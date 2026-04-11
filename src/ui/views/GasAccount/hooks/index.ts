@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { useInfiniteScroll, useInViewport } from 'ahooks';
 import { message } from 'antd';
 import { uniqBy } from 'lodash';
@@ -20,6 +20,8 @@ import {
   supportedDirectSign,
   supportedHardwareDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { SignatureSteps } from '@/ui/component/MiniSignV2';
+import { KEYRING_TYPE } from '@/constant';
 
 export const useGasAccountRefresh = () => {
   const refreshId = useGasAccountRefreshId();
@@ -93,6 +95,23 @@ export const useGasAccountInfo = () => {
     }
   }, [error?.message, sig, accountId]);
 
+  useEffect(() => {
+    if (!sig || !accountId) {
+      wallet.setGasAccountBalanceState();
+      return;
+    }
+
+    const responseAccountId = value?.account?.id;
+    if (!responseAccountId || !isSameAddress(responseAccountId, accountId)) {
+      return;
+    }
+
+    wallet.setGasAccountBalanceState(
+      accountId,
+      Number(value.account.balance || 0) > 0
+    );
+  }, [wallet, sig, accountId, value?.account?.id, value?.account?.balance]);
+
   return { loading, value };
 };
 
@@ -116,7 +135,6 @@ export const useGasAccountMethods = () => {
         const miniSign = supportedHardwareDirectSign(account.type);
         let signature = '';
         if (miniSign) {
-          // startDirectSigning(true);
           const [hash] = (await personalMessagePromise.present({
             autoSign: true,
             account,
@@ -127,6 +145,12 @@ export const useGasAccountMethods = () => {
 
           signature = hash;
         } else {
+          if (account.type === KEYRING_TYPE.HdKeyring) {
+            await SignatureSteps.invokeEnterPassphraseModal({
+              wallet: wallet,
+              value: account.address,
+            });
+          }
           const { txHash } = await sendPersonalMessage({
             data: [text, account.address],
             wallet,
@@ -145,7 +169,8 @@ export const useGasAccountMethods = () => {
         );
 
         if (result?.success) {
-          dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+          await wallet.handleGasAccountLoginSuccess(signature, account);
+          dispatch.gasAccount.syncState(undefined);
           if (isClaimGift) {
             await wallet.claimGasAccountGift(account.address);
           }
@@ -194,7 +219,8 @@ export const useGasAccountMethods = () => {
       );
 
       if (result?.success) {
-        dispatch.gasAccount.setGasAccountSig({ sig: signature, account });
+        await wallet.handleGasAccountLoginSuccess(signature, account);
+        dispatch.gasAccount.syncState(undefined);
         if (isClaimGift) {
           await wallet.claimGasAccountGift(account.address);
         }

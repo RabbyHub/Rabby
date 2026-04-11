@@ -16,17 +16,13 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import IconUnknown from 'ui/assets/token-default.svg';
 import { ellipsis } from '@/ui/utils/address';
 import { DesktopTxExplain } from './DesktopTxExplain';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 type HistoryItemProps = {
-  data: TxDisplayItem | TxHistoryItem;
-} & Pick<TxDisplayItem, 'cateDict' | 'projectDict' | 'tokenDict'>;
+  data: TxHistoryItemRow;
+};
 
-export const DesktopHistoryItem = ({
-  data,
-  cateDict,
-  projectDict,
-  tokenDict,
-}: HistoryItemProps) => {
+export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
   const chainItem = getChain(data.chain);
   const isFailed = data.tx?.status === 0;
   const isScam = data.is_scam;
@@ -64,7 +60,7 @@ export const DesktopHistoryItem = ({
       )}
 
       {/* Column 1 - Time */}
-      <div className="w-[225px] flex-shrink-0">
+      <div className="min-w-[250px] flex-shrink-0 w-[25%]">
         <div className="flex items-center gap-1">
           <span className="text-[14px] leading-[17px]  text-rb-neutral-secondary">
             {sinceTime(data.time_at)}
@@ -86,22 +82,17 @@ export const DesktopHistoryItem = ({
       </div>
 
       {/* Column 2 - Transaction Type/Details */}
-      <div className="flex-1 min-w-0 mx-4">
-        <DesktopTxExplain
-          data={data}
-          projectDict={projectDict}
-          tokenDict={tokenDict}
-          cateDict={cateDict}
-        />
+      <div className="flex-[2] min-w-0 mx-4 w-[25%]">
+        <DesktopTxExplain data={data} />
       </div>
 
       {/* Column 3 - Token Changes */}
-      <div className="flex-1 mx-4">
-        <DesktopTokenChange data={data} tokenDict={tokenDict} />
+      <div className="flex-[2] mx-4 min-w-0 w-[25%]">
+        <DesktopTokenChange data={data} />
       </div>
 
       {/* Column 4 - Gas Fee and Status */}
-      <div className="w-[220px] flex-shrink-0 text-right">
+      <div className="min-w-[250px] flex-shrink-0 text-right w-[25%]">
         {data.tx && data.tx?.eth_gas_fee ? (
           <div className="text-[14px] leading-[17px] text-r-neutral-foot">
             Gas fee: {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 4)}{' '}

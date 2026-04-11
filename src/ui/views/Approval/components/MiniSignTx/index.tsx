@@ -9,7 +9,8 @@ import {
   checkGasAndNonce,
   convertLegacyTo1559,
   explainGas,
-  getNativeTokenBalance,
+  GasTokenInfo,
+  getGasTokenBalance,
   getPendingTxs,
   is7702Tx,
 } from '@/utils/transaction';
@@ -78,6 +79,7 @@ import { Divide } from '../Divide';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { BalanceChangeLoading } from './BalanceChangeLoanding';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
+import { isTempoChain } from '@/utils/tempo';
 
 interface MiniSignTxProps {
   txs: Tx[];
@@ -313,7 +315,16 @@ export const MiniSignTx = ({
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
-  const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
+  const [nativeTokenBalance, setNativeTokenBalance] = useState('0');
+  const [gasToken, setGasToken] = useState<GasTokenInfo>({
+    tokenId: chain.nativeTokenAddress,
+    symbol: chain.nativeTokenSymbol,
+    decimals: chain.nativeTokenDecimals || 18,
+    logoUrl: chain.nativeTokenLogo,
+  });
+  const checkTxValueInBalance = useMemo(() => !isTempoChain(chain.serverId), [
+    chain.serverId,
+  ]);
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const securityLevel = useMemo(() => {
@@ -510,7 +521,7 @@ export const MiniSignTx = ({
             ? {
                 maxFeePerGas: intToHex(Math.round(gas.price)),
                 maxPriorityFeePerGas:
-                  gas.maxPriorityFee <= 0
+                  gas.maxPriorityFee < 0
                     ? item.tx.maxFeePerGas
                     : intToHex(Math.round(gas.maxPriorityFee)),
               }
@@ -528,6 +539,7 @@ export const MiniSignTx = ({
             tx,
             gasLimit: item.gasLimit,
             account: currentAccount!,
+            gasTokenDecimals: gasToken.decimals || 18,
           }),
         };
       })
@@ -644,13 +656,14 @@ export const MiniSignTx = ({
         )
       );
       try {
-        const balance = await getNativeTokenBalance({
+        const balanceInfo = await getGasTokenBalance({
           wallet,
           chainId,
           address: currentAccount.address,
         });
 
-        setNativeTokenBalance(balance);
+        setNativeTokenBalance(balanceInfo.rawBalance);
+        setGasToken(balanceInfo.token);
       } catch (e) {
         if (await wallet.hasCustomRPC(chain.enum)) {
           triggerCustomRPCErrorModal();
@@ -742,7 +755,7 @@ export const MiniSignTx = ({
               ? {
                   maxFeePerGas: intToHex(Math.round(gas.price || 0)),
                   maxPriorityFeePerGas:
-                    gas.maxPriorityFee <= 0
+                    gas.maxPriorityFee < 0
                       ? item.tx.maxFeePerGas
                       : intToHex(Math.round(gas.maxPriorityFee)),
                 }
@@ -760,6 +773,7 @@ export const MiniSignTx = ({
               tx,
               gasLimit: item.gasLimit,
               account: currentAccount!,
+              gasTokenDecimals: gasToken.decimals || 18,
             }),
           };
         })
@@ -785,10 +799,15 @@ export const MiniSignTx = ({
               isSpeedUp: isSpeedUp,
               isGnosisAccount: false,
               nativeTokenBalance: balance,
+              gasTokenDecimals: gasToken.decimals || 18,
+              checkTxValueInBalance,
             });
+            const txValueRaw = checkTxValueInBalance
+              ? new BigNumber(item.tx.value || 0)
+              : new BigNumber(0);
             balance = new BigNumber(balance)
-              .minus(new BigNumber(item.tx.value || 0))
-              .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
+              .minus(txValueRaw)
+              .minus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0))
               .toFixed();
             return result;
           });
@@ -826,6 +845,8 @@ export const MiniSignTx = ({
       sig,
       support1559,
       initdTxs,
+      gasToken.decimals,
+      checkTxValueInBalance,
     ]
   );
 
@@ -863,7 +884,7 @@ export const MiniSignTx = ({
         if (support1559) {
           tx = convertLegacyTo1559(tx);
           tx.maxPriorityFeePerGas =
-            maxPriorityFee <= 0
+            maxPriorityFee < 0
               ? tx.maxFeePerGas
               : intToHex(Math.round(maxPriorityFee));
         }
@@ -924,6 +945,8 @@ export const MiniSignTx = ({
             explainTx: preExecResult,
             needRatio,
             wallet,
+            gasTokenDecimals: gasToken.decimals || 18,
+            checkTxValueInBalance,
           });
           gasLimit = _gasLimit;
           recommendGasLimitRatio = _recommendGasLimitRatio;
@@ -939,6 +962,7 @@ export const MiniSignTx = ({
           tx,
           gasLimit,
           account: currentAccount,
+          gasTokenDecimals: gasToken.decimals || 18,
         });
 
         tx.gas = gasLimit;
@@ -1042,15 +1066,26 @@ export const MiniSignTx = ({
         isSpeedUp: isSpeedUp,
         isGnosisAccount: false,
         nativeTokenBalance: balance,
+        gasTokenDecimals: gasToken.decimals || 18,
+        checkTxValueInBalance,
       });
+      const txValueRaw = checkTxValueInBalance
+        ? new BigNumber(item.tx.value || 0)
+        : new BigNumber(0);
       balance = new BigNumber(balance)
-        .minus(new BigNumber(item.tx.value || 0))
-        .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
+        .minus(txValueRaw)
+        .minus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0))
         .toFixed();
       return result;
     });
     return _.flatten(res);
-  }, [txsResult, nativeTokenBalance, recommendNonce]);
+  }, [
+    txsResult,
+    nativeTokenBalance,
+    recommendNonce,
+    gasToken.decimals,
+    checkTxValueInBalance,
+  ]);
 
   const totalGasCost = useMemo(() => {
     return txsResult.reduce(
@@ -1084,6 +1119,7 @@ export const MiniSignTx = ({
             wallet,
             gasLimit: item.gasLimit,
             account: currentAccount!,
+            gasTokenDecimals: gasToken.decimals || 18,
           })
         )
       );
@@ -1105,7 +1141,7 @@ export const MiniSignTx = ({
       );
       return totalCost;
     },
-    [chainId, txsResult, currentAccount]
+    [chainId, txsResult, currentAccount, gasToken.decimals]
   );
 
   const { value } = useAsync<() => Promise<[string, RetryUpdateType]>>(() => {
@@ -1279,6 +1315,8 @@ export const MiniSignTx = ({
               errors={checkErrors}
               engineResults={engineResults}
               nativeTokenBalance={nativeTokenBalance}
+              gasToken={gasToken}
+              checkTxValueInBalance={checkTxValueInBalance}
               gasPriceMedian={gasPriceMedian}
               gas={totalGasCost}
               gasCalcMethod={gasCalcMethod}

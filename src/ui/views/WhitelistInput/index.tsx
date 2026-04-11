@@ -107,7 +107,7 @@ const WhitelistInput = () => {
       history.goBack();
     } else {
       history.replace('/');
-      history.push('/send-poly');
+      history.push('/send-token');
     }
     wallet.clearPageStateCache();
   }, [history, wallet]);
@@ -183,6 +183,8 @@ const WhitelistInput = () => {
       content: t('page.whitelist.tips.added'),
     });
   };
+
+  const disabledSubmit = !isValidAddr || !inputAddress || !inputAlias;
 
   const handleSubmit = async () => {
     if (!isValidAddress(inputAddress)) {
@@ -412,7 +414,7 @@ const WhitelistInput = () => {
           <div className="btn-wrapper w-[100%] px-[16px] flex justify-center">
             <Button
               onClick={handleSubmit}
-              disabled={!isValidAddr || !inputAddress}
+              disabled={disabledSubmit}
               type="primary"
               htmlType="submit"
               size="large"

@@ -21,7 +21,8 @@ export const ExplorePerpsHeader = React.forwardRef<
       className={clsx('sticky top-0 z-10 bg-r-neutral-bg2 pb-12', className)}
     >
       <div className="flex justify-between">
-        <div className="text-13 font-medium text-r-neutral-title-1">
+        <div className="text-13 font-medium text-r-neutral-title-1 flex items-center gap-6">
+          <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
           {t('page.perps.explorePerps')}
         </div>
         <div className="cursor-pointer px-2" onClick={onSearchClick}>

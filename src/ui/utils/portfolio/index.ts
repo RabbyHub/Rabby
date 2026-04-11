@@ -13,10 +13,13 @@ export const useQueryProjects = (
   withHistory = false,
   visible: boolean,
   isTestnet = false,
-  isAll = false,
-  showBlocked = false
+  lpTokenMode = false,
+  showBlocked = false,
+  searchMode = false,
+  autoLoad = true
 ) => {
   const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
+  const shouldAutoLoad = visible && autoLoad;
 
   useEffect(() => {
     if (time!.add(1, 'day').add(Cache_Timeout, 's').isBefore(dayjs())) {
@@ -33,6 +36,7 @@ export const useQueryProjects = (
     tokens,
     netWorth: tokenNetWorth,
     isLoading: isTokensLoading,
+    isAllTokenLoading,
     hasValue: hasTokens,
     updateData: updateTokens,
     walletProject,
@@ -41,12 +45,14 @@ export const useQueryProjects = (
   } = useTokens(
     userAddr,
     historyTime,
-    visible,
+    shouldAutoLoad,
     0,
     undefined,
     isTestnet,
-    isAll,
-    showBlocked
+    lpTokenMode,
+    showBlocked,
+    searchMode,
+    true // disableRecommended
   );
 
   const {
@@ -56,10 +62,10 @@ export const useQueryProjects = (
     netWorth: portfolioNetWorth,
     updateData: updatePortfolio,
     removeProtocol,
-  } = usePortfolios(userAddr, historyTime, visible, isTestnet);
+  } = usePortfolios(userAddr, historyTime, shouldAutoLoad, isTestnet);
 
   const refreshPositions = useCallback(() => {
-    if (!isTokensLoading && !isPortfoliosLoading) {
+    if (!autoLoad || (!isTokensLoading && !isPortfoliosLoading)) {
       updatePortfolio();
       updateTokens();
       setTime(dayjs().subtract(1, 'day'));
@@ -70,6 +76,7 @@ export const useQueryProjects = (
     isTokensLoading,
     isPortfoliosLoading,
     setTime,
+    autoLoad,
   ]);
 
   const grossNetWorth = useMemo(() => tokenNetWorth + portfolioNetWorth!, [
@@ -82,7 +89,10 @@ export const useQueryProjects = (
     portfolioNetWorth,
     grossNetWorth,
     refreshPositions,
+    refreshTokens: updateTokens,
+    refreshPortfolios: updatePortfolio,
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     hasTokens,
     hasPortfolios,

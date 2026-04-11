@@ -4,6 +4,31 @@ import { AbstractPortfolioToken } from '../utils/portfolio/types';
 import { useWallet } from 'ui/utils';
 import { useRabbySelector } from 'ui/store';
 
+const isSameSortedResult = <T extends TokenItem | AbstractPortfolioToken>(
+  prev: T[],
+  next: T[]
+) => {
+  if (prev === next) return true;
+  if (prev.length !== next.length) return false;
+
+  for (let i = 0; i < prev.length; i++) {
+    const a = prev[i];
+    const b = next[i];
+    if (a === b) continue;
+    if (
+      a.id !== b.id ||
+      a.chain !== b.chain ||
+      a.amount !== b.amount ||
+      a.price !== b.price ||
+      a.is_core !== b.is_core
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 const useSortToken = <T extends TokenItem | AbstractPortfolioToken>(
   list?: T[]
 ) => {
@@ -35,13 +60,14 @@ const useSortToken = <T extends TokenItem | AbstractPortfolioToken>(
 
   useEffect(() => {
     if (!list) return;
+    let canceled = false;
     const hasUsdValue: T[] = [];
     const hasAmount: T[] = [];
     const others: T[] = [];
     for (let i = 0; i < list.length; i++) {
       const item = list[i];
       const usdValue = item.price * item.amount;
-      if (usdValue > 0) {
+      if (usdValue > 0 && item.is_core) {
         hasUsdValue.push(item);
       } else if (item.amount > 0) {
         hasAmount.push(item);
@@ -52,9 +78,16 @@ const useSortToken = <T extends TokenItem | AbstractPortfolioToken>(
     hasUsdValue.sort((a, b) => {
       return b.amount * b.price - a.amount * a.price;
     });
-    sortByChainBalance(others).then((list) => {
-      setResult([...hasUsdValue, ...hasAmount, ...list]);
+    sortByChainBalance(others).then((sortedOthers) => {
+      if (canceled) return;
+      const nextResult = [...hasUsdValue, ...hasAmount, ...sortedOthers];
+      setResult((prev) =>
+        isSameSortedResult(prev, nextResult) ? prev : nextResult
+      );
     });
+    return () => {
+      canceled = true;
+    };
   }, [list]);
 
   return result;

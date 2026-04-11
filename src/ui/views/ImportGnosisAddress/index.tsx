@@ -17,9 +17,11 @@ import clsx from 'clsx';
 import { UI_TYPE } from '@/constant/ui';
 import qs from 'qs';
 
-const ImportGnosisAddress: React.FC<{ isInModal?: boolean }> = ({
-  isInModal,
-}) => {
+const ImportGnosisAddress: React.FC<{
+  isInModal?: boolean;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+  onBack?(): void;
+}> = ({ isInModal, onNavigate, onBack }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -28,6 +30,7 @@ const ImportGnosisAddress: React.FC<{ isInModal?: boolean }> = ({
 
   const [form] = useForm();
   const { show, contextHolder } = useRepeatImportConfirm();
+  const successTitle = t('page.newAddress.addressAdded');
   const { data: chainList, runAsync, error, loading } = useRequest(
     async (address: string) => {
       const res = await wallet.fetchGnosisChainList(address);
@@ -60,29 +63,22 @@ const ImportGnosisAddress: React.FC<{ isInModal?: boolean }> = ({
     manual: true,
     async onSuccess(accounts) {
       if (UI_TYPE.isDesktop) {
-        history.replace({
-          pathname: history.location.pathname,
-          search: `?${qs.stringify({
-            action: 'add-address',
-            import: 'success',
-          })}`,
-          state: {
-            accounts,
-            title: t('Added successfully'),
-            editing: true,
-            importedAccount: true,
-            importedLength: (
-              await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
-            )?.[0]?.accounts?.length,
-            supportChainList: chainList,
-          },
+        onNavigate?.('success', {
+          accounts,
+          title: successTitle,
+          editing: true,
+          importedAccount: true,
+          importedLength: (
+            await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
+          )?.[0]?.accounts?.length,
+          supportChainList: chainList,
         });
       } else {
         history.replace({
           pathname: '/popup/import/success',
           state: {
             accounts,
-            title: t('Added successfully'),
+            title: successTitle,
             editing: true,
             importedAccount: true,
             importedLength: (
@@ -120,6 +116,10 @@ const ImportGnosisAddress: React.FC<{ isInModal?: boolean }> = ({
             src={IconBack}
             className="mb-0 absolute z-10 top-[20px] left-[20px] cursor-pointer"
             onClick={() => {
+              if (onBack) {
+                onBack();
+                return;
+              }
               history.goBack();
               sessionStorage.setItem(
                 'SELECTED_WALLET_TYPE',

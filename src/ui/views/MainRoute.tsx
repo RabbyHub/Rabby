@@ -47,7 +47,6 @@ import ManageAddress from './ManageAddress';
 import { NFTView } from './NFTView';
 import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
 import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
-import ApprovalManagePage from './ApprovalManagePage';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
@@ -58,15 +57,21 @@ import CreateMnemonics from './CreateMnemonics';
 import ImportHardware from './ImportHardware';
 import { CustomTestnet } from './CustomTestnet';
 import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
+import { AddNewAddress } from './AddAddress/AddNewAddress';
+import { AddMoreAddressesFromSeedPhrase } from './AddAddress/AddMoreAddressesFromSeedPhrase';
+import { CreateAddressSuccess } from './AddAddress/CreateAddressSuccess';
+import ImportAddressSuccess from './AddAddress/ImportAddressSuccess';
+import { HardwareWallets } from './AddAddress/HardwareWallets';
+import BulkImportPrivateKey from './AddAddress/BulkImportPrivateKey';
+import ImportKeyOrSeed from './AddAddress/ImportKeyOrSeed';
+import { InstitutionalWallets } from './AddAddress/InstitutionalWallets';
 import { Ecology } from './Ecology';
 import { Bridge } from './Bridge';
 import { GasAccount } from './GasAccount';
 import { GnosisQueue } from './GnosisQueue';
 import Perps from './Perps/screen/home';
 import { Guide } from './NewUserImport/Guide';
-import { ImportWalletList } from './NewUserImport/ImportList';
 import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
-import { NewUserImportPrivateKey } from './NewUserImport/ImportPrivateKey';
 import { NewUserSetPassword } from './NewUserImport/SetPassword';
 import { NewUserImportGnosisAddress } from './NewUserImport/ImportGnosisAddress';
 import { NewUserImportLedger } from './NewUserImport/ImportLedger';
@@ -76,7 +81,6 @@ import { NewUserImportOneKey } from './NewUserImport/ImportOnekey';
 import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
 import { ImportOrCreatedSuccess } from './NewUserImport/Success';
 import { ReadyToUse } from './NewUserImport/ReadyToUse';
-import { ImportSeedPhrase } from './NewUserImport/ImportSeedPhrase';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 import { DARK_MODE_TYPE, KEYRING_CLASS } from '@/constant';
 import {
@@ -89,7 +93,6 @@ import { ConnectApproval } from './Approval/components/Connect/SelectWalletAppro
 import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
 import dayjs from 'dayjs';
 import { PreferenceStore } from '@/background/service/preference';
-import SendPoly from './SendPoly';
 import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
 import {
@@ -97,6 +100,10 @@ import {
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
 import SelectToAddress from './SelectToAddress';
+import { ImportWalletType } from './NewUserImport/ImportWalletType';
+import { ImportHardwareList } from './NewUserImport/importHardwareList';
+import { ImportSeedOrKey } from './NewUserImport/ImportSeedOrKey';
+import { BiometricUnlockSetup } from './BiometricUnlockSetup';
 
 declare global {
   interface Window {
@@ -150,6 +157,8 @@ const Main = () => {
         ) {
           return;
         }
+        await wallet.trackGasAccountActiveStatusOncePerDay();
+
         ga4.fireEvent(
           `ThemeMode_${
             preference.themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'
@@ -169,6 +178,23 @@ const Main = () => {
         ga4.fireEvent(`Whitelist_${isEnabledWhiteList ? 'On' : 'Off'}`, {
           event_category: 'Settings Snapshot',
         });
+
+        ga4.fireEvent(
+          `PwdForNonWhitelistedTx_${
+            preference.isEnabledPwdForNonWhitelistedTx ? 'On' : 'Off'
+          }`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
+
+        const isBiometricsEnabled = preference.biometricUnlockEnabled;
+        ga4.fireEvent(
+          `Unlock_Biometrics_${isBiometricsEnabled ? 'On' : 'Off'}`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
         wallet.updateGa4EventTime(Date.now());
       }
     })();
@@ -191,20 +217,20 @@ const Main = () => {
           <Guide />
         </Route>
 
-        <Route exact path="/new-user/import-list">
-          <ImportWalletList />
+        <Route exact path="/new-user/import-wallet-type">
+          <ImportWalletType />
         </Route>
 
-        <Route exact path="/new-user/import/private-key">
-          <NewUserImportPrivateKey />
+        <Route exact path="/new-user/import-hardware-list">
+          <ImportHardwareList />
         </Route>
 
         <Route exact path="/new-user/import/gnosis-address">
           <NewUserImportGnosisAddress />
         </Route>
 
-        <Route exact path="/new-user/import/seed-phrase">
-          <ImportSeedPhrase />
+        <Route exact path="/new-user/import/seed-or-key">
+          <ImportSeedOrKey />
         </Route>
 
         <Route
@@ -278,6 +304,9 @@ const Main = () => {
         <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
+        <Route exact path="/biometric-unlock-setup">
+          <BiometricUnlockSetup />
+        </Route>
         <PrivateRoute exact path="/import">
           <ImportMode />
         </PrivateRoute>
@@ -331,11 +360,43 @@ const Main = () => {
           <AddFromCurrentSeedPhrase />
         </PrivateRoute>
 
+        <PrivateRoute exact path="/add-address/new-address">
+          <AddNewAddress />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/import">
+          <ImportKeyOrSeed />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/bulk-import-private-key">
+          <BulkImportPrivateKey />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/create-address-success">
+          <CreateAddressSuccess />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/import-address-success">
+          <ImportAddressSuccess />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/add-more-from-seed-phrase">
+          <AddMoreAddressesFromSeedPhrase />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/hardware-wallets">
+          <HardwareWallets />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address/institutional-wallets">
+          <InstitutionalWallets />
+        </PrivateRoute>
+
         <PrivateRoute exact path="/history">
           <HistoryPage />
         </PrivateRoute>
         <PrivateRoute exact path="/history/filter-scam">
-          <HistoryPage isFitlerScam={true} />
+          <HistoryPage />
         </PrivateRoute>
         <PrivateRoute exact path="/activities">
           <Activities />
@@ -394,9 +455,6 @@ const Main = () => {
         <PrivateRoute exact path="/send-token">
           <SendToken />
         </PrivateRoute>
-        {/* <PrivateRoute exact path="/send-poly">
-          <SendPoly />
-        </PrivateRoute> */}
         <PrivateRoute exact path="/select-to-address">
           <SelectToAddress />
         </PrivateRoute>
@@ -412,11 +470,6 @@ const Main = () => {
 
         <PrivateRoute exact path="/bridge">
           <Bridge />
-        </PrivateRoute>
-
-        {/* todo remove */}
-        <PrivateRoute exact path="/approval-manage">
-          <ApprovalManagePage />
         </PrivateRoute>
 
         <PrivateRoute exact path="/dapp-search">

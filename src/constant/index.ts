@@ -40,6 +40,10 @@ import IconMnemonicDesktopWhite, {
 import IconWatchWhite, {
   ReactComponent as RcIconWatchWhite,
 } from 'ui/assets/walletlogo/IconWatch-white.svg';
+import IconWatchInk, {
+  ReactComponent as RcIconWatchInk,
+} from 'ui/assets/walletlogo/icon-watch-ink.svg';
+
 import LogoAirGap, {
   ReactComponent as RcLogoAirGap,
 } from 'ui/assets/walletlogo/airgap.svg';
@@ -199,6 +203,11 @@ import {
 import IconWatchPurple, {
   ReactComponent as RcIconWatchPurple,
 } from 'ui/assets/walletlogo/watch-purple.svg';
+
+import IconWhiteListWhite from 'ui/assets/walletlogo/whitelist-white.svg';
+
+import IconWhiteListDark from 'ui/assets/walletlogo/whitelist-dark.svg';
+
 import LogoZerion, {
   ReactComponent as RcLogoZerion,
 } from 'ui/assets/walletlogo/zerion.svg';
@@ -268,6 +277,10 @@ export const KEYRING_TYPE = {
   GnosisKeyring: 'Gnosis',
   CoboArgusKeyring: 'CoboArgus',
   CoinbaseKeyring: 'Coinbase',
+  /**
+   * just for type, not a real keyring type
+   */
+  Whitelist: 'Whitelist',
 } as const;
 
 const createHardwareObject = () => {
@@ -294,6 +307,10 @@ export const KEYRING_CLASS = {
   GNOSIS: 'Gnosis',
   CoboArgus: 'CoboArgus',
   Coinbase: 'Coinbase',
+  /**
+   * just for type, not a real keyring type
+   */
+  Whitelist: 'Whitelist',
 } as const;
 
 export const CORE_KEYRING_TYPES = [
@@ -322,7 +339,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
 export const KEYRING_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Created by Seed Phrase',
   [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
-  [KEYRING_TYPE.WatchAddressKeyring]: 'Contact',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch-only',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'Imported by BitBox02',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Imported by Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Imported by Trezor',
@@ -545,6 +562,7 @@ export const EVENTS = {
     REQUEST_PERMISSION_WEBUSB: 'ONEKEY_REQUEST_PERMISSION_WEBUI',
   },
   LOCK_WALLET: 'LOCK_WALLET',
+  UNLOCK_WALLET: 'UNLOCK_WALLET',
   RELOAD_TX: 'RELOAD_TX',
   SIGN_BEGIN: 'SIGN_BEGIN',
   SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
@@ -557,6 +575,9 @@ export const EVENTS = {
   },
   PERPS: {
     LOG_OUT: 'PERPS_LOG_OUT',
+    HANDLE_CLICK_PRICE: 'PERPS_HANDLE_CLICK_PRICE',
+    SWITCH_LIMIT_FILL_PRICE: 'SWITCH_LIMIT_FILL_PRICE',
+    USER_INFO_HISTORY_TAB_CHANGED: 'PERPS_USER_INFO_HISTORY_TAB_CHANGED',
   },
   INNER_HISTORY_ITEM_PENDING: 'INNER_HISTORY_ITEM_PENDING',
   INNER_HISTORY_ITEM_COMPLETE: 'INNER_HISTORY_ITEM_COMPLETE',
@@ -566,9 +587,14 @@ export const EVENTS = {
 
   DESKTOP: {
     FOCUSED: 'DESKTOP_FOCUSED',
+    SWITCH_PERPS_ACCOUNT: 'DESKTOP_SWITCH_PERPS_ACCOUNT',
   },
 
   RELOAD_APPROVAL: 'RELOAD_APPROVAL',
+  INNER_DAPP_CHANGE: {
+    ACCOUNT_CHANGED: 'INNER_DAPP_ACCOUNT_CHANGED',
+    DAPP_CHANGED: 'INNER_DAPP_DAPP_CHANGED',
+  },
 };
 
 export const EVENTS_IN_BG = {
@@ -1022,13 +1048,14 @@ export const WALLET_BRAND_CONTENT: {
 export const KEYRING_ICONS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
-  [KEYRING_CLASS.WATCH]: IconWatchPurple,
+  [KEYRING_CLASS.WATCH]: IconWatchInk,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
   [HARDWARE_KEYRING_TYPES.ImKey.type]: IconImKey,
+  [KEYRING_TYPE.Whitelist]: IconWhiteListWhite,
   // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 } as const;
 
@@ -1054,13 +1081,14 @@ export const KEYRING_ICONS_WHITE: Record<KeyringWithIcon, string> = {
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
   [HARDWARE_KEYRING_TYPES.ImKey.type]: IconImKey,
+  [KEYRING_TYPE.Whitelist]: IconWhiteListDark,
   // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
 export const KEYRING_PURPLE_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
-  [KEYRING_CLASS.WATCH]: IconWatchPurple,
+  [KEYRING_CLASS.WATCH]: IconWatchInk,
 };
 
 export const KEYRINGS_LOGOS: Record<KeyringWithIcon, string> = {
@@ -1073,6 +1101,8 @@ export const KEYRINGS_LOGOS: Record<KeyringWithIcon, string> = {
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
   [HARDWARE_KEYRING_TYPES.ImKey.type]: IconImKey,
+
+  [KEYRING_TYPE.Whitelist]: IconWhiteListWhite,
   // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
@@ -1100,7 +1130,7 @@ export const NEXT_KEYRING_ICONS = {
     dataLight: KEYRING_ICONS_WHITE[KEYRING_CLASS.WATCH],
     dataDark: KEYRING_ICONS[KEYRING_CLASS.WATCH],
     rcLight: RcIconWatchWhite,
-    rcDark: RcIconWatchPurple,
+    rcDark: RcIconWatchInk,
   } as NextKeyringIconType,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: {
     dataLight: KEYRING_ICONS_WHITE[HARDWARE_KEYRING_TYPES.BitBox02.type],
@@ -1381,6 +1411,7 @@ export const CAN_ESTIMATE_L1_FEE_CHAINS = [
   CHAINS_ENUM.PZE,
   CHAINS_ENUM.ERA,
   CHAINS_ENUM.LINEA,
+  'CITREA',
 ];
 
 export const SecurityEngineLevelOrder = [
@@ -1442,10 +1473,10 @@ export const IS_RD = typeof window === 'undefined' ? false : window.__is_rd__;
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',
   [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
-  [KEYRING_TYPE.WatchAddressKeyring]: 'Contact',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch-only',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
-  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'OneKey',
   [WALLET_BRAND_TYPES.ONEKEY]: 'Onekey QR',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
   [KEYRING_CLASS.GNOSIS]: 'Safe',
@@ -1460,32 +1491,6 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.Coinbase]: WALLET_BRAND_CONTENT.Coinbase.name,
   [KEYRING_CLASS.HARDWARE.IMKEY]: 'imKey',
 };
-
-export const GNOSIS_SUPPORT_CHAINS = [
-  CHAINS_ENUM.ETH,
-  CHAINS_ENUM.BSC,
-  CHAINS_ENUM.POLYGON,
-  CHAINS_ENUM.GNOSIS,
-  CHAINS_ENUM.AVAX,
-  CHAINS_ENUM.OP,
-  CHAINS_ENUM.ARBITRUM,
-  CHAINS_ENUM.AURORA,
-  CHAINS_ENUM.BASE,
-  CHAINS_ENUM.CELO,
-  CHAINS_ENUM.PZE,
-  CHAINS_ENUM.ERA,
-  CHAINS_ENUM.SCRL,
-  CHAINS_ENUM.LINEA,
-  'XLAYER',
-  CHAINS_ENUM.MANTLE,
-  'WORLD',
-  CHAINS_ENUM.BLAST,
-  'SONIC',
-  'BERA',
-  'INK',
-  'HEMI',
-  'KATANA',
-];
 
 export const COBO_ARGUS_SUPPORT_CHAINS = ensureChainListValid([
   CHAINS_ENUM.ETH,
@@ -1691,5 +1696,3 @@ export const SELF_HOST_SAFE_NETWORKS = [
   '10',
   '8453',
 ];
-
-export const SAFE_API_KEY = process.env.SAFE_API_KEY || '';

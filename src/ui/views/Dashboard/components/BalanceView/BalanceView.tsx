@@ -36,6 +36,8 @@ import type { Account } from '@/background/service/preference';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { OfflineChainNotify } from '../OfflineChainNotify';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+import { useQueryProjects } from 'ui/utils/portfolio';
+import { useCurrency } from '@/ui/hooks/useCurrency';
 
 export const BalanceView = ({
   currentAccount,
@@ -43,6 +45,7 @@ export const BalanceView = ({
   currentAccount?: Account | null;
 }) => {
   const { t } = useTranslation();
+  const { currency, syncCurrencyList } = useCurrency();
 
   const { currentHomeBalanceCache } = useHomeBalanceView(
     currentAccount?.address
@@ -93,6 +96,7 @@ export const BalanceView = ({
     nonce: accountBalanceUpdateNonce,
     realtimeNetWorth: latestEvmBalance,
     initData: currentHomeBalanceCache?.originalCurveData,
+    currency,
   });
   const wallet = useWallet();
   const [isGnosis, setIsGnosis] = useState(false);
@@ -112,8 +116,9 @@ export const BalanceView = ({
     const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
     const evmBalanceValue =
       latestEvmBalance || currentHomeBalanceCache?.evmBalance;
-    const appChainIds =
-      latestAppChainIds || currentHomeBalanceCache?.appChainIds;
+    const appChainIds = latestAppChainIds?.length
+      ? latestAppChainIds
+      : currentHomeBalanceCache?.appChainIds || [];
     return {
       appChainIds,
       balance: balanceValue,
@@ -123,7 +128,8 @@ export const BalanceView = ({
         formChartData(
           currentHomeBalanceCache?.originalCurveData || [],
           balanceValue,
-          Date.now()
+          Date.now(),
+          currency
         ),
       matteredChainBalances: latestMatteredChainBalances.length
         ? latestMatteredChainBalances
@@ -140,6 +146,7 @@ export const BalanceView = ({
     latestChainBalancesWithValue,
     latestCurveChartData,
     currentHomeBalanceCache,
+    currency,
   ]);
 
   const getCacheExpired = useCallback(async () => {
@@ -159,6 +166,16 @@ export const BalanceView = ({
     refreshCurve,
     isExpired: getCacheExpired,
   });
+  const { refreshPositions } = useQueryProjects(
+    currentAccount?.address,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false
+  );
 
   // const refreshTimerlegacy = useRef<NodeJS.Timeout>();
   // only execute once on component mounted or address changed
@@ -189,6 +206,10 @@ export const BalanceView = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  useEffect(() => {
+    syncCurrencyList();
+  }, [syncCurrencyList]);
 
   const handleIsGnosisChange = useCallback(async () => {
     if (!currentAccount) return;
@@ -266,6 +287,11 @@ export const BalanceView = ({
     setIsDebounceHover(false);
   };
 
+  const handleClickRefresh = () => {
+    refreshPositions();
+    onRefresh({ isManual: true });
+  };
+
   useDebounce(
     () => {
       if (isHover) {
@@ -338,7 +364,8 @@ export const BalanceView = ({
             ) : (
               <BalanceLabel
                 // isCache={balanceFromCache}
-                balance={currentBalance || 0}
+                balanceUsd={currentBalance || 0}
+                currency={currency}
               />
             )}
           </div>
@@ -347,7 +374,7 @@ export const BalanceView = ({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onRefresh({ isManual: true });
+              handleClickRefresh();
             }}
           >
             <div

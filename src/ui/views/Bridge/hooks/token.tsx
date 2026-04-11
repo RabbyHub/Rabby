@@ -520,6 +520,8 @@ export const useBridge = () => {
             const fromChain = findChain({ serverId: fromToken?.chain });
             if (fromToken?.id === fromChain?.nativeTokenAddress) {
               tokenApproved = true;
+            } else if (!quote.approve_contract_id) {
+              tokenApproved = true;
             } else {
               allowance = await wallet.getERC20Allowance(
                 fromToken.chain,

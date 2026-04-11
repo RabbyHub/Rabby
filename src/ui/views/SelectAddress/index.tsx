@@ -5,6 +5,8 @@ import { KEYRING_CLASS } from 'consts';
 import './style.less';
 import { HDManager } from '../HDManager/HDManager';
 import { useRabbyDispatch } from '@/ui/store';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { ga4 } from '@/utils/ga4';
 
 type State = {
   keyring: string;
@@ -28,6 +30,7 @@ const SelectAddress = () => {
     brand?: string;
   }>();
   const query = new URLSearchParams(search);
+  const hasReportedRef = useRef(false);
 
   state.keyring = state?.keyring || (query.get('hd') as string);
   state.brand = state?.brand || (query.get('brand') as string);
@@ -62,6 +65,26 @@ const SelectAddress = () => {
   React.useEffect(() => {
     initMnemonics();
   }, [query]);
+
+  React.useEffect(() => {
+    if (hasReportedRef.current) {
+      return;
+    }
+    if (!state.keyring) {
+      return;
+    }
+    hasReportedRef.current = true;
+    const mnemonicSuffix =
+      state.keyring === KEYRING_CLASS.MNEMONIC ? '_Add' : '';
+    matomoRequestEvent({
+      category: 'User',
+      action: 'importAddress',
+      label: `${state.keyring}${mnemonicSuffix}`,
+    });
+    ga4.fireEvent(`Import_${state.keyring}${mnemonicSuffix}`, {
+      event_category: 'Import Address',
+    });
+  }, [state.keyring]);
 
   const { keyring, brand } = state;
   const keyringId = useRef<number | null | undefined>(state.keyringId);

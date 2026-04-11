@@ -1,0 +1,134 @@
+// Perps Professional Toast Styles
+.perps-toast-wrapper {
+  .ant-message-notice-content {
+    padding: 0;
+    background: var(--rb-neutral-bg-1, #fff);
+    box-shadow: none;
+  }
+
+  .ant-message-custom-content {
+    display: flex;
+    align-items: center;
+
+    // Hide default antd icon
+    > .anticon {
+      display: none;
+    }
+  }
+}
+
+.perps-toast-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  min-width: 320px;
+  max-width: 420px;
+  padding: 12px 16px;
+  border-radius: 8px;
+
+  // Success state
+  &.perps-toast-success {
+    border: 1px solid var(--rb-green-light-1, #2abb7f);
+    background-color: var(--rb-green-light-1, #2abb7f);
+
+    .perps-toast-icon {
+      color: var(--rb-green-default, #2abb7f);
+    }
+
+    .perps-toast-title {
+      color: var(--rb-green-default, #2abb7f);
+    }
+  }
+
+  // Error state
+  &.perps-toast-error {
+    background-color: var(--rb-red-light-1, #e34935);
+    border: 1px solid var(--rb-red-light-1, #e34935);
+
+    .perps-toast-icon {
+      color: var(--rb-red-default, #e34935);
+    }
+
+    .perps-toast-title {
+      color: var(--rb-red-default, #e34935);
+    }
+  }
+
+  // Info state
+  &.perps-toast-info {
+    border: 1px solid var(--rb-neutral-line, rgba(224, 229, 236, 1));
+    background-color: var(--rb-neutral-bg-0, rgba(246, 247, 247, 1));
+
+    .perps-toast-icon {
+      color: var(--rb-neutral-secondary, rgba(154, 156, 169, 1));
+    }
+
+    .perps-toast-title {
+      color: var(--rb-neutral-title-1, #192945);
+    }
+  }
+}
+
+.perps-toast-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.perps-toast-body {
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+}
+
+.perps-toast-title {
+  font-size: 13px;
+  font-weight: 590;
+  line-height: 18px;
+  word-break: break-word;
+}
+
+.perps-toast-desc {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--rb-neutral-body, #3e495e);
+  word-break: break-word;
+
+  // a {
+  //   color: var(--r-blue-default, #7084ff);
+  //   text-decoration: underline;
+
+  //   &:hover {
+  //     opacity: 0.8;
+  //   }
+  // }
+}
+
+.perps-toast-close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  color: var(--rb-neutral-foot, #6a7587);
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+

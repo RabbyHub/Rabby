@@ -4,12 +4,17 @@ import { AssetPosition, OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { MarketData } from '@/ui/models/perps';
 import { TokenImg } from './TokenImg';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
-import { DistanceToLiquidationTag } from './DistanceToLiquidationTag';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { format } from 'path';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
@@ -72,12 +77,16 @@ export const PositionItem: React.FC<{
       (order) =>
         order.orderType === 'Take Profit Market' &&
         order.isTrigger &&
+        order.isPositionTpsl &&
         order.reduceOnly
     );
 
     const slItem = openOrders.find(
       (order) =>
-        order.orderType === 'Stop Market' && order.isTrigger && order.reduceOnly
+        order.orderType === 'Stop Market' &&
+        order.isTrigger &&
+        order.isPositionTpsl &&
+        order.reduceOnly
     );
 
     return {
@@ -103,7 +112,7 @@ export const PositionItem: React.FC<{
     >
       <div className={clsx('flex items-center justify-between px-16 py-12')}>
         <div className="flex flex-col gap-8 flex-1">
-          <div className="flex items-center">
+          <div className="flex items-center relative">
             <TokenImg
               logoUrl={logoUrl}
               direction={side}
@@ -111,31 +120,52 @@ export const PositionItem: React.FC<{
               size={20}
             />
             <span className="text-15 ml-4 font-medium text-r-neutral-title-1">
-              {coin}
+              {formatPerpsCoin(coin)}
             </span>
-            <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" />
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle"
+              placement="top"
+              title={
+                leverageType === 'cross'
+                  ? t('page.perps.crossMarginLiqPriceTip')
+                  : undefined
+              }
+            >
+              <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
+                {leverageType === 'cross'
+                  ? t('page.perps.cross')
+                  : t('page.perps.isolated')}
+                {leverageType === 'cross' && (
+                  <RcIconInfo
+                    viewBox="0 0 14 14"
+                    width={12}
+                    height={12}
+                    className="text-r-neutral-foot"
+                  />
+                )}
+              </span>
+            </TooltipWithMagnetArrow>
+            {/* <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" /> */}
           </div>
           <div className="flex items-center gap-6">
             <span
               className={clsx(
                 'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',
                 isLong
-                  ? 'text-rb-green-default bg-rb-green-light-1'
-                  : 'text-rb-red-default bg-rb-red-light-1'
+                  ? 'text-r-green-default bg-r-green-light'
+                  : 'text-r-red-default bg-r-red-light'
               )}
             >
               {side} {leverageText}
             </span>
-            {leverageType === 'cross' && (
-              <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
-                {t('page.perps.cross')}
-              </span>
+            {!hasStopLoss && (
+              <DistanceRiskTag
+                isLong={isLong}
+                percent={formatPerpsPct(
+                  calculateDistanceToLiquidation(liquidationPx, markPrice)
+                )}
+              />
             )}
-            <DistanceToLiquidationTag
-              liquidationPrice={liquidationPx}
-              markPrice={markPrice}
-              onPress={() => onShowRiskPopup?.(coin)}
-            />
           </div>
         </div>
         <div className="flex flex-col items-end gap-4">

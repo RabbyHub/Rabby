@@ -24,6 +24,11 @@ import { useAsync } from 'react-use';
 import { getUiType, useWallet } from '@/ui/utils';
 import { isAddress } from 'viem/utils';
 import { useTranslation } from 'react-i18next';
+import {
+  concatAndSort,
+  contactAmountTokens,
+  scamTokenFilter,
+} from '@/ui/utils/portfolio/tokenUtils';
 const isTab = getUiType().isTab;
 
 const Wrapper = styled.div`
@@ -63,6 +68,7 @@ const Text = styled.span`
 `;
 
 interface CommonProps {
+  isHideTitle?: boolean;
   token?: TokenItem;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
@@ -86,6 +92,8 @@ interface CommonProps {
   supportChains?: CHAINS_ENUM[];
   getContainer?: DrawerProps['getContainer'];
   onStartSelectChain?: () => void;
+  onOpenTokenModal?: () => void;
+  onSelectRecentToken?: (token: TokenItem) => void;
 }
 
 interface BridgeFromProps extends CommonProps {
@@ -115,6 +123,7 @@ const TokenSelect = forwardRef<
       excludeTokens = defaultExcludeTokens,
       type = 'default',
       placeholder,
+      isHideTitle,
       hideChainIcon = true,
       value,
       loading = false,
@@ -125,6 +134,8 @@ const TokenSelect = forwardRef<
       supportChains,
       getContainer,
       onStartSelectChain,
+      onOpenTokenModal,
+      onSelectRecentToken,
     },
     ref
   ) => {
@@ -156,6 +167,7 @@ const TokenSelect = forwardRef<
     const handleCurrentTokenChange = (token: TokenItem) => {
       onChange && onChange('');
       onTokenChange(token);
+      setLpTokenMode(false);
       setTokenSelectorVisible(false);
 
       // const chainItem = findChainByServerID(token.chain);
@@ -176,19 +188,28 @@ const TokenSelect = forwardRef<
         setUpdateNonce(updateNonce + 1);
       }
       setTokenSelectorVisible(true);
+      onOpenTokenModal?.();
     };
 
     const isSwapType = isSwapTokenType(type);
 
     // when no any queryConds
-    const { tokens: allTokens, isLoading: isLoadingAllTokens } = useTokens(
+    const {
+      tokens: allTokens,
+      isLoading: isLoadingAllTokens,
+      isAllTokenLoading, // 包含lp Token的请求
+    } = useTokens(
       useSwapTokenList ? undefined : currentAccount?.address,
       undefined,
       tokenSelectorVisible,
       updateNonce,
       queryConds.chainServerId,
       undefined,
-      isFromMode ? lpTokenMode : undefined // only show lp tokens in from mode
+      isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
+      undefined,
+      !!queryConds.keyword,
+      false,
+      true
     );
 
     const {
@@ -247,14 +268,22 @@ const TokenSelect = forwardRef<
       return uniqBy(
         queryConds.keyword
           ? isSwapTo
-            ? remoteSwapToSearchTokens
+            ? contactAmountTokens(
+                // remoteSwapToSearchTokens获取的接口不好加amount，就从已推荐列表中找到amount合并进去
+                remoteSwapToSearchTokens || [],
+                swapTokenList || []
+              )
                 ?.filter((e) => e.chain === queryConds.chainServerId)
                 .filter((e) =>
                   isAddress(queryConds.keyword, { strict: false })
                     ? true
-                    : !!e.is_core
+                    : scamTokenFilter(e)
                 )
-            : searchedTokenByQuery.map(abstractTokenToTokenItem)
+            : concatAndSort(
+                searchedTokenByQuery.map(abstractTokenToTokenItem),
+                allTokens,
+                queryConds.keyword
+              )
           : allTokens,
         (token) => {
           return `${token.chain}-${token.id}`;
@@ -266,6 +295,7 @@ const TokenSelect = forwardRef<
       excludeTokens,
       queryConds,
       isSwapTo,
+      swapTokenList,
       remoteSwapToSearchTokens,
     ]);
 
@@ -285,7 +315,8 @@ const TokenSelect = forwardRef<
         ? isSearchLoading || remoteSwapToSearchTokensLoading
         : useSwapTokenList
         ? swapTokenListLoading
-        : isLoadingAllTokens) || initLoading;
+        : isLoadingAllTokens || (lpTokenMode && isAllTokenLoading)) ||
+      initLoading;
 
     const handleSearchTokens = React.useCallback(async (ctx) => {
       setQueryConds({
@@ -321,6 +352,7 @@ const TokenSelect = forwardRef<
           <TokenSelector
             drawerHeight={drawerHeight}
             visible={tokenSelectorVisible}
+            isHideTitle={isHideTitle}
             mainnetTokenList={displayTokenList}
             onConfirm={handleCurrentTokenChange}
             onCancel={handleTokenSelectorClose}
@@ -337,6 +369,7 @@ const TokenSelect = forwardRef<
             setLpTokenMode={setLpTokenMode}
             showLpTokenSwitch={isFromMode}
             onStartSelectChain={onStartSelectChain}
+            onSelectRecentToken={onSelectRecentToken}
           />
         </>
       );
@@ -390,6 +423,7 @@ const TokenSelect = forwardRef<
         </Wrapper>
         <TokenSelector
           visible={tokenSelectorVisible}
+          isHideTitle={isHideTitle}
           mainnetTokenList={displayTokenList}
           onConfirm={handleCurrentTokenChange}
           onCancel={handleTokenSelectorClose}

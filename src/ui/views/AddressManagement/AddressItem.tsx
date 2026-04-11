@@ -29,6 +29,7 @@ import { CopyChecked } from '@/ui/component/CopyChecked';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
+import { useHandleDeleteHdKeyringAndSimpleKeyringAccount } from '@/ui/hooks/useDeleteHdOrPrivateKeyringAddress';
 
 export interface AddressItemProps {
   balance: number;
@@ -90,14 +91,14 @@ const AddressItem = memo(
     const titleRef = useRef<HTMLDivElement>(null);
     const dispatch = useRabbyDispatch();
 
+    const {
+      deleteAccount: deletePrivateKeyOrHD,
+      renderDelete,
+    } = useHandleDeleteHdKeyringAndSimpleKeyringAccount();
+
     const canFastDeleteAccount = useMemo(
       // not privacy secret
-      () =>
-        onDelete
-          ? true
-          : isCurrentAccount
-          ? false
-          : ![KEYRING_CLASS.PRIVATE_KEY].includes(type as any),
+      () => (onDelete ? true : isCurrentAccount ? false : true),
       [type, onDelete]
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {
@@ -106,7 +107,21 @@ const AddressItem = memo(
         await onDelete();
         return;
       }
+
       if (canFastDeleteAccount) {
+        if (
+          type === KEYRING_CLASS.MNEMONIC ||
+          type === KEYRING_CLASS.PRIVATE_KEY
+        ) {
+          await deletePrivateKeyOrHD({
+            address,
+            type,
+            brandName,
+          });
+          await dispatch.accountToDisplay.getAllAccountsToDisplay();
+          return;
+        }
+
         await dispatch.addressManagement.removeAddress([
           address,
           type,
@@ -190,14 +205,15 @@ const AddressItem = memo(
               )}
             >
               <Tooltip
-                overlayClassName="rectangle addressType__tooltip"
+                overlayClassName="rectangle"
                 placement="topRight"
+                align={{ offset: [12, 5] }}
                 title={formatAddressTooltip(
                   type,
                   BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
                 )}
               >
-                <div className="relative mr-[12px] flex-none">
+                <div className="relative flex-none">
                   <img
                     src={addressTypeIcon}
                     className={
@@ -215,7 +231,7 @@ const AddressItem = memo(
                 </div>
               </Tooltip>
 
-              <div className={clsx('rabby-address-item-content')}>
+              <div className={clsx('rabby-address-item-content ml-[12px]')}>
                 {
                   <div className="rabby-address-item-title" ref={titleRef}>
                     {
@@ -336,6 +352,10 @@ const AddressItem = memo(
           </div>
           {children}
         </div>
+
+        {renderDelete(() => {
+          dispatch.accountToDisplay.getAllAccountsToDisplay();
+        })}
       </div>
     );
   }

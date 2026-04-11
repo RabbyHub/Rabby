@@ -28,11 +28,18 @@ import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { FooterBar } from './FooterBar/FooterBar';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
+import {
+  filterPrimaryType,
+  parseSignTypedDataMessage,
+} from './SignTypedDataExplain/parseSignTypedDataMessage';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TypedDataActions';
-import { normalizeTypeData } from './TypedDataActions/utils';
+import {
+  cleanEIP712Payload,
+  isDeepJSON,
+  normalizeTypeData,
+} from './TypedDataActions/utils';
 import {
   Level,
   defaultRules,
@@ -193,8 +200,15 @@ const SignTypedData = ({
     if (!isSignTypedDataV1) {
       try {
         const v = JSON.parse(data[1]);
-        const displayData = cloneDeep(v);
-        const normalized = normalizeTypeData(v);
+
+        let v2 = v;
+        // if the payload is too deep, we need to clean it
+        if (isDeepJSON(v, 100)) {
+          v2 = cleanEIP712Payload(v);
+        }
+
+        const displayData = cloneDeep(v2);
+        const normalized = normalizeTypeData(v2);
         return [normalized, displayData];
       } catch (error) {
         console.error('parse signTypedData error: ', error);

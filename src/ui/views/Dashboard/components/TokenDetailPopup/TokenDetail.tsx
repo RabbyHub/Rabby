@@ -6,7 +6,7 @@ import {
   TxHistoryResult,
 } from 'background/service/openapi';
 import clsx from 'clsx';
-import { last } from 'lodash';
+import { last, sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -37,6 +37,7 @@ import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
 import { DBK_CHAIN_ID } from '@/constant';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
+import { transformToHistory } from '@/utils/history';
 const isDesktop = getUiType().isDesktop;
 const PAGE_COUNT = 10;
 
@@ -117,22 +118,20 @@ const TokenDetail = ({
   }, [currentAccount, getTokenAmount]);
 
   const fetchData = async (startTime = 0) => {
-    const res: TxHistoryResult = await wallet.openapi.listTxHisotry({
+    const res = await wallet.openapi.listTxHisotry({
       id: currentAccount!.address,
       chain_id: token.chain,
       start_time: startTime,
       page_count: PAGE_COUNT,
       token_id: token.id,
     });
-    const { project_dict, cate_dict, token_dict, history_list: list } = res;
-    const displayList = list
-      .map((item) => ({
-        ...item,
-        projectDict: project_dict,
-        cateDict: cate_dict,
-        tokenDict: token_dict,
-      }))
-      .sort((v1, v2) => v2.time_at - v1.time_at);
+    const displayList = sortBy(
+      transformToHistory({
+        data: res,
+        address: currentAccount!.address,
+      }),
+      (item) => -item.time_at
+    );
     return {
       last: last(displayList)?.time_at,
       list: displayList,
@@ -359,7 +358,7 @@ const TokenDetail = ({
                   className="rectangle w-[max-content]"
                 >
                   <img
-                    className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                    className="w-14 h-14 absolute right-[-2px] bottom-[-2px] rounded-full"
                     src={chain?.logo}
                   />
                 </TooltipWithMagnetArrow>
@@ -369,7 +368,12 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
-            {isLpToken(token) && <LpTokenTag className="ml-8" />}
+            {isLpToken(token) && (
+              <LpTokenTag
+                className="ml-8"
+                protocolName={token.protocol_id || ''}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -493,9 +497,6 @@ const TokenDetail = ({
           {data?.list.map((item) => (
             <HistoryItem
               data={item}
-              projectDict={item.projectDict}
-              cateDict={item.cateDict}
-              tokenDict={item.tokenDict}
               key={item.id}
               onClose={onClose}
               canClickToken={canClickToken}

@@ -12,6 +12,7 @@ import { onBroadcastToUI } from '@/ui/utils/broadcastToUI';
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { Account } from '@/background/service/preference';
+import { AccountScene } from '@/constant/scene-account';
 
 export function useCurrentAccount(options?: {
   onChanged?: (ctx: {
@@ -59,6 +60,29 @@ export function useCurrentAccount(options?: {
   }, [currentAccount, onChanged, dispatch.account]);
 
   return currentAccount;
+}
+
+export function useSceneAccount(options?: { scene: AccountScene }) {
+  const dispatch = useRabbyDispatch();
+  const { scene } = options || {};
+
+  const currentAccount = useRabbySelector((s) => {
+    return scene
+      ? s.account.sceneAccountMap?.[scene] || s.account.currentAccount
+      : s.account.currentAccount;
+  });
+
+  const switchCurrentAccount = useMemoizedFn((account: Account) => {
+    if (!scene) {
+      return dispatch.account.changeAccountAsync(account);
+    }
+    return dispatch.account.switchSceneAccount({
+      scene,
+      account,
+    });
+  });
+
+  return [currentAccount, switchCurrentAccount] as const;
 }
 
 export function useSubscribeCurrentAccountChanged() {

@@ -22,13 +22,16 @@
       "filterScam": {
         "loading": "La carga puede tardar un momento y es posible que haya retrasos en los datos.",
         "title": "Ocultar transacciones fraudulentas",
-        "btn": "Ocultar transacciones de estafa"
+        "btn": "Ocultar transacciones de estafa",
+        "button": "Ocultar transacciones de estafa"
       },
       "detail": {
         "Pending": "Pendiente",
         "Failed": "Fallido",
         "Succeeded": "Sucedido"
-      }
+      },
+      "showScamTips": "Mostrar transacciones de estafa",
+      "hideScamTips": "Ocultar transacciones fraudulentas"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",
@@ -346,7 +349,7 @@
       "typedDataMessage": "Firmar Datos Tipados",
       "trustValueTitle": "Confianza en el valor",
       "primaryType": "Tipo principal",
-      "safeServiceNotAvailable": "El servicio Safe no está disponible ahora, por favor intente más tarde.",
+      "safeServiceNotAvailable": "El servicio de Safe no está disponible ahora, por favor intenta más tarde.",
       "safeTx": {
         "selfHostConfirm": {
           "content": "La API de Safe no está disponible. Cambia al servicio de Safe desplegado por Rabby para mantener tu Safe funcional. <strong>Todos los firmantes de Safe deben usar Rabby Wallet para autorizar transacciones.<strong>",
@@ -652,7 +655,8 @@
     "receive": {
       "title": "Recibir {{token}} en {{chain}}",
       "watchModeAlert1": "Esta es una dirección en Modo de Observación.",
-      "watchModeAlert2": "¿Estás seguro de que quieres usarla para recibir activos?"
+      "watchModeAlert2": "¿Estás seguro de que quieres usarla para recibir activos?",
+      "receiveOn": "Recibir {{token}} en"
     },
     "sendToken": {
       "addressNotInContract": "No en la lista de direcciones. <1></1><2>Agregar a contactos</2>",
@@ -829,8 +833,8 @@
             "modalTitle_one": "Se requiere un total de <2>{{count}}</2> firmas",
             "modalContent": "Las aprobaciones del mismo contrato Permit2 se empaquetarían juntas bajo la misma firma."
           },
-          "notSupport7702Title": "No compatible con el tipo de dirección actual",
-          "notSupport7702Content": "Actualmente solo admite revocar la delegación EIP-7702 para direcciones de clave privada y frase semilla."
+          "notSupport7702Title": "Dirección de tipo no compatible",
+          "notSupport7702Content": "Revocar las delegaciones de EIP-7702 solo es compatible con direcciones de clave privada o frase semilla."
         },
         "ViewMore": {
           "text": "Ver más"
@@ -1051,7 +1055,8 @@
       "no-quote-found": "No quote found",
       "usd-after-fees": "≈ {{usd}}",
       "understandRisks": "Entiendo los riesgos y quiero continuar",
-      "approve": "Aprobar"
+      "approve": "Aprobar",
+      "search-by-token-name-address": "Buscar nombre de token / dirección"
     },
     "manageAddress": {
       "no-address": "Sin dirección",
@@ -1083,7 +1088,6 @@
       "confirm-delete": "Confirmar eliminación",
       "private-key": "Clave Privada",
       "seed-phrase": "Frase de Recuperación",
-      "watch-address": "Dirección de observación",
       "backup-seed-phrase": "Respaldo de la Frase de Recuperación",
       "delete-all-addresses-but-keep-the-seed-phrase": "Eliminar todas las direcciones, pero conservar la Frase de Recuperación",
       "delete-all-addresses-and-the-seed-phrase": "Eliminar todas las direcciones y la Frase de Recuperación",
@@ -1098,7 +1102,12 @@
       "sort-address": "Ordenar dirección",
       "CurrentDappAddress": {
         "desc": "Cambiar dirección Dapp"
-      }
+      },
+      "noSeedPhraseAddress": "No se han agregado direcciones para esta frase semilla. Puedes agregar una dirección o eliminar la frase semilla.",
+      "watch-address": "Solo de ver",
+      "deleteSuccess": "Eliminado con éxito",
+      "seedPhraseNotBackedUp": "Wallet no respaldada",
+      "backupSeedPhraseNow": "Iniciar copia de seguridad"
     },
     "dashboard": {
       "home": {
@@ -1126,7 +1135,10 @@
           "setting": "Configuración",
           "settings": "Configuraciones",
           "perpsPositions_one": "{{count}} Posición",
-          "perpsPositions_other": "{{count}} Posiciones"
+          "perpsPositions_other": "{{count}} Posiciones",
+          "lending": "Préstamo",
+          "dragTip": "Función de pulsar largo para reordenar",
+          "convertDust": "Convertir Polvo"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -1297,7 +1309,13 @@
           "toggleThemeMode": "Modo de tema",
           "themeMode": "Modo de tema",
           "metamaskMode": "Conectar Rabby disfrazándolo como MetaMask",
-          "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n"
+          "enableDappAccount": "Cambiar la dirección del Dapp de forma independiente\n",
+          "switchPasswordForNonWhitelistedTx": "Contraseña para transferencias no autorizadas",
+          "biometricUnlock": "Desbloquear con biometría",
+          "biometricUnlockHint": "Usa biometría para desbloquear en este dispositivo.",
+          "biometricUnlockUnsupported": "Este dispositivo no soporta el desbloqueo biométrico.",
+          "currency": "Moneda",
+          "searchCurrency": "Buscar moneda"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
@@ -1324,7 +1342,23 @@
           "thxTitle": "¡Gracias!",
           "feedbackDesc": "¿Tienes comentarios? Estamos escuchando.",
           "thxDesc": "Si te gusta Rabby, una rápida valoración en la Chrome Store significaría mucho."
-        }
+        },
+        "PwdForNonWhitelistedTx": {
+          "titleDisable": "Introduce la contraseña para desactivar",
+          "inputPlaceholder": "Introduce la contraseña para confirmar",
+          "wrongPassword": "Contraseña incorrecta",
+          "titleEnable": "¿Habilitar verificación de contraseña?",
+          "descDisable": "Una vez deshabilitada, la verificación de contraseña ya no será necesaria para direcciones que no estén en la lista blanca.",
+          "descEnable": "Una vez habilitado, transferir a una dirección no autorizada en esta extensión requerirá su contraseña."
+        },
+        "biometricUnlockDisabled": "Desbloqueo biométrico desactivado",
+        "biometricUnlockPasswordPlaceholder": "Introducir contraseña",
+        "biometricUnlockEnabled": "Desbloqueo biométrico habilitado.",
+        "biometricUnlockDisableFailed": "No se pudo deshabilitar el desbloqueo biométrico.",
+        "biometricUnlockUnsupported": "Este dispositivo no admite desbloqueo biométrico.",
+        "biometricUnlockSetupTitle": "Habilitar Desbloqueo Biométrico",
+        "biometricUnlockEnableFailed": "No se pudo habilitar el desbloqueo biométrico.",
+        "biometricUnlockSetupDesc": "Confirma tu contraseña para activar el desbloqueo biométrico."
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
@@ -1408,13 +1442,14 @@
           "noMatch": "Sin coincidencias",
           "lowValueDescription": "Los activos de bajo valor se mostrarán aquí",
           "lowValueAssets": "{{count}} activos de bajo valor",
-          "lowValueAssets_other": "{{count}} low value tokens",
-          "lowValueAssets_0": "{{count}} token de bajo valor",
-          "lowValueAssets_one": "{{count}} low value token",
           "review": "Revisión",
           "noTokens": "Sin tokens",
           "searchToken": "Buscar Token",
-          "lowValueDefis": "{{count}} defis de bajo valor"
+          "noLpTokens": "Sin Token de Proveedor de Liquidez (LP)",
+          "lowValueAssets_0": "{{count}} token de bajo valor",
+          "lowValueAssets_other": "{{count}} tokens de bajo valor",
+          "lowValueAssets_one": "{{count}} token de bajo valor",
+          "lowValueDefis": "{{count}} activos DeFi de bajo valor"
         },
         "noAssets": "No hay activos",
         "blockLinkText": "Buscar dirección para bloquear token",
@@ -1453,8 +1488,10 @@
         "addTokenEntryText": "Token",
         "price": "PRECIO",
         "side": "LADO",
-        "openInTab": "Abrir en pestaña",
-        "searchTokenPlaceholder": "Buscar Token"
+        "searchTokenPlaceholder": "Buscar Token",
+        "openInTab": "Abrir en Rabby Tab",
+        "openProMode": "Abrir Modo Pro",
+        "openInTabV2": "Abrir en pestaña"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -1518,7 +1555,8 @@
         "title": "Rabby Puntos",
         "downloadIntro": "¿No tienes la aplicación aún? Descárgala ahora.",
         "desc": "Consulta tus puntos en Rabby Mobile."
-      }
+      },
+      "noData": "No se encontró moneda"
     },
     "nft": {
       "floorPrice": "/ Precio Mínimo:",
@@ -1537,8 +1575,6 @@
       "importPrivateKey": "Importar Clave Privada",
       "importMyMetamaskAccount": "Importar Mi Cuenta de MetaMask",
       "addContacts": {
-        "content": "Agregar Contactos",
-        "description": "También puedes usarlo como una dirección de solo observación",
         "required": "Por favor ingrese una dirección",
         "notAValidAddress": "No es una dirección válida",
         "scanViaMobileWallet": "Escanear a través de billetera móvil",
@@ -1547,7 +1583,9 @@
         "walletConnect": "WalletConnect",
         "walletConnectVPN": "WalletConnect será inestable si utilizas una VPN.",
         "cameraTitle": "Por favor escanea el código QR con tu cámara",
-        "addressEns": "Dirección / ENS"
+        "addressEns": "Dirección / ENS",
+        "description": "Rastrea cualquier dirección de billetera pública",
+        "content": "Agregar Dirección Solo de Observación"
       },
       "unableToImport": {
         "title": "No se puede importar",
@@ -1822,7 +1860,8 @@
         },
         "importBtn": "Importar ({{count}})",
         "manageImtokenOffline": "Administrar imToken",
-        "manageImKey": "Administrar imKey"
+        "manageImKey": "Administrar imKey",
+        "nonAddr": "No se han añadido direcciones para esta frase semilla. Puedes eliminar esta frase en Rabby Extension > Administrar Dirección."
       },
       "importYourKeystore": "Importar su KeyStore",
       "incorrectPassword": "Contraseña incorrecta",
@@ -1869,11 +1908,40 @@
       "addFromCurrentSeedPhrase": "Añadir desde la frase de recuperación actual",
       "trezor": {
         "title": "Conectar Trezor"
-      }
+      },
+      "addMoreAddresses": "Agregar más direcciones",
+      "importMoreWallets": "Agregar más direcciones",
+      "addNewAddress": "Crear nueva dirección",
+      "moreWallets": "Más Carteras",
+      "createANewSeedPhrase": "Crea una nueva frase semilla",
+      "newAddressAdded": "Nueva dirección añadida",
+      "duplicateAddressesSkippedTitle": "Algunas direcciones ya están importadas",
+      "addressImported": "Dirección importada",
+      "bulkImportPrivateKeyExceeded": "Admite hasta {{count}} claves privadas a la vez",
+      "duplicateAddressesSkippedDesc_other": "Se omitieron {{count}} direcciones porque ya existen.",
+      "privateKeyTab": "Clave Privada",
+      "addressAdded": "Dirección añadida",
+      "newSeedPhraseCreated": "Nueva frase semilla creada",
+      "watchAddress": "Dirección solo de visualización",
+      "bulkImportPrivateKey": "Importar en masa la clave privada",
+      "duplicateAddressesSkippedDesc_one": "{{count}} dirección fue omitida porque ya existe.",
+      "bulkImportPrivateKeyPlaceholder": "Cada clave privada debe estar separada por un nueva línea o un carácter especial.",
+      "imported": "Importado Antes",
+      "seedPhraseTab": "Frase Semilla",
+      "bulkImportPrivateKeyInputTab": "Ingrese la clave privada",
+      "bulkImportPrivateKeyInvalid": "Algunas claves privadas son inválidas. Por favor, elimínalas o vuelve a ingresarlas.",
+      "newAddressCreated": "Nueva Dirección Creada",
+      "addMoreAddressesFromThisSeedPhrase": "Agrega más direcciones de esta frase semilla",
+      "addressAddedCount_other": "{{count}} Direcciones Agregadas",
+      "bulkImportPrivateKeySupport": "Soporta hasta 1000 claves privadas compatibles con EVM",
+      "addressAddedCount_one": "{{count}} Dirección Añadida",
+      "openExtensionToGetStarted": "Abre la extensión de Rabby para comenzar."
     },
     "unlock": {
       "btn": {
-        "unlock": "Desbloquear"
+        "unlock": "Desbloquear",
+        "biometric": "Desbloquear con biometría",
+        "unlockWithPassword": "Desbloquear con contraseña"
       },
       "password": {
         "required": "Ingrese la contraseña para desbloquear",
@@ -1882,7 +1950,8 @@
       },
       "title": "Rabby Wallet",
       "btnForgotPassword": "¿Olvidaste la contraseña?",
-      "description": "Tu billetera de referencia para Ethereum y EVM"
+      "description": "Tu billetera de referencia para Ethereum y EVM",
+      "biometricFailed": "Desbloqueo biométrico fallido"
     },
     "addToken": {
       "noTokenFound": "No se encontró ningún token",
@@ -2003,7 +2072,26 @@
       "safeModuleAddress": "Dirección del Módulo Safe",
       "manage-addresses-under": "Administra direcciones bajo este {{brand}}",
       "coboSafeErrorModule": "La dirección ha caducado, por favor elimínala e importa la dirección de nuevo.",
-      "importedDelegatedAddress": "Dirección delegada importada"
+      "importedDelegatedAddress": "Dirección delegada importada",
+      "deleteSeedPhrase": {
+        "option2": "Eliminar dirección y frase semilla",
+        "remainSeedPhrase": "Tu frase semilla permanece en tu dispositivo.",
+        "title2": "¿Eliminar la dirección?",
+        "option1": "Eliminar Dirección, Mantener Frase Semilla",
+        "keepSeedPhrase": "Esta es la única dirección vinculada a esta frase semilla. ¿Te gustaría conservar la frase semilla?",
+        "title": "¿Eliminar la dirección y la frase semilla?",
+        "check2": "Confirmo que he hecho una copia de seguridad de mi clave privada o frase semilla y estoy listo para eliminarla.",
+        "check1": "Entiendo que eliminar esta dirección también elimina su clave privada y frase semilla. Rabby no puede recuperarlas para mí.",
+        "onlyDeleteAddr": "Solo esta dirección será eliminada. Tu frase semilla no se verá afectada, ya que tus otras direcciones aún la utilizan.",
+        "sub-title": "Esta acción es permanente. Por favor, revise lo siguiente para proteger sus activos:"
+      },
+      "deletePrivateKey": {
+        "title": "¿Eliminar dirección y clave privada?",
+        "sub-title": "Esta acción es permanente. Por favor, revise lo siguiente para proteger sus activos:",
+        "check2": "Confirmo que he respaldado mi clave privada o frase semilla y estoy listo para eliminarla.",
+        "check1": "Entiendo que eliminar esta dirección también elimina su clave privada. Rabby no puede recuperarlas por mí."
+      },
+      "notBackup": "No hacer copia de seguridad"
     },
     "preferMetamaskDapps": {
       "title": "Dapps preferidos de MetaMask",
@@ -2082,7 +2170,8 @@
       "copySeedPhrase": "Copiar frase de recuperación",
       "showQrCode": "Mostrar código QR",
       "qrCodePopupTips": "Nunca compartas el código QR de la seed phrase con nadie más. Por favor, revísalo en un entorno seguro y guárdalo cuidadosamente.",
-      "qrCodePopupTitle": "Código QR"
+      "qrCodePopupTitle": "Código QR",
+      "doneButton": "He guardado la frase semilla."
     },
     "backupPrivateKey": {
       "title": "Respaldar Clave Privada",
@@ -2514,8 +2603,8 @@
       },
       "signWithLedger": "Firmar con Ledger",
       "speedUpTitle": "Acelerar",
-      "speedUpDesc": "El precio del gas aumentó en {{percent}} para acelerar.",
-      "cancleDesc": "El precio del gas aumentó en {{percent}} para cancelar la transacción.",
+      "speedUpDesc": "El precio del Gas aumentó {{percent}} para una velocidad más rápida.",
+      "cancleDesc": "El precio del Gas aumentó {{percent}} para una cancelación más rápida.",
       "cancelTitle": "Cancelación en cadena",
       "signWithOneKey": "Firma con OneKey"
     },
@@ -2639,7 +2728,9 @@
       },
       "importPrivateKey": {
         "title": "Importar Private Key",
-        "pasteCleared": "Pegado y portapapeles borrado"
+        "pasteCleared": "Pegado y portapapeles borrado",
+        "createWallet": "Crea una billetera",
+        "noWallet": "¿No tienes aún la frase semilla o la clave privada?"
       },
       "PasswordCard": {
         "form": {
@@ -2665,7 +2756,11 @@
         "import": "Importado correctamente",
         "create": "Creado con éxito",
         "addMoreAddr": "Agregar más direcciones desde esta Seed Phrase",
-        "addMoreFrom": "Agregar más direcciones de {{name}}"
+        "addMoreFrom": "Agregar más direcciones de {{name}}",
+        "openWallet": "Abrir Wallet",
+        "desc": "¡Rabby Wallet está listo para usar!",
+        "backupSeedPhraseNow": "Realiza una copia de seguridad de la frase semilla ahora",
+        "backupSeedPhrase": "Frase de respaldo"
       },
       "readyToUse": {
         "pin": "Fijar Rabby Wallet",
@@ -2678,7 +2773,9 @@
         "title": "¡Tu billetera Rabby está lista!"
       },
       "importSeedPhrase": {
-        "title": "Importar Seed Phrase"
+        "title": "Importar Seed Phrase",
+        "createWallet": "Crear una wallet",
+        "noWallet": "¿No tienes frase semilla ni clave privada aún?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2717,15 +2814,15 @@
         "tip2": "2. Conecta tu BitBox02"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Escanee el código QR en el monedero de hardware Keystone"
-        },
         "usb": {
           "connect": "Conectar Keystone",
           "tip1": "Conecte su dispositivo Keystone",
           "tip3": "Aprobar la conexión a su computadora",
           "tip2": "Ingrese su contraseña para desbloquear",
           "desc": "Asegúrate de que tu Keystone 3 Pro esté en la página de inicio"
+        },
+        "qrcode": {
+          "desc": "Escanea el código QR en la billetera hardware {{brandName}}"
         }
       },
       "importSafe": {
@@ -2736,6 +2833,18 @@
         "title": "Agregar dirección Safe",
         "loading": "Buscando la cadena desplegada de esta dirección",
         "placeholder": "Introduzca la dirección segura"
+      },
+      "importHardwareList": {
+        "title": "Seleccionar Hardware Wallet"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Clave Privada",
+        "title": "Frase semilla o clave privada",
+        "seedPhrase": "Frase Semilla"
+      },
+      "importWalletType": {
+        "seedOrKey": "Frase Semilla o Clave Privada",
+        "hardwareWallet": "Cartera de Hardware"
       }
     },
     "metamaskModeDapps": {
@@ -2821,8 +2930,7 @@
       "sectionHeader": {
         "token": "Tokens",
         "NFT": "NFT",
-        "AllChains": "Todas las cadenas",
-        "Defi": "DeFi"
+        "AllChains": "Todas las cadenas"
       },
       "header": {
         "placeHolder": "Buscar",
@@ -2902,227 +3010,11 @@
       "addSuccess": "Añadido con éxito",
       "exchangeAddress": "Dirección de intercambio",
       "enterAddress": "Introducir dirección",
-      "title": "Agregar dirección a la lista blanca"
-    },
-    "perps": {
-      "candleMenuKey": {
-        "oneDay": "1D",
-        "ytd": "YTD",
-        "oneHour": "1H",
-        "oneWeek": "1W",
-        "all": "TODOS",
-        "oneMonth": "1M"
-      },
-      "newUserProcess": {
-        "gotIt": "Entendido",
-        "secondTitle": "Ve largo",
-        "next": "Siguiente",
-        "thirdTitle": "Ve a Corto",
-        "fourthTitle": "Ajustando el apalancamiento",
-        "fifthTitle": "Liquidación",
-        "firstTitle": "Maestro de Futuros Perpetuos",
-        "firstDescription": "Con los futuros perpetuos, no solo estás negociando activos. Estás negociando lo que crees que sucederá a continuación.",
-        "secondDescription": "Cuando esperas que el precio suba, abres un long. Si el precio sube, ganas. Si baja, pierdes.",
-        "thirdDescription": "Cuando esperas que el precio baje, abres un short. Si el precio baja, ganas. Si sube, pierdes.",
-        "fifthDescription": "Cada posición tiene un precio de liquidación. Si el precio del mercado alcanza este, tu posición se cerrará. Usar un alto apalancamiento aumenta el riesgo de liquidación.",
-        "fourthDescription": "El apalancamiento te permite operar con más de lo que has invertido. Puede aumentar tanto tus ganancias como tus pérdidas."
-      },
-      "historyDetail": {
-        "title": {
-          "closeLongSl": "Cerrar Long Stop Loss",
-          "closeLong": "Cerrar Long",
-          "closeLongLiquidation": "Cerrar Long Liquidación",
-          "closeShortTp": "Cerrar Corto Tomar Beneficio",
-          "openShort": "Abrir posición corta",
-          "openLong": "Abrir Long",
-          "closeShort": "Cerrar posición corta",
-          "closeShortSl": "Cerrar Short Stop Loss",
-          "closeShortLiquidation": "Cerrar Corto Liquidación",
-          "closeLongTp": "Cerrar Largo Tomar Ganancias"
-        },
-        "date": "Fecha",
-        "fee": "Tarifa",
-        "size": "Tamaño",
-        "provider": "Proveedor",
-        "tradeValue": "Valor de Comercio",
-        "price": "Precio",
-        "closedPnl": "PNL cerrado"
-      },
-      "logoutConfirmModal": {
-        "title": "Cerrar sesión en la dirección actual",
-        "desc": "Estás cerrando sesión en tu cuenta actual de Perps. Puedes restaurarla en cualquier momento iniciando sesión con esta dirección."
-      },
-      "depositAmountPopup": {
-        "payWith": "Pagar con",
-        "feeTip": "$1 Tarifa",
-        "estReceive": "Est. Recibir: {{balance}}",
-        "receiveToken": "Recibir Token",
-        "minimumDepositSize": "El monto mínimo de depósito es de $5",
-        "feeTipTooltip": "Cargo por retiro cobrado por Hyperliquid: $1",
-        "fetchQuoteFailed": "Error al obtener la cotización de depósito. Por favor, cambia de token.",
-        "minimumWithdrawSize": "La cantidad mínima de retiro es de $2",
-        "estReceiveTooltip": "El depósito entre cadenas se procesa a través de LiFi y puede incurrir en algún deslizamiento. Llegada estimada en {{number}}s.",
-        "goSwapTips": "Solo se admite USDC en Arbitrum para depósitos directos. Por favor, intercambia tu token actual por USDC antes de depositar.",
-        "goBridgeTips": "Solo se admite USDC en Arbitrum para depósitos directos. Por favor, transfiere tu token actual a USDC en Arbitrum antes de hacer el depósito."
-      },
-      "home": {
-        "margin": "Margen",
-        "entryPrice": "Precio de Entrada",
-        "size": "Tamaño",
-        "markPrice": "Precio de Marcado",
-        "pnl": "PNL",
-        "liquidationPrice": "Precio de Liquidación"
-      },
-      "singleCoin": {
-        "openInterestTips": "La posición total pendiente de todos los usuarios en este contrato.",
-        "fundingTips": "Esta es una tarifa horaria que los traders pagan o reciben para mantener el precio del contrato perp cerca del precio real del token. Si es positiva, long paga a short. Si es negativa, short paga a long.",
-        "fundingPaymentsTips": "Este es el pago neto de financiamiento desde que se abrió la posición. El financiamiento es una tarifa que los traders pagan o reciben cada hora para mantener el precio del contrato perp cerca del precio real del token.",
-        "fundingGainsTips": "Este es el beneficio neto de financiación desde que se abrió la posición. La financiación es una tarifa que los traders pagan o reciben cada hora para mantener el precio del contrato perp cerca del precio real del token."
-      },
-      "accountSelector": {
-        "hyperliquidBalance": "Saldo de Perps",
-        "activatedAddress": "Activado",
-        "noPosition": "Sin Posición",
-        "notActivatedAddress": "No activado"
-      },
-      "deposit": "Depósito",
-      "withdraw": "Retirar",
-      "positions": "Posiciones",
-      "permissionTips": "No se admite la apertura de posiciones en su región.",
-      "title": "Perpetuas",
-      "pending": "Pendiente",
-      "yourPosition": "Tu posición",
-      "seeMore": "Ver más",
-      "margin": "Margen",
-      "pnl": "PNL",
-      "direction": "Dirección",
-      "closeShort": "Cerrar Short",
-      "availableBalance": "Disponible: {{balance}}",
-      "directDeposit": "Depósito Directo",
-      "balanceAvailable": "Saldo: {{balance}}",
-      "selectTokenToDeposit": "Seleccionar token para depositar",
-      "liquidationPrice": "Precio de Liquidación",
-      "size": "Tamaño",
-      "fundingPayments": "Pagos de financiación",
-      "closeLong": "Cerrar Long",
-      "price": "Precio",
-      "openShort": "Abrir posición corta",
-      "logInPerpsAccount": "Iniciar sesión en mi cuenta de Perps",
-      "entryPrice": "Precio de Entrada",
-      "explorePerps": "Explorar Perps",
-      "learnAboutPerps": "Aprende sobre Perps",
-      "marginIsolated": "Margen (Aislada)",
-      "completed": "Completado",
-      "tradePerps": "Comer Perps",
-      "history": "Historia",
-      "autoClose": "Cierre Automático",
-      "leverage": "Apalancamiento",
-      "lastUsed": "Último uso",
-      "marginCross": "Margen (Crucero)",
-      "openLong": "Abrir Long",
-      "logInTips": "Inicia sesión con tu dirección y deposita fondos para comenzar a operar con perps.",
-      "long": "Largo",
-      "TakeProfit": "Tomar ganancias",
-      "StopLoss": "Stop loss",
-      "deleteAgentSuccess": "Agente eliminado con éxito",
-      "dailyVolume": "Volumen 24h",
-      "stopLossWhen": "Establecer precio de stop-loss",
-      "timeAgo": "hace {{time}}",
-      "providerFeeTips": "Tarifa de Hyperliquid: {{fee}}",
-      "confirm": "Confirmar",
-      "short": "Corto",
-      "openInterest": "Interés Abierto",
-      "review": "Revisión",
-      "stopLossTipsShortLiquidation": "El precio es más alto que el precio de liquidación ({{price}})",
-      "takeProfitTipsShort": "El precio de toma de ganancias debe ser inferior al precio actual.",
-      "availableToTrade": "Disponible para operar",
-      "rabbyFeeTips": "Tasa de Rabby: 0.04%",
-      "takeProfitWhen": "Establecer el precio de toma de beneficios",
-      "takeProfitTipsLong": "El precio de toma de ganancias debe ser mayor que el precio actual.",
-      "takeProfit": "tomar ganancias",
-      "stopLossTipsLong": "El precio de stop loss debe ser inferior al precio actual.",
-      "funding": "Financiamiento",
-      "stopLoss": "orden de stop loss",
-      "insufficientBalance": "Saldo insuficiente",
-      "rabbyFeeTipsZero": "Tarifa de Rabby: 0%",
-      "stopLossTipsLongLiquidation": "El precio es más bajo que el precio de liquidación ({{price}})",
-      "stopLossTipsShort": "El precio de stop loss debe ser más alto que el precio actual.",
-      "deleteAgentModal": "Has alcanzado el número máximo de agentes. ¿Deseas eliminar un agente existente para crear uno nuevo?",
-      "sizeTips": "El valor total o la cantidad de su operación, determinado por el margen y el apalancamiento.",
-      "back": "Atrás",
-      "liquidationPriceTips": "El precio al cual tu posición se cierra automáticamente por el intercambio para evitar pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento.",
-      "reviewOrder": "Revisar Orden",
-      "liquidation": "Liquidación",
-      "fee": "Tarifa",
-      "estimatedLiquidationPrice": "Precio de Liquidación Estimado",
-      "leverageRangeMinError": "El apalancamiento mínimo es {{min}}x",
-      "maximumOrderSize": "El tamaño máximo del pedido es {{amount}}",
-      "minimumOrderSize": "El tamaño mínimo de la orden es de $10",
-      "leverageRangeMaxError": "El apalancamiento máximo es de {{max}}x",
-      "openPositionTips": "El comercio de contratos perpetuos implica un riesgo significativo, incluido el potencial de pérdida repentina y total de su inversión y colateral debido al alto apalancamiento y la volatilidad del mercado, y puede no ser adecuado para todos los usuarios. Los precios pueden verse influenciados por las tasas de financiación y la liquidez, y puede estar sujeto a liquidaciones automáticas sin previo aviso. Los datos del mercado son proporcionados por Hyperliquid.",
-      "toast": {
-        "setAutoCloseSuccess": "La posición de cierre automático se estableció con éxito.",
-        "closePositionSuccess": "Cerrado {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
-        "openPositionSuccess": "Abierto {{direction}} {{coin}}-USD: Tamaño {{size}} a Precio ${{price}}",
-        "stopLossSuccess": "Stop loss configurado con éxito",
-        "takeProfitSuccess": "Toma de ganancias establecida con éxito"
-      },
-      "closePositionPopup": {
-        "closeLong": "Cerrar Long",
-        "positionSize": "Tamaño de la posición",
-        "closeShort": "Cerrar Corto",
-        "pnl": "P&L",
-        "title": "Cerrar {{coin}}-USD {{direction}}"
-      },
-      "cross": "Cruz",
-      "isolated": "Aislado",
-      "closeAllPopup": {
-        "description": "Todas tus posiciones abiertas se cerrarán al precio de mercado.",
-        "title": "Confirmar cerrar todas las posiciones"
-      },
-      "riskLevel": {
-        "danger": {
-          "title": "Peligro",
-          "description": "Su posición está en alto riesgo de liquidación. La distancia al precio de liquidación es ≤3%. Considere agregar margen o cerrar su posición para evitar la liquidación."
-        },
-        "warning": {
-          "title": "Advertencia",
-          "description": "Tu posición se está acercando al riesgo de liquidación. La distancia al precio de liquidación está entre el 3% y el 8%. Monitorea tu posición cuidadosamente y considera agregar margen."
-        },
-        "safe": {
-          "title": "Seguro",
-          "description": "Tu posición está en un nivel seguro. La distancia al precio de liquidación es >8%. Sigue monitoreando las condiciones del mercado."
-        },
-        "liquidationPrice": "Precio de Liquidación",
-        "currentPrice": "Precio Actual",
-        "title": "Nivel de Riesgo",
-        "gotIt": "Entendido",
-        "subTitle": "Distancia de liquidación en tiempo real (%)",
-        "liquidationDistance": "Distancia de Liquidación",
-        "liquidationDistanceTips": "La Distancia de Liquidación (%) muestra qué tan lejos está el precio actual de tu precio de liquidación. Una mayor distancia indica una posición más segura, mientras que una distancia más pequeña significa un mayor riesgo de liquidación.",
-        "distanceLabel": "Distancia de Liquidación",
-        "liqDistanceTipsShort": "Subiendo <1>{{distance}}</1> se activará la liquidación."
-      },
-      "searchPerpsPopup": {
-        "onePosition": "1 Posición",
-        "hasPosition": "Posición",
-        "empty": "No se encontraron mercados",
-        "searchPerps": "Buscar Perps",
-        "openPosition": "Abrir Posición",
-        "searchPosition": "Buscar posición",
-        "searchPlaceholder": "Buscar perps"
-      },
-      "closeAll": "Cerrar Todo",
-      "position": "Posición",
-      "invitePopup": {
-        "title": "Ahorra en tarifas de Hyperliquid",
-        "description": "Utiliza el código de Rabby para habilitar",
-        "activateFailed": "Fallido",
-        "activatedSuccess": "Ahorros de tarifa del 4% de Hyperliquid activados",
-        "hyperliquidFee": "Comisiones de trading de Hyperliquid."
-      },
-      "close": "Cerrar",
-      "fundingRate": "Tasa de financiación"
+      "title": "Agregar dirección a la lista blanca",
+      "verifyPwd": {
+        "title": "Dirección no autorizada",
+        "inputPlaceholder": "Ingresa tu contraseña para confirmar esta transferencia"
+      }
     },
     "selectToAddress": {
       "emptyWhitelist": {
@@ -3135,7 +3027,10 @@
         "removeFromWhitelist": "Eliminar de la lista blanca",
         "addWhitelist": "Agregar dirección a la lista blanca",
         "notWhitelist": "No es una dirección en la lista blanca",
-        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez."
+        "addWhitelistDesc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez.",
+        "PwdForNonWhitelistedTx": {
+          "enabledHint": "Contraseña para transferencias no autorizadas"
+        }
       },
       "addWhitelist": {
         "desc": "Agrega direcciones de confianza a la lista blanca para transferencias rápidas---sin necesidad de confirmación la próxima vez.",
@@ -3209,7 +3104,9 @@
           "hideSmallDesc": "No se muestran los tokens con saldos pequeños.",
           "hideSmall": "Ocultar tokens con saldos pequeños.",
           "hideDefiWithSmallDepositsDesc": "Los Defis con depósitos pequeños no se muestran.",
-          "hideDefiWithSmallDeposits": "Ocultar Defis con depósitos pequeños."
+          "hideDefiWithSmallDeposits": "Ocultar Defis con depósitos pequeños.",
+          "hideDeFiWithSmallDepositsDesc": "No se muestran los DeFis con depósitos pequeños.",
+          "hideDeFiWithSmallDeposits": "Ocultar DeFis con depósitos pequeños."
         },
         "table": {
           "amount": "Cantidad",
@@ -3234,8 +3131,7 @@
       "tabs": {
         "tokens": "Tokens",
         "approvals": "Aprobaciones",
-        "transactions": "Transacciones",
-        "difi": "Defi"
+        "transactions": "Transacciones"
       },
       "nft": {
         "message": {
@@ -3322,95 +3218,1120 @@
         "all": "Todo"
       }
     },
-    "perpsDetail": {
-      "PerpsOpenPositionPopup": {
-        "long": "Largo",
-        "margin": "Margen",
-        "short": "Corto",
-        "newPosition": "Abrir posición",
-        "rabbyFee": "Rabby Tarifa",
-        "invalidNumber": "Número inválido",
-        "free": "Gratis",
+    "dappIfame": {
+      "serviceUnavailable": "Servicio no disponible",
+      "openPolymarket": "Abriendo Polymarket...",
+      "predictionNotSupported": "La función de Predicción no es compatible en tu región actual.",
+      "reload": "Recargar",
+      "networkErrorTitle": "Este sitio no se puede alcanzar",
+      "networkErrorDescription": "{{site}} cerró la conexión inesperadamente. Por favor, verifica tu red.",
+      "networkErrorDescriptionFallback": "El sitio cerró inesperadamente la conexión. Por favor, revisa tu red.",
+      "opening": "Abriendo {{name}}...",
+      "serviceNotSupported": "El servicio no está disponible en su región actual."
+    },
+    "perps": {
+      "closeAllPopup": {
+        "title": "Confirmar el cierre de todas las posiciones",
+        "description": "Todas tus posiciones abiertas se cerrarán al precio de mercado."
+      },
+      "cancelAllOrdersPopup": {
+        "description": "Todas tus órdenes abiertas serán canceladas.",
+        "title": "Confirmar la cancelación de todas las órdenes"
+      },
+      "toast": {
+        "marginUpdated": "Margen actualizado",
+        "success": "Éxito",
+        "closeAllPositionsSuccess": "Todas las posiciones se han cerrado con éxito.",
+        "openTWAPOrderSuccess": "Orden TWAP abierta {{direction}} {{coin}}-USD: Tamaño {{size}}",
+        "deposit": "Depósito realizado con éxito",
+        "stopLossSuccess": "Stop loss establecido con éxito",
+        "setAutoCloseSuccess": "Cierre automático configurado con éxito",
+        "cancelOrderSuccess": "La orden ha sido cancelada",
+        "leverageChanged": "Apalancamiento cambiado a: {{leverage}}",
+        "withdraw": "Retiro exitoso",
+        "orderPlaced": "Orden colocada",
+        "cancelOrderError": "No se pudo cancelar la orden.",
+        "orderFilled": "Orden ejecutada",
+        "withdrawTip": "{{amount}} USDC ha sido retirado con éxito",
+        "cancelTWAPOrderSuccess": "Orden TWAP cancelada con éxito",
+        "orderCancelled": "Orden cancelada",
+        "limitOrderFilled": "Orden límite ejecutada ({{percent}}%)",
+        "cancelAllOrderSuccess": "Se cancelaron con éxito {{count}} órdenes",
+        "buyFilledContentNoPercentage": "Comprado {{sz}} {{coin}} ejecutado a {{price}} USDC",
+        "cancelFailed": "Cancelación fallida",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} orden de mercado colocada {{direction}} {{coin}}-USD: Tamaño {{size}} a un precio de ${{price}}",
+        "marginModeUpdated": "El modo de margen ha cambiado a: {{mode}}",
+        "twapSliceFilled": "Fragmento TWAP completado",
+        "closePositionSuccess": "Cerrado {{direction}} {{coin}}-USD: Tamaño {{size}} al precio de ${{price}}",
+        "takeProfitSuccess": "Objetivo de ganancia establecido con éxito",
+        "ordersCancelled": "Todas las órdenes canceladas.",
+        "buyFilledContent": "comprado {{sz}} / {{origSz}} {{coin}} ejecutado @{{price}} USDC",
+        "openLimitOrderSuccess": "Orden límite colocada {{direction}} {{coin}}-USD: Tamaño {{size}} a un precio de ${{price}}",
+        "terminalTwapSuccess": "Orden TWAP de Terminal ejecutada con éxito",
+        "openPositionSuccess": "{{direction}} {{coin}}-USD: Tamaño {{size}} a un precio de ${{price}}",
+        "depositTip": "Se ha depositado {{amount}} USDC",
+        "sellFilledContentNoPercentage": "Vendido {{sz}} {{coin}} ejecutado @{{price}} USDC",
+        "openScaleOrderSuccess": "Orden de escalado colocada {{direction}} {{coin}}-USD: Tamaño {{size}}",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} orden límite colocada {{direction}} {{coin}}-USD: tamaño {{size}} a un precio de ${{price}}",
+        "terminalTwap": "Terminal TWAP",
+        "sellFilledContent": "vendido {{sz}} / {{origSz}} {{coin}} ejecutado @{{price}} USDC",
+        "orderError": "Error de orden"
+      },
+      "closePositionPopup": {
+        "positionSize": "Tamaño de la posición",
+        "closeShort": "Cerrar posición corta",
+        "closeLong": "Cerrar posición larga",
+        "pnl": "Pérdidas y Ganancias",
+        "title": "Cerrar {{coin}}-USD {{direction}}"
+      },
+      "candleMenuKey": {
+        "ytd": "Año hasta la fecha",
+        "oneDay": "1D",
+        "all": "TODOS",
+        "oneWeek": "1 semana",
+        "oneHour": "1 hora",
+        "oneMonth": "1M"
+      },
+      "newUserProcess": {
+        "gotIt": "Entendido",
+        "next": "Siguiente",
+        "fifthDescription": "Cada posición tiene un precio de liquidación. Si el precio de mercado lo alcanza, tu posición se liquidará. El uso de un apalancamiento alto aumenta el riesgo de liquidación.",
+        "fourthDescription": "El apalancamiento te permite operar con más de lo que inviertes en contratos perpetuos. Puede aumentar tanto tus ganancias como tus pérdidas.",
+        "fourthTitle": "Ajuste de apalancamiento",
+        "firstDescription": "Con futuros perpetuos, no solo estás comerciando con activos. Estás operando con aquello que crees que va a ocurrir a continuación.",
+        "firstTitle": "Maestro de Futuros Perpetuos",
+        "thirdTitle": "Vender en corto",
+        "thirdDescription": "Cuando esperas que el precio caiga, abres una posición corta. Si el precio cae, ganas. Si sube, pierdes.",
+        "secondDescription": "Cuando esperas que el precio suba, abres una posición larga. Si el precio sube, ganas. Si el precio cae, pierdes.",
+        "fifthTitle": "Liquidación forzada",
+        "secondTitle": "Abrir posición larga"
+      },
+      "historyDetail": {
+        "title": {
+          "openLong": "Abrir posición larga",
+          "closeLong": "Cerrar posición larga",
+          "closeShort": "Cerrar posición corta",
+          "openShort": "Abrir posición corta",
+          "closeLongSl": "Cerrar posición larga con Stop Loss",
+          "closeLongTp": "Cerrar posición larga\nTomar ganancia",
+          "closeShortTp": "Cerrar posición corta Tomar ganancias",
+          "closeLongLiquidation": "Liquidación al cerrar posición larga",
+          "closeShortLiquidation": "Cerrar posición corta Liquidación",
+          "closeShortSl": "Cerrar posición corta Stop Loss"
+        },
+        "provider": "Proveedor",
+        "date": "Fecha",
+        "price": "Precio",
+        "size": "Tamaño de la posición",
+        "closedPnl": "P/L realizado",
+        "tradeValue": "Valor nocional",
+        "fee": "Comisión",
+        "feeDesc": "Cuando los usuarios realizan operaciones, se aplican tanto <1>comisiones de trading</1> como <2>comisiones de constructor</2>."
+      },
+      "logoutConfirmModal": {
+        "title": "Cerrar sesión de la dirección actual",
+        "desc": "Estás cerrando sesión de tu cuenta Perps actual. Puedes restaurarla en cualquier momento iniciando sesión con esta dirección."
+      },
+      "depositAmountPopup": {
+        "payWith": "Pagar con",
+        "estTimeLabel": "Tiempo estimado",
+        "receiveToken": "Recibir token",
+        "feeTipTooltip": "Tarifa de retiro cobrada por Hyperliquid: $1",
+        "goSwapTips": "Solo USDC en Arbitrum es compatible para depósito directo. Por favor, intercambia tu token actual por USDC antes de depositar.",
+        "fetchQuoteFailed": "No se pudo obtener la cotización de depósito. Por favor, cambie de token.",
+        "estReceiveTooltipNoTime": "El depósito entre cadenas se procesa a través de LiFi; puede sufrir deslizamiento de precio.",
+        "minimumWithdrawSize": "El importe mínimo de retiro es de $2.",
+        "minimumDepositSize": "El depósito mínimo es de $5.",
+        "estReceiveTooltip": "El depósito entre cadenas se procesa a través de LiFi y podría sufrir algo de deslizamiento. Llegada estimada en {{number}}s.",
+        "hyperliquidFeeLabel": "Comisión de Hyperliquid",
+        "feeTip": "Comisión de $1",
+        "estReceiveLabel": "Recibo estimado",
+        "goBridgeTips": "Solo USDC en Arbitrum es compatible con depósitos directos. Por favor, puentea tu token actual a USDC en Arbitrum antes de depositar.",
+        "estReceive": "Recibo estimado: {{balance}}",
+        "hyperliquidFeeLabelTooltip": "Los nuevos usuarios deben pagar una tarifa de activación única a Hyperliquid.",
+        "amount": "Cantidad",
+        "hypeActivationFeeTip": "Se cobrará una tarifa de activación única de {{fee}} por parte de Hyperliquid para el primer retiro de HyperEVM.",
+        "feeTipTooltipHype": "Se cobrará una tarifa de ~0.00002 HYPE para retirar a la EVM."
+      },
+      "home": {
         "size": "Tamaño",
+        "entryPrice": "Precio de entrada",
+        "liquidationPrice": "Precio de liquidación",
+        "markPrice": "Precio de marca",
+        "pnl": "P/L",
+        "margin": "margen"
+      },
+      "singleCoin": {
+        "openInterestTips": "La posición abierta total de todos los usuarios en este contrato perpetuo.",
+        "fundingGainsTips": "Estas son las ganancias netas de financiamiento desde que se abrió la posición. El financiamiento es una tarifa por hora que pagan o reciben los operadores para mantener el precio del contrato perpetuo cercano al precio actual del token.",
+        "fundingPaymentsTips": "Estos son los pagos netos de financiación desde que se abrió la posición. La financiación es una tarifa por hora que los operadores pagan o reciben para mantener el precio del contrato perpetuo cercano al precio real del token.",
+        "fundingTips": "Esta es una tarifa por hora que los operadores pagan o reciben para mantener el precio del contrato perpetuo cercano al precio real del token. Si es positivo, la posición larga paga a la posición corta. Si es negativo, la posición corta paga a la posición larga."
+      },
+      "accountSelector": {
+        "activatedAddress": "Activado",
+        "notActivatedAddress": "No activado",
+        "noPosition": "Sin posición",
+        "hyperliquidBalance": "Saldo de contratos perpetuos",
+        "position": "Posición",
+        "positions": "Posiciones",
+        "selectAddress": "Selecciona una dirección"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Peligro",
+          "description": "Tu posición está en alto riesgo de liquidación. La distancia al precio de liquidación es ≤3%. Considera añadir margen o cerrar tu posición para evitar la liquidación."
+        },
+        "warning": {
+          "title": "Advertencia",
+          "description": "Su posición se acerca al riesgo de liquidación. La distancia al precio de liquidación es entre el 3% y el 8%. Monitoree su posición cuidadosamente y considere añadir margen."
+        },
+        "safe": {
+          "description": "Tu posición se encuentra en un nivel seguro. La distancia al precio de liquidación es superior al 8%. Continúa monitorizando las condiciones del mercado.",
+          "title": "Seguro"
+        },
+        "gotIt": "Entendido.",
+        "subTitle": "Distancia de liquidación en tiempo real (%)",
+        "title": "Nivel de riesgo",
+        "currentPrice": "Precio actual",
+        "liquidationDistance": "Distancia de liquidación",
+        "liquidationPrice": "Precio de liquidación",
+        "liqDistanceTipsShort": "Una subida de <1>{{distance}}</1> activará una liquidación.",
+        "liqDistanceTipsLong": "Si cae <1>{{distance}}</1>, se liquidará.",
+        "liquidationDistanceTips": "Distancia de Liquidación (%) muestra qué tan lejos está el precio actual de tu precio de liquidación. Una mayor distancia indica una posición más segura, mientras que una menor distancia implica un mayor riesgo de liquidación.",
+        "distanceLabel": "Distancia a la liquidación"
+      },
+      "searchPerpsPopup": {
+        "empty": "No se encontraron mercados",
+        "searchPosition": "Buscar posición",
+        "openPosition": "Abrir posición",
+        "searchPlaceholder": "Buscar contratos perpetuos",
+        "hasPosition": "Posición",
+        "onePosition": "1 Posición",
+        "searchPerps": "Buscar contratos perpetuos"
+      },
+      "invitePopup": {
+        "activateNow": "Activar ahora",
+        "activateFailed": "Fallido",
+        "title": "Ahorra en las comisiones de Hyperliquid",
+        "hyperliquidFee": "Comisiones de trading de Hyperliquid.",
+        "description": "Usa el código de Rabby para habilitar",
+        "activatedSuccess": "Ahorro del 4% en comisiones Hyperliquid activado"
+      },
+      "closeAll": "Cerrar todas las posiciones",
+      "minimumOrderSize": "El tamaño mínimo de la orden es de $10.",
+      "confirm": "Confirmar",
+      "yourPosition": "Tu posición",
+      "seeMore": "Ver más",
+      "balanceAvailable": "Saldo: {{balance}}",
+      "pending": "Pendiente",
+      "liquidationPrice": "Precio de liquidación",
+      "margin": "Margen",
+      "insufficientBalance": "Saldo insuficiente",
+      "positions": "Posiciones",
+      "timeAgo": "hace {{time}}",
+      "entryPrice": "Precio de entrada",
+      "close": "Cerrar",
+      "position": "Posición",
+      "leverage": "apalancamiento",
+      "availableToTrade": "Disponible para operar",
+      "leverageRangeMaxError": "El apalancamiento máximo es {{max}}x",
+      "stopLossTipsShort": "El precio de stop loss debe ser mayor que el precio actual.",
+      "availableBalance": "Disponible: {{balance}}",
+      "marginIsolated": "Margen (Aislado)",
+      "review": "Revisar",
+      "back": "Atrás",
+      "takeProfitTipsShort": "El precio de toma de ganancias debe ser menor que el precio actual.",
+      "closeLong": "Cerrar posición larga",
+      "stopLossTipsLongLiquidation": "El precio es más bajo que el precio de liquidación ({{price}})",
+      "closeShort": "Cerrar posición corta",
+      "rabbyFeeTipsZero": "Tarifa de Rabby: 0%",
+      "withdraw": "Retirar fondos",
+      "size": "Tamaño",
+      "openInterest": "Interés abierto",
+      "history": "Historial",
+      "price": "Precio",
+      "tradePerps": "Operar contratos perpetuos",
+      "isolated": "Margen aislado",
+      "completed": "Completado",
+      "providerFeeTips": "Tarifa de Hyperliquid: {{fee}}",
+      "liquidation": "Liquidación",
+      "title": "Futuros perpetuos",
+      "add": "Agregar",
+      "deleteAgentModal": "Has alcanzado el número máximo de agentes. ¿Eliminarías un agente existente para crear uno nuevo?",
+      "deleteAgentSuccess": "Agente eliminado con éxito",
+      "stopLossTipsShortLiquidation": "El precio es mayor que el precio de liquidación ({{price}})",
+      "openShort": "Abrir posición corta",
+      "fundingRate": "Tasa de financiación",
+      "openLong": "Abrir posición larga",
+      "rabbyFeeTipsV2": "Tarifa de Rabby: 0,02%",
+      "lastUsed": "Último utilizado",
+      "directDeposit": "Depósito directo",
+      "permissionTips": "La apertura de posiciones no está disponible en tu región.",
+      "leverageRangeMinError": "El apalancamiento mínimo es {{min}}x",
+      "autoClose": "Cierre automático de la posición",
+      "selectTokenToDeposit": "Seleccionar token para depositar",
+      "cross": "Margen cruzado",
+      "TakeProfit": "Tomar ganancias",
+      "deposit": "Depósito",
+      "short": "Posición corta",
+      "reviewOrder": "Revisar orden",
+      "direction": "Dirección",
+      "fundingPayments": "Pagos de financiación",
+      "long": "Posición larga",
+      "estimatedLiquidationPrice": "Precio de liquidación estimado",
+      "marginCross": "Margen cruzado",
+      "stopLossWhen": "Establecer precio de stop loss",
+      "maximumOrderSize": "El tamaño máximo de la orden es {{amount}}",
+      "explorePerps": "Explorar contratos perpetuos",
+      "takeProfitWhen": "Establecer precio de toma de ganancias",
+      "stopLossTipsLong": "El precio de stop loss debe ser inferior al precio actual.",
+      "funding": "Tasa de financiación",
+      "learnAboutPerps": "Aprende sobre contratos perpetuos",
+      "sizeTips": "El valor total o la cantidad de tu operación, establecido por el margen y el apalancamiento.",
+      "StopLoss": "Orden de stop loss",
+      "takeProfitTipsLong": "El precio de Take Profit debe ser mayor que el precio actual.",
+      "stopLoss": "Orden de stop loss",
+      "logInPerpsAccount": "Inicia sesión en mi cuenta de Perps.",
+      "dailyVolume": "Volumen de 24 horas",
+      "liquidationPriceTips": "El precio al que tu posición se cierra automáticamente por la plataforma de intercambio para evitar pérdidas adicionales cuando tu margen caiga por debajo del nivel de margen de mantenimiento.",
+      "pnl": "Ganancia y Pérdida",
+      "takeProfit": "Tomar ganancias",
+      "fundingGains": "Ganancias de financiación",
+      "fee": "Comisión",
+      "logInTips": "Inicia sesión con la dirección de tu billetera y deposita fondos para empezar a operar contratos perpetuos.",
+      "openPositionTips": "El comercio de contratos perpetuos implica un riesgo significativo, que incluye la posibilidad de pérdida repentina y total de su inversión y de su colateral debido al alto apalancamiento y a la volatilidad del mercado, y puede que no sea adecuado para todos los usuarios. Los precios pueden verse influenciados por las tasas de financiación y la liquidez, y usted podría estar sujeto a liquidaciones automáticas sin previo aviso. Datos de mercado proporcionados por Hyperliquid.",
+      "directDepositFast": "Rápido, 0 Deslizamiento",
+      "crossMargin": "Margen cruzado",
+      "unrealizedPnl": "PNL no realizado",
+      "details": "Detalles",
+      "currentPrice": "Precio Actual",
+      "settings": "Configuraciones",
+      "marginMode": "Modo de Margen",
+      "isolatedMargin": "Margen Aislada",
+      "liquidationDistanceUp": "Subir <bold>{{percent}}</bold> activará la liquidación",
+      "liquidationDistanceDown": "Bajar <bold>{{percent}}</bold> activará la liquidación",
+      "positionValue": "Valor de la posición",
+      "openProModeInTab": "Abrir Modo Pro en la pestaña",
+      "cannotChangeMarginModeWithOpenPositions": "No se puede cambiar el modo de margen con posiciones abiertas.",
+      "isolatedMarginDesc": "Cada posición utiliza su propio margen. Las pérdidas están limitadas a esa posición, pero puede ser liquidada más fácilmente.",
+      "crossMarginDesc": "Todas las posiciones comparten el mismo margen. Esto reduce la posibilidad de que una sola posición sea liquidada, pero todos los fondos de margen cruzado pueden perderse en movimientos extremos del mercado.",
+      "newUserGuide": {
+        "learnMore": "Aprender más"
+      },
+      "addFunds": "Agregar fondos",
+      "crossMarginLiqPriceTip": "En el modo de margen cruzado, el precio de liquidación para una posición única es solo una estimación de referencia.",
+      "selectTokenToWithdraw": "Seleccionar Red de Retiro"
+    },
+    "perpsPro": {
+      "chatArea": {
+        "searchMarkets": "Buscar mercados",
+        "symbol": "Símbolo",
+        "openInterest": "Interés abierto",
+        "fundingCountdown": "Tasa de financiación / Cuenta regresiva",
+        "lastPrice": "Último precio",
+        "24hVol": "Volumen en 24h",
+        "oracleTips": "La mediana de los precios externos informados por los validadores, utilizada para calcular las tasas de financiación.",
+        "openInterestTips": "Interés abierto bidireccional: la suma de las posiciones largas y cortas en este contrato.",
+        "volume": "Volumen",
+        "8hrFunding": "Tasa de financiación de 8h",
+        "oracle": "oráculo de precios",
+        "24hChange": "Variación de 24h",
+        "mark": "Precio de marca",
+        "markTips": "Se utiliza para la gestión de margen, el cálculo del PNL no realizado, liquidaciones y la activación de órdenes TP/SL.",
+        "fundingTips": "La tasa horaria a la que las posiciones largas pagan a las cortas (si es negativa, las cortas pagan a las largas). No hay tarifas asociadas a la financiación, que es una transferencia entre pares entre usuarios para empujar los precios hacia el precio al contado. Consulte la Documentación para obtener más detalles."
+      },
+      "userInfo": {
+        "tab": {
+          "status": "Estado",
+          "type": "Tipo",
+          "creationTime": "Fecha de creación",
+          "fundingHistory": "Historial de tasas de financiación",
+          "order": "Orden",
+          "positions": "Posiciones",
+          "price": "Precio",
+          "time": "Tiempo",
+          "openOrders": "Órdenes abiertas",
+          "payment": "Pago",
+          "value": "Valor",
+          "tradeHistory": "Historial de operaciones",
+          "coin": "Criptomoneda",
+          "averagePrice": "Precio promedio",
+          "size": "Tamaño de la posición",
+          "margin": "margen",
+          "terminate": "Terminar",
+          "side": "Lado",
+          "markEntry": "Precio de marca / Entrada",
+          "filled": "Ejecutado",
+          "orderHistory": "Historial de órdenes",
+          "funding": "Tasa de financiación",
+          "reduceOnly": "Solo reducción",
+          "runningTimeTotal": "Tiempo transcurrido / Total",
+          "trade": "Operar",
+          "liqPrice": "Precio de liquidación",
+          "tradeValue": "Valor de la transacción",
+          "unrealizedPnl": "PnL no realizado",
+          "trigger": "Precio de activación",
+          "direction": "Dirección",
+          "closedPnlTooltip": "P/L cerrado incluye comisiones y reembolsos.",
+          "fundingTips": "Pagos netos de financiación desde la apertura de la posición. Si es negativo, significa ganancias por financiación.",
+          "closedPnl": "PnL realizado",
+          "rate": "Tasa de financiación",
+          "unrealizedPnlTooltip": "El precio de marca se utiliza para estimar la PNL no realizada. Solo se utilizan los precios de negociación para la PNL realizada.",
+          "fee": "Tarifa",
+          "slice": "Segmento",
+          "tpSl": "Objetivo de ganancia / Límite de pérdidas",
+          "twap": "TWAP",
+          "fundingTipsV2": "Financiamiento neto desde que se abrió la posición. Un valor de financiamiento rojo (negativo) indica financiamiento pagado, mientras que un valor verde (positivo) indica financiamiento recibido.",
+          "fundingTipsBold": "Esto muestra tu financiación total liquidada desde que se abrió la posición. Los valores <bold>Verdes (positivos)</bold> significan que has ganado de otros traders, mientras que los valores <bold>Rojos (negativos)</bold> son los costos de financiación que les has pagado."
+        },
+        "emptyMessage": {
+          "orderHistory": "Sin historial de órdenes",
+          "tradeHistory": "Sin historial de operaciones",
+          "fundingHistory": "Sin historial de financiamiento",
+          "fillHistory": "Sin historial de ejecuciones",
+          "positions": "Sin posiciones",
+          "activeTwap": "No hay TWAP activo",
+          "twapHistory": "Sin historial de TWAP",
+          "openOrders": "No hay órdenes abiertas."
+        },
+        "positionInfo": {
+          "configure": "Configurar",
+          "closeAll": "Cerrar todo",
+          "viewOrders": "Ver órdenes",
+          "currentPosition": "Posición actual",
+          "newPosition": "Nueva posición",
+          "receive": "Recibir",
+          "reversePosition": "Invertir posición",
+          "closePositionMarketTips": "Esto se cerrará de inmediato al precio de mercado actual.",
+          "confirm": "Confirmar",
+          "closePositionReverseTips": "Esto cerrará inmediatamente tu posición al precio de mercado actual y abrirá una posición del mismo tamaño en la dirección opuesta.",
+          "closePositionTips": "Esto intentará cerrar al precio límite que elija.",
+          "closePosition": "Cerrar posición",
+          "closeMarket": "Cerrar al precio de mercado",
+          "limitPrice": "Precio límite",
+          "closedPnl": "PNL realizado",
+          "reverse": "Invertir posición",
+          "close": "Cerrar",
+          "mid": "Precio medio",
+          "limitClose": "Cierre límite",
+          "closeLimit": "Límite de cierre",
+          "marketCloseBtn": "Cierre de mercado",
+          "dontShowAgain": "No mostrar esto de nuevo",
+          "confirmCloseAllTitle": "Confirmar cierre de todas las posiciones",
+          "marketCloseDesc": "Esto intentará cerrar la posición de inmediato.",
+          "confirmCloseAllDesc": "Todas tus posiciones abiertas se cerrarán al precio de mercado y se cancelarán todas las órdenes.",
+          "marketCloseTitle": "Cerrar posición de mercado",
+          "invalidPrice": "Precio inválido"
+        },
+        "openOrders": {
+          "order": "Orden",
+          "time": "Tiempo",
+          "cancel": "Cancelar",
+          "price": "Precio",
+          "type": "Tipo",
+          "orderValueSize": "Valor de la orden / Tamaño",
+          "cancelAll": "Cancelar todo",
+          "triggerConditions": "Condiciones de Activación",
+          "filled": "Completado",
+          "reduceOnly": "Solo reducir",
+          "tpSl": "Objetivo de ganancia / Stop Loss"
+        },
+        "distanceRiskTag": {
+          "goingDown": "Una caída de {{percent}} desencadenará la liquidación",
+          "goingUp": "Al subir {{percent}} se activará la liquidación"
+        },
+        "twap": {
+          "completed": "Completado",
+          "terminated": "Terminado",
+          "activated": "Activado"
+        },
+        "yes": "Sí",
+        "history": "Historial",
+        "randomized": "(aleatorizado)",
+        "no": "No",
+        "terminate": "Terminar",
+        "active": "Activo",
+        "fillHistory": "Historial de ejecuciones",
+        "status": {
+          "rejected": "Rechazado",
+          "triggered": "Activado",
+          "canceled": "Cancelado",
+          "open": "Abierto",
+          "filled": "Lleno",
+          "perpMarginRejected": "Margen de Perp Rechazada",
+          "partiallyFilled": "Parcialmente Lleno",
+          "badAloPxRejected": "Rechazado debido a mal ALO PX",
+          "iocCancelRejected": "Rechazado debido a cancelación de IOC",
+          "minTradeNtlRejected": "Rechazado debido a min trade NTL",
+          "reduceOnlyCanceled": "Cancelado debido a reducción solamente",
+          "siblingFilledCanceled": "Cancelado debido a que el pedido de hermano fue ejecutado."
+        }
+      },
+      "statusBar": {
+        "online": "En línea",
+        "sound": "Activar sonido",
+        "offline": "Desconectado"
+      },
+      "tradingPanel": {
+        "slippagePage": {
+          "description": "El deslizamiento máximo solo afecta a las órdenes de mercado colocadas desde el formulario de órdenes. Cerrar posiciones utilizará un deslizamiento máximo del 8% y las órdenes de TP/SL de mercado utilizarán un deslizamiento máximo del 10%.",
+          "minError": "El deslizamiento mínimo es 0%.",
+          "maxSlippage": "Deslizamiento máximo",
+          "maxError": "El deslizamiento máximo es del 100%.",
+          "title": "Ajustar el deslizamiento máximo"
+        },
+        "limitOrderTypeOptions": {
+          "Ioc": "IOC (Inmediato o Cancelar): Cualquier porción que no se ejecute de inmediato será cancelada",
+          "Alo": "ALO (Añadir liquidez únicamente): La orden existirá solo como una orden límite en el libro de órdenes. También conocida como post-only.",
+          "Gtc": "GTC (Good Til Cancel): La orden permanecerá activa hasta que se ejecute o se cancele."
+        },
+        "atLeastTwoOrders": "Se requieren al menos dos órdenes.",
+        "threeThirtySeconds": "30 segundos",
+        "runtime": "Tiempo de ejecución",
+        "runtimeTooLong": "El tiempo de ejecución debe ser menor a 24 horas.",
+        "start": "Iniciar",
+        "type": "Tipo",
         "insufficientBalance": "Saldo insuficiente",
-        "leverage": "Apalancamiento",
+        "currentPosition": "Posición actual",
+        "randomize": "Aleatorizar",
+        "availableFunds": "Fondos disponibles",
+        "frequency": "Frecuencia",
+        "slippage": "Deslizamiento",
+        "slSellMustBeLowerThanMidPrice": "El precio de la orden stop de venta debe ser inferior al precio medio.",
+        "marginRequired": "Margen requerido",
+        "limitPrice": "Precio límite",
+        "aloTooLargeBuy": "El precio de la orden Alo debe ser menor que el mejor precio de venta.",
+        "liquidationPrice": "Precio de liquidación",
+        "liquidationPriceTooltip": "El riesgo de la posición es bajo, por lo que, por el momento, no hay un precio de liquidación. Tenga en cuenta que aumentar la posición o reducir el margen incrementarán el riesgo.",
+        "end": "Finalizar",
+        "enterAmount": "Por favor, introduzca la cantidad.",
+        "marginUsage": "Uso de margen",
+        "runtimeTooShort": "El tiempo de ejecución debe ser mayor a 5 minutos.",
+        "orderValue": "Valor de la orden",
+        "startPrice": "Precio inicial",
+        "marginIsolated": "Margen aislado",
+        "slMustBeHigherThanCurrentPrice": "El precio de stop loss debe estar por encima del precio actual.",
+        "hours": "Horas",
+        "minimumOrderSize": "El tamaño mínimo de la orden es $10.",
+        "placeOrder": "Colocar orden",
+        "maximumOrderSize": "El tamaño máximo de la orden es {{amount}}.",
+        "triggerPrice": "Precio de activación",
+        "tpMustBeLowerThanCurrentPrice": "El precio para tomar ganancias debe ser inferior al precio actual.",
+        "marginCross": "Margen cruzado",
+        "tpMustBeHigherThanCurrentPrice": "El precio de toma de beneficios debe ser mayor que el precio actual.",
+        "randomizeTooltip": "Aleatoriza el momento y el tamaño de las subórdenes para reducir la previsibilidad.",
+        "tpBuyMustBeLowerThanMidPrice": "El precio de la orden de compra debe ser inferior al precio medio.",
+        "sizeSkew": "Desbalance de tamaño",
+        "invalidSlPrice": "Precio de stop loss inválido",
+        "slMustBeLowerThanCurrentPrice": "El precio de stop loss debe ser inferior al precio actual.",
+        "endPrice": "Precio de liquidación",
+        "minutes": "Minutos",
+        "slBuyMustBeHigherThanMidPrice": "El precio de la orden stop de compra debe ser mayor que el precio medio.",
+        "sellShort": "Vender / Venta en corto",
+        "buyLong": "Comprar / Posición larga",
+        "totalOrders": "Órdenes totales",
+        "startAndEndPriceMustBeDifferent": "El precio de inicio y el precio final deben ser diferentes.",
+        "stopLossExpectedPnL": "Stop loss: PnL esperado",
+        "reduceOnlyTips": "Esta orden no abrirá una nueva posición, sin importar cuán grande sea el tamaño de la orden. Se comparará con la posición existente en el momento de la ejecución.",
+        "takeProfitExpectedPnL": "Tomar beneficios P/L esperado",
+        "numberOfOrders": "Número de órdenes",
+        "runtimeTips": "(5m-24h)",
+        "minimumSuborderSize": "El tamaño mínimo de la suborden TWAP es de $10.",
+        "reduceOnlyTooLarge": "Solo reducción: Demasiado grande",
+        "sizePerSuborder": "Tamaño por suborden",
+        "sizeSkewTooltip": "Relación entre el precio final y el precio inicial. Por ejemplo, si el sesgo de tamaño es 2.0, entonces se colocará una orden límite para el precio final con el doble del tamaño del precio inicial. Un sesgo de tamaño de 1.0 crea órdenes de igual tamaño.",
+        "tpSlTips": "Coloca órdenes simples de mercado TP/SL. Para características avanzadas, como precios límite o TP/SL parciales, establece el TP/SL en una posición abierta.",
+        "enableTrading": "Activar operaciones",
+        "aloTooLargeSell": "El precio de la orden Alo debe ser mayor que el mejor precio de compra.",
+        "tpSellMustBeHigherThanMidPrice": "El precio de la orden de venta debe ser mayor que el precio medio.",
+        "invalidTpPrice": "Precio de toma de ganancias no válido.",
+        "tpSl": "Objetivo de ganancia / Stop Loss",
+        "reduceOnly": "Solo reducir posición",
+        "deposit": "Depositar",
+        "addFundsToGetStarted": "Añade fondos para comenzar",
+        "cost": "Costo",
+        "price": "Precio",
+        "sellTrigger": "Venta de activación",
+        "action": "Acción",
+        "short": "Corto",
+        "long": "Largo",
+        "max": "MÁXIMO",
+        "orderCount": "Recuento de órdenes",
+        "estimatedPnlWillBe": "Tu PnL estimado será",
+        "Buy": "Comprar",
+        "Sell": "Vender",
+        "bboDisabledTooltip": "BBO no es compatible cuando {{bboDisabledReason}} está habilitado.",
+        "slTriggerLessThanOrderPrice": "El precio de activación de tu SL debe ser menor que el precio de tu orden.",
+        "buyTrigger": "Compra Disparador",
+        "tpTriggerLessThanOrderPrice": "Tu precio de activación de TP debe ser menor que tu precio de orden.",
+        "slTriggerMoreThanOrderPrice": "Su precio de activación de SL debe ser mayor que su precio de orden.",
+        "sideLongBuy": "largo (comprar)",
+        "tpTriggerMoreThanOrderPrice": "El precio de activación de tu TP debe ser mayor que el precio de tu orden.",
+        "orderTypeTooltipMarket": "La orden de mercado se empareja de inmediato con el mejor precio de mercado disponible.",
+        "orderTypeTooltipTakeLimit": "Las órdenes de Take Limit se convierten en órdenes limitadas cuando se alcanza un precio de toma específico. Especifique un precio de activación para activar la orden.",
+        "sideShortSell": "corto (vender)",
+        "hour": "hora",
+        "totalTime": "Tiempo total (5m-24h)",
+        "orderTypeTooltipStopLimit": "Las órdenes de stop limit se convierten en órdenes limitadas cuando se alcanza un precio de stop especificado. Especifique un precio de activación para activar la orden.",
+        "maxDurationTwap": "La duración máxima para ejecutar la orden TWAP es",
+        "orderTypeTooltipLimit": "Una orden limitada es una orden para comprar o vender a un precio específico o mejor. Las órdenes limitadas no están garantizadas para ejecutarse.",
+        "orderTypeTooltipTakeMarket": "Las órdenes de mercado se convierten en órdenes de mercado cuando se alcanza un precio de toma especificado. Especifique un precio de activación para activar la orden.",
+        "min": "mín",
+        "orderTypeTooltipStopMarket": "Las órdenes de mercado de parada se convierten en órdenes de mercado cuando se alcanza un precio específico. Especifique un precio de activación para activar la orden.",
+        "slTriggerPriceIsZero": "Tu precio de activación de SL es 0 y no se establecerá cuando vayas {{side}}.",
+        "tpTriggerPriceIsZero": "Tu precio de activación de TP es 0 y no se establecerá cuando vayas {{side}}.",
+        "size": "Tamaño",
+        "orderTypeTooltipScale": "Los pedidos escalonados te permiten dividir una cantidad en múltiples subpedidos para minimizar el impacto en el mercado.",
+        "bboTips": "La Mejor Oferta y Demanda (BBO) se refiere al mejor precio de venta disponible y al mejor precio de compra disponible en el libro de órdenes en cualquier momento dado. Las órdenes BBO siempre se colocan utilizando el tamaño de tick mínimo preciso, asegurando precios granulares y precisos independientemente de las preferencias de visualización.",
+        "orderTypeTooltipTwap": "TWAP (Precio Promedio Ponderado por Tiempo) es una estrategia de ejecución de operaciones algorítmica que tiene como objetivo lograr un precio de ejecución promedio cercano al precio promedio ponderado por tiempo del período especificado por el usuario."
+      },
+      "marginMode": {
+        "title": "Modo de margen",
+        "confirm": "Confirmar",
+        "isolated": "Margen aislado",
+        "cross": "Margen cruzado",
+        "crossDescription": "Todas las posiciones en cruce comparten el mismo margen cruzado como garantía. En caso de liquidación, tu saldo de margen y cualquier posición abierta restante en cruce en este modo pueden perderse.",
+        "isolatedDescription": "Gestiona tu riesgo en posiciones individuales asignando el margen correspondiente a cada una. Si la relación de margen de una posición aislada alcanza el 100%, la posición se liquidará. El margen puede añadirse o retirarse de las posiciones individuales en este modo.",
+        "onlyIsolatedSupported": "Este activo solo admite el modo de margen aislado.",
+        "cannotChange": "No se puede cambiar el modo de margen"
+      },
+      "leverage": {
+        "maxError": "El apalancamiento máximo es {{max}}x",
+        "higherLeverageRisk": "Un mayor apalancamiento aumenta el riesgo de liquidación.",
+        "confirm": "Confirmar",
+        "title": "Ajustar el apalancamiento",
+        "maxPositionSize": "El tamaño máximo de posición disminuye a medida que aumenta tu apalancamiento.",
+        "controlPositionLeverage": "Controla el apalancamiento utilizado para las posiciones de {{coin}}.\nEl apalancamiento máximo es de {{max}}x.",
+        "minError": "El apalancamiento mínimo es 1x."
+      },
+      "editTpSl": {
+        "gain": "Ganancia",
+        "currentPosition": "Posición actual",
+        "entryPrice": "Precio de entrada:",
+        "confirm": "Confirmar",
+        "markPrice": "Precio de marca:",
+        "loss": "Pérdida",
+        "cancelSl": "Cancelar Stop Loss",
+        "sl": "Límite de pérdidas",
+        "tp": "Tomar ganancias",
+        "title": "Configurar TP/SL",
+        "cancelTp": "Cancelar toma de ganancia",
+        "stopLossExpectedPnl": "PnL esperado de Stop Loss",
+        "takeProfitExpectedPnl": "Toma de beneficios: PnL esperado"
+      },
+      "accountInfo": {
+        "availableBalance": "Saldo disponible",
+        "withdraw": "Retirar",
+        "totalBalance": "Saldo total",
+        "balance": "Saldo",
+        "deposit": "Depósito",
+        "unrealizedPnl": "Ganancias y pérdidas no realizadas",
+        "maintenanceMargin": "margen de mantenimiento",
+        "crossMarginRatio": "Relación de margen cruzado",
+        "accountEquity": "Equidad de la cuenta",
+        "crossAccountLeverage": "Apalancamiento de margen cruzado",
+        "maintenanceMarginTips": "El valor mínimo de la cartera necesario para mantener abiertas sus posiciones con margen cruzado.",
+        "crossAccountLeverageTips": "El apalancamiento de cuenta cruzada = Valor total de la posición cruzada / Valor de la cuenta cruzada.",
+        "crossMarginRatioTips": "Margen de mantenimiento / Valor de la cartera. Sus posiciones cruzadas serán liquidadas si el ratio de margen alcanza el 100%.",
+        "accountEquityTip": "Saldo + PNL no realizado (valor aproximado de la cuenta si se cerraran todas las posiciones)",
+        "balanceTip": "Transferencias netas totales + Ganancia realizada total + Comisiones netas de financiación totales",
+        "available": "Disponible:"
+      },
+      "accountActions": {
         "available": "Disponible",
-        "maximumOrderSize": "El tamaño máximo del pedido es {{amount}}",
-        "stopLossWhenPriceBelow": "Stop Loss Cuando el Precio Está por Debajo",
-        "takeProfitWhenPriceBelow": "Toma ganancias cuando el precio esté por debajo",
-        "minimumOrderSize": "El tamaño mínimo del pedido es de $10.",
-        "stopLossWhenPriceAbove": "Stop Loss Cuando el Precio Está por Encima",
-        "takeProfitWhenPriceAbove": "Toma de Ganancias Cuando el Precio Está por Encima",
-        "providerFee": "Tarifa de Hyperliquid",
-        "sizeTips": "El valor total o la cantidad de su operación, establecido por el margen y el apalancamiento.",
+        "deposit": "Depósito",
+        "positionCount": "{{count}} posiciones",
+        "pending": "Pendiente",
+        "onePosition": "1 posición",
+        "availableBalanceTips": "Fondos Disponibles"
+      },
+      "orderBook": {
+        "total": "Total",
+        "time": "Tiempo",
+        "viewBoth": "Ambos",
+        "amount": "Cantidad",
+        "markPrice": "Precio de marca",
+        "viewAsks": "Ofertas de venta",
+        "price": "Precio",
+        "trades": "Operaciones",
+        "noTrades": "Sin operaciones",
+        "title": "Libro de órdenes",
+        "viewBids": "Ofertas de compra"
+      },
+      "editMargin": {
+        "longLiquidationTips": "Bajar {{percent}} activará la liquidación",
+        "title": "Gestionar Margen",
+        "configureMargin": "Configurar Margen",
+        "currentPosition": "Posición Actual",
+        "shortLiquidationTips": "Subir {{percent}} activará la liquidación"
+      }
+    },
+    "perpsDetail": {
+      "PerpsAddPositionPopup": {
+        "addToShort": "Añadir a la posición corta",
+        "addToLong": "Añadir a la posición larga",
+        "sizeTips": "El valor total o la cantidad de tu operación, determinado por el margen y el apalancamiento.",
+        "totalSize": "Tamaño total",
+        "addSize": "Agregar tamaño",
+        "liquidationPriceTips": "El precio al que tu posición se liquida automáticamente en la bolsa para evitar pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento."
+      },
+      "PerpsOpenPositionPopup": {
+        "available": "Disponible",
+        "maximumOrderSize": "El tamaño máximo de la orden es {{amount}}.",
+        "providerFee": "Comisión de Hyperliquid",
+        "free": "Gratis",
+        "margin": "Margen",
+        "minimumOrderSize": "El tamaño mínimo de la orden es de $10.",
+        "insufficientBalance": "Saldo insuficiente",
+        "size": "Tamaño de la posición",
+        "invalidNumber": "Número inválido",
         "minMargin": "El margen mínimo es {{amount}}",
-        "maxMargin": "El margen máximo es {{amount}}"
+        "maxMargin": "El margen máximo es {{amount}}",
+        "leverage": "Apalancamiento",
+        "rabbyFee": "Comisión de Rabby",
+        "stopLossWhenPriceBelow": "Stop Loss cuando el precio esté por debajo de",
+        "short": "Corto",
+        "takeProfitWhenPriceBelow": "Tomar ganancias cuando el precio esté por debajo",
+        "newPosition": "Abrir posición",
+        "long": "Largo",
+        "takeProfitWhenPriceAbove": "Tomar ganancia cuando el precio supere",
+        "sizeTips": "El valor total o la cantidad de tu operación, determinado por el margen y el apalancamiento.",
+        "stopLossWhenPriceAbove": "Orden de stop loss cuando el precio esté por encima"
       },
       "PerpsEditMarginPopup": {
-        "addMargin": "Agregar margen",
-        "margin": "Margen",
-        "reduceMargin": "Reducir Margen",
-        "currentPrice": "Precio Actual",
-        "available": "Disponible",
-        "confirm": "Confirmar",
-        "addMarginSuccess": "Margen añadida con éxito",
-        "title": "Ajustar Margen",
-        "liqPrice": "Precio de Liquidación",
         "insufficientBalance": "Saldo insuficiente",
+        "margin": "Margen",
         "reduceMarginTooltip": "Margen insuficiente para reducir la posición.",
-        "perpsBalance": "Saldo de Perps",
-        "amountToReduce": "Cantidad a Reducir",
-        "exceedMaxReduction": "Excede la reducción máxima",
-        "amountToAdd": "Cantidad a agregar",
-        "reduceMarginSuccess": "Margen reducida con éxito",
+        "available": "Disponible",
+        "addMarginSuccess": "Margen agregado con éxito",
+        "title": "Ajustar margen",
+        "amountToReduce": "Cantidad a reducir",
+        "confirm": "Confirmar",
         "upto": "Hasta",
-        "upTo": "Hasta"
+        "reduceMargin": "Reducir el margen",
+        "reduceMarginSuccess": "Margen reducido con éxito",
+        "liqPrice": "Precio de liquidación",
+        "exceedMaxReduction": "Supera la reducción máxima",
+        "currentPrice": "Precio actual",
+        "addMargin": "Añadir margen",
+        "upTo": "Hasta",
+        "amountToAdd": "Cantidad a añadir",
+        "perpsBalance": "Saldo de contratos perpetuos",
+        "liqDistance": "Distancia de liquidez"
       },
       "PerpsClosePositionPopup": {
-        "confirm": "Confirmar",
         "total": "Total",
-        "amount": "Cantidad",
-        "title": "Cerrar Posición",
-        "fee": "Tarifa",
-        "closedPnl": "PNL Cerrado",
         "receive": "Recibir",
-        "minimumWarning": "La cantidad mínima de cierre es del {{percent}}%"
+        "amount": "Cantidad",
+        "minimumWarning": "El monto mínimo de cierre es {{percent}}%",
+        "title": "Cerrar posición",
+        "confirm": "Confirmar",
+        "closedPnl": "PnL realizado",
+        "fee": "Comisión"
       },
       "PerpsAutoCloseModal": {
-        "youLoss": "Pierdes",
-        "priceBelow": "Precio por debajo",
-        "priceAbove": "Precio por encima",
+        "stopLossTipsLongLiquidation": "El precio es menor que el precio de liquidación ({{price}})",
+        "takeProfitTipsShort": "El precio de toma de ganancias debe ser menor que el precio actual.",
         "currentPrice": "Precio actual:",
-        "stopLossExpectedPNL": "Stop Loss PNL Esperado",
-        "youGain": "Ganas",
-        "takeProfit": "Toma de Ganancias",
         "confirm": "Confirmar",
-        "stopLoss": "Orden de Stop Loss",
-        "stopLossWhen": "Stop Loss Cuando",
-        "takeProfitExpectedPNL": "Toma de Beneficio PNL Esperado",
-        "stopLossWhenPriceBelow": "Stop Loss Cuando el Precio esté por Debajo",
-        "takeProfitWhenPriceAbove": "Toma de ganancias cuando el precio esté por encima",
-        "takeProfitWhen": "Toma de Ganancias Cuando",
-        "takeProfitTipsLong": "El precio de toma de ganancias debe ser más alto que el precio actual.",
-        "takeProfitWhenPriceBelow": "Toma de Beneficios Cuando el Precio Esté por Debajo",
-        "title": "Cerrar posición automáticamente",
-        "EntryAndCurrentPrice": "Entrada: ${{entryPrice}} Actual: ${{currentPrice}}",
-        "stopLossWhenPriceAbove": "Stop Loss Cuando el Precio Esté por Encima",
-        "noPosition": "Debes ingresar primero el margen.",
-        "takeProfitTipsShort": "El precio de toma de ganancias debe ser inferior al precio actual.",
-        "cancel": "Cancelar",
-        "stopLossTipsShort": "El precio de stop loss debe ser más alto que el precio actual.",
         "stopLossTipsLong": "El precio de stop loss debe ser inferior al precio actual.",
-        "stopLossTipsShortLiquidation": "El precio es más alto que el liq.price ({{price}})",
-        "stopLossTipsLongLiquidation": "El precio es inferior al liq.price ({{price}})"
+        "noPosition": "Debe ingresar primero el margen.",
+        "priceAbove": "Precio por encima",
+        "youGain": "Ganas",
+        "cancel": "Cancelar",
+        "stopLossTipsShort": "El precio de stop loss debe ser mayor que el precio actual.",
+        "takeProfitWhen": "Tomar Ganancias Cuando",
+        "title": "Cierre automático de la posición",
+        "stopLossTipsShortLiquidation": "El precio es mayor que el precio de liquidación ({{price}})",
+        "priceBelow": "Precio por debajo",
+        "youLoss": "¡Perdiste!",
+        "EntryAndCurrentPrice": "Precio de entrada: ${{entryPrice}} Precio actual: ${{currentPrice}}",
+        "takeProfitWhenPriceAbove": "Tomar ganancia cuando el precio esté por encima",
+        "stopLossWhen": "Detener pérdidas cuando",
+        "takeProfitTipsLong": "El precio de toma de ganancias debe ser mayor que el precio actual.",
+        "stopLoss": "Orden de Stop Loss",
+        "takeProfit": "Tomar Ganancias",
+        "stopLossWhenPriceBelow": "Stop Loss cuando el precio caiga por debajo de",
+        "stopLossWhenPriceAbove": "Stop Loss cuando el precio esté por encima",
+        "takeProfitWhenPriceBelow": "Tomar ganancia cuando el precio esté por debajo de",
+        "stopLossExpectedPNL": "Límite de pérdidas PNL esperado",
+        "takeProfitExpectedPNL": "Tomar Ganancia Esperado P/L"
       },
-      "PerpsAddPositionPopup": {
-        "addToLong": "Agregar a Long",
-        "addToShort": "Agregar a Short",
-        "sizeTips": "El valor total o la cantidad de su operación, establecido por el margen y el apalancamiento.",
-        "addSize": "Agregar Tamaño",
-        "liquidationPriceTips": "El precio al cual tu posición se cierra automáticamente por el intercambio para prevenir pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento."
-      }
+      "needDepositFirst": "Primero debes depositar fondos."
+    },
+    "lending": {
+      "availableCard": {
+        "singleAssetUnavailableForEmode": "No disponible para pedir prestado. Salga del E-Mode para acceder.",
+        "emodeNoAssets": "No pudimos encontrar activos relacionados con su búsqueda. Intente nuevamente con una categoría diferente.",
+        "needSupply": "Para pedir prestado, debes proporcionar activos como garantía.",
+        "canBorrow": "Puedes pedir prestado basado en tu colateral suministrado, hasta el límite de préstamo.",
+        "emode": "Algunos activos no están disponibles para prestar en E-Mode. Sal de E-Mode para acceder a todos los activos."
+      },
+      "list": {
+        "headers": {
+          "my_assets": "Mis Activos",
+          "myBorrows": "Mis préstamos",
+          "totalBorrowed": "Total Prestado",
+          "mySupplies": "Mis suministros",
+          "token_balance": "Token/Saldo",
+          "token_tvl": "Token/TVL",
+          "my_balance": "Mi saldo",
+          "token": "Token"
+        },
+        "item": {
+          "wrapperToken": "Token envuelto para {{name}}"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "collateral": "Colateral",
+          "wallet": "Saldo de la billetera"
+        },
+        "amountTitle": "Saldo:",
+        "repayWith": "Reembolsar con",
+        "actions": "Reembolsar",
+        "approveAndRepay": "Aprobar y Reembolsar"
+      },
+      "supplyDetail": {
+        "amountTitle": "Disponible:",
+        "actions": "Suministro",
+        "supplied": "Suministrado",
+        "approveAndSupply": "Autorizar y Proveer",
+        "collateralization": "Colateralización",
+        "supplyBalance": "Suministro de Saldo",
+        "enabled": "Habilitado",
+        "supplyAPY": "Suministrar APY",
+        "availableToBorrow": "Disponible para pedir prestado",
+        "isolatedTips": "Tus activos de préstamo/endeudamiento existentes no son compatibles.",
+        "unavailable": "No disponible"
+      },
+      "withdrawDetail": {
+        "remainingSupply": "Suministro restante",
+        "amountTitle": "Saldo: ",
+        "actions": "Retirar"
+      },
+      "toggleCollateralDetail": {
+        "enable": "Habilitar {{asset}} como Colateral",
+        "actions": "Alternar {{asset}} como Colateral",
+        "disable": "Deshabilitar {{asset}} como Colateral",
+        "error": "Hay un error con el servicio AAVE. Por favor, inténtalo de nuevo más tarde."
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "doNotHaveSuppliesInThisCurrency": "No tienes suministros en esta moneda.",
+          "canNotUseThisCurrencyAsCollateral": "No puedes usar esta moneda como colateral.",
+          "zeroLTVWithdrawBlocked": "Los activos con LTV cero ({{assets}}) deben ser retirados o deshabilitados como garantía para realizar esta acción.",
+          "canNotSwitchUsageAsCollateralMode": "No puedes cambiar el uso a modo de colateral para esta moneda, porque causará una llamada de colateral."
+        },
+        "exitIsolationModeTitle": "Salir del modo de aislamiento",
+        "closeTitle": "Revisar desactivación",
+        "openTitle": "Revisión de Habilitación",
+        "enableIsolationModeTitle": "Habilitar Modo de Aislamiento",
+        "exitIsolationModeDesc": "Saldremos del modo de Aislamiento y otros tokens ahora pueden usarse como colateral.",
+        "riskToLiquidationText": "No puedes cambiar el uso a modo de colateral para esta moneda, porque causará una llamada de colateral.",
+        "openDesc": "Habilitar este activo como colateral aumenta tu poder de endeudamiento y el Factor de Salud. Sin embargo, puede ser liquidado si tu factor de salud cae por debajo de 1.",
+        "closeDesc": "Deshabilitar este activo como colateral afecta tu poder de endeudamiento y el Factor de Salud.",
+        "enableIsolationModeDesc": "Estás entrando en modo Aislamiento. En modo Aislamiento, no puedes proporcionar otros activos como colateral. Un techo global de deuda limita el poder de endeudamiento del activo aislado. Para salir del modo aislamiento, desactiva CRV como colateral antes de pedir prestado otro activo."
+      },
+      "borrowDetail": {
+        "swapDebt": "Intercambiar",
+        "actions": "Prestar",
+        "amountTitle": "Disponible:",
+        "borrowed": "Prestado",
+        "approveAndBorrow": "Aprobar y Pedir Prestado",
+        "almostReachedWarning": "El límite de préstamo del protocolo está al 100% para este activo. No se pueden realizar más préstamos.",
+        "almostReachedError": "La cantidad máxima disponible para prestar está limitada porque se ha alcanzado casi el límite de préstamo del protocolo."
+      },
+      "popup": {
+        "remainingDebt": "Deuda restante",
+        "available": "disponible",
+        "liquidationAt": "Liquidación en < 1.0",
+        "title": "Resumen de Transacciones",
+        "amount": "Cantidad"
+      },
+      "borrowOverview": {
+        "totalBorrowed": "Total Prestado",
+        "availableToBorrow": "Disponible para prestar",
+        "borrowCap": "Límite de Préstamo",
+        "title": "Detalles del Préstamo",
+        "myBorrow": "Mi Préstamo",
+        "reachCapTip": "Este activo ha alcanzado el límite de préstamo.",
+        "liquidityPenalty": "Penalización por Liquidación"
+      },
+      "supplyOverview": {
+        "useAsCollateral": "Usar como garantía",
+        "walletBalance": "Saldo de Billetera",
+        "mySupply": "Mi Suministro",
+        "collateral": "Colateral",
+        "title": "Detalles de Suministro",
+        "totalSupplied": "Suministro Total",
+        "availableToSupply": "Disponible para Suministrar",
+        "almostCap": "Este activo casi ha alcanzado su límite de préstamo. Solo hay {{available}} disponibles para ser prestados de este mercado.",
+        "noBalance": "Sin saldo",
+        "reachCap": "Este activo ha alcanzado su límite de suministro. No hay nada disponible para ser suministrado desde este mercado."
+      },
+      "risk": {
+        "toggleCollateralWarning": "Deshabilitar este activo como colateral reducirá tu Factor de Salud a un nivel arriesgado para la liquidación.",
+        "withdrawWarning": "Retirar esta cantidad reducirá tu Factor de Salud a un nivel arriesgado para la liquidación.",
+        "warning": "Tomar esta cantidad reducirá su Factor de Salud a un nivel arriesgado para la liquidación.",
+        "checkbox": "Entiendo la alerta y quiero continuar.",
+        "emodeBlockWarning": "Desactivar el modo E reducirá tu Factor de Salud a un nivel arriesgado para la liquidación.",
+        "blockEmodeWarning": "No puedes desactivar E-Mode porque eso podría causar una liquidación. Para salir de E-Mode, proporciona o paga las posiciones prestadas."
+      },
+      "lqDescription": {
+        "liquidationTitle": "Liquidación:",
+        "over3title": "Factor de salud > 3.0:",
+        "desc": "Valor de liquidación",
+        "over3desc": "Tus posiciones están seguras",
+        "below1title": "Factor de Salud ≤ 1.0:",
+        "below1desc": "Tu posición está en riesgo de liquidación.",
+        "risky": "Arriesgado",
+        "introText": "Tu Factor de Salud muestra cuán segura está tu posición de préstamo. Si baja demasiado, tu colateral podría ser liquidado.",
+        "warningText": "Tu Factor de Salud es demasiado bajo. Para evitar la liquidación:\n1. Reembolsa parte o la totalidad de tu préstamo\n2. Añade más colateral",
+        "liquidation": "Si tu Factor de Salud cae por debajo de 1.0, parte de tu garantía puede ser vendida automáticamente para pagar la deuda. Se aplicará una penalización por liquidación, lo que resultará en una pérdida parcial de tu garantía."
+      },
+      "modalDesc": {
+        "availableToBorrow": "Disponible para pedir prestado",
+        "isolatedSupplyDesc": "El uso de colateral está limitado debido al modo de aislamiento.",
+        "isolatedTitle": "El activo no puede ser utilizado como colateral.",
+        "availableToBorrowDesc": "Puedes pedir prestado en función de tu garantía suministrada y hasta que se alcance el límite de préstamo.",
+        "maxAmount": "Esta es la cantidad máxima que puedes pedir prestada en función de todo tu colateral proporcionado. Tu poder total de endeudamiento se calcula multiplicando el valor de mercado de cada activo colateral por su LTV máximo, y luego sumando los resultados.",
+        "globalIsolatedDesc": "En modo de aislamiento, no puedes proporcionar otros activos como colateral. Un límite global de deuda limita el poder de endeudamiento del activo aislado. Para salir del modo de aislamiento, desactiva UNI como colateral antes de pedir prestado otro activo.",
+        "lqDesc": "Cuando ocurre una liquidación, los liquidadores reembolsan hasta el 50% del monto prestado pendiente en nombre del prestatario. A cambio, pueden comprar la garantía a un descuento y mantener la diferencia (penalización por liquidación) como bono.",
+        "isolatedDesc": "Este activo solo puede utilizarse como colateral en modo de aislamiento, donde no puedes aportar otros activos como colateral para pedir préstamos. Los activos utilizados como colateral en modo de aislamiento solo pueden ser pedidos prestados hasta un límite específico de deuda.",
+        "maxLTV": "La relación LTV máxima representa el máximo poder de endeudamiento de un colateral específico. Por ejemplo, si un colateral tiene un LTV del 75%, el usuario puede pedir prestado hasta 0.75 en valor de ETH en la moneda principal por cada 1 ETH en valor de colateral."
+      },
+      "repayWithAToken": {
+        "header": {
+          "assets": "Token",
+          "balance": "Saldo"
+        },
+        "title": "Seleccionar Token de Reembolso",
+        "zeroLtvCollateralTips": "Tienes los siguientes LTV = 0 colaterales y, por lo tanto, solo puedes reembolsar con estos colaterales primero de acuerdo con las reglas de reembolso de colaterales."
+      },
+      "manageEmode": {
+        "actions": {
+          "disable": "Deshabilitar E-Mode",
+          "enable": "Habilitar el modo E"
+        },
+        "guide": {
+          "buttonTitle": "Gestionar E-Mode",
+          "title": "Modo de eficiencia (E-Mode)",
+          "description": "E-Mode aumenta tu LTV para una categoría seleccionada de activos."
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "Activos"
+          },
+          "label": "Categoría de activos",
+          "desc": "Todas las posiciones de préstamo fuera de esta categoría deben cerrarse para habilitar esta categoría.",
+          "placeholder": "Seleccionar"
+        },
+        "debtSwapSelector": {
+          "header": {
+            "borrow": "Mis préstamos",
+            "assets": "Token/Saldo"
+          },
+          "title": "Seleccionar Token de Préstamo"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "assets": "Token",
+            "collateral": "Mi colateral"
+          },
+          "title": "Seleccionar Token de Colateral"
+        },
+        "overview": {
+          "row": {
+            "asset": "Activo",
+            "collateral": "Colateral",
+            "borrowable": "Prestable"
+          },
+          "title": "Categoría de activo"
+        },
+        "disableTitle": "Deshabilitar",
+        "title": "Gestionar E-Mode",
+        "unavailable": "• No disponible",
+        "unavailableTips": "Sus activos de préstamo/borrowing existentes no son compatibles.",
+        "enabled": "• Habilitado",
+        "description": "Habilitar E-Mode te permite maximizar tu poder de endeudamiento. Sin embargo, el endeudamiento está restringido a los activos dentro de la categoría seleccionada."
+      },
+      "debtSwap": {
+        "actions": {
+          "amount": "Cantidad",
+          "borrowed": "Prestado",
+          "select": "Seleccionar",
+          "title": "Intercambio de Deuda",
+          "swapTo": "Intercambiar a"
+        },
+        "overview": {
+          "title": "Resumen de Transacciones",
+          "borrowAPY": "Tasa de préstamo",
+          "borrowValueAfter": "Saldo de préstamo después del intercambio"
+        },
+        "button": {
+          "swap": "Intercambiar"
+        },
+        "borrowBalance": "Balance de préstamo",
+        "title": "Intercambiar Posición de Préstamo",
+        "entryTips": "Un clic para intercambiar tu activo prestado, reduciendo pasos y tarifas.",
+        "lpRiskWarning": "Bajo factor de salud después del intercambio. Tu posición llevará un mayor riesgo de liquidación.",
+        "priceImpactTips": "Impacto alto en el precio ({{lostValue}}). Esta ruta puede devolver más debido a la baja liquidez o al tamaño pequeño de la orden.",
+        "lpDangerWarning": "Su factor de salud después de este intercambio será críticamente bajo y puede resultar en liquidación. Por favor, elija un activo diferente o reduzca la cantidad del intercambio para mantenerse a salvo.",
+        "maxLtvWarning": "Colateral insuficiente para cubrir la nueva posición de préstamo. La billetera debe tener poder de préstamo restante para realizar el cambio de deuda."
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "Reembolsar con {{collateral}}"
+        },
+        "overview": {
+          "title": "Resumen de Transacciones",
+          "collateralValueAfter": "Saldo de colateral después del reembolso",
+          "borrowValueAfter": "Saldo de préstamo después de reembolso"
+        },
+        "button": {
+          "repay": "Reembolso"
+        },
+        "repayWith": "Garantía para reembolsar con",
+        "toRepay": "Cantidad esperada a reembolsar",
+        "collateralNotEnough": "Tu saldo de colateral es inferior a la cantidad seleccionada."
+      },
+      "hfTips": {
+        "more": "Más",
+        "desc": "Si cae por debajo de 1.0, su garantía puede ser liquidada."
+      },
+      "disableBorrowTip": {
+        "noSupply": "Proporciona activos primero para habilitar el préstamo.",
+        "desc": "No hay suministro: Para pedir prestado, necesitas proporcionar activos como garantía."
+      },
+      "type": {
+        "supplied": "Suministrado",
+        "borrowed": "Prestado"
+      },
+      "actions": {
+        "borrow": "Pedir prestado",
+        "repay": "Reembolsar",
+        "supply": "Suministro",
+        "withdraw": "Retirar",
+        "swap": "Intercambiar"
+      },
+      "summary": {
+        "empty": {
+          "title": "Gana intereses con tus activos",
+          "description": "Impulsado por AAVE. Seguro y sin comisiones.",
+          "endDesc": "No tienes ningún depósito aún. Consulta los activos recomendados a continuación para comenzar a ganar intereses."
+        },
+        "netWorth": "Valor Neto",
+        "totalSupplied": "Total Suministrado",
+        "eMode": "E-Mode",
+        "healthFactor": "Factor de Salud",
+        "healthFactorTip": "El factor de salud indica la seguridad de tu posición.",
+        "totalBorrowed": "Total Prestado",
+        "netApy": "APY neto",
+        "ethCorrelatedTip": "Activos correlacionados con ETH",
+        "lq": "Si cae por debajo de 1, la liquidación podría ser activada.",
+        "healthy": "Saludable",
+        "estDailyEarnings": "Ganancias Diarias Estimadas",
+        "risky": "Arriesgado",
+        "more": "Más"
+      },
+      "market": {
+        "core": "Mercado Principal"
+      },
+      "accountActions": {
+        "both": "Ambos",
+        "supply": "Suministro",
+        "borrow": "Pedir prestado"
+      },
+      "table": {
+        "type": "Tipo",
+        "collateral": "Colateral",
+        "token": "Token",
+        "actions": "Acciones",
+        "myAssets": "Mis activos"
+      },
+      "supplyList": {
+        "collapse": "Colapso",
+        "more": "Más tokens para suministrar"
+      },
+      "borrowList": {
+        "collapse": "Colapso",
+        "more": "Más tokens para pedir prestado"
+      },
+      "gotIt": "Entendido",
+      "borrowed": "Prestado",
+      "estNetApy": "Est. net APY",
+      "supplyApy": "Suministrar APY",
+      "supplyBalance": "Saldo de Suministro",
+      "estDailyEarning": "Est. Ganancia Diaria",
+      "isolateTip": "Este es un mercado aislado",
+      "borrowBalance": "Saldo de Préstamo",
+      "noData": "Sin datos",
+      "netApy": "Net APY",
+      "isolate": "aislado",
+      "title": "Préstamo",
+      "submitted": "enviado",
+      "totalSupply": "Suministro Total",
+      "totalBorrow": "Total Borrow",
+      "totalBorrowed": "Total prestado",
+      "netWorth": "Valor neto",
+      "supplied": "Suministrado",
+      "totalSupplied": "Total suministrado",
+      "borrowApy": "Tasa de interés de préstamo",
+      "searchMarket": "Buscar Mercado",
+      "hf": "Factor de salud",
+      "disabled": "DESHABILITADO",
+      "enterAmount": "Ingrese la cantidad",
+      "hfTitle": "Factor de Salud",
+      "selectChain": "Seleccionar cadena",
+      "selectMarket": "Seleccionar Mercado"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Faltan parámetros requeridos",
+        "quoteUnavailable": "Error al obtener la cotización",
+        "gasCostTooHigh": "Excede el límite de comisión de gas",
+        "priceImpactTooHigh": "Alto impacto en el precio",
+        "buildSwapTxsFailed": "Error al construir las transacciones de swap",
+        "sendSwapTxFailed": "Error al enviar la transacción de swap",
+        "transactionFailed": "Transacción fallida",
+        "submitFailed": "Error al enviar las transacciones",
+        "gasNotEnough": "Gas insuficiente"
+      },
+      "stopTaskModal": {
+        "title": "¿Detener los intercambios actuales?",
+        "description": "Si detienes ahora, los intercambios restantes no se completarán. Ten en cuenta que los intercambios completados no se pueden revertir.",
+        "continueSwap": "Continuar intercambio",
+        "stop": "Detener intercambio"
+      },
+      "status": {
+        "pending": "Intercambiando",
+        "idle": "Esperando para intercambiar",
+        "success": "Intercambio exitoso"
+      },
+      "title": "Convertir Polvo",
+      "description": "¡Convierte tokens de bajo valor en token de gas para simplificar tu lista de activos!",
+      "receiveTitle": "Recibes",
+      "expectedToReceive": "Se espera recibir",
+      "completedTitle": "¡Polvo Convertido!",
+      "done": "Hecho",
+      "conversionProgress": "Progreso de conversión",
+      "slippageTolerance": "Tolerancia de deslizamiento",
+      "singleTransactionGasLimit": "Límite de gas de transacción única",
+      "startConvert": "Iniciar conversión",
+      "unsupportedWalletType": "Solo se admiten direcciones de clave privada y frase semilla.",
+      "stop": "Detener",
+      "selectLowValueTokens": "Seleccionar tokens de bajo valor",
+      "tokenColumn": "Token",
+      "amountColumn": "Cantidad",
+      "valueColumn": "Valor",
+      "statusColumn": "Estado",
+      "noLowValueTokensFound": "No se encontraron tokens de bajo valor",
+      "selectedTokens": "Tokens seleccionados",
+      "totalValue": "Valor total",
+      "moreChains": "+{{count}} cadenas",
+      "swapFailed": "Intercambio fallido, {{reason}}",
+      "completedTips": "El intercambio en curso continuará procesándose"
     }
   },
   "component": {
@@ -3520,7 +4441,8 @@
         }
       },
       "searchInput": {
-        "placeholder": "Buscar por Nombre / Dirección"
+        "placeholder": "Buscar por Nombre / Dirección",
+        "placeholder1": "Buscar nombre de token / dirección"
       },
       "header": {
         "title": "Seleccionar un token"
@@ -3531,10 +4453,10 @@
       "bridge": {
         "value": "Valor",
         "liquidity": "Liquidez",
-        "high": "Alto",
-        "low": "Bajo",
         "token": "Token",
-        "liquidityTips": "Cuanto mayor sea el volumen de comercio histórico, más probable es que el puente tenga éxito."
+        "liquidityTips": "Cuanto mayor sea el volumen de comercio histórico, más probable es que el puente tenga éxito.",
+        "low": "Baja liquidez",
+        "high": "Alta liquidez"
       },
       "recent": "Reciente",
       "common": "Común",
@@ -3542,7 +4464,8 @@
       "chainNotSupport": "Esta cadena no es compatible",
       "chainFilterLine": {
         "filterAll": "Todas las cadenas"
-      }
+      },
+      "noLpTokens": "No hay Token de Proveedor de Liquidez (LP)"
     },
     "ModalPreviewNFTItem": {
       "FieldLabel": {
@@ -3623,11 +4546,19 @@
       "comingSoon": "Próximamente"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Agregar dirección"
+      "addAddresses": "Agregar dirección",
+      "smallSwapDisabledTips": "Actualmente solo se admiten direcciones de clave privada y frase semilla."
     },
     "LpTokenTag": {
       "title": "Este es un token de proveedor de liquidez (LP)",
-      "description": "Los tokens LP son emitidos por los protocolos DeFi donde has depositado tus activos. Sirven como prueba de esos activos, pero su valor no está incluido en tu saldo total."
+      "description": "Los tokens LP son emitidos por los protocolos DeFi donde has depositado tus activos. Sirven como prueba de esos activos, pero su valor no está incluido en tu saldo total.",
+      "descriptionFor": "Este es un token de Proveedor de Liquidez (LP) para {{ protocolName }}"
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Seleccionar dirección"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Cartera no respaldada. Comenzar respaldo."
     }
   },
   "global": {
@@ -3664,7 +4595,8 @@
     "notSupportTesntnet": "No compatible con red personalizada",
     "tryAgain": "Inténtalo de nuevo",
     "Nonce": "Nonce",
-    "appDescription": "Tu billetera de referencia para Ethereum y EVM"
+    "appDescription": "Tu billetera de referencia para Ethereum y EVM",
+    "collapse": "Contraer"
   },
   "background": {
     "error": {
@@ -3698,7 +4630,7 @@
     "alias": {
       "HdKeyring": "Frase semilla",
       "simpleKeyring": "Clave privada",
-      "watchAddressKeyring": "Contacto"
+      "watchAddressKeyring": "Solo de visualización"
     },
     "keyring": {
       "onekey": {
@@ -3717,7 +4649,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Creado por Frase Semilla",
       "SimpleKeyring": "Importado por Clave Privada",
-      "WatchAddressKeyring": "Contacto"
+      "WatchAddressKeyring": "Solo de visualización"
     },
     "IMPORTED_HD_KEYRING": "Importado por Frase Semilla",
     "SIGN_PERMISSION_OPTIONS": {

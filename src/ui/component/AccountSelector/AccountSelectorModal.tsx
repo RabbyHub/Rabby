@@ -209,10 +209,10 @@ export const AccountSelectorModal = ({
   return (
     <>
       <Drawer
-        title={title || t('component.AccountSelectorModal.title')}
+        title={title}
         width="400px"
         height={height}
-        closable={showClosableIcon}
+        closable={showClosableIcon && !!title}
         placement={'bottom'}
         visible={visible}
         onClose={handleCancel}

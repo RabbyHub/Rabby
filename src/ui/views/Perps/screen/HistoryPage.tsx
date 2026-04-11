@@ -60,20 +60,26 @@ export const HistoryPage: React.FC = () => {
       </PageHeader>
 
       {list.length > 0 ? (
-        <div className="flex-1 overflow-auto mx-20">
-          {list.map((item) =>
-            'usdValue' in item ? (
-              <HistoryAccountItem data={item} key={item.hash} />
-            ) : (
-              <HistoryItem
-                fill={item}
-                orderTpOrSl={fillsOrderTpOrSl[item.oid]}
-                onClick={handleItemClick}
-                marketData={marketDataMap}
-                key={item.hash}
-              />
-            )
-          )}
+        <div className="flex-1 overflow-hidden mx-20">
+          <Virtuoso
+            data={list}
+            style={{ height: '100%' }}
+            components={{
+              Footer: () => <div className="h-[12px]" />,
+            }}
+            itemContent={(_, item) =>
+              'usdValue' in item ? (
+                <HistoryAccountItem data={item} />
+              ) : (
+                <HistoryItem
+                  fill={item}
+                  orderTpOrSl={fillsOrderTpOrSl[item.oid]}
+                  onClick={handleItemClick}
+                  marketData={marketDataMap}
+                />
+              )
+            }
+          />
         </div>
       ) : (
         <div className="flex mx-20 items-center justify-center gap-8 bg-r-neutral-card1 rounded-[12px] p-20 h-[120px] mb-20 flex-col">

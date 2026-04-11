@@ -41,6 +41,14 @@ export interface PerpsServiceStore {
   currentAccount: StoreAccount | null;
   lastUsedAccount: StoreAccount | null;
   hasDoneNewUserProcess: boolean;
+  hasDismissedNewUserGuideV2: boolean;
+  favoritedCoins: string[];
+  soundEnabled: boolean;
+  marketSlippage: number; // 0-1, default 0.05 (5%)
+  quoteUnit: 'base' | 'usd';
+  firstOpenPerpsNeedDark: boolean;
+  selectedCoin: string;
+  skipMarketCloseConfirm: boolean;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -68,6 +76,14 @@ class PerpsService {
         // no clear account , just cache for last used
         lastUsedAccount: null,
         hasDoneNewUserProcess: false,
+        hasDismissedNewUserGuideV2: false,
+        favoritedCoins: [],
+        marketSlippage: 0.05, // default 5%
+        soundEnabled: true,
+        quoteUnit: 'base',
+        firstOpenPerpsNeedDark: true,
+        selectedCoin: 'BTC',
+        skipMarketCloseConfirm: false,
       },
     });
 
@@ -86,6 +102,20 @@ class PerpsService {
       throw new Error('PerpsService not initialized');
     }
     return this.store.hasDoneNewUserProcess;
+  };
+
+  setHasDismissedNewUserGuideV2 = async (dismissed: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.hasDismissedNewUserGuideV2 = dismissed;
+  };
+
+  getHasDismissedNewUserGuideV2 = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.hasDismissedNewUserGuideV2;
   };
 
   setSendApproveAfterDeposit = async (
@@ -384,6 +414,49 @@ class PerpsService {
     return preference;
   };
 
+  getPerpsFavoritedCoins = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.favoritedCoins || [];
+  };
+
+  setPerpsFavoritedCoins = async (coins: string[]) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.favoritedCoins = coins;
+  };
+
+  getMarketSlippage = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.marketSlippage ?? 0.05;
+  };
+
+  setMarketSlippage = async (slippage: number) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    // Clamp between 0 and 1
+    this.store.marketSlippage = Math.max(0, Math.min(1, slippage));
+  };
+
+  getSoundEnabled = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.soundEnabled ?? true;
+  };
+
+  setSoundEnabled = async (soundEnabled: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.soundEnabled = soundEnabled;
+  };
+
   getInviteConfig = async (address: string) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
@@ -404,18 +477,80 @@ class PerpsService {
     };
   };
 
+  getQuoteUnit = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.quoteUnit ?? 'base';
+  };
+
+  setQuoteUnit = async (quoteUnit: 'base' | 'usd') => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.quoteUnit = quoteUnit;
+  };
+
+  getIsNeedSetDarkTheme = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    if (this.store.firstOpenPerpsNeedDark) {
+      this.store.firstOpenPerpsNeedDark = false;
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  getSelectedCoin = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.selectedCoin ?? 'BTC';
+  };
+
+  setSelectedCoin = async (coin: string) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.selectedCoin = coin;
+  };
+
+  getSkipMarketCloseConfirm = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.skipMarketCloseConfirm ?? false;
+  };
+
+  setSkipMarketCloseConfirm = async (skip: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.skipMarketCloseConfirm = skip;
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
     this.store = {
+      hasDismissedNewUserGuideV2: false,
       agentVaults: '',
       agentPreferences: {},
       currentAccount: null,
       lastUsedAccount: null,
       hasDoneNewUserProcess: false,
       inviteConfig: {},
+      favoritedCoins: [],
+      marketSlippage: 0.05,
+      soundEnabled: true,
+      quoteUnit: 'base',
+      firstOpenPerpsNeedDark: true,
+      selectedCoin: 'BTC',
+      skipMarketCloseConfirm: false,
     };
     this.memoryState.agentWallets = {};
   };

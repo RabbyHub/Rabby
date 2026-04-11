@@ -4,6 +4,7 @@ export const AccountListSkeleton: React.FC<{
   width?: number;
   height?: number;
   align?: 'left' | 'center';
+  children?: React.ReactNode;
 }> = ({ children, width, height, align = 'center' }) => {
   return (
     <div

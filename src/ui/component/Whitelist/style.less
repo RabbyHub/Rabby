@@ -1,0 +1,38 @@
+.pwd-for-non-whitelisted-tx-popup-wrapper,
+.verify-whitelisted-item-popup-wrapper {
+  .ant-drawer-body {
+    position: relative;
+    padding: 20px 20px 24px;
+    border-radius: 16px 16px 0 0;
+    background: var(--r-neutral-bg2, #F2F4F7);
+    // box-shadow: 0 -12px 20px 0 rgba(19, 20, 26, 0.05);
+  }
+
+  .page-header {
+    padding-top: 0;
+    margin-bottom: 28px;
+  }
+
+  &, &.is-support-darkmode {
+    .whitelist-pwd-input {
+      border-radius: 8px;
+      background: var(--r-neutral-card1, #FFF) !important;
+
+      border: 1px solid transparent;
+
+      &:focus,
+      &.ant-input-focused {
+        border: 1px solid var(--r-blue-default, #4C65FF);
+      }
+    }
+  }
+
+  .fixed-footer {
+    position: absolute;
+    padding: 18px 20px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-top: 0.5px solid var(--r-neutral-line, #E0E5EC);
+  }
+}

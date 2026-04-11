@@ -7,6 +7,7 @@ import type {
 } from './types';
 import type { OpenApiService } from '@rabby-wallet/rabby-api';
 import BigNumber from 'bignumber.js';
+import type { GasTokenInfo } from '@/utils/transaction';
 
 export type SignerCtx = {
   fingerprint: string;
@@ -20,6 +21,7 @@ export type SignerCtx = {
   txsCalc: CalcItem[];
   nativeTokenPrice?: number;
   nativeTokenBalance?: string;
+  gasToken?: GasTokenInfo;
   checkErrors?: {
     code: number;
     msg: string;
@@ -43,6 +45,8 @@ export type SignerCtx = {
     gasCostUsd: BigNumber;
     gasCostAmount: BigNumber;
     maxGasCostAmount: BigNumber;
+    gasCostRawAmount?: BigNumber;
+    maxGasCostRawAmount?: BigNumber;
   };
   gasFeeTooHigh?: boolean;
   disabledProcess?: boolean;

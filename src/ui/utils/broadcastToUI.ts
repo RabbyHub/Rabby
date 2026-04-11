@@ -19,6 +19,7 @@ export function onBroadcastToUI<T extends BROADCAST_TO_UI_EVENTS>(
 type AllBackgroundStores = {
   contactBook: import('@/background/service/contactBook').ContactBookStore;
   preference: import('@/background/service/preference').PreferenceStore;
+  currency: import('@/background/service/currency').CurrencyStore;
   whitelist: import('@/background/service/whitelist').WhitelistStore;
 };
 

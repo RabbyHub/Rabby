@@ -57,10 +57,10 @@ export const Header = ({
           canBack={!isTab}
           isShowAccount
           rightSlot={
-            <div className="flex items-center gap-20 absolute top-[50%] translate-y-[-50%] right-0">
+            <div className="flex items-center gap-[16px] absolute top-[50%] translate-y-[-50%] right-0">
               {isTab ? null : (
                 <div
-                  className="text-r-neutral-title1 cursor-pointer"
+                  className="text-r-neutral-title1 cursor-pointer relative hit-slop-8"
                   onClick={() => {
                     onOpenInTab?.();
                   }}
@@ -68,10 +68,9 @@ export const Header = ({
                   <RcIconFullscreen />
                 </div>
               )}
-              <RcIconSwapHistory
-                className="cursor-pointer"
-                onClick={openHistory}
-              />
+              <div className="relative hit-slop-8" onClick={openHistory}>
+                <RcIconSwapHistory className="cursor-pointer" />
+              </div>
             </div>
           }
         >

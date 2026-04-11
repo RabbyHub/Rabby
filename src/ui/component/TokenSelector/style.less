@@ -89,7 +89,7 @@
         @token-icon-margin: 6px;
         @symbol-click-pl: 4px;
         &:nth-child(1) {
-          width: 160px;
+          width: 200px;
           display: flex;
           align-items: center;
           .token-with-chain + div {
@@ -141,6 +141,9 @@
           border-radius: 4px;
           width: min-content;
         }
+        .symbol_click {
+          max-width: fit-content;
+        }
 
         .token_usd_value {
           margin-left: 0px;
@@ -186,7 +189,6 @@
     }
     .token-list__item {
       border: 1px solid transparent;
-      box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
       background: var(--r-neutral-card1, #fff);
       border-radius: 8px;
       margin: 0 20px;

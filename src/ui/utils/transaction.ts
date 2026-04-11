@@ -71,14 +71,11 @@ export function getCustomTxParamsData(
     if (spender.startsWith('0x')) {
       spender = spender.substring(2);
     }
-    const [signature, tokenValue] = data.split(spender);
+    const separator = new RegExp(spender, 'i');
+    const [signature, tokenValue] = data.split(separator);
 
     if (!signature || !tokenValue) {
       throw new Error('Invalid data');
-    } else if (tokenValue.length !== 64) {
-      throw new Error(
-        'Invalid token value; should be exactly 64 hex digits long (u256)'
-      );
     }
 
     let customPermissionValue = calcTokenValue(
@@ -90,10 +87,7 @@ export function getCustomTxParamsData(
       throw new Error('Custom value is larger than u256');
     }
 
-    customPermissionValue = customPermissionValue.padStart(
-      tokenValue.length,
-      '0'
-    );
+    customPermissionValue = customPermissionValue.padStart(64, '0');
     const customTxParamsData = `${signature}${spender}${customPermissionValue}`;
     return customTxParamsData;
   }
@@ -241,7 +235,7 @@ export const waitForTxCompleted = async ({
   return await new Promise((resolve, reject) => {
     const handler = (res) => {
       if (res?.hash === hash) {
-        if (res?.status) {
+        if (res?.status && Number(res.status) !== 0) {
           resolve(true);
         } else {
           reject(new Error('tx failed'));

@@ -19,6 +19,7 @@ export interface Props {
   customizeTokens?: TokenItemProps['item'][];
   isTestnet: boolean;
   selectChainId?: string | null;
+  lpTokenMode?: boolean;
 }
 
 export const HomeTokenList = ({
@@ -31,10 +32,14 @@ export const HomeTokenList = ({
   customizeTokens,
   isTestnet,
   selectChainId,
+  lpTokenMode,
 }) => {
   const totalValue = React.useMemo(() => {
     return list
-      ?.reduce((acc, item) => acc.plus(item._usdValue || 0), new BigNumber(0))
+      ?.reduce(
+        (acc, item) => acc.plus(item.is_core ? item._usdValue || 0 : 0),
+        new BigNumber(0)
+      )
       .toNumber();
   }, [list]);
   const { result: currentList } = useExpandList(list, totalValue);
@@ -60,6 +65,20 @@ export const HomeTokenList = ({
         className="mt-[92px]"
         text={t('page.dashboard.assets.table.noMatch')}
       />
+    );
+  }
+  if (lpTokenMode && !list?.length) {
+    return (
+      <div className="no-token w-full flex flex-col items-center justify-center h-[154px] bg-r-neutral-card1 rounded-[8px]">
+        <img
+          className="w-[72px] h-[72px]"
+          src="/images/nodata-tx.png"
+          alt="no site"
+        />
+        <p className="text-r-neutral-foot text-13 mt-2 text-center mb-0">
+          {t('component.TokenSelector.noLpTokens')}
+        </p>
+      </div>
     );
   }
 

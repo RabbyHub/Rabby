@@ -40,6 +40,7 @@ const Main = styled.div`
 `;
 
 interface Props {
+  children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
   isUnlock?: boolean;

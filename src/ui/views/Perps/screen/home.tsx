@@ -8,15 +8,15 @@ import React, {
 import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { RcIconExternal1CC, RcIconExternalCC } from '@/ui/assets/dashboard';
 import {
   formatUsdValue,
   sleep,
   splitNumberByStep,
   useWallet,
 } from '@/ui/utils';
-import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ReactComponent as RcIconBackTopCC } from '@/ui/assets/perps/IconBackTopCC.svg';
-import perpsBg from '@/ui/assets/perps/perps-bg.svg';
+import { ReactComponent as RcIconHyperLogo } from '@/ui/assets/perps/IconHyperLogo.svg';
 import { AssetPosition, HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { Button, message, Modal } from 'antd';
 import { PerpsLoginPopup } from '../popup/LoginPopup';
@@ -24,7 +24,6 @@ import { PerpsLogoutPopup } from '../popup/LogoutPopup';
 import { usePerpsDeposit } from '../hooks/usePerpsDeposit';
 import { usePerpsState } from '../hooks/usePerpsState';
 import { PerpsLoginContent } from '../components/LoginContent';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import clsx from 'clsx';
 import { PerpsBlueBorderedButton } from '../components/BlueBorderedButton';
 import { PerpsDepositAmountPopup } from '../popup/DepositAmountPopup';
@@ -52,11 +51,16 @@ import * as Sentry from '@sentry/browser';
 import { sortBy } from 'lodash';
 import { RiskLevelPopup } from '../popup/RiskLevelPopup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import stats from '@/stats';
+import { getStatsReportSide } from '../../DesktopPerps/utils';
 import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
+import { OpenProModeEntry } from '../components/OpenProModeEntry';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
-import { BackToTopButton } from '../components/BackToTopButton';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
+import { useScroll } from 'ahooks';
+import { usePerpsAccount } from '../hooks/usePerpsAccount';
+import { PerpsAccountCard } from '../components/PerpsAccountCard';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -67,7 +71,6 @@ export const Perps: React.FC = () => {
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
   const {
     positionAndOpenOrders,
-    accountSummary,
     currentPerpsAccount,
     isLogin,
     marketData,
@@ -100,6 +103,9 @@ export const Perps: React.FC = () => {
   const [openFromSource, setOpenFromSource] = useState<
     'openPosition' | 'searchPerps'
   >('openPosition');
+  const [openPositionDirection, setOpenPositionDirection] = useState<
+    'Long' | 'Short'
+  >('Long');
   const {
     miniSignTx,
     clearMiniSignTx,
@@ -119,18 +125,10 @@ export const Perps: React.FC = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
-  const [showBackToTop, setShowBackToTop] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
   const headerInitialTopRef = useRef<number>(0);
-
-  useEffect(() => {
-    wallet.getHasDoneNewUserProcess().then((hasDoneNewUserProcess) => {
-      if (!hasDoneNewUserProcess) {
-        setNewUserProcessVisible(true);
-      }
-    });
-  }, [wallet]);
+  const scroll = useScroll(scrollContainerRef);
 
   useEffect(() => {
     const scrollContainer = scrollContainerRef.current;
@@ -157,8 +155,6 @@ export const Perps: React.FC = () => {
         stickyRect.top <= containerRect.top ||
         (headerInitialTopRef.current > 0 &&
           scrollTop >= headerInitialTopRef.current);
-
-      setShowBackToTop(isSticky);
     };
 
     scrollContainer.addEventListener('scroll', handleScroll);
@@ -169,22 +165,8 @@ export const Perps: React.FC = () => {
     };
   }, [isInitialized]);
 
-  const handleBackToTop = useCallback(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (scrollContainer) {
-      scrollContainer.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-      });
-    }
-  }, []);
-
   useEffect(() => {
-    if (isLogin) {
-      // dispatch.perps.fetchClearinghouseState();
-      dispatch.perps.fetchPositionAndOpenOrders();
-      // dispatch.perps.fetchUserHistoricalOrders();
-    }
+    dispatch.perps.initFavoritedCoins(undefined);
   }, []);
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
@@ -195,12 +177,6 @@ export const Perps: React.FC = () => {
     return miniSignTx || [];
   }, [miniSignTx]);
 
-  const positionAllPnl = useMemo(() => {
-    return positionAndOpenOrders.reduce((acc, asset) => {
-      return acc + Number(asset.position.unrealizedPnl || 0);
-    }, 0);
-  }, [positionAndOpenOrders]);
-
   const goBack = () => {
     if (history.length > 1) {
       history.goBack();
@@ -209,14 +185,22 @@ export const Perps: React.FC = () => {
     history.push('/dashboard');
   };
 
-  const withdrawDisabled = useMemo(
-    () => !Number(accountSummary?.withdrawable || 0),
-    [accountSummary?.withdrawable]
-  );
+  const { accountValue, availableBalance } = usePerpsAccount();
+
+  const favoritedCoins = useRabbySelector((s) => s.perps.favoritedCoins);
+
+  const toggleFavorite = useMemoizedFn((coin: string) => {
+    dispatch.perps.toggleFavoriteCoin(coin);
+  });
 
   const marketSectionList = useMemo(() => {
-    return sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
-  }, [marketData]);
+    const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
+    const favorites = sorted.filter((item) =>
+      favoritedCoins.includes(item.name)
+    );
+    const others = sorted.filter((item) => !favoritedCoins.includes(item.name));
+    return [...favorites, ...others];
+  }, [marketData, favoritedCoins]);
 
   // Calculate real-time popup data based on selected coin
   const riskPopupData = useMemo(() => {
@@ -285,6 +269,7 @@ export const Perps: React.FC = () => {
               price: avgPx,
             }),
           });
+          return filled as { totalSz: string; avgPx: string; oid: number };
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
           message.error({
@@ -333,12 +318,34 @@ export const Perps: React.FC = () => {
       await handleActionApproveStatus();
       const sdk = getPerpsSDK();
       for (const item of positionAndOpenOrders) {
-        await handleClosePosition({
+        const isBuy = Number(item.position.szi || 0) > 0;
+        const closePrice = marketDataMap[item.position.coin]?.markPx || '0';
+        const res = await handleClosePosition({
           coin: item.position.coin,
           size: Math.abs(Number(item.position.szi || 0)).toString() || '0',
-          direction: Number(item.position.szi || 0) > 0 ? 'Long' : 'Short',
-          price: marketDataMap[item.position.coin.toUpperCase()]?.markPx || '0',
+          direction: isBuy ? 'Long' : 'Short',
+          price: closePrice,
         });
+        if (res) {
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'popup close all position',
+            leverage: item.position.leverage.value.toString(),
+            trade_side: getStatsReportSide(!isBuy, true),
+            margin_mode:
+              item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
+            coin: item.position.coin,
+            size: res.totalSz,
+            price: res.avgPx,
+            trade_usd_value: new BigNumber(res.avgPx)
+              .times(res.totalSz)
+              .toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+        }
         await sleep(10);
       }
       dispatch.perps.fetchClearinghouseState();
@@ -364,18 +371,24 @@ export const Perps: React.FC = () => {
       maskClosable: true,
       centered: true,
       title: null,
-      bodyStyle: {
-        padding: 0,
-      },
       className: clsx(
         'perps-bridge-swap-modal perps-close-all-position-modal',
         isDarkTheme
           ? 'perps-bridge-swap-modal-dark'
           : 'perps-bridge-swap-modal-light'
       ),
+      bodyStyle: {
+        padding: 0,
+      },
       content: (
         <>
-          <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
+          <div
+            className={clsx(
+              'flex items-center justify-center flex-col gap-12',
+              'bg-r-neutral-bg2 rounded-lg',
+              'px-[16px] pt-[20px] pb-[24px]'
+            )}
+          >
             <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
               {t('page.perps.closeAllPopup.title')}
             </div>
@@ -436,112 +449,41 @@ export const Perps: React.FC = () => {
         }
         showCurrentAccount={currentPerpsAccount || undefined}
       >
-        {t('page.perps.title')}
+        <span className="flex items-center justify-center gap-6">
+          <RcIconHyperLogo className="w-[20px] h-[20px]" />
+          {t('page.perps.title')}
+        </span>
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
       <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
         {!isInitialized ? (
           <PerpsLoading />
-        ) : isLogin ? (
-          <div className="mx-20">
-            <div
-              className="bg-r-neutral-card1 rounded-[8px] p-[16px] "
-              style={{
-                background: `no-repeat top 16px right 16px url(${perpsBg})`,
-              }}
-            >
-              <div className="flex items-end gap-[4px]">
-                <div className="text-[28px] leading-[33px] font-bold text-r-neutral-title-1">
-                  {formatUsdValue(
-                    Number(accountSummary?.accountValue || 0),
-                    BigNumber.ROUND_DOWN
-                  )}
-                </div>
-                {Boolean(positionAndOpenOrders?.length) && (
-                  <div
-                    className={clsx(
-                      'text-[15px] leading-[18px] font-medium pb-[5px]',
-                      positionAllPnl >= 0
-                        ? 'text-r-green-default'
-                        : 'text-r-red-default'
-                    )}
-                  >
-                    {positionAllPnl >= 0 ? '+' : '-'}$
-                    {splitNumberByStep(Math.abs(positionAllPnl).toFixed(2))}
-                  </div>
-                )}
-              </div>
-              <div className="text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]">
-                {t('page.perps.availableBalance', {
-                  balance: formatUsdValue(
-                    Number(accountSummary?.withdrawable || 0),
-                    BigNumber.ROUND_DOWN
-                  ),
-                })}
-              </div>
-              <div className="w-full flex gap-12 items-center justify-center relative mt-24">
-                <TooltipWithMagnetArrow
-                  className="rectangle w-[max-content]"
-                  visible={withdrawDisabled ? undefined : false}
-                  title={t('page.gasAccount.noBalance')}
-                >
-                  <div className="w-[158px]">
-                    <PerpsBlueBorderedButton
-                      block
-                      className={clsx(
-                        'h-[36px] text-[13px] leading-[16px]',
-                        withdrawDisabled && 'opacity-50 cursor-not-allowed'
-                      )}
-                      onClick={() => {
-                        if (currentPerpsAccount) {
-                          dispatch.account.changeAccountAsync(
-                            currentPerpsAccount
-                          );
-                        }
-                        setPopupType('withdraw');
-                        setAmountVisible(true);
-                      }}
-                      disabled={withdrawDisabled}
-                    >
-                      {t('page.gasAccount.withdraw')}
-                    </PerpsBlueBorderedButton>
-                  </div>
-                </TooltipWithMagnetArrow>
-                <Button
-                  block
-                  size="large"
-                  type="primary"
-                  className="h-[36px] text-r-neutral-title2 text-[13px] leading-[16px] font-medium w-[158px]"
-                  onClick={() => {
-                    if (currentPerpsAccount) {
-                      dispatch.account.changeAccountAsync(currentPerpsAccount);
-                    }
-                    setPopupType('deposit');
-                    setAmountVisible(true);
-                  }}
-                >
-                  {t('page.gasAccount.deposit')}
-                </Button>
-              </div>
-            </div>
-          </div>
         ) : (
           <div className="mx-20">
-            <PerpsLoginContent
-              onLearnAboutPerps={() => {
-                setNewUserProcessVisible(true);
+            <PerpsAccountCard
+              currentPerpsAccount={currentPerpsAccount}
+              onDeposit={() => {
+                setPopupType('deposit');
+                setAmountVisible(true);
               }}
-              clickLoginBtn={() => {
-                setLoginVisible(true);
+              onWithdraw={() => {
+                setPopupType('withdraw');
+                setAmountVisible(true);
+              }}
+              onLearnMore={() => {
+                setNewUserProcessVisible(true);
               }}
             />
           </div>
         )}
 
+        <OpenProModeEntry />
+
         {isInitialized && Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20 mx-20">
             <div className="flex items-center mb-8 justify-between">
-              <div className="text-13 font-medium text-r-neutral-title-1">
+              <div className="text-13 font-medium text-r-neutral-title-1 flex items-center gap-6">
+                <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
                 {t('page.perps.positions')}
               </div>
               <div
@@ -564,9 +506,7 @@ export const Perps: React.FC = () => {
                     key={asset.position.coin}
                     position={asset.position}
                     openOrders={asset.openOrders}
-                    marketData={
-                      marketDataMap[asset.position.coin.toUpperCase()]
-                    }
+                    marketData={marketDataMap[asset.position.coin]}
                     handleClosePosition={(position) => {
                       setClosePosition(position);
                       setClosePositionVisible(true);
@@ -606,27 +546,43 @@ export const Perps: React.FC = () => {
                     );
                   }}
                   hasPosition={positionCoinSet.has(item.name)}
+                  isFavorited={favoritedCoins.includes(item.name)}
+                  onToggleFavorite={toggleFavorite}
                 />
               ))}
             </div>
           </div>
         )}
-
-        <BackToTopButton visible={showBackToTop} onClick={handleBackToTop} />
-
-        {isLogin && hasPermission && (
-          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20">
+        <div className="h-[96px]"></div>
+        {isLogin && (
+          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20 flex gap-12">
             <Button
               block
-              type="primary"
+              disabled={!hasPermission}
+              size="large"
+              className="h-[48px] text-white text-15 font-medium rounded-[8px] border-none"
+              style={{ backgroundColor: 'var(--r-green-default, #2abb7f)' }}
               onClick={() => {
+                setOpenPositionDirection('Long');
                 setSearchPopupVisible(true);
                 setOpenFromSource('openPosition');
               }}
-              size="large"
-              className="h-[48px] bg-blue-500 border-blue-500 text-white text-15 font-medium rounded-[8px]"
             >
-              {t('page.perps.searchPerpsPopup.openPosition')}
+              {t('page.perps.long')}
+            </Button>
+            <Button
+              block
+              disabled={!hasPermission}
+              size="large"
+              className="h-[48px] text-white text-15 font-medium rounded-[8px] border-none"
+              style={{ backgroundColor: 'var(--r-red-default, #e34935)' }}
+              onClick={() => {
+                setOpenPositionDirection('Short');
+                setSearchPopupVisible(true);
+                setOpenFromSource('openPosition');
+              }}
+            >
+              {t('page.perps.short')}
             </Button>
           </div>
         )}
@@ -667,8 +623,8 @@ export const Perps: React.FC = () => {
         handleWithdraw={handleWithdraw}
         clearMiniSignTx={clearMiniSignTx}
         updateMiniSignTx={updateMiniSignTx}
-        accountValue={accountSummary?.accountValue || '0'}
-        availableBalance={accountSummary?.withdrawable || '0'}
+        accountValue={accountValue.toString() || '0'}
+        availableBalance={availableBalance.toString() || '0'}
         onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();
@@ -707,10 +663,6 @@ export const Perps: React.FC = () => {
         visible={newUserProcessVisible}
         onCancel={async () => {
           setNewUserProcessVisible(false);
-          const hasDoneNewUserProcess = await wallet.getHasDoneNewUserProcess();
-          if (!hasDoneNewUserProcess) {
-            history.push('/dashboard');
-          }
         }}
         onComplete={() => {
           wallet.setHasDoneNewUserProcess(true);
@@ -725,9 +677,17 @@ export const Perps: React.FC = () => {
         marketData={marketData}
         positionAndOpenOrders={positionAndOpenOrders}
         onSelect={(coin) => {
-          history.push(`/perps/single-coin/${coin}?openPosition=true`);
+          const dirParam =
+            openFromSource === 'openPosition'
+              ? `&direction=${openPositionDirection}`
+              : '';
+          history.push(
+            `/perps/single-coin/${coin}?openPosition=true${dirParam}`
+          );
         }}
         openFromSource={openFromSource}
+        favoritedCoins={favoritedCoins}
+        onToggleFavorite={toggleFavorite}
       />
       <PerpsModal
         visible={deleteAgentModalVisible}
@@ -742,9 +702,7 @@ export const Perps: React.FC = () => {
           direction={riskPopupData.direction}
           pxDecimals={riskPopupData?.pxDecimals || 2}
           liquidationPrice={riskPopupData.liquidationPrice}
-          markPrice={Number(
-            marketDataMap[riskPopupCoin.toUpperCase()]?.markPx || 0
-          )}
+          markPrice={Number(marketDataMap[riskPopupCoin]?.markPx || 0)}
           onClose={() => {
             setRiskPopupVisible(false);
             setRiskPopupCoin('');

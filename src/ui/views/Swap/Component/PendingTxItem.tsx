@@ -90,7 +90,7 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
         className="rectangle w-[max-content]"
       >
         <img
-          className="w-12 h-12 absolute right-[-4px] top-[-4px] rounded-full"
+          className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
           src={chainItem?.logo || IconUnknown}
           alt={chainItem?.name}
         />
@@ -286,7 +286,7 @@ export const PendingTxItem = forwardRef<
                         className="rectangle w-[max-content]"
                       >
                         <img
-                          className="w-12 h-12 absolute right-[-4px] top-[-4px] rounded-full"
+                          className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
                           src={sendChainItem?.logo || IconUnknown}
                           alt={sendChainItem?.name}
                         />

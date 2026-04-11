@@ -7,8 +7,10 @@ import { useEffect, useMemo, useState } from 'react';
 
 export const useTokenAndDIFIData = ({
   selectChainId,
+  allTokenMode,
 }: {
   selectChainId?: string;
+  allTokenMode?: boolean;
 }) => {
   const [lpTokenMode, setLpTokenMode] = useState(false);
 
@@ -20,19 +22,24 @@ export const useTokenAndDIFIData = ({
 
   const {
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokens: tokenList,
     hasTokens,
     removeProtocol,
     portfolioNetWorth,
+    refreshPositions,
+    refreshTokens,
+    refreshPortfolios,
   } = useQueryProjects(
     currentAccount?.address,
     false,
     true,
     false,
     lpTokenMode,
-    true
+    true,
+    allTokenMode
   );
 
   const {
@@ -46,11 +53,10 @@ export const useTokenAndDIFIData = ({
   }, [portfolioNetWorth, appPortfolioNetWorth]);
 
   const displayTokenList = useMemo(() => {
-    const result = tokenList.filter((item) => item.is_verified); // only show verified tokens
     if (selectChainId) {
-      return result.filter((item) => item.chain === selectChainId);
+      return tokenList.filter((item) => item.chain === selectChainId);
     }
-    return result;
+    return tokenList;
   }, [tokenList, selectChainId]);
 
   const displayPortfolios = useMemo(() => {
@@ -93,6 +99,7 @@ export const useTokenAndDIFIData = ({
   return {
     // useQueryProjects
     isTokensLoading,
+    isAllTokenLoading,
     isPortfoliosLoading,
     portfolios,
     tokenList,
@@ -113,5 +120,8 @@ export const useTokenAndDIFIData = ({
     setLpTokenMode,
     appIds,
     isNoResults,
+    refreshPositions,
+    refreshTokens,
+    refreshPortfolios,
   };
 };

@@ -141,6 +141,30 @@
       }
     }
   }
+  .setting-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    &-key {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--rb-neutral-line);
+      color: var(--r-neutral-body);
+      font-size: 14px;
+      line-height: 20px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    &-text {
+      font-size: 14px;
+      line-height: 16px;
+      color: var(--r-neutral-foot, #6a7587);
+      white-space: nowrap;
+    }
+  }
   .popup-feedback-inner,
   .recent-connections-popup,
   .resolve-conflict-modal,

@@ -78,6 +78,7 @@ import {
   removeLeadingZeroes,
 } from '@/background/utils/7702';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
+import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
 
 const reportSignText = (params: {
   method: string;
@@ -274,7 +275,13 @@ class ProviderController extends BaseController {
 
     const _account = req.account;
     const account = _account ? [_account.address.toLowerCase()] : [];
-    sessionService.broadcastEvent('accountsChanged', account, origin);
+    sessionService.broadcastEvent(
+      'accountsChanged',
+      account,
+      origin,
+      undefined,
+      req.isFromDesktopDapp
+    );
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
       const chain = findChain({ enum: connectSite.chain });
@@ -437,6 +444,10 @@ class ProviderController extends BaseController {
 
     let is1559 = is1559Tx(approvalRes);
     const is7702 = is7702Tx(approvalRes);
+
+    if ((eip7702Revoke || is7702) && origin !== INTERNAL_REQUEST_ORIGIN) {
+      throw new Error('not support 7702');
+    }
 
     if (is7702 && !(eip7702Revoke || isSpeedUp)) {
       // todo
@@ -915,12 +926,11 @@ class ProviderController extends BaseController {
               adoptBE7702Params();
               const res = await openapiService.submitTxV2(params);
               if (res.access_token) {
-                gasAccountService.setGasAccountSig(
+                void handleGasAccountLoginSuccess(
                   res.access_token,
                   currentAccount
-                );
-                eventBus.emit(EVENTS.broadcastToUI, {
-                  method: EVENTS.GAS_ACCOUNT.LOG_IN,
+                ).catch((error) => {
+                  console.error('[handleGasAccountLoginSuccess] failed', error);
                 });
               }
               hash = res.tx_id;

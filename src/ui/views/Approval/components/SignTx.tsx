@@ -4,8 +4,9 @@ import {
   checkGasAndNonce,
   convertLegacyTo1559,
   explainGas,
+  GasTokenInfo,
+  getGasTokenBalance,
   getKRCategoryByType,
-  getNativeTokenBalance,
   getPendingTxs,
   is7702Tx,
   validateGasPriceRange,
@@ -67,11 +68,7 @@ import {
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
-import {
-  MultiAction,
-  TransactionAction,
-  TxPushType,
-} from '@rabby-wallet/rabby-api/dist/types';
+import { MultiAction, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { findChain, isTestnet } from '@/utils/chain';
@@ -95,6 +92,7 @@ import { EIP7702Warning } from './EIP7702Warning';
 import { getEIP7702MiniGasLimit } from '@/background/utils/7702';
 import { MultiActionProps } from './TypedDataActions';
 import { getCexInfo } from '@/ui/models/exchange';
+import { isTempoChain } from '@/utils/tempo';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -116,8 +114,8 @@ const normalizeHex = (value: string | number) => {
   return value;
 };
 
-export const normalizeTxParams = (tx) => {
-  const copy = tx;
+export const normalizeTxParams = (tx, isDapp?: boolean) => {
+  let copy = tx;
   try {
     if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
       copy.nonce = normalizeHex(copy.nonce);
@@ -157,6 +155,19 @@ export const normalizeTxParams = (tx) => {
       copy.authorizationList = copy.authorizationList.map((item) => {
         return normalizeHex(item);
       });
+    }
+
+    if (isDapp) {
+      copy = omit(copy, [
+        'isSpeedUp',
+        'isCancel',
+        'isSend',
+        'isSwap',
+        'isBridge',
+        'swapPreferMEVGuarded',
+        'isViewGnosisSafe',
+        'reqId',
+      ]);
     }
   } catch (e) {
     Sentry.captureException(
@@ -227,6 +238,7 @@ const useExplainGas = ({
   gasLimit,
   isReady,
   account,
+  gasTokenDecimals,
 }: {
   gasUsed: number | string;
   gasPrice: number | string;
@@ -237,11 +249,14 @@ const useExplainGas = ({
   gasLimit: string | undefined;
   isReady: boolean;
   account: Account;
+  gasTokenDecimals: number;
 }) => {
   const [result, setResult] = useState({
     gasCostUsd: new BigNumber(0),
     gasCostAmount: new BigNumber(0),
     maxGasCostAmount: new BigNumber(0),
+    gasCostRawAmount: new BigNumber(0),
+    maxGasCostRawAmount: new BigNumber(0),
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -256,6 +271,7 @@ const useExplainGas = ({
         tx,
         gasLimit,
         account,
+        gasTokenDecimals,
       }).then((data) => {
         setResult(data);
         setIsLoading(false);
@@ -270,6 +286,7 @@ const useExplainGas = ({
     tx,
     gasLimit,
     isReady,
+    gasTokenDecimals,
   ]);
 
   return useMemo(() => {
@@ -292,6 +309,8 @@ const useCheckGasAndNonce = ({
   isSpeedUp,
   isGnosisAccount,
   nativeTokenBalance,
+  gasTokenDecimals,
+  checkTxValueInBalance,
 }: Parameters<typeof checkGasAndNonce>[0]) => {
   return useMemo(
     () =>
@@ -307,6 +326,8 @@ const useCheckGasAndNonce = ({
         isSpeedUp,
         isGnosisAccount,
         nativeTokenBalance,
+        gasTokenDecimals,
+        checkTxValueInBalance,
       }),
     [
       recommendGasLimit,
@@ -319,6 +340,8 @@ const useCheckGasAndNonce = ({
       isSpeedUp,
       isGnosisAccount,
       nativeTokenBalance,
+      gasTokenDecimals,
+      checkTxValueInBalance,
     ]
   );
 };
@@ -599,10 +622,20 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     safeTxGas,
     authorizationList,
   } = useMemo(() => {
-    return normalizeTxParams(params.data[0]);
+    return normalizeTxParams(
+      params.data[0],
+      origin !== INTERNAL_REQUEST_ORIGIN
+    );
   }, [params.data]);
 
   const is7702 = is7702Tx({ authorizationList } as any);
+
+  if (
+    (is7702 || params?.$ctx?.eip7702Revoke) &&
+    origin !== INTERNAL_REQUEST_ORIGIN
+  ) {
+    return <EIP7702Warning />;
+  }
 
   if (is7702 && !(isSpeedUp || params?.$ctx?.eip7702Revoke)) {
     return <EIP7702Warning />;
@@ -661,7 +694,16 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const [safeInfo, setSafeInfo] = useState<BasicSafeInfo | null>(null);
   const [coboArgusInfo, setCoboArgusInfo] = useState<BasicCoboArgusInfo>();
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
-  const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
+  const [nativeTokenBalance, setNativeTokenBalance] = useState('0');
+  const [gasToken, setGasToken] = useState<GasTokenInfo>({
+    tokenId: chain?.nativeTokenAddress || '',
+    symbol: chain?.nativeTokenSymbol || '',
+    decimals: chain?.nativeTokenDecimals || 18,
+    logoUrl: chain?.nativeTokenLogo || '',
+  });
+  const checkTxValueInBalance = useMemo(() => !isTempoChain(chain?.serverId), [
+    chain?.serverId,
+  ]);
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const [multiActionList, setMultiActionList] = useState<
@@ -702,6 +744,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     gasLimit,
     isReady,
     account: currentAccount,
+    gasTokenDecimals: gasToken.decimals || 18,
   });
 
   const checkErrors = useCheckGasAndNonce({
@@ -716,6 +759,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     isGnosisAccount: isGnosisAccount || isCoboArugsAccount,
     nativeTokenBalance,
     recommendGasLimitRatio,
+    gasTokenDecimals: gasToken.decimals || 18,
+    checkTxValueInBalance,
   });
 
   const isGasNotEnough = useMemo(() => {
@@ -889,6 +934,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         explainTx: res,
         needRatio,
         wallet,
+        gasTokenDecimals: gasToken.decimals || 18,
+        checkTxValueInBalance,
       });
       setGasLimit(gasLimit);
       setRecommendGasLimitRatio(recommendGasLimitRatio);
@@ -1311,7 +1358,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (support1559) {
       transaction.maxFeePerGas = tx.maxFeePerGas;
       transaction.maxPriorityFeePerGas =
-        maxPriorityFee <= 0
+        maxPriorityFee < 0
           ? tx.maxFeePerGas
           : intToHex(Math.round(maxPriorityFee));
     } else {
@@ -1637,7 +1684,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }
     }
     try {
-      const pendingTxs = await Safe.getPendingTransactions(
+      const pendingTxs = await wallet.getSafePendingTransactions(
         currentAccount.address,
         networkId,
         safeInfo.nonce
@@ -1794,13 +1841,14 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         )
       );
       try {
-        const balance = await getNativeTokenBalance({
+        const balanceInfo = await getGasTokenBalance({
           wallet,
           chainId,
           address: currentAccount.address,
         });
 
-        setNativeTokenBalance(balance);
+        setNativeTokenBalance(balanceInfo.rawBalance);
+        setGasToken(balanceInfo.token);
       } catch (e) {
         if (await wallet.hasCustomRPC(chain.enum)) {
           triggerCustomRPCErrorModal();
@@ -2200,7 +2248,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           <Drawer
             placement="bottom"
             height="400px"
-            className="gnosis-drawer is-support-darkmode"
+            className="gnosis-drawer custom-popup is-support-darkmode"
             visible={drawerVisible}
             onClose={() => setDrawerVisible(false)}
             maskClosable
@@ -2320,6 +2368,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                     wallet,
                     gasLimit,
                     account: currentAccount,
+                    gasTokenDecimals: gasToken.decimals || 18,
                   });
                 }}
                 recommendGasLimit={recommendGasLimit}
@@ -2336,6 +2385,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                 errors={checkErrors}
                 engineResults={engineResults}
                 nativeTokenBalance={nativeTokenBalance}
+                gasToken={gasToken}
+                checkTxValueInBalance={checkTxValueInBalance}
                 gasPriceMedian={gasPriceMedian}
               />
             }

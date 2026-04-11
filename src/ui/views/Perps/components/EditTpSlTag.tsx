@@ -14,6 +14,7 @@ import { AssetPriceInfo } from './AssetPriceInfo';
 import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 interface EditTpSlTagProps {
   coin: string;
   handleActionApproveStatus?: () => Promise<void>;
@@ -23,6 +24,7 @@ interface EditTpSlTagProps {
   direction: 'Long' | 'Short';
   size: number;
   margin: number;
+  leverage: number;
   liqPrice: number;
   pxDecimals: number;
   szDecimals: number;
@@ -34,6 +36,13 @@ interface EditTpSlTagProps {
   handleCancelAutoClose: () => Promise<void>;
 }
 
+const PRICE_GAIN_QUICK_OPTIONS = [
+  { label: '5%', value: 5 },
+  { label: '10%', value: 10 },
+  { label: '25%', value: 25 },
+  { label: '50%', value: 50 },
+];
+
 export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   coin,
   entryPrice,
@@ -42,6 +51,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   direction,
   size,
   margin,
+  leverage,
   liqPrice,
   pxDecimals,
   szDecimals,
@@ -60,6 +70,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   const [inputFocused, setInputFocused] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const inputRef = React.useRef<any>(null);
+  const [activeOption, setActiveOption] = React.useState<number | null>(null);
 
   const hasPrice = initTpOrSlPrice && Number(initTpOrSlPrice) > 0;
   const disableEdit = !size || !margin;
@@ -78,6 +89,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
       validatePriceInput(value, szDecimals)
     ) {
       setAutoClosePrice(value);
+      setActiveOption(null);
     }
   });
 
@@ -88,10 +100,8 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     }
     const costPrice =
       type === 'openPosition' ? markPrice : entryPrice || markPrice;
-    const pnlUsdValue =
-      direction === 'Long'
-        ? (Number(autoClosePrice) - costPrice) * size
-        : (costPrice - Number(autoClosePrice)) * size;
+    const withSize = direction === 'Long' ? 1 : -1;
+    const pnlUsdValue = (Number(autoClosePrice) - costPrice) * size * withSize;
     return pnlUsdValue;
   }, [autoClosePrice, markPrice, size, type, direction, entryPrice]);
 
@@ -100,8 +110,12 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   }, [calculatedPnl]);
 
   const gainPct = useMemo(() => {
-    return Number(calculatedPnl) / margin;
-  }, [calculatedPnl, margin]);
+    const costPrice =
+      type === 'openPosition' ? markPrice : entryPrice || markPrice;
+    const costValue = (size * costPrice) / leverage;
+    if (!costValue) return 0;
+    return Number(calculatedPnl) / costValue;
+  }, [calculatedPnl, size, entryPrice, markPrice, leverage, type]);
 
   // 验证价格输入
   const priceValidation = React.useMemo(() => {
@@ -182,16 +196,14 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     actionType,
   ]);
 
-  const handleInitGainPct = useMemoizedFn(() => {
-    // console.log('szDecimals', szDecimals);
-    const pct = actionType === 'tp' ? 5.0 : 4.5;
-    const pctValue = Number(pct) / 100;
-    const costValue = margin;
+  const handleQuickOptionPress = useMemoizedFn((pct: number) => {
+    setActiveOption(pct);
+    const pctValue = pct / 100;
+    const costPrice =
+      type === 'openPosition' ? markPrice : entryPrice || markPrice;
+    const costValue = (size * costPrice) / leverage;
     const pnlUsdValue = costValue * pctValue;
-    const priceDifference = Number((pnlUsdValue / size).toFixed(pxDecimals));
-
-    // make difference to mark price avoid error from hy validator
-    const costPrice = markPrice;
+    const priceDifference = pnlUsdValue / size;
 
     if (actionType === 'tp') {
       const newPrice =
@@ -199,14 +211,14 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
           ? costPrice + priceDifference
           : costPrice - priceDifference;
       const newPriceStr = formatTpOrSlPrice(newPrice, szDecimals);
-      handlePriceChange(newPriceStr);
+      setAutoClosePrice(newPriceStr);
     } else {
       const newPrice =
         direction === 'Long'
           ? costPrice - priceDifference
           : costPrice + priceDifference;
       const newPriceStr = formatTpOrSlPrice(newPrice, szDecimals);
-      handlePriceChange(newPriceStr);
+      setAutoClosePrice(newPriceStr);
     }
   });
 
@@ -215,9 +227,12 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     if (modalVisible) {
       if (initTpOrSlPrice) {
         setAutoClosePrice(initTpOrSlPrice);
+        setActiveOption(null);
       } else {
         if (type === 'openPosition') {
-          handleInitGainPct();
+          handleQuickOptionPress(5);
+        } else {
+          setActiveOption(null);
         }
       }
       const timer = setTimeout(() => {
@@ -226,6 +241,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
       return () => clearTimeout(timer);
     } else {
       setAutoClosePrice('');
+      setActiveOption(null);
     }
   }, [modalVisible, initTpOrSlPrice, type]);
 
@@ -312,7 +328,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
           {/* Header */}
           <div className="mb-20 text-center">
             <div className="text-20 font-medium text-r-neutral-title-1 mb-4">
-              {direction} {coin}-USD
+              {direction} {formatPerpsCoin(coin)}-USD
             </div>
             <div className={clsx('text-14 text-rb-neutral-secondary')}>
               {type === 'openPosition' ? (
@@ -347,6 +363,26 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                 : t(
                     'page.perpsDetail.PerpsAutoCloseModal.stopLossWhenPriceAbove'
                   )}
+            </div>
+
+            {/* Quick Option Buttons */}
+            <div className="flex gap-8 mb-12">
+              {PRICE_GAIN_QUICK_OPTIONS.map((option) => (
+                <div
+                  key={option.value}
+                  className={clsx(
+                    'flex-1 h-[40px] flex items-center justify-center rounded-[6px] cursor-pointer text-[14px] font-medium',
+                    'border border-solid',
+                    activeOption === option.value
+                      ? 'bg-r-blue-light1 border-rabby-blue-default text-r-blue-default'
+                      : 'bg-r-neutral-line border-transparent text-r-neutral-body hover:border-rabby-blue-default'
+                  )}
+                  onClick={() => handleQuickOptionPress(option.value)}
+                >
+                  {actionType === 'tp' ? '+' : '-'}
+                  {option.label}
+                </div>
+              ))}
             </div>
 
             <div

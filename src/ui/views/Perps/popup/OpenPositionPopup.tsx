@@ -7,18 +7,24 @@ import clsx from 'clsx';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+import { ReactComponent as RcIconModeSwitch } from 'ui/assets/perps/IconModeSwitch.svg';
 import { ReactComponent as RcIconPerpsLeveragePlus } from 'ui/assets/perps/ImgLeveragePlus.svg';
 import { ReactComponent as RcIconPerpsLeverageMinus } from 'ui/assets/perps/ImgLeverageMinus.svg';
 import { useMemoizedFn } from 'ahooks';
 import { calLiquidationPrice, formatPercent } from '../utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { PERPS_MAX_NTL_VALUE } from '../constants';
+import { PERPS_EXCHANGE_FEE_NUMBER, PERPS_MAX_NTL_VALUE } from '../constants';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { AssetPriceInfo } from '../components/AssetPriceInfo';
 import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { MarginInput } from '../components/MarginInput';
 import { LeverageInput } from '../components/LeverageInput';
+import { format } from 'path';
+import { formatPerpsCoin, getStatsReportSide } from '../../DesktopPerps/utils';
+import stats from '@/stats';
+import { useRabbySelector } from '@/ui/store';
+import { MarginModePopup } from './MarginModePopup';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -34,6 +40,9 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
   onCancel: () => void;
   onConfirm: () => void;
+  marginMode: 'cross' | 'isolated';
+  onMarginModeChange?: (mode: 'cross' | 'isolated') => void;
+  hasPosition?: boolean;
   handleOpenPosition: (params: {
     coin: string;
     size: string;
@@ -42,6 +51,7 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
     midPx: string;
     tpTriggerPx?: string;
     slTriggerPx?: string;
+    marginMode: 'cross' | 'isolated';
   }) => Promise<
     | {
         oid: number;
@@ -68,8 +78,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   handleOpenPosition,
   currentAssetCtx,
   activeAssetCtx,
+  marginMode,
+  onMarginModeChange,
+  hasPosition,
 }) => {
   const { t } = useTranslation();
+  const perpsAccount = useRabbySelector(
+    (state) => state.perps.currentPerpsAccount
+  );
   const [isReviewMode, setIsReviewMode] = React.useState(false);
 
   const [direction, setDirection] = React.useState<'Long' | 'Short'>(
@@ -83,6 +99,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
   const [slTriggerPx, setSlTriggerPx] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [marginModeModalVisible, setMarginModeModalVisible] = React.useState(
+    false
+  );
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   React.useEffect(() => {
@@ -122,7 +141,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   }, [markPrice, leverage, leverageRange, margin, tradeSize]);
 
   const bothFee = React.useMemo(() => {
-    return providerFee;
+    return providerFee + PERPS_EXCHANGE_FEE_NUMBER;
   }, [providerFee]);
 
   // 验证 margin 输入
@@ -212,8 +231,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   }, [visible]);
 
   React.useEffect(() => {
-    setDirection(_direction);
-  }, [_direction]);
+    if (visible) {
+      setDirection(_direction);
+    }
+  }, [visible, _direction]);
 
   const handleReview = () => {
     setIsReviewMode(true);
@@ -244,7 +265,61 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       midPx: markPrice.toString(),
       tpTriggerPx: tpTriggerPx ? tpTriggerPx : undefined,
       slTriggerPx: slTriggerPx ? slTriggerPx : undefined,
+      marginMode,
     });
+    if (res) {
+      const { totalSz, avgPx } = res;
+      const isBuy = direction === 'Long';
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: perpsAccount?.address || '',
+        trade_type: 'popup open position',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, false),
+        margin_mode: marginMode,
+        coin,
+        size: totalSz,
+        price: avgPx,
+        trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: perpsAccount?.type || '',
+      });
+      if (tpTriggerPx) {
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: perpsAccount?.address || '',
+          trade_type: 'popup open position tp',
+          leverage: leverage.toString(),
+          trade_side: getStatsReportSide(!isBuy, true),
+          margin_mode: marginMode,
+          coin,
+          size: totalSz,
+          price: tpTriggerPx,
+          trade_usd_value: new BigNumber(tpTriggerPx).times(totalSz).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: perpsAccount?.type || '',
+        });
+      }
+      if (slTriggerPx) {
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: perpsAccount?.address || '',
+          trade_type: 'popup open position sl',
+          leverage: leverage.toString(),
+          trade_side: getStatsReportSide(!isBuy, true),
+          margin_mode: 'isolated',
+          coin,
+          size: totalSz,
+          price: slTriggerPx,
+          trade_usd_value: new BigNumber(slTriggerPx).times(totalSz).toFixed(2),
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: perpsAccount?.type || '',
+        });
+      }
+    }
     setLoading(false);
     onConfirm();
     return res;
@@ -302,6 +377,19 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           errorMessage={
             marginValidation.error ? marginValidation.errorMessage : null
           }
+          titleExtra={
+            <span
+              className="ml-8 text-12 text-r-blue-default bg-r-blue-light1 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
+              onClick={() => {
+                setMarginModeModalVisible(true);
+              }}
+            >
+              {marginMode === 'cross'
+                ? t('page.perps.cross')
+                : t('page.perps.isolated')}
+              <RcIconModeSwitch />
+            </span>
+          }
         />
 
         <LeverageInput
@@ -336,7 +424,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 Number(tradeSize) * markPrice,
                 BigNumber.ROUND_DOWN
               )}{' '}
-              = {tradeSize} {coin}
+              = {tradeSize} {formatPerpsCoin(coin)}
             </div>
           </div>
           {/* TP/SL Section */}
@@ -359,6 +447,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               direction={direction}
               size={Number(tradeSize)}
               margin={Number(margin)}
+              leverage={leverage}
               liqPrice={Number(estimatedLiquidationPrice)}
               pxDecimals={pxDecimals}
               szDecimals={szDecimals}
@@ -391,6 +480,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               direction={direction}
               size={Number(tradeSize)}
               margin={Number(margin)}
+              leverage={leverage}
               liqPrice={Number(estimatedLiquidationPrice)}
               pxDecimals={pxDecimals}
               szDecimals={szDecimals}
@@ -445,12 +535,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perps.title')}
               </div>
               <div className="text-13 text-r-neutral-title-1 flex items-center font-medium">
-                {coin} - USD
+                {formatPerpsCoin(coin)} - USD
               </div>
             </div>
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
-                {t('page.perps.marginIsolated')}
+                {marginMode === 'isolated'
+                  ? t('page.perps.marginIsolated')
+                  : t('page.perps.marginCross')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
                 {formatUsdValue(Number(margin))}
@@ -476,7 +568,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </TooltipWithMagnetArrow>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                {formatUsdValue(Number(tradeAmount))} = {tradeSize} {coin}
+                {formatUsdValue(Number(tradeAmount))} = {tradeSize}{' '}
+                {formatPerpsCoin(coin)}
               </div>
             </div>
             {Boolean(tpTriggerPx) && (
@@ -523,7 +616,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           <div className="space-y-16">
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body">
-                {coin}-USD {t('page.perps.price')}
+                {formatPerpsCoin(coin)}-USD {t('page.perps.price')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
                 ${splitNumberByStep(markPrice)}
@@ -545,44 +638,50 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 ${splitNumberByStep(Number(estimatedLiquidationPrice))}
               </div>
             </div>
-            <div className="flex justify-between items-center">
-              <div className="text-13 text-r-neutral-body flex items-center gap-4">
-                {t('page.perpsDetail.PerpsOpenPositionPopup.rabbyFee')}
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="h-[24px] px-6 text-12 text-r-blue-default bg-r-blue-light-1 rounded-[4px] flex items-center justify-center font-medium">
-                  {t('page.perpsDetail.PerpsOpenPositionPopup.free')}
-                </div>
-                <div className="text-13 text-r-neutral-title-1 font-medium">
-                  0%
-                </div>
-              </div>
-            </div>
-            <div className="flex justify-between items-center">
-              <div className="text-13 text-r-neutral-body flex items-center gap-4">
-                {t('page.perpsDetail.PerpsOpenPositionPopup.providerFee')}
-              </div>
-              <div className="text-13 text-r-neutral-title-1 font-medium">
-                {formatPercent(providerFee, 4)}
-              </div>
-            </div>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
-          <Button
-            block
-            size="large"
-            type="primary"
-            className="h-[48px] text-15 font-medium flex-1"
-            onClick={openPosition}
-            loading={loading}
-          >
-            {direction === 'Long'
-              ? t('page.perps.openLong')
-              : t('page.perps.openShort')}
-          </Button>
+        <div className="fixed bottom-0 left-0 right-0">
+          {/* <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
+            <span>
+              {t('page.perpsDetail.PerpsClosePositionPopup.fee')}{' '}
+              {formatPercent(bothFee, 4)}
+            </span>
+            <Tooltip
+              overlayClassName={clsx('rectangle')}
+              placement="top"
+              title={
+                <div>
+                  <div className="text-13 text-r-neutral-title-2">
+                    {t('page.perps.rabbyFeeTipsV2')}
+                  </div>
+                  <div className="text-13 text-r-neutral-title-2">
+                    {t('page.perps.providerFeeTips', {
+                      fee: formatPercent(providerFee, 4),
+                    })}
+                  </div>
+                </div>
+              }
+              align={{ targetOffset: [0, 0] }}
+            >
+              <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+            </Tooltip>
+          </div> */}
+          <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+            <Button
+              block
+              size="large"
+              type="primary"
+              className="h-[48px] text-15 font-medium flex-1"
+              onClick={openPosition}
+              loading={loading}
+            >
+              {direction === 'Long'
+                ? t('page.perps.openLong')
+                : t('page.perps.openShort')}
+            </Button>
+          </div>
         </div>
       </div>
     </>
@@ -606,6 +705,16 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           {isReviewMode ? renderReviewMode() : renderEditMode()}
         </div>
       </Popup>
+
+      <MarginModePopup
+        visible={marginModeModalVisible}
+        currentMode={marginMode}
+        onCancel={() => setMarginModeModalVisible(false)}
+        onConfirm={(mode) => {
+          onMarginModeChange?.(mode);
+          setMarginModeModalVisible(false);
+        }}
+      />
     </>
   );
 };

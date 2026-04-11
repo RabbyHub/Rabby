@@ -23,7 +23,7 @@ import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import eventBus from '@/eventBus';
 import { findChain } from '@/utils/chain';
 import { t } from 'i18next';
-import { ModalProps } from 'antd';
+import { DrawerProps, ModalProps } from 'antd';
 
 const ETH_GAS_USD_LIMIT = 15;
 const OTHER_GAS_USD_LIMIT = 5;
@@ -33,6 +33,7 @@ export const MINI_SIGN_ERROR = {
   PREFETCH_FAILURE: 'prepare failure',
   USER_CANCELLED: 'User cancelled',
   CANT_PROCESS: 'Can not process',
+  GAS_NOT_ENOUGH: 'Gas not enough',
 };
 
 type Subscriber = (state: SignatureFlowState) => void;
@@ -212,6 +213,7 @@ class SignatureManager {
 
   private createSkeletonCtx(txs: Tx[], fingerprint: string): SignerCtx {
     const chainId = txs[0]?.chainId || 0;
+    const chain = findChain({ id: chainId });
     return {
       fingerprint,
       open: true,
@@ -223,7 +225,15 @@ class SignatureManager {
       selectedGas: null,
       txsCalc: [],
       nativeTokenPrice: 0,
-      nativeTokenBalance: '0x0',
+      nativeTokenBalance: '0',
+      gasToken: chain
+        ? {
+            tokenId: chain.nativeTokenAddress,
+            symbol: chain.nativeTokenSymbol,
+            decimals: chain.nativeTokenDecimals || 18,
+            logoUrl: chain.nativeTokenLogo,
+          }
+        : undefined,
       checkErrors: [],
       gasless: undefined,
       gasAccount: undefined,
@@ -405,11 +415,13 @@ class SignatureManager {
     retry,
     getContainer,
     pauseAfter,
+    isHideErrorUI,
   }: {
     wallet: WalletControllerType;
     retry?: boolean;
-    getContainer?: ModalProps['getContainer'];
+    getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
     pauseAfter?: number;
+    isHideErrorUI?: boolean;
   }) {
     this.pauseAfterThreshold =
       typeof pauseAfter === 'number' ? pauseAfter : this.pauseAfterThreshold;
@@ -418,8 +430,13 @@ class SignatureManager {
       throw new Error('Signature is not ready');
     }
     if (!this.canProcess()) {
-      this.rejectPending(MINI_SIGN_ERROR.CANT_PROCESS);
-      throw MINI_SIGN_ERROR.CANT_PROCESS;
+      if (ctx.isGasNotEnough) {
+        this.rejectPending(MINI_SIGN_ERROR.GAS_NOT_ENOUGH);
+        throw MINI_SIGN_ERROR.GAS_NOT_ENOUGH;
+      } else {
+        this.rejectPending(MINI_SIGN_ERROR.CANT_PROCESS);
+        throw MINI_SIGN_ERROR.CANT_PROCESS;
+      }
     }
     this.pauseRequested = false;
     this.pausedIndex = 0;
@@ -484,12 +501,15 @@ class SignatureManager {
         return this.signedHashes;
       }
       if ((res as any).error) {
-        this.dispatch({
-          type: 'SEND_FAILURE',
-          fingerprint,
-          error: (res as any).error,
-        });
-        // this.rejectPending((res as any).error.description);
+        if (isHideErrorUI) {
+          this.rejectPending((res as any).error.description);
+        } else {
+          this.dispatch({
+            type: 'SEND_FAILURE',
+            fingerprint,
+            error: (res as any).error,
+          });
+        }
         return res;
       }
 
@@ -584,7 +604,7 @@ class SignatureManager {
   public async openDirect(
     request: SignatureRequest,
     wallet: WalletControllerType,
-    opts?: { pauseAfter?: number }
+    opts?: { pauseAfter?: number; isHideErrorUI?: boolean }
   ) {
     if (opts?.pauseAfter !== undefined) {
       this.pauseAfterThreshold = opts.pauseAfter;
@@ -628,7 +648,9 @@ class SignatureManager {
       });
 
       await this.checkHardWareConnected(() =>
-        this.send({ wallet }).catch(() => undefined)
+        this.send({ wallet, isHideErrorUI: opts?.isHideErrorUI }).catch(
+          () => undefined
+        )
       );
     } catch (error) {
       const message = createErrorMessage(error);
@@ -666,7 +688,7 @@ class SignatureManager {
   public async startUI(
     request: SignatureRequest,
     wallet: WalletControllerType,
-    opts?: { pauseAfter?: number }
+    opts?: { pauseAfter?: number; isHideErrorUI?: boolean }
   ): Promise<string[]> {
     if (opts?.pauseAfter !== undefined) {
       this.pauseAfterThreshold = opts.pauseAfter;

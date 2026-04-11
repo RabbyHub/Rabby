@@ -30,8 +30,12 @@ export const AddFromCurrentSeedPhrase: React.FC<{
         {t('page.newAddress.addFromCurrentSeedPhrase')}
       </PageHeader>
       <div className="flex-1 flex flex-col space-y-[20px] pb-[20px]">
-        {seedPhraseList?.map((item, index) => (
-          <Group data={item} index={index} onAdd={handleAddSeedPhraseAddress} />
+        {seedPhraseList?.map((item) => (
+          <Group
+            data={item}
+            onAdd={handleAddSeedPhraseAddress}
+            key={item.publicKey}
+          />
         ))}
       </div>
     </div>
@@ -40,18 +44,16 @@ export const AddFromCurrentSeedPhrase: React.FC<{
 
 const Group = ({
   data,
-  index,
   onAdd,
 }: {
   data: TypeKeyringGroup;
-  index: number;
   onAdd: (p: string) => void;
 }) => {
   const { t } = useTranslation();
   return (
     <div className="relative w-full p-[16px] bg-r-neutral-card-1 overflow-hidden rounded-[6px] pt-0">
       <div className="h-[48px] flex items-center mb-14 text-r-neutral-title1 text-[15px] font-medium">
-        Seed Phrase {index + 1}
+        Seed Phrase {(data.index || 0) + 1}
       </div>
       <div className="absolute left-0 top-[48px] w-full h-0 border-b-[0.5px] border-rabby-neutral-line" />
 

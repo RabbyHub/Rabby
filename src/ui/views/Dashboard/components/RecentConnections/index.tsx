@@ -140,7 +140,7 @@ const RecentConnections = ({
 
   return (
     <div
-      className={clsx('recent-connections-popup', {
+      className={clsx('recent-connections-popup h-full flex flex-col pb-0', {
         show: isVisible,
         hidden: !visible,
       })}
@@ -158,7 +158,7 @@ const RecentConnections = ({
       </PageHeader>
       {list?.length ? (
         <>
-          <div className="mx-[-20px] px-[20px] h-[calc(100%-97.5px)] overflow-auto">
+          <div className="mx-[-20px] px-[20px] flex-1 min-h-0 overflow-auto">
             <ConnectionList
               onRemove={handleRemove}
               onClick={handleClick}
@@ -174,7 +174,7 @@ const RecentConnections = ({
           </div>
           <footer
             className={clsx(
-              'absolute z-10 bottom-0 left-0 right-0 bg-r-neutral-bg1',
+              'mx-[-20px] z-10 bottom-0 left-0 right-0 bg-r-neutral-bg1',
               'border-t-[0.5px] border-t-solid border-t-rabby-neutral-line px-[20px]',
               'py-[16px]'
             )}
@@ -215,7 +215,7 @@ export const RecentConnectionsPopup: React.FC<RecentConnectionsProps> = ({
       className="settings-popup-wrapper"
       isSupportDarkMode
     >
-      <RecentConnections visible={true} onClose={onClose} canBack={false} />;
+      <RecentConnections visible={true} onClose={onClose} canBack={false} />
     </Popup>
   );
 };

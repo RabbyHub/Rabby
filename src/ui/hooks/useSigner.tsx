@@ -17,6 +17,7 @@ export type SimpleSignConfig = {
   buildTxs?: () => Promise<Tx[] | undefined>;
   gasSelection?: GasSelectionOptions;
   pauseAfter?: number;
+  isHideErrorUI?: boolean;
 } & Omit<SignerConfig, 'account'>;
 
 const useLocalMiniSignGasStore = () => {
@@ -181,7 +182,7 @@ export const useMiniSigner = ({
 
   const openUI = useMemoizedFn(
     async (
-      cfg: SimpleSignConfig & { pauseAfter?: number }
+      cfg: SimpleSignConfig & { pauseAfter?: number; isHideErrorUI?: boolean }
     ): Promise<string[]> => {
       const payload = await prepareSignerPayload(cfg);
       if (!payload) {
@@ -198,16 +199,17 @@ export const useMiniSigner = ({
           gasSelection: payload.gasSelection,
         },
         wallet,
-        { pauseAfter: cfg.pauseAfter }
+        { pauseAfter: cfg.pauseAfter, isHideErrorUI: cfg.isHideErrorUI }
       );
     }
   );
 
   const openDirect = useMemoizedFn(
     async (
-      cfg: SimpleSignConfig & { pauseAfter?: number }
+      cfg: SimpleSignConfig & { pauseAfter?: number; isHideErrorUI?: boolean }
     ): Promise<string[]> => {
       const payload = await prepareSignerPayload(cfg);
+      console.log('openDirect payload', payload, cfg);
       if (!payload) {
         throw new Error('No transactions to sign');
       }
@@ -219,7 +221,7 @@ export const useMiniSigner = ({
           gasSelection: payload.gasSelection,
         },
         wallet,
-        { pauseAfter: cfg.pauseAfter }
+        { pauseAfter: cfg.pauseAfter, isHideErrorUI: cfg.isHideErrorUI }
       );
     }
   );

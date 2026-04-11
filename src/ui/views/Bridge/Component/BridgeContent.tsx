@@ -205,6 +205,7 @@ export const BridgeContent = () => {
         });
         const promise = wallet.bridgeToken(
           {
+            approveId: selectedBridgeQuote.approve_contract_id,
             to: tx.to,
             value: tx.value,
             data: tx.data,
@@ -345,6 +346,7 @@ export const BridgeContent = () => {
         });
         return wallet.buildBridgeToken(
           {
+            approveId: selectedBridgeQuote.approve_contract_id,
             to: tx.to,
             value: tx.value,
             data: tx.data,

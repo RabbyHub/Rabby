@@ -5,7 +5,7 @@ import TokenSelect from '@/ui/component/TokenSelect';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { DrawerProps, Input } from 'antd';
+import { DrawerProps, Input, InputRef } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -107,7 +107,7 @@ export const BridgeToken = ({
 
   const isMaxRef = useRef(false);
 
-  const inputRef = useRef<Input>();
+  const inputRef = useRef<InputRef>();
 
   const chainSelectorRef = useRef<ChainSelectorRef>(null);
 
@@ -319,18 +319,19 @@ export const BridgeToken = ({
               token={token}
               onTokenChange={onChangeToken}
               chainId={chainObj?.serverId}
-              placeholder={t('page.swap.search-by-name-address')}
+              placeholder={t('page.swap.search-by-token-name-address')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               getContainer={getContainer}
             />
           ) : (
             <TokenSelect
+              isHideTitle={true}
               drawerHeight={540}
               token={token}
               onTokenChange={handleChangeFromToken}
               chainId={chainObj?.serverId}
               type={'bridgeFrom'}
-              placeholder={t('page.swap.search-by-name-address')}
+              placeholder={t('page.swap.search-by-token-name-address')}
               disabledTips={t('page.bridge.insufficient-balance')}
               tokenRender={(p) => <TokenRender {...p} type="bridge" />}
               // supportChains={supportedChains}

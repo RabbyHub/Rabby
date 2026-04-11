@@ -23,7 +23,7 @@ export const AssetRow: React.FC<{
       : asset.name || 'Unknown';
 
   return (
-    <div className="flex items-center font-[500]">
+    <div className="flex items-center font-medium">
       <IconWithChain
         width={iconSize + 'px'}
         height={iconSize + 'px'}

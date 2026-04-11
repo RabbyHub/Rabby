@@ -45,6 +45,8 @@ import { getAddressScanLink, getTxScanLink } from '@/utils';
 import { TokenCharts } from '@/ui/component/TokenChart';
 import TokenChainAndContract from '../../Dashboard/components/TokenDetailPopup/TokenInfo';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { transformToHistory } from '@/utils/history';
+import { TxHistoryItemRow } from '@/db/schema/history';
 
 interface AddAssetProps {
   params: {
@@ -203,7 +205,7 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [token, setToken] = useState<TokenItem | null>(null);
   const [chainSelectorVisible, setChainSelectorVisible] = useState(false);
-  const [tokenHistory, setTokenHistory] = useState<TokenHistoryItem[]>([]);
+  const [tokenHistory, setTokenHistory] = useState<TxHistoryItemRow[]>([]);
   const [isTokenHistoryLoaded, setIsTokenHistoryLoaded] = useState(false);
   const [tokenEntity, setTokenEntity] = React.useState<TokenEntityDetail>();
   const [isLoading, setIsLoading] = useState(true);
@@ -376,14 +378,9 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
       token_id: token.id,
     });
     const { project_dict, cate_dict, token_dict, history_list: list } = history;
-    const displayList = list
-      .map((item) => ({
-        ...item,
-        projectDict: project_dict,
-        cateDict: cate_dict,
-        tokenDict: token_dict,
-      }))
-      .sort((v1, v2) => v2.time_at - v1.time_at);
+    const displayList = transformToHistory({
+      data: history,
+    });
     setTokenHistory(displayList);
     setIsTokenHistoryLoaded(true);
   };
@@ -466,7 +463,7 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
                       className="rectangle w-[max-content]"
                     >
                       <img
-                        className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                        className="w-14 h-14 absolute right-[-2px] bottom-[-2px] rounded-full"
                         src={currentChain?.logo || IconUnknown}
                       />
                     </TooltipWithMagnetArrow>
@@ -547,9 +544,6 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
                 {tokenHistory.map((item) => (
                   <HistoryItem
                     data={item}
-                    projectDict={item.projectDict}
-                    cateDict={item.cateDict}
-                    tokenDict={item.tokenDict}
                     canClickToken={false}
                     key={item.id}
                   />
@@ -572,7 +566,7 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
                       className="rectangle w-[max-content]"
                     >
                       <img
-                        className="w-14 h-14 absolute right-[-2px] top-[-2px] rounded-full"
+                        className="w-14 h-14 absolute right-[-2px] bottom-[-2px] rounded-full"
                         src={currentChain?.logo || IconUnknown}
                       />
                     </TooltipWithMagnetArrow>
@@ -702,9 +696,6 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
                 {tokenHistory.map((item) => (
                   <HistoryItem
                     data={item}
-                    projectDict={item.projectDict}
-                    cateDict={item.cateDict}
-                    tokenDict={item.tokenDict}
                     canClickToken={false}
                     key={item.id}
                   />

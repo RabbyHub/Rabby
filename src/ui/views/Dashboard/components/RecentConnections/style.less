@@ -59,14 +59,20 @@
     flex-wrap: wrap;
     // background-color: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
     border-radius: 6px;
-    .item {
-      margin-bottom: 8px;
-      position: relative;
-      width: 100%;
+    .site-item {
       display: flex;
       align-items: center;
-      column-gap: 12px;
-      padding: 13px 15px;
+      width: 100%;
+      &-main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        column-gap: 12px;
+        padding: 11px 15px;
+        min-width: 0;
+      }
+      margin-bottom: 8px;
+      position: relative;
       border-radius: 6px;
       border: 1px solid transparent;
       background: var(--r-neutral-card2, #f2f4f7);
@@ -79,15 +85,8 @@
       .icon-close {
         width: 16px;
         height: 16px;
-        opacity: 0;
         path {
           fill: var(--r-neutral-foot);
-        }
-
-        &:hover {
-          path {
-            fill: var(--r-red-default, #e34935);
-          }
         }
       }
       &.is-dragging {
@@ -116,15 +115,30 @@
         align-items: center;
         flex-shrink: 0;
         margin-left: auto;
+        padding-left: 15px;
+        padding-right: 15px;
+        height: 100%;
+        border-left: 1px solid transparent;
+        border-radius: 0 6px 6px 0;
+
+        &:hover {
+          background: var(--r-blue-light2, #dbe0ff);
+        }
       }
       &:hover {
         // background: rgba(134, 151, 255, 0.2);
         border: 1px solid var(--r-blue-default, #7084ff);
         background: var(--r-blue-light-1, rgba(112, 132, 255, 0.1));
-        .pin-website {
-          opacity: 1;
+
+        .site-item-extra {
+          border-left: 1px solid var(--r-blue-default, #7084ff);
         }
         .icon-close {
+          path {
+            fill: var(--r-blue-default, #7084ff);
+          }
+        }
+        .pin-website {
           opacity: 1;
         }
       }

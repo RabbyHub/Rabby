@@ -6,6 +6,11 @@ import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM, MINIMUM_GAS_LIMIT } from '@/constant';
 import { hexToString } from 'viem';
+import {
+  TEMPO_FEE_TOKEN_DECIMALS,
+  TEMPO_PATH_USD_TOKEN,
+} from '@/constant/tempo';
+import { isTempoChain } from '@/utils/tempo';
 
 export const geTokenDecimals = async (
   id: string,
@@ -221,14 +226,20 @@ function checkGasIsEnough({
   token_balance_hex,
   price,
   gasLimit,
+  tokenDecimals = 18,
 }: {
   token_balance_hex: TokenItem['raw_amount_hex_str'];
   price: number;
   gasLimit: number;
+  tokenDecimals?: number;
 }) {
-  return new BigNumber(token_balance_hex || 0, 16).gte(
-    new BigNumber(gasLimit).times(price)
-  );
+  let gasCostRaw = new BigNumber(gasLimit).times(price);
+  if (tokenDecimals > 18) {
+    gasCostRaw = gasCostRaw.times(new BigNumber(10).pow(tokenDecimals - 18));
+  } else if (tokenDecimals < 18) {
+    gasCostRaw = gasCostRaw.div(new BigNumber(10).pow(18 - tokenDecimals));
+  }
+  return new BigNumber(token_balance_hex || 0, 16).gte(gasCostRaw);
 }
 export function checkIfTokenBalanceEnough(
   token: TokenItem,
@@ -246,11 +257,13 @@ export function checkIfTokenBalanceEnough(
     token_balance_hex: token?.raw_amount_hex_str,
     price: normalLevel?.price || 0,
     gasLimit,
+    tokenDecimals: token?.decimals,
   });
   const isSlowEnough = checkGasIsEnough({
     token_balance_hex: token?.raw_amount_hex_str,
     price: slowLevel?.price || 0,
     gasLimit,
+    tokenDecimals: token?.decimals,
   });
 
   return {
@@ -264,12 +277,31 @@ export function checkIfTokenBalanceEnough(
 
 export function tokenAmountBn(token: TokenItem) {
   return new BigNumber(token?.raw_amount_hex_str || 0, 16).div(
-    10 ** (token?.decimals || 1)
+    10 ** token.decimals
   );
 }
 
 export function getChainDefaultToken(chain: CHAINS_ENUM) {
   const chainInfo = findChainByEnum(chain)!;
+  if (isTempoChain(chainInfo.serverId)) {
+    return {
+      id: TEMPO_PATH_USD_TOKEN,
+      decimals: TEMPO_FEE_TOKEN_DECIMALS,
+      logo_url: '',
+      symbol: 'pathUSD',
+      display_symbol: 'pathUSD',
+      optimized_symbol: 'pathUSD',
+      is_core: true,
+      is_verified: true,
+      is_wallet: true,
+      amount: 0,
+      price: 0,
+      name: 'pathUSD',
+      chain: chainInfo.serverId,
+      time_at: 0,
+    } as TokenItem;
+  }
+
   return {
     id: chainInfo.nativeTokenAddress,
     decimals: chainInfo.nativeTokenDecimals,

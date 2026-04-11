@@ -96,7 +96,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
   }
 
   const showPopup =
-    request.config.mode === 'UI' || status === 'signing' || !!error;
+    (request.config.mode === 'UI' && status === 'signing') || !!error;
 
   if (isDesktop && !config?.getContainer) {
     const desktopPortalClassName = 'desktop-mini-signer-typed-data';
@@ -222,6 +222,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
       >
         <MiniFooterBar
           // directSubmit={directSubmit}
+          getContainer={config?.getContainer}
           directSubmit={config?.mode !== 'UI'}
           hasShadow={false}
           origin={INTERNAL_REQUEST_SESSION.origin}

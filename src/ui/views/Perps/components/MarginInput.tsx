@@ -15,6 +15,7 @@ interface MarginInputProps {
   onMarginChange: (value: string) => void;
   errorMessage?: string | null;
   customAvailableText?: string;
+  titleExtra?: React.ReactNode;
 }
 
 export const MarginInput: React.FC<MarginInputProps> = ({
@@ -25,6 +26,7 @@ export const MarginInput: React.FC<MarginInputProps> = ({
   onMarginChange,
   errorMessage,
   customAvailableText,
+  titleExtra,
 }) => {
   const { t } = useTranslation();
   const textColorClass =
@@ -94,12 +96,15 @@ export const MarginInput: React.FC<MarginInputProps> = ({
 
   return (
     <div className="bg-r-neutral-card1 rounded-[8px] mb-[12px] px-[16px] py-[16px]">
-      <div className="text-[16px] leading-[19px] font-medium text-r-blue-default">
-        {title}
+      <div className="flex items-center">
+        <div className="text-[16px] leading-[19px] font-medium text-r-blue-default">
+          {title}
+        </div>
+        {titleExtra}
       </div>
       <div className="flex items-center mb-[8px]">
         <div className="flex items-end gap-[6px]">
-          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-black">
+          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
             {formatUsdValue(availableAmount, BigNumber.ROUND_DOWN)}
           </div>
           <div className="text-[13px] leading-[16px] text-r-neutral-foot pb-[2px]">

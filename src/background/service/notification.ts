@@ -40,6 +40,7 @@ export interface Approval {
 }
 
 const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
+  'Unlock',
   'SignTx',
   'SignText',
   'SignTypedData',
@@ -130,12 +131,8 @@ class NotificationService extends Events {
     );
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
-      if (IS_VIVALDI) return;
-      if (
-        IS_CHROME &&
-        winId === browser.windows.WINDOW_ID_NONE &&
-        (IS_LINUX || IS_WINDOWS)
-      ) {
+      if (IS_VIVALDI || IS_LINUX) return;
+      if (IS_CHROME && winId === browser.windows.WINDOW_ID_NONE && IS_WINDOWS) {
         // When sign on Linux or Windows, will focus on -1 first then focus on sign window
         return;
       }

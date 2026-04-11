@@ -10,6 +10,7 @@ import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useTranslation } from 'react-i18next';
 import { TokenImg } from './TokenImg';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 interface HistoryItemProps {
   fill: WsFill;
@@ -95,7 +96,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
               )}
             >
               {isRealDeposit ? '+' : '-'}
-              {`${formatUsdValue(usdValue)}`}
+              {`${formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}`}
             </div>
             <div className="text-13 text-r-neutral-foot">
               {sinceTime(time / 1000)}
@@ -109,7 +110,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
             )}
           >
             {isRealDeposit ? '+' : '-'}
-            {`${formatUsdValue(usdValue)}`}
+            {`${formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}`}
           </div>
         )}
       </div>
@@ -161,8 +162,9 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
     return fill?.dir;
   }, [fill, orderTpOrSl]);
 
-  const itemData = marketData[coin.toUpperCase()];
+  const itemData = marketData[coin];
   const logoUrl = itemData?.logoUrl;
+  const pxDecimals = itemData?.pxDecimals;
   const isClose = (dir === 'Close Long' || dir === 'Close Short') && _closedPnl;
   const direction =
     dir === 'Close Long' || dir === 'Open Long' ? 'Long' : 'Short';
@@ -190,7 +192,13 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
             {titleString}
           </div>
           <div className="text-13 text-r-neutral-foot font-medium">
-            {coin}-USD
+            {formatPerpsCoin(coin)}-USD
+            {fill.px ? (
+              <span className="ml-4">
+                @$
+                {splitNumberByStep(new BigNumber(fill.px).toFixed(pxDecimals))}
+              </span>
+            ) : null}
           </div>
         </div>
       </div>

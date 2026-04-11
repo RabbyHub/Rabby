@@ -1,0 +1,143 @@
+import clsx from 'clsx';
+import React, { useMemo, useState } from 'react';
+import { Button } from 'antd';
+import { OrderSide } from '../../../types';
+import { useRabbySelector } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
+import { RcIconInfoCC } from '@/ui/assets/desktop/common';
+import { useHistory, useLocation } from 'react-router-dom';
+import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
+import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+
+interface TradingButtonProps {
+  loading: boolean;
+  onClick: () => void;
+  disabled: boolean;
+  error?: string;
+  isValid: boolean;
+  orderSide: OrderSide;
+  titleText: string;
+}
+
+export const TradingButton: React.FC<TradingButtonProps> = ({
+  loading,
+  onClick,
+  disabled,
+  error,
+  isValid,
+  orderSide,
+  titleText,
+}) => {
+  const clearinghouseState = useRabbySelector(
+    (store) => store.perps.clearinghouseState
+  );
+
+  const wsActiveAssetData = useRabbySelector(
+    (store) => store.perps.wsActiveAssetData
+  );
+
+  const { accountValue } = usePerpsAccount();
+
+  const needDepositFirst = useMemo(() => {
+    const orderSideAvailableBalance = Number(
+      wsActiveAssetData?.availableToTrade[
+        orderSide === OrderSide.BUY ? 0 : 1
+      ] || 0
+    );
+    return (
+      clearinghouseState &&
+      accountValue === 0 &&
+      orderSideAvailableBalance === 0
+    );
+  }, [
+    clearinghouseState,
+    wsActiveAssetData?.availableToTrade,
+    orderSide,
+    accountValue,
+  ]);
+
+  const hasPermission = useRabbySelector((state) => state.perps.hasPermission);
+  const { t } = useTranslation();
+  const [hovered, setHovered] = useState(false);
+  const location = useLocation();
+  const history = useHistory();
+
+  const {
+    needEnableTrading,
+    handleActionApproveStatus,
+  } = usePerpsProPosition();
+
+  const handleDepositClick = () => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('action', 'deposit');
+    history.push({
+      pathname: location.pathname,
+      search: searchParams.toString(),
+    });
+  };
+
+  return (
+    <div className="flex flex-col gap-[12px]">
+      {Boolean(error || needDepositFirst) && (
+        <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
+          <RcIconInfoCC className="text-r-orange-default" />
+          <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
+            {needDepositFirst
+              ? t('page.perpsPro.tradingPanel.addFundsToGetStarted')
+              : error}
+          </div>
+        </div>
+      )}
+      {needDepositFirst || needEnableTrading ? (
+        <Button
+          type="primary"
+          block
+          size="large"
+          onClick={() => {
+            if (needDepositFirst) {
+              handleDepositClick();
+            } else {
+              handleActionApproveStatus();
+            }
+          }}
+          className={
+            'w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent text-rb-neutral-InvertHighlight'
+          }
+        >
+          {needDepositFirst
+            ? t('page.perpsPro.tradingPanel.deposit')
+            : t('page.perpsPro.tradingPanel.enableTrading')}
+        </Button>
+      ) : (
+        <Button
+          type="primary"
+          block
+          size="large"
+          loading={loading}
+          onClick={onClick}
+          disabled={disabled || !hasPermission}
+          style={{
+            boxShadow:
+              hovered && isValid && !error
+                ? orderSide === OrderSide.BUY
+                  ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
+                  : '0px 8px 16px rgba(227, 73, 53, 0.3)'
+                : 'none',
+          }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={clsx(
+            'w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent text-rb-neutral-InvertHighlight',
+            !(isValid && !error && hasPermission) && 'cursor-not-allowed',
+            orderSide === OrderSide.BUY
+              ? 'bg-rb-green-default'
+              : 'bg-rb-red-default'
+          )}
+        >
+          {titleText}
+        </Button>
+      )}
+    </div>
+  );
+};

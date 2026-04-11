@@ -168,7 +168,7 @@ export function ChainFilterV2Line({
           </div>
 
           <div className="ml-[4px]">
-            <span className="text-[13px] text-r-neutral-body font-[600]">
+            <span className="text-[13px] text-r-neutral-body font-semibold">
               {selectedChain.name || selectedChain.nativeTokenSymbol}
             </span>
           </div>
@@ -237,7 +237,7 @@ export function ChainFilterV2Line({
           </div> */}
 
           <div className="ml-[4px]">
-            <span className="text-[13px] text-r-neutral-body font-[600]">
+            <span className="text-[13px] text-r-neutral-body font-semibold">
               {t('component.TokenSelector.chainFilterLine.filterAll')}
             </span>
           </div>

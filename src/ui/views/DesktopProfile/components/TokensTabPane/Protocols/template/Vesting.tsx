@@ -12,8 +12,9 @@ export default memo(
     name: string;
     siteUrl?: string;
     protocolLogo?: string;
+    protocolName?: string;
   }) => {
-    const { tag, protocolLogo } = props;
+    const { tag, protocolLogo, protocolName } = props;
     const data = props.data;
     const headers = ['Pool', 'Balance'];
 
@@ -78,6 +79,7 @@ export default memo(
                       ]}
                       portfolio={p}
                       protocolLogo={protocolLogo || ''}
+                      protocolName={protocolName}
                     />
                   )}
                 </Fragment>

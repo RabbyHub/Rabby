@@ -72,9 +72,14 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
   );
 
   const fetchCurrentAccounts = React.useCallback(
-    async (nextSetting?: SettingData) => {
+    async (
+      nextSetting?: SettingData,
+      options?: { resetInitialAccounts?: boolean }
+    ) => {
       setLoading(true);
-      await getCurrentAccounts();
+      await getCurrentAccounts({
+        resetInitialAccounts: options?.resetInitialAccounts,
+      });
       await fetchInitCurrentPathType(nextSetting);
       setLoading(false);
     },
@@ -126,7 +131,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
           console.error(e);
         }
 
-        await getCurrentAccounts();
+        await getCurrentAccounts({ resetInitialAccounts: true });
         setLoading(false);
       } catch (error) {
         history.goBack();
@@ -137,10 +142,13 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
           ? DEFAULT_SETTING_DATA.startNo
           : rest.startNo;
     }
-    await fetchCurrentAccounts({
-      type,
-      ...rest,
-    });
+    await fetchCurrentAccounts(
+      {
+        type,
+        ...rest,
+      },
+      { resetInitialAccounts: true }
+    );
     setSelectedAccounts([]);
   }, []);
 

@@ -1,10 +1,12 @@
+/* eslint "react-hooks/exhaustive-deps": ["error"] */
+/* eslint-enable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory, useLocation } from 'react-router-dom';
 import { isValidAddress } from '@ethereumjs/util';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { Button, message, Tabs } from 'antd';
+import { Button, message, Switch, Tabs } from 'antd';
 
 import { EmptyWhitelistHolder } from '../components/EmptyWhitelistHolder';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
@@ -22,15 +24,18 @@ import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import qs from 'qs';
+import { Account } from '@rabby-wallet/eth-walletconnect-keyring/type';
 
 const WhitelistItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
   position: relative;
   border-radius: 12px;
   margin-top: 12px;
+
   &:first-child {
-    margin-top: 9px;
+    margin-top: 0;
   }
+
   .whitelist-item {
     gap: 12px !important;
   }
@@ -58,9 +63,11 @@ const getContainer =
 export default function TabWhitelist({
   unimportedBalances = {},
   handleChange,
+  onManagePwdForNonWhitelistedTx,
 }: {
   unimportedBalances: Record<string, number>;
-  handleChange: (address: string, type?: string) => void;
+  handleChange: (account: Account) => void;
+  onManagePwdForNonWhitelistedTx: () => void;
 }) {
   const history = useHistory();
   const { search } = useLocation();
@@ -128,17 +135,47 @@ export default function TabWhitelist({
       content: t('page.whitelist.tips.removed'),
     });
   };
+
+  const isEnabledPwdForNonWhitelistedTx = useRabbySelector(
+    (state) => state.preference.isEnabledPwdForNonWhitelistedTx
+  );
+
   return (
     <div className="h-full static">
+      {isEnabledPwdForNonWhitelistedTx && (
+        <div className="flex-1 overflow-y-auto px-[20px] mb-[12px]">
+          <div className="flex justify-between items-center px-[10px] py-[8px] bg-r-yellow-light rounded-[8px] bg-r-neutral-card1">
+            <span className="text-[13px] font-normal text-r-neutral-title1">
+              {t(
+                'page.selectToAddress.whitelist.PwdForNonWhitelistedTx.enabledHint'
+              )}
+            </span>
+
+            <Switch
+              checked={isEnabledPwdForNonWhitelistedTx}
+              onChange={() => {
+                onManagePwdForNonWhitelistedTx();
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* WhiteList or Imported Addresses List */}
       <div
         className="flex-1 overflow-y-auto px-[20px]"
-        style={{ paddingBottom: 72 }}
+        style={{ paddingBottom: 84 }}
       >
         <div className="h-full">
           {allAccounts.length > 0 ? (
-            allAccounts.map((item) => (
-              <WhitelistItemWrapper key={`${item.address}-${item.type}`}>
+            allAccounts.map((item, index) => (
+              <WhitelistItemWrapper
+                key={`${item.address}-${item.type}`}
+                {...(index === 0 &&
+                  isEnabledPwdForNonWhitelistedTx && {
+                    style: { marginTop: 0 },
+                  })}
+              >
                 <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center">
                   <RcIconDeleteAddress
                     className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
@@ -152,25 +189,26 @@ export default function TabWhitelist({
                   showWhitelistIcon
                   allowEditAlias
                   hideBalance
-                  longEllipsis
                   address={item.address}
                   alias={ellipsisAddress(item.address)}
                   type={item.type}
                   brandName={item.brandName}
                   onClick={() => {
-                    handleChange(item.address, item.type);
+                    handleChange(item);
                   }}
                 />
               </WhitelistItemWrapper>
             ))
           ) : (
             <EmptyWhitelistHolder
-              onAddWhitelist={() => {
+              onAddWhitelist={async () => {
                 if (getUiType().isDesktop) {
                   const query = new URLSearchParams(history.location.search);
                   query.set('sendPageType', 'whitelistInput');
                   query.set('action', 'send');
-                  wallet.openInDesktop(`desktop/profile?${query.toString()}`);
+                  wallet.openInDesktop(`desktop/profile?${query.toString()}`, {
+                    triggerFocusEventOnDesktop: false,
+                  });
                 } else {
                   history.push('/whitelist-input');
                 }
@@ -180,8 +218,9 @@ export default function TabWhitelist({
         </div>
       </div>
       {/* Add Whitelist Entry */}
-      <div className="select-to-address-tab-fixed-bottom">
-        {allAccounts.length > 0 && (
+
+      {allAccounts.length > 0 && (
+        <div className="select-to-address-tab-fixed-bottom">
           <div className="px-[20px] w-full">
             <Button
               onClick={() => {
@@ -214,8 +253,8 @@ export default function TabWhitelist({
               </div>
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

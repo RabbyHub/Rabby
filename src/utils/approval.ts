@@ -268,7 +268,7 @@ export function compareContractApprovalItemByRiskLevel(
     getContractRiskEvaluation(a.risk_level, a.$riskAboutValues);
   const bRisk =
     b.$contractRiskEvaluation ||
-    getContractRiskEvaluation(b.risk_level, a.$riskAboutValues);
+    getContractRiskEvaluation(b.risk_level, b.$riskAboutValues);
 
   // some times, server risk score is null, so we need to compare client risk score
   if (
@@ -498,7 +498,7 @@ function getAssetSpenderTypeOrderScore(spender: AssetApprovalSpender) {
     }
   }
 
-  return AssetTypeScores.unknown;
+  return score;
 }
 
 /**

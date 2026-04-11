@@ -35,6 +35,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 const isDesktop = getUiType().isDesktop;
 
 const ChildrenWrapper = styled.div`
@@ -62,7 +63,8 @@ export const TransactionItem = ({
   getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
-  const desktopGetContainer = getContainer || '.activities';
+  const { getContainer: getPopupContainer } = usePopupContainer();
+  const desktopGetContainer = getContainer || getPopupContainer;
   const wallet = useWallet();
   const [isShowCancelPopup, setIsShowCancelPopup] = useState(false);
   const chain = findChain({

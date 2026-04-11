@@ -22,8 +22,8 @@ import { DappSearchResult } from './components/DappSearchResult';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ConnectedSite } from '@/background/service/permission';
 import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
-import { ChainSelectorButton } from '../ApprovalManagePage/components/ChainSelectorButton';
 import { ga4 } from '@/utils/ga4';
+import { ChainSelectorButton } from '../DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton';
 const { Search } = Input;
 
 const SearchWrapper = styled.div`
