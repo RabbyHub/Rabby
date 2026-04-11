@@ -504,7 +504,7 @@ class GnosisKeyring extends EventEmitter {
   async buildBatchTransaction(
     address: string,
     transactions: SafeTransactionDataPartial[],
-    provider,
+    provider: any,
     version: SafeVersion,
     networkId: string
   ) {
@@ -551,7 +551,7 @@ class GnosisKeyring extends EventEmitter {
       from: address,
       to: multiSendContract.contractAddress,
       value: '0',
-      operation: 1, // DelegateCall
+      operation: Number(Operation.DELEGATE), // DelegateCall
     };
 
     const safeTransaction = await safe.buildTransaction(tx);
