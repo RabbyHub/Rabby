@@ -46,13 +46,13 @@ jobs:
         run: yarn --prefer-offline
 
       - name: Use NPM Token with organization read access
-        uses: heisenberg-2077/use-npm-token-action@v1
+        uses: heisenberg-2077/use-npm-token-action@v3
         with:
           token: '${{ secrets.NPM_AUTH_TOKEN }}'
 
       - name: Install Dependencies
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install --no-frozen-lockfile
 
   build-pro:
     name: build pro
