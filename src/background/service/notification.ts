@@ -40,6 +40,7 @@ export interface Approval {
 }
 
 const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
+  'Unlock',
   'SignTx',
   'SignText',
   'SignTypedData',

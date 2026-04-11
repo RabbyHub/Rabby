@@ -12,6 +12,7 @@ import { useMemoizedFn } from 'ahooks';
 import { findAccountByPriority } from '@/utils/account';
 import { useInterval } from 'react-use';
 import pRetry, { AbortError } from 'p-retry';
+import { toChecksumAddress } from '@ethereumjs/util';
 import {
   ARB_USDC_TOKEN_ID,
   ARB_USDC_TOKEN_ITEM,
@@ -312,7 +313,7 @@ export const usePerpsDeposit = ({
               },
             ] as any[],
           } as const,
-          [to, sendValue.toFixed(0)] as any[],
+          [toChecksumAddress(to), sendValue.toFixed(0)] as any[],
         ] as const;
         const params: Record<string, any> = {
           chainId: chain.id,
@@ -344,7 +345,8 @@ export const usePerpsDeposit = ({
 
     dispatch.perps.setLocalLoadingHistory([
       {
-        time: Date.now(),
+        // Set a slightly earlier time to ensure it appears before withdraw in history
+        time: Date.now() - 1000,
         hash,
         type,
         status: 'pending',

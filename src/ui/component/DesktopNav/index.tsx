@@ -4,7 +4,6 @@ import {
   RcIconHomeInActive,
   RcIconLeadingCC,
   RcIconPerpsCC,
-  RcIconPredictionCC,
 } from '@/ui/assets/desktop/nav';
 import { splitNumberByStep } from '@/ui/utils';
 import { Skeleton, Tooltip } from 'antd';
@@ -42,6 +41,9 @@ const reportNavEvent = debounce((eventKey: string) => {
   });
 }, 300);
 
+/**
+ * @deprecated
+ */
 export const DesktopNav: React.FC<{
   onActionSelect?: (action: DesktopNavAction) => void;
   showRightItems?: boolean;
@@ -57,21 +59,12 @@ export const DesktopNav: React.FC<{
 
   const currentPathname = history.location.pathname;
   const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
-  const predictionId = useRabbySelector(
-    (state) => state.innerDappFrame.prediction
-  );
 
   const IconLending = useMemo(() => {
     const dapp = INNER_DAPP_LIST.LENDING.find((item) => item.id === lendingId);
     return dapp?.NavIcon || RcIconLeadingCC;
   }, [lendingId]);
   const IconPerps = RcIconPerpsCC;
-  const IconPrediction = useMemo(() => {
-    const dapp = INNER_DAPP_LIST.PREDICTION.find(
-      (item) => item.id === predictionId
-    );
-    return dapp?.NavIcon || RcIconPredictionCC;
-  }, [predictionId]);
 
   const navs: {
     key: string;
@@ -94,19 +87,13 @@ export const DesktopNav: React.FC<{
         eventKey: 'Perps',
       },
       {
-        key: '/desktop/prediction',
-        icon: IconPrediction,
-        title: t('component.DesktopNav.prediction'),
-        eventKey: 'Prediction',
-      },
-      {
         key: '/desktop/lending',
         icon: IconLending,
         title: t('component.DesktopNav.lending'),
         eventKey: 'Lending',
       },
     ];
-  }, [t, IconLending, IconPerps, IconPrediction]);
+  }, [t, IconLending, IconPerps]);
 
   const activeNav = useMemo(
     () => navs.find((item) => currentPathname.startsWith(item.key)),

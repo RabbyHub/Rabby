@@ -5,7 +5,7 @@ import {
   AaveV3Optimism,
   AaveV3Plasma,
   AaveV3Polygon,
-} from '@bgd-labs/aave-address-book';
+} from '@aave-dao/aave-address-book';
 
 export const unPrefixSymbol = (symbol: string, prefix: string) => {
   return symbol

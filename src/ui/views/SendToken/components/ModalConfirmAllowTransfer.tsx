@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback, useLayoutEffect } from 'react';
 
 import styled from 'styled-components';
-import { Button, DrawerProps, Form, Input } from 'antd';
+import { Button, DrawerProps, Form, Input, InputRef } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -59,7 +59,7 @@ function ModalConfirmAllowTransfer({
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
 
   const [confirmToAddToWhitelist, setConfirmToAddToWhitelist] = useState(false);
 

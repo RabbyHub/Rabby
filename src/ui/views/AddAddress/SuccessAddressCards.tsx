@@ -12,7 +12,7 @@ import {
   AccountItemInputWrapper,
   AccountItemWrapper,
 } from '../NewUserImport/AccountItem';
-import { Input } from 'antd';
+import { InputRef } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 type SuccessAddressCommitResult = CreateAddressSuccessAddress | null;
@@ -28,7 +28,7 @@ const useEditableSuccessAddresses = (
   const [items, setItems] = React.useState<CreateAddressSuccessAddress[]>(
     addresses
   );
-  const inputRefs = React.useRef<Record<string, Input | null>>({});
+  const inputRefs = React.useRef<Record<string, InputRef | null>>({});
   const committedAliasRef = React.useRef<Record<string, string>>({});
 
   React.useEffect(() => {
@@ -186,7 +186,7 @@ const SuccessAddressCard = ({
   item: CreateAddressSuccessAddress;
   index: number;
   isLast: boolean;
-  inputRefs: React.MutableRefObject<Record<string, Input | null>>;
+  inputRefs: React.MutableRefObject<Record<string, InputRef | null>>;
   onAliasChange: (address: string, alias: string) => void;
   onCommitAlias: SuccessAddressCommitAlias;
   onEnterNext?: () => void;

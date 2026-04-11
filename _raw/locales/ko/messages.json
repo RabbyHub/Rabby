@@ -29,7 +29,9 @@
         "Pending": "대기 중",
         "Succeeded": "성공했습니다",
         "Failed": "실패했습니다"
-      }
+      },
+      "showScamTips": "사기 거래 표시",
+      "hideScamTips": "스캠 트랜잭션 숨기기"
     },
     "chainList": {
       "mainnet": "메인넷",
@@ -1195,7 +1197,9 @@
       },
       "noSeedPhraseAddress": "이 시드 문구에 대해 추가된 주소가 없습니다. 주소를 추가하거나 시드 문구를 삭제할 수 있습니다.",
       "watch-address": "모니터 전용",
-      "deleteSuccess": "삭제가 완료되었습니다"
+      "deleteSuccess": "삭제가 완료되었습니다",
+      "backupSeedPhraseNow": "백업 시작",
+      "seedPhraseNotBackedUp": "백업되지 않은 지갑"
     },
     "dashboard": {
       "home": {
@@ -1223,9 +1227,9 @@
           "settings": "설정",
           "perpsPositions_one": "{{count}} 포지션",
           "perpsPositions_other": "{{count}} 포지션",
-          "prediction": "예측",
           "lending": "대출",
-          "dragTip": "길게 눌러서 재배치하기"
+          "dragTip": "길게 눌러서 재배치하기",
+          "convertDust": "더스트 변환"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -1377,7 +1381,9 @@
           "switchPasswordForNonWhitelistedTx": "비공식 화이트리스트 전송을 위한 비밀번호",
           "biometricUnlock": "바이오메트릭스로 잠금 해제",
           "biometricUnlockUnsupported": "이 장치는 생체 인식 잠금 해제를 지원하지 않습니다.",
-          "biometricUnlockHint": "이 장치에서 생체 인식을 사용하여 잠금을 해제하세요."
+          "biometricUnlockHint": "이 장치에서 생체 인식을 사용하여 잠금을 해제하세요.",
+          "currency": "통화",
+          "searchCurrency": "통화 검색"
         },
         "save": "저장",
         "inputOpenapiHost": "openapi 호스트를 입력하세요",
@@ -1574,7 +1580,8 @@
         "side": "측면",
         "searchTokenPlaceholder": "토큰 검색",
         "openInTab": "Rabby 탭에서 열기",
-        "openProMode": "프로 모드 열기"
+        "openProMode": "프로 모드 열기",
+        "openInTabV2": "탭에서 열기"
       },
       "hd": {
         "ledger": {
@@ -1637,7 +1644,8 @@
         "title": "Rabby 포인트",
         "downloadIntro": "아직 앱이 없으신가요? 지금 다운로드하세요.",
         "desc": "Rabby Mobile에서 포인트를 확인하세요."
-      }
+      },
+      "noData": "일치하는 통화가 없습니다"
     },
     "nft": {
       "empty": {
@@ -3314,7 +3322,8 @@
         "provider": "프로바이더",
         "fee": "수수료",
         "tradeValue": "거래 가치",
-        "size": "포지션 규모"
+        "size": "포지션 규모",
+        "feeDesc": "사용자가 거래를 진행할 때, <1>거래 수수료</1>와 <2>빌더 수수료</2>가 모두 적용됩니다."
       },
       "logoutConfirmModal": {
         "desc": "현재의 무기한 계약 계정에서 로그아웃 중입니다. 이 주소로 로그인하면 언제든지 복구할 수 있습니다.",
@@ -3336,7 +3345,10 @@
         "goBridgeTips": "아비트럼에서 USDC만 직접 입금이 지원됩니다. 입금하기 전에 현재 보유 토큰을 아비트럼의 USDC로 브리지해 주세요.",
         "estReceiveTooltip": "크로스체인 입금은 LiFi를 통해 처리되며 약간의 슬리피지가 발생할 수 있습니다. 도착 예정 시간은 {{number}}초입니다.",
         "estReceiveLabel": "추정 수령",
-        "hyperliquidFeeLabelTooltip": "신규 사용자는 Hyperliquid에 의해 일회성 활성화 요금이 부과됩니다."
+        "hyperliquidFeeLabelTooltip": "신규 사용자는 Hyperliquid에 의해 일회성 활성화 요금이 부과됩니다.",
+        "amount": "금액",
+        "feeTipTooltipHype": "EVM으로 출금할 때 ~0.00002 HYPE의 수수료가 부과됩니다.",
+        "hypeActivationFeeTip": "HyperEVM 첫 번째 출금 시 Hyperliquid에서 {{fee}}의 일회성 활성화 수수료가 부과됩니다."
       },
       "home": {
         "entryPrice": "진입가",
@@ -3499,7 +3511,13 @@
       "isolatedMarginDesc": "각 포지션은 자체 마진을 사용합니다. 손실은 해당 포지션으로 제한되지만, 더 쉽게 청산될 수 있습니다.",
       "cannotChangeMarginModeWithOpenPositions": "열린 포지션이 있는 상태에서 마진 모드를 변경할 수 없습니다.",
       "crossMarginDesc": "모든 포지션은 동일한 마진을 공유합니다. 이렇게 하면 단일 포지션이 청산될 가능성이 줄어들지만, 극단적인 시장 변동에서 모든 교차 마진 자금이 손실될 수 있습니다.",
-      "unrealizedPnl": "실현되지 않은 PNL"
+      "unrealizedPnl": "실현되지 않은 PNL",
+      "newUserGuide": {
+        "learnMore": "자세히 알아보기"
+      },
+      "addFunds": "자금 추가",
+      "crossMarginLiqPriceTip": "크로스 마진 모드에서는 단일 포지션의 청산 가격이 참고용 추정치입니다.",
+      "selectTokenToWithdraw": "출금 네트워크 선택"
     },
     "perpsPro": {
       "chatArea": {
@@ -3593,7 +3611,14 @@
           "reverse": "역전",
           "closedPnl": "실현 손익",
           "closeLimit": "포지션 종료 지정가",
-          "receive": "받기"
+          "receive": "받기",
+          "marketCloseTitle": "시장 포지션 종료",
+          "marketCloseBtn": "시장 마감",
+          "dontShowAgain": "다시 표시하지 않음",
+          "invalidPrice": "잘못된 가격",
+          "marketCloseDesc": "이것은 포지션을 즉시 종료하려고 시도합니다.",
+          "confirmCloseAllTitle": "모든 포지션 종료 확인",
+          "confirmCloseAllDesc": "모든 열린 포지션은 시장 가격으로 종료되며 모든 주문이 취소됩니다."
         },
         "openOrders": {
           "time": "시간",
@@ -4257,6 +4282,53 @@
       "selectChain": "체인 선택",
       "selectMarket": "시장 선택",
       "disabled": "비활성화됨"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "필수 매개변수 누락",
+        "quoteUnavailable": "견적 조회 실패",
+        "gasCostTooHigh": "가스비 한도 초과",
+        "priceImpactTooHigh": "가격 영향도 높음",
+        "buildSwapTxsFailed": "스왑 트랜잭션 빌드 실패",
+        "sendSwapTxFailed": "스왑 트랜잭션 전송 실패",
+        "transactionFailed": "트랜잭션 실패",
+        "submitFailed": "트랜잭션 제출 실패",
+        "gasNotEnough": "가스 부족"
+      },
+      "stopTaskModal": {
+        "title": "현재 스왑을 중지하시겠습니까?",
+        "description": "지금 중지하면 나머지 스왑은 완료되지 않습니다. 완료된 스왑은 취소할 수 없으므로 주의하시기 바랍니다.",
+        "continueSwap": "스왑 계속",
+        "stop": "스왑 중지"
+      },
+      "status": {
+        "pending": "스왑",
+        "idle": "스왑 대기 중",
+        "success": "스왑 성공"
+      },
+      "title": "먼지 전환",
+      "description": "가치 낮은 토큰을 가스 토큰으로 전환하여 자산 목록을 단순화하세요!",
+      "receiveTitle": "받게 되는 금액",
+      "expectedToReceive": "예상 수령량",
+      "completedTitle": "먼지 전환 완료!",
+      "done": "완료",
+      "conversionProgress": "전환 진행률",
+      "slippageTolerance": "슬리피지 허용 범위",
+      "singleTransactionGasLimit": "단일 트랜잭션 가스 한도",
+      "startConvert": "전환 시작",
+      "unsupportedWalletType": "개인 키와 시드 구문 주소만 지원됩니다.",
+      "stop": "중지",
+      "selectLowValueTokens": "낮은 가치 토큰 선택",
+      "tokenColumn": "토큰",
+      "amountColumn": "수량",
+      "valueColumn": "가치",
+      "statusColumn": "상태",
+      "noLowValueTokensFound": "낮은 가치 토큰이 없습니다",
+      "selectedTokens": "선택된 토큰",
+      "totalValue": "총 가치",
+      "moreChains": "+{{count}}개 체인",
+      "swapFailed": "스왑 실패, {{reason}}",
+      "completedTips": "진행 중인 스왑은 계속 처리됩니다"
     }
   },
   "component": {
@@ -4468,11 +4540,11 @@
       "lending": "대출",
       "perps": "Perps",
       "comingSoon": "곧 출시됩니다",
-      "portfolio": "포트폴리오",
-      "prediction": "예측"
+      "portfolio": "포트폴리오"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "주소 추가"
+      "addAddresses": "주소 추가",
+      "smallSwapDisabledTips": "현재 개인 키 및 시드 문구 주소만 지원됩니다."
     },
     "LpTokenTag": {
       "title": "이는 유동성 공급자(LP) 토큰입니다.",
@@ -4520,7 +4592,8 @@
     "closeButton": "닫기",
     "Nonce": "논스",
     "unknownNFT": "알 수 없는 NFT",
-    "appDescription": "Ethereum 및 EVM을 위한 당신의 필수 지갑"
+    "appDescription": "Ethereum 및 EVM을 위한 당신의 필수 지갑",
+    "collapse": "접기"
   },
   "background": {
     "error": {

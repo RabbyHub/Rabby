@@ -18,11 +18,9 @@ export { ReactComponent as RcIconSearchCC } from './search-cc.svg';
 export { ReactComponent as RcIconDappsCC } from './dapps-cc.svg';
 export { ReactComponent as RcIconManageCC } from './address-manage-cc.svg';
 export { ReactComponent as RcIconSettingCC } from './setting-cc.svg';
-export { ReactComponent as RcIconPrediction } from './prediction.svg';
-export { ReactComponent as RcIconProbablePredictionCC } from './probable-cc.svg';
-export { ReactComponent as RcIconOpinionPredictionCC } from './opinion-cc.svg';
 
 export { ReactComponent as RcIconAaveLendingCC } from './aave-cc.svg';
 export { ReactComponent as RcIconSparkLendingCC } from './spark-cc.svg';
 export { ReactComponent as RcIconVenusLendingCC } from './venus-cc.svg';
 export { ReactComponent as RcIconLampCC } from './lamp-cc.svg';
+export { ReactComponent as RcIconConvertDustCC } from './convert-dust-cc.svg';

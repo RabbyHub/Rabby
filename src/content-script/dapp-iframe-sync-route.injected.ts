@@ -21,38 +21,6 @@ const applyIframeTheme = (theme?: IframeBridgeTheme | null) => {
   if (theme !== 'dark' && theme !== 'light') {
     return false;
   }
-
-  if (location.origin === 'https://polymarket.com') {
-    localStorage?.setItem?.('color-mode', theme);
-    document?.documentElement?.setAttribute('data-theme', theme);
-    if (document?.documentElement?.style) {
-      document.documentElement.style['colorScheme'] = theme;
-    }
-    return true;
-  }
-
-  if (location.origin === 'https://probable.markets') {
-    const switchBTN = document?.documentElement?.querySelector?.(
-      'header label[data-scope="switch"]'
-    ) as HTMLLabelElement | null;
-    if (switchBTN) {
-      if (
-        !document?.documentElement
-          ?.querySelector?.('html')
-          ?.classList?.contains(theme)
-      ) {
-        switchBTN?.click?.();
-      }
-    } else {
-      localStorage?.setItem?.('theme', theme);
-      document?.documentElement
-        ?.querySelector?.('html')
-        ?.classList.remove('light', 'dark');
-      document?.documentElement?.querySelector?.('html')?.classList.add(theme);
-    }
-    return true;
-  }
-
   return false;
 };
 

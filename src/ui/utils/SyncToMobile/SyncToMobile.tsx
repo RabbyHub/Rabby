@@ -8,7 +8,9 @@ import { useWallet } from '../WalletContext';
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
 
-export interface Props {}
+export interface Props {
+  children?: React.ReactNode;
+}
 
 export const SyncToMobile: React.FC<Props> = ({ children }) => {
   const { t } = useTranslation();

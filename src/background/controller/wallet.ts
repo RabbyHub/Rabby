@@ -19,6 +19,7 @@ import {
   transactionHistoryService,
   transactionsService,
   contactBookService,
+  currencyService,
   signTextHistoryService,
   whitelistService,
   swapService,
@@ -60,7 +61,11 @@ import {
   CORE_KEYRING_TYPES,
 } from 'consts';
 import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
-import { Account, IHighlightedAddress } from '../service/preference';
+import {
+  Account,
+  IHighlightedAddress,
+  UnlockPreferredMethod,
+} from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import {
   TokenItem,
@@ -186,6 +191,17 @@ import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { AccountScene, SCENE_ACCOUNT_CONFIG } from '@/constant/scene-account';
+import { syncDbService } from '@/db/services/syncDbService';
+import { historyDbService } from '@/db/services/historyDbService';
+import { tokenDbService } from '@/db/services/tokenDbService';
+import { defiDbService } from '@/db/services/defiDbService';
+import { appChainDbService } from '@/db/services/appChainDbService';
+import { balanceDbService } from '@/db/services/balanceDbService';
+import { BALANCE_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
+import {
+  BalanceCacheData,
+  normalizeBalanceCacheData,
+} from '@/db/schema/balance';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -197,6 +213,16 @@ const gnosisPQueue = new PQueue({
   carryoverConcurrencyCount: false,
   concurrency: 2,
 });
+
+type DesktopPageType = 'profile' | 'perps' | 'lending' | 'prediction';
+
+function getDesktopPageType(path: string): DesktopPageType {
+  const normalized = path.replace(/^\//, '');
+  if (normalized.startsWith('desktop/perps')) return 'perps';
+  if (normalized.startsWith('desktop/lending')) return 'lending';
+  if (normalized.startsWith('desktop/prediction')) return 'prediction';
+  return 'profile';
+}
 
 export class WalletController extends BaseController {
   openapi = openapiService;
@@ -365,7 +391,7 @@ export class WalletController extends BaseController {
             },
           ],
         },
-        [to, rawAmount]
+        [toChecksumAddress(to), rawAmount]
       ),
       isSend: true,
     };
@@ -768,6 +794,7 @@ export class WalletController extends BaseController {
 
   bridgeToken = async (
     {
+      approveId,
       to,
       data,
       payTokenRawAmount,
@@ -780,6 +807,7 @@ export class WalletController extends BaseController {
       value,
       addHistoryData,
     }: {
+      approveId?: string;
       data: string;
       to: string;
       value: string;
@@ -808,7 +836,7 @@ export class WalletController extends BaseController {
         await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           0,
           {
             ga: {
@@ -829,7 +857,7 @@ export class WalletController extends BaseController {
         await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           payTokenRawAmount,
           {
             ga: {
@@ -884,6 +912,7 @@ export class WalletController extends BaseController {
 
   buildBridgeToken = async (
     {
+      approveId,
       to,
       data,
       payTokenRawAmount,
@@ -896,6 +925,7 @@ export class WalletController extends BaseController {
       value,
       addHistoryData,
     }: {
+      approveId?: string;
       data: string;
       to: string;
       value: string;
@@ -926,7 +956,7 @@ export class WalletController extends BaseController {
         const res = await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           0,
           {
             ga: {
@@ -949,7 +979,7 @@ export class WalletController extends BaseController {
         const res = await this.approveToken(
           payTokenChainServerId,
           payTokenId,
-          to,
+          approveId || to,
           payTokenRawAmount,
           {
             ga: {
@@ -1057,7 +1087,7 @@ export class WalletController extends BaseController {
           stateMutability: 'nonpayable',
           type: 'function',
         },
-        [spender, amount] as any
+        [toChecksumAddress(spender), amount] as any
       ),
     };
   };
@@ -1112,7 +1142,7 @@ export class WalletController extends BaseController {
           stateMutability: 'nonpayable',
           type: 'function',
         },
-        [spender, amount] as any
+        [toChecksumAddress(spender), amount] as any
       ),
     };
     if (gasPrice) {
@@ -1155,6 +1185,10 @@ export class WalletController extends BaseController {
     } = input;
 
     const tokenSpenders = JSON.parse(JSON.stringify(_tokenSpenders));
+    tokenSpenders.forEach((item: TokenSpenderPair) => {
+      item.token = toChecksumAddress(item.token);
+      item.spender = toChecksumAddress(item.spender);
+    });
 
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
@@ -1315,7 +1349,11 @@ export class WalletController extends BaseController {
                 stateMutability: 'nonpayable',
                 type: 'function',
               },
-              [account.address, to, tokenId]
+              [
+                toChecksumAddress(account.address),
+                toChecksumAddress(to),
+                tokenId,
+              ]
             ),
           },
         ],
@@ -1363,7 +1401,13 @@ export class WalletController extends BaseController {
                 stateMutability: 'nonpayable',
                 type: 'function',
               },
-              [account.address, to, tokenId, amount, []] as any
+              [
+                toChecksumAddress(account.address),
+                toChecksumAddress(to),
+                tokenId,
+                amount,
+                [],
+              ] as any
             ),
           },
         ],
@@ -1428,7 +1472,7 @@ export class WalletController extends BaseController {
                     stateMutability: 'nonpayable',
                     type: 'function',
                   },
-                  [spender, false] as any
+                  [toChecksumAddress(spender), false] as any
                 ),
               },
             ],
@@ -1499,7 +1543,7 @@ export class WalletController extends BaseController {
                   stateMutability: 'nonpayable',
                   type: 'function',
                 },
-                [spender, false] as any
+                [toChecksumAddress(spender), false] as any
               ),
               chainId,
             },
@@ -1693,21 +1737,22 @@ export class WalletController extends BaseController {
   openInDesktop = async (
     _url: string,
     options?: {
-      desktopTabId?: Browser.Tabs.Tab['id'];
       triggerFocusEventOnDesktop?: boolean;
     }
   ) => {
-    const {
-      desktopTabId: inputDesktopTabId,
-      triggerFocusEventOnDesktop = true,
-    } = options || {};
-    const desktopTabId: Browser.Tabs.Tab['id'] =
-      inputDesktopTabId || preferenceService.getPreference('desktopTabId');
-    const currentDesktopTab = desktopTabId
-      ? await Browser.tabs.get(desktopTabId).catch(() => null)
+    const { triggerFocusEventOnDesktop = true } = options || {};
+
+    const path = _url.replace(/^\//, '');
+    const pageType = getDesktopPageType(path);
+    const desktopTabIds =
+      preferenceService.getPreference('desktopTabIds') || {};
+    const storedTabId = desktopTabIds[pageType];
+
+    const currentDesktopTab = storedTabId
+      ? await Browser.tabs.get(storedTabId).catch(() => null)
       : null;
 
-    const url = `desktop.html#/${_url.replace(/^\//, '')}`;
+    const url = `desktop.html#/${path}`;
     if (currentDesktopTab) {
       const tab = await Browser.tabs.update(currentDesktopTab.id, {
         active: true,
@@ -1729,13 +1774,17 @@ export class WalletController extends BaseController {
       active: true,
       url: url,
     });
+    const latestIds = preferenceService.getPreference('desktopTabIds') || {};
     preferenceService.setPreferencePartials({
-      desktopTabId: tab.id,
+      desktopTabIds: { ...latestIds, [pageType]: tab.id },
     });
     return tab;
   };
 
-  openBiometricUnlockSetupWindow = async () => {
+  openBiometricUnlockSetupWindow = async (params?: { from?: string }) => {
+    if (params?.from !== 'settings') {
+      await this.clearPageStateCache();
+    }
     const {
       top: cTop,
       left: cLeft,
@@ -1743,7 +1792,8 @@ export class WalletController extends BaseController {
     } = await Browser.windows.getLastFocused({
       windowTypes: ['normal'],
     } as Windows.GetInfo);
-    const url = 'index.html#/biometric-unlock-setup';
+    const from = params?.from ? `?from=${encodeURIComponent(params.from)}` : '';
+    const url = `index.html#/biometric-unlock-setup${from}`;
     const top = cTop;
     const left = cLeft! + width! - 500;
     return Browser.windows.create({
@@ -1773,14 +1823,22 @@ export class WalletController extends BaseController {
     return false;
   };
 
-  finishBiometricUnlockSetup = async (setupWindowId?: number) => {
-    await this.setPageStateCache({
-      path: '/dashboard',
-      params: {},
-      states: {
-        action: 'open-settings',
-      },
-    });
+  finishBiometricUnlockSetup = async (
+    setupWindowId?: number,
+    options?: { openSettings?: boolean }
+  ) => {
+    const shouldOpenSettings = options?.openSettings ?? true;
+    if (shouldOpenSettings) {
+      await this.setPageStateCache({
+        path: '/dashboard',
+        params: {},
+        states: {
+          action: 'open-settings',
+        },
+      });
+    } else {
+      await this.clearPageStateCache();
+    }
 
     if (typeof setupWindowId === 'number') {
       try {
@@ -1861,15 +1919,30 @@ export class WalletController extends BaseController {
       } catch (error) {
         // just ignore appChain data
       }
-      const formatData = {
+      const formatData: BalanceCacheData = normalizeBalanceCacheData({
         ...data,
         evmUsdValue: data.total_usd_value,
         total_usd_value: data.total_usd_value + appChainTotalNetWorth,
         appChainIds,
-      };
+        appChainUsdValue: appChainTotalNetWorth,
+      });
       preferenceService.updateBalanceAboutCache(address, {
         totalBalance: formatData,
       });
+
+      try {
+        await Promise.all([
+          balanceDbService.putBalance(address, formatData),
+          syncDbService.setUpdatedAt({
+            address,
+            scene: BALANCE_SYNC_SCENE,
+            updatedAt: Date.now(),
+          }),
+        ]);
+      } catch (error) {
+        // keep balance response available even if Dexie persistence fails
+      }
+
       return formatData;
     },
     {
@@ -1930,20 +2003,71 @@ export class WalletController extends BaseController {
   /**
    * @deprecatedgetPersistedBalanceAboutCacheMap
    */
-  getAddressCacheBalance = (address: string | undefined, isTestnet = false) => {
+  getAddressCacheBalance = async (
+    address: string | undefined,
+    isTestnet = false
+  ) => {
     if (!address) return null;
     if (isTestnet) {
       return null;
     }
 
-    return (
-      preferenceService.getBalanceAboutCacheByAddress(address)?.totalBalance ??
-      null
-    );
+    try {
+      const balance = await balanceDbService.queryBalance(address);
+
+      if (balance) {
+        return balance;
+      }
+    } catch (error) {
+      // fallback to legacy preference cache below
+    }
+
+    const legacyBalance = preferenceService.getBalanceAboutCacheByAddress(
+      address
+    )?.totalBalance;
+
+    return legacyBalance ? normalizeBalanceCacheData(legacyBalance) : null;
   };
 
-  getPersistedBalanceAboutCacheMap = () => {
-    return preferenceService.getBalanceAboutCacheMap();
+  getPersistedBalanceAboutCacheMap = async () => {
+    const legacyCacheMap = preferenceService.getBalanceAboutCacheMap();
+    let dexieBalanceMap = {} as Record<string, BalanceCacheData>;
+
+    try {
+      dexieBalanceMap = await balanceDbService.queryBalanceMap();
+    } catch (error) {
+      // fallback to legacy preference cache below
+    }
+
+    return {
+      balanceMap: {
+        ...Object.entries(legacyCacheMap.balanceMap || {}).reduce(
+          (map, [address, balance]) => {
+            map[address] = normalizeBalanceCacheData(balance);
+            return map;
+          },
+          {} as Record<string, BalanceCacheData>
+        ),
+        ...dexieBalanceMap,
+      },
+      curvePointsMap: legacyCacheMap.curvePointsMap || {},
+    };
+  };
+
+  isBalanceDbCacheExpired = async (address: string) => {
+    let updatedAt = 0;
+
+    try {
+      updatedAt =
+        (await syncDbService.getUpdatedAt({
+          address,
+          scene: BALANCE_SYNC_SCENE,
+        })) || 0;
+    } catch (error) {
+      return true;
+    }
+
+    return updatedAt < Date.now() - CACHE_VALID_DURATION;
   };
 
   private getNetCurveCached = cached(
@@ -1982,6 +2106,11 @@ export class WalletController extends BaseController {
 
   getLocale = () => preferenceService.getLocale();
   setLocale = (locale: string) => preferenceService.setLocale(locale);
+
+  getCurrencyStore = () => currencyService.getStore();
+  syncCurrencyList = (force = false) => currencyService.syncCurrencyList(force);
+  getCurrency = () => currencyService.getCurrency();
+  setCurrency = (currency: string) => currencyService.setCurrency(currency);
 
   getThemeMode = () => preferenceService.getThemeMode();
   setThemeMode = (themeMode: DARK_MODE_TYPE) =>
@@ -2032,12 +2161,7 @@ export class WalletController extends BaseController {
     iv?: string;
   }) => {
     if (!payload.enabled) {
-      preferenceService.setPreferencePartials({
-        biometricUnlockEnabled: false,
-        biometricUnlockCredentialId: '',
-        biometricUnlockEncryptedPassword: '',
-        biometricUnlockIv: '',
-      });
+      preferenceService.clearBiometricUnlockStorage();
       return;
     }
 
@@ -2046,6 +2170,15 @@ export class WalletController extends BaseController {
       biometricUnlockCredentialId: payload.credentialId || '',
       biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
       biometricUnlockIv: payload.iv || '',
+    });
+  };
+
+  setUnlockPreferredMethod = (method: UnlockPreferredMethod) => {
+    if (!['password', 'biometric'].includes(method)) {
+      return;
+    }
+    preferenceService.setPreferencePartials({
+      unlockPreferredMethod: method,
     });
   };
 
@@ -2470,6 +2603,19 @@ export class WalletController extends BaseController {
 
   clearKeyrings = () => keyringService.clearKeyrings();
 
+  getSafePendingTransactions = async (
+    address: string,
+    networkId: string,
+    nonce: number
+  ) => {
+    const pendingTxs = await Safe.getPendingTransactions(
+      address,
+      networkId,
+      nonce
+    );
+    return pendingTxs;
+  };
+
   importGnosisAddress = async (address: string, networkIds: string[]) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.GNOSIS;
@@ -2752,7 +2898,7 @@ export class WalletController extends BaseController {
               address: safeAddress,
             });
             const threshold = await safe.getThreshold();
-            const { results } = await safe.apiKit.getMessages(safeAddress);
+            const { results } = await safe.getMessages();
             return {
               networkId,
               messages: results.filter(
@@ -3014,8 +3160,7 @@ export class WalletController extends BaseController {
     chainId: number;
     messageHash: string;
   }) => {
-    const apiKit = Safe.createSafeApiKit(String(chainId));
-    return apiKit.getMessage(messageHash);
+    return Safe.getMessage(messageHash, String(chainId));
   };
 
   getGnosisMessageHash = async ({
@@ -3668,6 +3813,7 @@ export class WalletController extends BaseController {
       preferenceService.removeAddressBalance(address);
       preferenceService.removeCurvePoints(address);
       perpsService.removeAgentWallet(address);
+      this.forceExpireInMemoryAddressBalance(address);
     }
     const current = preferenceService.getCurrentAccount();
     if (
@@ -3691,6 +3837,13 @@ export class WalletController extends BaseController {
         });
       }
     });
+
+    syncDbService.deleteForAddress(address);
+    historyDbService.deleteForAddress(address);
+    tokenDbService.deleteForAddress(address);
+    defiDbService.deleteForAddress(address);
+    appChainDbService.deleteForAddress(address);
+    balanceDbService.deleteForAddress(address);
   };
 
   removeAddresses = async (
@@ -6027,6 +6180,8 @@ export class WalletController extends BaseController {
   setMarketSlippage = perpsService.setMarketSlippage;
   getSoundEnabled = perpsService.getSoundEnabled;
   setSoundEnabled = perpsService.setSoundEnabled;
+  getSkipMarketCloseConfirm = perpsService.getSkipMarketCloseConfirm;
+  setSkipMarketCloseConfirm = perpsService.setSkipMarketCloseConfirm;
   getPerpsIsNeedSetDarkTheme = perpsService.getIsNeedSetDarkTheme;
   updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
@@ -6037,6 +6192,8 @@ export class WalletController extends BaseController {
   setPerpsQuoteUnit = perpsService.setQuoteUnit;
   setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
   getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
+  setHasDismissedNewUserGuideV2 = perpsService.setHasDismissedNewUserGuideV2;
+  getHasDismissedNewUserGuideV2 = perpsService.getHasDismissedNewUserGuideV2;
   getPerpsAgentWallet = async (masterWallet: string) => {
     return perpsService.getAgentWallet(masterWallet);
   };
@@ -6348,6 +6505,7 @@ export class WalletController extends BaseController {
   fetchRemoteConfig = async (): Promise<{
     switches?: {
       isPerpsInviteDisabled?: boolean;
+      rabbySyncTour20260403?: boolean;
     };
   }> => {
     const url = appIsProd

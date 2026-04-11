@@ -1,5 +1,5 @@
 import { TestnetChainBase } from '@/background/service/customTestnet';
-import { Form, FormInstance, Input } from 'antd';
+import { Form, FormInstance, Input, InputRef } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMount } from 'ahooks';
@@ -70,7 +70,7 @@ export const CustomTestnetForm = ({
   onFieldsChange?(changedFields: any, allFields: any): void;
 }) => {
   const { t } = useTranslation();
-  const inputRef = React.useRef<Input>(null);
+  const inputRef = React.useRef<InputRef>(null);
 
   useMount(() => {
     setTimeout(() => {

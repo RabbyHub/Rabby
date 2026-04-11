@@ -30,7 +30,10 @@ import {
   formatMarkData,
   getMaxTimeFromAccountHistory,
 } from '../views/Perps/utils';
-import { DEFAULT_TOP_ASSET } from '../views/Perps/constants';
+import {
+  DEFAULT_TOP_ASSET,
+  HYPE_EVM_BRIDGE_ADDRESS,
+} from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
@@ -199,6 +202,7 @@ export interface PerpsState {
   twapSliceFills: UserTwapSliceFill[];
   marketSlippage: number; // 0-1, default 0.05 (5%)
   soundEnabled: boolean;
+  skipMarketCloseConfirm: boolean;
   marketEstSize: string;
   marketEstPrice: string;
   quoteUnit: 'base' | 'usd';
@@ -264,6 +268,7 @@ export const perps = createModel<RootModel>()({
     twapHistory: [],
     twapSliceFills: [],
     soundEnabled: true,
+    skipMarketCloseConfirm: false,
     marketSlippage: 0.05, // default 5%
     marketEstSize: '',
     marketEstPrice: '',
@@ -362,6 +367,19 @@ export const perps = createModel<RootModel>()({
               time: item.time,
               hash: item.hash,
               type: 'receive' as const,
+              status: 'success' as const,
+              usdValue: usdcValue.toString(),
+            };
+          }
+
+          if (
+            item.delta.type === 'send' &&
+            destination === HYPE_EVM_BRIDGE_ADDRESS
+          ) {
+            return {
+              time: item.time,
+              hash: item.hash,
+              type: 'withdraw' as const,
               status: 'success' as const,
               usdValue: usdcValue.toString(),
             };
@@ -476,9 +494,19 @@ export const perps = createModel<RootModel>()({
     },
 
     setLocalLoadingHistory(state, payload: AccountHistoryItem[]) {
+      // If WS already delivered a confirmed entry for this type,
+      // skip adding the pending item (WS arrived before HTTP response)
+      const filtered = payload.filter((item) => {
+        return !state.userAccountHistory.some(
+          (h) => h.type === item.type && h.time >= item.time
+        );
+      });
+      if (filtered.length === 0) {
+        return state;
+      }
       return {
         ...state,
-        localLoadingHistory: [...payload, ...state.localLoadingHistory],
+        localLoadingHistory: [...filtered, ...state.localLoadingHistory],
       };
     },
 
@@ -783,6 +811,13 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         soundEnabled: payload ?? true,
+      };
+    },
+
+    setSkipMarketCloseConfirm(state, payload: boolean) {
+      return {
+        ...state,
+        skipMarketCloseConfirm: payload,
       };
     },
   },
@@ -1312,16 +1347,9 @@ export const perps = createModel<RootModel>()({
     async initFavoritedCoins(_, rootState) {
       try {
         const favoritedCoins = await rootState.app.wallet.getPerpsFavoritedCoins();
-        if (favoritedCoins && favoritedCoins.length > 0) {
-          dispatch.perps.setFavoritedCoins(favoritedCoins);
-        } else {
-          // Default favorited coins
-          dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
-        }
+        dispatch.perps.setFavoritedCoins(favoritedCoins);
       } catch (error) {
         console.error('Failed to load favorited coins:', error);
-        // Fallback to default
-        dispatch.perps.setFavoritedCoins(['BTC', 'ETH', 'SOL']);
       }
     },
 
@@ -1374,10 +1402,19 @@ export const perps = createModel<RootModel>()({
     async initMarketSlippage(_, rootState) {
       try {
         const slippage = await rootState.app.wallet.getMarketSlippage();
-        dispatch.perps.setMarketSlippage(slippage ?? 0.08);
+        dispatch.perps.setMarketSlippage(slippage ?? 0.05);
       } catch (error) {
         console.error('Failed to load market slippage:', error);
-        dispatch.perps.setMarketSlippage(0.08);
+        dispatch.perps.setMarketSlippage(0.05);
+      }
+    },
+
+    async initSkipMarketCloseConfirm(_, rootState) {
+      try {
+        const skip = await rootState.app.wallet.getSkipMarketCloseConfirm();
+        dispatch.perps.setSkipMarketCloseConfirm(skip ?? false);
+      } catch (error) {
+        dispatch.perps.setSkipMarketCloseConfirm(false);
       }
     },
 
@@ -1407,6 +1444,15 @@ export const perps = createModel<RootModel>()({
         dispatch.perps.setSoundEnabled(enabled);
       } catch (error) {
         console.error('Failed to save sound enabled:', error);
+      }
+    },
+
+    async updateSkipMarketCloseConfirm(skip: boolean, rootState) {
+      try {
+        await rootState.app.wallet.setSkipMarketCloseConfirm(skip);
+        dispatch.perps.setSkipMarketCloseConfirm(skip);
+      } catch (error) {
+        console.error('Failed to save skipMarketCloseConfirm:', error);
       }
     },
   }),

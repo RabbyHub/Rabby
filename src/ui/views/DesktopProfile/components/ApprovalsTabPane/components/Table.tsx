@@ -13,6 +13,7 @@ import type { ColumnGroupType, ColumnType } from 'antd/lib/table';
 import classNames from 'classnames';
 import clsx from 'clsx';
 import ResizeObserver from 'rc-resize-observer';
+import type { RenderedCell } from 'rc-table/lib/interface';
 import { VariableSizeGrid as VGrid, areEqual } from 'react-window';
 import { ROW_HEIGHT, SCROLLBAR_WIDTH } from '../constant';
 
@@ -81,6 +82,18 @@ export type IVGridContextualPayload<RecordType> = {
   record: RecordType;
 };
 
+const isRenderedCell = <T extends object>(
+  value: unknown
+): value is RenderedCell<T> => {
+  return (
+    !!value &&
+    typeof value === 'object' &&
+    'children' in value &&
+    'props' in value &&
+    !React.isValidElement(value)
+  );
+};
+
 const TableCellProto = <RecordType extends object = any>({
   columnIndex,
   rowIndex,
@@ -120,9 +133,14 @@ const TableCellProto = <RecordType extends object = any>({
     cellNode = cellValue;
   }
 
-  const colGroupConfig = columnConfig as ColumnGroupType<RecordType>;
-  if (typeof colGroupConfig.render === 'function') {
-    cellNode = colGroupConfig.render!(cellValue, record, rowIndex) || null;
+  if (typeof colConfig.render === 'function') {
+    const renderedCell = colConfig.render(cellValue, record, rowIndex);
+
+    if (isRenderedCell<RecordType>(renderedCell)) {
+      cellNode = renderedCell.children ?? null;
+    } else {
+      cellNode = renderedCell as React.ReactNode;
+    }
   }
 
   return (

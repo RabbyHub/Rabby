@@ -13,6 +13,7 @@ const Container = styled.div`
 export const PopupContainer: React.FC<{
   style?: StyleSheet;
   className?: string;
+  children?: React.ReactNode;
 }> = ({ children, style, className }) => {
   const ref = useRef<HTMLDivElement | null>(null);
   const getContainer = useMemoizedFn(() => {

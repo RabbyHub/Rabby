@@ -29,7 +29,9 @@
         "Pending": "Pendiente",
         "Failed": "Fallido",
         "Succeeded": "Sucedido"
-      }
+      },
+      "showScamTips": "Mostrar transacciones de estafa",
+      "hideScamTips": "Ocultar transacciones fraudulentas"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",
@@ -1103,7 +1105,9 @@
       },
       "noSeedPhraseAddress": "No se han agregado direcciones para esta frase semilla. Puedes agregar una dirección o eliminar la frase semilla.",
       "watch-address": "Solo de ver",
-      "deleteSuccess": "Eliminado con éxito"
+      "deleteSuccess": "Eliminado con éxito",
+      "seedPhraseNotBackedUp": "Wallet no respaldada",
+      "backupSeedPhraseNow": "Iniciar copia de seguridad"
     },
     "dashboard": {
       "home": {
@@ -1132,9 +1136,9 @@
           "settings": "Configuraciones",
           "perpsPositions_one": "{{count}} Posición",
           "perpsPositions_other": "{{count}} Posiciones",
-          "prediction": "Predicción",
           "lending": "Préstamo",
-          "dragTip": "Función de pulsar largo para reordenar"
+          "dragTip": "Función de pulsar largo para reordenar",
+          "convertDust": "Convertir Polvo"
         },
         "comingSoon": "Próximamente",
         "soon": "Pronto",
@@ -1309,7 +1313,9 @@
           "switchPasswordForNonWhitelistedTx": "Contraseña para transferencias no autorizadas",
           "biometricUnlock": "Desbloquear con biometría",
           "biometricUnlockHint": "Usa biometría para desbloquear en este dispositivo.",
-          "biometricUnlockUnsupported": "Este dispositivo no soporta el desbloqueo biométrico."
+          "biometricUnlockUnsupported": "Este dispositivo no soporta el desbloqueo biométrico.",
+          "currency": "Moneda",
+          "searchCurrency": "Buscar moneda"
         },
         "aboutUs": "Acerca de Nosotros",
         "currentVersion": "Versión Actual",
@@ -1484,7 +1490,8 @@
         "side": "LADO",
         "searchTokenPlaceholder": "Buscar Token",
         "openInTab": "Abrir en Rabby Tab",
-        "openProMode": "Abrir Modo Pro"
+        "openProMode": "Abrir Modo Pro",
+        "openInTabV2": "Abrir en pestaña"
       },
       "hd": {
         "howToConnectLedger": "¿Cómo Conectar Ledger?",
@@ -1548,7 +1555,8 @@
         "title": "Rabby Puntos",
         "downloadIntro": "¿No tienes la aplicación aún? Descárgala ahora.",
         "desc": "Consulta tus puntos en Rabby Mobile."
-      }
+      },
+      "noData": "No se encontró moneda"
     },
     "nft": {
       "floorPrice": "/ Precio Mínimo:",
@@ -3317,7 +3325,8 @@
         "size": "Tamaño de la posición",
         "closedPnl": "P/L realizado",
         "tradeValue": "Valor nocional",
-        "fee": "Comisión"
+        "fee": "Comisión",
+        "feeDesc": "Cuando los usuarios realizan operaciones, se aplican tanto <1>comisiones de trading</1> como <2>comisiones de constructor</2>."
       },
       "logoutConfirmModal": {
         "title": "Cerrar sesión de la dirección actual",
@@ -3339,7 +3348,10 @@
         "estReceiveLabel": "Recibo estimado",
         "goBridgeTips": "Solo USDC en Arbitrum es compatible con depósitos directos. Por favor, puentea tu token actual a USDC en Arbitrum antes de depositar.",
         "estReceive": "Recibo estimado: {{balance}}",
-        "hyperliquidFeeLabelTooltip": "Los nuevos usuarios deben pagar una tarifa de activación única a Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Los nuevos usuarios deben pagar una tarifa de activación única a Hyperliquid.",
+        "amount": "Cantidad",
+        "hypeActivationFeeTip": "Se cobrará una tarifa de activación única de {{fee}} por parte de Hyperliquid para el primer retiro de HyperEVM.",
+        "feeTipTooltipHype": "Se cobrará una tarifa de ~0.00002 HYPE para retirar a la EVM."
       },
       "home": {
         "size": "Tamaño",
@@ -3502,7 +3514,13 @@
       "openProModeInTab": "Abrir Modo Pro en la pestaña",
       "cannotChangeMarginModeWithOpenPositions": "No se puede cambiar el modo de margen con posiciones abiertas.",
       "isolatedMarginDesc": "Cada posición utiliza su propio margen. Las pérdidas están limitadas a esa posición, pero puede ser liquidada más fácilmente.",
-      "crossMarginDesc": "Todas las posiciones comparten el mismo margen. Esto reduce la posibilidad de que una sola posición sea liquidada, pero todos los fondos de margen cruzado pueden perderse en movimientos extremos del mercado."
+      "crossMarginDesc": "Todas las posiciones comparten el mismo margen. Esto reduce la posibilidad de que una sola posición sea liquidada, pero todos los fondos de margen cruzado pueden perderse en movimientos extremos del mercado.",
+      "newUserGuide": {
+        "learnMore": "Aprender más"
+      },
+      "addFunds": "Agregar fondos",
+      "crossMarginLiqPriceTip": "En el modo de margen cruzado, el precio de liquidación para una posición única es solo una estimación de referencia.",
+      "selectTokenToWithdraw": "Seleccionar Red de Retiro"
     },
     "perpsPro": {
       "chatArea": {
@@ -3596,7 +3614,14 @@
           "close": "Cerrar",
           "mid": "Precio medio",
           "limitClose": "Cierre límite",
-          "closeLimit": "Límite de cierre"
+          "closeLimit": "Límite de cierre",
+          "marketCloseBtn": "Cierre de mercado",
+          "dontShowAgain": "No mostrar esto de nuevo",
+          "confirmCloseAllTitle": "Confirmar cierre de todas las posiciones",
+          "marketCloseDesc": "Esto intentará cerrar la posición de inmediato.",
+          "confirmCloseAllDesc": "Todas tus posiciones abiertas se cerrarán al precio de mercado y se cancelarán todas las órdenes.",
+          "marketCloseTitle": "Cerrar posición de mercado",
+          "invalidPrice": "Precio inválido"
         },
         "openOrders": {
           "order": "Orden",
@@ -4260,6 +4285,53 @@
       "hfTitle": "Factor de Salud",
       "selectChain": "Seleccionar cadena",
       "selectMarket": "Seleccionar Mercado"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Faltan parámetros requeridos",
+        "quoteUnavailable": "Error al obtener la cotización",
+        "gasCostTooHigh": "Excede el límite de comisión de gas",
+        "priceImpactTooHigh": "Alto impacto en el precio",
+        "buildSwapTxsFailed": "Error al construir las transacciones de swap",
+        "sendSwapTxFailed": "Error al enviar la transacción de swap",
+        "transactionFailed": "Transacción fallida",
+        "submitFailed": "Error al enviar las transacciones",
+        "gasNotEnough": "Gas insuficiente"
+      },
+      "stopTaskModal": {
+        "title": "¿Detener los intercambios actuales?",
+        "description": "Si detienes ahora, los intercambios restantes no se completarán. Ten en cuenta que los intercambios completados no se pueden revertir.",
+        "continueSwap": "Continuar intercambio",
+        "stop": "Detener intercambio"
+      },
+      "status": {
+        "pending": "Intercambiando",
+        "idle": "Esperando para intercambiar",
+        "success": "Intercambio exitoso"
+      },
+      "title": "Convertir Polvo",
+      "description": "¡Convierte tokens de bajo valor en token de gas para simplificar tu lista de activos!",
+      "receiveTitle": "Recibes",
+      "expectedToReceive": "Se espera recibir",
+      "completedTitle": "¡Polvo Convertido!",
+      "done": "Hecho",
+      "conversionProgress": "Progreso de conversión",
+      "slippageTolerance": "Tolerancia de deslizamiento",
+      "singleTransactionGasLimit": "Límite de gas de transacción única",
+      "startConvert": "Iniciar conversión",
+      "unsupportedWalletType": "Solo se admiten direcciones de clave privada y frase semilla.",
+      "stop": "Detener",
+      "selectLowValueTokens": "Seleccionar tokens de bajo valor",
+      "tokenColumn": "Token",
+      "amountColumn": "Cantidad",
+      "valueColumn": "Valor",
+      "statusColumn": "Estado",
+      "noLowValueTokensFound": "No se encontraron tokens de bajo valor",
+      "selectedTokens": "Tokens seleccionados",
+      "totalValue": "Valor total",
+      "moreChains": "+{{count}} cadenas",
+      "swapFailed": "Intercambio fallido, {{reason}}",
+      "completedTips": "El intercambio en curso continuará procesándose"
     }
   },
   "component": {
@@ -4471,11 +4543,11 @@
       "portfolio": "Cartera",
       "lending": "Préstamo",
       "perps": "Perps",
-      "comingSoon": "Próximamente",
-      "prediction": "Predicción"
+      "comingSoon": "Próximamente"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Agregar dirección"
+      "addAddresses": "Agregar dirección",
+      "smallSwapDisabledTips": "Actualmente solo se admiten direcciones de clave privada y frase semilla."
     },
     "LpTokenTag": {
       "title": "Este es un token de proveedor de liquidez (LP)",
@@ -4523,7 +4595,8 @@
     "notSupportTesntnet": "No compatible con red personalizada",
     "tryAgain": "Inténtalo de nuevo",
     "Nonce": "Nonce",
-    "appDescription": "Tu billetera de referencia para Ethereum y EVM"
+    "appDescription": "Tu billetera de referencia para Ethereum y EVM",
+    "collapse": "Contraer"
   },
   "background": {
     "error": {

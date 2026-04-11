@@ -26,15 +26,18 @@ export const useCheckCurrentSafeMessage = (
 ) => {
   const wallet = useWallet();
   const { t } = useTranslation();
+  type CheckCurrentSafeMessageResult =
+    | { safeMessage: SafeMessage; threshold: number; isFinished: boolean }
+    | undefined;
   return useRequest(
-    async () => {
+    async (): Promise<CheckCurrentSafeMessageResult> => {
       if (
         !threshold ||
         !chainId ||
         !safeMessageHash ||
         currentAccount.type !== KEYRING_TYPE.GnosisKeyring
       ) {
-        return;
+        return undefined;
       }
       const res = await wallet.getGnosisMessage({
         chainId: chainId,

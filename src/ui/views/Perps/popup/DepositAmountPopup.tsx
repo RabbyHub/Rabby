@@ -15,7 +15,10 @@ import {
   ARB_USDC_TOKEN_ITEM,
   ARB_USDC_TOKEN_SERVER_CHAIN,
   HYPE_USDC_TOKEN_ID,
+  HYPE_USDC_TOKEN_ITEM,
   HYPE_USDC_TOKEN_SERVER_CHAIN,
+  isHypeWithdrawToken,
+  HYPE_EVM_BRIDGE_ADDRESS,
 } from '../constants';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenWithChain } from '@/ui/component';
@@ -34,12 +37,13 @@ import { getTokenSymbol, tokenAmountBn } from '@/ui/utils/token';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { getPerpsSDK } from '../sdkManager';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { useTwoStepSwap } from '@/ui/views/Swap/hooks/twoStepSwap';
 import TokenSelectPopup from './TokenSelectPopup';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
   type: 'deposit' | 'withdraw';
@@ -58,7 +62,10 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   setIsPreparingSign: (isPreparingSign: boolean) => void;
   handleDeposit: () => void;
   miniTxs: Tx[];
-  handleWithdraw?: (amount: number) => Promise<boolean>;
+  handleWithdraw?: (
+    amount: number,
+    isHypeWithdraw?: boolean
+  ) => Promise<boolean>;
   onClose: () => void;
   clearMiniSignTx: () => void;
   clearMiniSignTypeData?: () => void;
@@ -100,6 +107,31 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const [tokenListLoading, setTokenListLoading] = React.useState(false);
   const [gasPrice, setGasPrice] = React.useState<number>(0);
 
+  // Fetch preTransferCheck fee for HyperEVM withdrawal
+  const [hypeTransferFee, setHypeTransferFee] = React.useState<string>('0');
+  React.useEffect(() => {
+    if (!visible || !currentPerpsAccount?.address) {
+      setHypeTransferFee('0');
+      return;
+    }
+    const sdk = getPerpsSDK();
+    sdk.info
+      .getPreTransferCheck(HYPE_EVM_BRIDGE_ADDRESS, currentPerpsAccount.address)
+      .then((res) => {
+        setHypeTransferFee(res?.fee || '0');
+      })
+      .catch(() => {
+        setHypeTransferFee('0');
+      });
+  }, [visible, currentPerpsAccount?.address]);
+
+  const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
+
+  const hypeGasFeeUsd = useMemo(() => {
+    const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
+    return new BigNumber(0.00002).times(hypePrice).toNumber();
+  }, [marketDataMap]);
+
   const { value: _tokenInfo, loading: tokenLoading } = useAsync(async () => {
     if (!currentPerpsAccount?.address || !visible || !selectedToken)
       return null;
@@ -128,14 +160,10 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   }, [_tokenInfo, selectedToken]);
 
   const fetchTokenList = useCallback(async () => {
+    if (!currentPerpsAccount?.address || !visible || type === 'withdraw')
+      return [];
     setTokenListLoading(true);
-    if (!currentPerpsAccount?.address || !visible) return [];
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
-    const usdcToken = res.find(
-      (t) =>
-        t.id === ARB_USDC_TOKEN_ID && t.chain === ARB_USDC_TOKEN_SERVER_CHAIN
-    );
-    // setSelectedToken(usdcToken || ARB_USDC_TOKEN_ITEM);
     setTokenListLoading(false);
     setTokenList(res);
 
@@ -160,6 +188,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
       setSelectedToken(null);
       setIsWithdrawLoading(false);
       setGasPrice(0);
+      setTokenVisible(false);
     }
   }, [visible]);
 
@@ -172,11 +201,37 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
   }, [selectedToken]);
 
+  const isHypeWithdraw = useMemo(() => {
+    return type === 'withdraw' && isHypeWithdrawToken(selectedToken);
+  }, [type, selectedToken]);
+
+  const withdrawMaxBalance = useMemo(() => {
+    if (!isHypeWithdraw || !Number(hypeTransferFee))
+      return Number(availableBalance);
+    return Math.max(
+      0,
+      new BigNumber(availableBalance)
+        .minus(hypeTransferFee)
+        .decimalPlaces(6, BigNumber.ROUND_DOWN)
+        .toNumber()
+    );
+  }, [isHypeWithdraw, availableBalance, hypeTransferFee]);
+
+  // Auto-select token with highest USD balance
   useEffect(() => {
-    if (visible && type === 'deposit') {
-      setTokenVisible(true);
+    if (visible && type === 'withdraw' && !selectedToken) {
+      setSelectedToken(ARB_USDC_TOKEN_ITEM);
     }
-  }, [visible, type]);
+    if (visible && type === 'deposit' && !selectedToken) {
+      if (tokenList.length > 0) {
+        const sorted = [...tokenList].sort(
+          (a, b) => b.amount * b.price - a.amount * a.price
+        );
+        // Pick the first token (highest USD value)
+        setSelectedToken(sorted[0]);
+      }
+    }
+  }, [visible, type, tokenList, selectedToken]);
 
   React.useEffect(() => {
     if (visible && inputRef.current) {
@@ -325,7 +380,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           setUsdValue(
             val
               .times(tokenInfo?.price || 0)
-              .decimalPlaces(2, BigNumber.ROUND_DOWN)
+              .decimalPlaces(6, BigNumber.ROUND_DOWN)
               .toFixed()
           );
           setGasPrice(normalPrice);
@@ -339,12 +394,25 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         setUsdValue(
           tokenAmountBn(tokenInfo)
             ?.times(tokenInfo?.price || 0)
-            .decimalPlaces(2, BigNumber.ROUND_DOWN)
+            .decimalPlaces(6, BigNumber.ROUND_DOWN)
             .toFixed()
         );
       }
     }
   }, [tokenInfo, nativeTokenDecimals, gasList, gasLimit, tokenIsNativeToken]);
+
+  const handlePercentage = React.useCallback(
+    (pct: number) => {
+      if (!tokenInfo) return;
+      const maxVal = new BigNumber(depositMaxUsdValue);
+      const val = maxVal
+        .times(pct)
+        .div(100)
+        .decimalPlaces(6, BigNumber.ROUND_DOWN);
+      setUsdValue(val.toFixed());
+    },
+    [depositMaxUsdValue, tokenInfo]
+  );
 
   // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
   useDebounce(
@@ -427,130 +495,181 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
             : t('page.perps.withdraw')}
         </div>
         <div className="px-16">
-          <div
-            className={`flex flex-col bg-r-neutral-card1 rounded-[8px] ${
-              type === 'withdraw' ? 'h-[140px]' : 'h-[140px]'
-            }`}
-          >
-            <div className="h-[140px] flex items-center justify-center flex-col">
-              <input
-                className={`mt-12 text-[40px] bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none ${getMarginTextColor()}`}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  boxShadow: 'none',
-                }}
-                ref={inputRef}
-                autoFocus
-                placeholder="$0"
-                value={usdValue ? `$${usdValue}` : ''}
-                onChange={(e) => {
-                  let value = e.target.value;
-
-                  // 移除美元符号
-                  if (value.startsWith('$')) {
-                    value = value.slice(1);
-                  }
-
-                  // 只允许数字和小数点
-                  if (/^\d*\.?\d*$/.test(value) || value === '') {
-                    setUsdValue(value);
-                  }
-                }}
-              />
-              {type === 'withdraw' ? (
-                <div className="text-13 text-r-neutral-body text-center flex items-center justify-center gap-6">
-                  {t('page.perps.availableBalance', {
+          {/* Amount / Balance — outside card */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="text-13 text-r-neutral-foot">
+              {t('page.perps.depositAmountPopup.amount')}
+            </div>
+            <div className="text-13 text-r-neutral-foot flex items-center">
+              {type === 'withdraw'
+                ? t('page.perps.availableBalance', {
                     balance: formatUsdValue(
-                      availableBalance,
+                      withdrawMaxBalance,
                       BigNumber.ROUND_DOWN
                     ),
-                  })}
-                  <div
-                    className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
-                    onClick={() => {
-                      setUsdValue(
-                        new BigNumber(availableBalance)
-                          .decimalPlaces(2, BigNumber.ROUND_DOWN)
-                          .toFixed()
-                      );
-                    }}
-                  >
-                    Max
-                  </div>
-                </div>
-              ) : (
-                <div className="text-13 text-r-neutral-body text-center flex items-center justify-center gap-6">
-                  {t('page.perps.balanceAvailable', {
+                  })
+                : t('page.perps.balanceAvailable', {
                     balance: formatUsdValue(
                       depositMaxUsdValue,
                       BigNumber.ROUND_DOWN
                     ),
                   })}
-                  <div
-                    className="text-r-blue-default bg-r-blue-light1 rounded-[4px] px-6 py-2 cursor-pointer"
-                    onClick={handleMax}
-                  >
-                    Max
-                  </div>
-                </div>
+              {isHypeWithdraw && Number(hypeTransferFee) > 0 && (
+                <Tooltip
+                  overlayClassName={clsx('rectangle')}
+                  placement="topLeft"
+                  title={t(
+                    'page.perps.depositAmountPopup.hypeActivationFeeTip',
+                    {
+                      fee: formatUsdValue(hypeTransferFee),
+                    }
+                  )}
+                >
+                  <RcIconInfo
+                    viewBox="0 0 12 12"
+                    width={12}
+                    height={12}
+                    className="text-rabby-neutral-foot mx-4"
+                  />
+                </Tooltip>
               )}
-              <div className="text-13 text-r-red-default text-center mt-8 h-[22px]">
-                {amountValidation.errorMessage || quoteError || ''}
+            </div>
+          </div>
+
+          {/* Input card */}
+          <div className="flex flex-col bg-r-neutral-card1 rounded-[8px] px-16 py-24">
+            <div className="flex items-center gap-8">
+              <div className="flex-1 flex flex-col">
+                <input
+                  className={clsx(
+                    'text-[28px] font-medium bg-transparent border-none p-0 w-full outline-none focus:outline-none',
+                    getMarginTextColor()
+                  )}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    boxShadow: 'none',
+                  }}
+                  ref={inputRef}
+                  autoFocus
+                  placeholder="$0"
+                  value={usdValue ? `$${usdValue}` : ''}
+                  onChange={(e) => {
+                    let value = e.target.value;
+                    if (value.startsWith('$')) {
+                      value = value.slice(1);
+                    }
+                    if (/^\d*\.?\d*$/.test(value) || value === '') {
+                      setUsdValue(value);
+                    }
+                  }}
+                />
+                <div className="text-12 text-r-neutral-foot mt-2">
+                  {type === 'withdraw'
+                    ? `${usdValue || '0'} USDC`
+                    : isDirectDeposit
+                    ? `${usdValue || '0'} ${getTokenSymbol(tokenInfo)}`
+                    : `${
+                        usdValue
+                          ? new BigNumber(usdValue)
+                              .div(tokenInfo?.price || 1)
+                              .decimalPlaces(6, BigNumber.ROUND_DOWN)
+                              .toFixed()
+                          : '0'
+                      } ${getTokenSymbol(tokenInfo || ARB_USDC_TOKEN_ITEM)}`}
+                </div>
+              </div>
+              <div
+                className={clsx(
+                  'flex items-center gap-6 px-12 h-[40px] justify-center rounded-[6px]',
+                  'bg-r-neutral-card-2',
+                  'border border-solid border-transparent',
+                  'cursor-pointer hover:bg-r-blue-light1 hover:border-rabby-blue-default'
+                )}
+                onClick={() => {
+                  setTokenVisible(true);
+                }}
+              >
+                <TokenWithChain
+                  token={selectedToken || ARB_USDC_TOKEN_ITEM}
+                  hideConer
+                  width="24px"
+                  height="24px"
+                />
+                <span className="text-[18px] font-medium text-r-neutral-title-1">
+                  {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                </span>
+                <ThemeIcon
+                  className="icon icon-arrow-right text-r-neutral-foot"
+                  src={RcIconArrowDownCC}
+                />
               </div>
             </div>
           </div>
-          <div
-            onClick={() => {
-              if (type === 'deposit') {
-                setTokenVisible(true);
-              }
-            }}
-            className={`mt-12 bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 text-r-neutral-body px-16 h-[48px] border border-transparent ${
-              type === 'withdraw'
-                ? ''
-                : 'hover:bg-r-blue-light1 hover:border-rabby-blue-default cursor-pointer'
-            }`}
-          >
-            <div className="text-r-neutral-title-1 font-medium text-13">
-              {type === 'deposit'
-                ? t('page.perps.depositAmountPopup.payWith')
-                : t('page.perps.depositAmountPopup.receiveToken')}
-            </div>
-            <div className={'flex items-center'}>
-              <TokenWithChain
-                token={selectedToken || ARB_USDC_TOKEN_ITEM}
-                hideConer
-                width="20px"
-                height="20px"
-              />
+
+          {/* Percentage buttons — outside card */}
+          <div className="flex items-center gap-8 mt-8">
+            {[25, 50, 75].map((pct) => (
               <div
-                className={'text-r-neutral-title-1 font-medium text-13 ml-4'}
+                key={pct}
+                className="flex-1 h-[40px] flex items-center justify-center rounded-[8px] border border-solid border-transparent text-13 text-r-neutral-title-1 cursor-pointer hover:border-rabby-blue-default font-medium hover:text-r-blue-default bg-r-neutral-card1"
+                onClick={() => {
+                  if (type === 'withdraw') {
+                    const val = new BigNumber(withdrawMaxBalance)
+                      .times(pct)
+                      .div(100)
+                      .decimalPlaces(6, BigNumber.ROUND_DOWN);
+                    setUsdValue(val.toFixed());
+                  } else {
+                    handlePercentage(pct);
+                  }
+                }}
               >
-                {type === 'withdraw'
-                  ? getTokenSymbol(ARB_USDC_TOKEN_ITEM)
-                  : getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                {pct}%
               </div>
-              {type === 'deposit' && (
-                <ThemeIcon
-                  className="icon icon-arrow-right ml-4"
-                  src={RcIconArrowRight}
-                />
-              )}
+            ))}
+            <div
+              className="flex-1 h-[40px] flex items-center justify-center rounded-[8px] border border-solid border-transparent text-13 text-r-neutral-title-1 cursor-pointer hover:border-rabby-blue-default font-medium hover:text-r-blue-default bg-r-neutral-card1"
+              onClick={() => {
+                if (type === 'withdraw') {
+                  setUsdValue(
+                    new BigNumber(withdrawMaxBalance)
+                      .decimalPlaces(6, BigNumber.ROUND_DOWN)
+                      .toFixed()
+                  );
+                } else {
+                  handleMax();
+                }
+              }}
+            >
+              Max
             </div>
+          </div>
+
+          {/* Error message */}
+          <div className="text-13 text-r-red-default text-left mt-8 h-[22px]">
+            {amountValidation.errorMessage || quoteError || ''}
           </div>
         </div>
         <div className="w-full mt-auto px-20 py-16 border-t-[0.5px] border-solid border-rabby-neutral-line flex items-center justify-center flex-col">
           {type === 'withdraw' && (
             <div className="mb-10 flex flex-row items-center justify-center">
               <div className="text-[11px] text-r-neutral-foot text-center">
-                {t('page.perps.depositAmountPopup.feeTip')}
+                {isHypeWithdraw
+                  ? `${t('page.perps.fee')}: $${new BigNumber(hypeGasFeeUsd)
+                      .decimalPlaces(6)
+                      .toFixed()}`
+                  : `${t('page.perps.fee')}: $1.00`}
               </div>
               <Tooltip
                 overlayClassName={clsx('rectangle')}
                 placement="top"
-                title={t('page.perps.depositAmountPopup.feeTipTooltip')}
+                title={t(
+                  isHypeWithdraw
+                    ? 'page.perps.depositAmountPopup.feeTipTooltipHype'
+                    : 'page.perps.depositAmountPopup.feeTipTooltip'
+                )}
                 align={{ targetOffset: [0, 0] }}
               >
                 <RcIconInfo
@@ -677,9 +796,19 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
               onClick={async () => {
                 setIsWithdrawLoading(true);
                 clearMiniSignTx();
-                await handleWithdraw?.(Number(usdValue));
+                let withdrawAmount = Number(usdValue);
+                if (isHypeWithdraw && hypeGasFeeUsd > 0) {
+                  withdrawAmount = new BigNumber(withdrawAmount)
+                    .minus(hypeGasFeeUsd)
+                    .decimalPlaces(6, BigNumber.ROUND_DOWN)
+                    .toNumber();
+                }
+                const success = await handleWithdraw?.(
+                  withdrawAmount,
+                  isHypeWithdraw
+                );
                 setIsWithdrawLoading(false);
-                onClose?.();
+                if (success) onClose?.();
               }}
             >
               {t('page.perps.withdraw')}
@@ -697,6 +826,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           }
         }}
         list={tokenList || []}
+        mode={type}
         onCancel={() => {
           if (type === 'deposit' && !selectedToken) {
             onClose();

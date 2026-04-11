@@ -136,6 +136,33 @@ const wrapperToken = {
       symbol: 'ETH',
     },
   },
+  XLAYER: {
+    name: 'Wrapped OKB',
+    symbol: 'WOKB',
+    address: '0xe538905cf8410324e03A5A23C1c177a474D59b2b',
+    origin: {
+      name: 'OKB',
+      symbol: 'OKB',
+    },
+  },
+  [CHAINS_ENUM.MANTLE]: {
+    name: 'Wrapped Mantle',
+    symbol: 'WMNT',
+    address: '0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8',
+    origin: {
+      name: 'MNT',
+      symbol: 'MNT',
+    },
+  },
+  MEGAETH: {
+    name: 'Wrapped Ether',
+    symbol: 'WETH',
+    address: '0x4200000000000000000000000000000000000006',
+    origin: {
+      name: 'Ether',
+      symbol: 'ETH',
+    },
+  },
 };
 
 export default wrapperToken;

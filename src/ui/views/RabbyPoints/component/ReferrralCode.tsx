@@ -1,5 +1,5 @@
 import { Popup } from '@/ui/component';
-import { Button, Input, message } from 'antd';
+import { Button, Input, InputRef, message } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -118,7 +118,7 @@ export const SetReferralCode = ({
     }
   }, [onSetCode, input]);
 
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
 
   useEffect(() => {
     if (visible) {

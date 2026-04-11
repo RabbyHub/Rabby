@@ -11,7 +11,7 @@ import {
 } from './TokenListViewSkeleton';
 import ProtocolList from './ProtocolList';
 import { useQueryProjects } from 'ui/utils/portfolio';
-import { Input } from 'antd';
+import { InputRef } from 'antd';
 import { useFilterProtocolList } from './useFilterProtocolList';
 import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
@@ -73,7 +73,7 @@ export const AssetListContainer: React.FC<Props> = ({
     isLoading: isAppPortfoliosLoading,
   } = useAppChain(currentAccount?.address, visible, isTestnet);
 
-  const inputRef = React.useRef<Input>(null);
+  const inputRef = React.useRef<InputRef>(null);
   const { isLoading: isSearching, list } = useSearchToken(
     currentAccount?.address,
     search,
@@ -148,7 +148,6 @@ export const AssetListContainer: React.FC<Props> = ({
   React.useEffect(() => {
     if (!visible) {
       setSearch('');
-      inputRef.current?.setValue('');
       inputRef.current?.focus();
       inputRef.current?.blur();
       setLpTokenMode(false);

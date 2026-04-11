@@ -29,7 +29,9 @@
         "Failed": "Başarısız",
         "Pending": "Beklemede",
         "Succeeded": "Başarılı"
-      }
+      },
+      "hideScamTips": "Dolandırıcılık işlemlerini gizle",
+      "showScamTips": "Dolandırıcılık işlemlerini göster"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",
@@ -1103,7 +1105,9 @@
       },
       "noSeedPhraseAddress": "Bu tohum ifadesi için adres eklenmemiştir. Bir adres ekleyebilir veya tohum ifadesini silebilirsiniz.",
       "watch-address": "Sadece izleme",
-      "deleteSuccess": "Başarıyla silindi"
+      "deleteSuccess": "Başarıyla silindi",
+      "backupSeedPhraseNow": "Yedeklemeye başla",
+      "seedPhraseNotBackedUp": "Cüzdan yedeklenmedi"
     },
     "dashboard": {
       "home": {
@@ -1132,9 +1136,9 @@
           "settings": "Ayarlar",
           "perpsPositions_one": "{{count}} Pozisyon",
           "perpsPositions_other": "{{count}} Pozisyonlar",
-          "prediction": "Tahmin",
           "lending": "Kredi Verme",
-          "dragTip": "Uzun basma özelliği ile sıralama"
+          "dragTip": "Uzun basma özelliği ile sıralama",
+          "convertDust": "Tozu Dönüştür"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1309,7 +1313,9 @@
           "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre",
           "biometricUnlock": "Biyometriklerle Kilidi Açma",
           "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açmayı desteklememektedir.",
-          "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın."
+          "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın.",
+          "currency": "Para Birimi",
+          "searchCurrency": "Para birimi ara"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -1484,7 +1490,8 @@
         "price": "FİYAT",
         "searchTokenPlaceholder": "Token Ara",
         "openInTab": "Rabby Sekmesinde Açın",
-        "openProMode": "Pro Modu Açın"
+        "openProMode": "Pro Modu Açın",
+        "openInTabV2": "Sekmede Aç"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -1548,7 +1555,8 @@
         "desc": "Rabby Mobile'de puanlarınızı kontrol edin.",
         "title": "Rabby Puanları",
         "downloadIntro": "Uygulamayı henüz indirmediniz mi? Şimdi indirin."
-      }
+      },
+      "noData": "Eşleşen para birimi yok"
     },
     "nft": {
       "floorPrice": "Taban Fiyat:",
@@ -3320,7 +3328,8 @@
         "date": "Tarih",
         "tradeValue": "İşlem Değeri",
         "size": "Pozisyon Büyüklüğü",
-        "closedPnl": "Kapatılan Kâr/Zarar"
+        "closedPnl": "Kapatılan Kâr/Zarar",
+        "feeDesc": "Kullanıcılar işlem yaptığında, hem <1>işlem ücretleri</1> hem de <2>oluşturucu ücretleri</2> geçerlidir."
       },
       "logoutConfirmModal": {
         "desc": "Mevcut Sürekli Vadeli Hesabınızdan çıkış yapıyorsunuz. Bu adresle giriş yaparak istediğiniz zaman hesabınızı geri yükleyebilirsiniz.",
@@ -3342,7 +3351,10 @@
         "estReceiveLabel": "Tahmini Alınacak",
         "goBridgeTips": "Arbitrum üzerinde doğrudan yatırma için yalnızca USDC desteklenir. Yatırmadan önce mevcut tokeninizi Arbitrum'daki USDC'ye köprüleyin.",
         "estReceiveTooltip": "Çapraz zincir mevduatı LiFi üzerinden işlenir, bazı kaymalar meydana gelebilir. {{number}} saniye içinde varış tahmini.",
-        "hyperliquidFeeLabelTooltip": "Yeni kullanıcılar Hyperliquid tarafından tek seferlik bir etkinleştirme ücreti öder."
+        "hyperliquidFeeLabelTooltip": "Yeni kullanıcılar Hyperliquid tarafından tek seferlik bir etkinleştirme ücreti öder.",
+        "amount": "Miktar",
+        "feeTipTooltipHype": "EVM'ye çekim yapmak için yaklaşık ~0.00002 HYPE ücret alınacaktır.",
+        "hypeActivationFeeTip": "Hyperliquid, ilk HyperEVM çekimi için {{fee}} tutarında tek seferlik bir aktivasyon ücreti alacaktır."
       },
       "home": {
         "entryPrice": "Giriş Fiyatı",
@@ -3505,7 +3517,13 @@
       "marginMode": "Marjinal Modu",
       "positionValue": "Pozisyon Değeri",
       "isolatedMarginDesc": "Her bir pozisyon kendi teminatını kullanır. Kayıplar o pozisyonla sınırlıdır, ancak likiditeye daha kolay maruz kalabilir.",
-      "crossMarginDesc": "Tüm pozisyonlar aynı marjı paylaşır. Bu, tek bir pozisyonun tasfiye edilme şansını azaltır, ancak tüm çapraz marj fonları aşırı piyasa hareketlerinde kaybedilebilir."
+      "crossMarginDesc": "Tüm pozisyonlar aynı marjı paylaşır. Bu, tek bir pozisyonun tasfiye edilme şansını azaltır, ancak tüm çapraz marj fonları aşırı piyasa hareketlerinde kaybedilebilir.",
+      "newUserGuide": {
+        "learnMore": "Daha Fazla Öğrenin"
+      },
+      "addFunds": "Fon Ekle",
+      "crossMarginLiqPriceTip": "Cross Margin modunda, tek bir pozisyon için tasfiye fiyatı sadece referans için bir tahmindir.",
+      "selectTokenToWithdraw": "Para Çekim Ağı Seçin"
     },
     "perpsPro": {
       "chatArea": {
@@ -3599,7 +3617,14 @@
           "closeLimit": "Kapatma Limiti",
           "closePositionMarketTips": "Bu, mevcut piyasa fiyatında derhal kapanacaktır.",
           "reverse": "Tersine çevir",
-          "mid": "orta fiyat"
+          "mid": "orta fiyat",
+          "invalidPrice": "Geçersiz Fiyat",
+          "dontShowAgain": "Bunu bir daha gösterme",
+          "marketCloseTitle": "Piyasa Kapatma Pozisyonu",
+          "confirmCloseAllTitle": "Tüm Pozisyonları Kapatmayı Onayla",
+          "marketCloseBtn": "Piyasa Kapatma",
+          "marketCloseDesc": "Bu, pozisyonu hemen kapatmayı deneyecektir.",
+          "confirmCloseAllDesc": "Tüm açık pozisyonlar piyasa fiyatından kapatılacak ve tüm emirler iptal edilecektir."
         },
         "openOrders": {
           "time": "Zaman",
@@ -4263,6 +4288,53 @@
       "hf": "Sağlık faktörü",
       "searchMarket": "Pazar Ara",
       "selectChain": "Zincir Seçin"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Eksik zorunlu parametreler",
+        "quoteUnavailable": "Teklif alınamadı",
+        "gasCostTooHigh": "Gas ücret limiti aşıldı",
+        "priceImpactTooHigh": "Yüksek fiyat etkisi",
+        "buildSwapTxsFailed": "Swap işlemleri oluşturulamadı",
+        "sendSwapTxFailed": "Swap işlemi gönderilemedi",
+        "transactionFailed": "İşlem başarısız",
+        "submitFailed": "İşlemler gönderilemedi",
+        "gasNotEnough": "Yetersiz Gas"
+      },
+      "stopTaskModal": {
+        "title": "Mevcut takasları durdur?",
+        "description": "Şimdi durdurursanız, kalan takaslar tamamlanmayacaktır. Tamamlanan takasların geri alınamayacağını lütfen unutmayın.",
+        "continueSwap": "Takasa devam et",
+        "stop": "Takası durdur"
+      },
+      "status": {
+        "pending": "Takas yapılıyor",
+        "idle": "Takas bekleniyor",
+        "success": "Takas başarılı"
+      },
+      "title": "Küçük Bakiyeleri Dönüştür",
+      "description": "Varlık listenizi basitleştirmek için düşük değerli tokenları gas tokenına dönüştürün!",
+      "receiveTitle": "Alacaksınız",
+      "expectedToReceive": "Beklenen alış",
+      "completedTitle": "Küçük Bakiyeler Dönüştürüldü!",
+      "done": "Tamamlandı",
+      "conversionProgress": "Dönüştürme ilerlemesi",
+      "slippageTolerance": "Kayma toleransı",
+      "singleTransactionGasLimit": "Tek İşlem Gas Limiti",
+      "startConvert": "Dönüştürmeyi başlat",
+      "unsupportedWalletType": "Yalnızca özel anahtar ve kurtarma cümlesi adresleri desteklenir.",
+      "stop": "Durdur",
+      "selectLowValueTokens": "Düşük Değerli Tokenları Seç",
+      "tokenColumn": "Token",
+      "amountColumn": "Miktar",
+      "valueColumn": "Değer",
+      "statusColumn": "Durum",
+      "noLowValueTokensFound": "Düşük değerli token bulunamadı",
+      "selectedTokens": "Seçili Tokenlar",
+      "totalValue": "Toplam değer",
+      "moreChains": "+{{count}} zincir",
+      "swapFailed": "Swap başarısız oldu, {{reason}}",
+      "completedTips": "Devam eden swap işlemi işlenmeye devam edecek"
     }
   },
   "component": {
@@ -4474,11 +4546,11 @@
       "perps": "Perps",
       "comingSoon": "Yakında",
       "lending": "Kredi Verme",
-      "portfolio": "Portföy",
-      "prediction": "Tahmin"
+      "portfolio": "Portföy"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Adres ekle"
+      "addAddresses": "Adres ekle",
+      "smallSwapDisabledTips": "Şu anda yalnızca özel anahtar ve kurtarma ifadesi adresleri desteklenmektedir."
     },
     "LpTokenTag": {
       "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",
@@ -4526,7 +4598,8 @@
     "Nonce": "Nonce",
     "notSupportTesntnet": "Özel ağ için desteklenmiyor",
     "tryAgain": "Tekrar Dene",
-    "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan."
+    "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan.",
+    "collapse": "Daralt"
   },
   "background": {
     "error": {

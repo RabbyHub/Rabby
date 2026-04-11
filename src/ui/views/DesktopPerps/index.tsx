@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useRef } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -13,16 +13,17 @@ import {
   DepositWithdrawModal,
   DepositWithdrawModalType,
 } from './components/DepositWithdrawModal';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { TopPermissionTips } from './components/TopPermissionTips';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import usePerpsProState from './hooks/usePerpsProState';
-import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
+import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import './resizable-panels.css';
+import { useTranslation } from 'react-i18next';
 
 const Wrap = styled.div`
   width: 100%;
@@ -38,67 +39,35 @@ export type PopupType = DepositWithdrawModalType | 'add-address' | null;
 export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   isActive = true,
 }) => {
-  usePerpsProInit();
+  usePerpsProInit(isActive);
 
+  const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation();
-  const dispatch = useRabbyDispatch();
-  const selectedCoin = useRabbySelector((state) => state.perps.selectedCoin);
-  const isUpdatingFromUrl = useRef(false);
 
   const currentPerpsAccount = useRabbySelector(
     (s) => s.perps.currentPerpsAccount
   );
   const { login: switchPerpsAccount } = usePerpsProState();
 
-  const { action, coin } = useMemo(() => {
-    const searchParams = new URLSearchParams(location.search);
-    return {
-      action: searchParams.get('action'),
-      coin: searchParams.get('coin'),
-    };
+  const action = useMemo(() => {
+    return new URLSearchParams(location.search).get('action');
   }, [location.search]);
-
-  // Initialize coin from URL on mount or when URL coin changes
-  useEffect(() => {
-    if (!isActive) {
-      return;
-    }
-    if (coin && coin !== selectedCoin) {
-      isUpdatingFromUrl.current = true;
-      dispatch.perps.updateSelectedCoin(coin);
-      // Reset flag after state update
-      setTimeout(() => {
-        isUpdatingFromUrl.current = false;
-      }, 0);
-    }
-  }, [coin, dispatch, isActive]); // Run when URL coin param changes
-
-  // Update URL when selectedCoin changes (but not from URL change)
-  useEffect(() => {
-    if (!isActive) {
-      return;
-    }
-
-    if (!isUpdatingFromUrl.current && selectedCoin && coin !== selectedCoin) {
-      const searchParams = new URLSearchParams(location.search);
-      searchParams.set('coin', selectedCoin);
-      history.replace({
-        pathname: location.pathname,
-        search: searchParams.toString(),
-      });
-    }
-  }, [selectedCoin, coin, history, location, isActive]);
 
   return (
     <>
       <Wrap>
-        <div className="flex flex-1 px-[20px] pb-16">
+        <div className="flex flex-1 pb-16">
           <div className="flex flex-col flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <DesktopNav showRightItems={false} />
-
-              <div className="flex items-center gap-[16px]">
+            <div className="flex items-center justify-between mt-20 mb-12 px-[12px]">
+              {/* <DesktopNav showRightItems={false} /> */}
+              <div className="flex items-center gap-[6px] text-rb-neutral-title-1">
+                <RcIconRabbyCC />
+                <span className="text-[20px] leading-[24px] font-bold">
+                  {t('component.DesktopNav.perps')}
+                </span>
+              </div>
+              <div className="flex items-center gap-[12px]">
                 <DesktopAccountSelector
                   scene="perps"
                   value={currentPerpsAccount}
@@ -109,7 +78,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               </div>
             </div>
             <TopPermissionTips />
-            <div className="flex flex-1 min-w-0 min-h-0 border border-solid border-rb-neutral-line rounded-[16px] overflow-hidden bg-rb-neutral-bg-1">
+            <div className="flex flex-1 min-w-0 min-h-0 border-t border-b  border-solid border-rb-neutral-line overflow-hidden bg-rb-neutral-bg-1">
               {/* [chart + order book] + UserInfoHistory，can be resized vertically */}
               <div className="flex-[4] flex flex-col min-w-0 min-h-0 border-r border-solid border-rb-neutral-line overflow-hidden">
                 <PanelGroup
@@ -121,7 +90,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                       <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
                         <ChartArea />
                       </div>
-                      <div className="flex-1 min-w-0">
+                      <div className="flex-1 max-w-[340px] min-w-0">
                         <OrderBookTrades />
                       </div>
                     </div>
@@ -134,7 +103,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               </div>
 
               {/* TradingPanel + AccountInfo */}
-              <div className="flex-1 flex-shrink-0 flex flex-col min-h-0 overflow-hidden">
+              <div className="flex-1 max-w-[340px] flex-shrink-0 flex flex-col min-h-0 overflow-hidden">
                 <div className="h-[680px] flex-shrink-0 overflow-hidden border-b border-solid border-rb-neutral-line">
                   <TradingPanel />
                 </div>

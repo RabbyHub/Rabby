@@ -56,19 +56,16 @@ const Wrapper = styled.div`
   .ant-table-header {
     flex-shrink: 0;
     .ant-table-thead > tr > th.ant-table-cell-scrollbar:last-child {
-      padding-right: 0;
-      display: none;
-    }
-
-    .ant-table-thead > tr > th:nth-last-child(2) {
-      padding-right: 16px; // add 4px for scrollbar
+      padding: 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
     }
   }
 
   .ant-table-body {
     flex: 1;
     overflow-y: auto !important;
-    overflow-x: hidden !important;
   }
 
   .ant-table-expanded-row {
@@ -85,6 +82,10 @@ const Wrapper = styled.div`
     border: none;
 
     padding: 12px 8px;
+
+    &::before {
+      display: none !important;
+    }
 
     &:first-child {
       padding-left: 16px;
@@ -145,6 +146,10 @@ const Wrapper = styled.div`
     }
   }
 
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
+    /* background-color: transparent; */
+    background-color: var(--rb-neutral-bg-3, #e0e5ec);
+  }
   .ant-table-tbody > tr.ant-table-row:hover > td {
     background-color: var(--rb-neutral-bg-3, #e0e5ec);
   }
@@ -179,6 +184,10 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
       background-color: var(--rb-neutral-bg-1, #fff);
       border: none;
       padding: 12px 8px;
+
+      &::before {
+        display: none !important;
+      }
 
       &:first-child {
         padding-left: 16px;
@@ -286,9 +295,17 @@ function VirtualRow<T extends object>({
           ];
         }
 
-        const cellContent = column.render
+        const renderedValue = column.render
           ? column.render(value, record, index)
-          : (value as React.ReactNode);
+          : value;
+
+        const cellContent: React.ReactNode =
+          renderedValue &&
+          typeof renderedValue === 'object' &&
+          !React.isValidElement(renderedValue) &&
+          'children' in renderedValue
+            ? (renderedValue.children as React.ReactNode)
+            : (renderedValue as React.ReactNode);
 
         const cellKey = column.key ?? String(dataIndex) ?? colIndex;
         const cellWidth = columnWidths[colIndex] || 0;
@@ -393,6 +410,10 @@ export const CommonTable = <T extends object>({
       }
 
       const originalTitle = col.title;
+      const renderedTitle: React.ReactNode =
+        typeof originalTitle === 'function'
+          ? originalTitle({} as Parameters<typeof originalTitle>[0])
+          : originalTitle;
       const fieldKey = (col.key || col.dataIndex) as string | undefined;
 
       const enhanced: SortedColumnType<T> = {
@@ -401,7 +422,7 @@ export const CommonTable = <T extends object>({
         sortDirections: ['ascend', 'descend'] as SortDirections,
         title: (
           <>
-            {originalTitle}
+            {renderedTitle}
             <span
               className="w-[16px] text-center"
               style={{
@@ -541,7 +562,7 @@ export const CommonTable = <T extends object>({
         dataSource={sortedData}
         columns={enhancedColumns as ColumnType<T>[]}
         onChange={handleTableChange}
-        scroll={{ y: bodyHeight || 'auto' }}
+        scroll={{ x: 'max-content', y: bodyHeight || 'auto' }}
       />
     </Wrapper>
   );

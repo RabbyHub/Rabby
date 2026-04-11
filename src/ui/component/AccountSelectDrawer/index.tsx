@@ -186,7 +186,7 @@ const AccountSelectDrawer = ({
   return (
     <Drawer
       height={440}
-      className="account-select is-support-darkmode"
+      className="account-select custom-popup is-support-darkmode"
       visible={visible}
       placement="bottom"
       maskClosable

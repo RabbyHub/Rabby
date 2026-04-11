@@ -29,7 +29,9 @@
         "Failed": "Gagal",
         "Pending": "Menunggu",
         "Succeeded": "Sukses"
-      }
+      },
+      "hideScamTips": "Sembunyikan transaksi penipuan",
+      "showScamTips": "Tampilkan transaksi penipuan"
     },
     "chainList": {
       "mainnet": "Jaringan Utama",
@@ -1195,7 +1197,9 @@
       },
       "noSeedPhraseAddress": "Tidak ada alamat yang ditambahkan untuk frase biji ini. Anda dapat menambahkan alamat atau menghapus frase biji ini.",
       "watch-address": "Tampilan Saja",
-      "deleteSuccess": "Dihapus dengan sukses"
+      "deleteSuccess": "Dihapus dengan sukses",
+      "seedPhraseNotBackedUp": "Dompet tidak dicadangkan",
+      "backupSeedPhraseNow": "Mulai cadangan"
     },
     "dashboard": {
       "home": {
@@ -1223,9 +1227,9 @@
           "settings": "Pengaturan",
           "perpsPositions_other": "{{count}} Posisi",
           "perpsPositions_one": "{{count}} Posisi",
-          "prediction": "Prediksi",
           "lending": "Peminjaman",
-          "dragTip": "Fitur tekan lama untuk mengurutkan ulang"
+          "dragTip": "Fitur tekan lama untuk mengurutkan ulang",
+          "convertDust": "Konversi Dust"
         },
         "queue": {
           "title": "Antrian",
@@ -1377,7 +1381,9 @@
           "switchPasswordForNonWhitelistedTx": "Kata sandi untuk transfer yang tidak terdaftar",
           "biometricUnlock": "Buka dengan Biometrik",
           "biometricUnlockHint": "Gunakan biometrik untuk membuka kunci di perangkat ini.",
-          "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik."
+          "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
+          "currency": "Mata Uang",
+          "searchCurrency": "Cari mata uang"
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",
@@ -1574,7 +1580,8 @@
         "side": "SISI",
         "searchTokenPlaceholder": "Cari Token",
         "openInTab": "Buka di Rabby Tab",
-        "openProMode": "Buka Mode Pro"
+        "openProMode": "Buka Mode Pro",
+        "openInTabV2": "Buka di Tab"
       },
       "hd": {
         "ledger": {
@@ -1637,7 +1644,8 @@
         "downloadIntro": "Belum punya aplikasi? Unduh sekarang.",
         "desc": "Periksa poin Anda di Rabby Mobile.",
         "title": "Rabby Points"
-      }
+      },
+      "noData": "Tidak ada mata uang yang cocok"
     },
     "nft": {
       "empty": {
@@ -3314,7 +3322,8 @@
         "price": "Harga",
         "provider": "Penyedia",
         "closedPnl": "PNL terealisasi",
-        "size": "Ukuran posisi"
+        "size": "Ukuran posisi",
+        "feeDesc": "Saat pengguna melakukan transaksi, baik <1>biaya perdagangan</1> maupun <2>biaya pembangun</2> berlaku."
       },
       "logoutConfirmModal": {
         "title": "Keluar dari alamat saat ini",
@@ -3336,7 +3345,10 @@
         "estReceiveTooltipNoTime": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi slippage.",
         "estReceiveTooltip": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi selisih harga. Perkiraan kedatangan dalam {{number}} detik.",
         "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk deposit langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan deposit.",
-        "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid.",
+        "amount": "Jumlah",
+        "feeTipTooltipHype": "Biaya sebesar ~0,00002 HYPE akan dikenakan untuk menarik ke EVM.",
+        "hypeActivationFeeTip": "Biaya aktivasi sekali sebesar {{fee}} akan dikenakan oleh Hyperliquid untuk penarikan HyperEVM pertama."
       },
       "home": {
         "size": "Ukuran Posisi",
@@ -3499,7 +3511,13 @@
       "liquidationDistanceUp": "Naik <bold>{{percent}}</bold> akan memicu likuidasi",
       "settings": "Pengaturan",
       "isolatedMarginDesc": "Setiap posisi menggunakan margin-nya sendiri. Kerugian dibatasi pada posisi tersebut, tetapi dapat dilikuidasi dengan lebih mudah.",
-      "crossMarginDesc": "Semua posisi berbagi margin yang sama. Ini mengurangi kemungkinan satu posisi dilikuidasi, tetapi semua dana cross-margin bisa hilang dalam gerakan pasar yang ekstrem."
+      "crossMarginDesc": "Semua posisi berbagi margin yang sama. Ini mengurangi kemungkinan satu posisi dilikuidasi, tetapi semua dana cross-margin bisa hilang dalam gerakan pasar yang ekstrem.",
+      "newUserGuide": {
+        "learnMore": "Pelajari Lebih Lanjut"
+      },
+      "addFunds": "Tambahkan Dana",
+      "crossMarginLiqPriceTip": "Dalam mode Cross Margin, harga likuidasi untuk satu posisi adalah perkiraan untuk referensi saja.",
+      "selectTokenToWithdraw": "Pilih Jaringan Penarikan"
     },
     "perpsPro": {
       "chatArea": {
@@ -3593,7 +3611,14 @@
           "closeMarket": "Tutup Posisi Pasar",
           "closedPnl": "PNL terealisasi",
           "closeLimit": "Tutup Limit",
-          "configure": "Konfigurasikan"
+          "configure": "Konfigurasikan",
+          "marketCloseBtn": "Tutup Pasar",
+          "dontShowAgain": "Jangan tunjukkan ini lagi",
+          "invalidPrice": "Harga Tidak Valid",
+          "marketCloseTitle": "Tutup Posisi Pasar",
+          "confirmCloseAllTitle": "Konfirmasi Tutup Semua Posisi",
+          "marketCloseDesc": "Ini akan mencoba untuk segera menutup posisi.",
+          "confirmCloseAllDesc": "Semua posisi terbuka Anda akan ditutup pada harga pasar dan membatalkan semua pesanan."
         },
         "openOrders": {
           "price": "Harga",
@@ -4257,6 +4282,53 @@
       "hfTitle": "Faktor Kesehatan",
       "hf": "Faktor kesehatan",
       "selectMarket": "Pilih Pasar"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Parameter yang diperlukan tidak ada",
+        "quoteUnavailable": "Gagal mengambil kutipan",
+        "gasCostTooHigh": "Melebihi batas biaya gas",
+        "priceImpactTooHigh": "Dampak harga tinggi",
+        "buildSwapTxsFailed": "Gagal membangun txs tukar",
+        "sendSwapTxFailed": "Gagal mengirim tx tukar",
+        "transactionFailed": "Transaksi gagal",
+        "submitFailed": "Gagal mengirimkan transaksi",
+        "gasNotEnough": "Gas tidak mencukupi"
+      },
+      "stopTaskModal": {
+        "title": "Hentikan swap yang sedang berlangsung?",
+        "description": "Jika Anda berhenti sekarang, swap yang tersisa tidak akan selesai. Perlu diperhatikan bahwa swap yang sudah selesai tidak dapat dibatalkan.",
+        "continueSwap": "Lanjutkan swap",
+        "stop": "Hentikan swap"
+      },
+      "status": {
+        "pending": "Menukar",
+        "idle": "Menunggu penukaran",
+        "success": "Penukaran berhasil"
+      },
+      "title": "Konversi Dust",
+      "description": "Ubah token bernilai rendah menjadi gas token untuk menyederhanakan daftar aset Anda!",
+      "receiveTitle": "Anda Menerima",
+      "expectedToReceive": "Diperkirakan menerima",
+      "completedTitle": "Dust Dikonversi!",
+      "done": "Selesai",
+      "conversionProgress": "Kemajuan konversi",
+      "slippageTolerance": "Toleransi selip",
+      "singleTransactionGasLimit": "Batas Gas Transaksi Tunggal",
+      "startConvert": "Mulai konversi",
+      "unsupportedWalletType": "Hanya alamat kunci privat dan seed phrase yang didukung.",
+      "stop": "Berhenti",
+      "selectLowValueTokens": "Pilih Token Bernilai Rendah",
+      "tokenColumn": "Token",
+      "amountColumn": "Jumlah",
+      "valueColumn": "Nilai",
+      "statusColumn": "Status",
+      "noLowValueTokensFound": "Tidak ada token bernilai rendah ditemukan",
+      "selectedTokens": "Token Terpilih",
+      "totalValue": "Total nilai",
+      "moreChains": "+{{count}} rantai",
+      "swapFailed": "Swap gagal, {{reason}}",
+      "completedTips": "Swap yang sedang berlangsung akan terus diproses"
     }
   },
   "component": {
@@ -4468,11 +4540,11 @@
       "perps": "Perps",
       "portfolio": "Portofolio",
       "comingSoon": "Segera Hadir",
-      "lending": "Peminjaman",
-      "prediction": "Prediksi"
+      "lending": "Peminjaman"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Tambah alamat"
+      "addAddresses": "Tambah alamat",
+      "smallSwapDisabledTips": "Saat ini hanya alamat kunci privat dan frase seed yang didukung."
     },
     "LpTokenTag": {
       "title": "Ini adalah token penyedia likuiditas (LP)",
@@ -4520,7 +4592,8 @@
     "tryAgain": "Coba Lagi",
     "Nonce": "Nonce",
     "backButton": "Kembali",
-    "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM"
+    "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM",
+    "collapse": "Tutup"
   },
   "background": {
     "error": {

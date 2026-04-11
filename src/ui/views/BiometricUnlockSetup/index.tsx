@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Input, message } from 'antd';
+import { Button, Input, InputRef, message } from 'antd';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
 import clsx from 'clsx';
+import { useLocation } from 'react-router-dom';
 
 import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
 import { ReactComponent as BiometricsSVG } from '@/ui/assets/unlock/biometrics.svg';
@@ -95,12 +96,15 @@ const Footer = styled.footer`
 export const BiometricUnlockSetup = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
+  const location = useLocation();
   const dispatch = useRabbyDispatch();
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [inputError, setInputError] = useState('');
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
   const disableSubmit = !password || loading;
+  const from = new URLSearchParams(location.search).get('from');
+  const isFromSettings = from === 'settings';
 
   const closeCurrentWindowOnly = async () => {
     try {
@@ -140,6 +144,9 @@ export const BiometricUnlockSetup = () => {
     setLoading(true);
     try {
       await wallet.verifyPassword(password);
+      if (!(await wallet.isUnlocked())) {
+        await wallet.unlock(password);
+      }
       setInputError('');
     } catch (error: any) {
       setInputError(
@@ -157,9 +164,16 @@ export const BiometricUnlockSetup = () => {
         encryptedPassword: payload.encryptedPassword,
         iv: payload.iv,
       });
+      await dispatch.preference.setUnlockPreferredMethod('biometric');
       message.success(t('page.dashboard.settings.biometricUnlockEnabled'));
       const currentWindow = await browser.windows.getCurrent();
-      await wallet.finishBiometricUnlockSetup(currentWindow?.id);
+      if (isFromSettings) {
+        await wallet.finishBiometricUnlockSetup(currentWindow?.id);
+      } else {
+        await wallet.finishBiometricUnlockSetup(currentWindow?.id, {
+          openSettings: false,
+        });
+      }
     } catch (error: any) {
       if (!isBiometricUserCanceledError(error)) {
         message.error(

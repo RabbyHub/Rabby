@@ -75,6 +75,12 @@ export default (store: typeof import('@/ui/store').default) => {
         });
         break;
       }
+      case 'unlockPreferredMethod': {
+        dispatch.preference.setField({
+          unlockPreferredMethod: payload.partials.unlockPreferredMethod,
+        });
+        break;
+      }
     }
   });
 
@@ -89,6 +95,29 @@ export default (store: typeof import('@/ui/store').default) => {
       case 'enabled': {
         dispatch.whitelist.setField({
           enabled: payload.partials.enabled,
+        });
+        break;
+      }
+    }
+  });
+
+  onBackgroundStoreChanged('currency', (payload) => {
+    switch (payload.changedKey) {
+      case 'currency': {
+        dispatch.currency.setField({
+          currency: payload.partials.currency,
+        });
+        break;
+      }
+      case 'currencyList': {
+        dispatch.currency.setField({
+          currencyList: payload.partials.currencyList,
+        });
+        break;
+      }
+      case 'updatedAt': {
+        dispatch.currency.setField({
+          updatedAt: payload.partials.updatedAt,
         });
         break;
       }

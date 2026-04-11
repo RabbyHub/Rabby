@@ -17,9 +17,13 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useMount } from 'react-use';
 import { useMemoizedFn } from 'ahooks';
 import { useThemeModeOnMain } from '../hooks/usePreference';
-import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
+import {
+  useCurrentAccount,
+  useSubscribeCurrentAccountChanged,
+} from '../hooks/backgroundState/useAccount';
 import { ForgotPassword } from './ForgotPassword/ForgotPassword';
 import { useSyncCurrentAccount } from '../utils/withAccountChange';
+import { useSyncDbHistory } from '@/db/hooks/history';
 const UiType = getUiType();
 const AsyncMainRoute = lazy(() =>
   UiType.isDesktop ? import('./DesktopRoute') : import('./MainRoute')
@@ -93,6 +97,15 @@ const useAutoLock = () => {
   }, [handleLockShortcut]);
 };
 
+const SyncHook = () => {
+  const account = useCurrentAccount();
+  useSyncDbHistory({
+    account,
+  });
+
+  return null;
+};
+
 const Main = () => {
   useAutoLock();
   useThemeModeOnMain();
@@ -119,6 +132,8 @@ const Main = () => {
       <Suspense fallback={null}>
         <AsyncMainRoute />
       </Suspense>
+
+      <SyncHook />
     </>
   );
 };

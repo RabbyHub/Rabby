@@ -29,7 +29,9 @@
         "Failed": "Не вдалося",
         "Pending": "Очікує",
         "Succeeded": "Вдалося"
-      }
+      },
+      "showScamTips": "Показати шахрайські транзакції",
+      "hideScamTips": "Сховати шахрайські транзакції"
     },
     "chainList": {
       "title": "{{count}} підтримуваних мереж",
@@ -1106,7 +1108,9 @@
       },
       "noSeedPhraseAddress": "Для цієї сеїд-фрази не додано жодних адрес. Ви можете додати адресу або видалити сеїд-фразу.",
       "watch-address": "Тільки перегляд",
-      "deleteSuccess": "Успішно видалено"
+      "deleteSuccess": "Успішно видалено",
+      "seedPhraseNotBackedUp": "Гаманець не був створений резервною копією",
+      "backupSeedPhraseNow": "Почати резервне копіювання"
     },
     "dashboard": {
       "home": {
@@ -1135,9 +1139,9 @@
           "settings": "Налаштування",
           "perpsPositions_other": "{{count}} Позицій",
           "perpsPositions_one": "{{count}} Позиція",
-          "prediction": "Прогнозування",
           "dragTip": "Функція довгого натискання для зміни порядку",
-          "lending": "Кредитування"
+          "lending": "Кредитування",
+          "convertDust": "Конвертувати пил"
         },
         "comingSoon": "Скоро",
         "soon": "Незабаром",
@@ -1312,7 +1316,9 @@
           "switchPasswordForNonWhitelistedTx": "Пароль для нестандартних трансакцій",
           "biometricUnlock": "Розблокувати за допомогою біометрії",
           "biometricUnlockUnsupported": "Цей пристрій не підтримує біометричне розблокування.",
-          "biometricUnlockHint": "Використовуйте біометрію для розблокування на цьому пристрої."
+          "biometricUnlockHint": "Використовуйте біометрію для розблокування на цьому пристрої.",
+          "currency": "Валюта",
+          "searchCurrency": "Пошук валюти"
         },
         "aboutUs": "Про нас",
         "currentVersion": "Поточна версія",
@@ -1487,7 +1493,8 @@
         "side": "БОКОВИЙ",
         "searchTokenPlaceholder": "Пошук Токену",
         "openInTab": "Відкрити в Rabby Tab",
-        "openProMode": "Відкрити професійний режим"
+        "openProMode": "Відкрити професійний режим",
+        "openInTabV2": "Відкрити у вкладці"
       },
       "hd": {
         "howToConnectLedger": "Як підключити Ledger",
@@ -1552,7 +1559,8 @@
         "title": "Rabby Points",
         "desc": "Перевірте свої бали в Rabby Mobile.",
         "downloadIntro": "Ще не маєте програми? Завантажте зараз."
-      }
+      },
+      "noData": "Валюта не знайдена"
     },
     "nft": {
       "floorPrice": "/ Ринкова Ціна:",
@@ -3329,7 +3337,8 @@
         "price": "Ціна",
         "fee": "Комісія",
         "tradeValue": "Вартість угоди",
-        "closedPnl": "Реалізований P&L"
+        "closedPnl": "Реалізований P&L",
+        "feeDesc": "Коли користувачі здійснюють угоди, застосовуються як <1>торгівельні збори</1>, так і <2>збори для розробників</2>."
       },
       "logoutConfirmModal": {
         "title": "Вийти з поточної адреси",
@@ -3351,7 +3360,10 @@
         "feeTip": "$1 Комісія",
         "goBridgeTips": "Для прямого депозиту підтримується лише USDC на мережі Arbitrum. Будь ласка, перенесіть ваш поточний токен у USDC на Arbitrum перед депозитом.",
         "estReceiveTooltip": "Міжланцюговий депозит обробляється через LiFi, може виникнути деяке проскальзування. Очікуване прибуття через {{number}} с.",
-        "hyperliquidFeeLabelTooltip": "Новим користувачам стягується одноразовий платіж за активацію від Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Новим користувачам стягується одноразовий платіж за активацію від Hyperliquid.",
+        "amount": "Сума",
+        "feeTipTooltipHype": "Для виведення до EVM стягуватиметься плата в розмірі ~0.00002 HYPE.",
+        "hypeActivationFeeTip": "Одноразовий платіж у розмірі {{fee}} буде стягнуто Hyperliquid за перший вивід HyperEVM."
       },
       "home": {
         "margin": "Маржа",
@@ -3514,7 +3526,13 @@
       "cannotChangeMarginModeWithOpenPositions": "Не можна змінювати режим маржі з відкритими позиціями.",
       "isolatedMarginDesc": "Кожна позиція використовує свій власний маржин. Збитки обмежені цією позицією, але її може бути ліквідовано легше.",
       "openProModeInTab": "Відкрити Pro Mode у вкладці",
-      "crossMarginDesc": "Всі позиції ділять один і той же маржинальний рахунок. Це зменшує ймовірність ліквідації однієї позиції, але всі кошти крос-маржі можна втратити під час екстремальних коливань ринку."
+      "crossMarginDesc": "Всі позиції ділять один і той же маржинальний рахунок. Це зменшує ймовірність ліквідації однієї позиції, але всі кошти крос-маржі можна втратити під час екстремальних коливань ринку.",
+      "newUserGuide": {
+        "learnMore": "Дізнатися більше"
+      },
+      "addFunds": "Додати кошти",
+      "crossMarginLiqPriceTip": "У режимі перехресного маржинування ціна ліквідації для однієї позиції є оцінкою лише для довідки.",
+      "selectTokenToWithdraw": "Виберіть мережу виведення"
     },
     "perpsPro": {
       "chatArea": {
@@ -3608,7 +3626,14 @@
           "closedPnl": "Закритий прибуток/збиток",
           "closeLimit": "Лімітний ордер на закриття позиції",
           "reverse": "Реверс",
-          "limitClose": "Лімітне закриття позиції"
+          "limitClose": "Лімітне закриття позиції",
+          "marketCloseBtn": "Закриття ринку",
+          "invalidPrice": "Неправильна ціна",
+          "marketCloseTitle": "Закриття позиції на ринку",
+          "dontShowAgain": "Не показувати це знову",
+          "confirmCloseAllTitle": "Підтвердити закриття всіх позицій",
+          "marketCloseDesc": "Це спробує відразу закрити позицію.",
+          "confirmCloseAllDesc": "Всі ваші відкриті позиції будуть закриті за ринковою ціною, а всі ордери будуть скасовані."
         },
         "openOrders": {
           "price": "Ціна",
@@ -4272,6 +4297,53 @@
       "selectChain": "Виберіть ланцюг",
       "disabled": "ВІКЛЮЧЕНО",
       "supplyBalance": "Постачання Баланс"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Відсутні обов'язкові параметри",
+        "quoteUnavailable": "Не вдалося отримати котирування",
+        "gasCostTooHigh": "Перевищено ліміт комісії за газ",
+        "priceImpactTooHigh": "Високий вплив на ціну",
+        "buildSwapTxsFailed": "Не вдалося створити транзакції обміну",
+        "sendSwapTxFailed": "Не вдалося надіслати транзакцію обміну",
+        "transactionFailed": "Транзакція не виконана",
+        "submitFailed": "Не вдалося надіслати транзакції",
+        "gasNotEnough": "Недостатньо Газу"
+      },
+      "stopTaskModal": {
+        "title": "Зупинити поточні свопи?",
+        "description": "Якщо ви зупините зараз, усі незавершені свопи не будуть виконані. Зверніть увагу, що завершені свопи не можна скасувати.",
+        "continueSwap": "Продовжити своп",
+        "stop": "Зупинити своп"
+      },
+      "status": {
+        "pending": "Обмін",
+        "idle": "Очікування обміну",
+        "success": "Обмін успішний"
+      },
+      "title": "Конвертація пилюки",
+      "description": "Конвертуйте токени з низькою вартістю в gas-токен, щоб спростити список активів!",
+      "receiveTitle": "Ви отримаєте",
+      "expectedToReceive": "Очікується отримати",
+      "completedTitle": "Пилюка конвертована!",
+      "done": "Готово",
+      "conversionProgress": "Прогрес конвертації",
+      "slippageTolerance": "Допуск slippage",
+      "singleTransactionGasLimit": "Ліміт газу однієї транзакції",
+      "startConvert": "Почати конвертацію",
+      "unsupportedWalletType": "Підтримуються лише адреси з приватним ключем та seed-фразою.",
+      "stop": "Стоп",
+      "selectLowValueTokens": "Виберіть токени з низькою вартістю",
+      "tokenColumn": "Токен",
+      "amountColumn": "Сума",
+      "valueColumn": "Вартість",
+      "statusColumn": "Статус",
+      "noLowValueTokensFound": "Токени з низькою вартістю не знайдено",
+      "selectedTokens": "Вибрані токени",
+      "totalValue": "Загальна вартість",
+      "moreChains": "+{{count}} ланцюжків",
+      "swapFailed": "Конвертація не вдалася, {{reason}}",
+      "completedTips": "Поточна конвертація продовжить обробку"
     }
   },
   "component": {
@@ -4483,11 +4555,11 @@
       "lending": "Позика",
       "portfolio": "Портфель",
       "comingSoon": "Скоро буде",
-      "perps": "Периферійні",
-      "prediction": "Прогнозування"
+      "perps": "Периферійні"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Додати адресу"
+      "addAddresses": "Додати адресу",
+      "smallSwapDisabledTips": "Наразі підтримуються лише адреси з приватним ключем та seed-фразою."
     },
     "LpTokenTag": {
       "title": "Це токен постачальника ліквідності (LP)",
@@ -4543,7 +4615,8 @@
     "Deleted": "Видалити",
     "Save": "Зберегти",
     "Done": "Готово",
-    "appDescription": "Ваш улюблений гаманець для Ethereum та EVM"
+    "appDescription": "Ваш улюблений гаманець для Ethereum та EVM",
+    "collapse": "Згорнути"
   },
   "background": {
     "error": {

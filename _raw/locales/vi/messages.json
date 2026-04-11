@@ -29,7 +29,9 @@
         "Succeeded": "Thành công",
         "Pending": "Đang chờ xử lý",
         "Failed": "Thất bại"
-      }
+      },
+      "hideScamTips": "Ẩn các giao dịch lừa đảo",
+      "showScamTips": "Hiển thị giao dịch lừa đảo"
     },
     "chainList": {
       "mainnet": "Mainnets",
@@ -1195,7 +1197,9 @@
       },
       "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ hạt giống.",
       "watch-address": "Chỉ xem",
-      "deleteSuccess": "Xóa thành công"
+      "deleteSuccess": "Xóa thành công",
+      "seedPhraseNotBackedUp": "Ví không được sao lưu",
+      "backupSeedPhraseNow": "Bắt đầu sao lưu"
     },
     "dashboard": {
       "home": {
@@ -1223,9 +1227,9 @@
           "settings": "Cài đặt",
           "perpsPositions_other": "{{count}} Vị trí",
           "perpsPositions_one": "{{count}} Vị trí",
-          "prediction": "Dự đoán",
           "lending": "Cho vay",
-          "dragTip": "Tính năng nhấn giữ để sắp xếp lại"
+          "dragTip": "Tính năng nhấn giữ để sắp xếp lại",
+          "convertDust": "Chuyển đổi Dust"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1377,7 +1381,9 @@
           "switchPasswordForNonWhitelistedTx": "Mật khẩu cho các giao dịch không nằm trong danh sách trắng",
           "biometricUnlock": "Mở khóa bằng Sinh trắc học",
           "biometricUnlockHint": "Sử dụng sinh trắc học để mở khóa trên thiết bị này.",
-          "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học."
+          "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học.",
+          "currency": "Tiền tệ",
+          "searchCurrency": "Tìm kiếm tiền tệ"
         },
         "1Hour": "1 giờ",
         "7Days": "7 ngày",
@@ -1574,7 +1580,8 @@
         "price": "GIÁ",
         "searchTokenPlaceholder": "Tìm kiếm Token",
         "openInTab": "Mở trong Rabby Tab",
-        "openProMode": "Mở Chế Độ Chuyên Nghiệp"
+        "openProMode": "Mở Chế Độ Chuyên Nghiệp",
+        "openInTabV2": "Mở trong Tab"
       },
       "hd": {
         "ledger": {
@@ -1637,7 +1644,8 @@
         "title": "Rabby Points",
         "downloadIntro": "Chưa có ứng dụng? Tải xuống ngay.",
         "desc": "Kiểm tra điểm của bạn trong Rabby Mobile."
-      }
+      },
+      "noData": "Không tìm thấy đơn vị tiền tệ phù hợp"
     },
     "nft": {
       "empty": {
@@ -3314,7 +3322,8 @@
         "provider": "Nhà cung cấp",
         "size": "Kích thước vị thế",
         "tradeValue": "Giá trị giao dịch",
-        "closedPnl": "PNL đã thực hiện"
+        "closedPnl": "PNL đã thực hiện",
+        "feeDesc": "Khi người dùng thực hiện giao dịch, cả <1>phí giao dịch</1> và <2>phí nhà phát triển</2> đều được áp dụng."
       },
       "logoutConfirmModal": {
         "title": "Đăng xuất khỏi địa chỉ hiện tại",
@@ -3336,7 +3345,10 @@
         "goSwapTips": "Chỉ có USDC trên Arbitrum được hỗ trợ cho nạp ký quỹ trực tiếp. Vui lòng đổi token hiện tại của bạn sang USDC trước khi nạp ký quỹ.",
         "goBridgeTips": "Chỉ USDC trên Arbitrum được hỗ trợ cho việc nạp trực tiếp. Vui lòng bắc cầu token đang có của bạn sang USDC trên Arbitrum trước khi nạp tiền.",
         "payWith": "Thanh toán bằng",
-        "hyperliquidFeeLabelTooltip": "Người dùng mới sẽ bị tính phí kích hoạt một lần bởi Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Người dùng mới sẽ bị tính phí kích hoạt một lần bởi Hyperliquid.",
+        "amount": "Số lượng",
+        "feeTipTooltipHype": "Phí ~0.00002 HYPE sẽ được tính cho việc rút về EVM.",
+        "hypeActivationFeeTip": "Phí kích hoạt một lần là {{fee}} sẽ được Hyperliquid tính cho lần rút HyperEVM đầu tiên."
       },
       "home": {
         "margin": "Ký quỹ",
@@ -3499,7 +3511,13 @@
       "cannotChangeMarginModeWithOpenPositions": "Không thể thay đổi Chế độ Margin khi có vị trí mở.",
       "liquidationDistanceDown": "Đi xuống <bold>{{percent}}</bold> sẽ kích hoạt thanh lý",
       "crossMarginDesc": "Tất cả các vị trí đều chia sẻ cùng một khoản ký quỹ. Điều này giảm khả năng một vị trí đơn lẻ bị thanh lý, nhưng tất cả các quỹ ký quỹ chéo có thể bị mất trong những biến động cực đoan của thị trường.",
-      "isolatedMarginDesc": "Mỗi vị thế sử dụng ký quỹ riêng của nó. Lỗ giới hạn ở vị thế đó, nhưng nó có thể bị thanh lý dễ hơn."
+      "isolatedMarginDesc": "Mỗi vị thế sử dụng ký quỹ riêng của nó. Lỗ giới hạn ở vị thế đó, nhưng nó có thể bị thanh lý dễ hơn.",
+      "newUserGuide": {
+        "learnMore": "Tìm hiểu thêm"
+      },
+      "addFunds": "Thêm Quỹ",
+      "crossMarginLiqPriceTip": "Trong chế độ Cross Margin, giá thanh lý cho một vị trí đơn lẻ chỉ là một ước tính để tham khảo.",
+      "selectTokenToWithdraw": "Chọn Mạng Rút Tiền"
     },
     "perpsPro": {
       "chatArea": {
@@ -3593,7 +3611,14 @@
           "limitClose": "Đóng lệnh giới hạn",
           "closeLimit": "Lệnh đóng giới hạn",
           "closeMarket": "Đóng vị thế theo giá thị trường",
-          "closedPnl": "PNL đã đóng"
+          "closedPnl": "PNL đã đóng",
+          "marketCloseBtn": "Đóng thị trường",
+          "invalidPrice": "Giá không hợp lệ",
+          "marketCloseTitle": "Đóng vị trí Thị trường",
+          "dontShowAgain": "Không hiển thị lại điều này nữa",
+          "marketCloseDesc": "Điều này sẽ cố gắng đóng vị thế ngay lập tức.",
+          "confirmCloseAllTitle": "Xác nhận Đóng Tất Cả Vị Thế",
+          "confirmCloseAllDesc": "Tất cả các vị thế mở của bạn sẽ được đóng ở giá thị trường và hủy tất cả các lệnh."
         },
         "openOrders": {
           "time": "Thời gian",
@@ -4257,6 +4282,53 @@
       "searchMarket": "Tìm kiếm Thị trường",
       "enterAmount": "Nhập số tiền",
       "selectChain": "Chọn Chuỗi"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Thiếu các tham số bắt buộc",
+        "quoteUnavailable": "Không thể lấy báo giá",
+        "gasCostTooHigh": "Vượt quá giới hạn phí gas",
+        "priceImpactTooHigh": "Tác động giá cao",
+        "buildSwapTxsFailed": "Không thể tạo các giao dịch hoán đổi",
+        "sendSwapTxFailed": "Không thể gửi giao dịch hoán đổi",
+        "transactionFailed": "Giao dịch thất bại",
+        "submitFailed": "Không thể gửi các giao dịch",
+        "gasNotEnough": "Không đủ Gas"
+      },
+      "stopTaskModal": {
+        "title": "Dừng các swap hiện tại?",
+        "description": "Nếu bạn dừng bây giờ, các swap còn lại sẽ không được thực hiện. Xin lưu ý các swap đã hoàn thành không thể hoàn tác.",
+        "continueSwap": "Tiếp tục swap",
+        "stop": "Dừng swap"
+      },
+      "status": {
+        "pending": "Đang hoán đổi",
+        "idle": "Đang chờ hoán đổi",
+        "success": "Hoán đổi thành công"
+      },
+      "title": "Chuyển đổi Dust",
+      "description": "Chuyển đổi token giá trị thấp thành gas token để đơn giản hóa danh sách tài sản của bạn!",
+      "receiveTitle": "Bạn nhận được",
+      "expectedToReceive": "Dự kiến nhận được",
+      "completedTitle": "Đã chuyển đổi Dust!",
+      "done": "Hoàn tất",
+      "conversionProgress": "Tiến trình chuyển đổi",
+      "slippageTolerance": "Chênh lệch giá cho phép",
+      "singleTransactionGasLimit": "Giới hạn Gas giao dịch đơn",
+      "startConvert": "Bắt đầu chuyển đổi",
+      "unsupportedWalletType": "Chỉ hỗ trợ địa chỉ từ private key và seed phrase.",
+      "stop": "Dừng",
+      "selectLowValueTokens": "Chọn Token giá trị thấp",
+      "tokenColumn": "Token",
+      "amountColumn": "Số lượng",
+      "valueColumn": "Giá trị",
+      "statusColumn": "Trạng thái",
+      "noLowValueTokensFound": "Không tìm thấy token giá trị thấp",
+      "selectedTokens": "Token đã chọn",
+      "totalValue": "Tổng giá trị",
+      "moreChains": "+{{count}} chains",
+      "swapFailed": "Hoán đổi thất bại, {{reason}}",
+      "completedTips": "Hoán đổi đang diễn ra sẽ tiếp tục xử lý"
     }
   },
   "component": {
@@ -4468,11 +4540,11 @@
       "perps": "Perps",
       "portfolio": "Danh mục đầu tư",
       "lending": "Cho vay",
-      "comingSoon": "Sắp ra mắt",
-      "prediction": "Dự đoán"
+      "comingSoon": "Sắp ra mắt"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Thêm địa chỉ"
+      "addAddresses": "Thêm địa chỉ",
+      "smallSwapDisabledTips": "Hiện tại chỉ hỗ trợ địa chỉ từ private key và seed phrase."
     },
     "LpTokenTag": {
       "title": "Đây là một token nhà cung cấp thanh khoản (LP)",
@@ -4520,7 +4592,8 @@
     "Loading": "Đang tải",
     "Clear": "Xóa",
     "proceedButton": "Tiến hành",
-    "appDescription": "Ví dụ ví của bạn cho Ethereum và EVM"
+    "appDescription": "Ví dụ ví của bạn cho Ethereum và EVM",
+    "collapse": "Thu gọn"
   },
   "background": {
     "error": {

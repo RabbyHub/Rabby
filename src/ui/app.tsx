@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import Views from './views';
@@ -167,6 +167,9 @@ const compensateUnlockedOnceFlag = async () => {
   }
 };
 
+const rootContainer = document.getElementById('root');
+const root = rootContainer ? createRoot(rootContainer) : null;
+
 const main = async () => {
   portMessageChannel.connect(getUITypeName());
   await compensateUnlockedOnceFlag();
@@ -185,11 +188,10 @@ const main = async () => {
   wallet.getLocale().then((locale) => {
     addResourceBundle(locale).then(() => {
       changeLanguage(locale);
-      ReactDOM.render(
+      root?.render(
         <Provider store={store}>
           <Views wallet={wallet} />
-        </Provider>,
-        document.getElementById('root')
+        </Provider>
       );
     });
   });

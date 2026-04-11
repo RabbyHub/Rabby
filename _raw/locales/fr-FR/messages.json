@@ -255,11 +255,11 @@
       "perps": "Perps",
       "portfolio": "Portefeuille",
       "lending": "Prêt",
-      "comingSoon": "Bientôt disponible",
-      "prediction": "Prédiction"
+      "comingSoon": "Bientôt disponible"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Ajouter une adresse"
+      "addAddresses": "Ajouter une adresse",
+      "smallSwapDisabledTips": "Actuellement, seules les adresses de clé privée et de phrase de récupération sont prises en charge."
     },
     "LpTokenTag": {
       "title": "Ceci est un jeton de fournisseur de liquidité (LP)",
@@ -320,7 +320,8 @@
     "Nonce": "Nonce",
     "tryAgain": "Essayer à nouveau",
     "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé",
-    "appDescription": "Votre portefeuille de référence pour Ethereum et EVM"
+    "appDescription": "Votre portefeuille de référence pour Ethereum et EVM",
+    "collapse": "Réduire"
   },
   "page": {
     "activities": {
@@ -792,7 +793,8 @@
         "side": "CÔTÉ",
         "searchTokenPlaceholder": "Rechercher Token",
         "openInTab": "Ouvrir dans l'onglet Rabby",
-        "openProMode": "Ouvrir le mode pro"
+        "openProMode": "Ouvrir le mode pro",
+        "openInTabV2": "Ouvrir dans l'onglet"
       },
       "contacts": {
         "noData": "Pas de données",
@@ -877,9 +879,9 @@
           "settings": "Paramètres",
           "perpsPositions_one": "{{count}} Position",
           "perpsPositions_other": "{{count}} Positions",
-          "prediction": "Prédiction",
           "lending": "Prêt",
-          "dragTip": "Fonctionnalité de pression longue pour réorganiser"
+          "dragTip": "Fonctionnalité de pression longue pour réorganiser",
+          "convertDust": "Convertir les Dust"
         },
         "pendingCount": "1 en attente",
         "pendingCountPlural": "{{countStr}} en attente",
@@ -1031,7 +1033,9 @@
           "switchPasswordForNonWhitelistedTx": "Mot de passe pour les transferts non autorisés",
           "biometricUnlockHint": "Utilisez des biométries pour déverrouiller cet appareil.",
           "biometricUnlockUnsupported": "Cet appareil ne prend pas en charge le déverrouillage biométrique.",
-          "biometricUnlock": "Déverrouiller avec des biométriques"
+          "biometricUnlock": "Déverrouiller avec des biométriques",
+          "currency": "Devise",
+          "searchCurrency": "Rechercher une devise"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -1148,7 +1152,8 @@
         "title": "Rabby Points",
         "desc": "Vérifiez vos points dans Rabby Mobile.",
         "downloadIntro": "Vous n'avez pas encore l'application ? Téléchargez-la maintenant."
-      }
+      },
+      "noData": "Aucune devise correspondante"
     },
     "ethSign": {
       "alert": "Signer avec \"eth_sign\" peut entraîner une perte d'actifs. Pour votre sécurité, Rabby ne prend pas en charge cette méthode."
@@ -1241,7 +1246,9 @@
       },
       "noSeedPhraseAddress": "Aucune adresse n'a été ajoutée pour cette phrase de récupération. Vous pouvez ajouter une adresse ou supprimer la phrase de récupération.",
       "watch-address": "Regarder uniquement",
-      "deleteSuccess": "Supprimé avec succès"
+      "deleteSuccess": "Supprimé avec succès",
+      "backupSeedPhraseNow": "Commencer la sauvegarde",
+      "seedPhraseNotBackedUp": "Portefeuille non sauvegardé"
     },
     "newAddress": {
       "addContacts": {
@@ -2503,7 +2510,9 @@
         "Pending": "En attente",
         "Succeeded": "Réussi",
         "Failed": "Échoué"
-      }
+      },
+      "showScamTips": "Afficher les transactions frauduleuses",
+      "hideScamTips": "Masquer les transactions frauduleuses"
     },
     "unlock": {
       "btn": {
@@ -3640,7 +3649,8 @@
         "tradeValue": "Valeur de l'opération",
         "size": "Taille de position",
         "fee": "Frais",
-        "provider": "Fournisseur"
+        "provider": "Fournisseur",
+        "feeDesc": "Lorsque les utilisateurs effectuent des transactions, des <1>frais de trading</1> et des <2>frais de constructeur</2> s'appliquent."
       },
       "logoutConfirmModal": {
         "title": "Se déconnecter de l'adresse actuelle",
@@ -3662,7 +3672,10 @@
         "receiveToken": "Recevoir des jetons",
         "goBridgeTips": "Seul l'USDC sur Arbitrum est pris en charge pour le dépôt direct. Veuillez transférer votre jeton actuel vers l'USDC sur Arbitrum via le pont avant de déposer.",
         "estReceiveTooltip": "Le dépôt cross-chain est traité via LiFi, ce qui peut entraîner un léger glissement. Arrivée estimée dans {{number}}s.",
-        "hyperliquidFeeLabelTooltip": "Les nouveaux utilisateurs sont facturés des frais d'activation uniques par Hyperliquid."
+        "hyperliquidFeeLabelTooltip": "Les nouveaux utilisateurs sont facturés des frais d'activation uniques par Hyperliquid.",
+        "amount": "Montant",
+        "hypeActivationFeeTip": "Une frais d'activation unique de {{fee}} sera facturé par Hyperliquid pour le premier retrait HyperEVM.",
+        "feeTipTooltipHype": "Des frais d'environ ~0,00002 HYPE seront facturés pour retirer vers l'EVM."
       },
       "home": {
         "entryPrice": "Prix d'entrée",
@@ -3825,7 +3838,13 @@
       "isolatedMarginDesc": "Chaque position utilise sa propre marge. Les pertes sont limitées à cette position, mais elle peut être liquidée plus facilement.",
       "liquidationDistanceDown": "Descendre de <bold>{{percent}}</bold> déclenchera la liquidation",
       "openProModeInTab": "Ouvrir le mode Pro dans l'onglet",
-      "crossMarginDesc": "Tous les positions partagent la même marge. Cela réduit les chances qu'une seule position soit liquidée, mais tous les fonds de marge croisés peuvent être perdus lors de mouvements de marché extrêmes."
+      "crossMarginDesc": "Tous les positions partagent la même marge. Cela réduit les chances qu'une seule position soit liquidée, mais tous les fonds de marge croisés peuvent être perdus lors de mouvements de marché extrêmes.",
+      "newUserGuide": {
+        "learnMore": "En savoir plus"
+      },
+      "addFunds": "Ajouter des fonds",
+      "crossMarginLiqPriceTip": "En mode Cross Margin, le prix de liquidation pour une position unique est une estimation à titre de référence uniquement.",
+      "selectTokenToWithdraw": "Sélectionnez le réseau de retrait"
     },
     "perpsPro": {
       "chatArea": {
@@ -3919,7 +3938,14 @@
           "closeMarket": "Clôturer au prix du marché",
           "closeLimit": "Ordre de clôture à cours limité",
           "limitClose": "Ordre de clôture à cours limité",
-          "closedPnl": "PNL réalisé"
+          "closedPnl": "PNL réalisé",
+          "invalidPrice": "Prix invalide",
+          "marketCloseBtn": "Fermeture du marché",
+          "marketCloseTitle": "Fermer la position de marché",
+          "dontShowAgain": "Ne pas montrer ceci à nouveau",
+          "confirmCloseAllTitle": "Confirmer la fermeture de toutes les positions",
+          "marketCloseDesc": "Cela tentera de fermer immédiatement la position.",
+          "confirmCloseAllDesc": "Toutes vos positions ouvertes seront fermées au prix du marché et toutes les commandes seront annulées."
         },
         "openOrders": {
           "cancel": "Annuler",
@@ -4583,6 +4609,53 @@
       "enterAmount": "Entrez le montant",
       "estDailyEarning": "Est. Gain quotidien",
       "supplyBalance": "Fournir le solde"
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Paramètres requis manquants",
+        "quoteUnavailable": "Échec de la récupération du devis",
+        "gasCostTooHigh": "Dépassement de la limite de frais de gas",
+        "priceImpactTooHigh": "Impact élevé sur le prix",
+        "buildSwapTxsFailed": "Échec de la construction des transactions d'échange",
+        "sendSwapTxFailed": "Échec de l'envoi de la transaction d'échange",
+        "transactionFailed": "Transaction échouée",
+        "submitFailed": "Échec de la soumission des transactions",
+        "gasNotEnough": "Gas insuffisant"
+      },
+      "stopTaskModal": {
+        "title": "Arrêter les swaps en cours ?",
+        "description": "Si vous arrêtez maintenant, les swaps restants ne seront pas terminés. Veuillez noter que les swaps terminés ne peuvent pas être annulés.",
+        "continueSwap": "Continuer le swap",
+        "stop": "Arrêter le swap"
+      },
+      "status": {
+        "pending": "Échange en cours",
+        "idle": "En attente d'échange",
+        "success": "Échange réussi"
+      },
+      "title": "Convertir la poussière",
+      "description": "Convertissez les jetons de faible valeur en jeton de gaz pour simplifier votre liste d'actifs !",
+      "receiveTitle": "Vous recevez",
+      "expectedToReceive": "Réception estimée",
+      "completedTitle": "Poussière convertie !",
+      "done": "Terminé",
+      "conversionProgress": "Progression de la conversion",
+      "slippageTolerance": "Tolérance de slippage",
+      "singleTransactionGasLimit": "Limite de gaz pour une seule transaction",
+      "startConvert": "Démarrer la conversion",
+      "unsupportedWalletType": "Seules les adresses de clé privée et de phrase de graine sont prises en charge.",
+      "stop": "Arrêter",
+      "selectLowValueTokens": "Sélectionner les jetons de faible valeur",
+      "tokenColumn": "Jeton",
+      "amountColumn": "Montant",
+      "valueColumn": "Valeur",
+      "statusColumn": "Statut",
+      "noLowValueTokensFound": "Aucun jeton de faible valeur trouvé",
+      "selectedTokens": "Jetons sélectionnés",
+      "totalValue": "Valeur totale",
+      "moreChains": "+{{count}} chaînes",
+      "swapFailed": "Échec de l'échange, {{reason}}",
+      "completedTips": "L'échange en cours continuera à être traité"
     }
   }
 }

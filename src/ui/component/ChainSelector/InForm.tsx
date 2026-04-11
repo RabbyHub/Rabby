@@ -184,8 +184,11 @@ export const ChainRender = ({
     >
       {loading ? (
         <>
-          <Skeleton.Avatar className="bg-r-neutral-card2 w-[18px] h-[18px] rounded-full" />
-          <Skeleton.Avatar className="bg-r-neutral-card2 w-[94px] h-[18px] rounded-[2px]" />
+          <Skeleton.Avatar
+            className="bg-r-neutral-card2 w-[18px] h-[18px] rounded-full"
+            size={18}
+          />
+          <Skeleton.Input className="bg-r-neutral-card2 w-[94px] h-[18px] rounded-[2px]" />
         </>
       ) : (
         <>
