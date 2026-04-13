@@ -4,7 +4,7 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { StepInput } from '@/ui/component/StepInput';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
 import { formatTokenAmount, formatUsdValue, useWallet } from '@/ui/utils';
 import { waitForTxCompleted } from '@/ui/utils/transaction';
@@ -42,6 +42,11 @@ const Content: React.FC<Props> = (props) => {
     updateConfig,
   } = useMiniSigner({
     account: currentAccount!,
+    owner: createMiniSignOwner(
+      'nft-accept-offer',
+      currentAccount,
+      nftDetail?.id
+    ),
   });
 
   // const canDirectSign = useMemo(

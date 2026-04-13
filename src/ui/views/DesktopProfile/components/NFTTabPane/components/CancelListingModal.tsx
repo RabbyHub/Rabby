@@ -20,7 +20,7 @@ import { useTokenInfo } from '@/ui/hooks/useTokenInfo';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { findChain } from '@/utils/chain';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
@@ -65,6 +65,11 @@ const Content: React.FC<Props> = (props) => {
     updateConfig,
   } = useMiniSigner({
     account: currentAccount!,
+    owner: createMiniSignOwner(
+      'nft-cancel-listing',
+      currentAccount,
+      nftDetail?.id
+    ),
   });
 
   const wallet = useWallet();

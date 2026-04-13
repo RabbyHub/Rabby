@@ -37,7 +37,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { TokenImg } from '../components/TokenImg';
 import { TopPermissionTips } from '../components/TopPermissionTips';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
@@ -276,6 +276,7 @@ export const PerpsSingleCoin = () => {
 
   const { openDirect, close: closeSign, resetGasStore } = useMiniSigner({
     account: signerAccount!,
+    owner: createMiniSignOwner('perps-single-coin', signerAccount, coin),
   });
 
   const singleCoinHistoryList = useMemo(() => {

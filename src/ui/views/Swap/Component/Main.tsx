@@ -39,7 +39,7 @@ import type { SelectChainItemProps } from '@/ui/component/ChainSelector/componen
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 // New simplified signing hook (no MiniApproval/MiniSignTx)
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useHistory } from 'react-router-dom';
@@ -62,6 +62,12 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from './PendingTxItem';
 import { useTwoStepSwap } from '../hooks/twoStepSwap';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import {
+  FormAmountMode,
+  FormValuesOnSubmit,
+  createAmountComparer,
+  shouldIgnoreAmountChangeInMaxMode,
+} from '@/ui/utils/form';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -81,6 +87,11 @@ const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
 };
 
 export const Main = () => {
+  interface SwapTopUpSnapshot {
+    amount: string;
+    amountMode?: FormAmountMode;
+  }
+
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
     unlimitedAllowance: state.swap.unlimitedAllowance || false,
@@ -506,6 +517,21 @@ export const Main = () => {
   const history = useHistory();
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
+  const topUpFormValuesRef = useRef(
+    new FormValuesOnSubmit<SwapTopUpSnapshot>({
+      comparers: {
+        amount: createAmountComparer<string>(),
+      },
+    })
+  );
+  const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
+  const buildTopUpSnapshot = useCallback(
+    (): SwapTopUpSnapshot => ({
+      amount: inputAmount || '',
+      amountMode: slider === 100 ? 'max' : 'exact',
+    }),
+    [inputAmount, slider]
+  );
   const persistSwapPageState = useCallback(async () => {
     await wallet.setPageStateCache({
       path: '/swap',
@@ -520,6 +546,7 @@ export const Main = () => {
         slider,
         swapUseSlider,
         fromGasAccountRedirect: true,
+        topUpSnapshot: topUpFormValuesRef.current.getSnapshot(),
       },
     });
   }, [
@@ -534,13 +561,46 @@ export const Main = () => {
     swapUseSlider,
   ]);
 
+  const swapSignerOwner = useMemo(
+    () => createMiniSignOwner('swap', currentAccount),
+    [currentAccount]
+  );
   const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChain({ enum: chain })?.serverId || '',
     autoResetGasStoreOnChainChange: true,
+    owner: swapSignerOwner,
   });
+  const consumeTopUpResumeGuard = useCallback(() => {
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return false;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+
+    if (comparison.isChanged && !shouldIgnore) {
+      closeSign();
+      return true;
+    }
+
+    return false;
+  }, [buildTopUpSnapshot, closeSign]);
 
   useEffect(() => {
+    if (awaitingTopUpResume) {
+      return;
+    }
     closeSign();
     prefetch({
       txs: currentTxs || [],
@@ -548,7 +608,35 @@ export const Main = () => {
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
     });
-  }, [currentTxs]);
+  }, [awaitingTopUpResume, closeSign, currentTxs, prefetch]);
+
+  useEffect(() => {
+    if (!awaitingTopUpResume) {
+      return;
+    }
+
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    if (!comparison.isChanged || shouldIgnore) {
+      return;
+    }
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+    closeSign();
+  }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   const handleSwap = useMemoizedFn(async () => {
     if (!isTab) {
@@ -560,9 +648,18 @@ export const Main = () => {
     }
 
     if (canUseDirectSubmitTx) {
-      if (shouldTwoStepSwap && isApprove && currentTxs?.[0]) {
+      let txsForSigning = currentTxs;
+      const formChangedDuringTopUp = consumeTopUpResumeGuard();
+      if (formChangedDuringTopUp) {
+        const rebuiltTxs = await runBuildSwapTxs();
+        if (!rebuiltTxs?.length) {
+          return;
+        }
+        txsForSigning = rebuiltTxs;
+      }
+      if (shouldTwoStepSwap && isApprove && txsForSigning?.[0]) {
         wallet.addCacheHistoryData(
-          `${chain}-${currentTxs?.[0].data}`,
+          `${chain}-${txsForSigning?.[0].data}`,
           {
             address: userAddress,
             chainId: findChain({ enum: chain })?.id || 0,
@@ -579,7 +676,7 @@ export const Main = () => {
 
       try {
         const hashes = await openDirect({
-          txs: currentTxs,
+          txs: txsForSigning,
           getContainer,
           ga: {
             category: 'Swap',
@@ -588,6 +685,8 @@ export const Main = () => {
             swapUseSlider,
           },
           onRedirectToDeposit: () => {
+            topUpFormValuesRef.current.save(buildTopUpSnapshot());
+            setAwaitingTopUpResume(true);
             persistSwapPageState().catch((error) => {
               console.error(
                 '[Swap] persist page state before gas account deposit failed',
@@ -621,12 +720,20 @@ export const Main = () => {
 
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
+      if (awaitingTopUpResume) {
+        return;
+      }
       if (canUseDirectSubmitTx) {
         mutateTxs([]);
         runBuildSwapTxs();
       }
     }
-  }, [swapBtnDisabled, canUseDirectSubmitTx, activeProvider]);
+  }, [
+    swapBtnDisabled,
+    canUseDirectSubmitTx,
+    activeProvider,
+    awaitingTopUpResume,
+  ]);
 
   useEffect(() => {
     setLowCreditToken(receiveToken);
@@ -641,6 +748,11 @@ export const Main = () => {
         !cache.states?.receiveToken
       ) {
         return;
+      }
+
+      if (cache.states?.fromGasAccountRedirect && cache.states?.topUpSnapshot) {
+        topUpFormValuesRef.current.save(cache.states.topUpSnapshot);
+        setAwaitingTopUpResume(true);
       }
 
       switchChain(cache.states.chain);

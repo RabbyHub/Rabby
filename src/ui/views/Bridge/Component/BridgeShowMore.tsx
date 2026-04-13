@@ -36,6 +36,7 @@ import {
   GasLessActivityToSign,
   GasLessNotEnough,
 } from '../../Approval/components/FooterBar/GasLessComponents';
+import { shouldShowGasLessNotEnough } from '../../Approval/components/FooterBar/gasAccountDecision';
 import { useGasAccountSign } from '../../GasAccount/hooks';
 import { useMemoizedFn } from 'ahooks';
 
@@ -603,7 +604,12 @@ export const DirectSignGasInfo = ({
         />
       ) : null}
 
-      {showGasLess && !payGasByGasAccount && !canUseGasLess ? (
+      {shouldShowGasLessNotEnough({
+        showGasLess,
+        isGasNotEnough,
+        payGasByGasAccount,
+        canUseGasLess,
+      }) ? (
         <GasLessNotEnough
           directSubmit
           gasLessFailedReason={ctx?.gasless?.desc}
@@ -612,6 +618,7 @@ export const DirectSignGasInfo = ({
           canDepositUseGasAccount={canDepositUseGasAccount}
           miniFooter
           onRedirectToDeposit={config?.onRedirectToDeposit}
+          preserveApprovalContext
         />
       ) : null}
 
@@ -624,6 +631,7 @@ export const DirectSignGasInfo = ({
           noCustomRPC={noCustomRPC}
           miniFooter
           onRedirectToDeposit={config?.onRedirectToDeposit}
+          preserveApprovalContext
         />
       ) : null}
     </GasTipsWrapper>

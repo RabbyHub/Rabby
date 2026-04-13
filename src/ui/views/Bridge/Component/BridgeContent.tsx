@@ -45,9 +45,15 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DbkButton } from '../../Ecology/dbk-chain/components/DbkButton';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { BridgePendingTxItem } from './PendingTxItem';
+import {
+  FormAmountMode,
+  FormValuesOnSubmit,
+  createAmountComparer,
+  shouldIgnoreAmountChangeInMaxMode,
+} from '@/ui/utils/form';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -59,6 +65,11 @@ const getContainer = isTab
   : undefined;
 
 export const BridgeContent = () => {
+  interface BridgeTopUpSnapshot {
+    amount: string;
+    amountMode?: FormAmountMode;
+  }
+
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
   }));
@@ -480,6 +491,21 @@ export const BridgeContent = () => {
   const showRiskTips = isSlippageHigh || isSlippageLow || showLoss;
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
+  const topUpFormValuesRef = useRef(
+    new FormValuesOnSubmit<BridgeTopUpSnapshot>({
+      comparers: {
+        amount: createAmountComparer<string>(),
+      },
+    })
+  );
+  const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
+  const buildTopUpSnapshot = useCallback(
+    (): BridgeTopUpSnapshot => ({
+      amount: amount || '',
+      amountMode: 'exact',
+    }),
+    [amount]
+  );
   const persistBridgePageState = useCallback(async () => {
     await wallet.setPageStateCache({
       path: '/bridge',
@@ -493,6 +519,7 @@ export const BridgeContent = () => {
         amount,
         slippageState,
         fromGasAccountRedirect: true,
+        topUpSnapshot: topUpFormValuesRef.current.getSnapshot(),
       },
     });
   }, [
@@ -506,14 +533,46 @@ export const BridgeContent = () => {
     slippageState,
   ]);
 
+  const bridgeSignerOwner = useMemo(
+    () => createMiniSignOwner('bridge', currentAccount),
+    [currentAccount]
+  );
   const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChainByEnum(fromChain)?.serverId || '',
     autoResetGasStoreOnChainChange: true,
+    owner: bridgeSignerOwner,
   });
+  const consumeTopUpResumeGuard = useCallback(() => {
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return false;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+
+    if (comparison.isChanged && !shouldIgnore) {
+      closeSign();
+      runBuildSwapTxsRef.current = undefined;
+      return true;
+    }
+
+    return false;
+  }, [buildTopUpSnapshot, closeSign]);
 
   const handleBridge = useMemoizedFn(async () => {
     if (canUseDirectSubmitTx) {
+      consumeTopUpResumeGuard();
       setMiniSignLoading(true);
       setFetchingBridgeQuote(true);
       try {
@@ -534,6 +593,8 @@ export const BridgeContent = () => {
             trigger: rbiSource,
           },
           onRedirectToDeposit: () => {
+            topUpFormValuesRef.current.save(buildTopUpSnapshot());
+            setAwaitingTopUpResume(true);
             persistBridgePageState().catch((error) => {
               console.error(
                 '[Bridge] persist page state before gas account deposit failed',
@@ -579,6 +640,11 @@ export const BridgeContent = () => {
         return;
       }
 
+      if (cache.states?.fromGasAccountRedirect && cache.states?.topUpSnapshot) {
+        topUpFormValuesRef.current.save(cache.states.topUpSnapshot);
+        setAwaitingTopUpResume(true);
+      }
+
       switchFromChain(cache.states.fromChain);
       setFromToken(cache.states.fromToken);
       setToChain(cache.states.toChain);
@@ -621,13 +687,24 @@ export const BridgeContent = () => {
 
   useEffect(() => {
     if (!btnDisabled && selectedBridgeQuote) {
+      if (awaitingTopUpResume) {
+        return;
+      }
       mutateTxs([]);
       runBuildSwapTxsRef.current = runBuildSwapTxs();
     }
-  }, [canUseDirectSubmitTx, btnDisabled, selectedBridgeQuote]);
+  }, [
+    canUseDirectSubmitTx,
+    btnDisabled,
+    selectedBridgeQuote,
+    awaitingTopUpResume,
+  ]);
 
   useEffect(() => {
     if (!canUseDirectSubmitTx) return;
+    if (awaitingTopUpResume) {
+      return;
+    }
     closeSign();
     prefetch({
       txs: txs || [],
@@ -638,7 +715,43 @@ export const BridgeContent = () => {
         trigger: rbiSource,
       },
     });
-  }, [closeSign, prefetch, txs, canUseDirectSubmitTx, rbiSource]);
+  }, [
+    awaitingTopUpResume,
+    closeSign,
+    prefetch,
+    txs,
+    canUseDirectSubmitTx,
+    rbiSource,
+  ]);
+
+  useEffect(() => {
+    if (!awaitingTopUpResume) {
+      return;
+    }
+
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    if (!comparison.isChanged || shouldIgnore) {
+      return;
+    }
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+    closeSign();
+    runBuildSwapTxsRef.current = undefined;
+  }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);
 

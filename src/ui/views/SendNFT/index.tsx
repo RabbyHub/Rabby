@@ -33,7 +33,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 import { findChain, findChainByEnum } from '@/utils/chain';
@@ -101,6 +101,7 @@ const SendNFT = () => {
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
+    owner: createMiniSignOwner('send-nft', currentAccount, chainInfo?.serverId),
   });
 
   const nftItem = useMemo(() => {

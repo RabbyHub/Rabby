@@ -37,7 +37,7 @@ import { GasAccountDepositButton } from './GasAccountDepositButton';
 import { addHexPrefix, toChecksumAddress } from '@ethereumjs/util';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { Account } from '@/background/service/preference';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
 import { useRabbyDispatch } from '@/ui/store';
@@ -389,6 +389,7 @@ const GasAccountDepositContent = ({
   const { openDirect, openUI, close: closeSign, resetGasStore } = useMiniSigner(
     {
       account: currentAccount!,
+      owner: createMiniSignOwner('gas-account-deposit', currentAccount),
     }
   );
 

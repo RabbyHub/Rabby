@@ -93,6 +93,7 @@ import { getEIP7702MiniGasLimit } from '@/background/utils/7702';
 import { MultiActionProps } from './TypedDataActions';
 import { getCexInfo } from '@/ui/models/exchange';
 import { isTempoChain } from '@/utils/tempo';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -2399,6 +2400,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             gasAccountCanPay={gasAccountCanPay}
             canGotoUseGasAccount={canGotoUseGasAccount}
             canDepositUseGasAccount={canDepositUseGasAccount}
+            preserveApprovalContext={supportedDirectSign(
+              currentAccountType || ''
+            )}
             isGasAccountLogin={isGasAccountLogin}
             isWalletConnect={
               currentAccountType === KEYRING_TYPE.WalletConnectKeyring

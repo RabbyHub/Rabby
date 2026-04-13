@@ -294,7 +294,7 @@ export const useGasAccountDiscovery = () => {
   const { login } = useGasAccountMethods();
 
   const refreshDiscovery = useCallback(async () => {
-    return dispatch.gasAccount.discoverRuntimeState();
+    return dispatch.gasAccount.discoverRuntimeState(undefined);
   }, [dispatch]);
 
   useEffect(() => {

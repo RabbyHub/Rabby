@@ -24,6 +24,10 @@ import {
   GasLessConfig,
   GasLessNotEnough,
 } from '../FooterBar/GasLessComponents';
+import {
+  shouldAutoSwitchToGasAccountFromGasless,
+  shouldShowGasLessNotEnough,
+} from '../FooterBar/gasAccountDecision';
 import { MiniCommonAction } from './MiniCommonAction';
 import { MiniLedgerAction } from './MiniLedgerAction';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
@@ -31,6 +35,7 @@ import { GasAccountCheckResult } from '@/background/service/openapi';
 import { DrawerProps } from 'antd';
 import { MiniOneKeyAction } from './MiniOneKeyAction';
 import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -292,7 +297,14 @@ export const MiniFooterBar: React.FC<Props> = ({
     if (!isFirstGasCostLoading && !isFirstGasLessLoading) {
       isSetGasMethodRef.current = true;
 
-      if (showGasLess && !canUseGasLess && canGotoUseGasAccount) {
+      if (
+        shouldAutoSwitchToGasAccountFromGasless({
+          showGasLess,
+          isGasNotEnough: !!isGasNotEnough,
+          canUseGasLess,
+          canGotoUseGasAccount: !!canGotoUseGasAccount,
+        })
+      ) {
         onChangeGasAccount?.();
       }
 
@@ -372,7 +384,13 @@ export const MiniFooterBar: React.FC<Props> = ({
             }}
             gasLessConfig={gasLessConfig}
           />
-        ) : isWatchAddr ? null : (
+        ) : isWatchAddr ||
+          !shouldShowGasLessNotEnough({
+            showGasLess,
+            isGasNotEnough: !!isGasNotEnough,
+            payGasByGasAccount,
+            canUseGasLess,
+          }) ? null : (
           <GasLessNotEnough
             gasLessFailedReason={gasLessFailedReason}
             canGotoUseGasAccount={canGotoUseGasAccount}
@@ -380,6 +398,7 @@ export const MiniFooterBar: React.FC<Props> = ({
             canDepositUseGasAccount={canDepositUseGasAccount}
             miniFooter
             onRedirectToDeposit={onRedirectToDeposit}
+            preserveApprovalContext={supportedDirectSign(account.type)}
           />
         )
       ) : null}
@@ -392,6 +411,7 @@ export const MiniFooterBar: React.FC<Props> = ({
           noCustomRPC={noCustomRPC}
           miniFooter
           onRedirectToDeposit={onRedirectToDeposit}
+          preserveApprovalContext={supportedDirectSign(account.type)}
         />
       ) : null}
     </>

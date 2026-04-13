@@ -19,7 +19,7 @@ import styled from 'styled-components';
 import { ETH_USDT_CONTRACT } from '@/constant';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
@@ -361,6 +361,11 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
+    owner: createMiniSignOwner(
+      'lending-repay-with-collateral',
+      currentAccount,
+      chainInfo?.serverId
+    ),
   });
 
   const clearQuoteExpiredTimer = useCallback(() => {

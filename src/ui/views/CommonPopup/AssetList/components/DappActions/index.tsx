@@ -13,7 +13,7 @@ import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
 import { Value } from '@/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import stats from '@/stats';
 import { last } from 'lodash';
@@ -118,6 +118,7 @@ const DappActions = ({
     updateConfig,
   } = useMiniSigner({
     account: currentAccount!,
+    owner: createMiniSignOwner('asset-dapp-actions', currentAccount, type),
   });
 
   const targetAction = useMemo(() => {

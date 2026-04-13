@@ -24,6 +24,12 @@ export type SimpleSignConfig = {
   isHideErrorUI?: boolean;
 } & Omit<SignerConfig, 'account'>;
 
+export const createMiniSignOwner = (
+  scope: string,
+  account?: Pick<Account, 'address'> | null,
+  extra?: string
+) => [scope, account?.address?.toLowerCase(), extra].filter(Boolean).join(':');
+
 const useLocalMiniSignGasStore = () => {
   const [miniGasLevel, setMiniGasLevel] = useState<
     'normal' | 'slow' | 'fast' | 'custom'
@@ -56,10 +62,10 @@ export const useMiniSigner = ({
   autoResetGasStoreOnChainChange?: boolean;
   owner?: string;
 }) => {
-  const ownerRef = useRef(
-    owner ||
-      `mini-sign-${account.address}-${Math.random().toString(36).slice(2)}`
+  const generatedOwnerRef = useRef(
+    `mini-sign-${account.address}-${Math.random().toString(36).slice(2)}`
   );
+  const ownerKey = owner || generatedOwnerRef.current;
   const {
     miniGasLevel,
     setMiniGasLevel,
@@ -102,7 +108,7 @@ export const useMiniSigner = ({
   );
 
   const wallet = useWallet();
-  const signatureStore = getSignatureStore(ownerRef.current);
+  const signatureStore = getSignatureStore(ownerKey);
 
   const toSignerConfig = (cfg: SimpleSignConfig): SignerConfig => ({
     account,
@@ -177,7 +183,7 @@ export const useMiniSigner = ({
     const payload = await prepareSignerPayload(cfg);
     if (!payload) {
       signatureStore.close();
-      releaseSignatureOwner(ownerRef.current);
+      releaseSignatureOwner(ownerKey);
       return;
     }
 
@@ -201,7 +207,7 @@ export const useMiniSigner = ({
         throw new Error('No transactions to sign');
       }
 
-      activateSignatureOwner(ownerRef.current, {
+      activateSignatureOwner(ownerKey, {
         suspendCurrent: true,
       });
       return signatureStore.startUI(
@@ -226,7 +232,7 @@ export const useMiniSigner = ({
       if (!payload) {
         throw new Error('No transactions to sign');
       }
-      activateSignatureOwner(ownerRef.current, {
+      activateSignatureOwner(ownerKey, {
         suspendCurrent: true,
       });
       return signatureStore.openDirect(
@@ -249,7 +255,7 @@ export const useMiniSigner = ({
 
   const close = useMemoizedFn(() => {
     signatureStore.close();
-    releaseSignatureOwner(ownerRef.current);
+    releaseSignatureOwner(ownerKey);
   });
   return {
     openDirect,

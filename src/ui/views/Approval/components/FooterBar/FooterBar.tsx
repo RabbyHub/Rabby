@@ -24,6 +24,7 @@ import {
   GasAccountTips,
 } from './GasLessComponents';
 import { GasAccountCheckResult } from '@/background/service/openapi';
+import { shouldShowGasLessNotEnough } from './gasAccountDecision';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -55,6 +56,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   noCustomRPC?: boolean;
   canGotoUseGasAccount?: boolean;
   canDepositUseGasAccount?: boolean;
+  preserveApprovalContext?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -170,6 +172,7 @@ export const FooterBar: React.FC<Props> = ({
   noCustomRPC,
   canGotoUseGasAccount,
   canDepositUseGasAccount,
+  preserveApprovalContext = false,
   ...props
 }) => {
   const [
@@ -314,12 +317,19 @@ export const FooterBar: React.FC<Props> = ({
               }}
               gasLessConfig={gasLessConfig}
             />
-          ) : isWatchAddr ? null : (
+          ) : isWatchAddr ||
+            !shouldShowGasLessNotEnough({
+              showGasLess,
+              isGasNotEnough: !!props.isGasNotEnough,
+              payGasByGasAccount,
+              canUseGasLess,
+            }) ? null : (
             <GasLessNotEnough
               gasLessFailedReason={gasLessFailedReason}
               canGotoUseGasAccount={canGotoUseGasAccount}
               onChangeGasAccount={onChangeGasAccount}
               canDepositUseGasAccount={canDepositUseGasAccount}
+              preserveApprovalContext={preserveApprovalContext}
             />
           )
         ) : null}
@@ -330,6 +340,7 @@ export const FooterBar: React.FC<Props> = ({
             isGasAccountLogin={isGasAccountLogin}
             isWalletConnect={isWalletConnect}
             noCustomRPC={noCustomRPC}
+            preserveApprovalContext={preserveApprovalContext}
           />
         ) : null}
       </Wrapper>

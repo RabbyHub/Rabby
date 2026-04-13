@@ -13,13 +13,10 @@ import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { Button } from 'antd';
-import {
-  GAS_ACCOUNT_INSUFFICIENT_TIP,
-  useLoginDepositConfirm,
-} from '@/ui/views/GasAccount/hooks/checkTxs';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from '@/ui/utils';
 import { UI_TYPE } from '@/constant/ui';
+import { getGasAccountDecision } from './gasAccountDecision';
 
 export type GasLessConfig = {
   button_text: string;
@@ -38,6 +35,7 @@ export function GasLessNotEnough({
   miniFooter,
   directSubmit,
   onRedirectToDeposit,
+  preserveApprovalContext,
 }: {
   url?: string;
   gasLessFailedReason?: string;
@@ -47,21 +45,19 @@ export function GasLessNotEnough({
   miniFooter?: boolean;
   directSubmit?: boolean;
   onRedirectToDeposit?: () => void;
+  preserveApprovalContext?: boolean;
 }) {
   const { t } = useTranslation();
 
-  const modalConfirm = useLoginDepositConfirm({
-    onGotoGasAccount: onRedirectToDeposit,
-  });
   const history = useHistory();
   const wallet = useWallet();
   const gotoGasAccount = React.useCallback(async () => {
     onRedirectToDeposit?.();
 
     const openGasAccountPopup = async () => {
-      const opened = await wallet.openGasAccountPopup<boolean>({
-        clearApprovals: false,
-      });
+      const opened = await wallet.openGasAccountPopup<boolean>(
+        preserveApprovalContext ? { clearApprovals: false } : undefined
+      );
       if (!opened) {
         history.push('/gas-account');
       }
@@ -74,7 +70,7 @@ export function GasLessNotEnough({
         window.close();
       }
     }
-  }, [history, onRedirectToDeposit, wallet]);
+  }, [history, onRedirectToDeposit, preserveApprovalContext, wallet]);
 
   return (
     <div
@@ -431,6 +427,7 @@ export function GasAccountTips({
   miniFooter,
   directSubmit,
   onRedirectToDeposit,
+  preserveApprovalContext,
 }: {
   gasAccountCost?: GasAccountCheckResult;
   isGasAccountLogin?: boolean;
@@ -439,98 +436,74 @@ export function GasAccountTips({
   miniFooter?: boolean;
   directSubmit?: boolean;
   onRedirectToDeposit?: () => void;
+  preserveApprovalContext?: boolean;
 }) {
   const { t } = useTranslation();
 
-  const { tip, btnText, loginGasAccount, depositGasAccount } = useMemo(() => {
-    if (!noCustomRPC) {
+  const decision = useMemo(
+    () =>
+      getGasAccountDecision({
+        gasAccountCost: gasAccountCost as GasAccountCheckResult & {
+          err_msg?: string;
+        },
+        noCustomRPC,
+        isWalletConnect,
+      }),
+    [gasAccountCost, isWalletConnect, noCustomRPC]
+  );
+
+  const { tip, btnText } = useMemo(() => {
+    if (decision.customRPCUnsupported) {
       return {
         tip: t('page.signFooterBar.gasAccount.customRPC'),
         btnText: null,
-        loginGasAccount: false,
-        depositGasAccount: false,
       };
     }
 
-    if (isWalletConnect) {
+    if (decision.walletConnectUnsupported) {
       return {
         tip: t('page.signFooterBar.gasAccount.WalletConnectTips'),
         btnText: null,
-        loginGasAccount: false,
-        depositGasAccount: false,
       };
     }
 
-    if (
-      gasAccountCost?.err_msg &&
-      gasAccountCost?.err_msg?.toLowerCase() !==
-        GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase()
-    ) {
+    if (decision.blockingError) {
       return {
-        tip: gasAccountCost.err_msg,
+        tip: decision.blockingError,
         btnText: null,
-        loginGasAccount: false,
-        depositGasAccount: false,
       };
     }
 
-    // if (!isGasAccountLogin && !miniFooter) {
-    //   return {
-    //     tip: t('page.signFooterBar.gasAccount.loginFirst'),
-    //     btnText: t('page.signFooterBar.gasAccount.login'),
-    //     loginGasAccount: true,
-    //     depositGasAccount: false,
-    //   };
-    // }
-
-    if (gasAccountCost?.chain_not_support) {
+    if (decision.chainUnsupported) {
       return {
         tip: t('page.signFooterBar.gasAccount.chainNotSupported'),
         btnText: null,
-        loginGasAccount: false,
-        depositGasAccount: false,
       };
     }
 
-    if (!gasAccountCost?.balance_is_enough) {
+    if (decision.insufficientBalance) {
       return {
         tip: directSubmit
           ? t('page.signFooterBar.gasless.notEnough')
           : t('page.signFooterBar.gasAccount.notEnough'),
         btnText: t('page.signFooterBar.gasAccount.deposit'),
-        loginGasAccount: false,
-        depositGasAccount: true,
       };
     }
 
     return {
       tip: null,
       btnText: null,
-      loginGasAccount: false,
-      depositGasAccount: false,
     };
-  }, [
-    directSubmit,
-    miniFooter,
-    isGasAccountLogin,
-    isWalletConnect,
-    gasAccountCost,
-    noCustomRPC,
-    t,
-  ]);
-
-  const modalConfirm = useLoginDepositConfirm({
-    onGotoGasAccount: onRedirectToDeposit,
-  });
+  }, [decision, directSubmit, t]);
 
   const history = useHistory();
   const wallet = useWallet();
   const gotoGasAccount = React.useCallback(async () => {
     onRedirectToDeposit?.();
     const openGasAccountPopup = async () => {
-      const opened = await wallet.openGasAccountPopup<boolean>({
-        clearApprovals: false,
-      });
+      const opened = await wallet.openGasAccountPopup<boolean>(
+        preserveApprovalContext ? { clearApprovals: false } : undefined
+      );
       if (!opened) {
         history.push('/gas-account');
       }
@@ -543,16 +516,9 @@ export function GasAccountTips({
         window.close();
       }
     }
-  }, [history, onRedirectToDeposit, wallet]);
+  }, [history, onRedirectToDeposit, preserveApprovalContext, wallet]);
 
-  if (
-    !isWalletConnect &&
-    // isGasAccountLogin &&
-    gasAccountCost?.balance_is_enough &&
-    !gasAccountCost.chain_not_support &&
-    noCustomRPC &&
-    !gasAccountCost?.err_msg
-  ) {
+  if (!decision.walletConnectUnsupported && decision.canUseGasAccount) {
     return null;
   }
 
