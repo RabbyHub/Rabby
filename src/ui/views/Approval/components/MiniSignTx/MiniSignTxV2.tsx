@@ -30,8 +30,10 @@ import { checkGasAndNonce, explainGas } from '@/utils/transaction';
 import { MiniFooterBar } from './MiniFooterBar';
 import { useMemoizedFn } from 'ahooks';
 import { ApprovalUtilsProvider } from '../../hooks/useApprovalUtils';
-import { useSignatureStore } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import { signatureStore } from '@/ui/component/MiniSignV2/state';
+import {
+  signatureStore,
+  useSignatureStore,
+} from '@/ui/component/MiniSignV2/state';
 import { MiniSecurityHeader } from '@/ui/component/MiniSignV2/components';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';

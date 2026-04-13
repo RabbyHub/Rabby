@@ -52,7 +52,12 @@ const defaultError = {
 const createErrorMessage = (err: unknown) =>
   err instanceof Error ? err.message : String(err ?? 'Unknown error');
 
-class SignatureManager {
+export class SignatureManager {
+  constructor(
+    private readonly options?: {
+      onReset?: () => void;
+    }
+  ) {}
   private state: SignatureFlowState = {
     status: 'idle',
   };
@@ -546,6 +551,7 @@ class SignatureManager {
       this.pendingResult = null;
     }
     this.dispatch({ type: 'RESET' });
+    this.options?.onReset?.();
   }
 
   public updateConfig(config: Partial<SignerConfig>) {

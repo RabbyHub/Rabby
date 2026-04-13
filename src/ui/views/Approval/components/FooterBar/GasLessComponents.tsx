@@ -59,7 +59,9 @@ export function GasLessNotEnough({
     onRedirectToDeposit?.();
 
     const openGasAccountPopup = async () => {
-      const opened = await wallet.openGasAccountPopup<boolean>();
+      const opened = await wallet.openGasAccountPopup<boolean>({
+        clearApprovals: false,
+      });
       if (!opened) {
         history.push('/gas-account');
       }
@@ -526,7 +528,9 @@ export function GasAccountTips({
   const gotoGasAccount = React.useCallback(async () => {
     onRedirectToDeposit?.();
     const openGasAccountPopup = async () => {
-      const opened = await wallet.openGasAccountPopup<boolean>();
+      const opened = await wallet.openGasAccountPopup<boolean>({
+        clearApprovals: false,
+      });
       if (!opened) {
         history.push('/gas-account');
       }

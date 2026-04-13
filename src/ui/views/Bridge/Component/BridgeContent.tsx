@@ -161,6 +161,7 @@ export const BridgeContent = () => {
   // } = usePollBridgePendingNumber();
 
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
+  const history = useHistory();
 
   const gotoBridge = useCallback(async () => {
     if (
@@ -479,6 +480,31 @@ export const BridgeContent = () => {
   const showRiskTips = isSlippageHigh || isSlippageLow || showLoss;
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
+  const persistBridgePageState = useCallback(async () => {
+    await wallet.setPageStateCache({
+      path: '/bridge',
+      search: history.location.search,
+      params: {},
+      states: {
+        fromChain,
+        fromToken,
+        toChain,
+        toToken,
+        amount,
+        slippageState,
+        fromGasAccountRedirect: true,
+      },
+    });
+  }, [
+    wallet,
+    history.location.search,
+    fromChain,
+    fromToken,
+    toChain,
+    toToken,
+    amount,
+    slippageState,
+  ]);
 
   const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
@@ -507,6 +533,14 @@ export const BridgeContent = () => {
             source: 'bridge',
             trigger: rbiSource,
           },
+          onRedirectToDeposit: () => {
+            persistBridgePageState().catch((error) => {
+              console.error(
+                '[Bridge] persist page state before gas account deposit failed',
+                error
+              );
+            });
+          },
           onPreExecError: () => {
             gotoBridge();
           },
@@ -534,7 +568,34 @@ export const BridgeContent = () => {
     }
   });
 
-  const history = useHistory();
+  useEffect(() => {
+    wallet.getPageStateCache().then((cache) => {
+      if (
+        cache?.path !== '/bridge' ||
+        !cache.states?.fromGasAccountRedirect ||
+        !cache.states?.fromToken ||
+        !cache.states?.toToken
+      ) {
+        return;
+      }
+
+      switchFromChain(cache.states.fromChain);
+      setFromToken(cache.states.fromToken);
+      setToChain(cache.states.toChain);
+      setToToken(cache.states.toToken);
+      handleAmountChange(cache.states.amount || '');
+      setSlippage(cache.states.slippageState);
+      wallet.clearPageStateCache();
+    });
+  }, [
+    wallet,
+    switchFromChain,
+    setFromToken,
+    setToChain,
+    setToToken,
+    handleAmountChange,
+    setSlippage,
+  ]);
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {

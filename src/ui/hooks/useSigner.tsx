@@ -6,8 +6,12 @@ import type {
 
 import { useMemoizedFn } from 'ahooks';
 import { useWallet } from '@/ui/utils';
-import { signatureStore } from '@/ui/component/MiniSignV2/state';
-import { useCallback, useEffect, useState } from 'react';
+import {
+  activateSignatureOwner,
+  getSignatureStore,
+  releaseSignatureOwner,
+} from '@/ui/component/MiniSignV2/state';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { omit } from 'lodash';
 import { Account } from '@/background/service/preference';
 import { normalizeTxParams } from '../views/Approval/components/SignTx';
@@ -45,11 +49,17 @@ export const useMiniSigner = ({
   account,
   chainServerId,
   autoResetGasStoreOnChainChange,
+  owner,
 }: {
   account: Account;
   chainServerId?: string;
   autoResetGasStoreOnChainChange?: boolean;
+  owner?: string;
 }) => {
+  const ownerRef = useRef(
+    owner ||
+      `mini-sign-${account.address}-${Math.random().toString(36).slice(2)}`
+  );
   const {
     miniGasLevel,
     setMiniGasLevel,
@@ -92,6 +102,7 @@ export const useMiniSigner = ({
   );
 
   const wallet = useWallet();
+  const signatureStore = getSignatureStore(ownerRef.current);
 
   const toSignerConfig = (cfg: SimpleSignConfig): SignerConfig => ({
     account,
@@ -166,6 +177,7 @@ export const useMiniSigner = ({
     const payload = await prepareSignerPayload(cfg);
     if (!payload) {
       signatureStore.close();
+      releaseSignatureOwner(ownerRef.current);
       return;
     }
 
@@ -189,8 +201,9 @@ export const useMiniSigner = ({
         throw new Error('No transactions to sign');
       }
 
-      console.log('cfgcfg', cfg, payload);
-
+      activateSignatureOwner(ownerRef.current, {
+        suspendCurrent: true,
+      });
       return signatureStore.startUI(
         {
           txs: payload.txs,
@@ -213,6 +226,9 @@ export const useMiniSigner = ({
       if (!payload) {
         throw new Error('No transactions to sign');
       }
+      activateSignatureOwner(ownerRef.current, {
+        suspendCurrent: true,
+      });
       return signatureStore.openDirect(
         {
           txs: payload.txs,
@@ -231,7 +247,10 @@ export const useMiniSigner = ({
     signatureStore.updateConfig(partial);
   });
 
-  const close = useMemoizedFn(() => signatureStore.close());
+  const close = useMemoizedFn(() => {
+    signatureStore.close();
+    releaseSignatureOwner(ownerRef.current);
+  });
   return {
     openDirect,
     openUI,

@@ -503,8 +503,36 @@ export const Main = () => {
   const showRiskTips = isSlippageLow || isSlippageHigh || showLoss;
 
   const [swapDappOpen, setSwapDappOpen] = useState(false);
+  const history = useHistory();
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
+  const persistSwapPageState = useCallback(async () => {
+    await wallet.setPageStateCache({
+      path: '/swap',
+      search: history.location.search,
+      params: {},
+      states: {
+        chain,
+        payToken,
+        receiveToken,
+        inputAmount,
+        slippageState,
+        slider,
+        swapUseSlider,
+        fromGasAccountRedirect: true,
+      },
+    });
+  }, [
+    wallet,
+    history.location.search,
+    chain,
+    payToken,
+    receiveToken,
+    inputAmount,
+    slippageState,
+    slider,
+    swapUseSlider,
+  ]);
 
   const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
@@ -559,6 +587,14 @@ export const Main = () => {
             trigger: rbiSource,
             swapUseSlider,
           },
+          onRedirectToDeposit: () => {
+            persistSwapPageState().catch((error) => {
+              console.error(
+                '[Swap] persist page state before gas account deposit failed',
+                error
+              );
+            });
+          },
         });
         miniSignNextStep(hashes[hashes.length - 1]);
       } catch (error) {
@@ -592,11 +628,38 @@ export const Main = () => {
     }
   }, [swapBtnDisabled, canUseDirectSubmitTx, activeProvider]);
 
-  const history = useHistory();
-
   useEffect(() => {
     setLowCreditToken(receiveToken);
   }, [receiveToken]);
+
+  useEffect(() => {
+    wallet.getPageStateCache().then((cache) => {
+      if (
+        cache?.path !== '/swap' ||
+        !cache.states?.fromGasAccountRedirect ||
+        !cache.states?.payToken ||
+        !cache.states?.receiveToken
+      ) {
+        return;
+      }
+
+      switchChain(cache.states.chain);
+      setPayToken(cache.states.payToken);
+      setReceiveToken(cache.states.receiveToken);
+      handleAmountChange(cache.states.inputAmount || '');
+      setSlippage(cache.states.slippageState);
+      onChangeSlider(cache.states.slider || 0);
+      wallet.clearPageStateCache();
+    });
+  }, [
+    wallet,
+    switchChain,
+    setPayToken,
+    setReceiveToken,
+    handleAmountChange,
+    setSlippage,
+    onChangeSlider,
+  ]);
 
   useEffect(() => {
     if (

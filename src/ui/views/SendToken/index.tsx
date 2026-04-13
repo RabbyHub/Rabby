@@ -810,6 +810,14 @@ const SendToken = () => {
               trigger: filterRbiSource('sendToken', rbisource) && rbisource,
             },
             getContainer,
+            onRedirectToDeposit: () => {
+              persistPageStateCache().catch((error) => {
+                console.error(
+                  '[SendToken] persist page state before gas account deposit failed',
+                  error
+                );
+              });
+            },
           });
 
           handleFormValuesChange(

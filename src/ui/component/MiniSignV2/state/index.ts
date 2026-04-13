@@ -1,11 +1,17 @@
-import { signatureManager } from './SignatureManager';
 import { typedDataSignatureManager } from './TypedDataSignatureManager';
+export {
+  activateSignatureOwner,
+  getSignatureStore,
+  releaseSignatureOwner,
+  signatureRegistry,
+  signatureStore,
+  useSignatureStore,
+} from '../registry';
 
 export * from './types';
-export { signatureManager, useSignatureStore } from './SignatureManager';
+export { signatureManager } from './SignatureManager';
 export {
   typedDataSignatureManager,
   useTypedDataSignatureStore,
   typedDataSignatureStore,
 } from './TypedDataSignatureManager';
-export const signatureStore = signatureManager;
