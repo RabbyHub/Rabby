@@ -44,10 +44,14 @@ export const useGasAccountHistoryRefresh = () => {
 };
 
 export const useGasAccountSign = () => {
-  const sig = useRabbySelector((s) => s.gasAccount.sig);
-  const accountId = useRabbySelector((s) => s.gasAccount.accountId);
-
-  return { sig, accountId };
+  return useRabbySelector((s) => ({
+    sig: s.gasAccount.sig,
+    accountId: s.gasAccount.accountId,
+    pendingHardwareAccount: s.gasAccount.pendingHardwareAccount,
+    autoLoginAccount: s.gasAccount.autoLoginAccount,
+    accountsWithGasAccountBalance:
+      s.gasAccount.accountsWithGasAccountBalance || [],
+  }));
 };
 
 export const claimGift = () => {
@@ -276,6 +280,46 @@ export const useGasAccountLogin = ({
   );
 
   return { login, logout, isLogin };
+};
+
+export const useGasAccountDiscovery = () => {
+  const dispatch = useRabbyDispatch();
+  const discovery = useRabbySelector((s) => ({
+    pendingHardwareAccount: s.gasAccount.pendingHardwareAccount,
+    autoLoginAccount: s.gasAccount.autoLoginAccount,
+    accountsWithGasAccountBalance:
+      s.gasAccount.accountsWithGasAccountBalance || [],
+  }));
+  const autoLoginInFlight = useRef(false);
+  const { login } = useGasAccountMethods();
+
+  const refreshDiscovery = useCallback(async () => {
+    return dispatch.gasAccount.discoverRuntimeState();
+  }, [dispatch]);
+
+  useEffect(() => {
+    refreshDiscovery();
+  }, [refreshDiscovery]);
+
+  useEffect(() => {
+    if (!discovery.autoLoginAccount?.address || autoLoginInFlight.current) {
+      return;
+    }
+
+    autoLoginInFlight.current = true;
+    login(discovery.autoLoginAccount)
+      .catch((error) => {
+        console.error('[gasAccount] auto login failed', error);
+      })
+      .finally(() => {
+        autoLoginInFlight.current = false;
+      });
+  }, [discovery.autoLoginAccount, login]);
+
+  return {
+    ...discovery,
+    refreshDiscovery,
+  };
 };
 
 export const useGasAccountHistory = () => {

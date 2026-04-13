@@ -93,6 +93,7 @@ import {
   handleGasAccountLoginSuccess as syncGasAccountLoginSuccess,
   trackGasAccountActiveStatus as trackCurrentGasAccountActiveStatus,
 } from '../utils/gasAccountLogin';
+import { discoverGasAccountRuntimeState } from '../utils/gasAccountDiscovery';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -2294,6 +2295,10 @@ export class WalletController extends BaseController {
   getGasAccountData = gasAccountService.getGasAccountData;
   getGasAccountSig = gasAccountService.getGasAccountSig;
   setGasAccountSig = gasAccountService.setGasAccountSig;
+  discoverGasAccountRuntimeState = async () => {
+    const accounts = await this.getAllVisibleAccountsArray();
+    return discoverGasAccountRuntimeState(accounts);
+  };
   setGasAccountBalanceState = (accountId?: string, hasBalance?: boolean) => {
     gasAccountService.setCurrentBalanceState(accountId, hasBalance);
   };

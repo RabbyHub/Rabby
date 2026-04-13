@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Empty, Item, Popup, TokenWithChain } from '@/ui/component';
-import { Space, Tooltip } from 'antd';
+import { message, Space, Tooltip } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
 import { SvgIconLoading } from 'ui/assets';
 import { FixedSizeList } from 'react-window';
@@ -26,7 +26,6 @@ import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { findChain, findChainByServerID } from '@/utils/chain';
-import { L2_DEPOSIT_ADDRESS_MAP } from '@/constant/gas-account';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
 import { Input } from 'antd';
 import {
@@ -43,6 +42,15 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
 import { useRabbyDispatch } from '@/ui/store';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
+import { useGasAccountSign } from '../hooks';
+import {
+  getGasAccountDepositMode,
+  getGasAccountDirectDepositAddress,
+  isValidBridgeQuote,
+  MAX_GAS_ACCOUNT_DEPOSIT_USD,
+  MIN_GAS_ACCOUNT_DEPOSIT_USD,
+  pollGasAccountBridgeStatus,
+} from './depositUtils';
 const isTab = getUiType().isTab;
 
 const amountList = [10, 100];
@@ -369,10 +377,12 @@ const GasAccountDepositContent = ({
   const [token, setToken] = useState<TokenItem | undefined>(undefined);
   const [formattedValue, setFormattedValue] = useState('');
   const [rawValue, setRawValue] = useState(0);
+  const [bridgeSubmitting, setBridgeSubmitting] = useState(false);
 
   const wallet = useWallet();
   const currentAccount = useCurrentAccount();
   const [isPreparingSign, setIsPreparingSign] = useState(false);
+  const { sig, accountId } = useGasAccountSign();
 
   const isDirectSignAccount = supportedDirectSign(currentAccount?.type || '');
 
@@ -391,31 +401,57 @@ const GasAccountDepositContent = ({
 
   const amountPass = useMemo(() => {
     if (selectedAmount === CUSTOM_AMOUNT) {
-      return rawValue >= 1 && rawValue <= 500;
+      return (
+        rawValue >= MIN_GAS_ACCOUNT_DEPOSIT_USD &&
+        rawValue <= MAX_GAS_ACCOUNT_DEPOSIT_USD
+      );
     }
     return true;
   }, [rawValue, selectedAmount]);
 
+  const depositMode = useMemo(() => getGasAccountDepositMode(token?.chain), [
+    token?.chain,
+  ]);
+  const directDepositAddress = useMemo(
+    () => getGasAccountDirectDepositAddress(token?.chain),
+    [token?.chain]
+  );
+
   const depositBtnDisabled = useMemo(() => {
-    return !token || !amountPass || isPreparingSign;
-  }, [token, amountPass, isPreparingSign]);
+    if (depositMode === 'bridge' && !isDirectSignAccount) {
+      return true;
+    }
+    return !token || !amountPass || isPreparingSign || bridgeSubmitting;
+  }, [
+    token,
+    amountPass,
+    isPreparingSign,
+    bridgeSubmitting,
+    depositMode,
+    isDirectSignAccount,
+  ]);
 
   const canUseDirectSubmitTx = useMemo(() => {
     if (!isDirectSignAccount || !token || !depositAmount) return false;
-
-    const chainEnum = findChainByServerID(token.chain);
-    if (!chainEnum) return false;
-
+    if (depositMode === 'direct') {
+      return !!directDepositAddress;
+    }
     return true;
-  }, [isDirectSignAccount, token, depositAmount]);
+  }, [
+    isDirectSignAccount,
+    token,
+    depositAmount,
+    depositMode,
+    directDepositAddress,
+  ]);
 
   const [forceRefresh, refresh] = useState(0);
 
   const topUpGasAccount = useCallback(() => {
-    if (!token || !amountPass) return;
+    if (!token || !amountPass || !directDepositAddress) return;
     const chainEnum = findChainByServerID(token.chain)!;
     wallet.topUpGasAccount({
-      to: L2_DEPOSIT_ADDRESS_MAP[chainEnum.enum],
+      to: directDepositAddress,
       chainServerId: chainEnum.serverId,
       tokenId: token.id,
       amount: Number(depositAmount),
@@ -424,7 +460,14 @@ const GasAccountDepositContent = ({
         .toFixed(0),
     });
     window.close();
-  }, [token?.chain, token?.id, amountPass, depositAmount]);
+  }, [
+    token?.chain,
+    token?.id,
+    amountPass,
+    depositAmount,
+    directDepositAddress,
+    wallet,
+  ]);
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = e.target.value.replace(/[^0-9]/g, '');
@@ -454,10 +497,17 @@ const GasAccountDepositContent = ({
   };
 
   const errorTips = useMemo(() => {
-    if (selectedAmount === CUSTOM_AMOUNT && rawValue && rawValue > 500) {
+    if (
+      selectedAmount === CUSTOM_AMOUNT &&
+      rawValue &&
+      rawValue > MAX_GAS_ACCOUNT_DEPOSIT_USD
+    ) {
       return t('page.gasAccount.depositPopup.invalidAmount');
     }
-  }, [rawValue, selectedAmount]);
+    if (depositMode === 'bridge' && token && token.price <= 0) {
+      return t('page.gasAccount.depositPopup.invalidAmount');
+    }
+  }, [depositMode, rawValue, selectedAmount, t, token]);
 
   const openTokenList = () => {
     if (!amountPass) return;
@@ -468,26 +518,116 @@ const GasAccountDepositContent = ({
     if (!token || !amountPass || !currentAccount || !isDirectSignAccount) {
       return [] as Tx[];
     }
-    const chainEnum = findChainByServerID(token.chain)!;
     const rawAmount = new BigNumber(depositAmount)
       .times(10 ** token.decimals)
       .toFixed(0);
 
-    const txs = buildDepositTxs({
-      to: L2_DEPOSIT_ADDRESS_MAP[chainEnum.enum],
-      chainServerId: chainEnum.serverId,
-      tokenId: token.id,
-      rawAmount,
-      account: currentAccount,
+    if (depositMode === 'direct') {
+      const chainEnum = findChainByServerID(token.chain)!;
+      const txs = buildDepositTxs({
+        to: directDepositAddress!,
+        chainServerId: chainEnum.serverId,
+        tokenId: token.id,
+        rawAmount,
+        account: currentAccount,
+      });
+      return txs as Tx[];
+    }
+
+    const quote = await wallet.openapi.getGasAccountBridgeQuote({
+      user_addr: currentAccount.address,
+      from_chain_id: token.chain,
+      from_token_id: token.id,
+      from_token_raw_amount: rawAmount,
     });
-    return txs as Tx[];
-  }, [token, amountPass, currentAccount, depositAmount, forceRefresh]);
+
+    if (
+      !isValidBridgeQuote({
+        quote,
+        accountAddress: currentAccount.address,
+        chainServerId: token.chain,
+        gasAccountAddress: accountId,
+      })
+    ) {
+      throw new Error('Invalid gas account bridge quote');
+    }
+
+    return [quote.tx as Tx];
+  }, [
+    wallet,
+    token,
+    amountPass,
+    currentAccount,
+    depositAmount,
+    forceRefresh,
+    depositMode,
+    directDepositAddress,
+    accountId,
+  ]);
 
   const miniSignTxs = useMemo(() => (loading ? [] : txs || []), [loading, txs]);
 
+  const createBridgeRecharge = useCallback(
+    async (hash: string) => {
+      if (!token || !sig || !accountId || !currentAccount) {
+        throw new Error('Gas account bridge context missing');
+      }
+
+      await wallet.openapi.createGasAccountBridgeRecharge({
+        sig,
+        gas_account_id: accountId,
+        user_addr: currentAccount.address,
+        from_chain_id: token.chain,
+        from_token_id: token.id,
+        from_token_amount: Number(depositAmount),
+        from_usd_value: Number(
+          new BigNumber(depositAmount).times(token.price || 0).toFixed(8)
+        ),
+        tx_id: hash,
+      });
+
+      const status = await pollGasAccountBridgeStatus({
+        fetchStatus: () =>
+          wallet.openapi.getGasAccountBridgeStatus({
+            from_chain_id: token.chain,
+            tx_id: hash,
+          }),
+      });
+
+      if (status.status !== 'success') {
+        throw new Error(`Bridge recharge ${status.status}`);
+      }
+    },
+    [wallet, token, sig, accountId, currentAccount, depositAmount]
+  );
+
   const handleDirectSubmit = useCallback(async () => {
     if (!canUseDirectSubmitTx || !miniSignTxs?.length) {
-      topUpGasAccount();
+      if (depositMode === 'direct') {
+        topUpGasAccount();
+        return;
+      }
+      try {
+        setBridgeSubmitting(true);
+        const hashes = await openUI({
+          txs: miniSignTxs,
+          checkGasFeeTooHigh: false,
+          autoUseGasFree: true,
+        });
+        const hash = hashes[hashes.length - 1];
+        if (!hash) {
+          throw new Error('Bridge tx hash missing');
+        }
+        await createBridgeRecharge(hash);
+        refresh((e) => e + 1);
+        handleRefreshHistory();
+        onClose();
+      } catch (error) {
+        console.error('Gas account bridge sign error', error);
+        message.error('Bridge deposit failed, please retry');
+      } finally {
+        setBridgeSubmitting(false);
+      }
       return;
     }
     setIsPreparingSign(true);
@@ -526,6 +666,9 @@ const GasAccountDepositContent = ({
       });
       const hash = hashes[hashes.length - 1];
       if (hash) {
+        if (depositMode === 'bridge') {
+          await createBridgeRecharge(hash);
+        }
         succeeded = true;
       }
     } catch (error) {
@@ -539,12 +682,19 @@ const GasAccountDepositContent = ({
         });
         const hash = hashes[hashes.length - 1];
         if (hash) {
+          if (depositMode === 'bridge') {
+            await createBridgeRecharge(hash);
+          }
           succeeded = true;
         }
       } else if (error == MINI_SIGN_ERROR.USER_CANCELLED) {
         setIsPreparingSign(false);
       } else {
-        topUpGasAccount();
+        if (depositMode === 'direct') {
+          topUpGasAccount();
+        } else {
+          message.error('Bridge deposit failed, please retry');
+        }
         setIsPreparingSign(false);
       }
     } finally {
@@ -565,7 +715,18 @@ const GasAccountDepositContent = ({
     miniSignTxs,
     topUpGasAccount,
     openDirect,
+    openUI,
     refresh,
+    wallet,
+    currentAccount,
+    token,
+    depositAmount,
+    resetGasStore,
+    closeSign,
+    createBridgeRecharge,
+    depositMode,
+    handleRefreshHistory,
+    onClose,
   ]);
 
   useEffect(() => {
@@ -680,7 +841,7 @@ const GasAccountDepositContent = ({
           disabled={depositBtnDisabled}
           onSignPage={topUpGasAccount}
           onDirectSubmit={handleDirectSubmit}
-          loading={isPreparingSign}
+          loading={isPreparingSign || bridgeSubmitting}
         />
       </div>
 

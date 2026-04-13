@@ -12,6 +12,8 @@ import {
   useGasAccountInfo,
   useGasAccountLogin,
   useGasAccountHistoryRefresh,
+  useGasAccountDiscovery,
+  useGasAccountMethods,
 } from './hooks';
 import { ReactComponent as RcIconLogout } from '@/ui/assets/gas-account/logout.svg';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/gas-account/switch-cc.svg';
@@ -57,6 +59,8 @@ const GasAccountInner = () => {
 
   const { value: gasAccount, loading } = useGasAccountInfo();
   const { isLogin } = useGasAccountLogin({ value: gasAccount, loading });
+  const { pendingHardwareAccount } = useGasAccountDiscovery();
+  const { login } = useGasAccountMethods();
 
   const wallet = useWallet();
 
@@ -174,7 +178,17 @@ const GasAccountInner = () => {
       <div className="flex-1 overflow-auto mx-20">
         <GasAccountCard
           isLogin={isLogin}
-          onLoginPress={() => {
+          pendingHardwareAccount={pendingHardwareAccount}
+          onPrimaryAction={() => {
+            if (pendingHardwareAccount) {
+              login(pendingHardwareAccount).catch((error) => {
+                console.error(
+                  'gas account pending hardware login failed',
+                  error
+                );
+              });
+              return;
+            }
             setLoginVisible(true);
           }}
           onDepositPress={openDepositPopup}
@@ -187,9 +201,11 @@ const GasAccountInner = () => {
           gasAccountInfo={gasAccount?.account}
         />
 
-        <GasAccountHistory
-          key={refreshHistoryKey + `-${isLogin}-${gasAccount?.account}`}
-        />
+        {isLogin ? (
+          <GasAccountHistory
+            key={refreshHistoryKey + `-${isLogin}-${gasAccount?.account}`}
+          />
+        ) : null}
       </div>
 
       <GasAccountLoginPopup

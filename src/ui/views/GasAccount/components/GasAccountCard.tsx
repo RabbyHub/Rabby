@@ -13,13 +13,15 @@ import { useAml } from '../hooks';
 import { GasAccountLoginCard } from './GasAccountLoginCard';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { KEYRING_TYPE } from '@/constant';
+import { Account } from '@/background/service/preference';
 
 interface Props {
   isLogin?: boolean;
   isLoading?: boolean;
-  onLoginPress?(): void;
+  onPrimaryAction?(): void;
   onDepositPress?(): void;
   onWithdrawPress?(): void;
+  pendingHardwareAccount?: Account;
   gasAccountInfo?: NonNullable<
     Awaited<ReturnType<typeof openapi.getGasAccountInfo>>
   >['account'];
@@ -29,9 +31,10 @@ const DEPOSIT_LIMIT = 1000;
 export const GasAccountCard = ({
   isLogin,
   isLoading,
-  onLoginPress,
+  onPrimaryAction,
   onDepositPress,
   onWithdrawPress,
+  pendingHardwareAccount,
   gasAccountInfo,
 }: Props) => {
   const isRisk = useAml();
@@ -63,7 +66,12 @@ export const GasAccountCard = ({
   const withdrawDisabled = !balance;
 
   if (!isLogin) {
-    return <GasAccountLoginCard onLoginPress={onLoginPress} />;
+    return (
+      <GasAccountLoginCard
+        onPrimaryAction={onPrimaryAction}
+        pendingHardwareAccount={pendingHardwareAccount}
+      />
+    );
   }
 
   return (

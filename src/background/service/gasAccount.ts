@@ -22,6 +22,21 @@ export type GasAccountServiceStore = {
   currentBalanceAccountId?: string;
   currentHasBalance?: boolean;
   ga4ActiveEventTime?: number;
+  pendingHardwareAccount?: {
+    address: string;
+    type: string;
+    brandName: string;
+  };
+  autoLoginAccount?: {
+    address: string;
+    type: string;
+    brandName: string;
+  };
+  accountsWithGasAccountBalance?: Array<{
+    address: string;
+    type: string;
+    brandName: string;
+  }>;
 };
 
 class GasAccountService {
@@ -46,6 +61,9 @@ class GasAccountService {
     if (this.store.sig && this.store.accountId) {
       this.store.hasEverLoggedIn = true;
     }
+    this.store.pendingHardwareAccount = undefined;
+    this.store.autoLoginAccount = undefined;
+    this.store.accountsWithGasAccountBalance = [];
   };
 
   getGasAccountData = (key?: keyof GasAccountServiceStore) => {
@@ -55,6 +73,8 @@ class GasAccountService {
   getGasAccountSig = () => {
     return { sig: this.store.sig, accountId: this.store.accountId };
   };
+
+  hasGasAccountSession = () => !!this.store.sig && !!this.store.accountId;
 
   setGasAccountSig = (
     sig?: string,
@@ -74,6 +94,18 @@ class GasAccountService {
         brandName: account.brandName,
         type: account.type,
       };
+      if (
+        this.store.pendingHardwareAccount?.address?.toLowerCase() ===
+        account.address.toLowerCase()
+      ) {
+        this.store.pendingHardwareAccount = undefined;
+      }
+      if (
+        this.store.autoLoginAccount?.address?.toLowerCase() ===
+        account.address.toLowerCase()
+      ) {
+        this.store.autoLoginAccount = undefined;
+      }
     }
     eventBus.emit(EVENTS.broadcastToUI, {
       method:
@@ -102,6 +134,23 @@ class GasAccountService {
   setCurrentBalanceState(accountId?: string, hasBalance?: boolean) {
     this.store.currentBalanceAccountId = accountId;
     this.store.currentHasBalance = hasBalance;
+  }
+
+  setDiscoveryState(
+    payload: Pick<
+      GasAccountServiceStore,
+      | 'pendingHardwareAccount'
+      | 'autoLoginAccount'
+      | 'accountsWithGasAccountBalance'
+    >
+  ) {
+    this.store.pendingHardwareAccount = payload.pendingHardwareAccount;
+    this.store.autoLoginAccount = payload.autoLoginAccount;
+    this.store.accountsWithGasAccountBalance =
+      payload.accountsWithGasAccountBalance || [];
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.GAS_ACCOUNT.DISCOVERY_UPDATED,
+    });
   }
 
   hasTrackedGa4ActiveToday() {

@@ -12,6 +12,9 @@ export const gasAccount = createModel<RootModel>()({
     sig: undefined,
     accountId: undefined,
     account: undefined,
+    pendingHardwareAccount: undefined,
+    autoLoginAccount: undefined,
+    accountsWithGasAccountBalance: [],
   } as Partial<GasAccountServiceStore>,
 
   reducers: {
@@ -39,8 +42,15 @@ export const gasAccount = createModel<RootModel>()({
       const login = () => {
         this.syncState();
       };
+      const discoveryUpdated = () => {
+        this.syncState();
+      };
       eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_OUT, logout);
       eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_IN, login);
+      eventBus.addEventListener(
+        EVENTS.GAS_ACCOUNT.DISCOVERY_UPDATED,
+        discoveryUpdated
+      );
       return this.syncState();
     },
     async syncState(key: keyof GasAccountServiceStore | undefined, store) {
@@ -68,6 +78,12 @@ export const gasAccount = createModel<RootModel>()({
       store
     ) {
       await store.app.wallet.setGasAccountSig(sig, account);
+    },
+
+    async discoverRuntimeState(_, store) {
+      const data = await store.app.wallet.discoverGasAccountRuntimeState();
+      this.setField(data);
+      return data;
     },
   }),
 });

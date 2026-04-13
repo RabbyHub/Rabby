@@ -5,21 +5,22 @@ import { ReactComponent as RcIconQuoteStart } from '@/ui/assets/gas-account/quot
 import { ReactComponent as RcIconQuoteEnd } from '@/ui/assets/gas-account/quote-end.svg';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
-import { useRabbySelector, useRabbyDispatch } from 'ui/store';
-import { formatUsdValue, useWallet } from 'ui/utils';
+import { useRabbySelector } from 'ui/store';
+import { formatUsdValue } from 'ui/utils';
 import { useGasAccountMethods } from '../hooks';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
 import clsx from 'clsx';
 import GasAccountNewUserProcessPopup from './NewUserProcessPopup';
+import { Account } from '@/background/service/preference';
 
 export const GasAccountLoginCard = ({
-  onLoginPress,
+  onPrimaryAction,
+  pendingHardwareAccount,
 }: {
-  onLoginPress?(): void;
+  onPrimaryAction?(): void;
+  pendingHardwareAccount?: Account;
 }) => {
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useGasAccountMethods();
   const { giftUsdValue, currentAccount } = useRabbySelector((s) => ({
@@ -45,10 +46,27 @@ export const GasAccountLoginCard = ({
   const handleClick = () => {
     if (giftUsdValue > 0) {
       handleLoginAndClaim();
-    } else if (onLoginPress) {
-      onLoginPress();
+      return;
     }
+    if (pendingHardwareAccount) {
+      setIsLoading(true);
+      login(pendingHardwareAccount)
+        .catch((error) => {
+          console.error('gas account hardware login failed', error);
+        })
+        .finally(() => setIsLoading(false));
+      return;
+    }
+    onPrimaryAction?.();
   };
+
+  const primaryActionText = giftUsdValue
+    ? t('page.gasAccount.loginInTip.loginAndClaim', {
+        usdValue: formatUsdValue(giftUsdValue),
+      })
+    : pendingHardwareAccount
+    ? t('page.signFooterBar.signAndSubmitButton')
+    : t('page.gasAccount.deposit');
 
   return (
     <>
@@ -86,14 +104,10 @@ export const GasAccountLoginCard = ({
             {giftUsdValue > 0 ? (
               <>
                 <IconGift viewBox="0 0 18 18" className="w-18 h-18" />
-                <span>
-                  {t('page.gasAccount.loginInTip.loginAndClaim', {
-                    usdValue: formatUsdValue(giftUsdValue),
-                  })}
-                </span>
+                <span>{primaryActionText}</span>
               </>
             ) : (
-              t('page.gasAccount.loginInTip.login')
+              primaryActionText
             )}
           </Button>
 
