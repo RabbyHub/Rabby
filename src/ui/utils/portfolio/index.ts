@@ -3,13 +3,23 @@ import { useCallback, useMemo } from 'react';
 import { useTokens } from './token';
 import { usePortfolios } from './usePortfolio';
 
+type UseQueryProjectsOptions = {
+  visible?: boolean;
+  lpTokenMode?: boolean;
+  showBlocked?: boolean;
+  searchMode?: boolean;
+  autoLoad?: boolean;
+};
+
 export const useQueryProjects = (
   userAddr: string | undefined,
-  visible: boolean,
-  lpTokenMode = false,
-  showBlocked = false,
-  searchMode = false,
-  autoLoad = true
+  {
+    visible = false,
+    lpTokenMode = false,
+    showBlocked = false,
+    searchMode = false,
+    autoLoad = true,
+  }: UseQueryProjectsOptions = {}
 ) => {
   const shouldAutoLoad = visible && autoLoad;
 

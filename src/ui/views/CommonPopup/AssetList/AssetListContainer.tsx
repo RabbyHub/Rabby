@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
-import AddTokenEntry, { AddTokenEntryInst } from './AddTokenEntry';
+import { AddTokenEntryInst } from './AddTokenEntry';
 import { useRabbySelector } from '@/ui/store';
 import { HomeTokenList } from './TokenList';
 import useSortTokens from 'ui/hooks/useSortTokens';
@@ -17,8 +17,6 @@ import { useAppChain } from '@/ui/hooks/useAppChain';
 import { useCommonPopupView } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
-import clsx from 'clsx';
-import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import { HomePerpsPositionList } from './HomePerpsPositionList';
 import { uniqBy } from 'lodash';
 import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
@@ -57,13 +55,11 @@ export const AssetListContainer: React.FC<Props> = ({
     blockedTokens,
     customizeTokens,
     removeProtocol,
-  } = useQueryProjects(
-    currentAccount?.address,
+  } = useQueryProjects(currentAccount?.address, {
     visible,
-    lpTokenMode ? lpTokenMode : undefined,
-    undefined,
-    !!search
-  );
+    lpTokenMode: lpTokenMode ? lpTokenMode : undefined,
+    searchMode: !!search,
+  });
   const {
     data: appPortfolios,
     isLoading: isAppPortfoliosLoading,

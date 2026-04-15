@@ -24,10 +24,7 @@ import { GnosisQueueModal } from './components/GnosisQueueModal';
 import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { AddressDetailModal } from './components/AddressDetailModal';
 import { AddressBackupModal } from './components/AddressBackupModal';
-import { AddAddressModal } from './components/AddAddressModal';
 import { RcIconBackTopCC } from '@/ui/assets/desktop/profile';
-import { ReachedEnd } from './components/ReachedEnd';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import TopShortcut, {
   PORTFOLIO_LIST_ID,
   TOP_SHORTCUT_SLOT_ID,
@@ -35,14 +32,11 @@ import TopShortcut, {
 import { AbstractProject } from '@/ui/utils/portfolio/types';
 import { NFTTabPane } from './components/NFTTabPane';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { ga4 } from '@/utils/ga4';
 import { DesktopPending } from './components/DesktopPending';
 import { TokenTab } from './components/TokensTabPane/TokenTab';
 import { DIFITab } from './components/TokensTabPane/DifiTab';
-import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
+import { useTokenAndDefiData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
-import { SwitchThemeBtn } from './components/SwitchThemeBtn';
 const DESKTOP_NAV_HEIGHT = 0;
 
 const StickyBorderTop = () => (
@@ -162,7 +156,7 @@ export const DesktopProfile: React.FC<{
     isNoResults,
     refreshPositions,
     refreshTokens,
-  } = useTokenAndDIFIData({
+  } = useTokenAndDefiData({
     selectChainId: chainInfo?.serverId,
     allTokenMode: !!searchValue,
   });

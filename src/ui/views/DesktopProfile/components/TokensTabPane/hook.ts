@@ -5,7 +5,7 @@ import { useCommonPopupView } from '@/ui/utils';
 import { useQueryProjects } from '@/ui/utils/portfolio';
 import { useEffect, useMemo, useState } from 'react';
 
-export const useTokenAndDIFIData = ({
+export const useTokenAndDefiData = ({
   selectChainId,
   allTokenMode,
 }: {
@@ -32,13 +32,12 @@ export const useTokenAndDIFIData = ({
     refreshPositions,
     refreshTokens,
     refreshPortfolios,
-  } = useQueryProjects(
-    currentAccount?.address,
-    true,
+  } = useQueryProjects(currentAccount?.address, {
+    visible: true,
     lpTokenMode,
-    true,
-    allTokenMode
-  );
+    showBlocked: true,
+    searchMode: allTokenMode,
+  });
 
   const {
     data: appPortfolios,
