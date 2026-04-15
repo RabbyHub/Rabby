@@ -25,7 +25,6 @@ import {
   sortWalletTokens,
 } from './tokenUtils';
 import { isSameAddress } from '..';
-import { Token } from 'background/service/preference';
 import {
   defaultTokenFilter,
   includeLpTokensFilter,
@@ -34,31 +33,21 @@ import {
 import { useAsync } from 'react-use';
 
 let lastResetTokenListAddr = '';
-// export const tokenChangeLoadingAtom = atom(false);
-
-const filterDisplayToken = (
-  tokens: AbstractPortfolioToken[],
-  blocked: Token[]
-) => {
-  return tokens.filter((token) => {
-    const chain = findChain({
-      serverId: token.chain,
-    });
-    return (
-      !blocked.find(
-        (item) =>
-          isSameAddress(token._tokenId, item.address) &&
-          item.chain === token.chain
-      ) && findChainByEnum(chain?.enum)
-    );
-  });
-};
 
 const buildTokenKey = (token: Pick<TokenItem, 'chain' | 'id'>) =>
   `${token.chain}-${token.id.toLowerCase()}`;
 
 const uniqTokens = (tokens: TokenItem[]) => {
   return uniqBy(tokens, buildTokenKey);
+};
+
+const filterValidChainTokens = (tokens: AbstractPortfolioToken[]) => {
+  return tokens.filter((token) => {
+    const chain = findChain({
+      serverId: token.chain,
+    });
+    return findChainByEnum(chain?.enum);
+  });
 };
 
 /** 替换核心 token */
@@ -69,12 +58,13 @@ const replaceCoreTokens = (tokens: TokenItem[], cacheTokens: TokenItem[]) => {
   ]);
 };
 
+const EMPTY_BLOCKED_TOKENS: AbstractPortfolioToken[] = [];
+
 type UseTokensOptions = {
   visible?: boolean;
   updateNonce?: number;
   chainServerId?: string;
   lpTokensOnly?: boolean;
-  showBlocked?: boolean;
   searchMode?: boolean;
   disableRecommended?: boolean;
   realtimeMode?: boolean;
@@ -87,15 +77,11 @@ export const useTokens = (
     updateNonce = 0,
     chainServerId,
     lpTokensOnly = false,
-    showBlocked = false,
     searchMode = false,
     disableRecommended = false,
     realtimeMode = false,
   }: UseTokensOptions = {}
 ) => {
-  const isTestnet = chainServerId
-    ? !!findChain({ serverId: chainServerId })?.isTestnet
-    : false;
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
   const [isLoading, setLoading] = useSafeState(true);
@@ -110,6 +96,12 @@ export const useTokens = (
   const chainIdRef = useRef<string | undefined>(undefined);
   // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
   const callCountRef = useRef(0);
+
+  const isTestnet = useMemo(() => {
+    return chainServerId
+      ? !!findChain({ serverId: chainServerId })?.isTestnet
+      : false;
+  }, [chainServerId]);
 
   useEffect(() => {
     if (updateNonce === 0) return;
@@ -187,16 +179,6 @@ export const useTokens = (
     let _tokens: AbstractPortfolioToken[] = [];
     setData(_data);
 
-    const blocked = showBlocked
-      ? []
-      : (await wallet.getBlockedToken()).filter((token) => {
-          if (isTestnet) {
-            return checkIsTestnet(token.chain);
-          } else {
-            return !checkIsTestnet(token.chain);
-          }
-        });
-
     if (currentAbort.signal.aborted) {
       abortedFn();
       return;
@@ -234,11 +216,9 @@ export const useTokens = (
         setData(_data);
         _tokens = sortWalletTokens(_data);
         if (isTestnet) {
-          dispatch.account.setTestnetTokenList(
-            filterDisplayToken(_tokens, blocked)
-          );
+          dispatch.account.setTestnetTokenList(filterValidChainTokens(_tokens));
         } else {
-          dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+          dispatch.account.setTokenList(filterValidChainTokens(_tokens));
         }
         setLoading(false);
       }
@@ -292,11 +272,9 @@ export const useTokens = (
       setData(_data);
       _tokens = sortWalletTokens(_data);
       if (isTestnet) {
-        dispatch.account.setTestnetTokenList(
-          filterDisplayToken(_tokens, blocked)
-        );
+        dispatch.account.setTestnetTokenList(filterValidChainTokens(_tokens));
       } else {
-        dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+        dispatch.account.setTokenList(filterValidChainTokens(_tokens));
       }
       setLoading(false);
     }
@@ -321,7 +299,7 @@ export const useTokens = (
       return;
     }
 
-    // customize and blocked tokens
+    // customize  tokens
     const customizeTokens = (await wallet.getCustomizedToken()).filter(
       (token) => {
         if (isTestnet) {
@@ -332,7 +310,6 @@ export const useTokens = (
       }
     );
     const customTokenList: TokenItem[] = [];
-    const blockedTokenList: TokenItem[] = [];
     tokenRes.forEach((token) => {
       if (
         customizeTokens.find(
@@ -345,23 +322,8 @@ export const useTokens = (
         // customize with balance
         customTokenList.push(token);
       }
-      if (
-        blocked.find(
-          (t) =>
-            isSameAddress(token.id, t.address) &&
-            token.chain === t.chain &&
-            token.is_core
-        )
-      ) {
-        blockedTokenList.push(token);
-      }
     });
     const apiProvider = isTestnet ? wallet.testnetOpenapi : wallet.openapi;
-    const noBalanceBlockedTokens = blocked.filter((token) => {
-      return !blockedTokenList.find(
-        (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
-      );
-    });
     const noBalanceCustomizeTokens = customizeTokens.filter((token) => {
       return !customTokenList.find(
         (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
@@ -376,13 +338,6 @@ export const useTokens = (
         ...noBalanceCustomTokens.filter((token) => !token.is_core)
       );
     }
-    if (noBalanceBlockedTokens.length > 0) {
-      const blockedTokens = await apiProvider.customListToken(
-        noBalanceBlockedTokens.map((item) => `${item.chain}:${item.address}`),
-        userAddr
-      );
-      blockedTokenList.push(...blockedTokens.filter((token) => token.is_core));
-    }
 
     if (currentAbort.signal.aborted) {
       abortedFn();
@@ -392,15 +347,10 @@ export const useTokens = (
     const formattedCustomTokenList = customTokenList.map(
       (token) => new DisplayedToken(token) as AbstractPortfolioToken
     );
-    const formattedBlockedTokenList = blockedTokenList.map(
-      (token) => new DisplayedToken(token) as AbstractPortfolioToken
-    );
 
     if (isTestnet) {
-      dispatch.account.setTestnetBlockedTokenList(formattedBlockedTokenList);
       dispatch.account.setTestnetCustomizeTokenList(formattedCustomTokenList);
     } else {
-      dispatch.account.setBlockedTokenList(formattedBlockedTokenList);
       dispatch.account.setCustomizeTokenList(formattedCustomTokenList);
     }
 
@@ -410,7 +360,6 @@ export const useTokens = (
         : []),
       ...tokenRes,
       ...customTokenList,
-      ...blockedTokenList,
     ]);
 
     if (currentAbort.signal.aborted) {
@@ -446,12 +395,12 @@ export const useTokens = (
     _tokens = sortWalletTokens(_data);
     if (isTestnet) {
       dispatch.account.setTestnetTokenList([
-        ...filterDisplayToken(_tokens, blocked),
+        ...filterValidChainTokens(_tokens),
         ...formattedCustomTokenList,
       ]);
     } else {
       dispatch.account.setTokenList([
-        ...filterDisplayToken(_tokens, blocked),
+        ...filterValidChainTokens(_tokens),
         ...formattedCustomTokenList,
       ]);
     }
@@ -545,7 +494,7 @@ export const useTokens = (
     customizeTokens: isTestnet
       ? testnetTokens.customize
       : mainnetTokens.customize,
-    blockedTokens: isTestnet ? testnetTokens.blocked : mainnetTokens.blocked,
+    blockedTokens: EMPTY_BLOCKED_TOKENS,
     hasValue: !!data?._portfolios?.length,
     updateData: forceRefresh,
     walletProject: data,

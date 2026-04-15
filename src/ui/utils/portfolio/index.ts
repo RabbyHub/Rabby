@@ -6,7 +6,6 @@ import { usePortfolios } from './usePortfolio';
 type UseQueryProjectsOptions = {
   visible?: boolean;
   lpTokenMode?: boolean;
-  showBlocked?: boolean;
   searchMode?: boolean;
   autoLoad?: boolean;
 };
@@ -16,7 +15,6 @@ export const useQueryProjects = (
   {
     visible = false,
     lpTokenMode = false,
-    showBlocked = false,
     searchMode = false,
     autoLoad = true,
   }: UseQueryProjectsOptions = {}
@@ -36,7 +34,6 @@ export const useQueryProjects = (
   } = useTokens(userAddr, {
     visible: shouldAutoLoad,
     lpTokensOnly: lpTokenMode,
-    showBlocked,
     searchMode,
     disableRecommended: true,
   });

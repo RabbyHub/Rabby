@@ -35,7 +35,6 @@ export const useTokenAndDefiData = ({
   } = useQueryProjects(currentAccount?.address, {
     visible: true,
     lpTokenMode,
-    showBlocked: true,
     searchMode: allTokenMode,
   });
 
