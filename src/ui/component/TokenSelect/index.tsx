@@ -198,17 +198,14 @@ const TokenSelect = forwardRef<
       tokens: allTokens,
       isLoading: isLoadingAllTokens,
       isAllTokenLoading, // 包含lp Token的请求
-    } = useTokens(
-      useSwapTokenList ? undefined : currentAccount?.address,
-      tokenSelectorVisible,
+    } = useTokens(useSwapTokenList ? undefined : currentAccount?.address, {
+      visible: tokenSelectorVisible,
       updateNonce,
-      queryConds.chainServerId,
-      isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
-      undefined,
-      !!queryConds.keyword,
-      false,
-      true
-    );
+      chainServerId: queryConds.chainServerId,
+      lpTokensOnly: isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
+      searchMode: !!queryConds.keyword,
+      realtimeMode: true,
+    });
 
     const {
       value: swapTokenList,

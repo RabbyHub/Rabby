@@ -231,17 +231,14 @@ const TokenAmountInput = ({
     tokens: allTokens,
     isLoading: isLoadingAllTokens,
     isAllTokenLoading, // 包含lpToken
-  } = useTokens(
-    currentAccount?.address,
-    selectorOpened.current ? tokenSelectorVisible : true,
+  } = useTokens(currentAccount?.address, {
+    visible: selectorOpened.current ? tokenSelectorVisible : true,
     updateNonce,
-    mainnetChainServerId,
-    isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
-    undefined,
-    !!keyword,
-    false,
-    true
-  );
+    chainServerId: mainnetChainServerId,
+    lpTokensOnly: isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
+    searchMode: !!keyword,
+    realtimeMode: true,
+  });
 
   const handleSelectToken = useCallback(() => {
     if (allTokens.length > 0) {

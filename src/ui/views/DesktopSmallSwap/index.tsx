@@ -115,17 +115,10 @@ const DesktopSmallSwapContent: React.FC = () => {
     tokens: allTokens,
     isLoading: isLoadingAllTokens,
     updateData: updateAllTokens,
-  } = useTokens(
-    chainServerId ? currentAccount?.address : undefined,
-    true,
-    undefined,
+  } = useTokens(chainServerId ? currentAccount?.address : undefined, {
     chainServerId,
-    undefined,
-    undefined,
-    false,
-    false,
-    true
-  );
+    realtimeMode: true,
+  });
 
   const isSupportDB = isSupportDBAccount(currentAccount);
 

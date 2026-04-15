@@ -23,16 +23,13 @@ export const useQueryProjects = (
     walletProject,
     customizeTokens,
     blockedTokens,
-  } = useTokens(
-    userAddr,
-    shouldAutoLoad,
-    0,
-    undefined,
-    lpTokenMode,
+  } = useTokens(userAddr, {
+    visible: shouldAutoLoad,
+    lpTokensOnly: lpTokenMode,
     showBlocked,
     searchMode,
-    true // disableRecommended
-  );
+    disableRecommended: true,
+  });
 
   const {
     data: portfolios,

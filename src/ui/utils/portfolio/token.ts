@@ -69,16 +69,29 @@ const replaceCoreTokens = (tokens: TokenItem[], cacheTokens: TokenItem[]) => {
   ]);
 };
 
+type UseTokensOptions = {
+  visible?: boolean;
+  updateNonce?: number;
+  chainServerId?: string;
+  lpTokensOnly?: boolean;
+  showBlocked?: boolean;
+  searchMode?: boolean;
+  disableRecommended?: boolean;
+  realtimeMode?: boolean;
+};
+
 export const useTokens = (
   userAddr: string | undefined,
-  visible = true,
-  updateNonce = 0,
-  chainServerId?: string,
-  lpTokensOnly = false,
-  showBlocked = false,
-  searchMode = false,
-  disableRecommended = false,
-  realtimeMode = false
+  {
+    visible = true,
+    updateNonce = 0,
+    chainServerId,
+    lpTokensOnly = false,
+    showBlocked = false,
+    searchMode = false,
+    disableRecommended = false,
+    realtimeMode = false,
+  }: UseTokensOptions = {}
 ) => {
   const isTestnet = chainServerId
     ? !!findChain({ serverId: chainServerId })?.isTestnet
