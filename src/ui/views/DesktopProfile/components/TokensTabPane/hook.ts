@@ -34,9 +34,7 @@ export const useTokenAndDIFIData = ({
     refreshPortfolios,
   } = useQueryProjects(
     currentAccount?.address,
-    false,
     true,
-    false,
     lpTokenMode,
     true,
     allTokenMode
@@ -46,7 +44,7 @@ export const useTokenAndDIFIData = ({
     data: appPortfolios,
     netWorth: appPortfolioNetWorth,
     isLoading: isAppPortfoliosLoading,
-  } = useAppChain(currentAccount?.address, true, false);
+  } = useAppChain(currentAccount?.address, true);
 
   const currentPortfolioNetWorth = useMemo(() => {
     return (portfolioNetWorth || 0) + (appPortfolioNetWorth || 0);

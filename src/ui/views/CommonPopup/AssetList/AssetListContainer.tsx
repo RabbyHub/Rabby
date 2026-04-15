@@ -28,7 +28,6 @@ interface Props {
   selectChainId: string | null;
   visible: boolean;
   onEmptyAssets: (isEmpty: boolean) => void;
-  isTestnet?: boolean;
 }
 
 export const AssetListContainer: React.FC<Props> = ({
@@ -36,7 +35,6 @@ export const AssetListContainer: React.FC<Props> = ({
   selectChainId,
   visible,
   onEmptyAssets,
-  isTestnet = false,
 }) => {
   const { t } = useTranslation();
   const [search, setSearch] = React.useState<string>('');
@@ -61,9 +59,7 @@ export const AssetListContainer: React.FC<Props> = ({
     removeProtocol,
   } = useQueryProjects(
     currentAccount?.address,
-    false,
     visible,
-    isTestnet,
     lpTokenMode ? lpTokenMode : undefined,
     undefined,
     !!search
@@ -71,7 +67,7 @@ export const AssetListContainer: React.FC<Props> = ({
   const {
     data: appPortfolios,
     isLoading: isAppPortfoliosLoading,
-  } = useAppChain(currentAccount?.address, visible, isTestnet);
+  } = useAppChain(currentAccount?.address, visible);
 
   const inputRef = React.useRef<InputRef>(null);
   const { isLoading: isSearching, list } = useSearchToken(
@@ -80,7 +76,7 @@ export const AssetListContainer: React.FC<Props> = ({
     {
       chainServerId: selectChainId ? selectChainId : undefined,
       withBalance: true,
-      isTestnet: isTestnet,
+      isTestnet: false,
     }
   );
   const displayTokenList = useMemo(() => {
@@ -219,7 +215,7 @@ export const AssetListContainer: React.FC<Props> = ({
             isNoResults={isNoResults}
             blockedTokens={displayBlockedTokens}
             customizeTokens={displayCustomizeTokens}
-            isTestnet={isTestnet}
+            isTestnet={false}
             selectChainId={selectChainId}
           />
         </div>

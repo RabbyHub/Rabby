@@ -168,9 +168,7 @@ export const BalanceView = ({
   });
   const { refreshPositions } = useQueryProjects(
     currentAccount?.address,
-    false,
     true,
-    false,
     false,
     false,
     false,

@@ -233,11 +233,9 @@ const TokenAmountInput = ({
     isAllTokenLoading, // 包含lpToken
   } = useTokens(
     currentAccount?.address,
-    undefined,
     selectorOpened.current ? tokenSelectorVisible : true,
     updateNonce,
     mainnetChainServerId,
-    undefined,
     isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
     undefined,
     !!keyword,

@@ -117,11 +117,9 @@ const DesktopSmallSwapContent: React.FC = () => {
     updateData: updateAllTokens,
   } = useTokens(
     chainServerId ? currentAccount?.address : undefined,
-    undefined,
     true,
     undefined,
     chainServerId,
-    undefined,
     undefined,
     undefined,
     false,

@@ -1,6 +1,5 @@
 import { useRef, useEffect, useMemo, useCallback } from 'react';
 import produce from 'immer';
-import { Dayjs } from 'dayjs';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
@@ -15,18 +14,12 @@ import { tokenDbService } from '@/db/services/tokenDbService';
 import { useWallet } from '../WalletContext';
 import { useSafeState } from '../safeState';
 import { log } from './usePortfolio';
-import {
-  PortfolioItem,
-  PortfolioItemToken,
-} from '@rabby-wallet/rabby-api/dist/types';
 import { uniqBy } from 'lodash';
-import { DisplayedProject, DisplayedToken } from './project';
+import { DisplayedToken } from './project';
 import { AbstractPortfolioToken } from './types';
-import { getMissedTokenPrice } from './utils';
 import {
   walletProject,
   batchQueryTokens,
-  batchQueryHistoryTokens,
   setWalletTokens,
   queryTokensCache,
   sortWalletTokens,
@@ -78,25 +71,22 @@ const replaceCoreTokens = (tokens: TokenItem[], cacheTokens: TokenItem[]) => {
 
 export const useTokens = (
   userAddr: string | undefined,
-  timeAt?: Dayjs,
   visible = true,
   updateNonce = 0,
   chainServerId?: string,
-  isTestnet: boolean = chainServerId
-    ? !!findChain({ serverId: chainServerId })?.isTestnet
-    : false,
   lpTokensOnly = false,
   showBlocked = false,
   searchMode = false,
   disableRecommended = false,
   realtimeMode = false
 ) => {
+  const isTestnet = chainServerId
+    ? !!findChain({ serverId: chainServerId })?.isTestnet
+    : false;
   const abortProcess = useRef<AbortController>();
   const [data, setData] = useSafeState(walletProject);
   const [isLoading, setLoading] = useSafeState(true);
   const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
-  const historyTime = useRef<number>();
-  const historyLoad = useRef<boolean>(false);
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { mainnetTokens, testnetTokens } = useRabbySelector((store) => ({
@@ -144,19 +134,6 @@ export const useTokens = (
     };
   }, [userAddr, visible, chainServerId]);
 
-  useEffect(() => {
-    if (timeAt) {
-      historyTime.current = timeAt.unix();
-
-      if (!isLoading) {
-        loadHistory();
-      }
-    } else {
-      historyTime.current = 0;
-    }
-    // eslint-disable-next-line
-  }, [timeAt, isLoading]);
-
   const loadProcess = async ({ forceRefresh = false } = {}) => {
     callCountRef.current++;
     const callCount = callCountRef.current;
@@ -183,7 +160,6 @@ export const useTokens = (
 
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
-    historyLoad.current = false;
 
     setLoading(true);
     setIsAllTokenLoading(true);
@@ -469,119 +445,8 @@ export const useTokens = (
 
     setLoading(false);
     setIsAllTokenLoading(false);
-    loadHistory(_data, currentAbort);
 
     log('<<==Tokens-end==>>', userAddr);
-  };
-
-  const loadHistory = async (
-    pre?: DisplayedProject,
-    currentAbort = new AbortController()
-  ) => {
-    if (!historyTime.current || !userAddr || historyLoad.current || isTestnet) {
-      log('middle-tokens-end');
-      return;
-    }
-
-    abortProcess.current = currentAbort;
-    historyLoad.current = true;
-
-    let _data = pre || data!;
-
-    log('===token===batchhistory====', userAddr);
-    // setTokenChangeLoading(true);
-
-    if (currentAbort.signal.aborted || !_data?.netWorth) {
-      return;
-    }
-
-    const historyTokenRes = await batchQueryHistoryTokens(
-      userAddr,
-      historyTime.current,
-      wallet,
-      isTestnet
-    );
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-
-    const historyPortfolios: PortfolioItem[] = [];
-
-    historyTokenRes?.forEach((token) => {
-      const chain = token.chain;
-      const index = historyPortfolios.findIndex((p) => p.pool.id === chain);
-      if (index === -1) {
-        historyPortfolios.push({
-          pool: {
-            id: chain,
-          },
-          asset_token_list: [token as PortfolioItemToken],
-        } as PortfolioItem);
-      } else {
-        historyPortfolios[index].asset_token_list?.push(
-          token as PortfolioItemToken
-        );
-      }
-    });
-
-    _data = produce(_data, (draft) => {
-      draft.patchHistory(historyPortfolios);
-    });
-
-    const tokenList = sortWalletTokens(_data);
-    if (isTestnet) {
-      dispatch.account.setTestnetTokenList(tokenList);
-    } else {
-      dispatch.account.setTokenList(tokenList);
-    }
-    setData(_data);
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-
-    const missedTokens = tokenList.reduce((m, n) => {
-      if (n._tokenId && !n._historyPatched) {
-        m[n.chain] = m[n.chain] || new Set();
-        m[n.chain].add(n._tokenId);
-      }
-
-      return m;
-    }, {} as Record<string, Set<string>>);
-
-    const priceDicts = await getMissedTokenPrice(
-      missedTokens,
-      historyTime.current,
-      wallet
-    );
-
-    if (currentAbort.signal.aborted || !priceDicts) {
-      return;
-    }
-
-    _data = produce(_data, (draft) => {
-      Object.entries(priceDicts).forEach(([c, dict]) => {
-        if (!draft._portfolioDict[c]._historyPatched) {
-          draft._portfolioDict[c].patchPrice(dict);
-          if (draft._portfolioDict[c].netWorthChange) {
-            draft.netWorthChange += draft._portfolioDict[c].netWorthChange;
-          }
-        }
-        draft.afterHistoryPatched();
-      });
-    }) as DisplayedProject;
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-
-    setData(_data);
-    if (isTestnet) {
-      dispatch.account.setTestnetTokenList(sortWalletTokens(_data));
-    } else {
-      dispatch.account.setTokenList(sortWalletTokens(_data));
-    }
   };
 
   useEffect(() => {

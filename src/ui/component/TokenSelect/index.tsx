@@ -200,11 +200,9 @@ const TokenSelect = forwardRef<
       isAllTokenLoading, // 包含lp Token的请求
     } = useTokens(
       useSwapTokenList ? undefined : currentAccount?.address,
-      undefined,
       tokenSelectorVisible,
       updateNonce,
       queryConds.chainServerId,
-      undefined,
       isFromMode ? lpTokenMode : undefined, // only show lp tokens in from mode
       undefined,
       !!queryConds.keyword,
