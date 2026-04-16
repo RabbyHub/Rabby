@@ -6,6 +6,7 @@ import {
   DEX_ENUM,
   DEX_ROUTER_WHITELIST,
   DEX_SPENDER_WHITELIST,
+  UNI_NATIVE_TO_ADDRESSES,
   WrapTokenAddressMap,
 } from '@rabby-wallet/rabby-swap';
 import { QuoteResult, getQuote } from '@rabby-wallet/rabby-swap/dist/quote';
@@ -743,8 +744,20 @@ interface getTokenParams {
   tokenId: string;
 }
 
-export const getRouter = (dexId: DEX_ENUM, chain: CHAINS_ENUM) => {
+export const getRouter = (
+  dexId: DEX_ENUM,
+  chain: CHAINS_ENUM,
+  payTokenId: string
+) => {
   const list = DEX_ROUTER_WHITELIST[dexId as keyof typeof DEX_ROUTER_WHITELIST];
+
+  const payTokenIsNativeToken =
+    findChainByEnum(chain)?.nativeTokenAddress === payTokenId;
+
+  if (dexId === DEX_ENUM.UNI && payTokenIsNativeToken) {
+    return UNI_NATIVE_TO_ADDRESSES[chain];
+  }
+
   return list[chain as keyof typeof list];
 };
 
@@ -752,6 +765,7 @@ export const getSpender = (dexId: DEX_ENUM, chain: CHAINS_ENUM) => {
   if (dexId === DEX_ENUM.WRAPTOKEN) {
     return '';
   }
+
   const list =
     DEX_SPENDER_WHITELIST[dexId as keyof typeof DEX_SPENDER_WHITELIST];
   return list[chain as keyof typeof list];
