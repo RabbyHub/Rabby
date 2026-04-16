@@ -30,7 +30,6 @@ export const useQueryProjects = (
     updateData: updateTokens,
     walletProject,
     customizeTokens,
-    blockedTokens,
   } = useTokens(userAddr, {
     visible: shouldAutoLoad,
     lpTokensOnly: lpTokenMode,
@@ -79,7 +78,6 @@ export const useQueryProjects = (
     hasPortfolios,
     tokens,
     customizeTokens,
-    blockedTokens,
     portfolios,
     walletProject,
     removeProtocol,

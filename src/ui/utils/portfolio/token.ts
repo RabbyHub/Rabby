@@ -58,8 +58,6 @@ const replaceCoreTokens = (tokens: TokenItem[], cacheTokens: TokenItem[]) => {
   ]);
 };
 
-const EMPTY_BLOCKED_TOKENS: AbstractPortfolioToken[] = [];
-
 type UseTokensOptions = {
   visible?: boolean;
   updateNonce?: number;
@@ -94,7 +92,6 @@ export const useTokens = (
   }));
   const userAddrRef = useRef('');
   const chainIdRef = useRef<string | undefined>(undefined);
-  // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
   const callCountRef = useRef(0);
 
   const isTestnet = useMemo(() => {
@@ -494,7 +491,6 @@ export const useTokens = (
     customizeTokens: isTestnet
       ? testnetTokens.customize
       : mainnetTokens.customize,
-    blockedTokens: EMPTY_BLOCKED_TOKENS,
     hasValue: !!data?._portfolios?.length,
     updateData: forceRefresh,
     walletProject: data,

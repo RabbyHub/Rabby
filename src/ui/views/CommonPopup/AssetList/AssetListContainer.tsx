@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
 import { TokenSearchInput } from './TokenSearchInput';
-import { AddTokenEntryInst } from './AddTokenEntry';
 import { useRabbySelector } from '@/ui/store';
 import { HomeTokenList } from './TokenList';
 import useSortTokens from 'ui/hooks/useSortTokens';
@@ -52,7 +51,6 @@ export const AssetListContainer: React.FC<Props> = ({
     portfolios,
     tokens: tokenList,
     hasTokens,
-    blockedTokens,
     customizeTokens,
     removeProtocol,
   } = useQueryProjects(currentAccount?.address, {
@@ -99,13 +97,6 @@ export const AssetListContainer: React.FC<Props> = ({
     return combinedPortfolios;
   }, [portfolios, appPortfolios, selectChainId]);
 
-  const displayBlockedTokens = useMemo(() => {
-    if (selectChainId) {
-      return blockedTokens?.filter((item) => item.chain === selectChainId);
-    }
-    return blockedTokens;
-  }, [blockedTokens, selectChainId]);
-
   const displayCustomizeTokens = useMemo(() => {
     if (selectChainId) {
       return customizeTokens?.filter((item) => item.chain === selectChainId);
@@ -118,7 +109,6 @@ export const AssetListContainer: React.FC<Props> = ({
     !displayTokenList.length &&
     !isPortfoliosLoading &&
     !displayPortfolios?.length &&
-    !displayBlockedTokens?.length &&
     !displayCustomizeTokens?.length &&
     !isAppPortfoliosLoading &&
     !appPortfolios?.length;
@@ -132,10 +122,6 @@ export const AssetListContainer: React.FC<Props> = ({
     list: displayPortfolios,
     kw: search,
   });
-
-  const handleFocusInput = React.useCallback(() => {
-    inputRef.current?.focus();
-  }, []);
 
   React.useEffect(() => {
     if (!visible) {
@@ -161,8 +147,6 @@ export const AssetListContainer: React.FC<Props> = ({
   const appIds = useMemo(() => {
     return [...new Set(appPortfolios?.map((item) => item.id) || [])];
   }, [appPortfolios]);
-
-  const addTokenEntryRef = React.useRef<AddTokenEntryInst>(null);
 
   if (isTokensLoading && !hasTokens) {
     return <TokenListViewSkeleton />;
@@ -194,7 +178,6 @@ export const AssetListContainer: React.FC<Props> = ({
             onLpTokenModeChange={setLpTokenMode}
           />
         </div>
-        {/* {isFocus || search ? null : <AddTokenEntry ref={addTokenEntryRef} />} */}
       </div>
       {isTokensLoading || isSearching || (lpTokenMode && isAllTokenLoading) ? (
         <TokenListSkeleton />
@@ -202,17 +185,10 @@ export const AssetListContainer: React.FC<Props> = ({
         <div className="mt-[12px]">
           <HomeTokenList
             list={sortTokens}
-            onFocusInput={handleFocusInput}
-            onOpenAddEntryPopup={() => {
-              addTokenEntryRef.current?.startAddToken();
-            }}
             isSearch={!!search}
             lpTokenMode={lpTokenMode}
             isNoResults={isNoResults}
-            blockedTokens={displayBlockedTokens}
             customizeTokens={displayCustomizeTokens}
-            isTestnet={false}
-            selectChainId={selectChainId}
           />
         </div>
       )}
