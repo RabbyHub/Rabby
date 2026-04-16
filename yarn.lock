@@ -9289,10 +9289,10 @@ bip66@^2.0.0:
   resolved "https://registry.yarnpkg.com/bip66/-/bip66-2.0.0.tgz#96b5cca18ad10a009f7c8ea4eb24079e37ec9c79"
   integrity sha512-kBG+hSpgvZBrkIm9dt5T1Hd/7xGCPEX2npoxAWZfsK1FvjgaxySEh2WizjyIstWXriKo9K9uJ4u0OnsyLDUPXQ==
 
-bitbox-api@0.10.0:
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/bitbox-api/-/bitbox-api-0.10.0.tgz#df64afee9df133c530a7e5d5bedc45d7aa940ab9"
-  integrity sha512-cf8CoTl6E/eZw6Mksw7KFX7uZEm2YdxQJdaElLGmgLnOw36ecnIT08OC+qL1/6XHF8qkWWVhYVn+I6Vw5WYIPw==
+bitbox-api@0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/bitbox-api/-/bitbox-api-0.13.0.tgz#3c8bc1909941274a4a5f9846e97ef06aa919a4e8"
+  integrity sha512-mLNrdvZbXyvEQ2wwq48KjEkuiv2sMVieQe1pTLcFSaQjy6HnzLO80eDnEnSmNLuTCYNHpHqmb2Rf6ZST4ehhlw==
 
 bitcoin-ops@^1.3.0, bitcoin-ops@^1.4.1:
   version "1.4.1"
