@@ -920,6 +920,8 @@ class TxHistory {
           code: 0,
           status: parseInt(res.status, 16),
           gas_used: parseInt(res.gasUsed, 16),
+          gasUsed: res.gasUsed,
+          effectiveGasPrice: res.effectiveGasPrice,
         };
       })
       .catch((e) => {
@@ -928,6 +930,8 @@ class TxHistory {
           code: -1,
           status: 0,
           gas_used: 0,
+          gasUsed: '0x0',
+          effectiveGasPrice: '0x0',
         };
       });
   };
