@@ -44,8 +44,6 @@ const PAGE_COUNT = 10;
 interface TokenDetailProps {
   onClose?(): void;
   token: TokenItem;
-  addToken(token: TokenItem): void;
-  removeToken(token: TokenItem): void;
   variant?: 'add';
   isAdded?: boolean;
   canClickToken?: boolean;
@@ -57,8 +55,6 @@ interface TokenDetailProps {
 
 const TokenDetail = ({
   token,
-  addToken,
-  removeToken,
   variant,
   isAdded,
   onClose,
