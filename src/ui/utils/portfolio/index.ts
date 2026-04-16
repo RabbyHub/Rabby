@@ -27,7 +27,6 @@ export const useQueryProjects = (
     isAllTokenLoading,
     hasValue: hasTokens,
     updateData: updateTokens,
-    customizeTokens,
   } = useTokens(userAddr, {
     visible: shouldAutoLoad,
     lpTokensOnly: lpTokenMode,
@@ -68,7 +67,6 @@ export const useQueryProjects = (
     hasTokens,
     hasPortfolios,
     tokens,
-    customizeTokens,
     portfolios,
     removeProtocol,
   };

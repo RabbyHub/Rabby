@@ -10,11 +10,7 @@ import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { tokenDbService } from '@/db/services/tokenDbService';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
-import {
-  isTestnet as checkIsTestnet,
-  findChain,
-  findChainByEnum,
-} from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
 
 import { isSameAddress } from '..';
 import { log } from './usePortfolio';
@@ -96,9 +92,10 @@ export const useTokens = (
   const [isLoading, setLoading] = useSafeState(true);
   const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
 
-  const abortProcess = useRef<AbortController>();
   const userAddrRef = useRef('');
   const chainIdRef = useRef<string | undefined>(undefined);
+
+  const abortProcess = useRef<AbortController>();
   const callCountRef = useRef(0);
 
   const isTestnet = useMemo(() => {
@@ -303,67 +300,11 @@ export const useTokens = (
       return;
     }
 
-    // customize  tokens
-    const customizeTokens = (await wallet.getCustomizedToken()).filter(
-      (token) => {
-        if (isTestnet) {
-          return checkIsTestnet(token.chain);
-        } else {
-          return !checkIsTestnet(token.chain);
-        }
-      }
-    );
-    const customTokenList: TokenItem[] = [];
-    tokenRes.forEach((token) => {
-      if (
-        customizeTokens.find(
-          (t) =>
-            isSameAddress(token.id, t.address) &&
-            token.chain === t.chain &&
-            !token.is_core
-        )
-      ) {
-        // customize with balance
-        customTokenList.push(token);
-      }
-    });
-    const apiProvider = isTestnet ? wallet.testnetOpenapi : wallet.openapi;
-    const noBalanceCustomizeTokens = customizeTokens.filter((token) => {
-      return !customTokenList.find(
-        (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
-      );
-    });
-    if (noBalanceCustomizeTokens.length > 0) {
-      const noBalanceCustomTokens = await apiProvider.customListToken(
-        noBalanceCustomizeTokens.map((item) => `${item.chain}:${item.address}`),
-        userAddr
-      );
-      customTokenList.push(
-        ...noBalanceCustomTokens.filter((token) => !token.is_core)
-      );
-    }
-
-    if (currentAbort.signal.aborted) {
-      abortedFn();
-      return;
-    }
-
-    const formattedCustomTokenList = customTokenList.map(
-      (token) => new DisplayedToken(token) as AbstractPortfolioToken
-    );
-
-    if (isTestnet) {
-      dispatch.account.setTestnetCustomizeTokenList(formattedCustomTokenList);
-    } else {
-      dispatch.account.setCustomizeTokenList(formattedCustomTokenList);
-    }
-
     currentAllTokens = uniqTokens([
       ...(chainServerId
         ? currentAllTokens.filter((token) => token.chain !== chainServerId)
         : []),
       ...tokenRes,
-      ...customTokenList,
     ]);
 
     if (currentAbort.signal.aborted) {
@@ -398,15 +339,9 @@ export const useTokens = (
     setData(_data);
     _tokens = sortWalletTokens(_data);
     if (isTestnet) {
-      dispatch.account.setTestnetTokenList([
-        ...filterValidChainTokens(_tokens),
-        ...formattedCustomTokenList,
-      ]);
+      dispatch.account.setTestnetTokenList(filterValidChainTokens(_tokens));
     } else {
-      dispatch.account.setTokenList([
-        ...filterValidChainTokens(_tokens),
-        ...formattedCustomTokenList,
-      ]);
+      dispatch.account.setTokenList(filterValidChainTokens(_tokens));
     }
 
     setLoading(false);
@@ -494,9 +429,6 @@ export const useTokens = (
     isLoading: isLoading || loadingRecommendedTokens,
     isAllTokenLoading: isAllTokenLoading || loadingRecommendedTokens,
     tokens,
-    customizeTokens: isTestnet
-      ? testnetTokens.customize
-      : mainnetTokens.customize,
     hasValue: !!data?._portfolios?.length,
     updateData: forceRefresh,
   };

@@ -51,7 +51,6 @@ export const AssetListContainer: React.FC<Props> = ({
     portfolios,
     tokens: tokenList,
     hasTokens,
-    customizeTokens,
     removeProtocol,
   } = useQueryProjects(currentAccount?.address, {
     visible,
@@ -97,19 +96,11 @@ export const AssetListContainer: React.FC<Props> = ({
     return combinedPortfolios;
   }, [portfolios, appPortfolios, selectChainId]);
 
-  const displayCustomizeTokens = useMemo(() => {
-    if (selectChainId) {
-      return customizeTokens?.filter((item) => item.chain === selectChainId);
-    }
-    return customizeTokens;
-  }, [customizeTokens, selectChainId]);
-
   const isEmptyAssets =
     !isTokensLoading &&
     !displayTokenList.length &&
     !isPortfoliosLoading &&
     !displayPortfolios?.length &&
-    !displayCustomizeTokens?.length &&
     !isAppPortfoliosLoading &&
     !appPortfolios?.length;
 
@@ -188,7 +179,6 @@ export const AssetListContainer: React.FC<Props> = ({
             isSearch={!!search}
             lpTokenMode={lpTokenMode}
             isNoResults={isNoResults}
-            customizeTokens={displayCustomizeTokens}
           />
         </div>
       )}

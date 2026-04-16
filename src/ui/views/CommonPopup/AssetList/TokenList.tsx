@@ -11,17 +11,10 @@ export interface Props {
   list?: TokenItemProps['item'][];
   isSearch: boolean;
   isNoResults?: boolean;
-  customizeTokens?: TokenItemProps['item'][];
   lpTokenMode?: boolean;
 }
 
-export const HomeTokenList = ({
-  list,
-  isSearch,
-  isNoResults,
-  customizeTokens,
-  lpTokenMode,
-}) => {
+export const HomeTokenList = ({ list, isSearch, isNoResults, lpTokenMode }) => {
   const totalValue = React.useMemo(() => {
     return list
       ?.reduce(
@@ -32,15 +25,8 @@ export const HomeTokenList = ({
   }, [list]);
   const { result: currentList } = useExpandList(list, totalValue);
   const lowValueList = React.useMemo(() => {
-    // 排除customized tokens
-    const customizedTokenIds = new Set(
-      customizeTokens?.map((token) => token.id) || []
-    );
-    return list?.filter(
-      (item) =>
-        currentList?.indexOf(item) === -1 && !customizedTokenIds.has(item.id)
-    );
-  }, [currentList, list, isSearch, customizeTokens]);
+    return list?.filter((item) => currentList?.indexOf(item) === -1);
+  }, [currentList, list, isSearch]);
   const { t } = useTranslation();
 
   if (isNoResults) {
@@ -66,11 +52,7 @@ export const HomeTokenList = ({
     );
   }
 
-  const hasList = !!(
-    list?.length ||
-    currentList?.length ||
-    customizeTokens?.length
-  );
+  const hasList = !!(list?.length || currentList?.length);
   const hasLowValueList = !!lowValueList?.length;
 
   return (
