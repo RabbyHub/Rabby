@@ -189,44 +189,49 @@ export const useTokens = (
      * 阶段一：本地 DB 缓存
      * 能用缓存就从缓存取，否则删除缓存
      */
-    if (!shouldPersistTokenCache) {
-      await Promise.all([
-        tokenDbService.deleteForAddress(userAddr),
-        syncDbService.deleteSceneForAddress({
-          address: userAddr,
-          scene: TOKEN_SYNC_SCENE,
-        }),
-      ]);
-    } else {
-      currentAllTokens = await tokenDbService.queryTokens(userAddr);
+    try {
+      if (!shouldPersistTokenCache) {
+        await Promise.all([
+          tokenDbService.deleteForAddress(userAddr),
+          syncDbService.deleteSceneForAddress({
+            address: userAddr,
+            scene: TOKEN_SYNC_SCENE,
+          }),
+        ]);
+      } else {
+        currentAllTokens = await tokenDbService.queryTokens(userAddr);
 
-      if (currentAbort.signal.aborted) {
-        abortedFn();
-        return;
+        if (currentAbort.signal.aborted) {
+          abortedFn();
+          return;
+        }
+
+        if (currentAllTokens.length) {
+          applyTokenItems(currentAllTokens);
+          setLoading(false);
+        }
+
+        const updatedAt =
+          (await syncDbService.getUpdatedAt({
+            address: userAddr,
+            scene: TOKEN_SYNC_SCENE,
+          })) || 0;
+
+        const shouldUseDbCache =
+          currentAllTokens.length > 0 &&
+          !forceRefresh &&
+          !realtimeMode &&
+          updatedAt > Date.now() - CACHE_VALID_DURATION;
+
+        if (shouldUseDbCache) {
+          log('<<==Tokens-cache-hit==>>', userAddr);
+          setIsAllTokenLoading(false);
+          return;
+        }
       }
-
-      if (currentAllTokens.length) {
-        applyTokenItems(currentAllTokens);
-        setLoading(false);
-      }
-
-      const updatedAt =
-        (await syncDbService.getUpdatedAt({
-          address: userAddr,
-          scene: TOKEN_SYNC_SCENE,
-        })) || 0;
-
-      const shouldUseDbCache =
-        currentAllTokens.length > 0 &&
-        !forceRefresh &&
-        !realtimeMode &&
-        updatedAt > Date.now() - CACHE_VALID_DURATION;
-
-      if (shouldUseDbCache) {
-        log('<<==Tokens-cache-hit==>>', userAddr);
-        setIsAllTokenLoading(false);
-        return;
-      }
+    } catch (error) {
+      // 忽略 db 的影响，直接走线上逻辑
+      log('--Terminate-tokens-db-cache-get', userAddr);
     }
 
     /**
@@ -284,14 +289,19 @@ export const useTokens = (
     );
 
     if (shouldPersistTokenCache) {
-      await tokenDbService.replaceAddressTokens(userAddr, currentAllTokens);
+      try {
+        await tokenDbService.replaceAddressTokens(userAddr, currentAllTokens);
 
-      if (!chainServerId) {
-        await syncDbService.setUpdatedAt({
-          address: userAddr,
-          scene: TOKEN_SYNC_SCENE,
-          updatedAt: Date.now(),
-        });
+        if (!chainServerId) {
+          await syncDbService.setUpdatedAt({
+            address: userAddr,
+            scene: TOKEN_SYNC_SCENE,
+            updatedAt: Date.now(),
+          });
+        }
+      } catch (error) {
+        // 忽略 db 的影响，不写缓存，直走内存
+        log('--Terminate-tokens-db-cache-set', userAddr);
       }
     }
 
