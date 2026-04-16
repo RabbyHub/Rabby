@@ -131,23 +131,13 @@ export const DesktopProfile: React.FC<{
   const [searchValue, setSearchValue] = React.useState('');
 
   const {
-    // useQueryProjects
     isTokensLoading,
     isAllTokenLoading,
     isPortfoliosLoading,
-    portfolios,
-    tokenList,
     hasTokens,
     removeProtocol,
-    portfolioNetWorth,
-    // useQueryProjects end
-    // useAppChain
-    appPortfolios,
-    appPortfolioNetWorth,
     isAppPortfoliosLoading,
-    // useAppChain end
     currentPortfolioNetWorth,
-    displayTokenList,
     displayPortfolios,
     sortTokens,
     lpTokenMode,

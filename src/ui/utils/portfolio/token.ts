@@ -491,7 +491,6 @@ export const useTokens = (
   }, [loadProcess]);
 
   return {
-    netWorth: data?.netWorth || 0,
     isLoading: isLoading || loadingRecommendedTokens,
     isAllTokenLoading: isAllTokenLoading || loadingRecommendedTokens,
     tokens,
@@ -500,6 +499,5 @@ export const useTokens = (
       : mainnetTokens.customize,
     hasValue: !!data?._portfolios?.length,
     updateData: forceRefresh,
-    walletProject: data,
   };
 };

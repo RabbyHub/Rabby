@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 import { useTokens } from './token';
 import { usePortfolios } from './usePortfolio';
@@ -23,12 +23,10 @@ export const useQueryProjects = (
 
   const {
     tokens,
-    netWorth: tokenNetWorth,
     isLoading: isTokensLoading,
     isAllTokenLoading,
     hasValue: hasTokens,
     updateData: updateTokens,
-    walletProject,
     customizeTokens,
   } = useTokens(userAddr, {
     visible: shouldAutoLoad,
@@ -59,15 +57,8 @@ export const useQueryProjects = (
     autoLoad,
   ]);
 
-  const grossNetWorth = useMemo(() => tokenNetWorth + portfolioNetWorth!, [
-    tokenNetWorth,
-    portfolioNetWorth,
-  ]);
-
   return {
-    tokenNetWorth,
     portfolioNetWorth,
-    grossNetWorth,
     refreshPositions,
     refreshTokens: updateTokens,
     refreshPortfolios: updatePortfolio,
@@ -79,7 +70,6 @@ export const useQueryProjects = (
     tokens,
     customizeTokens,
     portfolios,
-    walletProject,
     removeProtocol,
   };
 };
