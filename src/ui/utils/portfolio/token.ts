@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import produce from 'immer';
 import { useAsync } from 'react-use';
 
 import { isFullVersionAccountType } from '@/utils/account';
@@ -13,7 +12,6 @@ import { findChain } from '@/utils/chain';
 
 import { isSameAddress } from '..';
 import { log } from './usePortfolio';
-import { DisplayedToken } from './project';
 import { useSafeState } from '../safeState';
 import { useWallet } from '../WalletContext';
 import { AbstractPortfolioToken } from './types';
@@ -25,13 +23,11 @@ import {
 import {
   batchQueryTokens,
   queryTokensCache,
-  setWalletTokens,
-  sortWalletTokens,
-  walletProject,
   filterValidChainTokens,
-  groupTokensByChain,
   replaceCoreTokens,
   replaceTokensWithLatest,
+  parseTokenItem,
+  sortTokenItems,
 } from './tokenUtils';
 
 let lastResetTokenListAddr = '';
@@ -66,7 +62,7 @@ export const useTokens = (
     testnetTokens: store.account.testnetTokens,
   }));
 
-  const [data, setData] = useSafeState(walletProject);
+  const [hasValue, setHasValue] = useSafeState(false);
   const [isLoading, setLoading] = useSafeState(true);
   const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
 
@@ -107,7 +103,7 @@ export const useTokens = (
         }
       });
     } else {
-      setData(undefined);
+      setHasValue(false);
     }
 
     return () => {
@@ -147,16 +143,8 @@ export const useTokens = (
 
     setLoading(true);
     setIsAllTokenLoading(true);
+    setHasValue(false);
     log('======Start-Tokens======', userAddr);
-    let _data = produce(walletProject, (draft) => {
-      draft.netWorth = 0;
-      draft._netWorth = '$0';
-      draft._netWorthChange = '-';
-      draft.netWorthChange = 0;
-      draft._netWorthChangePercent = '';
-    });
-    let _tokens: AbstractPortfolioToken[] = [];
-    setData(_data);
 
     const dispatchTokenList = (tokens: AbstractPortfolioToken[]) => {
       const displayTokens = filterValidChainTokens(tokens);
@@ -169,13 +157,8 @@ export const useTokens = (
     };
 
     const applyTokenItems = (tokens: TokenItem[]) => {
-      _data = produce(_data, (draft) => {
-        setWalletTokens(draft, groupTokensByChain(tokens));
-      });
-
-      setData(_data);
-      _tokens = sortWalletTokens(_data);
-      dispatchTokenList(_tokens);
+      setHasValue(tokens.length > 0);
+      dispatchTokenList(sortTokenItems(tokens));
     };
 
     if (currentAbort.signal.aborted) {
@@ -359,9 +342,7 @@ export const useTokens = (
       chainServerId || ''
     );
 
-    return list.map(
-      (token) => new DisplayedToken(token) as AbstractPortfolioToken
-    );
+    return list.map(parseTokenItem);
   }, [shouldLoadRecommended, userAddr, chainServerId]);
 
   const tokens = useMemo(() => {
@@ -392,7 +373,7 @@ export const useTokens = (
     isLoading: isLoading || loadingRecommendedTokens,
     isAllTokenLoading: isAllTokenLoading || loadingRecommendedTokens,
     tokens,
-    hasValue: !!data?._portfolios?.length,
+    hasValue,
     updateData: forceRefresh,
   };
 };

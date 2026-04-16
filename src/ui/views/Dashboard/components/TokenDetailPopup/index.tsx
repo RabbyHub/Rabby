@@ -6,8 +6,6 @@ import './style.less';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { Account, Token } from '@/background/service/preference';
 import { useRabbyDispatch } from 'ui/store';
-import { DisplayedToken } from 'ui/utils/portfolio/project';
-import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { useLocation } from 'react-router-dom';
 import { DrawerProps } from 'antd';
 
@@ -55,36 +53,6 @@ export const TokenDetailPopup = ({
   const isInSend = location.pathname === '/send-token';
   const isBridge = location.pathname === '/bridge';
 
-  const handleAddToken = React.useCallback((tokenWithAmount) => {
-    if (!tokenWithAmount) return;
-
-    if (tokenWithAmount.is_core) {
-      dispatch.account.addBlockedToken(
-        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
-      );
-    } else {
-      dispatch.account.addCustomizeToken(
-        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
-      );
-    }
-    setIsAdded(true);
-  }, []);
-
-  const handleRemoveToken = React.useCallback((tokenWithAmount) => {
-    if (!tokenWithAmount) return;
-
-    if (tokenWithAmount?.is_core) {
-      dispatch.account.removeBlockedToken(
-        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
-      );
-    } else {
-      dispatch.account.removeCustomizeToken(
-        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
-      );
-    }
-    setIsAdded(false);
-  }, []);
-
   const checkIsAdded = React.useCallback(async () => {
     if (!token) return;
 
@@ -123,8 +91,6 @@ export const TokenDetailPopup = ({
           account={account}
           token={token}
           popupHeight={popupHeight}
-          addToken={handleAddToken}
-          removeToken={handleRemoveToken}
           variant={variant}
           isAdded={isAdded}
           onClose={onClose}

@@ -263,7 +263,7 @@ export const DesktopProfile: React.FC<{
                         }
                         isNoResults={isNoResults}
                         sortTokens={sortTokens}
-                        hasTokens={hasTokens}
+                        hasTokens={!!hasTokens}
                         lpTokenMode={lpTokenMode}
                         setLpTokenMode={setLpTokenMode}
                         selectChainId={chainInfo?.serverId}
