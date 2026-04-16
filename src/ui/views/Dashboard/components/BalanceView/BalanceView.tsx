@@ -6,23 +6,20 @@ import React, {
   useCallback,
   useRef,
   useMemo,
-  useImperativeHandle,
 } from 'react';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { formatUsdValue, useCommonPopupView, useWallet } from 'ui/utils';
+import { useCommonPopupView, useWallet } from 'ui/utils';
 import { KEYRING_TYPE } from 'consts';
-import { SvgIconOffline } from '@/ui/assets';
 import clsx from 'clsx';
 import { Skeleton } from 'antd';
 import { Chain } from '@debank/common';
 import { ChainList } from './ChainList';
 import { formChartData, useCurve } from './useCurve';
 import { CurvePoint, CurveThumbnail } from './CurveView';
-import ArrowNextSVG from '@/ui/assets/dashboard/arrow-next.svg';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
 import { useDebounce } from 'react-use';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { BalanceLabel } from './BalanceLabel';
 import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -166,16 +163,10 @@ export const BalanceView = ({
     refreshCurve,
     isExpired: getCacheExpired,
   });
-  const { refreshPositions } = useQueryProjects(
-    currentAccount?.address,
-    false,
-    true,
-    false,
-    false,
-    false,
-    false,
-    false
-  );
+  const { refreshPositions } = useQueryProjects(currentAccount?.address, {
+    visible: true,
+    autoLoad: false,
+  });
 
   // const refreshTimerlegacy = useRef<NodeJS.Timeout>();
   // only execute once on component mounted or address changed

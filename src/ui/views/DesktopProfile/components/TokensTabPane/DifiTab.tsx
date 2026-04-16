@@ -1,11 +1,7 @@
 import React, { useEffect } from 'react';
 import ProtocolList from './ProtocolList';
 import { useTranslation } from 'react-i18next';
-import { useRabbyDispatch } from '@/ui/store';
-import {
-  AbstractPortfolioToken,
-  AbstractProject,
-} from '@/ui/utils/portfolio/types';
+import { AbstractProject } from '@/ui/utils/portfolio/types';
 import { useExpandList } from './useExpandList';
 import ProjectOverview from './ProjectOverview';
 import { TokenListEmpty } from './TokenListEmpty';
@@ -41,11 +37,6 @@ export const DIFITab = ({
   onProjectOverviewListChange,
 }: Props) => {
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
-
-  const setAllMode = (value: boolean) => {
-    dispatch.preference.setDesktopTokensAllMode(value);
-  };
 
   const {
     isExpanded,
