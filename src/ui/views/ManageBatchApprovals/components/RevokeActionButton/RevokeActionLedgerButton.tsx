@@ -2,7 +2,6 @@ import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { BatchRevokeTaskType } from './useBatchRevokeTask';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { CommonAccount } from '@/ui/views/Approval/components/FooterBar/CommonAccount';
 import { EVENTS, WALLET_BRAND_CONTENT } from '@/constant';
@@ -12,6 +11,7 @@ import eventBus from '@/eventBus';
 import { isLedgerLockError } from '@/ui/utils/ledger';
 import { Ledger } from '@/ui/views/CommonPopup/Ledger';
 import { Modal, Popup } from '@/ui/component';
+import { BatchRevokeTaskType } from '../../hooks/useBatchRevokeTask';
 
 const buttonBaseClass = clsx(
   'rounded-[6px] h-[48px] w-[252px]',

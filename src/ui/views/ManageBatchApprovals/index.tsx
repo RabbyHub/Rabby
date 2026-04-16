@@ -20,7 +20,6 @@ import {
   getBatchRevokeAccountMode,
   useBatchRevokeTask,
 } from './hooks/useBatchRevokeTask';
-import { RevokeActionLedgerButton } from './components/RevokeActionLedgerButton';
 import { RevokeActionButton } from './components/RevokeActionButton';
 
 const GlobalStyle = createGlobalStyle`
