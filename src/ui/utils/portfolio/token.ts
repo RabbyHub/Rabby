@@ -1,36 +1,39 @@
-import { useRef, useEffect, useMemo, useCallback } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+
 import produce from 'immer';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { useRabbyDispatch, useRabbySelector } from 'ui/store';
-import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
-import {
-  findChainByEnum,
-  isTestnet as checkIsTestnet,
-  findChain,
-} from '@/utils/chain';
+import { uniqBy } from 'lodash';
+import { useAsync } from 'react-use';
+
 import { isFullVersionAccountType } from '@/utils/account';
 import { syncDbService } from '@/db/services/syncDbService';
+import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { tokenDbService } from '@/db/services/tokenDbService';
-import { useWallet } from '../WalletContext';
-import { useSafeState } from '../safeState';
-import { log } from './usePortfolio';
-import { uniqBy } from 'lodash';
-import { DisplayedToken } from './project';
-import { AbstractPortfolioToken } from './types';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
 import {
-  walletProject,
-  batchQueryTokens,
-  setWalletTokens,
-  queryTokensCache,
-  sortWalletTokens,
-} from './tokenUtils';
+  isTestnet as checkIsTestnet,
+  findChain,
+  findChainByEnum,
+} from '@/utils/chain';
+
 import { isSameAddress } from '..';
+import { log } from './usePortfolio';
+import { DisplayedToken } from './project';
+import { useSafeState } from '../safeState';
+import { useWallet } from '../WalletContext';
+import { AbstractPortfolioToken } from './types';
 import {
   defaultTokenFilter,
   includeLpTokensFilter,
   isLpToken,
 } from './lpToken';
-import { useAsync } from 'react-use';
+import {
+  batchQueryTokens,
+  queryTokensCache,
+  setWalletTokens,
+  sortWalletTokens,
+  walletProject,
+} from './tokenUtils';
 
 let lastResetTokenListAddr = '';
 
@@ -41,6 +44,7 @@ const uniqTokens = (tokens: TokenItem[]) => {
   return uniqBy(tokens, buildTokenKey);
 };
 
+// 过滤掉无效的链
 const filterValidChainTokens = (tokens: AbstractPortfolioToken[]) => {
   return tokens.filter((token) => {
     const chain = findChain({
@@ -80,16 +84,19 @@ export const useTokens = (
     realtimeMode = false,
   }: UseTokensOptions = {}
 ) => {
-  const abortProcess = useRef<AbortController>();
-  const [data, setData] = useSafeState(walletProject);
-  const [isLoading, setLoading] = useSafeState(true);
-  const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+
   const { mainnetTokens, testnetTokens } = useRabbySelector((store) => ({
     mainnetTokens: store.account.tokens,
     testnetTokens: store.account.testnetTokens,
   }));
+
+  const [data, setData] = useSafeState(walletProject);
+  const [isLoading, setLoading] = useSafeState(true);
+  const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
+
+  const abortProcess = useRef<AbortController>();
   const userAddrRef = useRef('');
   const chainIdRef = useRef<string | undefined>(undefined);
   const callCountRef = useRef(0);
