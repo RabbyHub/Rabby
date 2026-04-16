@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import produce from 'immer';
-import { uniqBy } from 'lodash';
 import { useAsync } from 'react-use';
 
 import { isFullVersionAccountType } from '@/utils/account';
@@ -10,7 +9,7 @@ import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { tokenDbService } from '@/db/services/tokenDbService';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
-import { findChain, findChainByEnum } from '@/utils/chain';
+import { findChain } from '@/utils/chain';
 
 import { isSameAddress } from '..';
 import { log } from './usePortfolio';
@@ -29,34 +28,13 @@ import {
   setWalletTokens,
   sortWalletTokens,
   walletProject,
+  filterValidChainTokens,
+  groupTokensByChain,
+  replaceCoreTokens,
+  replaceTokensWithLatest,
 } from './tokenUtils';
 
 let lastResetTokenListAddr = '';
-
-const buildTokenKey = (token: Pick<TokenItem, 'chain' | 'id'>) =>
-  `${token.chain}-${token.id.toLowerCase()}`;
-
-const uniqTokens = (tokens: TokenItem[]) => {
-  return uniqBy(tokens, buildTokenKey);
-};
-
-// 过滤掉无效的链
-const filterValidChainTokens = (tokens: AbstractPortfolioToken[]) => {
-  return tokens.filter((token) => {
-    const chain = findChain({
-      serverId: token.chain,
-    });
-    return findChainByEnum(chain?.enum);
-  });
-};
-
-/** 替换核心 token */
-const replaceCoreTokens = (tokens: TokenItem[], cacheTokens: TokenItem[]) => {
-  return uniqTokens([
-    ...tokens.filter((token) => !token.is_core),
-    ...cacheTokens,
-  ]);
-};
 
 type UseTokensOptions = {
   visible?: boolean;
@@ -180,6 +158,26 @@ export const useTokens = (
     let _tokens: AbstractPortfolioToken[] = [];
     setData(_data);
 
+    const dispatchTokenList = (tokens: AbstractPortfolioToken[]) => {
+      const displayTokens = filterValidChainTokens(tokens);
+
+      if (isTestnet) {
+        dispatch.account.setTestnetTokenList(displayTokens);
+      } else {
+        dispatch.account.setTokenList(displayTokens);
+      }
+    };
+
+    const applyTokenItems = (tokens: TokenItem[]) => {
+      _data = produce(_data, (draft) => {
+        setWalletTokens(draft, groupTokensByChain(tokens));
+      });
+
+      setData(_data);
+      _tokens = sortWalletTokens(_data);
+      dispatchTokenList(_tokens);
+    };
+
     if (currentAbort.signal.aborted) {
       abortedFn();
       return;
@@ -187,6 +185,10 @@ export const useTokens = (
 
     let currentAllTokens: TokenItem[] = [];
 
+    /**
+     * 阶段一：本地 DB 缓存
+     * 能用缓存就从缓存取，否则删除缓存
+     */
     if (!shouldPersistTokenCache) {
       await Promise.all([
         tokenDbService.deleteForAddress(userAddr),
@@ -204,23 +206,7 @@ export const useTokens = (
       }
 
       if (currentAllTokens.length) {
-        const chainTokens = currentAllTokens.reduce((m, n) => {
-          m[n.chain] = m[n.chain] || [];
-          m[n.chain].push(n);
-
-          return m;
-        }, {} as Record<string, TokenItem[]>);
-        _data = produce(_data, (draft) => {
-          setWalletTokens(draft, chainTokens);
-        });
-
-        setData(_data);
-        _tokens = sortWalletTokens(_data);
-        if (isTestnet) {
-          dispatch.account.setTestnetTokenList(filterValidChainTokens(_tokens));
-        } else {
-          dispatch.account.setTokenList(filterValidChainTokens(_tokens));
-        }
+        applyTokenItems(currentAllTokens);
         setLoading(false);
       }
 
@@ -243,6 +229,10 @@ export const useTokens = (
       }
     }
 
+    /**
+     * 阶段二：接口快照缓存
+     * 完成后再决定是否进入完整刷新。
+     */
     const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
     if (!snapshot) {
@@ -260,26 +250,13 @@ export const useTokens = (
 
     if (snapshot?.length) {
       currentAllTokens = replaceCoreTokens(currentAllTokens, snapshot);
-      const chainTokens = currentAllTokens.reduce((m, n) => {
-        m[n.chain] = m[n.chain] || [];
-        m[n.chain].push(n);
-
-        return m;
-      }, {} as Record<string, TokenItem[]>);
-      _data = produce(_data, (draft) => {
-        setWalletTokens(draft, chainTokens);
-      });
-
-      setData(_data);
-      _tokens = sortWalletTokens(_data);
-      if (isTestnet) {
-        dispatch.account.setTestnetTokenList(filterValidChainTokens(_tokens));
-      } else {
-        dispatch.account.setTokenList(filterValidChainTokens(_tokens));
-      }
+      applyTokenItems(currentAllTokens);
       setLoading(false);
     }
 
+    /**
+     * 阶段三：完整 token 刷新
+     */
     const tokenRes = await batchQueryTokens(
       userAddr,
       wallet,
@@ -300,17 +277,11 @@ export const useTokens = (
       return;
     }
 
-    currentAllTokens = uniqTokens([
-      ...(chainServerId
-        ? currentAllTokens.filter((token) => token.chain !== chainServerId)
-        : []),
-      ...tokenRes,
-    ]);
-
-    if (currentAbort.signal.aborted) {
-      abortedFn();
-      return;
-    }
+    currentAllTokens = replaceTokensWithLatest(
+      currentAllTokens,
+      tokenRes,
+      chainServerId
+    );
 
     if (shouldPersistTokenCache) {
       await tokenDbService.replaceAddressTokens(userAddr, currentAllTokens);
@@ -324,25 +295,7 @@ export const useTokens = (
       }
     }
 
-    const tokensDict: Record<string, TokenItem[]> = {};
-    tokenRes.forEach((token) => {
-      if (!tokensDict[token.chain]) {
-        tokensDict[token.chain] = [];
-      }
-      tokensDict[token.chain].push(token);
-    });
-
-    _data = produce(_data, (draft) => {
-      setWalletTokens(draft, tokensDict);
-    });
-
-    setData(_data);
-    _tokens = sortWalletTokens(_data);
-    if (isTestnet) {
-      dispatch.account.setTestnetTokenList(filterValidChainTokens(_tokens));
-    } else {
-      dispatch.account.setTokenList(filterValidChainTokens(_tokens));
-    }
+    applyTokenItems(tokenRes);
 
     setLoading(false);
     setIsAllTokenLoading(false);

@@ -8,10 +8,15 @@ import { CHAINS } from 'consts';
 import { DisplayedProject } from './project';
 import { WalletControllerType } from '../WalletContext';
 import { requestOpenApiWithChainId } from '@/ui/utils/openapi';
-import { isTestnet as checkIsTestnet } from '@/utils/chain';
+import {
+  isTestnet as checkIsTestnet,
+  findChain,
+  findChainByEnum,
+} from '@/utils/chain';
 import { pQueue } from './utils';
-import { flatten } from 'lodash';
+import { flatten, uniqBy } from 'lodash';
 import { isSameAddress } from '..';
+import { AbstractPortfolioToken } from './types';
 
 export const queryTokensCache = async (
   user_id: string,
@@ -175,4 +180,56 @@ export const scamTokenFilter = (item: {
     return false;
   }
   return true;
+};
+
+export const buildTokenKey = (token: Pick<TokenItem, 'chain' | 'id'>) =>
+  `${token.chain}-${token.id.toLowerCase()}`;
+
+export const uniqTokens = (tokens: TokenItem[]) => {
+  return uniqBy(tokens, buildTokenKey);
+};
+
+// 过滤掉无效的链
+export const filterValidChainTokens = (tokens: AbstractPortfolioToken[]) => {
+  return tokens.filter((token) => {
+    const chain = findChain({
+      serverId: token.chain,
+    });
+    return findChainByEnum(chain?.enum);
+  });
+};
+
+/** 替换核心 token (缓存接口没有非 core 的 token */
+export const replaceCoreTokens = (
+  tokens: TokenItem[],
+  cacheTokens: TokenItem[]
+) => {
+  return uniqTokens([
+    ...tokens.filter((token) => !token.is_core),
+    ...cacheTokens,
+  ]);
+};
+
+export const replaceTokensWithLatest = (
+  tokens: TokenItem[],
+  latestTokens: TokenItem[],
+  chainServerId?: string
+) => {
+  if (!chainServerId) {
+    return uniqTokens(latestTokens);
+  }
+
+  return uniqTokens([
+    ...latestTokens,
+    ...tokens.filter((token) => token.chain !== chainServerId),
+  ]);
+};
+
+export const groupTokensByChain = (tokens: TokenItem[]) => {
+  return tokens.reduce((m, n) => {
+    m[n.chain] = m[n.chain] || [];
+    m[n.chain].push(n);
+
+    return m;
+  }, {} as Record<string, TokenItem[]>);
 };
