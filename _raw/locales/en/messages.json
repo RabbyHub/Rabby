@@ -4375,6 +4375,21 @@
       "networkErrorDescription": "{{site}} unexpectedly closed the connection. Please check your network.",
       "networkErrorDescriptionFallback": "The site unexpectedly closed the connection. Please check your network.",
       "reload": "Reload"
+    },
+    "manageBatchApprovals": {
+      "title": "Batch Revoke",
+      "cols": {
+        "asset": "Asset",
+        "revokeFrom": "Revoke From",
+        "gasFee": "Gas Fee"
+      },
+      "stopTheRevokeProcess": "Stop the revoke process?",
+      "leavingThisPageWillStopTheRevokeProcess": "Leaving this page will stop the revoke process.",
+      "startRevoke": "Start Revoke",
+      "continueRevoke": "Continue",
+      "pauseRevoke": "Pause",
+      "revokeCompleted": "Done",
+      "canStillRevoke": "Still Revoke"
     }
   },
   "component": {
@@ -4645,7 +4660,8 @@
     "Nonce": "Nonce",
     "tryAgain": "Try Again",
     "notSupportTesntnet": "Not supported for custom network",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "Yes": "Yes"
   },
   "background": {
     "error": {

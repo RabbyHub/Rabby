@@ -585,9 +585,10 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       eventKey: 'Approvals',
       content: t('page.dashboard.home.panel.approvals'),
       onClick: async (evt) => {
+        history.push('/revoke-approvals');
         // openInternalPageInTab('approval-manage');
-        await wallet.openInDesktop('/desktop/profile/approvals');
-        window.close();
+        // await wallet.openInDesktop('/desktop/profile/approvals');
+        // window.close();
       },
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
