@@ -113,6 +113,7 @@ export const Quotes = ({
       <div className="flex flex-col gap-8 px-20">
         {dex ? (
           <DexQuoteItem
+            active={activeName === dex?.name}
             inSufficient={inSufficient}
             preExecResult={dex?.preExecResult}
             quote={dex?.data}
@@ -159,6 +160,7 @@ export const Quotes = ({
             <DexQuoteItem
               onErrQuote={setErrorQuoteDEXs}
               key={name}
+              active={activeName === name}
               inSufficient={inSufficient}
               preExecResult={params.preExecResult}
               quote={(data as unknown) as any}
@@ -215,6 +217,7 @@ export const Quotes = ({
               onErrQuote={setErrorQuoteDEXs}
               onlyShowErrorQuote
               key={name}
+              active={activeName === name}
               inSufficient={inSufficient}
               preExecResult={params.preExecResult}
               quote={(data as unknown) as any}
@@ -296,7 +299,7 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
               </span>
             </div>
           </div>
-          <div className="mt-8 text-12 leading-[18px] text-r-neutral-foot text-left">
+          <div className="mt-8 mb-16 text-12 leading-[18px] text-r-neutral-foot text-left">
             {t('page.swap.best-subtitle')}
           </div>
         </div>

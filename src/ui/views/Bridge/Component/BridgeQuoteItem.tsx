@@ -24,6 +24,7 @@ interface QuoteItemProps extends SelectedBridgeQuote {
   payAmount: string;
   payToken: TokenItem;
   receiveToken: TokenItem;
+  active?: boolean;
   isBestQuote?: boolean;
   isTopAmount?: boolean;
   bestQuoteUsd: string;
@@ -152,7 +153,10 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             ? 'h-[88px] p-16 pt-[20px] bg-transparent border-[1px] border-solid border-rabby-neutral-line'
             : clsx(
                 'h-[88px] p-16 pt-[20px] cursor-pointer',
-                'bg-r-neutral-card1 border-[1px] border-solid border-transparent hover:bg-rabby-blue-light1',
+                'bg-r-neutral-card1 border-[1px] border-solid border-transparent',
+                props.active && 'bg-rabby-blue-light1',
+                props.active &&
+                  'after:absolute after:rounded-md after:inset-[-1px] after:border after:border-rabby-blue-default after:pointer-events-none',
                 ' hover:after:absolute hover:after:rounded-md hover:after:inset-[-1px] hover:after:border hover:after:border-rabby-blue-default hover:after:pointer-events-none'
               )
         )}

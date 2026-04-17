@@ -879,6 +879,11 @@ export const BridgeContent = () => {
         {fromToken && toToken ? (
           <QuoteList
             list={quoteList}
+            activeName={
+              selectedBridgeQuote
+                ? `${selectedBridgeQuote.aggregator.id}-${selectedBridgeQuote.bridge_id}`
+                : undefined
+            }
             loading={quoteLoading}
             visible={visible}
             onClose={() => {

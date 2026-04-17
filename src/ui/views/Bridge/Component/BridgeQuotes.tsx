@@ -10,6 +10,7 @@ import { TokenItem } from '@/background/service/openapi';
 import { BridgeQuoteItem, bridgeQuoteScore } from './BridgeQuoteItem';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 import { DrawerProps } from 'antd';
+import { useRabbySelector } from '@/ui/store';
 
 interface QuotesProps {
   userAddress: string;
@@ -85,6 +86,7 @@ export const Quotes = ({
             <BridgeQuoteItem
               key={item.aggregator.id + item.bridge_id}
               {...item}
+              active={activeName === `${item.aggregator.id}-${item.bridge_id}`}
               isBestQuote={idx === bestIndex}
               isTopAmount={idx === 0}
               bestQuoteUsd={bestAmountUsd}
@@ -120,12 +122,28 @@ const bodyStyle = {
 export const QuoteList = (props: QuotesProps) => {
   const { visible, onClose, getContainer } = props;
   const refresh = useSetRefreshId();
+  const aggregatorsList = useRabbySelector((s) => s.bridge.aggregatorsList);
 
   const refreshQuote = React.useCallback(() => {
     refresh((e) => e + 1);
   }, [refresh]);
 
   const { t } = useTranslation();
+
+  const height = useMemo(() => {
+    const min = 333;
+    const max = 548;
+    const itemCount = Math.max(props.list?.length || 0, aggregatorsList.length);
+    const h = 45 + 24 + itemCount * 100;
+
+    if (h < min) {
+      return min;
+    }
+    if (h > max) {
+      return max;
+    }
+    return h;
+  }, [aggregatorsList.length, props.list?.length]);
 
   return (
     <Popup
@@ -157,12 +175,12 @@ export const QuoteList = (props: QuotesProps) => {
               </span>
             </div>
           </div>
-          <div className="mt-8 text-12 leading-[18px] text-r-neutral-foot text-left">
+          <div className="mt-8 mb-16 text-12 leading-[18px] text-r-neutral-foot text-left">
             {t('page.bridge.best-subtitle')}
           </div>
         </div>
       }
-      height={462}
+      height={height}
       onClose={onClose}
       closable={false}
       destroyOnClose

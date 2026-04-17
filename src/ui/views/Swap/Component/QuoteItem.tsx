@@ -41,7 +41,20 @@ const ItemWrapper = styled.div`
   border: var(--quote--border-width) solid transparent;
   cursor: pointer;
 
-  &:hover:not(.disabled, .inSufficient) {
+  &:hover:not(.disabled, .inSufficient, .active) {
+    &::after {
+      position: absolute;
+      content: '';
+      inset: calc(0px - var(--quote--border-width));
+      border: var(--quote--border-width) solid var(--r-blue-default, #7084ff);
+      background: transparent;
+      border-radius: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+  }
+
+  &.active:not(.disabled, .inSufficient) {
     background: var(--r-blue-light-1, #eef1ff);
     &::after {
       position: absolute;
@@ -107,6 +120,7 @@ export interface QuoteItemProps {
   onlyShowErrorQuote?: boolean;
   quote: QuoteResult | null;
   name: string;
+  active?: boolean;
   loading?: boolean;
   payToken: TokenItem;
   receiveToken: TokenItem;
@@ -138,6 +152,7 @@ export const DexQuoteItem = (
     onlyShow,
     quote,
     name: dexId,
+    active,
     loading,
     bestQuoteAmount,
     bestQuoteGasUsd,
@@ -392,6 +407,7 @@ export const DexQuoteItem = (
         onClick={onlyShow ? undefined : handleClick}
         className={clsx(
           'dex',
+          active && 'active',
           disabled && 'disabled',
           isErrorQuote && 'error',
           inSufficient && !disabled && 'disabled inSufficient',
