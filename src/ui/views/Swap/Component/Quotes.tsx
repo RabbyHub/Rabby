@@ -1,5 +1,5 @@
-import { Checkbox, Popup } from '@/ui/component';
-import React, { useEffect, useMemo, useState } from 'react';
+import { Popup } from '@/ui/component';
+import React, { useMemo, useState } from 'react';
 import { QuoteListLoading, QuoteLoading } from './loading';
 import { IconRefresh } from './IconRefresh';
 import { DexQuoteItem, QuoteItemProps } from './QuoteItem';
@@ -12,7 +12,6 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RcIconHiddenArrow } from '@/ui/assets/swap/hidden-quote-arrow.svg';
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
-import { isSameAddress } from '@/ui/utils';
 import { DrawerProps } from 'antd';
 
 interface QuotesProps
@@ -37,7 +36,6 @@ export const Quotes = ({
   list,
   activeName,
   inSufficient,
-  sortIncludeGasFee,
   getContainer,
   ...other
 }: QuotesProps) => {
@@ -67,18 +65,14 @@ export const Quotes = ({
                 (quote?.data?.toTokenDecimals || other.receiveToken.decimals)
             )
             .toString();
-          if (sortIncludeGasFee) {
-            return new BigNumber(receiveTokenAmount)
-              .times(price)
-              .minus(quote?.preExecResult?.gasUsdValue || 0);
-          }
-
-          return new BigNumber(receiveTokenAmount).times(price);
+          return new BigNumber(receiveTokenAmount)
+            .times(price)
+            .minus(quote?.preExecResult?.gasUsdValue || 0);
         };
         return getNumber(b).minus(getNumber(a)).toNumber();
       }) || []),
     ],
-    [inSufficient, list, other.receiveToken, sortIncludeGasFee]
+    [inSufficient, list, other.receiveToken]
   );
 
   const [bestQuoteAmount, bestQuoteGasUsd] = useMemo(() => {
@@ -138,7 +132,6 @@ export const Quotes = ({
               name: t('page.swap.wrap-contract'),
               logo: other?.receiveToken?.logo_url,
             }}
-            sortIncludeGasFee={sortIncludeGasFee}
             {...other}
           />
         ) : (
@@ -177,7 +170,6 @@ export const Quotes = ({
               quoteProviderInfo={
                 DEX_WITH_WRAP[name as keyof typeof DEX_WITH_WRAP]
               }
-              sortIncludeGasFee={sortIncludeGasFee}
               {...other}
             />
           );
@@ -234,7 +226,6 @@ export const Quotes = ({
               quoteProviderInfo={
                 DEX_WITH_WRAP[name as keyof typeof DEX_WITH_WRAP]
               }
-              sortIncludeGasFee={sortIncludeGasFee}
               {...other}
             />
           );
@@ -258,8 +249,6 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
 
   const { t } = useTranslation();
 
-  const [sortIncludeGasFee, setSortIncludeGasFee] = useState(true);
-
   const dexList = useRabbySelector((s) => s.swap.supportedDEXList);
 
   const height = useMemo(() => {
@@ -277,12 +266,6 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
     return h;
   }, [dexList.length]);
 
-  useEffect(() => {
-    if (!visible) {
-      setSortIncludeGasFee(true);
-    }
-  }, [visible]);
-
   return (
     <Popup
       closeIcon={
@@ -293,62 +276,29 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
       }}
       visible={visible}
       title={
-        <div className="flex items-center justify-between mb-[-2px] pb-10">
-          <div className="flex items-center gap-6 text-left text-r-neutral-title-1 text-[16px] font-medium ">
+        <div className="mb-[-2px] pb-10">
+          <div className="relative pr-24 text-left text-r-neutral-title-1 text-[16px] font-medium">
             <div>{t('page.swap.the-following-swap-rates-are-found')}</div>
-            <div className="w-14 h-14 relative overflow-hidden">
-              <div className="w-[26px] h-[26px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-                <IconRefresh onClick={refreshQuote} />
+            <div className="absolute right-0 top-1/2 translate-y-[-50%] flex items-center gap-2 text-r-blue-default">
+              <div className="w-14 h-14 relative overflow-hidden">
+                <div className="w-[14px] h-[14px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
+                  <IconRefresh
+                    spinning={props.loading}
+                    onClick={refreshQuote}
+                  />
+                </div>
               </div>
+              <span
+                className="text-[16px] font-medium cursor-pointer"
+                onClick={refreshQuote}
+              >
+                {t('global.refresh')}
+              </span>
             </div>
           </div>
-
-          <Checkbox
-            checked={!!sortIncludeGasFee}
-            onChange={setSortIncludeGasFee}
-            className="text-12 text-rabby-neutral-body"
-            width="14px"
-            height="14px"
-            type="square"
-            background="transparent"
-            unCheckBackground="transparent"
-            checkIcon={
-              sortIncludeGasFee ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path
-                    fill={'var(--r-blue-default)'}
-                    d="M12.103.875H1.898a1.02 1.02 0 0 0-1.02 1.02V12.1c0 .564.456 1.02 1.02 1.02h10.205a1.02 1.02 0 0 0 1.02-1.02V1.895a1.02 1.02 0 0 0-1.02-1.02Z"
-                  />
-                  <path
-                    stroke="#fff"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.05}
-                    d="m4.2 7.348 2.1 2.45 4.2-4.9"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path
-                    stroke="var(--r-neutral-foot)"
-                    strokeLinejoin="round"
-                    strokeWidth={0.75}
-                    d="M12.103.875H1.898a1.02 1.02 0 0 0-1.02 1.02V12.1c0 .564.456 1.02 1.02 1.02h10.205a1.02 1.02 0 0 0 1.02-1.02V1.895a1.02 1.02 0 0 0-1.02-1.02Z"
-                  />
-                </svg>
-              )
-            }
-          >
-            <span className="ml-[-4px]">{t('page.swap.sort-with-gas')}</span>
-          </Checkbox>
+          <div className="mt-8 text-12 leading-[18px] text-r-neutral-foot text-left">
+            {t('page.swap.best-subtitle')}
+          </div>
         </div>
       }
       height={height}
@@ -360,7 +310,7 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
       isSupportDarkMode
       getContainer={getContainer}
     >
-      <Quotes {...props} sortIncludeGasFee={sortIncludeGasFee} />
+      <Quotes {...props} sortIncludeGasFee />
     </Popup>
   );
 };
