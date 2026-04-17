@@ -1057,6 +1057,7 @@ export const Main = () => {
         {payToken && receiveToken && chain ? (
           <QuoteList
             list={quoteList}
+            activeName={activeProvider?.name}
             loading={quoteLoading}
             visible={visible}
             onClose={() => {
