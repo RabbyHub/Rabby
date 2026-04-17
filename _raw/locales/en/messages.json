@@ -2128,7 +2128,11 @@
         "ledgerSending": "Sending signing request ({{current}}/{{total}})",
         "ledgerAlert": "Please open Ethereum App on your Ledger device",
         "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})",
-        "simulationFailed": "Simulation Failed"
+        "simulationFailed": "Simulation Failed",
+        "revokeWithOneKey": "Start revoke with OneKey",
+        "oneKeySended": "Please sign the request on OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Sending signing request ({{current}}/{{total}})",
+        "oneKeySigned": "Signed. Creating transaction ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -4377,6 +4381,62 @@
       "networkErrorDescription": "{{site}} unexpectedly closed the connection. Please check your network.",
       "networkErrorDescriptionFallback": "The site unexpectedly closed the connection. Please check your network.",
       "reload": "Reload"
+    },
+    "manageBatchApprovals": {
+      "title": "Batch Revoke",
+      "cols": {
+        "asset": "Asset",
+        "revokeFrom": "Revoke From",
+        "gasFee": "Gas Fee"
+      },
+      "stopTheRevokeProcess": "Stop the revoke process?",
+      "leavingThisPageWillStopTheRevokeProcess": "Leaving this page will stop the revoke process.",
+      "startRevoke": "Start Revoke",
+      "continueRevoke": "Continue",
+      "pauseRevoke": "Pause",
+      "revokeCompleted": "Done",
+      "canStillRevoke": "Still Revoke"
+    },
+    "manageApprovals": {
+      "title": "Approvals",
+      "tabs": {
+        "contracts": "By Contracts",
+        "assets": "By Assets"
+      },
+      "revoke": "Revoke",
+      "approvals": "approvals",
+      "ApprovalCardContractPopup": {
+        "allApprovals": "All Approvals",
+        "contractAddress": "Contract Address"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Approved Assets Amount & Balance"
+      },
+      "unselectAll": "Unselect All",
+      "selectAll": "Select All",
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "All Approvals",
+        "myBalance": "My Balance"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Approved Contracts & Amount"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Unsupported Address Type",
+        "unsupportedAddressTypeDesc": "Revoking EIP-7702 delegations is only supported for private key                 or seed phrase addresses",
+        "supportedChains": "Supported Chains",
+        "delegatedAddressDesc": "Delegated Address",
+        "notMatched": "Not Matched",
+        "noApprovals": "No approvals"
+      },
+      "ListByAssets": {
+        "noApprovals": "No approvals",
+        "notMatched": "Not Matched"
+      },
+      "ListByContracts": {
+        "noApprovals": "No approvals",
+        "notMatched": "Not Matched"
+      }
     }
   },
   "component": {
@@ -4647,7 +4707,8 @@
     "Nonce": "Nonce",
     "tryAgain": "Try Again",
     "notSupportTesntnet": "Not supported for custom network",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "Yes": "Yes"
   },
   "background": {
     "error": {
