@@ -1,14 +1,13 @@
-import { Checkbox, Popup } from '@/ui/component';
-import React, { useEffect, useMemo, useState } from 'react';
+import { Popup } from '@/ui/component';
+import React, { useMemo } from 'react';
 import { QuoteLoading } from './loading';
 import { IconRefresh } from './IconRefresh';
 import { SelectedBridgeQuote, useSetRefreshId } from '../hooks';
 import BigNumber from 'bignumber.js';
-import { CHAINS_ENUM } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
 import { useTranslation } from 'react-i18next';
 import { TokenItem } from '@/background/service/openapi';
-import { BridgeQuoteItem } from './BridgeQuoteItem';
+import { BridgeQuoteItem, bridgeQuoteScore } from './BridgeQuoteItem';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 import { DrawerProps } from 'antd';
 
@@ -24,7 +23,6 @@ interface QuotesProps {
   onClose: () => void;
   payAmount: string;
   setSelectedBridgeQuote: (quote?: SelectedBridgeQuote) => void;
-  sortIncludeGasFee: boolean;
   getContainer?: DrawerProps['getContainer'];
 }
 
@@ -32,7 +30,6 @@ export const Quotes = ({
   list,
   activeName,
   inSufficient,
-  sortIncludeGasFee,
   ...other
 }: QuotesProps) => {
   const { t } = useTranslation();
@@ -41,26 +38,44 @@ export const Quotes = ({
     return list?.sort((b, a) => {
       return new BigNumber(a.to_token_amount)
         .times(other.receiveToken.price || 1)
-        .minus(sortIncludeGasFee ? a.gas_fee.usd_value : 0)
+        .minus(a.gas_fee.usd_value)
         .minus(
           new BigNumber(b.to_token_amount)
             .times(other.receiveToken.price || 1)
-            .minus(sortIncludeGasFee ? b.gas_fee.usd_value : 0)
+            .minus(b.gas_fee.usd_value)
         )
         .toNumber();
     });
-  }, [list, sortIncludeGasFee, other.receiveToken]);
+  }, [list, other.receiveToken]);
 
-  const bestQuoteUsd = useMemo(() => {
+  const bestIndex = useMemo(() => {
+    if (!sortedList?.length) {
+      return 0;
+    }
+
+    let bestIdx = 0;
+    let bestScore = bridgeQuoteScore(sortedList[0], other.receiveToken);
+    for (let i = 1; i < sortedList.length; i += 1) {
+      const score = bridgeQuoteScore(sortedList[i], other.receiveToken);
+      if (score.gt(bestScore)) {
+        bestScore = score;
+        bestIdx = i;
+      }
+    }
+
+    return bestIdx;
+  }, [sortedList, other.receiveToken]);
+
+  const bestAmountUsd = useMemo(() => {
     const bestQuote = sortedList?.[0];
     if (!bestQuote) {
       return '0';
     }
     return new BigNumber(bestQuote.to_token_amount)
       .times(other.receiveToken.price || 1)
-      .minus(sortIncludeGasFee ? bestQuote.gas_fee.usd_value : 0)
+      .minus(bestQuote.gas_fee.usd_value)
       .toString();
-  }, [sortedList, other.receiveToken, sortIncludeGasFee]);
+  }, [sortedList, other.receiveToken]);
 
   return (
     <div className="flex flex-col h-full w-full ">
@@ -70,9 +85,9 @@ export const Quotes = ({
             <BridgeQuoteItem
               key={item.aggregator.id + item.bridge_id}
               {...item}
-              sortIncludeGasFee={!!sortIncludeGasFee}
-              isBestQuote={idx === 0}
-              bestQuoteUsd={bestQuoteUsd}
+              isBestQuote={idx === bestIndex}
+              isTopAmount={idx === 0}
+              bestQuoteUsd={bestAmountUsd}
               payToken={other.payToken}
               receiveToken={other.receiveToken}
               setSelectedBridgeQuote={other.setSelectedBridgeQuote}
@@ -102,7 +117,7 @@ const bodyStyle = {
   padding: 0,
 };
 
-export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
+export const QuoteList = (props: QuotesProps) => {
   const { visible, onClose, getContainer } = props;
   const refresh = useSetRefreshId();
 
@@ -111,14 +126,6 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
   }, [refresh]);
 
   const { t } = useTranslation();
-
-  const [sortIncludeGasFee, setSortIncludeGasFee] = useState(true);
-
-  useEffect(() => {
-    if (!visible) {
-      setSortIncludeGasFee(true);
-    }
-  }, [visible]);
 
   return (
     <Popup
@@ -130,62 +137,29 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
       }}
       visible={visible}
       title={
-        <div className="flex items-center justify-between mb-[-2px] pb-10">
-          <div className="flex items-center gap-6 text-left text-r-neutral-title-1 text-[16px] font-medium ">
+        <div className="mb-[-2px] pb-10">
+          <div className="relative pr-24 text-left text-r-neutral-title-1 text-[16px] font-medium">
             <div>{t('page.bridge.the-following-bridge-route-are-found')}</div>
-            <div className="w-14 h-14 relative overflow-hidden">
-              <div className="w-[26px] h-[26px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-                <IconRefresh onClick={refreshQuote} />
+            <div className="absolute right-0 top-1/2 translate-y-[-50%] flex items-center gap-2 text-r-blue-default">
+              <div className="w-14 h-14 relative overflow-hidden mr-4">
+                <div className="w-[14px] h-[14px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
+                  <IconRefresh
+                    spinning={props.loading}
+                    onClick={refreshQuote}
+                  />
+                </div>
               </div>
+              <span
+                className="text-[16px] font-medium cursor-pointer"
+                onClick={refreshQuote}
+              >
+                {t('global.refresh')}
+              </span>
             </div>
           </div>
-
-          <Checkbox
-            checked={!!sortIncludeGasFee}
-            onChange={setSortIncludeGasFee}
-            className="text-12 text-rabby-neutral-body"
-            width="14px"
-            height="14px"
-            type="square"
-            background="transparent"
-            unCheckBackground="transparent"
-            checkIcon={
-              sortIncludeGasFee ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path
-                    fill={'var(--r-blue-default)'}
-                    d="M12.103.875H1.898a1.02 1.02 0 0 0-1.02 1.02V12.1c0 .564.456 1.02 1.02 1.02h10.205a1.02 1.02 0 0 0 1.02-1.02V1.895a1.02 1.02 0 0 0-1.02-1.02Z"
-                  />
-                  <path
-                    stroke="#fff"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.05}
-                    d="m4.2 7.348 2.1 2.45 4.2-4.9"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path
-                    stroke="var(--r-neutral-foot)"
-                    strokeLinejoin="round"
-                    strokeWidth={0.75}
-                    d="M12.103.875H1.898a1.02 1.02 0 0 0-1.02 1.02V12.1c0 .564.456 1.02 1.02 1.02h10.205a1.02 1.02 0 0 0 1.02-1.02V1.895a1.02 1.02 0 0 0-1.02-1.02Z"
-                  />
-                </svg>
-              )
-            }
-          >
-            <span className="ml-[-4px]">{t('page.swap.sort-with-gas')}</span>
-          </Checkbox>
+          <div className="mt-8 text-12 leading-[18px] text-r-neutral-foot text-left">
+            {t('page.bridge.best-subtitle')}
+          </div>
         </div>
       }
       height={462}
@@ -197,7 +171,7 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
       isSupportDarkMode
       getContainer={getContainer}
     >
-      <Quotes {...props} sortIncludeGasFee={sortIncludeGasFee} />
+      <Quotes {...props} />
     </Popup>
   );
 };
