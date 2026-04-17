@@ -2128,7 +2128,11 @@
         "ledgerSending": "Sending signing request ({{current}}/{{total}})",
         "ledgerAlert": "Please open Ethereum App on your Ledger device",
         "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})",
-        "simulationFailed": "Simulation Failed"
+        "simulationFailed": "Simulation Failed",
+        "revokeWithOneKey": "Start revoke with OneKey",
+        "oneKeySended": "Please sign the request on OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Sending signing request ({{current}}/{{total}})",
+        "oneKeySigned": "Signed. Creating transaction ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {

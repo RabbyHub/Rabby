@@ -5,6 +5,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { RevokeActionLedgerButton } from './RevokeActionLedgerButton';
 import React from 'react';
 import { RevokeActionCommonButton } from './RevokeActionCommonButton';
+import { RevokeActionOnekeyButton } from './RevokeActionOnekeyButton';
 
 export const RevokeActionButton: React.FC<{
   task: BatchRevokeTaskType;
@@ -14,6 +15,10 @@ export const RevokeActionButton: React.FC<{
 
   if (account?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
     return <RevokeActionLedgerButton task={task} onDone={onDone} />;
+  }
+
+  if (account?.type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+    return <RevokeActionOnekeyButton task={task} onDone={onDone} />;
   }
 
   return <RevokeActionCommonButton task={task} onDone={onDone} />;
