@@ -37,7 +37,10 @@ export const ApprovalsBottomBar: React.FC = () => {
 
     return {
       couldSubmit: !!revokeCount,
-      buttonTitle: ['Revoke', revokeCount ? ` (${displayCount})` : '']
+      buttonTitle: [
+        t('page.manageApprovals.revoke'),
+        revokeCount ? ` (${displayCount})` : '',
+      ]
         .filter(Boolean)
         .join(''),
       isDisabled: unsupported || revokeCount <= 0,

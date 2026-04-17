@@ -70,7 +70,9 @@ export const ApprovalAssetPopup: React.FC = () => {
 
               <div className="mt-[20px] flex items-center justify-between gap-[12px] px-[2px]">
                 <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-                  Approved Contracts & Amount
+                  {t(
+                    'page.manageApprovals.ApprovalAssetPopup.approvedContractsAndAmount'
+                  )}
                 </div>
                 <div
                   onClick={() => {
@@ -87,7 +89,9 @@ export const ApprovalAssetPopup: React.FC = () => {
                     'cursor-pointer text-[13px] leading-[16px] font-medium text-r-blue-default'
                   )}
                 >
-                  {allSelected ? 'Unselect All' : 'Select All'}
+                  {allSelected
+                    ? t('page.manageApprovals.unselectAll')
+                    : t('page.manageApprovals.selectAll')}
                 </div>
               </div>
 
@@ -135,7 +139,7 @@ export const ApprovalAssetPopup: React.FC = () => {
                 {/* {t('page.approvals.component.RevokeButton.btnText', {
                   count: Object.keys(assetDraftMap).length,
                 })} */}
-                Confirm
+                {t('global.confirm')}
               </Button>
             </footer>
           </div>

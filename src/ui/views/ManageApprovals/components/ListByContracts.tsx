@@ -8,6 +8,7 @@ import {
 import { ApprovalCard } from './ApprovalCard';
 import { EmptyState } from './EmptyState';
 import { SkeletonLoading } from './SkeletonLoading';
+import { useTranslation } from 'react-i18next';
 
 export const ListByContracts: React.FC = () => {
   const {
@@ -21,6 +22,8 @@ export const ListByContracts: React.FC = () => {
     openContractDetail,
   } = useApprovalsPage();
 
+  const { t } = useTranslation();
+
   if (isLoading) {
     return <SkeletonLoading />;
   }
@@ -28,7 +31,11 @@ export const ListByContracts: React.FC = () => {
   if (!displaySortedContractList.length) {
     return (
       <EmptyState
-        text={contractEmptyStatus === 'none' ? 'No approvals' : 'Not Matched'}
+        text={
+          contractEmptyStatus === 'none'
+            ? t('page.manageApprovals.ListByContracts.noApprovals')
+            : t('page.manageApprovals.ListByContracts.notMatched')
+        }
         onReset={searchKw ? () => setSearchKw('') : undefined}
       />
     );

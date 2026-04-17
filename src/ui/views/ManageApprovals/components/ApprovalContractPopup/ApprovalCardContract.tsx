@@ -80,7 +80,7 @@ export const ApprovalCardContract: React.FC<ApprovalCardContractProps> = ({
 
       <div className="mt-[16px] flex items-center justify-between gap-[12px]">
         <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-          All Approvals
+          {t('page.manageApprovals.ApprovalCardContractPopup.allApprovals')}
         </div>
         <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
           {contract.list.length}
@@ -89,7 +89,7 @@ export const ApprovalCardContract: React.FC<ApprovalCardContractProps> = ({
 
       <div className="mt-[12px] flex items-center justify-between gap-[12px]">
         <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-          Contract Address
+          {t('page.manageApprovals.ApprovalCardContractPopup.contractAddress')}
         </div>
         <div
           className="flex min-w-0 items-center gap-[4px] cursor-pointer"

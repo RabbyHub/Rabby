@@ -8,6 +8,7 @@ import {
 import { ApprovalCard } from './ApprovalCard';
 import { EmptyState } from './EmptyState';
 import { SkeletonLoading } from './SkeletonLoading';
+import { useTranslation } from 'react-i18next';
 
 export const ListByAssets: React.FC = () => {
   const {
@@ -21,6 +22,8 @@ export const ListByAssets: React.FC = () => {
     openAssetDetail,
   } = useApprovalsPage();
 
+  const { t } = useTranslation();
+
   if (isLoading) {
     return <SkeletonLoading />;
   }
@@ -28,7 +31,11 @@ export const ListByAssets: React.FC = () => {
   if (!displaySortedAssetApprovalList.length) {
     return (
       <EmptyState
-        text={assetEmptyStatus === 'none' ? 'No approvals' : 'Not Matched'}
+        text={
+          assetEmptyStatus === 'none'
+            ? t('page.manageApprovals.ListByAssets.noApprovals')
+            : t('page.manageApprovals.ListByAssets.notMatched')
+        }
         onReset={searchKw ? () => setSearchKw('') : undefined}
       />
     );

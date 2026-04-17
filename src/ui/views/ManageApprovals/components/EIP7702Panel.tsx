@@ -88,11 +88,12 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
             <RcIconWarningCC className="flex-shrink-0 text-r-orange-default" />
             <div>
               <div className="text-[13px] leading-[16px] font-medium text-r-orange-default">
-                Unsupported Address Type
+                {t('page.manageApprovals.EIP7702Panel.unsupportedAddressType')}
               </div>
               <div className="text-[12px] leading-[14px] text-r-orange-default mt-[4px]">
-                Revoking EIP-7702 delegations is only supported for private key
-                or seed phrase addresses
+                {t(
+                  'page.manageApprovals.EIP7702Panel.unsupportedAddressTypeDesc'
+                )}
               </div>
             </div>
           </div>
@@ -106,7 +107,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
           onClick={() => setSupportedChainsOpen(true)}
         >
           <div className="text-[12px] leading-[14px] text-r-neutral-foot">
-            Supported Chains
+            {t('page.manageApprovals.EIP7702Panel.supportedChains')}
           </div>
           <button
             type="button"
@@ -141,7 +142,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
           </button>
         </div>
         <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[8px]">
-          Delegated Address
+          {t('page.manageApprovals.EIP7702Panel.delegatedAddressDesc')}
         </div>
         <div className="flex flex-col gap-[8px]">
           {isLoading ? (
@@ -215,7 +216,13 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
               );
             })
           ) : (
-            <EmptyState text={searchKw ? 'Not Matched' : 'No approvals'} />
+            <EmptyState
+              text={
+                searchKw
+                  ? t('page.manageApprovals.EIP7702Panel.notMatched')
+                  : t('page.manageApprovals.EIP7702Panel.noApprovals')
+              }
+            />
           )}
         </div>
       </div>
