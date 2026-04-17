@@ -119,9 +119,9 @@
           "rabbyPoints": "Rabby Points",
           "ecology": "生态系统",
           "bridge": "跨链",
-          "mobile": "Mobile Sync",
+          "mobile": "同步手机端",
           "perps": "永续合约",
-          "gasAccount": "GasAccount",
+          "gasAccount": "Gas 充值",
           "setting": "设置",
           "dapps": "Dapps",
           "searchDapp": "搜索 Dapp",
@@ -130,7 +130,7 @@
           "perpsPositions_other": "{{count}} 头寸",
           "lending": "借贷",
           "dragTip": "长按以重新排序",
-          "convertDust": "小额资产兑换"
+          "convertDust": "小额资产归集"
         },
         "comingSoon": "即将推出",
         "soon": "很快",
@@ -594,18 +594,18 @@
         "pastedAndClear": "已粘贴并清空剪切板",
         "inputInvalidCount": "有{{count}}处输入内容不符合助记词规范，请检查",
         "wordPhraseAndPassphrase": "我有一个包含 <1>{{count}}</1> 个词的短语和密码",
-        "slip39SeedPhrase": "我有一个 <0>{{SLIP39}}</0> 种子短语",
-        "slip39SeedPhraseWithPassphrase": "我有一个带密码的 <0>{{SLIP39}}</0> 种子短语",
-        "slip39SeedPhrasePlaceholder_one": "在这里输入你的第 {{count}} 个种子短语份额",
-        "slip39SeedPhrasePlaceholder_two": "在这里输入你的第 {{count}} 个种子短语份额",
-        "slip39SeedPhrasePlaceholder_few": "在这里输入你的第 {{count}} 个种子短语份额",
-        "slip39SeedPhrasePlaceholder_other": "在这里输入你的第 {{count}} 个种子短语份额",
+        "slip39SeedPhrase": "我有一个 <0>{{SLIP39}}</0> 助记词",
+        "slip39SeedPhraseWithPassphrase": "我有一个带密码的 <0>{{SLIP39}}</0> 助记词",
+        "slip39SeedPhrasePlaceholder_one": "在这里输入你的第 {{count}} 个助记词份额",
+        "slip39SeedPhrasePlaceholder_two": "在这里输入你的第 {{count}} 个助记词份额",
+        "slip39SeedPhrasePlaceholder_few": "在这里输入你的第 {{count}} 个助记词份额",
+        "slip39SeedPhrasePlaceholder_other": "在这里输入你的第 {{count}} 个助记词份额",
         "invalidContent": "内容无效",
-        "inputInvalidCount_one": "1 个输入不符合种子短语规范，请检查。",
-        "inputInvalidCount_other": "{{count}} 个输入不符合种子短语规范，请检查。",
+        "inputInvalidCount_one": "1 个输入不符合助记词规范，请检查。",
+        "inputInvalidCount_other": "{{count}} 个输入不符合助记词规范，请检查。",
         "passphrase": "密码",
-        "importQuestion1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
-        "importQuestion3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，将无法通过 Rabby 恢复。",
+        "importQuestion1": "如果我丢失或分享我的助记词，我将永久失去对我的资产的访问权限。",
+        "importQuestion3": "如果我在没有备份我的助记词的情况下卸载 Rabby，将无法通过 Rabby 恢复。",
         "importQuestion2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。",
         "showMoreOptions": "显示更多选项",
         "inputInvalid": "检测到无效单词。请检查标记的单词。"
@@ -850,7 +850,7 @@
         },
         "manageImKey": "管理 imKey",
         "importBtn": "导入 ({{count}})",
-        "nonAddr": "尚未为此种子短语添加任何地址。您可以在 Rabby Extension > 管理地址 中删除此短语。"
+        "nonAddr": "尚未为此助记词添加任何地址。您可以在 Rabby Extension > 管理地址 中删除此短语。"
       },
       "importYourKeystore": "导入你的 KeyStore",
       "incorrectPassword": "密码错误",
@@ -881,7 +881,7 @@
       "addMoreAddresses": "添加更多地址",
       "addNewAddress": "创建新地址",
       "createANewSeedPhrase": "创建新的助记词",
-      "newSeedPhraseCreated": "新的助记词已创建",
+      "newSeedPhraseCreated": "助记词创建成功",
       "moreWallets": "更多钱包",
       "privateKeyTab": "私钥",
       "addressImported": "地址已导入",
@@ -889,13 +889,13 @@
       "addressAdded": "地址已添加",
       "addressAddedCount_other": "{{count}} 个地址已添加",
       "newAddressCreated": "新地址已创建",
-      "addMoreAddressesFromThisSeedPhrase": "从这个种子短语添加更多地址",
+      "addMoreAddressesFromThisSeedPhrase": "从这个助记词添加更多地址",
       "newAddressAdded": "新地址已添加",
       "openExtensionToGetStarted": "打开 Rabby 扩展以开始使用",
       "bulkImportPrivateKeyInvalid": "一些私钥无效。请删除或重新输入它们。",
       "duplicateAddressesSkippedDesc_other": "{{count}} 个地址被跳过，因为它们已存在。",
       "bulkImportPrivateKey": "批量导入私钥",
-      "seedPhraseTab": "种子短语",
+      "seedPhraseTab": "助记词",
       "bulkImportPrivateKeyPlaceholder": "每个私钥应使用新行或特殊字符分隔。",
       "duplicateAddressesSkippedTitle": "某些地址已被导入",
       "bulkImportPrivateKeySupport": "支持多达 1000 个 EVM 兼容的私钥",
@@ -1260,7 +1260,7 @@
       "CurrentDappAddress": {
         "desc": "切换 Dapp 地址\n"
       },
-      "noSeedPhraseAddress": "还没有为这个种子短语添加地址。您可以添加一个地址或删除该种子短语。",
+      "noSeedPhraseAddress": "还没有为这个助记词添加地址。您可以添加一个地址或删除该助记词。",
       "watch-address": "仅观察",
       "deleteSuccess": "删除成功"
     },
@@ -1445,7 +1445,7 @@
         "trezor": "Trezor 地址",
         "watchAddress": "无法使用观察地址进行签名",
         "coboSafe": "Cobo Argus 地址",
-        "seedPhraseWithPassphrase": "种子短语地址（密码）"
+        "seedPhraseWithPassphrase": "助记词地址（密码）"
       },
       "beginSigning": "开始签名流程",
       "connectButton": "连接",
@@ -1693,7 +1693,7 @@
         "tokenNotSupport": "不支持 {{0}}",
         "whitelistTitle": "白名单",
         "scamAddress": "诈骗地址",
-        "fromMySeedPhrase": "使用我的种子短语",
+        "fromMySeedPhrase": "使用我的助记词",
         "fromMyPrivateKey": "使用我的私钥"
       },
       "sendNFT": {
@@ -2115,15 +2115,15 @@
       "manage-addresses-under": "在此 {{brand}} 下管理地址",
       "deleteSeedPhrase": {
         "title2": "删除地址？",
-        "option2": "删除地址和种子短语",
+        "option2": "删除地址和助记词",
         "option1": "删除地址，保留助记词",
         "sub-title": "此操作是永久性的。请查看以下内容以保护您的资产：",
-        "remainSeedPhrase": "您的种子短语保留在您的设备上。",
+        "remainSeedPhrase": "您的助记词保留在您的设备上。",
         "check2": "我确认我已经备份了我的 Private Key 或 Seed Phrase，并且我准备删除它。",
-        "title": "删除地址和种子短语吗？",
+        "title": "删除地址和助记词吗？",
         "keepSeedPhrase": "这是唯一与这个助记词关联的地址。您想保留这个助记词吗？",
-        "onlyDeleteAddr": "只有这个地址将被移除。您的种子短语不受影响，因为您的其他地址仍然使用它。",
-        "check1": "我明白，删除该地址也会删除它的私钥和种子短语。Rabby 无法为我恢复它们。"
+        "onlyDeleteAddr": "只有这个地址将被移除。您的助记词不受影响，因为您的其他地址仍然使用它。",
+        "check1": "我明白，删除该地址也会删除它的私钥和助记词。Rabby 无法为我恢复它们。"
       },
       "deletePrivateKey": {
         "title": "删除地址和私钥吗？",
@@ -2204,20 +2204,20 @@
       "gnosisChainDesc": "该地址部署于  {{count}} 条链上"
     },
     "backupPrivateKey": {
-      "alert": "此私钥是您资产的凭证。请勿丢失或泄露给他人，否则可能永远失去您的资产。请在安全环境中查看并小心保管。",
+      "alert": "此私钥是您资产的凭证。一旦丢失 / 泄露，资产将永久无法找回。请务必在安全环境下妥善保管，切勿向任何人泄露。",
       "clickToShowQr": "点击展示私钥二维码",
       "clickToShow": "点击展示私钥",
       "title": "备份私钥"
     },
     "backupSeedPhrase": {
-      "alert": "此种子短语是您资产的凭证。请勿丢失或泄露给他人，否则可能永远失去您的资产。请在安全环境中查看并小心保管。",
+      "alert": "助记词是您资产的唯一凭证，一旦丢失 / 泄露，资产将永久无法找回。请务必在安全环境下妥善保管，切勿向任何人泄露。",
       "clickToShow": "点击展示助记词",
       "copySeedPhrase": "复制助记词",
       "title": "备份助记词",
       "showQrCode": "显示二维码",
       "qrCodePopupTitle": "二维码",
-      "qrCodePopupTips": "永远不要与任何其他人分享种子短语的二维码。请在安全的环境中查看并小心保管。",
-      "doneButton": "我已保存助记词"
+      "qrCodePopupTips": "永远不要与任何其他人分享助记词的二维码。请在安全的环境中查看并小心保管。",
+      "doneButton": "我已备份助记词"
     },
     "ethSign": {
       "alert": " 'eth_sign' 类型签名会导致资产损失。为了你的安全， Rabby 不支持此类签名"
@@ -2799,9 +2799,9 @@
         "showSeedPhrase": "显示 Seed Phrase",
         "title": "在开始之前",
         "desc": "请阅读并牢记以下安全提示",
-        "tip2": "我的种子短语仅存储在我的设备上。Rabby 无法访问它。",
-        "tip1": "如果我丢失或分享我的种子短语，我将永久失去对我的资产的访问权限。",
-        "tip3": "如果我在没有备份我的种子短语的情况下卸载 Rabby，则无法通过 Rabby 恢复。"
+        "tip2": "我的助记词仅存储在我的设备上。Rabby 无法访问它。",
+        "tip1": "如果我丢失或分享我的助记词，我将永久失去对我的资产的访问权限。",
+        "tip3": "如果我在没有备份我的助记词的情况下卸载 Rabby，则无法通过 Rabby 恢复。"
       },
       "importList": {
         "title": "选择导入方式"
@@ -2810,7 +2810,7 @@
         "title": "导入私钥",
         "pasteCleared": "已粘贴并清除剪贴板",
         "createWallet": "创建钱包",
-        "noWallet": "还没有种子短语或私钥吗？"
+        "noWallet": "还没有助记词或私钥吗？"
       },
       "PasswordCard": {
         "form": {
@@ -2838,9 +2838,9 @@
         "create": "创建成功",
         "addMoreFrom": "从 {{name}} 添加更多地址",
         "openWallet": "打开钱包",
-        "desc": "Rabby 钱包已经可以使用了！",
-        "backupSeedPhraseNow": "立即备份种子短语",
-        "backupSeedPhrase": "备份种子短语"
+        "desc": "你的 Rabby 钱包已就绪",
+        "backupSeedPhraseNow": "立即备份助记词",
+        "backupSeedPhrase": "备份助记词"
       },
       "readyToUse": {
         "pin": "固定 Rabby 钱包",
@@ -2918,7 +2918,7 @@
         "title": "选择硬件钱包"
       },
       "importSeedOrKey": {
-        "seedPhrase": "种子短语",
+        "seedPhrase": "助记词",
         "title": "助记词或私钥",
         "privateKey": "私钥"
       },
