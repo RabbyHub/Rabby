@@ -3549,7 +3549,7 @@
       "liquidationDistanceUp": "上涨 <bold>{{percent}}</bold> 将触发清算",
       "cannotChangeMarginModeWithOpenPositions": "无法更改开仓的保证金模式",
       "marginMode": "保证金模式",
-      "openProModeInTab": "在选项卡中打开专业模式",
+      "openProModeInTab": "切换至专业模式",
       "isolatedMarginDesc": "每个头寸使用独立的保证金。损失仅限于该头寸，但更容易被清算。",
       "liquidationDistanceDown": "下跌 <bold>{{percent}}</bold> 将触发清算",
       "details": "详情",
