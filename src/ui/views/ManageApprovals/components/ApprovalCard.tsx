@@ -43,6 +43,7 @@ type ApprovalCardProps = {
   onToggle: () => void;
   onOpenDetail: () => void;
   badge?: React.ReactNode;
+  isNFT?: boolean;
 };
 
 export const ApprovalCard: React.FC<ApprovalCardProps> = ({
@@ -57,6 +58,7 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
   onToggle,
   onOpenDetail,
   badge,
+  isNFT,
 }) => {
   const isRisky = Boolean(riskyText);
 
@@ -77,12 +79,17 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
             className="flex-shrink-0"
           />
           <div className="flex items-center gap-[8px] min-w-0 flex-1">
-            <AssetAvatar chain={chainServerId} logo={logoUrl} size={28} />
+            <AssetAvatar
+              chain={chainServerId}
+              logo={logoUrl}
+              size={28}
+              logoStyle={isNFT ? { borderRadius: 4 } : undefined}
+            />
             <div className="min-w-0 flex-1">
               <div className="truncate text-[15px] leading-[18px] font-medium  text-r-neutral-title1">
                 {title}
               </div>
-              {badge ? <div className="mt-[6px]">{badge}</div> : null}
+              {badge ? badge : null}
             </div>
           </div>
         </div>
