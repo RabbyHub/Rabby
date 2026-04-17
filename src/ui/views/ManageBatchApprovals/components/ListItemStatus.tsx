@@ -42,7 +42,7 @@ export const ListItemStatus: React.FC<{
       <div className="flex items-center justify-end">
         {data.$status?.status === 'success' && (
           <div className="flex items-center gap-[4px]">
-            <SuccessSVG className="mb-[2px]" />
+            <SuccessSVG />
             {data.$status.gasCost ? (
               <div className="block truncate text-[13px] leading-[16px] font-medium text-r-neutral-foot">
                 ${formatGasCostUsd(data.$status.gasCost.gasCostUsd)}
@@ -53,12 +53,15 @@ export const ListItemStatus: React.FC<{
         {data.$status?.status === 'fail' && (
           <Tooltip
             overlayClassName="rectangle"
+            align={{
+              offset: [16, 0],
+            }}
             title={
               <div>
                 {FailReason[failedCode ?? FailedCode.DefaultFailed]}{' '}
                 {canStillRevoke && gasCostUsd
                   ? `(Est. Gas ≈$ ${formatGasCostUsd(gasCostUsd)})`
-                  : ''}
+                  : ''}{' '}
                 {canStillRevoke ? (
                   <span
                     className="cursor-pointer text-r-blue-default"
@@ -71,7 +74,7 @@ export const ListItemStatus: React.FC<{
                 )}
               </div>
             }
-            placement="top"
+            placement="topRight"
           >
             <RcIconWarningCC className="text-r-red-default" />
           </Tooltip>
