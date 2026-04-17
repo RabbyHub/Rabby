@@ -44,7 +44,7 @@ export const IconRefresh = memo((props: IconRefreshProps) => {
       $animating={spinning}
       className={clsx(
         'arrow-loading cursor-pointer',
-        className || 'text-[#4C65FF]'
+        className || 'text-r-blue-default'
       )}
       {...other}
     >
