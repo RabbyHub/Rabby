@@ -119,6 +119,28 @@ const Unlock = () => {
     });
   }, [location.search]);
   const dispatch = useRabbyDispatch();
+  const inputErrorNode = useMemo(() => {
+    if (!inputError) return null;
+
+    return (
+      <div>
+        <span>{inputError}</span>
+        {hasForgotPassword && (
+          <button
+            type="button"
+            className={clsx(
+              'text-r-blue-default font-medium',
+              'underline',
+              'ml-[8px]'
+            )}
+            onClick={() => openInternalPageInTab('forgot-password')}
+          >
+            {t('page.unlock.btnForgotPassword')}
+          </button>
+        )}
+      </div>
+    );
+  }, [hasForgotPassword, inputError, t]);
 
   useEffect(() => {
     let mounted = true;
@@ -187,7 +209,6 @@ const Unlock = () => {
       pendingUnlockTypeRef.current = null;
       console.log('error', err);
       setInputError(err?.message || t('page.unlock.password.error'));
-      form.validateFields(['password']);
     },
   });
 
@@ -245,7 +266,6 @@ const Unlock = () => {
       const errorMessage = error?.message || t('page.unlock.biometricFailed');
       if (!String(errorMessage).toLowerCase().includes('canceled')) {
         setInputError(errorMessage);
-        form.validateFields(['password']);
       }
     } finally {
       isUnlockingRef.current = false;
@@ -391,36 +411,12 @@ const Unlock = () => {
             <InputFormStyled
               className="mt-[34px] mx-20"
               name="password"
+              validateStatus={inputError ? 'error' : undefined}
+              help={inputErrorNode}
               rules={[
                 {
                   required: true,
                   message: t('page.unlock.password.required'),
-                },
-                {
-                  validator: (_, value) => {
-                    if (inputError) {
-                      return Promise.reject(
-                        <div>
-                          <span>{inputError}</span>
-                          {hasForgotPassword && (
-                            <button
-                              className={clsx(
-                                'text-r-blue-default font-medium',
-                                'underline',
-                                'ml-[8px]'
-                              )}
-                              onClick={() =>
-                                openInternalPageInTab('forgot-password')
-                              }
-                            >
-                              {t('page.unlock.btnForgotPassword')}
-                            </button>
-                          )}
-                        </div>
-                      );
-                    }
-                    return Promise.resolve();
-                  },
                 },
               ]}
             >
