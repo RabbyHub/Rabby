@@ -4,6 +4,7 @@ import React from 'react';
 import { ReactComponent as LoadingSVG } from '@/ui/assets/approval/loading.svg';
 import { ReactComponent as SuccessSVG } from '@/ui/assets/approval/success.svg';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconLoadingCC } from '@/ui/assets/loading-cc.svg';
 import { formatGasCostUsd } from '@/ui/utils';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -40,12 +41,12 @@ export const ListItemStatus: React.FC<{
     <>
       <div className="flex items-center justify-end">
         {data.$status?.status === 'success' && (
-          <div className="flex items-center gap-[2px]">
+          <div className="flex items-center gap-[4px]">
             <SuccessSVG className="mb-[2px]" />
             {data.$status.gasCost ? (
-              <CellText>
+              <div className="block truncate text-[13px] leading-[16px] font-medium text-r-neutral-foot">
                 ${formatGasCostUsd(data.$status.gasCost.gasCostUsd)}
-              </CellText>
+              </div>
             ) : null}
           </div>
         )}
@@ -82,9 +83,17 @@ export const ListItemStatus: React.FC<{
         )}
 
         {!data.$status?.status && (
-          <CellText>
-            {isPaused ? t('page.approvals.revokeModal.paused') : '-'}
-          </CellText>
+          <>
+            {isPaused ? (
+              <RcIconLoadingCC
+                viewBox="0 0 24 24"
+                className="w-[16px] h-[16px] text-r-orange-default mr-[4px]"
+              />
+            ) : null}
+            <div className="block truncate text-[13px] leading-[16px] font-medium text-r-neutral-foot">
+              {isPaused ? t('page.approvals.revokeModal.paused') : '-'}
+            </div>
+          </>
         )}
       </div>
     </>

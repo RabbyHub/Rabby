@@ -8,9 +8,11 @@ import ChainIcon from '@/ui/component/ChainIcon';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { findChainByEnum } from '@/utils/chain';
 import clsx from 'clsx';
-import { EIP7702Delegated } from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
+import {
+  EIP7702_REVOKE_SUPPORTED_CHAINS,
+  EIP7702Delegated,
+} from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
 import { CheckboxV2 } from '../../DesktopSmallSwap/components/Checkbox';
-import { EIP7702_REVOKE_SUPPORTED_CHAINS } from '../hooks/useEIP7702Approvals';
 import { EIP7702SupportedChainsPopup } from './EIP7702SupportedChainsPopup';
 import { EmptyState } from './EmptyState';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
@@ -97,15 +99,16 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
         <div
           className={clsx(
             'flex items-center justify-between mb-[16px]',
-            'p-[12px] bg-r-neutral-card-1 rounded-[8px]'
+            'p-[11px] bg-r-neutral-card-1 rounded-[8px]',
+            'border border-transparent hover:border-rabby-blue-default cursor-pointer'
           )}
+          onClick={() => setSupportedChainsOpen(true)}
         >
           <div className="text-[12px] leading-[14px] text-r-neutral-foot">
             Supported Chains
           </div>
           <button
             type="button"
-            onClick={() => setSupportedChainsOpen(true)}
             className="flex items-center gap-[6px] border-none bg-transparent text-r-neutral-foot"
           >
             <div className={clsx('flex items-center mr-[-12px]')}>
@@ -165,7 +168,12 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
                       : 'cursor-not-allowed opacity-50 pointer-events-none'
                   )}
                 >
-                  <CheckboxV2 checked={checked} />
+                  <CheckboxV2
+                    checked={checked}
+                    onChange={() => {
+                      toggleSelected(item);
+                    }}
+                  />
                   <div className="flex items-center gap-[8px]">
                     <img
                       src={chain?.logo}

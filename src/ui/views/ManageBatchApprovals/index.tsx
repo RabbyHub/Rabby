@@ -21,6 +21,8 @@ import {
   useBatchRevokeTask,
 } from './hooks/useBatchRevokeTask';
 import { RevokeActionButton } from './components/RevokeActionButton';
+import { openInTab } from '@/ui/utils';
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
 
 const GlobalStyle = createGlobalStyle`
 .global-stop-revoke-modal {
@@ -159,7 +161,21 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
     <>
       <GlobalStyle />
       <div className="h-full bg-r-neutral-bg-2 px-[20px] flex flex-col">
-        <PageHeader onBack={handleCloseAttempt}>
+        <PageHeader
+          onBack={handleCloseAttempt}
+          rightSlot={
+            <div className="flex items-center gap-[16px] ">
+              <div
+                className="relative cursor-pointer text-r-neutral-title1 hit-slop-8"
+                onClick={() => {
+                  openInTab('desktop.html#/desktop/manage-approvals');
+                }}
+              >
+                <RcIconFullscreen />
+              </div>
+            </div>
+          }
+        >
           {t('page.manageBatchApprovals.title')}
         </PageHeader>
         <div className="flex-1 min-h-0 overflow-auto pb-[20px]">

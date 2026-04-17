@@ -210,7 +210,7 @@ export const InModalApprovalContractRow: React.FC<InModalApprovalContractRowProp
           <ApprovalAmountInfo
             amountValue={
               spenderValues
-                ? spenderValues.displayAmountText
+                ? spenderValues.displayAmount
                 : 'amount' in contractApproval
                 ? contractApproval.amount
                 : ''

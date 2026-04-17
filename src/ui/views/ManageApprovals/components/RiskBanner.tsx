@@ -16,7 +16,7 @@ export const RiskBanner: React.FC<RiskBannerProps> = ({ text, className }) => {
   return (
     <div
       className={clsx(
-        'flex items-center gap-[4px] p-[8px]',
+        'flex items-start gap-[4px] p-[8px]',
         'rounded-[8px] bg-[#FFD9D5]',
         'text-r-red-default',
         className

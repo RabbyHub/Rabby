@@ -585,53 +585,6 @@
       }
     }
 
-    .J-risk-cell__tooltip,
-    .J-table__tooltip,
-    .J_permit2-tooltip {
-      color: #fff;
-      font-size: 12px;
-      font-weight: 400;
-
-      .ant-tooltip-inner {
-        line-height: 18px;
-        border-radius: 2px;
-        background-color: var(--r-neutral-black);
-
-        p {
-          margin-bottom: 0;
-        }
-      }
-
-      &.tip-column-contract-trust-value .ant-tooltip-inner {
-        width: 350px;
-      }
-    }
-
-    .J_permit2-tooltip .ant-tooltip-content {
-      width: 370px;
-    }
-
-    .J-modal-item__tooltip.min-width-limit {
-      .ant-tooltip-inner {
-        word-wrap: normal;
-        min-width: 300px;
-      }
-    }
-
-    .J-risk-cell__tooltip {
-      &.tip-trust-value .ant-tooltip-inner {
-        line-height: 20px;
-        text-align: center;
-      }
-
-      &.is-danger.tip-recent-revokes .ant-tooltip-inner {
-        min-width: 460px;
-      }
-      &.is-warning.tip-recent-revokes .ant-tooltip-inner {
-        min-width: 460px;
-      }
-    }
-
     .J_selected_count_text {
       color: var(--r-blue-default, #7084ff);
       font-size: 14px;
@@ -671,18 +624,68 @@
   .am-revoke-btn.ant-btn-primary[disabled] {
     .light-style-disabled-btn();
   }
+}
+.contract-approval-item .token-approval-item-desc {
+  &,
+  .address {
+    color: var(--r-neutral-title1);
+  }
 
-  .contract-approval-item .token-approval-item-desc {
-    &,
-    .address {
-      color: var(--r-neutral-title1);
-    }
+  .contract-name {
+    color: var(--r-neutral-body);
+    max-width: 10em;
+    .ellipsis();
+  }
+}
 
-    .contract-name {
-      color: var(--r-neutral-body);
-      max-width: 10em;
-      .ellipsis();
+.J-risk-cell__tooltip,
+.J-table__tooltip,
+.J_permit2-tooltip {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+
+  .ant-tooltip-arrow-content::before {
+    display: none;
+  }
+
+  .ant-tooltip-inner {
+    line-height: 18px;
+    border-radius: 2px;
+    background-color: var(--r-neutral-black);
+
+    p {
+      margin-bottom: 0;
     }
+  }
+
+  &.tip-column-contract-trust-value .ant-tooltip-inner {
+    width: 350px;
+  }
+}
+
+.J_permit2-tooltip .ant-tooltip-content {
+  width: 370px;
+}
+
+.J-modal-item__tooltip.min-width-limit {
+  .ant-tooltip-inner {
+    word-wrap: normal;
+    min-width: 300px;
+  }
+}
+
+.J-risk-cell__tooltip {
+  &.tip-trust-value .ant-tooltip-inner {
+    line-height: 20px;
+    text-align: center;
+  }
+
+  &.is-danger.tip-recent-revokes .ant-tooltip-inner {
+    min-width: 460px;
+  }
+  &.is-warning.tip-recent-revokes .ant-tooltip-inner {
+    min-width: 460px;
   }
 }
 

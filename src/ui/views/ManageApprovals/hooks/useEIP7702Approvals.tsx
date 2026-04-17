@@ -9,18 +9,7 @@ import PQueue from 'p-queue';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fromHex, zeroAddress } from 'viem';
-
-export const EIP7702_REVOKE_SUPPORTED_CHAINS = [
-  CHAINS_ENUM.ETH,
-  CHAINS_ENUM.BSC,
-  CHAINS_ENUM.OP,
-  CHAINS_ENUM.BASE,
-  CHAINS_ENUM.ARBITRUM,
-  CHAINS_ENUM.SCRL,
-  'BERA' as CHAINS_ENUM,
-  'UNI' as CHAINS_ENUM,
-  'INK' as CHAINS_ENUM,
-] as CHAINS_ENUM[];
+import { EIP7702_REVOKE_SUPPORTED_CHAINS } from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
 
 const EIP7702SupportedAccountType = [
   KEYRING_TYPE.SimpleKeyring,
