@@ -69,14 +69,14 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
       onClick={onToggle}
     >
       <div className="flex items-center gap-[10px]">
-        <div className="flex items-center gap-[12px] flex-1 px-[11px] py-[13px]">
+        <div className="flex items-center gap-[12px] flex-1 px-[11px] py-[13px] min-w-0">
           <CheckboxV2
             checked={selected}
             indeterminate={partial}
             onChange={onToggle}
             className="flex-shrink-0"
           />
-          <div className="flex items-center gap-[8px]">
+          <div className="flex items-center gap-[8px] min-w-0 flex-1">
             <AssetAvatar chain={chainServerId} logo={logoUrl} size={28} />
             <div className="min-w-0 flex-1">
               <div className="truncate text-[15px] leading-[18px] font-medium  text-r-neutral-title1">

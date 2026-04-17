@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSuffix } from '@/utils/string';
 import type { AssetApprovalItem } from '../../hooks/useManageApprovalsPage';
 import { AssetAvatar } from '../AssetAvatar';
+import { coerceFloat, formatAmount } from '@/ui/utils';
 
 function formatBalance(value?: string | number | null) {
   if (value === null || value === undefined || value === '') {
@@ -31,31 +32,39 @@ export const ApprovalCardAsset: React.FC<ApprovalCardAssetProps> = ({
   const { t } = useTranslation();
 
   const { assetName, nftTypeBadge, displayBalanceText } = React.useMemo(() => {
-    if (assetItem.type === 'nft') {
-      const badge = assetItem.nftContract ? 'Collection' : 'NFT';
+    const assetInfo = {
+      assetName: '',
+      nftType: null as null | 'collection' | 'nft',
+      nftTypeBadge: '',
+      balanceText: '',
+    };
+    let balance = 0 as number;
 
-      if (assetItem.nftToken) {
-        return {
-          assetName: ensureSuffix(
-            assetItem.name || 'Unknown',
-            ` #${assetItem.nftToken.inner_id}`
-          ),
-          nftTypeBadge: badge,
-          displayBalanceText: assetItem.nftToken.amount,
-        };
+    if (assetItem?.type === 'nft') {
+      assetInfo.nftType = assetItem.nftContract ? 'collection' : 'nft';
+      assetInfo.nftTypeBadge =
+        assetInfo.nftType === 'collection' ? 'Collection' : 'NFT';
+
+      if (assetItem?.nftToken) {
+        assetInfo.assetName = ensureSuffix(
+          assetItem?.name || 'Unknown',
+          ` #${assetItem?.nftToken.inner_id}`
+        );
+        assetInfo.balanceText = assetItem?.nftToken.amount;
+      } else if (assetItem?.nftContract) {
+        assetInfo.assetName = assetItem?.nftContract.contract_name || 'Unknown';
+        assetInfo.balanceText = assetItem?.nftContract.amount;
       }
-
-      return {
-        assetName: assetItem.nftContract?.contract_name || 'Unknown',
-        nftTypeBadge: badge,
-        displayBalanceText: assetItem.nftContract?.amount || '',
-      };
+    } else {
+      assetInfo.assetName = assetItem?.name || 'Unknown';
+      balance = coerceFloat(assetItem?.balance);
+      assetInfo.balanceText = formatAmount(balance);
     }
 
     return {
-      assetName: assetItem.name || 'Unknown',
-      nftTypeBadge: '',
-      displayBalanceText: formatBalance(assetItem.balance),
+      assetName: assetInfo.assetName,
+      nftTypeBadge: assetInfo.nftTypeBadge,
+      displayBalanceText: assetInfo.balanceText,
     };
   }, [assetItem]);
 

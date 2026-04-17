@@ -83,7 +83,7 @@ export const ApprovalContractPopup: React.FC = () => {
                   }}
                   className="h-auto px-0 py-0 text-[13px] leading-[16px] font-medium text-r-blue-default"
                 >
-                  {allSelected ? 'Select All' : 'Unselect All'}
+                  {allSelected ? 'Unselect All' : 'Select All'}
                 </button>
               </div>
 
