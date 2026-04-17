@@ -6,9 +6,11 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useMemoizedFn } from 'ahooks';
 import { useWallet } from '@/ui/utils';
 import { useRabbyDispatch } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
 
 export const DesktopManageApprovals = () => {
   const currentAccount = useCurrentAccount();
+  const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const handleAccountChange = useMemoizedFn((account) => {
@@ -25,7 +27,7 @@ export const DesktopManageApprovals = () => {
               <div className="flex items-center justify-between gap-[12px] pt-[32px] pb-[22px]">
                 <img src={IconRabby} alt="Rabby" className="w-[33px]" />
                 <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
-                  Approvals
+                  {t('page.manageApprovals.title')}
                 </div>
               </div>
               <DesktopAccountSelector
