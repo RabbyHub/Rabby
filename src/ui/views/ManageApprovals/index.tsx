@@ -99,7 +99,7 @@ const ManageApprovalsContent: React.FC = () => {
           </div>
         }
       >
-        Approvals
+        {t('page.manageApprovals.title')}
       </PageHeader>
 
       <Tabs
@@ -113,14 +113,14 @@ const ManageApprovalsContent: React.FC = () => {
         className="flex-1 min-h-0 overflow-auto"
       >
         <Tabs.TabPane
-          tab={t('page.approvals.tab-switch.contract')}
+          tab={t('page.manageApprovals.tabs.contracts')}
           key={FILTER_TYPES.contract}
         >
           <ListByContracts />
         </Tabs.TabPane>
 
         <Tabs.TabPane
-          tab={t('page.approvals.tab-switch.assets')}
+          tab={t('page.manageApprovals.tabs.assets')}
           key={FILTER_TYPES.assets}
         >
           <ListByAssets />

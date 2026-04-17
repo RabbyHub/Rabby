@@ -7,6 +7,7 @@ import { CheckboxV2 } from '../../DesktopSmallSwap/components/Checkbox';
 import styled from 'styled-components';
 import clsx from 'clsx';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+import { useTranslation } from 'react-i18next';
 
 const Container = styled.div`
   width: 100%;
@@ -61,6 +62,7 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
   isNFT,
 }) => {
   const isRisky = Boolean(riskyText);
+  const { t } = useTranslation();
 
   return (
     <Container
@@ -103,7 +105,7 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
             'text-[13px] leading-[16px] font-medium text-r-neutral-title1'
           )}
         >
-          {count} approvals
+          {count} {t('page.manageApprovals.approvals')}
           <RcIconArrowRightCC />
         </div>
       </div>

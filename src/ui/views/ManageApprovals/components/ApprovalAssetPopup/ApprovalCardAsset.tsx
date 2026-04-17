@@ -94,7 +94,7 @@ export const ApprovalCardAsset: React.FC<ApprovalCardAssetProps> = ({
 
       <div className="mt-[16px] flex items-center justify-between gap-[12px]">
         <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-          All Approvals
+          {t('page.manageApprovals.ApprovalCardAssetPopup.allApprovals')}
         </div>
         <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
           {assetItem.list.length}
@@ -104,7 +104,7 @@ export const ApprovalCardAsset: React.FC<ApprovalCardAssetProps> = ({
       {displayBalanceText ? (
         <div className="mt-[12px] flex items-center justify-between gap-[12px]">
           <div className="text-[13px] leading-[16px] text-r-neutral-foot">
-            My Balance
+            {t('page.manageApprovals.ApprovalCardAssetPopup.myBalance')}
           </div>
           <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title1">
             {displayBalanceText}
