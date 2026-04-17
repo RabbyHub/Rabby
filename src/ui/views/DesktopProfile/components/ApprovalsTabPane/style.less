@@ -638,6 +638,15 @@
   }
 }
 
+html.dark {
+  .J-risk-cell__tooltip,
+  .J-table__tooltip,
+  .J_permit2-tooltip {
+    .ant-tooltip-arrow-content::before {
+      background: var(--rb-neutral-bg-4);
+    }
+  }
+}
 .J-risk-cell__tooltip,
 .J-table__tooltip,
 .J_permit2-tooltip {
@@ -646,7 +655,7 @@
   font-weight: 400;
 
   .ant-tooltip-arrow-content::before {
-    display: none;
+    background: var(--r-neutral-black);
   }
 
   .ant-tooltip-inner {
@@ -1260,7 +1269,7 @@
   .sticky-footer {
     text-align: center;
     position: absolute;
-    height: @sticky-footer-height;
+    // height: @sticky-footer-height;
     bottom: 0;
     padding-top: 40px;
     padding-bottom: @sticky-btn-bottom-offset;

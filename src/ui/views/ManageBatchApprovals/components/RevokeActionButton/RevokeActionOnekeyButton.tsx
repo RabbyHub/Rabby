@@ -49,7 +49,7 @@ export const RevokeActionOnekeyButton: React.FC<{
 
   React.useEffect(() => {
     const listener = (msg) => {
-      if (msg === 'DISCONNECTED' || msg === 'No OneKey Device found') {
+      if (msg === 'DISCONNECTED' || msg.startsWith('901:')) {
         handledDisconnectRef.current = true;
         setDisconnectTipsModal(true);
         task?.pause();
@@ -78,7 +78,7 @@ export const RevokeActionOnekeyButton: React.FC<{
   return (
     <>
       <Popup
-        height={320}
+        height={'fit-content'}
         visible={disconnectTipsModal}
         closable
         onCancel={() => {

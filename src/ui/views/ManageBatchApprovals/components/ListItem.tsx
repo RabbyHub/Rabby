@@ -13,13 +13,13 @@ export const ListItem: React.FC<{
 }> = ({ item, isPaused, onStillRevoke }) => {
   return (
     <div className="px-[12px] py-[10px] flex items-center gap-[8px]">
-      <div style={{ width: CELL_WIDTH.ASSET }}>
+      <div style={{ width: CELL_WIDTH.ASSET }} className="min-w-0">
         <ListItemAsset data={item} />
       </div>
-      <div style={{ width: CELL_WIDTH.REVOKE_FROM }}>
+      <div style={{ width: CELL_WIDTH.REVOKE_FROM }} className="min-w-0">
         <ListItemSpender data={item} />
       </div>
-      <div style={{ width: CELL_WIDTH.GAS_FEE }} className="text-right">
+      <div style={{ width: CELL_WIDTH.GAS_FEE }} className="text-right min-w-0">
         <ListItemStatus
           data={item}
           isPaused={isPaused}
