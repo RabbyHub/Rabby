@@ -84,12 +84,12 @@ export const ListItemStatus: React.FC<{
 
         {!data.$status?.status && (
           <>
-            {isPaused ? (
+            {/* {isPaused ? (
               <RcIconLoadingCC
                 viewBox="0 0 24 24"
                 className="w-[16px] h-[16px] text-r-orange-default mr-[4px]"
               />
-            ) : null}
+            ) : null} */}
             <div className="block truncate text-[13px] leading-[16px] font-medium text-r-neutral-foot">
               {isPaused ? t('page.approvals.revokeModal.paused') : '-'}
             </div>

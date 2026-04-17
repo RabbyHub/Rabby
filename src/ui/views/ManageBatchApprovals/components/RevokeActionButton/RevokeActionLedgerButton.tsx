@@ -138,17 +138,17 @@ export const RevokeActionLedgerButton: React.FC<{
       <Popup
         height={72}
         open={task.status === 'active'}
-        maskStyle={
-          {
-            // backgroundColor: 'transparent',
-          }
-        }
+        maskStyle={{
+          backgroundColor: 'transparent',
+        }}
         // getContainer={getContainer}
         bodyStyle={{
           padding: 0,
         }}
-        className="borderless"
         push={false}
+        onCancel={() => {
+          task.pause();
+        }}
       >
         {task.status === 'active' && (
           <div className="">
@@ -176,7 +176,7 @@ export const RevokeActionLedgerButton: React.FC<{
               <div
                 className={clsx(
                   'flex items-center justify-center rounded-t-[16px]',
-                  'h-[72px] bg-r-neutral-card-2',
+                  'h-[72px] bg-r-neutral-bg-1',
                   'text-[15px] leading-[18px] font-medium text-r-neutral-title-1'
                 )}
               >
@@ -192,7 +192,7 @@ export const RevokeActionLedgerButton: React.FC<{
               <div
                 className={clsx(
                   'flex items-center justify-center rounded-t-[16px]',
-                  'h-[72px] bg-r-neutral-card-2',
+                  'h-[72px] bg-r-neutral-bg-1',
                   'text-[15px] leading-[18px] font-medium text-r-neutral-title-1'
                 )}
               >

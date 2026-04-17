@@ -500,7 +500,6 @@ export function useManageApprovalsPage(options: {
   const [searchKw, setSearchKw] = React.useState('');
   const debouncedSearchKw = useDebouncedValue(searchKw, 250);
   const queueRef = React.useRef(new PQueue({ concurrency: 40 }));
-  const [isLoadingOnAsyncFn, setIsLoadingOnAsyncFn] = React.useState(false);
   const [approvalsData, setApprovalsData] = React.useState<{
     contractMap: Record<string, ContractApprovalItem>;
     tokenMap: Record<string, TokenApprovalItem>;
@@ -519,111 +518,176 @@ export function useManageApprovalsPage(options: {
     []
   );
 
-  const { loading: loadingMaybeWrong, runAsync: loadApprovals } = useRequest(
+  const { loading: isLoading, runAsync: loadApprovals } = useRequest(
     async () => {
       if (!account?.address) {
-        setApprovalsData(emptyApprovalsData);
         return emptyApprovalsData;
       }
 
-      setIsLoadingOnAsyncFn(true);
+      const openapiClient = options.isTestnet
+        ? wallet.testnetOpenapi
+        : wallet.openapi;
+      const usedChainList = await openapiClient.usedChainList(account.address);
+      const nextApprovalsData = {
+        contractMap: {},
+        tokenMap: {},
+        nftMap: {},
+      } as typeof approvalsData;
 
-      try {
-        const openapiClient = options.isTestnet
-          ? wallet.testnetOpenapi
-          : wallet.openapi;
-        const usedChainList = await openapiClient.usedChainList(
-          account.address
-        );
-        const nextApprovalsData = {
-          contractMap: {},
-          tokenMap: {},
-          nftMap: {},
-        } as typeof approvalsData;
+      queueRef.current.clear();
 
-        queueRef.current.clear();
+      const nftAuthorizedQueryList = usedChainList.map(
+        (chainItem) => async () => {
+          try {
+            const data = await openapiClient.userNFTAuthorizedList(
+              account.address,
+              chainItem.id
+            );
+            if (!data.total) {
+              return;
+            }
 
-        const nftAuthorizedQueryList = usedChainList.map(
-          (chainItem) => async () => {
-            try {
-              const data = await openapiClient.userNFTAuthorizedList(
-                account.address,
-                chainItem.id
-              );
-              if (!data.total) {
-                return;
+            data.contracts.forEach((contract) => {
+              const spender = contract.spender;
+              const contractKey = `${contract.chain}:${spender.id}`;
+
+              if (!nextApprovalsData.contractMap[contractKey]) {
+                const riskValues = makeComputedRiskAboutValues(
+                  'nft-contract',
+                  spender
+                );
+                nextApprovalsData.contractMap[contractKey] = {
+                  list: [],
+                  chain: chainItem.id,
+                  type: 'contract',
+                  contractFor: 'nft-contract',
+                  $riskAboutValues: riskValues,
+                  $contractRiskEvaluation: getContractRiskEvaluation(
+                    spender.risk_level,
+                    riskValues
+                  ),
+                  risk_level: spender.risk_level,
+                  risk_alert: spender.risk_alert,
+                  id: spender.id,
+                  name: spender.protocol?.name || 'Unknown',
+                  logo_url: spender.protocol?.logo_url,
+                };
               }
+              nextApprovalsData.contractMap[contractKey].list.push(contract);
 
-              data.contracts.forEach((contract) => {
-                const spender = contract.spender;
-                const contractKey = `${contract.chain}:${spender.id}`;
-
-                if (!nextApprovalsData.contractMap[contractKey]) {
-                  const riskValues = makeComputedRiskAboutValues(
+              const nftKey = `${contract.chain}:${contract.contract_id}`;
+              if (!nextApprovalsData.nftMap[nftKey]) {
+                nextApprovalsData.nftMap[nftKey] = {
+                  nftContract: contract,
+                  list: [],
+                  type: 'nft',
+                  $riskAboutValues: makeComputedRiskAboutValues(
                     'nft-contract',
                     spender
-                  );
-                  nextApprovalsData.contractMap[contractKey] = {
-                    list: [],
-                    chain: chainItem.id,
-                    type: 'contract',
-                    contractFor: 'nft-contract',
-                    $riskAboutValues: riskValues,
-                    $contractRiskEvaluation: getContractRiskEvaluation(
-                      spender.risk_level,
-                      riskValues
-                    ),
-                    risk_level: spender.risk_level,
-                    risk_alert: spender.risk_alert,
-                    id: spender.id,
-                    name: spender.protocol?.name || 'Unknown',
-                    logo_url: spender.protocol?.logo_url,
-                  };
-                }
-                nextApprovalsData.contractMap[contractKey].list.push(contract);
+                  ),
+                  risk_level: 'safe',
+                  id: contract.contract_id,
+                  name: contract.contract_name,
+                  logo_url: (contract as any)?.collection?.logo_url,
+                  amount: contract.amount,
+                  chain: chainItem.id,
+                };
+              }
+              nextApprovalsData.nftMap[nftKey].list.push(
+                markParentForAssetItemSpender(
+                  spender,
+                  nextApprovalsData.nftMap[nftKey],
+                  nextApprovalsData.contractMap[contractKey],
+                  contract
+                )
+              );
+            });
 
-                const nftKey = `${contract.chain}:${contract.contract_id}`;
-                if (!nextApprovalsData.nftMap[nftKey]) {
-                  nextApprovalsData.nftMap[nftKey] = {
-                    nftContract: contract,
-                    list: [],
-                    type: 'nft',
-                    $riskAboutValues: makeComputedRiskAboutValues(
-                      'nft-contract',
-                      spender
-                    ),
-                    risk_level: 'safe',
-                    id: contract.contract_id,
-                    name: contract.contract_name,
-                    logo_url: (contract as any)?.collection?.logo_url,
-                    amount: contract.amount,
-                    chain: chainItem.id,
-                  };
-                }
-                nextApprovalsData.nftMap[nftKey].list.push(
-                  markParentForAssetItemSpender(
-                    spender,
-                    nextApprovalsData.nftMap[nftKey],
-                    nextApprovalsData.contractMap[contractKey],
-                    contract
-                  )
-                );
-              });
+            data.tokens.forEach((token) => {
+              const spender = token.spender;
+              const contractKey = `${token.chain}:${spender.id}`;
 
-              data.tokens.forEach((token) => {
-                const spender = token.spender;
+              if (!nextApprovalsData.contractMap[contractKey]) {
+                const riskValues = makeComputedRiskAboutValues('nft', spender);
+                nextApprovalsData.contractMap[contractKey] = {
+                  list: [],
+                  chain: chainItem.id,
+                  type: 'contract',
+                  contractFor: 'nft',
+                  $riskAboutValues: riskValues,
+                  $contractRiskEvaluation: getContractRiskEvaluation(
+                    spender.risk_level,
+                    riskValues
+                  ),
+                  risk_level: spender.risk_level,
+                  risk_alert: spender.risk_alert,
+                  id: spender.id,
+                  name: spender.protocol?.name || 'Unknown',
+                  logo_url: spender.protocol?.logo_url,
+                };
+              }
+              nextApprovalsData.contractMap[contractKey].list.push(token);
+
+              const nftKey = `${token.chain}:${token.contract_id}:${token.inner_id}`;
+              if (!nextApprovalsData.nftMap[nftKey]) {
+                nextApprovalsData.nftMap[nftKey] = {
+                  nftToken: token,
+                  list: [],
+                  chain: chainItem.id,
+                  risk_level: 'safe',
+                  id: token.contract_id,
+                  name: token.contract_name,
+                  logo_url:
+                    token.content || (token as any).collection?.logo_url,
+                  type: 'nft',
+                  $riskAboutValues: makeComputedRiskAboutValues('nft', spender),
+                  amount: token.amount,
+                };
+              }
+              nextApprovalsData.nftMap[nftKey].list.push(
+                markParentForAssetItemSpender(
+                  spender,
+                  nextApprovalsData.nftMap[nftKey],
+                  nextApprovalsData.contractMap[contractKey],
+                  token
+                )
+              );
+            });
+          } catch (error) {
+            console.error('fetch userNFTAuthorizedList error', error);
+          }
+        }
+      );
+
+      const tokenAuthorizedQueryList = usedChainList.map(
+        (chainItem) => async () => {
+          try {
+            const data = await openapiClient.tokenAuthorizedList(
+              account.address,
+              chainItem.id,
+              {
+                restfulPrefix: 'v2',
+              }
+            );
+            if (!data.length) {
+              return;
+            }
+
+            data.forEach((token) => {
+              token.spenders.forEach((spender) => {
+                const shapedToken = markContractTokenSpender(token, spender);
                 const contractKey = `${token.chain}:${spender.id}`;
 
                 if (!nextApprovalsData.contractMap[contractKey]) {
                   const riskValues = makeComputedRiskAboutValues(
-                    'nft',
+                    'token',
                     spender
                   );
                   nextApprovalsData.contractMap[contractKey] = {
                     list: [],
-                    chain: chainItem.id,
+                    chain: token.chain,
                     type: 'contract',
-                    contractFor: 'nft',
+                    contractFor: 'token',
                     $riskAboutValues: riskValues,
                     $contractRiskEvaluation: getContractRiskEvaluation(
                       spender.risk_level,
@@ -636,150 +700,67 @@ export function useManageApprovalsPage(options: {
                     logo_url: spender.protocol?.logo_url,
                   };
                 }
-                nextApprovalsData.contractMap[contractKey].list.push(token);
+                nextApprovalsData.contractMap[contractKey].list.push(
+                  shapedToken
+                );
 
-                const nftKey = `${token.chain}:${token.contract_id}:${token.inner_id}`;
-                if (!nextApprovalsData.nftMap[nftKey]) {
-                  nextApprovalsData.nftMap[nftKey] = {
-                    nftToken: token,
+                const tokenKey = `${token.chain}:${shapedToken.id}`;
+                if (!nextApprovalsData.tokenMap[tokenKey]) {
+                  nextApprovalsData.tokenMap[tokenKey] = {
                     list: [],
                     chain: chainItem.id,
                     risk_level: 'safe',
-                    id: token.contract_id,
-                    name: token.contract_name,
-                    logo_url:
-                      token.content || (token as any).collection?.logo_url,
-                    type: 'nft',
+                    id: shapedToken.id,
+                    name: shapedToken.symbol,
+                    logo_url: shapedToken.logo_url,
+                    type: 'token',
                     $riskAboutValues: makeComputedRiskAboutValues(
-                      'nft',
+                      'token',
                       spender
                     ),
-                    amount: token.amount,
+                    balance: shapedToken.balance,
                   };
                 }
-                nextApprovalsData.nftMap[nftKey].list.push(
+                nextApprovalsData.tokenMap[tokenKey].list.push(
                   markParentForAssetItemSpender(
                     spender,
-                    nextApprovalsData.nftMap[nftKey],
+                    nextApprovalsData.tokenMap[tokenKey],
                     nextApprovalsData.contractMap[contractKey],
-                    token
+                    shapedToken
                   )
                 );
               });
-            } catch (error) {
-              console.error('fetch userNFTAuthorizedList error', error);
-            }
+            });
+          } catch (error) {
+            console.error('fetch tokenAuthorizedList error', error);
           }
-        );
+        }
+      );
 
-        const tokenAuthorizedQueryList = usedChainList.map(
-          (chainItem) => async () => {
-            try {
-              const data = await openapiClient.tokenAuthorizedList(
-                account.address,
-                chainItem.id,
-                {
-                  restfulPrefix: 'v2',
-                }
-              );
-              if (!data.length) {
-                return;
-              }
+      await queueRef.current.addAll([
+        ...nftAuthorizedQueryList,
+        ...tokenAuthorizedQueryList,
+      ]);
 
-              data.forEach((token) => {
-                token.spenders.forEach((spender) => {
-                  const shapedToken = markContractTokenSpender(token, spender);
-                  const contractKey = `${token.chain}:${spender.id}`;
+      Object.values(nextApprovalsData.tokenMap).forEach((item) =>
+        sortTokenOrNFTApprovalsSpenderList(item)
+      );
+      Object.values(nextApprovalsData.nftMap).forEach((item) =>
+        sortTokenOrNFTApprovalsSpenderList(item)
+      );
 
-                  if (!nextApprovalsData.contractMap[contractKey]) {
-                    const riskValues = makeComputedRiskAboutValues(
-                      'token',
-                      spender
-                    );
-                    nextApprovalsData.contractMap[contractKey] = {
-                      list: [],
-                      chain: token.chain,
-                      type: 'contract',
-                      contractFor: 'token',
-                      $riskAboutValues: riskValues,
-                      $contractRiskEvaluation: getContractRiskEvaluation(
-                        spender.risk_level,
-                        riskValues
-                      ),
-                      risk_level: spender.risk_level,
-                      risk_alert: spender.risk_alert,
-                      id: spender.id,
-                      name: spender.protocol?.name || 'Unknown',
-                      logo_url: spender.protocol?.logo_url,
-                    };
-                  }
-                  nextApprovalsData.contractMap[contractKey].list.push(
-                    shapedToken
-                  );
-
-                  const tokenKey = `${token.chain}:${shapedToken.id}`;
-                  if (!nextApprovalsData.tokenMap[tokenKey]) {
-                    nextApprovalsData.tokenMap[tokenKey] = {
-                      list: [],
-                      chain: chainItem.id,
-                      risk_level: 'safe',
-                      id: shapedToken.id,
-                      name: shapedToken.symbol,
-                      logo_url: shapedToken.logo_url,
-                      type: 'token',
-                      $riskAboutValues: makeComputedRiskAboutValues(
-                        'token',
-                        spender
-                      ),
-                      balance: shapedToken.balance,
-                    };
-                  }
-                  nextApprovalsData.tokenMap[tokenKey].list.push(
-                    markParentForAssetItemSpender(
-                      spender,
-                      nextApprovalsData.tokenMap[tokenKey],
-                      nextApprovalsData.contractMap[contractKey],
-                      shapedToken
-                    )
-                  );
-                });
-              });
-            } catch (error) {
-              console.error('fetch tokenAuthorizedList error', error);
-            }
-          }
-        );
-
-        await queueRef.current.addAll([
-          ...nftAuthorizedQueryList,
-          ...tokenAuthorizedQueryList,
-        ]);
-
-        Object.values(nextApprovalsData.tokenMap).forEach((item) =>
-          sortTokenOrNFTApprovalsSpenderList(item)
-        );
-        Object.values(nextApprovalsData.nftMap).forEach((item) =>
-          sortTokenOrNFTApprovalsSpenderList(item)
-        );
-
-        setApprovalsData(nextApprovalsData);
-        return nextApprovalsData;
-      } finally {
-        setIsLoadingOnAsyncFn(false);
-      }
+      return nextApprovalsData;
     },
     {
       manual: true,
-      refreshDeps: [
-        account?.address,
-        options.isTestnet,
-        wallet,
-        emptyApprovalsData,
-      ],
+      refreshDeps: [account?.address],
+      cacheKey: `manage-approvals-${account?.address}`,
+      staleTime: 5000,
+      onSuccess(data) {
+        setApprovalsData(data);
+      },
     }
   );
-
-  const isLoading = isLoadingOnAsyncFn && loadingMaybeWrong;
 
   const sortedContractList = React.useMemo(() => {
     return sortContractApproval(Object.values(approvalsData.contractMap));

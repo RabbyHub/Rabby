@@ -1,25 +1,22 @@
-import React from 'react';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import React from 'react';
 
+import { getTokenSymbol } from '@/ui/utils/token';
+import { CheckboxV2 } from '@/ui/views/DesktopSmallSwap/components/Checkbox';
+import { getSpenderApprovalAmount } from '@/utils/approval';
+import { ensureSuffix } from '@/utils/string';
+import { NFTApproval } from '@rabby-wallet/rabby-api/dist/types';
+import { useMemoizedFn } from 'ahooks';
+import clsx from 'clsx';
 import type { ContractApprovalItem } from '../../hooks/useManageApprovalsPage';
 import {
   checkoutContractSpender,
   getContractNFTType,
   maybeNFTLikeItem,
 } from '../../utils';
-import { getSpenderApprovalAmount } from '@/utils/approval';
-import { getTokenSymbol } from '@/ui/utils/token';
 import { AssetAvatar } from '../AssetAvatar';
-import { SelectionIndicator } from '../SelectionIndicator';
-import { NFTApproval } from '@rabby-wallet/rabby-api/dist/types';
-import { ensureSuffix } from '@/utils/string';
-import clsx from 'clsx';
-import { CheckboxV2 } from '@/ui/views/DesktopSmallSwap/components/Checkbox';
-import { useMemoizedFn } from 'ahooks';
 
 const lineColor = 'var(--r-neutral-line, #e5e9ef)';
-const brandColor = 'var(--r-blue-default, #7084ff)';
-const brandLightColor = 'var(--r-blue-light1, #eef1ff)';
 
 const Badge: React.FC<{ label: string; className?: string }> = ({
   label,
@@ -192,10 +189,8 @@ export const InModalApprovalContractRow: React.FC<InModalApprovalContractRowProp
             {maybeNFTInfo.nftBadgeType ? (
               <div
                 className={clsx(
-                  'mt-[6px] inline-flex',
-                  'rounded-[4px] px-[6px] py-[2px]',
-                  'text-[12px] leading-[12px] text-r-neutral-foot',
-                  'border border-rabby-neutral-line'
+                  'mt-[2px]',
+                  'text-[11px] leading-[13px] text-r-neutral-foot'
                 )}
               >
                 {maybeNFTInfo.nftBadgeType === 'collection'

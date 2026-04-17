@@ -12,4 +12,3 @@ export { EmptyState } from './EmptyState';
 export { ListByAssets } from './ListByAssets';
 export { ListByContracts } from './ListByContracts';
 export { RiskBanner } from './RiskBanner';
-export { SelectionIndicator } from './SelectionIndicator';

@@ -7,6 +7,7 @@ import {
 } from '../hooks/useManageApprovalsPage';
 import { ApprovalCard } from './ApprovalCard';
 import { EmptyState } from './EmptyState';
+import { SkeletonLoading } from './SkeletonLoading';
 
 export const ListByContracts: React.FC = () => {
   const {
@@ -21,11 +22,7 @@ export const ListByContracts: React.FC = () => {
   } = useApprovalsPage();
 
   if (isLoading) {
-    return (
-      <div className="py-[48px] text-center">
-        <Spin />
-      </div>
-    );
+    return <SkeletonLoading />;
   }
 
   if (!displaySortedContractList.length) {

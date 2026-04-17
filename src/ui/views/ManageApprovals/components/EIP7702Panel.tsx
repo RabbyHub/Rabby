@@ -18,6 +18,7 @@ import { EmptyState } from './EmptyState';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { SkeletonLoading } from './SkeletonLoading';
 
 type EIP7702PanelProps = {
   isLoading: boolean;
@@ -109,10 +110,10 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
           </div>
           <button
             type="button"
-            className="flex items-center gap-[6px] border-none bg-transparent text-r-neutral-foot"
+            className="flex items-center border-none bg-transparent "
           >
-            <div className={clsx('flex items-center mr-[-12px]')}>
-              {EIP7702_REVOKE_SUPPORTED_CHAINS.slice(0, 3).map((chain, idx) => {
+            <div className={clsx('flex items-center mr-[-16px]')}>
+              {EIP7702_REVOKE_SUPPORTED_CHAINS.slice(0, 5).map((chain, idx) => {
                 return (
                   <div
                     className={clsx('relative')}
@@ -133,7 +134,10 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
                 );
               })}
             </div>
-            <RcIconArrowRightCC />
+            <div className="text-[13px] leading-[16px] font-medium text-r-neutral-body">
+              +{EIP7702_REVOKE_SUPPORTED_CHAINS.length - 5}
+            </div>
+            <RcIconArrowRightCC className="text-r-neutral-foot" />
           </button>
         </div>
         <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[8px]">
@@ -141,9 +145,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
         </div>
         <div className="flex flex-col gap-[8px]">
           {isLoading ? (
-            <div className="py-[48px] text-center">
-              <Spin />
-            </div>
+            <SkeletonLoading />
           ) : rows.length ? (
             rows.map((item) => {
               const chain = findChainByEnum(item.chain);
