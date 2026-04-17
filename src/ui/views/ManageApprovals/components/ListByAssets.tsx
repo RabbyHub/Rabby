@@ -59,11 +59,12 @@ export const ListByAssets: React.FC = () => {
             }
             onToggle={() => toggleAssetSelection(assetApproval)}
             onOpenDetail={() => openAssetDetail(assetApproval)}
+            isNFT={assetApproval.type === 'nft'}
             badge={
               assetApproval.type === 'nft' ? (
-                <span className="inline-flex items-center rounded-full bg-r-neutral-bg-3 px-[8px] py-[2px] text-[12px] text-r-neutral-body">
+                <div className="mt-[2px] text-[12px] leading-[13px] text-r-neutral-foot">
                   {assetApproval.nftToken ? 'NFT' : 'Collection'}
-                </span>
+                </div>
               ) : null
             }
           />
