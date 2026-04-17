@@ -1,7 +1,9 @@
 node_modules
 dist
 dist-*
-.yarn
+.yarn/*
+!.yarn/releases/
+!.yarn/releases/*
 .DS_Store
 yarn-error
 .claude/settings.local.json
