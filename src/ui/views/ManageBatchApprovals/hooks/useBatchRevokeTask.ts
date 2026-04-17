@@ -1,23 +1,20 @@
-import { useMemoizedFn } from 'ahooks';
-import { useWallet, WalletControllerType } from '@/ui/utils';
-import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
-import { AssetApprovalSpender } from '@/utils/approval';
-import { Tx } from '@rabby-wallet/rabby-api/dist/types';
-import BigNumber from 'bignumber.js';
-import PQueue from 'p-queue';
-import React from 'react';
 import i18n from '@/i18n';
-import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import {
   supportedDirectSign,
   supportedHardwareDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useWallet, WalletControllerType } from '@/ui/utils';
+import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import { AssetApprovalSpender } from '@/utils/approval';
+import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
+import { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { useMemoizedFn } from 'ahooks';
+import BigNumber from 'bignumber.js';
+import PQueue from 'p-queue';
+import React from 'react';
 import { findIndexRevokeList } from '../../ManageApprovals/utils';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { waitForTxCompleted } from '@/ui/utils/transaction';
-import { KEYRING_CLASS } from '@/constant';
 
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
@@ -209,114 +206,13 @@ export const useBatchRevokeTask = () => {
     'idle'
   );
   const currentApprovalRef = React.useRef<AssetApprovalSpender>();
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
-    account: account!,
-    autoResetGasStoreOnChainChange: true,
-  });
 
   const pause = useMemoizedFn(() => {
     queueRef.current.pause();
     setStatus('paused');
   });
 
-  const addMiniSignTask = useMemoizedFn(
-    async (
-      item: AssetApprovalSpender,
-      priority: number = -1,
-      ignoreGasCheck = false
-    ) => {
-      return queueRef.current.add(
-        async () => {
-          closeSign();
-          currentApprovalRef.current = item;
-          const cloneItem = cloneAssetApprovalSpender(item);
-          const revokeItem =
-            revokeList[
-              findIndexRevokeList(revokeList, {
-                item: item.$assetContract!,
-                spenderHost: item.$assetToken!,
-                assetApprovalSpender: item,
-              })
-            ];
-
-          cloneItem.$status!.status = 'pending';
-          setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
-          try {
-            const tx = await buildTx(wallet, revokeItem);
-
-            setTxStatus('sended');
-            const result = await openDirect({
-              txs: [tx],
-            });
-            setTxStatus('signed');
-            const hash = result[0];
-            await waitForTxCompleted({
-              hash,
-              wallet,
-              chainServerId: revokeItem.chainServerId,
-            });
-
-            const receipt: EthTransactionReceipt = await wallet.requestETHRpc(
-              {
-                method: 'eth_getTransactionReceipt',
-                params: [hash],
-              },
-              revokeItem.chainServerId
-            );
-
-            const nativeToken = await wallet.openapi.getToken(
-              account!.address!,
-              revokeItem.chainServerId,
-              revokeItem.chainServerId
-            );
-
-            const gasCostAmount = receipt.effectiveGasPrice
-              ? new BigNumber(receipt.effectiveGasPrice)
-                  .multipliedBy(receipt.gasUsed)
-                  .div(1e18)
-              : undefined;
-            const gasCostUsd = gasCostAmount
-              ? gasCostAmount.multipliedBy(nativeToken.price || 0)
-              : undefined;
-
-            // const gasUsed = new BigNumber(receipt.gasUsed);
-            cloneItem.$status = {
-              status: 'success',
-              txHash: hash,
-              gasCost: {
-                gasCostUsd: gasCostUsd || new BigNumber(0),
-                gasCostAmount: gasCostAmount || new BigNumber(0),
-                nativeTokenSymbol: nativeToken.symbol,
-              },
-            };
-          } catch (error: any) {
-            let failedCode = FailedCode.SubmitTxFailed;
-            if (FailedCode[error?.name]) {
-              failedCode = error.name;
-            }
-
-            console.error(error);
-            cloneItem.$status = {
-              status: 'fail',
-              failedCode,
-              failedReason: error?.message,
-              gasCost: error?.gasCost,
-            };
-
-            if (error === 'PRESS_BACKDROP') {
-              pause();
-            }
-          } finally {
-            setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
-            setTxStatus('idle');
-            closeSign();
-          }
-        },
-        { priority }
-      );
-    }
-  );
-  const addTraditionalTask = useMemoizedFn(
+  const addRevokeTask = useMemoizedFn(
     async (
       item: AssetApprovalSpender,
       priority: number = -1,
@@ -396,18 +292,6 @@ export const useBatchRevokeTask = () => {
       );
     }
   );
-  const addRevokeTask = useMemoizedFn(
-    async (
-      item: AssetApprovalSpender,
-      priority: number = -1,
-      ignoreGasCheck = false
-    ) => {
-      if (account?.type === KEYRING_CLASS.HARDWARE.ONEKEY) {
-        return addMiniSignTask(item, priority, ignoreGasCheck);
-      }
-      return addTraditionalTask(item, priority, ignoreGasCheck);
-    }
-  );
 
   const start = useMemoizedFn(() => {
     setStatus('active');
@@ -425,7 +309,6 @@ export const useBatchRevokeTask = () => {
       setList(dataSource);
       setRevokeList(nextRevokeList);
       setStatus('idle');
-      closeSign();
     }
   );
 
