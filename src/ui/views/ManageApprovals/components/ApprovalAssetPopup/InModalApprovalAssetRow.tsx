@@ -1,19 +1,14 @@
 import React from 'react';
-import { LinkOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
+import { CheckboxV2 } from '@/ui/views/DesktopSmallSwap/components/Checkbox';
 import type { AssetApprovalItem, AssetApprovalSpender } from '@/utils/approval';
 import { getSpenderApprovalAmount } from '@/utils/approval';
-import { AssetAvatar } from '../AssetAvatar';
-import { SelectionIndicator } from '../SelectionIndicator';
-import { ApprovalAvatar } from '../ApprovalAvatar';
-import clsx from 'clsx';
-import { CheckboxV2 } from '@/ui/views/DesktopSmallSwap/components/Checkbox';
 import { useMemoizedFn } from 'ahooks';
+import clsx from 'clsx';
+import { AssetAvatar } from '../AssetAvatar';
 
 const lineColor = 'var(--r-neutral-line, #e5e9ef)';
-const brandColor = 'var(--r-blue-default, #7084ff)';
-const brandLightColor = 'var(--r-blue-light1, #eef1ff)';
 
 const Badge: React.FC<{ label: string; className?: string }> = ({
   label,

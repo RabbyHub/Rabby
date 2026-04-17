@@ -5,6 +5,7 @@ import { ensureSuffix } from '@/utils/string';
 import type { AssetApprovalItem } from '../../hooks/useManageApprovalsPage';
 import { AssetAvatar } from '../AssetAvatar';
 import { coerceFloat, formatAmount } from '@/ui/utils';
+import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 
 function formatBalance(value?: string | number | null) {
   if (value === null || value === undefined || value === '') {
@@ -71,14 +72,18 @@ export const ApprovalCardAsset: React.FC<ApprovalCardAssetProps> = ({
   return (
     <div className="shrink-0 rounded-[20px] bg-r-neutral-card1 px-[16px] py-[16px]">
       <div className="flex min-w-0 items-center justify-center gap-[8px]">
-        <AssetAvatar chain={assetItem.chain} logo={assetItem.logo_url} />
+        <AssetAvatar
+          chain={assetItem.chain}
+          logo={assetItem.logo_url}
+          logoStyle={nftTypeBadge ? { borderRadius: 4 } : undefined}
+        />
 
         <div className="min-w-0">
           <div className="truncate text-[15px] leading-[18px] font-medium text-r-neutral-title1">
             {assetName}
           </div>
           {nftTypeBadge ? (
-            <div className="mt-[4px] inline-flex rounded-[6px] border border-r-neutral-line px-[4px] py-[2px] text-[12px] leading-[12px] text-r-neutral-foot">
+            <div className="mt-[2px] text-[12px] leading-[13px] text-r-neutral-foot">
               {nftTypeBadge}
             </div>
           ) : null}
