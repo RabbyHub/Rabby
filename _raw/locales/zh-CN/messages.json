@@ -4328,7 +4328,7 @@
       "disabled": "禁用"
     },
     "desktopSmallSwap": {
-      "title": "小额资产兑换",
+      "title": "小额资产归集",
       "description": "清空链上小额资产，让资产列表更简洁！",
       "selectedTokens": "已选择资产",
       "totalValue": "共计",
