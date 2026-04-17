@@ -58,7 +58,7 @@ export function AddressInfoTo({
     address: toAccount?.address || '',
     brandName: toAccount?.brandName || '',
     type: toAccount?.type || '',
-    forceLight: false,
+    // forceLight: false,
   });
 
   const [aliasName] = useAlias(toAccount?.address || '');
