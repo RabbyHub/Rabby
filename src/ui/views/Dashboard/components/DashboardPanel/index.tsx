@@ -758,6 +758,10 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     return getPanelKeys();
   }, [dashboardPanelOrder]);
 
+  const placeholderCount = useMemo(() => {
+    return (3 - (pickedPanelKeys.length % 3)) % 3;
+  }, [pickedPanelKeys.length]);
+
   const setPickedPanelKeys = useMemoizedFn(
     (keys: (keyof typeof panelItems)[]) => {
       dispatch.preference.setField({
@@ -883,6 +887,15 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
                     />
                   );
                 })}
+                {Array.from({ length: placeholderCount }).map((_, index) => (
+                  <div
+                    key={`dashboard-panel-placeholder-${index}`}
+                    className="bg-r-neutral-bg-2"
+                    aria-hidden="true"
+                  >
+                    <div className="panel-item pointer-events-none" />
+                  </div>
+                ))}
               </div>
             </SortableContext>
             <DragOverlay
