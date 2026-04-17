@@ -19,11 +19,12 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
-import { Popup } from 'ui/component';
+import { Popup, TokenWithChain } from 'ui/component';
 import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
 import {
   formatGasCostUsd,
   formatTokenAmount,
+  formatUsdValue,
   formatGasHeaderUsdValue,
   formatGasAccountUSDValue,
 } from '@/ui/utils/number';
@@ -54,6 +55,8 @@ import {
   useGetShowMoreGasSelectVisible,
   useSetGasInfoByUI,
 } from '@/ui/views/Bridge/Component/ShowMoreGasModal';
+import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { getTokenSymbol } from '@/ui/utils/token';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -126,6 +129,10 @@ interface GasSelectorProps {
     gasType: 'native' | 'gasAccount'
   ) => Promise<[boolean, number]>;
   getContainer?: DrawerProps['getContainer'];
+  showTempoGasTokenSelector?: boolean;
+  tempoGasTokenList?: TokenItem[];
+  onSelectTempoGasToken?: (token: TokenItem) => void;
+  tempoGasTokenLoading?: boolean;
 }
 
 const useExplainGas = ({
@@ -316,6 +323,10 @@ const GasSelectorHeader = ({
   directSubmit,
   gasToken,
   getContainer,
+  showTempoGasTokenSelector = false,
+  tempoGasTokenList = [],
+  onSelectTempoGasToken,
+  tempoGasTokenLoading = false,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -370,6 +381,10 @@ const GasSelectorHeader = ({
     [gasToken, chain]
   );
   const [customGasEstimated, setCustomGasEstimated] = useState<number>(0);
+  const [tempoGasTokenVisible, setTempoGasTokenVisible] = useState(false);
+  const handleOpenTempoGasToken = useCallback(() => {
+    setTempoGasTokenVisible(true);
+  }, []);
 
   const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
@@ -1209,8 +1224,71 @@ const GasSelectorHeader = ({
           onSelect={externalPanelSelection}
           onCustom={handleClickEdit}
           showCustomGasPrice={changedCustomGas}
+          showTempoGasTokenSelector={
+            showTempoGasTokenSelector && gasMethod !== 'gasAccount'
+          }
+          onOpenTempoGasToken={handleOpenTempoGasToken}
+          tempoGasToken={resolvedGasToken}
         />
       </HeaderStyled>
+      <Popup
+        isNew
+        visible={tempoGasTokenVisible}
+        title={t('page.gasAccount.gasToken')}
+        onCancel={() => setTempoGasTokenVisible(false)}
+        destroyOnClose
+        closable
+        height="auto"
+        isSupportDarkMode
+        className={clsx(uiType.isPop && 'is-popup')}
+        getContainer={getContainer}
+      >
+        <div className="max-h-[420px] overflow-y-auto pr-2">
+          {tempoGasTokenList.map((item) => {
+            const isActive =
+              item.id.toLowerCase() ===
+              (resolvedGasToken.tokenId || '').toLowerCase();
+            const amount = formatTokenAmount(
+              new BigNumber(item.raw_amount_hex_str || 0)
+                .div(new BigNumber(10).pow(item.decimals || 18))
+                .toFixed(),
+              6,
+              true
+            );
+
+            return (
+              <div
+                key={item.id}
+                className="h-[52px] rounded-[8px] px-10 flex items-center justify-between cursor-pointer mb-8 border hover:bg-r-blue-light1 bg-r-neutral-card-1 hover:border-rabby-blue-default border-transparent"
+                onClick={() => {
+                  onSelectTempoGasToken?.(item);
+                  setTempoGasTokenVisible(false);
+                }}
+              >
+                <div className="flex items-center">
+                  <TokenWithChain
+                    token={item}
+                    width="32px"
+                    height="32px"
+                    className="mr-12"
+                  />
+                  <div className="text-[15px] text-r-neutral-title1 font-medium">
+                    {getTokenSymbol(item)}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[15px] text-r-neutral-title1 font-medium">
+                    {formatUsdValue(item.usd_value || 0)}
+                  </div>
+                  <div className="text-[12px] text-r-neutral-foot">
+                    {formatTokenAmount(amount)}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Popup>
       <Popup
         isNew
         height={'auto'}

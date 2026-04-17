@@ -59,7 +59,7 @@ import { isLedgerLockError } from '@/ui/utils/ledger';
 import { t } from 'i18next';
 import AuthenticationModalPromise from '../../AuthenticationModal';
 import { DrawerProps, ModalProps } from 'antd';
-import { isTempoChain } from '@/utils/tempo';
+import { isTempoChain, toTempoCallsTx } from '@/utils/tempo';
 
 async function recomputeExplainForCalcItems(params: {
   wallet: WalletControllerType;
@@ -146,15 +146,20 @@ async function computeGasAccount(params: {
 }): Promise<PreparedContext['gasAccount'] | undefined> {
   const { wallet, txsCalc } = params;
   try {
+    if (!txsCalc.length) return undefined;
     const sig = await wallet.getGasAccountSig();
+    const chain = findChain({ id: txsCalc[0]?.tx.chainId })!;
     const res = await wallet.openapi.checkGasAccountTxs({
       sig: sig.sig || '',
       account_id: sig.accountId || txsCalc[0].tx.from,
-      tx_list: txsCalc.map((i) => i.tx),
+      tx_list: txsCalc.map((i) =>
+        isTempoChain(chain.serverId)
+          ? (toTempoCallsTx(i.tx as any, { stripTopLevelData: true }) as any)
+          : i.tx
+      ),
     });
     return res as any;
   } catch (e) {
-    console.log('error', e);
     return undefined;
   }
 }
@@ -1187,7 +1192,7 @@ export class SignatureSteps {
         });
         ctx = { ...ctx, engineResults: results };
       } catch (err) {
-        console.log('getSecurityEngineResults err', err);
+        console.error('getSecurityEngineResults err', err);
       }
     }
     return ctx;
