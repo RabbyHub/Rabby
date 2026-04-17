@@ -34,7 +34,8 @@
     "tryAgain": "再试一次",
     "notSupportTesntnet": "不支持自定义网络",
     "appDescription": "你首选的以太坊和 EVM 钱包",
-    "collapse": "折叠"
+    "collapse": "折叠",
+    "Yes": "是"
   },
   "page": {
     "transactions": {
@@ -1145,7 +1146,11 @@
         "simulationFailed": "交易模拟失败",
         "paused": "暂停",
         "waitInQueue": "排队等待",
-        "ledgerConfirmTitle": "使用Ledger批量撤销"
+        "ledgerConfirmTitle": "使用Ledger批量撤销",
+        "revokeWithOneKey": "开始使用 OneKey 撤销",
+        "oneKeySended": "请在 OneKey 上签名请求 ({{current}}/{{total}})",
+        "oneKeySending": "正在发送签名请求 ({{current}}/{{total}})",
+        "oneKeySigned": "已签名。正在创建交易 ({{current}}/{{total}})"
       }
     },
     "connect": {
@@ -4373,6 +4378,62 @@
       "statusColumn": "兑换状态",
       "noLowValueTokensFound": "暂无资产",
       "moreChains": "+{{count}} 条链"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "资产",
+        "revokeFrom": "撤销自",
+        "gasFee": "Gas费"
+      },
+      "title": "批量撤销",
+      "stopTheRevokeProcess": "停止撤销流程？",
+      "leavingThisPageWillStopTheRevokeProcess": "离开此页面将停止撤销流程。",
+      "startRevoke": "开始撤销",
+      "continueRevoke": "继续",
+      "pauseRevoke": "暂停",
+      "revokeCompleted": "完成",
+      "canStillRevoke": "仍要撤销"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "按合约",
+        "assets": "按资产"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "所有授权",
+        "contractAddress": "合约地址"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "已授权资产金额与余额"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "所有授权",
+        "myBalance": "我的余额"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "已授权合约及金额"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "不支持的地址类型",
+        "unsupportedAddressTypeDesc": "撤销 EIP-7702 委托仅支持私钥或助记词地址",
+        "supportedChains": "支持的链",
+        "delegatedAddressDesc": "委托地址",
+        "notMatched": "不匹配",
+        "noApprovals": "无授权"
+      },
+      "ListByAssets": {
+        "noApprovals": "无授权",
+        "notMatched": "不匹配"
+      },
+      "ListByContracts": {
+        "noApprovals": "无授权",
+        "notMatched": "不匹配"
+      },
+      "title": "授权",
+      "revoke": "撤销",
+      "approvals": "授权",
+      "unselectAll": "取消全选",
+      "selectAll": "全选"
     }
   },
   "component": {
