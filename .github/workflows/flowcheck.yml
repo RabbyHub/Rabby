@@ -31,7 +31,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PUSH_BRANCH: ${{ github.ref_name }}
           BRANCH_OVERRIDE: ${{ github.event.inputs.branch || '' }}
-          NOTIFY_LARKBOT: ${{ github.event.inputs.notify_larkbot || 'false' }}
+          NOTIFY_LARKBOT: ${{ github.event.inputs.notify_larkbot || 'true' }}
         run: |
           set -euo pipefail
 
