@@ -923,7 +923,11 @@
         "useGasAccount": "ガス残高が少なくなっています。GasAccountがガス料金をカバーします。",
         "simulationFailed": "シミュレーション失敗",
         "gasNotEnough": "Gasが不足しているため、送信できません",
-        "ledgerConfirmTitle": "Ledgerでバッチ取り消し"
+        "ledgerConfirmTitle": "Ledgerでバッチ取り消し",
+        "revokeWithOneKey": "OneKey でリボークを開始",
+        "oneKeySended": "OneKey 上でリクエストに署名してください ({{current}}/{{total}})",
+        "oneKeySending": "署名リクエストを送信中 ({{current}}/{{total}})",
+        "oneKeySigned": "署名完了。トランザクションを作成中 ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
       "understandRisks": "リスクを理解しており、続けたいと思います。",
       "approve": "承認",
-      "search-by-token-name-address": "トークン名 / アドレスを検索"
+      "search-by-token-name-address": "トークン名 / アドレスを検索",
+      "best-subtitle": "最佳报价由最低的预估总成本决定，包括汇率和 gas 费用。"
     },
     "manageAddress": {
       "no-address": "アドレスがありません",
@@ -2307,7 +2312,8 @@
         "BridgeStatusUnavailable": "ブリッジステータスは利用できません。資金が到着したことを確認するために、transaction historyを確認してください。",
         "swapStatus": "スワップステータス",
         "sendStatus": "送信状況"
-      }
+      },
+      "best-subtitle": "ガス手数料を含む推定総コストと配信速度の組み合わせによって、最適なクォートが決まります。"
     },
     "pendingDetail": {
       "Header": {
@@ -4332,6 +4338,62 @@
       "moreChains": "+{{count}}チェーン",
       "swapFailed": "スワップに失敗しました、{{reason}}",
       "completedTips": "進行中のスワップは処理を継続します"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "資産",
+        "revokeFrom": "リボーク元",
+        "gasFee": "ガス手数料"
+      },
+      "title": "批量撤销",
+      "stopTheRevokeProcess": "撤销プロセスを停止しますか？",
+      "leavingThisPageWillStopTheRevokeProcess": "このページを離れると、撤销プロセスが停止します。",
+      "startRevoke": "撤销を開始",
+      "continueRevoke": "続ける",
+      "pauseRevoke": "一時停止",
+      "revokeCompleted": "完了",
+      "canStillRevoke": "それでも撤销"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "コントラクト別",
+        "assets": "資産別"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "すべての承認",
+        "contractAddress": "コントラクトアドレス"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "承認済み資産の金額と残高"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "すべての承認",
+        "myBalance": "私の残高"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "承認済みコントラクトと金額"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "サポートされていないアドレス種別",
+        "unsupportedAddressTypeDesc": "EIP-7702権限の취소는、秘密鍵またはシードフレーズのアドレスのみサポートされています",
+        "supportedChains": "サポートチェーン",
+        "delegatedAddressDesc": "委託アドレス",
+        "notMatched": "一致なし",
+        "noApprovals": "承認なし"
+      },
+      "ListByAssets": {
+        "noApprovals": "承認なし",
+        "notMatched": "一致しません"
+      },
+      "ListByContracts": {
+        "noApprovals": "承認がありません",
+        "notMatched": "一致しません"
+      },
+      "title": "承認",
+      "revoke": "取消",
+      "approvals": "承認",
+      "unselectAll": "すべて選択解除",
+      "selectAll": "すべて選択"
     }
   },
   "component": {
@@ -4596,7 +4658,8 @@
     "notSupportTesntnet": "カスタムネットワークには対応していません。",
     "tryAgain": "再試行してください",
     "appDescription": "EthereumおよびEVMのためのあなたの定番ウォレット",
-    "collapse": "折りたたむ"
+    "collapse": "折りたたむ",
+    "Yes": "はい"
   },
   "background": {
     "error": {

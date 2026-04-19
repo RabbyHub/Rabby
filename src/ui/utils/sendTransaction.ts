@@ -129,6 +129,7 @@ export const sendTransaction = async ({
   ignoreSimulationFailed,
   extra,
   session,
+  account: _account,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -152,6 +153,7 @@ export const sendTransaction = async ({
     actionData?: ParseTxResponse;
   };
   session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
+  account?: Account;
 }) => {
   const shouldUseTempoCallsForGasAccount = (gasAccountEnabled?: boolean) =>
     !!gasAccountEnabled && isTempoChain(chainServerId);
@@ -161,7 +163,8 @@ export const sendTransaction = async ({
     serverId: chainServerId,
   })!;
   const support1559 = chain.eip['1559'];
-  const { address, ...currentAccount } = (await wallet.getCurrentAccount())!;
+  const account = _account || (await wallet.getCurrentAccount())!;
+  const { address, ...currentAccount } = account;
   const recommendNonce =
     tx.nonce ||
     (await wallet.getRecommendNonce({
@@ -627,7 +630,6 @@ export const sendTransaction = async ({
 
   // submit tx
   let hash = '';
-  const account = await wallet.getCurrentAccount();
   try {
     hash = await wallet.ethSendTransaction({
       data: {

@@ -24,9 +24,10 @@ interface QuoteItemProps extends SelectedBridgeQuote {
   payAmount: string;
   payToken: TokenItem;
   receiveToken: TokenItem;
+  active?: boolean;
   isBestQuote?: boolean;
+  isTopAmount?: boolean;
   bestQuoteUsd: string;
-  sortIncludeGasFee: boolean;
   setSelectedBridgeQuote?: (quote: SelectedBridgeQuote) => void;
   onlyShow?: boolean;
   loading?: boolean;
@@ -35,12 +36,30 @@ interface QuoteItemProps extends SelectedBridgeQuote {
 
 export const bridgeQuoteEstimatedValueBn = (
   quote: SelectedBridgeQuote,
-  receiveToken: TokenItem,
-  sortIncludeGasFee: boolean
+  receiveToken: TokenItem
 ) => {
   return new BigNumber(quote.to_token_amount)
     .times(receiveToken.price || 1)
-    .minus(sortIncludeGasFee ? quote.gas_fee.usd_value : 0);
+    .minus(quote.gas_fee.usd_value);
+};
+
+const PER_MINUTE_TIME_COST = 20000;
+
+export const bridgeQuoteScore = (
+  quote: SelectedBridgeQuote,
+  receiveToken: TokenItem
+) => {
+  const amountUsd = new BigNumber(quote.to_token_amount).times(
+    receiveToken.price || 1
+  );
+  const gasFeeUsd = new BigNumber(quote.gas_fee.usd_value);
+  const durationMinutes = Math.ceil(quote.duration / 60);
+  const timeCostUsd = BigNumber.min(
+    amountUsd.div(PER_MINUTE_TIME_COST).times(durationMinutes),
+    1
+  );
+
+  return amountUsd.minus(gasFeeUsd).minus(timeCostUsd);
 };
 
 export const BridgeQuoteItem = (props: QuoteItemProps) => {
@@ -70,23 +89,41 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     return 'text-r-neutral-foot';
   }, [showMinDuration]);
 
-  const diffPercent = React.useMemo(() => {
-    if (props.onlyShow || props.isBestQuote) {
-      return '';
+  const { isTopAmount, diffPercent } = React.useMemo(() => {
+    if (props.onlyShow) {
+      return {
+        isTopAmount: false,
+        diffPercent: '',
+      };
     }
 
-    const percent = bridgeQuoteEstimatedValueBn(
-      props,
-      props.receiveToken,
-      props.sortIncludeGasFee
-    )
-      .minus(props.bestQuoteUsd)
+    if (props.isTopAmount) {
+      return {
+        isTopAmount: true,
+        diffPercent: '0.00%',
+      };
+    }
+
+    const bestUsd = new BigNumber(props.bestQuoteUsd);
+
+    if (bestUsd.isZero()) {
+      return {
+        isTopAmount: true,
+        diffPercent: '0.00%',
+      };
+    }
+
+    const percent = bridgeQuoteEstimatedValueBn(props, props.receiveToken)
+      .minus(bestUsd)
       .div(props.bestQuoteUsd)
       .abs()
       .times(100)
       .toFixed(2, 1)
       .toString();
-    return `-${percent}%`;
+    return {
+      isTopAmount: false,
+      diffPercent: `-${percent}%`,
+    };
   }, [props]);
 
   const handleClick = async () => {
@@ -116,7 +153,10 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             ? 'h-[88px] p-16 pt-[20px] bg-transparent border-[1px] border-solid border-rabby-neutral-line'
             : clsx(
                 'h-[88px] p-16 pt-[20px] cursor-pointer',
-                'bg-r-neutral-card1 border-[1px] border-solid border-transparent hover:bg-rabby-blue-light1',
+                'bg-r-neutral-card1 border-[1px] border-solid border-transparent',
+                props.active && 'bg-rabby-blue-light1',
+                props.active &&
+                  'after:absolute after:rounded-md after:inset-[-1px] after:border after:border-rabby-blue-default after:pointer-events-none',
                 ' hover:after:absolute hover:after:rounded-md hover:after:inset-[-1px] hover:after:border hover:after:border-rabby-blue-default hover:after:pointer-events-none'
               )
         )}
@@ -226,6 +266,8 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               'text-12 font-medium',
               props.isBestQuote
                 ? 'text-r-blue-default bg-light-r-blue-light2'
+                : isTopAmount
+                ? 'text-r-green-default bg-r-green-light'
                 : 'text-r-red-default bg-r-red-light'
             )}
           >

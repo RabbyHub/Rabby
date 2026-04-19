@@ -923,7 +923,11 @@
         "ledgerSending": "Mengirim permintaan penandatanganan ({{current}}/{{total}})",
         "done": "Selesai",
         "cancelBody": "Jika Anda menutup halaman ini, sisa pencabutan tidak akan dilaksanakan.",
-        "ledgerConfirmTitle": "Batch Revokasi dengan Ledger"
+        "ledgerConfirmTitle": "Batch Revokasi dengan Ledger",
+        "revokeWithOneKey": "Mulai batalkan dengan OneKey",
+        "oneKeySended": "Silakan tanda tangani permintaan di OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Mengirim permintaan tanda tangan ({{current}}/{{total}})",
+        "oneKeySigned": "Ditandatangani. Membuat transaksi ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "estimate": "Perkiraan:",
       "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
       "approve": "Setujui",
-      "search-by-token-name-address": "Cari Nama Token / Alamat"
+      "search-by-token-name-address": "Cari Nama Token / Alamat",
+      "best-subtitle": "Kutipan terbaik ditentukan oleh total biaya perkiraan terendah, termasuk kurs dan biaya gas。"
     },
     "bridge": {
       "showMore": {
@@ -1148,7 +1153,8 @@
         "sendingFrom": "Mengirim dari {{chain}}",
         "sendStatus": "Kirim Status",
         "swapStatus": "Status Swap"
-      }
+      },
+      "best-subtitle": "Kutipan terbaik ditentukan oleh kombinasi perkiraan biaya total (termasuk biaya gas) dan kecepatan pengiriman."
     },
     "manageAddress": {
       "address-management": "Manajemen Alamat",
@@ -4329,6 +4335,62 @@
       "moreChains": "+{{count}} rantai",
       "swapFailed": "Swap gagal, {{reason}}",
       "completedTips": "Swap yang sedang berlangsung akan terus diproses"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Aset",
+        "revokeFrom": "Cabut Dari",
+        "gasFee": "Biaya Gas"
+      },
+      "title": "Batalkan Massal",
+      "stopTheRevokeProcess": "Hentikan proses pembatalan?",
+      "leavingThisPageWillStopTheRevokeProcess": "Meninggalkan halaman ini akan menghentikan proses pembatalan.",
+      "startRevoke": "Mulai Batalkan",
+      "continueRevoke": "Lanjutkan",
+      "pauseRevoke": "Jeda",
+      "revokeCompleted": "Selesai",
+      "canStillRevoke": "Tetap Batalkan"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Berdasarkan Kontrak",
+        "assets": "Berdasarkan Aset"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Semua Persetujuan",
+        "contractAddress": "Alamat Kontrak"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Jumlah & Saldo Aset yang Disetujui"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Semua Persetujuan",
+        "myBalance": "Saldo Saya"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Kontrak & Jumlah yang Disetujui"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Jenis Alamat Tidak Didukung",
+        "unsupportedAddressTypeDesc": "Pencabutan delegasi EIP-7702 hanya didukung untuk alamat private key atau seed phrase",
+        "supportedChains": "Rantai yang Didukung",
+        "delegatedAddressDesc": "Alamat Terdelegasikan",
+        "notMatched": "Tidak Cocok",
+        "noApprovals": "Tidak Ada Persetujuan"
+      },
+      "ListByAssets": {
+        "noApprovals": "Tidak ada persetujuan",
+        "notMatched": "Tidak Cocok"
+      },
+      "ListByContracts": {
+        "noApprovals": "Tidak ada persetujuan",
+        "notMatched": "Tidak Cocok"
+      },
+      "title": "Persetujuan",
+      "revoke": "Batalkan",
+      "approvals": "persetujuan",
+      "unselectAll": "Batalkan Pilih Semua",
+      "selectAll": "Pilih Semua"
     }
   },
   "component": {
@@ -4593,7 +4655,8 @@
     "Nonce": "Nonce",
     "backButton": "Kembali",
     "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM",
-    "collapse": "Tutup"
+    "collapse": "Tutup",
+    "Yes": "Ya"
   },
   "background": {
     "error": {

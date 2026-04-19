@@ -923,7 +923,11 @@
         "cancelBody": "Bu sayfayı kapatırsanız, kalan iptaller gerçekleştirilmez.",
         "simulationFailed": "Simülasyon Başarısız Oldu",
         "useGasAccount": "Gas bakiyeniz düşük. GasAccount gaz ücretlerini karşılayacaktır.",
-        "ledgerConfirmTitle": "Ledger ile Toplu İptal"
+        "ledgerConfirmTitle": "Ledger ile Toplu İptal",
+        "revokeWithOneKey": "OneKey ile iptal işlemini başlat",
+        "oneKeySended": "Lütfen OneKey üzerinde isteği imzalayın ({{current}}/{{total}})",
+        "oneKeySending": "İmzalama isteği gönderiliyor ({{current}}/{{total}})",
+        "oneKeySigned": "İmzalandı. İşlem oluşturuluyor ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
       "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
       "approve": "Onayla",
-      "search-by-token-name-address": "Token Adı / Adresi Ara"
+      "search-by-token-name-address": "Token Adı / Adresi Ara",
+      "best-subtitle": "En iyi teklif, döviz kuru ve gaz ücretleri dahil olmak üzere en düşük tahmini toplam maliyet tarafından belirlenir."
     },
     "manageAddress": {
       "no-address": "Adres yok",
@@ -2310,7 +2315,8 @@
         "BridgeStatusUnavailable": "Köprü durumu mevcut değil. Lütfen işlem geçmişinizi kontrol edin ve fonların ulaştığını doğrulayın.",
         "swapStatus": "Takasta Değiştir",
         "sendStatus": "Gönderim Durumu"
-      }
+      },
+      "best-subtitle": "En iyi teklif, tahmini toplam maliyet (gas ücretleri dahil) ve teslimat hızının kombinasyonuyla belirlenir."
     },
     "pendingDetail": {
       "Header": {
@@ -4335,6 +4341,62 @@
       "moreChains": "+{{count}} zincir",
       "swapFailed": "Swap başarısız oldu, {{reason}}",
       "completedTips": "Devam eden swap işlemi işlenmeye devam edecek"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Varlık",
+        "revokeFrom": "İptal Et",
+        "gasFee": "Gas Ücreti"
+      },
+      "title": "Toplu İptal",
+      "stopTheRevokeProcess": "İptal işlemi durdurulsun mu?",
+      "leavingThisPageWillStopTheRevokeProcess": "Bu sayfadan ayrılırsanız iptal işlemi durdurulacaktır.",
+      "startRevoke": "İptali Başlat",
+      "continueRevoke": "Devam Et",
+      "pauseRevoke": "Duraklat",
+      "revokeCompleted": "Tamamlandı",
+      "canStillRevoke": "İptale Devam Et"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Sözleşmelere Göre",
+        "assets": "Varlıklara Göre"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Tüm Onaylar",
+        "contractAddress": "Kontrat Adresi"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Onaylanan Varlık Tutarı ve Bakiye"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Tüm Onaylar",
+        "myBalance": "Bakiyem"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Onaylanan Sözleşmeler ve Miktar"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Desteklenmeyen Adres Türü",
+        "unsupportedAddressTypeDesc": "EIP-7702 devirlerini iptal etmek yalnızca private key veya seed phrase adresleri için desteklenmektedir",
+        "supportedChains": "Desteklenen Zincirler",
+        "delegatedAddressDesc": "Devredilen Adres",
+        "notMatched": "Eşleşmedi",
+        "noApprovals": "Onay yok"
+      },
+      "ListByAssets": {
+        "noApprovals": "Onay yok",
+        "notMatched": "Eşleşmedi"
+      },
+      "ListByContracts": {
+        "noApprovals": "İzin yok",
+        "notMatched": "Eşleşmedi"
+      },
+      "title": "Onaylar",
+      "revoke": "İptal Et",
+      "approvals": "onaylar",
+      "unselectAll": "Tüm Seçimleri Kaldır",
+      "selectAll": "Tümünü Seç"
     }
   },
   "component": {
@@ -4599,7 +4661,8 @@
     "notSupportTesntnet": "Özel ağ için desteklenmiyor",
     "tryAgain": "Tekrar Dene",
     "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan.",
-    "collapse": "Daralt"
+    "collapse": "Daralt",
+    "Yes": "Evet"
   },
   "background": {
     "error": {

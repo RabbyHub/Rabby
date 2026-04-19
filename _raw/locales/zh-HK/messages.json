@@ -34,7 +34,8 @@
     "tryAgain": "再試一次",
     "notSupportTesntnet": "不支持自定義網絡",
     "appDescription": "您首选的以太坊和 EVM 钱包",
-    "collapse": "摺疊"
+    "collapse": "摺疊",
+    "Yes": "是"
   },
   "page": {
     "transactions": {
@@ -1145,7 +1146,11 @@
         "ledgerSigned": "已簽名。創建交易（{{current}}/{{total}}）",
         "gasTooHigh": "Gas fee is high",
         "submitTxFailed": "提交失敗",
-        "ledgerConfirmTitle": "批量撤销使用 Ledger"
+        "ledgerConfirmTitle": "批量撤销使用 Ledger",
+        "revokeWithOneKey": "開始使用 OneKey 撤銷",
+        "oneKeySended": "請在 OneKey 上簽署請求 ({{current}}/{{total}})",
+        "oneKeySending": "發送簽署請求 ({{current}}/{{total}})",
+        "oneKeySigned": "已簽署。正在創建交易 ({{current}}/{{total}})"
       }
     },
     "connect": {
@@ -2055,7 +2060,8 @@
       "two-step-approve": "簽署 2 筆交易以更改允許額",
       "understandRisks": "我明白風險並想繼續",
       "approve": "批准",
-      "search-by-token-name-address": "搜尋代幣名稱 / 地址"
+      "search-by-token-name-address": "搜尋代幣名稱 / 地址",
+      "best-subtitle": "最佳報價由最低的預估總成本決定，包括匯率及 Gas 費用。"
     },
     "switchChain": {
       "chainNotSupport": "Rabby尚不支持請求的鏈",
@@ -2535,7 +2541,8 @@
         "BridgeStatusUnavailable": "橋接狀態不可用。請檢查您的交易記錄以確認資金是否已到達。",
         "sendStatus": "發送狀態",
         "swapStatus": "交換狀態"
-      }
+      },
+      "best-subtitle": "最佳報價由預計總成本（包括 Gas 費用）及交付速度綜合決定。"
     },
     "ecology": {
       "sonic": {
@@ -4371,6 +4378,62 @@
       "moreChains": "+{{count}} 條鏈",
       "swapFailed": "交換失敗，{{reason}}",
       "completedTips": "正在進行的交換將繼續處理"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "資產",
+        "revokeFrom": "撤銷授權",
+        "gasFee": "Gas 費用"
+      },
+      "title": "批量撤銷",
+      "stopTheRevokeProcess": "停止撤銷程序？",
+      "leavingThisPageWillStopTheRevokeProcess": "離開此頁面將停止撤銷程序。",
+      "startRevoke": "開始撤銷",
+      "continueRevoke": "繼續",
+      "pauseRevoke": "暫停",
+      "revokeCompleted": "完成",
+      "canStillRevoke": "繼續撤銷"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "按合約",
+        "assets": "按資產"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "所有授權",
+        "contractAddress": "合約地址"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "已批准資產金額及餘額"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "所有授權",
+        "myBalance": "我的餘額"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "已授權合約及金額"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "不支援的地址類型",
+        "unsupportedAddressTypeDesc": "撤銷 EIP-7702 授權僅支援私鑰或助記詞地址",
+        "supportedChains": "支援的鏈",
+        "delegatedAddressDesc": "委託地址",
+        "notMatched": "不匹配",
+        "noApprovals": "無審批"
+      },
+      "ListByAssets": {
+        "noApprovals": "無批准",
+        "notMatched": "未匹配"
+      },
+      "ListByContracts": {
+        "noApprovals": "無授權",
+        "notMatched": "不匹配"
+      },
+      "title": "授權",
+      "revoke": "撤銷",
+      "approvals": "授權",
+      "unselectAll": "取消全選",
+      "selectAll": "全選"
     }
   },
   "component": {
