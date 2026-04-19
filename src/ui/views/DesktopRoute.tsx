@@ -20,6 +20,7 @@ import { EVENTS } from '@/constant';
 import { useMemoizedFn } from 'ahooks';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
 import { DesktopSmallSwap } from './DesktopSmallSwap';
+import { DesktopManageApprovals } from './DesktopManageApprovals';
 
 declare global {
   interface Window {
@@ -76,6 +77,9 @@ const Main = () => {
     <>
       <PrivateRoute exact path="/desktop/small-swap">
         <DesktopSmallSwap />
+      </PrivateRoute>
+      <PrivateRoute exact path="/desktop/manage-approvals">
+        <DesktopManageApprovals />
       </PrivateRoute>
       {hasMountedProfileRef.current ? (
         <PrivateRouteGuard>

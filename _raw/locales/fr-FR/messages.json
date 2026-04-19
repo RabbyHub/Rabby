@@ -321,7 +321,8 @@
     "tryAgain": "Essayer à nouveau",
     "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé",
     "appDescription": "Votre portefeuille de référence pour Ethereum et EVM",
-    "collapse": "Réduire"
+    "collapse": "Réduire",
+    "Yes": "Oui"
   },
   "page": {
     "activities": {
@@ -609,7 +610,11 @@
         "ledgerSending": "Envoi de la demande de signature ({{current}}/{{total}})",
         "confirm": "Confirmer",
         "ledgerSigned": "Signé. Création de la transaction ({{current}}/{{total}})",
-        "ledgerConfirmTitle": "Révocation par lots avec Ledger"
+        "ledgerConfirmTitle": "Révocation par lots avec Ledger",
+        "revokeWithOneKey": "Démarrer la révocation avec OneKey",
+        "oneKeySended": "Veuillez signer la demande sur OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Envoi de la demande de signature ({{current}}/{{total}})",
+        "oneKeySigned": "Signé. Création de la transaction ({{current}}/{{total}})"
       }
     },
     "backupPrivateKey": {
@@ -2465,7 +2470,8 @@
       "max": "MAX",
       "understandRisks": "Je comprends les risques et je souhaite continuer",
       "approve": "Approuver",
-      "search-by-token-name-address": "Rechercher le nom / l'adresse du token"
+      "search-by-token-name-address": "Rechercher le nom / l'adresse du token",
+      "best-subtitle": "La meilleure offre est déterminée par le coût total estimé le plus bas, incluant le taux de change et les frais de gaz."
     },
     "switchChain": {
       "chainNotSupport": "La chaîne demandée n'est pas encore prise en charge par Rabby",
@@ -2710,7 +2716,8 @@
         "fromFailed": "La transaction n'a pas été effectuée. Essayez à nouveau.",
         "swapStatus": "État de l'échange",
         "sendStatus": "Envoyer le statut"
-      }
+      },
+      "best-subtitle": "La meilleure offre est déterminée par une combinaison du coût total estimé (y compris les frais de gaz) et de la vitesse de livraison."
     },
     "dappSearch": {
       "searchResult": {
@@ -4656,6 +4663,62 @@
       "moreChains": "+{{count}} chaînes",
       "swapFailed": "Échec de l'échange, {{reason}}",
       "completedTips": "L'échange en cours continuera à être traité"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Actif",
+        "revokeFrom": "Révoquer depuis",
+        "gasFee": "Frais de gaz"
+      },
+      "title": "Annulation par lot",
+      "stopTheRevokeProcess": "Arrêter le processus d'annulation ?",
+      "leavingThisPageWillStopTheRevokeProcess": "Quitter cette page arrêtera le processus d'annulation.",
+      "startRevoke": "Démarrer l'annulation",
+      "continueRevoke": "Continuer",
+      "pauseRevoke": "Pause",
+      "revokeCompleted": "Terminé",
+      "canStillRevoke": "Continuer l'annulation"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Par Contrats",
+        "assets": "Par Actifs"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Toutes les approbations",
+        "contractAddress": "Adresse du contrat"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Montant et solde des actifs approuvés"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Toutes les approbations",
+        "myBalance": "Mon solde"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Contrats et montants approuvés"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Type d'adresse non pris en charge",
+        "unsupportedAddressTypeDesc": "La révocation des délégations EIP-7702 n'est prise en charge que pour les adresses à clé privée ou phrase de seed",
+        "supportedChains": "Chaînes prises en charge",
+        "delegatedAddressDesc": "Adresse déléguée",
+        "notMatched": "Non concordé",
+        "noApprovals": "Aucune approbation"
+      },
+      "ListByAssets": {
+        "noApprovals": "Aucune approbation",
+        "notMatched": "Non correspondé"
+      },
+      "ListByContracts": {
+        "noApprovals": "Aucune approbation",
+        "notMatched": "Non correspondé"
+      },
+      "title": "Approbations",
+      "revoke": "Révoquer",
+      "approvals": "autorisations",
+      "unselectAll": "Tout désélectionner",
+      "selectAll": "Tout sélectionner"
     }
   }
 }

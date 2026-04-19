@@ -923,7 +923,11 @@
         "ledgerSigned": "Assinado. Criando transação ({{current}}/{{total}})",
         "cancelBody": "Se você fechar esta página, as revogações restantes não serão executadas.",
         "useGasAccount": "Seu saldo de gás está baixo. Seu GasAccount cobrirá as taxas de gás.",
-        "ledgerConfirmTitle": "Revogação em Lote com Ledger"
+        "ledgerConfirmTitle": "Revogação em Lote com Ledger",
+        "revokeWithOneKey": "Iniciar revogação com OneKey",
+        "oneKeySended": "Por favor, assine a solicitação no OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Enviando solicitação de assinatura ({{current}}/{{total}})",
+        "oneKeySigned": "Assinado. Criando transação ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "hidden-no-quote-rates_other": "{{count}} taxas indisponíveis",
       "understandRisks": "Eu entendo os riscos e quero continuar",
       "approve": "Aprovar",
-      "search-by-token-name-address": "Pesquisar Nome do Token / Endereço"
+      "search-by-token-name-address": "Pesquisar Nome do Token / Endereço",
+      "best-subtitle": "A melhor cotação é determinada pelo menor custo total estimado, incluindo a taxa de câmbio e as taxas de gás."
     },
     "manageAddress": {
       "no-address": "Nenhum endereço",
@@ -2307,7 +2312,8 @@
         "estimatedTime": "Tempo estimado",
         "sendStatus": "Enviar Status",
         "swapStatus": "Status de Swap"
-      }
+      },
+      "best-subtitle": "A melhor cotação é determinada por uma combinação do custo total estimado (incluindo taxas de gás) e velocidade de entrega."
     },
     "pendingDetail": {
       "Header": {
@@ -4334,6 +4340,62 @@
       "moreChains": "+{{count}} cadeias",
       "swapFailed": "Troca falhou, {{reason}}",
       "completedTips": "A troca em andamento continuará processando"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Ativo",
+        "revokeFrom": "Revogar de",
+        "gasFee": "Taxa de Gas"
+      },
+      "title": "Revogação em Lote",
+      "stopTheRevokeProcess": "Parar o processo de revogação?",
+      "leavingThisPageWillStopTheRevokeProcess": "Sair desta página interromperá o processo de revogação.",
+      "startRevoke": "Iniciar Revogação",
+      "continueRevoke": "Continuar",
+      "pauseRevoke": "Pausar",
+      "revokeCompleted": "Concluído",
+      "canStillRevoke": "Continuar Revogando"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Por Contratos",
+        "assets": "Por Ativos"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Todas as aprovações",
+        "contractAddress": "Endereço do contrato"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Quantidade e Saldo de Ativos Aprovados"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Todas as aprovações",
+        "myBalance": "Meu saldo"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Contratos e Montantes Aprovados"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Tipo de Endereço Não Suportado",
+        "unsupportedAddressTypeDesc": "A revogação de delegações EIP-7702 só é suportada para endereços de chave privada ou frase-semente",
+        "supportedChains": "Cadeias Suportadas",
+        "delegatedAddressDesc": "Endereço Delegado",
+        "notMatched": "Não Corresponde",
+        "noApprovals": "Nenhuma aprovação"
+      },
+      "ListByAssets": {
+        "noApprovals": "Sem aprovações",
+        "notMatched": "Sem correspondência"
+      },
+      "ListByContracts": {
+        "noApprovals": "Sem aprovações",
+        "notMatched": "Não correspondido"
+      },
+      "title": "Aprovações",
+      "revoke": "Revogar",
+      "approvals": "aprovações",
+      "unselectAll": "Desmarcar Todos",
+      "selectAll": "Selecionar Todos"
     }
   },
   "component": {
@@ -4599,7 +4661,8 @@
     "tryAgain": "Tente Novamente",
     "Nonce": "Nonce",
     "appDescription": "Sua carteira de referência para Ethereum e EVM",
-    "collapse": "Recolher"
+    "collapse": "Recolher",
+    "Yes": "Sim"
   },
   "background": {
     "error": {
