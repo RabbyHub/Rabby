@@ -923,7 +923,11 @@
         "ledgerAlert": "Пожалуйста, откройте Ethereum App на вашем устройстве Ledger.",
         "simulationFailed": "Симуляция не удалась",
         "ledgerSigned": "Подписано. Создание транзакции ({{current}}/{{total}})",
-        "ledgerConfirmTitle": "П批回收 с Ledger"
+        "ledgerConfirmTitle": "П批回收 с Ledger",
+        "revokeWithOneKey": "Начать отзыв с OneKey",
+        "oneKeySended": "Пожалуйста, подпишите запрос на OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Отправка запроса на подпись ({{current}}/{{total}})",
+        "oneKeySigned": "Подписано. Создание транзакции ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "no-slippage-for-wrap": "Отсутствие проскальзывания для Wrap",
       "understandRisks": "Я понимаю риски и хочу продолжить",
       "approve": "Одобрить",
-      "search-by-token-name-address": "Поиск имени токена / адреса"
+      "search-by-token-name-address": "Поиск имени токена / адреса",
+      "best-subtitle": "Лучшее предложение определяется по наименьшей оценочной общей стоимости, включая обменный курс и комиссии за газ."
     },
     "manageAddress": {
       "no-address": "Нет адресов",
@@ -2498,7 +2503,8 @@
         "receivedDifferentTokenFromSource": "Мост не сработал. На исходной цепи был возвращен другой токен.",
         "sendStatus": "Статус отправки",
         "swapStatus": "Статус обмена"
-      }
+      },
+      "best-subtitle": "Лучшее предложение определяется сочетанием оценочной общей стоимости (включая комиссии за газ) и скорости доставки."
     },
     "ecology": {
       "sonic": {
@@ -4334,6 +4340,62 @@
       "moreChains": "+{{count}} цепей",
       "swapFailed": "Неудачный обмен, {{reason}}",
       "completedTips": "Текущий обмен будет продолжать обрабатываться"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Актив",
+        "revokeFrom": "Отозвать от",
+        "gasFee": "Комиссия за Gas"
+      },
+      "title": "Массовый отзыв",
+      "stopTheRevokeProcess": "Остановить процесс отзыва?",
+      "leavingThisPageWillStopTheRevokeProcess": "Выход с этой страницы остановит процесс отзыва.",
+      "startRevoke": "Начать отзыв",
+      "continueRevoke": "Продолжить",
+      "pauseRevoke": "Пауза",
+      "revokeCompleted": "Готово",
+      "canStillRevoke": "Отозвать всё равно"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "По контрактам",
+        "assets": "По активам"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Все подтверждения",
+        "contractAddress": "Адрес контракта"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Сумма и баланс одобренных активов"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Все подтверждения",
+        "myBalance": "Мой баланс"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Одобренные контракты и сумма"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Unsupported Address Type",
+        "unsupportedAddressTypeDesc": "Revoking EIP-7702 delegations is only supported for private key                 or seed phrase addresses",
+        "supportedChains": "Supported Chains",
+        "delegatedAddressDesc": "Delegated Address",
+        "notMatched": "Not Matched",
+        "noApprovals": "No approvals"
+      },
+      "ListByAssets": {
+        "noApprovals": "Нет подтверждений",
+        "notMatched": "Не совпадает"
+      },
+      "ListByContracts": {
+        "noApprovals": "Нет подтверждений",
+        "notMatched": "Не совпадает"
+      },
+      "title": "Одобрения",
+      "revoke": "Отозвать",
+      "approvals": "одобрения",
+      "unselectAll": "Снять выделение со всех",
+      "selectAll": "Выделить все"
     }
   },
   "component": {
@@ -4598,7 +4660,8 @@
     "tryAgain": "Попробовать снова",
     "notSupportTesntnet": "Эта своя сеть поддерживается",
     "appDescription": "Ваш кошелек для Ethereum и EVM",
-    "collapse": "Свернуть"
+    "collapse": "Свернуть",
+    "Yes": "Да"
   },
   "background": {
     "error": {

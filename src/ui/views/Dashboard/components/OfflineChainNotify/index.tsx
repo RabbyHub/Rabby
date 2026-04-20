@@ -84,7 +84,13 @@ const useOfflineChains = () => {
   return { offlineList, setClosedTipsChain, closedTipsChains };
 };
 
-export const OfflineChainNotify = () => {
+export const OfflineChainNotify = ({
+  className,
+  itemClassName,
+}: {
+  className?: string;
+  itemClassName?: string;
+} = {}) => {
   const { t } = useTranslation();
   const {
     offlineList,
@@ -103,7 +109,7 @@ export const OfflineChainNotify = () => {
   );
 
   return (
-    <div className={clsx('absolute left-0 bottom-0 w-full')}>
+    <div className={clsx(className ?? 'absolute left-0 bottom-0 w-full')}>
       {offlineList?.map((e) => {
         const chainInfo = findChainByServerID(e.id);
         if (
@@ -121,7 +127,8 @@ export const OfflineChainNotify = () => {
               'hidden last:flex',
               'w-full h-auto min-h-[32px] bg-rabby-orange-light',
               'items-center px-16',
-              'border-[0.5px] border-solid border-rabby-neutral-line'
+              'border-[0.5px] border-solid border-rabby-neutral-line',
+              itemClassName
             )}
           >
             <img src={chainInfo.logo} className="w-16 h-16 rounded-full" />

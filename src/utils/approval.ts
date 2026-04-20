@@ -362,6 +362,7 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
   let isCollectionHasNFTs = false;
   const resTexts = {
     displayAmountText: '',
+    displayAmount: '',
     displayBalanceText: '',
     balanceNumText: '' as number | string,
     balanceUnitText: '',
@@ -424,6 +425,8 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
     resTexts.displayAmountText = isUnlimited
       ? 'Unlimited'
       : `${stepNumberText} ${spender.$assetParent?.name || ''}`;
+
+    resTexts.displayAmount = isUnlimited ? 'Unlimited' : `${stepNumberText}`;
 
     const absBalance = spender.$assetParent?.balance;
     resTexts.balanceNumText =

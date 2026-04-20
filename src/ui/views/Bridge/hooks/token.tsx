@@ -16,6 +16,7 @@ import { useBridgeSlippage } from './slippage';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import eventBus from '@/eventBus';
+import { bridgeQuoteScore } from '../Component/BridgeQuoteItem';
 
 export const enableInsufficientQuote = true;
 
@@ -645,31 +646,30 @@ export const useBridge = () => {
 
   useEffect(() => {
     if (!quoteLoading && toToken && quoteList.every((e) => !e.loading)) {
-      const sortedList = quoteList?.sort((b, a) => {
-        return new BigNumber(a.to_token_amount)
-          .times(toToken.price || 1)
-          .minus(a.gas_fee.usd_value)
-          .minus(
-            new BigNumber(b.to_token_amount)
-              .times(toToken.price || 1)
-              .minus(b.gas_fee.usd_value)
-          )
-          .toNumber();
-      });
-      if (
-        sortedList[0] &&
-        sortedList[0]?.bridge_id &&
-        sortedList[0]?.aggregator?.id
-      ) {
+      if (!quoteList.length) {
+        return;
+      }
+
+      let bestQuote = quoteList[0];
+      let bestScore = bridgeQuoteScore(quoteList[0], toToken);
+      for (let i = 1; i < quoteList.length; i += 1) {
+        const score = bridgeQuoteScore(quoteList[i], toToken);
+        if (score.gt(bestScore)) {
+          bestScore = score;
+          bestQuote = quoteList[i];
+        }
+      }
+
+      if (bestQuote?.bridge_id && bestQuote?.aggregator?.id) {
         setBestQuoteId({
-          bridgeId: sortedList[0]?.bridge_id,
-          aggregatorId: sortedList[0]?.aggregator?.id,
+          bridgeId: bestQuote.bridge_id,
+          aggregatorId: bestQuote.aggregator.id,
         });
 
-        let useQuote = sortedList[0];
+        let useQuote = bestQuote;
 
         setOriSelectedBridgeQuote((preItem) => {
-          useQuote = preItem?.manualClick ? preItem : sortedList[0];
+          useQuote = preItem?.manualClick ? preItem : bestQuote;
           return preItem;
         });
 

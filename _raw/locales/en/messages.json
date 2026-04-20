@@ -2128,7 +2128,11 @@
         "ledgerSending": "Sending signing request ({{current}}/{{total}})",
         "ledgerAlert": "Please open Ethereum App on your Ledger device",
         "ledgerSigned": "Signed. Creating transaction ({{current}}/{{total}})",
-        "simulationFailed": "Simulation Failed"
+        "simulationFailed": "Simulation Failed",
+        "revokeWithOneKey": "Start revoke with OneKey",
+        "oneKeySended": "Please sign the request on OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Sending signing request ({{current}}/{{total}})",
+        "oneKeySigned": "Signed. Creating transaction ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -2210,6 +2214,7 @@
       "edit": "Edit",
       "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
       "the-following-swap-rates-are-found": "Found following rates",
+      "best-subtitle": "The best quote is determined by the lowest estimated total cost, including the exchange rate and gas fees.",
       "sort-with-gas": "Sort with gas",
       "est-payment": "Est. Payment:",
       "est-receiving": "Est. Receiving:",
@@ -2300,6 +2305,7 @@
       "duration": "{{duration}} min",
       "estimated-value": "≈ {{value}} ",
       "best": "Best",
+      "best-subtitle": "The best quote is determined by a combination of estimated total cost (including gas fees) and delivery speed.",
       "bridge-cost": "Bridge cost",
       "rabby-fee": "Rabby fee",
       "bridge-via-x": "Bridge on {{name}}",
@@ -4375,6 +4381,62 @@
       "networkErrorDescription": "{{site}} unexpectedly closed the connection. Please check your network.",
       "networkErrorDescriptionFallback": "The site unexpectedly closed the connection. Please check your network.",
       "reload": "Reload"
+    },
+    "manageBatchApprovals": {
+      "title": "Batch Revoke",
+      "cols": {
+        "asset": "Asset",
+        "revokeFrom": "Revoke From",
+        "gasFee": "Gas Fee"
+      },
+      "stopTheRevokeProcess": "Stop the revoke process?",
+      "leavingThisPageWillStopTheRevokeProcess": "Leaving this page will stop the revoke process.",
+      "startRevoke": "Start Revoke",
+      "continueRevoke": "Continue",
+      "pauseRevoke": "Pause",
+      "revokeCompleted": "Done",
+      "canStillRevoke": "Still Revoke"
+    },
+    "manageApprovals": {
+      "title": "Approvals",
+      "tabs": {
+        "contracts": "By Contracts",
+        "assets": "By Assets"
+      },
+      "revoke": "Revoke",
+      "approvals": "approvals",
+      "ApprovalCardContractPopup": {
+        "allApprovals": "All Approvals",
+        "contractAddress": "Contract Address"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Approved Assets Amount & Balance"
+      },
+      "unselectAll": "Unselect All",
+      "selectAll": "Select All",
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "All Approvals",
+        "myBalance": "My Balance"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Approved Contracts & Amount"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Unsupported Address Type",
+        "unsupportedAddressTypeDesc": "Revoking EIP-7702 delegations is only supported for private key                 or seed phrase addresses",
+        "supportedChains": "Supported Chains",
+        "delegatedAddressDesc": "Delegated Address",
+        "notMatched": "Not Matched",
+        "noApprovals": "No approvals"
+      },
+      "ListByAssets": {
+        "noApprovals": "No approvals",
+        "notMatched": "Not Matched"
+      },
+      "ListByContracts": {
+        "noApprovals": "No approvals",
+        "notMatched": "Not Matched"
+      }
     }
   },
   "component": {
@@ -4645,7 +4707,8 @@
     "Nonce": "Nonce",
     "tryAgain": "Try Again",
     "notSupportTesntnet": "Not supported for custom network",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "Yes": "Yes"
   },
   "background": {
     "error": {

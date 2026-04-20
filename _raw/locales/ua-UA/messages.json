@@ -925,7 +925,11 @@
         "resume": "Продовжити",
         "revokeWithLedger": "Почніть відкликання за допомогою Ledger",
         "gasTooHigh": "Висока плата за Gas",
-        "ledgerConfirmTitle": "Пакетне відкликання з Ledger"
+        "ledgerConfirmTitle": "Пакетне відкликання з Ledger",
+        "revokeWithOneKey": "Почати скасування через OneKey",
+        "oneKeySended": "Будь ласка, підпишіть запит на OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Надсилаємо запит на підписання ({{current}}/{{total}})",
+        "oneKeySigned": "Підписано. Створюємо транзакцію ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1059,7 +1063,8 @@
       "from": "Від",
       "understandRisks": "Я розумію ризики і хочу продовжити",
       "approve": "Схвалити",
-      "search-by-token-name-address": "Токен ім'я / адреса пошуку"
+      "search-by-token-name-address": "Токен ім'я / адреса пошуку",
+      "best-subtitle": "Найкращу котировку визначають за найменшою очікуваною загальною вартістю, включаючи курс обміну та комісію за газ."
     },
     "manageAddress": {
       "no-address": "Немає адреси",
@@ -2319,7 +2324,8 @@
         "swap": "Обмін",
         "sendStatus": "Відправити статус",
         "swapStatus": "Статус обміну"
-      }
+      },
+      "best-subtitle": "Найкращу пропозицію визначає комбінація очікуваної загальної вартості (включно з комісіями за газ) та швидкості доставки."
     },
     "pendingDetail": {
       "Header": {
@@ -4344,6 +4350,62 @@
       "moreChains": "+{{count}} ланцюжків",
       "swapFailed": "Конвертація не вдалася, {{reason}}",
       "completedTips": "Поточна конвертація продовжить обробку"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Актив",
+        "revokeFrom": "Скасувати від",
+        "gasFee": "Комісія за газ"
+      },
+      "title": "Масове скасування",
+      "stopTheRevokeProcess": "зупинити процес скасування?",
+      "leavingThisPageWillStopTheRevokeProcess": "Виходь із цієї сторінки — процес скасування зупиниться.",
+      "startRevoke": "Почати скасування",
+      "continueRevoke": "Продовжити",
+      "pauseRevoke": "Пауза",
+      "revokeCompleted": "Готово",
+      "canStillRevoke": "Все ще скасування"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "За контрактами",
+        "assets": "За активами"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Всі схвалення",
+        "contractAddress": "Адреса контракту"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Сума схвалених активів та баланс"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Усі підтвердження",
+        "myBalance": "Мій баланс"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Схвалені контракти та суми"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Непідтримуваний тип адреси",
+        "unsupportedAddressTypeDesc": "Скасування делегувань EIP-7702 підтримується лише для адрес із приватним ключем або seed-фразою",
+        "supportedChains": "Підтримувані ланцюги",
+        "delegatedAddressDesc": "Делегована адреса",
+        "notMatched": "Не збігається",
+        "noApprovals": "Немає схвалень"
+      },
+      "ListByAssets": {
+        "noApprovals": "Немає схвалень",
+        "notMatched": "Невідповідні"
+      },
+      "ListByContracts": {
+        "noApprovals": "Немає схвалень",
+        "notMatched": "Не відповідає"
+      },
+      "title": "Схвалення",
+      "revoke": "Скасувати",
+      "approvals": "схвалення",
+      "unselectAll": "Зняти виділення з усіх",
+      "selectAll": "Виділити всі"
     }
   },
   "component": {
@@ -4616,7 +4678,8 @@
     "Save": "Зберегти",
     "Done": "Готово",
     "appDescription": "Ваш улюблений гаманець для Ethereum та EVM",
-    "collapse": "Згорнути"
+    "collapse": "Згорнути",
+    "Yes": "Так"
   },
   "background": {
     "error": {

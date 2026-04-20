@@ -33,6 +33,7 @@ import { CHAINS_ENUM } from '@/types/chain';
 import { useRequest } from 'ahooks';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
+import { OfflineChainNotify } from '@/ui/views/Dashboard/components/OfflineChainNotify';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -264,6 +265,10 @@ const Receive = () => {
           'text-r-red-default bg-r-red-light rounded-[8px]',
           'mb-[8px] mt-[-12px]'
         )}
+      />
+      <OfflineChainNotify
+        className="w-full"
+        itemClassName="rounded-[8px] mb-[8px]"
       />
 
       <div className="qr-card">
