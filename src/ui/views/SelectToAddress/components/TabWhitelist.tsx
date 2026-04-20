@@ -92,28 +92,36 @@ export default function TabWhitelist({
     );
   }, [accountsList, whitelist]);
 
+  const importedWhitelistAccountMap = useMemo(() => {
+    return importedWhitelistAccounts.reduce<
+      Record<string, typeof importedWhitelistAccounts[number]>
+    >((acc, item) => {
+      acc[item.address.toLowerCase()] = item;
+      return acc;
+    }, {});
+  }, [importedWhitelistAccounts]);
+
   const unimportedWhitelistAccounts = useMemo(() => {
     return whitelist
-      ?.filter(
-        (w) =>
-          !importedWhitelistAccounts.some((a) => isSameAddress(w, a.address))
-      )
+      ?.filter((w) => !importedWhitelistAccountMap[w.toLowerCase()])
       .map((w) => padWatchAccount(w));
-  }, [importedWhitelistAccounts, whitelist]);
+  }, [importedWhitelistAccountMap, whitelist]);
 
   const allAccounts = useMemo(() => {
-    return [
-      ...importedWhitelistAccounts,
-      ...unimportedWhitelistAccounts.map((acc) => ({
-        ...acc,
-        balance: unimportedBalances[acc.address],
-      })),
-    ].sort((a, b) => (b.balance || 0) - (a.balance || 0));
-  }, [
-    importedWhitelistAccounts,
-    unimportedWhitelistAccounts,
-    unimportedBalances,
-  ]);
+    return (whitelist || []).map((address) => {
+      const lowerAddress = address.toLowerCase();
+      const importedAccount = importedWhitelistAccountMap[lowerAddress];
+
+      if (importedAccount) {
+        return importedAccount;
+      }
+
+      return {
+        ...padWatchAccount(address),
+        balance: unimportedBalances[lowerAddress],
+      };
+    });
+  }, [importedWhitelistAccountMap, unimportedBalances, whitelist]);
 
   const handleDeleteWhitelist = async (address: string) => {
     await wallet.removeWhitelist(address);

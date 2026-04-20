@@ -104,6 +104,8 @@ import { ImportWalletType } from './NewUserImport/ImportWalletType';
 import { ImportHardwareList } from './NewUserImport/importHardwareList';
 import { ImportSeedOrKey } from './NewUserImport/ImportSeedOrKey';
 import { BiometricUnlockSetup } from './BiometricUnlockSetup';
+import { ManageApprovals } from './ManageApprovals';
+import { ManageBatchRevokeApprovals } from './ManageBatchApprovals';
 
 declare global {
   interface Window {
@@ -418,6 +420,12 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/approval">
           <Approval />
+        </PrivateRoute>
+        <PrivateRoute exact path="/revoke-approvals/batch-revoke">
+          <ManageBatchRevokeApprovals />
+        </PrivateRoute>
+        <PrivateRoute exact path="/revoke-approvals">
+          <ManageApprovals />
         </PrivateRoute>
         <PrivateRoute exact path="/token-approval">
           <TokenApproval />

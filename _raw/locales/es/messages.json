@@ -923,7 +923,11 @@
         "ledgerSended": "Por favor, firme la solicitud en Ledger ({{current}}/{{total}})",
         "ledgerSigned": "Firmado. Creando transacción ({{current}}/{{total}})",
         "ledgerSending": "Enviando solicitud de firma ({{current}}/{{total}})",
-        "ledgerConfirmTitle": "Revocar en lote con Ledger"
+        "ledgerConfirmTitle": "Revocar en lote con Ledger",
+        "revokeWithOneKey": "Iniciar revocación con OneKey",
+        "oneKeySended": "Por favor firme la solicitud en OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Enviando solicitud de firma ({{current}}/{{total}})",
+        "oneKeySigned": "Firmado. Creando transacción ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "usd-after-fees": "≈ {{usd}}",
       "understandRisks": "Entiendo los riesgos y quiero continuar",
       "approve": "Aprobar",
-      "search-by-token-name-address": "Buscar nombre de token / dirección"
+      "search-by-token-name-address": "Buscar nombre de token / dirección",
+      "best-subtitle": "La mejor cotización se determina por el costo total estimado más bajo, incluyendo la tasa de cambio y las comisiones de gas."
     },
     "manageAddress": {
       "no-address": "Sin dirección",
@@ -2307,7 +2312,8 @@
         "sendingFrom": "Enviando desde {{chain}}",
         "swapStatus": "Estado de intercambio",
         "sendStatus": "Enviar Estado"
-      }
+      },
+      "best-subtitle": "La mejor cotización se determina por una combinación del costo total estimado (incluyendo las tarifas de gas) y la velocidad de entrega."
     },
     "pendingDetail": {
       "Header": {
@@ -4332,6 +4338,62 @@
       "moreChains": "+{{count}} cadenas",
       "swapFailed": "Intercambio fallido, {{reason}}",
       "completedTips": "El intercambio en curso continuará procesándose"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Activo",
+        "revokeFrom": "Revocar de",
+        "gasFee": "Tarifa de Gas"
+      },
+      "title": "Revocación por lotes",
+      "stopTheRevokeProcess": "¿Detener el proceso de revocación?",
+      "leavingThisPageWillStopTheRevokeProcess": "Salir de esta página detendrá el proceso de revocación.",
+      "startRevoke": "Iniciar revocación",
+      "continueRevoke": "Continuar",
+      "pauseRevoke": "Pausar",
+      "revokeCompleted": "Hecho",
+      "canStillRevoke": "Seguir revocando"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Por Contratos",
+        "assets": "Por Activos"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Todas las aprobaciones",
+        "contractAddress": "Dirección del contrato"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Monto y Saldo de Activos Aprobados"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Todas las aprobaciones",
+        "myBalance": "Mi saldo"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Contratos aprobados y monto"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Tipo de dirección no compatible",
+        "unsupportedAddressTypeDesc": "Revocar delegaciones EIP-7702 solo es compatible con direcciones de clave privada o frase semilla",
+        "supportedChains": "Cadenas compatibles",
+        "delegatedAddressDesc": "Dirección delegados",
+        "notMatched": "No coincide",
+        "noApprovals": "Sin aprobaciones"
+      },
+      "ListByAssets": {
+        "noApprovals": "Sin aprobaciones",
+        "notMatched": "Sin coincidencias"
+      },
+      "ListByContracts": {
+        "noApprovals": "Sin aprobaciones",
+        "notMatched": "No coincide"
+      },
+      "title": "Aprobaciones",
+      "revoke": "Revocar",
+      "approvals": "aprobaciones",
+      "unselectAll": "Deseleccionar todo",
+      "selectAll": "Seleccionar todo"
     }
   },
   "component": {
@@ -4596,7 +4658,8 @@
     "tryAgain": "Inténtalo de nuevo",
     "Nonce": "Nonce",
     "appDescription": "Tu billetera de referencia para Ethereum y EVM",
-    "collapse": "Contraer"
+    "collapse": "Contraer",
+    "Yes": "Sí"
   },
   "background": {
     "error": {

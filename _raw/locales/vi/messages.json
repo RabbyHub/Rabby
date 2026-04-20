@@ -923,7 +923,11 @@
         "ledgerAlert": "Vui lòng mở ứng dụng Ethereum trên thiết bị Ledger của bạn",
         "useGasAccount": "Số dư gas của bạn thấp. GasAccount của bạn sẽ chi trả phí gas.",
         "ledgerSending": "Gửi yêu cầu ký ({{current}}/{{total}})",
-        "ledgerConfirmTitle": "Batch Revoke với Ledger"
+        "ledgerConfirmTitle": "Batch Revoke với Ledger",
+        "revokeWithOneKey": "Bắt đầu thu hồi với OneKey",
+        "oneKeySended": "Vui lòng ký yêu cầu trên OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Đang gửi yêu cầu ký ({{current}}/{{total}})",
+        "oneKeySigned": "Đã ký. Đang tạo giao dịch ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "no-quote-found": "Không tìm thấy báo giá",
       "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục",
       "approve": "Chấp thuận",
-      "search-by-token-name-address": "Tìm kiếm Tên / Địa chỉ Token"
+      "search-by-token-name-address": "Tìm kiếm Tên / Địa chỉ Token",
+      "best-subtitle": "Định giá tốt nhất được xác định bởi tổng chi phí ước tính thấp nhất, bao gồm tỷ giá và phí gas."
     },
     "bridge": {
       "showMore": {
@@ -1148,7 +1153,8 @@
         "receivedDifferentTokenNeedSwap": "Bạn đã nhận một mã thông báo khác. Bạn có thể trao đổi nó với mã thông báo mà bạn đã chọn.",
         "sendStatus": "Gửi trạng thái",
         "swapStatus": "Trạng thái hoán đổi"
-      }
+      },
+      "best-subtitle": "Báo giá tốt nhất được xác định bởi sự kết hợp của chi phí ước tính tổng cộng (bao gồm phí gas) và tốc độ giao hàng."
     },
     "manageAddress": {
       "no-match": "Không tìm thấy",
@@ -4329,6 +4335,62 @@
       "moreChains": "+{{count}} chains",
       "swapFailed": "Hoán đổi thất bại, {{reason}}",
       "completedTips": "Hoán đổi đang diễn ra sẽ tiếp tục xử lý"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Tài sản",
+        "revokeFrom": "Thu hồi từ",
+        "gasFee": "Phí Gas"
+      },
+      "title": "Thu hồi hàng loạt",
+      "stopTheRevokeProcess": "Dừng quá trình thu hồi?",
+      "leavingThisPageWillStopTheRevokeProcess": "Rời khỏi trang này sẽ dừng quá trình thu hồi.",
+      "startRevoke": "Bắt đầu thu hồi",
+      "continueRevoke": "Tiếp tục",
+      "pauseRevoke": "Tạm dừng",
+      "revokeCompleted": "Hoàn tất",
+      "canStillRevoke": "Vẫn thu hồi"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Theo Hợp Đồng",
+        "assets": "Theo Tài Sản"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Tất cả phê duyệt",
+        "contractAddress": "Địa chỉ hợp đồng"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Số dư & Số tiền Tài sản Đã phê duyệt"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Tất cả phê duyệt",
+        "myBalance": "Số dư của tôi"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Hợp đồng đã phê duyệt & Số tiền"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Loại địa chỉ không được hỗ trợ",
+        "unsupportedAddressTypeDesc": "Việc hủy ủy quyền EIP-7702 chỉ được hỗ trợ cho địa chỉ khóa riêng tư hoặc cụm từ hạt giống",
+        "supportedChains": "Các chuỗi được hỗ trợ",
+        "delegatedAddressDesc": "Địa chỉ ủy quyền",
+        "notMatched": "Không khớp",
+        "noApprovals": "Không có phê duyệt"
+      },
+      "ListByAssets": {
+        "noApprovals": "Không có phê duyệt",
+        "notMatched": "Không khớp"
+      },
+      "ListByContracts": {
+        "noApprovals": "Không có phê duyệt",
+        "notMatched": "Không khớp"
+      },
+      "title": "Phê duyệt",
+      "revoke": "Hủy bỏ",
+      "approvals": "Phê duyệt",
+      "unselectAll": "Bỏ chọn tất cả",
+      "selectAll": "Chọn tất cả"
     }
   },
   "component": {
@@ -4593,7 +4655,8 @@
     "Clear": "Xóa",
     "proceedButton": "Tiến hành",
     "appDescription": "Ví dụ ví của bạn cho Ethereum và EVM",
-    "collapse": "Thu gọn"
+    "collapse": "Thu gọn",
+    "Yes": "Có"
   },
   "background": {
     "error": {

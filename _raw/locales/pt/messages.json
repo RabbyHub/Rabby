@@ -923,7 +923,11 @@
         "ledgerSigned": "Assinado. Criando transação ({{current}}/{{total}})",
         "stillRevoke": "Ainda Revogar",
         "ledgerSended": "Por favor, assine a solicitação no Ledger ({{current}}/{{total}})",
-        "ledgerConfirmTitle": "Revogar em Lote com Ledger"
+        "ledgerConfirmTitle": "Revogar em Lote com Ledger",
+        "revokeWithOneKey": "Iniciar revogação com OneKey",
+        "oneKeySended": "Por favor, assine a solicitação no OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Enviando solicitação de assinatura ({{current}}/{{total}})",
+        "oneKeySigned": "Assinado. Criando transação ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "trade": "Negociar",
       "understandRisks": "Eu entendo os riscos e quero continuar",
       "approve": "Aprovar",
-      "search-by-token-name-address": "Pesquisar Nome / Endereço do Token"
+      "search-by-token-name-address": "Pesquisar Nome / Endereço do Token",
+      "best-subtitle": "A melhor cotação é determinada pelo menor custo total estimado, incluindo a taxa de câmbio e as taxas de gás."
     },
     "bridge": {
       "showMore": {
@@ -1148,7 +1153,8 @@
         "queued": "Em espera",
         "sendStatus": "Enviar Status",
         "swapStatus": "Status da Troca"
-      }
+      },
+      "best-subtitle": "A melhor cotação é determinada por uma combinação do custo total estimado (incluindo taxas de gás) e velocidade de entrega."
     },
     "manageAddress": {
       "whitelisted-address": "Endereço na lista branca",
@@ -4329,6 +4335,62 @@
       "moreChains": "+{{count}} cadeias",
       "swapFailed": "Troca falhou, {{reason}}",
       "completedTips": "Troca em andamento continuará processando"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Ativo",
+        "revokeFrom": "Revogar De",
+        "gasFee": "Taxa de Gas"
+      },
+      "title": "Revogar em Lote",
+      "stopTheRevokeProcess": "Parar o processo de revogação?",
+      "leavingThisPageWillStopTheRevokeProcess": "Sair desta página interromperá o processo de revogação.",
+      "startRevoke": "Iniciar Revogação",
+      "continueRevoke": "Continuar",
+      "pauseRevoke": "Pausar",
+      "revokeCompleted": "Concluído",
+      "canStillRevoke": "Ainda Revogar"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Por Contratos",
+        "assets": "Por Ativos"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Todas as Aprovações",
+        "contractAddress": "Endereço do Contrato"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Montante e Saldo dos Ativos Aprovados"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Todas as Aprovações",
+        "myBalance": "Meu Saldo"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Contratos Aprovados e Montante"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Tipo de Endereço Não Suportado",
+        "unsupportedAddressTypeDesc": "Revogar delegações EIP-7702 só é suportado para endereços de chave privada ou frase-semente",
+        "supportedChains": "Redes Suportadas",
+        "delegatedAddressDesc": "Endereço Delegado",
+        "notMatched": "Não Corresponde",
+        "noApprovals": "Sem aprovações"
+      },
+      "ListByAssets": {
+        "noApprovals": "Sem aprovações",
+        "notMatched": "Não correspondido"
+      },
+      "ListByContracts": {
+        "noApprovals": "Sem aprovações",
+        "notMatched": "Não correspondido"
+      },
+      "title": "Aprovações",
+      "revoke": "Revogar",
+      "approvals": "aprovações",
+      "unselectAll": "Desselecionar Tudo",
+      "selectAll": "Selecionar Tudo"
     }
   },
   "component": {
@@ -4593,7 +4655,8 @@
     "nonce": "nonce",
     "copyAddress": "Copie o endereço",
     "appDescription": "Sua carteira de referência para Ethereum e EVM",
-    "collapse": "Recolher"
+    "collapse": "Recolher",
+    "Yes": "Sim"
   },
   "background": {
     "error": {

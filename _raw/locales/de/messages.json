@@ -923,7 +923,11 @@
         "confirmRevokeLedger": "Mithilfe einer Ledger-Adresse können Sie {{count}} Genehmigungen mit einem Klick widerrufen.",
         "stillRevoke": "Noch widerrufen",
         "resume": "Fortfahren",
-        "ledgerConfirmTitle": "Batch widerrufen mit Ledger"
+        "ledgerConfirmTitle": "Batch widerrufen mit Ledger",
+        "revokeWithOneKey": "Revoke mit OneKey starten",
+        "oneKeySended": "Bitte signieren Sie die Anfrage auf OneKey ({{current}}/{{total}})",
+        "oneKeySending": "Signieranfrage wird gesendet ({{current}}/{{total}})",
+        "oneKeySigned": "Signiert. Transaktion wird erstellt ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1056,7 +1060,8 @@
       "preferMEVTip": "Aktivieren Sie die Funktion \"MEV Guarded\" für Ethereum-Swaps, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie eine benutzerdefinierte RPC- oder Wallet-Verbindungsadresse verwenden.",
       "understandRisks": "Ich verstehe die Risiken und möchte fortfahren",
       "approve": "Genehmigen",
-      "search-by-token-name-address": "Suche Token-Name / Adresse"
+      "search-by-token-name-address": "Suche Token-Name / Adresse",
+      "best-subtitle": "Das beste Angebot wird durch die niedrigsten geschätzten Gesamtkosten bestimmt, einschließlich des Wechselkurses und der Gas-Gebühren."
     },
     "manageAddress": {
       "no-address": "Keine Adresse",
@@ -2307,7 +2312,8 @@
         "estimatedTime": "Geschätzte Zeit",
         "sendStatus": "Send-Status",
         "swapStatus": "Swap-Status"
-      }
+      },
+      "best-subtitle": "Das beste Angebot wird durch eine Kombination aus geschätzten Gesamtkosten (einschließlich Gasgebühren) und Liefergeschwindigkeit bestimmt."
     },
     "pendingDetail": {
       "Header": {
@@ -4332,6 +4338,62 @@
       "moreChains": "+{{count}} Ketten",
       "swapFailed": "Swap fehlgeschlagen, {{reason}}",
       "completedTips": "Laufender Swap wird weiterverarbeitet"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Vermögenswerte",
+        "revokeFrom": "Widerrufen von",
+        "gasFee": "Gasgebühr"
+      },
+      "title": "Batch Revoke",
+      "stopTheRevokeProcess": "Stop the revoke process?",
+      "leavingThisPageWillStopTheRevokeProcess": "Leaving this page will stop the revoke process.",
+      "startRevoke": "Start Revoke",
+      "continueRevoke": "Continue",
+      "pauseRevoke": "Pause",
+      "revokeCompleted": "Fertig",
+      "canStillRevoke": "Still Revoke"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Nach Contracts",
+        "assets": "Nach Assets"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Alle Genehmigungen",
+        "contractAddress": "Vertragsadresse"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Genehmigte Vermögenswerte Betrag & Saldo"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Alle Genehmigungen",
+        "myBalance": "Mein Guthaben"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Genehmigte Verträge & Betrag"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Nicht unterstützter Adresstyp",
+        "unsupportedAddressTypeDesc": "Das Widerrufen von EIP-7702-Delegierungen wird nur für Private-Key- oder Seed-Phrase-Adressen unterstützt",
+        "supportedChains": "Unterstützte Chains",
+        "delegatedAddressDesc": "Delegierte Adresse",
+        "notMatched": "Keine Übereinstimmung",
+        "noApprovals": "Keine Approvals"
+      },
+      "ListByAssets": {
+        "noApprovals": "Keine Genehmigungen",
+        "notMatched": "Nicht zugeordnet"
+      },
+      "ListByContracts": {
+        "noApprovals": "Keine Genehmigungen",
+        "notMatched": "Nicht zugeordnet"
+      },
+      "title": "Genehmigungen",
+      "revoke": "Widerrufen",
+      "approvals": "Genehmigungen",
+      "unselectAll": "Auswahl aufheben",
+      "selectAll": "Alle auswählen"
     }
   },
   "component": {
@@ -4596,7 +4658,8 @@
     "tryAgain": "Erneut versuchen",
     "notSupportTesntnet": "Für benutzerdefiniertes Netzwerk nicht unterstützt",
     "appDescription": "Ihr bevorzugtes Wallet für Ethereum und EVM",
-    "collapse": "Einklappen"
+    "collapse": "Einklappen",
+    "Yes": "Ja"
   },
   "background": {
     "error": {
