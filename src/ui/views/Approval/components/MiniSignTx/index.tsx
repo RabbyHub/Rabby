@@ -81,6 +81,7 @@ import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { BalanceChangeLoading } from './BalanceChangeLoanding';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 import {
+  isTempoBatchSupportedAccountType,
   isTempoChain,
   loadTempoFeeTokenOptionsState,
   toTempoCallsTx,
@@ -378,6 +379,9 @@ export const MiniSignTx = ({
   const [noCustomRPC, setNoCustomRPC] = useState(true);
 
   const gasAccountTxs = useMemo(() => {
+    const shouldUseTempoCallsForGasAccount =
+      isTempoChain(chain.serverId) &&
+      isTempoBatchSupportedAccountType(currentAccount?.type);
     if (!selectedGas?.price) {
       return [] as Tx[];
     }
@@ -388,14 +392,20 @@ export const MiniSignTx = ({
           gas: item.gasLimit,
           gasPrice: intToHex(selectedGas.price),
         };
-        return isTempoChain(chain.serverId)
+        return shouldUseTempoCallsForGasAccount
           ? (toTempoCallsTx(gasAccountTx as any, {
               stripTopLevelData: true,
             }) as Tx)
           : gasAccountTx;
       }) || ([] as Tx[])
     );
-  }, [txsResult, realNonce, selectedGas?.price, chain.serverId]);
+  }, [
+    txsResult,
+    realNonce,
+    selectedGas?.price,
+    chain.serverId,
+    currentAccount?.type,
+  ]);
 
   const _currentAccount = useRabbySelector((s) => s.account.currentAccount!);
 
@@ -418,8 +428,12 @@ export const MiniSignTx = ({
     currentAccount: _currentAccount,
   });
   const showTempoGasTokenSelector = useMemo(() => {
-    return isTempoChain(chain.serverId) && gasMethod !== 'gasAccount';
-  }, [chain.serverId, gasMethod]);
+    return (
+      isTempoChain(chain.serverId) &&
+      gasMethod !== 'gasAccount' &&
+      isTempoBatchSupportedAccountType(currentAccount?.type)
+    );
+  }, [chain.serverId, gasMethod, currentAccount?.type]);
 
   const handleSelectTempoGasToken = useMemoizedFn((token: TokenItem) => {
     const tokenId = token.id;
@@ -913,8 +927,12 @@ export const MiniSignTx = ({
 
   const [preExecError, setPreExecError] = useState(false);
   const shouldUseTempoCallsForGasAccount = useMemo(() => {
-    return gasMethod === 'gasAccount' && isTempoChain(chain.serverId);
-  }, [gasMethod, chain.serverId]);
+    return (
+      gasMethod === 'gasAccount' &&
+      isTempoChain(chain.serverId) &&
+      isTempoBatchSupportedAccountType(currentAccount?.type)
+    );
+  }, [gasMethod, chain.serverId, currentAccount?.type]);
 
   const prepareTxs = useMemoizedFn(async () => {
     if (!selectedGas || !inited || !currentAccount?.address) {

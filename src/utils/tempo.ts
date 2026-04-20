@@ -4,6 +4,7 @@ import {
   TEMPO_FEE_TOKEN_DECIMALS,
   TEMPO_PATH_USD_TOKEN,
 } from '@/constant/tempo';
+import { KEYRING_TYPE } from 'consts';
 import type { WalletControllerType } from '@/ui/utils';
 import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import {
@@ -269,11 +270,52 @@ export const shouldUseTempoTransaction = (params: {
   tx: Record<string, unknown>;
   chainServerId?: string | null;
   isGasAccount?: boolean;
+  accountType?: string | null;
 }) => {
-  const { tx, chainServerId, isGasAccount } = params;
+  const { tx, chainServerId, isGasAccount, accountType } = params;
   if (!isTempoChain(chainServerId)) return false;
-  if (isGasAccount) return true;
+  if (isGasAccount) return isTempoBatchSupportedAccountType(accountType);
   return isTempoSpecialTransaction(tx);
+};
+
+export const getTxMatchData = (
+  tx?: Partial<
+    TempoTxLike & {
+      calls?: Array<{
+        data?: unknown;
+      }>;
+    }
+  > | null
+) => {
+  if (typeof tx?.data === 'string' && tx.data) {
+    return tx.data;
+  }
+
+  if (Array.isArray(tx?.calls) && tx.calls.length) {
+    const lastCall = tx.calls[tx.calls.length - 1];
+    if (typeof lastCall?.data === 'string' && lastCall.data) {
+      return lastCall.data;
+    }
+  }
+
+  return '0x';
+};
+
+export const isTempoBatchSupportedAccountType = (type?: string | null) => {
+  return type === KEYRING_TYPE.SimpleKeyring || type === KEYRING_TYPE.HdKeyring;
+};
+
+export const shouldUseTempoBatchTransaction = (params: {
+  chainServerId?: string | null;
+  accountType?: string | null;
+  txs?: TempoTxLike[];
+  txCount?: number;
+}) => {
+  const { chainServerId, accountType, txs, txCount } = params;
+  if (!isTempoChain(chainServerId)) return false;
+  if (!isTempoBatchSupportedAccountType(accountType)) return false;
+  const count = Array.isArray(txs) ? txs.length : txCount || 0;
+  return count > 1;
 };
 
 const normalizeCall = (
@@ -368,6 +410,34 @@ export const buildTempoTransaction = <T extends TxWithTempoExtras<TempoTxLike>>(
   return toTempoCallsTx(nextTx, {
     stripTopLevelData: options?.stripTopLevelData ?? true,
   });
+};
+
+export const buildTempoBatchTransaction = <
+  T extends TxWithTempoExtras<TempoTxLike>
+>(
+  txs: T[],
+  options?: {
+    stripTopLevelData?: boolean;
+  }
+) => {
+  if (!txs.length) {
+    throw new Error('tempo batch transaction requires at least one tx');
+  }
+
+  const baseTx = txs[txs.length - 1];
+  return buildTempoTransaction(
+    {
+      ...baseTx,
+      calls: txs.map((tx) => ({
+        to: tx.to,
+        data: tx.data,
+        value: normalizeHexValue(tx.value ?? '0x0'),
+      })),
+    } as T,
+    {
+      stripTopLevelData: options?.stripTopLevelData ?? false,
+    }
+  );
 };
 
 export const resolveTempoDefaultTokenId = (params: {

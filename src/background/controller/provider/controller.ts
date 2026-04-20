@@ -79,6 +79,7 @@ import {
   removeLeadingZeroes,
 } from '@/background/utils/7702';
 import {
+  getTxMatchData,
   isTempoChain,
   shouldUseTempoTransaction,
   TempoTxCall,
@@ -733,6 +734,7 @@ class ProviderController extends BaseController {
       },
       chainServerId: chainForTx?.serverId,
       isGasAccount,
+      accountType: currentAccount.type,
     });
     if ((eip7702Revoke || is7702) && origin !== INTERNAL_REQUEST_ORIGIN) {
       throw new Error('not support 7702');
@@ -1031,7 +1033,9 @@ class ProviderController extends BaseController {
         if (hash) {
           swapService.postSwap(chain, hash, other);
           bridgeService.postBridge(chain, hash, other);
-          const key = `${chain}-${other.data || rawTx?.data || '0x'}`;
+          const key = `${chain}-${getTxMatchData(
+            [other, rawTx].find(Boolean) as any
+          )}`;
           transactionHistoryService.postCacheHistoryData(key, hash);
         }
 

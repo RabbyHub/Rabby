@@ -59,7 +59,103 @@ import { isLedgerLockError } from '@/ui/utils/ledger';
 import { t } from 'i18next';
 import AuthenticationModalPromise from '../../AuthenticationModal';
 import { DrawerProps, ModalProps } from 'antd';
-import { isTempoChain, toTempoCallsTx } from '@/utils/tempo';
+import {
+  buildTempoTransaction,
+  isTempoChain,
+  shouldUseTempoTransaction,
+  toTempoCallsTx,
+  TxWithTempoExtras,
+} from '@/utils/tempo';
+
+const pickTempoTxFields = (tx: TxWithTempoExtras<Tx>) => ({
+  type: tx.type,
+  calls: tx.calls,
+  feeToken: tx.feeToken,
+  feePayer: tx.feePayer,
+  feePayerSignature: tx.feePayerSignature,
+  nonceKey: tx.nonceKey,
+  keyAuthorization: tx.keyAuthorization,
+  validBefore: tx.validBefore,
+  validAfter: tx.validAfter,
+});
+
+const buildMiniSignPreExecTx = (params: {
+  tx: TxWithTempoExtras<Tx>;
+  chainId: number;
+  chainServerId: string;
+  gas: string;
+  nonce: string;
+  gasPrice: string;
+  is1559Capable: boolean;
+  maxPriorityFee: number;
+}) => {
+  const {
+    tx,
+    chainId,
+    chainServerId,
+    gas,
+    nonce,
+    gasPrice,
+    is1559Capable,
+    maxPriorityFee,
+  } = params;
+  const shouldUseTempoTx = shouldUseTempoTransaction({
+    tx: (tx as unknown) as Record<string, unknown>,
+    chainServerId,
+  });
+  const buildTxBase: TxWithTempoExtras<Tx> = {
+    chainId,
+    data: tx.data || '0x',
+    from: tx.from,
+    gas,
+    nonce,
+    to: tx.to,
+    value: tx.value,
+    gasPrice,
+    ...(shouldUseTempoTx ? pickTempoTxFields(tx) : {}),
+  };
+
+  let buildTx = buildTxBase;
+  if (is1559Capable) {
+    buildTx = {
+      ...(convertLegacyTo1559(buildTxBase) as TxWithTempoExtras<Tx>),
+      ...(shouldUseTempoTx ? pickTempoTxFields(tx) : {}),
+    };
+    buildTx.maxPriorityFeePerGas =
+      maxPriorityFee < 0
+        ? buildTx.maxFeePerGas
+        : intToHex(Math.round(maxPriorityFee));
+  }
+
+  return shouldUseTempoTx
+    ? ((buildTempoTransaction(buildTx as any, {
+        stripTopLevelData: true,
+      }) as unknown) as TxWithTempoExtras<Tx>)
+    : buildTx;
+};
+
+const buildHistoryGasUsedTx = (tx: TxWithTempoExtras<Tx>) => {
+  const shouldUseTempoTx = shouldUseTempoTransaction({
+    tx: (tx as unknown) as Record<string, unknown>,
+    chainServerId: findChain({ id: tx.chainId })?.serverId,
+  });
+
+  if (shouldUseTempoTx) {
+    return {
+      ...tx,
+      nonce: tx.nonce || '0x1',
+      gas: tx.gas || '',
+    };
+  }
+
+  return {
+    ...tx,
+    nonce: tx.nonce || '0x1',
+    data: tx.data,
+    value: tx.value || '0x0',
+    gas: tx.gas || '',
+  };
+};
 
 async function recomputeExplainForCalcItems(params: {
   wallet: WalletControllerType;
@@ -500,28 +596,19 @@ export class SignatureSteps {
     );
 
     const tempTxs: Tx[] = txs.map((e, index) => {
-      const normalizedTx = normalizeTxParams(e);
-      let buildTx: Tx = {
+      const normalizedTx = normalizeTxParams(e) as TxWithTempoExtras<Tx>;
+      return buildMiniSignPreExecTx({
+        tx: normalizedTx,
         chainId,
-        data: normalizedTx.data || '0x', // can not execute with empty string, use 0x instead
-        from: normalizedTx.from,
-        gas: normalizedTx.gas || e.gasLimit,
+        chainServerId: chain.serverId,
+        gas: normalizedTx.gas || e.gasLimit || '',
         nonce:
           normalizedTx.nonce ||
           intToHex(new BigNumber(baseRecommendNonce).plus(index).toNumber()),
-        to: normalizedTx.to,
-        value: normalizedTx.value,
         gasPrice: intToHex(selectedGas.price),
-      };
-
-      if (is1559Capable) {
-        buildTx = convertLegacyTo1559(buildTx) as any;
-        (buildTx as any).maxPriorityFeePerGas =
-          maxPriorityFee < 0
-            ? (buildTx as any).maxFeePerGas
-            : intToHex(Math.round(maxPriorityFee));
-      }
-      return buildTx;
+        is1559Capable,
+        maxPriorityFee,
+      }) as Tx;
     });
 
     const pending_tx_list_promise = getPendingTxs({
@@ -551,13 +638,7 @@ export class SignatureSteps {
       const buildTx = tempTxs[index];
 
       const preparedHistoryGasUsed = wallet.openapi.historyGasUsed({
-        tx: {
-          ...buildTx,
-          nonce: buildTx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
-          data: buildTx.data,
-          value: buildTx.value || '0x0',
-          gas: buildTx.gas || '', // set gas limit if dapp not set
-        },
+        tx: buildHistoryGasUsedTx(buildTx as TxWithTempoExtras<Tx>),
         user_addr: buildTx.from,
       });
 

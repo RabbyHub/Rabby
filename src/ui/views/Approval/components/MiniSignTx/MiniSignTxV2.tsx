@@ -41,6 +41,7 @@ import { DrawerProps, ModalProps } from 'antd';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 import {
   calcTempoMaxGasCostRawAmountIn18,
+  isTempoBatchSupportedAccountType,
   isTempoChain,
   listTempoFeeTokenOptionsFromCache,
   loadTempoFeeTokenOptionsState,
@@ -164,7 +165,10 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   );
   const [tempoGasTokenLoading, setTempoGasTokenLoading] = React.useState(false);
   const showTempoGasTokenSelector =
-    !!chain && isTempoChain(chain.serverId) && ctx?.gasMethod !== 'gasAccount';
+    !!chain &&
+    isTempoChain(chain.serverId) &&
+    ctx?.gasMethod !== 'gasAccount' &&
+    isTempoBatchSupportedAccountType(currentAccount?.type);
 
   const handleSelectTempoGasToken = useCallback(
     async (token: TokenItem) => {

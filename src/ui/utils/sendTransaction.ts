@@ -39,6 +39,7 @@ import { getCexInfo } from '../models/exchange';
 import { Account } from '@/background/service/preference';
 import {
   buildTempoTransaction,
+  isTempoBatchSupportedAccountType,
   isTempoChain,
   shouldUseTempoTransaction,
   TxWithTempoExtras,
@@ -156,7 +157,9 @@ export const sendTransaction = async ({
   account?: Account;
 }) => {
   const shouldUseTempoCallsForGasAccount = (gasAccountEnabled?: boolean) =>
-    !!gasAccountEnabled && isTempoChain(chainServerId);
+    !!gasAccountEnabled &&
+    isTempoChain(chainServerId) &&
+    isTempoBatchSupportedAccountType(account.type);
   let sig = _sig;
   onProgress?.('building');
   const chain = findChain({
@@ -739,13 +742,6 @@ export const sendTransactionByMiniSignV2 = async ({
   parsedData?: ParsedTransactionActionData;
   requiredData?: ActionRequireData;
 }) => {
-  const shouldUseTempoCallsForGasAccount =
-    !!isGasAccount && isTempoChain(chainServerId);
-  const shouldUseTempoTx = shouldUseTempoTransaction({
-    tx: tx as Tx & Record<string, unknown>,
-    chainServerId,
-    isGasAccount: shouldUseTempoCallsForGasAccount,
-  });
   const buildTempoTx = (
     rawTx: Tx & Record<string, unknown>,
     opts?: { stripTopLevelData?: boolean; feePayer?: boolean }
@@ -762,6 +758,16 @@ export const sendTransactionByMiniSignV2 = async ({
   const support1559 = chain.eip['1559'];
 
   const currentAccount = _account || (await wallet.getCurrentAccount())!;
+  const shouldUseTempoCallsForGasAccount =
+    !!isGasAccount &&
+    isTempoChain(chainServerId) &&
+    isTempoBatchSupportedAccountType(currentAccount.type);
+  const shouldUseTempoTx = shouldUseTempoTransaction({
+    tx: tx as Tx & Record<string, unknown>,
+    chainServerId,
+    isGasAccount: shouldUseTempoCallsForGasAccount,
+    accountType: currentAccount.type,
+  });
 
   const signingTxId = await wallet.addSigningTx(tx);
 

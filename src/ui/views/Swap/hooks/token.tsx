@@ -26,6 +26,11 @@ import { useLowCreditState } from '../Component/LowCreditModal';
 import eventBus from '@/eventBus';
 import { useAutoSlippageEffect } from './autoSlippageEffect';
 import { getChainDefaultToken } from '@/ui/utils/token';
+import {
+  getGasTokenBalance,
+  convert18RawToTokenRaw,
+} from '@/utils/transaction';
+import { isTempoChain } from '@/utils/tempo';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -317,6 +322,43 @@ export const useTokenPair = (userAddress: string) => {
     return false;
   }, [chain, payToken]);
 
+  const isTempoSwapChain = useMemo(
+    () => isTempoChain(findChainByEnum(chain)?.serverId),
+    [chain]
+  );
+
+  const {
+    value: tempoGasTokenInfo,
+    loading: isTempoGasTokenLoading,
+  } = useAsync(async () => {
+    if (!userAddress || !isTempoSwapChain) {
+      return null;
+    }
+
+    return getGasTokenBalance({
+      wallet,
+      address: userAddress,
+      chainId: findChainByEnum(chain)!.id,
+    });
+  }, [wallet, userAddress, chain, refreshId, isTempoSwapChain]);
+
+  const payTokenIsTempoFeeToken = useMemo(() => {
+    if (
+      !isTempoSwapChain ||
+      !payToken?.id ||
+      !tempoGasTokenInfo?.token.tokenId
+    ) {
+      return false;
+    }
+
+    return isSameAddress(payToken.id, tempoGasTokenInfo.token.tokenId);
+  }, [isTempoSwapChain, payToken?.id, tempoGasTokenInfo?.token.tokenId]);
+
+  const payTokenIsGasToken = useMemo(
+    () => payTokenIsNativeToken || payTokenIsTempoFeeToken,
+    [payTokenIsNativeToken, payTokenIsTempoFeeToken]
+  );
+
   const [passGasPrice, setUseGasPrice] = useState(false);
 
   const handleAmountChange = useCallback(
@@ -369,11 +411,32 @@ export const useTokenPair = (userAddress: string) => {
     [chain]
   );
 
+  const gasTokenDecimals = useMemo(() => {
+    if (payTokenIsNativeToken) {
+      return nativeTokenDecimals;
+    }
+
+    if (payTokenIsTempoFeeToken) {
+      return tempoGasTokenInfo?.token.decimals || payToken?.decimals || 18;
+    }
+
+    return undefined;
+  }, [
+    nativeTokenDecimals,
+    payTokenIsNativeToken,
+    payTokenIsTempoFeeToken,
+    payToken?.decimals,
+    tempoGasTokenInfo?.token.decimals,
+  ]);
+
   useEffect(() => {
-    if (payTokenIsNativeToken && gasList) {
+    if (payTokenIsGasToken && gasList && gasTokenDecimals !== undefined) {
       const checkGasIsEnough = (price: number) => {
         return new BigNumber(payToken?.raw_amount_hex_str || 0, 16).gte(
-          new BigNumber(gasLimit).times(price)
+          convert18RawToTokenRaw(
+            new BigNumber(gasLimit).times(price),
+            gasTokenDecimals
+          )
         );
       };
       const normalPrice =
@@ -384,19 +447,27 @@ export const useTokenPair = (userAddress: string) => {
       } else {
         gasPriceRef.current = undefined;
       }
+      return;
     }
-  }, [payTokenIsNativeToken, gasList, gasLimit, payToken?.raw_amount_hex_str]);
+
+    gasPriceRef.current = undefined;
+  }, [
+    payTokenIsGasToken,
+    gasList,
+    gasLimit,
+    gasTokenDecimals,
+    normalGasPrice,
+    payToken?.raw_amount_hex_str,
+  ]);
 
   const handleSlider100 = useCallback(() => {
-    if (
-      payTokenIsNativeToken &&
-      payToken &&
-      gasPriceRef.current !== undefined
-    ) {
+    if (payTokenIsGasToken && payToken && gasPriceRef.current !== undefined) {
+      const decimals = gasTokenDecimals || 18;
       const val = tokenAmountBn(payToken).minus(
-        new BigNumber(gasLimit)
-          .times(gasPriceRef.current)
-          .div(10 ** nativeTokenDecimals)
+        convert18RawToTokenRaw(
+          new BigNumber(gasLimit).times(gasPriceRef.current),
+          decimals
+        ).div(new BigNumber(10).pow(decimals))
       );
       if (!val.lt(0)) {
         setUseGasPrice(true);
@@ -409,7 +480,27 @@ export const useTokenPair = (userAddress: string) => {
         setPayAmount(tokenAmountBn(payToken).toString(10));
       }
     }
-  }, [payToken, chain, nativeTokenDecimals, gasLimit, payTokenIsNativeToken]);
+  }, [payToken, gasTokenDecimals, gasLimit, payTokenIsGasToken]);
+
+  useEffect(() => {
+    if (
+      slider === 100 &&
+      swapUseSlider &&
+      payToken?.amount &&
+      !isGasMarketLoading &&
+      (!isTempoSwapChain || !isTempoGasTokenLoading)
+    ) {
+      handleSlider100();
+    }
+  }, [
+    slider,
+    swapUseSlider,
+    payToken?.amount,
+    isGasMarketLoading,
+    isTempoSwapChain,
+    isTempoGasTokenLoading,
+    handleSlider100,
+  ]);
 
   const isStableCoin = useMemo(() => {
     if (payToken?.price && receiveToken?.price) {
@@ -840,11 +931,22 @@ export const useTokenPair = (userAddress: string) => {
     if (isSetMaxRef.current) {
       return;
     }
-    if (!isGasMarketLoading && searchObj?.isMax && payToken?.amount) {
+    if (
+      !isGasMarketLoading &&
+      (!isTempoSwapChain || !isTempoGasTokenLoading) &&
+      searchObj?.isMax &&
+      payToken?.amount
+    ) {
       onChangeSlider(100, true);
       isSetMaxRef.current = true;
     }
-  }, [isGasMarketLoading, searchObj?.isMax, payToken]);
+  }, [
+    isGasMarketLoading,
+    isTempoSwapChain,
+    isTempoGasTokenLoading,
+    searchObj?.isMax,
+    payToken,
+  ]);
 
   const rbiSource = useRbiSource();
 
@@ -885,6 +987,7 @@ export const useTokenPair = (userAddress: string) => {
     setReceiveToken,
     exchangeToken,
     payTokenIsNativeToken,
+    payTokenIsGasToken,
 
     handleAmountChange,
     setPayAmount,

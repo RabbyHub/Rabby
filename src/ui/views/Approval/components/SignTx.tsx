@@ -97,6 +97,7 @@ import { getCexInfo } from '@/ui/models/exchange';
 import {
   buildTempoTransaction,
   calcTempoMaxGasCostRawAmountIn18,
+  isTempoBatchSupportedAccountType,
   loadTempoFeeTokenOptionsState,
   isTempoChain,
   listTempoFeeTokenOptionsFromCache,
@@ -861,8 +862,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     currentAccount: _currentAccount,
   });
   const showTempoGasTokenSelector = useMemo(
-    () => isTempoChain(chain?.serverId) && gasMethod !== 'gasAccount',
-    [chain?.serverId, gasMethod]
+    () =>
+      isTempoChain(chain?.serverId) &&
+      gasMethod !== 'gasAccount' &&
+      isTempoBatchSupportedAccountType(_currentAccount?.type),
+    [chain?.serverId, gasMethod, _currentAccount?.type]
   );
 
   useEffect(() => {
@@ -1398,7 +1402,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
     const tempoTx = tx as TxWithTempoExtras<Tx>;
     const shouldUseTempoCallsForGasAccount =
-      gasMethod === 'gasAccount' && isTempoChain(chain.serverId);
+      gasMethod === 'gasAccount' &&
+      isTempoChain(chain.serverId) &&
+      (currentAccount.type === KEYRING_TYPE.SimpleKeyring ||
+        currentAccount.type === KEYRING_TYPE.HdKeyring);
     const transaction: TxWithTempoExtras<Tx> = {
       from: tempoTx.from,
       to: tempoTx.to,
@@ -1424,6 +1431,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       tx: (transaction as unknown) as Record<string, unknown>,
       chainServerId: chain.serverId,
       isGasAccount: shouldUseTempoCallsForGasAccount,
+      accountType: currentAccount.type,
     });
 
     if (support1559) {

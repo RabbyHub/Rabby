@@ -36,6 +36,7 @@ import IconUnknown from '@/ui/assets/token-default.svg';
 import {
   calcTempoMaxGasCostRawAmountIn18,
   loadTempoFeeTokenOptionsState,
+  isTempoBatchSupportedAccountType,
   isTempoChain,
   listTempoFeeTokenOptionsFromCache,
   TxWithTempoExtras,
@@ -96,6 +97,7 @@ export default function ShowMoreGasSelectModal({
   const state = useSignatureStore();
   const { ctx, config, status } = state;
   const cachedTokenList = useRabbySelector((s) => s.account.tokens.list);
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
   const cachedTokenItems = useMemo(
     () => (cachedTokenList || []).map(abstractTokenToTokenItem),
     [cachedTokenList]
@@ -123,7 +125,8 @@ export default function ShowMoreGasSelectModal({
   const showTempoGasTokenSelector =
     !!ctx &&
     isTempoChain(findChain({ id: ctx.chainId })?.serverId || '') &&
-    ctx.gasMethod !== 'gasAccount';
+    ctx.gasMethod !== 'gasAccount' &&
+    isTempoBatchSupportedAccountType(currentAccount?.type);
 
   const [_, setVisible] = useShowMoreGasSelectModalVisible();
 
