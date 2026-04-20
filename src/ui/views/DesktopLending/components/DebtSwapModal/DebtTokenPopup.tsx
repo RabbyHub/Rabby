@@ -6,9 +6,12 @@ import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg
 import Popup from '@/ui/component/Popup';
 
 import { SwappableToken } from '../../types/swap';
-import { formatApy, formatListNetWorth } from '../../utils/format';
+import {
+  formatApy,
+  formatListNetWorth,
+  formatUsdValue,
+} from '../../utils/format';
 import SymbolIcon from '../SymbolIcon';
-import { formatUsdValue } from '@/ui/utils';
 
 interface DebtTokenPopupProps {
   visible: boolean;
