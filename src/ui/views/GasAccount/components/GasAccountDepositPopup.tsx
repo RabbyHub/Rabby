@@ -11,7 +11,6 @@ interface GasAccountDepositPopupProps {
   onDeposit?(): Promise<void> | void;
   onWaitDepositResult?: GasAccountTopUpWaitCallback;
   minDepositPrice?: number;
-  gasAccountAddress?: string;
   disableDirectDeposit?: boolean;
   maxAccountCount?: number;
 }
@@ -23,7 +22,6 @@ export const GasAccountDepositPopup: React.FC<GasAccountDepositPopupProps> = ({
   onDeposit,
   onWaitDepositResult,
   minDepositPrice,
-  gasAccountAddress,
   disableDirectDeposit,
   maxAccountCount,
 }) => {
@@ -38,7 +36,6 @@ export const GasAccountDepositPopup: React.FC<GasAccountDepositPopupProps> = ({
         onDeposit={onDeposit}
         onWaitDepositResult={onWaitDepositResult}
         minDepositPrice={minDepositPrice}
-        gasAccountAddress={gasAccountAddress}
         disableDirectDeposit={disableDirectDeposit}
         maxAccountCount={maxAccountCount}
       />

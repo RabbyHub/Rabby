@@ -115,7 +115,7 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[24px]">
-        {t('page.gasAccount.loginConfirmModal.title')}
+        {t('page.gasAccount.switchAccount')}
       </div>
 
       <SelectGasAccountList isGasAccount onChange={confirmAddress} />

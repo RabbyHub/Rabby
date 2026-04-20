@@ -53,6 +53,7 @@ export const getDepositAmountValidation = ({
   usdValue,
   amountValue,
   isBridgeDeposit,
+  directTokenBalance,
   tokenBalanceUsd,
   hasTokenPrice,
   minDepositUsd,
@@ -63,6 +64,7 @@ export const getDepositAmountValidation = ({
   usdValue: string;
   amountValue: number;
   isBridgeDeposit: boolean;
+  directTokenBalance: number;
   tokenBalanceUsd: number;
   hasTokenPrice: boolean;
   minDepositUsd: number;
@@ -111,7 +113,14 @@ export const getDepositAmountValidation = ({
     };
   }
 
-  if (tokenBalanceUsd < amountValue) {
+  if (!isBridgeDeposit && directTokenBalance < amountValue) {
+    return {
+      isValid: false,
+      errorMessage: messages.insufficientTokenBalance,
+    };
+  }
+
+  if (isBridgeDeposit && tokenBalanceUsd < amountValue) {
     return {
       isValid: false,
       errorMessage: messages.insufficientTokenBalance,
@@ -149,11 +158,15 @@ export const getBridgeFromTokenAmount = ({
 };
 
 export const getDepositMaxUsdValue = ({
+  isBridgeDeposit,
+  directTokenBalance,
   tokenBalanceUsd,
 }: {
+  isBridgeDeposit: boolean;
+  directTokenBalance: number;
   tokenBalanceUsd: number;
 }) => {
-  return tokenBalanceUsd;
+  return isBridgeDeposit ? tokenBalanceUsd : directTokenBalance;
 };
 
 export const getDepositBalanceCopy = ({

@@ -7,6 +7,7 @@ import { ReactComponent as RcIconMore } from '@/ui/assets/gas-account/more.svg';
 import { ReactComponent as RcIconLogout } from '@/ui/assets/gas-account/logout.svg';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/gas-account/switch-cc.svg';
 import { ReactComponent as RcIconWithdrawCC } from '@/ui/assets/gas-account/withdraw-cc.svg';
+import { __DEV__ } from '@/utils/env';
 
 export const GasAccountHeader: React.FC<{
   isLogin?: boolean;
@@ -42,7 +43,7 @@ export const GasAccountHeader: React.FC<{
           onClick: onSwitchWallet,
         }
       : null,
-    isLogin
+    isLogin && __DEV__
       ? {
           key: 'logout',
           icon: <RcIconLogout className="w-16 h-16" />,

@@ -2626,7 +2626,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             visible={gasAccountDepositVisible}
             onCancel={() => setGasAccountDepositVisible(false)}
             onWaitDepositResult={handleTopUpWaitResult}
-            gasAccountAddress={gasAccountAddress}
             minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
             disableDirectDeposit
           />

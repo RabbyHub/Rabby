@@ -767,7 +767,6 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           visible={gasAccountDepositVisible}
           onCancel={() => setGasAccountDepositVisible(false)}
           onWaitDepositResult={handleTopUpWaitResult}
-          gasAccountAddress={gasAccountAddress}
           minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
           disableDirectDeposit
         />
@@ -1018,7 +1017,6 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         visible={gasAccountDepositVisible}
         onCancel={() => setGasAccountDepositVisible(false)}
         onWaitDepositResult={handleTopUpWaitResult}
-        gasAccountAddress={gasAccountAddress}
         minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
         disableDirectDeposit
       />

@@ -241,6 +241,76 @@ export const fetchGasAccountTopUpUsedNonce = async ({
   return tx?.nonce;
 };
 
+export type GasAccountDepositStatusParams = Parameters<
+  WalletControllerType['openapi']['getGasAccountBridgeStatus']
+>[0];
+
+export const pollDepositStatus = ({
+  wallet,
+  params,
+  intervalMs = 3000,
+  maxAttempts = 100,
+}: {
+  wallet: Pick<WalletControllerType, 'openapi'>;
+  params: GasAccountDepositStatusParams;
+  intervalMs?: number;
+  maxAttempts?: number;
+}): { promise: Promise<boolean | 'cancel'>; cancel: () => void } => {
+  let cancelled = false;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  let wakeSleep: (() => void) | null = null;
+
+  const cancel = () => {
+    cancelled = true;
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    if (wakeSleep) {
+      wakeSleep();
+      wakeSleep = null;
+    }
+  };
+
+  const promise = (async () => {
+    for (let i = 0; i < maxAttempts && !cancelled; i += 1) {
+      try {
+        const result = await wallet.openapi.getGasAccountBridgeStatus(params);
+        if (cancelled) {
+          return 'cancel';
+        }
+        if (result.status === 'success') {
+          return true;
+        }
+        if (result.status === 'failed') {
+          return false;
+        }
+      } catch (error) {
+        console.error('pollDepositStatus error', error);
+      }
+
+      if (cancelled) {
+        break;
+      }
+
+      await new Promise<void>((resolve) => {
+        wakeSleep = () => {
+          wakeSleep = null;
+          timer = null;
+          resolve();
+        };
+        timer = setTimeout(() => {
+          wakeSleep?.();
+        }, intervalMs);
+      });
+    }
+
+    return 'cancel';
+  })();
+
+  return { promise, cancel };
+};
+
 export const isValidBridgeQuote = ({
   quote,
   accountAddress,

@@ -1,6 +1,6 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import { useInfiniteScroll, useInViewport } from 'ahooks';
+import { useInViewport } from 'ahooks';
 import { message } from 'antd';
 import { uniqBy } from 'lodash';
 import React, { useRef } from 'react';
@@ -40,7 +40,9 @@ export const useGasAccountRefresh = () => {
   const refreshId = useGasAccountRefreshId();
   const setRefreshId = useGasAccountSetRefreshId();
 
-  const refresh = () => setRefreshId((e) => e + 1);
+  const refresh = useCallback(() => {
+    setRefreshId((e) => e + 1);
+  }, [setRefreshId]);
 
   return { refreshId, refresh };
 };
@@ -573,13 +575,6 @@ export const useGasAccountHistory = () => {
 
   const wallet = useWallet();
   const depositFlowActive = useGasAccountDepositFlowActive();
-
-  const [refreshTxListCount, setRefreshListTx] = useState(0);
-  const pendingPollCountRef = useRef(0);
-  const refreshListTx = React.useCallback(() => {
-    setRefreshListTx((e) => e + 1);
-  }, []);
-
   const { refresh: refreshGasAccountBalance } = useGasAccountRefresh();
   const { refreshHistoryId } = useGasAccountHistoryRefresh();
 
@@ -587,92 +582,181 @@ export const useGasAccountHistory = () => {
     ReturnType<typeof wallet.openapi.getGasAccountHistory>
   >;
 
-  const {
-    data: txList,
-    loading,
-    loadMore,
-    loadingMore,
-    noMore,
-    mutate,
-  } = useInfiniteScroll<{
+  type HistoryTxList = {
     rechargeList: History['recharge_list'];
     withdrawList: History['withdraw_list'];
     list: History['history_list'];
     totalCount: number;
-  }>(
-    async (d) => {
-      const data = await wallet.openapi.getGasAccountHistory({
-        sig: sig!,
-        account_id: accountId!,
-        start: d?.list?.length && d?.list?.length > 1 ? d?.list?.length : 0,
-        limit: 5,
-      });
+  };
 
-      const rechargeList = data.recharge_list;
-      const historyList = data.history_list;
-      const withdrawList = data.withdraw_list;
-
-      return {
-        rechargeList: rechargeList || [],
-        withdrawList: withdrawList || [],
-        list: historyList,
-        totalCount: data.pagination.total,
-      };
-    },
-
-    {
-      reloadDeps: [sig, refreshHistoryId],
-      isNoMore(data) {
-        if (data) {
-          return (
-            data.totalCount <=
-            (data.list.length || 0) +
-              (data?.rechargeList?.length || 0) +
-              (data?.withdrawList?.length || 0)
-          );
-        }
-        return true;
-      },
-      manual: !sig || !accountId,
-    }
-  );
-
-  const { value } = useAsync(async () => {
-    if (sig && accountId && refreshTxListCount) {
-      return wallet.openapi.getGasAccountHistory({
-        sig,
-        account_id: accountId,
-        start: 0,
-        limit: 5,
-      });
-    }
-  }, [sig, refreshTxListCount]);
+  const [txList, setTxList] = useState<HistoryTxList>();
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const requestVersionRef = useRef(0);
+  const pendingPollCountRef = useRef(0);
+  const txListRef = useRef<HistoryTxList>();
 
   useEffect(() => {
-    if (value?.history_list) {
-      mutate((d) => {
-        if (!d) {
+    txListRef.current = txList;
+  }, [txList]);
+
+  const buildTxList = useCallback(
+    (data: History, previousList?: History['history_list']) => ({
+      rechargeList: data.recharge_list || [],
+      withdrawList: data.withdraw_list || [],
+      list: previousList
+        ? uniqBy(
+            [...(data.history_list || []), ...previousList],
+            (item) => `${item?.create_at}` as string
+          )
+        : data.history_list || [],
+      totalCount: data.pagination.total,
+    }),
+    []
+  );
+
+  const clearHistory = useCallback(() => {
+    requestVersionRef.current += 1;
+    pendingPollCountRef.current = 0;
+    txListRef.current = undefined;
+    setLoading(false);
+    setLoadingMore(false);
+    setTxList(undefined);
+  }, []);
+
+  const refreshListTx = useCallback(
+    async (options?: { preserveLoadedList?: boolean }) => {
+      if (!sig || !accountId) {
+        clearHistory();
+        return;
+      }
+
+      const requestVersion = ++requestVersionRef.current;
+      const previousTxList = txListRef.current;
+
+      if (!previousTxList) {
+        setLoading(true);
+      }
+
+      try {
+        const data = await wallet.openapi.getGasAccountHistory({
+          sig,
+          account_id: accountId,
+          start: 0,
+          limit: 5,
+        });
+
+        if (requestVersion !== requestVersionRef.current) {
           return;
         }
 
+        const nextTxList = buildTxList(
+          data,
+          options?.preserveLoadedList ? previousTxList?.list : undefined
+        );
+
+        setTxList(nextTxList);
+
         if (
-          value?.recharge_list?.length !== d.rechargeList.length ||
-          value?.withdraw_list?.length !== d.withdrawList.length
+          previousTxList &&
+          (previousTxList.rechargeList.length !==
+            nextTxList.rechargeList.length ||
+            previousTxList.withdrawList.length !==
+              nextTxList.withdrawList.length)
         ) {
           refreshGasAccountBalance();
         }
+      } catch (error) {
+        console.error('refresh gas account history error', error);
+      } finally {
+        if (requestVersion === requestVersionRef.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [
+      accountId,
+      buildTxList,
+      clearHistory,
+      refreshGasAccountBalance,
+      sig,
+      wallet,
+    ]
+  );
+
+  const loadMoreHistory = useCallback(async () => {
+    const currentTxList = txListRef.current;
+
+    if (
+      !sig ||
+      !accountId ||
+      !currentTxList ||
+      loading ||
+      loadingMore ||
+      currentTxList.totalCount <=
+        currentTxList.list.length +
+          currentTxList.rechargeList.length +
+          currentTxList.withdrawList.length
+    ) {
+      return;
+    }
+
+    setLoadingMore(true);
+    const requestVersion = requestVersionRef.current;
+
+    try {
+      const data = await wallet.openapi.getGasAccountHistory({
+        sig,
+        account_id: accountId,
+        start: currentTxList.list.length > 0 ? currentTxList.list.length : 0,
+        limit: 5,
+      });
+
+      if (requestVersion !== requestVersionRef.current) {
+        return;
+      }
+
+      setTxList((previous) => {
+        if (!previous) {
+          return previous;
+        }
+
         return {
-          withdrawList: value?.withdraw_list,
-          rechargeList: value?.recharge_list,
-          totalCount: value.pagination.total,
-          list: uniqBy(
-            [...(value?.history_list || []), ...(d?.list || [])],
-            (e) => `${e?.create_at}` as string
-          ),
+          ...previous,
+          list: [...previous.list, ...(data.history_list || [])],
+          totalCount: data.pagination.total,
         };
       });
+    } catch (error) {
+      console.error('load more gas account history error', error);
+    } finally {
+      setLoadingMore(false);
     }
-  }, [mutate, value]);
+  }, [accountId, loading, loadingMore, sig, wallet]);
+
+  const noMore = useMemo(() => {
+    if (!txList) {
+      return true;
+    }
+
+    return (
+      txList.totalCount <=
+      txList.list.length +
+        txList.rechargeList.length +
+        txList.withdrawList.length
+    );
+  }, [txList]);
+
+  useEffect(() => {
+    if (!sig || !accountId) {
+      clearHistory();
+      return;
+    }
+
+    refreshListTx({
+      preserveLoadedList: true,
+    });
+  }, [accountId, clearHistory, refreshHistoryId, refreshListTx, sig]);
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -684,11 +768,18 @@ export const useGasAccountHistory = () => {
       !noMore &&
       inViewport &&
       !loadingMore &&
-      loadMore
+      loadMoreHistory
     ) {
-      loadMore();
+      loadMoreHistory();
     }
-  }, [depositFlowActive, inViewport, loadMore, loading, loadingMore, noMore]);
+  }, [
+    depositFlowActive,
+    inViewport,
+    loadMoreHistory,
+    loading,
+    loadingMore,
+    noMore,
+  ]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -696,6 +787,8 @@ export const useGasAccountHistory = () => {
       txList?.rechargeList?.length || txList?.withdrawList?.length
     );
     const MAX_PENDING_POLLS = 30;
+    const PENDING_POLL_DELAY = 2000;
+
     if (
       !depositFlowActive &&
       !loading &&
@@ -704,15 +797,17 @@ export const useGasAccountHistory = () => {
       pendingPollCountRef.current < MAX_PENDING_POLLS
     ) {
       pendingPollCountRef.current += 1;
-      const delay = Math.min(
-        2000 * 2 ** Math.floor(pendingPollCountRef.current / 5),
-        30000
-      );
-      timer = setTimeout(refreshListTx, delay);
+
+      timer = setTimeout(() => {
+        refreshListTx({
+          preserveLoadedList: true,
+        });
+      }, PENDING_POLL_DELAY);
     }
-    if (!hasSomePending) {
+    if (!hasSomePending && pendingPollCountRef.current) {
       pendingPollCountRef.current = 0;
     }
+
     return () => {
       if (timer) {
         clearTimeout(timer);
@@ -725,7 +820,6 @@ export const useGasAccountHistory = () => {
     txList,
     loadingMore,
     ref,
-    refreshListTx,
   };
 };
 

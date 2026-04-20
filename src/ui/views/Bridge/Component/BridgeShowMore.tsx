@@ -970,7 +970,6 @@ export const DirectSignGasInfo = ({
         visible={gasAccountDepositVisible}
         onCancel={() => setGasAccountDepositVisible(false)}
         onWaitDepositResult={handleTopUpWaitResult}
-        gasAccountAddress={accountId || currentAccount?.address || ''}
         minDepositPrice={
           gasAccount?.gas_account_cost?.total_cost != null
             ? Number(gasAccount.gas_account_cost.total_cost)

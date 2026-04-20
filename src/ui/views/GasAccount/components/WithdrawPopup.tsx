@@ -283,7 +283,7 @@ const Selector = ({
           {!sortedList?.length ? null : isSelectChain ? (
             <FixedSizeList<RechargeChainItem[]>
               width={'100%'}
-              height={251}
+              height={340}
               itemCount={sortedList?.length || 0}
               itemData={sortedList as RechargeChainItem[]}
               itemSize={68}
@@ -293,7 +293,7 @@ const Selector = ({
           ) : (
             <FixedSizeList<WithdrawListAddressItem[]>
               width={'100%'}
-              height={251}
+              height={340}
               itemCount={sortedList?.length || 0}
               itemData={sortedList as WithdrawListAddressItem[]}
               itemSize={68}
@@ -689,7 +689,7 @@ const WithdrawContent = ({
   );
 };
 
-export const WithDrawPopup = (
+export const WithdrawPopup = (
   props: PopupProps & {
     balance: number;
     handleRefreshHistory: () => void;

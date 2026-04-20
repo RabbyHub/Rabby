@@ -17,6 +17,12 @@ import { useGasAccountSign } from '../hooks';
 const GAS_ACCOUNT_INFO_CACHE_TTL = 60 * 1000;
 const GAS_ACCOUNT_INFO_CACHE_MAX_SIZE = 50;
 
+const getGasAccountListItemKey = (account: {
+  address: string;
+  type: string;
+  brandName: string;
+}) => `${account.address.toLowerCase()}-${account.type}-${account.brandName}`;
+
 type GasAccountInfoCacheEntry = {
   data?: GasAccountInfo | null;
   updatedAt: number;
@@ -160,38 +166,24 @@ export const SelectGasAccountList = ({
     [accounts]
   );
 
-  const cachedBalanceOrder = useMemo(
-    () =>
-      new Map(
-        accountsWithGasAccountBalance.map((item, index) => [
-          item.address.toLowerCase(),
-          index,
-        ])
-      ),
-    [accountsWithGasAccountBalance]
+  const gasAccountListItemMap = useMemo(
+    () => new Map(_list.map((item) => [getGasAccountListItemKey(item), item])),
+    [_list]
   );
 
   const list = useMemo(() => {
     if (!isGasAccount) {
       return _list;
     }
-    return [..._list].sort((a, b) => {
-      const aOrder = cachedBalanceOrder.get(a.address.toLowerCase());
-      const bOrder = cachedBalanceOrder.get(b.address.toLowerCase());
-
-      if (aOrder !== undefined && bOrder !== undefined) {
-        return aOrder - bOrder;
-      }
-      if (aOrder !== undefined) {
-        return -1;
-      }
-      if (bOrder !== undefined) {
-        return 1;
-      }
-
-      return 0;
-    });
-  }, [_list, cachedBalanceOrder, isGasAccount]);
+    return accountsWithGasAccountBalance
+      .map((item) => gasAccountListItemMap.get(getGasAccountListItemKey(item)))
+      .filter((item): item is IDisplayedAccountWithBalance => !!item);
+  }, [
+    _list,
+    accountsWithGasAccountBalance,
+    gasAccountListItemMap,
+    isGasAccount,
+  ]);
 
   return (
     <>
@@ -231,7 +223,7 @@ const GasAccountBalance = ({
 }: {
   account?: GasAccountInfo | null;
 }) => {
-  if (!account || account.no_register) {
+  if (!account || account.no_register || account.balance === 0) {
     return null;
   }
   return (

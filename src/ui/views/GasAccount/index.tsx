@@ -3,7 +3,7 @@ import { PageHeader } from '@/ui/component';
 
 import { useTranslation } from 'react-i18next';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { GasAccountLoginPopup } from './components/GasAccountLoginPopup';
 import { GasAccountDepositPopup } from './components/GasAccountDepositPopup';
@@ -19,7 +19,6 @@ import {
 } from './hooks';
 
 import { GasAccountLogoutPopup } from './components/GasAccountLogoutPopup';
-import { WithDrawPopup } from './components/WithDrawPopup';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   GasAccountRefreshIdProvider,
@@ -35,6 +34,7 @@ import { GasAccountUserState } from './components/GasAccountUserState';
 import { GasAccountHeader } from './components/HeaderRight';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
 import { formatUsdValue } from '@/ui/utils/number';
+import { WithdrawPopup } from './components/WithdrawPopup';
 
 const GasAccountInner = () => {
   const { t } = useTranslation();
@@ -43,8 +43,6 @@ const GasAccountInner = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
 
   const [depositVisible, setDepositVisible] = useState(false);
-
-  const [refreshHistoryKey, setRefreshHistoryKey] = useState(0);
 
   const [withdrawVisible, setWithdrawVisible] = useState(false);
 
@@ -62,7 +60,7 @@ const GasAccountInner = () => {
   };
 
   const { value: gasAccount, loading } = useGasAccountInfo();
-  const { isLogin } = useGasAccountLogin({ value: gasAccount, loading });
+  const { isLogin, login } = useGasAccountLogin({ value: gasAccount, loading });
   const {
     pendingHardwareAccount,
     accountsWithGasAccountBalance,
@@ -93,9 +91,8 @@ const GasAccountInner = () => {
   const { refreshHistory } = useGasAccountHistoryRefresh();
 
   const handleRefreshHistory = useCallback(() => {
-    setRefreshHistoryKey((prevKey) => prevKey + 1);
     refreshHistory();
-  }, [setRefreshHistoryKey, refreshHistory]);
+  }, [refreshHistory]);
 
   const hasHistory = Boolean(
     historyState.txList?.rechargeList?.length ||
@@ -199,8 +196,24 @@ const GasAccountInner = () => {
     refresh,
   ]);
 
-  const handleUserStatePrimaryPress = useCallback(() => {
+  const handleUserStatePrimaryPress = useCallback(async () => {
     if (emptyStateLoading) {
+      return;
+    }
+    if (!isLogin && pendingHardwareAccount) {
+      setEmptyStateLoading(true);
+      try {
+        await login(pendingHardwareAccount);
+        refresh();
+        handleRefreshHistory();
+        message.success(t('page.gasAccount.loginSuccess'));
+        openDepositPopup();
+      } catch (error) {
+        console.error('handleOldUserStatePrimaryPress error', error);
+        message.error(t('page.gasAccount.loginFailed'));
+      } finally {
+        setEmptyStateLoading(false);
+      }
       return;
     }
 
@@ -279,12 +292,6 @@ const GasAccountInner = () => {
             balance={visibleBalance}
             historyState={historyState}
             warningMessage={lowBalanceWarningMessage}
-            key={
-              refreshHistoryKey +
-              `-${isLogin}-${
-                gasAccount?.account?.id || pendingHardwareAccount?.address
-              }`
-            }
           />
         )}
       </div>
@@ -323,7 +330,7 @@ const GasAccountInner = () => {
         onCancel={() => setDepositVisible(false)}
       />
 
-      <WithDrawPopup
+      <WithdrawPopup
         visible={withdrawVisible}
         onCancel={() => setWithdrawVisible(false)}
         handleRefreshHistory={handleRefreshHistory}
