@@ -36,10 +36,14 @@ import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TypedDataActions';
 import {
-  cleanEIP712Payload,
-  isDeepJSON,
   normalizeTypeData,
 } from './TypedDataActions/utils';
+import {
+  cleanEIP712Payload,
+  isDeepJSON,
+  MAX_TYPED_DATA_DEPTH,
+  truncateDeepJSON,
+} from './typedDataSafety';
 import {
   Level,
   defaultRules,
@@ -238,29 +242,43 @@ const SignTypedData = ({
     () => /^eth_signTypedData(_v1)?$/.test(method),
     [method]
   );
-  const [signTypedData, rawMessage]: (null | Record<
-    string,
-    any
-  >)[] = useMemo(() => {
+  const [
+    signTypedData,
+    rawMessage,
+    displayMessageData,
+    isUnsafeDeepTypedData,
+  ]: [
+    null | Record<string, any>,
+    null | Record<string, any>,
+    null | Record<string, any>,
+    boolean,
+  ] = useMemo(() => {
     if (!isSignTypedDataV1) {
       try {
         const v = JSON.parse(data[1]);
 
-        let v2 = v;
-        // if the payload is too deep, we need to clean it
-        if (isDeepJSON(v, 100)) {
-          v2 = cleanEIP712Payload(v);
+        if (isDeepJSON(v, MAX_TYPED_DATA_DEPTH)) {
+          const cleaned = cleanEIP712Payload(v);
+          return [
+            null,
+            null,
+            truncateDeepJSON(cleaned, MAX_TYPED_DATA_DEPTH) as Record<
+              string,
+              any
+            >,
+            true,
+          ];
         }
 
-        const displayData = cloneDeep(v2);
-        const normalized = normalizeTypeData(v2);
-        return [normalized, displayData];
+        const displayData = cloneDeep(v);
+        const normalized = normalizeTypeData(v);
+        return [normalized, displayData, displayData, false];
       } catch (error) {
         console.error('parse signTypedData error: ', error);
-        return [null, null];
+        return [null, null, null, false];
       }
     }
-    return [null, null];
+    return [null, null, null, false];
   }, [data, isSignTypedDataV1]);
   const normalizedSignTypedData = useMemo(
     () => normalizePolygonMetaTransactionTypedData(signTypedData),
@@ -279,14 +297,12 @@ const SignTypedData = ({
         }, {});
         displayMessage = message;
       } else {
-        // [from, Message]
-        /**
-         * To avoid bypass, we need to normalize body of typedData before
-         * decode from server, but normalized value may not same as origin
-         * so use displayMessage for UI display
-         * */
-        displayMessage = parseSignTypedDataMessage(data[1]);
-        message = parseSignTypedDataMessage(signTypedData || data[1]);
+        displayMessage = parseSignTypedDataMessage(
+          displayMessageData || data[1]
+        );
+        message = parseSignTypedDataMessage(
+          signTypedData || displayMessageData || data[1]
+        );
       }
 
       setMessage(message);
@@ -377,6 +393,12 @@ const SignTypedData = ({
           <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
           {t('page.signTypedData.safeCantSignTypedData')}
         </div>
+      );
+    }
+    if (isUnsafeDeepTypedData) {
+      setIsWatch(true);
+      setCantProcessReason(
+        <div>Typed data is too deep to parse safely.</div>
       );
     }
   };
@@ -915,7 +937,11 @@ const SignTypedData = ({
             requireData={actionRequireData}
             chain={chain}
             engineResults={engineResults}
-            raw={isSignTypedDataV1 ? data[0] : rawMessage || data[1]}
+            raw={
+              isSignTypedDataV1
+                ? data[0]
+                : displayMessageData || rawMessage || data[1]
+            }
             message={parsedMessage}
             origin={params.session.origin}
             originLogo={params.session.icon}
