@@ -2,10 +2,10 @@ import BigNumber from 'bignumber.js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
+import { formatTokenAmount } from '@/ui/utils/number';
 
 import { SwappableToken } from '../../types/swap';
-import { formatApy } from '../../utils/format';
+import { formatApy, formatUsdValue } from '../../utils/format';
 import { HealthFactorText } from '../HealthFactorText';
 import SymbolIcon from '../SymbolIcon';
 

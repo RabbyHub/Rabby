@@ -1,13 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { Skeleton, Tooltip } from 'antd';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import styled, { createGlobalStyle } from 'styled-components';
 import { getHealthStatusColor, isHFEmpty } from '../../utils';
 import { HF_COLOR_GOOD_THRESHOLD } from '../../utils/constant';
-import { estDaily, formatApy } from '../../utils/format';
+import { estDaily, formatApy, formatUsdValue } from '../../utils/format';
 import { getHealthFactorText } from '../../utils/health';
 import RightMarketTabInfo from './RightTag';
 import { HFDescription } from '../HFDescription';
