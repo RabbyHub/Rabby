@@ -45,7 +45,7 @@ import {
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DbkButton } from '../../Ecology/dbk-chain/components/DbkButton';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { BridgePendingTxItem } from './PendingTxItem';
 import {
@@ -54,6 +54,7 @@ import {
   createAmountComparer,
   shouldIgnoreAmountChangeInMaxMode,
 } from '@/ui/utils/form';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -499,6 +500,7 @@ export const BridgeContent = () => {
     })
   );
   const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
+  const depositFlowActive = useGasAccountDepositFlowActive();
   const buildTopUpSnapshot = useCallback(
     (): BridgeTopUpSnapshot => ({
       amount: amount || '',
@@ -533,15 +535,10 @@ export const BridgeContent = () => {
     slippageState,
   ]);
 
-  const bridgeSignerOwner = useMemo(
-    () => createMiniSignOwner('bridge', currentAccount),
-    [currentAccount]
-  );
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChainByEnum(fromChain)?.serverId || '',
     autoResetGasStoreOnChainChange: true,
-    owner: bridgeSignerOwner,
   });
   const consumeTopUpResumeGuard = useCallback(() => {
     const snapshot = topUpFormValuesRef.current.getSnapshot();
@@ -687,7 +684,7 @@ export const BridgeContent = () => {
 
   useEffect(() => {
     if (!btnDisabled && selectedBridgeQuote) {
-      if (awaitingTopUpResume) {
+      if (awaitingTopUpResume || depositFlowActive) {
         return;
       }
       mutateTxs([]);
@@ -698,11 +695,12 @@ export const BridgeContent = () => {
     btnDisabled,
     selectedBridgeQuote,
     awaitingTopUpResume,
+    depositFlowActive,
   ]);
 
   useEffect(() => {
     if (!canUseDirectSubmitTx) return;
-    if (awaitingTopUpResume) {
+    if (awaitingTopUpResume || depositFlowActive) {
       return;
     }
     closeSign();
@@ -721,6 +719,7 @@ export const BridgeContent = () => {
     prefetch,
     txs,
     canUseDirectSubmitTx,
+    depositFlowActive,
     rbiSource,
   ]);
 
@@ -891,6 +890,7 @@ export const BridgeContent = () => {
             <BridgeShowMore
               insufficient={inSufficient}
               supportDirectSign={canUseDirectSubmitTx}
+              signatureInstance={instance}
               openFeePopup={openFeePopup}
               open={showMoreOpen}
               setOpen={setShowMoreOpen}
@@ -985,6 +985,7 @@ export const BridgeContent = () => {
                   onConfirm={handleBridge}
                   showRiskTips={showRiskTips && !btnDisabled}
                   accountType={currentAccount?.type}
+                  signatureInstance={instance}
                   riskReset={btnDisabled}
                   loading={miniSignLoading}
                 />

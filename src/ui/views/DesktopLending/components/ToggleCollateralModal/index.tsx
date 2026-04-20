@@ -16,7 +16,7 @@ import { usePoolDataProviderContract } from '../../hooks/pool';
 
 import { useCollateralWaring } from '../../hooks/useCollateralWaring';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -124,15 +124,10 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
-    owner: createMiniSignOwner(
-      'lending-toggle-collateral',
-      currentAccount,
-      chainInfo?.serverId
-    ),
   });
 
   const buildTx = useCallback(async () => {
@@ -445,6 +440,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
               chainServeId={chainInfo.serverId}
               noQuote={false}
               type="send"
+              signatureInstance={instance}
             />
           </div>
         )}
@@ -496,6 +492,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
           loading={miniSignLoading}
           onConfirm={() => handleToggleCollateral()}
           accountType={currentAccount.type}
+          signatureInstance={instance}
         />
       ) : (
         <Button

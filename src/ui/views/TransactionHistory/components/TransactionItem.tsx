@@ -33,7 +33,7 @@ import { is7702Tx } from '@/utils/transaction';
 import { omit } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 const isDesktop = getUiType().isDesktop;
@@ -80,11 +80,6 @@ export const TransactionItem = ({
   const { openUI, resetGasStore, close: closeSign } = useMiniSigner({
     account: account!,
     chainServerId: chain?.serverId,
-    owner: createMiniSignOwner(
-      'tx-history-item',
-      account,
-      `${item.chainId}-${item.nonce}`
-    ),
   });
 
   const canUseMiniTx = useMemo(() => {

@@ -61,13 +61,16 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   task: BatchSignTxTaskType;
   gasMethod?: 'native' | 'gasAccount';
   gasAccountCost?: GasAccountCheckResult;
-  onChangeGasAccount?: () => void;
+  onChangeGasAccount?: () => void | Promise<void>;
   isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
   gasAccountCanPay?: boolean;
   noCustomRPC?: boolean;
   canGotoUseGasAccount?: boolean;
   canDepositUseGasAccount?: boolean;
+  gasAccountAddress?: string;
+  onOpenGasAccountDeposit?: () => void;
+  disableGasAccountDeposit?: boolean;
   getContainer?: DrawerProps['getContainer'];
   isFirstGasCostLoading?: boolean;
   isFirstGasLessLoading?: boolean;
@@ -210,6 +213,9 @@ export const MiniFooterBar: React.FC<Props> = ({
   noCustomRPC,
   canGotoUseGasAccount,
   canDepositUseGasAccount,
+  gasAccountAddress,
+  onOpenGasAccountDeposit,
+  disableGasAccountDeposit,
   task,
   getContainer,
   isFirstGasCostLoading,
@@ -392,12 +398,16 @@ export const MiniFooterBar: React.FC<Props> = ({
             canUseGasLess,
           }) ? null : (
           <GasLessNotEnough
-            gasLessFailedReason={gasLessFailedReason}
+            approvalUiStyle
+            nativeTokenInsufficient={!!isGasNotEnough}
+            gasAccountCost={gasAccountCost}
+            gasAccountAddress={gasAccountAddress}
             canGotoUseGasAccount={canGotoUseGasAccount}
             onChangeGasAccount={onChangeGasAccount}
             canDepositUseGasAccount={canDepositUseGasAccount}
-            miniFooter
             onRedirectToDeposit={onRedirectToDeposit}
+            onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+            disableGasAccountDeposit={disableGasAccountDeposit}
             preserveApprovalContext={supportedDirectSign(account.type)}
           />
         )
@@ -405,12 +415,16 @@ export const MiniFooterBar: React.FC<Props> = ({
 
       {payGasByGasAccount && !gasAccountCanPay ? (
         <GasAccountTips
+          approvalUiStyle
           gasAccountCost={gasAccountCost}
-          isGasAccountLogin={isGasAccountLogin}
+          gasAccountAddress={gasAccountAddress}
           isWalletConnect={isWalletConnect}
           noCustomRPC={noCustomRPC}
-          miniFooter
+          nativeTokenInsufficient={!!isGasNotEnough}
           onRedirectToDeposit={onRedirectToDeposit}
+          onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+          disableGasAccountDeposit={disableGasAccountDeposit}
+          onChangeGasAccount={onChangeGasAccount}
           preserveApprovalContext={supportedDirectSign(account.type)}
         />
       ) : null}

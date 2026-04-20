@@ -7,7 +7,7 @@ import { useWallet } from '@/ui/utils/WalletContext';
 import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { message } from 'antd';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -148,15 +148,10 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
-    owner: createMiniSignOwner(
-      'lending-manage-emode',
-      currentAccount,
-      chainInfo?.serverId
-    ),
   });
 
   const buildTx = useCallback(async () => {
@@ -421,6 +416,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
               chainServeId={chainInfo.serverId}
               noQuote={false}
               type="send"
+              signatureInstance={instance}
             />
           </div>
         )}
@@ -463,6 +459,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleSubmit()}
             accountType={currentAccount.type}
+            signatureInstance={instance}
           />
         ) : (
           <Button

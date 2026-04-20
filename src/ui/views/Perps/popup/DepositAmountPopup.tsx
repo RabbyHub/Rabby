@@ -39,7 +39,7 @@ import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { getPerpsSDK } from '../sdkManager';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { useTwoStepSwap } from '@/ui/views/Swap/hooks/twoStepSwap';
 import TokenSelectPopup from './TokenSelectPopup';
@@ -450,11 +450,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 
   const { openDirect, close: closeSign } = useMiniSigner({
     account: currentPerpsAccount!,
-    owner: createMiniSignOwner(
-      'perps-deposit-popup',
-      currentPerpsAccount,
-      type
-    ),
   });
 
   const estReceiveUsdValue = useMemo(() => {

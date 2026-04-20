@@ -226,17 +226,22 @@ const Selector = ({
         status === SelectorStatus.Chain || status === SelectorStatus.Address
       }
       onClose={onClose}
-      getContainer={false}
       bodyStyle={{
         padding: 0,
+        height: '100%',
       }}
       contentWrapperStyle={{
         boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
         borderRadius: '16px 16px 0px 0',
         height: 440,
+        top: 'auto',
+        bottom: 0,
+        overflow: 'hidden',
       }}
       closeIcon={<GasAccountCloseIcon />}
       closable
+      destroyOnClose
+      push={false}
     >
       <div className="flex flex-col h-full pt-20">
         <div>
@@ -684,7 +689,7 @@ const WithdrawContent = ({
   );
 };
 
-export const WithdrawPopup = (
+export const WithDrawPopup = (
   props: PopupProps & {
     balance: number;
     handleRefreshHistory: () => void;

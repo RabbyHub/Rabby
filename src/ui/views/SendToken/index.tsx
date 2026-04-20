@@ -74,7 +74,7 @@ import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { useAddressInfo } from '@/ui/hooks/useAddressInfo';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useInitCheck } from './useInitCheck';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import {
   DirectSubmitProvider,
@@ -97,6 +97,7 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 // import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
@@ -317,6 +318,7 @@ const SendToken = () => {
     })
   );
   const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
+  const depositFlowActive = useGasAccountDepositFlowActive();
   const buildTopUpSnapshot = useCallback(
     (): SendTopUpSnapshot => ({
       amount: form.getFieldValue('amount') || '',
@@ -324,16 +326,10 @@ const SendToken = () => {
     }),
     [clickedMax, form]
   );
-  const sendSignerOwner = useMemo(
-    () =>
-      createMiniSignOwner('send-token', currentAccount, chainItem?.serverId),
-    [chainItem?.serverId, currentAccount]
-  );
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainItem?.serverId,
     autoResetGasStoreOnChainChange: true,
-    owner: sendSignerOwner,
   });
   const consumeTopUpResumeGuard = useCallback(() => {
     const snapshot = topUpFormValuesRef.current.getSnapshot();
@@ -1142,7 +1138,7 @@ const SendToken = () => {
           );
 
         if (isCurrent) {
-          if (awaitingTopUpResume) {
+          if (awaitingTopUpResume || depositFlowActive) {
             return;
           }
           prefetch({
@@ -1161,7 +1157,7 @@ const SendToken = () => {
         }
       } else {
         if (isCurrent) {
-          if (awaitingTopUpResume) {
+          if (awaitingTopUpResume || depositFlowActive) {
             return;
           }
           prefetch({
@@ -1174,7 +1170,7 @@ const SendToken = () => {
     setMiniTx();
     return () => {
       isCurrent = false;
-      if (awaitingTopUpResume) {
+      if (awaitingTopUpResume || depositFlowActive) {
         return;
       }
       prefetch({
@@ -1204,6 +1200,7 @@ const SendToken = () => {
     prefetch,
     rbisource,
     awaitingTopUpResume,
+    depositFlowActive,
   ]);
 
   const handleMiniSignResolve = useCallback(() => {
@@ -2331,6 +2328,7 @@ const SendToken = () => {
               <ShowMoreOnSend
                 chainServeId={chainItem?.serverId}
                 open
+                signatureInstance={instance}
                 // setOpen={setGasFeeOpen}
               />
             ) : null}
@@ -2361,6 +2359,7 @@ const SendToken = () => {
             canSubmit={canSubmit}
             miniSignLoading={miniSignLoading}
             canUseDirectSubmitTx={canUseDirectSubmitTx}
+            signatureInstance={instance}
             onConfirm={async () => {
               await handleSubmit({
                 to: form.getFieldValue('to'),

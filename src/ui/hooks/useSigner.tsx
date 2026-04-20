@@ -6,15 +6,12 @@ import type {
 
 import { useMemoizedFn } from 'ahooks';
 import { useWallet } from '@/ui/utils';
-import {
-  activateSignatureOwner,
-  getSignatureStore,
-  releaseSignatureOwner,
-} from '@/ui/component/MiniSignV2/state';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { omit } from 'lodash';
 import { Account } from '@/background/service/preference';
 import { normalizeTxParams } from '../views/Approval/components/SignTx';
+import { registry } from '@/ui/component/MiniSignV2/registry';
+import { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 export type SimpleSignConfig = {
   txs?: Tx[];
@@ -23,12 +20,6 @@ export type SimpleSignConfig = {
   pauseAfter?: number;
   isHideErrorUI?: boolean;
 } & Omit<SignerConfig, 'account'>;
-
-export const createMiniSignOwner = (
-  scope: string,
-  account?: Pick<Account, 'address'> | null,
-  extra?: string
-) => [scope, account?.address?.toLowerCase(), extra].filter(Boolean).join(':');
 
 const useLocalMiniSignGasStore = () => {
   const [miniGasLevel, setMiniGasLevel] = useState<
@@ -55,17 +46,16 @@ export const useMiniSigner = ({
   account,
   chainServerId,
   autoResetGasStoreOnChainChange,
-  owner,
 }: {
-  account: Account;
+  account: Account | null | undefined;
   chainServerId?: string;
   autoResetGasStoreOnChainChange?: boolean;
-  owner?: string;
 }) => {
-  const generatedOwnerRef = useRef(
-    `mini-sign-${account.address}-${Math.random().toString(36).slice(2)}`
-  );
-  const ownerKey = owner || generatedOwnerRef.current;
+  const instanceRef = useRef<SignatureManager | null>(null);
+  if (!instanceRef.current) {
+    instanceRef.current = new SignatureManager();
+  }
+  const instance = instanceRef.current;
   const {
     miniGasLevel,
     setMiniGasLevel,
@@ -74,24 +64,23 @@ export const useMiniSigner = ({
     reset: resetGasStore,
   } = useLocalMiniSignGasStore();
 
+  const previousChainServerIdRef = useRef(chainServerId);
+
   useEffect(() => {
-    resetGasStore();
-    return resetGasStore;
-  }, []);
+    if (previousChainServerIdRef.current === chainServerId) {
+      return;
+    }
 
-  const [previousChainServerId, setPreviousChainServerId] = useState(
-    chainServerId
-  );
-
-  if (
-    previousChainServerId !== chainServerId &&
-    autoResetGasStoreOnChainChange
-  ) {
-    setPreviousChainServerId(chainServerId);
-    if (miniGasLevel === 'custom') {
+    previousChainServerIdRef.current = chainServerId;
+    if (autoResetGasStoreOnChainChange && miniGasLevel === 'custom') {
       resetGasStore();
     }
-  }
+  }, [
+    autoResetGasStoreOnChainChange,
+    chainServerId,
+    miniGasLevel,
+    resetGasStore,
+  ]);
 
   const updateMiniGasStore = useCallback(
     (params: {
@@ -100,7 +89,6 @@ export const useMiniSigner = ({
       customGasPrice?: number;
       fixed?: boolean;
     }) => {
-      console.log('updateMiniGasStore', params);
       setMiniGasLevel(params.gasLevel);
       setMiniCustomPrice(params.customGasPrice || 0);
     },
@@ -108,10 +96,18 @@ export const useMiniSigner = ({
   );
 
   const wallet = useWallet();
-  const signatureStore = getSignatureStore(ownerKey);
+
+  const assertAccount = useMemoizedFn(() => {
+    const runtimeAccount = account as Account | null | undefined;
+    if (!runtimeAccount) {
+      throw new Error('Mini signer account is unavailable');
+    }
+
+    return runtimeAccount;
+  });
 
   const toSignerConfig = (cfg: SimpleSignConfig): SignerConfig => ({
-    account,
+    account: assertAccount(),
     updateMiniGasStore,
     ...cfg,
   });
@@ -182,12 +178,11 @@ export const useMiniSigner = ({
   const prefetch = useMemoizedFn(async (cfg: SimpleSignConfig) => {
     const payload = await prepareSignerPayload(cfg);
     if (!payload) {
-      signatureStore.close();
-      releaseSignatureOwner(ownerKey);
+      instance.close();
       return;
     }
 
-    await signatureStore.prefetch(
+    await instance.prefetch(
       {
         txs: payload.txs,
         config: payload.signerConfig,
@@ -207,10 +202,7 @@ export const useMiniSigner = ({
         throw new Error('No transactions to sign');
       }
 
-      activateSignatureOwner(ownerKey, {
-        suspendCurrent: true,
-      });
-      return signatureStore.startUI(
+      return instance.startUI(
         {
           txs: payload.txs,
           config: payload.signerConfig,
@@ -228,14 +220,10 @@ export const useMiniSigner = ({
       cfg: SimpleSignConfig & { pauseAfter?: number; isHideErrorUI?: boolean }
     ): Promise<string[]> => {
       const payload = await prepareSignerPayload(cfg);
-      console.log('openDirect payload', payload, cfg);
       if (!payload) {
         throw new Error('No transactions to sign');
       }
-      activateSignatureOwner(ownerKey, {
-        suspendCurrent: true,
-      });
-      return signatureStore.openDirect(
+      return instance.openDirect(
         {
           txs: payload.txs,
           config: payload.signerConfig,
@@ -250,14 +238,21 @@ export const useMiniSigner = ({
 
   const updateConfig = useMemoizedFn((next: Partial<SimpleSignConfig>) => {
     const partial = toPartialSignerConfig(next);
-    signatureStore.updateConfig(partial);
+    instance.updateConfig(partial);
   });
 
   const close = useMemoizedFn(() => {
-    signatureStore.close();
-    releaseSignatureOwner(ownerKey);
+    instance.close();
   });
+
+  useEffect(() => {
+    registry.add(instance);
+    return () => {
+      registry.destroy(instance.instanceId);
+    };
+  }, [instance]);
   return {
+    instance,
     openDirect,
     openUI,
     prefetch,

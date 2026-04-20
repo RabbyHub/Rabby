@@ -26,6 +26,7 @@ import { useLowCreditState } from '../Component/LowCreditModal';
 import eventBus from '@/eventBus';
 import { useAutoSlippageEffect } from './autoSlippageEffect';
 import { getChainDefaultToken } from '@/ui/utils/token';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -87,6 +88,7 @@ export const useTokenPair = (userAddress: string) => {
   const refreshId = useRefreshId();
   const setRefreshId = useSetRefreshId();
   const wallet = useWallet();
+  const depositFlowActive = useGasAccountDepositFlowActive();
 
   const {
     initialSelectedChain,
@@ -123,6 +125,9 @@ export const useTokenPair = (userAddress: string) => {
   );
   useEffect(() => {
     const refreshToken = (params: { addressList: string[] }) => {
+      if (depositFlowActive) {
+        return;
+      }
       if (
         userAddress &&
         params?.addressList?.find((item) => {
@@ -137,7 +142,7 @@ export const useTokenPair = (userAddress: string) => {
     return () => {
       eventBus.removeEventListener(EVENTS.RELOAD_TX, refreshToken);
     };
-  }, [refreshTokensInfo, userAddress]);
+  }, [depositFlowActive, refreshTokensInfo, userAddress]);
 
   const [payToken, setPayToken] = useTokenInfo({
     userAddress,
@@ -182,9 +187,11 @@ export const useTokenPair = (userAddress: string) => {
       clearTimeout(expiredTimer.current);
     }
 
-    if (p) {
+    if (p && !depositFlowActiveRef.current) {
       expiredTimer.current = setTimeout(() => {
-        setRefreshId((e) => e + 1);
+        if (!depositFlowActiveRef.current) {
+          setRefreshId((e) => e + 1);
+        }
       }, 1000 * 20);
     }
 
@@ -299,6 +306,12 @@ export const useTokenPair = (userAddress: string) => {
   >();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
+  const depositFlowActiveRef = useRef(depositFlowActive);
+  const previousDepositFlowActiveRef = useRef(depositFlowActive);
+
+  useEffect(() => {
+    depositFlowActiveRef.current = depositFlowActive;
+  }, [depositFlowActive]);
 
   const exchangeToken = useCallback(() => {
     setPayToken(receiveToken);
@@ -528,6 +541,11 @@ export const useTokenPair = (userAddress: string) => {
     { loading: quoteLoading, error: quotesError },
     getQuotes,
   ] = useAsyncFn(async () => {
+    if (depositFlowActiveRef.current) {
+      setPending(false);
+      return;
+    }
+
     fetchIdRef.current += 1;
     const currentFetchId = fetchIdRef.current;
     if (
@@ -634,13 +652,27 @@ export const useTokenPair = (userAddress: string) => {
     refreshId,
   ]);
 
-  useDebounce(
+  const [, cancelQuoteDebounce] = useDebounce(
     () => {
       getQuotes();
     },
     1000,
     [getQuotes]
   );
+
+  useEffect(() => {
+    if (depositFlowActive) {
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+      }
+      setPending(false);
+      cancelQuoteDebounce();
+    } else if (previousDepositFlowActiveRef.current) {
+      setRefreshId((e) => e + 1);
+    }
+
+    previousDepositFlowActiveRef.current = depositFlowActive;
+  }, [cancelQuoteDebounce, depositFlowActive, setRefreshId]);
 
   useEffect(() => {
     if (

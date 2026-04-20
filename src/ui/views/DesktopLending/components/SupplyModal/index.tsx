@@ -27,7 +27,7 @@ import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -190,15 +190,10 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
-    owner: createMiniSignOwner(
-      'lending-supply',
-      currentAccount,
-      chainInfo?.serverId
-    ),
   });
 
   const checkApproveStatus = useCallback(async () => {
@@ -676,6 +671,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             chainServeId={chainInfo.serverId}
             noQuote={false}
             type="send"
+            signatureInstance={instance}
           />
         </div>
       ) : null}
@@ -694,6 +690,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleSupply()}
             accountType={currentAccount.type}
+            signatureInstance={instance}
           />
         ) : (
           <Button

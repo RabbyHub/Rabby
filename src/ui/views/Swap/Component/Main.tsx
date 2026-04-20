@@ -39,7 +39,7 @@ import type { SelectChainItemProps } from '@/ui/component/ChainSelector/componen
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 // New simplified signing hook (no MiniApproval/MiniSignTx)
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useHistory } from 'react-router-dom';
@@ -68,6 +68,7 @@ import {
   createAmountComparer,
   shouldIgnoreAmountChangeInMaxMode,
 } from '@/ui/utils/form';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -525,6 +526,7 @@ export const Main = () => {
     })
   );
   const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
+  const depositFlowActive = useGasAccountDepositFlowActive();
   const buildTopUpSnapshot = useCallback(
     (): SwapTopUpSnapshot => ({
       amount: inputAmount || '',
@@ -561,15 +563,10 @@ export const Main = () => {
     swapUseSlider,
   ]);
 
-  const swapSignerOwner = useMemo(
-    () => createMiniSignOwner('swap', currentAccount),
-    [currentAccount]
-  );
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChain({ enum: chain })?.serverId || '',
     autoResetGasStoreOnChainChange: true,
-    owner: swapSignerOwner,
   });
   const consumeTopUpResumeGuard = useCallback(() => {
     const snapshot = topUpFormValuesRef.current.getSnapshot();
@@ -598,7 +595,7 @@ export const Main = () => {
   }, [buildTopUpSnapshot, closeSign]);
 
   useEffect(() => {
-    if (awaitingTopUpResume) {
+    if (awaitingTopUpResume || depositFlowActive) {
       return;
     }
     closeSign();
@@ -608,7 +605,7 @@ export const Main = () => {
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
     });
-  }, [awaitingTopUpResume, closeSign, currentTxs, prefetch]);
+  }, [awaitingTopUpResume, closeSign, currentTxs, depositFlowActive, prefetch]);
 
   useEffect(() => {
     if (!awaitingTopUpResume) {
@@ -720,7 +717,7 @@ export const Main = () => {
 
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
-      if (awaitingTopUpResume) {
+      if (awaitingTopUpResume || depositFlowActive) {
         return;
       }
       if (canUseDirectSubmitTx) {
@@ -733,6 +730,7 @@ export const Main = () => {
     canUseDirectSubmitTx,
     activeProvider,
     awaitingTopUpResume,
+    depositFlowActive,
   ]);
 
   useEffect(() => {
@@ -1083,6 +1081,7 @@ export const Main = () => {
             <BridgeShowMore
               insufficient={inSufficient}
               supportDirectSign={canUseDirectSubmitTx}
+              signatureInstance={instance}
               autoSuggestSlippage={autoSuggestSlippage}
               openFeePopup={openFeePopup}
               open={showMoreOpen}
@@ -1172,6 +1171,7 @@ export const Main = () => {
                 onConfirm={handleSwap}
                 showRiskTips={showRiskTips && !swapBtnDisabled}
                 accountType={currentAccount?.type}
+                signatureInstance={instance}
                 riskReset={swapBtnDisabled}
               />
             ) : (

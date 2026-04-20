@@ -48,9 +48,9 @@ import { useAsync } from 'react-use';
 import { intToHex } from 'ui/utils/number';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
-import GasSelectorHeader, {
-  GasSelectorResponse,
-} from '../TxComponents/GasSelectorHeader';
+import { GasSelectorResponse } from '../TxComponents/GasSelectorHeader';
+import SignMainnetGasSelectorHeader from '../TxComponents/GasSelector/SignMainnetGasSelectorHeader';
+import { useEffectiveApprovalGasMethod } from '../TxComponents/GasSelector/useEffectiveApprovalGasMethod';
 import clsx from 'clsx';
 import { Popup } from '@/ui/component';
 import _ from 'lodash';
@@ -398,6 +398,8 @@ export const MiniSignTx = ({
     isSupportedAddr,
     currentAccount: _currentAccount,
   });
+  const gasAccountChainSupported =
+    !!gasAccountCost && !gasAccountCost.chain_not_support;
 
   useEffect(() => {
     const hasCustomRPC = async () => {
@@ -1106,6 +1108,17 @@ export const MiniSignTx = ({
     return checkErrors.some((e) => e.code === 3001);
   }, [checkErrors]);
 
+  useEffectiveApprovalGasMethod({
+    isReady,
+    isFirstGasLessLoading,
+    isGasNotEnough,
+    gasAccountChainSupported,
+    noCustomRPC,
+    canUseGasLess,
+    gasMethod,
+    setGasMethod,
+  });
+
   const gasCalcMethod = useCallback(
     async (price) => {
       const res = await Promise.all(
@@ -1288,11 +1301,14 @@ export const MiniSignTx = ({
                 <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
               </div>
             ) : null}
-            <GasSelectorHeader
+            <SignMainnetGasSelectorHeader
               tx={txs[0]}
               gasAccountCost={gasAccountCost}
               gasMethod={gasMethod}
               onChangeGasMethod={setGasMethod}
+              noCustomRPC={noCustomRPC}
+              nativeTokenInsufficient={isGasNotEnough}
+              freeGasAvailable={canUseGasLess}
               pushType={pushInfo.type}
               disabled={false}
               isReady={isReady}

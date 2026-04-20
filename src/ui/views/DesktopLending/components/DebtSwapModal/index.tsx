@@ -18,7 +18,7 @@ import styled from 'styled-components';
 
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
@@ -309,15 +309,10 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
     [chainInfo, currentAccount]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
-    owner: createMiniSignOwner(
-      'lending-debt-swap',
-      currentAccount,
-      chainInfo?.serverId
-    ),
   });
 
   const clearQuoteExpiredTimer = useCallback(() => {
@@ -1170,6 +1165,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
               chainServeId={chainInfo.serverId}
               noQuote={false}
               type="send"
+              signatureInstance={instance}
             />
           </div>
         ) : null}
@@ -1270,6 +1266,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleSwap()}
             accountType={currentAccount.type}
+            signatureInstance={instance}
           />
         ) : (
           <Button

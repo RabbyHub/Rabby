@@ -39,6 +39,30 @@ export type GasAccountServiceStore = {
   }>;
 };
 
+const isSameDiscoveryAccount = (
+  a?: { address: string; type: string; brandName: string },
+  b?: { address: string; type: string; brandName: string }
+) =>
+  a?.address?.toLowerCase() === b?.address?.toLowerCase() &&
+  a?.type === b?.type &&
+  a?.brandName === b?.brandName;
+
+const isSameDiscoveryAccountList = (
+  prev: GasAccountServiceStore['accountsWithGasAccountBalance'],
+  next: GasAccountServiceStore['accountsWithGasAccountBalance']
+) => {
+  const prevList = prev || [];
+  const nextList = next || [];
+
+  if (prevList.length !== nextList.length) {
+    return false;
+  }
+
+  return prevList.every((item, index) =>
+    isSameDiscoveryAccount(item, nextList[index])
+  );
+};
+
 class GasAccountService {
   store: GasAccountServiceStore = {
     sig: undefined,
@@ -66,9 +90,13 @@ class GasAccountService {
     this.store.accountsWithGasAccountBalance = [];
   };
 
-  getGasAccountData = (key?: keyof GasAccountServiceStore) => {
+  getGasAccountData(): GasAccountServiceStore;
+  getGasAccountData<K extends keyof GasAccountServiceStore>(
+    key: K
+  ): GasAccountServiceStore[K];
+  getGasAccountData(key?: keyof GasAccountServiceStore) {
     return key ? this.store[key] : { ...this.store };
-  };
+  }
 
   getGasAccountSig = () => {
     return { sig: this.store.sig, accountId: this.store.accountId };
@@ -144,13 +172,31 @@ class GasAccountService {
       | 'accountsWithGasAccountBalance'
     >
   ) {
+    const nextAccountsWithGasAccountBalance =
+      payload.accountsWithGasAccountBalance || [];
+    const hasChanged =
+      !isSameDiscoveryAccount(
+        this.store.pendingHardwareAccount,
+        payload.pendingHardwareAccount
+      ) ||
+      !isSameDiscoveryAccount(
+        this.store.autoLoginAccount,
+        payload.autoLoginAccount
+      ) ||
+      !isSameDiscoveryAccountList(
+        this.store.accountsWithGasAccountBalance,
+        nextAccountsWithGasAccountBalance
+      );
+
     this.store.pendingHardwareAccount = payload.pendingHardwareAccount;
     this.store.autoLoginAccount = payload.autoLoginAccount;
-    this.store.accountsWithGasAccountBalance =
-      payload.accountsWithGasAccountBalance || [];
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.GAS_ACCOUNT.DISCOVERY_UPDATED,
-    });
+    this.store.accountsWithGasAccountBalance = nextAccountsWithGasAccountBalance;
+
+    if (hasChanged) {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.GAS_ACCOUNT.DISCOVERY_UPDATED,
+      });
+    }
   }
 
   hasTrackedGa4ActiveToday() {

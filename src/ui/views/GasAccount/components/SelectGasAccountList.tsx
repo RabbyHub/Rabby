@@ -1,22 +1,133 @@
 import { Account } from '@/background/service/preference';
 import { KEYRING_CLASS } from '@/constant';
-import { openapi } from '@/ui/models/openapi';
 import { useRabbySelector } from '@/ui/store';
 import { formatUsdValue, useAlias, useWallet } from '@/ui/utils';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { GasAccountInfo } from '@rabby-wallet/rabby-api/dist/types';
-import { useRequest } from 'ahooks';
-import { sortBy } from 'lodash';
-import React from 'react';
-import { ReactNode, useMemo } from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import AddressItem from '../../AddressManagement/AddressItem';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { AddressViewer, Item } from '@/ui/component';
 import { Virtuoso } from 'react-virtuoso';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import clsx from 'clsx';
+import { useGasAccountSign } from '../hooks';
+
+const GAS_ACCOUNT_INFO_CACHE_TTL = 60 * 1000;
+const GAS_ACCOUNT_INFO_CACHE_MAX_SIZE = 50;
+
+type GasAccountInfoCacheEntry = {
+  data?: GasAccountInfo | null;
+  updatedAt: number;
+  promise?: Promise<GasAccountInfo | null>;
+};
+
+const gasAccountInfoCache = new Map<string, GasAccountInfoCacheEntry>();
+
+const evictGasAccountInfoCache = () => {
+  if (gasAccountInfoCache.size <= GAS_ACCOUNT_INFO_CACHE_MAX_SIZE) return;
+  const entries = Array.from(gasAccountInfoCache.entries()).sort(
+    (a, b) => a[1].updatedAt - b[1].updatedAt
+  );
+  const toRemove = entries.slice(
+    0,
+    gasAccountInfoCache.size - GAS_ACCOUNT_INFO_CACHE_MAX_SIZE
+  );
+  for (const [key] of toRemove) {
+    gasAccountInfoCache.delete(key);
+  }
+};
+
+const getFreshGasAccountInfoCache = (address: string) => {
+  const cached = gasAccountInfoCache.get(address.toLowerCase());
+  if (!cached) {
+    return undefined;
+  }
+
+  if (Date.now() - cached.updatedAt > GAS_ACCOUNT_INFO_CACHE_TTL) {
+    return undefined;
+  }
+
+  return cached.data;
+};
+
+const loadGasAccountInfo = async (
+  wallet: ReturnType<typeof useWallet>,
+  address: string
+) => {
+  const key = address.toLowerCase();
+  const cached = gasAccountInfoCache.get(key);
+  if (
+    cached?.promise &&
+    Date.now() - cached.updatedAt <= GAS_ACCOUNT_INFO_CACHE_TTL
+  ) {
+    return cached.promise;
+  }
+
+  const promise = wallet.openapi
+    .getGasAccountInfoV2({
+      id: address,
+    })
+    .then((result) => result?.account || null)
+    .catch(() => null)
+    .then((data) => {
+      gasAccountInfoCache.set(key, {
+        data,
+        updatedAt: Date.now(),
+      });
+      evictGasAccountInfoCache();
+      return data;
+    });
+
+  gasAccountInfoCache.set(key, {
+    data: cached?.data,
+    updatedAt: Date.now(),
+    promise,
+  });
+
+  return promise;
+};
+
+const useLazyGasAccountInfo = ({
+  address,
+  enabled,
+}: {
+  address: string;
+  enabled?: boolean;
+}) => {
+  const wallet = useWallet();
+  const [gasAccountInfo, setGasAccountInfo] = useState<GasAccountInfo | null>(
+    () => getFreshGasAccountInfoCache(address) || null
+  );
+
+  useEffect(() => {
+    if (!enabled || !address) {
+      return;
+    }
+
+    const cached = getFreshGasAccountInfoCache(address);
+    if (cached !== undefined) {
+      setGasAccountInfo(cached);
+      return;
+    }
+
+    let mounted = true;
+
+    loadGasAccountInfo(wallet, address).then((data) => {
+      if (!mounted) {
+        return;
+      }
+      setGasAccountInfo(data);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, [address, enabled, wallet]);
+
+  return gasAccountInfo;
+};
 
 export const SelectGasAccountList = ({
   onChange,
@@ -34,6 +145,7 @@ export const SelectGasAccountList = ({
   isGasAccount?: boolean;
 }) => {
   const { t } = useTranslation();
+  const { accountsWithGasAccountBalance } = useGasAccountSign();
 
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
 
@@ -48,48 +160,38 @@ export const SelectGasAccountList = ({
     [accounts]
   );
 
-  const wallet = useWallet();
-
-  const { data: gasAccountBalanceDict } = useRequest(
-    async () => {
-      if (!isGasAccount) {
-        return;
-      }
-      const res = await Promise.all(
-        _list.map((item) => {
-          return wallet.openapi
-            .getGasAccountInfoV2({
-              id: item.address,
-            })
-            .catch(() => null);
-        })
-      );
-      const dict: Record<string, GasAccountInfo> = {};
-      res.forEach((item) => {
-        if (item?.account) {
-          dict[item.account.id.toLowerCase()] = item.account;
-        }
-      });
-      return dict;
-    },
-    {
-      cacheKey: 'batch-fetch-gas-account-info',
-      staleTime: 1000 * 15,
-    }
+  const cachedBalanceOrder = useMemo(
+    () =>
+      new Map(
+        accountsWithGasAccountBalance.map((item, index) => [
+          item.address.toLowerCase(),
+          index,
+        ])
+      ),
+    [accountsWithGasAccountBalance]
   );
 
   const list = useMemo(() => {
-    if (!isGasAccount || !gasAccountBalanceDict) {
+    if (!isGasAccount) {
       return _list;
     }
-    return sortBy(_list, (item) => {
-      const info = gasAccountBalanceDict[item.address.toLowerCase()];
-      if (!info) {
-        return 2;
+    return [..._list].sort((a, b) => {
+      const aOrder = cachedBalanceOrder.get(a.address.toLowerCase());
+      const bOrder = cachedBalanceOrder.get(b.address.toLowerCase());
+
+      if (aOrder !== undefined && bOrder !== undefined) {
+        return aOrder - bOrder;
       }
-      return !info.balance ? (info.no_register ? 1 : 0) : -info.balance;
+      if (aOrder !== undefined) {
+        return -1;
+      }
+      if (bOrder !== undefined) {
+        return 1;
+      }
+
+      return 0;
     });
-  }, [_list, gasAccountBalanceDict, isGasAccount]);
+  }, [_list, cachedBalanceOrder, isGasAccount]);
 
   return (
     <>
@@ -109,13 +211,11 @@ export const SelectGasAccountList = ({
                 <AccountItem
                   onChange={onChange}
                   account={account}
-                  gasAccount={
-                    gasAccountBalanceDict?.[account.address.toLowerCase()]
-                  }
+                  isGasAccount={isGasAccount}
                 />
               );
             },
-            [list, gasAccountBalanceDict]
+            [isGasAccount, onChange]
           )}
           components={{
             Footer: () => <div className="h-[36px] w-full" />,
@@ -126,7 +226,11 @@ export const SelectGasAccountList = ({
   );
 };
 
-const GasAccountBalance = ({ account }: { account?: GasAccountInfo }) => {
+const GasAccountBalance = ({
+  account,
+}: {
+  account?: GasAccountInfo | null;
+}) => {
   if (!account || account.no_register) {
     return null;
   }
@@ -139,10 +243,14 @@ const GasAccountBalance = ({ account }: { account?: GasAccountInfo }) => {
 
 function AccountItem(props: {
   account: IDisplayedAccountWithBalance;
-  gasAccount?: GasAccountInfo;
+  isGasAccount?: boolean;
   onChange?: (account: Account) => void;
 }) {
-  const { account, gasAccount } = props;
+  const { account, isGasAccount } = props;
+  const gasAccount = useLazyGasAccountInfo({
+    address: account.address,
+    enabled: !!isGasAccount,
+  });
   const addressTypeIcon = useBrandIcon({
     address: account.address,
     brandName: account.brandName,

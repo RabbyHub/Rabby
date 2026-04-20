@@ -34,7 +34,7 @@ import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
 import { Tx } from 'background/service/openapi';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { DepositWithdrawModalType } from './index';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
@@ -643,11 +643,6 @@ export const useDepositWithdraw = (
 
   const { openDirect, close: closeSign } = useMiniSigner({
     account: currentPerpsAccount!,
-    owner: createMiniSignOwner(
-      'desktop-perps-deposit-withdraw',
-      currentPerpsAccount,
-      type
-    ),
   });
 
   const {

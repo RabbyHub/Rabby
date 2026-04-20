@@ -38,6 +38,7 @@ import {
   lendingService,
   innerDappFrameService,
 } from 'background/service';
+import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
@@ -2292,12 +2293,22 @@ export class WalletController extends BaseController {
   setBridgeSortIncludeGasFee = bridgeService.setBridgeSortIncludeGasFee;
   setBridgeSettingFirstOpen = bridgeService.setBridgeSettingFirstOpen;
 
-  getGasAccountData = gasAccountService.getGasAccountData;
+  getGasAccountData(): GasAccountServiceStore;
+  getGasAccountData<K extends keyof GasAccountServiceStore>(
+    key: K
+  ): GasAccountServiceStore[K];
+  getGasAccountData(key?: keyof GasAccountServiceStore) {
+    return key
+      ? gasAccountService.getGasAccountData(key)
+      : gasAccountService.getGasAccountData();
+  }
   getGasAccountSig = gasAccountService.getGasAccountSig;
   setGasAccountSig = gasAccountService.setGasAccountSig;
-  discoverGasAccountRuntimeState = async () => {
+  discoverGasAccountRuntimeState = async (
+    options?: { force?: boolean } | null
+  ) => {
     const accounts = await this.getAllVisibleAccountsArray();
-    return discoverGasAccountRuntimeState(accounts);
+    return discoverGasAccountRuntimeState(accounts, options);
   };
   setGasAccountBalanceState = (accountId?: string, hasBalance?: boolean) => {
     gasAccountService.setCurrentBalanceState(accountId, hasBalance);
@@ -5678,36 +5689,23 @@ export class WalletController extends BaseController {
     success: boolean;
     result?: any;
   }> {
-    const currentAccount = await preferenceService.getCurrentAccount();
-    if (!currentAccount) {
-      throw new Error(t('background.error.noCurrentAccount'));
-    }
-
-    const resumeAccount = async () => {
-      await this.changeAccount(currentAccount);
-    };
-
-    if (
-      currentAccount.address !== account.address ||
-      currentAccount.type !== account.type ||
-      currentAccount.brandName !== account.brandName
-    ) {
-      await this.changeAccount(account);
-    }
-
     const { text } = await wallet.openapi.getGasAccountSignText(
       account.address
     );
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
     });
-    const signature = await this.sendRequest<string>({
-      method: 'personal_sign',
-      params: [text, account.address],
-    });
+    const signature = await this.sendRequest<string>(
+      {
+        method: 'personal_sign',
+        params: [text, account.address],
+      },
+      {
+        account,
+      }
+    );
 
     if (!signature) {
-      await resumeAccount();
       return { signature: '', success: false };
     }
 
@@ -5721,17 +5719,16 @@ export class WalletController extends BaseController {
         retries: 2,
       }
     );
-    await resumeAccount();
     return { signature, success: result?.success || false, result };
   }
 
   signGasAccount = async (account: Account, isClaimGift: boolean = false) => {
     const { signature, success } = await this.executeGasAccountLogin(account);
-    if (success && signature) {
-      await this.handleGasAccountLoginSuccess(signature, account, {
-        redirectToGasAccount: true,
-      });
+    if (!success || !signature) {
+      return '';
     }
+
+    await this.handleGasAccountLoginSuccess(signature, account);
     if (isClaimGift) {
       await this.claimGasAccountGift(account.address);
     }

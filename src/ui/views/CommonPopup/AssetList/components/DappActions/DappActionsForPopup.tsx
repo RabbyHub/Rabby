@@ -12,7 +12,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
-import { createMiniSignOwner, useMiniSigner } from '@/ui/hooks/useSigner';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import stats from '@/stats';
 import { last } from 'lodash';
@@ -111,11 +111,6 @@ const DappActionsForPopup = ({
 
   const { openUI, resetGasStore, close, updateConfig } = useMiniSigner({
     account: currentAccount!,
-    owner: createMiniSignOwner(
-      'asset-dapp-actions-popup',
-      currentAccount,
-      protocolName || chain
-    ),
   });
 
   const withdrawAction = useMemo(
