@@ -61,6 +61,40 @@ export function getCustomTxParamsData(
       customPermissionValue.toFixed(),
     ]);
     return calldata;
+  } else if (methodId === '0x87517c45') {
+    /**
+     * Approves the spender to use up to amount of the specified token up until the expiration
+     * https://arbiscan.io/address/0x000000000022D473030F116dDEE9F6B43aC78BA3#writeContract
+     */
+    const iface = new ethers.utils.Interface([
+      {
+        inputs: [
+          { internalType: 'address', name: 'token', type: 'address' },
+          { internalType: 'address', name: 'spender', type: 'address' },
+          { internalType: 'uint160', name: 'amount', type: 'uint160' },
+          { internalType: 'uint48', name: 'expiration', type: 'uint48' },
+        ],
+        name: 'approve',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ]);
+    const [token, spender, , expiration] = iface.decodeFunctionData(
+      'approve',
+      data
+    );
+    const customPermissionValue = calcTokenValue(
+      customPermissionAmount,
+      decimals
+    ).toString(16);
+    const calldata = iface.encodeFunctionData('approve', [
+      token,
+      spender,
+      customPermissionValue,
+      expiration,
+    ]);
+    return calldata;
   } else {
     const tokenData = getTokenData(data);
 
