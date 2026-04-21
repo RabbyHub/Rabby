@@ -195,6 +195,17 @@ export const normalizeTxParams = (tx, isDapp?: boolean) => {
   return copy;
 };
 
+const getCachedMaxPriorityFee = (
+  lastTimeGas: ChainGas | null,
+  customGasPrice: number
+) => {
+  if (typeof lastTimeGas?.maxPriorityFee !== 'number') {
+    return undefined;
+  }
+
+  return Math.min(lastTimeGas.maxPriorityFee, customGasPrice);
+};
+
 export const TxTypeComponent = ({
   actionRequireData,
   actionData,
@@ -731,6 +742,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         type,
         calls,
         feeToken,
+        maxFeePerGas,
         feePayer,
         feePayerSignature,
         nonceKey,
@@ -1575,8 +1587,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (selectedGas.level === 'custom') {
       if (support1559) {
         selected.gasPrice = parseInt(tx.maxFeePerGas!);
+        selected.maxPriorityFee = Math.round(maxPriorityFee);
       } else {
         selected.gasPrice = parseInt(tx.gasPrice!);
+        selected.maxPriorityFee = null;
       }
     } else {
       selected.gasLevel = selectedGas.level;
@@ -2212,9 +2226,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       checkCanProcess();
       const lastTimeGas: ChainGas | null = await lastTimeGasPromise;
       let customGasPrice = 0;
+      let useCachedCustomGasPrice = false;
       if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
         // use cached gasPrice if exist
         customGasPrice = lastTimeGas.gasPrice;
+        useCachedCustomGasPrice = true;
       }
       if (
         isSpeedUp ||
@@ -2223,8 +2239,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       ) {
         // use gasPrice set by dapp when it's a speedup or cancel tx
         customGasPrice = parseInt(tx.gasPrice!);
+        useCachedCustomGasPrice = false;
       }
-      const gasList = await loadGasMarket(chain, customGasPrice);
+      let gasList = await loadGasMarket(chain, customGasPrice);
       let gas: GasLevel | null = null;
 
       if (
@@ -2249,6 +2266,19 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       } else {
         // no cache, use the fast level in gasMarket
         gas = gasList.find((item) => item.level === 'normal')!;
+      }
+      const cachedMaxPriorityFee =
+        useCachedCustomGasPrice && gas?.level === 'custom'
+          ? getCachedMaxPriorityFee(lastTimeGas, customGasPrice)
+          : undefined;
+      if (typeof cachedMaxPriorityFee === 'number') {
+        gas = {
+          ...gas,
+          priority_price: cachedMaxPriorityFee,
+        };
+        gasList = gasList.map((item) =>
+          item.level === 'custom' ? (gas as GasLevel) : item
+        );
       }
       const fee = calcMaxPriorityFee(
         gasList,
@@ -2741,6 +2771,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                   noUpdate={isCancel || isSpeedUp}
                   gasList={gasList}
                   selectedGas={selectedGas}
+                  selectedMaxPriorityFee={maxPriorityFee}
                   version={txDetail.pre_exec_version}
                   gas={{
                     error: txDetail.gas.error,
