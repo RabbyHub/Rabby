@@ -183,7 +183,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -564,6 +564,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             chainServeId={chainInfo.serverId}
             noQuote={false}
             type="send"
+            signatureInstance={instance}
           />
         </div>
       ) : null}
@@ -606,6 +607,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleBorrow()}
             accountType={currentAccount.type}
+            signatureInstance={instance}
           />
         ) : (
           <Button

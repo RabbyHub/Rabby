@@ -1,34 +1,40 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
-import { ReactComponent as RcIconMore } from '@/ui/assets/gas-account/more.svg';
 
 import { useTranslation } from 'react-i18next';
-import { useWallet } from '@/ui/utils';
-import { Dropdown, Menu } from 'antd';
-import { GasAccountHistory } from './components/History';
-import { GasAccountLoginPopup } from './components/LoginPopup';
-import { GasAccountDepositPopup } from './components/DepositPopup';
+import { isSameAddress, useWallet } from '@/ui/utils';
+import { Button, message } from 'antd';
+import clsx from 'clsx';
+import { GasAccountLoginPopup } from './components/GasAccountLoginPopup';
+import { GasAccountDepositPopup } from './components/GasAccountDepositPopup';
 import {
   useGasAccountInfo,
   useGasAccountLogin,
   useGasAccountHistoryRefresh,
+  useGasAccountDiscovery,
+  useGasAccountHistory,
+  useGasAccountInfoV2,
+  useGasAccountEligibility,
+  useGasAccountSign,
 } from './hooks';
-import { ReactComponent as RcIconLogout } from '@/ui/assets/gas-account/logout.svg';
-import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/gas-account/switch-cc.svg';
 
-import { GasAccountLogoutPopup } from './components/LogoutPopop';
-import { WithdrawPopup } from './components/WithdrawPopup';
+import { GasAccountLogoutPopup } from './components/GasAccountLogoutPopup';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   GasAccountRefreshIdProvider,
   GasAccountHistoryRefreshIdProvider,
 } from './hooks/context';
 import { useRabbyDispatch } from '@/ui/store';
-import { SwitchLoginAddrBeforeDepositModal } from './components/SwitchLoginAddrModal';
-import { GasAccountCard } from './components/GasAccountCard';
 import { EVENTS } from '@/constant';
 import { useGasAccountRefresh } from './hooks';
 import eventBus from '@/eventBus';
+import { GasAccountEmptyState } from './components/GasAccountEmptyState';
+import { getGasAccountEmptyStatePrimaryMode } from './components/GasAccountEmptyState.utils';
+import { GasAccountUserState } from './components/GasAccountUserState';
+import { GasAccountHeader } from './components/HeaderRight';
+import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
+import { formatUsdValue } from '@/ui/utils/number';
+import { WithdrawPopup } from './components/WithdrawPopup';
 
 const GasAccountInner = () => {
   const { t } = useTranslation();
@@ -37,8 +43,6 @@ const GasAccountInner = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
 
   const [depositVisible, setDepositVisible] = useState(false);
-
-  const [refreshHistoryKey, setRefreshHistoryKey] = useState(0);
 
   const [withdrawVisible, setWithdrawVisible] = useState(false);
 
@@ -56,24 +60,70 @@ const GasAccountInner = () => {
   };
 
   const { value: gasAccount, loading } = useGasAccountInfo();
-  const { isLogin } = useGasAccountLogin({ value: gasAccount, loading });
+  const { isLogin, login } = useGasAccountLogin({ value: gasAccount, loading });
+  const {
+    pendingHardwareAccount,
+    accountsWithGasAccountBalance,
+  } = useGasAccountDiscovery();
+  const { account: currentGasAccount } = useGasAccountSign();
+  const historyState = useGasAccountHistory();
+  const {
+    claimGift,
+    currentEligibleAddress,
+    checkAddressesEligibility,
+  } = useGasAccountEligibility();
+  const { value: pendingHardwareGasAccountInfo } = useGasAccountInfoV2({
+    address: pendingHardwareAccount?.address,
+  });
 
   const wallet = useWallet();
 
   const balance = gasAccount?.account?.balance || 0;
-
-  // const gasAccount = useRabbySelector((s) => s.gasAccount.account);
-
-  const [switchAddrVisible, setSwitchAddrVisible] = useState(false);
+  const pendingHardwareBalance =
+    pendingHardwareGasAccountInfo?.account?.balance || 0;
+  const visibleBalance = Number(
+    isLogin ? balance : pendingHardwareAccount ? pendingHardwareBalance : 0
+  );
+  const [emptyStateLoading, setEmptyStateLoading] = useState(false);
 
   const dispatch = useRabbyDispatch();
   const { refresh } = useGasAccountRefresh();
   const { refreshHistory } = useGasAccountHistoryRefresh();
 
   const handleRefreshHistory = useCallback(() => {
-    setRefreshHistoryKey((prevKey) => prevKey + 1);
     refreshHistory();
-  }, [setRefreshHistoryKey, refreshHistory]);
+  }, [refreshHistory]);
+
+  const hasHistory = Boolean(
+    historyState.txList?.rechargeList?.length ||
+      historyState.txList?.withdrawList?.length ||
+      historyState.txList?.list?.length
+  );
+  const showEmptyState =
+    (!isLogin && !pendingHardwareAccount) ||
+    (isLogin &&
+      !historyState.loading &&
+      Number(balance || 0) === 0 &&
+      !hasHistory);
+  const emptyStatePrimaryMode = getGasAccountEmptyStatePrimaryMode({
+    isLogin,
+    hasPendingHardwareAccount: !!pendingHardwareAccount,
+    hasEligibleGiftAddress: !!currentEligibleAddress?.isEligible,
+  });
+  const canSwitchWallet = useMemo(
+    () =>
+      accountsWithGasAccountBalance.some(
+        (item) =>
+          !currentGasAccount?.address ||
+          !isSameAddress(item.address, currentGasAccount.address) ||
+          item.type !== currentGasAccount.type
+      ),
+    [
+      accountsWithGasAccountBalance,
+      currentGasAccount?.address,
+      currentGasAccount?.type,
+    ]
+  );
 
   // 监听 Gas Account 登录回调事件
   useEffect(() => {
@@ -99,97 +149,169 @@ const GasAccountInner = () => {
     });
   }, []);
 
+  useEffect(() => {
+    if (isLogin || pendingHardwareAccount) {
+      return;
+    }
+
+    checkAddressesEligibility().catch((error) => {
+      console.error('checkAddressesEligibility on GasAccount error', error);
+    });
+  }, [checkAddressesEligibility, isLogin, pendingHardwareAccount]);
+
   const openDepositPopup = () => {
     setDepositVisible(true);
   };
+
+  const handleEmptyStatePrimaryPress = useCallback(async () => {
+    if (emptyStateLoading) {
+      return;
+    }
+
+    if (
+      emptyStatePrimaryMode === 'claimGift' &&
+      currentEligibleAddress?.isEligible
+    ) {
+      setEmptyStateLoading(true);
+      try {
+        await claimGift(currentEligibleAddress.address);
+        refresh();
+        handleRefreshHistory();
+      } catch (error) {
+        console.error('handleEmptyStatePrimaryPress claimGift error', error);
+      } finally {
+        setEmptyStateLoading(false);
+      }
+      return;
+    }
+
+    openDepositPopup();
+  }, [
+    claimGift,
+    currentEligibleAddress?.address,
+    currentEligibleAddress?.isEligible,
+    emptyStateLoading,
+    emptyStatePrimaryMode,
+    handleRefreshHistory,
+    refresh,
+  ]);
+
+  const handleUserStatePrimaryPress = useCallback(async () => {
+    if (emptyStateLoading) {
+      return;
+    }
+    if (!isLogin && pendingHardwareAccount) {
+      setEmptyStateLoading(true);
+      try {
+        const sig = await login(pendingHardwareAccount);
+        if (sig) {
+          refresh();
+          handleRefreshHistory();
+          message.success(t('page.gasAccount.loginSuccess'));
+          openDepositPopup();
+        }
+      } catch (error) {
+        console.error('handleOldUserStatePrimaryPress error', error);
+        message.error(t('page.gasAccount.loginFailed'));
+      } finally {
+        setEmptyStateLoading(false);
+      }
+      return;
+    }
+
+    openDepositPopup();
+  }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
+
+  const lowBalanceWarningMessage =
+    visibleBalance < 0.1
+      ? t('page.gasAccount.lowBalance', {
+          defaultValue:
+            "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+        })
+      : undefined;
+
+  const emptyStatePrimaryContent =
+    emptyStatePrimaryMode === 'claimGift' &&
+    currentEligibleAddress?.isEligible ? (
+      <span className="inline-flex items-center gap-6">
+        <IconGift viewBox="0 0 18 18" className="w-18 h-18" />
+        <span>
+          {t('page.gasAccount.claimFreeGas', {
+            usdValue: formatUsdValue(currentEligibleAddress.giftUsdValue),
+            defaultValue: 'Claim {{usdValue}} Free Gas',
+          })}
+        </span>
+      </span>
+    ) : undefined;
+  const primaryButtonClassName =
+    showEmptyState && emptyStatePrimaryMode === 'claimGift'
+      ? 'bg-green border-green gap-6'
+      : undefined;
+  const primaryButtonContent = showEmptyState
+    ? emptyStatePrimaryContent ||
+      t('page.gasAccount.depositNow', {
+        defaultValue: 'Deposit Now',
+      })
+    : t('page.gasAccount.depositNow', {
+        defaultValue: 'Deposit Now',
+      });
+  const handlePrimaryButtonPress = showEmptyState
+    ? handleEmptyStatePrimaryPress
+    : handleUserStatePrimaryPress;
 
   useEffect(() => {
     wallet.clearPageStateCache();
   }, [wallet?.clearPageStateCache]);
 
-  const rightItems = React.useMemo(
-    () => (
-      <Menu
-        className="bg-r-neutral-bg-1 rounded-[6px] p-0"
-        style={{
-          boxShadow: '0px 8px 24px 0px rgba(0, 0, 0, 0.14)',
-        }}
-      >
-        <Menu.Item
-          className="px-12 h-40 bg-transparent hover:bg-transparent border-b-[0.5px] border-solid border-rabby-neutral-line"
-          onClick={() => {
-            setLoginVisible(true);
-          }}
-        >
-          <div className="flex items-center gap-[6px]">
-            <RcIconSwitchCC className="w-16 h-16 text-r-neutral-title-1" />
-            <span className="text-r-neutral-title-1 text-13 font-medium">
-              {t('page.gasAccount.switchAccount')}
-            </span>
-          </div>
-        </Menu.Item>
-
-        <Menu.Item
-          className="px-12 h-40 bg-transparent hover:bg-transparent"
-          onClick={() => {
-            setLogoutVisible(true);
-          }}
-        >
-          <div className="flex items-center gap-[6px]">
-            <RcIconLogout className="w-16 h-16" />
-            <span className="text-r-red-default text-13 font-medium">
-              {t('page.gasAccount.logout')}
-            </span>
-          </div>
-        </Menu.Item>
-      </Menu>
-    ),
-    [t]
-  );
-
   return (
-    <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
+    <div className="h-full min-h-full overflow-hidden bg-r-neutral-bg2 flex flex-col">
       <PageHeader
-        className="mx-[20px] pt-[20px] mb-[20px]"
+        className="mx-[20px] pt-[20px] mb-[16px]"
         forceShowBack
         onBack={goBack}
         rightSlot={
-          isLogin ? (
-            <div className="flex items-center gap-20 absolute bottom-0 right-0">
-              <Dropdown overlay={rightItems} mouseLeaveDelay={0.3}>
-                <RcIconMore
-                  viewBox="0 0 20 20"
-                  className="w-20 h-20 cursor-pointer"
-                />
-              </Dropdown>
-            </div>
-          ) : null
+          <GasAccountHeader
+            isLogin={isLogin}
+            canSwitchWallet={canSwitchWallet}
+            onSwitchWallet={() => setLoginVisible(true)}
+            onWithdraw={() => setWithdrawVisible(true)}
+            onLogout={() => setLogoutVisible(true)}
+          />
         }
       >
         <span className="text-20 font-medium text-r-neutral-title-1">
-          {t('page.gasAccount.title')}
+          {t('page.gasAccount.gasDeposit', {
+            defaultValue: 'Gas Deposit',
+          })}
         </span>
       </PageHeader>
 
-      <div className="flex-1 overflow-auto mx-20">
-        <GasAccountCard
-          isLogin={isLogin}
-          onLoginPress={() => {
-            setLoginVisible(true);
-          }}
-          onDepositPress={openDepositPopup}
-          onWithdrawPress={() => {
-            if (!balance) {
-              return;
-            }
-            setWithdrawVisible(true);
-          }}
-          gasAccountInfo={gasAccount?.account}
-        />
+      <div className="flex-1 min-h-0 overflow-y-auto px-20">
+        {showEmptyState ? (
+          <GasAccountEmptyState />
+        ) : (
+          <GasAccountUserState
+            balance={visibleBalance}
+            historyState={historyState}
+            warningMessage={lowBalanceWarningMessage}
+          />
+        )}
+      </div>
 
-        <GasAccountHistory
-          key={refreshHistoryKey + `-${isLogin}-${gasAccount?.account}`}
-        />
+      <div className="shrink-0 border-t-[0.5px] border-solid border-rabby-neutral-line bg-r-neutral-bg2 px-20 py-14">
+        <Button
+          onClick={handlePrimaryButtonPress}
+          type="primary"
+          block
+          loading={emptyStateLoading}
+          className={clsx(
+            'h-[44px] rounded-[8px] text-15 font-medium leading-normal text-r-neutral-title2',
+            'flex items-center justify-center',
+            primaryButtonClassName
+          )}
+        >
+          {primaryButtonContent}
+        </Button>
       </div>
 
       <GasAccountLoginPopup
@@ -206,7 +328,7 @@ const GasAccountInner = () => {
       />
       <GasAccountDepositPopup
         visible={depositVisible}
-        handleRefreshHistory={handleRefreshHistory}
+        onDeposit={handleRefreshHistory}
         onCancel={() => setDepositVisible(false)}
       />
 
@@ -216,13 +338,6 @@ const GasAccountInner = () => {
         handleRefreshHistory={handleRefreshHistory}
         balance={gasAccount?.account.withdrawable_balance || 0}
         gasAccountInfo={gasAccount?.account}
-      />
-
-      <SwitchLoginAddrBeforeDepositModal
-        visible={switchAddrVisible}
-        onCancel={() => {
-          setSwitchAddrVisible(false);
-        }}
       />
     </div>
   );

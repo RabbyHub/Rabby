@@ -97,6 +97,7 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 // import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
@@ -105,6 +106,12 @@ import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecen
 import { ChainSelectorInSend } from './components/ChainSelectorInSend';
 import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
 import { resolveTempoDefaultTokenId } from '@/utils/tempo';
+import {
+  FormAmountMode,
+  FormValuesOnSubmit,
+  createAmountComparer,
+  shouldIgnoreAmountChangeInMaxMode,
+} from '@/ui/utils/form';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -146,6 +153,11 @@ const DEFAULT_TOKEN: TokenItem = {
 type FormSendToken = {
   to: string;
   amount: string;
+};
+
+type SendTopUpSnapshot = {
+  amount: string;
+  amountMode?: FormAmountMode;
 };
 
 function formatAmountString(
@@ -237,12 +249,6 @@ const SendToken = () => {
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
-
-  const { openDirect, prefetch } = useMiniSigner({
-    account: currentAccount!,
-    chainServerId: chainItem?.serverId,
-    autoResetGasStoreOnChainChange: true,
-  });
   const [currentToken, setCurrentToken] = useState<TokenItem | null>(
     DEFAULT_TOKEN
   );
@@ -266,6 +272,8 @@ const SendToken = () => {
         chainId: number;
         nonce: number;
       };
+      fromGasAccountRedirect?: boolean;
+      topUpSnapshot?: SendTopUpSnapshot;
     }) => {
       await wallet.setPageStateCache({
         path: '/send-token',
@@ -301,6 +309,53 @@ const SendToken = () => {
   const cancelClickedMax = useCallback(() => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   }, []);
+
+  const topUpFormValuesRef = useRef(
+    new FormValuesOnSubmit<SendTopUpSnapshot>({
+      comparers: {
+        amount: createAmountComparer<string>(),
+      },
+    })
+  );
+  const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
+  const depositFlowActive = useGasAccountDepositFlowActive();
+  const buildTopUpSnapshot = useCallback(
+    (): SendTopUpSnapshot => ({
+      amount: form.getFieldValue('amount') || '',
+      amountMode: clickedMax ? 'max' : 'exact',
+    }),
+    [clickedMax, form]
+  );
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: chainItem?.serverId,
+    autoResetGasStoreOnChainChange: true,
+  });
+  const consumeTopUpResumeGuard = useCallback(() => {
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return false;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+
+    if (comparison.isChanged && !shouldIgnore) {
+      closeSign();
+      return true;
+    }
+
+    return false;
+  }, [buildTopUpSnapshot, closeSign]);
 
   const handleReserveGasClose = useCallback(() => {
     setReserveGasOpen(false);
@@ -795,6 +850,7 @@ const SendToken = () => {
       let shouldForceSignPage = !!forceSignPage;
 
       if (canUseDirectSubmitTx && !shouldForceSignPage) {
+        consumeTopUpResumeGuard();
         setMiniSignLoading(true);
         try {
           // no need to wait
@@ -810,6 +866,19 @@ const SendToken = () => {
               trigger: filterRbiSource('sendToken', rbisource) && rbisource,
             },
             getContainer,
+            onRedirectToDeposit: () => {
+              topUpFormValuesRef.current.save(buildTopUpSnapshot());
+              setAwaitingTopUpResume(true);
+              persistPageStateCache({
+                fromGasAccountRedirect: true,
+                topUpSnapshot: buildTopUpSnapshot(),
+              }).catch((error) => {
+                console.error(
+                  '[SendToken] persist page state before gas account deposit failed',
+                  error
+                );
+              });
+            },
           });
 
           handleFormValuesChange(
@@ -1069,6 +1138,9 @@ const SendToken = () => {
           );
 
         if (isCurrent) {
+          if (awaitingTopUpResume || depositFlowActive) {
+            return;
+          }
           prefetch({
             txs: [params as Tx],
             ga: {
@@ -1085,6 +1157,9 @@ const SendToken = () => {
         }
       } else {
         if (isCurrent) {
+          if (awaitingTopUpResume || depositFlowActive) {
+            return;
+          }
           prefetch({
             txs: [],
           });
@@ -1095,6 +1170,9 @@ const SendToken = () => {
     setMiniTx();
     return () => {
       isCurrent = false;
+      if (awaitingTopUpResume || depositFlowActive) {
+        return;
+      }
       prefetch({
         txs: [],
       });
@@ -1121,6 +1199,8 @@ const SendToken = () => {
     currentToken,
     prefetch,
     rbisource,
+    awaitingTopUpResume,
+    depositFlowActive,
   ]);
 
   const handleMiniSignResolve = useCallback(() => {
@@ -1882,6 +1962,13 @@ const SendToken = () => {
           const cache = await wallet.getPageStateCache();
 
           if (cache?.path === history.location.pathname) {
+            if (
+              cache.states?.fromGasAccountRedirect &&
+              cache.states?.topUpSnapshot
+            ) {
+              topUpFormValuesRef.current.save(cache.states.topUpSnapshot);
+              setAwaitingTopUpResume(true);
+            }
             if (cache.states.values) {
               form.setFieldsValue(cache.states.values);
               handleFormValuesChange(
@@ -1947,6 +2034,34 @@ const SendToken = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inited, currentAccount?.address]);
+
+  useEffect(() => {
+    if (!awaitingTopUpResume) {
+      return;
+    }
+
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    if (!comparison.isChanged || shouldIgnore) {
+      return;
+    }
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+    closeSign();
+  }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   useEffect(() => {
     init();
@@ -2213,6 +2328,7 @@ const SendToken = () => {
               <ShowMoreOnSend
                 chainServeId={chainItem?.serverId}
                 open
+                signatureInstance={instance}
                 // setOpen={setGasFeeOpen}
               />
             ) : null}
@@ -2243,6 +2359,7 @@ const SendToken = () => {
             canSubmit={canSubmit}
             miniSignLoading={miniSignLoading}
             canUseDirectSubmitTx={canUseDirectSubmitTx}
+            signatureInstance={instance}
             onConfirm={async () => {
               await handleSubmit({
                 to: form.getFieldValue('to'),

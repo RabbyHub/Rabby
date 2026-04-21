@@ -17,6 +17,7 @@ import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import eventBus from '@/eventBus';
 import { bridgeQuoteScore } from '../Component/BridgeQuoteItem';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 
 export const enableInsufficientQuote = true;
 
@@ -138,6 +139,7 @@ export const useBridge = () => {
   const userAddress = useRabbySelector(
     (s) => s.account.currentAccount?.address
   );
+  const depositFlowActive = useGasAccountDepositFlowActive();
 
   const refreshId = useRefreshId();
 
@@ -151,6 +153,9 @@ export const useBridge = () => {
   );
   useEffect(() => {
     const refreshToken = (params: { addressList: string[] }) => {
+      if (depositFlowActive) {
+        return;
+      }
       if (
         userAddress &&
         params?.addressList?.find((item) => {
@@ -165,7 +170,7 @@ export const useBridge = () => {
     return () => {
       eventBus.removeEventListener(EVENTS.RELOAD_TX, refreshToken);
     };
-  }, [refreshTokensInfo, userAddress]);
+  }, [depositFlowActive, refreshTokensInfo, userAddress]);
 
   const wallet = useWallet();
   const [fromChain, fromToken, setFromToken, switchFromChain] = useToken(
@@ -203,6 +208,12 @@ export const useBridge = () => {
   >();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
+  const depositFlowActiveRef = useRef(depositFlowActive);
+  const previousDepositFlowActiveRef = useRef(depositFlowActive);
+
+  useEffect(() => {
+    depositFlowActiveRef.current = depositFlowActive;
+  }, [depositFlowActive]);
 
   const inSufficient = useMemo(
     () =>
@@ -320,9 +331,11 @@ export const useBridge = () => {
     if (!quote?.manualClick && expiredTimer.current) {
       clearTimeout(expiredTimer.current);
     }
-    if (!quote?.manualClick && quote) {
+    if (!quote?.manualClick && quote && !depositFlowActiveRef.current) {
       expiredTimer.current = setTimeout(() => {
-        setRefreshId((e) => e + 1);
+        if (!depositFlowActiveRef.current) {
+          setRefreshId((e) => e + 1);
+        }
       }, 1000 * 30);
     }
     setOriSelectedBridgeQuote(quote);
@@ -364,6 +377,11 @@ export const useBridge = () => {
     { loading: quoteLoading, error: quotesError },
     getQuoteList,
   ] = useAsyncFn(async () => {
+    if (depositFlowActiveRef.current) {
+      setPending(false);
+      return;
+    }
+
     fetchIdRef.current += 1;
     if (
       inSufficientCanGetQuote &&
@@ -629,6 +647,20 @@ export const useBridge = () => {
     300,
     [getQuoteList]
   );
+
+  useEffect(() => {
+    if (depositFlowActive) {
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+      }
+      setPending(false);
+      cancelDebounce();
+    } else if (previousDepositFlowActiveRef.current) {
+      setRefreshId((e) => e + 1);
+    }
+
+    previousDepositFlowActiveRef.current = depositFlowActive;
+  }, [cancelDebounce, depositFlowActive, setRefreshId]);
 
   const [bestQuoteId, setBestQuoteId] = useState<
     | {

@@ -49,9 +49,9 @@ import { useAsync } from 'react-use';
 import { intToHex } from 'ui/utils/number';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
-import GasSelectorHeader, {
-  GasSelectorResponse,
-} from '../TxComponents/GasSelectorHeader';
+import { GasSelectorResponse } from '../TxComponents/GasSelectorHeader';
+import SignMainnetGasSelectorHeader from '../TxComponents/GasSelector/SignMainnetGasSelectorHeader';
+import { useEffectiveApprovalGasMethod } from '../TxComponents/GasSelector/useEffectiveApprovalGasMethod';
 import clsx from 'clsx';
 import { Popup } from '@/ui/component';
 import _ from 'lodash';
@@ -447,6 +447,8 @@ export const MiniSignTx = ({
       new BigNumber(token.raw_amount_hex_str || 0).toFixed(0)
     );
   });
+  const gasAccountChainSupported =
+    !!gasAccountCost && !gasAccountCost.chain_not_support;
 
   useEffect(() => {
     const hasCustomRPC = async () => {
@@ -1217,43 +1219,49 @@ export const MiniSignTx = ({
     return checkErrors.some((e) => e.code === 3001);
   }, [checkErrors]);
 
-  const gasCalcMethod = useCallback(
-    async (price) => {
-      const res = await Promise.all(
-        txsResult.map((item) =>
-          explainGas({
-            gasUsed: item.gasUsed,
-            gasPrice: price,
-            chainId,
-            nativeTokenPrice: item.preExecResult.native_token.price || 0,
-            tx: item.tx,
-            wallet,
-            gasLimit: item.gasLimit,
-            account: currentAccount!,
-            gasTokenDecimals: gasToken.decimals || 18,
-          })
-        )
-      );
-      const totalCost = res.reduce(
-        (sum, item) => {
-          sum.gasCostAmount = sum.gasCostAmount.plus(item.gasCostAmount);
-          sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
+  useEffectiveApprovalGasMethod({
+    isReady,
+    isFirstGasLessLoading,
+    isGasNotEnough,
+    gasAccountChainSupported,
+    noCustomRPC,
+    canUseGasLess,
+    gasMethod,
+    setGasMethod,
+  });
 
-          sum.maxGasCostAmount = sum.maxGasCostAmount.plus(
-            item.maxGasCostAmount
-          );
-          return sum;
-        },
-        {
-          gasCostUsd: new BigNumber(0),
-          gasCostAmount: new BigNumber(0),
-          maxGasCostAmount: new BigNumber(0),
-        }
-      );
-      return totalCost;
-    },
-    [chainId, txsResult, currentAccount, gasToken.decimals]
-  );
+  const gasCalcMethod = useMemoizedFn(async (price) => {
+    const res = await Promise.all(
+      txsResult.map((item) =>
+        explainGas({
+          gasUsed: item.gasUsed,
+          gasPrice: price,
+          chainId,
+          nativeTokenPrice: item.preExecResult.native_token.price || 0,
+          tx: item.tx,
+          wallet,
+          gasLimit: item.gasLimit,
+          account: currentAccount!,
+          gasTokenDecimals: gasToken.decimals || 18,
+        })
+      )
+    );
+    const totalCost = res.reduce(
+      (sum, item) => {
+        sum.gasCostAmount = sum.gasCostAmount.plus(item.gasCostAmount);
+        sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
+
+        sum.maxGasCostAmount = sum.maxGasCostAmount.plus(item.maxGasCostAmount);
+        return sum;
+      },
+      {
+        gasCostUsd: new BigNumber(0),
+        gasCostAmount: new BigNumber(0),
+        maxGasCostAmount: new BigNumber(0),
+      }
+    );
+    return totalCost;
+  });
 
   const { value } = useAsync<() => Promise<[string, RetryUpdateType]>>(() => {
     let msg = task.error;
@@ -1399,11 +1407,14 @@ export const MiniSignTx = ({
                 <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
               </div>
             ) : null}
-            <GasSelectorHeader
+            <SignMainnetGasSelectorHeader
               tx={txs[0]}
               gasAccountCost={gasAccountCost}
               gasMethod={gasMethod}
               onChangeGasMethod={setGasMethod}
+              noCustomRPC={noCustomRPC}
+              nativeTokenInsufficient={isGasNotEnough}
+              freeGasAvailable={canUseGasLess}
               pushType={pushInfo.type}
               disabled={false}
               isReady={isReady}

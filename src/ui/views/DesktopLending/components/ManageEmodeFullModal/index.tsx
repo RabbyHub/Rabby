@@ -148,7 +148,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -416,6 +416,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
               chainServeId={chainInfo.serverId}
               noQuote={false}
               type="send"
+              signatureInstance={instance}
             />
           </div>
         )}
@@ -458,6 +459,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleSubmit()}
             accountType={currentAccount.type}
+            signatureInstance={instance}
           />
         ) : (
           <Button

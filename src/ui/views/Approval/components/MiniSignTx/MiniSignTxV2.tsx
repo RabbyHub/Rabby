@@ -4,9 +4,9 @@ import { intToHex, noop, useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import _ from 'lodash';
 
-import GasSelectorHeader, {
-  GasSelectorResponse,
-} from '../TxComponents/GasSelectorHeader';
+import { GasSelectorResponse } from '../TxComponents/GasSelectorHeader';
+import SignMainnetGasSelectorHeader from '../TxComponents/GasSelector/SignMainnetGasSelectorHeader';
+import { useEffectiveApprovalGasMethod } from '../TxComponents/GasSelector/useEffectiveApprovalGasMethod';
 import BalanceChange from '../TxComponents/BalanceChange';
 import { SpeedUpCancelHeader } from './SpeedUpCancalHeader';
 import { Divide } from '../Divide';
@@ -30,8 +30,10 @@ import { checkGasAndNonce, explainGas } from '@/utils/transaction';
 import { MiniFooterBar } from './MiniFooterBar';
 import { useMemoizedFn } from 'ahooks';
 import { ApprovalUtilsProvider } from '../../hooks/useApprovalUtils';
-import { useSignatureStore } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import { signatureStore } from '@/ui/component/MiniSignV2/state';
+import {
+  useSignatureInstance,
+  useSignatureStoreOf,
+} from '@/ui/component/MiniSignV2/state';
 import { MiniSecurityHeader } from '@/ui/component/MiniSignV2/components';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -49,6 +51,13 @@ import {
 } from '@/utils/tempo';
 import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { abstractTokenToTokenItem } from '@/ui/utils/token';
+import { GasAccountDepositPopup } from '@/ui/views/GasAccount/components/GasAccountDepositPopup';
+import {
+  buildTopUpResumedTxs,
+  GasAccountTopUpResult,
+} from '@/ui/views/GasAccount/components/topUpContinuation';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
+import { supportedHardwareDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const { t } = useTranslation();
@@ -64,10 +73,25 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   );
   const dispatch = useRabbyDispatch();
 
-  const state = useSignatureStore();
+  const instance = useSignatureInstance();
+  const state = useSignatureStoreOf(instance);
+  const [
+    gasAccountDepositVisible,
+    setGasAccountDepositVisible,
+  ] = React.useState(false);
+  const depositFlowActive = useGasAccountDepositFlowActive();
 
   const { ctx, config, error, status } = state;
   const currentAccount = config?.account;
+  const gasCalcMethod = useMemoizedFn(async (price: number) => {
+    const nativePrice = ctx?.nativeTokenPrice || 0;
+    const amount =
+      ctx?.txsCalc?.reduce(
+        (acc, i) => acc.plus(new BigNumber(i.gasUsed).times(price).div(1e18)),
+        new BigNumber(0)
+      ) || new BigNumber(0);
+    return { gasCostUsd: amount.times(nativePrice), gasCostAmount: amount };
+  });
   const _visible = React.useMemo(() => {
     const isDirectSignAccount = [
       KEYRING_CLASS.MNEMONIC,
@@ -130,24 +154,42 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const handleChangeGasMethod = useCallback(
     async (method: 'native' | 'gasAccount') => {
       try {
-        signatureStore.setGasMethod(method);
+        instance.setGasMethod(method);
       } catch (error) {
         console.error('Gas method change error:', error);
       }
     },
-    [ctx?.selectedGas, wallet]
+    [instance]
   );
 
   const handleGasChange = useCallback(
     async (gas) => {
       try {
-        await signatureStore.updateGasLevel(gas, wallet);
+        await instance.updateGasLevel(gas, wallet);
       } catch (error) {
         console.error('Gas change error:', error);
       }
     },
-    [wallet]
+    [instance, wallet]
   );
+
+  const handleChangeGasAccount = useMemoizedFn(async () => {
+    await handleChangeGasMethod('gasAccount');
+    if (ctx?.selectedGas) {
+      await handleGasChange(ctx.selectedGas as any);
+    }
+  });
+  const handleOpenGasAccountDeposit = useMemoizedFn(() => {
+    if (
+      isGasAccountTopUpFlow ||
+      gasAccountDepositVisible ||
+      depositFlowActive
+    ) {
+      return;
+    }
+
+    setGasAccountDepositVisible(true);
+  });
 
   const isReady = (ctx?.txsCalc?.length || 0) > 0;
   const chain = findChain({ id: ctx?.chainId });
@@ -172,9 +214,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   const handleSelectTempoGasToken = useCallback(
     async (token: TokenItem) => {
-      signatureStore.setTempoFeeToken(token);
+      instance.setTempoFeeToken(token);
       if (ctx?.selectedGas) {
-        await signatureStore.updateGasLevel(ctx.selectedGas, wallet);
+        await instance.updateGasLevel(ctx.selectedGas, wallet);
       }
     },
     [ctx?.selectedGas, wallet]
@@ -347,6 +389,49 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     }
   );
 
+  const gasAccountCost = ctx?.gasAccount as any;
+  const gasMethod = ctx?.gasMethod;
+  const canUseGasLess = !!ctx?.gasless?.is_gasless;
+  const isGasNotEnough = !!ctx?.isGasNotEnough;
+  const noCustomRPC = !!ctx?.noCustomRPC;
+  const gasAccountChainSupported =
+    !!gasAccountCost && !gasAccountCost.chain_not_support;
+  const isMissingRequiredContext =
+    !ctx || !config?.account || !ctx?.txs?.length || !ctx?.chainId || !chain;
+
+  const handleTopUpWaitResult = useMemoizedFn(
+    async (result: GasAccountTopUpResult) => {
+      if (isMissingRequiredContext) {
+        return;
+      }
+
+      const nextTxs = await buildTopUpResumedTxs({
+        txs: ctx.txs,
+        originalAccountAddress: config.account.address,
+        originalChainServerId: chain.serverId,
+        topUpResult: result,
+        wallet,
+      });
+
+      instance.replaceTxs(nextTxs);
+      if (ctx.selectedGas) {
+        await handleGasChange(ctx.selectedGas as any);
+      }
+      instance.setGasMethod('gasAccount');
+    }
+  );
+
+  useEffectiveApprovalGasMethod({
+    isReady,
+    isFirstGasLessLoading: !ctx?.txsCalc?.length,
+    isGasNotEnough,
+    gasAccountChainSupported,
+    noCustomRPC,
+    canUseGasLess,
+    gasMethod,
+    setGasMethod: handleChangeGasMethod,
+  });
+
   if (
     !ctx ||
     !config?.account ||
@@ -360,25 +445,27 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const { swapPreferMEVGuarded, isSpeedUp, isCancel } = normalizeTxParams(
     ctx.txs[0]
   );
+  const isGasAccountTopUpFlow =
+    config?.ga?.category === 'GasAccount' && config?.ga?.action === 'deposit';
 
   const handleToggleGasless = (value) => {
-    signatureStore.toggleGasless(value);
+    instance.toggleGasless(value);
   };
   const handleConfirm = (
     getContainer: ModalProps['getContainer'] | DrawerProps['getContainer']
   ) => {
     if (!ctx?.txsCalc?.length) return;
-    signatureStore.send({ wallet, getContainer }).catch(() => undefined);
+    instance.send({ wallet, getContainer }).catch(() => undefined);
   };
 
   const handleCancel = () => {
-    signatureStore.close();
+    instance.close();
   };
 
   const handleRetry = (
     getContainer: ModalProps['getContainer'] | DrawerProps['getContainer']
   ) => {
-    signatureStore.retry({ wallet, getContainer }).catch(() => undefined);
+    instance.retry({ wallet, getContainer }).catch(() => undefined);
   };
 
   const totalGasCost = ctx.txsCalc?.reduce(
@@ -423,18 +510,6 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     currentAccount!.type === KEYRING_CLASS.HARDWARE.LEDGER
       ? 'wired'
       : 'privatekey';
-
-  const gasCalcMethod = async (price: number) => {
-    const nativePrice = ctx?.nativeTokenPrice || 0;
-    const amount =
-      ctx?.txsCalc.reduce(
-        (acc, i) => acc.plus(new BigNumber(i.gasUsed).times(price).div(1e18)),
-        new BigNumber(0)
-      ) || new BigNumber(0);
-    return { gasCostUsd: amount.times(nativePrice), gasCostAmount: amount };
-  };
-
-  const canUseGasLess = !!ctx?.gasless?.is_gasless;
   let gasLessConfig =
     canUseGasLess && ctx?.gasless?.promotion
       ? ctx?.gasless?.promotion?.config
@@ -446,14 +521,10 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     gasLessConfig = { ...gasLessConfig, dark_color: '', theme_color: '' };
   }
 
-  const isGasNotEnough = !!ctx?.isGasNotEnough;
-
   const useGasLess =
     (isGasNotEnough || !!gasLessConfig) && !!canUseGasLess && !!ctx?.useGasless;
 
   const showGasLess = isReady && (isGasNotEnough || !!gasLessConfig);
-
-  const noCustomRPC = !!ctx?.noCustomRPC;
 
   const canGotoUseGasAccount =
     // isSupportedAddr &&
@@ -496,6 +567,10 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   } as any;
 
   const directSubmit = ctx.mode === 'direct';
+  const showDirectTransparentOverlay =
+    ctx?.mode === 'direct' &&
+    status !== 'ready' &&
+    !supportedHardwareDirectSign(config?.account.type || '');
 
   const {
     enableSecurityEngine,
@@ -508,8 +583,6 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   } = config;
   const txsResult = ctx.txsCalc;
   const txs = ctx.txs;
-  const gasAccountCost = ctx.gasAccount as any;
-  const gasMethod = ctx.gasMethod;
   const setGasMethod = handleChangeGasMethod;
   const pushType = swapPreferMEVGuarded ? 'mev' : 'default';
   const gasLimit = ctx.txs?.[0]?.gas;
@@ -539,6 +612,27 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     const desktopMiniSignerGetContainer = `.${desktopPortalClassName}`;
     return (
       <>
+        {showDirectTransparentOverlay ? (
+          <Modal
+            getContainer={config.getContainer}
+            transitionName=""
+            visible={true}
+            maskClosable={false}
+            centered
+            cancelText={null}
+            okText={null}
+            footer={null}
+            width={'auto'}
+            closable={false}
+            bodyStyle={{ padding: 0 }}
+            maskStyle={{
+              backgroundColor: 'transparent',
+            }}
+            style={{
+              border: 'none',
+            }}
+          />
+        ) : null}
         <Popup
           height={'fit-content'}
           visible={!!error && !!ctx.signInfo?.status}
@@ -654,11 +748,14 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                       ) : (
                         <div className="mt-auto" />
                       )}
-                      <GasSelectorHeader
+                      <SignMainnetGasSelectorHeader
                         tx={txs[0]}
                         gasAccountCost={gasAccountCost}
                         gasMethod={gasMethod}
                         onChangeGasMethod={setGasMethod}
+                        noCustomRPC={noCustomRPC}
+                        nativeTokenInsufficient={isGasNotEnough}
+                        freeGasAvailable={canUseGasLess}
                         pushType={pushType}
                         disabled={false}
                         isReady={isReady}
@@ -712,7 +809,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 canDepositUseGasAccount={canDepositUseGasAccount}
                 isGasAccountLogin={isGasAccountLogin}
                 isWalletConnect={isWalletConnect}
-                onChangeGasAccount={() => setGasMethod('gasAccount')}
+                gasAccountAddress={gasAccountAddress}
+                onChangeGasAccount={handleChangeGasAccount}
                 isWatchAddr={isWatchAddr}
                 gasLessConfig={gasLessConfig}
                 gasLessFailedReason={gasLessFailedReason}
@@ -753,10 +851,23 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 isFirstGasCostLoading={!ctx?.txsCalc.length}
                 getContainer={desktopMiniSignerGetContainer}
                 onRedirectToDeposit={onRedirectToDeposit}
+                onOpenGasAccountDeposit={handleOpenGasAccountDeposit}
+                disableGasAccountDeposit={
+                  isGasAccountTopUpFlow ||
+                  gasAccountDepositVisible ||
+                  depositFlowActive
+                }
               />
             </div>
           </PopupContainer>
         </Modal>
+        <GasAccountDepositPopup
+          visible={gasAccountDepositVisible}
+          onCancel={() => setGasAccountDepositVisible(false)}
+          onWaitDepositResult={handleTopUpWaitResult}
+          minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
+          disableDirectDeposit
+        />
 
         <TokenDetailPopup
           token={tokenDetail.selectToken}
@@ -774,6 +885,27 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   return (
     <>
+      {showDirectTransparentOverlay ? (
+        <Modal
+          getContainer={config?.getContainer}
+          transitionName=""
+          visible={true}
+          maskClosable={false}
+          centered
+          cancelText={null}
+          okText={null}
+          footer={null}
+          width={'auto'}
+          closable={false}
+          bodyStyle={{ padding: 0 }}
+          maskStyle={{
+            backgroundColor: 'transparent',
+          }}
+          style={{
+            border: 'none',
+          }}
+        />
+      ) : null}
       <Popup
         height={'fit-content'}
         visible={!!error && !!ctx.signInfo?.status}
@@ -880,11 +1012,14 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                   <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
                 </div>
               ) : null}
-              <GasSelectorHeader
+              <SignMainnetGasSelectorHeader
                 tx={txs[0]}
                 gasAccountCost={gasAccountCost}
                 gasMethod={gasMethod}
                 onChangeGasMethod={setGasMethod}
+                noCustomRPC={noCustomRPC}
+                nativeTokenInsufficient={isGasNotEnough}
+                freeGasAvailable={canUseGasLess}
                 pushType={pushType}
                 disabled={false}
                 isReady={isReady}
@@ -933,7 +1068,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           canDepositUseGasAccount={canDepositUseGasAccount}
           isGasAccountLogin={isGasAccountLogin}
           isWalletConnect={isWalletConnect}
-          onChangeGasAccount={() => setGasMethod('gasAccount')}
+          gasAccountAddress={gasAccountAddress}
+          onChangeGasAccount={handleChangeGasAccount}
           isWatchAddr={isWatchAddr}
           gasLessConfig={gasLessConfig}
           gasLessFailedReason={gasLessFailedReason}
@@ -971,8 +1107,21 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           isFirstGasCostLoading={!ctx?.txsCalc.length}
           getContainer={getContainer}
           onRedirectToDeposit={onRedirectToDeposit}
+          onOpenGasAccountDeposit={handleOpenGasAccountDeposit}
+          disableGasAccountDeposit={
+            isGasAccountTopUpFlow ||
+            gasAccountDepositVisible ||
+            depositFlowActive
+          }
         />
       </Popup>
+      <GasAccountDepositPopup
+        visible={gasAccountDepositVisible}
+        onCancel={() => setGasAccountDepositVisible(false)}
+        onWaitDepositResult={handleTopUpWaitResult}
+        minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
+        disableDirectDeposit
+      />
       <TokenDetailPopup
         token={tokenDetail.selectToken}
         visible={tokenDetail.popupVisible}
