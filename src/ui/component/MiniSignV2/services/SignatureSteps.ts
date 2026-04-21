@@ -264,12 +264,16 @@ function aggregateCheckErrors(params: {
   txsCalc: CalcItem[];
   nativeTokenBalance?: string;
   gasTokenDecimals?: number;
+  gasTokenId?: string;
+  tempoPreferredFeeTokenId?: string;
   checkTxValueInBalance?: boolean;
 }): PreparedContext['checkErrors'] {
   const {
     txsCalc,
     nativeTokenBalance,
     gasTokenDecimals = 18,
+    gasTokenId,
+    tempoPreferredFeeTokenId,
     checkTxValueInBalance = true,
   } = params;
   let checkErrors: PreparedContext['checkErrors'] = [];
@@ -289,6 +293,8 @@ function aggregateCheckErrors(params: {
       isGnosisAccount: false,
       nativeTokenBalance: balanceLeft,
       gasTokenDecimals,
+      gasTokenId,
+      tempoPreferredFeeTokenId,
       checkTxValueInBalance,
     });
     checkErrors = [...checkErrors, ...errs];
@@ -573,6 +579,11 @@ export class SignatureSteps {
     const gasToken = gasTokenBalanceInfo.token;
     const gasTokenDecimals = gasToken.decimals || 18;
     const checkTxValueInBalance = !isTempoChain(chain.serverId);
+    const tempoPreferredFeeTokenId = isTempoChain(chain.serverId)
+      ? (((txs[0] as unknown) as TxWithTempoExtras<Tx>)?.feeToken as
+          | string
+          | undefined) || gasToken.tokenId
+      : undefined;
 
     const noCustomRPC = !hasCustomChainRPC;
 
@@ -765,6 +776,8 @@ export class SignatureSteps {
       txsCalc,
       nativeTokenBalance,
       gasTokenDecimals,
+      gasTokenId: gasToken.tokenId,
+      tempoPreferredFeeTokenId,
       checkTxValueInBalance,
     });
     const isGasNotEnough = !!checkErrors?.some((e) => e.code === 3001);
@@ -792,6 +805,7 @@ export class SignatureSteps {
       nativeTokenPrice,
       nativeTokenBalance,
       gasToken,
+      tempoPreferredFeeTokenId,
       checkErrors,
       gasless,
       gasAccount,
@@ -811,6 +825,7 @@ export class SignatureSteps {
     newGas: GasLevel;
     nativeTokenBalance?: string;
     gasToken?: PreparedContext['gasToken'];
+    tempoPreferredFeeTokenId?: string;
   }): Promise<
     Pick<
       PreparedContext,
@@ -833,6 +848,7 @@ export class SignatureSteps {
       newGas,
       nativeTokenBalance,
       gasToken,
+      tempoPreferredFeeTokenId,
     } = params;
     const chain = findChain({ id: chainId })!;
     const gasTokenDecimals = gasToken?.decimals || 18;
@@ -882,6 +898,8 @@ export class SignatureSteps {
       txsCalc: nextCalc,
       nativeTokenBalance,
       gasTokenDecimals,
+      gasTokenId: gasToken?.tokenId,
+      tempoPreferredFeeTokenId,
       checkTxValueInBalance,
     });
     const isGasNotEnough = !!checkErrors?.some((e) => e.code === 3001);
@@ -1292,6 +1310,7 @@ export class SignatureSteps {
       is1559,
       nativeTokenBalance,
       gasToken,
+      tempoPreferredFeeTokenId,
     } = ctx;
     const updated = await SignatureSteps.refreshOnGasChange({
       wallet,
@@ -1303,6 +1322,7 @@ export class SignatureSteps {
       newGas: gas,
       nativeTokenBalance,
       gasToken,
+      tempoPreferredFeeTokenId,
     });
     return {
       ...ctx,

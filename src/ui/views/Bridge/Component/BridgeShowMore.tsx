@@ -573,6 +573,7 @@ export const DirectSignGasInfo = ({
   };
   const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
   const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
+  const [tempoPreferredFeeTokenId, setTempoPreferredFeeTokenId] = useState('');
   const showTempoGasTokenSelector =
     !!chain &&
     isTempoChain(chain.serverId) &&
@@ -670,12 +671,17 @@ export const DirectSignGasInfo = ({
     },
     [signatureInstance, wallet]
   );
-  const handleSelectTempoGasToken = useMemoizedFn(async (token: TokenItem) => {
-    signatureInstance.setTempoFeeToken(token);
-    if (selectedGas) {
-      await handleGasChange(selectedGas as any);
+  const handleSelectTempoGasToken = useMemoizedFn(
+    async (
+      token: TokenItem,
+      options?: Parameters<typeof signatureInstance.setTempoFeeToken>[1]
+    ) => {
+      signatureInstance.setTempoFeeToken(token, options);
+      if (selectedGas) {
+        await handleGasChange(selectedGas as any);
+      }
     }
-  });
+  );
 
   const handleChangeGasAccount = useMemoizedFn(async () => {
     await handleChangeGasMethod('gasAccount');
@@ -718,15 +724,11 @@ export const DirectSignGasInfo = ({
   );
 
   useEffect(() => {
-    console.log('1111 2222');
-
     if (!currentAccount?.address || !chain || !isTempoChain(chain.serverId)) {
       setTempoGasTokenList([]);
       setTempoGasTokenLoading(false);
       return;
     }
-
-    console.log('1111');
 
     let mounted = true;
     setTempoGasTokenLoading(true);
@@ -761,15 +763,19 @@ export const DirectSignGasInfo = ({
       maxGasCostRawAmountDecimals: gasToken.decimals || 18,
       maxGasCostRawAmountIn18,
     })
-      .then(({ options, selectedOption }) => {
+      .then(({ options, preferredTokenId, selectedOption }) => {
         if (!mounted) return;
 
+        setTempoPreferredFeeTokenId(preferredTokenId);
         setTempoGasTokenList(options);
         if (
           selectedOption &&
           gasToken.tokenId?.toLowerCase() !== selectedOption.id.toLowerCase()
         ) {
-          void handleSelectTempoGasToken(selectedOption);
+          void handleSelectTempoGasToken(selectedOption, {
+            applyFeeToken: false,
+            tempoPreferredFeeTokenId: preferredTokenId,
+          });
         }
       })
       .finally(() => {
@@ -869,10 +875,21 @@ export const DirectSignGasInfo = ({
               isSpeedUp,
               isGnosisAccount: false,
               nativeTokenBalance: balance,
+              gasTokenDecimals: gasToken.decimals || 18,
+              gasTokenId: gasToken.tokenId,
+              tempoPreferredFeeTokenId:
+                tempoPreferredFeeTokenId ||
+                ((txs?.[0] as TxWithTempoExtras<Tx> | undefined)?.feeToken as
+                  | string
+                  | undefined),
+              checkTxValueInBalance: !isTempoChain(chain?.serverId),
             });
 
+            const txValueRaw = !isTempoChain(chain?.serverId)
+              ? new BigNumber(item.tx.value || 0)
+              : new BigNumber(0);
             balance = new BigNumber(balance)
-              .minus(new BigNumber(item.tx.value || 0))
+              .minus(txValueRaw)
               .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
               .toFixed();
 

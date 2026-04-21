@@ -722,10 +722,17 @@ export class SignatureManager {
     });
   }
 
-  public setTempoFeeToken(token: TokenItem) {
+  public setTempoFeeToken(
+    token: TokenItem,
+    options?: {
+      applyFeeToken?: boolean;
+      tempoPreferredFeeTokenId?: string;
+    }
+  ) {
     const { ctx, fingerprint } = this.state;
     if (!ctx || !fingerprint) return;
-    const shouldApplyFeeToken = ctx.gasMethod !== 'gasAccount';
+    const shouldApplyFeeToken =
+      ctx.gasMethod !== 'gasAccount' && options?.applyFeeToken !== false;
     const tokenId = token.id;
 
     const txs = ctx.txs.map((tx) => {
@@ -763,6 +770,9 @@ export class SignatureManager {
         nativeTokenBalance: new BigNumber(
           token.raw_amount_hex_str || 0
         ).toFixed(0),
+        tempoPreferredFeeTokenId:
+          options?.tempoPreferredFeeTokenId ||
+          (shouldApplyFeeToken ? tokenId : ctx.tempoPreferredFeeTokenId),
       } as SignerCtx,
     });
   }

@@ -328,6 +328,8 @@ const useCheckGasAndNonce = ({
   isGnosisAccount,
   nativeTokenBalance,
   gasTokenDecimals,
+  gasTokenId,
+  tempoPreferredFeeTokenId,
   checkTxValueInBalance,
 }: Parameters<typeof checkGasAndNonce>[0]) => {
   return useMemo(
@@ -345,6 +347,8 @@ const useCheckGasAndNonce = ({
         isGnosisAccount,
         nativeTokenBalance,
         gasTokenDecimals,
+        gasTokenId,
+        tempoPreferredFeeTokenId,
         checkTxValueInBalance,
       }),
     [
@@ -359,6 +363,8 @@ const useCheckGasAndNonce = ({
       isGnosisAccount,
       nativeTokenBalance,
       gasTokenDecimals,
+      gasTokenId,
+      tempoPreferredFeeTokenId,
       checkTxValueInBalance,
     ]
   );
@@ -756,6 +762,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
   const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
   const [tempoCurrentFeeTokenId, setTempoCurrentFeeTokenId] = useState('');
+  const [tempoPreferredFeeTokenId, setTempoPreferredFeeTokenId] = useState('');
   const checkTxValueInBalance = useMemo(() => !isTempoChain(chain?.serverId), [
     chain?.serverId,
   ]);
@@ -818,6 +825,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     nativeTokenBalance,
     recommendGasLimitRatio,
     gasTokenDecimals: gasToken.decimals || 18,
+    gasTokenId: gasToken.tokenId,
+    tempoPreferredFeeTokenId,
     checkTxValueInBalance,
   });
 
@@ -973,6 +982,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             isGnosisAccount,
             nativeTokenBalance,
             gasTokenDecimals: gasToken.decimals || 18,
+            gasTokenId: gasToken.tokenId,
+            tempoPreferredFeeTokenId,
             checkTxValueInBalance,
           });
 
@@ -2082,7 +2093,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
   });
 
-  const handleSelectTempoGasToken = useMemoizedFn((token: TokenItem) => {
+  const syncTempoGasTokenState = useMemoizedFn((token: TokenItem) => {
     const tokenId = token.id;
     setGasToken({
       tokenId,
@@ -2093,6 +2104,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     setNativeTokenBalance(
       new BigNumber(token.raw_amount_hex_str || 0).toFixed(0)
     );
+  });
+
+  const handleSelectTempoGasToken = useMemoizedFn((token: TokenItem) => {
+    const tokenId = token.id;
+    syncTempoGasTokenState(token);
     setTx((prev) => ({
       ...prev,
       feeToken: tokenId,
@@ -2159,14 +2175,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             maxGasCostRawAmountIn18: calcTempoMaxGasCostRawAmountIn18([tx]),
           });
           setTempoCurrentFeeTokenId(currentFeeTokenId);
-          setTx((prev) => ({
-            ...prev,
-            feeToken: preferredTokenId,
-          }));
+          setTempoPreferredFeeTokenId(preferredTokenId);
           setTempoGasTokenLoading(true);
           setTempoGasTokenList(options);
           if (selectedOption) {
-            handleSelectTempoGasToken(selectedOption);
+            syncTempoGasTokenState(selectedOption);
           }
         }
       } catch (e) {
@@ -2412,22 +2425,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       ({ options, currentFeeTokenId, preferredTokenId, selectedOption }) => {
         if (!mounted) return;
         setTempoCurrentFeeTokenId(currentFeeTokenId);
+        setTempoPreferredFeeTokenId(preferredTokenId);
         setTempoGasTokenList(options);
-        setTx((prev) => {
-          const prevTx = prev as TxWithTempoExtras<Tx>;
-          if (prevTx.feeToken === preferredTokenId) {
-            return prev;
-          }
-          return {
-            ...prevTx,
-            feeToken: preferredTokenId,
-          } as Tx;
-        });
         if (
           selectedOption &&
           gasToken.tokenId.toLowerCase() !== selectedOption.id.toLowerCase()
         ) {
-          handleSelectTempoGasToken(selectedOption);
+          syncTempoGasTokenState(selectedOption);
         }
       }
     );
