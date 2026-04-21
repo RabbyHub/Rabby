@@ -309,7 +309,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
     [chainInfo, currentAccount]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -1165,6 +1165,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
               chainServeId={chainInfo.serverId}
               noQuote={false}
               type="send"
+              signatureInstance={instance}
             />
           </div>
         ) : null}
@@ -1265,6 +1266,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleSwap()}
             accountType={currentAccount.type}
+            signatureInstance={instance}
           />
         ) : (
           <Button

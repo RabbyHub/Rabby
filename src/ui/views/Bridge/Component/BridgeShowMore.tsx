@@ -1,6 +1,6 @@
 import { TokenWithChain } from '@/ui/component';
-import { getTokenSymbol } from '@/ui/utils/token';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { getTokenSymbol, abstractTokenToTokenItem } from '@/ui/utils/token';
+import { TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { Button, Skeleton, Switch, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
@@ -22,22 +22,44 @@ import styled from 'styled-components';
 import { findChainByServerID } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from '@debank/common';
-import { formatGasHeaderUsdValue } from '@/ui/utils';
-import ShowMoreGasSelectModal, { useGetGasInfoByUI } from './ShowMoreGasModal';
-import { getGasLevelI18nKey } from '@/ui/utils/trans';
-import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
-import { noop } from 'lodash';
+import { intToHex, useWallet } from '@/ui/utils';
+import _, { noop } from 'lodash';
 import {
-  useSignatureStore,
-  signatureStore,
+  shallowEqual,
+  useSignatureStoreOf,
 } from '@/ui/component/MiniSignV2/state';
+import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import {
   GasAccountTips,
   GasLessActivityToSign,
   GasLessNotEnough,
 } from '../../Approval/components/FooterBar/GasLessComponents';
+import {
+  shouldAutoSwitchToGasAccountFromGasless,
+  shouldShowGasLessNotEnough,
+} from '../../Approval/components/FooterBar/gasAccountDecision';
 import { useGasAccountSign } from '../../GasAccount/hooks';
+import { GasAccountDepositPopup } from '../../GasAccount/components/GasAccountDepositPopup';
+import {
+  buildTopUpResumedTxs,
+  GasAccountTopUpResult,
+} from '../../GasAccount/components/topUpContinuation';
+import { useGasAccountDepositFlowActive } from '../../GasAccount/hooks/runtime';
 import { useMemoizedFn } from 'ahooks';
+import { GasSelectorResponse } from '../../Approval/components/TxComponents/GasSelectorHeader';
+import SignMainnetGasSelectorHeader from '../../Approval/components/TxComponents/GasSelector/SignMainnetGasSelectorHeader';
+import { normalizeTxParams } from '../../Approval/components/SignTx';
+import { checkGasAndNonce, explainGas } from '@/utils/transaction';
+import { KEYRING_CLASS } from 'consts';
+import { useRabbySelector } from '@/ui/store';
+import {
+  calcTempoMaxGasCostRawAmountIn18,
+  isTempoBatchSupportedAccountType,
+  isTempoChain,
+  listTempoFeeTokenOptionsFromCache,
+  loadTempoFeeTokenOptionsState,
+  TxWithTempoExtras,
+} from '@/utils/tempo';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -89,6 +111,7 @@ export const BridgeShowMore = ({
   supportDirectSign = false,
   autoSuggestSlippage,
   insufficient = false,
+  signatureInstance,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -124,6 +147,7 @@ export const BridgeShowMore = ({
   openFeePopup: () => void;
   autoSuggestSlippage?: string;
   supportDirectSign?: boolean;
+  signatureInstance: SignatureManager;
 }) => {
   const { t } = useTranslation();
   const sourceAlwaysShow = type === 'bridge';
@@ -310,6 +334,7 @@ export const BridgeShowMore = ({
             openShowMore={noop}
             noQuote={!sourceLogo && !sourceName}
             chainServeId={fromToken?.chain}
+            signatureInstance={signatureInstance}
           />
         ) : null}
 
@@ -444,6 +469,7 @@ export const DirectSignGasInfo = ({
   noQuote,
   type = 'bridge',
   chainServeId,
+  signatureInstance,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
@@ -451,53 +477,130 @@ export const DirectSignGasInfo = ({
   noQuote?: boolean;
   type?: 'send' | 'swap' | 'bridge';
   chainServeId: string;
+  signatureInstance: SignatureManager;
 }) => {
-  const { t } = useTranslation();
+  const wallet = useWallet();
+  const { cachedTokenList } = useRabbySelector((s) => ({
+    cachedTokenList: s.account.tokens.list,
+  }));
+  const cachedTokenItems = useMemo(
+    () => (cachedTokenList || []).map(abstractTokenToTokenItem),
+    [cachedTokenList]
+  );
+  const [gasAccountDepositVisible, setGasAccountDepositVisible] = useState(
+    false
+  );
+  const depositFlowActive = useGasAccountDepositFlowActive();
 
-  const [gasModalVisible, setGasModalVisible] = useState(false);
-
-  const chainEnum = findChainByServerID(chainServeId)?.enum;
-
-  const calcGasAccountUsd = useCallback((n: number | string) => {
-    const v = Number(n);
-    if (!Number.isNaN(v) && v < 0.0001) {
-      return `$${n}`;
-    }
-    return formatGasHeaderUsdValue(n || '0');
-  }, []);
+  const chain = findChainByServerID(chainServeId);
+  const chainId = chain?.id || 0;
+  const chainEnum = chain?.enum;
 
   const { sig, accountId } = useGasAccountSign();
 
   const isGasAccountLogin = !!sig && !!accountId;
 
-  const { ctx, config } = useSignatureStore();
+  const {
+    currentAccount,
+    gaConfig,
+    onRedirectToDeposit,
+    txs,
+    txsResult,
+    gasList,
+    selectedGas,
+    gasless,
+    gasAccount,
+    gasMethod,
+    noCustomRPC,
+    support1559,
+    nativeTokenBalance,
+    gasToken: ctxGasToken,
+    gasPriceMedian,
+    checkErrors,
+    useGaslessEnabled,
+    isGasNotEnough,
+    nativeTokenPrice,
+  } = useSignatureStoreOf(
+    signatureInstance,
+    (state) => ({
+      currentAccount: state.config?.account,
+      gaConfig: state.config?.ga,
+      onRedirectToDeposit: state.config?.onRedirectToDeposit,
+      txs: state.ctx?.txs || [],
+      txsResult: state.ctx?.txsCalc || [],
+      gasList: state.ctx?.gasList || [],
+      selectedGas: state.ctx?.selectedGas,
+      gasless: state.ctx?.gasless,
+      gasAccount: state.ctx?.gasAccount,
+      gasMethod: state.ctx?.gasMethod,
+      noCustomRPC: !!state.ctx?.noCustomRPC,
+      support1559: !!state.ctx?.is1559,
+      nativeTokenBalance: state.ctx?.nativeTokenBalance || '0',
+      gasToken: state.ctx?.gasToken,
+      gasPriceMedian: state.ctx?.gasPriceMedian || null,
+      checkErrors: state.ctx?.checkErrors || [],
+      useGaslessEnabled: !!state.ctx?.useGasless,
+      isGasNotEnough: !!state.ctx?.isGasNotEnough,
+      nativeTokenPrice: state.ctx?.nativeTokenPrice || 0,
+    }),
+    shallowEqual
+  );
+  const currentTx = txs[0];
+  const isGasAccountTopUpFlow =
+    gaConfig?.category === 'GasAccount' && gaConfig?.action === 'deposit';
+  const { isSpeedUp, isCancel } = currentTx
+    ? normalizeTxParams(currentTx)
+    : { isSpeedUp: false, isCancel: false };
+  const showGasContent =
+    !!txsResult.length &&
+    !!gasList.length &&
+    !!selectedGas &&
+    !loading &&
+    !noQuote &&
+    !!currentTx &&
+    !!currentAccount &&
+    !!chainId;
 
-  const gasInfoByUI = useGetGasInfoByUI();
-
-  const { gasCostUsdStr, gasAccountCost } = gasInfoByUI || {};
-
-  const gasCostUsd =
-    ctx?.gasMethod === 'gasAccount'
-      ? calcGasAccountUsd(
-          (gasAccountCost?.estimate_tx_cost || 0) +
-            Number(gasAccountCost?.gas_cost || 0)
-        )
-      : gasCostUsdStr;
-
-  const showGasContent = !!ctx?.txsCalc?.length && !loading && !noQuote;
-
-  const isReady = (ctx?.txsCalc?.length || 0) > 0;
-  const isGasNotEnough = !!ctx?.isGasNotEnough;
-  const canUseGasLess = !!ctx?.gasless?.is_gasless;
-  const noCustomRPC = !!ctx?.noCustomRPC;
+  const isReady = txsResult.length > 0;
+  const canUseGasLess = !!gasless?.is_gasless;
+  const gasToken = ctxGasToken || {
+    tokenId: chain?.nativeTokenAddress || '',
+    symbol: chain?.nativeTokenSymbol || '',
+    decimals: chain?.nativeTokenDecimals || 18,
+    logoUrl: chain?.nativeTokenLogo || '',
+  };
+  const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
+  const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
+  const showTempoGasTokenSelector =
+    !!chain &&
+    isTempoChain(chain.serverId) &&
+    gasMethod !== 'gasAccount' &&
+    isTempoBatchSupportedAccountType(currentAccount?.type);
+  const isHardware =
+    currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER ||
+    currentAccount?.type === KEYRING_CLASS.HARDWARE.ONEKEY;
+  const totalGasCost = txsResult.reduce(
+    (sum, item) => {
+      sum.gasCostAmount = sum.gasCostAmount.plus(
+        item.gasCost?.gasCostAmount || 0
+      );
+      sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCost?.gasCostUsd || 0);
+      return sum;
+    },
+    {
+      gasCostUsd: new BigNumber(0),
+      gasCostAmount: new BigNumber(0),
+      success: true,
+    }
+  );
 
   let gasLessConfig =
-    canUseGasLess && ctx?.gasless?.promotion
-      ? ctx?.gasless?.promotion?.config
+    canUseGasLess && gasless?.promotion
+      ? gasless?.promotion?.config
       : undefined;
   if (
     gasLessConfig &&
-    ctx?.gasless?.promotion?.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
+    gasless?.promotion?.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
   ) {
     gasLessConfig = { ...gasLessConfig, dark_color: '', theme_color: '' };
   }
@@ -505,60 +608,317 @@ export const DirectSignGasInfo = ({
   const canGotoUseGasAccount =
     // isSupportedAddr &&
     noCustomRPC &&
-    !!ctx?.gasAccount?.balance_is_enough &&
-    !ctx?.gasAccount.chain_not_support &&
-    !!ctx?.gasAccount.is_gas_account;
+    !!gasAccount?.balance_is_enough &&
+    !gasAccount.chain_not_support &&
+    !!gasAccount.is_gas_account;
+  const payGasByGasAccount = gasMethod === 'gasAccount';
 
   const showGasLess = isReady && (isGasNotEnough || !!gasLessConfig);
 
-  const showGasLessToSign =
-    showGasLess && !canGotoUseGasAccount && canUseGasLess;
+  const showGasLessToSign = showGasLess && !payGasByGasAccount && canUseGasLess;
 
   // gas 提交使用 gasless
   const useGasLess =
-    (isGasNotEnough || !!gasLessConfig) && !!canUseGasLess && !!ctx?.useGasless;
-
-  const payGasByGasAccount = ctx?.gasMethod === 'gasAccount';
+    (isGasNotEnough || !!gasLessConfig) && !!canUseGasLess && useGaslessEnabled;
 
   const canDepositUseGasAccount =
     // isSupportedAddr &&
     noCustomRPC &&
-    !!ctx?.gasAccount &&
-    !ctx?.gasAccount?.balance_is_enough &&
-    !ctx?.gasAccount.chain_not_support;
+    !!gasAccount &&
+    !gasAccount?.balance_is_enough &&
+    !gasAccount.chain_not_support;
 
   const gasAccountCanPay =
-    ctx?.gasMethod === 'gasAccount' &&
+    gasMethod === 'gasAccount' &&
     // isSupportedAddr &&
     noCustomRPC &&
-    !!ctx?.gasAccount?.balance_is_enough &&
-    !ctx?.gasAccount.chain_not_support &&
-    !!ctx?.gasAccount.is_gas_account &&
-    !(ctx?.gasAccount as any).err_msg;
+    !!gasAccount?.balance_is_enough &&
+    !gasAccount.chain_not_support &&
+    !!gasAccount.is_gas_account &&
+    !(gasAccount as any).err_msg;
 
   const disabledProcess = payGasByGasAccount
     ? !gasAccountCanPay
     : useGasLess
     ? false
-    : !ctx?.txsCalc?.length ||
-      !!ctx.checkErrors?.some((e) => e.level === 'forbidden');
+    : !txsResult.length || !!checkErrors.some((e) => e.level === 'forbidden');
 
   // Gasless 切换
   const handleToggleGasless = (value) => {
-    signatureStore.toggleGasless(value);
+    signatureInstance.toggleGasless(value);
   };
 
-  // Gas 方法切换 - 添加异步处理
   const handleChangeGasMethod = useCallback(
     async (method: 'native' | 'gasAccount') => {
       try {
-        signatureStore.setGasMethod(method);
+        signatureInstance.setGasMethod(method);
       } catch (error) {
         console.error('Gas method change error:', error);
       }
     },
-    [ctx?.selectedGas]
+    [signatureInstance]
   );
+
+  const handleGasChange = useCallback(
+    async (gas) => {
+      try {
+        await signatureInstance.updateGasLevel(gas, wallet);
+      } catch (error) {
+        console.error('Gas change error:', error);
+      }
+    },
+    [signatureInstance, wallet]
+  );
+  const handleSelectTempoGasToken = useMemoizedFn(async (token: TokenItem) => {
+    signatureInstance.setTempoFeeToken(token);
+    if (selectedGas) {
+      await handleGasChange(selectedGas as any);
+    }
+  });
+
+  const handleChangeGasAccount = useMemoizedFn(async () => {
+    await handleChangeGasMethod('gasAccount');
+    if (selectedGas) {
+      await handleGasChange(selectedGas as any);
+    }
+  });
+  const handleOpenGasAccountDeposit = useMemoizedFn(() => {
+    if (
+      isGasAccountTopUpFlow ||
+      gasAccountDepositVisible ||
+      depositFlowActive
+    ) {
+      return;
+    }
+
+    setGasAccountDepositVisible(true);
+  });
+
+  const handleTopUpWaitResult = useMemoizedFn(
+    async (result: GasAccountTopUpResult) => {
+      if (!currentAccount || !txs.length || !chain?.serverId) {
+        return;
+      }
+
+      const nextTxs = await buildTopUpResumedTxs({
+        txs,
+        originalAccountAddress: currentAccount.address,
+        originalChainServerId: chain.serverId,
+        topUpResult: result,
+        wallet,
+      });
+
+      signatureInstance.replaceTxs(nextTxs);
+      if (selectedGas) {
+        await handleGasChange(selectedGas as any);
+      }
+      signatureInstance.setGasMethod('gasAccount');
+    }
+  );
+
+  useEffect(() => {
+    if (!currentAccount?.address || !chain || !isTempoChain(chain.serverId)) {
+      setTempoGasTokenList([]);
+      setTempoGasTokenLoading(false);
+      return;
+    }
+
+    let mounted = true;
+    setTempoGasTokenLoading(true);
+
+    const maxGasCostRawAmount = (txsResult || []).reduce(
+      (sum, item) =>
+        sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
+      new BigNumber(0)
+    );
+    const maxGasCostRawAmountIn18 = calcTempoMaxGasCostRawAmountIn18(txs || []);
+    const cachedOptions = listTempoFeeTokenOptionsFromCache({
+      tokenList: cachedTokenItems,
+      chainServerId: chain.serverId,
+      maxGasCostRawAmount,
+      maxGasCostRawAmountDecimals: gasToken.decimals || 18,
+      maxGasCostRawAmountIn18,
+    });
+    const txFeeToken = (txs?.[0] as TxWithTempoExtras<Tx> | undefined)
+      ?.feeToken as string | undefined;
+
+    if (cachedOptions.length) {
+      setTempoGasTokenList(cachedOptions);
+    }
+
+    loadTempoFeeTokenOptionsState({
+      wallet,
+      userAddress: currentAccount.address,
+      chainServerId: chain.serverId,
+      tokenList: cachedTokenItems,
+      txFeeToken,
+      maxGasCostRawAmount,
+      maxGasCostRawAmountDecimals: gasToken.decimals || 18,
+      maxGasCostRawAmountIn18,
+    })
+      .then(({ options, selectedOption }) => {
+        if (!mounted) return;
+
+        setTempoGasTokenList(options);
+        if (
+          selectedOption &&
+          gasToken.tokenId?.toLowerCase() !== selectedOption.id.toLowerCase()
+        ) {
+          void handleSelectTempoGasToken(selectedOption);
+        }
+      })
+      .finally(() => {
+        if (mounted) {
+          setTempoGasTokenLoading(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [
+    cachedTokenItems,
+    chain,
+    currentAccount?.address,
+    gasToken.decimals,
+    gasToken.tokenId,
+    handleSelectTempoGasToken,
+    txs,
+    txsResult,
+    wallet,
+  ]);
+
+  const gasCalcMethod = useCallback(
+    async (price: number) => {
+      const nativePrice = nativeTokenPrice || 0;
+      const amount =
+        txsResult.reduce(
+          (acc, item) =>
+            acc.plus(new BigNumber(item.gasUsed).times(price).div(1e18)),
+          new BigNumber(0)
+        ) || new BigNumber(0);
+
+      return { gasCostUsd: amount.times(nativePrice), gasCostAmount: amount };
+    },
+    [nativeTokenPrice, txsResult]
+  );
+
+  const checkGasLevelIsNotEnough = useMemoizedFn(
+    (
+      gas: GasSelectorResponse,
+      type?: 'gasAccount' | 'native'
+    ): Promise<[boolean, number]> => {
+      if (!isReady || !txsResult.length || !currentAccount || !chainId) {
+        return Promise.resolve([true, 0]);
+      }
+
+      return Promise.all(
+        txsResult.map(async (item) => {
+          const tx = {
+            ...item.tx,
+            ...(support1559
+              ? {
+                  maxFeePerGas: intToHex(Math.round(gas.price || 0)),
+                  maxPriorityFeePerGas:
+                    gas.maxPriorityFee < 0
+                      ? item.tx.maxFeePerGas
+                      : intToHex(Math.round(gas.maxPriorityFee)),
+                }
+              : { gasPrice: intToHex(Math.round(gas.price)) }),
+          };
+
+          return {
+            ...item,
+            tx,
+            gasCost: await explainGas({
+              gasUsed: item.gasUsed,
+              gasPrice: gas.price,
+              chainId,
+              nativeTokenPrice: item.preExecResult.native_token.price,
+              wallet,
+              tx,
+              gasLimit: item.gasLimit,
+              account: currentAccount,
+              preparedL1Fee: item.L1feeCache,
+            }),
+          };
+        })
+      ).then((arr) => {
+        let balance = nativeTokenBalance || '';
+
+        if (!arr.length) {
+          return [true, 0] as [boolean, number];
+        }
+
+        if (type === 'native') {
+          const checkResult = arr.map((item) => {
+            const result = checkGasAndNonce({
+              recommendGasLimitRatio: item.recommendGasLimitRatio,
+              recommendGasLimit: item.gasLimit,
+              recommendNonce: item.tx.nonce,
+              tx: item.tx,
+              gasLimit: item.gasLimit,
+              nonce: item.tx.nonce,
+              isCancel,
+              gasExplainResponse: item.gasCost,
+              isSpeedUp,
+              isGnosisAccount: false,
+              nativeTokenBalance: balance,
+            });
+
+            balance = new BigNumber(balance)
+              .minus(new BigNumber(item.tx.value || 0))
+              .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
+              .toFixed();
+
+            return result;
+          });
+
+          return [_.flatten(checkResult)?.some((e) => e.code === 3001), 0] as [
+            boolean,
+            number
+          ];
+        }
+
+        return wallet.openapi
+          .checkGasAccountTxs({
+            sig: sig || '',
+            account_id: accountId || currentAccount.address,
+            tx_list: arr.map((item) => ({
+              ...item.tx,
+              gas: item.gasLimit,
+              gasPrice: intToHex(gas.price),
+            })),
+          })
+          .then((gasAccountRes) => [
+            !gasAccountRes.balance_is_enough,
+            (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
+              (gasAccountRes.gas_account_cost?.gas_cost || 0),
+          ]);
+      });
+    }
+  );
+
+  useEffect(() => {
+    if (
+      shouldAutoSwitchToGasAccountFromGasless({
+        showGasLess,
+        isGasNotEnough,
+        canUseGasLess,
+        canGotoUseGasAccount: !!canGotoUseGasAccount,
+      }) &&
+      !payGasByGasAccount
+    ) {
+      void handleChangeGasAccount();
+    }
+  }, [
+    canGotoUseGasAccount,
+    canUseGasLess,
+    handleChangeGasAccount,
+    isGasNotEnough,
+    payGasByGasAccount,
+    showGasLess,
+  ]);
 
   useEffect(() => {
     if (loading || noQuote) {
@@ -567,10 +927,7 @@ export const DirectSignGasInfo = ({
     const showGasLevelPopup = !!showGasContent && !!disabledProcess;
     const gasTooHigh =
       !!showGasContent &&
-      !!gasCostUsdStr &&
-      new BigNumber(gasCostUsdStr?.replace(/\$/g, '')).gt(
-        chainEnum === CHAINS_ENUM.ETH ? 10 : 1
-      );
+      totalGasCost.gasCostUsd.gt(chainEnum === CHAINS_ENUM.ETH ? 10 : 1);
     if (showGasLevelPopup || gasTooHigh) {
       openShowMore(true);
     } else {
@@ -580,9 +937,9 @@ export const DirectSignGasInfo = ({
     chainEnum,
     disabledProcess,
     isReady,
-    gasCostUsdStr,
     openShowMore,
     showGasContent,
+    totalGasCost.gasCostUsd,
     loading,
     noQuote,
   ]);
@@ -603,27 +960,46 @@ export const DirectSignGasInfo = ({
         />
       ) : null}
 
-      {showGasLess && !payGasByGasAccount && !canUseGasLess ? (
+      {shouldShowGasLessNotEnough({
+        showGasLess,
+        isGasNotEnough,
+        payGasByGasAccount,
+        canUseGasLess,
+      }) ? (
         <GasLessNotEnough
           directSubmit
-          gasLessFailedReason={ctx?.gasless?.desc}
+          nativeTokenInsufficient={isGasNotEnough}
           canGotoUseGasAccount={canGotoUseGasAccount}
-          onChangeGasAccount={() => handleChangeGasMethod('gasAccount')}
+          onChangeGasAccount={handleChangeGasAccount}
           canDepositUseGasAccount={canDepositUseGasAccount}
-          miniFooter
-          onRedirectToDeposit={config?.onRedirectToDeposit}
+          onOpenGasAccountDeposit={handleOpenGasAccountDeposit}
+          disableGasAccountDeposit={
+            isGasAccountTopUpFlow ||
+            gasAccountDepositVisible ||
+            depositFlowActive
+          }
+          onRedirectToDeposit={onRedirectToDeposit}
+          preserveApprovalContext
         />
       ) : null}
 
       {payGasByGasAccount && !gasAccountCanPay ? (
         <GasAccountTips
           directSubmit
-          gasAccountCost={ctx?.gasAccount as any}
-          isGasAccountLogin={isGasAccountLogin}
+          gasAccountCost={gasAccount as any}
+          gasAccountAddress={accountId || currentAccount?.address || ''}
           isWalletConnect={false}
           noCustomRPC={noCustomRPC}
-          miniFooter
-          onRedirectToDeposit={config?.onRedirectToDeposit}
+          nativeTokenInsufficient={isGasNotEnough}
+          onChangeGasAccount={handleChangeGasAccount}
+          onOpenGasAccountDeposit={handleOpenGasAccountDeposit}
+          disableGasAccountDeposit={
+            isGasAccountTopUpFlow ||
+            gasAccountDepositVisible ||
+            depositFlowActive
+          }
+          onRedirectToDeposit={onRedirectToDeposit}
+          preserveApprovalContext
         />
       ) : null}
     </GasTipsWrapper>
@@ -631,81 +1007,60 @@ export const DirectSignGasInfo = ({
 
   return (
     <>
-      <ListItem
-        name={<>{'Gas fee'}</>}
-        className={clsx(type !== 'send' && 'mt-12')}
-      >
-        {showGasContent ? (
-          <>
-            <ShowMoreGasSelectModal
-              visible={gasModalVisible}
-              onCancel={() => {
-                setGasModalVisible(false);
-              }}
-              onConfirm={() => {
-                setGasModalVisible(false);
-              }}
-            >
-              <div
-                className={clsx(
-                  'cursor-pointer',
-                  'cursor text-12 font-medium flex items-center gap-4',
-                  disabledProcess ? 'text-r-red-default' : 'text-r-blue-default'
-                )}
-                onClick={() => {
-                  setGasModalVisible(true);
-                }}
-              >
-                <div>
-                  {ctx?.selectedGas?.level
-                    ? t(getGasLevelI18nKey(ctx.selectedGas.level))
-                    : t(getGasLevelI18nKey('normal'))}
-                  {' · '}
-                  {gasCostUsd}
-                </div>
-                {ctx.gasMethod === 'gasAccount' ? (
-                  <Tooltip
-                    align={{
-                      offset: [10, 0],
-                    }}
-                    placement={'topRight'}
-                    overlayClassName="rectangle w-[max-content]"
-                    title={
-                      <div onClick={(e) => e.stopPropagation()}>
-                        <div>{t('page.signTx.gasAccount.description')}</div>
-                        <div>
-                          {t('page.signTx.gasAccount.estimatedGas')}{' '}
-                          {calcGasAccountUsd(
-                            gasAccountCost?.estimate_tx_cost || 0
-                          )}
-                        </div>
-                        <div>
-                          {t('page.signTx.gasAccount.maxGas')}{' '}
-                          {calcGasAccountUsd(gasAccountCost?.total_cost || '0')}
-                        </div>
-                        <div>
-                          {t('page.signTx.gasAccount.sendGas')}{' '}
-                          {calcGasAccountUsd(gasAccountCost?.total_cost || '0')}
-                        </div>
-                        <div>
-                          {t('page.signTx.gasAccount.gasCost')}{' '}
-                          {calcGasAccountUsd(gasAccountCost?.gas_cost || '0')}
-                        </div>
-                      </div>
-                    }
-                  >
-                    <IconInfoSVG
-                      className="text-r-neutral-foot -top-1"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </Tooltip>
-                ) : null}
-              </div>
-            </ShowMoreGasSelectModal>
-          </>
-        ) : !loading && noQuote ? (
+      {showGasContent ? (
+        <div className={clsx(type !== 'send' && 'mt-12')}>
+          <SignMainnetGasSelectorHeader
+            tx={currentTx!}
+            gasAccountCost={gasAccount as any}
+            gasMethod={gasMethod}
+            onChangeGasMethod={handleChangeGasMethod}
+            disabled={false}
+            isReady={isReady}
+            gasLimit={String(txsResult?.[0]?.gasLimit || currentTx?.gas || 0)}
+            noUpdate={false}
+            gasList={gasList || []}
+            selectedGas={selectedGas}
+            version={txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0'}
+            recommendGasLimit={txsResult?.[0]?.gasLimit || currentTx?.gas || 0}
+            recommendNonce={currentTx?.nonce || '0'}
+            chainId={chainId}
+            onChange={handleGasChange}
+            nonce={String(currentTx?.nonce || '0')}
+            disableNonce={true}
+            isSpeedUp={!!isSpeedUp}
+            isCancel={!!isCancel}
+            is1559={support1559}
+            isHardware={isHardware}
+            manuallyChangeGasLimit={false}
+            errors={checkErrors}
+            nativeTokenBalance={nativeTokenBalance}
+            gasToken={gasToken}
+            gasPriceMedian={gasPriceMedian}
+            gas={totalGasCost}
+            gasCalcMethod={gasCalcMethod}
+            directSubmit
+            checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
+            nativeTokenInsufficient={isGasNotEnough}
+            freeGasAvailable={canUseGasLess}
+            noCustomRPC={noCustomRPC}
+            showTempoGasTokenSelector={showTempoGasTokenSelector}
+            tempoGasTokenList={tempoGasTokenList}
+            onSelectTempoGasToken={handleSelectTempoGasToken}
+            tempoGasTokenLoading={tempoGasTokenLoading}
+          />
+        </div>
+      ) : !loading && noQuote ? (
+        <ListItem
+          name={<>{'Gas fee'}</>}
+          className={clsx(type !== 'send' && 'mt-12')}
+        >
           <div>-</div>
-        ) : (
+        </ListItem>
+      ) : (
+        <ListItem
+          name={<>{'Gas fee'}</>}
+          className={clsx(type !== 'send' && 'mt-12')}
+        >
           <Skeleton.Input
             active
             className="rounded"
@@ -714,9 +1069,20 @@ export const DirectSignGasInfo = ({
               height: 12,
             }}
           />
-        )}
-      </ListItem>
+        </ListItem>
+      )}
       {showGasContent && <>{gasTipsComponent()}</>}
+      <GasAccountDepositPopup
+        visible={gasAccountDepositVisible}
+        onCancel={() => setGasAccountDepositVisible(false)}
+        onWaitDepositResult={handleTopUpWaitResult}
+        minDepositPrice={
+          gasAccount?.gas_account_cost?.total_cost != null
+            ? Number(gasAccount.gas_account_cost.total_cost)
+            : undefined
+        }
+        disableDirectDeposit
+      />
     </>
   );
 };

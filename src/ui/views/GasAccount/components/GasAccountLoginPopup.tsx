@@ -5,18 +5,13 @@ import { PopupProps } from '@/ui/component/Popup';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import clsx from 'clsx';
 import { CopyChecked } from '@/ui/component/CopyChecked';
-import {
-  useGasAccountInfo,
-  useGasAccountMethods,
-  useGasAccountSign,
-} from '../hooks';
+import { useGasAccountMethods, useGasAccountSign } from '../hooks';
 import { useAlias } from '@/ui/utils';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { SelectGasAccountList } from './SelectGasAccountList';
 import { Account } from '@/background/service/preference';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
-export const GasACcountCurrentAddress = ({
+export const GasAccountCurrentAddress = ({
   account,
   twoColumn,
 }: {
@@ -28,14 +23,20 @@ export const GasACcountCurrentAddress = ({
   };
 }) => {
   const currentAccount = useCurrentAccount();
+  const { account: gasAccount } = useGasAccountSign();
+  const resolvedAccount = account || gasAccount || currentAccount;
 
-  const [alias] = useAlias(account?.address || currentAccount?.address || '');
+  const [alias] = useAlias(resolvedAccount?.address || '');
 
   const addressTypeIcon = useBrandIcon({
-    address: account?.address || currentAccount!.address,
-    brandName: account?.brandName || currentAccount!.brandName,
-    type: account?.type || currentAccount!.type,
+    address: resolvedAccount?.address || '',
+    brandName: resolvedAccount?.brandName || '',
+    type: resolvedAccount?.type || '',
   });
+
+  if (!resolvedAccount) {
+    return null;
+  }
 
   if (twoColumn) {
     return (
@@ -47,12 +48,12 @@ export const GasACcountCurrentAddress = ({
           </span>
           <div className="flex items-center">
             <AddressViewer
-              address={account?.address || currentAccount!.address}
+              address={resolvedAccount.address}
               showArrow={false}
               className="text-[12px] text-r-neutral-body relative top-1"
             />
             <CopyChecked
-              addr={account?.address || currentAccount!.address}
+              addr={resolvedAccount.address}
               className={clsx(
                 'w-[14px] h-[14px] ml-4 text-14  cursor-pointer relative top-1'
               )}
@@ -70,12 +71,12 @@ export const GasACcountCurrentAddress = ({
         {alias}
       </span>
       <AddressViewer
-        address={account?.address || currentAccount!.address}
+        address={resolvedAccount.address}
         showArrow={false}
         className="text-13 text-r-neutral-body relative top-1"
       />
       <CopyChecked
-        addr={account?.address || currentAccount!.address}
+        addr={resolvedAccount.address}
         className={clsx(
           'w-[14px] h-[14px] ml-4 text-14  cursor-pointer relative top-1'
         )}
@@ -87,28 +88,16 @@ export const GasACcountCurrentAddress = ({
 
 const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
-
   const { login, logout } = useGasAccountMethods();
 
-  const { value: gasAccountInfo } = useGasAccountInfo();
-  const { sig } = useGasAccountSign();
-
   const [loading, setLoading] = useState(false);
-
-  // 获取 wallet 实例
-  const wallet = useRabbySelector((state) => state.app.wallet);
 
   const confirmAddress = async (account: Account) => {
     if (loading) {
       return;
     }
-    const isSwitch = gasAccountInfo?.account.id || sig;
     setLoading(true);
     try {
-      if (isSwitch) {
-        await logout();
-      }
       await login(account, false);
       await onLogin?.();
     } catch (error) {
@@ -121,7 +110,7 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[24px]">
-        {t('page.gasAccount.loginConfirmModal.title')}
+        {t('page.gasAccount.switchAccount')}
       </div>
 
       <SelectGasAccountList isGasAccount onChange={confirmAddress} />
