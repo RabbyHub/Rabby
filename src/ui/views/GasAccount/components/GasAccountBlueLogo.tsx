@@ -1,4 +1,5 @@
-import { ReactComponent as RcIconGasAccountBlue } from '@/ui/assets/gas-account/gas-account-blue-combined.svg';
+import { ReactComponent as RcIconGasAccountBlue } from '@/ui/assets/gas-account/gas-account-blue.svg';
+import { ReactComponent as RcIconGasAccountBlueBlur } from '@/ui/assets/gas-account/gas-account-blue-blur.svg';
 import React from 'react';
 import clsx from 'clsx';
 
@@ -11,9 +12,10 @@ export const GasAccountBlueLogo = (
   return (
     <div
       {...props}
-      className={clsx('relative overflow-visible', props.className)}
+      className={clsx('w-[60px] h-[60px] relative', props.className)}
     >
-      <RcIconGasAccountBlue className="absolute left-1/2 top-1/2 h-[65px] w-[92px] -translate-x-1/2 -translate-y-1/2" />
+      <RcIconGasAccountBlueBlur className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      <RcIconGasAccountBlue className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ReactComponent as RcIconGas } from '@/ui/assets/sign/tx/gas-cc.svg';
 import { ReactComponent as RcIconGasAccountCC } from '@/ui/assets/sign/tx/gas-account-blur-cc.svg';
 
@@ -13,15 +13,13 @@ import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { Button } from 'antd';
+import {
+  GAS_ACCOUNT_INSUFFICIENT_TIP,
+  useLoginDepositConfirm,
+} from '@/ui/views/GasAccount/hooks/checkTxs';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from '@/ui/utils';
 import { UI_TYPE } from '@/constant/ui';
-import {
-  useGasAccountBalance,
-  usePendingHardwareGasAccountLogin,
-} from '@/ui/views/GasAccount/hooks';
-import { formatUsdValue } from '@/ui/utils/number';
-import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
 
 export type GasLessConfig = {
   button_text: string;
@@ -33,44 +31,35 @@ export type GasLessConfig = {
 };
 
 export function GasLessNotEnough({
+  gasLessFailedReason,
   onChangeGasAccount,
-  gasAccountCost,
-  gasAccountAddress,
   canGotoUseGasAccount,
   canDepositUseGasAccount,
+  miniFooter,
   directSubmit,
   onRedirectToDeposit,
-  onOpenGasAccountDeposit,
-  disableGasAccountDeposit,
-  preserveApprovalContext,
-  nativeTokenInsufficient,
-  approvalUiStyle,
 }: {
-  onChangeGasAccount?: () => void | Promise<void>;
-  gasAccountCost?: GasAccountCheckResult;
-  gasAccountAddress?: string;
+  url?: string;
+  gasLessFailedReason?: string;
+  onChangeGasAccount?: () => void;
   canGotoUseGasAccount?: boolean;
   canDepositUseGasAccount?: boolean;
+  miniFooter?: boolean;
   directSubmit?: boolean;
   onRedirectToDeposit?: () => void;
-  onOpenGasAccountDeposit?: () => void;
-  disableGasAccountDeposit?: boolean;
-  preserveApprovalContext?: boolean;
-  nativeTokenInsufficient?: boolean;
-  approvalUiStyle?: boolean;
 }) {
   const { t } = useTranslation();
-  const gasAccountBalance = useGasAccountBalance(gasAccountAddress);
 
+  const modalConfirm = useLoginDepositConfirm({
+    onGotoGasAccount: onRedirectToDeposit,
+  });
   const history = useHistory();
   const wallet = useWallet();
   const gotoGasAccount = React.useCallback(async () => {
     onRedirectToDeposit?.();
 
     const openGasAccountPopup = async () => {
-      const opened = await wallet.openGasAccountPopup<boolean>(
-        preserveApprovalContext ? { clearApprovals: false } : undefined
-      );
+      const opened = await wallet.openGasAccountPopup<boolean>();
       if (!opened) {
         history.push('/gas-account');
       }
@@ -83,125 +72,45 @@ export function GasLessNotEnough({
         window.close();
       }
     }
-  }, [history, onRedirectToDeposit, preserveApprovalContext, wallet]);
-
-  const openDeposit = React.useCallback(() => {
-    if (disableGasAccountDeposit) {
-      return;
-    }
-
-    if (onOpenGasAccountDeposit) {
-      onOpenGasAccountDeposit();
-      return;
-    }
-
-    gotoGasAccount();
-  }, [disableGasAccountDeposit, gotoGasAccount, onOpenGasAccountDeposit]);
-
-  const {
-    shouldSignWithPendingHardware,
-    pendingHardwareAddressLabel,
-    isLoggingPendingHardware,
-    handleSignWithPendingHardware,
-  } = usePendingHardwareGasAccountLogin({
-    enabled: !!nativeTokenInsufficient,
-    gasAccountCost,
-    currentGasAccountAddress: gasAccountAddress,
-    onLoggedIn: onChangeGasAccount,
-  });
-
-  const notEnoughTip = t('page.signFooterBar.gasAccount.notEnough', {
-    usd: formatUsdValue(gasAccountBalance),
-  });
-
-  const action = shouldSignWithPendingHardware
-    ? {
-        type: 'button' as const,
-        text: t('page.signFooterBar.signAndSubmitButton'),
-        onClick: () => {
-          void handleSignWithPendingHardware();
-        },
-        loading: isLoggingPendingHardware,
-      }
-    : canDepositUseGasAccount && !disableGasAccountDeposit
-    ? {
-        type: 'button' as const,
-        text: t('page.signFooterBar.gasAccount.deposit'),
-        onClick: openDeposit,
-        loading: false,
-      }
-    : canGotoUseGasAccount
-    ? {
-        type: 'pill' as const,
-        text: t('page.signFooterBar.gasAccount.useGasAccount'),
-        onClick: () => {
-          void onChangeGasAccount?.();
-        },
-        loading: false,
-      }
-    : null;
-
-  const tipText = shouldSignWithPendingHardware
-    ? t('page.signFooterBar.gasAccount.signWithHardwareWalletToUse', {
-        brand: pendingHardwareAddressLabel,
-        defaultValue: `Sign with ${pendingHardwareAddressLabel} to use GasAccount`,
-      })
-    : canDepositUseGasAccount
-    ? notEnoughTip
-    : t('page.signFooterBar.gasless.notEnough');
-
-  const showApprovalUiStyle = !!approvalUiStyle;
+  }, [history, onRedirectToDeposit, wallet]);
 
   return (
     <div
       className={clsx(
-        'security-level-tip items-center',
-        showApprovalUiStyle
-          ? 'mt-8 min-h-[40px] bg-r-red-light text-r-red-light pl-[10px] pr-8 py-6'
-          : directSubmit
-          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default text-r-neutral-card2'
-          : 'mt-[15px] bg-r-neutral-card2 text-r-neutral-card2'
+        'security-level-tip  items-center text-r-neutral-card2',
+        directSubmit
+          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default'
+          : 'bg-r-neutral-card2  mt-[15px]'
       )}
     >
-      {(showApprovalUiStyle || !directSubmit) && (
+      {!directSubmit && (
         <RcIconGas
           viewBox="0 0 16 16"
-          className={clsx(
-            'w-16 h-16 shrink-0',
-            showApprovalUiStyle
-              ? 'mr-6 text-r-red-default'
-              : 'mr-4 text-r-neutral-title-1'
-          )}
+          className="w-16 h-16 mr-4 text-r-neutral-title-1"
         />
       )}
-      <div
+      <span
         className={clsx(
-          'relative flex-1 min-w-0',
-          showApprovalUiStyle
-            ? 'text-12 leading-[16px] text-r-red-default'
-            : directSubmit
-            ? 'text-r-red-default'
-            : 'text-r-neutral-title1'
+          'relative flex-1  inline-flex gap-4 items-center',
+          directSubmit ? 'text-r-red-default' : 'text-r-neutral-title1'
         )}
       >
-        <span className="block break-words">{tipText}</span>
-      </div>
+        {t('page.signFooterBar.gasless.notEnough')}
+      </span>
 
-      {action?.type === 'button' ? (
+      {canDepositUseGasAccount ? (
         <Button
-          loading={action.loading}
           type="primary"
-          className={clsx(
-            'h-[28px] min-w-[72px] px-10 flex justify-center items-center text-[12px] font-medium',
-            showApprovalUiStyle && 'rounded-[6px] shadow-none'
-          )}
-          onClick={action.onClick}
+          className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
+          onClick={() => {
+            gotoGasAccount();
+          }}
         >
-          {action.text}
+          {t('page.signFooterBar.gasAccount.deposit')}
         </Button>
       ) : null}
 
-      {action?.type === 'pill' ? (
+      {canGotoUseGasAccount ? (
         <div
           style={{
             cursor: 'pointer',
@@ -211,9 +120,9 @@ export function GasLessNotEnough({
             boxShadow: '0px 1px 4px 0px rgba(65, 89, 188, 0.33)',
           }}
           className="text-r-neutral-title2"
-          onClick={action.onClick}
+          onClick={onChangeGasAccount}
         >
-          {action.text}
+          {t('page.signFooterBar.gasAccount.useGasAccount')}
         </div>
       ) : null}
     </div>
@@ -514,35 +423,102 @@ export const GasLessAnimatedWrapper = styled.div`
 
 export function GasAccountTips({
   gasAccountCost,
-  gasAccountAddress,
+  isGasAccountLogin,
   isWalletConnect,
   noCustomRPC,
+  miniFooter,
   directSubmit,
   onRedirectToDeposit,
-  onOpenGasAccountDeposit,
-  disableGasAccountDeposit,
-  onChangeGasAccount,
-  preserveApprovalContext,
-  nativeTokenInsufficient,
-  approvalUiStyle,
 }: {
   gasAccountCost?: GasAccountCheckResult;
-  gasAccountAddress?: string;
+  isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
   noCustomRPC?: boolean;
+  miniFooter?: boolean;
   directSubmit?: boolean;
   onRedirectToDeposit?: () => void;
-  onOpenGasAccountDeposit?: () => void;
-  disableGasAccountDeposit?: boolean;
-  onChangeGasAccount?: () => void | Promise<void>;
-  preserveApprovalContext?: boolean;
-  nativeTokenInsufficient?: boolean;
-  approvalUiStyle?: boolean;
 }) {
   const { t } = useTranslation();
-  const gasAccountBalance = useGasAccountBalance(gasAccountAddress);
-  const notEnoughTipText = t('page.signFooterBar.gasAccount.notEnough', {
-    usd: formatUsdValue(gasAccountBalance),
+
+  const { tip, btnText, loginGasAccount, depositGasAccount } = useMemo(() => {
+    if (!noCustomRPC) {
+      return {
+        tip: t('page.signFooterBar.gasAccount.customRPC'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
+    }
+
+    if (isWalletConnect) {
+      return {
+        tip: t('page.signFooterBar.gasAccount.WalletConnectTips'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
+    }
+
+    if (
+      gasAccountCost?.err_msg &&
+      gasAccountCost?.err_msg?.toLowerCase() !==
+        GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase()
+    ) {
+      return {
+        tip: gasAccountCost.err_msg,
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
+    }
+
+    // if (!isGasAccountLogin && !miniFooter) {
+    //   return {
+    //     tip: t('page.signFooterBar.gasAccount.loginFirst'),
+    //     btnText: t('page.signFooterBar.gasAccount.login'),
+    //     loginGasAccount: true,
+    //     depositGasAccount: false,
+    //   };
+    // }
+
+    if (gasAccountCost?.chain_not_support) {
+      return {
+        tip: t('page.signFooterBar.gasAccount.chainNotSupported'),
+        btnText: null,
+        loginGasAccount: false,
+        depositGasAccount: false,
+      };
+    }
+
+    if (!gasAccountCost?.balance_is_enough) {
+      return {
+        tip: directSubmit
+          ? t('page.signFooterBar.gasless.notEnough')
+          : t('page.signFooterBar.gasAccount.notEnough'),
+        btnText: t('page.signFooterBar.gasAccount.deposit'),
+        loginGasAccount: false,
+        depositGasAccount: true,
+      };
+    }
+
+    return {
+      tip: null,
+      btnText: null,
+      loginGasAccount: false,
+      depositGasAccount: false,
+    };
+  }, [
+    directSubmit,
+    miniFooter,
+    isGasAccountLogin,
+    isWalletConnect,
+    gasAccountCost,
+    noCustomRPC,
+    t,
+  ]);
+
+  const modalConfirm = useLoginDepositConfirm({
+    onGotoGasAccount: onRedirectToDeposit,
   });
 
   const history = useHistory();
@@ -550,9 +526,7 @@ export function GasAccountTips({
   const gotoGasAccount = React.useCallback(async () => {
     onRedirectToDeposit?.();
     const openGasAccountPopup = async () => {
-      const opened = await wallet.openGasAccountPopup<boolean>(
-        preserveApprovalContext ? { clearApprovals: false } : undefined
-      );
+      const opened = await wallet.openGasAccountPopup<boolean>();
       if (!opened) {
         history.push('/gas-account');
       }
@@ -565,145 +539,52 @@ export function GasAccountTips({
         window.close();
       }
     }
-  }, [history, onRedirectToDeposit, preserveApprovalContext, wallet]);
-
-  const openDeposit = React.useCallback(() => {
-    if (disableGasAccountDeposit) {
-      return;
-    }
-
-    if (onOpenGasAccountDeposit) {
-      onOpenGasAccountDeposit();
-      return;
-    }
-
-    gotoGasAccount();
-  }, [disableGasAccountDeposit, gotoGasAccount, onOpenGasAccountDeposit]);
-
-  const {
-    shouldSignWithPendingHardware,
-    pendingHardwareAddressLabel,
-    isLoggingPendingHardware,
-    handleSignWithPendingHardware,
-  } = usePendingHardwareGasAccountLogin({
-    enabled: !!nativeTokenInsufficient,
-    gasAccountCost,
-    currentGasAccountAddress: gasAccountAddress,
-    onLoggedIn: onChangeGasAccount,
-  });
-
-  const depositAction = disableGasAccountDeposit
-    ? null
-    : {
-        text: t('page.signFooterBar.gasAccount.deposit'),
-        onClick: openDeposit,
-        loading: false,
-      };
-
-  let finalTip: string | null = null;
-  let action: {
-    text: string;
-    onClick: () => void;
-    loading: boolean;
-  } | null = null;
-
-  if (!noCustomRPC) {
-    finalTip = t('page.signFooterBar.gasAccount.customRPC');
-  } else if (isWalletConnect) {
-    finalTip = t('page.signFooterBar.gasAccount.WalletConnectTips');
-  } else if (shouldSignWithPendingHardware) {
-    finalTip = t('page.signFooterBar.gasAccount.signWithHardwareWalletToUse', {
-      brand: pendingHardwareAddressLabel,
-      defaultValue: `Sign with ${pendingHardwareAddressLabel} to use GasAccount`,
-    });
-    action = {
-      text: t('page.signFooterBar.signAndSubmitButton'),
-      onClick: () => {
-        void handleSignWithPendingHardware();
-      },
-      loading: isLoggingPendingHardware,
-    };
-  } else if (gasAccountCost?.err_msg) {
-    const isInsufficientError =
-      !gasAccountCost.chain_not_support &&
-      gasAccountCost.err_msg.toLowerCase() ===
-        GAS_ACCOUNT_INSUFFICIENT_TIP.toLowerCase();
-    if (isInsufficientError) {
-      finalTip = notEnoughTipText;
-      action = depositAction;
-    } else {
-      finalTip = gasAccountCost.err_msg;
-    }
-  } else if (gasAccountCost?.chain_not_support) {
-    finalTip = t('page.signFooterBar.gasAccount.chainNotSupported');
-  } else if (gasAccountCost && !gasAccountCost.balance_is_enough) {
-    finalTip = notEnoughTipText;
-    action = depositAction;
-  }
+  }, [history, onRedirectToDeposit, wallet]);
 
   if (
     !isWalletConnect &&
+    // isGasAccountLogin &&
     gasAccountCost?.balance_is_enough &&
     !gasAccountCost.chain_not_support &&
     noCustomRPC &&
-    !gasAccountCost?.err_msg &&
-    !shouldSignWithPendingHardware
+    !gasAccountCost?.err_msg
   ) {
     return null;
   }
 
-  if (!finalTip) {
-    return null;
-  }
-
-  const showApprovalUiStyle = !!approvalUiStyle;
-
   return (
     <div
       className={clsx(
-        'security-level-tip items-center',
-        showApprovalUiStyle
-          ? 'mt-8 min-h-[40px] bg-r-red-light text-r-red-light pl-[10px] pr-8 py-6'
-          : directSubmit
-          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default min-h-[42px] text-r-neutral-card2'
-          : 'mt-[15px] bg-r-neutral-card2 text-r-neutral-card2'
+        'security-level-tip text-r-neutral-card2 items-center',
+        directSubmit
+          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default min-h-[42px]'
+          : 'bg-r-neutral-card2 mt-[15px]'
       )}
     >
-      {(showApprovalUiStyle || !directSubmit) && (
+      {!directSubmit && (
         <RcIconGasAccountCC
           viewBox="0 0 20 20"
-          className={clsx(
-            'w-16 h-16 shrink-0',
-            showApprovalUiStyle
-              ? 'mr-6 text-r-red-default'
-              : 'mr-4 text-r-neutral-foot'
-          )}
+          className="w-16 h-16 mr-4 text-r-neutral-foot"
         />
       )}
-      <div
+      <span
         className={clsx(
-          'relative flex-1 min-w-0',
-          showApprovalUiStyle
-            ? 'text-12 leading-[16px] text-r-red-default'
-            : directSubmit
-            ? 'text-r-red-default'
-            : 'text-r-neutral-title1'
+          'relative flex-1  inline-flex gap-4 items-center',
+          directSubmit ? 'text-r-red-default' : 'text-r-neutral-title1'
         )}
       >
-        <span className="block break-words">{finalTip}</span>
-      </div>
+        {tip}
+      </span>
 
-      {action ? (
+      {btnText ? (
         <Button
-          loading={action.loading}
           type="primary"
-          className={clsx(
-            'h-[28px] min-w-[72px] px-10 flex justify-center items-center text-[12px] font-medium',
-            showApprovalUiStyle && 'rounded-[6px] shadow-none'
-          )}
-          onClick={action.onClick}
+          className="h-[28px] w-[72px] flex justify-center items-center text-[12px] font-medium"
+          onClick={() => {
+            gotoGasAccount();
+          }}
         >
-          {action.text}
+          {btnText}
         </Button>
       ) : null}
     </div>

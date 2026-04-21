@@ -21,23 +21,16 @@ import { CHAINS_ENUM } from '@/constant';
 import Settings from './components/Settings';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
-import { useGasAccountDiscovery } from '@/ui/views/GasAccount/hooks';
 
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
-  const { refreshDiscovery } = useGasAccountDiscovery({
-    autoRefresh: false,
-  });
 
   const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
     ...s.appVersion,
   }));
-  const accountsCount = useRabbySelector(
-    (s) => s.accountToDisplay.accountsList.length
-  );
 
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
 
@@ -72,39 +65,6 @@ const Dashboard = () => {
       dispatch.gift.setField({ hasClaimedGift: hasAnyAccountClaimedGift });
     })();
   }, []);
-
-  useEffect(() => {
-    if (!accountsCount) {
-      return;
-    }
-    refreshDiscovery().catch((error) => {
-      console.error(
-        '[gasAccount] refresh discovery on account change failed',
-        error
-      );
-    });
-  }, [accountsCount, refreshDiscovery]);
-
-  useEffect(() => {
-    const handleFocus = () => {
-      refreshDiscovery().catch((error) => {
-        console.error('[gasAccount] refresh discovery on focus failed', error);
-      });
-    };
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        handleFocus();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [refreshDiscovery]);
 
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();

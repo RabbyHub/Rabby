@@ -307,7 +307,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -919,7 +919,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
                 chainServeId={chainInfo.serverId}
                 noQuote={false}
                 type="send"
-                signatureInstance={instance}
               />
             </div>
           ) : null}
@@ -938,7 +937,6 @@ export const RepayModal: React.FC<RepayModalProps> = ({
                 loading={miniSignLoading}
                 onConfirm={() => handleRepay()}
                 accountType={currentAccount.type}
-                signatureInstance={instance}
               />
             ) : (
               <Button

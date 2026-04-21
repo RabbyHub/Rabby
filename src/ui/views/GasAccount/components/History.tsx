@@ -3,14 +3,12 @@ import { ReactComponent as RcIconEmptyCC } from '@/ui/assets/empty-cc.svg';
 import { useTranslation } from 'react-i18next';
 import { formatGasAccountUSDValue, sinceTime } from '@/ui/utils';
 import clsx from 'clsx';
-import type { useGasAccountHistory } from '../hooks';
+import { useGasAccountHistory } from '../hooks';
 import { Skeleton, Tooltip } from 'antd';
 import { ReactComponent as RcIconPendingCC } from '@/ui/assets/pending-cc.svg';
 import { ReactComponent as RcIconOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { findChainByServerID } from '@/utils/chain';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-green.svg';
-
-type GasAccountHistoryState = ReturnType<typeof useGasAccountHistory>;
 
 const HistoryItem = ({
   time,
@@ -119,13 +117,10 @@ const LoadingItem = ({ borderT }: { borderT: boolean }) => {
   );
 };
 
-export const GasAccountHistory = ({
-  historyState,
-}: {
-  historyState: GasAccountHistoryState;
-}) => {
+export const GasAccountHistory = () => {
   const { t } = useTranslation();
-  const { loading, txList, loadingMore, ref } = historyState;
+
+  const { loading, txList, loadingMore, ref } = useGasAccountHistory();
 
   if (
     !loading &&
@@ -134,21 +129,19 @@ export const GasAccountHistory = ({
     !txList?.list.length
   ) {
     return (
-      <div className="bg-r-neutral-card-1 h-full min-h-[283px] flex flex-col items-center justify-center gap-10 rounded-[12px] px-20">
+      <div className="bg-r-neutral-card-1 h-[283px] flex flex-col gap-8 items-center rounded-[8px]">
         <RcIconEmptyCC
           viewBox="0 0 40 40"
-          className="w-32 h-32 text-r-neutral-foot"
+          className="w-28 h-28 mt-[90px] text-r-neutral-foot"
         />
         <span className="text-13 font-medium text-r-neutral-foot">
-          {t('page.gasAccount.history.noHistoryForPast30Days', {
-            defaultValue: 'No history for the past 30 days.',
-          })}
+          {t('page.gasAccount.history.noHistory')}
         </span>
       </div>
     );
   }
   return (
-    <div className="bg-r-neutral-card-1 flex flex-col rounded-[12px] overflow-hidden">
+    <div className="bg-r-neutral-card-1 flex flex-col rounded-[8px] mb-20">
       {!loading &&
         txList?.rechargeList?.map((item, index) => (
           <HistoryItem

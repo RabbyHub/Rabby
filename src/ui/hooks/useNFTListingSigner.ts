@@ -1,5 +1,6 @@
 import { useMemoizedFn } from 'ahooks';
 
+import { signatureStore } from '@/ui/component/MiniSignV2/state';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2/state/TypedDataSignatureManager';
 import { getUiType, useWallet } from '@/ui/utils';
 import type { Account } from '@/background/service/preference';
@@ -32,14 +33,6 @@ export const useNFTListSigner = (
   const wallet = useWallet();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [wip, setWip] = useState(true);
-  const assertAccount = useMemoizedFn(() => {
-    const runtimeAccount = params.account;
-    if (!runtimeAccount) {
-      throw new Error('NFT listing signer account is unavailable');
-    }
-
-    return runtimeAccount;
-  });
 
   const {
     prefetch,
@@ -87,7 +80,7 @@ export const useNFTListSigner = (
             {
               txs: step.txs,
               config: {
-                account: assertAccount(),
+                account: params.account,
                 getContainer: options?.getContainer,
                 mode: 'UI',
                 title: options?.title,

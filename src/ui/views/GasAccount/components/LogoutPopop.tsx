@@ -5,18 +5,20 @@ import { message } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
 import { noop } from 'lodash';
 import clsx from 'clsx';
-import { useGasAccountMethods, useGasAccountSign } from '../hooks';
-import { GasAccountCurrentAddress } from './GasAccountLoginPopup';
+import { useGasAccountMethods } from '../hooks';
+import { GasACcountCurrentAddress } from './LoginPopup';
 import {
   GasAccountBlueBorderedButton,
   GasAccountRedBorderedButton,
 } from './Button';
+import { useRabbySelector } from '@/ui/store';
 
 const GasAccountLogoutContent = ({ onClose }: { onClose: () => void }) => {
   const { t } = useTranslation();
 
   const { logout } = useGasAccountMethods();
-  const { account: gasAccount } = useGasAccountSign();
+
+  const gasAccount = useRabbySelector((s) => s.gasAccount.account);
 
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +39,7 @@ const GasAccountLogoutContent = ({ onClose }: { onClose: () => void }) => {
       <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[24px]">
         {t('page.gasAccount.logoutConfirmModal.title')}
       </div>
-      <GasAccountCurrentAddress account={gasAccount} />
+      <GasACcountCurrentAddress account={gasAccount} />
       <div className="text-center text-14 text-r-neutral-body px-20">
         {t('page.gasAccount.logoutConfirmModal.desc')}
       </div>

@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from 'use-sync-external-store/shim';
+
 import { hasConnectedLedgerDevice } from '@/ui/utils';
 
 import type { WalletControllerType } from '@/ui/utils';
@@ -51,18 +53,7 @@ const defaultError = {
 const createErrorMessage = (err: unknown) =>
   err instanceof Error ? err.message : String(err ?? 'Unknown error');
 
-let nextInstanceId = 0;
-
-export class SignatureManager {
-  public readonly instanceId: string;
-  constructor(
-    private readonly options?: {
-      onReset?: () => void;
-    },
-    instanceId?: string
-  ) {
-    this.instanceId = instanceId ?? `sig-${++nextInstanceId}`;
-  }
+class SignatureManager {
   private state: SignatureFlowState = {
     status: 'idle',
   };
@@ -314,16 +305,16 @@ export class SignatureManager {
     return !disabledProcess;
   }
 
-  public getState = () => {
+  public getState() {
     return this.state;
-  };
+  }
 
-  public subscribe = (fn: Subscriber) => {
+  public subscribe(fn: Subscriber) {
     this.subscribers.push(fn);
     return () => {
       this.subscribers = this.subscribers.filter((e) => e !== fn);
     };
-  };
+  }
 
   public prefetch(request: SignatureRequest, wallet: WalletControllerType) {
     this.close();
@@ -418,36 +409,6 @@ export class SignatureManager {
 
   public async updateGasLevel(gas: GasLevel, wallet: WalletControllerType) {
     return this.updateGas(gas, wallet);
-  }
-
-  public replaceTxs(nextTxs: Tx[]) {
-    const { ctx, fingerprint } = this.state;
-    if (!ctx || !fingerprint) return;
-
-    const nextCalc = ctx.txsCalc.map((item, index) => {
-      const nextTx = nextTxs[index];
-      if (!nextTx) {
-        return item;
-      }
-
-      return {
-        ...item,
-        tx: {
-          ...item.tx,
-          nonce: nextTx.nonce ?? item.tx.nonce,
-        },
-      };
-    });
-
-    this.dispatch({
-      type: 'UPDATE_CTX',
-      fingerprint,
-      ctx: {
-        ...ctx,
-        txs: nextTxs,
-        txsCalc: nextCalc,
-      } as SignerCtx,
-    });
   }
 
   public async send({
@@ -586,7 +547,6 @@ export class SignatureManager {
       this.pendingResult = null;
     }
     this.dispatch({ type: 'RESET' });
-    this.options?.onReset?.();
   }
 
   public updateConfig(config: Partial<SignerConfig>) {
@@ -818,3 +778,18 @@ export class SignatureManager {
 }
 
 export const signatureManager = new SignatureManager();
+
+export const useSignatureStore = <T = SignatureFlowState>(
+  selector?: (state: SignatureFlowState) => T
+) =>
+  useSyncExternalStore(
+    signatureManager.subscribe.bind(signatureManager),
+    () => {
+      const snapshot = signatureManager.getState();
+      return (selector ? selector(snapshot) : snapshot) as T;
+    },
+    () => {
+      const snapshot = signatureManager.getState();
+      return (selector ? selector(snapshot) : snapshot) as T;
+    }
+  );

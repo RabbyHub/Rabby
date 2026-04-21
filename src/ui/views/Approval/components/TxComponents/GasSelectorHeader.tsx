@@ -29,7 +29,7 @@ import {
   formatGasAccountUSDValue,
 } from '@/ui/utils/number';
 import { calcMaxPriorityFee, GasTokenInfo } from '@/utils/transaction';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
@@ -48,15 +48,13 @@ import { GasMenuButton } from './GasMenuButton';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentcolor.svg';
 import { calcGasEstimated } from '@/utils/time';
-import {
-  GasCardBody,
-  GasPriceDesc as SharedGasPriceDesc,
-  GasPriceBold as SharedGasPriceBold,
-  useExplainGas,
-} from './GasSelector/gasCardStyles';
 import { getUiType, useHover, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { noop } from 'lodash';
+import {
+  useGetShowMoreGasSelectVisible,
+  useSetGasInfoByUI,
+} from '@/ui/views/Bridge/Component/ShowMoreGasModal';
 import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getTokenSymbol } from '@/ui/utils/token';
 
@@ -137,7 +135,126 @@ interface GasSelectorProps {
   tempoGasTokenLoading?: boolean;
 }
 
-const CardBody = GasCardBody;
+const useExplainGas = ({
+  price,
+  method,
+  value,
+}: {
+  price: number;
+  method: GasSelectorProps['gasCalcMethod'];
+  value: {
+    gasCostUsd: BigNumber;
+    gasCostAmount: BigNumber;
+  };
+}) => {
+  const [result, setResult] = useState<{
+    gasCostUsd: BigNumber;
+    gasCostAmount: BigNumber;
+  }>(value);
+  useEffect(() => {
+    method(price).then(setResult);
+  }, [price, method]);
+
+  return result;
+};
+
+const CardBody = styled.div<{
+  $disabled?: boolean;
+}>`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+
+  ${({ $disabled }) =>
+    $disabled
+      ? css`
+          opacity: 0.5;
+          cursor: not-allowed;
+        `
+      : css`
+          .card {
+            cursor: pointer;
+
+            &:hover {
+              border: 1px solid var(--r-blue-default, #7084ff);
+            }
+
+            &.active {
+              background: var(--r-blue-light-1, #eef1ff);
+              border: 1px solid var(--r-blue-default, #7084ff);
+              box-shadow: none;
+            }
+          }
+
+          .cardTitle {
+            &.active {
+              color: var(--r-blue-default, #7084ff) !important;
+            }
+          }
+        `}
+
+  .card {
+    width: 84px;
+    height: 80px;
+    border-radius: 8px;
+    background: var(--r-neutral-card1, #fff);
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+
+    .gas-level,
+    .cardTitle {
+      text-align: center;
+      font-size: 12px;
+      line-height: 14px;
+      color: var(--r-neutral-body, #3e495e);
+      margin: 14px auto 0;
+      font-weight: 500;
+    }
+    .cardTitle {
+      color: var(--r-neutral-title-1, #192945) !important;
+      font-weight: 500;
+      font-size: 15px !important;
+      line-height: 18px;
+      margin: 6px auto 0;
+      .ant-input {
+        background: transparent !important;
+      }
+    }
+    .cardTime {
+      font-size: 12px;
+      line-height: 14px;
+      color: var(--r-neutral-foot, #6a7587);
+      margin: 2px auto 0;
+    }
+
+    .custom-input {
+      margin: 6px auto 0;
+
+      .ant-input {
+        padding: 0;
+      }
+    }
+    .ant-input {
+      text-align: center !important;
+      font-size: 15px !important;
+      font-weight: 500;
+      color: var(--r-neutral-title-1, #192945);
+      padding-top: 0;
+      transition: none;
+      &.active {
+        color: var(--r-blue-default, #7084ff) !important;
+      }
+    }
+    .ant-input:focus,
+    .ant-input-focused {
+      color: var(--r-neutral-title-1);
+    }
+  }
+`;
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -160,8 +277,21 @@ const GasStyled = styled.div`
   }
 `;
 
-const GasPriceDesc = SharedGasPriceDesc;
-const GasPriceBold = SharedGasPriceBold;
+const GasPriceDesc = styled.div`
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--r-neutral-body, #3e495e);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  line-height: 16px;
+`;
+
+const GasPriceBold = styled.span`
+  font-weight: 500;
+  color: var(--r-neutral-title1, #192945);
+  font-size: 13px;
+`;
 
 const GasSelectorHeader = ({
   gasLimit,
@@ -364,6 +494,16 @@ const GasSelectorHeader = ({
     normal: false,
     fast: false,
   });
+  const [gasAccountIsNotEnough, setGasAccountIsNotEnough] = useState<{
+    slow: [boolean, string];
+    normal: [boolean, string];
+    fast: [boolean, string];
+  }>({
+    slow: [false, ''],
+    normal: [false, ''],
+    fast: [false, ''],
+  });
+
   const calcGasAccountUsd = useCallback((n: number | string) => {
     const v = Number(n);
     if (!Number.isNaN(v) && v < 0.0001) {
@@ -424,6 +564,76 @@ const GasSelectorHeader = ({
       chainId,
       isCancel,
       isSpeedUp,
+    ]
+  );
+
+  const outGasModalIsOpen = useGetShowMoreGasSelectVisible();
+
+  const gasAccountStateInit = useRef(false);
+
+  useDebounce(
+    () => {
+      if (
+        checkGasLevelIsNotEnough &&
+        gasList.length &&
+        directSubmit &&
+        isReady &&
+        outGasModalIsOpen &&
+        !gasAccountStateInit.current
+      ) {
+        let init = true;
+        ['slow', 'normal', 'fast'].forEach((level) => {
+          const selectedGas = gasList.find((e) => e.level === level);
+          checkGasLevelIsNotEnough(
+            {
+              ...gasList.find((e) => e.level === level),
+              gasLimit: Number(afterGasLimit),
+              nonce: Number(customNonce),
+              level: selectedGas!.level,
+              maxPriorityFee: calcMaxPriorityFee(
+                gasList,
+                selectedGas!,
+                chainId,
+                isCancel || isSpeedUp
+              ),
+            } as GasSelectorResponse,
+            'gasAccount'
+          )
+            .then((arr) => {
+              if (init) {
+                gasAccountStateInit.current = true;
+                setGasAccountIsNotEnough((pre) => ({
+                  ...pre,
+                  [level]: [
+                    arr[0],
+                    calcGasAccountUsd(((arr[1] as unknown) as number) || 0),
+                  ],
+                }));
+              }
+            })
+            .catch((e) => {
+              console.log('checkGasLevelIsNotEnough gasAccount error', e);
+            });
+        });
+
+        return () => {
+          init = false;
+        };
+      }
+    },
+    100,
+    [
+      outGasModalIsOpen,
+      isReady,
+      directSubmit,
+      afterGasLimit,
+      checkGasLevelIsNotEnough,
+      customNonce,
+      gasList,
+      chainId,
+      isCancel,
+      isSpeedUp,
+      calcGasAccountUsd,
     ]
   );
 
@@ -759,6 +969,58 @@ const GasSelectorHeader = ({
     setSelectedGas(rawSelectedGas);
     setModalVisible(false);
   };
+
+  const setGasInfoByUI = useSetGasInfoByUI();
+
+  useEffect(() => {
+    if (
+      isFirstTimeLoad ||
+      disabled ||
+      !isReady ||
+      !selectedGas ||
+      !directSubmit
+    ) {
+      setGasInfoByUI(undefined);
+      return;
+    }
+
+    setGasInfoByUI({
+      externalPanelSelection,
+      handleClickEdit,
+      // gasList,
+      gasCostUsdStr,
+      gasUsdList: {
+        slow: formatGasHeaderUsdValue(new BigNumber(gasSlowUsd).toString(10)),
+        normal: formatGasHeaderUsdValue(
+          new BigNumber(gasNormalUsd).toString(10)
+        ),
+        fast: formatGasHeaderUsdValue(new BigNumber(gasFastUsd).toString(10)),
+      },
+      gasIsNotEnough,
+      gasAccountIsNotEnough,
+      gasAccountCost: gasAccountCost?.gas_account_cost,
+    });
+  }, [
+    gasAccountIsNotEnough,
+    gasIsNotEnough,
+    directSubmit,
+    isReady,
+    isFirstTimeLoad,
+    disabled,
+    gasMethod,
+    onChangeGasMethod,
+    // isDisabledGasPopup,
+    gasList,
+    selectedGas,
+    externalPanelSelection,
+    handleClickEdit,
+    changedCustomGas,
+    gasCostUsdStr,
+    gasSlowUsd,
+    gasNormalUsd,
+    gasFastUsd,
+    gasAccountCost?.gas_account_cost,
+  ]);
 
   const uiType = useMemo(() => getUiType(), []);
 

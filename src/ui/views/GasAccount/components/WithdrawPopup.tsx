@@ -226,22 +226,17 @@ const Selector = ({
         status === SelectorStatus.Chain || status === SelectorStatus.Address
       }
       onClose={onClose}
+      getContainer={false}
       bodyStyle={{
         padding: 0,
-        height: '100%',
       }}
       contentWrapperStyle={{
         boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
         borderRadius: '16px 16px 0px 0',
         height: 440,
-        top: 'auto',
-        bottom: 0,
-        overflow: 'hidden',
       }}
       closeIcon={<GasAccountCloseIcon />}
       closable
-      destroyOnClose
-      push={false}
     >
       <div className="flex flex-col h-full pt-20">
         <div>
@@ -283,7 +278,7 @@ const Selector = ({
           {!sortedList?.length ? null : isSelectChain ? (
             <FixedSizeList<RechargeChainItem[]>
               width={'100%'}
-              height={340}
+              height={251}
               itemCount={sortedList?.length || 0}
               itemData={sortedList as RechargeChainItem[]}
               itemSize={68}
@@ -293,7 +288,7 @@ const Selector = ({
           ) : (
             <FixedSizeList<WithdrawListAddressItem[]>
               width={'100%'}
-              height={340}
+              height={251}
               itemCount={sortedList?.length || 0}
               itemData={sortedList as WithdrawListAddressItem[]}
               itemSize={68}

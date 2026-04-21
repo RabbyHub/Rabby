@@ -190,7 +190,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -671,7 +671,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             chainServeId={chainInfo.serverId}
             noQuote={false}
             type="send"
-            signatureInstance={instance}
           />
         </div>
       ) : null}
@@ -690,7 +689,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleSupply()}
             accountType={currentAccount.type}
-            signatureInstance={instance}
           />
         ) : (
           <Button

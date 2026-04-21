@@ -172,7 +172,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -563,7 +563,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             chainServeId={chainInfo.serverId}
             noQuote={false}
             type="send"
-            signatureInstance={instance}
           />
         </div>
       ) : null}
@@ -604,7 +603,6 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleWithdraw()}
             accountType={currentAccount.type}
-            signatureInstance={instance}
           />
         ) : (
           <Button

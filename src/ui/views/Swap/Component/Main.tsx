@@ -62,13 +62,6 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from './PendingTxItem';
 import { useTwoStepSwap } from '../hooks/twoStepSwap';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import {
-  FormAmountMode,
-  FormValuesOnSubmit,
-  createAmountComparer,
-  shouldIgnoreAmountChangeInMaxMode,
-} from '@/ui/utils/form';
-import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -88,11 +81,6 @@ const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
 };
 
 export const Main = () => {
-  interface SwapTopUpSnapshot {
-    amount: string;
-    amountMode?: FormAmountMode;
-  }
-
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
     unlimitedAllowance: state.swap.unlimitedAllowance || false,
@@ -515,89 +503,16 @@ export const Main = () => {
   const showRiskTips = isSlippageLow || isSlippageHigh || showLoss;
 
   const [swapDappOpen, setSwapDappOpen] = useState(false);
-  const history = useHistory();
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
-  const topUpFormValuesRef = useRef(
-    new FormValuesOnSubmit<SwapTopUpSnapshot>({
-      comparers: {
-        amount: createAmountComparer<string>(),
-      },
-    })
-  );
-  const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
-  const depositFlowActive = useGasAccountDepositFlowActive();
-  const buildTopUpSnapshot = useCallback(
-    (): SwapTopUpSnapshot => ({
-      amount: inputAmount || '',
-      amountMode: slider === 100 ? 'max' : 'exact',
-    }),
-    [inputAmount, slider]
-  );
-  const persistSwapPageState = useCallback(async () => {
-    await wallet.setPageStateCache({
-      path: '/swap',
-      search: history.location.search,
-      params: {},
-      states: {
-        chain,
-        payToken,
-        receiveToken,
-        inputAmount,
-        slippageState,
-        slider,
-        swapUseSlider,
-        fromGasAccountRedirect: true,
-        topUpSnapshot: topUpFormValuesRef.current.getSnapshot(),
-      },
-    });
-  }, [
-    wallet,
-    history.location.search,
-    chain,
-    payToken,
-    receiveToken,
-    inputAmount,
-    slippageState,
-    slider,
-    swapUseSlider,
-  ]);
 
-  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChain({ enum: chain })?.serverId || '',
     autoResetGasStoreOnChainChange: true,
   });
-  const consumeTopUpResumeGuard = useCallback(() => {
-    const snapshot = topUpFormValuesRef.current.getSnapshot();
-    if (!snapshot) {
-      setAwaitingTopUpResume(false);
-      return false;
-    }
-
-    const currentValues = buildTopUpSnapshot();
-    const comparison = topUpFormValuesRef.current.compare(currentValues);
-    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
-      comparison,
-      snapshot,
-      currentValues
-    );
-
-    topUpFormValuesRef.current.clear();
-    setAwaitingTopUpResume(false);
-
-    if (comparison.isChanged && !shouldIgnore) {
-      closeSign();
-      return true;
-    }
-
-    return false;
-  }, [buildTopUpSnapshot, closeSign]);
 
   useEffect(() => {
-    if (awaitingTopUpResume || depositFlowActive) {
-      return;
-    }
     closeSign();
     prefetch({
       txs: currentTxs || [],
@@ -605,35 +520,7 @@ export const Main = () => {
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
     });
-  }, [awaitingTopUpResume, closeSign, currentTxs, depositFlowActive, prefetch]);
-
-  useEffect(() => {
-    if (!awaitingTopUpResume) {
-      return;
-    }
-
-    const snapshot = topUpFormValuesRef.current.getSnapshot();
-    if (!snapshot) {
-      setAwaitingTopUpResume(false);
-      return;
-    }
-
-    const currentValues = buildTopUpSnapshot();
-    const comparison = topUpFormValuesRef.current.compare(currentValues);
-    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
-      comparison,
-      snapshot,
-      currentValues
-    );
-
-    if (!comparison.isChanged || shouldIgnore) {
-      return;
-    }
-
-    topUpFormValuesRef.current.clear();
-    setAwaitingTopUpResume(false);
-    closeSign();
-  }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
+  }, [currentTxs]);
 
   const handleSwap = useMemoizedFn(async () => {
     if (!isTab) {
@@ -645,18 +532,9 @@ export const Main = () => {
     }
 
     if (canUseDirectSubmitTx) {
-      let txsForSigning = currentTxs;
-      const formChangedDuringTopUp = consumeTopUpResumeGuard();
-      if (formChangedDuringTopUp) {
-        const rebuiltTxs = await runBuildSwapTxs();
-        if (!rebuiltTxs?.length) {
-          return;
-        }
-        txsForSigning = rebuiltTxs;
-      }
-      if (shouldTwoStepSwap && isApprove && txsForSigning?.[0]) {
+      if (shouldTwoStepSwap && isApprove && currentTxs?.[0]) {
         wallet.addCacheHistoryData(
-          `${chain}-${txsForSigning?.[0].data}`,
+          `${chain}-${currentTxs?.[0].data}`,
           {
             address: userAddress,
             chainId: findChain({ enum: chain })?.id || 0,
@@ -673,23 +551,13 @@ export const Main = () => {
 
       try {
         const hashes = await openDirect({
-          txs: txsForSigning,
+          txs: currentTxs,
           getContainer,
           ga: {
             category: 'Swap',
             source: 'swap',
             trigger: rbiSource,
             swapUseSlider,
-          },
-          onRedirectToDeposit: () => {
-            topUpFormValuesRef.current.save(buildTopUpSnapshot());
-            setAwaitingTopUpResume(true);
-            persistSwapPageState().catch((error) => {
-              console.error(
-                '[Swap] persist page state before gas account deposit failed',
-                error
-              );
-            });
           },
         });
         miniSignNextStep(hashes[hashes.length - 1]);
@@ -717,59 +585,18 @@ export const Main = () => {
 
   useEffect(() => {
     if (!swapBtnDisabled && activeProvider) {
-      if (awaitingTopUpResume || depositFlowActive) {
-        return;
-      }
       if (canUseDirectSubmitTx) {
         mutateTxs([]);
         runBuildSwapTxs();
       }
     }
-  }, [
-    swapBtnDisabled,
-    canUseDirectSubmitTx,
-    activeProvider,
-    awaitingTopUpResume,
-    depositFlowActive,
-  ]);
+  }, [swapBtnDisabled, canUseDirectSubmitTx, activeProvider]);
+
+  const history = useHistory();
 
   useEffect(() => {
     setLowCreditToken(receiveToken);
   }, [receiveToken]);
-
-  useEffect(() => {
-    wallet.getPageStateCache().then((cache) => {
-      if (
-        cache?.path !== '/swap' ||
-        !cache.states?.fromGasAccountRedirect ||
-        !cache.states?.payToken ||
-        !cache.states?.receiveToken
-      ) {
-        return;
-      }
-
-      if (cache.states?.fromGasAccountRedirect && cache.states?.topUpSnapshot) {
-        topUpFormValuesRef.current.save(cache.states.topUpSnapshot);
-        setAwaitingTopUpResume(true);
-      }
-
-      switchChain(cache.states.chain);
-      setPayToken(cache.states.payToken);
-      setReceiveToken(cache.states.receiveToken);
-      handleAmountChange(cache.states.inputAmount || '');
-      setSlippage(cache.states.slippageState);
-      onChangeSlider(cache.states.slider || 0);
-      wallet.clearPageStateCache();
-    });
-  }, [
-    wallet,
-    switchChain,
-    setPayToken,
-    setReceiveToken,
-    handleAmountChange,
-    setSlippage,
-    onChangeSlider,
-  ]);
 
   useEffect(() => {
     if (
@@ -1081,7 +908,6 @@ export const Main = () => {
             <BridgeShowMore
               insufficient={inSufficient}
               supportDirectSign={canUseDirectSubmitTx}
-              signatureInstance={instance}
               autoSuggestSlippage={autoSuggestSlippage}
               openFeePopup={openFeePopup}
               open={showMoreOpen}
@@ -1171,7 +997,6 @@ export const Main = () => {
                 onConfirm={handleSwap}
                 showRiskTips={showRiskTips && !swapBtnDisabled}
                 accountType={currentAccount?.type}
-                signatureInstance={instance}
                 riskReset={swapBtnDisabled}
               />
             ) : (

@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { getUiType } from 'ui/utils';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import type { Account } from '@/background/service/preference';
-import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 import { ReactComponent as RcIconRiskAlert } from '@/ui/assets/send-token/risk-alert.svg';
 import { ReactComponent as RcIconCheckboxChecked } from '@/ui/assets/send-token/icon-checkbox-checked.svg';
@@ -23,7 +22,6 @@ export default function BottomArea({
   canSubmit: _canSubmit = false,
   miniSignLoading = false,
   canUseDirectSubmitTx,
-  signatureInstance,
   onConfirm,
 }: {
   mostImportantRisks: { value: string }[];
@@ -34,7 +32,6 @@ export default function BottomArea({
   canSubmit: boolean;
   miniSignLoading: boolean;
   canUseDirectSubmitTx: boolean;
-  signatureInstance: SignatureManager;
   onConfirm?: () => void;
 }) {
   const { t } = useTranslation();
@@ -90,7 +87,6 @@ export default function BottomArea({
             }}
             disabled={!canSubmit}
             accountType={currentAccount?.type}
-            signatureInstance={signatureInstance}
             loading={miniSignLoading}
           />
         ) : (

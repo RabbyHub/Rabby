@@ -96,7 +96,8 @@ const SendNFT = () => {
   const chainInfo = useMemo(() => {
     return findChain({ enum: chain });
   }, [chain]);
-  const { instance, openDirect, prefetch } = useMiniSigner({
+
+  const { openDirect, prefetch } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -729,7 +730,6 @@ const SendNFT = () => {
                   <ShowMoreOnSend
                     chainServeId={chainInfo?.serverId}
                     open
-                    signatureInstance={instance}
                     // setOpen={setGasFeeOpen}
                   />
                 </div>
@@ -756,7 +756,6 @@ const SendNFT = () => {
             canSubmit={canSubmit}
             miniSignLoading={miniSignLoading}
             canUseDirectSubmitTx={canUseDirectSubmitTx}
-            signatureInstance={instance}
             onConfirm={() => {
               handleSubmit({
                 amount: form.getFieldValue('amount'),

@@ -131,15 +131,7 @@ export const useAccounts = () => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
-  }, [dispatch]);
-
-  const allSortedAccountList = React.useMemo(
-    () => [
-      ...(sortedAccountsList?.flat() || []),
-      ...(watchSortedAccountsList || []),
-    ],
-    [sortedAccountsList, watchSortedAccountsList]
-  );
+  }, []);
 
   return {
     sortedAccountsList,
@@ -149,6 +141,9 @@ export const useAccounts = () => {
     highlightedAddresses,
     loadingAccounts,
     fetchAllAccounts,
-    allSortedAccountList,
+    allSortedAccountList: [
+      ...(sortedAccountsList?.flat() || []),
+      ...(watchSortedAccountsList || []),
+    ],
   };
 };
