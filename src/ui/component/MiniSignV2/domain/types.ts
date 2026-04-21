@@ -74,6 +74,7 @@ export type PreparedContext = {
   nativeTokenPrice?: number;
   nativeTokenBalance: string;
   gasToken?: GasTokenInfo;
+  tempoPreferredFeeTokenId?: string;
   checkErrors?: {
     code: number;
     msg: string;

@@ -206,6 +206,10 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     []
   );
   const [tempoGasTokenLoading, setTempoGasTokenLoading] = React.useState(false);
+  const [
+    tempoPreferredFeeTokenId,
+    setTempoPreferredFeeTokenId,
+  ] = React.useState('');
   const showTempoGasTokenSelector =
     !!chain &&
     isTempoChain(chain.serverId) &&
@@ -213,8 +217,11 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     isTempoBatchSupportedAccountType(currentAccount?.type);
 
   const handleSelectTempoGasToken = useCallback(
-    async (token: TokenItem) => {
-      instance.setTempoFeeToken(token);
+    async (
+      token: TokenItem,
+      options?: Parameters<typeof instance.setTempoFeeToken>[1]
+    ) => {
+      instance.setTempoFeeToken(token, options);
       if (ctx?.selectedGas) {
         await instance.updateGasLevel(ctx.selectedGas, wallet);
       }
@@ -256,15 +263,19 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       maxGasCostRawAmountDecimals: ctx?.gasToken?.decimals || 18,
       maxGasCostRawAmountIn18: calcTempoMaxGasCostRawAmountIn18(ctx?.txs || []),
     })
-      .then(({ options, selectedOption }) => {
+      .then(({ options, preferredTokenId, selectedOption }) => {
         if (!mounted) return;
+        setTempoPreferredFeeTokenId(preferredTokenId);
         setTempoGasTokenList(options);
         if (
           selectedOption &&
           ctx?.gasToken?.tokenId?.toLowerCase() !==
             selectedOption.id.toLowerCase()
         ) {
-          handleSelectTempoGasToken(selectedOption);
+          handleSelectTempoGasToken(selectedOption, {
+            applyFeeToken: false,
+            tempoPreferredFeeTokenId: preferredTokenId,
+          });
         }
       })
       .finally(() => {
@@ -350,6 +361,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
               isGnosisAccount: false,
               nativeTokenBalance: balance,
               gasTokenDecimals: gasToken.decimals || 18,
+              gasTokenId: gasToken.tokenId,
+              tempoPreferredFeeTokenId:
+                ctx?.tempoPreferredFeeTokenId || tempoPreferredFeeTokenId,
               checkTxValueInBalance,
             });
             const txValueRaw = checkTxValueInBalance

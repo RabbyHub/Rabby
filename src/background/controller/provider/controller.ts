@@ -707,6 +707,7 @@ class ProviderController extends BaseController {
     delete approvalRes.isSend;
     delete approvalRes.isSwap;
     delete approvalRes.address;
+    delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
     delete approvalRes.traceId;
     delete approvalRes.extra;

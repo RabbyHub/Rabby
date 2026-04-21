@@ -62,6 +62,7 @@ export interface SignMainnetCustomGasSheetProps
   extends SignMainnetCustomGasSheetBaseProps {
   visible: boolean;
   onClose(): void;
+  selectedMaxPriorityFee?: number;
 }
 
 const CardBody = GasCardBody;
@@ -79,6 +80,7 @@ export const SignMainnetCustomGasSheet = ({
   nonce,
   gasList,
   selectedGas: rawSelectedGas,
+  selectedMaxPriorityFee,
   is1559,
   isHardware,
   gasCalcMethod,
@@ -119,7 +121,9 @@ export const SignMainnetCustomGasSheet = ({
   const [isSelectCustom, setIsSelectCustom] = useState(true);
   const [maxPriorityFee, setMaxPriorityFee] = useState<number | undefined>(
     rawSelectedGas
-      ? (rawSelectedGas.priority_price === null
+      ? (typeof selectedMaxPriorityFee === 'number'
+          ? Math.min(selectedMaxPriorityFee, rawSelectedGas.price)
+          : rawSelectedGas.priority_price === null
           ? rawSelectedGas.price
           : rawSelectedGas.priority_price) / 1e9
       : 0
@@ -133,7 +137,9 @@ export const SignMainnetCustomGasSheet = ({
     setLoadingGasEstimated(false);
     setMaxPriorityFee(
       rawSelectedGas
-        ? (rawSelectedGas.priority_price === null
+        ? (typeof selectedMaxPriorityFee === 'number'
+            ? Math.min(selectedMaxPriorityFee, rawSelectedGas.price)
+            : rawSelectedGas.priority_price === null
             ? rawSelectedGas.price
             : rawSelectedGas.priority_price) / 1e9
         : 0
@@ -151,7 +157,7 @@ export const SignMainnetCustomGasSheet = ({
     setCustomGasEstimated(
       gasList.find((item) => item.level === 'custom')?.estimated_seconds ?? 0
     );
-  }, [gasList, rawSelectedGas]);
+  }, [gasList, rawSelectedGas, selectedMaxPriorityFee]);
 
   useEffect(() => {
     if (!visible) {
@@ -366,6 +372,14 @@ export const SignMainnetCustomGasSheet = ({
       isSpeedUp || isCancel
     );
 
+    if (
+      typeof selectedMaxPriorityFee === 'number' &&
+      rawSelectedGas?.level === selectedGas.level &&
+      rawSelectedGas.price === selectedGas.price
+    ) {
+      priorityPrice = Math.min(selectedMaxPriorityFee, selectedGas.price);
+    }
+
     setMaxPriorityFee((prevFee = priorityPrice / 1e9) => {
       if (hasCustomPriorityFee.current) {
         priorityPrice = Math.min(selectedGas.price, prevFee * 1e9);
@@ -380,7 +394,9 @@ export const SignMainnetCustomGasSheet = ({
     isReady,
     isSelectCustom,
     isSpeedUp,
+    rawSelectedGas,
     selectedGas,
+    selectedMaxPriorityFee,
   ]);
 
   const handleClose = useCallback(() => {

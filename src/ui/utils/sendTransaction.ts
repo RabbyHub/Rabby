@@ -317,6 +317,7 @@ export const sendTransaction = async ({
         nativeTokenBalance: balance,
         recommendGasLimitRatio,
         gasTokenDecimals: gasToken.token.decimals,
+        gasTokenId: gasToken.token.tokenId,
         checkTxValueInBalance,
       });
 

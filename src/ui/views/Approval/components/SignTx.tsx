@@ -195,6 +195,17 @@ export const normalizeTxParams = (tx, isDapp?: boolean) => {
   return copy;
 };
 
+const getCachedMaxPriorityFee = (
+  lastTimeGas: ChainGas | null,
+  customGasPrice: number
+) => {
+  if (typeof lastTimeGas?.maxPriorityFee !== 'number') {
+    return undefined;
+  }
+
+  return Math.min(lastTimeGas.maxPriorityFee, customGasPrice);
+};
+
 export const TxTypeComponent = ({
   actionRequireData,
   actionData,
@@ -328,6 +339,8 @@ const useCheckGasAndNonce = ({
   isGnosisAccount,
   nativeTokenBalance,
   gasTokenDecimals,
+  gasTokenId,
+  tempoPreferredFeeTokenId,
   checkTxValueInBalance,
 }: Parameters<typeof checkGasAndNonce>[0]) => {
   return useMemo(
@@ -345,6 +358,8 @@ const useCheckGasAndNonce = ({
         isGnosisAccount,
         nativeTokenBalance,
         gasTokenDecimals,
+        gasTokenId,
+        tempoPreferredFeeTokenId,
         checkTxValueInBalance,
       }),
     [
@@ -359,6 +374,8 @@ const useCheckGasAndNonce = ({
       isGnosisAccount,
       nativeTokenBalance,
       gasTokenDecimals,
+      gasTokenId,
+      tempoPreferredFeeTokenId,
       checkTxValueInBalance,
     ]
   );
@@ -725,6 +742,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         type,
         calls,
         feeToken,
+        maxFeePerGas,
         feePayer,
         feePayerSignature,
         nonceKey,
@@ -756,6 +774,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
   const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
   const [tempoCurrentFeeTokenId, setTempoCurrentFeeTokenId] = useState('');
+  const [tempoPreferredFeeTokenId, setTempoPreferredFeeTokenId] = useState('');
   const checkTxValueInBalance = useMemo(() => !isTempoChain(chain?.serverId), [
     chain?.serverId,
   ]);
@@ -818,6 +837,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     nativeTokenBalance,
     recommendGasLimitRatio,
     gasTokenDecimals: gasToken.decimals || 18,
+    gasTokenId: gasToken.tokenId,
+    tempoPreferredFeeTokenId,
     checkTxValueInBalance,
   });
 
@@ -973,6 +994,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             isGnosisAccount,
             nativeTokenBalance,
             gasTokenDecimals: gasToken.decimals || 18,
+            gasTokenId: gasToken.tokenId,
+            tempoPreferredFeeTokenId,
             checkTxValueInBalance,
           });
 
@@ -1564,8 +1587,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (selectedGas.level === 'custom') {
       if (support1559) {
         selected.gasPrice = parseInt(tx.maxFeePerGas!);
+        selected.maxPriorityFee = Math.round(maxPriorityFee);
       } else {
         selected.gasPrice = parseInt(tx.gasPrice!);
+        selected.maxPriorityFee = null;
       }
     } else {
       selected.gasLevel = selectedGas.level;
@@ -2082,7 +2107,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
   });
 
-  const handleSelectTempoGasToken = useMemoizedFn((token: TokenItem) => {
+  const syncTempoGasTokenState = useMemoizedFn((token: TokenItem) => {
     const tokenId = token.id;
     setGasToken({
       tokenId,
@@ -2093,6 +2118,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     setNativeTokenBalance(
       new BigNumber(token.raw_amount_hex_str || 0).toFixed(0)
     );
+  });
+
+  const handleSelectTempoGasToken = useMemoizedFn((token: TokenItem) => {
+    const tokenId = token.id;
+    syncTempoGasTokenState(token);
     setTx((prev) => ({
       ...prev,
       feeToken: tokenId,
@@ -2159,14 +2189,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             maxGasCostRawAmountIn18: calcTempoMaxGasCostRawAmountIn18([tx]),
           });
           setTempoCurrentFeeTokenId(currentFeeTokenId);
-          setTx((prev) => ({
-            ...prev,
-            feeToken: preferredTokenId,
-          }));
+          setTempoPreferredFeeTokenId(preferredTokenId);
           setTempoGasTokenLoading(true);
           setTempoGasTokenList(options);
           if (selectedOption) {
-            handleSelectTempoGasToken(selectedOption);
+            syncTempoGasTokenState(selectedOption);
           }
         }
       } catch (e) {
@@ -2199,9 +2226,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       checkCanProcess();
       const lastTimeGas: ChainGas | null = await lastTimeGasPromise;
       let customGasPrice = 0;
+      let useCachedCustomGasPrice = false;
       if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
         // use cached gasPrice if exist
         customGasPrice = lastTimeGas.gasPrice;
+        useCachedCustomGasPrice = true;
       }
       if (
         isSpeedUp ||
@@ -2210,8 +2239,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       ) {
         // use gasPrice set by dapp when it's a speedup or cancel tx
         customGasPrice = parseInt(tx.gasPrice!);
+        useCachedCustomGasPrice = false;
       }
-      const gasList = await loadGasMarket(chain, customGasPrice);
+      let gasList = await loadGasMarket(chain, customGasPrice);
       let gas: GasLevel | null = null;
 
       if (
@@ -2236,6 +2266,19 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       } else {
         // no cache, use the fast level in gasMarket
         gas = gasList.find((item) => item.level === 'normal')!;
+      }
+      const cachedMaxPriorityFee =
+        useCachedCustomGasPrice && gas?.level === 'custom'
+          ? getCachedMaxPriorityFee(lastTimeGas, customGasPrice)
+          : undefined;
+      if (typeof cachedMaxPriorityFee === 'number') {
+        gas = {
+          ...gas,
+          priority_price: cachedMaxPriorityFee,
+        };
+        gasList = gasList.map((item) =>
+          item.level === 'custom' ? (gas as GasLevel) : item
+        );
       }
       const fee = calcMaxPriorityFee(
         gasList,
@@ -2412,22 +2455,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       ({ options, currentFeeTokenId, preferredTokenId, selectedOption }) => {
         if (!mounted) return;
         setTempoCurrentFeeTokenId(currentFeeTokenId);
+        setTempoPreferredFeeTokenId(preferredTokenId);
         setTempoGasTokenList(options);
-        setTx((prev) => {
-          const prevTx = prev as TxWithTempoExtras<Tx>;
-          if (prevTx.feeToken === preferredTokenId) {
-            return prev;
-          }
-          return {
-            ...prevTx,
-            feeToken: preferredTokenId,
-          } as Tx;
-        });
         if (
           selectedOption &&
           gasToken.tokenId.toLowerCase() !== selectedOption.id.toLowerCase()
         ) {
-          handleSelectTempoGasToken(selectedOption);
+          syncTempoGasTokenState(selectedOption);
         }
       }
     );
@@ -2737,6 +2771,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                   noUpdate={isCancel || isSpeedUp}
                   gasList={gasList}
                   selectedGas={selectedGas}
+                  selectedMaxPriorityFee={maxPriorityFee}
                   version={txDetail.pre_exec_version}
                   gas={{
                     error: txDetail.gas.error,

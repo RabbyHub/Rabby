@@ -337,6 +337,7 @@ export const MiniSignTx = ({
   });
   const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
   const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
+  const [tempoPreferredFeeTokenId, setTempoPreferredFeeTokenId] = useState('');
   const checkTxValueInBalance = useMemo(() => !isTempoChain(chain.serverId), [
     chain.serverId,
   ]);
@@ -719,6 +720,7 @@ export const MiniSignTx = ({
           setTempoGasTokenLoading(true);
           const {
             options,
+            preferredTokenId,
             selectedOption,
           } = await loadTempoFeeTokenOptionsState({
             wallet,
@@ -729,6 +731,7 @@ export const MiniSignTx = ({
               | string
               | undefined,
           });
+          setTempoPreferredFeeTokenId(preferredTokenId);
           setTempoGasTokenList(options);
           if (selectedOption) {
             handleSelectTempoGasToken(selectedOption);
@@ -872,6 +875,8 @@ export const MiniSignTx = ({
               isGnosisAccount: false,
               nativeTokenBalance: balance,
               gasTokenDecimals: gasToken.decimals || 18,
+              gasTokenId: gasToken.tokenId,
+              tempoPreferredFeeTokenId,
               checkTxValueInBalance,
             });
             const txValueRaw = checkTxValueInBalance
@@ -1180,6 +1185,8 @@ export const MiniSignTx = ({
         isGnosisAccount: false,
         nativeTokenBalance: balance,
         gasTokenDecimals: gasToken.decimals || 18,
+        gasTokenId: gasToken.tokenId,
+        tempoPreferredFeeTokenId,
         checkTxValueInBalance,
       });
       const txValueRaw = checkTxValueInBalance
@@ -1197,6 +1204,8 @@ export const MiniSignTx = ({
     nativeTokenBalance,
     recommendNonce,
     gasToken.decimals,
+    gasToken.tokenId,
+    tempoPreferredFeeTokenId,
     checkTxValueInBalance,
   ]);
 

@@ -36,6 +36,7 @@ export interface SignMainnetGasSelectorHeaderProps
   nativeTokenInsufficient?: boolean;
   freeGasAvailable?: boolean;
   noCustomRPC?: boolean;
+  selectedMaxPriorityFee?: number;
 }
 
 export const SignMainnetGasSelectorHeader = ({
@@ -56,6 +57,7 @@ export const SignMainnetGasSelectorHeader = ({
   isSpeedUp,
   gasCalcMethod,
   checkGasLevelIsNotEnough,
+  selectedMaxPriorityFee,
   showTempoGasTokenSelector = false,
   tempoGasTokenList = [],
   onSelectTempoGasToken,
@@ -515,6 +517,7 @@ export const SignMainnetGasSelectorHeader = ({
         tx={tx}
         gasList={gasList}
         selectedGas={selectedGas}
+        selectedMaxPriorityFee={selectedMaxPriorityFee}
         chainId={chainId}
         gasLimit={gasLimit}
         nonce={nonce}
