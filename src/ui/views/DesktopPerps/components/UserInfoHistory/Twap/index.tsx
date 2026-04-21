@@ -272,7 +272,7 @@ export const Twap: React.FC = () => {
                 .times(new BigNumber(record.fill.sz).abs())
                 .toFixed(2)
             )}{' '}
-            USDC
+            USD
           </div>
         ),
       },
@@ -292,7 +292,7 @@ export const Twap: React.FC = () => {
           }
           return (
             <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
-              {splitNumberByStep(Number(fee).toFixed(2))} USDC
+              {splitNumberByStep(Number(fee).toFixed(2))} USD
             </div>
           );
         },
@@ -326,7 +326,7 @@ export const Twap: React.FC = () => {
               )}
             >
               {pnlValue >= 0 ? '+' : ''}
-              {splitNumberByStep(pnlValue.toFixed(2))} USDC
+              {splitNumberByStep(pnlValue.toFixed(2))} USD
             </div>
           );
         },

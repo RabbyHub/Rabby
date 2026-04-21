@@ -24,6 +24,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { FixedSizeList } from 'react-window';
 import { formatPerpsCoin } from '../../../utils';
+import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 
 const SearchInput = styled(Input)`
   background-color: var(--r-neutral-card1, #fff) !important;
@@ -125,7 +126,7 @@ const MarketRowComponent = memo(
           }}
         >
           {/* Left: Star + Logo + Symbol */}
-          <div className="flex items-center gap-[8px] w-[180px] flex-shrink-0">
+          <div className="flex items-center gap-[8px] w-[200px] flex-shrink-0">
             <div
               className="flex items-center justify-center w-[16px] h-[16px] flex-shrink-0"
               onClick={(e) => onToggleFavorite(marketItem.name, e)}
@@ -142,9 +143,10 @@ const MarketRowComponent = memo(
               size={20}
             />
             <div>
-              <span className="text-[13px] font-medium text-r-neutral-title-1">
-                {formatPerpsCoin(marketItem.name)}
-              </span>
+              <PerpsDisplayCoinName
+                item={marketItem}
+                className="text-[13px] font-medium"
+              />
               <span className="text-[13px] text-r-neutral-foot ml-4">
                 {marketItem.maxLeverage}x
               </span>
@@ -388,7 +390,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         <div className="flex items-center gap-[12px] px-[8px] py-[12px]">
           <div
             className={clsx(
-              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[180px] flex-shrink-0',
+              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[200px] flex-shrink-0',
               sortField === 'name' && 'text-r-neutral-title-1 font-medium'
             )}
             onClick={() => handleSort('name')}
@@ -506,9 +508,13 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
             withDirection={false}
             size={24}
           />
-          <div className="text-[20px] leading-[24px] font-bold text-r-neutral-title-1">
-            {formatPerpsCoin(coin)}
-          </div>
+          <PerpsDisplayCoinName
+            item={marketItem}
+            separator="-"
+            className="text-[20px] leading-[24px] font-bold"
+            quoteClassName="text-r-neutral-title-1"
+            showDexTag
+          />
           <RcIconArrowDown className="text-r-neutral-secondary" />
         </div>
       </Dropdown>

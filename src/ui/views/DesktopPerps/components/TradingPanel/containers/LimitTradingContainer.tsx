@@ -48,6 +48,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     szDecimals,
     leverage,
     availableBalance,
+    quoteAsset,
     reduceOnly,
     setReduceOnly,
     tradeSize,
@@ -556,7 +557,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
   return (
     <div className="space-y-[12px]">
-      <OrderSideAndFunds availableBalance={availableBalance} />
+      <OrderSideAndFunds
+        availableBalance={availableBalance}
+        quoteAsset={quoteAsset}
+      />
 
       <div className="flex flex-col gap-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
@@ -583,7 +587,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
               className="text-left"
               suffix={
                 <span className="text-15 font-medium text-rb-neutral-title-1">
-                  USDC
+                  {quoteAsset}
                 </span>
               }
             />

@@ -15,6 +15,21 @@ import IconHyperliquid from 'ui/assets/perps/IconHyperLogo.svg';
 import IconRabby from 'ui/assets/rabby-logo-circle.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
+import { SPOT_STABLE_COIN_NAME, PerpsQuoteAsset } from '../constants';
+import { useRabbySelector } from '@/ui/store';
+import { ReactComponent as RcIconUSDT } from '@/ui/assets/perps/IconUSDT.svg';
+import { ReactComponent as RcIconUSDE } from '@/ui/assets/perps/IconUSDE.svg';
+import { ReactComponent as RcIconUSDH } from '@/ui/assets/perps/IconUSDH.svg';
+
+const STABLECOIN_SVG: Record<
+  Exclude<PerpsQuoteAsset, 'USDC'>,
+  React.FC<any>
+> = {
+  USDT: RcIconUSDT,
+  USDE: RcIconUSDE,
+  USDH: RcIconUSDH,
+};
 
 interface HistoryDetailPopupProps extends Omit<PopupProps, 'onCancel'> {
   fill: (WsFill & { logoUrl: string }) | null;
@@ -35,6 +50,21 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   const pnlValue = Number(closedPnl) - Number(fee);
   const isClose = (dir === 'Close Long' || dir === 'Close Short') && closedPnl;
   const logoUrl = fill?.logoUrl;
+  const marketDataMap = useRabbySelector((s) => s.perps.marketDataMap);
+  const currentAssetCtx = coin ? marketDataMap[coin] : undefined;
+
+  // Stablecoin swap detection (e.g. @166 = USDT, @150 = USDE, @230 = USDH)
+  const stableCoinSwap = useMemo((): null | {
+    symbol: Exclude<PerpsQuoteAsset, 'USDC'>;
+    isBuy: boolean;
+  } => {
+    if (!coin) return null;
+    const entry = (Object.entries(SPOT_STABLE_COIN_NAME) as Array<
+      [Exclude<PerpsQuoteAsset, 'USDC'>, string]
+    >).find(([, v]) => v === coin);
+    if (!entry) return null;
+    return { symbol: entry[0], isBuy: side === 'B' };
+  }, [coin, side]);
 
   const titleString = useMemo(() => {
     const isLiquidation = Boolean(fill?.liquidation);
@@ -99,10 +129,31 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                   {t('page.perps.title')}
                 </span>
                 <div className="flex items-center space-x-8">
-                  <TokenImg logoUrl={logoUrl} size={20} />
-                  <span className="text-13 text-r-neutral-title-1 font-medium">
-                    {formatPerpsCoin(coin || '')}-USD
-                  </span>
+                  {stableCoinSwap ? (
+                    <>
+                      {(() => {
+                        const Icon = STABLECOIN_SVG[stableCoinSwap.symbol];
+                        return <Icon className="w-20 h-20" />;
+                      })()}
+                      <span className="text-13 text-r-neutral-title-1 font-medium">
+                        {t(
+                          stableCoinSwap.isBuy
+                            ? 'page.perps.PerpsSpotSwap.buyAsset'
+                            : 'page.perps.PerpsSpotSwap.sellAsset',
+                          { asset: stableCoinSwap.symbol }
+                        )}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <TokenImg logoUrl={logoUrl} size={20} />
+                      <PerpsDisplayCoinName
+                        item={currentAssetCtx}
+                        baseClassName="text-r-neutral-title-1 font-medium"
+                        quoteClassName="text-r-neutral-title-1 font-medium"
+                      />
+                    </>
+                  )}
                 </div>
               </div>
 

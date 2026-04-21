@@ -7,6 +7,14 @@ import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { useHistory, useLocation } from 'react-router-dom';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import {
+  getSpotBalanceKey,
+  PerpsQuoteAsset,
+  SWAP_REQUIRED_QUOTE_ASSETS,
+} from '@/ui/views/Perps/constants';
+import { SpotSwapModal } from '@/ui/views/DesktopPerps/modal/SpotSwapModal';
+import { EnableUnifiedAccountModal } from '@/ui/views/DesktopPerps/modal/EnableUnifiedAccountModal';
+import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
 
 interface TradingButtonsProps {
   onBuyClick: () => void;
@@ -35,8 +43,23 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
   const wsActiveAssetData = useRabbySelector(
     (store) => store.perps.wsActiveAssetData
   );
-  const { accountValue } = usePerpsAccount();
+  const { accountValue, isUnifiedAccount, spotBalancesMap } = usePerpsAccount();
   const hasPermission = useRabbySelector((state) => state.perps.hasPermission);
+  const selectedCoin = useRabbySelector((s) => s.perps.selectedCoin);
+  const marketDataMap = useRabbySelector((s) => s.perps.marketDataMap);
+  const quoteAsset: PerpsQuoteAsset = (marketDataMap[selectedCoin]
+    ?.quoteAsset ?? 'USDC') as PerpsQuoteAsset;
+  const currentAssetBalance = Number(
+    spotBalancesMap[getSpotBalanceKey(quoteAsset)]?.available || 0
+  );
+  const needSwapStableCoin = useMemo(() => {
+    return (
+      SWAP_REQUIRED_QUOTE_ASSETS.includes(quoteAsset) && !currentAssetBalance
+    );
+  }, [quoteAsset, currentAssetBalance]);
+  const [swapVisible, setSwapVisible] = useState(false);
+  const [enableVisible, setEnableVisible] = useState(false);
+  const { handleEnableUnifiedAccount } = usePerpsActions();
   const { t } = useTranslation();
   const location = useLocation();
   const history = useHistory();
@@ -73,18 +96,48 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
 
   return (
     <div className="flex flex-col gap-[12px]">
-      {Boolean(error || needDepositFirst) && (
+      {Boolean(error || needDepositFirst || needSwapStableCoin) && (
         <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
           <RcIconInfoCC className="text-r-orange-default" />
           <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
             {needDepositFirst
               ? t('page.perpsPro.tradingPanel.addFundsToGetStarted')
+              : needSwapStableCoin
+              ? t('page.perps.PerpsSpotSwap.swapBeforeTrading', {
+                  quoteAsset,
+                })
               : error}
           </div>
         </div>
       )}
 
-      {needDepositFirst || needEnableTrading ? (
+      <SpotSwapModal
+        visible={swapVisible}
+        targetAsset={quoteAsset === 'USDC' ? undefined : quoteAsset}
+        disableSwitch={quoteAsset !== 'USDC'}
+        onClose={() => setSwapVisible(false)}
+      />
+      <EnableUnifiedAccountModal
+        visible={enableVisible}
+        onCancel={() => setEnableVisible(false)}
+        onConfirm={async () => {
+          const ok = await handleEnableUnifiedAccount();
+          if (ok) setSwapVisible(true);
+          return ok;
+        }}
+      />
+
+      {needSwapStableCoin ? (
+        <Button
+          type="primary"
+          block
+          size="large"
+          onClick={() => setEnableVisible(true)}
+          className="w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent text-rb-neutral-InvertHighlight"
+        >
+          {t('page.perps.PerpsDepositCard.swap')}
+        </Button>
+      ) : needDepositFirst || needEnableTrading ? (
         <Button
           type="primary"
           block

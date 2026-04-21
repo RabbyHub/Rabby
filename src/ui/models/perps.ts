@@ -29,10 +29,12 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import {
   formatMarkData,
   getMaxTimeFromAccountHistory,
+  getPxDecimals,
 } from '../views/Perps/utils';
 import {
   DEFAULT_TOP_ASSET,
-  HYPE_EVM_BRIDGE_ADDRESS,
+  HYPE_EVM_BRIDGE_ADDRESS_MAP,
+  PerpsQuoteAsset,
 } from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
@@ -46,6 +48,7 @@ import {
   handleUpdateTwapSliceFills,
   showDepositAndWithdrawToast,
   formatSpotState,
+  SpotBalance,
 } from '../views/DesktopPerps/utils';
 import {
   OrderType,
@@ -54,7 +57,7 @@ import {
   TPSLConfig,
   SizeDisplayUnit,
 } from '../views/DesktopPerps/types';
-import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
+import { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 
@@ -70,6 +73,11 @@ export interface MarketData {
   index: number;
   logoUrl: string;
   name: string;
+  displayName: string;
+  quoteAsset: PerpsQuoteAsset;
+  category?: string;
+  brief?: string;
+  description?: string;
   maxLeverage: number;
   minLeverage: number;
   maxUsdValueSize: string;
@@ -192,6 +200,8 @@ export interface PerpsState {
   spotState: {
     accountValue: string;
     availableToTrade: string;
+    balances: SpotBalance[];
+    balancesMap: Record<string, SpotBalance>;
   };
   userAbstraction: UserAbstractionResp;
   historicalOrders: UserHistoricalOrders[];
@@ -224,7 +234,7 @@ export interface PerpsState {
   };
 }
 
-let topAssetsCache: PerpTopToken[] = [];
+let topAssetsCache: PerpTopTokenV3[] = [];
 
 export const perps = createModel<RootModel>()({
   state: {
@@ -261,6 +271,8 @@ export const perps = createModel<RootModel>()({
     spotState: {
       accountValue: '0',
       availableToTrade: '0',
+      balances: [],
+      balancesMap: {},
     },
     userFunding: [],
     nonFundingLedgerUpdates: [],
@@ -374,7 +386,9 @@ export const perps = createModel<RootModel>()({
 
           if (
             item.delta.type === 'send' &&
-            destination === HYPE_EVM_BRIDGE_ADDRESS
+            Object.values(HYPE_EVM_BRIDGE_ADDRESS_MAP).some((addr) =>
+              isSameAddress(addr, destination)
+            )
           ) {
             return {
               time: item.time,
@@ -613,12 +627,16 @@ export const perps = createModel<RootModel>()({
         marketByDexName[dexName] = assetCtx;
       });
       const newMarketData = state.marketData.map((item) => {
-        // other dex , example xyz is error
         const dexName = item.dexId ? item.dexId : 'hyperliquid';
         const assetCtx = marketByDexName[dexName];
+        const ctx = assetCtx?.[item.index];
+        if (!ctx) {
+          return item;
+        }
         return {
           ...item,
-          ...assetCtx[item.index],
+          ...ctx,
+          pxDecimals: getPxDecimals(String(ctx.markPx ?? item.markPx ?? '')),
         };
       });
       return {
@@ -1063,7 +1081,7 @@ export const perps = createModel<RootModel>()({
           if (topAssetsCache.length > 0) {
             return topAssetsCache;
           }
-          const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenList(
+          const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenListV3(
             {
               dex_id: 'all',
             }
@@ -1080,13 +1098,23 @@ export const perps = createModel<RootModel>()({
         }
       };
 
-      const [topAssets, marketData, xyzMarketData] = await Promise.all([
+      const [topAssets, allMetas, perpDexs] = await Promise.all([
         fetchTopTokenList(),
-        sdk.info.metaAndAssetCtxs(),
-        sdk.info.metaAndAssetCtxs('xyz'),
+        sdk.info.getPerpsAllMetas(),
+        sdk.info.getPerpDexs(),
       ]);
+
+      // perpDexs is an array parallel to allMetas; entry is either null (main dex='')
+      // or { name: 'xyz', ... }. Build idx → dex name map.
+      const dexIdMap: Record<number, string> = {};
+      if (Array.isArray(perpDexs)) {
+        perpDexs.forEach((dex: any, idx: number) => {
+          dexIdMap[idx] = dex?.name ?? '';
+        });
+      }
+
       dispatch.perps.setMarketData(
-        formatMarkData(marketData, topAssets, xyzMarketData)
+        formatMarkData(allMetas, topAssets, dexIdMap)
       );
     },
 

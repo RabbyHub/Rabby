@@ -11,6 +11,20 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useTranslation } from 'react-i18next';
 import { TokenImg } from './TokenImg';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
+import { SPOT_STABLE_COIN_NAME, PerpsQuoteAsset } from '../constants';
+import { ReactComponent as RcIconUSDT } from '@/ui/assets/perps/IconUSDT.svg';
+import { ReactComponent as RcIconUSDE } from '@/ui/assets/perps/IconUSDE.svg';
+import { ReactComponent as RcIconUSDH } from '@/ui/assets/perps/IconUSDH.svg';
+
+const STABLECOIN_SVG: Record<
+  Exclude<PerpsQuoteAsset, 'USDC'>,
+  React.FC<any>
+> = {
+  USDT: RcIconUSDT,
+  USDE: RcIconUSDE,
+  USDH: RcIconUSDH,
+};
 
 interface HistoryItemProps {
   fill: WsFill;
@@ -125,9 +139,30 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
   onClick,
 }) => {
   const { t } = useTranslation();
-  const { coin, closedPnl: _closedPnl, dir, fee } = fill as WsFill;
+  const { coin, closedPnl: _closedPnl, dir, fee, side } = fill as WsFill;
+
+  // Detect stablecoin swap fills (coin === '@150' | '@166' | '@230')
+  const stableCoinSwap = useMemo((): null | {
+    symbol: Exclude<PerpsQuoteAsset, 'USDC'>;
+    isBuy: boolean;
+  } => {
+    if (!coin) return null;
+    const entry = (Object.entries(SPOT_STABLE_COIN_NAME) as Array<
+      [Exclude<PerpsQuoteAsset, 'USDC'>, string]
+    >).find(([, v]) => v === coin);
+    if (!entry) return null;
+    return { symbol: entry[0], isBuy: side === 'B' };
+  }, [coin, side]);
 
   const titleString = useMemo(() => {
+    if (stableCoinSwap) {
+      return t(
+        stableCoinSwap.isBuy
+          ? 'page.perps.PerpsSpotSwap.buyAsset'
+          : 'page.perps.PerpsSpotSwap.sellAsset',
+        { asset: stableCoinSwap.symbol }
+      );
+    }
     const isLiquidation = Boolean(fill?.liquidation);
     if (fill?.dir === 'Close Long') {
       if (orderTpOrSl === 'tp') {
@@ -160,7 +195,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       return t('page.perps.historyDetail.title.openShort');
     }
     return fill?.dir;
-  }, [fill, orderTpOrSl]);
+  }, [fill, orderTpOrSl, stableCoinSwap]);
 
   const itemData = marketData[coin];
   const logoUrl = itemData?.logoUrl;
@@ -182,18 +217,33 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       onClick={() => onClick?.(fill)}
     >
       <div className="flex items-center">
-        <TokenImg
-          logoUrl={logoUrl}
-          direction={direction}
-          withDirection={true}
-        />
+        {stableCoinSwap ? (
+          (() => {
+            const Icon = STABLECOIN_SVG[stableCoinSwap.symbol];
+            return <Icon className="w-[32px] h-[32px]" />;
+          })()
+        ) : (
+          <TokenImg
+            logoUrl={logoUrl}
+            direction={direction}
+            withDirection={true}
+          />
+        )}
         <div className="flex flex-col ml-12">
           <div className="text-13 text-r-neutral-title-1 font-medium">
             {titleString}
           </div>
           <div className="text-13 text-r-neutral-foot font-medium">
-            {formatPerpsCoin(coin)}-USD
-            {fill.px ? (
+            {stableCoinSwap ? (
+              t('page.swap.Completed')
+            ) : (
+              <PerpsDisplayCoinName
+                item={itemData}
+                baseClassName="text-r-neutral-foot"
+                quoteClassName="text-r-neutral-foot"
+              />
+            )}
+            {!stableCoinSwap && fill.px ? (
               <span className="ml-4">
                 @$
                 {splitNumberByStep(new BigNumber(fill.px).toFixed(pxDecimals))}

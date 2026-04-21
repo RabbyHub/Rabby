@@ -39,6 +39,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     leverage,
     leverageType,
     availableBalance,
+    quoteAsset,
     reduceOnly,
     setReduceOnly,
     tradeSize,
@@ -294,7 +295,10 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
   return (
     <div className="space-y-[12px]">
-      <OrderSideAndFunds availableBalance={availableBalance} />
+      <OrderSideAndFunds
+        availableBalance={availableBalance}
+        quoteAsset={quoteAsset}
+      />
 
       <PositionSizeInputAndSlider
         price={midPrice}

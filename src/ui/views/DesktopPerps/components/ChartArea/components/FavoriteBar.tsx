@@ -54,7 +54,10 @@ export const FavoriteBar: React.FC<FavoriteBarProps> = ({ onSelectCoin }) => {
                   onClick={() => onSelectCoin(coin)}
                 >
                   <span className="text-[12px] font-medium text-r-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
-                    {formatPerpsCoin(coin)}
+                    {formatPerpsCoin(marketData.displayName || coin)}
+                    <span className="text-r-neutral-foot">
+                      /{marketData.quoteAsset || 'USDC'}
+                    </span>
                   </span>
                   <span className="text-[12px] font-medium text-r-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
                     ${splitNumberByStep(Number(marketData.markPx))}

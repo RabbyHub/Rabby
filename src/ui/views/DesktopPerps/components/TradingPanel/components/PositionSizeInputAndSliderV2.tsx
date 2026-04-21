@@ -268,7 +268,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   // Preview: show separate buy/sell amounts
   const { buyPreview, sellPreview } = useMemo(() => {
     const unit =
-      sizeDisplayUnit === 'usdc' ? 'USDC' : formatPerpsCoin(baseAsset);
+      sizeDisplayUnit === 'usdc' ? 'USD' : formatPerpsCoin(baseAsset);
 
     if (isSliderMode || positionSize.inputSource === 'slider') {
       // Percentage mode: each direction has its own amount
@@ -318,7 +318,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   ]);
 
   const unitLabel = useMemo(
-    () => (sizeDisplayUnit === 'base' ? formatPerpsCoin(baseAsset) : 'USDC'),
+    () => (sizeDisplayUnit === 'base' ? formatPerpsCoin(baseAsset) : 'USD'),
     [sizeDisplayUnit, baseAsset]
   );
 
@@ -327,9 +327,6 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     if (!positionSize.amount || !price) return null;
     if (sizeDisplayUnit === 'base') {
       return null;
-      // Input is in base → tooltip shows USDC equivalent
-      const notional = positionSize.notionalValue || '0';
-      return `≈ ${notional} USDC`;
     }
     // Input is in USDC → tooltip shows base equivalent
     const coin = formatPerpsCoin(baseAsset);

@@ -4,7 +4,7 @@ import { formatPercent } from '../utils';
 import { splitNumberByStep } from '@/ui/utils';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { MarketData } from '@/ui/models/perps';
-import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
 
 interface AssetPriceInfoProps {
   coin: string;
@@ -13,7 +13,6 @@ interface AssetPriceInfoProps {
 }
 
 export const AssetPriceInfo = ({
-  coin,
   activeAssetCtx,
   currentAssetCtx,
 }: AssetPriceInfoProps) => {
@@ -42,7 +41,11 @@ export const AssetPriceInfo = ({
   return (
     <div className="text-center px-20 flex flex-row items-center justify-center gap-6">
       <div className="text-13 font-medium text-r-neutral-foot">
-        {formatPerpsCoin(coin)}-USD
+        <PerpsDisplayCoinName
+          item={currentAssetCtx}
+          baseClassName="text-r-neutral-foot"
+          quoteClassName="text-r-neutral-foot"
+        />
       </div>
       <div
         className={clsx(

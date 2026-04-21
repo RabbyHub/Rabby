@@ -5,16 +5,21 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
 import { DashedUnderlineText } from '../DashedUnderlineText';
 import { isNaN } from 'lodash';
 import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import {
+  PerpsQuoteAsset,
+  SWAP_REQUIRED_QUOTE_ASSETS,
+  PERPS_LOW_BALANCE_THRESHOLD,
+  getSpotBalanceKey,
+} from '@/ui/views/Perps/constants';
+import { usePerpsPopupNav } from '@/ui/views/DesktopPerps/hooks/usePerpsPopupNav';
 
 export const AccountInfo: React.FC = () => {
   const { t } = useTranslation();
-  const history = useHistory();
-  const location = useLocation();
+  const { openPerpsPopup } = usePerpsPopupNav();
   const clearinghouseState = useRabbySelector(
     (store) => store.perps.clearinghouseState
   );
@@ -34,24 +39,13 @@ export const AccountInfo: React.FC = () => {
     return isNaN(num.toNumber()) ? '0%' : formatPerpsPct(num.toNumber());
   }, [clearinghouseState]);
 
-  const handleDepositClick = () => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set('action', 'deposit');
-    history.push({
-      pathname: location.pathname,
-      search: searchParams.toString(),
-    });
-  };
-  const handleWithdrawClick = () => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set('action', 'withdraw');
-    history.push({
-      pathname: location.pathname,
-      search: searchParams.toString(),
-    });
-  };
+  const handleDepositClick = () => openPerpsPopup('deposit');
+  const handleWithdrawClick = () => openPerpsPopup('withdraw');
 
-  const { accountValue } = usePerpsAccount();
+  const { accountValue, isUnifiedAccount, spotBalancesMap } = usePerpsAccount();
+  const selectedCoin = useRabbySelector((s) => s.perps.selectedCoin);
+  const marketDataMap = useRabbySelector((s) => s.perps.marketDataMap);
+  const currentMarket = marketDataMap[selectedCoin];
 
   const customBalance = useMemo(() => {
     return accountValue - Number(positionAllPnl || 0);

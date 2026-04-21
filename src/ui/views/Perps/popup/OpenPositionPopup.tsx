@@ -22,6 +22,7 @@ import { MarginInput } from '../components/MarginInput';
 import { LeverageInput } from '../components/LeverageInput';
 import { format } from 'path';
 import { formatPerpsCoin, getStatsReportSide } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 import stats from '@/stats';
 import { useRabbySelector } from '@/ui/store';
 import { MarginModePopup } from './MarginModePopup';
@@ -535,7 +536,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perps.title')}
               </div>
               <div className="text-13 text-r-neutral-title-1 flex items-center font-medium">
-                {formatPerpsCoin(coin)} - USD
+                <PerpsDisplayCoinName item={currentAssetCtx} />
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -615,8 +616,13 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-20">
           <div className="space-y-16">
             <div className="flex justify-between items-center">
-              <div className="text-13 text-r-neutral-body">
-                {formatPerpsCoin(coin)}-USD {t('page.perps.price')}
+              <div className="text-13 text-r-neutral-body flex items-center gap-4">
+                <PerpsDisplayCoinName
+                  item={currentAssetCtx}
+                  baseClassName="text-r-neutral-body"
+                  quoteClassName="text-r-neutral-body"
+                />
+                {t('page.perps.price')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
                 ${splitNumberByStep(markPrice)}

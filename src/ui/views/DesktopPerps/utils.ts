@@ -23,7 +23,16 @@ import {
   HYPE_USDC_TOKEN_ID,
   HYPE_USDC_TOKEN_ITEM,
   HYPE_USDC_TOKEN_SERVER_CHAIN,
+  COLLATERAL_TOKEN_TO_QUOTE,
 } from '../Perps/constants';
+
+export interface SpotBalance {
+  coin: string;
+  token: number;
+  total: string;
+  hold: string;
+  available: string;
+}
 
 export const getPositionDirection = (
   position: PositionAndOpenOrder['position']
@@ -412,24 +421,51 @@ export const formatSpotState = (spotState: SpotClearinghouseState) => {
     return {
       accountValue: '0',
       availableToTrade: '0',
+      balances: [] as SpotBalance[],
+      balancesMap: {} as Record<string, SpotBalance>,
     };
   }
-  const availableToTrade = new BigNumber(
-    spotState.balances?.[0]?.total || '0'
-  ).minus(spotState.balances?.[0]?.hold || '0');
-  return {
-    accountValue: spotState.balances?.[0]?.total || '0',
-    availableToTrade: availableToTrade.toString(),
-  };
-  // const token = spotState.balances.find((i) => i.token === USDC_TOKEN_ID);
-  // const availableToTrade = spotState.tokenToAvailableAfterMaintenance?.find(
-  //   (i) => i?.[0] === USDC_TOKEN_ID
-  // );
 
-  // return {
-  //   accountValue: token?.total || '0',
-  //   availableToTrade: availableToTrade?.[1] || '0',
-  // };
+  // Only extract the 4 stablecoins we support (USDC/USDT/USDE/USDH)
+  const STABLECOIN_TOKEN_IDS = new Set(
+    Object.keys(COLLATERAL_TOKEN_TO_QUOTE).map(Number)
+  );
+
+  const balances: SpotBalance[] = spotState.balances
+    .filter((b) => STABLECOIN_TOKEN_IDS.has(b.token))
+    .map((b) => {
+      const available = new BigNumber(b.total || '0')
+        .minus(b.hold || '0')
+        .toString();
+      return {
+        coin: b.coin, // Hyperliquid's quirk: USDT is returned as 'USDT0'
+        token: b.token,
+        total: b.total || '0',
+        hold: b.hold || '0',
+        available,
+      };
+    });
+
+  // Assumes all stablecoins at 1:1 USD parity (matches Hyperliquid internal accounting)
+  const totalAccountValue = balances
+    .reduce((sum, b) => sum.plus(b.total), new BigNumber(0))
+    .toString();
+
+  const totalAvailable = balances
+    .reduce((sum, b) => sum.plus(b.available), new BigNumber(0))
+    .toString();
+
+  const balancesMap: Record<string, SpotBalance> = {};
+  for (const b of balances) {
+    balancesMap[b.coin] = b;
+  }
+
+  return {
+    accountValue: totalAccountValue,
+    availableToTrade: totalAvailable,
+    balances,
+    balancesMap,
+  };
 };
 
 export const getStatsReportSide = (isBuy: boolean, isReduceOnly: boolean) => {

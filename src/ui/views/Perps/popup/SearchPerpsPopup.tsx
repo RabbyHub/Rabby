@@ -70,9 +70,13 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
       return list;
     }
 
+    const q = search.toLowerCase();
     return (
       list.filter((item) => {
-        return item.name.toLowerCase().includes(search.toLowerCase());
+        if (item.name.toLowerCase().includes(q)) return true;
+        if ((item.displayName || '').toLowerCase().includes(q)) return true;
+        if ((item.quoteAsset || '').toLowerCase().includes(q)) return true;
+        return false;
       }) || []
     );
   }, [list, search]);

@@ -83,7 +83,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
   const closeLimitCount = record.closeLimitOrders.length;
   const coinUnit =
-    sizeDisplayUnit === 'usdc' ? 'USDC' : formatPerpsCoin(record.coin);
+    sizeDisplayUnit === 'usdc' ? 'USD' : formatPerpsCoin(record.coin);
 
   const [limitPrice, setLimitPrice] = useState(
     formatTpOrSlPrice(midPrice, szDecimals)
@@ -416,7 +416,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
               Position Size: {positionSize} {coin}
             </div>
             <div>
-              Qty: {sizeInput} {coin} ≈ {splitNumberByStep(notionalValue)} USDC
+              Qty: {sizeInput} {coin} ≈ {splitNumberByStep(notionalValue)} USD
             </div>
           </>
         ) : (

@@ -896,6 +896,9 @@
       },
       "historyDetail": {
         "date": "Date",
+        "amount": "Amount",
+        "asset": "Asset",
+        "action": "Action",
         "price": "Price",
         "size": "Size",
         "tradeValue": "Trade Value",
@@ -921,8 +924,54 @@
         "title": "Log Out Current Address",
         "desc": "You are logging out of your current Perps account. You can restore it anytime by logging in with this address."
       },
+      "PerpsDepositCard": {
+        "availableToTrade": "Available to trade: ",
+        "deposit": "Deposit",
+        "swap": "Swap"
+      },
+      "selectChainToWithdraw": "Select Chain to Withdraw",
+      "selectTokenToWithdraw": "Select Token to Withdraw",
+      "EnableUnifiedAccount": {
+        "title": "Enable Unified Account",
+        "desc": "Unified Account is the recommended account mode that simplifies the trading experience. Spot and Perps balances are merged for all tokens, and cross margin is supported on all available assets.",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "importantTips": "All USDC collateral will be used as cross margin once Unified Account is enabled.",
+        "important": "Important"
+      },
+      "PerpsSpotSwap": {
+        "title": "Swap",
+        "from": "From",
+        "to": "Swap To",
+        "balance": "Balance",
+        "swapBtn": "Swap",
+        "insufficientBalance": "Insufficient balance",
+        "invalidAmount": "Please input a valid amount",
+        "minimumAmount": "The minimum swap amount is 10",
+        "max": "Max",
+        "toDeposit": "To Deposit →",
+        "swapBeforeTrading": "Swap USDC to {{quoteAsset}} before trading",
+        "enabledSuccess": "Unified Account enabled",
+        "enableFailed": "Enable Unified Account failed",
+        "swapFailed": "Swap failed",
+        "swapSuccess": "Swap completed successfully",
+        "buyAsset": "Buy {{asset}}",
+        "sellAsset": "Sell {{asset}}"
+      },
+      "PerpMarginModePopup": {
+        "crossRequiresUnified": "Cross margin for this trading pair requires a Unified Account. Would you like to enable it?"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid Balances",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      },
+      "PerpsAbout": {
+        "title": "About"
+      },
       "depositAmountPopup": {
         "amount": "Amount",
+        "chain": "Chain",
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
@@ -1171,7 +1220,8 @@
           "twap": "TWAP",
           "tradeHistory": "Trade History",
           "fundingHistory": "Funding History",
-          "orderHistory": "Order History"
+          "orderHistory": "Order History",
+          "assets": "Assets"
         },
         "emptyMessage": {
           "openOrders": "No open orders",
@@ -1181,7 +1231,16 @@
           "tradeHistory": "No trade history",
           "fillHistory": "No fill history",
           "fundingHistory": "No funding history",
-          "orderHistory": "No order history"
+          "orderHistory": "No order history",
+          "assets": "No assets"
+        },
+        "assets": {
+          "columnAsset": "Assets",
+          "columnTotal": "Total Balance",
+          "columnAvailable": "Available Balance",
+          "columnAction": "Action",
+          "swapStablecoins": "Swap Stablecoins",
+          "enableUnifiedAccount": "Enable Unified Account"
         },
         "positionInfo": {
           "viewOrders": "View Orders",

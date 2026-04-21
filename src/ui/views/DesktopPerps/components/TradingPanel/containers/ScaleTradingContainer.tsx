@@ -47,6 +47,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     markPrice,
     midPrice,
     szDecimals,
+    quoteAsset,
     pxDecimals,
     leverage,
     leverageType,
@@ -305,10 +306,10 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     return {
       start: `${startOrderSize} ${selectedCoin} @ ${splitNumberByStep(
         startPrice || '0'
-      )} USDC`,
+      )} USD`,
       end: `${endOrderSize} ${selectedCoin} @ ${splitNumberByStep(
         endPrice || '0'
-      )} USDC`,
+      )} USD`,
       orderValue:
         scaleOrdersValue > 0 ? formatUsdValue(scaleOrdersValue) : '$0.00',
       marginRequired: formatUsdValue(marginRequired),
@@ -399,7 +400,10 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
 
   return (
     <div className="space-y-[10px]">
-      <OrderSideAndFunds availableBalance={availableBalance} />
+      <OrderSideAndFunds
+        availableBalance={availableBalance}
+        quoteAsset={quoteAsset}
+      />
 
       <div className="flex flex-col gap-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
@@ -411,7 +415,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           className="text-left"
           suffix={
             <span className="text-15 font-medium text-rb-neutral-title-1">
-              USDC
+              {quoteAsset}
             </span>
           }
         />
@@ -427,7 +431,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           className="text-left"
           suffix={
             <span className="text-15 font-medium text-rb-neutral-title-1">
-              USDC
+              {quoteAsset}
             </span>
           }
         />

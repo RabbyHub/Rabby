@@ -11,8 +11,9 @@ import {
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
   DELETE_AGENT_EMPTY_ADDRESS,
-  HYPE_EVM_BRIDGE_ADDRESS,
-  HYPE_SEND_ASSET_TOKEN,
+  HYPE_EVM_BRIDGE_ADDRESS_MAP,
+  HYPE_SEND_ASSET_TOKEN_MAP,
+  PerpsQuoteAsset,
 } from '../constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
@@ -733,9 +734,13 @@ export const usePerpsState = ({
   });
 
   const handleWithdraw = useMemoizedFn(
-    async (amount: number, isHypeWithdraw = false): Promise<boolean> => {
+    async (
+      amount: number,
+      isHypeWithdraw = false,
+      targetAsset: PerpsQuoteAsset = 'USDC'
+    ): Promise<boolean> => {
       try {
-        console.log('handleWithdraw', amount, isHypeWithdraw);
+        console.log('handleWithdraw', amount, isHypeWithdraw, targetAsset);
         const sdk = getPerpsSDK();
 
         if (!currentPerpsAccount) {
@@ -753,9 +758,9 @@ export const usePerpsState = ({
         let res: any;
         if (isHypeWithdraw) {
           const action = sdk.exchange.prepareSendAsset({
-            destination: HYPE_EVM_BRIDGE_ADDRESS,
+            destination: HYPE_EVM_BRIDGE_ADDRESS_MAP[targetAsset],
             amount: amount.toString(),
-            token: HYPE_SEND_ASSET_TOKEN,
+            token: HYPE_SEND_ASSET_TOKEN_MAP[targetAsset],
             sourceDex: isUnified ? 'spot' : '',
             destinationDex: 'spot',
           });

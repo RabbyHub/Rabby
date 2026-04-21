@@ -19,7 +19,11 @@ import {
   HYPE_USDC_TOKEN_SERVER_CHAIN,
   isHypeWithdrawToken,
   HYPE_EVM_BRIDGE_ADDRESS,
+  WITHDRAW_CHAIN_TOKENS,
+  WITHDRAW_CHAINS,
+  PerpsQuoteAsset,
 } from '../constants';
+import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
@@ -64,7 +68,8 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   miniTxs: Tx[];
   handleWithdraw?: (
     amount: number,
-    isHypeWithdraw?: boolean
+    isHypeWithdraw?: boolean,
+    targetAsset?: PerpsQuoteAsset
   ) => Promise<boolean>;
   onClose: () => void;
   clearMiniSignTx: () => void;
@@ -201,21 +206,82 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
   }, [selectedToken]);
 
+  const [selectChainId, setSelectChainId] = React.useState<string>(
+    ARB_USDC_TOKEN_SERVER_CHAIN
+  );
+  const [chainSelectVisible, setChainSelectVisible] = React.useState(false);
+  const { spotBalancesMap, isUnifiedAccount } = usePerpsAccount();
+
   const isHypeWithdraw = useMemo(() => {
-    return type === 'withdraw' && isHypeWithdrawToken(selectedToken);
+    return type === 'withdraw' && selectChainId !== ARB_USDC_TOKEN_SERVER_CHAIN;
+  }, [type, selectChainId]);
+
+  const withdrawTargetAsset = useMemo<PerpsQuoteAsset>(() => {
+    if (type !== 'withdraw' || !selectedToken) return 'USDC';
+    const sym = getTokenSymbol(selectedToken).toUpperCase() as PerpsQuoteAsset;
+    if (sym === 'USDC' || sym === 'USDT' || sym === 'USDH' || sym === 'USDE') {
+      return sym;
+    }
+    return 'USDC';
   }, [type, selectedToken]);
 
+  const chainTokenItems = useMemo(() => {
+    const list = WITHDRAW_CHAIN_TOKENS[selectChainId] || [];
+    return list
+      .map((tk) => {
+        const sym = getTokenSymbol(tk).toUpperCase();
+        let balance = 0;
+        if (isUnifiedAccount) {
+          const key = sym === 'USDT' ? 'USDT0' : sym;
+          balance = Number(spotBalancesMap[key]?.available || 0);
+        } else if (sym === 'USDC') {
+          balance = Number(availableBalance);
+        }
+        return { token: tk, balance };
+      })
+      .sort((a, b) => b.balance - a.balance);
+  }, [selectChainId, isUnifiedAccount, spotBalancesMap, availableBalance]);
+
+  const handleChainSelect = useCallback((serverChain: string) => {
+    setSelectChainId(serverChain);
+    setChainSelectVisible(false);
+    const first = WITHDRAW_CHAIN_TOKENS[serverChain]?.[0];
+    if (first) {
+      setSelectedToken(first);
+    }
+    setUsdValue('');
+  }, []);
+
   const withdrawMaxBalance = useMemo(() => {
-    if (!isHypeWithdraw || !Number(hypeTransferFee))
-      return Number(availableBalance);
+    // For HyperEVM withdraw of a specific stablecoin, use that token's balance,
+    // not the aggregate across all stablecoins.
+    const baseBalance = (() => {
+      if (type !== 'withdraw' || !isHypeWithdraw)
+        return Number(availableBalance);
+      if (!selectedToken) return Number(availableBalance);
+      const row = chainTokenItems.find(
+        (i) =>
+          i.token.id === selectedToken.id &&
+          i.token.chain === selectedToken.chain
+      );
+      return row ? row.balance : 0;
+    })();
+    if (!isHypeWithdraw || !Number(hypeTransferFee)) return baseBalance;
     return Math.max(
       0,
-      new BigNumber(availableBalance)
+      new BigNumber(baseBalance)
         .minus(hypeTransferFee)
         .decimalPlaces(6, BigNumber.ROUND_DOWN)
         .toNumber()
     );
-  }, [isHypeWithdraw, availableBalance, hypeTransferFee]);
+  }, [
+    type,
+    isHypeWithdraw,
+    availableBalance,
+    hypeTransferFee,
+    selectedToken,
+    chainTokenItems,
+  ]);
 
   // Auto-select token with highest USD balance
   useEffect(() => {
@@ -536,6 +602,40 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
             </div>
           </div>
 
+          {/* Chain Row (withdraw only) */}
+          {type === 'withdraw' && (
+            <div
+              onClick={() => setChainSelectVisible(true)}
+              className={clsx(
+                'flex items-center justify-between bg-r-neutral-card1 rounded-[8px] px-16 h-[48px] mb-8 cursor-pointer',
+                'border border-solid border-transparent hover:border-rabby-blue-default'
+              )}
+            >
+              <div className="text-13 text-r-neutral-foot">
+                {t('page.perps.depositAmountPopup.chain')}
+              </div>
+              <div className="flex items-center">
+                {(() => {
+                  const chain = findChainByServerID(selectChainId);
+                  return chain?.logo ? (
+                    <img
+                      src={chain.logo}
+                      alt={chain.name}
+                      className="w-20 h-20 mr-6"
+                    />
+                  ) : null;
+                })()}
+                <span className="text-13 font-medium text-r-neutral-title-1">
+                  {findChainByServerID(selectChainId)?.name || selectChainId}
+                </span>
+                <ThemeIcon
+                  className="icon icon-arrow-right text-r-neutral-foot ml-4"
+                  src={RcIconArrowDownCC}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Input card */}
           <div className="flex flex-col bg-r-neutral-card1 rounded-[8px] px-16 py-24">
             <div className="flex items-center gap-8">
@@ -805,7 +905,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 }
                 const success = await handleWithdraw?.(
                   withdrawAmount,
-                  isHypeWithdraw
+                  isHypeWithdraw,
+                  withdrawTargetAsset
                 );
                 setIsWithdrawLoading(false);
                 if (success) onClose?.();
@@ -827,6 +928,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         }}
         list={tokenList || []}
         mode={type}
+        withdrawItems={chainTokenItems}
         onCancel={() => {
           if (type === 'deposit' && !selectedToken) {
             onClose();
@@ -841,6 +943,53 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           inputRef.current?.focus();
         }}
       />
+
+      {/* Chain Select (withdraw only) */}
+      <Popup
+        placement="bottom"
+        visible={chainSelectVisible}
+        onClose={() => setChainSelectVisible(false)}
+        onCancel={() => setChainSelectVisible(false)}
+        getContainer={false}
+        bodyStyle={{ padding: 0 }}
+        height={280}
+        closable
+      >
+        <div className="flex flex-col px-20 pt-16 bg-r-neutral-bg2 rounded-t-[16px]">
+          <div className="text-[18px] font-medium text-r-neutral-title-1 text-center mb-16">
+            {t('page.perps.selectChainToWithdraw')}
+          </div>
+          <div className="flex flex-col gap-8">
+            {WITHDRAW_CHAINS.map((c) => {
+              const chain = findChainByServerID(c.serverChain);
+              const selected = selectChainId === c.serverChain;
+              return (
+                <div
+                  key={c.serverChain}
+                  onClick={() => handleChainSelect(c.serverChain)}
+                  className={clsx(
+                    'flex items-center h-[56px] px-16 rounded-[12px] cursor-pointer',
+                    'bg-r-neutral-card1 text-15 text-r-neutral-title-1 font-medium',
+                    'border border-solid',
+                    selected
+                      ? 'border-rabby-blue-default bg-r-blue-light-1'
+                      : 'border-transparent hover:border-rabby-blue-default'
+                  )}
+                >
+                  {chain?.logo && (
+                    <img
+                      src={chain.logo}
+                      alt={chain.name}
+                      className="w-24 h-24 mr-12"
+                    />
+                  )}
+                  <span>{chain?.name || c.chainEnum}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </Popup>
     </Popup>
   );
 };

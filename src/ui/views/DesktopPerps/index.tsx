@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -8,11 +8,14 @@ import { AccountInfo } from './components/AccountInfo';
 import { StatusBar } from './components/StatusBar';
 import './index.less';
 import { usePerpsProInit } from './hooks/usePerpsProInit';
-import { useHistory, useLocation } from 'react-router-dom';
 import {
   DepositWithdrawModal,
   DepositWithdrawModalType,
 } from './components/DepositWithdrawModal';
+import { SpotSwapModal } from './modal/SpotSwapModal';
+import { EnableUnifiedAccountModal } from './modal/EnableUnifiedAccountModal';
+import { usePerpsPopupNav } from './hooks/usePerpsPopupNav';
+import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
 import { useRabbySelector } from '@/ui/store';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
@@ -34,7 +37,12 @@ const Wrap = styled.div`
   padding-bottom: 32px;
 `;
 
-export type PopupType = DepositWithdrawModalType | 'add-address' | null;
+export type PopupType =
+  | DepositWithdrawModalType
+  | 'swap'
+  | 'enable-unified'
+  | 'add-address'
+  | null;
 
 export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   isActive = true,
@@ -42,17 +50,21 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   usePerpsProInit(isActive);
 
   const { t } = useTranslation();
-  const history = useHistory();
-  const location = useLocation();
 
   const currentPerpsAccount = useRabbySelector(
     (s) => s.perps.currentPerpsAccount
   );
   const { login: switchPerpsAccount } = usePerpsProState();
 
-  const action = useMemo(() => {
-    return new URLSearchParams(location.search).get('action');
-  }, [location.search]);
+  const {
+    action,
+    source,
+    target,
+    next,
+    closePerpsPopup,
+    advancePerpsPopup,
+  } = usePerpsPopupNav();
+  const { handleEnableUnifiedAccount } = usePerpsActions();
 
   return (
     <>
@@ -128,13 +140,30 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
       <DepositWithdrawModal
         visible={action === 'deposit' || action === 'withdraw'}
         type={action === 'deposit' ? 'deposit' : 'withdraw'}
-        onCancel={() => {
-          const searchParams = new URLSearchParams(location.search);
-          searchParams.delete('action');
-          history.push({
-            pathname: location.pathname,
-            search: searchParams.toString(),
-          });
+        onCancel={closePerpsPopup}
+      />
+
+      <SpotSwapModal
+        visible={action === 'swap'}
+        sourceAsset={source}
+        targetAsset={target}
+        disableSwitch={!!target}
+        onClose={closePerpsPopup}
+      />
+
+      <EnableUnifiedAccountModal
+        visible={action === 'enable-unified'}
+        onCancel={closePerpsPopup}
+        onConfirm={async () => {
+          const ok = await handleEnableUnifiedAccount();
+          if (ok && next) {
+            // We took over the close path by advancing to the chained popup.
+            // Return false so the modal skips its own onCancel call, which
+            // would otherwise wipe the freshly pushed URL params.
+            advancePerpsPopup();
+            return false;
+          }
+          return ok;
         }}
       />
     </>

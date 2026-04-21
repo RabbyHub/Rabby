@@ -54,6 +54,7 @@ import {
   getStatsReportSide,
   handleDisplayFundingPayments,
 } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 import stats from '@/stats';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
@@ -526,9 +527,10 @@ export const PerpsSingleCoin = () => {
             }}
           >
             <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
-            <span className="text-20 font-medium text-r-neutral-title-1">
-              {formatPerpsCoin(coin)}-USD
-            </span>
+            <PerpsDisplayCoinName
+              item={currentAssetCtx}
+              className="text-20 font-medium"
+            />
             <ThemeIcon
               className="icon text-r-neutral-title-1"
               src={isDarkTheme ? RcIconTitleSelectDark : RcIconTitleSelect}

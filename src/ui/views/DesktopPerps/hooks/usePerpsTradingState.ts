@@ -140,8 +140,14 @@ export const usePerpsTradingState = () => {
 
   // Available balance - use withdrawable as direction-agnostic value
   const availableBalance = React.useMemo(() => {
-    return Number(withdrawableBalance || 0);
-  }, [withdrawableBalance]);
+    return Math.min(
+      Number(wsActiveAssetData?.availableToTrade[0] || 0),
+      Number(wsActiveAssetData?.availableToTrade[1] || 0)
+    );
+  }, [
+    wsActiveAssetData?.availableToTrade[0],
+    wsActiveAssetData?.availableToTrade[1],
+  ]);
 
   const rawMaxBuyTradeSize = wsActiveAssetData?.maxTradeSzs[0];
   const rawMaxSellTradeSize = wsActiveAssetData?.maxTradeSzs[1];
@@ -220,6 +226,7 @@ export const usePerpsTradingState = () => {
     [currentPosition]
   );
 
+  const quoteAsset = currentMarketData?.quoteAsset || 'USDC';
   // Calculate liquidation price and cost for a direction
   // orderPrice: optional override (e.g. limitPrice), defaults to markPrice
   const calcDirectionInfo = useCallback(
@@ -231,7 +238,7 @@ export const usePerpsTradingState = () => {
       const px = Number(orderPrice ?? markPrice);
       const size = Number(dirTradeSize);
       if (!px || !leverage || size === 0) {
-        return { liqPrice: '', cost: '0 USDC' };
+        return { liqPrice: '', cost: '0 USD' };
       }
 
       const netNew = calcNetNewSize(direction, size);
@@ -240,7 +247,7 @@ export const usePerpsTradingState = () => {
       let cost = '$0.00';
       if (!reduceOnly && netNew > 0) {
         const netNewMargin = (netNew * px) / leverage;
-        cost = `${splitNumberByStep(netNewMargin.toFixed(2))} USDC`;
+        cost = `${splitNumberByStep(netNewMargin.toFixed(2))} ${quoteAsset}`;
       }
 
       // Liq price
@@ -261,7 +268,9 @@ export const usePerpsTradingState = () => {
         return { liqPrice: '-', cost };
       }
       return {
-        liqPrice: `${splitNumberByStep(liqPrice.toFixed(pxDecimals))} USDC`,
+        liqPrice: `${splitNumberByStep(
+          liqPrice.toFixed(pxDecimals)
+        )} ${quoteAsset}`,
         cost,
       };
     },
@@ -464,5 +473,6 @@ export const usePerpsTradingState = () => {
     calcDirectionInfo,
     buyTradeSize,
     sellTradeSize,
+    quoteAsset,
   };
 };
