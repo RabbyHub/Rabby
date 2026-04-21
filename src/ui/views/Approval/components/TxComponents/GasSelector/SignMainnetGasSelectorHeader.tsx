@@ -1,5 +1,6 @@
 import { formatGasHeaderUsdValue } from '@/ui/utils/number';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
+import { findChain } from '@/utils/chain';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { Tooltip, Skeleton } from 'antd';
 import clsx from 'clsx';
@@ -55,6 +56,10 @@ export const SignMainnetGasSelectorHeader = ({
   isSpeedUp,
   gasCalcMethod,
   checkGasLevelIsNotEnough,
+  showTempoGasTokenSelector = false,
+  tempoGasTokenList = [],
+  onSelectTempoGasToken,
+  tempoGasTokenLoading = false,
   ...props
 }: SignMainnetGasSelectorHeaderProps) => {
   const { t } = useTranslation();
@@ -63,6 +68,23 @@ export const SignMainnetGasSelectorHeader = ({
   const [autoOpenSignal, setAutoOpenSignal] = useState(0);
   const hasOpenedOnceRef = useRef(false);
   const noCustomRPCEnabled = noCustomRPC ?? true;
+  const chain = useMemo(
+    () =>
+      findChain({
+        id: chainId,
+      })!,
+    [chainId]
+  );
+  const resolvedGasToken = useMemo(
+    () =>
+      props.gasToken || {
+        tokenId: chain.nativeTokenAddress,
+        symbol: chain.nativeTokenSymbol,
+        decimals: chain.nativeTokenDecimals || 18,
+        logoUrl: chain.nativeTokenLogo,
+      },
+    [chain, props.gasToken]
+  );
 
   const displayGasMethod = resolveApprovalGasMethod({
     nativeTokenInsufficient,
@@ -428,42 +450,50 @@ export const SignMainnetGasSelectorHeader = ({
         <span>Gas fee</span>
         {gasAccountInfoTooltip}
       </span>
-      {canOpenShowMore ? (
-        <SignMainnetShowMoreGasModal
-          visible={showMoreOpen}
-          onVisibleChange={(open) => {
-            setShowMoreOpen(open);
-            if (open) {
-              hasOpenedOnceRef.current = true;
-            }
-          }}
-          gasList={gasList}
-          selectedGas={selectedGas}
-          gasMethod={gasMethod}
-          onChangeGasMethod={props.onChangeGasMethod}
-          noCustomRPC={noCustomRPCEnabled}
-          freeGasAvailable={freeGasAvailable}
-          chainId={chainId}
-          gasLimit={gasLimit || '0'}
-          nonce={nonce}
-          onChange={onChange}
-          isCancel={isCancel}
-          isSpeedUp={isSpeedUp}
-          selectedGasCostUsdStr={gasCostUsdStr}
-          gasAccountCost={gasAccountCost}
-          nativeTokenInsufficient={nativeTokenInsufficient}
-          autoOpenSignal={autoOpenSignal}
-          levelState={levelState}
-          onEditCustomGas={() => {
-            setShowMoreOpen(false);
-            setCustomVisible(true);
-          }}
-        >
-          {summaryNode}
-        </SignMainnetShowMoreGasModal>
-      ) : (
-        summaryNode
-      )}
+      <div className="flex items-center gap-8">
+        {canOpenShowMore ? (
+          <SignMainnetShowMoreGasModal
+            visible={showMoreOpen}
+            onVisibleChange={(open) => {
+              setShowMoreOpen(open);
+              if (open) {
+                hasOpenedOnceRef.current = true;
+              }
+            }}
+            gasList={gasList}
+            selectedGas={selectedGas}
+            gasMethod={gasMethod}
+            onChangeGasMethod={props.onChangeGasMethod}
+            noCustomRPC={noCustomRPCEnabled}
+            freeGasAvailable={freeGasAvailable}
+            chainId={chainId}
+            gasLimit={gasLimit || '0'}
+            nonce={nonce}
+            onChange={onChange}
+            isCancel={isCancel}
+            isSpeedUp={isSpeedUp}
+            selectedGasCostUsdStr={gasCostUsdStr}
+            gasAccountCost={gasAccountCost}
+            nativeTokenInsufficient={nativeTokenInsufficient}
+            autoOpenSignal={autoOpenSignal}
+            levelState={levelState}
+            showTempoGasTokenSelector={showTempoGasTokenSelector}
+            selectedGasToken={resolvedGasToken}
+            tempoGasTokenList={tempoGasTokenList}
+            onSelectTempoGasToken={onSelectTempoGasToken}
+            tempoGasTokenLoading={tempoGasTokenLoading}
+            getContainer={props.getContainer}
+            onEditCustomGas={() => {
+              setShowMoreOpen(false);
+              setCustomVisible(true);
+            }}
+          >
+            {summaryNode}
+          </SignMainnetShowMoreGasModal>
+        ) : (
+          summaryNode
+        )}
+      </div>
     </div>
   );
 

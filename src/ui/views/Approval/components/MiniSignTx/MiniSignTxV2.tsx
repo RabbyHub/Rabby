@@ -219,7 +219,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         await instance.updateGasLevel(ctx.selectedGas, wallet);
       }
     },
-    [ctx?.selectedGas, wallet]
+    [ctx?.selectedGas, wallet, instance]
   );
 
   React.useEffect(() => {

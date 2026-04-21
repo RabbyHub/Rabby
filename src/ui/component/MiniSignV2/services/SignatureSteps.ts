@@ -642,18 +642,6 @@ export class SignatureSteps {
         user_addr: buildTx.from,
       });
 
-      let L1feePromises;
-
-      if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
-        L1feePromises = wallet.fetchEstimatedL1Fee(
-          {
-            txParams: buildTx,
-          },
-          chain.enum,
-          account
-        );
-      }
-
       const preExecResult = await wallet.openapi.preExecTx({
         tx: buildTx,
         origin: INTERNAL_REQUEST_ORIGIN,
@@ -701,6 +689,17 @@ export class SignatureSteps {
         });
         gasLimit = _gl;
         recommendGasLimitRatio = _ratio;
+      }
+      let L1feePromises;
+
+      if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
+        L1feePromises = wallet.fetchEstimatedL1Fee(
+          {
+            txParams: { ...buildTx, gas: buildTx.gas || gasLimit } as Tx,
+          },
+          chain.enum,
+          account
+        );
       }
       const gasCost = await explainGas({
         gasUsed,

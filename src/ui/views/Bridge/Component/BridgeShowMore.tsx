@@ -1,6 +1,6 @@
 import { TokenWithChain } from '@/ui/component';
-import { getTokenSymbol } from '@/ui/utils/token';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { getTokenSymbol, abstractTokenToTokenItem } from '@/ui/utils/token';
+import { TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { Button, Skeleton, Switch, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
@@ -51,6 +51,15 @@ import SignMainnetGasSelectorHeader from '../../Approval/components/TxComponents
 import { normalizeTxParams } from '../../Approval/components/SignTx';
 import { checkGasAndNonce, explainGas } from '@/utils/transaction';
 import { KEYRING_CLASS } from 'consts';
+import { useRabbySelector } from '@/ui/store';
+import {
+  calcTempoMaxGasCostRawAmountIn18,
+  isTempoBatchSupportedAccountType,
+  isTempoChain,
+  listTempoFeeTokenOptionsFromCache,
+  loadTempoFeeTokenOptionsState,
+  TxWithTempoExtras,
+} from '@/utils/tempo';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -471,12 +480,21 @@ export const DirectSignGasInfo = ({
   signatureInstance: SignatureManager;
 }) => {
   const wallet = useWallet();
+  const { cachedTokenList } = useRabbySelector((s) => ({
+    cachedTokenList: s.account.tokens.list,
+  }));
+  const cachedTokenItems = useMemo(
+    () => (cachedTokenList || []).map(abstractTokenToTokenItem),
+    [cachedTokenList]
+  );
   const [gasAccountDepositVisible, setGasAccountDepositVisible] = useState(
     false
   );
   const depositFlowActive = useGasAccountDepositFlowActive();
 
-  const chain = findChainByServerID(chainServeId);
+  const chain = useMemo(() => findChainByServerID(chainServeId), [
+    chainServeId,
+  ]);
   const chainId = chain?.id || 0;
   const chainEnum = chain?.enum;
 
@@ -553,6 +571,12 @@ export const DirectSignGasInfo = ({
     decimals: chain?.nativeTokenDecimals || 18,
     logoUrl: chain?.nativeTokenLogo || '',
   };
+  const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
+  const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
+  const showTempoGasTokenSelector =
+    !!chain &&
+    isTempoChain(chain.serverId) &&
+    isTempoBatchSupportedAccountType(currentAccount?.type);
   const isHardware =
     currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER ||
     currentAccount?.type === KEYRING_CLASS.HARDWARE.ONEKEY;
@@ -646,6 +670,12 @@ export const DirectSignGasInfo = ({
     },
     [signatureInstance, wallet]
   );
+  const handleSelectTempoGasToken = useMemoizedFn(async (token: TokenItem) => {
+    signatureInstance.setTempoFeeToken(token);
+    if (selectedGas) {
+      await handleGasChange(selectedGas as any);
+    }
+  });
 
   const handleChangeGasAccount = useMemoizedFn(async () => {
     await handleChangeGasMethod('gasAccount');
@@ -686,6 +716,82 @@ export const DirectSignGasInfo = ({
       signatureInstance.setGasMethod('gasAccount');
     }
   );
+
+  useEffect(() => {
+    console.log('1111 2222');
+
+    if (!currentAccount?.address || !chain || !isTempoChain(chain.serverId)) {
+      setTempoGasTokenList([]);
+      setTempoGasTokenLoading(false);
+      return;
+    }
+
+    console.log('1111');
+
+    let mounted = true;
+    setTempoGasTokenLoading(true);
+
+    const maxGasCostRawAmount = (txsResult || []).reduce(
+      (sum, item) =>
+        sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
+      new BigNumber(0)
+    );
+    const maxGasCostRawAmountIn18 = calcTempoMaxGasCostRawAmountIn18(txs || []);
+    const cachedOptions = listTempoFeeTokenOptionsFromCache({
+      tokenList: cachedTokenItems,
+      chainServerId: chain.serverId,
+      maxGasCostRawAmount,
+      maxGasCostRawAmountDecimals: gasToken.decimals || 18,
+      maxGasCostRawAmountIn18,
+    });
+    const txFeeToken = (txs?.[0] as TxWithTempoExtras<Tx> | undefined)
+      ?.feeToken as string | undefined;
+
+    if (cachedOptions.length) {
+      setTempoGasTokenList(cachedOptions);
+    }
+
+    loadTempoFeeTokenOptionsState({
+      wallet,
+      userAddress: currentAccount.address,
+      chainServerId: chain.serverId,
+      tokenList: cachedTokenItems,
+      txFeeToken,
+      maxGasCostRawAmount,
+      maxGasCostRawAmountDecimals: gasToken.decimals || 18,
+      maxGasCostRawAmountIn18,
+    })
+      .then(({ options, selectedOption }) => {
+        if (!mounted) return;
+
+        setTempoGasTokenList(options);
+        if (
+          selectedOption &&
+          gasToken.tokenId?.toLowerCase() !== selectedOption.id.toLowerCase()
+        ) {
+          void handleSelectTempoGasToken(selectedOption);
+        }
+      })
+      .finally(() => {
+        if (mounted) {
+          setTempoGasTokenLoading(false);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [
+    cachedTokenItems,
+    chain,
+    currentAccount?.address,
+    gasToken.decimals,
+    gasToken.tokenId,
+    handleSelectTempoGasToken,
+    txs,
+    txsResult,
+    // wallet,
+  ]);
 
   const gasCalcMethod = useCallback(
     async (price: number) => {
@@ -942,6 +1048,10 @@ export const DirectSignGasInfo = ({
             nativeTokenInsufficient={isGasNotEnough}
             freeGasAvailable={canUseGasLess}
             noCustomRPC={noCustomRPC}
+            showTempoGasTokenSelector={showTempoGasTokenSelector}
+            tempoGasTokenList={tempoGasTokenList}
+            onSelectTempoGasToken={handleSelectTempoGasToken}
+            tempoGasTokenLoading={tempoGasTokenLoading}
           />
         </div>
       ) : !loading && noQuote ? (
