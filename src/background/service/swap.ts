@@ -7,6 +7,7 @@ import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { openapiService } from 'background/service';
 import { TokenItem } from './openapi';
 import * as Sentry from '@sentry/browser';
+import { getTxMatchData } from '@/utils/tempo';
 
 type ViewKey = keyof typeof CEX | keyof typeof DEX;
 
@@ -216,7 +217,7 @@ class SwapService {
     data: string,
     quoteInfo: Omit<Parameters<OpenApiService['postSwap']>[0], 'tx' | 'tx_id'>
   ) => {
-    this.txQuotes[`${chain}-${data}`] = quoteInfo;
+    this.txQuotes[`${chain}-${getTxMatchData({ data })}`] = quoteInfo;
   };
 
   postSwap = (
@@ -226,7 +227,7 @@ class SwapService {
   ) => {
     const { postSwap } = openapiService;
     const { txQuotes } = this;
-    const key = `${chain}-${tx.data}`;
+    const key = `${chain}-${getTxMatchData(tx as any)}`;
     const quoteInfo = txQuotes[key];
     if (quoteInfo) {
       delete txQuotes[key];

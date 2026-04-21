@@ -6,7 +6,7 @@ import type { WalletControllerType } from '@/ui/utils';
 import type { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import type { SignerConfig } from '@/ui/component/MiniSignV2/domain/types';
 import type { SignerCtx } from '@/ui/component/MiniSignV2/domain/ctx';
-import type { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import type { TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 import type {
   SignatureAction,
@@ -24,6 +24,7 @@ import eventBus from '@/eventBus';
 import { findChain } from '@/utils/chain';
 import { t } from 'i18next';
 import { DrawerProps, ModalProps } from 'antd';
+import BigNumber from 'bignumber.js';
 
 const ETH_GAS_USD_LIMIT = 15;
 const OTHER_GAS_USD_LIMIT = 5;
@@ -678,6 +679,51 @@ class SignatureManager {
       type: 'UPDATE_CTX',
       fingerprint,
       ctx: { ...ctx, gasMethod: method } as SignerCtx,
+    });
+  }
+
+  public setTempoFeeToken(token: TokenItem) {
+    const { ctx, fingerprint } = this.state;
+    if (!ctx || !fingerprint) return;
+    const shouldApplyFeeToken = ctx.gasMethod !== 'gasAccount';
+    const tokenId = token.id;
+
+    const txs = ctx.txs.map((tx) => {
+      const next = { ...tx } as Tx & { feeToken?: string };
+      if (shouldApplyFeeToken) {
+        next.feeToken = tokenId;
+      }
+      return next as Tx;
+    });
+
+    const txsCalc = ctx.txsCalc.map((item) => {
+      const nextTx = { ...item.tx } as Tx & { feeToken?: string };
+      if (shouldApplyFeeToken) {
+        nextTx.feeToken = tokenId;
+      }
+      return {
+        ...item,
+        tx: nextTx as Tx,
+      };
+    });
+
+    this.dispatch({
+      type: 'UPDATE_CTX',
+      fingerprint,
+      ctx: {
+        ...ctx,
+        txs,
+        txsCalc,
+        gasToken: {
+          tokenId,
+          symbol: token.display_symbol || token.symbol,
+          decimals: token.decimals || 18,
+          logoUrl: token.logo_url,
+        },
+        nativeTokenBalance: new BigNumber(
+          token.raw_amount_hex_str || 0
+        ).toFixed(0),
+      } as SignerCtx,
     });
   }
 

@@ -17,6 +17,7 @@ import {
 import {
   GasLevel,
   ParseTxResponse,
+  TokenItem,
   Tx,
   TxPushType,
 } from '@rabby-wallet/rabby-api/dist/types';
@@ -79,7 +80,14 @@ import { Divide } from '../Divide';
 import { OpenApiService } from '@rabby-wallet/rabby-api';
 import { BalanceChangeLoading } from './BalanceChangeLoanding';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
-import { isTempoChain } from '@/utils/tempo';
+import {
+  isTempoBatchSupportedAccountType,
+  isTempoChain,
+  loadTempoFeeTokenOptionsState,
+  toTempoCallsTx,
+  TxWithTempoExtras,
+} from '@/utils/tempo';
+import { abstractTokenToTokenItem } from '@/ui/utils/token';
 
 interface MiniSignTxProps {
   txs: Tx[];
@@ -261,6 +269,11 @@ export const MiniSignTx = ({
     currentTx: s.securityEngine.currentTx,
     tokenDetail: s.sign.tokenDetail,
   }));
+  const cachedTokenList = useRabbySelector((s) => s.account.tokens.list);
+  const cachedTokenItems = useMemo(
+    () => (cachedTokenList || []).map(abstractTokenToTokenItem),
+    [cachedTokenList]
+  );
 
   const [footerShowShadow, setFooterShowShadow] = useState(false);
 
@@ -322,6 +335,8 @@ export const MiniSignTx = ({
     decimals: chain.nativeTokenDecimals || 18,
     logoUrl: chain.nativeTokenLogo,
   });
+  const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
+  const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
   const checkTxValueInBalance = useMemo(() => !isTempoChain(chain.serverId), [
     chain.serverId,
   ]);
@@ -364,19 +379,33 @@ export const MiniSignTx = ({
   const [noCustomRPC, setNoCustomRPC] = useState(true);
 
   const gasAccountTxs = useMemo(() => {
+    const shouldUseTempoCallsForGasAccount =
+      isTempoChain(chain.serverId) &&
+      isTempoBatchSupportedAccountType(currentAccount?.type);
     if (!selectedGas?.price) {
       return [] as Tx[];
     }
     return (
       txsResult.map((item) => {
-        return {
+        const gasAccountTx = {
           ...item.tx,
           gas: item.gasLimit,
           gasPrice: intToHex(selectedGas.price),
         };
+        return shouldUseTempoCallsForGasAccount
+          ? (toTempoCallsTx(gasAccountTx as any, {
+              stripTopLevelData: true,
+            }) as Tx)
+          : gasAccountTx;
       }) || ([] as Tx[])
     );
-  }, [txsResult, realNonce, selectedGas?.price]);
+  }, [
+    txsResult,
+    realNonce,
+    selectedGas?.price,
+    chain.serverId,
+    currentAccount?.type,
+  ]);
 
   const _currentAccount = useRabbySelector((s) => s.account.currentAccount!);
 
@@ -397,6 +426,26 @@ export const MiniSignTx = ({
     noCustomRPC,
     isSupportedAddr,
     currentAccount: _currentAccount,
+  });
+  const showTempoGasTokenSelector = useMemo(() => {
+    return (
+      isTempoChain(chain.serverId) &&
+      gasMethod !== 'gasAccount' &&
+      isTempoBatchSupportedAccountType(currentAccount?.type)
+    );
+  }, [chain.serverId, gasMethod, currentAccount?.type]);
+
+  const handleSelectTempoGasToken = useMemoizedFn((token: TokenItem) => {
+    const tokenId = token.id;
+    setGasToken({
+      tokenId,
+      symbol: token.display_symbol || token.symbol,
+      decimals: token.decimals || 18,
+      logoUrl: token.logo_url,
+    });
+    setNativeTokenBalance(
+      new BigNumber(token.raw_amount_hex_str || 0).toFixed(0)
+    );
   });
 
   useEffect(() => {
@@ -664,10 +713,31 @@ export const MiniSignTx = ({
 
         setNativeTokenBalance(balanceInfo.rawBalance);
         setGasToken(balanceInfo.token);
+        if (isTempoChain(chain.serverId)) {
+          setTempoGasTokenLoading(true);
+          const {
+            options,
+            selectedOption,
+          } = await loadTempoFeeTokenOptionsState({
+            wallet,
+            userAddress: currentAccount.address,
+            chainServerId: chain.serverId,
+            tokenList: cachedTokenItems,
+            txFeeToken: (txs[0] as TxWithTempoExtras<Tx>).feeToken as
+              | string
+              | undefined,
+          });
+          setTempoGasTokenList(options);
+          if (selectedOption) {
+            handleSelectTempoGasToken(selectedOption);
+          }
+        }
       } catch (e) {
         if (await wallet.hasCustomRPC(chain.enum)) {
           triggerCustomRPCErrorModal();
         }
+      } finally {
+        setTempoGasTokenLoading(false);
       }
 
       checkCanProcess();
@@ -821,11 +891,16 @@ export const MiniSignTx = ({
             sig: sig || '',
             account_id: gasAccountAddress,
             tx_list: arr.map((item, index) => {
-              return {
+              const gasAccountTx = {
                 ...item.tx,
                 gas: item.gasLimit,
                 gasPrice: intToHex(gas.price),
               };
+              return isTempoChain(chain.serverId)
+                ? (toTempoCallsTx(gasAccountTx as any, {
+                    stripTopLevelData: true,
+                  }) as any)
+                : gasAccountTx;
             }),
           })
           .then((gasAccountRes) => {
@@ -851,6 +926,13 @@ export const MiniSignTx = ({
   );
 
   const [preExecError, setPreExecError] = useState(false);
+  const shouldUseTempoCallsForGasAccount = useMemo(() => {
+    return (
+      gasMethod === 'gasAccount' &&
+      isTempoChain(chain.serverId) &&
+      isTempoBatchSupportedAccountType(currentAccount?.type)
+    );
+  }, [gasMethod, chain.serverId, currentAccount?.type]);
 
   const prepareTxs = useMemoizedFn(async () => {
     if (!selectedGas || !inited || !currentAccount?.address) {
@@ -879,6 +961,14 @@ export const MiniSignTx = ({
           value: normalizedTx.value,
           gasPrice: intToHex(selectedGas.price),
         };
+        if (isTempoChain(chain.serverId) && gasMethod !== 'gasAccount') {
+          ((tx as unknown) as { feeToken?: string }).feeToken =
+            gasToken.tokenId;
+        } else if ((normalizedTx as Tx & { feeToken?: string }).feeToken) {
+          ((tx as unknown) as {
+            feeToken?: string;
+          }).feeToken = (normalizedTx as Tx & { feeToken?: string }).feeToken;
+        }
         tempTxs.push(tx);
 
         if (support1559) {
@@ -888,9 +978,12 @@ export const MiniSignTx = ({
               ? tx.maxFeePerGas
               : intToHex(Math.round(maxPriorityFee));
         }
+        const tempoGasAccountTx = shouldUseTempoCallsForGasAccount
+          ? (toTempoCallsTx(tx as any, { stripTopLevelData: true }) as Tx)
+          : tx;
 
         const preExecResult = await wallet.openapi.preExecTx({
-          tx: tx,
+          tx: tempoGasAccountTx,
           origin: INTERNAL_REQUEST_ORIGIN,
           address: currentAccount?.address,
           updateNonce: true,
@@ -969,14 +1062,26 @@ export const MiniSignTx = ({
 
         const actionData = await wallet.openapi.parseTx({
           chainId: chain.serverId,
-          tx: {
-            ...tx,
-            gas: '0x0',
-            nonce: tx.nonce || '0x1',
-            value: tx.value || '0x0',
-            to: tx.to || '',
-            type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
-          } as any,
+          tx: shouldUseTempoCallsForGasAccount
+            ? (toTempoCallsTx(
+                {
+                  ...tx,
+                  gas: '0x0',
+                  nonce: tx.nonce || '0x1',
+                  value: tx.value || '0x0',
+                  to: tx.to || '',
+                  type: '0x76',
+                },
+                { stripTopLevelData: true }
+              ) as any)
+            : ({
+                ...tx,
+                gas: '0x0',
+                nonce: tx.nonce || '0x1',
+                value: tx.value || '0x0',
+                to: tx.to || '',
+                type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
+              } as any),
           origin: origin || '',
           addr: currentAccount.address,
         });
@@ -1049,7 +1154,13 @@ export const MiniSignTx = ({
         //goto origin signTx
       });
     }
-  }, [inited, txs]);
+  }, [
+    inited,
+    txs,
+    shouldUseTempoCallsForGasAccount,
+    gasToken.tokenId,
+    gasMethod,
+  ]);
 
   const checkErrors = useMemo(() => {
     let balance = nativeTokenBalance;
@@ -1316,6 +1427,10 @@ export const MiniSignTx = ({
               engineResults={engineResults}
               nativeTokenBalance={nativeTokenBalance}
               gasToken={gasToken}
+              showTempoGasTokenSelector={showTempoGasTokenSelector}
+              tempoGasTokenList={tempoGasTokenList}
+              onSelectTempoGasToken={handleSelectTempoGasToken}
+              tempoGasTokenLoading={tempoGasTokenLoading}
               checkTxValueInBalance={checkTxValueInBalance}
               gasPriceMedian={gasPriceMedian}
               gas={totalGasCost}

@@ -167,6 +167,11 @@ import {
   decodePermit2GroupKey,
 } from '@/utils/approve';
 import { appIsProd, isManifestV3 } from '@/utils/env';
+import {
+  buildTempoBatchTransaction,
+  getTxMatchData,
+  shouldUseTempoBatchTransaction,
+} from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
@@ -576,6 +581,58 @@ export class WalletController extends BaseController {
     const chainObj = findChainByEnum(chain);
     if (!chainObj)
       throw new Error(t('background.error.notFindChain', { chain }));
+
+    const shouldBatchTempoSwap =
+      needApprove &&
+      shouldUseTempoBatchTransaction({
+        chainServerId: chainObj.serverId,
+        accountType: account.type,
+        txCount: 1 + Number(needApprove) + Number(shouldTwoStepApprove),
+      });
+
+    if (shouldBatchTempoSwap) {
+      const txs = await this.buildDexSwapTxs(
+        {
+          chainObj,
+          quote,
+          needApprove,
+          spender,
+          pay_token_id,
+          gasPrice,
+          shouldTwoStepApprove,
+          swapPreferMEVGuarded,
+        },
+        $ctx,
+        account
+      );
+
+      if (!txs.length) return;
+      const batchedTx = buildTempoBatchTransaction(txs as any, {
+        stripTopLevelData: false,
+      }) as Tx;
+
+      if (postSwapParams) {
+        swapService.addTx(chain, quote.tx.data, postSwapParams);
+        transactionHistoryService.addCacheHistoryData(
+          `${chain}-${getTxMatchData({ data: quote.tx.data })}`,
+          addHistoryData,
+          'swap'
+        );
+      }
+
+      await this.sendRequest({
+        $ctx: {
+          ga: {
+            ...$ctx?.ga,
+            source: 'approvalAndSwap|swap',
+          },
+        },
+        method: 'eth_sendTransaction',
+        params: [batchedTx],
+      });
+      return;
+    }
+
     try {
       if (shouldTwoStepApprove) {
         unTriggerTxCounter.increase(3);
@@ -621,7 +678,7 @@ export class WalletController extends BaseController {
       if (postSwapParams) {
         swapService.addTx(chain, quote.tx.data, postSwapParams);
         transactionHistoryService.addCacheHistoryData(
-          `${chain}-${quote.tx.data}`,
+          `${chain}-${getTxMatchData({ data: quote.tx.data })}`,
           addHistoryData,
           'swap'
         );
@@ -656,6 +713,120 @@ export class WalletController extends BaseController {
     } catch (e) {
       unTriggerTxCounter.reset();
     }
+  };
+
+  private buildDexSwapTxs = async (
+    {
+      chainObj,
+      quote,
+      needApprove,
+      spender,
+      pay_token_id,
+      gasPrice,
+      shouldTwoStepApprove,
+      swapPreferMEVGuarded,
+    }: {
+      chainObj: NonNullable<ReturnType<typeof findChainByEnum>>;
+      quote: QuoteResult;
+      needApprove: boolean;
+      spender: string;
+      pay_token_id: string;
+      gasPrice?: number;
+      shouldTwoStepApprove: boolean;
+      swapPreferMEVGuarded: boolean;
+    },
+    $ctx?: any,
+    account?: Account
+  ) => {
+    const txs: Tx[] = [];
+
+    try {
+      if (shouldTwoStepApprove) {
+        unTriggerTxCounter.increase(3);
+        const res = await this.approveToken(
+          chainObj.serverId,
+          pay_token_id,
+          spender,
+          0,
+          {
+            ga: {
+              ...$ctx?.ga,
+              source: 'approvalAndSwap|tokenApproval',
+            },
+          },
+          gasPrice,
+          { isSwap: true, swapPreferMEVGuarded },
+          true,
+          account
+        );
+        txs.push(res.params[0]);
+        unTriggerTxCounter.decrease();
+      }
+
+      if (needApprove) {
+        if (!shouldTwoStepApprove) {
+          unTriggerTxCounter.increase(2);
+        }
+        const res = await this.approveToken(
+          chainObj.serverId,
+          pay_token_id,
+          spender,
+          quote.fromTokenAmount,
+          {
+            ga: {
+              ...$ctx?.ga,
+              source: 'approvalAndSwap|tokenApproval',
+            },
+          },
+          gasPrice,
+          { isSwap: true, swapPreferMEVGuarded },
+          true,
+          account
+        );
+
+        txs.push(res.params[0]);
+        unTriggerTxCounter.decrease();
+      }
+
+      const res = await this.sendRequest(
+        {
+          $ctx:
+            needApprove && pay_token_id !== chainObj.nativeTokenAddress
+              ? {
+                  ga: {
+                    ...$ctx?.ga,
+                    source: 'approvalAndSwap|swap',
+                  },
+                }
+              : $ctx,
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: quote.tx.from,
+              to: quote.tx.to,
+              data: quote.tx.data || '0x',
+              value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
+              chainId: chainObj.id,
+              gasPrice: gasPrice
+                ? `0x${new BigNumber(gasPrice).toString(16)}`
+                : undefined,
+              isSwap: true,
+              swapPreferMEVGuarded,
+            },
+          ],
+        },
+        {
+          isBuild: true,
+          account,
+        }
+      );
+      txs.push(res.params[0]);
+      unTriggerTxCounter.decrease();
+    } catch (e) {
+      unTriggerTxCounter.reset();
+    }
+
+    return txs;
   };
 
   buildDexSwap = async (
@@ -696,97 +867,42 @@ export class WalletController extends BaseController {
     if (!chainObj)
       throw new Error(t('background.error.notFindChain', { chain }));
 
-    const txs: Tx[] = [];
-    try {
-      if (shouldTwoStepApprove) {
-        unTriggerTxCounter.increase(3);
-        const res = await this.approveToken(
-          chainObj.serverId,
-          pay_token_id,
-          spender,
-          0,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndSwap|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isSwap: true, swapPreferMEVGuarded },
-          true
-        );
-        txs.push(res.params[0]);
-        unTriggerTxCounter.decrease();
-      }
+    const txs = await this.buildDexSwapTxs(
+      {
+        chainObj,
+        quote,
+        needApprove,
+        spender,
+        pay_token_id,
+        gasPrice,
+        shouldTwoStepApprove,
+        swapPreferMEVGuarded,
+      },
+      $ctx,
+      account
+    );
 
-      if (needApprove) {
-        if (!shouldTwoStepApprove) {
-          unTriggerTxCounter.increase(2);
-        }
-        const res = await this.approveToken(
-          chainObj.serverId,
-          pay_token_id,
-          spender,
-          // unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
-          quote.fromTokenAmount,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndSwap|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isSwap: true, swapPreferMEVGuarded },
-          true
-        );
-
-        txs.push(res.params[0]);
-        unTriggerTxCounter.decrease();
-      }
-
-      if (postSwapParams) {
-        swapService.addTx(chain, quote.tx.data, postSwapParams);
-        transactionHistoryService.addCacheHistoryData(
-          `${chain}-${quote.tx.data}`,
-          addHistoryData,
-          'swap'
-        );
-      }
-      const res = await this.sendRequest(
-        {
-          $ctx:
-            needApprove && pay_token_id !== chainObj.nativeTokenAddress
-              ? {
-                  ga: {
-                    ...$ctx?.ga,
-                    source: 'approvalAndSwap|swap',
-                  },
-                }
-              : $ctx,
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: quote.tx.from,
-              to: quote.tx.to,
-              data: quote.tx.data || '0x',
-              value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
-              chainId: chainObj.id,
-              gasPrice: gasPrice
-                ? `0x${new BigNumber(gasPrice).toString(16)}`
-                : undefined,
-              isSwap: true,
-              swapPreferMEVGuarded,
-            },
-          ],
-        },
-        {
-          isBuild: true,
-        }
+    if (postSwapParams) {
+      swapService.addTx(chain, quote.tx.data, postSwapParams);
+      transactionHistoryService.addCacheHistoryData(
+        `${chain}-${getTxMatchData({ data: quote.tx.data })}`,
+        addHistoryData,
+        'swap'
       );
-      txs.push(res.params[0]);
-      unTriggerTxCounter.decrease();
-    } catch (e) {
-      unTriggerTxCounter.reset();
+    }
+
+    if (
+      shouldUseTempoBatchTransaction({
+        chainServerId: chainObj.serverId,
+        accountType: account.type,
+        txs,
+      })
+    ) {
+      return [
+        buildTempoBatchTransaction(txs as any, {
+          stripTopLevelData: false,
+        }) as Tx,
+      ];
     }
 
     return txs;
@@ -830,6 +946,60 @@ export class WalletController extends BaseController {
       throw new Error(
         t('background.error.notFindChain', { payTokenChainServerId })
       );
+
+    const shouldBatchTempoBridge =
+      shouldApprove &&
+      shouldUseTempoBatchTransaction({
+        chainServerId: chainObj.serverId,
+        accountType: account.type,
+        txCount: 1 + Number(shouldApprove) + Number(shouldTwoStepApprove),
+      });
+
+    if (shouldBatchTempoBridge) {
+      const txs = await this.buildBridgeTokenTxs(
+        {
+          approveId,
+          to,
+          data,
+          payTokenRawAmount,
+          payTokenId,
+          chainObj,
+          shouldApprove,
+          shouldTwoStepApprove,
+          gasPrice,
+          value,
+        },
+        $ctx,
+        account
+      );
+
+      if (!txs.length) return;
+      const batchedTx = buildTempoBatchTransaction(txs as any, {
+        stripTopLevelData: false,
+      }) as Tx;
+
+      if (info) {
+        bridgeService.addTx(chainObj.enum, data, info);
+        transactionHistoryService.addCacheHistoryData(
+          `${chainObj.enum}-${getTxMatchData({ data })}`,
+          addHistoryData,
+          'bridge'
+        );
+      }
+
+      await this.sendRequest({
+        $ctx: {
+          ga: {
+            ...$ctx?.ga,
+            source: 'approvalAndBridge|bridge',
+          },
+        },
+        method: 'eth_sendTransaction',
+        params: [batchedTx],
+      });
+      return;
+    }
+
     try {
       if (shouldTwoStepApprove) {
         unTriggerTxCounter.increase(3);
@@ -874,7 +1044,7 @@ export class WalletController extends BaseController {
       if (info) {
         bridgeService.addTx(chainObj.enum, data, info);
         transactionHistoryService.addCacheHistoryData(
-          `${chainObj.enum}-${data}`,
+          `${chainObj.enum}-${getTxMatchData({ data })}`,
           addHistoryData,
           'bridge'
         );
@@ -908,6 +1078,121 @@ export class WalletController extends BaseController {
     } catch (e) {
       unTriggerTxCounter.reset();
     }
+  };
+
+  private buildBridgeTokenTxs = async (
+    {
+      approveId,
+      to,
+      data,
+      payTokenRawAmount,
+      payTokenId,
+      chainObj,
+      shouldApprove,
+      shouldTwoStepApprove,
+      gasPrice,
+      value,
+    }: {
+      approveId?: string;
+      data: string;
+      to: string;
+      value: string;
+      shouldApprove: boolean;
+      shouldTwoStepApprove: boolean;
+      payTokenId: string;
+      chainObj: NonNullable<ReturnType<typeof findChain>>;
+      payTokenRawAmount: string;
+      gasPrice?: number;
+    },
+    $ctx?: any,
+    account?: Account
+  ) => {
+    const txs: Tx[] = [];
+    try {
+      if (shouldTwoStepApprove) {
+        unTriggerTxCounter.increase(3);
+        const res = await this.approveToken(
+          chainObj.serverId,
+          payTokenId,
+          approveId || to,
+          0,
+          {
+            ga: {
+              ...$ctx?.ga,
+              source: 'approvalAndBridge|tokenApproval',
+            },
+          },
+          gasPrice,
+          { isBridge: true },
+          true,
+          account
+        );
+        txs.push(res.params[0]);
+        unTriggerTxCounter.decrease();
+      }
+
+      if (shouldApprove) {
+        if (!shouldTwoStepApprove) {
+          unTriggerTxCounter.increase(2);
+        }
+        const res = await this.approveToken(
+          chainObj.serverId,
+          payTokenId,
+          approveId || to,
+          payTokenRawAmount,
+          {
+            ga: {
+              ...$ctx?.ga,
+              source: 'approvalAndBridge|tokenApproval',
+            },
+          },
+          gasPrice,
+          { isBridge: true },
+          true,
+          account
+        );
+        txs.push(res.params[0]);
+        unTriggerTxCounter.decrease();
+      }
+
+      const res = await this.sendRequest(
+        {
+          $ctx:
+            shouldApprove && payTokenId !== chainObj.nativeTokenAddress
+              ? {
+                  ga: {
+                    ...$ctx?.ga,
+                    source: 'approvalAndBridge|bridge',
+                  },
+                }
+              : $ctx,
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: account?.address,
+              to: to,
+              data: data || '0x',
+              value: `0x${new BigNumber(value || '0').toString(16)}`,
+              chainId: chainObj.id,
+              gasPrice: gasPrice
+                ? `0x${new BigNumber(gasPrice).toString(16)}`
+                : undefined,
+              isBridge: true,
+            },
+          ],
+        },
+        {
+          isBuild: true,
+          account,
+        }
+      );
+      txs.push(res.params[0]);
+      unTriggerTxCounter.decrease();
+    } catch (e) {
+      unTriggerTxCounter.reset();
+    }
+
+    return txs;
   };
 
   buildBridgeToken = async (
@@ -949,95 +1234,47 @@ export class WalletController extends BaseController {
         t('background.error.notFindChain', { payTokenChainServerId })
       );
 
-    const txs: Tx[] = [];
-    try {
-      if (shouldTwoStepApprove) {
-        unTriggerTxCounter.increase(3);
-        const res = await this.approveToken(
-          payTokenChainServerId,
-          payTokenId,
-          approveId || to,
-          0,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndBridge|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isBridge: true },
-          true
-        );
-        txs.push(res.params[0]);
-        unTriggerTxCounter.decrease();
-      }
+    const txs = await this.buildBridgeTokenTxs(
+      {
+        approveId,
+        to,
+        data,
+        payTokenRawAmount,
+        payTokenId,
+        chainObj,
+        shouldApprove,
+        shouldTwoStepApprove,
+        gasPrice,
+        value,
+      },
+      $ctx,
+      account
+    );
 
-      if (shouldApprove) {
-        if (!shouldTwoStepApprove) {
-          unTriggerTxCounter.increase(2);
-        }
-        const res = await this.approveToken(
-          payTokenChainServerId,
-          payTokenId,
-          approveId || to,
-          payTokenRawAmount,
-          {
-            ga: {
-              ...$ctx?.ga,
-              source: 'approvalAndBridge|tokenApproval',
-            },
-          },
-          gasPrice,
-          { isBridge: true },
-          true
-        );
-        txs.push(res.params[0]);
-        unTriggerTxCounter.decrease();
-      }
-
-      if (info) {
-        bridgeService.addTx(chainObj.enum, data, info);
-        transactionHistoryService.addCacheHistoryData(
-          `${chainObj.enum}-${data}`,
-          addHistoryData,
-          'bridge'
-        );
-      }
-      const res = await this.sendRequest(
-        {
-          $ctx:
-            shouldApprove && payTokenId !== chainObj.nativeTokenAddress
-              ? {
-                  ga: {
-                    ...$ctx?.ga,
-                    source: 'approvalAndBridge|bridge',
-                  },
-                }
-              : $ctx,
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              from: account.address,
-              to: to,
-              data: data || '0x',
-              value: `0x${new BigNumber(value || '0').toString(16)}`,
-              chainId: chainObj.id,
-              gasPrice: gasPrice
-                ? `0x${new BigNumber(gasPrice).toString(16)}`
-                : undefined,
-              isBridge: true,
-            },
-          ],
-        },
-        {
-          isBuild: true,
-        }
+    if (info) {
+      bridgeService.addTx(chainObj.enum, data, info);
+      transactionHistoryService.addCacheHistoryData(
+        `${chainObj.enum}-${getTxMatchData({ data })}`,
+        addHistoryData,
+        'bridge'
       );
-      txs.push(res.params[0]);
-      unTriggerTxCounter.decrease();
-    } catch (e) {
-      unTriggerTxCounter.reset();
     }
+
+    if (
+      shouldApprove &&
+      shouldUseTempoBatchTransaction({
+        chainServerId: chainObj.serverId,
+        accountType: account.type,
+        txs,
+      })
+    ) {
+      return [
+        buildTempoBatchTransaction(txs as any, {
+          stripTopLevelData: false,
+        }) as Tx,
+      ];
+    }
+
     return txs;
   };
 

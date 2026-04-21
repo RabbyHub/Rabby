@@ -107,7 +107,7 @@ export const Main = () => {
 
     inputAmount,
 
-    payTokenIsNativeToken,
+    payTokenIsGasToken,
     isWrapToken,
     inSufficient,
 
@@ -213,7 +213,7 @@ export const Main = () => {
               unlimited: false,
               shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
               gasPrice:
-                payTokenIsNativeToken && passGasPrice
+                payTokenIsGasToken && passGasPrice
                   ? gasList?.find((e) => e.level === gasLevel)?.price
                   : undefined,
               postSwapParams: {
@@ -295,7 +295,7 @@ export const Main = () => {
             unlimited: false,
             shouldTwoStepApprove: activeProvider.shouldTwoStepApprove,
             gasPrice:
-              payTokenIsNativeToken && passGasPrice
+              payTokenIsGasToken && passGasPrice
                 ? gasList?.find((e) => e.level === gasLevel)?.price
                 : undefined,
             postSwapParams: {

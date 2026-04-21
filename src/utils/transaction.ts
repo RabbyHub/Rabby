@@ -183,7 +183,7 @@ const pow10 = (decimals: number) => {
   return new BigNumber(10).pow(Math.max(0, decimals));
 };
 
-const convert18RawToTokenRaw = (
+export const convert18RawToTokenRaw = (
   rawAmountIn18: BigNumber,
   tokenDecimals: number
 ) => {

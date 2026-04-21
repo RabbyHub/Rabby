@@ -4,6 +4,7 @@ import {
   TEMPO_FEE_TOKEN_DECIMALS,
   TEMPO_PATH_USD_TOKEN,
 } from '@/constant/tempo';
+import { KEYRING_TYPE } from 'consts';
 import type { WalletControllerType } from '@/ui/utils';
 import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import {
@@ -12,6 +13,7 @@ import {
   isAddress,
   toHex,
 } from 'viem';
+import BigNumber from 'bignumber.js';
 
 const FEE_MANAGER_READ_METHODS = [
   'userTokens',
@@ -67,14 +69,375 @@ const isSameTokenId = (a?: string | null, b?: string | null) => {
 };
 
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const TEMPO_FEE_TOKEN_WHITELIST = [
+  {
+    tokenId: '0x20C000000000000000000000b9537d11c60E8b50',
+    symbol: 'USDC.e',
+  },
+  {
+    tokenId: '0x20C00000000000000000000014f22CA97301EB73',
+    symbol: 'USDT0',
+  },
+  {
+    tokenId: '0x20C0000000000000000000000000000000000000',
+    symbol: 'pathUSD',
+  },
+  {
+    tokenId: '0x20C0000000000000000000000520792DcCccCccC',
+    symbol: 'cUSD',
+  },
+  {
+    tokenId: '0x20C0000000000000000000003554d28269E0f3c2',
+    symbol: 'frxUSD',
+  },
+] as const;
+const TEMPO_FEE_TOKEN_WHITELIST_MAP = new Map(
+  TEMPO_FEE_TOKEN_WHITELIST.map((item) => [item.tokenId.toLowerCase(), item])
+);
 
 const normalizeChainServerId = (chainServerId?: string | null) =>
   (chainServerId || '').toLowerCase();
+
+const toBigNumberFromValue = (value: unknown) => {
+  if (BigNumber.isBigNumber(value)) return value;
+  if (value === null || typeof value === 'undefined') return new BigNumber(0);
+  if (typeof value === 'bigint') return new BigNumber(value.toString());
+  if (typeof value === 'number') return new BigNumber(value);
+  if (typeof value === 'string') {
+    if (!value.trim()) return new BigNumber(0);
+    if (value.startsWith('0x') || value.startsWith('0X')) {
+      return new BigNumber(BigInt(value).toString());
+    }
+    return new BigNumber(value);
+  }
+  return new BigNumber(0);
+};
+
+const convert18RawToTokenRaw = (
+  rawAmountIn18: BigNumber,
+  tokenDecimals: number
+) => {
+  if (tokenDecimals === 18) {
+    return rawAmountIn18;
+  }
+  const pow10 = new BigNumber(10).pow(Math.abs(tokenDecimals - 18));
+  if (tokenDecimals > 18) {
+    return rawAmountIn18.times(pow10);
+  }
+  return rawAmountIn18.div(pow10);
+};
 
 export const isTempoChain = (chainServerId?: string | null) => {
   const normalized = normalizeChainServerId(chainServerId);
   const base = normalizeChainServerId(TEMPO_CHAIN_SERVER_ID);
   return normalized === base;
+};
+
+export const calcTempoMaxGasCostRawAmountIn18 = (
+  txs: Array<
+    Partial<{
+      gas?: string | number;
+      gasLimit?: string | number;
+      gasPrice?: string | number;
+      maxFeePerGas?: string | number;
+    }>
+  >
+) => {
+  return txs.reduce((sum, tx) => {
+    const gas = toBigNumberFromValue(tx.gas ?? tx.gasLimit);
+    const gasPrice = toBigNumberFromValue(tx.maxFeePerGas ?? tx.gasPrice);
+    if (!gas.isFinite() || !gasPrice.isFinite()) {
+      return sum;
+    }
+    if (gas.lte(0) || gasPrice.lte(0)) {
+      return sum;
+    }
+    return sum.plus(gas.times(gasPrice));
+  }, new BigNumber(0));
+};
+
+export type TempoTxCall = {
+  to?: string;
+  data?: string;
+  value?: string;
+};
+
+export type TempoTxExtras = {
+  type?: string | number;
+  calls?: Array<{
+    to?: unknown;
+    data?: unknown;
+    value?: unknown;
+  }>;
+  feeToken?: unknown;
+  feePayer?: boolean;
+  feePayerSignature?: unknown;
+  nonceKey?: unknown;
+  keyAuthorization?: unknown;
+  validBefore?: unknown;
+  validAfter?: unknown;
+};
+
+export type TxWithTempoExtras<T extends object = Record<string, unknown>> = T &
+  TempoTxExtras;
+
+export type TempoTxLike = {
+  type?: string | number;
+  to?: string;
+  data?: string;
+  value?: string | number | bigint;
+  calls?: TempoTxExtras['calls'];
+} & object;
+
+export type TempoFeeTokenInfo = {
+  tokenId: string;
+  symbol: string;
+  decimals: number;
+  logoUrl: string;
+  rawBalanceHex: string;
+};
+
+const normalizeHexValue = (value?: string | number | bigint) => {
+  if (typeof value === 'number' || typeof value === 'bigint') {
+    return toHex(value);
+  }
+  if (value === '0x' || value === '0X') return '0x0';
+  return value;
+};
+
+export const isTempoTxType = (type: unknown) => {
+  if (type === 118 || type === '0x76' || type === '0X76') return true;
+  return typeof type === 'string' && type.toLowerCase() === 'tempo';
+};
+
+const hasTempoFieldValue = (value: unknown) =>
+  typeof value !== 'undefined' &&
+  value !== null &&
+  !(typeof value === 'string' && value.trim() === '');
+
+export const hasValidTempoFeePayerSignature = (sig: unknown) => {
+  if (typeof sig === 'string') return sig.length > 0;
+  if (!sig || typeof sig !== 'object') return false;
+  const typedSig = sig as {
+    r?: unknown;
+    s?: unknown;
+    yParity?: unknown;
+    v?: unknown;
+  };
+  return (
+    hasTempoFieldValue(typedSig.r) &&
+    hasTempoFieldValue(typedSig.s) &&
+    (hasTempoFieldValue(typedSig.yParity) || hasTempoFieldValue(typedSig.v))
+  );
+};
+
+export const hasValidTempoCalls = (calls: unknown) => {
+  if (!Array.isArray(calls) || calls.length === 0) return false;
+  return calls.every((call) => {
+    if (!call || typeof call !== 'object') return false;
+    const typedCall = call as {
+      to?: unknown;
+      data?: unknown;
+      value?: unknown;
+    };
+    return (
+      (!hasTempoFieldValue(typedCall.to) || typeof typedCall.to === 'string') &&
+      (!hasTempoFieldValue(typedCall.data) ||
+        typeof typedCall.data === 'string') &&
+      (!hasTempoFieldValue(typedCall.value) ||
+        typeof typedCall.value === 'string' ||
+        typeof typedCall.value === 'number' ||
+        typeof typedCall.value === 'bigint')
+    );
+  });
+};
+
+export const isTempoSpecialTransaction = <T extends Record<string, unknown>>(
+  tx: T
+) => {
+  if (isTempoTxType(tx.type)) return true;
+  if (hasValidTempoCalls(tx.calls)) return true;
+  if (hasValidTempoFeePayerSignature(tx.feePayerSignature)) return true;
+  if (hasTempoFieldValue(tx.feeToken)) return true;
+  if (hasTempoFieldValue(tx.nonceKey)) return true;
+  if (hasTempoFieldValue(tx.keyAuthorization)) return true;
+  if (hasTempoFieldValue(tx.validBefore)) return true;
+  if (hasTempoFieldValue(tx.validAfter)) return true;
+  return false;
+};
+
+export const shouldUseTempoTransaction = (params: {
+  tx: Record<string, unknown>;
+  chainServerId?: string | null;
+  isGasAccount?: boolean;
+  accountType?: string | null;
+}) => {
+  const { tx, chainServerId, isGasAccount, accountType } = params;
+  if (!isTempoChain(chainServerId)) return false;
+  if (isGasAccount) return isTempoBatchSupportedAccountType(accountType);
+  return isTempoSpecialTransaction(tx);
+};
+
+export const getTxMatchData = (
+  tx?: Partial<
+    TempoTxLike & {
+      calls?: Array<{
+        data?: unknown;
+      }>;
+    }
+  > | null
+) => {
+  if (typeof tx?.data === 'string' && tx.data) {
+    return tx.data;
+  }
+
+  if (Array.isArray(tx?.calls) && tx.calls.length) {
+    const lastCall = tx.calls[tx.calls.length - 1];
+    if (typeof lastCall?.data === 'string' && lastCall.data) {
+      return lastCall.data;
+    }
+  }
+
+  return '0x';
+};
+
+export const isTempoBatchSupportedAccountType = (type?: string | null) => {
+  return type === KEYRING_TYPE.SimpleKeyring || type === KEYRING_TYPE.HdKeyring;
+};
+
+export const shouldUseTempoBatchTransaction = (params: {
+  chainServerId?: string | null;
+  accountType?: string | null;
+  txs?: TempoTxLike[];
+  txCount?: number;
+}) => {
+  const { chainServerId, accountType, txs, txCount } = params;
+  if (!isTempoChain(chainServerId)) return false;
+  if (!isTempoBatchSupportedAccountType(accountType)) return false;
+  const count = Array.isArray(txs) ? txs.length : txCount || 0;
+  return count > 1;
+};
+
+const normalizeCall = (
+  call: NonNullable<TempoTxExtras['calls']>[number],
+  topLevel: TempoTxLike
+): TempoTxCall => {
+  const nextCall: TempoTxCall = {
+    to: typeof call.to === 'string' ? call.to : topLevel.to,
+    data: typeof call.data === 'string' ? call.data : topLevel.data,
+    value: normalizeHexValue(
+      typeof call.value === 'string'
+        ? call.value
+        : typeof call.value === 'number' || typeof call.value === 'bigint'
+        ? toHex(call.value)
+        : typeof topLevel.value === 'string'
+        ? topLevel.value
+        : typeof topLevel.value === 'number' ||
+          typeof topLevel.value === 'bigint'
+        ? toHex(topLevel.value)
+        : '0x0'
+    ),
+  };
+
+  if (nextCall.data === '') {
+    delete nextCall.data;
+  }
+  if (!nextCall.to) {
+    delete nextCall.to;
+  }
+  if (!nextCall.data) {
+    delete nextCall.data;
+  }
+
+  return nextCall;
+};
+
+export const toTempoCallsTx = <T extends TempoTxLike>(
+  tx: T,
+  options?: {
+    stripTopLevelData?: boolean;
+  }
+) => {
+  const nextTx: TempoTxLike = {
+    ...tx,
+    type: tx.type || '0x76',
+    value: normalizeHexValue(tx.value),
+  };
+
+  if (Array.isArray(nextTx.calls) && nextTx.calls.length > 0) {
+    nextTx.calls = nextTx.calls.map((call) =>
+      normalizeCall(call || {}, nextTx)
+    );
+  } else {
+    nextTx.calls = [normalizeCall({}, nextTx)];
+  }
+
+  if (options?.stripTopLevelData) {
+    delete nextTx.data;
+  }
+  delete nextTx.to;
+  delete nextTx.value;
+
+  return nextTx as T;
+};
+
+export const buildTempoTransaction = <T extends TxWithTempoExtras<TempoTxLike>>(
+  tx: T,
+  options?: {
+    stripTopLevelData?: boolean;
+    feePayer?: boolean;
+    forceTempoType?: boolean;
+  }
+) => {
+  const nextTx = {
+    ...tx,
+    type:
+      options?.forceTempoType === false
+        ? tx.type
+        : isTempoTxType(tx.type)
+        ? tx.type
+        : '0x76',
+    calls: tx.calls,
+    feeToken: tx.feeToken,
+    nonceKey: tx.nonceKey,
+    keyAuthorization: tx.keyAuthorization,
+    validBefore: tx.validBefore,
+    validAfter: tx.validAfter,
+    feePayerSignature:
+      tx.feePayerSignature === null ? undefined : tx.feePayerSignature,
+    feePayer: options?.feePayer ? true : tx.feePayer,
+  } as T;
+  return toTempoCallsTx(nextTx, {
+    stripTopLevelData: options?.stripTopLevelData ?? true,
+  });
+};
+
+export const buildTempoBatchTransaction = <
+  T extends TxWithTempoExtras<TempoTxLike>
+>(
+  txs: T[],
+  options?: {
+    stripTopLevelData?: boolean;
+  }
+) => {
+  if (!txs.length) {
+    throw new Error('tempo batch transaction requires at least one tx');
+  }
+
+  const baseTx = txs[txs.length - 1];
+  return buildTempoTransaction(
+    {
+      ...baseTx,
+      calls: txs.map((tx) => ({
+        to: tx.to,
+        data: tx.data,
+        value: normalizeHexValue(tx.value ?? '0x0'),
+      })),
+    } as T,
+    {
+      stripTopLevelData: options?.stripTopLevelData ?? false,
+    }
+  );
 };
 
 export const resolveTempoDefaultTokenId = (params: {
@@ -285,7 +648,7 @@ export const getTempoFeeTokenInfo = async (params: {
   wallet: WalletControllerType;
   userAddress?: string | null;
   chainServerId?: string | null;
-}) => {
+}): Promise<TempoFeeTokenInfo> => {
   const { wallet, userAddress, chainServerId } = params;
   const targetServerId = chainServerId || TEMPO_CHAIN_SERVER_ID;
   const tokenId = await getTempoFeeTokenAddress({
@@ -344,5 +707,376 @@ export const getTempoFeeTokenInfo = async (params: {
     decimals,
     logoUrl: token?.logo_url || '',
     rawBalanceHex,
+  };
+};
+
+const createTempoTokenItem = (params: {
+  tokenId: string;
+  symbol?: string;
+  decimals?: number;
+  logoUrl?: string;
+  rawAmountHex?: string;
+  usdValue?: number;
+  chainServerId?: string;
+}): TokenItem => {
+  const {
+    tokenId,
+    symbol,
+    decimals,
+    logoUrl,
+    rawAmountHex,
+    usdValue,
+    chainServerId,
+  } = params;
+  const normalizedRawAmountHex = rawAmountHex || '0x0';
+  const normalizedRawAmount = toBigNumberFromValue(normalizedRawAmountHex);
+  const normalizedSymbol = symbol || '';
+  return {
+    amount: 0,
+    chain: chainServerId || TEMPO_CHAIN_SERVER_ID,
+    decimals: decimals ?? TEMPO_FEE_TOKEN_DECIMALS,
+    display_symbol: normalizedSymbol,
+    id: tokenId,
+    is_core: false,
+    is_verified: true,
+    is_wallet: true,
+    logo_url: logoUrl || '',
+    name: normalizedSymbol,
+    optimized_symbol: normalizedSymbol,
+    price: 0,
+    symbol: normalizedSymbol,
+    time_at: 0,
+    usd_value: Number.isFinite(usdValue) ? usdValue : 0,
+    raw_amount: normalizedRawAmount.toFixed(0),
+    raw_amount_hex_str: normalizedRawAmountHex,
+  };
+};
+
+const mapTokenToTempoFeeTokenOption = (
+  token: TokenItem,
+  chainServerId: string,
+  fallbackSymbol?: string
+): TokenItem => {
+  const amount = Number(token.amount || 0);
+  const usdValue = Number(token.usd_value || amount * Number(token.price || 0));
+  const tokenId = token.id || '';
+  if (!tokenId) {
+    return createTempoTokenItem({
+      tokenId: '',
+      symbol: fallbackSymbol,
+      chainServerId,
+    });
+  }
+  const white = TEMPO_FEE_TOKEN_WHITELIST_MAP.get(tokenId.toLowerCase());
+
+  return createTempoTokenItem({
+    tokenId,
+    symbol:
+      fallbackSymbol ||
+      white?.symbol ||
+      token.display_symbol ||
+      token.symbol ||
+      '',
+    decimals: token.decimals || TEMPO_FEE_TOKEN_DECIMALS,
+    logoUrl: token.logo_url || '',
+    rawAmountHex: token.raw_amount_hex_str || '0x0',
+    usdValue: Number.isFinite(usdValue) ? usdValue : 0,
+    chainServerId,
+  });
+};
+
+const filterTempoFeeTokenOptionsByGas = (
+  options: TokenItem[],
+  params: {
+    maxGasCostRawAmountIn18?: string | number | BigNumber;
+    maxGasCostRawAmount?: string | number | BigNumber;
+    maxGasCostRawAmountDecimals?: number;
+  }
+) => {
+  const {
+    maxGasCostRawAmountIn18,
+    maxGasCostRawAmount,
+    maxGasCostRawAmountDecimals,
+  } = params;
+  const requiredRawIn18 = toBigNumberFromValue(maxGasCostRawAmountIn18);
+  const requiredRaw = toBigNumberFromValue(maxGasCostRawAmount);
+
+  return options
+    .filter((token) => {
+      const balanceRaw = toBigNumberFromValue(token.raw_amount_hex_str || 0);
+      if (requiredRaw.gt(0)) {
+        const baseDecimals =
+          typeof maxGasCostRawAmountDecimals === 'number'
+            ? maxGasCostRawAmountDecimals
+            : TEMPO_FEE_TOKEN_DECIMALS;
+        const tokenDecimals = token.decimals ?? TEMPO_FEE_TOKEN_DECIMALS;
+        let requiredByRaw = requiredRaw;
+        if (baseDecimals > tokenDecimals) {
+          requiredByRaw = requiredRaw.div(
+            new BigNumber(10).pow(baseDecimals - tokenDecimals)
+          );
+        } else if (baseDecimals < tokenDecimals) {
+          requiredByRaw = requiredRaw.times(
+            new BigNumber(10).pow(tokenDecimals - baseDecimals)
+          );
+        }
+        return balanceRaw.gte(requiredByRaw);
+      }
+      if (requiredRawIn18.lte(0)) return true;
+      const requiredByRawIn18 = convert18RawToTokenRaw(
+        requiredRawIn18,
+        token.decimals ?? TEMPO_FEE_TOKEN_DECIMALS
+      );
+      return balanceRaw.gte(requiredByRawIn18);
+    })
+    .sort((a, b) => (b.usd_value || 0) - (a.usd_value || 0));
+};
+
+export const listTempoFeeTokenOptionsFromCache = (params: {
+  tokenList?: TokenItem[];
+  chainServerId?: string | null;
+  maxGasCostRawAmountIn18?: string | number | BigNumber;
+  maxGasCostRawAmount?: string | number | BigNumber;
+  maxGasCostRawAmountDecimals?: number;
+}) => {
+  const {
+    tokenList = [],
+    chainServerId,
+    maxGasCostRawAmountIn18,
+    maxGasCostRawAmount,
+    maxGasCostRawAmountDecimals,
+  } = params;
+  const targetServerId = chainServerId || TEMPO_CHAIN_SERVER_ID;
+  const dict = new Map<string, TokenItem>();
+
+  tokenList.forEach((token) => {
+    const tokenId = (token.id || '').toLowerCase();
+    if (!tokenId) return;
+    if ((token.chain || '').toLowerCase() !== targetServerId.toLowerCase())
+      return;
+    if (!TEMPO_FEE_TOKEN_WHITELIST_MAP.has(tokenId)) return;
+    dict.set(tokenId, mapTokenToTempoFeeTokenOption(token, targetServerId));
+  });
+
+  TEMPO_FEE_TOKEN_WHITELIST.forEach((white) => {
+    const key = white.tokenId.toLowerCase();
+    if (dict.has(key)) return;
+    dict.set(
+      key,
+      createTempoTokenItem({
+        tokenId: white.tokenId,
+        symbol: white.symbol,
+        decimals: TEMPO_FEE_TOKEN_DECIMALS,
+        rawAmountHex: '0x0',
+        usdValue: 0,
+        chainServerId: targetServerId,
+      })
+    );
+  });
+
+  return filterTempoFeeTokenOptionsByGas([...dict.values()], {
+    maxGasCostRawAmountIn18,
+    maxGasCostRawAmount,
+    maxGasCostRawAmountDecimals,
+  });
+};
+
+export const listTempoFeeTokenOptions = async (params: {
+  wallet: WalletControllerType;
+  userAddress?: string | null;
+  chainServerId?: string | null;
+  maxGasCostRawAmountIn18?: string | number | BigNumber;
+  maxGasCostRawAmount?: string | number | BigNumber;
+  maxGasCostRawAmountDecimals?: number;
+  currentFeeTokenInfo?: TempoFeeTokenInfo | null;
+}) => {
+  const {
+    wallet,
+    userAddress,
+    chainServerId,
+    maxGasCostRawAmountIn18,
+    maxGasCostRawAmount,
+    maxGasCostRawAmountDecimals,
+    currentFeeTokenInfo,
+  } = params;
+  const targetServerId = chainServerId || TEMPO_CHAIN_SERVER_ID;
+  if (!userAddress) return [] as TokenItem[];
+
+  const [defaultFeeToken, list] = await Promise.all([
+    currentFeeTokenInfo
+      ? Promise.resolve(currentFeeTokenInfo)
+      : getTempoFeeTokenInfo({
+          wallet,
+          userAddress,
+          chainServerId: targetServerId,
+        }),
+    wallet.openapi
+      .listToken(userAddress, targetServerId, true)
+      .catch(() => [] as TokenItem[]),
+  ]);
+
+  const dict = new Map<string, TokenItem>();
+  list.forEach((token) => {
+    if (!token?.id) return;
+    const key = token.id.toLowerCase();
+    if (!TEMPO_FEE_TOKEN_WHITELIST_MAP.has(key)) return;
+    const whitelistMeta = TEMPO_FEE_TOKEN_WHITELIST_MAP.get(key);
+    const option = mapTokenToTempoFeeTokenOption(token, targetServerId);
+    dict.set(key, {
+      ...option,
+      symbol: whitelistMeta?.symbol || option.symbol || '',
+      display_symbol: whitelistMeta?.symbol || option.display_symbol || '',
+      optimized_symbol: whitelistMeta?.symbol || option.optimized_symbol || '',
+      name: whitelistMeta?.symbol || option.name || '',
+    });
+  });
+
+  for (const white of TEMPO_FEE_TOKEN_WHITELIST) {
+    const key = white.tokenId.toLowerCase();
+    if (dict.has(key)) continue;
+
+    let token: TokenItem | null = null;
+    try {
+      token = await wallet.openapi.getToken(
+        userAddress,
+        targetServerId,
+        white.tokenId
+      );
+    } catch {
+      token = null;
+    }
+
+    if (token?.id) {
+      const option = mapTokenToTempoFeeTokenOption(token, targetServerId);
+      dict.set(key, {
+        ...option,
+        id: white.tokenId,
+        symbol: white.symbol,
+        display_symbol: white.symbol,
+        optimized_symbol: white.symbol,
+        name: white.symbol,
+      });
+      continue;
+    }
+
+    const isDefault = key === defaultFeeToken.tokenId.toLowerCase();
+    const fallback = createTempoTokenItem({
+      tokenId: white.tokenId,
+      symbol: white.symbol,
+      decimals: isDefault ? defaultFeeToken.decimals : TEMPO_FEE_TOKEN_DECIMALS,
+      logoUrl: isDefault ? defaultFeeToken.logoUrl : '',
+      rawAmountHex: isDefault ? defaultFeeToken.rawBalanceHex || '0x0' : '0x0',
+      usdValue: 0,
+      chainServerId: targetServerId,
+    });
+    dict.set(key, fallback);
+  }
+
+  return filterTempoFeeTokenOptionsByGas([...dict.values()], {
+    maxGasCostRawAmountIn18,
+    maxGasCostRawAmount,
+    maxGasCostRawAmountDecimals,
+  });
+};
+
+export const resolveTempoPreferredFeeTokenId = (params: {
+  chainServerId?: string | null;
+  txFeeToken?: string | null;
+  currentFeeTokenId?: string | null;
+}) => {
+  const { chainServerId, txFeeToken, currentFeeTokenId } = params;
+  if (!isTempoChain(chainServerId)) {
+    return txFeeToken || currentFeeTokenId || '';
+  }
+
+  if (txFeeToken && txFeeToken.trim()) {
+    return txFeeToken;
+  }
+
+  if (currentFeeTokenId && currentFeeTokenId.trim()) {
+    return currentFeeTokenId;
+  }
+
+  return TEMPO_PATH_USD_TOKEN;
+};
+
+export const findTempoFeeTokenOption = (
+  options: TokenItem[],
+  tokenId?: string | null
+) => {
+  if (!tokenId) return undefined;
+
+  return options.find((item) => isSameTokenId(item.id, tokenId));
+};
+
+export const loadTempoFeeTokenOptionsState = async (params: {
+  wallet: WalletControllerType;
+  userAddress?: string | null;
+  chainServerId?: string | null;
+  tokenList?: TokenItem[];
+  txFeeToken?: string | null;
+  currentFeeTokenId?: string | null;
+  maxGasCostRawAmountIn18?: string | number | BigNumber;
+  maxGasCostRawAmount?: string | number | BigNumber;
+  maxGasCostRawAmountDecimals?: number;
+}) => {
+  const {
+    wallet,
+    userAddress,
+    chainServerId,
+    tokenList = [],
+    txFeeToken,
+    currentFeeTokenId,
+    maxGasCostRawAmountIn18,
+    maxGasCostRawAmount,
+    maxGasCostRawAmountDecimals,
+  } = params;
+  const targetServerId = chainServerId || TEMPO_CHAIN_SERVER_ID;
+  const cachedOptions = listTempoFeeTokenOptionsFromCache({
+    tokenList,
+    chainServerId: targetServerId,
+    maxGasCostRawAmountIn18,
+    maxGasCostRawAmount,
+    maxGasCostRawAmountDecimals,
+  });
+
+  const fetchedCurrentFeeTokenInfo =
+    currentFeeTokenId || !userAddress
+      ? null
+      : await getTempoFeeTokenInfo({
+          wallet,
+          userAddress,
+          chainServerId: targetServerId,
+        });
+  const resolvedCurrentFeeTokenId =
+    currentFeeTokenId || fetchedCurrentFeeTokenInfo?.tokenId || '';
+  const preferredTokenId = resolveTempoPreferredFeeTokenId({
+    chainServerId: targetServerId,
+    txFeeToken,
+    currentFeeTokenId: resolvedCurrentFeeTokenId,
+  });
+  const options = userAddress
+    ? await listTempoFeeTokenOptions({
+        wallet,
+        userAddress,
+        chainServerId: targetServerId,
+        maxGasCostRawAmountIn18,
+        maxGasCostRawAmount,
+        maxGasCostRawAmountDecimals,
+        currentFeeTokenInfo: fetchedCurrentFeeTokenInfo,
+      })
+    : [];
+  const selectedOption =
+    findTempoFeeTokenOption(options, preferredTokenId) ||
+    findTempoFeeTokenOption(cachedOptions, preferredTokenId) ||
+    options[0] ||
+    cachedOptions[0];
+
+  return {
+    cachedOptions,
+    options,
+    currentFeeTokenId: resolvedCurrentFeeTokenId,
+    preferredTokenId,
+    selectedOption,
   };
 };
