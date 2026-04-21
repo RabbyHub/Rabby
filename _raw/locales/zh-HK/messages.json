@@ -2685,7 +2685,8 @@
         "invalidAmount": "必須少於 500",
         "desc": "將存款存入 Rabby 的 DeBank L2 Account，沒有額外費用 — 隨時提取。",
         "selectToken": "選擇代幣以存入",
-        "paymentAddr": "支付地址"
+        "paymentAddr": "支付地址",
+        "depositSuccess": ""
       },
       "withdrawPopup": {
         "withdrawalLimit": "提取限额",

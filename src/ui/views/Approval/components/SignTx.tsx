@@ -75,9 +75,9 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { findChain, isTestnet } from '@/utils/chain';
 import { SignTestnetTx } from './SignTestnetTx';
 import { SignAdvancedSettings } from './SignAdvancedSettings';
-import GasSelectorHeader, {
-  GasSelectorResponse,
-} from './TxComponents/GasSelectorHeader';
+import { GasSelectorResponse } from './TxComponents/GasSelectorHeader';
+import SignMainnetGasSelectorHeader from './TxComponents/GasSelector/SignMainnetGasSelectorHeader';
+import { useEffectiveApprovalGasMethod } from './TxComponents/GasSelector/useEffectiveApprovalGasMethod';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
 import { abstractTokenToTokenItem } from '@/ui/utils/token';
@@ -104,6 +104,13 @@ import {
   shouldUseTempoTransaction,
   TxWithTempoExtras,
 } from '@/utils/tempo';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { GasAccountDepositPopup } from '@/ui/views/GasAccount/components/GasAccountDepositPopup';
+import {
+  GasAccountTopUpResult,
+  getBumpedNonceAfterTopUp,
+} from '@/ui/views/GasAccount/components/topUpContinuation';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -505,6 +512,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     undefined | string
   >(currentAccount?.type);
   const [gasLessLoading, setGasLessLoading] = useState(false);
+  const [isFirstGasLessLoading, setIsFirstGasLessLoading] = useState(true);
   const [canUseGasLess, setCanUseGasLess] = useState(false);
   const [gasLessFailedReason, setGasLessFailedReason] = useState<
     string | undefined
@@ -729,6 +737,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       !enable7702 ? ['authorizationList'] : []
     ) as any
   );
+  const [gasAccountDepositVisible, setGasAccountDepositVisible] = useState(
+    false
+  );
+  const depositFlowActive = useGasAccountDepositFlowActive();
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
   const [safeInfo, setSafeInfo] = useState<BasicSafeInfo | null>(null);
@@ -776,6 +788,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   }, [engineResults, currentTx]);
 
   const isGasTopUp = tx.to?.toLowerCase() === GAS_TOP_UP_ADDRESS.toLowerCase();
+  const isGasAccountTopUpFlow =
+    params?.$ctx?.ga?.category === 'GasAccount' &&
+    params?.$ctx?.ga?.action === 'deposit';
 
   const gasExplainResponse = useExplainGas({
     gasUsed,
@@ -853,7 +868,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     gasAccountCanPay,
     canGotoUseGasAccount,
     canDepositUseGasAccount,
+    gasAccountCostFn,
+    gasAccountAddress,
     sig,
+    isFirstGasCostLoading,
   } = useGasAccountTxsCheck({
     isReady,
     txs,
@@ -868,6 +886,161 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       isTempoBatchSupportedAccountType(_currentAccount?.type),
     [chain?.serverId, gasMethod, _currentAccount?.type]
   );
+
+  const handleChangeGasAccount = useMemoizedFn(async () => {
+    setGasMethod('gasAccount');
+    await gasAccountCostFn();
+  });
+
+  const handleTopUpWaitResult = useMemoizedFn(
+    async (result: GasAccountTopUpResult) => {
+      const nextNonce = await getBumpedNonceAfterTopUp({
+        currentNonce: realNonce || tx.nonce,
+        originalAccountAddress: currentAccount.address,
+        originalChainServerId: chain.serverId,
+        topUpResult: result,
+        wallet,
+      });
+
+      if (nextNonce && nextNonce !== realNonce && nextNonce !== tx.nonce) {
+        setRealNonce(nextNonce);
+        setNonceChanged(true);
+      }
+
+      await gasAccountCostFn();
+      setGasMethod('gasAccount');
+    }
+  );
+
+  const handleOpenGasAccountDeposit = useMemoizedFn(() => {
+    if (
+      isGasAccountTopUpFlow ||
+      gasAccountDepositVisible ||
+      depositFlowActive
+    ) {
+      return;
+    }
+
+    setGasAccountDepositVisible(true);
+  });
+
+  const checkGasLevelIsNotEnough = useMemoizedFn(
+    (
+      gasLevel: GasSelectorResponse,
+      type?: 'gasAccount' | 'native'
+    ): Promise<[boolean, number]> => {
+      if (!isReady || !chain) {
+        return Promise.resolve([true, 0]);
+      }
+
+      const nextTx = {
+        ...tx,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        ...(support1559
+          ? {
+              maxFeePerGas: intToHex(Math.round(gasLevel.price || 0)),
+              maxPriorityFeePerGas:
+                gasLevel.maxPriorityFee < 0
+                  ? tx.maxFeePerGas
+                  : intToHex(Math.round(gasLevel.maxPriorityFee)),
+            }
+          : { gasPrice: intToHex(Math.round(gasLevel.price)) }),
+      };
+
+      return explainGas({
+        gasUsed,
+        gasPrice: gasLevel.price,
+        chainId,
+        nativeTokenPrice: txDetail?.native_token.price || 0,
+        wallet,
+        tx: nextTx,
+        gasLimit,
+        account: currentAccount,
+        gasTokenDecimals: gasToken.decimals || 18,
+      }).then((gasCost) => {
+        if (type === 'native') {
+          const checkResult = checkGasAndNonce({
+            recommendGasLimitRatio,
+            recommendGasLimit,
+            recommendNonce: nextTx.nonce,
+            tx: nextTx,
+            gasLimit: gasLimit || '0',
+            nonce: nextTx.nonce,
+            isCancel,
+            gasExplainResponse: gasCost,
+            isSpeedUp,
+            isGnosisAccount,
+            nativeTokenBalance,
+            gasTokenDecimals: gasToken.decimals || 18,
+            checkTxValueInBalance,
+          });
+
+          return [checkResult.some((item) => item.code === 3001), 0];
+        }
+
+        return wallet.openapi
+          .checkGasAccountTxs({
+            sig: sig || '',
+            account_id: gasAccountAddress || currentAccount.address,
+            tx_list: [
+              {
+                ...nextTx,
+                gas: gasLimit,
+                gasPrice: intToHex(gasLevel.price),
+              },
+            ],
+          })
+          .then((gasAccountRes) => {
+            return [
+              !gasAccountRes.balance_is_enough,
+              (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
+                (gasAccountRes.gas_account_cost?.gas_cost || 0),
+            ] as [boolean, number];
+          });
+      });
+    }
+  );
+
+  const gasCalcMethod = useMemoizedFn(async (price: number) => {
+    if (!isReady) {
+      return {
+        gasCostUsd: new BigNumber(0),
+        gasCostAmount: new BigNumber(0),
+      };
+    }
+
+    return explainGas({
+      gasUsed,
+      gasPrice: price,
+      chainId,
+      nativeTokenPrice: txDetail?.native_token.price || 0,
+      tx,
+      wallet,
+      gasLimit,
+      account: currentAccount,
+      gasTokenDecimals: gasToken.decimals || 18,
+    });
+  });
+
+  const showGasLess =
+    !gasLessLoading && isReady && (isGasNotEnough || !!gasLessConfig);
+  const gasAccountChainSupported =
+    !!gasAccountCost && !gasAccountCost.chain_not_support;
+
+  useEffectiveApprovalGasMethod({
+    isReady,
+    isFirstGasLessLoading:
+      isFirstGasLessLoading ||
+      isFirstGasCostLoading ||
+      gasExplainResponse.isExplainingGas,
+    isGasNotEnough: !!isGasNotEnough,
+    gasAccountChainSupported,
+    noCustomRPC,
+    canUseGasLess,
+    gasMethod,
+    setGasMethod,
+  });
 
   useEffect(() => {
     const hasCustomRPC = async () => {
@@ -1735,6 +1908,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       setCanUseGasLess(res.is_gasless);
       setGasLessFailedReason(res.desc);
       setGasLessLoading(false);
+      setIsFirstGasLessLoading(false);
       if (res.is_gasless && res?.promotion?.config) {
         setGasLessConfig(
           res.promotion.id === '0ca5aaa5f0c9217e6f45fe1d109c24fb'
@@ -1751,6 +1925,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       setCanUseGasLess(false);
       setGasLessConfig(undefined);
       setGasLessLoading(false);
+      setIsFirstGasLessLoading(false);
     }
   };
 
@@ -2299,6 +2474,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         checkGasLessStatus();
       } else {
         setGasLessLoading(false);
+        setIsFirstGasLessLoading(false);
       }
     }
   }, [
@@ -2545,66 +2721,54 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         <>
           <FooterBar
             Header={
-              <GasSelectorHeader
-                tx={tx}
-                gasAccountCost={gasAccountCost}
-                gasMethod={gasMethod}
-                onChangeGasMethod={setGasMethod}
-                pushType={pushInfo.type}
-                disabled={isGnosisAccount || isCoboArugsAccount}
-                isReady={isReady}
-                gasLimit={gasLimit}
-                noUpdate={isCancel || isSpeedUp}
-                gasList={gasList}
-                selectedGas={selectedGas}
-                version={txDetail.pre_exec_version}
-                gas={{
-                  error: txDetail.gas.error,
-                  success: txDetail.gas.success,
-                  gasCostUsd: gasExplainResponse.gasCostUsd,
-                  gasCostAmount: gasExplainResponse.gasCostAmount,
-                }}
-                gasCalcMethod={async (price) => {
-                  if (!isReady) {
-                    return {
-                      gasCostUsd: new BigNumber(0),
-                      gasCostAmount: new BigNumber(0),
-                    };
-                  }
-                  return explainGas({
-                    gasUsed,
-                    gasPrice: price,
-                    chainId,
-                    nativeTokenPrice: txDetail?.native_token.price || 0,
-                    tx,
-                    wallet,
-                    gasLimit,
-                    account: currentAccount,
-                    gasTokenDecimals: gasToken.decimals || 18,
-                  });
-                }}
-                recommendGasLimit={recommendGasLimit}
-                recommendNonce={recommendNonce}
-                chainId={chainId}
-                onChange={handleGasChange}
-                nonce={realNonce || tx.nonce}
-                disableNonce={isSpeedUp || isCancel}
-                isSpeedUp={isSpeedUp}
-                isCancel={isCancel}
-                is1559={support1559}
-                isHardware={isHardware}
-                manuallyChangeGasLimit={manuallyChangeGasLimit}
-                errors={checkErrors}
-                engineResults={engineResults}
-                nativeTokenBalance={nativeTokenBalance}
-                gasToken={gasToken}
-                showTempoGasTokenSelector={showTempoGasTokenSelector}
-                tempoGasTokenList={tempoGasTokenList}
-                onSelectTempoGasToken={handleSelectTempoGasToken}
-                tempoGasTokenLoading={tempoGasTokenLoading}
-                checkTxValueInBalance={checkTxValueInBalance}
-                gasPriceMedian={gasPriceMedian}
-              />
+              <div className="mb-8">
+                <SignMainnetGasSelectorHeader
+                  tx={tx}
+                  gasAccountCost={gasAccountCost}
+                  gasMethod={gasMethod}
+                  onChangeGasMethod={setGasMethod}
+                  noCustomRPC={noCustomRPC}
+                  nativeTokenInsufficient={isGasNotEnough}
+                  freeGasAvailable={canUseGasLess}
+                  pushType={pushInfo.type}
+                  disabled={isGnosisAccount || isCoboArugsAccount}
+                  isReady={isReady}
+                  gasLimit={gasLimit}
+                  noUpdate={isCancel || isSpeedUp}
+                  gasList={gasList}
+                  selectedGas={selectedGas}
+                  version={txDetail.pre_exec_version}
+                  gas={{
+                    error: txDetail.gas.error,
+                    success: txDetail.gas.success,
+                    gasCostUsd: gasExplainResponse.gasCostUsd,
+                    gasCostAmount: gasExplainResponse.gasCostAmount,
+                  }}
+                  gasCalcMethod={gasCalcMethod}
+                  recommendGasLimit={recommendGasLimit}
+                  recommendNonce={recommendNonce}
+                  chainId={chainId}
+                  onChange={handleGasChange}
+                  nonce={realNonce || tx.nonce}
+                  disableNonce={isSpeedUp || isCancel}
+                  isSpeedUp={isSpeedUp}
+                  isCancel={isCancel}
+                  is1559={support1559}
+                  isHardware={isHardware}
+                  manuallyChangeGasLimit={manuallyChangeGasLimit}
+                  errors={checkErrors}
+                  engineResults={engineResults}
+                  nativeTokenBalance={nativeTokenBalance}
+                  gasToken={gasToken}
+                  showTempoGasTokenSelector={showTempoGasTokenSelector}
+                  tempoGasTokenList={tempoGasTokenList}
+                  onSelectTempoGasToken={handleSelectTempoGasToken}
+                  tempoGasTokenLoading={tempoGasTokenLoading}
+                  checkTxValueInBalance={checkTxValueInBalance}
+                  gasPriceMedian={gasPriceMedian}
+                  checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
+                />
+              </div>
             }
             isWatchAddr={
               currentAccountType === KEYRING_TYPE.WatchAddressKeyring
@@ -2615,17 +2779,19 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             gasAccountCanPay={gasAccountCanPay}
             canGotoUseGasAccount={canGotoUseGasAccount}
             canDepositUseGasAccount={canDepositUseGasAccount}
+            gasAccountAddress={gasAccountAddress}
+            preserveApprovalContext={supportedDirectSign(
+              currentAccountType || ''
+            )}
             isGasAccountLogin={isGasAccountLogin}
             isWalletConnect={
               currentAccountType === KEYRING_TYPE.WalletConnectKeyring
             }
-            onChangeGasAccount={() => setGasMethod('gasAccount')}
+            onChangeGasAccount={handleChangeGasAccount}
             gasLessConfig={gasLessConfig}
             gasLessFailedReason={gasLessFailedReason}
             canUseGasLess={canUseGasLess}
-            showGasLess={
-              !gasLessLoading && isReady && (isGasNotEnough || !!gasLessConfig)
-            }
+            showGasLess={showGasLess}
             useGasLess={
               (isGasNotEnough || !!gasLessConfig) && canUseGasLess && useGasLess
             }
@@ -2634,6 +2800,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             hasShadow={footerShowShadow}
             origin={origin}
             originLogo={params.session.icon}
+            onOpenGasAccountDeposit={handleOpenGasAccountDeposit}
+            disableGasAccountDeposit={
+              isGasAccountTopUpFlow ||
+              gasAccountDepositVisible ||
+              depositFlowActive
+            }
+            gasTipsApprovalUiStyle
             hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             securityLevel={securityLevel}
             gnosisAccount={isGnosis ? params.account : undefined}
@@ -2668,6 +2841,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               (isGnosisAccount &&
                 new BigNumber(realNonce || 0).isLessThan(safeInfo?.nonce || 0))
             }
+          />
+          <GasAccountDepositPopup
+            visible={gasAccountDepositVisible}
+            onCancel={() => setGasAccountDepositVisible(false)}
+            onWaitDepositResult={handleTopUpWaitResult}
+            minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
+            disableDirectDeposit
           />
         </>
       )}

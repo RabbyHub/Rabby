@@ -24,6 +24,7 @@ import {
   GasAccountTips,
 } from './GasLessComponents';
 import { GasAccountCheckResult } from '@/background/service/openapi';
+import { shouldShowGasLessNotEnough } from './gasAccountDecision';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -48,13 +49,18 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   isGasNotEnough?: boolean;
   gasMethod?: 'native' | 'gasAccount';
   gasAccountCost?: GasAccountCheckResult;
-  onChangeGasAccount?: () => void;
+  onChangeGasAccount?: () => void | Promise<void>;
   isGasAccountLogin?: boolean;
   isWalletConnect?: boolean;
   gasAccountCanPay?: boolean;
   noCustomRPC?: boolean;
   canGotoUseGasAccount?: boolean;
   canDepositUseGasAccount?: boolean;
+  gasAccountAddress?: string;
+  onOpenGasAccountDeposit?: () => void;
+  disableGasAccountDeposit?: boolean;
+  preserveApprovalContext?: boolean;
+  gasTipsApprovalUiStyle?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -170,6 +176,11 @@ export const FooterBar: React.FC<Props> = ({
   noCustomRPC,
   canGotoUseGasAccount,
   canDepositUseGasAccount,
+  gasAccountAddress,
+  onOpenGasAccountDeposit,
+  disableGasAccountDeposit,
+  preserveApprovalContext = false,
+  gasTipsApprovalUiStyle = false,
   ...props
 }) => {
   const [
@@ -314,22 +325,40 @@ export const FooterBar: React.FC<Props> = ({
               }}
               gasLessConfig={gasLessConfig}
             />
-          ) : isWatchAddr ? null : (
+          ) : isWatchAddr ||
+            !shouldShowGasLessNotEnough({
+              showGasLess,
+              isGasNotEnough: !!props.isGasNotEnough,
+              payGasByGasAccount,
+              canUseGasLess,
+            }) ? null : (
             <GasLessNotEnough
-              gasLessFailedReason={gasLessFailedReason}
+              approvalUiStyle={gasTipsApprovalUiStyle}
+              nativeTokenInsufficient={!!props.isGasNotEnough}
+              gasAccountCost={gasAccountCost}
+              gasAccountAddress={gasAccountAddress}
               canGotoUseGasAccount={canGotoUseGasAccount}
               onChangeGasAccount={onChangeGasAccount}
               canDepositUseGasAccount={canDepositUseGasAccount}
+              onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+              disableGasAccountDeposit={disableGasAccountDeposit}
+              preserveApprovalContext={preserveApprovalContext}
             />
           )
         ) : null}
 
         {payGasByGasAccount && !gasAccountCanPay ? (
           <GasAccountTips
+            approvalUiStyle={gasTipsApprovalUiStyle}
             gasAccountCost={gasAccountCost}
-            isGasAccountLogin={isGasAccountLogin}
+            gasAccountAddress={gasAccountAddress}
             isWalletConnect={isWalletConnect}
             noCustomRPC={noCustomRPC}
+            nativeTokenInsufficient={!!props.isGasNotEnough}
+            onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+            disableGasAccountDeposit={disableGasAccountDeposit}
+            onChangeGasAccount={onChangeGasAccount}
+            preserveApprovalContext={preserveApprovalContext}
           />
         ) : null}
       </Wrapper>

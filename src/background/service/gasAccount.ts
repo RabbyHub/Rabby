@@ -22,6 +22,59 @@ export type GasAccountServiceStore = {
   currentBalanceAccountId?: string;
   currentHasBalance?: boolean;
   ga4ActiveEventTime?: number;
+  pendingHardwareAccount?: {
+    address: string;
+    type: string;
+    brandName: string;
+  };
+  autoLoginAccount?: {
+    address: string;
+    type: string;
+    brandName: string;
+  };
+  accountsWithGasAccountBalance?: Array<{
+    address: string;
+    type: string;
+    brandName: string;
+  }>;
+};
+
+type GasAccountLinkedAccount = NonNullable<GasAccountServiceStore['account']>;
+
+const isSameDiscoveryAccount = (
+  a?: GasAccountLinkedAccount,
+  b?: GasAccountLinkedAccount
+) =>
+  a?.address?.toLowerCase() === b?.address?.toLowerCase() &&
+  a?.type === b?.type &&
+  a?.brandName === b?.brandName;
+
+const isSameRemovedAccount = (
+  account: GasAccountLinkedAccount | undefined,
+  removed: {
+    address: string;
+    type: string;
+    brandName?: string;
+  }
+) =>
+  account?.address?.toLowerCase() === removed.address.toLowerCase() &&
+  account?.type === removed.type &&
+  (!removed.brandName || account?.brandName === removed.brandName);
+
+const isSameDiscoveryAccountList = (
+  prev: GasAccountServiceStore['accountsWithGasAccountBalance'],
+  next: GasAccountServiceStore['accountsWithGasAccountBalance']
+) => {
+  const prevList = prev || [];
+  const nextList = next || [];
+
+  if (prevList.length !== nextList.length) {
+    return false;
+  }
+
+  return prevList.every((item, index) =>
+    isSameDiscoveryAccount(item, nextList[index])
+  );
 };
 
 class GasAccountService {
@@ -46,15 +99,24 @@ class GasAccountService {
     if (this.store.sig && this.store.accountId) {
       this.store.hasEverLoggedIn = true;
     }
+    this.store.pendingHardwareAccount = undefined;
+    this.store.autoLoginAccount = undefined;
+    this.store.accountsWithGasAccountBalance = [];
   };
 
-  getGasAccountData = (key?: keyof GasAccountServiceStore) => {
+  getGasAccountData(): GasAccountServiceStore;
+  getGasAccountData<K extends keyof GasAccountServiceStore>(
+    key: K
+  ): GasAccountServiceStore[K];
+  getGasAccountData(key?: keyof GasAccountServiceStore) {
     return key ? this.store[key] : { ...this.store };
-  };
+  }
 
   getGasAccountSig = () => {
     return { sig: this.store.sig, accountId: this.store.accountId };
   };
+
+  hasGasAccountSession = () => !!this.store.sig && !!this.store.accountId;
 
   setGasAccountSig = (
     sig?: string,
@@ -66,20 +128,36 @@ class GasAccountService {
       this.store.account = undefined;
       this.store.currentBalanceAccountId = undefined;
       this.store.currentHasBalance = undefined;
-    } else {
-      this.store.sig = sig;
-      this.store.accountId = account?.address;
-      this.store.account = {
-        address: account.address,
-        brandName: account.brandName,
-        type: account.type,
-      };
+
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+      });
+      return;
     }
+
+    const accountAddress = account.address.toLowerCase();
+
+    this.store.sig = sig;
+    this.store.accountId = account.address;
+    this.store.account = {
+      address: account.address,
+      brandName: account.brandName,
+      type: account.type,
+    };
+    if (
+      this.store.pendingHardwareAccount?.address?.toLowerCase() ===
+      accountAddress
+    ) {
+      this.store.pendingHardwareAccount = undefined;
+    }
+    if (
+      this.store.autoLoginAccount?.address?.toLowerCase() === accountAddress
+    ) {
+      this.store.autoLoginAccount = undefined;
+    }
+
     eventBus.emit(EVENTS.broadcastToUI, {
-      method:
-        !sig || !account
-          ? EVENTS.GAS_ACCOUNT.LOG_OUT
-          : EVENTS.GAS_ACCOUNT.LOG_IN,
+      method: EVENTS.GAS_ACCOUNT.LOG_IN,
     });
   };
 
@@ -102,6 +180,67 @@ class GasAccountService {
   setCurrentBalanceState(accountId?: string, hasBalance?: boolean) {
     this.store.currentBalanceAccountId = accountId;
     this.store.currentHasBalance = hasBalance;
+  }
+
+  handleRemovedAccount(address: string, type: string, brandName?: string) {
+    const removedAccount = { address, type, brandName };
+
+    // if (isSameRemovedAccount(this.store.account, removedAccount)) {
+    //   this.setGasAccountSig();
+    // }
+
+    this.setDiscoveryState({
+      pendingHardwareAccount: isSameRemovedAccount(
+        this.store.pendingHardwareAccount,
+        removedAccount
+      )
+        ? undefined
+        : this.store.pendingHardwareAccount,
+      autoLoginAccount: isSameRemovedAccount(
+        this.store.autoLoginAccount,
+        removedAccount
+      )
+        ? undefined
+        : this.store.autoLoginAccount,
+      accountsWithGasAccountBalance: (
+        this.store.accountsWithGasAccountBalance || []
+      ).filter((account) => !isSameRemovedAccount(account, removedAccount)),
+    });
+  }
+
+  setDiscoveryState(
+    payload: Pick<
+      GasAccountServiceStore,
+      | 'pendingHardwareAccount'
+      | 'autoLoginAccount'
+      | 'accountsWithGasAccountBalance'
+    >
+  ) {
+    const nextAccountsWithGasAccountBalance =
+      payload.accountsWithGasAccountBalance || [];
+    const hasChanged =
+      !isSameDiscoveryAccount(
+        this.store.pendingHardwareAccount,
+        payload.pendingHardwareAccount
+      ) ||
+      !isSameDiscoveryAccount(
+        this.store.autoLoginAccount,
+        payload.autoLoginAccount
+      ) ||
+      !isSameDiscoveryAccountList(
+        this.store.accountsWithGasAccountBalance,
+        nextAccountsWithGasAccountBalance
+      );
+
+    this.store.pendingHardwareAccount = payload.pendingHardwareAccount;
+    this.store.autoLoginAccount = payload.autoLoginAccount;
+    this.store.accountsWithGasAccountBalance = nextAccountsWithGasAccountBalance;
+
+    if (hasChanged) {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.GAS_ACCOUNT.DISCOVERY_UPDATED,
+      });
+    }
   }
 
   hasTrackedGa4ActiveToday() {
