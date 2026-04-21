@@ -31,8 +31,8 @@ import { MiniFooterBar } from './MiniFooterBar';
 import { useMemoizedFn } from 'ahooks';
 import { ApprovalUtilsProvider } from '../../hooks/useApprovalUtils';
 import {
-  useSignatureStore,
   useSignatureInstance,
+  useSignatureStoreOf,
 } from '@/ui/component/MiniSignV2/state';
 import { MiniSecurityHeader } from '@/ui/component/MiniSignV2/components';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
@@ -59,10 +59,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   }));
   const dispatch = useRabbyDispatch();
 
-  const contextInstance = useSignatureInstance();
-  const contextState = useSignatureStore();
-  const instance = contextInstance;
-  const state = contextState;
+  const instance = useSignatureInstance();
+  const state = useSignatureStoreOf(instance);
   const [
     gasAccountDepositVisible,
     setGasAccountDepositVisible,

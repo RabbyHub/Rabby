@@ -2,7 +2,6 @@ import { useSyncExternalStoreWithSelector } from 'use-sync-external-store/shim/w
 
 import type { SignatureFlowState } from './types';
 import type { SignatureManager } from './SignatureManager';
-import { useSignatureInstance } from './SignatureInstanceContext';
 
 const identity = <T>(value: T) => value;
 
@@ -34,14 +33,6 @@ export const shallowEqual = <T>(left: T, right: T) => {
         (right as Record<string, unknown>)[key]
       )
   );
-};
-
-export const useSignatureStore = <T = SignatureFlowState>(
-  selector?: (state: SignatureFlowState) => T,
-  isEqual?: (left: T, right: T) => boolean
-) => {
-  const instance = useSignatureInstance();
-  return useSignatureStoreOf(instance, selector, isEqual);
 };
 
 export const useSignatureStoreOf = <T = SignatureFlowState>(
