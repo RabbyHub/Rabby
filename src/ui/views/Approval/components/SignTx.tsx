@@ -844,11 +844,12 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
   const handleTopUpWaitResult = useMemoizedFn(
     async (result: GasAccountTopUpResult) => {
-      const nextNonce = getBumpedNonceAfterTopUp({
+      const nextNonce = await getBumpedNonceAfterTopUp({
         currentNonce: realNonce || tx.nonce,
         originalAccountAddress: currentAccount.address,
         originalChainServerId: chain.serverId,
         topUpResult: result,
+        wallet,
       });
 
       if (nextNonce && nextNonce !== realNonce && nextNonce !== tx.nonce) {
@@ -950,6 +951,27 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       });
     }
   );
+
+  const gasCalcMethod = useMemoizedFn(async (price: number) => {
+    if (!isReady) {
+      return {
+        gasCostUsd: new BigNumber(0),
+        gasCostAmount: new BigNumber(0),
+      };
+    }
+
+    return explainGas({
+      gasUsed,
+      gasPrice: price,
+      chainId,
+      nativeTokenPrice: txDetail?.native_token.price || 0,
+      tx,
+      wallet,
+      gasLimit,
+      account: currentAccount,
+      gasTokenDecimals: gasToken.decimals || 18,
+    });
+  });
 
   const showGasLess =
     !gasLessLoading && isReady && (isGasNotEnough || !!gasLessConfig);
@@ -2510,25 +2532,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                     gasCostUsd: gasExplainResponse.gasCostUsd,
                     gasCostAmount: gasExplainResponse.gasCostAmount,
                   }}
-                  gasCalcMethod={async (price) => {
-                    if (!isReady) {
-                      return {
-                        gasCostUsd: new BigNumber(0),
-                        gasCostAmount: new BigNumber(0),
-                      };
-                    }
-                    return explainGas({
-                      gasUsed,
-                      gasPrice: price,
-                      chainId,
-                      nativeTokenPrice: txDetail?.native_token.price || 0,
-                      tx,
-                      wallet,
-                      gasLimit,
-                      account: currentAccount,
-                      gasTokenDecimals: gasToken.decimals || 18,
-                    });
-                  }}
+                  gasCalcMethod={gasCalcMethod}
                   recommendGasLimit={recommendGasLimit}
                   recommendNonce={recommendNonce}
                   chainId={chainId}

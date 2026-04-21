@@ -71,20 +71,25 @@ const loadGasAccountInfo = async (
     return cached.promise;
   }
 
-  const promise = wallet.openapi
-    .getGasAccountInfoV2({
-      id: address,
-    })
-    .then((result) => result?.account || null)
-    .catch(() => null)
-    .then((data) => {
-      gasAccountInfoCache.set(key, {
-        data,
-        updatedAt: Date.now(),
+  const promise = (async () => {
+    let data: GasAccountInfo | null = null;
+
+    try {
+      const result = await wallet.openapi.getGasAccountInfoV2({
+        id: address,
       });
-      evictGasAccountInfoCache();
-      return data;
+      data = result?.account || null;
+    } catch (_) {
+      data = null;
+    }
+
+    gasAccountInfoCache.set(key, {
+      data,
+      updatedAt: Date.now(),
     });
+    evictGasAccountInfoCache();
+    return data;
+  })();
 
   gasAccountInfoCache.set(key, {
     data: cached?.data,
@@ -228,7 +233,7 @@ const GasAccountBalance = ({
   }
   return (
     <div className="text-13 font-medium text-r-neutral-title1">
-      {account?.balance ? formatUsdValue(account?.balance) : '$0'}
+      {formatUsdValue(account.balance)}
     </div>
   );
 };

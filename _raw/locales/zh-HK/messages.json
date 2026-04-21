@@ -2679,7 +2679,7 @@
         "desc": "將存款存入 Rabby 的 DeBank L2 Account，沒有額外費用 — 隨時提取。",
         "selectToken": "選擇代幣以存入",
         "paymentAddr": "支付地址",
-        "depositSuccess": "Gas 充值成功"
+        "depositSuccess": ""
       },
       "withdrawPopup": {
         "withdrawalLimit": "提取限额",

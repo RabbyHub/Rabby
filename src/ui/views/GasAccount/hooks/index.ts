@@ -3,7 +3,7 @@ import { isSameAddress, useWallet } from '@/ui/utils';
 import { useInViewport } from 'ahooks';
 import { message } from 'antd';
 import { uniqBy } from 'lodash';
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
 import {
@@ -34,6 +34,50 @@ type GasAccountEligibleAddress = {
   giftUsdValue: number;
   isEligible: boolean;
   account: Account;
+};
+
+const GAS_ACCOUNT_INFO_V2_CACHE_TTL = 1500;
+const gasAccountInfoV2Cache = new Map<
+  string,
+  {
+    updatedAt: number;
+    value: any;
+  }
+>();
+const gasAccountInfoV2InFlight = new Map<string, Promise<any>>();
+
+const getGasAccountInfoV2CacheKey = (address: string) => address.toLowerCase();
+
+const fetchCachedGasAccountInfoV2 = async (
+  wallet: ReturnType<typeof useWallet>,
+  address: string
+) => {
+  const cacheKey = getGasAccountInfoV2CacheKey(address);
+  const cached = gasAccountInfoV2Cache.get(cacheKey);
+  if (cached && Date.now() - cached.updatedAt < GAS_ACCOUNT_INFO_V2_CACHE_TTL) {
+    return cached.value;
+  }
+
+  const inflight = gasAccountInfoV2InFlight.get(cacheKey);
+  if (inflight) {
+    return inflight;
+  }
+
+  const request = wallet.openapi
+    .getGasAccountInfoV2({ id: address })
+    .then((value) => {
+      gasAccountInfoV2Cache.set(cacheKey, {
+        updatedAt: Date.now(),
+        value,
+      });
+      return value;
+    })
+    .finally(() => {
+      gasAccountInfoV2InFlight.delete(cacheKey);
+    });
+
+  gasAccountInfoV2InFlight.set(cacheKey, request);
+  return request;
 };
 
 export const useGasAccountRefresh = () => {
@@ -70,7 +114,11 @@ export const useGasAccountSign = () => {
   }));
 };
 
-export const useGasAccountInfo = () => {
+export const useGasAccountInfo = ({
+  enabled = true,
+}: {
+  enabled?: boolean;
+} = {}) => {
   const wallet = useWallet();
 
   const { sig, accountId } = useGasAccountSign();
@@ -89,19 +137,24 @@ export const useGasAccountInfo = () => {
   }, [dispatch, wallet]);
 
   const { value, loading, error } = useAsync(async () => {
-    if (!sig || !accountId) return undefined;
-    return wallet.openapi
-      .getGasAccountInfo({ sig, id: accountId })
-      .then((e) => {
-        if (e.account.id) {
-          return e;
-        }
-        invalidateSession();
-        return undefined;
-      });
-  }, [accountId, invalidateSession, refreshId, sig]);
+    if (!enabled || !sig || !accountId) return undefined;
+
+    const response = await wallet.openapi.getGasAccountInfo({
+      sig,
+      id: accountId,
+    });
+    if (response.account.id) {
+      return response;
+    }
+
+    invalidateSession();
+    return undefined;
+  }, [accountId, enabled, invalidateSession, refreshId, sig]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     if (
       error?.message?.includes('gas account verified failed') &&
       sig &&
@@ -109,49 +162,74 @@ export const useGasAccountInfo = () => {
     ) {
       invalidateSession();
     }
-  }, [accountId, error?.message, invalidateSession, sig]);
+  }, [accountId, enabled, error?.message, invalidateSession, sig]);
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
     if (!sig || !accountId) {
       wallet.setGasAccountBalanceState();
       return;
     }
 
-    const responseAccountId = value?.account?.id;
-    if (!responseAccountId || !isSameAddress(responseAccountId, accountId)) {
+    const responseAccount = value?.account;
+    if (!responseAccount?.id || !isSameAddress(responseAccount.id, accountId)) {
       return;
     }
 
     wallet.setGasAccountBalanceState(
       accountId,
-      Number(value.account.balance || 0) > 0
+      Number(responseAccount.balance || 0) > 0
     );
-  }, [wallet, sig, accountId, value?.account?.id, value?.account?.balance]);
+  }, [
+    wallet,
+    enabled,
+    sig,
+    accountId,
+    value?.account?.id,
+    value?.account?.balance,
+  ]);
 
   return { loading, value };
 };
 
-export const useGasAccountInfoV2 = ({ address }: { address?: string }) => {
+export const useGasAccountInfoV2 = ({
+  address,
+  enabled = true,
+}: {
+  address?: string;
+  enabled?: boolean;
+}) => {
   const wallet = useWallet();
 
   const { value, loading } = useAsync(async () => {
-    if (!address) return undefined;
-    return wallet.openapi.getGasAccountInfoV2({ id: address });
-  }, [address]);
+    if (!enabled || !address) return undefined;
+    return fetchCachedGasAccountInfoV2(wallet, address);
+  }, [address, enabled, wallet]);
 
   return { value, loading };
 };
 
 export const useGasAccountBalance = (gasAccountAddress?: string) => {
-  const { value: gasAccountInfo } = useGasAccountInfo();
+  const shouldQuerySpecificAddress = !!gasAccountAddress;
+  const { value: gasAccountInfo } = useGasAccountInfo({
+    enabled: !shouldQuerySpecificAddress,
+  });
+  const fallbackAddress = shouldQuerySpecificAddress
+    ? gasAccountAddress
+    : gasAccountInfo?.account?.id;
   const { value: fallbackGasAccountInfo } = useGasAccountInfoV2({
-    address: gasAccountInfo?.account?.id ? undefined : gasAccountAddress,
+    address: fallbackAddress,
+    enabled: !!fallbackAddress,
   });
 
   return Number(
-    gasAccountInfo?.account?.balance ||
-      fallbackGasAccountInfo?.account?.balance ||
-      0
+    shouldQuerySpecificAddress
+      ? fallbackGasAccountInfo?.account?.balance || 0
+      : gasAccountInfo?.account?.balance ||
+          fallbackGasAccountInfo?.account?.balance ||
+          0
   );
 };
 
@@ -247,36 +325,30 @@ export const useGasAccountMethods = () => {
     [handleLoginOnSig, wallet]
   );
 
-  const handleHardwareLogin = useCallback(
-    async (account: Account, isClaimGift: boolean = false) => {
-      const signature = await wallet.signGasAccount(account, isClaimGift);
-      return signature;
-    },
-    [wallet]
-  );
-
   const login = useCallback(
     async (account: Account, isClaimGift: boolean = false) => {
       if (account && supportedDirectSign(account.type)) {
-        return await handleNoSignLogin(account, isClaimGift);
-      } else {
-        return await handleHardwareLogin(account, isClaimGift);
+        return handleNoSignLogin(account, isClaimGift);
       }
+
+      return wallet.signGasAccount(account, isClaimGift);
     },
-    [handleNoSignLogin, handleHardwareLogin]
+    [handleNoSignLogin, wallet]
   );
 
   const logout = useCallback(async () => {
-    if (sig && accountId) {
-      const result = await wallet.openapi.logoutGasAccount({
-        sig,
-        account_id: accountId,
-      });
-      if (result.success) {
-        dispatch.gasAccount.setGasAccountSig({});
-      } else {
-        message.error('please retry');
-      }
+    if (!sig || !accountId) {
+      return;
+    }
+
+    const result = await wallet.openapi.logoutGasAccount({
+      sig,
+      account_id: accountId,
+    });
+    if (result.success) {
+      dispatch.gasAccount.setGasAccountSig({});
+    } else {
+      message.error('please retry');
     }
   }, [sig, accountId, wallet, dispatch]);
 
@@ -376,11 +448,12 @@ export const useGasAccountEligibility = () => {
     }
 
     const results = await Promise.allSettled(
-      eligibleAccounts.map((account) =>
-        wallet.openapi
-          .checkGasAccountGiftEligibility({ id: account.address })
-          .then((result) => ({ account, result }))
-      )
+      eligibleAccounts.map(async (account) => ({
+        account,
+        result: await wallet.openapi.checkGasAccountGiftEligibility({
+          id: account.address,
+        }),
+      }))
     );
 
     for (const settled of results) {
@@ -470,19 +543,6 @@ export const usePendingHardwareGasAccountLogin = ({
   );
 
   const pendingHardwareAddress = pendingHardwareLoginAccount?.address;
-  const { value: pendingHardwareGasAccountInfo } = useGasAccountInfoV2({
-    address: pendingHardwareAddress,
-  });
-
-  const pendingHardwareBalance = Number(
-    pendingHardwareGasAccountInfo?.account?.balance || 0
-  );
-  const requiredTotalCost = Number(
-    gasAccountCost?.gas_account_cost?.total_cost ||
-      (gasAccountCost?.gas_account_cost?.estimate_tx_cost || 0) +
-        (gasAccountCost?.gas_account_cost?.gas_cost || 0)
-  );
-
   const isInsufficientOnly = useMemo(() => {
     if (!gasAccountCost || gasAccountCost.chain_not_support) {
       return false;
@@ -504,10 +564,32 @@ export const usePendingHardwareGasAccountLogin = ({
     !!currentGasAccountAddress &&
     !isSameAddress(pendingHardwareAddress, currentGasAccountAddress);
 
+  const shouldLoadPendingHardwareBalance =
+    enabled &&
+    !sig &&
+    !accountId &&
+    !!pendingHardwareAddress &&
+    isInsufficientOnly &&
+    isAddressMismatch;
+  const { value: pendingHardwareGasAccountInfo } = useGasAccountInfoV2({
+    address: pendingHardwareAddress,
+    enabled: shouldLoadPendingHardwareBalance,
+  });
+
+  const pendingHardwareBalance = Number(
+    pendingHardwareGasAccountInfo?.account?.balance || 0
+  );
+  const requiredTotalCost = Number(
+    gasAccountCost?.gas_account_cost?.total_cost ||
+      (gasAccountCost?.gas_account_cost?.estimate_tx_cost || 0) +
+        (gasAccountCost?.gas_account_cost?.gas_cost || 0)
+  );
+
   const hasEnoughPendingHardwareBalance =
-    Number.isFinite(requiredTotalCost) && requiredTotalCost > 0
+    shouldLoadPendingHardwareBalance &&
+    (Number.isFinite(requiredTotalCost) && requiredTotalCost > 0
       ? pendingHardwareBalance >= requiredTotalCost
-      : pendingHardwareBalance > 0;
+      : pendingHardwareBalance > 0);
 
   const shouldSignWithPendingHardware =
     enabled &&
@@ -625,7 +707,9 @@ export const useGasAccountHistory = () => {
   }, []);
 
   const refreshListTx = useCallback(
-    async (options?: { preserveLoadedList?: boolean }) => {
+    async ({
+      preserveLoadedList = false,
+    }: { preserveLoadedList?: boolean } = {}) => {
       if (!sig || !accountId) {
         clearHistory();
         return;
@@ -652,7 +736,7 @@ export const useGasAccountHistory = () => {
 
         const nextTxList = buildTxList(
           data,
-          options?.preserveLoadedList ? previousTxList?.list : undefined
+          preserveLoadedList ? previousTxList?.list : undefined
         );
 
         setTxList(nextTxList);
@@ -686,6 +770,11 @@ export const useGasAccountHistory = () => {
 
   const loadMoreHistory = useCallback(async () => {
     const currentTxList = txListRef.current;
+    const loadedCount = currentTxList
+      ? currentTxList.list.length +
+        currentTxList.rechargeList.length +
+        currentTxList.withdrawList.length
+      : 0;
 
     if (
       !sig ||
@@ -693,10 +782,7 @@ export const useGasAccountHistory = () => {
       !currentTxList ||
       loading ||
       loadingMore ||
-      currentTxList.totalCount <=
-        currentTxList.list.length +
-          currentTxList.rechargeList.length +
-          currentTxList.withdrawList.length
+      currentTxList.totalCount <= loadedCount
     ) {
       return;
     }
@@ -708,7 +794,7 @@ export const useGasAccountHistory = () => {
       const data = await wallet.openapi.getGasAccountHistory({
         sig,
         account_id: accountId,
-        start: currentTxList.list.length > 0 ? currentTxList.list.length : 0,
+        start: currentTxList.list.length,
         limit: 5,
       });
 
@@ -739,12 +825,12 @@ export const useGasAccountHistory = () => {
       return true;
     }
 
-    return (
-      txList.totalCount <=
+    const loadedCount =
       txList.list.length +
-        txList.rechargeList.length +
-        txList.withdrawList.length
-    );
+      txList.rechargeList.length +
+      txList.withdrawList.length;
+
+    return txList.totalCount <= loadedCount;
   }, [txList]);
 
   useEffect(() => {

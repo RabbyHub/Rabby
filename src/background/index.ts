@@ -66,7 +66,6 @@ import { testnetOpenapiService } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
 import lendingService from './service/lending';
-import { isSameAddress } from './utils';
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
@@ -304,7 +303,7 @@ restoreAppState();
   keyringService.on(
     'removedAccount',
     async (address: string, type: string, brand?: string) => {
-      // logoutGasAccountOnAddressRemoved(address, type, brand);
+      await logoutGasAccountOnAddressRemoved(address, type, brand);
       if (type !== KEYRING_TYPE.WatchAddressKeyring) {
         const perpsAccount = await perpsService.getCurrentAccount();
         if (perpsAccount?.address === address && perpsAccount.type === type) {
@@ -564,14 +563,5 @@ export const logoutGasAccountOnAddressRemoved = async (
   if (type === KEYRING_TYPE.WatchAddressKeyring) {
     return;
   }
-  const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
-  if (gasAccount?.account?.address) {
-    if (isSameAddress(address, gasAccount.account.address)) {
-      // if removed address is the same as gas account address then reset signature
-      gasAccountService.setGasAccountSig();
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.GAS_ACCOUNT.LOG_OUT,
-      });
-    }
-  }
+  gasAccountService.handleRemovedAccount(address, type, brand);
 };

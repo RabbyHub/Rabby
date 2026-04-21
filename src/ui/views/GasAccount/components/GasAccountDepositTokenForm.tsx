@@ -69,10 +69,29 @@ interface GasAccountDepositTokenFormProps {
 
 const PENDING_STATUS_MAX_ATTEMPTS = 100;
 const GAS_ACCOUNT_DEPOSIT_POPUP_HEIGHT = 320;
-const POST_DEPOSIT_REFRESH_DELAYS = [1500, 5000, 10000];
+// const POST_DEPOSIT_REFRESH_DELAYS = [1500, 5000, 10000];
 
-const parseTopUpNonce = (nonce: string) =>
-  nonce.startsWith('0x') ? parseInt(nonce, 16) : parseInt(nonce, 10);
+type SubmittedDepositTxInfo = {
+  trackingTxHash: string;
+  nonceSourceTxHash: string;
+  consumedNonceCount: number;
+};
+
+const buildSubmittedDepositTxInfo = (
+  txHashes: Array<string | undefined | null>
+): SubmittedDepositTxInfo | null => {
+  const normalizedTxHashes = txHashes.filter((hash): hash is string => !!hash);
+
+  if (!normalizedTxHashes.length) {
+    return null;
+  }
+
+  return {
+    trackingTxHash: normalizedTxHashes[normalizedTxHashes.length - 1],
+    nonceSourceTxHash: normalizedTxHashes[0],
+    consumedNonceCount: normalizedTxHashes.length,
+  };
+};
 
 export const GasAccountDepositTokenForm: React.FC<GasAccountDepositTokenFormProps> = ({
   visible,
@@ -84,7 +103,15 @@ export const GasAccountDepositTokenForm: React.FC<GasAccountDepositTokenFormProp
   maxAccountCount,
 }) => {
   const { t } = useTranslation();
-  const { allSortedAccountList } = useAccounts();
+  const { allSortedAccountList, fetchAllAccounts } = useAccounts();
+
+  useEffect(() => {
+    if (!visible || allSortedAccountList.length) {
+      return;
+    }
+
+    fetchAllAccounts();
+  }, [allSortedAccountList.length, fetchAllAccounts, visible]);
 
   if (!allSortedAccountList.length) {
     return (
@@ -163,16 +190,12 @@ const GasAccountDepositTokenFormInner: React.FC<
   const {
     availableTokens: rawAvailableTokens,
     isCheckingAvailability,
-    checkIsExpireAndUpdate,
+    refreshAvailableTokens,
   } = useGasAccountDepositAvailableTokens({
     minDepositPrice,
     disableDirectDeposit,
     maxAccountCount,
   });
-
-  const refreshAvailableTokens = useCallback(async () => {
-    await checkIsExpireAndUpdate();
-  }, [checkIsExpireAndUpdate]);
 
   const ownerAccountMap = useMemo(
     () =>
@@ -190,27 +213,25 @@ const GasAccountDepositTokenFormInner: React.FC<
         const ownerAccount = ownerAccountMap.get(
           token.owner_addr.toLowerCase()
         );
-        if (!ownerAccount) {
-          return false;
-        }
-
-        if (!isInTxFlow) {
-          return true;
-        }
-
-        return supportedDirectSign(ownerAccount.type);
+        return (
+          !!ownerAccount &&
+          (!isInTxFlow || supportedDirectSign(ownerAccount.type))
+        );
       }),
     [isInTxFlow, ownerAccountMap, rawAvailableTokens]
   );
 
+  const eligibleAccountAddressSet = useMemo(
+    () =>
+      new Set(availableTokens.map((token) => token.owner_addr.toLowerCase())),
+    [availableTokens]
+  );
   const eligibleAccounts = useMemo(
     () =>
       allSortedAccountList.filter((account) =>
-        availableTokens.some((token) =>
-          isSameAddress(token.owner_addr, account.address)
-        )
+        eligibleAccountAddressSet.has(account.address.toLowerCase())
       ) as Account[],
-    [allSortedAccountList, availableTokens]
+    [allSortedAccountList, eligibleAccountAddressSet]
   );
 
   const [usdValue, setUsdValue] = useState('');
@@ -228,6 +249,12 @@ const GasAccountDepositTokenFormInner: React.FC<
   const quoteReqIdRef = useRef(0);
   const didInitSelectedTokenRef = useRef(false);
   const pollCancelRef = useRef<(() => void) | null>(null);
+  const resetBridgeQuoteState = useCallback(() => {
+    setBridgeQuote(null);
+    setQuoteAmountValue(null);
+    setBridgeQuoteError('');
+    setQuoteLoading(false);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -245,10 +272,7 @@ const GasAccountDepositTokenFormInner: React.FC<
     if (!visible) {
       setUsdValue('');
       setTokenPickerVisible(false);
-      setQuoteLoading(false);
-      setBridgeQuote(null);
-      setQuoteAmountValue(null);
-      setBridgeQuoteError('');
+      resetBridgeQuoteState();
       setLoading(false);
       return;
     }
@@ -333,9 +357,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   const canUseMiniSign = selectedOwnerAccount?.type
     ? supportedDirectSign(selectedOwnerAccount.type)
     : false;
-  const minDepositUsd = useMemo(() => getMinDepositUsdValue(minDepositPrice), [
-    minDepositPrice,
-  ]);
+  const minDepositUsd = getMinDepositUsdValue(minDepositPrice);
   const isBridgeDeposit = selectedToken?.gasAccountDepositType === 'bridge';
   const directTokenBalance = Number(selectedToken?.amount || 0);
   const tokenBalanceUsd = getTokenUsdValue(selectedToken);
@@ -388,43 +410,24 @@ const GasAccountDepositTokenFormInner: React.FC<
     messages: validationMessages,
   });
 
-  const resetBridgeQuoteState = useCallback(() => {
-    setBridgeQuote(null);
-    setQuoteAmountValue(null);
-    setBridgeQuoteError('');
-    setQuoteLoading(false);
-  }, []);
+  const shouldResetBridgeQuote =
+    !visible ||
+    !isBridgeDeposit ||
+    !selectedToken ||
+    !selectedOwnerAccount ||
+    !amountValidation.isValid;
+  const canFetchBridgeQuote = !loading && !shouldResetBridgeQuote;
 
   useEffect(() => {
-    if (
-      !visible ||
-      !isBridgeDeposit ||
-      !selectedToken ||
-      !selectedOwnerAccount ||
-      !amountValidation.isValid
-    ) {
+    if (shouldResetBridgeQuote) {
       quoteReqIdRef.current += 1;
       resetBridgeQuoteState();
     }
-  }, [
-    amountValidation.isValid,
-    isBridgeDeposit,
-    resetBridgeQuoteState,
-    selectedOwnerAccount,
-    selectedToken,
-    visible,
-  ]);
+  }, [resetBridgeQuoteState, shouldResetBridgeQuote]);
 
   useDebounce(
     () => {
-      if (
-        loading ||
-        !visible ||
-        !isBridgeDeposit ||
-        !selectedToken ||
-        !selectedOwnerAccount ||
-        !amountValidation.isValid
-      ) {
+      if (!canFetchBridgeQuote) {
         return;
       }
 
@@ -465,14 +468,11 @@ const GasAccountDepositTokenFormInner: React.FC<
     },
     300,
     [
-      loading,
-      amountValidation.isValid,
       amountValue,
-      isBridgeDeposit,
+      canFetchBridgeQuote,
       selectedBridgeQuoteTokenKey,
       selectedOwnerAddress,
       validationMessages.fetchQuoteFailed,
-      visible,
       wallet,
     ]
   );
@@ -501,16 +501,11 @@ const GasAccountDepositTokenFormInner: React.FC<
   );
 
   const quoteError = useMemo(() => {
-    if (!isBridgeDeposit || !amountValidation.isValid || quoteLoading) {
+    if (shouldResetBridgeQuote || quoteLoading) {
       return '';
     }
     return bridgeQuoteError;
-  }, [
-    amountValidation.isValid,
-    bridgeQuoteError,
-    isBridgeDeposit,
-    quoteLoading,
-  ]);
+  }, [bridgeQuoteError, quoteLoading, shouldResetBridgeQuote]);
 
   const estReceiveUsdValue = useMemo(() => {
     if (!selectedToken) {
@@ -616,17 +611,20 @@ const GasAccountDepositTokenFormInner: React.FC<
     [accountId, login, sig, wallet]
   );
 
-  const fetchTopUpUsedNonce = useCallback(
-    async (txHash: string, chainServerId: string, account: Account) => {
-      return fetchGasAccountTopUpUsedNonce({
-        wallet,
-        txHash,
-        chainServerId,
-        account,
-      });
-    },
-    [wallet]
-  );
+  const getRequiredGasAccountSession = useCallback(async (): Promise<{
+    sig: string;
+    accountId: string;
+  }> => {
+    const gasAccountSession = await wallet.getGasAccountSig();
+    if (!gasAccountSession?.sig || !gasAccountSession?.accountId) {
+      throw new Error('GasAccount login failed');
+    }
+
+    return {
+      sig: gasAccountSession.sig,
+      accountId: gasAccountSession.accountId,
+    };
+  }, [wallet]);
 
   const schedulePostDepositStateRefresh = useCallback(() => {
     const runRefresh = () => {
@@ -635,26 +633,16 @@ const GasAccountDepositTokenFormInner: React.FC<
     };
 
     runRefresh();
-
-    POST_DEPOSIT_REFRESH_DELAYS.forEach((delay) => {
-      setTimeout(runRefresh, delay);
-    });
   }, [refreshGasAccount, refreshHistory]);
 
   const afterTopUpGasAccount = useCallback(
     async ({
-      to: _to,
       chainServerId,
-      tokenId: _tokenId,
-      rawAmount: _rawAmount,
       amount,
       tx,
       account,
     }: {
-      to: string;
       chainServerId: string;
-      tokenId: string;
-      rawAmount: string;
       amount: number;
       tx?: string;
       account: Account;
@@ -664,7 +652,7 @@ const GasAccountDepositTokenFormInner: React.FC<
       }
 
       const usedNonce =
-        (await await wallet.getNonceByChain(
+        (await wallet.getNonceByChain(
           account.address,
           findChainByServerID(chainServerId)!.id
         )) || 0;
@@ -673,10 +661,7 @@ const GasAccountDepositTokenFormInner: React.FC<
         throw new Error('GasAccount top up nonce missing');
       }
 
-      const gasAccountSession = await wallet.getGasAccountSig();
-      if (!gasAccountSession?.sig || !gasAccountSession?.accountId) {
-        throw new Error('GasAccount login failed');
-      }
+      const gasAccountSession = await getRequiredGasAccountSession();
 
       await wallet.openapi.rechargeGasAccount({
         sig: gasAccountSession.sig,
@@ -685,10 +670,10 @@ const GasAccountDepositTokenFormInner: React.FC<
         chain_id: chainServerId,
         amount,
         user_addr: account.address,
-        nonce: usedNonce,
+        nonce: usedNonce - 1,
       });
     },
-    [fetchTopUpUsedNonce, wallet]
+    [getRequiredGasAccountSession, wallet]
   );
 
   const topUpGasAccount = useCallback(
@@ -732,10 +717,7 @@ const GasAccountDepositTokenFormInner: React.FC<
       );
 
       await afterTopUpGasAccount({
-        to,
         chainServerId,
-        tokenId,
-        rawAmount,
         amount,
         tx: txHash,
         account,
@@ -746,12 +728,29 @@ const GasAccountDepositTokenFormInner: React.FC<
     [afterTopUpGasAccount, wallet]
   );
 
+  const openMiniSignDeposit = useCallback(
+    async (txs: Tx[]) => {
+      resetGasStore();
+      closeSign();
+      return openUI({
+        txs,
+        ga: {
+          category: 'GasAccount',
+          action: 'deposit',
+        },
+        checkGasFeeTooHigh: true,
+        autoUseGasFree: true,
+      });
+    },
+    [closeSign, openUI, resetGasStore]
+  );
+
   const sendBridgeTxsDirectly = useCallback(
     async (txs: Tx[], account: Account) => {
-      let lastHash = '';
+      const hashes: string[] = [];
 
       for (const tx of txs) {
-        lastHash = await wallet.sendRequest<string>(
+        const hash = await wallet.sendRequest<string>(
           {
             method: 'eth_sendTransaction',
             params: [tx],
@@ -766,9 +765,10 @@ const GasAccountDepositTokenFormInner: React.FC<
             account,
           }
         );
+        hashes.push(hash);
       }
 
-      return lastHash;
+      return hashes;
     },
     [wallet]
   );
@@ -791,10 +791,7 @@ const GasAccountDepositTokenFormInner: React.FC<
       account: Account;
       scene: 'in_tx_flow' | 'recharge';
     }) => {
-      const gasAccountSession = await wallet.getGasAccountSig();
-      if (!gasAccountSession?.sig || !gasAccountSession?.accountId) {
-        throw new Error('GasAccount login failed');
-      }
+      const gasAccountSession = await getRequiredGasAccountSession();
 
       await wallet.openapi.createGasAccountBridgeRecharge({
         sig: gasAccountSession.sig,
@@ -808,7 +805,193 @@ const GasAccountDepositTokenFormInner: React.FC<
         scene,
       } as any);
     },
-    [wallet]
+    [getRequiredGasAccountSession, wallet]
+  );
+
+  const finishDepositSuccess = useCallback(
+    async (accountAddress: string) => {
+      invalidateGasAccountDepositTokensCache(accountAddress);
+      schedulePostDepositStateRefresh();
+      if (onDeposit) {
+        await onDeposit();
+      } else {
+        message.success(t('page.gasAccount.depositPopup.depositSuccess'));
+      }
+      onClose?.();
+    },
+    [onClose, onDeposit, schedulePostDepositStateRefresh, t]
+  );
+
+  const submitDirectDeposit = useCallback(
+    async ({
+      token,
+      account,
+      usdValue,
+    }: {
+      token: GasAccountAvailableToken;
+      account: Account;
+      usdValue: number;
+    }) => {
+      const depositAddress = getGasAccountDirectDepositAddress(token.chain);
+      if (!depositAddress) {
+        throw new Error('Gas account deposit address missing');
+      }
+
+      const params = {
+        to: depositAddress,
+        chainServerId: token.chain,
+        tokenId: token.id,
+        amount: usdValue,
+        rawAmount: new BigNumber(usdValue)
+          .times(10 ** token.decimals)
+          .decimalPlaces(0, BigNumber.ROUND_DOWN)
+          .toFixed(),
+        account,
+      };
+
+      if (!canUseMiniSign) {
+        return buildSubmittedDepositTxInfo([await topUpGasAccount(params)]);
+      }
+
+      const tx = await buildTopUpGasAccount(params);
+      const txHash = (await openMiniSignDeposit([tx]))?.[0];
+      if (!txHash) {
+        return null;
+      }
+
+      await afterTopUpGasAccount({
+        ...params,
+        tx: txHash,
+      });
+
+      return buildSubmittedDepositTxInfo([txHash]);
+    },
+    [afterTopUpGasAccount, canUseMiniSign, openMiniSignDeposit, topUpGasAccount]
+  );
+
+  const submitBridgeDeposit = useCallback(
+    async ({
+      token,
+      account,
+      quote,
+      usdValue,
+      tokenAmount,
+    }: {
+      token: GasAccountAvailableToken;
+      account: Account;
+      quote: GasAccountBridgeQuote;
+      usdValue: number;
+      tokenAmount: number;
+    }) => {
+      const bridgeTxs = await buildGasAccountBridgeTxs({
+        wallet,
+        token,
+        account,
+        quote,
+        usdValue,
+      });
+
+      const bridgeTxHashes = canUseMiniSign
+        ? (await openMiniSignDeposit(bridgeTxs)) || []
+        : await sendBridgeTxsDirectly(bridgeTxs, account);
+      const submittedDeposit = buildSubmittedDepositTxInfo(bridgeTxHashes);
+
+      if (!submittedDeposit) {
+        return null;
+      }
+
+      await afterBridgeTopUpGasAccount({
+        chainServerId: token.chain,
+        tokenId: token.id,
+        tokenAmount,
+        usdValue,
+        txId: submittedDeposit.trackingTxHash,
+        account,
+        scene: onWaitDepositResult ? 'in_tx_flow' : 'recharge',
+      });
+
+      return submittedDeposit;
+    },
+    [
+      afterBridgeTopUpGasAccount,
+      canUseMiniSign,
+      onWaitDepositResult,
+      openMiniSignDeposit,
+      sendBridgeTxsDirectly,
+      wallet,
+    ]
+  );
+
+  const waitForDepositResult = useCallback(
+    async ({
+      submittedDeposit,
+      chainServerId,
+      account,
+    }: {
+      submittedDeposit: SubmittedDepositTxInfo;
+      chainServerId: string;
+      account: Account;
+    }) => {
+      if (!onWaitDepositResult) {
+        return;
+      }
+
+      const { promise: pollPromise, cancel } = pollDepositStatus({
+        wallet,
+        params: {
+          from_chain_id: chainServerId,
+          tx_id: submittedDeposit.trackingTxHash,
+        },
+        maxAttempts: PENDING_STATUS_MAX_ATTEMPTS,
+      });
+      pollCancelRef.current = cancel;
+      const success = await pollPromise;
+      pollCancelRef.current = null;
+
+      if (success === 'cancel') {
+        onClose?.();
+        return;
+      }
+
+      if (success) {
+        message.success(t('page.gasAccount.depositPopup.depositSuccess'));
+        try {
+          await onWaitDepositResult({
+            type: 'token',
+            ownerAddress: account.address,
+            chainServerId,
+          });
+
+          invalidateGasAccountDepositTokensCache(account.address);
+          await onDeposit?.();
+        } catch (error) {
+          console.error(
+            'GasAccountDepositTokenForm post-deposit resume error',
+            error
+          );
+        } finally {
+          schedulePostDepositStateRefresh();
+        }
+        onClose?.();
+        return;
+      }
+
+      message.error(
+        t('page.gasAccount.depositFailed', {
+          defaultValue: 'Deposit failed',
+        })
+      );
+      schedulePostDepositStateRefresh();
+      onClose?.();
+    },
+    [
+      onClose,
+      onDeposit,
+      onWaitDepositResult,
+      schedulePostDepositStateRefresh,
+      t,
+      wallet,
+    ]
   );
 
   const handleSubmit = useCallback(async () => {
@@ -825,166 +1008,37 @@ const GasAccountDepositTokenFormInner: React.FC<
       if (!(await ensureGasAccountLogin(selectedOwnerAccount))) {
         return;
       }
-      let depositTxHash = '';
+      const submittedDeposit =
+        selectedToken.gasAccountDepositType === 'direct'
+          ? await submitDirectDeposit({
+              token: selectedToken,
+              account: selectedOwnerAccount,
+              usdValue: amountValue,
+            })
+          : bridgeQuote?.tx && quoteAmountValue === amountValue
+          ? await submitBridgeDeposit({
+              token: selectedToken,
+              account: selectedOwnerAccount,
+              quote: bridgeQuote,
+              usdValue: amountValue,
+              tokenAmount: bridgeFromTokenAmount,
+            })
+          : null;
 
-      if (selectedToken.gasAccountDepositType === 'direct') {
-        const depositAddress = getGasAccountDirectDepositAddress(
-          selectedToken.chain
-        );
-        if (!depositAddress) {
-          throw new Error('Gas account deposit address missing');
-        }
-
-        const params = {
-          to: depositAddress,
-          chainServerId: selectedToken.chain,
-          tokenId: selectedToken.id,
-          amount: amountValue,
-          rawAmount: new BigNumber(amountValue)
-            .times(10 ** selectedToken.decimals)
-            .decimalPlaces(0, BigNumber.ROUND_DOWN)
-            .toFixed(),
-          account: selectedOwnerAccount,
-        };
-
-        if (canUseMiniSign) {
-          const tx = await buildTopUpGasAccount(params);
-          resetGasStore();
-          closeSign();
-          const hashes = await openUI({
-            txs: [tx],
-            ga: {
-              category: 'GasAccount',
-              action: 'deposit',
-            },
-            checkGasFeeTooHigh: true,
-            autoUseGasFree: true,
-          });
-
-          const txHash = hashes?.[0];
-          if (!txHash) {
-            return;
-          }
-
-          await afterTopUpGasAccount({
-            ...params,
-            tx: txHash,
-          });
-          depositTxHash = txHash;
-        } else {
-          depositTxHash =
-            (await topUpGasAccount({
-              ...params,
-            })) || '';
-        }
-      } else {
-        if (!bridgeQuote?.tx || quoteAmountValue !== amountValue) {
-          return;
-        }
-
-        const bridgeTxs = await buildGasAccountBridgeTxs({
-          wallet,
-          token: selectedToken,
-          account: selectedOwnerAccount,
-          quote: bridgeQuote,
-          usdValue: amountValue,
-        });
-
-        if (canUseMiniSign) {
-          resetGasStore();
-          closeSign();
-          const hashes = await openUI({
-            txs: bridgeTxs,
-            ga: {
-              category: 'GasAccount',
-              action: 'deposit',
-            },
-            checkGasFeeTooHigh: true,
-            autoUseGasFree: true,
-          });
-          depositTxHash = hashes?.[hashes.length - 1] || '';
-        } else {
-          depositTxHash = await sendBridgeTxsDirectly(
-            bridgeTxs,
-            selectedOwnerAccount
-          );
-        }
-
-        if (!depositTxHash) {
-          return;
-        }
-
-        await afterBridgeTopUpGasAccount({
-          chainServerId: selectedToken.chain,
-          tokenId: selectedToken.id,
-          tokenAmount: bridgeFromTokenAmount,
-          usdValue: amountValue,
-          txId: depositTxHash,
-          account: selectedOwnerAccount,
-          scene: onWaitDepositResult ? 'in_tx_flow' : 'recharge',
-        });
-      }
-
-      if (onWaitDepositResult && depositTxHash) {
-        const { promise: pollPromise, cancel } = pollDepositStatus({
-          wallet,
-          params: {
-            from_chain_id: selectedToken.chain,
-            tx_id: depositTxHash,
-          },
-          maxAttempts: PENDING_STATUS_MAX_ATTEMPTS,
-        });
-        pollCancelRef.current = cancel;
-        const success = await pollPromise;
-        pollCancelRef.current = null;
-
-        if (success !== 'cancel') {
-          if (success) {
-            const usedNonce = await fetchTopUpUsedNonce(
-              depositTxHash,
-              selectedToken.chain,
-              selectedOwnerAccount
-            );
-
-            await onWaitDepositResult({
-              type: 'token',
-              ownerAddress: selectedOwnerAccount.address,
-              chainServerId: selectedToken.chain,
-              usedNonce,
-            });
-
-            invalidateGasAccountDepositTokensCache(
-              selectedOwnerAccount.address
-            );
-            await onDeposit?.();
-          } else {
-            message.info(
-              t('page.gasAccount.depositFailed', {
-                defaultValue: 'Deposit failed',
-              })
-            );
-          }
-        }
-
-        if (success !== 'cancel') {
-          schedulePostDepositStateRefresh();
-        }
-        onClose?.();
+      if (!submittedDeposit) {
         return;
       }
 
-      invalidateGasAccountDepositTokensCache(selectedOwnerAccount.address);
-      schedulePostDepositStateRefresh();
-      if (onDeposit) {
-        await onDeposit();
-      } else {
-        message.success(
-          t('page.gasAccount.depositPopup.depositSuccess', {
-            defaultValue: 'Deposit successful',
-          })
-        );
+      if (onWaitDepositResult) {
+        await waitForDepositResult({
+          submittedDeposit,
+          chainServerId: selectedToken.chain,
+          account: selectedOwnerAccount,
+        });
+        return;
       }
-      onClose?.();
+
+      await finishDepositSuccess(selectedOwnerAccount.address);
     } catch (error) {
       const errorText =
         error instanceof Error
@@ -1008,29 +1062,20 @@ const GasAccountDepositTokenFormInner: React.FC<
       setLoading(false);
     }
   }, [
-    accountId,
     amountValidation.isValid,
     amountValue,
     bridgeFromTokenAmount,
     bridgeQuote,
-    canUseMiniSign,
-    closeSign,
-    afterBridgeTopUpGasAccount,
-    afterTopUpGasAccount,
     ensureGasAccountLogin,
-    fetchTopUpUsedNonce,
-    onClose,
-    onDeposit,
+    finishDepositSuccess,
     onWaitDepositResult,
-    openUI,
     quoteAmountValue,
-    refreshHistory,
-    resetGasStore,
-    schedulePostDepositStateRefresh,
     selectedOwnerAccount,
     selectedToken,
-    topUpGasAccount,
+    submitBridgeDeposit,
+    submitDirectDeposit,
     t,
+    waitForDepositResult,
   ]);
 
   const amountTokenText = selectedToken

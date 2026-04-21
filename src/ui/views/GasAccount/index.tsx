@@ -203,11 +203,13 @@ const GasAccountInner = () => {
     if (!isLogin && pendingHardwareAccount) {
       setEmptyStateLoading(true);
       try {
-        await login(pendingHardwareAccount);
-        refresh();
-        handleRefreshHistory();
-        message.success(t('page.gasAccount.loginSuccess'));
-        openDepositPopup();
+        const sig = await login(pendingHardwareAccount);
+        if (sig) {
+          refresh();
+          handleRefreshHistory();
+          message.success(t('page.gasAccount.loginSuccess'));
+          openDepositPopup();
+        }
       } catch (error) {
         console.error('handleOldUserStatePrimaryPress error', error);
         message.error(t('page.gasAccount.loginFailed'));
@@ -218,10 +220,10 @@ const GasAccountInner = () => {
     }
 
     openDepositPopup();
-  }, [emptyStateLoading]);
+  }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
 
   const lowBalanceWarningMessage =
-    visibleBalance > 0 && visibleBalance <= 0.1
+    visibleBalance < 0.1
       ? t('page.gasAccount.lowBalance', {
           defaultValue:
             "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",

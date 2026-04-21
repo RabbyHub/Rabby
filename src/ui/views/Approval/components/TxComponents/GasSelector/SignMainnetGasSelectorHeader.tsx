@@ -44,6 +44,7 @@ export const SignMainnetGasSelectorHeader = ({
   gasMethod,
   gasAccountCost,
   gas,
+  tx,
   gasList,
   selectedGas,
   chainId,
@@ -114,19 +115,54 @@ export const SignMainnetGasSelectorHeader = ({
   const selectedSupportedLevel = supportedLevels.find(
     (gasLevel) => gasLevel.level === selectedGas?.level
   )?.level;
+  const txFingerprint = useMemo(
+    () =>
+      [
+        chainId || 0,
+        tx.chainId || 0,
+        tx.from || '',
+        tx.to || '',
+        tx.value || '',
+        tx.data || '',
+        tx.gas || '',
+        tx.gasPrice || '',
+        tx.maxFeePerGas || '',
+        tx.maxPriorityFeePerGas || '',
+        gasLimit || '',
+        nonce || '',
+        isCancel ? '1' : '0',
+        isSpeedUp ? '1' : '0',
+        supportedLevels
+          .map(
+            (gasLevel) =>
+              `${gasLevel.level}:${gasLevel.price}:${gasLevel.priority_price}:${gasLevel.base_fee}:${gasLevel.front_tx_count}:${gasLevel.estimated_seconds}`
+          )
+          .join(';'),
+      ].join('|'),
+    [
+      chainId,
+      gasLimit,
+      isCancel,
+      isSpeedUp,
+      nonce,
+      supportedLevels,
+      tx.chainId,
+      tx.data,
+      tx.from,
+      tx.gas,
+      tx.gasPrice,
+      tx.maxFeePerGas,
+      tx.maxPriorityFeePerGas,
+      tx.to,
+      tx.value,
+    ]
+  );
   const gasAccountUsable =
     gasAccountMethodSupported && !!gasAccountCost?.balance_is_enough;
   const [levelState, setLevelState] = useState<SignMainnetGasLevelState>({});
   const levelStateRef = useRef(levelState);
-  const fetchContextIdRef = useRef(0);
-  const levelRequestSeqRef = useRef(0);
   const activeLevelRequestsRef = useRef<
-    Partial<
-      Record<
-        SignMainnetSupportedGasLevel,
-        { contextId: number; requestId: number }
-      >
-    >
+    Partial<Record<SignMainnetSupportedGasLevel, string>>
   >({});
 
   useEffect(() => {
@@ -149,7 +185,6 @@ export const SignMainnetGasSelectorHeader = ({
       return;
     }
 
-    const contextId = ++fetchContextIdRef.current;
     const patchLevelState = (
       level: SignMainnetSupportedGasLevel,
       patch: Partial<
@@ -173,24 +208,34 @@ export const SignMainnetGasSelectorHeader = ({
         gasAccountChainSupported: gasAccountMethodSupported,
       });
       const currentLevelState = levelStateRef.current[gasLevel.level];
-      const activeRequest = activeLevelRequestsRef.current[gasLevel.level];
+      const isStaleLevelState =
+        currentLevelState?.fingerprint !== txFingerprint;
+      const requestKey = `${gasLevel.level}:${txFingerprint}`;
+      const activeRequestKey = activeLevelRequestsRef.current[gasLevel.level];
       const shouldFetchLevel = shouldFetchSignMainnetGasLevel({
         state: currentLevelState,
+        requestFingerprint: txFingerprint,
         needsNative,
         needsGasAccount,
-        hasActiveRequest: activeRequest?.contextId === contextId,
+        hasActiveRequest: activeRequestKey === requestKey,
       });
 
       if ((!needsNative && !needsGasAccount) || !shouldFetchLevel) {
         return;
       }
 
-      const requestId = ++levelRequestSeqRef.current;
-      activeLevelRequestsRef.current[gasLevel.level] = {
-        contextId,
-        requestId,
-      };
-      patchLevelState(gasLevel.level, { loading: true });
+      activeLevelRequestsRef.current[gasLevel.level] = requestKey;
+      patchLevelState(gasLevel.level, {
+        fingerprint: txFingerprint,
+        loading: true,
+        ...(isStaleLevelState
+          ? {
+              nativeUsd: undefined,
+              nativeNotEnough: undefined,
+              gasAccount: undefined,
+            }
+          : {}),
+      });
 
       const gasChange = {
         ...gasLevel,
@@ -233,29 +278,29 @@ export const SignMainnetGasSelectorHeader = ({
           : Promise.resolve({}),
       ])
         .then(([nativePatch, gasAccountPatch]) => {
-          const currentRequest = activeLevelRequestsRef.current[gasLevel.level];
-          if (
-            currentRequest?.contextId !== contextId ||
-            currentRequest.requestId !== requestId
-          ) {
+          const currentRequestKey =
+            activeLevelRequestsRef.current[gasLevel.level];
+          if (currentRequestKey !== requestKey) {
             return;
           }
           patchLevelState(gasLevel.level, {
+            fingerprint: txFingerprint,
             ...nativePatch,
             ...gasAccountPatch,
           });
         })
         .catch(() => undefined)
         .finally(() => {
-          const currentRequest = activeLevelRequestsRef.current[gasLevel.level];
-          if (
-            currentRequest?.contextId !== contextId ||
-            currentRequest.requestId !== requestId
-          ) {
+          const currentRequestKey =
+            activeLevelRequestsRef.current[gasLevel.level];
+          if (currentRequestKey !== requestKey) {
             return;
           }
           delete activeLevelRequestsRef.current[gasLevel.level];
-          patchLevelState(gasLevel.level, { loading: false });
+          patchLevelState(gasLevel.level, {
+            fingerprint: txFingerprint,
+            loading: false,
+          });
         });
     });
   }, [
@@ -270,6 +315,7 @@ export const SignMainnetGasSelectorHeader = ({
     isSpeedUp,
     nonce,
     supportedLevels,
+    txFingerprint,
   ]);
 
   useEffect(() => {
@@ -283,6 +329,7 @@ export const SignMainnetGasSelectorHeader = ({
         gasAccountUsable,
         gasAccountChainSupported: gasAccountMethodSupported,
         levelState,
+        requestFingerprint: txFingerprint,
       })
     ) {
       return;
@@ -298,6 +345,7 @@ export const SignMainnetGasSelectorHeader = ({
     nativeTokenInsufficient,
     selectedSupportedLevel,
     showMoreOpen,
+    txFingerprint,
   ]);
 
   const canOpenShowMore =
@@ -424,8 +472,17 @@ export const SignMainnetGasSelectorHeader = ({
       {content}
 
       <SignMainnetCustomGasSheet
-        {...props}
+        version={props.version}
+        isReady={props.isReady}
+        is1559={props.is1559}
+        isHardware={props.isHardware}
+        disabled={props.disabled}
+        nativeTokenBalance={props.nativeTokenBalance}
+        gasToken={props.gasToken}
+        gasPriceMedian={props.gasPriceMedian}
+        getContainer={props.getContainer}
         gas={gas}
+        tx={tx}
         gasList={gasList}
         selectedGas={selectedGas}
         chainId={chainId}

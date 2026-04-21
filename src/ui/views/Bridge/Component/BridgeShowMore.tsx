@@ -671,11 +671,12 @@ export const DirectSignGasInfo = ({
         return;
       }
 
-      const nextTxs = buildTopUpResumedTxs({
+      const nextTxs = await buildTopUpResumedTxs({
         txs,
         originalAccountAddress: currentAccount.address,
         originalChainServerId: chain.serverId,
         topUpResult: result,
+        wallet,
       });
 
       signatureInstance.replaceTxs(nextTxs);

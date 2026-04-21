@@ -10,6 +10,7 @@ export type SignMainnetGasLevelState = Partial<
   Record<
     SignMainnetSupportedGasLevel,
     {
+      fingerprint?: string;
       nativeUsd?: string;
       nativeNotEnough?: boolean;
       gasAccount?: [boolean, string];
@@ -51,25 +52,32 @@ export const resolveSignMainnetGasLevelFetchNeeds = ({
 
 export const shouldFetchSignMainnetGasLevel = ({
   state,
+  requestFingerprint,
   needsNative,
   needsGasAccount,
   hasActiveRequest = false,
 }: {
   state?: SignMainnetGasLevelState[SignMainnetSupportedGasLevel];
+  requestFingerprint: string;
   needsNative: boolean;
   needsGasAccount: boolean;
   hasActiveRequest?: boolean;
 }) => {
+  const isFreshState = state?.fingerprint === requestFingerprint;
   const hasNativeData =
-    state?.nativeUsd !== undefined && state?.nativeNotEnough !== undefined;
-  const hasGasAccountData = state?.gasAccount !== undefined;
+    isFreshState &&
+    state?.nativeUsd !== undefined &&
+    state?.nativeNotEnough !== undefined;
+  const hasGasAccountData = isFreshState && state?.gasAccount !== undefined;
 
-  if (state?.loading && hasActiveRequest) {
+  if (state?.loading && isFreshState && hasActiveRequest) {
     return false;
   }
 
   return (
-    (needsNative && !hasNativeData) || (needsGasAccount && !hasGasAccountData)
+    !isFreshState ||
+    (needsNative && !hasNativeData) ||
+    (needsGasAccount && !hasGasAccountData)
   );
 };
 
@@ -77,10 +85,12 @@ export const hasUsableSiblingSignMainnetGasLevel = ({
   selectedSupportedLevel,
   gasAccountChainSupported,
   levelState,
+  requestFingerprint,
 }: {
   selectedSupportedLevel?: SignMainnetSupportedGasLevel;
   gasAccountChainSupported: boolean;
   levelState: SignMainnetGasLevelState;
+  requestFingerprint: string;
 }) =>
   SIGN_MAINNET_SUPPORTED_GAS_LEVELS.some((level) => {
     if (level === selectedSupportedLevel) {
@@ -88,7 +98,7 @@ export const hasUsableSiblingSignMainnetGasLevel = ({
     }
 
     const state = levelState[level];
-    if (!state) {
+    if (!state || state.fingerprint !== requestFingerprint) {
       return false;
     }
 
@@ -111,6 +121,7 @@ export const shouldAutoOpenSignMainnetGasModal = ({
   gasAccountUsable,
   gasAccountChainSupported,
   levelState,
+  requestFingerprint,
 }: {
   fetchMode: 'idle' | 'prefetch' | 'open';
   selectedSupportedLevel?: SignMainnetSupportedGasLevel;
@@ -118,6 +129,7 @@ export const shouldAutoOpenSignMainnetGasModal = ({
   gasAccountUsable: boolean;
   gasAccountChainSupported: boolean;
   levelState: SignMainnetGasLevelState;
+  requestFingerprint: string;
 }) =>
   fetchMode === 'prefetch' &&
   nativeTokenInsufficient &&
@@ -126,4 +138,5 @@ export const shouldAutoOpenSignMainnetGasModal = ({
     selectedSupportedLevel,
     gasAccountChainSupported,
     levelState,
+    requestFingerprint,
   });

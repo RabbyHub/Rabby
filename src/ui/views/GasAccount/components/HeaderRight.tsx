@@ -22,43 +22,43 @@ export const GasAccountHeader: React.FC<{
     return null;
   }
 
-  const menuItems = [
-    isLogin
-      ? {
-          key: 'withdraw',
-          icon: (
-            <RcIconWithdrawCC className="w-16 h-16 text-r-neutral-title-1" />
-          ),
-          label: t('page.gasAccount.withdraw'),
-          labelClassName: 'text-r-neutral-title-1 text-13 font-medium',
-          onClick: onWithdraw,
-        }
-      : null,
-    canSwitchWallet
-      ? {
-          key: 'switch-wallet',
-          icon: <RcIconSwitchCC className="w-16 h-16 text-r-neutral-title-1" />,
-          label: t('page.gasAccount.switchAccount'),
-          labelClassName: 'text-r-neutral-title-1 text-13 font-medium',
-          onClick: onSwitchWallet,
-        }
-      : null,
-    isLogin && __DEV__
-      ? {
-          key: 'logout',
-          icon: <RcIconLogout className="w-16 h-16" />,
-          label: t('page.gasAccount.logout'),
-          labelClassName: 'text-r-red-default text-13 font-medium',
-          onClick: onLogout,
-        }
-      : null,
-  ].filter(Boolean) as Array<{
+  const menuItems: Array<{
     key: string;
     icon: React.ReactNode;
     label: string;
     labelClassName: string;
     onClick?: () => void;
-  }>;
+  }> = [];
+
+  if (isLogin) {
+    menuItems.push({
+      key: 'withdraw',
+      icon: <RcIconWithdrawCC className="w-16 h-16 text-r-neutral-title-1" />,
+      label: t('page.gasAccount.withdraw'),
+      labelClassName: 'text-r-neutral-title-1 text-13 font-medium',
+      onClick: onWithdraw,
+    });
+  }
+
+  if (canSwitchWallet) {
+    menuItems.push({
+      key: 'switch-wallet',
+      icon: <RcIconSwitchCC className="w-16 h-16 text-r-neutral-title-1" />,
+      label: t('page.gasAccount.switchAccount'),
+      labelClassName: 'text-r-neutral-title-1 text-13 font-medium',
+      onClick: onSwitchWallet,
+    });
+  }
+
+  if (isLogin && __DEV__) {
+    menuItems.push({
+      key: 'logout',
+      icon: <RcIconLogout className="w-16 h-16" />,
+      label: t('page.gasAccount.logout'),
+      labelClassName: 'text-r-red-default text-13 font-medium',
+      onClick: onLogout,
+    });
+  }
 
   const menu = (
     <Menu

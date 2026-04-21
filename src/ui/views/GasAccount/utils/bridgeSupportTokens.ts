@@ -65,9 +65,9 @@ export const ensureGasAccountBridgeSupportTokenList = async ({
 
   const previousCache = bridgeSupportTokenListCache;
 
-  bridgeSupportTokenListInFlight = wallet.openapi
-    .getGasAccountBridgeSupportTokenList()
-    .then((result) => {
+  bridgeSupportTokenListInFlight = (async () => {
+    try {
+      const result = await wallet.openapi.getGasAccountBridgeSupportTokenList();
       const normalized = normalizeGasAccountBridgeSupportTokenList(result);
       bridgeSupportTokenListCache = {
         status: 'success',
@@ -75,8 +75,7 @@ export const ensureGasAccountBridgeSupportTokenList = async ({
         updatedAt: Date.now(),
       };
       return normalized;
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error('ensureGasAccountBridgeSupportTokenList error', error);
       bridgeSupportTokenListCache = previousCache.updatedAt
         ? previousCache
@@ -86,10 +85,10 @@ export const ensureGasAccountBridgeSupportTokenList = async ({
             updatedAt: 0,
           };
       return bridgeSupportTokenListCache.data;
-    })
-    .finally(() => {
+    } finally {
       bridgeSupportTokenListInFlight = null;
-    });
+    }
+  })();
 
   return bridgeSupportTokenListInFlight;
 };
@@ -98,6 +97,4 @@ export const prefetchGasAccountBridgeSupportTokenList = async ({
   wallet,
 }: {
   wallet: GasAccountBridgeSupportTokenWallet;
-}) => {
-  return ensureGasAccountBridgeSupportTokenList({ wallet });
-};
+}) => ensureGasAccountBridgeSupportTokenList({ wallet });

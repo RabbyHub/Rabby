@@ -1,17 +1,13 @@
-import { isSameAddress } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
+import { findChainByServerID } from '@/utils/chain';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 
-export type GasAccountTopUpResult =
-  | {
-      type: 'token';
-      ownerAddress: string;
-      chainServerId: string;
-      usedNonce?: string;
-    }
-  | {
-      type: 'pay';
-    };
+export type GasAccountTopUpResult = {
+  type: 'token';
+  ownerAddress: string;
+  chainServerId: string;
+};
 
 export type GasAccountTopUpWaitCallback = (
   result: GasAccountTopUpResult
@@ -36,39 +32,63 @@ export const shouldUpdateOriginalTxNonceAfterTopUp = ({
   );
 };
 
-const incrementNonce = (nonce: string) => {
-  const toHex = (value: BigNumber) => `0x${value.toString(16)}`;
-
+const parseNonce = (nonce: string) => {
   if (nonce.startsWith('0x')) {
-    return toHex(new BigNumber(nonce.slice(2), 16).plus(1));
+    return new BigNumber(nonce.slice(2), 16);
   }
 
-  return toHex(new BigNumber(nonce).plus(1));
+  return new BigNumber(nonce);
 };
 
-const normalizeNonce = (nonce: string) => {
-  if (nonce.startsWith('0x')) {
-    return nonce.toLowerCase();
+const incrementNonce = (nonce: string, step = 1) =>
+  `0x${parseNonce(nonce).plus(step).toString(16)}`;
+
+const getLocalNonceShift = async ({
+  targetNonce,
+  address,
+  chainServerId,
+  wallet,
+}: {
+  targetNonce: string;
+  address: string;
+  chainServerId: string;
+  wallet: ReturnType<typeof useWallet>;
+}) => {
+  const chain = findChainByServerID(chainServerId);
+  if (!chain) {
+    return 0;
   }
 
-  return `0x${new BigNumber(nonce).toString(16)}`;
+  const localNextNonce = await wallet.getNonceByChain(address, chain.id);
+
+  if (localNextNonce === null) {
+    return 0;
+  }
+
+  const target = parseNonce(targetNonce);
+  const localNext = new BigNumber(localNextNonce);
+
+  if (target.gte(localNext)) {
+    return 0;
+  }
+
+  return localNext.minus(target).toNumber();
 };
 
-export const getBumpedNonceAfterTopUp = ({
+export const getBumpedNonceAfterTopUp = async ({
   currentNonce,
   originalAccountAddress,
   originalChainServerId,
   topUpResult,
+  wallet,
 }: {
   currentNonce?: string;
   originalAccountAddress: string;
   originalChainServerId: string;
   topUpResult: GasAccountTopUpResult;
+  wallet: ReturnType<typeof useWallet>;
 }) => {
-  const usedNonce =
-    topUpResult.type === 'token' ? topUpResult.usedNonce : undefined;
-
-  if (!currentNonce || !usedNonce) {
+  if (!currentNonce) {
     return currentNonce;
   }
 
@@ -82,27 +102,33 @@ export const getBumpedNonceAfterTopUp = ({
     return currentNonce;
   }
 
-  if (normalizeNonce(currentNonce) !== normalizeNonce(usedNonce)) {
+  const shift = await getLocalNonceShift({
+    targetNonce: currentNonce,
+    address: originalAccountAddress,
+    chainServerId: originalChainServerId,
+    wallet,
+  });
+
+  if (!shift) {
     return currentNonce;
   }
 
-  return incrementNonce(currentNonce);
+  return incrementNonce(currentNonce, shift);
 };
 
-export const buildTopUpResumedTxs = ({
+export const buildTopUpResumedTxs = async ({
   txs,
   originalAccountAddress,
   originalChainServerId,
   topUpResult,
+  wallet,
 }: {
   txs: Tx[];
   originalAccountAddress: string;
   originalChainServerId: string;
   topUpResult: GasAccountTopUpResult;
+  wallet: ReturnType<typeof useWallet>;
 }) => {
-  const usedNonce =
-    topUpResult.type === 'token' ? topUpResult.usedNonce : undefined;
-
   if (
     !shouldUpdateOriginalTxNonceAfterTopUp({
       originalAccountAddress,
@@ -110,10 +136,6 @@ export const buildTopUpResumedTxs = ({
       topUpResult,
     })
   ) {
-    return txs;
-  }
-
-  if (!usedNonce) {
     return txs;
   }
 
@@ -123,7 +145,14 @@ export const buildTopUpResumedTxs = ({
     return txs;
   }
 
-  if (normalizeNonce(firstExplicitNonce) !== normalizeNonce(usedNonce)) {
+  const shift = await getLocalNonceShift({
+    targetNonce: firstExplicitNonce,
+    address: originalAccountAddress,
+    chainServerId: originalChainServerId,
+    wallet,
+  });
+
+  if (!shift) {
     return txs;
   }
 
@@ -134,7 +163,7 @@ export const buildTopUpResumedTxs = ({
 
     return {
       ...tx,
-      nonce: incrementNonce(tx.nonce),
+      nonce: incrementNonce(tx.nonce, shift),
     };
   });
 };

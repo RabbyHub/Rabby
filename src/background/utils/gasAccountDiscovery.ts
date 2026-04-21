@@ -57,6 +57,10 @@ const updateDiscoveryCache = (cacheKey: string) => {
   cachedDiscoveryAt = Date.now();
 };
 
+const isDiscoveryBalanceResult = (
+  item: { account: Account; balance: number } | null
+): item is { account: Account; balance: number } => !!item;
+
 export const discoverGasAccountRuntimeState = async (
   accounts: Account[],
   options?: {
@@ -68,6 +72,18 @@ export const discoverGasAccountRuntimeState = async (
     isGasAccountDirectSignType(account.type)
   );
   const cacheKey = getDiscoveryCacheKey(visibleAccounts);
+  const syncDiscoveryState = (
+    payload: Pick<
+      GasAccountServiceStore,
+      | 'pendingHardwareAccount'
+      | 'autoLoginAccount'
+      | 'accountsWithGasAccountBalance'
+    >
+  ) => {
+    gasAccountService.setDiscoveryState(payload);
+    updateDiscoveryCache(cacheKey);
+    return gasAccountService.getGasAccountData();
+  };
 
   if (!force && isDiscoveryCacheFresh(cacheKey)) {
     return gasAccountService.getGasAccountData();
@@ -78,13 +94,11 @@ export const discoverGasAccountRuntimeState = async (
   }
 
   if (!visibleAccounts.length) {
-    gasAccountService.setDiscoveryState({
+    return syncDiscoveryState({
       pendingHardwareAccount: undefined,
       autoLoginAccount: undefined,
       accountsWithGasAccountBalance: [],
     });
-    updateDiscoveryCache(cacheKey);
-    return gasAccountService.getGasAccountData();
   }
 
   discoveryInFlightKey = cacheKey;
@@ -109,19 +123,19 @@ export const discoverGasAccountRuntimeState = async (
             account,
             balance: Number(info.account.balance || 0),
           };
-        } catch (error) {
+        } catch {
           return null;
         }
       })
     );
 
     const accountsWithGasAccountBalance = responses
-      .filter(Boolean)
+      .filter(isDiscoveryBalanceResult)
       .sort((a, b) => (b?.balance || 0) - (a?.balance || 0))
-      .map((item) => ({
-        address: item!.account.address,
-        type: item!.account.type,
-        brandName: item!.account.brandName,
+      .map(({ account }) => ({
+        address: account.address,
+        type: account.type,
+        brandName: account.brandName,
       }));
 
     const hasSession = gasAccountService.hasGasAccountSession();
@@ -130,20 +144,16 @@ export const discoverGasAccountRuntimeState = async (
       : accountsWithGasAccountBalance.find(
           (account) => !isGasAccountHardwareType(account.type)
         );
-    const pendingHardwareAccount =
-      autoLoginAccount || hasSession
-        ? undefined
-        : accountsWithGasAccountBalance.find((account) =>
-            isGasAccountHardwareType(account.type)
-          );
-
-    gasAccountService.setDiscoveryState({
+    return syncDiscoveryState({
       autoLoginAccount,
-      pendingHardwareAccount,
+      pendingHardwareAccount:
+        hasSession || autoLoginAccount
+          ? undefined
+          : accountsWithGasAccountBalance.find((account) =>
+              isGasAccountHardwareType(account.type)
+            ),
       accountsWithGasAccountBalance,
     });
-    updateDiscoveryCache(cacheKey);
-    return gasAccountService.getGasAccountData();
   })().finally(() => {
     if (discoveryInFlightKey === cacheKey) {
       discoveryInFlight = null;

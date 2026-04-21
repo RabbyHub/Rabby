@@ -71,6 +71,20 @@ const getOwnedTokenKey = (
   owner: string
 ) => `${owner.toLowerCase()}-${token.chain}-${token.id.toLowerCase()}`;
 
+const buildSupportedTokenSet = (
+  tokens: Array<{ chain_id?: string; token_id?: string }>
+) => {
+  const tokenSet = new Set<string>();
+
+  tokens.forEach((item) => {
+    if (item.chain_id && item.token_id) {
+      tokenSet.add(`${item.chain_id}:${item.token_id.toLowerCase()}`);
+    }
+  });
+
+  return tokenSet;
+};
+
 const getAccountTokensCacheKey = (address: string) => address.toLowerCase();
 
 const isAccountTokensCacheFresh = (updatedAt: number) =>
@@ -257,19 +271,12 @@ export const getAvailableGasAccountDepositTokens = (
   const withBalance = tokens.filter(
     (token) => getTokenUsdValue(token) >= minDepositUsd
   );
-  const walletTokenSet = new Set<string>();
-  bridgeSupportTokens.wallet_tokens.forEach((item) => {
-    if (item.chain_id && item.token_id) {
-      walletTokenSet.add(`${item.chain_id}:${item.token_id.toLowerCase()}`);
-    }
-  });
-
-  const bridgeTokenSet = new Set<string>();
-  bridgeSupportTokens.hyperliquid_tokens.forEach((item) => {
-    if (item.chain_id && item.token_id) {
-      bridgeTokenSet.add(`${item.chain_id}:${item.token_id.toLowerCase()}`);
-    }
-  });
+  const walletTokenSet = buildSupportedTokenSet(
+    bridgeSupportTokens.wallet_tokens
+  );
+  const bridgeTokenSet = buildSupportedTokenSet(
+    bridgeSupportTokens.hyperliquid_tokens
+  );
 
   if (!walletTokenSet.size && !bridgeTokenSet.size) {
     return [];
@@ -383,6 +390,18 @@ export const useGasAccountDepositAvailableTokens = ({
         }
 
         const accountTokensMap = new Map<string, AccountTokenMapItem>();
+        const syncAvailableTokens = () => {
+          const nextAvailableTokens = getAvailableGasAccountDepositTokensFromMap(
+            {
+              accountTokensMap,
+              bridgeSupportTokens,
+              minDepositPrice,
+              disableDirectDeposit,
+            }
+          );
+          setAvailableTokens(nextAvailableTokens);
+          return nextAvailableTokens;
+        };
 
         dbAccountStates.forEach(({ accountAddress, tokens }) => {
           if (!tokens.length) {
@@ -395,15 +414,7 @@ export const useGasAccountDepositAvailableTokens = ({
           });
         });
 
-        const initialAvailableTokens = getAvailableGasAccountDepositTokensFromMap(
-          {
-            accountTokensMap,
-            bridgeSupportTokens,
-            minDepositPrice,
-            disableDirectDeposit,
-          }
-        );
-        setAvailableTokens(initialAvailableTokens);
+        const initialAvailableTokens = syncAvailableTokens();
 
         const accountsToRefresh = dbAccountStates
           .filter((item) => !item.isFresh)
@@ -434,27 +445,21 @@ export const useGasAccountDepositAvailableTokens = ({
                 return;
               }
 
-              const cacheKey = getAccountTokensCacheKey(accountAddress);
-              if (result.source !== 'error') {
-                if (result.tokens.length) {
-                  accountTokensMap.set(cacheKey, {
-                    accountAddress,
-                    tokens: result.tokens,
-                  });
-                } else {
-                  accountTokensMap.delete(cacheKey);
-                }
+              if (result.source === 'error') {
+                return;
               }
 
-              const nextAvailableTokens = getAvailableGasAccountDepositTokensFromMap(
-                {
-                  accountTokensMap,
-                  bridgeSupportTokens,
-                  minDepositPrice,
-                  disableDirectDeposit,
-                }
-              );
-              setAvailableTokens(nextAvailableTokens);
+              const cacheKey = getAccountTokensCacheKey(accountAddress);
+              if (result.tokens.length) {
+                accountTokensMap.set(cacheKey, {
+                  accountAddress,
+                  tokens: result.tokens,
+                });
+              } else {
+                accountTokensMap.delete(cacheKey);
+              }
+
+              const nextAvailableTokens = syncAvailableTokens();
 
               if (nextAvailableTokens.length > 0) {
                 setIsCheckingAvailability(false);
@@ -476,10 +481,6 @@ export const useGasAccountDepositAvailableTokens = ({
     [disableDirectDeposit, minDepositPrice, myAccounts, wallet]
   );
 
-  const checkIsExpireAndUpdate = useCallback(async () => {
-    await updateAvailableTokens(false);
-  }, [updateAvailableTokens]);
-
   useEffect(() => {
     fetchAllAccounts();
   }, [fetchAllAccounts]);
@@ -488,6 +489,6 @@ export const useGasAccountDepositAvailableTokens = ({
     availableTokens,
     hasAvailableTokens: availableTokens.length > 0,
     isCheckingAvailability,
-    checkIsExpireAndUpdate,
+    refreshAvailableTokens: updateAvailableTokens,
   };
 };

@@ -1119,43 +1119,38 @@ export const MiniSignTx = ({
     setGasMethod,
   });
 
-  const gasCalcMethod = useCallback(
-    async (price) => {
-      const res = await Promise.all(
-        txsResult.map((item) =>
-          explainGas({
-            gasUsed: item.gasUsed,
-            gasPrice: price,
-            chainId,
-            nativeTokenPrice: item.preExecResult.native_token.price || 0,
-            tx: item.tx,
-            wallet,
-            gasLimit: item.gasLimit,
-            account: currentAccount!,
-            gasTokenDecimals: gasToken.decimals || 18,
-          })
-        )
-      );
-      const totalCost = res.reduce(
-        (sum, item) => {
-          sum.gasCostAmount = sum.gasCostAmount.plus(item.gasCostAmount);
-          sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
+  const gasCalcMethod = useMemoizedFn(async (price) => {
+    const res = await Promise.all(
+      txsResult.map((item) =>
+        explainGas({
+          gasUsed: item.gasUsed,
+          gasPrice: price,
+          chainId,
+          nativeTokenPrice: item.preExecResult.native_token.price || 0,
+          tx: item.tx,
+          wallet,
+          gasLimit: item.gasLimit,
+          account: currentAccount!,
+          gasTokenDecimals: gasToken.decimals || 18,
+        })
+      )
+    );
+    const totalCost = res.reduce(
+      (sum, item) => {
+        sum.gasCostAmount = sum.gasCostAmount.plus(item.gasCostAmount);
+        sum.gasCostUsd = sum.gasCostUsd.plus(item.gasCostUsd);
 
-          sum.maxGasCostAmount = sum.maxGasCostAmount.plus(
-            item.maxGasCostAmount
-          );
-          return sum;
-        },
-        {
-          gasCostUsd: new BigNumber(0),
-          gasCostAmount: new BigNumber(0),
-          maxGasCostAmount: new BigNumber(0),
-        }
-      );
-      return totalCost;
-    },
-    [chainId, txsResult, currentAccount, gasToken.decimals]
-  );
+        sum.maxGasCostAmount = sum.maxGasCostAmount.plus(item.maxGasCostAmount);
+        return sum;
+      },
+      {
+        gasCostUsd: new BigNumber(0),
+        gasCostAmount: new BigNumber(0),
+        maxGasCostAmount: new BigNumber(0),
+      }
+    );
+    return totalCost;
+  });
 
   const { value } = useAsync<() => Promise<[string, RetryUpdateType]>>(() => {
     let msg = task.error;

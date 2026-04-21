@@ -2761,7 +2761,7 @@
         "bridgeLabel": "桥接",
         "estReceiveLabel": "预计到账：{{usd}}",
         "estReceiveTip": "服务通过 {{name}} 处理，可能会有滑点。",
-        "depositSuccess": "Gas 充值成功",
+        "depositSuccess": "充值成功",
         "depositFailed": "存款失败，请重试",
         "bridgeDepositFailed": "桥接充值失败，请重试",
         "noAvailableToken": "暂无可用 Token"

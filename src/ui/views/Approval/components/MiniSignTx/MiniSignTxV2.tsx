@@ -71,6 +71,15 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   const { ctx, config, error, status } = state;
   const currentAccount = config?.account;
+  const gasCalcMethod = useMemoizedFn(async (price: number) => {
+    const nativePrice = ctx?.nativeTokenPrice || 0;
+    const amount =
+      ctx?.txsCalc?.reduce(
+        (acc, i) => acc.plus(new BigNumber(i.gasUsed).times(price).div(1e18)),
+        new BigNumber(0)
+      ) || new BigNumber(0);
+    return { gasCostUsd: amount.times(nativePrice), gasCostAmount: amount };
+  });
   const _visible = React.useMemo(() => {
     const isDirectSignAccount = [
       KEYRING_CLASS.MNEMONIC,
@@ -302,11 +311,12 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         return;
       }
 
-      const nextTxs = buildTopUpResumedTxs({
+      const nextTxs = await buildTopUpResumedTxs({
         txs: ctx.txs,
         originalAccountAddress: config.account.address,
         originalChainServerId: chain.serverId,
         topUpResult: result,
+        wallet,
       });
 
       instance.replaceTxs(nextTxs);
@@ -406,16 +416,6 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     currentAccount!.type === KEYRING_CLASS.HARDWARE.LEDGER
       ? 'wired'
       : 'privatekey';
-
-  const gasCalcMethod = async (price: number) => {
-    const nativePrice = ctx?.nativeTokenPrice || 0;
-    const amount =
-      ctx?.txsCalc.reduce(
-        (acc, i) => acc.plus(new BigNumber(i.gasUsed).times(price).div(1e18)),
-        new BigNumber(0)
-      ) || new BigNumber(0);
-    return { gasCostUsd: amount.times(nativePrice), gasCostAmount: amount };
-  };
   let gasLessConfig =
     canUseGasLess && ctx?.gasless?.promotion
       ? ctx?.gasless?.promotion?.config

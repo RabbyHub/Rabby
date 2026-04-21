@@ -89,7 +89,6 @@ export const GasAccountCurrentAddress = ({
 const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
   const { t } = useTranslation();
   const { login, logout } = useGasAccountMethods();
-  const { sig, account: gasAccount } = useGasAccountSign();
 
   const [loading, setLoading] = useState(false);
 
@@ -97,12 +96,8 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
     if (loading) {
       return;
     }
-    const isSwitch = !!gasAccount?.address || !!sig;
     setLoading(true);
     try {
-      if (isSwitch) {
-        await logout();
-      }
       await login(account, false);
       await onLogin?.();
     } catch (error) {

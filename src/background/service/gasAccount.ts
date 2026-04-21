@@ -39,13 +39,27 @@ export type GasAccountServiceStore = {
   }>;
 };
 
+type GasAccountLinkedAccount = NonNullable<GasAccountServiceStore['account']>;
+
 const isSameDiscoveryAccount = (
-  a?: { address: string; type: string; brandName: string },
-  b?: { address: string; type: string; brandName: string }
+  a?: GasAccountLinkedAccount,
+  b?: GasAccountLinkedAccount
 ) =>
   a?.address?.toLowerCase() === b?.address?.toLowerCase() &&
   a?.type === b?.type &&
   a?.brandName === b?.brandName;
+
+const isSameRemovedAccount = (
+  account: GasAccountLinkedAccount | undefined,
+  removed: {
+    address: string;
+    type: string;
+    brandName?: string;
+  }
+) =>
+  account?.address?.toLowerCase() === removed.address.toLowerCase() &&
+  account?.type === removed.type &&
+  (!removed.brandName || account?.brandName === removed.brandName);
 
 const isSameDiscoveryAccountList = (
   prev: GasAccountServiceStore['accountsWithGasAccountBalance'],
@@ -114,32 +128,36 @@ class GasAccountService {
       this.store.account = undefined;
       this.store.currentBalanceAccountId = undefined;
       this.store.currentHasBalance = undefined;
-    } else {
-      this.store.sig = sig;
-      this.store.accountId = account?.address;
-      this.store.account = {
-        address: account.address,
-        brandName: account.brandName,
-        type: account.type,
-      };
-      if (
-        this.store.pendingHardwareAccount?.address?.toLowerCase() ===
-        account.address.toLowerCase()
-      ) {
-        this.store.pendingHardwareAccount = undefined;
-      }
-      if (
-        this.store.autoLoginAccount?.address?.toLowerCase() ===
-        account.address.toLowerCase()
-      ) {
-        this.store.autoLoginAccount = undefined;
-      }
+
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.GAS_ACCOUNT.LOG_OUT,
+      });
+      return;
     }
+
+    const accountAddress = account.address.toLowerCase();
+
+    this.store.sig = sig;
+    this.store.accountId = account.address;
+    this.store.account = {
+      address: account.address,
+      brandName: account.brandName,
+      type: account.type,
+    };
+    if (
+      this.store.pendingHardwareAccount?.address?.toLowerCase() ===
+      accountAddress
+    ) {
+      this.store.pendingHardwareAccount = undefined;
+    }
+    if (
+      this.store.autoLoginAccount?.address?.toLowerCase() === accountAddress
+    ) {
+      this.store.autoLoginAccount = undefined;
+    }
+
     eventBus.emit(EVENTS.broadcastToUI, {
-      method:
-        !sig || !account
-          ? EVENTS.GAS_ACCOUNT.LOG_OUT
-          : EVENTS.GAS_ACCOUNT.LOG_IN,
+      method: EVENTS.GAS_ACCOUNT.LOG_IN,
     });
   };
 
@@ -162,6 +180,32 @@ class GasAccountService {
   setCurrentBalanceState(accountId?: string, hasBalance?: boolean) {
     this.store.currentBalanceAccountId = accountId;
     this.store.currentHasBalance = hasBalance;
+  }
+
+  handleRemovedAccount(address: string, type: string, brandName?: string) {
+    const removedAccount = { address, type, brandName };
+
+    // if (isSameRemovedAccount(this.store.account, removedAccount)) {
+    //   this.setGasAccountSig();
+    // }
+
+    this.setDiscoveryState({
+      pendingHardwareAccount: isSameRemovedAccount(
+        this.store.pendingHardwareAccount,
+        removedAccount
+      )
+        ? undefined
+        : this.store.pendingHardwareAccount,
+      autoLoginAccount: isSameRemovedAccount(
+        this.store.autoLoginAccount,
+        removedAccount
+      )
+        ? undefined
+        : this.store.autoLoginAccount,
+      accountsWithGasAccountBalance: (
+        this.store.accountsWithGasAccountBalance || []
+      ).filter((account) => !isSameRemovedAccount(account, removedAccount)),
+    });
   }
 
   setDiscoveryState(

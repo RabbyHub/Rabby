@@ -428,8 +428,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   );
   const isLowGasAccountBalance = visibleGasAccountBalance < 0.1;
 
-  console.log('isLowGasAccountBalance', isLowGasAccountBalance);
-
   const gasAccountSubContentNode = useMemo<React.ReactNode>(() => {
     if (
       (gasAccountLoading && isGasAccountLogin) ||
