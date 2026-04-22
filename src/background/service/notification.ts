@@ -132,8 +132,8 @@ class NotificationService extends Events {
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
       if (IS_VIVALDI || IS_LINUX) return;
-      if (IS_CHROME && winId === browser.windows.WINDOW_ID_NONE && IS_WINDOWS) {
-        // When sign on Linux or Windows, will focus on -1 first then focus on sign window
+      if (IS_CHROME && winId === browser.windows.WINDOW_ID_NONE && !IS_LINUX) {
+        // When sign on non-Linux Chromium (Windows, macOS), focus goes to -1 first then to the sign window
         return;
       }
 
