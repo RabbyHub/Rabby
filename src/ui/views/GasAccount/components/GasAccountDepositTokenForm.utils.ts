@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
 import type { GasAccountAvailableToken } from '../hooks/useDepositTokenAvailability';
@@ -142,6 +143,12 @@ export const getDepositAmountValidation = ({
 
 export const getMinDepositUsdValue = (minDepositPrice?: number) =>
   Math.max(1, Number(minDepositPrice || 0));
+
+export const getDefaultDepositUsdValue = (minDepositPrice?: number) =>
+  new BigNumber(getMinDepositUsdValue(minDepositPrice)).toFixed(
+    2,
+    BigNumber.ROUND_CEIL
+  );
 
 export const getBridgeFromTokenAmount = ({
   amountValue,

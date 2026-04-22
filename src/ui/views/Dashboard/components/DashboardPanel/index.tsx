@@ -681,7 +681,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     gasAccount: {
       icon: RcIconGasAccountCC,
       eventKey: 'GasAccount',
-      content: t('page.dashboard.home.panel.gasAccount'),
+      content: t('page.gasAccount.gasDeposit'),
       onClick: () => {
         history.push('/gas-account');
       },

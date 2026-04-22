@@ -39,6 +39,7 @@ import {
   getBridgeFromTokenAmount,
   getDepositAmountValidation,
   getDepositBalanceCopy,
+  getDefaultDepositUsdValue,
   getDepositMaxUsdValue,
   getMinDepositUsdValue,
 } from './GasAccountDepositTokenForm.utils';
@@ -234,7 +235,9 @@ const GasAccountDepositTokenFormInner: React.FC<
     [allSortedAccountList, eligibleAccountAddressSet]
   );
 
-  const [usdValue, setUsdValue] = useState('');
+  const [usdValue, setUsdValue] = useState(() =>
+    getDefaultDepositUsdValue(minDepositPrice)
+  );
   const [selectedToken, setSelectedToken] = useState<
     GasAccountAvailableToken | undefined
   >();
@@ -248,6 +251,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   const [loading, setLoading] = useState(false);
   const quoteReqIdRef = useRef(0);
   const didInitSelectedTokenRef = useRef(false);
+  const wasVisibleRef = useRef(false);
   const pollCancelRef = useRef<(() => void) | null>(null);
   const resetBridgeQuoteState = useCallback(() => {
     setBridgeQuote(null);
@@ -269,23 +273,18 @@ const GasAccountDepositTokenFormInner: React.FC<
   }, [refreshAvailableTokens, visible]);
 
   useEffect(() => {
+    if (visible && !wasVisibleRef.current) {
+      setUsdValue(getDefaultDepositUsdValue(minDepositPrice));
+    }
+
+    wasVisibleRef.current = !!visible;
+
     if (!visible) {
-      setUsdValue('');
       setTokenPickerVisible(false);
       resetBridgeQuoteState();
       setLoading(false);
-      return;
     }
-
-    if (!usdValue) {
-      setUsdValue(
-        new BigNumber(getMinDepositUsdValue(minDepositPrice)).toFixed(
-          2,
-          BigNumber.ROUND_CEIL
-        )
-      );
-    }
-  }, [minDepositPrice, usdValue, visible]);
+  }, [minDepositPrice, resetBridgeQuoteState, visible]);
 
   useEffect(() => {
     if (!availableTokens.length) {
