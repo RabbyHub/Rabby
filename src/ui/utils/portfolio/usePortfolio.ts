@@ -43,8 +43,6 @@ export const log = (...args: any) => {
   // console.log(...args);
 };
 
-// export const portfolioChangeLoadingAtom = atom(true);
-
 export const usePortfolios = (userAddr: string | undefined, visible = true) => {
   const [data, setData] = useSafeState<DisplayedProject[]>([]);
   const [netWorth, setNetWorth] = useSafeState(0);
@@ -55,7 +53,6 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
   const realtimeIds = useRef<string[]>([]);
   const wallet = useWallet();
   const userAddrRef = useRef('');
-  // const setPortfolioChangeLoading = useSetAtom(portfolioChangeLoadingAtom);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
