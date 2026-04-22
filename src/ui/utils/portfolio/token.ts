@@ -288,7 +288,13 @@ export const useTokens = (
       }
     }
 
-    applyTokenItems(tokenRes);
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-tokens-db-cache-set', userAddr);
+      abortedFn();
+      return;
+    }
+
+    applyTokenItems(currentAllTokens);
 
     setLoading(false);
     setIsAllTokenLoading(false);

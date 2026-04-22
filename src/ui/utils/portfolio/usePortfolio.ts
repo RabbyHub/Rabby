@@ -257,6 +257,13 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
       })
     );
 
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-portfolio-realtime-', userAddr);
+      projectDict.current = null;
+      setLoading(false);
+      return;
+    }
+
     currentProtocols = replaceProtocols(currentProtocols, realtimeProtocols);
 
     if (shouldPersistDefiCache) {
@@ -271,6 +278,13 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
         // 忽略 db 的影响，不写缓存，直走内存
         log('--Terminate-portfolio-db-cache-set', userAddr);
       }
+    }
+
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-portfolio-db-cache-set', userAddr);
+      projectDict.current = null;
+      setLoading(false);
+      return;
     }
 
     realtimeData = Object.values(projectDict.current)?.sort(
