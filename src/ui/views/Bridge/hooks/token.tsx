@@ -4,7 +4,14 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { BridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useAsyncFn, useDebounce } from 'react-use';
 import useAsync from 'react-use/lib/useAsync';
 import { useRefreshId, useSetQuoteVisible, useSetRefreshId } from './context';
@@ -325,7 +332,22 @@ export const useBridge = () => {
     fromChain,
   ]);
 
+  const aggregatorsList = useRabbySelector(
+    (s) => s.bridge.aggregatorsList || []
+  );
+  const canRunQuoteRequest = !!(
+    inSufficientCanGetQuote &&
+    userAddress &&
+    fromToken?.id &&
+    toToken?.id &&
+    fromChain &&
+    toChain &&
+    Number(amount) > 0 &&
+    aggregatorsList.length > 0
+  );
   const [quoteList, setQuotesList] = useState<SelectedBridgeQuote[]>([]);
+  const fetchIdRef = useRef(0);
+  const [pending, setPending] = useState(false);
 
   const setSelectedBridgeQuote = useCallback((quote?: SelectedBridgeQuote) => {
     if (!quote?.manualClick && expiredTimer.current) {
@@ -341,38 +363,23 @@ export const useBridge = () => {
     setOriSelectedBridgeQuote(quote);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    fetchIdRef.current += 1;
     setQuotesList([]);
     setRecommendFromToken(undefined);
     setSelectedBridgeQuote(undefined);
-  }, [fromToken?.id, toToken?.id, fromChain, toChain]);
+    setPending(canRunQuoteRequest);
+  }, [
+    canRunQuoteRequest,
+    userAddress,
+    fromToken?.id,
+    toToken?.id,
+    fromChain,
+    toChain,
+    amount,
+    slippageObj.slippage,
+  ]);
 
-  useEffect(() => {
-    if (!inSufficientCanGetQuote) {
-      setQuotesList([]);
-      setRecommendFromToken(undefined);
-      setSelectedBridgeQuote(undefined);
-    }
-  }, [inSufficientCanGetQuote, setSelectedBridgeQuote]);
-
-  useEffect(() => {
-    if (
-      !enableInsufficientQuote ||
-      !amount ||
-      Number(amount) === 0 ||
-      quoteList.length < 1
-    ) {
-      setQuotesList([]);
-      setRecommendFromToken(undefined);
-      setSelectedBridgeQuote(undefined);
-    }
-  }, [amount, setSelectedBridgeQuote, quoteList.length]);
-
-  const aggregatorsList = useRabbySelector(
-    (s) => s.bridge.aggregatorsList || []
-  );
-
-  const fetchIdRef = useRef(0);
   const [
     { loading: quoteLoading, error: quotesError },
     getQuoteList,
@@ -383,17 +390,7 @@ export const useBridge = () => {
     }
 
     fetchIdRef.current += 1;
-    if (
-      inSufficientCanGetQuote &&
-      userAddress &&
-      fromToken?.id &&
-      toToken?.id &&
-      toToken &&
-      fromChain &&
-      toChain &&
-      Number(amount) > 0 &&
-      aggregatorsList.length > 0
-    ) {
+    if (canRunQuoteRequest && toToken) {
       refreshTokensInfo();
       const currentFetchId = fetchIdRef.current;
 
@@ -502,13 +499,22 @@ export const useBridge = () => {
                 to_token_id: toToken.id,
               }
             );
+            if (currentFetchId !== fetchIdRef.current) {
+              return;
+            }
             if (recommendFromToken?.token_list?.[0]) {
               await getQUoteV2(recommendFromToken?.token_list?.[0]);
             } else {
               setRecommendFromToken(undefined);
             }
           } catch (error) {
-            setRecommendFromToken(undefined);
+            if (currentFetchId === fetchIdRef.current) {
+              setRecommendFromToken(undefined);
+            }
+          }
+
+          if (currentFetchId !== fetchIdRef.current) {
+            return;
           }
 
           setSelectedBridgeQuote(undefined);
@@ -596,7 +602,7 @@ export const useBridge = () => {
       }
     }
   }, [
-    inSufficientCanGetQuote,
+    canRunQuoteRequest,
     aggregatorsList,
     refreshId,
     userAddress,
@@ -608,37 +614,13 @@ export const useBridge = () => {
     slippageObj.slippage,
   ]);
 
-  const [pending, setPending] = useState(false);
-
   useEffect(() => {
-    if (
-      inSufficientCanGetQuote &&
-      userAddress &&
-      fromToken?.id &&
-      toToken?.id &&
-      toToken &&
-      fromChain &&
-      toChain &&
-      Number(amount) > 0 &&
-      aggregatorsList.length > 0
-    ) {
+    if (canRunQuoteRequest) {
       setPending(true);
     } else {
       setPending(false);
-      setSelectedBridgeQuote(undefined);
     }
-  }, [
-    inSufficientCanGetQuote,
-    userAddress,
-    fromToken?.id,
-    toToken?.id,
-    toToken,
-    fromChain,
-    toChain,
-    Number(amount),
-    aggregatorsList.length,
-    refreshId,
-  ]);
+  }, [canRunQuoteRequest, slippageObj.slippage, refreshId]);
 
   const [, cancelDebounce] = useDebounce(
     () => {
@@ -677,7 +659,12 @@ export const useBridge = () => {
   }, []);
 
   useEffect(() => {
-    if (!quoteLoading && toToken && quoteList.every((e) => !e.loading)) {
+    if (
+      canRunQuoteRequest &&
+      !quoteLoading &&
+      toToken &&
+      quoteList.every((e) => !e.loading)
+    ) {
       if (!quoteList.length) {
         return;
       }
@@ -708,7 +695,7 @@ export const useBridge = () => {
         setSelectedBridgeQuote(useQuote);
       }
     }
-  }, [quoteList, quoteLoading, toToken]);
+  }, [canRunQuoteRequest, quoteList, quoteLoading, toToken]);
 
   if (quotesError) {
     console.error('quotesError', quotesError);

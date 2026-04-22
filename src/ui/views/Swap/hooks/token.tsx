@@ -4,7 +4,14 @@ import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useAsync, useAsyncFn, useDebounce } from 'react-use';
 import {
   isSwapWrapToken,
@@ -550,6 +557,15 @@ export const useTokenPair = (userAddress: string) => {
   const inSufficientCanGetQuote = enableInsufficientQuote
     ? true
     : !inSufficient;
+  const canRunQuoteRequest =
+    !!(
+      userAddress &&
+      payToken?.id &&
+      receiveToken?.id &&
+      chain &&
+      Number(inputAmount) > 0 &&
+      feeRate
+    ) && inSufficientCanGetQuote;
 
   useEffect(() => {
     if (isWrapToken) {
@@ -562,26 +578,22 @@ export const useTokenPair = (userAddress: string) => {
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    fetchIdRef.current += 1;
     setQuotesList([]);
-  }, [payToken?.id, receiveToken?.id, chain, inputAmount]);
-
-  useEffect(() => {
     setActiveProvider(undefined);
-  }, [payToken?.id, receiveToken?.id, chain]);
-
-  useEffect(() => {
-    if (!enableInsufficientQuote || !inputAmount || Number(inputAmount) === 0) {
-      setActiveProvider(undefined);
-    }
-  }, [inputAmount]);
-
-  useEffect(() => {
-    if (!inSufficientCanGetQuote) {
-      setQuotesList([]);
-      setActiveProvider(undefined);
-    }
-  }, [inSufficientCanGetQuote]);
+    setPending(canRunQuoteRequest);
+  }, [
+    canRunQuoteRequest,
+    userAddress,
+    payToken?.id,
+    receiveToken?.id,
+    chain,
+    inputAmount,
+    feeRate,
+    slippageObj.slippage,
+    slippageObj.autoSlippage,
+  ]);
 
   const setQuote = useCallback(
     (id: number) => (quote: TDexQuoteData) => {
@@ -639,17 +651,7 @@ export const useTokenPair = (userAddress: string) => {
 
     fetchIdRef.current += 1;
     const currentFetchId = fetchIdRef.current;
-    if (
-      userAddress &&
-      payToken?.id &&
-      receiveToken?.id &&
-      receiveToken &&
-      chain &&
-      Number(inputAmount) > 0 &&
-      feeRate &&
-      inSufficientCanGetQuote &&
-      !isDraggingSlider
-    ) {
+    if (canRunQuoteRequest && receiveToken && !isDraggingSlider) {
       refreshTokensInfo();
 
       setQuotesList((e) =>
@@ -692,6 +694,9 @@ export const useTokenPair = (userAddress: string) => {
         setQuote: setQuote(currentFetchId),
         inSufficient,
       }).finally(() => {
+        if (currentFetchId !== fetchIdRef.current) {
+          return;
+        }
         setPending(false);
         setShowMoreVisible(true);
       });
@@ -700,7 +705,7 @@ export const useTokenPair = (userAddress: string) => {
     }
   }, [
     setActiveProvider,
-    inSufficientCanGetQuote,
+    canRunQuoteRequest,
     setQuotesList,
     setQuote,
     refreshId,
@@ -716,28 +721,13 @@ export const useTokenPair = (userAddress: string) => {
   ]);
 
   useEffect(() => {
-    if (
-      userAddress &&
-      payToken?.id &&
-      receiveToken?.id &&
-      receiveToken &&
-      chain &&
-      Number(inputAmount) > 0 &&
-      feeRate &&
-      inSufficientCanGetQuote
-    ) {
+    if (canRunQuoteRequest) {
       setPending(true);
     } else {
       setPending(false);
     }
   }, [
-    userAddress,
-    payToken?.id,
-    receiveToken?.id,
-    chain,
-    inputAmount,
-    feeRate,
-    inSufficientCanGetQuote,
+    canRunQuoteRequest,
     slippageObj?.slippage,
     slippageObj.autoSlippage,
     refreshId,
