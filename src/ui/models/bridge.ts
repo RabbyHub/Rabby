@@ -5,9 +5,7 @@ import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { ALL_SUPPORTED_BRIDGE_CHAINS } from '@rabby-wallet/rabby-bridge';
 import { BridgeServiceStore } from '@/background/service/bridge';
 import { BridgeAggregator } from '@/background/service/openapi';
-import {
-  DEFAULT_BRIDGE_AGGREGATOR,
-} from '@/constant/bridge';
+import { DEFAULT_BRIDGE_AGGREGATOR } from '@/constant/bridge';
 import { ensureChainListValid, findChainByServerID } from '@/utils/chain';
 
 export const bridge = createModel<RootModel>()({

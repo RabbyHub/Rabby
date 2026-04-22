@@ -191,10 +191,9 @@ export const BridgeContent = () => {
                 quoteKey: selectedBridgeQuote.quote_key || {},
               },
               wallet.openapi
-            )
-              .catch((e) => {
-                throw new AbortError(e?.message || String(e));
-              }),
+            ).catch((e) => {
+              throw new AbortError(e?.message || String(e));
+            }),
           { retries: 1 }
         );
         stats.report('bridgeQuoteResult', {
@@ -334,10 +333,9 @@ export const BridgeContent = () => {
                 quoteKey: selectedBridgeQuote.quote_key || {},
               },
               wallet.openapi
-            )
-              .catch((e) => {
-                throw new AbortError(e?.message || String(e));
-              }),
+            ).catch((e) => {
+              throw new AbortError(e?.message || String(e));
+            }),
           { retries: 1 }
         );
         stats.report('bridgeQuoteResult', {
