@@ -3,7 +3,7 @@ import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { formatUsdValue } from '@/ui/utils/number';
-import { getTokenSymbol } from '@/ui/utils/token';
+import { getTokenSymbol, tokenAmountBn } from '@/ui/utils/token';
 import { useWallet, isSameAddress } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { Button, Skeleton, Tooltip, message } from 'antd';
@@ -16,7 +16,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { useAsync, useDebounce } from 'react-use';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import {
   GasAccountAvailableToken,
@@ -46,7 +46,6 @@ import {
 import {
   buildGasAccountBridgeTxs,
   buildTopUpGasAccount,
-  fetchGasAccountTopUpUsedNonce,
   fetchGasAccountBridgeQuote,
   getGasAccountDirectDepositAddress,
   pollDepositStatus,
@@ -57,6 +56,7 @@ import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { findChainByServerID } from '@/utils/chain';
+import { CHAINS_ENUM } from '@/types/chain';
 
 interface GasAccountDepositTokenFormProps {
   visible?: boolean;
@@ -69,8 +69,8 @@ interface GasAccountDepositTokenFormProps {
 }
 
 const PENDING_STATUS_MAX_ATTEMPTS = 100;
-const GAS_ACCOUNT_DEPOSIT_POPUP_HEIGHT = 320;
-// const POST_DEPOSIT_REFRESH_DELAYS = [1500, 5000, 10000];
+const GAS_ACCOUNT_DEPOSIT_POPUP_HEIGHT = 360;
+const QUICK_DEPOSIT_PERCENT_PRESETS = [25, 50, 75];
 
 type SubmittedDepositTxInfo = {
   trackingTxHash: string;
@@ -93,6 +93,12 @@ const buildSubmittedDepositTxInfo = (
     consumedNonceCount: normalizedTxHashes.length,
   };
 };
+
+const formatQuickDepositUsdValue = (amount: BigNumber.Value) =>
+  new BigNumber(amount)
+    .decimalPlaces(4, BigNumber.ROUND_DOWN)
+    .toFixed()
+    .replace(/(\.\d*?[1-9])0+$|\.0+$/, '$1');
 
 export const GasAccountDepositTokenForm: React.FC<GasAccountDepositTokenFormProps> = ({
   visible,
@@ -351,12 +357,46 @@ const GasAccountDepositTokenFormInner: React.FC<
   const { openUI, resetGasStore, close: closeSign } = useMiniSigner({
     account: signerAccount as Account,
   });
+  const { value: gasMarketResult } = useAsync(async () => {
+    if (!selectedToken?.chain) {
+      return null;
+    }
+
+    return {
+      chainId: selectedToken.chain,
+      gasList: await wallet.gasMarketV2({
+        chainId: selectedToken.chain,
+      }),
+    };
+  }, [selectedToken?.chain, wallet]);
 
   const amountValue = Number(usdValue || 0);
   const canUseMiniSign = selectedOwnerAccount?.type
     ? supportedDirectSign(selectedOwnerAccount.type)
     : false;
   const minDepositUsd = getMinDepositUsdValue(minDepositPrice);
+  const chainInfo = useMemo(
+    () =>
+      selectedToken?.chain
+        ? findChainByServerID(selectedToken.chain) || null
+        : null,
+    [selectedToken?.chain]
+  );
+  const tokenIsNativeToken = useMemo(() => {
+    if (!selectedToken) {
+      return false;
+    }
+
+    return isSameAddress(selectedToken.id, chainInfo?.nativeTokenAddress || '');
+  }, [chainInfo?.nativeTokenAddress, selectedToken]);
+  const nativeTokenDecimals = useMemo(
+    () => chainInfo?.nativeTokenDecimals || 1e18,
+    [chainInfo?.nativeTokenDecimals]
+  );
+  const maxReserveGasLimit = useMemo(
+    () => (chainInfo?.enum === CHAINS_ENUM.ETH ? 1000000 : 2000000),
+    [chainInfo?.enum]
+  );
   const isBridgeDeposit = selectedToken?.gasAccountDepositType === 'bridge';
   const directTokenBalance = Number(selectedToken?.amount || 0);
   const tokenBalanceUsd = getTokenUsdValue(selectedToken);
@@ -369,6 +409,76 @@ const GasAccountDepositTokenFormInner: React.FC<
     directTokenBalance,
     tokenBalanceUsd,
   });
+  const quickDepositBaseUsdValue = depositMaxUsdValue;
+  const maxQuickDepositValue = useMemo(() => {
+    if (!selectedToken) {
+      return '';
+    }
+
+    const fallbackValue = formatQuickDepositUsdValue(quickDepositBaseUsdValue);
+
+    if (!tokenIsNativeToken) {
+      return fallbackValue;
+    }
+
+    if (
+      gasMarketResult?.chainId !== selectedToken.chain ||
+      !gasMarketResult.gasList?.length
+    ) {
+      return fallbackValue;
+    }
+
+    const normalPrice =
+      gasMarketResult.gasList.find((item) => item.level === 'normal')?.price ||
+      0;
+    if (!normalPrice) {
+      return fallbackValue;
+    }
+
+    const reservedNativeTokenAmount = new BigNumber(maxReserveGasLimit)
+      .times(normalPrice)
+      .div(10 ** nativeTokenDecimals);
+    const retainedAmount = tokenAmountBn(selectedToken).minus(
+      reservedNativeTokenAmount
+    );
+
+    if (retainedAmount.lte(0)) {
+      return fallbackValue;
+    }
+
+    return formatQuickDepositUsdValue(
+      selectedToken.gasAccountDepositType === 'direct'
+        ? retainedAmount
+        : retainedAmount.times(selectedToken.price || 0)
+    );
+  }, [
+    gasMarketResult,
+    maxReserveGasLimit,
+    nativeTokenDecimals,
+    quickDepositBaseUsdValue,
+    selectedToken,
+    tokenIsNativeToken,
+  ]);
+  const quickDepositButtons = useMemo(() => {
+    if (!selectedToken || quickDepositBaseUsdValue <= 0) {
+      return [];
+    }
+
+    return [
+      ...QUICK_DEPOSIT_PERCENT_PRESETS.map((pct) => ({
+        key: `${pct}`,
+        label: `${pct}%`,
+        value: formatQuickDepositUsdValue(
+          new BigNumber(quickDepositBaseUsdValue).times(pct).div(100)
+        ),
+      })),
+      {
+        key: 'max',
+        label: 'Max',
+        value: maxQuickDepositValue,
+      },
+    ];
+  }, [maxQuickDepositValue, quickDepositBaseUsdValue, selectedToken]);
   const balanceText = formatUsdValue(depositMaxUsdValue);
   const balanceDisplayText = formatUsdValue(tokenBalanceUsd);
   const validationMessages = {
@@ -498,6 +608,9 @@ const GasAccountDepositTokenFormInner: React.FC<
     },
     []
   );
+  const handleQuickAmountClick = useCallback((value: string) => {
+    setUsdValue(value);
+  }, []);
 
   const quoteError = useMemo(() => {
     if (shouldResetBridgeQuote || quoteLoading) {
@@ -586,10 +699,8 @@ const GasAccountDepositTokenFormInner: React.FC<
     tokenBalanceUsd,
     amountValue,
     formattedBalance: selectedToken ? balanceDisplayText : balanceText,
-    balanceLabel: t('page.gasAccount.depositPopup.balanceLabel', {
-      defaultValue: 'Balance',
-    }),
-    insufficientBalanceLabel: validationMessages.insufficientBalanceLabel,
+    balanceLabel: t('page.gasAccount.depositPopup.balanceLabel'),
+    insufficientBalanceLabel: t('page.gasAccount.depositPopup.balanceLabel'),
   });
 
   const ensureGasAccountLogin = useCallback(
@@ -675,58 +786,6 @@ const GasAccountDepositTokenFormInner: React.FC<
     [getRequiredGasAccountSession, wallet]
   );
 
-  const topUpGasAccount = useCallback(
-    async ({
-      to,
-      chainServerId,
-      tokenId,
-      rawAmount,
-      amount,
-      account,
-    }: {
-      to: string;
-      chainServerId: string;
-      tokenId: string;
-      rawAmount: string;
-      amount: number;
-      account: Account;
-    }) => {
-      const tx = await buildTopUpGasAccount({
-        to,
-        chainServerId,
-        tokenId,
-        rawAmount,
-        account,
-      });
-
-      const txHash = await wallet.sendRequest<string>(
-        {
-          method: 'eth_sendTransaction',
-          params: [tx],
-          $ctx: {
-            ga: {
-              category: 'GasAccount',
-              action: 'deposit',
-            },
-          },
-        },
-        {
-          account,
-        }
-      );
-
-      await afterTopUpGasAccount({
-        chainServerId,
-        amount,
-        tx: txHash,
-        account,
-      });
-
-      return txHash;
-    },
-    [afterTopUpGasAccount, wallet]
-  );
-
   const openMiniSignDeposit = useCallback(
     async (txs: Tx[]) => {
       resetGasStore();
@@ -742,34 +801,6 @@ const GasAccountDepositTokenFormInner: React.FC<
       });
     },
     [closeSign, openUI, resetGasStore]
-  );
-
-  const sendBridgeTxsDirectly = useCallback(
-    async (txs: Tx[], account: Account) => {
-      const hashes: string[] = [];
-
-      for (const tx of txs) {
-        const hash = await wallet.sendRequest<string>(
-          {
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'GasAccount',
-                action: 'deposit',
-              },
-            },
-          },
-          {
-            account,
-          }
-        );
-        hashes.push(hash);
-      }
-
-      return hashes;
-    },
-    [wallet]
   );
 
   const afterBridgeTopUpGasAccount = useCallback(
@@ -802,7 +833,7 @@ const GasAccountDepositTokenFormInner: React.FC<
         from_usd_value: usdValue,
         tx_id: txId,
         scene,
-      } as any);
+      });
     },
     [getRequiredGasAccountSession, wallet]
   );
@@ -849,7 +880,15 @@ const GasAccountDepositTokenFormInner: React.FC<
       };
 
       if (!canUseMiniSign) {
-        return buildSubmittedDepositTxInfo([await topUpGasAccount(params)]);
+        const tx = await buildTopUpGasAccount(params);
+        const txHashes = await wallet.submitGasAccountDepositTxs({
+          account,
+          txs: [tx],
+          amount: usdValue,
+          chainServerId: token.chain,
+          depositType: 'direct',
+        });
+        return buildSubmittedDepositTxInfo(txHashes);
       }
 
       const tx = await buildTopUpGasAccount(params);
@@ -865,7 +904,7 @@ const GasAccountDepositTokenFormInner: React.FC<
 
       return buildSubmittedDepositTxInfo([txHash]);
     },
-    [afterTopUpGasAccount, canUseMiniSign, openMiniSignDeposit, topUpGasAccount]
+    [afterTopUpGasAccount, canUseMiniSign, openMiniSignDeposit, wallet]
   );
 
   const submitBridgeDeposit = useCallback(
@@ -890,9 +929,22 @@ const GasAccountDepositTokenFormInner: React.FC<
         usdValue,
       });
 
-      const bridgeTxHashes = canUseMiniSign
-        ? (await openMiniSignDeposit(bridgeTxs)) || []
-        : await sendBridgeTxsDirectly(bridgeTxs, account);
+      if (!canUseMiniSign) {
+        const bridgeTxHashes = await wallet.submitGasAccountDepositTxs({
+          account,
+          txs: bridgeTxs,
+          amount: usdValue,
+          chainServerId: token.chain,
+          depositType: 'bridge',
+          tokenId: token.id,
+          tokenAmount,
+          scene: onWaitDepositResult ? 'in_tx_flow' : 'recharge',
+        });
+
+        return buildSubmittedDepositTxInfo(bridgeTxHashes);
+      }
+
+      const bridgeTxHashes = (await openMiniSignDeposit(bridgeTxs)) || [];
       const submittedDeposit = buildSubmittedDepositTxInfo(bridgeTxHashes);
 
       if (!submittedDeposit) {
@@ -916,7 +968,6 @@ const GasAccountDepositTokenFormInner: React.FC<
       canUseMiniSign,
       onWaitDepositResult,
       openMiniSignDeposit,
-      sendBridgeTxsDirectly,
       wallet,
     ]
   );
@@ -1004,7 +1055,10 @@ const GasAccountDepositTokenFormInner: React.FC<
 
     setLoading(true);
     try {
-      if (!(await ensureGasAccountLogin(selectedOwnerAccount))) {
+      if (
+        canUseMiniSign &&
+        !(await ensureGasAccountLogin(selectedOwnerAccount))
+      ) {
         return;
       }
       const submittedDeposit =
@@ -1065,6 +1119,7 @@ const GasAccountDepositTokenFormInner: React.FC<
     amountValue,
     bridgeFromTokenAmount,
     bridgeQuote,
+    canUseMiniSign,
     ensureGasAccountLogin,
     finishDepositSuccess,
     onWaitDepositResult,
@@ -1092,6 +1147,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   const infoText = amountValidation.errorMessage || quoteError;
   const shouldShowReceiveMetrics =
     !!selectedToken && amountValidation.isValid && !infoText;
+  const hasQuickAmountOptions = !!quickDepositButtons.length;
 
   return (
     <Popup
@@ -1144,9 +1200,10 @@ const GasAccountDepositTokenFormInner: React.FC<
                   <input
                     className={clsx(
                       'text-[28px] leading-[34px] font-medium bg-transparent border-none p-0 w-full outline-none focus:outline-none',
-                      amountValidation.errorMessage
-                        ? 'text-r-red-default'
-                        : 'text-r-neutral-title-1'
+                      // amountValidation.errorMessage
+                      //   ? 'text-r-red-default'
+                      //   : 'text-r-neutral-title-1'
+                      'text-r-neutral-title-1'
                     )}
                     autoFocus
                     placeholder="$0"
@@ -1156,9 +1213,10 @@ const GasAccountDepositTokenFormInner: React.FC<
                   <div
                     className={clsx(
                       'text-13 leading-[16px] mt-2 truncate',
-                      balanceCopy.isInsufficient
-                        ? 'text-r-red-default'
-                        : 'text-r-neutral-foot'
+                      // balanceCopy.isInsufficient
+                      //   ? 'text-r-red-default'
+                      //   : 'text-r-neutral-foot'
+                      'text-r-neutral-foot'
                     )}
                   >
                     {amountTokenText}
@@ -1199,7 +1257,40 @@ const GasAccountDepositTokenFormInner: React.FC<
               </div>
             </div>
 
-            <div className="mt-10 min-h-[36px]">
+            {hasQuickAmountOptions ? (
+              <div className="flex items-center gap-8 mt-8">
+                {quickDepositButtons.map((button) => {
+                  const isActive = new BigNumber(usdValue || 0).eq(
+                    button.value
+                  );
+
+                  return (
+                    <button
+                      key={button.key}
+                      type="button"
+                      className={clsx(
+                        'flex-1 h-[40px] flex items-center justify-center rounded-[8px] border border-solid text-13 font-medium',
+                        isActive
+                          ? 'border-rabby-blue-default bg-r-blue-light1 text-r-blue-default'
+                          : 'border-transparent text-r-neutral-title-1 bg-r-neutral-card1 hover:border-rabby-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default'
+                      )}
+                      onClick={() => {
+                        handleQuickAmountClick(button.value);
+                      }}
+                    >
+                      {button.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : null}
+
+            <div
+              className={clsx(
+                'min-h-[36px]',
+                hasQuickAmountOptions ? 'mt-8' : 'mt-10'
+              )}
+            >
               {infoText ? (
                 <div className="text-13 leading-[18px] text-r-red-default">
                   {infoText}
