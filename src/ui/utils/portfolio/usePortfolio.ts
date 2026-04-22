@@ -1,23 +1,25 @@
 import { useCallback, useEffect, useRef } from 'react';
-import produce from 'immer';
 
-import { CACHE_VALID_DURATION, DEFI_SYNC_SCENE } from '@/db/constants';
+import produce from 'immer';
+import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
+
+import { isFullVersionAccountType } from '@/utils/account';
 import { defiDbService } from '@/db/services/defiDbService';
 import { syncDbService } from '@/db/services/syncDbService';
-import { isFullVersionAccountType } from '@/utils/account';
-import { useWallet } from '../WalletContext';
+import { CACHE_VALID_DURATION, DEFI_SYNC_SCENE } from '@/db/constants';
+
 import { chunk } from './utils';
+import { isSameAddress } from '..';
 import { useSafeState } from '../safeState';
+import { useWallet } from '../WalletContext';
+import { DisplayedProject } from './project';
 import { getExpandListSwitch } from './expandList';
 import {
   batchLoadProjects,
   loadPortfolioSnapshot,
-  snapshot2Display,
   portfolio2Display,
+  snapshot2Display,
 } from './utils';
-import { DisplayedProject } from './project';
-import { isSameAddress } from '..';
-import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
 
 const chunkSize = 5;
 
@@ -41,8 +43,6 @@ export const log = (...args: any) => {
   // console.log(...args);
 };
 
-// export const portfolioChangeLoadingAtom = atom(true);
-
 export const usePortfolios = (userAddr: string | undefined, visible = true) => {
   const [data, setData] = useSafeState<DisplayedProject[]>([]);
   const [netWorth, setNetWorth] = useSafeState(0);
@@ -53,7 +53,6 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
   const realtimeIds = useRef<string[]>([]);
   const wallet = useWallet();
   const userAddrRef = useRef('');
-  // const setPortfolioChangeLoading = useSetAtom(portfolioChangeLoadingAtom);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -112,7 +111,6 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
     abortProcess.current = currentAbort;
 
     setLoading(true);
-    // setPortfolioChangeLoading(withHistory);
 
     log('======Start-Portfolio======', userAddr);
     setData([]);
@@ -124,45 +122,56 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
       ? isFullVersionAccountType(matchedAccount as any)
       : false;
 
-    if (shouldPersistDefiCache) {
-      currentProtocols = await defiDbService.queryProtocols(userAddr);
+    /**
+     * 阶段一：本地 DB 缓存
+     */
+    try {
+      if (shouldPersistDefiCache) {
+        currentProtocols = await defiDbService.queryProtocols(userAddr);
 
-      if (currentAbort.signal.aborted) {
-        log('--Terminate-portfolio-db-cache-', userAddr);
-        setLoading(false);
-        return;
+        if (currentAbort.signal.aborted) {
+          log('--Terminate-portfolio-db-cache-', userAddr);
+          setLoading(false);
+          return;
+        }
+
+        if (currentProtocols.length) {
+          applyProtocols(currentProtocols);
+          setLoading(false);
+        }
+
+        const updatedAt =
+          (await syncDbService.getUpdatedAt({
+            address: userAddr,
+            scene: DEFI_SYNC_SCENE,
+          })) || 0;
+
+        const shouldUseDbCache =
+          currentProtocols.length > 0 &&
+          !forceRefresh &&
+          updatedAt > Date.now() - CACHE_VALID_DURATION;
+
+        if (shouldUseDbCache) {
+          log('<<==Defi-cache-hit==>>', userAddr);
+          return;
+        }
+      } else {
+        await Promise.all([
+          defiDbService.deleteForAddress(userAddr),
+          syncDbService.deleteSceneForAddress({
+            address: userAddr,
+            scene: DEFI_SYNC_SCENE,
+          }),
+        ]);
       }
-
-      if (currentProtocols.length) {
-        applyProtocols(currentProtocols);
-        setLoading(false);
-      }
-
-      const updatedAt =
-        (await syncDbService.getUpdatedAt({
-          address: userAddr,
-          scene: DEFI_SYNC_SCENE,
-        })) || 0;
-
-      const shouldUseDbCache =
-        currentProtocols.length > 0 &&
-        !forceRefresh &&
-        updatedAt > Date.now() - CACHE_VALID_DURATION;
-
-      if (shouldUseDbCache) {
-        log('<<==Defi-cache-hit==>>', userAddr);
-        return;
-      }
-    } else {
-      await Promise.all([
-        defiDbService.deleteForAddress(userAddr),
-        syncDbService.deleteSceneForAddress({
-          address: userAddr,
-          scene: DEFI_SYNC_SCENE,
-        }),
-      ]);
+    } catch (error) {
+      // 忽略 db 的影响，直接走线上逻辑
+      log('--Terminate-portfolio-db-cache-get', userAddr);
     }
 
+    /**
+     * 阶段二：接口快照缓存
+     */
     let snapshotRes: ComplexProtocol[] = [];
     snapshotRes = await loadPortfolioSnapshot(userAddr, wallet);
 
@@ -185,12 +194,20 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
 
     if (!realtimeIds.current.length) {
       if (shouldPersistDefiCache) {
-        await defiDbService.replaceAddressProtocols(userAddr, currentProtocols);
-        await syncDbService.setUpdatedAt({
-          address: userAddr,
-          scene: DEFI_SYNC_SCENE,
-          updatedAt: Date.now(),
-        });
+        try {
+          await defiDbService.replaceAddressProtocols(
+            userAddr,
+            currentProtocols
+          );
+          await syncDbService.setUpdatedAt({
+            address: userAddr,
+            scene: DEFI_SYNC_SCENE,
+            updatedAt: Date.now(),
+          });
+        } catch (error) {
+          // 忽略 db 的影响，不写缓存，直走内存
+          log('--Terminate-portfolio-db-cache-set', userAddr);
+        }
       }
 
       log('--Terminate-portfolio-loadProjectIds-', userAddr);
@@ -198,6 +215,10 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
       setLoading(false);
       return;
     }
+
+    /**
+     * 阶段三：完整逐个 id刷新
+     */
 
     const chunkIds = chunk(realtimeIds.current, chunkSize);
 
@@ -239,12 +260,17 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
     currentProtocols = replaceProtocols(currentProtocols, realtimeProtocols);
 
     if (shouldPersistDefiCache) {
-      await defiDbService.replaceAddressProtocols(userAddr, currentProtocols);
-      await syncDbService.setUpdatedAt({
-        address: userAddr,
-        scene: DEFI_SYNC_SCENE,
-        updatedAt: Date.now(),
-      });
+      try {
+        await defiDbService.replaceAddressProtocols(userAddr, currentProtocols);
+        await syncDbService.setUpdatedAt({
+          address: userAddr,
+          scene: DEFI_SYNC_SCENE,
+          updatedAt: Date.now(),
+        });
+      } catch (error) {
+        // 忽略 db 的影响，不写缓存，直走内存
+        log('--Terminate-portfolio-db-cache-set', userAddr);
+      }
     }
 
     realtimeData = Object.values(projectDict.current)?.sort(
