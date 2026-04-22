@@ -136,9 +136,7 @@ export const GasAccountDepositTokenForm: React.FC<GasAccountDepositTokenFormProp
           <div className="bg-r-neutral-bg2 h-full flex flex-col relative overflow-hidden rounded-t-[16px]">
             <div className="relative flex items-center justify-center h-[52px] shrink-0">
               <div className="text-[20px] font-medium text-r-neutral-title-1 text-center">
-                {t('page.gasAccount.depositPopup.gasDepositTitle', {
-                  defaultValue: 'Gas Deposit',
-                })}
+                {t('page.gasAccount.depositPopup.gasDepositTitle')}
               </div>
               <button
                 type="button"
@@ -244,7 +242,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   const [usdValue, setUsdValue] = useState(() =>
     getDefaultDepositUsdValue(minDepositPrice)
   );
-  const [selectedToken, setSelectedToken] = useState<
+  const [selectedTokenSnapshot, setSelectedToken] = useState<
     GasAccountAvailableToken | undefined
   >();
   const [tokenPickerVisible, setTokenPickerVisible] = useState(false);
@@ -265,6 +263,52 @@ const GasAccountDepositTokenFormInner: React.FC<
     setBridgeQuoteError('');
     setQuoteLoading(false);
   }, []);
+
+  const { value: selectedTokenInfo } = useAsync(async () => {
+    const ownerAddr = selectedTokenSnapshot?.owner_addr;
+    const chain = selectedTokenSnapshot?.chain;
+    const tokenId = selectedTokenSnapshot?.id;
+
+    if (!ownerAddr || !chain || !tokenId) {
+      return null;
+    }
+
+    const token = await wallet.openapi.getToken(ownerAddr, chain, tokenId);
+
+    return {
+      ...token,
+      owner_addr: ownerAddr,
+    };
+  }, [
+    selectedTokenSnapshot?.owner_addr,
+    selectedTokenSnapshot?.chain,
+    selectedTokenSnapshot?.id,
+    wallet,
+  ]);
+
+  const selectedToken = useMemo<GasAccountAvailableToken | undefined>(() => {
+    const snapshot = selectedTokenSnapshot;
+
+    if (!snapshot || !selectedTokenInfo) {
+      return snapshot;
+    }
+
+    const isSameSelectedToken =
+      isSameAddress(snapshot.owner_addr, selectedTokenInfo.owner_addr) &&
+      snapshot.chain === selectedTokenInfo.chain &&
+      isSameAddress(snapshot.id, selectedTokenInfo.id);
+
+    if (!isSameSelectedToken) {
+      return snapshot;
+    }
+
+    return {
+      ...snapshot,
+      ...selectedTokenInfo,
+      owner_addr: snapshot.owner_addr,
+      gasAccountDepositType: snapshot.gasAccountDepositType,
+    };
+  }, [selectedTokenInfo, selectedTokenSnapshot]);
 
   useEffect(() => {
     return () => {
@@ -312,21 +356,6 @@ const GasAccountDepositTokenFormInner: React.FC<
       });
       return;
     }
-
-    setSelectedToken((current) => {
-      if (!current) {
-        return availableTokens[0];
-      }
-
-      const matched = availableTokens.find(
-        (item) =>
-          isSameAddress(item.owner_addr, current.owner_addr) &&
-          item.chain === current.chain &&
-          isSameAddress(item.id, current.id)
-      );
-
-      return matched || availableTokens[0];
-    });
   }, [availableTokens]);
 
   const selectedOwnerAccount = useMemo(
