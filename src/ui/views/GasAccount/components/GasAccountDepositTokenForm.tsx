@@ -46,7 +46,6 @@ import {
 import {
   buildGasAccountBridgeTxs,
   buildTopUpGasAccount,
-  fetchGasAccountTopUpUsedNonce,
   fetchGasAccountBridgeQuote,
   getGasAccountDirectDepositAddress,
   pollDepositStatus,
@@ -675,58 +674,6 @@ const GasAccountDepositTokenFormInner: React.FC<
     [getRequiredGasAccountSession, wallet]
   );
 
-  const topUpGasAccount = useCallback(
-    async ({
-      to,
-      chainServerId,
-      tokenId,
-      rawAmount,
-      amount,
-      account,
-    }: {
-      to: string;
-      chainServerId: string;
-      tokenId: string;
-      rawAmount: string;
-      amount: number;
-      account: Account;
-    }) => {
-      const tx = await buildTopUpGasAccount({
-        to,
-        chainServerId,
-        tokenId,
-        rawAmount,
-        account,
-      });
-
-      const txHash = await wallet.sendRequest<string>(
-        {
-          method: 'eth_sendTransaction',
-          params: [tx],
-          $ctx: {
-            ga: {
-              category: 'GasAccount',
-              action: 'deposit',
-            },
-          },
-        },
-        {
-          account,
-        }
-      );
-
-      await afterTopUpGasAccount({
-        chainServerId,
-        amount,
-        tx: txHash,
-        account,
-      });
-
-      return txHash;
-    },
-    [afterTopUpGasAccount, wallet]
-  );
-
   const openMiniSignDeposit = useCallback(
     async (txs: Tx[]) => {
       resetGasStore();
@@ -742,34 +689,6 @@ const GasAccountDepositTokenFormInner: React.FC<
       });
     },
     [closeSign, openUI, resetGasStore]
-  );
-
-  const sendBridgeTxsDirectly = useCallback(
-    async (txs: Tx[], account: Account) => {
-      const hashes: string[] = [];
-
-      for (const tx of txs) {
-        const hash = await wallet.sendRequest<string>(
-          {
-            method: 'eth_sendTransaction',
-            params: [tx],
-            $ctx: {
-              ga: {
-                category: 'GasAccount',
-                action: 'deposit',
-              },
-            },
-          },
-          {
-            account,
-          }
-        );
-        hashes.push(hash);
-      }
-
-      return hashes;
-    },
-    [wallet]
   );
 
   const afterBridgeTopUpGasAccount = useCallback(
@@ -802,7 +721,7 @@ const GasAccountDepositTokenFormInner: React.FC<
         from_usd_value: usdValue,
         tx_id: txId,
         scene,
-      } as any);
+      });
     },
     [getRequiredGasAccountSession, wallet]
   );
@@ -849,7 +768,15 @@ const GasAccountDepositTokenFormInner: React.FC<
       };
 
       if (!canUseMiniSign) {
-        return buildSubmittedDepositTxInfo([await topUpGasAccount(params)]);
+        const tx = await buildTopUpGasAccount(params);
+        const txHashes = await wallet.submitGasAccountDepositTxs({
+          account,
+          txs: [tx],
+          amount: usdValue,
+          chainServerId: token.chain,
+          depositType: 'direct',
+        });
+        return buildSubmittedDepositTxInfo(txHashes);
       }
 
       const tx = await buildTopUpGasAccount(params);
@@ -865,7 +792,7 @@ const GasAccountDepositTokenFormInner: React.FC<
 
       return buildSubmittedDepositTxInfo([txHash]);
     },
-    [afterTopUpGasAccount, canUseMiniSign, openMiniSignDeposit, topUpGasAccount]
+    [afterTopUpGasAccount, canUseMiniSign, openMiniSignDeposit, wallet]
   );
 
   const submitBridgeDeposit = useCallback(
@@ -890,9 +817,22 @@ const GasAccountDepositTokenFormInner: React.FC<
         usdValue,
       });
 
-      const bridgeTxHashes = canUseMiniSign
-        ? (await openMiniSignDeposit(bridgeTxs)) || []
-        : await sendBridgeTxsDirectly(bridgeTxs, account);
+      if (!canUseMiniSign) {
+        const bridgeTxHashes = await wallet.submitGasAccountDepositTxs({
+          account,
+          txs: bridgeTxs,
+          amount: usdValue,
+          chainServerId: token.chain,
+          depositType: 'bridge',
+          tokenId: token.id,
+          tokenAmount,
+          scene: onWaitDepositResult ? 'in_tx_flow' : 'recharge',
+        });
+
+        return buildSubmittedDepositTxInfo(bridgeTxHashes);
+      }
+
+      const bridgeTxHashes = (await openMiniSignDeposit(bridgeTxs)) || [];
       const submittedDeposit = buildSubmittedDepositTxInfo(bridgeTxHashes);
 
       if (!submittedDeposit) {
@@ -916,7 +856,6 @@ const GasAccountDepositTokenFormInner: React.FC<
       canUseMiniSign,
       onWaitDepositResult,
       openMiniSignDeposit,
-      sendBridgeTxsDirectly,
       wallet,
     ]
   );
@@ -1004,7 +943,10 @@ const GasAccountDepositTokenFormInner: React.FC<
 
     setLoading(true);
     try {
-      if (!(await ensureGasAccountLogin(selectedOwnerAccount))) {
+      if (
+        canUseMiniSign &&
+        !(await ensureGasAccountLogin(selectedOwnerAccount))
+      ) {
         return;
       }
       const submittedDeposit =
@@ -1065,6 +1007,7 @@ const GasAccountDepositTokenFormInner: React.FC<
     amountValue,
     bridgeFromTokenAmount,
     bridgeQuote,
+    canUseMiniSign,
     ensureGasAccountLogin,
     finishDepositSuccess,
     onWaitDepositResult,

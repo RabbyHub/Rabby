@@ -5920,18 +5920,24 @@ export class WalletController extends BaseController {
   };
 
   private async executeGasAccountLogin(
-    account: Account
+    account: Account,
+    options?: {
+      closeWindowBeforeSign?: boolean;
+    }
   ): Promise<{
     signature: string;
     success: boolean;
     result?: any;
   }> {
+    const { closeWindowBeforeSign = true } = options || {};
     const { text } = await wallet.openapi.getGasAccountSignText(
       account.address
     );
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
-    });
+    if (closeWindowBeforeSign) {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,
+      });
+    }
     const signature = await this.sendRequest<string>(
       {
         method: 'personal_sign',
@@ -5959,6 +5965,79 @@ export class WalletController extends BaseController {
     return { signature, success: result?.success || false, result };
   }
 
+  private ensureGasAccountSession = async (
+    account: Account,
+    options?: {
+      closeWindowBeforeSign?: boolean;
+    }
+  ) => {
+    const currentSession = this.getGasAccountSig();
+
+    if (currentSession?.sig && currentSession?.accountId) {
+      return {
+        sig: currentSession.sig,
+        accountId: currentSession.accountId,
+      };
+    }
+
+    const { signature, success } = await this.executeGasAccountLogin(
+      account,
+      options
+    );
+    if (!success || !signature) {
+      throw new Error('GasAccount login failed');
+    }
+
+    await this.handleGasAccountLoginSuccess(signature, account);
+
+    const nextSession = this.getGasAccountSig();
+    if (!nextSession?.sig || !nextSession?.accountId) {
+      throw new Error('GasAccount login failed');
+    }
+
+    return {
+      sig: nextSession.sig,
+      accountId: nextSession.accountId,
+    };
+  };
+
+  private reportGasAccountDirectDeposit = async ({
+    account,
+    chainServerId,
+    amount,
+    txHash,
+    gasAccountSession,
+  }: {
+    account: Account;
+    chainServerId: string;
+    amount: number;
+    txHash: string;
+    gasAccountSession: {
+      sig: string;
+      accountId: string;
+    };
+  }) => {
+    const chain = findChainByServerID(chainServerId);
+    if (!chain) {
+      throw new Error('Invalid chain');
+    }
+
+    const usedNonce = await this.getNonceByChain(account.address, chain.id);
+    if (usedNonce === null || usedNonce === undefined || usedNonce <= 0) {
+      throw new Error('GasAccount top up nonce missing');
+    }
+
+    await openapiService.rechargeGasAccount({
+      sig: gasAccountSession.sig,
+      account_id: gasAccountSession.accountId,
+      tx_id: txHash,
+      chain_id: chainServerId,
+      amount,
+      user_addr: account.address,
+      nonce: usedNonce - 1,
+    });
+  };
+
   signGasAccount = async (account: Account, isClaimGift: boolean = false) => {
     const { signature, success } = await this.executeGasAccountLogin(account);
     if (!success || !signature) {
@@ -5973,43 +6052,97 @@ export class WalletController extends BaseController {
     return signature;
   };
 
-  topUpGasAccount = async ({
-    to,
-    chainServerId,
-    tokenId,
-    rawAmount,
+  submitGasAccountDepositTxs = async ({
+    account,
+    txs,
     amount,
+    chainServerId,
+    depositType,
+    tokenId,
+    tokenAmount,
+    scene = 'recharge',
   }: {
-    to: string;
-    chainServerId: string;
-    tokenId: string;
-    rawAmount: string;
+    account: Account;
+    txs: Tx[];
     amount: number;
+    chainServerId: string;
+    depositType: 'direct' | 'bridge';
+    tokenId?: string;
+    tokenAmount?: number;
+    scene?: 'in_tx_flow' | 'recharge';
   }) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+    const gasAccountSession = await this.ensureGasAccountSession(account, {
+      closeWindowBeforeSign: false,
+    });
 
-    const { sig, accountId } = this.getGasAccountSig();
+    if (depositType === 'direct') {
+      if (txs.length !== 1) {
+        throw new Error('GasAccount direct deposit expects a single tx');
+      }
+    }
 
-    await this.sendToken({
-      to,
-      chainServerId,
-      tokenId,
-      rawAmount,
-      $ctx: {
-        ga: {
-          category: 'GasAccount',
-          action: 'deposit',
-          rechargeGasAccount: {
-            amount,
-            sig: sig!,
-            account_id: accountId!,
-            user_addr: account?.address,
-            chain_id: chainServerId,
+    const hashes: string[] = [];
+
+    for (const tx of txs) {
+      const hash = await this.sendRequest<string>(
+        {
+          method: 'eth_sendTransaction',
+          params: [tx],
+          $ctx: {
+            ga: {
+              category: 'GasAccount',
+              action: 'deposit',
+            },
           },
         },
-      },
-    });
+        {
+          account,
+        }
+      );
+      hashes.push(hash);
+    }
+
+    if (depositType === 'bridge') {
+      const bridgeHash = hashes[hashes.length - 1];
+      if (!bridgeHash) {
+        throw new Error('GasAccount bridge tx missing');
+      }
+      if (!tokenId) {
+        throw new Error('GasAccount bridge token missing');
+      }
+      if (typeof tokenAmount !== 'number' || Number.isNaN(tokenAmount)) {
+        throw new Error('GasAccount bridge token amount missing');
+      }
+
+      await openapiService.createGasAccountBridgeRecharge({
+        sig: gasAccountSession.sig,
+        gas_account_id: gasAccountSession.accountId,
+        user_addr: account.address,
+        from_chain_id: chainServerId,
+        from_token_id: tokenId,
+        from_token_amount: tokenAmount,
+        from_usd_value: amount,
+        tx_id: bridgeHash,
+        scene,
+      });
+    }
+
+    if (depositType === 'direct') {
+      const directHash = hashes[0];
+      if (!directHash) {
+        throw new Error('GasAccount direct tx missing');
+      }
+
+      await this.reportGasAccountDirectDeposit({
+        account,
+        chainServerId,
+        amount,
+        txHash: directHash,
+        gasAccountSession,
+      });
+    }
+
+    return hashes;
   };
 
   addCustomTestnet = async (
