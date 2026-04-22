@@ -87,11 +87,16 @@ export function getCustomTxParamsData(
     const customPermissionValue = calcTokenValue(
       customPermissionAmount,
       decimals
-    ).toString(16);
+    );
+
+    if (customPermissionValue.toString(16).length > 40) {
+      throw new Error('Custom value is larger than uint160');
+    }
+
     const calldata = iface.encodeFunctionData('approve', [
       token,
       spender,
-      customPermissionValue,
+      customPermissionValue.toFixed(),
       expiration,
     ]);
     return calldata;
