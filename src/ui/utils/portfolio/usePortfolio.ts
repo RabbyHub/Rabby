@@ -1,23 +1,25 @@
 import { useCallback, useEffect, useRef } from 'react';
-import produce from 'immer';
 
-import { CACHE_VALID_DURATION, DEFI_SYNC_SCENE } from '@/db/constants';
+import produce from 'immer';
+import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
+
+import { isFullVersionAccountType } from '@/utils/account';
 import { defiDbService } from '@/db/services/defiDbService';
 import { syncDbService } from '@/db/services/syncDbService';
-import { isFullVersionAccountType } from '@/utils/account';
-import { useWallet } from '../WalletContext';
+import { CACHE_VALID_DURATION, DEFI_SYNC_SCENE } from '@/db/constants';
+
 import { chunk } from './utils';
+import { isSameAddress } from '..';
 import { useSafeState } from '../safeState';
+import { useWallet } from '../WalletContext';
+import { DisplayedProject } from './project';
 import { getExpandListSwitch } from './expandList';
 import {
   batchLoadProjects,
   loadPortfolioSnapshot,
-  snapshot2Display,
   portfolio2Display,
+  snapshot2Display,
 } from './utils';
-import { DisplayedProject } from './project';
-import { isSameAddress } from '..';
-import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
 
 const chunkSize = 5;
 
