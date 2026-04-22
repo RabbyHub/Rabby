@@ -629,22 +629,6 @@ export class SignatureSteps {
       chainId: txs[0].chainId,
     });
 
-    let L1feePromises;
-
-    if (CAN_ESTIMATE_L1_FEE_CHAINS.includes(chain.enum)) {
-      L1feePromises = Promise.all(
-        tempTxs.map((tx) =>
-          wallet.fetchEstimatedL1Fee(
-            {
-              txParams: tx,
-            },
-            chain.enum,
-            account
-          )
-        )
-      );
-    }
-
     const preExecProcess = async (index: number) => {
       const buildTx = tempTxs[index];
 

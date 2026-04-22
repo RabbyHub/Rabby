@@ -501,6 +501,21 @@ export const BridgeContent = () => {
   );
   const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
   const depositFlowActive = useGasAccountDepositFlowActive();
+  const canPrepareDirectSign = useMemo(
+    () =>
+      canUseDirectSubmitTx &&
+      !btnDisabled &&
+      !!selectedBridgeQuote &&
+      !awaitingTopUpResume &&
+      !depositFlowActive,
+    [
+      canUseDirectSubmitTx,
+      btnDisabled,
+      selectedBridgeQuote,
+      awaitingTopUpResume,
+      depositFlowActive,
+    ]
+  );
   const buildTopUpSnapshot = useCallback(
     (): BridgeTopUpSnapshot => ({
       amount: amount || '',
@@ -683,24 +698,25 @@ export const BridgeContent = () => {
   });
 
   useEffect(() => {
-    if (!btnDisabled && selectedBridgeQuote) {
-      if (awaitingTopUpResume || depositFlowActive) {
-        return;
-      }
-      mutateTxs([]);
-      runBuildSwapTxsRef.current = runBuildSwapTxs();
+    if (canPrepareDirectSign) {
+      return;
     }
-  }, [
-    canUseDirectSubmitTx,
-    btnDisabled,
-    selectedBridgeQuote,
-    awaitingTopUpResume,
-    depositFlowActive,
-  ]);
+
+    mutateTxs([]);
+    runBuildSwapTxsRef.current = undefined;
+    closeSign();
+  }, [canPrepareDirectSign, mutateTxs, closeSign]);
 
   useEffect(() => {
-    if (!canUseDirectSubmitTx) return;
-    if (awaitingTopUpResume || depositFlowActive) {
+    if (canPrepareDirectSign) {
+      mutateTxs([]);
+      const buildPromise = runBuildSwapTxs();
+      runBuildSwapTxsRef.current = buildPromise;
+    }
+  }, [canPrepareDirectSign, mutateTxs, runBuildSwapTxs]);
+
+  useEffect(() => {
+    if (!canPrepareDirectSign) {
       return;
     }
     closeSign();
@@ -713,15 +729,7 @@ export const BridgeContent = () => {
         trigger: rbiSource,
       },
     });
-  }, [
-    awaitingTopUpResume,
-    closeSign,
-    prefetch,
-    txs,
-    canUseDirectSubmitTx,
-    depositFlowActive,
-    rbiSource,
-  ]);
+  }, [canPrepareDirectSign, closeSign, prefetch, txs, rbiSource]);
 
   useEffect(() => {
     if (!awaitingTopUpResume) {
