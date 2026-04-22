@@ -25,7 +25,7 @@ import { StopTaskModal } from './components/StopTaskModal';
 import {
   DEFAULT_ETH_MAX_GAS_COST,
   DEFAULT_MAX_GAS_COST,
-  DEFAULT_SLIPPAGE,
+  DEFAULT_PRICE_IMPACT,
 } from './constant';
 import { useBatchSwapTask } from './hooks/useBatchSwapTask';
 
@@ -91,12 +91,12 @@ const DesktopSmallSwapContent: React.FC = () => {
     if (chainServerId !== serverId) {
       if (serverId === 'eth') {
         task.setConfig({
-          slippage: DEFAULT_SLIPPAGE,
+          priceImpact: DEFAULT_PRICE_IMPACT,
           maxGasCost: DEFAULT_ETH_MAX_GAS_COST,
         });
       } else {
         task.setConfig({
-          slippage: DEFAULT_SLIPPAGE,
+          priceImpact: DEFAULT_PRICE_IMPACT,
           maxGasCost: DEFAULT_MAX_GAS_COST,
         });
       }
