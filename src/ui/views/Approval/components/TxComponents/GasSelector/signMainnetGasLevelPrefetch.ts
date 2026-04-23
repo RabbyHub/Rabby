@@ -1,3 +1,5 @@
+import { GasAccountCheckResult } from '@rabby-wallet/rabby-api/dist/types';
+
 export const SIGN_MAINNET_SUPPORTED_GAS_LEVELS = [
   'slow',
   'normal',
@@ -15,6 +17,7 @@ export type SignMainnetGasLevelState = Partial<
       nativeNotEnough?: boolean;
       gasAccount?: [boolean, string];
       loading?: boolean;
+      gasAccountResult?: GasAccountCheckResult;
     }
   >
 >;

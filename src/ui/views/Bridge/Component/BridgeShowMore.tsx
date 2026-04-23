@@ -1,6 +1,10 @@
 import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol, abstractTokenToTokenItem } from '@/ui/utils/token';
-import { TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  GasAccountCheckResult,
+  TokenItem,
+  Tx,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { Button, Skeleton, Switch, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
@@ -50,6 +54,7 @@ import { GasSelectorResponse } from '../../Approval/components/TxComponents/GasS
 import SignMainnetGasSelectorHeader from '../../Approval/components/TxComponents/GasSelector/SignMainnetGasSelectorHeader';
 import { normalizeTxParams } from '../../Approval/components/SignTx';
 import { checkGasAndNonce, explainGas } from '@/utils/transaction';
+import { KEYRING_TYPE } from '@/constant';
 import { KEYRING_CLASS } from 'consts';
 import { useRabbySelector } from '@/ui/store';
 import {
@@ -503,6 +508,7 @@ export const DirectSignGasInfo = ({
   const isGasAccountLogin = !!sig && !!accountId;
 
   const {
+    getContainer,
     currentAccount,
     gaConfig,
     onRedirectToDeposit,
@@ -525,6 +531,7 @@ export const DirectSignGasInfo = ({
   } = useSignatureStoreOf(
     signatureInstance,
     (state) => ({
+      getContainer: state.config?.getContainer,
       currentAccount: state.config?.account,
       gaConfig: state.config?.ga,
       onRedirectToDeposit: state.config?.onRedirectToDeposit,
@@ -574,9 +581,36 @@ export const DirectSignGasInfo = ({
   const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
   const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
   const [tempoPreferredFeeTokenId, setTempoPreferredFeeTokenId] = useState('');
+  const txFeeToken =
+    ((txs?.[0] as TxWithTempoExtras<Tx> | undefined)?.feeToken as
+      | string
+      | undefined) || '';
+  const maxGasCostRawAmount = useMemo(
+    () =>
+      txsResult.reduce(
+        (sum, item) =>
+          sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
+        new BigNumber(0)
+      ),
+    [txsResult]
+  );
+  const maxGasCostRawAmountText = useMemo(() => maxGasCostRawAmount.toFixed(), [
+    maxGasCostRawAmount,
+  ]);
+  const maxGasCostRawAmountIn18 = useMemo(
+    () => calcTempoMaxGasCostRawAmountIn18(txs || []),
+    [txs]
+  );
+  const maxGasCostRawAmountIn18Text = useMemo(
+    () => maxGasCostRawAmountIn18.toFixed(),
+    [maxGasCostRawAmountIn18]
+  );
+  const currentTempoTokenId =
+    txFeeToken || tempoPreferredFeeTokenId || gasToken.tokenId || '';
   const showTempoGasTokenSelector =
     !!chain &&
     isTempoChain(chain.serverId) &&
+    gasMethod !== 'gasAccount' &&
     isTempoBatchSupportedAccountType(currentAccount?.type);
   const isHardware =
     currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER ||
@@ -724,7 +758,7 @@ export const DirectSignGasInfo = ({
   );
 
   useEffect(() => {
-    if (!currentAccount?.address || !chain || !isTempoChain(chain.serverId)) {
+    if (!currentAccount?.address || !chain || !showTempoGasTokenSelector) {
       setTempoGasTokenList([]);
       setTempoGasTokenLoading(false);
       return;
@@ -732,13 +766,6 @@ export const DirectSignGasInfo = ({
 
     let mounted = true;
     setTempoGasTokenLoading(true);
-
-    const maxGasCostRawAmount = (txsResult || []).reduce(
-      (sum, item) =>
-        sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
-      new BigNumber(0)
-    );
-    const maxGasCostRawAmountIn18 = calcTempoMaxGasCostRawAmountIn18(txs || []);
     const cachedOptions = listTempoFeeTokenOptionsFromCache({
       tokenList: cachedTokenItems,
       chainServerId: chain.serverId,
@@ -746,9 +773,6 @@ export const DirectSignGasInfo = ({
       maxGasCostRawAmountDecimals: gasToken.decimals || 18,
       maxGasCostRawAmountIn18,
     });
-    const txFeeToken = (txs?.[0] as TxWithTempoExtras<Tx> | undefined)
-      ?.feeToken as string | undefined;
-
     if (cachedOptions.length) {
       setTempoGasTokenList(cachedOptions);
     }
@@ -770,7 +794,7 @@ export const DirectSignGasInfo = ({
         setTempoGasTokenList(options);
         if (
           selectedOption &&
-          gasToken.tokenId?.toLowerCase() !== selectedOption.id.toLowerCase()
+          currentTempoTokenId.toLowerCase() !== selectedOption.id.toLowerCase()
         ) {
           void handleSelectTempoGasToken(selectedOption, {
             applyFeeToken: false,
@@ -789,14 +813,14 @@ export const DirectSignGasInfo = ({
     };
   }, [
     cachedTokenItems,
-    chain,
+    chain?.serverId,
+    currentTempoTokenId,
     currentAccount?.address,
     gasToken.decimals,
-    gasToken.tokenId,
     handleSelectTempoGasToken,
-    txs,
-    txsResult,
-    // wallet,
+    maxGasCostRawAmountIn18Text,
+    maxGasCostRawAmountText,
+    showTempoGasTokenSelector,
   ]);
 
   const gasCalcMethod = useCallback(
@@ -818,9 +842,9 @@ export const DirectSignGasInfo = ({
     (
       gas: GasSelectorResponse,
       type?: 'gasAccount' | 'native'
-    ): Promise<[boolean, number]> => {
+    ): Promise<[boolean, number, undefined | GasAccountCheckResult]> => {
       if (!isReady || !txsResult.length || !currentAccount || !chainId) {
-        return Promise.resolve([true, 0]);
+        return Promise.resolve([true, 0, undefined]);
       }
 
       return Promise.all(
@@ -858,7 +882,7 @@ export const DirectSignGasInfo = ({
         let balance = nativeTokenBalance || '';
 
         if (!arr.length) {
-          return [true, 0] as [boolean, number];
+          return [true, 0, undefined];
         }
 
         if (type === 'native') {
@@ -896,9 +920,10 @@ export const DirectSignGasInfo = ({
             return result;
           });
 
-          return [_.flatten(checkResult)?.some((e) => e.code === 3001), 0] as [
-            boolean,
-            number
+          return [
+            _.flatten(checkResult)?.some((e) => e.code === 3001),
+            0,
+            undefined,
           ];
         }
 
@@ -916,6 +941,7 @@ export const DirectSignGasInfo = ({
             !gasAccountRes.balance_is_enough,
             (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
               (gasAccountRes.gas_account_cost?.gas_cost || 0),
+            gasAccountRes,
           ]);
       });
     }
@@ -1036,6 +1062,9 @@ export const DirectSignGasInfo = ({
             gasAccountCost={gasAccount as any}
             gasMethod={gasMethod}
             onChangeGasMethod={handleChangeGasMethod}
+            isWalletConnect={
+              currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring
+            }
             disabled={false}
             isReady={isReady}
             gasLimit={String(txsResult?.[0]?.gasLimit || currentTx?.gas || 0)}
@@ -1069,6 +1098,7 @@ export const DirectSignGasInfo = ({
             tempoGasTokenList={tempoGasTokenList}
             onSelectTempoGasToken={handleSelectTempoGasToken}
             tempoGasTokenLoading={tempoGasTokenLoading}
+            getContainer={getContainer}
           />
         </div>
       ) : !loading && noQuote ? (
@@ -1104,6 +1134,7 @@ export const DirectSignGasInfo = ({
             : undefined
         }
         disableDirectDeposit
+        getContainer={getContainer}
       />
     </>
   );

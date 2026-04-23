@@ -3820,6 +3820,7 @@
       "speedUpDesc": "Gas price increased {{percent}} for a faster speed up"
     },
     "gasAccount": {
+      "gasFee":"Gas fee",
       "title": "GasAccount",
       "gasDeposit": "Gas Deposit",
       "gasToken": "Gas Token",

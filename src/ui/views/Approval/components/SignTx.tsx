@@ -69,7 +69,10 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import { MultiAction, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
-import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import type {
+  GasAccountCheckResult,
+  TokenItem,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { SafeNonceSelector } from './TxComponents/SafeNonceSelector';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { findChain, isTestnet } from '@/utils/chain';
@@ -949,9 +952,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     (
       gasLevel: GasSelectorResponse,
       type?: 'gasAccount' | 'native'
-    ): Promise<[boolean, number]> => {
+    ): Promise<[boolean, number, undefined | GasAccountCheckResult]> => {
       if (!isReady || !chain) {
-        return Promise.resolve([true, 0]);
+        return Promise.resolve([true, 0, undefined]);
       }
 
       const nextTx = {
@@ -999,7 +1002,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             checkTxValueInBalance,
           });
 
-          return [checkResult.some((item) => item.code === 3001), 0];
+          return [checkResult.some((item) => item.code === 3001), 0, undefined];
         }
 
         return wallet.openapi
@@ -1019,7 +1022,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               !gasAccountRes.balance_is_enough,
               (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
                 (gasAccountRes.gas_account_cost?.gas_cost || 0),
-            ] as [boolean, number];
+              gasAccountRes,
+            ];
           });
       });
     }
@@ -1063,6 +1067,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     canUseGasLess,
     gasMethod,
     setGasMethod,
+    isWalletConnect: currentAccountType === KEYRING_TYPE.WalletConnectKeyring,
   });
 
   useEffect(() => {
@@ -2757,11 +2762,15 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             Header={
               <div className="mb-8">
                 <SignMainnetGasSelectorHeader
+                  onSignTx
                   tx={tx}
                   gasAccountCost={gasAccountCost}
                   gasMethod={gasMethod}
                   onChangeGasMethod={setGasMethod}
                   noCustomRPC={noCustomRPC}
+                  isWalletConnect={
+                    currentAccountType === KEYRING_TYPE.WalletConnectKeyring
+                  }
                   nativeTokenInsufficient={isGasNotEnough}
                   freeGasAvailable={canUseGasLess}
                   pushType={pushInfo.type}

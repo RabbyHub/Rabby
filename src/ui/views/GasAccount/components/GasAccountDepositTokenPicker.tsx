@@ -6,7 +6,7 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useAlias } from '@/ui/utils';
 import { buildOwnerAccountMap } from './GasAccountDepositTokenForm.utils';
-import { Skeleton } from 'antd';
+import { DrawerProps, Skeleton } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ interface GasAccountDepositTokenPickerProps {
   onSelect?(token: GasAccountAvailableToken): void;
   availableTokens: GasAccountAvailableToken[];
   isCheckingAvailability?: boolean;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const GAS_ACCOUNT_DEPOSIT_TOKEN_PICKER_HEIGHT = 540;
@@ -74,6 +75,7 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
   onSelect,
   availableTokens,
   isCheckingAvailability = false,
+  getContainer,
 }) => {
   const { t } = useTranslation();
   const { allSortedAccountList } = useAccounts();
@@ -166,6 +168,7 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
       destroyOnClose
       push={false}
       keyboard={false}
+      getContainer={getContainer}
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
         <div className="relative shrink-0 h-[56px]">

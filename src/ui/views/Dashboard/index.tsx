@@ -35,8 +35,16 @@ const Dashboard = () => {
   const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
     ...s.appVersion,
   }));
-  const accountsCount = useRabbySelector(
-    (s) => s.accountToDisplay.accountsList.length
+  const accountsDiscoveryKey = useRabbySelector((s) =>
+    s.accountToDisplay.accountsList
+      .map(
+        (account) =>
+          `${account.address.toLowerCase()}:${account.type}:${
+            account.brandName || ''
+          }`
+      )
+      .sort()
+      .join('|')
   );
 
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
@@ -74,7 +82,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!accountsCount) {
+    if (!accountsDiscoveryKey) {
       return;
     }
     refreshDiscovery().catch((error) => {
@@ -83,28 +91,7 @@ const Dashboard = () => {
         error
       );
     });
-  }, [accountsCount, refreshDiscovery]);
-
-  useEffect(() => {
-    const handleFocus = () => {
-      refreshDiscovery().catch((error) => {
-        console.error('[gasAccount] refresh discovery on focus failed', error);
-      });
-    };
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        handleFocus();
-      }
-    };
-
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [refreshDiscovery]);
+  }, [accountsDiscoveryKey, refreshDiscovery]);
 
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();

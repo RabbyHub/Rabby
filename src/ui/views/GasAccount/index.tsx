@@ -94,17 +94,8 @@ const GasAccountInner = () => {
     refreshHistory();
   }, [refreshHistory]);
 
-  const hasHistory = Boolean(
-    historyState.txList?.rechargeList?.length ||
-      historyState.txList?.withdrawList?.length ||
-      historyState.txList?.list?.length
-  );
-  const showEmptyState =
-    (!isLogin && !pendingHardwareAccount) ||
-    (isLogin &&
-      !historyState.loading &&
-      Number(balance || 0) === 0 &&
-      !hasHistory);
+  const showEmptyState = !isLogin && !pendingHardwareAccount;
+
   const emptyStatePrimaryMode = getGasAccountEmptyStatePrimaryMode({
     isLogin,
     hasPendingHardwareAccount: !!pendingHardwareAccount,
@@ -223,7 +214,7 @@ const GasAccountInner = () => {
   }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
 
   const lowBalanceWarningMessage =
-    visibleBalance < 0.1
+    visibleBalance < 0.1 && !loading
       ? t('page.gasAccount.lowBalance', {
           defaultValue:
             "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",

@@ -1,4 +1,4 @@
-import { formatGasHeaderUsdValue } from '@/ui/utils/number';
+import { formatGasHeaderUsdValue, formatTokenAmount } from '@/ui/utils/number';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { findChain } from '@/utils/chain';
 import { calcMaxPriorityFee } from '@/utils/transaction';
@@ -26,6 +26,12 @@ import type {
   SignMainnetGasLevelState,
   SignMainnetSupportedGasLevel,
 } from './signMainnetGasLevelPrefetch';
+import { ReactComponent as GasLogoSVG } from 'ui/assets/sign/tx/gas-blur-cc.svg';
+import { BigNumber } from 'bignumber.js';
+import { MenuButtonStyled } from '../GasMenuButton';
+import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import SecurityLevelTagNoText from 'ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText';
 
 type GasSelectorHeaderProps = ComponentProps<
   typeof import('../GasSelectorHeader').default
@@ -36,13 +42,16 @@ export interface SignMainnetGasSelectorHeaderProps
   nativeTokenInsufficient?: boolean;
   freeGasAvailable?: boolean;
   noCustomRPC?: boolean;
+  isWalletConnect?: boolean;
   selectedMaxPriorityFee?: number;
+  onSignTx?: boolean;
 }
 
 export const SignMainnetGasSelectorHeader = ({
   nativeTokenInsufficient,
   freeGasAvailable,
   noCustomRPC,
+  isWalletConnect,
   gasMethod,
   gasAccountCost,
   gas,
@@ -62,6 +71,7 @@ export const SignMainnetGasSelectorHeader = ({
   tempoGasTokenList = [],
   onSelectTempoGasToken,
   tempoGasTokenLoading = false,
+  onSignTx,
   ...props
 }: SignMainnetGasSelectorHeaderProps) => {
   const { t } = useTranslation();
@@ -95,11 +105,10 @@ export const SignMainnetGasSelectorHeader = ({
     noCustomRPC: noCustomRPCEnabled,
     freeGasAvailable,
     legacyGasMethod: gasMethod,
+    isWalletConnect: !!isWalletConnect,
   });
-  const gasAccountChainSupported =
-    !!gasAccountCost && !gasAccountCost.chain_not_support;
-  const gasAccountMethodSupported =
-    gasAccountChainSupported && noCustomRPCEnabled;
+
+  const gasAccountMethodSupported = !isWalletConnect && noCustomRPCEnabled;
 
   const gasCostUsdStr = useMemo(
     () => formatGasHeaderUsdValue(String(gas.gasCostUsd || 0)),
@@ -148,10 +157,6 @@ export const SignMainnetGasSelectorHeader = ({
         tx.to || '',
         tx.value || '',
         tx.data || '',
-        tx.gas || '',
-        tx.gasPrice || '',
-        tx.maxFeePerGas || '',
-        tx.maxPriorityFeePerGas || '',
         gasLimit || '',
         nonce || '',
         isCancel ? '1' : '0',
@@ -173,10 +178,6 @@ export const SignMainnetGasSelectorHeader = ({
       tx.chainId,
       tx.data,
       tx.from,
-      tx.gas,
-      tx.gasPrice,
-      tx.maxFeePerGas,
-      tx.maxPriorityFeePerGas,
       tx.to,
       tx.value,
     ]
@@ -292,11 +293,9 @@ export const SignMainnetGasSelectorHeader = ({
           : Promise.resolve({}),
         needsGasAccount
           ? checkGasLevelIsNotEnough(gasChange, 'gasAccount').then(
-              ([notEnough, usd]) => ({
-                gasAccount: [
-                  notEnough,
-                  calcGasAccountUsd(Number(usd || 0)),
-                ] as [boolean, string],
+              ([notEnough, usd, gasAccountResult]) => ({
+                gasAccount: [notEnough, calcGasAccountUsd(Number(usd || 0))],
+                gasAccountResult,
               })
             )
           : Promise.resolve({}),
@@ -342,35 +341,35 @@ export const SignMainnetGasSelectorHeader = ({
     txFingerprint,
   ]);
 
-  useEffect(() => {
-    if (
-      showMoreOpen ||
-      hasOpenedOnceRef.current ||
-      !shouldAutoOpenSignMainnetGasModal({
-        fetchMode,
-        selectedSupportedLevel,
-        nativeTokenInsufficient: !!nativeTokenInsufficient,
-        gasAccountUsable,
-        gasAccountChainSupported: gasAccountMethodSupported,
-        levelState,
-        requestFingerprint: txFingerprint,
-      })
-    ) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (
+  //     showMoreOpen ||
+  //     hasOpenedOnceRef.current ||
+  //     !shouldAutoOpenSignMainnetGasModal({
+  //       fetchMode,
+  //       selectedSupportedLevel,
+  //       nativeTokenInsufficient: !!nativeTokenInsufficient,
+  //       gasAccountUsable,
+  //       gasAccountChainSupported: gasAccountMethodSupported,
+  //       levelState,
+  //       requestFingerprint: txFingerprint,
+  //     })
+  //   ) {
+  //     return;
+  //   }
 
-    hasOpenedOnceRef.current = true;
-    setAutoOpenSignal((signal) => signal + 1);
-  }, [
-    fetchMode,
-    gasAccountMethodSupported,
-    gasAccountUsable,
-    levelState,
-    nativeTokenInsufficient,
-    selectedSupportedLevel,
-    showMoreOpen,
-    txFingerprint,
-  ]);
+  //   hasOpenedOnceRef.current = true;
+  //   setAutoOpenSignal((signal) => signal + 1);
+  // }, [
+  //   fetchMode,
+  //   gasAccountMethodSupported,
+  //   gasAccountUsable,
+  //   levelState,
+  //   nativeTokenInsufficient,
+  //   selectedSupportedLevel,
+  //   showMoreOpen,
+  //   txFingerprint,
+  // ]);
 
   const canOpenShowMore =
     !!props.isReady && !props.disabled && gas.success && !gas.error;
@@ -416,6 +415,45 @@ export const SignMainnetGasSelectorHeader = ({
       </Tooltip>
     ) : null;
 
+  const gasCostAmountStr = useMemo(() => {
+    return `${formatTokenAmount(
+      new BigNumber(gas.gasCostAmount).toString(10),
+      6,
+      true
+    )} ${resolvedGasToken.symbol}`;
+  }, [gas.gasCostAmount, resolvedGasToken.symbol]);
+
+  const securityResult = useMemo(
+    () => props.engineResults?.find((item) => item.id === '1118'),
+    [props.engineResults]
+  );
+
+  const { rules, processedRules } = useRabbySelector((s) => ({
+    rules: s.securityEngine.rules,
+    processedRules: s.securityEngine.currentTx.processedRules,
+  }));
+  const dispatch = useRabbyDispatch();
+
+  const handleClickRule = (id: string) => {
+    const rule = rules.find((item) => item.id === id);
+    if (!rule) return;
+
+    dispatch.securityEngine.openRuleDrawer({
+      ruleConfig: rule,
+      value: securityResult?.value,
+      level: securityResult?.level,
+      ignored: processedRules.includes(id),
+    });
+  };
+  const initEngineResultsRef = React.useRef(false);
+
+  useEffect(() => {
+    if (props.engineResults && !initEngineResultsRef.current) {
+      initEngineResultsRef.current = true;
+      dispatch.securityEngine.init();
+    }
+  }, [dispatch, props.engineResults]);
+
   const summaryNode = (
     <div
       className={clsx(
@@ -446,10 +484,92 @@ export const SignMainnetGasSelectorHeader = ({
     </div>
   );
 
+  const summaryNodeOnSignTx = (
+    <div className={clsx('text-14 font-medium flex items-center gap-4')}>
+      {!props.isReady ? (
+        <Skeleton.Input
+          active
+          className="rounded"
+          style={{
+            width: 84,
+            height: 16,
+          }}
+        />
+      ) : gas.error || !gas.success ? (
+        <span>{t('page.signTx.failToFetchGasCost')}</span>
+      ) : (
+        // <span>{`${levelText} · ${summary.primaryText}`}</span>
+        <>
+          <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot mr-8" />
+          <div className="truncate max-w-[200px]">
+            <span
+              className={clsx(
+                'text-[16px] font-medium',
+                isSummaryNotEnough
+                  ? 'text-r-red-default'
+                  : 'text-r-blue-default'
+              )}
+            >
+              {summary.primaryText}{' '}
+            </span>
+            {displayGasMethod === 'gasAccount' ? (
+              <span>
+                ~
+                {calcGasAccountUsd(
+                  (gasAccountCost?.gas_account_cost.estimate_tx_cost || 0) +
+                    (gasAccountCost?.gas_account_cost.gas_cost || 0)
+                )?.replace('$', '')}{' '}
+                USD
+              </span>
+            ) : (
+              <span>~{gasCostAmountStr}</span>
+            )}
+          </div>
+          {securityResult && (
+            <SecurityLevelTagNoText
+              enable={true}
+              level={securityResult.level}
+              onClick={() => handleClickRule('1118')}
+              right="-46px"
+              className="security-level-tag"
+            />
+          )}
+        </>
+      )}
+    </div>
+  );
+
+  const rightNode = !props.isReady ? (
+    <Skeleton.Input
+      active
+      className="rounded"
+      style={{
+        width: 60,
+        height: 16,
+      }}
+    />
+  ) : (
+    <MenuButtonStyled
+      className={clsx(canOpenShowMore && 'cursor-pointer')}
+      onClick={() => {
+        if (canOpenShowMore) {
+          setShowMoreOpen(true);
+        }
+      }}
+    >
+      <span>{levelText}</span>
+      <ArrowSVG className="text-r-neutral-foot ml-2" />
+    </MenuButtonStyled>
+  );
+
   const content = (
-    <div className="flex items-center justify-between text-12 text-r-neutral-foot">
+    <div className="flex items-center justify-between text-12 text-r-neutral-foot relative">
       <span className="inline-flex items-center gap-4">
-        <span>Gas fee</span>
+        {onSignTx ? (
+          summaryNodeOnSignTx
+        ) : (
+          <span>{t('page.gasAccount.gasFee')}</span>
+        )}
         {gasAccountInfoTooltip}
       </span>
       <div className="flex items-center gap-8">
@@ -477,6 +597,7 @@ export const SignMainnetGasSelectorHeader = ({
             selectedGasCostUsdStr={gasCostUsdStr}
             gasAccountCost={gasAccountCost}
             nativeTokenInsufficient={nativeTokenInsufficient}
+            isWalletConnect={isWalletConnect}
             autoOpenSignal={autoOpenSignal}
             levelState={levelState}
             showTempoGasTokenSelector={showTempoGasTokenSelector}
@@ -490,10 +611,10 @@ export const SignMainnetGasSelectorHeader = ({
               setCustomVisible(true);
             }}
           >
-            {summaryNode}
+            {onSignTx ? rightNode : summaryNode}
           </SignMainnetShowMoreGasModal>
         ) : (
-          summaryNode
+          <>{onSignTx ? rightNode : summaryNode}</>
         )}
       </div>
     </div>

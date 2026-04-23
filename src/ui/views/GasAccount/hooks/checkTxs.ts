@@ -13,6 +13,7 @@ import { Account } from '@/background/service/preference';
 import { useRequest } from 'ahooks';
 import { nanoid } from 'nanoid';
 import { getGasAccountDecision } from '@/ui/views/Approval/components/FooterBar/gasAccountDecision';
+import { KEYRING_CLASS } from '@/constant';
 
 export const GAS_ACCOUNT_INSUFFICIENT_TIP =
   'Gas balance is not enough for transaction';
@@ -71,7 +72,9 @@ export const useGasAccountTxsCheck = ({
     gasAccountCost: gasAccountCost as typeof gasAccountCost & {
       err_msg?: string;
     },
-    noCustomRPC,
+    noCustomRPC: !!noCustomRPC,
+    isWalletConnect: currentAccount.type === KEYRING_CLASS.WALLETCONNECT,
+    accountType: currentAccount.type,
   });
 
   const gasAccountCanPay =
