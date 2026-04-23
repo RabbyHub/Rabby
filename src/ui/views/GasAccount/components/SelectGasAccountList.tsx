@@ -21,7 +21,15 @@ const getGasAccountListItemKey = (account: {
   address: string;
   type: string;
   brandName: string;
-}) => `${account.address.toLowerCase()}-${account.type}-${account.brandName}`;
+}) =>
+  `${account.address.toLowerCase()}-${account.type}-${(
+    account.brandName || ''
+  ).toLowerCase()}`;
+
+const getGasAccountListFallbackKey = (account: {
+  address: string;
+  type: string;
+}) => `${account.address.toLowerCase()}-${account.type}`;
 
 type GasAccountInfoCacheEntry = {
   data?: GasAccountInfo | null;
@@ -175,17 +183,44 @@ export const SelectGasAccountList = ({
     () => new Map(_list.map((item) => [getGasAccountListItemKey(item), item])),
     [_list]
   );
+  const gasAccountListFallbackMap = useMemo(() => {
+    const map = new Map<string, IDisplayedAccountWithBalance>();
+
+    _list.forEach((item) => {
+      const key = getGasAccountListFallbackKey(item);
+
+      if (!map.has(key)) {
+        map.set(key, item);
+      }
+    });
+
+    return map;
+  }, [_list]);
 
   const list = useMemo(() => {
     if (!isGasAccount) {
       return _list;
     }
     return accountsWithGasAccountBalance
-      .map((item) => gasAccountListItemMap.get(getGasAccountListItemKey(item)))
+      .map((item) => {
+        const exactMatch = gasAccountListItemMap.get(
+          getGasAccountListItemKey(item)
+        );
+        if (exactMatch) {
+          return exactMatch;
+        }
+
+        const fallbackMatch = gasAccountListFallbackMap.get(
+          getGasAccountListFallbackKey(item)
+        );
+
+        return fallbackMatch;
+      })
       .filter((item): item is IDisplayedAccountWithBalance => !!item);
   }, [
     _list,
     accountsWithGasAccountBalance,
+    gasAccountListFallbackMap,
     gasAccountListItemMap,
     isGasAccount,
   ]);

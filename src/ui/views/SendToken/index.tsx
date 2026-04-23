@@ -1170,12 +1170,6 @@ const SendToken = () => {
     setMiniTx();
     return () => {
       isCurrent = false;
-      if (awaitingTopUpResume || depositFlowActive) {
-        return;
-      }
-      prefetch({
-        txs: [],
-      });
     };
   }, [
     refreshId,
@@ -1202,6 +1196,14 @@ const SendToken = () => {
     awaitingTopUpResume,
     depositFlowActive,
   ]);
+
+  useEffect(() => {
+    return () => {
+      prefetch({
+        txs: [],
+      });
+    };
+  }, [prefetch]);
 
   const handleMiniSignResolve = useCallback(() => {
     return new Promise<void>((resolve, reject) => {

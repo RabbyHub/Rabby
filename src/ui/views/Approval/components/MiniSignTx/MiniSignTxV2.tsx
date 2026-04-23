@@ -210,6 +210,33 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     tempoPreferredFeeTokenId,
     setTempoPreferredFeeTokenId,
   ] = React.useState('');
+  const txFeeToken =
+    (((ctx?.txs?.[0] as unknown) as TxWithTempoExtras)?.feeToken as
+      | string
+      | undefined) || '';
+  const maxGasCostRawAmount = React.useMemo(
+    () =>
+      (ctx?.txsCalc || []).reduce(
+        (sum, item) =>
+          sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
+        new BigNumber(0)
+      ),
+    [ctx?.txsCalc]
+  );
+  const maxGasCostRawAmountText = React.useMemo(
+    () => maxGasCostRawAmount.toFixed(),
+    [maxGasCostRawAmount]
+  );
+  const maxGasCostRawAmountIn18 = React.useMemo(
+    () => calcTempoMaxGasCostRawAmountIn18(ctx?.txs || []),
+    [ctx?.txs]
+  );
+  const maxGasCostRawAmountIn18Text = React.useMemo(
+    () => maxGasCostRawAmountIn18.toFixed(),
+    [maxGasCostRawAmountIn18]
+  );
+  const currentTempoTokenId =
+    txFeeToken || tempoPreferredFeeTokenId || ctx?.gasToken?.tokenId || '';
   const showTempoGasTokenSelector =
     !!chain &&
     isTempoChain(chain.serverId) &&
@@ -230,24 +257,19 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   );
 
   React.useEffect(() => {
-    if (!currentAccount?.address || !chain || !isTempoChain(chain.serverId)) {
+    if (!currentAccount?.address || !chain || !showTempoGasTokenSelector) {
       setTempoGasTokenList([]);
       setTempoGasTokenLoading(false);
       return;
     }
     let mounted = true;
     setTempoGasTokenLoading(true);
-    const maxGasCostRawAmount = (ctx?.txsCalc || []).reduce(
-      (sum, item) =>
-        sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
-      new BigNumber(0)
-    );
     const cachedOptions = listTempoFeeTokenOptionsFromCache({
       tokenList: cachedTokenItems,
       chainServerId: chain.serverId,
       maxGasCostRawAmount,
-      maxGasCostRawAmountDecimals: ctx?.gasToken?.decimals || 18,
-      maxGasCostRawAmountIn18: calcTempoMaxGasCostRawAmountIn18(ctx?.txs || []),
+      maxGasCostRawAmountDecimals: gasToken.decimals || 18,
+      maxGasCostRawAmountIn18,
     });
     if (cachedOptions.length) {
       setTempoGasTokenList(cachedOptions);
@@ -257,11 +279,10 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       userAddress: currentAccount.address,
       chainServerId: chain.serverId,
       tokenList: cachedTokenItems,
-      txFeeToken: ((ctx?.txs?.[0] as unknown) as TxWithTempoExtras)
-        ?.feeToken as string | undefined,
+      txFeeToken,
       maxGasCostRawAmount,
-      maxGasCostRawAmountDecimals: ctx?.gasToken?.decimals || 18,
-      maxGasCostRawAmountIn18: calcTempoMaxGasCostRawAmountIn18(ctx?.txs || []),
+      maxGasCostRawAmountDecimals: gasToken.decimals || 18,
+      maxGasCostRawAmountIn18,
     })
       .then(({ options, preferredTokenId, selectedOption }) => {
         if (!mounted) return;
@@ -269,8 +290,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         setTempoGasTokenList(options);
         if (
           selectedOption &&
-          ctx?.gasToken?.tokenId?.toLowerCase() !==
-            selectedOption.id.toLowerCase()
+          currentTempoTokenId.toLowerCase() !== selectedOption.id.toLowerCase()
         ) {
           handleSelectTempoGasToken(selectedOption, {
             applyFeeToken: false,
@@ -289,11 +309,12 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     chain?.serverId,
     wallet,
     cachedTokenItems,
-    ctx?.gasToken?.decimals,
-    ctx?.gasToken?.tokenId,
-    ctx?.txs,
-    ctx?.txsCalc,
+    currentTempoTokenId,
+    gasToken.decimals,
     handleSelectTempoGasToken,
+    maxGasCostRawAmountIn18Text,
+    maxGasCostRawAmountText,
+    showTempoGasTokenSelector,
   ]);
 
   const checkGasLevelIsNotEnough = useMemoizedFn(
@@ -763,6 +784,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                         <div className="mt-auto" />
                       )}
                       <SignMainnetGasSelectorHeader
+                        onSignTx
                         tx={txs[0]}
                         gasAccountCost={gasAccountCost}
                         gasMethod={gasMethod}
@@ -881,6 +903,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           onWaitDepositResult={handleTopUpWaitResult}
           minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
           disableDirectDeposit
+          getContainer={desktopMiniSignerGetContainer}
         />
 
         <TokenDetailPopup
@@ -1027,6 +1050,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 </div>
               ) : null}
               <SignMainnetGasSelectorHeader
+                onSignTx
                 tx={txs[0]}
                 gasAccountCost={gasAccountCost}
                 gasMethod={gasMethod}
@@ -1135,6 +1159,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         onWaitDepositResult={handleTopUpWaitResult}
         minDepositPrice={gasAccountCost?.gas_account_cost?.total_cost}
         disableDirectDeposit
+        getContainer={config?.getContainer}
       />
       <TokenDetailPopup
         token={tokenDetail.selectToken}

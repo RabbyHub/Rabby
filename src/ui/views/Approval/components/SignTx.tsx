@@ -2757,6 +2757,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             Header={
               <div className="mb-8">
                 <SignMainnetGasSelectorHeader
+                  onSignTx
                   tx={tx}
                   gasAccountCost={gasAccountCost}
                   gasMethod={gasMethod}

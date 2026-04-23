@@ -503,6 +503,7 @@ export const DirectSignGasInfo = ({
   const isGasAccountLogin = !!sig && !!accountId;
 
   const {
+    getContainer,
     currentAccount,
     gaConfig,
     onRedirectToDeposit,
@@ -525,6 +526,7 @@ export const DirectSignGasInfo = ({
   } = useSignatureStoreOf(
     signatureInstance,
     (state) => ({
+      getContainer: state.config?.getContainer,
       currentAccount: state.config?.account,
       gaConfig: state.config?.ga,
       onRedirectToDeposit: state.config?.onRedirectToDeposit,
@@ -574,9 +576,36 @@ export const DirectSignGasInfo = ({
   const [tempoGasTokenList, setTempoGasTokenList] = useState<TokenItem[]>([]);
   const [tempoGasTokenLoading, setTempoGasTokenLoading] = useState(false);
   const [tempoPreferredFeeTokenId, setTempoPreferredFeeTokenId] = useState('');
+  const txFeeToken =
+    ((txs?.[0] as TxWithTempoExtras<Tx> | undefined)?.feeToken as
+      | string
+      | undefined) || '';
+  const maxGasCostRawAmount = useMemo(
+    () =>
+      txsResult.reduce(
+        (sum, item) =>
+          sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
+        new BigNumber(0)
+      ),
+    [txsResult]
+  );
+  const maxGasCostRawAmountText = useMemo(() => maxGasCostRawAmount.toFixed(), [
+    maxGasCostRawAmount,
+  ]);
+  const maxGasCostRawAmountIn18 = useMemo(
+    () => calcTempoMaxGasCostRawAmountIn18(txs || []),
+    [txs]
+  );
+  const maxGasCostRawAmountIn18Text = useMemo(
+    () => maxGasCostRawAmountIn18.toFixed(),
+    [maxGasCostRawAmountIn18]
+  );
+  const currentTempoTokenId =
+    txFeeToken || tempoPreferredFeeTokenId || gasToken.tokenId || '';
   const showTempoGasTokenSelector =
     !!chain &&
     isTempoChain(chain.serverId) &&
+    gasMethod !== 'gasAccount' &&
     isTempoBatchSupportedAccountType(currentAccount?.type);
   const isHardware =
     currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER ||
@@ -724,7 +753,7 @@ export const DirectSignGasInfo = ({
   );
 
   useEffect(() => {
-    if (!currentAccount?.address || !chain || !isTempoChain(chain.serverId)) {
+    if (!currentAccount?.address || !chain || !showTempoGasTokenSelector) {
       setTempoGasTokenList([]);
       setTempoGasTokenLoading(false);
       return;
@@ -732,13 +761,6 @@ export const DirectSignGasInfo = ({
 
     let mounted = true;
     setTempoGasTokenLoading(true);
-
-    const maxGasCostRawAmount = (txsResult || []).reduce(
-      (sum, item) =>
-        sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
-      new BigNumber(0)
-    );
-    const maxGasCostRawAmountIn18 = calcTempoMaxGasCostRawAmountIn18(txs || []);
     const cachedOptions = listTempoFeeTokenOptionsFromCache({
       tokenList: cachedTokenItems,
       chainServerId: chain.serverId,
@@ -746,9 +768,6 @@ export const DirectSignGasInfo = ({
       maxGasCostRawAmountDecimals: gasToken.decimals || 18,
       maxGasCostRawAmountIn18,
     });
-    const txFeeToken = (txs?.[0] as TxWithTempoExtras<Tx> | undefined)
-      ?.feeToken as string | undefined;
-
     if (cachedOptions.length) {
       setTempoGasTokenList(cachedOptions);
     }
@@ -770,7 +789,7 @@ export const DirectSignGasInfo = ({
         setTempoGasTokenList(options);
         if (
           selectedOption &&
-          gasToken.tokenId?.toLowerCase() !== selectedOption.id.toLowerCase()
+          currentTempoTokenId.toLowerCase() !== selectedOption.id.toLowerCase()
         ) {
           void handleSelectTempoGasToken(selectedOption, {
             applyFeeToken: false,
@@ -789,14 +808,14 @@ export const DirectSignGasInfo = ({
     };
   }, [
     cachedTokenItems,
-    chain,
+    chain?.serverId,
+    currentTempoTokenId,
     currentAccount?.address,
     gasToken.decimals,
-    gasToken.tokenId,
     handleSelectTempoGasToken,
-    txs,
-    txsResult,
-    // wallet,
+    maxGasCostRawAmountIn18Text,
+    maxGasCostRawAmountText,
+    showTempoGasTokenSelector,
   ]);
 
   const gasCalcMethod = useCallback(
@@ -1069,6 +1088,7 @@ export const DirectSignGasInfo = ({
             tempoGasTokenList={tempoGasTokenList}
             onSelectTempoGasToken={handleSelectTempoGasToken}
             tempoGasTokenLoading={tempoGasTokenLoading}
+            getContainer={getContainer}
           />
         </div>
       ) : !loading && noQuote ? (
@@ -1104,6 +1124,7 @@ export const DirectSignGasInfo = ({
             : undefined
         }
         disableDirectDeposit
+        getContainer={getContainer}
       />
     </>
   );

@@ -6,7 +6,7 @@ import { formatUsdValue } from '@/ui/utils/number';
 import { getTokenSymbol, tokenAmountBn } from '@/ui/utils/token';
 import { useWallet, isSameAddress } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
-import { Button, Skeleton, Tooltip, message } from 'antd';
+import { Button, DrawerProps, Skeleton, Tooltip, message } from 'antd';
 import clsx from 'clsx';
 import React, {
   useCallback,
@@ -57,6 +57,9 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
+import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { KEYRING_CLASS } from '@/constant';
 
 interface GasAccountDepositTokenFormProps {
   visible?: boolean;
@@ -66,6 +69,7 @@ interface GasAccountDepositTokenFormProps {
   minDepositPrice?: number;
   disableDirectDeposit?: boolean;
   maxAccountCount?: number;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const PENDING_STATUS_MAX_ATTEMPTS = 100;
@@ -108,6 +112,7 @@ export const GasAccountDepositTokenForm: React.FC<GasAccountDepositTokenFormProp
   minDepositPrice,
   disableDirectDeposit,
   maxAccountCount,
+  getContainer,
 }) => {
   const { t } = useTranslation();
   const { allSortedAccountList, fetchAllAccounts } = useAccounts();
@@ -131,6 +136,7 @@ export const GasAccountDepositTokenForm: React.FC<GasAccountDepositTokenFormProp
         destroyOnClose
         closable={false}
         push={false}
+        getContainer={getContainer}
       >
         <PopupContainer className="h-full">
           <div className="bg-r-neutral-bg2 h-full flex flex-col relative overflow-hidden rounded-t-[16px]">
@@ -167,6 +173,7 @@ export const GasAccountDepositTokenForm: React.FC<GasAccountDepositTokenFormProp
       disableDirectDeposit={disableDirectDeposit}
       maxAccountCount={maxAccountCount}
       allSortedAccountList={allSortedAccountList as Account[]}
+      getContainer={getContainer}
     />
   );
 };
@@ -184,6 +191,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   disableDirectDeposit,
   maxAccountCount,
   allSortedAccountList,
+  getContainer,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -383,9 +391,11 @@ const GasAccountDepositTokenFormInner: React.FC<
   const signerAccount = (selectedOwnerAccount ||
     eligibleAccounts[0] ||
     allSortedAccountList[0]) as Account | undefined;
-  const { openUI, resetGasStore, close: closeSign } = useMiniSigner({
-    account: signerAccount as Account,
-  });
+  const { openUI, openDirect, resetGasStore, close: closeSign } = useMiniSigner(
+    {
+      account: signerAccount as Account,
+    }
+  );
   const { value: gasMarketResult } = useAsync(async () => {
     if (!selectedToken?.chain) {
       return null;
@@ -403,6 +413,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   const canUseMiniSign = selectedOwnerAccount?.type
     ? supportedDirectSign(selectedOwnerAccount.type)
     : false;
+
   const minDepositUsd = getMinDepositUsdValue(minDepositPrice);
   const chainInfo = useMemo(
     () =>
@@ -809,7 +820,8 @@ const GasAccountDepositTokenFormInner: React.FC<
     async (txs: Tx[]) => {
       resetGasStore();
       closeSign();
-      return openUI({
+
+      const params = {
         txs,
         ga: {
           category: 'GasAccount',
@@ -817,9 +829,22 @@ const GasAccountDepositTokenFormInner: React.FC<
         },
         checkGasFeeTooHigh: true,
         autoUseGasFree: true,
-      });
+      };
+
+      try {
+        return await openDirect(params);
+      } catch (error) {
+        if (
+          error === MINI_SIGN_ERROR.GAS_NOT_ENOUGH ||
+          error === MINI_SIGN_ERROR.GAS_FEE_TOO_HIGH
+        ) {
+          return openUI(params);
+        }
+
+        throw error;
+      }
     },
-    [closeSign, openUI, resetGasStore]
+    [closeSign, openDirect, openUI, resetGasStore]
   );
 
   const afterBridgeTopUpGasAccount = useCallback(
@@ -1120,15 +1145,12 @@ const GasAccountDepositTokenFormInner: React.FC<
         return;
       }
 
+      closeSign();
       console.error('GasAccountDepositTokenForm handleSubmit error', error);
       message.error(
-        selectedToken?.gasAccountDepositType === 'bridge'
-          ? t('page.gasAccount.depositPopup.bridgeDepositFailed', {
-              defaultValue: 'Bridge deposit failed, please retry',
-            })
-          : t('page.gasAccount.depositPopup.depositFailed', {
-              defaultValue: 'Deposit failed, please retry',
-            })
+        t('page.gasAccount.depositPopup.depositFailed', {
+          defaultValue: 'Deposit failed, please retry',
+        })
       );
     } finally {
       setLoading(false);
@@ -1178,6 +1200,7 @@ const GasAccountDepositTokenFormInner: React.FC<
       destroyOnClose
       closable={false}
       push={false}
+      getContainer={getContainer}
     >
       <PopupContainer className="h-full">
         <div className="bg-r-neutral-bg2 h-full flex flex-col relative overflow-hidden rounded-t-[16px]">
@@ -1363,6 +1386,7 @@ const GasAccountDepositTokenFormInner: React.FC<
           </div>
 
           <GasAccountDepositTokenPicker
+            getContainer={getContainer}
             visible={tokenPickerVisible}
             onCancel={() => setTokenPickerVisible(false)}
             onSelect={(token) => {

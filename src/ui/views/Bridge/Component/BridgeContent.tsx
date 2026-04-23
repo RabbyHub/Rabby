@@ -501,21 +501,6 @@ export const BridgeContent = () => {
   );
   const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
   const depositFlowActive = useGasAccountDepositFlowActive();
-  const canPrepareDirectSign = useMemo(
-    () =>
-      canUseDirectSubmitTx &&
-      !btnDisabled &&
-      !!selectedBridgeQuote &&
-      !awaitingTopUpResume &&
-      !depositFlowActive,
-    [
-      canUseDirectSubmitTx,
-      btnDisabled,
-      selectedBridgeQuote,
-      awaitingTopUpResume,
-      depositFlowActive,
-    ]
-  );
   const buildTopUpSnapshot = useCallback(
     (): BridgeTopUpSnapshot => ({
       amount: amount || '',
@@ -698,25 +683,24 @@ export const BridgeContent = () => {
   });
 
   useEffect(() => {
-    if (canPrepareDirectSign) {
-      return;
-    }
-
-    mutateTxs([]);
-    runBuildSwapTxsRef.current = undefined;
-    closeSign();
-  }, [canPrepareDirectSign, mutateTxs, closeSign]);
-
-  useEffect(() => {
-    if (canPrepareDirectSign) {
+    if (!btnDisabled && selectedBridgeQuote) {
+      if (awaitingTopUpResume || depositFlowActive) {
+        return;
+      }
       mutateTxs([]);
-      const buildPromise = runBuildSwapTxs();
-      runBuildSwapTxsRef.current = buildPromise;
+      runBuildSwapTxsRef.current = runBuildSwapTxs();
     }
-  }, [canPrepareDirectSign, mutateTxs, runBuildSwapTxs]);
+  }, [
+    canUseDirectSubmitTx,
+    btnDisabled,
+    selectedBridgeQuote,
+    awaitingTopUpResume,
+    depositFlowActive,
+  ]);
 
   useEffect(() => {
-    if (!canPrepareDirectSign) {
+    if (!canUseDirectSubmitTx) return;
+    if (awaitingTopUpResume || depositFlowActive) {
       return;
     }
     closeSign();
@@ -729,7 +713,15 @@ export const BridgeContent = () => {
         trigger: rbiSource,
       },
     });
-  }, [canPrepareDirectSign, closeSign, prefetch, txs, rbiSource]);
+  }, [
+    awaitingTopUpResume,
+    closeSign,
+    prefetch,
+    txs,
+    canUseDirectSubmitTx,
+    depositFlowActive,
+    rbiSource,
+  ]);
 
   useEffect(() => {
     if (!awaitingTopUpResume) {

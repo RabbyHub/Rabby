@@ -18,7 +18,7 @@ import { ReactComponent as IconArrowDownCC } from 'ui/assets/swap/arrow-down-cc.
 import IconUnknown from '@/ui/assets/token-default.svg';
 import type { GasTokenInfo } from '@/utils/transaction';
 
-const MenuButtonStyled = styled.div`
+export const MenuButtonStyled = styled.div`
   display: flex;
   align-items: center;
   border-radius: 100px;
