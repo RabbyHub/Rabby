@@ -606,6 +606,7 @@ export function GasAccountTips({
     onClick: () => void;
     loading: boolean;
   } | null = null;
+  let isPendingHardware = false;
 
   if (!noCustomRPC) {
     finalTip = t('page.signFooterBar.gasAccount.customRPC');
@@ -623,6 +624,7 @@ export function GasAccountTips({
       },
       loading: isLoggingPendingHardware,
     };
+    isPendingHardware = true;
   } else if (gasAccountCost?.err_msg) {
     const isInsufficientError =
       !gasAccountCost.chain_not_support &&
@@ -662,14 +664,16 @@ export function GasAccountTips({
     <div
       className={clsx(
         'security-level-tip items-center',
-        showApprovalUiStyle
-          ? 'mt-8 min-h-[40px] bg-r-red-light text-r-red-light pl-[10px] pr-8 py-6'
+        isPendingHardware
+          ? 'mt-8 bg-r-neutral-line p-8 text-r-neutral-line'
+          : showApprovalUiStyle
+          ? 'mt-8 min-h-[40px]  pl-[10px] pr-8 py-6'
           : directSubmit
           ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default min-h-[42px] text-r-neutral-card2'
           : 'mt-[15px] bg-r-neutral-card2 text-r-neutral-card2'
       )}
     >
-      {(showApprovalUiStyle || !directSubmit) && (
+      {!isPendingHardware && (showApprovalUiStyle || !directSubmit) && (
         <RcIconGasAccountCC
           viewBox="0 0 20 20"
           className={clsx(
@@ -683,7 +687,9 @@ export function GasAccountTips({
       <div
         className={clsx(
           'relative flex-1 min-w-0',
-          showApprovalUiStyle
+          isPendingHardware
+            ? 'text-r-neutral-title1'
+            : showApprovalUiStyle
             ? 'text-12 leading-[16px] text-r-red-default'
             : directSubmit
             ? 'text-r-red-default'
