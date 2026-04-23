@@ -178,6 +178,8 @@ export const getDepositMaxUsdValue = ({
 
 export const getDepositBalanceCopy = ({
   hasSelectedToken,
+  isBridgeDeposit,
+  directTokenBalance,
   tokenBalanceUsd,
   amountValue,
   formattedBalance,
@@ -185,15 +187,20 @@ export const getDepositBalanceCopy = ({
   insufficientBalanceLabel,
 }: {
   hasSelectedToken: boolean;
+  isBridgeDeposit: boolean;
+  directTokenBalance: number;
   tokenBalanceUsd: number;
   amountValue: number;
   formattedBalance: string;
   balanceLabel: string;
   insufficientBalanceLabel: string;
 }) => {
+  const insufficientForAmount = isBridgeDeposit
+    ? tokenBalanceUsd < amountValue
+    : directTokenBalance < amountValue;
   const isInsufficient =
     hasSelectedToken &&
-    (tokenBalanceUsd < 1 || (amountValue > 0 && tokenBalanceUsd < amountValue));
+    (tokenBalanceUsd < 1 || (amountValue > 0 && insufficientForAmount));
   const label = isInsufficient ? insufficientBalanceLabel : balanceLabel;
 
   return {
