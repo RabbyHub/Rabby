@@ -615,14 +615,17 @@ export const usePendingHardwareGasAccountLogin = ({
 
     setIsLoggingPendingHardware(true);
     try {
-      await login(pendingHardwareLoginAccount);
-      message.success(
-        t('page.gasAccount.loginSuccess', {
-          defaultValue: 'GasAccount login successful',
-        })
-      );
-      await onLoggedIn?.();
-      return true;
+      const sig = await login(pendingHardwareLoginAccount);
+      if (sig) {
+        message.success(
+          t('page.gasAccount.loginSuccess', {
+            defaultValue: 'GasAccount login successful',
+          })
+        );
+        await onLoggedIn?.();
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error('login pending hardware gas account error', error);
       message.error(
@@ -677,6 +680,7 @@ export const useGasAccountHistory = () => {
   const requestVersionRef = useRef(0);
   const pendingPollCountRef = useRef(0);
   const txListRef = useRef<HistoryTxList>();
+  const historyAccountIdRef = useRef<string>();
 
   useEffect(() => {
     txListRef.current = txList;
@@ -834,13 +838,23 @@ export const useGasAccountHistory = () => {
   }, [txList]);
 
   useEffect(() => {
+    const prevHistoryAccountId = historyAccountIdRef.current;
+    historyAccountIdRef.current = accountId;
+
     if (!sig || !accountId) {
       clearHistory();
       return;
     }
 
+    const switchedAccount =
+      !!prevHistoryAccountId && !isSameAddress(prevHistoryAccountId, accountId);
+
+    if (switchedAccount) {
+      clearHistory();
+    }
+
     refreshListTx({
-      preserveLoadedList: true,
+      preserveLoadedList: !switchedAccount,
     });
   }, [accountId, clearHistory, refreshHistoryId, refreshListTx, sig]);
 
