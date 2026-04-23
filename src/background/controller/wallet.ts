@@ -94,7 +94,10 @@ import {
   handleGasAccountLoginSuccess as syncGasAccountLoginSuccess,
   trackGasAccountActiveStatus as trackCurrentGasAccountActiveStatus,
 } from '../utils/gasAccountLogin';
-import { discoverGasAccountRuntimeState } from '../utils/gasAccountDiscovery';
+import {
+  discoverGasAccountRuntimeState,
+  GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT,
+} from '../utils/gasAccountDiscovery';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -115,6 +118,7 @@ import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
+
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { Chain } from '@debank/common';
@@ -2544,7 +2548,64 @@ export class WalletController extends BaseController {
   discoverGasAccountRuntimeState = async (
     options?: { force?: boolean } | null
   ) => {
-    const accounts = await this.getAllVisibleAccountsArray();
+    const NON_SWITCHABLE_GAS_ACCOUNT_TYPES = new Set<string>([
+      KEYRING_CLASS.WATCH,
+      KEYRING_CLASS.GNOSIS,
+      KEYRING_CLASS.CoboArgus,
+    ]);
+
+    const isGasAccountSwitchableType = (type?: string) =>
+      !!type && !NON_SWITCHABLE_GAS_ACCOUNT_TYPES.has(type);
+
+    const visibleAccounts = (
+      await this.getAllVisibleAccountsArray()
+    ).filter((account) => isGasAccountSwitchableType(account.type));
+
+    const currentGasAccount = gasAccountService.getGasAccountData('account');
+
+    const accountsWithCachedBalance = await Promise.all(
+      visibleAccounts.map(async (account) => {
+        const cachedBalance = await this.getAddressCacheBalance(
+          account.address
+        );
+
+        return {
+          account,
+          balance: Number(cachedBalance?.total_usd_value || 0),
+        };
+      })
+    );
+    const accounts = sortBy(accountsWithCachedBalance, [
+      (item) => -item.balance,
+    ])
+      .slice(
+        0,
+        GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT > 0
+          ? GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT
+          : accountsWithCachedBalance.length
+      )
+      .map((item) => item.account);
+    const currentGasAccountInVisibleAccounts = currentGasAccount
+      ? visibleAccounts.find(
+          (account) =>
+            isSameAddress(account.address, currentGasAccount.address) &&
+            account.type === currentGasAccount.type
+        )
+      : undefined;
+
+    if (
+      currentGasAccountInVisibleAccounts &&
+      !accounts.some(
+        (account) =>
+          isSameAddress(
+            account.address,
+            currentGasAccountInVisibleAccounts.address
+          ) && account.type === currentGasAccountInVisibleAccounts.type
+      )
+    ) {
+      accounts.push(currentGasAccountInVisibleAccounts);
+    }
+
     return discoverGasAccountRuntimeState(accounts, options);
   };
   setGasAccountBalanceState = (accountId?: string, hasBalance?: boolean) => {
