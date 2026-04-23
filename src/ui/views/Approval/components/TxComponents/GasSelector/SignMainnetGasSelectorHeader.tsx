@@ -3,12 +3,13 @@ import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { findChain } from '@/utils/chain';
 import type { TempoFeeTokenOption } from '@/utils/tempo';
 import { calcMaxPriorityFee } from '@/utils/transaction';
-import { Tooltip, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import type { ComponentProps } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 import { buildDirectSignSummary, calcGasAccountUsd } from './directSignSummary';
 import { SignMainnetCustomGasSheet } from './SignMainnetCustomGasSheet';
@@ -381,12 +382,9 @@ export const SignMainnetGasSelectorHeader = ({
   const levelText = t(getGasLevelI18nKey(selectedGas?.level || 'normal'));
   const gasAccountInfoTooltip =
     displayGasMethod === 'gasAccount' ? (
-      <Tooltip
-        align={{
-          offset: [-10, 0],
-        }}
-        placement="topLeft"
-        overlayClassName="rectangle w-[max-content]"
+      <TooltipWithMagnetArrow
+        placement="top"
+        className="rectangle w-[max-content]"
         title={
           <div onClick={(e) => e.stopPropagation()}>
             <div>{t('page.signTx.gasAccount.description')}</div>
@@ -417,7 +415,7 @@ export const SignMainnetGasSelectorHeader = ({
             onClick={(e) => e.stopPropagation()}
           />
         </span>
-      </Tooltip>
+      </TooltipWithMagnetArrow>
     ) : null;
 
   const gasCostAmountStr = useMemo(() => {
@@ -569,7 +567,7 @@ export const SignMainnetGasSelectorHeader = ({
 
   const content = (
     <div className="flex items-center justify-between text-12 text-r-neutral-foot relative">
-      <span className="inline-flex items-center gap-4">
+      <span className="relative inline-flex items-center gap-4">
         {onSignTx ? (
           summaryNodeOnSignTx
         ) : (

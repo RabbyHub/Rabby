@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 import { useTranslation } from 'react-i18next';
 import { isSameAddress, useWallet } from '@/ui/utils';
@@ -35,6 +36,7 @@ import { GasAccountHeader } from './components/HeaderRight';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
 import { formatUsdValue } from '@/ui/utils/number';
 import { WithdrawPopup } from './components/WithdrawPopup';
+import { useGasAccountDepositAvailableTokens } from './hooks/useDepositTokenAvailability';
 
 const GasAccountInner = () => {
   const { t } = useTranslation();
@@ -77,6 +79,12 @@ const GasAccountInner = () => {
   });
 
   const wallet = useWallet();
+  const {
+    hasAvailableTokens,
+    hasInitializedAvailability,
+    isCheckingAvailability: isCheckingDepositAvailability,
+    refreshAvailableTokens,
+  } = useGasAccountDepositAvailableTokens();
 
   const balance = gasAccount?.account?.balance || 0;
   const pendingHardwareBalance =
@@ -92,7 +100,8 @@ const GasAccountInner = () => {
 
   const handleRefreshHistory = useCallback(() => {
     refreshHistory();
-  }, [refreshHistory]);
+    refreshAvailableTokens();
+  }, [refreshAvailableTokens, refreshHistory]);
 
   const showEmptyState = !isLogin && !pendingHardwareAccount;
 
@@ -213,6 +222,10 @@ const GasAccountInner = () => {
     openDepositPopup();
   }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
 
+  useEffect(() => {
+    refreshAvailableTokens();
+  }, [refreshAvailableTokens]);
+
   const lowBalanceWarningMessage =
     visibleBalance < 0.1 && !loading
       ? t('page.gasAccount.lowBalance', {
@@ -249,6 +262,16 @@ const GasAccountInner = () => {
   const handlePrimaryButtonPress = showEmptyState
     ? handleEmptyStatePrimaryPress
     : handleUserStatePrimaryPress;
+  const isDepositPrimaryAction =
+    !showEmptyState || emptyStatePrimaryMode !== 'claimGift';
+  const isPrimaryDepositDisabled =
+    isDepositPrimaryAction &&
+    hasInitializedAvailability &&
+    !isCheckingDepositAvailability &&
+    !hasAvailableTokens;
+  const depositUnavailableTooltip = t(
+    'page.gasAccount.depositPopup.InsufficientToken'
+  );
 
   useEffect(() => {
     wallet.clearPageStateCache();
@@ -290,19 +313,43 @@ const GasAccountInner = () => {
       </div>
 
       <div className="shrink-0 border-t-[0.5px] border-solid border-rabby-neutral-line bg-r-neutral-bg2 px-20 py-14">
-        <Button
-          onClick={handlePrimaryButtonPress}
-          type="primary"
-          block
-          loading={emptyStateLoading}
-          className={clsx(
-            'h-[44px] rounded-[8px] text-15 font-medium leading-normal text-r-neutral-title2',
-            'flex items-center justify-center',
-            primaryButtonClassName
-          )}
-        >
-          {primaryButtonContent}
-        </Button>
+        {isPrimaryDepositDisabled ? (
+          <TooltipWithMagnetArrow
+            trigger={['click']}
+            placement="top"
+            overlayClassName="rectangle sign-tx-forbidden-tooltip"
+            title={depositUnavailableTooltip}
+          >
+            <div className="relative w-full cursor-not-allowed">
+              <Button
+                disabled
+                type="primary"
+                block
+                className={clsx(
+                  'h-[44px] rounded-[8px] text-15 font-medium leading-normal text-r-neutral-title2 pointer-events-none',
+                  'flex items-center justify-center',
+                  primaryButtonClassName
+                )}
+              >
+                {primaryButtonContent}
+              </Button>
+            </div>
+          </TooltipWithMagnetArrow>
+        ) : (
+          <Button
+            onClick={handlePrimaryButtonPress}
+            type="primary"
+            block
+            loading={emptyStateLoading}
+            className={clsx(
+              'h-[44px] rounded-[8px] text-15 font-medium leading-normal text-r-neutral-title2',
+              'flex items-center justify-center',
+              primaryButtonClassName
+            )}
+          >
+            {primaryButtonContent}
+          </Button>
+        )}
       </div>
 
       <GasAccountLoginPopup

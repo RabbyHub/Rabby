@@ -3825,6 +3825,7 @@
       "gasToken": "Gas Token",
       "deposit": "Deposit",
       "depositNow": "Deposit Now",
+      "signWithPendingHardwareToUse": "Sign with {{addressAlias}} to use",
       "depositSubmitted": "Deposit Submitted",
       "withdraw": "Withdraw",
       "noBalance": "No balance",
@@ -3908,7 +3909,8 @@
         "depositSuccess": "Deposit successful",
         "depositFailed": "Deposit failed, please retry",
         "bridgeDepositFailed": "Bridge deposit failed, please retry",
-        "noAvailableToken": "No available token"
+        "noAvailableToken": "No available token",
+        "InsufficientToken":"Insufficient Token Balance"
       },
       "depositPayPopup": {
         "topUpPayTips": "Gas required: {{topUpUsd}}, Gas remaining est: {{balance}}"

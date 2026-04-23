@@ -319,6 +319,9 @@ export const useGasAccountDepositAvailableTokens = ({
     GasAccountAvailableToken[]
   >([]);
   const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  const [hasInitializedAvailability, setHasInitializedAvailability] = useState(
+    false
+  );
   const minDepositUsd = useMemo(
     () => Math.max(1, Number(minDepositPrice || 0)),
     [minDepositPrice]
@@ -355,6 +358,9 @@ export const useGasAccountDepositAvailableTokens = ({
       if (!myAccounts.length) {
         setAvailableTokens([]);
         setIsCheckingAvailability(false);
+        if (allSortedAccountList.length > 0) {
+          setHasInitializedAvailability(true);
+        }
         return;
       }
 
@@ -422,6 +428,7 @@ export const useGasAccountDepositAvailableTokens = ({
 
         if (initialAvailableTokens.length > 0 || !accountsToRefresh.length) {
           setIsCheckingAvailability(false);
+          setHasInitializedAvailability(true);
         }
 
         if (!accountsToRefresh.length) {
@@ -463,6 +470,7 @@ export const useGasAccountDepositAvailableTokens = ({
 
               if (nextAvailableTokens.length > 0) {
                 setIsCheckingAvailability(false);
+                setHasInitializedAvailability(true);
               }
             })
           )
@@ -471,14 +479,22 @@ export const useGasAccountDepositAvailableTokens = ({
         console.error('updateAvailableTokens error', error);
         if (requestIdRef.current === currentRequestId) {
           setAvailableTokens([]);
+          setHasInitializedAvailability(true);
         }
       } finally {
         if (requestIdRef.current === currentRequestId) {
           setIsCheckingAvailability(false);
+          setHasInitializedAvailability(true);
         }
       }
     },
-    [disableDirectDeposit, minDepositPrice, myAccounts, wallet]
+    [
+      allSortedAccountList.length,
+      disableDirectDeposit,
+      minDepositPrice,
+      myAccounts,
+      wallet,
+    ]
   );
 
   useEffect(() => {
@@ -488,6 +504,7 @@ export const useGasAccountDepositAvailableTokens = ({
   return {
     availableTokens,
     hasAvailableTokens: availableTokens.length > 0,
+    hasInitializedAvailability,
     isCheckingAvailability,
     refreshAvailableTokens: updateAvailableTokens,
   };

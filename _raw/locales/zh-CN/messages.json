@@ -2700,6 +2700,7 @@
       "gasToken": "Gas Token",
       "deposit": "存款",
       "depositNow": "立即存款",
+      "signWithPendingHardwareToUse": "使用{{addressAlias}}签名后即可使用",
       "depositSubmitted": "存款已提交",
       "withdraw": "提取",
       "noBalance": "无余额",
