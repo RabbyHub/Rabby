@@ -432,7 +432,6 @@ export const useBridge = () => {
                 });
               }
             });
-            console.log(bridgeAggregator.id, data);
             if (alternativeToken) {
               if (data?.length && currentFetchId === fetchIdRef.current) {
                 setRecommendFromToken(alternativeToken);
@@ -717,7 +716,6 @@ export const useBridge = () => {
 
   useEffect(() => {
     let active = true;
-    console.log('searchObj', searchObj, search, userAddress);
     if (!searchObj) {
       return;
     }
@@ -729,16 +727,13 @@ export const useBridge = () => {
         enum: searchObj.fromChain,
         serverId: fromChainServerId,
       });
-      console.log('searchObj0', fromChain, fromChainItem);
       if (userAddress && fromChainItem) {
-        console.log('searchObj1', searchObj, search);
         wallet.openapi
           .getToken(userAddress, fromChainItem.serverId, fromTokenId)
           .then((token) => {
             if (active) {
               switchFromChain(fromChainItem.enum);
               setFromToken(token);
-              console.log('searchObj2', searchObj, search);
             }
           });
       }
