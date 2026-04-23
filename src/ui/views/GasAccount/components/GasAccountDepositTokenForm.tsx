@@ -617,23 +617,13 @@ const GasAccountDepositTokenFormInner: React.FC<
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      let nextValue = event.target.value;
-      if (nextValue.startsWith('$')) {
-        nextValue = nextValue.slice(1);
+      let value = event.target.value;
+      if (value.startsWith('$')) {
+        value = value.slice(1);
       }
-      nextValue = nextValue.replace(/[^\d.]/g, '');
-      if (nextValue.startsWith('.')) {
-        nextValue = `0${nextValue}`;
+      if (/^\d*\.?\d*$/.test(value) || value === '') {
+        setUsdValue(value);
       }
-
-      const [integer, ...rest] = nextValue.split('.');
-      const normalizedInteger = integer.replace(/^0+(?=\d)/, '');
-      const normalizedDecimal = rest.join('').slice(0, 4);
-      const normalizedValue = rest.length
-        ? `${normalizedInteger || '0'}.${normalizedDecimal}`
-        : normalizedInteger;
-
-      setUsdValue(normalizedValue);
     },
     []
   );
