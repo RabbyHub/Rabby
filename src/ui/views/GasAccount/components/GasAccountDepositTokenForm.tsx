@@ -366,6 +366,16 @@ const GasAccountDepositTokenFormInner: React.FC<
     }
   }, [availableTokens]);
 
+  useEffect(() => {
+    if (!visible) {
+      didInitSelectedTokenRef.current = false;
+      //wait close animation
+      setTimeout(() => {
+        setSelectedToken(undefined);
+      }, 200);
+    }
+  }, [visible]);
+
   const selectedOwnerAccount = useMemo(
     () =>
       selectedToken
