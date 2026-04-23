@@ -174,9 +174,8 @@ export const useEIP7702ApprovalsQuery = ({
       return;
     }
 
-    await revokeEIP7702({
+    await wallet.revokeEIP7702V2({
       chainList: selectedRows?.map((e) => e.chain),
-      account: currentAccount,
     });
 
     clearState();

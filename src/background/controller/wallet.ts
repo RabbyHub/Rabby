@@ -5441,6 +5441,91 @@ export class WalletController extends BaseController {
     }
   };
 
+  revokeEIP7702V2 = async ({ chainList }: { chainList: CHAINS_ENUM[] }) => {
+    const queue = new PQueue({
+      autoStart: true,
+      concurrency: 1,
+      timeout: undefined,
+    });
+
+    const abortRevoke = new AbortController();
+
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error(t('background.error.noCurrentAccount'));
+
+    const paramsList = await Promise.all(
+      chainList.map(async (chain) => {
+        try {
+          const chainId = findChain({
+            enum: chain,
+          })?.id;
+          if (!chainId) throw new Error(t('background.error.invalidChainId'));
+
+          const _nonce = await this.getRecommendNonce({
+            from: account.address,
+            chainId,
+          });
+
+          const nonce = fromHex(_nonce as `0x${string}`, 'number') + 1;
+
+          const tx: any = {
+            from: account.address,
+            to: account.address,
+            chainId: chainId,
+            type: 4,
+            nonce: _nonce,
+          };
+          return {
+            chain,
+            data: {
+              $ctx: {
+                eip7702Revoke: true,
+                eip7702RevokeAuthorization: [[chainId, zeroAddress, nonce]],
+              },
+              method: 'eth_sendTransaction',
+              params: [tx],
+            },
+          };
+        } catch (error) {
+          console.error(error);
+          return null;
+        }
+      })
+    );
+
+    const revokeList: (() => Promise<void>)[] = paramsList.map(
+      (item) => async () => {
+        try {
+          if (!item) {
+            throw new Error(t('background.error.invalidRevokeParams'));
+          }
+
+          await this.sendRequest(item.data);
+        } catch (error) {
+          abortRevoke.abort();
+          if (!appIsProd) console.error(error);
+          console.error(`batch revoke ${item?.chain} 7702 error`);
+        }
+      }
+    );
+
+    const waitAbort = new Promise<void>((resolve) => {
+      const onAbort = () => {
+        queue.clear();
+        resolve();
+
+        abortRevoke.signal.removeEventListener('abort', onAbort);
+      };
+      abortRevoke.signal.addEventListener('abort', onAbort);
+    });
+
+    try {
+      await Promise.race([queue.addAll(revokeList), waitAbort]);
+    } catch (error) {
+      console.log('revoke error', error);
+    }
+  };
+
   getSecurityEngineRules = () => {
     return securityEngineService.getRules();
   };
