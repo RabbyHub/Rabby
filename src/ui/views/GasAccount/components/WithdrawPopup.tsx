@@ -4,7 +4,6 @@ import { Popup, Item, Empty } from '@/ui/component';
 import { Button, message, Skeleton, Tooltip } from 'antd';
 import { PopupProps } from '@/ui/component/Popup';
 import { noop } from 'lodash';
-import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useGasAccountRefresh, useGasAccountSign } from '../hooks';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
@@ -14,8 +13,6 @@ import { formatUsdValue, useAlias, useWallet } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
 import { findChainByServerID } from '@/utils/chain';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { CSSProperties } from 'styled-components';
 import styled from 'styled-components';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
@@ -26,6 +23,7 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import IconArrowRight from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
+import { Virtuoso } from 'react-virtuoso';
 
 enum SelectorStatus {
   Hidden,
@@ -94,34 +92,21 @@ const Selector = ({
   const sortedList = useMemo(
     () =>
       isSelectChain
-        ? selectAddressChainList?.recharge_chain_list?.sort(
+        ? [...(selectAddressChainList?.recharge_chain_list || [])].sort(
             (a, b) => b.withdraw_limit - a.withdraw_limit
-          ) || []
+          )
         : withdrawList,
     [selectAddressChainList, withdrawList, isSelectChain]
   );
 
-  const ChainRow = React.useCallback(
-    ({
-      index,
-      data,
-      style,
-    }: {
-      index: number;
-      data: RechargeChainItem[];
-      style: CSSProperties;
-    }) => {
-      const item = data[index];
+  const renderChainRow = React.useCallback(
+    (_: number, item: RechargeChainItem) => {
       const chainEnum = findChainByServerID(item.chain_id)!;
       const disabled = !item.withdraw_limit;
 
       return (
-        <div
-          className={clsx('w-full h-[68px] flex items-center justify-between')}
-        >
+        <div className="w-full h-[68px] flex items-center justify-between">
           <Item
-            key={item.chain_id}
-            style={style}
             px={16}
             py={0}
             className={clsx(
@@ -161,32 +146,19 @@ const Selector = ({
         </div>
       );
     },
-    [isSelectChain]
+    [onClose, setChain]
   );
 
-  const AddressRow = React.useCallback(
-    ({
-      index,
-      data,
-      style,
-    }: {
-      index: number;
-      data: WithdrawListAddressItem[];
-      style: CSSProperties;
-    }) => {
-      const item = data[index];
+  const renderAddressRow = React.useCallback(
+    (_: number, item: WithdrawListAddressItem) => {
       const disabled = !item.total_withdraw_limit;
       const account = accountsList.find(
         (i) => i.address === item.recharge_addr
       );
 
       return (
-        <div
-          className={clsx('w-full h-[68px] flex items-center justify-between')}
-        >
+        <div className="w-full h-[68px] flex items-center justify-between">
           <Item
-            key={item.recharge_addr}
-            style={style}
             px={16}
             py={0}
             className={clsx(
@@ -215,7 +187,7 @@ const Selector = ({
         </div>
       );
     },
-    [isSelectChain, accountsList]
+    [accountsList, onClose, setSelectAddressChainList]
   );
 
   return (
@@ -279,27 +251,23 @@ const Selector = ({
             </div>
           </div>
         </div>
-        <div className="overflow-y-auto flex-1 relative px-20">
+        <div className="flex-1 min-h-0 px-20">
           {!sortedList?.length ? null : isSelectChain ? (
-            <FixedSizeList<RechargeChainItem[]>
-              width={'100%'}
-              height={340}
-              itemCount={sortedList?.length || 0}
-              itemData={sortedList as RechargeChainItem[]}
-              itemSize={68}
-            >
-              {ChainRow}
-            </FixedSizeList>
+            <Virtuoso
+              data={sortedList as RechargeChainItem[]}
+              style={{ height: '100%' }}
+              fixedItemHeight={68}
+              computeItemKey={(_, item) => item.chain_id}
+              itemContent={renderChainRow}
+            />
           ) : (
-            <FixedSizeList<WithdrawListAddressItem[]>
-              width={'100%'}
-              height={340}
-              itemCount={sortedList?.length || 0}
-              itemData={sortedList as WithdrawListAddressItem[]}
-              itemSize={68}
-            >
-              {AddressRow}
-            </FixedSizeList>
+            <Virtuoso
+              data={sortedList as WithdrawListAddressItem[]}
+              style={{ height: '100%' }}
+              fixedItemHeight={68}
+              computeItemKey={(_, item) => item.recharge_addr}
+              itemContent={renderAddressRow}
+            />
           )}
           {!sortedList?.length && (
             <Empty
@@ -341,12 +309,11 @@ const WithdrawContent = ({
   ] = useState<WithdrawListAddressItem>();
   const { sig, accountId } = useGasAccountSign();
   const wallet = useWallet();
-
-  const account = useCurrentAccount();
   const [btnLoading, setBtnLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [withdrawList, setWithdrawList] = useState<WithdrawListAddressItem[]>();
   const { refresh } = useGasAccountRefresh();
+  const accountsList = useRabbySelector((s) => s.accountToDisplay.accountsList);
 
   const fetchData = async () => {
     setLoading(true);
@@ -381,10 +348,6 @@ const WithdrawContent = ({
       fetchData();
     }
   }, [sig, accountId]);
-
-  const { accountsList } = useRabbySelector((s) => ({
-    ...s.accountToDisplay,
-  }));
 
   const withdraw = async () => {
     if (
