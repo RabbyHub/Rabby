@@ -95,6 +95,13 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
       ),
     [allSortedAccountList, availableTokens]
   );
+  const showOwnerInfo = React.useMemo(() => {
+    const ownerAddresses = new Set(
+      availableTokens.map((token) => token.owner_addr.toLowerCase())
+    );
+
+    return ownerAddresses.size > 1;
+  }, [availableTokens]);
 
   const Row = React.useCallback(
     ({
@@ -136,10 +143,12 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
                     {getTokenSymbol(item)}
                   </div>
                 </div>
-                <GasAccountDepositTokenOwnerInfo
-                  address={item.owner_addr}
-                  account={ownerAccount}
-                />
+                {showOwnerInfo ? (
+                  <GasAccountDepositTokenOwnerInfo
+                    address={item.owner_addr}
+                    account={ownerAccount}
+                  />
+                ) : null}
               </div>
             </div>
             <div className="text-right ml-12 shrink-0">
@@ -154,7 +163,7 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
         </div>
       );
     },
-    [handleClose, onSelect, ownerAccountMap]
+    [handleClose, onSelect, ownerAccountMap, showOwnerInfo]
   );
 
   return (
