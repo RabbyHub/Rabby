@@ -1,6 +1,10 @@
 import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol, abstractTokenToTokenItem } from '@/ui/utils/token';
-import { TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  GasAccountCheckResult,
+  TokenItem,
+  Tx,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { Button, Skeleton, Switch, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
@@ -50,6 +54,7 @@ import { GasSelectorResponse } from '../../Approval/components/TxComponents/GasS
 import SignMainnetGasSelectorHeader from '../../Approval/components/TxComponents/GasSelector/SignMainnetGasSelectorHeader';
 import { normalizeTxParams } from '../../Approval/components/SignTx';
 import { checkGasAndNonce, explainGas } from '@/utils/transaction';
+import { KEYRING_TYPE } from '@/constant';
 import { KEYRING_CLASS } from 'consts';
 import { useRabbySelector } from '@/ui/store';
 import {
@@ -837,9 +842,9 @@ export const DirectSignGasInfo = ({
     (
       gas: GasSelectorResponse,
       type?: 'gasAccount' | 'native'
-    ): Promise<[boolean, number]> => {
+    ): Promise<[boolean, number, undefined | GasAccountCheckResult]> => {
       if (!isReady || !txsResult.length || !currentAccount || !chainId) {
-        return Promise.resolve([true, 0]);
+        return Promise.resolve([true, 0, undefined]);
       }
 
       return Promise.all(
@@ -877,7 +882,7 @@ export const DirectSignGasInfo = ({
         let balance = nativeTokenBalance || '';
 
         if (!arr.length) {
-          return [true, 0] as [boolean, number];
+          return [true, 0, undefined];
         }
 
         if (type === 'native') {
@@ -915,9 +920,10 @@ export const DirectSignGasInfo = ({
             return result;
           });
 
-          return [_.flatten(checkResult)?.some((e) => e.code === 3001), 0] as [
-            boolean,
-            number
+          return [
+            _.flatten(checkResult)?.some((e) => e.code === 3001),
+            0,
+            undefined,
           ];
         }
 
@@ -935,6 +941,7 @@ export const DirectSignGasInfo = ({
             !gasAccountRes.balance_is_enough,
             (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
               (gasAccountRes.gas_account_cost?.gas_cost || 0),
+            gasAccountRes,
           ]);
       });
     }
@@ -1055,6 +1062,9 @@ export const DirectSignGasInfo = ({
             gasAccountCost={gasAccount as any}
             gasMethod={gasMethod}
             onChangeGasMethod={handleChangeGasMethod}
+            isWalletConnect={
+              currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring
+            }
             disabled={false}
             isReady={isReady}
             gasLimit={String(txsResult?.[0]?.gasLimit || currentTx?.gas || 0)}

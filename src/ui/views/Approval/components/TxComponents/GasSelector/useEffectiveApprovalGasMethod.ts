@@ -15,6 +15,7 @@ export const useEffectiveApprovalGasMethod = ({
   canUseGasLess,
   gasMethod,
   setGasMethod,
+  isWalletConnect,
 }: {
   isReady: boolean;
   isFirstGasLessLoading: boolean;
@@ -23,6 +24,7 @@ export const useEffectiveApprovalGasMethod = ({
   noCustomRPC?: boolean;
   canUseGasLess?: boolean;
   gasMethod?: ApprovalGasMethod;
+  isWalletConnect: boolean;
   setGasMethod(method: ApprovalGasMethod): void | Promise<void>;
 }) => {
   const shouldPreferGasAccountImmediately = useMemo(
@@ -32,6 +34,7 @@ export const useEffectiveApprovalGasMethod = ({
         gasAccountChainSupported,
         freeGasAvailable: canUseGasLess,
         noCustomRPC,
+        isWalletConnect,
       }),
     [canUseGasLess, gasAccountChainSupported, isGasNotEnough, noCustomRPC]
   );
@@ -44,6 +47,7 @@ export const useEffectiveApprovalGasMethod = ({
         gasAccountChainSupported,
         freeGasAvailable: canUseGasLess,
         noCustomRPC,
+        isWalletConnect,
       }),
     [
       canUseGasLess,
@@ -51,6 +55,7 @@ export const useEffectiveApprovalGasMethod = ({
       gasMethod,
       isGasNotEnough,
       noCustomRPC,
+      isWalletConnect,
     ]
   );
 

@@ -34,9 +34,9 @@ export const getGasAccountDecision = ({
   authTimeFormChanged,
 }: {
   gasAccountCost?: GasAccountCheckResult & { err_msg?: string };
-  noCustomRPC?: boolean;
-  isWalletConnect?: boolean;
-  accountType?: string;
+  noCustomRPC: boolean;
+  isWalletConnect: boolean;
+  accountType: string;
   authTimeFormChanged?: boolean;
 }) => {
   const customRPCUnsupported = !noCustomRPC;

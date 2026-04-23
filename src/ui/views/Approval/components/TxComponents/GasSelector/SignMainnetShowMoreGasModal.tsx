@@ -27,6 +27,7 @@ import { ReactComponent as RcIconGasAccountActive } from 'ui/assets/sign/tx/gas-
 import { calcGasAccountUsd } from './directSignSummary';
 import { GasMethod } from '../GasSelectorHeader';
 import {
+  canDisplaySharedGasAccountForApproval,
   resolveApprovalGasMethod,
   resolveApprovalDisplayedGasLevelNotEnough,
   resolveApprovalGasLevelMethod,
@@ -70,8 +71,10 @@ type Props = {
     is_gas_account: boolean;
     balance_is_enough: boolean;
     chain_not_support: boolean;
+    err_msg?: string;
   };
   nativeTokenInsufficient?: boolean;
+  isWalletConnect?: boolean;
   levelState: SignMainnetGasLevelState;
   autoOpenSignal?: number;
   showTempoGasTokenSelector?: boolean;
@@ -104,6 +107,7 @@ export const SignMainnetShowMoreGasModal = ({
   selectedGasCostUsdStr,
   gasAccountCost,
   nativeTokenInsufficient,
+  isWalletConnect = false,
   levelState,
   autoOpenSignal = 0,
   showTempoGasTokenSelector = false,
@@ -117,8 +121,7 @@ export const SignMainnetShowMoreGasModal = ({
   const { t } = useTranslation();
   const currentGasMethod = gasMethod ?? 'native';
   const noCustomRPCEnabled = noCustomRPC ?? true;
-  const gasAccountChainSupported =
-    !!gasAccountCost && !gasAccountCost.chain_not_support;
+
   const lastHandledAutoOpenSignalRef = React.useRef(0);
   const uiType = React.useMemo(() => getUiType(), []);
   const [tempoGasTokenVisible, setTempoGasTokenVisible] = React.useState(false);
@@ -252,16 +255,34 @@ export const SignMainnetShowMoreGasModal = ({
                 const isActive = selectedGas?.level === gas.level;
                 const isCustom = gas.level === 'custom';
                 const levelKey = gas.level as SignMainnetSupportedGasLevel;
+
+                const gasAccountChainSupported = isActive
+                  ? !!gasAccountCost && !gasAccountCost.chain_not_support
+                  : !levelState[levelKey]?.gasAccountResult?.chain_not_support;
+
+                const levelSupportedUseGasAccount = canDisplaySharedGasAccountForApproval(
+                  {
+                    gasAccountBalanceEnough: !!levelState[levelKey]
+                      ?.gasAccountResult?.balance_is_enough,
+                    gasAccountChainSupported,
+                    noCustomRPC: noCustomRPCEnabled,
+                    gasAccountErrMsg: gasAccountCost?.err_msg,
+                    isWalletConnect,
+                  }
+                );
+
                 const levelNativeInsufficient = isCustom
                   ? false
                   : !!levelState[levelKey]?.nativeNotEnough;
+
                 const displayMethod = isActive
                   ? resolveApprovalGasMethod({
                       nativeTokenInsufficient: !!nativeTokenInsufficient,
-                      gasAccountChainSupported: !!gasAccountChainSupported,
+                      gasAccountChainSupported,
                       noCustomRPC: noCustomRPCEnabled,
                       freeGasAvailable,
                       legacyGasMethod: currentGasMethod,
+                      isWalletConnect,
                     })
                   : resolveApprovalGasLevelMethod({
                       isCustom,
@@ -270,6 +291,7 @@ export const SignMainnetShowMoreGasModal = ({
                       gasAccountChainSupported,
                       noCustomRPC: noCustomRPCEnabled,
                       freeGasAvailable,
+                      sharedGasAccountAvailable: levelSupportedUseGasAccount,
                     });
                 const isRowLoading = !!levelState[levelKey]?.loading;
 
@@ -283,10 +305,8 @@ export const SignMainnetShowMoreGasModal = ({
                   displayMethod,
                   nativeTokenInsufficient: !!nativeTokenInsufficient,
                   gasAccountBalanceEnough: gasAccountCost?.balance_is_enough,
-                  levelNativeInsufficient:
-                    levelState[levelKey]?.nativeNotEnough,
-                  levelGasAccountNotEnough:
-                    levelState[levelKey]?.gasAccount?.[0],
+                  levelNativeInsufficient,
+                  sharedGasAccountAvailable: levelSupportedUseGasAccount,
                 });
 
                 costUsd = isActive

@@ -1,7 +1,12 @@
 import { Button, DrawerProps, Input, InputRef, Skeleton, Tooltip } from 'antd';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { GasLevel, Tx, TxPushType } from 'background/service/openapi';
+import {
+  GasAccountCheckResult,
+  GasLevel,
+  Tx,
+  TxPushType,
+} from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
@@ -129,7 +134,7 @@ interface GasSelectorProps {
   checkGasLevelIsNotEnough?: (
     gas: GasSelectorResponse,
     gasType: 'native' | 'gasAccount'
-  ) => Promise<[boolean, number]>;
+  ) => Promise<[boolean, number, undefined | GasAccountCheckResult]>;
   getContainer?: DrawerProps['getContainer'];
   showTempoGasTokenSelector?: boolean;
   tempoGasTokenList?: TokenItem[];

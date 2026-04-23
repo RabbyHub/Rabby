@@ -42,6 +42,7 @@ export interface SignMainnetGasSelectorHeaderProps
   nativeTokenInsufficient?: boolean;
   freeGasAvailable?: boolean;
   noCustomRPC?: boolean;
+  isWalletConnect?: boolean;
   selectedMaxPriorityFee?: number;
   onSignTx?: boolean;
 }
@@ -50,6 +51,7 @@ export const SignMainnetGasSelectorHeader = ({
   nativeTokenInsufficient,
   freeGasAvailable,
   noCustomRPC,
+  isWalletConnect,
   gasMethod,
   gasAccountCost,
   gas,
@@ -103,11 +105,10 @@ export const SignMainnetGasSelectorHeader = ({
     noCustomRPC: noCustomRPCEnabled,
     freeGasAvailable,
     legacyGasMethod: gasMethod,
+    isWalletConnect: !!isWalletConnect,
   });
-  const gasAccountChainSupported =
-    !!gasAccountCost && !gasAccountCost.chain_not_support;
-  const gasAccountMethodSupported =
-    gasAccountChainSupported && noCustomRPCEnabled;
+
+  const gasAccountMethodSupported = !isWalletConnect && noCustomRPCEnabled;
 
   const gasCostUsdStr = useMemo(
     () => formatGasHeaderUsdValue(String(gas.gasCostUsd || 0)),
@@ -156,10 +157,6 @@ export const SignMainnetGasSelectorHeader = ({
         tx.to || '',
         tx.value || '',
         tx.data || '',
-        tx.gas || '',
-        tx.gasPrice || '',
-        tx.maxFeePerGas || '',
-        tx.maxPriorityFeePerGas || '',
         gasLimit || '',
         nonce || '',
         isCancel ? '1' : '0',
@@ -181,10 +178,6 @@ export const SignMainnetGasSelectorHeader = ({
       tx.chainId,
       tx.data,
       tx.from,
-      tx.gas,
-      tx.gasPrice,
-      tx.maxFeePerGas,
-      tx.maxPriorityFeePerGas,
       tx.to,
       tx.value,
     ]
@@ -300,11 +293,9 @@ export const SignMainnetGasSelectorHeader = ({
           : Promise.resolve({}),
         needsGasAccount
           ? checkGasLevelIsNotEnough(gasChange, 'gasAccount').then(
-              ([notEnough, usd]) => ({
-                gasAccount: [
-                  notEnough,
-                  calcGasAccountUsd(Number(usd || 0)),
-                ] as [boolean, string],
+              ([notEnough, usd, gasAccountResult]) => ({
+                gasAccount: [notEnough, calcGasAccountUsd(Number(usd || 0))],
+                gasAccountResult,
               })
             )
           : Promise.resolve({}),
@@ -350,35 +341,35 @@ export const SignMainnetGasSelectorHeader = ({
     txFingerprint,
   ]);
 
-  useEffect(() => {
-    if (
-      showMoreOpen ||
-      hasOpenedOnceRef.current ||
-      !shouldAutoOpenSignMainnetGasModal({
-        fetchMode,
-        selectedSupportedLevel,
-        nativeTokenInsufficient: !!nativeTokenInsufficient,
-        gasAccountUsable,
-        gasAccountChainSupported: gasAccountMethodSupported,
-        levelState,
-        requestFingerprint: txFingerprint,
-      })
-    ) {
-      return;
-    }
+  // useEffect(() => {
+  //   if (
+  //     showMoreOpen ||
+  //     hasOpenedOnceRef.current ||
+  //     !shouldAutoOpenSignMainnetGasModal({
+  //       fetchMode,
+  //       selectedSupportedLevel,
+  //       nativeTokenInsufficient: !!nativeTokenInsufficient,
+  //       gasAccountUsable,
+  //       gasAccountChainSupported: gasAccountMethodSupported,
+  //       levelState,
+  //       requestFingerprint: txFingerprint,
+  //     })
+  //   ) {
+  //     return;
+  //   }
 
-    hasOpenedOnceRef.current = true;
-    setAutoOpenSignal((signal) => signal + 1);
-  }, [
-    fetchMode,
-    gasAccountMethodSupported,
-    gasAccountUsable,
-    levelState,
-    nativeTokenInsufficient,
-    selectedSupportedLevel,
-    showMoreOpen,
-    txFingerprint,
-  ]);
+  //   hasOpenedOnceRef.current = true;
+  //   setAutoOpenSignal((signal) => signal + 1);
+  // }, [
+  //   fetchMode,
+  //   gasAccountMethodSupported,
+  //   gasAccountUsable,
+  //   levelState,
+  //   nativeTokenInsufficient,
+  //   selectedSupportedLevel,
+  //   showMoreOpen,
+  //   txFingerprint,
+  // ]);
 
   const canOpenShowMore =
     !!props.isReady && !props.disabled && gas.success && !gas.error;
@@ -606,6 +597,7 @@ export const SignMainnetGasSelectorHeader = ({
             selectedGasCostUsdStr={gasCostUsdStr}
             gasAccountCost={gasAccountCost}
             nativeTokenInsufficient={nativeTokenInsufficient}
+            isWalletConnect={isWalletConnect}
             autoOpenSignal={autoOpenSignal}
             levelState={levelState}
             showTempoGasTokenSelector={showTempoGasTokenSelector}

@@ -49,7 +49,10 @@ import {
   loadTempoFeeTokenOptionsState,
   TxWithTempoExtras,
 } from '@/utils/tempo';
-import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import type {
+  GasAccountCheckResult,
+  TokenItem,
+} from '@rabby-wallet/rabby-api/dist/types';
 import { abstractTokenToTokenItem } from '@/ui/utils/token';
 import { GasAccountDepositPopup } from '@/ui/views/GasAccount/components/GasAccountDepositPopup';
 import {
@@ -321,11 +324,11 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     (
       gas: GasSelectorResponse,
       type?: 'gasAccount' | 'native'
-    ): Promise<[boolean, number]> => {
+    ): Promise<[boolean, number, undefined | GasAccountCheckResult]> => {
       const initdTxs = ctx?.txsCalc || [];
       let _txsResult = initdTxs;
       if (!isReady || !initdTxs.length || !chain) {
-        return Promise.resolve([true, 0]);
+        return Promise.resolve([true, 0, undefined]);
       }
 
       return Promise.all(
@@ -364,7 +367,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         _txsResult = arr;
 
         if (!_txsResult.length) {
-          return [true, 0];
+          return [true, 0, undefined];
         }
 
         if (type === 'native') {
@@ -396,9 +399,10 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
               .toFixed();
             return result;
           });
-          return [_.flatten(checkResult)?.some((e) => e.code === 3001), 0] as [
-            boolean,
-            number
+          return [
+            _.flatten(checkResult)?.some((e) => e.code === 3001),
+            0,
+            undefined,
           ];
         }
         return wallet.openapi
@@ -418,6 +422,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
               !gasAccountRes.balance_is_enough,
               (gasAccountRes.gas_account_cost.estimate_tx_cost || 0) +
                 (gasAccountRes.gas_account_cost?.gas_cost || 0),
+              gasAccountRes,
             ];
           });
       });
@@ -465,6 +470,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     canUseGasLess,
     gasMethod,
     setGasMethod: handleChangeGasMethod,
+    isWalletConnect: currentAccount?.type === KEYRING_CLASS.WALLETCONNECT,
   });
 
   if (
@@ -790,6 +796,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                         gasMethod={gasMethod}
                         onChangeGasMethod={setGasMethod}
                         noCustomRPC={noCustomRPC}
+                        isWalletConnect={isWalletConnect}
                         nativeTokenInsufficient={isGasNotEnough}
                         freeGasAvailable={canUseGasLess}
                         pushType={pushType}
@@ -1056,6 +1063,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 gasMethod={gasMethod}
                 onChangeGasMethod={setGasMethod}
                 noCustomRPC={noCustomRPC}
+                isWalletConnect={isWalletConnect}
                 nativeTokenInsufficient={isGasNotEnough}
                 freeGasAvailable={canUseGasLess}
                 pushType={pushType}

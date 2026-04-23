@@ -1,3 +1,5 @@
+import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
+
 export type ApprovalGasMethod = 'native' | 'gasAccount';
 
 export type ApprovalGasDisplayMode =
@@ -10,10 +12,12 @@ export const APPROVAL_GAS_DISPLAY_MODE: ApprovalGasDisplayMode =
 const canUseApprovalGasAccount = ({
   gasAccountChainSupported,
   noCustomRPC,
+  isWalletConnect,
 }: {
   gasAccountChainSupported?: boolean;
   noCustomRPC?: boolean;
-}) => !!gasAccountChainSupported && !!noCustomRPC;
+  isWalletConnect: boolean;
+}) => !!gasAccountChainSupported && !!noCustomRPC && !isWalletConnect;
 
 export const isApprovalSmartGasDisplayEnabled = (
   mode: ApprovalGasDisplayMode = APPROVAL_GAS_DISPLAY_MODE
@@ -28,17 +32,20 @@ export const shouldAutoSwitchToApprovalGasAccount = ({
   gasAccountChainSupported,
   freeGasAvailable,
   noCustomRPC,
+  isWalletConnect,
 }: {
   nativeTokenInsufficient?: boolean;
   gasAccountChainSupported?: boolean;
   freeGasAvailable?: boolean;
   noCustomRPC?: boolean;
+  isWalletConnect: boolean;
 }) =>
   !!nativeTokenInsufficient &&
   !freeGasAvailable &&
   canUseApprovalGasAccount({
     gasAccountChainSupported,
     noCustomRPC,
+    isWalletConnect,
   });
 
 export const resolveApprovalGasMethod = ({
@@ -48,6 +55,7 @@ export const resolveApprovalGasMethod = ({
   gasAccountChainSupported,
   freeGasAvailable,
   noCustomRPC,
+  isWalletConnect,
 }: {
   mode?: ApprovalGasDisplayMode;
   legacyGasMethod?: ApprovalGasMethod;
@@ -55,6 +63,7 @@ export const resolveApprovalGasMethod = ({
   gasAccountChainSupported?: boolean;
   freeGasAvailable?: boolean;
   noCustomRPC?: boolean;
+  isWalletConnect: boolean;
 }): ApprovalGasMethod => {
   if (!isApprovalSmartGasDisplayEnabled(mode)) {
     return legacyGasMethod || 'native';
@@ -65,19 +74,17 @@ export const resolveApprovalGasMethod = ({
     gasAccountChainSupported,
     freeGasAvailable,
     noCustomRPC,
+    isWalletConnect,
   })
     ? 'gasAccount'
     : 'native';
 };
 
 export const resolveApprovalGasLevelMethod = ({
-  mode = APPROVAL_GAS_DISPLAY_MODE,
   isCustom = false,
   nativeTokenInsufficient,
-  gasAccountChainSupported,
-  freeGasAvailable,
-  noCustomRPC,
   currentGasMethod = 'native',
+  sharedGasAccountAvailable,
 }: {
   mode?: ApprovalGasDisplayMode;
   isCustom?: boolean;
@@ -86,20 +93,43 @@ export const resolveApprovalGasLevelMethod = ({
   freeGasAvailable?: boolean;
   noCustomRPC?: boolean;
   currentGasMethod?: ApprovalGasMethod;
+  sharedGasAccountAvailable?: boolean;
 }): ApprovalGasMethod => {
   if (isCustom) {
     return currentGasMethod;
   }
 
-  return resolveApprovalGasMethod({
-    mode,
-    legacyGasMethod: currentGasMethod,
-    nativeTokenInsufficient,
-    gasAccountChainSupported,
-    freeGasAvailable,
-    noCustomRPC,
-  });
+  if (nativeTokenInsufficient === false) {
+    return 'native';
+  }
+
+  if (nativeTokenInsufficient === true && sharedGasAccountAvailable) {
+    return 'gasAccount';
+  }
+
+  return 'native';
 };
+
+export const canDisplaySharedGasAccountForApproval = ({
+  gasAccountBalanceEnough,
+  gasAccountChainSupported,
+  noCustomRPC,
+  gasAccountErrMsg,
+  isWalletConnect,
+}: {
+  gasAccountBalanceEnough: boolean;
+  gasAccountChainSupported: boolean;
+  noCustomRPC?: boolean;
+  gasAccountErrMsg?: string | null;
+  isWalletConnect: boolean;
+}) =>
+  !isWalletConnect &&
+  !!noCustomRPC &&
+  !!gasAccountBalanceEnough &&
+  !!gasAccountChainSupported &&
+  (!gasAccountErrMsg ||
+    gasAccountErrMsg?.toLowerCase() ===
+      GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase());
 
 export const isApprovalGasMethodNotEnough = ({
   displayMethod,
@@ -120,14 +150,14 @@ export const resolveApprovalDisplayedGasLevelNotEnough = ({
   nativeTokenInsufficient,
   gasAccountBalanceEnough,
   levelNativeInsufficient,
-  levelGasAccountNotEnough,
+  sharedGasAccountAvailable,
 }: {
   isActive: boolean;
   displayMethod: ApprovalGasMethod;
   nativeTokenInsufficient?: boolean;
   gasAccountBalanceEnough?: boolean;
   levelNativeInsufficient?: boolean;
-  levelGasAccountNotEnough?: boolean;
+  sharedGasAccountAvailable?: boolean;
 }) => {
   if (isActive) {
     return isApprovalGasMethodNotEnough({
@@ -137,7 +167,15 @@ export const resolveApprovalDisplayedGasLevelNotEnough = ({
     });
   }
 
+  if (
+    nativeTokenInsufficient &&
+    sharedGasAccountAvailable &&
+    gasAccountBalanceEnough
+  ) {
+    return false;
+  }
+
   return displayMethod === 'gasAccount'
-    ? levelGasAccountNotEnough
-    : levelNativeInsufficient;
+    ? !sharedGasAccountAvailable
+    : !!levelNativeInsufficient;
 };
