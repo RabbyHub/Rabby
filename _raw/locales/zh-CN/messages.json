@@ -2749,15 +2749,10 @@
         "desc": "注销会禁用GasAccount。您可以通过使用此地址登录来恢复您的GasAccount。"
       },
       "depositPopup": {
-<<<<<<< HEAD
         "title": "存款",
         "gasDepositTitle": "Gas 充值",
         "selectToken": "选择要存入的 Token",
         "zeroInvalidAmount": "金额不能为 0",
-=======
-        "title": "充值",
-        "selectToken": "选择要充值的代币",
->>>>>>> feat/cn-i18n01
         "invalidAmount": "必须在 500 以下",
         "minAmountRequired": "最低存款金额为 ${{value}}",
         "token": "Token",
