@@ -60,6 +60,7 @@ import { CHAINS_ENUM } from '@/types/chain';
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { KEYRING_CLASS } from '@/constant';
+import { findAccountByPriority } from '@/utils/account';
 
 interface GasAccountDepositTokenFormProps {
   visible?: boolean;
@@ -370,13 +371,20 @@ const GasAccountDepositTokenFormInner: React.FC<
     }
   }, [visible]);
 
-  const selectedOwnerAccount = useMemo(
-    () =>
-      selectedToken
-        ? ownerAccountMap.get(selectedToken.owner_addr.toLowerCase())
-        : undefined,
-    [ownerAccountMap, selectedToken]
-  );
+  const selectedOwnerAccount = useMemo(() => {
+    if (!selectedToken) {
+      return undefined;
+    }
+
+    const matchedAccounts = allSortedAccountList.filter((account) =>
+      isSameAddress(account.address, selectedToken.owner_addr)
+    );
+    const eligibleMatchedAccounts = isInTxFlow
+      ? matchedAccounts.filter((account) => supportedDirectSign(account.type))
+      : matchedAccounts;
+
+    return findAccountByPriority(eligibleMatchedAccounts as Account[]);
+  }, [allSortedAccountList, isInTxFlow, selectedToken]);
   const selectedOwnerAddress = selectedOwnerAccount?.address;
   const selectedBridgeQuoteTokenKey = selectedToken
     ? [
