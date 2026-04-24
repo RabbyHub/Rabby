@@ -131,13 +131,17 @@ export const useTokenPair = (userAddress: string) => {
     [dispatch?.swap?.setSelectedChain]
   );
   const [refreshTokenId, updateRefreshTokenId] = useState(0);
+  const reloadTxRefreshPausedRef = useRef(false);
+  const setReloadTxRefreshPaused = useCallback((paused: boolean) => {
+    reloadTxRefreshPausedRef.current = paused;
+  }, []);
   const refreshTokensInfo = useCallback(
     () => updateRefreshTokenId((e) => e + 1),
     [updateRefreshTokenId]
   );
   useEffect(() => {
     const refreshToken = (params: { addressList: string[] }) => {
-      if (depositFlowActive) {
+      if (depositFlowActive || reloadTxRefreshPausedRef.current) {
         return;
       }
       if (
@@ -993,6 +997,7 @@ export const useTokenPair = (userAddress: string) => {
   }, []);
 
   return {
+    setReloadTxRefreshPaused,
     bestQuoteDex,
     gasLevel,
 

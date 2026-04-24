@@ -110,6 +110,7 @@ export const BridgeContent = () => {
     setSlippageChanged,
     isSlippageHigh,
     isSlippageLow,
+    setReloadTxRefreshPaused,
 
     autoSlippage,
     isCustomSlippage,
@@ -580,6 +581,7 @@ export const BridgeContent = () => {
   }, [buildTopUpSnapshot, closeSign]);
 
   const handleBridge = useMemoizedFn(async () => {
+    setReloadTxRefreshPaused(true);
     if (canUseDirectSubmitTx) {
       consumeTopUpResumeGuard();
       setMiniSignLoading(true);
@@ -632,9 +634,14 @@ export const BridgeContent = () => {
         console.error('bridge direct sign error', error);
       } finally {
         setMiniSignLoading(false);
+        setReloadTxRefreshPaused(false);
       }
     } else {
-      gotoBridge();
+      try {
+        await gotoBridge();
+      } finally {
+        setReloadTxRefreshPaused(false);
+      }
     }
   });
 
