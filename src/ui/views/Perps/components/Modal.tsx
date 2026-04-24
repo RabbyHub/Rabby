@@ -29,6 +29,7 @@ export const PerpsModal = ({
           ? 'perps-bridge-swap-modal-dark'
           : 'perps-bridge-swap-modal-light'
       )}
+      bodyStyle={{ borderRadius: '4px' }}
       visible={visible}
       centered
       closable={false}
