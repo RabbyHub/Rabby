@@ -1,10 +1,13 @@
 import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import { DisplayPoolReserveInfo } from '../../types';
-import { formatApy, formatListNetWorth } from '../../utils/format';
+import {
+  formatApy,
+  formatListNetWorth,
+  formatUsdValue,
+} from '../../utils/format';
 import SymbolIcon from '../SymbolIcon';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { Tooltip } from 'antd';
 
