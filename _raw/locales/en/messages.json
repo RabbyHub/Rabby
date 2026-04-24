@@ -83,7 +83,8 @@
         "idle": "Waiting to swap",
         "success": "Swap successful"
       },
-      "completedTips": "Ongoing swap will continue processing"
+      "completedTips": "Ongoing swap will continue processing",
+      "priceImpact": "Price Impact Cap"
     },
     "signTx": {
       "nftIn": "NFT in",

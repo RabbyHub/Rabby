@@ -19,6 +19,7 @@ import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 import { ExchangeSettingRow } from './ExchangeSettingRow';
 import { SelectPopup } from './SelectPopup';
 import { SwapAnimation } from './SwapAnimation';
+import { ReactComponent as RcIconFailed } from '@/ui/assets/small-swap/failed.svg';
 
 type ReceiveSummaryProps = {
   totalValue?: number;
@@ -40,7 +41,9 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
   const ref = React.useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
-  const [slippagePopupVisible, setSlippagePopupVisible] = React.useState(false);
+  const [priceImpactPopupVisible, setPriceImpactPopupVisible] = React.useState(
+    false
+  );
   const [gasPopupVisible, setGasPopupVisible] = React.useState(false);
 
   const previousUsd = usePrevious(task?.finalReceive?.usd || 0);
@@ -60,6 +63,15 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
       return true;
     }
     return false;
+  }, [task?.status, task?.statusDict]);
+
+  const isSuccess = useMemo(() => {
+    return (
+      task?.status === 'completed' &&
+      !!Object.values(task?.statusDict || {}).find(
+        (item) => item.status === 'success'
+      )
+    );
   }, [task?.status, task?.statusDict]);
 
   return (
@@ -83,11 +95,15 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
         {task?.status === 'completed' ? (
           <>
             <div className="flex-1 pt-[12px]">
-              <Lottie
-                animationData={require('@/ui/assets/animation/animation-create-success.min.json')}
-                loop={false}
-                style={{ width: 130, height: 130, margin: '0 auto' }}
-              />
+              {isSuccess ? (
+                <Lottie
+                  animationData={require('@/ui/assets/animation/animation-create-success.min.json')}
+                  loop={false}
+                  style={{ width: 130, height: 130, margin: '0 auto' }}
+                />
+              ) : (
+                <RcIconFailed className="mx-auto mt-[24px] mb-[32px]" />
+              )}
               <div className="mt-[-8px] text-center text-[24px] leading-[29px] font-medium text-r-neutral-title1">
                 {t('page.desktopSmallSwap.completedTitle')}
               </div>
@@ -160,21 +176,24 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
               <div className="relative w-[46px] h-[46px] flex-shrink-0">
                 <Image
                   className="w-full h-full block rounded-full"
+                  rootClassName="w-full h-full"
                   src={token?.logo_url || IconUnknown}
                   alt={token?.symbol}
                   fallback={IconUnknown}
                   preview={false}
                 />
-                <TooltipWithMagnetArrow
-                  title={chain?.name}
-                  className="rectangle w-[max-content]"
-                >
-                  <img
-                    className="w-[18px] h-[18px] absolute right-[-1px] bottom-[-1px] rounded-full"
-                    src={chain?.logo || IconUnknown}
-                    alt={chain?.name}
-                  />
-                </TooltipWithMagnetArrow>
+                {chain?.logo ? (
+                  <TooltipWithMagnetArrow
+                    title={chain?.name}
+                    className="rectangle w-[max-content]"
+                  >
+                    <img
+                      className="w-[18px] h-[18px] absolute right-[-1px] bottom-[-1px] rounded-full"
+                      src={chain?.logo || IconUnknown}
+                      alt={chain?.name}
+                    />
+                  </TooltipWithMagnetArrow>
+                ) : null}
               </div>
               {task?.status === 'idle' ? (
                 <div>
@@ -237,14 +256,16 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                 />
               ) : null}
               <ExchangeSettingRow
-                label={t('page.desktopSmallSwap.slippageTolerance')}
-                value={task?.config.slippage ? `${task.config.slippage}%` : '-'}
+                label={t('page.desktopSmallSwap.priceImpact')}
+                value={
+                  task?.config.priceImpact ? `${task.config.priceImpact}%` : '-'
+                }
                 isShowArrow={task?.status === 'idle'}
                 onClick={() => {
                   if (task?.status !== 'idle') {
                     return;
                   }
-                  setSlippagePopupVisible(true);
+                  setPriceImpactPopupVisible(true);
                 }}
               />
 
@@ -315,31 +336,31 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
         )}
       </section>
       <SelectPopup
-        value={task?.config.slippage}
-        title={t('page.desktopSmallSwap.slippageTolerance')}
-        visible={slippagePopupVisible}
+        value={task?.config.priceImpact}
+        title={t('page.desktopSmallSwap.priceImpact')}
+        visible={priceImpactPopupVisible}
         onCancel={() => {
-          setSlippagePopupVisible(false);
+          setPriceImpactPopupVisible(false);
         }}
         onConfirm={(v) => {
           task?.setConfig((prev) => ({
             ...prev,
-            slippage: v,
+            priceImpact: v,
           }));
-          setSlippagePopupVisible(false);
+          setPriceImpactPopupVisible(false);
         }}
         options={[
           {
-            label: '1%',
-            value: '1',
-          },
-          {
-            label: '3%',
-            value: '3',
+            label: '5%',
+            value: '5',
           },
           {
             label: '10%',
             value: '10',
+          },
+          {
+            label: '15%',
+            value: '15',
           },
           {
             label: '20%',
