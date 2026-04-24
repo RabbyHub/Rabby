@@ -138,6 +138,8 @@ export const SignMainnetGasSelectorHeader = ({
     gasAccountBalanceEnough: gasAccountCost?.balance_is_enough,
   });
 
+  console.log('gasAccountCost', gasAccountCost);
+
   const supportedLevels = useMemo(
     () =>
       gasList.filter(
@@ -281,44 +283,54 @@ export const SignMainnetGasSelectorHeader = ({
         ),
       };
 
-      Promise.all([
-        needsNative
-          ? Promise.all([
-              gasCalcMethod(gasLevel.price).then((res) => ({
-                nativeUsd: formatGasHeaderUsdValue(res.gasCostUsd.toString(10)),
-              })),
-              checkGasLevelIsNotEnough(gasChange, 'native').then(
-                ([notEnough]) => ({
-                  nativeNotEnough: notEnough,
-                })
-              ),
-            ]).then(([usdPatch, nativePatch]) => ({
-              ...usdPatch,
-              ...nativePatch,
-            }))
-          : Promise.resolve({}),
-        needsGasAccount
-          ? checkGasLevelIsNotEnough(gasChange, 'gasAccount').then(
-              ([notEnough, usd, gasAccountResult]) => ({
-                gasAccount: [notEnough, calcGasAccountUsd(Number(usd || 0))],
-                gasAccountResult,
+      const nativeRequest = needsNative
+        ? Promise.all([
+            gasCalcMethod(gasLevel.price).then((res) => ({
+              nativeUsd: formatGasHeaderUsdValue(res.gasCostUsd.toString(10)),
+            })),
+            checkGasLevelIsNotEnough(gasChange, 'native').then(
+              ([notEnough]) => ({
+                nativeNotEnough: notEnough,
               })
-            )
-          : Promise.resolve({}),
-      ])
-        .then(([nativePatch, gasAccountPatch]) => {
+            ),
+          ]).then(([usdPatch, nativePatch]) => ({
+            ...usdPatch,
+            ...nativePatch,
+          }))
+        : Promise.resolve({});
+
+      const gasAccountRequest = needsGasAccount
+        ? checkGasLevelIsNotEnough(gasChange, 'gasAccount').then(
+            ([notEnough, usd, gasAccountResult]) => ({
+              gasAccount: [notEnough, calcGasAccountUsd(Number(usd || 0))],
+              gasAccountResult,
+            })
+          )
+        : Promise.resolve({});
+
+      Promise.allSettled([nativeRequest, gasAccountRequest])
+        .then(([nativePatchResult, gasAccountPatchResult]) => {
           const currentRequestKey =
             activeLevelRequestsRef.current[gasLevel.level];
           if (currentRequestKey !== requestKey) {
             return;
           }
+
+          const nativePatch =
+            nativePatchResult.status === 'fulfilled'
+              ? nativePatchResult.value
+              : {};
+          const gasAccountPatch =
+            gasAccountPatchResult.status === 'fulfilled'
+              ? gasAccountPatchResult.value
+              : {};
+
           patchLevelState(gasLevel.level, {
             fingerprint: txFingerprint,
             ...nativePatch,
             ...gasAccountPatch,
           });
         })
-        .catch(() => undefined)
         .finally(() => {
           const currentRequestKey =
             activeLevelRequestsRef.current[gasLevel.level];

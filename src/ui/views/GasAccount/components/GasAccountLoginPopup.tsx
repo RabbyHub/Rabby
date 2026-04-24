@@ -86,7 +86,13 @@ export const GasAccountCurrentAddress = ({
   );
 };
 
-const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
+const GasAccountLoginContent = ({
+  onLogin,
+  getContainer,
+}: {
+  onLogin?(): void;
+  getContainer?: PopupProps['getContainer'];
+}) => {
   const { t } = useTranslation();
   const { login, logout } = useGasAccountMethods();
 
@@ -98,7 +104,7 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
     }
     setLoading(true);
     try {
-      await login(account, false);
+      await login(account, false, { getContainer });
       await onLogin?.();
     } catch (error) {
       console.error(error);
@@ -109,7 +115,7 @@ const GasAccountLoginContent = ({ onLogin }: { onLogin?(): void }) => {
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
-      <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[24px]">
+      <div className="text-20 font-medium text-r-neutral-title1 mt-20 mb-[20px]">
         {t('page.gasAccount.switchAccount')}
       </div>
 
@@ -124,6 +130,7 @@ export const GasAccountLoginPopup = (props: PopupProps) => {
       placement="bottom"
       height={440}
       isSupportDarkMode
+      isNew
       bodyStyle={{
         padding: 0,
       }}
@@ -132,6 +139,7 @@ export const GasAccountLoginPopup = (props: PopupProps) => {
       {...props}
     >
       <GasAccountLoginContent
+        getContainer={props.getContainer}
         onLogin={() => {
           props.onCancel?.();
         }}

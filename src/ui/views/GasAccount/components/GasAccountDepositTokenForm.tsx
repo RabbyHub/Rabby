@@ -690,12 +690,13 @@ const GasAccountDepositTokenFormInner: React.FC<
       return estReceiveLabel;
     }
 
+    const defaultDepositUsdValue = getDefaultDepositUsdValue(minDepositPrice);
     const estRemainingBalance = new BigNumber(estReceiveUsdValue)
       .plus(currentGasAccountInfo?.account?.balance || 0)
       .minus(minDepositPrice);
 
     return t('page.gasAccount.depositPayPopup.topUpPayTips', {
-      topUpUsd: formatUsdValue(minDepositPrice),
+      topUpUsd: `$${defaultDepositUsdValue}`,
       balance: formatUsdValue(
         estRemainingBalance.lt(0) ? 0 : estRemainingBalance.toFixed()
       ),
@@ -760,7 +761,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   const ensureGasAccountLogin = useCallback(
     async (account: Account) => {
       if (!sig || !accountId) {
-        const loginResult = await login(account);
+        const loginResult = await login(account, false, { getContainer });
         if (!loginResult) {
           return null;
         }
@@ -772,7 +773,7 @@ const GasAccountDepositTokenFormInner: React.FC<
       }
       return nextSession;
     },
-    [accountId, login, sig, wallet]
+    [accountId, getContainer, login, sig, wallet]
   );
 
   const getRequiredGasAccountSession = useCallback(async (): Promise<{
@@ -853,6 +854,7 @@ const GasAccountDepositTokenFormInner: React.FC<
         },
         checkGasFeeTooHigh: true,
         autoUseGasFree: true,
+        getContainer,
       };
 
       try {

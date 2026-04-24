@@ -365,6 +365,7 @@ export const Main = () => {
 
   const {
     data: txs,
+    loading: buildSwapTxsLoading,
     runAsync: runBuildSwapTxs,
     mutate: mutateTxs,
   } = useRequest(buildSwapTxs, {
@@ -527,6 +528,14 @@ export const Main = () => {
   );
   const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
   const depositFlowActive = useGasAccountDepositFlowActive();
+  const canPrepareDirectSign =
+    canUseDirectSubmitTx &&
+    !swapBtnDisabled &&
+    !!activeProvider &&
+    !awaitingTopUpResume &&
+    !depositFlowActive;
+  const directSignTxPreparing =
+    canPrepareDirectSign && (buildSwapTxsLoading || !currentTxs?.length);
   const buildTopUpSnapshot = useCallback(
     (): SwapTopUpSnapshot => ({
       amount: inputAmount || '',
@@ -1101,6 +1110,7 @@ export const Main = () => {
               }
               openQuotesList={openQuotesList}
               quoteLoading={quoteLoading}
+              gasFeeLoading={directSignTxPreparing}
               slippageError={isSlippageHigh || isSlippageLow}
               autoSlippage={!!autoSlippage}
               isCustomSlippage={isCustomSlippage}

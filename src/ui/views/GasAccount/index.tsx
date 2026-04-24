@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 import { useTranslation } from 'react-i18next';
 import { isSameAddress, useWallet } from '@/ui/utils';
@@ -26,7 +25,7 @@ import {
   GasAccountHistoryRefreshIdProvider,
 } from './hooks/context';
 import { useRabbyDispatch } from '@/ui/store';
-import { EVENTS } from '@/constant';
+import { BRAND_ALIAN_TYPE_TEXT, EVENTS } from '@/constant';
 import { useGasAccountRefresh } from './hooks';
 import eventBus from '@/eventBus';
 import { GasAccountEmptyState } from './components/GasAccountEmptyState';
@@ -36,7 +35,6 @@ import { GasAccountHeader } from './components/HeaderRight';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
 import { formatUsdValue } from '@/ui/utils/number';
 import { WithdrawPopup } from './components/WithdrawPopup';
-import { useGasAccountDepositAvailableTokens } from './hooks/useDepositTokenAvailability';
 
 const GasAccountInner = () => {
   const { t } = useTranslation();
@@ -74,17 +72,14 @@ const GasAccountInner = () => {
     currentEligibleAddress,
     checkAddressesEligibility,
   } = useGasAccountEligibility();
-  const { value: pendingHardwareGasAccountInfo } = useGasAccountInfoV2({
+  const {
+    value: pendingHardwareGasAccountInfo,
+    loading: pendingHardwareAccountGasAccountInfoLoading,
+  } = useGasAccountInfoV2({
     address: pendingHardwareAccount?.address,
   });
 
   const wallet = useWallet();
-  const {
-    hasAvailableTokens,
-    hasInitializedAvailability,
-    isCheckingAvailability: isCheckingDepositAvailability,
-    refreshAvailableTokens,
-  } = useGasAccountDepositAvailableTokens();
 
   const balance = gasAccount?.account?.balance || 0;
   const pendingHardwareBalance =
@@ -100,8 +95,7 @@ const GasAccountInner = () => {
 
   const handleRefreshHistory = useCallback(() => {
     refreshHistory();
-    refreshAvailableTokens();
-  }, [refreshAvailableTokens, refreshHistory]);
+  }, [refreshHistory]);
 
   const showEmptyState = !isLogin && !pendingHardwareAccount;
 
@@ -222,12 +216,10 @@ const GasAccountInner = () => {
     openDepositPopup();
   }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
 
-  useEffect(() => {
-    refreshAvailableTokens();
-  }, [refreshAvailableTokens]);
-
   const lowBalanceWarningMessage =
-    visibleBalance < 0.1 && !loading
+    visibleBalance < 0.1 &&
+    !loading &&
+    !pendingHardwareAccountGasAccountInfoLoading
       ? t('page.gasAccount.lowBalance', {
           defaultValue:
             "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
@@ -242,7 +234,6 @@ const GasAccountInner = () => {
         <span>
           {t('page.gasAccount.claimFreeGas', {
             usdValue: formatUsdValue(currentEligibleAddress.giftUsdValue),
-            defaultValue: 'Claim {{usdValue}} Free Gas',
           })}
         </span>
       </span>
@@ -252,26 +243,15 @@ const GasAccountInner = () => {
       ? 'bg-green border-green gap-6'
       : undefined;
   const primaryButtonContent = showEmptyState
-    ? emptyStatePrimaryContent ||
-      t('page.gasAccount.depositNow', {
-        defaultValue: 'Deposit Now',
+    ? emptyStatePrimaryContent || t('page.gasAccount.depositNow')
+    : !isLogin && pendingHardwareAccount
+    ? t('page.gasAccount.signWithPendingHardwareToUse', {
+        addressAlias: BRAND_ALIAN_TYPE_TEXT[pendingHardwareAccount.type],
       })
-    : t('page.gasAccount.depositNow', {
-        defaultValue: 'Deposit Now',
-      });
+    : t('page.gasAccount.depositNow');
   const handlePrimaryButtonPress = showEmptyState
     ? handleEmptyStatePrimaryPress
     : handleUserStatePrimaryPress;
-  const isDepositPrimaryAction =
-    !showEmptyState || emptyStatePrimaryMode !== 'claimGift';
-  const isPrimaryDepositDisabled =
-    isDepositPrimaryAction &&
-    hasInitializedAvailability &&
-    !isCheckingDepositAvailability &&
-    !hasAvailableTokens;
-  const depositUnavailableTooltip = t(
-    'page.gasAccount.depositPopup.InsufficientToken'
-  );
 
   useEffect(() => {
     wallet.clearPageStateCache();
@@ -313,43 +293,19 @@ const GasAccountInner = () => {
       </div>
 
       <div className="shrink-0 border-t-[0.5px] border-solid border-rabby-neutral-line bg-r-neutral-bg2 px-20 py-14">
-        {isPrimaryDepositDisabled ? (
-          <TooltipWithMagnetArrow
-            trigger={['click']}
-            placement="top"
-            overlayClassName="rectangle sign-tx-forbidden-tooltip"
-            title={depositUnavailableTooltip}
-          >
-            <div className="relative w-full cursor-not-allowed">
-              <Button
-                disabled
-                type="primary"
-                block
-                className={clsx(
-                  'h-[44px] rounded-[8px] text-15 font-medium leading-normal text-r-neutral-title2 pointer-events-none',
-                  'flex items-center justify-center',
-                  primaryButtonClassName
-                )}
-              >
-                {primaryButtonContent}
-              </Button>
-            </div>
-          </TooltipWithMagnetArrow>
-        ) : (
-          <Button
-            onClick={handlePrimaryButtonPress}
-            type="primary"
-            block
-            loading={emptyStateLoading}
-            className={clsx(
-              'h-[44px] rounded-[8px] text-15 font-medium leading-normal text-r-neutral-title2',
-              'flex items-center justify-center',
-              primaryButtonClassName
-            )}
-          >
-            {primaryButtonContent}
-          </Button>
-        )}
+        <Button
+          onClick={handlePrimaryButtonPress}
+          type="primary"
+          block
+          loading={emptyStateLoading}
+          className={clsx(
+            'h-[44px] rounded-[8px] text-15 font-medium leading-normal text-r-neutral-title2',
+            'flex items-center justify-center',
+            primaryButtonClassName
+          )}
+        >
+          {primaryButtonContent}
+        </Button>
       </div>
 
       <GasAccountLoginPopup

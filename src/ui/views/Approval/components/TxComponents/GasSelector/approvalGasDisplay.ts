@@ -126,10 +126,11 @@ export const canDisplaySharedGasAccountForApproval = ({
   !isWalletConnect &&
   !!noCustomRPC &&
   !!gasAccountBalanceEnough &&
-  !!gasAccountChainSupported &&
-  (!gasAccountErrMsg ||
-    gasAccountErrMsg?.toLowerCase() ===
-      GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase());
+  !!gasAccountChainSupported;
+// &&
+// (!gasAccountErrMsg ||
+//   gasAccountErrMsg?.toLowerCase() ===
+//     GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase());
 
 export const isApprovalGasMethodNotEnough = ({
   displayMethod,
