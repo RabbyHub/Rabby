@@ -23,3 +23,8 @@ export const LendingReportType = {
   RepayWithAToken: 'RepayWithAToken',
   RepayWithCollateral: 'RepayWithCollateral',
 };
+
+export const LendingSignType = {
+  Simplified: 'simplified',
+  Full: 'full',
+};

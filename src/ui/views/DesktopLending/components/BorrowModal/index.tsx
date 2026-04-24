@@ -35,7 +35,7 @@ import { formatUsdValue, formatAmount } from '../../utils/format';
 import styled from 'styled-components';
 import { LendingStyledInput } from '../StyledInput';
 import stats from '@/stats';
-import { LendingReportType } from '../../types/tx';
+import { LendingReportType, LendingSignType } from '../../types/tx';
 import { isSameAddress } from '@/ui/utils';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
@@ -322,7 +322,12 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
         return;
       }
 
-      const report = (lastHash: string) => {
+      const report = (
+        lastHash: string,
+        signType:
+          | typeof LendingSignType.Simplified
+          | typeof LendingSignType.Full
+      ) => {
         const targetPool = formattedPoolReservesAndIncentives.find((item) =>
           isSameAddress(item.underlyingAsset, reserve.underlyingAsset)
         );
@@ -342,6 +347,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
           usd_value: usdValue,
           create_at: Date.now(),
           app_version: process.env.release || '0',
+          signType,
         });
       };
 
@@ -360,7 +366,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
-              report(hash);
+              report(hash, LendingSignType.Simplified);
               message.success(
                 `${t('page.lending.borrowDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -401,7 +407,7 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
             account: currentAccount,
           }
         );
-        report(lastHash as string);
+        report(lastHash as string, LendingSignType.Full);
         message.success(
           `${t('page.lending.borrowDetail.actions')} ${t(
             'page.lending.submitted'
