@@ -404,14 +404,14 @@
           "summaryDescription": "协议中的所有资产（例如 LP 代币）都将解析为统计计算所需的基础资产",
           "noMatch": "没有匹配",
           "lowValueDescription": "低价值资产将显示在这里",
-          "lowValueAssets": "{{count}} 个低价值资产",
+          "lowValueAssets": "{{count}} 个低价值代币",
           "review": "审核",
           "noTokens": "没有代币",
           "searchToken": "搜索 Token",
           "lowValueDefis": "{{count}} 低价值 DeFi 资产",
-          "lowValueAssets_one": "{{count}} 低价值代币",
-          "lowValueAssets_0": "{{count}} 低价值代币",
-          "lowValueAssets_other": "{{count}} 低价值代币",
+          "lowValueAssets_one": "{{count}} 个低价值代币",
+          "lowValueAssets_0": "{{count}} 个低价值代币",
+          "lowValueAssets_other": "{{count}} 个低价值代币",
           "noLpTokens": "没有流动性提供者（LP）代币"
         },
         "noAssets": "没有资产",
@@ -1206,7 +1206,7 @@
       "InsufficientBalanceTips": "余额不足",
       "Loading_Tokens": "正在加载代币...",
       "No_Tokens": "没有代币",
-      "Deposit-tip": "使用 USDC/USDT 存款",
+      "Deposit-tip": "使用 USDC/USDT 充值",
       "Payment-Token": "支付代币",
       "Select-payment-token": "选择支付代币",
       "Token": "代币",
@@ -1549,9 +1549,9 @@
       "cancelCurrentConnection": "取消当前连接",
       "gasAccount": {
         "login": "登录",
-        "deposit": "存入",
         "signWithHardwareWalletToUse": "你需要使用{{brand}}签名后才能使用",
-        "notEnough": "Not enough gas. Gas Balance: {{usd}}",
+        "deposit": "充值",
+        "notEnough": "GasAccount 不足够",
         "customRPC": "使用自定义 RPC 时不支持",
         "loginFirst": "请先登录GasAccount",
         "WalletConnectTips": "GasAccount 不支持 WalletConnect",
@@ -1559,7 +1559,7 @@
         "gotIt": "知道了",
         "chainNotSupported": "此链不被GasAccount支持",
         "loginTips": "要完成 GasAccount 登录，此交易将被丢弃。您需要在登录后重新进行。",
-        "depositTips": "要完成 GasAccount 存款，此交易将被丢弃。存款完成后，您需要重新发起交易。"
+        "depositTips": "要完成 GasAccount 充值，此交易将被丢弃。充值完成后，你需要重新发起交易。"
       },
       "iGotIt": "我明白了"
     },
@@ -2730,7 +2730,7 @@
       },
       "loginInTip": {
         "gotIt": "知道了",
-        "title": "存入 USDC / USDT",
+        "title": "充值 USDC / USDT",
         "desc": "在所有链上支付 Gas Fees",
         "login": "登录 GasAccount",
         "loginAndClaim": "登录并领取 $2.00",
@@ -2741,7 +2741,7 @@
       },
       "loginConfirmModal": {
         "title": "使用当前地址登录",
-        "desc": "一旦确认，您只能将其存入此地址"
+        "desc": "确认后，你只能向该地址充值"
       },
       "logoutConfirmModal": {
         "logout": "注销",
@@ -2749,14 +2749,19 @@
         "desc": "注销会禁用GasAccount。您可以通过使用此地址登录来恢复您的GasAccount。"
       },
       "depositPopup": {
+<<<<<<< HEAD
         "title": "存款",
         "gasDepositTitle": "Gas 充值",
         "selectToken": "选择要存入的 Token",
         "zeroInvalidAmount": "金额不能为 0",
+=======
+        "title": "充值",
+        "selectToken": "选择要充值的代币",
+>>>>>>> feat/cn-i18n01
         "invalidAmount": "必须在 500 以下",
         "minAmountRequired": "最低存款金额为 ${{value}}",
         "token": "Token",
-        "desc": "无需额外费用即可向 Rabby 的 DeBank L2 账户存款—随时提款。",
+        "desc": "无需额外费用即可向 Rabby 的 DeBank L2 账户充值，随时可提现。",
         "amount": "金额",
         "paymentAddr": "支付钱包",
         "paymentAddress": "支付钱包",
@@ -2806,12 +2811,23 @@
       },
       "GasAccountDepositTipPopup": {
         "gotIt": "明白了",
-        "title": "打开 GasAccount 并存入"
+        "title": "打开 GasAccount 并充值"
       },
       "switchLoginAddressBeforeDeposit": {
-        "title": "存款前切换地址",
+        "title": "充值前切换地址",
         "desc": "请切换到您的登录地址。"
       },
+<<<<<<< HEAD
+=======
+      "title": "GasAccount",
+      "noBalance": "无余额",
+      "deposit": "充值",
+      "gasExceed": "GasAccount余额不能超过$1000",
+      "withdraw": "提取",
+      "safeAddressDepositTips": "多签地址不支持充值。",
+      "logout": "退出当前 GasAccount",
+      "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。",
+>>>>>>> feat/cn-i18n01
       "gasAccountList": {
         "gasAccountBalance": "余额",
         "address": "地址"
@@ -2821,7 +2837,7 @@
         "title3": "GasAccount 有额外费用吗？",
         "title4": "GasAccount安全吗",
         "title2": "如何使用 Gas Account",
-        "desc4": "GasAccount 无需合同批准或权限。您将资金存入 Rabby 的 GasAccount 地址，Rabby 在需要时向您的地址发送 gas。设计上完全安全。",
+        "desc4": "GasAccount 无需合约批准或权限。你向 Rabby 的 GasAccount 地址充值，Rabby 在需要时向你的地址发送 gas。设计上完全安全。",
         "desc3": "Rabby Wallet 不收取额外费用。您只需支付交易的 gas 费用，以及从 GasAccount 发送 gas 到您地址的少量 gas 费用。",
         "desc1": "GasAccount 是一种新的支付燃料费的方式。您可以使用一个账户为您在所有链上的所有地址支付燃料，而不必在每个链上使用本地代币。简单、可选，从不耗尽燃料。",
         "desc2": "将资金添加到您的 GasAccount，并将其用于任何交易。在签名时，可以选择使用原生代币或 GasAccount 来支付手续费，随时切换。"
@@ -3140,7 +3156,7 @@
       },
       "tabs": {
         "imported": "已导入",
-        "whitelist": "已被列入白名单"
+        "whitelist": "白名单"
       },
       "positiveTips": {
         "yourOwnAddress": "您的个人地址",
