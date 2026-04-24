@@ -33,6 +33,7 @@ import { useAsync } from 'react-use';
 import { createGlobalStyle } from 'styled-components';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
+import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
 
 import {
   RcIconApprovalsCC,
@@ -404,6 +405,12 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const IconPerps = RcIconPerpsCC;
 
+  const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
+  const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
+  const hasGiftEligibility = useMemo(() => {
+    return giftUsdValue > 0 && !hasClaimedGift;
+  }, [giftUsdValue, hasClaimedGift]);
+
   const { value: gasAccount, loading: gasAccountLoading } = useGasAccountInfo();
   const { isLogin: isGasAccountLogin } = useGasAccountLogin({
     value: gasAccount,
@@ -428,12 +435,34 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   );
   const isLowGasAccountBalance = visibleGasAccountBalance < 0.1;
 
+  const gasAccountGiftBadgeNode = useMemo<React.ReactNode>(() => {
+    if (!hasGiftEligibility || isGasAccountLogin || pendingHardwareAccount) {
+      return null;
+    }
+
+    return (
+      <div className="absolute top-[6px] right-[6px]">
+        <div
+          className={clsx(
+            'text-r-green-default text-[10px] leading-[12px] font-medium',
+            'flex items-center px-[3px] py-[2px] rounded-[4px] bg-r-green-light'
+          )}
+        >
+          <RcIconGift viewBox="0 0 14 14" />
+        </div>
+      </div>
+    );
+  }, [
+    giftUsdValue,
+    hasGiftEligibility,
+    isGasAccountLogin,
+    pendingHardwareAccount,
+  ]);
+
   const gasAccountSubContentNode = useMemo<React.ReactNode>(() => {
-    if (
+    const balanceNode =
       (gasAccountLoading && isGasAccountLogin) ||
-      (pendingGasLoading && pendingHardwareAccount?.address)
-    ) {
-      return (
+      (pendingGasLoading && pendingHardwareAccount?.address) ? (
         <div className="absolute bottom-[6px] text-[11px] font-medium">
           <Skeleton.Button
             active={true}
@@ -441,22 +470,27 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
             style={{ width: 42 }}
           />
         </div>
+      ) : (
+        <div
+          className={clsx(
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
+            isLowGasAccountBalance
+              ? 'text-r-orange-default'
+              : 'text-r-neutral-foot'
+          )}
+        >
+          {formatUsdValue(visibleGasAccountBalance || 0)}
+        </div>
       );
-    }
 
     return (
-      <div
-        className={clsx(
-          'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
-          isLowGasAccountBalance
-            ? 'text-r-orange-default'
-            : 'text-r-neutral-foot'
-        )}
-      >
-        {formatUsdValue(visibleGasAccountBalance || 0)}
-      </div>
+      <>
+        {gasAccountGiftBadgeNode}
+        {gasAccountGiftBadgeNode ? null : balanceNode}
+      </>
     );
   }, [
+    gasAccountGiftBadgeNode,
     gasAccountLoading,
     isGasAccountLogin,
     isLowGasAccountBalance,
@@ -465,7 +499,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     visibleGasAccountBalance,
   ]);
 
-  // --- Perps data lifting (from PerpsSubContent) ---
   const perpsId = useRabbySelector((s) => s.innerDappFrame.perps);
 
   const {

@@ -443,88 +443,96 @@ export const useGasAccountDiscovery = ({
 };
 
 export const useGasAccountEligibility = () => {
-  const wallet = useWallet();
-  const { allSortedAccountList } = useAccounts();
   const { sig, accountId, pendingHardwareAccount } = useGasAccountSign();
   const { login } = useGasAccountMethods();
+  const dispatch = useRabbyDispatch();
   const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
-  const [currentEligibleAddress, setCurrentEligibleAddress] = useState<
-    GasAccountEligibleAddress | undefined
-  >(undefined);
+  const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+  const currentAccountGiftEligibility = useRabbySelector((s) => {
+    const address = s.account.currentAccount?.address;
+    return address ? s.gift.giftEligibility[address.toLowerCase()] : undefined;
+  });
 
-  const eligibleAccounts = useMemo(
-    () =>
-      allSortedAccountList.filter(
-        (account) =>
-          supportedDirectSign(account.type) &&
-          !supportedHardwareDirectSign(account.type)
-      ) as Account[],
-    [allSortedAccountList]
+  const eligibleAccount = useMemo(() => {
+    if (
+      currentAccount &&
+      supportedDirectSign(currentAccount.type) &&
+      !supportedHardwareDirectSign(currentAccount.type)
+    ) {
+      return currentAccount as Account;
+    }
+    return undefined;
+  }, [currentAccount]);
+
+  const canCheckGiftEligibility = !!(
+    eligibleAccount &&
+    !sig &&
+    !accountId &&
+    !pendingHardwareAccount &&
+    !hasClaimedGift
   );
 
-  const checkAddressesEligibility = useCallback(async () => {
-    if (sig || accountId || pendingHardwareAccount || hasClaimedGift) {
-      setCurrentEligibleAddress(undefined);
+  const currentEligibleAddress = useMemo<
+    GasAccountEligibleAddress | undefined
+  >(() => {
+    if (
+      !canCheckGiftEligibility ||
+      !currentAccountGiftEligibility?.isEligible
+    ) {
       return undefined;
     }
 
-    const results = await Promise.allSettled(
-      eligibleAccounts.map(async (account) => ({
-        account,
-        result: await wallet.openapi.checkGasAccountGiftEligibility({
-          id: account.address,
-        }),
-      }))
-    );
-
-    for (const settled of results) {
-      if (settled.status !== 'fulfilled') continue;
-      const { account, result } = settled.value;
-      if (!result.has_eligibility) continue;
-
-      const nextEligibleAddress = {
-        address: account.address,
-        giftUsdValue: Number(result.can_claimed_usd_value || 0),
-        isEligible: true,
-        account,
-      };
-      setCurrentEligibleAddress(nextEligibleAddress);
-      return nextEligibleAddress;
-    }
-
-    setCurrentEligibleAddress(undefined);
-    return undefined;
+    return {
+      address: eligibleAccount.address,
+      giftUsdValue,
+      isEligible: true,
+      account: eligibleAccount,
+    };
   }, [
-    accountId,
-    eligibleAccounts,
-    hasClaimedGift,
-    pendingHardwareAccount,
-    sig,
-    wallet,
+    canCheckGiftEligibility,
+    currentAccountGiftEligibility?.isEligible,
+    eligibleAccount,
+    giftUsdValue,
   ]);
 
-  useEffect(() => {
-    if (sig || accountId || pendingHardwareAccount || hasClaimedGift) {
-      setCurrentEligibleAddress(undefined);
+  const checkAddressesEligibility = useCallback(async () => {
+    if (!canCheckGiftEligibility) {
+      return undefined;
     }
-  }, [accountId, hasClaimedGift, pendingHardwareAccount, sig]);
+
+    if (!currentAccountGiftEligibility?.isChecked) {
+      await dispatch.gift.checkGiftEligibilityAsync({
+        address: eligibleAccount.address,
+        currentAccount: eligibleAccount,
+      });
+    }
+
+    return currentEligibleAddress;
+  }, [
+    canCheckGiftEligibility,
+    currentAccountGiftEligibility?.isChecked,
+    currentEligibleAddress,
+    dispatch.gift,
+    eligibleAccount,
+  ]);
 
   const claimGift = useCallback(
     async (address?: string) => {
       const targetAccount =
-        eligibleAccounts.find((item) =>
-          isSameAddress(item.address, address || '')
-        ) || currentEligibleAddress?.account;
+        currentEligibleAddress?.account &&
+        (!address || isSameAddress(currentEligibleAddress.address, address))
+          ? currentEligibleAddress.account
+          : undefined;
 
       if (!targetAccount) {
         throw new Error('No eligible address available');
       }
 
       await login(targetAccount, true);
-      setCurrentEligibleAddress(undefined);
       return true;
     },
-    [currentEligibleAddress?.account, eligibleAccounts, login]
+    [currentEligibleAddress, login]
   );
 
   return {
