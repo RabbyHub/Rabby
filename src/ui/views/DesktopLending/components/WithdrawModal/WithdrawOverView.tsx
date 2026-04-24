@@ -3,14 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PopupDetailProps } from '../../types';
 import { isHFEmpty } from '../../utils';
 import { HealthFactorText } from '../HealthFactorText';
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
-
-const formatNetworth = (num: number) => {
-  if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B`;
-  if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
-  if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K`;
-  return formatUsdValue(num);
-};
+import { formatAmount, formatUsdValue } from '../../utils/format';
 
 export const WithdrawOverView: React.FC<
   PopupDetailProps & {
@@ -26,7 +19,7 @@ export const WithdrawOverView: React.FC<
   const { healthFactor = '0' } = userSummary;
 
   const availableText = useMemo(
-    () => formatNetworth(Number(reserve.underlyingBalanceUSD || '0')),
+    () => formatUsdValue(Number(reserve.underlyingBalanceUSD || '0')),
     [reserve.underlyingBalanceUSD]
   );
 
@@ -37,7 +30,7 @@ export const WithdrawOverView: React.FC<
   const afterSupplyBalanceUSDText = useMemo(
     () =>
       afterSupply
-        ? formatNetworth(Number(afterSupply.balanceUSD || '0'))
+        ? formatUsdValue(Number(afterSupply.balanceUSD || '0'))
         : null,
     [afterSupply]
   );
@@ -55,12 +48,12 @@ export const WithdrawOverView: React.FC<
             </span>
             <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1 text-right">
               {amount && amount !== '0' && afterSupply
-                ? `${formatTokenAmount(reserve?.underlyingBalance || '0')} ${
+                ? `${formatAmount(reserve?.underlyingBalance || '0')} ${
                     reserve.reserve.symbol
-                  } → ${formatTokenAmount(afterSupply.balance)} ${
+                  } → ${formatAmount(afterSupply.balance)} ${
                     reserve.reserve.symbol
                   }`
-                : `${formatTokenAmount(reserve?.underlyingBalance || '0')} ${
+                : `${formatAmount(reserve?.underlyingBalance || '0')} ${
                     reserve.reserve.symbol
                   }`}
             </span>

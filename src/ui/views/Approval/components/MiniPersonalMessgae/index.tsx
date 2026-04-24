@@ -147,6 +147,7 @@ export const MiniSignPersonalMessage = ({
       <MiniFooterBar
         account={currentAccount || undefined}
         directSubmit={directSubmit}
+        getContainer={getContainer}
         hasShadow={false}
         origin={INTERNAL_REQUEST_SESSION.origin}
         originLogo={INTERNAL_REQUEST_SESSION.icon}

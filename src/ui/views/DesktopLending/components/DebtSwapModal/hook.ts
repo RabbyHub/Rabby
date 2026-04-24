@@ -4,10 +4,11 @@ import { OptimalRate } from '@paraswap/sdk';
 import BigNumber from 'bignumber.js';
 import { valueToBigNumber } from '@aave/math-utils';
 
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
+import { formatTokenAmount } from '@/ui/utils/number';
 import { isSameAddress } from '@/ui/utils';
 
 import { useLendingSummary } from '../../hooks';
+import { formatUsdValue } from '../../utils/format';
 import { SwappableToken, SwapType } from '../../types/swap';
 import { calculateHFAfterSwap } from '../../utils/hfUtils';
 import {

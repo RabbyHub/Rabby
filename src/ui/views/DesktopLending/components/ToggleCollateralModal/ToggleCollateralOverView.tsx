@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PopupDetailProps } from '../../types';
-import { getHealthFactorText } from '../../utils/health';
 import { isHFEmpty } from '../../utils';
-import { formatTokenAmount } from '@/ui/utils/number';
 import SymbolIcon from '../SymbolIcon';
 import { HealthFactorText } from '../HealthFactorText';
+import { formatAmount } from '../../utils/format';
 
 export const ToggleCollateralOverView: React.FC<
   PopupDetailProps & {
@@ -32,7 +31,7 @@ export const ToggleCollateralOverView: React.FC<
           <div className="flex items-center gap-8">
             <SymbolIcon tokenSymbol={reserve.reserve.symbol} size={16} />
             <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1">
-              {formatTokenAmount(reserve.underlyingBalance || '0')}{' '}
+              {formatAmount(reserve.underlyingBalance || '0')}{' '}
               {reserve.reserve.symbol}
             </span>
           </div>

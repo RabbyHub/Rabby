@@ -2,9 +2,8 @@ import BigNumber from 'bignumber.js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
-
 import { SwappableToken } from '../../types/swap';
+import { formatUsdValue, formatAmount } from '../../utils/format';
 import { HealthFactorText } from '../HealthFactorText';
 import SymbolIcon from '../SymbolIcon';
 
@@ -108,7 +107,7 @@ const RepayWithCollateralOverview = ({
               <SymbolIcon tokenSymbol={toToken.symbol} size={16} />
               <div className="flex flex-col items-end gap-2">
                 <span className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
-                  {formatTokenAmount(estimatedBorrowAfter.toString(10))}
+                  {formatAmount(estimatedBorrowAfter.toString(10))}
                 </span>
                 <span className="text-[12px] leading-[14px] text-r-neutral-foot">
                   {formatUsdValue(
@@ -131,7 +130,7 @@ const RepayWithCollateralOverview = ({
               <SymbolIcon tokenSymbol={fromToken.symbol} size={16} />
               <div className="flex flex-col items-end gap-2">
                 <span className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
-                  {formatTokenAmount(estimatedCollateralAfter.toString(10))}
+                  {formatAmount(estimatedCollateralAfter.toString(10))}
                 </span>
                 <span className="text-[12px] leading-[14px] text-r-neutral-foot">
                   {estimatedCollateralAfter.eq(0)

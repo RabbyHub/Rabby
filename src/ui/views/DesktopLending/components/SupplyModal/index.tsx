@@ -24,7 +24,6 @@ import { usePoolDataProviderContract } from '../../hooks/pool';
 
 import { ETH_USDT_CONTRACT } from '@/constant';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
@@ -32,9 +31,10 @@ import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManage
 import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
+import { formatUsdValue, formatAmount } from '../../utils/format';
 import { LendingStyledInput } from '../StyledInput';
 import stats from '@/stats';
-import { LendingReportType } from '../../types/tx';
+import { LendingReportType, LendingSignType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
@@ -190,7 +190,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -436,7 +436,12 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
         return;
       }
 
-      const report = (lastHash: string) => {
+      const report = (
+        lastHash: string,
+        signType:
+          | typeof LendingSignType.Simplified
+          | typeof LendingSignType.Full
+      ) => {
         const bgCurrency = new BigNumber(
           reserve.reserve.formattedPriceInMarketReferenceCurrency || '0'
         );
@@ -453,6 +458,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
           usd_value: usdValue,
           create_at: Date.now(),
           app_version: process.env.release || '0',
+          signType,
         });
       };
 
@@ -471,7 +477,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
-              report(hash);
+              report(hash, LendingSignType.Simplified);
               message.success(
                 `${t('page.lending.supplyDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -517,7 +523,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             }
           );
         }
-        report(lastHash);
+        report(lastHash, LendingSignType.Full);
         message.success(
           `${t('page.lending.supplyDetail.actions')} ${t(
             'page.lending.submitted'
@@ -595,14 +601,22 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             {t('page.lending.popup.amount')}
           </span>
         </div>
-        <div className="flex items-start gap-4 p-16 rounded-[8px] bg-rb-neutral-card-1">
-          <div className="flex items-start flex-shrink-0 flex-col gap-8">
+        <div className="flex flex-col gap-8 p-16 rounded-[8px] bg-rb-neutral-card-1">
+          <div className="flex items-center w-full flex-row justify-between min-w-0 gap-8">
             <div className="flex items-center gap-6">
               <SymbolIcon tokenSymbol={reserve.reserve.symbol} size={24} />
               <span className="text-[20px] leading-[20px] font-medium text-r-neutral-title-1">
                 {reserve.reserve.symbol}
               </span>
             </div>
+            <LendingStyledInput
+              value={_amount ?? ''}
+              onValueChange={onAmountChange}
+              placeholder="0"
+              className="text-right w-[200px] border-0 bg-transparent p-0 h-auto hover:border-r-0"
+            />
+          </div>
+          <div className="w-full flex flex-row justify-between min-w-0 gap-4">
             <div className="flex items-center gap-4">
               <RcIconWalletCC
                 viewBox="0 0 16 16"
@@ -610,7 +624,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
               />
               <span className="text-[13px] leading-[16px] text-r-neutral-foot">
                 {t('page.lending.supplyDetail.amountTitle')}
-                {formatTokenAmount(supplyAmount.amount || '0')}(
+                {formatAmount(supplyAmount.amount || '0')}(
                 {formatUsdValue(Number(supplyAmount.usdValue))})
               </span>
               <button
@@ -627,14 +641,6 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
                 MAX
               </button>
             </div>
-          </div>
-          <div className="flex-1 flex flex-col items-end min-w-0 gap-4">
-            <LendingStyledInput
-              value={_amount ?? ''}
-              onValueChange={onAmountChange}
-              placeholder="0"
-              className="text-right border-0 bg-transparent p-0 h-auto hover:border-r-0"
-            />
             {amount && !isZeroAmount(amount) && (
               <span className="text-[13px] leading-[15px] text-r-neutral-foot mt-1">
                 {formatUsdValue(
@@ -671,6 +677,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             chainServeId={chainInfo.serverId}
             noQuote={false}
             type="send"
+            signatureInstance={instance}
           />
         </div>
       ) : null}
@@ -689,6 +696,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             loading={miniSignLoading}
             onConfirm={() => handleSupply()}
             accountType={currentAccount.type}
+            signatureInstance={instance}
           />
         ) : (
           <Button

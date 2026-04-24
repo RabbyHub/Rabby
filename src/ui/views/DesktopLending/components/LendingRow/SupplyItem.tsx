@@ -1,13 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { IsolateTag } from '../IsolateTag';
 import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { Switch, Tooltip } from 'antd';
 import styled from 'styled-components';
-import { formatApy } from '../../utils/format';
+import { formatApy, formatUsdValue } from '../../utils/format';
 import SymbolIcon from '../SymbolIcon';
 import { DisplayPoolReserveInfo } from '../../types';
 import { getSupplyCapData } from '../../utils/supply';

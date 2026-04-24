@@ -9,18 +9,10 @@ import {
   getAssetCollateralType,
   getCollateralState,
 } from '../../utils/collateral';
-import { formatApy } from '../../utils/format';
-import { formatUsdValue } from '@/ui/utils/number';
+import { formatApy, formatUsdValue } from '../../utils/format';
 import { IsolateTag } from '../IsolateTag';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/tip-cc.svg';
 import { HealthFactorText } from '../HealthFactorText';
-
-const formatNetworth = (num: number) => {
-  if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B`;
-  if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
-  if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K`;
-  return formatUsdValue(num);
-};
 
 export const SupplyOverView: React.FC<
   PopupDetailProps & {
@@ -32,7 +24,7 @@ export const SupplyOverView: React.FC<
   const { availableBorrowsUSD = '0', healthFactor = '0' } = userSummary;
 
   const availableText = useMemo(
-    () => formatNetworth(Number(availableBorrowsUSD || '0')),
+    () => formatUsdValue(Number(availableBorrowsUSD || '0')),
     [availableBorrowsUSD]
   );
 
@@ -58,7 +50,7 @@ export const SupplyOverView: React.FC<
 
   const afterAvailableText = useMemo(
     () =>
-      afterAvailable ? formatNetworth(Number(afterAvailable || '0')) : null,
+      afterAvailable ? formatUsdValue(Number(afterAvailable || '0')) : null,
     [afterAvailable]
   );
 

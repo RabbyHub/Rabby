@@ -3,14 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PopupDetailProps } from '../../types';
 import { isHFEmpty } from '../../utils';
 import { HealthFactorText } from '../HealthFactorText';
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
-
-const formatNetworth = (num: number) => {
-  if (num >= 1e9) return `${(num / 1e9).toFixed(2)}B`;
-  if (num >= 1e6) return `${(num / 1e6).toFixed(2)}M`;
-  if (num >= 1e3) return `${(num / 1e3).toFixed(2)}K`;
-  return formatUsdValue(num);
-};
+import { formatAmount, formatUsdValue } from '../../utils/format';
 
 export const RepayOverView: React.FC<
   PopupDetailProps & {
@@ -35,14 +28,14 @@ export const RepayOverView: React.FC<
   ]);
 
   const currentDebtUSDText = useMemo(
-    () => formatNetworth(Number(reserve.variableBorrowsUSD || '0')),
+    () => formatUsdValue(Number(reserve.variableBorrowsUSD || '0')),
     [reserve.variableBorrowsUSD]
   );
 
   const afterRepayUsdValueText = useMemo(
     () =>
       afterRepayUsdValue !== undefined
-        ? formatNetworth(Number(afterRepayUsdValue || '0'))
+        ? formatUsdValue(Number(afterRepayUsdValue || '0'))
         : null,
     [afterRepayUsdValue]
   );
@@ -60,12 +53,12 @@ export const RepayOverView: React.FC<
             </span>
             <span className="text-[13px] leading-[15px] font-medium text-r-neutral-title-1 text-right">
               {amount && amount !== '0' && afterRepayAmount !== undefined
-                ? `${formatTokenAmount(reserve?.variableBorrows || '0')} ${
+                ? `${formatAmount(reserve?.variableBorrows || '0')} ${
                     reserve.reserve.symbol
-                  } → ${formatTokenAmount(afterRepayAmount)} ${
+                  } → ${formatAmount(afterRepayAmount)} ${
                     reserve.reserve.symbol
                   }`
-                : `${formatTokenAmount(reserve?.variableBorrows || '0')} ${
+                : `${formatAmount(reserve?.variableBorrows || '0')} ${
                     reserve.reserve.symbol
                   }`}
             </span>
