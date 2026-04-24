@@ -419,21 +419,27 @@ const GasSelectorHeader = ({
 
   const handleConfirmGas = () => {
     if (!selectedGas) return;
+    const nextGas = {
+      ...selectedGas,
+      priority_price: is1559
+        ? (maxPriorityFee ?? 0) * 1e9
+        : selectedGas.priority_price,
+    };
     if (selectedGas.level === 'custom') {
       onChange({
-        ...selectedGas,
+        ...nextGas,
         price: Number(customGas) * 1e9,
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
-        level: selectedGas.level,
+        level: nextGas.level,
         maxPriorityFee: (maxPriorityFee ?? 0) * 1e9,
       });
     } else {
       onChange({
-        ...selectedGas,
+        ...nextGas,
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
-        level: selectedGas.level,
+        level: nextGas.level,
         maxPriorityFee: (maxPriorityFee ?? 0) * 1e9,
       });
     }
