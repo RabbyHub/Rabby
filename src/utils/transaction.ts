@@ -183,7 +183,7 @@ const pow10 = (decimals: number) => {
   return new BigNumber(10).pow(Math.max(0, decimals));
 };
 
-const convert18RawToTokenRaw = (
+export const convert18RawToTokenRaw = (
   rawAmountIn18: BigNumber,
   tokenDecimals: number
 ) => {
@@ -488,6 +488,8 @@ export const checkGasAndNonce = ({
   isGnosisAccount,
   nativeTokenBalance,
   gasTokenDecimals = GAS_PRICE_DECIMALS,
+  gasTokenId,
+  tempoPreferredFeeTokenId,
   checkTxValueInBalance = true,
 }: {
   recommendGasLimitRatio: number;
@@ -509,6 +511,8 @@ export const checkGasAndNonce = ({
   isSpeedUp: boolean;
   isGnosisAccount: boolean;
   gasTokenDecimals?: number;
+  gasTokenId?: string;
+  tempoPreferredFeeTokenId?: string;
   checkTxValueInBalance?: boolean;
 }) => {
   const errors: {
@@ -564,12 +568,28 @@ export const checkGasAndNonce = ({
     rawAmountToBn(gasExplainResponse.maxGasCostAmount).times(
       pow10(gasTokenDecimals)
     );
+  const chain = findChain({
+    id: tx.chainId,
+  });
+  const tempoFeeToken =
+    tempoPreferredFeeTokenId || (tx as Tx & { feeToken?: string }).feeToken;
+  // Tempo gas token options are pre-filtered by gas affordability. If the
+  // transaction feeToken cannot be selected as the current gas token, treat it
+  // as the same 3001 gas-not-enough condition so Gas Account auto-switching
+  // stays centralized in this check.
+  const tempoFeeTokenBalanceInsufficient =
+    !!chain &&
+    isTempoChain(chain.serverId) &&
+    !!tempoFeeToken &&
+    !!gasTokenId &&
+    tempoFeeToken.toLowerCase() !== gasTokenId.toLowerCase();
 
   if (
     !isGnosisAccount &&
-    maxGasCostRawAmount
-      .plus(sendNativeTokenRawAmount)
-      .isGreaterThan(balanceRawAmount)
+    (tempoFeeTokenBalanceInsufficient ||
+      maxGasCostRawAmount
+        .plus(sendNativeTokenRawAmount)
+        .isGreaterThan(balanceRawAmount))
   ) {
     errors.push({
       code: 3001,

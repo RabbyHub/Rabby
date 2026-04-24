@@ -50,7 +50,8 @@ export const MiniPersonalMessageApproval = ({
     BatchSignPersonalMessageTaskType['status']
   >('idle');
   const { isDarkTheme } = useThemeMode();
-  const currentAccount = useCurrentAccount();
+  const _currentAccount = useCurrentAccount();
+  const currentAccount = account || _currentAccount;
 
   const isSigningLoading = useDirectSigning();
   const setDirectSigning = useSetDirectSigning();

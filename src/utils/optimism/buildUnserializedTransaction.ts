@@ -2,26 +2,85 @@ import { omit } from 'lodash';
 import { Common, Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
 
+const EIP7702_PLACEHOLDER_R = `0x${'11'.repeat(32)}`;
+const EIP7702_PLACEHOLDER_S = `0x${'22'.repeat(32)}`;
+
+function normalizeHexValue(value) {
+  if (typeof value === 'number') {
+    return `0x${value.toString(16)}`;
+  }
+
+  if (typeof value === 'bigint') {
+    return `0x${value.toString(16)}`;
+  }
+
+  return value;
+}
+
+function buildAuthorizationList(authorizationList) {
+  if (!Array.isArray(authorizationList)) {
+    return authorizationList;
+  }
+
+  return authorizationList.map((item) => {
+    if (!Array.isArray(item)) {
+      return item;
+    }
+
+    const [chainId, address, nonce] = item;
+
+    return {
+      chainId: normalizeHexValue(chainId),
+      address,
+      nonce: normalizeHexValue(nonce),
+      // L1 fee estimation happens before signing in the 7702 revoke flow, so we
+      // synthesize a serializable authorization payload with fixed-size fields.
+      yParity: '0x',
+      r: EIP7702_PLACEHOLDER_R,
+      s: EIP7702_PLACEHOLDER_S,
+    };
+  });
+}
+
 function buildTxParams(txMeta) {
-  return {
+  const txParams = {
     ...omit(txMeta.txParams, 'gas'),
-    gasLimit: txMeta.txParams.gas,
+    gasLimit: txMeta.txParams.gas || txMeta.txParams.gasLimit,
   };
+
+  if ('authorizationList' in txParams) {
+    txParams.authorizationList = buildAuthorizationList(
+      txParams.authorizationList
+    );
+  }
+
+  return txParams;
 }
 
 function buildTransactionCommon(txMeta) {
-  // This produces a transaction whose information does not completely match an
-  // Optimism transaction — for instance, DEFAULT_CHAIN is still 'mainnet' and
-  // genesis points to the mainnet genesis, not the Optimism genesis — but
-  // considering that all we want to do is serialize a transaction, this works
-  // fine for our use case.
-  return Common.custom({
-    chainId: Number(txMeta.chainId),
-    // Optimism only supports type-0 transactions; it does not support any of
-    // the newer EIPs since EIP-155. Source:
-    // <https://github.com/ethereum-optimism/optimism/blob/develop/specs/l2geth/transaction-types.md>
-    defaultHardfork: Hardfork.SpuriousDragon,
-  });
+  const rawChainId = txMeta.txParams?.chainId ?? txMeta.chainId;
+  const chainId = Number(rawChainId);
+
+  if (!Number.isInteger(chainId) || chainId <= 0) {
+    throw new Error(
+      `buildUnserializedTransaction requires a valid chainId, got ${String(
+        rawChainId
+      )}`
+    );
+  }
+
+  // We only need a serializable payload for L1 fee oracles. Prague + 7702 keeps
+  // legacy transactions working while allowing pre-sign EIP-7702 revoke txs to
+  // be serialized as well.
+  return Common.custom(
+    {
+      chainId,
+    },
+    {
+      hardfork: Hardfork.Prague,
+      eips: [7702],
+    }
+  );
 }
 
 export default function buildUnserializedTransaction(txMeta) {

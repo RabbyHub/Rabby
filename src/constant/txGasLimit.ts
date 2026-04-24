@@ -12,4 +12,6 @@ export const TX_GAS_LIMIT_CHAIN_MAPPING = {
   //https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm/dual-block-architecture
   // fast block gas limit
   ['HYPER' as CHAINS_ENUM]: 2_000_000,
+  // https://docs.tempo.xyz/protocol/tips/tip-1010
+  ['TEMPO' as CHAINS_ENUM]: 30_000_000,
 };

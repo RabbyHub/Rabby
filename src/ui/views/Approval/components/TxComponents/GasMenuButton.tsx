@@ -14,8 +14,11 @@ import BigNumber from 'bignumber.js';
 import { Divide } from '../Divide';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import clsx from 'clsx';
+import { ReactComponent as IconArrowDownCC } from 'ui/assets/swap/arrow-down-cc.svg';
+import IconUnknown from '@/ui/assets/token-default.svg';
+import type { GasTokenInfo } from '@/utils/transaction';
 
-const MenuButtonStyled = styled.div`
+export const MenuButtonStyled = styled.div`
   display: flex;
   align-items: center;
   border-radius: 100px;
@@ -137,6 +140,9 @@ interface Props {
   onSelect: (gas: GasLevel) => void;
   onCustom: () => void;
   showCustomGasPrice: boolean;
+  showTempoGasTokenSelector?: boolean;
+  onOpenTempoGasToken?: () => void;
+  tempoGasToken?: GasTokenInfo;
 }
 
 export const GasLevelIcon: React.FC<{
@@ -174,6 +180,9 @@ export const GasMenuButton: React.FC<Props> = ({
   onSelect,
   onCustom,
   showCustomGasPrice,
+  showTempoGasTokenSelector = false,
+  onOpenTempoGasToken,
+  tempoGasToken,
 }) => {
   const { t } = useTranslation();
   const orderedGasList = [...gasList].reverse();
@@ -193,6 +202,32 @@ export const GasMenuButton: React.FC<Props> = ({
               </MenuTitleStyled>
             }
           >
+            {showTempoGasTokenSelector ? (
+              <>
+                <MenuItemStyled
+                  className="justify-between"
+                  key="tempo-gas-token"
+                  onClick={(e) => {
+                    e.domEvent.stopPropagation();
+                    onOpenTempoGasToken?.();
+                  }}
+                >
+                  <span className="text-r-neutral-title-1 text-[13px]">
+                    {t('page.gasAccount.gasToken')}
+                  </span>
+                  <div className="flex items-center flex-1">
+                    <img
+                      src={tempoGasToken?.logoUrl || IconUnknown}
+                      className="w-14 h-14 rounded-full mr-6"
+                    />
+                    <span className="text-[13px] text-r-neutral-title1 font-medium mr-2">
+                      {tempoGasToken?.symbol || '-'}
+                    </span>
+                    <IconArrowDownCC className="text-r-neutral-foot" />
+                  </div>
+                </MenuItemStyled>
+              </>
+            ) : null}
             {orderedGasList.map((gas) => {
               const isSelected = selectedGas?.level === gas.level;
 
