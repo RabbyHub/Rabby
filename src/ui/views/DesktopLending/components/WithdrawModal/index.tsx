@@ -33,7 +33,7 @@ import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { LendingStyledInput } from '../StyledInput';
 import stats from '@/stats';
-import { LendingReportType } from '../../types/tx';
+import { LendingReportType, LendingSignType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
 import { StyledCheckbox } from '../BorrowModal';
@@ -295,7 +295,12 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
       ) {
         return;
       }
-      const report = (lastHash: string) => {
+      const report = (
+        lastHash: string,
+        signType:
+          | typeof LendingSignType.Simplified
+          | typeof LendingSignType.Full
+      ) => {
         const targetPool = formattedPoolReservesAndIncentives.find((item) => {
           return isSameAddress(reserve.underlyingAsset, API_ETH_MOCK_ADDRESS)
             ? isSameAddress(
@@ -320,6 +325,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
           usd_value: usdValue,
           create_at: Date.now(),
           app_version: process.env.release || '0',
+          signType,
         });
       };
 
@@ -338,7 +344,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
-              report(hash);
+              report(hash, LendingSignType.Simplified);
               message.success(
                 `${t('page.lending.withdrawDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -383,7 +389,7 @@ export const WithdrawModal: React.FC<WithdrawModalProps> = ({
             }
           );
         }
-        report(lastHash);
+        report(lastHash, LendingSignType.Full);
         message.success(
           `${t('page.lending.withdrawDetail.actions')} ${t(
             'page.lending.submitted'

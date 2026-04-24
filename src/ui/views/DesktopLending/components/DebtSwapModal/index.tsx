@@ -43,7 +43,7 @@ import { useSelectedMarket } from '../../hooks/market';
 import { usePoolDataProviderContract } from '../../hooks/pool';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import { ParaswapRatesType, SwappableToken, SwapType } from '../../types/swap';
-import { LendingReportType } from '../../types/tx';
+import { LendingReportType, LendingSignType } from '../../types/tx';
 import { APP_CODE_LENDING_DEBT_SWAP } from '../../utils/constant';
 import {
   buildDebtSwitchTx,
@@ -795,7 +795,12 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
         return;
       }
 
-      const report = (lastHash: string) => {
+      const report = (
+        lastHash: string,
+        signType:
+          | typeof LendingSignType.Simplified
+          | typeof LendingSignType.Full
+      ) => {
         const usdValue = new BigNumber(debouncedFromAmount || '0')
           .multipliedBy(new BigNumber(fromToken.usdPrice || '0'))
           .toString();
@@ -809,6 +814,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
           usd_value: usdValue,
           create_at: Date.now(),
           app_version: process.env.release || '0',
+          signType,
         });
       };
 
@@ -828,7 +834,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
             const hash = hashes[hashes.length - 1];
 
             if (hash) {
-              report(hash);
+              report(hash, LendingSignType.Simplified);
               message.success(
                 `${t('page.lending.debtSwap.button.swap')} ${t(
                   'page.lending.submitted'
@@ -874,7 +880,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
           );
         }
 
-        report(lastHash);
+        report(lastHash, LendingSignType.Full);
         message.success(
           `${t('page.lending.debtSwap.button.swap')} ${t(
             'page.lending.submitted'

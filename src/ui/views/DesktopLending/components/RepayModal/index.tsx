@@ -33,7 +33,7 @@ import { ReactComponent as RcImgArrowDownCC } from '@/ui/assets/swap/arrow-down-
 import { getTokenIcon } from '../../utils/tokenIcon';
 import { LendingStyledInput } from '../StyledInput';
 import stats from '@/stats';
-import { LendingReportType } from '../../types/tx';
+import { LendingReportType, LendingSignType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
@@ -592,7 +592,12 @@ export const RepayModal: React.FC<RepayModalProps> = ({
         message.info(t('page.lending.submitted') || 'Please retry');
         return;
       }
-      const report = (lastHash: string) => {
+      const report = (
+        lastHash: string,
+        signType:
+          | typeof LendingSignType.Simplified
+          | typeof LendingSignType.Full
+      ) => {
         const poolReserve = formattedPoolReservesAndIncentives.find((item) =>
           isSameAddress(item.underlyingAsset, reserve.underlyingAsset)
         );
@@ -614,6 +619,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
           usd_value: usdValue,
           create_at: Date.now(),
           app_version: process.env.release || '0',
+          signType,
         });
       };
 
@@ -632,7 +638,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
-              report(hash);
+              report(hash, LendingSignType.Simplified);
               message.success(
                 `${t('page.lending.repayDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -677,7 +683,7 @@ export const RepayModal: React.FC<RepayModalProps> = ({
             }
           );
         }
-        report(lastHash);
+        report(lastHash, LendingSignType.Full);
         message.success(
           `${t('page.lending.repayDetail.actions')} ${t(
             'page.lending.submitted'
