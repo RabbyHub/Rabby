@@ -34,7 +34,7 @@ import { DirectSignGasInfo } from '@/ui/views/Bridge/Component/BridgeShowMore';
 import { formatUsdValue, formatAmount } from '../../utils/format';
 import { LendingStyledInput } from '../StyledInput';
 import stats from '@/stats';
-import { LendingReportType } from '../../types/tx';
+import { LendingReportType, LendingSignType } from '../../types/tx';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { isZeroAmount } from '../../utils/number';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
@@ -436,7 +436,12 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
         return;
       }
 
-      const report = (lastHash: string) => {
+      const report = (
+        lastHash: string,
+        signType:
+          | typeof LendingSignType.Simplified
+          | typeof LendingSignType.Full
+      ) => {
         const bgCurrency = new BigNumber(
           reserve.reserve.formattedPriceInMarketReferenceCurrency || '0'
         );
@@ -453,6 +458,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
           usd_value: usdValue,
           create_at: Date.now(),
           app_version: process.env.release || '0',
+          signType,
         });
       };
 
@@ -471,7 +477,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             });
             const hash = hashes[hashes.length - 1];
             if (hash) {
-              report(hash);
+              report(hash, LendingSignType.Simplified);
               message.success(
                 `${t('page.lending.supplyDetail.actions')} ${t(
                   'page.lending.submitted'
@@ -517,7 +523,7 @@ export const SupplyModal: React.FC<SupplyModalProps> = ({
             }
           );
         }
-        report(lastHash);
+        report(lastHash, LendingSignType.Full);
         message.success(
           `${t('page.lending.supplyDetail.actions')} ${t(
             'page.lending.submitted'
