@@ -4377,7 +4377,8 @@
       "valueColumn": "美元价值",
       "statusColumn": "兑换状态",
       "noLowValueTokensFound": "暂无资产",
-      "moreChains": "+{{count}} 条链"
+      "moreChains": "+{{count}} 条链",
+      "priceImpact": "价差上限"
     },
     "manageBatchApprovals": {
       "cols": {

@@ -84,7 +84,7 @@
         "success": "Swap successful"
       },
       "completedTips": "Ongoing swap will continue processing",
-      "priceImpact": "Price impact"
+      "priceImpact": "Price Impact Cap"
     },
     "signTx": {
       "nftIn": "NFT in",
