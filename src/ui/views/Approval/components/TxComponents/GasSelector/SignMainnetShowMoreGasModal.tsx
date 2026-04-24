@@ -295,8 +295,6 @@ export const SignMainnetShowMoreGasModal = ({
                     });
                 const isRowLoading = !!levelState[levelKey]?.loading;
 
-                console.log('lvel', levelKey, { levelState, displayMethod });
-
                 let costUsd =
                   displayMethod === 'native'
                     ? levelState[levelKey]?.nativeUsd
