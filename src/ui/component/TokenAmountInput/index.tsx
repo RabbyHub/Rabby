@@ -475,6 +475,7 @@ const TokenAmountInput = ({
         onChange={(value) => {
           setChainServerId(findChainByEnum(value)?.serverId || '');
         }}
+        getContainer={getContainer}
       />
     </div>
   );
