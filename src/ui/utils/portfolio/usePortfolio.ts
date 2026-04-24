@@ -1,29 +1,25 @@
 import { useCallback, useEffect, useRef } from 'react';
-import produce from 'immer';
-import { Dayjs } from 'dayjs';
-// import { atom, useSetAtom } from 'jotai';
 
-import { CACHE_VALID_DURATION, DEFI_SYNC_SCENE } from '@/db/constants';
+import produce from 'immer';
+import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
+
+import { isFullVersionAccountType } from '@/utils/account';
 import { defiDbService } from '@/db/services/defiDbService';
 import { syncDbService } from '@/db/services/syncDbService';
-import { isFullVersionAccountType } from '@/utils/account';
-import { CHAIN_ID_LIST, syncChainIdList } from 'consts';
-import { useWallet } from '../WalletContext';
-import { chunk, loadTestnetPortfolioSnapshot } from './utils';
+import { CACHE_VALID_DURATION, DEFI_SYNC_SCENE } from '@/db/constants';
+
+import { chunk } from './utils';
+import { isSameAddress } from '..';
 import { useSafeState } from '../safeState';
+import { useWallet } from '../WalletContext';
+import { DisplayedProject } from './project';
 import { getExpandListSwitch } from './expandList';
 import {
   batchLoadProjects,
-  batchLoadHistoryProjects,
   loadPortfolioSnapshot,
-  snapshot2Display,
   portfolio2Display,
-  patchPortfolioHistory,
-  getMissedTokenPrice,
+  snapshot2Display,
 } from './utils';
-import { DisplayedProject } from './project';
-import { isSameAddress } from '..';
-import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
 
 const chunkSize = 5;
 
@@ -47,26 +43,16 @@ export const log = (...args: any) => {
   // console.log(...args);
 };
 
-// export const portfolioChangeLoadingAtom = atom(true);
-
-export const usePortfolios = (
-  userAddr: string | undefined,
-  timeAt?: Dayjs,
-  visible = true,
-  isTestnet = false
-) => {
+export const usePortfolios = (userAddr: string | undefined, visible = true) => {
   const [data, setData] = useSafeState<DisplayedProject[]>([]);
   const [netWorth, setNetWorth] = useSafeState(0);
   const [hasValue, setHasValue] = useSafeState(false);
   const abortProcess = useRef<AbortController>();
   const [isLoading, setLoading] = useSafeState(true);
   const projectDict = useRef<Record<string, DisplayedProject> | null>({});
-  const historyTime = useRef<number>();
-  const historyLoad = useRef<boolean>(false);
   const realtimeIds = useRef<string[]>([]);
   const wallet = useWallet();
   const userAddrRef = useRef('');
-  // const setPortfolioChangeLoading = useSetAtom(portfolioChangeLoadingAtom);
 
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | null = null;
@@ -92,19 +78,6 @@ export const usePortfolios = (
       }
     };
   }, [userAddr, visible]);
-
-  useEffect(() => {
-    if (timeAt) {
-      historyTime.current = timeAt.unix();
-
-      if (!isLoading) {
-        loadHistory();
-      }
-    } else {
-      historyTime.current = 0;
-    }
-    // eslint-disable-next-line
-  }, [timeAt, isLoading]);
 
   const applyProtocols = (protocols: ComplexProtocol[]) => {
     const _hasValue = protocols.some((x) => Object.keys(x).length > 0);
@@ -137,69 +110,70 @@ export const usePortfolios = (
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
 
-    historyLoad.current = false;
-
     setLoading(true);
-    // setPortfolioChangeLoading(withHistory);
 
     log('======Start-Portfolio======', userAddr);
     setData([]);
     setHasValue(false);
 
     let currentProtocols: ComplexProtocol[] = [];
-    const matchedAccount = isTestnet
-      ? null
-      : await wallet.getAccountByAddress(userAddr);
-    const shouldPersistDefiCache =
-      !isTestnet && matchedAccount
-        ? isFullVersionAccountType(matchedAccount as any)
-        : false;
+    const matchedAccount = await wallet.getAccountByAddress(userAddr);
+    const shouldPersistDefiCache = matchedAccount
+      ? isFullVersionAccountType(matchedAccount as any)
+      : false;
 
-    if (shouldPersistDefiCache) {
-      currentProtocols = await defiDbService.queryProtocols(userAddr);
+    /**
+     * 阶段一：本地 DB 缓存
+     */
+    try {
+      if (shouldPersistDefiCache) {
+        currentProtocols = await defiDbService.queryProtocols(userAddr);
 
-      if (currentAbort.signal.aborted) {
-        log('--Terminate-portfolio-db-cache-', userAddr);
-        setLoading(false);
-        return;
+        if (currentAbort.signal.aborted) {
+          log('--Terminate-portfolio-db-cache-', userAddr);
+          setLoading(false);
+          return;
+        }
+
+        if (currentProtocols.length) {
+          applyProtocols(currentProtocols);
+          setLoading(false);
+        }
+
+        const updatedAt =
+          (await syncDbService.getUpdatedAt({
+            address: userAddr,
+            scene: DEFI_SYNC_SCENE,
+          })) || 0;
+
+        const shouldUseDbCache =
+          currentProtocols.length > 0 &&
+          !forceRefresh &&
+          updatedAt > Date.now() - CACHE_VALID_DURATION;
+
+        if (shouldUseDbCache) {
+          log('<<==Defi-cache-hit==>>', userAddr);
+          return;
+        }
+      } else {
+        await Promise.all([
+          defiDbService.deleteForAddress(userAddr),
+          syncDbService.deleteSceneForAddress({
+            address: userAddr,
+            scene: DEFI_SYNC_SCENE,
+          }),
+        ]);
       }
-
-      if (currentProtocols.length) {
-        applyProtocols(currentProtocols);
-        setLoading(false);
-      }
-
-      const updatedAt =
-        (await syncDbService.getUpdatedAt({
-          address: userAddr,
-          scene: DEFI_SYNC_SCENE,
-        })) || 0;
-
-      const shouldUseDbCache =
-        currentProtocols.length > 0 &&
-        !forceRefresh &&
-        updatedAt > Date.now() - CACHE_VALID_DURATION;
-
-      if (shouldUseDbCache) {
-        log('<<==Defi-cache-hit==>>', userAddr);
-        return;
-      }
-    } else if (!isTestnet) {
-      await Promise.all([
-        defiDbService.deleteForAddress(userAddr),
-        syncDbService.deleteSceneForAddress({
-          address: userAddr,
-          scene: DEFI_SYNC_SCENE,
-        }),
-      ]);
+    } catch (error) {
+      // 忽略 db 的影响，直接走线上逻辑
+      log('--Terminate-portfolio-db-cache-get', userAddr);
     }
 
+    /**
+     * 阶段二：接口快照缓存
+     */
     let snapshotRes: ComplexProtocol[] = [];
-    if (isTestnet) {
-      snapshotRes = await loadTestnetPortfolioSnapshot(userAddr, wallet);
-    } else {
-      snapshotRes = await loadPortfolioSnapshot(userAddr, wallet);
-    }
+    snapshotRes = await loadPortfolioSnapshot(userAddr, wallet);
 
     if (currentAbort.signal.aborted || !snapshotRes) {
       log('--Terminate-portfolio-snapshot-', userAddr);
@@ -220,12 +194,20 @@ export const usePortfolios = (
 
     if (!realtimeIds.current.length) {
       if (shouldPersistDefiCache) {
-        await defiDbService.replaceAddressProtocols(userAddr, currentProtocols);
-        await syncDbService.setUpdatedAt({
-          address: userAddr,
-          scene: DEFI_SYNC_SCENE,
-          updatedAt: Date.now(),
-        });
+        try {
+          await defiDbService.replaceAddressProtocols(
+            userAddr,
+            currentProtocols
+          );
+          await syncDbService.setUpdatedAt({
+            address: userAddr,
+            scene: DEFI_SYNC_SCENE,
+            updatedAt: Date.now(),
+          });
+        } catch (error) {
+          // 忽略 db 的影响，不写缓存，直走内存
+          log('--Terminate-portfolio-db-cache-set', userAddr);
+        }
       }
 
       log('--Terminate-portfolio-loadProjectIds-', userAddr);
@@ -233,6 +215,10 @@ export const usePortfolios = (
       setLoading(false);
       return;
     }
+
+    /**
+     * 阶段三：完整逐个 id刷新
+     */
 
     const chunkIds = chunk(realtimeIds.current, chunkSize);
 
@@ -249,7 +235,7 @@ export const usePortfolios = (
           userAddr,
           ids,
           wallet,
-          isTestnet
+          false
         );
 
         const projects = projectListRes;
@@ -271,15 +257,34 @@ export const usePortfolios = (
       })
     );
 
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-portfolio-realtime-', userAddr);
+      projectDict.current = null;
+      setLoading(false);
+      return;
+    }
+
     currentProtocols = replaceProtocols(currentProtocols, realtimeProtocols);
 
     if (shouldPersistDefiCache) {
-      await defiDbService.replaceAddressProtocols(userAddr, currentProtocols);
-      await syncDbService.setUpdatedAt({
-        address: userAddr,
-        scene: DEFI_SYNC_SCENE,
-        updatedAt: Date.now(),
-      });
+      try {
+        await defiDbService.replaceAddressProtocols(userAddr, currentProtocols);
+        await syncDbService.setUpdatedAt({
+          address: userAddr,
+          scene: DEFI_SYNC_SCENE,
+          updatedAt: Date.now(),
+        });
+      } catch (error) {
+        // 忽略 db 的影响，不写缓存，直走内存
+        log('--Terminate-portfolio-db-cache-set', userAddr);
+      }
+    }
+
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-portfolio-db-cache-set', userAddr);
+      projectDict.current = null;
+      setLoading(false);
+      return;
     }
 
     realtimeData = Object.values(projectDict.current)?.sort(
@@ -290,124 +295,7 @@ export const usePortfolios = (
     setNetWorth(realtimeData.reduce((m, n) => m + n.netWorth, 0));
     setLoading(false);
 
-    loadHistory(currentAbort);
     log('portfolios-end', userAddr);
-  };
-
-  const loadHistory = async (currentAbort = new AbortController()) => {
-    if (
-      !historyTime.current ||
-      currentAbort.signal.aborted ||
-      !userAddr ||
-      historyLoad.current
-    ) {
-      return;
-    }
-
-    historyLoad.current = true;
-    syncChainIdList();
-    const historyIds = realtimeIds.current.filter(
-      (x) =>
-        projectDict.current![x].chain &&
-        CHAIN_ID_LIST.get(projectDict.current![x].chain!)?.isSupportHistory
-    );
-
-    const historyIdsArr = chunk(historyIds, chunkSize);
-
-    if (currentAbort.signal.aborted || !historyIdsArr.length) {
-      return;
-    }
-
-    await Promise.all(
-      historyIdsArr.map(async (ids) => {
-        const historyProjectListRes = await batchLoadHistoryProjects(
-          userAddr,
-          ids,
-          wallet,
-          historyTime.current,
-          isTestnet
-        );
-        const projects = historyProjectListRes;
-
-        if (!projects?.length) {
-          return;
-        }
-
-        projects.forEach((project) => {
-          if (!currentAbort.signal.aborted && projectDict.current) {
-            projectDict.current = produce(projectDict.current, (draft) => {
-              patchPortfolioHistory(project, draft);
-            });
-          }
-        });
-      })
-    );
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-    const historyList = Object.values(projectDict.current!)?.sort(
-      (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
-    );
-
-    setData(historyList);
-
-    // 可能有获取失败的，也需要通过 priceChange 来算大概的变化
-    const notSuportHistoryProjects = realtimeIds.current.filter(
-      (x) => !projectDict.current![x]._historyPatched
-    );
-
-    // 是否存在没有被 patchHistory 的（不支持历史结点 | 获取失败的），需要再去请求它之前的价格来计算大致的 usdChange
-    const missedTokens = notSuportHistoryProjects.reduce((m, n) => {
-      const pChain = projectDict.current![n]?.chain;
-
-      if (!pChain) {
-        return m;
-      }
-
-      m[pChain] = m[pChain] || new Set();
-
-      projectDict.current![n]._portfolios?.forEach((x) => {
-        x._tokenList?.forEach((t) => {
-          m[pChain].add(t._tokenId);
-        });
-      });
-
-      return m;
-    }, {} as Record<string, Set<string>>);
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-
-    const priceDicts = await getMissedTokenPrice(
-      missedTokens,
-      historyTime.current,
-      wallet,
-      isTestnet
-    );
-
-    if (currentAbort.signal.aborted || !projectDict.current || !priceDicts) {
-      return;
-    }
-
-    projectDict.current = produce(projectDict.current, (draft) => {
-      notSuportHistoryProjects?.forEach((pId) => {
-        if (priceDicts?.[draft[pId].chain!]) {
-          draft[pId].patchPrice(priceDicts?.[draft[pId].chain!]);
-        }
-      });
-    });
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-
-    const priceProjects = Object.values(projectDict.current!)?.sort(
-      (m, n) => (n.netWorth || 0) - (m.netWorth || 0)
-    );
-    setData(priceProjects);
-    // setPortfolioChangeLoading(false);
   };
 
   const removeProtocol = useCallback(

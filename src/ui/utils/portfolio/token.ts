@@ -1,112 +1,82 @@
-import { useRef, useEffect, useMemo, useCallback } from 'react';
-import produce from 'immer';
-import { Dayjs } from 'dayjs';
-import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { useRabbyDispatch, useRabbySelector } from 'ui/store';
-import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
-import {
-  findChainByEnum,
-  isTestnet as checkIsTestnet,
-  findChain,
-} from '@/utils/chain';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
+
+import { useAsync } from 'react-use';
+
 import { isFullVersionAccountType } from '@/utils/account';
 import { syncDbService } from '@/db/services/syncDbService';
+import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { tokenDbService } from '@/db/services/tokenDbService';
-import { useWallet } from '../WalletContext';
-import { useSafeState } from '../safeState';
-import { log } from './usePortfolio';
-import {
-  PortfolioItem,
-  PortfolioItemToken,
-} from '@rabby-wallet/rabby-api/dist/types';
-import { uniqBy } from 'lodash';
-import { DisplayedProject, DisplayedToken } from './project';
-import { AbstractPortfolioToken } from './types';
-import { getMissedTokenPrice } from './utils';
-import {
-  walletProject,
-  batchQueryTokens,
-  batchQueryHistoryTokens,
-  setWalletTokens,
-  queryTokensCache,
-  sortWalletTokens,
-} from './tokenUtils';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { CACHE_VALID_DURATION, TOKEN_SYNC_SCENE } from '@/db/constants';
+import { findChain } from '@/utils/chain';
+
 import { isSameAddress } from '..';
-import { Token } from 'background/service/preference';
+import { log } from './usePortfolio';
+import { useSafeState } from '../safeState';
+import { useWallet } from '../WalletContext';
+import { AbstractPortfolioToken } from './types';
 import {
   defaultTokenFilter,
   includeLpTokensFilter,
   isLpToken,
 } from './lpToken';
-import { useAsync } from 'react-use';
+import {
+  batchQueryTokens,
+  queryTokensCache,
+  filterValidChainTokens,
+  replaceCoreTokens,
+  replaceTokensWithLatest,
+  parseTokenItem,
+  sortTokenItems,
+} from './tokenUtils';
 
 let lastResetTokenListAddr = '';
-// export const tokenChangeLoadingAtom = atom(false);
 
-const filterDisplayToken = (
-  tokens: AbstractPortfolioToken[],
-  blocked: Token[]
-) => {
-  return tokens.filter((token) => {
-    const chain = findChain({
-      serverId: token.chain,
-    });
-    return (
-      !blocked.find(
-        (item) =>
-          isSameAddress(token._tokenId, item.address) &&
-          item.chain === token.chain
-      ) && findChainByEnum(chain?.enum)
-    );
-  });
-};
-
-const buildTokenKey = (token: Pick<TokenItem, 'chain' | 'id'>) =>
-  `${token.chain}-${token.id.toLowerCase()}`;
-
-const uniqTokens = (tokens: TokenItem[]) => {
-  return uniqBy(tokens, buildTokenKey);
-};
-
-/** 替换核心 token */
-const replaceCoreTokens = (tokens: TokenItem[], cacheTokens: TokenItem[]) => {
-  return uniqTokens([
-    ...tokens.filter((token) => !token.is_core),
-    ...cacheTokens,
-  ]);
+type UseTokensOptions = {
+  visible?: boolean;
+  updateNonce?: number;
+  chainServerId?: string;
+  lpTokensOnly?: boolean;
+  searchMode?: boolean;
+  disableRecommended?: boolean;
+  realtimeMode?: boolean;
 };
 
 export const useTokens = (
   userAddr: string | undefined,
-  timeAt?: Dayjs,
-  visible = true,
-  updateNonce = 0,
-  chainServerId?: string,
-  isTestnet: boolean = chainServerId
-    ? !!findChain({ serverId: chainServerId })?.isTestnet
-    : false,
-  lpTokensOnly = false,
-  showBlocked = false,
-  searchMode = false,
-  disableRecommended = false,
-  realtimeMode = false
+  {
+    visible = true,
+    updateNonce = 0,
+    chainServerId,
+    lpTokensOnly = false,
+    searchMode = false,
+    disableRecommended = false,
+    realtimeMode = false,
+  }: UseTokensOptions = {}
 ) => {
-  const abortProcess = useRef<AbortController>();
-  const [data, setData] = useSafeState(walletProject);
-  const [isLoading, setLoading] = useSafeState(true);
-  const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
-  const historyTime = useRef<number>();
-  const historyLoad = useRef<boolean>(false);
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+
   const { mainnetTokens, testnetTokens } = useRabbySelector((store) => ({
     mainnetTokens: store.account.tokens,
     testnetTokens: store.account.testnetTokens,
   }));
+
+  const [hasValue, setHasValue] = useSafeState(false);
+  const [isLoading, setLoading] = useSafeState(true);
+  const [isAllTokenLoading, setIsAllTokenLoading] = useSafeState(true);
+
   const userAddrRef = useRef('');
   const chainIdRef = useRef<string | undefined>(undefined);
-  // const setTokenChangeLoading = useSetAtom(tokenChangeLoadingAtom);
+
+  const abortProcess = useRef<AbortController>();
   const callCountRef = useRef(0);
+
+  const isTestnet = useMemo(() => {
+    return chainServerId
+      ? !!findChain({ serverId: chainServerId })?.isTestnet
+      : false;
+  }, [chainServerId]);
 
   useEffect(() => {
     if (updateNonce === 0) return;
@@ -133,7 +103,7 @@ export const useTokens = (
         }
       });
     } else {
-      setData(undefined);
+      setHasValue(false);
     }
 
     return () => {
@@ -143,19 +113,6 @@ export const useTokens = (
       }
     };
   }, [userAddr, visible, chainServerId]);
-
-  useEffect(() => {
-    if (timeAt) {
-      historyTime.current = timeAt.unix();
-
-      if (!isLoading) {
-        loadHistory();
-      }
-    } else {
-      historyTime.current = 0;
-    }
-    // eslint-disable-next-line
-  }, [timeAt, isLoading]);
 
   const loadProcess = async ({ forceRefresh = false } = {}) => {
     callCountRef.current++;
@@ -183,30 +140,26 @@ export const useTokens = (
 
     const currentAbort = new AbortController();
     abortProcess.current = currentAbort;
-    historyLoad.current = false;
 
     setLoading(true);
     setIsAllTokenLoading(true);
+    setHasValue(false);
     log('======Start-Tokens======', userAddr);
-    let _data = produce(walletProject, (draft) => {
-      draft.netWorth = 0;
-      draft._netWorth = '$0';
-      draft._netWorthChange = '-';
-      draft.netWorthChange = 0;
-      draft._netWorthChangePercent = '';
-    });
-    let _tokens: AbstractPortfolioToken[] = [];
-    setData(_data);
 
-    const blocked = showBlocked
-      ? []
-      : (await wallet.getBlockedToken()).filter((token) => {
-          if (isTestnet) {
-            return checkIsTestnet(token.chain);
-          } else {
-            return !checkIsTestnet(token.chain);
-          }
-        });
+    const dispatchTokenList = (tokens: AbstractPortfolioToken[]) => {
+      const displayTokens = filterValidChainTokens(tokens);
+
+      if (isTestnet) {
+        dispatch.account.setTestnetTokenList(displayTokens);
+      } else {
+        dispatch.account.setTokenList(displayTokens);
+      }
+    };
+
+    const applyTokenItems = (tokens: TokenItem[]) => {
+      setHasValue(tokens.length > 0);
+      dispatchTokenList(sortTokenItems(tokens));
+    };
 
     if (currentAbort.signal.aborted) {
       abortedFn();
@@ -215,64 +168,59 @@ export const useTokens = (
 
     let currentAllTokens: TokenItem[] = [];
 
-    if (!shouldPersistTokenCache) {
-      await Promise.all([
-        tokenDbService.deleteForAddress(userAddr),
-        syncDbService.deleteSceneForAddress({
-          address: userAddr,
-          scene: TOKEN_SYNC_SCENE,
-        }),
-      ]);
-    } else {
-      currentAllTokens = await tokenDbService.queryTokens(userAddr);
+    /**
+     * 阶段一：本地 DB 缓存
+     * 能用缓存就从缓存取，否则删除缓存
+     */
+    try {
+      if (!shouldPersistTokenCache) {
+        await Promise.all([
+          tokenDbService.deleteForAddress(userAddr),
+          syncDbService.deleteSceneForAddress({
+            address: userAddr,
+            scene: TOKEN_SYNC_SCENE,
+          }),
+        ]);
+      } else {
+        currentAllTokens = await tokenDbService.queryTokens(userAddr);
 
-      if (currentAbort.signal.aborted) {
-        abortedFn();
-        return;
-      }
-
-      if (currentAllTokens.length) {
-        const chainTokens = currentAllTokens.reduce((m, n) => {
-          m[n.chain] = m[n.chain] || [];
-          m[n.chain].push(n);
-
-          return m;
-        }, {} as Record<string, TokenItem[]>);
-        _data = produce(_data, (draft) => {
-          setWalletTokens(draft, chainTokens);
-        });
-
-        setData(_data);
-        _tokens = sortWalletTokens(_data);
-        if (isTestnet) {
-          dispatch.account.setTestnetTokenList(
-            filterDisplayToken(_tokens, blocked)
-          );
-        } else {
-          dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
+        if (currentAbort.signal.aborted) {
+          abortedFn();
+          return;
         }
-        setLoading(false);
+
+        if (currentAllTokens.length) {
+          applyTokenItems(currentAllTokens);
+          setLoading(false);
+        }
+
+        const updatedAt =
+          (await syncDbService.getUpdatedAt({
+            address: userAddr,
+            scene: TOKEN_SYNC_SCENE,
+          })) || 0;
+
+        const shouldUseDbCache =
+          currentAllTokens.length > 0 &&
+          !forceRefresh &&
+          !realtimeMode &&
+          updatedAt > Date.now() - CACHE_VALID_DURATION;
+
+        if (shouldUseDbCache) {
+          log('<<==Tokens-cache-hit==>>', userAddr);
+          setIsAllTokenLoading(false);
+          return;
+        }
       }
-
-      const updatedAt =
-        (await syncDbService.getUpdatedAt({
-          address: userAddr,
-          scene: TOKEN_SYNC_SCENE,
-        })) || 0;
-
-      const shouldUseDbCache =
-        currentAllTokens.length > 0 &&
-        !forceRefresh &&
-        !realtimeMode &&
-        updatedAt > Date.now() - CACHE_VALID_DURATION;
-
-      if (shouldUseDbCache) {
-        log('<<==Tokens-cache-hit==>>', userAddr);
-        setIsAllTokenLoading(false);
-        return;
-      }
+    } catch (error) {
+      // 忽略 db 的影响，直接走线上逻辑
+      log('--Terminate-tokens-db-cache-get', userAddr);
     }
 
+    /**
+     * 阶段二：接口快照缓存
+     * 完成后再决定是否进入完整刷新。
+     */
     const snapshot = await queryTokensCache(userAddr, wallet, isTestnet);
 
     if (!snapshot) {
@@ -290,28 +238,13 @@ export const useTokens = (
 
     if (snapshot?.length) {
       currentAllTokens = replaceCoreTokens(currentAllTokens, snapshot);
-      const chainTokens = currentAllTokens.reduce((m, n) => {
-        m[n.chain] = m[n.chain] || [];
-        m[n.chain].push(n);
-
-        return m;
-      }, {} as Record<string, TokenItem[]>);
-      _data = produce(_data, (draft) => {
-        setWalletTokens(draft, chainTokens);
-      });
-
-      setData(_data);
-      _tokens = sortWalletTokens(_data);
-      if (isTestnet) {
-        dispatch.account.setTestnetTokenList(
-          filterDisplayToken(_tokens, blocked)
-        );
-      } else {
-        dispatch.account.setTokenList(filterDisplayToken(_tokens, blocked));
-      }
+      applyTokenItems(currentAllTokens);
       setLoading(false);
     }
 
+    /**
+     * 阶段三：完整 token 刷新
+     */
     const tokenRes = await batchQueryTokens(
       userAddr,
       wallet,
@@ -332,256 +265,41 @@ export const useTokens = (
       return;
     }
 
-    // customize and blocked tokens
-    const customizeTokens = (await wallet.getCustomizedToken()).filter(
-      (token) => {
-        if (isTestnet) {
-          return checkIsTestnet(token.chain);
-        } else {
-          return !checkIsTestnet(token.chain);
-        }
-      }
+    currentAllTokens = replaceTokensWithLatest(
+      currentAllTokens,
+      tokenRes,
+      chainServerId
     );
-    const customTokenList: TokenItem[] = [];
-    const blockedTokenList: TokenItem[] = [];
-    tokenRes.forEach((token) => {
-      if (
-        customizeTokens.find(
-          (t) =>
-            isSameAddress(token.id, t.address) &&
-            token.chain === t.chain &&
-            !token.is_core
-        )
-      ) {
-        // customize with balance
-        customTokenList.push(token);
-      }
-      if (
-        blocked.find(
-          (t) =>
-            isSameAddress(token.id, t.address) &&
-            token.chain === t.chain &&
-            token.is_core
-        )
-      ) {
-        blockedTokenList.push(token);
-      }
-    });
-    const apiProvider = isTestnet ? wallet.testnetOpenapi : wallet.openapi;
-    const noBalanceBlockedTokens = blocked.filter((token) => {
-      return !blockedTokenList.find(
-        (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
-      );
-    });
-    const noBalanceCustomizeTokens = customizeTokens.filter((token) => {
-      return !customTokenList.find(
-        (t) => isSameAddress(token.address, t.id) && token.chain === t.chain
-      );
-    });
-    if (noBalanceCustomizeTokens.length > 0) {
-      const noBalanceCustomTokens = await apiProvider.customListToken(
-        noBalanceCustomizeTokens.map((item) => `${item.chain}:${item.address}`),
-        userAddr
-      );
-      customTokenList.push(
-        ...noBalanceCustomTokens.filter((token) => !token.is_core)
-      );
-    }
-    if (noBalanceBlockedTokens.length > 0) {
-      const blockedTokens = await apiProvider.customListToken(
-        noBalanceBlockedTokens.map((item) => `${item.chain}:${item.address}`),
-        userAddr
-      );
-      blockedTokenList.push(...blockedTokens.filter((token) => token.is_core));
-    }
-
-    if (currentAbort.signal.aborted) {
-      abortedFn();
-      return;
-    }
-
-    const formattedCustomTokenList = customTokenList.map(
-      (token) => new DisplayedToken(token) as AbstractPortfolioToken
-    );
-    const formattedBlockedTokenList = blockedTokenList.map(
-      (token) => new DisplayedToken(token) as AbstractPortfolioToken
-    );
-
-    if (isTestnet) {
-      dispatch.account.setTestnetBlockedTokenList(formattedBlockedTokenList);
-      dispatch.account.setTestnetCustomizeTokenList(formattedCustomTokenList);
-    } else {
-      dispatch.account.setBlockedTokenList(formattedBlockedTokenList);
-      dispatch.account.setCustomizeTokenList(formattedCustomTokenList);
-    }
-
-    currentAllTokens = uniqTokens([
-      ...(chainServerId
-        ? currentAllTokens.filter((token) => token.chain !== chainServerId)
-        : []),
-      ...tokenRes,
-      ...customTokenList,
-      ...blockedTokenList,
-    ]);
-
-    if (currentAbort.signal.aborted) {
-      abortedFn();
-      return;
-    }
 
     if (shouldPersistTokenCache) {
-      await tokenDbService.replaceAddressTokens(userAddr, currentAllTokens);
+      try {
+        await tokenDbService.replaceAddressTokens(userAddr, currentAllTokens);
 
-      if (!chainServerId) {
-        await syncDbService.setUpdatedAt({
-          address: userAddr,
-          scene: TOKEN_SYNC_SCENE,
-          updatedAt: Date.now(),
-        });
+        if (!chainServerId) {
+          await syncDbService.setUpdatedAt({
+            address: userAddr,
+            scene: TOKEN_SYNC_SCENE,
+            updatedAt: Date.now(),
+          });
+        }
+      } catch (error) {
+        // 忽略 db 的影响，不写缓存，直走内存
+        log('--Terminate-tokens-db-cache-set', userAddr);
       }
     }
 
-    const tokensDict: Record<string, TokenItem[]> = {};
-    tokenRes.forEach((token) => {
-      if (!tokensDict[token.chain]) {
-        tokensDict[token.chain] = [];
-      }
-      tokensDict[token.chain].push(token);
-    });
-
-    _data = produce(_data, (draft) => {
-      setWalletTokens(draft, tokensDict);
-    });
-
-    setData(_data);
-    _tokens = sortWalletTokens(_data);
-    if (isTestnet) {
-      dispatch.account.setTestnetTokenList([
-        ...filterDisplayToken(_tokens, blocked),
-        ...formattedCustomTokenList,
-      ]);
-    } else {
-      dispatch.account.setTokenList([
-        ...filterDisplayToken(_tokens, blocked),
-        ...formattedCustomTokenList,
-      ]);
+    if (currentAbort.signal.aborted) {
+      log('--Terminate-tokens-db-cache-set', userAddr);
+      abortedFn();
+      return;
     }
+
+    applyTokenItems(currentAllTokens);
 
     setLoading(false);
     setIsAllTokenLoading(false);
-    loadHistory(_data, currentAbort);
 
     log('<<==Tokens-end==>>', userAddr);
-  };
-
-  const loadHistory = async (
-    pre?: DisplayedProject,
-    currentAbort = new AbortController()
-  ) => {
-    if (!historyTime.current || !userAddr || historyLoad.current || isTestnet) {
-      log('middle-tokens-end');
-      return;
-    }
-
-    abortProcess.current = currentAbort;
-    historyLoad.current = true;
-
-    let _data = pre || data!;
-
-    log('===token===batchhistory====', userAddr);
-    // setTokenChangeLoading(true);
-
-    if (currentAbort.signal.aborted || !_data?.netWorth) {
-      return;
-    }
-
-    const historyTokenRes = await batchQueryHistoryTokens(
-      userAddr,
-      historyTime.current,
-      wallet,
-      isTestnet
-    );
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-
-    const historyPortfolios: PortfolioItem[] = [];
-
-    historyTokenRes?.forEach((token) => {
-      const chain = token.chain;
-      const index = historyPortfolios.findIndex((p) => p.pool.id === chain);
-      if (index === -1) {
-        historyPortfolios.push({
-          pool: {
-            id: chain,
-          },
-          asset_token_list: [token as PortfolioItemToken],
-        } as PortfolioItem);
-      } else {
-        historyPortfolios[index].asset_token_list?.push(
-          token as PortfolioItemToken
-        );
-      }
-    });
-
-    _data = produce(_data, (draft) => {
-      draft.patchHistory(historyPortfolios);
-    });
-
-    const tokenList = sortWalletTokens(_data);
-    if (isTestnet) {
-      dispatch.account.setTestnetTokenList(tokenList);
-    } else {
-      dispatch.account.setTokenList(tokenList);
-    }
-    setData(_data);
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-
-    const missedTokens = tokenList.reduce((m, n) => {
-      if (n._tokenId && !n._historyPatched) {
-        m[n.chain] = m[n.chain] || new Set();
-        m[n.chain].add(n._tokenId);
-      }
-
-      return m;
-    }, {} as Record<string, Set<string>>);
-
-    const priceDicts = await getMissedTokenPrice(
-      missedTokens,
-      historyTime.current,
-      wallet
-    );
-
-    if (currentAbort.signal.aborted || !priceDicts) {
-      return;
-    }
-
-    _data = produce(_data, (draft) => {
-      Object.entries(priceDicts).forEach(([c, dict]) => {
-        if (!draft._portfolioDict[c]._historyPatched) {
-          draft._portfolioDict[c].patchPrice(dict);
-          if (draft._portfolioDict[c].netWorthChange) {
-            draft.netWorthChange += draft._portfolioDict[c].netWorthChange;
-          }
-        }
-        draft.afterHistoryPatched();
-      });
-    }) as DisplayedProject;
-
-    if (currentAbort.signal.aborted) {
-      return;
-    }
-
-    setData(_data);
-    if (isTestnet) {
-      dispatch.account.setTestnetTokenList(sortWalletTokens(_data));
-    } else {
-      dispatch.account.setTokenList(sortWalletTokens(_data));
-    }
   };
 
   useEffect(() => {
@@ -630,9 +348,7 @@ export const useTokens = (
       chainServerId || ''
     );
 
-    return list.map(
-      (token) => new DisplayedToken(token) as AbstractPortfolioToken
-    );
+    return list.map(parseTokenItem);
   }, [shouldLoadRecommended, userAddr, chainServerId]);
 
   const tokens = useMemo(() => {
@@ -660,16 +376,10 @@ export const useTokens = (
   }, [loadProcess]);
 
   return {
-    netWorth: data?.netWorth || 0,
     isLoading: isLoading || loadingRecommendedTokens,
     isAllTokenLoading: isAllTokenLoading || loadingRecommendedTokens,
     tokens,
-    customizeTokens: isTestnet
-      ? testnetTokens.customize
-      : mainnetTokens.customize,
-    blockedTokens: isTestnet ? testnetTokens.blocked : mainnetTokens.blocked,
-    hasValue: !!data?._portfolios?.length,
+    hasValue,
     updateData: forceRefresh,
-    walletProject: data,
   };
 };
