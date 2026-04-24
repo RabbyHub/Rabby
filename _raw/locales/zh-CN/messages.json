@@ -2762,7 +2762,8 @@
         "depositSuccess": "充值成功",
         "depositFailed": "存款失败，请重试",
         "bridgeDepositFailed": "桥接充值失败，请重试",
-        "noAvailableToken": "暂无可用 Token"
+        "noAvailableToken": "暂无可用 Token",
+        "InsufficientToken": "代币余额不足"
       },
       "depositPayPopup": {
         "topUpPayTips": "所需 Gas：{{topUpUsd}}，预计剩余 Gas：{{balance}}"
@@ -2825,7 +2826,10 @@
         "desc3": "Rabby Wallet 不收取额外费用。您只需支付交易的 gas 费用，以及从 GasAccount 发送 gas 到您地址的少量 gas 费用。",
         "desc1": "GasAccount 是一种新的支付燃料费的方式。您可以使用一个账户为您在所有链上的所有地址支付燃料，而不必在每个链上使用本地代币。简单、可选，从不耗尽燃料。",
         "desc2": "将资金添加到您的 GasAccount，并将其用于任何交易。在签名时，可以选择使用原生代币或 GasAccount 来支付手续费，随时切换。"
-      }
+      },
+      "gasFee": "Gas 费用",
+      "loginSuccess": "登录成功",
+      "loginFailed": "登录失败"
     },
     "safeMessageQueue": {
       "loading": "加载消息",

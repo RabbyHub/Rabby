@@ -1558,7 +1558,8 @@
         "deposit": "存入",
         "chainNotSupported": "此區塊鏈不被 GasAccount 支援",
         "depositTips": "要完成GasAccount存款，此交易將被丟棄。您需要在存款後重新進行交易。",
-        "loginTips": "若要完成 GasAccount 登录，此交易将被放弃。您需要在登录后重新进行。"
+        "loginTips": "若要完成 GasAccount 登录，此交易将被放弃。您需要在登录后重新进行。",
+        "signWithHardwareWalletToUse": "你需要使用 {{brand}} 來簽署"
       },
       "iGotIt": "我明白了"
     },
@@ -2656,7 +2657,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "無歷史記錄"
+        "noHistory": "無歷史記錄",
+        "noHistoryForPast30Days": "過去 30 天沒有任何記錄。"
       },
       "loginInTip": {
         "gotIt": "明白",
@@ -2686,7 +2688,22 @@
         "desc": "將存款存入 Rabby 的 DeBank L2 Account，沒有額外費用 — 隨時提取。",
         "selectToken": "選擇代幣以存入",
         "paymentAddr": "支付地址",
-        "depositSuccess": ""
+        "depositSuccess": "存款成功",
+        "gasDepositTitle": "Gas 存款",
+        "zeroInvalidAmount": "金額不能為零",
+        "minAmountRequired": "最低存款金額為 ${{value}}",
+        "paymentAddress": "付款 Wallet",
+        "balanceLabel": "餘額",
+        "insufficientBalanceLabel": "餘額不足",
+        "unavailablePaymentWallet": "所選付款錢包不可用",
+        "suggestedToken": "建議代幣",
+        "bridgeLabel": "跨鏈橋",
+        "estReceiveLabel": "預計收到：{{usd}}",
+        "estReceiveTip": "服務透過 {{name}} 處理，可能有滑點",
+        "depositFailed": "存款失敗，請重試",
+        "bridgeDepositFailed": "跨鏈橋存款失敗，請重試",
+        "noAvailableToken": "無可用代幣",
+        "InsufficientToken": "代幣餘額不足"
       },
       "withdrawPopup": {
         "withdrawalLimit": "提取限额",
@@ -2749,7 +2766,31 @@
         "desc2": "將資金添加到您的 GasAccount 並將其用於任何交易。在簽署時，選擇使用原生代幣或 GasAccount 來支付手續費，隨時切換。",
         "desc1": "GasAccount 是支付 gas 费用的一種新方式。您可以使用一個帳戶來覆蓋所有鏈上所有地址的 gas，而不必在每個鏈上使用原生代幣。簡單，可選，且永不缺少 gas。",
         "desc4": "GasAccount 無需合約批准或許可。您將資金存入 Rabby 的 GasAccount 地址，當需要時，Rabby 會將 Gas 發送到您的地址。設計上完全安全。"
-      }
+      },
+      "benefitCard": {
+        "title": "在所有鏈上支付 Gas 費用",
+        "subtitle": "當你沒有 Gas 時",
+        "item1": "無 Rabby 費用",
+        "desc1": "無需支付額外費用來支付 Gas",
+        "item2": "支援所有網絡",
+        "desc2": "在 80+ 網絡上自動支付 Gas",
+        "item3": "支援所有交易",
+        "desc3": "Swap、Bridge、發送、DApps 等"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "所需 Gas：{{topUpUsd}}，預計剩餘 Gas：{{balance}}"
+      },
+      "gasFee": "燃料費",
+      "gasDeposit": "存入燃料",
+      "depositNow": "立即存入",
+      "signWithPendingHardwareToUse": "使用 {{addressAlias}} 簽署以使用",
+      "depositSubmitted": "已提交存入",
+      "claimFreeGas": "領取 {{usdValue}} 免費燃料",
+      "depositFailed": "存入失敗",
+      "lowBalance": "你的燃料不足。存入燃料以確保未來交易順利進行。",
+      "gasBalance": "燃料餘額",
+      "loginSuccess": "登入成功",
+      "loginFailed": "登入失敗"
     },
     "safeMessageQueue": {
       "noData": "沒有訊息",
@@ -4378,7 +4419,8 @@
       "totalValue": "總價值",
       "moreChains": "+{{count}} 條鏈",
       "swapFailed": "交換失敗，{{reason}}",
-      "completedTips": "正在進行的交換將繼續處理"
+      "completedTips": "正在進行的交換將繼續處理",
+      "priceImpact": "價格影響上限"
     },
     "manageBatchApprovals": {
       "cols": {

@@ -1966,7 +1966,8 @@
         "chainNotSupported": "Cette chaîne n'est pas prise en charge par GasAccount.",
         "customRPC": "Non pris en charge lors de l'utilisation de custom RPC",
         "loginTips": "Pour terminer la connexion GasAccount, cette transaction sera annulée. Vous devrez la refaire après la connexion.",
-        "depositTips": "Pour compléter le dépôt GasAccount, cette transaction sera annulée. Vous devrez la recréer après le dépôt."
+        "depositTips": "Pour compléter le dépôt GasAccount, cette transaction sera annulée. Vous devrez la recréer après le dépôt.",
+        "signWithHardwareWalletToUse": "Vous devez signer avec {{brand}} pour utiliser"
       },
       "imKeyConnected": "imKey est connecté",
       "imKeyNotConnected": "imKey n'est pas connecté",
@@ -2941,7 +2942,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "Aucun historique"
+        "noHistory": "Aucun historique",
+        "noHistoryForPast30Days": "Aucun historique pour les 30 derniers jours."
       },
       "loginInTip": {
         "title": "Déposez USDC / USDT",
@@ -2970,7 +2972,23 @@
         "title": "Dépôt",
         "selectToken": "Sélectionnez le Token à Déposer",
         "desc": "Faites un dépôt sur le compte DeBank L2 de Rabby sans frais supplémentaires—retirez à tout moment.",
-        "paymentAddr": "Adresse de paiement"
+        "paymentAddr": "Adresse de paiement",
+        "gasDepositTitle": "Dépôt de Gas",
+        "zeroInvalidAmount": "Le montant ne peut pas être zéro",
+        "minAmountRequired": "Le montant minimum de dépôt est {{value}}$",
+        "paymentAddress": "Portefeuille de paiement",
+        "balanceLabel": "Solde",
+        "insufficientBalanceLabel": "Solde insuffisant",
+        "unavailablePaymentWallet": "Le portefeuille de paiement sélectionné n'est pas disponible",
+        "suggestedToken": "Tokens suggérés",
+        "bridgeLabel": "Bridge",
+        "estReceiveLabel": "Est.Receive: {{usd}}",
+        "estReceiveTip": "Service traité via {{name}}, peut avoir du glissement",
+        "depositSuccess": "Dépôt réussi",
+        "depositFailed": "Échec du dépôt, veuillez réessayer",
+        "bridgeDepositFailed": "Échec du dépôt Bridge, veuillez réessayer",
+        "noAvailableToken": "Aucun token disponible",
+        "InsufficientToken": "Solde de tokens insuffisant"
       },
       "withdrawPopup": {
         "to": "À",
@@ -3033,7 +3051,31 @@
         "desc3": "Rabby Wallet ne facture aucun frais supplémentaire. Vous ne payez que le gaz pour votre transaction et une petite quantité de gaz pour envoyer ce gaz de GasAccount à votre adresse.",
         "desc4": "GasAccount ne nécessite aucune approbation ou permission de contrat. Vous déposez sur l'adresse GasAccount de Rabby, et Rabby envoie du gaz à votre adresse si nécessaire. Entièrement sécurisé par conception.",
         "desc1": "GasAccount est une nouvelle façon de payer les frais de gaz. Au lieu d'utiliser des jetons natifs sur chaque chaîne, vous pouvez utiliser un seul compte pour couvrir le gaz pour toutes vos adresses sur toutes les chaînes. Simple, optionnel et jamais à court de gaz."
-      }
+      },
+      "benefitCard": {
+        "title": "Payer les frais de gaz sur toutes les chaînes",
+        "subtitle": "quand vous n'avez plus de gaz",
+        "item1": "Pas de frais Rabby",
+        "desc1": "Pas de frais supplémentaires pour payer le gaz",
+        "item2": "Prend en charge tous les réseaux",
+        "desc2": "Paiements automatiques de gaz sur plus de 80 réseaux",
+        "item3": "Prend en charge toutes les transactions",
+        "desc3": "Swap, Bridge, Envoi, DApps, et plus encore"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "Gaz requis: {{topUpUsd}}, Solde restant estimé: {{balance}}"
+      },
+      "gasFee": "Frais de gaz",
+      "gasDeposit": "Dépôt de gaz",
+      "depositNow": "Déposer maintenant",
+      "signWithPendingHardwareToUse": "Signer avec {{addressAlias}} pour utiliser",
+      "depositSubmitted": "Dépôt soumis",
+      "claimFreeGas": "Réclamer {{usdValue}} de gaz gratuit",
+      "depositFailed": "Échec du dépôt",
+      "lowBalance": "Vous n'avez pas assez de gaz. Déposez du gaz pour garantir que les futures transactions se dérouleront sans accroc.",
+      "gasBalance": "Solde de gaz",
+      "loginSuccess": "Connexion réussie",
+      "loginFailed": "Échec de la connexion"
     },
     "safeMessageQueue": {
       "noData": "Aucun message",
@@ -4662,7 +4704,8 @@
       "totalValue": "Valeur totale",
       "moreChains": "+{{count}} chaînes",
       "swapFailed": "Échec de l'échange, {{reason}}",
-      "completedTips": "L'échange en cours continuera à être traité"
+      "completedTips": "L'échange en cours continuera à être traité",
+      "priceImpact": "Plafond de l'incidence sur le prix"
     },
     "manageBatchApprovals": {
       "cols": {

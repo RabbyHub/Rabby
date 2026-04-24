@@ -475,7 +475,8 @@
         "WalletConnectTips": "GasAccountではWalletConnectはサポートされていません。",
         "deposit": "入金",
         "loginTips": "GasAccountログインを完了するために、このトランザクションは破棄されます。ログイン後に再作成する必要があります。",
-        "depositTips": "GasAccountの入金を完了するためには、この取引は破棄されます。入金後に再度作成する必要があります。"
+        "depositTips": "GasAccountの入金を完了するためには、この取引は破棄されます。入金後に再度作成する必要があります。",
+        "signWithHardwareWalletToUse": "{{brand}}でサインインする必要があります"
       },
       "keystone": {
         "txRejected": "トランザクションが拒否されました",
@@ -2616,7 +2617,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "履歴なし"
+        "noHistory": "履歴なし",
+        "noHistoryForPast30Days": "過去30日間に履歴がありません。"
       },
       "loginInTip": {
         "title": "USDC / USDTを入金",
@@ -2645,7 +2647,23 @@
         "desc": "RabbyのDeBank L2アカウントに手数料なしで入金し、いつでも引き出し可能。",
         "selectToken": "トークンを選択して入金",
         "token": "トークン",
-        "paymentAddr": "支払いアドレス"
+        "paymentAddr": "支払いアドレス",
+        "gasDepositTitle": "ガス入金",
+        "zeroInvalidAmount": "金額はゼロにできません",
+        "minAmountRequired": "最小預入金額は${{value}}です",
+        "paymentAddress": "決済用ウォレット",
+        "balanceLabel": "残高",
+        "insufficientBalanceLabel": "残高不足",
+        "unavailablePaymentWallet": "選択した決済用ウォレットは利用できません",
+        "suggestedToken": "推奨トークン",
+        "bridgeLabel": "ブリッジ",
+        "estReceiveLabel": "推定受取額: {{usd}}",
+        "estReceiveTip": "サービスは{{name}}経由で処理されるため、スリッページが発生する可能性があります",
+        "depositSuccess": "入金成功",
+        "depositFailed": "入金に失敗しました。もう一度お試しください",
+        "bridgeDepositFailed": "ブリッジ入金に失敗しました。もう一度お試しください",
+        "noAvailableToken": "利用可能なトークンがありません",
+        "InsufficientToken": "トークン残高不足"
       },
       "withdrawPopup": {
         "noEnoughValuetBalance": "Vault Balance insufficient. チェーンを切り替えるか、後でもう一度お試しください。",
@@ -2708,7 +2726,31 @@
         "desc4": "GasAccountは、契約の承認や権限を必要としません。あなたはRabbyのGasAccountアドレスに入金し、必要な時にRabbyがあなたのアドレスにガスを送ります。設計上、完全に安全です。",
         "desc2": "GasAccountに資金を追加し、任意の取引に使用してください。署名する際、ネイティブトークンまたはGasAccountでガスを支払うオプションを選択し、いつでも切り替えてください。",
         "desc1": "GasAccountはガス料金を支払う新しい方法です。各チェーンのネイティブトークンを使用する代わりに、1つのアカウントを使用してすべてのチェーンのすべてのアドレスのガスをカバーできます。シンプルでオプションの機能で、ガス切れになることもありません。"
-      }
+      },
+      "benefitCard": {
+        "title": "すべてのチェーンでガス料金を支払う",
+        "subtitle": "ガスがなくなったとき",
+        "item1": "Rabbyの手数料なし",
+        "desc1": "ガス支払いの追加手数料なし",
+        "item2": "すべてのネットワークに対応",
+        "desc2": "80以上のネットワークでの自動ガス支払い",
+        "item3": "すべての取引に対応",
+        "desc3": "_swap、ブリッジ、送金、DAppsなど"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "必要なGas: {{topUpUsd}}, 残りのGas（推定）: {{balance}}"
+      },
+      "gasFee": "ガス手数料",
+      "gasDeposit": "ガスデポジット",
+      "depositNow": "今すぐ入金",
+      "signWithPendingHardwareToUse": "{{addressAlias}}で署名して使用",
+      "depositSubmitted": "入金完了",
+      "claimFreeGas": "{{usdValue}}分の無料ガスをClaim",
+      "depositFailed": "入金失敗",
+      "lowBalance": "ガスが不足しています今後の取引をスムーズに行うため、ガス入金を行ってください。",
+      "gasBalance": "ガス残高",
+      "loginSuccess": "ログイン成功",
+      "loginFailed": "ログイン失敗"
     },
     "safeMessageQueue": {
       "loading": "メッセージを読み込み中",
@@ -4337,7 +4379,8 @@
       "totalValue": "合計価値",
       "moreChains": "+{{count}}チェーン",
       "swapFailed": "スワップに失敗しました、{{reason}}",
-      "completedTips": "進行中のスワップは処理を継続します"
+      "completedTips": "進行中のスワップは処理を継続します",
+      "priceImpact": "気配値変動上限"
     },
     "manageBatchApprovals": {
       "cols": {
