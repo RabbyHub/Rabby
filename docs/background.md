@@ -4,7 +4,7 @@
 
 there are 2 controllers handle the requests.
 
-- `walletController` is mounted to background's window, `ui` will get it with `runtime.getBackgroundWindow`.
+- `walletController` lives in the background controller, and UI pages use the `wallet` proxy from `src/ui/app.tsx`, which forwards calls through `PortMessage`.
 
 - `providerController` is listening message from `runtime.onConnect` and handle these request.
 
