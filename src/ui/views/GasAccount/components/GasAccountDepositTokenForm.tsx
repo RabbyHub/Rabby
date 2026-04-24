@@ -344,7 +344,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   }, [minDepositPrice, resetBridgeQuoteState, visible]);
 
   useEffect(() => {
-    if (!visible) {
+    if (!visible || selectedToken) {
       return;
     }
 
@@ -359,7 +359,7 @@ const GasAccountDepositTokenFormInner: React.FC<
         availableTokens.find((item) => item.chain !== 'eth') ||
         availableTokens[0]
     );
-  }, [availableTokens, visible]);
+  }, [selectedToken, availableTokens, visible]);
 
   useEffect(() => {
     if (!visible) {
