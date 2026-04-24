@@ -4919,14 +4919,14 @@
     patch-package "^8.0.0"
     uuid "^9.0.1"
 
-"@rabby-wallet/eth-hd-keyring@4.3.3":
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-4.3.3.tgz#5f882f1ef45a323c01410058d0bf166e1ee5c558"
-  integrity sha512-ShPdj+bnrqejTngu5sOMjuBNrSlRz1zdHBeKpVU1ndR9b+pdaT4GIPFyPNRYzGDrjIF4rfhqAdU0/SjWc/dPqA==
+"@rabby-wallet/eth-hd-keyring@4.3.7":
+  version "4.3.7"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-4.3.7.tgz#ff1746559cf6e97e7add14417bd036bd8e281cb3"
+  integrity sha512-jQx+xk0ps+k029Tz+L75RvlfR3FAJEKJa2lkNiz9Ifjjhv1OKDqtPdTmRnTcFI0gET0LABibOOk5aRPNd52oLg==
   dependencies:
     "@ethereumjs/util" "^9.0.0"
     "@metamask/eth-sig-util" "^4.0.0"
-    "@rabby-wallet/eth-simple-keyring" "^5.0.1"
+    "@rabby-wallet/eth-simple-keyring" "5.1.2"
     "@scure/bip39" "^1.2.1"
     eth-sig-util "^3.0.1"
     ethereum-cryptography "^2.1.2"
@@ -4944,10 +4944,10 @@
     gridplus-sdk "3.2.0"
     rlp "^3.0.0"
 
-"@rabby-wallet/eth-simple-keyring@5.1.1", "@rabby-wallet/eth-simple-keyring@^5.0.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.1.1.tgz#f9d8fe09d26ee8c944a3819191dbc5e5e1ccdc74"
-  integrity sha512-jJbL6V3dt6S/c3t7s85ggszs0fCGhHqHoVHk6mJ5xHjvClCJJpfQuQnjUbr9TIE2EqYERd7HVwCwojvULzc+QQ==
+"@rabby-wallet/eth-simple-keyring@5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-simple-keyring/-/eth-simple-keyring-5.1.2.tgz#7b5d2ca68868a2bd4dd91345ddb7fb1f8f063980"
+  integrity sha512-pqWz6lw+EwfrgMjwl0bhFLYynU1rqg2PJrJGWS4swKfFNihu1+JFmAHYdEnnW7tgacwHNOcWYFqc1vmwfZMaSg==
   dependencies:
     "@ethereumjs/util" "^9.0.0"
     "@metamask/eth-sig-util" "8.2.0"
