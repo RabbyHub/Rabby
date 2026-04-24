@@ -166,7 +166,6 @@ export const SelectGasAccountList = ({
   const { t } = useTranslation();
   const { accountsWithGasAccountBalance } = useGasAccountSign();
 
-
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
 
   const _list = React.useMemo(
