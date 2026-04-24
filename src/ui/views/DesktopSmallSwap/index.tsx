@@ -238,14 +238,16 @@ const DesktopSmallSwapContent: React.FC = () => {
           />
         </header>
 
-        <div className="flex-shrink-0">
-          <ChainPillList
-            data={chainList}
-            value={chainServerId}
-            disabled={task.disabled}
-            onChange={handleChainChange}
-          />
-        </div>
+        {chainList?.length ? (
+          <div className="flex-shrink-0">
+            <ChainPillList
+              data={chainList}
+              value={chainServerId}
+              disabled={task.disabled}
+              onChange={handleChainChange}
+            />
+          </div>
+        ) : null}
 
         <div className="flex-1 min-h-[608px] flex items-stretch justify-between gap-[24px]">
           <LowValueTokenSelector
