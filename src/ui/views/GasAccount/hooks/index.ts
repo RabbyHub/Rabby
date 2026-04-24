@@ -2,6 +2,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useInViewport } from 'ahooks';
 import { message } from 'antd';
+import type { DrawerProps } from 'antd';
 import { uniqBy } from 'lodash';
 import { useRef } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -21,13 +22,22 @@ import {
   supportedHardwareDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { SignatureSteps } from '@/ui/component/MiniSignV2';
-import { KEYRING_TYPE } from '@/constant';
+import { BRAND_ALIAN_TYPE_TEXT, KEYRING_TYPE } from '@/constant';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { useTranslation } from 'react-i18next';
 import { GAS_ACCOUNT_INSUFFICIENT_TIP } from './checkTxs';
 import { useGasAccountDepositFlowActive } from './runtime';
+import { getUiType } from '@/ui/utils';
+
+const { isTab, isDesktop } = getUiType();
+
+const defaultGetContainer =
+  isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
+type GasAccountLoginOptions = {
+  getContainer?: DrawerProps['getContainer'];
+};
 
 type GasAccountEligibleAddress = {
   address: string;
@@ -280,7 +290,11 @@ export const useGasAccountMethods = () => {
   );
 
   const handleNoSignLogin = useCallback(
-    async (account: Account, isClaimGift: boolean = false) => {
+    async (
+      account: Account,
+      isClaimGift: boolean = false,
+      options?: GasAccountLoginOptions
+    ) => {
       if (!account) return '';
 
       try {
@@ -297,6 +311,7 @@ export const useGasAccountMethods = () => {
             directSubmit: true,
             canUseDirectSubmitTx: true,
             txs: [{ data: [text, account.address] }],
+            getContainer: options?.getContainer ?? defaultGetContainer,
           })) as string[];
 
           signature = hash;
@@ -305,6 +320,7 @@ export const useGasAccountMethods = () => {
             await SignatureSteps.invokeEnterPassphraseModal({
               wallet: wallet,
               value: account.address,
+              getContainer: options?.getContainer ?? defaultGetContainer,
             });
           }
 
@@ -312,6 +328,7 @@ export const useGasAccountMethods = () => {
             data: [text, account.address],
             wallet,
             account,
+            getContainer: options?.getContainer ?? defaultGetContainer,
           });
           signature = txHash;
         }
@@ -326,9 +343,13 @@ export const useGasAccountMethods = () => {
   );
 
   const login = useCallback(
-    async (account: Account, isClaimGift: boolean = false) => {
+    async (
+      account: Account,
+      isClaimGift: boolean = false,
+      options?: GasAccountLoginOptions
+    ) => {
       if (account && supportedDirectSign(account.type)) {
-        return handleNoSignLogin(account, isClaimGift);
+        return handleNoSignLogin(account, isClaimGift, options);
       }
 
       return wallet.signGasAccount(account, isClaimGift);
@@ -571,7 +592,10 @@ export const usePendingHardwareGasAccountLogin = ({
     !!pendingHardwareAddress &&
     isInsufficientOnly &&
     isAddressMismatch;
-  const { value: pendingHardwareGasAccountInfo } = useGasAccountInfoV2({
+  const {
+    value: pendingHardwareGasAccountInfo,
+    loading: isPendingHardwareGasAccountInfoLoading,
+  } = useGasAccountInfoV2({
     address: pendingHardwareAddress,
     enabled: shouldLoadPendingHardwareBalance,
   });
@@ -591,6 +615,11 @@ export const usePendingHardwareGasAccountLogin = ({
       ? pendingHardwareBalance >= requiredTotalCost
       : pendingHardwareBalance > 0);
 
+  const isCheckingPendingHardwareGasAccount =
+    shouldLoadPendingHardwareBalance &&
+    isPendingHardwareGasAccountInfoLoading &&
+    !pendingHardwareGasAccountInfo;
+
   const shouldSignWithPendingHardware =
     enabled &&
     !sig &&
@@ -604,6 +633,9 @@ export const usePendingHardwareGasAccountLogin = ({
     (pendingHardwareLoginAccount as any)?.alianName ||
     ellipsisAddress(pendingHardwareLoginAccount?.address || '');
 
+  const pendingHardwareAddressBrandName =
+    BRAND_ALIAN_TYPE_TEXT[pendingHardwareLoginAccount?.type || ''];
+
   const handleSignWithPendingHardware = useCallback(async () => {
     if (
       !shouldSignWithPendingHardware ||
@@ -615,14 +647,17 @@ export const usePendingHardwareGasAccountLogin = ({
 
     setIsLoggingPendingHardware(true);
     try {
-      await login(pendingHardwareLoginAccount);
-      message.success(
-        t('page.gasAccount.loginSuccess', {
-          defaultValue: 'GasAccount login successful',
-        })
-      );
-      await onLoggedIn?.();
-      return true;
+      const sig = await login(pendingHardwareLoginAccount);
+      if (sig) {
+        message.success(
+          t('page.gasAccount.loginSuccess', {
+            defaultValue: 'GasAccount login successful',
+          })
+        );
+        await onLoggedIn?.();
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error('login pending hardware gas account error', error);
       message.error(
@@ -649,6 +684,8 @@ export const usePendingHardwareGasAccountLogin = ({
     isLoggingPendingHardware,
     handleSignWithPendingHardware,
     pendingHardwareGasAccountInfo,
+    isCheckingPendingHardwareGasAccount,
+    pendingHardwareAddressBrandName,
   };
 };
 
@@ -677,6 +714,7 @@ export const useGasAccountHistory = () => {
   const requestVersionRef = useRef(0);
   const pendingPollCountRef = useRef(0);
   const txListRef = useRef<HistoryTxList>();
+  const historyAccountIdRef = useRef<string>();
 
   useEffect(() => {
     txListRef.current = txList;
@@ -834,13 +872,23 @@ export const useGasAccountHistory = () => {
   }, [txList]);
 
   useEffect(() => {
+    const prevHistoryAccountId = historyAccountIdRef.current;
+    historyAccountIdRef.current = accountId;
+
     if (!sig || !accountId) {
       clearHistory();
       return;
     }
 
+    const switchedAccount =
+      !!prevHistoryAccountId && !isSameAddress(prevHistoryAccountId, accountId);
+
+    if (switchedAccount) {
+      clearHistory();
+    }
+
     refreshListTx({
-      preserveLoadedList: true,
+      preserveLoadedList: !switchedAccount,
     });
   }, [accountId, clearHistory, refreshHistoryId, refreshListTx, sig]);
 

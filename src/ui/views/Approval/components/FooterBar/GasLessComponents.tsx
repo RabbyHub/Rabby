@@ -32,6 +32,130 @@ export type GasLessConfig = {
   dark_color: string;
 };
 
+type GasAccountChangeHandler = () => void | Promise<void>;
+
+type GasAccountDepositNavigationOptions = {
+  onRedirectToDeposit?: () => void;
+  onOpenGasAccountDeposit?: () => void;
+  disableGasAccountDeposit?: boolean;
+  preserveApprovalContext?: boolean;
+};
+
+type GasLessNotEnoughProps = GasAccountDepositNavigationOptions & {
+  onChangeGasAccount?: GasAccountChangeHandler;
+  gasAccountCost?: GasAccountCheckResult;
+  gasAccountAddress?: string;
+  canGotoUseGasAccount?: boolean;
+  canDepositUseGasAccount?: boolean;
+  directSubmit?: boolean;
+  nativeTokenInsufficient?: boolean;
+  approvalUiStyle?: boolean;
+};
+
+type GasLessAction =
+  | {
+      type: 'button';
+      text: string;
+      onClick: () => void;
+      loading: boolean;
+    }
+  | {
+      type: 'pill';
+      text: string;
+      onClick: () => void;
+      loading: boolean;
+    };
+
+type FreeGasReadyProps = {
+  freeGasText?: string;
+  color?: string;
+  logo?: string;
+  directSubmit?: boolean;
+};
+
+type GasLessActivityToSignProps = {
+  handleFreeGas: () => void;
+  gasLessEnable: boolean;
+  gasLessConfig?: GasLessConfig;
+  directSubmit?: boolean;
+};
+
+type GasAccountAction = {
+  text: string;
+  onClick: () => void;
+  loading: boolean;
+};
+
+type GasAccountTipsProps = GasAccountDepositNavigationOptions & {
+  gasAccountCost?: GasAccountCheckResult;
+  gasAccountAddress?: string;
+  isWalletConnect?: boolean;
+  noCustomRPC?: boolean;
+  directSubmit?: boolean;
+  onChangeGasAccount?: GasAccountChangeHandler;
+  nativeTokenInsufficient?: boolean;
+  approvalUiStyle?: boolean;
+};
+
+const GAS_ACCOUNT_PILL_STYLE: React.CSSProperties = {
+  cursor: 'pointer',
+  padding: '7px 8px',
+  borderRadius: 6,
+  background: 'var(--r-blue-default, #7084FF)',
+  boxShadow: '0px 1px 4px 0px rgba(65, 89, 188, 0.33)',
+};
+
+const EMPTY_STYLE: React.CSSProperties = {};
+
+const FREE_GAS_READY_BG_STYLE: React.CSSProperties = {
+  backgroundImage: `url(${GasLessBg})`,
+};
+
+function useOpenGasAccountDeposit({
+  onRedirectToDeposit,
+  onOpenGasAccountDeposit,
+  disableGasAccountDeposit,
+  preserveApprovalContext,
+}: GasAccountDepositNavigationOptions) {
+  const history = useHistory();
+  const wallet = useWallet();
+
+  const gotoGasAccount = React.useCallback(async () => {
+    onRedirectToDeposit?.();
+
+    const openGasAccountPopup = async () => {
+      const opened = await wallet.openGasAccountPopup<boolean>(
+        preserveApprovalContext ? { clearApprovals: false } : undefined
+      );
+      if (!opened) {
+        history.push('/gas-account');
+      }
+    };
+
+    if (UI_TYPE.isPop) {
+      history.push('/gas-account');
+    } else {
+      void openGasAccountPopup();
+      if (UI_TYPE.isNotification) {
+        window.close();
+      }
+    }
+  }, [history, onRedirectToDeposit, preserveApprovalContext, wallet]);
+
+  return React.useCallback(() => {
+    if (disableGasAccountDeposit) {
+      return;
+    }
+
+    if (onOpenGasAccountDeposit) {
+      onOpenGasAccountDeposit();
+      return;
+    }
+
+    void gotoGasAccount();
+  }, [disableGasAccountDeposit, gotoGasAccount, onOpenGasAccountDeposit]);
+}
+
 export function GasLessNotEnough({
   onChangeGasAccount,
   gasAccountCost,
@@ -45,62 +169,20 @@ export function GasLessNotEnough({
   preserveApprovalContext,
   nativeTokenInsufficient,
   approvalUiStyle,
-}: {
-  onChangeGasAccount?: () => void | Promise<void>;
-  gasAccountCost?: GasAccountCheckResult;
-  gasAccountAddress?: string;
-  canGotoUseGasAccount?: boolean;
-  canDepositUseGasAccount?: boolean;
-  directSubmit?: boolean;
-  onRedirectToDeposit?: () => void;
-  onOpenGasAccountDeposit?: () => void;
-  disableGasAccountDeposit?: boolean;
-  preserveApprovalContext?: boolean;
-  nativeTokenInsufficient?: boolean;
-  approvalUiStyle?: boolean;
-}) {
+}: GasLessNotEnoughProps) {
   const { t } = useTranslation();
   const gasAccountBalance = useGasAccountBalance(gasAccountAddress);
-
-  const history = useHistory();
-  const wallet = useWallet();
-  const gotoGasAccount = React.useCallback(async () => {
-    onRedirectToDeposit?.();
-
-    const openGasAccountPopup = async () => {
-      const opened = await wallet.openGasAccountPopup<boolean>(
-        preserveApprovalContext ? { clearApprovals: false } : undefined
-      );
-      if (!opened) {
-        history.push('/gas-account');
-      }
-    };
-    if (UI_TYPE.isPop) {
-      history.push('/gas-account');
-    } else {
-      openGasAccountPopup();
-      if (UI_TYPE.isNotification) {
-        window.close();
-      }
-    }
-  }, [history, onRedirectToDeposit, preserveApprovalContext, wallet]);
-
-  const openDeposit = React.useCallback(() => {
-    if (disableGasAccountDeposit) {
-      return;
-    }
-
-    if (onOpenGasAccountDeposit) {
-      onOpenGasAccountDeposit();
-      return;
-    }
-
-    gotoGasAccount();
-  }, [disableGasAccountDeposit, gotoGasAccount, onOpenGasAccountDeposit]);
+  const openDeposit = useOpenGasAccountDeposit({
+    onRedirectToDeposit,
+    onOpenGasAccountDeposit,
+    disableGasAccountDeposit,
+    preserveApprovalContext,
+  });
 
   const {
     shouldSignWithPendingHardware,
     pendingHardwareAddressLabel,
+    isCheckingPendingHardwareGasAccount,
     isLoggingPendingHardware,
     handleSignWithPendingHardware,
   } = usePendingHardwareGasAccountLogin({
@@ -110,36 +192,41 @@ export function GasLessNotEnough({
     onLoggedIn: onChangeGasAccount,
   });
 
+  if (isCheckingPendingHardwareGasAccount) {
+    return null;
+  }
+
   const notEnoughTip = t('page.signFooterBar.gasAccount.notEnough', {
     usd: formatUsdValue(gasAccountBalance),
   });
 
-  const action = shouldSignWithPendingHardware
-    ? {
-        type: 'button' as const,
-        text: t('page.signFooterBar.signAndSubmitButton'),
-        onClick: () => {
-          void handleSignWithPendingHardware();
-        },
-        loading: isLoggingPendingHardware,
-      }
-    : canDepositUseGasAccount && !disableGasAccountDeposit
-    ? {
-        type: 'button' as const,
-        text: t('page.signFooterBar.gasAccount.deposit'),
-        onClick: openDeposit,
-        loading: false,
-      }
-    : canGotoUseGasAccount
-    ? {
-        type: 'pill' as const,
-        text: t('page.signFooterBar.gasAccount.useGasAccount'),
-        onClick: () => {
-          void onChangeGasAccount?.();
-        },
-        loading: false,
-      }
-    : null;
+  let action: GasLessAction | null = null;
+  if (shouldSignWithPendingHardware) {
+    action = {
+      type: 'button',
+      text: t('page.signFooterBar.signAndSubmitButton'),
+      onClick: () => {
+        void handleSignWithPendingHardware();
+      },
+      loading: isLoggingPendingHardware,
+    };
+  } else if (canDepositUseGasAccount && !disableGasAccountDeposit) {
+    action = {
+      type: 'button',
+      text: t('page.signFooterBar.gasAccount.deposit'),
+      onClick: openDeposit,
+      loading: false,
+    };
+  } else if (canGotoUseGasAccount) {
+    action = {
+      type: 'pill',
+      text: t('page.signFooterBar.gasAccount.useGasAccount'),
+      onClick: () => {
+        void onChangeGasAccount?.();
+      },
+      loading: false,
+    };
+  }
 
   const tipText = shouldSignWithPendingHardware
     ? t('page.signFooterBar.gasAccount.signWithHardwareWalletToUse', {
@@ -203,13 +290,7 @@ export function GasLessNotEnough({
 
       {action?.type === 'pill' ? (
         <div
-          style={{
-            cursor: 'pointer',
-            padding: '7px 8px',
-            borderRadius: 6,
-            background: 'var(--r-blue-default, #7084FF)',
-            boxShadow: '0px 1px 4px 0px rgba(65, 89, 188, 0.33)',
-          }}
+          style={GAS_ACCOUNT_PILL_STYLE}
           className="text-r-neutral-title2"
           onClick={action.onClick}
         >
@@ -319,12 +400,7 @@ function FreeGasReady({
   color,
   logo,
   directSubmit,
-}: {
-  freeGasText?: string;
-  color?: string;
-  logo?: string;
-  directSubmit?: boolean;
-}) {
+}: FreeGasReadyProps) {
   const { t } = useTranslation();
   return (
     <span
@@ -335,15 +411,11 @@ function FreeGasReady({
           : 'bg-transparent py-0 pt-[18px] h-[46px]'
       )}
       style={
-        freeGasText || directSubmit
-          ? {}
-          : {
-              backgroundImage: `url(${GasLessBg})`,
-            }
+        freeGasText || directSubmit ? EMPTY_STYLE : FREE_GAS_READY_BG_STYLE
       }
     >
       {logo ? (
-        <img src={logo} className="w-16 h-16 mr-4" />
+        <img src={logo} className="w-16 h-16 mr-4" alt="" />
       ) : (
         <RcIconLogo viewBox="0 0 20 20" className="w-16 h-16 mr-4 " />
       )}
@@ -366,94 +438,86 @@ export function GasLessActivityToSign({
   gasLessEnable,
   gasLessConfig,
   directSubmit,
-}: {
-  handleFreeGas: () => void;
-  gasLessEnable: boolean;
-
-  gasLessConfig?: GasLessConfig;
-  directSubmit?: boolean;
-}) {
+}: GasLessActivityToSignProps) {
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
 
   const themeColor = gasLessConfig
-    ? (isDarkTheme ? gasLessConfig?.dark_color : gasLessConfig?.theme_color) ||
+    ? (isDarkTheme ? gasLessConfig.dark_color : gasLessConfig.theme_color) ||
       'var(--r-blue-default, #7084FF)'
     : undefined;
 
   return (
-    <>
-      <GasLessReady
+    <GasLessReady
+      className={clsx(
+        gasLessEnable && 'gasLess',
+        directSubmit && 'direct-submit'
+      )}
+    >
+      <FreeGasReady
+        directSubmit={directSubmit}
+        freeGasText={gasLessConfig?.after_click_text}
+        color={themeColor}
+        logo={gasLessConfig?.logo}
+      />
+      {themeColor && !directSubmit && (
+        <RcIconCCFreeGasBg
+          style={{
+            color: themeColor,
+          }}
+          className="h-[45px] w-full absolute top-[7px]"
+        />
+      )}
+      <span
         className={clsx(
-          gasLessEnable && 'gasLess',
-          directSubmit && 'direct-submit'
+          'gas-to-sign security-level-tip  items-center ',
+          !directSubmit && 'pr-6',
+          directSubmit
+            ? 'mt-8 rounded-[8px] border border-solid bg-r-red-light border-rabby-red-default'
+            : themeColor
+            ? 'bg-transparent text-transparent'
+            : 'bg-r-neutral-card2 text-r-neutral-card2'
         )}
       >
-        <FreeGasReady
-          directSubmit={directSubmit}
-          freeGasText={gasLessConfig?.after_click_text}
-          color={themeColor}
-          logo={gasLessConfig?.logo}
-        />
-        {themeColor && !directSubmit && (
-          <RcIconCCFreeGasBg
-            style={{
-              color: themeColor,
-            }}
-            className="h-[45px] w-full absolute top-[7px]"
-          />
+        {gasLessConfig?.logo ? (
+          <img src={gasLessConfig.logo} className="w-16 h-16 mr-4" alt="" />
+        ) : (
+          !directSubmit && (
+            <RcIconGas
+              viewBox="0 0 16 16"
+              className="w-16 h-16 mr-4 text-r-neutral-title-1"
+            />
+          )
         )}
+
         <span
           className={clsx(
-            'gas-to-sign security-level-tip  items-center ',
-            !directSubmit && 'pr-6',
-            directSubmit
-              ? 'mt-8 rounded-[8px] border border-solid bg-r-red-light border-rabby-red-default'
-              : themeColor
-              ? 'bg-transparent text-transparent'
-              : 'bg-r-neutral-card2 text-r-neutral-card2'
+            'flex-1',
+            themeColor ? '' : 'text-r-neutral-title-1',
+            directSubmit && 'text-r-red-default'
           )}
+          style={{
+            color: themeColor,
+          }}
         >
-          {gasLessConfig?.logo ? (
-            <img src={gasLessConfig?.logo} className="w-16 h-16 mr-4" />
-          ) : (
-            !directSubmit && (
-              <RcIconGas
-                viewBox="0 0 16 16"
-                className="w-16 h-16 mr-4 text-r-neutral-title-1"
-              />
-            )
-          )}
-
-          <span
-            className={clsx(
-              'flex-1',
-              themeColor ? '' : 'text-r-neutral-title-1',
-              directSubmit && 'text-r-red-default'
-            )}
-            style={{
-              color: themeColor,
-            }}
-          >
-            {gasLessConfig?.before_click_text ||
-              t('page.signFooterBar.gasless.notEnough')}
-          </span>
-
-          <LinearGradientAnimatedSpan
-            className={clsx(
-              'mr-auto px-10 py-[7px]  cursor-pointer text-r-neutral-title-2'
-            )}
-            style={{
-              background: themeColor,
-            }}
-            onClick={handleFreeGas}
-          >
-            {gasLessConfig?.button_text ||
-              t('page.signFooterBar.gasless.GetFreeGasToSign')}
-          </LinearGradientAnimatedSpan>
+          {gasLessConfig?.before_click_text ||
+            t('page.signFooterBar.gasless.notEnough')}
         </span>
-      </GasLessReady>
-    </>
+
+        <LinearGradientAnimatedSpan
+          className={clsx(
+            'mr-auto px-10 py-[7px]  cursor-pointer text-r-neutral-title-2'
+          )}
+          style={{
+            background: themeColor,
+          }}
+          onClick={handleFreeGas}
+        >
+          {gasLessConfig?.button_text ||
+            t('page.signFooterBar.gasless.GetFreeGasToSign')}
+        </LinearGradientAnimatedSpan>
+      </span>
+    </GasLessReady>
   );
 }
 
@@ -525,64 +589,20 @@ export function GasAccountTips({
   preserveApprovalContext,
   nativeTokenInsufficient,
   approvalUiStyle,
-}: {
-  gasAccountCost?: GasAccountCheckResult;
-  gasAccountAddress?: string;
-  isWalletConnect?: boolean;
-  noCustomRPC?: boolean;
-  directSubmit?: boolean;
-  onRedirectToDeposit?: () => void;
-  onOpenGasAccountDeposit?: () => void;
-  disableGasAccountDeposit?: boolean;
-  onChangeGasAccount?: () => void | Promise<void>;
-  preserveApprovalContext?: boolean;
-  nativeTokenInsufficient?: boolean;
-  approvalUiStyle?: boolean;
-}) {
+}: GasAccountTipsProps) {
   const { t } = useTranslation();
   const gasAccountBalance = useGasAccountBalance(gasAccountAddress);
-  const notEnoughTipText = t('page.signFooterBar.gasAccount.notEnough', {
-    usd: formatUsdValue(gasAccountBalance),
+  const openDeposit = useOpenGasAccountDeposit({
+    onRedirectToDeposit,
+    onOpenGasAccountDeposit,
+    disableGasAccountDeposit,
+    preserveApprovalContext,
   });
-
-  const history = useHistory();
-  const wallet = useWallet();
-  const gotoGasAccount = React.useCallback(async () => {
-    onRedirectToDeposit?.();
-    const openGasAccountPopup = async () => {
-      const opened = await wallet.openGasAccountPopup<boolean>(
-        preserveApprovalContext ? { clearApprovals: false } : undefined
-      );
-      if (!opened) {
-        history.push('/gas-account');
-      }
-    };
-    if (UI_TYPE.isPop) {
-      history.push('/gas-account');
-    } else {
-      openGasAccountPopup();
-      if (UI_TYPE.isNotification) {
-        window.close();
-      }
-    }
-  }, [history, onRedirectToDeposit, preserveApprovalContext, wallet]);
-
-  const openDeposit = React.useCallback(() => {
-    if (disableGasAccountDeposit) {
-      return;
-    }
-
-    if (onOpenGasAccountDeposit) {
-      onOpenGasAccountDeposit();
-      return;
-    }
-
-    gotoGasAccount();
-  }, [disableGasAccountDeposit, gotoGasAccount, onOpenGasAccountDeposit]);
 
   const {
     shouldSignWithPendingHardware,
-    pendingHardwareAddressLabel,
+    pendingHardwareAddressBrandName,
+    isCheckingPendingHardwareGasAccount,
     isLoggingPendingHardware,
     handleSignWithPendingHardware,
   } = usePendingHardwareGasAccountLogin({
@@ -592,7 +612,15 @@ export function GasAccountTips({
     onLoggedIn: onChangeGasAccount,
   });
 
-  const depositAction = disableGasAccountDeposit
+  if (isCheckingPendingHardwareGasAccount) {
+    return null;
+  }
+
+  const notEnoughTipText = t('page.signFooterBar.gasAccount.notEnough', {
+    usd: formatUsdValue(gasAccountBalance),
+  });
+
+  const depositAction: GasAccountAction | null = disableGasAccountDeposit
     ? null
     : {
         text: t('page.signFooterBar.gasAccount.deposit'),
@@ -601,11 +629,8 @@ export function GasAccountTips({
       };
 
   let finalTip: string | null = null;
-  let action: {
-    text: string;
-    onClick: () => void;
-    loading: boolean;
-  } | null = null;
+  let action: GasAccountAction | null = null;
+  let isPendingHardware = false;
 
   if (!noCustomRPC) {
     finalTip = t('page.signFooterBar.gasAccount.customRPC');
@@ -613,8 +638,7 @@ export function GasAccountTips({
     finalTip = t('page.signFooterBar.gasAccount.WalletConnectTips');
   } else if (shouldSignWithPendingHardware) {
     finalTip = t('page.signFooterBar.gasAccount.signWithHardwareWalletToUse', {
-      brand: pendingHardwareAddressLabel,
-      defaultValue: `Sign with ${pendingHardwareAddressLabel} to use GasAccount`,
+      brand: pendingHardwareAddressBrandName,
     });
     action = {
       text: t('page.signFooterBar.signAndSubmitButton'),
@@ -623,6 +647,7 @@ export function GasAccountTips({
       },
       loading: isLoggingPendingHardware,
     };
+    isPendingHardware = true;
   } else if (gasAccountCost?.err_msg) {
     const isInsufficientError =
       !gasAccountCost.chain_not_support &&
@@ -662,14 +687,16 @@ export function GasAccountTips({
     <div
       className={clsx(
         'security-level-tip items-center',
-        showApprovalUiStyle
-          ? 'mt-8 min-h-[40px] bg-r-red-light text-r-red-light pl-[10px] pr-8 py-6'
+        isPendingHardware
+          ? 'mt-8 bg-r-neutral-line p-8 text-r-neutral-line'
+          : showApprovalUiStyle
+          ? 'mt-8 min-h-[40px] pl-[10px] pr-8 py-6 bg-r-red-light text-r-red-light'
           : directSubmit
-          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default min-h-[42px] text-r-neutral-card2'
+          ? 'mt-8 bg-r-red-light border border-solid border-rabby-red-default min-h-[42px] text-r-red-light'
           : 'mt-[15px] bg-r-neutral-card2 text-r-neutral-card2'
       )}
     >
-      {(showApprovalUiStyle || !directSubmit) && (
+      {!isPendingHardware && (showApprovalUiStyle || !directSubmit) && (
         <RcIconGasAccountCC
           viewBox="0 0 20 20"
           className={clsx(
@@ -683,7 +710,9 @@ export function GasAccountTips({
       <div
         className={clsx(
           'relative flex-1 min-w-0',
-          showApprovalUiStyle
+          isPendingHardware
+            ? 'text-r-neutral-title1'
+            : showApprovalUiStyle
             ? 'text-12 leading-[16px] text-r-red-default'
             : directSubmit
             ? 'text-r-red-default'

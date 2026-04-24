@@ -98,6 +98,7 @@ export const BridgeShowMore = ({
   amount,
   toAmount,
   quoteLoading,
+  gasFeeLoading,
   slippageError,
   autoSlippage,
   isCustomSlippage,
@@ -133,6 +134,7 @@ export const BridgeShowMore = ({
   amount?: string | number;
   toAmount?: string | number;
   quoteLoading?: boolean;
+  gasFeeLoading?: boolean;
   slippageError?: boolean;
   autoSlippage: boolean;
   isCustomSlippage: boolean;
@@ -335,7 +337,7 @@ export const BridgeShowMore = ({
         {!insufficient && fromToken && supportDirectSign ? (
           <DirectSignGasInfo
             supportDirectSign={supportDirectSign}
-            loading={!!quoteLoading}
+            loading={!!quoteLoading || !!gasFeeLoading}
             openShowMore={noop}
             noQuote={!sourceLogo && !sourceName}
             chainServeId={fromToken?.chain}

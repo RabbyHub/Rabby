@@ -366,6 +366,16 @@ const GasAccountDepositTokenFormInner: React.FC<
     }
   }, [availableTokens]);
 
+  useEffect(() => {
+    if (!visible) {
+      didInitSelectedTokenRef.current = false;
+      //wait close animation
+      setTimeout(() => {
+        setSelectedToken(undefined);
+      }, 200);
+    }
+  }, [visible]);
+
   const selectedOwnerAccount = useMemo(
     () =>
       selectedToken
@@ -566,6 +576,7 @@ const GasAccountDepositTokenFormInner: React.FC<
     !selectedOwnerAccount ||
     !amountValidation.isValid;
   const canFetchBridgeQuote = !loading && !shouldResetBridgeQuote;
+  const isSubmittingDeposit = loading;
 
   useEffect(() => {
     if (shouldResetBridgeQuote) {
@@ -628,6 +639,10 @@ const GasAccountDepositTokenFormInner: React.FC<
 
   const handleInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (isSubmittingDeposit) {
+        return;
+      }
+
       let value = event.target.value;
       if (value.startsWith('$')) {
         value = value.slice(1);
@@ -636,11 +651,18 @@ const GasAccountDepositTokenFormInner: React.FC<
         setUsdValue(value);
       }
     },
-    []
+    [isSubmittingDeposit]
   );
-  const handleQuickAmountClick = useCallback((value: string) => {
-    setUsdValue(value);
-  }, []);
+  const handleQuickAmountClick = useCallback(
+    (value: string) => {
+      if (isSubmittingDeposit) {
+        return;
+      }
+
+      setUsdValue(value);
+    },
+    [isSubmittingDeposit]
+  );
 
   const quoteError = useMemo(() => {
     if (shouldResetBridgeQuote || quoteLoading) {
@@ -668,12 +690,13 @@ const GasAccountDepositTokenFormInner: React.FC<
       return estReceiveLabel;
     }
 
+    const defaultDepositUsdValue = getDefaultDepositUsdValue(minDepositPrice);
     const estRemainingBalance = new BigNumber(estReceiveUsdValue)
       .plus(currentGasAccountInfo?.account?.balance || 0)
       .minus(minDepositPrice);
 
     return t('page.gasAccount.depositPayPopup.topUpPayTips', {
-      topUpUsd: formatUsdValue(minDepositPrice),
+      topUpUsd: `$${defaultDepositUsdValue}`,
       balance: formatUsdValue(
         estRemainingBalance.lt(0) ? 0 : estRemainingBalance.toFixed()
       ),
@@ -726,6 +749,8 @@ const GasAccountDepositTokenFormInner: React.FC<
 
   const balanceCopy = getDepositBalanceCopy({
     hasSelectedToken: !!selectedToken,
+    isBridgeDeposit: !!isBridgeDeposit,
+    directTokenBalance,
     tokenBalanceUsd,
     amountValue,
     formattedBalance: selectedToken ? balanceDisplayText : balanceText,
@@ -736,7 +761,7 @@ const GasAccountDepositTokenFormInner: React.FC<
   const ensureGasAccountLogin = useCallback(
     async (account: Account) => {
       if (!sig || !accountId) {
-        const loginResult = await login(account);
+        const loginResult = await login(account, false, { getContainer });
         if (!loginResult) {
           return null;
         }
@@ -748,7 +773,7 @@ const GasAccountDepositTokenFormInner: React.FC<
       }
       return nextSession;
     },
-    [accountId, login, sig, wallet]
+    [accountId, getContainer, login, sig, wallet]
   );
 
   const getRequiredGasAccountSession = useCallback(async (): Promise<{
@@ -829,6 +854,7 @@ const GasAccountDepositTokenFormInner: React.FC<
         },
         checkGasFeeTooHigh: true,
         autoUseGasFree: true,
+        getContainer,
       };
 
       try {
@@ -1249,6 +1275,7 @@ const GasAccountDepositTokenFormInner: React.FC<
                     )}
                     autoFocus
                     placeholder="$0"
+                    readOnly={isSubmittingDeposit}
                     value={usdValue ? `$${usdValue}` : ''}
                     onChange={handleInputChange}
                   />
@@ -1310,11 +1337,13 @@ const GasAccountDepositTokenFormInner: React.FC<
                     <button
                       key={button.key}
                       type="button"
+                      disabled={isSubmittingDeposit}
                       className={clsx(
                         'flex-1 h-[40px] flex items-center justify-center rounded-[8px] border border-solid text-13 font-medium',
-                        isActive
-                          ? 'border-rabby-blue-default bg-r-blue-light1 text-r-blue-default'
-                          : 'border-transparent text-r-neutral-title-1 bg-r-neutral-card1 hover:border-rabby-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default'
+                        isSubmittingDeposit
+                          ? 'border-transparent text-r-neutral-title-1 bg-r-neutral-card1'
+                          : 'border-transparent text-r-neutral-title-1 bg-r-neutral-card1 hover:border-rabby-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default',
+                        isSubmittingDeposit && 'cursor-not-allowed opacity-50'
                       )}
                       onClick={() => {
                         handleQuickAmountClick(button.value);

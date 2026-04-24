@@ -229,7 +229,7 @@ export const SelectGasAccountList = ({
     <>
       <div className="w-full flex justify-between px-20 mb-8 text-r-neutral-foot">
         <div>{t('page.gasAccount.gasAccountList.address')}</div>
-        <div>{t('page.gasAccount.gasAccountList.gasAccountBalance')}</div>
+        <div>{t('page.gasAccount.gasBalance')}</div>
       </div>
       <div className="w-full flex flex-1 flex-col px-20 overflow-auto">
         <Virtuoso
@@ -298,7 +298,7 @@ function AccountItem(props: {
       }}
       px={16}
       py={0}
-      bgColor="var(--r-neutral-card2, #F2F4F7);"
+      bgColor="var(--r-neutral-card1, #F2F4F7);"
       className="h-[56px] rounded-[6px] mb-12"
       left={<img src={addressTypeIcon} className={'w-[24px] h-[24px]'} />}
       right={

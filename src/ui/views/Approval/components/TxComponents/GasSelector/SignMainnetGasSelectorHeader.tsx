@@ -3,12 +3,13 @@ import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { findChain } from '@/utils/chain';
 import type { TempoFeeTokenOption } from '@/utils/tempo';
 import { calcMaxPriorityFee } from '@/utils/transaction';
-import { Tooltip, Skeleton } from 'antd';
+import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import type { ComponentProps } from 'react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 import { buildDirectSignSummary, calcGasAccountUsd } from './directSignSummary';
 import { SignMainnetCustomGasSheet } from './SignMainnetCustomGasSheet';
@@ -136,6 +137,8 @@ export const SignMainnetGasSelectorHeader = ({
     nativeTokenInsufficient,
     gasAccountBalanceEnough: gasAccountCost?.balance_is_enough,
   });
+
+  console.log('gasAccountCost', gasAccountCost);
 
   const supportedLevels = useMemo(
     () =>
@@ -280,44 +283,54 @@ export const SignMainnetGasSelectorHeader = ({
         ),
       };
 
-      Promise.all([
-        needsNative
-          ? Promise.all([
-              gasCalcMethod(gasLevel.price).then((res) => ({
-                nativeUsd: formatGasHeaderUsdValue(res.gasCostUsd.toString(10)),
-              })),
-              checkGasLevelIsNotEnough(gasChange, 'native').then(
-                ([notEnough]) => ({
-                  nativeNotEnough: notEnough,
-                })
-              ),
-            ]).then(([usdPatch, nativePatch]) => ({
-              ...usdPatch,
-              ...nativePatch,
-            }))
-          : Promise.resolve({}),
-        needsGasAccount
-          ? checkGasLevelIsNotEnough(gasChange, 'gasAccount').then(
-              ([notEnough, usd, gasAccountResult]) => ({
-                gasAccount: [notEnough, calcGasAccountUsd(Number(usd || 0))],
-                gasAccountResult,
+      const nativeRequest = needsNative
+        ? Promise.all([
+            gasCalcMethod(gasLevel.price).then((res) => ({
+              nativeUsd: formatGasHeaderUsdValue(res.gasCostUsd.toString(10)),
+            })),
+            checkGasLevelIsNotEnough(gasChange, 'native').then(
+              ([notEnough]) => ({
+                nativeNotEnough: notEnough,
               })
-            )
-          : Promise.resolve({}),
-      ])
-        .then(([nativePatch, gasAccountPatch]) => {
+            ),
+          ]).then(([usdPatch, nativePatch]) => ({
+            ...usdPatch,
+            ...nativePatch,
+          }))
+        : Promise.resolve({});
+
+      const gasAccountRequest = needsGasAccount
+        ? checkGasLevelIsNotEnough(gasChange, 'gasAccount').then(
+            ([notEnough, usd, gasAccountResult]) => ({
+              gasAccount: [notEnough, calcGasAccountUsd(Number(usd || 0))],
+              gasAccountResult,
+            })
+          )
+        : Promise.resolve({});
+
+      Promise.allSettled([nativeRequest, gasAccountRequest])
+        .then(([nativePatchResult, gasAccountPatchResult]) => {
           const currentRequestKey =
             activeLevelRequestsRef.current[gasLevel.level];
           if (currentRequestKey !== requestKey) {
             return;
           }
+
+          const nativePatch =
+            nativePatchResult.status === 'fulfilled'
+              ? nativePatchResult.value
+              : {};
+          const gasAccountPatch =
+            gasAccountPatchResult.status === 'fulfilled'
+              ? gasAccountPatchResult.value
+              : {};
+
           patchLevelState(gasLevel.level, {
             fingerprint: txFingerprint,
             ...nativePatch,
             ...gasAccountPatch,
           });
         })
-        .catch(() => undefined)
         .finally(() => {
           const currentRequestKey =
             activeLevelRequestsRef.current[gasLevel.level];
@@ -381,12 +394,9 @@ export const SignMainnetGasSelectorHeader = ({
   const levelText = t(getGasLevelI18nKey(selectedGas?.level || 'normal'));
   const gasAccountInfoTooltip =
     displayGasMethod === 'gasAccount' ? (
-      <Tooltip
-        align={{
-          offset: [-10, 0],
-        }}
-        placement="topLeft"
-        overlayClassName="rectangle w-[max-content]"
+      <TooltipWithMagnetArrow
+        placement="top"
+        className="rectangle w-[max-content]"
         title={
           <div onClick={(e) => e.stopPropagation()}>
             <div>{t('page.signTx.gasAccount.description')}</div>
@@ -417,7 +427,7 @@ export const SignMainnetGasSelectorHeader = ({
             onClick={(e) => e.stopPropagation()}
           />
         </span>
-      </Tooltip>
+      </TooltipWithMagnetArrow>
     ) : null;
 
   const gasCostAmountStr = useMemo(() => {
@@ -569,7 +579,7 @@ export const SignMainnetGasSelectorHeader = ({
 
   const content = (
     <div className="flex items-center justify-between text-12 text-r-neutral-foot relative">
-      <span className="inline-flex items-center gap-4">
+      <span className="relative inline-flex items-center gap-4">
         {onSignTx ? (
           summaryNodeOnSignTx
         ) : (

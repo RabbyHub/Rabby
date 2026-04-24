@@ -11,19 +11,10 @@ const DIRECT_SIGN_TYPES = new Set<string>([
   KEYRING_CLASS.HARDWARE.ONEKEY,
 ]);
 
-const NON_SWITCHABLE_GAS_ACCOUNT_TYPES = new Set<string>([
-  KEYRING_CLASS.WATCH,
-  KEYRING_CLASS.GNOSIS,
-  KEYRING_CLASS.CoboArgus,
-]);
-
 const HARDWARE_DIRECT_SIGN_TYPES = new Set<string>([
   KEYRING_CLASS.HARDWARE.LEDGER,
   KEYRING_CLASS.HARDWARE.ONEKEY,
 ]);
-
-const isGasAccountSwitchableType = (type?: string) =>
-  !!type && !NON_SWITCHABLE_GAS_ACCOUNT_TYPES.has(type);
 
 export const isGasAccountDirectSignType = (type?: string) =>
   !!type && DIRECT_SIGN_TYPES.has(type);
@@ -34,6 +25,7 @@ export const isGasAccountHardwareType = (type?: string) =>
 const hasGasAccountBalance = (balance?: number, noRegister?: boolean) =>
   !noRegister && Number(balance || 0) > 0;
 
+export const GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT = 20;
 const DISCOVERY_CACHE_TTL = 60 * 1000;
 const GAS_ACCOUNT_INFO_CONCURRENCY = 6;
 
@@ -42,6 +34,15 @@ let cachedDiscoveryAt = 0;
 let discoveryInFlightKey = '';
 let discoveryInFlight: Promise<GasAccountServiceStore> | null = null;
 let latestDiscoveryRequestId = 0;
+
+type GasAccountDiscoveryOptions = {
+  force?: boolean;
+} | null;
+
+type GasAccountDiscoveryBalanceResult = {
+  account: Account;
+  balance: number;
+};
 
 const getVisibleAccountsKey = (accounts: Account[]) =>
   accounts
@@ -70,20 +71,38 @@ const updateDiscoveryCache = (cacheKey: string) => {
 };
 
 const isDiscoveryBalanceResult = (
-  item: { account: Account; balance: number } | null
-): item is { account: Account; balance: number } => !!item;
+  item: GasAccountDiscoveryBalanceResult | null
+): item is GasAccountDiscoveryBalanceResult => !!item;
+
+const queryAccountGasAccountBalance = async (
+  account: Account
+): Promise<GasAccountDiscoveryBalanceResult | null> => {
+  try {
+    const info = await openapiService.getGasAccountInfoV2({
+      id: account.address,
+    });
+
+    if (
+      !hasGasAccountBalance(info?.account?.balance, info?.account?.no_register)
+    ) {
+      return null;
+    }
+
+    return {
+      account,
+      balance: Number(info.account.balance || 0),
+    };
+  } catch {
+    return null;
+  }
+};
 
 export const discoverGasAccountRuntimeState = async (
   accounts: Account[],
-  options?: {
-    force?: boolean;
-  } | null
+  options?: GasAccountDiscoveryOptions
 ) => {
   const force = !!options?.force;
-  const switchableAccounts = accounts.filter((account) =>
-    isGasAccountSwitchableType(account.type)
-  );
-  const cacheKey = getDiscoveryCacheKey(switchableAccounts);
+  const cacheKey = getDiscoveryCacheKey(accounts);
 
   if (!force && isDiscoveryCacheFresh(cacheKey)) {
     return gasAccountService.getGasAccountData();
@@ -110,7 +129,7 @@ export const discoverGasAccountRuntimeState = async (
     return gasAccountService.getGasAccountData();
   };
 
-  if (!switchableAccounts.length) {
+  if (!accounts.length) {
     return syncDiscoveryState({
       pendingHardwareAccount: undefined,
       autoLoginAccount: undefined,
@@ -124,30 +143,8 @@ export const discoverGasAccountRuntimeState = async (
       concurrency: GAS_ACCOUNT_INFO_CONCURRENCY,
     });
     const responses = await Promise.all(
-      switchableAccounts.map((account) =>
-        queue.add(async () => {
-          try {
-            const info = await openapiService.getGasAccountInfoV2({
-              id: account.address,
-            });
-
-            if (
-              !hasGasAccountBalance(
-                info?.account?.balance,
-                info?.account?.no_register
-              )
-            ) {
-              return null;
-            }
-
-            return {
-              account,
-              balance: Number(info.account.balance || 0),
-            };
-          } catch {
-            return null;
-          }
-        })
+      accounts.map((account) =>
+        queue.add(() => queryAccountGasAccountBalance(account))
       )
     );
 
@@ -162,7 +159,6 @@ export const discoverGasAccountRuntimeState = async (
     const loginCandidateAccountsWithGasAccountBalance = accountsWithGasAccountBalance.filter(
       (account) => isGasAccountDirectSignType(account.type)
     );
-
     const hasSession = gasAccountService.hasGasAccountSession();
     const autoLoginAccount = hasSession
       ? undefined

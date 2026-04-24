@@ -25,7 +25,7 @@ import {
   GasAccountHistoryRefreshIdProvider,
 } from './hooks/context';
 import { useRabbyDispatch } from '@/ui/store';
-import { EVENTS } from '@/constant';
+import { BRAND_ALIAN_TYPE_TEXT, EVENTS } from '@/constant';
 import { useGasAccountRefresh } from './hooks';
 import eventBus from '@/eventBus';
 import { GasAccountEmptyState } from './components/GasAccountEmptyState';
@@ -72,7 +72,10 @@ const GasAccountInner = () => {
     currentEligibleAddress,
     checkAddressesEligibility,
   } = useGasAccountEligibility();
-  const { value: pendingHardwareGasAccountInfo } = useGasAccountInfoV2({
+  const {
+    value: pendingHardwareGasAccountInfo,
+    loading: pendingHardwareAccountGasAccountInfoLoading,
+  } = useGasAccountInfoV2({
     address: pendingHardwareAccount?.address,
   });
 
@@ -214,7 +217,9 @@ const GasAccountInner = () => {
   }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
 
   const lowBalanceWarningMessage =
-    visibleBalance < 0.1 && !loading
+    visibleBalance < 0.1 &&
+    !loading &&
+    !pendingHardwareAccountGasAccountInfoLoading
       ? t('page.gasAccount.lowBalance', {
           defaultValue:
             "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
@@ -229,7 +234,6 @@ const GasAccountInner = () => {
         <span>
           {t('page.gasAccount.claimFreeGas', {
             usdValue: formatUsdValue(currentEligibleAddress.giftUsdValue),
-            defaultValue: 'Claim {{usdValue}} Free Gas',
           })}
         </span>
       </span>
@@ -239,13 +243,12 @@ const GasAccountInner = () => {
       ? 'bg-green border-green gap-6'
       : undefined;
   const primaryButtonContent = showEmptyState
-    ? emptyStatePrimaryContent ||
-      t('page.gasAccount.depositNow', {
-        defaultValue: 'Deposit Now',
+    ? emptyStatePrimaryContent || t('page.gasAccount.depositNow')
+    : !isLogin && pendingHardwareAccount
+    ? t('page.gasAccount.signWithPendingHardwareToUse', {
+        addressAlias: BRAND_ALIAN_TYPE_TEXT[pendingHardwareAccount.type],
       })
-    : t('page.gasAccount.depositNow', {
-        defaultValue: 'Deposit Now',
-      });
+    : t('page.gasAccount.depositNow');
   const handlePrimaryButtonPress = showEmptyState
     ? handleEmptyStatePrimaryPress
     : handleUserStatePrimaryPress;

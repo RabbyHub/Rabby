@@ -67,6 +67,34 @@ export interface SignMainnetCustomGasSheetProps
 
 const CardBody = GasCardBody;
 
+const formatMaxPriorityFeeInput = (value?: number) => {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return undefined;
+  }
+
+  return new BigNumber(value).toFixed();
+};
+
+const parseMaxPriorityFeeInput = (value?: string) => {
+  if (!value) {
+    return undefined;
+  }
+
+  const number = Number(value);
+  return Number.isFinite(number) ? number : undefined;
+};
+
+const toMaxPriorityFeeWei = (value?: string) => {
+  if (!value) {
+    return 0;
+  }
+
+  return new BigNumber(value)
+    .times(1e9)
+    .integerValue(BigNumber.ROUND_HALF_UP)
+    .toNumber();
+};
+
 export const SignMainnetCustomGasSheet = ({
   visible,
   onClose,
@@ -119,30 +147,37 @@ export const SignMainnetCustomGasSheet = ({
     SignMainnetCustomGasSheetProps['selectedGas']
   >(rawSelectedGas);
   const [isSelectCustom, setIsSelectCustom] = useState(true);
-  const [maxPriorityFee, setMaxPriorityFee] = useState<number | undefined>(
-    rawSelectedGas
-      ? (typeof selectedMaxPriorityFee === 'number'
-          ? Math.min(selectedMaxPriorityFee, rawSelectedGas.price)
-          : rawSelectedGas.priority_price === null
-          ? rawSelectedGas.price
-          : rawSelectedGas.priority_price) / 1e9
-      : 0
-  );
-  const [isReal1559, setIsReal1559] = useState(false);
-
-  const syncFromProps = useCallback(() => {
-    hasCustomPriorityFee.current = false;
-    setSelectedGas(rawSelectedGas);
-    setIsSelectCustom(true);
-    setLoadingGasEstimated(false);
-    setMaxPriorityFee(
+  const resolvedSelectedMaxPriorityFee = useMemo(
+    () =>
       rawSelectedGas
         ? (typeof selectedMaxPriorityFee === 'number'
             ? Math.min(selectedMaxPriorityFee, rawSelectedGas.price)
             : rawSelectedGas.priority_price === null
             ? rawSelectedGas.price
             : rawSelectedGas.priority_price) / 1e9
-        : 0
+        : 0,
+    [rawSelectedGas, selectedMaxPriorityFee]
+  );
+  const [maxPriorityFeeInput, setMaxPriorityFeeInput] = useState<
+    string | undefined
+  >(() => formatMaxPriorityFeeInput(resolvedSelectedMaxPriorityFee));
+  const maxPriorityFee = useMemo(
+    () => parseMaxPriorityFeeInput(maxPriorityFeeInput),
+    [maxPriorityFeeInput]
+  );
+  const [isReal1559, setIsReal1559] = useState(false);
+  const maxPriorityFeeWei = useMemo(
+    () => toMaxPriorityFeeWei(maxPriorityFeeInput),
+    [maxPriorityFeeInput]
+  );
+
+  const syncFromProps = useCallback(() => {
+    hasCustomPriorityFee.current = false;
+    setSelectedGas(rawSelectedGas);
+    setIsSelectCustom(true);
+    setLoadingGasEstimated(false);
+    setMaxPriorityFeeInput(
+      formatMaxPriorityFeeInput(resolvedSelectedMaxPriorityFee)
     );
 
     if (rawSelectedGas?.level === 'custom') {
@@ -157,7 +192,7 @@ export const SignMainnetCustomGasSheet = ({
     setCustomGasEstimated(
       gasList.find((item) => item.level === 'custom')?.estimated_seconds ?? 0
     );
-  }, [gasList, rawSelectedGas, selectedMaxPriorityFee]);
+  }, [gasList, rawSelectedGas, resolvedSelectedMaxPriorityFee]);
 
   useEffect(() => {
     if (!visible) {
@@ -312,6 +347,10 @@ export const SignMainnetCustomGasSheet = ({
   };
 
   const handleMaxPriorityFeeChange = (val: string) => {
+    if (val !== '' && !INPUT_NUMBER_RE.test(val)) {
+      return;
+    }
+
     let priorityFeeMax = selectedGas ? selectedGas.price / 1e9 : 0;
 
     if (
@@ -323,21 +362,22 @@ export const SignMainnetCustomGasSheet = ({
     }
 
     if (val === '') {
-      setMaxPriorityFee(undefined);
+      setMaxPriorityFeeInput(undefined);
       return;
     }
 
-    const number = Number(val);
+    const nextValue = filterNumber(val);
+    const number = Number(nextValue);
     if (number < 0) {
       return;
     }
     if (number > priorityFeeMax) {
-      setMaxPriorityFee(priorityFeeMax);
+      setMaxPriorityFeeInput(formatMaxPriorityFeeInput(priorityFeeMax));
       return;
     }
 
     hasCustomPriorityFee.current = true;
-    setMaxPriorityFee(number);
+    setMaxPriorityFeeInput(nextValue);
   };
 
   const isNilCustomGas = customGas === undefined || customGas === '';
@@ -361,7 +401,7 @@ export const SignMainnetCustomGasSheet = ({
     }
 
     if (isSelectCustom && isNilCustomGas && !hasCustomPriorityFee.current) {
-      setMaxPriorityFee(undefined);
+      setMaxPriorityFeeInput(undefined);
       return;
     }
 
@@ -380,12 +420,19 @@ export const SignMainnetCustomGasSheet = ({
       priorityPrice = Math.min(selectedMaxPriorityFee, selectedGas.price);
     }
 
-    setMaxPriorityFee((prevFee = priorityPrice / 1e9) => {
-      if (hasCustomPriorityFee.current) {
-        priorityPrice = Math.min(selectedGas.price, prevFee * 1e9);
-      }
-      return priorityPrice / 1e9;
-    });
+    const nextMaxPriorityFee = priorityPrice / 1e9;
+
+    if (!hasCustomPriorityFee.current || maxPriorityFee === undefined) {
+      setMaxPriorityFeeInput(formatMaxPriorityFeeInput(nextMaxPriorityFee));
+      return;
+    }
+
+    const clampedMaxPriorityFee =
+      Math.min(selectedGas.price, maxPriorityFeeWei) / 1e9;
+
+    if (clampedMaxPriorityFee !== maxPriorityFee) {
+      setMaxPriorityFeeInput(formatMaxPriorityFeeInput(clampedMaxPriorityFee));
+    }
   }, [
     chainId,
     gasList,
@@ -394,6 +441,8 @@ export const SignMainnetCustomGasSheet = ({
     isReady,
     isSelectCustom,
     isSpeedUp,
+    maxPriorityFee,
+    maxPriorityFeeWei,
     rawSelectedGas,
     selectedGas,
     selectedMaxPriorityFee,
@@ -416,7 +465,7 @@ export const SignMainnetCustomGasSheet = ({
         gasLimit: Number(gasLimit),
         nonce: Number(nonce),
         level: selectedGas.level,
-        maxPriorityFee: (maxPriorityFee ?? 0) * 1e9,
+        maxPriorityFee: maxPriorityFeeWei,
       });
     } else {
       onChange({
@@ -424,7 +473,7 @@ export const SignMainnetCustomGasSheet = ({
         gasLimit: Number(gasLimit),
         nonce: Number(nonce),
         level: selectedGas.level,
-        maxPriorityFee: (maxPriorityFee ?? 0) * 1e9,
+        maxPriorityFee: maxPriorityFeeWei,
       });
     }
 
@@ -433,7 +482,7 @@ export const SignMainnetCustomGasSheet = ({
     customGas,
     gasLimit,
     handleClose,
-    maxPriorityFee,
+    maxPriorityFeeWei,
     nonce,
     onChange,
     selectedGas,
@@ -633,19 +682,11 @@ export const SignMainnetCustomGasSheet = ({
                 <div className="priority-slider-body">
                   <Input
                     onFocus={(e) => e.target.select()}
-                    value={
-                      maxPriorityFee && typeof maxPriorityFee === 'number'
-                        ? new BigNumber(maxPriorityFee).toFormat({
-                            decimalSeparator: '.',
-                          })
-                        : maxPriorityFee
-                    }
+                    value={maxPriorityFeeInput}
                     onChange={(e) => handleMaxPriorityFeeChange(e.target.value)}
                     prefixCls="priority-slider-input h-[52px]"
-                    type="number"
-                    min={0}
-                    max={priorityFeeMax}
-                    step={0.01}
+                    type="text"
+                    inputMode="decimal"
                     disabled={isSelectCustom && isNilCustomGas}
                   />
                 </div>

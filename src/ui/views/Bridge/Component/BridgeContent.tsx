@@ -441,6 +441,7 @@ export const BridgeContent = () => {
 
   const {
     data: txs,
+    loading: buildTxsLoading,
     runAsync: runBuildSwapTxs,
     mutate: mutateTxs,
   } = useRequest(buildTxs, {
@@ -504,6 +505,14 @@ export const BridgeContent = () => {
   );
   const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
   const depositFlowActive = useGasAccountDepositFlowActive();
+  const canBuildBridgeTxs =
+    !btnDisabled &&
+    !!selectedBridgeQuote &&
+    !awaitingTopUpResume &&
+    !depositFlowActive;
+  const canPrepareDirectSign = canUseDirectSubmitTx && canBuildBridgeTxs;
+  const directSignTxPreparing =
+    canPrepareDirectSign && (buildTxsLoading || !txs?.length);
   const buildTopUpSnapshot = useCallback(
     (): BridgeTopUpSnapshot => ({
       amount: amount || '',
@@ -912,6 +921,7 @@ export const BridgeContent = () => {
               toAmount={selectedBridgeQuote?.to_token_amount}
               openQuotesList={openQuotesList}
               quoteLoading={quoteLoading}
+              gasFeeLoading={directSignTxPreparing}
               slippageError={isSlippageHigh || isSlippageLow}
               autoSlippage={autoSlippage}
               isCustomSlippage={isCustomSlippage}

@@ -62,7 +62,7 @@ export const GasAccountHeader: React.FC<{
 
   const menu = (
     <Menu
-      className="bg-r-neutral-card1 rounded-[8px] p-0 overflow-hidden min-w-[200px]"
+      className="bg-r-neutral-bg-1 rounded-[8px] p-0 overflow-hidden min-w-[200px]"
       style={
         {
           // boxShadow: '0px 8px 24px 0px rgba(0, 0, 0, 0.14)',

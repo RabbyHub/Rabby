@@ -209,6 +209,19 @@ const getCachedMaxPriorityFee = (
   return Math.min(lastTimeGas.maxPriorityFee, customGasPrice);
 };
 
+const resolve1559MaxPriorityFee = (
+  maxFeePerGas: string | number | undefined,
+  maxPriorityFee: number
+) => {
+  const nextMaxFeePerGas = Math.max(0, Math.round(Number(maxFeePerGas || 0)));
+
+  if (!Number.isFinite(maxPriorityFee) || maxPriorityFee < 0) {
+    return nextMaxFeePerGas;
+  }
+
+  return Math.min(Math.round(maxPriorityFee), nextMaxFeePerGas);
+};
+
 export const TxTypeComponent = ({
   actionRequireData,
   actionData,
@@ -962,13 +975,19 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         nonce: realNonce || tx.nonce,
         gas: gasLimit,
         ...(support1559
-          ? {
-              maxFeePerGas: intToHex(Math.round(gasLevel.price || 0)),
-              maxPriorityFeePerGas:
-                gasLevel.maxPriorityFee < 0
-                  ? tx.maxFeePerGas
-                  : intToHex(Math.round(gasLevel.maxPriorityFee)),
-            }
+          ? (() => {
+              const nextMaxFeePerGas = Math.round(gasLevel.price || 0);
+
+              return {
+                maxFeePerGas: intToHex(nextMaxFeePerGas),
+                maxPriorityFeePerGas: intToHex(
+                  resolve1559MaxPriorityFee(
+                    nextMaxFeePerGas,
+                    gasLevel.maxPriorityFee
+                  )
+                ),
+              };
+            })()
           : { gasPrice: intToHex(Math.round(gasLevel.price)) }),
       };
 
@@ -1639,10 +1658,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
     if (support1559) {
       transaction.maxFeePerGas = tx.maxFeePerGas;
-      transaction.maxPriorityFeePerGas =
-        maxPriorityFee < 0
-          ? tx.maxFeePerGas
-          : intToHex(Math.round(maxPriorityFee));
+      transaction.maxPriorityFeePerGas = intToHex(
+        resolve1559MaxPriorityFee(tx.maxFeePerGas, maxPriorityFee)
+      );
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
@@ -1771,13 +1789,20 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       ? getEIP7702MiniGasLimit(intToHex(gas.gasLimit))
       : intToHex(gas.gasLimit);
     if (support1559) {
+      const nextMaxFeePerGas = Math.round(gas.price);
+      const nextMaxPriorityFee = resolve1559MaxPriorityFee(
+        nextMaxFeePerGas,
+        gas.maxPriorityFee
+      );
+
       setTx({
         ...tx,
-        maxFeePerGas: intToHex(Math.round(gas.price)),
+        maxFeePerGas: intToHex(nextMaxFeePerGas),
+        maxPriorityFeePerGas: intToHex(nextMaxPriorityFee),
         gas: gasLimitHex,
         nonce: afterNonce,
       });
-      setMaxPriorityFee(Math.round(gas.maxPriorityFee));
+      setMaxPriorityFee(nextMaxPriorityFee);
     } else {
       setTx({
         ...tx,
