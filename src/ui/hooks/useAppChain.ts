@@ -35,11 +35,7 @@ export const formatAppChain = (app: AppChain): DisplayChainWithWhiteLogo => {
     isAppChain: true,
   };
 };
-export const useAppChain = (
-  userAddr: string | undefined,
-  visible = true,
-  isTestnet = false
-) => {
+export const useAppChain = (userAddr: string | undefined, visible = true) => {
   const abortProcess = useRef<AbortController>();
   const [appChains, setAppChains] = useSafeState<AppChainItem[]>([]);
   const [data, setData] = useSafeState<DisplayedProject[]>([]);
@@ -106,11 +102,6 @@ export const useAppChain = (
     setAppChains([]);
     setData([]);
     setHasValue(false);
-
-    if (isTestnet) {
-      setLoading(false);
-      return;
-    }
 
     let currentAppChains: AppChainItem[] = [];
     const matchedAccount = await wallet.getAccountByAddress(userAddr);

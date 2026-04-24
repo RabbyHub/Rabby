@@ -1533,7 +1533,7 @@
       "imKeyConnected": "imKey 已连接",
       "gasless": {
         "unavailable": "Gas不足且不符合免费Gas条件",
-        "notEnough": "Gas余额不足",
+        "notEnough": "Gas 余额不足",
         "GetFreeGasToSign": "获取免费Gas进行签名",
         "rabbyPayGas": "Rabby将支付所需Gas费用 - 只需签名即可",
         "customRpcUnavailableTip": "不支持免费Gas的自定义RPC",
@@ -1550,7 +1550,8 @@
       "gasAccount": {
         "login": "登录",
         "deposit": "存入",
-        "notEnough": "GasAccount 不足够",
+        "signWithHardwareWalletToUse": "你需要使用{{brand}}签名后才能使用",
+        "notEnough": "Not enough gas. Gas Balance: {{usd}}",
         "customRPC": "使用自定义 RPC 时不支持",
         "loginFirst": "请先登录GasAccount",
         "WalletConnectTips": "GasAccount 不支持 WalletConnect",
@@ -2694,8 +2695,38 @@
       "speedUpDesc": "Gas价格上涨了{{percent}}，以获得更快的速度。"
     },
     "gasAccount": {
+      "title": "GasAccount",
+      "gasDeposit": "Gas 充值",
+      "gasToken": "Gas Token",
+      "deposit": "存款",
+      "depositNow": "立即存款",
+      "signWithPendingHardwareToUse": "使用{{addressAlias}}签名后即可使用",
+      "depositSubmitted": "存款已提交",
+      "withdraw": "提取",
+      "noBalance": "无余额",
+      "gasExceed": "GasAccount余额不能超过$1000",
+      "safeAddressDepositTips": "多签地址不支持存款。",
+      "logout": "退出当前 GasAccount",
+      "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。",
+      "switchAccount": "切换钱包",
+      "claimFreeGas": "领取 {{usdValue}} 免费 Gas",
+      "depositFailed": "存款失败",
+      "lowBalance": "您没有足够的 gas。请存入 gas 以确保未来交易顺利进行。",
+      "gasBalance": "Gas 余额",
+      "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。",
+      "benefitCard": {
+        "title": "在所有链上支付 Gas 费用",
+        "subtitle": "当你没有 gas 的时候",
+        "item1": "无 Rabby Fee",
+        "desc1": "无需支付额外的 gas 费用",
+        "item2": "支持所有网络",
+        "desc2": "80+ 网络上的自动 Gas 支付",
+        "item3": "支持所有交易",
+        "desc3": "兑换、桥接、发送、DApps 等更多功能"
+      },
       "history": {
-        "noHistory": "无历史记录"
+        "noHistory": "无历史记录",
+        "noHistoryForPast30Days": "过去 30 天内无历史记录。"
       },
       "loginInTip": {
         "gotIt": "知道了",
@@ -2719,12 +2750,30 @@
       },
       "depositPopup": {
         "title": "存款",
-        "selectToken": "选择代币进行存款",
+        "gasDepositTitle": "Gas 充值",
+        "selectToken": "选择要存入的 Token",
+        "zeroInvalidAmount": "金额不能为 0",
         "invalidAmount": "必须在 500 以下",
+        "minAmountRequired": "最低存款金额为 ${{value}}",
         "token": "Token",
         "desc": "无需额外费用即可向 Rabby 的 DeBank L2 账户存款—随时提款。",
         "amount": "金额",
-        "paymentAddr": "支付地址"
+        "paymentAddr": "支付钱包",
+        "paymentAddress": "支付钱包",
+        "balanceLabel": "余额",
+        "insufficientBalanceLabel": "余额不足",
+        "unavailablePaymentWallet": "所选支付钱包不可用",
+        "suggestedToken": "建议的代币",
+        "bridgeLabel": "桥接",
+        "estReceiveLabel": "预计到账：{{usd}}",
+        "estReceiveTip": "服务通过 {{name}} 处理，可能会有滑点。",
+        "depositSuccess": "充值成功",
+        "depositFailed": "存款失败，请重试",
+        "bridgeDepositFailed": "桥接充值失败，请重试",
+        "noAvailableToken": "暂无可用 Token"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "所需 Gas：{{topUpUsd}}，预计剩余 Gas：{{balance}}"
       },
       "withdrawPopup": {
         "title": "提取",
@@ -2763,21 +2812,10 @@
         "title": "存款前切换地址",
         "desc": "请切换到您的登录地址。"
       },
-      "title": "GasAccount",
-      "noBalance": "无余额",
-      "deposit": "存款",
-      "gasExceed": "GasAccount余额不能超过$1000",
-      "withdraw": "提取",
-      "safeAddressDepositTips": "多签地址不支持存款。",
-      "logout": "退出当前 GasAccount",
-      "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。",
       "gasAccountList": {
-        "gasAccountBalance": "Gas Balance",
+        "gasAccountBalance": "余额",
         "address": "地址"
       },
-      "switchAccount": "切换 GasAccount",
-      "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。",
-      "gasToken": "Gas Token",
       "about": {
         "title1": "GasAccount是什么",
         "title3": "GasAccount 有额外费用吗？",
@@ -4377,7 +4415,8 @@
       "valueColumn": "美元价值",
       "statusColumn": "兑换状态",
       "noLowValueTokensFound": "暂无资产",
-      "moreChains": "+{{count}} 条链"
+      "moreChains": "+{{count}} 条链",
+      "priceImpact": "价差上限"
     },
     "manageBatchApprovals": {
       "cols": {

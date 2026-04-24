@@ -40,7 +40,6 @@ import {
   RcIconBridgeCC,
   RcIconDappsCC,
   RcIconGasAccountCC,
-  RcIconLampCC,
   RcIconManageCC,
   RcIconMobileSyncCC,
   RcIconNftCC,
@@ -61,10 +60,14 @@ import {
 import { RcIconExternal1CC } from '@/ui/assets/dashboard';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
+import {
+  useGasAccountInfo,
+  useGasAccountInfoV2,
+  useGasAccountLogin,
+} from '@/ui/views/GasAccount/hooks';
 import { useMemoizedFn, useMount, useScroll } from 'ahooks';
 import { isEqual } from 'lodash';
 import {
-  formatGasAccountUsdValueV2,
   formatUsdValue,
   openInTab,
   openInternalPageInTab,
@@ -385,14 +388,10 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     isFullscreen?: boolean;
   };
 
-  const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
-  const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
-
-  const hasGiftEligibility = useMemo(() => {
-    return giftUsdValue > 0 && !hasClaimedGift;
-  }, [giftUsdValue, hasClaimedGift]);
-
   const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
+  const pendingHardwareAccount = useRabbySelector(
+    (state) => state.gasAccount.pendingHardwareAccount
+  );
 
   const IconLending = useMemo(() => {
     if (lendingId === 'venus') {
@@ -406,7 +405,100 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const IconPerps = RcIconPerpsCC;
 
-  // --- Perps data lifting (from PerpsSubContent) ---
+  const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
+  const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
+  const hasGiftEligibility = useMemo(() => {
+    return giftUsdValue > 0 && !hasClaimedGift;
+  }, [giftUsdValue, hasClaimedGift]);
+
+  const { value: gasAccount, loading: gasAccountLoading } = useGasAccountInfo();
+  const { isLogin: isGasAccountLogin } = useGasAccountLogin({
+    value: gasAccount,
+    loading: gasAccountLoading,
+  });
+  const {
+    value: pendingHardwareGasAccountInfo,
+    loading: pendingGasLoading,
+  } = useGasAccountInfoV2({
+    address: pendingHardwareAccount?.address,
+  });
+
+  const gasAccountBalance = gasAccount?.account?.balance || 0;
+  const pendingHardwareGasBalance =
+    pendingHardwareGasAccountInfo?.account?.balance || 0;
+  const visibleGasAccountBalance = Number(
+    isGasAccountLogin
+      ? gasAccountBalance
+      : pendingHardwareAccount
+      ? pendingHardwareGasBalance
+      : 0
+  );
+  const isLowGasAccountBalance = visibleGasAccountBalance < 0.1;
+
+  const gasAccountGiftBadgeNode = useMemo<React.ReactNode>(() => {
+    if (!hasGiftEligibility || isGasAccountLogin || pendingHardwareAccount) {
+      return null;
+    }
+
+    return (
+      <div className="absolute top-[6px] right-[6px]">
+        <div
+          className={clsx(
+            'text-r-green-default text-[10px] leading-[12px] font-medium',
+            'flex items-center px-[3px] py-[2px] rounded-[4px] bg-r-green-light'
+          )}
+        >
+          <RcIconGift viewBox="0 0 14 14" />
+        </div>
+      </div>
+    );
+  }, [
+    giftUsdValue,
+    hasGiftEligibility,
+    isGasAccountLogin,
+    pendingHardwareAccount,
+  ]);
+
+  const gasAccountSubContentNode = useMemo<React.ReactNode>(() => {
+    const balanceNode =
+      (gasAccountLoading && isGasAccountLogin) ||
+      (pendingGasLoading && pendingHardwareAccount?.address) ? (
+        <div className="absolute bottom-[6px] text-[11px] font-medium">
+          <Skeleton.Button
+            active={true}
+            className="h-[10px] block rounded-[2px]"
+            style={{ width: 42 }}
+          />
+        </div>
+      ) : (
+        <div
+          className={clsx(
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
+            isLowGasAccountBalance
+              ? 'text-r-orange-default'
+              : 'text-r-neutral-foot'
+          )}
+        >
+          {formatUsdValue(visibleGasAccountBalance || 0)}
+        </div>
+      );
+
+    return (
+      <>
+        {gasAccountGiftBadgeNode}
+        {gasAccountGiftBadgeNode ? null : balanceNode}
+      </>
+    );
+  }, [
+    gasAccountGiftBadgeNode,
+    gasAccountLoading,
+    isGasAccountLogin,
+    isLowGasAccountBalance,
+    pendingGasLoading,
+    pendingHardwareAccount?.address,
+    visibleGasAccountBalance,
+  ]);
+
   const perpsId = useRabbySelector((s) => s.innerDappFrame.perps);
 
   const {
@@ -622,25 +714,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     gasAccount: {
       icon: RcIconGasAccountCC,
       eventKey: 'GasAccount',
-      content: t('page.dashboard.home.panel.gasAccount'),
+      content: t('page.gasAccount.gasDeposit'),
       onClick: () => {
         history.push('/gas-account');
       },
-      subContent: hasGiftEligibility ? (
-        <div className="absolute top-[6px] right-[6px]">
-          <div
-            className={clsx(
-              'text-r-green-default text-[10px] leading-[12px] font-medium',
-              'flex items-center px-[3px] py-[2px] rounded-[4px] bg-r-green-light'
-            )}
-          >
-            <RcIconGift viewBox="0 0 14 14" />
-            {Number.isInteger(giftUsdValue)
-              ? '$' + splitNumberByStep(giftUsdValue)
-              : formatGasAccountUsdValueV2(giftUsdValue)}
-          </div>
-        </div>
-      ) : null,
+      subContent: gasAccountSubContentNode,
     } as IPanelItem,
     points: {
       icon: RcIconPointsCC,

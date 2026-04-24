@@ -4,9 +4,10 @@ import { constants } from 'ethers';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { isSameAddress } from '@/ui/utils';
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
+import { formatTokenAmount } from '@/ui/utils/number';
 
 import { useLendingSummary } from '../../hooks';
+import { formatUsdValue } from '../../utils/format';
 import { SwappableToken, SwapType } from '../../types/swap';
 import { UserSummary } from '../../types';
 import { calculateHFAfterCollateralRepay } from '../../utils/hfUtils';

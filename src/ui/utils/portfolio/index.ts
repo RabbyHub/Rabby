@@ -1,59 +1,38 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import dayjs from 'dayjs';
-
-import { useSafeState } from '../safeState';
+import { useCallback } from 'react';
 
 import { useTokens } from './token';
 import { usePortfolios } from './usePortfolio';
 
-const Cache_Timeout = 5 * 60;
+type UseQueryProjectsOptions = {
+  visible?: boolean;
+  lpTokenMode?: boolean;
+  searchMode?: boolean;
+  autoLoad?: boolean;
+};
 
 export const useQueryProjects = (
   userAddr: string | undefined,
-  withHistory = false,
-  visible: boolean,
-  isTestnet = false,
-  lpTokenMode = false,
-  showBlocked = false,
-  searchMode = false,
-  autoLoad = true
+  {
+    visible = false,
+    lpTokenMode = false,
+    searchMode = false,
+    autoLoad = true,
+  }: UseQueryProjectsOptions = {}
 ) => {
-  const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
   const shouldAutoLoad = visible && autoLoad;
-
-  useEffect(() => {
-    if (time!.add(1, 'day').add(Cache_Timeout, 's').isBefore(dayjs())) {
-      // refreshPositions();
-    }
-  }, [time]);
-
-  const historyTime = useMemo(() => (withHistory ? time : undefined), [
-    withHistory,
-    time,
-  ]);
 
   const {
     tokens,
-    netWorth: tokenNetWorth,
     isLoading: isTokensLoading,
     isAllTokenLoading,
     hasValue: hasTokens,
     updateData: updateTokens,
-    walletProject,
-    customizeTokens,
-    blockedTokens,
-  } = useTokens(
-    userAddr,
-    historyTime,
-    shouldAutoLoad,
-    0,
-    undefined,
-    isTestnet,
-    lpTokenMode,
-    showBlocked,
+  } = useTokens(userAddr, {
+    visible: shouldAutoLoad,
+    lpTokensOnly: lpTokenMode,
     searchMode,
-    true // disableRecommended
-  );
+    disableRecommended: true,
+  });
 
   const {
     data: portfolios,
@@ -62,32 +41,23 @@ export const useQueryProjects = (
     netWorth: portfolioNetWorth,
     updateData: updatePortfolio,
     removeProtocol,
-  } = usePortfolios(userAddr, historyTime, shouldAutoLoad, isTestnet);
+  } = usePortfolios(userAddr, shouldAutoLoad);
 
   const refreshPositions = useCallback(() => {
     if (!autoLoad || (!isTokensLoading && !isPortfoliosLoading)) {
       updatePortfolio();
       updateTokens();
-      setTime(dayjs().subtract(1, 'day'));
     }
   }, [
     updatePortfolio,
     updateTokens,
     isTokensLoading,
     isPortfoliosLoading,
-    setTime,
     autoLoad,
   ]);
 
-  const grossNetWorth = useMemo(() => tokenNetWorth + portfolioNetWorth!, [
-    tokenNetWorth,
-    portfolioNetWorth,
-  ]);
-
   return {
-    tokenNetWorth,
     portfolioNetWorth,
-    grossNetWorth,
     refreshPositions,
     refreshTokens: updateTokens,
     refreshPortfolios: updatePortfolio,
@@ -97,10 +67,7 @@ export const useQueryProjects = (
     hasTokens,
     hasPortfolios,
     tokens,
-    customizeTokens,
-    blockedTokens,
     portfolios,
-    walletProject,
     removeProtocol,
   };
 };

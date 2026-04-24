@@ -25,7 +25,7 @@ import {
   useQuoteMethods,
 } from '../../Swap/hooks';
 import { twoStepChains } from '../../Swap/hooks/twoStepSwap';
-import { DEFAULT_MAX_GAS_COST, DEFAULT_SLIPPAGE } from '../constant';
+import { DEFAULT_MAX_GAS_COST, DEFAULT_PRICE_IMPACT } from '../constant';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
@@ -250,12 +250,19 @@ export const useBatchSwapTask = (options: {
   >({});
 
   const [config, setConfig] = React.useState<{
-    slippage: string;
+    priceImpact: string;
     maxGasCost: string;
   }>({
-    slippage: DEFAULT_SLIPPAGE,
+    priceImpact: DEFAULT_PRICE_IMPACT,
     maxGasCost: DEFAULT_MAX_GAS_COST,
   });
+
+  const slippage = useMemo(() => {
+    // 预留一半价差给滑点，避免用户设置的价差过小导致频繁交易失败
+    return new BigNumber(config.priceImpact).div(2).toString(10);
+  }, [config.priceImpact]);
+
+  const priceImpactLimit = slippage;
 
   const [status, setStatus] = React.useState<
     'idle' | 'active' | 'paused' | 'completed'
@@ -349,7 +356,7 @@ export const useBatchSwapTask = (options: {
               getSingleQuote,
               payToken: item,
               receiveToken: options.receiveToken,
-              slippage: config.slippage,
+              slippage: slippage,
             });
 
             throwIfTaskCancelled();
@@ -386,7 +393,7 @@ export const useBatchSwapTask = (options: {
               .times(100);
 
             // 价差过大
-            if (priceImpact.lte(-20)) {
+            if (priceImpact.lte(-priceImpactLimit)) {
               throw new Error(
                 t('page.desktopSmallSwap.failReason.priceImpactTooHigh')
               );
@@ -403,7 +410,7 @@ export const useBatchSwapTask = (options: {
               inputAmount: new BigNumber(item.raw_amount_hex_str || 0)
                 .div(10 ** item.decimals)
                 .toString(10),
-              slippage: config.slippage,
+              slippage: slippage,
               userAddress: options.account.address,
               rbiSource: 'desktopSmallSwap',
               swapUseSlider: false,
@@ -654,10 +661,10 @@ export const useBatchSwapTask = (options: {
           totalUsd +=
             (Number(item.actualReceiveAmount || 0) *
               (options.receiveToken?.price || 0) || 0) *
-            (1 - Number(config.slippage) / 100);
+            (1 - Number(slippage) / 100);
           totalAmount +=
             (Number(item.actualReceiveAmount || 0) || 0) *
-            (1 - Number(config.slippage) / 100);
+            (1 - Number(slippage) / 100);
         }
       }
     });

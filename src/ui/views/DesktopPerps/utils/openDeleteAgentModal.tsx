@@ -3,7 +3,7 @@ import { Modal, Button, message } from 'antd';
 import clsx from 'clsx';
 import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
 import { ReactComponent as ImgDeleteWarning } from '@/ui/assets/perps/ImgDeleteWarning.svg';
-import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 
 interface OpenDeleteAgentModalParams {
   isDarkTheme: boolean;
@@ -14,7 +14,7 @@ export const openDeleteAgentModal = ({
   isDarkTheme,
   onConfirm,
 }: OpenDeleteAgentModalParams) => {
-  const { t } = useTranslation();
+  const t = i18n.t.bind(i18n);
   const modal = Modal.info({
     width: 360,
     closable: false,
@@ -29,7 +29,7 @@ export const openDeleteAgentModal = ({
     ),
     content: (
       <>
-        <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg p-20">
+        <div className="flex items-center justify-center flex-col gap-12 rounded-lg">
           <ImgDeleteWarning />
           <div className="text-15 font-medium text-r-neutral-title-1 text-center">
             {t('page.perps.deleteAgentModal')}

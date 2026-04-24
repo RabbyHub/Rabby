@@ -1,12 +1,10 @@
-import { useSyncExternalStore } from 'use-sync-external-store/shim';
-
 import { hasConnectedLedgerDevice } from '@/ui/utils';
 
 import type { WalletControllerType } from '@/ui/utils';
 import type { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import type { SignerConfig } from '@/ui/component/MiniSignV2/domain/types';
 import type { SignerCtx } from '@/ui/component/MiniSignV2/domain/ctx';
-import type { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import type { TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 import type {
   SignatureAction,
@@ -24,6 +22,7 @@ import eventBus from '@/eventBus';
 import { findChain } from '@/utils/chain';
 import { t } from 'i18next';
 import { DrawerProps, ModalProps } from 'antd';
+import BigNumber from 'bignumber.js';
 
 const ETH_GAS_USD_LIMIT = 15;
 const OTHER_GAS_USD_LIMIT = 5;
@@ -52,7 +51,18 @@ const defaultError = {
 const createErrorMessage = (err: unknown) =>
   err instanceof Error ? err.message : String(err ?? 'Unknown error');
 
-class SignatureManager {
+let nextInstanceId = 0;
+
+export class SignatureManager {
+  public readonly instanceId: string;
+  constructor(
+    private readonly options?: {
+      onReset?: () => void;
+    },
+    instanceId?: string
+  ) {
+    this.instanceId = instanceId ?? `sig-${++nextInstanceId}`;
+  }
   private state: SignatureFlowState = {
     status: 'idle',
   };
@@ -304,16 +314,16 @@ class SignatureManager {
     return !disabledProcess;
   }
 
-  public getState() {
+  public getState = () => {
     return this.state;
-  }
+  };
 
-  public subscribe(fn: Subscriber) {
+  public subscribe = (fn: Subscriber) => {
     this.subscribers.push(fn);
     return () => {
       this.subscribers = this.subscribers.filter((e) => e !== fn);
     };
-  }
+  };
 
   public prefetch(request: SignatureRequest, wallet: WalletControllerType) {
     this.close();
@@ -408,6 +418,36 @@ class SignatureManager {
 
   public async updateGasLevel(gas: GasLevel, wallet: WalletControllerType) {
     return this.updateGas(gas, wallet);
+  }
+
+  public replaceTxs(nextTxs: Tx[]) {
+    const { ctx, fingerprint } = this.state;
+    if (!ctx || !fingerprint) return;
+
+    const nextCalc = ctx.txsCalc.map((item, index) => {
+      const nextTx = nextTxs[index];
+      if (!nextTx) {
+        return item;
+      }
+
+      return {
+        ...item,
+        tx: {
+          ...item.tx,
+          nonce: nextTx.nonce ?? item.tx.nonce,
+        },
+      };
+    });
+
+    this.dispatch({
+      type: 'UPDATE_CTX',
+      fingerprint,
+      ctx: {
+        ...ctx,
+        txs: nextTxs,
+        txsCalc: nextCalc,
+      } as SignerCtx,
+    });
   }
 
   public async send({
@@ -546,6 +586,7 @@ class SignatureManager {
       this.pendingResult = null;
     }
     this.dispatch({ type: 'RESET' });
+    this.options?.onReset?.();
   }
 
   public updateConfig(config: Partial<SignerConfig>) {
@@ -681,6 +722,61 @@ class SignatureManager {
     });
   }
 
+  public setTempoFeeToken(
+    token: TokenItem,
+    options?: {
+      applyFeeToken?: boolean;
+      tempoPreferredFeeTokenId?: string;
+    }
+  ) {
+    const { ctx, fingerprint } = this.state;
+    if (!ctx || !fingerprint) return;
+    const shouldApplyFeeToken =
+      ctx.gasMethod !== 'gasAccount' && options?.applyFeeToken !== false;
+    const tokenId = token.id;
+
+    const txs = ctx.txs.map((tx) => {
+      const next = { ...tx } as Tx & { feeToken?: string };
+      if (shouldApplyFeeToken) {
+        next.feeToken = tokenId;
+      }
+      return next as Tx;
+    });
+
+    const txsCalc = ctx.txsCalc.map((item) => {
+      const nextTx = { ...item.tx } as Tx & { feeToken?: string };
+      if (shouldApplyFeeToken) {
+        nextTx.feeToken = tokenId;
+      }
+      return {
+        ...item,
+        tx: nextTx as Tx,
+      };
+    });
+
+    this.dispatch({
+      type: 'UPDATE_CTX',
+      fingerprint,
+      ctx: {
+        ...ctx,
+        txs,
+        txsCalc,
+        gasToken: {
+          tokenId,
+          symbol: token.display_symbol || token.symbol,
+          decimals: token.decimals || 18,
+          logoUrl: token.logo_url,
+        },
+        nativeTokenBalance: new BigNumber(
+          token.raw_amount_hex_str || 0
+        ).toFixed(0),
+        tempoPreferredFeeTokenId:
+          options?.tempoPreferredFeeTokenId ||
+          (shouldApplyFeeToken ? tokenId : ctx.tempoPreferredFeeTokenId),
+      } as SignerCtx,
+    });
+  }
+
   public async retry(params: Parameters<typeof this.send>[0]) {
     return this.send({ ...params, retry: true });
   }
@@ -732,18 +828,3 @@ class SignatureManager {
 }
 
 export const signatureManager = new SignatureManager();
-
-export const useSignatureStore = <T = SignatureFlowState>(
-  selector?: (state: SignatureFlowState) => T
-) =>
-  useSyncExternalStore(
-    signatureManager.subscribe.bind(signatureManager),
-    () => {
-      const snapshot = signatureManager.getState();
-      return (selector ? selector(snapshot) : snapshot) as T;
-    },
-    () => {
-      const snapshot = signatureManager.getState();
-      return (selector ? selector(snapshot) : snapshot) as T;
-    }
-  );
