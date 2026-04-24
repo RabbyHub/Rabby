@@ -4,6 +4,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { getUiType } from '@/ui/utils';
 import type { GasTokenInfo } from '@/utils/transaction';
 import { calcMaxPriorityFee } from '@/utils/transaction';
+import type { TempoFeeTokenOption } from '@/utils/tempo';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { ReactComponent as IconGasCustomRightArrowCC } from 'ui/assets/approval/edit-arrow-right.svg';
 import { ReactComponent as IconArrowDownCC } from 'ui/assets/swap/arrow-down-cc.svg';
@@ -13,7 +14,6 @@ import { Popup, TokenWithChain } from 'ui/component';
 import { Dropdown, Tooltip } from 'antd';
 import type { DrawerProps } from 'antd';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
-import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React from 'react';
@@ -79,8 +79,8 @@ type Props = {
   autoOpenSignal?: number;
   showTempoGasTokenSelector?: boolean;
   selectedGasToken?: GasTokenInfo;
-  tempoGasTokenList?: TokenItem[];
-  onSelectTempoGasToken?: (token: TokenItem) => void;
+  tempoGasTokenList?: TempoFeeTokenOption[];
+  onSelectTempoGasToken?: (token: TempoFeeTokenOption) => void;
   tempoGasTokenLoading?: boolean;
   getContainer?: DrawerProps['getContainer'];
   onEditCustomGas?: () => void;
@@ -444,19 +444,19 @@ export const SignMainnetShowMoreGasModal = ({
             </div>
           ) : (
             tempoGasTokenList.map((item) => {
-              const amount = formatTokenAmount(
-                new BigNumber(item.raw_amount_hex_str || 0)
-                  .div(new BigNumber(10).pow(item.decimals || 18))
-                  .toFixed(),
-                6,
-                true
-              );
+              const isDisabled = !!item.isDisabledByTempoGasBalance;
 
               return (
                 <div
                   key={item.id}
-                  className="h-[52px] rounded-[8px] px-10 flex items-center justify-between cursor-pointer mb-8 border hover:bg-r-blue-light1 bg-r-neutral-card-1 hover:border-rabby-blue-default border-transparent"
+                  className={clsx(
+                    'h-[52px] rounded-[8px] px-10 flex items-center justify-between mb-8 border bg-r-neutral-card-1 border-transparent',
+                    isDisabled
+                      ? 'cursor-not-allowed opacity-50'
+                      : 'cursor-pointer hover:bg-r-blue-light1 hover:border-rabby-blue-default'
+                  )}
                   onClick={() => {
+                    if (isDisabled) return;
                     onSelectTempoGasToken?.(item);
                     setTempoGasTokenVisible(false);
                   }}
@@ -477,7 +477,7 @@ export const SignMainnetShowMoreGasModal = ({
                       {formatUsdValue(item.usd_value || 0)}
                     </div>
                     <div className="text-[12px] text-r-neutral-foot">
-                      {formatTokenAmount(amount)}
+                      {formatTokenAmount(item.amount)}
                     </div>
                   </div>
                 </div>

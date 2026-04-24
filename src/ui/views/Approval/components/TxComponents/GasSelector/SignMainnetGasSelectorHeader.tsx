@@ -1,6 +1,7 @@
 import { formatGasHeaderUsdValue, formatTokenAmount } from '@/ui/utils/number';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { findChain } from '@/utils/chain';
+import type { TempoFeeTokenOption } from '@/utils/tempo';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { Tooltip, Skeleton } from 'antd';
 import clsx from 'clsx';
@@ -45,6 +46,10 @@ export interface SignMainnetGasSelectorHeaderProps
   isWalletConnect?: boolean;
   selectedMaxPriorityFee?: number;
   onSignTx?: boolean;
+  showTempoGasTokenSelector?: boolean;
+  tempoGasTokenList?: TempoFeeTokenOption[];
+  onSelectTempoGasToken?: (token: TempoFeeTokenOption) => void;
+  tempoGasTokenLoading?: boolean;
 }
 
 export const SignMainnetGasSelectorHeader = ({

@@ -197,6 +197,10 @@ export type TempoFeeTokenInfo = {
   rawBalanceHex: string;
 };
 
+export type TempoFeeTokenOption = TokenItem & {
+  isDisabledByTempoGasBalance?: boolean;
+};
+
 const normalizeHexValue = (value?: string | number | bigint) => {
   if (typeof value === 'number' || typeof value === 'bigint') {
     return toHex(value);
@@ -731,10 +735,14 @@ const createTempoTokenItem = (params: {
   const normalizedRawAmountHex = rawAmountHex || '0x0';
   const normalizedRawAmount = toBigNumberFromValue(normalizedRawAmountHex);
   const normalizedSymbol = symbol || '';
+  const tokenDecimals = decimals ?? TEMPO_FEE_TOKEN_DECIMALS;
+  const normalizedAmount = normalizedRawAmount.div(
+    new BigNumber(10).pow(tokenDecimals)
+  );
   return {
-    amount: 0,
+    amount: normalizedAmount.isFinite() ? normalizedAmount.toNumber() : 0,
     chain: chainServerId || TEMPO_CHAIN_SERVER_ID,
-    decimals: decimals ?? TEMPO_FEE_TOKEN_DECIMALS,
+    decimals: tokenDecimals,
     display_symbol: normalizedSymbol,
     id: tokenId,
     is_core: false,
@@ -748,7 +756,7 @@ const createTempoTokenItem = (params: {
     time_at: 0,
     usd_value: Number.isFinite(usdValue) ? usdValue : 0,
     raw_amount: normalizedRawAmount.toFixed(0),
-    raw_amount_hex_str: normalizedRawAmountHex,
+    raw_amount_hex_str: normalizedRawAmount.toFixed(0),
   };
 };
 
@@ -785,8 +793,8 @@ const mapTokenToTempoFeeTokenOption = (
   });
 };
 
-const filterTempoFeeTokenOptionsByGas = (
-  options: TokenItem[],
+const isTempoFeeTokenBalanceEnoughForGas = (
+  token: TokenItem,
   params: {
     maxGasCostRawAmountIn18?: string | number | BigNumber;
     maxGasCostRawAmount?: string | number | BigNumber;
@@ -800,36 +808,57 @@ const filterTempoFeeTokenOptionsByGas = (
   } = params;
   const requiredRawIn18 = toBigNumberFromValue(maxGasCostRawAmountIn18);
   const requiredRaw = toBigNumberFromValue(maxGasCostRawAmount);
+  const balanceRaw = toBigNumberFromValue(token.raw_amount_hex_str || 0);
 
-  return options
-    .filter((token) => {
-      const balanceRaw = toBigNumberFromValue(token.raw_amount_hex_str || 0);
-      if (requiredRaw.gt(0)) {
-        const baseDecimals =
-          typeof maxGasCostRawAmountDecimals === 'number'
-            ? maxGasCostRawAmountDecimals
-            : TEMPO_FEE_TOKEN_DECIMALS;
-        const tokenDecimals = token.decimals ?? TEMPO_FEE_TOKEN_DECIMALS;
-        let requiredByRaw = requiredRaw;
-        if (baseDecimals > tokenDecimals) {
-          requiredByRaw = requiredRaw.div(
-            new BigNumber(10).pow(baseDecimals - tokenDecimals)
-          );
-        } else if (baseDecimals < tokenDecimals) {
-          requiredByRaw = requiredRaw.times(
-            new BigNumber(10).pow(tokenDecimals - baseDecimals)
-          );
-        }
-        return balanceRaw.gte(requiredByRaw);
-      }
-      if (requiredRawIn18.lte(0)) return true;
-      const requiredByRawIn18 = convert18RawToTokenRaw(
-        requiredRawIn18,
-        token.decimals ?? TEMPO_FEE_TOKEN_DECIMALS
+  if (requiredRaw.gt(0)) {
+    const baseDecimals =
+      typeof maxGasCostRawAmountDecimals === 'number'
+        ? maxGasCostRawAmountDecimals
+        : TEMPO_FEE_TOKEN_DECIMALS;
+    const tokenDecimals = token.decimals ?? TEMPO_FEE_TOKEN_DECIMALS;
+    let requiredByRaw = requiredRaw;
+    if (baseDecimals > tokenDecimals) {
+      requiredByRaw = requiredRaw.div(
+        new BigNumber(10).pow(baseDecimals - tokenDecimals)
       );
-      return balanceRaw.gte(requiredByRawIn18);
-    })
-    .sort((a, b) => (b.usd_value || 0) - (a.usd_value || 0));
+    } else if (baseDecimals < tokenDecimals) {
+      requiredByRaw = requiredRaw.times(
+        new BigNumber(10).pow(tokenDecimals - baseDecimals)
+      );
+    }
+    return balanceRaw.gte(requiredByRaw);
+  }
+
+  if (requiredRawIn18.lte(0)) return true;
+  const requiredByRawIn18 = convert18RawToTokenRaw(
+    requiredRawIn18,
+    token.decimals ?? TEMPO_FEE_TOKEN_DECIMALS
+  );
+  return balanceRaw.gte(requiredByRawIn18);
+};
+
+const markTempoFeeTokenOptionsByGas = (
+  options: TokenItem[],
+  params: {
+    maxGasCostRawAmountIn18?: string | number | BigNumber;
+    maxGasCostRawAmount?: string | number | BigNumber;
+    maxGasCostRawAmountDecimals?: number;
+  }
+): TempoFeeTokenOption[] => {
+  return options
+    .map((token) => ({
+      ...token,
+      isDisabledByTempoGasBalance: !isTempoFeeTokenBalanceEnoughForGas(
+        token,
+        params
+      ),
+    }))
+    .sort((a, b) => {
+      if (a.isDisabledByTempoGasBalance !== b.isDisabledByTempoGasBalance) {
+        return a.isDisabledByTempoGasBalance ? 1 : -1;
+      }
+      return (b.usd_value || 0) - (a.usd_value || 0);
+    });
 };
 
 export const listTempoFeeTokenOptionsFromCache = (params: {
@@ -873,8 +902,7 @@ export const listTempoFeeTokenOptionsFromCache = (params: {
       })
     );
   });
-
-  return filterTempoFeeTokenOptionsByGas([...dict.values()], {
+  return markTempoFeeTokenOptionsByGas([...dict.values()], {
     maxGasCostRawAmountIn18,
     maxGasCostRawAmount,
     maxGasCostRawAmountDecimals,
@@ -972,7 +1000,7 @@ export const listTempoFeeTokenOptions = async (params: {
     dict.set(key, fallback);
   }
 
-  return filterTempoFeeTokenOptionsByGas([...dict.values()], {
+  return markTempoFeeTokenOptionsByGas([...dict.values()], {
     maxGasCostRawAmountIn18,
     maxGasCostRawAmount,
     maxGasCostRawAmountDecimals,
@@ -1001,12 +1029,24 @@ export const resolveTempoPreferredFeeTokenId = (params: {
 };
 
 export const findTempoFeeTokenOption = (
-  options: TokenItem[],
+  options: TempoFeeTokenOption[],
   tokenId?: string | null
 ) => {
   if (!tokenId) return undefined;
 
   return options.find((item) => isSameTokenId(item.id, tokenId));
+};
+
+const findEnabledTempoFeeTokenOption = (
+  options: TempoFeeTokenOption[],
+  tokenId?: string | null
+) => {
+  if (!tokenId) return undefined;
+
+  return options.find(
+    (item) =>
+      isSameTokenId(item.id, tokenId) && !item.isDisabledByTempoGasBalance
+  );
 };
 
 export const loadTempoFeeTokenOptionsState = async (params: {
@@ -1055,7 +1095,7 @@ export const loadTempoFeeTokenOptionsState = async (params: {
     txFeeToken,
     currentFeeTokenId: resolvedCurrentFeeTokenId,
   });
-  const options = userAddress
+  const options: TempoFeeTokenOption[] = userAddress
     ? await listTempoFeeTokenOptions({
         wallet,
         userAddress,
@@ -1067,10 +1107,10 @@ export const loadTempoFeeTokenOptionsState = async (params: {
       })
     : [];
   const selectedOption =
-    findTempoFeeTokenOption(options, preferredTokenId) ||
-    findTempoFeeTokenOption(cachedOptions, preferredTokenId) ||
-    options[0] ||
-    cachedOptions[0];
+    findEnabledTempoFeeTokenOption(options, preferredTokenId) ||
+    findEnabledTempoFeeTokenOption(cachedOptions, preferredTokenId) ||
+    options.find((item) => !item.isDisabledByTempoGasBalance) ||
+    cachedOptions.find((item) => !item.isDisabledByTempoGasBalance);
 
   return {
     cachedOptions,
