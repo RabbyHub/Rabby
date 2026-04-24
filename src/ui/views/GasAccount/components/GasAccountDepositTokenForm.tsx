@@ -262,7 +262,6 @@ const GasAccountDepositTokenFormInner: React.FC<
   const [bridgeQuoteError, setBridgeQuoteError] = useState('');
   const [loading, setLoading] = useState(false);
   const quoteReqIdRef = useRef(0);
-  const didInitSelectedTokenRef = useRef(false);
   const wasVisibleRef = useRef(false);
   const pollCancelRef = useRef<(() => void) | null>(null);
   const resetBridgeQuoteState = useCallback(() => {
@@ -345,30 +344,25 @@ const GasAccountDepositTokenFormInner: React.FC<
   }, [minDepositPrice, resetBridgeQuoteState, visible]);
 
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
     if (!availableTokens.length) {
       setSelectedToken(undefined);
       return;
     }
 
-    if (!didInitSelectedTokenRef.current) {
-      didInitSelectedTokenRef.current = true;
-      setSelectedToken((current) => {
-        if (current) {
-          return current;
-        }
-
-        return (
-          availableTokens.find((item) => item.chain !== 'eth') ||
-          availableTokens[0]
-        );
-      });
-      return;
-    }
-  }, [availableTokens]);
+    setSelectedToken(
+      (current) =>
+        current ||
+        availableTokens.find((item) => item.chain !== 'eth') ||
+        availableTokens[0]
+    );
+  }, [availableTokens, visible]);
 
   useEffect(() => {
     if (!visible) {
-      didInitSelectedTokenRef.current = false;
       //wait close animation
       setTimeout(() => {
         setSelectedToken(undefined);
@@ -663,6 +657,13 @@ const GasAccountDepositTokenFormInner: React.FC<
     },
     [isSubmittingDeposit]
   );
+  const handleOpenTokenPicker = useCallback(() => {
+    if (isSubmittingDeposit) {
+      return;
+    }
+
+    setTokenPickerVisible(true);
+  }, [isSubmittingDeposit]);
 
   const quoteError = useMemo(() => {
     if (shouldResetBridgeQuote || quoteLoading) {
@@ -1123,6 +1124,7 @@ const GasAccountDepositTokenFormInner: React.FC<
       return;
     }
 
+    setTokenPickerVisible(false);
     setLoading(true);
     try {
       if (
@@ -1293,12 +1295,14 @@ const GasAccountDepositTokenFormInner: React.FC<
                 </div>
                 <button
                   type="button"
-                  onClick={() => {
-                    setTokenPickerVisible(true);
-                  }}
+                  disabled={isSubmittingDeposit}
+                  onClick={handleOpenTokenPicker}
                   className={clsx(
                     'flex items-center gap-6 px-12 h-[40px] justify-center rounded-[8px]',
-                    'bg-r-neutral-card-2 border-none cursor-pointer'
+                    'bg-r-neutral-card-2 border-none',
+                    isSubmittingDeposit
+                      ? 'cursor-not-allowed'
+                      : 'cursor-pointer'
                   )}
                 >
                   {selectedToken ? (

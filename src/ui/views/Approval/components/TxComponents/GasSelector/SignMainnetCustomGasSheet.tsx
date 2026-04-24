@@ -458,21 +458,26 @@ export const SignMainnetCustomGasSheet = ({
       return;
     }
 
+    const nextGas = {
+      ...selectedGas,
+      priority_price: is1559 ? maxPriorityFeeWei : selectedGas.priority_price,
+    };
+
     if (selectedGas.level === 'custom') {
       onChange({
-        ...selectedGas,
+        ...nextGas,
         price: Number(customGas) * 1e9,
         gasLimit: Number(gasLimit),
         nonce: Number(nonce),
-        level: selectedGas.level,
+        level: nextGas.level,
         maxPriorityFee: maxPriorityFeeWei,
       });
     } else {
       onChange({
-        ...selectedGas,
+        ...nextGas,
         gasLimit: Number(gasLimit),
         nonce: Number(nonce),
-        level: selectedGas.level,
+        level: nextGas.level,
         maxPriorityFee: maxPriorityFeeWei,
       });
     }
@@ -482,6 +487,7 @@ export const SignMainnetCustomGasSheet = ({
     customGas,
     gasLimit,
     handleClose,
+    is1559,
     maxPriorityFeeWei,
     nonce,
     onChange,
