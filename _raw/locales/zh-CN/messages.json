@@ -2817,17 +2817,6 @@
         "title": "充值前切换地址",
         "desc": "请切换到您的登录地址。"
       },
-<<<<<<< HEAD
-=======
-      "title": "GasAccount",
-      "noBalance": "无余额",
-      "deposit": "充值",
-      "gasExceed": "GasAccount余额不能超过$1000",
-      "withdraw": "提取",
-      "safeAddressDepositTips": "多签地址不支持充值。",
-      "logout": "退出当前 GasAccount",
-      "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。",
->>>>>>> feat/cn-i18n01
       "gasAccountList": {
         "gasAccountBalance": "余额",
         "address": "地址"
