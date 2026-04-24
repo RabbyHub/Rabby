@@ -153,6 +153,7 @@ export const Main = () => {
     setLowCreditVisible,
     showMoreVisible,
     inSufficientCanGetQuote,
+    setReloadTxRefreshPaused,
 
     autoSuggestSlippage,
     setAutoSuggestSlippage,
@@ -645,42 +646,44 @@ export const Main = () => {
   }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   const handleSwap = useMemoizedFn(async () => {
+    setReloadTxRefreshPaused(true);
     if (!isTab) {
       dispatch.swap.setRecentSwapToToken(receiveToken);
     }
     if (!isSupportedChain) {
       setSwapDappOpen(true);
+      setReloadTxRefreshPaused(false);
       return;
     }
 
     if (canUseDirectSubmitTx) {
-      let txsForSigning = currentTxs;
-      const formChangedDuringTopUp = consumeTopUpResumeGuard();
-      if (formChangedDuringTopUp) {
-        const rebuiltTxs = await runBuildSwapTxs();
-        if (!rebuiltTxs?.length) {
-          return;
-        }
-        txsForSigning = rebuiltTxs;
-      }
-      if (shouldTwoStepSwap && isApprove && txsForSigning?.[0]) {
-        wallet.addCacheHistoryData(
-          `${chain}-${txsForSigning?.[0].data}`,
-          {
-            address: userAddress,
-            chainId: findChain({ enum: chain })?.id || 0,
-            amount: Number(inputAmount),
-            token: payToken,
-            status: 'pending',
-            createdAt: Date.now(),
-          } as any,
-          'approveSwap'
-        );
-      }
-      clearExpiredTimer();
-      setMiniSignLoading(true);
-
       try {
+        let txsForSigning = currentTxs;
+        const formChangedDuringTopUp = consumeTopUpResumeGuard();
+        if (formChangedDuringTopUp) {
+          const rebuiltTxs = await runBuildSwapTxs();
+          if (!rebuiltTxs?.length) {
+            return;
+          }
+          txsForSigning = rebuiltTxs;
+        }
+        if (shouldTwoStepSwap && isApprove && txsForSigning?.[0]) {
+          wallet.addCacheHistoryData(
+            `${chain}-${txsForSigning?.[0].data}`,
+            {
+              address: userAddress,
+              chainId: findChain({ enum: chain })?.id || 0,
+              amount: Number(inputAmount),
+              token: payToken,
+              status: 'pending',
+              createdAt: Date.now(),
+            } as any,
+            'approveSwap'
+          );
+        }
+        clearExpiredTimer();
+        setMiniSignLoading(true);
+
         const hashes = await openDirect({
           txs: txsForSigning,
           getContainer,
@@ -717,10 +720,15 @@ export const Main = () => {
         }
       } finally {
         setMiniSignLoading(false);
+        setReloadTxRefreshPaused(false);
       }
       return;
     } else {
-      gotoSwap();
+      try {
+        await gotoSwap();
+      } finally {
+        setReloadTxRefreshPaused(false);
+      }
     }
   });
 
