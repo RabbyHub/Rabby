@@ -102,7 +102,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                   style={{ width: 130, height: 130, margin: '0 auto' }}
                 />
               ) : (
-                <RcIconFailed className="mx-auto mb-[32px]" />
+                <RcIconFailed className="mx-auto mt-[24px] mb-[32px]" />
               )}
               <div className="mt-[-8px] text-center text-[24px] leading-[29px] font-medium text-r-neutral-title1">
                 {t('page.desktopSmallSwap.completedTitle')}
@@ -176,21 +176,24 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
               <div className="relative w-[46px] h-[46px] flex-shrink-0">
                 <Image
                   className="w-full h-full block rounded-full"
+                  rootClassName="w-full h-full"
                   src={token?.logo_url || IconUnknown}
                   alt={token?.symbol}
                   fallback={IconUnknown}
                   preview={false}
                 />
-                <TooltipWithMagnetArrow
-                  title={chain?.name}
-                  className="rectangle w-[max-content]"
-                >
-                  <img
-                    className="w-[18px] h-[18px] absolute right-[-1px] bottom-[-1px] rounded-full"
-                    src={chain?.logo || IconUnknown}
-                    alt={chain?.name}
-                  />
-                </TooltipWithMagnetArrow>
+                {chain?.logo ? (
+                  <TooltipWithMagnetArrow
+                    title={chain?.name}
+                    className="rectangle w-[max-content]"
+                  >
+                    <img
+                      className="w-[18px] h-[18px] absolute right-[-1px] bottom-[-1px] rounded-full"
+                      src={chain?.logo || IconUnknown}
+                      alt={chain?.name}
+                    />
+                  </TooltipWithMagnetArrow>
+                ) : null}
               </div>
               {task?.status === 'idle' ? (
                 <div>
