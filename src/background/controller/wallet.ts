@@ -37,6 +37,7 @@ import {
   miscService,
   lendingService,
   innerDappFrameService,
+  blockscoutService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import buildinProvider, {
@@ -7037,6 +7038,15 @@ export class WalletController extends BaseController {
     innerDappFrameService.getInnerDappAccountByOrigin;
   setInnerDappAccount = innerDappFrameService.setInnerDappAccount;
   setInnerDappId = innerDappFrameService.setInnerDappId;
+
+  getRnsAddressByName = async (name: string) => {
+    try {
+      const rnsResult = await blockscoutService.getRnsAddressByName(name);
+      return rnsResult;
+    } catch {
+      return null;
+    }
+  };
 
   updateDashboardPanelOrder = preferenceService.updateDashboardPanelOrder;
 }
