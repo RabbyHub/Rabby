@@ -867,13 +867,16 @@ const GasAccountDepositTokenFormInner: React.FC<
       };
 
       try {
-        return await openDirect(params);
+        const result = await openDirect(params);
+        return result;
       } catch (error) {
         if (
           error === MINI_SIGN_ERROR.GAS_NOT_ENOUGH ||
           error === MINI_SIGN_ERROR.GAS_FEE_TOO_HIGH
         ) {
-          return openUI(params);
+          closeSign();
+          const result = await openUI(params);
+          return result;
         }
 
         throw error;
