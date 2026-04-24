@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import pRetry, { AbortError } from 'p-retry';
 import stats from '@/stats';
 import { useMemoizedFn, useRequest } from 'ahooks';
+import { buildTx as buildBridgeTx } from '@rabby-wallet/rabby-bridge';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { CHAINS_ENUM, DBK_CHAIN_ID } from '@/constant';
 import { useHistory } from 'react-router-dom';
@@ -186,25 +187,26 @@ export const BridgeContent = () => {
         setFetchingBridgeQuote(true);
         const tx = await pRetry(
           () =>
-            wallet.openapi
-              .buildBridgeTx({
-                aggregator_id: selectedBridgeQuote.aggregator.id,
-                bridge_id: selectedBridgeQuote.bridge_id,
-                from_token_id: fromToken.id,
-                user_addr: userAddress,
-                from_chain_id: fromToken.chain,
-                from_token_raw_amount: new BigNumber(amount)
+            buildBridgeTx(
+              selectedBridgeQuote.aggregator.id,
+              {
+                bridgeId: selectedBridgeQuote.bridge_id,
+                userAddress,
+                fromChainId: fromToken.chain,
+                fromTokenId: fromToken.id,
+                fromTokenRawAmount: new BigNumber(amount)
                   .times(10 ** fromToken.decimals)
                   .toFixed(0, 1)
                   .toString(),
-                to_chain_id: toToken.chain,
-                to_token_id: toToken.id,
+                toChainId: toToken.chain,
+                toTokenId: toToken.id,
                 slippage: new BigNumber(slippageState).div(100).toString(10),
-                quote_key: JSON.stringify(selectedBridgeQuote.quote_key || {}),
-              })
-              .catch((e) => {
-                throw new AbortError(e?.message || String(e));
-              }),
+                quoteKey: selectedBridgeQuote.quote_key || {},
+              },
+              wallet.openapi
+            ).catch((e) => {
+              throw new AbortError(e?.message || String(e));
+            }),
           { retries: 1 }
         );
         stats.report('bridgeQuoteResult', {
@@ -327,25 +329,26 @@ export const BridgeContent = () => {
         // setFetchingBridgeQuote(true);
         const tx = await pRetry(
           () =>
-            wallet.openapi
-              .buildBridgeTx({
-                aggregator_id: selectedBridgeQuote.aggregator.id,
-                bridge_id: selectedBridgeQuote.bridge_id,
-                from_chain_id: fromToken.chain,
-                from_token_id: fromToken.id,
-                user_addr: userAddress,
-                from_token_raw_amount: new BigNumber(amount)
+            buildBridgeTx(
+              selectedBridgeQuote.aggregator.id,
+              {
+                bridgeId: selectedBridgeQuote.bridge_id,
+                userAddress,
+                fromChainId: fromToken.chain,
+                fromTokenId: fromToken.id,
+                fromTokenRawAmount: new BigNumber(amount)
                   .times(10 ** fromToken.decimals)
                   .toFixed(0, 1)
                   .toString(),
-                to_chain_id: toToken.chain,
-                to_token_id: toToken.id,
+                toChainId: toToken.chain,
+                toTokenId: toToken.id,
                 slippage: new BigNumber(slippageState).div(100).toString(10),
-                quote_key: JSON.stringify(selectedBridgeQuote.quote_key || {}),
-              })
-              .catch((e) => {
-                throw new AbortError(e?.message || String(e));
-              }),
+                quoteKey: selectedBridgeQuote.quote_key || {},
+              },
+              wallet.openapi
+            ).catch((e) => {
+              throw new AbortError(e?.message || String(e));
+            }),
           { retries: 1 }
         );
         stats.report('bridgeQuoteResult', {

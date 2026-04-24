@@ -4,6 +4,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { BridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { getQuoteList as getBridgeQuoteList } from '@rabby-wallet/rabby-bridge';
 import {
   useCallback,
   useEffect,
@@ -409,13 +410,13 @@ export const useBridge = () => {
       const getQUoteV2 = async (alternativeToken?: TokenItem) =>
         await Promise.allSettled(
           aggregatorsList.map(async (bridgeAggregator) => {
-            const data = await wallet.openapi
-              .getBridgeQuoteV2({
-                aggregator_id: bridgeAggregator.id,
-                user_addr: userAddress,
-                from_chain_id: alternativeToken?.chain || fromToken.chain,
-                from_token_id: alternativeToken?.id || fromToken.id,
-                from_token_raw_amount: alternativeToken
+            const data = await getBridgeQuoteList(
+              bridgeAggregator.id,
+              {
+                userAddress,
+                fromChainId: alternativeToken?.chain || fromToken.chain,
+                fromTokenId: alternativeToken?.id || fromToken.id,
+                fromTokenRawAmount: alternativeToken
                   ? new BigNumber(amount)
                       .times(fromToken.price)
                       .div(alternativeToken.price)
@@ -426,28 +427,26 @@ export const useBridge = () => {
                       .times(10 ** fromToken.decimals)
                       .toFixed(0, 1)
                       .toString(),
-                to_chain_id: toToken.chain,
-                to_token_id: toToken.id,
+                toChainId: toToken.chain,
+                toTokenId: toToken.id,
                 slippage: new BigNumber(slippageObj.slippageState)
                   .div(100)
                   .toString(10),
-              })
-              .catch((e) => {
-                if (
-                  currentFetchId === fetchIdRef.current &&
-                  !alternativeToken
-                ) {
-                  stats.report('bridgeQuoteResult', {
-                    aggregatorIds: bridgeAggregator.id,
-                    fromChainId: fromToken.chain,
-                    fromTokenId: fromToken.id,
-                    toTokenId: toToken.id,
-                    toChainId: toToken.chain,
-                    status: 'fail',
-                  });
-                }
-              });
-
+              },
+              wallet.openapi
+            ).catch((e) => {
+              console.error(e);
+              if (currentFetchId === fetchIdRef.current && !alternativeToken) {
+                stats.report('bridgeQuoteResult', {
+                  aggregatorIds: bridgeAggregator.id,
+                  fromChainId: fromToken.chain,
+                  fromTokenId: fromToken.id,
+                  toTokenId: toToken.id,
+                  toChainId: toToken.chain,
+                  status: 'fail',
+                });
+              }
+            });
             if (alternativeToken) {
               if (data?.length && currentFetchId === fetchIdRef.current) {
                 setRecommendFromToken(alternativeToken);
@@ -736,7 +735,6 @@ export const useBridge = () => {
 
   useEffect(() => {
     let active = true;
-    console.log('searchObj', searchObj, search, userAddress);
     if (!searchObj) {
       return;
     }
@@ -748,16 +746,13 @@ export const useBridge = () => {
         enum: searchObj.fromChain,
         serverId: fromChainServerId,
       });
-      console.log('searchObj0', fromChain, fromChainItem);
       if (userAddress && fromChainItem) {
-        console.log('searchObj1', searchObj, search);
         wallet.openapi
           .getToken(userAddress, fromChainItem.serverId, fromTokenId)
           .then((token) => {
             if (active) {
               switchFromChain(fromChainItem.enum);
               setFromToken(token);
-              console.log('searchObj2', searchObj, search);
             }
           });
       }
