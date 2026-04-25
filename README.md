@@ -44,7 +44,7 @@ Please don't hesitate to reach out if you have any doubts.
 
 ### Install Dependency
 
-1. Install Node.js version 14 or later.
+1. Install Node.js version 22 (`v22` in `.nvmrc`).
 2. Install Yarn: `npm install -g yarn`
 3. Run `yarn` to install dependencies.
 
