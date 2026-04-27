@@ -1,4 +1,6 @@
 node_modules
+.yalc
+yalc.lock
 dist
 dist-*
 .yarn

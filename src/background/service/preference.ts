@@ -39,6 +39,7 @@ export interface Account {
 
 export interface ChainGas {
   gasPrice?: number | null; // custom cached gas price
+  maxPriorityFee?: number | null; // custom cached maxPriorityFee for 1559 tx
   gasLevel?: string | null; // cached gasLevel
   lastTimeSelect?: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
   expireAt?: number;
@@ -772,6 +773,7 @@ class PreferenceService {
         [chainId]: {
           ...this.store.gasCache[chainId],
           ...gas,
+          maxPriorityFee: gas.maxPriorityFee ?? null,
           expireAt: Date.now() + 3600000, // custom gasPrice will expire at 1h later
         },
       };

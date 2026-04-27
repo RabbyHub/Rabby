@@ -5,6 +5,7 @@ import eventBus from '@/eventBus';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import { Account } from '@/background/service/preference';
+import type { DrawerProps } from 'antd';
 
 // fail code
 export enum FailedCode {
@@ -72,12 +73,14 @@ export const sendPersonalMessage = async ({
   onProgress,
   ga,
   account,
+  getContainer,
 }: {
   data: string[];
   wallet: WalletControllerType;
   onProgress?: (status: ProgressStatus) => void;
   ga?: Record<string, any>;
   account?: Account;
+  getContainer?: DrawerProps['getContainer'];
 }) => {
   onProgress?.('building');
   const { address, ...currentAccount } =
@@ -118,6 +121,13 @@ export const sendPersonalMessage = async ({
         extra: {
           brandName: currentAccount.brandName,
           signTextMethod: 'personalSign',
+          ...(getContainer !== undefined
+            ? {
+                popupProps: {
+                  getContainer,
+                },
+              }
+            : {}),
         },
       },
       account: {

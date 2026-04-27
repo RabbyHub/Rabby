@@ -25,7 +25,7 @@ import { StopTaskModal } from './components/StopTaskModal';
 import {
   DEFAULT_ETH_MAX_GAS_COST,
   DEFAULT_MAX_GAS_COST,
-  DEFAULT_SLIPPAGE,
+  DEFAULT_PRICE_IMPACT,
 } from './constant';
 import { useBatchSwapTask } from './hooks/useBatchSwapTask';
 
@@ -91,12 +91,12 @@ const DesktopSmallSwapContent: React.FC = () => {
     if (chainServerId !== serverId) {
       if (serverId === 'eth') {
         task.setConfig({
-          slippage: DEFAULT_SLIPPAGE,
+          priceImpact: DEFAULT_PRICE_IMPACT,
           maxGasCost: DEFAULT_ETH_MAX_GAS_COST,
         });
       } else {
         task.setConfig({
-          slippage: DEFAULT_SLIPPAGE,
+          priceImpact: DEFAULT_PRICE_IMPACT,
           maxGasCost: DEFAULT_MAX_GAS_COST,
         });
       }
@@ -115,19 +115,10 @@ const DesktopSmallSwapContent: React.FC = () => {
     tokens: allTokens,
     isLoading: isLoadingAllTokens,
     updateData: updateAllTokens,
-  } = useTokens(
-    chainServerId ? currentAccount?.address : undefined,
-    undefined,
-    true,
-    undefined,
+  } = useTokens(chainServerId ? currentAccount?.address : undefined, {
     chainServerId,
-    undefined,
-    undefined,
-    undefined,
-    false,
-    false,
-    true
-  );
+    realtimeMode: true,
+  });
 
   const isSupportDB = isSupportDBAccount(currentAccount);
 
@@ -247,14 +238,16 @@ const DesktopSmallSwapContent: React.FC = () => {
           />
         </header>
 
-        <div className="flex-shrink-0">
-          <ChainPillList
-            data={chainList}
-            value={chainServerId}
-            disabled={task.disabled}
-            onChange={handleChainChange}
-          />
-        </div>
+        {chainList?.length ? (
+          <div className="flex-shrink-0">
+            <ChainPillList
+              data={chainList}
+              value={chainServerId}
+              disabled={task.disabled}
+              onChange={handleChainChange}
+            />
+          </div>
+        ) : null}
 
         <div className="flex-1 min-h-[608px] flex items-stretch justify-between gap-[24px]">
           <LowValueTokenSelector

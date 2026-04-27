@@ -399,7 +399,8 @@
         "loginFirst": "먼저 GasAccount에 로그인해 주세요.",
         "WalletConnectTips": "WalletConnect는 GasAccount에서 지원되지 않습니다.",
         "loginTips": "GasAccount 로그인 완료를 위해 이 거래는 취소됩니다. 로그인 후에 다시 만들어야 합니다.",
-        "depositTips": "GasAccount 입금을 완료하기 위해 이 트랜잭션은 취소됩니다. 입금 후 다시 만들어야 합니다."
+        "depositTips": "GasAccount 입금을 완료하기 위해 이 트랜잭션은 취소됩니다. 입금 후 다시 만들어야 합니다.",
+        "signWithHardwareWalletToUse": "사용하려면 {{brand}}(으)로 서명해야 합니다"
       },
       "walletConnect": {
         "signOnYourMobileWallet": "모바일 지갑에서 서명해주세요.",
@@ -2613,7 +2614,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "이력 없음"
+        "noHistory": "이력 없음",
+        "noHistoryForPast30Days": "지난 30일간 내역이 없습니다."
       },
       "loginInTip": {
         "gotIt": "알겠어요",
@@ -2646,7 +2648,23 @@
         "amount": "금액",
         "desc": "Rabby의 DeBank L2 계좌에 추가 수수료 없이 입금하세요—언제든지 인출할 수 있습니다.",
         "invalidAmount": "500 이하이어야 합니다.",
-        "paymentAddr": "지급 주소"
+        "paymentAddr": "지급 주소",
+        "gasDepositTitle": "가스 예치",
+        "zeroInvalidAmount": "금액은 0이 될 수 없습니다",
+        "minAmountRequired": "최소 예치 금액은 ${{value}}입니다",
+        "paymentAddress": "결제 지갑",
+        "balanceLabel": "잔액",
+        "insufficientBalanceLabel": "잔액 부족",
+        "unavailablePaymentWallet": "선택한 결제 지갑을 사용할 수 없습니다",
+        "suggestedToken": "권장 토큰",
+        "bridgeLabel": "브릿지",
+        "estReceiveLabel": "예상 수령: {{usd}}",
+        "estReceiveTip": "{{name}}(을)를 통해 처리되며 슬리피지가 발생할 수 있습니다",
+        "depositSuccess": "예치 성공",
+        "depositFailed": "예치 실패, 다시 시도해 주세요",
+        "bridgeDepositFailed": "브릿지 예치 실패, 다시 시도해 주세요",
+        "noAvailableToken": "사용 가능한 토큰 없음",
+        "InsufficientToken": "토큰 잔액 부족"
       },
       "withdrawPopup": {
         "amount": "금액",
@@ -2705,7 +2723,31 @@
         "desc2": "GasAccount에 자금을 추가하고 모든 거래에 사용하세요. 서명할 때, 네이티브 토큰 또는 GasAccount로 가스를 지불하도록 선택하고 언제든지 전환하세요.",
         "desc4": "GasAccount은 계약 승인이나 권한이 필요하지 않습니다. 당신은 Rabby의 GasAccount 주소로 입금하고, Rabby는 필요할 때 당신의 주소로 가스를 전송합니다. 설계상 완전히 안전합니다.",
         "desc1": "GasAccount는 가스 요금을 지불하는 새로운 방법입니다. 각 체인의 네이티브 토큰을 사용하는 대신, 모든 체인의 모든 주소에 대한 가스를 커버할 수 있는 하나의 계정을 사용할 수 있습니다. 간단하고 선택적이며, 가스가 부족해지는 일이 없습니다."
-      }
+      },
+      "benefitCard": {
+        "title": "모든 체인에서 Gas 수수료 결제",
+        "subtitle": "가스가 부족할 때",
+        "item1": "Rabby 수수료 없음",
+        "desc1": "가스 지불을 위한 추가 수수료 없음",
+        "item2": "모든 네트워크 지원",
+        "desc2": "80개 이상의 네트워크에서 자동 Gas 결제",
+        "item3": "모든 트랜잭션 지원",
+        "desc3": "Swap, Bridge, Send, DApps 등"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "필요한 Gas: {{topUpUsd}}, 잔여 Gas 예상: {{balance}}"
+      },
+      "gasFee": "Gas fee",
+      "gasDeposit": "Gas Deposit",
+      "depositNow": "Deposit Now",
+      "signWithPendingHardwareToUse": "Sign with {{addressAlias}} to use",
+      "depositSubmitted": "Deposit Submitted",
+      "claimFreeGas": "Claim {{usdValue}} Free Gas",
+      "depositFailed": "Deposit failed",
+      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "gasBalance": "Gas Balance",
+      "loginSuccess": "Login Successful",
+      "loginFailed": "Login Failed"
     },
     "safeMessageQueue": {
       "loading": "로드 중 메시지",
@@ -4334,7 +4376,8 @@
       "totalValue": "총 가치",
       "moreChains": "+{{count}}개 체인",
       "swapFailed": "스왑 실패, {{reason}}",
-      "completedTips": "진행 중인 스왑은 계속 처리됩니다"
+      "completedTips": "진행 중인 스왑은 계속 처리됩니다",
+      "priceImpact": "가격 영향 상한"
     },
     "manageBatchApprovals": {
       "cols": {

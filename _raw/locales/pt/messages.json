@@ -399,7 +399,8 @@
         "chainNotSupported": "Esta cadeia não é suportada pelo GasAccount.",
         "loginTips": "Para completar o login do GasAccount, esta transação será descartada. Você precisará refazê-la após o login.",
         "WalletConnectTips": "WalletConnect não é suportado pelo GasAccount.",
-        "useGasAccount": "Use GasAccount"
+        "useGasAccount": "Use GasAccount",
+        "signWithHardwareWalletToUse": "Você precisa assinar com {{brand}} para usar"
       },
       "walletConnect": {
         "signOnYourMobileWallet": "Por favor, assine na sua wallet móvel.",
@@ -2613,7 +2614,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "Sem histórico"
+        "noHistory": "Sem histórico",
+        "noHistoryForPast30Days": "Sem histórico nos últimos 30 dias."
       },
       "loginInTip": {
         "login": "Entrar no GasAccount",
@@ -2646,7 +2648,23 @@
         "invalidAmount": "Deve ter menos de 500",
         "selectToken": "Selecione o Token para Depositar",
         "desc": "Deposite na conta DeBank L2 da Rabby sem taxas adicionais—saque a qualquer momento.",
-        "paymentAddr": "Endereço de Pagamento"
+        "paymentAddr": "Endereço de Pagamento",
+        "gasDepositTitle": "Depósito de Gas",
+        "zeroInvalidAmount": "O valor não pode ser zero",
+        "minAmountRequired": "Valor mínimo de depósito é ${{value}}",
+        "paymentAddress": "Carteira de Pagamento",
+        "balanceLabel": "Saldo",
+        "insufficientBalanceLabel": "Saldo Insuficiente",
+        "unavailablePaymentWallet": "Carteira de pagamento selecionada indisponível",
+        "suggestedToken": "Tokens Sugeridos",
+        "bridgeLabel": "Bridge",
+        "estReceiveLabel": "Est.Receber: {{usd}}",
+        "estReceiveTip": "Serviço processado via {{name}}, pode haver slippage",
+        "depositSuccess": "Depósito bem-sucedido",
+        "depositFailed": "Depósito falhou, por favor tente novamente",
+        "bridgeDepositFailed": "Depósito via Bridge falhou, por favor tente novamente",
+        "noAvailableToken": "Nenhum token disponível",
+        "InsufficientToken": "Saldo Insuficiente de Token"
       },
       "withdrawPopup": {
         "to": "Para",
@@ -2705,7 +2723,31 @@
         "desc4": "GasAccount não requer aprovações ou permissões de contrato. Você deposita no endereço GasAccount do Rabby, e o Rabby envia gás para o seu endereço quando necessário. Totalmente seguro por design.",
         "desc3": "Rabby Wallet não cobra taxas extras. Você só paga o gás pela sua transação e uma pequena quantia de gás para enviar esse gás de GasAccount para seu endereço.",
         "desc1": "GasAccount é uma nova maneira de pagar taxas de gás. Em vez de usar tokens nativos em cada cadeia, você pode usar uma conta para cobrir o gás para todos os seus endereços em todas as cadeias. Simples, opcional e nunca sem gás."
-      }
+      },
+      "benefitCard": {
+        "title": "Pagar Taxas de Gas em Todas as Cadeias",
+        "subtitle": "quando você fica sem gas",
+        "item1": "Sem Taxa do Rabby",
+        "desc1": "Sem taxas extras para pagar gas",
+        "item2": "Suporta todas as redes",
+        "desc2": "Pagamentos automáticos de gas em mais de 80 redes",
+        "item3": "Suporta todas as transações",
+        "desc3": "Swap, Bridge, Enviar, DApps, e mais"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "Gas necessário: {{topUpUsd}}, Gas restante estimado: {{balance}}"
+      },
+      "gasFee": "Taxa de gás",
+      "gasDeposit": "Depósito de gás",
+      "depositNow": "Depositar Agora",
+      "signWithPendingHardwareToUse": "Assine com {{addressAlias}} para usar",
+      "depositSubmitted": "Depósito Enviado",
+      "claimFreeGas": "Reivindique {{usdValue}} de Gás Gratuito",
+      "depositFailed": "Falha no depósito",
+      "lowBalance": "Você não tem gás suficiente. Deposite gás para garantir que as transações futuras ocorram sem problemas.",
+      "gasBalance": "Saldo de Gás",
+      "loginSuccess": "Login bem-sucedido",
+      "loginFailed": "Falha no login"
     },
     "safeMessageQueue": {
       "loading": "Carregando mensagens",
@@ -4334,7 +4376,8 @@
       "totalValue": "Valor total",
       "moreChains": "+{{count}} cadeias",
       "swapFailed": "Troca falhou, {{reason}}",
-      "completedTips": "Troca em andamento continuará processando"
+      "completedTips": "Troca em andamento continuará processando",
+      "priceImpact": "Limite de Impacto de Preço"
     },
     "manageBatchApprovals": {
       "cols": {

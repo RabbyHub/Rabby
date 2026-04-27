@@ -701,7 +701,7 @@ function CommonTokenItem(props: {
     );
   }, [isSwapTo, isBridgeTo, supportChains, chainItem]);
 
-  const { value, loading, error } = useAsync(async () => {
+  const { value: remoteValue, loading, error } = useAsync(async () => {
     if (updateToken && currentAccount?.address) {
       const data = await wallet.openapi.getToken(
         currentAccount?.address,
@@ -710,8 +710,12 @@ function CommonTokenItem(props: {
       );
       return data;
     }
-    return token;
+    return undefined;
   }, [currentAccount?.address, updateToken, token?.chain, token?.id]);
+
+  const value = useMemo(() => {
+    return remoteValue ? remoteValue : token;
+  }, [remoteValue, token]);
 
   const tips = useMemo(() => {
     return disabled ? t('component.TokenSelector.chainNotSupport') : undefined;

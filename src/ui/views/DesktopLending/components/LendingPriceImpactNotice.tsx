@@ -5,9 +5,9 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as RcIconInfo } from '@/ui/assets/info-cc.svg';
-import { formatTokenAmount, formatUsdValue } from '@/ui/utils/number';
 
 import { SwappableToken } from '../types/swap';
+import { formatAmount, formatUsdValue } from '../utils/format';
 
 type LendingPriceImpactNoticeProps = {
   payToken?: SwappableToken;
@@ -83,13 +83,12 @@ const LendingPriceImpactNotice = ({
             title={
               <div className="flex flex-col gap-4 py-[5px] text-13">
                 <div>
-                  {t('page.bridge.est-payment')}{' '}
-                  {formatTokenAmount(payAmount || 0)}
+                  {t('page.bridge.est-payment')} {formatAmount(payAmount || 0)}
                   {payToken?.symbol} ≈ {data.payUsd}
                 </div>
                 <div>
                   {t('page.bridge.est-receiving')}{' '}
-                  {formatTokenAmount(receiveAmount || 0)}
+                  {formatAmount(receiveAmount || 0)}
                   {receiveToken?.symbol} ≈ {data.receiveUsd}
                 </div>
                 <div>

@@ -482,7 +482,8 @@
         "useGasAccount": "Verwenden Sie GasAccount",
         "chainNotSupported": "Diese Kette wird von GasAccount nicht unterstützt",
         "loginTips": "Um den GasAccount-Login abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach dem Login erneut erstellen.",
-        "depositTips": "Um die GasAccount-Einzahlung abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach der Einzahlung erneut erstellen."
+        "depositTips": "Um die GasAccount-Einzahlung abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach der Einzahlung erneut erstellen.",
+        "signWithHardwareWalletToUse": "Du musst mit {{brand}} signieren, um es zu nutzen"
       },
       "keystone": {
         "verifyPasswordError": "Signatur fehlgeschlagen, bitte versuchen Sie es nach dem Entsperren erneut.",
@@ -2616,7 +2617,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "Keine Historie"
+        "noHistory": "Keine Historie",
+        "noHistoryForPast30Days": "Keine Historie der letzten 30 Tage."
       },
       "loginInTip": {
         "desc": "Auf allen Chains Gasgebühren zahlen",
@@ -2645,7 +2647,23 @@
         "selectToken": "Token auswählen, um einzuzahlen",
         "token": "Token",
         "desc": "Machen Sie eine Einzahlung auf das DeBank L2 Konto von Rabby ohne zusätzliche Gebühren – jederzeit abheben.",
-        "paymentAddr": "Zahlungsadresse"
+        "paymentAddr": "Zahlungsadresse",
+        "gasDepositTitle": "Gas-Einzahlung",
+        "zeroInvalidAmount": "Der Betrag darf nicht Null sein",
+        "minAmountRequired": "MindestEinzahlungsbetrag ist ${{value}}",
+        "paymentAddress": "Zahlungs-Wallet",
+        "balanceLabel": "Guthaben",
+        "insufficientBalanceLabel": "Unzureichendes Guthaben",
+        "unavailablePaymentWallet": "Ausgewählte Zahlungs-Wallet ist nicht verfügbar",
+        "suggestedToken": "Vorgeschlagene Tokens",
+        "bridgeLabel": "Brücke",
+        "estReceiveLabel": "Geschätzter Empfang: {{usd}}",
+        "estReceiveTip": "Service wird über {{name}} abgewickelt, Slippage möglich",
+        "depositSuccess": "Einzahlung erfolgreich",
+        "depositFailed": "Einzahlung fehlgeschlagen, bitte erneut versuchen",
+        "bridgeDepositFailed": "Brücken-Einzahlung fehlgeschlagen, bitte erneut versuchen",
+        "noAvailableToken": "Kein verfügbarer Token",
+        "InsufficientToken": "Unzureichendes Token-Guthaben"
       },
       "withdrawPopup": {
         "noEnoughGas": "Betrag zu niedrig, um die Gasgebühren zu decken",
@@ -2708,7 +2726,31 @@
         "desc3": "Rabby Wallet erhebt keine zusätzlichen Gebühren. Sie zahlen nur die Gasgebühren für Ihre Transaktion und einen kleinen Betrag an Gas, um dieses Gas von GasAccount an Ihre Adresse zu senden.",
         "desc4": "GasAccount benötigt keine Vertragsgenehmigungen oder Berechtigungen. Sie zahlen auf die GasAccount-Adresse von Rabby ein, und Rabby sendet Gas an Ihre Adresse, wenn es benötigt wird. Von der Konstruktion her vollständig sicher.",
         "desc1": "GasAccount ist eine neue Möglichkeit, Gasgebühren zu bezahlen. Anstatt native Tokens auf jeder Kette zu verwenden, können Sie ein Konto nutzen, um die Gasgebühren für all Ihre Adressen auf allen Ketten zu decken. Einfach, optional und niemals ohne Gas."
-      }
+      },
+      "benefitCard": {
+        "title": "Gasgebühren auf allen Chains bezahlen",
+        "subtitle": "wenn du kein Gas mehr hast",
+        "item1": "Keine Rabby-Gebühr",
+        "desc1": "Keine zusätzlichen Gebühren für Gas",
+        "item2": "Unterstützt alle Netzwerke",
+        "desc2": "Automatische Gaszahlungen auf über 80 Netzwerken",
+        "item3": "Unterstützt alle Transaktionen",
+        "desc3": "Swap, Bridge, Senden, DApps, & mehr"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "Gas benötigt: {{topUpUsd}}, Gas verbleibend (geschätzt): {{balance}}"
+      },
+      "gasFee": "Gas-Gebühr",
+      "gasDeposit": "Gas-Einzahlung",
+      "depositNow": "Jetzt einzahlen",
+      "signWithPendingHardwareToUse": "Mit {{addressAlias}} signieren um zu nutzen",
+      "depositSubmitted": "Einzahlung eingereicht",
+      "claimFreeGas": "{{usdValue}} kostenloses Gas beanspruchen",
+      "depositFailed": "Einzahlung fehlgeschlagen",
+      "lowBalance": "Sie haben nicht genug Gas. Zahlen Sie Gas ein, um sicherzustellen, dass zukünftige Transaktionen reibungslos verlaufen.",
+      "gasBalance": "Gas-Guthaben",
+      "loginSuccess": "Anmeldung erfolgreich",
+      "loginFailed": "Anmeldung fehlgeschlagen"
     },
     "safeMessageQueue": {
       "noData": "Keine Nachrichten",
@@ -4337,7 +4379,8 @@
       "totalValue": "Gesamtwert",
       "moreChains": "+{{count}} Ketten",
       "swapFailed": "Swap fehlgeschlagen, {{reason}}",
-      "completedTips": "Laufender Swap wird weiterverarbeitet"
+      "completedTips": "Laufender Swap wird weiterverarbeitet",
+      "priceImpact": "Preisimpact-Obergrenze"
     },
     "manageBatchApprovals": {
       "cols": {

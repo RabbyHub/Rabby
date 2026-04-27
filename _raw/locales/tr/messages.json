@@ -475,7 +475,8 @@
         "chainNotSupported": "Bu zincir GasAccount tarafından desteklenmiyor",
         "customRPC": "Özel RPC kullanıldığında desteklenmez",
         "loginTips": "GasAccount girişini tamamlamak için bu işlem iptal edilecektir. Giriş yaptıktan sonra işlemi yeniden oluşturmanız gerekecek.",
-        "depositTips": "GasAccount para yatırma işlemini tamamlamak için, bu işlem iptal edilecektir. Para yatırma işleminden sonra yeniden yapmanız gerekecek."
+        "depositTips": "GasAccount para yatırma işlemini tamamlamak için, bu işlem iptal edilecektir. Para yatırma işleminden sonra yeniden yapmanız gerekecek.",
+        "signWithHardwareWalletToUse": "```json\n{\"u_0\":\"{{brand}} ile imzalamalısınız\"}\n```"
       },
       "keystone": {
         "siging": "İmza isteği gönderiliyor",
@@ -2619,7 +2620,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "Geçmiş yok"
+        "noHistory": "Geçmiş yok",
+        "noHistoryForPast30Days": "Son 30 gün içinde geçmiş yok."
       },
       "loginInTip": {
         "login": "GasAccount ile giriş yap",
@@ -2648,7 +2650,23 @@
         "desc": "Rabby'nin DeBank L2 Hesabına ekstra ücret ödemeden para yatırın—istediğiniz zaman çekin.",
         "title": "Para Yatırma",
         "invalidAmount": "500'ün altında olmalı",
-        "paymentAddr": "Ödeme Adresi"
+        "paymentAddr": "Ödeme Adresi",
+        "gasDepositTitle": "Gaz Yatırma",
+        "zeroInvalidAmount": "Miktar sıfır olamaz",
+        "minAmountRequired": "Minimum yatırma miktarı ${{value}}",
+        "paymentAddress": "Ödeme Cüzdanı",
+        "balanceLabel": "Bakiye",
+        "insufficientBalanceLabel": "Yetersiz Bakiye",
+        "unavailablePaymentWallet": "Seçili ödeme cüzdanı kullanılamıyor",
+        "suggestedToken": "Önerilen Tokenler",
+        "bridgeLabel": "Bridge",
+        "estReceiveLabel": "Tahmini Alım: {{usd}}",
+        "estReceiveTip": "Hizmet {{name}} üzerinden işlenir, kayma olabilir",
+        "depositSuccess": "Yatırma başarılı",
+        "depositFailed": "Yatırma başarısız, lütfen tekrar deneyin",
+        "bridgeDepositFailed": "Bridge yatırma başarısız, lütfen tekrar deneyin",
+        "noAvailableToken": "Kullanılabilir token yok",
+        "InsufficientToken": "Yetersiz Token Bakiyesi"
       },
       "withdrawPopup": {
         "withdrawalLimit": "Para çekme limiti",
@@ -2711,7 +2729,31 @@
         "desc2": "GasAccount'unuza fon ekleyin ve bunu herhangi bir işlem için kullanın. İmzalama sırasında, gazı yerel token'larla veya GasAccount ile ödeme seçeneğini belirleyin, istediğiniz zaman geçiş yapın.",
         "desc4": "GasAccount, herhangi bir sözleşme onayı veya izni gerektirmez. Rabby’nin GasAccount adresine para yatırırsınız ve ihtiyaç duyulduğunda Rabby, adresinize gaz gönderir. Tasarımı gereği tamamen güvenlidir.",
         "desc1": "GasAccount, gaz ücretlerini ödemenin yeni bir yoludur. Her bir zincirde yerel token'lar kullanmak yerine, tüm zincirlerdeki tüm adresleriniz için gaz ödemek üzere tek bir hesap kullanabilirsiniz. Basit, isteğe bağlı ve asla gazsız kalmaz."
-      }
+      },
+      "benefitCard": {
+        "title": "Tüm zincirlerde Gas Ücretlerini Ödeyin",
+        "subtitle": "gasınız bittiğinde",
+        "item1": "Rabby Ücreti Yok",
+        "desc1": "gas ödemek için ekstra ücret yok",
+        "item2": "Tüm ağları destekler",
+        "desc2": "80+ ağda otomatik gas ödemeleri",
+        "item3": "Tüm işlemleri destekler",
+        "desc3": "Swap, Bridge, Gönder, DApps ve daha fazlası"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "Gaz gerekli: {{topUpUsd}}, Kalan gaz tahmini: {{balance}}"
+      },
+      "gasFee": "Gas fee",
+      "gasDeposit": "Gas Deposit",
+      "depositNow": "Deposit Now",
+      "signWithPendingHardwareToUse": "Sign with {{addressAlias}} to use",
+      "depositSubmitted": "Deposit Submitted",
+      "claimFreeGas": "Claim {{usdValue}} Free Gas",
+      "depositFailed": "Deposit failed",
+      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "gasBalance": "Gas Balance",
+      "loginSuccess": "Login Successful",
+      "loginFailed": "Login Failed"
     },
     "safeMessageQueue": {
       "noData": "Mesaj yok",
@@ -4340,7 +4382,8 @@
       "totalValue": "Toplam değer",
       "moreChains": "+{{count}} zincir",
       "swapFailed": "Swap başarısız oldu, {{reason}}",
-      "completedTips": "Devam eden swap işlemi işlenmeye devam edecek"
+      "completedTips": "Devam eden swap işlemi işlenmeye devam edecek",
+      "priceImpact": "Fiyat Etkisi Üst Limiti"
     },
     "manageBatchApprovals": {
       "cols": {

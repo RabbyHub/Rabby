@@ -4,6 +4,7 @@ import { RootModel } from '.';
 import { GasAccountServiceStore } from '@/background/service/gasAccount';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { prefetchGasAccountBridgeSupportTokenList } from '@/ui/views/GasAccount/utils/bridgeSupportTokens';
 
 export const gasAccount = createModel<RootModel>()({
   name: 'gasAccount',
@@ -12,6 +13,9 @@ export const gasAccount = createModel<RootModel>()({
     sig: undefined,
     accountId: undefined,
     account: undefined,
+    pendingHardwareAccount: undefined,
+    autoLoginAccount: undefined,
+    accountsWithGasAccountBalance: [],
   } as Partial<GasAccountServiceStore>,
 
   reducers: {
@@ -27,7 +31,7 @@ export const gasAccount = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    init() {
+    init(_: void, store) {
       const logout = () => {
         this.setField({
           sig: undefined,
@@ -39,22 +43,39 @@ export const gasAccount = createModel<RootModel>()({
       const login = () => {
         this.syncState();
       };
+      const discoveryUpdated = () => {
+        this.syncState();
+      };
       eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_OUT, logout);
       eventBus.addEventListener(EVENTS.GAS_ACCOUNT.LOG_IN, login);
+      eventBus.addEventListener(
+        EVENTS.GAS_ACCOUNT.DISCOVERY_UPDATED,
+        discoveryUpdated
+      );
+      prefetchGasAccountBridgeSupportTokenList({
+        wallet: store.app.wallet,
+      }).catch((error) => {
+        console.error(
+          'prefetchBridgeSupportTokenList on gasAccount init error'
+        );
+        console.error(error);
+      });
       return this.syncState();
     },
     async syncState(key: keyof GasAccountServiceStore | undefined, store) {
-      const data = await store.app.wallet.getGasAccountData(key);
+      if (key) {
+        const data = await store.app.wallet.getGasAccountData(key);
+        this.setField({
+          [key]: data,
+        });
+        return;
+      }
 
-      this.setField(
-        key
-          ? {
-              [key]: data,
-            }
-          : {
-              ...(data as GasAccountServiceStore),
-            }
-      );
+      const wallet = store.app.wallet as any;
+      const data = (await wallet.getGasAccountData()) as GasAccountServiceStore;
+      this.setField({
+        ...data,
+      });
     },
 
     async setGasAccountSig(
@@ -68,6 +89,17 @@ export const gasAccount = createModel<RootModel>()({
       store
     ) {
       await store.app.wallet.setGasAccountSig(sig, account);
+    },
+
+    async discoverRuntimeState(
+      payload: { force?: boolean } | null | undefined,
+      store
+    ) {
+      const data = await store.app.wallet.discoverGasAccountRuntimeState(
+        payload
+      );
+      this.setField(data);
+      return data;
     },
   }),
 });

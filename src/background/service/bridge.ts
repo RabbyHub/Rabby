@@ -4,6 +4,7 @@ import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 import { openapiService } from 'background/service';
 import { TokenItem } from './openapi';
+import { getTxMatchData } from '@/utils/tempo';
 
 export type BridgeRecord = {
   aggregator_id: string;
@@ -123,12 +124,12 @@ class BridgeService {
   txQuotes: Record<string, BridgeRecord> = {};
 
   addTx = (chain: CHAINS_ENUM, data: string, info: BridgeRecord) => {
-    this.txQuotes[`${chain}-${data}`] = info;
+    this.txQuotes[`${chain}-${getTxMatchData({ data })}`] = info;
   };
 
   postBridge = (chain: CHAINS_ENUM, hash: string, tx: Tx) => {
     const { postBridgeHistory } = openapiService;
-    const key = `${chain}-${tx.data}`;
+    const key = `${chain}-${getTxMatchData(tx as any)}`;
     const data = { ...this.txQuotes };
     const quoteInfo = data[key];
     if (quoteInfo) {

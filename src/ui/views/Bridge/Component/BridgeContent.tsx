@@ -27,6 +27,7 @@ import { useTranslation } from 'react-i18next';
 import pRetry, { AbortError } from 'p-retry';
 import stats from '@/stats';
 import { useMemoizedFn, useRequest } from 'ahooks';
+import { buildTx as buildBridgeTx } from '@rabby-wallet/rabby-bridge';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { CHAINS_ENUM, DBK_CHAIN_ID } from '@/constant';
 import { useHistory } from 'react-router-dom';
@@ -48,6 +49,13 @@ import { DbkButton } from '../../Ecology/dbk-chain/components/DbkButton';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { BridgePendingTxItem } from './PendingTxItem';
+import {
+  FormAmountMode,
+  FormValuesOnSubmit,
+  createAmountComparer,
+  shouldIgnoreAmountChangeInMaxMode,
+} from '@/ui/utils/form';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -59,6 +67,11 @@ const getContainer = isTab
   : undefined;
 
 export const BridgeContent = () => {
+  interface BridgeTopUpSnapshot {
+    amount: string;
+    amountMode?: FormAmountMode;
+  }
+
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
   }));
@@ -97,6 +110,7 @@ export const BridgeContent = () => {
     setSlippageChanged,
     isSlippageHigh,
     isSlippageLow,
+    setReloadTxRefreshPaused,
 
     autoSlippage,
     isCustomSlippage,
@@ -161,6 +175,7 @@ export const BridgeContent = () => {
   // } = usePollBridgePendingNumber();
 
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
+  const history = useHistory();
 
   const gotoBridge = useCallback(async () => {
     if (
@@ -173,25 +188,26 @@ export const BridgeContent = () => {
         setFetchingBridgeQuote(true);
         const tx = await pRetry(
           () =>
-            wallet.openapi
-              .buildBridgeTx({
-                aggregator_id: selectedBridgeQuote.aggregator.id,
-                bridge_id: selectedBridgeQuote.bridge_id,
-                from_token_id: fromToken.id,
-                user_addr: userAddress,
-                from_chain_id: fromToken.chain,
-                from_token_raw_amount: new BigNumber(amount)
+            buildBridgeTx(
+              selectedBridgeQuote.aggregator.id,
+              {
+                bridgeId: selectedBridgeQuote.bridge_id,
+                userAddress,
+                fromChainId: fromToken.chain,
+                fromTokenId: fromToken.id,
+                fromTokenRawAmount: new BigNumber(amount)
                   .times(10 ** fromToken.decimals)
                   .toFixed(0, 1)
                   .toString(),
-                to_chain_id: toToken.chain,
-                to_token_id: toToken.id,
+                toChainId: toToken.chain,
+                toTokenId: toToken.id,
                 slippage: new BigNumber(slippageState).div(100).toString(10),
-                quote_key: JSON.stringify(selectedBridgeQuote.quote_key || {}),
-              })
-              .catch((e) => {
-                throw new AbortError(e?.message || String(e));
-              }),
+                quoteKey: selectedBridgeQuote.quote_key || {},
+              },
+              wallet.openapi
+            ).catch((e) => {
+              throw new AbortError(e?.message || String(e));
+            }),
           { retries: 1 }
         );
         stats.report('bridgeQuoteResult', {
@@ -314,25 +330,26 @@ export const BridgeContent = () => {
         // setFetchingBridgeQuote(true);
         const tx = await pRetry(
           () =>
-            wallet.openapi
-              .buildBridgeTx({
-                aggregator_id: selectedBridgeQuote.aggregator.id,
-                bridge_id: selectedBridgeQuote.bridge_id,
-                from_chain_id: fromToken.chain,
-                from_token_id: fromToken.id,
-                user_addr: userAddress,
-                from_token_raw_amount: new BigNumber(amount)
+            buildBridgeTx(
+              selectedBridgeQuote.aggregator.id,
+              {
+                bridgeId: selectedBridgeQuote.bridge_id,
+                userAddress,
+                fromChainId: fromToken.chain,
+                fromTokenId: fromToken.id,
+                fromTokenRawAmount: new BigNumber(amount)
                   .times(10 ** fromToken.decimals)
                   .toFixed(0, 1)
                   .toString(),
-                to_chain_id: toToken.chain,
-                to_token_id: toToken.id,
+                toChainId: toToken.chain,
+                toTokenId: toToken.id,
                 slippage: new BigNumber(slippageState).div(100).toString(10),
-                quote_key: JSON.stringify(selectedBridgeQuote.quote_key || {}),
-              })
-              .catch((e) => {
-                throw new AbortError(e?.message || String(e));
-              }),
+                quoteKey: selectedBridgeQuote.quote_key || {},
+              },
+              wallet.openapi
+            ).catch((e) => {
+              throw new AbortError(e?.message || String(e));
+            }),
           { retries: 1 }
         );
         stats.report('bridgeQuoteResult', {
@@ -425,6 +442,7 @@ export const BridgeContent = () => {
 
   const {
     data: txs,
+    loading: buildTxsLoading,
     runAsync: runBuildSwapTxs,
     mutate: mutateTxs,
   } = useRequest(buildTxs, {
@@ -479,15 +497,93 @@ export const BridgeContent = () => {
   const showRiskTips = isSlippageHigh || isSlippageLow || showLoss;
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
+  const topUpFormValuesRef = useRef(
+    new FormValuesOnSubmit<BridgeTopUpSnapshot>({
+      comparers: {
+        amount: createAmountComparer<string>(),
+      },
+    })
+  );
+  const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
+  const depositFlowActive = useGasAccountDepositFlowActive();
+  const canBuildBridgeTxs =
+    !btnDisabled &&
+    !!selectedBridgeQuote &&
+    !awaitingTopUpResume &&
+    !depositFlowActive;
+  const canPrepareDirectSign = canUseDirectSubmitTx && canBuildBridgeTxs;
+  const directSignTxPreparing =
+    canPrepareDirectSign && (buildTxsLoading || !txs?.length);
+  const buildTopUpSnapshot = useCallback(
+    (): BridgeTopUpSnapshot => ({
+      amount: amount || '',
+      amountMode: 'exact',
+    }),
+    [amount]
+  );
+  const persistBridgePageState = useCallback(async () => {
+    await wallet.setPageStateCache({
+      path: '/bridge',
+      search: history.location.search,
+      params: {},
+      states: {
+        fromChain,
+        fromToken,
+        toChain,
+        toToken,
+        amount,
+        slippageState,
+        fromGasAccountRedirect: true,
+        topUpSnapshot: topUpFormValuesRef.current.getSnapshot(),
+      },
+    });
+  }, [
+    wallet,
+    history.location.search,
+    fromChain,
+    fromToken,
+    toChain,
+    toToken,
+    amount,
+    slippageState,
+  ]);
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: findChainByEnum(fromChain)?.serverId || '',
     autoResetGasStoreOnChainChange: true,
   });
+  const consumeTopUpResumeGuard = useCallback(() => {
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return false;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+
+    if (comparison.isChanged && !shouldIgnore) {
+      closeSign();
+      runBuildSwapTxsRef.current = undefined;
+      return true;
+    }
+
+    return false;
+  }, [buildTopUpSnapshot, closeSign]);
 
   const handleBridge = useMemoizedFn(async () => {
+    setReloadTxRefreshPaused(true);
     if (canUseDirectSubmitTx) {
+      consumeTopUpResumeGuard();
       setMiniSignLoading(true);
       setFetchingBridgeQuote(true);
       try {
@@ -506,6 +602,16 @@ export const BridgeContent = () => {
             category: 'Bridge',
             source: 'bridge',
             trigger: rbiSource,
+          },
+          onRedirectToDeposit: () => {
+            topUpFormValuesRef.current.save(buildTopUpSnapshot());
+            setAwaitingTopUpResume(true);
+            persistBridgePageState().catch((error) => {
+              console.error(
+                '[Bridge] persist page state before gas account deposit failed',
+                error
+              );
+            });
           },
           onPreExecError: () => {
             gotoBridge();
@@ -528,13 +634,50 @@ export const BridgeContent = () => {
         console.error('bridge direct sign error', error);
       } finally {
         setMiniSignLoading(false);
+        setReloadTxRefreshPaused(false);
       }
     } else {
-      gotoBridge();
+      try {
+        await gotoBridge();
+      } finally {
+        setReloadTxRefreshPaused(false);
+      }
     }
   });
 
-  const history = useHistory();
+  useEffect(() => {
+    wallet.getPageStateCache().then((cache) => {
+      if (
+        cache?.path !== '/bridge' ||
+        !cache.states?.fromGasAccountRedirect ||
+        !cache.states?.fromToken ||
+        !cache.states?.toToken
+      ) {
+        return;
+      }
+
+      if (cache.states?.fromGasAccountRedirect && cache.states?.topUpSnapshot) {
+        topUpFormValuesRef.current.save(cache.states.topUpSnapshot);
+        setAwaitingTopUpResume(true);
+      }
+
+      switchFromChain(cache.states.fromChain);
+      setFromToken(cache.states.fromToken);
+      setToChain(cache.states.toChain);
+      setToToken(cache.states.toToken);
+      handleAmountChange(cache.states.amount || '');
+      setSlippage(cache.states.slippageState);
+      wallet.clearPageStateCache();
+    });
+  }, [
+    wallet,
+    switchFromChain,
+    setFromToken,
+    setToChain,
+    setToToken,
+    handleAmountChange,
+    setSlippage,
+  ]);
 
   const twoStepApproveCn = useCss({
     '& .ant-modal-content': {
@@ -560,13 +703,25 @@ export const BridgeContent = () => {
 
   useEffect(() => {
     if (!btnDisabled && selectedBridgeQuote) {
+      if (awaitingTopUpResume || depositFlowActive) {
+        return;
+      }
       mutateTxs([]);
       runBuildSwapTxsRef.current = runBuildSwapTxs();
     }
-  }, [canUseDirectSubmitTx, btnDisabled, selectedBridgeQuote]);
+  }, [
+    canUseDirectSubmitTx,
+    btnDisabled,
+    selectedBridgeQuote,
+    awaitingTopUpResume,
+    depositFlowActive,
+  ]);
 
   useEffect(() => {
     if (!canUseDirectSubmitTx) return;
+    if (awaitingTopUpResume || depositFlowActive) {
+      return;
+    }
     closeSign();
     prefetch({
       txs: txs || [],
@@ -577,7 +732,44 @@ export const BridgeContent = () => {
         trigger: rbiSource,
       },
     });
-  }, [closeSign, prefetch, txs, canUseDirectSubmitTx, rbiSource]);
+  }, [
+    awaitingTopUpResume,
+    closeSign,
+    prefetch,
+    txs,
+    canUseDirectSubmitTx,
+    depositFlowActive,
+    rbiSource,
+  ]);
+
+  useEffect(() => {
+    if (!awaitingTopUpResume) {
+      return;
+    }
+
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    if (!comparison.isChanged || shouldIgnore) {
+      return;
+    }
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+    closeSign();
+    runBuildSwapTxsRef.current = undefined;
+  }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);
 
@@ -717,6 +909,7 @@ export const BridgeContent = () => {
             <BridgeShowMore
               insufficient={inSufficient}
               supportDirectSign={canUseDirectSubmitTx}
+              signatureInstance={instance}
               openFeePopup={openFeePopup}
               open={showMoreOpen}
               setOpen={setShowMoreOpen}
@@ -735,6 +928,7 @@ export const BridgeContent = () => {
               toAmount={selectedBridgeQuote?.to_token_amount}
               openQuotesList={openQuotesList}
               quoteLoading={quoteLoading}
+              gasFeeLoading={directSignTxPreparing}
               slippageError={isSlippageHigh || isSlippageLow}
               autoSlippage={autoSlippage}
               isCustomSlippage={isCustomSlippage}
@@ -811,6 +1005,7 @@ export const BridgeContent = () => {
                   onConfirm={handleBridge}
                   showRiskTips={showRiskTips && !btnDisabled}
                   accountType={currentAccount?.type}
+                  signatureInstance={instance}
                   riskReset={btnDisabled}
                   loading={miniSignLoading}
                 />

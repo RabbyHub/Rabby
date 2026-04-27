@@ -83,7 +83,8 @@
         "idle": "Waiting to swap",
         "success": "Swap successful"
       },
-      "completedTips": "Ongoing swap will continue processing"
+      "completedTips": "Ongoing swap will continue processing",
+      "priceImpact": "Price Impact Cap"
     },
     "signTx": {
       "nftIn": "NFT in",
@@ -449,11 +450,12 @@
       },
       "gasAccount": {
         "customRPC": "Not supported when using custom RPC",
-        "notEnough": "GasAccount is not enough",
+        "notEnough": "Not enough gas. Gas Balance: {{usd}}",
         "useGasAccount": "Use GasAccount",
         "WalletConnectTips": "WalletConnect is not supported by GasAccount",
         "chainNotSupported": "This chain is not supported by GasAccount",
         "loginFirst": "Please log in to GasAccount first",
+        "signWithHardwareWalletToUse": "You need to sign with {{brand}} to use",
         "login": "Log in",
         "gotIt": "Got it",
         "deposit": "Deposit",
@@ -3877,19 +3879,39 @@
       "speedUpDesc": "Gas price increased {{percent}} for a faster speed up"
     },
     "gasAccount": {
+      "gasFee":"Gas fee",
       "title": "GasAccount",
+      "gasDeposit": "Gas Deposit",
       "gasToken": "Gas Token",
       "deposit": "Deposit",
+      "depositNow": "Deposit Now",
+      "signWithPendingHardwareToUse": "Sign with {{addressAlias}} to use",
+      "depositSubmitted": "Deposit Submitted",
       "withdraw": "Withdraw",
       "noBalance": "No balance",
       "gasExceed": "GasAccount balance cannot exceed $1000",
       "safeAddressDepositTips": "Multisig addresses are not supported for deposits.",
       "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
-      "switchAccount": "Switch GasAccount",
+      "switchAccount": "Switch Wallet",
+      "claimFreeGas": "Claim {{usdValue}} Free Gas",
+      "depositFailed": "Deposit failed",
+      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "gasBalance": "Gas Balance",
       "withdrawDisabledIAP": "Withdrawals are disabled because your balance includes fiat funds, which cannot be withdrawn. Contact support to withdraw your token balance",
+      "benefitCard": {
+        "title": "Pay Gas Fees on All chains",
+        "subtitle": "when you're out of gas",
+        "item1": "No Rabby Fee",
+        "desc1": "No extra fees to pay gas",
+        "item2": "Supports all networks",
+        "desc2": "Automatic gas payments on 80+ networks",
+        "item3": "Supports all transactions",
+        "desc3": "Swap, Bridge, Send, DApps, & more"
+      },
       "history": {
-        "noHistory": "No history"
+        "noHistory": "No history",
+        "noHistoryForPast30Days": "No history for the past 30 days."
       },
       "loginInTip": {
         "title": "Deposit USDC / USDT",
@@ -3918,7 +3940,7 @@
       },
       "gasAccountList": {
         "address": "Address",
-        "gasAccountBalance": "Gas Balance"
+        "gasAccountBalance": "Balance"
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",
@@ -3927,12 +3949,31 @@
       },
       "depositPopup": {
         "title": "Deposit",
+        "gasDepositTitle": "Gas Deposit",
         "desc": "Make a deposit to Rabby's DeBank L2 Account with no extra fees—withdraw anytime.",
+        "zeroInvalidAmount": "The amount cannot be zero",
         "invalidAmount": "Must be under 500",
+        "minAmountRequired": "Minimum deposit amount is ${{value}}",
         "amount": "Amount",
         "token": "Token",
         "selectToken": "Select Token to Deposit",
-        "paymentAddr": "Payment Address"
+        "paymentAddr": "Payment Wallet",
+        "paymentAddress": "Payment Wallet",
+        "balanceLabel": "Balance",
+        "insufficientBalanceLabel": "Insufficient Balance",
+        "unavailablePaymentWallet": "Selected payment wallet is unavailable",
+        "suggestedToken": "Suggested Tokens",
+        "bridgeLabel": "Bridge",
+        "estReceiveLabel": "Est.Receive: {{usd}}",
+        "estReceiveTip": "Service processed via {{name}}, may have slippage",
+        "depositSuccess": "Deposit successful",
+        "depositFailed": "Deposit failed, please retry",
+        "bridgeDepositFailed": "Bridge deposit failed, please retry",
+        "noAvailableToken": "No available token",
+        "InsufficientToken":"Insufficient Token Balance"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "Gas required: {{topUpUsd}}, Gas remaining est: {{balance}}"
       },
       "withdrawPopup": {
         "noEnoughValuetBalance": "Vault Balance insufficient. Switch chain or try again later.",
@@ -3970,7 +4011,9 @@
       "switchLoginAddressBeforeDeposit": {
         "title": "Switch address before deposit",
         "desc": "Please switch to your login address."
-      }
+      },
+      "loginSuccess": "Login Successful",
+      "loginFailed": "Login Failed"
     },
     "safeMessageQueue": {
       "loading": "Loading messages",
