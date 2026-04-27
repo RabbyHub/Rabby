@@ -4,7 +4,9 @@ import { MarketData } from '@/ui/models/perps';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 interface Props {
-  item?: Pick<MarketData, 'name' | 'displayName' | 'quoteAsset'> | null;
+  item?: Partial<
+    Pick<MarketData, 'name' | 'displayName' | 'quoteAsset'>
+  > | null;
   /** Separator rendered between base and quote (default `/`). */
   separator?: string;
   /** Extra classname for the wrapper span. */
@@ -33,7 +35,7 @@ export const PerpsDisplayCoinName: React.FC<Props> = ({
 }) => {
   const base = formatPerpsCoin(item?.displayName || item?.name || '');
   const quote = item?.quoteAsset || 'USDC';
-  const dexName = item?.name.split(':')[0];
+  const dexName = item?.name?.includes(':') ? item.name.split(':')[0] : '';
   return (
     <span className={clsx('inline-flex items-center')}>
       <span className={clsx('inline-flex items-baseline', className)}>

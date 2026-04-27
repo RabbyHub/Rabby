@@ -14,6 +14,7 @@ import {
 } from './components/DepositWithdrawModal';
 import { SpotSwapModal } from './modal/SpotSwapModal';
 import { EnableUnifiedAccountModal } from './modal/EnableUnifiedAccountModal';
+import { TransferToPerpsModal } from './modal/TransferToPerpsModal';
 import { usePerpsPopupNav } from './hooks/usePerpsPopupNav';
 import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
 import { useRabbySelector } from '@/ui/store';
@@ -41,6 +42,7 @@ export type PopupType =
   | DepositWithdrawModalType
   | 'swap'
   | 'enable-unified'
+  | 'transfer-to-perps'
   | 'add-address'
   | null;
 
@@ -165,6 +167,11 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
           }
           return ok;
         }}
+      />
+
+      <TransferToPerpsModal
+        visible={action === 'transfer-to-perps'}
+        onClose={closePerpsPopup}
       />
     </>
   );

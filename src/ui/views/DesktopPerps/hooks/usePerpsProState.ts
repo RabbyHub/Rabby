@@ -25,6 +25,7 @@ import { getPerpsSDK } from '../../Perps/sdkManager';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { openDeleteAgentModal } from '../utils/openDeleteAgentModal';
 import perpsToast from '../components/PerpsToast';
+import { Abstraction } from '@rabby-wallet/hyperliquid-sdk';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
 export interface SignAction {
@@ -234,15 +235,27 @@ export const usePerpsProState = () => {
     }
   }, []);
 
-  const handleSafeSetDexAbstraction = useCallback(async () => {
+  const handleSafeSetUnifiedAccount = useMemoizedFn(async () => {
     try {
       const sdk = getPerpsSDK();
-      const res = await sdk.exchange?.agentEnableDexAbstraction();
-      console.log('handleSafeSetDexAbstraction res', res);
-    } catch (e) {
-      console.log('Failed to handleSafeSetDexAbstraction:', e);
+      await sdk.exchange?.agentSetAbstraction(Abstraction.UNIFIED_ACCOUNT);
+      // Only refresh on success — refreshing after a failure shows stale
+      // state as if the operation succeeded.
+      setTimeout(() => {
+        // empty address makes perps sdk use current address
+        dispatch.perps.fetchUserAbstraction('');
+      }, 100);
+    } catch (e: any) {
+      console.error('Failed to agentSetAbstraction:', e);
+      Sentry.captureException(
+        new Error(
+          `PERPS agentSetAbstraction failed: ${
+            e?.message ? String(e.message) : String(e)
+          }`
+        )
+      );
     }
-  }, []);
+  });
 
   const handleDirectApprove = useCallback(
     async (signActions: SignAction[]): Promise<void> => {
@@ -271,7 +284,7 @@ export const usePerpsProState = () => {
 
       setTimeout(() => {
         handleSafeSetReference();
-        handleSafeSetDexAbstraction();
+        handleSafeSetUnifiedAccount();
       }, 100);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
@@ -325,7 +338,7 @@ export const usePerpsProState = () => {
         if (signActions.length === 0) {
           dispatch.perps.setAccountNeedApproveAgent(false);
           dispatch.perps.setAccountNeedApproveBuilderFee(false);
-          handleSafeSetDexAbstraction();
+          handleSafeSetUnifiedAccount();
           return;
         }
 
@@ -601,7 +614,7 @@ export const usePerpsProState = () => {
     login,
     logout,
     handleActionApproveStatus,
-    handleSafeSetDexAbstraction,
+    handleSafeSetUnifiedAccount,
     needEnableTrading,
     handleSafeSetReference,
 

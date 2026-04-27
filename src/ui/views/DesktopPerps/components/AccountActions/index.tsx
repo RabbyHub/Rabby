@@ -31,12 +31,12 @@ export const AccountActions: React.FC = () => {
   return (
     <div className="flex items-center gap-[12px]">
       {/* Available Balance */}
-      <div className="flex items-center gap-[6px] pl-[6px] pr-[6px] h-[32px] rounded-[8px] border border-rb-neutral-line">
+      <div className="flex items-center gap-[8px] pl-[6px] pr-[6px] h-[32px]">
         <button
           onClick={handleDeposit}
           className={clsx(
-            'ml-6 px-[8px] h-[24px] rounded-[8px] text-13 font-medium flex items-center justify-center',
-            'bg-rb-brand-light-1 text-rb-brand-default'
+            'ml-6 px-[12px] h-[32px] rounded-[8px] text-13 font-medium flex items-center justify-center',
+            'border border-rb-brand-default text-rb-brand-default'
           )}
         >
           {t('page.perpsPro.accountActions.deposit')}

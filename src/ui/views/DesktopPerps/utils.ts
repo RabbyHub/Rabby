@@ -217,6 +217,15 @@ export const formatPerpsCoin = (coin: string) => {
   }
 };
 
+export const formatPerpsDexName = (coin: string) => {
+  if (coin.includes(':')) {
+    // is hip-3 coin
+    return coin.split(':')[0];
+  } else {
+    return '';
+  }
+};
+
 const STATUS_ENUM = {
   FILLED: 'filled',
   OPEN: 'open',
@@ -386,9 +395,17 @@ const calcAccountValueByAllDexs = (
   }, 0);
 };
 
+/**
+ * the official ratio buckets it by collateral token, so we keep a flat
+ * `crossMaintByDex` map (dex name → that dex's `crossMaintenanceMarginUsed`)
+ */
+export type AggregatedClearinghouseState = ClearinghouseState & {
+  crossMaintByDex?: Record<string, string>;
+};
+
 export const formatAllDexsClearinghouseState = (
   allClearinghouseState: [string, ClearinghouseState][]
-): ClearinghouseState | null => {
+): AggregatedClearinghouseState | null => {
   if (!allClearinghouseState || !allClearinghouseState[0]) {
     return null;
   }
@@ -402,10 +419,18 @@ export const formatAllDexsClearinghouseState = (
     return acc + Number(item[1]?.withdrawable || 0);
   }, 0);
 
+  const crossMaintByDex: Record<string, string> = {};
+  let crossMaintenanceMarginUsed = 0;
+  for (const [dexName, state] of allClearinghouseState) {
+    if (!state) continue;
+    crossMaintByDex[dexName] = state.crossMaintenanceMarginUsed;
+    crossMaintenanceMarginUsed += Number(state.crossMaintenanceMarginUsed || 0);
+  }
+
   return {
     assetPositions: assetPositions,
-    crossMaintenanceMarginUsed:
-      hyperDexState?.crossMaintenanceMarginUsed || '0',
+    crossMaintenanceMarginUsed: crossMaintenanceMarginUsed.toString(),
+    crossMaintByDex,
     crossMarginSummary: hyperDexState?.crossMarginSummary || {},
     marginSummary: {
       ...hyperDexState.marginSummary,

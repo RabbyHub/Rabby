@@ -7,6 +7,7 @@ export type PerpsAction =
   | 'withdraw'
   | 'swap'
   | 'enable-unified'
+  | 'transfer-to-perps'
   | null;
 
 export interface PerpsPopupParams {
@@ -52,7 +53,8 @@ export const usePerpsPopupNav = () => {
     nextRaw === 'swap' ||
     nextRaw === 'deposit' ||
     nextRaw === 'withdraw' ||
-    nextRaw === 'enable-unified'
+    nextRaw === 'enable-unified' ||
+    nextRaw === 'transfer-to-perps'
       ? (nextRaw as Exclude<PerpsAction, null>)
       : undefined;
 

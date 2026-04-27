@@ -3,7 +3,7 @@ import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import * as Sentry from '@sentry/browser';
-import { Abstraction, UserAbstraction } from '@rabby-wallet/hyperliquid-sdk';
+import { UserAbstraction } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
 import { formatSpotState } from '../../DesktopPerps/utils';
 import { useWallet } from '@/ui/utils';
@@ -19,15 +19,6 @@ export const usePerpsActions = () => {
   const currentPerpsAccount = useRabbySelector(
     (s) => s.perps.currentPerpsAccount
   );
-
-  const handleSafeSetUnifiedAccount = useMemoizedFn(async () => {
-    try {
-      const sdk = getPerpsSDK();
-      await sdk.exchange?.agentSetAbstraction(Abstraction.UNIFIED_ACCOUNT);
-    } catch (e) {
-      console.log('Failed to agentSetAbstraction:', e);
-    }
-  });
 
   const handleEnableUnifiedAccount = useMemoizedFn(
     async (): Promise<boolean> => {
@@ -111,33 +102,7 @@ export const usePerpsActions = () => {
     }
   );
 
-  const handleStableCoinOrder = useMemoizedFn(
-    async (params: {
-      coin: 'USDT' | 'USDH' | 'USDE';
-      isBuy: boolean;
-      size: string;
-      limitPx: string;
-    }): Promise<boolean> => {
-      try {
-        const sdk = getPerpsSDK();
-        if (!sdk.exchange) throw new Error('Hyperliquid no exchange client');
-        const res = await sdk.exchange.stableCoinOrder(params);
-        // Spot balance refresh comes from the existing subscribeToSpotState WS push.
-        return true;
-      } catch (error: any) {
-        console.error('Failed stableCoinOrder:', error);
-        message.error({
-          duration: 1.5,
-          content: error?.message || t('page.perps.PerpsSpotSwap.swapFailed'),
-        });
-        return false;
-      }
-    }
-  );
-
   return {
-    handleSafeSetUnifiedAccount,
     handleEnableUnifiedAccount,
-    handleStableCoinOrder,
   };
 };

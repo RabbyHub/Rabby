@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import { formatPerpsCoin } from '../../../utils';
+import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 
 type TwapOrder = {
   twapId: number;
@@ -190,23 +191,29 @@ export const Twap: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
-        width: 60,
+        width: 120,
         dataIndex: 'coin',
         sorter: (a, b) => a.fill.coin.localeCompare(b.fill.coin),
-        render: (_, record) => (
-          <div
-            className={`text-[12px] leading-[14px] text-r-neutral-title-1 ${
-              record.fill.side === 'B'
-                ? 'text-rb-green-default'
-                : 'text-rb-red-default'
-            } cursor-pointer hover:font-bold hover:text-rb-brand-default`}
-            onClick={() => {
-              dispatch.perps.updateSelectedCoin(record.fill.coin);
-            }}
-          >
-            {formatPerpsCoin(record.fill.coin)}
-          </div>
-        ),
+        render: (_, record) => {
+          return (
+            <div
+              className={'group text-[12px] leading-[14px] cursor-pointer'}
+              onClick={() => {
+                dispatch.perps.updateSelectedCoin(record.fill.coin);
+              }}
+            >
+              <PerpsDisplayCoinName
+                item={
+                  marketDataMap[record.fill.coin] || { name: record.fill.coin }
+                }
+                separator="-"
+                showDexTag
+                baseClassName="group-hover:text-rb-brand-default group-hover:font-bold"
+                quoteClassName="text-r-neutral-title-1 group-hover:text-rb-brand-default group-hover:font-bold"
+              />
+            </div>
+          );
+        },
       },
       {
         title: t('page.perpsPro.userInfo.tab.direction'),
@@ -375,7 +382,6 @@ export const Twap: React.FC = () => {
           const sideName = record.side === 'B' ? 'Long' : 'Short';
           const sliceCount = record.slices.length;
           const canExpand = record.slices.length > 0;
-
           return (
             <div
               className={clsx(
@@ -387,7 +393,7 @@ export const Twap: React.FC = () => {
             >
               <div
                 className={clsx(
-                  'flex items-center gap-[4px]',
+                  'flex gap-[4px]',
                   canExpand && 'cursor-pointer'
                 )}
                 onClick={() => {
@@ -404,30 +410,38 @@ export const Twap: React.FC = () => {
                   );
                 }}
               >
-                <div className="flex flex-row items-center gap-[4px]">
-                  <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1">
+                <div className="flex flex-col gap-[4px]">
+                  <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 gap-6 flex items-center flex-row">
                     <span
-                      className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
+                      className="group cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         dispatch.perps.updateSelectedCoin(record.coin);
                       }}
                     >
-                      {formatPerpsCoin(record.coin)}{' '}
+                      <PerpsDisplayCoinName
+                        item={
+                          marketDataMap[record.coin] || { name: record.coin }
+                        }
+                        separator="-"
+                        showDexTag
+                        baseClassName="group-hover:text-rb-brand-default group-hover:font-bold"
+                        quoteClassName="text-r-neutral-title-1 group-hover:text-rb-brand-default group-hover:font-bold"
+                      />
                     </span>
+                    {canExpand && (
+                      <RcIconArrowDown
+                        className={clsx(
+                          'text-r-neutral-body',
+                          isExpanded && 'rotate-180'
+                        )}
+                      />
+                    )}
                   </div>
-                  <div className="text-[12px] leading-[14px] text-r-neutral-foot">
-                    {sideName} · ({sliceCount} slices)
+                  <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot">
+                    {sideName} ({sliceCount} slices)
                   </div>
                 </div>
-                {canExpand && (
-                  <RcIconArrowDown
-                    className={clsx(
-                      'text-r-neutral-body',
-                      isExpanded && 'rotate-180'
-                    )}
-                  />
-                )}
               </div>
             </div>
           );

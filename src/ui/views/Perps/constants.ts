@@ -1,5 +1,10 @@
-import { PerpTopTokenV3, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  PerpTopTokenV3,
+  TokenItem,
+  PerpTopTokenCategory,
+} from '@rabby-wallet/rabby-api/dist/types';
 import DEFAULT_TOP_ASSET_JSON from './constants/PerpsTopAsset.json';
+import DEFAULT_ASSET_CATEGORY_JSON from './constants/PerpsAssetCategory.json';
 
 // must be a USDC token and more than 5 usdc
 export const PERPS_SEND_ARB_USDC_ADDRESS =
@@ -184,6 +189,7 @@ export enum CandlePeriod {
 }
 
 export const DEFAULT_TOP_ASSET = DEFAULT_TOP_ASSET_JSON as PerpTopTokenV3[];
+export const DEFAULT_ASSET_CATEGORY = DEFAULT_ASSET_CATEGORY_JSON as PerpTopTokenCategory[];
 
 const INIT_PERPS_BUILD_FEE_RECEIVE_ADDRESS =
   '0xAd9bE64fD7a35d99a138b87CB212BAefbCDCf045';

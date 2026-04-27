@@ -7,6 +7,7 @@ import { SvgIconCross } from 'ui/assets';
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history.svg';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import { SvgPendingSpin } from '@/ui/assets';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { formatUsdValue } from '@/ui/utils/number';
@@ -209,150 +210,221 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               </h3>
             </div>
 
-            <div className="bg-r-neutral-card1 rounded-[8px] px-20 py-20 mb-12">
-              <div className="flex flex-col items-center justify-center">
-                <input
-                  ref={inputRef}
+            {type === 'withdraw' ? (
+              <>
+                {/* Chain selector */}
+                <div className="text-13 text-r-neutral-foot mb-8">
+                  {t('page.perps.depositAmountPopup.chain')}
+                </div>
+                <div
+                  onClick={() => setChainSelectVisible(true)}
                   className={clsx(
-                    'text-[32px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none',
-                    amountValidation.error
-                      ? 'text-r-red-default'
-                      : 'text-r-neutral-title-1'
+                    'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between px-16 h-[56px] border border-solid border-transparent mb-16',
+                    'hover:border-rabby-blue-default cursor-pointer'
                   )}
-                  placeholder="$0"
-                  value={usdValue ? `$${usdValue}` : ''}
-                  onChange={(e) => {
-                    let value = e.target.value;
-                    if (value.startsWith('$')) {
-                      value = value.slice(1);
-                    }
-                    if (/^\d*\.?\d*$/.test(value) || value === '') {
-                      setUsdValue(value);
-                    }
-                  }}
-                />
-                <div className="text-13 text-r-neutral-body mt-8 flex items-center">
-                  {type === 'withdraw'
-                    ? t('page.perps.availableBalance', {
-                        balance: formatUsdValue(
-                          withdrawMaxBalance,
-                          BigNumber.ROUND_DOWN
-                        ),
-                      })
-                    : t('page.perps.balanceAvailable', {
+                >
+                  <div className="flex items-center gap-8">
+                    {(() => {
+                      const chain = findChainByServerID(selectChainId);
+                      return chain?.logo ? (
+                        <img
+                          src={chain.logo}
+                          alt={chain.name}
+                          className="w-24 h-24"
+                        />
+                      ) : null;
+                    })()}
+                    <div className="text-r-neutral-title-1 font-medium text-15">
+                      {findChainByServerID(selectChainId)?.name ||
+                        selectChainId}
+                    </div>
+                  </div>
+                  <RcIconArrowDownCC className="text-r-neutral-foot w-16 h-16" />
+                </div>
+
+                {/* Amount label + balance */}
+                <div className="flex items-center justify-between mb-8">
+                  <span className="text-13 text-r-neutral-foot">
+                    {t('page.perps.depositAmountPopup.amount')}
+                  </span>
+                  <div className="text-13 text-r-neutral-foot flex items-center">
+                    <span>
+                      {t('page.perps.depositAmountPopup.balance')}:
+                      {formatUsdValue(withdrawMaxBalance, BigNumber.ROUND_DOWN)}
+                    </span>
+                    {isHypeWithdraw && Number(hypeTransferFee) > 0 && (
+                      <Tooltip
+                        overlayClassName={clsx('rectangle')}
+                        placement="top"
+                        title={t(
+                          'page.perps.depositAmountPopup.hypeActivationFeeTip',
+                          { fee: formatUsdValue(hypeTransferFee) }
+                        )}
+                      >
+                        <RcIconInfo
+                          viewBox="0 0 12 12"
+                          width={12}
+                          height={12}
+                          className="text-rabby-neutral-foot ml-4"
+                        />
+                      </Tooltip>
+                    )}
+                  </div>
+                </div>
+
+                {/* Amount input + token pill */}
+                <div className="bg-r-neutral-card1 rounded-[8px] px-16 py-24 mb-12">
+                  <div className="flex items-center gap-12">
+                    <input
+                      ref={inputRef}
+                      className={clsx(
+                        'flex-1 text-[28px] leading-[34px] font-medium bg-transparent border-none p-0 outline-none focus:outline-none min-w-0',
+                        amountValidation.error
+                          ? 'text-r-red-default'
+                          : 'text-r-neutral-title-1'
+                      )}
+                      placeholder="0"
+                      value={usdValue}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^\d*\.?\d*$/.test(value) || value === '') {
+                          setUsdValue(value);
+                        }
+                      }}
+                    />
+                    <div
+                      onClick={() => setTokenSelectVisible(true)}
+                      className={clsx(
+                        'flex items-center justify-center gap-6 pl-6 pr-8 h-32 rounded-[8px] border border-solid border-transparent',
+                        'bg-r-neutral-card-2 cursor-pointer flex-shrink-0',
+                        'hover:border-rabby-blue-default hover:text-rb-brand-default'
+                      )}
+                    >
+                      <TokenWithChain
+                        token={selectedToken || ARB_USDC_TOKEN_ITEM}
+                        hideChainIcon
+                        hideConer
+                        width="20px"
+                        height="20px"
+                      />
+                      <span className="text-r-neutral-title-1 font-medium text-14">
+                        {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                      </span>
+                      <RcIconArrowDownCC className="text-r-neutral-foot" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Percent buttons */}
+                <div className="flex items-center justify-between gap-8 mb-12">
+                  {PERCENTAGE_OPTIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => handlePercentageClick(option.value)}
+                      className={clsx(
+                        'flex-1 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
+                        'bg-r-neutral-card1 border border-solid border-transparent text-r-neutral-title-1',
+                        'hover:border-rabby-blue-default hover:text-rb-brand-default'
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+
+                {(amountValidation.errorMessage || quoteError) && (
+                  <div className="text-13 text-r-red-default mb-8">
+                    {amountValidation.errorMessage || quoteError}
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="bg-r-neutral-card1 rounded-[8px] px-20 py-20 mb-12">
+                  <div className="flex flex-col items-center justify-center">
+                    <input
+                      ref={inputRef}
+                      className={clsx(
+                        'text-[32px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none',
+                        amountValidation.error
+                          ? 'text-r-red-default'
+                          : 'text-r-neutral-title-1'
+                      )}
+                      placeholder="$0"
+                      value={usdValue ? `$${usdValue}` : ''}
+                      onChange={(e) => {
+                        let value = e.target.value;
+                        if (value.startsWith('$')) {
+                          value = value.slice(1);
+                        }
+                        if (/^\d*\.?\d*$/.test(value) || value === '') {
+                          setUsdValue(value);
+                        }
+                      }}
+                    />
+                    <div className="text-13 text-r-neutral-body mt-8 flex items-center">
+                      {t('page.perps.balanceAvailable', {
                         balance: formatUsdValue(
                           depositMaxUsdValue,
                           BigNumber.ROUND_DOWN
                         ),
                       })}
-                  {isHypeWithdraw && Number(hypeTransferFee) > 0 && (
-                    <Tooltip
-                      overlayClassName={clsx('rectangle')}
-                      placement="top"
-                      title={t(
-                        'page.perps.depositAmountPopup.hypeActivationFeeTip',
-                        {
-                          fee: formatUsdValue(hypeTransferFee),
-                        }
-                      )}
-                    >
-                      <RcIconInfo
-                        viewBox="0 0 12 12"
-                        width={12}
-                        height={12}
-                        className="text-rabby-neutral-foot ml-4"
-                      />
-                    </Tooltip>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-8 mt-16">
+                    {PERCENTAGE_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => handlePercentageClick(option.value)}
+                        className={clsx(
+                          'px-20 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
+                          'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
+                          'bg-r-neutral-bg-2 text-r-neutral-body'
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {(amountValidation.errorMessage || quoteError) && (
+                    <div className="text-13 text-r-red-default text-center mt-12">
+                      {amountValidation.errorMessage || quoteError}
+                    </div>
                   )}
                 </div>
-              </div>
 
-              <div className="flex items-center justify-center gap-8 mt-16">
-                {PERCENTAGE_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => handlePercentageClick(option.value)}
-                    className={clsx(
-                      'px-20 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
-                      'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
-                      'bg-r-neutral-bg-2 text-r-neutral-body'
-                    )}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-
-              {(amountValidation.errorMessage || quoteError) && (
-                <div className="text-13 text-r-red-default text-center mt-12">
-                  {amountValidation.errorMessage || quoteError}
-                </div>
-              )}
-            </div>
-
-            {type === 'withdraw' && (
-              <div
-                onClick={() => setChainSelectVisible(true)}
-                className={clsx(
-                  'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent mb-8',
-                  'hover:border-rabby-blue-default cursor-pointer'
-                )}
-              >
-                <div className="text-r-neutral-body text-13">
-                  {t('page.perps.depositAmountPopup.chain')}
-                </div>
-                <div className="flex items-center">
-                  {(() => {
-                    const chain = findChainByServerID(selectChainId);
-                    return chain?.logo ? (
-                      <img
-                        src={chain.logo}
-                        alt={chain.name}
-                        className="w-20 h-20 mr-4"
-                      />
-                    ) : null;
-                  })()}
-                  <div className="text-r-neutral-title-1 font-medium text-13">
-                    {findChainByServerID(selectChainId)?.name || selectChainId}
+                <div
+                  onClick={() => {
+                    setTokenSelectVisible(true);
+                  }}
+                  className={clsx(
+                    'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
+                    'hover:border-rabby-blue-default cursor-pointer'
+                  )}
+                >
+                  <div className="text-r-neutral-body text-13">
+                    {t('page.perps.depositAmountPopup.payWith')}
                   </div>
-                  <ThemeIcon
-                    className="icon icon-arrow-right text-r-neutral-title-1 ml-4"
-                    src={RcIconArrowRight}
-                  />
+                  <div className="flex items-center">
+                    <TokenWithChain
+                      token={selectedToken || ARB_USDC_TOKEN_ITEM}
+                      hideConer
+                      width="20px"
+                      height="20px"
+                    />
+                    <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
+                      {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                    </div>
+                    <ThemeIcon
+                      className="icon icon-arrow-right text-r-neutral-title-1 ml-4"
+                      src={RcIconArrowRight}
+                    />
+                  </div>
                 </div>
-              </div>
+              </>
             )}
-
-            <div
-              onClick={() => {
-                setTokenSelectVisible(true);
-              }}
-              className={clsx(
-                'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
-                'hover:border-rabby-blue-default cursor-pointer'
-              )}
-            >
-              <div className="text-r-neutral-body text-13">
-                {type === 'deposit'
-                  ? t('page.perps.depositAmountPopup.payWith')
-                  : t('page.perps.depositAmountPopup.receiveToken')}
-              </div>
-              <div className="flex items-center">
-                <TokenWithChain
-                  token={selectedToken || ARB_USDC_TOKEN_ITEM}
-                  hideConer
-                  width="20px"
-                  height="20px"
-                />
-                <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
-                  {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
-                </div>
-                <ThemeIcon
-                  className="icon icon-arrow-right text-r-neutral-title-1 ml-4"
-                  src={RcIconArrowRight}
-                />
-              </div>
-            </div>
 
             <div className="mt-12 space-y-8">
               {type === 'withdraw' && (

@@ -10,6 +10,7 @@ import { CommonTable } from '../CommonTable';
 import { sortBy } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
 import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 
@@ -17,6 +18,10 @@ export const FundingHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const { userFunding } = useRabbySelector((store) => {
     return store.perps;
+  });
+
+  const marketDataMap = useRabbySelector((store) => {
+    return store.perps.marketDataMap;
   });
 
   const { t } = useTranslation();
@@ -70,16 +75,18 @@ export const FundingHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div
-              className={`text-[12px] leading-[14px]  text-r-neutral-title-1 ${
-                Number(record.szi) >= 0
-                  ? 'text-rb-green-default'
-                  : 'text-rb-red-default'
-              } cursor-pointer hover:font-bold hover:text-rb-brand-default`}
+              className={'group text-[12px] leading-[14px] cursor-pointer'}
               onClick={() => {
                 dispatch.perps.updateSelectedCoin(record.coin);
               }}
             >
-              {formatPerpsCoin(record.coin)}
+              <PerpsDisplayCoinName
+                item={marketDataMap[record.coin] || { name: record.coin }}
+                separator="-"
+                showDexTag
+                baseClassName="group-hover:text-rb-brand-default group-hover:font-bold"
+                quoteClassName="text-r-neutral-title-1 group-hover:text-rb-brand-default group-hover:font-bold"
+              />
             </div>
           );
         },
@@ -171,7 +178,7 @@ export const FundingHistory: React.FC = () => {
         },
       },
     ],
-    []
+    [marketDataMap]
   );
   return (
     <CommonTable

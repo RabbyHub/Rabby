@@ -77,7 +77,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   );
 
   return (
-    <div className="flex items-center px-[16px] py-[4px] border-b border-solid border-rb-neutral-line">
+    <div className="flex items-center justify-center px-[16px] border-b border-solid border-rb-neutral-line h-[56px]">
       {/* Coin Dropdown - Only this area is clickable for dropdown */}
       <CoinDropdown coin={coin} onSelectCoin={onSelectCoin} />
 

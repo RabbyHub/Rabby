@@ -13,10 +13,10 @@ import {
 } from '@/ui/views/Perps/constants';
 import { QUOTE_ASSET_ICON_MAP as COIN_ICON_MAP } from '@/ui/views/Perps/components/quoteAssetIcons';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import { usePerpsProPosition } from '@/ui/views/DesktopPerps/hooks/usePerpsProPosition';
 import { useMemoizedFn } from 'ahooks';
-import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
+import { RcIconArrowDownCC, RcIconPlusCC } from '@/ui/assets/desktop/common';
 
 export { COIN_ICON_MAP };
 
@@ -67,7 +67,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
   onDeposit,
 }) => {
   const { t } = useTranslation();
-  const { handleStableCoinOrder } = usePerpsActions();
+  const { handleStableCoinOrder } = usePerpsProPosition();
   const { spotBalancesMap } = usePerpsAccount();
   const [fromCoin, setFromCoin] = useState<PerpsQuoteAsset>('USDC');
   const [toCoin, setToCoin] = useState<PerpsQuoteAsset>('USDT');
@@ -307,28 +307,69 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
       className="modal-support-darkmode desktop-perps-spot-swap-modal"
     >
       <PopupContainer>
-        <div className="bg-r-neutral-bg-2 h-[520px] flex flex-col relative overflow-hidden">
+        <div className="bg-rb-neutral-bg-0 h-[520px] flex flex-col relative overflow-hidden">
           <div className="px-20 pt-16 pb-20 flex-1 flex flex-col">
-            <h3 className="text-[20px] font-medium text-r-neutral-title-1 text-center mb-16">
+            <h3 className="text-[18px] font-medium text-r-neutral-title-1 text-center mb-20">
               {t('page.perps.PerpsSpotSwap.title')}
             </h3>
 
-            <div className="mb-12">
-              <div className="flex justify-between items-center mb-6">
-                <span className="text-rb-neutral-body text-12">
+            <div className="mb-12 bg-r-neutral-card1 rounded-[12px] px-16 py-14 flex items-center justify-between">
+              <span className="text-r-neutral-title-1 text-15 font-medium">
+                {t('page.perps.PerpsSpotSwap.to')}
+              </span>
+              <Dropdown
+                transitionName=""
+                forceRender
+                disabled={!!targetAsset || submitting}
+                overlay={renderCoinMenu(handleToChange, toCoin)}
+              >
+                <button
+                  type="button"
+                  className={coinSelectBtnClassName}
+                  disabled={!!targetAsset || submitting}
+                >
+                  <CoinOption coin={toCoin} />
+                  <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+                </button>
+              </Dropdown>
+            </div>
+
+            <div className="mb-12 bg-r-neutral-card1 rounded-[12px] px-16 pt-14 pb-16">
+              <div className="flex justify-between items-center mb-10">
+                <span className="text-r-neutral-title-1 text-15 font-medium">
                   {t('page.perps.PerpsSpotSwap.from')}
                 </span>
-                <span className="text-rb-neutral-foot text-12">
-                  {t('page.perps.PerpsSpotSwap.balance')}:{' '}
-                  {fromBalance.toFixed(4)} {fromCoin}
-                </span>
+                <div className="flex items-center gap-6">
+                  <span className="text-r-neutral-foot text-12">
+                    {t('page.perps.PerpsSpotSwap.balance')}:{' '}
+                    {fromBalance.toFixed(4)}
+                  </span>
+                  {onDeposit && (
+                    <button
+                      type="button"
+                      onClick={onDeposit}
+                      disabled={submitting}
+                      className={clsx(
+                        'inline-flex items-center justify-center w-16 h-16 rounded-[4px]',
+                        'text-r-blue-default hover:bg-rb-brand-light-1',
+                        'disabled:opacity-60 disabled:cursor-not-allowed'
+                      )}
+                    >
+                      <RcIconPlusCC className="w-12 h-12" />
+                    </button>
+                  )}
+                </div>
               </div>
-              <div
-                className={clsx(
-                  'flex items-center gap-8 bg-r-neutral-card1 rounded-[8px] px-12 py-8',
-                  'border border-solid border-transparent'
-                )}
-              >
+              <div className="flex items-center gap-8">
+                <Input
+                  bordered={false}
+                  size="large"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="0"
+                  className="flex-1 p-0 text-[28px] leading-[34px] font-medium text-r-neutral-title-1"
+                  disabled={submitting}
+                />
                 <Dropdown
                   transitionName=""
                   forceRender
@@ -344,81 +385,42 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                     <RcIconArrowDownCC className="text-rb-neutral-secondary" />
                   </button>
                 </Dropdown>
-                <Input
-                  bordered={false}
-                  size="large"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="0"
-                  className="text-[20px] font-medium text-r-neutral-title-1 text-right"
-                  disabled={submitting}
-                />
-              </div>
-              <div className="flex gap-8 mt-8">
-                {[0.25, 0.5, 0.75, 1].map((p) => (
-                  <button
-                    key={p}
-                    onClick={() => handlePercent(p)}
-                    className={clsx(
-                      'flex-1 h-[28px] rounded-[6px] text-12 font-medium',
-                      'bg-r-neutral-card1 text-r-neutral-body hover:bg-rb-brand-light-1 hover:text-rb-brand-default'
-                    )}
-                    disabled={submitting}
-                  >
-                    {p === 1
-                      ? t('page.perps.PerpsSpotSwap.max')
-                      : `${p * 100}%`}
-                  </button>
-                ))}
               </div>
             </div>
 
-            <div className="mb-12">
-              <div className="text-r-neutral-body text-12 mb-6">
-                {t('page.perps.PerpsSpotSwap.to')}
-              </div>
-              <div
-                className={clsx(
-                  'flex items-center gap-8 bg-r-neutral-card1 rounded-[8px] px-12 py-8',
-                  'border border-solid border-transparent'
-                )}
-              >
-                <Dropdown
-                  transitionName=""
-                  forceRender
-                  disabled={!!targetAsset || submitting}
-                  overlay={renderCoinMenu(handleToChange, toCoin)}
-                >
-                  <button
-                    type="button"
-                    className={coinSelectBtnClassName}
-                    disabled={!!targetAsset || submitting}
-                  >
-                    <CoinOption coin={toCoin} />
-                    <RcIconArrowDownCC className="text-rb-neutral-secondary" />
-                  </button>
-                </Dropdown>
-                <div className="flex-1 text-right text-[20px] text-r-neutral-title-1 font-medium">
-                  {receiveAmountStr}
-                </div>
-              </div>
-            </div>
-
-            {errorMessage && (
-              <div className="mb-12 text-13 text-r-red-default flex justify-between items-center">
-                <span>{errorMessage}</span>
-                {errorMessage ===
-                  t('page.perps.PerpsSpotSwap.insufficientBalance') &&
-                  onDeposit && (
-                    <a
-                      onClick={onDeposit}
-                      className="text-r-blue-default cursor-pointer"
-                    >
-                      {t('page.perps.PerpsSpotSwap.toDeposit')}
-                    </a>
+            <div className="flex gap-8 mb-16">
+              {[0.25, 0.5, 0.75, 1].map((p) => (
+                <button
+                  key={p}
+                  onClick={() => handlePercent(p)}
+                  className={clsx(
+                    'flex-1 h-[36px] rounded-[8px] text-13 font-medium',
+                    'bg-r-neutral-card1 border border-solid border-transparent',
+                    'text-r-neutral-title-1',
+                    'hover:border-rb-brand-default hover:text-rb-brand-default',
+                    'disabled:opacity-60 disabled:cursor-not-allowed'
                   )}
-              </div>
-            )}
+                  disabled={submitting}
+                >
+                  {p === 1 ? t('page.perps.PerpsSpotSwap.max') : `${p * 100}%`}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex justify-between items-center text-13">
+              {errorMessage ? (
+                <span className="text-r-red-default">{errorMessage}</span>
+              ) : (
+                <>
+                  <span className="text-r-neutral-foot">
+                    {t('page.perps.PerpsSpotSwap.estReceive')}
+                  </span>
+                  <span className="text-r-neutral-title-1 font-medium">
+                    {receiveAmountStr} {toCoin}
+                  </span>
+                </>
+              )}
+            </div>
 
             <div className="flex-1" />
 
@@ -426,7 +428,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
               block
               size="large"
               type="primary"
-              className="h-[44px] rounded-[8px] text-14 font-medium"
+              className="h-[44px] rounded-[8px] text-15 font-medium"
               disabled={!canSubmit}
               loading={submitting}
               onClick={handleSwap}

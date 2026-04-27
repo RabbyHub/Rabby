@@ -33,6 +33,7 @@ import {
 } from '../views/Perps/utils';
 import {
   DEFAULT_TOP_ASSET,
+  DEFAULT_ASSET_CATEGORY,
   HYPE_EVM_BRIDGE_ADDRESS_MAP,
   PerpsQuoteAsset,
 } from '../views/Perps/constants';
@@ -44,6 +45,7 @@ import { isSameAddress } from '../utils';
 import store from '@/ui/store';
 import {
   formatAllDexsClearinghouseState,
+  AggregatedClearinghouseState,
   handleUpdateHistoricalOrders,
   handleUpdateTwapSliceFills,
   showDepositAndWithdrawToast,
@@ -57,7 +59,10 @@ import {
   TPSLConfig,
   SizeDisplayUnit,
 } from '../views/DesktopPerps/types';
-import { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  PerpTopTokenV3,
+  PerpTopTokenCategory,
+} from '@rabby-wallet/rabby-api/dist/types';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 
@@ -177,6 +182,7 @@ export interface PerpsState {
   accountNeedApproveBuilderFee: boolean; // 账户是否需要重新approve builder fee
   marketData: MarketData[];
   marketDataMap: MarketDataMap;
+  marketDataCategories: PerpTopTokenCategory[];
   hasPermission: boolean;
   perpFee: number;
   isLogin: boolean;
@@ -190,11 +196,12 @@ export interface PerpsState {
   fillsOrderTpOrSl: Record<string, 'tp' | 'sl'>;
   // Desktop Pro fields
   selectedCoin: string;
+  selectedTokenDetail: PerpTopTokenV3 | null;
   favoritedCoins: string[];
   chartInterval: string;
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
-  clearinghouseState: ClearinghouseState | null;
+  clearinghouseState: AggregatedClearinghouseState | null;
   openOrders: OpenOrder[];
   clearinghouseStateMap: Record<string, ClearinghouseState | null>;
   spotState: {
@@ -235,6 +242,42 @@ export interface PerpsState {
 }
 
 let topAssetsCache: PerpTopTokenV3[] = [];
+let perpsCategoryCache: PerpTopTokenCategory[] = [];
+
+// Latest per-dex AssetCtx snapshot pushed by WS. WS frames are full-dex
+// snapshots, so the latest one is authoritative. Stored at module scope so
+// `setMarketData` (HTTP path, ticker fields are empty after `formatMarkData`)
+// can backfill any ticker data that arrived during the fetch window —
+// otherwise prices/funding/volume would briefly flash to empty until the next
+// WS tick.
+let lastCtxsByDex: Record<string, AssetCtx[]> = {};
+
+const buildCtxsByDex = (
+  payload: [string, AssetCtx[]][]
+): Record<string, AssetCtx[]> => {
+  const map: Record<string, AssetCtx[]> = {};
+  payload.forEach(([dexId, ctxs]) => {
+    const dexName = dexId ? dexId : 'hyperliquid';
+    map[dexName] = ctxs;
+  });
+  return map;
+};
+
+const applyAssetCtxsToList = (
+  list: MarketData[],
+  ctxsByDex: Record<string, AssetCtx[]>
+): MarketData[] => {
+  return list.map((item) => {
+    const dexName = item.dexId ? item.dexId : 'hyperliquid';
+    const ctx = ctxsByDex[dexName]?.[item.index];
+    if (!ctx) return item;
+    return {
+      ...item,
+      ...ctx,
+      pxDecimals: getPxDecimals(String(ctx.markPx ?? item.markPx ?? '')),
+    };
+  });
+};
 
 export const perps = createModel<RootModel>()({
   state: {
@@ -247,6 +290,7 @@ export const perps = createModel<RootModel>()({
     accountNeedApproveAgent: false,
     accountNeedApproveBuilderFee: false,
     marketData: [],
+    marketDataCategories: [],
     userAccountHistory: [],
     localLoadingHistory: [],
     marketDataMap: {},
@@ -289,6 +333,7 @@ export const perps = createModel<RootModel>()({
     // tradingOrderType: OrderType.MARKET,
     sizeDisplayUnit: 'base',
     tradingOrderSide: OrderSide.BUY,
+    selectedTokenDetail: null,
     ...getInitTradingState(),
   } as PerpsState,
 
@@ -604,41 +649,43 @@ export const perps = createModel<RootModel>()({
       };
     },
 
-    setMarketData(state, payload: MarketData[] | []) {
-      const list = payload || [];
+    setMarketData(
+      state,
+      payload: { list: MarketData[]; categories: PerpTopTokenCategory[] }
+    ) {
+      const baseList = payload.list || [];
+      // Backfill ticker fields with the most recent WS snapshot — HTTP
+      // `formatMarkData` initializes price/funding/volume to empty, and any
+      // WS push that landed during the fetch window would otherwise be
+      // wiped here.
+      const list = applyAssetCtxsToList(baseList, lastCtxsByDex);
       return {
         ...state,
         marketData: list,
         marketDataMap: buildMarketDataMap(list),
+        marketDataCategories: payload.categories,
       };
     },
 
     updateMarketData(state, payload: [string, AssetCtx[]][]) {
-      if (payload.length === 0 || state.marketData.length === 0) {
-        return {
-          ...state,
-        };
+      if (payload.length === 0) {
+        return state;
       }
 
-      const marketByDexName: Record<string, AssetCtx[]> = {};
-      payload.forEach((item) => {
-        const [dexId, assetCtx] = item;
-        const dexName = dexId ? dexId : 'hyperliquid';
-        marketByDexName[dexName] = assetCtx;
-      });
-      const newMarketData = state.marketData.map((item) => {
-        const dexName = item.dexId ? item.dexId : 'hyperliquid';
-        const assetCtx = marketByDexName[dexName];
-        const ctx = assetCtx?.[item.index];
-        if (!ctx) {
-          return item;
-        }
-        return {
-          ...item,
-          ...ctx,
-          pxDecimals: getPxDecimals(String(ctx.markPx ?? item.markPx ?? '')),
-        };
-      });
+      // Always cache the latest WS snapshot regardless of whether
+      // `marketData` is populated yet — `setMarketData` (HTTP) reads from
+      // this cache to merge ticker fields, so dropping early WS frames
+      // would leave a flash of empty prices.
+      lastCtxsByDex = buildCtxsByDex(payload);
+
+      if (state.marketData.length === 0) {
+        return state;
+      }
+
+      const newMarketData = applyAssetCtxsToList(
+        state.marketData,
+        lastCtxsByDex
+      );
       return {
         ...state,
         marketData: newMarketData,
@@ -951,6 +998,7 @@ export const perps = createModel<RootModel>()({
       console.log('loginPerpsAccount success', account.address);
     },
 
+    /* @deprecated use websocket subscription push */
     async fetchClearinghouseState() {
       const sdk = getPerpsSDK();
 
@@ -961,6 +1009,7 @@ export const perps = createModel<RootModel>()({
       // dispatch.perps.patchClearinghouseState(clearinghouseState);
     },
 
+    /* @deprecated use websocket subscription push */
     async fetchPositionOpenOrders() {
       const sdk = getPerpsSDK();
       // const openOrders = await sdk.info.getFrontendOpenOrders();
@@ -1098,8 +1147,29 @@ export const perps = createModel<RootModel>()({
         }
       };
 
-      const [topAssets, allMetas, perpDexs] = await Promise.all([
+      const fetchTokenCategories = async () => {
+        if (perpsCategoryCache.length > 0) {
+          return perpsCategoryCache;
+        }
+        try {
+          const categories = await rootState.app.wallet.openapi.getPerpTokenCategories(
+            {
+              lang: 'en-US',
+            }
+          );
+          if (categories.length > 0) {
+            perpsCategoryCache = categories;
+            return categories;
+          }
+        } catch (error) {
+          console.error('Failed to fetch token categories:', error);
+        }
+        return DEFAULT_ASSET_CATEGORY;
+      };
+
+      const [topAssets, categories, allMetas, perpDexs] = await Promise.all([
         fetchTopTokenList(),
+        fetchTokenCategories(),
         sdk.info.getPerpsAllMetas(),
         sdk.info.getPerpDexs(),
       ]);
@@ -1113,9 +1183,11 @@ export const perps = createModel<RootModel>()({
         });
       }
 
-      dispatch.perps.setMarketData(
-        formatMarkData(allMetas, topAssets, dexIdMap)
-      );
+      const formattedMarketData = formatMarkData(allMetas, topAssets, dexIdMap);
+      dispatch.perps.setMarketData({
+        list: formattedMarketData,
+        categories,
+      });
     },
 
     async fetchPerpFee() {

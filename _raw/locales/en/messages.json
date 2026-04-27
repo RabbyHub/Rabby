@@ -937,15 +937,17 @@
         "title": "Enable Unified Account",
         "desc": "Unified Account is the recommended account mode that simplifies the trading experience. Spot and Perps balances are merged for all tokens, and cross margin is supported on all available assets.",
         "confirm": "Confirm",
+        "enable": "Enable",
         "cancel": "Cancel",
         "importantTips": "All USDC collateral will be used as cross margin once Unified Account is enabled.",
         "important": "Important"
       },
       "PerpsSpotSwap": {
-        "title": "Swap",
+        "title": "Swap Stablecoins",
         "from": "From",
         "to": "Swap To",
         "balance": "Balance",
+        "estReceive": "Est.Receive",
         "swapBtn": "Swap",
         "insufficientBalance": "Insufficient balance",
         "invalidAmount": "Please input a valid amount",
@@ -963,6 +965,19 @@
       "PerpMarginModePopup": {
         "crossRequiresUnified": "Cross margin for this trading pair requires a Unified Account. Would you like to enable it?"
       },
+      "PerpsTransferToPerps": {
+        "title": "Transfer",
+        "from": "From",
+        "to": "To",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Balance",
+        "amount": "Amount",
+        "max": "Max",
+        "submit": "Trans",
+        "insufficientBalance": "Insufficient balance",
+        "invalidAmount": "Please input a valid amount"
+      },
       "PerpsMultiBalance": {
         "title": "Hyperliquid Balances",
         "deposit": "Deposit",
@@ -973,6 +988,7 @@
       },
       "depositAmountPopup": {
         "amount": "Amount",
+        "balance": "Balance",
         "chain": "Chain",
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
@@ -1175,7 +1191,8 @@
         "24hVol": "24h Vol",
         "volume": "Volume",
         "fundingCountdown": "Funding / Countdown",
-        "8hrFunding": "8h Funding"
+        "8hrFunding": "8h Funding",
+        "categoryAll": "ALL"
       },
       "userInfo": {
         "tab": {
@@ -1223,7 +1240,8 @@
           "tradeHistory": "Trade History",
           "fundingHistory": "Funding History",
           "orderHistory": "Order History",
-          "assets": "Assets"
+          "assets": "Assets",
+          "about": "About"
         },
         "emptyMessage": {
           "openOrders": "No open orders",
@@ -1242,7 +1260,10 @@
           "columnAvailable": "Available Balance",
           "columnAction": "Action",
           "swapStablecoins": "Swap Stablecoins",
-          "enableUnifiedAccount": "Enable Unified Account"
+          "enableUnifiedAccount": "Enable Unified Account",
+          "transferToPerps": "Transfer to Perps",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         },
         "positionInfo": {
           "viewOrders": "View Orders",
@@ -1496,7 +1517,16 @@
         "crossAccountLeverage": "Cross Account Leverage",
         "crossAccountLeverageTips": "Cross Account Leverage = Total Cross Position Value / Cross Account Value.",
         "maintenanceMargin": "Maintenance margin",
-        "maintenanceMarginTips": "The minimum portfolio value required to keep your cross positions open"
+        "maintenanceMarginTips": "The minimum portfolio value required to keep your cross positions open",
+        "accountSummary": "Account Summary",
+        "unifiedAccountSummary": "Unified Account Summary",
+        "unifiedAccountRatio": "Unified Account Ratio",
+        "unifiedAccountRatioTips": "Represents the risk of portfolio liquidation. When the value is greater than 95%, your portfolio may be liquidated.",
+        "unifiedAccountLeverage": "Unified Account Leverage",
+        "unifiedAccountLeverageTips": "Unified Account Leverage = Total Cross Positions Value / Total Collateral Balance.",
+        "perpsMaintenanceMargin": "Perps Maintenance Margin",
+        "perpsPortfolioValue": "Perps Portfolio Value",
+        "perpsUnrealizedPnl": "Perps Unrealized PNL"
       },
       "accountActions": {
         "pending": "Pending",

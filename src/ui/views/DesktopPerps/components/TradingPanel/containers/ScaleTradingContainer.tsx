@@ -23,7 +23,7 @@ import { EVENTS } from '@/constant';
 
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
-import { TradingButton } from '../components/TradingButton';
+import { TradingButton } from '../components/TradingButtons';
 import { BigNumber } from 'bignumber.js';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';

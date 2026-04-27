@@ -138,15 +138,14 @@ export const usePerpsTradingState = () => {
 
   const { availableBalance: withdrawableBalance } = usePerpsAccount();
 
-  // Available balance - use withdrawable as direction-agnostic value
+  // Available balance - direction-agnostic min of buy/sell available.
   const availableBalance = React.useMemo(() => {
-    return Math.min(
-      Number(wsActiveAssetData?.availableToTrade[0] || 0),
-      Number(wsActiveAssetData?.availableToTrade[1] || 0)
-    );
+    const buy = Number(wsActiveAssetData?.availableToTrade?.[0] || 0);
+    const sell = Number(wsActiveAssetData?.availableToTrade?.[1] || 0);
+    return Math.min(buy, sell);
   }, [
-    wsActiveAssetData?.availableToTrade[0],
-    wsActiveAssetData?.availableToTrade[1],
+    wsActiveAssetData?.availableToTrade?.[0],
+    wsActiveAssetData?.availableToTrade?.[1],
   ]);
 
   const rawMaxBuyTradeSize = wsActiveAssetData?.maxTradeSzs[0];
@@ -235,33 +234,34 @@ export const usePerpsTradingState = () => {
       dirTradeSize: string,
       orderPrice?: number | string
     ) => {
-      const px = Number(orderPrice ?? markPrice);
-      const size = Number(dirTradeSize);
-      if (!px || !leverage || size === 0) {
+      const pxBN = new BigNumber(orderPrice ?? markPrice);
+      const sizeBN = new BigNumber(dirTradeSize || 0);
+      if (!pxBN.gt(0) || !leverage || sizeBN.isZero()) {
         return { liqPrice: '', cost: '0 USD' };
       }
 
-      const netNew = calcNetNewSize(direction, size);
+      const netNew = calcNetNewSize(direction, sizeBN.toNumber());
+      const netNewBN = new BigNumber(netNew);
 
       // Cost
       let cost = '$0.00';
-      if (!reduceOnly && netNew > 0) {
-        const netNewMargin = (netNew * px) / leverage;
+      if (!reduceOnly && netNewBN.gt(0)) {
+        const netNewMargin = netNewBN.times(pxBN).dividedBy(leverage);
         cost = `${splitNumberByStep(netNewMargin.toFixed(2))} ${quoteAsset}`;
       }
 
       // Liq price
-      if (netNew === 0) {
+      if (netNewBN.isZero()) {
         return { liqPrice: '-', cost };
       }
-      const netNewUsd = netNew * px;
-      const netNewMargin = netNewUsd / leverage;
+      const netNewUsdBN = netNewBN.times(pxBN);
+      const netNewMarginBN = netNewUsdBN.dividedBy(leverage);
       const liqPrice = calLiquidationPrice(
-        px,
-        leverageType === 'cross' ? crossMargin : netNewMargin,
+        pxBN.toNumber(),
+        leverageType === 'cross' ? crossMargin : netNewMarginBN.toNumber(),
         direction,
-        netNew,
-        netNewUsd,
+        netNewBN.toNumber(),
+        netNewUsdBN.toNumber(),
         maxLeverage
       );
       if (!new BigNumber(liqPrice).gt(0)) {
@@ -283,6 +283,7 @@ export const usePerpsTradingState = () => {
       maxLeverage,
       pxDecimals,
       calcNetNewSize,
+      quoteAsset,
     ]
   );
 

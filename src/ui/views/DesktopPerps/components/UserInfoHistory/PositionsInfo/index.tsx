@@ -42,6 +42,8 @@ import {
   isScreenSmall,
 } from '../../../utils';
 import { formatPerpsCoin } from '../../../utils';
+import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
+import { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
 import perpsToast from '../../PerpsToast';
 import { ga4 } from '@/utils/ga4';
 import stats from '@/stats';
@@ -51,6 +53,7 @@ export interface PositionFormatData {
   direction: 'Long' | 'Short';
   type: 'cross' | 'isolated';
   coin: string;
+  quoteAsset: string;
   size: string;
   positionValue: string;
   leverage: number;
@@ -130,6 +133,7 @@ export const PositionsInfo: React.FC = () => {
       );
 
       const pxDecimals = marketData.pxDecimals || 2;
+      const quoteAsset = marketData.quoteAsset || 'USDC';
 
       const liquidationDistance = calculateDistanceToLiquidation(
         item.position.liquidationPx,
@@ -144,6 +148,7 @@ export const PositionsInfo: React.FC = () => {
         leverage: item.position.leverage.value,
         maxLeverage: marketData.maxLeverage || 25,
         positionValue: item.position.positionValue,
+        quoteAsset,
         markPx: Number(marketData.markPx || 0).toFixed(pxDecimals),
         entryPx: Number(item.position.entryPx || 0).toFixed(pxDecimals),
         liquidationPx:
@@ -308,7 +313,7 @@ export const PositionsInfo: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         className: 'relative',
         key: 'coin',
-        width: 100,
+        width: 130,
         dataIndex: 'coin',
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
@@ -323,12 +328,23 @@ export const PositionsInfo: React.FC = () => {
             >
               <div>
                 <div
-                  className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1 mb-[2px] cursor-pointer hover:font-bold hover:text-rb-brand-default"
+                  className="group text-[13px] leading-[16px] font-medium text-r-neutral-title-1 mb-[2px] cursor-pointer"
                   onClick={() => {
                     dispatch.perps.setSelectedCoin(record.coin);
                   }}
                 >
-                  {formatPerpsCoin(record.coin)}
+                  <PerpsDisplayCoinName
+                    item={
+                      marketDataMap[record.coin] || {
+                        name: record.coin,
+                        quoteAsset: record.quoteAsset as PerpsQuoteAsset,
+                      }
+                    }
+                    separator="-"
+                    showDexTag
+                    baseClassName="group-hover:text-rb-brand-default group-hover:font-bold"
+                    quoteClassName="text-r-neutral-title-1 group-hover:text-rb-brand-default group-hover:font-bold"
+                  />
                 </div>
                 <div
                   className={clsx(
