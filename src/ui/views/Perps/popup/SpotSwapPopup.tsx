@@ -1,29 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Dropdown, Menu, message } from 'antd';
+import { Button, Dropdown, Menu, Tooltip } from 'antd';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { Popup } from '@/ui/component';
 import { PopupProps } from '@/ui/component/Popup';
-import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconArrowDownCC } from '@/ui/assets/arrow-down-cc.svg';
 import { ReactComponent as RcIconAddDeposit } from '@/ui/assets/perps/IconAddDeposit.svg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
-import {
-  ALL_PERPS_QUOTE_ASSETS,
-  PerpsQuoteAsset,
-  SPOT_STABLE_COIN_NAME,
-  getSpotBalanceKey,
-} from '../constants';
+import { PerpsQuoteAsset } from '../constants';
 import { QUOTE_ASSET_ICON_MAP } from '../components/quoteAssetIcons';
-import { usePerpsAccount } from '../hooks/usePerpsAccount';
-import { usePerpsSpotMids } from '../hooks/usePerpsSpotMids';
 import { usePerpsPosition } from '../hooks/usePerpsPosition';
-
-const STABLECOIN_SLIPPAGE = 0.01;
-export const PERPS_MIN_SWAP_AMOUNT = 15;
+import { useStableCoinSwap } from '../hooks/useStableCoinSwap';
 
 interface SpotSwapContentProps {
   visible: boolean;
@@ -45,153 +34,31 @@ const Content: React.FC<SpotSwapContentProps> = ({
   onDeposit,
 }) => {
   const { t } = useTranslation();
-  const { spotBalancesMap, getSpotBalance } = usePerpsAccount();
   const { handleStableCoinOrder } = usePerpsPosition();
-  const midPrices = usePerpsSpotMids(visible);
 
-  const [fromCoin, setFromCoin] = useState<PerpsQuoteAsset>('USDC');
-  const [toCoin, setToCoin] = useState<PerpsQuoteAsset>('USDT');
-  const [amount, setAmount] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-
-  // Snapshot balances so the seed effect doesn't refire on each WS tick (which
-  // would wipe the user's typed amount).
-  const balancesRef = useRef(spotBalancesMap);
-  balancesRef.current = spotBalancesMap;
-
-  useEffect(() => {
-    if (!visible) return;
-    if (targetAsset) {
-      setFromCoin('USDC');
-      setToCoin(targetAsset);
-    } else if (sourceAsset) {
-      setFromCoin(sourceAsset);
-      setToCoin(sourceAsset === 'USDC' ? 'USDT' : 'USDC');
-    } else {
-      const sorted = ALL_PERPS_QUOTE_ASSETS.map((c) => ({
-        coin: c,
-        bal: Number(balancesRef.current[getSpotBalanceKey(c)]?.available || 0),
-      }))
-        .filter((i) => i.bal > 0)
-        .sort((a, b) => b.bal - a.bal);
-      if (sorted.length === 0) {
-        setFromCoin('USDC');
-        setToCoin('USDT');
-      } else {
-        setFromCoin(sorted[0].coin);
-        setToCoin(
-          sorted.find((i) => i.coin !== sorted[0].coin)?.coin ||
-            (sorted[0].coin === 'USDC' ? 'USDT' : 'USDC')
-        );
-      }
-    }
-    setAmount('');
-  }, [visible, targetAsset, sourceAsset]);
-
-  const fromBalanceStr = useMemo(
-    () => spotBalancesMap[getSpotBalanceKey(fromCoin)]?.available || '0',
-    [fromCoin, spotBalancesMap]
-  );
-  const fromBalanceBN = useMemo(() => new BigNumber(fromBalanceStr), [
-    fromBalanceStr,
-  ]);
-
-  const amountBN = useMemo(() => new BigNumber(amount || 0), [amount]);
-
-  // Mid price for current non-USDC leg as BigNumber (1 fallback — safe: limitPx
-  // is an upper/lower bound, real fill is matched against the orderbook).
-  const midBN = useMemo(() => {
-    if (fromCoin === toCoin) return new BigNumber(1);
-    const nonUsdc = fromCoin === 'USDC' ? toCoin : fromCoin;
-    if (nonUsdc === 'USDC') return new BigNumber(1);
-    const spotName =
-      SPOT_STABLE_COIN_NAME[nonUsdc as Exclude<PerpsQuoteAsset, 'USDC'>];
-    const raw = midPrices[spotName] || midPrices[nonUsdc] || '1';
-    const n = new BigNumber(raw);
-    return n.isFinite() && n.gt(0) ? n : new BigNumber(1);
-  }, [fromCoin, toCoin, midPrices]);
-
-  const receiveAmountStr = useMemo(() => {
-    if (amountBN.lte(0)) return '0';
-    const isBuy = fromCoin === 'USDC';
-    const converted = isBuy ? amountBN.dividedBy(midBN) : amountBN.times(midBN);
-    return converted.decimalPlaces(2, BigNumber.ROUND_DOWN).toFixed();
-  }, [amountBN, midBN, fromCoin]);
-
-  const errorMessage = useMemo(() => {
-    if (!amount) return '';
-    if (amountBN.lt(PERPS_MIN_SWAP_AMOUNT))
-      return t('page.perps.PerpsSpotSwap.minimumAmount');
-    if (amountBN.gt(fromBalanceBN))
-      return t('page.perps.PerpsSpotSwap.insufficientBalance');
-    return '';
-  }, [amount, amountBN, fromBalanceBN, t]);
-
-  // SDK stableCoinOrder supports only X ↔ USDC pairs.
-  const invalidPair = useMemo(() => {
-    if (fromCoin === toCoin) return true;
-    if (fromCoin !== 'USDC' && toCoin !== 'USDC') return true;
-    return false;
-  }, [fromCoin, toCoin]);
-
-  const canSubmit =
-    !invalidPair && !errorMessage && amountBN.gt(0) && !submitting;
-
-  const handleFromChange = useMemoizedFn((v: PerpsQuoteAsset) => {
-    setFromCoin(v);
-    if (v !== 'USDC' && toCoin !== 'USDC') setToCoin('USDC');
-    if (v === toCoin) setToCoin(v === 'USDC' ? 'USDT' : 'USDC');
-  });
-
-  const handleToChange = useMemoizedFn((v: PerpsQuoteAsset) => {
-    setToCoin(v);
-    if (v !== 'USDC' && fromCoin !== 'USDC') setFromCoin('USDC');
-    if (v === fromCoin) setFromCoin(v === 'USDC' ? 'USDT' : 'USDC');
-  });
-
-  const handlePercent = useMemoizedFn((pct: number) => {
-    if (fromBalanceBN.lte(0)) return;
-    setAmount(
-      fromBalanceBN.times(pct).decimalPlaces(2, BigNumber.ROUND_DOWN).toFixed()
-    );
-  });
-
-  const handleSwap = useMemoizedFn(async () => {
-    if (!canSubmit) return;
-    setSubmitting(true);
-    try {
-      const isBuy = fromCoin === 'USDC';
-      const nonUsdc = (isBuy ? toCoin : fromCoin) as 'USDT' | 'USDH' | 'USDE';
-      const limitPx = isBuy
-        ? midBN
-            .times(1 + STABLECOIN_SLIPPAGE)
-            .decimalPlaces(4)
-            .toFixed()
-        : midBN
-            .times(1 - STABLECOIN_SLIPPAGE)
-            .decimalPlaces(4)
-            .toFixed();
-      const size = isBuy
-        ? amountBN
-            .dividedBy(midBN)
-            .decimalPlaces(2, BigNumber.ROUND_DOWN)
-            .toFixed()
-        : amountBN.decimalPlaces(2, BigNumber.ROUND_DOWN).toFixed();
-
-      const ok = await handleStableCoinOrder({
-        coin: nonUsdc,
-        isBuy,
-        size,
-        limitPx,
-      });
-      if (ok) {
-        message.success(t('page.perps.PerpsSpotSwap.swapSuccess'));
-        onSuccess?.();
-        onClose();
-      }
-    } finally {
-      setSubmitting(false);
-    }
+  const {
+    fromCoin,
+    toCoin,
+    amount,
+    setAmount,
+    submitting,
+    fromBalanceBN,
+    receiveAmountStr,
+    errorMessage,
+    canSubmit,
+    sortedCoins,
+    getSpotBalance,
+    handleFromChange,
+    handleToChange,
+    handlePercent,
+    handleSwap,
+  } = useStableCoinSwap({
+    visible,
+    targetAsset,
+    sourceAsset,
+    handleStableCoinOrder,
+    onSuccess,
+    onClose,
   });
 
   const CoinOption = ({ coin }: { coin: PerpsQuoteAsset }) => {
@@ -203,12 +70,6 @@ const Content: React.FC<SpotSwapContentProps> = ({
       </div>
     );
   };
-
-  const sortedCoins = useMemo(() => {
-    return [...ALL_PERPS_QUOTE_ASSETS].sort(
-      (a, b) => getSpotBalance(b) - getSpotBalance(a)
-    );
-  }, [getSpotBalance, spotBalancesMap]);
 
   const renderCoinMenu = (onSelect: (v: PerpsQuoteAsset) => void) => (
     <Menu
@@ -224,7 +85,7 @@ const Content: React.FC<SpotSwapContentProps> = ({
           >
             <div className="flex items-center justify-between gap-12">
               <CoinOption coin={c} />
-              <span className="text-r-neutral-foot text-13">
+              <span className="text-r-neutral-title-1 font-medium text-13">
                 {new BigNumber(bal)
                   .decimalPlaces(2, BigNumber.ROUND_DOWN)
                   .toFixed()}
@@ -286,7 +147,7 @@ const Content: React.FC<SpotSwapContentProps> = ({
               {t('page.perps.PerpsSpotSwap.balance')}:{' '}
               {fromBalanceBN.toFixed(4)}
             </span>
-            {onDeposit && (
+            {onDeposit && fromCoin === 'USDC' && (
               <button
                 type="button"
                 onClick={onDeposit}
@@ -366,13 +227,13 @@ const Content: React.FC<SpotSwapContentProps> = ({
           <span className="text-r-neutral-foot inline-flex items-center gap-4">
             {t('page.perps.PerpsSpotSwap.estReceive')}:{receiveAmountStr}{' '}
             {toCoin}
-            <TooltipWithMagnetArrow
+            <Tooltip
               overlayClassName="rectangle w-[max-content]"
               placement="top"
               title={t('page.perps.PerpsSpotSwap.estReceiveTooltip')}
             >
               <RcIconInfo className="text-r-neutral-foot relative" />
-            </TooltipWithMagnetArrow>
+            </Tooltip>
           </span>
         )}
       </div>

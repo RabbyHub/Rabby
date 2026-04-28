@@ -76,13 +76,6 @@ export const usePerpsActions = () => {
           abstraction: UserAbstraction.UNIFIED_ACCOUNT,
         });
 
-        // const signature = await wallet.sendRequest<string>(
-        //   {
-        //     method: 'eth_signTypedDataV4',
-        //     params: [currentPerpsAccount.address, JSON.stringify(actionObj)],
-        //   },
-        //   { account: currentPerpsAccount }
-        // );
         const [signature] = await executeSignTypedData(
           [action],
           currentPerpsAccount

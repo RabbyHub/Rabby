@@ -165,7 +165,10 @@ export const PerpsSingleCoin = () => {
 
   const quoteAsset = currentAssetCtx?.quoteAsset as PerpsQuoteAsset | undefined;
 
-  const availableBalance = getAvailableByAsset(quoteAsset || 'USDC');
+  const availableBalance = useMemo(
+    () => getAvailableByAsset(quoteAsset || 'USDC'),
+    [getAvailableByAsset, quoteAsset]
+  );
 
   const needEnableUnifiedAccount = useMemo(
     () => !isUnifiedAccount && !!quoteAsset && quoteAsset !== 'USDC',
@@ -1348,6 +1351,11 @@ export const PerpsSingleCoin = () => {
       <SpotSwapPopup
         visible={swapVisible}
         targetAsset={swapTargetAsset}
+        onDeposit={() => {
+          setSwapVisible(false);
+          setSwapTargetAsset(undefined);
+          setAmountVisible(true);
+        }}
         disableSwitch={!!swapTargetAsset}
         onCancel={() => {
           setSwapVisible(false);

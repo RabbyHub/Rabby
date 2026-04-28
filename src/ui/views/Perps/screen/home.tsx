@@ -33,7 +33,6 @@ import { SpotSwapPopup } from '../popup/SpotSwapPopup';
 import { usePerpsActions } from '../hooks/usePerpsActions';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import type { PerpsQuoteAsset } from '../constants';
-import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
 import {
   DirectSubmitProvider,
   supportedDirectSign,
@@ -660,6 +659,10 @@ export const Perps: React.FC = () => {
         sourceAsset={swapSourceAsset}
         targetAsset={swapTargetAsset}
         disableSwitch={!!swapTargetAsset}
+        onDeposit={() => {
+          setSwapVisible(false);
+          setAmountVisible(true);
+        }}
         onCancel={() => {
           setSwapVisible(false);
           setSwapSourceAsset(undefined);
@@ -690,7 +693,6 @@ export const Perps: React.FC = () => {
       <PerpsWithdrawPopup
         visible={withdrawVisible}
         currentPerpsAccount={currentPerpsAccount}
-        availableBalance={availableBalance.toString() || '0'}
         handleWithdraw={handleWithdraw}
         onClose={() => setWithdrawVisible(false)}
       />

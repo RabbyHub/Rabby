@@ -277,3 +277,6 @@ export const SPOT_STABLE_COIN_NAME: Record<
   USDT: '@166',
   USDH: '@230',
 };
+
+export const PERPS_MIN_SWAP_AMOUNT = 15;
+export const STABLECOIN_SLIPPAGE = 0.01;

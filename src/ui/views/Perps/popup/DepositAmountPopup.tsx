@@ -98,8 +98,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     return info;
   }, [currentPerpsAccount?.address, visible, selectedToken]);
 
-  const isMissingRole = false;
-
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
   }, [_tokenInfo, selectedToken]);
@@ -322,11 +320,11 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         Number(usdValue),
         tokenInfo || ARB_USDC_TOKEN_ITEM,
         gasPrice,
-        isMissingRole
+        false
       );
     },
     300,
-    [gasPrice, usdValue, visible, updateMiniSignTx, tokenInfo, isMissingRole]
+    [gasPrice, usdValue, visible, updateMiniSignTx, tokenInfo]
   );
 
   useEffect(() => {

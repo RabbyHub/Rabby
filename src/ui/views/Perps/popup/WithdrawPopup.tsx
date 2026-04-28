@@ -24,7 +24,7 @@ import { formatNumber, formatUsdValue } from '@/ui/utils/number';
 import {
   ARB_USDC_TOKEN_ITEM,
   ARB_USDC_TOKEN_SERVER_CHAIN,
-  HYPE_EVM_BRIDGE_ADDRESS,
+  HYPE_EVM_BRIDGE_ADDRESS_MAP,
   WITHDRAW_CHAIN_TOKENS,
   WITHDRAW_CHAINS,
   PerpsQuoteAsset,
@@ -37,7 +37,6 @@ const MIN_WITHDRAW = 2;
 
 export type PerpsWithdrawPopupProps = PopupProps & {
   currentPerpsAccount: Account | null;
-  availableBalance: string;
   handleWithdraw?: (
     amount: number,
     isHypeWithdraw?: boolean,
@@ -49,7 +48,6 @@ export type PerpsWithdrawPopupProps = PopupProps & {
 export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
   visible,
   currentPerpsAccount,
-  availableBalance,
   handleWithdraw,
   onClose,
   ...rest
@@ -57,7 +55,7 @@ export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
-  const { spotBalancesMap, isUnifiedAccount } = usePerpsAccount();
+  const { isUnifiedAccount, getAvailableByAsset } = usePerpsAccount();
 
   const [usdValue, setUsdValue] = useState<string>('');
   const [selectedToken, setSelectedToken] = useState<TokenItem | null>(null);
@@ -95,19 +93,28 @@ export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
     }
   }, [visible]);
 
-  // HyperEVM withdraw activation fee
+  // HyperEVM withdraw activation fee — bridge is per-asset (USDC/USDT/USDE/USDH).
   const [hypeTransferFee, setHypeTransferFee] = useState<string>('0');
   useEffect(() => {
     if (!visible || !currentPerpsAccount?.address) {
       setHypeTransferFee('0');
       return;
     }
+    const sym = selectedToken
+      ? (getTokenSymbol(selectedToken).toUpperCase() as PerpsQuoteAsset)
+      : 'USDC';
+    const bridge =
+      HYPE_EVM_BRIDGE_ADDRESS_MAP[
+        sym === 'USDC' || sym === 'USDT' || sym === 'USDE' || sym === 'USDH'
+          ? sym
+          : 'USDC'
+      ];
     const sdk = getPerpsSDK();
     sdk.info
-      .getPreTransferCheck(HYPE_EVM_BRIDGE_ADDRESS, currentPerpsAccount.address)
+      .getPreTransferCheck(bridge, currentPerpsAccount.address)
       .then((res) => setHypeTransferFee(res?.fee || '0'))
       .catch(() => setHypeTransferFee('0'));
-  }, [visible, currentPerpsAccount?.address]);
+  }, [visible, currentPerpsAccount?.address, selectedToken]);
 
   const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
   const hypeGasFeeUsd = useMemo(() => {
@@ -133,23 +140,25 @@ export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
     const list = WITHDRAW_CHAIN_TOKENS[selectChainId] || [];
     return list
       .map((tk) => {
-        const sym = getTokenSymbol(tk).toUpperCase();
-        let balance = 0;
-        if (isUnifiedAccount) {
-          const key = sym === 'USDT' ? 'USDT0' : sym;
-          balance = Number(spotBalancesMap[key]?.available || 0);
-        } else if (sym === 'USDC') {
-          balance = Number(availableBalance);
-        }
+        const sym = getTokenSymbol(tk).toUpperCase() as PerpsQuoteAsset;
+        const isStable =
+          sym === 'USDC' || sym === 'USDT' || sym === 'USDE' || sym === 'USDH';
+        // Non-unified accounts can only hold USDC; other stables are 0.
+        const balance =
+          isStable && (isUnifiedAccount || sym === 'USDC')
+            ? getAvailableByAsset(sym)
+            : 0;
         return { token: tk, balance };
       })
       .sort((a, b) => b.balance - a.balance);
-  }, [selectChainId, isUnifiedAccount, spotBalancesMap, availableBalance]);
+  }, [selectChainId, isUnifiedAccount, getAvailableByAsset]);
 
   const withdrawMaxBalance = useMemo(() => {
     const baseBalance = (() => {
-      if (!isHypeWithdraw) return Number(availableBalance);
-      if (!selectedToken) return Number(availableBalance);
+      // ARB withdrawals can only settle USDC, so the cap must be the
+      // USDC-specific balance — not the unified-account aggregate sum.
+      if (!isHypeWithdraw) return getAvailableByAsset('USDC');
+      if (!selectedToken) return getAvailableByAsset('USDC');
       const row = chainTokenItems.find(
         (i) =>
           i.token.id === selectedToken.id &&
@@ -167,7 +176,7 @@ export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
     );
   }, [
     isHypeWithdraw,
-    availableBalance,
+    getAvailableByAsset,
     hypeTransferFee,
     selectedToken,
     chainTokenItems,

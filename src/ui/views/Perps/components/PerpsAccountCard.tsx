@@ -18,6 +18,7 @@ import { ReactComponent as RcIconBalanceMinus } from '@/ui/assets/perps/IconBala
 import { ReactComponent as RcIconAddFunds } from '@/ui/assets/perps/IconAddFunds.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ReactComponent as RcIconArrowDownCC } from '@/ui/assets/perps/IconArrowDownCC.svg';
+import { ReactComponent as RcIconArrowDownDark } from '@/ui/assets/perps/IconArrowDownDark.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconPerpsGuideLogo } from '@/ui/assets/perps/IconPerpsGuideLogo.svg';
 import { ReactComponent as RcIconPerpsGuideLogoDark } from '@/ui/assets/perps/IconPerpsGuideLogoDark.svg';
@@ -140,14 +141,21 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
               }}
             >
               {t('page.perpsDetail.PerpsOpenPositionPopup.available')}
-              {canExpand && (
-                <RcIconArrowDownCC
-                  className={clsx(
-                    'text-r-neutral-foot transition-transform',
-                    isBalanceExpanded && '-rotate-180'
-                  )}
-                />
-              )}
+              {canExpand &&
+                (isDarkTheme ? (
+                  <RcIconArrowDownDark
+                    className={clsx('transition-transform',
+                      isBalanceExpanded && '-rotate-180'
+                    )}
+                  />
+                ) : (
+                  <RcIconArrowDownCC
+                    className={clsx(
+                      'text-r-neutral-foot transition-transform',
+                      isBalanceExpanded && '-rotate-180'
+                    )}
+                  />
+                ))}
             </div>
           </div>
           {hasNoBalance ? (
@@ -206,7 +214,9 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
                     className="inline-flex items-center gap-4 text-12 font-medium text-r-neutral-title-1"
                   >
                     <Icon className="w-[16px] h-[16px]" />
-                    <span>${b.available.toFixed(2)}</span>
+                    <span>
+                      {formatUsdValue(b.available, BigNumber.ROUND_DOWN)}
+                    </span>
                   </div>
                 );
               })}

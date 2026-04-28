@@ -65,6 +65,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
     next,
     closePerpsPopup,
     advancePerpsPopup,
+    openPerpsPopup,
   } = usePerpsPopupNav();
   const { handleEnableUnifiedAccount } = usePerpsActions();
 
@@ -150,6 +151,9 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         sourceAsset={source}
         targetAsset={target}
         disableSwitch={!!target}
+        onDeposit={() => {
+          openPerpsPopup('deposit');
+        }}
         onClose={closePerpsPopup}
       />
 

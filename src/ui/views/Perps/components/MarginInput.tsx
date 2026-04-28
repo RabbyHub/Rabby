@@ -114,7 +114,6 @@ export const MarginInput: React.FC<MarginInputProps> = ({
           {new BigNumber(availableAmount)
             .decimalPlaces(2, BigNumber.ROUND_DOWN)
             .toFixed()}
-          {/* {formatNumber(Number(availableAmount), 2, {}, BigNumber.ROUND_DOWN)} */}
         </div>
         <input
           className={clsx(

@@ -152,8 +152,6 @@ const PositionItem: React.FC<{
   const logoUrl = marketData?.logoUrl || '';
   const leverageText = `${leverage.value}x`;
   const markPrice = marketData?.markPx || '0';
-  console.log('markPrice', markPrice, 'liquidationPx', liquidationPx);
-  console.log('marketData', marketData);
 
   return (
     <div

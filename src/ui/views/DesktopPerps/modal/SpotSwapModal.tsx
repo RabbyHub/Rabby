@@ -1,27 +1,19 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Modal, Button, Dropdown, Menu, Input, message } from 'antd';
+import React from 'react';
+import { Modal, Button, Dropdown, Menu, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import clsx from 'clsx';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
-import {
-  ALL_PERPS_QUOTE_ASSETS,
-  PerpsQuoteAsset,
-  SPOT_STABLE_COIN_NAME,
-  getSpotBalanceKey,
-} from '@/ui/views/Perps/constants';
+import { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
 import { QUOTE_ASSET_ICON_MAP as COIN_ICON_MAP } from '@/ui/views/Perps/components/quoteAssetIcons';
-import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import { ReactComponent as RcIconAddDeposit } from '@/ui/assets/perps/IconAddDeposit.svg';
 import { usePerpsProPosition } from '@/ui/views/DesktopPerps/hooks/usePerpsProPosition';
-import { usePerpsSpotMids } from '@/ui/views/Perps/hooks/usePerpsSpotMids';
-import { useMemoizedFn } from 'ahooks';
-import { RcIconArrowDownCC, RcIconPlusCC } from '@/ui/assets/desktop/common';
-import { PERPS_MIN_SWAP_AMOUNT } from '../../Perps/popup/SpotSwapPopup';
-
+import { useStableCoinSwap } from '@/ui/views/Perps/hooks/useStableCoinSwap';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 export { COIN_ICON_MAP };
-
-const STABLECOIN_SLIPPAGE = 0.01;
 
 interface SpotSwapModalProps {
   visible: boolean;
@@ -51,173 +43,33 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { handleStableCoinOrder } = usePerpsProPosition();
-  const { spotBalancesMap, getSpotBalance } = usePerpsAccount();
-  const [fromCoin, setFromCoin] = useState<PerpsQuoteAsset>('USDC');
-  const [toCoin, setToCoin] = useState<PerpsQuoteAsset>('USDT');
-  const [amount, setAmount] = useState<string>('');
-  const midPrices = usePerpsSpotMids(visible);
-  const [submitting, setSubmitting] = useState(false);
 
-  // Snapshot spotBalancesMap so the seed effect doesn't refire on each WS tick (which would
-  // wipe the user's typed amount).
-  const balancesRef = useRef(spotBalancesMap);
-  balancesRef.current = spotBalancesMap;
-
-  useEffect(() => {
-    if (!visible) return;
-    if (targetAsset) {
-      // Explicit target: "I need to get targetAsset" — pair it with USDC as source.
-      setFromCoin('USDC');
-      setToCoin(targetAsset);
-    } else if (sourceAsset) {
-      // Explicit source: "I want to sell my sourceAsset" — pair it with USDC as target.
-      // When sourceAsset === 'USDC', default target to USDT (free choice entry).
-      setFromCoin(sourceAsset);
-      setToCoin(sourceAsset === 'USDC' ? 'USDT' : 'USDC');
-    } else {
-      const sorted = ALL_PERPS_QUOTE_ASSETS.map((c) => ({
-        coin: c,
-        bal: Number(balancesRef.current[getSpotBalanceKey(c)]?.available || 0),
-      }))
-        .filter((i) => i.bal > 0)
-        .sort((a, b) => b.bal - a.bal);
-      if (sorted.length === 0) {
-        setFromCoin('USDC');
-        setToCoin('USDT');
-      } else {
-        setFromCoin(sorted[0].coin);
-        setToCoin(
-          sorted.find((i) => i.coin !== sorted[0].coin)?.coin ||
-            (sorted[0].coin === 'USDC' ? 'USDT' : 'USDC')
-        );
-      }
-    }
-    setAmount('');
-  }, [visible, targetAsset, sourceAsset]);
-
-  // Raw balance string (BigNumber-safe). Keep numeric cast only for presentation.
-  const fromBalanceStr = useMemo(
-    () => spotBalancesMap[getSpotBalanceKey(fromCoin)]?.available || '0',
-    [fromCoin, spotBalancesMap]
-  );
-  const fromBalanceBN = useMemo(() => new BigNumber(fromBalanceStr), [
-    fromBalanceStr,
-  ]);
-  const fromBalance = useMemo(() => fromBalanceBN.toNumber(), [fromBalanceBN]);
-
-  const amountBN = useMemo(() => new BigNumber(amount || 0), [amount]);
-  const amountNum = useMemo(() => amountBN.toNumber(), [amountBN]);
-
-  // Mid price for current non-USDC leg as BigNumber (1 fallback — safe: limitPx is an
-  // upper/lower bound, real fill is matched against the orderbook).
-  const midBN = useMemo(() => {
-    if (fromCoin === toCoin) return new BigNumber(1);
-    const nonUsdc = fromCoin === 'USDC' ? toCoin : fromCoin;
-    if (nonUsdc === 'USDC') return new BigNumber(1);
-    const spotName =
-      SPOT_STABLE_COIN_NAME[nonUsdc as Exclude<PerpsQuoteAsset, 'USDC'>];
-    const raw = midPrices[spotName] || midPrices[nonUsdc] || '1';
-    const n = new BigNumber(raw);
-    return n.isFinite() && n.gt(0) ? n : new BigNumber(1);
-  }, [fromCoin, toCoin, midPrices]);
-
-  // Amount the user receives on the `to` side (preview only).
-  const receiveAmountStr = useMemo(() => {
-    if (amountBN.lte(0)) return '0';
-    const isBuy = fromCoin === 'USDC';
-    const converted = isBuy ? amountBN.dividedBy(midBN) : amountBN.times(midBN);
-    return converted.decimalPlaces(4, BigNumber.ROUND_DOWN).toFixed();
-  }, [amountBN, midBN, fromCoin]);
-
-  const errorMessage = useMemo(() => {
-    if (!amount) return '';
-    if (amountBN.lt(PERPS_MIN_SWAP_AMOUNT))
-      return t('page.perps.PerpsSpotSwap.minimumAmount');
-    if (amountBN.gt(fromBalanceBN))
-      return t('page.perps.PerpsSpotSwap.insufficientBalance');
-    return '';
-  }, [amount, amountBN, fromBalanceBN, t]);
-
-  // SDK stableCoinOrder supports only X ↔ USDC pairs.
-  const invalidPair = useMemo(() => {
-    if (fromCoin === toCoin) return true;
-    if (fromCoin !== 'USDC' && toCoin !== 'USDC') return true;
-    return false;
-  }, [fromCoin, toCoin]);
-
-  const canSubmit =
-    !invalidPair && !errorMessage && amountBN.gt(0) && !submitting;
-
-  const handleFromChange = useMemoizedFn((v: PerpsQuoteAsset) => {
-    setFromCoin(v);
-    if (v !== 'USDC' && toCoin !== 'USDC') {
-      setToCoin('USDC');
-    }
-    if (v === toCoin) {
-      setToCoin(v === 'USDC' ? 'USDT' : 'USDC');
-    }
+  const {
+    fromCoin,
+    toCoin,
+    amount,
+    setAmount,
+    submitting,
+    fromBalanceBN,
+    receiveAmountStr,
+    errorMessage,
+    canSubmit,
+    sortedCoins,
+    getSpotBalance,
+    handleFromChange,
+    handleToChange,
+    handlePercent,
+    handleSwap,
+  } = useStableCoinSwap({
+    visible,
+    targetAsset,
+    sourceAsset,
+    handleStableCoinOrder,
+    onSuccess,
+    onClose,
   });
 
-  const handleToChange = useMemoizedFn((v: PerpsQuoteAsset) => {
-    setToCoin(v);
-    if (v !== 'USDC' && fromCoin !== 'USDC') {
-      setFromCoin('USDC');
-    }
-    if (v === fromCoin) {
-      setFromCoin(v === 'USDC' ? 'USDT' : 'USDC');
-    }
-  });
-
-  const handlePercent = useMemoizedFn((pct: number) => {
-    if (fromBalanceBN.lte(0)) return;
-    const v = fromBalanceBN
-      .times(pct)
-      .decimalPlaces(2, BigNumber.ROUND_DOWN)
-      .toFixed();
-    setAmount(v);
-  });
-
-  const handleSwap = useMemoizedFn(async () => {
-    if (!canSubmit) return;
-    setSubmitting(true);
-    try {
-      const isBuy = fromCoin === 'USDC';
-      const nonUsdc = (isBuy ? toCoin : fromCoin) as 'USDT' | 'USDH' | 'USDE';
-
-      let limitPx: string;
-      let size: string;
-      if (isBuy) {
-        limitPx = midBN
-          .times(1 + STABLECOIN_SLIPPAGE)
-          .decimalPlaces(4)
-          .toFixed();
-        size = amountBN
-          .dividedBy(midBN)
-          .decimalPlaces(2, BigNumber.ROUND_DOWN)
-          .toFixed();
-      } else {
-        limitPx = midBN
-          .times(1 - STABLECOIN_SLIPPAGE)
-          .decimalPlaces(4)
-          .toFixed();
-        size = amountBN.decimalPlaces(2, BigNumber.ROUND_DOWN).toFixed();
-      }
-
-      const ok = await handleStableCoinOrder({
-        coin: nonUsdc,
-        isBuy,
-        size,
-        limitPx,
-      });
-      if (ok) {
-        message.success(t('page.perps.PerpsSpotSwap.swapSuccess'));
-        onSuccess?.();
-        onClose();
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  });
+  const fromBalance = fromBalanceBN.toNumber();
 
   const CoinOption = ({ coin }: { coin: PerpsQuoteAsset }) => {
     const Icon = COIN_ICON_MAP[coin];
@@ -228,12 +80,6 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
       </div>
     );
   };
-
-  const sortedCoins = useMemo(() => {
-    return [...ALL_PERPS_QUOTE_ASSETS].sort(
-      (a, b) => getSpotBalance(b) - getSpotBalance(a)
-    );
-  }, [getSpotBalance, spotBalancesMap]);
 
   const renderCoinMenu = (
     onSelect: (v: PerpsQuoteAsset) => void,
@@ -253,7 +99,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
           >
             <div className="flex items-center justify-between gap-12">
               <CoinOption coin={c} />
-              <span className="text-rb-neutral-secondary text-[13px]">
+              <span className="text-rb-neutral-title-1 font-medium text-[13px]">
                 {new BigNumber(bal)
                   .decimalPlaces(2, BigNumber.ROUND_DOWN)
                   .toFixed()}
@@ -263,16 +109,6 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
         );
       })}
     </Menu>
-  );
-
-  const coinSelectBtnClassName = clsx(
-    'inline-flex items-center justify-between gap-6',
-    'px-10 h-32 rounded-[6px]',
-    'border border-solid border-rb-neutral-line',
-    'bg-transparent',
-    'text-[14px] leading-[16px] font-medium text-rb-neutral-title-1',
-    'hover:border-rb-brand-default',
-    'disabled:opacity-60 disabled:cursor-not-allowed'
   );
 
   return (
@@ -306,6 +142,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                 {t('page.perps.PerpsSpotSwap.to')}
               </span>
               <Dropdown
+                placement="bottomRight"
                 transitionName=""
                 forceRender
                 disabled={!!targetAsset || submitting}
@@ -313,7 +150,16 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
               >
                 <button
                   type="button"
-                  className={coinSelectBtnClassName}
+                  className={clsx(
+                    'inline-flex items-center justify-between gap-6',
+                    'px-10 h-32 rounded-[6px]',
+                    'border border-solid border-rb-neutral-line',
+                    'bg-transparent',
+                    'text-[14px] leading-[16px] font-medium text-rb-neutral-title-1',
+                    !(!!targetAsset || submitting) &&
+                      'hover:border-rb-brand-default',
+                    'disabled:cursor-default'
+                  )}
                   disabled={!!targetAsset || submitting}
                 >
                   <CoinOption coin={toCoin} />
@@ -332,7 +178,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                     {t('page.perps.PerpsSpotSwap.balance')}:{' '}
                     {fromBalance.toFixed(4)}
                   </span>
-                  {onDeposit && (
+                  {onDeposit && fromCoin === 'USDC' && (
                     <button
                       type="button"
                       onClick={onDeposit}
@@ -343,7 +189,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                         'disabled:opacity-60 disabled:cursor-not-allowed'
                       )}
                     >
-                      <RcIconPlusCC className="w-12 h-12" />
+                      <RcIconAddDeposit />
                     </button>
                   )}
                 </div>
@@ -359,6 +205,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                   disabled={submitting}
                 />
                 <Dropdown
+                  placement="bottomRight"
                   transitionName=""
                   forceRender
                   disabled={disableSwitch || submitting}
@@ -366,7 +213,16 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                 >
                   <button
                     type="button"
-                    className={coinSelectBtnClassName}
+                    className={clsx(
+                      'inline-flex items-center justify-between gap-6',
+                      'px-10 h-32 rounded-[6px]',
+                      'border border-solid border-rb-neutral-line',
+                      'bg-transparent',
+                      'text-[14px] leading-[16px] font-medium text-rb-neutral-title-1',
+                      !(!!targetAsset || submitting) &&
+                        'hover:border-rb-brand-default',
+                      'disabled:cursor-default'
+                    )}
                     disabled={disableSwitch || submitting}
                   >
                     <CoinOption coin={fromCoin} />
@@ -400,8 +256,15 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                 <span className="text-r-red-default">{errorMessage}</span>
               ) : (
                 <>
-                  <span className="text-r-neutral-foot">
+                  <span className="text-r-neutral-foot gap-4 flex items-center">
                     {t('page.perps.PerpsSpotSwap.estReceive')}
+                    <TooltipWithMagnetArrow
+                      overlayClassName="rectangle w-[max-content]"
+                      placement="top"
+                      title={t('page.perps.PerpsSpotSwap.estReceiveTooltip')}
+                    >
+                      <RcIconInfo className="text-r-neutral-foot relative" />
+                    </TooltipWithMagnetArrow>
                   </span>
                   <span className="text-r-neutral-title-1 font-medium">
                     {receiveAmountStr} {toCoin}
