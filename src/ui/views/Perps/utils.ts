@@ -1,18 +1,30 @@
 import { Account } from 'background/service/preference';
 import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
-import { Meta, AssetCtx, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
-import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
-import { PERPS_MAX_NTL_VALUE, PERPS_POSITION_RISK_LEVEL } from './constants';
+import { Meta, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
+import { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  PERPS_MAX_NTL_VALUE,
+  PERPS_POSITION_RISK_LEVEL,
+  PerpsQuoteAsset,
+  COLLATERAL_TOKEN_TO_QUOTE,
+} from './constants';
 import { useWallet, WalletController } from '@/ui/utils';
 import { KEYRING_CLASS } from '@/constant';
 import { getPerpsSDK } from './sdkManager';
 import { maxBy } from 'lodash';
 
-const getPxDecimals = (markPx: string) => {
+export const getPxDecimals = (markPx: string) => {
   const parts = markPx.split('.');
   if (!parts[1]) return 2;
   const decimalPart = parts[1];
   return decimalPart.length;
+};
+
+/**
+ * Determine quote asset from Meta.collateralToken.
+ */
+export const getQuoteAssetFromMeta = (meta: Meta): PerpsQuoteAsset => {
+  return COLLATERAL_TOKEN_TO_QUOTE[meta.collateralToken] ?? 'USDC';
 };
 
 export const normalizeHyperliquidCoinForLogo = (coin: string) => {
@@ -35,91 +47,83 @@ export const getHyperliquidCoinLogoUrl = (coin: string) => {
 };
 
 export const formatMarkData = (
-  marketData: [Meta, AssetCtx[]],
-  topAssets: PerpTopToken[],
-  xyzMarketData: [Meta, AssetCtx[]]
+  allMetas: Meta[],
+  topAssets: PerpTopTokenV3[],
+  dexIdMap: Record<number, string>
 ): MarketData[] => {
   try {
-    if (!Array.isArray(marketData) || marketData.length < 2) {
-      console.error(
-        'Failed to format market data: marketData is not an array or has less than 2 items'
-      );
+    if (!Array.isArray(allMetas) || allMetas.length === 0) {
+      console.error('Failed to format market data: allMetas is empty');
       return [];
     }
 
-    const meta = marketData[0];
-    const metrics = marketData[1];
-    if (!meta || !Array.isArray(meta.universe) || !Array.isArray(metrics)) {
-      console.error(
-        'Failed to format market data: meta or metrics is not an array'
-      );
-      return [];
-    }
-
-    const marginTableMap: Record<number, MarginTable> = {};
-    if (Array.isArray(meta.marginTables)) {
-      for (const entry of meta.marginTables) {
-        const [id, table] = entry || [];
-        if (id != null) marginTableMap[id] = table;
+    // Build a lookup: dexId → { meta, marginTableMap, quoteAsset }
+    const dexLookup: Record<
+      string,
+      {
+        meta: Meta;
+        marginTableMap: Record<number, MarginTable>;
+        quoteAsset: PerpsQuoteAsset;
       }
-    }
+    > = {};
 
-    const xyzMarginTableMap: Record<number, MarginTable> = {};
-    if (
-      xyzMarketData?.[0]?.marginTables &&
-      Array.isArray(xyzMarketData[0].marginTables)
-    ) {
-      for (const entry of xyzMarketData[0].marginTables) {
-        const [id, table] = entry || [];
-        if (id != null) xyzMarginTableMap[id] = table;
+    allMetas.forEach((meta, idx) => {
+      const dexId = dexIdMap[idx] ?? String(idx);
+      const marginTableMap: Record<number, MarginTable> = {};
+      if (Array.isArray(meta.marginTables)) {
+        for (const entry of meta.marginTables) {
+          const [id, table] = entry || [];
+          if (id != null) marginTableMap[id] = table;
+        }
       }
-    }
+      dexLookup[dexId] = {
+        meta,
+        marginTableMap,
+        quoteAsset: getQuoteAssetFromMeta(meta),
+      };
+    });
 
     const result: MarketData[] = topAssets
       .map((topAsset) => {
-        const index = topAsset.id;
-        const dexId = topAsset.dex_id;
-        const meta = dexId === 'xyz' ? xyzMarketData[0] : marketData[0];
-        const metrics = dexId === 'xyz' ? xyzMarketData[1] : marketData[1];
-        const tableMap = dexId === 'xyz' ? xyzMarginTableMap : marginTableMap;
+        const index = topAsset.token_id;
+        const dexId = topAsset.dex_id ?? '';
+        const dexInfo = dexLookup[dexId] ?? dexLookup[''];
+        if (!dexInfo) return null;
+
+        const { meta, marginTableMap, quoteAsset } = dexInfo;
         const hlDataAsset = meta.universe[index];
+        if (!hlDataAsset || hlDataAsset.isDelisted) return null;
 
-        if (!hlDataAsset) return null;
-
-        if (hlDataAsset.isDelisted) return null;
-
-        const m = metrics[index] || {};
-        const table = tableMap[hlDataAsset?.marginTableId];
+        const table = marginTableMap[hlDataAsset.marginTableId];
         const tiers = table?.marginTiers || [];
-        const firstTier =
-          Array.isArray(tiers) && tiers.length > 0 ? tiers[0] : undefined;
-        const nextTier =
-          Array.isArray(tiers) && tiers.length > 1 ? tiers[1] : undefined;
+        const firstTier = tiers[0];
+        const nextTier = tiers[1];
 
         const item: MarketData = {
           index,
-          dexId: topAsset.dex_id,
+          dexId: topAsset.dex_id ?? '',
           name: String(topAsset.name ?? ''),
-          // 取保证金表第一档的最大杠杆；若无表则回退 asset.maxLeverage
+          quoteAsset,
+          displayName: topAsset.display_name || topAsset.name,
+          category: topAsset.category || '',
           maxLeverage: Number(
             firstTier?.maxLeverage ?? hlDataAsset?.maxLeverage
           ),
           minLeverage: 1,
-          // 第一档的最大名义值 = 下一档的 lowerBound；若不存在下一档则为兜底1000000
           maxUsdValueSize: String(nextTier?.lowerBound ?? PERPS_MAX_NTL_VALUE),
           szDecimals: Number(hlDataAsset.szDecimals ?? 0),
-          // 根据 markPx 推断价格精度
-          pxDecimals: getPxDecimals(m?.markPx ?? ''),
-          dayBaseVlm: String(m?.dayBaseVlm ?? '0'),
-          dayNtlVlm: String(m?.dayNtlVlm ?? '0'),
-          funding: String(m?.funding ?? '0'),
-          markPx: String(m?.markPx ?? ''),
-          midPx: String(m?.midPx ?? ''),
-          openInterest: String(m?.openInterest ?? '0'),
-          oraclePx: String(m?.oraclePx ?? ''),
-          premium: String(m?.premium ?? '0'),
-          prevDayPx: String(m?.prevDayPx ?? ''),
           onlyIsolated: hlDataAsset.onlyIsolated,
+          // Price fields initialized empty; filled by WebSocket AssetCtx updates.
+          pxDecimals: 2,
+          dayBaseVlm: '0',
+          dayNtlVlm: '0',
+          funding: '0',
+          markPx: '',
+          midPx: '',
+          openInterest: '0',
+          oraclePx: '',
+          premium: '0',
+          prevDayPx: '',
           logoUrl:
             topAsset.full_logo_url || getHyperliquidCoinLogoUrl(topAsset.name),
         };

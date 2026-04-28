@@ -5,6 +5,7 @@ import { Empty } from '@/ui/component';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import { useTranslation } from 'react-i18next';
 import { HistoryDetailPopup } from '../popup/HistoryDetailPopup';
+import { HistoryTransferDetailPopup } from '../popup/HistoryTransferDetailPopup';
 import { ReactComponent as RcIconNoSrc } from '@/ui/assets/perps/IconNoSrc.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
@@ -23,6 +24,10 @@ export const HistoryContent: React.FC<{
     (WsFill & { logoUrl: string }) | null
   >(null);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [transferItem, setTransferItem] = useState<AccountHistoryItem | null>(
+    null
+  );
+  const [transferDetailVisible, setTransferDetailVisible] = useState(false);
   const fillsOrderTpOrSl = useRabbySelector(
     (state) => state.perps.fillsOrderTpOrSl
   );
@@ -36,9 +41,19 @@ export const HistoryContent: React.FC<{
     setDetailVisible(true);
   });
 
+  const handleTransferClick = useMemoizedFn((item: AccountHistoryItem) => {
+    setTransferItem(item);
+    setTransferDetailVisible(true);
+  });
+
   const handleCloseDetail = () => {
     setDetailVisible(false);
     setSelectedFill(null);
+  };
+
+  const handleCloseTransferDetail = () => {
+    setTransferDetailVisible(false);
+    setTransferItem(null);
   };
 
   return (
@@ -66,12 +81,16 @@ export const HistoryContent: React.FC<{
       </div>
 
       {historyData.length > 0 ? (
-        <div className="overflow-hidden mb-20">
+        <div className="overflow-hidden mb-16">
           {historyData
             .slice(0, 3)
             .map((item) =>
               'usdValue' in item ? (
-                <HistoryAccountItem data={item} key={item.hash} />
+                <HistoryAccountItem
+                  data={item}
+                  onClick={handleTransferClick}
+                  key={item.hash}
+                />
               ) : (
                 <HistoryItem
                   fill={item}
@@ -119,6 +138,12 @@ export const HistoryContent: React.FC<{
         }
         fill={selectedFill}
         onCancel={handleCloseDetail}
+      />
+
+      <HistoryTransferDetailPopup
+        visible={transferDetailVisible}
+        item={transferItem}
+        onCancel={handleCloseTransferDetail}
       />
     </div>
   );

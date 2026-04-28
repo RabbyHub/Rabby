@@ -4,25 +4,40 @@ import { splitNumberByStep } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { useHistory, useLocation } from 'react-router-dom';
 import { ReactComponent as RcIconAddDeposit } from '@/ui/assets/perps/IconAddDeposit.svg';
-
+import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/perps/IconSwitchCC.svg';
+import usePerpsPopupNav from '../../../hooks/usePerpsPopupNav';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
 interface AvailableFundsProps {
   availableBalance: number;
+  quoteAsset?: string;
 }
 
 export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
   availableBalance,
+  quoteAsset,
 }) => {
   const { t } = useTranslation();
-  const location = useLocation();
-  const history = useHistory();
+  const { openPerpsPopup } = usePerpsPopupNav();
+  const { isUnifiedAccount } = usePerpsAccount();
+  const handleSwapStableCoinClick = () => {
+    if (!isUnifiedAccount) {
+      openPerpsPopup('enable-unified', {
+        next: 'swap',
+        target: quoteAsset as PerpsQuoteAsset,
+      });
+    } else {
+      openPerpsPopup('swap', { target: quoteAsset as PerpsQuoteAsset });
+    }
+  };
 
   const handleDepositClick = () => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set('action', 'deposit');
-    history.push({
-      pathname: location.pathname,
-      search: searchParams.toString(),
-    });
+    if (quoteAsset !== 'USDC') {
+      handleSwapStableCoinClick();
+      return;
+    }
+
+    openPerpsPopup('deposit');
   };
 
   return (
@@ -37,8 +52,13 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
         {splitNumberByStep(
           new BigNumber(availableBalance).toFixed(2, BigNumber.ROUND_DOWN)
         )}{' '}
-        {'USDC'}
-        <RcIconAddDeposit />
+        {quoteAsset || 'USDC'}
+        {quoteAsset === 'USDC' ? (
+          <RcIconAddDeposit />
+        ) : (
+          /* If it's not USDC, show the switch icon to indicate they can switch to USDC */
+          <RcIconSwitchCC className="text-rb-neutral-foot" />
+        )}
       </span>
     </div>
   );

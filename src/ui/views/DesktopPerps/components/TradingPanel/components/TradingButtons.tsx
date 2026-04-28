@@ -4,10 +4,159 @@ import { Button } from 'antd';
 import { useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
-import { useHistory, useLocation } from 'react-router-dom';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import {
+  getSpotBalanceKey,
+  PerpsQuoteAsset,
+  SWAP_REQUIRED_QUOTE_ASSETS,
+} from '@/ui/views/Perps/constants';
+import { usePerpsPopupNav } from '@/ui/views/DesktopPerps/hooks/usePerpsPopupNav';
+import { OrderSide } from '../../../types';
 
+const PRIMARY_BTN_CLASS =
+  'w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent text-rb-neutral-InvertHighlight';
+
+const useTradingGate = ({
+  error,
+  orderSide,
+}: {
+  error?: string;
+  orderSide?: OrderSide;
+}) => {
+  const { t } = useTranslation();
+  const { openPerpsPopup } = usePerpsPopupNav();
+
+  const clearinghouseState = useRabbySelector(
+    (s) => s.perps.clearinghouseState
+  );
+  const wsActiveAssetData = useRabbySelector((s) => s.perps.wsActiveAssetData);
+  const selectedCoin = useRabbySelector((s) => s.perps.selectedCoin);
+  const marketDataMap = useRabbySelector((s) => s.perps.marketDataMap);
+
+  const { accountValue, isUnifiedAccount, spotBalancesMap } = usePerpsAccount();
+
+  const {
+    needEnableTrading,
+    handleActionApproveStatus,
+  } = usePerpsProPosition();
+
+  const quoteAsset: PerpsQuoteAsset = (marketDataMap[selectedCoin]
+    ?.quoteAsset ?? 'USDC') as PerpsQuoteAsset;
+
+  const currentAssetBalance = Number(
+    spotBalancesMap[getSpotBalanceKey(quoteAsset)]?.available || 0
+  );
+
+  const needSwapStableCoin = useMemo(() => {
+    return (
+      SWAP_REQUIRED_QUOTE_ASSETS.includes(quoteAsset) && !currentAssetBalance
+    );
+  }, [quoteAsset, currentAssetBalance]);
+
+  const needDepositFirst = useMemo(() => {
+    if (!clearinghouseState || accountValue !== 0) return false;
+    const buyAvailable = Number(wsActiveAssetData?.availableToTrade[0] || 0);
+    const sellAvailable = Number(wsActiveAssetData?.availableToTrade[1] || 0);
+    if (orderSide === OrderSide.BUY) return buyAvailable === 0;
+    if (orderSide === OrderSide.SELL) return sellAvailable === 0;
+    return buyAvailable === 0 && sellAvailable === 0;
+  }, [
+    clearinghouseState,
+    accountValue,
+    wsActiveAssetData?.availableToTrade,
+    orderSide,
+  ]);
+
+  const bannerNode = useMemo(() => {
+    if (!error && !needDepositFirst && !needSwapStableCoin) return null;
+    return (
+      <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
+        <RcIconInfoCC className="text-r-orange-default" />
+        <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
+          {needDepositFirst
+            ? t('page.perpsPro.tradingPanel.addFundsToGetStarted')
+            : needEnableTrading
+            ? ''
+            : needSwapStableCoin
+            ? t('page.perps.PerpsSpotSwap.swapBeforeTrading', { quoteAsset })
+            : error}
+        </div>
+      </div>
+    );
+  }, [
+    error,
+    needDepositFirst,
+    needSwapStableCoin,
+    quoteAsset,
+    needEnableTrading,
+    t,
+  ]);
+
+  const gateButton = useMemo(() => {
+    if (needDepositFirst) {
+      return (
+        <Button
+          type="primary"
+          block
+          size="large"
+          onClick={() => openPerpsPopup('deposit')}
+          className={PRIMARY_BTN_CLASS}
+        >
+          {t('page.perpsPro.tradingPanel.deposit')}
+        </Button>
+      );
+    }
+    if (needEnableTrading) {
+      return (
+        <Button
+          type="primary"
+          block
+          size="large"
+          onClick={() => handleActionApproveStatus()}
+          className={PRIMARY_BTN_CLASS}
+        >
+          {t('page.perpsPro.tradingPanel.enableTrading')}
+        </Button>
+      );
+    }
+    if (needSwapStableCoin) {
+      return (
+        <Button
+          type="primary"
+          block
+          size="large"
+          onClick={() => {
+            const target = quoteAsset === 'USDC' ? undefined : quoteAsset;
+            if (!isUnifiedAccount) {
+              // Chain enable → swap; advancePerpsPopup() preserves target.
+              openPerpsPopup('enable-unified', { next: 'swap', target });
+            } else {
+              openPerpsPopup('swap', { target });
+            }
+          }}
+          className={PRIMARY_BTN_CLASS}
+        >
+          {t('page.perps.PerpsDepositCard.swap')}
+        </Button>
+      );
+    }
+    return null;
+  }, [
+    needDepositFirst,
+    needEnableTrading,
+    needSwapStableCoin,
+    quoteAsset,
+    isUnifiedAccount,
+    openPerpsPopup,
+    handleActionApproveStatus,
+    t,
+  ]);
+
+  return { bannerNode, gateButton };
+};
+
+// === Pair: Buy / Sell — Market, Limit, TP/SL, TWAP containers ===
 interface TradingButtonsProps {
   onBuyClick: () => void;
   onSellClick: () => void;
@@ -29,80 +178,17 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
   buyError,
   sellError,
 }) => {
-  const clearinghouseState = useRabbySelector(
-    (store) => store.perps.clearinghouseState
-  );
-  const wsActiveAssetData = useRabbySelector(
-    (store) => store.perps.wsActiveAssetData
-  );
-  const { accountValue } = usePerpsAccount();
-  const hasPermission = useRabbySelector((state) => state.perps.hasPermission);
   const { t } = useTranslation();
-  const location = useLocation();
-  const history = useHistory();
-
-  const {
-    needEnableTrading,
-    handleActionApproveStatus,
-  } = usePerpsProPosition();
-
-  const needDepositFirst = useMemo(() => {
-    const buyAvailable = Number(wsActiveAssetData?.availableToTrade[0] || 0);
-    const sellAvailable = Number(wsActiveAssetData?.availableToTrade[1] || 0);
-    return (
-      clearinghouseState &&
-      accountValue === 0 &&
-      buyAvailable === 0 &&
-      sellAvailable === 0
-    );
-  }, [clearinghouseState, wsActiveAssetData?.availableToTrade, accountValue]);
-
-  const handleDepositClick = () => {
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set('action', 'deposit');
-    history.push({
-      pathname: location.pathname,
-      search: searchParams.toString(),
-    });
-  };
-
+  const hasPermission = useRabbySelector((s) => s.perps.hasPermission);
   const error = buyError || sellError;
-
+  const { bannerNode, gateButton } = useTradingGate({ error });
   const [buyHovered, setBuyHovered] = useState(false);
   const [sellHovered, setSellHovered] = useState(false);
 
   return (
     <div className="flex flex-col gap-[12px]">
-      {Boolean(error || needDepositFirst) && (
-        <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
-          <RcIconInfoCC className="text-r-orange-default" />
-          <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
-            {needDepositFirst
-              ? t('page.perpsPro.tradingPanel.addFundsToGetStarted')
-              : error}
-          </div>
-        </div>
-      )}
-
-      {needDepositFirst || needEnableTrading ? (
-        <Button
-          type="primary"
-          block
-          size="large"
-          onClick={() => {
-            if (needDepositFirst) {
-              handleDepositClick();
-            } else {
-              handleActionApproveStatus();
-            }
-          }}
-          className="w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent text-rb-neutral-InvertHighlight"
-        >
-          {needDepositFirst
-            ? t('page.perpsPro.tradingPanel.deposit')
-            : t('page.perpsPro.tradingPanel.enableTrading')}
-        </Button>
-      ) : (
+      {bannerNode}
+      {gateButton ?? (
         <div className="flex items-center gap-[8px]">
           <Button
             type="primary"
@@ -152,6 +238,66 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
             {t('page.perpsPro.tradingPanel.sellShort')}
           </Button>
         </div>
+      )}
+    </div>
+  );
+};
+
+// === Single direction — Scale container ===
+interface TradingButtonProps {
+  loading: boolean;
+  onClick: () => void;
+  disabled: boolean;
+  error?: string;
+  isValid: boolean;
+  orderSide: OrderSide;
+  titleText: string;
+}
+
+export const TradingButton: React.FC<TradingButtonProps> = ({
+  loading,
+  onClick,
+  disabled,
+  error,
+  isValid,
+  orderSide,
+  titleText,
+}) => {
+  const hasPermission = useRabbySelector((s) => s.perps.hasPermission);
+  const { bannerNode, gateButton } = useTradingGate({ error, orderSide });
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-[12px]">
+      {bannerNode}
+      {gateButton ?? (
+        <Button
+          type="primary"
+          block
+          size="large"
+          loading={loading}
+          onClick={onClick}
+          disabled={disabled || !hasPermission}
+          style={{
+            boxShadow:
+              hovered && isValid && !error
+                ? orderSide === OrderSide.BUY
+                  ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
+                  : '0px 8px 16px rgba(227, 73, 53, 0.3)'
+                : 'none',
+          }}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          className={clsx(
+            'w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent text-rb-neutral-InvertHighlight',
+            !(isValid && !error && hasPermission) && 'cursor-not-allowed',
+            orderSide === OrderSide.BUY
+              ? 'bg-rb-green-default'
+              : 'bg-rb-red-default'
+          )}
+        >
+          {titleText}
+        </Button>
       )}
     </div>
   );

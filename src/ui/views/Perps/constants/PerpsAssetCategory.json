@@ -1,0 +1,72 @@
+[
+  {
+    "id": "commodities",
+    "name": "Commodities",
+    "priority": 0,
+    "is_disable": false,
+    "translations": {
+      "en-US": "Commodities",
+      "ru-RU": "Сырьевые товары",
+      "es-ES": "Materias primas",
+      "fr-FR": "Matières premières",
+      "pt-PT": "Matérias-primas",
+      "zh-CN": "大宗商品"
+    }
+  },
+  {
+    "id": "stocks",
+    "name": "Stocks",
+    "priority": 1,
+    "is_disable": false,
+    "translations": {
+      "en-US": "Stocks",
+      "ru-RU": "Акции",
+      "es-ES": "Acciones",
+      "fr-FR": "Actions",
+      "pt-PT": "Ações",
+      "zh-CN": "股票"
+    }
+  },
+  {
+    "id": "indices",
+    "name": "Indices",
+    "priority": 2,
+    "is_disable": false,
+    "translations": {
+      "en-US": "Indices",
+      "ru-RU": "Индексы",
+      "es-ES": "Índices",
+      "fr-FR": "Indices",
+      "pt-PT": "Índices",
+      "zh-CN": "指数"
+    }
+  },
+  {
+    "id": "fx",
+    "name": "FX",
+    "priority": 3,
+    "is_disable": false,
+    "translations": {
+      "en-US": "FX",
+      "ru-RU": "Форекс",
+      "es-ES": "Forex",
+      "fr-FR": "Forex",
+      "pt-PT": "Forex",
+      "zh-CN": "外汇"
+    }
+  },
+  {
+    "id": "memes",
+    "name": "Memes",
+    "priority": 4,
+    "is_disable": false,
+    "translations": {
+      "en-US": "Memes",
+      "ru-RU": "Memes",
+      "es-ES": "Memes",
+      "fr-FR": "Memes",
+      "pt-PT": "Memes",
+      "zh-CN": "Memes"
+    }
+  }
+]

@@ -6,10 +6,19 @@ import { Account } from '@/background/service/preference';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { useRabbyDispatch } from '@/ui/store';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
+import {
+  ALL_PERPS_QUOTE_ASSETS,
+  PerpsQuoteAsset,
+  PERPS_LOW_BALANCE_THRESHOLD,
+  getSpotBalanceKey,
+} from '../constants';
+import { QUOTE_ASSET_ICON_MAP } from './quoteAssetIcons';
 import { ReactComponent as RcIconBalanceAdd } from '@/ui/assets/perps/IconBalanceAdd.svg';
 import { ReactComponent as RcIconBalanceMinus } from '@/ui/assets/perps/IconBalanceMinus.svg';
 import { ReactComponent as RcIconAddFunds } from '@/ui/assets/perps/IconAddFunds.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
+import { ReactComponent as RcIconArrowDownCC } from '@/ui/assets/perps/IconArrowDownCC.svg';
+import { ReactComponent as RcIconArrowDownDark } from '@/ui/assets/perps/IconArrowDownDark.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconPerpsGuideLogo } from '@/ui/assets/perps/IconPerpsGuideLogo.svg';
 import { ReactComponent as RcIconPerpsGuideLogoDark } from '@/ui/assets/perps/IconPerpsGuideLogoDark.svg';
@@ -22,6 +31,7 @@ interface PerpsAccountCardProps {
   onDeposit: () => void;
   onWithdraw: () => void;
   onLearnMore: () => void;
+  onSwap?: (source?: PerpsQuoteAsset) => void;
 }
 
 export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
@@ -29,11 +39,32 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
   onDeposit,
   onWithdraw,
   onLearnMore,
+  onSwap,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
-  const { accountValue, availableBalance } = usePerpsAccount();
+  const {
+    accountValue,
+    availableBalance,
+    isUnifiedAccount,
+    spotBalancesMap,
+  } = usePerpsAccount();
+
+  const visibleStableBalances = useMemo(() => {
+    if (!isUnifiedAccount) return [];
+    return ALL_PERPS_QUOTE_ASSETS.map((coin) => {
+      const item = spotBalancesMap[getSpotBalanceKey(coin)];
+      return { coin, available: Number(item?.available || 0) };
+    })
+      .filter((b) => b.available >= PERPS_LOW_BALANCE_THRESHOLD)
+      .sort((a, b) => b.available - a.available);
+  }, [isUnifiedAccount, spotBalancesMap]);
+
+  const [isBalanceExpanded, setIsBalanceExpanded] = useState(false);
+  const showChips =
+    isUnifiedAccount && visibleStableBalances.length > 0 && isBalanceExpanded;
+  const canExpand = isUnifiedAccount;
 
   const hasNoBalance = useMemo(() => !Number(availableBalance || 0), [
     availableBalance,
@@ -100,8 +131,32 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
             <div className="font-bold text-r-neutral-title-1">
               {balanceDisplay}
             </div>
-            <div className="text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]">
+            <div
+              className={clsx(
+                'flex items-center gap-2 text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]',
+                canExpand && 'cursor-pointer'
+              )}
+              onClick={() => {
+                if (canExpand) setIsBalanceExpanded((v) => !v);
+              }}
+            >
               {t('page.perpsDetail.PerpsOpenPositionPopup.available')}
+              {canExpand &&
+                (isDarkTheme ? (
+                  <RcIconArrowDownDark
+                    className={clsx(
+                      'transition-transform',
+                      isBalanceExpanded && '-rotate-180'
+                    )}
+                  />
+                ) : (
+                  <RcIconArrowDownCC
+                    className={clsx(
+                      'text-r-neutral-foot transition-transform',
+                      isBalanceExpanded && '-rotate-180'
+                    )}
+                  />
+                ))}
             </div>
           </div>
           {hasNoBalance ? (
@@ -144,6 +199,37 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
             </div>
           )}
         </div>
+        {showChips && (
+          <div
+            className={clsx(
+              'mt-12 flex items-center justify-between gap-8',
+              'bg-r-neutral-bg2 rounded-[8px] px-12 h-[36px]'
+            )}
+          >
+            <div className="flex items-center gap-12 min-w-0 flex-1">
+              {visibleStableBalances.map((b) => {
+                const Icon = QUOTE_ASSET_ICON_MAP[b.coin];
+                return (
+                  <div
+                    key={b.coin}
+                    className="inline-flex items-center gap-4 text-12 font-medium text-r-neutral-title-1"
+                  >
+                    <Icon className="w-[16px] h-[16px]" />
+                    <span>
+                      {formatUsdValue(b.available, BigNumber.ROUND_DOWN)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div
+              className="text-12 font-medium text-r-blue-default cursor-pointer flex-shrink-0 flex items-center gap-2"
+              onClick={() => onSwap?.()}
+            >
+              {t('page.perps.PerpsSpotSwap.toSwapEntry')}
+            </div>
+          </div>
+        )}
       </div>
       {showNewUserGuide && (
         <div

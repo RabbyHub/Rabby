@@ -21,6 +21,7 @@ import {
 } from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 
 export interface AddPositionPopupProps {
   visible?: boolean;
@@ -39,6 +40,9 @@ export interface AddPositionPopupProps {
   markPrice: number;
   leverageRange: [number, number]; // [min, max]
   leverageType: 'cross' | 'isolated';
+  quoteAsset?: string;
+  onDepositPress?: () => void;
+  onSwapPress?: () => void;
   onCancel: () => void;
   onConfirm: (tradeSize: string) => Promise<void>;
 }
@@ -60,6 +64,9 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   onCancel,
   onConfirm,
   leverageRange,
+  quoteAsset = 'USDC',
+  onDepositPress,
+  onSwapPress,
 }) => {
   const pxDecimals = currentAssetCtx?.pxDecimals || 2;
   const szDecimals = currentAssetCtx?.szDecimals || 0;
@@ -209,11 +216,13 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
       onCancel={onCancel}
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px] overflow-auto pb-[80px]">
-        <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2">
-          {direction === 'Long'
-            ? t('page.perpsDetail.PerpsAddPositionPopup.addToLong')
-            : t('page.perpsDetail.PerpsAddPositionPopup.addToShort')}{' '}
-          {formatPerpsCoin(coin)}-USD
+        <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2 inline-flex items-center justify-center gap-4 w-full">
+          <span>
+            {direction === 'Long'
+              ? t('page.perpsDetail.PerpsAddPositionPopup.addToLong')
+              : t('page.perpsDetail.PerpsAddPositionPopup.addToShort')}
+          </span>
+          <PerpsDisplayCoinName item={currentAssetCtx} />
         </div>
 
         <AssetPriceInfo
@@ -227,9 +236,10 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
             <div className="flex flex-col gap-8">
               <div className="flex items-center gap-6">
                 <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
-                <span className="text-[16px] font-medium text-r-neutral-title-1">
-                  {formatPerpsCoin(coin)}
-                </span>
+                <PerpsDisplayCoinName
+                  item={currentAssetCtx}
+                  className="text-[16px] font-medium"
+                />
                 <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
                   {leverageType === 'cross'
                     ? t('page.perps.cross')
@@ -287,12 +297,33 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
 
           <MarginInput
             title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
+            quoteAsset={quoteAsset}
             availableAmount={availableBalance}
             margin={margin}
             onMarginChange={setMargin}
             sliderDisabled={availableBalance < 0.1}
             errorMessage={
               marginValidation.error ? marginValidation.errorMessage : null
+            }
+            availableExtra={
+              (availableBalance < 0.1 ||
+                marginValidation.error === 'insufficient_balance') && (
+                <span
+                  className="text-r-blue-default font-medium cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (quoteAsset === 'USDC') {
+                      onDepositPress?.();
+                    } else {
+                      onSwapPress?.();
+                    }
+                  }}
+                >
+                  {quoteAsset === 'USDC'
+                    ? t('page.perps.PerpsSpotSwap.toDepositEntry')
+                    : t('page.perps.PerpsSpotSwap.toSwapEntry')}
+                </span>
+              )
             }
           />
 

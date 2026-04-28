@@ -3,7 +3,6 @@ import { Button, Skeleton, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useDebounce } from 'react-use';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/perps/IconInfo.svg';
 import {
   batchQueryTokens,
@@ -15,30 +14,21 @@ import {
   ARB_USDC_TOKEN_ITEM,
   ARB_USDC_TOKEN_SERVER_CHAIN,
   HYPE_USDC_TOKEN_ID,
-  HYPE_USDC_TOKEN_ITEM,
   HYPE_USDC_TOKEN_SERVER_CHAIN,
-  isHypeWithdrawToken,
-  HYPE_EVM_BRIDGE_ADDRESS,
 } from '../constants';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { TokenWithChain } from '@/ui/component';
-import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { formatNumber, formatUsdValue } from '../../../utils/number';
+import { formatUsdValue } from '../../../utils/number';
 import BigNumber from 'bignumber.js';
-import { ToConfirmBtn } from '@/ui/component/ToConfirmButton';
-import {
-  supportedDirectSign,
-  useDirectSigning,
-} from '@/ui/hooks/useMiniApprovalDirectSign';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
 import { getTokenSymbol, tokenAmountBn } from '@/ui/utils/token';
-import { findChainByEnum, findChainByServerID } from '@/utils/chain';
+import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@/types/chain';
 import { Tx } from 'background/service/openapi';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { getPerpsSDK } from '../sdkManager';
+import { useRabbyDispatch } from '@/ui/store';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { useTwoStepSwap } from '@/ui/views/Swap/hooks/twoStepSwap';
@@ -46,7 +36,6 @@ import TokenSelectPopup from './TokenSelectPopup';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 
 export type PerpsDepositAmountPopupProps = PopupProps & {
-  type: 'deposit' | 'withdraw';
   updateMiniSignTx: (
     amount: number,
     token: TokenItem,
@@ -62,10 +51,6 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
   setIsPreparingSign: (isPreparingSign: boolean) => void;
   handleDeposit: () => void;
   miniTxs: Tx[];
-  handleWithdraw?: (
-    amount: number,
-    isHypeWithdraw?: boolean
-  ) => Promise<boolean>;
   onClose: () => void;
   clearMiniSignTx: () => void;
   clearMiniSignTypeData?: () => void;
@@ -75,7 +60,6 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
 
 export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = ({
   visible,
-  type,
   quoteLoading,
   bridgeQuote,
   isPreparingSign,
@@ -83,11 +67,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   miniTxs,
   updateMiniSignTx,
   currentPerpsAccount,
-  availableBalance,
-  accountValue,
   setIsPreparingSign,
   handleDeposit,
-  handleWithdraw,
   clearMiniSignTx,
   clearMiniSignTypeData,
   resetBridgeQuoteLoading,
@@ -95,7 +76,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
 }) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
-  const [isWithdrawLoading, setIsWithdrawLoading] = React.useState(false);
   const [usdValue, setUsdValue] = React.useState<string>('');
   const [tokenVisible, setTokenVisible] = React.useState(false);
   const [selectedToken, setSelectedToken] = React.useState<TokenItem | null>(
@@ -107,32 +87,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   const [tokenListLoading, setTokenListLoading] = React.useState(false);
   const [gasPrice, setGasPrice] = React.useState<number>(0);
 
-  // Fetch preTransferCheck fee for HyperEVM withdrawal
-  const [hypeTransferFee, setHypeTransferFee] = React.useState<string>('0');
-  React.useEffect(() => {
-    if (!visible || !currentPerpsAccount?.address) {
-      setHypeTransferFee('0');
-      return;
-    }
-    const sdk = getPerpsSDK();
-    sdk.info
-      .getPreTransferCheck(HYPE_EVM_BRIDGE_ADDRESS, currentPerpsAccount.address)
-      .then((res) => {
-        setHypeTransferFee(res?.fee || '0');
-      })
-      .catch(() => {
-        setHypeTransferFee('0');
-      });
-  }, [visible, currentPerpsAccount?.address]);
-
-  const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
-
-  const hypeGasFeeUsd = useMemo(() => {
-    const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
-    return new BigNumber(0.00002).times(hypePrice).toNumber();
-  }, [marketDataMap]);
-
-  const { value: _tokenInfo, loading: tokenLoading } = useAsync(async () => {
+  const { value: _tokenInfo } = useAsync(async () => {
     if (!currentPerpsAccount?.address || !visible || !selectedToken)
       return null;
     const info = await wallet.openapi.getToken(
@@ -143,25 +98,12 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     return info;
   }, [currentPerpsAccount?.address, visible, selectedToken]);
 
-  const { value: isMissingRole } = useAsync(async () => {
-    if (Number(accountValue)) {
-      // has account value no need fetch api to check
-      return false;
-    }
-
-    if (!currentPerpsAccount?.address || !visible) return false;
-    const sdk = getPerpsSDK();
-    const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
-    return role === 'missing';
-  }, [currentPerpsAccount?.address, visible, accountValue]);
-
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
   }, [_tokenInfo, selectedToken]);
 
   const fetchTokenList = useCallback(async () => {
-    if (!currentPerpsAccount?.address || !visible || type === 'withdraw')
-      return [];
+    if (!currentPerpsAccount?.address || !visible) return [];
     setTokenListLoading(true);
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
     setTokenListLoading(false);
@@ -186,7 +128,6 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     if (!visible) {
       setUsdValue('');
       setSelectedToken(null);
-      setIsWithdrawLoading(false);
       setGasPrice(0);
       setTokenVisible(false);
     }
@@ -201,41 +142,18 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
   }, [selectedToken]);
 
-  const isHypeWithdraw = useMemo(() => {
-    return type === 'withdraw' && isHypeWithdrawToken(selectedToken);
-  }, [type, selectedToken]);
-
-  const withdrawMaxBalance = useMemo(() => {
-    if (!isHypeWithdraw || !Number(hypeTransferFee))
-      return Number(availableBalance);
-    return Math.max(
-      0,
-      new BigNumber(availableBalance)
-        .minus(hypeTransferFee)
-        .decimalPlaces(6, BigNumber.ROUND_DOWN)
-        .toNumber()
-    );
-  }, [isHypeWithdraw, availableBalance, hypeTransferFee]);
-
-  // Auto-select token with highest USD balance
+  // Auto-select token with highest USD balance on open
   useEffect(() => {
-    if (visible && type === 'withdraw' && !selectedToken) {
-      setSelectedToken(ARB_USDC_TOKEN_ITEM);
+    if (visible && !selectedToken && tokenList.length > 0) {
+      const sorted = [...tokenList].sort(
+        (a, b) => b.amount * b.price - a.amount * a.price
+      );
+      setSelectedToken(sorted[0]);
     }
-    if (visible && type === 'deposit' && !selectedToken) {
-      if (tokenList.length > 0) {
-        const sorted = [...tokenList].sort(
-          (a, b) => b.amount * b.price - a.amount * a.price
-        );
-        // Pick the first token (highest USD value)
-        setSelectedToken(sorted[0]);
-      }
-    }
-  }, [visible, type, tokenList, selectedToken]);
+  }, [visible, tokenList, selectedToken]);
 
   React.useEffect(() => {
     if (visible && inputRef.current) {
-      // 使用 setTimeout 确保弹窗完全渲染后再聚焦
       const timer = setTimeout(() => {
         inputRef.current?.focus();
       }, 200);
@@ -255,43 +173,22 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     if (!usdValue) {
       return { isValid: false, error: null };
     }
-
-    if (type === 'withdraw') {
-      if (value > Number(availableBalance)) {
-        return {
-          isValid: false,
-          error: 'insufficient_balance',
-          errorMessage: t('page.perps.insufficientBalance'),
-        };
-      }
-      if (value < 2) {
-        return {
-          isValid: false,
-          error: 'minimum_limit',
-          errorMessage: t('page.perps.depositAmountPopup.minimumWithdrawSize'),
-        };
-      }
-
-      return { isValid: true, error: null };
-    } else {
-      if (value < 5) {
-        return {
-          isValid: false,
-          error: 'minimum_limit',
-          errorMessage: t('page.perps.depositAmountPopup.minimumDepositSize'),
-        };
-      }
-
-      if (value > depositMaxUsdValue) {
-        return {
-          isValid: false,
-          error: 'insufficient_balance',
-          errorMessage: t('page.perps.insufficientBalance'),
-        };
-      }
-      return { isValid: true, error: null };
+    if (value < 5) {
+      return {
+        isValid: false,
+        error: 'minimum_limit',
+        errorMessage: t('page.perps.depositAmountPopup.minimumDepositSize'),
+      };
     }
-  }, [usdValue, t, tokenInfo, depositMaxUsdValue]);
+    if (value > depositMaxUsdValue) {
+      return {
+        isValid: false,
+        error: 'insufficient_balance',
+        errorMessage: t('page.perps.insufficientBalance'),
+      };
+    }
+    return { isValid: true, error: null };
+  }, [usdValue, t, depositMaxUsdValue]);
 
   const isValidAmount = useMemo(() => amountValidation.isValid, [
     amountValidation.isValid,
@@ -414,61 +311,49 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     [depositMaxUsdValue, tokenInfo]
   );
 
-  // 金额变更后，防抖更新 mini sign tx，避免每次输入都触发
+  // Debounced mini sign tx update so each keystroke doesn't refire
   useDebounce(
     () => {
-      if (!visible || type === 'withdraw') return;
+      if (!visible) return;
       if (!isValidAmount) return;
       updateMiniSignTx(
         Number(usdValue),
         tokenInfo || ARB_USDC_TOKEN_ITEM,
         gasPrice,
-        isMissingRole
+        false
       );
     },
     300,
-    [
-      gasPrice,
-      usdValue,
-      visible,
-      updateMiniSignTx,
-      type,
-      tokenInfo,
-      isMissingRole,
-    ]
+    [gasPrice, usdValue, visible, updateMiniSignTx, tokenInfo]
   );
 
   useEffect(() => {
-    if (type === 'deposit' || visible) {
+    if (visible) {
       if (isValidAmount) {
         resetBridgeQuoteLoading();
       } else {
         clearMiniSignTx();
       }
     }
-  }, [isValidAmount, type, visible]);
+  }, [isValidAmount, visible]);
 
   const { openDirect, close: closeSign } = useMiniSigner({
     account: currentPerpsAccount!,
   });
 
   const estReceiveUsdValue = useMemo(() => {
-    const value =
-      (bridgeQuote?.to_token_amount || 0) * ARB_USDC_TOKEN_ITEM.price;
-    return isMissingRole ? value - 1 : value;
-  }, [bridgeQuote, tokenInfo, isMissingRole]);
+    return (bridgeQuote?.to_token_amount || 0) * ARB_USDC_TOKEN_ITEM.price;
+  }, [bridgeQuote]);
 
   const quoteError = useMemo(() => {
-    return type === 'deposit' &&
-      !isDirectDeposit &&
+    return !isDirectDeposit &&
       isValidAmount &&
       !quoteLoading &&
       !bridgeQuote?.tx
       ? t('page.perps.depositAmountPopup.fetchQuoteFailed')
       : '';
-  }, [bridgeQuote, quoteLoading, type, isDirectDeposit, t, isValidAmount]);
+  }, [bridgeQuote, quoteLoading, isDirectDeposit, t, isValidAmount]);
 
-  // 获取错误状态下的文字颜色
   const getMarginTextColor = () => {
     if (amountValidation.error) {
       return 'text-r-red-default';
@@ -490,49 +375,21 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
         <div className="text-20 font-medium text-r-neutral-title-1 mb-16 text-center mt-16">
-          {type === 'deposit'
-            ? t('page.perps.deposit')
-            : t('page.perps.withdraw')}
+          {t('page.perps.deposit')}
         </div>
         <div className="px-16">
-          {/* Amount / Balance — outside card */}
+          {/* Amount / Balance */}
           <div className="flex items-center justify-between mb-8">
             <div className="text-13 text-r-neutral-foot">
               {t('page.perps.depositAmountPopup.amount')}
             </div>
             <div className="text-13 text-r-neutral-foot flex items-center">
-              {type === 'withdraw'
-                ? t('page.perps.availableBalance', {
-                    balance: formatUsdValue(
-                      withdrawMaxBalance,
-                      BigNumber.ROUND_DOWN
-                    ),
-                  })
-                : t('page.perps.balanceAvailable', {
-                    balance: formatUsdValue(
-                      depositMaxUsdValue,
-                      BigNumber.ROUND_DOWN
-                    ),
-                  })}
-              {isHypeWithdraw && Number(hypeTransferFee) > 0 && (
-                <Tooltip
-                  overlayClassName={clsx('rectangle')}
-                  placement="topLeft"
-                  title={t(
-                    'page.perps.depositAmountPopup.hypeActivationFeeTip',
-                    {
-                      fee: formatUsdValue(hypeTransferFee),
-                    }
-                  )}
-                >
-                  <RcIconInfo
-                    viewBox="0 0 12 12"
-                    width={12}
-                    height={12}
-                    className="text-rabby-neutral-foot mx-4"
-                  />
-                </Tooltip>
-              )}
+              {t('page.perps.balanceAvailable', {
+                balance: formatUsdValue(
+                  depositMaxUsdValue,
+                  BigNumber.ROUND_DOWN
+                ),
+              })}
             </div>
           </div>
 
@@ -566,9 +423,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                   }}
                 />
                 <div className="text-12 text-r-neutral-foot mt-2">
-                  {type === 'withdraw'
-                    ? `${usdValue || '0'} USDC`
-                    : isDirectDeposit
+                  {isDirectDeposit
                     ? `${usdValue || '0'} ${getTokenSymbol(tokenInfo)}`
                     : `${
                         usdValue
@@ -608,40 +463,20 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
             </div>
           </div>
 
-          {/* Percentage buttons — outside card */}
+          {/* Percentage buttons */}
           <div className="flex items-center gap-8 mt-8">
             {[25, 50, 75].map((pct) => (
               <div
                 key={pct}
                 className="flex-1 h-[40px] flex items-center justify-center rounded-[8px] border border-solid border-transparent text-13 text-r-neutral-title-1 cursor-pointer hover:border-rabby-blue-default font-medium hover:text-r-blue-default bg-r-neutral-card1"
-                onClick={() => {
-                  if (type === 'withdraw') {
-                    const val = new BigNumber(withdrawMaxBalance)
-                      .times(pct)
-                      .div(100)
-                      .decimalPlaces(6, BigNumber.ROUND_DOWN);
-                    setUsdValue(val.toFixed());
-                  } else {
-                    handlePercentage(pct);
-                  }
-                }}
+                onClick={() => handlePercentage(pct)}
               >
                 {pct}%
               </div>
             ))}
             <div
               className="flex-1 h-[40px] flex items-center justify-center rounded-[8px] border border-solid border-transparent text-13 text-r-neutral-title-1 cursor-pointer hover:border-rabby-blue-default font-medium hover:text-r-blue-default bg-r-neutral-card1"
-              onClick={() => {
-                if (type === 'withdraw') {
-                  setUsdValue(
-                    new BigNumber(withdrawMaxBalance)
-                      .decimalPlaces(6, BigNumber.ROUND_DOWN)
-                      .toFixed()
-                  );
-                } else {
-                  handleMax();
-                }
-              }}
+              onClick={handleMax}
             >
               Max
             </div>
@@ -653,36 +488,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           </div>
         </div>
         <div className="w-full mt-auto px-20 py-16 border-t-[0.5px] border-solid border-rabby-neutral-line flex items-center justify-center flex-col">
-          {type === 'withdraw' && (
-            <div className="mb-10 flex flex-row items-center justify-center">
-              <div className="text-[11px] text-r-neutral-foot text-center">
-                {isHypeWithdraw
-                  ? `${t('page.perps.fee')}: $${new BigNumber(hypeGasFeeUsd)
-                      .decimalPlaces(6)
-                      .toFixed()}`
-                  : `${t('page.perps.fee')}: $1.00`}
-              </div>
-              <Tooltip
-                overlayClassName={clsx('rectangle')}
-                placement="top"
-                title={t(
-                  isHypeWithdraw
-                    ? 'page.perps.depositAmountPopup.feeTipTooltipHype'
-                    : 'page.perps.depositAmountPopup.feeTipTooltip'
-                )}
-                align={{ targetOffset: [0, 0] }}
-              >
-                <RcIconInfo
-                  viewBox="0 0 12 12"
-                  width={12}
-                  height={12}
-                  className="text-rabby-neutral-foot ml-4"
-                />
-              </Tooltip>
-            </div>
-          )}
-          {type === 'deposit' &&
-            isValidAmount &&
+          {isValidAmount &&
             !isDirectDeposit &&
             !quoteError &&
             (quoteLoading ? (
@@ -717,103 +523,70 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 </Tooltip>
               </div>
             ))}
-          {type === 'deposit' ? (
-            <Button
-              block
-              disabled={
-                !isValidAmount ||
-                Boolean(quoteError) ||
-                (!isDirectDeposit && quoteLoading) ||
-                twoStepApprovePending
-              }
-              size="large"
-              type="primary"
-              loading={isPreparingSign || twoStepApprovePending}
-              className="h-[48px] text-r-neutral-title2 text-15 font-medium"
-              style={{
-                height: 48,
-              }}
-              onClick={async () => {
-                const txsToSign = shouldTwoStep
-                  ? twoStepCurrentTxs || []
-                  : miniTxs;
-                if (canUseDirectSubmitTx && txsToSign.length) {
-                  clearMiniSignTypeData?.();
-                  setIsPreparingSign(true);
-                  closeSign();
-                  try {
-                    const hashes = await openDirect({
-                      txs: txsToSign,
-                      checkGasFeeTooHigh: true,
-                      ga: {
-                        category: 'Perps',
-                        source: 'Perps',
-                        trigger: 'Perps',
-                      },
-                    });
-                    if (hashes && hashes.length > 0) {
-                      const lastHash = hashes[hashes.length - 1];
-                      if (shouldTwoStep && twoStepIsApprove) {
-                        twoStepNext(lastHash);
-                      } else {
-                        handleSignDepositDirect(lastHash);
-                        setTimeout(() => {
-                          onClose?.();
-                        }, 500);
-                      }
+          <Button
+            block
+            disabled={
+              !isValidAmount ||
+              Boolean(quoteError) ||
+              (!isDirectDeposit && quoteLoading) ||
+              twoStepApprovePending
+            }
+            size="large"
+            type="primary"
+            loading={isPreparingSign || twoStepApprovePending}
+            className="h-[48px] text-r-neutral-title2 text-15 font-medium"
+            style={{
+              height: 48,
+            }}
+            onClick={async () => {
+              const txsToSign = shouldTwoStep
+                ? twoStepCurrentTxs || []
+                : miniTxs;
+              if (canUseDirectSubmitTx && txsToSign.length) {
+                clearMiniSignTypeData?.();
+                setIsPreparingSign(true);
+                closeSign();
+                try {
+                  const hashes = await openDirect({
+                    txs: txsToSign,
+                    checkGasFeeTooHigh: true,
+                    ga: {
+                      category: 'Perps',
+                      source: 'Perps',
+                      trigger: 'Perps',
+                    },
+                  });
+                  if (hashes && hashes.length > 0) {
+                    const lastHash = hashes[hashes.length - 1];
+                    if (shouldTwoStep && twoStepIsApprove) {
+                      twoStepNext(lastHash);
+                    } else {
+                      handleSignDepositDirect(lastHash);
+                      setTimeout(() => {
+                        onClose?.();
+                      }, 500);
                     }
-                  } catch (error) {
-                    console.log('deposit error', error);
-                    if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
-                      onClose();
-                      return;
-                    }
-                    handleDeposit();
-                  } finally {
-                    setIsPreparingSign(false);
                   }
-                } else {
+                } catch (error) {
+                  console.log('deposit error', error);
+                  if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+                    onClose();
+                    return;
+                  }
                   handleDeposit();
+                } finally {
+                  setIsPreparingSign(false);
                 }
-                return true;
-              }}
-            >
-              {shouldTwoStep && twoStepIsApprove
-                ? t('page.swap.approve')
-                : t('page.perps.deposit')}
-            </Button>
-          ) : (
-            <Button
-              block
-              disabled={!isValidAmount}
-              size="large"
-              type="primary"
-              loading={isWithdrawLoading}
-              className="h-[48px] text-r-neutral-title2 text-15 font-medium"
-              style={{
-                height: 48,
-              }}
-              onClick={async () => {
-                setIsWithdrawLoading(true);
-                clearMiniSignTx();
-                let withdrawAmount = Number(usdValue);
-                if (isHypeWithdraw && hypeGasFeeUsd > 0) {
-                  withdrawAmount = new BigNumber(withdrawAmount)
-                    .minus(hypeGasFeeUsd)
-                    .decimalPlaces(6, BigNumber.ROUND_DOWN)
-                    .toNumber();
-                }
-                const success = await handleWithdraw?.(
-                  withdrawAmount,
-                  isHypeWithdraw
-                );
-                setIsWithdrawLoading(false);
-                if (success) onClose?.();
-              }}
-            >
-              {t('page.perps.withdraw')}
-            </Button>
-          )}
+              } else {
+                handleDeposit();
+              }
+              return true;
+            }}
+          >
+            {shouldTwoStep && twoStepIsApprove
+              ? t('page.swap.approve')
+              : t('page.perps.deposit')}
+          </Button>
         </div>
       </div>
 
@@ -826,12 +599,11 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
           }
         }}
         list={tokenList || []}
-        mode={type}
+        mode="deposit"
         onCancel={() => {
-          if (type === 'deposit' && !selectedToken) {
+          if (!selectedToken) {
             onClose();
           }
-
           setTokenVisible(false);
         }}
         onSelect={(t) => {

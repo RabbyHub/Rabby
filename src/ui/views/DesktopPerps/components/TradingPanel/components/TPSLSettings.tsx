@@ -25,8 +25,8 @@ const MODE_OPTIONS: {
   label: string;
   unit: string;
 }[] = [
-  { value: 'price', label: 'Price', unit: 'USDC' },
-  { value: 'pnl', label: 'PNL', unit: 'USDC' },
+  { value: 'price', label: 'Price', unit: 'USD' },
+  { value: 'pnl', label: 'PNL', unit: 'USD' },
   { value: 'roi', label: 'ROI%', unit: '%' },
 ];
 
@@ -305,7 +305,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     const modeLabel =
       MODE_OPTIONS.find((o) => o.value === item.settingMode)?.label || 'Price';
     const unitLabel =
-      MODE_OPTIONS.find((o) => o.value === item.settingMode)?.unit || 'USDC';
+      MODE_OPTIONS.find((o) => o.value === item.settingMode)?.unit || 'USD';
 
     const hasError = !!item.error;
 

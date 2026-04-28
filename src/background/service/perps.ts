@@ -49,6 +49,7 @@ export interface PerpsServiceStore {
   firstOpenPerpsNeedDark: boolean;
   selectedCoin: string;
   skipMarketCloseConfirm: boolean;
+  candleInterval: string;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -84,6 +85,7 @@ class PerpsService {
         firstOpenPerpsNeedDark: true,
         selectedCoin: 'BTC',
         skipMarketCloseConfirm: false,
+        candleInterval: '15M',
       },
     });
 
@@ -531,6 +533,20 @@ class PerpsService {
     this.store.skipMarketCloseConfirm = skip;
   };
 
+  getCandleInterval = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.candleInterval ?? '15M';
+  };
+
+  setCandleInterval = async (interval: string) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.candleInterval = interval;
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
@@ -551,6 +567,7 @@ class PerpsService {
       firstOpenPerpsNeedDark: true,
       selectedCoin: 'BTC',
       skipMarketCloseConfirm: false,
+      candleInterval: '15M',
     };
     this.memoryState.agentWallets = {};
   };

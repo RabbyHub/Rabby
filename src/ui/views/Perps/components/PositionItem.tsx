@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { format } from 'path';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -119,9 +120,10 @@ export const PositionItem: React.FC<{
               withDirection={false}
               size={20}
             />
-            <span className="text-15 ml-4 font-medium text-r-neutral-title-1">
-              {formatPerpsCoin(coin)}
-            </span>
+            <PerpsDisplayCoinName
+              item={marketData}
+              className="text-15 ml-4 font-medium"
+            />
             <TooltipWithMagnetArrow
               overlayClassName="rectangle"
               placement="top"

@@ -816,6 +816,8 @@
       "title": "Perps",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
+      "transferToSpot": "Transfer to Spot",
+      "transferToPerps": "Transfer to Perps",
       "positions": "Positions",
       "openProModeInTab": "Open Pro Mode in Tab",
       "closeAll": "Close All",
@@ -898,6 +900,15 @@
       },
       "historyDetail": {
         "date": "Date",
+        "amount": "Amount",
+        "asset": "Asset",
+        "action": "Action",
+        "value": "Value",
+        "buy": "Buy",
+        "sell": "Sell",
+        "transferDetailTitle": "Transfer",
+        "transferActionToSpot": "Transfer (from Perps to Spot)",
+        "transferActionToPerps": "Transfer (from Spot to Perps)",
         "price": "Price",
         "size": "Size",
         "tradeValue": "Trade Value",
@@ -923,8 +934,70 @@
         "title": "Log Out Current Address",
         "desc": "You are logging out of your current Perps account. You can restore it anytime by logging in with this address."
       },
+      "PerpsDepositCard": {
+        "availableToTrade": "Available to trade: ",
+        "deposit": "Deposit",
+        "swap": "Swap"
+      },
+      "selectChainToWithdraw": "Select Chain to Withdraw",
+      "selectTokenToWithdraw": "Select Token to Withdraw",
+      "EnableUnifiedAccount": {
+        "title": "Enable Unified Account",
+        "desc": "Unified Account is the recommended account mode that simplifies the trading experience. Spot and Perps balances are merged for all tokens, and cross margin is supported on all available assets.",
+        "confirm": "Confirm",
+        "enable": "Enable",
+        "cancel": "Cancel",
+        "importantTips": "All USDC collateral will be used as cross margin once Unified Account is enabled.",
+        "important": "Important"
+      },
+      "PerpsSpotSwap": {
+        "title": "Swap Stablecoins",
+        "from": "From",
+        "to": "Swap To",
+        "balance": "Balance",
+        "estReceive": "Est.Receive",
+        "swapBtn": "Swap",
+        "insufficientBalance": "Insufficient balance",
+        "invalidAmount": "Please input a valid amount",
+        "minimumAmount": "The minimum swap amount is 10",
+        "max": "Max",
+        "toDeposit": "To Deposit →",
+        "swapBeforeTrading": "Swap USDC to {{quoteAsset}} before trading",
+        "enabledSuccess": "Unified Account enabled",
+        "enableFailed": "Enable Unified Account failed",
+        "swapFailed": "Swap failed",
+        "swapSuccess": "Swap completed successfully",
+        "estReceiveTooltip": "Estimated receive amount is subject to market price fluctuations.",
+        "buyAsset": "Buy {{asset}}",
+        "sellAsset": "Sell {{asset}}",
+        "toSwapEntry": "To Swap →",
+        "toDepositEntry": "To Deposit →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Transfer",
+        "from": "From",
+        "to": "To",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Balance",
+        "amount": "Amount",
+        "max": "Max",
+        "submit": "Trans",
+        "insufficientBalance": "Insufficient balance",
+        "invalidAmount": "Please input a valid amount"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid Balances",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      },
+      "PerpsAbout": {
+        "title": "About"
+      },
       "depositAmountPopup": {
         "amount": "Amount",
+        "balance": "Balance",
+        "chain": "Chain",
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
@@ -1126,7 +1199,8 @@
         "24hVol": "24h Vol",
         "volume": "Volume",
         "fundingCountdown": "Funding / Countdown",
-        "8hrFunding": "8h Funding"
+        "8hrFunding": "8h Funding",
+        "categoryAll": "ALL"
       },
       "userInfo": {
         "tab": {
@@ -1173,7 +1247,9 @@
           "twap": "TWAP",
           "tradeHistory": "Trade History",
           "fundingHistory": "Funding History",
-          "orderHistory": "Order History"
+          "orderHistory": "Order History",
+          "assets": "Assets",
+          "about": "About"
         },
         "emptyMessage": {
           "openOrders": "No open orders",
@@ -1183,7 +1259,19 @@
           "tradeHistory": "No trade history",
           "fillHistory": "No fill history",
           "fundingHistory": "No funding history",
-          "orderHistory": "No order history"
+          "orderHistory": "No order history",
+          "assets": "No assets"
+        },
+        "assets": {
+          "columnAsset": "Assets",
+          "columnTotal": "Total Balance",
+          "columnAvailable": "Available Balance",
+          "columnAction": "Action",
+          "swapStablecoins": "Swap Stablecoins",
+          "enableUnifiedAccount": "Enable Unified Account",
+          "transferToPerps": "Transfer to Perps",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         },
         "positionInfo": {
           "viewOrders": "View Orders",
@@ -1437,7 +1525,16 @@
         "crossAccountLeverage": "Cross Account Leverage",
         "crossAccountLeverageTips": "Cross Account Leverage = Total Cross Position Value / Cross Account Value.",
         "maintenanceMargin": "Maintenance margin",
-        "maintenanceMarginTips": "The minimum portfolio value required to keep your cross positions open"
+        "maintenanceMarginTips": "The minimum portfolio value required to keep your cross positions open",
+        "accountSummary": "Account Summary",
+        "unifiedAccountSummary": "Unified Account Summary",
+        "unifiedAccountRatio": "Unified Account Ratio",
+        "unifiedAccountRatioTips": "Represents the risk of portfolio liquidation. When the value is greater than 95%, your portfolio may be liquidated.",
+        "unifiedAccountLeverage": "Unified Account Leverage",
+        "unifiedAccountLeverageTips": "Unified Account Leverage = Total Cross Positions Value / Total Collateral Balance.",
+        "perpsMaintenanceMargin": "Perps Maintenance Margin",
+        "perpsPortfolioValue": "Perps Portfolio Value",
+        "perpsUnrealizedPnl": "Perps Unrealized PNL"
       },
       "accountActions": {
         "pending": "Pending",

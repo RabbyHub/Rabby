@@ -4,15 +4,19 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { sleep, useWallet } from '@/ui/utils';
 import { destroyPerpsSDK, getPerpsSDK } from '../sdkManager';
 import * as Sentry from '@sentry/browser';
-import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
+import {
+  Abstraction,
+  UserAbstractionResp,
+} from '@rabby-wallet/hyperliquid-sdk';
 import {
   PERPS_AGENT_NAME,
   PERPS_BUILD_FEE,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PERPS_REFERENCE_CODE,
   DELETE_AGENT_EMPTY_ADDRESS,
-  HYPE_EVM_BRIDGE_ADDRESS,
-  HYPE_SEND_ASSET_TOKEN,
+  HYPE_EVM_BRIDGE_ADDRESS_MAP,
+  HYPE_SEND_ASSET_TOKEN_MAP,
+  PerpsQuoteAsset,
 } from '../constants';
 import { isSameAddress } from '@/ui/utils';
 import { findAccountByPriority } from '@/utils/account';
@@ -403,6 +407,28 @@ export const usePerpsState = ({
     }
   }, []);
 
+  const handleSafeSetUnifiedAccount = useMemoizedFn(async () => {
+    try {
+      const sdk = getPerpsSDK();
+      await sdk.exchange?.agentSetAbstraction(Abstraction.UNIFIED_ACCOUNT);
+      // Only refresh on success — refreshing after a failure shows stale
+      // state as if the operation succeeded.
+      setTimeout(() => {
+        // empty address makes perps sdk use current address
+        dispatch.perps.fetchUserAbstraction('');
+      }, 100);
+    } catch (e: any) {
+      console.error('Failed to agentSetAbstraction:', e);
+      Sentry.captureException(
+        new Error(
+          `PERPS agentSetAbstraction failed: ${
+            e?.message ? String(e.message) : String(e)
+          }`
+        )
+      );
+    }
+  });
+
   const handleDirectApprove = useCallback(
     async (signActions: SignAction[]): Promise<void> => {
       const sdk = getPerpsSDK();
@@ -430,12 +456,13 @@ export const usePerpsState = ({
 
       setTimeout(() => {
         handleSafeSetReference();
-      }, 500);
+        handleSafeSetUnifiedAccount();
+      }, 100);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
       console.log('sendApproveBuilderFeeRes', approveBuilderFeeRes);
     },
-    [handleSafeSetReference]
+    [handleSafeSetReference, handleSafeSetUnifiedAccount]
   );
 
   const ensureLoginApproveSign = useMemoizedFn(
@@ -733,9 +760,13 @@ export const usePerpsState = ({
   });
 
   const handleWithdraw = useMemoizedFn(
-    async (amount: number, isHypeWithdraw = false): Promise<boolean> => {
+    async (
+      amount: number,
+      isHypeWithdraw = false,
+      targetAsset: PerpsQuoteAsset = 'USDC'
+    ): Promise<boolean> => {
       try {
-        console.log('handleWithdraw', amount, isHypeWithdraw);
+        console.log('handleWithdraw', amount, isHypeWithdraw, targetAsset);
         const sdk = getPerpsSDK();
 
         if (!currentPerpsAccount) {
@@ -753,9 +784,9 @@ export const usePerpsState = ({
         let res: any;
         if (isHypeWithdraw) {
           const action = sdk.exchange.prepareSendAsset({
-            destination: HYPE_EVM_BRIDGE_ADDRESS,
+            destination: HYPE_EVM_BRIDGE_ADDRESS_MAP[targetAsset],
             amount: amount.toString(),
-            token: HYPE_SEND_ASSET_TOKEN,
+            token: HYPE_SEND_ASSET_TOKEN_MAP[targetAsset],
             sourceDex: isUnified ? 'spot' : '',
             destinationDex: 'spot',
           });
@@ -793,7 +824,12 @@ export const usePerpsState = ({
         console.log('withdraw res', res);
         dispatch.perps.setLocalLoadingHistory([
           {
-            time,
+            // HYPE withdraw goes through `send` ledger update whose server-
+            // side timestamp can be a few dozen ms earlier than the client
+            // clock, leaving the time-based pending filter unable to clear
+            // it. Backdate by 1s to absorb the drift (matches the desktop
+            // deposit handler's `Date.now() - 1000` trick).
+            time: isHypeWithdraw ? time - 1000 : time,
             hash: res.hash || '',
             type: 'withdraw',
             status: 'pending',

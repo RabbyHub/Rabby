@@ -30,7 +30,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
     if (displayUnit === 'usdc' && price && Number(max) > 0) {
       return `${splitNumberByStep(
         new BigNumber(max).multipliedBy(price).toFixed(2)
-      )} USDC`;
+      )} USD`;
     }
     return `${max} ${formatPerpsCoin(selectedCoin)}`;
   };

@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 
 export const TradeHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -52,7 +53,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.time'),
         key: 'time',
         dataIndex: 'time',
-        width: '20%',
+        width: '17%',
         sorter: (a, b) => a.time - b.time,
         render: (_, record) => {
           return (
@@ -66,21 +67,23 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
-        width: '7%',
+        width: '10%',
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
             <div
-              className={`text-[12px] leading-[14px]  text-r-neutral-title-1 ${
-                record.side === 'B'
-                  ? 'text-rb-green-default'
-                  : 'text-rb-red-default'
-              } cursor-pointer hover:font-bold hover:text-rb-brand-default`}
+              className={'group text-[12px] leading-[14px] cursor-pointer'}
               onClick={() => {
                 dispatch.perps.updateSelectedCoin(record.coin);
               }}
             >
-              {formatPerpsCoin(record.coin)}
+              <PerpsDisplayCoinName
+                item={marketDataMap[record.coin] || { name: record.coin }}
+                separator="-"
+                showDexTag
+                baseClassName="group-hover:text-rb-brand-default group-hover:font-bold"
+                quoteClassName="text-r-neutral-title-1 group-hover:text-rb-brand-default group-hover:font-bold"
+              />
             </div>
           );
         },

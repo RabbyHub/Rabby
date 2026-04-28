@@ -6,6 +6,8 @@ import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import { Virtuoso } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
 import { HistoryDetailPopup } from '../popup/HistoryDetailPopup';
+import { HistoryTransferDetailPopup } from '../popup/HistoryTransferDetailPopup';
+import { AccountHistoryItem } from '@/ui/models/perps';
 import { ReactComponent as RcIconNoSrc } from '@/ui/assets/perps/IconNoSrc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useHistory, useParams } from 'react-router-dom';
@@ -37,6 +39,10 @@ export const HistoryPage: React.FC = () => {
     (WsFill & { logoUrl: string }) | null
   >(null);
   const [detailVisible, setDetailVisible] = useState(false);
+  const [transferItem, setTransferItem] = useState<AccountHistoryItem | null>(
+    null
+  );
+  const [transferDetailVisible, setTransferDetailVisible] = useState(false);
 
   const handleItemClick = useMemoizedFn((fill: WsFill) => {
     const obj = {
@@ -47,8 +53,18 @@ export const HistoryPage: React.FC = () => {
     setDetailVisible(true);
   });
 
+  const handleTransferClick = useMemoizedFn((item: AccountHistoryItem) => {
+    setTransferItem(item);
+    setTransferDetailVisible(true);
+  });
+
   const handleCloseDetail = () => {
     setDetailVisible(false);
+  };
+
+  const handleCloseTransferDetail = () => {
+    setTransferDetailVisible(false);
+    setTransferItem(null);
   };
 
   const list = coin && coin !== 'undefined' ? coinHistoryList : homeHistoryList;
@@ -69,7 +85,7 @@ export const HistoryPage: React.FC = () => {
             }}
             itemContent={(_, item) =>
               'usdValue' in item ? (
-                <HistoryAccountItem data={item} />
+                <HistoryAccountItem data={item} onClick={handleTransferClick} />
               ) : (
                 <HistoryItem
                   fill={item}
@@ -99,6 +115,12 @@ export const HistoryPage: React.FC = () => {
         }
         fill={selectedFill}
         onCancel={handleCloseDetail}
+      />
+
+      <HistoryTransferDetailPopup
+        visible={transferDetailVisible}
+        item={transferItem}
+        onCancel={handleCloseTransferDetail}
       />
     </div>
   );

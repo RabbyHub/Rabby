@@ -8,6 +8,7 @@ import { PERPS_AGENT_NAME } from '../../Perps/constants';
 import { usePerpsProState } from './usePerpsProState';
 import { preloadSound } from '@/ui/utils/sound';
 import { DARK_MODE_TYPE } from '@/constant';
+import { useRequest } from 'ahooks';
 
 export const usePerpsProInit = (isActive = true) => {
   usePerpsDefaultAccount({
@@ -116,6 +117,20 @@ export const usePerpsProInit = (isActive = true) => {
       unsubscribe();
     };
   }, [selectedCoin, currentPerpsAccount?.address]);
+
+  const lang = useRabbySelector((state) => state.preference.locale);
+
+  const { data: tokenDetail } = useRequest(
+    async () => {
+      const res = await wallet.openapi.getPerpTokenDetail({
+        name: selectedCoin,
+        lang,
+      });
+      dispatch.perps.patchState({ selectedTokenDetail: res });
+      return res;
+    },
+    { refreshDeps: [selectedCoin, lang] }
+  );
 
   useEffect(() => {
     if (isInitialized) {
