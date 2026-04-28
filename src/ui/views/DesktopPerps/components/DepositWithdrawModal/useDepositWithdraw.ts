@@ -914,7 +914,12 @@ export const useDepositWithdraw = (
 
       dispatch.perps.setLocalLoadingHistory([
         {
-          time,
+          // HYPE withdraw goes through `send` ledger update whose server-
+          // side timestamp can be a few dozen ms earlier than the client
+          // clock, leaving the time-based pending filter unable to clear
+          // it. Backdate by 1s to absorb the drift (matches the desktop
+          // deposit handler's `Date.now() - 1000` trick).
+          time: isHypeWithdraw ? Date.now() - 1000 : Date.now(),
           hash: res.hash || '',
           type: 'withdraw',
           status: 'pending',

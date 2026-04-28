@@ -7,17 +7,61 @@ import { UserAbstraction } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
 import { formatSpotState } from '../../DesktopPerps/utils';
 import { useWallet } from '@/ui/utils';
+import type { Account } from '@/background/service/preference';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
 
-/**
- * Lightweight hook for stablecoin swap & Unified Account enable actions.
- * Decoupled from usePerpsInitial's initialization side-effects so modals can use it safely.
- */
 export const usePerpsActions = () => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   const currentPerpsAccount = useRabbySelector(
     (s) => s.perps.currentPerpsAccount
+  );
+
+  const executeSignTypedData = useMemoizedFn(
+    async (actions: any[], account: Account) => {
+      if (!actions || actions.length === 0) {
+        throw new Error('no signature, try later');
+      }
+
+      let result: string[] = [];
+
+      if (supportedDirectSign(account.type)) {
+        typedDataSignatureStore.close();
+        result = await typedDataSignatureStore.start(
+          {
+            txs: actions.map((item) => {
+              return {
+                data: item,
+                from: account.address,
+                version: 'V4',
+              };
+            }),
+            config: {
+              account: account,
+            },
+            wallet,
+          },
+          {}
+        );
+        typedDataSignatureStore.close();
+      } else {
+        for (const actionObj of actions) {
+          const signature = await wallet.sendRequest<string>(
+            {
+              method: 'eth_signTypedDataV4',
+              params: [account.address, JSON.stringify(actionObj)],
+            },
+            {
+              account,
+            }
+          );
+          result.push(signature);
+        }
+      }
+      return result;
+    }
   );
 
   const handleEnableUnifiedAccount = useMemoizedFn(
@@ -27,29 +71,27 @@ export const usePerpsActions = () => {
         if (!currentPerpsAccount) throw new Error('No currentPerpsAccount');
         if (!sdk.exchange) throw new Error('Hyperliquid no exchange client');
 
-        const prepared = sdk.exchange.prepareUserSetAbstraction({
+        const action = sdk.exchange.prepareUserSetAbstraction({
           user: currentPerpsAccount.address,
           abstraction: UserAbstraction.UNIFIED_ACCOUNT,
         });
 
-        const actionObj = {
-          domain: prepared.domain,
-          types: prepared.types,
-          primaryType: prepared.primaryType,
-          message: prepared.message,
-        };
-        const signature = await wallet.sendRequest<string>(
-          {
-            method: 'eth_signTypedDataV4',
-            params: [currentPerpsAccount.address, JSON.stringify(actionObj)],
-          },
-          { account: currentPerpsAccount }
+        // const signature = await wallet.sendRequest<string>(
+        //   {
+        //     method: 'eth_signTypedDataV4',
+        //     params: [currentPerpsAccount.address, JSON.stringify(actionObj)],
+        //   },
+        //   { account: currentPerpsAccount }
+        // );
+        const [signature] = await executeSignTypedData(
+          [action],
+          currentPerpsAccount
         );
 
         await sdk.exchange.sendUserSetAbstraction({
-          action: prepared.message as any,
-          nonce: prepared.nonce || 0,
-          signature,
+          action: action.message as any,
+          nonce: action.nonce || 0,
+          signature: signature as string,
         });
 
         const [userAbsRes, spotRes] = await Promise.allSettled([

@@ -30,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import { splitNumberByStep, useWallet } from '@/ui/utils';
 import { obj2query } from '@/ui/utils/url';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/perps/Iconfullscreen.svg';
 
 const formatPercent = (value: number, decimals = 8) => {
@@ -273,6 +273,10 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
   }>({});
   const isMountedRef = useRef(true);
   const currentWeekCandleRef = useRef<CandleBar | null>(null);
+  // Gate WS updates until initial historical data is loaded for the current
+  // (coin, candleMenuKey). Without this, switching timeframe/coin can deliver
+  // a WS candle whose time is older than the stale series tail and trigger
+  const dataReadyRef = useRef(false);
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
   const isWeekly = candleMenuKey === CANDLE_MENU_KEY_V2.ONE_WEEK;
   const timeLocalization = useMemo(() => createTimeLocalization(isWeekly), [
@@ -481,6 +485,8 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       const sdk = getPerpsSDK();
       if (!seriesRef.current) return;
 
+      dataReadyRef.current = false;
+
       const isWeekly = candleMenuKey === CANDLE_MENU_KEY_V2.ONE_WEEK;
       let start = 0;
       let end = Date.now();
@@ -533,6 +539,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
           };
         }
         updatePriceLines();
+        dataReadyRef.current = true;
       }
     },
     [coin, candleMenuKey]
@@ -563,6 +570,10 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       interval,
       (snapshot) => {
         if (!isMountedRef.current || !seriesRef.current) return;
+        // Drop WS messages until fetchData has populated the series for the
+        // current (coin, candleMenuKey); otherwise a stale-tail vs new-time
+        // mismatch will throw inside lightweight-charts.
+        if (!dataReadyRef.current) return;
 
         const candles = parseCandles([snapshot]);
         if (candles.length === 0) return;
@@ -652,10 +663,10 @@ export const PerpsChart = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [
-    selectedInterval,
-    setSelectedInterval,
-  ] = React.useState<CANDLE_MENU_KEY_V2>(CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES);
+  const dispatch = useRabbyDispatch();
+  const selectedInterval = useRabbySelector(
+    (state) => state.perps.candleInterval
+  );
 
   // 状态用于存储图表的悬停数据
   const [chartHoverData, setChartHoverData] = React.useState<ChartHoverData>({
@@ -818,7 +829,7 @@ export const PerpsChart = ({
         {CANDLE_MENU_ITEM.map(({ key, label }) => (
           <button
             key={key}
-            onClick={() => setSelectedInterval(key)}
+            onClick={() => dispatch.perps.updateCandleInterval(key)}
             className={clsx(
               'px-10 py-4 text-12 rounded-[4px]',
               key === selectedInterval

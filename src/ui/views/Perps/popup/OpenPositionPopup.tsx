@@ -44,6 +44,9 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   marginMode: 'cross' | 'isolated';
   onMarginModeChange?: (mode: 'cross' | 'isolated') => void;
   hasPosition?: boolean;
+  quoteAsset?: string;
+  onDepositPress?: () => void;
+  onSwapPress?: () => void;
   handleOpenPosition: (params: {
     coin: string;
     size: string;
@@ -82,6 +85,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   marginMode,
   onMarginModeChange,
   hasPosition,
+  quoteAsset = 'USDC',
+  onDepositPress,
+  onSwapPress,
 }) => {
   const { t } = useTranslation();
   const perpsAccount = useRabbySelector(
@@ -371,12 +377,33 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
         <MarginInput
           title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
+          quoteAsset={quoteAsset}
           availableAmount={availableBalance}
           margin={margin}
           onMarginChange={setMargin}
           sliderDisabled={availableBalance < 0.1}
           errorMessage={
             marginValidation.error ? marginValidation.errorMessage : null
+          }
+          availableExtra={
+            (availableBalance < 0.1 ||
+              marginValidation.error === 'insufficient_balance') && (
+              <span
+                className="text-r-blue-default font-medium cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (quoteAsset === 'USDC') {
+                    onDepositPress?.();
+                  } else {
+                    onSwapPress?.();
+                  }
+                }}
+              >
+                {quoteAsset === 'USDC'
+                  ? t('page.perps.PerpsSpotSwap.toDepositEntry')
+                  : t('page.perps.PerpsSpotSwap.toSwapEntry')}
+              </span>
+            )
           }
           titleExtra={
             <span

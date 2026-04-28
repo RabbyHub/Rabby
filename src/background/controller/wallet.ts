@@ -6708,6 +6708,8 @@ export class WalletController extends BaseController {
   };
   getPerpsQuoteUnit = perpsService.getQuoteUnit;
   setPerpsQuoteUnit = perpsService.setQuoteUnit;
+  getPerpsCandleInterval = perpsService.getCandleInterval;
+  setPerpsCandleInterval = perpsService.setCandleInterval;
   setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
   getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
   setHasDismissedNewUserGuideV2 = perpsService.setHasDismissedNewUserGuideV2;

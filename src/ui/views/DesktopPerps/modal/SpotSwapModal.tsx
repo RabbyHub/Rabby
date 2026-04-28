@@ -12,33 +12,16 @@ import {
   getSpotBalanceKey,
 } from '@/ui/views/Perps/constants';
 import { QUOTE_ASSET_ICON_MAP as COIN_ICON_MAP } from '@/ui/views/Perps/components/quoteAssetIcons';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 import { usePerpsProPosition } from '@/ui/views/DesktopPerps/hooks/usePerpsProPosition';
+import { usePerpsSpotMids } from '@/ui/views/Perps/hooks/usePerpsSpotMids';
 import { useMemoizedFn } from 'ahooks';
 import { RcIconArrowDownCC, RcIconPlusCC } from '@/ui/assets/desktop/common';
+import { PERPS_MIN_SWAP_AMOUNT } from '../../Perps/popup/SpotSwapPopup';
 
 export { COIN_ICON_MAP };
 
 const STABLECOIN_SLIPPAGE = 0.01;
-const MIN_SWAP_AMOUNT = 10;
-
-let _midsCache: { time: number; data: Record<string, string> } | null = null;
-const fetchMids = async (): Promise<Record<string, string>> => {
-  const now = Date.now();
-  if (_midsCache && now - _midsCache.time < 30_000) {
-    return _midsCache.data;
-  }
-  try {
-    const sdk = getPerpsSDK();
-    const mids = await sdk.info.getAllMids();
-    _midsCache = { time: now, data: (mids as any) || {} };
-    return _midsCache.data;
-  } catch (e) {
-    console.error('fetchMids failed', e);
-    return _midsCache?.data || {};
-  }
-};
 
 interface SpotSwapModalProps {
   visible: boolean;
@@ -68,11 +51,11 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { handleStableCoinOrder } = usePerpsProPosition();
-  const { spotBalancesMap } = usePerpsAccount();
+  const { spotBalancesMap, getSpotBalance } = usePerpsAccount();
   const [fromCoin, setFromCoin] = useState<PerpsQuoteAsset>('USDC');
   const [toCoin, setToCoin] = useState<PerpsQuoteAsset>('USDT');
   const [amount, setAmount] = useState<string>('');
-  const [midPrices, setMidPrices] = useState<Record<string, string>>({});
+  const midPrices = usePerpsSpotMids(visible);
   const [submitting, setSubmitting] = useState(false);
 
   // Snapshot spotBalancesMap so the seed effect doesn't refire on each WS tick (which would
@@ -112,17 +95,6 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
     setAmount('');
   }, [visible, targetAsset, sourceAsset]);
 
-  useEffect(() => {
-    if (!visible) return;
-    let active = true;
-    fetchMids().then((m) => {
-      if (active) setMidPrices(m);
-    });
-    return () => {
-      active = false;
-    };
-  }, [visible]);
-
   // Raw balance string (BigNumber-safe). Keep numeric cast only for presentation.
   const fromBalanceStr = useMemo(
     () => spotBalancesMap[getSpotBalanceKey(fromCoin)]?.available || '0',
@@ -159,7 +131,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
 
   const errorMessage = useMemo(() => {
     if (!amount) return '';
-    if (amountBN.lt(MIN_SWAP_AMOUNT))
+    if (amountBN.lt(PERPS_MIN_SWAP_AMOUNT))
       return t('page.perps.PerpsSpotSwap.minimumAmount');
     if (amountBN.gt(fromBalanceBN))
       return t('page.perps.PerpsSpotSwap.insufficientBalance');
@@ -257,23 +229,39 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
     );
   };
 
+  const sortedCoins = useMemo(() => {
+    return [...ALL_PERPS_QUOTE_ASSETS].sort(
+      (a, b) => getSpotBalance(b) - getSpotBalance(a)
+    );
+  }, [getSpotBalance, spotBalancesMap]);
+
   const renderCoinMenu = (
     onSelect: (v: PerpsQuoteAsset) => void,
     selected: PerpsQuoteAsset
   ) => (
     <Menu
-      className="bg-r-neutral-bg1"
+      className="bg-r-neutral-bg1 min-w-[180px]"
       onClick={(info) => onSelect(info.key as PerpsQuoteAsset)}
       // selectedKeys={[selected]}
     >
-      {ALL_PERPS_QUOTE_ASSETS.map((c) => (
-        <Menu.Item
-          key={c}
-          className="text-rb-neutral-title-1 hover:bg-rb-blue-light-1"
-        >
-          <CoinOption coin={c} />
-        </Menu.Item>
-      ))}
+      {sortedCoins.map((c) => {
+        const bal = getSpotBalance(c);
+        return (
+          <Menu.Item
+            key={c}
+            className="text-rb-neutral-title-1 hover:bg-rb-blue-light-1"
+          >
+            <div className="flex items-center justify-between gap-12">
+              <CoinOption coin={c} />
+              <span className="text-rb-neutral-secondary text-[13px]">
+                {new BigNumber(bal)
+                  .decimalPlaces(2, BigNumber.ROUND_DOWN)
+                  .toFixed()}
+              </span>
+            </div>
+          </Menu.Item>
+        );
+      })}
     </Menu>
   );
 

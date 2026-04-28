@@ -903,6 +903,12 @@
         "amount": "Amount",
         "asset": "Asset",
         "action": "Action",
+        "value": "Value",
+        "buy": "Buy",
+        "sell": "Sell",
+        "transferDetailTitle": "Transfer",
+        "transferActionToSpot": "Transfer (from Perps to Spot)",
+        "transferActionToPerps": "Transfer (from Spot to Perps)",
         "price": "Price",
         "size": "Size",
         "tradeValue": "Trade Value",
@@ -961,11 +967,11 @@
         "enableFailed": "Enable Unified Account failed",
         "swapFailed": "Swap failed",
         "swapSuccess": "Swap completed successfully",
+        "estReceiveTooltip": "Estimated receive amount is subject to market price fluctuations.",
         "buyAsset": "Buy {{asset}}",
-        "sellAsset": "Sell {{asset}}"
-      },
-      "PerpMarginModePopup": {
-        "crossRequiresUnified": "Cross margin for this trading pair requires a Unified Account. Would you like to enable it?"
+        "sellAsset": "Sell {{asset}}",
+        "toSwapEntry": "To Swap →",
+        "toDepositEntry": "To Deposit →"
       },
       "PerpsTransferToPerps": {
         "title": "Transfer",

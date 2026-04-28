@@ -36,6 +36,7 @@ import {
   DEFAULT_ASSET_CATEGORY,
   HYPE_EVM_BRIDGE_ADDRESS_MAP,
   PerpsQuoteAsset,
+  CANDLE_MENU_KEY_V2,
 } from '../views/Perps/constants';
 import { ApproveSignatures } from '@/background/service/perps';
 import { maxBy } from 'lodash';
@@ -222,6 +223,10 @@ export interface PerpsState {
   marketSlippage: number; // 0-1, default 0.05 (5%)
   soundEnabled: boolean;
   skipMarketCloseConfirm: boolean;
+  // Persisted candle interval for the popup chart ([CANDLE_MENU_KEY_V2]).
+  // Persistence is handled via perpsService — see initCandleInterval /
+  // updateCandleInterval effects.
+  candleInterval: CANDLE_MENU_KEY_V2;
   marketEstSize: string;
   marketEstPrice: string;
   quoteUnit: 'base' | 'usd';
@@ -327,6 +332,7 @@ export const perps = createModel<RootModel>()({
     twapSliceFills: [],
     soundEnabled: true,
     skipMarketCloseConfirm: false,
+    candleInterval: CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES,
     marketSlippage: 0.05, // default 5%
     marketEstSize: '',
     marketEstPrice: '',
@@ -422,6 +428,7 @@ export const perps = createModel<RootModel>()({
             usdcValue = '0',
             sourceDex,
             destinationDex,
+            user,
           } = item.delta;
           if (
             item.delta.type === 'send' &&
@@ -429,7 +436,7 @@ export const perps = createModel<RootModel>()({
             destination &&
             isSameAddress(destination, state.currentPerpsAccount?.address)
           ) {
-            if (sourceDex === 'spot' || destinationDex === 'spot') {
+            if (user && destination && isSameAddress(user, destination)) {
               return {
                 time: item.time,
                 hash: item.hash,
@@ -626,40 +633,6 @@ export const perps = createModel<RootModel>()({
           userFills: [...fills, ...state.userFills],
         };
       }
-    },
-
-    updateUserAccountHistory(
-      state,
-      payload: { newHistoryList: AccountHistoryItem[] }
-    ) {
-      if (payload.newHistoryList.length === 0) {
-        return {
-          ...state,
-          userAccountHistory: [],
-          localLoadingHistory: [],
-        };
-      }
-      const { newHistoryList } = payload;
-      const {
-        depositMaxTime,
-        withdrawMaxTime,
-        receiveMaxTime,
-      } = getMaxTimeFromAccountHistory(newHistoryList);
-      // 使用当前userAccountHistory过滤 localLoadingHistory
-      const filteredLocalHistory = state.localLoadingHistory.filter((item) => {
-        if (item.type === 'deposit') {
-          return item.time >= depositMaxTime;
-        } else if (item.type === 'withdraw') {
-          return item.time >= withdrawMaxTime;
-        } else {
-          return item.time >= receiveMaxTime;
-        }
-      });
-      return {
-        ...state,
-        userAccountHistory: newHistoryList,
-        localLoadingHistory: filteredLocalHistory,
-      };
     },
 
     setPerpFee(state, payload: number) {
@@ -903,6 +876,13 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         skipMarketCloseConfirm: payload,
+      };
+    },
+
+    setCandleInterval(state, payload: CANDLE_MENU_KEY_V2) {
+      return {
+        ...state,
+        candleInterval: payload,
       };
     },
   },
@@ -1521,6 +1501,33 @@ export const perps = createModel<RootModel>()({
         dispatch.perps.setSkipMarketCloseConfirm(skip);
       } catch (error) {
         console.error('Failed to save skipMarketCloseConfirm:', error);
+      }
+    },
+
+    async initCandleInterval(_, rootState) {
+      try {
+        const stored = await rootState.app.wallet.getPerpsCandleInterval();
+        // Storage holds a free-form string; coerce to a known enum value so
+        // stale/unrecognized values fall back to the default instead of
+        // breaking the chart.
+        const valid = Object.values(CANDLE_MENU_KEY_V2) as string[];
+        const next =
+          stored && valid.includes(stored)
+            ? (stored as CANDLE_MENU_KEY_V2)
+            : CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES;
+        dispatch.perps.setCandleInterval(next);
+      } catch (error) {
+        console.error('Failed to load candle interval:', error);
+        dispatch.perps.setCandleInterval(CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES);
+      }
+    },
+
+    async updateCandleInterval(interval: CANDLE_MENU_KEY_V2, rootState) {
+      dispatch.perps.setCandleInterval(interval);
+      try {
+        await rootState.app.wallet.setPerpsCandleInterval(interval);
+      } catch (error) {
+        console.error('Failed to save candle interval:', error);
       }
     },
   }),

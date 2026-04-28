@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconDeposit } from '@/ui/assets/perps/IconDeposit.svg';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { ReactComponent as RcIconWithdraw } from '@/ui/assets/perps/IconWithdraw.svg';
+import { ReactComponent as RcIconTransfer } from '@/ui/assets/perps/IconTransfer.svg';
 import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +36,7 @@ interface HistoryItemProps {
 
 interface HistoryAccountItemProps {
   data: AccountHistoryItem;
+  onClick?: (data: AccountHistoryItem) => void;
 }
 
 const getPnlColor = (pnl: string | number) => {
@@ -45,17 +47,27 @@ const getPnlColor = (pnl: string | number) => {
 
 export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
   data,
+  onClick,
 }) => {
-  const { time, type, status, usdValue } = data;
+  const { time, type, status, usdValue, destinationDex } = data;
   const { t } = useTranslation();
   const isRealDeposit = useMemo(
     () => type === 'deposit' || type === 'receive',
     [type]
   );
+  const isTransfer = type === 'transfer';
+  const isTransferToSpot = isTransfer && destinationDex === 'spot';
+
   const ImgAvatar = useMemo(() => {
     if (status === 'pending') {
       return (
         <RcIconPending className="w-32 h-32 rounded-full mr-4 animate-spin" />
+      );
+    }
+
+    if (isTransfer) {
+      return (
+        <RcIconTransfer className="w-32 h-32 rounded-full mr-4 text-r-neutral-body" />
       );
     }
 
@@ -66,27 +78,34 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
           className="w-32 h-32 rounded-full mr-4"
         />
       );
-    } else {
-      return (
-        <ThemeIcon
-          src={RcIconWithdraw}
-          className="w-32 h-32 rounded-full mr-4"
-        />
-      );
     }
-  }, [status, isRealDeposit]);
+    return (
+      <ThemeIcon src={RcIconWithdraw} className="w-32 h-32 rounded-full mr-4" />
+    );
+  }, [status, isRealDeposit, isTransfer]);
+
+  const titleText = isTransfer
+    ? isTransferToSpot
+      ? t('page.perps.transferToSpot')
+      : t('page.perps.transferToPerps')
+    : isRealDeposit
+    ? t('page.perps.deposit')
+    : t('page.perps.withdraw');
 
   return (
     <div
       className={clsx(
-        'w-full bg-r-neutral-card1 rounded-[12px] px-16 py-12 flex items-center justify-between mb-8 h-[60px]'
+        'w-full bg-r-neutral-card1 rounded-[12px] px-16 py-12 flex items-center justify-between mb-8 h-[60px]',
+        isTransfer &&
+          'border border-transparent hover:bg-r-blue-light1 hover:border-rabby-blue-default cursor-pointer'
       )}
+      onClick={isTransfer ? () => onClick?.(data) : undefined}
     >
       <div className="flex items-center">
         {ImgAvatar}
         <div className="flex flex-col ml-12">
           <div className="text-13 text-r-neutral-title-1 font-medium">
-            {isRealDeposit ? t('page.perps.deposit') : t('page.perps.withdraw')}
+            {titleText}
           </div>
           {status === 'pending' ? (
             <div className="text-13 text-r-orange-default font-medium">
@@ -106,10 +125,14 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
             <div
               className={clsx(
                 'text-14 font-medium',
-                isRealDeposit ? 'text-r-green-default' : 'text-r-red-default'
+                isTransfer
+                  ? 'text-r-neutral-title-1'
+                  : isRealDeposit
+                  ? 'text-r-green-default'
+                  : 'text-r-red-default'
               )}
             >
-              {isRealDeposit ? '+' : '-'}
+              {isTransfer ? '' : isRealDeposit ? '+' : '-'}
               {`${formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}`}
             </div>
             <div className="text-13 text-r-neutral-foot">
@@ -120,10 +143,14 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
           <div
             className={clsx(
               'text-14 font-medium',
-              isRealDeposit ? 'text-r-green-default' : 'text-r-red-default'
+              isTransfer
+                ? 'text-r-green-default'
+                : isRealDeposit
+                ? 'text-r-green-default'
+                : 'text-r-red-default'
             )}
           >
-            {isRealDeposit ? '+' : '-'}
+            {isTransfer || isRealDeposit ? '+' : '-'}
             {`${formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}`}
           </div>
         )}

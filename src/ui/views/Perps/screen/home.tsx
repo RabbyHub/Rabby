@@ -8,7 +8,7 @@ import React, {
 import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { RcIconExternal1CC, RcIconExternalCC } from '@/ui/assets/dashboard';
+import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
 import {
   formatUsdValue,
   sleep,
@@ -27,6 +27,12 @@ import { PerpsLoginContent } from '../components/LoginContent';
 import clsx from 'clsx';
 import { PerpsBlueBorderedButton } from '../components/BlueBorderedButton';
 import { PerpsDepositAmountPopup } from '../popup/DepositAmountPopup';
+import { PerpsWithdrawPopup } from '../popup/WithdrawPopup';
+import { EnableUnifiedAccountPopup } from '../popup/EnableUnifiedAccountPopup';
+import { SpotSwapPopup } from '../popup/SpotSwapPopup';
+import { usePerpsActions } from '../hooks/usePerpsActions';
+import { usePerpsAccount } from '../hooks/usePerpsAccount';
+import type { PerpsQuoteAsset } from '../constants';
 import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
 import {
   DirectSubmitProvider,
@@ -59,7 +65,6 @@ import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
 import { useScroll } from 'ahooks';
-import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { PerpsAccountCard } from '../components/PerpsAccountCard';
 
 export const Perps: React.FC = () => {
@@ -91,13 +96,41 @@ export const Perps: React.FC = () => {
     setDeleteAgentModalVisible,
   });
 
+  usePerpsDefaultAccount({
+    isPro: false,
+  });
   const { isDarkTheme } = useThemeMode();
+  const { handleEnableUnifiedAccount } = usePerpsActions();
+  const { isUnifiedAccount } = usePerpsAccount();
   const [closePositionVisible, setClosePositionVisible] = useState(false);
   const [closePosition, setClosePosition] = useState<
     AssetPosition['position'] | null
   >(null);
   const [searchPopupVisible, setSearchPopupVisible] = useState(false);
   const [amountVisible, setAmountVisible] = useState(false);
+  const [enableUnifiedVisible, setEnableUnifiedVisible] = useState(false);
+  const [swapVisible, setSwapVisible] = useState(false);
+  const [swapTargetAsset, setSwapTargetAsset] = useState<
+    PerpsQuoteAsset | undefined
+  >();
+  const [swapSourceAsset, setSwapSourceAsset] = useState<
+    PerpsQuoteAsset | undefined
+  >();
+  const [pendingSwapAfterEnable, setPendingSwapAfterEnable] = useState(false);
+
+  const openSwapPopup = useMemoizedFn(
+    (params: { source?: PerpsQuoteAsset; target?: PerpsQuoteAsset }) => {
+      setSwapSourceAsset(params.source);
+      setSwapTargetAsset(params.target);
+      if (!isUnifiedAccount) {
+        setPendingSwapAfterEnable(true);
+        setEnableUnifiedVisible(true);
+        return;
+      }
+      setSwapVisible(true);
+    }
+  );
+
   const [riskPopupVisible, setRiskPopupVisible] = useState(false);
   const [riskPopupCoin, setRiskPopupCoin] = useState<string>('');
   const [openFromSource, setOpenFromSource] = useState<
@@ -120,7 +153,7 @@ export const Perps: React.FC = () => {
     setAmountVisible,
   });
 
-  const [popupType, setPopupType] = useState<'deposit' | 'withdraw'>('deposit');
+  const [withdrawVisible, setWithdrawVisible] = useState(false);
   const [loginVisible, setLoginVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
@@ -167,6 +200,7 @@ export const Perps: React.FC = () => {
 
   useEffect(() => {
     dispatch.perps.initFavoritedCoins(undefined);
+    dispatch.perps.initCandleInterval(undefined);
   }, []);
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
@@ -463,16 +497,15 @@ export const Perps: React.FC = () => {
             <PerpsAccountCard
               currentPerpsAccount={currentPerpsAccount}
               onDeposit={() => {
-                setPopupType('deposit');
                 setAmountVisible(true);
               }}
               onWithdraw={() => {
-                setPopupType('withdraw');
-                setAmountVisible(true);
+                setWithdrawVisible(true);
               }}
               onLearnMore={() => {
                 setNewUserProcessVisible(true);
               }}
+              onSwap={(source) => openSwapPopup({ source })}
             />
           </div>
         )}
@@ -512,9 +545,7 @@ export const Perps: React.FC = () => {
                       setClosePositionVisible(true);
                     }}
                     handleNavigate={() => {
-                      history.push(
-                        `/perps/single-coin/${asset.position.coin}?openPosition=true`
-                      );
+                      history.push(`/perps/single-coin/${asset.position.coin}`);
                     }}
                     onShowRiskPopup={(coin) => {
                       setRiskPopupCoin(coin);
@@ -541,9 +572,7 @@ export const Perps: React.FC = () => {
                   key={item.name}
                   item={item}
                   onClick={() => {
-                    history.push(
-                      `/perps/single-coin/${item.name}?openPosition=true`
-                    );
+                    history.push(`/perps/single-coin/${item.name}`);
                   }}
                   hasPosition={positionCoinSet.has(item.name)}
                   isFavorited={favoritedCoins.includes(item.name)}
@@ -609,10 +638,37 @@ export const Perps: React.FC = () => {
           setLogoutVisible(false);
         }}
       />
+      <EnableUnifiedAccountPopup
+        visible={enableUnifiedVisible}
+        onCancel={() => {
+          setEnableUnifiedVisible(false);
+          setPendingSwapAfterEnable(false);
+        }}
+        onConfirm={async () => {
+          const ok = await handleEnableUnifiedAccount();
+          if (ok && pendingSwapAfterEnable) {
+            setEnableUnifiedVisible(false);
+            setPendingSwapAfterEnable(false);
+            setSwapVisible(true);
+            return false;
+          }
+          return ok;
+        }}
+      />
+      <SpotSwapPopup
+        visible={swapVisible}
+        sourceAsset={swapSourceAsset}
+        targetAsset={swapTargetAsset}
+        disableSwitch={!!swapTargetAsset}
+        onCancel={() => {
+          setSwapVisible(false);
+          setSwapSourceAsset(undefined);
+          setSwapTargetAsset(undefined);
+        }}
+      />
       <PerpsDepositAmountPopup
         resetBridgeQuoteLoading={resetBridgeQuoteLoading}
         visible={amountVisible}
-        type={popupType}
         miniTxs={miniTxs}
         quoteLoading={quoteLoading}
         bridgeQuote={bridgeQuote}
@@ -620,7 +676,6 @@ export const Perps: React.FC = () => {
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
         handleDeposit={handleDeposit}
-        handleWithdraw={handleWithdraw}
         clearMiniSignTx={clearMiniSignTx}
         updateMiniSignTx={updateMiniSignTx}
         accountValue={accountValue.toString() || '0'}
@@ -632,33 +687,13 @@ export const Perps: React.FC = () => {
         }}
         handleSignDepositDirect={handleSignDepositDirect}
       />
-      {/* {Boolean(miniSignTypeData.data.length) && (
-        <MiniTypedDataApproval
-          txs={miniSignTypeData.data}
-          account={miniSignTypeData.account || undefined}
-          noShowModalLoading={true}
-          onResolve={(txs) => {
-            handleMiniSignResolve(txs);
-          }}
-          onReject={() => {
-            handleMiniSignReject(new Error('User Rejected'));
-            setLoginVisible(false);
-            setAmountVisible(false);
-          }}
-          onClose={() => {
-            handleMiniSignReject(new Error('User closed'));
-            setLoginVisible(false);
-            setAmountVisible(false);
-          }}
-          onPreExecError={() => {
-            handleMiniSignReject(new Error('Pre execution error'));
-            setLoginVisible(false);
-            setAmountVisible(false);
-          }}
-          directSubmit
-          canUseDirectSubmitTx
-        />
-      )} */}
+      <PerpsWithdrawPopup
+        visible={withdrawVisible}
+        currentPerpsAccount={currentPerpsAccount}
+        availableBalance={availableBalance.toString() || '0'}
+        handleWithdraw={handleWithdraw}
+        onClose={() => setWithdrawVisible(false)}
+      />
       <NewUserProcessPopup
         visible={newUserProcessVisible}
         onCancel={async () => {

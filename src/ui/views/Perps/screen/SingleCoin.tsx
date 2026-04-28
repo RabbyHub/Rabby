@@ -27,6 +27,7 @@ import { ClosePositionPopup } from '../popup/ClosePositionPopup';
 import BigNumber from 'bignumber.js';
 import { usePerpsPosition } from '../hooks/usePerpsPosition';
 import HistoryContent from '../components/HistoryContent';
+import { PerpsAbout } from '../components/PerpsAbout';
 import { usePerpsDeposit } from '../hooks/usePerpsDeposit';
 import { PerpsDepositAmountPopup } from '../popup/DepositAmountPopup';
 import {
@@ -57,8 +58,12 @@ import {
 import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 import stats from '@/stats';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
+import { usePerpsActions } from '../hooks/usePerpsActions';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { EnableUnifiedAccountPopup } from '../popup/EnableUnifiedAccountPopup';
+import { SpotSwapPopup } from '../popup/SpotSwapPopup';
+import { PerpsQuoteAsset, SWAP_REQUIRED_QUOTE_ASSETS } from '../constants';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -79,7 +84,17 @@ export const PerpsSingleCoin = () => {
     favoritedCoins,
   } = useRabbySelector((state) => state.perps);
   const [coin, setCoin] = useState(_coin);
-  const { accountValue, availableBalance } = usePerpsAccount();
+  const {
+    accountValue,
+    isUnifiedAccount,
+    getAvailableByAsset,
+  } = usePerpsAccount();
+  const { handleEnableUnifiedAccount } = usePerpsActions();
+  const [enableUnifiedVisible, setEnableUnifiedVisible] = useState(false);
+  const [swapVisible, setSwapVisible] = useState(false);
+  const [swapTargetAsset, setSwapTargetAsset] = useState<
+    PerpsQuoteAsset | undefined
+  >();
 
   const [amountVisible, setAmountVisible] = useState(false);
   const wallet = useWallet();
@@ -147,6 +162,34 @@ export const PerpsSingleCoin = () => {
   const currentAssetCtx = useMemo(() => {
     return marketDataMap[coin];
   }, [marketDataMap, coin]);
+
+  const quoteAsset = currentAssetCtx?.quoteAsset as PerpsQuoteAsset | undefined;
+
+  const availableBalance = getAvailableByAsset(quoteAsset || 'USDC');
+
+  const needEnableUnifiedAccount = useMemo(
+    () => !isUnifiedAccount && !!quoteAsset && quoteAsset !== 'USDC',
+    [isUnifiedAccount, quoteAsset]
+  );
+  const isSwapRequired = useMemo(
+    () =>
+      !!quoteAsset &&
+      SWAP_REQUIRED_QUOTE_ASSETS.includes(quoteAsset) &&
+      !!Number(accountValue),
+    [quoteAsset, accountValue]
+  );
+
+  const handleSwapEntry = useMemoizedFn(async () => {
+    await handleActionApproveStatus();
+    if (!isUnifiedAccount && !accountNeedApproveAgent) {
+      setEnableUnifiedVisible(true);
+      return;
+    }
+    setSwapTargetAsset(
+      quoteAsset && quoteAsset !== 'USDC' ? quoteAsset : undefined
+    );
+    setSwapVisible(true);
+  });
 
   const { tpPrice, slPrice, tpOid, slOid } = useMemo(() => {
     if (
@@ -247,11 +290,11 @@ export const PerpsSingleCoin = () => {
   }, []);
 
   const canOpenPosition =
-    isLogin &&
     hasPermission &&
     !hasPosition &&
     !needDepositFirst &&
     !accountNeedApprove &&
+    !needEnableUnifiedAccount &&
     showOpenPosition;
 
   const [openPositionVisible, setOpenPositionVisible] = React.useState(
@@ -568,10 +611,16 @@ export const PerpsSingleCoin = () => {
             <div
               className="text-r-blue-default text-13 cursor-pointer px-16 py-10 rounded-[8px] bg-r-blue-light-1"
               onClick={() => {
-                setAmountVisible(true);
+                if (isSwapRequired) {
+                  handleSwapEntry();
+                } else {
+                  setAmountVisible(true);
+                }
               }}
             >
-              {t('page.perps.deposit')}
+              {isSwapRequired
+                ? t('page.perps.PerpsDepositCard.swap')
+                : t('page.perps.deposit')}
             </div>
           </div>
         )}
@@ -985,6 +1034,12 @@ export const PerpsSingleCoin = () => {
           </>
         )}
 
+        {!hasPosition && (
+          <div className="mt-16">
+            <PerpsAbout coin={coin} />
+          </div>
+        )}
+
         {/* Market Info Section */}
         <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
           Info
@@ -1043,6 +1098,12 @@ export const PerpsSingleCoin = () => {
           />
         ) : (
           <div className="h-[20px]" />
+        )}
+
+        {hasPosition && (
+          <div className="mb-16">
+            <PerpsAbout coin={coin} />
+          </div>
         )}
 
         <div
@@ -1164,6 +1225,15 @@ export const PerpsSingleCoin = () => {
         onMarginModeChange={setMarginMode}
         hasPosition={hasPosition}
         availableBalance={Number(availableBalance || 0)}
+        quoteAsset={quoteAsset}
+        onDepositPress={() => {
+          setOpenPositionVisible(false);
+          setAmountVisible(true);
+        }}
+        onSwapPress={() => {
+          setOpenPositionVisible(false);
+          handleSwapEntry();
+        }}
         onCancel={() => setOpenPositionVisible(false)}
         handleOpenPosition={handleOpenPosition}
         onConfirm={() => {
@@ -1235,7 +1305,6 @@ export const PerpsSingleCoin = () => {
         setIsPreparingSign={setIsPreparingSign}
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
-        type={'deposit'}
         accountValue={accountValue.toString() || '0'}
         availableBalance={availableBalance.toString() || '0'}
         updateMiniSignTx={updateMiniSignTx}
@@ -1261,6 +1330,29 @@ export const PerpsSingleCoin = () => {
         positionAndOpenOrders={positionAndOpenOrders}
         favoritedCoins={favoritedCoins}
         onToggleFavorite={toggleFavoriteForSearch}
+      />
+
+      <EnableUnifiedAccountPopup
+        visible={enableUnifiedVisible}
+        onCancel={() => setEnableUnifiedVisible(false)}
+        onConfirm={async () => {
+          const ok = await handleEnableUnifiedAccount();
+          if (ok) {
+            setEnableUnifiedVisible(false);
+            setSwapVisible(true);
+            return false;
+          }
+          return ok;
+        }}
+      />
+      <SpotSwapPopup
+        visible={swapVisible}
+        targetAsset={swapTargetAsset}
+        disableSwitch={!!swapTargetAsset}
+        onCancel={() => {
+          setSwapVisible(false);
+          setSwapTargetAsset(undefined);
+        }}
       />
 
       {hasPosition && positionData && (
@@ -1322,6 +1414,15 @@ export const PerpsSingleCoin = () => {
             pnlPercent={positionData.pnlPercent}
             pnl={positionData.pnl}
             handlePressRiskTag={() => setRiskPopupVisible(true)}
+            quoteAsset={quoteAsset}
+            onDepositPress={() => {
+              setAddPositionVisible(false);
+              setAmountVisible(true);
+            }}
+            onSwapPress={() => {
+              setAddPositionVisible(false);
+              handleSwapEntry();
+            }}
             onCancel={() => setAddPositionVisible(false)}
             onConfirm={async (tradeSize) => {
               const res = await handleOpenPosition({

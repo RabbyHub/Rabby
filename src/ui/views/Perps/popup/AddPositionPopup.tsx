@@ -40,6 +40,9 @@ export interface AddPositionPopupProps {
   markPrice: number;
   leverageRange: [number, number]; // [min, max]
   leverageType: 'cross' | 'isolated';
+  quoteAsset?: string;
+  onDepositPress?: () => void;
+  onSwapPress?: () => void;
   onCancel: () => void;
   onConfirm: (tradeSize: string) => Promise<void>;
 }
@@ -61,6 +64,9 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   onCancel,
   onConfirm,
   leverageRange,
+  quoteAsset = 'USDC',
+  onDepositPress,
+  onSwapPress,
 }) => {
   const pxDecimals = currentAssetCtx?.pxDecimals || 2;
   const szDecimals = currentAssetCtx?.szDecimals || 0;
@@ -291,12 +297,33 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
 
           <MarginInput
             title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
+            quoteAsset={quoteAsset}
             availableAmount={availableBalance}
             margin={margin}
             onMarginChange={setMargin}
             sliderDisabled={availableBalance < 0.1}
             errorMessage={
               marginValidation.error ? marginValidation.errorMessage : null
+            }
+            availableExtra={
+              (availableBalance < 0.1 ||
+                marginValidation.error === 'insufficient_balance') && (
+                <span
+                  className="text-r-blue-default font-medium cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (quoteAsset === 'USDC') {
+                      onDepositPress?.();
+                    } else {
+                      onSwapPress?.();
+                    }
+                  }}
+                >
+                  {quoteAsset === 'USDC'
+                    ? t('page.perps.PerpsSpotSwap.toDepositEntry')
+                    : t('page.perps.PerpsSpotSwap.toSwapEntry')}
+                </span>
+              )
             }
           />
 
