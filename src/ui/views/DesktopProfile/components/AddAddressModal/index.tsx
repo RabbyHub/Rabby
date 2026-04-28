@@ -23,6 +23,8 @@ import { useMemoizedFn } from 'ahooks';
 import { Modal, ModalProps } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { EVENTS } from '@/constant';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 
 export const AddAddressModal: React.FC = () => {
   const state = useRabbySelector(
@@ -34,14 +36,18 @@ export const AddAddressModal: React.FC = () => {
   );
   const dispatch = useRabbyDispatch();
   const importType = state.importType;
+  const closeModal = useMemoizedFn(() => {
+    dispatch.desktopProfile.setField({
+      addAddress: { visible: false, importType: '' },
+    });
+  });
+
+  useEventBusListener(EVENTS.LOCK_WALLET, closeModal);
+
   return (
     <Modal
       visible={state.visible}
-      onCancel={() => {
-        dispatch.desktopProfile.setField({
-          addAddress: { visible: false, importType: '' },
-        });
-      }}
+      onCancel={closeModal}
       width={400}
       centered
       closable

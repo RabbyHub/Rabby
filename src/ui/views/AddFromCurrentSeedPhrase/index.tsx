@@ -1,11 +1,11 @@
 import { AddressViewer, Copy, PageHeader } from '@/ui/component';
+import { Button } from 'antd';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UseSeedPhrase } from './hooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { formatUsdValue } from '@/ui/utils';
-import { Button } from 'antd';
 import { DisplayedAccount, TypeKeyringGroup } from '../ManageAddress/hooks';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';

@@ -7,6 +7,10 @@ import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
+import {
+  ensureWalletUnlocked,
+  isWalletUnlockCancelled,
+} from '@/ui/utils/walletUnlock';
 
 interface Props {
   address: string;
@@ -19,6 +23,14 @@ export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
   const { getContainer } = usePopupContainer();
 
   const goToHDManager = async () => {
+    try {
+      await ensureWalletUnlocked({ wallet, getContainer });
+    } catch (error) {
+      if (isWalletUnlockCancelled(error)) {
+        return;
+      }
+      throw error;
+    }
     const passphrase = await invokeEnterPassphrase(address);
     const mnemonics = await wallet.getMnemonicByAddress(address);
     const result = await wallet.generateKeyringWithMnemonic(

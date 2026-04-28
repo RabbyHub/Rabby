@@ -26,6 +26,7 @@ import { KEYRING_TYPE } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { repeat } from 'lodash';
 import { useCheckSeedPhraseBackup } from '@/ui/utils/useCheckSeedPhraseBackup';
+import { verifyPasswordOrUnlock } from '@/ui/utils/walletUnlock';
 
 const placeholderMnemonics = repeat('****** ', 12).trim();
 
@@ -109,6 +110,8 @@ const AddressBackupMnemonics: React.FC<{
         cancelText: t('global.Cancel'),
         title: t('page.addressDetail.backup-seed-phrase'),
         validationHandler: async (password: string) => {
+          await verifyPasswordOrUnlock({ wallet, password });
+
           if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
             await invokeEnterPassphrase(currentAccount.address);
           }

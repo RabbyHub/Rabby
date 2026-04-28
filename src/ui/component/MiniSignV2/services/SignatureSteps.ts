@@ -54,6 +54,7 @@ import type {
   GasSelectionOptions,
   SecurityResult,
   SignerConfig,
+  SignerContainer,
 } from '@/ui/component/MiniSignV2/domain/types';
 import { isLedgerLockError } from '@/ui/utils/ledger';
 import { t } from 'i18next';
@@ -66,6 +67,7 @@ import {
   toTempoCallsTx,
   TxWithTempoExtras,
 } from '@/utils/tempo';
+import { ensureWalletUnlocked as ensureWalletUnlockedCommon } from '@/ui/utils/walletUnlock';
 
 const pickTempoTxFields = (tx: TxWithTempoExtras<Tx>) => ({
   type: tx.type,
@@ -314,32 +316,15 @@ let retryTxs = [] as Tx[];
 export class SignatureSteps {
   static async ensureWalletUnlocked(params: {
     wallet: WalletControllerType;
-    getContainer?: ModalProps['getContainer'];
+    getContainer?: SignerContainer;
   }) {
-    const { wallet, getContainer } = params;
-
-    if (await wallet.isUnlocked()) {
-      return;
-    }
-
-    await AuthenticationModalPromise({
-      wallet,
-      confirmText: t('global.confirm'),
-      cancelText: t('global.Cancel'),
-      placeholder: t('page.unlock.password.placeholder'),
-      title: t('page.unlock.title'),
-      getContainer: getContainer || undefined,
-      forceRender: true,
-      validationHandler: async (password: string) => {
-        await wallet.unlock(password);
-      },
-    });
+    return ensureWalletUnlockedCommon(params);
   }
 
   static async invokeEnterPassphraseModal(params: {
     wallet: WalletControllerType;
     value?: string;
-    getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
+    getContainer?: SignerContainer;
   }) {
     const { wallet, value, getContainer } = params;
     const type = 'address';

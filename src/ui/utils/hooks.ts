@@ -375,7 +375,7 @@ export const useAccountInfo = (
         hdPathTypeLabel: LedgerHDPathTypeLabel[res?.hdPathType],
       });
     });
-  }, []);
+  }, [address, type, wallet]);
 
   const fetchTrezorLikeAccount = useCallback(() => {
     wallet
@@ -388,7 +388,7 @@ export const useAccountInfo = (
           hdPathTypeLabel: LedgerHDPathTypeLabel.BIP44,
         });
       });
-  }, []);
+  }, [address, type, wallet]);
 
   const fetchMnemonicsAccount = useCallback(async () => {
     const info = await wallet.getMnemonicAddressInfo(address);
@@ -400,17 +400,41 @@ export const useAccountInfo = (
         hdPathTypeLabel: LedgerHDPathTypeLabel[info.hdPathType],
       });
     }
-  }, []);
+  }, [address, wallet]);
 
   useEffect(() => {
-    if (isLedger || isGridPlus || isKeystone || isTrezor) {
-      fetAccountInfo();
-    } else if (isOneKey) {
-      fetchTrezorLikeAccount();
-    } else if (isMnemonics) {
-      fetchMnemonicsAccount();
-    }
-  }, [address]);
+    let cancelled = false;
+
+    const run = async () => {
+      if (!(await wallet.isUnlocked()) || cancelled) {
+        return;
+      }
+
+      if (isLedger || isGridPlus || isKeystone || isTrezor) {
+        fetAccountInfo();
+      } else if (isOneKey) {
+        fetchTrezorLikeAccount();
+      } else if (isMnemonics) {
+        fetchMnemonicsAccount();
+      }
+    };
+
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    fetchMnemonicsAccount,
+    fetchTrezorLikeAccount,
+    fetAccountInfo,
+    isGridPlus,
+    isKeystone,
+    isLedger,
+    isMnemonics,
+    isOneKey,
+    isTrezor,
+    wallet,
+  ]);
 
   return account;
 };

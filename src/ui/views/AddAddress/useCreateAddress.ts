@@ -5,6 +5,10 @@ import { obj2query } from '@/ui/utils/url';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import {
+  ensureWalletUnlocked,
+  isWalletUnlockCancelled,
+} from '@/ui/utils/walletUnlock';
 import type { AddAddressNavigateHandler } from './shared';
 
 export const CREATE_ADDRESS_SUCCESS_PATH =
@@ -212,6 +216,14 @@ export const useCreateAddressActions = ({
 
   const createNewSeedPhrase = useMemoizedFn(
     async (options?: { replaceSuccess?: boolean }) => {
+      try {
+        await ensureWalletUnlocked({ wallet });
+      } catch (error) {
+        if (isWalletUnlockCancelled(error)) {
+          return;
+        }
+        throw error;
+      }
       const seedPhrase = await wallet.generateMnemonic();
       await wallet.createKeyringWithMnemonics(seedPhrase, {
         hasBackup: false,
@@ -249,6 +261,14 @@ export const useCreateAddressActions = ({
 
   const deriveNextAddressFromSeedPhrase = useMemoizedFn(
     async (publicKey: string, options?: { replaceSuccess?: boolean }) => {
+      try {
+        await ensureWalletUnlocked({ wallet });
+      } catch (error) {
+        if (isWalletUnlockCancelled(error)) {
+          return;
+        }
+        throw error;
+      }
       await invokeEnterPassphrase(publicKey);
       const result = await wallet.deriveNextAccountFromMnemonicByPublicKey(
         publicKey

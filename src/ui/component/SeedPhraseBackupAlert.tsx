@@ -13,6 +13,7 @@ import styled from 'styled-components';
 import { UI_TYPE } from '@/constant/ui';
 import { obj2query } from '../utils/url';
 import browser from 'webextension-polyfill';
+import { verifyPasswordOrUnlock } from '../utils/walletUnlock';
 
 const AlertContainer = styled.div`
   display: flex;
@@ -77,6 +78,8 @@ export const SeedPhraseBackupAlert: React.FC<{
         cancelText: t('global.Cancel'),
         title: t('page.addressDetail.backup-seed-phrase'),
         validationHandler: async (password: string) => {
+          await verifyPasswordOrUnlock({ wallet, password });
+
           await invokeEnterPassphrase(address);
 
           data = await wallet.getMnemonics(password, address);

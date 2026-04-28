@@ -7,6 +7,7 @@ import AddressItem from '../AddressManagement/AddressItem';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { useRabbyDispatch } from '@/ui/store';
+import { useWallet } from '@/ui/utils';
 import { obj2query } from '@/ui/utils/url';
 
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
@@ -16,6 +17,10 @@ import IconSuccess from 'ui/assets/success.svg';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Virtuoso } from 'react-virtuoso';
+import {
+  ensureWalletUnlocked,
+  isWalletUnlockCancelled,
+} from '@/ui/utils/walletUnlock';
 
 export const AccountList = ({
   list,
@@ -34,6 +39,7 @@ export const AccountList = ({
   const history = useHistory();
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
   const accounts = list || [];
 
   const highlightedAddressSet = React.useMemo(() => {
@@ -71,6 +77,14 @@ export const AccountList = ({
                   handleOpenDeleteModal([account], false);
                 }
               : async () => {
+                  try {
+                    await ensureWalletUnlocked({ wallet });
+                  } catch (error) {
+                    if (isWalletUnlockCancelled(error)) {
+                      return;
+                    }
+                    throw error;
+                  }
                   await dispatch.addressManagement.removeAddress([
                     account.address,
                     account.type,

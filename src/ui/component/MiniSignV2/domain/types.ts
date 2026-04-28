@@ -1,6 +1,6 @@
 import type BigNumber from 'bignumber.js';
 import type React from 'react';
-import type { DrawerProps } from 'antd';
+import type { DrawerProps, ModalProps } from 'antd';
 import type { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import type { ExplainTxResponse } from 'background/service/openapi';
 import type { Result } from '@rabby-wallet/rabby-security-engine';
@@ -38,9 +38,13 @@ export type SecurityResult = {
   engineResult: Result[];
 };
 
+export type SignerContainer =
+  | DrawerProps['getContainer']
+  | ModalProps['getContainer'];
+
 export type SignerConfig = {
   account: Account;
-  getContainer?: DrawerProps['getContainer'];
+  getContainer?: SignerContainer;
   title?: React.ReactNode;
   ga?: Record<string, any>;
   session?: any;

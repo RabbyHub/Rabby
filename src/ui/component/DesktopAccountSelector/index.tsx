@@ -7,7 +7,12 @@ import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';
+import {
+  formatUsdValue,
+  splitNumberByStep,
+  useAlias,
+  useWallet,
+} from '@/ui/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { isSameAccount } from '@/utils/account';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
@@ -27,6 +32,10 @@ import BigNumber from 'bignumber.js';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import {
+  ensureWalletUnlocked,
+  isWalletUnlockCancelled,
+} from '@/ui/utils/walletUnlock';
 
 interface DesktopAccountSelectorProps {
   value?: Account | null;
@@ -287,6 +296,7 @@ const AccountList: React.FC<{
   }, [accounts.length]);
 
   const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -361,7 +371,15 @@ const AccountList: React.FC<{
         components={{
           Footer: () => (
             <div
-              onClick={() => {
+              onClick={async () => {
+                try {
+                  await ensureWalletUnlocked({ wallet });
+                } catch (error) {
+                  if (isWalletUnlockCancelled(error)) {
+                    return;
+                  }
+                  throw error;
+                }
                 dispatch.desktopProfile.setField({
                   addAddress: {
                     visible: true,

@@ -14,6 +14,7 @@ import { obj2query } from '@/ui/utils/url';
 import { useCheckSeedPhraseBackup } from '@/ui/utils/useCheckSeedPhraseBackup';
 import clsx from 'clsx';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/dashboard/warning-cc.svg';
+import { verifyPasswordOrUnlock } from '@/ui/utils/walletUnlock';
 
 type Props = {
   address: string;
@@ -49,6 +50,8 @@ export const AddressBackup = ({ address, type }: Props) => {
           ? t('page.addressDetail.backup-private-key')
           : t('page.addressDetail.backup-seed-phrase'),
       validationHandler: async (password: string) => {
+        await verifyPasswordOrUnlock({ wallet, password });
+
         if (type === KEYRING_TYPE.HdKeyring) {
           await invokeEnterPassphrase(address);
         }

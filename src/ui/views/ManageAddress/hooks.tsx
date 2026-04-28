@@ -19,6 +19,7 @@ import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { verifyPasswordOrUnlock } from '@/ui/utils/walletUnlock';
 
 export type DisplayedAccount = IDisplayedAccountWithBalance & {
   hdPathBasePublicKey?: string;
@@ -162,6 +163,7 @@ export const useWalletTypeData = () => {
   }, [accountsList, highlightedAddresses]);
 
   const { value, loading, error } = useAsync(async () => {
+    const isUnlocked = await wallet.isUnlocked();
     const walletGroup = groupBy(sortedAccountsList, (a) => a.brandName);
 
     const hdKeyringGroup = groupBy(
@@ -173,7 +175,9 @@ export const useWalletTypeData = () => {
       getTypeGroup(item)
     ) as TypeKeyringGroup[];
 
-    const allClassAccounts = await wallet.getAllClassAccounts();
+    const allClassAccounts = isUnlocked
+      ? await wallet.getAllClassAccounts()
+      : [];
 
     const emptyHdKeyringList: TypeKeyringGroup[] = [];
     allClassAccounts
@@ -198,6 +202,12 @@ export const useWalletTypeData = () => {
 
     const ledgerAccounts = await Promise.all(
       (walletGroup[KEYRING_CLASS.HARDWARE.LEDGER] || []).map(async (e) => {
+        if (!isUnlocked) {
+          return {
+            ...e,
+            hdPathBasePublicKey: e.address,
+          };
+        }
         try {
           const res = await wallet.requestKeyring(
             KEYRING_CLASS.HARDWARE.LEDGER,
@@ -292,14 +302,18 @@ export const useBackUp = () => {
 
   const handleBackup = useCallback(
     async (publicKey: string, index) => {
+      let data = '';
+
       await AuthenticationModalPromise({
         confirmText: t('page.manageAddress.confirm'),
         cancelText: t('page.manageAddress.cancel'),
         title: t('page.manageAddress.backup-seed-phrase'),
-
-        async onFinished() {
+        validationHandler: async (password: string) => {
+          await verifyPasswordOrUnlock({ wallet, password });
           await invokeEnterPassphrase(publicKey);
-          const data = await wallet.getMnemonicFromPublicKey(publicKey);
+          data = await wallet.getMnemonicFromPublicKey(publicKey);
+        },
+        async onFinished() {
           history.replace({
             search: `?index=${index}`,
           });
@@ -317,7 +331,7 @@ export const useBackUp = () => {
         wallet,
       });
     },
-    [wallet?.getPrivateKey, wallet?.getMnemonics]
+    [history, invokeEnterPassphrase, t, wallet]
   );
   return handleBackup;
 };

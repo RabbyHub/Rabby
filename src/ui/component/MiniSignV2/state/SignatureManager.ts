@@ -2,7 +2,10 @@ import { hasConnectedLedgerDevice } from '@/ui/utils';
 
 import type { WalletControllerType } from '@/ui/utils';
 import type { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
-import type { SignerConfig } from '@/ui/component/MiniSignV2/domain/types';
+import type {
+  SignerConfig,
+  SignerContainer,
+} from '@/ui/component/MiniSignV2/domain/types';
 import type { SignerCtx } from '@/ui/component/MiniSignV2/domain/ctx';
 import type { TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
 
@@ -459,7 +462,7 @@ export class SignatureManager {
   }: {
     wallet: WalletControllerType;
     retry?: boolean;
-    getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
+    getContainer?: SignerContainer;
     pauseAfter?: number;
     isHideErrorUI?: boolean;
   }) {
@@ -617,7 +620,7 @@ export class SignatureManager {
     getContainer,
   }: {
     wallet: WalletControllerType;
-    getContainer?: ModalProps['getContainer'];
+    getContainer?: SignerContainer;
   }) {
     const { ctx, config, fingerprint } = this.state;
     if (!ctx || !config || !fingerprint) {

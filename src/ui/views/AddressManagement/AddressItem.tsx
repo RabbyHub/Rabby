@@ -30,6 +30,11 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useHandleDeleteHdKeyringAndSimpleKeyringAccount } from '@/ui/hooks/useDeleteHdOrPrivateKeyringAddress';
+import { useWallet } from '@/ui/utils';
+import {
+  ensureWalletUnlocked,
+  isWalletUnlockCancelled,
+} from '@/ui/utils/walletUnlock';
 
 export interface AddressItemProps {
   balance: number;
@@ -90,6 +95,7 @@ const AddressItem = memo(
     const alias = _alias || aliasName;
     const titleRef = useRef<HTMLDivElement>(null);
     const dispatch = useRabbyDispatch();
+    const wallet = useWallet();
 
     const {
       deleteAccount: deletePrivateKeyOrHD,
@@ -122,6 +128,14 @@ const AddressItem = memo(
           return;
         }
 
+        try {
+          await ensureWalletUnlocked({ wallet });
+        } catch (error) {
+          if (isWalletUnlockCancelled(error)) {
+            return;
+          }
+          throw error;
+        }
         await dispatch.addressManagement.removeAddress([
           address,
           type,

@@ -71,7 +71,7 @@ const AddAddressOptions: React.FC<{
   const location = useLocation();
   const { t } = useTranslation();
   const { connectRouter } = useAddAddressWalletOptions({ onNavigate });
-  const { seedPhraseList } = UseSeedPhrase();
+  const { hasSeedPhrase } = UseSeedPhrase();
 
   const { createNewSeedPhrase } = useCreateAddressActions({
     onNavigate,
@@ -118,7 +118,7 @@ const AddAddressOptions: React.FC<{
           if (pendingRef.current) {
             return;
           }
-          if (seedPhraseList?.length > 0) {
+          if (hasSeedPhrase) {
             if (UI_TYPE.isDesktop) {
               onNavigate?.('add-new-address');
             } else {
@@ -189,7 +189,7 @@ const AddAddressOptions: React.FC<{
         },
       },
     ],
-    [history, onNavigate, t, createNewSeedPhrase, seedPhraseList?.length]
+    [createNewSeedPhrase, hasSeedPhrase, history, onNavigate, t]
   );
 
   if (preventMount) {

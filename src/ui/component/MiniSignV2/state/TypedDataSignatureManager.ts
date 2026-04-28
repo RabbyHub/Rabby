@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
-import { DrawerProps, ModalProps } from 'antd';
+import { DrawerProps } from 'antd';
 
 import { Account } from '@/background/service/preference';
 import { MINI_SIGN_ERROR } from './SignatureManager';
@@ -10,6 +10,7 @@ import { sendSignTypedData } from '@/ui/utils/sendTypedData';
 import { SignatureSteps } from '../services';
 import eventBus from '@/eventBus';
 import { isLedgerLockError } from '@/ui/utils/ledger';
+import type { SignerContainer } from '../domain/types';
 
 type Subscriber = (state: TypedDataSignatureState) => void;
 
@@ -108,7 +109,7 @@ class TypedDataSignatureManager {
   public start(
     request: TypedDataSignatureRequest,
     config: {
-      getContainer?: ModalProps['getContainer'];
+      getContainer?: SignerContainer;
     } = {}
   ) {
     if (!request.txs.length) {
@@ -149,7 +150,7 @@ class TypedDataSignatureManager {
     request: TypedDataSignatureRequest;
     startIndex?: number;
     existingResults?: string[];
-    getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
+    getContainer?: SignerContainer;
   }) {
     const { wallet, txs, config } = request;
     const result: string[] = [...existingResults];
@@ -247,7 +248,7 @@ class TypedDataSignatureManager {
   public retry({
     getContainer,
   }: {
-    getContainer?: ModalProps['getContainer'];
+    getContainer?: SignerContainer;
   } = {}) {
     const request = this.state.request || this.lastRequest;
     if (!request) {

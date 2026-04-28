@@ -51,6 +51,7 @@ export const accountToDisplay = createModel<RootModel>()({
     async getAllAccountsToDisplay(_: void, store) {
       dispatch.accountToDisplay.setField({ loadingAccounts: true });
 
+      const isUnlocked = await store.app.wallet.isUnlocked();
       const [displayedKeyrings, allAlianNames] = await Promise.all([
         store.app.wallet.getAllVisibleAccounts(),
         store.app.wallet.getAllAlianNameByMap(),
@@ -80,19 +81,25 @@ export const accountToDisplay = createModel<RootModel>()({
               hdPathType?: string;
             };
 
-            await Promise.allSettled([
+            const tasks: Promise<any>[] = [
               store.app.wallet.getAddressCacheBalance(item?.address),
-              store.app.wallet.requestKeyring(
-                item.type,
-                'getAccountInfo',
-                null,
-                item.address
-              ),
-            ]).then(([res1, res2]) => {
+            ];
+            if (isUnlocked) {
+              tasks.push(
+                store.app.wallet.requestKeyring(
+                  item.type,
+                  'getAccountInfo',
+                  null,
+                  item.address
+                )
+              );
+            }
+
+            await Promise.allSettled(tasks).then(([res1, res2]) => {
               if (res1.status === 'fulfilled') {
                 balance = res1.value;
               }
-              if (res2.status === 'fulfilled') {
+              if (res2?.status === 'fulfilled') {
                 accountInfo = res2.value;
               }
             });

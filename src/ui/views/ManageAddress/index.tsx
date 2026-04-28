@@ -25,6 +25,11 @@ import { query2obj } from '@/ui/utils/url';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
 import styled from 'styled-components';
+import {
+  ensureWalletUnlocked,
+  isWalletUnlockCancelled,
+  verifyPasswordOrUnlock,
+} from '@/ui/utils/walletUnlock';
 
 const SpinWrapper = styled.div`
   .ant-spin-container {
@@ -97,6 +102,9 @@ const ManageAddress = () => {
           t('page.manageAddress.delete-checklist-1'),
           t('page.manageAddress.delete-checklist-2'),
         ],
+        validationHandler: async (password: string) => {
+          await verifyPasswordOrUnlock({ wallet, password });
+        },
         async onFinished() {
           await onFinished();
         },
@@ -165,6 +173,14 @@ const ManageAddress = () => {
   );
 
   const handleConfirmDeleteAddress = async () => {
+    try {
+      await ensureWalletUnlocked({ wallet });
+    } catch (error) {
+      if (isWalletUnlockCancelled(error)) {
+        return;
+      }
+      throw error;
+    }
     setBatchDeleting(true);
     try {
       if (deleteList.length) {
@@ -230,6 +246,14 @@ const ManageAddress = () => {
   const invokeEnterPassphrase = useEnterPassphraseModal('publickey');
   const handleAddSeedPhraseAddress = async () => {
     if (TypedWalletObj?.[activeIndex]?.publicKey) {
+      try {
+        await ensureWalletUnlocked({ wallet });
+      } catch (error) {
+        if (isWalletUnlockCancelled(error)) {
+          return;
+        }
+        throw error;
+      }
       await invokeEnterPassphrase(TypedWalletObj?.[activeIndex]?.publicKey);
       const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
         TypedWalletObj[activeIndex].publicKey!

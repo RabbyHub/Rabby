@@ -17,6 +17,10 @@ import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { UI_TYPE } from '@/constant/ui';
 import { useHandleDeleteHdKeyringAndSimpleKeyringAccount } from '@/ui/hooks/useDeleteHdOrPrivateKeyringAddress';
 import { useRabbyDispatch } from '@/ui/store';
+import {
+  ensureWalletUnlocked,
+  isWalletUnlockCancelled,
+} from '@/ui/utils/walletUnlock';
 
 type AddressDeleteProps = {
   brandName?: string;
@@ -38,7 +42,15 @@ export const AddressDelete = ({
   const dispatch = useRabbyDispatch();
 
   const handleDeleteAddress = async () => {
-    dispatch.addressManagement.removeAddress([
+    try {
+      await ensureWalletUnlocked({ wallet, getContainer });
+    } catch (error) {
+      if (isWalletUnlockCancelled(error)) {
+        return;
+      }
+      throw error;
+    }
+    await dispatch.addressManagement.removeAddress([
       address,
       type,
       brandName,

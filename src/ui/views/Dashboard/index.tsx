@@ -22,6 +22,7 @@ import Settings from './components/Settings';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { useGasAccountDiscovery } from '@/ui/views/GasAccount/hooks';
+import { verifyPasswordOrUnlock } from '@/ui/utils/walletUnlock';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -143,6 +144,8 @@ const Dashboard = () => {
           cancelText: t('global.Cancel'),
           title: t('page.addressDetail.backup-seed-phrase'),
           validationHandler: async (password: string) => {
+            await verifyPasswordOrUnlock({ wallet, password });
+
             await invokeEnterPassphrase(address);
 
             data = await wallet.getMnemonics(password, address);
