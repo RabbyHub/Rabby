@@ -144,7 +144,8 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
               {canExpand &&
                 (isDarkTheme ? (
                   <RcIconArrowDownDark
-                    className={clsx('transition-transform',
+                    className={clsx(
+                      'transition-transform',
                       isBalanceExpanded && '-rotate-180'
                     )}
                   />
