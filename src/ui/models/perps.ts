@@ -51,6 +51,7 @@ import {
   showDepositAndWithdrawToast,
   formatSpotState,
   SpotBalance,
+  getCachedPerpDexs,
 } from '../views/DesktopPerps/utils';
 import {
   OrderType,
@@ -113,7 +114,8 @@ const buildMarketDataMap = (list: MarketData[]): MarketDataMap => {
 export interface AccountHistoryItem {
   time: number;
   hash: string;
-  type: 'deposit' | 'withdraw' | 'receive';
+  type: 'deposit' | 'withdraw' | 'receive' | 'transfer';
+  destinationDex?: string; // only for transfer type, indicate the destination dex of the transfer
   status: 'pending' | 'success' | 'failed';
   usdValue: string;
 }
@@ -415,18 +417,36 @@ export const perps = createModel<RootModel>()({
             };
           }
 
-          const { destination, usdcValue } = item.delta as any;
+          const {
+            destination = '',
+            usdcValue = '0',
+            sourceDex,
+            destinationDex,
+          } = item.delta;
           if (
             item.delta.type === 'send' &&
-            destination === state.currentPerpsAccount?.address
+            state.currentPerpsAccount?.address &&
+            destination &&
+            isSameAddress(destination, state.currentPerpsAccount?.address)
           ) {
-            return {
-              time: item.time,
-              hash: item.hash,
-              type: 'receive' as const,
-              status: 'success' as const,
-              usdValue: usdcValue.toString(),
-            };
+            if (sourceDex === 'spot' || destinationDex === 'spot') {
+              return {
+                time: item.time,
+                hash: item.hash,
+                destinationDex,
+                type: 'transfer' as const,
+                status: 'success' as const,
+                usdValue: usdcValue?.toString(),
+              };
+            } else {
+              return {
+                time: item.time,
+                hash: item.hash,
+                type: 'receive' as const,
+                status: 'success' as const,
+                usdValue: usdcValue?.toString(),
+              };
+            }
           }
 
           if (
@@ -456,7 +476,7 @@ export const perps = createModel<RootModel>()({
             hash: item.hash,
             type: type as 'deposit' | 'withdraw' | 'receive',
             status: 'success' as const,
-            usdValue: item.delta.usdc || (item.delta as any).usdcValue || '0',
+            usdValue: item.delta.usdc || item.delta.usdcValue || '0',
           };
         });
 
@@ -977,7 +997,6 @@ export const perps = createModel<RootModel>()({
         // other use subscribe to data
       } else {
         await dispatch.perps.fetchPositionAndOpenOrders();
-        dispatch.perps.fetchUserNonFundingLedgerUpdates();
         dispatch.perps.fetchUserHistoricalOrders();
       }
 
@@ -1025,55 +1044,6 @@ export const perps = createModel<RootModel>()({
       });
     },
 
-    async fetchUserNonFundingLedgerUpdates() {
-      const sdk = getPerpsSDK();
-      const res = await sdk.info.getUserNonFundingLedgerUpdates();
-
-      const list = res
-        .filter((item) => {
-          if (
-            item.delta.type === 'deposit' ||
-            item.delta.type === 'withdraw' ||
-            item.delta.type === 'send' ||
-            item.delta.type === 'internalTransfer' ||
-            item.delta.type === 'accountClassTransfer'
-          ) {
-            return true;
-          }
-          return false;
-        })
-        .map((item) => {
-          if (item.delta.type === 'internalTransfer') {
-            const fee = (item.delta as any).fee as string;
-            const realUsdValue = Number(item.delta.usdc) - Number(fee || '0');
-            return {
-              time: item.time,
-              hash: item.hash,
-              type: 'receive' as const,
-              status: 'success' as const,
-              usdValue: realUsdValue.toString(),
-            };
-          }
-
-          const type =
-            item.delta.type === 'accountClassTransfer'
-              ? item.delta.toPerp
-                ? 'deposit'
-                : 'withdraw'
-              : item.delta.type;
-
-          return {
-            time: item.time,
-            hash: item.hash,
-            type: type as 'deposit' | 'withdraw' | 'receive',
-            status: 'success' as const,
-            usdValue: item.delta.usdc || (item.delta as any).usdcValue || '0',
-          };
-        });
-
-      dispatch.perps.updateUserAccountHistory({ newHistoryList: list });
-    },
-
     async fetchUserHistoricalOrders() {
       try {
         const sdk = getPerpsSDK();
@@ -1117,8 +1087,6 @@ export const perps = createModel<RootModel>()({
     // },
 
     async refreshData() {
-      await dispatch.perps.fetchPositionAndOpenOrders();
-      dispatch.perps.fetchUserNonFundingLedgerUpdates();
       dispatch.perps.fetchUserHistoricalOrders();
     },
 
@@ -1171,7 +1139,7 @@ export const perps = createModel<RootModel>()({
         fetchTopTokenList(),
         fetchTokenCategories(),
         sdk.info.getPerpsAllMetas(),
-        sdk.info.getPerpDexs(),
+        getCachedPerpDexs(sdk),
       ]);
 
       // perpDexs is an array parallel to allMetas; entry is either null (main dex='')

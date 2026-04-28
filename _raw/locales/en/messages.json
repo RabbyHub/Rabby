@@ -816,6 +816,8 @@
       "title": "Perps",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
+      "transferToSpot": "Transfer to Spot",
+      "transferToPerps": "Transfer to Perps",
       "positions": "Positions",
       "openProModeInTab": "Open Pro Mode in Tab",
       "closeAll": "Close All",

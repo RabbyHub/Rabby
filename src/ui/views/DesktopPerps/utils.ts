@@ -6,6 +6,7 @@ import {
   SpotClearinghouseState,
   USDC_TOKEN_ID,
   UserAbstractionResp,
+  PerpDexsResponse,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
@@ -300,52 +301,68 @@ export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
   };
 };
 
+// Cache the perp dex list at module scope. The dex list is global (not user-
+// scoped) and changes very rarely, so a one-shot fetch reused across callers
+// is safe. `perpDexsPromise` dedupes concurrent first-time fetches.
+let perpDexsCache: PerpDexsResponse | null = null;
+let perpDexsPromise: Promise<PerpDexsResponse> | null = null;
+
+export const getCachedPerpDexs = async (
+  sdk: ReturnType<typeof getPerpsSDK>
+): Promise<PerpDexsResponse> => {
+  if (perpDexsCache) {
+    return perpDexsCache;
+  }
+  if (!perpDexsPromise) {
+    perpDexsPromise = sdk.info
+      .getPerpDexs()
+      .then((res) => {
+        perpDexsCache = res;
+        return res;
+      })
+      .finally(() => {
+        perpDexsPromise = null;
+      });
+  }
+  return perpDexsPromise;
+};
+
 export const getCustomClearinghouseState = async (address: string) => {
   const sdk = getPerpsSDK();
-  const getDefault = async () => {
-    const res = await sdk.info.getClearingHouseState(address);
-    return res;
-  };
-  const getXYX = async () => {
-    const res = await sdk.info.getClearingHouseState(address, 'xyz');
-    return res;
-  };
-  const [defaultRes, xyzRes] = await Promise.all([getDefault(), getXYX()]);
+  const perpDexs = await getCachedPerpDexs(sdk);
 
-  let withdrawable = defaultRes.withdrawable;
-  if (Number(defaultRes.withdrawable) === 0) {
+  // perpDexs[0] is null = the main hyperliquid dex (dexId='' by convention,
+  // matching `formatMarkData`/`AccountInfo` lookups). Other entries carry a
+  // `name` like 'xyz'. Preserve order so `formatAllDexsClearinghouseState`
+  // can take index 0 as the canonical hyperliquid state.
+  const dexEntries = perpDexs.map((dex) => {
+    const name = dex?.name ?? '';
+    return { key: name, param: name || undefined };
+  });
+
+  const allStates: [string, ClearinghouseState][] = await Promise.all(
+    dexEntries.map(async ({ key, param }) => {
+      const res = await sdk.info.getClearingHouseState(address, param);
+      return [key, res] as [string, ClearinghouseState];
+    })
+  );
+
+  const aggregated = formatAllDexsClearinghouseState(allStates);
+  if (!aggregated) {
+    return null;
+  }
+
+  // Unified-account fallback: when no perp withdrawable, fall back to spot
+  // availableToTrade so the selector shows a meaningful balance.
+  if (Number(aggregated.withdrawable) === 0) {
     const userAbstraction = await sdk.info.getUserAbstraction(address);
     if (userAbstraction === UserAbstractionResp.unifiedAccount) {
       const spotState = await sdk.info.getSpotClearingHouseState(address);
-      withdrawable = formatSpotState(spotState).availableToTrade;
+      aggregated.withdrawable = formatSpotState(spotState).availableToTrade;
     }
   }
 
-  return {
-    assetPositions: [...defaultRes.assetPositions, ...xyzRes.assetPositions],
-    crossMaintenanceMarginUsed: new BigNumber(
-      defaultRes.crossMaintenanceMarginUsed
-    )
-      .plus(xyzRes.crossMaintenanceMarginUsed)
-      .toString(),
-    crossMarginSummary: defaultRes.crossMarginSummary,
-    marginSummary: {
-      accountValue: new BigNumber(defaultRes.marginSummary.accountValue)
-        .plus(xyzRes.marginSummary.accountValue)
-        .toString(),
-      totalMarginUsed: new BigNumber(defaultRes.marginSummary.totalMarginUsed)
-        .plus(xyzRes.marginSummary.totalMarginUsed)
-        .toString(),
-      totalNtlPos: new BigNumber(defaultRes.marginSummary.totalNtlPos)
-        .plus(xyzRes.marginSummary.totalNtlPos)
-        .toString(),
-      totalRawUsd: new BigNumber(defaultRes.marginSummary.totalRawUsd)
-        .plus(xyzRes.marginSummary.totalRawUsd)
-        .toString(),
-    },
-    time: defaultRes.time,
-    withdrawable: withdrawable,
-  } as ClearinghouseState;
+  return aggregated as ClearinghouseState;
 };
 
 export const sortTokenList = (
