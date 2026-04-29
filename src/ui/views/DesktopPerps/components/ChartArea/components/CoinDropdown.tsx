@@ -325,10 +325,14 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         ? marketData
         : marketData.filter((item) => item.category === selectedCategory.name);
 
-    const filtered = searchText
-      ? categoryFiltered.filter((item) =>
-          item.name.toLowerCase().includes(searchText.toLowerCase())
-        )
+    const q = searchText.trim().toLowerCase();
+    const filtered = q
+      ? categoryFiltered.filter((item) => {
+          if (item.name.toLowerCase().includes(q)) return true;
+          if ((item.displayName || '').toLowerCase().includes(q)) return true;
+          if ((item.quoteAsset || '').toLowerCase().includes(q)) return true;
+          return false;
+        })
       : [...categoryFiltered];
 
     filtered.sort((a, b) => {
