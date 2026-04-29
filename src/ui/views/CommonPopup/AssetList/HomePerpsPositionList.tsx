@@ -92,7 +92,11 @@ export const HomePerpsPositionList: React.FC<{ needFetchMarket?: boolean }> = ({
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 dispatch.perps.updateSelectedCoin(assetPosition.position.coin);
                 wallet.setPerpsCurrentAccount(currentAccount);
-                wallet.openInDesktop('/desktop/perps');
+                wallet.openInDesktop(
+                  `/desktop/perps?${obj2query({
+                    coin: assetPosition.position.coin,
+                  })}`
+                );
                 ga4.fireEvent('Perps_CardToPerps_Web', {
                   event_category: 'Rabby Perps',
                 });
