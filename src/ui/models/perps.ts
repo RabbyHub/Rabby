@@ -922,19 +922,17 @@ export const perps = createModel<RootModel>()({
     async updateQuoteUnit(payload: 'base' | 'usd', rootState) {
       dispatch.perps.patchState({
         quoteUnit: payload,
-        sizeDisplayUnit: payload === 'usd' ? 'usdc' : 'base',
+        sizeDisplayUnit: payload,
       });
       await rootState.app.wallet.setPerpsQuoteUnit(payload);
     },
 
-    async updateSizeDisplayUnit(payload: 'base' | 'usdc', rootState) {
+    async updateSizeDisplayUnit(payload: 'base' | 'usd', rootState) {
       dispatch.perps.patchState({
         sizeDisplayUnit: payload,
-        quoteUnit: payload === 'usdc' ? 'usd' : 'base',
+        quoteUnit: payload,
       });
-      await rootState.app.wallet.setPerpsQuoteUnit(
-        payload === 'usdc' ? 'usd' : 'base'
-      );
+      await rootState.app.wallet.setPerpsQuoteUnit(payload);
     },
     async saveApproveSignatures(
       payload: {
@@ -1442,7 +1440,7 @@ export const perps = createModel<RootModel>()({
         const quoteUnit = await rootState.app.wallet.getPerpsQuoteUnit();
         dispatch.perps.patchState({
           quoteUnit: quoteUnit ?? 'base',
-          sizeDisplayUnit: quoteUnit === 'usd' ? 'usdc' : 'base',
+          sizeDisplayUnit: quoteUnit === 'usd' ? 'usd' : 'base',
         });
       } catch (error) {
         console.error('Failed to load quote unit:', error);

@@ -605,6 +605,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
+        quoteAsset={quoteAsset}
         szDecimals={szDecimals}
         sizeDisplayUnit={sizeDisplayUnit}
         onUnitChange={setSizeDisplayUnit}
@@ -641,6 +642,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         sell={limitSellInfo}
         displayUnit={sizeDisplayUnit}
         selectedCoin={selectedCoin}
+        quoteAsset={quoteAsset}
         reduceOnly={reduceOnly}
         price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
       />

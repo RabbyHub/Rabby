@@ -117,6 +117,12 @@ export const UserInfoHistory: React.FC = () => {
     [activeTab]
   );
 
+  useEffect(() => {
+    if (activeTab === 'about' && !hasAbout) {
+      setActiveTab('positions');
+    }
+  }, [activeTab, hasAbout]);
+
   useLayoutEffect(() => {
     const activeButton = tabRefs.current[activeTab];
     const container = tabsContainerRef.current;

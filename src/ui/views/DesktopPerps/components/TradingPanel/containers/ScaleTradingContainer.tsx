@@ -306,10 +306,10 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     return {
       start: `${startOrderSize} ${selectedCoin} @ ${splitNumberByStep(
         startPrice || '0'
-      )} USD`,
+      )} ${quoteAsset}`,
       end: `${endOrderSize} ${selectedCoin} @ ${splitNumberByStep(
         endPrice || '0'
-      )} USD`,
+      )} ${quoteAsset}`,
       orderValue:
         scaleOrdersValue > 0 ? formatUsdValue(scaleOrdersValue) : '$0.00',
       marginRequired: formatUsdValue(marginRequired),
@@ -319,6 +319,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       )})`,
     };
   }, [
+    quoteAsset,
     scaleOrders,
     leverage,
     marginRequired,

@@ -80,7 +80,7 @@ export const Assets: React.FC = () => {
         available: Number(b?.available || 0),
         action: 'swap' as const,
       };
-    });
+    }).filter((row) => row.available >= PERPS_LOW_BALANCE_THRESHOLD);
   }, [
     isUnifiedAccount,
     spotBalancesMap,

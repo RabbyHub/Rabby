@@ -1,7 +1,7 @@
 import { PositionAndOpenOrder } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { Table } from 'antd';
+import { message, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
@@ -89,6 +89,10 @@ export const OrderHistory: React.FC = () => {
             <div
               className={'group text-[12px] leading-[14px] cursor-pointer'}
               onClick={() => {
+                if (record.order.coin.startsWith('@')) {
+                  message.error('Not support to trade spot coin');
+                  return;
+                }
                 dispatch.perps.updateSelectedCoin(record.order.coin);
               }}
             >

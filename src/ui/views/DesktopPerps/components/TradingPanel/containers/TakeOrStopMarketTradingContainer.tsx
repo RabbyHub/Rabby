@@ -351,6 +351,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
+        quoteAsset={quoteAsset}
         szDecimals={szDecimals}
         sizeDisplayUnit={sizeDisplayUnit}
         onUnitChange={setSizeDisplayUnit}
@@ -389,6 +390,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         selectedCoin={selectedCoin}
         reduceOnly={reduceOnly}
         price={midPrice}
+        quoteAsset={quoteAsset}
       />
     </div>
   );

@@ -64,7 +64,6 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const MIDDLE_PRICE_HEIGHT = 40;
   const contentRef = useRef<HTMLDivElement>(null);
   const [containerHeight, setContainerHeight] = useState(0);
-
   useEffect(() => {
     if (!contentRef.current) return;
     const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
@@ -98,6 +97,8 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const szDecimals = useMemo(() => {
     return marketDataMap[selectedCoin]?.szDecimals ?? 5;
   }, [currentMarketData, selectedCoin]);
+
+  const quoteAsset = marketDataMap[selectedCoin]?.quoteAsset ?? 'USDC';
 
   const markPx = useMemo(() => {
     if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
@@ -439,7 +440,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   className="text-r-neutral-title1 hover:bg-r-blue-light1"
                   key="usd"
                 >
-                  USD
+                  {quoteAsset}
                 </Menu.Item>
               </Menu>
             }
@@ -454,7 +455,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
             >
-              {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : 'USD'}
+              {quoteUnit === 'base'
+                ? formatPerpsCoin(selectedCoin)
+                : quoteAsset}
               <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
             </button>
           </Dropdown>
@@ -502,11 +505,11 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </span>
         <span className="col-span-3 text-right">
           {t('page.perpsPro.orderBook.amount')} (
-          {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : 'USD'})
+          {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : quoteAsset})
         </span>
         <span className="col-span-4 text-right">
           {t('page.perpsPro.orderBook.total')} (
-          {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : 'USD'})
+          {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : quoteAsset})
         </span>
       </div>
 

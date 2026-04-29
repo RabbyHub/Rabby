@@ -631,6 +631,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
         szDecimals={szDecimals}
+        quoteAsset={quoteAsset}
         sizeDisplayUnit={sizeDisplayUnit}
         onUnitChange={setSizeDisplayUnit}
         reduceOnly={reduceOnly}
@@ -705,6 +706,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         displayUnit={sizeDisplayUnit}
         selectedCoin={selectedCoin}
         reduceOnly={reduceOnly}
+        quoteAsset={quoteAsset}
         price={priceForCalculation}
       />
     </div>

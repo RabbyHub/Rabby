@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import { MarketData } from '@/ui/models/perps';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { SPOT_STABLE_COIN_NAME } from '../constants';
 
 interface Props {
   item?: Partial<
@@ -33,9 +34,34 @@ export const PerpsDisplayCoinName: React.FC<Props> = ({
   quoteClassName,
   showDexTag = false,
 }) => {
-  const base = formatPerpsCoin(item?.displayName || item?.name || '');
+  const coinName = item?.displayName || item?.name || '';
+  const base = formatPerpsCoin(coinName);
   const quote = item?.quoteAsset || 'USDC';
   const dexName = item?.name?.includes(':') ? item.name.split(':')[0] : '';
+  if (coinName === '@150') {
+    return (
+      <span className={clsx('text-r-neutral-title-1', baseClassName)}>
+        USDE/USDC
+      </span>
+    );
+  }
+
+  if (coinName === '@166') {
+    return (
+      <span className={clsx('text-r-neutral-title-1', baseClassName)}>
+        USDT/USDC
+      </span>
+    );
+  }
+
+  if (coinName === '@230') {
+    return (
+      <span className={clsx('text-r-neutral-title-1', baseClassName)}>
+        USDH/USDC
+      </span>
+    );
+  }
+
   return (
     <span className={clsx('inline-flex items-center')}>
       <span className={clsx('inline-flex items-baseline', className)}>

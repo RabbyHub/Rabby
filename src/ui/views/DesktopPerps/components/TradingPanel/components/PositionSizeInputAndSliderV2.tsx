@@ -17,6 +17,7 @@ import { PerpsDropdown } from './PerpsDropdown';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/swap/switch-cc.svg';
 import { useRabbySelector } from '@/ui/store';
 import { splitNumberByStep } from '@/ui/utils';
+import type { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
 
 const PRESET_POINTS = [0, 25, 50, 75, 100];
 
@@ -34,6 +35,7 @@ interface PositionSizeInputAndSliderV2Props {
   percentage: number;
   setPercentage: (percentage: number) => void;
   baseAsset: string;
+  quoteAsset: PerpsQuoteAsset;
   szDecimals: number;
   sizeDisplayUnit: SizeDisplayUnit;
   onUnitChange: (unit: SizeDisplayUnit) => void;
@@ -49,6 +51,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   percentage,
   setPercentage,
   baseAsset,
+  quoteAsset,
   szDecimals,
   sizeDisplayUnit,
   onUnitChange,
@@ -268,14 +271,14 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   // Preview: show separate buy/sell amounts
   const { buyPreview, sellPreview } = useMemo(() => {
     const unit =
-      sizeDisplayUnit === 'usdc' ? 'USD' : formatPerpsCoin(baseAsset);
+      sizeDisplayUnit === 'usd' ? quoteAsset : formatPerpsCoin(baseAsset);
 
     if (isSliderMode || positionSize.inputSource === 'slider') {
       // Percentage mode: each direction has its own amount
       const buyAmt = calcDirectionAmount(maxBuyTradeSize, percentage);
       const sellAmt = calcDirectionAmount(maxSellTradeSize, percentage);
 
-      if (sizeDisplayUnit === 'usdc') {
+      if (sizeDisplayUnit === 'usd') {
         const buyNotional =
           Number(buyAmt) > 0 ? calcAssetNotionalByAmount(buyAmt, price) : '0';
         const sellNotional =
@@ -292,8 +295,8 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     }
 
     // Numeric mode: both directions show the same value
-    if (sizeDisplayUnit === 'usdc') {
-      // USDC mode: convert input USDC → size (rounded) → size * price = actual USDC
+    if (sizeDisplayUnit === 'usd') {
+      // USD mode: convert input USD → size (rounded) → size * price = actual USD
       const actualNotional =
         positionSize.amount && Number(price)
           ? calcAssetNotionalByAmount(positionSize.amount, price)
@@ -304,6 +307,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     const display = `${positionSize.amount || '0'} ${unit}`;
     return { buyPreview: display, sellPreview: display };
   }, [
+    quoteAsset,
     isSliderMode,
     positionSize.inputSource,
     positionSize.amount,
@@ -318,8 +322,9 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   ]);
 
   const unitLabel = useMemo(
-    () => (sizeDisplayUnit === 'base' ? formatPerpsCoin(baseAsset) : 'USD'),
-    [sizeDisplayUnit, baseAsset]
+    () =>
+      sizeDisplayUnit === 'base' ? formatPerpsCoin(baseAsset) : quoteAsset,
+    [sizeDisplayUnit, baseAsset, quoteAsset]
   );
 
   // Tooltip: show equivalent amount in the other unit when focused
@@ -365,7 +370,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   }, [baseAsset, currentPerpsAccount?.address]);
 
   const handleChangeUnit = useMemoizedFn(() => {
-    const newUnit = sizeDisplayUnit === 'base' ? 'usdc' : 'base';
+    const newUnit = sizeDisplayUnit === 'base' ? 'usd' : 'base';
     onUnitChange(newUnit);
   });
 

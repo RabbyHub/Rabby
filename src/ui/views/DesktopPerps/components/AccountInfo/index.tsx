@@ -114,16 +114,26 @@ export const AccountInfo: React.FC = () => {
     return isNaN(marginRatioNum) ? '0%' : formatPerpsPct(marginRatioNum);
   }, [marginRatioNum]);
 
-  // Cross account leverage (denom matches unified vs perp-only equity choice).
+  // Cross account leverage = sum(|cross position notional|) / collateral.
+  // Excludes isolated positions (their margin is independent of cross collateral).
   const accountLeverage = useMemo(() => {
     const denom = isUnifiedAccount
-      ? Number(accountValue || 1)
-      : Number(clearinghouseState?.marginSummary?.accountValue || 1);
-    return Number(clearinghouseState?.marginSummary?.totalNtlPos || 0) / denom;
+      ? Number(accountValue || 0)
+      : Number(clearinghouseState?.marginSummary?.accountValue || 0);
+    if (denom <= 0) return 0;
+
+    const totalCrossNtl = (clearinghouseState?.assetPositions || [])
+      .filter((p) => p.position.leverage?.type !== 'isolated')
+      .reduce(
+        (sum, p) => sum.plus(new BigNumber(p.position.positionValue || 0)),
+        new BigNumber(0)
+      );
+
+    return totalCrossNtl.dividedBy(denom).toNumber();
   }, [
     isUnifiedAccount,
     accountValue,
-    clearinghouseState?.marginSummary?.totalNtlPos,
+    clearinghouseState?.assetPositions,
     clearinghouseState?.marginSummary?.accountValue,
   ]);
 
