@@ -96,7 +96,9 @@ export const MiniTypedDataApprovalV2: React.FC<{
   }
 
   const showPopup =
-    (request.config.mode === 'UI' && status === 'signing') || !!error;
+    (request.config.mode === 'UI' &&
+      (status === 'signing' || status === 'idle')) ||
+    !!error;
 
   if (isDesktop && !config?.getContainer) {
     const desktopPortalClassName = 'desktop-mini-signer-typed-data';
