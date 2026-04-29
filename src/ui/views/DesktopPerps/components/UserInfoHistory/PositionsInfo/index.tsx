@@ -84,7 +84,7 @@ export const PositionsInfo: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  const { accountValue, availableBalance } = usePerpsAccount();
+  const { getAvailableByAsset } = usePerpsAccount();
 
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [editTpSlVisible, setEditTpSlVisible] = useState(false);
@@ -754,7 +754,9 @@ export const PositionsInfo: React.FC = () => {
             direction={currentPosition.direction}
             entryPrice={Number(currentPosition.entryPx || 0)}
             leverage={currentPosition.leverage}
-            availableBalance={Number(availableBalance || 0)}
+            availableBalance={getAvailableByAsset(
+              currentPosition.quoteAsset as PerpsQuoteAsset
+            )}
             liquidationPx={Number(currentPosition?.liquidationPx || 0)}
             positionSize={Number(currentPosition.size || 0)}
             marginUsed={Number(currentPosition.marginUsed || 0)}

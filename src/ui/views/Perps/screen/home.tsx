@@ -218,8 +218,6 @@ export const Perps: React.FC = () => {
     history.push('/dashboard');
   };
 
-  const { accountValue, availableBalance } = usePerpsAccount();
-
   const favoritedCoins = useRabbySelector((s) => s.perps.favoritedCoins);
 
   const toggleFavorite = useMemoizedFn((coin: string) => {
@@ -681,8 +679,6 @@ export const Perps: React.FC = () => {
         handleDeposit={handleDeposit}
         clearMiniSignTx={clearMiniSignTx}
         updateMiniSignTx={updateMiniSignTx}
-        accountValue={accountValue.toString() || '0'}
-        availableBalance={availableBalance.toString() || '0'}
         onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();

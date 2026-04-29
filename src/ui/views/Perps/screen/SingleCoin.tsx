@@ -1308,8 +1308,6 @@ export const PerpsSingleCoin = () => {
         setIsPreparingSign={setIsPreparingSign}
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
-        accountValue={accountValue.toString() || '0'}
-        availableBalance={availableBalance.toString() || '0'}
         updateMiniSignTx={updateMiniSignTx}
         handleDeposit={handleDeposit}
         clearMiniSignTx={clearMiniSignTx}

@@ -42,8 +42,6 @@ export type PerpsDepositAmountPopupProps = PopupProps & {
     gasPrice: number,
     needMinusOne?: boolean
   ) => void;
-  accountValue: string;
-  availableBalance: string;
   currentPerpsAccount: Account | null;
   quoteLoading: boolean;
   bridgeQuote: PerpBridgeQuote | null;
