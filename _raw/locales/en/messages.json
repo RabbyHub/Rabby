@@ -982,7 +982,7 @@
         "balance": "Balance",
         "amount": "Amount",
         "max": "Max",
-        "submit": "Trans",
+        "submit": "Confirm",
         "insufficientBalance": "Insufficient balance",
         "invalidAmount": "Please input a valid amount"
       },
@@ -1038,7 +1038,6 @@
       "balanceAvailable": "Balance: {{balance}}",
       "lastUsed": "Last used",
       "selectTokenToDeposit": "Select Token to Deposit",
-      "selectTokenToWithdraw": "Select Withdrawal Network",
       "tradePerps": "Trade Perps",
       "position": "Position",
       "yourPosition": "Your Position",
