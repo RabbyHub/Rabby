@@ -10,7 +10,8 @@ import { useWallet } from '@/ui/utils';
 import type { Account } from '@/background/service/preference';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
-
+import { KEYRING_TYPE } from '@/constant';
+import { UI_TYPE } from '@/constant/ui';
 export const usePerpsActions = () => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -19,15 +20,21 @@ export const usePerpsActions = () => {
     (s) => s.perps.currentPerpsAccount
   );
 
+  const isDesktop = UI_TYPE.isDesktop;
   const executeSignTypedData = useMemoizedFn(
     async (actions: any[], account: Account) => {
       if (!actions || actions.length === 0) {
         throw new Error('no signature, try later');
       }
-
       let result: string[] = [];
 
-      if (supportedDirectSign(account.type)) {
+      const isLocalWallet =
+        account.type === KEYRING_TYPE.HdKeyring ||
+        account.type === KEYRING_TYPE.SimpleKeyring;
+      const useMiniApprove = isDesktop
+        ? isLocalWallet
+        : supportedDirectSign(account.type);
+      if (useMiniApprove) {
         typedDataSignatureStore.close();
         result = await typedDataSignatureStore.start(
           {
@@ -40,6 +47,7 @@ export const usePerpsActions = () => {
             }),
             config: {
               account: account,
+              mode: isLocalWallet ? undefined : 'UI',
             },
             wallet,
           },

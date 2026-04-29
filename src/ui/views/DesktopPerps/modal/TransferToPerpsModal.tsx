@@ -103,6 +103,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
             })),
             config: {
               account,
+              mode: 'UI',
               getContainer: '.desktop-perps-transfer-to-perps-modal',
             },
             wallet,

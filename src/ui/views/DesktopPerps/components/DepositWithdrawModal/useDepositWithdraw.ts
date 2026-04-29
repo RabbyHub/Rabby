@@ -827,6 +827,7 @@ export const useDepositWithdraw = (
             config: {
               account: account,
               getContainer: '.desktop-perps-deposit-withdraw-content',
+              mode: 'UI',
             },
             wallet,
           },

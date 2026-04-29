@@ -344,6 +344,7 @@ export const usePerpsState = ({
             }),
             config: {
               account: account,
+              mode: 'UI',
             },
             wallet,
           },

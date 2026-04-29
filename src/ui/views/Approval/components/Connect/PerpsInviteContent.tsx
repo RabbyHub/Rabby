@@ -151,6 +151,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
             ],
             config: {
               account: selectedAccount,
+              mode: 'UI',
             },
             wallet,
           },
