@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
@@ -8,7 +8,6 @@ import clsx from 'clsx';
 import { PerpsChart } from '../components/Chart';
 import { PERPS_MAX_NTL_VALUE, PERPS_BUILDER_INFO } from '../constants';
 import * as Sentry from '@sentry/browser';
-import { getPerpsSDK } from '../sdkManager';
 import { useMemoizedFn } from 'ahooks';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconEdit } from 'ui/assets/perps/IconEditCC.svg';
@@ -16,10 +15,7 @@ import { ReactComponent as RcIconTitleSelect } from 'ui/assets/perps/IconTitleSe
 import { ReactComponent as RcIconTitleSelectDark } from 'ui/assets/perps/IconTitleSelectDark.svg';
 import { EditMarginPopup } from '../popup/EditMarginPopup';
 import { RiskLevelPopup } from '../popup/RiskLevelPopup';
-import {
-  CancelOrderParams,
-  WsActiveAssetCtx,
-} from '@rabby-wallet/hyperliquid-sdk';
+import { CancelOrderParams } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { PerpsOpenPositionPopup } from '../popup/OpenPositionPopup';
@@ -59,6 +55,7 @@ import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 import stats from '@/stats';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { usePerpsActions } from '../hooks/usePerpsActions';
+import { useActiveAssetSubscription } from '../hooks/useActiveAssetSubscription';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { EnableUnifiedAccountPopup } from '../popup/EnableUnifiedAccountPopup';
@@ -82,6 +79,7 @@ export const PerpsSingleCoin = () => {
     clearinghouseState,
     openOrders,
     favoritedCoins,
+    marginModePreferences,
   } = useRabbySelector((state) => state.perps);
   const [coin, setCoin] = useState(_coin);
   const {
@@ -100,9 +98,6 @@ export const PerpsSingleCoin = () => {
   const wallet = useWallet();
   const [isPreparingSign, setIsPreparingSign] = useState(false);
 
-  const [activeAssetCtx, setActiveAssetCtx] = React.useState<
-    WsActiveAssetCtx['ctx'] | null
-  >(null);
   const [searchPopupVisible, setSearchPopupVisible] = useState(false);
   const [positionDirection, setPositionDirection] = React.useState<
     'Long' | 'Short'
@@ -118,7 +113,6 @@ export const PerpsSingleCoin = () => {
   const [marginMode, setMarginMode] = useState<'cross' | 'isolated'>(
     'isolated'
   );
-  const activeAssetCtxRef = useRef<(() => void) | null>(null);
 
   const isFavorited = useMemo(() => favoritedCoins.includes(coin), [
     favoritedCoins,
@@ -164,11 +158,6 @@ export const PerpsSingleCoin = () => {
   }, [marketDataMap, coin]);
 
   const quoteAsset = currentAssetCtx?.quoteAsset as PerpsQuoteAsset | undefined;
-
-  const availableBalance = useMemo(
-    () => getAvailableByAsset(quoteAsset || 'USDC'),
-    [getAvailableByAsset, quoteAsset]
-  );
 
   const needEnableUnifiedAccount = useMemo(
     () => !isUnifiedAccount && !!quoteAsset && quoteAsset !== 'USDC',
@@ -263,20 +252,42 @@ export const PerpsSingleCoin = () => {
     setCurrentTpOrSl,
   });
 
+  const { activeAssetCtx, activeAssetData } = useActiveAssetSubscription(
+    coin,
+    currentPerpsAccount?.address
+  );
+
   const hasPosition = useMemo(() => {
     return !!currentPosition;
   }, [currentPosition]);
 
-  // Sync margin mode from existing position
   useEffect(() => {
-    if (currentPosition) {
-      setMarginMode(
-        currentPosition.position.leverage.type === 'cross'
-          ? 'cross'
-          : 'isolated'
-      );
+    if (!coin) return;
+    setMarginMode(marginModePreferences[coin] ?? 'isolated');
+  }, [coin, marginModePreferences]);
+
+  const handleMarginModeChange = useMemoizedFn((mode: 'cross' | 'isolated') => {
+    setMarginMode(mode);
+    if (coin) {
+      dispatch.perps.setMarginModePreference({ coin, mode });
     }
-  }, [currentPosition]);
+  });
+
+  const availableBalance = useMemo(() => {
+    if (activeAssetData?.availableToTrade) {
+      const isShort = hasPosition && Number(currentPosition?.position.szi) < 0;
+
+      // type availableToTrade : [longAvailable, shortAvailable]
+      return Number(activeAssetData.availableToTrade[isShort ? 1 : 0]);
+    }
+    return getAvailableByAsset(quoteAsset || 'USDC') || 0;
+  }, [
+    activeAssetData?.availableToTrade,
+    quoteAsset,
+    getAvailableByAsset,
+    hasPosition,
+    currentPosition?.position.szi,
+  ]);
 
   const needDepositFirst = useMemo(() => {
     return (
@@ -415,31 +426,6 @@ export const PerpsSingleCoin = () => {
     setAmountVisible,
     handleDeposit,
   ]);
-
-  const subscribeActiveAssetCtx = () => {
-    const sdk = getPerpsSDK();
-    const { unsubscribe } = sdk.ws.subscribeToActiveAssetCtx(coin, (data) => {
-      setActiveAssetCtx(data.ctx);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  };
-
-  // Subscribe to real-time candle updates
-  useEffect(() => {
-    if (activeAssetCtxRef.current) {
-      activeAssetCtxRef.current();
-    }
-    activeAssetCtxRef.current = subscribeActiveAssetCtx();
-
-    return () => {
-      // Cleanup WebSocket subscription
-      activeAssetCtxRef.current?.();
-      activeAssetCtxRef.current = null;
-    };
-  }, [coin]);
 
   const markPrice = useMemo(() => {
     return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
@@ -1225,7 +1211,7 @@ export const PerpsSingleCoin = () => {
         leverageRange={[1, currentAssetCtx?.maxLeverage || 5]}
         markPrice={markPrice}
         marginMode={marginMode}
-        onMarginModeChange={setMarginMode}
+        onMarginModeChange={handleMarginModeChange}
         hasPosition={hasPosition}
         availableBalance={Number(availableBalance || 0)}
         quoteAsset={quoteAsset}
@@ -1308,8 +1294,6 @@ export const PerpsSingleCoin = () => {
         setIsPreparingSign={setIsPreparingSign}
         isPreparingSign={isPreparingSign}
         currentPerpsAccount={currentPerpsAccount}
-        accountValue={accountValue.toString() || '0'}
-        availableBalance={availableBalance.toString() || '0'}
         updateMiniSignTx={updateMiniSignTx}
         handleDeposit={handleDeposit}
         clearMiniSignTx={clearMiniSignTx}

@@ -94,10 +94,6 @@ export const Perps: React.FC = () => {
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
-
-  usePerpsDefaultAccount({
-    isPro: false,
-  });
   const { isDarkTheme } = useThemeMode();
   const { handleEnableUnifiedAccount } = usePerpsActions();
   const { isUnifiedAccount } = usePerpsAccount();
@@ -200,6 +196,7 @@ export const Perps: React.FC = () => {
   useEffect(() => {
     dispatch.perps.initFavoritedCoins(undefined);
     dispatch.perps.initCandleInterval(undefined);
+    dispatch.perps.initMarginModePreferences(undefined);
   }, []);
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
@@ -217,8 +214,6 @@ export const Perps: React.FC = () => {
     }
     history.push('/dashboard');
   };
-
-  const { accountValue, availableBalance } = usePerpsAccount();
 
   const favoritedCoins = useRabbySelector((s) => s.perps.favoritedCoins);
 
@@ -681,8 +676,6 @@ export const Perps: React.FC = () => {
         handleDeposit={handleDeposit}
         clearMiniSignTx={clearMiniSignTx}
         updateMiniSignTx={updateMiniSignTx}
-        accountValue={accountValue.toString() || '0'}
-        availableBalance={availableBalance.toString() || '0'}
         onClose={() => {
           setAmountVisible(false);
           clearMiniSignTx();

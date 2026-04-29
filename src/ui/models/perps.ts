@@ -201,6 +201,7 @@ export interface PerpsState {
   selectedCoin: string;
   selectedTokenDetail: PerpTopTokenV3 | null;
   favoritedCoins: string[];
+  marginModePreferences: Record<string, 'cross' | 'isolated'>;
   chartInterval: string;
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
@@ -311,6 +312,7 @@ export const perps = createModel<RootModel>()({
     // Desktop Pro fields
     selectedCoin: 'BTC',
     favoritedCoins: [],
+    marginModePreferences: {},
     chartInterval: '15m',
     wsActiveAssetCtx: null,
     wsActiveAssetData: null,
@@ -834,6 +836,30 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         favoritedCoins: state.favoritedCoins.filter((coin) => coin !== payload),
+      };
+    },
+
+    setMarginModePreferences(
+      state,
+      payload: Record<string, 'cross' | 'isolated'>
+    ) {
+      return {
+        ...state,
+        marginModePreferences: payload,
+      };
+    },
+
+    patchMarginModePreference(
+      state,
+      payload: { coin: string; mode: 'cross' | 'isolated' }
+    ) {
+      if (!payload.coin) return state;
+      return {
+        ...state,
+        marginModePreferences: {
+          ...state.marginModePreferences,
+          [payload.coin]: payload.mode,
+        },
       };
     },
 
@@ -1444,6 +1470,30 @@ export const perps = createModel<RootModel>()({
         await rootState.app.wallet.setPerpsFavoritedCoins(newFavoritedCoins);
       } catch (error) {
         console.error('Failed to toggle favorite coin:', error);
+      }
+    },
+
+    async initMarginModePreferences(_, rootState) {
+      try {
+        const preferences = await rootState.app.wallet.getPerpsMarginModePreferences();
+        dispatch.perps.setMarginModePreferences(preferences || {});
+      } catch (error) {
+        console.error('Failed to load margin mode preferences:', error);
+      }
+    },
+
+    async setMarginModePreference(
+      payload: { coin: string; mode: 'cross' | 'isolated' },
+      rootState
+    ) {
+      try {
+        dispatch.perps.patchMarginModePreference(payload);
+        await rootState.app.wallet.setPerpsMarginModePreference(
+          payload.coin,
+          payload.mode
+        );
+      } catch (error) {
+        console.error('Failed to save margin mode preference:', error);
       }
     },
 
