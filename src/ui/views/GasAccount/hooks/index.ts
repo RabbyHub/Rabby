@@ -401,6 +401,7 @@ export const useGasAccountDiscovery = ({
   autoRefresh?: boolean;
 } = {}) => {
   const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
   const discovery = useRabbySelector((s) => ({
     pendingHardwareAccount: s.gasAccount.pendingHardwareAccount,
     autoLoginAccount: s.gasAccount.autoLoginAccount,
@@ -429,8 +430,15 @@ export const useGasAccountDiscovery = ({
       return;
     }
 
-    autoLoginInFlight.current = true;
-    login(discovery.autoLoginAccount)
+    wallet
+      .isUnlocked()
+      .then((isUnlocked) => {
+        if (!isUnlocked) {
+          return '';
+        }
+        autoLoginInFlight.current = true;
+        return login(discovery.autoLoginAccount!);
+      })
       .catch((error) => {
         console.error('[gasAccount] auto login failed', error);
       })
