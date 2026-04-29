@@ -28,6 +28,7 @@ import {
   WITHDRAW_CHAIN_TOKENS,
   WITHDRAW_CHAINS,
   PerpsQuoteAsset,
+  HYPE_GAS_FEE_IN_HYPE,
 } from '../constants';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { getPerpsSDK } from '../sdkManager';
@@ -119,7 +120,7 @@ export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
   const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
   const hypeGasFeeUsd = useMemo(() => {
     const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
-    return new BigNumber(0.00002).times(hypePrice).toNumber();
+    return new BigNumber(HYPE_GAS_FEE_IN_HYPE).times(hypePrice).toNumber();
   }, [marketDataMap]);
 
   const isHypeWithdraw = useMemo(

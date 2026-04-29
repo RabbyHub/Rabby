@@ -27,6 +27,7 @@ import {
   WITHDRAW_CHAIN_TOKENS,
   PerpsQuoteAsset,
   getSpotBalanceKey,
+  HYPE_GAS_FEE_IN_HYPE,
 } from '@/ui/views/Perps/constants';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -138,10 +139,10 @@ export const useDepositWithdraw = (
 
   const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
 
-  // Gas fee for every HyperEVM withdrawal: fixed 0.00002 HYPE
+  // Gas fee for every HyperEVM withdrawal
   const hypeGasFeeUsd = useMemo(() => {
     const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
-    return new BigNumber(0.00002).times(hypePrice).toNumber();
+    return new BigNumber(HYPE_GAS_FEE_IN_HYPE).times(hypePrice).toNumber();
   }, [marketDataMap]);
 
   // Fetch token info
