@@ -444,19 +444,20 @@ export const usePerpsState = ({
               signature,
             });
           } else if (type === 'approveBuilderFee') {
-            const res = await sdk.exchange?.sendApproveBuilderFee({
+            return sdk.exchange?.sendApproveBuilderFee({
               action: action?.message,
               nonce: action?.nonce || 0,
               signature: signature || '',
             });
-            return res;
           }
         })
       );
 
+      // wait 100ms for backend to process approve, then setUnifiedAccount
+      await sleep(100);
+      handleSafeSetUnifiedAccount();
       setTimeout(() => {
         handleSafeSetReference();
-        handleSafeSetUnifiedAccount();
       }, 100);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);

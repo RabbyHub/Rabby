@@ -76,6 +76,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
   const szDecimals = marketData.szDecimals ?? 4;
   const pxDecimals = marketData.pxDecimals ?? 2;
+  const quoteAsset = marketData.quoteAsset || 'USDC';
   const midPrice = Number(marketData.midPx || marketData.markPx || 0);
   const positionSize = Math.abs(Number(record.size || 0));
   const entryPrice = Number(record.entryPx);
@@ -83,7 +84,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
   const closeLimitCount = record.closeLimitOrders.length;
   const coinUnit =
-    sizeDisplayUnit === 'usdc' ? 'USD' : formatPerpsCoin(record.coin);
+    sizeDisplayUnit === 'usd' ? quoteAsset : formatPerpsCoin(record.coin);
 
   const [limitPrice, setLimitPrice] = useState(
     formatTpOrSlPrice(midPrice, szDecimals)
@@ -410,13 +411,14 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     const pnlIsUp = estPnl >= 0;
     return (
       <div className="text-[12px] space-y-[2px]">
-        {sizeDisplayUnit === 'usdc' ? (
+        {sizeDisplayUnit === 'usd' ? (
           <>
             <div>
               Position Size: {positionSize} {coin}
             </div>
             <div>
-              Qty: {sizeInput} {coin} ≈ {splitNumberByStep(notionalValue)} USD
+              Qty: {sizeInput} {coin} ≈ {splitNumberByStep(notionalValue)}{' '}
+              {quoteAsset}
             </div>
           </>
         ) : (
@@ -455,7 +457,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       <div className="space-y-[4px] px-2">
         {record.closeLimitOrders.map((order) => {
           const orderSize =
-            sizeDisplayUnit === 'usdc'
+            sizeDisplayUnit === 'usd'
               ? new BigNumber(order.sz).multipliedBy(order.limitPx).toFixed(2)
               : order.sz;
           return (

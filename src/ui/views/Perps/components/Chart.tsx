@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   createChart,
   IChartApi,
@@ -277,6 +283,11 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
   // (coin, candleMenuKey). Without this, switching timeframe/coin can deliver
   // a WS candle whose time is older than the stale series tail and trigger
   const dataReadyRef = useRef(false);
+  // Bumped whenever the chart instance is recreated (e.g. pxDecimals or theme
+  // changes). Used as a fetchData re-run trigger so the new empty series gets
+  // historical data repopulated — otherwise WS-only updates would leave it
+  // showing a single bar.
+  const [chartGen, setChartGen] = useState(0);
   const colors = useMemo(() => getThemeColors(isDarkTheme), [isDarkTheme]);
   const isWeekly = candleMenuKey === CANDLE_MENU_KEY_V2.ONE_WEEK;
   const timeLocalization = useMemo(() => createTimeLocalization(isWeekly), [
@@ -427,6 +438,10 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
 
     chartRef.current = chart;
     seriesRef.current = series;
+    // Block stale WS writes against the freshly created (empty) series until
+    // fetchData repopulates it.
+    dataReadyRef.current = false;
+    setChartGen((g) => g + 1);
 
     // 订阅十字线移动事件来获取鼠标悬停数据
     chart.subscribeCrosshairMove((param) => {
@@ -547,13 +562,14 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
 
   // Fetch and set data
   useEffect(() => {
+    if (chartGen === 0) return;
     let aborted = false;
 
     fetchData(aborted);
     return () => {
       aborted = true;
     };
-  }, [coin, fetchData]);
+  }, [fetchData, chartGen]);
 
   const subscribeCandle = useCallback(() => {
     const sdk = getPerpsSDK();

@@ -309,6 +309,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
+        quoteAsset={quoteAsset}
         szDecimals={szDecimals}
         sizeDisplayUnit={sizeDisplayUnit}
         onUnitChange={setSizeDisplayUnit}
@@ -432,6 +433,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         reduceOnly={reduceOnly}
         hideLiqPrice
         price={midPrice}
+        quoteAsset={quoteAsset}
       />
     </div>
   );

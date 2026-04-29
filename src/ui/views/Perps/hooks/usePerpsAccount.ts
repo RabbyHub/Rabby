@@ -70,7 +70,7 @@ export const usePerpsAccount = () => {
       if (isUnifiedAccount) {
         return getSpotBalance(coin);
       }
-      return Number(perpsWithdrawable) || 0;
+      return coin === 'USDC' ? Number(perpsWithdrawable) || 0 : 0;
     },
     [isUnifiedAccount, getSpotBalance, perpsWithdrawable]
   );

@@ -210,6 +210,16 @@ export const handleDisplayFundingPayments = (fundingPayments: string) => {
 };
 
 export const formatPerpsCoin = (coin: string) => {
+  if (coin === '@150') {
+    return 'USDE';
+  }
+  if (coin === '@166') {
+    return 'USDT';
+  }
+  if (coin === '@230') {
+    return 'USDH';
+  }
+
   if (coin.includes(':')) {
     // is hip-3 coin
     return coin.split(':')[1];
@@ -354,7 +364,7 @@ export const getCustomClearinghouseState = async (address: string) => {
 
   // Unified-account fallback: when no perp withdrawable, fall back to spot
   // availableToTrade so the selector shows a meaningful balance.
-  if (Number(aggregated.withdrawable) === 0) {
+  if (Number(aggregated.withdrawable) < 1) {
     const userAbstraction = await sdk.info.getUserAbstraction(address);
     if (userAbstraction === UserAbstractionResp.unifiedAccount) {
       const spotState = await sdk.info.getSpotClearingHouseState(address);

@@ -237,14 +237,14 @@ export const usePerpsTradingState = () => {
       const pxBN = new BigNumber(orderPrice ?? markPrice);
       const sizeBN = new BigNumber(dirTradeSize || 0);
       if (!pxBN.gt(0) || !leverage || sizeBN.isZero()) {
-        return { liqPrice: '', cost: '0 USD' };
+        return { liqPrice: '', cost: `0 ${quoteAsset}` };
       }
 
       const netNew = calcNetNewSize(direction, sizeBN.toNumber());
       const netNewBN = new BigNumber(netNew);
 
       // Cost
-      let cost = '$0.00';
+      let cost = `0 ${quoteAsset}`;
       if (!reduceOnly && netNewBN.gt(0)) {
         const netNewMargin = netNewBN.times(pxBN).dividedBy(leverage);
         cost = `${splitNumberByStep(netNewMargin.toFixed(2))} ${quoteAsset}`;

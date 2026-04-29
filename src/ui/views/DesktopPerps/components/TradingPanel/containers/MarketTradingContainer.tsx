@@ -326,6 +326,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           percentage={percentage}
           setPercentage={setPercentage}
           baseAsset={selectedCoin}
+          quoteAsset={quoteAsset}
           szDecimals={szDecimals}
           sizeDisplayUnit={sizeDisplayUnit}
           onUnitChange={setSizeDisplayUnit}
@@ -402,6 +403,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         {/* Order Info Grid */}
         <OrderInfoGrid
           buy={buyInfo}
+          quoteAsset={quoteAsset}
           sell={sellInfo}
           displayUnit={sizeDisplayUnit}
           selectedCoin={selectedCoin}
