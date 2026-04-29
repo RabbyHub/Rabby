@@ -2,12 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { splitNumberByStep } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
-import { useHistory, useLocation } from 'react-router-dom';
 import { ReactComponent as RcIconAddDeposit } from '@/ui/assets/perps/IconAddDeposit.svg';
 import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/perps/IconSwitchCC.svg';
-import usePerpsPopupNav from '../../../hooks/usePerpsPopupNav';
-import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
-import { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
+import { usePerpsTradingGate } from '../hooks/usePerpsTradingGate';
+
 interface AvailableFundsProps {
   availableBalance: number;
   quoteAsset?: string;
@@ -18,31 +16,36 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
   quoteAsset,
 }) => {
   const { t } = useTranslation();
-  const { openPerpsPopup } = usePerpsPopupNav();
-  const { isUnifiedAccount } = usePerpsAccount();
-  const handleSwapStableCoinClick = () => {
-    if (!isUnifiedAccount) {
-      openPerpsPopup('enable-unified', {
-        next: 'swap',
-        target: quoteAsset as PerpsQuoteAsset,
-        disableSwitch: true,
-      });
-    } else {
-      openPerpsPopup('swap', {
-        target: quoteAsset as PerpsQuoteAsset,
-        disableSwitch: true,
-      });
-    }
-  };
+  const {
+    needDepositFirst,
+    needEnableTrading,
+    needSwapStableCoin,
+    openSwapForCurrentQuote,
+    openPerpsPopup,
+  } = usePerpsTradingGate();
 
   const handleDepositClick = () => {
-    if (quoteAsset !== 'USDC') {
-      handleSwapStableCoinClick();
+    // Priority matches TradingButtons: deposit > enable-trading > swap.
+    // Without funds, swapping is meaningless — must deposit first.
+    // While enable-trading is pending, the swap entry is suppressed (the
+    // dedicated enable-trading button handles that step).
+    if (needDepositFirst) {
+      openPerpsPopup('deposit');
       return;
     }
-
+    if (needEnableTrading) {
+      openPerpsPopup('deposit');
+      return;
+    }
+    if (needSwapStableCoin) {
+      openSwapForCurrentQuote();
+      return;
+    }
     openPerpsPopup('deposit');
   };
+
+  const showSwapIcon =
+    needSwapStableCoin && !needDepositFirst && !needEnableTrading;
 
   return (
     <div className="flex items-center justify-between">
@@ -57,11 +60,11 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
           new BigNumber(availableBalance).toFixed(2, BigNumber.ROUND_DOWN)
         )}{' '}
         {quoteAsset || 'USDC'}
-        {quoteAsset === 'USDC' ? (
-          <RcIconAddDeposit />
-        ) : (
-          /* If it's not USDC, show the switch icon to indicate they can switch to USDC */
+        {showSwapIcon ? (
+          /* Quote needs a swap and user has none of it — surface the swap entry. */
           <RcIconSwitchCC className="text-rb-neutral-foot" />
+        ) : (
+          <RcIconAddDeposit />
         )}
       </span>
     </div>

@@ -178,7 +178,9 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                 <div className="flex items-center gap-6">
                   <span className="text-r-neutral-foot text-12">
                     {t('page.perps.PerpsSpotSwap.balance')}:{' '}
-                    {fromBalance.toFixed(4)}
+                    {fromBalanceBN
+                      .decimalPlaces(4, BigNumber.ROUND_DOWN)
+                      .toFixed()}
                   </span>
                   {onDeposit && fromCoin === 'USDC' && (
                     <button
