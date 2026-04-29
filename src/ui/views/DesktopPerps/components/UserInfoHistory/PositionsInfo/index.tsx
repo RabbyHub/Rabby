@@ -327,12 +327,7 @@ export const PositionsInfo: React.FC = () => {
               )}
             >
               <div>
-                <div
-                  className="group text-[13px] leading-[16px] font-medium text-r-neutral-title-1 mb-[2px] cursor-pointer"
-                  onClick={() => {
-                    dispatch.perps.setSelectedCoin(record.coin);
-                  }}
-                >
+                <div className="group text-[13px] leading-[16px] font-medium text-r-neutral-title-1 mb-[2px]">
                   <PerpsDisplayCoinName
                     item={
                       marketDataMap[record.coin] || {
@@ -358,9 +353,10 @@ export const PositionsInfo: React.FC = () => {
                     className={clsx(
                       'text-[12px] leading-[14px] font-medium hover:font-bold hover:text-rb-brand-default cursor-pointer'
                     )}
-                    onClick={(e) =>
-                      handleClickLeverage(record.coin, record.leverage)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClickLeverage(record.coin, record.leverage);
+                    }}
                   >
                     {record.leverage}x{' '}
                   </span>
@@ -464,7 +460,8 @@ export const PositionsInfo: React.FC = () => {
               {record.type === 'isolated' && (
                 <RcIconEditCC
                   className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedCoin(record.coin);
                     setEditMarginVisible(true);
                   }}
@@ -588,7 +585,8 @@ export const PositionsInfo: React.FC = () => {
                   'hover:border-rb-brand-default',
                   'text-[12px] leading-[14px]  text-r-neutral-title-1'
                 )}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setSelectedCoin(record.coin);
                   setClosePositionType('reverse');
                   setClosePositionVisible(true);
@@ -633,7 +631,8 @@ export const PositionsInfo: React.FC = () => {
             return (
               <div
                 className="text-[12px] leading-[14px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default flex item-center justify-center"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   eventBus.emit(
                     EVENTS.PERPS.USER_INFO_HISTORY_TAB_CHANGED,
                     'openOrders'
@@ -656,7 +655,8 @@ export const PositionsInfo: React.FC = () => {
                     'hover:border-rb-brand-default',
                     'text-[12px] leading-[14px]  text-r-neutral-title-1'
                   )}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedCoin(record.coin);
                     setEditTpSlVisible(true);
                   }}
@@ -719,7 +719,8 @@ export const PositionsInfo: React.FC = () => {
               </div>
               <RcIconEditCC
                 className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setSelectedCoin(record.coin);
                   setEditTpSlVisible(true);
                 }}
@@ -744,6 +745,10 @@ export const PositionsInfo: React.FC = () => {
         rowKey="coin"
         defaultSortField="coin"
         defaultSortOrder="ascend"
+        onRow={(record) => ({
+          onClick: () => dispatch.perps.setSelectedCoin(record.coin),
+          style: { cursor: 'pointer' },
+        })}
       ></CommonTable>
       {currentPosition && (
         <>
