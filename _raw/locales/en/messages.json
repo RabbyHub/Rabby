@@ -959,7 +959,7 @@
         "swapBtn": "Swap",
         "insufficientBalance": "Insufficient balance",
         "invalidAmount": "Please input a valid amount",
-        "minimumAmount": "The minimum swap amount is 10",
+        "minimumAmount": "The minimum swap amount is {{amount}}",
         "max": "Max",
         "toDeposit": "To Deposit →",
         "swapBeforeTrading": "Swap USDC to {{quoteAsset}} before trading",
@@ -1355,6 +1355,7 @@
         "sound": "Enable Sound"
       },
       "tradingPanel": {
+        "swapStableCoins": "Swap Stablecoins",
         "bboTips": "Best Bid Offer (BBO) refers to the best-available ask price and the best-available bid price on the order book at any given time. BBO orders are always placed using the precise minimum tick size , ensuring granular and accurate pricing independent of display preferences.",
         "bboDisabledTooltip": "BBO is not supported when {{bboDisabledReason}} is enabled",
         "action": "Action",

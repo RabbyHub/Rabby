@@ -13,8 +13,14 @@ export type PerpsAction =
 export interface PerpsPopupParams {
   /** Pre-fill the `from` side of SpotSwap (i.e., user clicked their USDT row to sell it). */
   source?: PerpsQuoteAsset;
-  /** Lock the `to` side of SpotSwap (i.e., user needs USDH to trade). */
+  /** Pre-fill the `to` side of SpotSwap. Soft seed only — user can still
+   *  change tokens unless the caller also passes `disableSwitch: true`. */
   target?: PerpsQuoteAsset;
+  /** Set to true only when the caller has decided which stablecoin pair the
+   *  user must end up with (e.g. trading panel needs USDH to trade a
+   *  USDH-quoted market). Locks BOTH from and to dropdowns. Defaults to false
+   *  — both dropdowns stay editable. */
+  disableSwitch?: boolean;
   /** After current action completes, navigate to this follow-up action. */
   next?: Exclude<PerpsAction, null>;
 }
@@ -22,6 +28,7 @@ export interface PerpsPopupParams {
 const PARAM_ACTION = 'action';
 const PARAM_SOURCE = 'perpsSource';
 const PARAM_TARGET = 'perpsTarget';
+const PARAM_DISABLE_SWITCH = 'perpsDisableSwitch';
 const PARAM_NEXT = 'perpsNext';
 
 const isPerpsQuoteAsset = (v: string | null): v is PerpsQuoteAsset =>
@@ -41,6 +48,7 @@ export const usePerpsPopupNav = () => {
   const action = (searchParams.get(PARAM_ACTION) as PerpsAction) || null;
   const sourceRaw = searchParams.get(PARAM_SOURCE);
   const targetRaw = searchParams.get(PARAM_TARGET);
+  const disableSwitchRaw = searchParams.get(PARAM_DISABLE_SWITCH);
   const nextRaw = searchParams.get(PARAM_NEXT);
 
   const source: PerpsQuoteAsset | undefined = isPerpsQuoteAsset(sourceRaw)
@@ -49,6 +57,8 @@ export const usePerpsPopupNav = () => {
   const target: PerpsQuoteAsset | undefined = isPerpsQuoteAsset(targetRaw)
     ? targetRaw
     : undefined;
+  // Default false (editable). Caller must explicitly opt in by passing `disableSwitch: true`.
+  const disableSwitch: boolean = disableSwitchRaw === 'true';
   const next =
     nextRaw === 'swap' ||
     nextRaw === 'deposit' ||
@@ -79,6 +89,8 @@ export const usePerpsPopupNav = () => {
         else sp.delete(PARAM_SOURCE);
         if (params.target) sp.set(PARAM_TARGET, params.target);
         else sp.delete(PARAM_TARGET);
+        if (params.disableSwitch === true) sp.set(PARAM_DISABLE_SWITCH, 'true');
+        else sp.delete(PARAM_DISABLE_SWITCH);
         if (params.next) sp.set(PARAM_NEXT, params.next);
         else sp.delete(PARAM_NEXT);
       });
@@ -90,6 +102,7 @@ export const usePerpsPopupNav = () => {
       sp.delete(PARAM_ACTION);
       sp.delete(PARAM_SOURCE);
       sp.delete(PARAM_TARGET);
+      sp.delete(PARAM_DISABLE_SWITCH);
       sp.delete(PARAM_NEXT);
     });
   });
@@ -115,6 +128,7 @@ export const usePerpsPopupNav = () => {
     action,
     source,
     target,
+    disableSwitch,
     next,
     openPerpsPopup,
     closePerpsPopup,

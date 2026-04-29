@@ -69,16 +69,26 @@ const useTradingGate = ({
   ]);
 
   const bannerNode = useMemo(() => {
-    if (!error && !needDepositFirst && !needSwapStableCoin) return null;
+    // Priority matches gateButton: needDepositFirst > needEnableTrading > needSwapStableCoin > error.
+    // needEnableTrading suppresses the banner (the enable-trading button alone is enough),
+    // but a pending deposit still needs the banner above it.
+    if (needDepositFirst) {
+      return (
+        <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
+          <RcIconInfoCC className="text-r-orange-default" />
+          <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
+            {t('page.perpsPro.tradingPanel.addFundsToGetStarted')}
+          </div>
+        </div>
+      );
+    }
+    if (needEnableTrading) return null;
+    if (!error && !needSwapStableCoin) return null;
     return (
       <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
         <RcIconInfoCC className="text-r-orange-default" />
         <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
-          {needDepositFirst
-            ? t('page.perpsPro.tradingPanel.addFundsToGetStarted')
-            : needEnableTrading
-            ? ''
-            : needSwapStableCoin
+          {needSwapStableCoin
             ? t('page.perps.PerpsSpotSwap.swapBeforeTrading', { quoteAsset })
             : error}
         </div>
@@ -130,14 +140,18 @@ const useTradingGate = ({
             const target = quoteAsset === 'USDC' ? undefined : quoteAsset;
             if (!isUnifiedAccount) {
               // Chain enable → swap; advancePerpsPopup() preserves target.
-              openPerpsPopup('enable-unified', { next: 'swap', target });
+              openPerpsPopup('enable-unified', {
+                next: 'swap',
+                target,
+                disableSwitch: true,
+              });
             } else {
-              openPerpsPopup('swap', { target });
+              openPerpsPopup('swap', { target, disableSwitch: true });
             }
           }}
           className={PRIMARY_BTN_CLASS}
         >
-          {t('page.perps.PerpsDepositCard.swap')}
+          {t('page.perpsPro.tradingPanel.swapStableCoins')}
         </Button>
       );
     }

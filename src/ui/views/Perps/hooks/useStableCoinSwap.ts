@@ -117,7 +117,9 @@ export const useStableCoinSwap = ({
   const errorMessage = useMemo(() => {
     if (!amount) return '';
     if (amountBN.lt(PERPS_MIN_SWAP_AMOUNT))
-      return t('page.perps.PerpsSpotSwap.minimumAmount');
+      return t('page.perps.PerpsSpotSwap.minimumAmount', {
+        amount: PERPS_MIN_SWAP_AMOUNT,
+      });
     if (amountBN.gt(fromBalanceBN))
       return t('page.perps.PerpsSpotSwap.insufficientBalance');
     return '';

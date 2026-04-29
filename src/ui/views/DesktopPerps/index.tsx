@@ -62,6 +62,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
     action,
     source,
     target,
+    disableSwitch,
     next,
     closePerpsPopup,
     advancePerpsPopup,
@@ -150,7 +151,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         visible={action === 'swap'}
         sourceAsset={source}
         targetAsset={target}
-        disableSwitch={!!target}
+        disableSwitch={disableSwitch}
         onDeposit={() => {
           openPerpsPopup('deposit');
         }}
