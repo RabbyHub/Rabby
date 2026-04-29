@@ -80,7 +80,7 @@ export const Assets: React.FC = () => {
         available: Number(b?.available || 0),
         action: 'swap' as const,
       };
-    }).filter((row) => row.available >= PERPS_LOW_BALANCE_THRESHOLD);
+    });
   }, [
     isUnifiedAccount,
     spotBalancesMap,
@@ -93,8 +93,12 @@ export const Assets: React.FC = () => {
     if (row.action === 'enable-unified') {
       openPerpsPopup('enable-unified');
     } else if (row.action === 'swap') {
-      // Clicking a row means "sell FROM this coin" (pair with USDC as the destination).
-      openPerpsPopup('swap', { source: row.coin });
+      // USDC: open swap with USDC as the source (sell FROM USDC).
+      // Non-USDC: prefill the row's coin as the swap target (buy INTO it).
+      openPerpsPopup(
+        'swap',
+        row.coin === 'USDC' ? { source: 'USDC' } : { target: row.coin }
+      );
     } else if (row.action === 'transfer-to-perps') {
       openPerpsPopup('transfer-to-perps');
     }

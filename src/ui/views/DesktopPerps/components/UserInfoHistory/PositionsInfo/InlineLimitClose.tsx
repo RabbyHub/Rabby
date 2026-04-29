@@ -493,7 +493,10 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         {/* Market link */}
         <span
           className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-          onClick={() => !marketLoading && handleMarketCloseWithConfirm()}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!marketLoading) handleMarketCloseWithConfirm();
+          }}
         >
           Market
         </span>
@@ -511,7 +514,8 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             className={clsx(
               'cursor-pointer font-bold text-[12px] transition-colors text-rb-brand-default hover:text-r-neutral-title-1'
             )}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (isPriceValid && sizeNum > 0 && !loading) {
                 setShowValidation(false);
                 handleSubmit();
@@ -545,6 +549,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
           )}
           placeholder="Price"
           value={limitPrice}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => {
             handlePriceChange(e);
             if (showValidation) setShowValidation(false);
@@ -580,8 +585,10 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
                   className="text-13 text-rb-neutral-title-1 bg-rb-neutral-line hover:text-rb-brand-default cursor-pointer px-[11px] h-[24px] flex items-center justify-center rounded-[4px]"
                   onMouseDown={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     handlePercentageClick(pct);
                   }}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   {pct}%
                 </span>
@@ -603,6 +610,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             )}
             placeholder="Size"
             value={sizeInput}
+            onClick={(e) => e.stopPropagation()}
             onChange={(e) => {
               handleSizeChange(e);
               if (showValidation) setShowValidation(false);
