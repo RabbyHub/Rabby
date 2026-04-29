@@ -4,15 +4,8 @@ import { Button } from 'antd';
 import { useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
-import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
-import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
-import {
-  getSpotBalanceKey,
-  PerpsQuoteAsset,
-  SWAP_REQUIRED_QUOTE_ASSETS,
-} from '@/ui/views/Perps/constants';
-import { usePerpsPopupNav } from '@/ui/views/DesktopPerps/hooks/usePerpsPopupNav';
 import { OrderSide } from '../../../types';
+import { usePerpsTradingGate } from '../hooks/usePerpsTradingGate';
 
 const PRIMARY_BTN_CLASS =
   'w-full h-[40px] rounded-[8px] font-medium text-[13px] border-transparent text-rb-neutral-InvertHighlight';
@@ -25,48 +18,16 @@ const useTradingGate = ({
   orderSide?: OrderSide;
 }) => {
   const { t } = useTranslation();
-  const { openPerpsPopup } = usePerpsPopupNav();
-
-  const clearinghouseState = useRabbySelector(
-    (s) => s.perps.clearinghouseState
-  );
-  const wsActiveAssetData = useRabbySelector((s) => s.perps.wsActiveAssetData);
-  const selectedCoin = useRabbySelector((s) => s.perps.selectedCoin);
-  const marketDataMap = useRabbySelector((s) => s.perps.marketDataMap);
-
-  const { accountValue, isUnifiedAccount, spotBalancesMap } = usePerpsAccount();
 
   const {
+    quoteAsset,
+    needDepositFirst,
     needEnableTrading,
+    needSwapStableCoin,
+    openSwapForCurrentQuote,
     handleActionApproveStatus,
-  } = usePerpsProPosition();
-
-  const quoteAsset: PerpsQuoteAsset = (marketDataMap[selectedCoin]
-    ?.quoteAsset ?? 'USDC') as PerpsQuoteAsset;
-
-  const currentAssetBalance = Number(
-    spotBalancesMap[getSpotBalanceKey(quoteAsset)]?.available || 0
-  );
-
-  const needSwapStableCoin = useMemo(() => {
-    return (
-      SWAP_REQUIRED_QUOTE_ASSETS.includes(quoteAsset) && !currentAssetBalance
-    );
-  }, [quoteAsset, currentAssetBalance]);
-
-  const needDepositFirst = useMemo(() => {
-    if (!clearinghouseState || accountValue !== 0) return false;
-    const buyAvailable = Number(wsActiveAssetData?.availableToTrade[0] || 0);
-    const sellAvailable = Number(wsActiveAssetData?.availableToTrade[1] || 0);
-    if (orderSide === OrderSide.BUY) return buyAvailable === 0;
-    if (orderSide === OrderSide.SELL) return sellAvailable === 0;
-    return buyAvailable === 0 && sellAvailable === 0;
-  }, [
-    clearinghouseState,
-    accountValue,
-    wsActiveAssetData?.availableToTrade,
-    orderSide,
-  ]);
+    openPerpsPopup,
+  } = usePerpsTradingGate({ orderSide });
 
   const bannerNode = useMemo(() => {
     // Priority matches gateButton: needDepositFirst > needEnableTrading > needSwapStableCoin > error.
@@ -136,19 +97,7 @@ const useTradingGate = ({
           type="primary"
           block
           size="large"
-          onClick={() => {
-            const target = quoteAsset === 'USDC' ? undefined : quoteAsset;
-            if (!isUnifiedAccount) {
-              // Chain enable → swap; advancePerpsPopup() preserves target.
-              openPerpsPopup('enable-unified', {
-                next: 'swap',
-                target,
-                disableSwitch: true,
-              });
-            } else {
-              openPerpsPopup('swap', { target, disableSwitch: true });
-            }
-          }}
+          onClick={openSwapForCurrentQuote}
           className={PRIMARY_BTN_CLASS}
         >
           {t('page.perpsPro.tradingPanel.swapStableCoins')}
@@ -160,8 +109,7 @@ const useTradingGate = ({
     needDepositFirst,
     needEnableTrading,
     needSwapStableCoin,
-    quoteAsset,
-    isUnifiedAccount,
+    openSwapForCurrentQuote,
     openPerpsPopup,
     handleActionApproveStatus,
     t,
