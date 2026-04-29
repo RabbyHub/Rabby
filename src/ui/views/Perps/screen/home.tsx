@@ -94,10 +94,6 @@ export const Perps: React.FC = () => {
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
-
-  usePerpsDefaultAccount({
-    isPro: false,
-  });
   const { isDarkTheme } = useThemeMode();
   const { handleEnableUnifiedAccount } = usePerpsActions();
   const { isUnifiedAccount } = usePerpsAccount();
