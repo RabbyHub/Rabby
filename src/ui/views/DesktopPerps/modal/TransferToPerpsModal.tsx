@@ -21,6 +21,7 @@ import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2/state/TypedDataSignatureManager';
 import { Account } from '@/background/service/preference';
 import { TokenWithChain } from '@/ui/component';
+import { KEYRING_TYPE } from '@/constant';
 
 interface TransferToPerpsModalProps {
   visible: boolean;
@@ -94,6 +95,9 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
       let result: string[] = [];
       if (canUseDirectSubmitTx) {
         typedDataSignatureStore.close();
+        const isLocalWallet =
+          account.type === KEYRING_TYPE.SimpleKeyring ||
+          account.type === KEYRING_TYPE.HdKeyring;
         result = await typedDataSignatureStore.start(
           {
             txs: actions.map((item) => ({
@@ -103,7 +107,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
             })),
             config: {
               account,
-              mode: 'UI',
+              mode: isLocalWallet ? undefined : 'UI',
               getContainer: '.desktop-perps-transfer-to-perps-modal',
             },
             wallet,

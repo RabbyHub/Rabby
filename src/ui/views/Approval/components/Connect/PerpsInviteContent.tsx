@@ -14,7 +14,7 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useEventListener, useRequest } from 'ahooks';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
-import { CHAINS_ENUM, EVENTS, KEYRING_CLASS } from 'consts';
+import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -140,6 +140,9 @@ export const PerpsInviteContent = (props: ConnectProps) => {
       let signature = '';
       if (supportedDirectSign(selectedAccount.type)) {
         typedDataSignatureStore.close();
+        const isLocalWallet =
+          selectedAccount.type === KEYRING_TYPE.SimpleKeyring ||
+          selectedAccount.type === KEYRING_TYPE.HdKeyring;
         const res = await typedDataSignatureStore.start(
           {
             txs: [
@@ -151,7 +154,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
             ],
             config: {
               account: selectedAccount,
-              mode: 'UI',
+              mode: isLocalWallet ? undefined : 'UI',
             },
             wallet,
           },
