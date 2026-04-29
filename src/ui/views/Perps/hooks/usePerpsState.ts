@@ -351,18 +351,19 @@ export const usePerpsState = ({
         );
         typedDataSignatureStore.close();
       } else {
-        for (const actionObj of actions) {
-          const signature = await wallet.sendRequest<string>(
-            {
-              method: 'eth_signTypedDataV4',
-              params: [account.address, JSON.stringify(actionObj)],
-            },
-            {
-              account,
-            }
-          );
-          result.push(signature);
-        }
+        result = await Promise.all(
+          actions.map((actionObj) =>
+            wallet.sendRequest<string>(
+              {
+                method: 'eth_signTypedDataV4',
+                params: [account.address, JSON.stringify(actionObj)],
+              },
+              {
+                account,
+              }
+            )
+          )
+        );
       }
       return result;
     }
@@ -647,8 +648,6 @@ export const usePerpsState = ({
       account.type === KEYRING_CLASS.PRIVATE_KEY ||
       account.type === KEYRING_CLASS.MNEMONIC
     ) {
-      await executeSignatures(signActions, account);
-
       let isNeedDepositBeforeApprove = true;
       const info = await sdk.info.getClearingHouseState(account.address);
       if ((Number(info?.marginSummary.accountValue) || 0) > 0) {
@@ -661,6 +660,7 @@ export const usePerpsState = ({
       if (isNeedDepositBeforeApprove) {
         handleSetLaterApproveStatus(signActions);
       } else {
+        await executeSignatures(signActions, account);
         await handleDirectApprove(signActions);
         setTimeout(() => {
           handleSafeSetReference();
