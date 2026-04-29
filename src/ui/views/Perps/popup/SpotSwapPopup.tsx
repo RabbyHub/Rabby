@@ -120,16 +120,16 @@ const Content: React.FC<SpotSwapContentProps> = ({
         <Dropdown
           transitionName=""
           forceRender
-          disabled={!!targetAsset || submitting}
+          disabled={!!disableSwitch || submitting}
           overlay={renderCoinMenu(handleToChange)}
         >
           <button
             type="button"
-            disabled={!!targetAsset || submitting}
+            disabled={!!disableSwitch || submitting}
             className={coinPillClassName}
           >
             <CoinOption coin={toCoin} />
-            {!targetAsset && (
+            {!disableSwitch && (
               <RcIconArrowDownCC className="w-[12px] h-[12px] text-r-neutral-foot" />
             )}
           </button>

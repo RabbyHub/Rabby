@@ -332,6 +332,9 @@ export const usePerpsState = ({
       // await dispatch.account.changeAccountAsync(account);
 
       if (supportedDirectSign(account.type)) {
+        const isLocalWallet =
+          account.type === KEYRING_TYPE.SimpleKeyring ||
+          account.type === KEYRING_TYPE.HdKeyring;
         typedDataSignatureStore.close();
         result = await typedDataSignatureStore.start(
           {
@@ -344,6 +347,7 @@ export const usePerpsState = ({
             }),
             config: {
               account: account,
+              mode: isLocalWallet ? undefined : 'UI',
             },
             wallet,
           },

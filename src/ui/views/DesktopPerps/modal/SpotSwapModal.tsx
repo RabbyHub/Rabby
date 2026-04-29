@@ -17,7 +17,7 @@ export { COIN_ICON_MAP };
 
 interface SpotSwapModalProps {
   visible: boolean;
-  /** When provided, locks the target asset (user must swap USDC → targetAsset). */
+  /** Pre-fills the `to` side. Soft seed only — set `disableSwitch` to also lock it. */
   targetAsset?: PerpsQuoteAsset;
   /**
    * When provided, seeds `from` to this asset (and pairs it with USDC on the other side).
@@ -25,7 +25,7 @@ interface SpotSwapModalProps {
    * If both sourceAsset and targetAsset are set, targetAsset wins.
    */
   sourceAsset?: PerpsQuoteAsset;
-  /** When true, hides the from/to switch UI. */
+  /** When true, locks BOTH from and to dropdowns and hides their dropdown arrows. */
   disableSwitch?: boolean;
   onClose: () => void;
   onSuccess?: () => void;
@@ -145,7 +145,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                 placement="bottomRight"
                 transitionName=""
                 forceRender
-                disabled={!!targetAsset || submitting}
+                disabled={!!disableSwitch || submitting}
                 overlay={renderCoinMenu(handleToChange, toCoin)}
               >
                 <button
@@ -156,14 +156,16 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                     'border border-solid border-rb-neutral-line',
                     'bg-transparent',
                     'text-[14px] leading-[16px] font-medium text-rb-neutral-title-1',
-                    !(!!targetAsset || submitting) &&
+                    !(!!disableSwitch || submitting) &&
                       'hover:border-rb-brand-default',
                     'disabled:cursor-default'
                   )}
-                  disabled={!!targetAsset || submitting}
+                  disabled={!!disableSwitch || submitting}
                 >
                   <CoinOption coin={toCoin} />
-                  <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+                  {!disableSwitch && (
+                    <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+                  )}
                 </button>
               </Dropdown>
             </div>
@@ -219,14 +221,16 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                       'border border-solid border-rb-neutral-line',
                       'bg-transparent',
                       'text-[14px] leading-[16px] font-medium text-rb-neutral-title-1',
-                      !(!!targetAsset || submitting) &&
+                      !(disableSwitch || submitting) &&
                         'hover:border-rb-brand-default',
                       'disabled:cursor-default'
                     )}
                     disabled={disableSwitch || submitting}
                   >
                     <CoinOption coin={fromCoin} />
-                    <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+                    {!disableSwitch && (
+                      <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+                    )}
                   </button>
                 </Dropdown>
               </div>

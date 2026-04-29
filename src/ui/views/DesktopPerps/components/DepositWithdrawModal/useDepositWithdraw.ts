@@ -36,7 +36,7 @@ import {
   queryTokensCache,
 } from '@/ui/utils/portfolio/tokenUtils';
 import { findChain, findChainByServerID } from '@/utils/chain';
-import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
+import { CHAINS_ENUM, ETH_USDT_CONTRACT, KEYRING_TYPE } from '@/constant';
 import { Tx } from 'background/service/openapi';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -813,8 +813,12 @@ export const useDepositWithdraw = (
       }
       let result: string[] = [];
       // await dispatch.account.changeAccountAsync(account);
+      const isLocalWallet =
+        account.type === KEYRING_TYPE.SimpleKeyring ||
+        account.type === KEYRING_TYPE.HdKeyring;
       if (canUseDirectSubmitTx) {
         typedDataSignatureStore.close();
+
         result = await typedDataSignatureStore.start(
           {
             txs: actions.map((item) => {
@@ -827,6 +831,7 @@ export const useDepositWithdraw = (
             config: {
               account: account,
               getContainer: '.desktop-perps-deposit-withdraw-content',
+              mode: isLocalWallet ? undefined : 'UI',
             },
             wallet,
           },

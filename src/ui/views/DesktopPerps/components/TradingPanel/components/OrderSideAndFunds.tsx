@@ -25,9 +25,13 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
       openPerpsPopup('enable-unified', {
         next: 'swap',
         target: quoteAsset as PerpsQuoteAsset,
+        disableSwitch: true,
       });
     } else {
-      openPerpsPopup('swap', { target: quoteAsset as PerpsQuoteAsset });
+      openPerpsPopup('swap', {
+        target: quoteAsset as PerpsQuoteAsset,
+        disableSwitch: true,
+      });
     }
   };
 

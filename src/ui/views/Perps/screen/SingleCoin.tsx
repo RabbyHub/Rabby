@@ -33,9 +33,6 @@ import {
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { TokenImg } from '../components/TokenImg';
 import { TopPermissionTips } from '../components/TopPermissionTips';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
-import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { EditTpSlTag } from '../components/EditTpSlTag';
@@ -329,13 +326,6 @@ export const PerpsSingleCoin = () => {
     setAmountVisible,
   });
 
-  const currentAccount = useCurrentAccount();
-  const signerAccount = currentPerpsAccount || currentAccount;
-
-  const { openDirect, close: closeSign, resetGasStore } = useMiniSigner({
-    account: signerAccount!,
-  });
-
   const singleCoinHistoryList = useMemo(() => {
     return userFills
       .filter((fill) => fill.coin.toLowerCase() === coin?.toLowerCase())
@@ -349,83 +339,6 @@ export const PerpsSingleCoin = () => {
   const miniTxs = useMemo(() => {
     return miniSignTx || [];
   }, [miniSignTx]);
-
-  useEffect(() => {
-    if (
-      !isPreparingSign ||
-      !canUseDirectSubmitTx ||
-      !miniTxs.length ||
-      !signerAccount
-    ) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const run = async () => {
-      try {
-        if (cancelled) return;
-        closeSign();
-        resetGasStore();
-        const hashes = await openDirect({
-          txs: miniTxs,
-          ga: {
-            category: 'Perps',
-            source: 'Perps',
-            trigger: 'Perps',
-          },
-        });
-        if (cancelled) return;
-        const hash = hashes[hashes.length - 1];
-        if (hash) {
-          handleSignDepositDirect(hash);
-        }
-        setAmountVisible(false);
-        setTimeout(() => {
-          if (cancelled) return;
-          setIsPreparingSign(false);
-          clearMiniSignTx();
-        }, 500);
-      } catch (error) {
-        if (cancelled) return;
-        if (
-          error === MINI_SIGN_ERROR.PREFETCH_FAILURE ||
-          error === MINI_SIGN_ERROR.GAS_FEE_TOO_HIGH
-        ) {
-          handleDeposit();
-        } else if (error !== 'User cancelled') {
-          console.error('perps single coin direct sign error', error);
-          message.error({
-            // className: 'toast-message-2025-center',
-            duration: 1.5,
-            content:
-              typeof (error as any)?.message === 'string'
-                ? (error as any).message
-                : 'Transaction failed',
-          });
-        }
-        setIsPreparingSign(false);
-        clearMiniSignTx();
-        setAmountVisible(false);
-      }
-    };
-
-    run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    isPreparingSign,
-    canUseDirectSubmitTx,
-    miniTxs,
-    signerAccount,
-    openDirect,
-    handleSignDepositDirect,
-    clearMiniSignTx,
-    setAmountVisible,
-    handleDeposit,
-  ]);
 
   const markPrice = useMemo(() => {
     return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);

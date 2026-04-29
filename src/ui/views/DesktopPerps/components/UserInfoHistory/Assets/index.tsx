@@ -94,7 +94,8 @@ export const Assets: React.FC = () => {
       openPerpsPopup('enable-unified');
     } else if (row.action === 'swap') {
       // USDC: open swap with USDC as the source (sell FROM USDC).
-      // Non-USDC: prefill the row's coin as the swap target (buy INTO it).
+      // Non-USDC: pre-fill the row's coin as the swap target. Both dropdowns
+      // stay editable — the user is exploring, not forced into a fixed pair.
       openPerpsPopup(
         'swap',
         row.coin === 'USDC' ? { source: 'USDC' } : { target: row.coin }

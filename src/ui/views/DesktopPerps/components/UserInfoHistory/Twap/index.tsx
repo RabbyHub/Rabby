@@ -586,7 +586,8 @@ export const Twap: React.FC = () => {
         width: 150,
         render: (_, slice) => (
           <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
-            {splitNumberByStep(Number(slice.fill.sz))} {record.coin}
+            {splitNumberByStep(Number(slice.fill.sz))}{' '}
+            {formatPerpsCoin(record.coin)}
           </div>
         ),
       },
