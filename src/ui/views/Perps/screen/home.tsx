@@ -196,6 +196,7 @@ export const Perps: React.FC = () => {
   useEffect(() => {
     dispatch.perps.initFavoritedCoins(undefined);
     dispatch.perps.initCandleInterval(undefined);
+    dispatch.perps.initMarginModePreferences(undefined);
   }, []);
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
