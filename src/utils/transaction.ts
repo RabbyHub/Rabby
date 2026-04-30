@@ -240,7 +240,12 @@ export async function calcGasLimit({
   gasTokenDecimals?: number;
   checkTxValueInBalance?: boolean;
 }) {
-  let block: null | BlockInfo = preparedBlock ? await preparedBlock : null;
+  let block: null | BlockInfo = null;
+  try {
+    block = preparedBlock ? await preparedBlock : null;
+  } catch (error) {
+    // NOTHING
+  }
   try {
     if (!block) {
       block = await wallet.requestETHRpc<BlockInfo>(
