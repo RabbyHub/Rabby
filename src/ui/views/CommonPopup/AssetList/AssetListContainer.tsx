@@ -193,7 +193,9 @@ export const AssetListContainer: React.FC<Props> = ({
           <TokenListSkeleton />
         ) : (
           <>
-            {visible && !search ? <HomePerpsPositionList /> : null}
+            {visible && !search ? (
+              <HomePerpsPositionList needFetchMarket />
+            ) : null}
             <ProtocolList
               removeProtocol={removeProtocol}
               appIds={appIds}

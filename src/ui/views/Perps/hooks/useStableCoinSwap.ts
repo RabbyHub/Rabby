@@ -73,12 +73,17 @@ export const useStableCoinSwap = ({
       if (sorted.length === 0) {
         setFromCoin('USDC');
         setToCoin('USDT');
+      } else if (sorted[0].coin === 'USDC') {
+        // USDC has the most balance — keep USDC as `from`, pick the next
+        // non-USDC stablecoin as `to` (USDT fallback if nothing else).
+        setFromCoin('USDC');
+        const nextNonUsdc = sorted.find((i) => i.coin !== 'USDC');
+        setToCoin(nextNonUsdc?.coin || 'USDT');
       } else {
+        // Top is non-USDC — user is more likely selling it. Pair with USDC
+        // on the other side (SDK only supports X ↔ USDC).
         setFromCoin(sorted[0].coin);
-        setToCoin(
-          sorted.find((i) => i.coin !== sorted[0].coin)?.coin ||
-            (sorted[0].coin === 'USDC' ? 'USDT' : 'USDC')
-        );
+        setToCoin('USDC');
       }
     }
     setAmount('');
@@ -135,16 +140,26 @@ export const useStableCoinSwap = ({
   const canSubmit =
     !invalidPair && !errorMessage && amountBN.gt(0) && !submitting;
 
+  // SDK only supports X ↔ USDC. When the user picks a non-USDC token on one
+  // side, the other side is forced back to USDC. If both sides become USDC
+  // (e.g. user picked USDC where the other side was already USDC), bump the
+  // opposite side to USDT.
   const handleFromChange = useMemoizedFn((v: PerpsQuoteAsset) => {
     setFromCoin(v);
-    if (v !== 'USDC' && toCoin !== 'USDC') setToCoin('USDC');
-    if (v === toCoin) setToCoin(v === 'USDC' ? 'USDT' : 'USDC');
+    if (v !== 'USDC') {
+      setToCoin('USDC');
+    } else if (v === toCoin) {
+      setToCoin('USDT');
+    }
   });
 
   const handleToChange = useMemoizedFn((v: PerpsQuoteAsset) => {
     setToCoin(v);
-    if (v !== 'USDC' && fromCoin !== 'USDC') setFromCoin('USDC');
-    if (v === fromCoin) setFromCoin(v === 'USDC' ? 'USDT' : 'USDC');
+    if (v !== 'USDC') {
+      setFromCoin('USDC');
+    } else if (v === fromCoin) {
+      setFromCoin('USDT');
+    }
   });
 
   const handlePercent = useMemoizedFn((pct: number) => {

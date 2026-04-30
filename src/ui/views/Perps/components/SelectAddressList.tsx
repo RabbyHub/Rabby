@@ -307,22 +307,22 @@ function AccountItem(props: {
     return (
       <div className="flex flex-col gap-[4px] items-end ml-auto">
         <div className="text-[13px] leading-[16px] text-r-neutral-body font-medium">
-          {info
-            ? formatUsdValue(Number(info?.withdrawable || 0))
-            : formatUsdValue(account.balance || 0)}
+          {info ? formatUsdValue(Number(info?.withdrawable || 0)) : ''}
         </div>
-        {positionCount > 0 ? (
-          <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot">
-            {positionCount}{' '}
-            {positionCount > 1
-              ? t('page.perps.accountSelector.positions')
-              : t('page.perps.accountSelector.position')}
-          </div>
-        ) : (
-          <div className="text-[12px] leading-[14px] font-normal text-r-neutral-foot">
-            {t('page.perps.accountSelector.noPosition')}
-          </div>
-        )}
+        {info ? (
+          positionCount > 0 ? (
+            <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot">
+              {positionCount}{' '}
+              {positionCount > 1
+                ? t('page.perps.accountSelector.positions')
+                : t('page.perps.accountSelector.position')}
+            </div>
+          ) : (
+            <div className="text-[12px] leading-[14px] font-normal text-r-neutral-foot">
+              {t('page.perps.accountSelector.noPosition')}
+            </div>
+          )
+        ) : null}
       </div>
     );
   }, [loading, info, positionCount, account.balance, t]);

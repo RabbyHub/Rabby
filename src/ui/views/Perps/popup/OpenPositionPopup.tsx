@@ -106,6 +106,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
   const [slTriggerPx, setSlTriggerPx] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
+  const marginModeDisabled = currentAssetCtx?.onlyIsolated;
   const [marginModeModalVisible, setMarginModeModalVisible] = React.useState(
     false
   );
@@ -409,6 +410,12 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             <span
               className="ml-8 text-12 text-r-blue-default bg-r-blue-light1 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
               onClick={() => {
+                if (marginModeDisabled) {
+                  message.error(
+                    t('page.perpsPro.marginMode.onlyIsolatedSupported')
+                  );
+                  return;
+                }
                 setMarginModeModalVisible(true);
               }}
             >

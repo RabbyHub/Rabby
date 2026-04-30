@@ -8,7 +8,6 @@ import React, {
 import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
 import {
   formatUsdValue,
   sleep,
