@@ -3371,7 +3371,16 @@
         "size": "Kích thước vị thế",
         "tradeValue": "Giá trị giao dịch",
         "closedPnl": "PNL đã thực hiện",
-        "feeDesc": "Khi người dùng thực hiện giao dịch, cả <1>phí giao dịch</1> và <2>phí nhà phát triển</2> đều được áp dụng."
+        "feeDesc": "Khi người dùng thực hiện giao dịch, cả <1>phí giao dịch</1> và <2>phí nhà phát triển</2> đều được áp dụng.",
+        "amount": "Số lượng",
+        "asset": "Tài sản",
+        "action": "Thao tác",
+        "value": "Giá trị",
+        "buy": "Mua",
+        "sell": "Bán",
+        "transferDetailTitle": "Chuyển",
+        "transferActionToSpot": "Chuyển (từ Perps sang Spot)",
+        "transferActionToPerps": "Chuyển (từ Spot sang Perps)"
       },
       "logoutConfirmModal": {
         "title": "Đăng xuất khỏi địa chỉ hiện tại",
@@ -3396,7 +3405,9 @@
         "hyperliquidFeeLabelTooltip": "Người dùng mới sẽ bị tính phí kích hoạt một lần bởi Hyperliquid.",
         "amount": "Số lượng",
         "feeTipTooltipHype": "Phí ~0.00002 HYPE sẽ được tính cho việc rút về EVM.",
-        "hypeActivationFeeTip": "Phí kích hoạt một lần là {{fee}} sẽ được Hyperliquid tính cho lần rút HyperEVM đầu tiên."
+        "hypeActivationFeeTip": "Phí kích hoạt một lần là {{fee}} sẽ được Hyperliquid tính cho lần rút HyperEVM đầu tiên.",
+        "balance": "Số dư",
+        "chain": "Chuỗi"
       },
       "home": {
         "margin": "Ký quỹ",
@@ -3565,7 +3576,68 @@
       },
       "addFunds": "Thêm Quỹ",
       "crossMarginLiqPriceTip": "Trong chế độ Cross Margin, giá thanh lý cho một vị trí đơn lẻ chỉ là một ước tính để tham khảo.",
-      "selectTokenToWithdraw": "Chọn Token để Rút"
+      "selectTokenToWithdraw": "Chọn Token để Rút",
+      "PerpsDepositCard": {
+        "availableToTrade": "Có sẵn để giao dịch: ",
+        "deposit": "Nạp tiền",
+        "swap": "Hoán đổi"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Bật Tài khoản Thống nhất",
+        "desc": "Tài khoản Thống nhất là chế độ tài khoản được khuyên dùng giúp đơn giản hóa trải nghiệm giao dịch. Số dư Spot và Perps được hợp nhất cho tất cả token, và cross margin được hỗ trợ trên tất cả tài sản khả dụng.",
+        "confirm": "Xác nhận",
+        "enable": "Bật",
+        "cancel": "Hủy",
+        "importantTips": "Tất cả tài sản thế chấp USDC sẽ được sử dụng làm cross margin sau khi Tài khoản Thống nhất được bật.",
+        "important": "Quan trọng"
+      },
+      "PerpsSpotSwap": {
+        "title": "Hoán đổi Stablecoin",
+        "from": "Từ",
+        "to": "Hoán đổi sang",
+        "balance": "Số dư",
+        "estReceive": "Nhận ước tính",
+        "swapBtn": "Hoán đổi",
+        "insufficientBalance": "Số dư không đủ",
+        "invalidAmount": "Vui lòng nhập số tiền hợp lệ",
+        "minimumAmount": "Số tiền hoán đổi tối thiểu là {{amount}}",
+        "max": "Tối đa",
+        "toDeposit": "Đến Nạp tiền →",
+        "swapBeforeTrading": "Hoán đổi USDC sang {{quoteAsset}} trước khi giao dịch",
+        "enabledSuccess": "Tài khoản Thống nhất đã được bật",
+        "enableFailed": "Bật Tài khoản Thống nhất thất bại",
+        "swapFailed": "Hoán đổi thất bại",
+        "swapSuccess": "Hoán đổi thành công",
+        "estReceiveTooltip": "Số tiền nhận ước tính phụ thuộc vào biến động giá thị trường.",
+        "buyAsset": "Mua {{asset}}",
+        "sellAsset": "Bán {{asset}}",
+        "toSwapEntry": "Đến Hoán đổi →",
+        "toDepositEntry": "Đến Nạp tiền →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Chuyển",
+        "from": "Từ",
+        "to": "Đến",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Số dư",
+        "amount": "Số lượng",
+        "max": "Tối đa",
+        "submit": "Xác nhận",
+        "insufficientBalance": "Số dư không đủ",
+        "invalidAmount": "Vui lòng nhập số tiền hợp lệ"
+      },
+      "PerpsMultiBalance": {
+        "title": "Số dư Hyperliquid",
+        "deposit": "Nạp tiền",
+        "withdraw": "Rút tiền"
+      },
+      "PerpsAbout": {
+        "title": "Giới thiệu"
+      },
+      "transferToSpot": "Chuyển sang Spot",
+      "transferToPerps": "Chuyển sang Perps",
+      "selectChainToWithdraw": "Chọn Chain để rút"
     },
     "perpsPro": {
       "chatArea": {
@@ -3583,7 +3655,8 @@
         "oracleTips": "Trung vị của các giá bên ngoài do các nhà xác thực báo cáo, được dùng để tính toán tỷ lệ funding.",
         "openInterestTips": "Vị thế mở hai chiều: tổng các vị thế dài và ngắn trên hợp đồng này.",
         "oracle": "Oracle (nguồn dữ liệu giá ngoài chuỗi)",
-        "fundingTips": "Phí funding theo giờ là tỷ lệ mà vị thế dài trả cho vị thế ngắn (nếu âm, vị thế ngắn trả cho vị thế dài). Không có phí liên quan đến funding, đây là một giao dịch ngang hàng giữa người dùng nhằm đẩy giá về mức giá giao ngay. Xem Docs để biết chi tiết."
+        "fundingTips": "Phí funding theo giờ là tỷ lệ mà vị thế dài trả cho vị thế ngắn (nếu âm, vị thế ngắn trả cho vị thế dài). Không có phí liên quan đến funding, đây là một giao dịch ngang hàng giữa người dùng nhằm đẩy giá về mức giá giao ngay. Xem Docs để biết chi tiết.",
+        "categoryAll": "TẤT CẢ"
       },
       "userInfo": {
         "tab": {
@@ -3627,7 +3700,9 @@
           "markEntry": "Giá tham chiếu / Giá vào vị thế",
           "closedPnl": "PnL đã thực hiện",
           "fundingTipsV2": "Net funding kể từ khi vị trí được mở. Một giá trị funding đỏ (âm) cho thấy đã trả tiền funding, trong khi giá trị funding xanh (dương) cho thấy đã nhận được tiền funding.",
-          "fundingTipsBold": "Điều này cho thấy tổng số phí tài trợ của bạn đã được thanh toán kể từ khi vị trí được mở. <bold>Giá trị xanh (dương)</bold> có nghĩa là bạn đã kiếm được từ các nhà giao dịch khác, trong khi <bold>Giá trị đỏ (âm)</bold> là chi phí tài trợ mà bạn đã trả cho họ."
+          "fundingTipsBold": "Điều này cho thấy tổng số phí tài trợ của bạn đã được thanh toán kể từ khi vị trí được mở. <bold>Giá trị xanh (dương)</bold> có nghĩa là bạn đã kiếm được từ các nhà giao dịch khác, trong khi <bold>Giá trị đỏ (âm)</bold> là chi phí tài trợ mà bạn đã trả cho họ.",
+          "assets": "Tài sản",
+          "about": "Giới thiệu"
         },
         "emptyMessage": {
           "tradeHistory": "Không có lịch sử giao dịch",
@@ -3637,7 +3712,8 @@
           "twapHistory": "Chưa có lịch sử TWAP",
           "activeTwap": "Không có TWAP đang hoạt động.",
           "orderHistory": "Không có lịch sử lệnh",
-          "fundingHistory": "Chưa có lịch sử funding"
+          "fundingHistory": "Chưa có lịch sử funding",
+          "assets": "Không có tài sản"
         },
         "positionInfo": {
           "reverse": "Đảo ngược",
@@ -3710,6 +3786,17 @@
           "minTradeNtlRejected": "Bị từ chối do min trade NTL",
           "perpMarginRejected": "Đã từ chối ký quỹ Perp",
           "siblingFilledCanceled": "Bị hủy do thứ tự của sibling đã được lấp đầy"
+        },
+        "assets": {
+          "columnAsset": "Tài sản",
+          "columnTotal": "Tổng số dư",
+          "columnAvailable": "Số dư khả dụng",
+          "columnAction": "Thao tác",
+          "swapStablecoins": "Hoán đổi Stablecoin",
+          "enableUnifiedAccount": "Bật Tài khoản Thống nhất",
+          "transferToPerps": "Chuyển sang Perps",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3828,7 +3915,8 @@
         "orderTypeTooltipLimit": "Lệnh giới hạn là lệnh mua hoặc bán ở một mức giá cụ thể hoặc tốt hơn. Lệnh giới hạn không được đảm bảo sẽ được thực hiện.",
         "bboTips": "Giá thầu tốt nhất (BBO) đề cập đến giá chào bán tốt nhất và giá thầu tốt nhất có sẵn trên sổ lệnh tại bất kỳ thời điểm nào. Các lệnh BBO luôn được đặt bằng cách sử dụng kích thước tick tối thiểu chính xác, đảm bảo giá cả chính xác và chi tiết, độc lập với sở thích hiển thị.",
         "orderTypeTooltipTwap": "TWAP (Giá trung bình theo thời gian) là một chiến lược thực hiện giao dịch theo thuật toán nhằm mục tiêu đạt được mức giá thực hiện trung bình gần với giá trung bình theo thời gian của giai đoạn do người dùng chỉ định.",
-        "min": "min"
+        "min": "min",
+        "swapStableCoins": "Hoán đổi Stablecoin"
       },
       "marginMode": {
         "confirm": "Xác nhận",
@@ -3880,7 +3968,16 @@
         "crossMarginRatioTips": "Ký quỹ duy trì / Giá trị danh mục đầu tư. Các vị thế ký quỹ chéo của bạn sẽ bị thanh lý nếu Tỷ lệ ký quỹ đạt 100%.",
         "unrealizedPnl": "Lợi nhuận và lỗ chưa thực hiện",
         "crossAccountLeverageTips": "Đòn bẩy ký quỹ chéo = Tổng giá trị vị thế ký quỹ chéo / Giá trị tài khoản ký quỹ chéo.",
-        "available": "Có sẵn:"
+        "available": "Có sẵn:",
+        "accountSummary": "Tổng quan tài khoản",
+        "unifiedAccountSummary": "Tổng quan Tài khoản Thống nhất",
+        "unifiedAccountRatio": "Tỷ lệ Tài khoản Thống nhất",
+        "unifiedAccountRatioTips": "Đại diện cho rủi ro thanh lý danh mục đầu tư. Khi giá trị lớn hơn 95%, danh mục đầu tư của bạn có thể bị thanh lý.",
+        "unifiedAccountLeverage": "Đòn bẩy Tài khoản Thống nhất",
+        "unifiedAccountLeverageTips": "Đòn bẩy Tài khoản Thống nhất = Tổng giá trị vị thế Cross / Tổng số dư ký quỹ.",
+        "perpsMaintenanceMargin": "Ký quỹ Duy trì Perps",
+        "perpsPortfolioValue": "Giá trị danh mục Perps",
+        "perpsUnrealizedPnl": "PNL chưa thực hiện của Perps"
       },
       "accountActions": {
         "available": "Có sẵn",
@@ -4329,7 +4426,10 @@
       "selectMarket": "Chọn Thị Trường",
       "searchMarket": "Tìm kiếm Thị trường",
       "enterAmount": "Nhập số tiền",
-      "selectChain": "Chọn Chuỗi"
+      "selectChain": "Chọn Chuỗi",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Mô phỏng thất bại. Giao dịch này rất có thể sẽ thất bại do lỗi AAVE."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

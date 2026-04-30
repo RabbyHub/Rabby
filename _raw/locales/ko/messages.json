@@ -3371,7 +3371,16 @@
         "fee": "수수료",
         "tradeValue": "거래 가치",
         "size": "포지션 규모",
-        "feeDesc": "사용자가 거래를 진행할 때, <1>거래 수수료</1>와 <2>빌더 수수료</2>가 모두 적용됩니다."
+        "feeDesc": "사용자가 거래를 진행할 때, <1>거래 수수료</1>와 <2>빌더 수수료</2>가 모두 적용됩니다.",
+        "amount": "수량",
+        "asset": "자산",
+        "action": "작업",
+        "value": "가치",
+        "buy": "买入",
+        "sell": "卖出",
+        "transferDetailTitle": "전송",
+        "transferActionToSpot": "转账（从永续合约到现货）",
+        "transferActionToPerps": "转账（从现货到永续合约）"
       },
       "logoutConfirmModal": {
         "desc": "현재의 무기한 계약 계정에서 로그아웃 중입니다. 이 주소로 로그인하면 언제든지 복구할 수 있습니다.",
@@ -3396,7 +3405,9 @@
         "hyperliquidFeeLabelTooltip": "신규 사용자는 Hyperliquid에 의해 일회성 활성화 요금이 부과됩니다.",
         "amount": "금액",
         "feeTipTooltipHype": "EVM으로 출금할 때 ~0.00002 HYPE의 수수료가 부과됩니다.",
-        "hypeActivationFeeTip": "HyperEVM 첫 번째 출금 시 Hyperliquid에서 {{fee}}의 일회성 활성화 수수료가 부과됩니다."
+        "hypeActivationFeeTip": "HyperEVM 첫 번째 출금 시 Hyperliquid에서 {{fee}}의 일회성 활성화 수수료가 부과됩니다.",
+        "balance": "잔액",
+        "chain": "체인"
       },
       "home": {
         "entryPrice": "진입가",
@@ -3565,7 +3576,68 @@
       },
       "addFunds": "자금 추가",
       "crossMarginLiqPriceTip": "크로스 마진 모드에서는 단일 포지션의 청산 가격이 참고용 추정치입니다.",
-      "selectTokenToWithdraw": "출금할 토큰 선택"
+      "selectTokenToWithdraw": "출금할 토큰 선택",
+      "PerpsDepositCard": {
+        "availableToTrade": "거래 가능: ",
+        "deposit": "입금",
+        "swap": "스왑"
+      },
+      "EnableUnifiedAccount": {
+        "title": "통합 계정 활성화",
+        "desc": "통합 계정은 거래 경험을 간소화하는 권장 계정 모드입니다. 현물 및 Perp 잔액은 모든 토큰에 대해 통합되며, 사용 가능한 모든 자산에 대해 크로스 마진이 지원됩니다.",
+        "confirm": "확인",
+        "enable": "활성화",
+        "cancel": "취소",
+        "importantTips": "통합 계정이 활성화되면 모든 USDC 담보가 크로스 마진으로 사용됩니다.",
+        "important": "중요"
+      },
+      "PerpsSpotSwap": {
+        "title": "스테이블코인 스왑",
+        "from": "출발",
+        "to": "스왑 대상",
+        "balance": "잔액",
+        "estReceive": "예상 수령",
+        "swapBtn": "스왑",
+        "insufficientBalance": "잔액 부족",
+        "invalidAmount": "유효한 금액을 입력해 주세요",
+        "minimumAmount": "최소 스왑 금액은 {{amount}}입니다",
+        "max": "최대",
+        "toDeposit": "입금하기 →",
+        "swapBeforeTrading": "거래 전 USDC를 {{quoteAsset}}(으)로 스왑하세요",
+        "enabledSuccess": "통합 계정 활성화됨",
+        "enableFailed": "통합 계정 활성화 실패",
+        "swapFailed": "스왑 실패",
+        "swapSuccess": "스왑이 성공적으로 완료되었습니다",
+        "estReceiveTooltip": "예상 수령 금액은 시장 가격 변동에 따라 달라질 수 있습니다.",
+        "buyAsset": "{{asset}} 구매",
+        "sellAsset": "{{asset}} 판매",
+        "toSwapEntry": "스왑하기 →",
+        "toDepositEntry": "입금하기 →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "전송",
+        "from": "출발",
+        "to": "받는 곳",
+        "spot": "현물",
+        "perps": "퍼프스",
+        "balance": "잔액",
+        "amount": "수량",
+        "max": "최대",
+        "submit": "확인",
+        "insufficientBalance": "잔액 부족",
+        "invalidAmount": "유효한 금액을 입력해 주세요"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid 잔고",
+        "deposit": "입금",
+        "withdraw": "출금"
+      },
+      "PerpsAbout": {
+        "title": "정보"
+      },
+      "transferToSpot": "现货账户转账",
+      "transferToPerps": "Perps로 이전",
+      "selectChainToWithdraw": "选择提现链"
     },
     "perpsPro": {
       "chatArea": {
@@ -3583,7 +3655,8 @@
         "8hrFunding": "8시간 펀딩",
         "openInterestTips": "양방향 미결제약정: 이 계약의 롱 포지션과 숏 포지션의 합계",
         "fundingTips": "무기한 계약 거래에서 롱 포지션이 숏 포지션에 지불하는 시간당 비율(음수면 숏 포지션이 롱 포지션에 지불합니다). 펀딩과 관련된 수수료는 없으며, 이는 사용자 간 P2P 송금을 통해 가격을 현물가에 근접시키는 과정입니다. 자세한 내용은 문서를 참조하세요.",
-        "markTips": "마진 산정, 미실현 손익(PnL) 계산, 청산 및 TP/SL 주문 발동에 사용됩니다."
+        "markTips": "마진 산정, 미실현 손익(PnL) 계산, 청산 및 TP/SL 주문 발동에 사용됩니다.",
+        "categoryAll": "전체"
       },
       "userInfo": {
         "tab": {
@@ -3627,7 +3700,9 @@
           "value": "금액",
           "runningTimeTotal": "경과 시간 / 총 시간",
           "fundingTipsV2": "위치가 열렸던 이후의 순 자금. 빨간색 (부정적인) 자금 가치는 지불된 자금을 나타내고, 녹색 (긍정적인) 가치는 수령된 자금을 나타냅니다.",
-          "fundingTipsBold": "이것은 포지션이 열린 이후 정산된 총 자금을 보여줍니다. <bold>녹색(긍정적)</bold> 값은 다른 트레이더로부터 수익을 얻었다는 것을 의미하고, <bold>빨간색(부정적)</bold> 값은 그들에게 지급한 자금 비용을 나타냅니다."
+          "fundingTipsBold": "이것은 포지션이 열린 이후 정산된 총 자금을 보여줍니다. <bold>녹색(긍정적)</bold> 값은 다른 트레이더로부터 수익을 얻었다는 것을 의미하고, <bold>빨간색(부정적)</bold> 값은 그들에게 지급한 자금 비용을 나타냅니다.",
+          "assets": "자산",
+          "about": "정보"
         },
         "emptyMessage": {
           "openOrders": "미체결 주문이 없습니다",
@@ -3637,7 +3712,8 @@
           "tradeHistory": "거래 내역이 없습니다.",
           "positions": "포지션이 없습니다",
           "activeTwap": "현재 활성화된 TWAP이 없습니다.",
-          "twapHistory": "시간가중평균가격 이력 없음"
+          "twapHistory": "시간가중평균가격 이력 없음",
+          "assets": "자산 없음"
         },
         "positionInfo": {
           "currentPosition": "현재 포지션",
@@ -3710,6 +3786,17 @@
           "reduceOnlyCanceled": "단순 축소로 인해 취소됨",
           "minTradeNtlRejected": "최소 거래 NTL로 인해 거부되었습니다.",
           "siblingFilledCanceled": "형제 주문이 체결되어 취소됨"
+        },
+        "assets": {
+          "columnAsset": "자산",
+          "columnTotal": "총 잔액",
+          "columnAvailable": "사용 가능한 잔액",
+          "columnAction": "작업",
+          "swapStablecoins": "스테이블코인 스왑",
+          "enableUnifiedAccount": "통합 계정 활성화",
+          "transferToPerps": "Perps로 이전",
+          "usdcSpot": "USDC(현물)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3828,7 +3915,8 @@
         "orderTypeTooltipScale": "Scaled Orders는 시장 영향을 최소화하기 위해 금액을 여러 개의 하위 주문으로 나눌 수 있습니다.",
         "bboTips": "최고 매도 제안(BBO)은 주어진 시간에 주문서에서 가장 좋은 매도 가격과 가장 좋은 매수 가격을 의미합니다. BBO 주문은 항상 정확한 최소 틱 크기를 사용하여 적용되므로, 표시 선호도와 관계없이 세분화되고 정확한 가격 책정을 보장합니다.",
         "orderTypeTooltipTwap": "TWAP(시간 가중 평균 가격)은 사용자가 지정한 기간의 시간 가중 평균 가격에 근접한 평균 실행 가격을 달성하는 것을 목표로 하는 알고리즘 거래 실행 전략입니다.",
-        "action": "행동"
+        "action": "행동",
+        "swapStableCoins": "스테이블코인 스왑"
       },
       "marginMode": {
         "title": "마진 모드",
@@ -3880,7 +3968,16 @@
         "maintenanceMarginTips": "교차 포지션을 유지하기 위해 필요한 최소 포트폴리오 가치",
         "balanceTip": "총 순 이체 + 총 실현 손익 + 총 순 펀딩 수수료",
         "crossAccountLeverage": "크로스 계정 레버리지",
-        "available": "사용 가능:"
+        "available": "사용 가능:",
+        "accountSummary": "계정 요약",
+        "unifiedAccountSummary": "통합 계정 요약",
+        "unifiedAccountRatio": "통합 계정 비율",
+        "unifiedAccountRatioTips": "포트폴리오 청산 위험도를 나타냅니다. 값이 95%를 초과하면 포트폴리오가 청산될 수 있습니다.",
+        "unifiedAccountLeverage": "통합 계정 레버리지",
+        "unifiedAccountLeverageTips": "통합 계정 레버리지 = 총 교차 포지션 가치 / 총 담보금 잔액",
+        "perpsMaintenanceMargin": "퍼프스 유지 증거금",
+        "perpsPortfolioValue": "퍼프스 포트폴리오 가치",
+        "perpsUnrealizedPnl": "퍼프스 미실현 손익"
       },
       "accountActions": {
         "positionCount": "{{count}} 포지션",
@@ -4329,7 +4426,10 @@
       "totalSupply": "총 공급량",
       "selectChain": "체인 선택",
       "selectMarket": "시장 선택",
-      "disabled": "비활성화됨"
+      "disabled": "비활성화됨",
+      "signFallback": {
+        "preExecFailedUseFullSign": "시뮬레이션 실패. 이 거래는 AAVE 오류로 인해 실패할 가능성이 매우 높습니다."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

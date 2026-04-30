@@ -3699,7 +3699,16 @@
         "size": "Taille de position",
         "fee": "Frais",
         "provider": "Fournisseur",
-        "feeDesc": "Lorsque les utilisateurs effectuent des transactions, des <1>frais de trading</1> et des <2>frais de constructeur</2> s'appliquent."
+        "feeDesc": "Lorsque les utilisateurs effectuent des transactions, des <1>frais de trading</1> et des <2>frais de constructeur</2> s'appliquent.",
+        "amount": "Montant",
+        "asset": "Actif",
+        "action": "Action",
+        "value": "Valeur",
+        "buy": "Acheter",
+        "sell": "Vendre",
+        "transferDetailTitle": "Transférer",
+        "transferActionToSpot": "Transfert (de Perps vers Spot)",
+        "transferActionToPerps": "Transfert (de Spot vers Perps)"
       },
       "logoutConfirmModal": {
         "title": "Se déconnecter de l'adresse actuelle",
@@ -3724,7 +3733,9 @@
         "hyperliquidFeeLabelTooltip": "Les nouveaux utilisateurs sont facturés des frais d'activation uniques par Hyperliquid.",
         "amount": "Montant",
         "hypeActivationFeeTip": "Une frais d'activation unique de {{fee}} sera facturé par Hyperliquid pour le premier retrait HyperEVM.",
-        "feeTipTooltipHype": "Des frais d'environ ~0,00002 HYPE seront facturés pour retirer vers l'EVM."
+        "feeTipTooltipHype": "Des frais d'environ ~0,00002 HYPE seront facturés pour retirer vers l'EVM.",
+        "balance": "Solde",
+        "chain": "Chaîne"
       },
       "home": {
         "entryPrice": "Prix d'entrée",
@@ -3893,7 +3904,68 @@
       },
       "addFunds": "Ajouter des fonds",
       "crossMarginLiqPriceTip": "En mode Cross Margin, le prix de liquidation pour une position unique est une estimation à titre de référence uniquement.",
-      "selectTokenToWithdraw": "Sélectionnez le token à retirer"
+      "selectTokenToWithdraw": "Sélectionnez le token à retirer",
+      "PerpsDepositCard": {
+        "availableToTrade": "Disponible au trading : ",
+        "deposit": "Dépôt",
+        "swap": "Échanger"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Activer Unified Account",
+        "desc": "Unified Account est le mode de compte recommandé qui simplifie l'expérience de trading. Les soldes Spot et Perps sont fusionnés pour tous les jetons, et la marge croisée est supportée sur tous les actifs disponibles.",
+        "confirm": "Confirmer",
+        "enable": "Activer",
+        "cancel": "Annuler",
+        "importantTips": "Tout le collatéral USDC sera utilisé comme marge croisée une fois le Unified Account activé.",
+        "important": "Important"
+      },
+      "PerpsSpotSwap": {
+        "title": "Échanger des Stablecoins",
+        "from": "De",
+        "to": "Échanger en",
+        "balance": "Solde",
+        "estReceive": "Réception estimée",
+        "swapBtn": "Échanger",
+        "insufficientBalance": "Solde insuffisant",
+        "invalidAmount": "Veuillez saisir un montant valide",
+        "minimumAmount": "Le montant minimum d'échange est de {{amount}}",
+        "max": "Max",
+        "toDeposit": "Pour déposer →",
+        "swapBeforeTrading": "Échangez des USDC en {{quoteAsset}} avant de négocier",
+        "enabledSuccess": "Compte unifié activé",
+        "enableFailed": "Échec de l'activation du compte unifié",
+        "swapFailed": "Échec de l'échange",
+        "swapSuccess": "Échange effectué avec succès",
+        "estReceiveTooltip": "Le montant estimé à recevoir est soumis aux fluctuations du prix du marché.",
+        "buyAsset": "Acheter {{asset}}",
+        "sellAsset": "Vendre {{asset}}",
+        "toSwapEntry": "Pour échanger →",
+        "toDepositEntry": "Pour déposer →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Transférer",
+        "from": "De",
+        "to": "Vers",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Solde",
+        "amount": "Montant",
+        "max": "Max",
+        "submit": "Confirmer",
+        "insufficientBalance": "Solde insuffisant",
+        "invalidAmount": "Veuillez saisir un montant valide"
+      },
+      "PerpsMultiBalance": {
+        "title": "Soldes Hyperliquid",
+        "deposit": "Dépôt",
+        "withdraw": "Retrait"
+      },
+      "PerpsAbout": {
+        "title": "À propos"
+      },
+      "transferToSpot": "Transférer vers Spot",
+      "transferToPerps": "Transférer vers Perps",
+      "selectChainToWithdraw": "Sélectionner la chaîne pour retirer"
     },
     "perpsPro": {
       "chatArea": {
@@ -3911,7 +3983,8 @@
         "mark": "Prix de marquage",
         "24hChange": "Variation sur 24h",
         "openInterestTips": "Intérêt ouvert à double sens : la somme des positions longues et courtes sur ce contrat.",
-        "fundingTips": "Le taux horaire auquel les positions longues paient les positions courtes (si négatif, les positions courtes paient les positions longues). Il n'y a aucun frais de financement, qui est un transfert pair à pair entre les utilisateurs visant à rapprocher les prix vers le prix au comptant. Voir la documentation pour plus de détails."
+        "fundingTips": "Le taux horaire auquel les positions longues paient les positions courtes (si négatif, les positions courtes paient les positions longues). Il n'y a aucun frais de financement, qui est un transfert pair à pair entre les utilisateurs visant à rapprocher les prix vers le prix au comptant. Voir la documentation pour plus de détails.",
+        "categoryAll": "TOUT"
       },
       "userInfo": {
         "tab": {
@@ -3955,7 +4028,9 @@
           "closedPnlTooltip": "PNL réalisée inclut les frais et les remises.",
           "tpSl": "Objectif de profit / Limite de perte",
           "fundingTipsV2": "Financement net depuis l'ouverture de la position. Une valeur de financement rouge (négative) indique un financement payé, tandis qu'une valeur verte (positive) indique un financement reçu.",
-          "fundingTipsBold": "Cela montre votre total de financement réglé depuis l'ouverture de la position. Les valeurs <bold>vertes (positives)</bold> signifient que vous avez gagné de la part d'autres traders, tandis que les valeurs <bold>rouges (négatives)</bold> sont des coûts de financement que vous leur avez payés."
+          "fundingTipsBold": "Cela montre votre total de financement réglé depuis l'ouverture de la position. Les valeurs <bold>vertes (positives)</bold> signifient que vous avez gagné de la part d'autres traders, tandis que les valeurs <bold>rouges (négatives)</bold> sont des coûts de financement que vous leur avez payés.",
+          "assets": "Actifs",
+          "about": "À propos"
         },
         "emptyMessage": {
           "orderHistory": "Aucun historique des ordres",
@@ -3965,7 +4040,8 @@
           "fundingHistory": "Aucun historique du taux de financement",
           "tradeHistory": "Aucun historique des trades",
           "openOrders": "Aucun ordre ouvert",
-          "twapHistory": "Aucun historique TWAP"
+          "twapHistory": "Aucun historique TWAP",
+          "assets": "Aucun actif"
         },
         "positionInfo": {
           "configure": "Configurer",
@@ -4038,6 +4114,17 @@
           "reduceOnlyCanceled": "Annulé en raison de la réduction uniquement",
           "iocCancelRejected": "Rejeté en raison de l'annulation IOC",
           "siblingFilledCanceled": "Annulé en raison du remplissage de l'ordre des éléments frères"
+        },
+        "assets": {
+          "columnAsset": "Actifs",
+          "columnTotal": "Solde total",
+          "columnAvailable": "Solde disponible",
+          "columnAction": "Action",
+          "swapStablecoins": "Échanger des Stablecoins",
+          "enableUnifiedAccount": "Activer Unified Account",
+          "transferToPerps": "Transférer vers Perps",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -4156,7 +4243,8 @@
         "tpTriggerLessThanOrderPrice": "Votre prix de déclenchement TP doit être inférieur au prix de votre commande.",
         "orderTypeTooltipScale": "Les commandes échelonnées vous permettent de diviser un montant en plusieurs sous-commandes afin de minimiser l'impact sur le marché.",
         "orderTypeTooltipTwap": "TWAP (Prix Moyen Pondéré dans le Temps) est une stratégie d'exécution de trade algorithmique qui vise à atteindre un prix d'exécution moyen proche du prix moyen pondéré dans le temps de la période spécifiée par l'utilisateur.",
-        "orderCount": "Nombre de Commandes"
+        "orderCount": "Nombre de Commandes",
+        "swapStableCoins": "Échanger des Stablecoins"
       },
       "marginMode": {
         "title": "Mode de marge",
@@ -4208,7 +4296,16 @@
         "unrealizedPnl": "P&L non réalisé",
         "crossAccountLeverageTips": "Levier du compte croisé = Valeur totale de la position croisée / Valeur du compte croisé.",
         "crossAccountLeverage": "Levier en marge croisée",
-        "available": "Disponible :"
+        "available": "Disponible :",
+        "accountSummary": "Résumé du compte",
+        "unifiedAccountSummary": "Résumé unifié du compte",
+        "unifiedAccountRatio": "Ratio du compte unifié",
+        "unifiedAccountRatioTips": "Représente le risque de liquidation du portefeuille. Lorsque la valeur est supérieure à 95%, votre portefeuille peut être liquidé.",
+        "unifiedAccountLeverage": "Effet de levier du compte unifié",
+        "unifiedAccountLeverageTips": "Effet de levier du compte unifié = Valeur totale des positions croisées / Solde total des garanties.",
+        "perpsMaintenanceMargin": "Marge de maintenance des Perps",
+        "perpsPortfolioValue": "Valeur du portefeuille des Perps",
+        "perpsUnrealizedPnl": "PNL non réalisé des Perps"
       },
       "accountActions": {
         "pending": "En attente",
@@ -4657,7 +4754,10 @@
       "selectChain": "Sélectionner la chaîne",
       "enterAmount": "Entrez le montant",
       "estDailyEarning": "Est. Gain quotidien",
-      "supplyBalance": "Fournir le solde"
+      "supplyBalance": "Fournir le solde",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Échec de la simulation. Cette transaction est très susceptible d'échouer en raison d'erreurs AAVE."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

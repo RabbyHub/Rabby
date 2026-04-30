@@ -3376,7 +3376,16 @@
         "fee": "Taxa",
         "closedPnl": "PnL realizado",
         "size": "Tamanho da Posição",
-        "feeDesc": "Quando os usuários realizam negociações, tanto as <1>taxas de negociação</1> quanto as <2>taxas de construtor</2> se aplicam."
+        "feeDesc": "Quando os usuários realizam negociações, tanto as <1>taxas de negociação</1> quanto as <2>taxas de construtor</2> se aplicam.",
+        "amount": "Quantidade",
+        "asset": "Ativo",
+        "action": "Ação",
+        "value": "Valor",
+        "buy": "Comprar",
+        "sell": "Vender",
+        "transferDetailTitle": "Transferir",
+        "transferActionToSpot": "Transferir (de Perps para Spot)",
+        "transferActionToPerps": "Transferir (de Spot para Perps)"
       },
       "logoutConfirmModal": {
         "desc": "Você está encerrando a sessão da sua conta Perps atual. Você pode restaurá-la a qualquer momento fazendo login com este endereço.",
@@ -3401,7 +3410,9 @@
         "hyperliquidFeeLabelTooltip": "Novos usuários são cobrados uma taxa de ativação única pela Hyperliquid.",
         "amount": "Quantidade",
         "feeTipTooltipHype": "Uma taxa de ~0,00002 HYPE será cobrada para retirar para o EVM.",
-        "hypeActivationFeeTip": "Uma taxa de ativação única de {{fee}} será cobrada pela Hyperliquid para o primeiro saque de HyperEVM."
+        "hypeActivationFeeTip": "Uma taxa de ativação única de {{fee}} será cobrada pela Hyperliquid para o primeiro saque de HyperEVM.",
+        "balance": "Saldo",
+        "chain": "链"
       },
       "home": {
         "entryPrice": "Preço de entrada",
@@ -3570,7 +3581,68 @@
       },
       "addFunds": "Adicionar Fundos",
       "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência.",
-      "selectTokenToWithdraw": "Selecione o Token para Retirar"
+      "selectTokenToWithdraw": "Selecione o Token para Retirar",
+      "PerpsDepositCard": {
+        "availableToTrade": "Disponível para operar: ",
+        "deposit": "Depositar",
+        "swap": "Trocar"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Ativar Conta Unificada",
+        "desc": "Conta Unificada é o modo de conta recomendado que simplifica a experiência de negociação. Os saldos de Spot e Perps são mesclados para todos os tokens, e margem cruzada é suportada em todos os ativos disponíveis.",
+        "confirm": "Confirmar",
+        "enable": "Ativar",
+        "cancel": "Cancelar",
+        "importantTips": "Toda a garantia em USDC será usada como margem cruzada assim que a Conta Unificada for ativada.",
+        "important": "Importante"
+      },
+      "PerpsSpotSwap": {
+        "title": "Trocar Stablecoins",
+        "from": "De",
+        "to": "Trocar Para",
+        "balance": "Saldo",
+        "estReceive": "Est.Receber",
+        "swapBtn": "Trocar",
+        "insufficientBalance": "Saldo insuficiente",
+        "invalidAmount": "Por favor, insira um valor válido",
+        "minimumAmount": "O valor mínimo de troca é {{amount}}",
+        "max": "Máx",
+        "toDeposit": "Para Depositar →",
+        "swapBeforeTrading": "Troque USDC para {{quoteAsset}} antes de operar",
+        "enabledSuccess": "Conta Unificada habilitada",
+        "enableFailed": "Falha ao habilitar Conta Unificada",
+        "swapFailed": "Falha na troca",
+        "swapSuccess": "Troca concluída com sucesso",
+        "estReceiveTooltip": "O valor estimado a receber está sujeito a flutuações do preço de mercado.",
+        "buyAsset": "Comprar {{asset}}",
+        "sellAsset": "Vender {{asset}}",
+        "toSwapEntry": "Para Trocar →",
+        "toDepositEntry": "Para Depositar →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Transferir",
+        "from": "De",
+        "to": "Para",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Saldo",
+        "amount": "Quantidade",
+        "max": "Máx",
+        "submit": "Confirmar",
+        "insufficientBalance": "Saldo insuficiente",
+        "invalidAmount": "Por favor, insira um valor válido"
+      },
+      "PerpsMultiBalance": {
+        "title": "Saldos Hyperliquid",
+        "deposit": "Depositar",
+        "withdraw": "Saque"
+      },
+      "PerpsAbout": {
+        "title": "Sobre"
+      },
+      "transferToSpot": "Transferir para Spot",
+      "transferToPerps": "Transferir para Perps",
+      "selectChainToWithdraw": "Selecionar Rede para Retirar"
     },
     "perpsPro": {
       "chatArea": {
@@ -3588,7 +3660,8 @@
         "8hrFunding": "Financiamento a cada 8h",
         "markTips": "Usado para cálculo de margem, P/L não realizado, liquidações e acionamento de ordens TP/SL.",
         "fundingTips": "Taxa horária pela qual as posições longas pagam as posições curtas (se for negativa, as posições curtas pagam as longas). Não há taxas associadas ao financiamento, que é uma transferência entre pares (P2P) entre usuários para empurrar os preços em direção ao preço à vista. Consulte a documentação para detalhes.",
-        "fundingCountdown": "Financiamento / Contagem Regressiva"
+        "fundingCountdown": "Financiamento / Contagem Regressiva",
+        "categoryAll": "TODOS"
       },
       "userInfo": {
         "tab": {
@@ -3632,7 +3705,9 @@
           "size": "Tamanho da posição",
           "tpSl": "Lucro-alvo / Stop Loss",
           "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido.",
-          "fundingTipsBold": "Isto mostra o total de funding liquidado desde que a posição foi aberta. Valores <bold>Verde (positivo)</bold> significam que você ganhou de outros traders, enquanto valores <bold>Vermelho (negativo)</bold> são os custos de funding que você pagou a eles."
+          "fundingTipsBold": "Isto mostra o total de funding liquidado desde que a posição foi aberta. Valores <bold>Verde (positivo)</bold> significam que você ganhou de outros traders, enquanto valores <bold>Vermelho (negativo)</bold> são os custos de funding que você pagou a eles.",
+          "assets": "Ativos",
+          "about": "Sobre"
         },
         "emptyMessage": {
           "orderHistory": "Sem histórico de ordens",
@@ -3642,7 +3717,8 @@
           "fundingHistory": "Sem histórico de financiamento",
           "openOrders": "Não há ordens abertas.",
           "fillHistory": "Sem histórico de execuções",
-          "activeTwap": "Não há TWAP ativo"
+          "activeTwap": "Não há TWAP ativo",
+          "assets": "Sem ativos"
         },
         "positionInfo": {
           "receive": "Receber",
@@ -3715,6 +3791,17 @@
           "minTradeNtlRejected": "Rejeitado devido ao min trade NTL",
           "open": "Abrir",
           "siblingFilledCanceled": "Cancelado devido ao preenchimento da ordem de irmãos"
+        },
+        "assets": {
+          "columnAsset": "Ativos",
+          "columnTotal": "Saldo Total",
+          "columnAvailable": "Saldo Disponível",
+          "columnAction": "Ação",
+          "swapStablecoins": "Trocar Stablecoins",
+          "enableUnifiedAccount": "Ativar Conta Unificada",
+          "transferToPerps": "Transferir para Perps",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3833,7 +3920,8 @@
         "orderTypeTooltipScale": "Ordens escalonadas permitem que você divida um valor em múltiplas subordens para minimizar o impacto no mercado.",
         "bboTips": "Melhor Oferta de Licitação (BBO) refere-se ao melhor preço de venda disponível e ao melhor preço de compra disponível no livro de ordens a qualquer momento. As ordens BBO são sempre colocadas utilizando o tamanho mínimo de tick preciso, garantindo preços granulares e precisos, independentemente das preferências de exibição.",
         "orderTypeTooltipStopLimit": "Ordens de Stop Limit tornam-se ordens limitadas quando um preço de stop especificado é alcançado. Especifique um preço de gatilho para ativar a ordem.",
-        "orderTypeTooltipTwap": "TWAP (Preço Médio Ponderado pelo Tempo) é uma estratégia de execução de trades algorítmica que visa alcançar um preço médio de execução próximo ao preço médio ponderado pelo tempo do período especificado pelo usuário."
+        "orderTypeTooltipTwap": "TWAP (Preço Médio Ponderado pelo Tempo) é uma estratégia de execução de trades algorítmica que visa alcançar um preço médio de execução próximo ao preço médio ponderado pelo tempo do período especificado pelo usuário.",
+        "swapStableCoins": "Trocar Stablecoins"
       },
       "marginMode": {
         "confirm": "Confirmar",
@@ -3885,7 +3973,16 @@
         "unrealizedPnl": "P/L não realizado",
         "crossAccountLeverage": "Alavancagem de Conta Cruzada",
         "crossMarginRatio": "Índice de Margem Cruzada",
-        "available": "Disponível:"
+        "available": "Disponível:",
+        "accountSummary": "Resumo da Conta",
+        "unifiedAccountSummary": "Resumo da Conta Unificada",
+        "unifiedAccountRatio": "Índice da Conta Unificada",
+        "unifiedAccountRatioTips": "Representa o risco de liquidação do portfólio. Quando o valor é maior que 95%, seu portfólio pode ser liquidado.",
+        "unifiedAccountLeverage": "Alavancagem da Conta Unificada",
+        "unifiedAccountLeverageTips": "Alavancagem da Conta Unificada = Valor Total das Posições Cruzadas / Saldo Total de Colateral.",
+        "perpsMaintenanceMargin": "Margem de Manutenção de Perps",
+        "perpsPortfolioValue": "Valor do Portfólio de Perps",
+        "perpsUnrealizedPnl": "PNL Não Realizado de Perps"
       },
       "accountActions": {
         "deposit": "Depósito",
@@ -4334,7 +4431,10 @@
       "selectMarket": "Selecionar Mercado",
       "hfTitle": "Fator de Saúde",
       "selectChain": "Selecionar Cadeia",
-      "hf": "Fator de saúde"
+      "hf": "Fator de saúde",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simulação Falhou. Esta transação provavelmente falhará devido a erros da AAVE."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {
