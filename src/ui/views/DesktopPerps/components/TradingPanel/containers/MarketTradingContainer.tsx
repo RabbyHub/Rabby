@@ -42,6 +42,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     leverage,
     leverageType,
     availableBalance,
+    quoteAsset,
     reduceOnly,
     setReduceOnly,
     tradeUsdAmount,
@@ -310,7 +311,10 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     <>
       <div className="space-y-[16px]">
         {/* Available Funds */}
-        <OrderSideAndFunds availableBalance={availableBalance} />
+        <OrderSideAndFunds
+          availableBalance={availableBalance}
+          quoteAsset={quoteAsset}
+        />
 
         {/* Position Size Input */}
         <PositionSizeInputAndSlider
@@ -322,6 +326,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           percentage={percentage}
           setPercentage={setPercentage}
           baseAsset={selectedCoin}
+          quoteAsset={quoteAsset}
           szDecimals={szDecimals}
           sizeDisplayUnit={sizeDisplayUnit}
           onUnitChange={setSizeDisplayUnit}
@@ -398,6 +403,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         {/* Order Info Grid */}
         <OrderInfoGrid
           buy={buyInfo}
+          quoteAsset={quoteAsset}
           sell={sellInfo}
           displayUnit={sizeDisplayUnit}
           selectedCoin={selectedCoin}

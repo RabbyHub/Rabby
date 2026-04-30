@@ -12,10 +12,14 @@ import { TradeHistory } from './TradeHistory';
 import { OpenOrders } from './OpenOrders';
 import { FundingHistory } from './FundingHistory';
 import { Twap } from './Twap';
+import { Assets } from './Assets';
+import { About } from './About';
 import { useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
+import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import { ALL_PERPS_QUOTE_ASSETS } from '@/ui/views/Perps/constants';
 
 interface Tab {
   key: string;
@@ -25,9 +29,14 @@ interface Tab {
 }
 
 export const UserInfoHistory: React.FC = () => {
-  const { clearinghouseState, openOrders, twapStates } = useRabbySelector(
-    (store) => store.perps
-  );
+  const {
+    clearinghouseState,
+    openOrders,
+    twapStates,
+    selectedTokenDetail,
+  } = useRabbySelector((store) => store.perps);
+  const { isUnifiedAccount } = usePerpsAccount();
+  const hasAbout = !!selectedTokenDetail?.description;
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<typeof tabs[number]['key']>(
     'positions'
@@ -41,8 +50,16 @@ export const UserInfoHistory: React.FC = () => {
     const assetPositionNum = clearinghouseState?.assetPositions?.length || 0;
     const openOrdersNum = openOrders.length;
     const twapNum = twapStates.length;
+    // Non-unified mode shows two rows: USDC(Spot) + USDC(Perps).
+    const assetsNum = isUnifiedAccount ? ALL_PERPS_QUOTE_ASSETS.length : 2;
 
     return [
+      {
+        key: 'assets',
+        label: t('page.perpsPro.userInfo.tab.assets'),
+        content: Assets,
+        // number: assetsNum,
+      },
       {
         key: 'positions',
         label: t('page.perpsPro.userInfo.tab.positions'),
@@ -76,18 +93,35 @@ export const UserInfoHistory: React.FC = () => {
         label: t('page.perpsPro.userInfo.tab.orderHistory'),
         content: OrderHistory,
       },
+      ...(hasAbout
+        ? [
+            {
+              key: 'about',
+              label: t('page.perpsPro.userInfo.tab.about'),
+              content: About,
+            },
+          ]
+        : []),
     ];
   }, [
     clearinghouseState?.assetPositions?.length,
     openOrders.length,
     twapStates.length,
+    hasAbout,
     activeTab,
+    isUnifiedAccount,
   ]);
 
   const ActiveComponent = useMemo(
     () => tabs.find((tab) => tab.key === activeTab)?.content,
     [activeTab]
   );
+
+  useEffect(() => {
+    if (activeTab === 'about' && !hasAbout) {
+      setActiveTab('positions');
+    }
+  }, [activeTab, hasAbout]);
 
   useLayoutEffect(() => {
     const activeButton = tabRefs.current[activeTab];

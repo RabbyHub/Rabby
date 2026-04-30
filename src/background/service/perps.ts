@@ -43,12 +43,14 @@ export interface PerpsServiceStore {
   hasDoneNewUserProcess: boolean;
   hasDismissedNewUserGuideV2: boolean;
   favoritedCoins: string[];
+  marginModePreferences: Record<string, 'cross' | 'isolated'>;
   soundEnabled: boolean;
   marketSlippage: number; // 0-1, default 0.05 (5%)
   quoteUnit: 'base' | 'usd';
   firstOpenPerpsNeedDark: boolean;
   selectedCoin: string;
   skipMarketCloseConfirm: boolean;
+  candleInterval: string;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -78,12 +80,14 @@ class PerpsService {
         hasDoneNewUserProcess: false,
         hasDismissedNewUserGuideV2: false,
         favoritedCoins: [],
+        marginModePreferences: {},
         marketSlippage: 0.05, // default 5%
         soundEnabled: true,
         quoteUnit: 'base',
         firstOpenPerpsNeedDark: true,
         selectedCoin: 'BTC',
         skipMarketCloseConfirm: false,
+        candleInterval: '15M',
       },
     });
 
@@ -428,6 +432,27 @@ class PerpsService {
     this.store.favoritedCoins = coins;
   };
 
+  getPerpsMarginModePreferences = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.marginModePreferences || {};
+  };
+
+  setPerpsMarginModePreference = async (
+    coin: string,
+    mode: 'cross' | 'isolated'
+  ) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    if (!coin) return;
+    this.store.marginModePreferences = {
+      ...(this.store.marginModePreferences || {}),
+      [coin]: mode,
+    };
+  };
+
   getMarketSlippage = async () => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
@@ -531,6 +556,20 @@ class PerpsService {
     this.store.skipMarketCloseConfirm = skip;
   };
 
+  getCandleInterval = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.candleInterval ?? '15M';
+  };
+
+  setCandleInterval = async (interval: string) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.candleInterval = interval;
+  };
+
   // only test use
   resetStore = async () => {
     if (!this.store) {
@@ -545,12 +584,14 @@ class PerpsService {
       hasDoneNewUserProcess: false,
       inviteConfig: {},
       favoritedCoins: [],
+      marginModePreferences: {},
       marketSlippage: 0.05,
       soundEnabled: true,
       quoteUnit: 'base',
       firstOpenPerpsNeedDark: true,
       selectedCoin: 'BTC',
       skipMarketCloseConfirm: false,
+      candleInterval: '15M',
     };
     this.memoryState.agentWallets = {};
   };

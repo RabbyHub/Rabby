@@ -12,8 +12,8 @@ import { useTranslation } from 'react-i18next';
 export const usePerpsPosition = ({
   setCurrentTpOrSl,
 }: {
-  setCurrentTpOrSl: (params: { tpPrice?: string; slPrice?: string }) => void;
-}) => {
+  setCurrentTpOrSl?: (params: { tpPrice?: string; slPrice?: string }) => void;
+} = {}) => {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
@@ -66,7 +66,7 @@ export const usePerpsPosition = ({
           (nextCurrentTpOrSl.tpPrice = formattedTpTriggerPx);
         formattedSlTriggerPx &&
           (nextCurrentTpOrSl.slPrice = formattedSlTriggerPx);
-        setCurrentTpOrSl(nextCurrentTpOrSl);
+        setCurrentTpOrSl?.(nextCurrentTpOrSl);
         setTimeout(() => {
           dispatch.perps.fetchPositionOpenOrders();
         }, 1000);
@@ -238,7 +238,7 @@ export const usePerpsPosition = ({
               price: avgPx,
             }),
           });
-          setCurrentTpOrSl({
+          setCurrentTpOrSl?.({
             tpPrice: undefined,
             slPrice: undefined,
           });
@@ -371,7 +371,7 @@ export const usePerpsPosition = ({
               price: avgPx,
             }),
           });
-          setCurrentTpOrSl({
+          setCurrentTpOrSl?.({
             tpPrice: formattedTpTriggerPx,
             slPrice: formattedSlTriggerPx,
           });
@@ -421,12 +421,50 @@ export const usePerpsPosition = ({
     }
   );
 
+  const handleStableCoinOrder = useMemoizedFn(
+    async (params: {
+      coin: 'USDT' | 'USDH' | 'USDE';
+      isBuy: boolean;
+      size: string;
+      limitPx: string;
+    }): Promise<boolean> => {
+      try {
+        const sdk = getPerpsSDK();
+        if (!sdk.exchange) throw new Error('Hyperliquid no exchange client');
+        await sdk.exchange.stableCoinOrder(params);
+        // Spot balance refresh comes from the existing subscribeToSpotState WS push.
+        return true;
+      } catch (error: any) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return false;
+        }
+        console.error('PERPS stableCoinOrder error', error);
+        message.error({
+          duration: 1.5,
+          content: error?.message || t('page.perps.PerpsSpotSwap.swapFailed'),
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS stableCoinOrder error ' +
+              'params: ' +
+              JSON.stringify(params) +
+              ' error: ' +
+              JSON.stringify(error)
+          )
+        );
+        return false;
+      }
+    }
+  );
+
   return {
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,
     handleCancelOrder,
     handleUpdateMargin,
+    handleStableCoinOrder,
     userFills,
     isLogin,
     currentPerpsAccount,

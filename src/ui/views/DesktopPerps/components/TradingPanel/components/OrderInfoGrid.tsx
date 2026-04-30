@@ -4,6 +4,7 @@ import { formatPerpsCoin } from '../../../utils';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
+import type { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
 
 interface OrderInfoGridProps {
   buy: OrderSideInfo;
@@ -12,6 +13,7 @@ interface OrderInfoGridProps {
   selectedCoin: string;
   reduceOnly?: boolean;
   hideLiqPrice?: boolean;
+  quoteAsset: PerpsQuoteAsset;
   price?: number | string;
 }
 
@@ -23,14 +25,15 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
   reduceOnly,
   hideLiqPrice,
   price,
+  quoteAsset,
 }) => {
   const { t } = useTranslation();
 
   const formatMax = (max: string) => {
-    if (displayUnit === 'usdc' && price && Number(max) > 0) {
+    if (displayUnit === 'usd' && price && Number(max) > 0) {
       return `${splitNumberByStep(
         new BigNumber(max).multipliedBy(price).toFixed(2)
-      )} USDC`;
+      )} ${quoteAsset}`;
     }
     return `${max} ${formatPerpsCoin(selectedCoin)}`;
   };

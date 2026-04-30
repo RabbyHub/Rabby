@@ -6692,6 +6692,8 @@ export class WalletController extends BaseController {
   };
   getPerpsFavoritedCoins = perpsService.getPerpsFavoritedCoins;
   setPerpsFavoritedCoins = perpsService.setPerpsFavoritedCoins;
+  getPerpsMarginModePreferences = perpsService.getPerpsMarginModePreferences;
+  setPerpsMarginModePreference = perpsService.setPerpsMarginModePreference;
   setPerpsSelectedCoin = perpsService.setSelectedCoin;
   getPerpsSelectedCoin = perpsService.getSelectedCoin;
   getMarketSlippage = perpsService.getMarketSlippage;
@@ -6708,6 +6710,8 @@ export class WalletController extends BaseController {
   };
   getPerpsQuoteUnit = perpsService.getQuoteUnit;
   setPerpsQuoteUnit = perpsService.setQuoteUnit;
+  getPerpsCandleInterval = perpsService.getCandleInterval;
+  setPerpsCandleInterval = perpsService.setCandleInterval;
   setHasDoneNewUserProcess = perpsService.setHasDoneNewUserProcess;
   getHasDoneNewUserProcess = perpsService.getHasDoneNewUserProcess;
   setHasDismissedNewUserGuideV2 = perpsService.setHasDismissedNewUserGuideV2;

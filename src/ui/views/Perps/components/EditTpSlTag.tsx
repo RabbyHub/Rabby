@@ -15,6 +15,7 @@ import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
 interface EditTpSlTagProps {
   coin: string;
   handleActionApproveStatus?: () => Promise<void>;
@@ -327,8 +328,9 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
         <div className="flex flex-col items-center">
           {/* Header */}
           <div className="mb-20 text-center">
-            <div className="text-20 font-medium text-r-neutral-title-1 mb-4">
-              {direction} {formatPerpsCoin(coin)}-USD
+            <div className="text-20 font-medium text-r-neutral-title-1 mb-4 inline-flex items-baseline gap-4">
+              <span>{direction}</span>
+              <PerpsDisplayCoinName item={currentAssetCtx} />
             </div>
             <div className={clsx('text-14 text-rb-neutral-secondary')}>
               {type === 'openPosition' ? (

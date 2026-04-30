@@ -22,7 +22,14 @@ import {
   HYPE_EVM_BRIDGE_ADDRESS,
   HYPE_SEND_ASSET_TOKEN,
   isHypeWithdrawToken,
+  HYPE_EVM_BRIDGE_ADDRESS_MAP,
+  HYPE_SEND_ASSET_TOKEN_MAP,
+  WITHDRAW_CHAIN_TOKENS,
+  PerpsQuoteAsset,
+  getSpotBalanceKey,
+  HYPE_GAS_FEE_IN_HYPE,
 } from '@/ui/views/Perps/constants';
+import { getTokenSymbol } from '@/ui/utils/token';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { tokenAmountBn } from '@/ui/utils/token';
 import {
@@ -30,7 +37,7 @@ import {
   queryTokensCache,
 } from '@/ui/utils/portfolio/tokenUtils';
 import { findChain, findChainByServerID } from '@/utils/chain';
-import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
+import { CHAINS_ENUM, ETH_USDT_CONTRACT, KEYRING_TYPE } from '@/constant';
 import { Tx } from 'background/service/openapi';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -77,6 +84,11 @@ export const useDepositWithdraw = (
   const [tokenListLoading, setTokenListLoading] = useState(false);
   const [gasPrice, setGasPrice] = useState<number>(0);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
+  // Withdraw: which chain is the user withdrawing to (arb | hyper)
+  const [selectChainId, setSelectChainId] = useState<string>(
+    ARB_USDC_TOKEN_SERVER_CHAIN
+  );
+  const [chainSelectVisible, setChainSelectVisible] = useState(false);
 
   // Deposit state
   const [miniSignTx, setMiniSignTx] = useState<Tx[] | null>(null);
@@ -91,32 +103,47 @@ export const useDepositWithdraw = (
   const abortControllerRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { availableBalance, isUnifiedAccount } = usePerpsAccount();
+  const {
+    availableBalance,
+    isUnifiedAccount,
+    spotBalancesMap,
+    getAvailableByAsset,
+  } = usePerpsAccount();
 
-  // Fetch preTransferCheck fee for HyperEVM withdrawal
+  // Fetch preTransferCheck fee for HyperEVM withdrawal — per-bridge (USDC/USDT/USDE/USDH).
   const [hypeTransferFee, setHypeTransferFee] = useState<string>('0');
   useEffect(() => {
     if (!visible || !currentPerpsAccount?.address) {
       setHypeTransferFee('0');
       return;
     }
+    // selectedToken's symbol decides which bridge to query; fallback USDC when not picked yet.
+    const sym = selectedToken
+      ? (getTokenSymbol(selectedToken).toUpperCase() as PerpsQuoteAsset)
+      : 'USDC';
+    const bridge =
+      HYPE_EVM_BRIDGE_ADDRESS_MAP[
+        sym === 'USDC' || sym === 'USDT' || sym === 'USDE' || sym === 'USDH'
+          ? sym
+          : 'USDC'
+      ];
     const sdk = getPerpsSDK();
     sdk.info
-      .getPreTransferCheck(HYPE_EVM_BRIDGE_ADDRESS, currentPerpsAccount.address)
+      .getPreTransferCheck(bridge, currentPerpsAccount.address)
       .then((res) => {
         setHypeTransferFee(res?.fee || '0');
       })
       .catch(() => {
         setHypeTransferFee('0');
       });
-  }, [visible, currentPerpsAccount?.address]);
+  }, [visible, currentPerpsAccount?.address, selectedToken]);
 
   const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
 
-  // Gas fee for every HyperEVM withdrawal: fixed 0.00002 HYPE
+  // Gas fee for every HyperEVM withdrawal
   const hypeGasFeeUsd = useMemo(() => {
     const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
-    return new BigNumber(0.00002).times(hypePrice).toNumber();
+    return new BigNumber(HYPE_GAS_FEE_IN_HYPE).times(hypePrice).toNumber();
   }, [marketDataMap]);
 
   // Fetch token info
@@ -135,16 +162,6 @@ export const useDepositWithdraw = (
     selectedToken?.chain,
     selectedToken?.id,
   ]);
-
-  const isMissingRole = false;
-  // Check if user is missing role
-  // const { value: isMissingRole } = useAsync(async () => {
-  //   if (Number(clearinghouseState?.marginSummary?.accountValue)) return false;
-  //   if (!currentPerpsAccount?.address || !visible) return false;
-  //   const sdk = getPerpsSDK();
-  //   const { role } = await sdk.info.getUserRole(currentPerpsAccount.address);
-  //   return role === 'missing';
-  // }, [currentPerpsAccount?.address, visible]);
 
   const tokenInfo = useMemo(() => {
     return _tokenInfo || selectedToken || ARB_USDC_TOKEN_ITEM;
@@ -254,20 +271,71 @@ export const useDepositWithdraw = (
   }, [selectedToken, isHypeDeposit]);
 
   const isHypeWithdraw = useMemo(() => {
-    return type === 'withdraw' && isHypeWithdrawToken(selectedToken);
+    return type === 'withdraw' && selectChainId !== ARB_USDC_TOKEN_SERVER_CHAIN;
+  }, [type, selectChainId]);
+
+  // Symbol of the token currently selected for withdrawal (USDC / USDT / USDH / USDE)
+  const withdrawTargetAsset = useMemo<PerpsQuoteAsset>(() => {
+    if (type !== 'withdraw' || !selectedToken) return 'USDC';
+    const sym = getTokenSymbol(selectedToken).toUpperCase() as PerpsQuoteAsset;
+    if (sym === 'USDC' || sym === 'USDT' || sym === 'USDH' || sym === 'USDE') {
+      return sym;
+    }
+    return 'USDC';
   }, [type, selectedToken]);
 
+  // Tokens available for the currently selected withdraw chain, with balance
+  const chainTokenItems = useMemo(() => {
+    const list = WITHDRAW_CHAIN_TOKENS[selectChainId] || [];
+    return list
+      .map((token) => {
+        const sym = getTokenSymbol(token).toUpperCase() as PerpsQuoteAsset;
+        let balance = 0;
+        if (isUnifiedAccount) {
+          const b = spotBalancesMap[getSpotBalanceKey(sym)]?.available;
+          balance = b ? Number(b) : 0;
+        } else if (sym === 'USDC') {
+          balance = availableBalance;
+        }
+        return { token, balance };
+      })
+      .sort((a, b) => b.balance - a.balance);
+  }, [selectChainId, isUnifiedAccount, spotBalancesMap, availableBalance]);
+
   const withdrawMaxBalance = useMemo(() => {
-    if (!isHypeWithdraw) return availableBalance;
-    if (!Number(hypeTransferFee)) return availableBalance;
+    // Arbitrum withdraw uses Hyperliquid `withdraw3`, which is USDC-only.
+    // Unified-account `availableBalance` is the cross-stablecoin sum, so picking
+    // the USDC-specific balance here prevents overstating the withdrawable amount.
+    // HyperEVM withdraw is per-asset and reads the selected token's balance.
+    const baseBalance = (() => {
+      if (type !== 'withdraw') return availableBalance;
+      if (!isHypeWithdraw) return getAvailableByAsset('USDC');
+      if (!selectedToken) return availableBalance;
+      const row = chainTokenItems.find(
+        (i) =>
+          i.token.id === selectedToken.id &&
+          i.token.chain === selectedToken.chain
+      );
+      return row ? row.balance : 0;
+    })();
+    if (!isHypeWithdraw) return baseBalance;
+    if (!Number(hypeTransferFee)) return baseBalance;
     return Math.max(
       0,
-      new BigNumber(availableBalance)
+      new BigNumber(baseBalance)
         .minus(hypeTransferFee)
         .decimalPlaces(6, BigNumber.ROUND_DOWN)
         .toNumber()
     );
-  }, [isHypeWithdraw, availableBalance, hypeTransferFee]);
+  }, [
+    type,
+    isHypeWithdraw,
+    availableBalance,
+    hypeTransferFee,
+    selectedToken,
+    chainTokenItems,
+    getAvailableByAsset,
+  ]);
 
   const depositMaxUsdValue = useMemo(() => {
     return isDirectDeposit
@@ -517,11 +585,7 @@ export const useDepositWithdraw = (
           }
 
           setBridgeQuote(res);
-          setCacheUsdValue(
-            isMissingRole
-              ? res.to_token_amount * ARB_USDC_TOKEN_ITEM.price - 1
-              : res.to_token_amount * ARB_USDC_TOKEN_ITEM.price
-          );
+          setCacheUsdValue(res.to_token_amount * ARB_USDC_TOKEN_ITEM.price);
           const bridgeTx = {
             from: res.tx.from,
             to: res.tx.to,
@@ -597,7 +661,6 @@ export const useDepositWithdraw = (
     visible,
     type,
     tokenInfo,
-    isMissingRole,
     selectedToken,
     isHypeDeposit,
   ]);
@@ -754,8 +817,12 @@ export const useDepositWithdraw = (
       }
       let result: string[] = [];
       // await dispatch.account.changeAccountAsync(account);
+      const isLocalWallet =
+        account.type === KEYRING_TYPE.SimpleKeyring ||
+        account.type === KEYRING_TYPE.HdKeyring;
       if (canUseDirectSubmitTx) {
         typedDataSignatureStore.close();
+
         result = await typedDataSignatureStore.start(
           {
             txs: actions.map((item) => {
@@ -768,6 +835,7 @@ export const useDepositWithdraw = (
             config: {
               account: account,
               getContainer: '.desktop-perps-deposit-withdraw-content',
+              mode: isLocalWallet ? undefined : 'UI',
             },
             wallet,
           },
@@ -818,9 +886,9 @@ export const useDepositWithdraw = (
           .toNumber();
         if (hypeAmount <= 0) return;
         const action = sdk.exchange.prepareSendAsset({
-          destination: HYPE_EVM_BRIDGE_ADDRESS,
+          destination: HYPE_EVM_BRIDGE_ADDRESS_MAP[withdrawTargetAsset],
           amount: hypeAmount.toString(),
-          token: HYPE_SEND_ASSET_TOKEN,
+          token: HYPE_SEND_ASSET_TOKEN_MAP[withdrawTargetAsset],
           sourceDex: isUnifiedAccount ? 'spot' : '',
           destinationDex: 'spot',
         });
@@ -855,7 +923,12 @@ export const useDepositWithdraw = (
 
       dispatch.perps.setLocalLoadingHistory([
         {
-          time,
+          // HYPE withdraw goes through `send` ledger update whose server-
+          // side timestamp can be a few dozen ms earlier than the client
+          // clock, leaving the time-based pending filter unable to clear
+          // it. Backdate by 1s to absorb the drift (matches the desktop
+          // deposit handler's `Date.now() - 1000` trick).
+          time: isHypeWithdraw ? Date.now() - 1000 : Date.now(),
           hash: res.hash || '',
           type: 'withdraw',
           status: 'pending',
@@ -978,11 +1051,20 @@ export const useDepositWithdraw = (
     if (isDirectDeposit) {
       return new BigNumber(usdValue).toNumber();
     }
+    return (bridgeQuote?.to_token_amount || 0) * ARB_USDC_TOKEN_ITEM.price;
+  }, [bridgeQuote, isDirectDeposit, usdValue]);
 
-    const value =
-      (bridgeQuote?.to_token_amount || 0) * ARB_USDC_TOKEN_ITEM.price;
-    return isMissingRole ? value - 1 : value;
-  }, [bridgeQuote, isMissingRole, isDirectDeposit, usdValue]);
+  // When the user switches chain in the withdraw chain selector, reset
+  // selected token to the first item of that chain and clear amount.
+  const handleChainSelect = useMemoizedFn((serverChain: string) => {
+    setSelectChainId(serverChain);
+    setChainSelectVisible(false);
+    const first = WITHDRAW_CHAIN_TOKENS[serverChain]?.[0];
+    if (first) {
+      setSelectedToken(first);
+    }
+    setUsdValue('');
+  });
 
   return {
     // State
@@ -998,6 +1080,10 @@ export const useDepositWithdraw = (
     quoteLoading,
     bridgeQuote,
     inputRef,
+    selectChainId,
+    chainSelectVisible,
+    setChainSelectVisible,
+    chainTokenItems,
 
     // Computed
     availableBalance,
@@ -1009,6 +1095,7 @@ export const useDepositWithdraw = (
     withdrawMaxBalance,
     estReceiveUsdValue,
     tokenInfo,
+    withdrawTargetAsset,
 
     // Two-step deposit (HYPE)
     shouldTwoStep,
@@ -1021,5 +1108,6 @@ export const useDepositWithdraw = (
     handleCloseTokenSelect,
     handleDepositClick,
     handleWithdrawClick,
+    handleChainSelect,
   };
 };

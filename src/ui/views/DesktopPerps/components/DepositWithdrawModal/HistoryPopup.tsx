@@ -9,6 +9,7 @@ import { formatUsdValue, openInTab, sinceTime } from '@/ui/utils';
 import { ReactComponent as RcIconDeposit } from '@/ui/assets/perps/IconDeposit.svg';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { ReactComponent as RcIconWithdraw } from '@/ui/assets/perps/IconWithdraw.svg';
+import { ReactComponent as RcIconTransfer } from '@/ui/assets/perps/IconTransfer.svg';
 import { ReactComponent as RcIconNoSrc } from '@/ui/assets/perps/IconNoSrc.svg';
 import { ReactComponent as RcIconBack } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
@@ -25,7 +26,7 @@ interface HistoryAccountItemProps {
 }
 
 const HistoryAccountItemRow: React.FC<HistoryAccountItemProps> = ({ data }) => {
-  const { time, type, status, usdValue, hash } = data;
+  const { time, type, status, usdValue, hash, destinationDex } = data;
   const { t } = useTranslation();
 
   const isRealDeposit = useMemo(
@@ -33,9 +34,16 @@ const HistoryAccountItemRow: React.FC<HistoryAccountItemProps> = ({ data }) => {
     [type]
   );
 
+  const isTransfer = type === 'transfer';
+  const isTransferToSpot = isTransfer && destinationDex === 'spot';
+
   const ImgAvatar = useMemo(() => {
     if (status === 'pending') {
       return <RcIconPending className="w-32 h-32 rounded-full animate-spin" />;
+    }
+
+    if (isTransfer) {
+      return <RcIconTransfer className="w-32 h-32 text-r-neutral-body" />;
     }
 
     if (isRealDeposit) {
@@ -46,7 +54,15 @@ const HistoryAccountItemRow: React.FC<HistoryAccountItemProps> = ({ data }) => {
     return (
       <ThemeIcon src={RcIconWithdraw} className="w-32 h-32 rounded-full" />
     );
-  }, [status, isRealDeposit]);
+  }, [status, isRealDeposit, isTransfer]);
+
+  const titleText = isTransfer
+    ? isTransferToSpot
+      ? t('page.perps.transferToSpot')
+      : t('page.perps.transferToPerps')
+    : isRealDeposit
+    ? t('page.perps.deposit')
+    : t('page.perps.withdraw');
 
   return (
     <div
@@ -58,7 +74,7 @@ const HistoryAccountItemRow: React.FC<HistoryAccountItemProps> = ({ data }) => {
         {ImgAvatar}
         <div className="flex flex-col ml-10">
           <div className="text-15 text-r-neutral-title-1 font-medium">
-            {isRealDeposit ? t('page.perps.deposit') : t('page.perps.withdraw')}
+            {titleText}
           </div>
           {status === 'pending' ? (
             <div className="text-13 font-medium text-r-orange-default">
@@ -76,21 +92,16 @@ const HistoryAccountItemRow: React.FC<HistoryAccountItemProps> = ({ data }) => {
         <div
           className={clsx(
             'text-15 font-medium',
-            isRealDeposit ? 'text-r-green-default' : 'text-r-red-default'
+            isTransfer
+              ? 'text-r-neutral-title-1'
+              : isRealDeposit
+              ? 'text-r-green-default'
+              : 'text-r-red-default'
           )}
         >
-          {isRealDeposit ? '+' : '-'}
+          {isTransfer ? '' : isRealDeposit ? '+' : '-'}
           {`${formatUsdValue(usdValue)}`}
         </div>
-        {/* <div
-          className="text-13 text-r-neutral-foot cursor-pointer items-center flex gap-4"
-          onClick={() => {
-            openInTab(`https://app.hyperliquid.xyz/explorer/tx/${hash}`);
-          }}
-        >
-          {ellipsisAddress(hash)}
-          <RcIconOpenExternal />
-        </div> */}
       </div>
     </div>
   );

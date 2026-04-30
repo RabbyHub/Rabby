@@ -52,7 +52,7 @@ export type TPSLInputMode = 'price' | 'percentage';
 export type TPSLSettingMode = 'price' | 'pnl' | 'roi';
 
 // Position size display unit
-export type SizeDisplayUnit = 'base' | 'usdc';
+export type SizeDisplayUnit = 'base' | 'usd';
 
 export interface TPSLConfigItem {
   settingMode: TPSLSettingMode;

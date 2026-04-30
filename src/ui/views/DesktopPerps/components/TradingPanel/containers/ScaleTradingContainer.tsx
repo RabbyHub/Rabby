@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
+import { formatNumber, formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import {
   LimitOrderType,
   OrderSide,
@@ -23,10 +23,10 @@ import { EVENTS } from '@/constant';
 
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
-import { TradingButton } from '../components/TradingButton';
+import { TradingButton } from '../components/TradingButtons';
 import { BigNumber } from 'bignumber.js';
 import stats from '@/stats';
-import { getStatsReportSide } from '../../../utils';
+import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
 
 export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -47,6 +47,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     markPrice,
     midPrice,
     szDecimals,
+    quoteAsset,
     pxDecimals,
     leverage,
     leverageType,
@@ -305,19 +306,24 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     return {
       start: `${startOrderSize} ${selectedCoin} @ ${splitNumberByStep(
         startPrice || '0'
-      )} USDC`,
+      )} ${quoteAsset}`,
       end: `${endOrderSize} ${selectedCoin} @ ${splitNumberByStep(
         endPrice || '0'
-      )} USDC`,
+      )} ${quoteAsset}`,
       orderValue:
-        scaleOrdersValue > 0 ? formatUsdValue(scaleOrdersValue) : '$0.00',
-      marginRequired: formatUsdValue(marginRequired),
-      marginUsage: `${formatUsdValue(marginRequired)} (${formatPercent(
+        scaleOrdersValue > 0
+          ? `${formatNumber(scaleOrdersValue)} ${quoteAsset}`
+          : `0 ${quoteAsset}`,
+      marginRequired: `${formatNumber(marginRequired)} ${quoteAsset}`,
+      marginUsage: `${formatNumber(
+        marginRequired
+      )} ${quoteAsset} (${formatPercent(
         marginRequired / availableBalance,
         1
       )})`,
     };
   }, [
+    quoteAsset,
     scaleOrders,
     leverage,
     marginRequired,
@@ -399,7 +405,10 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
 
   return (
     <div className="space-y-[10px]">
-      <OrderSideAndFunds availableBalance={availableBalance} />
+      <OrderSideAndFunds
+        availableBalance={availableBalance}
+        quoteAsset={quoteAsset}
+      />
 
       <div className="flex flex-col gap-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
@@ -411,7 +420,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           className="text-left"
           suffix={
             <span className="text-15 font-medium text-rb-neutral-title-1">
-              USDC
+              {quoteAsset}
             </span>
           }
         />
@@ -427,7 +436,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           className="text-left"
           suffix={
             <span className="text-15 font-medium text-rb-neutral-title-1">
-              USDC
+              {quoteAsset}
             </span>
           }
         />
@@ -454,7 +463,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           className="text-left"
           suffix={
             <span className="text-15 font-medium text-rb-neutral-title-1">
-              {selectedCoin}
+              {formatPerpsCoin(selectedCoin)}
             </span>
           }
         />

@@ -7,6 +7,7 @@ import { SvgIconCross } from 'ui/assets';
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history.svg';
+import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import { SvgPendingSpin } from '@/ui/assets';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { formatUsdValue } from '@/ui/utils/number';
@@ -17,7 +18,9 @@ import {
 } from '@/ui/views/Perps/constants';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { TokenSelectPopup } from './TokenSelectPopup';
+import { ChainSelectPopup } from './ChainSelectPopup';
 import { useDepositWithdraw } from './useDepositWithdraw';
+import { findChainByServerID } from '@/utils/chain';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useRabbySelector } from '@/ui/store';
 import { HistoryPopup } from './HistoryPopup';
@@ -78,7 +81,6 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     hypeTransferFee,
     hypeGasFeeUsd,
     withdrawMaxBalance,
-    // isMissingRole,
     estReceiveUsdValue,
 
     // Two-step deposit (HYPE)
@@ -92,6 +94,11 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     handleCloseTokenSelect,
     handleDepositClick,
     handleWithdrawClick,
+    handleChainSelect,
+    selectChainId,
+    chainSelectVisible,
+    setChainSelectVisible,
+    chainTokenItems,
   } = useDepositWithdraw(visible, type, onCancel);
 
   // Validation
@@ -134,11 +141,9 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
       }
       return { isValid: true, error: null };
     }
-  }, [usdValue, t, depositMaxUsdValue, availableBalance, type]);
+  }, [usdValue, t, depositMaxUsdValue, withdrawMaxBalance, type]);
 
-  const isValidAmount = useMemo(() => amountValidation.isValid, [
-    amountValidation.isValid,
-  ]);
+  const isValidAmount = amountValidation.isValid;
 
   const estTimeMinutes = useMemo(() => {
     if (isDirectDeposit) {
@@ -163,97 +168,97 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   }, [bridgeQuote, quoteLoading, type, isDirectDeposit, t, isValidAmount]);
 
   return (
-    <>
-      <Modal
-        visible={visible}
-        onCancel={onCancel}
-        footer={null}
-        width={400}
-        centered
-        bodyStyle={{ padding: 0, height: '520px', maxHeight: '520px' }}
-        maskStyle={{
-          zIndex: 1000,
-          backdropFilter: 'blur(8px)',
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        }}
-        closeIcon={
-          historyVisible ? null : (
-            <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
-          )
-        }
-        closable={!historyVisible}
-        className="modal-support-darkmode desktop-perps-deposit-withdraw-modal"
-      >
-        <PopupContainer>
-          <div className="bg-r-neutral-bg-2 h-[520px] flex flex-col h-full relative overflow-hidden desktop-perps-deposit-withdraw-content">
-            <div className="px-20 pt-16 flex-1 pb-24">
-              {/* Header */}
-              <div className="flex items-center justify-center gap-8 mb-16 relative">
-                {/* History Button - Left Side */}
-                <div
-                  className="absolute left-0 top-1/2 -translate-y-1/2 cursor-pointer"
-                  onClick={() => setHistoryVisible(true)}
-                >
-                  {pendingCount > 0 ? (
-                    <DepositPending pendingCount={pendingCount} />
-                  ) : (
-                    <RcIconHistory className="w-20 h-20 text-r-neutral-title-1" />
-                  )}
-                </div>
-
-                <h3 className="text-[20px] font-medium text-r-neutral-title-1 text-center">
-                  {type === 'deposit'
-                    ? t('page.perps.deposit')
-                    : t('page.perps.withdraw')}
-                </h3>
+    <Modal
+      visible={visible}
+      onCancel={onCancel}
+      footer={null}
+      width={400}
+      centered
+      bodyStyle={{ padding: 0, height: '520px', maxHeight: '520px' }}
+      maskStyle={{
+        zIndex: 1000,
+        backdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+      }}
+      closeIcon={
+        historyVisible ? null : (
+          <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
+        )
+      }
+      closable={!historyVisible}
+      className="modal-support-darkmode desktop-perps-deposit-withdraw-modal"
+    >
+      <PopupContainer>
+        <div className="bg-r-neutral-bg-2 h-[520px] flex flex-col h-full relative overflow-hidden desktop-perps-deposit-withdraw-content">
+          <div className="px-20 pt-16 flex-1 pb-24">
+            <div className="flex items-center justify-center gap-8 mb-16 relative">
+              <div
+                className="absolute left-0 top-1/2 -translate-y-1/2 cursor-pointer"
+                onClick={() => setHistoryVisible(true)}
+              >
+                {pendingCount > 0 ? (
+                  <DepositPending pendingCount={pendingCount} />
+                ) : (
+                  <RcIconHistory className="w-20 h-20 text-r-neutral-title-1" />
+                )}
               </div>
 
-              {/* Amount Input */}
-              <div className="bg-r-neutral-card1 rounded-[8px] px-20 py-20 mb-12">
-                <div className="flex flex-col items-center justify-center">
-                  <input
-                    ref={inputRef}
-                    className={clsx(
-                      'text-[32px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none',
-                      amountValidation.error
-                        ? 'text-r-red-default'
-                        : 'text-r-neutral-title-1'
-                    )}
-                    placeholder="$0"
-                    value={usdValue ? `$${usdValue}` : ''}
-                    onChange={(e) => {
-                      let value = e.target.value;
-                      if (value.startsWith('$')) {
-                        value = value.slice(1);
-                      }
-                      if (/^\d*\.?\d*$/.test(value) || value === '') {
-                        setUsdValue(value);
-                      }
-                    }}
-                  />
-                  <div className="text-13 text-r-neutral-body mt-8 flex items-center">
-                    {type === 'withdraw'
-                      ? t('page.perps.availableBalance', {
-                          balance: formatUsdValue(
-                            withdrawMaxBalance,
-                            BigNumber.ROUND_DOWN
-                          ),
-                        })
-                      : t('page.perps.balanceAvailable', {
-                          balance: formatUsdValue(
-                            depositMaxUsdValue,
-                            BigNumber.ROUND_DOWN
-                          ),
-                        })}
+              <h3 className="text-[20px] font-medium text-r-neutral-title-1 text-center">
+                {type === 'deposit'
+                  ? t('page.perps.deposit')
+                  : t('page.perps.withdraw')}
+              </h3>
+            </div>
+
+            {type === 'withdraw' ? (
+              <>
+                {/* Chain selector */}
+                <div className="text-13 text-r-neutral-foot mb-8">
+                  {t('page.perps.depositAmountPopup.chain')}
+                </div>
+                <div
+                  onClick={() => setChainSelectVisible(true)}
+                  className={clsx(
+                    'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between px-16 h-[56px] border border-solid border-transparent mb-16',
+                    'hover:border-rabby-blue-default cursor-pointer'
+                  )}
+                >
+                  <div className="flex items-center gap-8">
+                    {(() => {
+                      const chain = findChainByServerID(selectChainId);
+                      return chain?.logo ? (
+                        <img
+                          src={chain.logo}
+                          alt={chain.name}
+                          className="w-24 h-24"
+                        />
+                      ) : null;
+                    })()}
+                    <div className="text-r-neutral-title-1 font-medium text-15">
+                      {findChainByServerID(selectChainId)?.name ||
+                        selectChainId}
+                    </div>
+                  </div>
+                  <RcIconArrowDownCC className="text-r-neutral-foot w-16 h-16" />
+                </div>
+
+                {/* Amount label + balance */}
+                <div className="flex items-center justify-between mb-8">
+                  <span className="text-13 text-r-neutral-foot">
+                    {t('page.perps.depositAmountPopup.amount')}
+                  </span>
+                  <div className="text-13 text-r-neutral-foot flex items-center">
+                    <span>
+                      {t('page.perps.depositAmountPopup.balance')}:
+                      {formatUsdValue(withdrawMaxBalance, BigNumber.ROUND_DOWN)}
+                    </span>
                     {isHypeWithdraw && Number(hypeTransferFee) > 0 && (
                       <Tooltip
                         overlayClassName={clsx('rectangle')}
                         placement="top"
                         title={t(
                           'page.perps.depositAmountPopup.hypeActivationFeeTip',
-                          {
-                            fee: formatUsdValue(hypeTransferFee),
-                          }
+                          { fee: formatUsdValue(hypeTransferFee) }
                         )}
                       >
                         <RcIconInfo
@@ -267,16 +272,59 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                   </div>
                 </div>
 
-                {/* Percentage Buttons */}
-                <div className="flex items-center justify-center gap-8 mt-16">
+                {/* Amount input + token pill */}
+                <div className="bg-r-neutral-card1 rounded-[8px] px-16 py-24 mb-12">
+                  <div className="flex items-center gap-12">
+                    <input
+                      ref={inputRef}
+                      className={clsx(
+                        'flex-1 text-[28px] leading-[34px] font-medium bg-transparent border-none p-0 outline-none focus:outline-none min-w-0',
+                        amountValidation.error
+                          ? 'text-r-red-default'
+                          : 'text-r-neutral-title-1'
+                      )}
+                      placeholder="0"
+                      value={usdValue}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^\d*\.?\d*$/.test(value) || value === '') {
+                          setUsdValue(value);
+                        }
+                      }}
+                    />
+                    <div
+                      onClick={() => setTokenSelectVisible(true)}
+                      className={clsx(
+                        'flex items-center justify-center gap-6 pl-6 pr-8 h-32 rounded-[8px] border border-solid border-transparent',
+                        'bg-r-neutral-card-2 cursor-pointer flex-shrink-0',
+                        'hover:border-rabby-blue-default hover:text-rb-brand-default'
+                      )}
+                    >
+                      <TokenWithChain
+                        token={selectedToken || ARB_USDC_TOKEN_ITEM}
+                        hideChainIcon
+                        hideConer
+                        width="20px"
+                        height="20px"
+                      />
+                      <span className="text-r-neutral-title-1 font-medium text-14">
+                        {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                      </span>
+                      <RcIconArrowDownCC className="text-r-neutral-foot" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Percent buttons */}
+                <div className="flex items-center justify-between gap-8 mb-12">
                   {PERCENTAGE_OPTIONS.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => handlePercentageClick(option.value)}
                       className={clsx(
-                        'px-20 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
-                        'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
-                        'bg-r-neutral-bg-2 text-r-neutral-body'
+                        'flex-1 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
+                        'bg-r-neutral-card1 border border-solid border-transparent text-r-neutral-title-1',
+                        'hover:border-rabby-blue-default hover:text-rb-brand-default'
                       )}
                     >
                       {option.label}
@@ -284,220 +332,255 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                   ))}
                 </div>
 
-                {/* Error Message */}
                 {(amountValidation.errorMessage || quoteError) && (
-                  <div className="text-13 text-r-red-default text-center mt-12">
+                  <div className="text-13 text-r-red-default mb-8">
                     {amountValidation.errorMessage || quoteError}
                   </div>
                 )}
-              </div>
-
-              {/* Token Selector */}
-              <div
-                onClick={() => {
-                  setTokenSelectVisible(true);
-                }}
-                className={clsx(
-                  'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
-                  'hover:border-rabby-blue-default cursor-pointer'
-                )}
-              >
-                <div className="text-r-neutral-body text-13">
-                  {type === 'deposit'
-                    ? t('page.perps.depositAmountPopup.payWith')
-                    : t('page.perps.depositAmountPopup.receiveToken')}
-                </div>
-                <div className="flex items-center">
-                  <TokenWithChain
-                    token={selectedToken || ARB_USDC_TOKEN_ITEM}
-                    hideConer
-                    width="20px"
-                    height="20px"
-                  />
-                  <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
-                    {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+              </>
+            ) : (
+              <>
+                <div className="bg-r-neutral-card1 rounded-[8px] px-20 py-20 mb-12">
+                  <div className="flex flex-col items-center justify-center">
+                    <input
+                      ref={inputRef}
+                      className={clsx(
+                        'text-[32px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none',
+                        amountValidation.error
+                          ? 'text-r-red-default'
+                          : 'text-r-neutral-title-1'
+                      )}
+                      placeholder="$0"
+                      value={usdValue ? `$${usdValue}` : ''}
+                      onChange={(e) => {
+                        let value = e.target.value;
+                        if (value.startsWith('$')) {
+                          value = value.slice(1);
+                        }
+                        if (/^\d*\.?\d*$/.test(value) || value === '') {
+                          setUsdValue(value);
+                        }
+                      }}
+                    />
+                    <div className="text-13 text-r-neutral-body mt-8 flex items-center">
+                      {t('page.perps.balanceAvailable', {
+                        balance: formatUsdValue(
+                          depositMaxUsdValue,
+                          BigNumber.ROUND_DOWN
+                        ),
+                      })}
+                    </div>
                   </div>
-                  <ThemeIcon
-                    className="icon icon-arrow-right text-r-neutral-title-1 ml-4"
-                    src={RcIconArrowRight}
-                  />
-                </div>
-              </div>
 
-              {/* Info Section */}
-              <div className="mt-12 space-y-8">
-                {type === 'withdraw' && (
-                  <>
-                    <div className="flex items-center justify-between text-13">
+                  <div className="flex items-center justify-center gap-8 mt-16">
+                    {PERCENTAGE_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => handlePercentageClick(option.value)}
+                        className={clsx(
+                          'px-20 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
+                          'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
+                          'bg-r-neutral-bg-2 text-r-neutral-body'
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {(amountValidation.errorMessage || quoteError) && (
+                    <div className="text-13 text-r-red-default text-center mt-12">
+                      {amountValidation.errorMessage || quoteError}
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  onClick={() => {
+                    setTokenSelectVisible(true);
+                  }}
+                  className={clsx(
+                    'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
+                    'hover:border-rabby-blue-default cursor-pointer'
+                  )}
+                >
+                  <div className="text-r-neutral-body text-13">
+                    {t('page.perps.depositAmountPopup.payWith')}
+                  </div>
+                  <div className="flex items-center">
+                    <TokenWithChain
+                      token={selectedToken || ARB_USDC_TOKEN_ITEM}
+                      hideConer
+                      width="20px"
+                      height="20px"
+                    />
+                    <div className="text-r-neutral-title-1 font-medium text-13 ml-4">
+                      {getTokenSymbol(selectedToken || ARB_USDC_TOKEN_ITEM)}
+                    </div>
+                    <ThemeIcon
+                      className="icon icon-arrow-right text-r-neutral-title-1 ml-4"
+                      src={RcIconArrowRight}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="mt-12 space-y-8">
+              {type === 'withdraw' && (
+                <>
+                  <div className="flex items-center justify-between text-13">
+                    <Tooltip
+                      overlayClassName={clsx('rectangle')}
+                      placement="top"
+                      title={t(
+                        isHypeWithdraw
+                          ? 'page.perps.depositAmountPopup.feeTipTooltipHype'
+                          : 'page.perps.depositAmountPopup.feeTipTooltip'
+                      )}
+                    >
+                      <DashedUnderlineText className="text-r-neutral-foot">
+                        {t('page.perps.depositAmountPopup.hyperliquidFeeLabel')}
+                      </DashedUnderlineText>
+                    </Tooltip>
+                    <span className="text-r-neutral-title-1">
+                      {isHypeWithdraw
+                        ? `$${new BigNumber(hypeGasFeeUsd)
+                            .decimalPlaces(6)
+                            .toFixed()}`
+                        : '$1'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-13">
+                    <span className="text-r-neutral-foot">
+                      {t('page.perps.depositAmountPopup.estTimeLabel')}
+                    </span>
+                    <span className="text-r-neutral-title-1">
+                      {isHypeWithdraw ? '~2s' : '~5 min'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-13">
+                    <span className="text-r-neutral-foot">
+                      {t('page.perps.depositAmountPopup.estReceiveLabel')}
+                    </span>
+                    <span className="text-r-neutral-title-1">
+                      {usdValue && isValidAmount
+                        ? formatUsdValue(
+                            isHypeWithdraw
+                              ? Number(usdValue)
+                              : Math.max(0, Number(usdValue) - 1),
+                            BigNumber.ROUND_DOWN
+                          )
+                        : '-'}
+                    </span>
+                  </div>
+                </>
+              )}
+
+              {type === 'deposit' && isValidAmount && (
+                <>
+                  <div className="flex items-center justify-between text-13">
+                    {isDirectDeposit ? (
+                      <span className="text-r-neutral-foot">
+                        {t('page.perps.depositAmountPopup.estReceiveLabel')}
+                      </span>
+                    ) : (
                       <Tooltip
                         overlayClassName={clsx('rectangle')}
                         placement="top"
                         title={t(
-                          isHypeWithdraw
-                            ? 'page.perps.depositAmountPopup.feeTipTooltipHype'
-                            : 'page.perps.depositAmountPopup.feeTipTooltip'
+                          'page.perps.depositAmountPopup.estReceiveTooltipNoTime'
                         )}
                       >
                         <DashedUnderlineText className="text-r-neutral-foot">
-                          {t(
-                            'page.perps.depositAmountPopup.hyperliquidFeeLabel'
-                          )}
+                          {t('page.perps.depositAmountPopup.estReceiveLabel')}
                         </DashedUnderlineText>
                       </Tooltip>
+                    )}
+                    {quoteLoading ? (
+                      <Skeleton.Button
+                        active
+                        className="h-[16px] rounded-[4px]"
+                        style={{ width: 60 }}
+                      />
+                    ) : (
                       <span className="text-r-neutral-title-1">
-                        {isHypeWithdraw
-                          ? `$${new BigNumber(hypeGasFeeUsd)
-                              .decimalPlaces(6)
-                              .toFixed()}`
-                          : '$1'}
+                        {quoteError ? '-' : formatUsdValue(estReceiveUsdValue)}
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between text-13">
-                      <span className="text-r-neutral-foot">
-                        {t('page.perps.depositAmountPopup.estTimeLabel')}
-                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between text-13">
+                    <span className="text-r-neutral-foot">
+                      {t('page.perps.depositAmountPopup.estTimeLabel')}
+                    </span>
+                    {quoteLoading ? (
+                      <Skeleton.Button
+                        active
+                        className="h-[16px] rounded-[4px]"
+                        style={{ width: 60 }}
+                      />
+                    ) : (
                       <span className="text-r-neutral-title-1">
-                        {isHypeWithdraw ? '~2s' : '~5 min'}
+                        {quoteError ? '-' : `~${estTimeMinutes} min`}
                       </span>
-                    </div>
-                    <div className="flex items-center justify-between text-13">
-                      <span className="text-r-neutral-foot">
-                        {t('page.perps.depositAmountPopup.estReceiveLabel')}
-                      </span>
-                      <span className="text-r-neutral-title-1">
-                        {usdValue && isValidAmount
-                          ? formatUsdValue(
-                              isHypeWithdraw
-                                ? Number(usdValue)
-                                : Math.max(0, Number(usdValue) - 1),
-                              BigNumber.ROUND_DOWN
-                            )
-                          : '-'}
-                      </span>
-                    </div>
-                  </>
-                )}
-
-                {type === 'deposit' && isValidAmount && (
-                  <>
-                    {/* {!isDirectDeposit && isMissingRole && (
-                      <div className="flex items-center justify-between text-13">
-                        <Tooltip
-                          overlayClassName={clsx('rectangle')}
-                          placement="top"
-                          title={t(
-                            'page.perps.depositAmountPopup.hyperliquidFeeLabelTooltip'
-                          )}
-                        >
-                          <DashedUnderlineText className="text-r-neutral-foot">
-                            {t(
-                              'page.perps.depositAmountPopup.hyperliquidFeeLabel'
-                            )}
-                          </DashedUnderlineText>
-                        </Tooltip>
-                        <span className="text-r-neutral-title-1">$1</span>
-                      </div>
-                    )} */}
-                    <div className="flex items-center justify-between text-13">
-                      {isDirectDeposit ? (
-                        <span className="text-r-neutral-foot">
-                          {t('page.perps.depositAmountPopup.estReceiveLabel')}
-                        </span>
-                      ) : (
-                        <Tooltip
-                          overlayClassName={clsx('rectangle')}
-                          placement="top"
-                          title={t(
-                            'page.perps.depositAmountPopup.estReceiveTooltipNoTime'
-                          )}
-                        >
-                          <DashedUnderlineText className="text-r-neutral-foot">
-                            {t('page.perps.depositAmountPopup.estReceiveLabel')}
-                          </DashedUnderlineText>
-                        </Tooltip>
-                      )}
-                      {quoteLoading ? (
-                        <Skeleton.Button
-                          active
-                          className="h-[16px] rounded-[4px]"
-                          style={{ width: 60 }}
-                        />
-                      ) : (
-                        <span className="text-r-neutral-title-1">
-                          {quoteError
-                            ? '-'
-                            : formatUsdValue(estReceiveUsdValue)}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center justify-between text-13">
-                      <span className="text-r-neutral-foot">
-                        {t('page.perps.depositAmountPopup.estTimeLabel')}
-                      </span>
-                      {quoteLoading ? (
-                        <Skeleton.Button
-                          active
-                          className="h-[16px] rounded-[4px]"
-                          style={{ width: 60 }}
-                        />
-                      ) : (
-                        <span className="text-r-neutral-title-1">
-                          {quoteError ? '-' : `~${estTimeMinutes} min`}
-                        </span>
-                      )}
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
-              <Button
-                loading={
-                  type === 'deposit'
-                    ? isPreparingSign || twoStepApprovePending
-                    : isWithdrawLoading
-                }
-                onClick={
-                  type === 'deposit' ? handleDepositClick : handleWithdrawClick
-                }
-                disabled={
-                  !isValidAmount ||
-                  Boolean(quoteError) ||
-                  (type === 'deposit' && quoteLoading) ||
-                  twoStepApprovePending
-                }
-                size="large"
-                type="primary"
-                className="w-full h-[44px] rounded-[8px] text-[14px] font-medium"
-              >
-                {type === 'deposit'
-                  ? shouldTwoStep && twoStepIsApprove
-                    ? t('page.swap.approve')
-                    : t('page.perps.deposit')
-                  : t('page.perps.withdraw')}
-              </Button>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
-          {/* Token Select Popup */}
-          <TokenSelectPopup
-            visible={tokenSelectVisible}
-            onCancel={handleCloseTokenSelect}
-            onSelect={handleTokenSelect}
-            tokenList={tokenList}
-            tokenListLoading={tokenListLoading}
-            mode={type}
-          />
 
-          {/* History Popup */}
-          <HistoryPopup
-            visible={historyVisible}
-            onClose={() => setHistoryVisible(false)}
-          />
-        </PopupContainer>
-      </Modal>
-    </>
+          <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+            <Button
+              loading={
+                type === 'deposit'
+                  ? isPreparingSign || twoStepApprovePending
+                  : isWithdrawLoading
+              }
+              onClick={
+                type === 'deposit' ? handleDepositClick : handleWithdrawClick
+              }
+              disabled={
+                !isValidAmount ||
+                Boolean(quoteError) ||
+                (type === 'deposit' && quoteLoading) ||
+                twoStepApprovePending
+              }
+              size="large"
+              type="primary"
+              className="w-full h-[44px] rounded-[8px] text-[14px] font-medium"
+            >
+              {type === 'deposit'
+                ? shouldTwoStep && twoStepIsApprove
+                  ? t('page.swap.approve')
+                  : t('page.perps.deposit')
+                : t('page.perps.withdraw')}
+            </Button>
+          </div>
+        </div>
+        <TokenSelectPopup
+          visible={tokenSelectVisible}
+          onCancel={handleCloseTokenSelect}
+          onSelect={handleTokenSelect}
+          tokenList={tokenList}
+          tokenListLoading={tokenListLoading}
+          mode={type}
+          withdrawItems={chainTokenItems}
+        />
+
+        <ChainSelectPopup
+          visible={chainSelectVisible}
+          onCancel={() => setChainSelectVisible(false)}
+          onSelect={handleChainSelect}
+          selected={selectChainId}
+        />
+
+        <HistoryPopup
+          visible={historyVisible}
+          onClose={() => setHistoryVisible(false)}
+        />
+      </PopupContainer>
+    </Modal>
   );
 };
 

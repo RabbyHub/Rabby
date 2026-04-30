@@ -95,7 +95,7 @@ export const DIFITab = ({
           filterWallet
         />
       )}
-      <HomePerpsPositionList />
+      <HomePerpsPositionList needFetchMarket />
       <ProtocolList
         removeProtocol={removeProtocol}
         appIds={appIds}

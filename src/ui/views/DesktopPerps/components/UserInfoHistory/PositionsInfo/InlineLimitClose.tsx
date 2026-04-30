@@ -76,6 +76,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
   const szDecimals = marketData.szDecimals ?? 4;
   const pxDecimals = marketData.pxDecimals ?? 2;
+  const quoteAsset = marketData.quoteAsset || 'USDC';
   const midPrice = Number(marketData.midPx || marketData.markPx || 0);
   const positionSize = Math.abs(Number(record.size || 0));
   const entryPrice = Number(record.entryPx);
@@ -83,7 +84,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
   const closeLimitCount = record.closeLimitOrders.length;
   const coinUnit =
-    sizeDisplayUnit === 'usdc' ? 'USDC' : formatPerpsCoin(record.coin);
+    sizeDisplayUnit === 'usd' ? quoteAsset : formatPerpsCoin(record.coin);
 
   const [limitPrice, setLimitPrice] = useState(
     formatTpOrSlPrice(midPrice, szDecimals)
@@ -410,13 +411,14 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     const pnlIsUp = estPnl >= 0;
     return (
       <div className="text-[12px] space-y-[2px]">
-        {sizeDisplayUnit === 'usdc' ? (
+        {sizeDisplayUnit === 'usd' ? (
           <>
             <div>
               Position Size: {positionSize} {coin}
             </div>
             <div>
-              Qty: {sizeInput} {coin} ≈ {splitNumberByStep(notionalValue)} USDC
+              Qty: {sizeInput} {coin} ≈ {splitNumberByStep(notionalValue)}{' '}
+              {quoteAsset}
             </div>
           </>
         ) : (
@@ -455,7 +457,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       <div className="space-y-[4px] px-2">
         {record.closeLimitOrders.map((order) => {
           const orderSize =
-            sizeDisplayUnit === 'usdc'
+            sizeDisplayUnit === 'usd'
               ? new BigNumber(order.sz).multipliedBy(order.limitPx).toFixed(2)
               : order.sz;
           return (
@@ -491,7 +493,10 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         {/* Market link */}
         <span
           className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
-          onClick={() => !marketLoading && handleMarketCloseWithConfirm()}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!marketLoading) handleMarketCloseWithConfirm();
+          }}
         >
           Market
         </span>
@@ -509,7 +514,8 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             className={clsx(
               'cursor-pointer font-bold text-[12px] transition-colors text-rb-brand-default hover:text-r-neutral-title-1'
             )}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (isPriceValid && sizeNum > 0 && !loading) {
                 setShowValidation(false);
                 handleSubmit();
@@ -543,6 +549,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
           )}
           placeholder="Price"
           value={limitPrice}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) => {
             handlePriceChange(e);
             if (showValidation) setShowValidation(false);
@@ -578,8 +585,10 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
                   className="text-13 text-rb-neutral-title-1 bg-rb-neutral-line hover:text-rb-brand-default cursor-pointer px-[11px] h-[24px] flex items-center justify-center rounded-[4px]"
                   onMouseDown={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     handlePercentageClick(pct);
                   }}
+                  onClick={(e) => e.stopPropagation()}
                 >
                   {pct}%
                 </span>
@@ -601,6 +610,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             )}
             placeholder="Size"
             value={sizeInput}
+            onClick={(e) => e.stopPropagation()}
             onChange={(e) => {
               handleSizeChange(e);
               if (showValidation) setShowValidation(false);
