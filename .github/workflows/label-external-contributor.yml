@@ -6,10 +6,11 @@ on:
 
 permissions:
   issues: write
+  pull-requests: write
 
 jobs:
   label:
-    if: ${{ !contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.pull_request.author_association) }}
+    if: ${{ !contains(fromJson('["OWNER","MEMBER"]'), github.event.pull_request.author_association) }}
     runs-on: ubuntu-latest
     steps:
       - name: Add external contributor label
@@ -19,28 +20,6 @@ jobs:
             const label = 'external contributor';
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
-
-            try {
-              await github.rest.issues.getLabel({ owner, repo, name: label });
-            } catch (error) {
-              if (error.status !== 404) {
-                throw error;
-              }
-
-              try {
-                await github.rest.issues.createLabel({
-                  owner,
-                  repo,
-                  name: label,
-                  color: 'D73A4A',
-                  description: 'PR opened by a contributor who is not a repo member',
-                });
-              } catch (createError) {
-                if (createError.status !== 422) {
-                  throw createError;
-                }
-              }
-            }
 
             await github.rest.issues.addLabels({
               owner,
