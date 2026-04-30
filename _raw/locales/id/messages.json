@@ -3371,7 +3371,16 @@
         "provider": "Penyedia",
         "closedPnl": "PNL terealisasi",
         "size": "Ukuran posisi",
-        "feeDesc": "Saat pengguna melakukan transaksi, baik <1>biaya perdagangan</1> maupun <2>biaya pembangun</2> berlaku."
+        "feeDesc": "Saat pengguna melakukan transaksi, baik <1>biaya perdagangan</1> maupun <2>biaya pembangun</2> berlaku.",
+        "amount": "Jumlah",
+        "asset": "Aset",
+        "action": "Tindakan",
+        "value": "Nilai",
+        "buy": "Beli",
+        "sell": "Jual",
+        "transferDetailTitle": "Transfer",
+        "transferActionToSpot": "Transfer (dari Perps ke Spot)",
+        "transferActionToPerps": "Transfer (dari Spot ke Perps)"
       },
       "logoutConfirmModal": {
         "title": "Keluar dari alamat saat ini",
@@ -3396,7 +3405,9 @@
         "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid.",
         "amount": "Jumlah",
         "feeTipTooltipHype": "Biaya sebesar ~0,00002 HYPE akan dikenakan untuk menarik ke EVM.",
-        "hypeActivationFeeTip": "Biaya aktivasi sekali sebesar {{fee}} akan dikenakan oleh Hyperliquid untuk penarikan HyperEVM pertama."
+        "hypeActivationFeeTip": "Biaya aktivasi sekali sebesar {{fee}} akan dikenakan oleh Hyperliquid untuk penarikan HyperEVM pertama.",
+        "balance": "Saldo",
+        "chain": "Rantai"
       },
       "home": {
         "size": "Ukuran Posisi",
@@ -3565,7 +3576,68 @@
       },
       "addFunds": "Tambahkan Dana",
       "crossMarginLiqPriceTip": "Dalam mode Cross Margin, harga likuidasi untuk satu posisi adalah perkiraan untuk referensi saja.",
-      "selectTokenToWithdraw": "Pilih Token untuk Ditarik"
+      "selectTokenToWithdraw": "Pilih Token untuk Ditarik",
+      "PerpsDepositCard": {
+        "availableToTrade": "Tersedia untuk diperdagangkan: ",
+        "deposit": "Setor",
+        "swap": "Tukar"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Aktifkan Unified Account",
+        "desc": "Unified Account adalah mode akun yang direkomendasikan yang menyederhanakan pengalaman trading. Saldo Spot dan Perps digabungkan untuk semua token, dan cross margin didukung pada semua aset yang tersedia.",
+        "confirm": "Konfirmasi",
+        "enable": "Aktifkan",
+        "cancel": "Batal",
+        "importantTips": "Semua agunan USDC akan digunakan sebagai cross margin setelah Unified Account diaktifkan.",
+        "important": "Penting"
+      },
+      "PerpsSpotSwap": {
+        "title": "Tukar Stablecoin",
+        "from": "Dari",
+        "to": "Tukar Ke",
+        "balance": "Saldo",
+        "estReceive": "Est. Terima",
+        "swapBtn": "Tukar",
+        "insufficientBalance": "Saldo tidak mencukupi",
+        "invalidAmount": "Silakan masukkan jumlah yang valid",
+        "minimumAmount": "Jumlah tukar minimum adalah {{amount}}",
+        "max": "Maks",
+        "toDeposit": "Ke Deposit →",
+        "swapBeforeTrading": "Tukar USDC ke {{quoteAsset}} sebelum trading",
+        "enabledSuccess": "Akun Terpadu diaktifkan",
+        "enableFailed": "Aktifkan Akun Terpadu gagal",
+        "swapFailed": "Tukar gagal",
+        "swapSuccess": "Tukar berhasil",
+        "estReceiveTooltip": "Jumlah perkiraan terima tergantung pada fluktuasi harga pasar.",
+        "buyAsset": "Beli {{asset}}",
+        "sellAsset": "Jual {{asset}}",
+        "toSwapEntry": "Ke Tukar →",
+        "toDepositEntry": "Ke Deposit →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Transfer",
+        "from": "Dari",
+        "to": "Ke",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Saldo",
+        "amount": "Jumlah",
+        "max": "Maks",
+        "submit": "Konfirmasi",
+        "insufficientBalance": "Saldo tidak mencukupi",
+        "invalidAmount": "Silakan masukkan jumlah yang valid"
+      },
+      "PerpsMultiBalance": {
+        "title": "Saldo Hyperliquid",
+        "deposit": "Setor",
+        "withdraw": "Tarik"
+      },
+      "PerpsAbout": {
+        "title": "Tentang"
+      },
+      "transferToSpot": "Transfer ke Spot",
+      "transferToPerps": "Transfer ke Perps",
+      "selectChainToWithdraw": "Pilih Chain untuk Withdrawal"
     },
     "perpsPro": {
       "chatArea": {
@@ -3583,7 +3655,8 @@
         "oracleTips": "Nilai median harga eksternal yang dilaporkan oleh validator untuk menghitung biaya pendanaan.",
         "fundingCountdown": "Biaya pendanaan / Hitung mundur",
         "oracle": "orakel",
-        "fundingTips": "Laju pendanaan per jam di mana posisi panjang membayar posisi pendek (jika nilainya negatif, posisi pendek membayar posisi panjang). Tidak ada biaya terkait pendanaan, yang merupakan transfer antar pengguna secara peer-to-peer untuk mendorong harga menuju harga spot. Lihat Dokumentasi untuk rinciannya."
+        "fundingTips": "Laju pendanaan per jam di mana posisi panjang membayar posisi pendek (jika nilainya negatif, posisi pendek membayar posisi panjang). Tidak ada biaya terkait pendanaan, yang merupakan transfer antar pengguna secara peer-to-peer untuk mendorong harga menuju harga spot. Lihat Dokumentasi untuk rinciannya.",
+        "categoryAll": "SEMUA"
       },
       "userInfo": {
         "tab": {
@@ -3627,7 +3700,9 @@
           "closedPnl": "Pnl terealisasi",
           "direction": "Arah",
           "fundingTipsV2": "Pendanaan bersih sejak posisi dibuka. nilai pendanaan merah (negatif) menunjukkan pendanaan yang dibayar, sementara nilai hijau (positif) menunjukkan pendanaan yang diterima.",
-          "fundingTipsBold": "Ini menunjukkan total pendanaan yang telah diselesaikan sejak posisi dibuka. Nilai <bold>Hijau (positif)</bold> berarti Anda telah mendapatkan dari trader lain, sementara nilai <bold>Merah (negatif)</bold> adalah biaya pendanaan yang telah Anda bayar kepada mereka."
+          "fundingTipsBold": "Ini menunjukkan total pendanaan yang telah diselesaikan sejak posisi dibuka. Nilai <bold>Hijau (positif)</bold> berarti Anda telah mendapatkan dari trader lain, sementara nilai <bold>Merah (negatif)</bold> adalah biaya pendanaan yang telah Anda bayar kepada mereka.",
+          "assets": "Aset",
+          "about": "Tentang"
         },
         "emptyMessage": {
           "fundingHistory": "Tidak ada riwayat pendanaan",
@@ -3637,7 +3712,8 @@
           "orderHistory": "Tidak ada riwayat pesanan.",
           "tradeHistory": "Tidak ada riwayat perdagangan.",
           "positions": "Tidak ada posisi terbuka.",
-          "twapHistory": "Tidak ada riwayat TWAP"
+          "twapHistory": "Tidak ada riwayat TWAP",
+          "assets": "Tidak ada aset"
         },
         "positionInfo": {
           "currentPosition": "Posisi Saat Ini",
@@ -3710,6 +3786,17 @@
           "reduceOnlyCanceled": "Dibatalkan karena hanya pengurangan",
           "minTradeNtlRejected": "Ditolak karena min perdagangan NTL",
           "siblingFilledCanceled": "Dibatalkan karena urutan saudara telah terisi"
+        },
+        "assets": {
+          "columnAsset": "Aset",
+          "columnTotal": "Total Saldo",
+          "columnAvailable": "Saldo Tersedia",
+          "columnAction": "Tindakan",
+          "swapStablecoins": "Tukar Stablecoin",
+          "enableUnifiedAccount": "Aktifkan Unified Account",
+          "transferToPerps": "Transfer ke Perps",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3828,7 +3915,8 @@
         "orderTypeTooltipTwap": "TWAP (Time-Weighted Average Price) adalah strategi eksekusi perdagangan algoritmik yang bertujuan untuk mencapai harga eksekusi rata-rata yang mendekati harga rata-rata berbobot waktu dari periode yang ditentukan oleh pengguna.",
         "bboTips": "Best Bid Offer (BBO) mengacu pada harga tawar terbaik yang tersedia dan harga permintaan terbaik yang tersedia di buku pesanan pada waktu tertentu. Pesanan BBO selalu ditempatkan menggunakan ukuran tick minimum yang tepat, memastikan penetapan harga yang terperinci dan akurat tanpa bergantung pada preferensi tampilan.",
         "orderTypeTooltipTakeMarket": "Ambil Pesanan Pasar menjadi pesanan pasar ketika harga ambil yang ditentukan tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",
-        "min": "min"
+        "min": "min",
+        "swapStableCoins": "Tukar Stablecoin"
       },
       "marginMode": {
         "cross": "Lepas",
@@ -3880,7 +3968,16 @@
         "crossAccountLeverage": "Leveraged Akun Silang",
         "maintenanceMarginTips": "Nilai portofolio minimum yang diperlukan untuk mempertahankan posisi silang Anda tetap terbuka",
         "crossAccountLeverageTips": "Leverage Akun Silang = Total Nilai Posisi Silang / Nilai Akun Silang.",
-        "available": "Tersedia:"
+        "available": "Tersedia:",
+        "accountSummary": "Ringkasan Akun",
+        "unifiedAccountSummary": "Ringkasan Akun Terpadu",
+        "unifiedAccountRatio": "Rasio Akun Terpadu",
+        "unifiedAccountRatioTips": "Mewakili risiko likuidasi portofolio. Ketika nilainya lebih dari 95%, portofolio Anda mungkin akan dilikuidasi.",
+        "unifiedAccountLeverage": "Leverage Akun Terpadu",
+        "unifiedAccountLeverageTips": "Leverage Akun Terpadu = Total Nilai Posisi Cross / Total Saldo Jaminan.",
+        "perpsMaintenanceMargin": "Margin Pemeliharaan Perps",
+        "perpsPortfolioValue": "Nilai Portofolio Perps",
+        "perpsUnrealizedPnl": "PNL Belum Terealisasi Perps"
       },
       "accountActions": {
         "pending": "Menunggu",
@@ -4329,7 +4426,10 @@
       "selectChain": "Pilih Rantai",
       "hfTitle": "Faktor Kesehatan",
       "hf": "Faktor kesehatan",
-      "selectMarket": "Pilih Pasar"
+      "selectMarket": "Pilih Pasar",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simulasi Gagal. Transaksi ini kemungkinan besar akan gagal karena kesalahan AAVE."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

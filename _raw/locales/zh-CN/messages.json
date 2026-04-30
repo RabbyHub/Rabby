@@ -3414,7 +3414,16 @@
         "closedPnl": "已实现盈亏",
         "size": "头寸规模",
         "fee": "手续费",
-        "feeDesc": "当用户进行交易时，同时会收取 <1>交易费用</1> 和 <2>建造者费用</2>。"
+        "feeDesc": "当用户进行交易时，同时会收取 <1>交易费用</1> 和 <2>建造者费用</2>。",
+        "amount": "数量",
+        "asset": "资产",
+        "action": "操作",
+        "value": "价值",
+        "buy": "买入",
+        "sell": "卖出",
+        "transferDetailTitle": "转账",
+        "transferActionToSpot": "从合约账户转至现货",
+        "transferActionToPerps": "从现货转至合约账户"
       },
       "logoutConfirmModal": {
         "title": "登出当前地址",
@@ -3439,7 +3448,9 @@
         "hyperliquidFeeLabelTooltip": "新用户需支付 Hyperliquid 一次性激活费用。",
         "amount": "金额",
         "hypeActivationFeeTip": "Hyperliquid 将收取一次性激活费 {{fee}} 作为首次 HyperEVM 提现的费用。",
-        "feeTipTooltipHype": "提取到 EVM 将收取 ~0.00002 HYPE 的费用。"
+        "feeTipTooltipHype": "提取到 EVM 将收取 ~0.00002 HYPE 的费用。",
+        "balance": "余额",
+        "chain": "链"
       },
       "home": {
         "markPrice": "标记价格",
@@ -3608,7 +3619,68 @@
       },
       "addFunds": "添加资金",
       "crossMarginLiqPriceTip": "在跨保证金模式下，单个头寸的清算价格仅供参考估算。",
-      "selectTokenToWithdraw": "选择提现代币"
+      "selectTokenToWithdraw": "选择提现代币",
+      "PerpsDepositCard": {
+        "availableToTrade": "可交易：",
+        "deposit": "充值",
+        "swap": "兑换"
+      },
+      "EnableUnifiedAccount": {
+        "title": "启用统一账户",
+        "desc": "统一账户是推荐的账户模式，可简化交易体验。所有代币的现货和永续合约余额将合并，所有可用资产均支持交叉保证金。",
+        "confirm": "确认",
+        "enable": "启用",
+        "cancel": "取消",
+        "importantTips": "启用统一账户后，所有 USDC 抵押品将作为交叉保证金使用。",
+        "important": "重要提示"
+      },
+      "PerpsSpotSwap": {
+        "title": "兑换稳定币",
+        "from": "从",
+        "to": "兑换为",
+        "balance": "余额",
+        "estReceive": "预计接收",
+        "swapBtn": "兑换",
+        "insufficientBalance": "余额不足",
+        "invalidAmount": "请输入有效金额",
+        "minimumAmount": "最小兑换金额为 {{amount}}",
+        "max": "最大",
+        "toDeposit": "去充值 →",
+        "swapBeforeTrading": "交易前请先将 USDC 兑换为 {{quoteAsset}}",
+        "enabledSuccess": "统一账户已启用",
+        "enableFailed": "启用统一账户失败",
+        "swapFailed": "兑换失败",
+        "swapSuccess": "兑换成功完成",
+        "estReceiveTooltip": "预计接收金额受市场价格波动影响。",
+        "buyAsset": "买入 {{asset}}",
+        "sellAsset": "卖出 {{asset}}",
+        "toSwapEntry": "去兑换 →",
+        "toDepositEntry": "去充值 →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "转账",
+        "from": "从",
+        "to": "到",
+        "spot": "现货",
+        "perps": "永续",
+        "balance": "余额",
+        "amount": "数量",
+        "max": "最大",
+        "submit": "确认",
+        "insufficientBalance": "余额不足",
+        "invalidAmount": "请输入有效金额"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid 余额",
+        "deposit": "充值",
+        "withdraw": "提现"
+      },
+      "PerpsAbout": {
+        "title": "关于"
+      },
+      "transferToSpot": "转账到现货",
+      "transferToPerps": "转账到永续合约",
+      "selectChainToWithdraw": "选择提现链"
     },
     "perpsPro": {
       "chatArea": {
@@ -3626,7 +3698,8 @@
         "markTips": "用于保证金管理、计算未实现盈亏、强平，以及触发止盈/止损订单。",
         "symbol": "永续合约符号",
         "fundingCountdown": "资金费率 / 倒计时",
-        "fundingTips": "多头向空头支付的每小时资金费率（若为负数，空头向多头支付）。资金交易不收取任何费用，这是一种用户之间的点对点转账，旨在将价格推向现货价格。详见文档以了解详情。"
+        "fundingTips": "多头向空头支付的每小时资金费率（若为负数，空头向多头支付）。资金交易不收取任何费用，这是一种用户之间的点对点转账，旨在将价格推向现货价格。详见文档以了解详情。",
+        "categoryAll": "全部"
       },
       "userInfo": {
         "tab": {
@@ -3670,7 +3743,9 @@
           "closedPnl": "已实现盈亏",
           "unrealizedPnl": "未实现盈亏",
           "fundingTipsV2": "自开仓以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。",
-          "fundingTipsBold": "这显示了自仓位开启以来您的总资金结算情况。<bold>绿色（正值）</bold>表示您从其他交易者那里赚取的资金，而<bold>红色（负值）</bold>表示您向他们支付的资金成本。"
+          "fundingTipsBold": "这显示了自仓位开启以来您的总资金结算情况。<bold>绿色（正值）</bold>表示您从其他交易者那里赚取的资金，而<bold>红色（负值）</bold>表示您向他们支付的资金成本。",
+          "assets": "资产",
+          "about": "关于"
         },
         "emptyMessage": {
           "positions": "暂无持仓",
@@ -3680,7 +3755,8 @@
           "orderHistory": "暂无订单记录",
           "tradeHistory": "暂无成交记录",
           "twapHistory": "暂无 TWAP 历史",
-          "activeTwap": "当前无活跃的TWAP"
+          "activeTwap": "当前无活跃的TWAP",
+          "assets": "暂无资产"
         },
         "positionInfo": {
           "configure": "配置",
@@ -3753,6 +3829,17 @@
           "perpMarginRejected": "拒绝的永续合约保证金",
           "rejected": "已拒绝",
           "siblingFilledCanceled": "由于兄弟订单已被成交而取消"
+        },
+        "assets": {
+          "columnAsset": "资产",
+          "columnTotal": "总余额",
+          "columnAvailable": "可用余额",
+          "columnAction": "操作",
+          "swapStablecoins": "兑换稳定币",
+          "enableUnifiedAccount": "启用统一账户",
+          "transferToPerps": "转账到永续合约",
+          "usdcSpot": "USDC（现货）",
+          "usdcPerps": "USDC（永续）"
         }
       },
       "statusBar": {
@@ -3871,7 +3958,8 @@
         "orderTypeTooltipScale": "缩放订单允许您将一个金额拆分为多个子订单，以最小化市场影响。",
         "totalTime": "总时间（5分钟-24小时）",
         "orderTypeTooltipTwap": "TWAP（时间加权平均价格）是一种算法交易执行策略，旨在实现接近用户指定周期的时间加权平均价格的平均执行价格。",
-        "bboTips": "最佳买卖报价（BBO）指的是在任何给定时间内，订单薄上可用的最佳卖出价格和最佳买入价格。BBO 订单始终使用精确的最小跳动点大小进行下单，确保价格细致且准确，与显示偏好无关。"
+        "bboTips": "最佳买卖报价（BBO）指的是在任何给定时间内，订单薄上可用的最佳卖出价格和最佳买入价格。BBO 订单始终使用精确的最小跳动点大小进行下单，确保价格细致且准确，与显示偏好无关。",
+        "swapStableCoins": "兑换稳定币"
       },
       "marginMode": {
         "cross": "全仓",
@@ -3923,7 +4011,16 @@
         "deposit": "充值",
         "accountEquityTip": "余额 + 未实现盈亏（若将所有头寸平仓时的近似账户价值）",
         "crossAccountLeverageTips": "跨账户杠杆率 = 跨账户总头寸价值 / 跨账户价值。",
-        "available": "可用："
+        "available": "可用：",
+        "accountSummary": "账户概览",
+        "unifiedAccountSummary": "统一账户概览",
+        "unifiedAccountRatio": "统一账户比率",
+        "unifiedAccountRatioTips": "表示投资组合清算风险。当该值大于95%时，您的投资组合可能会被清算。",
+        "unifiedAccountLeverage": "统一账户杠杆",
+        "unifiedAccountLeverageTips": "统一账户杠杆 = 交叉仓位总价值 / 总抵押品余额。",
+        "perpsMaintenanceMargin": "永续合约维持保证金",
+        "perpsPortfolioValue": "永续合约投资组合价值",
+        "perpsUnrealizedPnl": "永续合约未实现盈亏"
       },
       "accountActions": {
         "available": "可用",
@@ -4372,7 +4469,10 @@
       "hfTitle": "健康因子",
       "searchMarket": "搜索市场",
       "selectChain": "选择区块链",
-      "disabled": "禁用"
+      "disabled": "禁用",
+      "signFallback": {
+        "preExecFailedUseFullSign": "模拟失败。此交易很可能因 AAVE 错误而失败。"
+      }
     },
     "desktopSmallSwap": {
       "title": "小额资产归集",

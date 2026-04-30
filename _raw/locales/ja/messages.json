@@ -3374,7 +3374,16 @@
         "size": "ポジションサイズ",
         "provider": "プロバイダ",
         "closedPnl": "確定損益",
-        "feeDesc": "ユーザーが取引を行うと、<1>取引手数料</1>と<2>ビルダー手数料</2>が適用されます。"
+        "feeDesc": "ユーザーが取引を行うと、<1>取引手数料</1>と<2>ビルダー手数料</2>が適用されます。",
+        "amount": "数量",
+        "asset": "資産",
+        "action": "アクション",
+        "value": "価値",
+        "buy": "買い",
+        "sell": "売り",
+        "transferDetailTitle": "送金",
+        "transferActionToSpot": "送金（PerpsからSpotへ）",
+        "transferActionToPerps": "送金（SpotからPerpsへ）"
       },
       "logoutConfirmModal": {
         "title": "現在のアドレスをログアウト",
@@ -3399,7 +3408,9 @@
         "hyperliquidFeeLabelTooltip": "新規ユーザーはHyperliquidによって一度限りのアクティベーション手数料が課されます。",
         "amount": "金額",
         "feeTipTooltipHype": "EVMへの引き出しには約0.00002 HYPEの手数料が発生します。",
-        "hypeActivationFeeTip": "Hyperliquid は最初の HyperEVM 引き出しに対して、{{fee}} の一度限りのアクティベーション料金を請求します。"
+        "hypeActivationFeeTip": "Hyperliquid は最初の HyperEVM 引き出しに対して、{{fee}} の一度限りのアクティベーション料金を請求します。",
+        "balance": "残高",
+        "chain": "チェーン"
       },
       "home": {
         "markPrice": "マーク価格",
@@ -3568,7 +3579,68 @@
       },
       "addFunds": "資金を追加する",
       "crossMarginLiqPriceTip": "クロスマージンモードでは、単一ポジションの清算価格は参考用の推定値です。",
-      "selectTokenToWithdraw": "出金するトークンを選択してください"
+      "selectTokenToWithdraw": "出金するトークンを選択してください",
+      "PerpsDepositCard": {
+        "availableToTrade": "取引可能：",
+        "deposit": "入金",
+        "swap": "交換"
+      },
+      "EnableUnifiedAccount": {
+        "title": "統合アカウントを有効化",
+        "desc": "統合アカウントは推奨されるアカウントモードで、取引体験を簡素化します。スポットとPerpsの残高は全トークンで統合され、すべての借入可能資産でクロスマージンがサポートされます。",
+        "confirm": "確認",
+        "enable": "有効にする",
+        "cancel": "キャンセル",
+        "importantTips": "統合アカウントが有効になると、すべてのUSDC担保がクロスマージンとして使用されます。",
+        "important": "重要"
+      },
+      "PerpsSpotSwap": {
+        "title": "ステーブルコインを交換",
+        "from": "出金",
+        "to": "交換先",
+        "balance": "残高",
+        "estReceive": "推定受取額",
+        "swapBtn": "交換",
+        "insufficientBalance": "残高不足",
+        "invalidAmount": "有効な金額を入力してください",
+        "minimumAmount": "最小交換額は{{amount}}です",
+        "max": "最大",
+        "toDeposit": "入金へ →",
+        "swapBeforeTrading": "取引前にUSDCを{{quoteAsset}}に交換してください",
+        "enabledSuccess": "統合アカウントが有効になりました",
+        "enableFailed": "統合アカウントの有効化に失敗しました",
+        "swapFailed": "交換に失敗しました",
+        "swapSuccess": "交換が完了しました",
+        "estReceiveTooltip": "推定受取額は市场价格の変動により異なります。",
+        "buyAsset": "{{asset}}を購入",
+        "sellAsset": "{{asset}}を売却",
+        "toSwapEntry": "交換へ →",
+        "toDepositEntry": "入金へ →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "送金",
+        "from": "出金",
+        "to": "到",
+        "spot": "现货",
+        "perps": "Perps",
+        "balance": "残高",
+        "amount": "数量",
+        "max": "最大",
+        "submit": "確認",
+        "insufficientBalance": "残高不足",
+        "invalidAmount": "有効な金額を入力してください"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid 残高",
+        "deposit": "入金",
+        "withdraw": "出金"
+      },
+      "PerpsAbout": {
+        "title": "概要"
+      },
+      "transferToSpot": "現物账户への转移送",
+      "transferToPerps": "Perpsへ移転",
+      "selectChainToWithdraw": "出金先のチェーンを選択"
     },
     "perpsPro": {
       "chatArea": {
@@ -3586,7 +3658,8 @@
         "8hrFunding": "8時間ファンディング",
         "openInterest": "建玉",
         "markTips": "無期限契約における証拠金管理、未実現PNLの算出、清算、TP/SL注文の発動に使用します。",
-        "openInterestTips": "両建てオープン・インタレスト: 本契約におけるロングポジションとショートポジションの合計。"
+        "openInterestTips": "両建てオープン・インタレスト: 本契約におけるロングポジションとショートポジションの合計。",
+        "categoryAll": "すべて"
       },
       "userInfo": {
         "tab": {
@@ -3630,7 +3703,9 @@
           "runningTimeTotal": "経過時間 / 合計",
           "unrealizedPnlTooltip": "マーク価格は未実現PNLを推定するために使用されます。実現PNLには取引価格のみが使用されます。",
           "fundingTipsV2": "ポジションが開かれてからのネット資金。赤（負）の資金値は支払われた資金を示し、緑（正）の値は受け取った資金を示します。",
-          "fundingTipsBold": "これは、ポジションがオープンして以来の合計資金決済を示しています。<bold>グリーン（プラス）</bold>の値は、他のトレーダーから獲得したことを意味し、<bold>レッド（マイナス）</bold>の値は、彼らに支払った資金コストです。"
+          "fundingTipsBold": "これは、ポジションがオープンして以来の合計資金決済を示しています。<bold>グリーン（プラス）</bold>の値は、他のトレーダーから獲得したことを意味し、<bold>レッド（マイナス）</bold>の値は、彼らに支払った資金コストです。",
+          "assets": "資産",
+          "about": "概要"
         },
         "emptyMessage": {
           "positions": "ポジションなし",
@@ -3640,7 +3715,8 @@
           "openOrders": "未約定の注文はありません",
           "fundingHistory": "ファンディング履歴なし",
           "twapHistory": "TWAP履歴なし",
-          "orderHistory": "注文履歴がありません"
+          "orderHistory": "注文履歴がありません",
+          "assets": "資産がありません"
         },
         "positionInfo": {
           "receive": "受け取る",
@@ -3713,6 +3789,17 @@
           "perpMarginRejected": "拒否されたパーペッツマージン",
           "iocCancelRejected": "IOCキャンセルのため拒否されました",
           "siblingFilledCanceled": "兄弟注文が埋まったためキャンセルされました"
+        },
+        "assets": {
+          "columnAsset": "資産",
+          "columnTotal": "総残高",
+          "columnAvailable": "利用可能残高",
+          "columnAction": "アクション",
+          "swapStablecoins": "ステーブルコインを交換",
+          "enableUnifiedAccount": "統合アカウントを有効化",
+          "transferToPerps": "Perpsへ移転",
+          "usdcSpot": "USDC(現物)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3831,7 +3918,8 @@
         "orderTypeTooltipTakeLimit": "リミットオーダーは、指定したテイクプライスに達したときにリミットオーダーになります。オーダーをアクティブにするためのトリガープライスを指定してください。",
         "bboTips": "最良い入札オファー（BBO）とは、特定の時点におけるオーダーブック上での最良の売り価格と最良の買い価格を指します。BBOの注文は常に正確な最小ティックサイズを使用して出され、表示の好みに依存しない細かな正確な価格設定を保証します。",
         "orderTypeTooltipScale": "スケール注文を使用すると、金額を複数のサブオーダーに分割して市場への影響を最小限に抑えることができます。",
-        "orderTypeTooltipTwap": "TWAP（時間加重平均価格）は、ユーザー指定の期間の時間加重平均価格に近い平均実行価格を達成することを目指すアルゴリズミックな取引執行戦略です。"
+        "orderTypeTooltipTwap": "TWAP（時間加重平均価格）は、ユーザー指定の期間の時間加重平均価格に近い平均実行価格を達成することを目指すアルゴリズミックな取引執行戦略です。",
+        "swapStableCoins": "ステーブルコインを交換"
       },
       "marginMode": {
         "cross": "クロス証拠金",
@@ -3883,7 +3971,16 @@
         "crossAccountLeverageTips": "クロスアカウント・レバレッジ = 総クロスポジション価値 / クロスアカウント価値",
         "crossMarginRatioTips": "維持証拠金 / ポートフォリオ価値。クロス建玉は証拠金率が100%に達した場合に清算されます。",
         "accountEquityTip": "残高 + 未実現損益（全ポジションを決済した場合の概算口座価値）",
-        "available": "利用可能:"
+        "available": "利用可能:",
+        "accountSummary": "アカウント概要",
+        "unifiedAccountSummary": "統合アカウント概要",
+        "unifiedAccountRatio": "統合アカウント比率",
+        "unifiedAccountRatioTips": "ポートフォリオの清算リスクを示します。値が95%を超えると、ポートフォリオが清算される可能性があります。",
+        "unifiedAccountLeverage": "統合アカウントレバレッジ",
+        "unifiedAccountLeverageTips": "統合アカウントレバレッジ = 全クロス取引価値 / 全担保残高",
+        "perpsMaintenanceMargin": "永続契約維持証拠金",
+        "perpsPortfolioValue": "永続契約ポートフォリオ価値",
+        "perpsUnrealizedPnl": "永続契約未実現損益"
       },
       "accountActions": {
         "available": "利用可能",
@@ -4332,7 +4429,10 @@
       "hfTitle": "ヘルスファクター",
       "selectMarket": "マーケットを選択",
       "searchMarket": "マーケットを検索",
-      "selectChain": "チェーンを選択"
+      "selectChain": "チェーンを選択",
+      "signFallback": {
+        "preExecFailedUseFullSign": "シミュレーションに失敗しました。このトランザクションは、AAVE エラーのため、おそらく失敗します。"
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

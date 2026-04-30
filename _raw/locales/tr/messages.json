@@ -3377,7 +3377,16 @@
         "tradeValue": "İşlem Değeri",
         "size": "Pozisyon Büyüklüğü",
         "closedPnl": "Kapatılan Kâr/Zarar",
-        "feeDesc": "Kullanıcılar işlem yaptığında, hem <1>işlem ücretleri</1> hem de <2>oluşturucu ücretleri</2> geçerlidir."
+        "feeDesc": "Kullanıcılar işlem yaptığında, hem <1>işlem ücretleri</1> hem de <2>oluşturucu ücretleri</2> geçerlidir.",
+        "amount": "Miktar",
+        "asset": "Varlık",
+        "action": "İşlem",
+        "value": "Değer",
+        "buy": "Satın Al",
+        "sell": "Sat",
+        "transferDetailTitle": "Transfer",
+        "transferActionToSpot": "Transfer (Perps'ten Spot'a)",
+        "transferActionToPerps": "Transfer (Spot'tan Perps'e)"
       },
       "logoutConfirmModal": {
         "desc": "Mevcut Sürekli Vadeli Hesabınızdan çıkış yapıyorsunuz. Bu adresle giriş yaparak istediğiniz zaman hesabınızı geri yükleyebilirsiniz.",
@@ -3402,7 +3411,9 @@
         "hyperliquidFeeLabelTooltip": "Yeni kullanıcılar Hyperliquid tarafından tek seferlik bir etkinleştirme ücreti öder.",
         "amount": "Miktar",
         "feeTipTooltipHype": "EVM'ye çekim yapmak için yaklaşık ~0.00002 HYPE ücret alınacaktır.",
-        "hypeActivationFeeTip": "Hyperliquid, ilk HyperEVM çekimi için {{fee}} tutarında tek seferlik bir aktivasyon ücreti alacaktır."
+        "hypeActivationFeeTip": "Hyperliquid, ilk HyperEVM çekimi için {{fee}} tutarında tek seferlik bir aktivasyon ücreti alacaktır.",
+        "balance": "Bakiye",
+        "chain": "Zincir"
       },
       "home": {
         "entryPrice": "Giriş Fiyatı",
@@ -3571,7 +3582,68 @@
       },
       "addFunds": "Fon Ekle",
       "crossMarginLiqPriceTip": "Cross Margin modunda, tek bir pozisyon için tasfiye fiyatı sadece referans için bir tahmindir.",
-      "selectTokenToWithdraw": "Çekilecek Token'ı Seçin"
+      "selectTokenToWithdraw": "Çekilecek Token'ı Seçin",
+      "PerpsDepositCard": {
+        "availableToTrade": "İşlem yapılabilir: ",
+        "deposit": "Yatır",
+        "swap": "Takas"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Birleşik Hesabı Etkinleştir",
+        "desc": "Birleşik Hesap, alım satım deneyimini basitleştiren önerilen hesap modudur. Spot ve Perps bakiyeleri tüm tokenlar için birleştirilir ve tüm mevcut varlıklarda çapraz marj desteklenir.",
+        "confirm": "Onayla",
+        "enable": "Etkinleştir",
+        "cancel": "İptal Et",
+        "importantTips": "Birleşik Hesap etkinleştirildiğinde tüm USDC teminatı çapraz marj olarak kullanılacaktır.",
+        "important": "Önemli"
+      },
+      "PerpsSpotSwap": {
+        "title": "Stablecoin Swap",
+        "from": "Kimden",
+        "to": "Takası Yap",
+        "balance": "Bakiye",
+        "estReceive": "Tah.Al",
+        "swapBtn": "Takas",
+        "insufficientBalance": "Yetersiz bakiye",
+        "invalidAmount": "Geçerli bir tutar girin",
+        "minimumAmount": "Minimum takas tutarı {{amount}}",
+        "max": "Maks",
+        "toDeposit": "Yatırıma →",
+        "swapBeforeTrading": "İşlem yapmadan önce USDC'yi {{quoteAsset}}'e takas edin",
+        "enabledSuccess": "Birleşik Hesap etkinleştirildi",
+        "enableFailed": "Birleşik Hesap etkinleştirme başarısız",
+        "swapFailed": "Takas başarısız",
+        "swapSuccess": "Takas başarıyla tamamlandı",
+        "estReceiveTooltip": "Tahmini alınacak tutar piyasa fiyat dalgalanmalarına tabidir.",
+        "buyAsset": "{{asset}} Satın Al",
+        "sellAsset": "{{asset}} Sat",
+        "toSwapEntry": "Takasa →",
+        "toDepositEntry": "Yatırıma →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Transfer",
+        "from": "Kimden",
+        "to": "Alıcı",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Bakiye",
+        "amount": "Miktar",
+        "max": "Maks",
+        "submit": "Onayla",
+        "insufficientBalance": "Yetersiz bakiye",
+        "invalidAmount": "Geçerli bir tutar girin"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid Bakiyeleri",
+        "deposit": "Yatır",
+        "withdraw": "Çek"
+      },
+      "PerpsAbout": {
+        "title": "Hakkında"
+      },
+      "transferToSpot": "Spot'a Aktar",
+      "transferToPerps": "Perps'e Aktar",
+      "selectChainToWithdraw": "Çekmek İçin Zincir Seç"
     },
     "perpsPro": {
       "chatArea": {
@@ -3589,7 +3661,8 @@
         "oracleTips": "Doğrulayıcılar tarafından bildirilen harici fiyatların medyanı, finansman oranlarını hesaplamak için kullanılır.",
         "mark": "Mark",
         "markTips": "Marjin hesaplama, gerçekleşmemiş PNL'nin hesaplanması, likidasyonlar ve Kâr Al/Zarar Durdur emirlerini tetiklemek için kullanılır.",
-        "fundingTips": "Uzunlar kısa pozisyonlara saatlik ödeme yapar (negatif ise kısa pozisyonlar uzunlara ödeme yapar). Finansmanla ilgili herhangi bir ücret yoktur; bu, kullanıcılar arasında spot fiyatına doğru fiyatları itmek amacıyla yapılan eşler arası bir transferdir. Detaylar için dokümantasyona bakın."
+        "fundingTips": "Uzunlar kısa pozisyonlara saatlik ödeme yapar (negatif ise kısa pozisyonlar uzunlara ödeme yapar). Finansmanla ilgili herhangi bir ücret yoktur; bu, kullanıcılar arasında spot fiyatına doğru fiyatları itmek amacıyla yapılan eşler arası bir transferdir. Detaylar için dokümantasyona bakın.",
+        "categoryAll": "Tümü"
       },
       "userInfo": {
         "tab": {
@@ -3633,7 +3706,9 @@
           "closedPnl": "Gerçekleşen PnL",
           "fee": "Fonlama ücreti",
           "fundingTipsV2": "Pozisyon açıldıktan sonra net finansman. Kırmızı (negatif) bir finansman değeri, ödenen finansmanı; yeşil (pozitif) bir değer ise alınan finansmanı gösterir.",
-          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <bold>Yeşil (pozitif)</bold> değerler, diğer ticaretçilerden kazandığınızı, <bold>Kırmızı (negatif)</bold> değerler ise onlara ödediğiniz finansman maliyetleridir."
+          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <bold>Yeşil (pozitif)</bold> değerler, diğer ticaretçilerden kazandığınızı, <bold>Kırmızı (negatif)</bold> değerler ise onlara ödediğiniz finansman maliyetleridir.",
+          "assets": "Varlıklar",
+          "about": "Hakkında"
         },
         "emptyMessage": {
           "openOrders": "Açık emir yok.",
@@ -3643,7 +3718,8 @@
           "orderHistory": "Sipariş geçmişi yok",
           "fundingHistory": "Fonlama geçmişi yok",
           "positions": "Pozisyon yok",
-          "fillHistory": "Tamamlanan işlemler geçmişi yok"
+          "fillHistory": "Tamamlanan işlemler geçmişi yok",
+          "assets": "Varlık yok"
         },
         "positionInfo": {
           "newPosition": "Yeni Pozisyon",
@@ -3716,6 +3792,17 @@
           "perpMarginRejected": "Reddedilen Perp Marjı Reddedildi",
           "minTradeNtlRejected": "Min tic NTL nedeniyle reddedildi",
           "siblingFilledCanceled": "İptal edildi çünkü kardeş sıralama dolduruldu."
+        },
+        "assets": {
+          "columnAsset": "Varlıklar",
+          "columnTotal": "Toplam Bakiye",
+          "columnAvailable": "Kullanılabilir Bakiye",
+          "columnAction": "İşlem",
+          "swapStablecoins": "Stablecoin Swap",
+          "enableUnifiedAccount": "Birleşik Hesabı Etkinleştir",
+          "transferToPerps": "Perps'e Aktar",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3834,7 +3921,8 @@
         "bboTips": "En İyi Teklif Teklifi (BBO), herhangi bir anda emir defterinde mevcut olan en iyi arza fiyatı ve en iyi teklife fiyatını ifade eder. BBO emirleri her zaman tam minimum fiyat adımı kullanılarak verilir, bu da fiyatların ayrıntılı ve doğru olmasını sağlar ve görüntüleme tercihlerinden bağımsızdır.",
         "maxDurationTwap": "TWAP emri siparişinin çalışması için maksimum süre şudur:",
         "orderTypeTooltipScale": "Scaled Orders, bir miktarı piyasa etkisini minimize etmek için birden fazla alt siparişe bölmenizi sağlar.",
-        "orderTypeTooltipTwap": "TWAP (Zaman Ağırlıklı Ortalama Fiyat), kullanıcının belirttiği dönem boyunca zaman ağırlıklı ortalama fiyata yakın bir ortalama işlem fiyatı elde etmeyi amaçlayan bir algoritmik işlem yürütme stratejisidir."
+        "orderTypeTooltipTwap": "TWAP (Zaman Ağırlıklı Ortalama Fiyat), kullanıcının belirttiği dönem boyunca zaman ağırlıklı ortalama fiyata yakın bir ortalama işlem fiyatı elde etmeyi amaçlayan bir algoritmik işlem yürütme stratejisidir.",
+        "swapStableCoins": "Stablecoin Swap"
       },
       "marginMode": {
         "title": "Marjin Modu",
@@ -3886,7 +3974,16 @@
         "accountEquity": "Hesap Özsermayesi",
         "crossMarginRatioTips": "Bakım Marjı / Portföy Değeri. Çapraz pozisyonlarınız, Marj Oranı yüzde 100'e ulaştığında tasfiye edilecektir.",
         "accountEquityTip": "Bakiye + Gerçekleşmemiş Kâr/Zarar (tüm pozisyonlar kapatıldığında yaklaşık hesap değeri)",
-        "available": "Mevcut:"
+        "available": "Mevcut:",
+        "accountSummary": "Hesap Özeti",
+        "unifiedAccountSummary": "Birleşik Hesap Özeti",
+        "unifiedAccountRatio": "Birleşik Hesap Oranı",
+        "unifiedAccountRatioTips": "Portföy tasfiyesi riskini temsil eder. Değer %95'ten büyük olduğunda, portföyünüz tasfiye edilebilir.",
+        "unifiedAccountLeverage": "Birleşik Hesap Kaldıraç",
+        "unifiedAccountLeverageTips": "Birleşik Hesap Kaldıraç = Toplam Çapraz Pozisyon Değeri / Toplam Teminat Bakiyesi.",
+        "perpsMaintenanceMargin": "Perps Bakım Marjı",
+        "perpsPortfolioValue": "Perps Portföy Değeri",
+        "perpsUnrealizedPnl": "Perps Gerçekleşmemiş K/Z"
       },
       "accountActions": {
         "pending": "Beklemede",
@@ -4335,7 +4432,10 @@
       "selectMarket": "Piyasa Seçin",
       "hf": "Sağlık faktörü",
       "searchMarket": "Pazar Ara",
-      "selectChain": "Zincir Seçin"
+      "selectChain": "Zincir Seçin",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simülasyon Başarısız. Bu işlem büyük olasılıkla AAVE hataları nedeniyle başarısız olacak."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {
