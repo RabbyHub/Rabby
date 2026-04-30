@@ -130,7 +130,7 @@ const Content: React.FC<SpotSwapContentProps> = ({
           >
             <CoinOption coin={toCoin} />
             {!disableSwitch && (
-              <RcIconArrowDownCC className="w-[12px] h-[12px] text-r-neutral-foot" />
+              <RcIconArrowDownCC className="text-r-neutral-foot" />
             )}
           </button>
         </Dropdown>
@@ -194,7 +194,7 @@ const Content: React.FC<SpotSwapContentProps> = ({
             >
               <CoinOption coin={fromCoin} />
               {!disableSwitch && (
-                <RcIconArrowDownCC className="w-[12px] h-[12px] text-r-neutral-foot" />
+                <RcIconArrowDownCC className="text-r-neutral-foot" />
               )}
             </button>
           </Dropdown>

@@ -260,6 +260,8 @@ let perpsCategoryCache: PerpTopTokenCategory[] = [];
 // WS tick.
 let lastCtxsByDex: Record<string, AssetCtx[]> = {};
 
+let marketDataInFlight: Promise<void> | null = null;
+
 const buildCtxsByDex = (
   payload: [string, AssetCtx[]][]
 ): Record<string, AssetCtx[]> => {
@@ -1095,71 +1097,88 @@ export const perps = createModel<RootModel>()({
     },
 
     async fetchMarketData(_, rootState) {
-      const sdk = getPerpsSDK();
+      // Coalesce concurrent fetches: any caller arriving while a previous
+      // request is still pending re-uses that promise instead of firing a
+      // duplicate. The cache is cleared once settled so the next refresh
+      // fires a fresh request.
+      if (marketDataInFlight) return marketDataInFlight;
 
-      const fetchTopTokenList = async () => {
-        try {
-          if (topAssetsCache.length > 0) {
-            return topAssetsCache;
-          }
-          const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenListV3(
-            {
-              dex_id: 'all',
+      const run = async () => {
+        const sdk = getPerpsSDK();
+
+        const fetchTopTokenList = async () => {
+          try {
+            if (topAssetsCache.length > 0) {
+              return topAssetsCache;
             }
-          );
-          if (topAssets.length > 0) {
-            topAssetsCache = topAssets;
-            return topAssets;
-          } else {
+            const topAssets = await rootState.app.wallet.openapi.getPerpTopTokenListV3(
+              {
+                dex_id: 'all',
+              }
+            );
+            if (topAssets.length > 0) {
+              topAssetsCache = topAssets;
+              return topAssets;
+            } else {
+              return DEFAULT_TOP_ASSET;
+            }
+          } catch (error) {
+            console.error('Failed to fetch top assets:', error);
             return DEFAULT_TOP_ASSET;
           }
-        } catch (error) {
-          console.error('Failed to fetch top assets:', error);
-          return DEFAULT_TOP_ASSET;
-        }
-      };
+        };
 
-      const fetchTokenCategories = async () => {
-        if (perpsCategoryCache.length > 0) {
-          return perpsCategoryCache;
-        }
-        try {
-          const categories = await rootState.app.wallet.openapi.getPerpTokenCategories(
-            {
-              lang: 'en-US',
-            }
-          );
-          if (categories.length > 0) {
-            perpsCategoryCache = categories;
-            return categories;
+        const fetchTokenCategories = async () => {
+          if (perpsCategoryCache.length > 0) {
+            return perpsCategoryCache;
           }
-        } catch (error) {
-          console.error('Failed to fetch token categories:', error);
+          try {
+            const categories = await rootState.app.wallet.openapi.getPerpTokenCategories(
+              {
+                lang: 'en-US',
+              }
+            );
+            if (categories.length > 0) {
+              perpsCategoryCache = categories;
+              return categories;
+            }
+          } catch (error) {
+            console.error('Failed to fetch token categories:', error);
+          }
+          return DEFAULT_ASSET_CATEGORY;
+        };
+
+        const [topAssets, categories, allMetas, perpDexs] = await Promise.all([
+          fetchTopTokenList(),
+          fetchTokenCategories(),
+          sdk.info.getPerpsAllMetas(),
+          getCachedPerpDexs(sdk),
+        ]);
+
+        // perpDexs is an array parallel to allMetas; entry is either null (main dex='')
+        // or { name: 'xyz', ... }. Build idx → dex name map.
+        const dexIdMap: Record<number, string> = {};
+        if (Array.isArray(perpDexs)) {
+          perpDexs.forEach((dex: any, idx: number) => {
+            dexIdMap[idx] = dex?.name ?? '';
+          });
         }
-        return DEFAULT_ASSET_CATEGORY;
+
+        const formattedMarketData = formatMarkData(
+          allMetas,
+          topAssets,
+          dexIdMap
+        );
+        dispatch.perps.setMarketData({
+          list: formattedMarketData,
+          categories,
+        });
       };
 
-      const [topAssets, categories, allMetas, perpDexs] = await Promise.all([
-        fetchTopTokenList(),
-        fetchTokenCategories(),
-        sdk.info.getPerpsAllMetas(),
-        getCachedPerpDexs(sdk),
-      ]);
-
-      // perpDexs is an array parallel to allMetas; entry is either null (main dex='')
-      // or { name: 'xyz', ... }. Build idx → dex name map.
-      const dexIdMap: Record<number, string> = {};
-      if (Array.isArray(perpDexs)) {
-        perpDexs.forEach((dex: any, idx: number) => {
-          dexIdMap[idx] = dex?.name ?? '';
-        });
-      }
-
-      const formattedMarketData = formatMarkData(allMetas, topAssets, dexIdMap);
-      dispatch.perps.setMarketData({
-        list: formattedMarketData,
-        categories,
+      marketDataInFlight = run().finally(() => {
+        marketDataInFlight = null;
       });
+      return marketDataInFlight;
     },
 
     async fetchPerpFee() {

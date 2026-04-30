@@ -258,10 +258,16 @@ export const PerpsSingleCoin = () => {
     return !!currentPosition;
   }, [currentPosition]);
 
+  const marginModeDisabled = currentAssetCtx?.onlyIsolated;
+
   useEffect(() => {
     if (!coin) return;
-    setMarginMode(marginModePreferences[coin] ?? 'isolated');
-  }, [coin, marginModePreferences]);
+    if (marginModeDisabled) {
+      setMarginMode('isolated');
+    } else {
+      setMarginMode(marginModePreferences[coin] ?? 'isolated');
+    }
+  }, [coin, marginModePreferences, marginModeDisabled]);
 
   const handleMarginModeChange = useMemoizedFn((mode: 'cross' | 'isolated') => {
     setMarginMode(mode);
@@ -1008,12 +1014,12 @@ export const PerpsSingleCoin = () => {
           </div>
         )}
 
-        <div
+        {/* <div
           className="text-r-neutral-foot mb-20"
           style={{ fontSize: '11px', lineHeight: '16px' }}
         >
           {t('page.perps.openPositionTips')}
-        </div>
+        </div> */}
 
         {isLogin && (
           <>

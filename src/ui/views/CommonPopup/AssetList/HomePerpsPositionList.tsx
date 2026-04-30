@@ -92,6 +92,7 @@ export const HomePerpsPositionList: React.FC<{ needFetchMarket?: boolean }> = ({
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 dispatch.perps.updateSelectedCoin(assetPosition.position.coin);
                 wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount!);
                 wallet.openInDesktop(
                   `/desktop/perps?${obj2query({
                     coin: assetPosition.position.coin,

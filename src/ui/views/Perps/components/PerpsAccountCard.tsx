@@ -202,11 +202,11 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
         {showChips && (
           <div
             className={clsx(
-              'mt-12 flex items-center justify-between gap-8',
-              'bg-r-neutral-bg2 rounded-[8px] px-12 h-[36px]'
+              'mt-12 flex items-start justify-between gap-8',
+              'bg-r-neutral-bg2 rounded-[8px] px-12 py-8 min-h-[36px]'
             )}
           >
-            <div className="flex items-center gap-12 min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-x-12 gap-y-6 min-w-0 flex-1">
               {visibleStableBalances.map((b) => {
                 const Icon = QUOTE_ASSET_ICON_MAP[b.coin];
                 return (
@@ -223,7 +223,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
               })}
             </div>
             <div
-              className="text-12 font-medium text-r-blue-default cursor-pointer flex-shrink-0 flex items-center gap-2"
+              className="text-12 font-medium text-r-blue-default cursor-pointer flex-shrink-0 flex items-center gap-2 leading-[20px]"
               onClick={() => onSwap?.()}
             >
               {t('page.perps.PerpsSpotSwap.toSwapEntry')}

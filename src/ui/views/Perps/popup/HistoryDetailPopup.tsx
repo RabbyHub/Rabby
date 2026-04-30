@@ -178,7 +178,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                       {t('page.perps.price')}
                     </span>
                     <span className="text-13 text-r-neutral-title-1 font-medium">
-                      ${splitNumberByStep(px || 0)} USDC
+                      {splitNumberByStep(px || 0)} USDC
                     </span>
                   </div>
 

@@ -19,10 +19,11 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
   const {
     needDepositFirst,
     needEnableTrading,
-    needSwapStableCoin,
     openSwapForCurrentQuote,
     openPerpsPopup,
   } = usePerpsTradingGate();
+
+  const currentNeedSwap = quoteAsset !== 'USDC';
 
   const handleDepositClick = () => {
     // Priority matches TradingButtons: deposit > enable-trading > swap.
@@ -37,15 +38,14 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
       openPerpsPopup('deposit');
       return;
     }
-    if (needSwapStableCoin) {
+    if (currentNeedSwap) {
       openSwapForCurrentQuote();
       return;
     }
     openPerpsPopup('deposit');
   };
 
-  const showSwapIcon =
-    needSwapStableCoin && !needDepositFirst && !needEnableTrading;
+  const showSwapIcon = !needDepositFirst && !needEnableTrading;
 
   return (
     <div className="flex items-center justify-between">

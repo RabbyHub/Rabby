@@ -27,6 +27,7 @@ import {
   WITHDRAW_CHAIN_TOKENS,
   PerpsQuoteAsset,
   getSpotBalanceKey,
+  HYPE_GAS_FEE_IN_HYPE,
 } from '@/ui/views/Perps/constants';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -106,6 +107,7 @@ export const useDepositWithdraw = (
     availableBalance,
     isUnifiedAccount,
     spotBalancesMap,
+    getAvailableByAsset,
   } = usePerpsAccount();
 
   // Fetch preTransferCheck fee for HyperEVM withdrawal — per-bridge (USDC/USDT/USDE/USDH).
@@ -138,10 +140,10 @@ export const useDepositWithdraw = (
 
   const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
 
-  // Gas fee for every HyperEVM withdrawal: fixed 0.00002 HYPE
+  // Gas fee for every HyperEVM withdrawal
   const hypeGasFeeUsd = useMemo(() => {
     const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
-    return new BigNumber(0.00002).times(hypePrice).toNumber();
+    return new BigNumber(HYPE_GAS_FEE_IN_HYPE).times(hypePrice).toNumber();
   }, [marketDataMap]);
 
   // Fetch token info
@@ -301,12 +303,13 @@ export const useDepositWithdraw = (
   }, [selectChainId, isUnifiedAccount, spotBalancesMap, availableBalance]);
 
   const withdrawMaxBalance = useMemo(() => {
-    // Pick the selected-token's balance from chainTokenItems when withdrawing to HyperEVM.
-    // `availableBalance` (cross-sum) is only correct when all stablecoins are effectively
-    // interchangeable at the sending side — i.e., USDC withdraw to Arbitrum.
+    // Arbitrum withdraw uses Hyperliquid `withdraw3`, which is USDC-only.
+    // Unified-account `availableBalance` is the cross-stablecoin sum, so picking
+    // the USDC-specific balance here prevents overstating the withdrawable amount.
+    // HyperEVM withdraw is per-asset and reads the selected token's balance.
     const baseBalance = (() => {
       if (type !== 'withdraw') return availableBalance;
-      if (!isHypeWithdraw) return availableBalance;
+      if (!isHypeWithdraw) return getAvailableByAsset('USDC');
       if (!selectedToken) return availableBalance;
       const row = chainTokenItems.find(
         (i) =>
@@ -331,6 +334,7 @@ export const useDepositWithdraw = (
     hypeTransferFee,
     selectedToken,
     chainTokenItems,
+    getAvailableByAsset,
   ]);
 
   const depositMaxUsdValue = useMemo(() => {
