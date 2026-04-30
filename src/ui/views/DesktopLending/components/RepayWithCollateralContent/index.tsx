@@ -52,6 +52,7 @@ import {
   buildRepayWithCollateralTx,
   InterestRate,
 } from '../../utils/poolService';
+import { getRateUsage } from '../../utils/supply';
 import { getCollateralTokens, getFromToken } from '../../utils/swap';
 import { LendingStyledInput } from '../StyledInput';
 import { StyledCheckbox } from '../BorrowModal';
@@ -195,6 +196,13 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
             totalBorrowsUSD: displayReserve?.totalBorrowsUSD,
           },
         };
+      })
+      .filter((item) => {
+        if (!item.displayReserve) {
+          return true;
+        }
+        const { borrowReached } = getRateUsage(item.displayReserve);
+        return !borrowReached;
       })
       .sort((a, b) => {
         if (
@@ -1009,6 +1017,12 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
               error === MINI_SIGN_ERROR.CANT_PROCESS
             ) {
               return;
+            }
+
+            if (error === MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+              message.error(
+                t('page.lending.signFallback.preExecFailedUseFullSign')
+              );
             }
 
             await handleRepay(true);
