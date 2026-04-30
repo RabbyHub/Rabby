@@ -17,7 +17,7 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
@@ -42,7 +42,7 @@ jobs:
 
       - name: Create Pull Request
         if: steps.git-check.outputs.changed == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5 # v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: 'chore: update approvelist.json from remote source'
@@ -53,4 +53,3 @@ jobs:
             源URL: ${{ inputs.json_url }}
           branch: update-approvelist-${{ github.run_id }}
           delete-branch: true
-
