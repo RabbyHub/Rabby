@@ -3381,7 +3381,7 @@
         "value": "Wert",
         "buy": "Kaufen",
         "sell": "Verkaufen",
-        "transferDetailTitle": "Überweisung",
+        "transferDetailTitle": "Überweisen",
         "transferActionToSpot": "Überweisung (von Perps zu Spot)",
         "transferActionToPerps": "Überweisung (von Spot zu Perps)"
       },
@@ -3579,11 +3579,11 @@
       },
       "addFunds": "Fonds Hinzufügen",
       "crossMarginLiqPriceTip": "Im Cross Margin-Modus ist der Liquidationspreis für eine einzelne Position nur eine Schätzung zur Referenz.",
-      "selectTokenToWithdraw": "Netzwerk für Abhebungen auswählen",
+      "selectTokenToWithdraw": "Token zum Abheben auswählen",
       "PerpsDepositCard": {
         "availableToTrade": "Verfügbar zum Handeln: ",
         "deposit": "Einzahlung",
-        "swap": "Tausch"
+        "swap": "Tauschen"
       },
       "EnableUnifiedAccount": {
         "title": "Einheitliches Konto aktivieren",
@@ -3704,7 +3704,7 @@
           "unrealizedPnl": "Unrealisiertes PnL",
           "fundingTipsV2": "Nettofinanzierung seit der Eröffnung der Position. Ein roter (negativer) Finanzierungswert zeigt gezahlte Finanzierung an, während ein grüner (positiver) Wert erhaltene Finanzierung anzeigt.",
           "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <bold>Grüne (positive)</bold> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <bold>Rote (negative)</bold> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben.",
-          "assets": "Vermögenswerte",
+          "assets": "Vermögen",
           "about": "Über"
         },
         "emptyMessage": {
@@ -3796,8 +3796,8 @@
           "columnAvailable": "Verfügbarer Saldo",
           "columnAction": "Aktion",
           "swapStablecoins": "Stablecoins tauschen",
-          "enableUnifiedAccount": "Unified Account aktivieren",
-          "transferToPerps": "Zu Perps übertragen",
+          "enableUnifiedAccount": "Einheitliches Konto aktivieren",
+          "transferToPerps": "Zu Perps überweisen",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
         }

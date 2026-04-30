@@ -3706,7 +3706,7 @@
         "value": "Valeur",
         "buy": "Acheter",
         "sell": "Vendre",
-        "transferDetailTitle": "Transfert",
+        "transferDetailTitle": "Transférer",
         "transferActionToSpot": "Transfert (de Perps vers Spot)",
         "transferActionToPerps": "Transfert (de Spot vers Perps)"
       },
@@ -3904,11 +3904,11 @@
       },
       "addFunds": "Ajouter des fonds",
       "crossMarginLiqPriceTip": "En mode Cross Margin, le prix de liquidation pour une position unique est une estimation à titre de référence uniquement.",
-      "selectTokenToWithdraw": "Sélectionnez le réseau de retrait",
+      "selectTokenToWithdraw": "Sélectionnez le token à retirer",
       "PerpsDepositCard": {
         "availableToTrade": "Disponible au trading : ",
         "deposit": "Dépôt",
-        "swap": "Swap"
+        "swap": "Échanger"
       },
       "EnableUnifiedAccount": {
         "title": "Activer Unified Account",
@@ -4120,8 +4120,8 @@
           "columnTotal": "Solde total",
           "columnAvailable": "Solde disponible",
           "columnAction": "Action",
-          "swapStablecoins": "Échanger des stablecoins",
-          "enableUnifiedAccount": "Activer le compte unifié",
+          "swapStablecoins": "Échanger des Stablecoins",
+          "enableUnifiedAccount": "Activer Unified Account",
           "transferToPerps": "Transférer vers Perps",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"

@@ -3576,7 +3576,7 @@
       },
       "addFunds": "Adicionar Fundos",
       "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência.",
-      "selectTokenToWithdraw": "Selecionar Rede de Retirada",
+      "selectTokenToWithdraw": "Selecionar Token para Retirar",
       "PerpsDepositCard": {
         "availableToTrade": "Disponível para negociar: ",
         "deposit": "Depositar",
@@ -3916,7 +3916,7 @@
         "orderTypeTooltipScale": "Ordens Escalonadas permitem que você divida um valor em múltiplos subpedidos para minimizar o impacto no mercado.",
         "orderTypeTooltipTwap": "TWAP (Preço Médio Ponderado pelo Tempo) é uma estratégia de execução de trades algorítmica que visa alcançar um preço de execução médio próximo ao preço médio ponderado pelo tempo do período especificado pelo usuário.",
         "min": "mín",
-        "swapStableCoins": "Swap de Moedas Estáveis"
+        "swapStableCoins": "Trocar Stablecoins"
       },
       "marginMode": {
         "confirm": "Confirmar",

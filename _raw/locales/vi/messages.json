@@ -3374,7 +3374,7 @@
         "feeDesc": "Khi người dùng thực hiện giao dịch, cả <1>phí giao dịch</1> và <2>phí nhà phát triển</2> đều được áp dụng.",
         "amount": "Số lượng",
         "asset": "Tài sản",
-        "action": "Hành động",
+        "action": "Thao tác",
         "value": "Giá trị",
         "buy": "Mua",
         "sell": "Bán",
@@ -3576,7 +3576,7 @@
       },
       "addFunds": "Thêm Quỹ",
       "crossMarginLiqPriceTip": "Trong chế độ Cross Margin, giá thanh lý cho một vị trí đơn lẻ chỉ là một ước tính để tham khảo.",
-      "selectTokenToWithdraw": "Chọn Mạng Rút Tiền",
+      "selectTokenToWithdraw": "Chọn Token để Rút",
       "PerpsDepositCard": {
         "availableToTrade": "Có sẵn để giao dịch: ",
         "deposit": "Nạp tiền",

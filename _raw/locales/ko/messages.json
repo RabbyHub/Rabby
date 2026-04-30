@@ -3374,11 +3374,11 @@
         "feeDesc": "사용자가 거래를 진행할 때, <1>거래 수수료</1>와 <2>빌더 수수료</2>가 모두 적용됩니다.",
         "amount": "수량",
         "asset": "자산",
-        "action": "操作",
+        "action": "작업",
         "value": "가치",
         "buy": "买入",
         "sell": "卖出",
-        "transferDetailTitle": "转账",
+        "transferDetailTitle": "전송",
         "transferActionToSpot": "转账（从永续合约到现货）",
         "transferActionToPerps": "转账（从现货到永续合约）"
       },
@@ -3576,7 +3576,7 @@
       },
       "addFunds": "자금 추가",
       "crossMarginLiqPriceTip": "크로스 마진 모드에서는 단일 포지션의 청산 가격이 참고용 추정치입니다.",
-      "selectTokenToWithdraw": "출금 네트워크 선택",
+      "selectTokenToWithdraw": "출금할 토큰 선택",
       "PerpsDepositCard": {
         "availableToTrade": "거래 가능: ",
         "deposit": "입금",
@@ -3616,7 +3616,7 @@
       },
       "PerpsTransferToPerps": {
         "title": "전송",
-        "from": "보내는 곳",
+        "from": "출발",
         "to": "받는 곳",
         "spot": "현물",
         "perps": "퍼프스",
@@ -3636,7 +3636,7 @@
         "title": "정보"
       },
       "transferToSpot": "现货账户转账",
-      "transferToPerps": "合约账户转账",
+      "transferToPerps": "Perps로 이전",
       "selectChainToWithdraw": "选择提现链"
     },
     "perpsPro": {

@@ -3619,7 +3619,7 @@
       },
       "addFunds": "添加资金",
       "crossMarginLiqPriceTip": "在跨保证金模式下，单个头寸的清算价格仅供参考估算。",
-      "selectTokenToWithdraw": "选择提现网络",
+      "selectTokenToWithdraw": "选择提现代币",
       "PerpsDepositCard": {
         "availableToTrade": "可交易：",
         "deposit": "充值",
@@ -3658,7 +3658,7 @@
         "toDepositEntry": "去充值 →"
       },
       "PerpsTransferToPerps": {
-        "title": "划转",
+        "title": "转账",
         "from": "从",
         "to": "到",
         "spot": "现货",
@@ -3837,7 +3837,7 @@
           "columnAction": "操作",
           "swapStablecoins": "兑换稳定币",
           "enableUnifiedAccount": "启用统一账户",
-          "transferToPerps": "划转至永续",
+          "transferToPerps": "转账到永续合约",
           "usdcSpot": "USDC（现货）",
           "usdcPerps": "USDC（永续）"
         }

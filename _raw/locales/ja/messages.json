@@ -3377,7 +3377,7 @@
         "feeDesc": "ユーザーが取引を行うと、<1>取引手数料</1>と<2>ビルダー手数料</2>が適用されます。",
         "amount": "数量",
         "asset": "資産",
-        "action": "操作",
+        "action": "アクション",
         "value": "価値",
         "buy": "買い",
         "sell": "売り",
@@ -3579,14 +3579,14 @@
       },
       "addFunds": "資金を追加する",
       "crossMarginLiqPriceTip": "クロスマージンモードでは、単一ポジションの清算価格は参考用の推定値です。",
-      "selectTokenToWithdraw": "出金ネットワークを選択してください",
+      "selectTokenToWithdraw": "出金するトークンを選択してください",
       "PerpsDepositCard": {
         "availableToTrade": "取引可能：",
         "deposit": "入金",
         "swap": "交換"
       },
       "EnableUnifiedAccount": {
-        "title": "統合アカウントを有効にする",
+        "title": "統合アカウントを有効化",
         "desc": "統合アカウントは推奨されるアカウントモードで、取引体験を簡素化します。スポットとPerpsの残高は全トークンで統合され、すべての借入可能資産でクロスマージンがサポートされます。",
         "confirm": "確認",
         "enable": "有効にする",
@@ -3618,17 +3618,17 @@
         "toDepositEntry": "入金へ →"
       },
       "PerpsTransferToPerps": {
-        "title": "转账",
-        "from": "从",
+        "title": "送金",
+        "from": "出金",
         "to": "到",
         "spot": "现货",
         "perps": "Perps",
         "balance": "残高",
         "amount": "数量",
         "max": "最大",
-        "submit": "确认",
-        "insufficientBalance": "余额不足",
-        "invalidAmount": "请输入有效金额"
+        "submit": "確認",
+        "insufficientBalance": "残高不足",
+        "invalidAmount": "有効な金額を入力してください"
       },
       "PerpsMultiBalance": {
         "title": "Hyperliquid 残高",
@@ -3639,7 +3639,7 @@
         "title": "概要"
       },
       "transferToSpot": "現物账户への转移送",
-      "transferToPerps": "先物への转移送",
+      "transferToPerps": "Perpsへ移転",
       "selectChainToWithdraw": "出金先のチェーンを選択"
     },
     "perpsPro": {
@@ -3919,7 +3919,7 @@
         "bboTips": "最良い入札オファー（BBO）とは、特定の時点におけるオーダーブック上での最良の売り価格と最良の買い価格を指します。BBOの注文は常に正確な最小ティックサイズを使用して出され、表示の好みに依存しない細かな正確な価格設定を保証します。",
         "orderTypeTooltipScale": "スケール注文を使用すると、金額を複数のサブオーダーに分割して市場への影響を最小限に抑えることができます。",
         "orderTypeTooltipTwap": "TWAP（時間加重平均価格）は、ユーザー指定の期間の時間加重平均価格に近い平均実行価格を達成することを目指すアルゴリズミックな取引執行戦略です。",
-        "swapStableCoins": "ステーブルコインをSwap"
+        "swapStableCoins": "ステーブルコインを交換"
       },
       "marginMode": {
         "cross": "クロス証拠金",

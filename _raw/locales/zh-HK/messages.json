@@ -3619,14 +3619,14 @@
       },
       "addFunds": "添加資金",
       "crossMarginLiqPriceTip": "在交叉保证金模式下，单个头寸的清算价格仅为参考估算。",
-      "selectTokenToWithdraw": "選擇提款網絡",
+      "selectTokenToWithdraw": "選擇提款代幣",
       "PerpsDepositCard": {
         "availableToTrade": "可用於交易：",
         "deposit": "存款",
-        "swap": "兌換"
+        "swap": "交換"
       },
       "EnableUnifiedAccount": {
-        "title": "啟用整合帳戶",
+        "title": "啟用統一帳戶",
         "desc": "整合帳戶是建議的帳戶模式，可簡化交易體驗。所有代幣的現貨及 Perps 倉位將合併計算，並支援所有可用資產的交叉保證金。",
         "confirm": "確認",
         "enable": "啟用",
@@ -3635,7 +3635,7 @@
         "important": "重要"
       },
       "PerpsSpotSwap": {
-        "title": "交換穩定幣",
+        "title": "兌換穩定幣",
         "from": "從",
         "to": "交換至",
         "balance": "餘額",
@@ -3679,7 +3679,7 @@
         "title": "關於"
       },
       "transferToSpot": "轉入現貨",
-      "transferToPerps": "轉入永續期貨",
+      "transferToPerps": "轉帳至永續合約",
       "selectChainToWithdraw": "選擇要提現的鏈"
     },
     "perpsPro": {

@@ -3581,7 +3581,7 @@
       },
       "addFunds": "Adicionar Fundos",
       "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência.",
-      "selectTokenToWithdraw": "Selecione a Rede de Retirada",
+      "selectTokenToWithdraw": "Selecione o Token para Retirar",
       "PerpsDepositCard": {
         "availableToTrade": "Disponível para operar: ",
         "deposit": "Depositar",
@@ -3634,7 +3634,7 @@
       },
       "PerpsMultiBalance": {
         "title": "Saldos Hyperliquid",
-        "deposit": "Depósito",
+        "deposit": "Depositar",
         "withdraw": "Saque"
       },
       "PerpsAbout": {

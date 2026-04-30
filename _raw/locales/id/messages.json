@@ -3576,7 +3576,7 @@
       },
       "addFunds": "Tambahkan Dana",
       "crossMarginLiqPriceTip": "Dalam mode Cross Margin, harga likuidasi untuk satu posisi adalah perkiraan untuk referensi saja.",
-      "selectTokenToWithdraw": "Pilih Jaringan Penarikan",
+      "selectTokenToWithdraw": "Pilih Token untuk Ditarik",
       "PerpsDepositCard": {
         "availableToTrade": "Tersedia untuk diperdagangkan: ",
         "deposit": "Setor",
@@ -3624,8 +3624,8 @@
         "amount": "Jumlah",
         "max": "Maks",
         "submit": "Konfirmasi",
-        "insufficientBalance": "Saldo tidak cukup",
-        "invalidAmount": "Harap masukkan jumlah yang valid"
+        "insufficientBalance": "Saldo tidak mencukupi",
+        "invalidAmount": "Silakan masukkan jumlah yang valid"
       },
       "PerpsMultiBalance": {
         "title": "Saldo Hyperliquid",
@@ -3793,7 +3793,7 @@
           "columnAvailable": "Saldo Tersedia",
           "columnAction": "Tindakan",
           "swapStablecoins": "Tukar Stablecoin",
-          "enableUnifiedAccount": "Aktifkan Akun Terpadu",
+          "enableUnifiedAccount": "Aktifkan Unified Account",
           "transferToPerps": "Transfer ke Perps",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"

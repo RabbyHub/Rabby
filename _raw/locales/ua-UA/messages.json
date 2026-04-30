@@ -3591,14 +3591,14 @@
       },
       "addFunds": "Додати кошти",
       "crossMarginLiqPriceTip": "У режимі перехресного маржинування ціна ліквідації для однієї позиції є оцінкою лише для довідки.",
-      "selectTokenToWithdraw": "Виберіть мережу виведення",
+      "selectTokenToWithdraw": "Виберіть токен для виведення",
       "PerpsDepositCard": {
         "availableToTrade": "Доступно для торгівлі: ",
         "deposit": "Поповнити",
         "swap": "Обмін"
       },
       "EnableUnifiedAccount": {
-        "title": "Увімкнути Unified Account",
+        "title": "Увімкнути єдиний обліковий запис",
         "desc": "Unified Account — рекомендований режим облікового запису, який спрощує торгівлю. Баланси спотової торгівлі та перпсів об'єднуються для всіх токенів, і крос-маржа підтримується для всіх доступних активів.",
         "confirm": "Підтвердити",
         "enable": "Увімкнути",
@@ -3631,7 +3631,7 @@
       },
       "PerpsTransferToPerps": {
         "title": "Переказ",
-        "from": "Від",
+        "from": "З",
         "to": "До",
         "spot": "Спот",
         "perps": "Perps",
@@ -3640,18 +3640,18 @@
         "max": "Макс",
         "submit": "Підтвердити",
         "insufficientBalance": "Недостатній баланс",
-        "invalidAmount": "Будь ласка, введіть допустиму суму"
+        "invalidAmount": "Будь ласка, введіть коректну суму"
       },
       "PerpsMultiBalance": {
         "title": "Hyperliquid Баланси",
-        "deposit": "Депозит",
+        "deposit": "Поповнити",
         "withdraw": "Вивід"
       },
       "PerpsAbout": {
         "title": "Про"
       },
       "transferToSpot": "Переказ на спот",
-      "transferToPerps": "Переказ на перпс",
+      "transferToPerps": "Переказ на Perps",
       "selectChainToWithdraw": "Вибрати ланцюг для виведення"
     },
     "perpsPro": {
@@ -3807,7 +3807,7 @@
           "columnTotal": "Загальний баланс",
           "columnAvailable": "Доступний баланс",
           "columnAction": "Дія",
-          "swapStablecoins": "Обмін стейблкоінів",
+          "swapStablecoins": "Обмін стейблкойнів",
           "enableUnifiedAccount": "Увімкнути єдиний обліковий запис",
           "transferToPerps": "Переказ на Perps",
           "usdcSpot": "USDC (Спот)",
@@ -3931,7 +3931,7 @@
         "orderTypeTooltipTwap": "TWAP (Часовий Зважений Середній Ціна) — це алгоритмічна стратегія виконання торгів, яка має на меті досягти середньої ціни виконання, близької до часового зваженого середнього значення ціни за вказаний користувачем період.",
         "maxDurationTwap": "Максимальна тривалість виконання замовлення TWAP становить",
         "cost": "Вартість",
-        "swapStableCoins": "Swap стейблкоїнів"
+        "swapStableCoins": "Обмін стейблкойнів"
       },
       "marginMode": {
         "confirm": "Підтвердити",

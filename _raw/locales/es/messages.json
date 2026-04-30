@@ -3579,7 +3579,7 @@
       },
       "addFunds": "Agregar fondos",
       "crossMarginLiqPriceTip": "En el modo de margen cruzado, el precio de liquidación para una posición única es solo una estimación de referencia.",
-      "selectTokenToWithdraw": "Seleccionar Red de Retiro",
+      "selectTokenToWithdraw": "Seleccionar Token para Retirar",
       "PerpsDepositCard": {
         "availableToTrade": "Disponible para operar: ",
         "deposit": "Depósito",
@@ -3595,14 +3595,14 @@
         "important": "Importante"
       },
       "PerpsSpotSwap": {
-        "title": "Intercambiar stables",
+        "title": "Intercambiar Stablecoins",
         "from": "Desde",
         "to": "Intercambiar a",
         "balance": "Saldo",
         "estReceive": "Est.Recibir",
-        "swapBtn": "Intercambiar",
+        "swapBtn": "Swap",
         "insufficientBalance": "Saldo insuficiente",
-        "invalidAmount": "Por favor ingresa una cantidad válida",
+        "invalidAmount": "Por favor ingrese una cantidad válida",
         "minimumAmount": "La cantidad mínima de intercambio es {{amount}}",
         "max": "Máx",
         "toDeposit": "Para Depositar →",
@@ -3618,7 +3618,7 @@
         "toDepositEntry": "Para Depositar →"
       },
       "PerpsTransferToPerps": {
-        "title": "Transferir",
+        "title": "Transferencia",
         "from": "Desde",
         "to": "A",
         "spot": "Spot",

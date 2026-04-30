@@ -3582,11 +3582,11 @@
       },
       "addFunds": "Fon Ekle",
       "crossMarginLiqPriceTip": "Cross Margin modunda, tek bir pozisyon için tasfiye fiyatı sadece referans için bir tahmindir.",
-      "selectTokenToWithdraw": "Para Çekim Ağı Seçin",
+      "selectTokenToWithdraw": "Çekilecek Token'ı Seçin",
       "PerpsDepositCard": {
         "availableToTrade": "İşlem yapılabilir: ",
         "deposit": "Yatır",
-        "swap": "Swap"
+        "swap": "Takas"
       },
       "EnableUnifiedAccount": {
         "title": "Birleşik Hesabı Etkinleştir",
@@ -3598,7 +3598,7 @@
         "important": "Önemli"
       },
       "PerpsSpotSwap": {
-        "title": "Stablecoin Takas",
+        "title": "Stablecoin Swap",
         "from": "Kimden",
         "to": "Takası Yap",
         "balance": "Bakiye",
@@ -3622,7 +3622,7 @@
       },
       "PerpsTransferToPerps": {
         "title": "Transfer",
-        "from": "Gönderen",
+        "from": "Kimden",
         "to": "Alıcı",
         "spot": "Spot",
         "perps": "Perps",
@@ -3631,7 +3631,7 @@
         "max": "Maks",
         "submit": "Onayla",
         "insufficientBalance": "Yetersiz bakiye",
-        "invalidAmount": "Lütfen geçerli bir tutar girin"
+        "invalidAmount": "Geçerli bir tutar girin"
       },
       "PerpsMultiBalance": {
         "title": "Hyperliquid Bakiyeleri",
@@ -3798,7 +3798,7 @@
           "columnTotal": "Toplam Bakiye",
           "columnAvailable": "Kullanılabilir Bakiye",
           "columnAction": "İşlem",
-          "swapStablecoins": "Stablecoin Değiştir",
+          "swapStablecoins": "Stablecoin Swap",
           "enableUnifiedAccount": "Birleşik Hesabı Etkinleştir",
           "transferToPerps": "Perps'e Aktar",
           "usdcSpot": "USDC(Spot)",
