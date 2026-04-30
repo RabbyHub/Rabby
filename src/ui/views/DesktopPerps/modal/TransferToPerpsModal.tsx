@@ -108,7 +108,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
             config: {
               account,
               mode: isLocalWallet ? undefined : 'UI',
-              getContainer: '.desktop-perps-transfer-to-perps-modal',
+              getContainer: '.desktop-perps-transfer-to-perps-content',
             },
             wallet,
           },
@@ -197,7 +197,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
       className="modal-support-darkmode desktop-perps-transfer-to-perps-modal"
     >
       <PopupContainer>
-        <div className="bg-rb-neutral-bg-0 h-[520px] flex flex-col relative overflow-hidden">
+        <div className="bg-rb-neutral-bg-0 h-[520px] flex flex-col relative overflow-hidden desktop-perps-transfer-to-perps-content">
           <div className="px-20 pt-16 pb-20 flex-1 flex flex-col">
             <h3 className="text-[18px] font-medium text-r-neutral-title-1 text-center mb-20">
               {t('page.perps.PerpsTransferToPerps.title')}
