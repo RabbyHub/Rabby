@@ -3565,7 +3565,7 @@
       },
       "addFunds": "Adicionar Fundos",
       "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência.",
-      "selectTokenToWithdraw": "Selecionar Rede de Retirada"
+      "selectTokenToWithdraw": "Selecionar Token para Retirar"
     },
     "perpsPro": {
       "chatArea": {

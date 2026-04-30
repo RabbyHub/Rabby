@@ -3568,7 +3568,7 @@
       },
       "addFunds": "Fonds Hinzufügen",
       "crossMarginLiqPriceTip": "Im Cross Margin-Modus ist der Liquidationspreis für eine einzelne Position nur eine Schätzung zur Referenz.",
-      "selectTokenToWithdraw": "Netzwerk für Abhebungen auswählen"
+      "selectTokenToWithdraw": "Token zum Abheben auswählen"
     },
     "perpsPro": {
       "chatArea": {

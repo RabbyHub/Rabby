@@ -3565,7 +3565,7 @@
       },
       "addFunds": "Tambahkan Dana",
       "crossMarginLiqPriceTip": "Dalam mode Cross Margin, harga likuidasi untuk satu posisi adalah perkiraan untuk referensi saja.",
-      "selectTokenToWithdraw": "Pilih Jaringan Penarikan"
+      "selectTokenToWithdraw": "Pilih Token untuk Ditarik"
     },
     "perpsPro": {
       "chatArea": {

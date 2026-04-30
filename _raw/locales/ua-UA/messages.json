@@ -3580,7 +3580,7 @@
       },
       "addFunds": "Додати кошти",
       "crossMarginLiqPriceTip": "У режимі перехресного маржинування ціна ліквідації для однієї позиції є оцінкою лише для довідки.",
-      "selectTokenToWithdraw": "Виберіть мережу виведення"
+      "selectTokenToWithdraw": "Виберіть токен для виведення"
     },
     "perpsPro": {
       "chatArea": {

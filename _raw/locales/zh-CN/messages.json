@@ -3608,7 +3608,7 @@
       },
       "addFunds": "添加资金",
       "crossMarginLiqPriceTip": "在跨保证金模式下，单个头寸的清算价格仅供参考估算。",
-      "selectTokenToWithdraw": "选择提现网络"
+      "selectTokenToWithdraw": "选择提现代币"
     },
     "perpsPro": {
       "chatArea": {

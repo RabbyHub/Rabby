@@ -3571,7 +3571,7 @@
       },
       "addFunds": "Fon Ekle",
       "crossMarginLiqPriceTip": "Cross Margin modunda, tek bir pozisyon için tasfiye fiyatı sadece referans için bir tahmindir.",
-      "selectTokenToWithdraw": "Para Çekim Ağı Seçin"
+      "selectTokenToWithdraw": "Çekilecek Token'ı Seçin"
     },
     "perpsPro": {
       "chatArea": {

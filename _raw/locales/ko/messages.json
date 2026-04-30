@@ -3565,7 +3565,7 @@
       },
       "addFunds": "자금 추가",
       "crossMarginLiqPriceTip": "크로스 마진 모드에서는 단일 포지션의 청산 가격이 참고용 추정치입니다.",
-      "selectTokenToWithdraw": "출금 네트워크 선택"
+      "selectTokenToWithdraw": "출금할 토큰 선택"
     },
     "perpsPro": {
       "chatArea": {
