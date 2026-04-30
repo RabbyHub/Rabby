@@ -3570,7 +3570,7 @@
       },
       "addFunds": "Пополнить средства",
       "crossMarginLiqPriceTip": "В режиме Cross Margin цена ликвидации для одной позиции является ориентировочной оценкой.",
-      "selectTokenToWithdraw": "Выберите сеть для вывода средств"
+      "selectTokenToWithdraw": "Выберите токен для вывода"
     },
     "perpsPro": {
       "chatArea": {

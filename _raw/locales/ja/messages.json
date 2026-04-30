@@ -3568,7 +3568,7 @@
       },
       "addFunds": "資金を追加する",
       "crossMarginLiqPriceTip": "クロスマージンモードでは、単一ポジションの清算価格は参考用の推定値です。",
-      "selectTokenToWithdraw": "出金ネットワークを選択してください"
+      "selectTokenToWithdraw": "出金するトークンを選択してください"
     },
     "perpsPro": {
       "chatArea": {

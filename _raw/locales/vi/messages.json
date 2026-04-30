@@ -3565,7 +3565,7 @@
       },
       "addFunds": "Thêm Quỹ",
       "crossMarginLiqPriceTip": "Trong chế độ Cross Margin, giá thanh lý cho một vị trí đơn lẻ chỉ là một ước tính để tham khảo.",
-      "selectTokenToWithdraw": "Chọn Mạng Rút Tiền"
+      "selectTokenToWithdraw": "Chọn Token để Rút"
     },
     "perpsPro": {
       "chatArea": {

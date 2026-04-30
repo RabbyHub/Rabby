@@ -3608,7 +3608,7 @@
       },
       "addFunds": "添加資金",
       "crossMarginLiqPriceTip": "在交叉保证金模式下，单个头寸的清算价格仅为参考估算。",
-      "selectTokenToWithdraw": "選擇提款網絡"
+      "selectTokenToWithdraw": "選擇提款代幣"
     },
     "perpsPro": {
       "chatArea": {
