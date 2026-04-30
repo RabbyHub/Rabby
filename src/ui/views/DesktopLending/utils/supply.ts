@@ -25,7 +25,7 @@ export const getRateUsage = (asset: DisplayPoolReserveInfo) => {
 
 export const getBorrowUsage = (asset: DisplayPoolReserveInfo) => {
   let borrowUsage: number = asset
-    ? valueToBigNumber(asset.reserve.totalVariableDebt)
+    ? valueToBigNumber(asset.reserve.totalDebt)
         .dividedBy(asset.reserve.borrowCap)
         .toNumber() * 100
     : 0;
