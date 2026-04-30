@@ -151,6 +151,13 @@ export const calLiquidationPrice = (
   // const nationalValue = margin * leverage;
   const maintenance_margin_required = nationalValue * MMR;
   const margin_available = margin - maintenance_margin_required;
+  // When margin_available <= 0 (account hasn't loaded, or an abstraction mode
+  // we haven't mapped surfaces 0 collateral) the formula below produces a
+  // sign-inverted price — short below entry, long above. Bail out so callers
+  // hide the value rather than show a misleading number.
+  if (!Number.isFinite(margin_available) || margin_available <= 0) {
+    return 0;
+  }
   const liq_price =
     markPrice - (side * margin_available) / positionSize / (1 - MMR * side);
   // liq_price = price - side * margin_available / position_size / (1 - l * side)

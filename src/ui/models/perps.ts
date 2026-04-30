@@ -213,6 +213,7 @@ export interface PerpsState {
     availableToTrade: string;
     balances: SpotBalance[];
     balancesMap: Record<string, SpotBalance>;
+    tokenToAvailableAfterMaintenance: [number, string][] | null;
   };
   userAbstraction: UserAbstractionResp;
   historicalOrders: UserHistoricalOrders[];
@@ -328,6 +329,7 @@ export const perps = createModel<RootModel>()({
       availableToTrade: '0',
       balances: [],
       balancesMap: {},
+      tokenToAvailableAfterMaintenance: null,
     },
     userFunding: [],
     nonFundingLedgerUpdates: [],
