@@ -1841,6 +1841,9 @@
           "repay": "Repay"
         }
       },
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simulation Failed. This transaction is very likely to fail due to AAVE errors."
+      },
       "hfTips": {
         "desc": "If it drops below 1.0, your collateral may be liquidated.",
         "more": "More"

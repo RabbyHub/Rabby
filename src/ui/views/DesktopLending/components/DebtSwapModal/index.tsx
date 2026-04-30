@@ -850,6 +850,12 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
               return;
             }
 
+            if (error === MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+              message.error(
+                t('page.lending.signFallback.preExecFailedUseFullSign')
+              );
+            }
+
             await handleSwap(true);
             return;
           } finally {
