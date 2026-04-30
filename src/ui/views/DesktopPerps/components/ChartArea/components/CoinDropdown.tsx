@@ -128,7 +128,7 @@ const MarketRowComponent = memo(
           }}
         >
           {/* Left: Star + Logo + Symbol */}
-          <div className="flex items-center gap-[8px] w-[200px] flex-shrink-0">
+          <div className="flex items-center gap-[8px] w-[250px] flex-shrink-0">
             <div
               className="flex items-center justify-center w-[16px] h-[16px] flex-shrink-0"
               onClick={(e) => onToggleFavorite(marketItem.name, e)}
@@ -147,6 +147,7 @@ const MarketRowComponent = memo(
             <div>
               <PerpsDisplayCoinName
                 item={marketItem}
+                showDexTag
                 className="text-[13px] font-medium"
               />
               <span className="text-[13px] text-r-neutral-foot ml-4">
@@ -438,7 +439,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
 
   const dropdownMenu = useMemo(
     () => (
-      <div className="bg-rb-neutral-bg-1 rounded-[8px] shadow-lg border border-solid border-rb-neutral-line w-[800px] h-[480px] overflow-hidden flex flex-col px-16 pt-16">
+      <div className="bg-rb-neutral-bg-1 rounded-[8px] shadow-lg border border-solid border-rb-neutral-line w-[850px] h-[480px] overflow-hidden flex flex-col px-16 pt-16">
         <SearchInput
           prefix={<RcIconSearch className="text-r-neutral-foot" />}
           placeholder={t('page.perpsPro.chatArea.searchMarkets')}
@@ -474,7 +475,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         <div className="flex items-center gap-[12px] px-[8px] py-[12px]">
           <div
             className={clsx(
-              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[200px] flex-shrink-0',
+              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[250px] flex-shrink-0',
               sortField === 'name' && 'text-r-neutral-title-1 font-medium'
             )}
             onClick={() => handleSort('name')}

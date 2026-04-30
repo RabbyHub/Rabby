@@ -57,7 +57,8 @@ export const usePerpsTradingGate = ({
 
   const needSwapStableCoin = useMemo(() => {
     return (
-      SWAP_REQUIRED_QUOTE_ASSETS.includes(quoteAsset) && !currentAssetBalance
+      SWAP_REQUIRED_QUOTE_ASSETS.includes(quoteAsset) &&
+      currentAssetBalance < 0.1
     );
   }, [quoteAsset, currentAssetBalance]);
 
