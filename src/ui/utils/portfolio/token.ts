@@ -237,9 +237,14 @@ export const useTokens = (
     }
 
     if (snapshot?.length) {
+      const isRefreshChain = !!chainServerId && !!currentAllTokens.length;
       currentAllTokens = replaceCoreTokens(currentAllTokens, snapshot);
-      applyTokenItems(currentAllTokens);
-      setLoading(false);
+
+      // 单链二次刷新时，只多一个请求，可以保留现有 UI，等阶段三全量结果落地。
+      if (!isRefreshChain) {
+        applyTokenItems(currentAllTokens);
+        setLoading(false);
+      }
     }
 
     /**
