@@ -133,6 +133,8 @@ export const usePerpsAccount = () => {
     // When not in spot-collateral mode (default/disabled/dexAbstraction),
     // spot balances are not meaningful for Perps margin usage.
     spotBalances: isSpotCollateralMode ? spotBalances : EMPTY_BALANCES,
-    spotBalancesMap: isSpotCollateralMode ? spotBalancesMap : EMPTY_BALANCES_MAP,
+    spotBalancesMap: isSpotCollateralMode
+      ? spotBalancesMap
+      : EMPTY_BALANCES_MAP,
   };
 };
