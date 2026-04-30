@@ -52,7 +52,7 @@ import {
   buildRepayWithCollateralTx,
   InterestRate,
 } from '../../utils/poolService';
-import { getBorrowUsage } from '../../utils/supply';
+import { getRateUsage } from '../../utils/supply';
 import { getCollateralTokens, getFromToken } from '../../utils/swap';
 import { LendingStyledInput } from '../StyledInput';
 import { StyledCheckbox } from '../BorrowModal';
@@ -201,7 +201,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
         if (!item.displayReserve) {
           return true;
         }
-        const { borrowReached } = getBorrowUsage(item.displayReserve);
+        const { borrowReached } = getRateUsage(item.displayReserve);
         return !borrowReached;
       })
       .sort((a, b) => {
