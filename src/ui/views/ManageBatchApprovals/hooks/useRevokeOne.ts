@@ -1,14 +1,11 @@
-import React from 'react';
 import { useMemoizedFn } from 'ahooks';
 
+import { Account } from '@/background/service/preference';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { useWallet } from '@/ui/utils';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
-import { sendTransaction } from '@/ui/utils/sendTransaction';
-import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
 import { buildTx } from './useBatchRevokeTask';
-import { Account } from '@/background/service/preference';
-import { useMiniSigner } from '@/ui/hooks/useSigner';
-import { waitForTxCompleted } from '@/ui/utils/transaction';
 
 export const useRevokeOne = ({
   account,
@@ -18,22 +15,16 @@ export const useRevokeOne = ({
   chainServerId?: string;
 }) => {
   const wallet = useWallet();
-  const gasAccount = useGasAccountSign();
   const { openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: account!,
     chainServerId: chainServerId,
     autoResetGasStoreOnChainChange: true,
   });
 
-  return useMemoizedFn(
-    async (
-      revokeItem: ApprovalSpenderItemToBeRevoked,
-      options?: {
-        account?: Account;
-      }
-    ) => {
+  return useMemoizedFn(async (revokeItem: ApprovalSpenderItemToBeRevoked) => {
+    const tx = await buildTx(wallet, revokeItem);
+    try {
       closeSign();
-      const tx = await buildTx(wallet, revokeItem);
       const result = await openDirect({
         txs: [tx],
         onPreExecChange(p) {
@@ -43,19 +34,18 @@ export const useRevokeOne = ({
       if (!result?.length) {
         throw new Error('No signature result');
       }
-      await waitForTxCompleted({
-        wallet,
-        chainServerId: revokeItem.chainServerId,
-        hash: result[0],
+    } catch (error) {
+      console.error('Revoke approval failed', error);
+      if (
+        error === MINI_SIGN_ERROR.USER_CANCELLED ||
+        error === MINI_SIGN_ERROR.CANT_PROCESS
+      ) {
+        return;
+      }
+      return wallet.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [tx],
       });
-      // return sendTransaction({
-      //   tx,
-      //   wallet,
-      //   chainServerId: revokeItem.chainServerId,
-      //   sig: gasAccount?.sig,
-      //   autoUseGasAccount: true,
-      //   account: options?.account,
-      // });
     }
-  );
+  });
 };
