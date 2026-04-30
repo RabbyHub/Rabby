@@ -1375,7 +1375,7 @@ export const perps = createModel<RootModel>()({
             return;
           }
 
-          if (isSnapshot && isPro) {
+          if (isSnapshot) {
             // when return snapshot, fetch all user fill history from api
             dispatch.perps.fetchUserFillHistory();
           }
