@@ -7,13 +7,24 @@ import PQueue from 'p-queue';
 import { TotalBalanceResponse } from '@/background/service/openapi';
 import { filterMyAccounts } from '@/utils/account';
 
-type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
+type DisplayedAccountBase = DisplayedKeryring['accounts'][number];
+type PublicSnapshotAccountFields =
+  | 'byImport'
+  | 'publicKey'
+  | 'hdPathBasePublicKey'
+  | 'hdPathType'
+  | 'hasBackup';
+type IDisplayedAccount = Required<
+  Omit<DisplayedAccountBase, PublicSnapshotAccountFields>
+> &
+  Pick<DisplayedAccountBase, PublicSnapshotAccountFields>;
 export type IDisplayedAccountWithBalance = IDisplayedAccount & {
   balance: number;
   byImport?: boolean;
   publicKey?: string;
   hdPathBasePublicKey?: string;
   hdPathType?: string;
+  hasBackup?: boolean;
 };
 
 type IState = {
@@ -69,6 +80,7 @@ export const accountToDisplay = createModel<RootModel>()({
                 alianName: allAlianNames[account?.address?.toLowerCase()]?.name,
                 keyring: item.keyring,
                 publicKey: item?.publicKey,
+                hasBackup: item?.hasBackup,
               };
             });
           })
@@ -113,8 +125,9 @@ export const accountToDisplay = createModel<RootModel>()({
             return {
               ...item,
               balance: balance?.total_usd_value || 0,
-              hdPathBasePublicKey: accountInfo?.hdPathBasePublicKey,
-              hdPathType: accountInfo?.hdPathType,
+              hdPathBasePublicKey:
+                accountInfo?.hdPathBasePublicKey ?? item.hdPathBasePublicKey,
+              hdPathType: accountInfo?.hdPathType ?? item.hdPathType,
             };
           })
       );

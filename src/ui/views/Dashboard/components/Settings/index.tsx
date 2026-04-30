@@ -46,10 +46,6 @@ import {
   openInternalPageInTab,
   useWallet,
 } from 'ui/utils';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-} from '@/ui/utils/walletUnlock';
 import './style.less';
 
 import IconCheck from 'ui/assets/check-2.svg';
@@ -892,15 +888,7 @@ const SettingsInner = ({
         {
           leftIcon: RcIconAddresses,
           content: t('page.dashboard.settings.features.manageAddress'),
-          onClick: async () => {
-            try {
-              await ensureWalletUnlocked({ wallet });
-            } catch (error) {
-              if (isWalletUnlockCancelled(error)) {
-                return;
-              }
-              throw error;
-            }
+          onClick: () => {
             history.push('/settings/address');
             matomoRequestEvent({
               category: 'Setting',

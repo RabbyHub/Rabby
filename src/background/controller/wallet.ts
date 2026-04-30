@@ -3880,6 +3880,16 @@ export class WalletController extends BaseController {
   };
 
   checkSeedPhraseBackup = async (address: string) => {
+    if (!keyringService.isUnlocked()) {
+      const account = (await keyringService.getAllVisibleAccountsArray()).find(
+        (item) =>
+          isSameAddress(item.address, address) &&
+          item.type === KEYRING_CLASS.MNEMONIC
+      );
+
+      return account?.hasBackup == null ? true : account.hasBackup;
+    }
+
     const keyring = await keyringService.getKeyringForAccount(
       address,
       KEYRING_CLASS.MNEMONIC
@@ -4202,6 +4212,7 @@ export class WalletController extends BaseController {
   };
 
   _getMnemonicKeyringByAddress = (address: string) => {
+    keyringService.assertUnlocked();
     return keyringService.keyrings.find((item) => {
       return (
         item.type === KEYRING_CLASS.MNEMONIC &&
@@ -4212,11 +4223,13 @@ export class WalletController extends BaseController {
   };
 
   removeMnemonicsKeyRingByPublicKey = async (publicKey: string) => {
+    keyringService.assertUnlocked();
     this.removePublicKeyFromStash(publicKey);
     keyringService.removeKeyringByPublicKey(publicKey);
   };
 
   getMnemonicKeyRingFromPublicKey = (publicKey: string) => {
+    keyringService.assertUnlocked();
     const targetKeyring = keyringService.keyrings?.find((item) => {
       if (
         item.type === KEYRING_CLASS.MNEMONIC &&
@@ -4437,6 +4450,7 @@ export class WalletController extends BaseController {
   };
 
   deriveNextAccountFromMnemonicByPublicKey = async (publicKey: string) => {
+    keyringService.assertUnlocked();
     const keyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
     if (!keyring) {
       throw new Error(t('background.error.notFoundKeyringByAddress'));

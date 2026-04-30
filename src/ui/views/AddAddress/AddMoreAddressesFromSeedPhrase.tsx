@@ -36,6 +36,7 @@ import {
   RcAddMoreAddressesSheetInnerIcon,
   RcAddMoreAddressesSheetUncheckedIcon,
 } from '@/ui/assets/add-address';
+import { isWalletUnlockCancelled } from '@/ui/utils/walletUnlock';
 
 const FETCH_STEP = 5;
 const LIST_ITEM_HEIGHT = 60;
@@ -454,6 +455,9 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
         return nextSelected;
       });
     } catch (error) {
+      if (isWalletUnlockCancelled(error)) {
+        return;
+      }
       message.error(
         error instanceof Error ? error.message : 'Failed to load addresses'
       );
@@ -481,6 +485,10 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
         });
         setKeyringId(Number(nextKeyringId));
       } catch (error) {
+        if (isWalletUnlockCancelled(error)) {
+          setLoading(false);
+          return;
+        }
         message.error(
           error instanceof Error
             ? error.message
@@ -566,6 +574,9 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
         }),
       });
     } catch (error) {
+      if (isWalletUnlockCancelled(error)) {
+        return;
+      }
       message.error(
         error instanceof Error ? error.message : 'Failed to add address'
       );

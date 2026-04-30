@@ -1,16 +1,11 @@
 import { KEYRING_CLASS } from '@/constant';
-import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
-import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-} from '@/ui/utils/walletUnlock';
+import { isWalletUnlockCancelled } from '@/ui/utils/walletUnlock';
 
 interface Props {
   address: string;
@@ -20,28 +15,26 @@ export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
-  const { getContainer } = usePopupContainer();
 
   const goToHDManager = async () => {
     try {
-      await ensureWalletUnlocked({ wallet, getContainer });
+      const passphrase = await invokeEnterPassphrase(address);
+      const mnemonics = await wallet.getMnemonicByAddress(address);
+      const result = await wallet.generateKeyringWithMnemonic(
+        mnemonics,
+        passphrase
+      );
+      const keyringId = result.keyringId;
+
+      openInternalPageInTab(
+        `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
+      );
     } catch (error) {
       if (isWalletUnlockCancelled(error)) {
         return;
       }
       throw error;
     }
-    const passphrase = await invokeEnterPassphrase(address);
-    const mnemonics = await wallet.getMnemonicByAddress(address);
-    const result = await wallet.generateKeyringWithMnemonic(
-      mnemonics,
-      passphrase
-    );
-    const keyringId = result.keyringId;
-
-    openInternalPageInTab(
-      `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
-    );
   };
   return (
     <div

@@ -15,11 +15,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { Item, Popup } from '../component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import clsx from 'clsx';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-  verifyPasswordOrUnlock,
-} from '../utils/walletUnlock';
+import { verifyPasswordOrUnlock } from '../utils/walletUnlock';
 
 const AddressHdKeyringOrSimpleKeyringDelete = ({
   type,
@@ -60,14 +56,6 @@ const AddressHdKeyringOrSimpleKeyringDelete = ({
   >(undefined);
 
   const handleDeleteAddress = async (deleteSeed = false) => {
-    try {
-      await ensureWalletUnlocked({ wallet, getContainer });
-    } catch (error) {
-      if (isWalletUnlockCancelled(error)) {
-        return;
-      }
-      throw error;
-    }
     await wallet.removeAddress(
       address,
       type,

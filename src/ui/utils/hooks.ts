@@ -10,6 +10,7 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
+import { isWalletUnlockCancelled } from '@/shared/walletUnlockPolicy';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -164,6 +165,9 @@ export const useWalletRequest = <TReqArgs extends any[] = any[], TRet = any>(
       setRes(_res);
       onSuccess && onSuccess(_res, { args });
     } catch (err) {
+      if (isWalletUnlockCancelled(err)) {
+        return;
+      }
       if (!mounted.current) {
         return;
       }

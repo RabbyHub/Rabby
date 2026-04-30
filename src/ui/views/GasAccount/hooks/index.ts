@@ -430,13 +430,13 @@ export const useGasAccountDiscovery = ({
       return;
     }
 
+    autoLoginInFlight.current = true;
     wallet
       .isUnlocked()
       .then((isUnlocked) => {
         if (!isUnlocked) {
           return '';
         }
-        autoLoginInFlight.current = true;
         return login(discovery.autoLoginAccount!);
       })
       .catch((error) => {

@@ -17,10 +17,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Virtuoso } from 'react-virtuoso';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-} from '@/ui/utils/walletUnlock';
+import { isWalletUnlockCancelled } from '@/ui/utils/walletUnlock';
 
 export const AccountList = ({
   list,
@@ -78,19 +75,18 @@ export const AccountList = ({
                 }
               : async () => {
                   try {
-                    await ensureWalletUnlocked({ wallet });
+                    await dispatch.addressManagement.removeAddress([
+                      account.address,
+                      account.type,
+                      account.brandName,
+                      account.type !== KEYRING_TYPE['HdKeyring'],
+                    ]);
                   } catch (error) {
                     if (isWalletUnlockCancelled(error)) {
                       return;
                     }
                     throw error;
                   }
-                  await dispatch.addressManagement.removeAddress([
-                    account.address,
-                    account.type,
-                    account.brandName,
-                    account.type !== KEYRING_TYPE['HdKeyring'],
-                  ]);
                   if (
                     accounts.length === 1 &&
                     account.type !== KEYRING_TYPE['HdKeyring']

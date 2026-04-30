@@ -56,6 +56,9 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
     keyring === KEYRING_CLASS.HARDWARE.TREZOR
       ? MAX_STEP_COUNT_TREZOR
       : MAX_STEP_COUNT;
+  const isHardwareKeyring = Object.values(KEYRING_CLASS.HARDWARE).includes(
+    keyring as any
+  );
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -77,9 +80,11 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
       if (exitRef.current) {
         return;
       }
-      await createTask(() =>
-        wallet.requestKeyring(keyring, 'unlock', keyringId, null, true)
-      );
+      if (isHardwareKeyring) {
+        await createTask(() =>
+          wallet.requestKeyring(keyring, 'unlock', keyringId, null, true)
+        );
+      }
       maxCountRef.current =
         (await createTask(() =>
           wallet.requestKeyring(keyring, 'getMaxAccountLimit', keyringId, null)

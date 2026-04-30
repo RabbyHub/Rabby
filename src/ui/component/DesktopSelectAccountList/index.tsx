@@ -12,12 +12,8 @@ import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
-import { isSameAddress, splitNumberByStep, useWallet } from '@/ui/utils';
+import { isSameAddress, splitNumberByStep } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-} from '@/ui/utils/walletUnlock';
 import { obj2query } from '@/ui/utils/url';
 import { isSameAccount } from '@/utils/account';
 import { useMemoizedFn } from 'ahooks';
@@ -42,7 +38,6 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   const history = useHistory();
   const location = useLocation();
   const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
   const currentAccount = useCurrentAccount();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
@@ -134,15 +129,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
         // increaseViewportBy={100}
       />
       <div
-        onClick={async () => {
-          try {
-            await ensureWalletUnlocked({ wallet });
-          } catch (error) {
-            if (isWalletUnlockCancelled(error)) {
-              return;
-            }
-            throw error;
-          }
+        onClick={() => {
           dispatch.desktopProfile.setField({
             addAddress: {
               visible: true,

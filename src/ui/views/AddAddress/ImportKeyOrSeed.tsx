@@ -22,6 +22,7 @@ import { useCreateAddressActions } from './useCreateAddress';
 import { RcBulkImportArrowCC } from '@/ui/assets/add-address';
 import { privateKeyToAddress } from 'viem/accounts';
 import { ellipsisAddress } from '@/ui/utils/address';
+import { isWalletUnlockCancelled } from '@/ui/utils/walletUnlock';
 
 type ImportTab = 'privateKey' | 'seedPhrase';
 
@@ -247,6 +248,9 @@ const ImportKeyOrSeed: React.FC<{
         }))
       );
     } catch (err) {
+      if (isWalletUnlockCancelled(err)) {
+        return;
+      }
       if ((err as Error)?.message?.includes?.('DuplicateAccountError')) {
         const address = safeJSONParse((err as Error).message)?.address;
         show({
@@ -319,6 +323,9 @@ const ImportKeyOrSeed: React.FC<{
         }
       );
     } catch (err) {
+      if (isWalletUnlockCancelled(err)) {
+        return;
+      }
       setErrMsgs([
         (err as Error)?.message ||
           t('page.newAddress.theSeedPhraseIsInvalidPleaseCheck'),

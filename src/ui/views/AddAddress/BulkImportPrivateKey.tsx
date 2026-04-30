@@ -16,6 +16,7 @@ import { ReactComponent as RcEyeClose } from '@/ui/assets/new-user-import/eye-cl
 import { ReactComponent as RcClose } from '@/ui/assets/new-user-import/close-cc.svg';
 import { useCreateAddressActions } from './useCreateAddress';
 import { privateKeyToAddress } from 'viem/accounts';
+import { isWalletUnlockCancelled } from '@/ui/utils/walletUnlock';
 
 type BulkImportTab = 'privateKey' | 'keyStore';
 
@@ -947,6 +948,9 @@ const BulkImportPrivateKey: React.FC = () => {
 
       setPrivateKeyError(t('page.newAddress.privateKey.notAValidPrivateKey'));
     } catch (error) {
+      if (isWalletUnlockCancelled(error)) {
+        return;
+      }
       setPrivateKeyError(t('page.newAddress.privateKey.notAValidPrivateKey'));
     } finally {
       setSubmitting(false);
@@ -976,6 +980,9 @@ const BulkImportPrivateKey: React.FC = () => {
       const accounts = await wallet.importJson(keyStoreContent, password);
       handleImportSuccess(accounts);
     } catch (error) {
+      if (isWalletUnlockCancelled(error)) {
+        return;
+      }
       form.setFields([
         {
           name: 'password',

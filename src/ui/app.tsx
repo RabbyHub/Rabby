@@ -10,6 +10,10 @@ import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import { EVENTS } from 'consts';
 import browser from 'webextension-polyfill';
+import {
+  isWalletLockedNeedUnlockError,
+  isWalletUnlockCancelled,
+} from '@/shared/walletUnlockPolicy';
 
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 
@@ -66,6 +70,34 @@ const { PortMessage } = Message;
 
 const portMessageChannel = new PortMessage();
 
+window.addEventListener('unhandledrejection', (event) => {
+  if (isWalletUnlockCancelled(event.reason)) {
+    event.preventDefault();
+  }
+});
+
+const requestController = async (method: string | symbol, params: any[]) => {
+  try {
+    return await portMessageChannel.request({
+      type: 'controller',
+      method,
+      params,
+    });
+  } catch (error) {
+    if (!isWalletLockedNeedUnlockError(error)) {
+      throw error;
+    }
+
+    const { ensureWalletUnlocked } = await import('@/ui/utils/walletUnlock');
+    await ensureWalletUnlocked({ wallet });
+    return portMessageChannel.request({
+      type: 'controller',
+      method,
+      params,
+    });
+  }
+};
+
 const wallet = new Proxy(
   {},
   {
@@ -121,11 +153,7 @@ const wallet = new Proxy(
           break;
         default:
           return function (...params: any) {
-            return portMessageChannel.request({
-              type: 'controller',
-              method: key,
-              params,
-            });
+            return requestController(key, params);
           };
       }
     },

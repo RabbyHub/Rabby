@@ -17,10 +17,7 @@ import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { UI_TYPE } from '@/constant/ui';
 import { useHandleDeleteHdKeyringAndSimpleKeyringAccount } from '@/ui/hooks/useDeleteHdOrPrivateKeyringAddress';
 import { useRabbyDispatch } from '@/ui/store';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-} from '@/ui/utils/walletUnlock';
+import { isWalletUnlockCancelled } from '@/ui/utils/walletUnlock';
 
 type AddressDeleteProps = {
   brandName?: string;
@@ -43,23 +40,22 @@ export const AddressDelete = ({
 
   const handleDeleteAddress = async () => {
     try {
-      await ensureWalletUnlocked({ wallet, getContainer });
+      await dispatch.addressManagement.removeAddress([
+        address,
+        type,
+        brandName,
+        type === KEYRING_TYPE.HdKeyring ||
+        KEYRING_CLASS.HARDWARE.GRIDPLUS ||
+        KEYRING_CLASS.HARDWARE.KEYSTONE
+          ? false
+          : true,
+      ]);
     } catch (error) {
       if (isWalletUnlockCancelled(error)) {
         return;
       }
       throw error;
     }
-    await dispatch.addressManagement.removeAddress([
-      address,
-      type,
-      brandName,
-      type === KEYRING_TYPE.HdKeyring ||
-      KEYRING_CLASS.HARDWARE.GRIDPLUS ||
-      KEYRING_CLASS.HARDWARE.KEYSTONE
-        ? false
-        : true,
-    ]);
 
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,

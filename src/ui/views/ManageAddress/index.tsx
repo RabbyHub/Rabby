@@ -26,7 +26,6 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
 import styled from 'styled-components';
 import {
-  ensureWalletUnlocked,
   isWalletUnlockCancelled,
   verifyPasswordOrUnlock,
 } from '@/ui/utils/walletUnlock';
@@ -173,14 +172,6 @@ const ManageAddress = () => {
   );
 
   const handleConfirmDeleteAddress = async () => {
-    try {
-      await ensureWalletUnlocked({ wallet });
-    } catch (error) {
-      if (isWalletUnlockCancelled(error)) {
-        return;
-      }
-      throw error;
-    }
     setBatchDeleting(true);
     try {
       if (deleteList.length) {
@@ -197,6 +188,11 @@ const ManageAddress = () => {
         content: t('page.manageAddress.deleteSuccess'),
         duration: 0.5,
       });
+    } catch (error) {
+      if (isWalletUnlockCancelled(error)) {
+        return;
+      }
+      throw error;
     } finally {
       setBatchDeleting(false);
     }
@@ -247,20 +243,19 @@ const ManageAddress = () => {
   const handleAddSeedPhraseAddress = async () => {
     if (TypedWalletObj?.[activeIndex]?.publicKey) {
       try {
-        await ensureWalletUnlocked({ wallet });
+        await invokeEnterPassphrase(TypedWalletObj?.[activeIndex]?.publicKey);
+        const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
+          TypedWalletObj[activeIndex].publicKey!
+        );
+        openInternalPageInTab(
+          `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
+        );
       } catch (error) {
         if (isWalletUnlockCancelled(error)) {
           return;
         }
         throw error;
       }
-      await invokeEnterPassphrase(TypedWalletObj?.[activeIndex]?.publicKey);
-      const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
-        TypedWalletObj[activeIndex].publicKey!
-      );
-      openInternalPageInTab(
-        `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
-      );
     }
   };
 

@@ -36,10 +36,6 @@ import { UI_TYPE } from '@/constant/ui';
 import { ReactComponent as RcIconArrowRight14 } from '@/ui/assets/address/arrow-right-14.svg';
 import { useMemoizedFn } from 'ahooks';
 import browser from 'webextension-polyfill';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-} from '@/ui/utils/walletUnlock';
 
 function NoAddressUI() {
   const { t } = useTranslation();
@@ -251,17 +247,9 @@ const AddressManagement = () => {
     history.push('/add-address');
   }, [history]);
 
-  const gotoManageAddress = useCallback(async () => {
-    try {
-      await ensureWalletUnlocked({ wallet });
-    } catch (error) {
-      if (isWalletUnlockCancelled(error)) {
-        return;
-      }
-      throw error;
-    }
+  const gotoManageAddress = useCallback(() => {
     history.push('/settings/address?back=true');
-  }, [history, wallet]);
+  }, [history]);
 
   const switchAccount = useCallback(
     async (account: typeof accountsList[number]) => {

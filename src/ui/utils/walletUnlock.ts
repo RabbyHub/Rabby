@@ -2,22 +2,15 @@ import type { DrawerProps, ModalProps } from 'antd';
 import { t } from 'i18next';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import type { WalletControllerType } from './WalletContext';
+export {
+  WalletUnlockCancelledError,
+  isWalletUnlockCancelled,
+} from '@/shared/walletUnlockPolicy';
+import { WalletUnlockCancelledError } from '@/shared/walletUnlockPolicy';
 
 export type UnlockModalContainer =
   | DrawerProps['getContainer']
   | ModalProps['getContainer'];
-
-export class WalletUnlockCancelledError extends Error {
-  constructor() {
-    super('User cancelled unlock');
-    this.name = 'WalletUnlockCancelledError';
-  }
-}
-
-export const isWalletUnlockCancelled = (
-  error: unknown
-): error is WalletUnlockCancelledError =>
-  error instanceof WalletUnlockCancelledError;
 
 let pendingUnlockPromise: Promise<void> | null = null;
 

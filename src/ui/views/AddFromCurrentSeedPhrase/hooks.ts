@@ -6,10 +6,7 @@ import { useWalletUnlocked } from '@/ui/hooks/useWalletUnlocked';
 import { TypeKeyringGroup, useWalletTypeData } from '../ManageAddress/hooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { sortSeedPhraseGroups } from './sort';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-} from '@/ui/utils/walletUnlock';
+import { isWalletUnlockCancelled } from '@/ui/utils/walletUnlock';
 
 const useGetHdKeys = (enabled: boolean) => {
   const wallet = useWallet();
@@ -46,20 +43,19 @@ export const UseSeedPhrase = () => {
     async (publicKey: string) => {
       if (publicKey) {
         try {
-          await ensureWalletUnlocked({ wallet });
+          await invokeEnterPassphrase(publicKey);
+          const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
+            publicKey
+          );
+          openInternalPageInTab(
+            `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
+          );
         } catch (error) {
           if (isWalletUnlockCancelled(error)) {
             return;
           }
           throw error;
         }
-        await invokeEnterPassphrase(publicKey);
-        const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
-          publicKey
-        );
-        openInternalPageInTab(
-          `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`
-        );
       }
     },
     [invokeEnterPassphrase, wallet]

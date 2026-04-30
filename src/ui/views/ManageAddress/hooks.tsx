@@ -205,7 +205,7 @@ export const useWalletTypeData = () => {
         if (!isUnlocked) {
           return {
             ...e,
-            hdPathBasePublicKey: e.address,
+            hdPathBasePublicKey: e.hdPathBasePublicKey || e.address,
           };
         }
         try {

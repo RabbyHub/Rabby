@@ -35,6 +35,7 @@ export interface Account {
   displayBrandName?: string;
   index?: number;
   balance?: number;
+  hasBackup?: boolean;
 }
 
 export interface ChainGas {

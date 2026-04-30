@@ -53,11 +53,15 @@ import {
 } from 'background/utils/password';
 import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
+import { WalletLockedNeedUnlockError } from '@/shared/walletUnlockPolicy';
 
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
   KEYRING_TYPE.HdKeyring,
 ];
+
+const isEncryptedKeyringType = (type: string) =>
+  UNENCRYPTED_IGNORE_KEYRING.includes(type as any);
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -92,15 +96,20 @@ type PublicAccountSnapshotItem = {
   address: string;
   type: string;
   brandName: string;
+  byImport?: boolean;
+  publicKey?: string;
+  hdPathBasePublicKey?: string;
+  hdPathType?: string;
+  hasBackup?: boolean;
 };
 
-type PublicAccountSnapshotV1 = {
-  version: 1;
+type PublicAccountSnapshotV3 = {
+  version: 3;
   updatedAt: number;
   accounts: PublicAccountSnapshotItem[];
 };
 
-const PUBLIC_ACCOUNT_SNAPSHOT_VERSION = 1;
+const PUBLIC_ACCOUNT_SNAPSHOT_VERSION = 3;
 
 export interface DisplayedKeryring {
   type: string;
@@ -110,10 +119,16 @@ export interface DisplayedKeryring {
     type?: string;
     keyring?: DisplayKeyring;
     alianName?: string;
+    byImport?: boolean;
+    publicKey?: string;
+    hdPathBasePublicKey?: string;
+    hdPathType?: string;
+    hasBackup?: boolean;
   }[];
   keyring: DisplayKeyring;
   byImport?: boolean;
   publicKey?: string;
+  hasBackup?: boolean;
 }
 
 type BatchImportPrivateKeysResult = {
@@ -146,8 +161,12 @@ export class KeyringService extends EventEmitter {
 
   private normalizePublicAccountSnapshot(
     raw: any
-  ): PublicAccountSnapshotV1 | undefined {
-    if (!raw || !Array.isArray(raw.accounts)) {
+  ): PublicAccountSnapshotV3 | undefined {
+    if (
+      !raw ||
+      raw.version !== PUBLIC_ACCOUNT_SNAPSHOT_VERSION ||
+      !Array.isArray(raw.accounts)
+    ) {
       return undefined;
     }
     const accounts = raw.accounts
@@ -167,6 +186,23 @@ export class KeyringService extends EventEmitter {
           address: normalizeAddress(item.address),
           type: item.type,
           brandName,
+          byImport:
+            typeof item.byImport === 'boolean' ? item.byImport : undefined,
+          publicKey:
+            typeof item.publicKey === 'string' && item.publicKey
+              ? item.publicKey
+              : undefined,
+          hdPathBasePublicKey:
+            typeof item.hdPathBasePublicKey === 'string' &&
+            item.hdPathBasePublicKey
+              ? item.hdPathBasePublicKey
+              : undefined,
+          hdPathType:
+            typeof item.hdPathType === 'string' && item.hdPathType
+              ? item.hdPathType
+              : undefined,
+          hasBackup:
+            typeof item.hasBackup === 'boolean' ? item.hasBackup : undefined,
         } as PublicAccountSnapshotItem;
       })
       .filter(Boolean) as PublicAccountSnapshotItem[];
@@ -190,9 +226,10 @@ export class KeyringService extends EventEmitter {
     );
   }
 
-  private isPublicAccountSnapshotValid(snapshot?: PublicAccountSnapshotV1) {
+  private isPublicAccountSnapshotValid(snapshot?: PublicAccountSnapshotV3) {
     return (
       !!snapshot &&
+      snapshot.version === PUBLIC_ACCOUNT_SNAPSHOT_VERSION &&
       Array.isArray(snapshot.accounts) &&
       snapshot.accounts.length > 0 &&
       snapshot.accounts.every((item) => !!item.address && !!item.type)
@@ -204,24 +241,73 @@ export class KeyringService extends EventEmitter {
     return this.isPublicAccountSnapshotValid(snapshot);
   }
 
-  private async buildPublicAccountSnapshotFromRuntime(): Promise<PublicAccountSnapshotV1> {
+  private async getPublicAccountSnapshotAccountInfo(
+    keyring: any,
+    address: string
+  ) {
+    if (typeof keyring?.getAccountInfo !== 'function') {
+      return undefined;
+    }
+
+    try {
+      return await keyring.getAccountInfo(address);
+    } catch {
+      return undefined;
+    }
+  }
+
+  private async buildPublicAccountSnapshotFromRuntime(): Promise<PublicAccountSnapshotV3> {
     const typedAccounts = await Promise.all(
-      this.keyrings.map((keyring) => this.displayForKeyring(keyring))
+      this.keyrings.map(async (keyring) => ({
+        keyring,
+        display: await this.displayForKeyring(keyring),
+      }))
     );
-    const accounts = typedAccounts
-      .filter((group) => group.accounts.length > 0)
-      .map((group) => {
-        return group.accounts.map((account) => {
-          const address = normalizeAddress(account.address);
-          const type = String(group.type);
-          return {
-            address,
-            type,
-            brandName: account.brandName || type,
-          } as PublicAccountSnapshotItem;
-        });
-      })
-      .flat();
+    const accounts = (
+      await Promise.all(
+        typedAccounts
+          .filter(({ display }) => display.accounts.length > 0)
+          .map(({ keyring, display }) => {
+            return Promise.all(
+              display.accounts.map(async (account) => {
+                const address = normalizeAddress(account.address);
+                const type = String(display.type);
+                const accountInfo = await this.getPublicAccountSnapshotAccountInfo(
+                  keyring,
+                  address
+                );
+                return {
+                  address,
+                  type,
+                  brandName: account.brandName || type,
+                  byImport:
+                    typeof display.byImport === 'boolean'
+                      ? display.byImport
+                      : undefined,
+                  publicKey:
+                    typeof display.publicKey === 'string' && display.publicKey
+                      ? display.publicKey
+                      : undefined,
+                  hdPathBasePublicKey:
+                    typeof accountInfo?.hdPathBasePublicKey === 'string' &&
+                    accountInfo.hdPathBasePublicKey
+                      ? accountInfo.hdPathBasePublicKey
+                      : undefined,
+                  hdPathType:
+                    typeof accountInfo?.hdPathType === 'string' &&
+                    accountInfo.hdPathType
+                      ? accountInfo.hdPathType
+                      : undefined,
+                  hasBackup:
+                    typeof keyring.hasBackup === 'boolean'
+                      ? keyring.hasBackup
+                      : undefined,
+                } as PublicAccountSnapshotItem;
+              })
+            );
+          })
+      )
+    ).flat();
 
     return {
       version: PUBLIC_ACCOUNT_SNAPSHOT_VERSION,
@@ -239,18 +325,50 @@ export class KeyringService extends EventEmitter {
     return snapshot;
   }
 
+  private async writeMergedPublicAccountSnapshotFromRuntime(
+    changedTypes: string[] = []
+  ) {
+    if (!this.store) {
+      return undefined;
+    }
+
+    const runtimeSnapshot = await this.buildPublicAccountSnapshotFromRuntime();
+    const runtimeTypes = new Set(
+      runtimeSnapshot.accounts.map((item) => item.type)
+    );
+    changedTypes.forEach((type) => runtimeTypes.add(type));
+    const existingSnapshot = this.getPublicAccountSnapshotFromStore();
+    const existingAccounts = existingSnapshot?.accounts || [];
+    const snapshot: PublicAccountSnapshotV3 = {
+      version: PUBLIC_ACCOUNT_SNAPSHOT_VERSION,
+      updatedAt: Date.now(),
+      accounts: [
+        ...existingAccounts.filter((item) => !runtimeTypes.has(item.type)),
+        ...runtimeSnapshot.accounts,
+      ],
+    };
+
+    this.store.updateState({ publicAccountSnapshot: snapshot });
+    return snapshot;
+  }
+
   private getAccountsFromSnapshot() {
     const snapshot = this.getPublicAccountSnapshotFromStore();
     if (!this.isPublicAccountSnapshotValid(snapshot)) {
       return [];
     }
-    const validSnapshot = snapshot as PublicAccountSnapshotV1;
+    const validSnapshot = snapshot as PublicAccountSnapshotV3;
     const accounts = validSnapshot.accounts;
 
     return accounts.map((item) => ({
       address: normalizeAddress(item.address),
       type: item.type,
       brandName: item.brandName || item.type,
+      byImport: item.byImport,
+      publicKey: item.publicKey,
+      hdPathBasePublicKey: item.hdPathBasePublicKey,
+      hdPathType: item.hdPathType,
+      hasBackup: item.hasBackup,
     }));
   }
 
@@ -259,22 +377,39 @@ export class KeyringService extends EventEmitter {
     if (!this.isPublicAccountSnapshotValid(snapshot)) {
       return [];
     }
-    const validSnapshot = snapshot as PublicAccountSnapshotV1;
+    const validSnapshot = snapshot as PublicAccountSnapshotV3;
     const accounts = validSnapshot.accounts;
 
     const grouped = accounts.reduce(
       (acc, item) => {
-        const groupId = item.type;
+        const groupId = [
+          item.type,
+          item.brandName,
+          item.publicKey || '',
+          item.hdPathBasePublicKey || '',
+          item.hdPathType || '',
+          String(item.hasBackup ?? ''),
+          String(item.byImport ?? ''),
+        ].join('|');
         if (!acc[groupId]) {
           acc[groupId] = {
             type: item.type,
-            accounts: [] as { address: string; brandName: string }[],
+            byImport: item.byImport,
+            publicKey: item.publicKey,
+            hasBackup: item.hasBackup,
+            accounts: [] as PublicAccountSnapshotItem[],
           };
         }
 
         acc[groupId].accounts.push({
           address: item.address,
           brandName: item.brandName,
+          type: item.type,
+          byImport: item.byImport,
+          publicKey: item.publicKey,
+          hdPathBasePublicKey: item.hdPathBasePublicKey,
+          hdPathType: item.hdPathType,
+          hasBackup: item.hasBackup,
         });
 
         return acc;
@@ -283,7 +418,10 @@ export class KeyringService extends EventEmitter {
         string,
         {
           type: string;
-          accounts: { address: string; brandName: string }[];
+          byImport?: boolean;
+          publicKey?: string;
+          hasBackup?: boolean;
+          accounts: PublicAccountSnapshotItem[];
         }
       >
     );
@@ -294,6 +432,9 @@ export class KeyringService extends EventEmitter {
       keyring: new DisplayKeyring({
         type: group.type,
       }),
+      byImport: group.byImport,
+      publicKey: group.publicKey,
+      hasBackup: group.hasBackup,
     })) as DisplayedKeryring[];
   }
 
@@ -322,6 +463,12 @@ export class KeyringService extends EventEmitter {
 
   hasVault() {
     return !!this.store.getState().vault;
+  }
+
+  assertUnlocked() {
+    if (!this.isUnlocked()) {
+      throw new WalletLockedNeedUnlockError('keyringService');
+    }
   }
 
   /**
@@ -461,9 +608,7 @@ export class KeyringService extends EventEmitter {
   }
 
   async generatePreMnemonic(): Promise<string> {
-    if (!this.isUnlocked()) {
-      throw new Error(i18n.t('background.error.unlock'));
-    }
+    this.assertUnlocked();
     const mnemonic = this.generateMnemonic();
     const preMnemonics = await passwordEncrypt({
       data: mnemonic,
@@ -489,9 +634,7 @@ export class KeyringService extends EventEmitter {
       return '';
     }
 
-    if (!this.isUnlocked()) {
-      throw new Error(i18n.t('background.error.unlock'));
-    }
+    this.assertUnlocked();
 
     return await passwordDecrypt({
       password: this.password,
@@ -554,7 +697,7 @@ export class KeyringService extends EventEmitter {
       })
       .then(() => {
         this.keyrings.push(keyring);
-        return this.persistAllKeyrings();
+        return this.persistKeyringsForKeyring(keyring);
       })
       .then(() => this._updateMemStoreKeyrings())
       .then(() => this.fullUpdate())
@@ -597,6 +740,7 @@ export class KeyringService extends EventEmitter {
     this.memStore.updateState({ isUnlocked: false });
     // remove keyrings
     this.keyrings = [];
+    await this.restoreUnencryptedKeyrings();
     await this._updateMemStoreKeyrings();
     this.emit('lock');
     return this.fullUpdate();
@@ -629,7 +773,7 @@ export class KeyringService extends EventEmitter {
     }
 
     // force store unencrypted keyring data if not exist
-    if (!this.store.getState().unencryptedKeyringData) {
+    if (hasUnlockedKeyrings) {
       await this.persistAllKeyrings();
     }
     if (hasUnlockedKeyrings) {
@@ -645,11 +789,14 @@ export class KeyringService extends EventEmitter {
     }
     try {
       this.keyrings = await this.unlockKeyrings();
-      await this.writePublicAccountSnapshotToStore();
       this.setUnlocked();
+      await this.persistAllKeyrings();
+      await this.writePublicAccountSnapshotToStore();
       this.fullUpdate();
     } catch (e) {
       console.log('tryUnlock failed: ', e.message);
+      await this.restoreUnencryptedKeyrings();
+      this.fullUpdate();
     }
   }
 
@@ -807,7 +954,7 @@ export class KeyringService extends EventEmitter {
           _accounts = accounts;
         });
       })
-      .then(this.persistAllKeyrings.bind(this))
+      .then(() => this.persistKeyringsForKeyring(selectedKeyring))
       .then(this._updateMemStoreKeyrings.bind(this))
       .then(this.fullUpdate.bind(this))
       .then(() => _accounts);
@@ -912,9 +1059,9 @@ export class KeyringService extends EventEmitter {
 
           // return this.removeEmptyKeyrings();
         }
-        return undefined;
+        return currentKeyring;
       })
-      .then(this.persistAllKeyrings.bind(this))
+      .then((currentKeyring) => this.persistKeyringsForKeyring(currentKeyring))
       .then(this._updateMemStoreKeyrings.bind(this))
       .then(this.fullUpdate.bind(this))
       .catch((e) => {
@@ -949,11 +1096,7 @@ export class KeyringService extends EventEmitter {
   }
 
   async persistUpdate() {
-    if (!this.isUnlocked()) {
-      return Promise.reject(
-        new Error('KeyringController - password is not a string')
-      );
-    }
+    this.assertUnlocked();
 
     return this.persistAllKeyrings()
       .then(this._updateMemStoreKeyrings.bind(this))
@@ -961,6 +1104,85 @@ export class KeyringService extends EventEmitter {
       .catch((e) => {
         return Promise.reject(e);
       });
+  }
+
+  private async serializeKeyrings(keyrings = this.keyrings) {
+    return Promise.all(
+      keyrings.map((keyring) => {
+        return Promise.all([keyring.type, keyring.serialize()]).then(
+          (serializedKeyringArray) => {
+            // Label the output values on each serialized Keyring:
+            return {
+              type: serializedKeyringArray[0],
+              data: serializedKeyringArray[1],
+            } as KeyringSerializedData;
+          }
+        );
+      })
+    );
+  }
+
+  private getUnencryptedKeyringData(
+    serializedKeyrings: KeyringSerializedData[]
+  ) {
+    return serializedKeyrings
+      .map(({ type, data }) => {
+        if (!isEncryptedKeyringType(type)) {
+          return { type, data };
+        }
+
+        // maybe empty keyring
+        // TODO: maybe need remove simple keyring if empty
+        if (type === KEYRING_TYPE.SimpleKeyring && !data.length) {
+          return undefined;
+        }
+
+        return undefined;
+      })
+      .filter(Boolean) as KeyringSerializedData[];
+  }
+
+  private hasEncryptedKeyrings(serializedKeyrings: KeyringSerializedData[]) {
+    return serializedKeyrings.some(({ type, data }) => {
+      if (!isEncryptedKeyringType(type)) {
+        return false;
+      }
+
+      return !(type === KEYRING_TYPE.SimpleKeyring && !data.length);
+    });
+  }
+
+  async persistUnencryptedKeyrings(
+    changedTypes: string[] = []
+  ): Promise<boolean> {
+    const serializedKeyrings = await this.serializeKeyrings();
+    const unencryptedKeyringData = this.getUnencryptedKeyringData(
+      serializedKeyrings
+    );
+
+    await this.writeMergedPublicAccountSnapshotFromRuntime(changedTypes);
+
+    this.store.updateState({
+      unencryptedKeyringData,
+    });
+
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.PERSIST_KEYRING,
+    });
+
+    return true;
+  }
+
+  async persistKeyringsForKeyring(keyring: any): Promise<boolean> {
+    if (isEncryptedKeyringType(keyring.type)) {
+      return this.persistAllKeyrings();
+    }
+
+    if (this.isUnlocked()) {
+      return this.persistAllKeyrings();
+    }
+
+    return this.persistUnencryptedKeyrings([keyring.type]);
   }
 
   //
@@ -1119,43 +1341,15 @@ export class KeyringService extends EventEmitter {
    * @returns {Promise<boolean>} Resolves to true once keyrings are persisted.
    */
   async persistAllKeyrings(): Promise<boolean> {
-    if (!this.isUnlocked()) {
-      return Promise.reject(
-        new Error('KeyringController - password is not a string')
-      );
-    }
+    this.assertUnlocked();
 
-    const serializedKeyrings = await Promise.all(
-      this.keyrings.map((keyring) => {
-        return Promise.all([keyring.type, keyring.serialize()]).then(
-          (serializedKeyringArray) => {
-            // Label the output values on each serialized Keyring:
-            return {
-              type: serializedKeyringArray[0],
-              data: serializedKeyringArray[1],
-            } as KeyringSerializedData;
-          }
-        );
-      })
+    const serializedKeyrings = await this.serializeKeyrings();
+    const hasEncryptedKeyringData = this.hasEncryptedKeyrings(
+      serializedKeyrings
     );
-
-    let hasEncryptedKeyringData = false;
-    const unencryptedKeyringData = serializedKeyrings
-      .map(({ type, data }) => {
-        if (!UNENCRYPTED_IGNORE_KEYRING.includes(type as any)) {
-          return { type, data };
-        }
-
-        // maybe empty keyring
-        // TODO: maybe need remove simple keyring if empty
-        if (type === KEYRING_TYPE.SimpleKeyring && !data.length) {
-          return undefined;
-        }
-
-        hasEncryptedKeyringData = true;
-        return undefined;
-      })
-      .filter(Boolean) as KeyringSerializedData[];
+    const unencryptedKeyringData = this.getUnencryptedKeyringData(
+      serializedKeyrings
+    );
 
     const encryptedString = await passwordEncrypt({
       data: serializedKeyrings,
@@ -1200,9 +1394,36 @@ export class KeyringService extends EventEmitter {
       encryptedData: encryptedVault,
       persisted: true,
     });
+    const unencryptedKeyringData = this.store.getState().unencryptedKeyringData;
+    const hasUnencryptedKeyringData = Array.isArray(unencryptedKeyringData);
+    const keyringsToRestore = hasUnencryptedKeyringData
+      ? (vault as KeyringSerializedData[]).filter(({ type }) =>
+          isEncryptedKeyringType(type)
+        )
+      : (vault as KeyringSerializedData[]);
+
     // TODO: FIXME
+    await Promise.all(keyringsToRestore.map(this._restoreKeyring.bind(this)));
+    if (hasUnencryptedKeyringData) {
+      await Promise.all(
+        unencryptedKeyringData.map(this._restoreKeyring.bind(this))
+      );
+    }
+    await this._updateMemStoreKeyrings();
+    return this.keyrings;
+  }
+
+  async restoreUnencryptedKeyrings(): Promise<any[]> {
+    const unencryptedKeyringData = this.store.getState().unencryptedKeyringData;
+    if (!Array.isArray(unencryptedKeyringData)) {
+      return this.keyrings;
+    }
+
+    this.keyrings = this.keyrings.filter((keyring) =>
+      isEncryptedKeyringType(keyring.type)
+    );
     await Promise.all(
-      Array.from(vault as any).map(this._restoreKeyring.bind(this))
+      unencryptedKeyringData.map(this._restoreKeyring.bind(this))
     );
     await this._updateMemStoreKeyrings();
     return this.keyrings;
@@ -1507,6 +1728,10 @@ export class KeyringService extends EventEmitter {
         keyring,
         byImport: keyring.byImport,
         publicKey: keyring.publicKey,
+        hasBackup:
+          typeof keyring.hasBackup === 'boolean'
+            ? keyring.hasBackup
+            : undefined,
       };
     });
   }
@@ -1534,19 +1759,20 @@ export class KeyringService extends EventEmitter {
     return keyrings.filter((keyring) => keyring.accounts.length > 0);
   }
 
-  async getAllVisibleAccountsArray() {
+  async getAllVisibleAccountsArray(): Promise<Account[]> {
     if (!this.isUnlocked()) {
       return this.getAccountsFromSnapshot();
     }
 
     const typedAccounts = await this.getAllTypedVisibleAccounts();
-    const result: { address: string; type: string; brandName: string }[] = [];
+    const result: Account[] = [];
     typedAccounts.forEach((accountGroup) => {
       result.push(
         ...accountGroup.accounts.map((account) => ({
           address: account.address,
           brandName: account.brandName,
           type: accountGroup.type,
+          hasBackup: account.hasBackup ?? accountGroup.hasBackup,
         }))
       );
     });
@@ -1554,19 +1780,20 @@ export class KeyringService extends EventEmitter {
     return result;
   }
 
-  async getAllAdresses() {
+  async getAllAdresses(): Promise<Account[]> {
     if (!this.isUnlocked()) {
       return this.getAccountsFromSnapshot();
     }
 
     const keyrings = await this.getAllTypedAccounts();
-    const result: { address: string; type: string; brandName: string }[] = [];
+    const result: Account[] = [];
     keyrings.forEach((accountGroup) => {
       result.push(
         ...accountGroup.accounts.map((account) => ({
           address: account.address,
           brandName: account.brandName,
           type: accountGroup.type,
+          hasBackup: account.hasBackup ?? accountGroup.hasBackup,
         }))
       );
     });

@@ -74,10 +74,6 @@ import {
   splitNumberByStep,
   useWallet,
 } from 'ui/utils';
-import {
-  ensureWalletUnlocked,
-  isWalletUnlockCancelled,
-} from '@/ui/utils/walletUnlock';
 import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadgeModal';
 import { EcologyPopup } from '../EcologyPopup';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
@@ -775,15 +771,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       icon: RcIconManageCC,
       eventKey: 'Manage Address',
       content: t('page.dashboard.home.panel.manageAddress'),
-      onClick: async () => {
-        try {
-          await ensureWalletUnlocked({ wallet });
-        } catch (error) {
-          if (isWalletUnlockCancelled(error)) {
-            return;
-          }
-          throw error;
-        }
+      onClick: () => {
         history.push('/settings/address');
       },
     } as IPanelItem,
