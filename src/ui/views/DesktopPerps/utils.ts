@@ -469,12 +469,24 @@ export const formatAllDexsClearinghouseState = (
 };
 
 export const formatSpotState = (spotState: SpotClearinghouseState) => {
+  // `tokenToAvailableAfterMaintenance` is the server-computed net free
+  // collateral per token (after LTV weighting and existing-position MM).
+  // Surfaced raw so consumers can decide how to use it based on the user's
+  // abstraction mode — portfolio margin needs it, unifiedAccount has its own
+  // accounting via stablecoin totals.
+  const tokenToAvailableAfterMaintenance = Array.isArray(
+    spotState?.tokenToAvailableAfterMaintenance
+  )
+    ? spotState.tokenToAvailableAfterMaintenance ?? null
+    : null;
+
   if (!spotState || !spotState.balances || spotState.balances.length === 0) {
     return {
       accountValue: '0',
       availableToTrade: '0',
       balances: [] as SpotBalance[],
       balancesMap: {} as Record<string, SpotBalance>,
+      tokenToAvailableAfterMaintenance,
     };
   }
 
@@ -517,6 +529,7 @@ export const formatSpotState = (spotState: SpotClearinghouseState) => {
     availableToTrade: totalAvailable,
     balances,
     balancesMap,
+    tokenToAvailableAfterMaintenance,
   };
 };
 
