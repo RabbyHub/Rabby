@@ -3374,7 +3374,16 @@
         "closedPnl": "Realisiertes P&L",
         "tradeValue": "Transaktionswert",
         "size": "Positionsgröße",
-        "feeDesc": "Wenn Nutzer Trades platzieren, fallen sowohl <1>Handelsgebühren</1> als auch <2>Erbauergebühren</2> an."
+        "feeDesc": "Wenn Nutzer Trades platzieren, fallen sowohl <1>Handelsgebühren</1> als auch <2>Erbauergebühren</2> an.",
+        "amount": "Betrag",
+        "asset": "Vermögenswerte",
+        "action": "Aktion",
+        "value": "Wert",
+        "buy": "Kaufen",
+        "sell": "Verkaufen",
+        "transferDetailTitle": "Überweisung",
+        "transferActionToSpot": "Überweisung (von Perps zu Spot)",
+        "transferActionToPerps": "Überweisung (von Spot zu Perps)"
       },
       "logoutConfirmModal": {
         "title": "Aktuelle Adresse abmelden",
@@ -3399,7 +3408,9 @@
         "hyperliquidFeeLabelTooltip": "Neue Benutzer zahlen eine einmalige Aktivierungsgebühr an Hyperliquid.",
         "amount": "Betrag",
         "feeTipTooltipHype": "Eine Gebühr von ~0,00002 HYPE wird für den Abzug auf die EVM erhoben.",
-        "hypeActivationFeeTip": "Eine einmalige Aktivierungsgebühr von {{fee}} wird von Hyperliquid für die erste HyperEVM-Abhebung erhoben."
+        "hypeActivationFeeTip": "Eine einmalige Aktivierungsgebühr von {{fee}} wird von Hyperliquid für die erste HyperEVM-Abhebung erhoben.",
+        "balance": "Guthaben",
+        "chain": "Kette"
       },
       "home": {
         "entryPrice": "Einstiegskurs",
@@ -3568,7 +3579,68 @@
       },
       "addFunds": "Fonds Hinzufügen",
       "crossMarginLiqPriceTip": "Im Cross Margin-Modus ist der Liquidationspreis für eine einzelne Position nur eine Schätzung zur Referenz.",
-      "selectTokenToWithdraw": "Netzwerk für Abhebungen auswählen"
+      "selectTokenToWithdraw": "Netzwerk für Abhebungen auswählen",
+      "PerpsDepositCard": {
+        "availableToTrade": "Verfügbar zum Handeln: ",
+        "deposit": "Einzahlung",
+        "swap": "Tausch"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Einheitliches Konto aktivieren",
+        "desc": "Unified Account ist der empfohlene Kontomodus, der das Trading-Erlebnis vereinfacht. Spot- und Perps-Guthaben werden für alle Token zusammengelegt, und Cross-Margin wird für alle verfügbaren Assets unterstützt.",
+        "confirm": "Bestätigen",
+        "enable": "Aktivieren",
+        "cancel": "Abbrechen",
+        "importantTips": "Alle USDC-Sicherheiten werden als Cross-Margin verwendet, sobald das Unified Account aktiviert ist.",
+        "important": "Wichtig"
+      },
+      "PerpsSpotSwap": {
+        "title": "Stablecoins tauschen",
+        "from": "Von",
+        "to": "Tauschen zu",
+        "balance": "Guthaben",
+        "estReceive": "Gesch. Erhalt",
+        "swapBtn": "Tauschen",
+        "insufficientBalance": "Unzureichendes Guthaben",
+        "invalidAmount": "Bitte geben Sie einen gültigen Betrag ein",
+        "minimumAmount": "Der Mindest-Tauschbetrag beträgt {{amount}}",
+        "max": "Max",
+        "toDeposit": "Zur Einzahlung →",
+        "swapBeforeTrading": "USDC vor dem Handel in {{quoteAsset}} tauschen",
+        "enabledSuccess": "Unified Account aktiviert",
+        "enableFailed": "Unified Account-Aktivierung fehlgeschlagen",
+        "swapFailed": "Tausch fehlgeschlagen",
+        "swapSuccess": "Tausch erfolgreich abgeschlossen",
+        "estReceiveTooltip": "Der geschätzte Erhaltungsbetrag unterliegt Marktkursschwankungen.",
+        "buyAsset": "{{asset}} kaufen",
+        "sellAsset": "{{asset}} verkaufen",
+        "toSwapEntry": "Zum Tauschen →",
+        "toDepositEntry": "Zur Einzahlung →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Überweisen",
+        "from": "Von",
+        "to": "An",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Guthaben",
+        "amount": "Betrag",
+        "max": "Max",
+        "submit": "Bestätigen",
+        "insufficientBalance": "Unzureichendes Guthaben",
+        "invalidAmount": "Bitte geben Sie einen gültigen Betrag ein"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid-Guthaben",
+        "deposit": "Einzahlung",
+        "withdraw": "Auszahlung"
+      },
+      "PerpsAbout": {
+        "title": "Über"
+      },
+      "transferToSpot": "Zu Spot überweisen",
+      "transferToPerps": "Zu Perps überweisen",
+      "selectChainToWithdraw": "Kette für Auszahlung wählen"
     },
     "perpsPro": {
       "chatArea": {
@@ -3586,7 +3658,8 @@
         "openInterest": "Offenes Interesse",
         "lastPrice": "Letzter Handelspreis",
         "symbol": "Symbol",
-        "fundingTips": "Die stündliche Finanzierungsrate, mit der Long-Positionen Short-Positionen bezahlen (ist sie negativ, bezahlen Short-Positionen Long-Positionen). Es fallen keine Gebühren im Zusammenhang mit der Finanzierung an, was eine Peer-to-Peer-Überweisung zwischen Nutzern ist, um die Preise in Richtung des Spotpreises zu bewegen. Siehe Dokumentation für Details."
+        "fundingTips": "Die stündliche Finanzierungsrate, mit der Long-Positionen Short-Positionen bezahlen (ist sie negativ, bezahlen Short-Positionen Long-Positionen). Es fallen keine Gebühren im Zusammenhang mit der Finanzierung an, was eine Peer-to-Peer-Überweisung zwischen Nutzern ist, um die Preise in Richtung des Spotpreises zu bewegen. Siehe Dokumentation für Details.",
+        "categoryAll": "Alle"
       },
       "userInfo": {
         "tab": {
@@ -3630,7 +3703,9 @@
           "slice": "Slice",
           "unrealizedPnl": "Unrealisiertes PnL",
           "fundingTipsV2": "Nettofinanzierung seit der Eröffnung der Position. Ein roter (negativer) Finanzierungswert zeigt gezahlte Finanzierung an, während ein grüner (positiver) Wert erhaltene Finanzierung anzeigt.",
-          "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <bold>Grüne (positive)</bold> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <bold>Rote (negative)</bold> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben."
+          "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <bold>Grüne (positive)</bold> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <bold>Rote (negative)</bold> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben.",
+          "assets": "Vermögenswerte",
+          "about": "Über"
         },
         "emptyMessage": {
           "fillHistory": "Keine Ausführungshistorie",
@@ -3640,7 +3715,8 @@
           "activeTwap": "Kein aktiver TWAP",
           "fundingHistory": "Keine Finanzierungshistorie",
           "openOrders": "Keine offenen Orders",
-          "orderHistory": "Keine Orderhistorie"
+          "orderHistory": "Keine Orderhistorie",
+          "assets": "Keine Guthaben"
         },
         "positionInfo": {
           "receive": "Empfangen",
@@ -3713,6 +3789,17 @@
           "minTradeNtlRejected": "Abgelehnt aufgrund des minimalen Handels NTL",
           "reduceOnlyCanceled": "Wegen Reduzierung nur storniert",
           "siblingFilledCanceled": "Abgebrochen aufgrund der Erfüllung der Geschwisterreihenfolge"
+        },
+        "assets": {
+          "columnAsset": "Vermögen",
+          "columnTotal": "Gesamtsaldo",
+          "columnAvailable": "Verfügbarer Saldo",
+          "columnAction": "Aktion",
+          "swapStablecoins": "Stablecoins tauschen",
+          "enableUnifiedAccount": "Unified Account aktivieren",
+          "transferToPerps": "Zu Perps übertragen",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3831,7 +3918,8 @@
         "bboTips": "Das beste Angebot (BBO) bezieht sich auf den zum jeweiligen Zeitpunkt besten verfügbaren Ask-Preis und den besten verfügbaren Bid-Preis im Orderbuch. BBO-Orders werden immer mit der genauen minimalen Tickgröße platziert, was eine granulare und präzise Preisgestaltung unabhängig von Anzeigepräferenzen gewährleistet.",
         "orderTypeTooltipScale": "Skalierte Aufträge ermöglichen es Ihnen, einen Betrag in mehrere Unteraufträge aufzuteilen, um die Marktbeeinflussung zu minimieren.",
         "orderTypeTooltipTwap": "TWAP (Zeitgewichteter Durchschnittspreis) ist eine algorithmische Handelsausführungsstrategie, die darauf abzielt, einen durchschnittlichen Ausführungspreis zu erreichen, der nahe am zeitgewichteten Durchschnittspreis des benutzerdefinierten Zeitraums liegt.",
-        "Sell": "Verkaufen"
+        "Sell": "Verkaufen",
+        "swapStableCoins": "Stablecoins tauschen"
       },
       "marginMode": {
         "confirm": "Bestätigen",
@@ -3883,7 +3971,16 @@
         "unrealizedPnl": "Unrealisiertes P&L",
         "accountEquityTip": "Kontostand + unrealisierte P&L (ungefähre Kontobewertung, falls alle Positionen geschlossen würden)",
         "balanceTip": "Summe der Nettoüberweisungen + Summe der realisierten Gewinne + Summe der Nettofinanzierungsgebühren",
-        "available": "Verfügbar:"
+        "available": "Verfügbar:",
+        "accountSummary": "Kontoübersicht",
+        "unifiedAccountSummary": "Einheitliche Kontoübersicht",
+        "unifiedAccountRatio": "Einheitliches Kontoverhältnis",
+        "unifiedAccountRatioTips": "Stellt das Risiko der Portfolioliquidation dar. Wenn der Wert größer als 95% ist, kann Ihr Portfolio liquidiert werden.",
+        "unifiedAccountLeverage": "Einheitliche Kontoleverage",
+        "unifiedAccountLeverageTips": "Einheitliche Kontoleverage = Gesamtwert der Cross-Positionen / Gesamte Sicherheitenbilanz.",
+        "perpsMaintenanceMargin": "Perps Maintenance-Marge",
+        "perpsPortfolioValue": "Perps Portfoliowert",
+        "perpsUnrealizedPnl": "Perps nicht realisierter PNL"
       },
       "accountActions": {
         "available": "Verfügbar",
@@ -4332,7 +4429,10 @@
       "selectMarket": "Markt auswählen",
       "supplied": "Bereitgestellt",
       "searchMarket": "Markt durchsuchen",
-      "enterAmount": "Betrag eingeben"
+      "enterAmount": "Betrag eingeben",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simulation fehlgeschlagen. Diese Transaktion wird mit hoher Wahrscheinlichkeit aufgrund von AAVE-Fehlern fehlschlagen."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

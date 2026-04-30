@@ -3371,7 +3371,16 @@
         "closedPnl": "PNL realizado",
         "fee": "Taxa",
         "size": "Tamanho da posição",
-        "feeDesc": "Quando os usuários fazem negociações, tanto as <1>taxas de negociação</1> quanto as <2>taxas de criador</2> se aplicam."
+        "feeDesc": "Quando os usuários fazem negociações, tanto as <1>taxas de negociação</1> quanto as <2>taxas de criador</2> se aplicam.",
+        "amount": "Quantidade",
+        "asset": "Ativo",
+        "action": "Ação",
+        "value": "Valor",
+        "buy": "Comprar",
+        "sell": "Vender",
+        "transferDetailTitle": "Transferir",
+        "transferActionToSpot": "Transferir (de Perps para Spot)",
+        "transferActionToPerps": "Transferir (de Spot para Perps)"
       },
       "logoutConfirmModal": {
         "title": "Desconectar o endereço atual",
@@ -3396,7 +3405,9 @@
         "hyperliquidFeeLabelTooltip": "Novos usuários são cobrados uma taxa de ativação única pela Hyperliquid.",
         "amount": "Quantidade",
         "feeTipTooltipHype": "Uma taxa de ~0,00002 HYPE será cobrada para retirar para o EVM.",
-        "hypeActivationFeeTip": "Uma taxa de ativação única de {{fee}} será cobrada pela Hyperliquid na primeira retirada do HyperEVM."
+        "hypeActivationFeeTip": "Uma taxa de ativação única de {{fee}} será cobrada pela Hyperliquid na primeira retirada do HyperEVM.",
+        "balance": "Saldo",
+        "chain": "Cadeia"
       },
       "home": {
         "entryPrice": "Preço de entrada",
@@ -3565,7 +3576,68 @@
       },
       "addFunds": "Adicionar Fundos",
       "crossMarginLiqPriceTip": "No modo de Margem Cruzada, o preço de liquidação para uma única posição é uma estimativa apenas para referência.",
-      "selectTokenToWithdraw": "Selecionar Rede de Retirada"
+      "selectTokenToWithdraw": "Selecionar Rede de Retirada",
+      "PerpsDepositCard": {
+        "availableToTrade": "Disponível para negociar: ",
+        "deposit": "Depositar",
+        "swap": "Trocar"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Ativar Conta Unificada",
+        "desc": "Conta Unificada é o modo de conta recomendado que simplifica a experiência de negociação. Os saldos de Spot e Perps são mesclados para todos os tokens, e margem cruzada é suportada em todos os ativos disponíveis.",
+        "confirm": "Confirmar",
+        "enable": "Ativar",
+        "cancel": "Cancelar",
+        "importantTips": "Toda a garantia USDC será usada como margem cruzada assim que a Conta Unificada for ativada.",
+        "important": "Importante"
+      },
+      "PerpsSpotSwap": {
+        "title": "Trocar Stablecoins",
+        "from": "De",
+        "to": "Trocar Para",
+        "balance": "Saldo",
+        "estReceive": "Est.Receber",
+        "swapBtn": "Trocar",
+        "insufficientBalance": "Saldo insuficiente",
+        "invalidAmount": "Por favor, insira um valor válido",
+        "minimumAmount": "O valor mínimo de troca é {{amount}}",
+        "max": "Máx",
+        "toDeposit": "Para Depositar →",
+        "swapBeforeTrading": "Trocar USDC para {{quoteAsset}} antes de negociar",
+        "enabledSuccess": "Conta Unificada ativada",
+        "enableFailed": "Falha ao ativar Conta Unificada",
+        "swapFailed": "Falha na troca",
+        "swapSuccess": "Troca concluída com sucesso",
+        "estReceiveTooltip": "O valor estimado a receber está sujeito a flutuações do preço de mercado.",
+        "buyAsset": "Comprar {{asset}}",
+        "sellAsset": "Vender {{asset}}",
+        "toSwapEntry": "Para Trocar →",
+        "toDepositEntry": "Para Depositar →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Transferir",
+        "from": "De",
+        "to": "Para",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Saldo",
+        "amount": "Quantidade",
+        "max": "Máx",
+        "submit": "Confirmar",
+        "insufficientBalance": "Saldo insuficiente",
+        "invalidAmount": "Por favor, insira um valor válido"
+      },
+      "PerpsMultiBalance": {
+        "title": "Saldos Hyperliquid",
+        "deposit": "Depositar",
+        "withdraw": "Retirar"
+      },
+      "PerpsAbout": {
+        "title": "Sobre"
+      },
+      "transferToSpot": "Transferir para Spot",
+      "transferToPerps": "Transferir para Perps",
+      "selectChainToWithdraw": "Selecionar Cadeia para Retirar"
     },
     "perpsPro": {
       "chatArea": {
@@ -3583,7 +3655,8 @@
         "8hrFunding": "Taxa de financiamento a cada 8h",
         "24hVol": "Volume 24h",
         "fundingTips": "A taxa horária pela qual as posições longas pagam às posições curtas (se for negativo, as posições curtas pagam às longas). Não há taxas associadas ao financiamento, que é uma transferência P2P entre usuários para levar os preços na direção do preço à vista. Consulte a documentação para detalhes.",
-        "markTips": "Utilizado para margem, cálculo do PnL não realizado, liquidações e disparo de ordens TP/SL."
+        "markTips": "Utilizado para margem, cálculo do PnL não realizado, liquidações e disparo de ordens TP/SL.",
+        "categoryAll": "TODOS"
       },
       "userInfo": {
         "tab": {
@@ -3627,7 +3700,9 @@
           "trade": "Negociar",
           "unrealizedPnlTooltip": "O preço de marcação é usado para estimar o PnL não realizado. Apenas os preços de negociação são usados para o PnL realizado.",
           "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido.",
-          "fundingTipsBold": "Isto mostra o seu financiamento total liquidado desde que a posição foi aberta. Valores <bold>Verdes (positivos)</bold> significam que você ganhou de outros traders, enquanto valores <bold>Vermelhos (negativos)</bold> são custos de financiamento que você pagou a eles."
+          "fundingTipsBold": "Isto mostra o seu financiamento total liquidado desde que a posição foi aberta. Valores <bold>Verdes (positivos)</bold> significam que você ganhou de outros traders, enquanto valores <bold>Vermelhos (negativos)</bold> são custos de financiamento que você pagou a eles.",
+          "assets": "Ativos",
+          "about": "Sobre"
         },
         "emptyMessage": {
           "tradeHistory": "Sem histórico de negociações",
@@ -3637,7 +3712,8 @@
           "openOrders": "Sem ordens abertas",
           "fundingHistory": "Sem histórico de financiamento",
           "activeTwap": "Nenhum TWAP ativo",
-          "twapHistory": "Sem histórico de Preço Médio Ponderado no Tempo (TWAP)"
+          "twapHistory": "Sem histórico de Preço Médio Ponderado no Tempo (TWAP)",
+          "assets": "Nenhum ativo"
         },
         "positionInfo": {
           "confirm": "Confirmar",
@@ -3710,6 +3786,17 @@
           "iocCancelRejected": "Rejeitado devido ao cancelamento IOC",
           "perpMarginRejected": "Margem de Perp Rejeitada",
           "siblingFilledCanceled": "Cancelado devido à ordem de irmãos ter sido preenchida"
+        },
+        "assets": {
+          "columnAsset": "Ativos",
+          "columnTotal": "Saldo Total",
+          "columnAvailable": "Saldo Disponível",
+          "columnAction": "Ação",
+          "swapStablecoins": "Trocar Stablecoins",
+          "enableUnifiedAccount": "Ativar Conta Unificada",
+          "transferToPerps": "Transferir para Perps",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3828,7 +3915,8 @@
         "totalTime": "Tempo Total (5m-24h)",
         "orderTypeTooltipScale": "Ordens Escalonadas permitem que você divida um valor em múltiplos subpedidos para minimizar o impacto no mercado.",
         "orderTypeTooltipTwap": "TWAP (Preço Médio Ponderado pelo Tempo) é uma estratégia de execução de trades algorítmica que visa alcançar um preço de execução médio próximo ao preço médio ponderado pelo tempo do período especificado pelo usuário.",
-        "min": "mín"
+        "min": "mín",
+        "swapStableCoins": "Swap de Moedas Estáveis"
       },
       "marginMode": {
         "confirm": "Confirmar",
@@ -3880,7 +3968,16 @@
         "crossAccountLeverageTips": "Alavancagem de Conta Cruzada = Valor Total da Posição Cruzada / Valor da Conta Cruzada",
         "unrealizedPnl": "P&L não realizado",
         "crossMarginRatioTips": "Margem de Manutenção / Valor da Carteira. Suas posições de margem cruzada serão liquidadas se o Índice de Margem atingir 100%.",
-        "available": "Disponível:"
+        "available": "Disponível:",
+        "accountSummary": "Resumo da Conta",
+        "unifiedAccountSummary": "Resumo da Conta Unificada",
+        "unifiedAccountRatio": "Índice de Conta Unificada",
+        "unifiedAccountRatioTips": "Representa o risco de liquidação do portfólio. Quando o valor é maior que 95%, seu portfólio pode ser liquidado.",
+        "unifiedAccountLeverage": "Alavancagem da Conta Unificada",
+        "unifiedAccountLeverageTips": "Alavancagem da Conta Unificada = Valor Total das Posições Cruzadas / Saldo Total de Colateral.",
+        "perpsMaintenanceMargin": "Margem de Manutenção de Perps",
+        "perpsPortfolioValue": "Valor do Portfólio de Perps",
+        "perpsUnrealizedPnl": "PNL Não Realizado de Perps"
       },
       "accountActions": {
         "pending": "Pendente",
@@ -4329,7 +4426,10 @@
       "selectMarket": "Selecionar Mercado",
       "searchMarket": "Pesquisar Mercado",
       "disabled": "DESABILITADO",
-      "hf": "Fator de saúde"
+      "hf": "Fator de saúde",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simulação Falhou. Esta transação provavelmente falhará devido a erros da AAVE."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {
