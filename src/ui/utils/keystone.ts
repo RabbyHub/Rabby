@@ -17,8 +17,8 @@ const isKeystoneDevice = (
   } | null
 ) =>
   device?.vendorId === keystoneUSBVendorId &&
-  (!device?.productName?.toLowerCase()?.includes('onekey') ||
-    !device?.manufacturerName?.toLowerCase()?.includes('onekey'));
+  !device?.productName?.toLowerCase()?.includes('onekey') &&
+  !device?.manufacturerName?.toLowerCase()?.includes('onekey');
 
 export const hasConnectedKeystoneDevice = async () => {
   const devices = await navigator.usb?.getDevices();
