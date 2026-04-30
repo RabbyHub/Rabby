@@ -12,6 +12,28 @@ export const getSupplyCapData = (asset: DisplayPoolReserveInfo) => {
   return { supplyCapUsage, supplyCapReached };
 };
 
+export const getRateUsage = (asset: DisplayPoolReserveInfo) => {
+  let borrowUsage: number = asset
+    ? valueToBigNumber(asset.reserve.totalVariableDebt)
+        .dividedBy(asset.reserve.totalLiquidity)
+        .toNumber() * 100
+    : 0;
+  borrowUsage = borrowUsage === Infinity ? 0 : borrowUsage;
+  const borrowReached = borrowUsage >= 99.9999;
+  return { borrowUsage, borrowReached };
+};
+
+export const getBorrowUsage = (asset: DisplayPoolReserveInfo) => {
+  let borrowUsage: number = asset
+    ? valueToBigNumber(asset.reserve.totalDebt)
+        .dividedBy(asset.reserve.borrowCap)
+        .toNumber() * 100
+    : 0;
+  borrowUsage = borrowUsage === Infinity ? 0 : borrowUsage;
+  const borrowReached = borrowUsage >= 99.9999;
+  return { borrowUsage, borrowReached };
+};
+
 export const GHO_SYMBOL = 'GHO';
 
 /**

@@ -1011,6 +1011,12 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
               return;
             }
 
+            if (error === MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+              message.error(
+                t('page.lending.signFallback.preExecFailedUseFullSign')
+              );
+            }
+
             await handleRepay(true);
             return;
           } finally {
