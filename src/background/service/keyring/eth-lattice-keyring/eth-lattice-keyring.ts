@@ -25,6 +25,15 @@ const HD_PATH_TYPE = {
   [HD_PATH_BASE[HDPathType.LedgerLive]]: HDPathType.LedgerLive,
 };
 
+const RECOVERABLE_LATTICE_CONNECTION_ERRORS = [
+  'not_paired',
+  'no active wallet in lattice',
+  'no connection to lattice',
+  'lattice connector closed',
+  'invalid credentials returned from lattice',
+  'failed to get accounts',
+];
+
 let callStackCounter = 0;
 
 class LatticeKeyring extends OldLatticeKeyring {
@@ -32,6 +41,52 @@ class LatticeKeyring extends OldLatticeKeyring {
   appName = 'Rabby';
   static type = keyringType;
   type = keyringType;
+
+  private isRecoverableConnectionError(error: any) {
+    const message = String(error?.message || error || '').toLowerCase();
+
+    return RECOVERABLE_LATTICE_CONNECTION_ERRORS.some((recoverableError) =>
+      message.includes(recoverableError)
+    );
+  }
+
+  private resetConnectionState() {
+    this.creds = {
+      deviceID: null,
+      password: null,
+      endpoint: null,
+    };
+    this.sdkSession = null;
+    this.walletUID = null;
+    this.isLocked = true;
+  }
+
+  private async withConnectionRecovery<T>(sign: () => Promise<T>) {
+    try {
+      return await sign();
+    } catch (error) {
+      if (!this.isRecoverableConnectionError(error)) {
+        throw error;
+      }
+
+      this.resetConnectionState();
+      return sign();
+    }
+  }
+
+  async signTransaction(address, tx) {
+    return this.withConnectionRecovery(() => super.signTransaction(address, tx));
+  }
+
+  async signMessage(address, msg) {
+    return this.withConnectionRecovery(() => super.signMessage(address, msg));
+  }
+
+  async signTypedData(address, msg, opts) {
+    return this.withConnectionRecovery(() =>
+      super.signTypedData(address, msg, opts)
+    );
+  }
 
   async _getCreds() {
     if (!isManifestV3) {
