@@ -42,6 +42,8 @@ import {
   isScreenSmall,
 } from '../../../utils';
 import { formatPerpsCoin } from '../../../utils';
+import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
+import { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
 import perpsToast from '../../PerpsToast';
 import { ga4 } from '@/utils/ga4';
 import stats from '@/stats';
@@ -51,6 +53,7 @@ export interface PositionFormatData {
   direction: 'Long' | 'Short';
   type: 'cross' | 'isolated';
   coin: string;
+  quoteAsset: string;
   size: string;
   positionValue: string;
   leverage: number;
@@ -81,7 +84,7 @@ export const PositionsInfo: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  const { accountValue, availableBalance } = usePerpsAccount();
+  const { getAvailableByAsset } = usePerpsAccount();
 
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [editTpSlVisible, setEditTpSlVisible] = useState(false);
@@ -130,6 +133,7 @@ export const PositionsInfo: React.FC = () => {
       );
 
       const pxDecimals = marketData.pxDecimals || 2;
+      const quoteAsset = marketData.quoteAsset || 'USDC';
 
       const liquidationDistance = calculateDistanceToLiquidation(
         item.position.liquidationPx,
@@ -144,6 +148,7 @@ export const PositionsInfo: React.FC = () => {
         leverage: item.position.leverage.value,
         maxLeverage: marketData.maxLeverage || 25,
         positionValue: item.position.positionValue,
+        quoteAsset,
         markPx: Number(marketData.markPx || 0).toFixed(pxDecimals),
         entryPx: Number(item.position.entryPx || 0).toFixed(pxDecimals),
         liquidationPx:
@@ -308,7 +313,7 @@ export const PositionsInfo: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         className: 'relative',
         key: 'coin',
-        width: 100,
+        width: 130,
         dataIndex: 'coin',
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
@@ -322,13 +327,19 @@ export const PositionsInfo: React.FC = () => {
               )}
             >
               <div>
-                <div
-                  className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1 mb-[2px] cursor-pointer hover:font-bold hover:text-rb-brand-default"
-                  onClick={() => {
-                    dispatch.perps.setSelectedCoin(record.coin);
-                  }}
-                >
-                  {formatPerpsCoin(record.coin)}
+                <div className="group text-[13px] leading-[16px] font-medium text-r-neutral-title-1 mb-[2px]">
+                  <PerpsDisplayCoinName
+                    item={
+                      marketDataMap[record.coin] || {
+                        name: record.coin,
+                        quoteAsset: record.quoteAsset as PerpsQuoteAsset,
+                      }
+                    }
+                    separator="-"
+                    showDexTag
+                    baseClassName="group-hover:text-rb-brand-default group-hover:font-bold"
+                    quoteClassName="text-r-neutral-title-1 group-hover:text-rb-brand-default group-hover:font-bold"
+                  />
                 </div>
                 <div
                   className={clsx(
@@ -342,9 +353,10 @@ export const PositionsInfo: React.FC = () => {
                     className={clsx(
                       'text-[12px] leading-[14px] font-medium hover:font-bold hover:text-rb-brand-default cursor-pointer'
                     )}
-                    onClick={(e) =>
-                      handleClickLeverage(record.coin, record.leverage)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleClickLeverage(record.coin, record.leverage);
+                    }}
                   >
                     {record.leverage}x{' '}
                   </span>
@@ -448,7 +460,8 @@ export const PositionsInfo: React.FC = () => {
               {record.type === 'isolated' && (
                 <RcIconEditCC
                   className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedCoin(record.coin);
                     setEditMarginVisible(true);
                   }}
@@ -572,7 +585,8 @@ export const PositionsInfo: React.FC = () => {
                   'hover:border-rb-brand-default',
                   'text-[12px] leading-[14px]  text-r-neutral-title-1'
                 )}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setSelectedCoin(record.coin);
                   setClosePositionType('reverse');
                   setClosePositionVisible(true);
@@ -617,7 +631,8 @@ export const PositionsInfo: React.FC = () => {
             return (
               <div
                 className="text-[12px] leading-[14px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default flex item-center justify-center"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   eventBus.emit(
                     EVENTS.PERPS.USER_INFO_HISTORY_TAB_CHANGED,
                     'openOrders'
@@ -640,7 +655,8 @@ export const PositionsInfo: React.FC = () => {
                     'hover:border-rb-brand-default',
                     'text-[12px] leading-[14px]  text-r-neutral-title-1'
                   )}
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedCoin(record.coin);
                     setEditTpSlVisible(true);
                   }}
@@ -703,7 +719,8 @@ export const PositionsInfo: React.FC = () => {
               </div>
               <RcIconEditCC
                 className="text-rb-neutral-foot cursor-pointer hover:text-r-blue-default"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   setSelectedCoin(record.coin);
                   setEditTpSlVisible(true);
                 }}
@@ -728,6 +745,10 @@ export const PositionsInfo: React.FC = () => {
         rowKey="coin"
         defaultSortField="coin"
         defaultSortOrder="ascend"
+        onRow={(record) => ({
+          onClick: () => dispatch.perps.setSelectedCoin(record.coin),
+          style: { cursor: 'pointer' },
+        })}
       ></CommonTable>
       {currentPosition && (
         <>
@@ -738,7 +759,9 @@ export const PositionsInfo: React.FC = () => {
             direction={currentPosition.direction}
             entryPrice={Number(currentPosition.entryPx || 0)}
             leverage={currentPosition.leverage}
-            availableBalance={Number(availableBalance || 0)}
+            availableBalance={getAvailableByAsset(
+              currentPosition.quoteAsset as PerpsQuoteAsset
+            )}
             liquidationPx={Number(currentPosition?.liquidationPx || 0)}
             positionSize={Number(currentPosition.size || 0)}
             marginUsed={Number(currentPosition.marginUsed || 0)}

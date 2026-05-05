@@ -22,6 +22,7 @@ import { MarginInput } from '../components/MarginInput';
 import { LeverageInput } from '../components/LeverageInput';
 import { format } from 'path';
 import { formatPerpsCoin, getStatsReportSide } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 import stats from '@/stats';
 import { useRabbySelector } from '@/ui/store';
 import { MarginModePopup } from './MarginModePopup';
@@ -43,6 +44,9 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   marginMode: 'cross' | 'isolated';
   onMarginModeChange?: (mode: 'cross' | 'isolated') => void;
   hasPosition?: boolean;
+  quoteAsset?: string;
+  onDepositPress?: () => void;
+  onSwapPress?: () => void;
   handleOpenPosition: (params: {
     coin: string;
     size: string;
@@ -81,6 +85,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   marginMode,
   onMarginModeChange,
   hasPosition,
+  quoteAsset = 'USDC',
+  onDepositPress,
+  onSwapPress,
 }) => {
   const { t } = useTranslation();
   const perpsAccount = useRabbySelector(
@@ -99,6 +106,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
   const [slTriggerPx, setSlTriggerPx] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(false);
+  const marginModeDisabled = currentAssetCtx?.onlyIsolated;
   const [marginModeModalVisible, setMarginModeModalVisible] = React.useState(
     false
   );
@@ -370,6 +378,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
         <MarginInput
           title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
+          quoteAsset={quoteAsset}
           availableAmount={availableBalance}
           margin={margin}
           onMarginChange={setMargin}
@@ -377,10 +386,36 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           errorMessage={
             marginValidation.error ? marginValidation.errorMessage : null
           }
+          availableExtra={
+            (availableBalance < 0.1 ||
+              marginValidation.error === 'insufficient_balance') && (
+              <span
+                className="text-r-blue-default font-medium cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (quoteAsset === 'USDC') {
+                    onDepositPress?.();
+                  } else {
+                    onSwapPress?.();
+                  }
+                }}
+              >
+                {quoteAsset === 'USDC'
+                  ? t('page.perps.PerpsSpotSwap.toDepositEntry')
+                  : t('page.perps.PerpsSpotSwap.toSwapEntry')}
+              </span>
+            )
+          }
           titleExtra={
             <span
               className="ml-8 text-12 text-r-blue-default bg-r-blue-light1 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
               onClick={() => {
+                if (marginModeDisabled) {
+                  message.error(
+                    t('page.perpsPro.marginMode.onlyIsolatedSupported')
+                  );
+                  return;
+                }
                 setMarginModeModalVisible(true);
               }}
             >
@@ -535,7 +570,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perps.title')}
               </div>
               <div className="text-13 text-r-neutral-title-1 flex items-center font-medium">
-                {formatPerpsCoin(coin)} - USD
+                <PerpsDisplayCoinName item={currentAssetCtx} />
               </div>
             </div>
             <div className="flex justify-between items-center">
@@ -615,8 +650,13 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-20">
           <div className="space-y-16">
             <div className="flex justify-between items-center">
-              <div className="text-13 text-r-neutral-body">
-                {formatPerpsCoin(coin)}-USD {t('page.perps.price')}
+              <div className="text-13 text-r-neutral-body flex items-center gap-4">
+                <PerpsDisplayCoinName
+                  item={currentAssetCtx}
+                  baseClassName="text-r-neutral-body"
+                  quoteClassName="text-r-neutral-body"
+                />
+                {t('page.perps.price')}
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
                 ${splitNumberByStep(markPrice)}
@@ -635,7 +675,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 </Tooltip>
               </div>
               <div className="text-13 text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(Number(estimatedLiquidationPrice))}
+                {Number(estimatedLiquidationPrice) <= 0
+                  ? '-'
+                  : `$${splitNumberByStep(Number(estimatedLiquidationPrice))}`}
               </div>
             </div>
           </div>

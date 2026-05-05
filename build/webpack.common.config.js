@@ -9,7 +9,10 @@ const tsImportPluginFactory = require('ts-import-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const { resolveManifestFilename } = require('./manifest-utils');
+const {
+  resolveManifestFilename,
+  resolveManifestVersion,
+} = require('./manifest-utils');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
   .default;
@@ -45,6 +48,12 @@ const MANIFEST_FILENAME = resolveManifestFilename({
   manifestType: MANIFEST_TYPE,
   buildEnv: BUILD_ENV,
 });
+const APP_VERSION =
+  process.env.VERSION ||
+  resolveManifestVersion({
+    manifestType: MANIFEST_TYPE,
+    buildEnv: BUILD_ENV,
+  });
 
 const config = {
   entry: {
@@ -282,8 +291,8 @@ const config = {
       dayjs: 'dayjs',
     }),
     new webpack.DefinePlugin({
-      'process.env.version': JSON.stringify(`version: ${process.env.VERSION}`),
-      'process.env.release': JSON.stringify(process.env.VERSION),
+      'process.env.version': JSON.stringify(`version: ${APP_VERSION}`),
+      'process.env.release': JSON.stringify(APP_VERSION),
       'process.env.RABBY_BUILD_GIT_HASH': JSON.stringify(BUILD_GIT_HASH),
       'process.env.ETHERSCAN_KEY': JSON.stringify(process.env.ETHERSCAN_KEY),
     }),

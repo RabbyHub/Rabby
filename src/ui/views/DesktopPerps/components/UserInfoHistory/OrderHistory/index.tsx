@@ -1,7 +1,7 @@
 import { PositionAndOpenOrder } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { Table } from 'antd';
+import { message, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
@@ -15,15 +15,17 @@ import { formatPercent } from '@/ui/views/Perps/utils';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
-import {
-  formatPerpsCoin,
-  formatPerpsOrderStatus,
-} from '@/ui/views/DesktopPerps/utils';
+import { formatPerpsOrderStatus } from '@/ui/views/DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 
 export const OrderHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const historicalOrders = useRabbySelector((store) => {
     return store.perps.historicalOrders;
+  });
+
+  const marketDataMap = useRabbySelector((store) => {
+    return store.perps.marketDataMap;
   });
 
   const { t } = useTranslation();
@@ -85,16 +87,26 @@ export const OrderHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div
-              className={`text-[12px] leading-[14px]  text-r-neutral-title-1 cursor-pointer hover:font-bold hover:text-rb-brand-default ${
-                record.order.side === 'B'
-                  ? 'text-rb-green-default'
-                  : 'text-rb-red-default'
-              }`}
+              className={'group text-[12px] leading-[14px] cursor-pointer'}
               onClick={() => {
+                if (record.order.coin.startsWith('@')) {
+                  message.error('Not support to trade spot coin');
+                  return;
+                }
                 dispatch.perps.updateSelectedCoin(record.order.coin);
               }}
             >
-              {formatPerpsCoin(record.order.coin)}
+              <PerpsDisplayCoinName
+                item={
+                  marketDataMap[record.order.coin] || {
+                    name: record.order.coin,
+                  }
+                }
+                separator="-"
+                showDexTag
+                baseClassName="group-hover:text-rb-brand-default group-hover:font-bold"
+                quoteClassName="text-r-neutral-title-1 group-hover:text-rb-brand-default group-hover:font-bold"
+              />
             </div>
           );
         },
@@ -271,7 +283,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
     ],
-    []
+    [marketDataMap]
   );
   return (
     <CommonTable

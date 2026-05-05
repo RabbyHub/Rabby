@@ -10,10 +10,15 @@ import browser from 'webextension-polyfill';
 const navigator = window.navigator;
 
 const isKeystoneDevice = (
-  device?: { vendorId?: number; productName?: string } | null
+  device?: {
+    vendorId?: number;
+    productName?: string;
+    manufacturerName?: string;
+  } | null
 ) =>
   device?.vendorId === keystoneUSBVendorId &&
-  !device?.productName?.toLowerCase()?.includes('onekey');
+  !device?.productName?.toLowerCase()?.includes('onekey') &&
+  !device?.manufacturerName?.toLowerCase()?.includes('onekey');
 
 export const hasConnectedKeystoneDevice = async () => {
   const devices = await navigator.usb?.getDevices();

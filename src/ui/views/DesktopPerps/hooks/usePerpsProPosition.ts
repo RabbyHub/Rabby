@@ -846,6 +846,27 @@ export const usePerpsProPosition = () => {
     }
   );
 
+  const handleStableCoinOrder = useMemoizedFn(
+    async (params: {
+      coin: 'USDT' | 'USDH' | 'USDE';
+      isBuy: boolean;
+      size: string;
+      limitPx: string;
+    }) => {
+      return withErrorHandler(
+        async (p) => {
+          const sdk = getPerpsSDK();
+          if (!sdk.exchange) throw new Error('Hyperliquid no exchange client');
+          await sdk.exchange.stableCoinOrder(p);
+          // Spot balance refresh comes from the existing subscribeToSpotState WS push.
+          return true;
+        },
+        params,
+        'stableCoinOrder error'
+      );
+    }
+  );
+
   const handleCancelOrder = useMemoizedFn(
     async (params: CancelOrderParams[]) => {
       return withErrorHandler(
@@ -902,6 +923,7 @@ export const usePerpsProPosition = () => {
     handleModifyTpSlOrders,
     handleUpdateMarginModeLeverage,
     handleCancelOrder,
+    handleStableCoinOrder,
 
     needEnableTrading,
     handleActionApproveStatus,

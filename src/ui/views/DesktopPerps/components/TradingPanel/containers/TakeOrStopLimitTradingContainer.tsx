@@ -51,6 +51,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     setReduceOnly,
     tradeSize,
     maxBuyTradeSize,
+    quoteAsset,
     maxSellTradeSize,
     currentMarketData,
     percentage,
@@ -521,7 +522,10 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
 
   return (
     <div className="space-y-[16px]">
-      <OrderSideAndFunds availableBalance={availableBalance} />
+      <OrderSideAndFunds
+        availableBalance={availableBalance}
+        quoteAsset={quoteAsset}
+      />
 
       <div className="flex flex-col gap-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
@@ -534,7 +538,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
             className="text-left"
             suffix={
               <span className="text-15 font-medium text-rb-neutral-title-1">
-                USDC
+                {quoteAsset}
               </span>
             }
           />
@@ -566,7 +570,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
               className="text-left"
               suffix={
                 <span className="text-15 font-medium text-rb-neutral-title-1">
-                  USDC
+                  {quoteAsset}
                 </span>
               }
             />
@@ -601,6 +605,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         percentage={percentage}
         setPercentage={setPercentage}
         baseAsset={selectedCoin}
+        quoteAsset={quoteAsset}
         szDecimals={szDecimals}
         sizeDisplayUnit={sizeDisplayUnit}
         onUnitChange={setSizeDisplayUnit}
@@ -637,6 +642,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         sell={limitSellInfo}
         displayUnit={sizeDisplayUnit}
         selectedCoin={selectedCoin}
+        quoteAsset={quoteAsset}
         reduceOnly={reduceOnly}
         price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
       />

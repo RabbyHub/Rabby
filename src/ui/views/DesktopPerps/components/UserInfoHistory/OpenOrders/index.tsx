@@ -1,4 +1,3 @@
-import { MarketData } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
@@ -17,6 +16,7 @@ import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBordere
 import { usePerpsProPosition } from '@/ui/views/DesktopPerps/hooks/usePerpsProPosition';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import { formatPerpsCoin } from '../../../utils';
+import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 
 export const OpenOrders: React.FC = () => {
   const { openOrders: orders, marketDataMap } = useRabbySelector(
@@ -88,15 +88,12 @@ export const OpenOrders: React.FC = () => {
     () => [
       {
         title: t('page.perpsPro.userInfo.openOrders.order'),
-        width: 100,
+        width: 160,
         className: 'relative',
         key: 'side',
         dataIndex: 'side',
         sorter: (a, b) => a.side.localeCompare(b.side),
         render: (_, record) => {
-          // const isTpSL =
-          //   record.orderType.includes('Take Profit') ||
-          //   record.orderType.includes('Stop') ||
           return (
             <div
               className={clsx(
@@ -106,12 +103,18 @@ export const OpenOrders: React.FC = () => {
                 record.side === 'B' ? 'is-long-bg' : 'is-short-bg'
               )}
             >
-              <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px]">
+              <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px] flex flex-col">
                 <span
                   onClick={() => dispatch.perps.updateSelectedCoin(record.coin)}
-                  className="cursor-pointer hover:font-bold hover:text-rb-brand-default"
+                  className="group cursor-pointer"
                 >
-                  {formatPerpsCoin(record.coin)}{' '}
+                  <PerpsDisplayCoinName
+                    item={marketDataMap[record.coin] || { name: record.coin }}
+                    separator="-"
+                    showDexTag
+                    baseClassName="group-hover:text-rb-brand-default group-hover:font-bold"
+                    quoteClassName="text-r-neutral-title-1 group-hover:text-rb-brand-default group-hover:font-bold"
+                  />
                 </span>
                 <span>{record.side === 'B' ? 'Long' : 'Short'}</span>
               </div>

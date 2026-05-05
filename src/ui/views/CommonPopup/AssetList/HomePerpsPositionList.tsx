@@ -24,14 +24,16 @@ import {
   formatPerpsPct,
 } from '../../Perps/utils';
 import { UI_TYPE } from '@/constant/ui';
-import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
 import { obj2query } from '@/ui/utils/url';
 import { ga4 } from '@/utils/ga4';
 import { Tooltip } from 'antd';
 
 const isDesktop = UI_TYPE.isDesktop;
 
-export const HomePerpsPositionList: React.FC = () => {
+export const HomePerpsPositionList: React.FC<{ needFetchMarket?: boolean }> = ({
+  needFetchMarket = false,
+}) => {
   const currentAccount = useCurrentAccount();
 
   const { data } = usePerpsClearHouseState({
@@ -48,10 +50,20 @@ export const HomePerpsPositionList: React.FC = () => {
   }, [data]);
 
   useEffect(() => {
-    if (hasPositions) {
+    if (hasPositions && needFetchMarket) {
       dispatch.perps.fetchMarketData(undefined);
+      const sdk = getPerpsSDK();
+      const {
+        unsubscribe: unsubscribeAllDexsAssetCtxs,
+      } = sdk.ws.subscribeToAllDexsAssetCtxs((data) => {
+        const { ctxs } = data;
+        dispatch.perps.updateMarketData(ctxs);
+      });
+      return () => {
+        unsubscribeAllDexsAssetCtxs();
+      };
     }
-  }, [hasPositions]);
+  }, [hasPositions, needFetchMarket]);
 
   if (!hasPositions) {
     return null;
@@ -80,7 +92,12 @@ export const HomePerpsPositionList: React.FC = () => {
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
                 dispatch.perps.updateSelectedCoin(assetPosition.position.coin);
                 wallet.setPerpsCurrentAccount(currentAccount);
-                wallet.openInDesktop('/desktop/perps');
+                wallet.switchDesktopPerpsAccount(currentAccount!);
+                wallet.openInDesktop(
+                  `/desktop/perps?${obj2query({
+                    coin: assetPosition.position.coin,
+                  })}`
+                );
                 ga4.fireEvent('Perps_CardToPerps_Web', {
                   event_category: 'Rabby Perps',
                 });
@@ -162,9 +179,10 @@ const PositionItem: React.FC<{
           />
           <div className="flex flex-col gap-[8px]">
             <div className="flex items-center gap-[4px]">
-              <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
-                {formatPerpsCoin(coin)}
-              </span>
+              <PerpsDisplayCoinName
+                item={marketData}
+                className="text-[13px] leading-[16px] font-medium"
+              />
               <span className="text-[11px] leading-[14px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default gap-2">
                 {leverageType === 'cross'
                   ? t('page.perps.cross')

@@ -1558,7 +1558,8 @@
         "deposit": "存入",
         "chainNotSupported": "此區塊鏈不被 GasAccount 支援",
         "depositTips": "要完成GasAccount存款，此交易將被丟棄。您需要在存款後重新進行交易。",
-        "loginTips": "若要完成 GasAccount 登录，此交易将被放弃。您需要在登录后重新进行。"
+        "loginTips": "若要完成 GasAccount 登录，此交易将被放弃。您需要在登录后重新进行。",
+        "signWithHardwareWalletToUse": "你需要使用 {{brand}} 來簽署"
       },
       "iGotIt": "我明白了"
     },
@@ -2656,7 +2657,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "無歷史記錄"
+        "noHistory": "無歷史記錄",
+        "noHistoryForPast30Days": "過去 30 天沒有任何記錄。"
       },
       "loginInTip": {
         "gotIt": "明白",
@@ -2685,7 +2687,23 @@
         "invalidAmount": "必須少於 500",
         "desc": "將存款存入 Rabby 的 DeBank L2 Account，沒有額外費用 — 隨時提取。",
         "selectToken": "選擇代幣以存入",
-        "paymentAddr": "支付地址"
+        "paymentAddr": "支付地址",
+        "depositSuccess": "存款成功",
+        "gasDepositTitle": "Gas 存款",
+        "zeroInvalidAmount": "金額不能為零",
+        "minAmountRequired": "最低存款金額為 ${{value}}",
+        "paymentAddress": "付款 Wallet",
+        "balanceLabel": "餘額",
+        "insufficientBalanceLabel": "餘額不足",
+        "unavailablePaymentWallet": "所選付款錢包不可用",
+        "suggestedToken": "建議代幣",
+        "bridgeLabel": "跨鏈橋",
+        "estReceiveLabel": "預計收到：{{usd}}",
+        "estReceiveTip": "服務透過 {{name}} 處理，可能有滑點",
+        "depositFailed": "存款失敗，請重試",
+        "bridgeDepositFailed": "跨鏈橋存款失敗，請重試",
+        "noAvailableToken": "無可用代幣",
+        "InsufficientToken": "代幣餘額不足"
       },
       "withdrawPopup": {
         "withdrawalLimit": "提取限额",
@@ -2748,7 +2766,31 @@
         "desc2": "將資金添加到您的 GasAccount 並將其用於任何交易。在簽署時，選擇使用原生代幣或 GasAccount 來支付手續費，隨時切換。",
         "desc1": "GasAccount 是支付 gas 费用的一種新方式。您可以使用一個帳戶來覆蓋所有鏈上所有地址的 gas，而不必在每個鏈上使用原生代幣。簡單，可選，且永不缺少 gas。",
         "desc4": "GasAccount 無需合約批准或許可。您將資金存入 Rabby 的 GasAccount 地址，當需要時，Rabby 會將 Gas 發送到您的地址。設計上完全安全。"
-      }
+      },
+      "benefitCard": {
+        "title": "在所有鏈上支付 Gas 費用",
+        "subtitle": "當你沒有 Gas 時",
+        "item1": "無 Rabby 費用",
+        "desc1": "無需支付額外費用來支付 Gas",
+        "item2": "支援所有網絡",
+        "desc2": "在 80+ 網絡上自動支付 Gas",
+        "item3": "支援所有交易",
+        "desc3": "Swap、Bridge、發送、DApps 等"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "所需 Gas：{{topUpUsd}}，預計剩餘 Gas：{{balance}}"
+      },
+      "gasFee": "燃料費",
+      "gasDeposit": "存入燃料",
+      "depositNow": "立即存入",
+      "signWithPendingHardwareToUse": "使用 {{addressAlias}} 簽署以使用",
+      "depositSubmitted": "已提交存入",
+      "claimFreeGas": "領取 {{usdValue}} 免費燃料",
+      "depositFailed": "存入失敗",
+      "lowBalance": "你的燃料不足。存入燃料以確保未來交易順利進行。",
+      "gasBalance": "燃料餘額",
+      "loginSuccess": "登入成功",
+      "loginFailed": "登入失敗"
     },
     "safeMessageQueue": {
       "noData": "沒有訊息",
@@ -3372,7 +3414,16 @@
         "closedPnl": "已實現盈虧",
         "fee": "費用",
         "size": "合約張數",
-        "feeDesc": "當用戶進行交易時，會收取<1>交易費用</1>和<2>建構者費用</2>。"
+        "feeDesc": "當用戶進行交易時，會收取<1>交易費用</1>和<2>建構者費用</2>。",
+        "amount": "數量",
+        "asset": "資產",
+        "action": "操作",
+        "value": "價值",
+        "buy": "買入",
+        "sell": "賣出",
+        "transferDetailTitle": "轉帳",
+        "transferActionToSpot": "轉帳（從永續合約到現貨）",
+        "transferActionToPerps": "轉帳（從現貨到永續合約）"
       },
       "logoutConfirmModal": {
         "title": "登出當前地址",
@@ -3397,7 +3448,9 @@
         "hyperliquidFeeLabelTooltip": "新用戶需支付一筆一次性啟動費用給 Hyperliquid。",
         "amount": "金額",
         "feeTipTooltipHype": "提取至 EVM 时将收取约 0.00002 HYPE 的费用。",
-        "hypeActivationFeeTip": "Hyperliquid 將收取一次性啟動費用 {{fee}} 以進行首次 HyperEVM 提現。"
+        "hypeActivationFeeTip": "Hyperliquid 將收取一次性啟動費用 {{fee}} 以進行首次 HyperEVM 提現。",
+        "balance": "餘額",
+        "chain": "鏈"
       },
       "home": {
         "margin": "保證金",
@@ -3566,7 +3619,68 @@
       },
       "addFunds": "添加資金",
       "crossMarginLiqPriceTip": "在交叉保证金模式下，单个头寸的清算价格仅为参考估算。",
-      "selectTokenToWithdraw": "選擇提款網絡"
+      "selectTokenToWithdraw": "選擇提款代幣",
+      "PerpsDepositCard": {
+        "availableToTrade": "可用於交易：",
+        "deposit": "存款",
+        "swap": "交換"
+      },
+      "EnableUnifiedAccount": {
+        "title": "啟用統一帳戶",
+        "desc": "整合帳戶是建議的帳戶模式，可簡化交易體驗。所有代幣的現貨及 Perps 倉位將合併計算，並支援所有可用資產的交叉保證金。",
+        "confirm": "確認",
+        "enable": "啟用",
+        "cancel": "取消",
+        "importantTips": "啟用整合帳戶後，所有 USDC 抵押品將作為交叉保證金使用。",
+        "important": "重要"
+      },
+      "PerpsSpotSwap": {
+        "title": "兌換穩定幣",
+        "from": "從",
+        "to": "交換至",
+        "balance": "餘額",
+        "estReceive": "預計收到",
+        "swapBtn": "交換",
+        "insufficientBalance": "餘額不足",
+        "invalidAmount": "請輸入有效金額",
+        "minimumAmount": "最低交換金額為 {{amount}}",
+        "max": "最大",
+        "toDeposit": "存款 →",
+        "swapBeforeTrading": "交易前將 USDC 交換為 {{quoteAsset}}",
+        "enabledSuccess": "統一帳戶已啟用",
+        "enableFailed": "啟用統一帳戶失敗",
+        "swapFailed": "交換失敗",
+        "swapSuccess": "交換成功完成",
+        "estReceiveTooltip": "預計收到金額可能因市場價格波動而有所變動。",
+        "buyAsset": "買入 {{asset}}",
+        "sellAsset": "賣出 {{asset}}",
+        "toSwapEntry": "交換 →",
+        "toDepositEntry": "存款 →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "轉帳",
+        "from": "從",
+        "to": "到",
+        "spot": "現貨",
+        "perps": "合約",
+        "balance": "餘額",
+        "amount": "數量",
+        "max": "最大",
+        "submit": "確認",
+        "insufficientBalance": "餘額不足",
+        "invalidAmount": "請輸入有效金額"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid 餘額",
+        "deposit": "存款",
+        "withdraw": "提款"
+      },
+      "PerpsAbout": {
+        "title": "關於"
+      },
+      "transferToSpot": "轉入現貨",
+      "transferToPerps": "轉帳至永續合約",
+      "selectChainToWithdraw": "選擇要提現的鏈"
     },
     "perpsPro": {
       "chatArea": {
@@ -3584,7 +3698,8 @@
         "oracleTips": "由驗證節點報告的外部價格中位數，用於計算資金費率。",
         "markTips": "用於計算保證金、計算未實現盈虧、清算，以及觸發止盈/止損訂單。",
         "symbol": "合約符號",
-        "fundingTips": "多頭對空頭的每小時資金費率（若為負，則空頭支付多頭）。資金費率不收取任何費用，這是用戶之間的點對點轉移，旨在將價格推向現貨價格。詳情請參閱說明文件。"
+        "fundingTips": "多頭對空頭的每小時資金費率（若為負，則空頭支付多頭）。資金費率不收取任何費用，這是用戶之間的點對點轉移，旨在將價格推向現貨價格。詳情請參閱說明文件。",
+        "categoryAll": "全部"
       },
       "userInfo": {
         "tab": {
@@ -3628,7 +3743,9 @@
           "size": "倉位大小",
           "orderHistory": "委託單歷史",
           "fundingTipsV2": "自持仓开启以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。",
-          "fundingTipsBold": "這顯示自開倉以來你的總資金結算。<bold>綠色（正數）</bold>值表示你從其他交易者那裡獲得了收益，而<bold>紅色（負數）</bold>值則是你支付給他們的資金成本。"
+          "fundingTipsBold": "這顯示自開倉以來你的總資金結算。<bold>綠色（正數）</bold>值表示你從其他交易者那裡獲得了收益，而<bold>紅色（負數）</bold>值則是你支付給他們的資金成本。",
+          "assets": "資產",
+          "about": "關於"
         },
         "emptyMessage": {
           "fundingHistory": "尚無資金費率歷史",
@@ -3638,7 +3755,8 @@
           "activeTwap": "現時沒有活躍的TWAP",
           "openOrders": "目前沒有未成交的委託單",
           "tradeHistory": "暫無成交紀錄",
-          "twapHistory": "沒有TWAP歷史"
+          "twapHistory": "沒有TWAP歷史",
+          "assets": "無資產"
         },
         "positionInfo": {
           "limitPrice": "限價",
@@ -3711,6 +3829,17 @@
           "reduceOnlyCanceled": "由於僅可減少而被取消",
           "badAloPxRejected": "因不良 ALO PX 被拒绝",
           "siblingFilledCanceled": "因兄弟订单已成交而取消"
+        },
+        "assets": {
+          "columnAsset": "資產",
+          "columnTotal": "總餘額",
+          "columnAvailable": "可用餘額",
+          "columnAction": "操作",
+          "swapStablecoins": "兌換穩定幣",
+          "enableUnifiedAccount": "啟用統一帳戶",
+          "transferToPerps": "轉帳至永續合約",
+          "usdcSpot": "USDC(現貨)",
+          "usdcPerps": "USDC(永續合約)"
         }
       },
       "statusBar": {
@@ -3829,7 +3958,8 @@
         "totalTime": "總時間 (5分鐘-24小時)",
         "orderTypeTooltipScale": "Scaled Orders 允許你將一個金額拆分為多個子訂單，以最小化市場影響。",
         "bboTips": "最佳出价询价 (BBO) 指的是在任何给定时间，订单簿上可用的最佳卖出价格和最佳买入价格。BBO 订单始终采用精确的最小跳动点价位进行下单，确保价格的细致和准确，不受显示偏好的影响。",
-        "orderTypeTooltipTwap": "TWAP（时间加权平均价格）是一种算法交易执行策略，旨在实现接近用户指定时间段的时间加权平均价格的平均执行价格。"
+        "orderTypeTooltipTwap": "TWAP（时间加权平均价格）是一种算法交易执行策略，旨在实现接近用户指定时间段的时间加权平均价格的平均执行价格。",
+        "swapStableCoins": "兌換穩定幣"
       },
       "marginMode": {
         "title": "保證金模式",
@@ -3881,7 +4011,16 @@
         "withdraw": "提款",
         "balanceTip": "淨轉賬總額 + 已實現利潤總額 + 淨資金費用總額",
         "crossAccountLeverageTips": "跨帳戶槓桿 = 跨帳戶總倉位價值 / 跨帳戶價值",
-        "available": "可用："
+        "available": "可用：",
+        "accountSummary": "帳戶概覽",
+        "unifiedAccountSummary": "統一帳戶概覽",
+        "unifiedAccountRatio": "統一帳戶比率",
+        "unifiedAccountRatioTips": "代表投資組合被清算的風險。當數值高於95%時，你的投資組合可能會被清算。",
+        "unifiedAccountLeverage": "統一帳戶槓桿",
+        "unifiedAccountLeverageTips": "統一帳戶槓桿 = 總交叉倉位價值 / 總抵押品餘額。",
+        "perpsMaintenanceMargin": "永續合約維持保證金",
+        "perpsPortfolioValue": "永續合約投資組合價值",
+        "perpsUnrealizedPnl": "永續合約未實現損益"
       },
       "accountActions": {
         "available": "可用",
@@ -4330,7 +4469,10 @@
       "selectChain": "選擇區塊鏈",
       "hfTitle": "健康因素",
       "searchMarket": "搜尋市場",
-      "selectMarket": "選擇市場"
+      "selectMarket": "選擇市場",
+      "signFallback": {
+        "preExecFailedUseFullSign": "模擬失敗。此交易很可能因 AAVE 錯誤而失敗。"
+      }
     },
     "desktopSmallSwap": {
       "failReason": {
@@ -4377,7 +4519,8 @@
       "totalValue": "總價值",
       "moreChains": "+{{count}} 條鏈",
       "swapFailed": "交換失敗，{{reason}}",
-      "completedTips": "正在進行的交換將繼續處理"
+      "completedTips": "正在進行的交換將繼續處理",
+      "priceImpact": "價格影響上限"
     },
     "manageBatchApprovals": {
       "cols": {

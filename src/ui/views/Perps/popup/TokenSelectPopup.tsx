@@ -18,7 +18,6 @@ import {
   HYPE_USDC_TOKEN_ID,
   HYPE_USDC_TOKEN_ITEM,
   HYPE_USDC_TOKEN_SERVER_CHAIN,
-  WITHDRAW_TOKEN_LIST,
   isDirectDepositToken as isDirectDepositTokenFn,
 } from '../constants';
 import { useMemoizedFn } from 'ahooks';
@@ -30,12 +29,16 @@ import { useHistory } from 'react-router-dom';
 import { PerpsBlueBorderedButton } from '../components/BlueBorderedButton';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 
+export type WithdrawTokenItem = { token: TokenItem; balance?: number };
+
 export type TokenSelectPopupProps = PopupProps & {
   onSelect: (token: TokenItem) => void;
   list: TokenItem[];
   tokenListLoading: boolean;
   changeAccount: () => Promise<void>;
   mode?: 'deposit' | 'withdraw';
+  /** Withdraw mode: tokens for current chain with balance; falls back to ARB+HYPE USDC when omitted. */
+  withdrawItems?: WithdrawTokenItem[];
 };
 
 export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
@@ -46,6 +49,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   list,
   changeAccount,
   mode = 'deposit',
+  withdrawItems,
   ...rest
 }) => {
   const { t } = useTranslation();
@@ -57,8 +61,19 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
 
   const isDirectDepositToken = isDirectDepositTokenFn;
 
+  const withdrawBalanceMap = React.useMemo(() => {
+    const map: Record<string, number> = {};
+    (withdrawItems || []).forEach((i) => {
+      map[i.token.id + i.token.chain] = i.balance || 0;
+    });
+    return map;
+  }, [withdrawItems]);
+
   const sortedList = React.useMemo(() => {
-    if (isWithdrawMode) return WITHDRAW_TOKEN_LIST;
+    if (isWithdrawMode) {
+      if (withdrawItems?.length) return withdrawItems.map((i) => i.token);
+      return [ARB_USDC_TOKEN_ITEM, HYPE_USDC_TOKEN_ITEM];
+    }
 
     const items = [...(list || [])].filter((t) => t.amount > 0);
     // Sort by USD value descending
@@ -307,10 +322,15 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               </div>
             </div>
           )}
+          {isWithdrawMode && (
+            <div className="text-15 text-r-neutral-title-1 font-medium">
+              {formatAmount(withdrawBalanceMap[item.id + item.chain] ?? 0)}
+            </div>
+          )}
         </div>
       );
     },
-    [handleClickToken, isWithdrawMode]
+    [handleClickToken, isWithdrawMode, withdrawBalanceMap]
   );
 
   return (

@@ -83,7 +83,8 @@
         "idle": "Waiting to swap",
         "success": "Swap successful"
       },
-      "completedTips": "Ongoing swap will continue processing"
+      "completedTips": "Ongoing swap will continue processing",
+      "priceImpact": "Price Impact Cap"
     },
     "signTx": {
       "nftIn": "NFT in",
@@ -449,11 +450,12 @@
       },
       "gasAccount": {
         "customRPC": "Not supported when using custom RPC",
-        "notEnough": "GasAccount is not enough",
+        "notEnough": "Not enough gas. Gas Balance: {{usd}}",
         "useGasAccount": "Use GasAccount",
         "WalletConnectTips": "WalletConnect is not supported by GasAccount",
         "chainNotSupported": "This chain is not supported by GasAccount",
         "loginFirst": "Please log in to GasAccount first",
+        "signWithHardwareWalletToUse": "You need to sign with {{brand}} to use",
         "login": "Log in",
         "gotIt": "Got it",
         "deposit": "Deposit",
@@ -814,6 +816,8 @@
       "title": "Perps",
       "deposit": "Deposit",
       "withdraw": "Withdraw",
+      "transferToSpot": "Transfer to Spot",
+      "transferToPerps": "Transfer to Perps",
       "positions": "Positions",
       "openProModeInTab": "Open Pro Mode in Tab",
       "closeAll": "Close All",
@@ -896,6 +900,15 @@
       },
       "historyDetail": {
         "date": "Date",
+        "amount": "Amount",
+        "asset": "Asset",
+        "action": "Action",
+        "value": "Value",
+        "buy": "Buy",
+        "sell": "Sell",
+        "transferDetailTitle": "Transfer",
+        "transferActionToSpot": "Transfer (from Perps to Spot)",
+        "transferActionToPerps": "Transfer (from Spot to Perps)",
         "price": "Price",
         "size": "Size",
         "tradeValue": "Trade Value",
@@ -921,8 +934,70 @@
         "title": "Log Out Current Address",
         "desc": "You are logging out of your current Perps account. You can restore it anytime by logging in with this address."
       },
+      "PerpsDepositCard": {
+        "availableToTrade": "Available to trade: ",
+        "deposit": "Deposit",
+        "swap": "Swap"
+      },
+      "selectChainToWithdraw": "Select Chain to Withdraw",
+      "selectTokenToWithdraw": "Select Token to Withdraw",
+      "EnableUnifiedAccount": {
+        "title": "Enable Unified Account",
+        "desc": "Unified Account is the recommended account mode that simplifies the trading experience. Spot and Perps balances are merged for all tokens, and cross margin is supported on all available assets.",
+        "confirm": "Confirm",
+        "enable": "Enable",
+        "cancel": "Cancel",
+        "importantTips": "All USDC collateral will be used as cross margin once Unified Account is enabled.",
+        "important": "Important"
+      },
+      "PerpsSpotSwap": {
+        "title": "Swap Stablecoins",
+        "from": "From",
+        "to": "Swap To",
+        "balance": "Balance",
+        "estReceive": "Est.Receive",
+        "swapBtn": "Swap",
+        "insufficientBalance": "Insufficient balance",
+        "invalidAmount": "Please input a valid amount",
+        "minimumAmount": "The minimum swap amount is {{amount}}",
+        "max": "Max",
+        "toDeposit": "To Deposit →",
+        "swapBeforeTrading": "Swap USDC to {{quoteAsset}} before trading",
+        "enabledSuccess": "Unified Account enabled",
+        "enableFailed": "Enable Unified Account failed",
+        "swapFailed": "Swap failed",
+        "swapSuccess": "Swap completed successfully",
+        "estReceiveTooltip": "Estimated receive amount is subject to market price fluctuations.",
+        "buyAsset": "Buy {{asset}}",
+        "sellAsset": "Sell {{asset}}",
+        "toSwapEntry": "To Swap →",
+        "toDepositEntry": "To Deposit →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Transfer",
+        "from": "From",
+        "to": "To",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Balance",
+        "amount": "Amount",
+        "max": "Max",
+        "submit": "Confirm",
+        "insufficientBalance": "Insufficient balance",
+        "invalidAmount": "Please input a valid amount"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid Balances",
+        "deposit": "Deposit",
+        "withdraw": "Withdraw"
+      },
+      "PerpsAbout": {
+        "title": "About"
+      },
       "depositAmountPopup": {
         "amount": "Amount",
+        "balance": "Balance",
+        "chain": "Chain",
         "payWith": "Pay With",
         "feeTip": "$1 Fee",
         "feeTipTooltip": "Withdrawal Fee charged by Hyperliquid: $1",
@@ -963,7 +1038,6 @@
       "balanceAvailable": "Balance: {{balance}}",
       "lastUsed": "Last used",
       "selectTokenToDeposit": "Select Token to Deposit",
-      "selectTokenToWithdraw": "Select Withdrawal Network",
       "tradePerps": "Trade Perps",
       "position": "Position",
       "yourPosition": "Your Position",
@@ -1124,7 +1198,8 @@
         "24hVol": "24h Vol",
         "volume": "Volume",
         "fundingCountdown": "Funding / Countdown",
-        "8hrFunding": "8h Funding"
+        "8hrFunding": "8h Funding",
+        "categoryAll": "ALL"
       },
       "userInfo": {
         "tab": {
@@ -1171,7 +1246,9 @@
           "twap": "TWAP",
           "tradeHistory": "Trade History",
           "fundingHistory": "Funding History",
-          "orderHistory": "Order History"
+          "orderHistory": "Order History",
+          "assets": "Assets",
+          "about": "About"
         },
         "emptyMessage": {
           "openOrders": "No open orders",
@@ -1181,7 +1258,19 @@
           "tradeHistory": "No trade history",
           "fillHistory": "No fill history",
           "fundingHistory": "No funding history",
-          "orderHistory": "No order history"
+          "orderHistory": "No order history",
+          "assets": "No assets"
+        },
+        "assets": {
+          "columnAsset": "Assets",
+          "columnTotal": "Total Balance",
+          "columnAvailable": "Available Balance",
+          "columnAction": "Action",
+          "swapStablecoins": "Swap Stablecoins",
+          "enableUnifiedAccount": "Enable Unified Account",
+          "transferToPerps": "Transfer to Perps",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         },
         "positionInfo": {
           "viewOrders": "View Orders",
@@ -1266,6 +1355,7 @@
         "sound": "Enable Sound"
       },
       "tradingPanel": {
+        "swapStableCoins": "Swap Stablecoins",
         "bboTips": "Best Bid Offer (BBO) refers to the best-available ask price and the best-available bid price on the order book at any given time. BBO orders are always placed using the precise minimum tick size , ensuring granular and accurate pricing independent of display preferences.",
         "bboDisabledTooltip": "BBO is not supported when {{bboDisabledReason}} is enabled",
         "action": "Action",
@@ -1435,7 +1525,16 @@
         "crossAccountLeverage": "Cross Account Leverage",
         "crossAccountLeverageTips": "Cross Account Leverage = Total Cross Position Value / Cross Account Value.",
         "maintenanceMargin": "Maintenance margin",
-        "maintenanceMarginTips": "The minimum portfolio value required to keep your cross positions open"
+        "maintenanceMarginTips": "The minimum portfolio value required to keep your cross positions open",
+        "accountSummary": "Account Summary",
+        "unifiedAccountSummary": "Unified Account Summary",
+        "unifiedAccountRatio": "Unified Account Ratio",
+        "unifiedAccountRatioTips": "Represents the risk of portfolio liquidation. When the value is greater than 95%, your portfolio may be liquidated.",
+        "unifiedAccountLeverage": "Unified Account Leverage",
+        "unifiedAccountLeverageTips": "Unified Account Leverage = Total Cross Positions Value / Total Collateral Balance.",
+        "perpsMaintenanceMargin": "Perps Maintenance Margin",
+        "perpsPortfolioValue": "Perps Portfolio Value",
+        "perpsUnrealizedPnl": "Perps Unrealized PNL"
       },
       "accountActions": {
         "pending": "Pending",
@@ -1838,6 +1937,9 @@
         "button": {
           "repay": "Repay"
         }
+      },
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simulation Failed. This transaction is very likely to fail due to AAVE errors."
       },
       "hfTips": {
         "desc": "If it drops below 1.0, your collateral may be liquidated.",
@@ -3818,19 +3920,39 @@
       "speedUpDesc": "Gas price increased {{percent}} for a faster speed up"
     },
     "gasAccount": {
+      "gasFee":"Gas fee",
       "title": "GasAccount",
+      "gasDeposit": "Gas Deposit",
       "gasToken": "Gas Token",
       "deposit": "Deposit",
+      "depositNow": "Deposit Now",
+      "signWithPendingHardwareToUse": "Sign with {{addressAlias}} to use",
+      "depositSubmitted": "Deposit Submitted",
       "withdraw": "Withdraw",
       "noBalance": "No balance",
       "gasExceed": "GasAccount balance cannot exceed $1000",
       "safeAddressDepositTips": "Multisig addresses are not supported for deposits.",
       "risk": "Your current address has been detected as risky, so this feature is unavailable.",
       "logout": "Log out current GasAccount",
-      "switchAccount": "Switch GasAccount",
+      "switchAccount": "Switch Wallet",
+      "claimFreeGas": "Claim {{usdValue}} Free Gas",
+      "depositFailed": "Deposit failed",
+      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "gasBalance": "Gas Balance",
       "withdrawDisabledIAP": "Withdrawals are disabled because your balance includes fiat funds, which cannot be withdrawn. Contact support to withdraw your token balance",
+      "benefitCard": {
+        "title": "Pay Gas Fees on All chains",
+        "subtitle": "when you're out of gas",
+        "item1": "No Rabby Fee",
+        "desc1": "No extra fees to pay gas",
+        "item2": "Supports all networks",
+        "desc2": "Automatic gas payments on 80+ networks",
+        "item3": "Supports all transactions",
+        "desc3": "Swap, Bridge, Send, DApps, & more"
+      },
       "history": {
-        "noHistory": "No history"
+        "noHistory": "No history",
+        "noHistoryForPast30Days": "No history for the past 30 days."
       },
       "loginInTip": {
         "title": "Deposit USDC / USDT",
@@ -3859,7 +3981,7 @@
       },
       "gasAccountList": {
         "address": "Address",
-        "gasAccountBalance": "Gas Balance"
+        "gasAccountBalance": "Balance"
       },
       "logoutConfirmModal": {
         "title": "Log out current GasAccount",
@@ -3868,12 +3990,31 @@
       },
       "depositPopup": {
         "title": "Deposit",
+        "gasDepositTitle": "Gas Deposit",
         "desc": "Make a deposit to Rabby's DeBank L2 Account with no extra fees—withdraw anytime.",
+        "zeroInvalidAmount": "The amount cannot be zero",
         "invalidAmount": "Must be under 500",
+        "minAmountRequired": "Minimum deposit amount is ${{value}}",
         "amount": "Amount",
         "token": "Token",
         "selectToken": "Select Token to Deposit",
-        "paymentAddr": "Payment Address"
+        "paymentAddr": "Payment Wallet",
+        "paymentAddress": "Payment Wallet",
+        "balanceLabel": "Balance",
+        "insufficientBalanceLabel": "Insufficient Balance",
+        "unavailablePaymentWallet": "Selected payment wallet is unavailable",
+        "suggestedToken": "Suggested Tokens",
+        "bridgeLabel": "Bridge",
+        "estReceiveLabel": "Est.Receive: {{usd}}",
+        "estReceiveTip": "Service processed via {{name}}, may have slippage",
+        "depositSuccess": "Deposit successful",
+        "depositFailed": "Deposit failed, please retry",
+        "bridgeDepositFailed": "Bridge deposit failed, please retry",
+        "noAvailableToken": "No available token",
+        "InsufficientToken":"Insufficient Token Balance"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "Gas required: {{topUpUsd}}, Gas remaining est: {{balance}}"
       },
       "withdrawPopup": {
         "noEnoughValuetBalance": "Vault Balance insufficient. Switch chain or try again later.",
@@ -3911,7 +4052,9 @@
       "switchLoginAddressBeforeDeposit": {
         "title": "Switch address before deposit",
         "desc": "Please switch to your login address."
-      }
+      },
+      "loginSuccess": "Login Successful",
+      "loginFailed": "Login Failed"
     },
     "safeMessageQueue": {
       "loading": "Loading messages",

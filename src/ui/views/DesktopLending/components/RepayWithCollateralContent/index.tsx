@@ -43,7 +43,7 @@ import { useSelectedMarket } from '../../hooks/market';
 import { usePoolDataProviderContract } from '../../hooks/pool';
 import { DisplayPoolReserveInfo, UserSummary } from '../../types';
 import { ParaswapRatesType, SwappableToken, SwapType } from '../../types/swap';
-import { LendingReportType } from '../../types/tx';
+import { LendingReportType, LendingSignType } from '../../types/tx';
 import {
   APP_CODE_LENDING_REPAY_WITH_COLLATERAL,
   LIQUIDATION_SAFETY_THRESHOLD,
@@ -357,7 +357,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
     [currentAccount, chainInfo]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -950,7 +950,12 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
         return;
       }
 
-      const report = (lastHash: string) => {
+      const report = (
+        lastHash: string,
+        signType:
+          | typeof LendingSignType.Simplified
+          | typeof LendingSignType.Full
+      ) => {
         const usdValue = new BigNumber(debouncedRepayAmount || '0')
           .multipliedBy(
             new BigNumber(
@@ -970,6 +975,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
           usd_value: usdValue,
           create_at: Date.now(),
           app_version: process.env.release || '0',
+          signType,
         });
       };
 
@@ -989,7 +995,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
             const hash = hashes[hashes.length - 1];
 
             if (hash) {
-              report(hash);
+              report(hash, LendingSignType.Simplified);
               message.success(
                 `${t('page.lending.repayWithCollateral.action.title', {
                   collateral: selectedCollateralToken.symbol,
@@ -1003,6 +1009,12 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
               error === MINI_SIGN_ERROR.CANT_PROCESS
             ) {
               return;
+            }
+
+            if (error === MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+              message.error(
+                t('page.lending.signFallback.preExecFailedUseFullSign')
+              );
             }
 
             await handleRepay(true);
@@ -1035,7 +1047,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
           );
         }
 
-        report(lastHash);
+        report(lastHash, LendingSignType.Full);
         message.success(
           `${t('page.lending.repayWithCollateral.action.title', {
             collateral: selectedCollateralToken.symbol,
@@ -1334,6 +1346,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
               chainServeId={chainInfo.serverId}
               noQuote={false}
               type="send"
+              signatureInstance={instance}
             />
           </div>
         ) : null}
@@ -1436,6 +1449,7 @@ export const RepayWithCollateralContent: React.FC<RepayWithCollateralContentProp
             loading={miniSignLoading}
             onConfirm={() => handleRepay()}
             accountType={currentAccount.type}
+            signatureInstance={instance}
           />
         ) : (
           <Button

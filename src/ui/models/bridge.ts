@@ -2,19 +2,19 @@ import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { ALL_SUPPORTED_BRIDGE_CHAINS } from '@rabby-wallet/rabby-bridge';
 import { BridgeServiceStore } from '@/background/service/bridge';
 import { BridgeAggregator } from '@/background/service/openapi';
-import {
-  DEFAULT_BRIDGE_AGGREGATOR,
-  DEFAULT_BRIDGE_SUPPORTED_CHAIN,
-} from '@/constant/bridge';
-import { findChainByServerID } from '@/utils/chain';
+import { DEFAULT_BRIDGE_AGGREGATOR } from '@/constant/bridge';
+import { ensureChainListValid, findChainByServerID } from '@/utils/chain';
 
 export const bridge = createModel<RootModel>()({
   name: 'bridge',
 
   state: {
-    supportedChains: DEFAULT_BRIDGE_SUPPORTED_CHAIN,
+    supportedChains: ensureChainListValid(
+      ALL_SUPPORTED_BRIDGE_CHAINS as string[]
+    ) as CHAINS_ENUM[],
     aggregatorsListInit: false,
     aggregatorsList: DEFAULT_BRIDGE_AGGREGATOR,
     selectedAggregators: [],

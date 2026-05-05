@@ -24,6 +24,7 @@ import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc
 import { useRequest } from 'ahooks';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 
 export interface EditMarginPopupProps {
   visible: boolean;
@@ -228,9 +229,10 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
             <div className="flex flex-col gap-8">
               <div className="flex items-center gap-6">
                 <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
-                <span className="text-[16px] font-medium text-r-neutral-title-1">
-                  {formatPerpsCoin(coin)}
-                </span>
+                <PerpsDisplayCoinName
+                  item={currentAssetCtx}
+                  className="text-[16px] font-medium"
+                />
                 <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
                   {leverageType === 'cross'
                     ? t('page.perps.cross')

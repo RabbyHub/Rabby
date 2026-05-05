@@ -5,10 +5,7 @@ import clsx from 'clsx';
 import { TokenWithChain, Popup } from '@/ui/component';
 import { ReactComponent as RcIconLoginLoading } from 'ui/assets/perps/IconLoginLoading.svg';
 import { formatUsdValue, useWallet } from '@/ui/utils';
-import {
-  WITHDRAW_TOKEN_LIST,
-  isDirectDepositToken as isDirectDepositTokenFn,
-} from '@/ui/views/Perps/constants';
+import { isDirectDepositToken } from '@/ui/views/Perps/constants';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { FixedSizeList } from 'react-window';
@@ -19,6 +16,11 @@ import { findChainByServerID } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { SvgIconCross } from '@/ui/assets';
 
+export interface WithdrawTokenItem {
+  token: TokenItem;
+  balance: number;
+}
+
 interface TokenSelectPopupProps {
   visible: boolean;
   onCancel: () => void;
@@ -26,6 +28,11 @@ interface TokenSelectPopupProps {
   tokenList: TokenItem[];
   tokenListLoading: boolean;
   mode?: 'deposit' | 'withdraw';
+  /**
+   * Withdraw mode: items with balance to render (preferred over WITHDRAW_TOKEN_LIST).
+   * Omit to fall back to chain-less legacy list.
+   */
+  withdrawItems?: WithdrawTokenItem[];
 }
 
 export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
@@ -35,6 +42,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   tokenList,
   tokenListLoading,
   mode = 'deposit',
+  withdrawItems,
 }) => {
   const { t } = useTranslation();
   const { getContainer } = usePopupContainer();
@@ -45,11 +53,22 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
 
   const isWithdrawMode = mode === 'withdraw';
 
-  const sortedTokenList = useMemo(() => {
-    return isWithdrawMode ? WITHDRAW_TOKEN_LIST : tokenList;
-  }, [tokenList, isWithdrawMode]);
+  const withdrawTokenList = useMemo(
+    () => withdrawItems?.map((i) => i.token) ?? [],
+    [withdrawItems]
+  );
 
-  const isDirectDepositToken = isDirectDepositTokenFn;
+  const withdrawBalanceMap = useMemo(() => {
+    const map: Record<string, number> = {};
+    (withdrawItems || []).forEach((i) => {
+      map[i.token.id + i.token.chain] = i.balance;
+    });
+    return map;
+  }, [withdrawItems]);
+
+  const sortedTokenList = useMemo(() => {
+    return isWithdrawMode ? withdrawTokenList : tokenList;
+  }, [tokenList, isWithdrawMode, withdrawTokenList]);
 
   const handleClickToken = useMemoizedFn(async (token: TokenItem) => {
     if (clickLoading) return;
@@ -150,6 +169,11 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               )}
             </div>
           )}
+          {isWithdrawMode && (
+            <div className="text-13 text-r-neutral-title-1 font-medium">
+              {(withdrawBalanceMap[item.id + item.chain] ?? 0).toFixed(4)}
+            </div>
+          )}
         </div>
       );
     },
@@ -160,6 +184,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       loadingItem,
       supportedChains,
       isWithdrawMode,
+      withdrawBalanceMap,
     ]
   );
 

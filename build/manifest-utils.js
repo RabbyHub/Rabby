@@ -36,6 +36,25 @@ const resolveManifestFilename = ({ manifestType, buildEnv }) =>
       : DEV_MANIFEST_FILENAME
     : DEFAULT_MANIFEST_FILENAME;
 
+const resolveManifestPath = ({ manifestType, buildEnv }) =>
+  path.resolve(
+    __dirname,
+    `../src/manifest/${manifestType}/${resolveManifestFilename({
+      manifestType,
+      buildEnv,
+    })}`
+  );
+
+const resolveManifestVersion = ({ manifestType, buildEnv }) => {
+  const manifest = JSON.parse(
+    fs.readFileSync(resolveManifestPath({ manifestType, buildEnv }), 'utf8')
+  );
+
+  return manifest.version;
+};
+
 module.exports = {
+  resolveManifestPath,
   resolveManifestFilename,
+  resolveManifestVersion,
 };

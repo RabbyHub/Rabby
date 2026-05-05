@@ -6,6 +6,7 @@ import {
   SpotClearinghouseState,
   USDC_TOKEN_ID,
   UserAbstractionResp,
+  PerpDexsResponse,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { perpsToast } from './components/PerpsToast';
 import i18n from '@/i18n';
@@ -23,7 +24,16 @@ import {
   HYPE_USDC_TOKEN_ID,
   HYPE_USDC_TOKEN_ITEM,
   HYPE_USDC_TOKEN_SERVER_CHAIN,
+  COLLATERAL_TOKEN_TO_QUOTE,
 } from '../Perps/constants';
+
+export interface SpotBalance {
+  coin: string;
+  token: number;
+  total: string;
+  hold: string;
+  available: string;
+}
 
 export const getPositionDirection = (
   position: PositionAndOpenOrder['position']
@@ -200,11 +210,30 @@ export const handleDisplayFundingPayments = (fundingPayments: string) => {
 };
 
 export const formatPerpsCoin = (coin: string) => {
+  if (coin === '@150') {
+    return 'USDE';
+  }
+  if (coin === '@166') {
+    return 'USDT';
+  }
+  if (coin === '@230') {
+    return 'USDH';
+  }
+
   if (coin.includes(':')) {
     // is hip-3 coin
     return coin.split(':')[1];
   } else {
     return coin;
+  }
+};
+
+export const formatPerpsDexName = (coin: string) => {
+  if (coin.includes(':')) {
+    // is hip-3 coin
+    return coin.split(':')[0];
+  } else {
+    return '';
   }
 };
 
@@ -282,52 +311,68 @@ export const formatPerpsOrderStatus = (record: UserHistoricalOrders) => {
   };
 };
 
+// Cache the perp dex list at module scope. The dex list is global (not user-
+// scoped) and changes very rarely, so a one-shot fetch reused across callers
+// is safe. `perpDexsPromise` dedupes concurrent first-time fetches.
+let perpDexsCache: PerpDexsResponse | null = null;
+let perpDexsPromise: Promise<PerpDexsResponse> | null = null;
+
+export const getCachedPerpDexs = async (
+  sdk: ReturnType<typeof getPerpsSDK>
+): Promise<PerpDexsResponse> => {
+  if (perpDexsCache) {
+    return perpDexsCache;
+  }
+  if (!perpDexsPromise) {
+    perpDexsPromise = sdk.info
+      .getPerpDexs()
+      .then((res) => {
+        perpDexsCache = res;
+        return res;
+      })
+      .finally(() => {
+        perpDexsPromise = null;
+      });
+  }
+  return perpDexsPromise;
+};
+
 export const getCustomClearinghouseState = async (address: string) => {
   const sdk = getPerpsSDK();
-  const getDefault = async () => {
-    const res = await sdk.info.getClearingHouseState(address);
-    return res;
-  };
-  const getXYX = async () => {
-    const res = await sdk.info.getClearingHouseState(address, 'xyz');
-    return res;
-  };
-  const [defaultRes, xyzRes] = await Promise.all([getDefault(), getXYX()]);
+  const perpDexs = await getCachedPerpDexs(sdk);
 
-  let withdrawable = defaultRes.withdrawable;
-  if (Number(defaultRes.withdrawable) === 0) {
+  // perpDexs[0] is null = the main hyperliquid dex (dexId='' by convention,
+  // matching `formatMarkData`/`AccountInfo` lookups). Other entries carry a
+  // `name` like 'xyz'. Preserve order so `formatAllDexsClearinghouseState`
+  // can take index 0 as the canonical hyperliquid state.
+  const dexEntries = perpDexs.map((dex) => {
+    const name = dex?.name ?? '';
+    return { key: name, param: name || undefined };
+  });
+
+  const allStates: [string, ClearinghouseState][] = await Promise.all(
+    dexEntries.map(async ({ key, param }) => {
+      const res = await sdk.info.getClearingHouseState(address, param);
+      return [key, res] as [string, ClearinghouseState];
+    })
+  );
+
+  const aggregated = formatAllDexsClearinghouseState(allStates);
+  if (!aggregated) {
+    return null;
+  }
+
+  // Unified-account fallback: when no perp withdrawable, fall back to spot
+  // availableToTrade so the selector shows a meaningful balance.
+  if (Number(aggregated.withdrawable) < 1) {
     const userAbstraction = await sdk.info.getUserAbstraction(address);
     if (userAbstraction === UserAbstractionResp.unifiedAccount) {
       const spotState = await sdk.info.getSpotClearingHouseState(address);
-      withdrawable = formatSpotState(spotState).availableToTrade;
+      aggregated.withdrawable = formatSpotState(spotState).availableToTrade;
     }
   }
 
-  return {
-    assetPositions: [...defaultRes.assetPositions, ...xyzRes.assetPositions],
-    crossMaintenanceMarginUsed: new BigNumber(
-      defaultRes.crossMaintenanceMarginUsed
-    )
-      .plus(xyzRes.crossMaintenanceMarginUsed)
-      .toString(),
-    crossMarginSummary: defaultRes.crossMarginSummary,
-    marginSummary: {
-      accountValue: new BigNumber(defaultRes.marginSummary.accountValue)
-        .plus(xyzRes.marginSummary.accountValue)
-        .toString(),
-      totalMarginUsed: new BigNumber(defaultRes.marginSummary.totalMarginUsed)
-        .plus(xyzRes.marginSummary.totalMarginUsed)
-        .toString(),
-      totalNtlPos: new BigNumber(defaultRes.marginSummary.totalNtlPos)
-        .plus(xyzRes.marginSummary.totalNtlPos)
-        .toString(),
-      totalRawUsd: new BigNumber(defaultRes.marginSummary.totalRawUsd)
-        .plus(xyzRes.marginSummary.totalRawUsd)
-        .toString(),
-    },
-    time: defaultRes.time,
-    withdrawable: withdrawable,
-  } as ClearinghouseState;
+  return aggregated as ClearinghouseState;
 };
 
 export const sortTokenList = (
@@ -377,9 +422,17 @@ const calcAccountValueByAllDexs = (
   }, 0);
 };
 
+/**
+ * the official ratio buckets it by collateral token, so we keep a flat
+ * `crossMaintByDex` map (dex name → that dex's `crossMaintenanceMarginUsed`)
+ */
+export type AggregatedClearinghouseState = ClearinghouseState & {
+  crossMaintByDex?: Record<string, string>;
+};
+
 export const formatAllDexsClearinghouseState = (
   allClearinghouseState: [string, ClearinghouseState][]
-): ClearinghouseState | null => {
+): AggregatedClearinghouseState | null => {
   if (!allClearinghouseState || !allClearinghouseState[0]) {
     return null;
   }
@@ -393,10 +446,18 @@ export const formatAllDexsClearinghouseState = (
     return acc + Number(item[1]?.withdrawable || 0);
   }, 0);
 
+  const crossMaintByDex: Record<string, string> = {};
+  let crossMaintenanceMarginUsed = 0;
+  for (const [dexName, state] of allClearinghouseState) {
+    if (!state) continue;
+    crossMaintByDex[dexName] = state.crossMaintenanceMarginUsed;
+    crossMaintenanceMarginUsed += Number(state.crossMaintenanceMarginUsed || 0);
+  }
+
   return {
     assetPositions: assetPositions,
-    crossMaintenanceMarginUsed:
-      hyperDexState?.crossMaintenanceMarginUsed || '0',
+    crossMaintenanceMarginUsed: crossMaintenanceMarginUsed.toString(),
+    crossMaintByDex,
     crossMarginSummary: hyperDexState?.crossMarginSummary || {},
     marginSummary: {
       ...hyperDexState.marginSummary,
@@ -408,28 +469,68 @@ export const formatAllDexsClearinghouseState = (
 };
 
 export const formatSpotState = (spotState: SpotClearinghouseState) => {
+  // `tokenToAvailableAfterMaintenance` is the server-computed net free
+  // collateral per token (after LTV weighting and existing-position MM).
+  // Surfaced raw so consumers can decide how to use it based on the user's
+  // abstraction mode — portfolio margin needs it, unifiedAccount has its own
+  // accounting via stablecoin totals.
+  const tokenToAvailableAfterMaintenance = Array.isArray(
+    spotState?.tokenToAvailableAfterMaintenance
+  )
+    ? spotState.tokenToAvailableAfterMaintenance ?? null
+    : null;
+
   if (!spotState || !spotState.balances || spotState.balances.length === 0) {
     return {
       accountValue: '0',
       availableToTrade: '0',
+      balances: [] as SpotBalance[],
+      balancesMap: {} as Record<string, SpotBalance>,
+      tokenToAvailableAfterMaintenance,
     };
   }
-  const availableToTrade = new BigNumber(
-    spotState.balances?.[0]?.total || '0'
-  ).minus(spotState.balances?.[0]?.hold || '0');
-  return {
-    accountValue: spotState.balances?.[0]?.total || '0',
-    availableToTrade: availableToTrade.toString(),
-  };
-  // const token = spotState.balances.find((i) => i.token === USDC_TOKEN_ID);
-  // const availableToTrade = spotState.tokenToAvailableAfterMaintenance?.find(
-  //   (i) => i?.[0] === USDC_TOKEN_ID
-  // );
 
-  // return {
-  //   accountValue: token?.total || '0',
-  //   availableToTrade: availableToTrade?.[1] || '0',
-  // };
+  // Only extract the 4 stablecoins we support (USDC/USDT/USDE/USDH)
+  const STABLECOIN_TOKEN_IDS = new Set(
+    Object.keys(COLLATERAL_TOKEN_TO_QUOTE).map(Number)
+  );
+
+  const balances: SpotBalance[] = spotState.balances
+    .filter((b) => STABLECOIN_TOKEN_IDS.has(b.token))
+    .map((b) => {
+      const available = new BigNumber(b.total || '0')
+        .minus(b.hold || '0')
+        .toString();
+      return {
+        coin: b.coin, // Hyperliquid's quirk: USDT is returned as 'USDT0'
+        token: b.token,
+        total: b.total || '0',
+        hold: b.hold || '0',
+        available,
+      };
+    });
+
+  // Assumes all stablecoins at 1:1 USD parity (matches Hyperliquid internal accounting)
+  const totalAccountValue = balances
+    .reduce((sum, b) => sum.plus(b.total), new BigNumber(0))
+    .toString();
+
+  const totalAvailable = balances
+    .reduce((sum, b) => sum.plus(b.available), new BigNumber(0))
+    .toString();
+
+  const balancesMap: Record<string, SpotBalance> = {};
+  for (const b of balances) {
+    balancesMap[b.coin] = b;
+  }
+
+  return {
+    accountValue: totalAccountValue,
+    availableToTrade: totalAvailable,
+    balances,
+    balancesMap,
+    tokenToAvailableAfterMaintenance,
+  };
 };
 
 export const getStatsReportSide = (isBuy: boolean, isReduceOnly: boolean) => {

@@ -124,7 +124,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
     [currentAccount, chainInfo]
   );
 
-  const { openDirect, prefetch, close: closeSign } = useMiniSigner({
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -440,6 +440,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
               chainServeId={chainInfo.serverId}
               noQuote={false}
               type="send"
+              signatureInstance={instance}
             />
           </div>
         )}
@@ -491,6 +492,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
           loading={miniSignLoading}
           onConfirm={() => handleToggleCollateral()}
           accountType={currentAccount.type}
+          signatureInstance={instance}
         />
       ) : (
         <Button

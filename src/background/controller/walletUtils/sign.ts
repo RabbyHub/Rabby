@@ -1,4 +1,5 @@
 import { findChain } from '@/utils/chain';
+import { isTempoChain } from '@/utils/tempo';
 import { Tx } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import providerController from '../provider/controller';
@@ -8,6 +9,8 @@ import {
 } from '@/background/service';
 import { t } from 'i18next';
 import { INTERNAL_REQUEST_SESSION } from '@/constant';
+import { decodeFunctionResult, encodeFunctionData } from 'viem';
+import { Abis as TempoAbis, Addresses as TempoAddresses } from 'viem/tempo';
 
 export const getRecommendGas = async ({
   gas,
@@ -76,9 +79,11 @@ export const getRecommendGas = async ({
 export const getRecommendNonce = async ({
   from,
   chainId,
+  nonceKey,
 }: {
   from: string;
   chainId: number;
+  nonceKey?: string | number | bigint;
 }) => {
   const chain = findChain({
     id: chainId,
@@ -86,6 +91,53 @@ export const getRecommendNonce = async ({
   if (!chain) {
     throw new Error(t('background.error.invalidChainId'));
   }
+  const normalizedNonceKey = (() => {
+    if (!isTempoChain(chain.serverId)) return undefined;
+    if (typeof nonceKey === 'undefined' || nonceKey === null) return undefined;
+    if (typeof nonceKey === 'bigint')
+      return nonceKey > 0n ? nonceKey : undefined;
+    if (typeof nonceKey === 'number') {
+      if (!Number.isFinite(nonceKey) || nonceKey <= 0) return undefined;
+      return BigInt(Math.trunc(nonceKey));
+    }
+    if (typeof nonceKey === 'string') {
+      const trimmed = nonceKey.trim();
+      if (!trimmed || trimmed === '0x' || trimmed === '0X') return undefined;
+      const value = BigInt(trimmed);
+      return value > 0n ? value : undefined;
+    }
+    return undefined;
+  })();
+  if (typeof normalizedNonceKey !== 'undefined') {
+    const data = encodeFunctionData({
+      abi: TempoAbis.nonce,
+      functionName: 'getNonce',
+      args: [from as `0x${string}`, normalizedNonceKey],
+    });
+    const result = await providerController.ethRpc(
+      {
+        data: {
+          method: 'eth_call',
+          params: [
+            {
+              to: TempoAddresses.nonceManager,
+              data,
+            },
+            'latest',
+          ],
+        },
+        session: INTERNAL_REQUEST_SESSION,
+      },
+      chain.serverId
+    );
+    const onChainNonce = decodeFunctionResult({
+      abi: TempoAbis.nonce,
+      functionName: 'getNonce',
+      data: result as `0x${string}`,
+    }) as bigint;
+    return `0x${onChainNonce.toString(16)}`;
+  }
+
   const onChainNonce = await providerController.ethRpc(
     {
       data: {

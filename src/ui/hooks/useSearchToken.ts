@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useWallet } from '../utils/WalletContext';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import {
-  DisplayedToken,
-  encodeProjectTokenId,
-} from '../utils/portfolio/project';
+import { encodeProjectTokenId } from '../utils/portfolio/project';
 import { AbstractPortfolioToken } from '../utils/portfolio/types';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { isSameAddress } from '../utils';
@@ -14,6 +11,7 @@ import { Chain } from '@debank/common';
 import useSyncStaleValue from './useDebounceValue';
 import { useRefState } from './useRefState';
 import { safeBuildRegExp } from '@/utils/string';
+import { parseTokenItem } from '../utils/portfolio/tokenUtils';
 
 function isSearchInputWeb3Address(q: string) {
   return q.length === 42 && q.toLowerCase().startsWith('0x');
@@ -101,12 +99,10 @@ export function useOperateCustomToken() {
     if (!tokenWithAmount) return;
 
     if (tokenWithAmount.is_core) {
-      return dispatch.account.addBlockedToken(
-        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
-      );
+      return dispatch.account.addBlockedToken(parseTokenItem(tokenWithAmount));
     } else {
       return dispatch.account.addCustomizeToken(
-        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
+        parseTokenItem(tokenWithAmount)
       );
     }
   }, []);
@@ -116,11 +112,11 @@ export function useOperateCustomToken() {
 
     if (tokenWithAmount?.is_core) {
       return dispatch.account.removeBlockedToken(
-        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
+        parseTokenItem(tokenWithAmount)
       );
     } else {
       return dispatch.account.removeCustomizeToken(
-        new DisplayedToken(tokenWithAmount) as AbstractPortfolioToken
+        parseTokenItem(tokenWithAmount)
       );
     }
   }, []);
@@ -224,9 +220,7 @@ export function useFindCustomToken(input?: {
           // });
 
           lists.portfolioTokenList = [
-            ...(lists.tokenList.map(
-              (item) => new DisplayedToken(item)
-            ) as AbstractPortfolioToken[]),
+            ...lists.tokenList.map(parseTokenItem),
             // ...matchCustomTokens,
           ].filter((item) => {
             const isBlocked = !!blocked.find((b) =>
@@ -346,9 +340,7 @@ const useSearchToken = (
         setIsLoading(false);
         setResult(
           [
-            ...(list.map(
-              (item) => new DisplayedToken(item)
-            ) as AbstractPortfolioToken[]),
+            ...list.map((item) => parseTokenItem(item)),
             ...matchCustomTokens,
           ].filter((item) => {
             const isBlocked = !!blocked.find((b) =>

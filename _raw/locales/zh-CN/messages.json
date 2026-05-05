@@ -404,14 +404,14 @@
           "summaryDescription": "协议中的所有资产（例如 LP 代币）都将解析为统计计算所需的基础资产",
           "noMatch": "没有匹配",
           "lowValueDescription": "低价值资产将显示在这里",
-          "lowValueAssets": "{{count}} 个低价值资产",
+          "lowValueAssets": "{{count}} 个低价值代币",
           "review": "审核",
           "noTokens": "没有代币",
           "searchToken": "搜索 Token",
           "lowValueDefis": "{{count}} 低价值 DeFi 资产",
-          "lowValueAssets_one": "{{count}} 低价值代币",
-          "lowValueAssets_0": "{{count}} 低价值代币",
-          "lowValueAssets_other": "{{count}} 低价值代币",
+          "lowValueAssets_one": "{{count}} 个低价值代币",
+          "lowValueAssets_0": "{{count}} 个低价值代币",
+          "lowValueAssets_other": "{{count}} 个低价值代币",
           "noLpTokens": "没有流动性提供者（LP）代币"
         },
         "noAssets": "没有资产",
@@ -1206,7 +1206,7 @@
       "InsufficientBalanceTips": "余额不足",
       "Loading_Tokens": "正在加载代币...",
       "No_Tokens": "没有代币",
-      "Deposit-tip": "使用 USDC/USDT 存款",
+      "Deposit-tip": "使用 USDC/USDT 充值",
       "Payment-Token": "支付代币",
       "Select-payment-token": "选择支付代币",
       "Token": "代币",
@@ -1533,7 +1533,7 @@
       "imKeyConnected": "imKey 已连接",
       "gasless": {
         "unavailable": "Gas不足且不符合免费Gas条件",
-        "notEnough": "Gas余额不足",
+        "notEnough": "Gas 余额不足",
         "GetFreeGasToSign": "获取免费Gas进行签名",
         "rabbyPayGas": "Rabby将支付所需Gas费用 - 只需签名即可",
         "customRpcUnavailableTip": "不支持免费Gas的自定义RPC",
@@ -1549,8 +1549,9 @@
       "cancelCurrentConnection": "取消当前连接",
       "gasAccount": {
         "login": "登录",
-        "deposit": "存入",
-        "notEnough": "GasAccount 不足够",
+        "notEnough": "GasAccount 余额不足",
+        "deposit": "充值",
+        "signWithHardwareWalletToUse": "你需要使用{{brand}}签名后才能使用",
         "customRPC": "使用自定义 RPC 时不支持",
         "loginFirst": "请先登录GasAccount",
         "WalletConnectTips": "GasAccount 不支持 WalletConnect",
@@ -1558,7 +1559,7 @@
         "gotIt": "知道了",
         "chainNotSupported": "此链不被GasAccount支持",
         "loginTips": "要完成 GasAccount 登录，此交易将被丢弃。您需要在登录后重新进行。",
-        "depositTips": "要完成 GasAccount 存款，此交易将被丢弃。存款完成后，您需要重新发起交易。"
+        "depositTips": "要完成 GasAccount 充值，此交易将被丢弃。充值完成后，你需要重新发起交易。"
       },
       "iGotIt": "我明白了"
     },
@@ -2694,12 +2695,34 @@
       "speedUpDesc": "Gas价格上涨了{{percent}}，以获得更快的速度。"
     },
     "gasAccount": {
+      "gasDeposit": "Gas 充值",
+      "gasToken": "Gas Token",
+      "depositNow": "立即充值",
+      "signWithPendingHardwareToUse": "使用{{addressAlias}}签名后即可使用",
+      "depositSubmitted": "充值已提交",
+      "switchAccount": "切换钱包",
+      "claimFreeGas": "领取 {{usdValue}} 免费 Gas",
+      "depositFailed": "充值失败",
+      "lowBalance": "您没有足够的 gas。请存入 gas 以确保未来交易顺利进行。",
+      "gasBalance": "Gas 余额",
+      "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。",
+      "benefitCard": {
+        "title": "在所有链上支付 Gas 费用",
+        "subtitle": "当你没有 gas 的时候",
+        "item1": "无 Rabby Fee",
+        "desc1": "无需支付额外的 gas 费用",
+        "item2": "支持所有网络",
+        "desc2": "80+ 网络上的自动 Gas 支付",
+        "item3": "支持所有交易",
+        "desc3": "兑换、桥接、发送、DApps 等更多功能"
+      },
       "history": {
-        "noHistory": "无历史记录"
+        "noHistory": "无历史记录",
+        "noHistoryForPast30Days": "过去 30 天内无历史记录。"
       },
       "loginInTip": {
         "gotIt": "知道了",
-        "title": "存入 USDC / USDT",
+        "title": "充值 USDC / USDT",
         "desc": "在所有链上支付 Gas Fees",
         "login": "登录 GasAccount",
         "loginAndClaim": "登录并领取 $2.00",
@@ -2710,7 +2733,7 @@
       },
       "loginConfirmModal": {
         "title": "使用当前地址登录",
-        "desc": "一旦确认，您只能将其存入此地址"
+        "desc": "确认后，你只能向该地址充值"
       },
       "logoutConfirmModal": {
         "logout": "注销",
@@ -2718,13 +2741,32 @@
         "desc": "注销会禁用GasAccount。您可以通过使用此地址登录来恢复您的GasAccount。"
       },
       "depositPopup": {
-        "title": "存款",
-        "selectToken": "选择代币进行存款",
+        "title": "充值",
+        "gasDepositTitle": "Gas 充值",
+        "selectToken": "选择要充值的代币",
+        "zeroInvalidAmount": "金额不能为 0",
         "invalidAmount": "必须在 500 以下",
+        "minAmountRequired": "最低充值金额为 ${{value}}",
         "token": "Token",
-        "desc": "无需额外费用即可向 Rabby 的 DeBank L2 账户存款—随时提款。",
+        "desc": "无需额外费用即可向 Rabby 的 DeBank L2 账户充值，随时可提现。",
         "amount": "金额",
-        "paymentAddr": "支付地址"
+        "paymentAddr": "支付钱包",
+        "paymentAddress": "支付钱包",
+        "balanceLabel": "余额",
+        "insufficientBalanceLabel": "余额不足",
+        "unavailablePaymentWallet": "所选支付钱包不可用",
+        "suggestedToken": "建议的代币",
+        "bridgeLabel": "桥接",
+        "estReceiveLabel": "预计到账：{{usd}}",
+        "estReceiveTip": "服务通过 {{name}} 处理，可能会有滑点。",
+        "depositSuccess": "充值成功",
+        "depositFailed": "充值失败，请重试",
+        "bridgeDepositFailed": "桥接充值失败，请重试",
+        "noAvailableToken": "暂无可用 Token",
+        "InsufficientToken": "代币余额不足"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "所需 Gas：{{topUpUsd}}，预计剩余 Gas：{{balance}}"
       },
       "withdrawPopup": {
         "title": "提取",
@@ -2739,7 +2781,7 @@
         "to": "至",
         "deductGasFees": "接收到的金额将扣除 gas 费用",
         "noEligibleChain": "没有符合条件的链可以提取",
-        "riskMessageFromAddress": "由于风险控制，提款上限取决于该地址的总存款金额。",
+        "riskMessageFromAddress": "由于风险控制，提款上限取决于该地址的总充值金额。",
         "riskMessageFromChain": "由于风险控制，提款限额取决于从该链存入的总金额。",
         "amount": "金额",
         "destinationChain": "目标链",
@@ -2757,37 +2799,37 @@
       },
       "GasAccountDepositTipPopup": {
         "gotIt": "明白了",
-        "title": "打开 GasAccount 并存入"
+        "title": "打开 GasAccount 并充值"
       },
       "switchLoginAddressBeforeDeposit": {
-        "title": "存款前切换地址",
+        "title": "充值前切换地址",
         "desc": "请切换到您的登录地址。"
       },
       "title": "GasAccount",
       "noBalance": "无余额",
-      "deposit": "存款",
+      "deposit": "充值",
       "gasExceed": "GasAccount余额不能超过$1000",
       "withdraw": "提取",
-      "safeAddressDepositTips": "多签地址不支持存款。",
+      "safeAddressDepositTips": "多签地址不支持充值。",
       "logout": "退出当前 GasAccount",
       "risk": "您的当前地址已被检测为风险地址，因此该功能不可用。",
       "gasAccountList": {
-        "gasAccountBalance": "Gas Balance",
+        "gasAccountBalance": "余额",
         "address": "地址"
       },
-      "switchAccount": "切换 GasAccount",
-      "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。",
-      "gasToken": "Gas Token",
       "about": {
         "title1": "GasAccount是什么",
         "title3": "GasAccount 有额外费用吗？",
         "title4": "GasAccount安全吗",
         "title2": "如何使用 Gas Account",
-        "desc4": "GasAccount 无需合同批准或权限。您将资金存入 Rabby 的 GasAccount 地址，Rabby 在需要时向您的地址发送 gas。设计上完全安全。",
+        "desc4": "GasAccount 无需合约批准或权限。你向 Rabby 的 GasAccount 地址充值，Rabby 在需要时向你的地址发送 gas。设计上完全安全。",
         "desc3": "Rabby Wallet 不收取额外费用。您只需支付交易的 gas 费用，以及从 GasAccount 发送 gas 到您地址的少量 gas 费用。",
         "desc1": "GasAccount 是一种新的支付燃料费的方式。您可以使用一个账户为您在所有链上的所有地址支付燃料，而不必在每个链上使用本地代币。简单、可选，从不耗尽燃料。",
         "desc2": "将资金添加到您的 GasAccount，并将其用于任何交易。在签名时，可以选择使用原生代币或 GasAccount 来支付手续费，随时切换。"
-      }
+      },
+      "gasFee": "Gas 费用",
+      "loginSuccess": "登录成功",
+      "loginFailed": "登录失败"
     },
     "safeMessageQueue": {
       "loading": "加载消息",
@@ -3018,7 +3060,7 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "dexNoDeposite": "不是CEX存款地址，资金可能会丢失",
+            "dexNoDeposite": "不是CEX充值地址，资金可能会丢失",
             "contractAddress": "检测到合约地址，资金可能会丢失。",
             "scamAddress": "被Rabby标记的诈骗地址",
             "noSend": "您在过去180天内没有发送到该地址。"
@@ -3027,7 +3069,7 @@
         "title": "发送到此地址",
         "understandRisks": "我理解这些风险，并且想继续",
         "cexAddress": "{{cexName}} 地址",
-        "cexDepositAddress": "{{cexName}} 存款地址",
+        "cexDepositAddress": "{{cexName}} 充值地址",
         "TransferBefore": "之前已转移",
         "AddToWhitelist": "添加到白名单",
         "passwordPlaceholder": "输入密码以继续",
@@ -3102,7 +3144,7 @@
       },
       "tabs": {
         "imported": "已导入",
-        "whitelist": "已被列入白名单"
+        "whitelist": "白名单"
       },
       "positiveTips": {
         "yourOwnAddress": "您的个人地址",
@@ -3372,7 +3414,16 @@
         "closedPnl": "已实现盈亏",
         "size": "头寸规模",
         "fee": "手续费",
-        "feeDesc": "当用户进行交易时，同时会收取 <1>交易费用</1> 和 <2>建造者费用</2>。"
+        "feeDesc": "当用户进行交易时，同时会收取 <1>交易费用</1> 和 <2>建造者费用</2>。",
+        "amount": "数量",
+        "asset": "资产",
+        "action": "操作",
+        "value": "价值",
+        "buy": "买入",
+        "sell": "卖出",
+        "transferDetailTitle": "转账",
+        "transferActionToSpot": "从合约账户转至现货",
+        "transferActionToPerps": "从现货转至合约账户"
       },
       "logoutConfirmModal": {
         "title": "登出当前地址",
@@ -3384,7 +3435,7 @@
         "estTimeLabel": "预计时间",
         "feeTipTooltip": "Hyperliquid 收取的提现手续费：$1",
         "estReceive": "预计到账：{{balance}}",
-        "minimumDepositSize": "最低存款金额为5美元。",
+        "minimumDepositSize": "最低充值金额为5美元。",
         "estReceiveLabel": "预计到账",
         "feeTip": "$1 手续费",
         "fetchQuoteFailed": "获取充值报价失败，请切换代币。",
@@ -3393,11 +3444,13 @@
         "goSwapTips": "仅在 Arbitrum 上支持 USDC 的直接入金。请在入金前将当前代币兑换为 USDC。",
         "estReceiveTooltip": "跨链充值通过 LiFi 进行，可能产生一些滑点。预计在 {{number}} 秒内到达。",
         "minimumWithdrawSize": "最低提现金额为$2",
-        "goBridgeTips": "仅支持在 Arbitrum 上的 USDC 进行直接充值。请在存款前，将您当前的代币跨链到 Arbitrum 上的 USDC。",
+        "goBridgeTips": "仅支持在 Arbitrum 上的 USDC 进行直接充值。请在充值前，将您当前的代币跨链到 Arbitrum 上的 USDC。",
         "hyperliquidFeeLabelTooltip": "新用户需支付 Hyperliquid 一次性激活费用。",
         "amount": "金额",
         "hypeActivationFeeTip": "Hyperliquid 将收取一次性激活费 {{fee}} 作为首次 HyperEVM 提现的费用。",
-        "feeTipTooltipHype": "提取到 EVM 将收取 ~0.00002 HYPE 的费用。"
+        "feeTipTooltipHype": "提取到 EVM 将收取 ~0.00002 HYPE 的费用。",
+        "balance": "余额",
+        "chain": "链"
       },
       "home": {
         "markPrice": "标记价格",
@@ -3566,7 +3619,68 @@
       },
       "addFunds": "添加资金",
       "crossMarginLiqPriceTip": "在跨保证金模式下，单个头寸的清算价格仅供参考估算。",
-      "selectTokenToWithdraw": "选择提现网络"
+      "selectTokenToWithdraw": "选择提现代币",
+      "PerpsDepositCard": {
+        "availableToTrade": "可交易：",
+        "deposit": "充值",
+        "swap": "兑换"
+      },
+      "EnableUnifiedAccount": {
+        "title": "启用统一账户",
+        "desc": "统一账户是推荐的账户模式，可简化交易体验。所有代币的现货和永续合约余额将合并，所有可用资产均支持交叉保证金。",
+        "confirm": "确认",
+        "enable": "启用",
+        "cancel": "取消",
+        "importantTips": "启用统一账户后，所有 USDC 抵押品将作为交叉保证金使用。",
+        "important": "重要提示"
+      },
+      "PerpsSpotSwap": {
+        "title": "兑换稳定币",
+        "from": "从",
+        "to": "兑换为",
+        "balance": "余额",
+        "estReceive": "预计接收",
+        "swapBtn": "兑换",
+        "insufficientBalance": "余额不足",
+        "invalidAmount": "请输入有效金额",
+        "minimumAmount": "最小兑换金额为 {{amount}}",
+        "max": "最大",
+        "toDeposit": "去充值 →",
+        "swapBeforeTrading": "交易前请先将 USDC 兑换为 {{quoteAsset}}",
+        "enabledSuccess": "统一账户已启用",
+        "enableFailed": "启用统一账户失败",
+        "swapFailed": "兑换失败",
+        "swapSuccess": "兑换成功完成",
+        "estReceiveTooltip": "预计接收金额受市场价格波动影响。",
+        "buyAsset": "买入 {{asset}}",
+        "sellAsset": "卖出 {{asset}}",
+        "toSwapEntry": "去兑换 →",
+        "toDepositEntry": "去充值 →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "转账",
+        "from": "从",
+        "to": "到",
+        "spot": "现货",
+        "perps": "永续",
+        "balance": "余额",
+        "amount": "数量",
+        "max": "最大",
+        "submit": "确认",
+        "insufficientBalance": "余额不足",
+        "invalidAmount": "请输入有效金额"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid 余额",
+        "deposit": "充值",
+        "withdraw": "提现"
+      },
+      "PerpsAbout": {
+        "title": "关于"
+      },
+      "transferToSpot": "转账到现货",
+      "transferToPerps": "转账到永续合约",
+      "selectChainToWithdraw": "选择提现链"
     },
     "perpsPro": {
       "chatArea": {
@@ -3584,7 +3698,8 @@
         "markTips": "用于保证金管理、计算未实现盈亏、强平，以及触发止盈/止损订单。",
         "symbol": "永续合约符号",
         "fundingCountdown": "资金费率 / 倒计时",
-        "fundingTips": "多头向空头支付的每小时资金费率（若为负数，空头向多头支付）。资金交易不收取任何费用，这是一种用户之间的点对点转账，旨在将价格推向现货价格。详见文档以了解详情。"
+        "fundingTips": "多头向空头支付的每小时资金费率（若为负数，空头向多头支付）。资金交易不收取任何费用，这是一种用户之间的点对点转账，旨在将价格推向现货价格。详见文档以了解详情。",
+        "categoryAll": "全部"
       },
       "userInfo": {
         "tab": {
@@ -3628,7 +3743,9 @@
           "closedPnl": "已实现盈亏",
           "unrealizedPnl": "未实现盈亏",
           "fundingTipsV2": "自开仓以来的净资金。红色（负值）资金表示支付的资金，而绿色（正值）资金表示收到的资金。",
-          "fundingTipsBold": "这显示了自仓位开启以来您的总资金结算情况。<bold>绿色（正值）</bold>表示您从其他交易者那里赚取的资金，而<bold>红色（负值）</bold>表示您向他们支付的资金成本。"
+          "fundingTipsBold": "这显示了自仓位开启以来您的总资金结算情况。<bold>绿色（正值）</bold>表示您从其他交易者那里赚取的资金，而<bold>红色（负值）</bold>表示您向他们支付的资金成本。",
+          "assets": "资产",
+          "about": "关于"
         },
         "emptyMessage": {
           "positions": "暂无持仓",
@@ -3638,7 +3755,8 @@
           "orderHistory": "暂无订单记录",
           "tradeHistory": "暂无成交记录",
           "twapHistory": "暂无 TWAP 历史",
-          "activeTwap": "当前无活跃的TWAP"
+          "activeTwap": "当前无活跃的TWAP",
+          "assets": "暂无资产"
         },
         "positionInfo": {
           "configure": "配置",
@@ -3711,6 +3829,17 @@
           "perpMarginRejected": "拒绝的永续合约保证金",
           "rejected": "已拒绝",
           "siblingFilledCanceled": "由于兄弟订单已被成交而取消"
+        },
+        "assets": {
+          "columnAsset": "资产",
+          "columnTotal": "总余额",
+          "columnAvailable": "可用余额",
+          "columnAction": "操作",
+          "swapStablecoins": "兑换稳定币",
+          "enableUnifiedAccount": "启用统一账户",
+          "transferToPerps": "转账到永续合约",
+          "usdcSpot": "USDC（现货）",
+          "usdcPerps": "USDC（永续）"
         }
       },
       "statusBar": {
@@ -3793,7 +3922,7 @@
         "minimumSuborderSize": "TWAP 子单的最小下单金额为 $10",
         "marginUsage": "保证金使用情况",
         "limitPrice": "限价",
-        "deposit": "存款",
+        "deposit": "充值",
         "addFundsToGetStarted": "添加资金以开始使用",
         "price": "价格",
         "action": "操作",
@@ -3829,7 +3958,8 @@
         "orderTypeTooltipScale": "缩放订单允许您将一个金额拆分为多个子订单，以最小化市场影响。",
         "totalTime": "总时间（5分钟-24小时）",
         "orderTypeTooltipTwap": "TWAP（时间加权平均价格）是一种算法交易执行策略，旨在实现接近用户指定周期的时间加权平均价格的平均执行价格。",
-        "bboTips": "最佳买卖报价（BBO）指的是在任何给定时间内，订单薄上可用的最佳卖出价格和最佳买入价格。BBO 订单始终使用精确的最小跳动点大小进行下单，确保价格细致且准确，与显示偏好无关。"
+        "bboTips": "最佳买卖报价（BBO）指的是在任何给定时间内，订单薄上可用的最佳卖出价格和最佳买入价格。BBO 订单始终使用精确的最小跳动点大小进行下单，确保价格细致且准确，与显示偏好无关。",
+        "swapStableCoins": "兑换稳定币"
       },
       "marginMode": {
         "cross": "全仓",
@@ -3881,7 +4011,16 @@
         "deposit": "充值",
         "accountEquityTip": "余额 + 未实现盈亏（若将所有头寸平仓时的近似账户价值）",
         "crossAccountLeverageTips": "跨账户杠杆率 = 跨账户总头寸价值 / 跨账户价值。",
-        "available": "可用："
+        "available": "可用：",
+        "accountSummary": "账户概览",
+        "unifiedAccountSummary": "统一账户概览",
+        "unifiedAccountRatio": "统一账户比率",
+        "unifiedAccountRatioTips": "表示投资组合清算风险。当该值大于95%时，您的投资组合可能会被清算。",
+        "unifiedAccountLeverage": "统一账户杠杆",
+        "unifiedAccountLeverageTips": "统一账户杠杆 = 交叉仓位总价值 / 总抵押品余额。",
+        "perpsMaintenanceMargin": "永续合约维持保证金",
+        "perpsPortfolioValue": "永续合约投资组合价值",
+        "perpsUnrealizedPnl": "永续合约未实现盈亏"
       },
       "accountActions": {
         "available": "可用",
@@ -4330,7 +4469,10 @@
       "hfTitle": "健康因子",
       "searchMarket": "搜索市场",
       "selectChain": "选择区块链",
-      "disabled": "禁用"
+      "disabled": "禁用",
+      "signFallback": {
+        "preExecFailedUseFullSign": "模拟失败。此交易很可能因 AAVE 错误而失败。"
+      }
     },
     "desktopSmallSwap": {
       "title": "小额资产归集",
@@ -4377,7 +4519,8 @@
       "valueColumn": "美元价值",
       "statusColumn": "兑换状态",
       "noLowValueTokensFound": "暂无资产",
-      "moreChains": "+{{count}} 条链"
+      "moreChains": "+{{count}} 条链",
+      "priceImpact": "价差上限"
     },
     "manageBatchApprovals": {
       "cols": {

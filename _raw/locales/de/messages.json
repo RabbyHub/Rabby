@@ -482,7 +482,8 @@
         "useGasAccount": "Verwenden Sie GasAccount",
         "chainNotSupported": "Diese Kette wird von GasAccount nicht unterstützt",
         "loginTips": "Um den GasAccount-Login abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach dem Login erneut erstellen.",
-        "depositTips": "Um die GasAccount-Einzahlung abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach der Einzahlung erneut erstellen."
+        "depositTips": "Um die GasAccount-Einzahlung abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach der Einzahlung erneut erstellen.",
+        "signWithHardwareWalletToUse": "Du musst mit {{brand}} signieren, um es zu nutzen"
       },
       "keystone": {
         "verifyPasswordError": "Signatur fehlgeschlagen, bitte versuchen Sie es nach dem Entsperren erneut.",
@@ -2616,7 +2617,8 @@
     },
     "gasAccount": {
       "history": {
-        "noHistory": "Keine Historie"
+        "noHistory": "Keine Historie",
+        "noHistoryForPast30Days": "Keine Historie der letzten 30 Tage."
       },
       "loginInTip": {
         "desc": "Auf allen Chains Gasgebühren zahlen",
@@ -2645,7 +2647,23 @@
         "selectToken": "Token auswählen, um einzuzahlen",
         "token": "Token",
         "desc": "Machen Sie eine Einzahlung auf das DeBank L2 Konto von Rabby ohne zusätzliche Gebühren – jederzeit abheben.",
-        "paymentAddr": "Zahlungsadresse"
+        "paymentAddr": "Zahlungsadresse",
+        "gasDepositTitle": "Gas-Einzahlung",
+        "zeroInvalidAmount": "Der Betrag darf nicht Null sein",
+        "minAmountRequired": "MindestEinzahlungsbetrag ist ${{value}}",
+        "paymentAddress": "Zahlungs-Wallet",
+        "balanceLabel": "Guthaben",
+        "insufficientBalanceLabel": "Unzureichendes Guthaben",
+        "unavailablePaymentWallet": "Ausgewählte Zahlungs-Wallet ist nicht verfügbar",
+        "suggestedToken": "Vorgeschlagene Tokens",
+        "bridgeLabel": "Brücke",
+        "estReceiveLabel": "Geschätzter Empfang: {{usd}}",
+        "estReceiveTip": "Service wird über {{name}} abgewickelt, Slippage möglich",
+        "depositSuccess": "Einzahlung erfolgreich",
+        "depositFailed": "Einzahlung fehlgeschlagen, bitte erneut versuchen",
+        "bridgeDepositFailed": "Brücken-Einzahlung fehlgeschlagen, bitte erneut versuchen",
+        "noAvailableToken": "Kein verfügbarer Token",
+        "InsufficientToken": "Unzureichendes Token-Guthaben"
       },
       "withdrawPopup": {
         "noEnoughGas": "Betrag zu niedrig, um die Gasgebühren zu decken",
@@ -2708,7 +2726,31 @@
         "desc3": "Rabby Wallet erhebt keine zusätzlichen Gebühren. Sie zahlen nur die Gasgebühren für Ihre Transaktion und einen kleinen Betrag an Gas, um dieses Gas von GasAccount an Ihre Adresse zu senden.",
         "desc4": "GasAccount benötigt keine Vertragsgenehmigungen oder Berechtigungen. Sie zahlen auf die GasAccount-Adresse von Rabby ein, und Rabby sendet Gas an Ihre Adresse, wenn es benötigt wird. Von der Konstruktion her vollständig sicher.",
         "desc1": "GasAccount ist eine neue Möglichkeit, Gasgebühren zu bezahlen. Anstatt native Tokens auf jeder Kette zu verwenden, können Sie ein Konto nutzen, um die Gasgebühren für all Ihre Adressen auf allen Ketten zu decken. Einfach, optional und niemals ohne Gas."
-      }
+      },
+      "benefitCard": {
+        "title": "Gasgebühren auf allen Chains bezahlen",
+        "subtitle": "wenn du kein Gas mehr hast",
+        "item1": "Keine Rabby-Gebühr",
+        "desc1": "Keine zusätzlichen Gebühren für Gas",
+        "item2": "Unterstützt alle Netzwerke",
+        "desc2": "Automatische Gaszahlungen auf über 80 Netzwerken",
+        "item3": "Unterstützt alle Transaktionen",
+        "desc3": "Swap, Bridge, Senden, DApps, & mehr"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "Gas benötigt: {{topUpUsd}}, Gas verbleibend (geschätzt): {{balance}}"
+      },
+      "gasFee": "Gas-Gebühr",
+      "gasDeposit": "Gas-Einzahlung",
+      "depositNow": "Jetzt einzahlen",
+      "signWithPendingHardwareToUse": "Mit {{addressAlias}} signieren um zu nutzen",
+      "depositSubmitted": "Einzahlung eingereicht",
+      "claimFreeGas": "{{usdValue}} kostenloses Gas beanspruchen",
+      "depositFailed": "Einzahlung fehlgeschlagen",
+      "lowBalance": "Sie haben nicht genug Gas. Zahlen Sie Gas ein, um sicherzustellen, dass zukünftige Transaktionen reibungslos verlaufen.",
+      "gasBalance": "Gas-Guthaben",
+      "loginSuccess": "Anmeldung erfolgreich",
+      "loginFailed": "Anmeldung fehlgeschlagen"
     },
     "safeMessageQueue": {
       "noData": "Keine Nachrichten",
@@ -3332,7 +3374,16 @@
         "closedPnl": "Realisiertes P&L",
         "tradeValue": "Transaktionswert",
         "size": "Positionsgröße",
-        "feeDesc": "Wenn Nutzer Trades platzieren, fallen sowohl <1>Handelsgebühren</1> als auch <2>Erbauergebühren</2> an."
+        "feeDesc": "Wenn Nutzer Trades platzieren, fallen sowohl <1>Handelsgebühren</1> als auch <2>Erbauergebühren</2> an.",
+        "amount": "Betrag",
+        "asset": "Vermögenswerte",
+        "action": "Aktion",
+        "value": "Wert",
+        "buy": "Kaufen",
+        "sell": "Verkaufen",
+        "transferDetailTitle": "Überweisen",
+        "transferActionToSpot": "Überweisung (von Perps zu Spot)",
+        "transferActionToPerps": "Überweisung (von Spot zu Perps)"
       },
       "logoutConfirmModal": {
         "title": "Aktuelle Adresse abmelden",
@@ -3357,7 +3408,9 @@
         "hyperliquidFeeLabelTooltip": "Neue Benutzer zahlen eine einmalige Aktivierungsgebühr an Hyperliquid.",
         "amount": "Betrag",
         "feeTipTooltipHype": "Eine Gebühr von ~0,00002 HYPE wird für den Abzug auf die EVM erhoben.",
-        "hypeActivationFeeTip": "Eine einmalige Aktivierungsgebühr von {{fee}} wird von Hyperliquid für die erste HyperEVM-Abhebung erhoben."
+        "hypeActivationFeeTip": "Eine einmalige Aktivierungsgebühr von {{fee}} wird von Hyperliquid für die erste HyperEVM-Abhebung erhoben.",
+        "balance": "Guthaben",
+        "chain": "Kette"
       },
       "home": {
         "entryPrice": "Einstiegskurs",
@@ -3526,7 +3579,68 @@
       },
       "addFunds": "Fonds Hinzufügen",
       "crossMarginLiqPriceTip": "Im Cross Margin-Modus ist der Liquidationspreis für eine einzelne Position nur eine Schätzung zur Referenz.",
-      "selectTokenToWithdraw": "Netzwerk für Abhebungen auswählen"
+      "selectTokenToWithdraw": "Token zum Abheben auswählen",
+      "PerpsDepositCard": {
+        "availableToTrade": "Verfügbar zum Handeln: ",
+        "deposit": "Einzahlung",
+        "swap": "Tauschen"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Einheitliches Konto aktivieren",
+        "desc": "Unified Account ist der empfohlene Kontomodus, der das Trading-Erlebnis vereinfacht. Spot- und Perps-Guthaben werden für alle Token zusammengelegt, und Cross-Margin wird für alle verfügbaren Assets unterstützt.",
+        "confirm": "Bestätigen",
+        "enable": "Aktivieren",
+        "cancel": "Abbrechen",
+        "importantTips": "Alle USDC-Sicherheiten werden als Cross-Margin verwendet, sobald das Unified Account aktiviert ist.",
+        "important": "Wichtig"
+      },
+      "PerpsSpotSwap": {
+        "title": "Stablecoins tauschen",
+        "from": "Von",
+        "to": "Tauschen zu",
+        "balance": "Guthaben",
+        "estReceive": "Gesch. Erhalt",
+        "swapBtn": "Tauschen",
+        "insufficientBalance": "Unzureichendes Guthaben",
+        "invalidAmount": "Bitte geben Sie einen gültigen Betrag ein",
+        "minimumAmount": "Der Mindest-Tauschbetrag beträgt {{amount}}",
+        "max": "Max",
+        "toDeposit": "Zur Einzahlung →",
+        "swapBeforeTrading": "USDC vor dem Handel in {{quoteAsset}} tauschen",
+        "enabledSuccess": "Unified Account aktiviert",
+        "enableFailed": "Unified Account-Aktivierung fehlgeschlagen",
+        "swapFailed": "Tausch fehlgeschlagen",
+        "swapSuccess": "Tausch erfolgreich abgeschlossen",
+        "estReceiveTooltip": "Der geschätzte Erhaltungsbetrag unterliegt Marktkursschwankungen.",
+        "buyAsset": "{{asset}} kaufen",
+        "sellAsset": "{{asset}} verkaufen",
+        "toSwapEntry": "Zum Tauschen →",
+        "toDepositEntry": "Zur Einzahlung →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Überweisen",
+        "from": "Von",
+        "to": "An",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Guthaben",
+        "amount": "Betrag",
+        "max": "Max",
+        "submit": "Bestätigen",
+        "insufficientBalance": "Unzureichendes Guthaben",
+        "invalidAmount": "Bitte geben Sie einen gültigen Betrag ein"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid-Guthaben",
+        "deposit": "Einzahlung",
+        "withdraw": "Auszahlung"
+      },
+      "PerpsAbout": {
+        "title": "Über"
+      },
+      "transferToSpot": "Zu Spot überweisen",
+      "transferToPerps": "Zu Perps überweisen",
+      "selectChainToWithdraw": "Kette für Auszahlung wählen"
     },
     "perpsPro": {
       "chatArea": {
@@ -3544,7 +3658,8 @@
         "openInterest": "Offenes Interesse",
         "lastPrice": "Letzter Handelspreis",
         "symbol": "Symbol",
-        "fundingTips": "Die stündliche Finanzierungsrate, mit der Long-Positionen Short-Positionen bezahlen (ist sie negativ, bezahlen Short-Positionen Long-Positionen). Es fallen keine Gebühren im Zusammenhang mit der Finanzierung an, was eine Peer-to-Peer-Überweisung zwischen Nutzern ist, um die Preise in Richtung des Spotpreises zu bewegen. Siehe Dokumentation für Details."
+        "fundingTips": "Die stündliche Finanzierungsrate, mit der Long-Positionen Short-Positionen bezahlen (ist sie negativ, bezahlen Short-Positionen Long-Positionen). Es fallen keine Gebühren im Zusammenhang mit der Finanzierung an, was eine Peer-to-Peer-Überweisung zwischen Nutzern ist, um die Preise in Richtung des Spotpreises zu bewegen. Siehe Dokumentation für Details.",
+        "categoryAll": "Alle"
       },
       "userInfo": {
         "tab": {
@@ -3588,7 +3703,9 @@
           "slice": "Slice",
           "unrealizedPnl": "Unrealisiertes PnL",
           "fundingTipsV2": "Nettofinanzierung seit der Eröffnung der Position. Ein roter (negativer) Finanzierungswert zeigt gezahlte Finanzierung an, während ein grüner (positiver) Wert erhaltene Finanzierung anzeigt.",
-          "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <bold>Grüne (positive)</bold> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <bold>Rote (negative)</bold> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben."
+          "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <bold>Grüne (positive)</bold> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <bold>Rote (negative)</bold> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben.",
+          "assets": "Vermögen",
+          "about": "Über"
         },
         "emptyMessage": {
           "fillHistory": "Keine Ausführungshistorie",
@@ -3598,7 +3715,8 @@
           "activeTwap": "Kein aktiver TWAP",
           "fundingHistory": "Keine Finanzierungshistorie",
           "openOrders": "Keine offenen Orders",
-          "orderHistory": "Keine Orderhistorie"
+          "orderHistory": "Keine Orderhistorie",
+          "assets": "Keine Guthaben"
         },
         "positionInfo": {
           "receive": "Empfangen",
@@ -3671,6 +3789,17 @@
           "minTradeNtlRejected": "Abgelehnt aufgrund des minimalen Handels NTL",
           "reduceOnlyCanceled": "Wegen Reduzierung nur storniert",
           "siblingFilledCanceled": "Abgebrochen aufgrund der Erfüllung der Geschwisterreihenfolge"
+        },
+        "assets": {
+          "columnAsset": "Vermögen",
+          "columnTotal": "Gesamtsaldo",
+          "columnAvailable": "Verfügbarer Saldo",
+          "columnAction": "Aktion",
+          "swapStablecoins": "Stablecoins tauschen",
+          "enableUnifiedAccount": "Einheitliches Konto aktivieren",
+          "transferToPerps": "Zu Perps überweisen",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
         }
       },
       "statusBar": {
@@ -3789,7 +3918,8 @@
         "bboTips": "Das beste Angebot (BBO) bezieht sich auf den zum jeweiligen Zeitpunkt besten verfügbaren Ask-Preis und den besten verfügbaren Bid-Preis im Orderbuch. BBO-Orders werden immer mit der genauen minimalen Tickgröße platziert, was eine granulare und präzise Preisgestaltung unabhängig von Anzeigepräferenzen gewährleistet.",
         "orderTypeTooltipScale": "Skalierte Aufträge ermöglichen es Ihnen, einen Betrag in mehrere Unteraufträge aufzuteilen, um die Marktbeeinflussung zu minimieren.",
         "orderTypeTooltipTwap": "TWAP (Zeitgewichteter Durchschnittspreis) ist eine algorithmische Handelsausführungsstrategie, die darauf abzielt, einen durchschnittlichen Ausführungspreis zu erreichen, der nahe am zeitgewichteten Durchschnittspreis des benutzerdefinierten Zeitraums liegt.",
-        "Sell": "Verkaufen"
+        "Sell": "Verkaufen",
+        "swapStableCoins": "Stablecoins tauschen"
       },
       "marginMode": {
         "confirm": "Bestätigen",
@@ -3841,7 +3971,16 @@
         "unrealizedPnl": "Unrealisiertes P&L",
         "accountEquityTip": "Kontostand + unrealisierte P&L (ungefähre Kontobewertung, falls alle Positionen geschlossen würden)",
         "balanceTip": "Summe der Nettoüberweisungen + Summe der realisierten Gewinne + Summe der Nettofinanzierungsgebühren",
-        "available": "Verfügbar:"
+        "available": "Verfügbar:",
+        "accountSummary": "Kontoübersicht",
+        "unifiedAccountSummary": "Einheitliche Kontoübersicht",
+        "unifiedAccountRatio": "Einheitliches Kontoverhältnis",
+        "unifiedAccountRatioTips": "Stellt das Risiko der Portfolioliquidation dar. Wenn der Wert größer als 95% ist, kann Ihr Portfolio liquidiert werden.",
+        "unifiedAccountLeverage": "Einheitliche Kontoleverage",
+        "unifiedAccountLeverageTips": "Einheitliche Kontoleverage = Gesamtwert der Cross-Positionen / Gesamte Sicherheitenbilanz.",
+        "perpsMaintenanceMargin": "Perps Maintenance-Marge",
+        "perpsPortfolioValue": "Perps Portfoliowert",
+        "perpsUnrealizedPnl": "Perps nicht realisierter PNL"
       },
       "accountActions": {
         "available": "Verfügbar",
@@ -4290,7 +4429,10 @@
       "selectMarket": "Markt auswählen",
       "supplied": "Bereitgestellt",
       "searchMarket": "Markt durchsuchen",
-      "enterAmount": "Betrag eingeben"
+      "enterAmount": "Betrag eingeben",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simulation fehlgeschlagen. Diese Transaktion wird mit hoher Wahrscheinlichkeit aufgrund von AAVE-Fehlern fehlschlagen."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {
@@ -4337,7 +4479,8 @@
       "totalValue": "Gesamtwert",
       "moreChains": "+{{count}} Ketten",
       "swapFailed": "Swap fehlgeschlagen, {{reason}}",
-      "completedTips": "Laufender Swap wird weiterverarbeitet"
+      "completedTips": "Laufender Swap wird weiterverarbeitet",
+      "priceImpact": "Preisimpact-Obergrenze"
     },
     "manageBatchApprovals": {
       "cols": {

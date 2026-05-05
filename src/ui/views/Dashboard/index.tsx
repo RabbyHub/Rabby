@@ -21,16 +21,31 @@ import { CHAINS_ENUM } from '@/constant';
 import Settings from './components/Settings';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { useGasAccountDiscovery } from '@/ui/views/GasAccount/hooks';
 
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
+  const { refreshDiscovery } = useGasAccountDiscovery({
+    autoRefresh: false,
+  });
 
   const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
     ...s.appVersion,
   }));
+  const accountsDiscoveryKey = useRabbySelector((s) =>
+    s.accountToDisplay.accountsList
+      .map(
+        (account) =>
+          `${account.address.toLowerCase()}:${account.type}:${
+            account.brandName || ''
+          }`
+      )
+      .sort()
+      .join('|')
+  );
 
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
 
@@ -65,6 +80,18 @@ const Dashboard = () => {
       dispatch.gift.setField({ hasClaimedGift: hasAnyAccountClaimedGift });
     })();
   }, []);
+
+  useEffect(() => {
+    if (!accountsDiscoveryKey) {
+      return;
+    }
+    refreshDiscovery().catch((error) => {
+      console.error(
+        '[gasAccount] refresh discovery on account change failed',
+        error
+      );
+    });
+  }, [accountsDiscoveryKey, refreshDiscovery]);
 
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();

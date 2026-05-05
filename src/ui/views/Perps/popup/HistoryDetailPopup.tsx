@@ -9,12 +9,28 @@ import {
   splitNumberByStep,
 } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
+import dayjs from 'dayjs';
 import { TokenImg } from '../components/TokenImg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import IconHyperliquid from 'ui/assets/perps/IconHyperLogo.svg';
 import IconRabby from 'ui/assets/rabby-logo-circle.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
+import { SPOT_STABLE_COIN_NAME, PerpsQuoteAsset } from '../constants';
+import { useRabbySelector } from '@/ui/store';
+import { ReactComponent as RcIconUSDT } from '@/ui/assets/perps/IconUSDT.svg';
+import { ReactComponent as RcIconUSDE } from '@/ui/assets/perps/IconUSDE.svg';
+import { ReactComponent as RcIconUSDH } from '@/ui/assets/perps/IconUSDH.svg';
+
+const STABLECOIN_SVG: Record<
+  Exclude<PerpsQuoteAsset, 'USDC'>,
+  React.FC<any>
+> = {
+  USDT: RcIconUSDT,
+  USDE: RcIconUSDE,
+  USDH: RcIconUSDH,
+};
 
 interface HistoryDetailPopupProps extends Omit<PopupProps, 'onCancel'> {
   fill: (WsFill & { logoUrl: string }) | null;
@@ -35,8 +51,31 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   const pnlValue = Number(closedPnl) - Number(fee);
   const isClose = (dir === 'Close Long' || dir === 'Close Short') && closedPnl;
   const logoUrl = fill?.logoUrl;
+  const marketDataMap = useRabbySelector((s) => s.perps.marketDataMap);
+  const currentAssetCtx = coin ? marketDataMap[coin] : undefined;
+
+  // Stablecoin swap detection (e.g. @166 = USDT, @150 = USDE, @230 = USDH)
+  const stableCoinSwap = useMemo((): null | {
+    symbol: Exclude<PerpsQuoteAsset, 'USDC'>;
+    isBuy: boolean;
+  } => {
+    if (!coin) return null;
+    const entry = (Object.entries(SPOT_STABLE_COIN_NAME) as Array<
+      [Exclude<PerpsQuoteAsset, 'USDC'>, string]
+    >).find(([, v]) => v === coin);
+    if (!entry) return null;
+    return { symbol: entry[0], isBuy: side === 'B' };
+  }, [coin, side]);
 
   const titleString = useMemo(() => {
+    if (stableCoinSwap) {
+      return t(
+        stableCoinSwap.isBuy
+          ? 'page.perps.PerpsSpotSwap.buyAsset'
+          : 'page.perps.PerpsSpotSwap.sellAsset',
+        { asset: stableCoinSwap.symbol }
+      );
+    }
     const isLiquidation = Boolean(fill?.liquidation);
     if (fill?.dir === 'Close Long') {
       if (orderTpOrSl === 'tp') {
@@ -69,7 +108,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
       return t('page.perps.historyDetail.title.openShort');
     }
     return fill?.dir;
-  }, [fill, orderTpOrSl]);
+  }, [fill, orderTpOrSl, stableCoinSwap, t]);
 
   return (
     <>
@@ -93,112 +132,180 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
           {/* Content */}
           <div className="flex-1 px-20 pb-20 mt-4">
             <div className="rounded-[8px] px-16 bg-r-neutral-card-1">
-              {/* Perps */}
-              <div className="flex justify-between items-center py-16">
-                <span className="text-13 text-r-neutral-body">
-                  {t('page.perps.title')}
-                </span>
-                <div className="flex items-center space-x-8">
-                  <TokenImg logoUrl={logoUrl} size={20} />
-                  <span className="text-13 text-r-neutral-title-1 font-medium">
-                    {formatPerpsCoin(coin || '')}-USD
-                  </span>
-                </div>
-              </div>
-
-              {/* Date */}
-              {time && (
-                <div className="flex justify-between items-center py-16">
-                  <span className="text-13 text-r-neutral-body">
-                    {t('page.perps.historyDetail.date')}
-                  </span>
-                  <span className="text-13 text-r-neutral-title-1 font-medium">
-                    {sinceTime(time / 1000)}
-                  </span>
-                </div>
-              )}
-
-              {Boolean(isClose) && (
-                <div className="flex justify-between items-center py-16">
-                  <span className="text-13 text-r-neutral-body">
-                    {t('page.perps.historyDetail.closedPnl')}
-                  </span>
-                  <span
-                    className={`text-13 ${
-                      pnlValue >= 0
-                        ? 'text-r-green-default'
-                        : 'text-r-red-default'
-                    } font-medium`}
-                  >
-                    {pnlValue > 0 ? '+' : '-'}$
-                    {splitNumberByStep(Math.abs(pnlValue).toFixed(2))}
-                  </span>
-                </div>
-              )}
-
-              {/* Price */}
-              <div className="flex justify-between items-center py-16">
-                <span className="text-13 text-r-neutral-body">
-                  {t('page.perps.price')}
-                </span>
-                <span className="text-13 text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(px || 0)}
-                </span>
-              </div>
-
-              {/* Size */}
-              <div className="flex justify-between items-center py-16">
-                <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
-                  {t('page.perps.size')}
-                  <TooltipWithMagnetArrow
-                    overlayClassName="rectangle w-[max-content]"
-                    placement="top"
-                    title={t('page.perps.sizeTips')}
-                  >
-                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                  </TooltipWithMagnetArrow>
-                </div>
-                <span className="text-13 text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(tradeValue.toFixed(2))} = {sz}{' '}
-                  {formatPerpsCoin(coin || '')}
-                </span>
-              </div>
-
-              {/* Trade Value */}
-              {/* <div className="flex justify-between items-center py-16">
-              <span className="text-13 text-r-neutral-body">
-                {t('page.perps.historyDetail.tradeValue')}
-              </span>
-              <span className="text-13 text-r-neutral-title-1 font-medium">
-                ${splitNumberByStep(tradeValue.toFixed(2))}
-              </span>
-            </div> */}
-
-              {/* Fee */}
-              {fee && (
-                <div className="flex justify-between items-center py-16">
-                  <div
-                    className="text-13 text-r-neutral-body flex items-center gap-4 cursor-pointer hover:text-r-blue-default"
-                    onClick={() => setFeeDetailVisible(true)}
-                  >
-                    {t('page.perps.fee')}
-                    <RcIconInfo className="text-rb-neutral-foot hover:text-r-blue-default w-14 h-14" />
+              {stableCoinSwap ? (
+                <>
+                  {/* Action */}
+                  <div className="flex justify-between items-center py-16">
+                    <span className="text-13 text-r-neutral-body">
+                      {t('page.perps.historyDetail.action')}
+                    </span>
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      {stableCoinSwap.isBuy
+                        ? t('page.perps.historyDetail.buy')
+                        : t('page.perps.historyDetail.sell')}
+                    </span>
                   </div>
-                  <span className="text-13 text-r-neutral-title-1 font-medium">
-                    ${splitNumberByStep(Number(fee).toFixed(4))}
-                  </span>
-                </div>
-              )}
 
-              {/* Provider */}
-              <div className="flex justify-between items-center py-16">
-                <span className="text-13 text-r-neutral-body">
-                  {t('page.perps.historyDetail.provider')}
-                </span>
-                <span className="text-13 text-r-neutral-title-1 font-medium">
-                  Hyperliquid
-                </span>
-              </div>
+                  {/* Asset */}
+                  <div className="flex justify-between items-center py-16">
+                    <span className="text-13 text-r-neutral-body">
+                      {t('page.perps.historyDetail.asset')}
+                    </span>
+                    <div className="flex items-center gap-6">
+                      {(() => {
+                        const Icon = STABLECOIN_SVG[stableCoinSwap.symbol];
+                        return <Icon className="w-16 h-16" />;
+                      })()}
+                      <span className="text-13 text-r-neutral-title-1 font-medium">
+                        {stableCoinSwap.symbol}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Amount */}
+                  <div className="flex justify-between items-center py-16">
+                    <span className="text-13 text-r-neutral-body">
+                      {t('page.perps.historyDetail.amount')}
+                    </span>
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      {sz} {stableCoinSwap.symbol}
+                    </span>
+                  </div>
+
+                  {/* Price */}
+                  <div className="flex justify-between items-center py-16">
+                    <span className="text-13 text-r-neutral-body">
+                      {t('page.perps.price')}
+                    </span>
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      {splitNumberByStep(px || 0)} USDC
+                    </span>
+                  </div>
+
+                  {/* Fee */}
+                  <div className="flex justify-between items-center py-16">
+                    <span className="text-13 text-r-neutral-body">
+                      {t('page.perps.fee')}
+                    </span>
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      {formatNumber(Number(fee || 0), 4)} USDC
+                    </span>
+                  </div>
+
+                  {/* Date */}
+                  {time && (
+                    <div className="flex justify-between items-center py-16">
+                      <span className="text-13 text-r-neutral-body">
+                        {t('page.perps.historyDetail.date')}
+                      </span>
+                      <span className="text-13 text-r-neutral-title-1 font-medium">
+                        {dayjs(time).format('YYYY-MM-DD HH:mm')}
+                      </span>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* Perps */}
+                  <div className="flex justify-between items-center py-16">
+                    <span className="text-13 text-r-neutral-body">
+                      {t('page.perps.title')}
+                    </span>
+                    <div className="flex items-center space-x-8">
+                      <TokenImg logoUrl={logoUrl} size={20} />
+                      <PerpsDisplayCoinName
+                        item={currentAssetCtx}
+                        baseClassName="text-r-neutral-title-1 font-medium"
+                        quoteClassName="text-r-neutral-title-1 font-medium"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Date */}
+                  {time && (
+                    <div className="flex justify-between items-center py-16">
+                      <span className="text-13 text-r-neutral-body">
+                        {t('page.perps.historyDetail.date')}
+                      </span>
+                      <span className="text-13 text-r-neutral-title-1 font-medium">
+                        {sinceTime(time / 1000)}
+                      </span>
+                    </div>
+                  )}
+
+                  {Boolean(isClose) && (
+                    <div className="flex justify-between items-center py-16">
+                      <span className="text-13 text-r-neutral-body">
+                        {t('page.perps.historyDetail.closedPnl')}
+                      </span>
+                      <span
+                        className={`text-13 ${
+                          pnlValue >= 0
+                            ? 'text-r-green-default'
+                            : 'text-r-red-default'
+                        } font-medium`}
+                      >
+                        {pnlValue > 0 ? '+' : '-'}$
+                        {splitNumberByStep(Math.abs(pnlValue).toFixed(2))}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Price */}
+                  <div className="flex justify-between items-center py-16">
+                    <span className="text-13 text-r-neutral-body">
+                      {t('page.perps.price')}
+                    </span>
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      ${splitNumberByStep(px || 0)}
+                    </span>
+                  </div>
+
+                  {/* Size */}
+                  <div className="flex justify-between items-center py-16">
+                    <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
+                      {t('page.perps.size')}
+                      <TooltipWithMagnetArrow
+                        overlayClassName="rectangle w-[max-content]"
+                        placement="top"
+                        title={t('page.perps.sizeTips')}
+                      >
+                        <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+                      </TooltipWithMagnetArrow>
+                    </div>
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      ${splitNumberByStep(tradeValue.toFixed(2))} = {sz}{' '}
+                      {formatPerpsCoin(coin || '')}
+                    </span>
+                  </div>
+
+                  {/* Fee */}
+                  {fee && (
+                    <div className="flex justify-between items-center py-16">
+                      <div
+                        className="text-13 text-r-neutral-body flex items-center gap-4 cursor-pointer hover:text-r-blue-default"
+                        onClick={() => setFeeDetailVisible(true)}
+                      >
+                        {t('page.perps.fee')}
+                        <RcIconInfo className="text-rb-neutral-foot hover:text-r-blue-default w-14 h-14" />
+                      </div>
+                      <span className="text-13 text-r-neutral-title-1 font-medium">
+                        ${splitNumberByStep(Number(fee).toFixed(4))}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Provider */}
+                  <div className="flex justify-between items-center py-16">
+                    <span className="text-13 text-r-neutral-body">
+                      {t('page.perps.historyDetail.provider')}
+                    </span>
+                    <span className="text-13 text-r-neutral-title-1 font-medium">
+                      Hyperliquid
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

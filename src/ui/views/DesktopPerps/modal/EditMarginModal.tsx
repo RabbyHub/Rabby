@@ -18,6 +18,7 @@ import { TokenImg } from '../../Perps/components/TokenImg';
 import { MarginEditInput } from '../../Perps/components/MarginEditInput';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { formatPerpsCoin } from '../utils';
+import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
 
 export interface EditMarginPopupProps {
   visible: boolean;
@@ -228,9 +229,10 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               <div className="flex flex-col gap-8">
                 <div className="flex items-center gap-6">
                   <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
-                  <span className="text-[16px] font-medium text-r-neutral-title-1">
-                    {formatPerpsCoin(coin)}
-                  </span>
+                  <PerpsDisplayCoinName
+                    item={currentAssetCtx}
+                    className="text-[16px] font-medium"
+                  />
                 </div>
                 <div className="flex items-center gap-4">
                   <div

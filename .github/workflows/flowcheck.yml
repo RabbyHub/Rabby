@@ -31,7 +31,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           PUSH_BRANCH: ${{ github.ref_name }}
           BRANCH_OVERRIDE: ${{ github.event.inputs.branch || '' }}
-          NOTIFY_LARKBOT: ${{ github.event.inputs.notify_larkbot || 'false' }}
+          NOTIFY_LARKBOT: ${{ github.event.inputs.notify_larkbot || 'true' }}
         run: |
           set -euo pipefail
 
@@ -63,7 +63,7 @@ jobs:
           echo "Notify LarkBot: ${NOTIFY_LARKBOT:-true}"
 
       - name: Setup Node.js 22
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
 
@@ -74,7 +74,7 @@ jobs:
         run: yarn global add chrome-extension-automator
 
       - name: Clone Rabby repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           repository: RabbyHub/Rabby
           ref: ${{ steps.resolve-branch.outputs.target_branch }}
