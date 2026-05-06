@@ -167,21 +167,25 @@ export type CurrencyLike = {
   symbol: string;
   logo_url?: string;
   usd_rate: number;
+  is_prefix?: boolean;
 };
 
 const DEFAULT_USD_CURRENCY: CurrencyLike = {
   code: 'USD',
   symbol: '$',
   usd_rate: 1,
+  is_prefix: true,
 };
 
-export const formatCurrency = (
+type FormatCurrencyOptions = {
+  decimal?: number;
+  currency?: CurrencyLike;
+  roundingMode?: BigNumber.RoundingMode;
+};
+
+export const formatCurrencyParts = (
   value: string | number,
-  options?: {
-    decimal?: number;
-    currency?: CurrencyLike;
-    roundingMode?: BigNumber.RoundingMode;
-  }
+  options?: FormatCurrencyOptions
 ) => {
   const {
     decimal = 2,
@@ -191,26 +195,44 @@ export const formatCurrency = (
 
   const bnValue = new BigNumber(value).times(currency.usd_rate || 1);
   const symbol = currency.symbol || '$';
+  const isPrefix = currency.is_prefix !== false;
+  const sign = bnValue.lt(0) ? '-' : '';
+  const absoluteValue = bnValue.absoluteValue();
+  const formatAmount = (num: BigNumber) =>
+    formatNumber(num.toFixed(), decimal, undefined, roundingMode);
+
+  let amount: string;
+  let isLessThan = false;
 
   if (bnValue.lt(0)) {
-    return `-${symbol}${formatNumber(
-      bnValue.absoluteValue().toFixed(),
-      decimal,
-      undefined,
-      roundingMode
-    )}`;
+    amount = formatAmount(absoluteValue);
+  } else if (bnValue.gte(0.01) || bnValue.eq(0)) {
+    amount = formatAmount(bnValue);
+  } else {
+    amount = '0.01';
+    isLessThan = true;
   }
 
-  if (bnValue.gte(0.01) || bnValue.eq(0)) {
-    return `${symbol}${formatNumber(
-      bnValue.toFixed(),
-      decimal,
-      undefined,
-      roundingMode
-    )}`;
-  }
+  const amountPrefix = `${sign}${isLessThan ? '<' : ''}`;
+  const text = isPrefix
+    ? `${amountPrefix}${symbol}${amount}`
+    : `${amountPrefix}${amount} ${symbol}`;
 
-  return `<${symbol}0.01`;
+  return {
+    amount,
+    isLessThan,
+    isPrefix,
+    sign,
+    symbol,
+    text,
+  };
+};
+
+export const formatCurrency = (
+  value: string | number,
+  options?: FormatCurrencyOptions
+) => {
+  return formatCurrencyParts(value, options).text;
 };
 
 export const formatAmount = (amount: string | number, decimals = 4) => {
