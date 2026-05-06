@@ -62,17 +62,6 @@ jobs:
           echo "Selected branch: $target_branch"
           echo "Notify LarkBot: ${NOTIFY_LARKBOT:-true}"
 
-      - name: Setup Node.js 22
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: '22'
-
-      - name: Install Yarn
-        run: npm install -g yarn
-
-      - name: Install chrome-extension-automator
-        run: yarn global add chrome-extension-automator
-
       - name: Clone Rabby repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -80,9 +69,19 @@ jobs:
           ref: ${{ steps.resolve-branch.outputs.target_branch }}
           path: rabby
 
+      - name: Setup Node.js 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+          cache: yarn
+          cache-dependency-path: rabby/yarn.lock
+
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install dependencies
         working-directory: rabby
-        run: yarn install
+        run: yarn install --immutable
 
       - name: Disable minimize in webpack config
         working-directory: rabby
@@ -97,4 +96,4 @@ jobs:
         env:
           RABBY_LARK_CHAT_URL: ${{ secrets.RABBY_LARK_CHAT_URL }}
           RABBY_LARK_CHAT_SECRET: ${{ secrets.RABBY_LARK_CHAT_SECRET }}
-        run: npx chrome-extension-automator rabby/dist ${{ steps.resolve-branch.outputs.target_branch }} ${{ steps.resolve-branch.outputs.notify_larkbot }}
+        run: npx -y chrome-extension-automator rabby/dist ${{ steps.resolve-branch.outputs.target_branch }} ${{ steps.resolve-branch.outputs.notify_larkbot }}
