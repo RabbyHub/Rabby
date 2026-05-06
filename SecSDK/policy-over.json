@@ -511,5 +511,27 @@
       },
       "disallow": []
     }
+  },
+  "node_modules/react-idle-timer/dist/index.esm.js": {
+    "enable": false
+  },
+  "node_modules/dexie/dist/dexie.min.js": {
+    "global": {
+      "allow": {
+        "Blob": "r",
+        "File": "r",
+        "FileList": "r",
+        "FileSystemFileHandle": "r",
+        "FileSystemDirectoryHandle": "r",
+        "ImageBitmap": "r",
+        "ImageData": "r",
+        "CryptoKey": "r",
+        "Float8Array": "r",
+        "Int64Array": "r",
+        "Uint64Array": "r",
+        "IDBKeyRange": "r"
+      },
+      "disallow": []
+    }
   }
 }

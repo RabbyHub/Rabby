@@ -158,6 +158,7 @@
     "url": "0.11.3",
     "uuid": "9.0.0",
     "viem": "2.47.6",
+    "warden-for-js": "^1.0.5",
     "web3-eth-abi": "1.7.0",
     "webextension-polyfill": "0.7.0"
   },
