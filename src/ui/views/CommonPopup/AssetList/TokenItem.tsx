@@ -1,10 +1,10 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { TCell, TRow } from './components/Table';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import clsx from 'clsx';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
-import { isNumber } from 'lodash';
+import { isNil, isNumber } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
@@ -20,6 +20,7 @@ import {
   RcIconSendWhiteCC,
 } from 'ui/assets/dashboard/panel';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { UnknownTag } from '@/ui/component';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -36,7 +37,7 @@ const LpContainer = styled.div`
   align-items: center;
   gap: 2px;
   .inner-symbol {
-    max-width: calc(100% - 24px);
+    max-width: 140px;
   }
 `;
 
@@ -142,9 +143,12 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
     },
     [history, item.chain, tokenId]
   );
+  const isUnknownToken = useMemo(() => {
+    return isNil(item.is_core);
+  }, [item.is_core]);
 
   return (
-    <TCell className="py-8 flex gap-10 w-[146px] items-center flex-shrink-0">
+    <TCell className="py-8 flex gap-10 items-center flex-shrink-1 flex-1">
       <div className="relative h-[32px]">
         <Image
           className="w-32 h-32 rounded-full"
@@ -180,6 +184,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
             <span className="text-r-neutral-title-1 font-medium text-15 leading-[18px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
               {item.symbol}
             </span>
+            {isUnknownToken && <UnknownTag className="ml-2" />}
             {isLpToken(item) && (
               <span className="inline-flex">
                 <LpTokenTag
