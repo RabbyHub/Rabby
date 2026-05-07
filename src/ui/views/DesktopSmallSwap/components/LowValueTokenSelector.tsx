@@ -370,7 +370,10 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
                           />
                         </TooltipWithMagnetArrow>
                       </div>
-                      <div className="text-[14px] leading-[17px] text-r-neutral-title1 truncate">
+                      <div
+                        title={getTokenSymbol(record)}
+                        className="text-[14px] leading-[17px] text-r-neutral-title1 truncate"
+                      >
                         {getTokenSymbol(record)}
                       </div>
                     </div>
