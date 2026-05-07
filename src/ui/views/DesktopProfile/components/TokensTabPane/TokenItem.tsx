@@ -14,6 +14,7 @@ import { isNil } from 'lodash';
 import clsx from 'clsx';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from './components/LpTokenTag';
+import { UnknownTag } from '@/ui/component';
 
 const PADDING = 8;
 
@@ -112,7 +113,7 @@ export const TokenItemAsset: React.FC<Props> = ({
         </TooltipWithMagnetArrow>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
-        <div className="flex items-center gap-4 max-w-[190px]">
+        <div className="flex items-center max-w-[190px] min-w-0">
           <DesktopTokenLabel
             token={{ ...item, id: item._tokenId }}
             isNft={false}
@@ -122,8 +123,14 @@ export const TokenItemAsset: React.FC<Props> = ({
               hover:text-r-blue-default hover:underline 
             `}
           />
+          {isNil(item.is_core) && (
+            <UnknownTag className="ml-12 !bg-r-neutral-line flex-shrink-0" />
+          )}
           {isLpToken(item) && (
-            <LpTokenTag protocolName={item.protocol_id || ''} />
+            <LpTokenTag
+              iconClassName="ml-4 inline-flex flex-shrink-0"
+              protocolName={item.protocol_id || ''}
+            />
           )}
         </div>
         {!disableSwap && (
