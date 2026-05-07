@@ -64,6 +64,8 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
     target,
     disableSwitch,
     next,
+    isActionOpen,
+    getActionZIndex,
     closePerpsPopup,
     advancePerpsPopup,
     openPerpsPopup,
@@ -142,13 +144,15 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
       /> */}
 
       <DepositWithdrawModal
-        visible={action === 'deposit' || action === 'withdraw'}
-        type={action === 'deposit' ? 'deposit' : 'withdraw'}
+        visible={isActionOpen('deposit') || isActionOpen('withdraw')}
+        type={action === 'withdraw' ? 'withdraw' : 'deposit'}
+        zIndex={getActionZIndex('deposit') ?? getActionZIndex('withdraw')}
         onCancel={closePerpsPopup}
       />
 
       <SpotSwapModal
-        visible={action === 'swap'}
+        visible={isActionOpen('swap')}
+        zIndex={getActionZIndex('swap')}
         sourceAsset={source}
         targetAsset={target}
         disableSwitch={disableSwitch}
@@ -159,7 +163,8 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
       />
 
       <EnableUnifiedAccountModal
-        visible={action === 'enable-unified'}
+        visible={isActionOpen('enable-unified')}
+        zIndex={getActionZIndex('enable-unified')}
         onCancel={closePerpsPopup}
         onConfirm={async () => {
           const ok = await handleEnableUnifiedAccount();
@@ -175,7 +180,8 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
       />
 
       <TransferToPerpsModal
-        visible={action === 'transfer-to-perps'}
+        visible={isActionOpen('transfer-to-perps')}
+        zIndex={getActionZIndex('transfer-to-perps')}
         onClose={closePerpsPopup}
       />
     </>

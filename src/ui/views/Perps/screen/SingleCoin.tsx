@@ -453,7 +453,13 @@ export const PerpsSingleCoin = () => {
   const needHiddenAccountCard = useMemo(() => {
     const dexName = formatPerpsDexName(coin);
     // exist dex need approval account agent so can enable unified account
-    if (accountNeedApprove && !isLocalWallet && dexName && !isUnifiedAccount) {
+    if (
+      accountNeedApprove &&
+      !isLocalWallet &&
+      dexName &&
+      !isUnifiedAccount &&
+      !needDepositFirst
+    ) {
       return true;
     } else {
       return false;
