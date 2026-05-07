@@ -58,6 +58,7 @@ import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/P
 import { EnableUnifiedAccountPopup } from '../popup/EnableUnifiedAccountPopup';
 import { SpotSwapPopup } from '../popup/SpotSwapPopup';
 import { PerpsQuoteAsset, SWAP_REQUIRED_QUOTE_ASSETS } from '../constants';
+import { KEYRING_TYPE } from '@/constant';
 
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -301,6 +302,18 @@ export const PerpsSingleCoin = () => {
   const accountNeedApprove = useMemo(() => {
     return accountNeedApproveAgent || accountNeedApproveBuilderFee;
   }, [accountNeedApproveAgent, accountNeedApproveBuilderFee]);
+
+  const hasAutoTriggeredApprove = React.useRef(false);
+  useEffect(() => {
+    if (hasAutoTriggeredApprove.current) return;
+    if (!currentPerpsAccount || !accountNeedApprove) return;
+    const isLocalWallet =
+      currentPerpsAccount.type === KEYRING_TYPE.HdKeyring ||
+      currentPerpsAccount.type === KEYRING_TYPE.SimpleKeyring;
+    if (!isLocalWallet) return;
+    hasAutoTriggeredApprove.current = true;
+    handleActionApproveStatus().catch(() => {});
+  }, [currentPerpsAccount, accountNeedApprove, handleActionApproveStatus]);
 
   const showOpenPosition = useMemo(() => {
     return history.location.search.includes('openPosition=true');
