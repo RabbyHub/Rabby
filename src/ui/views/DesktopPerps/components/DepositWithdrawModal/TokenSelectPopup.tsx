@@ -171,7 +171,9 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           )}
           {isWithdrawMode && (
             <div className="text-13 text-r-neutral-title-1 font-medium">
-              {(withdrawBalanceMap[item.id + item.chain] ?? 0).toFixed(4)}
+              {Number(
+                (withdrawBalanceMap[item.id + item.chain] ?? 0).toFixed(4)
+              )}
             </div>
           )}
         </div>
@@ -188,11 +190,15 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     ]
   );
 
+  // Withdraw uses a tighter sheet so the unified height matches ChainSelectPopup.
+  const popupHeight = isWithdrawMode ? 360 : 460;
+  const listHeight = popupHeight - 66;
+
   return (
     <Popup
       visible={visible}
       onCancel={onCancel}
-      height={460}
+      height={popupHeight}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -242,7 +248,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           ) : (
             <FixedSizeList
               width={'100%'}
-              height={394}
+              height={listHeight}
               itemCount={sortedTokenList?.length || 0}
               itemData={sortedTokenList}
               itemSize={56}
