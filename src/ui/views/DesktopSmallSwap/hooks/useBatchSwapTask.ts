@@ -463,6 +463,7 @@ export const useBatchSwapTask = (options: {
                   result.isSimulationFailed = true;
                 },
                 isHideErrorUI: true,
+                autoUseGasFree: true,
               });
 
               result.txHash = last(res) || '';
@@ -635,7 +636,9 @@ export const useBatchSwapTask = (options: {
     if (!options.receiveToken?.price) {
       return '0';
     }
-    return formatAmount(expectReceiveUsd / options.receiveToken.price);
+    return new BigNumber(expectReceiveUsd)
+      .div(options.receiveToken.price)
+      .toString(10);
   }, [expectReceiveUsd, options.receiveToken]);
 
   const finalReceive = useMemo(() => {
@@ -675,8 +678,8 @@ export const useBatchSwapTask = (options: {
   }, [statusDict, options.receiveToken?.id]);
 
   const currentTaskIndex = React.useMemo(() => {
-    return list.findIndex((item) => statusDict[item.id]?.status === 'pending');
-  }, [list, statusDict]);
+    return list.findIndex((item) => item.id === currentToken?.id);
+  }, [list, currentToken]);
 
   const clear = useMemoizedFn(() => {
     cancelRunningTasks();
