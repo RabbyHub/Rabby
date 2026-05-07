@@ -666,9 +666,6 @@ export const usePerpsState = ({
       } else {
         await executeSignatures(signActions, account);
         await handleDirectApprove(signActions);
-        setTimeout(() => {
-          handleSafeSetReference();
-        }, 500);
         dispatch.perps.setAccountNeedApproveAgent(false);
         dispatch.perps.setAccountNeedApproveBuilderFee(false);
       }
