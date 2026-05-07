@@ -1,12 +1,8 @@
 import { useInfiniteScroll } from 'ahooks';
 import { Button } from 'antd';
-import {
-  TokenEntityDetail,
-  TokenItem,
-  TxHistoryResult,
-} from 'background/service/openapi';
+import { TokenEntityDetail, TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
-import { last, sortBy } from 'lodash';
+import { isNil, last, sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -24,11 +20,10 @@ import { Loading } from './Loading';
 import './style.less';
 import { ellipsisOverflowedText } from 'ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { BlockedButton } from './BlockedButton';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { UnknownTag } from '@/ui/component';
 import TokenChainAndContract from './TokenInfo';
 import { TokenCharts } from '@/ui/component/TokenChart';
-import { BlockedTopTips } from './BlockedTopTips';
 import { ScamTokenTips } from './ScamTokenTips';
 import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
 import { Account } from '@/background/service/preference';
@@ -75,6 +70,10 @@ const TokenDetail = ({
   const currentAccount = account || _currentAccount;
 
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const isUnknownToken = useMemo(() => {
+    return isNil(token.is_core);
+  }, [token.is_core]);
 
   const getTokenAmount = React.useCallback(async () => {
     // if (token.amount !== undefined) return;
@@ -364,6 +363,9 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
+            {isUnknownToken && (
+              <UnknownTag className="ml-8 !px-[8px] !py-[4px] !text-[13px] !leading-[13px] bg-rb-neutral-bg-4" />
+            )}
             {isLpToken(token) && (
               <LpTokenTag
                 className="ml-8"
