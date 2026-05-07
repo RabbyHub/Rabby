@@ -464,7 +464,13 @@ export const PerpsSingleCoin = () => {
     } else {
       return false;
     }
-  }, [accountNeedApprove, coin, isUnifiedAccount]);
+  }, [
+    accountNeedApprove,
+    coin,
+    isUnifiedAccount,
+    needDepositFirst,
+    isLocalWallet,
+  ]);
 
   const HeaderRightSlot = useMemo(() => {
     return (
