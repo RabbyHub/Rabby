@@ -99,9 +99,15 @@ const AddressBackupMnemonics: React.FC<{
   // }, [data, history, isInModal]);
 
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
-  const { runCheckBackup } = useCheckSeedPhraseBackup(backupAddress || '', {
-    manual: true,
-  });
+  const { runCheckBackup } = useCheckSeedPhraseBackup(
+    {
+      address: backupAddress || '',
+      type: currentAccount?.type || '',
+    },
+    {
+      manual: true,
+    }
+  );
   useMount(() => {
     if (!state.data && currentAccount) {
       AuthenticationModal({
