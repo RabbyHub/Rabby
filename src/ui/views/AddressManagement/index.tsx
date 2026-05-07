@@ -183,7 +183,10 @@ const AddressManagement = () => {
   const currentAccount = useRabbySelector((s) => s.account.currentAccount);
 
   const { hasBackup } = useCheckSeedPhraseBackup(
-    currentAccount?.address || '',
+    {
+      address: currentAccount?.address || '',
+      type: currentAccount?.type || '',
+    },
     {
       refreshOnWindowFocus: true,
     }
