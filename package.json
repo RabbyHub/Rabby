@@ -77,7 +77,7 @@
     "@rabby-wallet/hyperliquid-sdk": "1.1.7",
     "@rabby-wallet/page-provider": "0.4.11",
     "@rabby-wallet/rabby-action": "0.1.14",
-    "@rabby-wallet/rabby-api": "0.9.60",
+    "@rabby-wallet/rabby-api": "0.9.61",
     "@rabby-wallet/rabby-bridge": "0.0.2",
     "@rabby-wallet/rabby-security-engine": "2.0.12",
     "@rabby-wallet/rabby-swap": "0.0.76",
