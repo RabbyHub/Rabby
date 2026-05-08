@@ -4804,6 +4804,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "錢包未備份。開始備份。"
+    },
+    "UnknownTag": {
+      "label": "未知",
+      "tooltip": "未知代幣，請自行研究。"
     }
   },
   "background": {

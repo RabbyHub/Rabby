@@ -4761,6 +4761,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "지갑이 백업되지 않았습니다. 백업 시작."
+    },
+    "UnknownTag": {
+      "label": "알 수 없음",
+      "tooltip": "알 수 없는 토큰입니다. 반드시 직접 조사하세요."
     }
   },
   "global": {

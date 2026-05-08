@@ -271,6 +271,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "Portefeuille non sauvegardé. Démarrer la sauvegarde."
+    },
+    "UnknownTag": {
+      "label": "Inconnu",
+      "tooltip": "Jeton inconnu, faites vos propres recherches."
     }
   },
   "constant": {

@@ -4764,6 +4764,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "バックアップされていないウォレット。バックアップを開始します。"
+    },
+    "UnknownTag": {
+      "label": "不明",
+      "tooltip": "不明なトークン。自己責任で調査してください。"
     }
   },
   "global": {
