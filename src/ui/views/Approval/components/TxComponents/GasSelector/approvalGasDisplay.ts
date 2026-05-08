@@ -173,6 +173,7 @@ export const resolveApprovalDisplayedGasLevelNotEnough = ({
   }
 
   if (
+    displayMethod === 'gasAccount' &&
     nativeTokenInsufficient &&
     sharedGasAccountAvailable &&
     gasAccountBalanceEnough

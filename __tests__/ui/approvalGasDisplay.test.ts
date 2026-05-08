@@ -1,5 +1,6 @@
 import {
   isApprovalSmartGasDisplayEnabled,
+  resolveApprovalDisplayedGasLevelNotEnough,
   resolveApprovalGasLevelMethod,
   resolveApprovalGasMethod,
   shouldAutoSwitchToApprovalGasAccount,
@@ -58,5 +59,29 @@ describe('approval gas display method', () => {
         isWalletConnect: false,
       })
     ).toBe('gasAccount');
+  });
+
+  test('keeps insufficient native gas levels red when gas account is available', () => {
+    expect(
+      resolveApprovalDisplayedGasLevelNotEnough({
+        isActive: false,
+        displayMethod: 'native',
+        nativeTokenInsufficient: true,
+        gasAccountBalanceEnough: true,
+        levelNativeInsufficient: true,
+        sharedGasAccountAvailable: true,
+      })
+    ).toBe(true);
+
+    expect(
+      resolveApprovalDisplayedGasLevelNotEnough({
+        isActive: false,
+        displayMethod: 'gasAccount',
+        nativeTokenInsufficient: true,
+        gasAccountBalanceEnough: true,
+        levelNativeInsufficient: true,
+        sharedGasAccountAvailable: true,
+      })
+    ).toBe(false);
   });
 });
