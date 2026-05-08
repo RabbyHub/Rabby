@@ -5060,10 +5060,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@rabby-wallet/rabby-bridge@0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-bridge/-/rabby-bridge-0.0.2.tgz#de3c52c87b81d7954e88e9106956836581761919"
-  integrity sha512-35owycAee/SH/NPyAS6QaDA55hU9UxGMHt9FRid5ngSt4hIDq25AHYJvEMHv8SgUegLtrtJxOwDOc2V0ba1b/A==
+"@rabby-wallet/rabby-bridge@0.0.3-beta.0":
+  version "0.0.3-beta.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-bridge/-/rabby-bridge-0.0.3-beta.0.tgz#7a1bec165fc0cef6a8e3eb6abf27383304f59c90"
+  integrity sha512-ow2rX+js0S9FkxgUU5hIYwCoGpLaTNeN513Bu1ZLVwoRWuv2Pvi1MWxixJGvCjpfgtcVmPCp48109K+po+XlZg==
 
 "@rabby-wallet/rabby-security-engine@2.0.12":
   version "2.0.12"
