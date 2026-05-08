@@ -33,7 +33,6 @@ import {
   resolveApprovalGasLevelMethod,
   shouldHideApprovalGasMethodTabs,
 } from './approvalGasDisplay';
-import type { ApprovalGasMethod } from './approvalGasDisplay';
 import type {
   SignMainnetGasLevelState,
   SignMainnetSupportedGasLevel,
@@ -52,9 +51,7 @@ type Props = {
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
   gasMethod?: 'native' | 'gasAccount';
-  manualGasMethod?: ApprovalGasMethod;
-  onChangeGasMethod?: (value: ApprovalGasMethod) => void;
-  onAutoChangeGasMethod?: (value: ApprovalGasMethod) => void;
+  onChangeGasMethod?: (value: 'native' | 'gasAccount') => void;
   noCustomRPC?: boolean;
   freeGasAvailable?: boolean;
   chainId?: number;
@@ -98,9 +95,7 @@ export const SignMainnetShowMoreGasModal = ({
   gasList,
   selectedGas,
   gasMethod,
-  manualGasMethod,
   onChangeGasMethod,
-  onAutoChangeGasMethod,
   noCustomRPC,
   freeGasAvailable,
   chainId,
@@ -124,33 +119,12 @@ export const SignMainnetShowMoreGasModal = ({
   onEditCustomGas,
 }: Props) => {
   const { t } = useTranslation();
-  const [
-    optimisticManualGasMethod,
-    setOptimisticManualGasMethod,
-  ] = React.useState<ApprovalGasMethod | undefined>(manualGasMethod);
-  const effectiveManualGasMethod = optimisticManualGasMethod ?? manualGasMethod;
-  const currentGasMethod = effectiveManualGasMethod ?? gasMethod ?? 'native';
+  const currentGasMethod = gasMethod ?? 'native';
   const noCustomRPCEnabled = noCustomRPC ?? true;
-  const gasAccountManualSwitchDisabled = !noCustomRPCEnabled || isWalletConnect;
 
   const lastHandledAutoOpenSignalRef = React.useRef(0);
   const uiType = React.useMemo(() => getUiType(), []);
   const [tempoGasTokenVisible, setTempoGasTokenVisible] = React.useState(false);
-
-  React.useEffect(() => {
-    setOptimisticManualGasMethod(manualGasMethod);
-  }, [manualGasMethod]);
-
-  const handleManualGasMethodChange = React.useCallback(
-    (method: ApprovalGasMethod) => {
-      setOptimisticManualGasMethod(method);
-      if (method === 'gasAccount') {
-        setTempoGasTokenVisible(false);
-      }
-      onChangeGasMethod?.(method);
-    },
-    [onChangeGasMethod]
-  );
 
   const handleOpenTempoGasToken = React.useCallback(() => {
     if (!showTempoGasTokenSelector || currentGasMethod === 'gasAccount') {
@@ -203,7 +177,7 @@ export const SignMainnetShowMoreGasModal = ({
                   active={currentGasMethod === 'native'}
                   onChange={(e) => {
                     e.stopPropagation();
-                    handleManualGasMethodChange('native');
+                    onChangeGasMethod?.('native');
                   }}
                   ActiveComponent={RcIconGasActive}
                   BlurComponent={RcIconGasBlurCC}
@@ -216,27 +190,22 @@ export const SignMainnetShowMoreGasModal = ({
                   title={
                     !noCustomRPCEnabled
                       ? t('page.signTx.BroadcastMode.tips.customRPC')
-                      : isWalletConnect
-                      ? t(
-                          'page.signFooterBar.gasless.walletConnectUnavailableTip'
-                        )
                       : undefined
                   }
                 >
                   <div
                     className={clsx(
-                      gasAccountManualSwitchDisabled &&
-                        'cursor-not-allowed opacity-50'
+                      !noCustomRPCEnabled && 'cursor-not-allowed opacity-50'
                     )}
                   >
                     <SignMainnetGasMethod
                       active={currentGasMethod === 'gasAccount'}
                       onChange={(e) => {
                         e.stopPropagation();
-                        if (gasAccountManualSwitchDisabled) {
+                        if (!noCustomRPCEnabled) {
                           return;
                         }
-                        handleManualGasMethodChange('gasAccount');
+                        onChangeGasMethod?.('gasAccount');
                       }}
                       ActiveComponent={RcIconGasAccountActive}
                       BlurComponent={RcIconGasAccountBlurCC}
@@ -308,7 +277,6 @@ export const SignMainnetShowMoreGasModal = ({
 
                 const displayMethod = isActive
                   ? resolveApprovalGasMethod({
-                      manualGasMethod: effectiveManualGasMethod,
                       nativeTokenInsufficient: !!nativeTokenInsufficient,
                       gasAccountChainSupported,
                       noCustomRPC: noCustomRPCEnabled,
@@ -317,7 +285,6 @@ export const SignMainnetShowMoreGasModal = ({
                       isWalletConnect,
                     })
                   : resolveApprovalGasLevelMethod({
-                      manualGasMethod: effectiveManualGasMethod,
                       isCustom,
                       currentGasMethod,
                       nativeTokenInsufficient: levelNativeInsufficient,
@@ -352,10 +319,6 @@ export const SignMainnetShowMoreGasModal = ({
                   : costUsd;
 
                 const handleSelect = () => {
-                  if (!effectiveManualGasMethod) {
-                    onAutoChangeGasMethod?.(displayMethod);
-                  }
-
                   if (gas.level === 'custom') {
                     onVisibleChange(false);
                     onEditCustomGas?.();

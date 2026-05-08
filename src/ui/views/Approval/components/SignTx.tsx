@@ -2823,10 +2823,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                   onSignTx
                   tx={tx}
                   gasAccountCost={gasAccountCost}
-                  gasMethod={gasMethod}
-                  manualGasMethod={manualGasMethod}
+                  gasMethod={manualGasMethod ?? gasMethod}
                   onChangeGasMethod={handleManualChangeGasMethod}
-                  onAutoChangeGasMethod={handleAutoChangeGasMethod}
                   noCustomRPC={noCustomRPC}
                   isWalletConnect={
                     currentAccountType === KEYRING_TYPE.WalletConnectKeyring

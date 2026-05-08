@@ -263,7 +263,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const showTempoGasTokenSelector =
     !!chain &&
     isTempoChain(chain.serverId) &&
-    ctx?.gasMethod !== 'gasAccount' &&
+    (manualGasMethod ?? ctx?.gasMethod) !== 'gasAccount' &&
     isTempoBatchSupportedAccountType(currentAccount?.type);
 
   const handleSelectTempoGasToken = useCallback(
@@ -451,6 +451,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   const gasAccountCost = ctx?.gasAccount as any;
   const gasMethod = ctx?.gasMethod;
+  const effectiveGasMethod = manualGasMethod ?? gasMethod;
   const canUseGasLess = !!ctx?.gasless?.is_gasless;
   const isGasNotEnough = !!ctx?.isGasNotEnough;
   const noCustomRPC = ctx?.noCustomRPC ?? true;
@@ -604,7 +605,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     !ctx?.gasAccount.chain_not_support;
 
   const gasAccountCanPay =
-    ctx?.gasMethod === 'gasAccount' &&
+    effectiveGasMethod === 'gasAccount' &&
     // isSupportedAddr &&
     noCustomRPC &&
     !!ctx?.gasAccount?.balance_is_enough &&
@@ -814,10 +815,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                         onSignTx
                         tx={txs[0]}
                         gasAccountCost={gasAccountCost}
-                        gasMethod={gasMethod}
-                        manualGasMethod={manualGasMethod}
+                        gasMethod={effectiveGasMethod}
                         onChangeGasMethod={handleChangeGasMethod}
-                        onAutoChangeGasMethod={handleAutoChangeGasMethod}
                         noCustomRPC={noCustomRPC}
                         isWalletConnect={isWalletConnect}
                         nativeTokenInsufficient={isGasNotEnough}
@@ -1083,10 +1082,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 onSignTx
                 tx={txs[0]}
                 gasAccountCost={gasAccountCost}
-                gasMethod={gasMethod}
-                manualGasMethod={manualGasMethod}
+                gasMethod={effectiveGasMethod}
                 onChangeGasMethod={handleChangeGasMethod}
-                onAutoChangeGasMethod={handleAutoChangeGasMethod}
                 noCustomRPC={noCustomRPC}
                 isWalletConnect={isWalletConnect}
                 nativeTokenInsufficient={isGasNotEnough}

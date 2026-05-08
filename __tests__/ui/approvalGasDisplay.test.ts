@@ -1,30 +1,33 @@
 import {
+  isApprovalSmartGasDisplayEnabled,
   resolveApprovalGasLevelMethod,
   resolveApprovalGasMethod,
+  shouldAutoSwitchToApprovalGasAccount,
   shouldHideApprovalGasMethodTabs,
 } from '@/ui/views/Approval/components/TxComponents/GasSelector/approvalGasDisplay';
 
 describe('approval gas display method', () => {
-  test('keeps gas method tabs visible while smart display is enabled', () => {
+  test('keeps manual gas method selection visible by default', () => {
+    expect(isApprovalSmartGasDisplayEnabled()).toBe(false);
     expect(shouldHideApprovalGasMethodTabs()).toBe(false);
   });
 
-  test('auto selects gas account when native gas is insufficient and gas account is usable', () => {
+  test('keeps the native-insufficient auto switch condition available', () => {
     expect(
-      resolveApprovalGasMethod({
+      shouldAutoSwitchToApprovalGasAccount({
         nativeTokenInsufficient: true,
         gasAccountChainSupported: true,
         freeGasAvailable: false,
         noCustomRPC: true,
         isWalletConnect: false,
       })
-    ).toBe('gasAccount');
+    ).toBe(true);
   });
 
-  test('manual gas method overrides the automatic result', () => {
+  test('uses the selected gas method in legacy mode', () => {
     expect(
       resolveApprovalGasMethod({
-        manualGasMethod: 'native',
+        legacyGasMethod: 'native',
         nativeTokenInsufficient: true,
         gasAccountChainSupported: true,
         freeGasAvailable: false,
@@ -35,10 +38,25 @@ describe('approval gas display method', () => {
 
     expect(
       resolveApprovalGasLevelMethod({
-        manualGasMethod: 'native',
+        currentGasMethod: 'native',
         nativeTokenInsufficient: true,
         sharedGasAccountAvailable: true,
+        isWalletConnect: false,
       })
     ).toBe('native');
+  });
+
+  test('still supports smart gas account resolution when explicitly requested', () => {
+    expect(
+      resolveApprovalGasMethod({
+        mode: 'native_insufficient_prefers_gasAccount',
+        legacyGasMethod: 'native',
+        nativeTokenInsufficient: true,
+        gasAccountChainSupported: true,
+        freeGasAvailable: false,
+        noCustomRPC: true,
+        isWalletConnect: false,
+      })
+    ).toBe('gasAccount');
   });
 });
