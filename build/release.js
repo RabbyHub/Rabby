@@ -5,6 +5,8 @@ const shell = require('shelljs');
 const pkg = require('../package.json');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
+const args = process.argv.slice(2);
+const isYesMode = args.includes('--yes') || args.includes('-y');
 
 function updateManifestVersion(version, p) {
   const manifestPath = path.resolve(
@@ -29,12 +31,25 @@ async function release([version, isDebug, isRelease, isMV3]) {
   return [version, isDebug, isRelease, isMV3];
 }
 
-async function bundle() {
+async function getBundleOptions() {
   const oldVersion = pkg.version;
   const plus1Version = oldVersion
     .split('.')
     .map((v, i) => (i === 2 ? +v + 1 : v))
     .join('.');
+
+  if (isYesMode) {
+    console.log(
+      `[Rabby] Running in --yes mode: version=${oldVersion}, MV3=y, debug=n, release=n`
+    );
+    return {
+      version: oldVersion,
+      isMV3: true,
+      isDebug: false,
+      isRelease: false,
+    };
+  }
+
   const { version } = await prompt({
     type: 'input',
     name: 'version',
@@ -54,6 +69,16 @@ async function bundle() {
     message: '[Rabby] Do you want to release? (y/N)',
   }).run();
 
+  return {
+    version,
+    isMV3,
+    isDebug,
+    isRelease,
+  };
+}
+
+async function bundle() {
+  const { version, isMV3, isDebug, isRelease } = await getBundleOptions();
   const buildStr = isDebug ? 'build:debug' : 'build:pro';
 
   updateManifestVersion(version, 'chrome-mv3');
