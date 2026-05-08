@@ -1,5 +1,3 @@
-import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
-
 export type ApprovalGasMethod = 'native' | 'gasAccount';
 
 export type ApprovalGasDisplayMode =
@@ -23,9 +21,8 @@ export const isApprovalSmartGasDisplayEnabled = (
   mode: ApprovalGasDisplayMode = APPROVAL_GAS_DISPLAY_MODE
 ) => mode === 'native_insufficient_prefers_gasAccount';
 
-export const shouldHideApprovalGasMethodTabs = (
-  mode: ApprovalGasDisplayMode = APPROVAL_GAS_DISPLAY_MODE
-) => isApprovalSmartGasDisplayEnabled(mode);
+// Smart mode decides the default; users can still override it in the picker.
+export const shouldHideApprovalGasMethodTabs = () => false;
 
 export const shouldAutoSwitchToApprovalGasAccount = ({
   nativeTokenInsufficient,
@@ -50,6 +47,7 @@ export const shouldAutoSwitchToApprovalGasAccount = ({
 
 export const resolveApprovalGasMethod = ({
   mode = APPROVAL_GAS_DISPLAY_MODE,
+  manualGasMethod,
   legacyGasMethod,
   nativeTokenInsufficient,
   gasAccountChainSupported,
@@ -58,6 +56,7 @@ export const resolveApprovalGasMethod = ({
   isWalletConnect,
 }: {
   mode?: ApprovalGasDisplayMode;
+  manualGasMethod?: ApprovalGasMethod;
   legacyGasMethod?: ApprovalGasMethod;
   nativeTokenInsufficient?: boolean;
   gasAccountChainSupported?: boolean;
@@ -65,6 +64,10 @@ export const resolveApprovalGasMethod = ({
   noCustomRPC?: boolean;
   isWalletConnect: boolean;
 }): ApprovalGasMethod => {
+  if (manualGasMethod) {
+    return manualGasMethod;
+  }
+
   if (!isApprovalSmartGasDisplayEnabled(mode)) {
     return legacyGasMethod || 'native';
   }
@@ -81,12 +84,14 @@ export const resolveApprovalGasMethod = ({
 };
 
 export const resolveApprovalGasLevelMethod = ({
+  manualGasMethod,
   isCustom = false,
   nativeTokenInsufficient,
   currentGasMethod = 'native',
   sharedGasAccountAvailable,
 }: {
   mode?: ApprovalGasDisplayMode;
+  manualGasMethod?: ApprovalGasMethod;
   isCustom?: boolean;
   nativeTokenInsufficient?: boolean;
   gasAccountChainSupported?: boolean;
@@ -95,6 +100,10 @@ export const resolveApprovalGasLevelMethod = ({
   currentGasMethod?: ApprovalGasMethod;
   sharedGasAccountAvailable?: boolean;
 }): ApprovalGasMethod => {
+  if (manualGasMethod) {
+    return manualGasMethod;
+  }
+
   if (isCustom) {
     return currentGasMethod;
   }
