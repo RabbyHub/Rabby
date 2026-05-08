@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rabby Yarn v4 Commit Check"
+  short_description: "Require yarn and yarn check before Rabby commits"
+  default_prompt: "Use $rabby-yarn-v4-commit-check before committing changes in the Rabby Yarn v4 branch."
