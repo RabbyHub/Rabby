@@ -44,9 +44,9 @@ Please don't hesitate to reach out if you have any doubts.
 
 ### Install Dependency
 
-1. Install Node.js version 14 or later.
-2. Install Yarn: `npm install -g yarn`
-3. Run `yarn` to install dependencies.
+1. Install Node.js version 22 or later.
+2. Enable Corepack: `corepack enable`
+3. Run `yarn install` to install dependencies.
 
 ### Development
 

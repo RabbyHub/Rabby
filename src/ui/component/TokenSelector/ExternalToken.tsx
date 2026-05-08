@@ -2,6 +2,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { TokenItemWithEntity } from '@rabby-wallet/rabby-api/dist/types';
 import React, { memo, SVGProps, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UnknownTag } from '@/ui/component';
 import TokenWithChain from '../TokenWithChain';
 import { formatPrice, formatTokenAmount, formatUsdValue } from '@/ui/utils';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
@@ -13,7 +14,7 @@ import { ExchangeLogos } from './CexLogos';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
-import { isNumber } from 'lodash';
+import { isNil, isNumber } from 'lodash';
 
 const formatPercentage = (x: number) => {
   if (Math.abs(x) < 0.00001) {
@@ -63,6 +64,10 @@ const ExternalTokenRow = memo(
       return getCexIds(data);
     }, [data]);
 
+    const isUnknownToken = useMemo(() => {
+      return isNil(data.is_core);
+    }, [data.is_core]);
+
     return (
       <div
         className={clsx(
@@ -79,11 +84,12 @@ const ExternalTokenRow = memo(
                 <span className="symbol_click" onClick={onClickTokenSymbol}>
                   {getTokenSymbol(data)}
                 </span>
+                {isUnknownToken && <UnknownTag className="ml-4 mr-4" />}
                 {isLpToken(data) && (
                   <LpTokenTag
                     size={14}
                     inModal
-                    iconClassName="text-r-neutral-foot"
+                    iconClassName="text-r-neutral-foot flex-shrink-0"
                     protocolName={data.protocol_id || ''}
                   />
                 )}

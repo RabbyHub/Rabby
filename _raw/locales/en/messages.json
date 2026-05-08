@@ -4813,6 +4813,10 @@
     },
     "DesktopAccountSelector": {
       "selectAddress": "Select Address"
+    },
+    "UnknownTag": {
+      "label": "Unknown",
+      "tooltip": "Unknown token, please do your own research."
     }
   },
   "global": {

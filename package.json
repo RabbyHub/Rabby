@@ -21,7 +21,10 @@
     "build:debug": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:debug:default",
     "build:sourcemap": "npm run clean && npm run make-theme && webpack --progress --env config=sourcemap",
     "sync-chain": "node ./scripts/sync-support-chain.js",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
+    "typecheck": "tsc --noEmit --skipLibCheck --pretty false",
+    "check": "npm run lint && npm run typecheck",
     "test": "jest",
     "pub": "node build/release.js",
     "postinstall": "patch-package"
@@ -130,7 +133,6 @@
     "p-queue": "7.3.0",
     "p-retry": "5.1.2",
     "patch-package": "6.4.7",
-    "postinstall-postinstall": "2.1.0",
     "process": "0.11.10",
     "qrcode.react": "3.1.0",
     "raw-loader": "4.0.2",
@@ -148,6 +150,7 @@
     "recharts": "2.7.1",
     "redux": "4.2.0",
     "reflect-metadata": "0.1.13",
+    "regenerator-runtime": "0.13.11",
     "remark-gfm": "3.0.1",
     "semver": "7.5.2",
     "semver-compare": "1.0.0",
@@ -250,10 +253,16 @@
   "resolutions": {
     "@debank/common": "^0.3.0",
     "blake2b": "https://github.com/RabbyHub/mirror-blake2b#55b93cc51a50b0af6b81bb44fcdf88e95c7e6b36",
-    "**/@types/react": "18.3.11",
-    "**/@types/react-dom": "18.3.1",
+    "@coinbase/wallet-sdk@npm:beta": "npm:3.8.0-beta.3",
+    "@keystonehq/base-eth-keyring@workspace:^": "npm:0.15.1",
+    "@rabby-wallet/eth-simple-keyring": "5.1.2",
     "@types/react": "18.3.11",
     "@types/react-dom": "18.3.1",
+    "@types/w3c-web-hid@^1.0.3": "1.0.3",
+    "@types/w3c-web-usb@^1.0.6": "1.0.10",
+    "postcss@^8.1.6": "8.4.31",
+    "postcss@^8.2.8": "8.4.31",
+    "postcss@^8.3.5": "8.4.32",
     "rc-tooltip": "5.3.1",
     "rc-picker": "2.6.9",
     "rc-trigger": "5.3.4"
@@ -264,5 +273,5 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "yarn@4.14.1"
 }

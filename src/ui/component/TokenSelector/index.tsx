@@ -48,9 +48,10 @@ import { LpTokenSwitch } from '@/ui/views/DesktopProfile/components/TokensTabPan
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { ChainFilterV2Line } from './ChainFilterV2Line';
-import { isNumber } from 'lodash';
+import { isNil, isNumber } from 'lodash';
 import { ExternalTokenRow } from './ExternalToken';
 import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
+import { UnknownTag } from '@/ui/component';
 
 const isTab = getUiType().isTab;
 
@@ -729,6 +730,10 @@ function CommonTokenItem(props: {
     return (isBridgeTo || isSwapTo) && !!cexIds?.length;
   }, [isBridgeTo, isSwapTo, cexIds?.length]);
 
+  const isUnknownToken = useMemo(() => {
+    return isNil(token.is_core);
+  }, [token.is_core]);
+
   const handleTokenPress = useCallback(() => {
     if (disabled) {
       return;
@@ -795,11 +800,12 @@ function CommonTokenItem(props: {
                   >
                     {getTokenSymbol(token)}
                   </span>
+                  {isUnknownToken && <UnknownTag className="ml-4" />}
                   {isLpToken(token) && (
                     <LpTokenTag
                       size={14}
                       inModal
-                      iconClassName="text-r-neutral-foot"
+                      iconClassName="text-r-neutral-foot flex-shrink-0"
                       protocolName={token.protocol_id || ''}
                     />
                   )}
@@ -813,11 +819,12 @@ function CommonTokenItem(props: {
                   >
                     {getTokenSymbol(token)}
                   </span>
+                  {isUnknownToken && !isBridgeTo && <UnknownTag />}
                   {isLpToken(token) && (
                     <LpTokenTag
                       size={14}
                       inModal
-                      iconClassName="text-r-neutral-foot"
+                      iconClassName="text-r-neutral-foot flex-shrink-0"
                       protocolName={token.protocol_id || ''}
                     />
                   )}
@@ -828,25 +835,29 @@ function CommonTokenItem(props: {
                   {chainItem?.name}
                 </span>
               ) : isBridgeTo ? (
-                <div
-                  className={clsx(
-                    'flex items-center justify-center',
-                    'ml-10 py-2 px-8 rounded-full w-max',
-                    'font-medium',
-                    token.trade_volume_level === 'high'
-                      ? 'bg-r-green-light'
-                      : 'bg-r-orange-light',
-                    token.trade_volume_level === 'high'
-                      ? 'text-r-green-default'
-                      : 'text-r-orange-default'
-                  )}
-                >
-                  <span className="text-[11px] leading-[11px]">
-                    {token?.trade_volume_level === 'high'
-                      ? t('component.TokenSelector.bridge.high')
-                      : t('component.TokenSelector.bridge.low')}
-                  </span>
-                </div>
+                isUnknownToken ? (
+                  <UnknownTag className="ml-10 w-min" />
+                ) : (
+                  <div
+                    className={clsx(
+                      'flex items-center justify-center',
+                      'ml-10 py-2 px-8 rounded-[4px] w-max',
+                      'font-normal',
+                      token.trade_volume_level === 'high'
+                        ? 'bg-r-green-light'
+                        : 'bg-r-orange-light',
+                      token.trade_volume_level === 'high'
+                        ? 'text-r-green-default'
+                        : 'text-r-orange-default'
+                    )}
+                  >
+                    <span className="text-[11px] leading-[11px]">
+                      {token?.trade_volume_level === 'high'
+                        ? t('component.TokenSelector.bridge.high')
+                        : t('component.TokenSelector.bridge.low')}
+                    </span>
+                  </div>
+                )
               ) : (
                 <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
                   {formatTokenAmount(value?.amount || 0)}

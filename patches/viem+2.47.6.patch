@@ -1,0 +1,560 @@
+diff --git a/node_modules/viem/_types/chains/definitions/tempo.d.ts b/node_modules/viem/_types/chains/definitions/tempo.d.ts
+index 66031486f..1a50dc14d 100644
+--- a/node_modules/viem/_types/chains/definitions/tempo.d.ts
++++ b/node_modules/viem/_types/chains/definitions/tempo.d.ts
+@@ -34,7 +34,7 @@ export declare const tempo: {
+     testnet?: boolean | undefined | undefined;
+     custom?: Record<string, unknown> | undefined;
+     extendSchema: {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     };
+     fees?: import("../../index.js").ChainFees<undefined> | undefined;
+     formatters: {
+@@ -220,18 +220,18 @@ export declare const tempo: {
+                 yParity?: number | undefined;
+                 accessList: import("../../index.js").AccessList;
+                 authorizationList?: readonly {
+-                    address: import("ox/tempo/TempoAddress").Address;
++                    address: import("ox/tempo/TempoAddress/").Address;
+                     chainId: number;
+                     nonce: bigint;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                 }[] | undefined;
+-                calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                 chainId: number;
+                 feeToken?: `0x${string}` | undefined;
+                 feePayerSignature?: import("../../index.js").Signature | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                 nonceKey?: bigint | undefined;
+-                signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                 type: "tempo";
+                 validBefore?: number | undefined;
+                 validAfter?: number | undefined;
+@@ -437,10 +437,10 @@ export declare const tempo: {
+                 maxFeePerGas?: `0x${string}` | undefined;
+                 maxPriorityFeePerGas?: `0x${string}` | undefined;
+                 accessList?: import("../../index.js").AccessList | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                 feePayer?: true | import("../../index.js").Account | undefined;
+-                feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                 nonceKey?: `0x${string}` | "expiring" | undefined;
+                 validBefore?: `0x${string}` | undefined;
+                 validAfter?: `0x${string}` | undefined;
+@@ -463,7 +463,7 @@ export declare const tempo: {
+     };
+     verifyHash: (client: import("../../index.js").Client, parameters: import("../../index.js").VerifyHashActionParameters) => Promise<boolean>;
+     extend: <const extended_1 extends {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     }>(extended: extended_1) => import("../index.js").Assign<import("../index.js").Assign<import("../index.js").Chain<undefined>, {
+         readonly id: 4217;
+         readonly blockExplorers: {
+@@ -486,7 +486,7 @@ export declare const tempo: {
+         };
+         readonly blockTime: 1000;
+         readonly extendSchema: {
+-            feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++            feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+         };
+         readonly formatters: {
+             readonly transaction: {
+@@ -671,18 +671,18 @@ export declare const tempo: {
+                     yParity?: number | undefined;
+                     accessList: import("../../index.js").AccessList;
+                     authorizationList?: readonly {
+-                        address: import("ox/tempo/TempoAddress").Address;
++                        address: import("ox/tempo/TempoAddress/").Address;
+                         chainId: number;
+                         nonce: bigint;
+-                        signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                        signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                     }[] | undefined;
+-                    calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                    calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                     chainId: number;
+                     feeToken?: `0x${string}` | undefined;
+                     feePayerSignature?: import("../../index.js").Signature | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                     nonceKey?: bigint | undefined;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                     type: "tempo";
+                     validBefore?: number | undefined;
+                     validAfter?: number | undefined;
+@@ -888,10 +888,10 @@ export declare const tempo: {
+                     maxFeePerGas?: `0x${string}` | undefined;
+                     maxPriorityFeePerGas?: `0x${string}` | undefined;
+                     accessList?: import("../../index.js").AccessList | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                    calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                    calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                     feePayer?: true | import("../../index.js").Account | undefined;
+-                    feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                    feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                     nonceKey?: `0x${string}` | "expiring" | undefined;
+                     validBefore?: `0x${string}` | undefined;
+                     validAfter?: `0x${string}` | undefined;
+diff --git a/node_modules/viem/_types/chains/definitions/tempoAndantino.d.ts b/node_modules/viem/_types/chains/definitions/tempoAndantino.d.ts
+index b8687fc1f..cd62d80a8 100644
+--- a/node_modules/viem/_types/chains/definitions/tempoAndantino.d.ts
++++ b/node_modules/viem/_types/chains/definitions/tempoAndantino.d.ts
+@@ -34,7 +34,7 @@ export declare const tempoAndantino: {
+     testnet?: boolean | undefined | undefined;
+     custom?: Record<string, unknown> | undefined;
+     extendSchema: {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     };
+     fees?: import("../../index.js").ChainFees<undefined> | undefined;
+     formatters: {
+@@ -220,18 +220,18 @@ export declare const tempoAndantino: {
+                 yParity?: number | undefined;
+                 accessList: import("../../index.js").AccessList;
+                 authorizationList?: readonly {
+-                    address: import("ox/tempo/TempoAddress").Address;
++                    address: import("ox/tempo/TempoAddress/").Address;
+                     chainId: number;
+                     nonce: bigint;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                 }[] | undefined;
+-                calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                 chainId: number;
+                 feeToken?: `0x${string}` | undefined;
+                 feePayerSignature?: import("../../index.js").Signature | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                 nonceKey?: bigint | undefined;
+-                signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                 type: "tempo";
+                 validBefore?: number | undefined;
+                 validAfter?: number | undefined;
+@@ -437,10 +437,10 @@ export declare const tempoAndantino: {
+                 maxFeePerGas?: `0x${string}` | undefined;
+                 maxPriorityFeePerGas?: `0x${string}` | undefined;
+                 accessList?: import("../../index.js").AccessList | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                 feePayer?: true | import("../../index.js").Account | undefined;
+-                feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                 nonceKey?: `0x${string}` | "expiring" | undefined;
+                 validBefore?: `0x${string}` | undefined;
+                 validAfter?: `0x${string}` | undefined;
+@@ -463,7 +463,7 @@ export declare const tempoAndantino: {
+     };
+     verifyHash: (client: import("../../index.js").Client, parameters: import("../../index.js").VerifyHashActionParameters) => Promise<boolean>;
+     extend: <const extended_1 extends {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     }>(extended: extended_1) => import("../index.js").Assign<import("../index.js").Assign<import("../index.js").Chain<undefined>, {
+         readonly id: 42429;
+         readonly blockExplorers: {
+@@ -486,7 +486,7 @@ export declare const tempoAndantino: {
+         };
+         readonly blockTime: 1000;
+         readonly extendSchema: {
+-            feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++            feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+         };
+         readonly formatters: {
+             readonly transaction: {
+@@ -671,18 +671,18 @@ export declare const tempoAndantino: {
+                     yParity?: number | undefined;
+                     accessList: import("../../index.js").AccessList;
+                     authorizationList?: readonly {
+-                        address: import("ox/tempo/TempoAddress").Address;
++                        address: import("ox/tempo/TempoAddress/").Address;
+                         chainId: number;
+                         nonce: bigint;
+-                        signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                        signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                     }[] | undefined;
+-                    calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                    calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                     chainId: number;
+                     feeToken?: `0x${string}` | undefined;
+                     feePayerSignature?: import("../../index.js").Signature | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                     nonceKey?: bigint | undefined;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                     type: "tempo";
+                     validBefore?: number | undefined;
+                     validAfter?: number | undefined;
+@@ -888,10 +888,10 @@ export declare const tempoAndantino: {
+                     maxFeePerGas?: `0x${string}` | undefined;
+                     maxPriorityFeePerGas?: `0x${string}` | undefined;
+                     accessList?: import("../../index.js").AccessList | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                    calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                    calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                     feePayer?: true | import("../../index.js").Account | undefined;
+-                    feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                    feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                     nonceKey?: `0x${string}` | "expiring" | undefined;
+                     validBefore?: `0x${string}` | undefined;
+                     validAfter?: `0x${string}` | undefined;
+diff --git a/node_modules/viem/_types/chains/definitions/tempoDevnet.d.ts b/node_modules/viem/_types/chains/definitions/tempoDevnet.d.ts
+index 8d5fff022..da244174d 100644
+--- a/node_modules/viem/_types/chains/definitions/tempoDevnet.d.ts
++++ b/node_modules/viem/_types/chains/definitions/tempoDevnet.d.ts
+@@ -34,7 +34,7 @@ export declare const tempoDevnet: {
+     testnet?: boolean | undefined | undefined;
+     custom?: Record<string, unknown> | undefined;
+     extendSchema: {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     };
+     fees?: import("../../index.js").ChainFees<undefined> | undefined;
+     formatters: {
+@@ -220,18 +220,18 @@ export declare const tempoDevnet: {
+                 yParity?: number | undefined;
+                 accessList: import("../../index.js").AccessList;
+                 authorizationList?: readonly {
+-                    address: import("ox/tempo/TempoAddress").Address;
++                    address: import("ox/tempo/TempoAddress/").Address;
+                     chainId: number;
+                     nonce: bigint;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                 }[] | undefined;
+-                calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                 chainId: number;
+                 feeToken?: `0x${string}` | undefined;
+                 feePayerSignature?: import("../../index.js").Signature | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                 nonceKey?: bigint | undefined;
+-                signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                 type: "tempo";
+                 validBefore?: number | undefined;
+                 validAfter?: number | undefined;
+@@ -437,10 +437,10 @@ export declare const tempoDevnet: {
+                 maxFeePerGas?: `0x${string}` | undefined;
+                 maxPriorityFeePerGas?: `0x${string}` | undefined;
+                 accessList?: import("../../index.js").AccessList | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                 feePayer?: true | import("../../index.js").Account | undefined;
+-                feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                 nonceKey?: `0x${string}` | "expiring" | undefined;
+                 validBefore?: `0x${string}` | undefined;
+                 validAfter?: `0x${string}` | undefined;
+@@ -463,7 +463,7 @@ export declare const tempoDevnet: {
+     };
+     verifyHash: (client: import("../../index.js").Client, parameters: import("../../index.js").VerifyHashActionParameters) => Promise<boolean>;
+     extend: <const extended_1 extends {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     }>(extended: extended_1) => import("../index.js").Assign<import("../index.js").Assign<import("../index.js").Chain<undefined>, {
+         readonly id: 31318;
+         readonly name: "Tempo Devnet";
+@@ -486,7 +486,7 @@ export declare const tempoDevnet: {
+         };
+         readonly blockTime: 1000;
+         readonly extendSchema: {
+-            feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++            feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+         };
+         readonly formatters: {
+             readonly transaction: {
+@@ -671,18 +671,18 @@ export declare const tempoDevnet: {
+                     yParity?: number | undefined;
+                     accessList: import("../../index.js").AccessList;
+                     authorizationList?: readonly {
+-                        address: import("ox/tempo/TempoAddress").Address;
++                        address: import("ox/tempo/TempoAddress/").Address;
+                         chainId: number;
+                         nonce: bigint;
+-                        signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                        signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                     }[] | undefined;
+-                    calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                    calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                     chainId: number;
+                     feeToken?: `0x${string}` | undefined;
+                     feePayerSignature?: import("../../index.js").Signature | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                     nonceKey?: bigint | undefined;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                     type: "tempo";
+                     validBefore?: number | undefined;
+                     validAfter?: number | undefined;
+@@ -888,10 +888,10 @@ export declare const tempoDevnet: {
+                     maxFeePerGas?: `0x${string}` | undefined;
+                     maxPriorityFeePerGas?: `0x${string}` | undefined;
+                     accessList?: import("../../index.js").AccessList | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                    calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                    calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                     feePayer?: true | import("../../index.js").Account | undefined;
+-                    feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                    feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                     nonceKey?: `0x${string}` | "expiring" | undefined;
+                     validBefore?: `0x${string}` | undefined;
+                     validAfter?: `0x${string}` | undefined;
+diff --git a/node_modules/viem/_types/chains/definitions/tempoLocalnet.d.ts b/node_modules/viem/_types/chains/definitions/tempoLocalnet.d.ts
+index 1f589b2ac..5a9ea627e 100644
+--- a/node_modules/viem/_types/chains/definitions/tempoLocalnet.d.ts
++++ b/node_modules/viem/_types/chains/definitions/tempoLocalnet.d.ts
+@@ -39,7 +39,7 @@ export declare const tempoLocalnet: {
+     testnet?: boolean | undefined | undefined;
+     custom?: Record<string, unknown> | undefined;
+     extendSchema: {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     };
+     fees?: import("../../index.js").ChainFees<undefined> | undefined;
+     formatters: {
+@@ -225,18 +225,18 @@ export declare const tempoLocalnet: {
+                 yParity?: number | undefined;
+                 accessList: import("../../index.js").AccessList;
+                 authorizationList?: readonly {
+-                    address: import("ox/tempo/TempoAddress").Address;
++                    address: import("ox/tempo/TempoAddress/").Address;
+                     chainId: number;
+                     nonce: bigint;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                 }[] | undefined;
+-                calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                 chainId: number;
+                 feeToken?: `0x${string}` | undefined;
+                 feePayerSignature?: import("../../index.js").Signature | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                 nonceKey?: bigint | undefined;
+-                signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                 type: "tempo";
+                 validBefore?: number | undefined;
+                 validAfter?: number | undefined;
+@@ -442,10 +442,10 @@ export declare const tempoLocalnet: {
+                 maxFeePerGas?: `0x${string}` | undefined;
+                 maxPriorityFeePerGas?: `0x${string}` | undefined;
+                 accessList?: import("../../index.js").AccessList | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                 feePayer?: true | import("../../index.js").Account | undefined;
+-                feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                 nonceKey?: `0x${string}` | "expiring" | undefined;
+                 validBefore?: `0x${string}` | undefined;
+                 validAfter?: `0x${string}` | undefined;
+@@ -468,7 +468,7 @@ export declare const tempoLocalnet: {
+     };
+     verifyHash: (client: import("../../index.js").Client, parameters: import("../../index.js").VerifyHashActionParameters) => Promise<boolean>;
+     extend: <const extended_1 extends {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     }>(extended: extended_1) => import("../index.js").Assign<import("../index.js").Assign<import("../index.js").Chain<undefined>, {
+         readonly id: 1337;
+         readonly name: "Tempo";
+@@ -484,7 +484,7 @@ export declare const tempoLocalnet: {
+         };
+         readonly blockTime: 1000;
+         readonly extendSchema: {
+-            feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++            feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+         };
+         readonly formatters: {
+             readonly transaction: {
+@@ -669,18 +669,18 @@ export declare const tempoLocalnet: {
+                     yParity?: number | undefined;
+                     accessList: import("../../index.js").AccessList;
+                     authorizationList?: readonly {
+-                        address: import("ox/tempo/TempoAddress").Address;
++                        address: import("ox/tempo/TempoAddress/").Address;
+                         chainId: number;
+                         nonce: bigint;
+-                        signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                        signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                     }[] | undefined;
+-                    calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                    calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                     chainId: number;
+                     feeToken?: `0x${string}` | undefined;
+                     feePayerSignature?: import("../../index.js").Signature | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                     nonceKey?: bigint | undefined;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                     type: "tempo";
+                     validBefore?: number | undefined;
+                     validAfter?: number | undefined;
+@@ -886,10 +886,10 @@ export declare const tempoLocalnet: {
+                     maxFeePerGas?: `0x${string}` | undefined;
+                     maxPriorityFeePerGas?: `0x${string}` | undefined;
+                     accessList?: import("../../index.js").AccessList | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                    calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                    calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                     feePayer?: true | import("../../index.js").Account | undefined;
+-                    feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                    feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                     nonceKey?: `0x${string}` | "expiring" | undefined;
+                     validBefore?: `0x${string}` | undefined;
+                     validAfter?: `0x${string}` | undefined;
+diff --git a/node_modules/viem/_types/chains/definitions/tempoModerato.d.ts b/node_modules/viem/_types/chains/definitions/tempoModerato.d.ts
+index 2c13cc41c..b7e3b17cb 100644
+--- a/node_modules/viem/_types/chains/definitions/tempoModerato.d.ts
++++ b/node_modules/viem/_types/chains/definitions/tempoModerato.d.ts
+@@ -34,7 +34,7 @@ export declare const tempoModerato: {
+     testnet?: boolean | undefined | undefined;
+     custom?: Record<string, unknown> | undefined;
+     extendSchema: {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     };
+     fees?: import("../../index.js").ChainFees<undefined> | undefined;
+     formatters: {
+@@ -220,18 +220,18 @@ export declare const tempoModerato: {
+                 yParity?: number | undefined;
+                 accessList: import("../../index.js").AccessList;
+                 authorizationList?: readonly {
+-                    address: import("ox/tempo/TempoAddress").Address;
++                    address: import("ox/tempo/TempoAddress/").Address;
+                     chainId: number;
+                     nonce: bigint;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                 }[] | undefined;
+-                calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                 chainId: number;
+                 feeToken?: `0x${string}` | undefined;
+                 feePayerSignature?: import("../../index.js").Signature | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                 nonceKey?: bigint | undefined;
+-                signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                 type: "tempo";
+                 validBefore?: number | undefined;
+                 validAfter?: number | undefined;
+@@ -437,10 +437,10 @@ export declare const tempoModerato: {
+                 maxFeePerGas?: `0x${string}` | undefined;
+                 maxPriorityFeePerGas?: `0x${string}` | undefined;
+                 accessList?: import("../../index.js").AccessList | undefined;
+-                keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                 feePayer?: true | import("../../index.js").Account | undefined;
+-                feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                 nonceKey?: `0x${string}` | "expiring" | undefined;
+                 validBefore?: `0x${string}` | undefined;
+                 validAfter?: `0x${string}` | undefined;
+@@ -463,7 +463,7 @@ export declare const tempoModerato: {
+     };
+     verifyHash: (client: import("../../index.js").Client, parameters: import("../../index.js").VerifyHashActionParameters) => Promise<boolean>;
+     extend: <const extended_1 extends {
+-        feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++        feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+     }>(extended: extended_1) => import("../index.js").Assign<import("../index.js").Assign<import("../index.js").Chain<undefined>, {
+         readonly id: 42431;
+         readonly blockExplorers: {
+@@ -486,7 +486,7 @@ export declare const tempoModerato: {
+         };
+         readonly blockTime: 1000;
+         readonly extendSchema: {
+-            feeToken?: import("ox/tempo/TokenId").TokenIdOrAddress | undefined;
++            feeToken?: import("ox/tempo/TokenId/").TokenIdOrAddress | undefined;
+         };
+         readonly formatters: {
+             readonly transaction: {
+@@ -671,18 +671,18 @@ export declare const tempoModerato: {
+                     yParity?: number | undefined;
+                     accessList: import("../../index.js").AccessList;
+                     authorizationList?: readonly {
+-                        address: import("ox/tempo/TempoAddress").Address;
++                        address: import("ox/tempo/TempoAddress/").Address;
+                         chainId: number;
+                         nonce: bigint;
+-                        signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope<bigint, number>;
++                        signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope<bigint, number>;
+                     }[] | undefined;
+-                    calls: readonly import("ox/tempo/TxEnvelopeTempo").Call<bigint, `0x${string}`>[];
++                    calls: readonly import("ox/tempo/TxEnvelopeTempo/").Call<bigint, `0x${string}`>[];
+                     chainId: number;
+                     feeToken?: `0x${string}` | undefined;
+                     feePayerSignature?: import("../../index.js").Signature | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<bigint, number, `0x${string}`> | null | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<bigint, number, `0x${string}`> | null | undefined;
+                     nonceKey?: bigint | undefined;
+-                    signature: import("ox/tempo/SignatureEnvelope").SignatureEnvelope;
++                    signature: import("ox/tempo/SignatureEnvelope/").SignatureEnvelope;
+                     type: "tempo";
+                     validBefore?: number | undefined;
+                     validAfter?: number | undefined;
+@@ -888,10 +888,10 @@ export declare const tempoModerato: {
+                     maxFeePerGas?: `0x${string}` | undefined;
+                     maxPriorityFeePerGas?: `0x${string}` | undefined;
+                     accessList?: import("../../index.js").AccessList | undefined;
+-                    keyAuthorization?: import("ox/tempo/KeyAuthorization").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                    calls?: readonly import("ox/tempo/TxEnvelopeTempo").Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                    keyAuthorization?: import("ox/tempo/KeyAuthorization/").Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
++                    calls?: readonly import("ox/tempo/TxEnvelopeTempo/").Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                     feePayer?: true | import("../../index.js").Account | undefined;
+-                    feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                    feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                     nonceKey?: `0x${string}` | "expiring" | undefined;
+                     validBefore?: `0x${string}` | undefined;
+                     validAfter?: `0x${string}` | undefined;
+diff --git a/node_modules/viem/_types/tempo/chainConfig.d.ts b/node_modules/viem/_types/tempo/chainConfig.d.ts
+index 5f0b12a5d..4598dd776 100644
+--- a/node_modules/viem/_types/tempo/chainConfig.d.ts
++++ b/node_modules/viem/_types/tempo/chainConfig.d.ts
+@@ -189,7 +189,7 @@ export declare const chainConfig: {
+                 yParity?: number | undefined;
+                 accessList: import("../index.js").AccessList;
+                 authorizationList?: readonly {
+-                    address: import("ox/tempo/TempoAddress").Address;
++                    address: import("ox/tempo/TempoAddress/").Address;
+                     chainId: number;
+                     nonce: bigint;
+                     signature: SignatureEnvelope.SignatureEnvelope<bigint, number>;
+@@ -407,9 +407,9 @@ export declare const chainConfig: {
+                 maxPriorityFeePerGas?: `0x${string}` | undefined;
+                 accessList?: import("../index.js").AccessList | undefined;
+                 keyAuthorization?: Transaction.z_KeyAuthorization.Signed<`0x${string}`, `0x${string}`, `0x${string}`> | undefined;
+-                calls?: readonly Transaction.z_TxEnvelopeTempo.Call<`0x${string}`, import("ox/tempo/TempoAddress").Address>[] | undefined;
++                calls?: readonly Transaction.z_TxEnvelopeTempo.Call<`0x${string}`, import("ox/tempo/TempoAddress/").Address>[] | undefined;
+                 feePayer?: true | import("../index.js").Account | undefined;
+-                feeToken?: bigint | import("ox/tempo/TempoAddress").Address | undefined;
++                feeToken?: bigint | import("ox/tempo/TempoAddress/").Address | undefined;
+                 nonceKey?: `0x${string}` | "expiring" | undefined;
+                 validBefore?: `0x${string}` | undefined;
+                 validAfter?: `0x${string}` | undefined;
