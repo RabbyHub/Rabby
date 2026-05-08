@@ -95,6 +95,7 @@ const commonConfig = {
       zlib: require.resolve('browserify-zlib'),
       https: require.resolve('https-browserify'),
       http: require.resolve('stream-http'),
+      vm: false,
     },
     extensions: ['.js', 'jsx', '.ts', '.tsx'],
   },
