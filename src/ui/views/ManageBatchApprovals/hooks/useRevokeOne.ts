@@ -40,7 +40,7 @@ export const useRevokeOne = ({
         hash: result[result.length - 1],
         wallet,
         chainServerId: revokeItem.chainServerId,
-      });
+      }).catch(() => undefined);
     } catch (error) {
       console.error('Revoke approval failed', error);
       if (
