@@ -1,5 +1,5 @@
 import { Account } from 'background/service/preference';
-import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/models/perps';
 import { Meta, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
 import { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
 import {
@@ -11,7 +11,6 @@ import {
 import { useWallet, WalletController } from '@/ui/utils';
 import { KEYRING_CLASS } from '@/constant';
 import { getPerpsSDK } from './sdkManager';
-import { maxBy } from 'lodash';
 
 export const getPxDecimals = (markPx: string) => {
   const parts = markPx.split('.');
@@ -395,20 +394,4 @@ export const checkPerpsReference = async ({
     console.error('checkPerpsReference error', e);
     return false;
   }
-};
-
-export const getMaxTimeFromAccountHistory = (
-  historyList: AccountHistoryItem[]
-) => {
-  const depositList = historyList.filter((item) => item.type === 'deposit');
-  const withdrawList = historyList.filter((item) => item.type === 'withdraw');
-  const receiveList = historyList.filter((item) => item.type === 'receive');
-  const depositMaxTime = maxBy(depositList, 'time')?.time || 0;
-  const withdrawMaxTime = maxBy(withdrawList, 'time')?.time || 0;
-  const receiveMaxTime = maxBy(receiveList, 'time')?.time || 0;
-  return {
-    depositMaxTime,
-    withdrawMaxTime,
-    receiveMaxTime,
-  };
 };

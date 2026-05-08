@@ -27,6 +27,9 @@ interface SpotSwapModalProps {
   sourceAsset?: PerpsQuoteAsset;
   /** When true, locks BOTH from and to dropdowns and hides their dropdown arrows. */
   disableSwitch?: boolean;
+  /** Stack-aware z-index from usePerpsPopupNav — applied to both the dialog
+   *  and the mask so deposit's mask renders above swap's dialog when nested. */
+  zIndex?: number;
   onClose: () => void;
   onSuccess?: () => void;
   onDeposit?: () => void;
@@ -37,6 +40,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
   targetAsset,
   sourceAsset,
   disableSwitch,
+  zIndex,
   onClose,
   onSuccess,
   onDeposit,
@@ -118,11 +122,12 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
       footer={null}
       centered
       width={400}
+      zIndex={zIndex}
       closable={!submitting}
       closeIcon={<RcIconCloseCC className="w-14 text-r-neutral-title-1" />}
       bodyStyle={{ padding: 0, height: '520px', maxHeight: '520px' }}
       maskStyle={{
-        zIndex: 1000,
+        zIndex: zIndex ?? 1000,
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
