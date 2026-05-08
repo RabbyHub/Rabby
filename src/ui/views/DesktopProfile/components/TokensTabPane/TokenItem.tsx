@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import IconUnknown from '@/ui/assets/token-default.svg';
-import { Image } from 'antd';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { Image, Tooltip } from 'antd';
 import { findChain } from '@/utils/chain';
 import { useHistory } from 'react-router-dom';
 import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
@@ -101,16 +100,20 @@ export const TokenItemAsset: React.FC<Props> = ({
           fallback={IconUnknown}
           preview={false}
         />
-        <TooltipWithMagnetArrow
+        <Tooltip
           title={chain?.name}
-          className="rectangle w-[max-content]"
+          overlayClassName="rectangle"
+          overlayStyle={{
+            padding: 0,
+          }}
+          mouseEnterDelay={0}
         >
           <img
             className="w-14 h-14 absolute right-[-4px] bottom-[-4px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={item.chain}
           />
-        </TooltipWithMagnetArrow>
+        </Tooltip>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
         <div className="flex items-center max-w-[190px] min-w-0">
@@ -174,16 +177,20 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
           fallback={IconUnknown}
           preview={false}
         />
-        <TooltipWithMagnetArrow
+        <Tooltip
           title={chain?.name}
-          className="rectangle w-[max-content]"
+          overlayClassName="rectangle"
+          overlayStyle={{
+            padding: 0,
+          }}
+          mouseEnterDelay={0}
         >
           <img
             className="w-14 h-14 absolute right-[-4px] bottom-[-4px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={chain?.name}
           />
-        </TooltipWithMagnetArrow>
+        </Tooltip>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
         <DesktopTokenLabel

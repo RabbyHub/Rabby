@@ -25,6 +25,7 @@ const UnknownTag = ({ className }: UnknownTagProps) => {
           'rounded-[4px] px-[4px] py-[2px]',
           'bg-rb-neutral-bg-0 text-rb-neutral-secondary',
           'text-[11px] leading-[11px] font-normal',
+          'cursor-pointer',
           className
         )}
       >
