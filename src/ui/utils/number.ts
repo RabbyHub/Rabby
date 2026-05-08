@@ -198,16 +198,20 @@ export const formatCurrencyParts = (
   const isPrefix = currency.is_prefix !== false;
   const sign = bnValue.lt(0) ? '-' : '';
   const absoluteValue = bnValue.absoluteValue();
-  const formatAmount = (num: BigNumber) =>
+  const formatPrefixAmount = (num: BigNumber) =>
     formatNumber(num.toFixed(), decimal, undefined, roundingMode);
+  const formatPostfixAmount = (num: BigNumber) =>
+    formatTokenAmount(num.toFixed());
 
   let amount: string;
   let isLessThan = false;
 
-  if (bnValue.lt(0)) {
-    amount = formatAmount(absoluteValue);
+  if (!isPrefix) {
+    amount = formatPostfixAmount(absoluteValue);
+  } else if (bnValue.lt(0)) {
+    amount = formatPrefixAmount(absoluteValue);
   } else if (bnValue.gte(0.01) || bnValue.eq(0)) {
-    amount = formatAmount(bnValue);
+    amount = formatPrefixAmount(bnValue);
   } else {
     amount = '0.01';
     isLessThan = true;
