@@ -112,6 +112,7 @@ import {
   createAmountComparer,
   shouldIgnoreAmountChangeInMaxMode,
 } from '@/ui/utils/form';
+import { normalizeInputNumber } from '@/constant/regexp';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -1051,7 +1052,7 @@ const SendToken = () => {
 
   const initialFormValues = {
     to: toAddress,
-    amount: paramAmount || '',
+    amount: normalizeInputNumber(paramAmount) || '',
   };
   const amount = useSyncStaleValue(form.getFieldValue('amount'), 300);
   const address = form.getFieldValue('to');
@@ -1282,8 +1283,8 @@ const SendToken = () => {
 
       const targetToken = token || currentToken;
 
-      let resultAmount = amount;
-      if (!/^\d*(\.\d*)?$/.test(amount)) {
+      let resultAmount = normalizeInputNumber(amount);
+      if (resultAmount === null) {
         resultAmount = cacheAmount;
       }
 
