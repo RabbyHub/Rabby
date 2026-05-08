@@ -27,3 +27,4 @@ Treat the sequence as `yarn && yarn check`: only run `yarn check` after `yarn` e
 - If the failure appears unrelated to the current edit, report the exact failing command and the relevant error output before deciding whether to proceed.
 - Do not substitute `npm install`, `npm run check`, `yarn lint`, or `yarn typecheck` for the required sequence unless the user explicitly redirects the workflow.
 - After committing or pushing, report the commit hash and the validation commands that passed.
+
