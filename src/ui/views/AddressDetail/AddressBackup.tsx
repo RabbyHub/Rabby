@@ -35,7 +35,7 @@ export const AddressBackup = ({ address, type }: Props) => {
   }
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
-  const { hasBackup } = useCheckSeedPhraseBackup(address);
+  const { hasBackup } = useCheckSeedPhraseBackup({ address, type });
 
   const handleBackup = async (path: 'mneonics' | 'private-key') => {
     form.resetFields();
