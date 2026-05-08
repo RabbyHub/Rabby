@@ -1,10 +1,10 @@
 import { useEffect, useMemo } from 'react';
 
 import {
-  ApprovalGasMethod,
   resolveApprovalGasMethod,
   shouldAutoSwitchToApprovalGasAccount,
 } from './approvalGasDisplay';
+import type { ApprovalGasMethod } from './approvalGasDisplay';
 
 export const useEffectiveApprovalGasMethod = ({
   isReady,
@@ -13,6 +13,7 @@ export const useEffectiveApprovalGasMethod = ({
   gasAccountChainSupported,
   noCustomRPC,
   canUseGasLess,
+  manualGasMethod,
   gasMethod,
   setGasMethod,
   isWalletConnect,
@@ -23,6 +24,7 @@ export const useEffectiveApprovalGasMethod = ({
   gasAccountChainSupported?: boolean;
   noCustomRPC?: boolean;
   canUseGasLess?: boolean;
+  manualGasMethod?: ApprovalGasMethod;
   gasMethod?: ApprovalGasMethod;
   isWalletConnect: boolean;
   setGasMethod(method: ApprovalGasMethod): void | Promise<void>;
@@ -36,12 +38,19 @@ export const useEffectiveApprovalGasMethod = ({
         noCustomRPC,
         isWalletConnect,
       }),
-    [canUseGasLess, gasAccountChainSupported, isGasNotEnough, noCustomRPC]
+    [
+      canUseGasLess,
+      gasAccountChainSupported,
+      isGasNotEnough,
+      isWalletConnect,
+      noCustomRPC,
+    ]
   );
 
   const effectiveApprovalGasMethod = useMemo(
     () =>
       resolveApprovalGasMethod({
+        manualGasMethod,
         legacyGasMethod: gasMethod,
         nativeTokenInsufficient: isGasNotEnough,
         gasAccountChainSupported,
@@ -54,6 +63,7 @@ export const useEffectiveApprovalGasMethod = ({
       gasAccountChainSupported,
       gasMethod,
       isGasNotEnough,
+      manualGasMethod,
       noCustomRPC,
       isWalletConnect,
     ]
@@ -64,7 +74,11 @@ export const useEffectiveApprovalGasMethod = ({
       return;
     }
 
-    if (isFirstGasLessLoading && !shouldPreferGasAccountImmediately) {
+    if (
+      !manualGasMethod &&
+      isFirstGasLessLoading &&
+      !shouldPreferGasAccountImmediately
+    ) {
       return;
     }
 
@@ -78,6 +92,7 @@ export const useEffectiveApprovalGasMethod = ({
     gasMethod,
     isFirstGasLessLoading,
     isReady,
+    manualGasMethod,
     setGasMethod,
     shouldPreferGasAccountImmediately,
   ]);

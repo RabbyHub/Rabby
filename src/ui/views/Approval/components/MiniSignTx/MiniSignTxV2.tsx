@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { GasSelectorResponse } from '../TxComponents/GasSelectorHeader';
 import SignMainnetGasSelectorHeader from '../TxComponents/GasSelector/SignMainnetGasSelectorHeader';
 import { useEffectiveApprovalGasMethod } from '../TxComponents/GasSelector/useEffectiveApprovalGasMethod';
+import type { ApprovalGasMethod } from '../TxComponents/GasSelector/approvalGasDisplay';
 import BalanceChange from '../TxComponents/BalanceChange';
 import { SpeedUpCancelHeader } from './SpeedUpCancalHeader';
 import { Divide } from '../Divide';
@@ -130,6 +131,13 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   useGasAccountInfo();
   const { sig, accountId: gasAccountAddress } = useGasAccountSign();
+  const [manualGasMethod, setManualGasMethod] = React.useState<
+    ApprovalGasMethod | undefined
+  >(undefined);
+
+  React.useEffect(() => {
+    setManualGasMethod(undefined);
+  }, [ctx?.fingerprint]);
 
   const { value } = useAsync(() => {
     let msg = error?.description || '';
@@ -154,10 +162,22 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       : Promise.resolve(['', 'origin']);
   }, [error, currentAccount?.type]);
 
-  const handleChangeGasMethod = useCallback(
-    async (method: 'native' | 'gasAccount') => {
+  const handleAutoChangeGasMethod = useCallback(
+    async (method: ApprovalGasMethod) => {
       try {
         instance.setGasMethod(method);
+      } catch (error) {
+        console.error('Gas method change error:', error);
+      }
+    },
+    [instance]
+  );
+
+  const handleChangeGasMethod = useCallback(
+    async (method: ApprovalGasMethod) => {
+      setManualGasMethod(method);
+      try {
+        instance.setGasMethod(method, { manual: true });
       } catch (error) {
         console.error('Gas method change error:', error);
       }
@@ -433,7 +453,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const gasMethod = ctx?.gasMethod;
   const canUseGasLess = !!ctx?.gasless?.is_gasless;
   const isGasNotEnough = !!ctx?.isGasNotEnough;
-  const noCustomRPC = !!ctx?.noCustomRPC;
+  const noCustomRPC = ctx?.noCustomRPC ?? true;
   const gasAccountChainSupported =
     !!gasAccountCost && !gasAccountCost.chain_not_support;
   const isMissingRequiredContext =
@@ -457,7 +477,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       if (ctx.selectedGas) {
         await handleGasChange(ctx.selectedGas as any);
       }
-      instance.setGasMethod('gasAccount');
+      setManualGasMethod('gasAccount');
+      instance.setGasMethod('gasAccount', { manual: true });
     }
   );
 
@@ -468,8 +489,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     gasAccountChainSupported,
     noCustomRPC,
     canUseGasLess,
+    manualGasMethod,
     gasMethod,
-    setGasMethod: handleChangeGasMethod,
+    setGasMethod: handleAutoChangeGasMethod,
     isWalletConnect: currentAccount?.type === KEYRING_CLASS.WALLETCONNECT,
   });
 
@@ -624,7 +646,6 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   } = config;
   const txsResult = ctx.txsCalc;
   const txs = ctx.txs;
-  const setGasMethod = handleChangeGasMethod;
   const pushType = swapPreferMEVGuarded ? 'mev' : 'default';
   const gasLimit = ctx.txs?.[0]?.gas;
   const gasList = ctx.gasList;
@@ -794,7 +815,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                         tx={txs[0]}
                         gasAccountCost={gasAccountCost}
                         gasMethod={gasMethod}
-                        onChangeGasMethod={setGasMethod}
+                        manualGasMethod={manualGasMethod}
+                        onChangeGasMethod={handleChangeGasMethod}
+                        onAutoChangeGasMethod={handleAutoChangeGasMethod}
                         noCustomRPC={noCustomRPC}
                         isWalletConnect={isWalletConnect}
                         nativeTokenInsufficient={isGasNotEnough}
@@ -1061,7 +1084,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 tx={txs[0]}
                 gasAccountCost={gasAccountCost}
                 gasMethod={gasMethod}
-                onChangeGasMethod={setGasMethod}
+                manualGasMethod={manualGasMethod}
+                onChangeGasMethod={handleChangeGasMethod}
+                onAutoChangeGasMethod={handleAutoChangeGasMethod}
                 noCustomRPC={noCustomRPC}
                 isWalletConnect={isWalletConnect}
                 nativeTokenInsufficient={isGasNotEnough}

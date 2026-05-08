@@ -81,6 +81,7 @@ import { SignAdvancedSettings } from './SignAdvancedSettings';
 import { GasSelectorResponse } from './TxComponents/GasSelectorHeader';
 import SignMainnetGasSelectorHeader from './TxComponents/GasSelector/SignMainnetGasSelectorHeader';
 import { useEffectiveApprovalGasMethod } from './TxComponents/GasSelector/useEffectiveApprovalGasMethod';
+import type { ApprovalGasMethod } from './TxComponents/GasSelector/approvalGasDisplay';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
 import { adjustV } from '@/ui/utils/gnosis';
 import { abstractTokenToTokenItem } from '@/ui/utils/token';
@@ -771,6 +772,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       !enable7702 ? ['authorizationList'] : []
     ) as any
   );
+  const [manualGasMethod, setManualGasMethod] = useState<
+    ApprovalGasMethod | undefined
+  >(undefined);
   const [gasAccountDepositVisible, setGasAccountDepositVisible] = useState(
     false
   );
@@ -895,6 +899,19 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       },
     ] as Tx[];
   }, [tx, realNonce, gasLimit]);
+  useEffect(() => {
+    setManualGasMethod(undefined);
+  }, [
+    chainId,
+    currentAccount.address,
+    currentAccount.type,
+    isCancel,
+    isSpeedUp,
+    tx.data,
+    tx.from,
+    tx.to,
+    tx.value,
+  ]);
   const _currentAccount = useRabbySelector((s) => s.account.currentAccount!);
 
   const {
@@ -924,7 +941,21 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     [chain?.serverId, gasMethod, _currentAccount?.type]
   );
 
+  const handleAutoChangeGasMethod = useMemoizedFn(
+    (method: ApprovalGasMethod) => {
+      setGasMethod(method);
+    }
+  );
+
+  const handleManualChangeGasMethod = useMemoizedFn(
+    (method: ApprovalGasMethod) => {
+      setManualGasMethod(method);
+      setGasMethod(method);
+    }
+  );
+
   const handleChangeGasAccount = useMemoizedFn(async () => {
+    setManualGasMethod('gasAccount');
     setGasMethod('gasAccount');
     await gasAccountCostFn();
   });
@@ -945,6 +976,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }
 
       await gasAccountCostFn();
+      setManualGasMethod('gasAccount');
       setGasMethod('gasAccount');
     }
   );
@@ -1084,8 +1116,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     gasAccountChainSupported,
     noCustomRPC,
     canUseGasLess,
+    manualGasMethod,
     gasMethod,
-    setGasMethod,
+    setGasMethod: handleAutoChangeGasMethod,
     isWalletConnect: currentAccountType === KEYRING_TYPE.WalletConnectKeyring,
   });
 
@@ -2791,7 +2824,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                   tx={tx}
                   gasAccountCost={gasAccountCost}
                   gasMethod={gasMethod}
-                  onChangeGasMethod={setGasMethod}
+                  manualGasMethod={manualGasMethod}
+                  onChangeGasMethod={handleManualChangeGasMethod}
+                  onAutoChangeGasMethod={handleAutoChangeGasMethod}
                   noCustomRPC={noCustomRPC}
                   isWalletConnect={
                     currentAccountType === KEYRING_TYPE.WalletConnectKeyring

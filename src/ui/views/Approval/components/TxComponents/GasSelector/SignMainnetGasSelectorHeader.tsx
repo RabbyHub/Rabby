@@ -18,6 +18,7 @@ import {
   isApprovalGasMethodNotEnough,
   resolveApprovalGasMethod,
 } from './approvalGasDisplay';
+import type { ApprovalGasMethod } from './approvalGasDisplay';
 import {
   resolveSignMainnetGasLevelFetchMode,
   resolveSignMainnetGasLevelFetchNeeds,
@@ -51,6 +52,8 @@ export interface SignMainnetGasSelectorHeaderProps
   tempoGasTokenList?: TempoFeeTokenOption[];
   onSelectTempoGasToken?: (token: TempoFeeTokenOption) => void;
   tempoGasTokenLoading?: boolean;
+  manualGasMethod?: ApprovalGasMethod;
+  onAutoChangeGasMethod?: (value: ApprovalGasMethod) => void;
 }
 
 export const SignMainnetGasSelectorHeader = ({
@@ -59,6 +62,7 @@ export const SignMainnetGasSelectorHeader = ({
   noCustomRPC,
   isWalletConnect,
   gasMethod,
+  manualGasMethod,
   gasAccountCost,
   gas,
   tx,
@@ -105,6 +109,7 @@ export const SignMainnetGasSelectorHeader = ({
   );
 
   const displayGasMethod = resolveApprovalGasMethod({
+    manualGasMethod,
     nativeTokenInsufficient,
     gasAccountChainSupported:
       !!gasAccountCost && !gasAccountCost.chain_not_support,
@@ -137,8 +142,6 @@ export const SignMainnetGasSelectorHeader = ({
     nativeTokenInsufficient,
     gasAccountBalanceEnough: gasAccountCost?.balance_is_enough,
   });
-
-  console.log('gasAccountCost', gasAccountCost);
 
   const supportedLevels = useMemo(
     () =>
@@ -600,7 +603,9 @@ export const SignMainnetGasSelectorHeader = ({
             gasList={gasList}
             selectedGas={selectedGas}
             gasMethod={gasMethod}
+            manualGasMethod={manualGasMethod}
             onChangeGasMethod={props.onChangeGasMethod}
+            onAutoChangeGasMethod={props.onAutoChangeGasMethod}
             noCustomRPC={noCustomRPCEnabled}
             freeGasAvailable={freeGasAvailable}
             chainId={chainId}
