@@ -4764,6 +4764,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "Wallet nicht gesichert. Backup starten."
+    },
+    "UnknownTag": {
+      "label": "Unbekannt",
+      "tooltip": "Unbekanntes Token, bitte recherchieren Sie selbst."
     }
   },
   "global": {
