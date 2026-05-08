@@ -464,7 +464,13 @@ export const PerpsSingleCoin = () => {
     } else {
       return false;
     }
-  }, [accountNeedApprove, coin, isUnifiedAccount]);
+  }, [
+    accountNeedApprove,
+    coin,
+    isUnifiedAccount,
+    needDepositFirst,
+    isLocalWallet,
+  ]);
 
   const HeaderRightSlot = useMemo(() => {
     return (
@@ -1164,11 +1170,9 @@ export const PerpsSingleCoin = () => {
         availableBalance={Number(availableBalance || 0)}
         quoteAsset={quoteAsset}
         onDepositPress={() => {
-          setOpenPositionVisible(false);
           setAmountVisible(true);
         }}
         onSwapPress={() => {
-          setOpenPositionVisible(false);
           handleSwapEntry();
         }}
         onCancel={() => setOpenPositionVisible(false)}
@@ -1284,8 +1288,10 @@ export const PerpsSingleCoin = () => {
         visible={swapVisible}
         targetAsset={swapTargetAsset}
         onDeposit={() => {
-          setSwapVisible(false);
-          setSwapTargetAsset(undefined);
+          // Stack deposit on top — keep swap popup (and its form state)
+          // mounted so the user can return after deposit closes. Do NOT
+          // reset swapTargetAsset for the same reason — it would re-seed
+          // the swap form.
           setAmountVisible(true);
         }}
         disableSwitch={!!swapTargetAsset}
@@ -1356,11 +1362,11 @@ export const PerpsSingleCoin = () => {
             handlePressRiskTag={() => setRiskPopupVisible(true)}
             quoteAsset={quoteAsset}
             onDepositPress={() => {
-              setAddPositionVisible(false);
+              // Stack deposit on top — keep add-position popup mounted.
               setAmountVisible(true);
             }}
             onSwapPress={() => {
-              setAddPositionVisible(false);
+              // Stack swap on top — keep add-position popup mounted.
               handleSwapEntry();
             }}
             onCancel={() => setAddPositionVisible(false)}
