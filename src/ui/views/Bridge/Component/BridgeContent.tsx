@@ -722,7 +722,6 @@ export const BridgeContent = () => {
     if (awaitingTopUpResume || depositFlowActive) {
       return;
     }
-    closeSign();
     prefetch({
       txs: txs || [],
       getContainer,
@@ -734,7 +733,6 @@ export const BridgeContent = () => {
     });
   }, [
     awaitingTopUpResume,
-    closeSign,
     prefetch,
     txs,
     canUseDirectSubmitTx,

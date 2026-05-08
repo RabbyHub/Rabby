@@ -29,8 +29,13 @@ import type {
   SignMainnetSupportedGasLevel,
 } from './signMainnetGasLevelPrefetch';
 import { ReactComponent as GasLogoSVG } from 'ui/assets/sign/tx/gas-blur-cc.svg';
+import { ReactComponent as RcIconGasActive } from 'ui/assets/sign/tx/gas-active.svg';
+import { ReactComponent as RcIconGasBlurCC } from 'ui/assets/sign/tx/gas-blur-cc.svg';
+import { ReactComponent as RcIconGasAccountBlurCC } from 'ui/assets/sign/tx/gas-account-blur-cc.svg';
+import { ReactComponent as RcIconGasAccountActive } from 'ui/assets/sign/tx/gas-account-active.svg';
 import { BigNumber } from 'bignumber.js';
 import { MenuButtonStyled } from '../GasMenuButton';
+import { GasMethod } from '../GasSelectorHeader';
 import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import SecurityLevelTagNoText from 'ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText';
@@ -427,6 +432,49 @@ export const SignMainnetGasSelectorHeader = ({
         </span>
       </TooltipWithMagnetArrow>
     ) : null;
+  const gasMethodQuickSwitch =
+    gasMethod && props.onChangeGasMethod && !props.disabled ? (
+      <div
+        className={clsx(
+          'p-2 rounded-md flex items-center relative flex-shrink-0 mr-8',
+          'border-[0.5px] border-solid border-rabby-neutral-line'
+        )}
+      >
+        <GasMethod
+          active={displayGasMethod === 'native'}
+          onChange={(e) => {
+            e.stopPropagation();
+            props.onChangeGasMethod?.('native');
+          }}
+          ActiveComponent={RcIconGasActive}
+          BlurComponent={RcIconGasBlurCC}
+          tips={t('page.signTx.nativeTokenForGas', {
+            tokenName: resolvedGasToken.symbol,
+            chainName: chain.name,
+          })}
+        />
+
+        <GasMethod
+          active={displayGasMethod === 'gasAccount'}
+          onChange={(e) => {
+            e.stopPropagation();
+            if (!noCustomRPCEnabled) {
+              return;
+            }
+            props.onChangeGasMethod?.('gasAccount');
+          }}
+          ActiveComponent={RcIconGasAccountActive}
+          BlurComponent={RcIconGasAccountBlurCC}
+          tips={
+            noCustomRPCEnabled
+              ? t('page.signTx.gasAccountForGas')
+              : t('page.signTx.BroadcastMode.tips.customRPC')
+          }
+        />
+      </div>
+    ) : (
+      <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot mr-8" />
+    );
 
   const gasCostAmountStr = useMemo(() => {
     return `${formatTokenAmount(
@@ -513,7 +561,7 @@ export const SignMainnetGasSelectorHeader = ({
       ) : (
         // <span>{`${levelText} · ${summary.primaryText}`}</span>
         <>
-          <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot mr-8" />
+          {gasMethodQuickSwitch}
           <div className="truncate max-w-[200px]">
             <span
               className={clsx(

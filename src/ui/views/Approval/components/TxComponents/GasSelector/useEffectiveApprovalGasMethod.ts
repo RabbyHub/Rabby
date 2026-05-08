@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import {
   resolveApprovalGasMethod,
@@ -17,6 +17,7 @@ export const useEffectiveApprovalGasMethod = ({
   gasMethod,
   setGasMethod,
   isWalletConnect,
+  autoSwitchKey,
 }: {
   isReady: boolean;
   isFirstGasLessLoading: boolean;
@@ -28,7 +29,19 @@ export const useEffectiveApprovalGasMethod = ({
   gasMethod?: ApprovalGasMethod;
   isWalletConnect: boolean;
   setGasMethod(method: ApprovalGasMethod): void | Promise<void>;
+  autoSwitchKey?: string | number;
 }) => {
+  const didAutoSwitchRef = useRef(false);
+  const autoSwitchKeyRef = useRef(autoSwitchKey);
+
+  useEffect(() => {
+    if (autoSwitchKeyRef.current === autoSwitchKey) {
+      return;
+    }
+    autoSwitchKeyRef.current = autoSwitchKey;
+    didAutoSwitchRef.current = false;
+  }, [autoSwitchKey]);
+
   const shouldPreferGasAccountImmediately = useMemo(
     () =>
       shouldAutoSwitchToApprovalGasAccount({
@@ -76,11 +89,11 @@ export const useEffectiveApprovalGasMethod = ({
       return;
     }
 
-    if (
-      !manualGasMethod &&
-      isFirstGasLessLoading &&
-      !shouldPreferGasAccountImmediately
-    ) {
+    if (manualGasMethod || didAutoSwitchRef.current) {
+      return;
+    }
+
+    if (isFirstGasLessLoading && !shouldPreferGasAccountImmediately) {
       return;
     }
 
@@ -88,6 +101,7 @@ export const useEffectiveApprovalGasMethod = ({
       return;
     }
 
+    didAutoSwitchRef.current = true;
     void setGasMethod(effectiveApprovalGasMethod);
   }, [
     effectiveApprovalGasMethod,

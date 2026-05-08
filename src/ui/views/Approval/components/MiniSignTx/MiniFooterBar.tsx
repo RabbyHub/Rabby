@@ -74,6 +74,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   getContainer?: DrawerProps['getContainer'];
   isFirstGasCostLoading?: boolean;
   isFirstGasLessLoading?: boolean;
+  disableAutoGasAccountSwitch?: boolean;
   directSubmit?: boolean;
   account?: Account;
   disableSignBtn?: boolean;
@@ -220,6 +221,7 @@ export const MiniFooterBar: React.FC<Props> = ({
   getContainer,
   isFirstGasCostLoading,
   isFirstGasLessLoading,
+  disableAutoGasAccountSwitch = false,
   isGasNotEnough,
   directSubmit,
   account: propsAccount,
@@ -297,6 +299,9 @@ export const MiniFooterBar: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
+    if (disableAutoGasAccountSwitch) {
+      return;
+    }
     if (isSetGasMethodRef.current) {
       return;
     }
@@ -333,6 +338,7 @@ export const MiniFooterBar: React.FC<Props> = ({
     directSubmit,
     canGotoUseGasAccount,
     canUseGasLess,
+    disableAutoGasAccountSwitch,
     isFirstGasCostLoading,
     isFirstGasLessLoading,
     onChangeGasAccount,
