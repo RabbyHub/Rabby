@@ -51,13 +51,9 @@ import {
   RcIconSettingCC,
   RcIconSwapCC,
   RcIconTransactionsCC,
-  RcIconAaveLendingCC,
-  RcIconSparkLendingCC,
-  RcIconVenusLendingCC,
   RcIconConvertDustCC,
 } from 'ui/assets/dashboard/panel';
 
-import { RcIconExternal1CC } from '@/ui/assets/dashboard';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
 import {
@@ -78,17 +74,8 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
-import { useCheckBridgePendingItem } from '@/ui/views/Bridge/hooks/history';
-import { RcIconLeadingCC } from '@/ui/assets/desktop/nav';
 import { INNER_DAPP_IDS, INNER_DAPP_LIST } from '@/constant/dappIframe';
-import { loadAppChainList } from '@/ui/utils/portfolio/utils';
 import { getOriginFromUrl } from '@/utils';
-import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { getHealthStatusColor } from '@/ui/views/DesktopLending/utils';
-import { getHealthFactorText } from '@/ui/views/DesktopLending/utils/health';
-import { HF_COLOR_GOOD_THRESHOLD } from '@/ui/views/DesktopLending/utils/constant';
-import { fetchLendingHealthFactorForDashboard } from '@/ui/views/DesktopLending/hooks';
-import { CustomMarket } from '@/ui/views/DesktopLending/config/market';
 import BigNumber from 'bignumber.js';
 
 export const DragOverlayContext = createContext(false);
@@ -388,20 +375,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     isFullscreen?: boolean;
   };
 
-  const lendingId = useRabbySelector((state) => state.innerDappFrame.lending);
   const pendingHardwareAccount = useRabbySelector(
     (state) => state.gasAccount.pendingHardwareAccount
   );
-
-  const IconLending = useMemo(() => {
-    if (lendingId === 'venus') {
-      return RcIconVenusLendingCC;
-    }
-    if (lendingId === 'spark') {
-      return RcIconSparkLendingCC;
-    }
-    return RcIconAaveLendingCC;
-  }, [lendingId]);
 
   const IconPerps = RcIconPerpsCC;
 
@@ -569,59 +545,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     lighterAccount,
   ]);
 
-  // --- Lending data lifting (from LendingSubContent) ---
-  const [lendingAccount] = useSceneAccount({ scene: 'lending' });
-
-  const { value: hfRaw, loading: lendingLoading } = useAsync(async () => {
-    if (lendingId !== 'aave') return '';
-    const address = lendingAccount?.address;
-    if (!address) return '';
-    const marketKey =
-      (await wallet.getLastSelectedLendingChain()) ||
-      CustomMarket.proto_mainnet_v3;
-    return fetchLendingHealthFactorForDashboard(
-      wallet,
-      address,
-      marketKey,
-      lendingAccount
-        ? {
-            address: lendingAccount.address,
-            type: lendingAccount.type,
-            brandName: lendingAccount.brandName,
-          }
-        : undefined
-    );
-  }, [lendingId, lendingAccount?.address]);
-
-  const lendingSubContentNode = useMemo<React.ReactNode>(() => {
-    if (lendingId !== 'aave') return null;
-    if (lendingLoading) {
-      return (
-        <div className="absolute bottom-[6px] text-[11px] font-medium">
-          <Skeleton.Button
-            active={true}
-            className="h-[10px] block rounded-[2px]"
-            style={{ width: 42 }}
-          />
-        </div>
-      );
-    }
-    const hfNumber = Number(hfRaw);
-    if (!hfRaw || hfRaw === '-1' || !Number.isFinite(hfNumber)) return null;
-    if (hfNumber >= HF_COLOR_GOOD_THRESHOLD) return null;
-    const colorInfo = getHealthStatusColor(hfNumber);
-    return (
-      <div
-        className={clsx(
-          'absolute bottom-[6px] text-[11px] leading-[13px] font-medium'
-        )}
-        style={{ color: colorInfo.color }}
-      >
-        {getHealthFactorText(hfRaw)}
-      </div>
-    );
-  }, [lendingId, lendingLoading, hfRaw]);
-
   const panelItems = {
     swap: {
       icon: RcIconSwapCC,
@@ -775,18 +698,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         history.push('/settings/address');
       },
     } as IPanelItem,
-    lending: {
-      icon: IconLending,
-      eventKey: 'Lending',
-      subContent: lendingSubContentNode,
-      content: t('page.dashboard.home.panel.lending'),
-      onClick: async () => {
-        await wallet.openInDesktop('/desktop/lending');
-        window.close();
-      },
-      isFullscreen: true,
-    } as IPanelItem,
-
     convertDust: {
       icon: RcIconConvertDustCC,
       eventKey: 'Convert Dust',
@@ -809,7 +720,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'transactions',
       'security',
       'perps',
-      'lending',
       'points',
       'mobile',
       'nft',
