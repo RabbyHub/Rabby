@@ -27,7 +27,7 @@ export const ChainSelectPopup: React.FC<ChainSelectPopupProps> = ({
     <Popup
       visible={visible}
       onCancel={onCancel}
-      height={260}
+      height={360}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose

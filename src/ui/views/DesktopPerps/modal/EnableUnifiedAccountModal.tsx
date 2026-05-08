@@ -7,12 +7,15 @@ import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBordere
 
 interface EnableUnifiedAccountModalProps {
   visible: boolean;
+  /** Stack-aware z-index from usePerpsPopupNav. */
+  zIndex?: number;
   onCancel: () => void;
   onConfirm: () => Promise<boolean | void>;
 }
 
 export const EnableUnifiedAccountModal: React.FC<EnableUnifiedAccountModalProps> = ({
   visible,
+  zIndex,
   onCancel,
   onConfirm,
 }) => {
@@ -40,6 +43,7 @@ export const EnableUnifiedAccountModal: React.FC<EnableUnifiedAccountModalProps>
       footer={null}
       width={400}
       centered
+      zIndex={zIndex}
       closable={false}
       maskClosable={!loading}
       keyboard={!loading}

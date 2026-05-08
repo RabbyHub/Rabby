@@ -45,6 +45,7 @@ import usePerpsState from '../hooks/usePerpsState';
 import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
 import {
   formatPerpsCoin,
+  formatPerpsDexName,
   getStatsReportSide,
   handleDisplayFundingPayments,
 } from '../../DesktopPerps/utils';
@@ -303,17 +304,16 @@ export const PerpsSingleCoin = () => {
     return accountNeedApproveAgent || accountNeedApproveBuilderFee;
   }, [accountNeedApproveAgent, accountNeedApproveBuilderFee]);
 
+  const isLocalWallet =
+    currentPerpsAccount?.type === KEYRING_TYPE.HdKeyring ||
+    currentPerpsAccount?.type === KEYRING_TYPE.SimpleKeyring;
   const hasAutoTriggeredApprove = React.useRef(false);
   useEffect(() => {
     if (hasAutoTriggeredApprove.current) return;
-    if (!currentPerpsAccount || !accountNeedApprove) return;
-    const isLocalWallet =
-      currentPerpsAccount.type === KEYRING_TYPE.HdKeyring ||
-      currentPerpsAccount.type === KEYRING_TYPE.SimpleKeyring;
-    if (!isLocalWallet) return;
+    if (!currentPerpsAccount || !accountNeedApprove || !isLocalWallet) return;
     hasAutoTriggeredApprove.current = true;
     handleActionApproveStatus().catch(() => {});
-  }, [currentPerpsAccount, accountNeedApprove, handleActionApproveStatus]);
+  }, [isLocalWallet, accountNeedApprove, handleActionApproveStatus]);
 
   const showOpenPosition = useMemo(() => {
     return history.location.search.includes('openPosition=true');
@@ -450,6 +450,28 @@ export const PerpsSingleCoin = () => {
     return pnlUsdValue;
   }, [slPrice, positionData]);
 
+  const needHiddenAccountCard = useMemo(() => {
+    const dexName = formatPerpsDexName(coin);
+    // exist dex need approval account agent so can enable unified account
+    if (
+      accountNeedApprove &&
+      !isLocalWallet &&
+      dexName &&
+      !isUnifiedAccount &&
+      !needDepositFirst
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }, [
+    accountNeedApprove,
+    coin,
+    isUnifiedAccount,
+    needDepositFirst,
+    isLocalWallet,
+  ]);
+
   const HeaderRightSlot = useMemo(() => {
     return (
       <div className="flex items-center justify-center">
@@ -523,7 +545,7 @@ export const PerpsSingleCoin = () => {
         />
 
         {/* Available to Trade */}
-        {!hasPosition && isLogin && (
+        {!hasPosition && !needHiddenAccountCard && (
           <div className="flex justify-between items-center text-15 text-r-neutral-title-1 font-medium pt-12 bg-r-neutral-card1 rounded-[12px] p-16">
             <span>
               {t('page.perps.availableToTrade')}:{' '}
@@ -1148,11 +1170,9 @@ export const PerpsSingleCoin = () => {
         availableBalance={Number(availableBalance || 0)}
         quoteAsset={quoteAsset}
         onDepositPress={() => {
-          setOpenPositionVisible(false);
           setAmountVisible(true);
         }}
         onSwapPress={() => {
-          setOpenPositionVisible(false);
           handleSwapEntry();
         }}
         onCancel={() => setOpenPositionVisible(false)}
@@ -1268,8 +1288,10 @@ export const PerpsSingleCoin = () => {
         visible={swapVisible}
         targetAsset={swapTargetAsset}
         onDeposit={() => {
-          setSwapVisible(false);
-          setSwapTargetAsset(undefined);
+          // Stack deposit on top — keep swap popup (and its form state)
+          // mounted so the user can return after deposit closes. Do NOT
+          // reset swapTargetAsset for the same reason — it would re-seed
+          // the swap form.
           setAmountVisible(true);
         }}
         disableSwitch={!!swapTargetAsset}
@@ -1340,11 +1362,11 @@ export const PerpsSingleCoin = () => {
             handlePressRiskTag={() => setRiskPopupVisible(true)}
             quoteAsset={quoteAsset}
             onDepositPress={() => {
-              setAddPositionVisible(false);
+              // Stack deposit on top — keep add-position popup mounted.
               setAmountVisible(true);
             }}
             onSwapPress={() => {
-              setAddPositionVisible(false);
+              // Stack swap on top — keep add-position popup mounted.
               handleSwapEntry();
             }}
             onCancel={() => setAddPositionVisible(false)}
