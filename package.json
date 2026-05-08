@@ -21,7 +21,10 @@
     "build:debug": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:debug:default",
     "build:sourcemap": "npm run clean && npm run make-theme && webpack --progress --env config=sourcemap",
     "sync-chain": "node ./scripts/sync-support-chain.js",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
+    "typecheck": "tsc --noEmit --skipLibCheck --pretty false",
+    "check": "npm run lint && npm run typecheck",
     "test": "jest",
     "pub": "node build/release.js",
     "postinstall": "patch-package"
