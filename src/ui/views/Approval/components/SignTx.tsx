@@ -899,19 +899,35 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       },
     ] as Tx[];
   }, [tx, realNonce, gasLimit]);
+  const gasMethodScopeKey = useMemo(
+    () =>
+      [
+        chainId,
+        currentAccount.address,
+        currentAccount.type,
+        isCancel ? 'cancel' : '',
+        isSpeedUp ? 'speedup' : '',
+        tx.data,
+        tx.from,
+        tx.to,
+        tx.value,
+      ].join('|'),
+    [
+      chainId,
+      currentAccount.address,
+      currentAccount.type,
+      isCancel,
+      isSpeedUp,
+      tx.data,
+      tx.from,
+      tx.to,
+      tx.value,
+    ]
+  );
+
   useEffect(() => {
     setManualGasMethod(undefined);
-  }, [
-    chainId,
-    currentAccount.address,
-    currentAccount.type,
-    isCancel,
-    isSpeedUp,
-    tx.data,
-    tx.from,
-    tx.to,
-    tx.value,
-  ]);
+  }, [gasMethodScopeKey]);
   const _currentAccount = useRabbySelector((s) => s.account.currentAccount!);
 
   const {
@@ -933,12 +949,15 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     isSupportedAddr,
     currentAccount: _currentAccount,
   });
+  const effectiveGasMethod = manualGasMethod ?? gasMethod;
+  const effectiveGasAccountCanPay =
+    effectiveGasMethod === 'gasAccount' && gasAccountCanPay;
   const showTempoGasTokenSelector = useMemo(
     () =>
       isTempoChain(chain?.serverId) &&
-      gasMethod !== 'gasAccount' &&
+      effectiveGasMethod !== 'gasAccount' &&
       isTempoBatchSupportedAccountType(_currentAccount?.type),
-    [chain?.serverId, gasMethod, _currentAccount?.type]
+    [chain?.serverId, effectiveGasMethod, _currentAccount?.type]
   );
 
   const handleAutoChangeGasMethod = useMemoizedFn(
@@ -1120,6 +1139,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     gasMethod,
     setGasMethod: handleAutoChangeGasMethod,
     isWalletConnect: currentAccountType === KEYRING_TYPE.WalletConnectKeyring,
+    autoSwitchKey: gasMethodScopeKey,
   });
 
   useEffect(() => {
@@ -1657,7 +1677,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
     const tempoTx = tx as TxWithTempoExtras<Tx>;
     const shouldUseTempoCallsForGasAccount =
-      gasMethod === 'gasAccount' &&
+      effectiveGasMethod === 'gasAccount' &&
       isTempoChain(chain.serverId) &&
       (currentAccount.type === KEYRING_TYPE.SimpleKeyring ||
         currentAccount.type === KEYRING_TYPE.HdKeyring);
@@ -1750,8 +1770,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         pushType: pushInfo.type,
         lowGasDeadline: pushInfo.lowGasDeadline,
         reqId,
-        isGasLess: gasMethod === 'native' ? useGasLess : false,
-        isGasAccount: gasAccountCanPay,
+        isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
+        isGasAccount: effectiveGasAccountCanPay,
         logId: logId.current,
         sig,
       });
@@ -2823,7 +2843,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                   onSignTx
                   tx={tx}
                   gasAccountCost={gasAccountCost}
-                  gasMethod={manualGasMethod ?? gasMethod}
+                  gasMethod={effectiveGasMethod}
                   onChangeGasMethod={handleManualChangeGasMethod}
                   noCustomRPC={noCustomRPC}
                   isWalletConnect={
@@ -2876,9 +2896,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               currentAccountType === KEYRING_TYPE.WatchAddressKeyring
             }
             noCustomRPC={noCustomRPC}
-            gasMethod={gasMethod}
+            gasMethod={effectiveGasMethod}
             gasAccountCost={gasAccountCost}
-            gasAccountCanPay={gasAccountCanPay}
+            gasAccountCanPay={effectiveGasAccountCanPay}
             canGotoUseGasAccount={canGotoUseGasAccount}
             canDepositUseGasAccount={canDepositUseGasAccount}
             gasAccountAddress={gasAccountAddress}

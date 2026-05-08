@@ -160,6 +160,12 @@ export class SignatureManager {
       : ctx;
   }
 
+  private bindManualGasMethodToFingerprint(fingerprint: string) {
+    if (this.manualGasMethod) {
+      this.manualGasFingerprint = fingerprint;
+    }
+  }
+
   private markRun(fingerprint: string, currentPendingId?: number) {
     if (currentPendingId && this.run?.fingerprint === fingerprint) {
       return currentPendingId;
@@ -181,6 +187,7 @@ export class SignatureManager {
     opId?: number
   ) {
     const fingerprint = this.getFingerprint(request.txs);
+    this.bindManualGasMethodToFingerprint(fingerprint);
 
     this.dispatch({ type: 'SET_CONFIG', payload: request.config });
 
@@ -197,7 +204,10 @@ export class SignatureManager {
     const cached = this.pendingCtx.get(fingerprint);
     if (cached) return cached;
     const currentOpId = this.markRun(fingerprint, opId);
-    const skeleton = this.createSkeletonCtx(request.txs, fingerprint);
+    const skeleton = this.withManualGasMethod(
+      this.createSkeletonCtx(request.txs, fingerprint),
+      fingerprint
+    );
 
     this.dispatch({
       type: 'PREFETCH_START',
@@ -352,12 +362,17 @@ export class SignatureManager {
   };
 
   public prefetch(request: SignatureRequest, wallet: WalletControllerType) {
-    this.close();
+    const fingerprint = this.getFingerprint(request.txs);
+
+    this.close({ preserveManualGasMethod: true });
+    this.bindManualGasMethodToFingerprint(fingerprint);
+
     return this.ensureContext(request, wallet);
   }
 
   public async openUI(request: SignatureRequest, wallet: WalletControllerType) {
     const fingerprint = this.getFingerprint(request.txs);
+    this.bindManualGasMethodToFingerprint(fingerprint);
     const opId = this.markRun(fingerprint);
     this.dispatch({ type: 'SET_CONFIG', payload: request.config });
 
@@ -365,7 +380,10 @@ export class SignatureManager {
       this.pendingCtx.get(fingerprint) ||
       this.ensureContext(request, wallet, opId);
 
-    const skeleton = this.createSkeletonCtx(request.txs, fingerprint);
+    const skeleton = this.withManualGasMethod(
+      this.createSkeletonCtx(request.txs, fingerprint),
+      fingerprint
+    );
     this.dispatch({ type: 'OPEN_UI_SKELETON', fingerprint, ctx: skeleton });
 
     try {
@@ -618,13 +636,15 @@ export class SignatureManager {
   //   }
   // }
 
-  public reset() {
+  public reset(options?: { preserveManualGasMethod?: boolean }) {
     this.pauseRequested = false;
     this.signedHashes = [];
     this.pausedIndex = 0;
     this.pauseAfterThreshold = null;
-    this.manualGasMethod = undefined;
-    this.manualGasFingerprint = undefined;
+    if (!options?.preserveManualGasMethod) {
+      this.manualGasMethod = undefined;
+      this.manualGasFingerprint = undefined;
+    }
     this.clearRunState();
     this.seq++;
     if (this.pendingResult) {
@@ -639,8 +659,13 @@ export class SignatureManager {
     this.dispatch({ type: 'SET_CONFIG', payload: config });
   }
 
-  public close() {
-    this.reset();
+  public close(options?: { preserveManualGasMethod?: boolean }) {
+    this.reset(options);
+  }
+
+  public clearManualGasMethod() {
+    this.manualGasMethod = undefined;
+    this.manualGasFingerprint = undefined;
   }
 
   public pause() {
@@ -697,6 +722,7 @@ export class SignatureManager {
       this.pauseAfterThreshold = opts.pauseAfter;
     }
     const fingerprint = this.getFingerprint(request.txs);
+    this.bindManualGasMethodToFingerprint(fingerprint);
     const resultPromise = this.createResultPromise();
     if (this.state.status === 'prefetch_failure') {
       this.rejectPending(MINI_SIGN_ERROR.PREFETCH_FAILURE);
@@ -707,7 +733,10 @@ export class SignatureManager {
     this.dispatch({
       type: 'UPDATE_CTX',
       fingerprint,
-      ctx: { ...this.state.ctx, mode: 'direct' } as SignerCtx,
+      ctx: this.withManualGasMethod(
+        { ...this.state.ctx, mode: 'direct' } as SignerCtx,
+        fingerprint
+      ),
     });
 
     try {

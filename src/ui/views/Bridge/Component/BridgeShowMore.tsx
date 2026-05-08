@@ -565,7 +565,7 @@ export const DirectSignGasInfo = ({
 
   useEffect(() => {
     setManualGasMethod(undefined);
-  }, [fingerprint]);
+  }, [chainServeId, currentAccount?.address, currentAccount?.type]);
 
   const currentTx = txs[0];
   const isGasAccountTopUpFlow =
@@ -964,6 +964,9 @@ export const DirectSignGasInfo = ({
   );
 
   useEffect(() => {
+    if (manualGasMethod) {
+      return;
+    }
     if (
       shouldAutoSwitchToGasAccountFromGasless({
         showGasLess,
@@ -980,6 +983,7 @@ export const DirectSignGasInfo = ({
     canUseGasLess,
     handleChangeGasAccount,
     isGasNotEnough,
+    manualGasMethod,
     payGasByGasAccount,
     showGasLess,
   ]);

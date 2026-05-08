@@ -136,8 +136,12 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   >(undefined);
 
   React.useEffect(() => {
+    if (_visible) {
+      return;
+    }
+
     setManualGasMethod(undefined);
-  }, [ctx?.fingerprint]);
+  }, [_visible]);
 
   const { value } = useAsync(() => {
     let msg = error?.description || '';
@@ -494,6 +498,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     gasMethod,
     setGasMethod: handleAutoChangeGasMethod,
     isWalletConnect: currentAccount?.type === KEYRING_CLASS.WALLETCONNECT,
+    autoSwitchKey: ctx?.fingerprint,
   });
 
   if (
@@ -867,7 +872,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                   </>
                 }
                 noCustomRPC={noCustomRPC}
-                gasMethod={gasMethod}
+                gasMethod={effectiveGasMethod}
                 gasAccountCost={gasAccountCost}
                 gasAccountCanPay={gasAccountCanPay}
                 canGotoUseGasAccount={canGotoUseGasAccount}
@@ -914,6 +919,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 disableSignBtn={disableSignBtn}
                 isFirstGasLessLoading={!ctx?.txsCalc.length}
                 isFirstGasCostLoading={!ctx?.txsCalc.length}
+                disableAutoGasAccountSwitch={!!manualGasMethod}
                 getContainer={desktopMiniSignerGetContainer}
                 onRedirectToDeposit={onRedirectToDeposit}
                 onOpenGasAccountDeposit={handleOpenGasAccountDeposit}
@@ -1129,7 +1135,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
             </div>
           }
           noCustomRPC={noCustomRPC}
-          gasMethod={gasMethod}
+          gasMethod={effectiveGasMethod}
           gasAccountCost={gasAccountCost}
           gasAccountCanPay={gasAccountCanPay}
           canGotoUseGasAccount={canGotoUseGasAccount}
@@ -1173,6 +1179,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           disableSignBtn={disableSignBtn}
           isFirstGasLessLoading={!ctx?.txsCalc.length}
           isFirstGasCostLoading={!ctx?.txsCalc.length}
+          disableAutoGasAccountSwitch={!!manualGasMethod}
           getContainer={getContainer}
           onRedirectToDeposit={onRedirectToDeposit}
           onOpenGasAccountDeposit={handleOpenGasAccountDeposit}
