@@ -26,11 +26,7 @@ import {
 import { Account } from '@/background/service/preference';
 import { RootModel, RabbyRootState } from '.';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import {
-  formatMarkData,
-  getMaxTimeFromAccountHistory,
-  getPxDecimals,
-} from '../views/Perps/utils';
+import { formatMarkData, getPxDecimals } from '../views/Perps/utils';
 import {
   DEFAULT_TOP_ASSET,
   DEFAULT_ASSET_CATEGORY,
@@ -494,31 +490,41 @@ export const perps = createModel<RootModel>()({
         });
 
       if (isSnapshot) {
+        // Mirror mobile usePerpsStore: snapshot replays a (possibly large)
+        // historical batch on WS reconnect. Take the latest ledger time per
+        // type, then drop pending entries whose time is at or before that
+        // cutoff — HL has already confirmed them.
+        const maxTimeByType: Record<string, number> = {};
+        for (const item of newList) {
+          const prev = maxTimeByType[item.type];
+          if (prev === undefined || item.time > prev) {
+            maxTimeByType[item.type] = item.time;
+          }
+        }
+        const filteredLocalHistory = state.localLoadingHistory.filter((p) => {
+          const cutoff = maxTimeByType[p.type];
+          return cutoff === undefined || p.time > cutoff;
+        });
+
         return {
           ...state,
+          localLoadingHistory: filteredLocalHistory,
           userAccountHistory: newList.reverse().slice(0, 200),
         };
       } else {
-        const {
-          depositMaxTime,
-          withdrawMaxTime,
-          receiveMaxTime,
-        } = getMaxTimeFromAccountHistory(newList);
-
         if (needShowToast) {
           newList.forEach((item) => showDepositAndWithdrawToast(item));
         }
-        const filteredLocalHistory = state.localLoadingHistory.filter(
-          (item) => {
-            if (item.type === 'deposit') {
-              return item.time >= depositMaxTime;
-            } else if (item.type === 'withdraw') {
-              return item.time >= withdrawMaxTime;
-            } else {
-              return item.time >= receiveMaxTime;
-            }
-          }
-        );
+        // Mirror mobile usePerpsStore: any newly-arrived ledger event of type
+        // X means we now have authoritative history for it — drop ALL pending
+        // of that type wholesale. Simpler than time-bucket filtering and keeps
+        // both clients behaving the same way.
+        let filteredLocalHistory = [...state.localLoadingHistory];
+        newList.forEach((item) => {
+          filteredLocalHistory = filteredLocalHistory.filter(
+            (i) => i.type !== item.type
+          );
+        });
 
         return {
           ...state,
