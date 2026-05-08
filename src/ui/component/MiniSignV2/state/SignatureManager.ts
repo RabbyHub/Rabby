@@ -378,9 +378,8 @@ export class SignatureManager {
         prepared,
       });
       if (!this.isActive(opId, fingerprint)) return ctx;
-      const nextCtx = this.withManualGasMethod(ctx, fingerprint);
-      this.dispatch({ type: 'OPEN_UI_SUCCESS', fingerprint, ctx: nextCtx });
-      return nextCtx;
+      this.dispatch({ type: 'OPEN_UI_SUCCESS', fingerprint, ctx });
+      return ctx;
     } catch (error) {
       if (!this.isActive(opId, fingerprint)) return;
       const message = createErrorMessage(error);
@@ -553,11 +552,7 @@ export class SignatureManager {
             signedCount >= this.pauseAfterThreshold),
         onProgress: (nextCtx) => {
           if (!this.isActive(opId, fingerprint)) return;
-          this.dispatch({
-            type: 'SEND_PROGRESS',
-            fingerprint,
-            ctx: this.withManualGasMethod(nextCtx, fingerprint),
-          });
+          this.dispatch({ type: 'SEND_PROGRESS', fingerprint, ctx: nextCtx });
         },
       });
       if (!this.isActive(opId, fingerprint)) return [];

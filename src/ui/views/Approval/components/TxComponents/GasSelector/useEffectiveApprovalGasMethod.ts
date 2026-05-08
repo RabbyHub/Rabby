@@ -47,27 +47,29 @@ export const useEffectiveApprovalGasMethod = ({
     ]
   );
 
-  const effectiveApprovalGasMethod = useMemo(
-    () =>
-      resolveApprovalGasMethod({
-        manualGasMethod,
-        legacyGasMethod: gasMethod,
-        nativeTokenInsufficient: isGasNotEnough,
-        gasAccountChainSupported,
-        freeGasAvailable: canUseGasLess,
-        noCustomRPC,
-        isWalletConnect,
-      }),
-    [
-      canUseGasLess,
+  const effectiveApprovalGasMethod = useMemo(() => {
+    if (manualGasMethod) {
+      return manualGasMethod;
+    }
+
+    return resolveApprovalGasMethod({
+      mode: 'native_insufficient_prefers_gasAccount',
+      legacyGasMethod: gasMethod,
+      nativeTokenInsufficient: isGasNotEnough,
       gasAccountChainSupported,
-      gasMethod,
-      isGasNotEnough,
-      manualGasMethod,
+      freeGasAvailable: canUseGasLess,
       noCustomRPC,
       isWalletConnect,
-    ]
-  );
+    });
+  }, [
+    canUseGasLess,
+    gasAccountChainSupported,
+    gasMethod,
+    isGasNotEnough,
+    manualGasMethod,
+    noCustomRPC,
+    isWalletConnect,
+  ]);
 
   useEffect(() => {
     if (!isReady) {

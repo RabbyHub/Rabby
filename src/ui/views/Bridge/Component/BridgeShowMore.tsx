@@ -698,17 +698,6 @@ export const DirectSignGasInfo = ({
     signatureInstance.toggleGasless(value);
   };
 
-  const handleAutoChangeGasMethod = useCallback(
-    async (method: ApprovalGasMethod) => {
-      try {
-        signatureInstance.setGasMethod(method);
-      } catch (error) {
-        console.error('Gas method change error:', error);
-      }
-    },
-    [signatureInstance]
-  );
-
   const handleChangeGasMethod = useCallback(
     async (method: ApprovalGasMethod) => {
       setManualGasMethod(method);
@@ -1088,9 +1077,7 @@ export const DirectSignGasInfo = ({
             tx={currentTx!}
             gasAccountCost={gasAccount as any}
             gasMethod={effectiveGasMethod}
-            manualGasMethod={manualGasMethod}
             onChangeGasMethod={handleChangeGasMethod}
-            onAutoChangeGasMethod={handleAutoChangeGasMethod}
             isWalletConnect={
               currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring
             }
