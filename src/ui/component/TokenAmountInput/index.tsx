@@ -355,7 +355,7 @@ const TokenAmountInput = ({
             insufficientError && 'text-rabby-red-default'
           )}
           autoFocus
-          value={value}
+          value={value ? splitNumberByStep(value) : ''}
           size="large"
           onChange={handleChange}
           title={value}
