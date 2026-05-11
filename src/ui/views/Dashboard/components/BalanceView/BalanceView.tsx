@@ -361,7 +361,7 @@ export const BalanceView = ({
             )}
           </div>
           <div
-            className="flex flex-end items-center gap-[8px] mb-[7px] ml-[8px] min-h-[20px] cursor-pointer"
+            className="flex flex-end items-center gap-[8px] mb-[4px] ml-[8px] min-h-[20px] cursor-pointer"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

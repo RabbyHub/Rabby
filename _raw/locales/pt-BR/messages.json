@@ -4767,6 +4767,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "Carteira não está respaldada. Iniciar backup."
+    },
+    "UnknownTag": {
+      "label": "Desconhecido",
+      "tooltip": "Token desconhecido, faça sua própria pesquisa."
     }
   },
   "global": {

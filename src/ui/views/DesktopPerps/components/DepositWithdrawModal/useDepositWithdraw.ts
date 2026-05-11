@@ -224,6 +224,7 @@ export const useDepositWithdraw = (
     if (!visible) {
       setUsdValue('');
       setSelectedToken(null);
+      setChainSelectVisible(false);
       setIsWithdrawLoading(false);
       setGasPrice(0);
       setTokenSelectVisible(false);
@@ -233,6 +234,8 @@ export const useDepositWithdraw = (
       setBridgeQuote(null);
       setCacheBridgeHistory(null);
       setIsPreparingSign(false);
+      typedDataSignatureStore.close();
+      closeSign();
     }
   }, [visible]);
 

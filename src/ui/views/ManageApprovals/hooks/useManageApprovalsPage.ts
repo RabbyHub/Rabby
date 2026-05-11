@@ -51,6 +51,17 @@ export const FILTER_TYPES = {
 
 export type ApprovalProcessType = 'contract' | 'assets';
 export type RevokeItemDict = Record<string, ApprovalSpenderItemToBeRevoked>;
+type ApprovalsData = {
+  contractMap: Record<string, ContractApprovalItem>;
+  tokenMap: Record<string, TokenApprovalItem>;
+  nftMap: Record<string, NftApprovalItem>;
+};
+
+const EMPTY_APPROVALS_DATA: ApprovalsData = {
+  contractMap: {},
+  tokenMap: {},
+  nftMap: {},
+};
 
 function sortTokenOrNFTApprovalsSpenderList(
   approval: TokenApprovalItem | NftApprovalItem
@@ -500,28 +511,15 @@ export function useManageApprovalsPage(options: {
   const [searchKw, setSearchKw] = React.useState('');
   const debouncedSearchKw = useDebouncedValue(searchKw, 250);
   const queueRef = React.useRef(new PQueue({ concurrency: 40 }));
-  const [approvalsData, setApprovalsData] = React.useState<{
-    contractMap: Record<string, ContractApprovalItem>;
-    tokenMap: Record<string, TokenApprovalItem>;
-    nftMap: Record<string, NftApprovalItem>;
-  }>({
-    contractMap: {},
-    tokenMap: {},
-    nftMap: {},
-  });
-  const emptyApprovalsData = React.useMemo(
-    () => ({
-      contractMap: {},
-      tokenMap: {},
-      nftMap: {},
-    }),
-    []
-  );
 
-  const { loading: isLoading, runAsync: loadApprovals } = useRequest(
+  const {
+    loading: isLoading,
+    runAsync: loadApprovals,
+    data: approvalsData = EMPTY_APPROVALS_DATA,
+  } = useRequest(
     async () => {
       if (!account?.address) {
-        return emptyApprovalsData;
+        return EMPTY_APPROVALS_DATA;
       }
 
       const openapiClient = options.isTestnet
@@ -532,7 +530,7 @@ export function useManageApprovalsPage(options: {
         contractMap: {},
         tokenMap: {},
         nftMap: {},
-      } as typeof approvalsData;
+      } as ApprovalsData;
 
       queueRef.current.clear();
 
@@ -755,10 +753,7 @@ export function useManageApprovalsPage(options: {
       manual: true,
       refreshDeps: [account?.address],
       cacheKey: `manage-approvals-${account?.address}`,
-      staleTime: 5000,
-      onSuccess(data) {
-        setApprovalsData(data);
-      },
+      staleTime: 1000,
     }
   );
 

@@ -35,7 +35,9 @@ export const CurrencyModal = ({
   };
 
   const sortedList = useMemo(() => {
-    const topCodes = Array.from(new Set([currency.code, 'USD', 'EUR']));
+    const topCodes = Array.from(
+      new Set([currency.code, 'BTC', 'ETH', 'USD', 'EUR'])
+    );
 
     const topList = topCodes.map((code) =>
       currencyList.find((item) => item.code === code)

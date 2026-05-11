@@ -154,7 +154,8 @@ const updateAssetApprovalSpender = (
   const index = list.findIndex((data) => {
     if (
       data.id === item.id &&
-      data.$assetParent?.id === item.$assetParent?.id
+      data.$assetParent?.id === item.$assetParent?.id &&
+      (data.permit2_id || '') === (item.permit2_id || '')
     ) {
       return true;
     }

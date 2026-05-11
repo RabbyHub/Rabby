@@ -11,7 +11,7 @@ import { Chain } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useInterval, useLocalStorageState, useMemoizedFn } from 'ahooks';
 import { Image, Tooltip } from 'antd';
-import { sortBy } from 'lodash';
+import { isNil, sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as RcIconStatusError } from 'ui/assets/small-swap/status-failed.svg';
@@ -22,6 +22,7 @@ import { ReactComponent as RcIconEmptyCC } from 'ui/assets/small-swap/empty-cc.s
 import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 import { CheckboxV2 } from './Checkbox';
+import { UnknownTag } from '@/ui/component';
 
 const Container = styled.section`
   .token-list {
@@ -65,6 +66,10 @@ const Container = styled.section`
     line-height: 17px;
   }
 
+  .token-list-cell--amount {
+    padding-left: 4px;
+  }
+
   .token-list-row {
     background: transparent;
     cursor: pointer;
@@ -92,8 +97,8 @@ const Container = styled.section`
 
 const COLUMN_WIDTH = {
   select: 52,
-  token: 142,
-  amount: 112,
+  token: 154,
+  amount: 100,
   value: 112,
   status: 112,
 } as const;
@@ -274,7 +279,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
             {t('page.desktopSmallSwap.tokenColumn')}
           </div>
           <div
-            className="token-list-cell flex items-center justify-end"
+            className="token-list-cell token-list-cell--amount flex items-center justify-end"
             style={{ width: COLUMN_WIDTH.amount }}
           >
             {t('page.desktopSmallSwap.amountColumn')}
@@ -342,8 +347,8 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
                   </div>
 
                   <div
-                    className="token-list-cell flex-1 min-w-0 flex items-center"
-                    style={{ width: COLUMN_WIDTH.amount }}
+                    className="token-list-cell pr-0 flex-1 min-w-0 flex items-center"
+                    style={{ width: COLUMN_WIDTH.token }}
                   >
                     <div className="flex items-center gap-[10px] min-w-0">
                       <div className="relative w-[24px] h-[24px] flex-shrink-0">
@@ -365,14 +370,18 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
                           />
                         </TooltipWithMagnetArrow>
                       </div>
-                      <div className="text-[14px] leading-[17px] text-r-neutral-title1 truncate">
+                      <div
+                        title={getTokenSymbol(record)}
+                        className="text-[14px] leading-[17px] text-r-neutral-title1 truncate"
+                      >
                         {getTokenSymbol(record)}
                       </div>
                     </div>
+                    {isNil(record.is_core) && <UnknownTag className="ml-8" />}
                   </div>
 
                   <div
-                    className="token-list-cell flex items-center justify-end"
+                    className="token-list-cell token-list-cell--amount flex items-center justify-end"
                     style={{ width: COLUMN_WIDTH.amount }}
                   >
                     <div className="text-r-neutral-title1">

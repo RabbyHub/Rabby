@@ -4761,6 +4761,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "Wallet Tidak Cadangan. Mulai Cadangan."
+    },
+    "UnknownTag": {
+      "label": "Tidak dikenal",
+      "tooltip": "Token tidak dikenal, silakan lakukan riset sendiri."
     }
   },
   "global": {
