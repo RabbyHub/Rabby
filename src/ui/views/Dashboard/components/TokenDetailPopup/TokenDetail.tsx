@@ -2,7 +2,7 @@ import { useInfiniteScroll } from 'ahooks';
 import { Button } from 'antd';
 import { TokenEntityDetail, TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
-import { isNil, last, sortBy } from 'lodash';
+import { last, sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -30,7 +30,7 @@ import { Account } from '@/background/service/preference';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
 import { DBK_CHAIN_ID } from '@/constant';
-import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { isLpToken, isUnknownToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { transformToHistory } from '@/utils/history';
 const isDesktop = getUiType().isDesktop;
@@ -70,10 +70,6 @@ const TokenDetail = ({
   const currentAccount = account || _currentAccount;
 
   const ref = useRef<HTMLDivElement | null>(null);
-
-  const isUnknownToken = useMemo(() => {
-    return isNil(token.is_core);
-  }, [token.is_core]);
 
   const getTokenAmount = React.useCallback(async () => {
     // if (token.amount !== undefined) return;
@@ -363,7 +359,7 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
-            {isUnknownToken && (
+            {isUnknownToken(token) && (
               <UnknownTag className="ml-8 !px-[8px] !py-[4px] !text-[13px] !leading-[13px] bg-rb-neutral-line" />
             )}
             {isLpToken(token) && (

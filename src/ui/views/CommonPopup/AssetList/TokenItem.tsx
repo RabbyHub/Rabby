@@ -1,13 +1,13 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { TCell, TRow } from './components/Table';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import clsx from 'clsx';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
-import { isNil, isNumber } from 'lodash';
+import { isNumber } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { findChain } from '@/utils/chain';
-import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { isLpToken, isUnknownToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
@@ -143,9 +143,6 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
     },
     [history, item.chain, tokenId]
   );
-  const isUnknownToken = useMemo(() => {
-    return isNil(item.is_core);
-  }, [item.is_core]);
 
   return (
     <TCell className="py-8 flex gap-10 items-center flex-shrink-1 flex-1">
@@ -184,7 +181,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
             <span className="text-r-neutral-title-1 font-medium text-15 leading-[18px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
               {item.symbol}
             </span>
-            {isUnknownToken && <UnknownTag className="ml-2" />}
+            {isUnknownToken(item) && <UnknownTag className="ml-2" />}
             {isLpToken(item) && (
               <span className="inline-flex">
                 <LpTokenTag

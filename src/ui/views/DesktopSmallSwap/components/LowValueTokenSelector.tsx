@@ -5,13 +5,16 @@ import IconUnknown from '@/ui/assets/token-default.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { formatAmount, formatUsdValue } from '@/ui/utils';
-import { defaultTokenFilter } from '@/ui/utils/portfolio/lpToken';
+import {
+  defaultTokenFilter,
+  isUnknownToken,
+} from '@/ui/utils/portfolio/lpToken';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Chain } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useInterval, useLocalStorageState, useMemoizedFn } from 'ahooks';
 import { Image, Tooltip } from 'antd';
-import { isNil, sortBy } from 'lodash';
+import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as RcIconStatusError } from 'ui/assets/small-swap/status-failed.svg';
@@ -377,7 +380,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
                         {getTokenSymbol(record)}
                       </div>
                     </div>
-                    {isNil(record.is_core) && <UnknownTag className="ml-8" />}
+                    {isUnknownToken(record) && <UnknownTag className="ml-8" />}
                   </div>
 
                   <div

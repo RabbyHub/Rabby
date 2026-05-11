@@ -45,7 +45,7 @@ import { useSearchTestnetToken } from '@/ui/hooks/useSearchTestnetToken';
 import { useHistory } from 'react-router-dom';
 import { ExchangeLogos } from './CexLogos';
 import { LpTokenSwitch } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
-import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { isLpToken, isUnknownToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { ChainFilterV2Line } from './ChainFilterV2Line';
 import { isNil, isNumber } from 'lodash';
@@ -730,10 +730,6 @@ function CommonTokenItem(props: {
     return (isBridgeTo || isSwapTo) && !!cexIds?.length;
   }, [isBridgeTo, isSwapTo, cexIds?.length]);
 
-  const isUnknownToken = useMemo(() => {
-    return isNil(token.is_core);
-  }, [token.is_core]);
-
   const handleTokenPress = useCallback(() => {
     if (disabled) {
       return;
@@ -800,7 +796,7 @@ function CommonTokenItem(props: {
                   >
                     {getTokenSymbol(token)}
                   </span>
-                  {isUnknownToken && <UnknownTag className="ml-4" />}
+                  {isUnknownToken(token) && <UnknownTag className="ml-4" />}
                   {isLpToken(token) && (
                     <LpTokenTag
                       size={14}
@@ -819,7 +815,7 @@ function CommonTokenItem(props: {
                   >
                     {getTokenSymbol(token)}
                   </span>
-                  {isUnknownToken && !isBridgeTo && <UnknownTag />}
+                  {isUnknownToken(token) && !isBridgeTo && <UnknownTag />}
                   {isLpToken(token) && (
                     <LpTokenTag
                       size={14}
@@ -835,7 +831,7 @@ function CommonTokenItem(props: {
                   {chainItem?.name}
                 </span>
               ) : isBridgeTo ? (
-                isUnknownToken ? (
+                isUnknownToken(token) ? (
                   <UnknownTag className="ml-10 w-min" />
                 ) : (
                   <div
