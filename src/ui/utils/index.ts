@@ -23,6 +23,7 @@ export * from './webapi';
 export * from './time';
 
 export * from './number';
+export * from './os';
 
 const UI_TYPE = {
   Tab: 'index',
@@ -60,7 +61,7 @@ export const hex2Text = (hex: string) => {
   try {
     return hex.startsWith('0x')
       ? decodeURIComponent(
-          hex.replace(/^0x/, '').replace(/[0-9a-f]{2}/g, '%$&')
+          hex.replace(/^0x/, '').replace(/[0-9a-fA-F]{2}/g, '%$&')
         )
       : hex;
   } catch {

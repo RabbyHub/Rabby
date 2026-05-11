@@ -1241,9 +1241,11 @@ function TableByEIP7702({
 export const ApprovalsTabPane = ({
   isDesktop = true,
   desktopChain,
+  header,
 }: {
   isDesktop?: boolean;
   desktopChain?: CHAINS_ENUM;
+  header?: React.ReactNode;
 }) => {
   const { t } = useTranslation();
 
@@ -1440,97 +1442,141 @@ export const ApprovalsTabPane = ({
         {
           'with-switchnet-tabs': isShowTestnet && !isDesktop,
         },
-        'w-full max-w-full'
+        'w-full max-w-full flex'
       )}
     >
       <div
         className={clsx(
-          'desktop-approvals-manager',
-          isDesktop && 'approvals-manager-desktop'
+          isDesktop
+            ? 'desktop-approvals-manager approvals-manager-desktop'
+            : 'approvals-manager'
         )}
       >
-        {!isDesktop && (
-          <header className="approvals-manager__header">
-            {isShowTestnet && (
-              <div className="tabs">
-                <NetSwitchTabs
-                  value={selectedTab}
-                  onTabChange={onTabChange}
-                  isDesktop={isDesktop}
-                />
-              </div>
-            )}
-            <div className="title">
-              {/* Approvals on {ellipsisAddress(account?.address || '')} */}
-              {t('page.approvals.header.title', {
-                address: ellipsisAddress(account?.address || ''),
-              })}
-              {account?.alianName && (
-                <span className="text-r-neutral-foot text-[20px] font-normal">
-                  {' '}
-                  ({account?.alianName})
-                </span>
-              )}
-            </div>
-          </header>
-        )}
+        {header}
 
         {selectedTab === 'mainnet' ? (
           <>
             <main className="relative w-full max-w-full">
-              <div className="approvals-manager__table-tools">
-                <PillsSwitch
-                  value={tab}
-                  options={
-                    [
-                      {
-                        key: 'contract',
-                        // 'By Contracts'
-                        label: t('page.approvals.tab-switch.contract'),
-                      },
-                      {
-                        key: 'assets',
-                        // 'By Assets'
-                        label: t('page.approvals.tab-switch.assets'),
-                      },
-                      {
-                        key: 'eip-7702',
-                        // 'By EIP-7702'
-                        label: `${t('page.approvals.tab-switch.eip-7702')} (${
-                          delegationAddresses?.length || 0
-                        })`,
-                      },
-                    ] as const
-                  }
-                  onTabChange={(key) => {
-                    setTab(key);
-                    if (key !== 'eip-7702') {
-                      setFilterType(key);
+              {isDesktop ? (
+                <div className="approvals-manager__table-tools">
+                  <PillsSwitch
+                    value={tab}
+                    options={
+                      [
+                        {
+                          key: 'contract',
+                          // 'By Contracts'
+                          label: t('page.approvals.tab-switch.contract'),
+                        },
+                        {
+                          key: 'assets',
+                          // 'By Assets'
+                          label: t('page.approvals.tab-switch.assets'),
+                        },
+                        {
+                          key: 'eip-7702',
+                          // 'By EIP-7702'
+                          label: `${t('page.approvals.tab-switch.eip-7702')} (${
+                            delegationAddresses?.length || 0
+                          })`,
+                        },
+                      ] as const
                     }
-                  }}
-                  className={clsx(
-                    'bg-rb-neutral-bg-0 rounded-[10px] p-[2px] h-[30px]'
-                  )}
-                  itemClassname="text-[12px] leading-[14px] font-medium px-[12px] py-[6px] w-auto rounded-[8px]"
-                  itemClassnameActive={
-                    'text-rb-neutral-InvertHighlight bg-rb-neutral-foot'
-                  }
-                  itemClassnameInActive={'text-rb-neutral-foot'}
-                />
-
-                <div className="flex items-center gap-x-12">
-                  <SearchInput
-                    value={searchKw}
-                    onChange={(e) => setSearchKw(e.target.value)}
-                    prefix={<img src={IconSearch} />}
-                    className="search-input"
-                    suffix={<span />}
-                    placeholder={t('page.approvals.search.placeholder', {
-                      type: tab !== 'assets' ? 'contract' : 'assets',
-                    })}
+                    onTabChange={(key) => {
+                      setTab(key);
+                      if (key !== 'eip-7702') {
+                        setFilterType(key);
+                      }
+                    }}
+                    className={clsx(
+                      'bg-rb-neutral-bg-0 rounded-[10px] p-[2px] h-[30px]'
+                    )}
+                    itemClassname="text-[12px] leading-[14px] font-medium px-[12px] py-[6px] w-auto rounded-[8px]"
+                    itemClassnameActive={
+                      'text-rb-neutral-InvertHighlight bg-rb-neutral-foot dark:bg-rb-neutral-bg-4'
+                    }
+                    itemClassnameInActive={'text-rb-neutral-foot'}
                   />
+
+                  <div className="flex items-center gap-x-12">
+                    <SearchInput
+                      value={searchKw}
+                      onChange={(e) => setSearchKw(e.target.value)}
+                      prefix={<img src={IconSearch} />}
+                      className="search-input"
+                      suffix={<span />}
+                      placeholder={t('page.approvals.search.placeholder', {
+                        type: tab !== 'assets' ? 'contract' : 'assets',
+                      })}
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="approvals-manager__table-tools">
+                  <PillsSwitch
+                    value={tab}
+                    options={
+                      [
+                        {
+                          key: 'contract',
+                          // 'By Contracts'
+                          label: t('page.approvals.tab-switch.contract'),
+                        },
+                        {
+                          key: 'assets',
+                          // 'By Assets'
+                          label: t('page.approvals.tab-switch.assets'),
+                        },
+                        {
+                          key: 'eip-7702',
+                          // 'By EIP-7702'
+                          label: `${t('page.approvals.tab-switch.eip-7702')} (${
+                            delegationAddresses?.length || 0
+                          })`,
+                        },
+                      ] as const
+                    }
+                    onTabChange={(key) => {
+                      setTab(key);
+                      if (key !== 'eip-7702') {
+                        setFilterType(key);
+                      }
+                    }}
+                    className={clsx(
+                      isDesktop &&
+                        'bg-transparent p-2 rounded-[8px] border-[0.5px] border-solid border-rabby-neutral-line'
+                    )}
+                    itemClassname="text-[15px] w-[128px] h-[40px]"
+                    itemClassnameActive={
+                      isDesktop
+                        ? 'bg-r-blue-light1 rounded-[6px]'
+                        : 'bg-r-neutral-bg-1'
+                    }
+                    itemClassnameInActive={
+                      'text-r-neutral-body hover:text-r-blue-default'
+                    }
+                  />
+
+                  <div className="flex items-center gap-x-12">
+                    <SearchInput
+                      value={searchKw}
+                      onChange={(e) => setSearchKw(e.target.value)}
+                      prefix={<img src={IconSearch} />}
+                      className="search-input"
+                      suffix={<span />}
+                      placeholder={t('page.approvals.search.placeholder', {
+                        type: tab !== 'assets' ? 'contract' : 'assets',
+                      })}
+                    />
+
+                    <ChainSelectorButton
+                      large
+                      chain={chain}
+                      setChain={setChain}
+                    />
+                  </div>
+                </div>
+              )}
 
               <div className="approvals-manager__table-wrapper">
                 <TableByContracts

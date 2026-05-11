@@ -12,6 +12,8 @@ import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
 import { useRequest } from 'ahooks';
 import { nanoid } from 'nanoid';
+import { getGasAccountDecision } from '@/ui/views/Approval/components/FooterBar/gasAccountDecision';
+import { KEYRING_CLASS } from '@/constant';
 
 export const GAS_ACCOUNT_INSUFFICIENT_TIP =
   'Gas balance is not enough for transaction';
@@ -66,28 +68,25 @@ export const useGasAccountTxsCheck = ({
     }
   );
 
+  const gasDecision = getGasAccountDecision({
+    gasAccountCost: gasAccountCost as typeof gasAccountCost & {
+      err_msg?: string;
+    },
+    noCustomRPC: !!noCustomRPC,
+    isWalletConnect: currentAccount.type === KEYRING_CLASS.WALLETCONNECT,
+    accountType: currentAccount.type,
+  });
+
   const gasAccountCanPay =
     gasMethod === 'gasAccount' &&
     isSupportedAddr &&
-    noCustomRPC &&
-    !!gasAccountCost?.balance_is_enough &&
-    !gasAccountCost.chain_not_support &&
-    !!gasAccountCost.is_gas_account &&
-    !gasAccountCost.err_msg;
+    gasDecision.canUseGasAccount;
 
   const canGotoUseGasAccount =
-    isSupportedAddr &&
-    noCustomRPC &&
-    !!gasAccountCost?.balance_is_enough &&
-    !gasAccountCost.chain_not_support &&
-    !!gasAccountCost.is_gas_account;
+    isSupportedAddr && gasDecision.canGotoUseGasAccount;
 
   const canDepositUseGasAccount =
-    isSupportedAddr &&
-    noCustomRPC &&
-    gasAccountCost &&
-    !gasAccountCost?.balance_is_enough &&
-    !gasAccountCost.chain_not_support;
+    isSupportedAddr && gasDecision.canDepositUseGasAccount;
 
   return {
     gasAccountCost,

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type WrappedComponentProps<T = {}> = {
@@ -16,24 +16,24 @@ export const wrapModalPromise = <T extends WrappedComponentProps>(
 ) => (props: Partial<T>) => {
   const div = document.createElement('div');
   document.body.appendChild(div);
+  const root = createRoot(div);
 
   return new Promise<void>((resolve, reject) => {
     const handleCancel = () => {
       setTimeout(() => {
-        ReactDOM.unmountComponentAtNode(div);
+        root.unmount();
         div.parentElement?.removeChild(div);
       }, 1000);
       reject();
     };
 
-    ReactDOM.render(
+    root.render(
       // @ts-expect-error we know T would be valid
       <Component
         onFinished={resolve as () => void}
         onCancel={handleCancel}
         {...props}
-      />,
-      div
+      />
     );
   });
 };

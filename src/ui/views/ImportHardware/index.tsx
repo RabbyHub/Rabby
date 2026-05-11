@@ -1,5 +1,6 @@
 import { useHistory } from 'react-router-dom';
 import { KEYRING_CLASS } from 'consts';
+import { withHardwareImportSelectAddressSource } from '../SelectAddress/route';
 
 import './index.css';
 
@@ -25,7 +26,7 @@ const ImportHardware = () => {
           keyring: KEYRING_CLASS.HARDWARE[hardware],
           brand,
         },
-        search,
+        search: withHardwareImportSelectAddressSource(search),
       });
     } catch (err) {
       console.log('connect error', err);

@@ -13,6 +13,7 @@ export const app = createModel<RootModel>()({
      * so its type could be annotated as `WalletControllerType`
      */
     wallet: (null as any) as WalletControllerType,
+    hasUnlockedOnce: false,
   },
   reducers: {
     /**
@@ -31,6 +32,12 @@ export const app = createModel<RootModel>()({
         wallet: (payload.wallet as unknown) as WalletControllerType,
       };
     },
+    setField(state, payload: Partial<typeof state>) {
+      return {
+        ...state,
+        ...payload,
+      };
+    },
   },
   effects: (dispatch) => ({
     /**
@@ -39,12 +46,14 @@ export const app = createModel<RootModel>()({
     initBizStore() {
       dispatch.account.init();
       dispatch.preference.init();
+      dispatch.currency.init();
       dispatch.swap.init();
       dispatch.whitelist.init();
       dispatch.bridge.init();
       dispatch.gasAccount.init();
       dispatch.exchange.init();
       dispatch.perps.initEventBus();
+      dispatch.innerDappFrame.init();
     },
   }),
 });

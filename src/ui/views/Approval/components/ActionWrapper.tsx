@@ -80,6 +80,7 @@ export const DIV = styled.div`
 
 export const ActionWrapper: React.FC<{
   isEmptyBody?: boolean;
+  children?: React.ReactNode;
 }> = ({ children, isEmptyBody }) => {
   return (
     <DIV>

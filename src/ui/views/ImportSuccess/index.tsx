@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { Button } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -23,16 +24,27 @@ import { connectStore, useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
 import { ga4 } from '@/utils/ga4';
 import { UI_TYPE } from '@/constant/ui';
+import { RcCreateAddressSuccessIcon } from '@/ui/assets/add-address';
+import {
+  SuccessAddressCards,
+  SuccessAddressCardsRef,
+} from '../AddAddress/SuccessAddressCards';
 
 const ImportSuccess = ({
   isPopup = false,
   isInModal,
+  onBack,
+  onNavigate,
+  state: _state,
 }: {
   isPopup?: boolean;
   isInModal?: boolean;
+  onBack?(): void;
+  onNavigate?(type: string, state?: Record<string, any>): void;
+  state?: Record<string, any>;
 }) => {
   const history = useHistory();
-  const { state } = useLocation<{
+  const location = useLocation<{
     accounts: Account[];
     hasDivider: boolean;
     title: string;
@@ -45,8 +57,18 @@ const ImportSuccess = ({
     supportChainList?: Chain[];
   }>();
 
+  const state = _state || location.state || {};
+  const safeAccount = state.accounts?.[0];
+  const isSafeSuccess = useMemo(
+    () =>
+      Boolean(state?.supportChainList?.length) &&
+      Boolean(safeAccount) &&
+      safeAccount.type === KEYRING_CLASS.GNOSIS,
+    [safeAccount, state?.supportChainList]
+  );
+
   const dispatch = useRabbyDispatch();
-  const addressItems = useRef(new Array(state.accounts.length));
+  const addressItems = useRef(new Array(state.accounts?.length));
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)') && isPopup;
   const {
@@ -59,10 +81,25 @@ const ImportSuccess = ({
     importedLength = 0,
   } = state;
   const [, resolveApproval] = useApproval();
+  const safeAddresses = React.useMemo(
+    () =>
+      safeAccount
+        ? [
+            {
+              address: safeAccount.address,
+              alias: safeAccount.alianName || '',
+            },
+          ]
+        : [],
+    [safeAccount]
+  );
+  const safeSuccessAddressCardsRef = React.useRef<SuccessAddressCardsRef>(null);
 
   const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
     e?.stopPropagation();
-    if (!stopEditing) {
+    if (isSafeSuccess) {
+      await safeSuccessAddressCardsRef.current?.commitAllAliases();
+    } else if (!stopEditing) {
       addressItems.current.forEach((item) => item.alianNameConfirm());
     }
     if (getUiType().isTab) {
@@ -77,14 +114,15 @@ const ImportSuccess = ({
     }
 
     if (UI_TYPE.isDesktop) {
-      history.push('/desktop/profile');
+      onNavigate?.('done');
     } else {
       history.push('/dashboard');
     }
   };
-  const importedIcon =
-    KEYRING_ICONS[accounts[0].type] ||
-    WALLET_BRAND_CONTENT[accounts[0].brandName]?.image;
+  const importedIcon = accounts?.[0]
+    ? KEYRING_ICONS[accounts[0].type] ||
+      WALLET_BRAND_CONTENT[accounts[0].brandName]?.image
+    : undefined;
   const [stopEditing, setStopEditing] = useState(true);
   const [editIndex, setEditIndex] = useState(0);
   const startEdit = (editing: boolean, index: number) => {
@@ -97,6 +135,9 @@ const ImportSuccess = ({
   };
 
   useEffect(() => {
+    if (!accounts?.[0]) {
+      return;
+    }
     if (
       Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type as any)
     ) {
@@ -117,7 +158,63 @@ const ImportSuccess = ({
     }
 
     dispatch.account.getCurrentAccountAsync();
-  }, []);
+  }, [accounts, dispatch]);
+
+  if (isSafeSuccess && safeAccount) {
+    return (
+      <div
+        className={clsx(
+          'import-success-safe bg-r-neutral-bg-1',
+          isInModal ? 'h-[600px]' : 'min-h-full h-full'
+        )}
+      >
+        <div className="import-success-safe__content">
+          <div className="import-success-safe__hero">
+            <RcCreateAddressSuccessIcon className="import-success-safe__hero-icon" />
+            <div className="import-success-safe__title">
+              {title || t('page.newAddress.addressAddedCount', { count: 1 })}
+            </div>
+          </div>
+
+          <div className="mt-[34px] min-h-0 h-[85px] overflow-hidden">
+            <SuccessAddressCards
+              ref={safeSuccessAddressCardsRef}
+              addresses={safeAddresses}
+            />
+          </div>
+
+          <div className="import-success-safe__desc">
+            {t('page.importSuccess.gnosisChainDesc', {
+              count: state.supportChainList.length,
+            })}
+          </div>
+          <div className="import-success-safe__chains">
+            {state.supportChainList.map((chain) => (
+              <div className="import-success-safe__chain" key={chain.id}>
+                <img
+                  src={chain.logo}
+                  alt=""
+                  className="import-success-safe__chain-logo"
+                />
+                <span>{chain.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="import-success-safe__footer">
+          <Button
+            type="primary"
+            size="large"
+            className="import-success-safe__button"
+            onClick={handleNextClick}
+          >
+            {t('global.Done')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <StrayPageWithButton

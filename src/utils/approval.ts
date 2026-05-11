@@ -268,7 +268,7 @@ export function compareContractApprovalItemByRiskLevel(
     getContractRiskEvaluation(a.risk_level, a.$riskAboutValues);
   const bRisk =
     b.$contractRiskEvaluation ||
-    getContractRiskEvaluation(b.risk_level, a.$riskAboutValues);
+    getContractRiskEvaluation(b.risk_level, b.$riskAboutValues);
 
   // some times, server risk score is null, so we need to compare client risk score
   if (
@@ -362,6 +362,7 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
   let isCollectionHasNFTs = false;
   const resTexts = {
     displayAmountText: '',
+    displayAmount: '',
     displayBalanceText: '',
     balanceNumText: '' as number | string,
     balanceUnitText: '',
@@ -424,6 +425,8 @@ export function getSpenderApprovalAmount(spender: AssetApprovalSpender) {
     resTexts.displayAmountText = isUnlimited
       ? 'Unlimited'
       : `${stepNumberText} ${spender.$assetParent?.name || ''}`;
+
+    resTexts.displayAmount = isUnlimited ? 'Unlimited' : `${stepNumberText}`;
 
     const absBalance = spender.$assetParent?.balance;
     resTexts.balanceNumText =
@@ -498,7 +501,7 @@ function getAssetSpenderTypeOrderScore(spender: AssetApprovalSpender) {
     }
   }
 
-  return AssetTypeScores.unknown;
+  return score;
 }
 
 /**

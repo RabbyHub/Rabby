@@ -5,11 +5,17 @@ import IconBack from 'ui/assets/icon-back.svg';
 import IconCoboArgus from 'ui/assets/walletlogo/CoboArgus.svg';
 
 export const Header: React.FC<{
+  children?: React.ReactNode;
   hasBack?: boolean;
-}> = ({ children, hasBack = true }) => {
+  onBack?(): void;
+}> = ({ children, hasBack = true, onBack }) => {
   const history = useHistory();
 
   const handleClickBack = () => {
+    if (onBack) {
+      onBack();
+      return;
+    }
     if (history.length > 1) {
       history.goBack();
       sessionStorage.setItem(

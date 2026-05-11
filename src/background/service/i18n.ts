@@ -13,13 +13,19 @@ export const getFirstPreferredLangCode = async () => {
   if (!userPreferredLocaleCodes) {
     userPreferredLocaleCodes = [];
   }
-  const firstPreferredLangCode = LANGS.find((item) => {
-    return userPreferredLocaleCodes.find(
-      (code) =>
+  let firstPreferredLangCode = 'en';
+  for (const code of userPreferredLocaleCodes) {
+    const lang = LANGS.find((item) => {
+      return (
         code.toLowerCase() === item.code.toLowerCase() ||
         item.code.toLowerCase() === code.toLowerCase().split('-')[0]
-    );
-  })?.code;
+      );
+    });
+    if (lang) {
+      firstPreferredLangCode = lang.code;
+      break;
+    }
+  }
   return firstPreferredLangCode || 'en';
 };
 

@@ -38,12 +38,14 @@ interface ActionRowProps {
   actionKeys: ('withdraw' | 'claim' | 'default' | '')[]; // default 占位，空字符串不现实
   portfolio: PortfolioItem;
   protocolLogo: string;
+  protocolName?: string;
   className?: string;
 }
 export const ActionRow = ({
   actionKeys,
   portfolio,
   protocolLogo,
+  protocolName,
   className,
 }: ActionRowProps) => {
   return (
@@ -60,6 +62,7 @@ export const ActionRow = ({
               chain={portfolio?.pool.chain}
               type="withdraw"
               protocolLogo={protocolLogo}
+              protocolName={protocolName}
             />
           );
         }
@@ -71,6 +74,7 @@ export const ActionRow = ({
               chain={portfolio?.pool.chain}
               type="claim"
               protocolLogo={protocolLogo}
+              protocolName={protocolName}
             />
           );
         }

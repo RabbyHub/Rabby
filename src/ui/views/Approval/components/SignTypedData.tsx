@@ -28,11 +28,18 @@ import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { FooterBar } from './FooterBar/FooterBar';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
+import {
+  filterPrimaryType,
+  parseSignTypedDataMessage,
+} from './SignTypedDataExplain/parseSignTypedDataMessage';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TypedDataActions';
-import { normalizeTypeData } from './TypedDataActions/utils';
+import {
+  cleanEIP712Payload,
+  isDeepJSON,
+  normalizeTypeData,
+} from './TypedDataActions/utils';
 import {
   Level,
   defaultRules,
@@ -75,6 +82,51 @@ interface SignTypedDataProps {
   account?: Account;
   $ctx?: any;
 }
+
+const POLYGON_CHAIN_ID = 137;
+const POLYGON_META_TRANSACTION_PRIMARY_TYPES = new Set([
+  'MetaTransaction',
+  'NativeMetaTransaction',
+]);
+
+// Polygon legacy meta transactions may encode the chain as domain.salt instead
+// of domain.chainId. We only patch the typed-data copy used for parsing/display.
+const normalizePolygonMetaTransactionTypedData = (
+  typedData: Record<string, any> | null
+) => {
+  if (
+    !typedData?.domain ||
+    typedData.domain.chainId ||
+    !typedData.domain.salt ||
+    !typedData.message?.functionSignature
+  ) {
+    return typedData;
+  }
+
+  const primaryType = typedData.primaryType;
+  const hasMetaTransactionShape =
+    POLYGON_META_TRANSACTION_PRIMARY_TYPES.has(primaryType) ||
+    typedData.types?.[primaryType]?.some(
+      (field) => field?.name === 'functionSignature'
+    );
+  if (!hasMetaTransactionShape) {
+    return typedData;
+  }
+
+  let chainId: number;
+  try {
+    chainId = Number(BigInt(typedData.domain.salt));
+  } catch (error) {
+    return typedData;
+  }
+  if (chainId !== POLYGON_CHAIN_ID) {
+    return typedData;
+  }
+
+  const normalizedTypedData = cloneDeep(typedData);
+  normalizedTypedData.domain.chainId = chainId;
+  return normalizedTypedData;
+};
 
 const SignTypedData = ({
   params,
@@ -193,8 +245,15 @@ const SignTypedData = ({
     if (!isSignTypedDataV1) {
       try {
         const v = JSON.parse(data[1]);
-        const displayData = cloneDeep(v);
-        const normalized = normalizeTypeData(v);
+
+        let v2 = v;
+        // if the payload is too deep, we need to clean it
+        if (isDeepJSON(v, 100)) {
+          v2 = cleanEIP712Payload(v);
+        }
+
+        const displayData = cloneDeep(v2);
+        const normalized = normalizeTypeData(v2);
         return [normalized, displayData];
       } catch (error) {
         console.error('parse signTypedData error: ', error);
@@ -203,6 +262,10 @@ const SignTypedData = ({
     }
     return [null, null];
   }, [data, isSignTypedDataV1]);
+  const normalizedSignTypedData = useMemo(
+    () => normalizePolygonMetaTransactionTypedData(signTypedData),
+    [signTypedData]
+  );
 
   useEffect(() => {
     try {
@@ -234,10 +297,10 @@ const SignTypedData = ({
   }, []);
 
   const chain = useMemo(() => {
-    if (!isSignTypedDataV1 && signTypedData) {
+    if (!isSignTypedDataV1 && normalizedSignTypedData) {
       let chainId;
       try {
-        chainId = signTypedData?.domain?.chainId;
+        chainId = normalizedSignTypedData?.domain?.chainId;
       } catch (error) {
         console.error(error);
       }
@@ -247,7 +310,7 @@ const SignTypedData = ({
     }
 
     return undefined;
-  }, [data, isSignTypedDataV1, signTypedData]);
+  }, [data, isSignTypedDataV1, normalizedSignTypedData]);
 
   const getCurrentChainId = async () => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
@@ -275,19 +338,19 @@ const SignTypedData = ({
         wallet.clearGnosisMessage();
       }
     }
-    if (!isSignTypedDataV1 && signTypedData) {
-      const chainId = signTypedData?.domain?.chainId;
+    if (!isSignTypedDataV1 && normalizedSignTypedData) {
+      const chainId = normalizedSignTypedData?.domain?.chainId;
       if (isTestnetChainId(chainId)) {
         return null;
       }
       return wallet.openapi.parseCommon({
-        typed_data: signTypedData,
+        typed_data: normalizedSignTypedData,
         user_addr: currentAccount!.address,
         origin: session.origin,
       });
     }
     return;
-  }, [data, isSignTypedDataV1, signTypedData]);
+  }, [data, isSignTypedDataV1, normalizedSignTypedData]);
 
   if (error) {
     console.error('error', error);
@@ -705,7 +768,7 @@ const SignTypedData = ({
             parseAction({
               type: 'typed_data',
               data: action as TypeDataActionItem,
-              typedData: signTypedData,
+              typedData: normalizedSignTypedData,
               sender,
               balanceChange:
                 typedDataActionData.pre_exec_result?.balance_change,
@@ -740,7 +803,7 @@ const SignTypedData = ({
           const parsed = parseAction({
             type: 'typed_data',
             data: typedDataActionData.action as any,
-            typedData: signTypedData,
+            typedData: normalizedSignTypedData,
             sender,
             balanceChange: typedDataActionData.pre_exec_result?.balance_change,
             preExecVersion:
@@ -766,7 +829,13 @@ const SignTypedData = ({
         setIsLoading(false);
       }
     }
-  }, [loading, typedDataActionData, signTypedData, params, isSignTypedDataV1]);
+  }, [
+    loading,
+    typedDataActionData,
+    normalizedSignTypedData,
+    params,
+    isSignTypedDataV1,
+  ]);
 
   useEffect(() => {
     if (scrollRef.current && scrollInfo && scrollRefSize) {

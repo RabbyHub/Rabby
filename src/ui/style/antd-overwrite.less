@@ -80,6 +80,17 @@
     top: 50%;
     transform: translateY(-50%);
   }
+
+  &:has(.toast-right-bottom-wrapper) {
+    top: unset;
+    right: 24px;
+    bottom: 36px;
+    left: unset;
+
+    .ant-message-notice {
+      text-align: right;
+    }
+  }
 }
 .ant-message-notice-content {
   padding: 8px 12px;
@@ -385,6 +396,11 @@ textarea {
 ---------------------*/
 .ant-tooltip:not(.disable-ant-overwrite) {
   max-width: 360px;
+  &.ant-tooltip-placement-top,
+  &.ant-tooltip-placement-topLeft,
+  &.ant-tooltip-placement-topRight {
+    padding-bottom: 8px;
+  }
   .ant-tooltip-inner {
     font-size: 12px;
     border-radius: 14px;
@@ -393,6 +409,11 @@ textarea {
   }
   .ant-tooltip-arrow-content {
     background-color: black;
+    width: 8px;
+    height: 8px;
+    &::before {
+      display: none;
+    }
   }
   .ant-tooltip-arrow {
     display: none;
@@ -449,6 +470,20 @@ textarea {
   }
 }
 
+html.dark .ant-tooltip:not(.disable-ant-overwrite) {
+  .ant-tooltip-inner {
+    background-color: var(--rb-neutral-bg-4);
+    color: var(--r-neutral-title-2);
+  }
+
+  .ant-tooltip-arrow-content {
+    background-color: var(--rb-neutral-bg-4);
+    &::before {
+      background: var(--rb-neutral-bg-4);
+    }
+  }
+}
+
 /*---------------------
       Dropdown
 ---------------------*/
@@ -463,11 +498,13 @@ textarea {
 .ant-skeleton-element .ant-skeleton-input {
   height: 18px;
   border-radius: 2px;
-  background: linear-gradient(
-    90deg,
-    rgba(216, 223, 235, 0.55) 0%,
-    rgba(216, 223, 235, 0.6) 95.31%
-  );
+  // background: linear-gradient(
+  //   90deg,
+  //   rgba(216, 223, 235, 0.55) 0%,
+  //   rgba(216, 223, 235, 0.6) 95.31%
+  // );
+
+  min-width: initial;
 }
 
 /*---------------------
@@ -480,6 +517,12 @@ textarea {
   .ant-drawer-close {
     font-size: 19px;
     line-height: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    padding: 21px;
+    margin-right: 0;
   }
   .ant-drawer-body {
     padding: 20px 20px 24px;
@@ -552,6 +595,19 @@ textarea {
   }
 }
 
+.perps-close-all-position-modal.perps-bridge-swap-modal {
+  .ant-modal-content {
+    border: none !important;
+    background-color: var(--rb-neutral-bg-0, #f5f6fa) !important;
+  }
+  .ant-modal-body {
+    background-color: var(--rb-neutral-bg-0, #f5f6fa) !important;
+  }
+  .ant-modal-confirm-content {
+    background-color: var(--rb-neutral-bg-0, #f5f6fa) !important;
+  }
+}
+
 .perps-bridge-swap-modal {
   .ant-modal-body {
     // border: transparent !important;
@@ -582,11 +638,7 @@ textarea {
   .ant-modal-confirm-content {
     margin-top: 0;
   }
-  
 }
-
-
-
 
 .desktop-swap-token-modal {
   .ant-modal-body {
@@ -633,7 +685,7 @@ textarea {
 
 html[desktop] {
   .ant-switch {
-    background: var(--r-neutral-line, #e0e5ec);
+    background: var(--rb-neutral-line, #e0e5ec);
 
     &:focus {
       box-shadow: none !important;
@@ -641,6 +693,21 @@ html[desktop] {
   }
 
   .ant-switch-checked {
-    background: var(--r-green-default, #27c193);
+    background: var(--rb-green-default, #27c193);
   }
+
+  .ant-select {
+    .ant-select-selector {
+      border-radius: 6px;
+      background-color: var(--rb-neutral-bg-1 #fff);
+      border-color: var(--rb-neutral-line, #e0e5ec);
+    }
+    .ant-select-arrow {
+      color: var(--rb-neutral-foot, #6a7587);
+    }
+  }
+
+  // .ant-select-dropdown {
+  //   background-color: var(--rb-neutral-bg-1 #fff);
+  // }
 }

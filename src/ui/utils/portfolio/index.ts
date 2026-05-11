@@ -1,56 +1,38 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import dayjs from 'dayjs';
-
-import { useSafeState } from '../safeState';
+import { useCallback } from 'react';
 
 import { useTokens } from './token';
 import { usePortfolios } from './usePortfolio';
 
-const Cache_Timeout = 5 * 60;
+type UseQueryProjectsOptions = {
+  visible?: boolean;
+  lpTokenMode?: boolean;
+  searchMode?: boolean;
+  autoLoad?: boolean;
+};
 
 export const useQueryProjects = (
   userAddr: string | undefined,
-  withHistory = false,
-  visible: boolean,
-  isTestnet = false,
-  lpTokenMode = false,
-  showBlocked = false,
-  searchMode = false
+  {
+    visible = false,
+    lpTokenMode = false,
+    searchMode = false,
+    autoLoad = true,
+  }: UseQueryProjectsOptions = {}
 ) => {
-  const [time, setTime] = useSafeState(dayjs().subtract(1, 'day'));
-
-  useEffect(() => {
-    if (time!.add(1, 'day').add(Cache_Timeout, 's').isBefore(dayjs())) {
-      // refreshPositions();
-    }
-  }, [time]);
-
-  const historyTime = useMemo(() => (withHistory ? time : undefined), [
-    withHistory,
-    time,
-  ]);
+  const shouldAutoLoad = visible && autoLoad;
 
   const {
     tokens,
-    netWorth: tokenNetWorth,
     isLoading: isTokensLoading,
     isAllTokenLoading,
     hasValue: hasTokens,
     updateData: updateTokens,
-    walletProject,
-    customizeTokens,
-    blockedTokens,
-  } = useTokens(
-    userAddr,
-    historyTime,
-    visible,
-    0,
-    undefined,
-    isTestnet,
-    lpTokenMode,
-    showBlocked,
-    searchMode
-  );
+  } = useTokens(userAddr, {
+    visible: shouldAutoLoad,
+    lpTokensOnly: lpTokenMode,
+    searchMode,
+    disableRecommended: true,
+  });
 
   const {
     data: portfolios,
@@ -59,42 +41,33 @@ export const useQueryProjects = (
     netWorth: portfolioNetWorth,
     updateData: updatePortfolio,
     removeProtocol,
-  } = usePortfolios(userAddr, historyTime, visible, isTestnet);
+  } = usePortfolios(userAddr, shouldAutoLoad);
 
   const refreshPositions = useCallback(() => {
-    if (!isTokensLoading && !isPortfoliosLoading) {
+    if (!autoLoad || (!isTokensLoading && !isPortfoliosLoading)) {
       updatePortfolio();
       updateTokens();
-      setTime(dayjs().subtract(1, 'day'));
     }
   }, [
     updatePortfolio,
     updateTokens,
     isTokensLoading,
     isPortfoliosLoading,
-    setTime,
-  ]);
-
-  const grossNetWorth = useMemo(() => tokenNetWorth + portfolioNetWorth!, [
-    tokenNetWorth,
-    portfolioNetWorth,
+    autoLoad,
   ]);
 
   return {
-    tokenNetWorth,
     portfolioNetWorth,
-    grossNetWorth,
     refreshPositions,
+    refreshTokens: updateTokens,
+    refreshPortfolios: updatePortfolio,
     isTokensLoading,
     isAllTokenLoading,
     isPortfoliosLoading,
     hasTokens,
     hasPortfolios,
     tokens,
-    customizeTokens,
-    blockedTokens,
     portfolios,
-    walletProject,
     removeProtocol,
   };
 };

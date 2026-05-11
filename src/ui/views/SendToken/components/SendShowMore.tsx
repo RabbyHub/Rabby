@@ -4,21 +4,24 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DirectSignGasInfo } from '../../Bridge/Component/BridgeShowMore';
 import { noop } from 'lodash';
+import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
 
 export const ShowMoreOnSend = ({
   chainServeId,
   open,
   setOpen,
+  signatureInstance,
 }: {
   chainServeId: string;
   open: boolean;
   setOpen?: (bool: boolean) => void;
+  signatureInstance: SignatureManager;
 }) => {
   const { t } = useTranslation();
   const [showGasFeeError, setShowGasFeeError] = useState(false);
 
   return (
-    <div className="mx-0">
+    <div className="px-20">
       {/* <div className="flex items-center justify-center gap-8 mb-8">
         <div
           className={clsx(
@@ -49,6 +52,7 @@ export const ShowMoreOnSend = ({
           chainServeId={chainServeId}
           noQuote={false}
           type="send"
+          signatureInstance={signatureInstance}
         />
       </div>
 
@@ -62,6 +66,7 @@ export const ShowMoreOnSend = ({
               chainServeId={chainServeId}
               noQuote={false}
               type="send"
+              signatureInstance={signatureInstance}
             />
           ) : null}
         </>

@@ -9,6 +9,10 @@ const tsImportPluginFactory = require('ts-import-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const {
+  resolveManifestFilename,
+  resolveManifestVersion,
+} = require('./manifest-utils');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
   .default;
@@ -38,6 +42,18 @@ const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'chrome-mv2';
 const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
 const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
 const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
+const BUILD_ENV = process.env.RABBY_BUILD_ENV || '';
+
+const MANIFEST_FILENAME = resolveManifestFilename({
+  manifestType: MANIFEST_TYPE,
+  buildEnv: BUILD_ENV,
+});
+const APP_VERSION =
+  process.env.VERSION ||
+  resolveManifestVersion({
+    manifestType: MANIFEST_TYPE,
+    buildEnv: BUILD_ENV,
+  });
 
 const config = {
   entry: {
@@ -46,9 +62,7 @@ const config = {
       asyncChunks: false,
     },
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve(
-      'node_modules/@rabby-wallet/page-provider/dist/index.js'
-    ),
+    pageProvider: paths.rootResolve('src/content-script/page-provider.ts'),
     ui: paths.rootResolve('src/ui/index.tsx'),
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },
@@ -277,20 +291,19 @@ const config = {
       dayjs: 'dayjs',
     }),
     new webpack.DefinePlugin({
-      'process.env.version': JSON.stringify(`version: ${process.env.VERSION}`),
-      'process.env.release': JSON.stringify(process.env.VERSION),
+      'process.env.version': JSON.stringify(`version: ${APP_VERSION}`),
+      'process.env.release': JSON.stringify(APP_VERSION),
       'process.env.RABBY_BUILD_GIT_HASH': JSON.stringify(BUILD_GIT_HASH),
       'process.env.ETHERSCAN_KEY': JSON.stringify(process.env.ETHERSCAN_KEY),
-      'process.env.SAFE_API_KEY': JSON.stringify(process.env.SAFE_API_KEY),
     }),
     new CopyPlugin({
       patterns: [
         { from: paths.rootResolve('_raw'), to: FINAL_DIST },
         {
           from: paths.rootResolve(
-            `src/manifest/${MANIFEST_TYPE}/manifest.json`
+            `src/manifest/${MANIFEST_TYPE}/${MANIFEST_FILENAME}`
           ),
-          to: FINAL_DIST,
+          to: path.resolve(FINAL_DIST, 'manifest.json'),
         },
         IS_MANIFEST_MV3
           ? {
@@ -347,6 +360,7 @@ const config = {
       zlib: require.resolve('browserify-zlib'),
       https: require.resolve('https-browserify'),
       http: require.resolve('stream-http'),
+      vm: false,
     },
     extensions: ['.js', 'jsx', '.ts', '.tsx'],
   },

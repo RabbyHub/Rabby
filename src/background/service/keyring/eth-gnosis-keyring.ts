@@ -628,7 +628,7 @@ class GnosisKeyring extends EventEmitter {
       throw new Error('No message in Gnosis keyring');
     }
     try {
-      const message = await this.safeInstance.apiKit.getMessage(
+      const message = await this.safeInstance.getMessage(
         this.currentSafeMessageHash
       );
 
@@ -683,7 +683,6 @@ class GnosisKeyring extends EventEmitter {
     ) {
       throw new Error('No message in Gnosis keyring');
     }
-    const apiKit = Safe.createSafeApiKit(this.safeInstance.network);
     signature = await adjustVInSignature(
       SigningMethod.ETH_SIGN_TYPED_DATA,
       signature
@@ -691,7 +690,7 @@ class GnosisKeyring extends EventEmitter {
     const safeSignature = new EthSafeSignature(signerAddress, signature);
     this.currentSafeMessage.addSignature(safeSignature);
 
-    return apiKit.addMessageSignature(
+    return this.safeInstance.addMessageSignature(
       this.currentSafeMessageHash,
       buildSignatureBytes([safeSignature])
     );

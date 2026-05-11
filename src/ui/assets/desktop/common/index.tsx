@@ -1,4 +1,5 @@
 export { ReactComponent as RcIconArrowDownCC } from './down-cc.svg';
+export { ReactComponent as RcIconArrowDownPerpsCC } from './down-perps-cc.svg';
 export { ReactComponent as RcIconCopyCC } from './copy-cc.svg';
 export { ReactComponent as RcIconCopy1CC } from './copy-1-cc.svg';
 export { ReactComponent as RcIconExternalCC } from './external-cc.svg';
@@ -10,3 +11,4 @@ export { ReactComponent as RcIconMinusCC } from './minus-cc.svg';
 export { ReactComponent as RcIconInfoCC } from './info-cc.svg';
 export { ReactComponent as RcIconWaringCC } from './warning-cc.svg';
 export { ReactComponent as RcIconSuccessCC } from './success-cc.svg';
+export { ReactComponent as RcIconEditCC } from './edit-cc.svg';

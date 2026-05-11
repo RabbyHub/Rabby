@@ -17,6 +17,7 @@ import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
 import { coerceFloat, sleep } from '../utils';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
 import { requestOpenApiMultipleNets } from '../utils/openapi';
+import { AccountScene } from '@/constant/scene-account';
 
 interface TotalBalanceWithEvmUsdValue extends TotalBalanceResponse {
   evmUsdValue?: number;
@@ -61,6 +62,8 @@ export interface AccountState {
   [symLoaderMatteredBalance]: Promise<MatteredChainBalancesResult> | null;
 
   approvalStatus: Record<string, ApprovalStatus[]>;
+
+  sceneAccountMap: Partial<Record<AccountScene, Account | null>>;
 }
 
 /**
@@ -115,6 +118,8 @@ export const account = createModel<RootModel>()({
     [symLoaderMatteredBalance]: null,
 
     approvalStatus: {},
+
+    sceneAccountMap: {},
   } as AccountState,
 
   reducers: {
@@ -240,6 +245,7 @@ export const account = createModel<RootModel>()({
 
       // 初始化gift状态
       await dispatch.gift.initGiftStateAsync();
+      await dispatch.account.getSceneAccountMap();
 
       return account;
     },
@@ -267,6 +273,28 @@ export const account = createModel<RootModel>()({
       }
 
       return account;
+    },
+
+    async getSceneAccountMap(_: void, store) {
+      const sceneAccountMap = await store.app.wallet.getPreference(
+        'sceneAccountMap'
+      );
+      if (sceneAccountMap) {
+        dispatch.account.setField({ sceneAccountMap });
+      }
+    },
+
+    async switchSceneAccount(
+      payload: { scene: AccountScene; account: Account },
+      store
+    ) {
+      await store.app.wallet.switchSceneAccount(payload);
+      dispatch.account.setField({
+        sceneAccountMap: {
+          ...store.account.sceneAccountMap,
+          [payload.scene]: payload.account,
+        },
+      });
     },
 
     async changeAccountAsync(account: Account, store) {
@@ -505,57 +533,21 @@ export const account = createModel<RootModel>()({
       testnetMatteredChainBalances: AccountState['testnetMatteredChainBalances'];
     }> {
       const wallet = store!.app.wallet;
-      const isShowTestnet = store.preference.isShowTestnet;
 
-      const { currentAccountAddress = '', leastLoadingTime } = options || {};
+      const { currentAccountAddress = '' } = options || {};
       const currentAccountAddr =
         currentAccountAddress || store.account.currentAccount?.address;
 
-      const pendingPromise = store.account[symLoaderMatteredBalance];
       let result: MatteredChainBalancesResult = {
         mainnet: null,
         testnet: null,
       };
       try {
-        const promise =
-          pendingPromise ||
-          Promise.all([
-            leastLoadingTime ? sleep(500) : null,
-            requestOpenApiMultipleNets<
-              TotalBalanceResponse | null,
-              MatteredChainBalancesResult
-            >(
-              (ctx) => {
-                if (ctx.isTestnetTask) {
-                  return null;
-                }
-
-                return wallet.getAddressCacheBalance(
-                  currentAccountAddr,
-                  ctx.isTestnetTask
-                );
-              },
-              {
-                wallet,
-                needTestnetResult: isShowTestnet,
-                processResults: ({ mainnet, testnet }) => {
-                  return {
-                    mainnet: mainnet,
-                    testnet: testnet,
-                  };
-                },
-                fallbackValues: {
-                  mainnet: null,
-                  testnet: null,
-                },
-              }
-            ),
-          ]).then(([_, r]) => r);
-
-        dispatch.account.setField({
-          [symLoaderMatteredBalance]: promise,
-        });
-        result = await promise;
+        const res = await wallet.getAddressCacheBalance(currentAccountAddr);
+        result = {
+          mainnet: res,
+          testnet: null,
+        };
       } catch (error) {
         console.error(error);
       } finally {

@@ -61,6 +61,45 @@ export function getCustomTxParamsData(
       customPermissionValue.toFixed(),
     ]);
     return calldata;
+  } else if (methodId === '0x87517c45') {
+    /**
+     * Approves the spender to use up to amount of the specified token up until the expiration
+     * https://arbiscan.io/address/0x000000000022D473030F116dDEE9F6B43aC78BA3#writeContract
+     */
+    const iface = new ethers.utils.Interface([
+      {
+        inputs: [
+          { internalType: 'address', name: 'token', type: 'address' },
+          { internalType: 'address', name: 'spender', type: 'address' },
+          { internalType: 'uint160', name: 'amount', type: 'uint160' },
+          { internalType: 'uint48', name: 'expiration', type: 'uint48' },
+        ],
+        name: 'approve',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+    ]);
+    const [token, spender, , expiration] = iface.decodeFunctionData(
+      'approve',
+      data
+    );
+    const customPermissionValue = calcTokenValue(
+      customPermissionAmount,
+      decimals
+    );
+
+    if (customPermissionValue.toString(16).length > 40) {
+      throw new Error('Custom value is larger than uint160');
+    }
+
+    const calldata = iface.encodeFunctionData('approve', [
+      token,
+      spender,
+      customPermissionValue.toFixed(),
+      expiration,
+    ]);
+    return calldata;
   } else {
     const tokenData = getTokenData(data);
 
@@ -71,14 +110,11 @@ export function getCustomTxParamsData(
     if (spender.startsWith('0x')) {
       spender = spender.substring(2);
     }
-    const [signature, tokenValue] = data.split(spender);
+    const separator = new RegExp(spender, 'i');
+    const [signature, tokenValue] = data.split(separator);
 
     if (!signature || !tokenValue) {
       throw new Error('Invalid data');
-    } else if (tokenValue.length !== 64) {
-      throw new Error(
-        'Invalid token value; should be exactly 64 hex digits long (u256)'
-      );
     }
 
     let customPermissionValue = calcTokenValue(
@@ -90,10 +126,7 @@ export function getCustomTxParamsData(
       throw new Error('Custom value is larger than u256');
     }
 
-    customPermissionValue = customPermissionValue.padStart(
-      tokenValue.length,
-      '0'
-    );
+    customPermissionValue = customPermissionValue.padStart(64, '0');
     const customTxParamsData = `${signature}${spender}${customPermissionValue}`;
     return customTxParamsData;
   }
@@ -241,7 +274,7 @@ export const waitForTxCompleted = async ({
   return await new Promise((resolve, reject) => {
     const handler = (res) => {
       if (res?.hash === hash) {
-        if (res?.status) {
+        if (res?.status && Number(res.status) !== 0) {
           resolve(true);
         } else {
           reject(new Error('tx failed'));

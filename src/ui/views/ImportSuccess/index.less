@@ -69,3 +69,92 @@
 .success-import::-webkit-scrollbar {
   display: none;
 }
+
+.import-success-safe {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__content {
+    flex: 1;
+    min-height: 0;
+    padding: 60px 20px 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__hero-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    color: var(--r-neutral-title-1, #192945);
+    text-align: center;
+    font-size: 24px;
+    font-weight: 510;
+    line-height: 29px;
+  }
+
+  &__desc {
+    margin-top: 16px;
+    color: var(--r-neutral-body, #3e495e);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 15px;
+  }
+
+  &__chains {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 20px;
+    row-gap: 12px;
+  }
+
+  &__chain {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--r-neutral-title-1, #192945);
+    font-size: 13px;
+    font-weight: 510;
+    line-height: 15px;
+  }
+
+  &__chain-logo {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &__footer {
+    flex-shrink: 0;
+    padding: 20px;
+    margin-top: auto;
+  }
+
+  &__button {
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: 8px;
+    background: var(--r-blue-default, #4c65ff);
+    color: var(--r-neutral-title-2, #fff);
+    text-align: center;
+    font-size: 13px;
+    font-weight: 510;
+    line-height: 16px;
+    cursor: pointer;
+  }
+}

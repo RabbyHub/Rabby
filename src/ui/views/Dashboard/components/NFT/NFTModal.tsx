@@ -9,9 +9,10 @@ import { IGAEventSource } from '@/ui/utils/ga-event';
 import { ReactComponent as RcLinkSVG } from '@/ui/assets/nft-view/link.svg';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { openNFTLinkFromChainItem } from '@/ui/views/ApprovalManagePage/utils';
+// import { openNFTLinkFromChainItem } from '@/ui/views/ApprovalManagePage/utils';
 import { findChainByServerID } from '@/utils/chain';
 import { UI_TYPE } from '@/constant/ui';
+import { openNFTLinkFromChainItem } from '@/ui/views/DesktopProfile/components/ApprovalsTabPane/utils';
 
 interface ContentProps {
   data?: NFTItem;

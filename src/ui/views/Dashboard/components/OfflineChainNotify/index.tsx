@@ -12,6 +12,8 @@ import { ReactComponent as RcIconCloseCC } from '@/ui/assets/component/close-cc.
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { KEYRING_CLASS } from '@/constant';
 import { pick } from 'lodash';
+import { useRequest } from 'ahooks';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 
 const useOfflineChains = () => {
   const wallet = useWallet();
@@ -19,6 +21,19 @@ const useOfflineChains = () => {
   const { value: closedTipsChains } = useAsync(
     () => wallet.getCloseTipsChains(),
     []
+  );
+
+  const account = useCurrentAccount();
+
+  const { data: hasTransaction } = useRequest(
+    async () => {
+      const res = await wallet.getTransactionHistory(account?.address || '');
+      return [...res.completeds, ...res.pendings].length > 0;
+    },
+    {
+      refreshDeps: [account?.address],
+      ready: !!account?.address,
+    }
   );
 
   const setClosedTipsChain = React.useCallback(
@@ -48,7 +63,7 @@ const useOfflineChains = () => {
   }, [balanceMap, accountsList]);
 
   const offlineList = useMemo(() => {
-    if (!value || !accountsValues.length) {
+    if (!value || !accountsValues.length || !hasTransaction) {
       return [];
     }
 
@@ -64,12 +79,18 @@ const useOfflineChains = () => {
           dayjs().add(7, 'day').isAfter(dayjs.unix(e.offline_at))
       )
       .sort((a, b) => b.offline_at - a.offline_at);
-  }, [value, accountsValues]);
+  }, [value, accountsValues, hasTransaction]);
 
   return { offlineList, setClosedTipsChain, closedTipsChains };
 };
 
-export const OfflineChainNotify = () => {
+export const OfflineChainNotify = ({
+  className,
+  itemClassName,
+}: {
+  className?: string;
+  itemClassName?: string;
+} = {}) => {
   const { t } = useTranslation();
   const {
     offlineList,
@@ -88,7 +109,7 @@ export const OfflineChainNotify = () => {
   );
 
   return (
-    <div className={clsx('absolute left-0 bottom-0 w-full')}>
+    <div className={clsx(className ?? 'absolute left-0 bottom-0 w-full')}>
       {offlineList?.map((e) => {
         const chainInfo = findChainByServerID(e.id);
         if (
@@ -106,7 +127,8 @@ export const OfflineChainNotify = () => {
               'hidden last:flex',
               'w-full h-auto min-h-[32px] bg-rabby-orange-light',
               'items-center px-16',
-              'border-[0.5px] border-solid border-rabby-neutral-line'
+              'border-[0.5px] border-solid border-rabby-neutral-line',
+              itemClassName
             )}
           >
             <img src={chainInfo.logo} className="w-16 h-16 rounded-full" />

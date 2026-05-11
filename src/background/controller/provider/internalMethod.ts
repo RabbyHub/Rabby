@@ -22,8 +22,9 @@ const tabCheckin = ({
   },
   session,
   origin,
+  isFromDesktopDapp,
 }) => {
-  session.setProp({ origin, name, icon });
+  session.setProp({ origin, name, icon, isFromDesktopDapp });
   const site = permissionService.getSite(origin);
   if (site) {
     permissionService.updateConnectSite(origin, { ...site, icon, name }, true);

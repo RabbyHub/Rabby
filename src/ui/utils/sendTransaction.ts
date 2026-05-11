@@ -14,7 +14,7 @@ import {
   calcMaxPriorityFee,
   checkGasAndNonce,
   explainGas,
-  getNativeTokenBalance,
+  getGasTokenBalance,
   getPendingTxs,
   is7702Tx,
 } from '@/utils/transaction';
@@ -37,6 +37,14 @@ import {
 import stats from '@/stats';
 import { getCexInfo } from '../models/exchange';
 import { Account } from '@/background/service/preference';
+import {
+  buildTempoTransaction,
+  isTempoBatchSupportedAccountType,
+  isTempoChain,
+  shouldUseTempoTransaction,
+  TxWithTempoExtras,
+  toTempoCallsTx,
+} from '@/utils/tempo';
 
 // fail code
 export enum FailedCode {
@@ -122,6 +130,7 @@ export const sendTransaction = async ({
   ignoreSimulationFailed,
   extra,
   session,
+  account: _account,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -145,19 +154,30 @@ export const sendTransaction = async ({
     actionData?: ParseTxResponse;
   };
   session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
+  account?: Account;
 }) => {
+  const shouldUseTempoCallsForGasAccount = (gasAccountEnabled?: boolean) =>
+    !!gasAccountEnabled &&
+    isTempoChain(chainServerId) &&
+    isTempoBatchSupportedAccountType(account.type);
   let sig = _sig;
   onProgress?.('building');
   const chain = findChain({
     serverId: chainServerId,
   })!;
   const support1559 = chain.eip['1559'];
-  const { address, ...currentAccount } = (await wallet.getCurrentAccount())!;
+  const account = _account || (await wallet.getCurrentAccount())!;
+  const { address, ...currentAccount } = account;
   const recommendNonce =
     tx.nonce ||
     (await wallet.getRecommendNonce({
       from: tx.from,
       chainId: chain.id,
+      nonceKey: (tx as TxWithTempoExtras<Tx>).nonceKey as
+        | string
+        | number
+        | bigint
+        | undefined,
     }));
 
   // get gas
@@ -198,13 +218,24 @@ export const sendTransaction = async ({
   const preExecResult =
     extra?.preExecResult ||
     (await wallet.openapi.preExecTx({
-      tx: {
-        ...tx,
-        nonce: recommendNonce,
-        data: tx.data,
-        value: tx.value || '0x0',
-        gasPrice: intToHex(Math.round(normalGas.price)),
-      },
+      tx: shouldUseTempoCallsForGasAccount(isGasAccount)
+        ? (toTempoCallsTx(
+            {
+              ...tx,
+              nonce: recommendNonce,
+              data: tx.data,
+              value: tx.value || '0x0',
+              gasPrice: intToHex(Math.round(normalGas.price)),
+            },
+            { stripTopLevelData: true }
+          ) as any)
+        : ({
+            ...tx,
+            nonce: recommendNonce,
+            data: tx.data,
+            value: tx.value || '0x0',
+            gasPrice: intToHex(Math.round(normalGas.price)),
+          } as any),
       origin: INTERNAL_REQUEST_ORIGIN,
       address: address,
       updateNonce: true,
@@ -216,11 +247,13 @@ export const sendTransaction = async ({
       }),
     }));
 
-  const balance = await getNativeTokenBalance({
+  const gasToken = await getGasTokenBalance({
     wallet,
     chainId: chain.id,
     address,
   });
+  const balance = gasToken.rawBalance;
+  const checkTxValueInBalance = !isTempoChain(chain.serverId);
   let estimateGas = 0;
   if (preExecResult.gas.success) {
     estimateGas = preExecResult.gas.gas_limit || preExecResult.gas.gas_used;
@@ -248,6 +281,8 @@ export const sendTransaction = async ({
       explainTx: preExecResult,
       needRatio,
       wallet,
+      gasTokenDecimals: gasToken.token.decimals,
+      checkTxValueInBalance,
     });
     gasLimit = _gasLimit;
     recommendGasLimitRatio = _recommendGasLimitRatio;
@@ -263,6 +298,7 @@ export const sendTransaction = async ({
     tx,
     gasLimit,
     account: { ...currentAccount, address },
+    gasTokenDecimals: gasToken.token.decimals,
   });
 
   // check gas errors
@@ -280,6 +316,9 @@ export const sendTransaction = async ({
         isGnosisAccount: false,
         nativeTokenBalance: balance,
         recommendGasLimitRatio,
+        gasTokenDecimals: gasToken.token.decimals,
+        gasTokenId: gasToken.token.tokenId,
+        checkTxValueInBalance,
       });
 
   const isGasNotEnough = !isGasLess && checkErrors.some((e) => e.code === 3001);
@@ -297,7 +336,7 @@ export const sendTransaction = async ({
     : false;
 
   // generate tx with gas
-  const transaction: Tx = {
+  const transaction: TxWithTempoExtras<Tx> = {
     from: tx.from,
     to: tx.to,
     data: tx.data,
@@ -305,6 +344,15 @@ export const sendTransaction = async ({
     value: tx.value,
     chainId: tx.chainId,
     gas: gasLimit,
+    type: (tx as TxWithTempoExtras<Tx>).type,
+    calls: (tx as TxWithTempoExtras<Tx>).calls,
+    feeToken: (tx as TxWithTempoExtras<Tx>).feeToken,
+    feePayer: (tx as TxWithTempoExtras<Tx>).feePayer,
+    feePayerSignature: (tx as TxWithTempoExtras<Tx>).feePayerSignature,
+    nonceKey: (tx as TxWithTempoExtras<Tx>).nonceKey,
+    keyAuthorization: (tx as TxWithTempoExtras<Tx>).keyAuthorization,
+    validBefore: (tx as TxWithTempoExtras<Tx>).validBefore,
+    validAfter: (tx as TxWithTempoExtras<Tx>).validAfter,
   };
 
   let failedCode;
@@ -324,12 +372,6 @@ export const sendTransaction = async ({
     failedCode = FailedCode.SimulationFailed;
   } else if (isGasNotEnough) {
     const gasAccount = await wallet.getGasAccountSig();
-    console.log(
-      'gasAccount sig',
-      gasAccount,
-      gasAccount?.sig,
-      gasAccount?.accountId
-    );
     if (sig !== gasAccount?.sig) {
       sig = gasAccount?.sig;
     }
@@ -340,9 +382,20 @@ export const sendTransaction = async ({
         currentAccountType: currentAccount.type,
         wallet,
         transaction: {
-          ...transaction,
-          gas: gasLimit,
-          gasPrice: intToHex(normalGas.price),
+          ...(shouldUseTempoCallsForGasAccount(true)
+            ? (toTempoCallsTx(
+                {
+                  ...transaction,
+                  gas: gasLimit,
+                  gasPrice: intToHex(normalGas.price),
+                },
+                { stripTopLevelData: true }
+              ) as any)
+            : {
+                ...transaction,
+                gas: gasLimit,
+                gasPrice: intToHex(normalGas.price),
+              }),
         },
       });
       if (gasAccountCanPay) {
@@ -382,39 +435,76 @@ export const sendTransaction = async ({
   if (support1559) {
     transaction.maxFeePerGas = maxFeePerGas;
     transaction.maxPriorityFeePerGas =
-      maxPriorityFee <= 0
+      maxPriorityFee < 0
         ? tx.maxFeePerGas
         : intToHex(Math.round(maxPriorityFee));
   } else {
     (transaction as Tx).gasPrice = maxFeePerGas;
   }
 
+  const shouldUseGasAccountMode = autoUseGasAccount
+    ? canUseGasAccount
+    : isGasAccount;
+  const transactionForSubmit = shouldUseTempoCallsForGasAccount(
+    shouldUseGasAccountMode
+  )
+    ? ({
+        ...(toTempoCallsTx(transaction as any, {
+          stripTopLevelData: true,
+        }) as any),
+        feePayer: true,
+      } as any)
+    : transaction;
+
   // fetch action data
   const actionData =
     extra?.actionData ||
     (await wallet.openapi.parseTx({
       chainId: chain.serverId,
-      tx: {
-        ...tx,
-        gas: '0x0',
-        nonce: recommendNonce || '0x1',
-        value: tx.value || '0x0',
-        to: tx.to || '',
-        type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
-      } as any,
-      origin: origin || '',
+      tx: shouldUseTempoCallsForGasAccount(shouldUseGasAccountMode)
+        ? (toTempoCallsTx(
+            {
+              ...tx,
+              gas: '0x0',
+              nonce: recommendNonce || '0x1',
+              value: tx.value || '0x0',
+              to: tx.to || '',
+              type: '0x76',
+            },
+            { stripTopLevelData: true }
+          ) as any)
+        : ({
+            ...tx,
+            gas: '0x0',
+            nonce: recommendNonce || '0x1',
+            value: tx.value || '0x0',
+            to: tx.to || '',
+            type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
+          } as any),
+      origin: session?.origin || '',
       addr: address,
     }));
   const parsed = parseAction({
     type: 'transaction',
     data: actionData.action,
     balanceChange: preExecResult.balance_change,
-    tx: {
-      ...tx,
-      gas: '0x0',
-      nonce: recommendNonce || '0x1',
-      value: tx.value || '0x0',
-    },
+    tx: shouldUseTempoCallsForGasAccount(shouldUseGasAccountMode)
+      ? (toTempoCallsTx(
+          {
+            ...tx,
+            gas: '0x0',
+            nonce: recommendNonce || '0x1',
+            value: tx.value || '0x0',
+            type: '0x76',
+          },
+          { stripTopLevelData: true }
+        ) as any)
+      : {
+          ...tx,
+          gas: '0x0',
+          nonce: recommendNonce || '0x1',
+          value: tx.value || '0x0',
+        },
     preExecVersion: preExecResult.pre_exec_version,
     gasUsed: preExecResult.gas.gas_used,
     sender: tx.from,
@@ -437,10 +527,23 @@ export const sendTransaction = async ({
     },
     cex: cexInfo,
     tx: {
-      ...tx,
-      gas: '0x0',
-      nonce: recommendNonce || '0x1',
-      value: tx.value || '0x0',
+      ...(shouldUseTempoCallsForGasAccount(shouldUseGasAccountMode)
+        ? (toTempoCallsTx(
+            {
+              ...tx,
+              gas: '0x0',
+              nonce: recommendNonce || '0x1',
+              value: tx.value || '0x0',
+              type: '0x76',
+            },
+            { stripTopLevelData: true }
+          ) as any)
+        : {
+            ...tx,
+            gas: '0x0',
+            nonce: recommendNonce || '0x1',
+            value: tx.value || '0x0',
+          }),
     },
     apiProvider: isTestnet(chain.serverId)
       ? wallet.testnetOpenapi
@@ -531,7 +634,6 @@ export const sendTransaction = async ({
 
   // submit tx
   let hash = '';
-  const account = await wallet.getCurrentAccount();
   try {
     hash = await wallet.ethSendTransaction({
       data: {
@@ -540,7 +642,7 @@ export const sendTransaction = async ({
         },
         params: [
           {
-            ...transaction,
+            ...transactionForSubmit,
             isSpeedUp: (tx as any)?.isSpeedUp,
             isCancel: (tx as any)?.isCancel,
           },
@@ -548,12 +650,12 @@ export const sendTransaction = async ({
       },
       session: session || INTERNAL_REQUEST_SESSION,
       approvalRes: {
-        ...transaction,
+        ...transactionForSubmit,
         signingTxId,
         logId: logId,
         lowGasDeadline,
         isGasLess,
-        isGasAccount: autoUseGasAccount ? canUseGasAccount : isGasAccount,
+        isGasAccount: shouldUseGasAccountMode,
         pushType,
         sig,
       },
@@ -641,6 +743,14 @@ export const sendTransactionByMiniSignV2 = async ({
   parsedData?: ParsedTransactionActionData;
   requiredData?: ActionRequireData;
 }) => {
+  const buildTempoTx = (
+    rawTx: Tx & Record<string, unknown>,
+    opts?: { stripTopLevelData?: boolean; feePayer?: boolean }
+  ) =>
+    buildTempoTransaction(rawTx as any, {
+      stripTopLevelData: opts?.stripTopLevelData ?? true,
+      feePayer: opts?.feePayer,
+    });
   onProgress?.('building');
 
   const chain = findChain({
@@ -649,9 +759,15 @@ export const sendTransactionByMiniSignV2 = async ({
   const support1559 = chain.eip['1559'];
 
   const currentAccount = _account || (await wallet.getCurrentAccount())!;
-
-  console.log('wallet.getCurrentAccount', {
-    currentAccount,
+  const shouldUseTempoCallsForGasAccount =
+    !!isGasAccount &&
+    isTempoChain(chainServerId) &&
+    isTempoBatchSupportedAccountType(currentAccount.type);
+  const shouldUseTempoTx = shouldUseTempoTransaction({
+    tx: tx as Tx & Record<string, unknown>,
+    chainServerId,
+    isGasAccount: shouldUseTempoCallsForGasAccount,
+    accountType: currentAccount.type,
   });
 
   const signingTxId = await wallet.addSigningTx(tx);
@@ -675,7 +791,7 @@ export const sendTransactionByMiniSignV2 = async ({
     gasLevel: reportGasLevel,
   });
 
-  const transaction: Tx = {
+  const transaction: TxWithTempoExtras<Tx> = {
     from: tx.from,
     to: tx.to,
     data: tx.data,
@@ -683,6 +799,15 @@ export const sendTransactionByMiniSignV2 = async ({
     value: tx.value,
     chainId: tx.chainId,
     gas: tx.gas,
+    type: (tx as TxWithTempoExtras<Tx>).type,
+    calls: (tx as TxWithTempoExtras<Tx>).calls,
+    feeToken: (tx as TxWithTempoExtras<Tx>).feeToken,
+    feePayer: (tx as TxWithTempoExtras<Tx>).feePayer,
+    feePayerSignature: (tx as TxWithTempoExtras<Tx>).feePayerSignature,
+    nonceKey: (tx as TxWithTempoExtras<Tx>).nonceKey,
+    keyAuthorization: (tx as TxWithTempoExtras<Tx>).keyAuthorization,
+    validBefore: (tx as TxWithTempoExtras<Tx>).validBefore,
+    validAfter: (tx as TxWithTempoExtras<Tx>).validAfter,
   };
 
   const maxPriorityFee = +(tx.maxPriorityFeePerGas || '');
@@ -691,37 +816,72 @@ export const sendTransactionByMiniSignV2 = async ({
   if (support1559) {
     transaction.maxFeePerGas = maxFeePerGas;
     transaction.maxPriorityFeePerGas =
-      maxPriorityFee <= 0
+      maxPriorityFee < 0
         ? tx.maxFeePerGas
         : intToHex(Math.round(maxPriorityFee));
   } else {
     (transaction as Tx).gasPrice = maxFeePerGas;
   }
+  const transactionForSubmit = shouldUseTempoTx
+    ? ({
+        ...(buildTempoTx(transaction as any, {
+          stripTopLevelData: true,
+          feePayer: shouldUseTempoCallsForGasAccount,
+        }) as any),
+      } as any)
+    : transaction;
   try {
     //for Signature Record
     const actionData = await wallet.openapi.parseTx({
       chainId: chain.serverId,
-      tx: {
-        ...tx,
-        gas: '0x0',
-        nonce: tx.nonce || '0x1',
-        value: tx.value || '0x0',
-        to: tx.to || '',
-        type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
-      } as any,
-      origin: origin || '',
+      tx: shouldUseTempoTx
+        ? (buildTempoTx(
+            {
+              ...tx,
+              gas: '0x0',
+              nonce: tx.nonce || '0x1',
+              value: tx.value || '0x0',
+              to: tx.to || '',
+            },
+            {
+              stripTopLevelData: true,
+              feePayer: shouldUseTempoCallsForGasAccount,
+            }
+          ) as any)
+        : ({
+            ...tx,
+            gas: '0x0',
+            nonce: tx.nonce || '0x1',
+            value: tx.value || '0x0',
+            to: tx.to || '',
+            type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
+          } as any),
+      origin: session?.origin || '',
       addr: currentAccount.address,
     });
     const parsed = parseAction({
       type: 'transaction',
       data: actionData.action,
       balanceChange: preExecResult!.balance_change,
-      tx: {
-        ...tx,
-        gas: '0x0',
-        nonce: tx.nonce || '0x1',
-        value: tx.value || '0x0',
-      },
+      tx: shouldUseTempoTx
+        ? (buildTempoTx(
+            {
+              ...tx,
+              gas: '0x0',
+              nonce: tx.nonce || '0x1',
+              value: tx.value || '0x0',
+            },
+            {
+              stripTopLevelData: true,
+              feePayer: shouldUseTempoCallsForGasAccount,
+            }
+          ) as any)
+        : {
+            ...tx,
+            gas: '0x0',
+            nonce: tx.nonce || '0x1',
+            value: tx.value || '0x0',
+          },
       preExecVersion: preExecResult!.pre_exec_version,
       gasUsed: preExecResult!.gas.gas_used,
       sender: tx.from,
@@ -744,10 +904,25 @@ export const sendTransactionByMiniSignV2 = async ({
       },
       cex: cexInfo,
       tx: {
-        ...tx,
-        gas: '0x0',
-        nonce: tx.nonce || '0x1',
-        value: tx.value || '0x0',
+        ...(shouldUseTempoTx
+          ? (buildTempoTx(
+              {
+                ...tx,
+                gas: '0x0',
+                nonce: tx.nonce || '0x1',
+                value: tx.value || '0x0',
+              },
+              {
+                stripTopLevelData: true,
+                feePayer: shouldUseTempoCallsForGasAccount,
+              }
+            ) as any)
+          : {
+              ...tx,
+              gas: '0x0',
+              nonce: tx.nonce || '0x1',
+              value: tx.value || '0x0',
+            }),
       },
       apiProvider: isTestnet(chain.serverId)
         ? wallet.testnetOpenapi
@@ -826,25 +1001,6 @@ export const sendTransactionByMiniSignV2 = async ({
   let hash = '';
   const account = currentAccount;
   try {
-    console.log('wallet.ethSendTransaction', {
-      params: [
-        {
-          ...transaction,
-          isSpeedUp: (tx as any)?.isSpeedUp,
-          isCancel: (tx as any)?.isCancel,
-        },
-      ],
-      approvalRes: {
-        ...transaction,
-        signingTxId,
-        // logId: logId,
-        lowGasDeadline,
-        isGasLess,
-        isGasAccount,
-        pushType,
-        sig,
-      },
-    });
     hash = await wallet.ethSendTransaction({
       data: {
         $ctx: {
@@ -852,7 +1008,7 @@ export const sendTransactionByMiniSignV2 = async ({
         },
         params: [
           {
-            ...transaction,
+            ...transactionForSubmit,
             isSpeedUp: (tx as any)?.isSpeedUp,
             isCancel: (tx as any)?.isCancel,
           },
@@ -860,7 +1016,7 @@ export const sendTransactionByMiniSignV2 = async ({
       },
       session: session || INTERNAL_REQUEST_SESSION,
       approvalRes: {
-        ...transaction,
+        ...transactionForSubmit,
         signingTxId,
         lowGasDeadline,
         isGasLess,

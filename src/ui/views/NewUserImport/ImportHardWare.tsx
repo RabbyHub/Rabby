@@ -137,7 +137,6 @@ export const NewUserImportHardware = () => {
 
   return (
     <Card
-      step={2}
       onBack={() => {
         if (history.length) {
           history.goBack();

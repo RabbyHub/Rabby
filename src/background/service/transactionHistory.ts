@@ -793,8 +793,9 @@ class TxHistory {
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;
     const from = tx.rawTx.from.toLowerCase();
+    if (!this.store.transactions[from]) return;
     const target = this.store.transactions[from][key];
-    if (!this.store.transactions[from] || !target) return;
+    if (!target) return;
     const index = target.txs.findIndex(
       (t) => (t.hash && t.hash === tx.hash) || (t.reqId && t.reqId === tx.reqId)
     );
@@ -820,8 +821,11 @@ class TxHistory {
     const key = `${chainId}-${nonce}`;
     const address = from.toLowerCase();
 
+    if (!this.store.transactions[address]) {
+      return;
+    }
     const group = this.store.transactions[address][key];
-    if (!this.store.transactions[address] || !group) {
+    if (!group) {
       return;
     }
 
@@ -843,14 +847,15 @@ class TxHistory {
         (txRequest.is_finished && !txRequest.tx_id && !txRequest.push_status),
       isSubmitFailed: isSubmitFailed,
     });
-    const target = this.store.transactions[from][key];
+    const target = this.store.transactions[address][key];
+    if (!target) return;
     const maxGasTx = findMaxGasTx(target.txs);
     if (maxGasTx.isSubmitFailed) {
       target.isSubmitFailed = isSubmitFailed;
       this._setStoreTransaction({
         ...this.store.transactions,
-        [from]: {
-          ...this.store.transactions[from],
+        [address]: {
+          ...this.store.transactions[address],
           [key]: target,
         },
       });
@@ -868,6 +873,9 @@ class TxHistory {
   }) => {
     const key = `${chainId}-${nonce}`;
     const from = address.toLowerCase();
+    if (!this.store.transactions[from]) {
+      return;
+    }
     const target = this.store.transactions[from][key];
     const chain = findChain({
       id: chainId,
@@ -912,6 +920,8 @@ class TxHistory {
           code: 0,
           status: parseInt(res.status, 16),
           gas_used: parseInt(res.gasUsed, 16),
+          gasUsed: res.gasUsed,
+          effectiveGasPrice: res.effectiveGasPrice,
         };
       })
       .catch((e) => {
@@ -920,6 +930,8 @@ class TxHistory {
           code: -1,
           status: 0,
           gas_used: 0,
+          gasUsed: '0x0',
+          effectiveGasPrice: '0x0',
         };
       });
   };

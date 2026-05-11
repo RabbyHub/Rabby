@@ -5,7 +5,7 @@ import { useCommonPopupView } from '@/ui/utils';
 import { useQueryProjects } from '@/ui/utils/portfolio';
 import { useEffect, useMemo, useState } from 'react';
 
-export const useTokenAndDIFIData = ({
+export const useTokenAndDefiData = ({
   selectChainId,
   allTokenMode,
 }: {
@@ -29,21 +29,20 @@ export const useTokenAndDIFIData = ({
     hasTokens,
     removeProtocol,
     portfolioNetWorth,
-  } = useQueryProjects(
-    currentAccount?.address,
-    false,
-    true,
-    false,
+    refreshPositions,
+    refreshTokens,
+    refreshPortfolios,
+  } = useQueryProjects(currentAccount?.address, {
+    visible: true,
     lpTokenMode,
-    true,
-    allTokenMode
-  );
+    searchMode: allTokenMode,
+  });
 
   const {
     data: appPortfolios,
     netWorth: appPortfolioNetWorth,
     isLoading: isAppPortfoliosLoading,
-  } = useAppChain(currentAccount?.address, true, false);
+  } = useAppChain(currentAccount?.address, true);
 
   const currentPortfolioNetWorth = useMemo(() => {
     return (portfolioNetWorth || 0) + (appPortfolioNetWorth || 0);
@@ -117,5 +116,8 @@ export const useTokenAndDIFIData = ({
     setLpTokenMode,
     appIds,
     isNoResults,
+    refreshPositions,
+    refreshTokens,
+    refreshPortfolios,
   };
 };

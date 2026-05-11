@@ -1,0 +1,50 @@
+name: PR Scan
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  prscan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+
+      - name: Detect Yarn 4 migration
+        id: detect-yarn4-migration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch --no-tags --depth=1 origin ${{ github.event.pull_request.base.sha }}
+
+          read_package_manager() {
+            node -e "const fs = require('fs'); const pkg = JSON.parse(fs.readFileSync(0, 'utf8')); process.stdout.write(pkg.packageManager || '');"
+          }
+
+          base_package_manager="$(git show ${{ github.event.pull_request.base.sha }}:package.json | read_package_manager)"
+          head_package_manager="$(read_package_manager < package.json)"
+
+          if [[ "$base_package_manager" != yarn@4* && "$head_package_manager" == yarn@4* ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Skipping prscan because this PR migrates yarn.lock from Yarn Classic to Yarn 4."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run prscan
+        if: steps.detect-yarn4-migration.outputs.skip != 'true'
+        env:
+          INPUT_PRSCAN_BOT_TOKEN: ${{ secrets.PRSCAN_BOT_TOKEN }}
+        run: npx prscan github ${{ github.event.pull_request.html_url }} --reply

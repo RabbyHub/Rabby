@@ -6,6 +6,7 @@ import {
   DEX_ENUM,
   DEX_ROUTER_WHITELIST,
   DEX_SPENDER_WHITELIST,
+  UNI_NATIVE_TO_ADDRESSES,
   WrapTokenAddressMap,
 } from '@rabby-wallet/rabby-swap';
 import { QuoteResult, getQuote } from '@rabby-wallet/rabby-swap/dist/quote';
@@ -605,10 +606,11 @@ export const useQuoteMethods = () => {
 
   const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
 
-  const getAllQuotes = React.useCallback(
+  const _getAllQuotes = React.useCallback(
     async (
       params: Omit<getDexQuoteParams, 'dexId'> & {
-        setQuote: (quote: TDexQuoteData) => void;
+        setQuote?: (quote: TDexQuoteData) => void;
+        dexId?: DEX_ENUM;
       }
     ) => {
       recommendNonceTaskCache.current = undefined;
@@ -660,8 +662,12 @@ export const useQuoteMethods = () => {
         });
       }
 
+      const dexList = params.dexId
+        ? ([params.dexId] as DEX_ENUM[])
+        : (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[]);
+
       return Promise.all([
-        ...(supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[]).map((dexId) =>
+        ...dexList.map((dexId) =>
           getDexQuote({
             ...params,
             dexId,
@@ -684,6 +690,28 @@ export const useQuoteMethods = () => {
     ]
   );
 
+  const getAllQuotes = React.useCallback(
+    async (
+      params: Omit<getDexQuoteParams, 'dexId'> & {
+        setQuote: (quote: TDexQuoteData) => void;
+      }
+    ) => {
+      const quotes = await _getAllQuotes(params);
+      return quotes;
+    },
+    [_getAllQuotes]
+  );
+
+  const getSingleQuote = React.useCallback(
+    async (
+      params: getDexQuoteParams & { setQuote?: (quote: TDexQuoteData) => void }
+    ) => {
+      const quotes = await _getAllQuotes(params);
+      return Array.isArray(quotes) ? quotes[0] : quotes;
+    },
+    [_getAllQuotes]
+  );
+
   return {
     validSlippage,
     getSwapList,
@@ -693,6 +721,7 @@ export const useQuoteMethods = () => {
     getPreExecResult: getPreEstimateGasUsed,
     getDexQuote,
     getAllQuotes,
+    getSingleQuote,
     supportedDEXList,
   };
 };
@@ -715,8 +744,20 @@ interface getTokenParams {
   tokenId: string;
 }
 
-export const getRouter = (dexId: DEX_ENUM, chain: CHAINS_ENUM) => {
+export const getRouter = (
+  dexId: DEX_ENUM,
+  chain: CHAINS_ENUM,
+  payTokenId: string
+) => {
   const list = DEX_ROUTER_WHITELIST[dexId as keyof typeof DEX_ROUTER_WHITELIST];
+
+  const payTokenIsNativeToken =
+    findChainByEnum(chain)?.nativeTokenAddress === payTokenId;
+
+  if (dexId === DEX_ENUM.UNI && payTokenIsNativeToken) {
+    return UNI_NATIVE_TO_ADDRESSES[chain];
+  }
+
   return list[chain as keyof typeof list];
 };
 
@@ -724,6 +765,7 @@ export const getSpender = (dexId: DEX_ENUM, chain: CHAINS_ENUM) => {
   if (dexId === DEX_ENUM.WRAPTOKEN) {
     return '';
   }
+
   const list =
     DEX_SPENDER_WHITELIST[dexId as keyof typeof DEX_SPENDER_WHITELIST];
   return list[chain as keyof typeof list];

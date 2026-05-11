@@ -5,6 +5,7 @@ import {
   AddressSortStore,
   GasCache,
   addedToken,
+  UnlockPreferredMethod,
 } from 'background/service/preference';
 import { CHAINS_ENUM, DARK_MODE_TYPE } from 'consts';
 import { changeLanguage } from '@/i18n';
@@ -39,7 +40,13 @@ interface PreferenceState {
   isHideEcologyNoticeDict: Record<string | number, boolean>;
   isEnabledPwdForNonWhitelistedTx?: boolean;
   isEnabledDappAccount?: boolean;
+  biometricUnlockEnabled?: boolean;
+  biometricUnlockCredentialId?: string;
+  biometricUnlockEncryptedPassword?: string;
+  biometricUnlockIv?: string;
+  unlockPreferredMethod?: UnlockPreferredMethod;
   rateGuideLastExposure?: RateGuideLastExposure;
+  dashboardPanelOrder?: string[];
 
   /** @deprecated */
   desktopTokensAllMode?: boolean;
@@ -71,8 +78,14 @@ export const preference = createModel<RootModel>()({
     isHideEcologyNoticeDict: {},
     isEnabledPwdForNonWhitelistedTx: false,
     isEnabledDappAccount: false,
+    biometricUnlockEnabled: false,
+    biometricUnlockCredentialId: '',
+    biometricUnlockEncryptedPassword: '',
+    biometricUnlockIv: '',
+    unlockPreferredMethod: 'biometric',
     rateGuideLastExposure: getDefaultRateGuideLastExposure(),
     desktopTokensAllMode: false,
+    dashboardPanelOrder: [],
   } as PreferenceState,
 
   reducers: {
@@ -313,6 +326,34 @@ export const preference = createModel<RootModel>()({
       dispatch.preference.getPreference('isEnabledDappAccount');
       ga4.fireEvent(`DappAccount_${v ? 'On' : 'Off'}`, {
         event_category: 'Settings Snapshot',
+      });
+    },
+
+    async setBiometricUnlock(
+      payload: {
+        enabled: boolean;
+        credentialId?: string;
+        encryptedPassword?: string;
+        iv?: string;
+      },
+      store
+    ) {
+      await store.app.wallet.setBiometricUnlock(payload);
+      dispatch.preference.setField({
+        biometricUnlockEnabled: payload.enabled,
+        biometricUnlockCredentialId: payload.credentialId || '',
+        biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
+        biometricUnlockIv: payload.iv || '',
+      });
+      ga4.fireEvent(`Unlock_Biometrics_${payload.enabled ? 'On' : 'Off'}`, {
+        event_category: 'Settings Snapshot',
+      });
+    },
+
+    async setUnlockPreferredMethod(method: UnlockPreferredMethod, store) {
+      await store.app.wallet.setUnlockPreferredMethod(method);
+      dispatch.preference.setField({
+        unlockPreferredMethod: method,
       });
     },
 

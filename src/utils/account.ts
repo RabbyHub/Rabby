@@ -1,6 +1,7 @@
 import { ChainWithBalance } from '@rabby-wallet/rabby-api/dist/types';
 import {
   BRAND_ALIAN_TYPE_TEXT,
+  HARDWARE_KEYRING_TYPES,
   KEYRING_CLASS,
   KEYRING_ICONS,
   KEYRING_ICONS_WHITE,
@@ -9,12 +10,18 @@ import {
   KeyringWithIcon,
   SORT_WEIGHT,
 } from 'consts';
-import { t } from 'i18next';
 import { DisplayChainWithWhiteLogo, findChain } from './chain';
 import { isAddress } from 'viem';
 import { isSameAddress } from '@/background/utils';
 import { isObject, isPlainObject } from 'lodash';
 import WatchLogo from 'ui/assets/waitcup.svg';
+import IconWhiteListWhite from 'ui/assets/walletlogo/whitelist-white.svg';
+
+const DEFAULT_ALIAS_PREFIX = {
+  hdKeyring: 'Seed Phrase',
+  simpleKeyring: 'Private Key',
+  watchAddressKeyring: 'Watch-only',
+} as const;
 
 export function generateAliasName({
   keyringType,
@@ -28,17 +35,17 @@ export function generateAliasName({
   addressCount?: number;
 }) {
   if (keyringType === KEYRING_CLASS.MNEMONIC) {
-    return `${t('background.alias.HdKeyring')} ${keyringCount + 1} #${
+    return `${DEFAULT_ALIAS_PREFIX.hdKeyring} ${keyringCount + 1} #${
       addressCount + 1
     }`;
   } else if (keyringType === KEYRING_TYPE.SimpleKeyring) {
-    return `${t('background.alias.simpleKeyring')} ${keyringCount + 1}`;
+    return `${DEFAULT_ALIAS_PREFIX.simpleKeyring} ${keyringCount + 1}`;
   } else {
     if (
       keyringType === KEYRING_TYPE.WatchAddressKeyring ||
       brandName === KEYRING_TYPE.WatchAddressKeyring
     ) {
-      return `${t('background.alias.watchAddressKeyring')} ${addressCount + 1}`;
+      return `${DEFAULT_ALIAS_PREFIX.watchAddressKeyring} ${addressCount + 1}`;
     }
     if (brandName) {
       return `${BRAND_ALIAN_TYPE_TEXT[brandName] || brandName} ${
@@ -70,9 +77,11 @@ export function pickKeyringThemeIcon(
 
   const {
     needLightVersion,
-    purpleFirst = ![KEYRING_CLASS.PRIVATE_KEY, KEYRING_CLASS.MNEMONIC].includes(
-      keyringClass as any
-    ),
+    purpleFirst = ![
+      KEYRING_CLASS.PRIVATE_KEY,
+      KEYRING_CLASS.MNEMONIC,
+      KEYRING_CLASS.WATCH,
+    ].includes(keyringClass as any),
   } = options || {};
 
   if (options.forceWatchTransparent && keyringClass === KEYRING_CLASS.WATCH) {
@@ -171,6 +180,7 @@ export const filterKeyringData = (
   }
 
   const keys = Object.keys(data);
+  const KEYSTONE_KEEP_KEYS = ['paths', 'indexes'];
 
   for (const key of keys) {
     const value = data[key];
@@ -183,8 +193,21 @@ export const filterKeyringData = (
       }
     } else if (isObject(value)) {
       const subKeys = Object.keys(value);
+      const keyringMeta = data as {
+        keyringMode?: string;
+        name?: string;
+      };
+      const isKeystonePubkey =
+        keyringMeta?.keyringMode === 'pubkey' &&
+        keyringMeta.name === 'Keystone';
+      const shouldSkipAddressFiltering =
+        isKeystonePubkey && KEYSTONE_KEEP_KEYS.includes(key);
 
-      if (isAddress(subKeys[0])) {
+      if (
+        !shouldSkipAddressFiltering &&
+        subKeys.length > 0 &&
+        isAddress(subKeys[0])
+      ) {
         const filteredSubKeys = subKeys.filter((item) =>
           addresses.some((address) => isSameAddress(item, address))
         );
@@ -236,4 +259,18 @@ export const filterMyAccounts = (account: Account) => {
     isWatchOnly: account.type === KEYRING_CLASS.WATCH,
     isGnosis: account.type === KEYRING_CLASS.GNOSIS,
   };
+};
+
+export const isSupportDBAccount = (account?: Account | null) => {
+  if (!account) {
+    return false;
+  }
+  return (
+    ([KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY] as string[]).includes(
+      account.type
+    ) ||
+    !!Object.values(HARDWARE_KEYRING_TYPES).find(
+      (item) => item.type === account.type
+    )
+  );
 };

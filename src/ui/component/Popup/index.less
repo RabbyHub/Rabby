@@ -1,9 +1,24 @@
 .custom-popup {
+  &.borderless {
+    .ant-drawer-content {
+      border: none;
+    }
+  }
+  &.no-title {
+    .ant-drawer-content {
+      padding-top: 20px;
+    }
+  }
   .ant-drawer-header {
     padding: 20px 20px 0px 20px;
     border: none;
     text-align: center;
   }
+  .ant-drawer-header.ant-drawer-header-close-only {
+    padding: 0;
+    border: none;
+  }
+
   .ant-drawer-title {
     font-weight: 500;
     font-size: 20px;
@@ -117,7 +132,7 @@
   .ant-input-darkmode();
 
   .ant-input {
-    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06)) !important;
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
 
     &.ant-input-affix-wrapper {
       border-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1)) !important;

@@ -56,7 +56,7 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
           <div className="text-[13px] leading-[16px] text-r-neutral-foot pb-[2px]">
             {t('page.perpsDetail.PerpsEditMarginPopup.upTo')}
           </div>
-          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-black">
+          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
             {max}x
           </div>
         </div>

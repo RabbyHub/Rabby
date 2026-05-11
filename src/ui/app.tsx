@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import Views from './views';
@@ -38,6 +38,8 @@ Sentry.init({
     /\[From .*\]/, // error from custom rpc
     /AxiosError/,
     /WebSocket connection failed/,
+    /Could not establish connection/,
+    /HttpRequestError/,
   ],
 });
 
@@ -151,9 +153,26 @@ eventBus.addEventListener('syncChainList', (params) => {
   updateChainStore(params);
 });
 
-const main = () => {
-  console.log('name', getUITypeName());
+const compensateUnlockedOnceFlag = async () => {
+  try {
+    if (store.getState().app.hasUnlockedOnce) return;
+    const isUnlocked = await wallet.isUnlocked();
+    if (isUnlocked) {
+      store.dispatch.app.setField({
+        hasUnlockedOnce: true,
+      });
+    }
+  } catch (e) {
+    console.log('[compensateUnlockedOnceFlag] failed', e);
+  }
+};
+
+const rootContainer = document.getElementById('root');
+const root = rootContainer ? createRoot(rootContainer) : null;
+
+const main = async () => {
   portMessageChannel.connect(getUITypeName());
+  await compensateUnlockedOnceFlag();
 
   store.dispatch.app.initBizStore();
   store.dispatch.chains.init();
@@ -169,11 +188,10 @@ const main = () => {
   wallet.getLocale().then((locale) => {
     addResourceBundle(locale).then(() => {
       changeLanguage(locale);
-      ReactDOM.render(
+      root?.render(
         <Provider store={store}>
           <Views wallet={wallet} />
-        </Provider>,
-        document.getElementById('root')
+        </Provider>
       );
     });
   });

@@ -2,11 +2,9 @@ import React, { useMemo, useState, useRef, useEffect } from 'react';
 
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-import { DesktopNav } from '@/ui/component/DesktopNav';
 import { ProfileHeader } from './components/ProfileHeader';
 import { BackTop, Tabs } from 'antd';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { SendTokenModal } from './components/SendTokenModal';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { SwapTokenModal } from './components/SwapTokenModal';
@@ -26,10 +24,7 @@ import { GnosisQueueModal } from './components/GnosisQueueModal';
 import { ApprovalsTabPane } from './components/ApprovalsTabPane';
 import { AddressDetailModal } from './components/AddressDetailModal';
 import { AddressBackupModal } from './components/AddressBackupModal';
-import { AddAddressModal } from './components/AddAddressModal';
-import { RcIconBackTop } from '@/ui/assets/desktop/profile';
-import { ReachedEnd } from './components/ReachedEnd';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { RcIconBackTopCC } from '@/ui/assets/desktop/profile';
 import TopShortcut, {
   PORTFOLIO_LIST_ID,
   TOP_SHORTCUT_SLOT_ID,
@@ -37,85 +32,15 @@ import TopShortcut, {
 import { AbstractProject } from '@/ui/utils/portfolio/types';
 import { NFTTabPane } from './components/NFTTabPane';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { ga4 } from '@/utils/ga4';
 import { DesktopPending } from './components/DesktopPending';
 import { TokenTab } from './components/TokensTabPane/TokenTab';
 import { DIFITab } from './components/TokensTabPane/DifiTab';
-import { useTokenAndDIFIData } from './components/TokensTabPane/hook';
-
-const Wrap = styled.div`
-  height: 100%;
-  width: 100%;
-  overflow: auto;
-  background: var(--rb-neutral-bg-1, #fff);
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 16px;
-  padding-bottom: 120px;
-
-  .main-content {
-    padding-left: 80px;
-    flex-shrink: 0;
-    min-height: 766px;
-
-    transition: padding 0.3s;
-
-    &.is-open {
-      padding-left: 0;
-    }
-  }
-
-  .layout-container {
-    /* max-width: 1440px; */
-    width: 1120px;
-    /* margin-left: auto; */
-    /* margin-right: auto; */
-    background-color: var(--rb-neutral-bg-1, #ffffff);
-  }
-
-  /* antd */
-  .ant-tabs-tab {
-    color: var(--r-neutral-foot, #6a7587);
-    font-size: 18px;
-    font-weight: 400;
-
-    padding-top: 16px;
-    padding-bottom: 13px;
-
-    &:hover {
-      color: var(--r-blue-default, #4c65ff);
-    }
-  }
-  .ant-tabs > .ant-tabs-nav .ant-tabs-nav-wrap {
-    padding-left: 20px;
-  }
-  .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: var(--r-blue-default, #4c65ff);
-    font-weight: 700;
-    font-size: 18px;
-    text-shadow: none;
-  }
-  .ant-tabs-top > .ant-tabs-nav .ant-tabs-ink-bar {
-    height: 4px;
-    border-radius: 4px 4px 0 0;
-    background-color: var(--r-blue-default, #4c65ff);
-  }
-  .ant-tabs-top > .ant-tabs-nav {
-    margin-bottom: 0;
-    position: sticky;
-    z-index: 10;
-    background: var(--rb-neutral-bg-1, #fff);
-  }
-  .ant-tabs-top > .ant-tabs-nav::before {
-    border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
-  }
-`;
+import { useTokenAndDefiData } from './components/TokensTabPane/hook';
+import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
+const DESKTOP_NAV_HEIGHT = 0;
 
 const StickyBorderTop = () => (
-  <div className="sticky top-[103px] h-0 z-50">
+  <div className="sticky h-0 z-50" style={{ top: DESKTOP_NAV_HEIGHT }}>
     <div
       className={clsx(
         'overflow-hidden absolute w-full h-[40px] pointer-events-none',
@@ -136,16 +61,36 @@ const StickyBorderTop = () => (
   </div>
 );
 
-export const DesktopProfile = () => {
+export const DesktopProfile: React.FC<{
+  isActive?: boolean;
+  style?: React.CSSProperties;
+}> = ({ isActive = true, style }) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
   const history = useHistory();
-  const activeTab = useParams<{ activeTab: string }>().activeTab || 'tokens';
-  const handleTabChange = (key: string) => {
-    history.replace(`/desktop/profile/${key}`);
-  };
   const location = useLocation();
+  const dispatch = useRabbyDispatch();
+  const activeTab = useMemo(() => {
+    const match = location.pathname.match(/^\/desktop\/profile(?:\/([^/?]+))?/);
+    return match?.[1] || 'tokens';
+  }, [location.pathname]);
+
+  const handleTabChange = (key: string) => {
+    dispatch.desktopProfile.setField({ activeTab: key });
+    history.replace(`/desktop/profile/${key}`);
+    const $scrollElement = scrollContainerRef.current;
+    if (!$scrollElement) {
+      return;
+    }
+    const profileHeight = 136;
+
+    if ($scrollElement.scrollTop > profileHeight) {
+      requestAnimationFrame(() => {
+        $scrollElement.scrollTo(0, profileHeight);
+      });
+    }
+  };
   const { action, sendPageType } = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
     return {
@@ -154,7 +99,6 @@ export const DesktopProfile = () => {
     };
   }, [location.search]);
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
-  const dispatch = useRabbyDispatch();
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -181,51 +125,43 @@ export const DesktopProfile = () => {
     }
   }, [isUpdating]);
 
-  const handleUpdate = useMemoizedFn(async () => {
-    setRefreshKey((prev) => prev + 1);
-    await refreshBalance();
-    await refreshCurve();
-  });
   const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
     AbstractProject[]
   >([]);
   const [searchValue, setSearchValue] = React.useState('');
 
   const {
-    // useQueryProjects
     isTokensLoading,
     isAllTokenLoading,
     isPortfoliosLoading,
-    portfolios,
-    tokenList,
     hasTokens,
     removeProtocol,
-    portfolioNetWorth,
-    // useQueryProjects end
-    // useAppChain
-    appPortfolios,
-    appPortfolioNetWorth,
     isAppPortfoliosLoading,
-    // useAppChain end
     currentPortfolioNetWorth,
-    displayTokenList,
     displayPortfolios,
     sortTokens,
     lpTokenMode,
     setLpTokenMode,
     appIds,
     isNoResults,
-  } = useTokenAndDIFIData({
+    refreshPositions,
+    refreshTokens,
+  } = useTokenAndDefiData({
     selectChainId: chainInfo?.serverId,
     allTokenMode: !!searchValue,
   });
 
+  const handleUpdate = useMemoizedFn(async () => {
+    setRefreshKey((prev) => prev + 1);
+    refreshPositions();
+    refreshBalance();
+    refreshCurve();
+  });
+
   useListenTxReload(async () => {
-    if (['tokens', 'transactions'].includes(activeTab)) {
-      setRefreshKey((prev) => prev + 1);
-    }
-    await refreshBalance();
-    await refreshCurve();
+    refreshBalance();
+    refreshCurve();
+    refreshTokens();
   });
 
   useEffect(
@@ -248,47 +184,22 @@ export const DesktopProfile = () => {
     handleUpdate();
   });
 
-  const isReportedRef = useRef(false);
-  useEffect(() => {
-    if (isReportedRef.current) {
-      return;
-    }
-    if (!action) {
-      matomoRequestEvent({
-        category: 'RabbyWeb_Active',
-        action: 'RabbyWeb_Portfolio',
-      });
-
-      ga4.fireEvent('RabbyWeb_Active', {
-        event_category: 'RabbyWeb_Portfolio',
-      });
-      isReportedRef.current = true;
-    }
-  }, [action]);
-
   return (
     <>
-      <Wrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element"
+      <DesktopPageWrap
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] mt-[18px] no-scrollbar"
         ref={scrollContainerRef}
+        style={style}
       >
-        <div className="main-content is-open">
-          <div className="layout-container sticky top-0 z-10 py-[16px] bg-rb-neutral-bg-1">
-            <DesktopNav
-              balance={balance}
-              changePercent={curveChartData?.changePercent}
-              isLoss={curveChartData?.isLoss}
-              isLoading={isBalanceLoading || isCurveLoading}
-            />
-          </div>
-
+        <div className="main-content flex-1 pb-[20px]">
           <div className="layout-container">
+            {/* <DesktopNav /> */}
             <div
               className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
               style={{
                 width: 0,
                 scrollbarWidth: 'none',
-                top: 103 + 57,
+                top: DESKTOP_NAV_HEIGHT + 57,
               }}
               id={TOP_SHORTCUT_SLOT_ID}
             >
@@ -317,7 +228,7 @@ export const DesktopProfile = () => {
                   <Tabs
                     tabBarStyle={{
                       position: 'sticky',
-                      top: 103,
+                      top: DESKTOP_NAV_HEIGHT,
                     }}
                     className="overflow-visible"
                     defaultActiveKey={activeTab}
@@ -352,7 +263,7 @@ export const DesktopProfile = () => {
                         }
                         isNoResults={isNoResults}
                         sortTokens={sortTokens}
-                        hasTokens={hasTokens}
+                        hasTokens={!!hasTokens}
                         lpTokenMode={lpTokenMode}
                         setLpTokenMode={setLpTokenMode}
                         selectChainId={chainInfo?.serverId}
@@ -413,7 +324,18 @@ export const DesktopProfile = () => {
                       right: 'initial',
                     }}
                   >
-                    <ThemeIcon src={RcIconBackTop} />
+                    <div
+                      className={clsx(
+                        'flex items-center justify-center w-[32px] h-[32px] rounded-full',
+                        'bg-rb-neutral-bg-1 dark:bg-rb-neutral-bg-4',
+                        'text-rb-neutral-foot'
+                      )}
+                      style={{
+                        boxShadow: '0 2px 8px 0 rgba(0, 0, 0, 0.12)',
+                      }}
+                    >
+                      <RcIconBackTopCC />
+                    </div>
                   </BackTop>
                 </div>
               </main>
@@ -421,11 +343,22 @@ export const DesktopProfile = () => {
           </div>
         </div>
         <aside
-          className={clsx('min-w-[64px] flex-shrink-0 sticky top-[103px] z-20')}
+          className={clsx(
+            'flex-shrink-0 sticky z-20 top-0 h-full flex flex-col'
+          )}
+          // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
-          <DesktopSelectAccountList />
+          {/* <div
+            className="flex items-center justify-end flex-shrink-0"
+            style={{ height: `${DESKTOP_NAV_HEIGHT}px` }}
+          >
+            <SwitchThemeBtn />
+          </div> */}
+          <div className="flex-1">
+            <DesktopSelectAccountList />
+          </div>
         </aside>
-      </Wrap>
+      </DesktopPageWrap>
       <SendTokenModal
         visible={action === 'send'}
         onCancel={() => {
@@ -484,13 +417,6 @@ export const DesktopProfile = () => {
       />
       <AddressBackupModal
         visible={action === 'address-backup'}
-        onCancel={() => {
-          history.replace(history.location.pathname);
-        }}
-        destroyOnClose
-      />
-      <AddAddressModal
-        visible={action === 'add-address'}
         onCancel={() => {
           history.replace(history.location.pathname);
         }}

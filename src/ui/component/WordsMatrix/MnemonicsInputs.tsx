@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo } from 'react';
 import styled, { css } from 'styled-components';
-import { Dropdown, Input, Menu, message } from 'antd';
+import { Dropdown, Input, Menu, message, Popover } from 'antd';
 import type { MenuProps } from 'antd';
 import { wordlist } from '@scure/bip39/wordlists/english';
 
 import { styid } from 'ui/utils/styled';
 
 import IconCaretDown from './icon-caret-down.svg';
-import { ReactComponent as RcIconClearAll } from './icon-clear-all.svg';
+import { ReactComponent as RcIconClearAllCC } from './icon-clear-all-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 
 import clsx from 'clsx';
@@ -21,7 +21,7 @@ import { clearClipboard } from '@/ui/utils/clipboard';
 
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/import/arrow-cc.svg';
 
-const ITEM_H = 40;
+const ITEM_H = 52;
 const ROW_COUNT = 3;
 const DEFAULT_MEMONICS_COUNT = 12;
 
@@ -68,9 +68,8 @@ const MatrixWrapper = styled.div.withConfig<{
       border-color: transparent;
 
       .mnemonics-input {
-        background-color: rgba(217, 217, 217, 0.2);
         border-radius: 8px;
-        border: 1.5px solid var(--r-neutral-line, #e0e5ec);
+        border: 1px solid var(--r-neutral-line, #e0e5ec);
         text-align: center;
         font-size: 22px;
         color: var(--r-neutral-title-1, #192945);
@@ -86,7 +85,6 @@ const MatrixWrapper = styled.div.withConfig<{
       &:not(.invalid) {
         .mnemonics-input:hover {
           border-color: var(--r-blue-default, #7084ff);
-          border-right-width: 1.5px !important;
         }
       }
 
@@ -104,6 +102,72 @@ const MatrixWrapper = styled.div.withConfig<{
       ${styid(NumberFlag)} {
         color: var(--r-red-default, #e34935);
       }
+    }
+  }
+
+  &.compact-import {
+    background-color: transparent;
+    gap: 9px;
+    border: 0;
+    border-radius: 0;
+
+    .matrix-word-item {
+      width: calc((100% - 18px) / 3);
+      border-right: 0;
+      border-bottom: 0;
+
+      .mnemonics-input {
+        padding: 0 12px 0 24px;
+        border-radius: 8px;
+        border: 0.5px solid var(--r-neutral-line, #e0e5ec);
+        background: var(--r-neutral-card-1, #fff);
+        text-align: left;
+        line-height: 51px;
+        font-size: 15px;
+        font-weight: 400;
+        color: var(--r-neutral-title-1, #192945);
+
+        &:hover {
+          border-color: var(--r-neutral-line, #e0e5ec);
+        }
+
+        &:focus,
+        &.ant-input-focused {
+          border-color: var(--r-blue-default, #4c65ff);
+          background: var(--r-neutral-card-1, #fff);
+          box-shadow: none;
+        }
+      }
+
+      ${styid(NumberFlag)} {
+        top: 7px;
+        left: 7px;
+        height: 16px;
+        color: var(--r-neutral-foot, #6a7587);
+        font-size: 13px;
+        line-height: 16px;
+        font-weight: 500;
+      }
+    }
+
+    .matrix-word-item.compact-focused {
+      ${styid(NumberFlag)} {
+        color: var(--r-blue-default, #4c65ff);
+      }
+    }
+
+    .matrix-word-item.invalid {
+      .mnemonics-input {
+        border-color: var(--r-red-default, #e34935);
+      }
+
+      ${styid(NumberFlag)} {
+        color: var(--r-red-default, #e34935);
+      }
+    }
+
+    .matrix-word-item.is-mnemonics-input ${styid(NumberFlag)} {
+      z-index: 2;
     }
   }
 
@@ -184,8 +248,6 @@ const MatrixWrapper = styled.div.withConfig<{
     &:focus,
     &.ant-input-focused {
       border-color: var(--r-blue-default, #7084ff);
-      border-width: 1.5px;
-      border-right-width: 1.5px !important;
       background-color: var(--r-neutral-bg-1, #fff);
       box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
     }
@@ -193,7 +255,6 @@ const MatrixWrapper = styled.div.withConfig<{
   .matrix-word-item.invalid {
     .mnemonics-input {
       opacity: 1;
-      border-width: 1.5px;
       border-color: var(--r-red-default, #e34935);
     }
     ${styid(NumberFlag)} {
@@ -230,7 +291,7 @@ const MatrixWrapper = styled.div.withConfig<{
 `;
 
 function fillMatrix(words: string[], mnemonicsCount: number) {
-  const matrix = words.slice() as string[];
+  const matrix = words.slice(0, mnemonicsCount) as string[];
   while (matrix.length < mnemonicsCount) {
     matrix.push('');
   }
@@ -247,12 +308,20 @@ const HeadToolbar = styled.div`
   line-height: 14px;
 
   color: var(--r-neutral-body);
+
+  &.compact-head-toolbar {
+    min-height: 14px;
+    font-size: 12px;
+    line-height: 14px;
+  }
 `;
 
 const DFLT_FOCUSING = { index: -1, visible: false };
 const DFLT_HOVERING = { index: -1, isHovering: false };
 type IMnemonicsCount = 12 | 15 | 18 | 21 | 24;
 const MNEMONICS_COUNTS: IMnemonicsCount[] = [12, 15, 18, 21, 24];
+const DISPLAYED_MNEMONICS_COUNTS: IMnemonicsCount[] = [12, 24];
+const MORE_MNEMONICS_COUNTS: IMnemonicsCount[] = [15, 18, 21];
 const NEED_PASSPHRASE_MNEMONICS_COUNTS: IMnemonicsCount[] = [
   12,
   15,
@@ -268,6 +337,7 @@ const SLIP39_MNEMONICS_COUNTS: { passphrase: boolean }[] = [
 
 function MnemonicsInputs({
   newUserImport,
+  compact,
   className,
   rowCount = ROW_COUNT,
   value = '',
@@ -275,6 +345,7 @@ function MnemonicsInputs({
   onChange,
   errMsgs = [],
   errorIndexes = [],
+  onModeChange,
   onPassphrase,
   isSlip39,
   onSlip39Change,
@@ -283,6 +354,7 @@ function MnemonicsInputs({
   ...props
 }: React.PropsWithChildren<{
   newUserImport?: boolean;
+  compact?: boolean;
   className?: string;
   rowCount?: number;
   value?: string;
@@ -294,6 +366,7 @@ function MnemonicsInputs({
   onChange?: (value: string) => any;
   errMsgs?: string[];
   errorIndexes?: number[];
+  onModeChange?: () => void;
   onPassphrase?: (val: boolean) => any;
   isSlip39: boolean;
   onSlip39Change: React.Dispatch<React.SetStateAction<boolean>>;
@@ -306,6 +379,7 @@ function MnemonicsInputs({
   const [needPassphrase, setNeedPassphrase] = React.useState<boolean>(false);
   const [dropdownVisible, setDropdownVisible] = React.useState(false);
   const [showAllMenuOptions, setShowAllMenuOptions] = React.useState(false);
+  const dropdownTriggerRef = React.useRef<HTMLDivElement | null>(null);
 
   const [invalidWords, setInvalidWords] = React.useState<number[]>([]);
   const { wordPlaceHolders } = React.useMemo(() => {
@@ -335,16 +409,47 @@ function MnemonicsInputs({
   const verRef = React.useRef(0);
   const ver = `ver-${verRef.current}-${mnemonicsCount}`;
   const setInputTexts = React.useCallback(
-    (vals: string[], noSlice = false) => {
+    (
+      vals: string[],
+      options?: {
+        noSlice?: boolean;
+        count?: number;
+      }
+    ) => {
+      const targetCount = options?.count ?? mnemonicsCount;
       const words = fillMatrix(
-        noSlice ? vals : vals.slice(0, mnemonicsCount),
-        mnemonicsCount
+        options?.noSlice ? vals : vals.slice(0, targetCount),
+        targetCount
       );
       _setInputTexts(words);
       onChange?.(words.join(' '));
       verRef.current++;
     },
     [onChange, mnemonicsCount]
+  );
+  const setInputTextsForCount = React.useCallback(
+    (vals: string[], count: IMnemonicsCount) => {
+      setInputTexts(vals, {
+        noSlice: true,
+        count,
+      });
+    },
+    [setInputTexts]
+  );
+  const applyMnemonicsCount = React.useCallback(
+    (
+      nextCount: IMnemonicsCount,
+      options?: { needPassphrase?: boolean; isSlip39?: boolean }
+    ) => {
+      setMnemonicsCount(nextCount);
+      setInputTextsForCount(inputTexts, nextCount);
+      setNeedPassphrase(!!options?.needPassphrase);
+      setInvalidWords([]);
+      onModeChange?.();
+      onSlip39Change(!!options?.isSlip39);
+      handleDropdownVisibleChange(false);
+    },
+    [inputTexts, onModeChange, onSlip39Change, setInputTextsForCount]
   );
 
   const hasInputValue = useMemo(() => {
@@ -386,13 +491,13 @@ function MnemonicsInputs({
         newInputTexts[idx + i] = words[i];
       }
       newInputTexts = newInputTexts.slice(0, nextCount);
-      setInputTexts(newInputTexts, true);
+      setInputTextsForCount(newInputTexts, nextCount);
 
       if (focusing.index === idx) {
         setMnemonics(word);
       }
     },
-    [focusing, inputTexts, mnemonicsCount]
+    [focusing, inputTexts, mnemonicsCount, setInputTextsForCount]
   );
 
   const validateWords = () => {
@@ -454,33 +559,45 @@ function MnemonicsInputs({
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
-      <HeadToolbar className="mb-[20px] text-r-neutral-body">
+      <HeadToolbar
+        className={clsx(
+          'mb-[12px] text-r-neutral-body min-h-[18px]',
+          compact && 'compact-head-toolbar'
+        )}
+      >
         <Dropdown
+          placement="bottomLeft"
           trigger={['click']}
           visible={dropdownVisible}
           onVisibleChange={handleDropdownVisibleChange}
+          getPopupContainer={() => dropdownTriggerRef.current || document.body}
           overlay={
             <Menu className="mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1">
-              {MNEMONICS_COUNTS.map((count) => {
+              {(showAllMenuOptions
+                ? [...DISPLAYED_MNEMONICS_COUNTS, ...MORE_MNEMONICS_COUNTS]
+                : DISPLAYED_MNEMONICS_COUNTS
+              ).map((count) => {
                 return (
                   <Menu.Item
                     className="h-[38px] py-0 px-[8px] text-r-neutral-title-1 hover:bg-transparent"
                     key={`countSelector-${count}`}
                     onClick={() => {
-                      setMnemonicsCount(count);
-                      setNeedPassphrase(false);
-                      onSlip39Change(false);
+                      applyMnemonicsCount(count);
                     }}
                   >
-                    <div className="text-wrapper">
+                    <div className="text-wrapper whitespace-nowrap">
                       <Trans
                         t={t}
                         i18nKey="page.newAddress.seedPhrase.wordPhrase"
                         values={{ count }}
                       >
                         I have a
-                        <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
-                          {{ count }}
+                        <b
+                          style={{
+                            color: 'var(--r-blue-default, #7084ff)',
+                          }}
+                        >
+                          {{ count } as any}
                         </b>
                         -word phrase
                       </Trans>
@@ -498,12 +615,12 @@ function MnemonicsInputs({
                         key={`countSelector-need-passphrase-${count}`}
                         style={{ color: 'var(--r-neutral-body)' }}
                         onClick={() => {
-                          setMnemonicsCount(count);
-                          setNeedPassphrase(true);
-                          onSlip39Change(false);
+                          applyMnemonicsCount(count, {
+                            needPassphrase: true,
+                          });
                         }}
                       >
-                        <div className="text-wrapper">
+                        <div className="text-wrapper whitespace-nowrap">
                           <Trans
                             t={t}
                             i18nKey="page.newAddress.seedPhrase.wordPhraseAndPassphrase"
@@ -515,7 +632,7 @@ function MnemonicsInputs({
                                 color: 'var(--r-blue-default, #7084ff)',
                               }}
                             >
-                              {{ count }}
+                              {{ count } as any}
                             </b>
                             -word phrase and Passphrase
                           </Trans>
@@ -531,11 +648,13 @@ function MnemonicsInputs({
                         key={`countSelector-need-passphrase-${passphrase}`}
                         style={{ color: 'var(--r-neutral-body)' }}
                         onClick={() => {
-                          onSlip39Change(true);
-                          setNeedPassphrase(passphrase);
+                          applyMnemonicsCount(DEFAULT_MEMONICS_COUNT, {
+                            needPassphrase: passphrase,
+                            isSlip39: true,
+                          });
                         }}
                       >
-                        <div className="text-wrapper">
+                        <div className="text-wrapper whitespace-nowrap">
                           <Trans
                             t={t}
                             i18nKey={
@@ -564,7 +683,7 @@ function MnemonicsInputs({
                   className="mnemonics-show-more-item h-auto py-0 px-[8px] hover:bg-transparent text-12"
                   onClick={handleToggleShowMore}
                 >
-                  <div className="text-wrapper show-more flex items-center justify-center text-r-neutral-foot">
+                  <div className="text-wrapper show-more flex items-center justify-start text-r-neutral-foot">
                     <span>
                       {t('page.newAddress.seedPhrase.showMoreOptions')}
                     </span>
@@ -581,7 +700,10 @@ function MnemonicsInputs({
             </Menu>
           }
         >
-          <div className="left flex items-center cursor-pointer">
+          <div
+            ref={dropdownTriggerRef}
+            className="left relative flex items-center cursor-pointer"
+          >
             <span>
               {!isSlip39 ? (
                 <Trans
@@ -594,8 +716,12 @@ function MnemonicsInputs({
                   values={{ count: mnemonicsCount }}
                 >
                   I have a
-                  <b style={{ color: 'var(--r-blue-default, #7084ff)' }}>
-                    {{ mnemonicsCount }}
+                  <b
+                    style={{
+                      color: 'var(--r-blue-default, #7084ff)',
+                    }}
+                  >
+                    {{ mnemonicsCount } as any}
                   </b>
                   -word phrase and Passphrase
                 </Trans>
@@ -614,9 +740,12 @@ function MnemonicsInputs({
               )}
             </span>
 
-            {newUserImport ? (
+            {newUserImport || compact ? (
               <RcIconArrowCC
-                className="ml-[2px] text-r-neutral-body w-16 h-16"
+                className={clsx(
+                  'ml-[2px] text-r-neutral-body',
+                  compact ? 'w-[14px] h-[14px]' : 'w-16 h-16'
+                )}
                 viewBox="0 0 16 16"
               />
             ) : (
@@ -628,31 +757,30 @@ function MnemonicsInputs({
           <div
             className={clsx(
               'right flex items-center cursor-pointer',
-              newUserImport &&
-                'min-w-max pb-[2px] hover:bg-r-blue-disable rounded-[1px]'
+              'p-[3px] rounded-[4px] hover:bg-r-neutral-card-2'
             )}
             onClick={() => {
               clearAll();
             }}
           >
-            <RcIconClearAll
-              viewBox="0 0 18 18"
-              className="w-[18px] h-[18px] text-rabby-blue-default"
-            />
-            {!newUserImport && (
-              <span className="ml-[6px]">
+            <RcIconClearAllCC className="w-[14px] h-[14px] text-r-neutral-body block" />
+            {/* {!newUserImport && (
+              <span className="ml-[6px] leading-[18px]">
                 {t('page.newAddress.seedPhrase.clearAll')}
               </span>
-            )}
+            )} */}
           </div>
         )}
       </HeadToolbar>
       <MatrixWrapper
         className={clsx(
-          'rounded-[6px] text-center',
-          !newUserImport && 'border border-rabby-neutral-line border-solid',
+          compact ? 'rounded-none text-center' : 'rounded-[6px] text-center',
+          !newUserImport &&
+            !compact &&
+            'border border-rabby-neutral-line border-solid',
           isSlip39 && 'hidden',
           newUserImport && 'new-user-import',
+          compact && 'compact-import',
           className
         )}
         rowCount={rowCount}
@@ -664,81 +792,135 @@ function MnemonicsInputs({
 
           const isCurrentFocusing = focusing.index === idx;
           const isCurrentVisible = focusing.visible && focusing.index === idx;
+          const suggestionList = word
+            ? wordlist.filter((w) => w.startsWith(word)).slice(0, 6)
+            : [];
+          const valid = word && wordlist.includes(word);
 
           return (
-            <div
+            <Popover
               key={`word-item-${idx}`}
-              className={clsx('matrix-word-item is-mnemonics-input', {
-                invalid: invalidWords.includes(idx),
-              })}
-              onClick={() => {
-                setFocusing({ index: idx, visible: isCurrentVisible });
-                setMnemonics(word);
+              overlayClassName="mnemonics-input-suggestions-popover"
+              align={{
+                offset: [0, -4],
               }}
-              onMouseEnter={() => handleMouseEnter(idx)}
-              onMouseLeave={() => handleMouseLeave(idx)}
+              content={
+                <div className="max-w-[324px] flex items-center flex-wrap">
+                  {suggestionList.map((suggestion) => (
+                    <div
+                      key={`suggestion-${suggestion}`}
+                      className={clsx(
+                        'w-[108px] h-[44px] flex items-center justify-center',
+                        'text-[13px] leading-[16px] text-r-neutral-title-1 font-medium',
+                        'rounded-[6px] cursor-pointer',
+                        'hover:bg-r-blue-light1'
+                      )}
+                      onMouseDown={(e) => {
+                        // 阻止默认行为，防止触发 input 的 blur 事件
+                        e.preventDefault();
+                      }}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onWordUpdated(idx, suggestion);
+                      }}
+                    >
+                      {suggestion}
+                    </div>
+                  ))}
+                </div>
+              }
+              placement="bottomRight"
+              visible={isCurrentFocusing && suggestionList.length > 0 && !valid}
             >
-              <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content] top-[-20px]"
-                title={word}
-                disableLeft
-                placement="top"
-                visible={
-                  !!(
-                    word &&
-                    (focusing.index === idx ||
-                      (hovering.index === idx && hovering.isHovering))
-                  )
-                }
+              <div
+                key={`word-item-${idx}`}
+                className={clsx(
+                  'matrix-word-item is-mnemonics-input',
+                  compact && isCurrentFocusing && 'compact-focused',
+                  {
+                    invalid: invalidWords.includes(idx),
+                  }
+                )}
+                onClick={() => {
+                  setFocusing({ index: idx, visible: isCurrentVisible });
+                  setMnemonics(word);
+                }}
+                onMouseEnter={() => handleMouseEnter(idx)}
+                onMouseLeave={() => handleMouseLeave(idx)}
               >
-                <DebouncedInput
-                  debounce={150}
-                  key={`word-input-${ver}-${word}-${idx}`}
-                  className={clsx(
-                    'mnemonics-input  pr-10',
-                    newUserImport ? 'pl-[10px]' : 'pl-[46px]',
-                    isCurrentFocusing && 'ant-input-focused',
-                    {
-                      'opacity-50':
-                        focusing.index !== -1 && focusing.index !== idx,
-                    }
-                  )}
-                  type={isCurrentVisible ? 'text' : 'password'}
-                  value={word}
-                  autoFocus={isCurrentFocusing}
-                  onFocus={() => {
-                    setFocusing({ index: idx, visible: isCurrentVisible });
-                  }}
-                  onBlur={() => {
-                    setFocusing(DFLT_FOCUSING);
-                    validateWords();
-                  }}
-                  onPaste={(e) => {
-                    clearClipboardToast();
-                    const input = e.target as HTMLInputElement;
-                    input.select();
-                  }}
-                  onContextMenu={(e) => {
-                    const input = e.target as HTMLInputElement;
-                    input.select();
-                  }}
-                  onChange={(text: string) => {
-                    const newVal = text.trim();
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle w-[max-content]"
+                  align={{ offset: [0, 20] }}
+                  title={word}
+                  disableLeft
+                  placement="top"
+                  visible={
+                    !!(
+                      word &&
+                      (focusing.index === idx ||
+                        (hovering.index === idx && hovering.isHovering))
+                    )
+                  }
+                >
+                  <DebouncedInput
+                    debounce={150}
+                    key={`word-input-${ver}-${word}-${idx}`}
+                    className={clsx(
+                      'mnemonics-input  pr-10',
+                      newUserImport
+                        ? 'pl-[10px]'
+                        : compact
+                        ? 'pl-[24px] pr-[12px]'
+                        : 'pl-[46px]',
+                      isCurrentFocusing && 'ant-input-focused',
+                      {
+                        'opacity-50':
+                          !compact &&
+                          focusing.index !== -1 &&
+                          focusing.index !== idx,
+                      }
+                    )}
+                    type={isCurrentVisible ? 'text' : 'password'}
+                    value={word}
+                    autoFocus={isCurrentFocusing}
+                    onFocus={() => {
+                      setFocusing({ index: idx, visible: isCurrentVisible });
+                    }}
+                    onBlur={() => {
+                      setFocusing(DFLT_FOCUSING);
+                      validateWords();
+                    }}
+                    onPaste={(e) => {
+                      clearClipboardToast();
+                      const input = e.target as HTMLInputElement;
+                      input.select();
+                    }}
+                    onContextMenu={(e) => {
+                      const input = e.target as HTMLInputElement;
+                      input.select();
+                    }}
+                    onChange={(text: string) => {
+                      const newVal = text.trim();
 
-                    if (newVal === word) return;
+                      if (newVal === word) return;
 
-                    onWordUpdated(idx, newVal);
-                  }}
-                />
-              </TooltipWithMagnetArrow>
-              <NumberFlag
-                className={clsx({
-                  'opacity-50': focusing.index !== -1 && focusing.index !== idx,
-                })}
-              >
-                {number}.
-              </NumberFlag>
-            </div>
+                      onWordUpdated(idx, newVal);
+                    }}
+                  />
+                </TooltipWithMagnetArrow>
+                <NumberFlag
+                  className={clsx({
+                    'opacity-50':
+                      !compact &&
+                      focusing.index !== -1 &&
+                      focusing.index !== idx,
+                  })}
+                >
+                  {number}.
+                </NumberFlag>
+              </div>
+            </Popover>
           );
         })}
       </MatrixWrapper>

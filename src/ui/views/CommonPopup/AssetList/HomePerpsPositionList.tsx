@@ -5,32 +5,42 @@ import {
   formatUsdValue,
   splitNumberByStep,
   useCommonPopupView,
+  useWallet,
 } from '@/ui/utils';
+import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { AssetPosition, OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import clsx from 'clsx';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import DistanceToLiquidationTag from '../../Perps/components/DistanceToLiquidationTag';
 import { TokenImg } from '../../Perps/components/TokenImg';
 import { usePerpsClearHouseState } from '../../Perps/hooks/usePerpsClearingHouseState';
 import RiskLevelPopup from '../../Perps/popup/RiskLevelPopup';
 import { getPerpsSDK } from '../../Perps/sdkManager';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import {
+  calculateDistanceToLiquidation,
+  formatPerpsPct,
+} from '../../Perps/utils';
+import { UI_TYPE } from '@/constant/ui';
+import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
+import { obj2query } from '@/ui/utils/url';
+import { ga4 } from '@/utils/ga4';
+import { Tooltip } from 'antd';
 
-export const HomePerpsPositionList: React.FC = () => {
+const isDesktop = UI_TYPE.isDesktop;
+
+export const HomePerpsPositionList: React.FC<{ needFetchMarket?: boolean }> = ({
+  needFetchMarket = false,
+}) => {
   const currentAccount = useCurrentAccount();
 
   const { data } = usePerpsClearHouseState({
     address: currentAccount?.address,
   });
+  const wallet = useWallet();
   const dispatch = useRabbyDispatch();
-
-  const [riskPopupVisible, setRiskPopupVisible] = useState(false);
-  const [riskPopupCoin, setRiskPopupCoin] = useState<string>('');
-  const marketDataMap = useRabbySelector(
-    (store) => store.perps.marketDataMap || {}
-  );
 
   const { closePopup } = useCommonPopupView();
   const history = useHistory();
@@ -39,87 +49,75 @@ export const HomePerpsPositionList: React.FC = () => {
     return (data?.assetPositions?.length || 0) > 0;
   }, [data]);
 
-  const riskPopupData = useMemo(() => {
-    if (!riskPopupCoin) {
-      return null;
-    }
-
-    const selectedPosition = data?.assetPositions?.find(
-      (item) => item.position.coin === riskPopupCoin
-    );
-    if (!selectedPosition) {
-      return null;
-    }
-
-    const marketDataItem = marketDataMap[riskPopupCoin];
-    const markPrice = Number(marketDataItem?.markPx || 0);
-    const liquidationPrice = Number(
-      selectedPosition.position.liquidationPx || 0
-    );
-
-    // const distanceLiquidation = calculateDistanceToLiquidation(
-    //   selectedPosition.position.liquidationPx,
-    //   marketDataItem?.markPx
-    // );
-    return {
-      // distanceLiquidation,
-      direction:
-        Number(selectedPosition.position.szi || 0) > 0
-          ? 'Long'
-          : ('Short' as 'Long' | 'Short'),
-      currentPrice: markPrice,
-      pxDecimals: marketDataItem?.pxDecimals || 2,
-      liquidationPrice,
-    };
-  }, [riskPopupCoin, data?.assetPositions, marketDataMap]);
-
   useEffect(() => {
-    if (hasPositions) {
+    if (hasPositions && needFetchMarket) {
       dispatch.perps.fetchMarketData(undefined);
+      const sdk = getPerpsSDK();
+      const {
+        unsubscribe: unsubscribeAllDexsAssetCtxs,
+      } = sdk.ws.subscribeToAllDexsAssetCtxs((data) => {
+        const { ctxs } = data;
+        dispatch.perps.updateMarketData(ctxs);
+      });
+      return () => {
+        unsubscribeAllDexsAssetCtxs();
+      };
     }
-  }, [hasPositions]);
+  }, [hasPositions, needFetchMarket]);
 
   if (!hasPositions) {
     return null;
   }
 
   return (
-    <div className="mb-[6px] flex flex-col gap-[6px]">
+    <div
+      className={
+        !isDesktop
+          ? 'mb-[6px] flex flex-col gap-[6px]'
+          : 'grid grid-cols-3 gap-[16px] px-20 mt-24'
+      }
+    >
       {data?.assetPositions?.map((assetPosition) => {
         return (
           <PositionItem
             key={assetPosition.position.coin}
             position={assetPosition.position}
-            onShowRiskPopup={(coin) => {
-              setRiskPopupVisible(true);
-              setRiskPopupCoin(coin);
-            }}
             handleNavigate={() => {
-              const sdk = getPerpsSDK();
-              if (currentAccount) {
+              dispatch.innerDappFrame.setInnerDappId({
+                type: 'perps',
+                dappId: 'hyperliquid',
+              });
+              if (isDesktop) {
+                dispatch.perps.resetProAccountInfo();
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);
-                sdk.initAccount(currentAccount.address);
-                dispatch.perps.subscribeToUserData(currentAccount.address);
+                dispatch.perps.updateSelectedCoin(assetPosition.position.coin);
+                wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount!);
+                wallet.openInDesktop(
+                  `/desktop/perps?${obj2query({
+                    coin: assetPosition.position.coin,
+                  })}`
+                );
+                ga4.fireEvent('Perps_CardToPerps_Web', {
+                  event_category: 'Rabby Perps',
+                });
+              } else {
+                wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount!);
+                wallet.openInDesktop(
+                  `/desktop/perps?${obj2query({
+                    coin: assetPosition.position.coin,
+                  })}`
+                );
+                ga4.fireEvent('Perps_CardToPerps', {
+                  event_category: 'Rabby Perps',
+                });
+                window.close();
               }
-              closePopup();
-              history.push('/perps');
             }}
           />
         );
       })}
-      <RiskLevelPopup
-        visible={riskPopupVisible && !!riskPopupData}
-        direction={riskPopupData?.direction || 'Long'}
-        pxDecimals={riskPopupData?.pxDecimals || 2}
-        liquidationPrice={riskPopupData?.liquidationPrice || 0}
-        markPrice={Number(
-          marketDataMap[riskPopupCoin.toUpperCase()]?.markPx || 0
-        )}
-        onClose={() => {
-          setRiskPopupVisible(false);
-          setRiskPopupCoin('');
-        }}
-      />
     </div>
   );
 };
@@ -129,8 +127,7 @@ const PositionItem: React.FC<{
   marketData?: MarketData;
   openOrders?: OpenOrder[];
   handleNavigate: () => void;
-  onShowRiskPopup?: (coin: string) => void;
-}> = ({ position, handleNavigate, onShowRiskPopup }) => {
+}> = ({ position, handleNavigate }) => {
   const { t } = useTranslation();
   const {
     coin,
@@ -143,10 +140,8 @@ const PositionItem: React.FC<{
   } = position;
 
   const marketData = useRabbySelector(
-    (store) => store.perps.marketDataMap?.[position.coin?.toUpperCase() || '']
+    (store) => store.perps.marketDataMap?.[position.coin || '']
   );
-
-  console.log('marketData', marketData);
 
   const isUp = Number(unrealizedPnl) >= 0;
   const isLong = Number(szi) > 0;
@@ -166,8 +161,9 @@ const PositionItem: React.FC<{
   return (
     <div
       className={clsx(
-        'w-full bg-r-neutral-card1 rounded-[8px] flex flex-col cursor-pointer',
+        'w-full rounded-[8px] flex flex-col cursor-pointer',
         'border-[1px]',
+        !isDesktop ? 'bg-r-neutral-card1' : 'bg-rb-neutral-bg-3',
         'border-solid border-transparent',
         'hover:bg-r-blue-light1 hover:border-rabby-blue-default'
       )}
@@ -181,14 +177,36 @@ const PositionItem: React.FC<{
             withDirection={false}
             size={32}
           />
-          <div className="flex flex-col gap-[2px]">
-            <div className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
-              {coin}
+          <div className="flex flex-col gap-[8px]">
+            <div className="flex items-center gap-[4px]">
+              <PerpsDisplayCoinName
+                item={marketData}
+                className="text-[13px] leading-[16px] font-medium"
+              />
+              <span className="text-[11px] leading-[14px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default gap-2">
+                {leverageType === 'cross'
+                  ? t('page.perps.cross')
+                  : t('page.perps.isolated')}
+                {leverageType === 'cross' && (
+                  <Tooltip
+                    overlayClassName="rectangle"
+                    placement="top"
+                    title={t('page.perps.crossMarginLiqPriceTip')}
+                  >
+                    <RcIconInfo
+                      viewBox="0 0 14 14"
+                      width={12}
+                      height={12}
+                      className="text-rb-blue-default"
+                    />
+                  </Tooltip>
+                )}
+              </span>
             </div>
             <div className="flex items-center gap-[6px]">
               <span
                 className={clsx(
-                  'text-[11px] leading-[13px] font-medium px-[4px] h-[18px] flex items-center justify-center rounded-[4px]',
+                  'text-[11px] leading-[14px] font-medium px-[4px] h-[18px] flex items-center justify-center rounded-[4px]',
                   isLong
                     ? 'text-rb-green-default bg-rb-green-light-1'
                     : 'text-rb-red-default bg-rb-red-light-1'
@@ -196,21 +214,16 @@ const PositionItem: React.FC<{
               >
                 {side} {leverageText}
               </span>
-              {leverageType === 'cross' && (
-                <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-rb-blue-light-1 text-rb-blue-default">
-                  {t('page.perps.cross')}
-                </span>
-              )}
-              <DistanceToLiquidationTag
-                liquidationPrice={liquidationPx}
-                markPrice={markPrice}
-                onPress={() => onShowRiskPopup?.(coin)}
-                variant="compact"
+              <DistanceRiskTag
+                isLong={isLong}
+                percent={formatPerpsPct(
+                  calculateDistanceToLiquidation(liquidationPx, markPrice)
+                )}
               />
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-[2px]">
+        <div className="flex flex-col items-end gap-[8px]">
           <div className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
             {formatUsdValue(Number(marginUsed))}
           </div>
@@ -235,7 +248,7 @@ const PositionItem: React.FC<{
         <div
           className={clsx(
             'cursor-pointer text-r-blue-default font-medium text-[12px] text-center',
-            'px-[12px] w-min',
+            'px-[12px]',
             'h-[24px] leading-[24px]',
             'border-[0.5px] border-r-blue-default rounded-[6px]',
             'hover:bg-r-blue-light1'

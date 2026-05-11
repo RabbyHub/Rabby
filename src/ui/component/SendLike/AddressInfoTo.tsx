@@ -165,7 +165,7 @@ export function AddressInfoTo({
                   ) : (
                     <ThemeIcon
                       src={cexInfo?.logo_url || addressTypeIcon}
-                      className={'w-[24px] h-[24px] rounded-full'}
+                      className={'w-[24px] h-[24px]'}
                       style={{ padding: 0 }}
                     />
                   )}
@@ -207,7 +207,7 @@ export function AddressInfoTo({
                   >
                     <div className="flex flex-col justify-center items-start">
                       {aliasName ? (
-                        <span className="text-[16px] mb-[4px] font-medium leading-[20px] text-r-neutral-title-1">
+                        <span className="text-[16px] mb-[4px] font-medium leading-[20px] text-r-neutral-title-1 truncate max-w-[220px]">
                           {aliasName}
                         </span>
                       ) : (
@@ -221,7 +221,6 @@ export function AddressInfoTo({
                       <AddressViewer
                         address={toAccount?.address?.toLowerCase()}
                         showArrow={false}
-                        longEllipsis
                         className={clsx(
                           'text-[12px] text-r-neutral-foot font-normal leading-[16px]'
                         )}

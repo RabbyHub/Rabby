@@ -22,13 +22,16 @@
       "filterScam": {
         "title": "Dolandırıcılık işlemlerini gizle",
         "btn": "Dolandırıcılık işlemlerini gizle",
-        "loading": "Yükleme biraz zaman alabilir ve veri gecikmeleri mümkün olabilir"
+        "loading": "Yükleme biraz zaman alabilir ve veri gecikmeleri mümkün olabilir",
+        "button": "Sahte tx'leri gizle"
       },
       "detail": {
         "Failed": "Başarısız",
         "Pending": "Beklemede",
         "Succeeded": "Başarılı"
-      }
+      },
+      "hideScamTips": "Dolandırıcılık işlemlerini gizle",
+      "showScamTips": "Dolandırıcılık işlemlerini göster"
     },
     "chainList": {
       "title": "{{count}} chains Integrated",
@@ -346,7 +349,7 @@
       "maxPriorityFeeDisabledAlert": "Lütfen önce Gas Price ayarlayın",
       "yes": "Evet",
       "primaryType": "Birincil tür",
-      "safeServiceNotAvailable": "Güvenli hizmet şu anda mevcut değil, lütfen daha sonra tekrar deneyin.",
+      "safeServiceNotAvailable": "Güvenli hizmet şu anda mevcut değil, lütfen daha sonra deneyin.",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
@@ -472,7 +475,8 @@
         "chainNotSupported": "Bu zincir GasAccount tarafından desteklenmiyor",
         "customRPC": "Özel RPC kullanıldığında desteklenmez",
         "loginTips": "GasAccount girişini tamamlamak için bu işlem iptal edilecektir. Giriş yaptıktan sonra işlemi yeniden oluşturmanız gerekecek.",
-        "depositTips": "GasAccount para yatırma işlemini tamamlamak için, bu işlem iptal edilecektir. Para yatırma işleminden sonra yeniden yapmanız gerekecek."
+        "depositTips": "GasAccount para yatırma işlemini tamamlamak için, bu işlem iptal edilecektir. Para yatırma işleminden sonra yeniden yapmanız gerekecek.",
+        "signWithHardwareWalletToUse": "```json\n{\"u_0\":\"{{brand}} ile imzalamalısınız\"}\n```"
       },
       "keystone": {
         "siging": "İmza isteği gönderiliyor",
@@ -652,7 +656,8 @@
     "receive": {
       "title": "{{chain}} üzerinde {{token}} Yatır",
       "watchModeAlert1": "Bu bir İzleme Modu adresidir.",
-      "watchModeAlert2": "Varlıkları yatırmak için bunu kullanmak istediğinizden emin misiniz?"
+      "watchModeAlert2": "Varlıkları yatırmak için bunu kullanmak istediğinizden emin misiniz?",
+      "receiveOn": "{{token}} almayı kabul et"
     },
     "sendToken": {
       "addressNotInContract": "Adres listesinde değil. <1></1><2>Rehbere ekle</2>",
@@ -919,7 +924,11 @@
         "cancelBody": "Bu sayfayı kapatırsanız, kalan iptaller gerçekleştirilmez.",
         "simulationFailed": "Simülasyon Başarısız Oldu",
         "useGasAccount": "Gas bakiyeniz düşük. GasAccount gaz ücretlerini karşılayacaktır.",
-        "ledgerConfirmTitle": "Ledger ile Toplu İptal"
+        "ledgerConfirmTitle": "Ledger ile Toplu İptal",
+        "revokeWithOneKey": "OneKey ile iptal işlemini başlat",
+        "oneKeySended": "Lütfen OneKey üzerinde isteği imzalayın ({{current}}/{{total}})",
+        "oneKeySending": "İmzalama isteği gönderiliyor ({{current}}/{{total}})",
+        "oneKeySigned": "İmzalandı. İşlem oluşturuluyor ({{current}}/{{total}})"
       }
     },
     "gasTopUp": {
@@ -1051,7 +1060,9 @@
       "two-step-approve-details": "Token USDT, hakkı değiştirmek için 2 işlem gerektirir. Öncelikle, hakkı sıfıra ayarlamanız gerekir ve ardından yeni hakkı değeri belirleyebilirsiniz.",
       "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
       "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
-      "approve": "Onayla"
+      "approve": "Onayla",
+      "search-by-token-name-address": "Token Adı / Adresi Ara",
+      "best-subtitle": "En iyi teklif, döviz kuru ve gaz ücretleri dahil olmak üzere en düşük tahmini toplam maliyet tarafından belirlenir."
     },
     "manageAddress": {
       "no-address": "Adres yok",
@@ -1083,7 +1094,6 @@
       "confirm-delete": "Silmeyi Onayla",
       "private-key": "Özel Anahtar",
       "seed-phrase": "Seed Phrase",
-      "watch-address": "Adresi İzle",
       "backup-seed-phrase": "Seed Phrase'i Yedekle",
       "delete-all-addresses-but-keep-the-seed-phrase": "Tüm adresleri sil, ancak Seed Phrase'i sakla",
       "delete-all-addresses-and-the-seed-phrase": "Tüm adresleri ve Seed Phrase'i sil",
@@ -1099,7 +1109,11 @@
       "CurrentDappAddress": {
         "desc": "DApp Adresini Değiştir\n"
       },
-      "noSeedPhraseAddress": "Bu tohum ifadesi için adres eklenmemiştir. Bir adres ekleyebilir veya tohum ifadesini silebilirsiniz."
+      "noSeedPhraseAddress": "Bu tohum ifadesi için adres eklenmemiştir. Bir adres ekleyebilir veya tohum ifadesini silebilirsiniz.",
+      "watch-address": "Sadece izleme",
+      "deleteSuccess": "Başarıyla silindi",
+      "backupSeedPhraseNow": "Yedeklemeye başla",
+      "seedPhraseNotBackedUp": "Cüzdan yedeklenmedi"
     },
     "dashboard": {
       "home": {
@@ -1127,7 +1141,10 @@
           "searchDapp": "Dapp Araştırın",
           "settings": "Ayarlar",
           "perpsPositions_one": "{{count}} Pozisyon",
-          "perpsPositions_other": "{{count}} Pozisyonlar"
+          "perpsPositions_other": "{{count}} Pozisyonlar",
+          "lending": "Kredi Verme",
+          "dragTip": "Uzun basma özelliği ile sıralama",
+          "convertDust": "Tozu Dönüştür"
         },
         "comingSoon": "Çok Yakında",
         "soon": "Yakında",
@@ -1299,7 +1316,12 @@
           "toggleThemeMode": "Tema Modu",
           "metamaskMode": "MetaMask gibi Gizlenerek Rabby'yi Bağla",
           "enableDappAccount": "Dapp Adreslerini Bağımsız Olarak Değiştirin\n",
-          "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre"
+          "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre",
+          "biometricUnlock": "Biyometriklerle Kilidi Açma",
+          "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açmayı desteklememektedir.",
+          "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın.",
+          "currency": "Para Birimi",
+          "searchCurrency": "Para birimi ara"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -1334,7 +1356,15 @@
           "titleEnable": "Şifre kontrolünü etkinleştir?",
           "descEnable": "Bir kez etkinleştirildiğinde, bu uzantıda beyaz listede olmayan bir adrese transfer yapmak şifrenizi gerektirecektir.",
           "descDisable": "Devre dışı bırakıldıktan sonra, beyaz listede yer almayan adresler için şifre doğrulaması artık gerekli olmayacaktır."
-        }
+        },
+        "biometricUnlockPasswordPlaceholder": "Şifreyi Girin",
+        "biometricUnlockSetupTitle": "Biyometrik Kilidi Etkinleştir",
+        "biometricUnlockEnableFailed": "Biyometrik kilidi etkinleştirme başarısız oldu",
+        "biometricUnlockDisabled": "Biyometrik kilidi devre dışı bırakıldı",
+        "biometricUnlockEnabled": "Biyometrik kilit açma etkinleştirildi.",
+        "biometricUnlockDisableFailed": "Biyometrik kilidi devre dışı bırakmayı başaramadı",
+        "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açma desteği sunmamaktadır.",
+        "biometricUnlockSetupDesc": "Parolanızı biyometrik kilidi etkinleştirmek için onaylayın."
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
@@ -1465,7 +1495,9 @@
         "side": "YAN TARAF",
         "price": "FİYAT",
         "searchTokenPlaceholder": "Token Ara",
-        "openInTab": "Rabby Sekmesinde Açın"
+        "openInTab": "Rabby Sekmesinde Açın",
+        "openProMode": "Pro Modu Açın",
+        "openInTabV2": "Sekmede Aç"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -1529,7 +1561,8 @@
         "desc": "Rabby Mobile'de puanlarınızı kontrol edin.",
         "title": "Rabby Puanları",
         "downloadIntro": "Uygulamayı henüz indirmediniz mi? Şimdi indirin."
-      }
+      },
+      "noData": "Eşleşen para birimi yok"
     },
     "nft": {
       "floorPrice": "Taban Fiyat:",
@@ -1548,8 +1581,6 @@
       "importPrivateKey": "Özel Anahtarı İçe Aktar",
       "importMyMetamaskAccount": "Metamask Hesabımı İçe Aktar",
       "addContacts": {
-        "content": "Kişi Ekle",
-        "description": "Bunu sadece izlemeye alınmış adres olarak da kullanabilirsiniz",
         "required": "Lütfen adresi girin",
         "notAValidAddress": "Geçerli bir adres değil",
         "scanViaMobileWallet": "Mobil cüzdanla tara",
@@ -1558,7 +1589,9 @@
         "walletConnect": "Wallet connect",
         "walletConnectVPN": "VPN kullanırsanız WalletConnect stabil olmayabilir.",
         "cameraTitle": "Lütfen kameranızla QR kodu tarayın",
-        "addressEns": "Adres / ENS"
+        "addressEns": "Adres / ENS",
+        "content": "Gözetim için Adres Ekle",
+        "description": "Herhangi bir kamu cüzdan adresini takip et"
       },
       "unableToImport": {
         "title": "İçe aktarılamıyor",
@@ -1884,11 +1917,40 @@
       "addFromCurrentSeedPhrase": "Mevcut Seed Phrase'ten Ekle",
       "trezor": {
         "title": "Trezor'u Bağla"
-      }
+      },
+      "moreWallets": "Daha Fazla Cüzdan",
+      "createANewSeedPhrase": "Yeni Bir Seed Phrase Oluştur",
+      "addNewAddress": "Yeni Adres Oluştur",
+      "importMoreWallets": "Daha Fazla Adres Ekle",
+      "addMoreAddresses": "Daha Fazla Adres Ekle",
+      "bulkImportPrivateKeyInputTab": "Özel Anahtarı Girin",
+      "watchAddress": "Sadece İzleme Adresi",
+      "openExtensionToGetStarted": "Rabby uzantısını açarak başlayın",
+      "addressAdded": "Adres Eklendi",
+      "addressImported": "Adres İçe Aktarıldı",
+      "privateKeyTab": "Özel Anahtar",
+      "newSeedPhraseCreated": "Yeni Seed Phrase Oluşturuldu",
+      "addressAddedCount_one": "{{count}} Adres Eklendi",
+      "seedPhraseTab": "Tohum Cümlesi",
+      "newAddressAdded": "Yeni Adres Eklendi",
+      "duplicateAddressesSkippedTitle": "Bazı adresler zaten içe aktarılmıştır.",
+      "duplicateAddressesSkippedDesc_other": "{{count}} adres geçildi çünkü zaten mevcut.",
+      "bulkImportPrivateKeyInvalid": "Bazı özel anahtarlar geçersiz. Lütfen bunları kaldırın veya tekrar girin.",
+      "bulkImportPrivateKeyExceeded": "Bir seferde {{count}} özel anahtara kadar destekler.",
+      "addressAddedCount_other": "{{count}} Adresler Eklendi",
+      "bulkImportPrivateKey": "Toplu özel anahtar içe aktarım",
+      "addMoreAddressesFromThisSeedPhrase": "Bu anahtar kelimeden daha fazla adres ekle",
+      "bulkImportPrivateKeySupport": "1000'e kadar EVM-uyumlu özel anahtarı destekler",
+      "newAddressCreated": "Yeni Adres Oluşturuldu",
+      "bulkImportPrivateKeyPlaceholder": "Her bir özel anahtar, yeni bir satır veya özel bir karakter ile ayrılmalıdır.",
+      "imported": "Daha Önce İçe Aktarıldı",
+      "duplicateAddressesSkippedDesc_one": "{{count}} adres geçildi çünkü zaten mevcut."
     },
     "unlock": {
       "btn": {
-        "unlock": "Kilidi Aç"
+        "unlock": "Kilidi Aç",
+        "unlockWithPassword": "Şifre ile açın",
+        "biometric": "Biyometrik ile kilidi açın"
       },
       "password": {
         "required": "Kilidi Açmak İçin Şifre Girin",
@@ -1897,7 +1959,8 @@
       },
       "btnForgotPassword": "Şifrenizi mi unuttunuz?",
       "title": "Rabby Cüzdan",
-      "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan"
+      "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan",
+      "biometricFailed": "Biyometrik kilit açma başarısız oldu"
     },
     "addToken": {
       "noTokenFound": "Token bulunamadı",
@@ -2036,7 +2099,8 @@
         "check2": "Özel Anahtarımı veya Seed Phrase'imi yedeklediğimi onaylıyorum ve silmeye hazırım.",
         "sub-title": "Bu eylem kalıcıdır. Varlıklarınızı korumak için lütfen aşağıdakileri gözden geçirin:",
         "check1": "Bu adresi silmenin aynı zamanda Özel Anahtarını da sileceğini anlıyorum. Rabby bunları benim için geri getiremez."
-      }
+      },
+      "notBackup": "Yedekleme Yok"
     },
     "preferMetamaskDapps": {
       "title": "MetaMask Tercihli Dapp'ler",
@@ -2115,7 +2179,8 @@
       "copySeedPhrase": "Seed phrase'i kopyala",
       "qrCodePopupTips": "Asla seed phrase QR kodunu başkalarıyla paylaşmayın. Lütfen güvenli bir ortamda görüntüleyin ve dikkatlice saklayın.",
       "qrCodePopupTitle": "QR Code",
-      "showQrCode": "QR Kodunu Göster"
+      "showQrCode": "QR Kodunu Göster",
+      "doneButton": "Seed ifadesini kaydettim."
     },
     "backupPrivateKey": {
       "title": "Özel Anahtarı Yedekle",
@@ -2251,7 +2316,8 @@
         "BridgeStatusUnavailable": "Köprü durumu mevcut değil. Lütfen işlem geçmişinizi kontrol edin ve fonların ulaştığını doğrulayın.",
         "swapStatus": "Takasta Değiştir",
         "sendStatus": "Gönderim Durumu"
-      }
+      },
+      "best-subtitle": "En iyi teklif, tahmini toplam maliyet (gas ücretleri dahil) ve teslimat hızının kombinasyonuyla belirlenir."
     },
     "pendingDetail": {
       "Header": {
@@ -2548,13 +2614,14 @@
       "signWithLedger": "Ledger ile imzala",
       "cancelTitle": "Zincir Üzerinde İptal",
       "signWithOneKey": "OneKey ile İmza At",
-      "speedUpDesc": "Gas fiyatı hızlandırmak için {{percent}} arttı.",
-      "cancleDesc": "Gas fiyatı, işlemi iptal etmek için {{percent}} oranında arttı.",
+      "speedUpDesc": "Gaz fiyatı daha hızlı bir hızlanma için {{percent}} arttı.",
+      "cancleDesc": "Gas fiyatı daha hızlı bir iptal için {{percent}} arttı",
       "speedUpTitle": "Hızlandırmak"
     },
     "gasAccount": {
       "history": {
-        "noHistory": "Geçmiş yok"
+        "noHistory": "Geçmiş yok",
+        "noHistoryForPast30Days": "Son 30 gün içinde geçmiş yok."
       },
       "loginInTip": {
         "login": "GasAccount ile giriş yap",
@@ -2583,7 +2650,23 @@
         "desc": "Rabby'nin DeBank L2 Hesabına ekstra ücret ödemeden para yatırın—istediğiniz zaman çekin.",
         "title": "Para Yatırma",
         "invalidAmount": "500'ün altında olmalı",
-        "paymentAddr": "Ödeme Adresi"
+        "paymentAddr": "Ödeme Adresi",
+        "gasDepositTitle": "Gaz Yatırma",
+        "zeroInvalidAmount": "Miktar sıfır olamaz",
+        "minAmountRequired": "Minimum yatırma miktarı ${{value}}",
+        "paymentAddress": "Ödeme Cüzdanı",
+        "balanceLabel": "Bakiye",
+        "insufficientBalanceLabel": "Yetersiz Bakiye",
+        "unavailablePaymentWallet": "Seçili ödeme cüzdanı kullanılamıyor",
+        "suggestedToken": "Önerilen Tokenler",
+        "bridgeLabel": "Bridge",
+        "estReceiveLabel": "Tahmini Alım: {{usd}}",
+        "estReceiveTip": "Hizmet {{name}} üzerinden işlenir, kayma olabilir",
+        "depositSuccess": "Yatırma başarılı",
+        "depositFailed": "Yatırma başarısız, lütfen tekrar deneyin",
+        "bridgeDepositFailed": "Bridge yatırma başarısız, lütfen tekrar deneyin",
+        "noAvailableToken": "Kullanılabilir token yok",
+        "InsufficientToken": "Yetersiz Token Bakiyesi"
       },
       "withdrawPopup": {
         "withdrawalLimit": "Para çekme limiti",
@@ -2646,7 +2729,31 @@
         "desc2": "GasAccount'unuza fon ekleyin ve bunu herhangi bir işlem için kullanın. İmzalama sırasında, gazı yerel token'larla veya GasAccount ile ödeme seçeneğini belirleyin, istediğiniz zaman geçiş yapın.",
         "desc4": "GasAccount, herhangi bir sözleşme onayı veya izni gerektirmez. Rabby’nin GasAccount adresine para yatırırsınız ve ihtiyaç duyulduğunda Rabby, adresinize gaz gönderir. Tasarımı gereği tamamen güvenlidir.",
         "desc1": "GasAccount, gaz ücretlerini ödemenin yeni bir yoludur. Her bir zincirde yerel token'lar kullanmak yerine, tüm zincirlerdeki tüm adresleriniz için gaz ödemek üzere tek bir hesap kullanabilirsiniz. Basit, isteğe bağlı ve asla gazsız kalmaz."
-      }
+      },
+      "benefitCard": {
+        "title": "Tüm zincirlerde Gas Ücretlerini Ödeyin",
+        "subtitle": "gasınız bittiğinde",
+        "item1": "Rabby Ücreti Yok",
+        "desc1": "gas ödemek için ekstra ücret yok",
+        "item2": "Tüm ağları destekler",
+        "desc2": "80+ ağda otomatik gas ödemeleri",
+        "item3": "Tüm işlemleri destekler",
+        "desc3": "Swap, Bridge, Gönder, DApps ve daha fazlası"
+      },
+      "depositPayPopup": {
+        "topUpPayTips": "Gaz gerekli: {{topUpUsd}}, Kalan gaz tahmini: {{balance}}"
+      },
+      "gasFee": "Gas fee",
+      "gasDeposit": "Gas Deposit",
+      "depositNow": "Deposit Now",
+      "signWithPendingHardwareToUse": "Sign with {{addressAlias}} to use",
+      "depositSubmitted": "Deposit Submitted",
+      "claimFreeGas": "Claim {{usdValue}} Free Gas",
+      "depositFailed": "Deposit failed",
+      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "gasBalance": "Gas Balance",
+      "loginSuccess": "Login Successful",
+      "loginFailed": "Login Failed"
     },
     "safeMessageQueue": {
       "noData": "Mesaj yok",
@@ -2672,7 +2779,9 @@
       },
       "importPrivateKey": {
         "pasteCleared": "Yapıştırıldı ve pano temizlendi",
-        "title": "Özel Anahtarı İçe Aktar"
+        "title": "Özel Anahtarı İçe Aktar",
+        "createWallet": "Cüzdan oluşturun",
+        "noWallet": "Henüz bir seed phrase veya özel anahtarınız yok mu?"
       },
       "PasswordCard": {
         "form": {
@@ -2698,7 +2807,11 @@
         "addMoreAddr": "Bu Seed Phrase'ten daha fazla adres ekleyin",
         "addMoreFrom": "{{name}}'den daha fazla adres ekleyin",
         "start": "Başlayın",
-        "create": "Başarıyla Oluşturuldu"
+        "create": "Başarıyla Oluşturuldu",
+        "openWallet": "Cüzdanı Aç",
+        "desc": "Rabby Wallet Kullanıma Hazır!",
+        "backupSeedPhraseNow": "Şu anda Yedek Seed ifadesi oluşturun",
+        "backupSeedPhrase": "Yedek Seed Cümlesi"
       },
       "readyToUse": {
         "pin": "Rabby Wallet'i Sabitle",
@@ -2711,7 +2824,9 @@
         "title": "Cüzdanınız hazır!"
       },
       "importSeedPhrase": {
-        "title": "Seed Phrase İçe Aktar"
+        "title": "Seed Phrase İçe Aktar",
+        "createWallet": "Cüzdan oluşturun",
+        "noWallet": "Henüz seed phrase veya özel anahtarınız yok mu?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2750,15 +2865,15 @@
         "tip3": "3. Cihazınızı kilitleyin"
       },
       "importKeystone": {
-        "qrcode": {
-          "desc": "Keystone donanım cüzdanındaki QR kodunu tarayın"
-        },
         "usb": {
           "tip2": "Şifrenizi girin ve kilidi açın",
           "tip3": "Bilgisayarınıza bağlantıyı onaylayın",
           "connect": "Keystone bağla",
           "desc": "Keystone 3 Pro'nuzun ana sayfada olduğundan emin olun",
           "tip1": "Keystone cihazınızı takın"
+        },
+        "qrcode": {
+          "desc": "{{brandName}} donanım cüzdanında QR kodunu tarayın."
         }
       },
       "importSafe": {
@@ -2769,6 +2884,18 @@
         "title": "Güvenli Adres Ekle",
         "loading": "Bu adresin dağıtılmış zinciri aranıyor",
         "placeholder": "Güvenli adres girin"
+      },
+      "importHardwareList": {
+        "title": "Donanım Cüzdanını Seçin"
+      },
+      "importSeedOrKey": {
+        "privateKey": "Özel Anahtar",
+        "seedPhrase": "Tohum Cümlesi",
+        "title": "Seed ifadesi veya özel anahtar"
+      },
+      "importWalletType": {
+        "hardwareWallet": "Donanım Cüzdanı",
+        "seedOrKey": "Seed Fiil veya Özel Anahtar"
       }
     },
     "metamaskModeDapps": {
@@ -2940,230 +3067,6 @@
         "inputPlaceholder": "Bu transferi onaylamak için şifrenizi girin."
       }
     },
-    "perps": {
-      "candleMenuKey": {
-        "oneHour": "1H",
-        "oneWeek": "1W",
-        "ytd": "YTD",
-        "oneDay": "1G",
-        "oneMonth": "1M",
-        "all": "TÜM"
-      },
-      "newUserProcess": {
-        "gotIt": "Tamam",
-        "fifthTitle": "Tasfiye",
-        "firstTitle": "Ana Sürekli Vadeli İşlemler",
-        "next": "Sonraki",
-        "secondTitle": "Uzun Veya Alış Yap",
-        "fourthTitle": "Kaldıraç Ayarlama",
-        "thirdTitle": "Kısa Git",
-        "firstDescription": "Sürekli vadeli işlemlerle sadece varlıkları işlemiyorsunuz. Gelecekte ne olacağını düşündüğünüzü işlemiyorsunuz.",
-        "fourthDescription": "Kaldıraç, yatırdığınızdan daha fazlasıyla ticaret yapmanızı sağlar. Hem kazançlarınızı hem de kayıplarınızı artırabilir.",
-        "secondDescription": "Fiyatın yükselmesini beklediğinizde, bir long açarsınız. Fiyat yükselirse, kazanç sağlarsınız. Eğer düşerse, kaybedersiniz.",
-        "thirdDescription": "Fiyatın düşmesini beklediğinizde, bir short pozisyonu açarsınız. Fiyat düşerse kazanırsınız. Fiyat yükselirse kaybedersiniz.",
-        "fifthDescription": "Her pozisyonun bir likidasyon fiyatı vardır. Piyasa fiyatı bu seviyeye ulaşırsa, pozisyonunuz kapatılacaktır. Yüksek kaldıraç kullanmak likidasyon riskini artırır."
-      },
-      "historyDetail": {
-        "title": {
-          "closeLongSl": "Kapat Long Stop Loss",
-          "openLong": "Uzun Pozisyon Aç",
-          "closeShort": "Kapat Short",
-          "closeLong": "Uzun Pozisyonu Kapat",
-          "openShort": "Açık Kısa",
-          "closeLongLiquidation": "Kapat Uzun Likidasyon",
-          "closeShortSl": "Kısa Poziyon Kapat, Zarar Durdur",
-          "closeShortTp": "Kapat Short Kar Al",
-          "closeShortLiquidation": "Kapat Kısa Tasfiye",
-          "closeLongTp": "Kapat Long Kar Al"
-        },
-        "price": "Fiyat",
-        "tradeValue": "Ticaret Değeri",
-        "fee": "Ücret",
-        "size": "Büyüklük",
-        "date": "Tarih",
-        "provider": "Sağlayıcı",
-        "closedPnl": "Kapandı PNL"
-      },
-      "logoutConfirmModal": {
-        "title": "Mevcut Adresten Çıkış Yap",
-        "desc": "Mevcut Perps hesabınızdan çıkış yapıyorsunuz. Bu adresle giriş yaparak istediğiniz zaman geri yükleyebilirsiniz."
-      },
-      "depositAmountPopup": {
-        "receiveToken": "Token Alın",
-        "payWith": "Öde ile",
-        "estReceive": "Tahmini Alım: {{balance}}",
-        "minimumDepositSize": "Minimum depozito miktarı 5 $'dır.",
-        "fetchQuoteFailed": "Yatırım alıntısını almakta başarısız olundu. Lütfen token'ı değiştirin.",
-        "minimumWithdrawSize": "Minimum çekim tutarı 2$'dır.",
-        "estReceiveTooltip": "Cross-chain deposit LiFi aracılığıyla işlenir, bazı kayıplara neden olabilir. Tahmini varış süresi {{number}}s.",
-        "goBridgeTips": "Sadece Arbitrum üzerindeki USDC doğrudan depozito için desteklenmektedir. Lütfen mevcut tokeninizi Arbitrum üzerindeki USDC'ye köprüleyin.",
-        "feeTipTooltip": "Hyperliquid tarafından alınan Çekim Ücreti: 1 $",
-        "goSwapTips": "Yalnızca Arbitrum'da USDC doğrudan yatırma için desteklenmektedir. Lütfen mevcut tokenınızı yatırmadan önce USDC ile değiştirin.",
-        "feeTip": "$1 Ücret"
-      },
-      "home": {
-        "pnl": "PNL",
-        "size": "Büyüklük",
-        "margin": "Marjinal",
-        "liquidationPrice": "Liq.Fiyat",
-        "markPrice": "İşaret Fiyatı",
-        "entryPrice": "Giriş Fiyatı"
-      },
-      "singleCoin": {
-        "openInterestTips": "Bu sözleşmedeki tüm kullanıcıların toplam açık pozisyonu.",
-        "fundingTips": "Bu, tüccarların perp sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için ödediği veya aldığı saatlik bir ücrettir. Eğer pozitifse, long short'a öder. Eğer negatifse, short long'a öder.",
-        "fundingPaymentsTips": "Bu, pozisyonun açıldığı tarihten itibaren net finansman ödemeleridir. Fonlama, türev sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için yatırımcıların ödeyip veya aldığı saatlik bir ücrettir.",
-        "fundingGainsTips": "Bu, pozisyon açıldığından beri elde edilen net finansman kazançlarıdır. Finansman, traderların perp sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak için ödediği veya aldığı saatlik bir ücrettir."
-      },
-      "accountSelector": {
-        "hyperliquidBalance": "Perps Bakiyesi",
-        "notActivatedAddress": "Aktif Değil",
-        "noPosition": "Hiç Pozisyon Yok",
-        "activatedAddress": "Aktif Edildi"
-      },
-      "title": "Perps",
-      "deposit": "Yatırma",
-      "positions": "Pozisyonlar",
-      "permissionTips": "Pozisyon açma, bölgenizde desteklenmemektedir.",
-      "withdraw": "Çekmek",
-      "pending": "Beklemede",
-      "margin": "Marjinal",
-      "price": "Fiyat",
-      "logInPerpsAccount": "Perps hesabıma giriş yap",
-      "direction": "Yön",
-      "size": "Boyut",
-      "lastUsed": "Son kullanılma zamanı",
-      "yourPosition": "Pozisyonunuz",
-      "availableBalance": "Mevcut: {{balance}}",
-      "entryPrice": "Giriş Fiyatı",
-      "leverage": "Kaldıraç",
-      "tradePerps": "Perps Ticaret Yapın",
-      "explorePerps": "Perps'i Keşfedin",
-      "completed": "Tamamlandı",
-      "openShort": "Kısa Pozisyon Aç",
-      "seeMore": "Daha Fazla Göster",
-      "marginIsolated": "Marj (Yalıtılmış)",
-      "liquidationPrice": "Tasfiye Fiyatı",
-      "learnAboutPerps": "Perps hakkında bilgi edinin",
-      "autoClose": "Otomatik Kapat",
-      "closeLong": "Uzun Kapat",
-      "closeShort": "Kapat Short",
-      "history": "Geçmiş",
-      "logInTips": "Adresinizle giriş yapın ve perps ticaretine başlamak için fon yatırın.",
-      "openLong": "Uzun Pozisyon Aç",
-      "balanceAvailable": "Bakiyeniz: {{balance}}",
-      "directDeposit": "Doğrudan Yatırım",
-      "pnl": "PNL",
-      "marginCross": "Marj (Çapraz)",
-      "selectTokenToDeposit": "Token Yatırmak İçin Seçin",
-      "fundingPayments": "Fonlama Ödemeleri",
-      "funding": "Fonlama",
-      "timeAgo": "{{time}} önce",
-      "takeProfit": "kar al getir",
-      "review": "Gözden Geçir",
-      "deleteAgentSuccess": "Ajan başarıyla silindi",
-      "stopLossWhen": "Stop-Loss Fiyatı Belirle",
-      "long": "Uzun",
-      "StopLoss": "Zararı durdurma",
-      "short": "Kısa",
-      "stopLossTipsShort": "Stop loss fiyatı, mevcut fiyatın üzerinde olmalıdır.",
-      "TakeProfit": "Kar alınıp satılacak",
-      "availableToTrade": "Ticaret için mevcut",
-      "takeProfitWhen": "Kâr Alım Fiyatını Belirle",
-      "openInterest": "Açık Pozisyon",
-      "takeProfitTipsShort": "Kar alım fiyatı mevcut fiyatın altında olmalıdır.",
-      "providerFeeTips": "Hyperliquid ücreti: {{fee}}",
-      "dailyVolume": "24h Hacim",
-      "confirm": "Onayla",
-      "stopLoss": "zarar durdurma",
-      "insufficientBalance": "Yetersiz bakiyeniz var",
-      "takeProfitTipsLong": "Kar alım fiyatı mevcut fiyatın üzerinde olmalıdır.",
-      "rabbyFeeTips": "Rabby ücreti: 0.04%",
-      "rabbyFeeTipsZero": "Rabby ücreti: %0",
-      "sizeTips": "İşleminizin toplam değeri veya miktarı, marjin ve kaldıraç tarafından belirlenir.",
-      "stopLossTipsLong": "Zararı durdurma fiyatı mevcut fiyatın altında olmalıdır.",
-      "stopLossTipsLongLiquidation": "Fiyat likidite fiyatından ({{price}}) daha düşük.",
-      "deleteAgentModal": "Maksimum ajan sayısına ulaştınız. Yeni bir ajanın oluşturulması için mevcut bir ajanı silmek ister misiniz?",
-      "liquidationPriceTips": "Pozisyonunuzun marjınız bakım marjı seviyesinin altına düştüğünde daha fazla kaybı önlemek için borsa tarafından otomatik olarak kapandığı fiyat.",
-      "fee": "Ücret",
-      "estimatedLiquidationPrice": "Tahmin Edilen Tasfiye Fiyatı",
-      "stopLossTipsShortLiquidation": "Fiyat, tasfiye fiyatından ({{price}}) daha yüksektir.",
-      "liquidation": "Tasfiye",
-      "reviewOrder": "Sipariş İncelemesi",
-      "leverageRangeMinError": "Minimum kaldıraç {{min}}x'tir.",
-      "maximumOrderSize": "Maksimum emir boyutu {{amount}}’dır.",
-      "back": "Geri dön",
-      "leverageRangeMaxError": "Maksimum kaldıraç {{max}}x'dir.",
-      "minimumOrderSize": "Minimum sipariş boyutu $10'dur.",
-      "openPositionTips": "Sürekli sözleşmeler ticareti, yüksek kaldıraç ve piyasa volatilitesi nedeniyle yatırımınızın ve teminatınızın ani ve toplam kaybı da dahil olmak üzere önemli riskler içermektedir ve tüm kullanıcılar için uygun olmayabilir. Fiyatlar, finansman oranları ve likiditeden etkilenebilir ve bildirim olmaksızın otomatik likidasyonlara tabi olabilirsiniz. Piyasa verileri Hyperliquid tarafından sağlanmaktadır.",
-      "toast": {
-        "openPositionSuccess": "Açıldı {{direction}} {{coin}}-USD: Boyut {{size}} Fiyattan ${{price}}",
-        "setAutoCloseSuccess": "Otomatik pozisyon kapatma ayarı başarıyla oluşturuldu.",
-        "closePositionSuccess": "Kapandı {{direction}} {{coin}}-USD: Büyüklük {{size}} Fiyat ${{price}}'de",
-        "stopLossSuccess": "Zarar durdurma başarıyla ayarlandı",
-        "takeProfitSuccess": "Kar alım başarıyla ayarlandı"
-      },
-      "closePositionPopup": {
-        "closeShort": "Kapat Short",
-        "pnl": "Kar/Zarar",
-        "title": "Kapat {{coin}}-USD {{direction}}",
-        "closeLong": "Kapat Long",
-        "positionSize": "Pozisyon Boyutu"
-      },
-      "isolated": "Yalıtılmış",
-      "cross": "Çapraz",
-      "closeAllPopup": {
-        "title": "Tüm Pozisyonları Kapatmayı Onayla",
-        "description": "Tüm açık pozisyonlarınız piyasa fiyatı üzerinden kapatılacaktır."
-      },
-      "riskLevel": {
-        "danger": {
-          "title": "Tehlike",
-          "description": "Pozisyonunuz likidasyon riski altındadır. Likidasyon fiyatına olan mesafe ≤%3'tür. Likidasyonu önlemek için marj eklemeyi veya pozisyonunuzu kapatmayı düşünün."
-        },
-        "warning": {
-          "title": "Uyarı",
-          "description": "Pozisyonunuz likidasyon riskiyle karşı karşıya. Likidasyon fiyatına olan mesafe %3 ile %8 arasındadır. Pozisyonunuzu dikkatlice izleyin ve marj eklemeyi düşünün."
-        },
-        "safe": {
-          "title": "Güvenli",
-          "description": "Pozisyonunuz güvenli bir seviyede. Tasfiye fiyatına olan mesafe >%8. Piyasa koşullarını izlemeye devam edin."
-        },
-        "currentPrice": "Mevcut Fiyat",
-        "title": "Risk Seviyesi",
-        "liquidationPrice": "Tasfiye Fiyatı",
-        "gotIt": "Anladım",
-        "liquidationDistance": "Likidasyon Mesafesi",
-        "subTitle": "Gerçek zamanlı likidasyon mesafesi (%)",
-        "liquidationDistanceTips": "Tasfiye Mesafesi (%) mevcut fiyatın tasfiye fiyatınızdan ne kadar uzakta olduğunu gösterir. Daha büyük bir mesafe daha güvenli bir pozisyonu belirtirken, daha küçük bir mesafe daha yüksek tasfiye riski anlamına gelir.",
-        "distanceLabel": "Tasfiye Mesafesi",
-        "liqDistanceTipsLong": "Aşağıdaki <1>{{distance}}</1> oranına inmek, likidasyon tetikleyecektir.",
-        "liqDistanceTipsShort": "Yukarı <1>{{distance}}</1> çıkmak likidasyonu tetikleyecektir."
-      },
-      "searchPerpsPopup": {
-        "hasPosition": "Pozisyon",
-        "empty": "Pazar bulunamadı",
-        "openPosition": "Açık Pozisyon",
-        "onePosition": "1 Pozisyon",
-        "searchPerps": "Perps Araştırması",
-        "searchPlaceholder": "perps araştırın",
-        "searchPosition": "Pozisyon Ara"
-      },
-      "position": "Pozisyon",
-      "closeAll": "Tümünü Kapat",
-      "invitePopup": {
-        "hyperliquidFee": "Hyperliquid işlem ücretleri.",
-        "activateFailed": "Başarısız",
-        "title": "Hyperliquid Ücretlerinden Tasarruf Et",
-        "activateNow": "Şimdi Aktif Et",
-        "activatedSuccess": "%4 Hyperliquid ücret tasarrufu etkinleştirildi",
-        "description": "Rabby'nin kodunu etkinleştirin"
-      },
-      "close": "Kapama",
-      "add": "Ekle",
-      "fundingGains": "Finansman Kazançları",
-      "fundingRate": "Finansman Oranı"
-    },
     "selectToAddress": {
       "emptyWhitelist": {
         "title": "Adresi beyaz listeye ekle",
@@ -3252,7 +3155,9 @@
           "hideProtocolsWithSmallDeposits": "Küçük bakiye ile protokolleri gizle.",
           "tokensWithZeroBalanceDesc": "$0 bakiyesi olan tokenlar gizlenmiştir.",
           "hideDefiWithSmallDeposits": "Küçük yatırımlarla Defi'leri gizle.",
-          "hideDefiWithSmallDepositsDesc": "Küçük yatırımlarla yapılan Defi'ler görüntülenmez."
+          "hideDefiWithSmallDepositsDesc": "Küçük yatırımlarla yapılan Defi'ler görüntülenmez.",
+          "hideDeFiWithSmallDepositsDesc": "Küçük yatırımlarla DeFi'ler görüntülenmez.",
+          "hideDeFiWithSmallDeposits": "Küçük yatırımlarla DeFi'leri gizle."
         },
         "table": {
           "token": "Jeton",
@@ -3364,98 +3269,1277 @@
         "all": "Tüm"
       }
     },
-    "perpsDetail": {
-      "PerpsOpenPositionPopup": {
-        "short": "Short",
-        "newPosition": "Açık Pozisyon",
+    "dappIfame": {
+      "openPolymarket": "Polymarket açılıyor...",
+      "serviceUnavailable": "Hizmet Kullanılamıyor",
+      "predictionNotSupported": "Tahmin özelliği mevcut bölgenizde desteklenmiyor.",
+      "reload": "Yenileştir",
+      "networkErrorTitle": "Bu siteye ulaşılamıyor.",
+      "networkErrorDescription": "{{site}} beklenmedik bir şekilde bağlantıyı kapattı. Lütfen ağınızı kontrol edin.",
+      "networkErrorDescriptionFallback": "Site beklenmedik bir şekilde bağlantıyı kapattı. Lütfen ağınızı kontrol edin.",
+      "serviceNotSupported": "Hizmet, mevcut bölgenizde desteklenmiyor.",
+      "opening": "Açılıyor {{name}}..."
+    },
+    "perps": {
+      "closeAllPopup": {
+        "description": "Tüm açık pozisyonlarınız piyasa fiyatıyla kapatılacaktır.",
+        "title": "Tüm Pozisyonları Kapatmayı Onayla"
+      },
+      "cancelAllOrdersPopup": {
+        "description": "Tüm açık emirleriniz iptal edilecek.",
+        "title": "Tüm Emirleri İptal Etmeyi Onayla"
+      },
+      "toast": {
+        "cancelTWAPOrderSuccess": "TWAP emri başarıyla iptal edildi.",
+        "cancelOrderSuccess": "Emir iptal edildi.",
+        "closeAllPositionsSuccess": "Tüm açık pozisyonlar başarıyla kapatıldı.",
+        "setAutoCloseSuccess": "Otomatik kapanış başarıyla ayarlandı.",
+        "deposit": "Yatırma işlemi başarılı.",
+        "cancelOrderError": "Emri iptal edilemedi.",
+        "marginUpdated": "Marjin güncellendi",
+        "success": "Başarılı",
+        "withdrawTip": "{{amount}} USDC başarıyla çekildi.",
+        "cancelFailed": "İptal Başarısız Oldu",
+        "withdraw": "Çekme Başarılı",
+        "orderCancelled": "Emir İptal Edildi",
+        "twapSliceFilled": "TWAP dilimi dolduruldu",
+        "cancelAllOrderSuccess": "Başarıyla {{count}} adet emir iptal edildi.",
+        "orderFilled": "Emir Gerçekleştirildi",
+        "stopLossSuccess": "Stop loss başarıyla ayarlandı",
+        "ordersCancelled": "Tüm emirler iptal edildi.",
+        "buyFilledContent": "Satın alındı {{sz}} / {{origSz}} {{coin}}, @{{price}} USDC ile tamamlandı",
+        "takeProfitSuccess": "Kar al emri başarıyla kaydedildi",
+        "terminalTwap": "Terminal Zaman Ağırlıklı Ortalama Fiyatı",
+        "leverageChanged": "Kaldıraç değiştirildi: {{leverage}}",
+        "orderPlaced": "Emir Verildi",
+        "depositTip": "{{amount}} USDC yatırıldı",
+        "openScaleOrderSuccess": "Ölçek emri verildi {{direction}} {{coin}}-USD: Boyut {{size}}",
+        "openLimitOrderSuccess": "Limit emri verildi {{direction}} {{coin}}-USD: Miktar {{size}}, Fiyatı ${{price}} ile",
+        "sellFilledContent": "Satıldı {{sz}} / {{origSz}} {{coin}} dolduruldu @{{price}} USDC",
+        "marginModeUpdated": "Marjin modu değiştirildi: {{mode}}",
+        "openTWAPOrderSuccess": "TWAP emri açıldı {{direction}} {{coin}}-USD: Boyut {{size}}",
+        "limitOrderFilled": "Limit Emri Dolduruldu ({{percent}}%)",
+        "sellFilledContentNoPercentage": "satıldı {{sz}} {{coin}} @{{price}} USDC",
+        "openTPSlLimitOrderSuccess": "{{tpsl}} limit emri verildi {{direction}} {{coin}}-USD: Miktar {{size}} Fiyatı ${{price}}",
+        "terminalTwapSuccess": "Terminal TWAP emri başarıyla tamamlandı",
+        "buyFilledContentNoPercentage": "{{sz}} {{coin}} satın alındı, @{{price}} USDC ile tamamlandı",
+        "openTPSlMarketOrderSuccess": "{{tpsl}} Piyasa emri verildi {{direction}} {{coin}}-USD: Miktar {{size}}, Fiyat ${{price}}",
+        "openPositionSuccess": "{{direction}} {{coin}}-USD: Boyut {{size}} Fiyatı ${{price}}",
+        "closePositionSuccess": "Kapatıldı {{direction}} {{coin}}-USD: Miktar {{size}}, Fiyatı ${{price}}",
+        "orderError": "Sipariş hatası"
+      },
+      "closePositionPopup": {
+        "positionSize": "Pozisyon Büyüklüğü",
+        "closeShort": "Kısa Pozisyonu Kapat",
+        "pnl": "Kâr/Zarar",
+        "title": "Kapat {{coin}}-USD {{direction}}",
+        "closeLong": "Uzun Pozisyonu Kapat"
+      },
+      "candleMenuKey": {
+        "all": "Tümü",
+        "oneHour": "1 saat",
+        "oneDay": "1 gün",
+        "oneWeek": "1 hafta",
+        "oneMonth": "1 ay",
+        "ytd": "Yılın başından bu yana"
+      },
+      "newUserProcess": {
+        "gotIt": "Anladım.",
+        "thirdTitle": "Kısa Pozisyon Aç",
+        "fourthDescription": "Kaldıraç, yatırdığınız miktardan daha fazlasıyla işlem yapmanıza olanak tanır. Bu, kazançlarınızı ve kayıplarınızı da artırabilir.",
+        "next": "İleri",
+        "fourthTitle": "Kaldıraç Ayarı",
+        "fifthDescription": "Her pozisyonun bir likidasyon fiyatı vardır. Piyasa fiyatı likidasyon fiyatına ulaştığında, pozisyonunuz kapatılır. Yüksek kaldıraç kullanmak likidasyon riskini artırır.",
+        "secondDescription": "Fiyatın yükseleceğini beklediğinizde uzun pozisyon açarsınız. Fiyat yükseldiğinde kar edersiniz. Düşerse zarar edersiniz.",
+        "thirdDescription": "Fiyatın düşmesini beklediğinizde kısa pozisyon açarsınız. Fiyat düşerse kazanırsınız. Fiyat yükselirse kaybedersiniz.",
+        "secondTitle": "Uzun Pozisyon Aç",
+        "fifthTitle": "likidasyon",
+        "firstDescription": "Süresiz vadeli işlem sözleşmeleriyle sadece varlıkları işlemiyorsun. Bir sonraki ne olacağını düşündüğüne göre işlem yapıyorsun.",
+        "firstTitle": "Ana Sürekli Vadeli Sözleşmeleri"
+      },
+      "historyDetail": {
+        "title": {
+          "openShort": "Kısa Pozisyon Aç",
+          "closeLong": "Long pozisyonunu kapat.",
+          "closeShort": "Kısa Pozisyonunu Kapat",
+          "openLong": "Uzun Pozisyon Aç",
+          "closeShortSl": "Kısa Pozisyonu Kapat Zarar Durdur",
+          "closeLongTp": "Uzun Pozisyonu Kapat, Kar Al",
+          "closeShortLiquidation": "Kısa Pozisyon Likidasyonunu Kapat",
+          "closeLongSl": "Uzun Pozisyonu Kapat (Zarar Durdurma Emri)",
+          "closeLongLiquidation": "Uzun Pozisyon Kapatma Likidasyonu",
+          "closeShortTp": "Kısa Pozisyonu Kapat Kar Al"
+        },
+        "price": "Fiyat",
+        "fee": "Ücret",
+        "provider": "Sağlayıcı",
+        "date": "Tarih",
+        "tradeValue": "İşlem Değeri",
+        "size": "Pozisyon Büyüklüğü",
+        "closedPnl": "Kapatılan Kâr/Zarar",
+        "feeDesc": "Kullanıcılar işlem yaptığında, hem <1>işlem ücretleri</1> hem de <2>oluşturucu ücretleri</2> geçerlidir.",
+        "amount": "Miktar",
+        "asset": "Varlık",
+        "action": "İşlem",
+        "value": "Değer",
+        "buy": "Satın Al",
+        "sell": "Sat",
+        "transferDetailTitle": "Transfer",
+        "transferActionToSpot": "Transfer (Perps'ten Spot'a)",
+        "transferActionToPerps": "Transfer (Spot'tan Perps'e)"
+      },
+      "logoutConfirmModal": {
+        "desc": "Mevcut Sürekli Vadeli Hesabınızdan çıkış yapıyorsunuz. Bu adresle giriş yaparak istediğiniz zaman hesabınızı geri yükleyebilirsiniz.",
+        "title": "Geçerli Adres Oturumunu Sonlandır"
+      },
+      "depositAmountPopup": {
+        "payWith": "İle Öde",
+        "minimumDepositSize": "Asgari para yatırma tutarı 5 ABD dolarıdır.",
+        "estReceive": "Tahmini Alınacak: {{balance}}",
+        "estTimeLabel": "Tahmini Zaman",
+        "fetchQuoteFailed": "Depozito için fiyat teklifi alınamadı. Lütfen token'ı değiştirin.",
+        "hyperliquidFeeLabel": "Hyperliquid Ücreti",
+        "goSwapTips": "Arbitrum'da yalnızca USDC doğrudan para yatırma için desteklenmektedir. Yatırmadan önce mevcut tokeninizi USDC'ye çevirin.",
+        "feeTip": "$1 Ücret",
+        "minimumWithdrawSize": "Minimum para çekme tutarı 2$'dır.",
+        "estReceiveTooltipNoTime": "Çapraz zincir mevduatı LiFi üzerinden işlenir, bir miktar fiyat kayması olabilir.",
+        "receiveToken": "Token Al",
+        "feeTipTooltip": "Hyperliquid tarafından tahsil edilen para çekme ücreti: $1",
+        "estReceiveLabel": "Tahmini Alınacak",
+        "goBridgeTips": "Arbitrum üzerinde doğrudan yatırma için yalnızca USDC desteklenir. Yatırmadan önce mevcut tokeninizi Arbitrum'daki USDC'ye köprüleyin.",
+        "estReceiveTooltip": "Çapraz zincir mevduatı LiFi üzerinden işlenir, bazı kaymalar meydana gelebilir. {{number}} saniye içinde varış tahmini.",
+        "hyperliquidFeeLabelTooltip": "Yeni kullanıcılar Hyperliquid tarafından tek seferlik bir etkinleştirme ücreti öder.",
+        "amount": "Miktar",
+        "feeTipTooltipHype": "EVM'ye çekim yapmak için yaklaşık ~0.00002 HYPE ücret alınacaktır.",
+        "hypeActivationFeeTip": "Hyperliquid, ilk HyperEVM çekimi için {{fee}} tutarında tek seferlik bir aktivasyon ücreti alacaktır.",
+        "balance": "Bakiye",
+        "chain": "Zincir"
+      },
+      "home": {
+        "entryPrice": "Giriş Fiyatı",
+        "size": "Pozisyon Büyüklüğü",
         "margin": "Marjin",
-        "long": "Uzun",
-        "free": "Ücretsiz",
-        "available": "Mevcut",
-        "size": "Boyut",
-        "invalidNumber": "Geçersiz sayı",
-        "leverage": "Kaldıraç",
+        "pnl": "Kâr/Zarar",
+        "markPrice": "İşaret Fiyatı",
+        "liquidationPrice": "Likidite Fiyatı"
+      },
+      "singleCoin": {
+        "openInterestTips": "Bu süresiz vadeli sözleşmesindeki tüm kullanıcıların toplam açık pozisyonu.",
+        "fundingTips": "Bu, tüccarların perp sözleşmesinin fiyatını token'ın gerçek fiyatına yakın tutmak amacıyla ödedikleri veya aldıkları saatlik bir ücrettir. Pozitifse, uzun pozisyon kısa pozisyona öder. Negatifse, kısa pozisyon uzun pozisyona öder.",
+        "fundingGainsTips": "Bu, pozisyon açıldığından beri elde edilen net finansman kazançlarıdır. Finansman, sürekli vadeli sözleşmenin fiyatını token'in gerçek fiyatına yakın tutmak için ticaretçiler tarafından ödenen veya alınan saatlik bir ücrettir.",
+        "fundingPaymentsTips": "Bu, pozisyon açıldığından bu yana net finansman ödemeleridir. Finansman, perp sözleşmesinin fiyatını tokenin gerçek fiyatına yakın tutmak için traderlar tarafından ödenen veya alınan saatlik bir ücrettir."
+      },
+      "accountSelector": {
+        "noPosition": "Pozisyon Yok",
+        "activatedAddress": "Etkinleştirildi",
+        "hyperliquidBalance": "Sürekli Vadeli İşlem Bakiyesi",
+        "notActivatedAddress": "Aktif değil",
+        "positions": "Pozisyonlar",
+        "selectAddress": "Bir Adres Seçin",
+        "position": "Pozisyon"
+      },
+      "riskLevel": {
+        "danger": {
+          "title": "Tehlike",
+          "description": "Pozisyonunuz yüksek bir likidasyon riski altında.\nLikidasyon fiyatına olan mesafe ≤ 3%.\nLikidasyon riskini önlemek için marj eklemeyi veya pozisyonunuzu kapatmayı düşünün."
+        },
+        "warning": {
+          "title": "Uyarı",
+          "description": "Pozisyonunuz tasfiye riskiyle karşı karşıya kalıyor. Tasfiye fiyatına olan mesafe %3 ile %8 arasında. Pozisyonunuzu dikkatlice izleyin ve teminat eklemeyi değerlendirin."
+        },
+        "safe": {
+          "title": "Güvenli",
+          "description": "Pozisyonunuz güvenli bir seviyededir. Tasfiye fiyatına olan fark >8%. Piyasa koşullarını izlemeye devam edin."
+        },
+        "currentPrice": "Güncel Fiyat",
+        "gotIt": "Anladım.",
+        "distanceLabel": "Likidasyon Mesafesi",
+        "title": "Risk Seviyesi",
+        "liquidationDistance": "Likidasyon Mesafesi",
+        "liqDistanceTipsLong": "Aşağı yönlü <1>{{distance}}</1> mesafeye inildiğinde likidasyon tetiklenecektir.",
+        "liquidationPrice": "Likidasyon Fiyatı",
+        "liqDistanceTipsShort": "Yukarı doğru çıkması <1>{{distance}}</1> likidasyonu tetikleyecek.",
+        "liquidationDistanceTips": "Likidasyon Mesafesi (%) mevcut fiyatın likidasyon fiyatınıza ne kadar uzak olduğunu gösterir. Daha büyük bir mesafe, daha güvenli bir pozisyonu gösterir; daha küçük bir mesafe ise daha yüksek likidasyon riski anlamına gelir.",
+        "subTitle": "Gerçek zamanlı likidasyon mesafesi (%)"
+      },
+      "searchPerpsPopup": {
+        "openPosition": "Pozisyon Aç",
+        "hasPosition": "Pozisyon",
+        "searchPlaceholder": "Sürekli vadeli sözleşmeleri ara",
+        "searchPosition": "Pozisyon ara",
+        "onePosition": "1 Pozisyon",
+        "empty": "Piyasalar bulunamadı",
+        "searchPerps": "Sürekli Vadeli Sözleşmeleri Ara"
+      },
+      "invitePopup": {
+        "activateFailed": "Başarısız",
+        "title": "Hyperliquid ücretlerinden tasarruf edin",
+        "activateNow": "Şimdi Etkinleştir",
+        "hyperliquidFee": "Hyperliquid işlem ücretleri.",
+        "description": "Rabby’nin kodunu kullanarak etkinleştirin.",
+        "activatedSuccess": "4% Hyperliquid ücret tasarrufu etkinleştirildi"
+      },
+      "positions": "Pozisyonlar",
+      "seeMore": "Daha Fazla Göster",
+      "completed": "Tamamlandı",
+      "permissionTips": "Bölgenizde pozisyon açma işlemi desteklenmiyor.",
+      "history": "Geçmiş",
+      "title": "Sürekli vadeli sözleşmeler",
+      "back": "Geri",
+      "confirm": "Onayla",
+      "yourPosition": "Pozisyonunuz",
+      "margin": "Marjin",
+      "openLong": "Uzun Pozisyon Aç",
+      "add": "Ekle",
+      "closeAll": "Tümünü Kapat",
+      "withdraw": "Çek",
+      "leverage": "Kaldıraç",
+      "rabbyFeeTipsZero": "Rabby ücreti: 0%",
+      "insufficientBalance": "Yetersiz bakiye",
+      "lastUsed": "En son kullanılan",
+      "timeAgo": "{{time}} önce",
+      "price": "Fiyat",
+      "minimumOrderSize": "Minimum sipariş tutarı 10 USD'dır.",
+      "marginIsolated": "İzole Marjin",
+      "deposit": "Yatır",
+      "short": "Kısa Pozisyon",
+      "pending": "Beklemede",
+      "openShort": "Kısa Pozisyon Aç",
+      "leverageRangeMinError": "Asgari kaldıraç {{min}}x'tir.",
+      "deleteAgentModal": "Ajan sayısının en fazlasına ulaştınız. Mevcut bir ajanı silip yeni bir ajan mı oluşturacaksınız?",
+      "position": "Pozisyon",
+      "availableBalance": "Mevcut: {{balance}}",
+      "learnAboutPerps": "Sürekli vadeli işlem sözleşmeleri hakkında bilgi edinin",
+      "providerFeeTips": "Hyperliquid ücreti: {{fee}}",
+      "fundingPayments": "Finansman Ödemeleri",
+      "stopLossTipsShort": "Zarar durdurma fiyatı mevcut fiyattan yüksek olmalıdır.",
+      "estimatedLiquidationPrice": "Tahmini Likidasyon Fiyatı",
+      "direction": "Pozisyon Yönü",
+      "openInterest": "Açık Pozisyonlar",
+      "directDeposit": "Doğrudan Yatırma",
+      "StopLoss": "Zarar durdurma emri",
+      "closeShort": "Kısa Pozisyonu Kapat",
+      "sizeTips": "İşleminizin toplam değeri veya miktarı, marjin ve kaldıraç tarafından belirlenir.",
+      "fundingRate": "Finansman Oranı",
+      "leverageRangeMaxError": "Maksimum kaldıraç: {{max}}x",
+      "availableToTrade": "Ticarete açık",
+      "explorePerps": "Sürekli Vadeli Sözleşmeleri Keşfet",
+      "liquidationPrice": "Likidasyon Fiyatı",
+      "entryPrice": "Giriş Fiyatı",
+      "deleteAgentSuccess": "Ajan başarıyla silindi.",
+      "fee": "Ücret",
+      "takeProfitWhen": "Kâr Alım Fiyatını Belirle",
+      "size": "Pozisyon Büyüklüğü",
+      "autoClose": "Otomatik Kapat",
+      "rabbyFeeTipsV2": "Rabby ücreti: 0,02%",
+      "stopLossTipsLongLiquidation": "Fiyat, tasfiye fiyatının ({{price}}) altında.",
+      "long": "Uzun Pozisyon",
+      "stopLoss": "Zarar Durdurma Emri",
+      "close": "Pozisyonu Kapat",
+      "TakeProfit": "Kâr Al",
+      "funding": "Finansman oranı",
+      "marginCross": "Çapraz Marjin",
+      "closeLong": "Uzun pozisyonunu kapat",
+      "logInTips": "Adresinizle giriş yapın ve sürekli vadeli sözleşmelerle işlem yapmaya başlamak için fon yatırın.",
+      "takeProfitTipsLong": "Kâr hedefi fiyatı mevcut fiyattan daha yüksek olmalıdır.",
+      "review": "İncele",
+      "pnl": "Kâr/Zarar",
+      "dailyVolume": "24 Saatlik Hacim",
+      "stopLossTipsLong": "Zarar durdurma fiyatı mevcut fiyattan daha düşük olmalıdır.",
+      "reviewOrder": "Siparişi İncele",
+      "tradePerps": "Sürekli Vadeli Sözleşmelerle İşlem Yap",
+      "takeProfit": "Kâr Al",
+      "fundingGains": "Finansman Getirileri",
+      "takeProfitTipsShort": "Kâr alım fiyatı mevcut fiyattan daha düşük olmalıdır.",
+      "selectTokenToDeposit": "Yatırılacak Token'ı Seçin",
+      "liquidation": "Pozisyon likidasyonu",
+      "stopLossWhen": "Zarar Durdurma Fiyatını Belirle",
+      "stopLossTipsShortLiquidation": "Fiyat tasfiye fiyatının üzerindedir ({{price}}).",
+      "maximumOrderSize": "Maksimum emir miktarı {{amount}}'dır.",
+      "cross": "Çapraz marjin",
+      "isolated": "İzole Marj",
+      "logInPerpsAccount": "Sürekli Sözleşme hesabıma giriş yap",
+      "openPositionTips": "Süresiz vadeli sözleşmelerin ticareti önemli riskler içerir; bu riskler arasında yüksek kaldıraç ve piyasa oynaklığı nedeniyle yatırımınızın ve teminatınızın ani ve tamamen kaybolma potansiyeli de bulunmaktadır ve tüm kullanıcılar için uygun olmayabilir. Fiyatlar, fonlama oranları ve likidite tarafından etkilenebilir ve bildirim olmadan otomatik likidasyonlara tabi olabilirsiniz. Piyasa verileri Hyperliquid tarafından sağlanmaktadır.",
+      "liquidationPriceTips": "Likidasyon fiyatı, marjınız bakım marjı seviyesinin altına düştüğünde borsa tarafından pozisyonunuzun otomatik olarak kapatıldığı ve daha fazla zararın önüne geçilmesi için kullanılan fiyattır.",
+      "balanceAvailable": "Bakiyeniz: {{balance}}",
+      "directDepositFast": "Hızlı, 0 Kayma",
+      "settings": "Ayarlar",
+      "crossMargin": "Cross Margin",
+      "unrealizedPnl": "Gerçekleşmemiş PNL",
+      "openProModeInTab": "Sekme'de Pro Modunu Aç",
+      "currentPrice": "Mevcut Fiyat",
+      "details": "Ayrıntılar",
+      "liquidationDistanceUp": "Yükselme <bold>{{percent}}</bold> likidasyonu tetikleyecektir.",
+      "isolatedMargin": "Ayrılmış Marj",
+      "cannotChangeMarginModeWithOpenPositions": "Açık pozisyonlarla Marj Modu değiştirilemez.",
+      "liquidationDistanceDown": "Aşağı düşme <bold>{{percent}}</bold> tasfiye tetikler",
+      "marginMode": "Marjinal Modu",
+      "positionValue": "Pozisyon Değeri",
+      "isolatedMarginDesc": "Her bir pozisyon kendi teminatını kullanır. Kayıplar o pozisyonla sınırlıdır, ancak likiditeye daha kolay maruz kalabilir.",
+      "crossMarginDesc": "Tüm pozisyonlar aynı marjı paylaşır. Bu, tek bir pozisyonun tasfiye edilme şansını azaltır, ancak tüm çapraz marj fonları aşırı piyasa hareketlerinde kaybedilebilir.",
+      "newUserGuide": {
+        "learnMore": "Daha Fazla Öğrenin"
+      },
+      "addFunds": "Fon Ekle",
+      "crossMarginLiqPriceTip": "Cross Margin modunda, tek bir pozisyon için tasfiye fiyatı sadece referans için bir tahmindir.",
+      "selectTokenToWithdraw": "Çekilecek Token'ı Seçin",
+      "PerpsDepositCard": {
+        "availableToTrade": "İşlem yapılabilir: ",
+        "deposit": "Yatır",
+        "swap": "Takas"
+      },
+      "EnableUnifiedAccount": {
+        "title": "Birleşik Hesabı Etkinleştir",
+        "desc": "Birleşik Hesap, alım satım deneyimini basitleştiren önerilen hesap modudur. Spot ve Perps bakiyeleri tüm tokenlar için birleştirilir ve tüm mevcut varlıklarda çapraz marj desteklenir.",
+        "confirm": "Onayla",
+        "enable": "Etkinleştir",
+        "cancel": "İptal Et",
+        "importantTips": "Birleşik Hesap etkinleştirildiğinde tüm USDC teminatı çapraz marj olarak kullanılacaktır.",
+        "important": "Önemli"
+      },
+      "PerpsSpotSwap": {
+        "title": "Stablecoin Swap",
+        "from": "Kimden",
+        "to": "Takası Yap",
+        "balance": "Bakiye",
+        "estReceive": "Tah.Al",
+        "swapBtn": "Takas",
         "insufficientBalance": "Yetersiz bakiye",
-        "takeProfitWhenPriceBelow": "Fiyat Altında Kar Al",
+        "invalidAmount": "Geçerli bir tutar girin",
+        "minimumAmount": "Minimum takas tutarı {{amount}}",
+        "max": "Maks",
+        "toDeposit": "Yatırıma →",
+        "swapBeforeTrading": "İşlem yapmadan önce USDC'yi {{quoteAsset}}'e takas edin",
+        "enabledSuccess": "Birleşik Hesap etkinleştirildi",
+        "enableFailed": "Birleşik Hesap etkinleştirme başarısız",
+        "swapFailed": "Takas başarısız",
+        "swapSuccess": "Takas başarıyla tamamlandı",
+        "estReceiveTooltip": "Tahmini alınacak tutar piyasa fiyat dalgalanmalarına tabidir.",
+        "buyAsset": "{{asset}} Satın Al",
+        "sellAsset": "{{asset}} Sat",
+        "toSwapEntry": "Takasa →",
+        "toDepositEntry": "Yatırıma →"
+      },
+      "PerpsTransferToPerps": {
+        "title": "Transfer",
+        "from": "Kimden",
+        "to": "Alıcı",
+        "spot": "Spot",
+        "perps": "Perps",
+        "balance": "Bakiye",
+        "amount": "Miktar",
+        "max": "Maks",
+        "submit": "Onayla",
+        "insufficientBalance": "Yetersiz bakiye",
+        "invalidAmount": "Geçerli bir tutar girin"
+      },
+      "PerpsMultiBalance": {
+        "title": "Hyperliquid Bakiyeleri",
+        "deposit": "Yatır",
+        "withdraw": "Çek"
+      },
+      "PerpsAbout": {
+        "title": "Hakkında"
+      },
+      "transferToSpot": "Spot'a Aktar",
+      "transferToPerps": "Perps'e Aktar",
+      "selectChainToWithdraw": "Çekmek İçin Zincir Seç"
+    },
+    "perpsPro": {
+      "chatArea": {
+        "volume": "Hacim",
+        "24hVol": "24 Saat Hacmi",
+        "symbol": "Sembol",
+        "searchMarkets": "Piyasaları ara",
+        "openInterestTips": "İki yönlü açık pozisyonlar: Bu kontrattaki uzun ve kısa pozisyonların toplamıdır.",
+        "24hChange": "24 saatlik değişim",
+        "lastPrice": "Son Fiyat",
+        "8hrFunding": "8 saatlik fonlama",
+        "openInterest": "Açık Pozisyonlar",
+        "oracle": "fiyat oracle'ı",
+        "fundingCountdown": "Finansman oranı / Geri sayım",
+        "oracleTips": "Doğrulayıcılar tarafından bildirilen harici fiyatların medyanı, finansman oranlarını hesaplamak için kullanılır.",
+        "mark": "Mark",
+        "markTips": "Marjin hesaplama, gerçekleşmemiş PNL'nin hesaplanması, likidasyonlar ve Kâr Al/Zarar Durdur emirlerini tetiklemek için kullanılır.",
+        "fundingTips": "Uzunlar kısa pozisyonlara saatlik ödeme yapar (negatif ise kısa pozisyonlar uzunlara ödeme yapar). Finansmanla ilgili herhangi bir ücret yoktur; bu, kullanıcılar arasında spot fiyatına doğru fiyatları itmek amacıyla yapılan eşler arası bir transferdir. Detaylar için dokümantasyona bakın.",
+        "categoryAll": "Tümü"
+      },
+      "userInfo": {
+        "tab": {
+          "payment": "Ödeme",
+          "creationTime": "Oluşturulma Zamanı",
+          "fundingTips": "Pozisyon açıldığından bu yana net finansman ödemeleri.\nNegatif ise, finansman kazançlarını ifade eder.",
+          "status": "Durum",
+          "positions": "Açık Pozisyonlar",
+          "margin": "Marjin",
+          "order": "Emir",
+          "value": "Değer",
+          "type": "Tür",
+          "time": "Zaman",
+          "funding": "Finansman",
+          "filled": "Dolduruldu",
+          "openOrders": "Açık Emirler",
+          "twap": "TWAP",
+          "direction": "Pozisyon Yönü",
+          "averagePrice": "Ortalama Fiyat",
+          "price": "Fiyat",
+          "tradeValue": "İşlem Değeri",
+          "markEntry": "İşaret fiyatı / Giriş fiyatı",
+          "tradeHistory": "İşlem Geçmişi",
+          "orderHistory": "Sipariş Geçmişi",
+          "trade": "İşlem Yap",
+          "size": "Pozisyon Büyüklüğü",
+          "tpSl": "Kâr Al / Zarar Durdur",
+          "slice": "Dilim",
+          "unrealizedPnl": "Gerçekleşmemiş Kâr/Zarar",
+          "liqPrice": "Likidasyon Fiyatı",
+          "unrealizedPnlTooltip": "İşaret fiyatı, gerçekleşmemiş kâr/zararın tahmin edilmesi için kullanılır. Gerçekleşmiş kâr/zararın hesaplanması için yalnızca işlem fiyatları kullanılır.",
+          "terminate": "Feshet",
+          "side": "Pozisyon Yönü",
+          "reduceOnly": "Sadece Azalt",
+          "coin": "Kripto para",
+          "trigger": "Tetikle",
+          "runningTimeTotal": "Geçen Süre / Toplam",
+          "fundingHistory": "Fonlama Geçmişi",
+          "rate": "Fonlama Oranı",
+          "closedPnlTooltip": "Kapatılan PNL ücretler ve iadeler içerir.",
+          "closedPnl": "Gerçekleşen PnL",
+          "fee": "Fonlama ücreti",
+          "fundingTipsV2": "Pozisyon açıldıktan sonra net finansman. Kırmızı (negatif) bir finansman değeri, ödenen finansmanı; yeşil (pozitif) bir değer ise alınan finansmanı gösterir.",
+          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <bold>Yeşil (pozitif)</bold> değerler, diğer ticaretçilerden kazandığınızı, <bold>Kırmızı (negatif)</bold> değerler ise onlara ödediğiniz finansman maliyetleridir.",
+          "assets": "Varlıklar",
+          "about": "Hakkında"
+        },
+        "emptyMessage": {
+          "openOrders": "Açık emir yok.",
+          "activeTwap": "Aktif TWAP yok",
+          "twapHistory": "TWAP geçmişi yok",
+          "tradeHistory": "İşlem geçmişi yok",
+          "orderHistory": "Sipariş geçmişi yok",
+          "fundingHistory": "Fonlama geçmişi yok",
+          "positions": "Pozisyon yok",
+          "fillHistory": "Tamamlanan işlemler geçmişi yok",
+          "assets": "Varlık yok"
+        },
+        "positionInfo": {
+          "newPosition": "Yeni Pozisyon",
+          "currentPosition": "Mevcut Pozisyon",
+          "receive": "Al",
+          "confirm": "Onayla",
+          "limitPrice": "Limit Fiyatı",
+          "close": "Pozisyonu kapat",
+          "closePosition": "Pozisyonu Kapat",
+          "viewOrders": "Emirleri Görüntüle",
+          "limitClose": "Limitli Kapatma Emri",
+          "closePositionTips": "Bu, seçtiğiniz limit fiyatında pozisyonu kapatmaya çalışacaktır.",
+          "closeAll": "Tüm Pozisyonları Kapat",
+          "closedPnl": "Kapatılan P/L",
+          "closeMarket": "Piyasayı Kapat",
+          "closePositionReverseTips": "Bu işlem, mevcut piyasa fiyatında pozisyonunuzu hemen kapatacak ve ters yönde aynı büyüklükte bir pozisyon açacaktır.",
+          "reversePosition": "Pozisyonu Tersine Çevir",
+          "configure": "Ayarla",
+          "closeLimit": "Kapatma Limiti",
+          "closePositionMarketTips": "Bu, mevcut piyasa fiyatında derhal kapanacaktır.",
+          "reverse": "Tersine çevir",
+          "mid": "orta fiyat",
+          "invalidPrice": "Geçersiz Fiyat",
+          "dontShowAgain": "Bunu bir daha gösterme",
+          "marketCloseTitle": "Piyasa Kapatma Pozisyonu",
+          "confirmCloseAllTitle": "Tüm Pozisyonları Kapatmayı Onayla",
+          "marketCloseBtn": "Piyasa Kapatma",
+          "marketCloseDesc": "Bu, pozisyonu hemen kapatmayı deneyecektir.",
+          "confirmCloseAllDesc": "Tüm açık pozisyonlar piyasa fiyatından kapatılacak ve tüm emirler iptal edilecektir."
+        },
+        "openOrders": {
+          "time": "Zaman",
+          "order": "Emir",
+          "price": "Fiyat",
+          "reduceOnly": "Sadece Azalt",
+          "orderValueSize": "Emir Değeri / Miktar",
+          "tpSl": "Kâr Al / Zarar Durdur",
+          "cancelAll": "Tümünü İptal Et",
+          "filled": "Dolduruldu",
+          "cancel": "İptal",
+          "type": "Tür",
+          "triggerConditions": "Tetikleme Koşulları"
+        },
+        "distanceRiskTag": {
+          "goingUp": "{{percent}} oranında yükseliş tasfiye işlemini tetikler.",
+          "goingDown": "Aşağı doğru {{percent}} düşüşü likidasyona yol açacaktır."
+        },
+        "twap": {
+          "completed": "Tamamlandı",
+          "activated": "Etkinleştirildi",
+          "terminated": "Sonlandırıldı"
+        },
+        "yes": "Evet",
+        "no": "Hayır",
+        "active": "Aktif",
+        "history": "Geçmiş",
+        "terminate": "Sonlandır",
+        "randomized": "(rastgeleleştirilmiş)",
+        "fillHistory": "Gerçekleşen Emirler Geçmişi",
+        "status": {
+          "triggered": "Tetiklendi",
+          "open": "Açık",
+          "rejected": "Reddedildi",
+          "filled": "Dolduruldu",
+          "iocCancelRejected": "IOC iptal nedeniyle reddedildi",
+          "canceled": "İptal Edildi",
+          "partiallyFilled": "Kısmen Doldurulmuş",
+          "reduceOnlyCanceled": "Sadece azaltma nedeniyle iptal edildi",
+          "badAloPxRejected": "Kötü ALO PX nedeniyle reddedildi",
+          "perpMarginRejected": "Reddedilen Perp Marjı Reddedildi",
+          "minTradeNtlRejected": "Min tic NTL nedeniyle reddedildi",
+          "siblingFilledCanceled": "İptal edildi çünkü kardeş sıralama dolduruldu."
+        },
+        "assets": {
+          "columnAsset": "Varlıklar",
+          "columnTotal": "Toplam Bakiye",
+          "columnAvailable": "Kullanılabilir Bakiye",
+          "columnAction": "İşlem",
+          "swapStablecoins": "Stablecoin Swap",
+          "enableUnifiedAccount": "Birleşik Hesabı Etkinleştir",
+          "transferToPerps": "Perps'e Aktar",
+          "usdcSpot": "USDC(Spot)",
+          "usdcPerps": "USDC(Perps)"
+        }
+      },
+      "statusBar": {
+        "offline": "Çevrimdışı",
+        "sound": "Sesi aç",
+        "online": "Çevrimiçi"
+      },
+      "tradingPanel": {
+        "slippagePage": {
+          "minError": "Minimum kayma oranı %0'dır.",
+          "maxError": "Maksimum kayma yüzde 100'tür.",
+          "maxSlippage": "Maksimum kayma",
+          "title": "Maks. Kayma Oranını Ayarla",
+          "description": "Maksimum kayma yalnızca sipariş formundan verilen piyasa emirlerini etkiler. Pozisyonlar kapatılırken maksimum kayma %8 olarak uygulanacaktır ve piyasa TP/SL emirleri için maksimum kayma %10 olarak uygulanacaktır."
+        },
+        "limitOrderTypeOptions": {
+          "Gtc": "GTC (İptal Edilene Kadar Geçerli): Emir, yerine getirilene kadar veya iptal edilene kadar bekletilir.",
+          "Ioc": "IOC (Immediate Or Cancel): Hemen doldurulamayan herhangi bir kısım iptal edilecektir.",
+          "Alo": "ALO (Yalnızca Likidite Ekle): Emir yalnızca emir defterinde bir limit emir olarak kalacaktır. Post-only olarak da bilinir."
+        },
+        "frequency": "Frekans",
+        "totalOrders": "Toplam Emirler",
+        "start": "Başlat",
+        "runtimeTooLong": "Çalışma süresi 24 saatten az olmalıdır.",
+        "currentPosition": "Mevcut Pozisyon",
+        "runtime": "Çalışma Zamanı",
+        "hours": "Saatler",
+        "threeThirtySeconds": "30 saniye",
+        "atLeastTwoOrders": "En az iki adet emir gereklidir.",
+        "minutes": "Dakikalar",
+        "placeOrder": "Emir Ver",
+        "randomizeTooltip": "Alt emirlerin zamanlamasını ve hacmini rastgeleleştirerek öngörülebilirliği azaltır.",
+        "slSellMustBeLowerThanMidPrice": "Satış durdurma emri fiyatı orta fiyattan daha düşük olmalıdır.",
+        "triggerPrice": "Tetikleme Fiyatı",
+        "runtimeTooShort": "Çalışma süresi 5 dakikadan uzun olmalıdır.",
+        "slippage": "Kayma",
+        "randomize": "Rastgeleleştir",
+        "minimumSuborderSize": "Asgari TWAP alt emir boyutu $10'dır.",
+        "reduceOnly": "Sadece Azalt",
+        "insufficientBalance": "Yetersiz bakiye",
+        "reduceOnlyTips": "Bu emir, emir büyüklüğü ne olursa olsun yeni bir pozisyon açmayacaktır. Bu emir yürütülme anında mevcut pozisyonla karşılaştırılacaktır.",
+        "numberOfOrders": "Emir sayısı",
+        "marginUsage": "Marjin Kullanımı",
+        "type": "Tür",
+        "reduceOnlyTooLarge": "Sadece Azalt Çok Büyük",
+        "tpSlTips": "Basit piyasa TP/SL emirleri verin. Sınırlı fiyatlar veya kısmi TP/SL gibi gelişmiş özellikler için TP/SL'yi açık bir pozisyonda ayarlayın.",
+        "orderValue": "Emir Değeri",
+        "minimumOrderSize": "Minimum emir büyüklüğü 10$'dır.",
+        "enterAmount": "Lütfen miktarı girin",
+        "startPrice": "Başlangıç Fiyatı",
+        "tpMustBeLowerThanCurrentPrice": "Kâr alım fiyatı mevcut fiyattan daha düşük olmalıdır.",
+        "marginCross": "Çapraz",
+        "sellShort": "Sat / Kısa Pozisyon Aç",
+        "endPrice": "Kapanış Fiyatı",
+        "liquidationPriceTooltip": "Pozisyon riski düşük olduğundan şu anda likidasyon fiyatı bulunmuyor. Pozisyonu artırmak veya marjı azaltmak riskinizi artıracaktır.",
+        "tpMustBeHigherThanCurrentPrice": "Kar al fiyatı mevcut fiyattan daha yüksek olmalıdır.",
+        "invalidTpPrice": "Geçersiz kar al emri fiyatı",
+        "tpSl": "Kâr Al / Zarar Durdur",
+        "tpSellMustBeHigherThanMidPrice": "Satış emri fiyatı orta fiyattan daha yüksek olmalıdır.",
+        "aloTooLargeBuy": "Alo emir fiyatı en iyi satış teklifi fiyatından daha düşük olmalıdır.",
+        "marginRequired": "Gereken Marjin",
+        "end": "Son",
+        "marginIsolated": "İzole",
+        "limitPrice": "Limit Fiyatı",
+        "sizeSkew": "Boyut sapması",
+        "maximumOrderSize": "Maksimum emir hacmi {{amount}}.",
+        "sizeSkewTooltip": "Son ve başlangıç fiyatları arasındaki oran. Örneğin, boyut kayması 2.0 ise, son fiyat için verilen limit emir başlangıç fiyatının iki katı büyüklüğünde konulacaktır. Boyut kayması 1.0 olduğunda, eşit büyüklükte emirler oluşur.",
+        "slBuyMustBeHigherThanMidPrice": "Stop alım emri fiyatı orta fiyattan yüksek olmalıdır.",
+        "availableFunds": "Kullanılabilir Fonlar",
+        "startAndEndPriceMustBeDifferent": "Açılış fiyatı ile kapanış fiyatı farklı olmalıdır.",
+        "invalidSlPrice": "Geçersiz zarar durdurma fiyatı",
+        "sizePerSuborder": "Alt Emir Başına Hacim",
+        "slMustBeLowerThanCurrentPrice": "Zarar durdurma fiyatı mevcut fiyattan daha düşük olmalıdır.",
+        "takeProfitExpectedPnL": "Kâr Al: Beklenen PnL",
+        "tpBuyMustBeLowerThanMidPrice": "Alım emri fiyatı orta fiyattan daha düşük olmalıdır.",
+        "aloTooLargeSell": "Emir fiyatı en iyi alış fiyatından yüksek olmalıdır.",
+        "slMustBeHigherThanCurrentPrice": "Zarar durdurma fiyatı mevcut fiyattan yüksek olmalıdır.",
+        "stopLossExpectedPnL": "Stop loss için beklenen PnL",
+        "liquidationPrice": "Likidasyon Fiyatı",
+        "runtimeTips": "(5 dk - 24 saat)",
+        "buyLong": "Satın Al / Uzun Pozisyon",
+        "enableTrading": "Süresiz Vadeli İşlemleri Etkinleştir",
+        "addFundsToGetStarted": "Fon ekleyin ve başlayın",
+        "deposit": "Teminat Deposito",
+        "Sell": "Satışı Yap",
+        "price": "Fiyat",
+        "max": "MAX",
+        "buyTrigger": "Alım Tetikleyici",
+        "short": "Kısa",
+        "cost": "Maliyet",
+        "long": "Uzun",
+        "Buy": "Satın Al",
+        "orderCount": "Sipariş Sayısı",
+        "action": "Eylem",
+        "tpTriggerMoreThanOrderPrice": "TP tetik fiyatınız, sipariş fiyatınızdan daha yüksek olmalıdır.",
+        "slTriggerMoreThanOrderPrice": "SL tetikleme fiyatınız, emir fiyatınızdan daha yüksek olmalıdır.",
+        "slTriggerLessThanOrderPrice": "SL tetikleme fiyatınız, sipariş fiyatınızdan düşük olmalıdır.",
+        "sideShortSell": "kısa (sat)",
+        "bboDisabledTooltip": "BBO, {{bboDisabledReason}} etkin olduğunda desteklenmiyor.",
+        "estimatedPnlWillBe": "Tahmin edilen PnL'iniz olacaktır",
+        "sellTrigger": "Satış Tetikleyici",
+        "orderTypeTooltipMarket": "Piyasa emri, mevcut en iyi piyasa fiyatıyla hemen eşleştirilir.",
+        "size": "Büyüklük",
+        "sideLongBuy": "uzun (al)",
+        "tpTriggerLessThanOrderPrice": "TP tetik fiyatınız, sipariş fiyatınızdan düşük olmalıdır.",
+        "tpTriggerPriceIsZero": "TP tetik fiyatınız 0'dır ve {{side}} gittiğinizde ayarlanmayacaktır.",
+        "slTriggerPriceIsZero": "SL tetikleme fiyatınız 0'dır ve {{side}} gittiğinizde ayarlanmamıştır.",
+        "orderTypeTooltipTakeLimit": "Limit Emirleri, belirli bir alım fiyatına ulaşıldığında limit emirlerine dönüşür. Emir aktivasyonu için bir tetikleme fiyatı belirtin.",
+        "orderTypeTooltipStopMarket": "Stop Market Orders, belirli bir fiyata ulaşıldığında piyasa emirlerine dönüşür. Emri aktive etmek için bir tetikleme fiyatı belirtin.",
+        "orderTypeTooltipStopLimit": "Stop Limit Orders, belirli bir stop fiyatına ulaşıldığında limit emirlerine dönüşür. Emri etkinleştirmek için bir tetikleme fiyatı belirtin.",
+        "orderTypeTooltipTakeMarket": "Piyasa Emirleri, belirli bir alım fiyatına ulaşıldığında piyasa emirlerine dönüşür. Emri etkinleştirmek için bir tetikleme fiyatı belirtin.",
+        "hour": "saat",
+        "orderTypeTooltipLimit": "Limit emri, belirli bir fiyattan veya daha iyi bir fiyattan alım veya satım yapmak için verilen bir emirdir. Limit emirlerinin gerçekleştirilmesi garanti edilmez.",
+        "min": "min",
+        "totalTime": "Toplam Zaman (5d-24s)",
+        "bboTips": "En İyi Teklif Teklifi (BBO), herhangi bir anda emir defterinde mevcut olan en iyi arza fiyatı ve en iyi teklife fiyatını ifade eder. BBO emirleri her zaman tam minimum fiyat adımı kullanılarak verilir, bu da fiyatların ayrıntılı ve doğru olmasını sağlar ve görüntüleme tercihlerinden bağımsızdır.",
+        "maxDurationTwap": "TWAP emri siparişinin çalışması için maksimum süre şudur:",
+        "orderTypeTooltipScale": "Scaled Orders, bir miktarı piyasa etkisini minimize etmek için birden fazla alt siparişe bölmenizi sağlar.",
+        "orderTypeTooltipTwap": "TWAP (Zaman Ağırlıklı Ortalama Fiyat), kullanıcının belirttiği dönem boyunca zaman ağırlıklı ortalama fiyata yakın bir ortalama işlem fiyatı elde etmeyi amaçlayan bir algoritmik işlem yürütme stratejisidir.",
+        "swapStableCoins": "Stablecoin Swap"
+      },
+      "marginMode": {
+        "title": "Marjin Modu",
+        "confirm": "Onayla",
+        "cross": "Çapraz",
+        "isolatedDescription": "Her pozisyona ayrılan marjin miktarını belirleyerek bireysel riskinizi yönetin. İzole pozisyonun marj oranı %100'e ulaştığında pozisyon tasfiye edilir. Bu modda bireysel pozisyonlara marjin eklenebilir veya kaldırılabilir.",
+        "isolated": "İzole Marjin",
+        "crossDescription": "Tüm çapraz pozisyonlar aynı çapraz teminatı paylaşır. Likidasyon durumunda, bu modda çapraz marjin bakiyeniz ve hâlâ açık olan çapraz pozisyonlar kaybedilebilir.",
+        "onlyIsolatedSupported": "Bu varlık sadece İzole marj modunu destekler.",
+        "cannotChange": "Marjin Modunu Değiştiremiyorsunuz"
+      },
+      "leverage": {
+        "confirm": "Onayla",
+        "higherLeverageRisk": "Daha yüksek kaldıraç, likidasyon riskini artırır.",
+        "maxPositionSize": "Kaldıraçınız yükseldikçe maksimum pozisyon büyüklüğü azalır.",
+        "maxError": "Maksimum kaldıraç {{max}}x",
+        "minError": "Asgari kaldıraç 1x'tir.",
+        "title": "Kaldıraç Ayarla",
+        "controlPositionLeverage": "{{coin}} pozisyonları için kullanılan kaldıraçı kontrol edin.\nMaksimum kaldıraç {{max}}x'tir."
+      },
+      "editTpSl": {
+        "entryPrice": "Giriş Fiyatı:",
+        "confirm": "Onayla",
+        "currentPosition": "Mevcut Pozisyon",
+        "loss": "zarar",
+        "markPrice": "İşaret Fiyatı:",
+        "gain": "Kâr",
+        "title": "Kâr Al / Zarar Durdur",
+        "sl": "Zarar Durdurma Emri",
+        "stopLossExpectedPnl": "Zarar durdurma beklenen kâr-zarar",
+        "tp": "Kâr Al",
+        "cancelTp": "Kâr Al Emrini İptal Et",
+        "takeProfitExpectedPnl": "Kâr Al, Beklenen PnL",
+        "cancelSl": "Stop-Loss'u İptal Et"
+      },
+      "accountInfo": {
+        "totalBalance": "Toplam Bakiye",
+        "availableBalance": "Kullanılabilir Bakiye",
+        "maintenanceMarginTips": "Çapraz pozisyonlarınızı açık tutmak için gerekli olan minimum portföy değeri.",
+        "withdraw": "Çek",
+        "balance": "Bakiye",
+        "maintenanceMargin": "Bakım teminatı",
+        "deposit": "Teminat yatırma",
+        "crossMarginRatio": "Çapraz Marjin Oranı",
+        "unrealizedPnl": "Gerçekleşmemiş Kâr/Zarar",
+        "crossAccountLeverage": "Hesaplararası Kaldıraç",
+        "balanceTip": "Toplam Net Transferler + Toplam Gerçekleşen Kâr + Toplam Net Finansman Ücretleri",
+        "crossAccountLeverageTips": "Çapraz Hesap Kaldıraç Oranı = Toplam Çapraz Pozisyon Değeri / Çapraz Hesap Değeri",
+        "accountEquity": "Hesap Özsermayesi",
+        "crossMarginRatioTips": "Bakım Marjı / Portföy Değeri. Çapraz pozisyonlarınız, Marj Oranı yüzde 100'e ulaştığında tasfiye edilecektir.",
+        "accountEquityTip": "Bakiye + Gerçekleşmemiş Kâr/Zarar (tüm pozisyonlar kapatıldığında yaklaşık hesap değeri)",
+        "available": "Mevcut:",
+        "accountSummary": "Hesap Özeti",
+        "unifiedAccountSummary": "Birleşik Hesap Özeti",
+        "unifiedAccountRatio": "Birleşik Hesap Oranı",
+        "unifiedAccountRatioTips": "Portföy tasfiyesi riskini temsil eder. Değer %95'ten büyük olduğunda, portföyünüz tasfiye edilebilir.",
+        "unifiedAccountLeverage": "Birleşik Hesap Kaldıraç",
+        "unifiedAccountLeverageTips": "Birleşik Hesap Kaldıraç = Toplam Çapraz Pozisyon Değeri / Toplam Teminat Bakiyesi.",
+        "perpsMaintenanceMargin": "Perps Bakım Marjı",
+        "perpsPortfolioValue": "Perps Portföy Değeri",
+        "perpsUnrealizedPnl": "Perps Gerçekleşmemiş K/Z"
+      },
+      "accountActions": {
+        "pending": "Beklemede",
+        "available": "Kullanılabilir",
+        "deposit": "Yatır",
+        "positionCount": "{{count}} pozisyonlar",
+        "onePosition": "1 pozisyon",
+        "availableBalanceTips": "Mevcut Fonlar"
+      },
+      "orderBook": {
+        "total": "Toplam",
+        "noTrades": "İşlemler yok",
+        "price": "Fiyat",
+        "time": "Zaman",
+        "markPrice": "İşaret Fiyatı",
+        "title": "Emir Defteri",
+        "amount": "Miktar",
+        "trades": "İşlemler",
+        "viewBoth": "İkisi de",
+        "viewAsks": "Satış Teklifleri",
+        "viewBids": "Alım Emirleri"
+      },
+      "editMargin": {
+        "title": "Marjini Yönetimi",
+        "shortLiquidationTips": "Yükselme {{percent}} likidasyonu tetikleyecektir.",
+        "configureMargin": "Marjin Ayarla",
+        "longLiquidationTips": "{{percent}} düşmek tasfiye işlemini tetikleyecektir.",
+        "currentPosition": "Mevcut Pozisyon"
+      }
+    },
+    "perpsDetail": {
+      "PerpsAddPositionPopup": {
+        "sizeTips": "İşleminizin toplam değeri veya miktarı, marj ve kaldıraç tarafından belirlenir.",
+        "totalSize": "Toplam Pozisyon Büyüklüğü",
+        "addToShort": "Kısa Pozisyonuna Ekle",
+        "addToLong": "Uzun Pozisyonuna Ekle",
+        "liquidationPriceTips": "Marjınız bakım marjı seviyesinin altına düştüğünde, daha fazla kaybı önlemek için borsa tarafından pozisyonunuzun otomatik olarak kapatıldığı fiyat.",
+        "addSize": "Miktar Ekle"
+      },
+      "PerpsOpenPositionPopup": {
+        "insufficientBalance": "Yetersiz bakiye",
+        "available": "Kullanılabilir",
+        "invalidNumber": "Geçersiz sayı",
+        "rabbyFee": "Rabby Ücret",
+        "sizeTips": "İşleminizin toplam değeri veya hacmi, marjin ve kaldıraç tarafından belirlenir.",
+        "size": "Pozisyon Büyüklüğü",
+        "takeProfitWhenPriceBelow": "Fiyat Belirlenen Seviyenin Altına Düştüğünde Kar Al",
+        "leverage": "Kaldıraç",
+        "minimumOrderSize": "Asgari sipariş hacmi 10$'dır.",
         "providerFee": "Hyperliquid Ücreti",
-        "maximumOrderSize": "Maksimum emir boyutu {{amount}}'dir",
-        "rabbyFee": "Rabby Ücreti",
-        "takeProfitWhenPriceAbove": "Kar Al, Fiyat Üstünde Olduğunda",
-        "minimumOrderSize": "Minimum sipariş büyüklüğü 10$'dır.",
-        "stopLossWhenPriceAbove": "Fiyat Üstünde Stop Loss",
-        "stopLossWhenPriceBelow": "Fiyat Aşağıda Olduğunda Zarar Durdur",
-        "sizeTips": "Ticaretinizin toplam değeri veya miktarı, teminat ve kaldıraç tarafından belirlenir.",
-        "maxMargin": "Maksimum teminat {{amount}}'dır.",
-        "minMargin": "Minimum margin {{amount}}'dir."
+        "short": "Kısa Pozisyon",
+        "free": "Ücretsiz",
+        "minMargin": "Asgari marjin: {{amount}}",
+        "long": "Uzun pozisyon",
+        "takeProfitWhenPriceAbove": "Fiyat Üstünde Kar Al",
+        "maximumOrderSize": "Maksimum emir miktarı {{amount}}",
+        "margin": "Marjin",
+        "maxMargin": "Maksimum marjin {{amount}}'dır",
+        "stopLossWhenPriceAbove": "Fiyat Üstünde Olduğunda Zarar Durdur Emri",
+        "newPosition": "Pozisyon Aç",
+        "stopLossWhenPriceBelow": "Fiyat Altında Olduğunda Zarar Durdur"
       },
       "PerpsEditMarginPopup": {
-        "title": "Marjini Ayarla",
-        "reduceMargin": "Marjini Azaltın",
-        "amountToAdd": "Ekleyeceğiniz Miktar",
-        "perpsBalance": "Perps Bakiyesi",
-        "addMargin": "Marjinal Ekle",
-        "available": "Mevcut",
-        "currentPrice": "Mevcut Fiyat",
-        "amountToReduce": "Azaltılacak Miktar",
-        "liqPrice": "Lik. Fiyat",
+        "amountToReduce": "Azaltılacak Tutar",
         "confirm": "Onayla",
-        "margin": "Marjinal",
-        "addMarginSuccess": "Marj ekleme başarılı bir şekilde yapıldı",
-        "reduceMarginTooltip": "Pozisyonu azaltmak için yetersiz marj.",
         "insufficientBalance": "Yetersiz bakiye",
+        "reduceMarginTooltip": "Pozisyonu azaltmak için yeterli marjin yok.",
+        "title": "Marjı Ayarla",
+        "addMarginSuccess": "Marjin başarıyla eklendi.",
+        "currentPrice": "Güncel Fiyat",
+        "available": "Kullanılabilir",
+        "liqPrice": "Likidasyon Fiyatı",
+        "upto": "En fazla",
+        "margin": "Marjin",
         "exceedMaxReduction": "Maksimum azaltmayı aştı",
-        "reduceMarginSuccess": "Marjinal azaltma başarıyla gerçekleştirildi",
-        "upTo": "Yükselişe kadar",
-        "upto": "Yükseltilebilir",
-        "liqDistance": "Liq. Mesafe"
+        "reduceMarginSuccess": "Marjin başarıyla azaltıldı",
+        "upTo": "En fazla",
+        "perpsBalance": "Sürekli Vadeli Bakiye",
+        "amountToAdd": "Eklenecek Tutar",
+        "reduceMargin": "Marjı Azalt",
+        "liqDistance": "Likidite Mesafesi",
+        "addMargin": "Marjı ekle"
       },
       "PerpsClosePositionPopup": {
-        "receive": "Alacak",
-        "fee": "Ücret",
-        "closedPnl": "Kapalı PNL",
-        "amount": "Miktar",
-        "minimumWarning": "Minimum close amount is {{percent}}%",
         "confirm": "Onayla",
-        "title": "Pozisyon Kapat",
-        "total": "Toplam"
+        "minimumWarning": "Kapanış için asgari tutar {{percent}}%",
+        "total": "Toplam",
+        "fee": "Ücret",
+        "receive": "Al",
+        "amount": "Miktar",
+        "title": "Pozisyonu Kapat",
+        "closedPnl": "Kapatılan Kar/Zarar"
       },
       "PerpsAutoCloseModal": {
-        "stopLoss": "Zarar Durdurma",
-        "youLoss": "Kaybediyorsun",
-        "priceAbove": "Fiyat üzerinde",
-        "confirm": "Onayla",
-        "youGain": "Kazanç sağlarsınız",
-        "takeProfitTipsShort": "Kar alım fiyatı mevcut fiyatın altında olmalıdır.",
-        "stopLossWhen": "Stop Loss Ne Zaman",
-        "takeProfit": "Kar Alayı",
-        "currentPrice": "Mevcut Fiyat:",
-        "priceBelow": "Fiyat altındadır",
-        "stopLossExpectedPNL": "Stop Loss Beklenen PNL",
-        "takeProfitTipsLong": "Kar elde etme fiyatı mevcut fiyatın üzerinde olmalıdır.",
-        "takeProfitWhenPriceAbove": "Fiyat Üstünde Kar Al",
-        "takeProfitWhenPriceBelow": "Fiyat Aşağıda Olduğunda Kar Al",
-        "takeProfitExpectedPNL": "Kâr Al, Beklenen PNL",
-        "title": "Otomatik Pozisyon Kapatma",
-        "takeProfitWhen": "Kar Alırken",
-        "stopLossWhenPriceAbove": "Fiyat Üstünde Zarar Durdurma",
-        "EntryAndCurrentPrice": "Giriş: ${{entryPrice}} Mevcut: ${{currentPrice}}",
-        "noPosition": "Öncelikle teminat girmelisiniz.",
         "cancel": "İptal",
-        "stopLossTipsLongLiquidation": "Fiyat likidasyon fiyatından ({{price}}) daha düşük.",
-        "stopLossTipsLong": "Zarar durdurma fiyatı mevcut fiyatın altında olmalıdır.",
-        "stopLossTipsShortLiquidation": "Fiyat likidasyon fiyatından ({{price}}) daha yüksek.",
-        "stopLossTipsShort": "Stop loss fiyatı mevcut fiyatın üzerinde olmalıdır.",
-        "stopLossWhenPriceBelow": "Fiyat Altında Zarar Durdur"
+        "currentPrice": "Güncel Fiyat:",
+        "stopLossTipsLong": "Stop loss fiyatı mevcut fiyattan daha düşük olmalıdır.",
+        "confirm": "Onayla",
+        "youLoss": "Kaybettin",
+        "priceBelow": "Fiyat aşağıda",
+        "priceAbove": "Fiyat Üstünde",
+        "noPosition": "İlk önce marjin girmeniz gerekir.",
+        "takeProfitTipsLong": "Kar alım fiyatı mevcut fiyattan daha yüksek olmalıdır.",
+        "stopLoss": "Zarar Durdurma Emri",
+        "title": "Pozisyonu Otomatik Kapat",
+        "takeProfitWhenPriceAbove": "Fiyat Üstünde Olduğunda Kar Al",
+        "youGain": "Kazanırsınız",
+        "stopLossWhen": "Zarar Durdurma Ne Zaman",
+        "stopLossTipsShort": "Zarar durdurma fiyatı mevcut fiyattan daha yüksek olmalıdır.",
+        "takeProfitWhenPriceBelow": "Fiyat Aşağı Düştüğünde Kar Al",
+        "takeProfit": "Kâr al emri",
+        "stopLossWhenPriceBelow": "Fiyat Belirli Bir Seviyenin Altına Düştüğünde Zarar Durdur",
+        "stopLossTipsLongLiquidation": "Fiyat likidasyon fiyatından düşüktür ({{price}}).",
+        "takeProfitTipsShort": "Kar alım fiyatı mevcut fiyattan daha düşük olmalıdır.",
+        "takeProfitWhen": "Kâr Almayı Ne Zaman",
+        "stopLossWhenPriceAbove": "Fiyat Üstünde Olduğunda Zarar Durdur",
+        "EntryAndCurrentPrice": "Giriş: ${{entryPrice}} Güncel: ${{currentPrice}}",
+        "stopLossExpectedPNL": "Zarar Durdurma Emri Beklenen Kar/Zarar",
+        "stopLossTipsShortLiquidation": "Fiyat likidasyon fiyatından daha yüksektir ({{price}})",
+        "takeProfitExpectedPNL": "Kâr Al Beklenen PnL"
       },
-      "PerpsAddPositionPopup": {
-        "addToShort": "Kısa Pozisyona Ekle",
-        "totalSize": "Toplam Boyut",
-        "addSize": "Boyut Ekle",
-        "addToLong": "Uzun Pozisyona Ekle",
-        "liquidationPriceTips": "Marjiniz bakım marj seviyesinin altına düştüğünde, pozisyonunuzun daha fazla kayıptan korunmak için borsa tarafından otomatik olarak kapandığı fiyat.",
-        "sizeTips": "Marjin ve kaldıraçla belirlenen işleminizin toplam değeri veya miktarı."
+      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir."
+    },
+    "lending": {
+      "availableCard": {
+        "canBorrow": "Temin ettiğiniz teminat bazında, borç limiti kadar borç alabilirsiniz.",
+        "emodeNoAssets": "Aramanıza uygun hiçbir varlık bulamadık. Farklı bir kategori ile tekrar deneyin.",
+        "singleAssetUnavailableForEmode": "Kullanılamaz. E-Mode'dan çıkın.",
+        "needSupply": "Borç almak için, teminat olarak varlık sağlamanız gerekir.",
+        "emode": "E-Mod’da bazı varlıklar borç alınamaz. Tüm varlıklara erişmek için E-Mod’dan çıkın."
       },
-      "needDepositFirst": "Öncelikle fon yatırmanız gerekiyor."
+      "list": {
+        "headers": {
+          "totalBorrowed": "Toplam Borçlanan",
+          "token_tvl": "Token/TVL",
+          "mySupplies": "Benim kaynaklarım",
+          "token_balance": "Token/Bakiye",
+          "my_balance": "Bakiyem",
+          "my_assets": "Varlıklarım",
+          "myBorrows": "Borçlarım",
+          "token": "Token"
+        },
+        "item": {
+          "wrapperToken": "{{name}} için Wrapped token"
+        }
+      },
+      "repayDetail": {
+        "tabs": {
+          "wallet": "Cüzdan bakiyesi",
+          "collateral": "Teminat"
+        },
+        "actions": "Geri Ödeme",
+        "repayWith": "İade etmek için",
+        "amountTitle": "Bakiye: ",
+        "approveAndRepay": "Onayla ve Geri Öde"
+      },
+      "supplyDetail": {
+        "supplied": "Verilen",
+        "actions": "Arz ",
+        "amountTitle": "Mevcut:",
+        "availableToBorrow": "Borrow edilebilir",
+        "collateralization": "Teminatlandırma",
+        "enabled": "Etkinleştirildi",
+        "supplyBalance": "Sağlama Bakiyesi",
+        "unavailable": "Kullanılamıyor",
+        "approveAndSupply": "Onayla ve Tedarik Et",
+        "supplyAPY": "Talep APY",
+        "isolatedTips": "Mevcut borç verme/borç alma varlıklarınız desteklenmiyor."
+      },
+      "withdrawDetail": {
+        "amountTitle": "Bakiyeniz:",
+        "remainingSupply": "Kalan arz",
+        "actions": "Çekmek"
+      },
+      "toggleCollateralDetail": {
+        "error": "AAVE hizmetinde bir hata oluştu. Lütfen daha sonra tekrar deneyin.",
+        "actions": "{{asset}} Teminatını Değiştir",
+        "disable": "{{asset}}'i Teminat Olarak Devre Dışı Bırak",
+        "enable": "{{asset}}'i Teminat Olarak Etkinleştir"
+      },
+      "toggleCollateralModal": {
+        "toggleRiskTexts": {
+          "canNotUseThisCurrencyAsCollateral": "Bu para birimini teminat olarak kullanamazsınız.",
+          "doNotHaveSuppliesInThisCurrency": "Bu para biriminde yeterli arzınız yok.",
+          "canNotSwitchUsageAsCollateralMode": "Bu para birimini teminat modu olarak değiştiremezsiniz, çünkü bu teminat araması yapar.",
+          "zeroLTVWithdrawBlocked": "Sıfır LTV'ye sahip varlıklar ({{assets}}) bu işlemi gerçekleştirmek için teminat olarak çekilmeli veya devre dışı bırakılmalıdır."
+        },
+        "exitIsolationModeTitle": "Yalnızlık Modundan Çıkış",
+        "closeTitle": "Gözden Geçirme Devre Dışı Bırakma",
+        "exitIsolationModeDesc": "İzole modundan çıkacaksınız ve diğer token'lar şimdi teminat olarak kullanılabilir.",
+        "enableIsolationModeTitle": "İzolasyon Modunu Etkinleştir",
+        "openTitle": "Gözden Geçirme Etkinleştirme",
+        "riskToLiquidationText": "Bu para birimi için teminat modu olarak kullanımı değiştiremezsiniz, çünkü bu teminat çağrısına neden olur.",
+        "closeDesc": "Bu varlığı teminat olarak devre dışı bırakmak, borçlanma gücünüzü ve Sağlık Faktörünü etkiler.",
+        "openDesc": "Bu varlıkları teminat olarak kullanmak, borçlanma gücünüzü ve Sağlık Faktörünüzü artırır. Ancak, sağlık faktörünüz 1'in altına düşerse tasfiye edilebilir.",
+        "enableIsolationModeDesc": "İzole moda giriyorsunuz. İzole modda, diğer varlıkları teminat olarak sağlayamazsınız. Küresel bir borç tavanı, izole olan varlığın borçlanma gücünü sınırlar. İzole moddan çıkmak için başka bir varlık borçlanmadan önce CRV'yi teminat olarak devre dışı bırakın."
+      },
+      "borrowDetail": {
+        "actions": "Ödünç Al",
+        "swapDebt": "Değiştir",
+        "approveAndBorrow": "Onayla ve Borç Al",
+        "borrowed": "Ödünç Alınan",
+        "amountTitle": "Mevcut:",
+        "almostReachedWarning": "Protokol borç limiti bu varlık için %100'dür. Ek borç alma mümkün değildir.",
+        "almostReachedError": "Borç alabileceğiniz maksimum miktar, protokol borç limiti neredeyse ulaşıldığı için sınırlıdır."
+      },
+      "popup": {
+        "amount": "Miktar",
+        "title": "İşlem Genel Görünümü",
+        "remainingDebt": "Kalan borç",
+        "available": "mevcut",
+        "liquidationAt": "1.0'da likidasyon"
+      },
+      "borrowOverview": {
+        "myBorrow": "Benim Borç Alım",
+        "title": "Borrow Detayları",
+        "totalBorrowed": "Toplam Borçlanan",
+        "borrowCap": "Kredi Limiti",
+        "availableToBorrow": "Ödünç Alınabilir",
+        "liquidityPenalty": "Tasfiye Cezası",
+        "reachCapTip": "Bu varlık borç limitiye ulaştı."
+      },
+      "supplyOverview": {
+        "totalSupplied": "Toplam Sağlanan",
+        "title": "Arz Sağlayıcı Bilgileri",
+        "collateral": "Teminat",
+        "noBalance": "Bakiyeniz yok",
+        "mySupply": "Benim Arzım",
+        "useAsCollateral": "Teminat olarak kullanın",
+        "walletBalance": "Cüzdan Bakiyesi",
+        "reachCap": "Bu varlık arz sınırına ulaştı. Bu piyasadan sağlanacak hiçbir şey yok.",
+        "availableToSupply": "Temin Sunulan",
+        "almostCap": "Bu varlık neredeyse borç sınırına ulaştı. Bu piyasadan borç alabileceğiniz yalnızca {{available}} mevcut."
+      },
+      "risk": {
+        "withdrawWarning": "Bu miktarı çekmek, Sağlık Faktörünüzü likidasyon için riskli bir seviyeye düşürecektir.",
+        "toggleCollateralWarning": "Bu varlığı teminat olarak devre dışı bırakmak Sağlık Faktörünüzü likidasyon riski taşıyan bir seviyeye düşürecektir.",
+        "warning": "Bu miktarı borç almak, Sağlık Faktörünüzü likidasyon için riskli bir seviyeye düşürecektir.",
+        "emodeBlockWarning": "E-modunun devre dışı bırakılması, Health Factor'ınızı tasfiye için riskli bir seviyeye düşürecektir.",
+        "checkbox": "Uyarıyı anlıyorum ve devam etmek istiyorum.",
+        "blockEmodeWarning": "E-Mode'u devre dışı bırakamazsınız çünkü bu tasfiyeye neden olabilir. E-Mode'dan çıkmak için alım veya borçlu pozisyonları geri ödemeniz gerekir."
+      },
+      "lqDescription": {
+        "risky": "Risky",
+        "desc": "Tasfiye değeri",
+        "below1desc": "Pozisyonunuz likidasyon riski altındadır.",
+        "over3desc": "Pozisyonlarınız güvende.",
+        "over3title": "Sağlık faktörü > 3.0:",
+        "below1title": "Sağlık Faktörü ≤ 1.0:",
+        "introText": "Sağlık Faktörünüz, borçlanma pozisyonunuzun ne kadar güvenli olduğunu gösterir. Eğer çok düşük bir seviyeye inerse, teminatınız tasfiye edilebilir.",
+        "warningText": "Sağlık Faktörünüz çok düşük. Tasfiye önlemek için:\n1. Kredinizin bir kısmını veya tamamını geri ödeyin\n2. Daha fazla teminat ekleyin",
+        "liquidationTitle": "Tasfiye:",
+        "liquidation": "Eğer Sağlık Faktörünüz 1.0'ın altına düşerse, teminatınızın bir kısmı borcu ödemek için otomatik olarak satılabilir. Bir likidasyon cezası uygulanacak ve bu da teminatınızın bir kısmının kaybına neden olacaktır."
+      },
+      "modalDesc": {
+        "availableToBorrow": "Mevcut borç alacak",
+        "isolatedTitle": "Varlık teminat olarak kullanılamaz.",
+        "isolatedSupplyDesc": "Teminat kullanımı izolasyon modu nedeniyle sınırlıdır.",
+        "availableToBorrowDesc": "Temin sağladığınız teminat temelinde borç alabilir ve borç limiti ulaşılana kadar borç alabilirsiniz.",
+        "isolatedDesc": "Bu varlık yalnızca izolasyon modunda teminat olarak kullanılabilir; burada borç almak için başka varlık teminatı sağlayamazsınız. İzolasyon modunda teminat olarak kullanılan varlıklar yalnızca belirli bir borç tavanına kadar borç alınabilir.",
+        "maxLTV": "Maksimum LTV oranı, belirli bir teminatın maksimum borçlanma gücünü temsil eder. Örneğin, bir teminatın LTV'si %75 ise, kullanıcı her 1 ETH değerindeki teminat için ana para para biriminde 0,75 değerinde ETH borç alabilir.",
+        "globalIsolatedDesc": "İzole modda, diğer varlıkları teminat olarak sağlayamazsınız. Küresel borç limiti, izole varlığın borçlanma gücünü sınırlar. İzole moddan çıkmak için, başka bir varlık borçlanmadan önce UNI'yi teminat olarak devre dışı bırakın.",
+        "maxAmount": "Bu, sağlanan tüm teminatlarınıza dayalı olarak borç alabileceğiniz maksimum tutardır. Toplam borç alma gücünüz, her teminat varlığının piyasa değeri ile Max LTV'sini çarparak ve ardından sonuçları toplayarak hesaplanır.",
+        "lqDesc": "Bir tasfiye gerçekleştiğinde, tasfiye ediciler borçlu adına borçlu miktarın %50'sine kadar olan kısmı geri öderler. Bunun karşılığında, teminatı indirimli bir fiyattan satın alabilirler ve farkı (tasfiye cezası) bonus olarak alabilirler."
+      },
+      "repayWithAToken": {
+        "header": {
+          "balance": "Bakiyeniz",
+          "assets": "Jeton"
+        },
+        "title": "Geri Ödeme Tokeni Seçin",
+        "zeroLtvCollateralTips": "Aşağıdaki LTV = 0 teminatlarınız var ve bu nedenle, teminat geri ödeme kurallarına göre önce bu teminatlarla geri ödeme yapabilirsiniz."
+      },
+      "manageEmode": {
+        "actions": {
+          "enable": "E-Modu'nu Etkinleştir",
+          "disable": "E-Mode'u Devre Dışı Bırak"
+        },
+        "guide": {
+          "buttonTitle": "E-Modu Yönetimi",
+          "description": "E-Mode, seçilen varlık kategorisi için LTV'nizi artırır.",
+          "title": "Verimlilik modu (E-Modu)"
+        },
+        "categorySelector": {
+          "header": {
+            "asset": "Varlıklar"
+          },
+          "placeholder": "Seçin",
+          "label": "Varlık kategorisi",
+          "desc": "Bu kategoriyi etkinleştirmek için bu kategorinin dışındaki tüm borç pozisyonları kapatılmalıdır."
+        },
+        "debtSwapSelector": {
+          "header": {
+            "borrow": "Borçlarım",
+            "assets": "Token/Bakiye"
+          },
+          "title": "Borç Alma Token'ını Seçin"
+        },
+        "collateralSwapSelector": {
+          "header": {
+            "assets": "Token",
+            "collateral": "Teminatım"
+          },
+          "title": "Teminat Token Seçin"
+        },
+        "overview": {
+          "row": {
+            "collateral": "Teminat",
+            "borrowable": "Borç Alınabilir",
+            "asset": "Varlık"
+          },
+          "title": "Varlık kategorisi"
+        },
+        "title": "E-Mode'u Yönet",
+        "disableTitle": "Devre dışı bırak",
+        "enabled": "• Etkinleştirildi",
+        "unavailableTips": "Mevcut borç verme/borç alma varlıklarınız desteklenmiyor.",
+        "unavailable": "• Kullanılamaz",
+        "description": "E-Modu'nu etkinleştirmek, borçlanma gücünüzü maksimize etmenizi sağlar. Ancak, borçlanma, seçilen kategori içindeki varlıklarla sınırlıdır."
+      },
+      "debtSwap": {
+        "actions": {
+          "borrowed": "Kullanılan",
+          "swapTo": "Değiştir",
+          "amount": "Miktar",
+          "select": "Seçin",
+          "title": "Borç Değişimi"
+        },
+        "overview": {
+          "title": "İşlem Genel Görünümü",
+          "borrowAPY": "Borç apy",
+          "borrowValueAfter": "Takastan sonra borç bakiyesi"
+        },
+        "button": {
+          "swap": "Değişim"
+        },
+        "title": "Swap Borç Pozisyonu",
+        "borrowBalance": "Borç bakiyesi",
+        "entryTips": "Bir tıklamayla ödünç aldığınız varlığı değiştirin, adımları ve ücretleri azaltın.",
+        "lpRiskWarning": "Takastan sonra düşük sağlık faktörü. Pozisyonunuz likidasyon riski taşımaktadır.",
+        "priceImpactTips": "Yüksek fiyat etkisi ({{lostValue}}). Bu rota, düşük likidite veya küçük sipariş boyutu nedeniyle daha fazla getirebilir.",
+        "lpDangerWarning": "Bu takas sonrası sağlık faktörünüz kritik derecede düşük olacak ve likidasyona yol açabilir. Lütfen farklı bir varlık seçin veya güvenli kalmak için takas miktarını azaltın.",
+        "maxLtvWarning": "Yeni borç pozisyonunu karşılamak için yetersiz teminat. Cüzdanın borç geçişi yapmak için geri kalan borç verme gücüne sahip olması gerekir."
+      },
+      "repayWithCollateral": {
+        "action": {
+          "title": "{{teminat}} ile geri ödeme yap"
+        },
+        "overview": {
+          "collateralValueAfter": "Geri ödeme sonrasında teminat bakiyesi",
+          "title": "İşlem Genel Bakışı",
+          "borrowValueAfter": "Geri ödenmiş borç bakiyesi"
+        },
+        "button": {
+          "repay": "Geri Ödeme"
+        },
+        "toRepay": "Beklenen geri ödeme miktarı",
+        "repayWith": "Geri ödenecek teminat",
+        "collateralNotEnough": "Teminat bakiyeniz seçilen tutardan daha düşük."
+      },
+      "hfTips": {
+        "more": "Daha fazlası",
+        "desc": "Eğer 1.0'ın altına düşerse, teminatınız tasfiye edilebilir."
+      },
+      "disableBorrowTip": {
+        "desc": "Temin yok: Borç almak için teminat olarak varlık sağlamanız gerekir.",
+        "noSupply": "Önce borçlanmayı sağlamak için varlıkları temin edin."
+      },
+      "type": {
+        "borrowed": "Ödünç Alınan",
+        "supplied": "Sağlanan"
+      },
+      "actions": {
+        "borrow": "Ödünç Al",
+        "swap": "Değiştir",
+        "supply": "Arz ",
+        "repay": "Geri Öde",
+        "withdraw": "Çekilmek"
+      },
+      "summary": {
+        "empty": {
+          "title": "Varlıklarınızla Faiz Kazanın",
+          "description": "AAVE tarafından desteklenmektedir. Güvenli ve sıfır ücrete sahip.",
+          "endDesc": "Henüz herhangi bir depozitonuz yok. Faiz kazanmaya başlamak için aşağıdaki önerilen varlıklara göz atın."
+        },
+        "eMode": "E-Modu",
+        "totalBorrowed": "Toplam Borçlanan",
+        "netWorth": "Net Worth",
+        "healthFactor": "Sağlık Faktörü",
+        "healthFactorTip": "Sağlık faktörü, pozisyonunuzun güvenliğini gösterir.",
+        "totalSupplied": "Toplam Sağlanan",
+        "netApy": "Net APY",
+        "healthy": "Sağlıklı",
+        "risky": "Risky",
+        "estDailyEarnings": "Günlük Tahmini Kazanç",
+        "ethCorrelatedTip": "ETH ile korelasyonlu varlıklar",
+        "lq": "Eğer 1'in altına düşerse, tasfiye tetiklenebilir.",
+        "more": "Daha fazla"
+      },
+      "market": {
+        "core": "Temel Pazar"
+      },
+      "accountActions": {
+        "borrow": "Ödünç Al",
+        "supply": "Tedari",
+        "both": "İkisi de"
+      },
+      "table": {
+        "collateral": "Teminat",
+        "actions": "Eylemler",
+        "token": "Token",
+        "myAssets": "Varlıklarım",
+        "type": "Türü"
+      },
+      "supplyList": {
+        "collapse": "Çöküş",
+        "more": "Daha fazla token temin etmek için"
+      },
+      "borrowList": {
+        "more": "Daha fazla borç alabileceğiniz tokenlar",
+        "collapse": "Çökmek"
+      },
+      "borrowApy": "Borç Alma APY",
+      "totalBorrow": "Toplam Borç",
+      "gotIt": "Anladım",
+      "totalBorrowed": "Toplam borç alınan",
+      "supplyBalance": "Solde Sağlama",
+      "supplyApy": "Sağlama APY",
+      "netApy": "Net APY",
+      "isolateTip": "Bu, izole bir piyasadır.",
+      "estDailyEarning": "Tahmini Günlük Kazanç",
+      "submitted": "gönderildi",
+      "supplied": "Temin edildi",
+      "borrowed": "Ödünç Alındı",
+      "netWorth": "Ağırlık Değeri",
+      "estNetApy": "Tahmini net APY",
+      "isolate": "izole edilmiş",
+      "title": "Borç Verme",
+      "totalSupply": "Toplam Arz",
+      "totalSupplied": "Toplam sağlanan",
+      "borrowBalance": "Borç Bakiyesi",
+      "noData": "Veri yok",
+      "disabled": "DEVRE Dışı",
+      "hfTitle": "Sağlık Faktörü",
+      "enterAmount": "Miktar Girin",
+      "selectMarket": "Piyasa Seçin",
+      "hf": "Sağlık faktörü",
+      "searchMarket": "Pazar Ara",
+      "selectChain": "Zincir Seçin",
+      "signFallback": {
+        "preExecFailedUseFullSign": "Simülasyon Başarısız. Bu işlem büyük olasılıkla AAVE hataları nedeniyle başarısız olacak."
+      }
+    },
+    "desktopSmallSwap": {
+      "failReason": {
+        "missingRequiredParams": "Eksik zorunlu parametreler",
+        "quoteUnavailable": "Teklif alınamadı",
+        "gasCostTooHigh": "Gas ücret limiti aşıldı",
+        "priceImpactTooHigh": "Yüksek fiyat etkisi",
+        "buildSwapTxsFailed": "Swap işlemleri oluşturulamadı",
+        "sendSwapTxFailed": "Swap işlemi gönderilemedi",
+        "transactionFailed": "İşlem başarısız",
+        "submitFailed": "İşlemler gönderilemedi",
+        "gasNotEnough": "Yetersiz Gas"
+      },
+      "stopTaskModal": {
+        "title": "Mevcut takasları durdur?",
+        "description": "Şimdi durdurursanız, kalan takaslar tamamlanmayacaktır. Tamamlanan takasların geri alınamayacağını lütfen unutmayın.",
+        "continueSwap": "Takasa devam et",
+        "stop": "Takası durdur"
+      },
+      "status": {
+        "pending": "Takas yapılıyor",
+        "idle": "Takas bekleniyor",
+        "success": "Takas başarılı"
+      },
+      "title": "Küçük Bakiyeleri Dönüştür",
+      "description": "Varlık listenizi basitleştirmek için düşük değerli tokenları gas tokenına dönüştürün!",
+      "receiveTitle": "Alacaksınız",
+      "expectedToReceive": "Beklenen alış",
+      "completedTitle": "Küçük Bakiyeler Dönüştürüldü!",
+      "done": "Tamamlandı",
+      "conversionProgress": "Dönüştürme ilerlemesi",
+      "slippageTolerance": "Kayma toleransı",
+      "singleTransactionGasLimit": "Tek İşlem Gas Limiti",
+      "startConvert": "Dönüştürmeyi başlat",
+      "unsupportedWalletType": "Yalnızca özel anahtar ve kurtarma cümlesi adresleri desteklenir.",
+      "stop": "Durdur",
+      "selectLowValueTokens": "Düşük Değerli Tokenları Seç",
+      "tokenColumn": "Token",
+      "amountColumn": "Miktar",
+      "valueColumn": "Değer",
+      "statusColumn": "Durum",
+      "noLowValueTokensFound": "Düşük değerli token bulunamadı",
+      "selectedTokens": "Seçili Tokenlar",
+      "totalValue": "Toplam değer",
+      "moreChains": "+{{count}} zincir",
+      "swapFailed": "Swap başarısız oldu, {{reason}}",
+      "completedTips": "Devam eden swap işlemi işlenmeye devam edecek",
+      "priceImpact": "Fiyat Etkisi Üst Limiti"
+    },
+    "manageBatchApprovals": {
+      "cols": {
+        "asset": "Varlık",
+        "revokeFrom": "İptal Et",
+        "gasFee": "Gas Ücreti"
+      },
+      "title": "Toplu İptal",
+      "stopTheRevokeProcess": "İptal işlemi durdurulsun mu?",
+      "leavingThisPageWillStopTheRevokeProcess": "Bu sayfadan ayrılırsanız iptal işlemi durdurulacaktır.",
+      "startRevoke": "İptali Başlat",
+      "continueRevoke": "Devam Et",
+      "pauseRevoke": "Duraklat",
+      "revokeCompleted": "Tamamlandı",
+      "canStillRevoke": "İptale Devam Et"
+    },
+    "manageApprovals": {
+      "tabs": {
+        "contracts": "Sözleşmelere Göre",
+        "assets": "Varlıklara Göre"
+      },
+      "ApprovalCardContractPopup": {
+        "allApprovals": "Tüm Onaylar",
+        "contractAddress": "Kontrat Adresi"
+      },
+      "ApprovalContractPopup": {
+        "approvedAssetsAmountAndBalance": "Onaylanan Varlık Tutarı ve Bakiye"
+      },
+      "ApprovalCardAssetPopup": {
+        "allApprovals": "Tüm Onaylar",
+        "myBalance": "Bakiyem"
+      },
+      "ApprovalAssetPopup": {
+        "approvedContractsAndAmount": "Onaylanan Sözleşmeler ve Miktar"
+      },
+      "EIP7702Panel": {
+        "unsupportedAddressType": "Desteklenmeyen Adres Türü",
+        "unsupportedAddressTypeDesc": "EIP-7702 devirlerini iptal etmek yalnızca private key veya seed phrase adresleri için desteklenmektedir",
+        "supportedChains": "Desteklenen Zincirler",
+        "delegatedAddressDesc": "Devredilen Adres",
+        "notMatched": "Eşleşmedi",
+        "noApprovals": "Onay yok"
+      },
+      "ListByAssets": {
+        "noApprovals": "Onay yok",
+        "notMatched": "Eşleşmedi"
+      },
+      "ListByContracts": {
+        "noApprovals": "İzin yok",
+        "notMatched": "Eşleşmedi"
+      },
+      "title": "Onaylar",
+      "revoke": "İptal Et",
+      "approvals": "onaylar",
+      "unselectAll": "Tüm Seçimleri Kaldır",
+      "selectAll": "Tümünü Seç"
     }
   },
   "component": {
@@ -3565,7 +4649,8 @@
         }
       },
       "searchInput": {
-        "placeholder": "İsme / Adrese göre ara"
+        "placeholder": "İsme / Adrese göre ara",
+        "placeholder1": "Token Adı / Adresi Ara"
       },
       "header": {
         "title": "Bir token seçin"
@@ -3575,11 +4660,11 @@
       "noMatchSuggestion": "{{ chainName }} üzerinde sözleşme adresini aramayı deneyin",
       "bridge": {
         "token": "Token",
-        "high": "Yüksek",
         "value": "Değer",
-        "low": "Düşük",
         "liquidity": "Likidite",
-        "liquidityTips": "Tarihi ticaret hacmi ne kadar yüksekse, köprünün başarılı olma olasılığı o kadar yüksektir."
+        "liquidityTips": "Tarihi ticaret hacmi ne kadar yüksekse, köprünün başarılı olma olasılığı o kadar yüksektir.",
+        "high": "Yüksek likidite",
+        "low": "Düşük likidite"
       },
       "hot": "Sıcak",
       "common": "Genel",
@@ -3669,12 +4754,23 @@
       "portfolio": "Portföy"
     },
     "DesktopSelectAccountList": {
-      "addAddresses": "Adres ekle"
+      "addAddresses": "Adres ekle",
+      "smallSwapDisabledTips": "Şu anda yalnızca özel anahtar ve kurtarma ifadesi adresleri desteklenmektedir."
     },
     "LpTokenTag": {
       "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",
       "description": "LP token’lar, varlıklarınızı yatırdığınız DeFi protokolleri tarafından verilmektedir. Bunlar, bu varlıkların kanıtı olarak hizmet eder, ancak değeri toplam bakiyenize dahil değildir.",
       "descriptionFor": "Bu, {{ protocolName }} için bir Likidite Sağlayıcı (LP) Token'dır."
+    },
+    "DesktopAccountSelector": {
+      "selectAddress": "Adres Seçin"
+    },
+    "SeedPhraseBackupAlert": {
+      "message": "Cüzdan Yedeklenmedi. Yedeklemeye Başla."
+    },
+    "UnknownTag": {
+      "label": "Bilinmeyen",
+      "tooltip": "Bilinmeyen token, lütfen kendi araştırmanızı yapın."
     }
   },
   "global": {
@@ -3711,7 +4807,9 @@
     "Nonce": "Nonce",
     "notSupportTesntnet": "Özel ağ için desteklenmiyor",
     "tryAgain": "Tekrar Dene",
-    "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan."
+    "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan.",
+    "collapse": "Daralt",
+    "Yes": "Evet"
   },
   "background": {
     "error": {
@@ -3745,7 +4843,7 @@
     "alias": {
       "HdKeyring": "Seed Phrase",
       "simpleKeyring": "Özel Anahtar",
-      "watchAddressKeyring": "Kişi"
+      "watchAddressKeyring": "Sadece İzle"
     },
     "keyring": {
       "onekey": {
@@ -3764,7 +4862,7 @@
     "KEYRING_TYPE_TEXT": {
       "HdKeyring": "Seed Phrase ile Oluşturuldu",
       "SimpleKeyring": "Özel Anahtarla İçe Aktarıldı",
-      "WatchAddressKeyring": "Kişi"
+      "WatchAddressKeyring": "Sadece İzle"
     },
     "IMPORTED_HD_KEYRING": "Seed Phrase ile İçe Aktarıldı",
     "SIGN_PERMISSION_OPTIONS": {

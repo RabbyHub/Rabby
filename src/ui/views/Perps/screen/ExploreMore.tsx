@@ -4,15 +4,29 @@ import { useRabbySelector } from '@/ui/store';
 import { PageHeader } from '@/ui/component';
 import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
 import { TokenImg } from '../components/TokenImg';
+import { getHyperliquidCoinLogoUrl } from '../utils';
 
 const Row: React.FC<{
   index: number;
   logoUrl: string;
   name: string;
+  displayName?: string;
+  quoteAsset?: string;
   leverage: number;
   volume: number;
   onClick: () => void;
-}> = ({ index, logoUrl, name, leverage, volume, onClick }) => {
+}> = ({
+  index,
+  logoUrl,
+  name,
+  displayName,
+  quoteAsset,
+  leverage,
+  volume,
+  onClick,
+}) => {
+  const base = displayName || name;
+  const quote = quoteAsset || 'USDC';
   return (
     <div
       className="flex items-center justify-between py-[12px] px-[16px] rounded-[8px] bg-r-neutral-card1 cursor-pointer
@@ -29,8 +43,9 @@ const Row: React.FC<{
         <div className="w-[20px] text-13 text-r-neutral-foot">{index}</div>
         <TokenImg size={28} logoUrl={logoUrl} />
         <div className="flex flex-col leading-[18px]">
-          <div className="text-15 text-r-neutral-title-1 font-medium">
-            {name} - USD
+          <div className="text-15 font-medium">
+            <span className="text-r-neutral-title-1">{base}</span>
+            <span className="text-r-neutral-foot">/{quote}</span>
           </div>
           <div className="text-12 text-r-neutral-foot">{leverage}x</div>
         </div>
@@ -69,10 +84,10 @@ export const ExploreMore: React.FC = () => {
             <Row
               key={m.name}
               index={i + 1}
-              logoUrl={
-                m.logoUrl || `https://app.hyperliquid.xyz/coins/${m.name}.svg`
-              }
+              logoUrl={m.logoUrl || getHyperliquidCoinLogoUrl(m.name)}
               name={m.name}
+              displayName={m.displayName}
+              quoteAsset={m.quoteAsset}
               leverage={m.maxLeverage}
               volume={Number(m.dayNtlVlm || 0)}
               onClick={() =>

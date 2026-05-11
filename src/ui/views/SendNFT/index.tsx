@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Form, message, Button } from 'antd';
-import { isValidAddress } from '@ethereumjs/util';
+import { isValidAddress, toChecksumAddress } from '@ethereumjs/util';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useRequest } from 'ahooks';
 import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
@@ -96,8 +96,7 @@ const SendNFT = () => {
   const chainInfo = useMemo(() => {
     return findChain({ enum: chain });
   }, [chain]);
-
-  const { openDirect, prefetch } = useMiniSigner({
+  const { instance, openDirect, prefetch } = useMiniSigner({
     account: currentAccount!,
     chainServerId: chainInfo?.serverId || '',
     autoResetGasStoreOnChainChange: true,
@@ -269,8 +268,8 @@ const SendNFT = () => {
                 ] as any[],
               } as const,
               [
-                currentAccount.address,
-                toAddress,
+                toChecksumAddress(currentAccount.address),
+                toChecksumAddress(toAddress),
                 nftItem.inner_id,
                 amount,
                 '0x',
@@ -286,7 +285,11 @@ const SendNFT = () => {
                   { type: 'uint256', name: 'tokenId' },
                 ] as any[],
               } as const,
-              [currentAccount.address, toAddress, nftItem.inner_id] as any[]
+              [
+                toChecksumAddress(currentAccount.address),
+                toChecksumAddress(toAddress),
+                nftItem.inner_id,
+              ] as any[]
             ),
       };
 
@@ -726,6 +729,7 @@ const SendNFT = () => {
                   <ShowMoreOnSend
                     chainServeId={chainInfo?.serverId}
                     open
+                    signatureInstance={instance}
                     // setOpen={setGasFeeOpen}
                   />
                 </div>
@@ -752,6 +756,7 @@ const SendNFT = () => {
             canSubmit={canSubmit}
             miniSignLoading={miniSignLoading}
             canUseDirectSubmitTx={canUseDirectSubmitTx}
+            signatureInstance={instance}
             onConfirm={() => {
               handleSubmit({
                 amount: form.getFieldValue('amount'),

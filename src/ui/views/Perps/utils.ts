@@ -1,88 +1,130 @@
 import { Account } from 'background/service/preference';
 import { MarketData } from '@/ui/models/perps';
-import { Meta, AssetCtx, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
-import { PerpTopToken } from '@rabby-wallet/rabby-api/dist/types';
-import { PERPS_MAX_NTL_VALUE, PERPS_POSITION_RISK_LEVEL } from './constants';
+import { Meta, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
+import { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  PERPS_MAX_NTL_VALUE,
+  PERPS_POSITION_RISK_LEVEL,
+  PerpsQuoteAsset,
+  COLLATERAL_TOKEN_TO_QUOTE,
+} from './constants';
 import { useWallet, WalletController } from '@/ui/utils';
 import { KEYRING_CLASS } from '@/constant';
 import { getPerpsSDK } from './sdkManager';
 
+export const getPxDecimals = (markPx: string) => {
+  const parts = markPx.split('.');
+  if (!parts[1]) return 2;
+  const decimalPart = parts[1];
+  return decimalPart.length;
+};
+
+/**
+ * Determine quote asset from Meta.collateralToken.
+ */
+export const getQuoteAssetFromMeta = (meta: Meta): PerpsQuoteAsset => {
+  return COLLATERAL_TOKEN_TO_QUOTE[meta.collateralToken] ?? 'USDC';
+};
+
+export const normalizeHyperliquidCoinForLogo = (coin: string) => {
+  if (!coin) {
+    return '';
+  }
+  // Keep km:* untouched, but drop k-prefix for meme perps like kPEPE -> PEPE.
+  if (coin.startsWith('k') && !coin.startsWith('km:')) {
+    return coin.slice(1);
+  }
+  return coin;
+};
+
+export const getHyperliquidCoinLogoUrl = (coin: string) => {
+  const iconKey = normalizeHyperliquidCoinForLogo(coin);
+  if (!iconKey) {
+    return '';
+  }
+  return `https://app.hyperliquid.xyz/coins/${iconKey}.svg`;
+};
+
 export const formatMarkData = (
-  marketData: [Meta, AssetCtx[]],
-  topAssets: PerpTopToken[]
+  allMetas: Meta[],
+  topAssets: PerpTopTokenV3[],
+  dexIdMap: Record<number, string>
 ): MarketData[] => {
   try {
-    if (!Array.isArray(marketData) || marketData.length < 2) {
-      console.error(
-        'Failed to format market data: marketData is not an array or has less than 2 items'
-      );
+    if (!Array.isArray(allMetas) || allMetas.length === 0) {
+      console.error('Failed to format market data: allMetas is empty');
       return [];
     }
 
-    const meta = marketData[0];
-    const metrics = marketData[1];
-    if (!meta || !Array.isArray(meta.universe) || !Array.isArray(metrics)) {
-      console.error(
-        'Failed to format market data: meta or metrics is not an array'
-      );
-      return [];
-    }
-
-    const marginTableMap: Record<number, MarginTable> = {};
-    if (Array.isArray(meta.marginTables)) {
-      for (const entry of meta.marginTables) {
-        const [id, table] = entry || [];
-        if (id != null) marginTableMap[id] = table;
+    // Build a lookup: dexId → { meta, marginTableMap, quoteAsset }
+    const dexLookup: Record<
+      string,
+      {
+        meta: Meta;
+        marginTableMap: Record<number, MarginTable>;
+        quoteAsset: PerpsQuoteAsset;
       }
-    }
+    > = {};
+
+    allMetas.forEach((meta, idx) => {
+      const dexId = dexIdMap[idx] ?? String(idx);
+      const marginTableMap: Record<number, MarginTable> = {};
+      if (Array.isArray(meta.marginTables)) {
+        for (const entry of meta.marginTables) {
+          const [id, table] = entry || [];
+          if (id != null) marginTableMap[id] = table;
+        }
+      }
+      dexLookup[dexId] = {
+        meta,
+        marginTableMap,
+        quoteAsset: getQuoteAssetFromMeta(meta),
+      };
+    });
 
     const result: MarketData[] = topAssets
       .map((topAsset) => {
-        const index = topAsset.id;
+        const index = topAsset.token_id;
+        const dexId = topAsset.dex_id ?? '';
+        const dexInfo = dexLookup[dexId] ?? dexLookup[''];
+        if (!dexInfo) return null;
+
+        const { meta, marginTableMap, quoteAsset } = dexInfo;
         const hlDataAsset = meta.universe[index];
+        if (!hlDataAsset || hlDataAsset.isDelisted) return null;
 
-        if (!hlDataAsset) return null;
-
-        if (hlDataAsset.isDelisted) return null;
-
-        const m = metrics[index] || {};
-        const table = marginTableMap[hlDataAsset?.marginTableId];
+        const table = marginTableMap[hlDataAsset.marginTableId];
         const tiers = table?.marginTiers || [];
-        const firstTier =
-          Array.isArray(tiers) && tiers.length > 0 ? tiers[0] : undefined;
-        const nextTier =
-          Array.isArray(tiers) && tiers.length > 1 ? tiers[1] : undefined;
+        const firstTier = tiers[0];
+        const nextTier = tiers[1];
 
         const item: MarketData = {
           index,
+          dexId: topAsset.dex_id ?? '',
           name: String(topAsset.name ?? ''),
-          // 取保证金表第一档的最大杠杆；若无表则回退 asset.maxLeverage
+          quoteAsset,
+          displayName: topAsset.display_name || topAsset.name,
+          category: topAsset.category || '',
           maxLeverage: Number(
             firstTier?.maxLeverage ?? hlDataAsset?.maxLeverage
           ),
           minLeverage: 1,
-          // 第一档的最大名义值 = 下一档的 lowerBound；若不存在下一档则为兜底1000000
           maxUsdValueSize: String(nextTier?.lowerBound ?? PERPS_MAX_NTL_VALUE),
           szDecimals: Number(hlDataAsset.szDecimals ?? 0),
-          // 根据 markPx 推断价格精度
-          pxDecimals: (() => {
-            const markPx = m?.markPx;
-            if (!markPx) return 2;
-            const parts = markPx.split('.');
-            return parts.length > 1 ? parts[1].length : 2;
-          })(),
-          dayBaseVlm: String(m?.dayBaseVlm ?? '0'),
-          dayNtlVlm: String(m?.dayNtlVlm ?? '0'),
-          funding: String(m?.funding ?? '0'),
-          markPx: String(m?.markPx ?? ''),
-          midPx: String(m?.midPx ?? ''),
-          openInterest: String(m?.openInterest ?? '0'),
-          oraclePx: String(m?.oraclePx ?? ''),
-          premium: String(m?.premium ?? '0'),
-          prevDayPx: String(m?.prevDayPx ?? ''),
+          onlyIsolated: hlDataAsset.onlyIsolated,
+          // Price fields initialized empty; filled by WebSocket AssetCtx updates.
+          pxDecimals: 2,
+          dayBaseVlm: '0',
+          dayNtlVlm: '0',
+          funding: '0',
+          markPx: '',
+          midPx: '',
+          openInterest: '0',
+          oraclePx: '',
+          premium: '0',
+          prevDayPx: '',
           logoUrl:
-            topAsset.full_logo_url ||
-            `https://app.hyperliquid.xyz/coins/${topAsset.name}.svg`,
+            topAsset.full_logo_url || getHyperliquidCoinLogoUrl(topAsset.name),
         };
         return item;
       })
@@ -108,6 +150,13 @@ export const calLiquidationPrice = (
   // const nationalValue = margin * leverage;
   const maintenance_margin_required = nationalValue * MMR;
   const margin_available = margin - maintenance_margin_required;
+  // When margin_available <= 0 (account hasn't loaded, or an abstraction mode
+  // we haven't mapped surfaces 0 collateral) the formula below produces a
+  // sign-inverted price — short below entry, long above. Bail out so callers
+  // hide the value rather than show a misleading number.
+  if (!Number.isFinite(margin_available) || margin_available <= 0) {
+    return 0;
+  }
   const liq_price =
     markPrice - (side * margin_available) / positionSize / (1 - MMR * side);
   // liq_price = price - side * margin_available / position_size / (1 - l * side)
@@ -171,6 +220,8 @@ export const validatePriceInput = (
   value: string,
   szDecimals: number
 ): boolean => {
+  if (!/^[0-9.]*$/.test(value) || value.split('.').length > 2) return false;
+
   if (!value || value === '0' || value === '0.') return true;
 
   // Check if it's an integer (no decimal point or ends with decimal point)
@@ -194,6 +245,15 @@ export const validatePriceInput = (
   }
 
   return true;
+};
+
+export const validateTradeAmount = (value: string, szDecimals: number) => {
+  if (!value || value === '0' || value === '0.') return true;
+};
+
+export const formatTradeAmount = (value: string, szDecimals: number) => {
+  if (!value || value === '0' || value === '0.') return '0';
+  return value;
 };
 
 /**
@@ -263,20 +323,13 @@ export const formatTpOrSlPrice = (
     return integerPart;
   }
 
-  // Some digits are in decimal part
+  // Calculate remaining digits allowed in decimal part
+  // Note: every digit in decimalPart counts toward allDigits length
   const remainingDigits = 5 - integerPartLength;
 
-  // Keep leading zeros but count significant digits after them
-  const leadingZerosInDecimal = decimalPart.match(/^0*/)?.[0] || '';
-  const sigDigitsInDecimal = decimalPart.slice(leadingZerosInDecimal.length);
-  const desiredSig = Math.min(remainingDigits, sigDigitsInDecimal.length);
-  const takenSig = sigDigitsInDecimal.slice(0, desiredSig);
-
-  // Compose decimal respecting maxDecimals
-  let composedDecimal = (leadingZerosInDecimal + takenSig).slice(
-    0,
-    maxDecimals
-  );
+  // Limit decimal part to the minimum of remainingDigits and maxDecimals
+  const maxDecimalLength = Math.min(remainingDigits, maxDecimals);
+  let composedDecimal = decimalPart.slice(0, maxDecimalLength);
 
   // Remove trailing zeros
   composedDecimal = composedDecimal.replace(/0+$/, '');

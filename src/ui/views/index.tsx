@@ -17,9 +17,13 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useMount } from 'react-use';
 import { useMemoizedFn } from 'ahooks';
 import { useThemeModeOnMain } from '../hooks/usePreference';
-import { useSubscribeCurrentAccountChanged } from '../hooks/backgroundState/useAccount';
+import {
+  useCurrentAccount,
+  useSubscribeCurrentAccountChanged,
+} from '../hooks/backgroundState/useAccount';
 import { ForgotPassword } from './ForgotPassword/ForgotPassword';
 import { useSyncCurrentAccount } from '../utils/withAccountChange';
+import { useSyncDbHistory } from '@/db/hooks/history';
 const UiType = getUiType();
 const AsyncMainRoute = lazy(() =>
   UiType.isDesktop ? import('./DesktopRoute') : import('./MainRoute')
@@ -72,6 +76,34 @@ const useAutoLock = () => {
       eventBus.removeEventListener(EVENTS.LOCK_WALLET, listener);
     };
   }, [listener]);
+
+  const handleLockShortcut = useMemoizedFn((event: KeyboardEvent) => {
+    if (!(UiType.isPop || UiType.isTab || UiType.isDesktop)) return;
+    if (event.repeat) return;
+    const isLockKey = event.key?.toLowerCase() === 'l' || event.code === 'KeyL';
+    if (!isLockKey) return;
+    if (!event.metaKey && !event.ctrlKey) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    wallet.lockWallet();
+  });
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleLockShortcut, true);
+    return () => {
+      window.removeEventListener('keydown', handleLockShortcut, true);
+    };
+  }, [handleLockShortcut]);
+};
+
+const SyncHook = () => {
+  const account = useCurrentAccount();
+  useSyncDbHistory({
+    account,
+  });
+
+  return null;
 };
 
 const Main = () => {
@@ -100,6 +132,8 @@ const Main = () => {
       <Suspense fallback={null}>
         <AsyncMainRoute />
       </Suspense>
+
+      <SyncHook />
     </>
   );
 };

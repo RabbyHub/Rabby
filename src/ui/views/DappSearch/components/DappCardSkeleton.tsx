@@ -22,6 +22,7 @@ export const DappCardSkeleton = () => {
         <div className="flex items-center gap-[12px]">
           <Skeleton.Avatar
             active={true}
+            size={32}
             className="bg-r-neutral-card3, w-[32px] h-[32px]"
           ></Skeleton.Avatar>
           <div className="min-w-0">

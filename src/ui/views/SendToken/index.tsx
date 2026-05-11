@@ -16,7 +16,12 @@ import { useAsyncFn, usePrevious } from 'react-use';
 import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
-import { isValidAddress, intToHex, zeroAddress } from '@ethereumjs/util';
+import {
+  isValidAddress,
+  intToHex,
+  zeroAddress,
+  toChecksumAddress,
+} from '@ethereumjs/util';
 import { globalSupportCexList } from '@/ui/models/exchange';
 
 import {
@@ -55,6 +60,8 @@ import { Chain } from '@debank/common';
 import {
   checkIfTokenBalanceEnough,
   customTestnetTokenToTokenItem,
+  getChainDefaultToken,
+  tokenAmountBn,
 } from '@/ui/utils/token';
 import {
   GasLevelType,
@@ -90,12 +97,22 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 // import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
 import { ChainSelectorInSend } from './components/ChainSelectorInSend';
+import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
+import { resolveTempoDefaultTokenId } from '@/utils/tempo';
+import {
+  FormAmountMode,
+  FormValuesOnSubmit,
+  createAmountComparer,
+  shouldIgnoreAmountChangeInMaxMode,
+} from '@/ui/utils/form';
+import { normalizeInputNumber } from '@/constant/regexp';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -137,6 +154,11 @@ const DEFAULT_TOKEN: TokenItem = {
 type FormSendToken = {
   to: string;
   amount: string;
+};
+
+type SendTopUpSnapshot = {
+  amount: string;
+  amountMode?: FormAmountMode;
 };
 
 function formatAmountString(
@@ -208,7 +230,10 @@ const SendToken = () => {
   const wallet = useWallet();
 
   // UI States
-  const [reserveGasOpen, setReserveGasOpen] = useState(false);
+  const [
+    /** @deprecated */ reserveGasOpen,
+    /** @deprecated */ setReserveGasOpen,
+  ] = useState(false);
   const [refreshId, setRefreshId] = useState(0);
 
   // Core States
@@ -225,12 +250,6 @@ const SendToken = () => {
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
-
-  const { openDirect, prefetch } = useMiniSigner({
-    account: currentAccount!,
-    chainServerId: chainItem?.serverId,
-    autoResetGasStoreOnChainChange: true,
-  });
   const [currentToken, setCurrentToken] = useState<TokenItem | null>(
     DEFAULT_TOKEN
   );
@@ -241,7 +260,7 @@ const SendToken = () => {
   } | null>(null);
 
   const [inited, setInited] = useState(false);
-  const [initLoading, setInitLoading] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState<string | null>(null);
@@ -254,6 +273,8 @@ const SendToken = () => {
         chainId: number;
         nonce: number;
       };
+      fromGasAccountRedirect?: boolean;
+      topUpSnapshot?: SendTopUpSnapshot;
     }) => {
       await wallet.setPageStateCache({
         path: '/send-token',
@@ -289,6 +310,53 @@ const SendToken = () => {
   const cancelClickedMax = useCallback(() => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: false }));
   }, []);
+
+  const topUpFormValuesRef = useRef(
+    new FormValuesOnSubmit<SendTopUpSnapshot>({
+      comparers: {
+        amount: createAmountComparer<string>(),
+      },
+    })
+  );
+  const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
+  const depositFlowActive = useGasAccountDepositFlowActive();
+  const buildTopUpSnapshot = useCallback(
+    (): SendTopUpSnapshot => ({
+      amount: form.getFieldValue('amount') || '',
+      amountMode: clickedMax ? 'max' : 'exact',
+    }),
+    [clickedMax, form]
+  );
+  const { instance, openDirect, prefetch, close: closeSign } = useMiniSigner({
+    account: currentAccount!,
+    chainServerId: chainItem?.serverId,
+    autoResetGasStoreOnChainChange: true,
+  });
+  const consumeTopUpResumeGuard = useCallback(() => {
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return false;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+
+    if (comparison.isChanged && !shouldIgnore) {
+      closeSign();
+      return true;
+    }
+
+    return false;
+  }, [buildTopUpSnapshot, closeSign]);
 
   const handleReserveGasClose = useCallback(() => {
     setReserveGasOpen(false);
@@ -345,13 +413,22 @@ const SendToken = () => {
         };
       }
 
+      // 当 token 还在加载时，不执行检查，避免用不完整数据判断导致错误闪现
+      if (initLoading) {
+        return {
+          disable: false,
+          cexId: '',
+          reason: '',
+          shortReason: '',
+        };
+      }
+
       const toCexId = addressDesc?.cex?.id;
       const isSupportCEX = globalSupportCexList.find(
         (cex) => cex.id === toCexId
       );
       if (toCexId && isSupportCEX) {
-        const cex_ids =
-          token.cex_ids || token.identity?.cex_list?.map((item) => item.id);
+        const cex_ids = getCexIds(token);
         const noSupportToken = cex_ids?.every?.(
           (id) => id.toLowerCase() !== toCexId.toLowerCase()
         );
@@ -400,7 +477,7 @@ const SendToken = () => {
         shortReason: '',
       };
     },
-    [addressDesc, t]
+    [addressDesc, initLoading, t]
   );
 
   const disableChainCheck: TDisableCheckChainFn = useCallback(
@@ -581,7 +658,9 @@ const SendToken = () => {
           ] as any[],
         } as const,
         [
-          toAddress || '0x0000000000000000000000000000000000000000',
+          toChecksumAddress(
+            toAddress || '0x0000000000000000000000000000000000000000'
+          ),
           sendValue.toFixed(0),
         ] as any[],
       ] as const;
@@ -630,11 +709,37 @@ const SendToken = () => {
     return fetchGasList();
   }, [fetchGasList]);
 
-  useEffect(() => {
-    if (clickedMax) {
-      loadGasList();
+  const loadGasListAndResolve = useCallback(async () => {
+    const result = {
+      isValidArray: true,
+      gasList: [] as GasLevel[],
+      instantGasLevel: null as null | GasLevel,
+      normalGasLevel: null as null | GasLevel,
+    };
+    let reqResult: GasLevel[] = [];
+    try {
+      reqResult = await loadGasList();
+      result.isValidArray = Array.isArray(reqResult);
+    } catch (err) {
+      result.isValidArray = false;
+      console.error(err);
+      // Sentry.captureException(err);
+    } finally {
+      result.gasList = result.isValidArray ? reqResult : [];
+      result.instantGasLevel = findInstanceLevel(result.gasList) || null;
+      result.normalGasLevel =
+        result.gasList.find((item) => item.level === 'normal') || null;
     }
-  }, [clickedMax, loadGasList]);
+
+    return result;
+  }, [loadGasList]);
+
+  useEffect(() => {
+    loadGasListAndResolve().then((result) => {
+      result.isValidArray &&
+        setSelectedGasLevel(result.normalGasLevel || result.instantGasLevel);
+    });
+  }, [loadGasListAndResolve]);
 
   const fetchExtraGasFees = useCallback(
     async (input: { gasPrice?: number }) => {
@@ -662,7 +767,9 @@ const SendToken = () => {
         return doReturn(0, 0);
 
       const {
-        gasPrice = (await loadGasList().then(findInstanceLevel))?.price || 0,
+        gasPrice = (
+          await loadGasListAndResolve().then((result) => result.instantGasLevel)
+        )?.price || 0,
       } = input;
 
       const l1GasFee = await wallet.fetchEstimatedL1Fee(
@@ -687,7 +794,7 @@ const SendToken = () => {
     },
     [
       currentAccount?.address,
-      loadGasList,
+      loadGasListAndResolve,
       chainItem?.id,
       currentToken,
       wallet,
@@ -744,6 +851,7 @@ const SendToken = () => {
       let shouldForceSignPage = !!forceSignPage;
 
       if (canUseDirectSubmitTx && !shouldForceSignPage) {
+        consumeTopUpResumeGuard();
         setMiniSignLoading(true);
         try {
           // no need to wait
@@ -759,6 +867,19 @@ const SendToken = () => {
               trigger: filterRbiSource('sendToken', rbisource) && rbisource,
             },
             getContainer,
+            onRedirectToDeposit: () => {
+              topUpFormValuesRef.current.save(buildTopUpSnapshot());
+              setAwaitingTopUpResume(true);
+              persistPageStateCache({
+                fromGasAccountRedirect: true,
+                topUpSnapshot: buildTopUpSnapshot(),
+              }).catch((error) => {
+                console.error(
+                  '[SendToken] persist page state before gas account deposit failed',
+                  error
+                );
+              });
+            },
           });
 
           handleFormValuesChange(
@@ -810,7 +931,7 @@ const SendToken = () => {
           const code = await wallet.requestETHRpc<any>(
             {
               method: 'eth_getCode',
-              params: [toAddress, 'latest'],
+              params: [toChecksumAddress(toAddress), 'latest'],
             },
             chain.serverId
           );
@@ -931,7 +1052,7 @@ const SendToken = () => {
 
   const initialFormValues = {
     to: toAddress,
-    amount: paramAmount || '',
+    amount: normalizeInputNumber(paramAmount) || '',
   };
   const amount = useSyncStaleValue(form.getFieldValue('amount'), 300);
   const address = form.getFieldValue('to');
@@ -966,7 +1087,7 @@ const SendToken = () => {
             const code = await wallet.requestETHRpc<any>(
               {
                 method: 'eth_getCode',
-                params: [toAddress, 'latest'],
+                params: [toChecksumAddress(toAddress), 'latest'],
               },
               chain.serverId
             );
@@ -1018,6 +1139,9 @@ const SendToken = () => {
           );
 
         if (isCurrent) {
+          if (awaitingTopUpResume || depositFlowActive) {
+            return;
+          }
           prefetch({
             txs: [params as Tx],
             ga: {
@@ -1034,6 +1158,9 @@ const SendToken = () => {
         }
       } else {
         if (isCurrent) {
+          if (awaitingTopUpResume || depositFlowActive) {
+            return;
+          }
           prefetch({
             txs: [],
           });
@@ -1044,9 +1171,6 @@ const SendToken = () => {
     setMiniTx();
     return () => {
       isCurrent = false;
-      prefetch({
-        txs: [],
-      });
     };
   }, [
     refreshId,
@@ -1070,7 +1194,17 @@ const SendToken = () => {
     currentToken,
     prefetch,
     rbisource,
+    awaitingTopUpResume,
+    depositFlowActive,
   ]);
+
+  useEffect(() => {
+    return () => {
+      prefetch({
+        txs: [],
+      });
+    };
+  }, [prefetch]);
 
   const handleMiniSignResolve = useCallback(() => {
     return new Promise<void>((resolve, reject) => {
@@ -1117,6 +1251,19 @@ const SendToken = () => {
     }
   });
 
+  const patchFormValues = useCallback(
+    (changedValues: Partial<FormSendToken>) => {
+      const newValues = {
+        // amount,
+        ...changedValues,
+        to: changedValues.to || form.getFieldValue('to') || '',
+      };
+      form.setFieldsValue(newValues);
+      setCacheAmount(newValues.amount || '0');
+    },
+    [form]
+  );
+
   const handleFormValuesChange = useCallback(
     async (
       changedValues: null | Partial<FormSendToken>,
@@ -1136,8 +1283,8 @@ const SendToken = () => {
 
       const targetToken = token || currentToken;
 
-      let resultAmount = amount;
-      if (!/^\d*(\.\d*)?$/.test(amount)) {
+      let resultAmount = normalizeInputNumber(amount);
+      if (resultAmount === null) {
         resultAmount = cacheAmount;
       }
 
@@ -1179,10 +1326,10 @@ const SendToken = () => {
           const percentValue = getSliderPercent(resultAmount, {
             token: targetToken,
           });
-          setSliderPercentValue(percentValue);
+          // setSliderPercentValue(percentValue);
         }
       } else {
-        setSliderPercentValue(0);
+        // setSliderPercentValue(0);
       }
 
       if (updateHistoryState) {
@@ -1278,10 +1425,11 @@ const SendToken = () => {
             params: [
               {
                 from: currentAddress,
-                to:
+                to: toChecksumAddress(
                   toAddress && isValidAddress(toAddress)
                     ? toAddress
-                    : zeroAddress(),
+                    : zeroAddress()
+                ),
                 gasPrice: intToHex(0),
                 value: intToHex(0),
               },
@@ -1308,18 +1456,27 @@ const SendToken = () => {
       const chain = findChain({
         serverId: chainId,
       });
+      const tokenId = resolveTempoDefaultTokenId({
+        chainServerId: chainId,
+        tokenId: id,
+        nativeTokenId: chain?.nativeTokenAddress,
+      });
       let result: TokenItem | null = null;
       if (chain?.isTestnet) {
         const res = await wallet.getCustomTestnetToken({
           address: currentAddress,
           chainId: chain.id,
-          tokenId: id,
+          tokenId,
         });
         if (res) {
           result = customTestnetTokenToTokenItem(res);
         }
       } else {
-        result = await wallet.openapi.getToken(currentAddress, chainId, id);
+        result = await wallet.openapi.getToken(
+          currentAddress,
+          chainId,
+          tokenId
+        );
       }
       if (result) {
         estimateGasOnChain({
@@ -1469,7 +1626,9 @@ const SendToken = () => {
 
       const {
         gasLevel = selectedGasLevel ||
-          (await loadGasList().then(findInstanceLevel)),
+          (await loadGasListAndResolve().then(
+            (result) => result.instantGasLevel
+          )),
       } = input || {};
       const needReserveGasOnSendToken = !!gasLevel && gasLevel?.price > 0;
 
@@ -1530,7 +1689,7 @@ const SendToken = () => {
       isEstimatingGas,
       currentToken,
       selectedGasLevel,
-      loadGasList,
+      loadGasListAndResolve,
       couldReserveGas,
       form,
       handleFormValuesChange,
@@ -1544,7 +1703,7 @@ const SendToken = () => {
       fetchExtraGasFees,
     ]
   );
-  const [sliderPercentValue, setSliderPercentValue] = useState(0);
+  // const [sliderPercentValue, setSliderPercentValue] = useState(0);
   // const onSliderValueChangeTo100 = useCallback(
   //   debounce((value: number) => {
   //     if (value !== 100) return;
@@ -1558,29 +1717,55 @@ const SendToken = () => {
       handleReserveGasClose();
       const gasLevel = gl
         ? gl
-        : await loadGasList().then(
-            (res) =>
-              res.find((item) => item.level === 'normal') ||
-              findInstanceLevel(res)
+        : await loadGasListAndResolve().then(
+            (result) => result.normalGasLevel || result.instantGasLevel
           );
 
       if (gasLevel) {
         setSelectedGasLevel(gasLevel);
+        handleMaxInfoChanged({ gasLevel }, { updateSliderValue: false });
+      } else {
+        setReserveGasOpen(false);
       }
-      handleMaxInfoChanged({ gasLevel }, { updateSliderValue: false });
     },
-    [handleReserveGasClose, handleMaxInfoChanged, loadGasList]
+    [handleReserveGasClose, handleMaxInfoChanged, loadGasListAndResolve]
   );
+
+  const handleSlider100 = useCallback(async () => {
+    if (currentToken && couldReserveGas) {
+      if (gasList) {
+        const gasLevel = gasList.find((e) => e.level === 'fast');
+        if (gasLevel) {
+          setSelectedGasLevel(gasLevel);
+          handleMaxInfoChanged({ gasLevel });
+        } else {
+          patchFormValues({ amount: tokenAmountBn(currentToken).toString(10) });
+        }
+      } else {
+        patchFormValues({ amount: tokenAmountBn(currentToken).toString(10) });
+      }
+    } else if (currentToken) {
+      patchFormValues({ amount: tokenAmountBn(currentToken).toString(10) });
+    }
+  }, [
+    currentToken,
+    couldReserveGas,
+    patchFormValues,
+
+    handleMaxInfoChanged,
+    gasList,
+  ]);
 
   const handleClickMaxButton = useCallback(async () => {
     setSendMaxInfo((prev) => ({ ...prev, clickedMax: true }));
 
-    if (couldReserveGas) {
-      setReserveGasOpen(true);
-    } else {
-      handleMaxInfoChanged(undefined, { updateSliderValue: false });
-    }
-  }, [couldReserveGas, handleMaxInfoChanged]);
+    handleSlider100();
+    // if (couldReserveGas) {
+    //   setReserveGasOpen(true);
+    // } else {
+    //   handleMaxInfoChanged(undefined, { updateSliderValue: false });
+    // }
+  }, [handleSlider100]);
 
   const handleClickBack = () => {
     const from = (history.location.state as any)?.from;
@@ -1760,8 +1945,9 @@ const SendToken = () => {
         let nativeToken: TokenItem | null = null;
         if (chain) {
           setChain(chain.enum);
+          const defaultToken = getChainDefaultToken(chain.enum);
           nativeToken = await loadCurrentToken(
-            chain.nativeTokenAddress,
+            defaultToken.id,
             chain.serverId,
             account.address
           );
@@ -1779,6 +1965,13 @@ const SendToken = () => {
           const cache = await wallet.getPageStateCache();
 
           if (cache?.path === history.location.pathname) {
+            if (
+              cache.states?.fromGasAccountRedirect &&
+              cache.states?.topUpSnapshot
+            ) {
+              topUpFormValuesRef.current.save(cache.states.topUpSnapshot);
+              setAwaitingTopUpResume(true);
+            }
             if (cache.states.values) {
               form.setFieldsValue(cache.states.values);
               handleFormValuesChange(
@@ -1844,6 +2037,34 @@ const SendToken = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inited, currentAccount?.address]);
+
+  useEffect(() => {
+    if (!awaitingTopUpResume) {
+      return;
+    }
+
+    const snapshot = topUpFormValuesRef.current.getSnapshot();
+    if (!snapshot) {
+      setAwaitingTopUpResume(false);
+      return;
+    }
+
+    const currentValues = buildTopUpSnapshot();
+    const comparison = topUpFormValuesRef.current.compare(currentValues);
+    const shouldIgnore = shouldIgnoreAmountChangeInMaxMode(
+      comparison,
+      snapshot,
+      currentValues
+    );
+
+    if (!comparison.isChanged || shouldIgnore) {
+      return;
+    }
+
+    topUpFormValuesRef.current.clear();
+    setAwaitingTopUpResume(false);
+    closeSign();
+  }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   useEffect(() => {
     init();
@@ -1923,7 +2144,7 @@ const SendToken = () => {
           rightSlot={
             isTab || isDesktop ? null : (
               <div
-                className="text-r-neutral-title1 cursor-pointer absolute right-0"
+                className="text-r-neutral-title1 cursor-pointer absolute right-0 hit-slop-8"
                 onClick={() => {
                   // openInternalPageInTab(`send-token${history.location.search}`);
                   wallet.openInDesktop(
@@ -2083,7 +2304,6 @@ const SendToken = () => {
                       onChange={handleAmountChange}
                       onTokenChange={handleCurrentTokenChange}
                       // chainId={chainItem.serverId}
-                      excludeTokens={[]}
                       initLoading={initLoading}
                       disableItemCheck={disableItemCheck}
                       balanceNumText={balanceNumText}
@@ -2111,6 +2331,7 @@ const SendToken = () => {
               <ShowMoreOnSend
                 chainServeId={chainItem?.serverId}
                 open
+                signatureInstance={instance}
                 // setOpen={setGasFeeOpen}
               />
             ) : null}
@@ -2141,6 +2362,7 @@ const SendToken = () => {
             canSubmit={canSubmit}
             miniSignLoading={miniSignLoading}
             canUseDirectSubmitTx={canUseDirectSubmitTx}
+            signatureInstance={instance}
             onConfirm={async () => {
               await handleSubmit({
                 to: form.getFieldValue('to'),

@@ -1,5 +1,5 @@
 import React from 'react';
-import { KEYRING_TYPE } from '@/constant';
+import { EVENTS, KEYRING_TYPE } from '@/constant';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useWallet } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
@@ -11,6 +11,7 @@ import { useAsyncRetry } from 'react-use';
 import { VariableSizeGrid } from 'react-window';
 import { Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
+import eventBus from '@/eventBus';
 
 export const EIP7702_REVOKE_SUPPORTED_CHAINS = [
   CHAINS_ENUM.ETH,
@@ -19,6 +20,7 @@ export const EIP7702_REVOKE_SUPPORTED_CHAINS = [
   CHAINS_ENUM.BASE,
   CHAINS_ENUM.ARBITRUM,
   CHAINS_ENUM.SCRL,
+  CHAINS_ENUM.POLYGON,
   'BERA' as CHAINS_ENUM,
   'UNI' as CHAINS_ENUM,
   'INK' as CHAINS_ENUM,
@@ -190,6 +192,13 @@ export const useEIP7702ApprovalsQuery = ({
     await wallet.revokeEIP7702({
       chainList: selectedRows?.map((e) => e.chain),
     });
+
+    // Listen for transaction completion to refresh delegation status
+    const handleTxReload = () => {
+      retry();
+      eventBus.removeEventListener(EVENTS.RELOAD_TX, handleTxReload);
+    };
+    eventBus.addEventListener(EVENTS.RELOAD_TX, handleTxReload);
 
     clearState();
   };

@@ -12,12 +12,13 @@ import { debounce, flatten } from 'lodash';
 import styled from 'styled-components';
 import clsx from 'clsx';
 
-import type { Input as AntdInput } from 'antd';
+import type { Input as AntdInput, InputRef } from 'antd';
 
 import { isSameAddress, useAlias, useCexId, useWallet } from 'ui/utils';
 
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { resolveEnsAddressByName } from '@/ui/utils/ens';
 import { AccountList } from './AccountList';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
@@ -90,7 +91,7 @@ export const EnterAddress = ({
     whitelist: s.whitelist.whitelist,
   }));
 
-  const inputRef = useRef<AntdInput>(null);
+  const inputRef = useRef<InputRef>(null);
 
   const [inputAddress, setInputAddress] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
@@ -181,7 +182,7 @@ export const EnterAddress = ({
         setTags([]);
         if (!isValidAddress(address)) {
           try {
-            const result = await wallet.openapi.getEnsAddressByName(address);
+            const result = await resolveEnsAddressByName(address, wallet);
             if (result && result.addr) {
               setEnsResult(result);
               // setIsValidAddr(true);

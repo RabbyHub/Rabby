@@ -2,8 +2,7 @@ import React, { useCallback } from 'react';
 import { TCell, TRow } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import IconUnknown from '@/ui/assets/token-default.svg';
-import { Image } from 'antd';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { Image, Tooltip } from 'antd';
 import { findChain } from '@/utils/chain';
 import { useHistory } from 'react-router-dom';
 import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
@@ -14,6 +13,7 @@ import { isNil } from 'lodash';
 import clsx from 'clsx';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from './components/LpTokenTag';
+import { UnknownTag } from '@/ui/component';
 
 const PADDING = 8;
 
@@ -21,7 +21,8 @@ const MAINNET_WIDTH_MAP = {
   token: 360 - PADDING,
   price: 280,
   amount: 280,
-  usdValue: 'auto', //136 - PADDING,
+  usdValue: 118,
+  // usdValue: 'auto', //136 - PADDING,
 };
 
 export interface Props {
@@ -86,7 +87,7 @@ export const TokenItemAsset: React.FC<Props> = ({
 
   return (
     <TCell
-      className="py-8 flex gap-10 items-center overflow-hidden"
+      className="py-8 flex gap-10 items-center overflow-hidden flex-1"
       style={{
         width: MAINNET_WIDTH_MAP['token'],
       }}
@@ -99,19 +100,23 @@ export const TokenItemAsset: React.FC<Props> = ({
           fallback={IconUnknown}
           preview={false}
         />
-        <TooltipWithMagnetArrow
+        <Tooltip
           title={chain?.name}
-          className="rectangle w-[max-content]"
+          overlayClassName="rectangle"
+          overlayStyle={{
+            padding: 0,
+          }}
+          mouseEnterDelay={0}
         >
           <img
             className="w-14 h-14 absolute right-[-4px] bottom-[-4px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={item.chain}
           />
-        </TooltipWithMagnetArrow>
+        </Tooltip>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
-        <div className="flex items-center gap-4 max-w-[190px]">
+        <div className="flex items-center max-w-[190px] min-w-0">
           <DesktopTokenLabel
             token={{ ...item, id: item._tokenId }}
             isNft={false}
@@ -121,8 +126,14 @@ export const TokenItemAsset: React.FC<Props> = ({
               hover:text-r-blue-default hover:underline 
             `}
           />
+          {isNil(item.is_core) && (
+            <UnknownTag className="ml-12 !bg-r-neutral-line flex-shrink-0" />
+          )}
           {isLpToken(item) && (
-            <LpTokenTag protocolName={item.protocol_id || ''} />
+            <LpTokenTag
+              iconClassName="ml-4 inline-flex flex-shrink-0"
+              protocolName={item.protocol_id || ''}
+            />
           )}
         </div>
         {!disableSwap && (
@@ -166,16 +177,20 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
           fallback={IconUnknown}
           preview={false}
         />
-        <TooltipWithMagnetArrow
+        <Tooltip
           title={chain?.name}
-          className="rectangle w-[max-content]"
+          overlayClassName="rectangle"
+          overlayStyle={{
+            padding: 0,
+          }}
+          mouseEnterDelay={0}
         >
           <img
             className="w-14 h-14 absolute right-[-4px] bottom-[-4px] rounded-full"
             src={chain?.logo || IconUnknown}
             alt={chain?.name}
           />
-        </TooltipWithMagnetArrow>
+        </Tooltip>
       </div>
       <div className="flex flex-1 flex-row items-center gap-[12px] overflow-hidden">
         <DesktopTokenLabel
@@ -216,7 +231,7 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
 const TokenItemAmount: React.FC<Props> = ({ item }) => {
   return (
     <TCell
-      className="py-8 text-r-neutral-title1 text-14 truncate"
+      className="py-8 text-r-neutral-title1 text-14 truncate flex-1"
       style={{
         width: MAINNET_WIDTH_MAP['amount'],
       }}
@@ -238,7 +253,7 @@ const TokenItemAmount: React.FC<Props> = ({ item }) => {
 const TokenItemPrice: React.FC<Props> = ({ item }) => {
   return (
     <TCell
-      className="text-r-neutral-title1 text-14  truncate flex items-center gap-4"
+      className="text-r-neutral-title1 text-14  truncate flex items-center gap-4 flex-1"
       style={{
         width: MAINNET_WIDTH_MAP['price'],
       }}
@@ -262,7 +277,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
 const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   return (
     <TCell
-      className="py-8 text-r-neutral-title1 text-14 flex-1 text-right truncate"
+      className="py-8 text-r-neutral-title1 text-14 text-right truncate"
       style={{
         width: MAINNET_WIDTH_MAP['usdValue'],
       }}

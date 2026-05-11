@@ -14,9 +14,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as RcIconActivities } from 'ui/assets/dashboard/activities.svg';
-import { ReactComponent as RcIconPoints } from 'ui/assets/dashboard/rabby-points.svg';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/dashboard/settings/icon-right-arrow.svg';
-import { ReactComponent as RCIconRabbyMobile } from 'ui/assets/dashboard/rabby-mobile.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { ReactComponent as RcIconAddresses } from 'ui/assets/dashboard/addresses.svg';
 import { ReactComponent as RcIconCustomRPC } from 'ui/assets/dashboard/custom-rpc.svg';
@@ -27,8 +25,10 @@ import { ReactComponent as RcIconLockWallet } from 'ui/assets/dashboard/settings
 import { ReactComponent as RcIconSwitchPwdForNonWhitelistedTx } from 'ui/assets/dashboard/settings/switch-password-non-whitelisted-tx.svg';
 import { ReactComponent as RcIconDappSwitchAddress } from 'ui/assets/dashboard/dapp-switch-address.svg';
 import { ReactComponent as RcIconThemeMode } from 'ui/assets/settings/theme-mode.svg';
+import { ReactComponent as RcIconCurrency } from 'ui/assets/settings/currency.svg';
 import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
+import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -39,7 +39,13 @@ import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import { ReactComponent as RcIconServerCC } from 'ui/assets/server-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { Checkbox, Field, PageHeader, Popup } from 'ui/component';
-import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
+import {
+  detectClientOS,
+  getUiType,
+  openInTab,
+  openInternalPageInTab,
+  useWallet,
+} from 'ui/utils';
 import './style.less';
 
 import IconCheck from 'ui/assets/check-2.svg';
@@ -60,6 +66,7 @@ import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
 import { Contacts, RecentConnections } from '..';
 import SwitchThemeModal from './components/SwitchThemeModal';
+import { CurrencyModal } from './components/CurrencyModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
 import { getChainList } from '@/utils/chain';
@@ -71,6 +78,11 @@ import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
+import { useCurrency } from '@/ui/hooks/useCurrency';
+import {
+  cleanupBiometricCredential,
+  isBiometricUnlockSupported,
+} from '@/ui/utils/biometric';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -105,6 +117,8 @@ const useAutoLockOptions = () => {
 interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
+  autoScrollToBiometric?: boolean;
+  onAutoScrollDone?: () => void;
 }
 
 const { confirm } = Modal;
@@ -576,6 +590,7 @@ type SettingItem = {
   leftIcon: ThemeIconType;
   leftIconClassName?: string;
   leftIconStyle?: React.CSSProperties;
+  className?: string;
   content: React.ReactNode;
   description?: React.ReactNode;
   rightIcon?: React.ReactNode;
@@ -597,11 +612,17 @@ const SettingsInner = ({
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
   const [isShowLangModal, setIsShowLangModal] = useState(false);
+  const [isShowCurrencyModal, setIsShowCurrencyModal] = useState(false);
   const [isShowThemeModeModal, setIsShowThemeModeModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
+  const [biometricSupported, setBiometricSupported] = useState(false);
+  const [biometricBusy, setBiometricBusy] = useState(false);
+  const lockShortcutLabel = useMemo(() => {
+    return detectClientOS() === 'darwin' ? '⌘ + L' : 'Ctrl + L';
+  }, []);
 
   const autoLockTime = useRabbySelector(
     (state) => state.preference.autoLockTime || 0
@@ -614,6 +635,12 @@ const SettingsInner = ({
   const isEnabledDappAccount = useRabbySelector(
     (state) => state.preference.isEnabledDappAccount
   );
+  const biometricUnlockEnabled = useRabbySelector(
+    (state) => state.preference.biometricUnlockEnabled
+  );
+  const biometricUnlockCredentialId = useRabbySelector(
+    (state) => state.preference.biometricUnlockCredentialId
+  );
   const locale = useRabbySelector((state) => state.preference.locale);
 
   const AUTO_LOCK_OPTIONS = useAutoLockOptions();
@@ -625,6 +652,7 @@ const SettingsInner = ({
   const openapiStore = useRabbySelector((state) => state.openapi);
 
   const dispatch = useRabbyDispatch();
+  const { currency, syncCurrencyList } = useCurrency();
 
   const autoLockTimeLabel = useMemo(() => {
     return (
@@ -677,6 +705,43 @@ const SettingsInner = ({
       setIsShowDappAccountModal(true);
     }
   });
+
+  const handleToggleBiometricUnlock = useMemoizedFn(
+    async (checked: boolean) => {
+      if (checked) {
+        if (!biometricSupported) {
+          message.error(
+            t('page.dashboard.settings.biometricUnlockUnsupported')
+          );
+          return;
+        }
+        setBiometricBusy(true);
+        try {
+          await wallet.openBiometricUnlockSetupWindow({ from: 'settings' });
+        } finally {
+          setBiometricBusy(false);
+        }
+        if (getUiType().isPop) {
+          window.close();
+        }
+        return;
+      }
+
+      setBiometricBusy(true);
+      try {
+        await cleanupBiometricCredential(biometricUnlockCredentialId || '');
+        await dispatch.preference.setBiometricUnlock({ enabled: false });
+        message.success(t('page.dashboard.settings.biometricUnlockDisabled'));
+      } catch (error) {
+        message.error(
+          (error as Error)?.message ||
+            t('page.dashboard.settings.biometricUnlockDisableFailed')
+        );
+      } finally {
+        setBiometricBusy(false);
+      }
+    }
+  );
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -746,6 +811,23 @@ const SettingsInner = ({
     }
   };
 
+  useEffect(() => {
+    let mounted = true;
+    isBiometricUnlockSupported().then((supported) => {
+      if (mounted) {
+        setBiometricSupported(supported);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    syncCurrencyList();
+  }, [visible, syncCurrencyList]);
+
   const {
     mockExposureRateGuide,
     resetExposureRateGuide,
@@ -757,6 +839,19 @@ const SettingsInner = ({
         {
           leftIcon: RcIconLockWallet,
           content: t('page.dashboard.settings.features.lockWallet'),
+          rightIcon: (
+            <div className="setting-shortcut">
+              {lockShortcutLabel.split(' + ').map((label) => (
+                <span key={label} className="setting-shortcut-key">
+                  {label}
+                </span>
+              ))}
+              <ThemeIcon
+                src={RcIconArrowRight}
+                className="icon icon-arrow-right"
+              />
+            </div>
+          ),
           onClick: () => {
             lockWallet();
             matomoRequestEvent({
@@ -874,6 +969,23 @@ const SettingsInner = ({
       label: t('page.dashboard.settings.settings.label'),
       items: [
         {
+          leftIcon: RCIconBiometric,
+          leftIconClassName: 'text-r-neutral-body',
+          className: 'js-setting-biometric',
+          content: t('page.dashboard.settings.settings.biometricUnlock'),
+          rightIcon: (
+            <Switch
+              checked={!!biometricUnlockEnabled}
+              disabled={
+                biometricBusy ||
+                (!biometricSupported && !biometricUnlockEnabled)
+              }
+              loading={biometricBusy}
+              onChange={handleToggleBiometricUnlock}
+            />
+          ),
+        },
+        {
           leftIcon: RcIconSwitchPwdForNonWhitelistedTx,
           // Password for non-whitelisted transfers
           content: t(
@@ -896,7 +1008,6 @@ const SettingsInner = ({
             />
           ),
         },
-
         {
           leftIcon: RcIconCustomTestnet,
           content: t('page.dashboard.settings.settings.customTestnet'),
@@ -953,10 +1064,32 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
               >
                 {langLabel}
+              </span>
+              <ThemeIcon
+                src={RcIconArrowRight}
+                className="icon icon-arrow-right"
+              />
+            </>
+          ),
+        },
+        {
+          leftIcon: RcIconCurrency,
+          content: t('page.dashboard.settings.settings.currency'),
+          onClick: () => {
+            reportSettings('Currency');
+            setIsShowCurrencyModal(true);
+          },
+          rightIcon: (
+            <>
+              <span
+                className="text-14 mr-[8px] text-r-neutral-foot"
+                role="button"
+              >
+                {currency.code}
               </span>
               <ThemeIcon
                 src={RcIconArrowRight}
@@ -985,7 +1118,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
               >
                 {ThemeModes.find((item) => item.code === themeMode)?.name ||
@@ -1040,7 +1173,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
               >
                 {autoLockTimeLabel}
@@ -1100,6 +1233,22 @@ const SettingsInner = ({
             <span>{t('page.dashboard.settings.testnetBackendServiceUrl')}</span>
           ),
           onClick: () => setShowTestnetOpenApiModal(true),
+          rightIcon: (
+            <ThemeIcon
+              src={RcIconArrowRight}
+              className="icon icon-arrow-right"
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconServerCC,
+          content: <span>Sync chain list</span>,
+          onClick: () => {
+            wallet.syncMainnetChainList({
+              force: true,
+            });
+            message.success('success');
+          },
           rightIcon: (
             <ThemeIcon
               src={RcIconArrowRight}
@@ -1251,7 +1400,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
                 onClick={updateVersion}
               >
@@ -1303,7 +1452,7 @@ const SettingsInner = ({
           rightIcon: (
             <>
               <span
-                className="text-14 mr-[8px] text-r-neutral-title-1"
+                className="text-14 mr-[8px] text-r-neutral-foot"
                 role="button"
               >
                 {getChainList('mainnet').length}
@@ -1441,7 +1590,10 @@ const SettingsInner = ({
                       )
                     }
                     onClick={data.onClick}
-                    className={clsx(data.description ? 'has-desc' : null)}
+                    className={clsx(
+                      data.className,
+                      data.description ? 'has-desc' : null
+                    )}
                   >
                     {data.content}
                     {data.description && (
@@ -1515,6 +1667,11 @@ const SettingsInner = ({
         onFinish={() => setIsShowLangModal(false)}
         onCancel={() => setIsShowLangModal(false)}
       />
+      <CurrencyModal
+        visible={isShowCurrencyModal}
+        onFinish={() => setIsShowCurrencyModal(false)}
+        onCancel={() => setIsShowCurrencyModal(false)}
+      />
       <SwitchThemeModal
         visible={isShowThemeModeModal}
         onFinish={() => setIsShowThemeModeModal(false)}
@@ -1536,12 +1693,30 @@ const SettingsInner = ({
 };
 
 const Settings = (props: SettingsProps) => {
-  const { visible, onClose } = props;
+  const { visible, onClose, autoScrollToBiometric, onAutoScrollDone } = props;
 
   const [
     isShowNonWhitelistedTxPwdModal,
     setIsShowNonWhitelistedTxPwdModal,
   ] = useState(false);
+
+  useEffect(() => {
+    if (!visible || !autoScrollToBiometric) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      const target = document.querySelector(
+        '.settings-popup-wrapper .js-setting-biometric'
+      ) as HTMLElement | null;
+      target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      onAutoScrollDone?.();
+    }, 120);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [visible, autoScrollToBiometric, onAutoScrollDone]);
 
   return (
     <>
@@ -1549,6 +1724,7 @@ const Settings = (props: SettingsProps) => {
         visible={visible}
         onClose={onClose}
         height={488}
+        push={false}
         bodyStyle={{ height: '100%', padding: '20px 20px 0 20px' }}
         destroyOnClose
         className="settings-popup-wrapper"

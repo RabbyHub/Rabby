@@ -4,8 +4,11 @@
   "i18n-ally.extract.ignored": ["Gwei"],
   "i18n-ally.sourceLanguage": "en",
   "cSpell.words": [
+    "Dexs",
+    "Favorited",
     "hyperliquid",
     "Perps",
-    "rabby"
+    "rabby",
+    "TWAP"
   ]
 }

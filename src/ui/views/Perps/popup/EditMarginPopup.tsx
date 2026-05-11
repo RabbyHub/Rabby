@@ -11,7 +11,6 @@ import {
   formatPercent,
   formatPerpsPct,
 } from '../utils';
-import { DistanceToLiquidationTag } from '../components/DistanceToLiquidationTag';
 import { TokenImg } from '../components/TokenImg';
 import Popup from '@/ui/component/Popup';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
@@ -23,6 +22,9 @@ import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
 import { MarginEditInput } from '../components/MarginEditInput';
 import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
 import { useRequest } from 'ahooks';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 
 export interface EditMarginPopupProps {
   visible: boolean;
@@ -38,6 +40,7 @@ export interface EditMarginPopupProps {
   marginUsed: number;
   pnlPercent: number;
   pnl: number;
+  leverageType: 'cross' | 'isolated';
   handlePressRiskTag: () => void;
   onCancel: () => void;
   onConfirm: (action: 'add' | 'reduce', margin: number) => Promise<void>;
@@ -60,6 +63,7 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
   activeAssetCtx,
   currentAssetCtx,
   handlePressRiskTag,
+  leverageType,
 }) => {
   const pxDecimals = currentAssetCtx?.pxDecimals || 2;
   const leverageMax = currentAssetCtx?.maxLeverage || 5;
@@ -225,8 +229,14 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
             <div className="flex flex-col gap-8">
               <div className="flex items-center gap-6">
                 <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
-                <span className="text-[16px] font-medium text-r-neutral-title-1">
-                  {coin}
+                <PerpsDisplayCoinName
+                  item={currentAssetCtx}
+                  className="text-[16px] font-medium"
+                />
+                <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
+                  {leverageType === 'cross'
+                    ? t('page.perps.cross')
+                    : t('page.perps.isolated')}
                 </span>
               </div>
               <div className="flex items-center gap-4">
@@ -240,10 +250,11 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
                 >
                   {direction} {leverage}x
                 </div>
-                <DistanceToLiquidationTag
-                  liquidationPrice={liquidationPx}
-                  markPrice={markPrice}
-                  onPress={handlePressRiskTag}
+                <DistanceRiskTag
+                  isLong={direction === 'Long'}
+                  percent={formatPerpsPct(
+                    calculateDistanceToLiquidation(liquidationPx, markPrice)
+                  )}
                 />
               </div>
             </div>

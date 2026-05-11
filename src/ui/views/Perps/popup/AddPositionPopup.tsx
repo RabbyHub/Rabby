@@ -4,18 +4,24 @@ import { MarketData } from '@/ui/models/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { useRequest } from 'ahooks';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { AssetPriceInfo } from '../components/AssetPriceInfo';
-import { DistanceToLiquidationTag } from '../components/DistanceToLiquidationTag';
 import { MarginInput } from '../components/MarginInput';
 import { TokenImg } from '../components/TokenImg';
 import { PERPS_MAX_NTL_VALUE, PERPS_MINI_USD_VALUE } from '../constants';
-import { calLiquidationPrice } from '../utils';
+import {
+  calculateDistanceToLiquidation,
+  calLiquidationPrice,
+  formatPerpsPct,
+} from '../utils';
+import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 
 export interface AddPositionPopupProps {
   visible?: boolean;
@@ -33,6 +39,10 @@ export interface AddPositionPopupProps {
   pnlPercent: number;
   markPrice: number;
   leverageRange: [number, number]; // [min, max]
+  leverageType: 'cross' | 'isolated';
+  quoteAsset?: string;
+  onDepositPress?: () => void;
+  onSwapPress?: () => void;
   onCancel: () => void;
   onConfirm: (tradeSize: string) => Promise<void>;
 }
@@ -44,6 +54,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   currentAssetCtx,
   availableBalance,
   leverage,
+  leverageType,
   direction,
   positionSize,
   marginUsed,
@@ -53,6 +64,9 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   onCancel,
   onConfirm,
   leverageRange,
+  quoteAsset = 'USDC',
+  onDepositPress,
+  onSwapPress,
 }) => {
   const pxDecimals = currentAssetCtx?.pxDecimals || 2;
   const szDecimals = currentAssetCtx?.szDecimals || 0;
@@ -202,11 +216,13 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
       onCancel={onCancel}
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px] overflow-auto pb-[80px]">
-        <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2">
-          {direction === 'Long'
-            ? t('page.perpsDetail.PerpsAddPositionPopup.addToLong')
-            : t('page.perpsDetail.PerpsAddPositionPopup.addToShort')}{' '}
-          {coin}-USD
+        <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2 inline-flex items-center justify-center gap-4 w-full">
+          <span>
+            {direction === 'Long'
+              ? t('page.perpsDetail.PerpsAddPositionPopup.addToLong')
+              : t('page.perpsDetail.PerpsAddPositionPopup.addToShort')}
+          </span>
+          <PerpsDisplayCoinName item={currentAssetCtx} />
         </div>
 
         <AssetPriceInfo
@@ -220,8 +236,28 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
             <div className="flex flex-col gap-8">
               <div className="flex items-center gap-6">
                 <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
-                <span className="text-[16px] font-medium text-r-neutral-title-1">
-                  {coin}
+                <PerpsDisplayCoinName
+                  item={currentAssetCtx}
+                  className="text-[16px] font-medium"
+                />
+                <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
+                  {leverageType === 'cross'
+                    ? t('page.perps.cross')
+                    : t('page.perps.isolated')}
+                  {leverageType === 'cross' && (
+                    <Tooltip
+                      overlayClassName="rectangle"
+                      placement="top"
+                      title={t('page.perps.crossMarginLiqPriceTip')}
+                    >
+                      <RcIconInfo
+                        viewBox="0 0 14 14"
+                        width={12}
+                        height={12}
+                        className="text-r-neutral-foot"
+                      />
+                    </Tooltip>
+                  )}
                 </span>
               </div>
               <div className="flex items-center gap-4">
@@ -235,10 +271,11 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                 >
                   {direction} {leverage}x
                 </div>
-                <DistanceToLiquidationTag
-                  liquidationPrice={liquidationPx}
-                  markPrice={markPrice}
-                  onPress={handlePressRiskTag}
+                <DistanceRiskTag
+                  isLong={direction === 'Long'}
+                  percent={formatPerpsPct(
+                    calculateDistanceToLiquidation(liquidationPx, markPrice)
+                  )}
                 />
               </div>
             </div>
@@ -260,12 +297,33 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
 
           <MarginInput
             title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
+            quoteAsset={quoteAsset}
             availableAmount={availableBalance}
             margin={margin}
             onMarginChange={setMargin}
             sliderDisabled={availableBalance < 0.1}
             errorMessage={
               marginValidation.error ? marginValidation.errorMessage : null
+            }
+            availableExtra={
+              (availableBalance < 0.1 ||
+                marginValidation.error === 'insufficient_balance') && (
+                <span
+                  className="text-r-blue-default font-medium cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (quoteAsset === 'USDC') {
+                      onDepositPress?.();
+                    } else {
+                      onSwapPress?.();
+                    }
+                  }}
+                >
+                  {quoteAsset === 'USDC'
+                    ? t('page.perps.PerpsSpotSwap.toDepositEntry')
+                    : t('page.perps.PerpsSpotSwap.toSwapEntry')}
+                </span>
+              )
             }
           />
 
@@ -279,7 +337,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                   Number(tradeSize) * markPrice,
                   BigNumber.ROUND_DOWN
                 )}{' '}
-                = {tradeSize} {coin}
+                = {tradeSize} {formatPerpsCoin(coin)}
               </div>
             </div>
             <div className="flex items-center justify-between px-[16px] py-[12px] min-[48px]">
@@ -298,7 +356,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                   Number(totalSize) * markPrice,
                   BigNumber.ROUND_DOWN
                 )}{' '}
-                = {totalSize} {coin}
+                = {totalSize} {formatPerpsCoin(coin)}
               </div>
             </div>
             <div className="flex items-center justify-between px-[16px] py-[12px] min-[48px]">

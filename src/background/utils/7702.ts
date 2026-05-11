@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js';
 import { Hex, numberToHex } from 'viem';
 
-export const EIP7702RevokeMiniGasLimit = 46000;
+//minium 46000;
+export const EIP7702RevokeMiniGasLimit = 60000;
 
 export function removeLeadingZeroes(value: Hex | undefined): Hex | undefined {
   if (!value) {

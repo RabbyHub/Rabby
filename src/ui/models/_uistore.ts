@@ -49,6 +49,38 @@ export default (store: typeof import('@/ui/store').default) => {
         });
         break;
       }
+      case 'biometricUnlockEnabled': {
+        dispatch.preference.setField({
+          biometricUnlockEnabled: payload.partials.biometricUnlockEnabled,
+        });
+        break;
+      }
+      case 'biometricUnlockCredentialId': {
+        dispatch.preference.setField({
+          biometricUnlockCredentialId:
+            payload.partials.biometricUnlockCredentialId,
+        });
+        break;
+      }
+      case 'biometricUnlockEncryptedPassword': {
+        dispatch.preference.setField({
+          biometricUnlockEncryptedPassword:
+            payload.partials.biometricUnlockEncryptedPassword,
+        });
+        break;
+      }
+      case 'biometricUnlockIv': {
+        dispatch.preference.setField({
+          biometricUnlockIv: payload.partials.biometricUnlockIv,
+        });
+        break;
+      }
+      case 'unlockPreferredMethod': {
+        dispatch.preference.setField({
+          unlockPreferredMethod: payload.partials.unlockPreferredMethod,
+        });
+        break;
+      }
     }
   });
 
@@ -63,6 +95,29 @@ export default (store: typeof import('@/ui/store').default) => {
       case 'enabled': {
         dispatch.whitelist.setField({
           enabled: payload.partials.enabled,
+        });
+        break;
+      }
+    }
+  });
+
+  onBackgroundStoreChanged('currency', (payload) => {
+    switch (payload.changedKey) {
+      case 'currency': {
+        dispatch.currency.setField({
+          currency: payload.partials.currency,
+        });
+        break;
+      }
+      case 'currencyList': {
+        dispatch.currency.setField({
+          currencyList: payload.partials.currencyList,
+        });
+        break;
+      }
+      case 'updatedAt': {
+        dispatch.currency.setField({
+          updatedAt: payload.partials.updatedAt,
         });
         break;
       }

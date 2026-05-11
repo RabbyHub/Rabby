@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import './style.less';
 import { InfoCircleOutlined } from '@ant-design/icons';
@@ -18,6 +18,16 @@ import { Popup } from '@/ui/component';
 import QRCode from 'qrcode.react';
 import { ReactComponent as RcIconQrCode } from 'ui/assets/qrcode-cc.svg';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
+import { useWallet } from '@/ui/utils';
+import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { useMount } from 'ahooks';
+import AuthenticationModal from '@/ui/component/AuthenticationModal';
+import { KEYRING_TYPE } from '@/constant';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { repeat } from 'lodash';
+import { useCheckSeedPhraseBackup } from '@/ui/utils/useCheckSeedPhraseBackup';
+
+const placeholderMnemonics = repeat('****** ', 12).trim();
 
 const AddressBackupMnemonics: React.FC<{
   isInModal?: boolean;
@@ -27,13 +37,18 @@ const AddressBackupMnemonics: React.FC<{
 
   const history = useHistory();
   const { state } = useLocation<{
-    data: string;
+    address?: string;
+    data?: string;
     goBack?: boolean;
+    redirectTo?: string;
   }>();
 
-  const data = state?.data;
+  const [data, setData] = useState(state?.data || placeholderMnemonics);
   const [masked, setMasked] = useState(true);
   const { getContainer } = usePopupContainer();
+  const wallet = useWallet();
+  const currentAccount = useCurrentAccount();
+  const backupAddress = state?.address || currentAccount?.address;
 
   const onCopyMnemonics = React.useCallback(() => {
     copyTextToClipboard(data).then(() => {
@@ -73,19 +88,70 @@ const AddressBackupMnemonics: React.FC<{
     return data?.split('\n').length > 1;
   }, [data]);
 
-  useEffect(() => {
-    if (!data) {
-      if (isInModal) {
-        onClose?.();
-      } else {
-        history.goBack();
-      }
-    }
-  }, [data, history, isInModal]);
+  // useEffect(() => {
+  //   if (!data) {
+  //     if (isInModal) {
+  //       onClose?.();
+  //     } else {
+  //       history.goBack();
+  //     }
+  //   }
+  // }, [data, history, isInModal]);
 
-  if (!data) {
-    return null;
-  }
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
+  const { runCheckBackup } = useCheckSeedPhraseBackup(
+    {
+      address: backupAddress || '',
+      type: currentAccount?.type || '',
+    },
+    {
+      manual: true,
+    }
+  );
+  useMount(() => {
+    if (!state.data && currentAccount) {
+      AuthenticationModal({
+        confirmText: t('global.confirm'),
+        cancelText: t('global.Cancel'),
+        title: t('page.addressDetail.backup-seed-phrase'),
+        validationHandler: async (password: string) => {
+          if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
+            await invokeEnterPassphrase(currentAccount.address);
+          }
+
+          const seed = await wallet.getMnemonics(
+            password,
+            currentAccount.address
+          );
+          setData(seed);
+        },
+        onFinished() {},
+        onCancel() {
+          if (isInModal) {
+            onClose?.();
+          } else {
+            if (state?.goBack) {
+              history.goBack();
+              return;
+            }
+
+            if (state?.redirectTo) {
+              history.replace(state.redirectTo);
+              return;
+            }
+
+            history.goBack();
+          }
+        },
+        getContainer,
+        wallet,
+      });
+    }
+  });
+
+  // if (!data) {
+  //   return null;
+  // }
 
   return (
     <div
@@ -95,10 +161,13 @@ const AddressBackupMnemonics: React.FC<{
       )}
     >
       <header className="relative">
-        {!!state.goBack && (
+        {!!state?.goBack && (
           <img
             src={IconBack}
-            className={clsx('absolute icon icon-back filter invert')}
+            className={clsx(
+              'absolute icon icon-back filter invert cursor-pointer',
+              'top-[50%] left-[16px] translate-y-[-50%]'
+            )}
             onClick={() => history.goBack()}
           />
         )}
@@ -152,26 +221,41 @@ const AddressBackupMnemonics: React.FC<{
             style={masked ? { filter: 'blur(3px)' } : {}}
           >
             {isSlip39 ? (
-              <Slip39TextareaContainer data={data} />
+              <Slip39TextareaContainer data={data || ''} />
             ) : (
               <WordsMatrix
-                className="w-full bg-r-neutral-card-2"
+                className="w-full bg-r-neutral-card-1"
                 focusable={false}
                 closable={false}
-                words={data.split(' ')}
+                words={data?.split(' ')}
               />
             )}
           </div>
         </div>
       </div>
-      <div className="footer pb-[20px] z-20">
+      <div className="footer py-[18px] z-20 border-t-[0.5px] border-rabby-neutral-line bg-transparent">
         <Button
           type="primary"
           className="w-full"
           size="large"
-          onClick={() => history.goBack()}
+          onClick={async () => {
+            if (!backupAddress) {
+              message.error('Address is missing');
+              return;
+            }
+
+            await wallet.backupSeedPhraseConfirmed(backupAddress);
+            runCheckBackup();
+
+            if (state?.redirectTo) {
+              history.replace(state.redirectTo);
+              return;
+            }
+
+            history.goBack();
+          }}
         >
-          {t('global.Done')}
+          {t('page.backupSeedPhrase.doneButton')}
         </Button>
       </div>
     </div>

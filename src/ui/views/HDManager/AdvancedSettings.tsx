@@ -218,8 +218,8 @@ export const AdvancedSettings: React.FC<Props> = ({
   const [disableStartFrom, setDisableStartFrom] = React.useState(false);
   const HDPathTypeGroup = useHDPathTypeGroup(brand);
 
-  const onInputChange = React.useCallback((value: number) => {
-    if (isNaN(value) || value < DEFAULT_SETTING_DATA.startNo) {
+  const onInputChange = React.useCallback((value: number | null) => {
+    if (value == null || isNaN(value) || value < DEFAULT_SETTING_DATA.startNo) {
       setStartNo(DEFAULT_SETTING_DATA.startNo);
     } else if (value > MAX_START_NO) {
       setStartNo(MAX_START_NO);

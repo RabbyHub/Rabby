@@ -4,6 +4,7 @@ import {
   DrawerProps,
   Form,
   Input,
+  InputRef,
   Skeleton,
   Switch,
   Tooltip,
@@ -126,7 +127,7 @@ export const AddressTypeCard = ({
 
   const [form] = useForm();
   const [_alias, setAlias] = useAlias(address);
-  const inputRef = useRef<Input>(null);
+  const inputRef = useRef<InputRef>(null);
   const showCexInfo = useMemo(() => {
     return cexInfo.id && cexInfo.isDeposit && type === KEYRING_CLASS.WATCH;
   }, [cexInfo, type]);
@@ -235,8 +236,11 @@ export const AddressTypeCard = ({
       >
         {loading ? (
           <>
-            <Skeleton.Avatar className="bg-r-neutral-line w-[20px] h-[20px] rounded-full" />
-            <Skeleton.Avatar className="bg-r-neutral-line w-[94px] h-[16px] rounded-[2px]" />
+            <Skeleton.Avatar
+              className="bg-r-neutral-line w-[20px] h-[20px] rounded-full"
+              size={20}
+            />
+            <Skeleton.Input className="bg-r-neutral-line w-[94px] h-[16px] rounded-[2px]" />
           </>
         ) : (
           <>
@@ -272,8 +276,8 @@ export const AddressTypeCard = ({
             <Tooltip overlayClassName="alias-tooltip" title={aliasName}>
               <div
                 className={clsx(
-                  'font-medium text-[13px] text-r-neutral-title1',
-                  showSideDesc ? 'max-w-[100px]  truncate' : ''
+                  'font-medium text-[13px] text-r-neutral-title1 truncate ',
+                  showSideDesc ? 'max-w-[100px]' : 'max-w-[220px]'
                 )}
               >
                 {allowEditAlias ? _alias || aliasName : aliasName}
@@ -469,7 +473,7 @@ export const AddressRiskAlert = ({
           {riskInfos.loadingAddrDesc ? (
             <Skeleton.Input className="w-full h-[44px] rounded-[8px]" active />
           ) : (
-            <div className="text-[16px] w-full text-center">
+            <div className="text-[16px] w-full text-center break-all">
               <AddressText>{addressSplit[0]}</AddressText>
               <span className="text-r-neutral-foot">{addressSplit[1]}</span>
               <AddressText>{addressSplit[2]}</AddressText>
@@ -541,7 +545,10 @@ export const AddressRiskAlert = ({
         {riskInfos.loadingHasTransfer ? (
           <div className="flex-1">
             <div className="flex gap-[8px] mt-[30px] items-center bg-r-neutral-card1 rounded-[8px] py-[14px] px-[16px]">
-              <Skeleton.Avatar className="w-[16px] h-[16px] rounded-full" />
+              <Skeleton.Avatar
+                size={16}
+                className="w-[16px] h-[16px] rounded-full"
+              />
               <Skeleton.Input className="w-[158px] rounded-[4px]" active />
             </div>
           </div>

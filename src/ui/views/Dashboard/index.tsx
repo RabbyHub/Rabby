@@ -2,10 +2,10 @@ import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import remarkGfm from 'remark-gfm';
 
-import { Modal } from 'ui/component';
+import { AuthenticationModal, Modal } from 'ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import './style.less';
@@ -17,19 +17,35 @@ import { DashboardHeader } from './components/DashboardHeader';
 import { DashboardPanel } from './components/DashboardPanel';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { GasPriceBar } from './components/GasPriceBar';
-import { CHAINS_ENUM } from '@/constant';
+import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import Settings from './components/Settings';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { useGasAccountDiscovery } from '@/ui/views/GasAccount/hooks';
 
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
+  const { refreshDiscovery } = useGasAccountDiscovery({
+    autoRefresh: false,
+  });
 
   const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
     ...s.appVersion,
   }));
+  const accountsDiscoveryKey = useRabbySelector((s) =>
+    s.accountToDisplay.accountsList
+      .map(
+        (account) =>
+          `${account.address.toLowerCase()}:${account.type}:${
+            account.brandName || ''
+          }`
+      )
+      .sort()
+      .join('|')
+  );
 
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
 
@@ -66,6 +82,18 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
+    if (!accountsDiscoveryKey) {
+      return;
+    }
+    refreshDiscovery().catch((error) => {
+      console.error(
+        '[gasAccount] refresh discovery on account change failed',
+        error
+      );
+    });
+  }, [accountsDiscoveryKey, refreshDiscovery]);
+
+  useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();
   }, [dispatch]);
 
@@ -75,8 +103,70 @@ const Dashboard = () => {
   );
 
   const [settingVisible, setSettingVisible] = useState(false);
+  const [autoScrollToBiometric, setAutoScrollToBiometric] = useState(false);
   const toggleShowMoreSettings = useMemoizedFn(() => {
     setSettingVisible(!settingVisible);
+  });
+
+  const location = useLocation();
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
+  useMount(() => {
+    const check = async () => {
+      const cache = await wallet.getPageStateCache();
+      if (
+        cache?.path === location.pathname &&
+        cache?.states?.action === 'open-settings'
+      ) {
+        wallet.clearPageStateCache();
+        setAutoScrollToBiometric(true);
+        setSettingVisible(true);
+        return;
+      }
+
+      if (
+        cache?.path === location.pathname &&
+        cache?.states?.action === 'address-backup'
+      ) {
+        wallet.clearPageStateCache();
+        const address = currentAccount?.address;
+        if (!address) {
+          return;
+        }
+        if (currentAccount?.type !== KEYRING_CLASS.MNEMONIC) {
+          return;
+        }
+        const hasBackup = await wallet.checkSeedPhraseBackup(address);
+        if (hasBackup) {
+          return;
+        }
+        let data = '';
+
+        await AuthenticationModal({
+          confirmText: t('global.confirm'),
+          cancelText: t('global.Cancel'),
+          title: t('page.addressDetail.backup-seed-phrase'),
+          validationHandler: async (password: string) => {
+            await invokeEnterPassphrase(address);
+
+            data = await wallet.getMnemonics(password, address);
+          },
+          onFinished() {
+            history.push({
+              pathname: '/settings/address-backup/mneonics',
+              state: {
+                data: data,
+                goBack: true,
+              },
+            });
+          },
+          onCancel() {
+            // do nothing
+          },
+          wallet,
+        });
+      }
+    };
+    check();
   });
 
   return (
@@ -113,7 +203,14 @@ const Dashboard = () => {
         />
       )}
 
-      <Settings visible={settingVisible} onClose={toggleShowMoreSettings} />
+      <Settings
+        visible={settingVisible}
+        onClose={toggleShowMoreSettings}
+        autoScrollToBiometric={autoScrollToBiometric}
+        onAutoScrollDone={() => {
+          setAutoScrollToBiometric(false);
+        }}
+      />
     </>
   );
 };

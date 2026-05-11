@@ -45,7 +45,7 @@ const FallbackImage = ({
     const bgIndex = Math.abs(hashCode(origin) % 12);
 
     return [bgColorList[bgIndex].toLowerCase(), getOriginName(origin)];
-  }, [url]);
+  }, [origin]);
 
   const handleImageLoadError = () => {
     setLoadFaild(true);
@@ -56,6 +56,10 @@ const FallbackImage = ({
   };
 
   useEffect(() => {
+    setLoadFaild(false);
+    setLoadSuccess(false);
+    setLogoUrl('');
+
     if (!url) {
       setLoadFaild(true);
       return;
@@ -85,7 +89,7 @@ const FallbackImage = ({
           '--background': loadSuccess ? `url(${logoUrl})` : bgColor,
         }}
       >
-        {!loadFaild && (
+        {!!logoUrl && !loadFaild && (
           <img
             src={logoUrl}
             alt={origin}

@@ -89,36 +89,46 @@ const useGetCurrentAccounts = ({ keyringId, keyring }: StateProviderProps) => {
   const wallet = useWallet();
   const [loading, setLoading] = React.useState(false);
   const [accounts, setAccounts] = React.useState<Account[]>([]);
+  const [initialAccounts, setInitialAccounts] = React.useState<Account[]>([]);
+  const initialAccountsRef = React.useRef<Account[] | null>(null);
   const dispatch = useRabbyDispatch();
 
-  const getCurrentAccounts = React.useCallback(async () => {
-    setLoading(true);
-    const accounts: Account[] = [];
-    if (keyring === KEYRING_CLASS.MNEMONIC) {
-      const list = await dispatch.importMnemonics.getImportedAccounts({});
-      accounts.push(...list);
-    } else {
-      accounts.push(
-        ...(await wallet.requestKeyring(
-          keyring,
-          'getCurrentAccounts',
-          keyringId
-        ))
+  const getCurrentAccounts = React.useCallback(
+    async (options?: { resetInitialAccounts?: boolean }) => {
+      setLoading(true);
+      const accounts: Account[] = [];
+      if (keyring === KEYRING_CLASS.MNEMONIC) {
+        const list = await dispatch.importMnemonics.getImportedAccounts({});
+        accounts.push(...list);
+      } else {
+        accounts.push(
+          ...(await wallet.requestKeyring(
+            keyring,
+            'getCurrentAccounts',
+            keyringId
+          ))
+        );
+      }
+
+      // fetch aliasName
+      const accountsWithAliasName = await Promise.all(
+        accounts.map(async (account) => {
+          const aliasName = await wallet.getAlianName(account.address);
+          account.aliasName = aliasName;
+          return account;
+        })
       );
-    }
 
-    // fetch aliasName
-    const accountsWithAliasName = await Promise.all(
-      accounts.map(async (account) => {
-        const aliasName = await wallet.getAlianName(account.address);
-        account.aliasName = aliasName;
-        return account;
-      })
-    );
-
-    setAccounts(accountsWithAliasName);
-    setLoading(false);
-  }, []);
+      setAccounts(accountsWithAliasName);
+      if (options?.resetInitialAccounts || !initialAccountsRef.current) {
+        initialAccountsRef.current = accountsWithAliasName;
+        setInitialAccounts(accountsWithAliasName);
+      }
+      setLoading(false);
+      return accountsWithAliasName;
+    },
+    []
+  );
 
   const removeCurrentAccount = React.useCallback((address: string) => {
     setAccounts((accounts) => {
@@ -146,6 +156,7 @@ const useGetCurrentAccounts = ({ keyringId, keyring }: StateProviderProps) => {
     currentAccountsLoading: loading,
     getCurrentAccounts,
     currentAccounts: accounts,
+    initialAccounts,
     removeCurrentAccount,
     updateCurrentAccountAliasName,
   };
@@ -223,6 +234,8 @@ export interface StateProviderProps {
   keyring: string;
   brand?: string;
   isLazyImport?: boolean;
+  children?: React.ReactNode;
+  onDone?(): void;
 }
 
 export const HDManagerStateContext = React.createContext<

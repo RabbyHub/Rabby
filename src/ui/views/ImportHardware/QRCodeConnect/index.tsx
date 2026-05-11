@@ -12,6 +12,7 @@ import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_CONTENT } from 'consts';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import clsx from 'clsx';
 import Progress from '@/ui/component/Progress';
+import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
 
 type Valueof<T> = T[keyof T];
 
@@ -97,7 +98,7 @@ export const QRCodeConnect = () => {
         keyringId,
         brand,
       },
-      search,
+      search: withHardwareImportSelectAddressSource(search),
     });
   };
 

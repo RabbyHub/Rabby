@@ -10,86 +10,38 @@ on:
       - '*'
 
 jobs:
-  # Prepare node modules. Reuse cache if available
-  setup:
-    name: prepare build
-    runs-on: ubuntu-latest
-    env:
-      NODE_OPTIONS: '--max_old_space_size=4096'
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: '22.17.1'
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-
-      - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-
-      - uses: actions/cache@v3
-        id: yarn-node_modules # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Get Yarn Cache
-        if: steps.yarn-cache.outputs.cache-hit == 'true'
-        run: yarn --prefer-offline
-
-      - name: Use NPM Token with organization read access
-        uses: heisenberg-2077/use-npm-token-action@v1
-        with:
-          token: '${{ secrets.NPM_AUTH_TOKEN }}'
-
-      - name: Install Dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
-
   build-pro:
     name: build pro
     runs-on: ubuntu-latest
-    needs: setup
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.17.1'
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Enable Corepack
+        run: corepack enable
 
-      - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      - name: Use NPM Token with organization read access
+        uses: heisenberg-2077/use-npm-token-action@99c5b17c84a15e44fdcef6712b34b76f8f0493b0 # v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          token: '${{ secrets.NPM_AUTH_TOKEN }}'
 
-      - uses: actions/cache@v3
-        id: yarn-node_modules # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install --immutable
 
       - name: build
         run: yarn build:pro
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: Rabby_${{github.sha}}
@@ -97,7 +49,7 @@ jobs:
           retention-days: 7
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ github.event_name == 'push' }}
         with:
           name: Rabby_${{github.ref_name}}
@@ -107,39 +59,35 @@ jobs:
   build-debug:
     name: build debug
     runs-on: ubuntu-latest
-    needs: setup
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       - name: Setup node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22.17.1'
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Enable Corepack
+        run: corepack enable
 
-      - uses: actions/cache@v3
-        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+      - name: Use NPM Token with organization read access
+        uses: heisenberg-2077/use-npm-token-action@99c5b17c84a15e44fdcef6712b34b76f8f0493b0 # v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          token: '${{ secrets.NPM_AUTH_TOKEN }}'
 
-      - uses: actions/cache@v3
-        id: yarn-node_modules # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node_modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Install dependencies
+        run: yarn install --immutable
 
       - name: build
         run: yarn build:debug
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ github.event_name == 'pull_request' }}
         with:
           name: Rabby_${{github.sha}}_debug
@@ -147,7 +95,7 @@ jobs:
           retention-days: 7
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ github.event_name == 'push' }}
         with:
           name: Rabby_${{github.ref_name}}_debug

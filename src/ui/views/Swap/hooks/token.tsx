@@ -4,7 +4,14 @@ import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useAsync, useAsyncFn, useDebounce } from 'react-use';
 import {
   isSwapWrapToken,
@@ -25,6 +32,13 @@ import { getSwapAutoSlippageValue, useSwapSlippage } from './slippage';
 import { useLowCreditState } from '../Component/LowCreditModal';
 import eventBus from '@/eventBus';
 import { useAutoSlippageEffect } from './autoSlippageEffect';
+import { getChainDefaultToken } from '@/ui/utils/token';
+import {
+  getGasTokenBalance,
+  convert18RawToTokenRaw,
+} from '@/utils/transaction';
+import { isTempoChain } from '@/utils/tempo';
+import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -86,6 +100,7 @@ export const useTokenPair = (userAddress: string) => {
   const refreshId = useRefreshId();
   const setRefreshId = useSetRefreshId();
   const wallet = useWallet();
+  const depositFlowActive = useGasAccountDepositFlowActive();
 
   const {
     initialSelectedChain,
@@ -116,12 +131,19 @@ export const useTokenPair = (userAddress: string) => {
     [dispatch?.swap?.setSelectedChain]
   );
   const [refreshTokenId, updateRefreshTokenId] = useState(0);
+  const reloadTxRefreshPausedRef = useRef(false);
+  const setReloadTxRefreshPaused = useCallback((paused: boolean) => {
+    reloadTxRefreshPausedRef.current = paused;
+  }, []);
   const refreshTokensInfo = useCallback(
     () => updateRefreshTokenId((e) => e + 1),
     [updateRefreshTokenId]
   );
   useEffect(() => {
     const refreshToken = (params: { addressList: string[] }) => {
+      if (depositFlowActive || reloadTxRefreshPausedRef.current) {
+        return;
+      }
       if (
         userAddress &&
         params?.addressList?.find((item) => {
@@ -136,7 +158,7 @@ export const useTokenPair = (userAddress: string) => {
     return () => {
       eventBus.removeEventListener(EVENTS.RELOAD_TX, refreshToken);
     };
-  }, [refreshTokensInfo, userAddress]);
+  }, [depositFlowActive, refreshTokensInfo, userAddress]);
 
   const [payToken, setPayToken] = useTokenInfo({
     userAddress,
@@ -181,9 +203,11 @@ export const useTokenPair = (userAddress: string) => {
       clearTimeout(expiredTimer.current);
     }
 
-    if (p) {
+    if (p && !depositFlowActiveRef.current) {
       expiredTimer.current = setTimeout(() => {
-        setRefreshId((e) => e + 1);
+        if (!depositFlowActiveRef.current) {
+          setRefreshId((e) => e + 1);
+        }
       }, 1000 * 20);
     }
 
@@ -298,6 +322,12 @@ export const useTokenPair = (userAddress: string) => {
   >();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
+  const depositFlowActiveRef = useRef(depositFlowActive);
+  const previousDepositFlowActiveRef = useRef(depositFlowActive);
+
+  useEffect(() => {
+    depositFlowActiveRef.current = depositFlowActive;
+  }, [depositFlowActive]);
 
   const exchangeToken = useCallback(() => {
     setPayToken(receiveToken);
@@ -315,6 +345,43 @@ export const useTokenPair = (userAddress: string) => {
     }
     return false;
   }, [chain, payToken]);
+
+  const isTempoSwapChain = useMemo(
+    () => isTempoChain(findChainByEnum(chain)?.serverId),
+    [chain]
+  );
+
+  const {
+    value: tempoGasTokenInfo,
+    loading: isTempoGasTokenLoading,
+  } = useAsync(async () => {
+    if (!userAddress || !isTempoSwapChain) {
+      return null;
+    }
+
+    return getGasTokenBalance({
+      wallet,
+      address: userAddress,
+      chainId: findChainByEnum(chain)!.id,
+    });
+  }, [wallet, userAddress, chain, refreshId, isTempoSwapChain]);
+
+  const payTokenIsTempoFeeToken = useMemo(() => {
+    if (
+      !isTempoSwapChain ||
+      !payToken?.id ||
+      !tempoGasTokenInfo?.token.tokenId
+    ) {
+      return false;
+    }
+
+    return isSameAddress(payToken.id, tempoGasTokenInfo.token.tokenId);
+  }, [isTempoSwapChain, payToken?.id, tempoGasTokenInfo?.token.tokenId]);
+
+  const payTokenIsGasToken = useMemo(
+    () => payTokenIsNativeToken || payTokenIsTempoFeeToken,
+    [payTokenIsNativeToken, payTokenIsTempoFeeToken]
+  );
 
   const [passGasPrice, setUseGasPrice] = useState(false);
 
@@ -368,11 +435,32 @@ export const useTokenPair = (userAddress: string) => {
     [chain]
   );
 
+  const gasTokenDecimals = useMemo(() => {
+    if (payTokenIsNativeToken) {
+      return nativeTokenDecimals;
+    }
+
+    if (payTokenIsTempoFeeToken) {
+      return tempoGasTokenInfo?.token.decimals || payToken?.decimals || 18;
+    }
+
+    return undefined;
+  }, [
+    nativeTokenDecimals,
+    payTokenIsNativeToken,
+    payTokenIsTempoFeeToken,
+    payToken?.decimals,
+    tempoGasTokenInfo?.token.decimals,
+  ]);
+
   useEffect(() => {
-    if (payTokenIsNativeToken && gasList) {
+    if (payTokenIsGasToken && gasList && gasTokenDecimals !== undefined) {
       const checkGasIsEnough = (price: number) => {
         return new BigNumber(payToken?.raw_amount_hex_str || 0, 16).gte(
-          new BigNumber(gasLimit).times(price)
+          convert18RawToTokenRaw(
+            new BigNumber(gasLimit).times(price),
+            gasTokenDecimals
+          )
         );
       };
       const normalPrice =
@@ -383,19 +471,27 @@ export const useTokenPair = (userAddress: string) => {
       } else {
         gasPriceRef.current = undefined;
       }
+      return;
     }
-  }, [payTokenIsNativeToken, gasList, gasLimit, payToken?.raw_amount_hex_str]);
+
+    gasPriceRef.current = undefined;
+  }, [
+    payTokenIsGasToken,
+    gasList,
+    gasLimit,
+    gasTokenDecimals,
+    normalGasPrice,
+    payToken?.raw_amount_hex_str,
+  ]);
 
   const handleSlider100 = useCallback(() => {
-    if (
-      payTokenIsNativeToken &&
-      payToken &&
-      gasPriceRef.current !== undefined
-    ) {
+    if (payTokenIsGasToken && payToken && gasPriceRef.current !== undefined) {
+      const decimals = gasTokenDecimals || 18;
       const val = tokenAmountBn(payToken).minus(
-        new BigNumber(gasLimit)
-          .times(gasPriceRef.current)
-          .div(10 ** nativeTokenDecimals)
+        convert18RawToTokenRaw(
+          new BigNumber(gasLimit).times(gasPriceRef.current),
+          decimals
+        ).div(new BigNumber(10).pow(decimals))
       );
       if (!val.lt(0)) {
         setUseGasPrice(true);
@@ -408,7 +504,27 @@ export const useTokenPair = (userAddress: string) => {
         setPayAmount(tokenAmountBn(payToken).toString(10));
       }
     }
-  }, [payToken, chain, nativeTokenDecimals, gasLimit, payTokenIsNativeToken]);
+  }, [payToken, gasTokenDecimals, gasLimit, payTokenIsGasToken]);
+
+  useEffect(() => {
+    if (
+      slider === 100 &&
+      swapUseSlider &&
+      payToken?.amount &&
+      !isGasMarketLoading &&
+      (!isTempoSwapChain || !isTempoGasTokenLoading)
+    ) {
+      handleSlider100();
+    }
+  }, [
+    slider,
+    swapUseSlider,
+    payToken?.amount,
+    isGasMarketLoading,
+    isTempoSwapChain,
+    isTempoGasTokenLoading,
+    handleSlider100,
+  ]);
 
   const isStableCoin = useMemo(() => {
     if (payToken?.price && receiveToken?.price) {
@@ -445,6 +561,15 @@ export const useTokenPair = (userAddress: string) => {
   const inSufficientCanGetQuote = enableInsufficientQuote
     ? true
     : !inSufficient;
+  const canRunQuoteRequest =
+    !!(
+      userAddress &&
+      payToken?.id &&
+      receiveToken?.id &&
+      chain &&
+      Number(inputAmount) > 0 &&
+      feeRate
+    ) && inSufficientCanGetQuote;
 
   useEffect(() => {
     if (isWrapToken) {
@@ -457,26 +582,22 @@ export const useTokenPair = (userAddress: string) => {
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    fetchIdRef.current += 1;
     setQuotesList([]);
-  }, [payToken?.id, receiveToken?.id, chain, inputAmount]);
-
-  useEffect(() => {
     setActiveProvider(undefined);
-  }, [payToken?.id, receiveToken?.id, chain]);
-
-  useEffect(() => {
-    if (!enableInsufficientQuote || !inputAmount || Number(inputAmount) === 0) {
-      setActiveProvider(undefined);
-    }
-  }, [inputAmount]);
-
-  useEffect(() => {
-    if (!inSufficientCanGetQuote) {
-      setQuotesList([]);
-      setActiveProvider(undefined);
-    }
-  }, [inSufficientCanGetQuote]);
+    setPending(canRunQuoteRequest);
+  }, [
+    canRunQuoteRequest,
+    userAddress,
+    payToken?.id,
+    receiveToken?.id,
+    chain,
+    inputAmount,
+    feeRate,
+    slippageObj.slippage,
+    slippageObj.autoSlippage,
+  ]);
 
   const setQuote = useCallback(
     (id: number) => (quote: TDexQuoteData) => {
@@ -527,19 +648,14 @@ export const useTokenPair = (userAddress: string) => {
     { loading: quoteLoading, error: quotesError },
     getQuotes,
   ] = useAsyncFn(async () => {
+    if (depositFlowActiveRef.current) {
+      setPending(false);
+      return;
+    }
+
     fetchIdRef.current += 1;
     const currentFetchId = fetchIdRef.current;
-    if (
-      userAddress &&
-      payToken?.id &&
-      receiveToken?.id &&
-      receiveToken &&
-      chain &&
-      Number(inputAmount) > 0 &&
-      feeRate &&
-      inSufficientCanGetQuote &&
-      !isDraggingSlider
-    ) {
+    if (canRunQuoteRequest && receiveToken && !isDraggingSlider) {
       refreshTokensInfo();
 
       setQuotesList((e) =>
@@ -582,6 +698,9 @@ export const useTokenPair = (userAddress: string) => {
         setQuote: setQuote(currentFetchId),
         inSufficient,
       }).finally(() => {
+        if (currentFetchId !== fetchIdRef.current) {
+          return;
+        }
         setPending(false);
         setShowMoreVisible(true);
       });
@@ -590,7 +709,7 @@ export const useTokenPair = (userAddress: string) => {
     }
   }, [
     setActiveProvider,
-    inSufficientCanGetQuote,
+    canRunQuoteRequest,
     setQuotesList,
     setQuote,
     refreshId,
@@ -606,40 +725,39 @@ export const useTokenPair = (userAddress: string) => {
   ]);
 
   useEffect(() => {
-    if (
-      userAddress &&
-      payToken?.id &&
-      receiveToken?.id &&
-      receiveToken &&
-      chain &&
-      Number(inputAmount) > 0 &&
-      feeRate &&
-      inSufficientCanGetQuote
-    ) {
+    if (canRunQuoteRequest) {
       setPending(true);
     } else {
       setPending(false);
     }
   }, [
-    userAddress,
-    payToken?.id,
-    receiveToken?.id,
-    chain,
-    inputAmount,
-    feeRate,
-    inSufficientCanGetQuote,
+    canRunQuoteRequest,
     slippageObj?.slippage,
     slippageObj.autoSlippage,
     refreshId,
   ]);
 
-  useDebounce(
+  const [, cancelQuoteDebounce] = useDebounce(
     () => {
       getQuotes();
     },
     1000,
     [getQuotes]
   );
+
+  useEffect(() => {
+    if (depositFlowActive) {
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+      }
+      setPending(false);
+      cancelQuoteDebounce();
+    } else if (previousDepositFlowActiveRef.current) {
+      setRefreshId((e) => e + 1);
+    }
+
+    previousDepositFlowActiveRef.current = depositFlowActive;
+  }, [cancelQuoteDebounce, depositFlowActive, setRefreshId]);
 
   useEffect(() => {
     if (
@@ -839,11 +957,22 @@ export const useTokenPair = (userAddress: string) => {
     if (isSetMaxRef.current) {
       return;
     }
-    if (!isGasMarketLoading && searchObj?.isMax && payToken?.amount) {
+    if (
+      !isGasMarketLoading &&
+      (!isTempoSwapChain || !isTempoGasTokenLoading) &&
+      searchObj?.isMax &&
+      payToken?.amount
+    ) {
       onChangeSlider(100, true);
       isSetMaxRef.current = true;
     }
-  }, [isGasMarketLoading, searchObj?.isMax, payToken]);
+  }, [
+    isGasMarketLoading,
+    isTempoSwapChain,
+    isTempoGasTokenLoading,
+    searchObj?.isMax,
+    payToken,
+  ]);
 
   const rbiSource = useRbiSource();
 
@@ -868,6 +997,7 @@ export const useTokenPair = (userAddress: string) => {
   }, []);
 
   return {
+    setReloadTxRefreshPaused,
     bestQuoteDex,
     gasLevel,
 
@@ -884,6 +1014,7 @@ export const useTokenPair = (userAddress: string) => {
     setReceiveToken,
     exchangeToken,
     payTokenIsNativeToken,
+    payTokenIsGasToken,
 
     handleAmountChange,
     setPayAmount,
@@ -924,29 +1055,9 @@ export const useTokenPair = (userAddress: string) => {
   };
 };
 
-function getChainDefaultToken(chain: CHAINS_ENUM) {
-  const chainInfo = findChainByEnum(chain)!;
-  return {
-    id: chainInfo.nativeTokenAddress,
-    decimals: chainInfo.nativeTokenDecimals,
-    logo_url: chainInfo.nativeTokenLogo,
-    symbol: chainInfo.nativeTokenSymbol,
-    display_symbol: chainInfo.nativeTokenSymbol,
-    optimized_symbol: chainInfo.nativeTokenSymbol,
-    is_core: true,
-    is_verified: true,
-    is_wallet: true,
-    amount: 0,
-    price: 0,
-    name: chainInfo.nativeTokenSymbol,
-    chain: chainInfo.serverId,
-    time_at: 0,
-  } as TokenItem;
-}
-
 function tokenAmountBn(token: TokenItem) {
   return new BigNumber(token?.raw_amount_hex_str || 0, 16).div(
-    10 ** (token?.decimals || 1)
+    10 ** token.decimals
   );
 }
 

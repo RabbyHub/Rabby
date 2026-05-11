@@ -1,7 +1,7 @@
 import gulp from 'gulp';
 import sort from 'gulp-sort';
 import gulpZip from 'gulp-zip';
-import { pipeline } from 'readable-stream';
+import { pipeline } from 'node:stream/promises';
 
 export async function createZipTask(dist, zipFileName) {
   return pipeline(

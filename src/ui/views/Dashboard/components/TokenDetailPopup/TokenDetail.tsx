@@ -1,12 +1,8 @@
 import { useInfiniteScroll } from 'ahooks';
 import { Button } from 'antd';
-import {
-  TokenEntityDetail,
-  TokenItem,
-  TxHistoryResult,
-} from 'background/service/openapi';
+import { TokenEntityDetail, TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
-import { last } from 'lodash';
+import { isNil, last, sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -24,11 +20,10 @@ import { Loading } from './Loading';
 import './style.less';
 import { ellipsisOverflowedText } from 'ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { BlockedButton } from './BlockedButton';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { UnknownTag } from '@/ui/component';
 import TokenChainAndContract from './TokenInfo';
 import { TokenCharts } from '@/ui/component/TokenChart';
-import { BlockedTopTips } from './BlockedTopTips';
 import { ScamTokenTips } from './ScamTokenTips';
 import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
 import { Account } from '@/background/service/preference';
@@ -37,14 +32,13 @@ import { DbkButton } from '@/ui/views/Ecology/dbk-chain/components/DbkButton';
 import { DBK_CHAIN_ID } from '@/constant';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
+import { transformToHistory } from '@/utils/history';
 const isDesktop = getUiType().isDesktop;
 const PAGE_COUNT = 10;
 
 interface TokenDetailProps {
   onClose?(): void;
   token: TokenItem;
-  addToken(token: TokenItem): void;
-  removeToken(token: TokenItem): void;
   variant?: 'add';
   isAdded?: boolean;
   canClickToken?: boolean;
@@ -56,8 +50,6 @@ interface TokenDetailProps {
 
 const TokenDetail = ({
   token,
-  addToken,
-  removeToken,
   variant,
   isAdded,
   onClose,
@@ -78,6 +70,10 @@ const TokenDetail = ({
   const currentAccount = account || _currentAccount;
 
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const isUnknownToken = useMemo(() => {
+    return isNil(token.is_core);
+  }, [token.is_core]);
 
   const getTokenAmount = React.useCallback(async () => {
     // if (token.amount !== undefined) return;
@@ -117,22 +113,20 @@ const TokenDetail = ({
   }, [currentAccount, getTokenAmount]);
 
   const fetchData = async (startTime = 0) => {
-    const res: TxHistoryResult = await wallet.openapi.listTxHisotry({
+    const res = await wallet.openapi.listTxHisotry({
       id: currentAccount!.address,
       chain_id: token.chain,
       start_time: startTime,
       page_count: PAGE_COUNT,
       token_id: token.id,
     });
-    const { project_dict, cate_dict, token_dict, history_list: list } = res;
-    const displayList = list
-      .map((item) => ({
-        ...item,
-        projectDict: project_dict,
-        cateDict: cate_dict,
-        tokenDict: token_dict,
-      }))
-      .sort((v1, v2) => v2.time_at - v1.time_at);
+    const displayList = sortBy(
+      transformToHistory({
+        data: res,
+        address: currentAccount!.address,
+      }),
+      (item) => -item.time_at
+    );
     return {
       last: last(displayList)?.time_at,
       list: displayList,
@@ -369,6 +363,9 @@ const TokenDetail = ({
             <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
+            {isUnknownToken && (
+              <UnknownTag className="ml-8 !px-[8px] !py-[4px] !text-[13px] !leading-[13px] bg-rb-neutral-line" />
+            )}
             {isLpToken(token) && (
               <LpTokenTag
                 className="ml-8"
@@ -498,9 +495,6 @@ const TokenDetail = ({
           {data?.list.map((item) => (
             <HistoryItem
               data={item}
-              projectDict={item.projectDict}
-              cateDict={item.cateDict}
-              tokenDict={item.tokenDict}
               key={item.id}
               onClose={onClose}
               canClickToken={canClickToken}
