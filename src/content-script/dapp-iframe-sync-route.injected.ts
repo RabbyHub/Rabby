@@ -195,7 +195,7 @@ const setupDappIframeSyncRoute = () => {
   const handleMessage = (event: MessageEvent) => {
     console.log('[iframe] in handleMessage', event.origin, event);
 
-    if (!event.origin.startsWith('chrome-extension://')) {
+    if (!/^(chrome|moz)-extension:\/\//.test(event.origin)) {
       return;
     }
 
