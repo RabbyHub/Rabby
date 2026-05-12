@@ -736,6 +736,9 @@ export const DirectSignGasInfo = ({
       token: TokenItem,
       options?: Parameters<typeof signatureInstance.setTempoFeeToken>[1]
     ) => {
+      setTempoPreferredFeeTokenId(
+        options?.tempoPreferredFeeTokenId || token.id
+      );
       signatureInstance.setTempoFeeToken(token, options);
       if (selectedGas) {
         await handleGasChange(selectedGas as any);
@@ -902,6 +905,7 @@ export const DirectSignGasInfo = ({
               gasLimit: item.gasLimit,
               account: currentAccount,
               preparedL1Fee: item.L1feeCache,
+              gasTokenDecimals: gasToken.decimals || 18,
             }),
           };
         })
@@ -941,7 +945,7 @@ export const DirectSignGasInfo = ({
               : new BigNumber(0);
             balance = new BigNumber(balance)
               .minus(txValueRaw)
-              .minus(new BigNumber(item.gasCost.maxGasCostAmount || 0))
+              .minus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0))
               .toFixed();
 
             return result;
@@ -1129,6 +1133,7 @@ export const DirectSignGasInfo = ({
             noCustomRPC={noCustomRPC}
             showTempoGasTokenSelector={showTempoGasTokenSelector}
             tempoGasTokenList={tempoGasTokenList}
+            tempoPreferredFeeTokenId={tempoPreferredFeeTokenId}
             onSelectTempoGasToken={handleSelectTempoGasToken}
             tempoGasTokenLoading={tempoGasTokenLoading}
             getContainer={getContainer}

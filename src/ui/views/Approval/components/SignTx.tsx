@@ -2206,6 +2206,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const handleSelectTempoGasToken = useMemoizedFn((token: TokenItem) => {
     const tokenId = token.id;
     syncTempoGasTokenState(token);
+    setTempoPreferredFeeTokenId(tokenId);
     setTx((prev) => ({
       ...prev,
       feeToken: tokenId,
@@ -2886,6 +2887,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                   gasToken={gasToken}
                   showTempoGasTokenSelector={showTempoGasTokenSelector}
                   tempoGasTokenList={tempoGasTokenList}
+                  tempoPreferredFeeTokenId={tempoPreferredFeeTokenId}
                   onSelectTempoGasToken={handleSelectTempoGasToken}
                   tempoGasTokenLoading={tempoGasTokenLoading}
                   checkTxValueInBalance={checkTxValueInBalance}

@@ -577,7 +577,7 @@ export const checkGasAndNonce = ({
     id: tx.chainId,
   });
   const tempoFeeToken =
-    tempoPreferredFeeTokenId || (tx as Tx & { feeToken?: string }).feeToken;
+    (tx as Tx & { feeToken?: string }).feeToken || tempoPreferredFeeTokenId;
   // Tempo gas token options are pre-filtered by gas affordability. If the
   // transaction feeToken cannot be selected as the current gas token, treat it
   // as the same 3001 gas-not-enough condition so Gas Account auto-switching
