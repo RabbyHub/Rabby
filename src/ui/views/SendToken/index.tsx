@@ -1770,6 +1770,12 @@ const SendToken = () => {
   const handleClickBack = () => {
     const from = (history.location.state as any)?.from;
 
+    console.debug('[route-perf][SendToken] back clicked', {
+      from,
+      pathname: history.location.pathname,
+      search: history.location.search,
+      historyLength: window.history.length,
+    });
     if (from) {
       history.replace(from);
     } else {
