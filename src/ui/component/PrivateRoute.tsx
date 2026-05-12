@@ -13,13 +13,28 @@ export const PrivateRouteGuard = ({ children }) => {
   useEffect(() => {
     let cancelled = false;
     const init = async () => {
+      const start = performance.now();
+      console.debug('[route-perf][PrivateRoute] guard start', {
+        pathname: location.pathname,
+        historyLength: window.history.length,
+      });
       const [booted, unlocked] = await Promise.all([
         wallet.isBooted(),
         wallet.isUnlocked(),
       ]);
       if (cancelled) {
+        console.debug('[route-perf][PrivateRoute] guard cancelled', {
+          pathname: location.pathname,
+          cost: Math.round(performance.now() - start),
+        });
         return;
       }
+      console.debug('[route-perf][PrivateRoute] guard resolved', {
+        pathname: location.pathname,
+        booted,
+        unlocked,
+        cost: Math.round(performance.now() - start),
+      });
       setIsBooted(booted);
       setIsUnlocked(unlocked);
       setIsReady(true);

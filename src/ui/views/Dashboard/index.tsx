@@ -24,6 +24,7 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { useGasAccountDiscovery } from '@/ui/views/GasAccount/hooks';
 
 const Dashboard = () => {
+  const dashboardRenderStart = performance.now();
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -50,7 +51,13 @@ const Dashboard = () => {
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
 
   const getCurrentAccount = async () => {
+    const start = performance.now();
     const account = await dispatch.account.getCurrentAccountAsync();
+    console.debug('[route-perf][Dashboard] getCurrentAccount resolved', {
+      cost: Math.round(performance.now() - start),
+      hasCurrentAccount: !!account,
+      historyLength: window.history.length,
+    });
     if (!account) {
       history.replace('/no-address');
       return;
@@ -58,6 +65,11 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    console.debug('[route-perf][Dashboard] mounted', {
+      costFromRender: Math.round(performance.now() - dashboardRenderStart),
+      historyLength: window.history.length,
+      pathname: history.location.pathname,
+    });
     getCurrentAccount();
   }, []);
 
@@ -72,11 +84,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     (async () => {
+      const start = performance.now();
       await dispatch.addressManagement.getHilightedAddressesAsync();
+      console.debug('[route-perf][Dashboard] highlighted addresses resolved', {
+        cost: Math.round(performance.now() - start),
+      });
       dispatch.accountToDisplay.getAllAccountsToDisplay();
       const pendingCount = await wallet.getPendingApprovalCount();
+      console.debug('[route-perf][Dashboard] pending approval count resolved', {
+        cost: Math.round(performance.now() - start),
+        pendingCount,
+      });
       setPendingApprovalCount(pendingCount);
       const hasAnyAccountClaimedGift = await wallet.getHasAnyAccountClaimedGift();
+      console.debug('[route-perf][Dashboard] gift status resolved', {
+        cost: Math.round(performance.now() - start),
+        hasAnyAccountClaimedGift,
+      });
       dispatch.gift.setField({ hasClaimedGift: hasAnyAccountClaimedGift });
     })();
   }, []);
