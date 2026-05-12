@@ -164,6 +164,14 @@ export const SignMainnetGasSelectorHeader = ({
   const selectedSupportedLevel = supportedLevels.find(
     (gasLevel) => gasLevel.level === selectedGas?.level
   )?.level;
+  const supportedGasLevelPrices = useMemo(
+    () =>
+      supportedLevels.map((gasLevel) => ({
+        level: gasLevel.level,
+        price: Number(gasLevel.price),
+      })),
+    [supportedLevels]
+  );
   const txFingerprint = useMemo(
     () =>
       [
@@ -381,6 +389,8 @@ export const SignMainnetGasSelectorHeader = ({
 
     const nextGasLevel = resolveSignMainnetAutoDowngradeGasLevel({
       selectedSupportedLevel,
+      selectedGasPrice: Number(selectedGas?.price),
+      supportedGasLevels: supportedGasLevelPrices,
       gasAccountChainSupported: gasAccountMethodSupported,
       levelState,
       requestFingerprint: txFingerprint,
@@ -401,6 +411,8 @@ export const SignMainnetGasSelectorHeader = ({
     const switchKey = [
       txFingerprint,
       selectedSupportedLevel || '',
+      selectedGas?.level || '',
+      selectedGas?.price || '',
       nextGasLevel.level,
       nextGasLevel.gasMethod,
     ].join('|');
@@ -445,7 +457,10 @@ export const SignMainnetGasSelectorHeader = ({
     props.disabled,
     props.isReady,
     props.onChangeGasMethod,
+    selectedGas?.level,
+    selectedGas?.price,
     selectedSupportedLevel,
+    supportedGasLevelPrices,
     supportedLevels,
     txFingerprint,
   ]);

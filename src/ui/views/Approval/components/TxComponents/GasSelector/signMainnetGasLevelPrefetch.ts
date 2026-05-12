@@ -27,6 +27,11 @@ export type SignMainnetAutoDowngradeGasLevel = {
   gasMethod: 'native' | 'gasAccount';
 };
 
+export type SignMainnetSupportedGasLevelPrice = {
+  level: SignMainnetSupportedGasLevel;
+  price: number;
+};
+
 export const resolveSignMainnetGasLevelFetchMode = ({
   isReady,
   isModalOpen,
@@ -124,11 +129,15 @@ export const hasUsableSiblingSignMainnetGasLevel = ({
 
 export const resolveSignMainnetAutoDowngradeGasLevel = ({
   selectedSupportedLevel,
+  selectedGasPrice,
+  supportedGasLevels = [],
   gasAccountChainSupported,
   levelState,
   requestFingerprint,
 }: {
   selectedSupportedLevel?: SignMainnetSupportedGasLevel;
+  selectedGasPrice?: number;
+  supportedGasLevels?: SignMainnetSupportedGasLevelPrice[];
   gasAccountChainSupported: boolean;
   levelState: SignMainnetGasLevelState;
   requestFingerprint: string;
@@ -137,14 +146,23 @@ export const resolveSignMainnetAutoDowngradeGasLevel = ({
     ? SIGN_MAINNET_SUPPORTED_GAS_LEVELS.indexOf(selectedSupportedLevel)
     : -1;
 
-  if (selectedIndex <= 0) {
+  const lowerLevels =
+    selectedIndex >= 0
+      ? SIGN_MAINNET_SUPPORTED_GAS_LEVELS.slice(0, selectedIndex).reverse()
+      : supportedGasLevels
+          .filter(
+            (gasLevel) =>
+              Number.isFinite(gasLevel.price) &&
+              typeof selectedGasPrice === 'number' &&
+              Number.isFinite(selectedGasPrice) &&
+              gasLevel.price < selectedGasPrice
+          )
+          .sort((a, b) => b.price - a.price)
+          .map((gasLevel) => gasLevel.level);
+
+  if (!lowerLevels.length) {
     return null;
   }
-
-  const lowerLevels = SIGN_MAINNET_SUPPORTED_GAS_LEVELS.slice(
-    0,
-    selectedIndex
-  ).reverse();
 
   for (const level of lowerLevels) {
     const state = levelState[level];
