@@ -3470,6 +3470,10 @@
         "onePosition": "1 Posição",
         "openPosition": "Abrir Posição"
       },
+      "categories": {
+        "favorite": "Favoritos",
+        "topVolume": "Maior volume"
+      },
       "invitePopup": {
         "activateNow": "Ativar agora",
         "title": "Economize nas taxas da Hyperliquid",

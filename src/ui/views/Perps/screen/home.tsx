@@ -52,7 +52,6 @@ import {
 import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from '../sdkManager';
 import * as Sentry from '@sentry/browser';
-import { sortBy } from 'lodash';
 import { RiskLevelPopup } from '../popup/RiskLevelPopup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import stats from '@/stats';
@@ -60,7 +59,9 @@ import { getStatsReportSide } from '../../DesktopPerps/utils';
 import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
 import { OpenProModeEntry } from '../components/OpenProModeEntry';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
-import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
+import { PerpsCategorySectionHeader } from '../components/PerpsCategorySectionHeader';
+import { usePerpsGroupedMarketData } from '../hooks/usePerpsGroupedMarketData';
+import { PerpsCategoryId } from '../constants/perpsCategories';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
 import { useScroll } from 'ahooks';
 import { PerpsAccountCard } from '../components/PerpsAccountCard';
@@ -105,6 +106,9 @@ export const Perps: React.FC = () => {
     AssetPosition['position'] | null
   >(null);
   const [searchPopupVisible, setSearchPopupVisible] = useState(false);
+  const [searchInitialTab, setSearchInitialTab] = useState<
+    PerpsCategoryId | undefined
+  >(undefined);
   const [amountVisible, setAmountVisible] = useState(false);
   const [enableUnifiedVisible, setEnableUnifiedVisible] = useState(false);
   const [swapVisible, setSwapVisible] = useState(false);
@@ -219,19 +223,19 @@ export const Perps: React.FC = () => {
   };
 
   const favoritedCoins = useRabbySelector((s) => s.perps.favoritedCoins);
+  const marketDataCategories = useRabbySelector(
+    (s) => s.perps.marketDataCategories
+  );
 
   const toggleFavorite = useMemoizedFn((coin: string) => {
     dispatch.perps.toggleFavoriteCoin(coin);
   });
 
-  const marketSectionList = useMemo(() => {
-    const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
-    const favorites = sorted.filter((item) =>
-      favoritedCoins.includes(item.name)
-    );
-    const others = sorted.filter((item) => !favoritedCoins.includes(item.name));
-    return [...favorites, ...others];
-  }, [marketData, favoritedCoins]);
+  const { visibleHome } = usePerpsGroupedMarketData({
+    marketData,
+    favoriteMarkets: favoritedCoins,
+    backendCategories: marketDataCategories,
+  });
 
   // Calculate real-time popup data based on selected coin
   const riskPopupData = useMemo(() => {
@@ -373,14 +377,6 @@ export const Perps: React.FC = () => {
     });
   });
 
-  const positionCoinSet = useMemo(() => {
-    const set = new Set();
-    positionAndOpenOrders?.forEach((order) => {
-      set.add(order.position.coin);
-    });
-    return set;
-  }, [positionAndOpenOrders]);
-
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
       <PageHeader
@@ -476,27 +472,30 @@ export const Perps: React.FC = () => {
 
         {isInitialized && (
           <div className="mt-20 mx-20">
-            <ExplorePerpsHeader
-              ref={headerRef}
-              onSearchClick={() => {
-                setSearchPopupVisible(true);
-                setOpenFromSource('searchPerps');
-              }}
-            />
-            <div className="rounded-[8px] flex flex-col gap-8">
-              {marketSectionList.map((item) => (
-                <AssetItem
-                  key={item.name}
-                  item={item}
-                  onClick={() => {
-                    history.push(`/perps/single-coin/${item.name}`);
+            {visibleHome.map((cat) => (
+              <div key={cat.id} className="mb-24">
+                <PerpsCategorySectionHeader
+                  cfg={cat.cfg}
+                  onSearchClick={() => {
+                    setSearchInitialTab(cat.id);
+                    setSearchPopupVisible(true);
+                    setOpenFromSource('searchPerps');
                   }}
-                  hasPosition={positionCoinSet.has(item.name)}
-                  isFavorited={favoritedCoins.includes(item.name)}
-                  onToggleFavorite={toggleFavorite}
                 />
-              ))}
-            </div>
+                <div className="rounded-[8px] flex flex-col gap-8">
+                  {cat.items.map((item, i) => (
+                    <AssetItem
+                      key={`${cat.id}-${item.name}`}
+                      item={item}
+                      rank={cat.cfg.showRankOnHome ? i + 1 : undefined}
+                      onClick={() => {
+                        history.push(`/perps/single-coin/${item.name}`);
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
         <div className="h-[96px]"></div>
@@ -623,9 +622,11 @@ export const Perps: React.FC = () => {
       />
       <SearchPerpsPopup
         visible={searchPopupVisible}
+        initialTab={searchInitialTab}
         onCancel={() => {
           setSearchPopupVisible(false);
           setOpenFromSource('openPosition');
+          setSearchInitialTab(undefined);
         }}
         marketData={marketData}
         positionAndOpenOrders={positionAndOpenOrders}

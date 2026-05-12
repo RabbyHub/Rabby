@@ -3797,6 +3797,10 @@
         "hasPosition": "Position",
         "openPosition": "Position ouverte"
       },
+      "categories": {
+        "favorite": "Favoris",
+        "topVolume": "Top volume"
+      },
       "invitePopup": {
         "title": "Économisez sur les frais Hyperliquid",
         "activateFailed": "Échoué",

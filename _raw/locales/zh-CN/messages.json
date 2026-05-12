@@ -3508,6 +3508,10 @@
         "hasPosition": "持仓",
         "onePosition": "1 仓位"
       },
+      "categories": {
+        "favorite": "收藏",
+        "topVolume": "成交量榜"
+      },
       "invitePopup": {
         "activateFailed": "失败",
         "title": "降低 Hyperliquid 交易手续费",

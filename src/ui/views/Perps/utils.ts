@@ -105,6 +105,7 @@ export const formatMarkData = (
           quoteAsset,
           displayName: topAsset.display_name || topAsset.name,
           category: topAsset.category || '',
+          categoryId: topAsset.category_id || topAsset.category || '',
           maxLeverage: Number(
             firstTier?.maxLeverage ?? hlDataAsset?.maxLeverage
           ),

@@ -3468,6 +3468,10 @@
         "openPosition": "建玉を開く",
         "onePosition": "1 建玉"
       },
+      "categories": {
+        "favorite": "お気に入り",
+        "topVolume": "取引高上位"
+      },
       "invitePopup": {
         "activateFailed": "失敗",
         "activateNow": "今すぐ有効化",

@@ -3508,6 +3508,10 @@
         "searchPerps": "搜尋永續合約",
         "searchPosition": "搜尋持倉"
       },
+      "categories": {
+        "favorite": "收藏",
+        "topVolume": "成交量榜"
+      },
       "invitePopup": {
         "activateFailed": "失敗",
         "activateNow": "立即啟用",

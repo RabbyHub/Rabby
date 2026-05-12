@@ -3468,6 +3468,10 @@
         "searchPlaceholder": "Nach Perpetual-Kontrakten suchen",
         "openPosition": "Offene Position"
       },
+      "categories": {
+        "favorite": "Favoriten",
+        "topVolume": "Top-Volumen"
+      },
       "invitePopup": {
         "activateFailed": "Fehlgeschlagen",
         "activateNow": "Jetzt aktivieren",

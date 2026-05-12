@@ -3471,6 +3471,10 @@
         "empty": "Piyasalar bulunamadı",
         "searchPerps": "Sürekli Vadeli Sözleşmeleri Ara"
       },
+      "categories": {
+        "favorite": "Favoriler",
+        "topVolume": "En Yüksek Hacim"
+      },
       "invitePopup": {
         "activateFailed": "Başarısız",
         "title": "Hyperliquid ücretlerinden tasarruf edin",

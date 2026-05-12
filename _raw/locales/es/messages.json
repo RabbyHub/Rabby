@@ -3468,6 +3468,10 @@
         "onePosition": "1 Posición",
         "searchPerps": "Buscar contratos perpetuos"
       },
+      "categories": {
+        "favorite": "Favoritos",
+        "topVolume": "Mayor volumen"
+      },
       "invitePopup": {
         "activateNow": "Activar ahora",
         "activateFailed": "Fallido",

@@ -3465,6 +3465,10 @@
         "hasPosition": "Posição",
         "openPosition": "Posição Aberta"
       },
+      "categories": {
+        "favorite": "Favoritos",
+        "topVolume": "Maior volume"
+      },
       "invitePopup": {
         "hyperliquidFee": "Taxas de negociação da Hyperliquid.",
         "description": "Use o código do Rabby para ativar",

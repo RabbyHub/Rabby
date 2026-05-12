@@ -3470,6 +3470,10 @@
         "searchPlaceholder": "Поиск бессрочных контрактов",
         "searchPerps": "Поиск вечных контрактов"
       },
+      "categories": {
+        "favorite": "Избранное",
+        "topVolume": "Топ по объёму"
+      },
       "invitePopup": {
         "activateFailed": "Не удалось",
         "title": "Сэкономьте на комиссиях Hyperliquid",

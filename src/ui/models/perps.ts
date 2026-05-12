@@ -80,6 +80,7 @@ export interface MarketData {
   displayName: string;
   quoteAsset: PerpsQuoteAsset;
   category?: string;
+  categoryId: string;
   brief?: string;
   description?: string;
   maxLeverage: number;
