@@ -768,7 +768,12 @@ export const PositionsInfo: React.FC = () => {
             pnl={Number(currentPosition.unrealizedPnl || 0)}
             onCancel={() => setEditMarginVisible(false)}
             onConfirm={async (action: 'add' | 'reduce', margin: number) => {
-              await handleUpdateMargin(currentPosition.coin, action, margin);
+              await handleUpdateMargin(
+                currentPosition.coin,
+                marketDataMap[currentPosition.coin]?.dexId ?? '',
+                action,
+                margin
+              );
               setEditMarginVisible(false);
             }}
           />

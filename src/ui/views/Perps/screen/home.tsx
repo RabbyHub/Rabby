@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -52,7 +46,6 @@ import {
 import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from '../sdkManager';
 import * as Sentry from '@sentry/browser';
-import { sortBy } from 'lodash';
 import { RiskLevelPopup } from '../popup/RiskLevelPopup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import stats from '@/stats';
@@ -60,10 +53,12 @@ import { getStatsReportSide } from '../../DesktopPerps/utils';
 import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
 import { OpenProModeEntry } from '../components/OpenProModeEntry';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
-import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
+import { PerpsCategorySectionHeader } from '../components/PerpsCategorySectionHeader';
+import { usePerpsGroupedMarketData } from '../hooks/usePerpsGroupedMarketData';
+import { PerpsCategoryId } from '../constants/perpsCategories';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
-import { useScroll } from 'ahooks';
 import { PerpsAccountCard } from '../components/PerpsAccountCard';
+import { usePerpsPosition } from '../hooks/usePerpsPosition';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -72,6 +67,9 @@ export const Perps: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const [deleteAgentModalVisible, setDeleteAgentModalVisible] = useState(false);
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
+  const clearinghouseState = useRabbySelector(
+    (s) => s.perps.clearinghouseState
+  );
   const {
     positionAndOpenOrders,
     currentPerpsAccount,
@@ -101,6 +99,9 @@ export const Perps: React.FC = () => {
     AssetPosition['position'] | null
   >(null);
   const [searchPopupVisible, setSearchPopupVisible] = useState(false);
+  const [searchInitialTab, setSearchInitialTab] = useState<
+    PerpsCategoryId | undefined
+  >(undefined);
   const [amountVisible, setAmountVisible] = useState(false);
   const [enableUnifiedVisible, setEnableUnifiedVisible] = useState(false);
   const [swapVisible, setSwapVisible] = useState(false);
@@ -152,45 +153,6 @@ export const Perps: React.FC = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const headerInitialTopRef = useRef<number>(0);
-  const scroll = useScroll(scrollContainerRef);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer || !isInitialized) return;
-
-    // 重置初始位置
-    headerInitialTopRef.current = 0;
-
-    const handleScroll = () => {
-      if (!headerRef.current) return;
-
-      const stickyRect = headerRef.current.getBoundingClientRect();
-      const containerRect = scrollContainer.getBoundingClientRect();
-
-      if (
-        headerInitialTopRef.current === 0 &&
-        scrollContainer.scrollTop === 0
-      ) {
-        headerInitialTopRef.current = stickyRect.top - containerRect.top;
-      }
-
-      const scrollTop = scrollContainer.scrollTop;
-      const isSticky =
-        stickyRect.top <= containerRect.top ||
-        (headerInitialTopRef.current > 0 &&
-          scrollTop >= headerInitialTopRef.current);
-    };
-
-    scrollContainer.addEventListener('scroll', handleScroll);
-    handleScroll();
-
-    return () => {
-      scrollContainer.removeEventListener('scroll', handleScroll);
-    };
-  }, [isInitialized]);
 
   useEffect(() => {
     dispatch.perps.initFavoritedCoins(undefined);
@@ -215,19 +177,19 @@ export const Perps: React.FC = () => {
   };
 
   const favoritedCoins = useRabbySelector((s) => s.perps.favoritedCoins);
+  const marketDataCategories = useRabbySelector(
+    (s) => s.perps.marketDataCategories
+  );
 
   const toggleFavorite = useMemoizedFn((coin: string) => {
     dispatch.perps.toggleFavoriteCoin(coin);
   });
 
-  const marketSectionList = useMemo(() => {
-    const sorted = sortBy(marketData, (item) => -(item.dayNtlVlm || 0));
-    const favorites = sorted.filter((item) =>
-      favoritedCoins.includes(item.name)
-    );
-    const others = sorted.filter((item) => !favoritedCoins.includes(item.name));
-    return [...favorites, ...others];
-  }, [marketData, favoritedCoins]);
+  const { visibleHome } = usePerpsGroupedMarketData({
+    marketData,
+    favoriteMarkets: favoritedCoins,
+    backendCategories: marketDataCategories,
+  });
 
   // Calculate real-time popup data based on selected coin
   const riskPopupData = useMemo(() => {
@@ -264,118 +226,38 @@ export const Perps: React.FC = () => {
     };
   }, [riskPopupCoin, positionAndOpenOrders, marketDataMap]);
 
-  const handleClosePosition = useMemoizedFn(
-    async (params: {
-      coin: string;
-      size: string;
-      direction: 'Long' | 'Short';
-      price: string;
-    }) => {
-      try {
-        const sdk = getPerpsSDK();
-        const { coin, direction, price, size } = params;
-        const res = await sdk.exchange?.marketOrderClose({
-          coin,
-          isBuy: direction === 'Short',
-          size,
-          midPx: price,
-          builder: PERPS_BUILDER_INFO,
-        });
+  const { handleCloseAllPositions } = usePerpsPosition();
 
-        const filled = res?.response?.data?.statuses[0]?.filled;
-        if (filled) {
-          // dispatch.perps.fetchClearinghouseState();
-          const { totalSz, avgPx } = filled;
-          message.success({
-            // className: 'toast-message-2025-center',
-            duration: 1.5,
-            content: t('page.perps.toast.closePositionSuccess', {
-              direction,
-              coin,
-              size: totalSz,
-              price: avgPx,
-            }),
-          });
-          return filled as { totalSz: string; avgPx: string; oid: number };
-        } else {
-          const msg = res?.response?.data?.statuses[0]?.error;
-          message.error({
-            // className: 'toast-message-2025-center',
-            duration: 1.5,
-            content: msg || 'close position error',
-          });
-          Sentry.captureException(
-            new Error(
-              'PERPS close position noFills' +
-                'params: ' +
-                JSON.stringify(params) +
-                'res: ' +
-                JSON.stringify(res)
-            )
-          );
-          return null;
-        }
-      } catch (e) {
-        const isExpired = await judgeIsUserAgentIsExpired(e?.message || '');
-        if (isExpired) {
-          return null;
-        }
-        console.error('close position error', e);
-        message.error({
-          // className: 'toast-message-2025-center',
-          duration: 1.5,
-          content: e?.message || 'close position error',
-        });
-        Sentry.captureException(
-          new Error(
-            'PERPS close position error' +
-              'params: ' +
-              JSON.stringify(params) +
-              'error: ' +
-              JSON.stringify(e)
-          )
-        );
-        return null;
-      }
-    }
-  );
-
-  const handleCloseAllPosition = useMemoizedFn(async () => {
+  const handleCloseAll = useMemoizedFn(async () => {
     try {
-      await handleActionApproveStatus();
-      const sdk = getPerpsSDK();
-      for (const item of positionAndOpenOrders) {
-        const isBuy = Number(item.position.szi || 0) > 0;
-        const closePrice = marketDataMap[item.position.coin]?.markPx || '0';
-        const res = await handleClosePosition({
-          coin: item.position.coin,
-          size: Math.abs(Number(item.position.szi || 0)).toString() || '0',
-          direction: isBuy ? 'Long' : 'Short',
-          price: closePrice,
-        });
-        if (res) {
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'popup close all position',
-            leverage: item.position.leverage.value.toString(),
-            trade_side: getStatsReportSide(!isBuy, true),
-            margin_mode:
-              item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
-            coin: item.position.coin,
-            size: res.totalSz,
-            price: res.avgPx,
-            trade_usd_value: new BigNumber(res.avgPx)
-              .times(res.totalSz)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
-        }
-        await sleep(10);
+      if (!clearinghouseState || !currentPerpsAccount) {
+        return;
       }
-      dispatch.perps.fetchClearinghouseState();
+      await handleActionApproveStatus();
+      const ok = await handleCloseAllPositions(clearinghouseState);
+      if (!ok) return;
+      clearinghouseState.assetPositions.forEach((item) => {
+        const isBuy = Number(item.position.szi || 0) > 0;
+        const price = new BigNumber(item.position.positionValue || 0).div(
+          new BigNumber(item.position.szi || 1).abs()
+        );
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: currentPerpsAccount?.address || '',
+          trade_type: 'close all market',
+          leverage: item.position.leverage.value.toString(),
+          trade_side: getStatsReportSide(!isBuy, true),
+          margin_mode:
+            item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
+          coin: item.position.coin,
+          size: Math.abs(Number(item.position.szi || 0)),
+          price: price.toFixed(2),
+          trade_usd_value: item.position.positionValue,
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: currentPerpsAccount?.type || '',
+        });
+      });
     } catch (error) {
       console.error('close all position error', error);
       message.error({
@@ -436,7 +318,7 @@ export const Perps: React.FC = () => {
                 block
                 type="primary"
                 onClick={async () => {
-                  handleCloseAllPosition();
+                  handleCloseAll();
                   modal.destroy();
                 }}
               >
@@ -448,14 +330,6 @@ export const Perps: React.FC = () => {
       ),
     });
   });
-
-  const positionCoinSet = useMemo(() => {
-    const set = new Set();
-    positionAndOpenOrders?.forEach((order) => {
-      set.add(order.position.coin);
-    });
-    return set;
-  }, [positionAndOpenOrders]);
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
@@ -482,7 +356,7 @@ export const Perps: React.FC = () => {
         </span>
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
-      <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
+      <div className="flex-1 overflow-auto">
         {!isInitialized ? (
           <PerpsLoading />
         ) : (
@@ -552,27 +426,30 @@ export const Perps: React.FC = () => {
 
         {isInitialized && (
           <div className="mt-20 mx-20">
-            <ExplorePerpsHeader
-              ref={headerRef}
-              onSearchClick={() => {
-                setSearchPopupVisible(true);
-                setOpenFromSource('searchPerps');
-              }}
-            />
-            <div className="rounded-[8px] flex flex-col gap-8">
-              {marketSectionList.map((item) => (
-                <AssetItem
-                  key={item.name}
-                  item={item}
-                  onClick={() => {
-                    history.push(`/perps/single-coin/${item.name}`);
+            {visibleHome.map((cat) => (
+              <div key={cat.id} className="mb-24">
+                <PerpsCategorySectionHeader
+                  cfg={cat.cfg}
+                  onSearchClick={() => {
+                    setSearchInitialTab(cat.id);
+                    setSearchPopupVisible(true);
+                    setOpenFromSource('searchPerps');
                   }}
-                  hasPosition={positionCoinSet.has(item.name)}
-                  isFavorited={favoritedCoins.includes(item.name)}
-                  onToggleFavorite={toggleFavorite}
                 />
-              ))}
-            </div>
+                <div className="rounded-[8px] flex flex-col gap-8">
+                  {cat.items.map((item, i) => (
+                    <AssetItem
+                      key={`${cat.id}-${item.name}`}
+                      item={item}
+                      rank={cat.cfg.showRankOnHome ? i + 1 : undefined}
+                      onClick={() => {
+                        history.push(`/perps/single-coin/${item.name}`);
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
         <div className="h-[96px]"></div>
@@ -699,12 +576,13 @@ export const Perps: React.FC = () => {
       />
       <SearchPerpsPopup
         visible={searchPopupVisible}
+        initialTab={searchInitialTab}
         onCancel={() => {
           setSearchPopupVisible(false);
           setOpenFromSource('openPosition');
+          setSearchInitialTab(undefined);
         }}
         marketData={marketData}
-        positionAndOpenOrders={positionAndOpenOrders}
         onSelect={(coin) => {
           const dirParam =
             openFromSource === 'openPosition'
@@ -716,7 +594,6 @@ export const Perps: React.FC = () => {
         }}
         openFromSource={openFromSource}
         favoritedCoins={favoritedCoins}
-        onToggleFavorite={toggleFavorite}
       />
       <PerpsModal
         visible={deleteAgentModalVisible}

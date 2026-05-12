@@ -1176,7 +1176,12 @@ export const PerpsSingleCoin = () => {
           handleSwapEntry();
         }}
         onCancel={() => setOpenPositionVisible(false)}
-        handleOpenPosition={handleOpenPosition}
+        handleOpenPosition={(params) =>
+          handleOpenPosition({
+            ...params,
+            dex: currentAssetCtx?.dexId ?? '',
+          })
+        }
         onConfirm={() => {
           setOpenPositionVisible(false);
           history.goBack();
@@ -1207,6 +1212,7 @@ export const PerpsSingleCoin = () => {
           }
           const res = await handleClosePosition({
             coin,
+            dex: currentAssetCtx?.dexId ?? '',
             size: sizeStr,
             direction: positionData?.direction as 'Long' | 'Short',
             price: activeAssetCtx?.markPx || '0',
@@ -1266,9 +1272,7 @@ export const PerpsSingleCoin = () => {
         }}
         openFromSource="searchPerps"
         marketData={marketData}
-        positionAndOpenOrders={positionAndOpenOrders}
         favoritedCoins={favoritedCoins}
-        onToggleFavorite={toggleFavoriteForSearch}
       />
 
       <EnableUnifiedAccountPopup
@@ -1325,7 +1329,12 @@ export const PerpsSingleCoin = () => {
             handlePressRiskTag={() => setRiskPopupVisible(true)}
             onCancel={() => setEditMarginVisible(false)}
             onConfirm={async (action: 'add' | 'reduce', margin: number) => {
-              await handleUpdateMargin(coin, action, margin);
+              await handleUpdateMargin(
+                coin,
+                currentAssetCtx?.dexId ?? '',
+                action,
+                margin
+              );
               setEditMarginVisible(false);
             }}
           />
@@ -1373,6 +1382,7 @@ export const PerpsSingleCoin = () => {
             onConfirm={async (tradeSize) => {
               const res = await handleOpenPosition({
                 coin,
+                dex: currentAssetCtx?.dexId ?? '',
                 size: tradeSize,
                 leverage: positionData?.leverage || 1,
                 direction: positionData?.direction as 'Long' | 'Short',

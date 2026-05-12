@@ -940,7 +940,6 @@ export const useDepositWithdraw = (
             : (amount - 1).toString(),
         },
       ]);
-      dispatch.perps.fetchClearinghouseState();
       resetFormValue();
       onCancel();
     } catch (error: any) {
