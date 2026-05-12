@@ -1272,9 +1272,7 @@ export const PerpsSingleCoin = () => {
         }}
         openFromSource="searchPerps"
         marketData={marketData}
-        positionAndOpenOrders={positionAndOpenOrders}
         favoritedCoins={favoritedCoins}
-        onToggleFavorite={toggleFavoriteForSearch}
       />
 
       <EnableUnifiedAccountPopup

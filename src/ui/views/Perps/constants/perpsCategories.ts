@@ -7,6 +7,4 @@ export type PerpsCategoryConfig = {
   homeLimit: number | null;
   showRankOnHome: boolean;
   showRankOnSearch: boolean;
-  /** Synthetic categories (favorite / topVolume) aren't matched against `item.categoryId`. */
-  synthetic?: boolean;
 };

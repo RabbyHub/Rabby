@@ -471,19 +471,39 @@ export const usePerpsPosition = ({
 
   const handleCloseAllPositions = useMemoizedFn(
     async (clearinghouseState: ClearinghouseState) => {
-      const sdk = getPerpsSDK();
-      const res = await sdk.exchange?.closeAllPositions(
-        clearinghouseState,
-        0.08,
-        PERPS_BUILDER_INFO
-      );
-      if (res?.response?.data?.statuses[0]?.filled) {
-        message.success({
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.closeAllPositions(
+          clearinghouseState,
+          0.08,
+          PERPS_BUILDER_INFO
+        );
+        if (res?.response?.data?.statuses[0]?.filled) {
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.closeAllPositionsSuccess'),
+          });
+          dispatch.perps.fetchClearinghouseState();
+          return true;
+        }
+      } catch (error: any) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return false;
+        }
+        console.error('PERPS closeAllPositions error', error);
+        message.error({
           duration: 1.5,
-          content: t('page.perps.toast.closeAllPositionsSuccess'),
+          content: error?.message || 'Close all positions error',
         });
-        dispatch.perps.fetchClearinghouseState();
-        return true;
+        Sentry.captureException(
+          new Error(
+            'PERPS closeAllPositions error ' +
+              ' error: ' +
+              JSON.stringify(error)
+          )
+        );
+        return false;
       }
     }
   );

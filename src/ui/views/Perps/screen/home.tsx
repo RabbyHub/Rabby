@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +57,6 @@ import { PerpsCategorySectionHeader } from '../components/PerpsCategorySectionHe
 import { usePerpsGroupedMarketData } from '../hooks/usePerpsGroupedMarketData';
 import { PerpsCategoryId } from '../constants/perpsCategories';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
-import { useScroll } from 'ahooks';
 import { PerpsAccountCard } from '../components/PerpsAccountCard';
 import { usePerpsPosition } from '../hooks/usePerpsPosition';
 
@@ -160,45 +153,6 @@ export const Perps: React.FC = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const headerInitialTopRef = useRef<number>(0);
-  const scroll = useScroll(scrollContainerRef);
-
-  useEffect(() => {
-    const scrollContainer = scrollContainerRef.current;
-    if (!scrollContainer || !isInitialized) return;
-
-    // 重置初始位置
-    headerInitialTopRef.current = 0;
-
-    const handleScroll = () => {
-      if (!headerRef.current) return;
-
-      const stickyRect = headerRef.current.getBoundingClientRect();
-      const containerRect = scrollContainer.getBoundingClientRect();
-
-      if (
-        headerInitialTopRef.current === 0 &&
-        scrollContainer.scrollTop === 0
-      ) {
-        headerInitialTopRef.current = stickyRect.top - containerRect.top;
-      }
-
-      const scrollTop = scrollContainer.scrollTop;
-      const isSticky =
-        stickyRect.top <= containerRect.top ||
-        (headerInitialTopRef.current > 0 &&
-          scrollTop >= headerInitialTopRef.current);
-    };
-
-    scrollContainer.addEventListener('scroll', handleScroll);
-    handleScroll();
-
-    return () => {
-      scrollContainer.removeEventListener('scroll', handleScroll);
-    };
-  }, [isInitialized]);
 
   useEffect(() => {
     dispatch.perps.initFavoritedCoins(undefined);
@@ -292,7 +246,7 @@ export const Perps: React.FC = () => {
           user_addr: currentPerpsAccount?.address || '',
           trade_type: 'close all market',
           leverage: item.position.leverage.value.toString(),
-          trade_side: getStatsReportSide(isBuy, true),
+          trade_side: getStatsReportSide(!isBuy, true),
           margin_mode:
             item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
           coin: item.position.coin,
@@ -402,7 +356,7 @@ export const Perps: React.FC = () => {
         </span>
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
-      <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
+      <div className="flex-1 overflow-auto">
         {!isInitialized ? (
           <PerpsLoading />
         ) : (
@@ -629,7 +583,6 @@ export const Perps: React.FC = () => {
           setSearchInitialTab(undefined);
         }}
         marketData={marketData}
-        positionAndOpenOrders={positionAndOpenOrders}
         onSelect={(coin) => {
           const dirParam =
             openFromSource === 'openPosition'
@@ -641,7 +594,6 @@ export const Perps: React.FC = () => {
         }}
         openFromSource={openFromSource}
         favoritedCoins={favoritedCoins}
-        onToggleFavorite={toggleFavorite}
       />
       <PerpsModal
         visible={deleteAgentModalVisible}

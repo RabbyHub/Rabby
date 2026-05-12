@@ -59,7 +59,6 @@ export function usePerpsGroupedMarketData(params: {
         homeLimit: b.homeLimit,
         showRankOnHome: b.showRankOnHome,
         showRankOnSearch: b.showRankOnSearch,
-        synthetic: true,
       })),
       ...(backendCategories ?? [])
         .filter((c) => !c.is_disable)
