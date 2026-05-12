@@ -96,4 +96,24 @@ describe('sign mainnet gas level prefetch', () => {
       })
     ).toEqual({ level: 'slow', gasMethod: 'gasAccount' });
   });
+
+  test('keeps the current level when no native or gas account level can pay', () => {
+    expect(
+      resolveSignMainnetAutoDowngradeGasLevel({
+        selectedSupportedLevel: 'fast',
+        gasAccountChainSupported: true,
+        requestFingerprint: fingerprint,
+        levelState: {
+          slow: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+          normal: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+        },
+      })
+    ).toBeNull();
+  });
 });
