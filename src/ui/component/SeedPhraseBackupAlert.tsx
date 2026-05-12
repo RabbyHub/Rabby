@@ -37,7 +37,10 @@ export const SeedPhraseBackupAlert: React.FC<{
   const currentAccount = useCurrentAccount();
 
   const { hasBackup } = useCheckSeedPhraseBackup(
-    currentAccount?.address || '',
+    {
+      address: currentAccount?.address || '',
+      type: currentAccount?.type || '',
+    },
     {
       refreshOnWindowFocus: true,
     }

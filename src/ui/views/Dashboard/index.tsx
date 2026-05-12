@@ -17,7 +17,7 @@ import { DashboardHeader } from './components/DashboardHeader';
 import { DashboardPanel } from './components/DashboardPanel';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { GasPriceBar } from './components/GasPriceBar';
-import { CHAINS_ENUM } from '@/constant';
+import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import Settings from './components/Settings';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
@@ -130,6 +130,9 @@ const Dashboard = () => {
         wallet.clearPageStateCache();
         const address = currentAccount?.address;
         if (!address) {
+          return;
+        }
+        if (currentAccount?.type !== KEYRING_CLASS.MNEMONIC) {
           return;
         }
         const hasBackup = await wallet.checkSeedPhraseBackup(address);

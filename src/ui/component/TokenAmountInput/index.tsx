@@ -23,7 +23,7 @@ import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
 import './style.less';
-import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
+import { normalizeInputNumber } from '@/constant/regexp';
 import { SendMaxButton } from '@/ui/views/SendToken/components/MaxButton';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
@@ -324,8 +324,9 @@ const TokenAmountInput = ({
   }, [token?.chain, setChainServerId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (INPUT_NUMBER_RE.test(e.target.value)) {
-      onChange?.(filterNumber(e.target.value));
+    const nextValue = normalizeInputNumber(e.target.value);
+    if (nextValue !== null) {
+      onChange?.(nextValue);
     }
   };
 

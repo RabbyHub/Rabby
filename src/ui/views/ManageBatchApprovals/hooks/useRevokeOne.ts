@@ -4,6 +4,7 @@ import { Account } from '@/background/service/preference';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { useWallet } from '@/ui/utils';
+import { waitForTxCompleted } from '@/ui/utils/transaction';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { buildTx } from './useBatchRevokeTask';
 
@@ -34,6 +35,12 @@ export const useRevokeOne = ({
       if (!result?.length) {
         throw new Error('No signature result');
       }
+
+      await waitForTxCompleted({
+        hash: result[result.length - 1],
+        wallet,
+        chainServerId: revokeItem.chainServerId,
+      }).catch(() => undefined);
     } catch (error) {
       console.error('Revoke approval failed', error);
       if (

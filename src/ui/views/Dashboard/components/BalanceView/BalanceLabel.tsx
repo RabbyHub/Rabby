@@ -1,6 +1,6 @@
 import { CurrencyItem } from '@/background/service/openapi';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { formatCurrency } from '@/ui/utils';
+import { formatCurrencyParts } from '@/ui/utils';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -10,7 +10,7 @@ interface Props {
   currency: CurrencyItem;
 }
 export const BalanceLabel: React.FC<Props> = ({ balanceUsd, currency }) => {
-  const formattedBalance = formatCurrency(balanceUsd || 0, { currency });
+  const formattedBalance = formatCurrencyParts(balanceUsd || 0, { currency });
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
   const dispatch = useRabbyDispatch();
 
@@ -37,8 +37,34 @@ export const BalanceLabel: React.FC<Props> = ({ balanceUsd, currency }) => {
         >
           *****
         </div>
+      ) : formattedBalance.isPrefix ? (
+        <div
+          className={clsx(
+            'font-bold text-[28px] leading-[33px] truncate max-w-full'
+          )}
+        >
+          {formattedBalance.text}
+        </div>
       ) : (
-        <div>{formattedBalance}</div>
+        <div
+          className={clsx(
+            'inline-flex items-end gap-[4px] max-w-full overflow-hidden',
+            'font-bold text-[28px] leading-[33px]'
+          )}
+        >
+          <span className="min-w-0 truncate">
+            {formattedBalance.sign}
+            {formattedBalance.isLessThan ? '<' : ''}
+            {formattedBalance.amount}
+          </span>
+          <span
+            className={clsx(
+              'shrink-0 pb-[4px] text-[16px] leading-[19px] font-medium'
+            )}
+          >
+            {formattedBalance.symbol}
+          </span>
+        </div>
       )}
     </div>
   );
