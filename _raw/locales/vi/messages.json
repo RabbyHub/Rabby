@@ -4761,6 +4761,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "Ví dụ: Ví không được sao lưu. Bắt đầu sao lưu."
+    },
+    "UnknownTag": {
+      "label": "Không xác định",
+      "tooltip": "Token không xác định, vui lòng tự nghiên cứu."
     }
   },
   "global": {

@@ -4767,6 +4767,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "Cüzdan Yedeklenmedi. Yedeklemeye Başla."
+    },
+    "UnknownTag": {
+      "label": "Bilinmeyen",
+      "tooltip": "Bilinmeyen token, lütfen kendi araştırmanızı yapın."
     }
   },
   "global": {

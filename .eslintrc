@@ -26,5 +26,20 @@
   "env": {
     "browser": true,
     "node": true
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "*.test.js",
+        "*.test.ts",
+        "*.test.tsx",
+        "*.spec.js",
+        "*.spec.ts",
+        "*.spec.tsx"
+      ],
+      "env": {
+        "jest": true
+      }
+    }
+  ]
 }

@@ -34,6 +34,8 @@ export type DepositWithdrawModalType = 'deposit' | 'withdraw';
 interface DepositWithdrawModalProps {
   visible: boolean;
   type: DepositWithdrawModalType;
+  /** Stack-aware z-index from usePerpsPopupNav. */
+  zIndex?: number;
   onCancel: () => void;
 }
 
@@ -47,6 +49,7 @@ const PERCENTAGE_OPTIONS = [
 export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   visible,
   type,
+  zIndex,
   onCancel,
 }) => {
   const { t } = useTranslation();
@@ -174,9 +177,10 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
       footer={null}
       width={400}
       centered
+      zIndex={zIndex}
       bodyStyle={{ padding: 0, height: '520px', maxHeight: '520px' }}
       maskStyle={{
-        zIndex: 1000,
+        zIndex: zIndex ?? 1000,
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}

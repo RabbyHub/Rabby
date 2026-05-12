@@ -28,4 +28,5 @@ export { default as Empty } from './Empty';
 export { default as Loading } from './Loading';
 export { default as LoadingOverlay } from './LoadingOverlay';
 export { default as Navbar } from './Navbar';
+export { default as UnknownTag } from './UnknownTag';
 export * from './Item';

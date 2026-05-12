@@ -4761,6 +4761,10 @@
     },
     "SeedPhraseBackupAlert": {
       "message": "Wallet Não Foi Salvo. Iniciar Backup."
+    },
+    "UnknownTag": {
+      "label": "Desconhecido",
+      "tooltip": "Token desconhecido, por favor, faça sua própria pesquisa."
     }
   },
   "global": {
