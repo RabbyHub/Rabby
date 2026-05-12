@@ -57,6 +57,7 @@ export interface SignMainnetGasSelectorHeaderProps
   tempoGasTokenList?: TempoFeeTokenOption[];
   onSelectTempoGasToken?: (token: TempoFeeTokenOption) => void;
   tempoGasTokenLoading?: boolean;
+  tempoPreferredFeeTokenId?: string;
   onAutoChangeGasMethod?: (value: 'native' | 'gasAccount') => void;
   disableAutoGasLevelSwitch?: boolean;
 }
@@ -172,6 +173,7 @@ export const SignMainnetGasSelectorHeader = ({
       })),
     [supportedLevels]
   );
+  const txFeeToken = (tx as typeof tx & { feeToken?: string }).feeToken || '';
   const txFingerprint = useMemo(
     () =>
       [
@@ -181,8 +183,13 @@ export const SignMainnetGasSelectorHeader = ({
         tx.to || '',
         tx.value || '',
         tx.data || '',
+        txFeeToken,
         gasLimit || '',
         nonce || '',
+        props.gasToken?.tokenId || '',
+        props.gasToken?.decimals || '',
+        props.nativeTokenBalance || '',
+        props.tempoPreferredFeeTokenId || '',
         isCancel ? '1' : '0',
         isSpeedUp ? '1' : '0',
         supportedLevels
@@ -198,7 +205,12 @@ export const SignMainnetGasSelectorHeader = ({
       isCancel,
       isSpeedUp,
       nonce,
+      props.gasToken?.decimals,
+      props.gasToken?.tokenId,
+      props.nativeTokenBalance,
+      props.tempoPreferredFeeTokenId,
       supportedLevels,
+      txFeeToken,
       tx.chainId,
       tx.data,
       tx.from,
