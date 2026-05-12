@@ -319,10 +319,6 @@ export const SignMainnetShowMoreGasModal = ({
                   : costUsd;
 
                 const handleSelect = () => {
-                  if (shouldHideApprovalGasMethodTabs()) {
-                    onChangeGasMethod?.(displayMethod);
-                  }
-
                   if (gas.level === 'custom') {
                     onVisibleChange(false);
                     onEditCustomGas?.();

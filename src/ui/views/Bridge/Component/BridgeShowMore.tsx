@@ -52,6 +52,7 @@ import { useGasAccountDepositFlowActive } from '../../GasAccount/hooks/runtime';
 import { useMemoizedFn } from 'ahooks';
 import { GasSelectorResponse } from '../../Approval/components/TxComponents/GasSelectorHeader';
 import SignMainnetGasSelectorHeader from '../../Approval/components/TxComponents/GasSelector/SignMainnetGasSelectorHeader';
+import type { ApprovalGasMethod } from '../../Approval/components/TxComponents/GasSelector/approvalGasDisplay';
 import { normalizeTxParams } from '../../Approval/components/SignTx';
 import { checkGasAndNonce, explainGas } from '@/utils/transaction';
 import { KEYRING_TYPE } from '@/constant';
@@ -521,6 +522,7 @@ export const DirectSignGasInfo = ({
     gasless,
     gasAccount,
     gasMethod,
+    fingerprint,
     noCustomRPC,
     support1559,
     nativeTokenBalance,
@@ -544,7 +546,8 @@ export const DirectSignGasInfo = ({
       gasless: state.ctx?.gasless,
       gasAccount: state.ctx?.gasAccount,
       gasMethod: state.ctx?.gasMethod,
-      noCustomRPC: !!state.ctx?.noCustomRPC,
+      fingerprint: state.ctx?.fingerprint,
+      noCustomRPC: state.ctx?.noCustomRPC ?? true,
       support1559: !!state.ctx?.is1559,
       nativeTokenBalance: state.ctx?.nativeTokenBalance || '0',
       gasToken: state.ctx?.gasToken,
@@ -556,6 +559,14 @@ export const DirectSignGasInfo = ({
     }),
     shallowEqual
   );
+  const [manualGasMethod, setManualGasMethod] = useState<
+    ApprovalGasMethod | undefined
+  >(undefined);
+
+  useEffect(() => {
+    setManualGasMethod(undefined);
+  }, [chainServeId, currentAccount?.address, currentAccount?.type]);
+
   const currentTx = txs[0];
   const isGasAccountTopUpFlow =
     gaConfig?.category === 'GasAccount' && gaConfig?.action === 'deposit';
@@ -609,10 +620,11 @@ export const DirectSignGasInfo = ({
   );
   const currentTempoTokenId =
     txFeeToken || tempoPreferredFeeTokenId || gasToken.tokenId || '';
+  const effectiveGasMethod = manualGasMethod ?? gasMethod;
   const showTempoGasTokenSelector =
     !!chain &&
     isTempoChain(chain.serverId) &&
-    gasMethod !== 'gasAccount' &&
+    effectiveGasMethod !== 'gasAccount' &&
     isTempoBatchSupportedAccountType(currentAccount?.type);
   const isHardware =
     currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER ||
@@ -649,7 +661,7 @@ export const DirectSignGasInfo = ({
     !!gasAccount?.balance_is_enough &&
     !gasAccount.chain_not_support &&
     !!gasAccount.is_gas_account;
-  const payGasByGasAccount = gasMethod === 'gasAccount';
+  const payGasByGasAccount = effectiveGasMethod === 'gasAccount';
 
   const showGasLess = isReady && (isGasNotEnough || !!gasLessConfig);
 
@@ -667,7 +679,7 @@ export const DirectSignGasInfo = ({
     !gasAccount.chain_not_support;
 
   const gasAccountCanPay =
-    gasMethod === 'gasAccount' &&
+    effectiveGasMethod === 'gasAccount' &&
     // isSupportedAddr &&
     noCustomRPC &&
     !!gasAccount?.balance_is_enough &&
@@ -687,7 +699,19 @@ export const DirectSignGasInfo = ({
   };
 
   const handleChangeGasMethod = useCallback(
-    async (method: 'native' | 'gasAccount') => {
+    async (method: ApprovalGasMethod) => {
+      setManualGasMethod(method);
+      try {
+        signatureInstance.setGasMethod(method, { manual: true });
+      } catch (error) {
+        console.error('Gas method change error:', error);
+      }
+    },
+    [signatureInstance]
+  );
+
+  const handleAutoChangeGasMethod = useCallback(
+    async (method: ApprovalGasMethod) => {
       try {
         signatureInstance.setGasMethod(method);
       } catch (error) {
@@ -755,7 +779,8 @@ export const DirectSignGasInfo = ({
       if (selectedGas) {
         await handleGasChange(selectedGas as any);
       }
-      signatureInstance.setGasMethod('gasAccount');
+      setManualGasMethod('gasAccount');
+      signatureInstance.setGasMethod('gasAccount', { manual: true });
     }
   );
 
@@ -950,6 +975,9 @@ export const DirectSignGasInfo = ({
   );
 
   useEffect(() => {
+    if (manualGasMethod) {
+      return;
+    }
     if (
       shouldAutoSwitchToGasAccountFromGasless({
         showGasLess,
@@ -966,6 +994,7 @@ export const DirectSignGasInfo = ({
     canUseGasLess,
     handleChangeGasAccount,
     isGasNotEnough,
+    manualGasMethod,
     payGasByGasAccount,
     showGasLess,
   ]);
@@ -1062,8 +1091,10 @@ export const DirectSignGasInfo = ({
           <SignMainnetGasSelectorHeader
             tx={currentTx!}
             gasAccountCost={gasAccount as any}
-            gasMethod={gasMethod}
+            gasMethod={effectiveGasMethod}
             onChangeGasMethod={handleChangeGasMethod}
+            onAutoChangeGasMethod={handleAutoChangeGasMethod}
+            disableAutoGasLevelSwitch={!!manualGasMethod}
             isWalletConnect={
               currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring
             }
