@@ -634,15 +634,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         setIsShowEcologyModal(true);
       },
     } as IPanelItem,
-    gasAccount: {
-      icon: RcIconGasAccountCC,
-      eventKey: 'GasAccount',
-      content: t('page.gasAccount.gasDeposit'),
-      onClick: () => {
-        history.push('/gas-account');
-      },
-      subContent: gasAccountSubContentNode,
-    } as IPanelItem,
+
     points: {
       icon: RcIconPointsCC,
       eventKey: 'Rabby Points',
@@ -723,8 +715,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'points',
       'mobile',
       'nft',
-      'gasAccount',
-      // 'searchDapp',
       'dapps',
       'convertDust',
     ];
