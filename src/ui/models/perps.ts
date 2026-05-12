@@ -188,6 +188,10 @@ export interface PerpsState {
   perpFee: number;
   isLogin: boolean;
   isInitialized: boolean;
+  // True after the first WS clearinghouseState frame for the current user.
+  isUserDataReady: boolean;
+  // True after the first WS asset ticker frame.
+  isMarketTickerReady: boolean;
   approveSignatures: ApproveSignatures;
   userFills: WsFill[];
   userAccountHistory: AccountHistoryItem[];
@@ -313,6 +317,8 @@ export const perps = createModel<RootModel>()({
     marketDataMap: {},
     isLogin: false,
     isInitialized: false,
+    isUserDataReady: false,
+    isMarketTickerReady: false,
     userFills: [],
     approveSignatures: [],
     wsSubscriptions: [],
@@ -593,6 +599,7 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         clearinghouseState: payload,
+        isUserDataReady: true,
       };
     },
 
@@ -722,7 +729,11 @@ export const perps = createModel<RootModel>()({
       lastCtxsByDex = buildCtxsByDex(payload);
 
       if (state.marketData.length === 0) {
-        return state;
+        // First WS ticker frame arrived before HTTP meta — still mark
+        // ticker as ready so `waitForInitialWsData` can resolve.
+        return state.isMarketTickerReady
+          ? state
+          : { ...state, isMarketTickerReady: true };
       }
 
       const newMarketData = applyAssetCtxsToList(
@@ -731,6 +742,7 @@ export const perps = createModel<RootModel>()({
       );
       return {
         ...state,
+        isMarketTickerReady: true,
         marketData: newMarketData,
         marketDataMap: buildMarketDataMap(newMarketData),
       };

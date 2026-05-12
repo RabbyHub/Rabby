@@ -11,6 +11,38 @@ import {
 import { useWallet, WalletController } from '@/ui/utils';
 import { KEYRING_CLASS } from '@/constant';
 import { getPerpsSDK } from './sdkManager';
+import store from '@/ui/store';
+
+/**
+ * Wait until both the user clearinghouseState and the global asset ticker
+ * have arrived via WS for the current account. Resolves immediately if both
+ * are already ready, or after `timeoutMs` to avoid hanging init forever
+ * (e.g. brand-new account with no positions, flaky WS).
+ */
+export const waitForInitialWsData = (timeoutMs = 5000): Promise<void> => {
+  return new Promise((resolve) => {
+    const isReady = () => {
+      const s = store.getState().perps;
+      return s.isUserDataReady && s.isMarketTickerReady;
+    };
+    if (isReady()) {
+      resolve();
+      return;
+    }
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      unsubscribe();
+      clearTimeout(timer);
+      resolve();
+    };
+    const unsubscribe = store.subscribe(() => {
+      if (isReady()) finish();
+    });
+    const timer = setTimeout(finish, timeoutMs);
+  });
+};
 
 export const getPxDecimals = (markPx: string) => {
   const parts = markPx.split('.');
