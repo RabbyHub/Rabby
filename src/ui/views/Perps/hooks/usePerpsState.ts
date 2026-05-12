@@ -840,7 +840,6 @@ export const usePerpsState = ({
               : (amount - 1).toString(),
           },
         ]);
-        dispatch.perps.fetchClearinghouseState();
         return true;
       } catch (error) {
         console.error('Failed to withdraw:', error);

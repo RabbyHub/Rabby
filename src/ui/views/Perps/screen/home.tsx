@@ -64,6 +64,7 @@ import { ExplorePerpsHeader } from '../components/ExplorePerpsHeader';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
 import { useScroll } from 'ahooks';
 import { PerpsAccountCard } from '../components/PerpsAccountCard';
+import { usePerpsPosition } from '../hooks/usePerpsPosition';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -72,6 +73,9 @@ export const Perps: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const [deleteAgentModalVisible, setDeleteAgentModalVisible] = useState(false);
   const accounts = useRabbySelector((s) => s.accountToDisplay.accountsList);
+  const clearinghouseState = useRabbySelector(
+    (s) => s.perps.clearinghouseState
+  );
   const {
     positionAndOpenOrders,
     currentPerpsAccount,
@@ -264,118 +268,38 @@ export const Perps: React.FC = () => {
     };
   }, [riskPopupCoin, positionAndOpenOrders, marketDataMap]);
 
-  const handleClosePosition = useMemoizedFn(
-    async (params: {
-      coin: string;
-      size: string;
-      direction: 'Long' | 'Short';
-      price: string;
-    }) => {
-      try {
-        const sdk = getPerpsSDK();
-        const { coin, direction, price, size } = params;
-        const res = await sdk.exchange?.marketOrderClose({
-          coin,
-          isBuy: direction === 'Short',
-          size,
-          midPx: price,
-          builder: PERPS_BUILDER_INFO,
-        });
+  const { handleCloseAllPositions } = usePerpsPosition();
 
-        const filled = res?.response?.data?.statuses[0]?.filled;
-        if (filled) {
-          // dispatch.perps.fetchClearinghouseState();
-          const { totalSz, avgPx } = filled;
-          message.success({
-            // className: 'toast-message-2025-center',
-            duration: 1.5,
-            content: t('page.perps.toast.closePositionSuccess', {
-              direction,
-              coin,
-              size: totalSz,
-              price: avgPx,
-            }),
-          });
-          return filled as { totalSz: string; avgPx: string; oid: number };
-        } else {
-          const msg = res?.response?.data?.statuses[0]?.error;
-          message.error({
-            // className: 'toast-message-2025-center',
-            duration: 1.5,
-            content: msg || 'close position error',
-          });
-          Sentry.captureException(
-            new Error(
-              'PERPS close position noFills' +
-                'params: ' +
-                JSON.stringify(params) +
-                'res: ' +
-                JSON.stringify(res)
-            )
-          );
-          return null;
-        }
-      } catch (e) {
-        const isExpired = await judgeIsUserAgentIsExpired(e?.message || '');
-        if (isExpired) {
-          return null;
-        }
-        console.error('close position error', e);
-        message.error({
-          // className: 'toast-message-2025-center',
-          duration: 1.5,
-          content: e?.message || 'close position error',
-        });
-        Sentry.captureException(
-          new Error(
-            'PERPS close position error' +
-              'params: ' +
-              JSON.stringify(params) +
-              'error: ' +
-              JSON.stringify(e)
-          )
-        );
-        return null;
-      }
-    }
-  );
-
-  const handleCloseAllPosition = useMemoizedFn(async () => {
+  const handleCloseAll = useMemoizedFn(async () => {
     try {
-      await handleActionApproveStatus();
-      const sdk = getPerpsSDK();
-      for (const item of positionAndOpenOrders) {
-        const isBuy = Number(item.position.szi || 0) > 0;
-        const closePrice = marketDataMap[item.position.coin]?.markPx || '0';
-        const res = await handleClosePosition({
-          coin: item.position.coin,
-          size: Math.abs(Number(item.position.szi || 0)).toString() || '0',
-          direction: isBuy ? 'Long' : 'Short',
-          price: closePrice,
-        });
-        if (res) {
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'popup close all position',
-            leverage: item.position.leverage.value.toString(),
-            trade_side: getStatsReportSide(!isBuy, true),
-            margin_mode:
-              item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
-            coin: item.position.coin,
-            size: res.totalSz,
-            price: res.avgPx,
-            trade_usd_value: new BigNumber(res.avgPx)
-              .times(res.totalSz)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
-        }
-        await sleep(10);
+      if (!clearinghouseState || !currentPerpsAccount) {
+        return;
       }
-      dispatch.perps.fetchClearinghouseState();
+      await handleActionApproveStatus();
+      const ok = await handleCloseAllPositions(clearinghouseState);
+      if (!ok) return;
+      clearinghouseState.assetPositions.forEach((item) => {
+        const isBuy = Number(item.position.szi || 0) > 0;
+        const price = new BigNumber(item.position.positionValue || 0).div(
+          new BigNumber(item.position.szi || 1).abs()
+        );
+        stats.report('perpsTradeHistory', {
+          created_at: new Date().getTime(),
+          user_addr: currentPerpsAccount?.address || '',
+          trade_type: 'close all market',
+          leverage: item.position.leverage.value.toString(),
+          trade_side: getStatsReportSide(isBuy, true),
+          margin_mode:
+            item.position.leverage.type === 'cross' ? 'cross' : 'isolated',
+          coin: item.position.coin,
+          size: Math.abs(Number(item.position.szi || 0)),
+          price: price.toFixed(2),
+          trade_usd_value: item.position.positionValue,
+          service_provider: 'hyperliquid',
+          app_version: process.env.release || '0',
+          address_type: currentPerpsAccount?.type || '',
+        });
+      });
     } catch (error) {
       console.error('close all position error', error);
       message.error({
@@ -436,7 +360,7 @@ export const Perps: React.FC = () => {
                 block
                 type="primary"
                 onClick={async () => {
-                  handleCloseAllPosition();
+                  handleCloseAll();
                   modal.destroy();
                 }}
               >
