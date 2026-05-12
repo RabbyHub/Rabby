@@ -77,10 +77,9 @@ export const useGasAccountTxsCheck = ({
     accountType: currentAccount.type,
   });
 
-  const gasAccountCanPay =
-    gasMethod === 'gasAccount' &&
-    isSupportedAddr &&
-    gasDecision.canUseGasAccount;
+  const canUseGasAccount = isSupportedAddr && gasDecision.canUseGasAccount;
+
+  const gasAccountCanPay = gasMethod === 'gasAccount' && canUseGasAccount;
 
   const canGotoUseGasAccount =
     isSupportedAddr && gasDecision.canGotoUseGasAccount;
@@ -95,6 +94,7 @@ export const useGasAccountTxsCheck = ({
     isGasAccountLogin,
     setIsGasAccountLogin,
     gasAccountCanPay,
+    canUseGasAccount,
     canGotoUseGasAccount,
     canDepositUseGasAccount,
     gasAccountCostFn,

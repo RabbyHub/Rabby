@@ -936,6 +936,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     setGasMethod,
     isGasAccountLogin,
     gasAccountCanPay,
+    canUseGasAccount,
     canGotoUseGasAccount,
     canDepositUseGasAccount,
     gasAccountCostFn,
@@ -1122,7 +1123,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
   const showGasLess =
     !gasLessLoading && isReady && (isGasNotEnough || !!gasLessConfig);
-  const gasAccountChainSupported = !!gasAccountCanPay;
+  const gasAccountChainSupported = !!canUseGasAccount;
 
   useEffectiveApprovalGasMethod({
     isReady,
