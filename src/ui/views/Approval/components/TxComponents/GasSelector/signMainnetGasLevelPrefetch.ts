@@ -22,6 +22,11 @@ export type SignMainnetGasLevelState = Partial<
   >
 >;
 
+export type SignMainnetAutoDowngradeGasLevel = {
+  level: SignMainnetSupportedGasLevel;
+  gasMethod: 'native' | 'gasAccount';
+};
+
 export const resolveSignMainnetGasLevelFetchMode = ({
   isReady,
   isModalOpen,
@@ -116,6 +121,61 @@ export const hasUsableSiblingSignMainnetGasLevel = ({
       state.gasAccount[0] === false
     );
   });
+
+export const resolveSignMainnetAutoDowngradeGasLevel = ({
+  selectedSupportedLevel,
+  gasAccountChainSupported,
+  levelState,
+  requestFingerprint,
+}: {
+  selectedSupportedLevel?: SignMainnetSupportedGasLevel;
+  gasAccountChainSupported: boolean;
+  levelState: SignMainnetGasLevelState;
+  requestFingerprint: string;
+}): SignMainnetAutoDowngradeGasLevel | null => {
+  const selectedIndex = selectedSupportedLevel
+    ? SIGN_MAINNET_SUPPORTED_GAS_LEVELS.indexOf(selectedSupportedLevel)
+    : -1;
+
+  if (selectedIndex <= 0) {
+    return null;
+  }
+
+  const lowerLevels = SIGN_MAINNET_SUPPORTED_GAS_LEVELS.slice(
+    0,
+    selectedIndex
+  ).reverse();
+
+  for (const level of lowerLevels) {
+    const state = levelState[level];
+    if (!state || state.fingerprint !== requestFingerprint || state.loading) {
+      return null;
+    }
+
+    if (state.nativeUsd !== undefined && state.nativeNotEnough === false) {
+      return { level, gasMethod: 'native' };
+    }
+
+    if (state.nativeNotEnough !== true) {
+      return null;
+    }
+
+    const levelGasAccountSupported =
+      gasAccountChainSupported && !state.gasAccountResult?.chain_not_support;
+
+    if (levelGasAccountSupported) {
+      if (!state.gasAccount) {
+        return null;
+      }
+
+      if (state.gasAccount[0] === false) {
+        return { level, gasMethod: 'gasAccount' };
+      }
+    }
+  }
+
+  return null;
+};
 
 export const shouldAutoOpenSignMainnetGasModal = ({
   fetchMode,

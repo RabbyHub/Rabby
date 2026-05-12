@@ -95,6 +95,7 @@ type GasAccountTipsProps = GasAccountDepositNavigationOptions & {
   onChangeGasAccount?: GasAccountChangeHandler;
   nativeTokenInsufficient?: boolean;
   approvalUiStyle?: boolean;
+  pendingHardwareOnly?: boolean;
 };
 
 const GAS_ACCOUNT_PILL_STYLE: React.CSSProperties = {
@@ -589,6 +590,7 @@ export function GasAccountTips({
   preserveApprovalContext,
   nativeTokenInsufficient,
   approvalUiStyle,
+  pendingHardwareOnly,
 }: GasAccountTipsProps) {
   const { t } = useTranslation();
   const gasAccountBalance = useGasAccountBalance(gasAccountAddress);
@@ -613,6 +615,10 @@ export function GasAccountTips({
   });
 
   if (isCheckingPendingHardwareGasAccount) {
+    return null;
+  }
+
+  if (pendingHardwareOnly && !shouldSignWithPendingHardware) {
     return null;
   }
 

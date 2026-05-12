@@ -347,6 +347,20 @@ export const MiniFooterBar: React.FC<Props> = ({
   ]);
 
   const { isDarkTheme } = useThemeMode();
+  const showGasLessNotEnoughTip =
+    showGasLess &&
+    !payGasByGasAccount &&
+    (!securityLevel || !hasUnProcessSecurityResult) &&
+    !canUseGasLess &&
+    !isWatchAddr &&
+    shouldShowGasLessNotEnough({
+      showGasLess,
+      isGasNotEnough: !!isGasNotEnough,
+      payGasByGasAccount,
+      canUseGasLess,
+    });
+  const showNativePendingHardwareGasAccountTip =
+    !payGasByGasAccount && !!isGasNotEnough && !showGasLessNotEnoughTip;
 
   if (!account) {
     return null;
@@ -396,13 +410,7 @@ export const MiniFooterBar: React.FC<Props> = ({
             }}
             gasLessConfig={gasLessConfig}
           />
-        ) : isWatchAddr ||
-          !shouldShowGasLessNotEnough({
-            showGasLess,
-            isGasNotEnough: !!isGasNotEnough,
-            payGasByGasAccount,
-            canUseGasLess,
-          }) ? null : (
+        ) : showGasLessNotEnoughTip ? (
           <GasLessNotEnough
             approvalUiStyle
             nativeTokenInsufficient={!!isGasNotEnough}
@@ -416,7 +424,24 @@ export const MiniFooterBar: React.FC<Props> = ({
             disableGasAccountDeposit={disableGasAccountDeposit}
             preserveApprovalContext={supportedDirectSign(account.type)}
           />
-        )
+        ) : null
+      ) : null}
+
+      {showNativePendingHardwareGasAccountTip ? (
+        <GasAccountTips
+          approvalUiStyle
+          gasAccountCost={gasAccountCost}
+          gasAccountAddress={gasAccountAddress}
+          isWalletConnect={isWalletConnect}
+          noCustomRPC={noCustomRPC}
+          nativeTokenInsufficient={!!isGasNotEnough}
+          onRedirectToDeposit={onRedirectToDeposit}
+          onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+          disableGasAccountDeposit={disableGasAccountDeposit}
+          onChangeGasAccount={onChangeGasAccount}
+          preserveApprovalContext={supportedDirectSign(account.type)}
+          pendingHardwareOnly
+        />
       ) : null}
 
       {payGasByGasAccount && !gasAccountCanPay ? (

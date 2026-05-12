@@ -460,7 +460,11 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const isGasNotEnough = !!ctx?.isGasNotEnough;
   const noCustomRPC = ctx?.noCustomRPC ?? true;
   const gasAccountChainSupported =
-    !!gasAccountCost && !gasAccountCost.chain_not_support;
+    noCustomRPC &&
+    !!gasAccountCost?.balance_is_enough &&
+    !gasAccountCost?.chain_not_support &&
+    !!gasAccountCost?.is_gas_account &&
+    !(gasAccountCost as any)?.err_msg;
   const isMissingRequiredContext =
     !ctx || !config?.account || !ctx?.txs?.length || !ctx?.chainId || !chain;
 
@@ -822,6 +826,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                         gasAccountCost={gasAccountCost}
                         gasMethod={effectiveGasMethod}
                         onChangeGasMethod={handleChangeGasMethod}
+                        onAutoChangeGasMethod={handleAutoChangeGasMethod}
+                        disableAutoGasLevelSwitch={!!manualGasMethod}
                         noCustomRPC={noCustomRPC}
                         isWalletConnect={isWalletConnect}
                         nativeTokenInsufficient={isGasNotEnough}
@@ -1090,6 +1096,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                 gasAccountCost={gasAccountCost}
                 gasMethod={effectiveGasMethod}
                 onChangeGasMethod={handleChangeGasMethod}
+                onAutoChangeGasMethod={handleAutoChangeGasMethod}
+                disableAutoGasLevelSwitch={!!manualGasMethod}
                 noCustomRPC={noCustomRPC}
                 isWalletConnect={isWalletConnect}
                 nativeTokenInsufficient={isGasNotEnough}

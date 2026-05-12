@@ -1122,8 +1122,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
   const showGasLess =
     !gasLessLoading && isReady && (isGasNotEnough || !!gasLessConfig);
-  const gasAccountChainSupported =
-    !!gasAccountCost && !gasAccountCost.chain_not_support;
+  const gasAccountChainSupported = !!gasAccountCanPay;
 
   useEffectiveApprovalGasMethod({
     isReady,
@@ -2845,6 +2844,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                   gasAccountCost={gasAccountCost}
                   gasMethod={effectiveGasMethod}
                   onChangeGasMethod={handleManualChangeGasMethod}
+                  onAutoChangeGasMethod={handleAutoChangeGasMethod}
+                  disableAutoGasLevelSwitch={!!manualGasMethod}
                   noCustomRPC={noCustomRPC}
                   isWalletConnect={
                     currentAccountType === KEYRING_TYPE.WalletConnectKeyring

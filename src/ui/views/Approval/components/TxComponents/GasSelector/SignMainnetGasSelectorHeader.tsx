@@ -21,6 +21,7 @@ import {
 import {
   resolveSignMainnetGasLevelFetchMode,
   resolveSignMainnetGasLevelFetchNeeds,
+  resolveSignMainnetAutoDowngradeGasLevel,
   shouldAutoOpenSignMainnetGasModal,
   shouldFetchSignMainnetGasLevel,
 } from './signMainnetGasLevelPrefetch';
@@ -56,6 +57,8 @@ export interface SignMainnetGasSelectorHeaderProps
   tempoGasTokenList?: TempoFeeTokenOption[];
   onSelectTempoGasToken?: (token: TempoFeeTokenOption) => void;
   tempoGasTokenLoading?: boolean;
+  onAutoChangeGasMethod?: (value: 'native' | 'gasAccount') => void;
+  disableAutoGasLevelSwitch?: boolean;
 }
 
 export const SignMainnetGasSelectorHeader = ({
@@ -82,6 +85,8 @@ export const SignMainnetGasSelectorHeader = ({
   tempoGasTokenList = [],
   onSelectTempoGasToken,
   tempoGasTokenLoading = false,
+  onAutoChangeGasMethod,
+  disableAutoGasLevelSwitch = false,
   onSignTx,
   ...props
 }: SignMainnetGasSelectorHeaderProps) => {
@@ -197,6 +202,7 @@ export const SignMainnetGasSelectorHeader = ({
     gasAccountMethodSupported && !!gasAccountCost?.balance_is_enough;
   const [levelState, setLevelState] = useState<SignMainnetGasLevelState>({});
   const levelStateRef = useRef(levelState);
+  const autoDowngradeKeyRef = useRef('');
   const activeLevelRequestsRef = useRef<
     Partial<Record<SignMainnetSupportedGasLevel, string>>
   >({});
@@ -358,6 +364,88 @@ export const SignMainnetGasSelectorHeader = ({
     isCancel,
     isSpeedUp,
     nonce,
+    supportedLevels,
+    txFingerprint,
+  ]);
+
+  useEffect(() => {
+    if (
+      disableAutoGasLevelSwitch ||
+      freeGasAvailable ||
+      props.disabled ||
+      !props.isReady ||
+      fetchMode !== 'prefetch'
+    ) {
+      return;
+    }
+
+    const nextGasLevel = resolveSignMainnetAutoDowngradeGasLevel({
+      selectedSupportedLevel,
+      gasAccountChainSupported: gasAccountMethodSupported,
+      levelState,
+      requestFingerprint: txFingerprint,
+    });
+
+    if (!nextGasLevel) {
+      return;
+    }
+
+    const gasLevel = supportedLevels.find(
+      (item) => item.level === nextGasLevel.level
+    );
+
+    if (!gasLevel) {
+      return;
+    }
+
+    const switchKey = [
+      txFingerprint,
+      selectedSupportedLevel || '',
+      nextGasLevel.level,
+      nextGasLevel.gasMethod,
+    ].join('|');
+
+    if (autoDowngradeKeyRef.current === switchKey) {
+      return;
+    }
+
+    const changeGasMethod = onAutoChangeGasMethod || props.onChangeGasMethod;
+    if (!changeGasMethod) {
+      return;
+    }
+
+    autoDowngradeKeyRef.current = switchKey;
+    void changeGasMethod(nextGasLevel.gasMethod);
+    onChange({
+      ...gasLevel,
+      gasLimit: Number(gasLimit),
+      nonce: Number(nonce),
+      level: gasLevel.level,
+      maxPriorityFee: calcMaxPriorityFee(
+        gasList,
+        gasLevel,
+        chainId || 0,
+        !!(isCancel || isSpeedUp)
+      ),
+    });
+  }, [
+    chainId,
+    disableAutoGasLevelSwitch,
+    fetchMode,
+    freeGasAvailable,
+    gasAccountMethodSupported,
+    gasLimit,
+    gasList,
+    isCancel,
+    isSpeedUp,
+    levelState,
+    nonce,
+    onAutoChangeGasMethod,
+    onChange,
+    props.disabled,
+    props.isReady,
+    props.onChangeGasMethod,
+    selectedSupportedLevel,
     supportedLevels,
     txFingerprint,
   ]);
