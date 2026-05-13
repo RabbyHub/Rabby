@@ -182,9 +182,7 @@ export const useDepositWithdraw = (
     setTokenListLoading(true);
     if (type === 'withdraw') {
       setTokenListLoading(false);
-      if (!selectedToken) {
-        setSelectedToken(ARB_USDC_TOKEN_ITEM);
-      }
+      setSelectedToken(ARB_USDC_TOKEN_ITEM);
       return;
     }
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
