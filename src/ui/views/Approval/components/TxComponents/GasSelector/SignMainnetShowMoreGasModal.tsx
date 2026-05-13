@@ -258,15 +258,20 @@ export const SignMainnetShowMoreGasModal = ({
                 const isActive = selectedGas?.level === gas.level;
                 const isCustom = gas.level === 'custom';
                 const levelKey = gas.level as SignMainnetSupportedGasLevel;
+                const levelGasAccountResult = isCustom
+                  ? undefined
+                  : levelState[levelKey]?.gasAccountResult;
+                const displayGasAccountCost = isActive
+                  ? levelGasAccountResult || gasAccountCost
+                  : levelGasAccountResult;
 
                 const gasAccountChainSupported = isActive
-                  ? !!gasAccountCost && !gasAccountCost.chain_not_support
-                  : !levelState[levelKey]?.gasAccountResult?.chain_not_support;
+                  ? !!displayGasAccountCost &&
+                    !displayGasAccountCost.chain_not_support
+                  : !displayGasAccountCost?.chain_not_support;
                 const levelGasAccountBalanceEnough = isGasAccountBalanceEnoughForDisplay(
                   {
-                    gasAccountCost: isActive
-                      ? gasAccountCost
-                      : levelState[levelKey]?.gasAccountResult,
+                    gasAccountCost: displayGasAccountCost,
                     pendingHardwareGasAccountBalance,
                   }
                 );
@@ -276,7 +281,7 @@ export const SignMainnetShowMoreGasModal = ({
                     gasAccountBalanceEnough: levelGasAccountBalanceEnough,
                     gasAccountChainSupported,
                     noCustomRPC: noCustomRPCEnabled,
-                    gasAccountErrMsg: gasAccountCost?.err_msg,
+                    gasAccountErrMsg: displayGasAccountCost?.err_msg,
                     isWalletConnect,
                   }
                 );
@@ -321,7 +326,8 @@ export const SignMainnetShowMoreGasModal = ({
 
                 costUsd = isActive
                   ? displayMethod === 'gasAccount'
-                    ? calcGasAccountUsd(
+                    ? levelState[levelKey]?.gasAccount?.[1] ||
+                      calcGasAccountUsd(
                         (gasAccountCost?.gas_account_cost.estimate_tx_cost ||
                           0) + (gasAccountCost?.gas_account_cost.gas_cost || 0)
                       )
