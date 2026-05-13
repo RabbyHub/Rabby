@@ -16,6 +16,7 @@ import { SignMainnetCustomGasSheet } from './SignMainnetCustomGasSheet';
 import { SignMainnetShowMoreGasModal } from './SignMainnetShowMoreGasModal';
 import {
   isApprovalGasMethodNotEnough,
+  isGasAccountBalanceEnoughForDisplay,
   resolveApprovalGasMethod,
 } from './approvalGasDisplay';
 import {
@@ -40,6 +41,10 @@ import { GasMethod } from '../GasSelectorHeader';
 import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import SecurityLevelTagNoText from 'ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText';
+import {
+  useGasAccountInfoV2,
+  useGasAccountSign,
+} from '@/ui/views/GasAccount/hooks';
 
 type GasSelectorHeaderProps = ComponentProps<
   typeof import('../GasSelectorHeader').default
@@ -131,6 +136,28 @@ export const SignMainnetGasSelectorHeader = ({
     () => formatGasHeaderUsdValue(String(gas.gasCostUsd || 0)),
     [gas.gasCostUsd]
   );
+  const { sig, accountId, pendingHardwareAccount } = useGasAccountSign();
+  const pendingHardwareGasAccountAddress =
+    !sig && !accountId ? pendingHardwareAccount?.address : undefined;
+  const { value: pendingHardwareGasAccountInfo } = useGasAccountInfoV2({
+    address: pendingHardwareGasAccountAddress,
+    enabled: !!pendingHardwareGasAccountAddress,
+  });
+  const pendingHardwareGasAccountBalance = useMemo(() => {
+    if (!pendingHardwareGasAccountAddress) {
+      return undefined;
+    }
+
+    return Number(pendingHardwareGasAccountInfo?.account?.balance || 0);
+  }, [pendingHardwareGasAccountAddress, pendingHardwareGasAccountInfo]);
+  const gasAccountBalanceEnoughForDisplay = useMemo(
+    () =>
+      isGasAccountBalanceEnoughForDisplay({
+        gasAccountCost,
+        pendingHardwareGasAccountBalance,
+      }),
+    [gasAccountCost, pendingHardwareGasAccountBalance]
+  );
 
   const summary = useMemo(
     () =>
@@ -146,7 +173,7 @@ export const SignMainnetGasSelectorHeader = ({
   const isSummaryNotEnough = isApprovalGasMethodNotEnough({
     displayMethod: displayGasMethod,
     nativeTokenInsufficient,
-    gasAccountBalanceEnough: gasAccountCost?.balance_is_enough,
+    gasAccountBalanceEnough: gasAccountBalanceEnoughForDisplay,
   });
 
   const supportedLevels = useMemo(
@@ -223,6 +250,10 @@ export const SignMainnetGasSelectorHeader = ({
   const [levelState, setLevelState] = useState<SignMainnetGasLevelState>({});
   const levelStateRef = useRef(levelState);
   const autoDowngradeKeyRef = useRef('');
+  const autoDowngradeResultRef = useRef<{
+    level: SignMainnetSupportedGasLevel;
+    price: number;
+  } | null>(null);
   const activeLevelRequestsRef = useRef<
     Partial<Record<SignMainnetSupportedGasLevel, string>>
   >({});
@@ -399,6 +430,30 @@ export const SignMainnetGasSelectorHeader = ({
       return;
     }
 
+    if (selectedSupportedLevel) {
+      const selectedLevelState = levelState[selectedSupportedLevel];
+      if (
+        !selectedLevelState ||
+        selectedLevelState.fingerprint !== txFingerprint ||
+        selectedLevelState.loading ||
+        selectedLevelState.nativeNotEnough === undefined
+      ) {
+        return;
+      }
+
+      if (selectedLevelState.nativeNotEnough === false) {
+        return;
+      }
+    }
+
+    const autoDowngradeResult = autoDowngradeResultRef.current;
+    if (
+      autoDowngradeResult?.level === selectedGas?.level &&
+      autoDowngradeResult?.price === Number(selectedGas?.price)
+    ) {
+      return;
+    }
+
     const nextGasLevel = resolveSignMainnetAutoDowngradeGasLevel({
       selectedSupportedLevel,
       selectedGasPrice: Number(selectedGas?.price),
@@ -439,6 +494,10 @@ export const SignMainnetGasSelectorHeader = ({
     }
 
     autoDowngradeKeyRef.current = switchKey;
+    autoDowngradeResultRef.current = {
+      level: nextGasLevel.level,
+      price: Number(gasLevel.price),
+    };
     void changeGasMethod(nextGasLevel.gasMethod);
     onChange({
       ...gasLevel,
@@ -772,6 +831,7 @@ export const SignMainnetGasSelectorHeader = ({
             isSpeedUp={isSpeedUp}
             selectedGasCostUsdStr={gasCostUsdStr}
             gasAccountCost={gasAccountCost}
+            pendingHardwareGasAccountBalance={pendingHardwareGasAccountBalance}
             nativeTokenInsufficient={nativeTokenInsufficient}
             isWalletConnect={isWalletConnect}
             autoOpenSignal={autoOpenSignal}

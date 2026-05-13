@@ -8,6 +8,11 @@ export const SIGN_MAINNET_SUPPORTED_GAS_LEVELS = [
 
 export type SignMainnetSupportedGasLevel = typeof SIGN_MAINNET_SUPPORTED_GAS_LEVELS[number];
 
+const SIGN_MAINNET_CUSTOM_DOWNGRADE_LEVELS: SignMainnetSupportedGasLevel[] = [
+  'normal',
+  'slow',
+];
+
 export type SignMainnetGasLevelState = Partial<
   Record<
     SignMainnetSupportedGasLevel,
@@ -145,20 +150,29 @@ export const resolveSignMainnetAutoDowngradeGasLevel = ({
   const selectedIndex = selectedSupportedLevel
     ? SIGN_MAINNET_SUPPORTED_GAS_LEVELS.indexOf(selectedSupportedLevel)
     : -1;
+  const selectedCustomGasPrice =
+    typeof selectedGasPrice === 'number' && Number.isFinite(selectedGasPrice)
+      ? selectedGasPrice
+      : undefined;
+  const customDowngradeLevel = SIGN_MAINNET_CUSTOM_DOWNGRADE_LEVELS.find(
+    (level) => {
+      const gasLevel = supportedGasLevels.find((item) => item.level === level);
+
+      return (
+        gasLevel &&
+        selectedCustomGasPrice !== undefined &&
+        Number.isFinite(gasLevel.price) &&
+        gasLevel.price < selectedCustomGasPrice
+      );
+    }
+  );
 
   const lowerLevels =
     selectedIndex >= 0
       ? SIGN_MAINNET_SUPPORTED_GAS_LEVELS.slice(0, selectedIndex).reverse()
-      : supportedGasLevels
-          .filter(
-            (gasLevel) =>
-              Number.isFinite(gasLevel.price) &&
-              typeof selectedGasPrice === 'number' &&
-              Number.isFinite(selectedGasPrice) &&
-              gasLevel.price < selectedGasPrice
-          )
-          .sort((a, b) => b.price - a.price)
-          .map((gasLevel) => gasLevel.level);
+      : customDowngradeLevel
+      ? [customDowngradeLevel]
+      : [];
 
   if (!lowerLevels.length) {
     return null;

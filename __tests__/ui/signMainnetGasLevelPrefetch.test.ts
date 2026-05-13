@@ -97,7 +97,32 @@ describe('sign mainnet gas level prefetch', () => {
     ).toEqual({ level: 'slow', gasMethod: 'gasAccount' });
   });
 
-  test('downgrades from custom to a cheaper native level that can pay', () => {
+  test('downgrades from custom to normal when custom is above normal', () => {
+    expect(
+      resolveSignMainnetAutoDowngradeGasLevel({
+        selectedGasPrice: 40,
+        supportedGasLevels: [
+          { level: 'slow', price: 10 },
+          { level: 'normal', price: 30 },
+          { level: 'fast', price: 50 },
+        ],
+        gasAccountChainSupported: true,
+        requestFingerprint: fingerprint,
+        levelState: {
+          normal: state({
+            nativeNotEnough: false,
+            gasAccount: [true, '<$0.0001'],
+          }),
+          slow: state({
+            nativeNotEnough: false,
+            gasAccount: [true, '<$0.0001'],
+          }),
+        },
+      })
+    ).toEqual({ level: 'normal', gasMethod: 'native' });
+  });
+
+  test('downgrades custom to slow when slow is the first lower level', () => {
     expect(
       resolveSignMainnetAutoDowngradeGasLevel({
         selectedGasPrice: 20,
@@ -111,14 +136,14 @@ describe('sign mainnet gas level prefetch', () => {
         levelState: {
           slow: state({
             nativeNotEnough: false,
-            gasAccount: [true, '<$0.0001'],
+            gasAccount: [false, '<$0.0001'],
           }),
         },
       })
     ).toEqual({ level: 'slow', gasMethod: 'native' });
   });
 
-  test('preserves the closest cheaper level when custom is above normal', () => {
+  test('downgrades custom to normal without using fast', () => {
     expect(
       resolveSignMainnetAutoDowngradeGasLevel({
         selectedGasPrice: 60,
@@ -139,12 +164,37 @@ describe('sign mainnet gas level prefetch', () => {
             gasAccount: [false, '<$0.0001'],
           }),
           fast: state({
+            nativeNotEnough: false,
+            gasAccount: [false, '<$0.0001'],
+          }),
+        },
+      })
+    ).toEqual({ level: 'normal', gasMethod: 'gasAccount' });
+  });
+
+  test('does not skip custom normal downgrade target to slow', () => {
+    expect(
+      resolveSignMainnetAutoDowngradeGasLevel({
+        selectedGasPrice: 60,
+        supportedGasLevels: [
+          { level: 'slow', price: 10 },
+          { level: 'normal', price: 30 },
+          { level: 'fast', price: 50 },
+        ],
+        gasAccountChainSupported: true,
+        requestFingerprint: fingerprint,
+        levelState: {
+          slow: state({
+            nativeNotEnough: false,
+            gasAccount: [false, '<$0.0001'],
+          }),
+          normal: state({
             nativeNotEnough: true,
             gasAccount: [true, '<$0.0001'],
           }),
         },
       })
-    ).toEqual({ level: 'normal', gasMethod: 'gasAccount' });
+    ).toBeNull();
   });
 
   test('keeps the current level when no native or gas account level can pay', () => {

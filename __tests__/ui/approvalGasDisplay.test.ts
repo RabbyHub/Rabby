@@ -1,5 +1,6 @@
 import {
   isApprovalSmartGasDisplayEnabled,
+  isGasAccountBalanceEnoughForDisplay,
   resolveApprovalDisplayedGasLevelNotEnough,
   resolveApprovalGasLevelMethod,
   resolveApprovalGasMethod,
@@ -81,6 +82,37 @@ describe('approval gas display method', () => {
         gasAccountBalanceEnough: true,
         levelNativeInsufficient: true,
         sharedGasAccountAvailable: true,
+      })
+    ).toBe(false);
+  });
+
+  test('uses pending hardware gas account balance for display state', () => {
+    expect(
+      isGasAccountBalanceEnoughForDisplay({
+        gasAccountCost: {
+          balance_is_enough: false,
+          chain_not_support: false,
+          gas_account_cost: {
+            total_cost: 0.15,
+          },
+        },
+        pendingHardwareGasAccountBalance: 0.2,
+      })
+    ).toBe(true);
+  });
+
+  test('keeps gas account display insufficient when pending hardware balance is not enough', () => {
+    expect(
+      isGasAccountBalanceEnoughForDisplay({
+        gasAccountCost: {
+          balance_is_enough: false,
+          chain_not_support: false,
+          gas_account_cost: {
+            estimate_tx_cost: 0.1,
+            gas_cost: 0.05,
+          },
+        },
+        pendingHardwareGasAccountBalance: 0.1,
       })
     ).toBe(false);
   });

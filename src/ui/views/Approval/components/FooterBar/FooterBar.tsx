@@ -252,7 +252,12 @@ export const FooterBar: React.FC<Props> = ({
       canUseGasLess,
     });
   const showNativePendingHardwareGasAccountTip =
-    !payGasByGasAccount && !!props.isGasNotEnough && !showGasLessNotEnoughTip;
+    showGasLess &&
+    !payGasByGasAccount &&
+    (!securityLevel || !hasUnProcessSecurityResult) &&
+    !canUseGasLess &&
+    !isWatchAddr &&
+    !!props.isGasNotEnough;
 
   if (!account) {
     return null;

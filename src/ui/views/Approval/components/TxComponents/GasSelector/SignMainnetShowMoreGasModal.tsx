@@ -28,6 +28,7 @@ import { calcGasAccountUsd } from './directSignSummary';
 import { GasMethod } from '../GasSelectorHeader';
 import {
   canDisplaySharedGasAccountForApproval,
+  isGasAccountBalanceEnoughForDisplay,
   resolveApprovalGasMethod,
   resolveApprovalDisplayedGasLevelNotEnough,
   resolveApprovalGasLevelMethod,
@@ -73,6 +74,7 @@ type Props = {
     chain_not_support: boolean;
     err_msg?: string;
   };
+  pendingHardwareGasAccountBalance?: number;
   nativeTokenInsufficient?: boolean;
   isWalletConnect?: boolean;
   levelState: SignMainnetGasLevelState;
@@ -106,6 +108,7 @@ export const SignMainnetShowMoreGasModal = ({
   isSpeedUp,
   selectedGasCostUsdStr,
   gasAccountCost,
+  pendingHardwareGasAccountBalance,
   nativeTokenInsufficient,
   isWalletConnect = false,
   levelState,
@@ -259,11 +262,18 @@ export const SignMainnetShowMoreGasModal = ({
                 const gasAccountChainSupported = isActive
                   ? !!gasAccountCost && !gasAccountCost.chain_not_support
                   : !levelState[levelKey]?.gasAccountResult?.chain_not_support;
+                const levelGasAccountBalanceEnough = isGasAccountBalanceEnoughForDisplay(
+                  {
+                    gasAccountCost: isActive
+                      ? gasAccountCost
+                      : levelState[levelKey]?.gasAccountResult,
+                    pendingHardwareGasAccountBalance,
+                  }
+                );
 
                 const levelSupportedUseGasAccount = canDisplaySharedGasAccountForApproval(
                   {
-                    gasAccountBalanceEnough: !!levelState[levelKey]
-                      ?.gasAccountResult?.balance_is_enough,
+                    gasAccountBalanceEnough: levelGasAccountBalanceEnough,
                     gasAccountChainSupported,
                     noCustomRPC: noCustomRPCEnabled,
                     gasAccountErrMsg: gasAccountCost?.err_msg,
@@ -304,7 +314,7 @@ export const SignMainnetShowMoreGasModal = ({
                   isActive,
                   displayMethod,
                   nativeTokenInsufficient: !!nativeTokenInsufficient,
-                  gasAccountBalanceEnough: gasAccountCost?.balance_is_enough,
+                  gasAccountBalanceEnough: levelGasAccountBalanceEnough,
                   levelNativeInsufficient,
                   sharedGasAccountAvailable: levelSupportedUseGasAccount,
                 });

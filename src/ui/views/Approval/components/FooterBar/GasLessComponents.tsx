@@ -182,10 +182,7 @@ export function GasLessNotEnough({
 
   const {
     shouldSignWithPendingHardware,
-    pendingHardwareAddressLabel,
     isCheckingPendingHardwareGasAccount,
-    isLoggingPendingHardware,
-    handleSignWithPendingHardware,
   } = usePendingHardwareGasAccountLogin({
     enabled: !!nativeTokenInsufficient,
     gasAccountCost,
@@ -197,21 +194,16 @@ export function GasLessNotEnough({
     return null;
   }
 
+  if (shouldSignWithPendingHardware) {
+    return null;
+  }
+
   const notEnoughTip = t('page.signFooterBar.gasAccount.notEnough', {
     usd: formatUsdValue(gasAccountBalance),
   });
 
   let action: GasLessAction | null = null;
-  if (shouldSignWithPendingHardware) {
-    action = {
-      type: 'button',
-      text: t('page.signFooterBar.signAndSubmitButton'),
-      onClick: () => {
-        void handleSignWithPendingHardware();
-      },
-      loading: isLoggingPendingHardware,
-    };
-  } else if (canDepositUseGasAccount && !disableGasAccountDeposit) {
+  if (canDepositUseGasAccount && !disableGasAccountDeposit) {
     action = {
       type: 'button',
       text: t('page.signFooterBar.gasAccount.deposit'),
@@ -229,12 +221,7 @@ export function GasLessNotEnough({
     };
   }
 
-  const tipText = shouldSignWithPendingHardware
-    ? t('page.signFooterBar.gasAccount.signWithHardwareWalletToUse', {
-        brand: pendingHardwareAddressLabel,
-        defaultValue: `Sign with ${pendingHardwareAddressLabel} to use GasAccount`,
-      })
-    : canDepositUseGasAccount
+  const tipText = canDepositUseGasAccount
     ? notEnoughTip
     : t('page.signFooterBar.gasless.notEnough');
 

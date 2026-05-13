@@ -136,6 +136,58 @@ export const canDisplaySharedGasAccountForApproval = ({
 //   gasAccountErrMsg?.toLowerCase() ===
 //     GAS_ACCOUNT_INSUFFICIENT_TIP?.toLowerCase());
 
+type GasAccountCostLike = {
+  balance_is_enough?: boolean;
+  chain_not_support?: boolean;
+  gas_account_cost?: {
+    total_cost?: number;
+    estimate_tx_cost?: number;
+    gas_cost?: number;
+  };
+};
+
+export const getGasAccountRequiredCost = (
+  gasAccountCost?: GasAccountCostLike
+) => {
+  if (!gasAccountCost?.gas_account_cost) {
+    return 0;
+  }
+
+  return (
+    gasAccountCost.gas_account_cost.total_cost ||
+    (gasAccountCost.gas_account_cost.estimate_tx_cost || 0) +
+      (gasAccountCost.gas_account_cost.gas_cost || 0)
+  );
+};
+
+export const isGasAccountBalanceEnoughForDisplay = ({
+  gasAccountCost,
+  pendingHardwareGasAccountBalance,
+}: {
+  gasAccountCost?: GasAccountCostLike;
+  pendingHardwareGasAccountBalance?: number;
+}) => {
+  if (gasAccountCost?.balance_is_enough) {
+    return true;
+  }
+
+  if (gasAccountCost?.chain_not_support) {
+    return false;
+  }
+
+  if (
+    typeof pendingHardwareGasAccountBalance !== 'number' ||
+    !Number.isFinite(pendingHardwareGasAccountBalance)
+  ) {
+    return false;
+  }
+
+  const requiredCost = getGasAccountRequiredCost(gasAccountCost);
+  return requiredCost > 0
+    ? pendingHardwareGasAccountBalance >= requiredCost
+    : pendingHardwareGasAccountBalance > 0;
+};
+
 export const isApprovalGasMethodNotEnough = ({
   displayMethod,
   nativeTokenInsufficient,
