@@ -2839,62 +2839,64 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         <>
           <FooterBar
             Header={
-              <div className="mb-8">
-                <SignMainnetGasSelectorHeader
-                  onSignTx
-                  tx={tx}
-                  gasAccountCost={gasAccountCost}
-                  gasMethod={effectiveGasMethod}
-                  onChangeGasMethod={handleManualChangeGasMethod}
-                  onAutoChangeGasMethod={handleAutoChangeGasMethod}
-                  disableAutoGasLevelSwitch={!!manualGasMethod}
-                  noCustomRPC={noCustomRPC}
-                  isWalletConnect={
-                    currentAccountType === KEYRING_TYPE.WalletConnectKeyring
-                  }
-                  nativeTokenInsufficient={isGasNotEnough}
-                  freeGasAvailable={canUseGasLess}
-                  pushType={pushInfo.type}
-                  disabled={isGnosisAccount || isCoboArugsAccount}
-                  isReady={isReady}
-                  gasLimit={gasLimit}
-                  noUpdate={isCancel || isSpeedUp}
-                  gasList={gasList}
-                  selectedGas={selectedGas}
-                  selectedMaxPriorityFee={maxPriorityFee}
-                  version={txDetail.pre_exec_version}
-                  gas={{
-                    error: txDetail.gas.error,
-                    success: txDetail.gas.success,
-                    gasCostUsd: gasExplainResponse.gasCostUsd,
-                    gasCostAmount: gasExplainResponse.gasCostAmount,
-                  }}
-                  gasCalcMethod={gasCalcMethod}
-                  recommendGasLimit={recommendGasLimit}
-                  recommendNonce={recommendNonce}
-                  chainId={chainId}
-                  onChange={handleGasChange}
-                  nonce={realNonce || tx.nonce}
-                  disableNonce={isSpeedUp || isCancel}
-                  isSpeedUp={isSpeedUp}
-                  isCancel={isCancel}
-                  is1559={support1559}
-                  isHardware={isHardware}
-                  manuallyChangeGasLimit={manuallyChangeGasLimit}
-                  errors={checkErrors}
-                  engineResults={engineResults}
-                  nativeTokenBalance={nativeTokenBalance}
-                  gasToken={gasToken}
-                  showTempoGasTokenSelector={showTempoGasTokenSelector}
-                  tempoGasTokenList={tempoGasTokenList}
-                  tempoPreferredFeeTokenId={tempoPreferredFeeTokenId}
-                  onSelectTempoGasToken={handleSelectTempoGasToken}
-                  tempoGasTokenLoading={tempoGasTokenLoading}
-                  checkTxValueInBalance={checkTxValueInBalance}
-                  gasPriceMedian={gasPriceMedian}
-                  checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
-                />
-              </div>
+              !isGnosisAccount ? (
+                <div className="mb-8">
+                  <SignMainnetGasSelectorHeader
+                    onSignTx
+                    tx={tx}
+                    gasAccountCost={gasAccountCost}
+                    gasMethod={effectiveGasMethod}
+                    onChangeGasMethod={handleManualChangeGasMethod}
+                    onAutoChangeGasMethod={handleAutoChangeGasMethod}
+                    disableAutoGasLevelSwitch={!!manualGasMethod}
+                    noCustomRPC={noCustomRPC}
+                    isWalletConnect={
+                      currentAccountType === KEYRING_TYPE.WalletConnectKeyring
+                    }
+                    nativeTokenInsufficient={isGasNotEnough}
+                    freeGasAvailable={canUseGasLess}
+                    pushType={pushInfo.type}
+                    disabled={isGnosisAccount || isCoboArugsAccount}
+                    isReady={isReady}
+                    gasLimit={gasLimit}
+                    noUpdate={isCancel || isSpeedUp}
+                    gasList={gasList}
+                    selectedGas={selectedGas}
+                    selectedMaxPriorityFee={maxPriorityFee}
+                    version={txDetail.pre_exec_version}
+                    gas={{
+                      error: txDetail.gas.error,
+                      success: txDetail.gas.success,
+                      gasCostUsd: gasExplainResponse.gasCostUsd,
+                      gasCostAmount: gasExplainResponse.gasCostAmount,
+                    }}
+                    gasCalcMethod={gasCalcMethod}
+                    recommendGasLimit={recommendGasLimit}
+                    recommendNonce={recommendNonce}
+                    chainId={chainId}
+                    onChange={handleGasChange}
+                    nonce={realNonce || tx.nonce}
+                    disableNonce={isSpeedUp || isCancel}
+                    isSpeedUp={isSpeedUp}
+                    isCancel={isCancel}
+                    is1559={support1559}
+                    isHardware={isHardware}
+                    manuallyChangeGasLimit={manuallyChangeGasLimit}
+                    errors={checkErrors}
+                    engineResults={engineResults}
+                    nativeTokenBalance={nativeTokenBalance}
+                    gasToken={gasToken}
+                    showTempoGasTokenSelector={showTempoGasTokenSelector}
+                    tempoGasTokenList={tempoGasTokenList}
+                    tempoPreferredFeeTokenId={tempoPreferredFeeTokenId}
+                    onSelectTempoGasToken={handleSelectTempoGasToken}
+                    tempoGasTokenLoading={tempoGasTokenLoading}
+                    checkTxValueInBalance={checkTxValueInBalance}
+                    gasPriceMedian={gasPriceMedian}
+                    checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
+                  />
+                </div>
+              ) : null
             }
             isWatchAddr={
               currentAccountType === KEYRING_TYPE.WatchAddressKeyring

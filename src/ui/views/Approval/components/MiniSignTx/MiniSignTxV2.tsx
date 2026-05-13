@@ -87,6 +87,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   const { ctx, config, error, status } = state;
   const currentAccount = config?.account;
+  const shouldShowGasModule = currentAccount?.type !== KEYRING_CLASS.GNOSIS;
   const gasCalcMethod = useMemoizedFn(async (price: number) => {
     const nativePrice = ctx?.nativeTokenPrice || 0;
     const amount =
@@ -820,57 +821,59 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                       ) : (
                         <div className="mt-auto" />
                       )}
-                      <SignMainnetGasSelectorHeader
-                        onSignTx
-                        tx={txs[0]}
-                        gasAccountCost={gasAccountCost}
-                        gasMethod={effectiveGasMethod}
-                        onChangeGasMethod={handleChangeGasMethod}
-                        onAutoChangeGasMethod={handleAutoChangeGasMethod}
-                        disableAutoGasLevelSwitch={!!manualGasMethod}
-                        noCustomRPC={noCustomRPC}
-                        isWalletConnect={isWalletConnect}
-                        nativeTokenInsufficient={isGasNotEnough}
-                        freeGasAvailable={canUseGasLess}
-                        pushType={pushType}
-                        disabled={false}
-                        isReady={isReady}
-                        gasLimit={gasLimit}
-                        noUpdate={false}
-                        gasList={gasList}
-                        selectedGas={selectedGas}
-                        version={
-                          txsResult?.[0]?.preExecResult?.pre_exec_version ||
-                          'v0'
-                        }
-                        recommendGasLimit={recommendGasLimit}
-                        recommendNonce={recommendNonce}
-                        chainId={chainId}
-                        onChange={handleGasChange}
-                        nonce={realNonce}
-                        disableNonce={true}
-                        isSpeedUp={isSpeedUp}
-                        isCancel={isCancel}
-                        is1559={support1559}
-                        isHardware={isHardware}
-                        manuallyChangeGasLimit={manuallyChangeGasLimit}
-                        errors={checkErrors}
-                        // engineResults={engineResults}
-                        nativeTokenBalance={nativeTokenBalance}
-                        gasToken={gasToken}
-                        showTempoGasTokenSelector={showTempoGasTokenSelector}
-                        tempoGasTokenList={tempoGasTokenList}
-                        onSelectTempoGasToken={handleSelectTempoGasToken}
-                        tempoGasTokenLoading={tempoGasTokenLoading}
-                        checkTxValueInBalance={checkTxValueInBalance}
-                        gasPriceMedian={gasPriceMedian}
-                        gas={totalGasCost}
-                        gasCalcMethod={gasCalcMethod}
-                        // directSubmit={directSubmit}
-                        directSubmit={true}
-                        checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
-                        getContainer={desktopMiniSignerGetContainer}
-                      />
+                      {shouldShowGasModule ? (
+                        <SignMainnetGasSelectorHeader
+                          onSignTx
+                          tx={txs[0]}
+                          gasAccountCost={gasAccountCost}
+                          gasMethod={effectiveGasMethod}
+                          onChangeGasMethod={handleChangeGasMethod}
+                          onAutoChangeGasMethod={handleAutoChangeGasMethod}
+                          disableAutoGasLevelSwitch={!!manualGasMethod}
+                          noCustomRPC={noCustomRPC}
+                          isWalletConnect={isWalletConnect}
+                          nativeTokenInsufficient={isGasNotEnough}
+                          freeGasAvailable={canUseGasLess}
+                          pushType={pushType}
+                          disabled={false}
+                          isReady={isReady}
+                          gasLimit={gasLimit}
+                          noUpdate={false}
+                          gasList={gasList}
+                          selectedGas={selectedGas}
+                          version={
+                            txsResult?.[0]?.preExecResult?.pre_exec_version ||
+                            'v0'
+                          }
+                          recommendGasLimit={recommendGasLimit}
+                          recommendNonce={recommendNonce}
+                          chainId={chainId}
+                          onChange={handleGasChange}
+                          nonce={realNonce}
+                          disableNonce={true}
+                          isSpeedUp={isSpeedUp}
+                          isCancel={isCancel}
+                          is1559={support1559}
+                          isHardware={isHardware}
+                          manuallyChangeGasLimit={manuallyChangeGasLimit}
+                          errors={checkErrors}
+                          // engineResults={engineResults}
+                          nativeTokenBalance={nativeTokenBalance}
+                          gasToken={gasToken}
+                          showTempoGasTokenSelector={showTempoGasTokenSelector}
+                          tempoGasTokenList={tempoGasTokenList}
+                          onSelectTempoGasToken={handleSelectTempoGasToken}
+                          tempoGasTokenLoading={tempoGasTokenLoading}
+                          checkTxValueInBalance={checkTxValueInBalance}
+                          gasPriceMedian={gasPriceMedian}
+                          gas={totalGasCost}
+                          gasCalcMethod={gasCalcMethod}
+                          // directSubmit={directSubmit}
+                          directSubmit={true}
+                          checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
+                          getContainer={desktopMiniSignerGetContainer}
+                        />
+                      ) : null}
                     </div>
                     {directSubmit && (
                       <div className="mt-auto flex-1 flex flex-col" />
@@ -1090,56 +1093,58 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                   <Divide className="w-[calc(100%+40px)] relative left-[-20px] bg-r-neutral-line" />
                 </div>
               ) : null}
-              <SignMainnetGasSelectorHeader
-                onSignTx
-                tx={txs[0]}
-                gasAccountCost={gasAccountCost}
-                gasMethod={effectiveGasMethod}
-                onChangeGasMethod={handleChangeGasMethod}
-                onAutoChangeGasMethod={handleAutoChangeGasMethod}
-                disableAutoGasLevelSwitch={!!manualGasMethod}
-                noCustomRPC={noCustomRPC}
-                isWalletConnect={isWalletConnect}
-                nativeTokenInsufficient={isGasNotEnough}
-                freeGasAvailable={canUseGasLess}
-                pushType={pushType}
-                disabled={false}
-                isReady={isReady}
-                gasLimit={gasLimit}
-                noUpdate={false}
-                gasList={gasList}
-                selectedGas={selectedGas}
-                version={
-                  txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0'
-                }
-                recommendGasLimit={recommendGasLimit}
-                recommendNonce={recommendNonce}
-                chainId={chainId}
-                onChange={handleGasChange}
-                nonce={realNonce}
-                disableNonce={true}
-                isSpeedUp={isSpeedUp}
-                isCancel={isCancel}
-                is1559={support1559}
-                isHardware={isHardware}
-                manuallyChangeGasLimit={manuallyChangeGasLimit}
-                errors={checkErrors}
-                // engineResults={engineResults}
-                nativeTokenBalance={nativeTokenBalance}
-                gasToken={gasToken}
-                showTempoGasTokenSelector={showTempoGasTokenSelector}
-                tempoGasTokenList={tempoGasTokenList}
-                onSelectTempoGasToken={handleSelectTempoGasToken}
-                tempoGasTokenLoading={tempoGasTokenLoading}
-                checkTxValueInBalance={checkTxValueInBalance}
-                gasPriceMedian={gasPriceMedian}
-                gas={totalGasCost}
-                gasCalcMethod={gasCalcMethod}
-                // directSubmit={directSubmit}
-                directSubmit={true}
-                checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
-                getContainer={getContainer}
-              />
+              {shouldShowGasModule ? (
+                <SignMainnetGasSelectorHeader
+                  onSignTx
+                  tx={txs[0]}
+                  gasAccountCost={gasAccountCost}
+                  gasMethod={effectiveGasMethod}
+                  onChangeGasMethod={handleChangeGasMethod}
+                  onAutoChangeGasMethod={handleAutoChangeGasMethod}
+                  disableAutoGasLevelSwitch={!!manualGasMethod}
+                  noCustomRPC={noCustomRPC}
+                  isWalletConnect={isWalletConnect}
+                  nativeTokenInsufficient={isGasNotEnough}
+                  freeGasAvailable={canUseGasLess}
+                  pushType={pushType}
+                  disabled={false}
+                  isReady={isReady}
+                  gasLimit={gasLimit}
+                  noUpdate={false}
+                  gasList={gasList}
+                  selectedGas={selectedGas}
+                  version={
+                    txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0'
+                  }
+                  recommendGasLimit={recommendGasLimit}
+                  recommendNonce={recommendNonce}
+                  chainId={chainId}
+                  onChange={handleGasChange}
+                  nonce={realNonce}
+                  disableNonce={true}
+                  isSpeedUp={isSpeedUp}
+                  isCancel={isCancel}
+                  is1559={support1559}
+                  isHardware={isHardware}
+                  manuallyChangeGasLimit={manuallyChangeGasLimit}
+                  errors={checkErrors}
+                  // engineResults={engineResults}
+                  nativeTokenBalance={nativeTokenBalance}
+                  gasToken={gasToken}
+                  showTempoGasTokenSelector={showTempoGasTokenSelector}
+                  tempoGasTokenList={tempoGasTokenList}
+                  onSelectTempoGasToken={handleSelectTempoGasToken}
+                  tempoGasTokenLoading={tempoGasTokenLoading}
+                  checkTxValueInBalance={checkTxValueInBalance}
+                  gasPriceMedian={gasPriceMedian}
+                  gas={totalGasCost}
+                  gasCalcMethod={gasCalcMethod}
+                  // directSubmit={directSubmit}
+                  directSubmit={true}
+                  checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
+                  getContainer={getContainer}
+                />
+              ) : null}
             </div>
           }
           noCustomRPC={noCustomRPC}
