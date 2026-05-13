@@ -142,6 +142,7 @@ export const useNFTCollections = (userAddr: string | undefined) => {
     }
 
     return () => {
+      abortProcess.current?.abort();
       if (timer) {
         clearTimeout(timer);
       }
