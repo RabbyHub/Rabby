@@ -8,6 +8,16 @@ import { isSameAddress } from '../utils';
 import { useSafeState } from '../utils/safeState';
 import { useWallet } from '../utils/WalletContext';
 
+const shouldUseNftCollectionsDbCache = ({
+  forceRefresh = false,
+  updatedAt,
+  now = Date.now(),
+}: {
+  forceRefresh?: boolean;
+  updatedAt: number;
+  now?: number;
+}) => !forceRefresh && updatedAt > now - CACHE_VALID_DURATION;
+
 export const useNFTCollections = (userAddr: string | undefined) => {
   const wallet = useWallet();
   const abortProcess = useRef<AbortController>();
@@ -54,24 +64,26 @@ export const useNFTCollections = (userAddr: string | undefined) => {
             return;
           }
 
-          if (currentCollections.length) {
-            applyCollections(currentCollections);
-            setLoading(false);
-          }
-
           const updatedAt =
             (await syncDbService.getUpdatedAt({
               address: userAddr,
               scene: NFT_SYNC_SCENE,
             })) || 0;
 
-          const shouldUseDbCache =
-            currentCollections.length > 0 &&
-            !forceRefresh &&
-            updatedAt > Date.now() - CACHE_VALID_DURATION;
+          const shouldUseDbCache = shouldUseNftCollectionsDbCache({
+            forceRefresh,
+            updatedAt,
+          });
 
           if (shouldUseDbCache) {
+            applyCollections(currentCollections);
+            setLoading(false);
             return;
+          }
+
+          if (currentCollections.length) {
+            applyCollections(currentCollections);
+            setLoading(false);
           }
         } else {
           await Promise.all([
@@ -142,6 +154,7 @@ export const useNFTCollections = (userAddr: string | undefined) => {
     }
 
     return () => {
+      abortProcess.current?.abort();
       if (timer) {
         clearTimeout(timer);
       }
