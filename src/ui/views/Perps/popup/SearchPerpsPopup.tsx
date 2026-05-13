@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Input, Empty } from 'antd';
+import { Input, Empty, InputRef } from 'antd';
 import { sortBy } from 'lodash';
 import { MarketData } from '@/ui/models/perps';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
@@ -42,6 +42,7 @@ interface SearchPerpsPopupProps {
   onSelect: (coin: string) => void;
   favoritedCoins?: string[];
   initialTab?: PerpsCategoryId;
+  autoFocus?: boolean;
 }
 
 export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
@@ -52,9 +53,23 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
   onSelect,
   favoritedCoins,
   initialTab,
+  autoFocus,
 }) => {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
+  const searchInputRef = useRef<InputRef>(null);
+
+  const shouldAutoFocus = autoFocus ?? openFromSource === 'searchPerps';
+
+  // Delay focus past the Popup slide-in animation, otherwise the input
+  // scrolls awkwardly mid-animation.
+  useEffect(() => {
+    if (!visible || !shouldAutoFocus) return;
+    const id = setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 300);
+    return () => clearTimeout(id);
+  }, [visible, shouldAutoFocus]);
 
   const marketDataCategories = useRabbySelector(
     (s) => s.perps.marketDataCategories
@@ -83,8 +98,8 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
   const [activeTab, setActiveTab] = useState<PerpsCategoryId | undefined>(
     defaultTab
   );
-  // Once the user manually picks a tab we never overwrite it with the async
-  // `defaultTab` again (e.g. backend categories arriving late).
+  // After a manual tab pick, late-arriving backend categories must not
+  // overwrite the user's choice.
   const manuallySelectedRef = useRef(false);
   const handleSelectTab = (id: PerpsCategoryId) => {
     manuallySelectedRef.current = true;
@@ -98,17 +113,16 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
   }, [visible, defaultTab]);
 
   const tabRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  // The last `activeTab` value that we've successfully scrolled into view
-  // during this popup-open lifecycle. Used to dedupe — `visibleSearchTabs`
-  // reallocates on every WS tick, and we need that as a dep so retries
-  // cover the popup open-animation window (the container's scroll viewport
-  // isn't laid out on the first frame). Without the guard, every WS tick
-  // would yank the user back to the active tab after they scrolled manually.
+  const listScrollRef = useRef<HTMLDivElement>(null);
+  // Dedupe scrollIntoView: `visibleSearchTabs` is a dep so retries cover
+  // the open-animation window, but without this guard every WS tick would
+  // yank the bar back to the active tab after a manual horizontal scroll.
   const lastScrolledTabRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!visible) {
       lastScrolledTabRef.current = null;
+      manuallySelectedRef.current = false;
     }
   }, [visible]);
 
@@ -118,9 +132,8 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
     const rafId = requestAnimationFrame(() => {
       const el = tabRefs.current[activeTab];
       if (!el) return;
-      // `center` maximizes context: middle tabs land in the viewport center,
-      // and the browser clamps scrollLeft for first/last tabs so they
-      // naturally hug the edge instead of leaving trailing whitespace.
+      // `center` clamps to edges for first/last tab; middle tabs land
+      // centered with surrounding context visible.
       el.scrollIntoView({
         behavior: 'auto',
         block: 'nearest',
@@ -130,6 +143,12 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
     });
     return () => cancelAnimationFrame(rafId);
   }, [visible, activeTab, visibleSearchTabs]);
+
+  useEffect(() => {
+    if (!visible || !activeTab) return;
+    const el = listScrollRef.current;
+    if (el) el.scrollTop = 0;
+  }, [visible, activeTab]);
 
   const activeTabItems = useMemo(() => {
     return visibleSearchTabs.find((tab) => tab.id === activeTab)?.items ?? [];
@@ -145,8 +164,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
     if (!q) {
       return activeTabItems;
     }
-    // Build favorites-first volume-sorted list only when searching, so the
-    // sort doesn't run on every WS tick while the popup is idle.
+    // Sort gated behind a non-empty query so the popup stays cheap while idle.
     const sorted = sortBy(marketData, (item) => -(Number(item.dayNtlVlm) || 0));
     const ordered = favoritedCoins?.length
       ? [
@@ -190,6 +208,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
         </div>
         <div className="px-20 mb-12">
           <SearchInput
+            ref={searchInputRef}
             prefix={
               <SearchSVG className="w-[16px] h-[16px] text-r-neutral-foot" />
             }
@@ -231,7 +250,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
                           className={clsx(
                             'w-18 h-18',
                             isActive
-                              ? 'text-r-blue-default'
+                              ? 'text-rb-orange-default'
                               : 'text-rb-neutral-info'
                           )}
                         />
@@ -252,7 +271,10 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
           </div>
         )}
 
-        <div className="flex-1 overflow-y-auto px-20 min-h-0">
+        <div
+          ref={listScrollRef}
+          className="flex-1 overflow-y-auto px-20 pb-20 min-h-0"
+        >
           {filteredList.length === 0 ? (
             <Empty
               className="text-r-neutral-title-1"
