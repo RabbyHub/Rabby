@@ -35,11 +35,14 @@ import { TokenImg } from '../components/TokenImg';
 import { TopPermissionTips } from '../components/TopPermissionTips';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
+import { markHomeScrollResetOnNextRestore } from './homeScrollState';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as RcIconArrow } from '@/ui/assets/perps/polygon-cc.svg';
-import { ReactComponent as RcIconCollected } from '@/ui/assets/perps/IconCollected.svg';
-import { ReactComponent as RcIconNotCollected } from '@/ui/assets/perps/IconUnCollected.svg';
+import { ReactComponent as RcIconCollected } from '@/ui/assets/perps/IconCollected20.svg';
+import { ReactComponent as RcIconNotCollected } from '@/ui/assets/perps/IconUnCollected20.svg';
+import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { obj2query } from '@/ui/utils/url';
 import { AddPositionPopup } from '../popup/AddPositionPopup';
 import usePerpsState from '../hooks/usePerpsState';
 import { MiniTypedDataApproval } from '../../Approval/components/MiniSignTypedData/MiniTypeDataApproval';
@@ -474,9 +477,22 @@ export const PerpsSingleCoin = () => {
 
   const HeaderRightSlot = useMemo(() => {
     return (
-      <div className="flex items-center justify-center">
+      <div className="flex items-center gap-12">
         <div
-          className="ml-8 cursor-pointer flex items-end"
+          className="cursor-pointer flex items-center text-r-neutral-body hover:text-r-blue-default"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (currentPerpsAccount) {
+              wallet.setPerpsCurrentAccount(currentPerpsAccount);
+              wallet.switchDesktopPerpsAccount(currentPerpsAccount);
+            }
+            wallet.openInDesktop(`/desktop/perps?${obj2query({ coin })}`);
+          }}
+        >
+          <RcIconFullscreen />
+        </div>
+        <div
+          className="cursor-pointer flex items-center"
           onClick={(e) => {
             e.stopPropagation();
             handleToggleFavorite();
@@ -486,7 +502,7 @@ export const PerpsSingleCoin = () => {
         </div>
       </div>
     );
-  }, [isFavorited, handleToggleFavorite]);
+  }, [isFavorited, handleToggleFavorite, wallet, currentPerpsAccount, coin]);
 
   const distancePercent = useMemo(() => {
     return formatPerpsPct(
@@ -1184,6 +1200,7 @@ export const PerpsSingleCoin = () => {
         }
         onConfirm={() => {
           setOpenPositionVisible(false);
+          markHomeScrollResetOnNextRestore();
           history.goBack();
         }}
       />
@@ -1390,6 +1407,7 @@ export const PerpsSingleCoin = () => {
                 isAddPosition: true,
               });
               if (res) {
+                markHomeScrollResetOnNextRestore();
                 const isBuy = positionData?.direction === 'Long';
                 stats.report('perpsTradeHistory', {
                   created_at: new Date().getTime(),

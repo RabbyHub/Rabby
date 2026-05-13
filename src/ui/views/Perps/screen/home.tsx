@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { PageHeader, TokenWithChain } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -59,6 +66,11 @@ import { PerpsCategoryId } from '../constants/perpsCategories';
 import { PerpsInvitePopup } from '../popup/PerpsInvitePopup';
 import { PerpsAccountCard } from '../components/PerpsAccountCard';
 import { usePerpsPosition } from '../hooks/usePerpsPosition';
+import {
+  consumeHomeScrollResetFlag,
+  getSavedHomeScrollTop,
+  setSavedHomeScrollTop,
+} from './homeScrollState';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -154,6 +166,22 @@ export const Perps: React.FC = () => {
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
 
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const didRestoreScrollRef = useRef(false);
+
+  const saveScroll = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (el) setSavedHomeScrollTop(el.scrollTop);
+  }, []);
+
+  // Snapshot scrollTop in a layout-effect cleanup (synchronous, runs while
+  // the ref is still attached) so back-nav from any child route restores it.
+  useLayoutEffect(() => {
+    return () => {
+      saveScroll();
+    };
+  }, [saveScroll]);
+
   useEffect(() => {
     dispatch.perps.initFavoritedCoins(undefined);
     dispatch.perps.initCandleInterval(undefined);
@@ -190,6 +218,28 @@ export const Perps: React.FC = () => {
     favoriteMarkets: favoritedCoins,
     backendCategories: marketDataCategories,
   });
+
+  // Restore saved scroll position once both the loading skeleton has been
+  // replaced by real content (`isInitialized`) AND the category list has
+  // produced rows. Otherwise `scrollTop = N` gets clamped to 0 because the
+  // scroll container doesn't yet have enough scrollable height.
+  const canRestoreScroll = isInitialized && visibleHome.length > 0;
+  useLayoutEffect(() => {
+    if (didRestoreScrollRef.current) return;
+    if (!canRestoreScroll) return;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    // If the child route signalled "reset" (e.g. user just opened a
+    // position), land at the top so the new fill is visible in the
+    // Positions section and forget the previously cached offset.
+    if (consumeHomeScrollResetFlag()) {
+      setSavedHomeScrollTop(0);
+    } else {
+      const saved = getSavedHomeScrollTop();
+      if (saved > 0) el.scrollTop = saved;
+    }
+    didRestoreScrollRef.current = true;
+  }, [canRestoreScroll]);
 
   // Calculate real-time popup data based on selected coin
   const riskPopupData = useMemo(() => {
@@ -356,7 +406,7 @@ export const Perps: React.FC = () => {
         </span>
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto" ref={scrollContainerRef}>
         {!isInitialized ? (
           <PerpsLoading />
         ) : (
@@ -443,6 +493,7 @@ export const Perps: React.FC = () => {
                       item={item}
                       rank={cat.cfg.showRankOnHome ? i + 1 : undefined}
                       onClick={() => {
+                        saveScroll();
                         history.push(`/perps/single-coin/${item.name}`);
                       }}
                     />
@@ -579,18 +630,16 @@ export const Perps: React.FC = () => {
         initialTab={searchInitialTab}
         onCancel={() => {
           setSearchPopupVisible(false);
-          setOpenFromSource('openPosition');
+          // setOpenFromSource('openPosition');
           setSearchInitialTab(undefined);
         }}
         marketData={marketData}
         onSelect={(coin) => {
-          const dirParam =
+          const query =
             openFromSource === 'openPosition'
-              ? `&direction=${openPositionDirection}`
+              ? `?openPosition=true&direction=${openPositionDirection}`
               : '';
-          history.push(
-            `/perps/single-coin/${coin}?openPosition=true${dirParam}`
-          );
+          history.push(`/perps/single-coin/${coin}${query}`);
         }}
         openFromSource={openFromSource}
         favoritedCoins={favoritedCoins}
