@@ -13,6 +13,7 @@ import {
   BALANCE_SYNC_SCENE,
   CACHE_VALID_DURATION,
   DEFI_SYNC_SCENE,
+  NFT_SYNC_SCENE,
   TOKEN_SYNC_SCENE,
 } from '@/db/constants';
 import { syncDbService } from '@/db/services/syncDbService';
@@ -197,6 +198,11 @@ async function restoreAppState() {
     syncDbService.setUpdatedAtIfExists({
       address,
       scene: BALANCE_SYNC_SCENE,
+      updatedAt: Date.now() - CACHE_VALID_DURATION,
+    });
+    syncDbService.setUpdatedAtIfExists({
+      address,
+      scene: NFT_SYNC_SCENE,
       updatedAt: Date.now() - CACHE_VALID_DURATION,
     });
   });
