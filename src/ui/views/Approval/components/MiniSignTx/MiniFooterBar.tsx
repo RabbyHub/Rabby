@@ -360,7 +360,12 @@ export const MiniFooterBar: React.FC<Props> = ({
       canUseGasLess,
     });
   const showNativePendingHardwareGasAccountTip =
-    !payGasByGasAccount && !!isGasNotEnough && !showGasLessNotEnoughTip;
+    showGasLess &&
+    !payGasByGasAccount &&
+    (!securityLevel || !hasUnProcessSecurityResult) &&
+    !canUseGasLess &&
+    !isWatchAddr &&
+    !!isGasNotEnough;
 
   if (!account) {
     return null;

@@ -666,6 +666,8 @@ export const DirectSignGasInfo = ({
   const showGasLess = isReady && (isGasNotEnough || !!gasLessConfig);
 
   const showGasLessToSign = showGasLess && !payGasByGasAccount && canUseGasLess;
+  const showNativePendingHardwareGasAccountTip =
+    showGasLess && !payGasByGasAccount && !canUseGasLess && isGasNotEnough;
 
   // gas 提交使用 gasless
   const useGasLess =
@@ -1052,6 +1054,8 @@ export const DirectSignGasInfo = ({
         <GasLessNotEnough
           directSubmit
           nativeTokenInsufficient={isGasNotEnough}
+          gasAccountCost={gasAccount as any}
+          gasAccountAddress={accountId || currentAccount?.address || ''}
           canGotoUseGasAccount={canGotoUseGasAccount}
           onChangeGasAccount={handleChangeGasAccount}
           canDepositUseGasAccount={canDepositUseGasAccount}
@@ -1063,6 +1067,27 @@ export const DirectSignGasInfo = ({
           }
           onRedirectToDeposit={onRedirectToDeposit}
           preserveApprovalContext
+        />
+      ) : null}
+
+      {showNativePendingHardwareGasAccountTip ? (
+        <GasAccountTips
+          directSubmit
+          gasAccountCost={gasAccount as any}
+          gasAccountAddress={accountId || currentAccount?.address || ''}
+          isWalletConnect={false}
+          noCustomRPC={noCustomRPC}
+          nativeTokenInsufficient={isGasNotEnough}
+          onChangeGasAccount={handleChangeGasAccount}
+          onOpenGasAccountDeposit={handleOpenGasAccountDeposit}
+          disableGasAccountDeposit={
+            isGasAccountTopUpFlow ||
+            gasAccountDepositVisible ||
+            depositFlowActive
+          }
+          onRedirectToDeposit={onRedirectToDeposit}
+          preserveApprovalContext
+          pendingHardwareOnly
         />
       ) : null}
 
