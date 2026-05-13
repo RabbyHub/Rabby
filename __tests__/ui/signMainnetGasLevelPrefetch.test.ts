@@ -13,16 +13,92 @@ const state = (
 });
 
 describe('sign mainnet gas level prefetch', () => {
-  test('prefers the closest gas account level before downgrading further', () => {
+  test('uses gas account at the selected level when gas account can pay it', () => {
     expect(
       resolveSignMainnetAutoDowngradeGasLevel({
         selectedSupportedLevel: 'fast',
         gasAccountChainSupported: true,
         requestFingerprint: fingerprint,
         levelState: {
+          fast: state({
+            nativeNotEnough: true,
+            gasAccount: [false, '<$0.0001'],
+          }),
+          slow: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+          normal: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+        },
+      })
+    ).toEqual({ level: 'fast', gasMethod: 'gasAccount' });
+  });
+
+  test('falls back to gas account normal when native and gas account cannot pay selected or lower levels', () => {
+    expect(
+      resolveSignMainnetAutoDowngradeGasLevel({
+        selectedSupportedLevel: 'fast',
+        gasAccountChainSupported: true,
+        requestFingerprint: fingerprint,
+        levelState: {
+          fast: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+          slow: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+          normal: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+        },
+      })
+    ).toEqual({ level: 'normal', gasMethod: 'gasAccount' });
+  });
+
+  test('downgrades to native slow before falling back to gas account', () => {
+    expect(
+      resolveSignMainnetAutoDowngradeGasLevel({
+        selectedSupportedLevel: 'fast',
+        gasAccountChainSupported: true,
+        requestFingerprint: fingerprint,
+        levelState: {
+          fast: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
           slow: state({
             nativeNotEnough: false,
-            gasAccount: [false, '<$0.0001'],
+            gasAccount: [true, '<$0.0001'],
+          }),
+          normal: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+        },
+      })
+    ).toEqual({ level: 'slow', gasMethod: 'native' });
+  });
+
+  test('prefers gas account normal before native slow', () => {
+    expect(
+      resolveSignMainnetAutoDowngradeGasLevel({
+        selectedSupportedLevel: 'fast',
+        gasAccountChainSupported: true,
+        requestFingerprint: fingerprint,
+        levelState: {
+          fast: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+          slow: state({
+            nativeNotEnough: false,
+            gasAccount: [true, '<$0.0001'],
           }),
           normal: state({
             nativeNotEnough: true,
@@ -33,64 +109,16 @@ describe('sign mainnet gas level prefetch', () => {
     ).toEqual({ level: 'normal', gasMethod: 'gasAccount' });
   });
 
-  test('downgrades to native slow when gas account cannot pay any level', () => {
+  test('uses gas account slow when slow is selected and native cannot pay', () => {
     expect(
       resolveSignMainnetAutoDowngradeGasLevel({
-        selectedSupportedLevel: 'fast',
-        gasAccountChainSupported: true,
-        requestFingerprint: fingerprint,
-        levelState: {
-          slow: state({
-            nativeNotEnough: false,
-            gasAccount: [true, '<$0.0001'],
-          }),
-          normal: state({
-            nativeNotEnough: true,
-            gasAccount: [true, '<$0.0001'],
-          }),
-          fast: state({
-            nativeNotEnough: true,
-            gasAccount: [true, '<$0.0001'],
-          }),
-        },
-      })
-    ).toEqual({ level: 'slow', gasMethod: 'native' });
-  });
-
-  test('prefers native slow when both native and gas account can pay slow', () => {
-    expect(
-      resolveSignMainnetAutoDowngradeGasLevel({
-        selectedSupportedLevel: 'fast',
-        gasAccountChainSupported: true,
-        requestFingerprint: fingerprint,
-        levelState: {
-          slow: state({
-            nativeNotEnough: false,
-            gasAccount: [false, '<$0.0001'],
-          }),
-          normal: state({
-            nativeNotEnough: true,
-            gasAccount: [true, '<$0.0001'],
-          }),
-        },
-      })
-    ).toEqual({ level: 'slow', gasMethod: 'native' });
-  });
-
-  test('downgrades to gas account slow when native cannot pay lower levels', () => {
-    expect(
-      resolveSignMainnetAutoDowngradeGasLevel({
-        selectedSupportedLevel: 'fast',
+        selectedSupportedLevel: 'slow',
         gasAccountChainSupported: true,
         requestFingerprint: fingerprint,
         levelState: {
           slow: state({
             nativeNotEnough: true,
             gasAccount: [false, '<$0.0001'],
-          }),
-          normal: state({
-            nativeNotEnough: true,
-            gasAccount: [true, '<$0.0001'],
           }),
         },
       })
@@ -172,7 +200,7 @@ describe('sign mainnet gas level prefetch', () => {
     ).toEqual({ level: 'normal', gasMethod: 'gasAccount' });
   });
 
-  test('does not skip custom normal downgrade target to slow', () => {
+  test('does not skip custom normal gas account fallback target to slow', () => {
     expect(
       resolveSignMainnetAutoDowngradeGasLevel({
         selectedGasPrice: 60,
@@ -194,16 +222,20 @@ describe('sign mainnet gas level prefetch', () => {
           }),
         },
       })
-    ).toBeNull();
+    ).toEqual({ level: 'normal', gasMethod: 'gasAccount' });
   });
 
-  test('keeps the current level when no native or gas account level can pay', () => {
+  test('uses gas account normal even when gas account balance is insufficient', () => {
     expect(
       resolveSignMainnetAutoDowngradeGasLevel({
         selectedSupportedLevel: 'fast',
         gasAccountChainSupported: true,
         requestFingerprint: fingerprint,
         levelState: {
+          fast: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
           slow: state({
             nativeNotEnough: true,
             gasAccount: [true, '<$0.0001'],
@@ -211,6 +243,36 @@ describe('sign mainnet gas level prefetch', () => {
           normal: state({
             nativeNotEnough: true,
             gasAccount: [true, '<$0.0001'],
+          }),
+        },
+      })
+    ).toEqual({ level: 'normal', gasMethod: 'gasAccount' });
+  });
+
+  test('keeps the current level when gas account is unsupported', () => {
+    expect(
+      resolveSignMainnetAutoDowngradeGasLevel({
+        selectedSupportedLevel: 'fast',
+        gasAccountChainSupported: true,
+        requestFingerprint: fingerprint,
+        levelState: {
+          fast: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+            gasAccountResult: {
+              chain_not_support: true,
+            } as any,
+          }),
+          slow: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+          }),
+          normal: state({
+            nativeNotEnough: true,
+            gasAccount: [true, '<$0.0001'],
+            gasAccountResult: {
+              chain_not_support: true,
+            } as any,
           }),
         },
       })

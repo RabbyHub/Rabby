@@ -174,13 +174,57 @@ export const resolveSignMainnetAutoDowngradeGasLevel = ({
       ? [customDowngradeLevel]
       : [];
 
-  if (!lowerLevels.length) {
+  if (!lowerLevels.length && !selectedSupportedLevel) {
     return null;
   }
 
-  for (const level of lowerLevels) {
+  const getReadyState = (level: SignMainnetSupportedGasLevel) => {
     const state = levelState[level];
     if (!state || state.fingerprint !== requestFingerprint || state.loading) {
+      return null;
+    }
+
+    return state;
+  };
+
+  const canUseGasAccountLevel = (level: SignMainnetSupportedGasLevel) => {
+    const state = getReadyState(level);
+    if (!state) {
+      return null;
+    }
+
+    if (
+      !gasAccountChainSupported ||
+      !state.gasAccount ||
+      state.gasAccountResult?.chain_not_support
+    ) {
+      return false;
+    }
+
+    return state.gasAccount[0] === false;
+  };
+
+  if (selectedSupportedLevel) {
+    const selectedState = getReadyState(selectedSupportedLevel);
+    if (!selectedState || selectedState.nativeNotEnough !== true) {
+      return null;
+    }
+
+    const selectedGasAccountEnough = canUseGasAccountLevel(
+      selectedSupportedLevel
+    );
+    if (selectedGasAccountEnough === null) {
+      return null;
+    }
+
+    if (selectedGasAccountEnough) {
+      return { level: selectedSupportedLevel, gasMethod: 'gasAccount' };
+    }
+  }
+
+  for (const level of lowerLevels) {
+    const state = getReadyState(level);
+    if (!state) {
       return null;
     }
 
@@ -192,18 +236,28 @@ export const resolveSignMainnetAutoDowngradeGasLevel = ({
       return null;
     }
 
-    const levelGasAccountSupported =
-      gasAccountChainSupported && !state.gasAccountResult?.chain_not_support;
-
-    if (levelGasAccountSupported) {
-      if (!state.gasAccount) {
-        return null;
-      }
-
-      if (state.gasAccount[0] === false) {
-        return { level, gasMethod: 'gasAccount' };
-      }
+    const levelGasAccountEnough = canUseGasAccountLevel(level);
+    if (levelGasAccountEnough === null) {
+      return null;
     }
+
+    if (levelGasAccountEnough) {
+      return { level, gasMethod: 'gasAccount' };
+    }
+  }
+
+  const normalState = getReadyState('normal');
+  if (!normalState || !normalState.gasAccount) {
+    return null;
+  }
+
+  const canFallbackToGasAccountNormal =
+    gasAccountChainSupported &&
+    normalState.nativeNotEnough === true &&
+    !normalState.gasAccountResult?.chain_not_support;
+
+  if (canFallbackToGasAccountNormal) {
+    return { level: 'normal', gasMethod: 'gasAccount' };
   }
 
   return null;
