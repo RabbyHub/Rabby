@@ -6,6 +6,7 @@ import {
   schemaV2,
   schemaV3,
   schemaV4,
+  schemaV5,
 } from './schema';
 import { TxHistoryItemRow } from './schema/history';
 import { judgeIsSmallUsdTx } from '@/utils/history';
@@ -16,7 +17,7 @@ db.version(1).stores(schemaV1);
 db.version(2).stores(schemaV2);
 db.version(3).stores(schemaV3);
 db.version(4).stores(schemaV4);
-db.version(5).stores(schema);
+db.version(5).stores(schemaV5);
 db.version(6).upgrade((trans) => {
   trans
     .table('history')
@@ -29,3 +30,4 @@ db.version(6).upgrade((trans) => {
       }
     });
 });
+db.version(7).stores(schema);
