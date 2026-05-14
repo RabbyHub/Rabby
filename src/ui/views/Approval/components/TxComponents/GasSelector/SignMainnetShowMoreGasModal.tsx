@@ -286,13 +286,18 @@ export const SignMainnetShowMoreGasModal = ({
                   }
                 );
 
-                const levelNativeInsufficient = isCustom
-                  ? false
-                  : !!levelState[levelKey]?.nativeNotEnough;
+                const levelNativeNotEnough = isCustom
+                  ? undefined
+                  : levelState[levelKey]?.nativeNotEnough;
+                const levelNativeInsufficient = !!levelNativeNotEnough;
+                const displayNativeInsufficient =
+                  isActive && levelNativeNotEnough !== undefined
+                    ? levelNativeNotEnough
+                    : !!nativeTokenInsufficient;
 
                 const displayMethod = isActive
                   ? resolveApprovalGasMethod({
-                      nativeTokenInsufficient: !!nativeTokenInsufficient,
+                      nativeTokenInsufficient: displayNativeInsufficient,
                       gasAccountChainSupported,
                       noCustomRPC: noCustomRPCEnabled,
                       freeGasAvailable,
@@ -318,7 +323,7 @@ export const SignMainnetShowMoreGasModal = ({
                 const isNotEnough = resolveApprovalDisplayedGasLevelNotEnough({
                   isActive,
                   displayMethod,
-                  nativeTokenInsufficient: !!nativeTokenInsufficient,
+                  nativeTokenInsufficient: displayNativeInsufficient,
                   gasAccountBalanceEnough: levelGasAccountBalanceEnough,
                   levelNativeInsufficient,
                   sharedGasAccountAvailable: levelSupportedUseGasAccount,
@@ -331,7 +336,7 @@ export const SignMainnetShowMoreGasModal = ({
                         (gasAccountCost?.gas_account_cost.estimate_tx_cost ||
                           0) + (gasAccountCost?.gas_account_cost.gas_cost || 0)
                       )
-                    : selectedGasCostUsdStr
+                    : levelState[levelKey]?.nativeUsd || selectedGasCostUsdStr
                   : costUsd;
 
                 const handleSelect = () => {
