@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { ChainList } from './ChainList';
 import { AssetListContainer } from './AssetListContainer';
 import NetSwitchTabs, {
-  useSwitchNetTab,
+  usePureNetSwitch,
 } from 'ui/component/PillsSwitch/NetSwitchTabs';
 import { ReactComponent as AssetEmptySVG } from '@/ui/assets/dashboard/asset-empty.svg';
 import clsx from 'clsx';
@@ -37,7 +37,7 @@ export const AssetList = ({
     setSelectTestnetChainId(id);
   };
   const [isEmptyAssets, setIsEmptyAssets] = useState<boolean>(false);
-  const { isShowTestnet, selectedTab, onTabChange } = useSwitchNetTab();
+  const { selectedTab, onTabChange } = usePureNetSwitch();
 
   React.useEffect(() => {
     setHeight(500);
@@ -70,15 +70,12 @@ export const AssetList = ({
     <div ref={containerRef} className="pt-[12px] h-full overflow-auto">
       <div className="px-[20px] pb-[12px]">
         <div className="relative min-h-[32px]">
-          {isShowTestnet ? (
-            <NetSwitchTabs
-              value={selectedTab}
-              onTabChange={onTabChange}
-              // className="h-[28px] box-content mt-[20px] mb-[20px]"
-            />
-          ) : (
-            <div className="h-[20px] mb-[12px]" />
-          )}
+          <NetSwitchTabs
+            value={selectedTab}
+            onTabChange={onTabChange}
+            // className="h-[28px] box-content mt-[20px] mb-[20px]"
+          />
+
           <div className="absolute top-0 right-0 h-[32px] flex items-center">
             <div
               className="text-rb-neutral-body cursor-pointer relative hit-slop-8"
