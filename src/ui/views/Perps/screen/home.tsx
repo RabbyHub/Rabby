@@ -432,7 +432,7 @@ export const Perps: React.FC = () => {
         {isInitialized && Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20 mx-20">
             <div className="flex items-center mb-8 justify-between">
-              <div className="text-13 font-medium text-r-neutral-title-1 flex items-center gap-6">
+              <div className="text-15 font-semibold text-r-neutral-title-1 flex items-center gap-6">
                 <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
                 {t('page.perps.positions')}
               </div>
