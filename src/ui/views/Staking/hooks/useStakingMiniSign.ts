@@ -1,12 +1,59 @@
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import type { Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 import type { Account } from '@/background/service/preference';
-import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
-import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
-import { findChainByServerID } from '@/utils/chain';
+
+const StakingMiniSignHeader = ({
+  title,
+  onBack,
+}: {
+  title: string;
+  onBack: () => void;
+}) =>
+  React.createElement(
+    'div',
+    {
+      className:
+        'relative h-[56px] w-full flex items-center justify-center text-r-neutral-title1',
+    },
+    React.createElement(
+      'button',
+      {
+        type: 'button',
+        className:
+          'absolute left-0 top-1/2 -translate-y-1/2 w-[20px] h-[20px] p-0 border-0 bg-transparent text-r-neutral-title1 flex items-center justify-center',
+        onClick: onBack,
+        'aria-label': 'Back',
+      },
+      React.createElement(
+        'svg',
+        {
+          width: 20,
+          height: 20,
+          viewBox: '0 0 20 20',
+          fill: 'none',
+          'aria-hidden': true,
+        },
+        React.createElement('path', {
+          d: 'M13.5 3L6.5 10L13.5 17',
+          stroke: 'currentColor',
+          strokeWidth: 2,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+        })
+      )
+    ),
+    React.createElement(
+      'div',
+      {
+        className:
+          'text-[20px] leading-[24px] font-medium text-r-neutral-title1',
+      },
+      title
+    )
+  );
 
 export const useStakingMiniSign = ({
   account,
@@ -16,18 +63,11 @@ export const useStakingMiniSign = ({
   chainServerId: string;
 }) => {
   const { getContainer } = usePopupContainer();
-  const { openDirect, openUI, resetGasStore, close: closeSign } = useMiniSigner(
-    {
-      account,
-      chainServerId,
-      autoResetGasStoreOnChainChange: true,
-    }
-  );
-  const chainInfo = findChainByServerID(chainServerId);
-  const canDirectSign =
-    !!chainInfo &&
-    !chainInfo.isTestnet &&
-    supportedDirectSign(account.type || '');
+  const { openUI, resetGasStore, close: closeSign } = useMiniSigner({
+    account,
+    chainServerId,
+    autoResetGasStoreOnChainChange: true,
+  });
 
   const baseGa = useMemo(
     () => ({
@@ -50,35 +90,17 @@ export const useStakingMiniSign = ({
           ...baseGa,
           trigger,
         },
+        title: React.createElement(StakingMiniSignHeader, {
+          title: trigger,
+          onBack: closeSign,
+        }),
+        showSimulateChange: true,
+        enableSecurityEngine: true,
       };
 
-      if (!canDirectSign) {
-        return openUI(params);
-      }
-
-      try {
-        return await openDirect(params);
-      } catch (error) {
-        if (
-          error === MINI_SIGN_ERROR.GAS_NOT_ENOUGH ||
-          error === MINI_SIGN_ERROR.GAS_FEE_TOO_HIGH
-        ) {
-          closeSign();
-          return openUI(params);
-        }
-
-        throw error;
-      }
+      return openUI(params);
     },
-    [
-      baseGa,
-      canDirectSign,
-      closeSign,
-      getContainer,
-      openDirect,
-      openUI,
-      resetGasStore,
-    ]
+    [baseGa, closeSign, getContainer, openUI, resetGasStore]
   );
 
   return {
