@@ -342,34 +342,25 @@ const TokenAmountInput = ({
   const chainSelectorRef = useRef<ChainSelectorInSend>(null);
 
   return (
-    <div className={clsx('token-amount-input', className)}>
-      <div
-        className="right relative flex flex-col justify-between pt-[5px] overflow-hidden"
-        style={{ paddingRight: 32 }}
-      >
-        <StyledInput
-          ref={tokenInputRef}
-          placeholder="0"
-          className={clsx(
-            !value && 'h-[29px]',
-            insufficientError && 'text-rabby-red-default'
-          )}
-          autoFocus
-          value={value}
-          size="large"
-          onChange={handleChange}
-          title={value}
-        />
-
-        <div
-          className="text-r-neutral-foot font-normal text-[13px] max-w-full truncate"
-          title={useValue}
-        >
-          {useValue}
+    <div className={clsx('token-amount-input flex-col gap-[13px]', className)}>
+      <div className="flex items-start gap-16">
+        <div className="right relative min-w-0 flex-1 pt-[5px] overflow-hidden">
+          <StyledInput
+            ref={tokenInputRef}
+            placeholder="0"
+            className={clsx(
+              !value && 'h-[29px]',
+              insufficientError && 'text-rabby-red-default'
+            )}
+            autoFocus
+            value={value}
+            size="large"
+            onChange={handleChange}
+            title={value}
+          />
         </div>
-      </div>
-      <div className="flex flex-col justify-between gap-[13px] items-end">
-        <div className="left" onClick={handleSelectToken}>
+
+        <div className="left shrink-0" onClick={handleSelectToken}>
           {initLoading ? (
             <>
               <Skeleton.Avatar
@@ -411,34 +402,44 @@ const TokenAmountInput = ({
             <RcArrowDown width={20} height={20} />
           </div>
         </div>
-        <div className="flex items-center">
-          {isLoading ? (
-            <Skeleton.Input active style={{ width: 100 }} />
-          ) : (
-            <div
-              className={clsx(
-                'flex items-center gap-4',
-                insufficientError
-                  ? 'text-rabby-red-default'
-                  : 'text-r-neutral-foot'
-              )}
-            >
-              <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
-              <span
+      </div>
+      <div className="flex items-center justify-between gap-16">
+        <div
+          className="text-r-neutral-foot font-normal text-[13px] min-w-0 flex-1 truncate"
+          title={useValue}
+        >
+          {useValue}
+        </div>
+        <div className="flex shrink-0 items-center">
+          <div className="flex items-center">
+            {isLoading ? (
+              <Skeleton.Input active style={{ width: 100 }} />
+            ) : (
+              <div
                 className={clsx(
-                  'truncate max-w-[90px] text-[13px] font-normal text-r-neutral-foot'
+                  'flex items-center gap-4',
+                  insufficientError
+                    ? 'text-rabby-red-default'
+                    : 'text-r-neutral-foot'
                 )}
-                title={balanceNumText}
               >
-                {balanceNumText}
-              </span>
-            </div>
-          )}
-          {token && token.amount > 0 && !isLoading && (
-            <SendMaxButton onClick={handleClickMaxButton}>
-              {t('page.sendToken.max')}
-            </SendMaxButton>
-          )}
+                <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
+                <span
+                  className={clsx(
+                    'truncate max-w-[90px] text-[13px] font-normal text-r-neutral-foot'
+                  )}
+                  title={balanceNumText}
+                >
+                  {balanceNumText}
+                </span>
+              </div>
+            )}
+            {token && token.amount > 0 && !isLoading && (
+              <SendMaxButton onClick={handleClickMaxButton}>
+                {t('page.sendToken.max')}
+              </SendMaxButton>
+            )}
+          </div>
         </div>
       </div>
       <TokenSelector
