@@ -2750,7 +2750,7 @@
       "depositSubmitted": "Deposit Submitted",
       "claimFreeGas": "Claim {{usdValue}} Free Gas",
       "depositFailed": "Deposit failed",
-      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "lowBalance": "",
       "gasBalance": "Gas Balance",
       "loginSuccess": "Login Successful",
       "loginFailed": "Login Failed"

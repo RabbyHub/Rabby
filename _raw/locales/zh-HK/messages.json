@@ -2787,7 +2787,7 @@
       "depositSubmitted": "已提交存入",
       "claimFreeGas": "領取 {{usdValue}} 免費燃料",
       "depositFailed": "存入失敗",
-      "lowBalance": "你的燃料不足。存入燃料以確保未來交易順利進行。",
+      "lowBalance": "",
       "gasBalance": "燃料餘額",
       "loginSuccess": "登入成功",
       "loginFailed": "登入失敗"

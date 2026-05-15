@@ -2744,7 +2744,7 @@
       "depositSubmitted": "Đã nạp",
       "claimFreeGas": "Nhận {{usdValue}} gas miễn phí",
       "depositFailed": "Nạp thất bại",
-      "lowBalance": "Bạn không có đủ gas. Hãy nạp gas để đảm bảo các giao dịch tương lai diễn ra suôn sẻ.",
+      "lowBalance": "",
       "gasBalance": "Số dư gas",
       "loginSuccess": "Đăng nhập thành công",
       "loginFailed": "Đăng nhập thất bại"

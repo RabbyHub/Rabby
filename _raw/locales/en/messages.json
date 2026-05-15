@@ -3941,7 +3941,7 @@
       "switchAccount": "Switch Wallet",
       "claimFreeGas": "Claim {{usdValue}} Free Gas",
       "depositFailed": "Deposit failed",
-      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "lowBalance": "You don't have enough gas(＜$1.00). Deposit gas to ensure future transactions go smoothly.",
       "gasBalance": "Gas Balance",
       "withdrawDisabledIAP": "Withdrawals are disabled because your balance includes fiat funds, which cannot be withdrawn. Contact support to withdraw your token balance",
       "benefitCard": {
