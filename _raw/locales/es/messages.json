@@ -2747,7 +2747,7 @@
       "depositSubmitted": "Depósito enviado",
       "claimFreeGas": "Reclamar {{usdValue}} de gas gratis",
       "depositFailed": "Depósito fallido",
-      "lowBalance": "",
+      "lowBalance": "No tienes suficiente gas (＜$1.00). Deposita gas para asegurar que las transacciones futuras se realicen sin problemas.",
       "gasBalance": "Saldo de gas",
       "loginSuccess": "Inicio de sesión exitoso",
       "loginFailed": "Inicio de sesión fallido"

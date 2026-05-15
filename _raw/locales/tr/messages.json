@@ -476,7 +476,7 @@
         "customRPC": "Özel RPC kullanıldığında desteklenmez",
         "loginTips": "GasAccount girişini tamamlamak için bu işlem iptal edilecektir. Giriş yaptıktan sonra işlemi yeniden oluşturmanız gerekecek.",
         "depositTips": "GasAccount para yatırma işlemini tamamlamak için, bu işlem iptal edilecektir. Para yatırma işleminden sonra yeniden yapmanız gerekecek.",
-        "signWithHardwareWalletToUse": "```json\n{\"u_0\":\"{{brand}} ile imzalamalısınız\"}\n```"
+        "signWithHardwareWalletToUse": "{{brand}} ile imzalamalısınız"
       },
       "keystone": {
         "siging": "İmza isteği gönderiliyor",
@@ -2750,7 +2750,7 @@
       "depositSubmitted": "Deposit Submitted",
       "claimFreeGas": "Claim {{usdValue}} Free Gas",
       "depositFailed": "Deposit failed",
-      "lowBalance": "",
+      "lowBalance": "Gazınız yetmiyor (＜$1.00). Gelecekteki işlemlerin sorunsuz ilerlemesini sağlamak için gaz yatırın.",
       "gasBalance": "Gas Balance",
       "loginSuccess": "Login Successful",
       "loginFailed": "Login Failed"

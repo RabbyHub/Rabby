@@ -2747,7 +2747,7 @@
       "depositSubmitted": "入金完了",
       "claimFreeGas": "{{usdValue}}分の無料ガスをClaim",
       "depositFailed": "入金失敗",
-      "lowBalance": "",
+      "lowBalance": "ガスが十分ではありません（<$1.00）。今後の取引が滞りなく行われるよう、ガスを入金してください。",
       "gasBalance": "ガス残高",
       "loginSuccess": "ログイン成功",
       "loginFailed": "ログイン失敗"

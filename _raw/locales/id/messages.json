@@ -2744,7 +2744,7 @@
       "depositSubmitted": "Setoran Terkirim",
       "claimFreeGas": "Klaim {{usdValue}} Gas Gratis",
       "depositFailed": "Setoran Gagal",
-      "lowBalance": "",
+      "lowBalance": "Anda tidak memiliki cukup gas(<$1.00). Simpan gas untuk memastikan transaksi di masa depan berjalan lancar.",
       "gasBalance": "Saldo Gas",
       "loginSuccess": "Login Berhasil",
       "loginFailed": "Login Gagal"

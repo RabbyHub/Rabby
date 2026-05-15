@@ -2744,7 +2744,7 @@
       "depositSubmitted": "Deposit Submitted",
       "claimFreeGas": "Claim {{usdValue}} Free Gas",
       "depositFailed": "Deposit failed",
-      "lowBalance": "",
+      "lowBalance": "gas가 부족합니다(＜$1.00). GasAccount에 gas를 예치하여 향후 거래가 원활히 진행되도록 하세요.",
       "gasBalance": "Gas Balance",
       "loginSuccess": "Login Successful",
       "loginFailed": "Login Failed"
