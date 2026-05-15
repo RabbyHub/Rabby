@@ -91,14 +91,16 @@ export const readStakingContract = async ({
 export const normalizeStakingSdkTx = (
   tx: StakingTxRequest,
   fallbackEvmChainId: number
-): Tx => ({
-  from: tx.from,
-  to: tx.to,
-  data: tx.data,
-  value: tx.value || '0x0',
-  chainId: tx.chainId || fallbackEvmChainId,
-  nonce: '',
-});
+): Tx =>
+  ({
+    from: tx.from,
+    to: tx.to,
+    data: tx.data,
+    value: tx.value || '0x0',
+    chainId: tx.chainId || fallbackEvmChainId,
+    // MiniSign fills the recommended nonce. Empty string normalizes to "0x"
+    // and causes preExec to reject the staking transaction payload.
+  } as Tx);
 
 export const collectStakingApprovals = (
   buildResult: StakingTxBuildResult

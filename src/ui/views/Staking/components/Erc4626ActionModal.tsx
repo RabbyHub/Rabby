@@ -166,8 +166,10 @@ export const Erc4626ActionModal = ({
     (maxAmountNumber.isFinite() && amountNumber.gt(maxAmountNumber));
   const disabledReason = !entry
     ? 'Unsupported pool'
-    : actionState?.is_supported === false
-    ? actionState.reason || 'Unavailable'
+    : !chainInfo
+    ? 'Unsupported chain'
+    : actionState?.is_supported !== true
+    ? actionState?.reason || 'Unavailable'
     : undefined;
   const { sign } = useStakingMiniSign({
     account,
