@@ -434,7 +434,7 @@ export const LpActionModal = ({
   const [v3RangePreset, setV3RangePreset] = useState<V3RangeOption>(
     V3_DEFAULT_RANGE_PRESET
   );
-  const [confirmingPrice, setConfirmingPrice] = useState(false);
+  const [priceWarningAccepted, setPriceWarningAccepted] = useState(false);
   const [percent, setPercent] = useState(100);
   const [submitting, setSubmitting] = useState(false);
 
@@ -444,7 +444,7 @@ export const LpActionModal = ({
       setAmount1('');
       setLastInputSide(null);
       setV3RangePreset(V3_DEFAULT_RANGE_PRESET);
-      setConfirmingPrice(false);
+      setPriceWarningAccepted(false);
       setPercent(100);
     }
   }, [visible]);
@@ -891,6 +891,18 @@ export const LpActionModal = ({
     action === 'deposit' &&
     !!priceDiffInfo &&
     priceDiffInfo.diffRatio > PRICE_DIFF_CONFIRM_THRESHOLD;
+  const priceDiffSignature = priceDiffInfo
+    ? [
+        priceDiffInfo.token0Symbol,
+        priceDiffInfo.token1Symbol,
+        priceDiffInfo.poolPrice.toFixed(),
+        priceDiffInfo.marketPrice.toFixed(),
+      ].join('|')
+    : '';
+
+  useEffect(() => {
+    setPriceWarningAccepted(false);
+  }, [priceDiffSignature]);
 
   const canSubmit = useMemo(() => {
     if (disabledReason) {
@@ -1097,8 +1109,7 @@ export const LpActionModal = ({
     if (!canSubmit) {
       return;
     }
-    if (needsPriceConfirm && !confirmingPrice) {
-      setConfirmingPrice(true);
+    if (needsPriceConfirm && !priceWarningAccepted) {
       return;
     }
 
@@ -1142,10 +1153,10 @@ export const LpActionModal = ({
     account,
     buildTxs,
     canSubmit,
-    confirmingPrice,
     needsPriceConfirm,
     onConfirmed,
     onSubmitted,
+    priceWarningAccepted,
     pool.chain_id,
     sign,
     title,
@@ -1224,7 +1235,7 @@ export const LpActionModal = ({
 
   const handleAmount0Change = useCallback(
     (value: string) => {
-      setConfirmingPrice(false);
+      setPriceWarningAccepted(false);
       if (isV2) {
         setV2AmountsFromSide('token0', value);
         return;
@@ -1237,7 +1248,7 @@ export const LpActionModal = ({
 
   const handleAmount1Change = useCallback(
     (value: string) => {
-      setConfirmingPrice(false);
+      setPriceWarningAccepted(false);
       if (isV2) {
         setV2AmountsFromSide('token1', value);
         return;
@@ -1276,7 +1287,7 @@ export const LpActionModal = ({
   );
 
   const handleMax0 = useCallback(() => {
-    setConfirmingPrice(false);
+    setPriceWarningAccepted(false);
     if (isV2 && normalizedTokens.token0Info) {
       setV2AmountsFromSide(
         'token0',
@@ -1292,7 +1303,7 @@ export const LpActionModal = ({
   }, [getV2MaxRaw, isV2, normalizedTokens.token0Info, setV2AmountsFromSide]);
 
   const handleMax1 = useCallback(() => {
-    setConfirmingPrice(false);
+    setPriceWarningAccepted(false);
     if (isV2 && normalizedTokens.token1Info) {
       setV2AmountsFromSide(
         'token1',
@@ -1327,7 +1338,7 @@ export const LpActionModal = ({
               key={item.label}
               className={clsx(v3RangePreset === item.label && 'is-active')}
               onClick={() => {
-                setConfirmingPrice(false);
+                setPriceWarningAccepted(false);
                 setV3RangePreset(item.label);
               }}
             >
@@ -1516,69 +1527,36 @@ export const LpActionModal = ({
     );
   };
 
-  const renderPriceConfirm = () => {
-    if (!priceDiffInfo) {
-      return null;
-    }
-    const pair = `${priceDiffInfo.token0Symbol}/${priceDiffInfo.token1Symbol}`;
-    return (
-      <div className="staking-lp-price-confirm">
-        <div className="staking-lp-price-warning">
-          Pool price differs from market price by more than 5%.
-        </div>
-        <div className="staking-lp-price-card">
-          <div className="staking-lp-price-row">
-            <span>Pool price</span>
-            <span>
-              1 {priceDiffInfo.token0Symbol} ={' '}
-              {formatPriceNumber(priceDiffInfo.poolPrice)}{' '}
-              {priceDiffInfo.token1Symbol}
-            </span>
-          </div>
-          <div className="staking-lp-price-row">
-            <span>Market price</span>
-            <span>
-              1 {priceDiffInfo.token0Symbol} ={' '}
-              {formatPriceNumber(priceDiffInfo.marketPrice)}{' '}
-              {priceDiffInfo.token1Symbol}
-            </span>
-          </div>
-          <div className="staking-lp-price-row">
-            <span>Pair</span>
-            <span>{pair}</span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const popupHeight = confirmingPrice
-    ? 360
-    : action === 'deposit'
-    ? isV3 && !isPositionAction
-      ? 520
-      : 460
-    : action === 'claim'
-    ? 340
-    : 480;
+  const popupHeight =
+    action === 'deposit'
+      ? isV3 && !isPositionAction
+        ? 520 + (needsPriceConfirm ? 24 : 0)
+        : 460 + (needsPriceConfirm ? 24 : 0)
+      : action === 'claim'
+      ? 340
+      : 480;
   const loading = tokenLoading && action !== 'claim';
   const handleCancel = useCallback(() => {
-    if (confirmingPrice) {
-      setConfirmingPrice(false);
-      return;
-    }
     onCancel();
-  }, [confirmingPrice, onCancel]);
+  }, [onCancel]);
+  const footerError = disabledReason || balanceError;
+  const priceWarningTitle = priceDiffInfo
+    ? `Pool price: 1 ${priceDiffInfo.token0Symbol} = ${formatPriceNumber(
+        priceDiffInfo.poolPrice
+      )} ${priceDiffInfo.token1Symbol}; Market price: 1 ${
+        priceDiffInfo.token0Symbol
+      } = ${formatPriceNumber(priceDiffInfo.marketPrice)} ${
+        priceDiffInfo.token1Symbol
+      }`
+    : '';
+  const showFooterMessages = !!footerError || needsPriceConfirm;
+  const submitDisabled =
+    !canSubmit || (needsPriceConfirm && !priceWarningAccepted);
 
   return (
     <Popup
       visible={visible}
-      title={
-        <ActionPopupTitle
-          title={confirmingPrice ? 'Confirm Deposit' : title}
-          onBack={handleCancel}
-        />
-      }
+      title={<ActionPopupTitle title={title} onBack={handleCancel} />}
       onCancel={handleCancel}
       height={popupHeight}
       closable={false}
@@ -1973,55 +1951,68 @@ export const LpActionModal = ({
             line-height: 20px;
           }
 
-          .staking-lp-price-confirm {
+          .staking-lp-footer-messages {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            padding-top: 4px;
-          }
-
-          .staking-lp-price-warning {
-            color: var(--r-neutral-title1);
-            font-size: 15px;
-            line-height: 22px;
-            font-weight: 500;
-          }
-
-          .staking-lp-price-card {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            border: 0.5px solid var(--r-neutral-line);
-            border-radius: 8px;
-            padding: 16px;
-            background: var(--r-neutral-bg2);
-          }
-
-          .staking-lp-price-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 12px;
-            color: var(--r-neutral-foot);
-            font-size: 13px;
-            line-height: 16px;
-          }
-
-          .staking-lp-price-row span:last-child {
-            color: var(--r-neutral-title1);
-            text-align: right;
+            gap: 8px;
+            margin-bottom: 4px;
           }
 
           .staking-lp-error {
-            height: 18px;
-            margin: 0 0 10px;
+            min-height: 16px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             text-align: center;
             color: var(--r-red-default);
             font-size: 13px;
-            line-height: 18px;
+            line-height: 16px;
+          }
+
+          .staking-lp-price-inline {
+            display: flex;
+            min-height: 16px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--r-neutral-foot);
+            font-size: 13px;
+            line-height: 16px;
+          }
+
+          .staking-lp-price-inline span {
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .staking-lp-price-checkbox {
+            position: relative;
+            display: inline-flex;
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: 1px solid var(--r-neutral-line);
+            border-radius: 4px;
+            background: transparent;
+          }
+
+          .staking-lp-price-checkbox.is-active {
+            border-color: var(--r-blue-default);
+            background: var(--r-blue-default);
+          }
+
+          .staking-lp-price-checkbox.is-active::after {
+            content: '';
+            width: 8px;
+            height: 4px;
+            border-left: 2px solid #fff;
+            border-bottom: 2px solid #fff;
+            transform: rotate(-45deg) translateY(-1px);
           }
 
           .staking-lp-submit {
@@ -2040,27 +2031,6 @@ export const LpActionModal = ({
           <div className="staking-lp-action-content is-loading">
             <Skeleton active paragraph={{ rows: 4 }} title={false} />
           </div>
-        ) : confirmingPrice ? (
-          <>
-            <div className="staking-lp-action-content">
-              {renderPriceConfirm()}
-            </div>
-            <div className="staking-lp-action-footer">
-              <div className="staking-lp-error" title={disabledReason || ''}>
-                {disabledReason || ''}
-              </div>
-              <Button
-                type="primary"
-                block
-                className="staking-lp-submit"
-                disabled={!canSubmit}
-                loading={submitting}
-                onClick={handleSubmit}
-              >
-                Confirm
-              </Button>
-            </div>
-          </>
         ) : (
           <>
             <div className="staking-lp-action-content">
@@ -2069,17 +2039,42 @@ export const LpActionModal = ({
               {action === 'claim' ? renderClaim() : null}
             </div>
             <div className="staking-lp-action-footer">
-              <div
-                className="staking-lp-error"
-                title={disabledReason || balanceError || ''}
-              >
-                {disabledReason || balanceError || ''}
-              </div>
+              {showFooterMessages ? (
+                <div className="staking-lp-footer-messages">
+                  {footerError ? (
+                    <div className="staking-lp-error" title={footerError}>
+                      {footerError}
+                    </div>
+                  ) : null}
+                  {needsPriceConfirm ? (
+                    <div
+                      className="staking-lp-price-inline"
+                      title={priceWarningTitle}
+                    >
+                      <button
+                        type="button"
+                        aria-label="Confirm pool price difference"
+                        aria-pressed={priceWarningAccepted}
+                        className={clsx(
+                          'staking-lp-price-checkbox',
+                          priceWarningAccepted && 'is-active'
+                        )}
+                        onClick={() =>
+                          setPriceWarningAccepted((accepted) => !accepted)
+                        }
+                      />
+                      <span>
+                        Pool price differs from market price by more than 5%.
+                      </span>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
               <Button
                 type="primary"
                 block
                 className="staking-lp-submit"
-                disabled={!canSubmit}
+                disabled={submitDisabled}
                 loading={submitting}
                 onClick={handleSubmit}
               >
