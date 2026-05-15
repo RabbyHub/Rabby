@@ -4835,9 +4835,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/gnosis-sdk@npm:1.4.9-1":
-  version: 1.4.9-1
-  resolution: "@rabby-wallet/gnosis-sdk@npm:1.4.9-1"
+"@rabby-wallet/gnosis-sdk@npm:1.4.9":
+  version: 1.4.9
+  resolution: "@rabby-wallet/gnosis-sdk@npm:1.4.9"
   dependencies:
     "@ethersproject/bignumber": "npm:5.5.0"
     "@ethersproject/bytes": "npm:5.5.0"
@@ -4852,7 +4852,7 @@ __metadata:
     ethereumjs-util: "npm:7.1.3"
     ethers: "npm:5.5.1"
     semver: "npm:7.5.4"
-  checksum: 10c0/7fced30fbd6a651bd7d11a34ecb0068e75e1d2dc03476493f189d6064a070ad4ef00a1fb27a0c7c8b46b18bc90f35a219c22607d526569a1d524669197f0c71c
+  checksum: 10c0/1d288991f80a6d2672ff7361c4b997c38f0dd10115b1c0cbe8941968cb296808bdec98117f1b68944b15b4400dbb2c87b85f3f314ed44439d08cb3d541d79a5d
   languageName: node
   linkType: hard
 
@@ -21303,7 +21303,7 @@ __metadata:
     "@rabby-wallet/eth-trezor-keyring": "npm:2.6.4"
     "@rabby-wallet/eth-walletconnect-keyring": "npm:2.1.7"
     "@rabby-wallet/eth-watch-keyring": "npm:1.0.0"
-    "@rabby-wallet/gnosis-sdk": "npm:1.4.9-1"
+    "@rabby-wallet/gnosis-sdk": "npm:1.4.9"
     "@rabby-wallet/hyperliquid-sdk": "npm:1.1.7"
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.14"
