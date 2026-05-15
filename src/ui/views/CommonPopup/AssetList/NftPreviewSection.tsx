@@ -72,7 +72,7 @@ export const NftPreviewSection: React.FC<Props> = ({
   };
 
   return (
-    <div className={className}>
+    <div className={className} onClick={handleOpenInTab}>
       {isLoading ? (
         <div className="flex items-center gap-4 mb-[4px]">
           <Skeleton.Input className="w-[80px] h-[30px] rounded-[4px]" active />
@@ -84,7 +84,6 @@ export const NftPreviewSection: React.FC<Props> = ({
             'bg-r-neutral-card1 rounded-[8px] p-[12px] overflow-hidden border border-transparent',
             'hover:border-rb-blue-default cursor-pointer'
           )}
-          onClick={handleOpenInTab}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-[8px] min-w-0 text-[15px] leading-[18px]">

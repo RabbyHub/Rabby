@@ -204,7 +204,7 @@ export const AssetListContainer: React.FC<Props> = ({
               list={filteredPortfolios}
               className="mt-0"
             />
-            <NftPreviewSection className="mt-[28px]" />
+            <NftPreviewSection className="mt-[28px] cursor-pointer" />
           </>
         )}
       </div>
