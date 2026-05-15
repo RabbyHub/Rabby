@@ -1,5 +1,6 @@
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { AbstractPortfolioToken } from './types';
+import { isNil } from 'lodash';
 
 // lpTokenMode is false
 export const defaultTokenFilter = (
@@ -36,4 +37,8 @@ interface IsLpTokenProps {
 }
 export const isLpToken = (token: IsLpTokenProps) => {
   return token.is_verified !== false && !token.is_core && !!token.protocol_id;
+};
+
+export const isUnknownToken = (data: IsLpTokenProps) => {
+  return isNil(data.is_core) && !isLpToken(data);
 };
