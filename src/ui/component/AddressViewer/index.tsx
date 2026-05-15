@@ -13,12 +13,14 @@ interface AddressViewProps {
   showImportIcon?: boolean;
   index?: number;
   showIndex?: boolean;
+  ellipsisLegacy?: boolean;
 }
 
 export default ({
   address,
   onClick,
   ellipsis = true,
+  ellipsisLegacy = false,
   showArrow = true,
   className = 'normal',
   index = -1,
@@ -36,7 +38,7 @@ export default ({
       >
         {showIndex && index >= 0 && <div className="number-index">{index}</div>}
         {ellipsis
-          ? ellipsisAddress(address.toLowerCase())
+          ? ellipsisAddress(address.toLowerCase(), ellipsisLegacy)
           : address?.toLowerCase()}
       </div>
       {showArrow && (
