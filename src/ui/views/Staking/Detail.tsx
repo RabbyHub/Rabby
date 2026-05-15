@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Empty, message } from 'antd';
+import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -756,6 +757,31 @@ const InlineActionButton = ({
 const hasRewards = (position: StakingPositionItem) =>
   position.rewards.some((asset) => new BigNumber(asset.rawAmount || 0).gt(0));
 
+const PortfolioNewPositionCard = ({
+  pool,
+  accountReady,
+  onAction,
+}: {
+  pool: StakingPool;
+  accountReady: boolean;
+  onAction: (action: StakingAction, position?: StakingPositionItem) => void;
+}) => {
+  const depositDisabled = !accountReady || !getActionSupported(pool, 'deposit');
+
+  return (
+    <div className="staking-position-new-card">
+      <div className="staking-position-new-title">New Position</div>
+      <InlineActionButton
+        variant="primary"
+        disabled={depositDisabled}
+        onClick={() => onAction('deposit')}
+      >
+        Deposit
+      </InlineActionButton>
+    </div>
+  );
+};
+
 const mergePositionAssets = (assets: StakingPositionAsset[]) => {
   const merged = new Map<string, StakingPositionAsset>();
 
@@ -910,6 +936,11 @@ const PortfolioTab = ({
     <div className="staking-position-panel">
       {pool.type === 'univ3' && summary?.positions.length ? (
         <>
+          <PortfolioNewPositionCard
+            pool={pool}
+            accountReady={accountReady}
+            onAction={onAction}
+          />
           {summary.positions.map((position) => (
             <PortfolioPositionCard
               key={position.id}
@@ -1446,6 +1477,29 @@ const StakingDetail = () => {
 
           .staking-detail-page .staking-position-card.is-rewards::after {
             border-color: rgba(135, 105, 12, 0.08);
+          }
+
+          .staking-detail-page .staking-position-new-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            width: 368px;
+            border: 0.5px solid var(--r-blue-light1);
+            border-radius: 16px;
+            padding: 16px;
+            background: linear-gradient(101deg, rgba(237, 240, 255, 0.3) 0%, rgba(255, 255, 255, 0.3) 100%);
+          }
+
+          .staking-detail-page .staking-position-new-title {
+            color: var(--r-neutral-black);
+            font-size: 15px;
+            line-height: 18px;
+            font-weight: 700;
+          }
+
+          .staking-detail-page .staking-position-new-card .staking-inline-action {
+            flex: 0 0 132px;
           }
 
           .staking-detail-page .staking-position-title {
