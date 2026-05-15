@@ -19,6 +19,7 @@ import {
   encodeUniv3Collect,
   encodeUniv3Multicall,
   quoteUniv2AddLiquidity,
+  quoteUniv2CounterAmount,
   quoteUniv3DecreaseLiquidity,
   quoteUniv3Liquidity,
   quoteUniv3RangeDeposit,
@@ -36,6 +37,8 @@ import type { Account } from '@/background/service/preference';
 import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { Popup, TokenWithChain } from '@/ui/component';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
+import { SwapSlider } from '@/ui/views/Swap/Component/Slider';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { findChainByServerID } from '@/utils/chain';
 
@@ -73,15 +76,48 @@ type TokenBalanceInfo = {
   price?: number | null;
 };
 
+type TokenInputSide = 'token0' | 'token1';
+type V3RangeOption = '1%' | '10%' | '20%' | '40%';
+
 const DEFAULT_SLIPPAGE_BPS = 50;
 const DEFAULT_DEADLINE_SECONDS = 20 * 60;
-const V3_DEFAULT_RANGE_PRESET = '20%' as const;
-const V3_AMOUNT_RATIO_MAX_WIDTH_BPS = 4000;
+const V3_DEFAULT_RANGE_PRESET: V3RangeOption = '20%';
+const V3_RANGE_OPTIONS: Array<{ label: V3RangeOption; bps: number }> = [
+  { label: '1%', bps: 100 },
+  { label: '10%', bps: 1_000 },
+  { label: '20%', bps: 2_000 },
+  { label: '40%', bps: 4_000 },
+];
+const PRICE_DIFF_CONFIRM_THRESHOLD = 0.05;
+const Q96 = new BigNumber(2).pow(96);
 
 const toSdkPool = (pool: StakingPool) => (pool as unknown) as SdkStakingPool;
 
 const toRawDecimal = (amount: string, decimals: number) =>
   parseUnits(amount || '0', decimals).toString();
+
+const toRawBigInt = (amount: string | number | undefined, decimals: number) => {
+  try {
+    return BigInt(toRawDecimal(String(amount || '0'), decimals));
+  } catch {
+    return 0n;
+  }
+};
+
+const safeBigInt = (value?: string | bigint | number | null) => {
+  try {
+    return BigInt(value || 0);
+  } catch {
+    return 0n;
+  }
+};
+
+const rawToDecimalInput = (raw: string | bigint, decimals: number) => {
+  const text = formatUnits(raw.toString(), decimals);
+  return text.includes('.') ? text.replace(/\.?0+$/, '') || '0' : text;
+};
+
+const minRaw = (left: bigint, right: bigint) => (left < right ? left : right);
 
 const toDeadline = () =>
   Math.floor(Date.now() / 1000 + DEFAULT_DEADLINE_SECONDS).toString();
@@ -92,6 +128,66 @@ const sameAddress = (left?: string | null, right?: string | null) =>
 const getTokenUsdText = (amount: string, price?: number | null) => {
   const value = new BigNumber(amount || 0).multipliedBy(price || 0);
   return value.isFinite() ? formatUsdValue(value.toString()) : '$0.00';
+};
+
+const getTokenBalanceRaw = (tokenInfo?: TokenBalanceInfo) =>
+  tokenInfo ? toRawBigInt(tokenInfo.balance, tokenInfo.decimals) : 0n;
+
+const getSelectedV3Range = (preset: V3RangeOption) =>
+  V3_RANGE_OPTIONS.find((item) => item.label === preset) || V3_RANGE_OPTIONS[2];
+
+const formatRangeBps = (bps: number) =>
+  `${new BigNumber(bps).div(100).toFixed()}%`;
+
+const formatPriceNumber = (value?: BigNumber | null) => {
+  if (!value || !value.isFinite() || value.lte(0)) {
+    return '-';
+  }
+  if (value.gte(1_000)) {
+    return value.decimalPlaces(2, BigNumber.ROUND_DOWN).toFormat();
+  }
+  if (value.gte(1)) {
+    return value.decimalPlaces(6, BigNumber.ROUND_DOWN).toFixed();
+  }
+  return value.decimalPlaces(8, BigNumber.ROUND_DOWN).toFixed();
+};
+
+const getV2PoolPrice = ({
+  reserve0,
+  reserve1,
+  token0Decimals,
+  token1Decimals,
+}: {
+  reserve0: bigint;
+  reserve1: bigint;
+  token0Decimals: number;
+  token1Decimals: number;
+}) => {
+  if (reserve0 <= 0n || reserve1 <= 0n) {
+    return null;
+  }
+  return new BigNumber(reserve1.toString())
+    .div(reserve0.toString())
+    .multipliedBy(new BigNumber(10).pow(token0Decimals - token1Decimals));
+};
+
+const getV3PoolPrice = ({
+  sqrtPriceX96,
+  token0Decimals,
+  token1Decimals,
+}: {
+  sqrtPriceX96: string;
+  token0Decimals: number;
+  token1Decimals: number;
+}) => {
+  const sqrt = new BigNumber(sqrtPriceX96);
+  if (!sqrt.isFinite() || sqrt.lte(0)) {
+    return null;
+  }
+  return sqrt
+    .div(Q96)
+    .pow(2)
+    .multipliedBy(new BigNumber(10).pow(token0Decimals - token1Decimals));
 };
 
 const multiplyRawByPercent = (raw: string, percent: number) =>
@@ -176,6 +272,7 @@ const AmountInputBlock = ({
   tokenInfo,
   onChange,
   onMax,
+  error,
   disabled,
 }: {
   label?: string;
@@ -183,9 +280,10 @@ const AmountInputBlock = ({
   tokenInfo?: TokenBalanceInfo;
   onChange: (value: string) => void;
   onMax?: () => void;
+  error?: boolean;
   disabled?: boolean;
 }) => (
-  <div className="staking-lp-token-input">
+  <div className={clsx('staking-lp-token-input', error && 'is-error')}>
     {label ? <div className="staking-lp-input-label">{label}</div> : null}
     <div className="staking-lp-input-row">
       <div className="staking-lp-input-main">
@@ -209,9 +307,9 @@ const AmountInputBlock = ({
         {tokenInfo ? (
           <div className="staking-lp-token-main">
             <TokenWithChain
-              width="28px"
-              height="28px"
-              chainSize={14}
+              width="32px"
+              height="32px"
+              chainSize={16}
               token={tokenInfo.tokenItem}
               hideConer
             />
@@ -219,6 +317,7 @@ const AmountInputBlock = ({
           </div>
         ) : null}
         <div className="staking-lp-balance-row">
+          <RcIconWalletCC viewBox="0 0 16 16" className="w-[14px] h-[14px]" />
           <span className="staking-lp-balance-text">
             {formatStakingAmount(tokenInfo?.balance || '0')}
           </span>
@@ -299,6 +398,13 @@ export const LpActionModal = ({
   const chainInfo = findChainByServerID(pool.chain_id);
   const [amount0, setAmount0] = useState('');
   const [amount1, setAmount1] = useState('');
+  const [lastInputSide, setLastInputSide] = useState<TokenInputSide | null>(
+    null
+  );
+  const [v3RangePreset, setV3RangePreset] = useState<V3RangeOption>(
+    V3_DEFAULT_RANGE_PRESET
+  );
+  const [confirmingPrice, setConfirmingPrice] = useState(false);
   const [percent, setPercent] = useState(100);
   const [submitting, setSubmitting] = useState(false);
 
@@ -306,6 +412,9 @@ export const LpActionModal = ({
     if (!visible) {
       setAmount0('');
       setAmount1('');
+      setLastInputSide(null);
+      setV3RangePreset(V3_DEFAULT_RANGE_PRESET);
+      setConfirmingPrice(false);
       setPercent(100);
     }
   }, [visible]);
@@ -488,12 +597,11 @@ export const LpActionModal = ({
   }, [tokenInfos, univ2Entry, univ3Entry]);
 
   const actionState = pool.actions?.[action];
-  const disabledReason =
-    actionState?.is_supported === false
-      ? actionState.reason || 'Unavailable'
-      : !chainInfo
-      ? 'Unsupported chain'
-      : undefined;
+  const disabledReason = !chainInfo
+    ? 'Unsupported chain'
+    : actionState?.is_supported !== true
+    ? actionState?.reason || 'Unavailable'
+    : undefined;
 
   const raw0 = useMemo(() => {
     try {
@@ -514,22 +622,49 @@ export const LpActionModal = ({
     }
   }, [amount1, normalizedTokens.token1Info]);
 
+  const token0BalanceRaw = useMemo(
+    () => getTokenBalanceRaw(normalizedTokens.token0Info),
+    [normalizedTokens.token0Info]
+  );
+  const token1BalanceRaw = useMemo(
+    () => getTokenBalanceRaw(normalizedTokens.token1Info),
+    [normalizedTokens.token1Info]
+  );
+  const v3SelectedRange = useMemo(() => getSelectedV3Range(v3RangePreset), [
+    v3RangePreset,
+  ]);
+  const v2InputSide = useMemo<TokenInputSide | null>(() => {
+    if (!isV2 || action !== 'deposit') {
+      return null;
+    }
+    if (lastInputSide) {
+      return lastInputSide;
+    }
+    if (hasPositiveRaw(raw0)) {
+      return 'token0';
+    }
+    if (hasPositiveRaw(raw1)) {
+      return 'token1';
+    }
+    return null;
+  }, [action, isV2, lastInputSide, raw0, raw1]);
+
   const v2AddQuote = useMemo(() => {
-    if (!isV2 || !univ2Facts || action !== 'deposit') {
+    if (!isV2 || !univ2Facts || action !== 'deposit' || !v2InputSide) {
       return null;
     }
     try {
       return quoteUniv2AddLiquidity({
         reserve0: univ2Facts.reserve0,
         reserve1: univ2Facts.reserve1,
-        amount0Desired: raw0,
-        amount1Desired: raw1,
+        amount0Desired: v2InputSide === 'token0' ? raw0 : undefined,
+        amount1Desired: v2InputSide === 'token1' ? raw1 : undefined,
         slippageBps: DEFAULT_SLIPPAGE_BPS,
       });
     } catch {
       return null;
     }
-  }, [action, isV2, raw0, raw1, univ2Facts]);
+  }, [action, isV2, raw0, raw1, univ2Facts, v2InputSide]);
 
   const v2WithdrawQuote = useMemo(() => {
     if (!isV2 || !univ2Facts || action !== 'withdraw') {
@@ -571,39 +706,19 @@ export const LpActionModal = ({
         amount0Desired: raw0,
         amount1Desired: raw1,
         rangeStrategy: {
-          type: 'preset',
-          preset: V3_DEFAULT_RANGE_PRESET,
-          mode: 'each-side',
+          type: 'amount-ratio',
+          constraints: {
+            mustIncludeCurrentPrice: true,
+            targetWidthBps: v3SelectedRange.bps,
+            maxWidthBps: v3SelectedRange.bps,
+          },
         },
         slippageBps: DEFAULT_SLIPPAGE_BPS,
       });
     } catch {
-      if (position?.raw?.univ3) {
-        return null;
-      }
-
-      try {
-        if (BigInt(raw0) <= 0n || BigInt(raw1) <= 0n) {
-          return null;
-        }
-        return quoteUniv3RangeDeposit({
-          poolState: univ3PoolState,
-          amount0Desired: raw0,
-          amount1Desired: raw1,
-          rangeStrategy: {
-            type: 'amount-ratio',
-            constraints: {
-              mustIncludeCurrentPrice: true,
-              maxWidthBps: V3_AMOUNT_RATIO_MAX_WIDTH_BPS,
-            },
-          },
-          slippageBps: DEFAULT_SLIPPAGE_BPS,
-        });
-      } catch {
-        return null;
-      }
+      return null;
     }
-  }, [action, isV3, position, raw0, raw1, univ3PoolState]);
+  }, [action, isV3, position, raw0, raw1, univ3PoolState, v3SelectedRange]);
 
   const v3WithdrawQuote = useMemo(() => {
     const raw = position?.raw?.univ3;
@@ -639,8 +754,119 @@ export const LpActionModal = ({
     return (claimPositions || []).filter((item) => item.raw?.univ3);
   }, [action, claimPositions, position]);
 
+  const requiredRaw0ForBalance = useMemo(() => {
+    if (action !== 'deposit') {
+      return 0n;
+    }
+    if (isV2) {
+      return v2AddQuote?.amount0 || 0n;
+    }
+    if (isV3) {
+      return v3DepositQuote?.amount0 || safeBigInt(raw0);
+    }
+    return 0n;
+  }, [action, isV2, isV3, raw0, v2AddQuote, v3DepositQuote]);
+
+  const requiredRaw1ForBalance = useMemo(() => {
+    if (action !== 'deposit') {
+      return 0n;
+    }
+    if (isV2) {
+      return v2AddQuote?.amount1 || 0n;
+    }
+    if (isV3) {
+      return v3DepositQuote?.amount1 || safeBigInt(raw1);
+    }
+    return 0n;
+  }, [action, isV2, isV3, raw1, v2AddQuote, v3DepositQuote]);
+
+  const token0Insufficient =
+    action === 'deposit' && requiredRaw0ForBalance > token0BalanceRaw;
+  const token1Insufficient =
+    action === 'deposit' && requiredRaw1ForBalance > token1BalanceRaw;
+  const balanceError = useMemo(() => {
+    const symbols = [
+      token0Insufficient ? normalizedTokens.token0Info?.token.symbol : null,
+      token1Insufficient ? normalizedTokens.token1Info?.token.symbol : null,
+    ].filter(Boolean);
+    if (!symbols.length) {
+      return '';
+    }
+    return `Insufficient ${symbols.join(' & ')} balance`;
+  }, [
+    normalizedTokens.token0Info?.token.symbol,
+    normalizedTokens.token1Info?.token.symbol,
+    token0Insufficient,
+    token1Insufficient,
+  ]);
+
+  const priceDiffInfo = useMemo(() => {
+    if (
+      action !== 'deposit' ||
+      !normalizedTokens.token0Info ||
+      !normalizedTokens.token1Info
+    ) {
+      return null;
+    }
+    const token0Price = new BigNumber(normalizedTokens.token0Info.price || 0);
+    const token1Price = new BigNumber(normalizedTokens.token1Info.price || 0);
+    if (
+      !token0Price.isFinite() ||
+      !token1Price.isFinite() ||
+      token0Price.lte(0) ||
+      token1Price.lte(0)
+    ) {
+      return null;
+    }
+
+    const marketPrice = token0Price.div(token1Price);
+    const poolPrice = isV2
+      ? univ2Facts
+        ? getV2PoolPrice({
+            reserve0: univ2Facts.reserve0,
+            reserve1: univ2Facts.reserve1,
+            token0Decimals: normalizedTokens.token0Info.decimals,
+            token1Decimals: normalizedTokens.token1Info.decimals,
+          })
+        : null
+      : isV3 && univ3PoolState
+      ? getV3PoolPrice({
+          sqrtPriceX96: univ3PoolState.sqrtPriceX96,
+          token0Decimals: normalizedTokens.token0Info.decimals,
+          token1Decimals: normalizedTokens.token1Info.decimals,
+        })
+      : null;
+
+    if (!poolPrice || !poolPrice.isFinite() || poolPrice.lte(0)) {
+      return null;
+    }
+
+    return {
+      poolPrice,
+      marketPrice,
+      diffRatio: poolPrice.minus(marketPrice).abs().div(marketPrice).toNumber(),
+      token0Symbol: normalizedTokens.token0Info.token.symbol,
+      token1Symbol: normalizedTokens.token1Info.token.symbol,
+    };
+  }, [
+    action,
+    isV2,
+    isV3,
+    normalizedTokens.token0Info,
+    normalizedTokens.token1Info,
+    univ2Facts,
+    univ3PoolState,
+  ]);
+  const needsPriceConfirm =
+    action === 'deposit' &&
+    !!priceDiffInfo &&
+    priceDiffInfo.diffRatio > PRICE_DIFF_CONFIRM_THRESHOLD;
+
   const canSubmit = useMemo(() => {
     if (disabledReason) {
+      return false;
+    }
+    if (action === 'deposit' && balanceError) {
       return false;
     }
     if (action === 'deposit') {
@@ -658,6 +884,7 @@ export const LpActionModal = ({
     return !!claimTargets.length;
   }, [
     action,
+    balanceError,
     claimTargets.length,
     disabledReason,
     isV2,
@@ -840,6 +1067,10 @@ export const LpActionModal = ({
     if (!canSubmit) {
       return;
     }
+    if (needsPriceConfirm && !confirmingPrice) {
+      setConfirmingPrice(true);
+      return;
+    }
 
     let submitted = false;
     try {
@@ -879,6 +1110,8 @@ export const LpActionModal = ({
     account,
     buildTxs,
     canSubmit,
+    confirmingPrice,
+    needsPriceConfirm,
     onSubmitted,
     pool.chain_id,
     sign,
@@ -886,34 +1119,228 @@ export const LpActionModal = ({
     wallet,
   ]);
 
+  const setV2AmountsFromSide = useCallback(
+    (side: TokenInputSide, value: string) => {
+      setLastInputSide(side);
+      if (side === 'token0') {
+        setAmount0(value);
+      } else {
+        setAmount1(value);
+      }
+
+      if (
+        !value ||
+        !univ2Facts ||
+        !normalizedTokens.token0Info ||
+        !normalizedTokens.token1Info
+      ) {
+        if (side === 'token0') {
+          setAmount1('');
+        } else {
+          setAmount0('');
+        }
+        return;
+      }
+
+      try {
+        const inputDecimals =
+          side === 'token0'
+            ? normalizedTokens.token0Info.decimals
+            : normalizedTokens.token1Info.decimals;
+        const outputDecimals =
+          side === 'token0'
+            ? normalizedTokens.token1Info.decimals
+            : normalizedTokens.token0Info.decimals;
+        const inputRaw = toRawDecimal(value, inputDecimals);
+        if (safeBigInt(inputRaw) <= 0n) {
+          if (side === 'token0') {
+            setAmount1('');
+          } else {
+            setAmount0('');
+          }
+          return;
+        }
+        const counterRaw =
+          side === 'token0'
+            ? quoteUniv2CounterAmount({
+                inputAmount: inputRaw,
+                inputReserve: univ2Facts.reserve0,
+                outputReserve: univ2Facts.reserve1,
+              })
+            : quoteUniv2CounterAmount({
+                inputAmount: inputRaw,
+                inputReserve: univ2Facts.reserve1,
+                outputReserve: univ2Facts.reserve0,
+              });
+        const counterValue = rawToDecimalInput(counterRaw, outputDecimals);
+        if (side === 'token0') {
+          setAmount1(counterValue);
+        } else {
+          setAmount0(counterValue);
+        }
+      } catch {
+        if (side === 'token0') {
+          setAmount1('');
+        } else {
+          setAmount0('');
+        }
+      }
+    },
+    [normalizedTokens.token0Info, normalizedTokens.token1Info, univ2Facts]
+  );
+
+  const handleAmount0Change = useCallback(
+    (value: string) => {
+      setConfirmingPrice(false);
+      if (isV2) {
+        setV2AmountsFromSide('token0', value);
+        return;
+      }
+      setLastInputSide('token0');
+      setAmount0(value);
+    },
+    [isV2, setV2AmountsFromSide]
+  );
+
+  const handleAmount1Change = useCallback(
+    (value: string) => {
+      setConfirmingPrice(false);
+      if (isV2) {
+        setV2AmountsFromSide('token1', value);
+        return;
+      }
+      setLastInputSide('token1');
+      setAmount1(value);
+    },
+    [isV2, setV2AmountsFromSide]
+  );
+
+  const getV2MaxRaw = useCallback(
+    (side: TokenInputSide) => {
+      if (!univ2Facts) {
+        return side === 'token0' ? token0BalanceRaw : token1BalanceRaw;
+      }
+      try {
+        if (side === 'token0') {
+          const maxByToken1 = quoteUniv2CounterAmount({
+            inputAmount: token1BalanceRaw,
+            inputReserve: univ2Facts.reserve1,
+            outputReserve: univ2Facts.reserve0,
+          });
+          return minRaw(token0BalanceRaw, maxByToken1);
+        }
+        const maxByToken0 = quoteUniv2CounterAmount({
+          inputAmount: token0BalanceRaw,
+          inputReserve: univ2Facts.reserve0,
+          outputReserve: univ2Facts.reserve1,
+        });
+        return minRaw(token1BalanceRaw, maxByToken0);
+      } catch {
+        return side === 'token0' ? token0BalanceRaw : token1BalanceRaw;
+      }
+    },
+    [token0BalanceRaw, token1BalanceRaw, univ2Facts]
+  );
+
+  const handleMax0 = useCallback(() => {
+    setConfirmingPrice(false);
+    if (isV2 && normalizedTokens.token0Info) {
+      setV2AmountsFromSide(
+        'token0',
+        rawToDecimalInput(
+          getV2MaxRaw('token0'),
+          normalizedTokens.token0Info.decimals
+        )
+      );
+      return;
+    }
+    setLastInputSide('token0');
+    setAmount0(String(normalizedTokens.token0Info?.balance || '0'));
+  }, [getV2MaxRaw, isV2, normalizedTokens.token0Info, setV2AmountsFromSide]);
+
+  const handleMax1 = useCallback(() => {
+    setConfirmingPrice(false);
+    if (isV2 && normalizedTokens.token1Info) {
+      setV2AmountsFromSide(
+        'token1',
+        rawToDecimalInput(
+          getV2MaxRaw('token1'),
+          normalizedTokens.token1Info.decimals
+        )
+      );
+      return;
+    }
+    setLastInputSide('token1');
+    setAmount1(String(normalizedTokens.token1Info?.balance || '0'));
+  }, [getV2MaxRaw, isV2, normalizedTokens.token1Info, setV2AmountsFromSide]);
+
+  const v3QuotedRange = (v3DepositQuote as {
+    range?: { lowerBps: number; upperBps: number };
+  } | null)?.range;
+  const rangeText = v3QuotedRange
+    ? `-${formatRangeBps(v3QuotedRange.lowerBps)} / +${formatRangeBps(
+        v3QuotedRange.upperBps
+      )}`
+    : v3SelectedRange.label;
+
+  const renderRangeSelector = () =>
+    isV3 && !isPositionAction ? (
+      <div className="staking-lp-range-selector">
+        <div className="staking-lp-range-title">Set Price Range</div>
+        <div className="staking-lp-range-options">
+          {V3_RANGE_OPTIONS.map((item) => (
+            <button
+              type="button"
+              key={item.label}
+              className={clsx(v3RangePreset === item.label && 'is-active')}
+              onClick={() => {
+                setConfirmingPrice(false);
+                setV3RangePreset(item.label);
+              }}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    ) : null;
+
+  const renderTokenSeparator = () => (
+    <div className="staking-lp-token-separator">
+      <div className="staking-lp-token-separator-line" />
+      <span>+</span>
+    </div>
+  );
+
   const renderDeposit = () => (
     <>
+      {renderRangeSelector()}
       <div className="staking-lp-input-stack">
         <AmountInputBlock
           value={amount0}
           tokenInfo={normalizedTokens.token0Info}
-          onChange={setAmount0}
-          onMax={() =>
-            setAmount0(String(normalizedTokens.token0Info?.balance || '0'))
-          }
+          onChange={handleAmount0Change}
+          onMax={handleMax0}
+          error={token0Insufficient}
         />
+        {renderTokenSeparator()}
         <AmountInputBlock
           value={amount1}
           tokenInfo={normalizedTokens.token1Info}
-          onChange={setAmount1}
-          onMax={() =>
-            setAmount1(String(normalizedTokens.token1Info?.balance || '0'))
-          }
+          onChange={handleAmount1Change}
+          onMax={handleMax1}
+          error={token1Insufficient}
         />
       </div>
       <div className="staking-lp-info">
         {isV3 && !isPositionAction ? (
           <div className="staking-lp-info-row">
             <span>Range</span>
-            <span>+/-20%</span>
+            <span>{rangeText}</span>
           </div>
         ) : null}
-        {v2AddQuote ? (
+        {v2AddQuote &&
+        (v2AddQuote.amount0Unused > 0n || v2AddQuote.amount1Unused > 0n) ? (
           <>
             <div className="staking-lp-info-row">
               <span>Unused</span>
@@ -931,13 +1358,11 @@ export const LpActionModal = ({
                 {normalizedTokens.token1Info?.token.symbol || ''}
               </span>
             </div>
-            <div className="staking-lp-info-row">
-              <span>Slippage</span>
-              <span>0.5%</span>
-            </div>
           </>
         ) : null}
-        {v3DepositQuote ? (
+        {v3DepositQuote &&
+        (v3DepositQuote.amount0Unused > 0n ||
+          v3DepositQuote.amount1Unused > 0n) ? (
           <>
             <div className="staking-lp-info-row">
               <span>Unused</span>
@@ -954,10 +1379,6 @@ export const LpActionModal = ({
                 )}{' '}
                 {normalizedTokens.token1Info?.token.symbol || ''}
               </span>
-            </div>
-            <div className="staking-lp-info-row">
-              <span>Slippage</span>
-              <span>0.5%</span>
             </div>
           </>
         ) : null}
@@ -987,13 +1408,14 @@ export const LpActionModal = ({
             <span>{percent}</span>
             <span>%</span>
           </div>
-          <input
-            className="staking-lp-range"
-            type="range"
+          <SwapSlider
+            className="staking-lp-percent-slider"
             min={0}
             max={100}
+            step={1}
             value={percent}
-            onChange={(event) => setPercent(Number(event.target.value))}
+            tooltipVisible={false}
+            onChange={(value) => setPercent(Number(value))}
           />
           <div className="staking-lp-presets">
             {[25, 50, 75, 100].map((item) => (
@@ -1061,15 +1483,65 @@ export const LpActionModal = ({
     );
   };
 
-  const popupHeight =
-    action === 'deposit' ? 520 : action === 'claim' ? 300 : 420;
+  const renderPriceConfirm = () => {
+    if (!priceDiffInfo) {
+      return null;
+    }
+    const pair = `${priceDiffInfo.token0Symbol}/${priceDiffInfo.token1Symbol}`;
+    return (
+      <div className="staking-lp-price-confirm">
+        <div className="staking-lp-price-warning">
+          Pool price differs from market price by more than 5%.
+        </div>
+        <div className="staking-lp-price-card">
+          <div className="staking-lp-price-row">
+            <span>Pool price</span>
+            <span>
+              1 {priceDiffInfo.token0Symbol} ={' '}
+              {formatPriceNumber(priceDiffInfo.poolPrice)}{' '}
+              {priceDiffInfo.token1Symbol}
+            </span>
+          </div>
+          <div className="staking-lp-price-row">
+            <span>Market price</span>
+            <span>
+              1 {priceDiffInfo.token0Symbol} ={' '}
+              {formatPriceNumber(priceDiffInfo.marketPrice)}{' '}
+              {priceDiffInfo.token1Symbol}
+            </span>
+          </div>
+          <div className="staking-lp-price-row">
+            <span>Pair</span>
+            <span>{pair}</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const popupHeight = confirmingPrice
+    ? 360
+    : action === 'deposit'
+    ? isV3 && !isPositionAction
+      ? 520
+      : 460
+    : action === 'claim'
+    ? 340
+    : 480;
   const loading = tokenLoading && action !== 'claim';
+  const handleCancel = useCallback(() => {
+    if (confirmingPrice) {
+      setConfirmingPrice(false);
+      return;
+    }
+    onCancel();
+  }, [confirmingPrice, onCancel]);
 
   return (
     <Popup
       visible={visible}
-      title={title}
-      onCancel={onCancel}
+      title={confirmingPrice ? 'Confirm Deposit' : title}
+      onCancel={handleCancel}
       height={popupHeight}
       closable
       isNew
@@ -1102,6 +1574,8 @@ export const LpActionModal = ({
 
           .staking-lp-action-popup .ant-drawer-body {
             padding: 0;
+            height: calc(100% - 60px);
+            overflow: hidden;
           }
 
           .staking-lp-action-popup .ant-drawer-close {
@@ -1114,21 +1588,116 @@ export const LpActionModal = ({
 
           .staking-lp-action-body {
             width: 400px;
-            padding: 0 20px 20px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
             color: var(--r-neutral-title1);
+          }
+
+          .staking-lp-action-content {
+            flex: 1 1 auto;
+            min-height: 0;
+            overflow-y: auto;
+            padding: 0 20px;
+          }
+
+          .staking-lp-action-content.is-loading {
+            padding: 20px;
+          }
+
+          .staking-lp-action-footer {
+            flex-shrink: 0;
+            width: 400px;
+            padding: 0 20px 20px;
+            background: var(--r-neutral-card1);
+          }
+
+          .staking-lp-range-selector {
+            width: 400px;
+            margin: 0 -20px;
+            padding: 0 20px 24px;
+          }
+
+          .staking-lp-range-title {
+            margin-bottom: 12px;
+            color: var(--r-neutral-black);
+            font-size: 15px;
+            line-height: 18px;
+            font-weight: 700;
+          }
+
+          .staking-lp-range-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            width: 360px;
+          }
+
+          .staking-lp-range-options button {
+            height: 32px;
+            border: 0;
+            border-radius: 4px;
+            background: var(--r-neutral-bg2);
+            color: var(--r-neutral-body);
+            font-size: 13px;
+            line-height: 16px;
+            font-weight: 500;
+          }
+
+          .staking-lp-range-options button.is-active {
+            background: var(--r-blue-light1);
+            color: var(--r-blue-default);
+            font-weight: 600;
           }
 
           .staking-lp-input-stack {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            width: 400px;
+            margin: 0 -20px;
           }
 
           .staking-lp-token-input {
-            border: 0.5px solid var(--r-neutral-line);
-            border-radius: 8px;
-            padding: 14px 16px;
-            background: linear-gradient(112deg, rgba(237, 240, 255, 0.25) 0%, rgba(237, 240, 255, 0) 100%);
+            height: 106px;
+            padding: 24px 20px;
+            background: transparent;
+          }
+
+          .staking-lp-token-input.is-error .staking-lp-input.ant-input {
+            color: var(--r-red-default);
+          }
+
+          .staking-lp-token-separator {
+            position: relative;
+            display: flex;
+            width: 400px;
+            height: 24px;
+            align-items: center;
+            justify-content: center;
+            padding: 0 20px;
+          }
+
+          .staking-lp-token-separator-line {
+            width: 360px;
+            height: 1px;
+            background: var(--r-neutral-line);
+          }
+
+          .staking-lp-token-separator span {
+            position: absolute;
+            left: 188px;
+            top: 0;
+            display: flex;
+            width: 24px;
+            height: 24px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--r-neutral-bg2);
+            color: var(--r-neutral-body);
+            font-size: 18px;
+            line-height: 20px;
+            font-weight: 500;
           }
 
           .staking-lp-input-label {
@@ -1159,8 +1728,8 @@ export const LpActionModal = ({
             background: transparent !important;
             box-shadow: none !important;
             color: var(--r-neutral-title1);
-            font-size: 28px;
-            line-height: 32px;
+            font-size: 32px;
+            line-height: 38px;
             font-weight: 700;
           }
 
@@ -1256,11 +1825,10 @@ export const LpActionModal = ({
             color: var(--r-neutral-foot);
           }
 
-          .staking-lp-range {
+          .staking-lp-percent-slider.ant-slider {
             width: 360px;
-            height: 40px;
-            margin-top: 4px;
-            accent-color: var(--r-blue-default);
+            margin: 8px 0 0;
+            padding: 14px 0;
           }
 
           .staking-lp-presets {
@@ -1333,19 +1901,61 @@ export const LpActionModal = ({
             line-height: 20px;
           }
 
+          .staking-lp-price-confirm {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-top: 4px;
+          }
+
+          .staking-lp-price-warning {
+            color: var(--r-neutral-title1);
+            font-size: 15px;
+            line-height: 22px;
+            font-weight: 500;
+          }
+
+          .staking-lp-price-card {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 0.5px solid var(--r-neutral-line);
+            border-radius: 8px;
+            padding: 16px;
+            background: var(--r-neutral-bg2);
+          }
+
+          .staking-lp-price-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            color: var(--r-neutral-foot);
+            font-size: 13px;
+            line-height: 16px;
+          }
+
+          .staking-lp-price-row span:last-child {
+            color: var(--r-neutral-title1);
+            text-align: right;
+          }
+
           .staking-lp-error {
-            min-height: 16px;
-            margin-top: 10px;
+            height: 18px;
+            margin: 0 0 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             text-align: center;
             color: var(--r-red-default);
             font-size: 13px;
-            line-height: 16px;
+            line-height: 18px;
           }
 
           .staking-lp-submit {
             width: 360px;
             height: 48px;
-            margin-top: 12px;
+            margin-top: 0;
             border-radius: 6px;
             font-size: 15px;
             line-height: 18px;
@@ -1355,23 +1965,55 @@ export const LpActionModal = ({
       </style>
       <div className="staking-lp-action-body">
         {loading ? (
-          <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          <div className="staking-lp-action-content is-loading">
+            <Skeleton active paragraph={{ rows: 4 }} title={false} />
+          </div>
+        ) : confirmingPrice ? (
+          <>
+            <div className="staking-lp-action-content">
+              {renderPriceConfirm()}
+            </div>
+            <div className="staking-lp-action-footer">
+              <div className="staking-lp-error" title={disabledReason || ''}>
+                {disabledReason || ''}
+              </div>
+              <Button
+                type="primary"
+                block
+                className="staking-lp-submit"
+                disabled={!canSubmit}
+                loading={submitting}
+                onClick={handleSubmit}
+              >
+                Confirm
+              </Button>
+            </div>
+          </>
         ) : (
           <>
-            {action === 'deposit' ? renderDeposit() : null}
-            {action === 'withdraw' ? renderPercentAction() : null}
-            {action === 'claim' ? renderClaim() : null}
-            <div className="staking-lp-error">{disabledReason || ''}</div>
-            <Button
-              type="primary"
-              block
-              className="staking-lp-submit"
-              disabled={!canSubmit}
-              loading={submitting}
-              onClick={handleSubmit}
-            >
-              {title}
-            </Button>
+            <div className="staking-lp-action-content">
+              {action === 'deposit' ? renderDeposit() : null}
+              {action === 'withdraw' ? renderPercentAction() : null}
+              {action === 'claim' ? renderClaim() : null}
+            </div>
+            <div className="staking-lp-action-footer">
+              <div
+                className="staking-lp-error"
+                title={disabledReason || balanceError || ''}
+              >
+                {disabledReason || balanceError || ''}
+              </div>
+              <Button
+                type="primary"
+                block
+                className="staking-lp-submit"
+                disabled={!canSubmit}
+                loading={submitting}
+                onClick={handleSubmit}
+              >
+                {title}
+              </Button>
+            </div>
           </>
         )}
       </div>
