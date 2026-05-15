@@ -1,7 +1,4 @@
-export const ellipsis = (text: string, legacy?: boolean) => {
-  if (legacy) {
-    return text.toString().replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
-  }
+export const ellipsis = (text: string) => {
   return text.toString().replace(/^(.{8})(.*)(.{6})$/, '$1...$3');
 };
 
