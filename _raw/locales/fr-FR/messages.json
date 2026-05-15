@@ -3076,7 +3076,7 @@
       "depositSubmitted": "Dépôt soumis",
       "claimFreeGas": "Réclamer {{usdValue}} de gaz gratuit",
       "depositFailed": "Échec du dépôt",
-      "lowBalance": "Vous n'avez pas assez de gaz. Déposez du gaz pour garantir que les futures transactions se dérouleront sans accroc.",
+      "lowBalance": "",
       "gasBalance": "Solde de gaz",
       "loginSuccess": "Connexion réussie",
       "loginFailed": "Échec de la connexion"

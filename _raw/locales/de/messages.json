@@ -2747,7 +2747,7 @@
       "depositSubmitted": "Einzahlung eingereicht",
       "claimFreeGas": "{{usdValue}} kostenloses Gas beanspruchen",
       "depositFailed": "Einzahlung fehlgeschlagen",
-      "lowBalance": "Sie haben nicht genug Gas. Zahlen Sie Gas ein, um sicherzustellen, dass zukünftige Transaktionen reibungslos verlaufen.",
+      "lowBalance": "",
       "gasBalance": "Gas-Guthaben",
       "loginSuccess": "Anmeldung erfolgreich",
       "loginFailed": "Anmeldung fehlgeschlagen"
