@@ -20,7 +20,8 @@ import { formatUsdValue, useWallet } from 'ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 
 import { RcIconSettingCC } from '@/ui/assets/dashboard';
-import { ReactComponent as RcIconGasCC } from '@/ui/assets/gas-cc.svg';
+import { ReactComponent as RcIconGasFullCC } from '@/ui/assets/gas-full-cc.svg';
+import { ReactComponent as RcIconGasLowCC } from '@/ui/assets/gas-low-cc.svg';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
@@ -40,7 +41,7 @@ import { useHomeBalanceViewOuterPrefetch } from '../BalanceView/useHomeBalanceVi
 import PendingTxs from '../PendingTxs';
 import Queue from '../Queue';
 
-const LOW_GAS_ACCOUNT_BALANCE = 0.1;
+const LOW_GAS_ACCOUNT_BALANCE = 1;
 
 const Container = styled.div`
   width: 100%;
@@ -105,35 +106,6 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
     });
 
     history.push('/switch-address');
-  });
-
-  const handleAddAddress = useMemoizedFn(() => {
-    // matomoRequestEvent({
-    //   category: 'Front Page Click',
-    //   action: 'Click',
-    //   label: 'Add Address',
-    // });
-
-    // ga4.fireEvent('Click_AddAddress', {
-    //   event_category: 'Front Page Click',
-    // });
-
-    history.push('/add-address');
-  });
-
-  const handleOpenDesktop = useMemoizedFn(() => {
-    // matomoRequestEvent({
-    //   category: 'Front Page Click',
-    //   action: 'Click',
-    //   label: 'Open Desktop App',
-    // });
-
-    // ga4.fireEvent('Click_OpenDesktopApp', {
-    //   event_category: 'Front Page Click',
-    // });
-
-    wallet.openInDesktop('/desktop/profile');
-    window.close();
   });
 
   const brandIcon = useWalletConnectIcon(currentAccount);
@@ -292,11 +264,15 @@ const GasAccountEntry = () => {
         'cursor-pointer overflow-hidden transition-all duration-200 shrink-0',
         'flex items-center gap-[2px]',
         'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]',
-        isLowGasAccountBalance ? 'text-r-red-default' : 'text-r-neutral-title-2'
+        'text-r-neutral-title-2'
       )}
       onClick={handleClick}
     >
-      <RcIconGasCC className="shrink-0" />
+      {isLowGasAccountBalance ? (
+        <RcIconGasLowCC className="flex-shrink-0" />
+      ) : (
+        <RcIconGasFullCC className="flex-shrink-0" />
+      )}
       <div
         className={clsx(
           'max-w-0 opacity-0 overflow-hidden whitespace-nowrap truncate',
