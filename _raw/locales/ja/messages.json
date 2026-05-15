@@ -2747,7 +2747,7 @@
       "depositSubmitted": "入金完了",
       "claimFreeGas": "{{usdValue}}分の無料ガスをClaim",
       "depositFailed": "入金失敗",
-      "lowBalance": "ガスが不足しています今後の取引をスムーズに行うため、ガス入金を行ってください。",
+      "lowBalance": "",
       "gasBalance": "ガス残高",
       "loginSuccess": "ログイン成功",
       "loginFailed": "ログイン失敗"
@@ -3467,6 +3467,10 @@
         "searchPlaceholder": "無期限契約を検索",
         "openPosition": "建玉を開く",
         "onePosition": "1 建玉"
+      },
+      "categories": {
+        "favorite": "お気に入り",
+        "topVolume": "取引高上位"
       },
       "invitePopup": {
         "activateFailed": "失敗",

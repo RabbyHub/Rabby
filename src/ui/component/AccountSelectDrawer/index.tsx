@@ -16,6 +16,7 @@ import { findChain } from '@/utils/chain';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
 import clsx from 'clsx';
 import { sortBy } from 'lodash';
+import { getTempoFeeTokenInfo, isTempoChain } from '@/utils/tempo';
 
 interface AccountSelectDrawerProps {
   onChange(account: Account): void;
@@ -68,6 +69,21 @@ export const AccountItem = ({
     if (!chain) {
       return;
     }
+    if (isTempoChain(chain.serverId)) {
+      const feeToken = await getTempoFeeTokenInfo({
+        wallet,
+        userAddress: account.address,
+        chainServerId: chain.serverId,
+      });
+      setNativeTokenSymbol(feeToken.symbol);
+      setNativeTokenBalance(
+        new BN(feeToken.rawBalanceHex || 0)
+          .div(new BN(10).pow(feeToken.decimals))
+          .toFixed()
+      );
+      return;
+    }
+
     const balanceInWei = await wallet.requestETHRpc<any>(
       {
         method: 'eth_getBalance',
@@ -76,18 +92,23 @@ export const AccountItem = ({
       chain.serverId,
       account
     );
-    setNativeTokenBalance(new BN(balanceInWei).div(1e18).toFixed());
+    setNativeTokenBalance(
+      new BN(balanceInWei)
+        .div(new BN(10).pow(chain.nativeTokenDecimals || 18))
+        .toFixed()
+    );
   };
 
   useEffect(() => {
     if (checked && nativeTokenBalance === null) {
       fetchNativeTokenBalance();
     }
-  }, [checked]);
+  }, [checked, nativeTokenBalance, networkId]);
 
   useEffect(() => {
+    setNativeTokenBalance(null);
     init(networkId);
-  }, [networkId]);
+  }, [networkId, account.address]);
 
   const brandIcon = useWalletConnectIcon(account);
 
@@ -120,12 +141,12 @@ export const AccountItem = ({
           className="bottom-[2px] right-0"
         />
       </div>
-      <div className="flex w-full item-container">
+      <div className="flex items-center w-full item-container">
         <div>
           <p className="alian-name">{alianName}</p>
           <AddressViewer address={account.address} showArrow={false} />
         </div>
-        <div className="text-12 text-r-neutral-body native-token-balance">
+        <div className="ml-auto flex-1 text-right min-w-0 text-12 text-r-neutral-body native-token-balance truncate">
           {nativeTokenBalance !== null &&
             `${formatTokenAmount(nativeTokenBalance)} ${nativeTokenSymbol}`}
         </div>

@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history.svg';
+import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history-cc.svg';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconSpin.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/perps/IconYellowArrow.svg';
 import { AccountHistoryItem } from '@/ui/models/perps';
@@ -29,7 +28,7 @@ export const PerpsHeaderRight: React.FC<PerpsHeaderRightProps> = ({
   return (
     <div className="flex items-center absolute top-[50%] translate-y-[-50%] right-0 gap-[16px]">
       <div
-        className="text-r-neutral-title1 cursor-pointer relative hit-slop-8"
+        className="text-r-neutral-title1 hover:text-r-blue-default cursor-pointer relative hit-slop-8"
         onClick={() => {
           wallet.openInDesktop('/desktop/perps');
         }}
@@ -52,12 +51,12 @@ export const PerpsHeaderRight: React.FC<PerpsHeaderRightProps> = ({
           </div>
         ) : (
           <div
-            className="flex items-center gap-[16px] cursor-pointer relative hit-slop-8"
+            className="flex items-center gap-[16px] cursor-pointer relative hit-slop-8 text-r-neutral-title1 hover:text-r-blue-default"
             onClick={() => {
               history.push(`/perps/history/${coin}`);
             }}
           >
-            <ThemeIcon src={RcIconHistory} />
+            <RcIconHistory />
           </div>
         )}
       </div>

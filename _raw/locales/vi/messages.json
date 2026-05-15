@@ -2744,7 +2744,7 @@
       "depositSubmitted": "Đã nạp",
       "claimFreeGas": "Nhận {{usdValue}} gas miễn phí",
       "depositFailed": "Nạp thất bại",
-      "lowBalance": "Bạn không có đủ gas. Hãy nạp gas để đảm bảo các giao dịch tương lai diễn ra suôn sẻ.",
+      "lowBalance": "",
       "gasBalance": "Số dư gas",
       "loginSuccess": "Đăng nhập thành công",
       "loginFailed": "Đăng nhập thất bại"
@@ -3464,6 +3464,10 @@
         "searchPlaceholder": "Tìm kiếm hợp đồng vĩnh viễn",
         "hasPosition": "Vị thế",
         "searchPerps": "Tìm kiếm hợp đồng vĩnh viễn"
+      },
+      "categories": {
+        "favorite": "Yêu thích",
+        "topVolume": "Khối lượng cao"
       },
       "invitePopup": {
         "activateFailed": "Thất bại",

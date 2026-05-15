@@ -2750,7 +2750,7 @@
       "depositSubmitted": "Deposit Submitted",
       "claimFreeGas": "Claim {{usdValue}} Free Gas",
       "depositFailed": "Deposit failed",
-      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "lowBalance": "",
       "gasBalance": "Gas Balance",
       "loginSuccess": "Login Successful",
       "loginFailed": "Login Failed"
@@ -3470,6 +3470,10 @@
         "onePosition": "1 Pozisyon",
         "empty": "Piyasalar bulunamadı",
         "searchPerps": "Sürekli Vadeli Sözleşmeleri Ara"
+      },
+      "categories": {
+        "favorite": "Favoriler",
+        "topVolume": "En Yüksek Hacim"
       },
       "invitePopup": {
         "activateFailed": "Başarısız",

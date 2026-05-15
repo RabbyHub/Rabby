@@ -49,6 +49,7 @@ import {
   formatSpotState,
   SpotBalance,
   getCachedPerpDexs,
+  fetchAllDexsRaw,
 } from '../views/DesktopPerps/utils';
 import {
   OrderType,
@@ -79,6 +80,7 @@ export interface MarketData {
   displayName: string;
   quoteAsset: PerpsQuoteAsset;
   category?: string;
+  categoryId: string;
   brief?: string;
   description?: string;
   maxLeverage: number;
@@ -186,6 +188,10 @@ export interface PerpsState {
   perpFee: number;
   isLogin: boolean;
   isInitialized: boolean;
+  // True after the first WS clearinghouseState frame for the current user.
+  isUserDataReady: boolean;
+  // True after the first WS asset ticker frame.
+  isMarketTickerReady: boolean;
   approveSignatures: ApproveSignatures;
   userFills: WsFill[];
   userAccountHistory: AccountHistoryItem[];
@@ -203,7 +209,15 @@ export interface PerpsState {
   wsActiveAssetData: WsActiveAssetData | null;
   clearinghouseState: AggregatedClearinghouseState | null;
   openOrders: OpenOrder[];
+  // Aggregated state keyed by **account address** — populated for every known
+  // perps account so the account selector can show their balances. Not the
+  // same as `dexClearinghouseStates` below.
   clearinghouseStateMap: Record<string, ClearinghouseState | null>;
+  // Raw per-dex cache for the **current account** keyed by dex name
+  // ('' = hyper main). WS and HTTP both write here with time guards; the
+  // aggregated `clearinghouseState` / `clearinghouseStateMap` are rebuilt
+  // from this map.
+  dexClearinghouseStates: Record<string, ClearinghouseState>;
   spotState: {
     accountValue: string;
     availableToTrade: string;
@@ -303,6 +317,8 @@ export const perps = createModel<RootModel>()({
     marketDataMap: {},
     isLogin: false,
     isInitialized: false,
+    isUserDataReady: false,
+    isMarketTickerReady: false,
     userFills: [],
     approveSignatures: [],
     wsSubscriptions: [],
@@ -317,6 +333,7 @@ export const perps = createModel<RootModel>()({
     wsActiveAssetData: null,
     clearinghouseState: null,
     clearinghouseStateMap: {},
+    dexClearinghouseStates: {},
     openOrders: [],
     historicalOrders: [],
     userAbstraction: 'default',
@@ -557,11 +574,19 @@ export const perps = createModel<RootModel>()({
       if (!payload.address || !payload.clearinghouseState) {
         return state;
       }
+      const key = payload.address.toLowerCase();
+      const existing = state.clearinghouseStateMap?.[key];
+      if (
+        existing &&
+        (payload.clearinghouseState.time ?? 0) <= (existing.time ?? 0)
+      ) {
+        return state;
+      }
       return {
         ...state,
         clearinghouseStateMap: {
           ...state.clearinghouseStateMap,
-          [payload.address.toLowerCase()]: payload.clearinghouseState,
+          [key]: payload.clearinghouseState,
         },
       };
     },
@@ -574,6 +599,26 @@ export const perps = createModel<RootModel>()({
       return {
         ...state,
         clearinghouseState: payload,
+        isUserDataReady: true,
+      };
+    },
+
+    // Per-dex write with time guard so stale HTTP never clobbers fresh WS.
+    patchDexClearinghouseState(
+      state,
+      payload: { dex: string; state: ClearinghouseState }
+    ) {
+      if (!payload.state) return state;
+      const existing = state.dexClearinghouseStates?.[payload.dex];
+      if (existing && (payload.state.time ?? 0) <= (existing.time ?? 0)) {
+        return state;
+      }
+      return {
+        ...state,
+        dexClearinghouseStates: {
+          ...state.dexClearinghouseStates,
+          [payload.dex]: payload.state,
+        },
       };
     },
 
@@ -684,7 +729,11 @@ export const perps = createModel<RootModel>()({
       lastCtxsByDex = buildCtxsByDex(payload);
 
       if (state.marketData.length === 0) {
-        return state;
+        // First WS ticker frame arrived before HTTP meta — still mark
+        // ticker as ready so `waitForInitialWsData` can resolve.
+        return state.isMarketTickerReady
+          ? state
+          : { ...state, isMarketTickerReady: true };
       }
 
       const newMarketData = applyAssetCtxsToList(
@@ -693,6 +742,7 @@ export const perps = createModel<RootModel>()({
       );
       return {
         ...state,
+        isMarketTickerReady: true,
         marketData: newMarketData,
         marketDataMap: buildMarketDataMap(newMarketData),
       };
@@ -1006,11 +1056,7 @@ export const perps = createModel<RootModel>()({
       const { account, isPro } = payload;
       await rootState.app.wallet.setPerpsCurrentAccount(account);
       // await dispatch.perps.refreshData();
-      if (isPro) {
-        await dispatch.perps.fetchClearinghouseState();
-        // other use subscribe to data
-      } else {
-        await dispatch.perps.fetchPositionAndOpenOrders();
+      if (!isPro) {
         dispatch.perps.fetchUserHistoricalOrders();
       }
 
@@ -1031,15 +1077,86 @@ export const perps = createModel<RootModel>()({
       console.log('loginPerpsAccount success', account.address);
     },
 
-    /* @deprecated use websocket subscription push */
-    async fetchClearinghouseState() {
+    // `{ dex }` refreshes one dex (single-position actions). No arg refreshes
+    // all dexes (close-all / withdraw / legacy callers).
+    async fetchClearinghouseState(payload?: { dex?: string }) {
+      if (payload && typeof payload.dex === 'string') {
+        await dispatch.perps.fetchSingleDexClearinghouseState({
+          dex: payload.dex,
+        });
+        return;
+      }
+      await dispatch.perps.fetchAllDexsClearinghouseState();
+    },
+
+    async fetchSingleDexClearinghouseState(
+      payload: { dex: string },
+      rootState
+    ) {
+      const address = rootState.perps.currentPerpsAccount?.address;
+      if (!address) return;
       const sdk = getPerpsSDK();
+      const dexParam = payload.dex || undefined; // '' is hyper main → undefined
+      try {
+        const dexState = await sdk.info.getClearingHouseState(
+          address,
+          dexParam
+        );
+        if (!dexState) return;
+        dispatch.perps.patchDexClearinghouseState({
+          dex: payload.dex,
+          state: dexState,
+        });
+        await dispatch.perps.rebuildAggregatedClearinghouseState({ address });
+      } catch (error) {
+        console.error('fetchSingleDexClearinghouseState failed', error);
+      }
+    },
 
-      // const clearinghouseState = await sdk.info.getClearingHouseState();
+    async fetchAllDexsClearinghouseState(_: void | undefined, rootState) {
+      const address = rootState.perps.currentPerpsAccount?.address;
+      if (!address) return;
+      try {
+        const allStates = await fetchAllDexsRaw(address);
+        // Bulk-replace the per-dex map in one dispatch (mirrors the WS path
+        // and avoids N subscriber notifications). Skips per-key time guards,
+        // which is fine: HTTP responses for all dexes come from the same
+        // server tick window, so we treat them as one frame.
+        const nextMap: Record<string, ClearinghouseState> = {};
+        for (const [dex, s] of allStates) {
+          if (s) nextMap[dex] = s;
+        }
+        dispatch.perps.patchState({ dexClearinghouseStates: nextMap });
+        await dispatch.perps.rebuildAggregatedClearinghouseState({ address });
+      } catch (error) {
+        console.error('fetchAllDexsClearinghouseState failed', error);
+      }
+    },
 
-      // dispatch.perps.updatePositionsWithClearinghouse(clearinghouseState);
-
-      // dispatch.perps.patchClearinghouseState(clearinghouseState);
+    async rebuildAggregatedClearinghouseState(
+      payload: { address: string },
+      rootState
+    ) {
+      const dexMap = rootState.perps.dexClearinghouseStates || {};
+      // formatAllDexsClearinghouseState seeds marginSummary from entries[0],
+      // so bail if hyper isn't cached yet (HTTP single-dex can race ahead of
+      // the first WS frame).
+      if (!dexMap['']) return;
+      const entries: [string, ClearinghouseState][] = Object.entries(dexMap);
+      // make hyper state the first entry so `formatAllDexsClearinghouseState` uses it as the base for marginSummary; order of the rest doesn't matter
+      entries.sort((a, b) => (a[0] === '' ? -1 : b[0] === '' ? 1 : 0));
+      const aggregated = formatAllDexsClearinghouseState(entries);
+      if (!aggregated) return;
+      if (
+        rootState.perps.userAbstraction === UserAbstractionResp.unifiedAccount
+      ) {
+        aggregated.withdrawable = rootState.perps.spotState.availableToTrade.toString();
+      }
+      dispatch.perps.patchClearinghouseState(aggregated);
+      dispatch.perps.setClearinghouseStateMapBySingle({
+        address: payload.address,
+        clearinghouseState: aggregated,
+      });
     },
 
     /* @deprecated use websocket subscription push */
@@ -1225,18 +1342,40 @@ export const perps = createModel<RootModel>()({
         if (!isSameAddress(user, address)) {
           return;
         }
+        // Drop the frame if max-time isn't newer than what we have; otherwise
+        // bulk-replace in one dispatch (per-key patches would notify N times).
+        const latestState = store.getState().perps;
+        const nextMap: Record<string, ClearinghouseState> = {};
+        let frameTime = 0;
+        for (const [dexName, dexState] of clearinghouseStates) {
+          if (dexState) {
+            nextMap[dexName] = dexState;
+            if ((dexState.time ?? 0) > frameTime) {
+              frameTime = dexState.time ?? 0;
+            }
+          }
+        }
+        const existingDexMap = latestState.dexClearinghouseStates || {};
+        let existingFrameTime = 0;
+        for (const key of Object.keys(existingDexMap)) {
+          const t = existingDexMap[key]?.time ?? 0;
+          if (t > existingFrameTime) existingFrameTime = t;
+        }
+        if (frameTime <= existingFrameTime) {
+          return;
+        }
         const clearinghouseState = formatAllDexsClearinghouseState(
           clearinghouseStates
         );
         if (!clearinghouseState) {
           return;
         }
-        const latestState = store.getState().perps;
         if (
           latestState.userAbstraction === UserAbstractionResp.unifiedAccount
         ) {
           clearinghouseState.withdrawable = latestState.spotState.availableToTrade.toString();
         }
+        dispatch.perps.patchState({ dexClearinghouseStates: nextMap });
         dispatch.perps.patchClearinghouseState(clearinghouseState);
         dispatch.perps.setClearinghouseStateMapBySingle({
           address,

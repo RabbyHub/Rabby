@@ -248,6 +248,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
     const res = await handleOpenMarketOrder({
       coin: selectedCoin,
+      dex: currentMarketData?.dexId ?? '',
       isBuy,
       size: directionSize,
       midPx: midPrice.toString(),

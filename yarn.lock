@@ -4835,9 +4835,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/gnosis-sdk@npm:1.4.8":
-  version: 1.4.8
-  resolution: "@rabby-wallet/gnosis-sdk@npm:1.4.8"
+"@rabby-wallet/gnosis-sdk@npm:1.4.9":
+  version: 1.4.9
+  resolution: "@rabby-wallet/gnosis-sdk@npm:1.4.9"
   dependencies:
     "@ethersproject/bignumber": "npm:5.5.0"
     "@ethersproject/bytes": "npm:5.5.0"
@@ -4846,13 +4846,13 @@ __metadata:
     "@ethersproject/solidity": "npm:5.5.0"
     "@safe-global/api-kit": "npm:4.0.0"
     "@safe-global/protocol-kit": "npm:5.2.1"
-    "@safe-global/safe-deployments": "npm:1.37.49"
+    "@safe-global/safe-deployments": "npm:1.37.55"
     "@safe-global/types-kit": "npm:1.0.2"
     axios: "npm:0.24.0"
     ethereumjs-util: "npm:7.1.3"
     ethers: "npm:5.5.1"
     semver: "npm:7.5.4"
-  checksum: 10c0/17c93c91b5a7215c325e41cab55dd523952e89ac688de9e89d0cb4c546982ed4d43511d183ecd14c9483ef7251b29c40feda00b8efcf4d2cfdf300c67e5f19cb
+  checksum: 10c0/1d288991f80a6d2672ff7361c4b997c38f0dd10115b1c0cbe8941968cb296808bdec98117f1b68944b15b4400dbb2c87b85f3f314ed44439d08cb3d541d79a5d
   languageName: node
   linkType: hard
 
@@ -4919,13 +4919,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-bridge@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.2"
+"@rabby-wallet/rabby-bridge@npm:0.0.3":
+  version: 0.0.3
+  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.3"
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.9.58"
-  checksum: 10c0/d7ad1b8b04a31a5881fe4c5e4630796fb0720a2f059e90fddcf0969bd6c65692a3a27e340c96378c35d782b95762dca082c3ce93e34447d2b21fb516f468c91a
+  checksum: 10c0/2b1c099ab9cbb52cf0099beccb869dd9aa412fdba3c4e55dab3c30596a7ab25d2d675b9f30b05a5d19f022873e2b91a761f37d443ced18c60e744c663e8ca548
   languageName: node
   linkType: hard
 
@@ -5229,16 +5229,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@safe-global/safe-deployments@npm:1.37.49":
-  version: 1.37.49
-  resolution: "@safe-global/safe-deployments@npm:1.37.49"
-  dependencies:
-    semver: "npm:^7.6.2"
-  checksum: 10c0/8cf7a014413756534e105de2a28a39ce9d6845513ca848fc12ad8bb69bc1f6405657c58d093f210dca7abbccb33d4f4095eca5f38e1d992339d035ead3e59779
-  languageName: node
-  linkType: hard
-
-"@safe-global/safe-deployments@npm:^1.37.12, @safe-global/safe-deployments@npm:^1.37.26, @safe-global/safe-deployments@npm:^1.37.49, @safe-global/safe-deployments@npm:^1.37.55":
+"@safe-global/safe-deployments@npm:1.37.55, @safe-global/safe-deployments@npm:^1.37.12, @safe-global/safe-deployments@npm:^1.37.26, @safe-global/safe-deployments@npm:^1.37.49, @safe-global/safe-deployments@npm:^1.37.55":
   version: 1.37.55
   resolution: "@safe-global/safe-deployments@npm:1.37.55"
   dependencies:
@@ -21312,12 +21303,12 @@ __metadata:
     "@rabby-wallet/eth-trezor-keyring": "npm:2.6.4"
     "@rabby-wallet/eth-walletconnect-keyring": "npm:2.1.7"
     "@rabby-wallet/eth-watch-keyring": "npm:1.0.0"
-    "@rabby-wallet/gnosis-sdk": "npm:1.4.8"
+    "@rabby-wallet/gnosis-sdk": "npm:1.4.9"
     "@rabby-wallet/hyperliquid-sdk": "npm:1.1.7"
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.14"
     "@rabby-wallet/rabby-api": "npm:0.9.61"
-    "@rabby-wallet/rabby-bridge": "npm:0.0.2"
+    "@rabby-wallet/rabby-bridge": "npm:0.0.3"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
     "@rabby-wallet/rabby-swap": "npm:0.0.76"
     "@rabby-wallet/widgets": "npm:1.0.9"

@@ -2749,7 +2749,7 @@
       "depositSubmitted": "Пополнение отправлено",
       "claimFreeGas": "Получить {{usdValue}} бесплатного газа",
       "depositFailed": "Пополнение не удалось",
-      "lowBalance": "У вас недостаточно газа. Пополните газ, чтобы обеспечить бесперебойность будущих транзакций.",
+      "lowBalance": "",
       "gasBalance": "Баланс газа",
       "loginSuccess": "Вход выполнен успешно",
       "loginFailed": "Ошибка входа"
@@ -3469,6 +3469,10 @@
         "searchPosition": "Поиск позиции",
         "searchPlaceholder": "Поиск бессрочных контрактов",
         "searchPerps": "Поиск вечных контрактов"
+      },
+      "categories": {
+        "favorite": "Избранное",
+        "topVolume": "Топ по объёму"
       },
       "invitePopup": {
         "activateFailed": "Не удалось",

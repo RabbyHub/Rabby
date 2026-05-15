@@ -2744,7 +2744,7 @@
       "depositSubmitted": "Setoran Terkirim",
       "claimFreeGas": "Klaim {{usdValue}} Gas Gratis",
       "depositFailed": "Setoran Gagal",
-      "lowBalance": "Anda tidak memiliki cukup gas. Setorkan gas untuk memastikan transaksi masa depan berjalan lancar.",
+      "lowBalance": "",
       "gasBalance": "Saldo Gas",
       "loginSuccess": "Login Berhasil",
       "loginFailed": "Login Gagal"
@@ -3464,6 +3464,10 @@
         "searchPerps": "Cari Kontrak Perpetual",
         "searchPosition": "Cari posisi terbuka",
         "searchPlaceholder": "Cari kontrak perpetual"
+      },
+      "categories": {
+        "favorite": "Favorit",
+        "topVolume": "Volume Tertinggi"
       },
       "invitePopup": {
         "activateFailed": "Gagal",

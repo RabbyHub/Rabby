@@ -2747,7 +2747,7 @@
       "depositSubmitted": "Depósito Enviado",
       "claimFreeGas": "Reivindicar {{usdValue}} de Gás Grátis",
       "depositFailed": "Falha no Depósito",
-      "lowBalance": "Você não tem gás suficiente. Deposite gás para garantir que transações futuras ocorram sem problemas.",
+      "lowBalance": "",
       "gasBalance": "Saldo de Gás",
       "loginSuccess": "Login Bem-sucedido",
       "loginFailed": "Falha no Login"
@@ -3469,6 +3469,10 @@
         "empty": "Nenhum mercado encontrado",
         "onePosition": "1 Posição",
         "openPosition": "Abrir Posição"
+      },
+      "categories": {
+        "favorite": "Favoritos",
+        "topVolume": "Maior volume"
       },
       "invitePopup": {
         "activateNow": "Ativar agora",

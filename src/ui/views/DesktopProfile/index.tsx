@@ -38,6 +38,8 @@ import { DIFITab } from './components/TokensTabPane/DifiTab';
 import { useTokenAndDefiData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { reportWebPageView } from '@/ui/utils/ga-event';
+import { expiredNft } from '@/db/utils/expired';
+
 const DESKTOP_NAV_HEIGHT = 0;
 
 const StickyBorderTop = () => (
@@ -153,6 +155,10 @@ export const DesktopProfile: React.FC<{
   });
 
   const handleUpdate = useMemoizedFn(async () => {
+    if (activeTab === 'nft' && currentAccount?.address) {
+      expiredNft(currentAccount.address);
+    }
+
     setRefreshKey((prev) => prev + 1);
     refreshPositions();
     refreshBalance();

@@ -2759,7 +2759,7 @@
       "depositSubmitted": "Поповнення надіслано",
       "claimFreeGas": "Отримайте {{usdValue}} безкоштовного газу",
       "depositFailed": "Поповнення не вдалося",
-      "lowBalance": "У вас недостатньо газу. Поповніть газ, щоб майбутні транзакції проходили безперебійно.",
+      "lowBalance": "",
       "gasBalance": "Баланс газу",
       "loginSuccess": "Вхід успішний",
       "loginFailed": "Помилка входу"
@@ -3479,6 +3479,10 @@
         "searchPosition": "Пошук позиції",
         "searchPerps": "Пошук безстрокових контрактів",
         "hasPosition": "Позиція"
+      },
+      "categories": {
+        "favorite": "Обране",
+        "topVolume": "Топ за обсягом"
       },
       "invitePopup": {
         "activateFailed": "Не вдалося",

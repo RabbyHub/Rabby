@@ -2747,7 +2747,7 @@
       "depositSubmitted": "Depósito enviado",
       "claimFreeGas": "Reclamar {{usdValue}} de gas gratis",
       "depositFailed": "Depósito fallido",
-      "lowBalance": "No tienes suficiente gas. Deposita gas para asegurar que las transacciones futuras transcurran sin problemas.",
+      "lowBalance": "",
       "gasBalance": "Saldo de gas",
       "loginSuccess": "Inicio de sesión exitoso",
       "loginFailed": "Inicio de sesión fallido"
@@ -3467,6 +3467,10 @@
         "hasPosition": "Posición",
         "onePosition": "1 Posición",
         "searchPerps": "Buscar contratos perpetuos"
+      },
+      "categories": {
+        "favorite": "Favoritos",
+        "topVolume": "Mayor volumen"
       },
       "invitePopup": {
         "activateNow": "Activar ahora",

@@ -2744,7 +2744,7 @@
       "depositSubmitted": "Deposit Submitted",
       "claimFreeGas": "Claim {{usdValue}} Free Gas",
       "depositFailed": "Deposit failed",
-      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "lowBalance": "",
       "gasBalance": "Gas Balance",
       "loginSuccess": "Login Successful",
       "loginFailed": "Login Failed"
@@ -3464,6 +3464,10 @@
         "searchPlaceholder": "무기한 계약 검색",
         "searchPosition": "포지션 검색",
         "openPosition": "포지션 진입"
+      },
+      "categories": {
+        "favorite": "즐겨찾기",
+        "topVolume": "거래량 상위"
       },
       "invitePopup": {
         "activateNow": "지금 활성화",

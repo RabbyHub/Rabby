@@ -102,6 +102,10 @@ export const useDepositWithdraw = (
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Guards against a stale deposit fetchTokenList resolving after the modal
+  // has switched to withdraw (or been re-opened): each invocation bumps the id
+  // and bails on its post-await state writes if a newer call has started.
+  const fetchTokenListIdRef = useRef(0);
 
   const {
     availableBalance,
@@ -179,15 +183,15 @@ export const useDepositWithdraw = (
   // Fetch token list
   const fetchTokenList = useCallback(async () => {
     if (!currentPerpsAccount?.address || !visible) return;
+    const fetchId = ++fetchTokenListIdRef.current;
     setTokenListLoading(true);
     if (type === 'withdraw') {
       setTokenListLoading(false);
-      if (!selectedToken) {
-        setSelectedToken(ARB_USDC_TOKEN_ITEM);
-      }
+      setSelectedToken(ARB_USDC_TOKEN_ITEM);
       return;
     }
     const res = await queryTokensCache(currentPerpsAccount.address, wallet);
+    if (fetchId !== fetchTokenListIdRef.current) return;
     const sortedTokenList = sortTokenList(res, supportedChains);
     setTokenListLoading(false);
     setTokenList(sortedTokenList);
@@ -200,6 +204,7 @@ export const useDepositWithdraw = (
       false,
       false
     );
+    if (fetchId !== fetchTokenListIdRef.current) return;
     const fullSortedList = sortTokenList(tokenRes, supportedChains);
     setTokenList(fullSortedList);
     pickDefaultToken(fullSortedList);
@@ -940,7 +945,6 @@ export const useDepositWithdraw = (
             : (amount - 1).toString(),
         },
       ]);
-      dispatch.perps.fetchClearinghouseState();
       resetFormValue();
       onCancel();
     } catch (error: any) {
