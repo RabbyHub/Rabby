@@ -19,6 +19,7 @@ import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/com
 import { HomePerpsPositionList } from './HomePerpsPositionList';
 import { uniqBy } from 'lodash';
 import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
+import { NftPreviewSection } from './NftPreviewSection';
 
 interface Props {
   className?: string;
@@ -203,6 +204,7 @@ export const AssetListContainer: React.FC<Props> = ({
               list={filteredPortfolios}
               className="mt-0"
             />
+            <NftPreviewSection className="mt-[28px]" />
           </>
         )}
       </div>
