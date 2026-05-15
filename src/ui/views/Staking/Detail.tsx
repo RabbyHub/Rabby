@@ -1669,8 +1669,8 @@ const StakingDetail = () => {
               onCancel={() => setLpAction(null)}
               onSubmitted={() => {
                 setLpAction(null);
-                refresh();
               }}
+              onConfirmed={refresh}
             />
           ) : null}
         </>

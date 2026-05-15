@@ -255,7 +255,7 @@ export const waitForStakingTxReceipt = async ({
   chainServerId,
   account,
   hash,
-  attempts = 5,
+  attempts = 20,
   interval = 3000,
 }: {
   wallet: Pick<WalletControllerType, 'requestETHRpc'>;
@@ -282,6 +282,10 @@ export const waitForStakingTxReceipt = async ({
       .catch(() => null);
 
     if (receipt) {
+      const status = String(receipt.status || '').toLowerCase();
+      if (status === '0x0' || status === '0') {
+        throw new Error('Staking transaction failed on chain');
+      }
       return receipt;
     }
 

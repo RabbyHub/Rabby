@@ -66,6 +66,7 @@ interface LpActionModalProps {
   claimPositions?: StakingPositionItem[];
   onCancel: () => void;
   onSubmitted: () => void;
+  onConfirmed: () => void;
 }
 
 type TokenBalanceInfo = {
@@ -90,6 +91,34 @@ const V3_RANGE_OPTIONS: Array<{ label: V3RangeOption; bps: number }> = [
 ];
 const PRICE_DIFF_CONFIRM_THRESHOLD = 0.05;
 const Q96 = new BigNumber(2).pow(96);
+
+const ActionPopupTitle = ({
+  title,
+  onBack,
+}: {
+  title: string;
+  onBack: () => void;
+}) => (
+  <div className="staking-lp-action-title">
+    <button
+      type="button"
+      className="staking-lp-action-title-back"
+      onClick={onBack}
+      aria-label="Back"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path
+          d="M13.5 3L6.5 10L13.5 17"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+    <span>{title}</span>
+  </div>
+);
 
 const toSdkPool = (pool: StakingPool) => (pool as unknown) as SdkStakingPool;
 
@@ -389,6 +418,7 @@ export const LpActionModal = ({
   claimPositions,
   onCancel,
   onSubmitted,
+  onConfirmed,
 }: LpActionModalProps) => {
   const wallet = useWallet();
   const { sign } = useStakingMiniSign({
@@ -1084,13 +1114,15 @@ export const LpActionModal = ({
         setSubmitting(false);
         submitted = true;
         onSubmitted();
-        await waitForStakingTxReceipt({
+        const receipt = await waitForStakingTxReceipt({
           wallet,
           chainServerId: pool.chain_id,
           account,
           hash: mainHash,
         });
-        onSubmitted();
+        if (receipt) {
+          onConfirmed();
+        }
       }
     } catch (error) {
       if (
@@ -1112,6 +1144,7 @@ export const LpActionModal = ({
     canSubmit,
     confirmingPrice,
     needsPriceConfirm,
+    onConfirmed,
     onSubmitted,
     pool.chain_id,
     sign,
@@ -1540,10 +1573,15 @@ export const LpActionModal = ({
   return (
     <Popup
       visible={visible}
-      title={confirmingPrice ? 'Confirm Deposit' : title}
+      title={
+        <ActionPopupTitle
+          title={confirmingPrice ? 'Confirm Deposit' : title}
+          onBack={handleCancel}
+        />
+      }
       onCancel={handleCancel}
       height={popupHeight}
-      closable
+      closable={false}
       isNew
       isSupportDarkMode
       className="staking-lp-action-popup"
@@ -1563,13 +1601,35 @@ export const LpActionModal = ({
 
           .staking-lp-action-popup .ant-drawer-title {
             height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%;
             color: var(--r-neutral-title1);
             font-size: 20px;
             line-height: 24px;
             font-weight: 500;
+          }
+
+          .staking-lp-action-popup .staking-lp-action-title {
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: 60px;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .staking-lp-action-popup .staking-lp-action-title-back {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            display: flex;
+            width: 20px;
+            height: 20px;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--r-neutral-title1);
           }
 
           .staking-lp-action-popup .ant-drawer-body {
@@ -1829,6 +1889,18 @@ export const LpActionModal = ({
             width: 360px;
             margin: 8px 0 0;
             padding: 14px 0;
+          }
+
+          .staking-lp-percent-slider.ant-slider .ant-slider-handle {
+            width: 16px;
+            height: 16px;
+            margin-top: -6px;
+          }
+
+          .staking-lp-percent-slider.ant-slider .ant-slider-handle::after {
+            width: 16px;
+            height: 16px;
+            box-shadow: 0 0 0 2px var(--r-blue-default);
           }
 
           .staking-lp-presets {
