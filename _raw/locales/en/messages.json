@@ -3920,7 +3920,7 @@
       "speedUpDesc": "Gas price increased {{percent}} for a faster speed up"
     },
     "gasAccount": {
-      "gasFee":"Gas fee",
+      "gasFee": "Gas fee",
       "title": "GasAccount",
       "gasDeposit": "Gas Deposit",
       "gasToken": "Gas Token",
@@ -4011,7 +4011,7 @@
         "depositFailed": "Deposit failed, please retry",
         "bridgeDepositFailed": "Bridge deposit failed, please retry",
         "noAvailableToken": "No available token",
-        "InsufficientToken":"Insufficient Token Balance"
+        "InsufficientToken": "Insufficient Token Balance"
       },
       "depositPayPopup": {
         "topUpPayTips": "Gas required: {{topUpUsd}}, Gas remaining est: {{balance}}"
@@ -4054,7 +4054,8 @@
         "desc": "Please switch to your login address."
       },
       "loginSuccess": "Login Successful",
-      "loginFailed": "Login Failed"
+      "loginFailed": "Login Failed",
+      "gasAccount": "Gas Account"
     },
     "safeMessageQueue": {
       "loading": "Loading messages",
