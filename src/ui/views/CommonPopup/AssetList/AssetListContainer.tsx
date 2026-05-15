@@ -188,25 +188,30 @@ export const AssetListContainer: React.FC<Props> = ({
         style={{
           display: visible ? 'block' : 'none',
         }}
-        className="pt-[24px]"
       >
         {isPortfoliosLoading && isAppPortfoliosLoading ? (
           <TokenListSkeleton />
         ) : (
           <>
             {visible && !search ? (
-              <HomePerpsPositionList needFetchMarket />
+              <HomePerpsPositionList className="pt-24" needFetchMarket />
             ) : null}
             <ProtocolList
               removeProtocol={removeProtocol}
               appIds={appIds}
               isSearch={!!search}
               list={filteredPortfolios}
-              className="mt-0"
+              className="mt-24"
             />
-            <NftPreviewSection className="mt-[28px] cursor-pointer" />
           </>
         )}
+      </div>
+      <div
+        style={{
+          display: visible ? 'block' : 'none',
+        }}
+      >
+        <NftPreviewSection className="mt-[28px] cursor-pointer" />
       </div>
     </div>
   );

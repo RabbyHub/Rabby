@@ -10,6 +10,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useNFTCollections } from '@/ui/hooks/useNFTCollections';
 import { useWallet } from '@/ui/utils';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import NftEmptyState from '@/ui/assets/dashboard/nft-empty-state.svg';
 import { ReactComponent as RcIconJump } from 'ui/assets/tokenDetail/IconJump.svg';
 
 interface Props {
@@ -57,10 +58,6 @@ export const NftPreviewSection: React.FC<Props> = ({
     );
   }, [collections]);
 
-  if (!isLoading && !list.length) {
-    return null;
-  }
-
   const handleOpenInTab = () => {
     if (onOpenInTab) {
       onOpenInTab();
@@ -74,10 +71,7 @@ export const NftPreviewSection: React.FC<Props> = ({
   return (
     <div className={className} onClick={handleOpenInTab}>
       {isLoading ? (
-        <div className="flex items-center gap-4 mb-[4px]">
-          <Skeleton.Input className="w-[80px] h-[30px] rounded-[4px]" active />
-          <Skeleton.Input className="w-[30px] h-[30px] rounded-[4px]" active />
-        </div>
+        <Skeleton.Input className="w-full h-[48px] rounded-[4px]" active />
       ) : (
         <div
           className={clsx(
@@ -106,32 +100,31 @@ export const NftPreviewSection: React.FC<Props> = ({
               <RcIconJump className="w-[14px] h-[14px]" />
             </button>
           </div>
-          <div className="mt-[8px] overflow-hidden">
-            <div className="flex w-max items-center gap-[4px]">
-              {list.slice(0, 7).map((item) => {
-                return (
-                  <div
-                    key={`${item.collection.chain}-${item.collection.id}-${item.nft.id}`}
-                    className="w-[48px] h-[48px] shrink-0 rounded-[4px] overflow-hidden bg-r-neutral-line"
-                  >
-                    <NFTAvatar
-                      className="w-[48px] h-[48px]"
-                      type={item.nft?.content_type}
-                      content={item.nft?.content}
-                      empty={
-                        <div className="w-[48px] h-[48px] rounded-[4px] bg-r-neutral-line" />
-                      }
-                    />
-                  </div>
-                );
-              })}
+          {list.length ? (
+            <div className="mt-[8px] overflow-hidden">
+              <div className="flex w-max items-center gap-[4px]">
+                {list.slice(0, 7).map((item) => {
+                  return (
+                    <div
+                      key={`${item.collection.chain}-${item.collection.id}-${item.nft.id}`}
+                      className="w-[48px] h-[48px] shrink-0 rounded-[4px] overflow-hidden bg-r-neutral-line"
+                    >
+                      <NFTAvatar
+                        className="w-[48px] h-[48px]"
+                        type={item.nft?.content_type}
+                        content={item.nft?.content}
+                        empty={
+                          <div className="w-[48px] h-[48px] rounded-[4px] bg-r-neutral-line" />
+                        }
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
       )}
-      {isLoading ? (
-        <Skeleton.Input className="w-[300px] h-[48px] rounded-[4px]" active />
-      ) : null}
     </div>
   );
 };
