@@ -14,7 +14,7 @@ import { useTokens } from '@/ui/utils/portfolio/token';
 import { abstractTokenToTokenItem } from '@/ui/utils/token';
 import { isSupportDBAccount } from '@/utils/account';
 import { findChain } from '@/utils/chain';
-import { useEventListener, useMemoizedFn, useRequest } from 'ahooks';
+import { useEventListener, useMemoizedFn, useMount, useRequest } from 'ahooks';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,8 @@ import {
   DEFAULT_PRICE_IMPACT,
 } from './constant';
 import { useBatchSwapTask } from './hooks/useBatchSwapTask';
+import { useLocation } from 'react-router-dom';
+import { reportWebPageView } from '@/ui/utils/ga-event';
 
 const DesktopSmallSwapContent: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -210,6 +212,11 @@ const DesktopSmallSwapContent: React.FC = () => {
       handleRefresh();
     }
   }, [task.status]);
+
+  const location = useLocation();
+  useMount(() => {
+    reportWebPageView(location.pathname);
+  });
 
   return (
     <div className={clsx('h-full overflow-auto bg-r-neutral-bg-2')}>
