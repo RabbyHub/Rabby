@@ -8,7 +8,7 @@ import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import {
   ERC4626_ABI,
   buildErc4626DepositTx,
-  buildErc4626WithdrawTx,
+  buildErc4626RedeemTx,
   getErc4626PoolEntry,
 } from '@rabby-wallet/staking-sdk';
 import type { StakingPool as SdkStakingPool } from '@rabby-wallet/staking-sdk';
@@ -20,12 +20,13 @@ import { Popup } from '@/ui/component';
 import TokenWithChain from '@/ui/component/TokenWithChain';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
+import { SwapSlider } from '@/ui/views/Swap/Component/Slider';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { findChainByServerID } from '@/utils/chain';
 
 import type { StakingPool } from '../types';
 import { useStakingMiniSign } from '../hooks/useStakingMiniSign';
-import { formatStakingAmount } from '../utils/format';
+import { formatStakingAmount, formatStakingUsd } from '../utils/format';
 import {
   buildStakingMiniSignTxs,
   getStakingMainTxHash,
@@ -42,10 +43,39 @@ interface Erc4626ActionModalProps {
   account: Account;
   onCancel: () => void;
   onSubmitted: () => void;
+  onConfirmed: () => void;
 }
 
 const getActionLabel = (action: Erc4626Action) =>
   action === 'deposit' ? 'Deposit' : 'Withdraw';
+
+const ActionPopupTitle = ({
+  title,
+  onBack,
+}: {
+  title: string;
+  onBack: () => void;
+}) => (
+  <div className="staking-action-title">
+    <button
+      type="button"
+      className="staking-action-title-back"
+      onClick={onBack}
+      aria-label="Back"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path
+          d="M13.5 3L6.5 10L13.5 17"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+    <span>{title}</span>
+  </div>
+);
 
 const toSdkPool = (pool: StakingPool) => (pool as unknown) as SdkStakingPool;
 
@@ -64,9 +94,11 @@ export const Erc4626ActionModal = ({
   account,
   onCancel,
   onSubmitted,
+  onConfirmed,
 }: Erc4626ActionModalProps) => {
   const wallet = useWallet();
   const [amount, setAmount] = useState('');
+  const [percent, setPercent] = useState(100);
   const [submitting, setSubmitting] = useState(false);
   const chainInfo = findChainByServerID(pool.chain_id);
   const entry = useMemo(() => {
@@ -122,7 +154,7 @@ export const Erc4626ActionModal = ({
     ]
   );
 
-  const { data: maxWithdraw, loading: maxWithdrawLoading } = useRequest(
+  const { data: maxRedeemRaw = '0', loading: maxRedeemLoading } = useRequest(
     async () => {
       if (!visible || action !== 'withdraw') {
         return '0';
@@ -131,24 +163,23 @@ export const Erc4626ActionModal = ({
         throw new Error('Unsupported ERC4626 pool');
       }
 
-      const rawMaxWithdraw = await readStakingContract({
+      const rawMaxRedeem = await readStakingContract({
         wallet,
         chainServerId: pool.chain_id,
         account,
         address: entry.vault,
         abi: ERC4626_ABI,
-        functionName: 'maxWithdraw',
+        functionName: 'maxRedeem',
         args: [account.address],
       });
 
-      return formatUnits(String(rawMaxWithdraw), decimals);
+      return String(rawMaxRedeem || 0);
     },
     {
       ready: visible && action === 'withdraw',
       refreshDeps: [
         account.address,
         action,
-        decimals,
         entry?.vault,
         pool.chain_id,
         visible,
@@ -156,10 +187,60 @@ export const Erc4626ActionModal = ({
     }
   );
 
-  const maxAmount = action === 'deposit' ? String(balance || 0) : maxWithdraw;
+  const selectedRedeemSharesRaw = useMemo(() => {
+    try {
+      return (
+        (BigInt(maxRedeemRaw || '0') * BigInt(percent)) /
+        100n
+      ).toString();
+    } catch {
+      return '0';
+    }
+  }, [maxRedeemRaw, percent]);
+
+  const {
+    data: previewRedeemAssetsRaw = '0',
+    loading: previewRedeemLoading,
+  } = useRequest(
+    async () => {
+      if (
+        !visible ||
+        action !== 'withdraw' ||
+        !entry ||
+        BigInt(selectedRedeemSharesRaw || '0') <= 0n
+      ) {
+        return '0';
+      }
+
+      const rawAssets = await readStakingContract({
+        wallet,
+        chainServerId: pool.chain_id,
+        account,
+        address: entry.vault,
+        abi: ERC4626_ABI,
+        functionName: 'previewRedeem',
+        args: [BigInt(selectedRedeemSharesRaw)],
+      });
+
+      return String(rawAssets || 0);
+    },
+    {
+      ready: visible && action === 'withdraw' && !!entry,
+      refreshDeps: [
+        account.address,
+        action,
+        entry?.vault,
+        pool.chain_id,
+        selectedRedeemSharesRaw,
+        visible,
+      ],
+    }
+  );
+
+  const maxAmount = String(balance || 0);
   const amountNumber = new BigNumber(amount || '0');
   const maxAmountNumber = new BigNumber(maxAmount || '0');
-  const amountInvalid =
+  const depositAmountInvalid =
     !amount ||
     !amountNumber.isFinite() ||
     amountNumber.lte(0) ||
@@ -171,6 +252,28 @@ export const Erc4626ActionModal = ({
     : actionState?.is_supported !== true
     ? actionState?.reason || 'Unavailable'
     : undefined;
+  const selectedRedeemShares = useMemo(() => {
+    try {
+      return BigInt(selectedRedeemSharesRaw || '0');
+    } catch {
+      return 0n;
+    }
+  }, [selectedRedeemSharesRaw]);
+  const previewRedeemAssets = useMemo(() => {
+    try {
+      return BigInt(previewRedeemAssetsRaw || '0');
+    } catch {
+      return 0n;
+    }
+  }, [previewRedeemAssetsRaw]);
+  const withdrawInvalid =
+    action === 'withdraw' &&
+    (selectedRedeemShares <= 0n || previewRedeemAssets <= 0n);
+  const canSubmit =
+    !disabledReason &&
+    (action === 'deposit'
+      ? !depositAmountInvalid
+      : !previewRedeemLoading && !withdrawInvalid);
   const { sign } = useStakingMiniSign({
     account,
     chainServerId: pool.chain_id,
@@ -184,7 +287,6 @@ export const Erc4626ActionModal = ({
       throw new Error('Unsupported ERC4626 pool');
     }
 
-    const rawAmount = parseUnits(amount, decimals).toString();
     const common = {
       pool: toSdkPool(pool),
       from: account.address,
@@ -195,11 +297,11 @@ export const Erc4626ActionModal = ({
       action === 'deposit'
         ? buildErc4626DepositTx({
             ...common,
-            assets: rawAmount,
+            assets: parseUnits(amount, decimals).toString(),
           })
-        : buildErc4626WithdrawTx({
+        : buildErc4626RedeemTx({
             ...common,
-            assets: rawAmount,
+            shares: selectedRedeemSharesRaw,
             owner: account.address,
           });
 
@@ -210,10 +312,20 @@ export const Erc4626ActionModal = ({
       account,
       buildResult,
     });
-  }, [account, action, amount, chainInfo, decimals, pool, wallet]);
+  }, [
+    account,
+    action,
+    amount,
+    chainInfo,
+    decimals,
+    entry,
+    pool,
+    selectedRedeemSharesRaw,
+    wallet,
+  ]);
 
   const handleSubmit = useCallback(async () => {
-    if (disabledReason || amountInvalid) {
+    if (!canSubmit) {
       return;
     }
 
@@ -226,16 +338,19 @@ export const Erc4626ActionModal = ({
       if (hash) {
         message.success(`${actionLabel} submitted`);
         setAmount('');
+        setPercent(100);
         setSubmitting(false);
         submitted = true;
         onSubmitted();
-        await waitForStakingTxReceipt({
+        const receipt = await waitForStakingTxReceipt({
           wallet,
           chainServerId: pool.chain_id,
           account,
           hash,
         });
-        onSubmitted();
+        if (receipt) {
+          onConfirmed();
+        }
       }
     } catch (error) {
       if (
@@ -253,10 +368,10 @@ export const Erc4626ActionModal = ({
     }
   }, [
     actionLabel,
-    amountInvalid,
     buildTxs,
-    disabledReason,
+    canSubmit,
     account,
+    onConfirmed,
     onSubmitted,
     pool.chain_id,
     sign,
@@ -271,20 +386,27 @@ export const Erc4626ActionModal = ({
 
   const resetAndCancel = () => {
     setAmount('');
+    setPercent(100);
     onCancel();
   };
 
-  const maxLoading = tokenLoading || maxWithdrawLoading;
+  const maxLoading =
+    tokenLoading || (action === 'withdraw' && maxRedeemLoading);
   const amountUsdText = getAmountUsdText(amount, tokenPrice);
   const balanceText = formatStakingAmount(maxAmount || '0');
+  const redeemReceiveAmount = formatUnits(previewRedeemAssetsRaw, decimals);
+  const redeemReceiveUsd = new BigNumber(redeemReceiveAmount || 0)
+    .multipliedBy(tokenPrice || 0)
+    .toNumber();
+  const redeemReceiveText = formatStakingAmount(redeemReceiveAmount);
 
   return (
     <Popup
       visible={visible}
-      title={actionLabel}
+      title={<ActionPopupTitle title={actionLabel} onBack={resetAndCancel} />}
       onCancel={resetAndCancel}
-      height={258}
-      closable
+      height={action === 'withdraw' ? 408 : 258}
+      closable={false}
       isNew
       isSupportDarkMode
       className="staking-action-popup"
@@ -304,13 +426,35 @@ export const Erc4626ActionModal = ({
 
           .staking-action-popup .ant-drawer-title {
             height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%;
             color: var(--r-neutral-title1);
             font-size: 20px;
             line-height: 24px;
             font-weight: 500;
+          }
+
+          .staking-action-popup .staking-action-title {
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: 60px;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .staking-action-popup .staking-action-title-back {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            display: flex;
+            width: 20px;
+            height: 20px;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--r-neutral-title1);
           }
 
           .staking-action-popup .ant-drawer-close {
@@ -451,6 +595,106 @@ export const Erc4626ActionModal = ({
             line-height: 18px;
             font-weight: 500;
           }
+
+          .staking-action-popup .staking-action-withdraw-box {
+            width: 400px;
+            padding: 16px 20px 24px;
+          }
+
+          .staking-action-popup .staking-action-percent-value {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            color: var(--r-neutral-title1);
+            font-size: 32px;
+            line-height: 38px;
+            font-weight: 700;
+          }
+
+          .staking-action-popup .staking-action-percent-value span:last-child {
+            color: var(--r-neutral-foot);
+          }
+
+          .staking-action-popup .staking-action-percent-slider.ant-slider {
+            width: 360px;
+            margin: 8px 0 0;
+            padding: 14px 0;
+          }
+
+          .staking-action-popup .staking-action-percent-slider.ant-slider .ant-slider-handle {
+            width: 16px;
+            height: 16px;
+            margin-top: -6px;
+          }
+
+          .staking-action-popup .staking-action-percent-slider.ant-slider .ant-slider-handle::after {
+            width: 16px;
+            height: 16px;
+            box-shadow: 0 0 0 2px var(--r-blue-default);
+          }
+
+          .staking-action-popup .staking-action-presets {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+          }
+
+          .staking-action-popup .staking-action-presets button {
+            height: 32px;
+            border: 0;
+            border-radius: 4px;
+            background: var(--r-neutral-bg2);
+            color: var(--r-neutral-title1);
+            font-size: 13px;
+            line-height: 16px;
+          }
+
+          .staking-action-popup .staking-action-presets button.is-active {
+            background: var(--r-blue-light1);
+            color: var(--r-blue-default);
+          }
+
+          .staking-action-popup .staking-action-preview {
+            width: 400px;
+            padding: 0 20px;
+          }
+
+          .staking-action-popup .staking-action-preview-title {
+            margin-bottom: 8px;
+            color: var(--r-neutral-title1);
+            font-size: 15px;
+            line-height: 18px;
+            font-weight: 500;
+          }
+
+          .staking-action-popup .staking-action-preview-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 56px;
+            border: 0.5px solid #edf0ff;
+            border-radius: 8px;
+            padding: 16px;
+            background: linear-gradient(112deg, rgba(237, 240, 255, 0.25) 0%, rgba(237, 240, 255, 0) 100%);
+          }
+
+          .staking-action-popup .staking-action-preview-left {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 8px;
+            color: var(--r-neutral-body);
+            font-size: 13px;
+            line-height: 16px;
+          }
+
+          .staking-action-popup .staking-action-preview-value {
+            color: var(--r-neutral-foot);
+            font-size: 13px;
+            line-height: 16px;
+          }
         `}
       </style>
 
@@ -461,64 +705,128 @@ export const Erc4626ActionModal = ({
           </div>
         ) : (
           <>
-            <div
-              className={clsx(
-                'staking-action-amount-row',
-                amountNumber.gt(maxAmountNumber) && 'is-error'
-              )}
-            >
-              <div className="staking-action-amount-left">
-                <Input
-                  className="staking-action-amount-input"
-                  placeholder="0"
-                  value={amount}
-                  onChange={(event) => onAmountChange(event.target.value)}
-                />
-                <div className="staking-action-amount-usd">{amountUsdText}</div>
-              </div>
-              <div className="staking-action-token-side">
-                <div className="staking-action-token-main">
-                  {actionToken ? (
-                    <TokenWithChain
-                      width="32px"
-                      height="32px"
-                      chainSize={16}
-                      token={actionToken}
-                      hideConer
-                    />
-                  ) : null}
-                  <span className="staking-action-token-symbol">
-                    {asset?.symbol || ''}
-                  </span>
-                </div>
-                <div className="staking-action-balance">
-                  <RcIconWalletCC
-                    viewBox="0 0 16 16"
-                    className="w-[14px] h-[14px]"
+            {action === 'deposit' ? (
+              <div
+                className={clsx(
+                  'staking-action-amount-row',
+                  amountNumber.gt(maxAmountNumber) && 'is-error'
+                )}
+              >
+                <div className="staking-action-amount-left">
+                  <Input
+                    className="staking-action-amount-input"
+                    placeholder="0"
+                    value={amount}
+                    onChange={(event) => onAmountChange(event.target.value)}
                   />
-                  <span
-                    className="staking-action-balance-text"
-                    title={balanceText}
-                  >
-                    {balanceText}
-                  </span>
-                  <button
-                    type="button"
-                    className="staking-action-max"
-                    onClick={() => setAmount(maxAmount || '')}
-                  >
-                    Max
-                  </button>
+                  <div className="staking-action-amount-usd">
+                    {amountUsdText}
+                  </div>
+                </div>
+                <div className="staking-action-token-side">
+                  <div className="staking-action-token-main">
+                    {actionToken ? (
+                      <TokenWithChain
+                        width="32px"
+                        height="32px"
+                        chainSize={16}
+                        token={actionToken}
+                        hideConer
+                      />
+                    ) : null}
+                    <span className="staking-action-token-symbol">
+                      {asset?.symbol || ''}
+                    </span>
+                  </div>
+                  <div className="staking-action-balance">
+                    <RcIconWalletCC
+                      viewBox="0 0 16 16"
+                      className="w-[14px] h-[14px]"
+                    />
+                    <span
+                      className="staking-action-balance-text"
+                      title={balanceText}
+                    >
+                      {balanceText}
+                    </span>
+                    <button
+                      type="button"
+                      className="staking-action-max"
+                      onClick={() => setAmount(maxAmount || '')}
+                    >
+                      Max
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <>
+                <div className="staking-action-withdraw-box">
+                  <div className="staking-action-percent-value">
+                    <span>{percent}</span>
+                    <span>%</span>
+                  </div>
+                  <SwapSlider
+                    className="staking-action-percent-slider"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={percent}
+                    tooltipVisible={false}
+                    onChange={(value) => setPercent(Number(value))}
+                  />
+                  <div className="staking-action-presets">
+                    {[25, 50, 75, 100].map((item) => (
+                      <button
+                        type="button"
+                        key={item}
+                        className={clsx(percent === item && 'is-active')}
+                        onClick={() => setPercent(item)}
+                      >
+                        {item}%
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="staking-action-preview">
+                  <div className="staking-action-preview-title">Receive</div>
+                  <div className="staking-action-preview-card">
+                    <div className="staking-action-preview-left">
+                      {actionToken ? (
+                        <TokenWithChain
+                          width="24px"
+                          height="24px"
+                          chainSize={12}
+                          token={actionToken}
+                          hideConer
+                        />
+                      ) : null}
+                      <span>
+                        {previewRedeemLoading
+                          ? '-'
+                          : `${redeemReceiveText} ${asset?.symbol || ''}`}
+                      </span>
+                    </div>
+                    <span className="staking-action-preview-value">
+                      {previewRedeemLoading
+                        ? '-'
+                        : formatStakingUsd(redeemReceiveUsd)}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
 
             <div className="staking-action-footer">
               {disabledReason ? (
                 <div className="staking-action-error">{disabledReason}</div>
-              ) : amountNumber.gt(maxAmountNumber) ? (
+              ) : action === 'deposit' && amountNumber.gt(maxAmountNumber) ? (
                 <div className="staking-action-error">
                   Insufficient {asset?.symbol || 'token'} balance
+                </div>
+              ) : action === 'withdraw' && withdrawInvalid ? (
+                <div className="staking-action-error">
+                  No withdrawable position
                 </div>
               ) : null}
 
@@ -527,7 +835,7 @@ export const Erc4626ActionModal = ({
                 block
                 className="staking-action-submit"
                 loading={submitting}
-                disabled={!!disabledReason || amountInvalid}
+                disabled={!canSubmit}
                 onClick={handleSubmit}
               >
                 {actionLabel}

@@ -1653,8 +1653,8 @@ const StakingDetail = () => {
               onCancel={() => setErc4626Action(null)}
               onSubmitted={() => {
                 setErc4626Action(null);
-                refresh();
               }}
+              onConfirmed={refresh}
             />
           ) : null}
 
