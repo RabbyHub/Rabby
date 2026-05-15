@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import omit from 'lodash/omit';
+import { Skeleton } from 'antd';
 
 import { CollectionList, NFTItem } from '@rabby-wallet/rabby-api/dist/types';
 
@@ -23,9 +24,12 @@ export const NftPreviewSection: React.FC<Props> = ({
   const wallet = useWallet();
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
-  const { collections } = useNFTCollections(currentAccount?.address, {
-    preferCacheOnExists: true,
-  });
+  const { collections, isLoading } = useNFTCollections(
+    currentAccount?.address,
+    {
+      preferCacheOnExists: true,
+    }
+  );
 
   const list = React.useMemo(() => {
     const result: {
@@ -53,7 +57,7 @@ export const NftPreviewSection: React.FC<Props> = ({
     );
   }, [collections]);
 
-  if (!list.length) {
+  if (!isLoading && !list.length) {
     return null;
   }
 
@@ -68,54 +72,67 @@ export const NftPreviewSection: React.FC<Props> = ({
   };
 
   return (
-    <div
-      className={clsx(
-        'bg-r-neutral-card1 rounded-[8px] p-[12px] overflow-hidden border border-transparent',
-        'hover:border-rb-blue-default cursor-pointer',
-        className
-      )}
-      onClick={handleOpenInTab}
-    >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-[8px] min-w-0 text-[15px] leading-[18px]">
-          <div className="text-r-neutral-title-1 font-semibold">
-            {t('page.dashboard.home.panel.nft')}
-          </div>
-          <div className="text-r-neutral-foot font-medium">({list.length})</div>
+    <div className={className}>
+      {isLoading ? (
+        <div className="flex items-center gap-4 mb-[4px]">
+          <Skeleton.Input className="w-[80px] h-[30px] rounded-[4px]" active />
+          <Skeleton.Input className="w-[30px] h-[30px] rounded-[4px]" active />
         </div>
-        <button
-          type="button"
+      ) : (
+        <div
           className={clsx(
-            'w-[16px] h-[16px] shrink-0 p-0 border-0 bg-transparent',
-            'flex items-center justify-center text-r-neutral-title-1',
-            'opacity-80 hover:opacity-100 transition-opacity'
+            'bg-r-neutral-card1 rounded-[8px] p-[12px] overflow-hidden border border-transparent',
+            'hover:border-rb-blue-default cursor-pointer'
           )}
-          aria-label={t('page.dashboard.assets.openInTabV2')}
+          onClick={handleOpenInTab}
         >
-          <RcIconJump className="w-[14px] h-[14px]" />
-        </button>
-      </div>
-      <div className="mt-[8px] overflow-hidden">
-        <div className="flex w-max items-center gap-[4px]">
-          {list.slice(0, 7).map((item) => {
-            return (
-              <div
-                key={`${item.collection.chain}-${item.collection.id}-${item.nft.id}`}
-                className="w-[48px] h-[48px] shrink-0 rounded-[4px] overflow-hidden bg-r-neutral-line"
-              >
-                <NFTAvatar
-                  className="w-[48px] h-[48px]"
-                  type={item.nft?.content_type}
-                  content={item.nft?.content}
-                  empty={
-                    <div className="w-[48px] h-[48px] rounded-[4px] bg-r-neutral-line" />
-                  }
-                />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-[8px] min-w-0 text-[15px] leading-[18px]">
+              <div className="text-r-neutral-title-1 font-semibold">
+                {t('page.dashboard.home.panel.nft')}
               </div>
-            );
-          })}
+              <div className="text-r-neutral-foot font-medium">
+                ({list.length})
+              </div>
+            </div>
+            <button
+              type="button"
+              className={clsx(
+                'w-[16px] h-[16px] shrink-0 p-0 border-0 bg-transparent',
+                'flex items-center justify-center text-r-neutral-title-1',
+                'opacity-80 hover:opacity-100 transition-opacity'
+              )}
+              aria-label={t('page.dashboard.assets.openInTabV2')}
+            >
+              <RcIconJump className="w-[14px] h-[14px]" />
+            </button>
+          </div>
+          <div className="mt-[8px] overflow-hidden">
+            <div className="flex w-max items-center gap-[4px]">
+              {list.slice(0, 7).map((item) => {
+                return (
+                  <div
+                    key={`${item.collection.chain}-${item.collection.id}-${item.nft.id}`}
+                    className="w-[48px] h-[48px] shrink-0 rounded-[4px] overflow-hidden bg-r-neutral-line"
+                  >
+                    <NFTAvatar
+                      className="w-[48px] h-[48px]"
+                      type={item.nft?.content_type}
+                      content={item.nft?.content}
+                      empty={
+                        <div className="w-[48px] h-[48px] rounded-[4px] bg-r-neutral-line" />
+                      }
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+      {isLoading ? (
+        <Skeleton.Input className="w-[300px] h-[48px] rounded-[4px]" active />
+      ) : null}
     </div>
   );
 };
