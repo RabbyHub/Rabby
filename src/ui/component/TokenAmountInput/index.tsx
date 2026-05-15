@@ -349,7 +349,7 @@ const TokenAmountInput = ({
             ref={tokenInputRef}
             placeholder="0"
             className={clsx(
-              !value && 'h-[29px]',
+              'h-[36px]',
               insufficientError && 'text-rabby-red-default'
             )}
             autoFocus
