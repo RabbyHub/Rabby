@@ -8,6 +8,11 @@ export const SIGN_MAINNET_SUPPORTED_GAS_LEVELS = [
 
 export type SignMainnetSupportedGasLevel = typeof SIGN_MAINNET_SUPPORTED_GAS_LEVELS[number];
 
+const SIGN_MAINNET_CUSTOM_DOWNGRADE_LEVELS: SignMainnetSupportedGasLevel[] = [
+  'normal',
+  'slow',
+];
+
 export type SignMainnetGasLevelState = Partial<
   Record<
     SignMainnetSupportedGasLevel,
@@ -21,6 +26,16 @@ export type SignMainnetGasLevelState = Partial<
     }
   >
 >;
+
+export type SignMainnetAutoDowngradeGasLevel = {
+  level: SignMainnetSupportedGasLevel;
+  gasMethod: 'native' | 'gasAccount';
+};
+
+export type SignMainnetSupportedGasLevelPrice = {
+  level: SignMainnetSupportedGasLevel;
+  price: number;
+};
 
 export const resolveSignMainnetGasLevelFetchMode = ({
   isReady,
@@ -116,6 +131,137 @@ export const hasUsableSiblingSignMainnetGasLevel = ({
       state.gasAccount[0] === false
     );
   });
+
+export const resolveSignMainnetAutoDowngradeGasLevel = ({
+  selectedSupportedLevel,
+  selectedGasPrice,
+  supportedGasLevels = [],
+  gasAccountChainSupported,
+  levelState,
+  requestFingerprint,
+}: {
+  selectedSupportedLevel?: SignMainnetSupportedGasLevel;
+  selectedGasPrice?: number;
+  supportedGasLevels?: SignMainnetSupportedGasLevelPrice[];
+  gasAccountChainSupported: boolean;
+  levelState: SignMainnetGasLevelState;
+  requestFingerprint: string;
+}): SignMainnetAutoDowngradeGasLevel | null => {
+  const selectedIndex = selectedSupportedLevel
+    ? SIGN_MAINNET_SUPPORTED_GAS_LEVELS.indexOf(selectedSupportedLevel)
+    : -1;
+  const selectedCustomGasPrice =
+    typeof selectedGasPrice === 'number' && Number.isFinite(selectedGasPrice)
+      ? selectedGasPrice
+      : undefined;
+  const customDowngradeLevel = SIGN_MAINNET_CUSTOM_DOWNGRADE_LEVELS.find(
+    (level) => {
+      const gasLevel = supportedGasLevels.find((item) => item.level === level);
+
+      return (
+        gasLevel &&
+        selectedCustomGasPrice !== undefined &&
+        Number.isFinite(gasLevel.price) &&
+        gasLevel.price < selectedCustomGasPrice
+      );
+    }
+  );
+
+  const lowerLevels =
+    selectedIndex >= 0
+      ? SIGN_MAINNET_SUPPORTED_GAS_LEVELS.slice(0, selectedIndex).reverse()
+      : customDowngradeLevel
+      ? [customDowngradeLevel]
+      : [];
+
+  if (!lowerLevels.length && !selectedSupportedLevel) {
+    return null;
+  }
+
+  const getReadyState = (level: SignMainnetSupportedGasLevel) => {
+    const state = levelState[level];
+    if (!state || state.fingerprint !== requestFingerprint || state.loading) {
+      return null;
+    }
+
+    return state;
+  };
+
+  const canUseGasAccountLevel = (level: SignMainnetSupportedGasLevel) => {
+    const state = getReadyState(level);
+    if (!state) {
+      return null;
+    }
+
+    if (
+      !gasAccountChainSupported ||
+      !state.gasAccount ||
+      state.gasAccountResult?.chain_not_support
+    ) {
+      return false;
+    }
+
+    return state.gasAccount[0] === false;
+  };
+
+  if (selectedSupportedLevel) {
+    const selectedState = getReadyState(selectedSupportedLevel);
+    if (!selectedState || selectedState.nativeNotEnough !== true) {
+      return null;
+    }
+
+    const selectedGasAccountEnough = canUseGasAccountLevel(
+      selectedSupportedLevel
+    );
+    if (selectedGasAccountEnough === null) {
+      return null;
+    }
+
+    if (selectedGasAccountEnough) {
+      return { level: selectedSupportedLevel, gasMethod: 'gasAccount' };
+    }
+  }
+
+  for (const level of lowerLevels) {
+    const state = getReadyState(level);
+    if (!state) {
+      return null;
+    }
+
+    if (state.nativeUsd !== undefined && state.nativeNotEnough === false) {
+      return { level, gasMethod: 'native' };
+    }
+
+    if (state.nativeNotEnough !== true) {
+      return null;
+    }
+
+    const levelGasAccountEnough = canUseGasAccountLevel(level);
+    if (levelGasAccountEnough === null) {
+      return null;
+    }
+
+    if (levelGasAccountEnough) {
+      return { level, gasMethod: 'gasAccount' };
+    }
+  }
+
+  const normalState = getReadyState('normal');
+  if (!normalState || !normalState.gasAccount) {
+    return null;
+  }
+
+  const canFallbackToGasAccountNormal =
+    gasAccountChainSupported &&
+    normalState.nativeNotEnough === true &&
+    !normalState.gasAccountResult?.chain_not_support;
+
+  if (canFallbackToGasAccountNormal) {
+    return { level: 'normal', gasMethod: 'gasAccount' };
+  }
+
+  return null;
+};
 
 export const shouldAutoOpenSignMainnetGasModal = ({
   fetchMode,

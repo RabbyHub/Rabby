@@ -65,8 +65,17 @@ export const useMiniSigner = ({
   } = useLocalMiniSignGasStore();
 
   const previousChainServerIdRef = useRef(chainServerId);
+  const signerScopeKey = `${account?.type || ''}:${account?.address || ''}:${
+    chainServerId || ''
+  }`;
+  const previousSignerScopeKeyRef = useRef(signerScopeKey);
 
   useEffect(() => {
+    if (previousSignerScopeKeyRef.current !== signerScopeKey) {
+      previousSignerScopeKeyRef.current = signerScopeKey;
+      instance.clearManualGasMethod();
+    }
+
     if (previousChainServerIdRef.current === chainServerId) {
       return;
     }
@@ -78,8 +87,10 @@ export const useMiniSigner = ({
   }, [
     autoResetGasStoreOnChainChange,
     chainServerId,
+    instance,
     miniGasLevel,
     resetGasStore,
+    signerScopeKey,
   ]);
 
   const updateMiniGasStore = useCallback(
@@ -178,7 +189,7 @@ export const useMiniSigner = ({
   const prefetch = useMemoizedFn(async (cfg: SimpleSignConfig) => {
     const payload = await prepareSignerPayload(cfg);
     if (!payload) {
-      instance.close();
+      instance.close({ preserveManualGasMethod: true });
       return;
     }
 
