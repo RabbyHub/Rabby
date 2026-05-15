@@ -149,6 +149,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         const price = new BigNumber(limitPrice).toFixed(marketData.pxDecimals);
         await handleOpenLimitOrder({
           coin: position.coin,
+          dex: marketData.dexId ?? '',
           isBuy,
           size,
           limitPx: price,
@@ -172,6 +173,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
       } else if (type === 'market') {
         const res = await handleCloseWithMarketOrder({
           coin: position.coin,
+          dex: marketData.dexId ?? '',
           isBuy,
           size: new BigNumber(positionSize.amount).toFixed(
             marketData.szDecimals
@@ -200,6 +202,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
       } else if (type === 'reverse') {
         const res = await handleCloseWithMarketOrder({
           coin: position.coin,
+          dex: marketData.dexId ?? '',
           isBuy,
           size: new BigNumber(position.size || 0)
             .times(2)
@@ -230,7 +233,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     {
       manual: true,
       onSuccess: () => {
-        dispatch.perps.fetchClearinghouseState();
+        // ClearinghouseState is refreshed inside the handlers (single-dex path).
         dispatch.perps.fetchUserHistoricalOrders();
         onConfirm?.();
       },

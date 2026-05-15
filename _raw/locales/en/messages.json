@@ -1160,6 +1160,10 @@
         "empty": "No markets found",
         "hasPosition": "Position"
       },
+      "categories": {
+        "favorite": "Favorites",
+        "topVolume": "Top Volume"
+      },
       "fundingRate": "Funding Rate",
       "fundingGains": "Funding Gains",
       "close": "Close",

@@ -3465,6 +3465,10 @@
         "searchPosition": "포지션 검색",
         "openPosition": "포지션 진입"
       },
+      "categories": {
+        "favorite": "즐겨찾기",
+        "topVolume": "거래량 상위"
+      },
       "invitePopup": {
         "activateNow": "지금 활성화",
         "activateFailed": "실패",

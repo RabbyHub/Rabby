@@ -3480,6 +3480,10 @@
         "searchPerps": "Пошук безстрокових контрактів",
         "hasPosition": "Позиція"
       },
+      "categories": {
+        "favorite": "Обране",
+        "topVolume": "Топ за обсягом"
+      },
       "invitePopup": {
         "activateFailed": "Не вдалося",
         "description": "Використовуйте код Rabby, щоб увімкнути.",

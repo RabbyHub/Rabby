@@ -3465,6 +3465,10 @@
         "hasPosition": "Vị thế",
         "searchPerps": "Tìm kiếm hợp đồng vĩnh viễn"
       },
+      "categories": {
+        "favorite": "Yêu thích",
+        "topVolume": "Khối lượng cao"
+      },
       "invitePopup": {
         "activateFailed": "Thất bại",
         "description": "Sử dụng mã của Rabby để kích hoạt",

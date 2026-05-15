@@ -337,26 +337,32 @@ export const getCachedPerpDexs = async (
   return perpDexsPromise;
 };
 
-export const getCustomClearinghouseState = async (address: string) => {
+// Fetch raw per-dex ClearinghouseState for every known dex in parallel.
+// perpDexs[0] is null = the main hyperliquid dex (dexId='' by convention,
+// matching `formatMarkData`/`AccountInfo` lookups). Order is preserved so
+// `formatAllDexsClearinghouseState` can take index 0 as canonical.
+export const fetchAllDexsRaw = async (
+  address: string
+): Promise<[string, ClearinghouseState][]> => {
   const sdk = getPerpsSDK();
   const perpDexs = await getCachedPerpDexs(sdk);
-
-  // perpDexs[0] is null = the main hyperliquid dex (dexId='' by convention,
-  // matching `formatMarkData`/`AccountInfo` lookups). Other entries carry a
-  // `name` like 'xyz'. Preserve order so `formatAllDexsClearinghouseState`
-  // can take index 0 as the canonical hyperliquid state.
-  const dexEntries = perpDexs.map((dex) => {
-    const name = dex?.name ?? '';
-    return { key: name, param: name || undefined };
-  });
-
-  const allStates: [string, ClearinghouseState][] = await Promise.all(
-    dexEntries.map(async ({ key, param }) => {
-      const res = await sdk.info.getClearingHouseState(address, param);
-      return [key, res] as [string, ClearinghouseState];
-    })
+  return Promise.all(
+    perpDexs.map(
+      async (dex): Promise<[string, ClearinghouseState]> => {
+        const name = dex?.name ?? '';
+        const res = await sdk.info.getClearingHouseState(
+          address,
+          name || undefined
+        );
+        return [name, res];
+      }
+    )
   );
+};
 
+export const getCustomClearinghouseState = async (address: string) => {
+  const sdk = getPerpsSDK();
+  const allStates = await fetchAllDexsRaw(address);
   const aggregated = formatAllDexsClearinghouseState(allStates);
   if (!aggregated) {
     return null;
@@ -463,7 +469,9 @@ export const formatAllDexsClearinghouseState = (
       ...hyperDexState.marginSummary,
       accountValue: calcAccountValueByAllDexs(allClearinghouseState).toString(),
     },
-    time: hyperDexState?.time || 0,
+    // Max across dexes (not just hyper) so a single-dex HTTP refresh on a
+    // non-hyper dex still advances aggregate time and passes the time guards.
+    time: Math.max(...allClearinghouseState.map(([, s]) => s?.time ?? 0), 0),
     withdrawable: withdrawable.toString(),
   };
 };

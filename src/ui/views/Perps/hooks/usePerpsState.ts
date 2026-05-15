@@ -3,6 +3,7 @@ import { Account } from '@/background/service/preference';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { sleep, useWallet } from '@/ui/utils';
 import { destroyPerpsSDK, getPerpsSDK } from '../sdkManager';
+import { waitForInitialWsData } from '../utils';
 import * as Sentry from '@sentry/browser';
 import {
   Abstraction,
@@ -840,7 +841,6 @@ export const usePerpsState = ({
               : (amount - 1).toString(),
           },
         ]);
-        dispatch.perps.fetchClearinghouseState();
         return true;
       } catch (error) {
         console.error('Failed to withdraw:', error);
@@ -912,7 +912,14 @@ export const usePerpsState = ({
         // checkIsNeedAutoLoginOut(initAccount.address, agentAddress);
         ensureLoginApproveSign(initAccount, agentAddress);
 
-        await dispatch.perps.fetchMarketData(undefined);
+        // Run HTTP meta fetch and WS first-frame wait in parallel.
+        // `waitForInitialWsData` resolves on the first push of both the
+        // user clearinghouseState and the global asset ticker, or on
+        // timeout — keeps init aligned with the mobile flow.
+        await Promise.all([
+          dispatch.perps.fetchMarketData(undefined),
+          waitForInitialWsData(),
+        ]);
 
         dispatch.perps.setInitialized(true);
         return true;

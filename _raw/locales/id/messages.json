@@ -3465,6 +3465,10 @@
         "searchPosition": "Cari posisi terbuka",
         "searchPlaceholder": "Cari kontrak perpetual"
       },
+      "categories": {
+        "favorite": "Favorit",
+        "topVolume": "Volume Tertinggi"
+      },
       "invitePopup": {
         "activateFailed": "Gagal",
         "activateNow": "Aktifkan Sekarang",
