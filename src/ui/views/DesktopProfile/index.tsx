@@ -14,7 +14,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { findChainByEnum } from '@/utils/chain';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { SendNftModal } from './components/SendNftModal';
 import { ReceiveTokenModal } from './components/ReceiveTokenModal';
 import { SignatureRecordModal } from './components/SignatureRecordModal';
@@ -39,6 +39,7 @@ import { useTokenAndDefiData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { expiredNft } from '@/db/utils/expired';
 
+import { reportWebPageView } from '@/ui/utils/ga-event';
 const DESKTOP_NAV_HEIGHT = 0;
 
 const StickyBorderTop = () => (
@@ -188,6 +189,12 @@ export const DesktopProfile: React.FC<{
   useEventBusListener(EVENTS.DESKTOP.FOCUSED, () => {
     // window.location.reload();
     handleUpdate();
+  });
+
+  useMount(() => {
+    if (!action) {
+      reportWebPageView(location.pathname);
+    }
   });
 
   return (
