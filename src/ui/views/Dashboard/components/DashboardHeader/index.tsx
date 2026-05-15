@@ -40,8 +40,8 @@ import { BalanceView } from '../BalanceView/BalanceView';
 import { useHomeBalanceViewOuterPrefetch } from '../BalanceView/useHomeBalanceView';
 import PendingTxs from '../PendingTxs';
 import Queue from '../Queue';
-
-const LOW_GAS_ACCOUNT_BALANCE = 1;
+import Tooltip from 'antd/es/tooltip';
+import { LOW_GAS_ACCOUNT_BALANCE } from '@/constant/gas-account';
 
 const Container = styled.div`
   width: 100%;
@@ -114,7 +114,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
   return (
     <Container>
       {currentAccount && (
-        <div className={clsx('flex mb-[8px] items-center gap-[8px] relative')}>
+        <div className={clsx('flex mb-[8px] items-center gap-[16px] relative')}>
           <div className="min-w-0 flex items-center gap-[8px]">
             <div
               className={clsx(
@@ -178,7 +178,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
             />
           </div>
 
-          <div className="flex-shrink-0 min-w-0 ml-auto flex items-center gap-[8px]">
+          <div className="flex-shrink-0 min-w-0 ml-auto flex items-center gap-[4px]">
             <GasAccountEntry />
 
             <div
@@ -241,11 +241,7 @@ const GasAccountEntry = () => {
       ? pendingHardwareGasBalance
       : 0
   );
-  const isGasAccountBalanceLoading =
-    gasAccountLoading ||
-    (!!pendingHardwareAccount?.address && pendingHardwareGasAccountLoading);
   const isLowGasAccountBalance =
-    !isGasAccountBalanceLoading &&
     visibleGasAccountBalance < LOW_GAS_ACCOUNT_BALANCE;
 
   const handleClick = useCallback(
@@ -256,32 +252,42 @@ const GasAccountEntry = () => {
     },
     [history]
   );
+  const { t } = useTranslation();
 
   return (
-    <div
-      className={clsx(
-        'group h-[32px] min-w-[32px] max-w-[32px] hover:max-w-[100px] px-[8px] rounded-[5px]',
-        'cursor-pointer overflow-hidden transition-all duration-200 shrink-0',
-        'flex items-center gap-[2px]',
-        'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]',
-        'text-r-neutral-title-2'
-      )}
-      onClick={handleClick}
+    <Tooltip
+      title={t('page.gasAccount.gasAccount')}
+      placement="bottom"
+      overlayClassName="rectangle"
+      align={{
+        offset: [0, -6],
+      }}
     >
-      {isLowGasAccountBalance ? (
-        <RcIconGasLowCC className="flex-shrink-0" />
-      ) : (
-        <RcIconGasFullCC className="flex-shrink-0" />
-      )}
       <div
         className={clsx(
-          'max-w-0 opacity-0 overflow-hidden whitespace-nowrap truncate',
-          'text-[13px] leading-[16px] font-medium',
-          'transition-all duration-200 group-hover:max-w-[100px] group-hover:opacity-100'
+          'group h-[32px] min-w-[32px] max-w-[32px] hover:max-w-[100px] px-[6px] rounded-[5px]',
+          'cursor-pointer overflow-hidden transition-all duration-200 shrink-0',
+          'flex items-center gap-[2px]',
+          'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]',
+          'text-r-neutral-title-2'
         )}
+        onClick={handleClick}
       >
-        {formatUsdValue(visibleGasAccountBalance || 0)}
+        {isLowGasAccountBalance ? (
+          <RcIconGasLowCC className="flex-shrink-0" />
+        ) : (
+          <RcIconGasFullCC className="flex-shrink-0" />
+        )}
+        <div
+          className={clsx(
+            'max-w-0 opacity-0 overflow-hidden whitespace-nowrap truncate',
+            'text-[13px] leading-[16px] font-medium',
+            'transition-all duration-200 group-hover:max-w-[100px] group-hover:opacity-100'
+          )}
+        >
+          {formatUsdValue(visibleGasAccountBalance || 0)}
+        </div>
       </div>
-    </div>
+    </Tooltip>
   );
 };
