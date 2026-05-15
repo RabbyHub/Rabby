@@ -61,7 +61,7 @@ export const ChainItem: React.FC<Props> = ({
       </TooltipWithMagnetArrow>
       <span
         className={clsx(
-          'text-13 font-medium text-r-neutral-title-1 hover:text-r-blue-default',
+          'text-13 leading-[16px] font-medium text-r-neutral-title-1 hover:text-r-blue-default',
           {
             'opacity-30': inactive,
           }
@@ -84,7 +84,7 @@ export const ChainItem: React.FC<Props> = ({
         </Tooltip>
       ) : (
         <span
-          className={clsx('text-12 text-r-neutral-foot', {
+          className={clsx('text-12 leading-[16px] text-r-neutral-foot', {
             'opacity-30': inactive,
           })}
         >
