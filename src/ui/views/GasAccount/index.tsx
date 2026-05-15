@@ -275,7 +275,7 @@ const GasAccountInner = () => {
         }
       >
         <span className="text-20 font-medium text-r-neutral-title-1">
-          {t('page.gasAccount.gasAccount')}
+          {t('page.gasAccount.title')}
         </span>
       </PageHeader>
 

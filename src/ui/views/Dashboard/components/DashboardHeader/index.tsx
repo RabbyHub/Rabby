@@ -119,14 +119,14 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
             <div
               className={clsx(
                 'flex-1 min-w-0 flex items-center justify-end',
-                'gap-[6px] px-[8px] py-[6px] rounded-[6px] cursor-pointer',
+                'gap-[6px] pl-[12px] pr-[8px] py-[6px] rounded-[6px] cursor-pointer',
                 'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
               )}
               onClick={handleSwitchAddress}
             >
               <div className="relative">
                 <img
-                  className={clsx('w-[20px] h-[20px] min-w-[20px]')}
+                  className={clsx('w-[16px] h-[16px] min-w-[16px]')}
                   src={
                     brandIcon ||
                     WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
@@ -151,6 +151,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
                 <AddressViewer
                   address={currentAccount.address}
                   showArrow={false}
+                  ellipsisLegacy={true}
                   className="text-[12px] leading-[14px] text-r-neutral-title2 opacity-60"
                 />
               )}
@@ -256,7 +257,7 @@ const GasAccountEntry = () => {
 
   return (
     <Tooltip
-      title={t('page.gasAccount.gasAccount')}
+      title={t('page.gasAccount.title')}
       placement="bottom"
       overlayClassName="rectangle"
       align={{
