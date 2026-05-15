@@ -2747,10 +2747,10 @@
       "depositSubmitted": "Einzahlung eingereicht",
       "claimFreeGas": "{{usdValue}} kostenloses Gas beanspruchen",
       "depositFailed": "Einzahlung fehlgeschlagen",
-      "lowBalance": "",
       "gasBalance": "Gas-Guthaben",
       "loginSuccess": "Anmeldung erfolgreich",
-      "loginFailed": "Anmeldung fehlgeschlagen"
+      "loginFailed": "Anmeldung fehlgeschlagen",
+      "lowBalance": "Sie haben nicht genug Gas (＜$1.00). Zahlen Sie Gas ein, um sicherzustellen, dass zukünftige Transaktionen reibungslos ablaufen."
     },
     "safeMessageQueue": {
       "noData": "Keine Nachrichten",

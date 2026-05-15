@@ -2749,7 +2749,7 @@
       "depositSubmitted": "Пополнение отправлено",
       "claimFreeGas": "Получить {{usdValue}} бесплатного газа",
       "depositFailed": "Пополнение не удалось",
-      "lowBalance": "",
+      "lowBalance": "У вас недостаточно газа (<$1.00). Пополните GasAccount, чтобы будущие транзакции проходили бесперебойно.",
       "gasBalance": "Баланс газа",
       "loginSuccess": "Вход выполнен успешно",
       "loginFailed": "Ошибка входа"

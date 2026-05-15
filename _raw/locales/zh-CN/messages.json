@@ -2703,7 +2703,7 @@
       "switchAccount": "切换钱包",
       "claimFreeGas": "领取 {{usdValue}} 免费 Gas",
       "depositFailed": "充值失败",
-      "lowBalance": "",
+      "lowBalance": "您的 Gas 不足(＜$1.00)。充值 Gas 以确保后续交易顺利进行。",
       "gasBalance": "Gas 余额",
       "withdrawDisabledIAP": "提款功能已禁用，因为您的余额中包含无法提取的法定资金。请联系支持以提取您的代币余额。",
       "benefitCard": {
