@@ -119,7 +119,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
             <div
               className={clsx(
                 'flex-1 min-w-0 flex items-center justify-end',
-                'gap-[6px] pl-[12px] pr-[8px] py-[6px] rounded-[6px] cursor-pointer',
+                'gap-[6px] pl-[12px] pr-[8px] py-[7px] rounded-[6px] cursor-pointer',
                 'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
               )}
               onClick={handleSwitchAddress}
