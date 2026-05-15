@@ -2744,7 +2744,7 @@
       "depositSubmitted": "Depósito Enviado",
       "claimFreeGas": "Reivindique {{usdValue}} de Gás Gratuito",
       "depositFailed": "Falha no depósito",
-      "lowBalance": "Você não tem gás suficiente. Deposite gás para garantir que as transações futuras ocorram sem problemas.",
+      "lowBalance": "",
       "gasBalance": "Saldo de Gás",
       "loginSuccess": "Login bem-sucedido",
       "loginFailed": "Falha no login"

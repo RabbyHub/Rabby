@@ -114,8 +114,8 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
   return (
     <Container>
       {currentAccount && (
-        <div className={clsx('flex mb-[8px] items-center gap-[16px] relative')}>
-          <div className="min-w-0 flex items-center gap-[8px]">
+        <div className={clsx('flex mb-[8px] items-center gap-[24px] relative')}>
+          <div className="min-w-0 flex items-center gap-[4px]">
             <div
               className={clsx(
                 'flex-1 min-w-0 flex items-center justify-end',
