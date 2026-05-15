@@ -31,9 +31,10 @@ import { Tooltip } from 'antd';
 
 const isDesktop = UI_TYPE.isDesktop;
 
-export const HomePerpsPositionList: React.FC<{ needFetchMarket?: boolean }> = ({
-  needFetchMarket = false,
-}) => {
+export const HomePerpsPositionList: React.FC<{
+  needFetchMarket?: boolean;
+  className?: string;
+}> = ({ needFetchMarket = false, className }) => {
   const currentAccount = useCurrentAccount();
 
   const { data } = usePerpsClearHouseState({
@@ -71,11 +72,12 @@ export const HomePerpsPositionList: React.FC<{ needFetchMarket?: boolean }> = ({
 
   return (
     <div
-      className={
+      className={clsx(
         !isDesktop
           ? 'mb-[6px] flex flex-col gap-[6px]'
-          : 'grid grid-cols-3 gap-[16px] px-20 mt-24'
-      }
+          : 'grid grid-cols-3 gap-[16px] px-20 mt-24',
+        className
+      )}
     >
       {data?.assetPositions?.map((assetPosition) => {
         return (

@@ -18,7 +18,15 @@ const shouldUseNftCollectionsDbCache = ({
   now?: number;
 }) => !forceRefresh && updatedAt > now - CACHE_VALID_DURATION;
 
-export const useNFTCollections = (userAddr: string | undefined) => {
+interface UseNFTCollectionsOptions {
+  preferCacheOnExists?: boolean;
+}
+
+export const useNFTCollections = (
+  userAddr: string | undefined,
+  options?: UseNFTCollectionsOptions
+) => {
+  const { preferCacheOnExists = false } = options || {};
   const wallet = useWallet();
   const abortProcess = useRef<AbortController>();
   const userAddrRef = useRef('');
@@ -69,6 +77,16 @@ export const useNFTCollections = (userAddr: string | undefined) => {
               address: userAddr,
               scene: NFT_SYNC_SCENE,
             })) || 0;
+
+          if (
+            preferCacheOnExists &&
+            currentCollections.length > 0 &&
+            !forceRefresh
+          ) {
+            applyCollections(currentCollections);
+            setLoading(false);
+            return;
+          }
 
           const shouldUseDbCache = shouldUseNftCollectionsDbCache({
             forceRefresh,
@@ -130,7 +148,7 @@ export const useNFTCollections = (userAddr: string | undefined) => {
         }
       }
     },
-    [applyCollections, setLoading, userAddr, wallet]
+    [applyCollections, preferCacheOnExists, setLoading, userAddr, wallet]
   );
 
   useEffect(() => {
