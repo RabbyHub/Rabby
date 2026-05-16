@@ -72,7 +72,7 @@ It has 2 main controllers:
 
 1. `walletController`
 
-   Exposes methods to the background window, so other scripts can access these methods with `runtime.getBackgroundPage`, e.g., `ui.js`.
+   Exposes methods on the background controller. UI pages call them through the `wallet` proxy created in `src/ui/app.tsx`, which forwards requests over `PortMessage`.
 
 2. `providerController`
 

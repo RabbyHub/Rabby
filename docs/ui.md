@@ -14,9 +14,9 @@ This extension has 3 kinds of UI pages.
 
   When the extension needs more space to ensure the user can get information easily, it will open a browser tab to display content.
 
-These pages share the same code. At the start of `ui` display, the extension will try to execute `getBackgroundWindow` first.
+These pages share the same code. At startup, `src/ui/app.tsx` creates a `wallet` proxy backed by `PortMessage` and passes it into the React tree.
 
-All operations regarding the wallet are mounted in the `background window.wallet`.
+All wallet operations are dispatched through that `wallet` proxy to the background controller.
 
 ## Route
 
