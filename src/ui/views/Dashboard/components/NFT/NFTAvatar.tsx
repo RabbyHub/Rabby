@@ -23,12 +23,31 @@ type AvatarProps = {
   empty?: ReactNode;
 };
 
-// check if the url is a valid http(s) url
+// check if the url is a valid http(s) url and not obviously local/private
 const isValidHttpUrl = (url?: string): boolean => {
   if (!url) return false;
+  const trimmed = url.trim();
+  if (!trimmed) return false;
   try {
-    const urlObj = new URL(url);
-    return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    const urlObj = new URL(trimmed);
+    const isHttp = urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    if (!isHttp || !urlObj.hostname) {
+      return false;
+    }
+
+    const hostname = urlObj.hostname.toLowerCase();
+    // Basic guard against localhost and common private IP ranges
+    if (
+      hostname === 'localhost' ||
+      hostname === '127.0.0.1' ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('192.168.') ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)
+    ) {
+      return false;
+    }
+
+    return true;
   } catch {
     return false;
   }
@@ -54,11 +73,11 @@ const Thumbnail = ({
   }
 
   const isShowEmpty =
-    !(type && ['image', 'image_url'].includes(type) && content) && empty;
+    !(type && ['image', 'image_url'].includes(type) && sanitizedUrl) && empty;
 
   const src =
-    type && ['image', 'image_url'].includes(type) && content
-      ? content
+    type && ['image', 'image_url'].includes(type) && sanitizedUrl
+      ? sanitizedUrl
       : unknown || IconNFTDefault;
 
   if (isShowEmpty) {
@@ -82,10 +101,11 @@ const Thumbnail = ({
 };
 
 const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
-  if (type && ['image', 'image_url'].includes(type) && content) {
+  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
+  if (type && ['image', 'image_url'].includes(type) && sanitizedUrl) {
     return (
       <Image
-        src={content}
+        src={sanitizedUrl}
         className="nft-avatar-image"
         preview={false}
         fallback={IconImgFail}
@@ -99,7 +119,6 @@ const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
       ></Image>
     );
   }
-  const sanitizedUrl = isValidHttpUrl(content) ? content : '';
   if (type && ['video_url', 'audio_url'].includes(type) && sanitizedUrl) {
     return (
       <video
