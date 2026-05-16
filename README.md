@@ -116,4 +116,4 @@ Thanks to contributions from the MetaMask team to the browser extension wallet c
 
 ## Other Docs
 
-- [How to add a new translation to Rabby](/docs/translation.md)
+- [How to add a new translation to Rabby](docs/translation.md)
