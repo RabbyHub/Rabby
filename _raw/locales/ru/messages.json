@@ -924,7 +924,7 @@
         "ledgerAlert": "Пожалуйста, откройте Ethereum App на вашем устройстве Ledger.",
         "simulationFailed": "Симуляция не удалась",
         "ledgerSigned": "Подписано. Создание транзакции ({{current}}/{{total}})",
-        "ledgerConfirmTitle": "П批回收 с Ledger",
+        "ledgerConfirmTitle": "Пакетный отзыв через Ledger",
         "revokeWithOneKey": "Начать отзыв с OneKey",
         "oneKeySended": "Пожалуйста, подпишите запрос на OneKey ({{current}}/{{total}})",
         "oneKeySending": "Отправка запроса на подпись ({{current}}/{{total}})",
