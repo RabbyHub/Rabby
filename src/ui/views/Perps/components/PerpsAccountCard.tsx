@@ -202,7 +202,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
         {showChips && (
           <div
             className={clsx(
-              'mt-12 flex items-start justify-between gap-8',
+              'mt-12 flex items-center justify-between gap-8',
               'bg-r-neutral-bg2 rounded-[8px] px-12 py-8 min-h-[36px]'
             )}
           >

@@ -9,3 +9,5 @@ export const L2_DEPOSIT_ADDRESS_MAP: Record<string, string> = {
   [CHAINS_ENUM.BASE]: '0x16ac3457ce84e6c5f80b394c59ccb2fd17049a62',
   [CHAINS_ENUM.AVAX]: '0x16ac3457ce84e6c5f80b394c59ccb2fd17049a62',
 };
+
+export const LOW_GAS_ACCOUNT_BALANCE = 1;

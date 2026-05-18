@@ -21,7 +21,7 @@ const Warper = styled.div`
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    background: transparent;
+    background: transparent !important;
     border: 1px solid var(--r-neutral-line, #d3d8e0);
     border-radius: 6px;
 

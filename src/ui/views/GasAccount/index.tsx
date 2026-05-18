@@ -35,6 +35,7 @@ import { GasAccountHeader } from './components/HeaderRight';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-18.svg';
 import { formatUsdValue } from '@/ui/utils/number';
 import { WithdrawPopup } from './components/WithdrawPopup';
+import { LOW_GAS_ACCOUNT_BALANCE } from '@/constant/gas-account';
 
 const GasAccountInner = () => {
   const { t } = useTranslation();
@@ -217,7 +218,7 @@ const GasAccountInner = () => {
   }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
 
   const lowBalanceWarningMessage =
-    visibleBalance < 0.1 &&
+    visibleBalance < LOW_GAS_ACCOUNT_BALANCE &&
     !loading &&
     !pendingHardwareAccountGasAccountInfoLoading
       ? t('page.gasAccount.lowBalance', {
@@ -274,9 +275,7 @@ const GasAccountInner = () => {
         }
       >
         <span className="text-20 font-medium text-r-neutral-title-1">
-          {t('page.gasAccount.gasDeposit', {
-            defaultValue: 'Gas Deposit',
-          })}
+          {t('page.gasAccount.title')}
         </span>
       </PageHeader>
 

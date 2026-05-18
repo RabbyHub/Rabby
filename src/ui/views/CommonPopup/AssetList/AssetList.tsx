@@ -78,7 +78,7 @@ export const AssetList = ({
 
           <div className="absolute top-0 right-0 h-[32px] flex items-center">
             <div
-              className="text-rb-neutral-body cursor-pointer relative hit-slop-8"
+              className="text-rb-neutral-body hover:text-rb-brand-default cursor-pointer relative hit-slop-8"
               onClick={handleOpenInTab}
             >
               <RcIconFullscreen />

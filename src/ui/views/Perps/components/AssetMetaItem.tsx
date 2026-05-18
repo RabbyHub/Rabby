@@ -4,8 +4,10 @@ import React from 'react';
 import { TokenImg } from './TokenImg';
 import { splitNumberByStep } from '@/ui/utils';
 import { formatUsdValueKMB } from '../../Dashboard/components/TokenDetailPopup/utils';
-import { useTranslation } from 'react-i18next';
 import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
+import { ReactComponent as IconTopFirst } from '@/ui/assets/perps/IconTopFirst.svg';
+import { ReactComponent as IconTopSecond } from '@/ui/assets/perps/IconTopSecond.svg';
+import { ReactComponent as IconTopThree } from '@/ui/assets/perps/IconTopThree.svg';
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
 export const FavoriteTag: React.FC<{
@@ -29,14 +31,33 @@ export const FavoriteTag: React.FC<{
   </div>
 );
 
+const MEDAL_ICON: Record<number, React.FC<React.SVGProps<SVGSVGElement>>> = {
+  1: IconTopFirst,
+  2: IconTopSecond,
+  3: IconTopThree,
+};
+
+const RankBadge: React.FC<{ rank: number }> = ({ rank }) => {
+  const MedalIcon = MEDAL_ICON[rank];
+  if (MedalIcon) {
+    return (
+      <div className="w-[20px] h-[20px] flex items-center justify-center flex-shrink-0">
+        <MedalIcon width={20} height={20} />
+      </div>
+    );
+  }
+  return (
+    <div className="w-[20px] h-[20px] flex items-center justify-center text-13 font-bold text-r-neutral-title-1 flex-shrink-0">
+      {rank}
+    </div>
+  );
+};
+
 export const AssetItem: React.FC<{
   item: MarketData;
-  hasPosition?: boolean;
-  isFavorited?: boolean;
-  onToggleFavorite?: (coin: string) => void;
+  rank?: number;
   onClick: () => void;
-}> = ({ item, hasPosition, isFavorited, onClick }) => {
-  const { t } = useTranslation();
+}> = ({ item, rank, onClick }) => {
   const isUp = Number(item.markPx) - Number(item.prevDayPx) > 0;
   const absPnlUsd = Math.abs(Number(item.markPx) - Number(item.prevDayPx));
   const absPnlPct = Math.abs(absPnlUsd / Number(item.prevDayPx));
@@ -58,8 +79,8 @@ export const AssetItem: React.FC<{
       "
       onClick={onClick}
     >
-      {isFavorited && <FavoriteTag />}
       <div className="flex items-center gap-10">
+        {rank != null && <RankBadge rank={rank} />}
         <TokenImg size={32} logoUrl={item.logoUrl} />
         <div className="text-left">
           <div className="flex items-center gap-4">
@@ -67,11 +88,6 @@ export const AssetItem: React.FC<{
               item={item}
               className="text-15 font-medium mb-2"
             />
-            {hasPosition && (
-              <div className="text-[12px] text-rb-brand-default bg-rb-brand-light-1 px-4 h-[18px] flex items-center justify-center rounded-[4px]">
-                {t('page.perps.searchPerpsPopup.onePosition')}
-              </div>
-            )}
           </div>
           <div className="flex items-center gap-4">
             <div className="text-12 text-r-neutral-foot bg-rb-neutral-bg-5 px-4 h-[18px] flex items-center justify-center rounded-[4px]">
