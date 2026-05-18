@@ -172,47 +172,51 @@ export const AssetListContainer: React.FC<Props> = ({
           />
         </div>
       </div>
-      {isTokensLoading || isSearching || (lpTokenMode && isAllTokenLoading) ? (
-        <TokenListSkeleton />
-      ) : (
-        <div className="mt-[12px]">
-          <HomeTokenList
-            list={sortTokens}
-            isSearch={!!search}
-            lpTokenMode={lpTokenMode}
-            isNoResults={isNoResults}
-          />
-        </div>
-      )}
-
-      <div
-        style={{
-          display: visible ? 'block' : 'none',
-        }}
-      >
-        {isPortfoliosLoading && isAppPortfoliosLoading ? (
+      <div className="flex flex-col gap-24">
+        {isTokensLoading ||
+        isSearching ||
+        (lpTokenMode && isAllTokenLoading) ? (
           <TokenListSkeleton />
         ) : (
-          <>
-            {visible && !search ? (
-              <HomePerpsPositionList className="pt-24" needFetchMarket />
-            ) : null}
-            <ProtocolList
-              removeProtocol={removeProtocol}
-              appIds={appIds}
+          <div className="mt-[12px]">
+            <HomeTokenList
+              list={sortTokens}
               isSearch={!!search}
-              list={filteredPortfolios}
-              className="mt-24"
+              lpTokenMode={lpTokenMode}
+              isNoResults={isNoResults}
             />
-          </>
+          </div>
         )}
-      </div>
-      <div
-        style={{
-          display: visible ? 'block' : 'none',
-        }}
-      >
-        <NftPreviewSection className="mt-[28px] cursor-pointer" />
+
+        <div
+          style={{
+            display: visible ? 'block' : 'none',
+          }}
+        >
+          {isPortfoliosLoading && isAppPortfoliosLoading ? (
+            <TokenListSkeleton />
+          ) : (
+            <>
+              {visible && !search ? (
+                <HomePerpsPositionList needFetchMarket />
+              ) : null}
+              <ProtocolList
+                removeProtocol={removeProtocol}
+                appIds={appIds}
+                isSearch={!!search}
+                list={filteredPortfolios}
+                className="mt-0"
+              />
+            </>
+          )}
+        </div>
+        <div
+          style={{
+            display: visible ? 'block' : 'none',
+          }}
+        >
+          <NftPreviewSection className="mt-[4px] cursor-pointer" />
+        </div>
       </div>
     </div>
   );
