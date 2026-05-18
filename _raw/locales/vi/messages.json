@@ -2510,7 +2510,7 @@
           "earnBtn": "Sắp ra mắt",
           "airdropBtn": "Kiếm điểm",
           "airdrop": "Airdrop",
-          "migrateDesc": "请提供您希望翻译的英文文案。",
+          "migrateDesc": "→",
           "socialsTitle": "Tham gia",
           "airdropDesc": "~200 triệu S cho người dùng trên Opera và Sonic.",
           "migrateBtn": "Sắp ra mắt",
@@ -3132,7 +3132,7 @@
       },
       "portfolio": {
         "headers": {
-          "wallet": "Ví 財布",
+          "wallet": "Ví",
           "unfoldProtocols": "Mở {{count}} Giao thức",
           "foldProtocols": "Gấp {{count}} Protocols",
           "allTokenMode": "Tất cả chế độ Token",

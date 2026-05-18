@@ -1062,7 +1062,7 @@
       "understandRisks": "リスクを理解しており、続けたいと思います。",
       "approve": "承認",
       "search-by-token-name-address": "トークン名 / アドレスを検索",
-      "best-subtitle": "最佳报价由最低的预估总成本决定，包括汇率和 gas 费用。"
+      "best-subtitle": "最適な見積もりは、為替レートとガス代を含む推定総コストが最も低いものに基づいて決定されます。"
     },
     "manageAddress": {
       "no-address": "アドレスがありません",
@@ -1981,7 +1981,7 @@
       "requestRabbyToSupport": "Rabbyにサポートをリクエスト",
       "addChain": "テストネットを追加",
       "chainNotSupportYet": "リクエストされたチェーンはまだRabbyによってサポートされていません",
-      "chainNotSupportAddChain": "要求的链尚未被Rabby集成。您可以将其添加为カスタムテストネット。",
+      "chainNotSupportAddChain": "要求されたチェーンはまだRabbyに統合されていません。カスタムテストネットとして追加できます。",
       "desc": "要求されたネットワークはまだRabbyに統合されていません 手動でカスタムネットワークとして追加することができます"
     },
     "signText": {
@@ -2540,7 +2540,7 @@
       "dbk": {
         "home": {
           "bridgeBtn": "ブリッジ",
-          "bridgePoweredBy": "OP Superchain 提供技术支持",
+          "bridgePoweredBy": "OP Superchain により提供",
           "mintNFT": "DBK Genesis NFT をミント",
           "mintNFTBtn": "ミント",
           "bridge": "DBK Chain にブリッジする",
@@ -2897,7 +2897,7 @@
     },
     "metamaskModeDapps": {
       "title": "許可されたDappsを管理する",
-      "desc": "以下 Dapps 已启用 MetaMask モード。MetaMask オプションを選択して Rabby を接続できます。"
+      "desc": "以下のDappsではMetaMaskモードが有効になっています。MetaMaskオプションを選択してRabbyに接続できます。"
     },
     "forgotPassword": {
       "home": {
@@ -3625,7 +3625,7 @@
         "title": "送金",
         "from": "出金",
         "to": "到",
-        "spot": "现货",
+        "spot": "現物",
         "perps": "Perps",
         "balance": "残高",
         "amount": "数量",
@@ -3642,7 +3642,7 @@
       "PerpsAbout": {
         "title": "概要"
       },
-      "transferToSpot": "現物账户への转移送",
+      "transferToSpot": "現物へ振替",
       "transferToPerps": "Perpsへ移転",
       "selectChainToWithdraw": "出金先のチェーンを選択"
     },
