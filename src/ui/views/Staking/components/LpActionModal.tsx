@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Input, Skeleton, message } from 'antd';
+import { Button, Skeleton, message } from 'antd';
 import { useRequest } from 'ahooks';
 import BigNumber from 'bignumber.js';
-import clsx from 'clsx';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import type { TokenItem } from 'background/service/openapi';
 import type { Hex } from 'viem';
@@ -34,18 +33,26 @@ import type {
 } from '@rabby-wallet/staking-sdk';
 
 import type { Account } from '@/background/service/preference';
-import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
-import { Popup, TokenWithChain } from '@/ui/component';
+import { Popup } from '@/ui/component';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
-import { SwapSlider } from '@/ui/views/Swap/Component/Slider';
-import { formatUsdValue, useWallet } from '@/ui/utils';
+import { useWallet } from '@/ui/utils';
 import { findChainByServerID } from '@/utils/chain';
 
+import { ActionPopupTitle } from './ActionModalShared';
+import {
+  LpClaimContent,
+  LpDepositContent,
+  LpFooterMessages,
+  LpPercentActionContent,
+} from './LpActionModalSections';
+import type {
+  LpActionModalTokenBalanceInfo as TokenBalanceInfo,
+  LpTokenInputSide as TokenInputSide,
+  LpV3RangeOption as V3RangeOption,
+} from './LpActionModalSections';
 import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionItem } from '../hooks/useStakingPositionSummary';
 import { useStakingMiniSign } from '../hooks/useStakingMiniSign';
-import { formatStakingAmount, formatStakingUsd } from '../utils/format';
 import { normalizeStakingPoolToPoolKey } from '../utils/poolKey';
 import {
   buildStakingMiniSignTxs,
@@ -54,6 +61,7 @@ import {
   readStakingContract,
   waitForStakingTxReceipt,
 } from '../utils/tx';
+import './actionModal.less';
 
 type LpAction = 'deposit' | 'withdraw' | 'claim';
 
@@ -69,17 +77,6 @@ interface LpActionModalProps {
   onConfirmed: () => void;
 }
 
-type TokenBalanceInfo = {
-  token: StakingToken;
-  tokenItem: TokenItem;
-  balance: string;
-  decimals: number;
-  price?: number | null;
-};
-
-type TokenInputSide = 'token0' | 'token1';
-type V3RangeOption = '1%' | '10%' | '20%' | '40%';
-
 const DEFAULT_SLIPPAGE_BPS = 50;
 const DEFAULT_DEADLINE_SECONDS = 20 * 60;
 const V3_DEFAULT_RANGE_PRESET: V3RangeOption = '20%';
@@ -91,34 +88,6 @@ const V3_RANGE_OPTIONS: Array<{ label: V3RangeOption; bps: number }> = [
 ];
 const PRICE_DIFF_CONFIRM_THRESHOLD = 0.05;
 const Q96 = new BigNumber(2).pow(96);
-
-const ActionPopupTitle = ({
-  title,
-  onBack,
-}: {
-  title: string;
-  onBack: () => void;
-}) => (
-  <div className="staking-lp-action-title">
-    <button
-      type="button"
-      className="staking-lp-action-title-back"
-      onClick={onBack}
-      aria-label="Back"
-    >
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path
-          d="M13.5 3L6.5 10L13.5 17"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </button>
-    <span>{title}</span>
-  </div>
-);
 
 const toSdkPool = (pool: StakingPool) => (pool as unknown) as SdkStakingPool;
 
@@ -153,11 +122,6 @@ const toDeadline = () =>
 
 const sameAddress = (left?: string | null, right?: string | null) =>
   !!left && !!right && left.toLowerCase() === right.toLowerCase();
-
-const getTokenUsdText = (amount: string, price?: number | null) => {
-  const value = new BigNumber(amount || 0).multipliedBy(price || 0);
-  return value.isFinite() ? formatUsdValue(value.toString()) : '$0.00';
-};
 
 const getTokenBalanceRaw = (tokenInfo?: TokenBalanceInfo) =>
   tokenInfo ? toRawBigInt(tokenInfo.balance, tokenInfo.decimals) : 0n;
@@ -235,23 +199,6 @@ const findToken = (
   tokens.find((token) => sameAddress(token.id, address)) ||
   tokens[fallbackIndex];
 
-const mergePreviewAssets = (
-  assets: Array<{ token: StakingToken; rawAmount: string }>
-) => {
-  const merged = new Map<string, { token: StakingToken; rawAmount: bigint }>();
-
-  assets.forEach((asset) => {
-    const key = `${asset.token.chain_id || ''}-${asset.token.id}`.toLowerCase();
-    const current = merged.get(key);
-    merged.set(key, {
-      token: current?.token || asset.token,
-      rawAmount: (current?.rawAmount || 0n) + BigInt(asset.rawAmount || '0'),
-    });
-  });
-
-  return Array.from(merged.values());
-};
-
 const buildTokenBalanceInfo = async ({
   wallet,
   account,
@@ -293,120 +240,6 @@ const buildTokenBalanceInfo = async ({
     decimals,
     price,
   };
-};
-
-const AmountInputBlock = ({
-  label,
-  value,
-  tokenInfo,
-  onChange,
-  onMax,
-  error,
-  disabled,
-}: {
-  label?: string;
-  value: string;
-  tokenInfo?: TokenBalanceInfo;
-  onChange: (value: string) => void;
-  onMax?: () => void;
-  error?: boolean;
-  disabled?: boolean;
-}) => (
-  <div className={clsx('staking-lp-token-input', error && 'is-error')}>
-    {label ? <div className="staking-lp-input-label">{label}</div> : null}
-    <div className="staking-lp-input-row">
-      <div className="staking-lp-input-main">
-        <Input
-          className="staking-lp-input ant-input"
-          placeholder="0"
-          value={value}
-          disabled={disabled}
-          onChange={(event) => {
-            const next = event.target.value;
-            if (next === '' || INPUT_NUMBER_RE.test(next)) {
-              onChange(next === '' ? '' : filterNumber(next));
-            }
-          }}
-        />
-        <div className="staking-lp-input-usd">
-          {getTokenUsdText(value, tokenInfo?.price)}
-        </div>
-      </div>
-      <div className="staking-lp-token-side">
-        {tokenInfo ? (
-          <div className="staking-lp-token-main">
-            <TokenWithChain
-              width="32px"
-              height="32px"
-              chainSize={16}
-              token={tokenInfo.tokenItem}
-              hideConer
-            />
-            <span>{tokenInfo.token.symbol}</span>
-          </div>
-        ) : null}
-        <div className="staking-lp-balance-row">
-          <RcIconWalletCC viewBox="0 0 16 16" className="w-[14px] h-[14px]" />
-          <span className="staking-lp-balance-text">
-            {formatStakingAmount(tokenInfo?.balance || '0')}
-          </span>
-          {onMax ? (
-            <button type="button" className="staking-lp-max" onClick={onMax}>
-              Max
-            </button>
-          ) : null}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const AssetPreviewRow = ({
-  token,
-  rawAmount,
-  pool,
-}: {
-  token?: StakingToken;
-  rawAmount: string | bigint;
-  pool: StakingPool;
-}) => {
-  if (!token) {
-    return null;
-  }
-  const decimals = token.decimals ?? 18;
-  const amount = formatUnits(rawAmount.toString(), decimals);
-  const usdValue =
-    token.price === undefined || token.price === null
-      ? null
-      : new BigNumber(amount).multipliedBy(token.price).toNumber();
-  const tokenItem = {
-    id: token.id,
-    chain: token.chain_id || pool.chain_id,
-    symbol: token.symbol,
-    display_symbol: token.symbol,
-    logo_url: token.logo_url,
-    amount: Number(amount || 0),
-    decimals,
-    price: token.price,
-  } as TokenItem;
-
-  return (
-    <div className="staking-lp-preview-row">
-      <div className="staking-lp-preview-left">
-        <TokenWithChain
-          width="24px"
-          height="24px"
-          chainSize={12}
-          token={tokenItem}
-          hideConer
-        />
-        <span>
-          {formatStakingAmount(amount)} {token.symbol}
-        </span>
-      </div>
-      <span>{formatStakingUsd(usdValue)}</span>
-    </div>
-  );
 };
 
 export const LpActionModal = ({
@@ -1327,108 +1160,21 @@ export const LpActionModal = ({
       )}`
     : v3SelectedRange.label;
 
-  const renderRangeSelector = () =>
-    isV3 && !isPositionAction ? (
-      <div className="staking-lp-range-selector">
-        <div className="staking-lp-range-title">Set Price Range</div>
-        <div className="staking-lp-range-options">
-          {V3_RANGE_OPTIONS.map((item) => (
-            <button
-              type="button"
-              key={item.label}
-              className={clsx(v3RangePreset === item.label && 'is-active')}
-              onClick={() => {
-                setPriceWarningAccepted(false);
-                setV3RangePreset(item.label);
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    ) : null;
+  const handleRangePresetChange = useCallback((value: V3RangeOption) => {
+    setPriceWarningAccepted(false);
+    setV3RangePreset(value);
+  }, []);
 
-  const renderTokenSeparator = () => (
-    <div className="staking-lp-token-separator">
-      <div className="staking-lp-token-separator-line" />
-      <span>+</span>
-    </div>
-  );
+  const handlePercentChange = useCallback((value: number) => {
+    setPercent(value);
+  }, []);
 
-  const renderDeposit = () => (
-    <>
-      {renderRangeSelector()}
-      <div className="staking-lp-input-stack">
-        <AmountInputBlock
-          value={amount0}
-          tokenInfo={normalizedTokens.token0Info}
-          onChange={handleAmount0Change}
-          onMax={handleMax0}
-          error={token0Insufficient}
-        />
-        {renderTokenSeparator()}
-        <AmountInputBlock
-          value={amount1}
-          tokenInfo={normalizedTokens.token1Info}
-          onChange={handleAmount1Change}
-          onMax={handleMax1}
-          error={token1Insufficient}
-        />
-      </div>
-      <div className="staking-lp-info">
-        {isV3 && !isPositionAction ? (
-          <div className="staking-lp-info-row">
-            <span>Range</span>
-            <span>{rangeText}</span>
-          </div>
-        ) : null}
-        {v2AddQuote &&
-        (v2AddQuote.amount0Unused > 0n || v2AddQuote.amount1Unused > 0n) ? (
-          <>
-            <div className="staking-lp-info-row">
-              <span>Unused</span>
-              <span>
-                {formatUnits(
-                  v2AddQuote.amount0Unused.toString(),
-                  normalizedTokens.token0Info?.decimals || 18
-                )}{' '}
-                {normalizedTokens.token0Info?.token.symbol || ''}
-                {' / '}
-                {formatUnits(
-                  v2AddQuote.amount1Unused.toString(),
-                  normalizedTokens.token1Info?.decimals || 18
-                )}{' '}
-                {normalizedTokens.token1Info?.token.symbol || ''}
-              </span>
-            </div>
-          </>
-        ) : null}
-        {v3DepositQuote &&
-        (v3DepositQuote.amount0Unused > 0n ||
-          v3DepositQuote.amount1Unused > 0n) ? (
-          <>
-            <div className="staking-lp-info-row">
-              <span>Unused</span>
-              <span>
-                {formatUnits(
-                  v3DepositQuote.amount0Unused.toString(),
-                  normalizedTokens.token0Info?.decimals || 18
-                )}{' '}
-                {normalizedTokens.token0Info?.token.symbol || ''}
-                {' / '}
-                {formatUnits(
-                  v3DepositQuote.amount1Unused.toString(),
-                  normalizedTokens.token1Info?.decimals || 18
-                )}{' '}
-                {normalizedTokens.token1Info?.token.symbol || ''}
-              </span>
-            </div>
-          </>
-        ) : null}
-      </div>
-    </>
-  );
+  const handlePriceWarningToggle = useCallback(() => {
+    setPriceWarningAccepted((accepted) => !accepted);
+  }, []);
+
+  const receive0 = v2WithdrawQuote?.amount0 || v3WithdrawQuote?.amount0 || 0n;
+  const receive1 = v2WithdrawQuote?.amount1 || v3WithdrawQuote?.amount1 || 0n;
 
   const previewToken0 = findToken(
     pool.tokens.supplies,
@@ -1440,92 +1186,6 @@ export const LpActionModal = ({
     univ2Entry?.token1 || univ3Entry?.token1,
     1
   );
-
-  const renderPercentAction = () => {
-    const receive0 = v2WithdrawQuote?.amount0 || v3WithdrawQuote?.amount0 || 0n;
-    const receive1 = v2WithdrawQuote?.amount1 || v3WithdrawQuote?.amount1 || 0n;
-
-    return (
-      <>
-        <div className="staking-lp-percent-box">
-          <div className="staking-lp-percent-value">
-            <span>{percent}</span>
-            <span>%</span>
-          </div>
-          <SwapSlider
-            className="staking-lp-percent-slider"
-            min={0}
-            max={100}
-            step={1}
-            value={percent}
-            tooltipVisible={false}
-            onChange={(value) => setPercent(Number(value))}
-          />
-          <div className="staking-lp-presets">
-            {[25, 50, 75, 100].map((item) => (
-              <button
-                type="button"
-                key={item}
-                className={clsx(percent === item && 'is-active')}
-                onClick={() => setPercent(item)}
-              >
-                {item}%
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="staking-lp-preview">
-          <div className="staking-lp-preview-title">Receive</div>
-          <div className="staking-lp-preview-card">
-            <AssetPreviewRow
-              token={previewToken0}
-              rawAmount={receive0}
-              pool={pool}
-            />
-            <AssetPreviewRow
-              token={previewToken1}
-              rawAmount={receive1}
-              pool={pool}
-            />
-          </div>
-        </div>
-      </>
-    );
-  };
-
-  const renderClaim = () => {
-    const rows = mergePreviewAssets(
-      claimTargets.flatMap((item) =>
-        item.rewards.map((asset) => ({
-          token: asset.token,
-          rawAmount: asset.rawAmount,
-        }))
-      )
-    );
-    return (
-      <div className="staking-lp-preview">
-        <div className="staking-lp-preview-title">
-          Rewards{claimTargets.length > 1 ? ` (${claimTargets.length})` : ''}
-        </div>
-        <div className="staking-lp-preview-card">
-          {rows.length ? (
-            rows.map((asset) => (
-              <AssetPreviewRow
-                key={`${asset.token.chain_id || pool.chain_id}-${
-                  asset.token.id
-                }`}
-                token={asset.token}
-                rawAmount={asset.rawAmount}
-                pool={pool}
-              />
-            ))
-          ) : (
-            <div className="staking-lp-empty">No claimable rewards</div>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   const popupHeight =
     action === 'deposit'
@@ -1549,14 +1209,20 @@ export const LpActionModal = ({
         priceDiffInfo.token1Symbol
       }`
     : '';
-  const showFooterMessages = !!footerError || needsPriceConfirm;
   const submitDisabled =
     !canSubmit || (needsPriceConfirm && !priceWarningAccepted);
 
   return (
     <Popup
       visible={visible}
-      title={<ActionPopupTitle title={title} onBack={handleCancel} />}
+      title={
+        <ActionPopupTitle
+          title={title}
+          onBack={handleCancel}
+          className="staking-lp-action-title"
+          backClassName="staking-lp-action-title-back"
+        />
+      }
       onCancel={handleCancel}
       height={popupHeight}
       closable={false}
@@ -1564,468 +1230,6 @@ export const LpActionModal = ({
       isSupportDarkMode
       className="staking-lp-action-popup"
     >
-      <style>
-        {`
-          .staking-lp-action-popup .ant-drawer-content {
-            background: var(--r-neutral-card1) !important;
-            border-radius: 16px 16px 0 0;
-            box-shadow: 0 -12px 20px rgba(19, 20, 26, 0.05);
-          }
-
-          .staking-lp-action-popup .ant-drawer-header {
-            height: 60px;
-            padding: 0;
-          }
-
-          .staking-lp-action-popup .ant-drawer-title {
-            height: 60px;
-            width: 100%;
-            color: var(--r-neutral-title1);
-            font-size: 20px;
-            line-height: 24px;
-            font-weight: 500;
-          }
-
-          .staking-lp-action-popup .staking-lp-action-title {
-            position: relative;
-            display: flex;
-            width: 100%;
-            height: 60px;
-            align-items: center;
-            justify-content: center;
-          }
-
-          .staking-lp-action-popup .staking-lp-action-title-back {
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            display: flex;
-            width: 20px;
-            height: 20px;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            border: 0;
-            background: transparent;
-            color: var(--r-neutral-title1);
-          }
-
-          .staking-lp-action-popup .ant-drawer-body {
-            padding: 0;
-            height: calc(100% - 60px);
-            overflow: hidden;
-          }
-
-          .staking-lp-action-popup .ant-drawer-close {
-            right: 20px;
-            top: 20px;
-            width: 20px;
-            height: 20px;
-            padding: 0;
-          }
-
-          .staking-lp-action-body {
-            width: 400px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            color: var(--r-neutral-title1);
-          }
-
-          .staking-lp-action-content {
-            flex: 1 1 auto;
-            min-height: 0;
-            overflow-y: auto;
-            padding: 0 20px;
-          }
-
-          .staking-lp-action-content.is-loading {
-            padding: 20px;
-          }
-
-          .staking-lp-action-footer {
-            flex-shrink: 0;
-            width: 400px;
-            padding: 0 20px 20px;
-            background: var(--r-neutral-card1);
-          }
-
-          .staking-lp-range-selector {
-            width: 400px;
-            margin: 0 -20px;
-            padding: 0 20px 24px;
-          }
-
-          .staking-lp-range-title {
-            margin-bottom: 12px;
-            color: var(--r-neutral-black);
-            font-size: 15px;
-            line-height: 18px;
-            font-weight: 700;
-          }
-
-          .staking-lp-range-options {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            width: 360px;
-          }
-
-          .staking-lp-range-options button {
-            height: 32px;
-            border: 0;
-            border-radius: 4px;
-            background: var(--r-neutral-bg2);
-            color: var(--r-neutral-body);
-            font-size: 13px;
-            line-height: 16px;
-            font-weight: 500;
-          }
-
-          .staking-lp-range-options button.is-active {
-            background: var(--r-blue-light1);
-            color: var(--r-blue-default);
-            font-weight: 600;
-          }
-
-          .staking-lp-input-stack {
-            display: flex;
-            flex-direction: column;
-            width: 400px;
-            margin: 0 -20px;
-          }
-
-          .staking-lp-token-input {
-            height: 106px;
-            padding: 24px 20px;
-            background: transparent;
-          }
-
-          .staking-lp-token-input.is-error .staking-lp-input.ant-input {
-            color: var(--r-red-default);
-          }
-
-          .staking-lp-token-separator {
-            position: relative;
-            display: flex;
-            width: 400px;
-            height: 24px;
-            align-items: center;
-            justify-content: center;
-            padding: 0 20px;
-          }
-
-          .staking-lp-token-separator-line {
-            width: 360px;
-            height: 1px;
-            background: var(--r-neutral-line);
-          }
-
-          .staking-lp-token-separator span {
-            position: absolute;
-            left: 188px;
-            top: 0;
-            display: flex;
-            width: 24px;
-            height: 24px;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: var(--r-neutral-bg2);
-            color: var(--r-neutral-body);
-            font-size: 18px;
-            line-height: 20px;
-            font-weight: 500;
-          }
-
-          .staking-lp-input-label {
-            margin-bottom: 8px;
-            color: var(--r-neutral-foot);
-            font-size: 12px;
-            line-height: 14px;
-          }
-
-          .staking-lp-input-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-          }
-
-          .staking-lp-input-main {
-            min-width: 0;
-            flex: 1 1 0;
-          }
-
-          .staking-lp-input.ant-input {
-            width: 100%;
-            height: 32px;
-            padding: 0;
-            border: 0 !important;
-            border-radius: 0;
-            background: transparent !important;
-            box-shadow: none !important;
-            color: var(--r-neutral-title1);
-            font-size: 32px;
-            line-height: 38px;
-            font-weight: 700;
-          }
-
-          .staking-lp-input-usd {
-            margin-top: 4px;
-            color: var(--r-neutral-foot);
-            font-size: 13px;
-            line-height: 16px;
-          }
-
-          .staking-lp-token-side {
-            display: flex;
-            flex-shrink: 0;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-          }
-
-          .staking-lp-token-main {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 15px;
-            line-height: 18px;
-            font-weight: 600;
-          }
-
-          .staking-lp-balance-row {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            color: var(--r-neutral-foot);
-            font-size: 13px;
-            line-height: 16px;
-          }
-
-          .staking-lp-balance-text {
-            max-width: 96px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-
-          .staking-lp-max {
-            height: 18px;
-            padding: 1px 6px;
-            border: 0;
-            border-radius: 4px;
-            background: var(--r-blue-light1);
-            color: var(--r-blue-default);
-            font-size: 12px;
-            line-height: 14px;
-            font-weight: 500;
-          }
-
-          .staking-lp-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-top: 12px;
-            color: var(--r-neutral-foot);
-            font-size: 13px;
-            line-height: 16px;
-          }
-
-          .staking-lp-info-row {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 12px;
-          }
-
-          .staking-lp-info-row span:last-child {
-            color: var(--r-neutral-title1);
-            text-align: right;
-          }
-
-          .staking-lp-percent-box {
-            padding: 16px 0 24px;
-          }
-
-          .staking-lp-percent-value {
-            display: flex;
-            align-items: baseline;
-            gap: 8px;
-            color: var(--r-neutral-title1);
-            font-size: 32px;
-            line-height: 38px;
-            font-weight: 700;
-          }
-
-          .staking-lp-percent-value span:last-child {
-            color: var(--r-neutral-foot);
-          }
-
-          .staking-lp-percent-slider.ant-slider {
-            width: 360px;
-            margin: 8px 0 0;
-            padding: 14px 0;
-          }
-
-          .staking-lp-percent-slider.ant-slider .ant-slider-handle {
-            width: 16px;
-            height: 16px;
-            margin-top: -6px;
-          }
-
-          .staking-lp-percent-slider.ant-slider .ant-slider-handle::after {
-            width: 16px;
-            height: 16px;
-            box-shadow: 0 0 0 2px var(--r-blue-default);
-          }
-
-          .staking-lp-presets {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-top: 8px;
-          }
-
-          .staking-lp-presets button {
-            height: 32px;
-            border: 0;
-            border-radius: 4px;
-            background: var(--r-neutral-bg2);
-            color: var(--r-neutral-title1);
-            font-size: 13px;
-            line-height: 16px;
-          }
-
-          .staking-lp-presets button.is-active {
-            color: var(--r-blue-default);
-            background: var(--r-blue-light1);
-          }
-
-          .staking-lp-preview {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-          }
-
-          .staking-lp-preview-title {
-            color: var(--r-neutral-title1);
-            font-size: 15px;
-            line-height: 18px;
-            font-weight: 500;
-          }
-
-          .staking-lp-preview-card {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            min-height: 56px;
-            border: 0.5px solid #edf0ff;
-            border-radius: 8px;
-            padding: 16px;
-            background: linear-gradient(112deg, rgba(237, 240, 255, 0.25) 0%, rgba(237, 240, 255, 0) 100%);
-          }
-
-          .staking-lp-preview-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            color: var(--r-neutral-foot);
-            font-size: 13px;
-            line-height: 16px;
-          }
-
-          .staking-lp-preview-left {
-            display: flex;
-            min-width: 0;
-            align-items: center;
-            gap: 8px;
-            color: var(--r-neutral-body);
-          }
-
-          .staking-lp-empty {
-            color: var(--r-neutral-foot);
-            font-size: 13px;
-            line-height: 20px;
-          }
-
-          .staking-lp-footer-messages {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 4px;
-          }
-
-          .staking-lp-error {
-            min-height: 16px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            text-align: center;
-            color: var(--r-red-default);
-            font-size: 13px;
-            line-height: 16px;
-          }
-
-          .staking-lp-price-inline {
-            display: flex;
-            min-height: 16px;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: var(--r-neutral-foot);
-            font-size: 13px;
-            line-height: 16px;
-          }
-
-          .staking-lp-price-inline span {
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-
-          .staking-lp-price-checkbox {
-            position: relative;
-            display: inline-flex;
-            width: 16px;
-            height: 16px;
-            flex: 0 0 16px;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            border: 1px solid var(--r-neutral-line);
-            border-radius: 4px;
-            background: transparent;
-          }
-
-          .staking-lp-price-checkbox.is-active {
-            border-color: var(--r-blue-default);
-            background: var(--r-blue-default);
-          }
-
-          .staking-lp-price-checkbox.is-active::after {
-            content: '';
-            width: 8px;
-            height: 4px;
-            border-left: 2px solid #fff;
-            border-bottom: 2px solid #fff;
-            transform: rotate(-45deg) translateY(-1px);
-          }
-
-          .staking-lp-submit {
-            width: 360px;
-            height: 48px;
-            margin-top: 0;
-            border-radius: 6px;
-            font-size: 15px;
-            line-height: 18px;
-            font-weight: 500;
-          }
-        `}
-      </style>
       <div className="staking-lp-action-body">
         {loading ? (
           <div className="staking-lp-action-content is-loading">
@@ -2034,42 +1238,51 @@ export const LpActionModal = ({
         ) : (
           <>
             <div className="staking-lp-action-content">
-              {action === 'deposit' ? renderDeposit() : null}
-              {action === 'withdraw' ? renderPercentAction() : null}
-              {action === 'claim' ? renderClaim() : null}
+              {action === 'deposit' ? (
+                <LpDepositContent
+                  isV3={isV3}
+                  isPositionAction={isPositionAction}
+                  rangeOptions={V3_RANGE_OPTIONS}
+                  rangePreset={v3RangePreset}
+                  onRangePresetChange={handleRangePresetChange}
+                  amount0={amount0}
+                  amount1={amount1}
+                  token0Info={normalizedTokens.token0Info}
+                  token1Info={normalizedTokens.token1Info}
+                  onAmount0Change={handleAmount0Change}
+                  onAmount1Change={handleAmount1Change}
+                  onMax0={handleMax0}
+                  onMax1={handleMax1}
+                  token0Insufficient={token0Insufficient}
+                  token1Insufficient={token1Insufficient}
+                  rangeText={rangeText}
+                  v2AddQuote={v2AddQuote}
+                  v3DepositQuote={v3DepositQuote}
+                />
+              ) : null}
+              {action === 'withdraw' ? (
+                <LpPercentActionContent
+                  percent={percent}
+                  onPercentChange={handlePercentChange}
+                  receive0={receive0}
+                  receive1={receive1}
+                  previewToken0={previewToken0}
+                  previewToken1={previewToken1}
+                  pool={pool}
+                />
+              ) : null}
+              {action === 'claim' ? (
+                <LpClaimContent claimTargets={claimTargets} pool={pool} />
+              ) : null}
             </div>
             <div className="staking-lp-action-footer">
-              {showFooterMessages ? (
-                <div className="staking-lp-footer-messages">
-                  {footerError ? (
-                    <div className="staking-lp-error" title={footerError}>
-                      {footerError}
-                    </div>
-                  ) : null}
-                  {needsPriceConfirm ? (
-                    <div
-                      className="staking-lp-price-inline"
-                      title={priceWarningTitle}
-                    >
-                      <button
-                        type="button"
-                        aria-label="Confirm pool price difference"
-                        aria-pressed={priceWarningAccepted}
-                        className={clsx(
-                          'staking-lp-price-checkbox',
-                          priceWarningAccepted && 'is-active'
-                        )}
-                        onClick={() =>
-                          setPriceWarningAccepted((accepted) => !accepted)
-                        }
-                      />
-                      <span>
-                        Pool price differs from market price by more than 5%.
-                      </span>
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
+              <LpFooterMessages
+                footerError={footerError}
+                needsPriceConfirm={needsPriceConfirm}
+                priceWarningTitle={priceWarningTitle}
+                priceWarningAccepted={priceWarningAccepted}
+                onPriceWarningAcceptedChange={handlePriceWarningToggle}
+              />
               <Button
                 type="primary"
                 block
