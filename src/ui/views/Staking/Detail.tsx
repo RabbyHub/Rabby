@@ -243,9 +243,9 @@ const StakingDetail = () => {
 
       {detailLoading && !visualPool ? (
         <div className="px-[20px] py-[10px]">
-          <div className="h-[44px] w-[180px] rounded-[8px] bg-r-neutral-bg2" />
-          <div className="mt-[16px] h-[24px] w-full rounded-[8px] bg-r-neutral-bg2" />
-          <div className="mt-[16px] h-[96px] w-[360px] rounded-[8px] bg-r-neutral-bg2" />
+          <div className="staking-detail-loading-skeleton h-[44px] w-[180px] rounded-[8px]" />
+          <div className="staking-detail-loading-skeleton mt-[16px] h-[24px] w-full rounded-[8px]" />
+          <div className="staking-detail-loading-skeleton mt-[16px] h-[96px] w-[360px] rounded-[8px]" />
         </div>
       ) : visualPool ? (
         <>

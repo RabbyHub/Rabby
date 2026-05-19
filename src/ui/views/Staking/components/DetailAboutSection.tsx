@@ -157,7 +157,7 @@ const PoolInfoSection = ({ pool }: { pool: StakingPool }) => {
 
   return (
     <section className="px-[20px]">
-      <div className="mb-[16px] text-[15px] leading-[18px] font-bold text-r-neutral-black">
+      <div className="staking-section-title mb-[16px] text-[15px] leading-[18px] font-bold">
         Pool
       </div>
       <div className="grid grid-cols-2 gap-x-[48px] gap-y-[16px]">
@@ -202,7 +202,7 @@ const AboutProtocolSection = ({ pool }: { pool: StakingPool }) => {
 
   return (
     <section className="px-[20px]">
-      <div className="mb-[16px] text-[15px] leading-[18px] font-bold text-r-neutral-black">
+      <div className="staking-section-title mb-[16px] text-[15px] leading-[18px] font-bold">
         About {protocolName}
       </div>
       <div
