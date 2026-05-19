@@ -633,7 +633,7 @@
           "clearPendingAlert": "{{chainName}} Transaksi ({{nonces}}) telah tertunda lebih dari 3 menit. Anda dapat <5></5> <6>Hapus Pending Secara Lokal</6> <7></7> dan mengirim ulang transaksi."
         },
         "PredictTime": {
-          "noTime": "Waktu peng打包 sedang diprediksi",
+          "noTime": "Waktu pengemasan sedang diprediksi",
           "time": "Diperkirakan akan dikemas dalam {{time}}",
           "failed": "Prediksi waktu pengemasan gagal"
         },
@@ -1062,7 +1062,7 @@
       "understandRisks": "Saya memahami risikonya dan ingin melanjutkan",
       "approve": "Setujui",
       "search-by-token-name-address": "Cari Nama Token / Alamat",
-      "best-subtitle": "Kutipan terbaik ditentukan oleh total biaya perkiraan terendah, termasuk kurs dan biaya gas。"
+      "best-subtitle": "Kutipan terbaik ditentukan oleh total biaya perkiraan terendah, termasuk kurs dan biaya gas."
     },
     "bridge": {
       "showMore": {
@@ -2363,7 +2363,7 @@
         "titleSameNotFound": "Tidak Ada Peringkat yang Sama dengan Saat Ini",
         "titleNotFound": "Tidak Ada Peringkat di Semua Tx Tertunda",
         "titleSame": "GasPrice berada di peringkat #{{rank}} sama dengan saat ini",
-        "title": "GasPrice排在所有待处理交易的第#{{rank}}"
+        "title": "GasPrice berada di peringkat #{{rank}} dari semua transaksi tertunda"
       },
       "Empty": {
         "noData": "Tidak ada data yang ditemukan"
@@ -2515,7 +2515,7 @@
           "earnBtn": "Segera hadir",
           "arcadeDesc": "Mainkan permainan gratis untuk mendapatkan poin untuk airdrop S.",
           "migrateTitle": "Migrasi",
-          "migrateDesc": "请提供需要翻译的英文文案。",
+          "migrateDesc": "→",
           "earnDesc": "Taruh $S Anda"
         },
         "points": {
@@ -2562,7 +2562,7 @@
               "withdraw": "Tarik",
               "deposit": "Setor",
               "readyToProve": "Siap untuk membuktikan",
-              "claimed": "D声。",
+              "claimed": "Diklaim",
               "challengePeriod": "Periode tantangan",
               "readyToClaim": "Siap untuk mengklaim",
               "waitingToProve": "State root dipublikasikan",
@@ -3783,7 +3783,7 @@
           "partiallyFilled": "Sebagian Terisi",
           "filled": "Terisi",
           "canceled": "Dibatalkan",
-          "triggered": "D触angkap",
+          "triggered": "Terpicu",
           "perpMarginRejected": "Ditolak Margin Perp Ditolak",
           "badAloPxRejected": "Ditolak karena ALO PX buruk",
           "iocCancelRejected": "Ditolak karena pembatalan IOC",

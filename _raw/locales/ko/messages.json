@@ -477,7 +477,7 @@
         "notSupport": "{{0}}은(는) 지원되지 않습니다"
       },
       "signAndSubmitButton": "서명",
-      "requestFrom": "요청来自",
+      "requestFrom": "요청 출처",
       "gridPlusConnected": "GridPlus에 연결되었습니다.",
       "gridPlusNotConnected": "GridPlus는 연결되어 있지 않습니다",
       "keystoneConnected": "Keystone이 연결되었습니다.",
@@ -989,7 +989,7 @@
       "chain": "체인",
       "testnet-is-not-supported": "사용자 정의 네트워크는 지원되지 않습니다",
       "pendingTip": "Tx 제출됨. tx가 오랜 시간 동안 대기 중인 경우 설정에서 대기를 해제해 보세요.",
-      "completedTip": "체인上的 거래, 데이터를 디코딩하여 기록 생성",
+      "completedTip": "체인에서 거래 중이며, 데이터를 디코딩해 기록을 생성합니다.",
       "approve-x-symbol": "승인 {{symbol}}",
       "InSufficientTip": "거래 시뮬레이션 및 가스 추정을 수행하기 위한 잔액이 부족합니다. 원래 집계기 견적이 표시됩니다.",
       "get-quotes": "견적 받기",
@@ -1062,7 +1062,7 @@
       "understandRisks": "나는 위험을 이해하고 계속 진행하고 싶다.",
       "approve": "승인",
       "search-by-token-name-address": "토큰 이름 / 주소 검색",
-      "best-subtitle": "최고의気配는환율과가스비를포함한다가장낮은추정총비용으로결정됩니다。"
+      "best-subtitle": "최적 견적은 환율과 가스비를 포함한 예상 총비용이 가장 낮은 항목으로 결정됩니다."
     },
     "bridge": {
       "showMore": {
@@ -1155,7 +1155,7 @@
         "sendStatus": "전송 상태",
         "swapStatus": "스왑 상태"
       },
-      "best-subtitle": "최고의报价은 예상 총 비용(gas 비용 포함)과 거래 속도의 조합에 의해 결정됩니다."
+      "best-subtitle": "최적 견적은 예상 총비용(가스비 포함)과 도착 속도의 조합으로 결정됩니다."
     },
     "manageAddress": {
       "deleted": "삭제됨",
@@ -1426,9 +1426,9 @@
         "requestDeBankTestnetGasToken": "DeBank 테스트넷 가스 토큰 요청",
         "enableWhitelist": "화이트리스트 활성화",
         "DappAccount": {
-          "button": "啟用\n",
+          "button": "활성화\n",
           "title": "Dapp 주소를 독립적으로 전환하세요\n",
-          "desc": "啟用後，您可以獨立選擇連接到每個 Dapp 的地址。切換您的主要地址不會影響連接到每個 Dapp 的地址。\n"
+          "desc": "활성화하면 각 Dapp에 연결할 주소를 독립적으로 선택할 수 있습니다. 기본 주소를 전환해도 각 Dapp에 연결된 주소에는 영향을 주지 않습니다.\n"
         },
         "rateModalTriggerOnHome": {
           "description": "Rabby Wallet은 어떻게 평가하시나요?"
@@ -2514,7 +2514,7 @@
           "arcadeDesc": "무료 게임을 플레이하여 S 에어드랍을 위한 포인트를 얻으세요.",
           "airdropDesc": "~200 백만 S를 Opera와 Sonic 사용자에게 제공합니다.",
           "earnBtn": "곧 출시됩니다",
-          "migrateDesc": "죄송하지만 요청하신 번역을 제공할 수 없습니다.",
+          "migrateDesc": "→",
           "socialsTitle": "참여하기",
           "migrateTitle": "마이그레이트"
         },
@@ -3376,11 +3376,11 @@
         "asset": "자산",
         "action": "작업",
         "value": "가치",
-        "buy": "买入",
-        "sell": "卖出",
+        "buy": "매수",
+        "sell": "매도",
         "transferDetailTitle": "전송",
-        "transferActionToSpot": "转账（从永续合约到现货）",
-        "transferActionToPerps": "转账（从现货到永续合约）"
+        "transferActionToSpot": "이체(Perps에서 Spot으로)",
+        "transferActionToPerps": "이체(Spot에서 Perps로)"
       },
       "logoutConfirmModal": {
         "desc": "현재의 무기한 계약 계정에서 로그아웃 중입니다. 이 주소로 로그인하면 언제든지 복구할 수 있습니다.",
@@ -3639,9 +3639,9 @@
       "PerpsAbout": {
         "title": "정보"
       },
-      "transferToSpot": "现货账户转账",
+      "transferToSpot": "Spot으로 이체",
       "transferToPerps": "Perps로 이전",
-      "selectChainToWithdraw": "选择提现链"
+      "selectChainToWithdraw": "출금할 체인 선택"
     },
     "perpsPro": {
       "chatArea": {

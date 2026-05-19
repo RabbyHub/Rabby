@@ -2449,7 +2449,7 @@
         "referral-code-cannot-be-empty": "El código de referencia no puede estar vacío",
         "max-15-characters-use-numbers-and-letters-only": "Máximo 15 caracteres, usa solo números y letras.",
         "refer-a-new-user-to-get-50-points": "Refiere a un nuevo usuario para obtener 50 puntos",
-        "referral-code-cannot-exceed-15-characters": "El código de referencia no puede exceder los 15 caracteres。",
+        "referral-code-cannot-exceed-15-characters": "El código de referencia no puede exceder los 15 caracteres.",
         "once-set-this-referral-code-is-permanent-and-cannot-change": "Una vez establecido, este código de referido es permanente y no se puede cambiar.",
         "set-my-referral-code": "Establecer mi código de referencia"
       },

@@ -478,7 +478,7 @@
         "login": "Einloggen",
         "WalletConnectTips": "GasAccount unterstützt WalletConnect nicht",
         "customRPC": "Nicht unterstützt bei der Verwendung eines benutzerdefinierten RPC",
-        "loginFirst": "Bitte loggen Sie sich zuerst bei GasAccount ein。",
+        "loginFirst": "Bitte loggen Sie sich zuerst bei GasAccount ein.",
         "useGasAccount": "Verwenden Sie GasAccount",
         "chainNotSupported": "Diese Kette wird von GasAccount nicht unterstützt",
         "loginTips": "Um den GasAccount-Login abzuschließen, wird diese Transaktion verworfen. Sie müssen sie nach dem Login erneut erstellen.",
@@ -636,7 +636,7 @@
         },
         "PredictTime": {
           "time": "Voraussichtlich verpackt in {{time}}",
-          "noTime": "Die Verpackungszeit wird vorhergesagt。",
+          "noTime": "Die Verpackungszeit wird vorhergesagt.",
           "failed": "Vorhersage der Verpackungszeit fehlgeschlagen"
         },
         "CancelTxConfirmPopup": {
@@ -917,7 +917,7 @@
         "cancelBody": "Wenn Sie diese Seite schließen, werden die verbleibenden Revokes nicht ausgeführt.",
         "confirmRevokePrivateKey": "Mithilfe eines Seed-Phrase oder Private-Key-Adresse können Sie {{count}} Genehmigungen mit nur einem Klick widerrufen.",
         "useGasAccount": "Ihr Gasguthaben ist niedrig. Ihr GasAccount übernimmt die Gasgebühren.",
-        "ledgerAlert": "Bitte öffnen Sie die Ethereum-App auf Ihrem Ledger-Gerät。",
+        "ledgerAlert": "Bitte öffnen Sie die Ethereum-App auf Ihrem Ledger-Gerät.",
         "revokeWithLedger": "Mit Ledger beginnen zu widerrufen",
         "simulationFailed": "Simulation fehlgeschlagen",
         "ledgerSended": "Bitte unterschreiben Sie die Anfrage auf Ledger ({{current}}/{{total}})",
@@ -2277,7 +2277,7 @@
       "recommendFromToken": "Brücke von <1></1> für ein verfügbares Angebot",
       "no-quote-found": "Kein Angebot gefunden. Bitte versuchen Sie es mit anderen Token-Paaren.",
       "completedTip": "Transaktion auf der Chain, Daten dekodieren, um einen Eintrag zu erstellen",
-      "need-to-approve-token-before-bridge": "Vor dem Bridge-Vorgang muss der Token genehmigt werden。",
+      "need-to-approve-token-before-bridge": "Vor dem Bridge-Vorgang muss der Token genehmigt werden.",
       "loss-tips": "Sie verlieren {{usd}}. Versuchen Sie einen anderen Betrag.",
       "est-difference": "Geschätzter Unterschied:",
       "price-impact": "Preiseffekt",
@@ -2515,7 +2515,7 @@
           "airdrop": "Airdrop",
           "arcadeDesc": "Spiele kostenlose Spiele, um Punkte für den S Airdrop zu verdienen.",
           "migrateBtn": "Demnächst verfügbar",
-          "migrateDesc": "请提供原文，以便我为您翻译成德语。",
+          "migrateDesc": "→",
           "airdropBtn": "Punkte verdienen",
           "socialsTitle": "Beteiligen Sie sich",
           "earnBtn": "Demnächst verfügbar",
@@ -2632,7 +2632,7 @@
         "learnAbout": "Erfahren Sie mehr über GasAccount"
       },
       "loginConfirmModal": {
-        "desc": "Nach der Bestätigung können Sie es nur an dieser Adresse einzahlen。",
+        "desc": "Nach der Bestätigung können Sie es nur an dieser Adresse einzahlen.",
         "title": "Mit aktueller Adresse anmelden"
       },
       "logoutConfirmModal": {
@@ -2783,7 +2783,7 @@
       "PasswordCard": {
         "form": {
           "password": {
-            "min": "Das Passwort muss mindestens 8 Zeichen lang sein。",
+            "min": "Das Passwort muss mindestens 8 Zeichen lang sein.",
             "label": "Passwort",
             "required": "Bitte Passwort eingeben",
             "placeholder": "Passwort (min. 8 Zeichen)"

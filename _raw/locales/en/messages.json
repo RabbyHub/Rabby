@@ -839,7 +839,7 @@
         "twapSliceFilled": "TWAP Slice Filled",
         "buyFilledContentNoPercentage": "bought {{sz}} {{coin}} filled @{{price}} USDC",
         "sellFilledContentNoPercentage": "sold {{sz}} {{coin}} filled @{{price}} USDC",
-        "limitOrderFilled": "Limit Order Filled（{{percent}}%）",
+        "limitOrderFilled": "Limit Order Filled ({{percent}}%)",
         "buyFilledContent": "bought {{sz}} / {{origSz}} {{coin}} filled @{{price}} USDC",
         "sellFilledContent": "sold {{sz}} / {{origSz}} {{coin}} filled @{{price}} USDC",
         "orderFilled": "Order Filled",

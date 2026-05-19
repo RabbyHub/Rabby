@@ -2262,7 +2262,7 @@
         "maxPay": "Paiement maximum"
       },
       "batchRevokePermit2": {
-        "title": "Batch Revoke Permit2 Approval\n\n翻译：Révoquer par lot l'approbation Permit2"
+        "title": "Révoquer par lot l'approbation Permit2"
       },
       "revokePermit": {
         "title": "Révoquer l'approbation du token de permit"

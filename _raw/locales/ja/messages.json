@@ -1062,7 +1062,7 @@
       "understandRisks": "リスクを理解しており、続けたいと思います。",
       "approve": "承認",
       "search-by-token-name-address": "トークン名 / アドレスを検索",
-      "best-subtitle": "最佳报价由最低的预估总成本决定，包括汇率和 gas 费用。"
+      "best-subtitle": "最適な見積もりは、為替レートとガス代を含む推定総コストが最も低いものに基づいて決定されます。"
     },
     "manageAddress": {
       "no-address": "アドレスがありません",
@@ -1936,7 +1936,7 @@
       "bulkImportPrivateKeySupport": "最大1000個EVM互換のプライベートキーをサポートしています",
       "duplicateAddressesSkippedDesc_other": "{{count}} のアドレスは、すでに存在するためスキップされました。",
       "bulkImportPrivateKey": "プライベートキーの一括インポート",
-      "bulkImportPrivateKeyExceeded": "{{count}} 个プライベートキーを同時にサポートしています",
+      "bulkImportPrivateKeyExceeded": "一度に最大{{count}}個のプライベートキーをサポートしています",
       "openExtensionToGetStarted": "Rabby拡張機能を開いて始めましょう。",
       "bulkImportPrivateKeyInvalid": "無効なプライベートキーがあります。削除するか、再入力してください。",
       "newAddressAdded": "新しいアドレスが追加されました",
@@ -1981,7 +1981,7 @@
       "requestRabbyToSupport": "Rabbyにサポートをリクエスト",
       "addChain": "テストネットを追加",
       "chainNotSupportYet": "リクエストされたチェーンはまだRabbyによってサポートされていません",
-      "chainNotSupportAddChain": "要求的链尚未被Rabby集成。您可以将其添加为カスタムテストネット。",
+      "chainNotSupportAddChain": "要求されたチェーンはまだRabbyに統合されていません。カスタムテストネットとして追加できます。",
       "desc": "要求されたネットワークはまだRabbyに統合されていません 手動でカスタムネットワークとして追加することができます"
     },
     "signText": {
@@ -2456,7 +2456,7 @@
       "top-100": "トップ 100",
       "title": "Rabby Points",
       "share-on": "シェアする",
-      "out-of-x-current-total-points": "{{total}} 点数の合計中",
+      "out-of-x-current-total-points": "配布済みポイント合計{{total}}のうち",
       "earn-points": "ポイントを獲得",
       "referral-code-copied": "紹介コードをコピーしました。",
       "initialPointsClaimEnded": "初期ポイント請求終了",
@@ -3642,7 +3642,7 @@
       "PerpsAbout": {
         "title": "概要"
       },
-      "transferToSpot": "現物账户への转移送",
+      "transferToSpot": "Spotへ振替",
       "transferToPerps": "Perpsへ移転",
       "selectChainToWithdraw": "出金先のチェーンを選択"
     },
@@ -4188,7 +4188,7 @@
         "amountTitle": "利用可能:",
         "borrowed": "借入",
         "approveAndBorrow": "承認して借りる",
-        "almostReachedError": "借入可能的最大金额受到限制，因为协议借入上限快要达到。",
+        "almostReachedError": "プロトコルの借入上限に近づいているため、借入可能な最大金額が制限されています。",
         "almostReachedWarning": "この資産のプロトコル借入上限は100％です。これ以上の借入はできません。"
       },
       "popup": {
@@ -4522,7 +4522,7 @@
       },
       "EIP7702Panel": {
         "unsupportedAddressType": "サポートされていないアドレス種別",
-        "unsupportedAddressTypeDesc": "EIP-7702権限の취소는、秘密鍵またはシードフレーズのアドレスのみサポートされています",
+        "unsupportedAddressTypeDesc": "EIP-7702の委任の取り消しは、秘密鍵またはシードフレーズのアドレスでのみサポートされています",
         "supportedChains": "サポートチェーン",
         "delegatedAddressDesc": "委託アドレス",
         "notMatched": "一致なし",

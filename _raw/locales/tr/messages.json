@@ -324,10 +324,10 @@
       "common": {
         "description": "Açıklama",
         "interactContract": "Sözleşme ile etkileşim kur",
-        "descTipSafe": "İmza, varlık değişikliğine neden olmaz veya adres sahipliğini doğrulamaz。",
+        "descTipSafe": "İmza, varlık değişikliğine neden olmaz veya adres sahipliğini doğrulamaz.",
         "descTipWarningPrivacy": "İmza adres sahipliğini doğrulayabilir",
         "descTipWarningAssets": "İmza varlık değişikliğine neden olabilir",
-        "descTipWarningBoth": "İmza, varlık değişikliğine neden olabilir ve adres sahipliğini doğrulayabilir。"
+        "descTipWarningBoth": "İmza, varlık değişikliğine neden olabilir ve adres sahipliğini doğrulayabilir."
       },
       "nativeTokenForGas": "{{chainName}} üzerinde gaz ücretini ödemek için {{tokenName}} tokenini kullanın",
       "gasAccountForGas": "Gas ödemesi yapmak için GasAccount'ımdaki USD'yi kullan",
@@ -2293,7 +2293,7 @@
       "max-tips": "Bu değer, köprü için gaz maliyeti çıkarılarak hesaplanır.",
       "enable-it": "Etkinleştir",
       "no-route-found": "Rota bulunamadı",
-      "slippage-adjusted-refresh-quote": "滑点已调整。刷新路线。",
+      "slippage-adjusted-refresh-quote": "Kayma ayarlandı. Rotayı yenileyin.",
       "select-chain": "Zincir Seç",
       "pendingTip": "Tx gönderildi. Tx uzun saatler boyunca beklemede kalırsa, ayarlardan beklemeyi temizlemeyi deneyebilirsiniz.",
       "need-to-approve-token-before-bridge": "Bridge öncesinde token onayı gerekiyor",
@@ -2590,7 +2590,7 @@
             "step1": "Çekimi başlat",
             "question2": "Para çekme işlemi başlatıldıktan sonra hızlandırılamayacağını veya iptal edilemeyeceğini anlıyorum",
             "question1": "Anladım ki, çekme işlemini kanıtladıktan sonra fonlarımın Ethereum'da talep edilebilir hale gelmesi yaklaşık 7 gün sürecek.",
-            "tips": "Çekim yapmak, 1 DBK Chain işlemi ve 2 Ethereum işlemi gerektiren 3 aşamalı bir süreç içerir。",
+            "tips": "Çekim yapmak, 1 DBK Chain işlemi ve 2 Ethereum işlemi gerektiren 3 aşamalı bir süreç içerir.",
             "question3": "Ağ ücretlerinin yaklaşık olduğunu ve değişeceğini anlıyorum"
           },
           "labelTo": "İçin",
@@ -2787,7 +2787,7 @@
         "form": {
           "password": {
             "label": "Parola",
-            "min": "Parola en az 8 karakter uzunluğunda olmalıdır。",
+            "min": "Parola en az 8 karakter uzunluğunda olmalıdır.",
             "required": "Lütfen Şifreyi Giriniz",
             "placeholder": "Şifre (en az 8 karakter)"
           },
