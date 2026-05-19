@@ -20,13 +20,14 @@ const shouldUseNftCollectionsDbCache = ({
 
 interface UseNFTCollectionsOptions {
   preferCacheOnExists?: boolean;
+  visible?: boolean;
 }
 
 export const useNFTCollections = (
   userAddr: string | undefined,
   options?: UseNFTCollectionsOptions
 ) => {
-  const { preferCacheOnExists = false } = options || {};
+  const { preferCacheOnExists = false, visible = true } = options || {};
   const wallet = useWallet();
   const abortProcess = useRef<AbortController>();
   const userAddrRef = useRef('');
@@ -160,7 +161,7 @@ export const useNFTCollections = (
 
     if (userAddr) {
       timer = setTimeout(() => {
-        if (!isSameAddress(userAddr, userAddrRef.current)) {
+        if (!isSameAddress(userAddr, userAddrRef.current) && visible) {
           abortProcess.current?.abort();
           userAddrRef.current = userAddr;
           loadProcess();
@@ -177,7 +178,7 @@ export const useNFTCollections = (
         clearTimeout(timer);
       }
     };
-  }, [applyCollections, loadProcess, setLoading, userAddr]);
+  }, [applyCollections, loadProcess, setLoading, userAddr, visible]);
 
   useEffect(() => {
     return () => {
