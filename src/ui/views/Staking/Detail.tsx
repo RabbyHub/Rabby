@@ -29,6 +29,10 @@ import { useStakingFilters } from './hooks/useStakingFilters';
 import { useStakingPoolCurve } from './hooks/useStakingPoolCurve';
 import { useStakingPoolDetail } from './hooks/useStakingPoolDetail';
 import { useStakingPositionSummary } from './hooks/useStakingPositionSummary';
+import {
+  formatStakingAuditDate,
+  getStakingSecurityAudits,
+} from './data/securityAudits';
 import type {
   StakingPositionAsset,
   StakingPositionItem,
@@ -637,18 +641,57 @@ const AboutTab = ({ pool }: { pool: StakingPool }) => (
   </div>
 );
 
-const SecurityTab = () => (
-  <div className="px-[16px]">
-    <div className="mb-[16px] flex items-center justify-between">
-      <div className="text-[15px] leading-[18px] font-bold text-r-neutral-black">
-        Certifications
-      </div>
-    </div>
-    <div className="py-[42px] text-center text-[13px] leading-[18px] text-r-neutral-foot">
-      No certification data
-    </div>
-  </div>
+const AuditFirmBadge = () => (
+  <span className="staking-security-auditor-icon" aria-hidden="true" />
 );
+
+const SecurityTab = ({ pool }: { pool: StakingPool }) => {
+  const audits = getStakingSecurityAudits(pool);
+
+  return (
+    <div className="staking-security-tab">
+      <div className="staking-security-title-row">
+        <div className="staking-security-title">Certifications</div>
+      </div>
+      {audits.length ? (
+        <div className="staking-security-table">
+          <div className="staking-security-header">
+            <span>Certified by</span>
+            <span>Certified on</span>
+            <span className="text-right">Action</span>
+          </div>
+          <div className="staking-security-rows">
+            {audits.map((audit) => (
+              <div className="staking-security-row" key={audit.auditReportUrl}>
+                <div
+                  className="staking-security-auditor"
+                  title={audit.auditFirm}
+                >
+                  <AuditFirmBadge />
+                  <span className="min-w-0 truncate">{audit.auditFirm}</span>
+                </div>
+                <div className="staking-security-date" title={audit.auditScope}>
+                  {formatStakingAuditDate(audit.auditDate)}
+                </div>
+                <button
+                  type="button"
+                  className="staking-security-action"
+                  onClick={() => openInTab(audit.auditReportUrl, false)}
+                  title={audit.auditScope}
+                >
+                  <span>View</span>
+                  <ExternalIcon />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="staking-security-empty">No certification data</div>
+      )}
+    </div>
+  );
+};
 
 const PortfolioAssetRow = ({
   asset,
@@ -1433,6 +1476,115 @@ const StakingDetail = () => {
             padding-bottom: 41px;
           }
 
+          .staking-detail-page .staking-security-tab {
+            display: flex;
+            width: 400px;
+            flex-direction: column;
+            padding: 0 16px 41px;
+          }
+
+          .staking-detail-page .staking-security-title-row {
+            display: flex;
+            width: 368px;
+            align-items: center;
+            justify-content: space-between;
+          }
+
+          .staking-detail-page .staking-security-title {
+            color: var(--r-neutral-black);
+            font-size: 15px;
+            line-height: 18px;
+            font-weight: 700;
+          }
+
+          .staking-detail-page .staking-security-table {
+            display: flex;
+            flex-direction: column;
+            width: 368px;
+            margin-top: 16px;
+          }
+
+          .staking-detail-page .staking-security-header,
+          .staking-detail-page .staking-security-row {
+            display: grid;
+            grid-template-columns: 80px 80px 80px;
+            column-gap: 64px;
+            width: 368px;
+          }
+
+          .staking-detail-page .staking-security-header {
+            color: var(--r-neutral-foot);
+            font-size: 12px;
+            line-height: 14px;
+            font-weight: 400;
+          }
+
+          .staking-detail-page .staking-security-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+          }
+
+          .staking-detail-page .staking-security-row {
+            min-height: 16px;
+            align-items: center;
+            color: var(--r-neutral-title1);
+            font-size: 13px;
+            line-height: 16px;
+            font-weight: 400;
+          }
+
+          .staking-detail-page .staking-security-auditor {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+          }
+
+          .staking-detail-page .staking-security-auditor-icon {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+            border-radius: 50%;
+            background: var(--r-neutral-line);
+          }
+
+          .staking-detail-page .staking-security-date {
+            white-space: nowrap;
+          }
+
+          .staking-detail-page .staking-security-action {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+            border: 0;
+            padding: 0;
+            background: transparent;
+            color: var(--r-neutral-title1);
+            font-size: 13px;
+            line-height: 16px;
+            font-weight: 400;
+            white-space: nowrap;
+          }
+
+          .staking-detail-page .staking-security-action svg {
+            width: 13px;
+            height: 13px;
+            flex: 0 0 13px;
+          }
+
+          .staking-detail-page .staking-security-empty {
+            padding: 42px 0;
+            color: var(--r-neutral-foot);
+            text-align: center;
+            font-size: 13px;
+            line-height: 18px;
+          }
+
           .staking-detail-page .staking-about-divider {
             width: 360px;
             height: 1px;
@@ -1682,7 +1834,9 @@ const StakingDetail = () => {
                 />
               ) : null}
               {displayedTab === 'about' ? <AboutTab pool={visualPool} /> : null}
-              {displayedTab === 'security' ? <SecurityTab /> : null}
+              {displayedTab === 'security' ? (
+                <SecurityTab pool={visualPool} />
+              ) : null}
             </div>
           </div>
 
