@@ -246,31 +246,6 @@ const InlineActionButton = ({
 const hasRewards = (position: StakingPositionItem) =>
   position.rewards.some((asset) => new BigNumber(asset.rawAmount || 0).gt(0));
 
-const PortfolioNewPositionCard = ({
-  pool,
-  accountReady,
-  onAction,
-}: {
-  pool: StakingPool;
-  accountReady: boolean;
-  onAction: (action: StakingAction, position?: StakingPositionItem) => void;
-}) => {
-  const depositDisabled = !accountReady || !getActionSupported(pool, 'deposit');
-
-  return (
-    <div className="staking-position-new-card">
-      <div className="staking-position-new-title">New Position</div>
-      <InlineActionButton
-        variant="primary"
-        disabled={depositDisabled}
-        onClick={() => onAction('deposit')}
-      >
-        Deposit
-      </InlineActionButton>
-    </div>
-  );
-};
-
 const mergePositionAssets = (assets: StakingPositionAsset[]) => {
   const merged = new Map<string, StakingPositionAsset>();
 
@@ -512,31 +487,34 @@ export const PortfolioTab = ({
           summary={summary}
         />
       ))}
-      {showPendingOnly ? null : pool.type === 'univ3' &&
+      {showPendingOnly ? null : pool.type === 'univ3' ? (
         summary?.positions.length ? (
-        <>
-          <PortfolioNewPositionCard
-            pool={pool}
-            accountReady={accountReady}
-            onAction={onAction}
-          />
-          {summary.positions.map((position) => (
-            <PortfolioPositionCard
-              key={position.id}
+          <>
+            {summary.positions.map((position) => (
+              <PortfolioPositionCard
+                key={position.id}
+                pool={pool}
+                position={position}
+                range={univ3PositionRanges?.[position.id]}
+                accountReady={accountReady}
+                onAction={onAction}
+              />
+            ))}
+            <PortfolioRewardsCard
               pool={pool}
-              position={position}
-              range={univ3PositionRanges?.[position.id]}
+              positions={summary.positions.filter(hasRewards)}
               accountReady={accountReady}
               onAction={onAction}
             />
-          ))}
-          <PortfolioRewardsCard
+          </>
+        ) : (
+          <PortfolioCard
+            title="Supplied"
+            rows={summary?.supplied || []}
             pool={pool}
-            positions={summary.positions.filter(hasRewards)}
-            accountReady={accountReady}
-            onAction={onAction}
+            emptyText={error ? 'Failed to load position' : 'No supplied assets'}
           />
-        </>
+        )
       ) : (
         <PortfolioCard
           title="Supplied"
