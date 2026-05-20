@@ -206,23 +206,22 @@ export const AssetListContainer: React.FC<Props> = ({
           />
         </div>
       </div>
-      <div className="flex flex-col gap-24">
+      <div className="flex flex-col gap-24 mt-12">
         {isTokensLoading ||
         isSearching ||
         (lpTokenMode && isAllTokenLoading) ? (
           <TokenListSkeleton />
         ) : (
-          <div className="mt-[12px]">
-            <HomeTokenList
-              list={sortTokens}
-              isSearch={!!search}
-              lpTokenMode={lpTokenMode}
-              isNoResults={isNoResults}
-            />
-          </div>
+          <HomeTokenList
+            list={sortTokens}
+            isSearch={!!search}
+            lpTokenMode={lpTokenMode}
+            isNoResults={isNoResults}
+          />
         )}
 
         <div
+          className="empty:hidden"
           style={{
             display: visible ? 'block' : 'none',
           }}
