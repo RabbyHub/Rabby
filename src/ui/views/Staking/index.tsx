@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Input, Switch, message } from 'antd';
-import { useHistory } from 'react-router-dom';
 
+import { PageHeader } from '@/ui/component';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
 import { useRabbySelector } from '@/ui/store';
 
-import { BackIcon, DownIcon, KeyIcon, SearchIcon } from './icons';
+import { SearchIcon } from './icons';
 import {
   ChainLogo,
   ChainSelectorPopup,
@@ -26,7 +26,6 @@ import './style.less';
 const PAGE_LIMIT = 50;
 
 const Staking = () => {
-  const history = useHistory();
   const account = useRabbySelector((state) => state.account.currentAccount);
   const [search, setSearch] = useState('');
   const [chainId, setChainId] = useState<string | undefined>();
@@ -106,28 +105,13 @@ const Staking = () => {
 
   return (
     <div className="staking-list-page min-h-screen bg-r-neutral-bg2 text-r-neutral-title1">
-      <div className="h-[60px] relative">
-        <div className="absolute left-[20px] top-[20px]">
-          <Button
-            type="text"
-            className="w-[20px] h-[20px] p-0 flex items-center justify-center text-r-neutral-title1"
-            icon={<BackIcon />}
-            onClick={() => history.goBack()}
-          />
-        </div>
-        <div className="absolute left-1/2 top-[9px] -translate-x-1/2 flex flex-col items-center gap-[2px]">
-          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title1">
-            Staking
-          </div>
-          <div className="flex items-center gap-[4px] text-[13px] leading-[16px] font-medium text-r-neutral-body">
-            <KeyIcon />
-            <span>Rabby</span>
-            <span className="text-r-neutral-foot">
-              <DownIcon />
-            </span>
-          </div>
-        </div>
-      </div>
+      <PageHeader
+        className="staking-page-header mx-[20px]"
+        forceShowBack
+        isShowAccount
+      >
+        Staking
+      </PageHeader>
 
       <div className="px-[20px]">
         <Input

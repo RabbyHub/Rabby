@@ -6,13 +6,13 @@ import React, {
   useState,
 } from 'react';
 import { Button, Empty, message } from 'antd';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
+import { PageHeader } from '@/ui/component';
 import { useRabbySelector } from '@/ui/store';
 
 import { Erc4626ActionModal } from './components/Erc4626ActionModal';
 import { LpActionModal } from './components/LpActionModal';
-import { BackIcon } from './icons';
 import {
   AboutTab,
   BottomActionBar,
@@ -49,7 +49,6 @@ const getPoolIdFromSearch = (search: string) => {
 };
 
 const StakingDetail = () => {
-  const history = useHistory();
   const location = useLocation();
   const account = useRabbySelector((state) => state.account.currentAccount);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -283,19 +282,13 @@ const StakingDetail = () => {
       ref={pageRef}
       className="staking-detail-page min-h-screen bg-r-neutral-bg1 text-r-neutral-title1"
     >
-      <div className="relative h-[60px]">
-        <div className="absolute left-[20px] top-[20px]">
-          <Button
-            type="text"
-            className="w-[20px] h-[20px] p-0 flex items-center justify-center text-r-neutral-title1"
-            icon={<BackIcon />}
-            onClick={() => history.goBack()}
-          />
-        </div>
-        <div className="absolute left-1/2 top-[18px] -translate-x-1/2 text-[20px] leading-[24px] font-medium text-r-neutral-title1">
-          Staking
-        </div>
-      </div>
+      <PageHeader
+        className="staking-page-header mx-[20px]"
+        forceShowBack
+        isShowAccount
+      >
+        Staking
+      </PageHeader>
 
       {detailLoading && !visualPool ? (
         <div className="px-[20px] py-[10px]">
