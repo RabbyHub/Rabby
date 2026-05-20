@@ -418,19 +418,16 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           </div>
         );
       }
-      if (Number(availableBalance) > 0) {
-        return (
-          <div
-            className={clsx(
-              'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-            )}
-          >
-            {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
-          </div>
-        );
-      }
+      return (
+        <div
+          className={clsx(
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+          )}
+        >
+          {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
+        </div>
+      );
     }
-    return null;
   }, [
     perpsId,
     perpsFetching,
