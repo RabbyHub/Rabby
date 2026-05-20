@@ -18,7 +18,7 @@ import type {
 import {
   formatStakingNumber,
   formatStakingPercent,
-  formatStakingUsd,
+  formatStakingTVL,
 } from '../utils/format';
 
 const getFeeTag = (pool: StakingPool) =>
@@ -42,7 +42,7 @@ const getExtraTags = (pool: StakingPool) => {
 const getMetricText = (pool: StakingPool, metric: StakingPoolCurveMetric) =>
   metric === 'apr'
     ? formatStakingPercent(pool.apr)
-    : formatStakingUsd(pool.tvl);
+    : formatStakingTVL(pool.tvl);
 
 const getMetricLabel = (pool: StakingPool, metric: StakingPoolCurveMetric) =>
   metric === 'apr' ? pool.metricLabel : 'TVL';
@@ -114,7 +114,7 @@ const CurveTooltip = ({
   const valueText =
     metric === 'apr'
       ? `${formatStakingNumber(value)}%`
-      : formatStakingUsd(value);
+      : formatStakingTVL(value);
   const markerColor =
     metric === 'apr' ? 'var(--r-green-default)' : 'var(--r-blue-default)';
   const dateLabel = payload[0]?.payload?.label || label;

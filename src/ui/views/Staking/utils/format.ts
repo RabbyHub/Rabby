@@ -1,12 +1,19 @@
 import BigNumber from 'bignumber.js';
 
-import { formatUsdValue } from '@/ui/utils';
+import { formatTVL, formatTokenAmount, formatUsdValue } from '@/ui/utils';
 
 export const formatStakingUsd = (value?: number | null) => {
   if (value === undefined || value === null || Number.isNaN(value)) {
     return '-';
   }
   return formatUsdValue(value);
+};
+
+export const formatStakingTVL = (value?: number | null) => {
+  if (value === undefined || value === null || Number.isNaN(value)) {
+    return '-';
+  }
+  return formatTVL(value);
 };
 
 export const formatStakingPercent = (value?: number | null) => {
@@ -51,13 +58,7 @@ export const formatStakingAmount = (
     return '0';
   }
 
-  const abs = number.abs();
-  const minVisible = new BigNumber(10).pow(-maxDecimals);
-  if (abs.lt(minVisible)) {
-    return `<${minVisible.toFixed(maxDecimals)}`;
-  }
-
-  return number.decimalPlaces(maxDecimals, BigNumber.ROUND_DOWN).toFormat();
+  return formatTokenAmount(number.toFixed(), maxDecimals);
 };
 
 export const shortenStakingAddress = (address?: string | null) => {

@@ -14,7 +14,7 @@ import {
 } from './PoolVisuals';
 import { CloseIcon, DownIcon, EmptyPoolsIcon, SearchIcon } from '../icons';
 import type { StakingFilterItem, StakingPool, StakingProtocol } from '../types';
-import { formatStakingPercent, formatStakingUsd } from '../utils/format';
+import { formatStakingPercent, formatStakingTVL } from '../utils/format';
 
 export { ProtocolLogo };
 
@@ -183,7 +183,7 @@ export const StakingPoolCard = ({
 
       <div className="shrink-0 text-right">
         <div className="text-[15px] leading-[18px] font-medium text-r-neutral-title1">
-          {formatStakingUsd(pool.tvl)} TVL
+          {formatStakingTVL(pool.tvl)} TVL
         </div>
         <div className="mt-[2px] text-[13px] leading-[16px] text-r-neutral-foot">
           {formatStakingPercent(pool.apr)} {pool.metricLabel}
