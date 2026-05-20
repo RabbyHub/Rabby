@@ -33,7 +33,6 @@ import {
   buildStakingMiniSignTxs,
   getStakingMainTxHash,
   readStakingContract,
-  waitForStakingTxReceipt,
 } from '../utils/tx';
 import './actionModal.less';
 
@@ -45,8 +44,7 @@ interface Erc4626ActionModalProps {
   pool: StakingPool;
   account: Account;
   onCancel: () => void;
-  onSubmitted: () => void;
-  onConfirmed: () => void;
+  onSubmitted: (payload: { hash: string }) => void;
 }
 
 const getActionLabel = (action: Erc4626Action) =>
@@ -69,7 +67,6 @@ export const Erc4626ActionModal = ({
   account,
   onCancel,
   onSubmitted,
-  onConfirmed,
 }: Erc4626ActionModalProps) => {
   const wallet = useWallet();
   const [amount, setAmount] = useState('');
@@ -316,16 +313,7 @@ export const Erc4626ActionModal = ({
         setPercent(100);
         setSubmitting(false);
         submitted = true;
-        onSubmitted();
-        const receipt = await waitForStakingTxReceipt({
-          wallet,
-          chainServerId: pool.chain_id,
-          account,
-          hash,
-        });
-        if (receipt) {
-          onConfirmed();
-        }
+        onSubmitted({ hash });
       }
     } catch (error) {
       if (
@@ -341,17 +329,7 @@ export const Erc4626ActionModal = ({
         setSubmitting(false);
       }
     }
-  }, [
-    actionLabel,
-    buildTxs,
-    canSubmit,
-    account,
-    onConfirmed,
-    onSubmitted,
-    pool.chain_id,
-    sign,
-    wallet,
-  ]);
+  }, [actionLabel, buildTxs, canSubmit, onSubmitted, sign]);
 
   const onAmountChange = useCallback((value: string) => {
     if (value === '' || INPUT_NUMBER_RE.test(value)) {

@@ -550,12 +550,16 @@ const readUniv3Position = async ({
   wallet,
   account,
   pool,
+  extraTokenIds = [],
 }: {
   wallet: ReturnType<typeof useWallet>;
   account: Account;
   pool: StakingPool;
+  extraTokenIds?: string[];
 }): Promise<StakingPositionSummary> => {
-  const tokenIds = pool.userPositionIndexes || [];
+  const tokenIds = Array.from(
+    new Set([...(pool.userPositionIndexes || []), ...extraTokenIds])
+  ).filter(Boolean);
   if (!tokenIds.length) {
     return { supplied: [], rewards: [], positionsCount: 0, positions: [] };
   }
@@ -656,10 +660,12 @@ const readPositionSummary = ({
   wallet,
   account,
   pool,
+  extraTokenIds,
 }: {
   wallet: ReturnType<typeof useWallet>;
   account: Account;
   pool: StakingPool;
+  extraTokenIds?: string[];
 }) => {
   if (pool.type === 'erc4626') {
     return readErc4626Position({ wallet, account, pool });
@@ -667,12 +673,13 @@ const readPositionSummary = ({
   if (pool.type === 'univ2') {
     return readUniv2Position({ wallet, account, pool });
   }
-  return readUniv3Position({ wallet, account, pool });
+  return readUniv3Position({ wallet, account, pool, extraTokenIds });
 };
 
 export const useStakingPositionSummary = (
   pool: StakingPool | undefined,
-  account: Account | null | undefined
+  account: Account | null | undefined,
+  extraTokenIds: string[] = []
 ) => {
   const wallet = useWallet();
 
@@ -681,7 +688,7 @@ export const useStakingPositionSummary = (
       if (!pool || !account) {
         return;
       }
-      return readPositionSummary({ wallet, account, pool });
+      return readPositionSummary({ wallet, account, pool, extraTokenIds });
     },
     {
       ready: !!pool && !!account,
@@ -691,6 +698,7 @@ export const useStakingPositionSummary = (
         pool?.id,
         pool?.type,
         pool?.userPositionIndexes?.join(','),
+        extraTokenIds.join(','),
       ],
     }
   );

@@ -2,12 +2,13 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 
-import { TokenLogos } from './PoolVisuals';
+import { ProtocolLogo, TokenLogos } from './PoolVisuals';
 import type {
   StakingPositionAsset,
   StakingPositionItem,
   StakingPositionSummary,
 } from '../hooks/useStakingPositionSummary';
+import type { StakingPendingAction } from '../hooks/useStakingPendingActions';
 import type { StakingPool } from '../types';
 import { formatStakingAmount, formatStakingUsd } from '../utils/format';
 import { getActionSupported } from './DetailSectionUtils';
@@ -60,6 +61,120 @@ const PortfolioRows = ({
           pool={pool}
         />
       ))}
+    </div>
+  );
+};
+
+const PendingTokenIcon = ({
+  token,
+}: {
+  token: StakingPositionAsset['token'];
+}) => (
+  <span className="staking-pending-token-icon">
+    {token.logo_url ? (
+      <img src={token.logo_url} alt={token.symbol || token.id} />
+    ) : (
+      <span>{(token.symbol || token.id || '?').slice(0, 1).toUpperCase()}</span>
+    )}
+  </span>
+);
+
+const PendingTokenGroup = ({
+  tokens,
+}: {
+  tokens: StakingPositionAsset['token'][];
+}) => {
+  const visibleTokens = tokens.slice(0, 2);
+
+  return (
+    <span className="staking-pending-token-group">
+      {visibleTokens.map((token, index) => (
+        <React.Fragment key={`${token.chain_id || ''}-${token.id}-${index}`}>
+          {index > 0 ? <span className="staking-pending-plus">+</span> : null}
+          <span className="staking-pending-token">
+            <PendingTokenIcon token={token} />
+            <span>{token.symbol || token.id}</span>
+          </span>
+        </React.Fragment>
+      ))}
+    </span>
+  );
+};
+
+const getPositiveAssets = (assets: StakingPositionAsset[]) =>
+  assets.filter((asset) => new BigNumber(asset.rawAmount || 0).gt(0));
+
+const getPendingActionTokens = ({
+  pending,
+  pool,
+  summary,
+}: {
+  pending: StakingPendingAction;
+  pool: StakingPool;
+  summary?: StakingPositionSummary;
+}) => {
+  if (pending.action === 'claim') {
+    const targetIds = pending.claimPositionIds?.length
+      ? pending.claimPositionIds
+      : pending.positionId
+      ? [pending.positionId]
+      : [];
+    const targetPositions = targetIds.length
+      ? (summary?.positions || []).filter((position) =>
+          targetIds.includes(position.id)
+        )
+      : summary?.positions || [];
+    const rewardTokens = getPositiveAssets(
+      targetPositions.flatMap((position) => position.rewards)
+    ).map((asset) => asset.token);
+
+    return rewardTokens.length
+      ? rewardTokens
+      : pool.tokens.rewards.length
+      ? pool.tokens.rewards
+      : pool.tokens.supplies;
+  }
+
+  if (pending.action === 'withdraw') {
+    const position = pending.positionId
+      ? summary?.positions.find((item) => item.id === pending.positionId)
+      : undefined;
+    const suppliedTokens = getPositiveAssets(
+      position?.supplied || summary?.supplied || []
+    ).map((asset) => asset.token);
+
+    return suppliedTokens.length ? suppliedTokens : pool.tokens.supplies;
+  }
+
+  return pool.tokens.supplies;
+};
+
+const PendingActionCard = ({
+  pending,
+  pool,
+  summary,
+}: {
+  pending: StakingPendingAction;
+  pool: StakingPool;
+  summary?: StakingPositionSummary;
+}) => {
+  const tokens = getPendingActionTokens({ pending, pool, summary });
+  const isProtocolToWallet =
+    pending.action === 'withdraw' || pending.action === 'claim';
+  const tokenGroup = <PendingTokenGroup tokens={tokens} />;
+  const protocol = <ProtocolLogo protocol={pool.protocol} size={20} />;
+
+  return (
+    <div className="staking-pending-card">
+      <div className="staking-pending-flow">
+        {isProtocolToWallet ? protocol : tokenGroup}
+        <span className="staking-pending-arrow">&rarr;</span>
+        {isProtocolToWallet ? tokenGroup : protocol}
+      </div>
+      <div className="staking-pending-status">
+        <span className="staking-pending-spinner" />
+        <span>Pending</span>
+      </div>
     </div>
   );
 };
@@ -270,6 +385,7 @@ export const PortfolioTab = ({
   summary,
   loading,
   error,
+  pendingActions,
   onAction,
 }: {
   pool: StakingPool;
@@ -277,6 +393,7 @@ export const PortfolioTab = ({
   summary?: StakingPositionSummary;
   loading: boolean;
   error?: Error;
+  pendingActions: StakingPendingAction[];
   onAction: (
     action: StakingAction,
     position?: StakingPositionItem,
@@ -286,8 +403,14 @@ export const PortfolioTab = ({
   const depositDisabled = !accountReady || !getActionSupported(pool, 'deposit');
   const withdrawDisabled =
     !accountReady || !getActionSupported(pool, 'withdraw');
+  const hasPortfolioContent =
+    !!summary &&
+    (summary.positions.length > 0 ||
+      getPositiveAssets(summary.supplied).length > 0 ||
+      getPositiveAssets(summary.rewards).length > 0);
+  const showPendingOnly = pendingActions.length > 0 && !hasPortfolioContent;
 
-  if (loading && !summary) {
+  if (loading && !summary && !pendingActions.length) {
     return (
       <div className="staking-position-panel">
         <PortfolioCardSkeleton />
@@ -297,7 +420,16 @@ export const PortfolioTab = ({
 
   return (
     <div className="staking-position-panel">
-      {pool.type === 'univ3' && summary?.positions.length ? (
+      {pendingActions.map((pending) => (
+        <PendingActionCard
+          key={pending.id}
+          pending={pending}
+          pool={pool}
+          summary={summary}
+        />
+      ))}
+      {showPendingOnly ? null : pool.type === 'univ3' &&
+        summary?.positions.length ? (
         <>
           <PortfolioNewPositionCard
             pool={pool}

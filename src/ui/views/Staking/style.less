@@ -807,6 +807,111 @@ body.dark .staking-selector-popup {
   padding: 0 16px 41px;
 }
 
+@keyframes staking-pending-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.staking-detail-page .staking-pending-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 360px;
+  height: 48px;
+  margin: 0 auto;
+  padding: 0 15.5px;
+  border: 0.5px solid var(--r-neutral-line);
+  border-radius: 8px;
+  background: var(--r-neutral-card1);
+}
+
+.staking-detail-page .staking-pending-flow,
+.staking-detail-page .staking-pending-token-group,
+.staking-detail-page .staking-pending-token,
+.staking-detail-page .staking-pending-status {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.staking-detail-page .staking-pending-flow {
+  flex: 1 1 auto;
+  gap: 8px;
+  overflow: hidden;
+  color: var(--r-neutral-title1);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.staking-detail-page .staking-pending-token-group {
+  gap: 8px;
+  overflow: hidden;
+}
+
+.staking-detail-page .staking-pending-token {
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-pending-token span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.staking-detail-page .staking-pending-token-icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--r-neutral-card2);
+  color: var(--r-neutral-foot);
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 600;
+}
+
+.staking-detail-page .staking-pending-token-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.staking-detail-page .staking-pending-plus,
+.staking-detail-page .staking-pending-arrow {
+  flex: 0 0 auto;
+  color: var(--r-neutral-foot);
+}
+
+.staking-detail-page .staking-pending-status {
+  flex: 0 0 auto;
+  gap: 6px;
+  color: var(--r-orange-default);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.staking-detail-page .staking-pending-spinner {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--r-orange-default);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: staking-pending-spin 0.8s linear infinite;
+}
+
 .staking-detail-page .staking-position-card {
   position: relative;
   width: 368px;

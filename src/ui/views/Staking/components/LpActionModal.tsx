@@ -59,7 +59,6 @@ import {
   createStakingReadContractClient,
   getStakingMainTxHash,
   readStakingContract,
-  waitForStakingTxReceipt,
 } from '../utils/tx';
 import './actionModal.less';
 
@@ -73,8 +72,7 @@ interface LpActionModalProps {
   position?: StakingPositionItem | null;
   claimPositions?: StakingPositionItem[];
   onCancel: () => void;
-  onSubmitted: () => void;
-  onConfirmed: () => void;
+  onSubmitted: (payload: { hash: string }) => void;
 }
 
 const DEFAULT_SLIPPAGE_BPS = 50;
@@ -251,7 +249,6 @@ export const LpActionModal = ({
   claimPositions,
   onCancel,
   onSubmitted,
-  onConfirmed,
 }: LpActionModalProps) => {
   const wallet = useWallet();
   const { sign } = useStakingMiniSign({
@@ -957,16 +954,7 @@ export const LpActionModal = ({
         message.success(`${title} submitted`);
         setSubmitting(false);
         submitted = true;
-        onSubmitted();
-        const receipt = await waitForStakingTxReceipt({
-          wallet,
-          chainServerId: pool.chain_id,
-          account,
-          hash: mainHash,
-        });
-        if (receipt) {
-          onConfirmed();
-        }
+        onSubmitted({ hash: mainHash });
       }
     } catch (error) {
       if (
@@ -987,13 +975,10 @@ export const LpActionModal = ({
     buildTxs,
     canSubmit,
     needsPriceConfirm,
-    onConfirmed,
     onSubmitted,
     priceWarningAccepted,
-    pool.chain_id,
     sign,
     title,
-    wallet,
   ]);
 
   const setV2AmountsFromSide = useCallback(

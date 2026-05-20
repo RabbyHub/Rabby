@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Empty, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -20,6 +26,7 @@ import {
 import { useStakingFilters } from './hooks/useStakingFilters';
 import { useStakingPoolCurve } from './hooks/useStakingPoolCurve';
 import { useStakingPoolDetail } from './hooks/useStakingPoolDetail';
+import { useStakingPendingActions } from './hooks/useStakingPendingActions';
 import { useStakingPositionSummary } from './hooks/useStakingPositionSummary';
 import type { StakingPositionItem } from './hooks/useStakingPositionSummary';
 import type { DetailTabKey, StakingAction } from './components/DetailSections';
@@ -57,18 +64,20 @@ const StakingDetail = () => {
     null
   );
   const [lpAction, setLpAction] = useState<PendingLpAction | null>(null);
+  const [localUniv3TokenIds, setLocalUniv3TokenIds] = useState<string[]>([]);
   const { data: filters } = useStakingFilters();
   const {
     data: pool,
     loading: detailLoading,
     error: detailError,
     refresh: refreshDetail,
+    refreshAsync: refreshDetailAsync,
   } = useStakingPoolDetail(poolId);
   const {
     data: curve = [],
     loading: curveLoading,
     error: curveError,
-    refresh: refreshCurve,
+    refreshAsync: refreshCurveAsync,
   } = useStakingPoolCurve(poolId, metric);
 
   const protocolMap = useMemo(
@@ -91,12 +100,50 @@ const StakingDetail = () => {
     data: positionSummary,
     loading: positionLoading,
     error: positionError,
-    refresh: refreshPosition,
-  } = useStakingPositionSummary(visualPool, account);
+    refreshAsync: refreshPositionAsync,
+  } = useStakingPositionSummary(visualPool, account, localUniv3TokenIds);
+
+  const handleMintedUniv3TokenId = useCallback((tokenId: string) => {
+    setLocalUniv3TokenIds((prev) =>
+      prev.includes(tokenId) ? prev : [...prev, tokenId]
+    );
+  }, []);
+
+  const { pendingActions, addPendingAction } = useStakingPendingActions({
+    pool: visualPool,
+    account,
+    positionSummary,
+    refreshDetailAsync,
+    refreshCurveAsync,
+    refreshPositionAsync,
+    onMintedUniv3TokenId: handleMintedUniv3TokenId,
+  });
+
+  useEffect(() => {
+    setLocalUniv3TokenIds([]);
+  }, [account?.address, poolId]);
+
+  const hasPortfolioData = useMemo(() => {
+    if (!positionSummary) {
+      return false;
+    }
+    return (
+      positionSummary.positions.length > 0 ||
+      positionSummary.supplied.some(
+        (asset) => BigInt(asset.rawAmount || '0') > 0n
+      ) ||
+      positionSummary.rewards.some(
+        (asset) => BigInt(asset.rawAmount || '0') > 0n
+      )
+    );
+  }, [positionSummary]);
+
+  const shouldShowPortfolio =
+    !!visualPool?.is_holding || pendingActions.length > 0 || hasPortfolioData;
 
   const tabs = useMemo(
     () =>
-      visualPool?.is_holding
+      shouldShowPortfolio
         ? [
             { key: 'portfolio' as const, label: 'Portfolio' },
             { key: 'about' as const, label: 'About' },
@@ -106,7 +153,7 @@ const StakingDetail = () => {
             { key: 'about' as const, label: 'About' },
             { key: 'security' as const, label: 'Security' },
           ],
-    [visualPool?.is_holding]
+    [shouldShowPortfolio]
   );
   const displayedTab = tabs.some((tab) => tab.key === activeTab)
     ? activeTab
@@ -114,9 +161,9 @@ const StakingDetail = () => {
 
   useEffect(() => {
     if (visualPool) {
-      setActiveTab(visualPool.is_holding ? 'portfolio' : 'about');
+      setActiveTab(shouldShowPortfolio ? 'portfolio' : 'about');
     }
-  }, [visualPool?.id, visualPool?.is_holding]);
+  }, [shouldShowPortfolio, visualPool?.id]);
 
   useEffect(() => {
     if (detailError) {
@@ -127,7 +174,7 @@ const StakingDetail = () => {
   }, [curveError, detailError]);
 
   useEffect(() => {
-    if (!visualPool || visualPool.is_holding) {
+    if (!visualPool || shouldShowPortfolio) {
       setShowBottomActionDivider(false);
       return;
     }
@@ -184,14 +231,9 @@ const StakingDetail = () => {
     displayedTab,
     positionLoading,
     positionSummary,
+    shouldShowPortfolio,
     visualPool,
   ]);
-
-  const refresh = () => {
-    refreshDetail();
-    refreshCurve();
-    refreshPosition();
-  };
 
   const handleAction = (
     action: StakingAction,
@@ -271,6 +313,7 @@ const StakingDetail = () => {
                   summary={positionSummary}
                   loading={positionLoading}
                   error={positionError}
+                  pendingActions={pendingActions}
                   onAction={handleAction}
                 />
               ) : null}
@@ -281,7 +324,7 @@ const StakingDetail = () => {
             </div>
           </div>
 
-          {!visualPool.is_holding ? (
+          {!shouldShowPortfolio ? (
             <>
               <div ref={bottomActionAnchorRef} />
               <BottomActionBar
@@ -300,10 +343,13 @@ const StakingDetail = () => {
               pool={visualPool}
               account={account}
               onCancel={() => setErc4626Action(null)}
-              onSubmitted={() => {
+              onSubmitted={({ hash }) => {
+                addPendingAction({
+                  hash,
+                  action: erc4626Action,
+                });
                 setErc4626Action(null);
               }}
-              onConfirmed={refresh}
             />
           ) : null}
 
@@ -316,10 +362,17 @@ const StakingDetail = () => {
               position={lpAction.position}
               claimPositions={lpAction.claimPositions}
               onCancel={() => setLpAction(null)}
-              onSubmitted={() => {
+              onSubmitted={({ hash }) => {
+                addPendingAction({
+                  hash,
+                  action: lpAction.action,
+                  positionId: lpAction.position?.id,
+                  claimPositionIds: lpAction.claimPositions?.map(
+                    (position) => position.id
+                  ),
+                });
                 setLpAction(null);
               }}
-              onConfirmed={refresh}
             />
           ) : null}
         </>
