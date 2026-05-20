@@ -243,9 +243,6 @@ const InlineActionButton = ({
   </button>
 );
 
-const hasRewards = (position: StakingPositionItem) =>
-  position.rewards.some((asset) => new BigNumber(asset.rawAmount || 0).gt(0));
-
 const mergePositionAssets = (assets: StakingPositionAsset[]) => {
   const merged = new Map<string, StakingPositionAsset>();
 
@@ -396,11 +393,13 @@ const PortfolioRewardsCard = ({
   pool,
   positions,
   accountReady,
+  showEmpty = false,
   onAction,
 }: {
   pool: StakingPool;
   positions: StakingPositionItem[];
   accountReady: boolean;
+  showEmpty?: boolean;
   onAction: (
     action: StakingAction,
     position?: StakingPositionItem,
@@ -411,7 +410,7 @@ const PortfolioRewardsCard = ({
   const claimDisabled =
     !accountReady || !rows.length || !getActionSupported(pool, 'claim');
 
-  if (!rows.length) {
+  if (!rows.length && !showEmpty) {
     return null;
   }
 
@@ -427,7 +426,17 @@ const PortfolioRewardsCard = ({
         <InlineActionButton
           variant="secondary"
           disabled={claimDisabled}
-          onClick={() => onAction('claim', undefined, positions)}
+          onClick={() => {
+            const singlePosition =
+              positions.length === 1 && positions[0]?.raw?.univ3
+                ? positions[0]
+                : undefined;
+            onAction(
+              'claim',
+              singlePosition,
+              singlePosition ? undefined : positions
+            );
+          }}
         >
           Claim
         </InlineActionButton>
@@ -491,21 +500,23 @@ export const PortfolioTab = ({
         summary?.positions.length ? (
           <>
             {summary.positions.map((position) => (
-              <PortfolioPositionCard
-                key={position.id}
-                pool={pool}
-                position={position}
-                range={univ3PositionRanges?.[position.id]}
-                accountReady={accountReady}
-                onAction={onAction}
-              />
+              <React.Fragment key={position.id}>
+                <PortfolioPositionCard
+                  pool={pool}
+                  position={position}
+                  range={univ3PositionRanges?.[position.id]}
+                  accountReady={accountReady}
+                  onAction={onAction}
+                />
+                <PortfolioRewardsCard
+                  pool={pool}
+                  positions={[position]}
+                  accountReady={accountReady}
+                  showEmpty
+                  onAction={onAction}
+                />
+              </React.Fragment>
             ))}
-            <PortfolioRewardsCard
-              pool={pool}
-              positions={summary.positions.filter(hasRewards)}
-              accountReady={accountReady}
-              onAction={onAction}
-            />
           </>
         ) : (
           <PortfolioCard
