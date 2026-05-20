@@ -955,7 +955,11 @@ export const LpActionModal = ({
     try {
       setSubmitting(true);
       const { txs } = await buildTxs();
-      const hashes = await sign({ txs, trigger: title });
+      const hashes = await sign({
+        txs,
+        trigger: title,
+        logo: pool.protocol.logo_url,
+      });
       const mainHash = getStakingMainTxHash(hashes);
 
       if (mainHash) {

@@ -305,7 +305,11 @@ export const Erc4626ActionModal = ({
     try {
       setSubmitting(true);
       const { txs } = await buildTxs();
-      const hashes = await sign({ txs, trigger: actionLabel });
+      const hashes = await sign({
+        txs,
+        trigger: actionLabel,
+        logo: pool.protocol.logo_url,
+      });
       const hash = getStakingMainTxHash(hashes);
       if (hash) {
         message.success(`${actionLabel} submitted`);
