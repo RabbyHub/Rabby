@@ -75,7 +75,13 @@ export const LpAmountInputBlock = ({
   error?: boolean;
   disabled?: boolean;
 }) => (
-  <div className={clsx('staking-lp-token-input', error && 'is-error')}>
+  <div
+    className={clsx(
+      'staking-lp-token-input',
+      error && 'is-error',
+      disabled && 'is-disabled'
+    )}
+  >
     {label ? <div className="staking-lp-input-label">{label}</div> : null}
     <div className="staking-lp-input-row">
       <div className="staking-lp-input-main">
@@ -113,7 +119,7 @@ export const LpAmountInputBlock = ({
           <span className="staking-lp-balance-text">
             {formatStakingAmount(tokenInfo?.balance || '0')}
           </span>
-          {onMax ? (
+          {onMax && !disabled ? (
             <button type="button" className="staking-lp-max" onClick={onMax}>
               Max
             </button>
@@ -257,6 +263,8 @@ export const LpDepositContent = ({
   onMax1,
   token0Insufficient,
   token1Insufficient,
+  token0Disabled,
+  token1Disabled,
   rangeText,
   v2AddQuote,
   v3DepositQuote,
@@ -276,6 +284,8 @@ export const LpDepositContent = ({
   onMax1: () => void;
   token0Insufficient: boolean;
   token1Insufficient: boolean;
+  token0Disabled?: boolean;
+  token1Disabled?: boolean;
   rangeText: string;
   v2AddQuote?: LpUnusedQuote | null;
   v3DepositQuote?: LpUnusedQuote | null;
@@ -294,6 +304,7 @@ export const LpDepositContent = ({
         onChange={onAmount0Change}
         onMax={onMax0}
         error={token0Insufficient}
+        disabled={token0Disabled}
       />
       <LpTokenSeparator />
       <LpAmountInputBlock
@@ -302,6 +313,7 @@ export const LpDepositContent = ({
         onChange={onAmount1Change}
         onMax={onMax1}
         error={token1Insufficient}
+        disabled={token1Disabled}
       />
     </div>
     <div className="staking-lp-info">

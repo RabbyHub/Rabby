@@ -17,6 +17,10 @@ import {
   buildUniv3MintTx,
   encodeUniv3Collect,
   encodeUniv3Multicall,
+  getSqrtRatioAtUniv3Tick,
+  getUniv3AmountsForLiquidity,
+  getUniv3LiquidityForAmount0,
+  getUniv3LiquidityForAmount1,
   quoteUniv2AddLiquidity,
   quoteUniv2CounterAmount,
   quoteUniv3DecreaseLiquidity,
@@ -30,12 +34,13 @@ import type {
   StakingTxBuildResult,
   Univ2PoolKey,
   Univ3PoolKey,
+  Univ3QuotePoolState,
 } from '@rabby-wallet/staking-sdk';
 
 import type { Account } from '@/background/service/preference';
 import { Popup } from '@/ui/component';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import { useWallet } from '@/ui/utils';
+import { formatPrice, useWallet } from '@/ui/utils';
 import { findChainByServerID } from '@/utils/chain';
 
 import { ActionPopupTitle } from './ActionModalShared';
@@ -64,6 +69,7 @@ import {
 import './actionModal.less';
 
 type LpAction = 'deposit' | 'withdraw' | 'claim';
+type V3PositionInputAvailability = TokenInputSide | 'both';
 
 interface LpActionModalProps {
   visible: boolean;
@@ -138,13 +144,96 @@ const formatPriceNumber = (value?: BigNumber | null) => {
   if (!value || !value.isFinite() || value.lte(0)) {
     return '-';
   }
-  if (value.gte(1_000)) {
-    return value.decimalPlaces(2, BigNumber.ROUND_DOWN).toFormat();
+  return formatPrice(value.toFixed());
+};
+
+const getV3PositionSqrtRatios = (tickLower: number, tickUpper: number) => {
+  const sqrtLower = BigInt(getSqrtRatioAtUniv3Tick(tickLower).toString());
+  const sqrtUpper = BigInt(getSqrtRatioAtUniv3Tick(tickUpper).toString());
+
+  return sqrtLower < sqrtUpper
+    ? { sqrtA: sqrtLower, sqrtB: sqrtUpper }
+    : { sqrtA: sqrtUpper, sqrtB: sqrtLower };
+};
+
+const getV3PositionInputAvailability = ({
+  poolState,
+  tickLower,
+  tickUpper,
+}: {
+  poolState: Univ3QuotePoolState;
+  tickLower: number;
+  tickUpper: number;
+}): V3PositionInputAvailability | null => {
+  try {
+    const sqrtX = BigInt(poolState.sqrtPriceX96.toString());
+    const { sqrtA, sqrtB } = getV3PositionSqrtRatios(tickLower, tickUpper);
+
+    if (sqrtX <= sqrtA) {
+      return 'token0';
+    }
+    if (sqrtX >= sqrtB) {
+      return 'token1';
+    }
+    return 'both';
+  } catch {
+    return null;
   }
-  if (value.gte(1)) {
-    return value.decimalPlaces(6, BigNumber.ROUND_DOWN).toFixed();
+};
+
+const quoteV3PositionAmountsFromSide = ({
+  poolState,
+  tickLower,
+  tickUpper,
+  side,
+  inputRaw,
+}: {
+  poolState: Univ3QuotePoolState;
+  tickLower: number;
+  tickUpper: number;
+  side: TokenInputSide;
+  inputRaw: string;
+}) => {
+  const amount = safeBigInt(inputRaw);
+  if (amount <= 0n) {
+    return { amount0: 0n, amount1: 0n };
   }
-  return value.decimalPlaces(8, BigNumber.ROUND_DOWN).toFixed();
+
+  const sqrtX = BigInt(poolState.sqrtPriceX96.toString());
+  const { sqrtA, sqrtB } = getV3PositionSqrtRatios(tickLower, tickUpper);
+  let liquidity = 0n;
+
+  if (side === 'token0') {
+    if (sqrtX >= sqrtB) {
+      return null;
+    }
+    liquidity = getUniv3LiquidityForAmount0({
+      sqrtRatioAX96: sqrtX > sqrtA ? sqrtX : sqrtA,
+      sqrtRatioBX96: sqrtB,
+      amount0: amount,
+    });
+  } else {
+    if (sqrtX <= sqrtA) {
+      return null;
+    }
+    liquidity = getUniv3LiquidityForAmount1({
+      sqrtRatioAX96: sqrtA,
+      sqrtRatioBX96: sqrtX < sqrtB ? sqrtX : sqrtB,
+      amount1: amount,
+    });
+  }
+
+  if (liquidity <= 0n) {
+    return { amount0: 0n, amount1: 0n };
+  }
+
+  return getUniv3AmountsForLiquidity({
+    sqrtRatioX96: sqrtX,
+    sqrtRatioAX96: sqrtA,
+    sqrtRatioBX96: sqrtB,
+    liquidity,
+    roundUp: true,
+  });
 };
 
 const getV2PoolPrice = ({
@@ -294,6 +383,7 @@ export const LpActionModal = ({
   const isV2 = pool.type === 'univ2';
   const isV3 = pool.type === 'univ3';
   const isPositionAction = !!position?.raw?.univ3;
+  const isV3PositionDeposit = isV3 && isPositionAction && action === 'deposit';
 
   const { data: tokenInfos, loading: tokenLoading } = useRequest(
     async () => {
@@ -497,6 +587,24 @@ export const LpActionModal = ({
   const v3SelectedRange = useMemo(() => getSelectedV3Range(v3RangePreset), [
     v3RangePreset,
   ]);
+  const v3PositionInputAvailability = useMemo(() => {
+    const raw = position?.raw?.univ3;
+    if (!isV3PositionDeposit || !raw || !univ3PoolState) {
+      return null;
+    }
+
+    return getV3PositionInputAvailability({
+      poolState: univ3PoolState,
+      tickLower: raw.tickLower,
+      tickUpper: raw.tickUpper,
+    });
+  }, [isV3PositionDeposit, position, univ3PoolState]);
+  const token0InputDisabled =
+    isV3PositionDeposit &&
+    (v3PositionInputAvailability === 'token1' || lastInputSide === 'token1');
+  const token1InputDisabled =
+    isV3PositionDeposit &&
+    (v3PositionInputAvailability === 'token0' || lastInputSide === 'token0');
   const v2InputSide = useMemo<TokenInputSide | null>(() => {
     if (!isV2 || action !== 'deposit') {
       return null;
@@ -1073,6 +1181,91 @@ export const LpActionModal = ({
     [normalizedTokens.token0Info, normalizedTokens.token1Info, univ2Facts]
   );
 
+  const setV3PositionAmountsFromSide = useCallback(
+    (side: TokenInputSide, value: string) => {
+      setPriceWarningAccepted(false);
+      setLastInputSide(value ? side : null);
+
+      if (side === 'token0') {
+        setAmount0(value);
+      } else {
+        setAmount1(value);
+      }
+
+      const clearCounterAmount = () => {
+        if (side === 'token0') {
+          setAmount1('');
+        } else {
+          setAmount0('');
+        }
+      };
+
+      if (
+        !value ||
+        !position?.raw?.univ3 ||
+        !univ3PoolState ||
+        !normalizedTokens.token0Info ||
+        !normalizedTokens.token1Info
+      ) {
+        clearCounterAmount();
+        return;
+      }
+
+      try {
+        const inputDecimals =
+          side === 'token0'
+            ? normalizedTokens.token0Info.decimals
+            : normalizedTokens.token1Info.decimals;
+        const inputRaw = toRawDecimal(value, inputDecimals);
+
+        if (safeBigInt(inputRaw) <= 0n) {
+          setLastInputSide(null);
+          clearCounterAmount();
+          return;
+        }
+
+        const amounts = quoteV3PositionAmountsFromSide({
+          poolState: univ3PoolState,
+          tickLower: position.raw.univ3.tickLower,
+          tickUpper: position.raw.univ3.tickUpper,
+          side,
+          inputRaw,
+        });
+
+        if (!amounts) {
+          setLastInputSide(null);
+          clearCounterAmount();
+          return;
+        }
+
+        if (side === 'token0') {
+          setAmount1(
+            rawToDecimalInput(
+              amounts.amount1,
+              normalizedTokens.token1Info.decimals
+            )
+          );
+        } else {
+          setAmount0(
+            rawToDecimalInput(
+              amounts.amount0,
+              normalizedTokens.token0Info.decimals
+            )
+          );
+        }
+      } catch {
+        setLastInputSide(null);
+        clearCounterAmount();
+      }
+    },
+    [
+      normalizedTokens.token0Info,
+      normalizedTokens.token1Info,
+      position,
+      univ3PoolState,
+    ]
+  );
+
   const handleAmount0Change = useCallback(
     (value: string) => {
       setPriceWarningAccepted(false);
@@ -1080,10 +1273,19 @@ export const LpActionModal = ({
         setV2AmountsFromSide('token0', value);
         return;
       }
+      if (isV3PositionDeposit) {
+        setV3PositionAmountsFromSide('token0', value);
+        return;
+      }
       setLastInputSide('token0');
       setAmount0(value);
     },
-    [isV2, setV2AmountsFromSide]
+    [
+      isV2,
+      isV3PositionDeposit,
+      setV2AmountsFromSide,
+      setV3PositionAmountsFromSide,
+    ]
   );
 
   const handleAmount1Change = useCallback(
@@ -1093,10 +1295,19 @@ export const LpActionModal = ({
         setV2AmountsFromSide('token1', value);
         return;
       }
+      if (isV3PositionDeposit) {
+        setV3PositionAmountsFromSide('token1', value);
+        return;
+      }
       setLastInputSide('token1');
       setAmount1(value);
     },
-    [isV2, setV2AmountsFromSide]
+    [
+      isV2,
+      isV3PositionDeposit,
+      setV2AmountsFromSide,
+      setV3PositionAmountsFromSide,
+    ]
   );
 
   const getV2MaxRaw = useCallback(
@@ -1138,9 +1349,23 @@ export const LpActionModal = ({
       );
       return;
     }
+    if (isV3PositionDeposit && normalizedTokens.token0Info) {
+      setV3PositionAmountsFromSide(
+        'token0',
+        String(normalizedTokens.token0Info.balance || '0')
+      );
+      return;
+    }
     setLastInputSide('token0');
     setAmount0(String(normalizedTokens.token0Info?.balance || '0'));
-  }, [getV2MaxRaw, isV2, normalizedTokens.token0Info, setV2AmountsFromSide]);
+  }, [
+    getV2MaxRaw,
+    isV2,
+    isV3PositionDeposit,
+    normalizedTokens.token0Info,
+    setV2AmountsFromSide,
+    setV3PositionAmountsFromSide,
+  ]);
 
   const handleMax1 = useCallback(() => {
     setPriceWarningAccepted(false);
@@ -1154,9 +1379,23 @@ export const LpActionModal = ({
       );
       return;
     }
+    if (isV3PositionDeposit && normalizedTokens.token1Info) {
+      setV3PositionAmountsFromSide(
+        'token1',
+        String(normalizedTokens.token1Info.balance || '0')
+      );
+      return;
+    }
     setLastInputSide('token1');
     setAmount1(String(normalizedTokens.token1Info?.balance || '0'));
-  }, [getV2MaxRaw, isV2, normalizedTokens.token1Info, setV2AmountsFromSide]);
+  }, [
+    getV2MaxRaw,
+    isV2,
+    isV3PositionDeposit,
+    normalizedTokens.token1Info,
+    setV2AmountsFromSide,
+    setV3PositionAmountsFromSide,
+  ]);
 
   const rangeText = v3QuotedRange
     ? `-${formatRangeBps(v3QuotedRange.lowerBps)} / +${formatRangeBps(
@@ -1259,6 +1498,8 @@ export const LpActionModal = ({
                   onMax1={handleMax1}
                   token0Insufficient={token0Insufficient}
                   token1Insufficient={token1Insufficient}
+                  token0Disabled={token0InputDisabled}
+                  token1Disabled={token1InputDisabled}
                   rangeText={rangeText}
                   v2AddQuote={v2AddQuote}
                   v3DepositQuote={v3DepositQuote}
