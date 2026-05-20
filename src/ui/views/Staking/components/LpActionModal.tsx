@@ -52,6 +52,7 @@ import type {
 } from './LpActionModalSections';
 import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionItem } from '../hooks/useStakingPositionSummary';
+import type { StakingUniv3RangeBps } from '../hooks/useStakingPendingActions';
 import { useStakingMiniSign } from '../hooks/useStakingMiniSign';
 import { normalizeStakingPoolToPoolKey } from '../utils/poolKey';
 import {
@@ -72,7 +73,10 @@ interface LpActionModalProps {
   position?: StakingPositionItem | null;
   claimPositions?: StakingPositionItem[];
   onCancel: () => void;
-  onSubmitted: (payload: { hash: string }) => void;
+  onSubmitted: (payload: {
+    hash: string;
+    univ3Range?: StakingUniv3RangeBps;
+  }) => void;
 }
 
 const DEFAULT_SLIPPAGE_BPS = 50;
@@ -766,6 +770,10 @@ export const LpActionModal = ({
     v3WithdrawQuote,
   ]);
 
+  const v3QuotedRange = (v3DepositQuote as {
+    range?: StakingUniv3RangeBps;
+  } | null)?.range;
+
   const buildUniv3ClaimAllTx = useCallback((): StakingTxBuildResult => {
     if (!chainInfo || !univ3Entry || !claimTargets.length) {
       throw new Error('No claimable V3 position');
@@ -954,7 +962,13 @@ export const LpActionModal = ({
         message.success(`${title} submitted`);
         setSubmitting(false);
         submitted = true;
-        onSubmitted({ hash: mainHash });
+        onSubmitted({
+          hash: mainHash,
+          univ3Range:
+            action === 'deposit' && isV3 && !position?.raw?.univ3
+              ? v3QuotedRange
+              : undefined,
+        });
       }
     } catch (error) {
       if (
@@ -972,13 +986,17 @@ export const LpActionModal = ({
     }
   }, [
     account,
+    action,
     buildTxs,
     canSubmit,
+    isV3,
     needsPriceConfirm,
     onSubmitted,
     priceWarningAccepted,
+    position,
     sign,
     title,
+    v3QuotedRange,
   ]);
 
   const setV2AmountsFromSide = useCallback(
@@ -1136,9 +1154,6 @@ export const LpActionModal = ({
     setAmount1(String(normalizedTokens.token1Info?.balance || '0'));
   }, [getV2MaxRaw, isV2, normalizedTokens.token1Info, setV2AmountsFromSide]);
 
-  const v3QuotedRange = (v3DepositQuote as {
-    range?: { lowerBps: number; upperBps: number };
-  } | null)?.range;
   const rangeText = v3QuotedRange
     ? `-${formatRangeBps(v3QuotedRange.lowerBps)} / +${formatRangeBps(
         v3QuotedRange.upperBps

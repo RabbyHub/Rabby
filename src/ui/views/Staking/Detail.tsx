@@ -27,6 +27,7 @@ import { useStakingFilters } from './hooks/useStakingFilters';
 import { useStakingPoolCurve } from './hooks/useStakingPoolCurve';
 import { useStakingPoolDetail } from './hooks/useStakingPoolDetail';
 import { useStakingPendingActions } from './hooks/useStakingPendingActions';
+import type { StakingUniv3RangeBps } from './hooks/useStakingPendingActions';
 import { useStakingPositionSummary } from './hooks/useStakingPositionSummary';
 import type { StakingPositionItem } from './hooks/useStakingPositionSummary';
 import type { DetailTabKey, StakingAction } from './components/DetailSections';
@@ -65,6 +66,9 @@ const StakingDetail = () => {
   );
   const [lpAction, setLpAction] = useState<PendingLpAction | null>(null);
   const [localUniv3TokenIds, setLocalUniv3TokenIds] = useState<string[]>([]);
+  const [localUniv3Ranges, setLocalUniv3Ranges] = useState<
+    Record<string, StakingUniv3RangeBps>
+  >({});
   const { data: filters } = useStakingFilters();
   const {
     data: pool,
@@ -103,11 +107,20 @@ const StakingDetail = () => {
     refreshAsync: refreshPositionAsync,
   } = useStakingPositionSummary(visualPool, account, localUniv3TokenIds);
 
-  const handleMintedUniv3TokenId = useCallback((tokenId: string) => {
-    setLocalUniv3TokenIds((prev) =>
-      prev.includes(tokenId) ? prev : [...prev, tokenId]
-    );
-  }, []);
+  const handleMintedUniv3TokenId = useCallback(
+    (tokenId: string, range?: StakingUniv3RangeBps) => {
+      setLocalUniv3TokenIds((prev) =>
+        prev.includes(tokenId) ? prev : [...prev, tokenId]
+      );
+      if (range) {
+        setLocalUniv3Ranges((prev) => ({
+          ...prev,
+          [tokenId]: range,
+        }));
+      }
+    },
+    []
+  );
 
   const { pendingActions, addPendingAction } = useStakingPendingActions({
     pool: visualPool,
@@ -121,6 +134,7 @@ const StakingDetail = () => {
 
   useEffect(() => {
     setLocalUniv3TokenIds([]);
+    setLocalUniv3Ranges({});
   }, [account?.address, poolId]);
 
   const hasPortfolioData = useMemo(() => {
@@ -314,6 +328,7 @@ const StakingDetail = () => {
                   loading={positionLoading}
                   error={positionError}
                   pendingActions={pendingActions}
+                  univ3PositionRanges={localUniv3Ranges}
                   onAction={handleAction}
                 />
               ) : null}
@@ -362,7 +377,7 @@ const StakingDetail = () => {
               position={lpAction.position}
               claimPositions={lpAction.claimPositions}
               onCancel={() => setLpAction(null)}
-              onSubmitted={({ hash }) => {
+              onSubmitted={({ hash, univ3Range }) => {
                 addPendingAction({
                   hash,
                   action: lpAction.action,
@@ -370,6 +385,7 @@ const StakingDetail = () => {
                   claimPositionIds: lpAction.claimPositions?.map(
                     (position) => position.id
                   ),
+                  univ3Range,
                 });
                 setLpAction(null);
               }}

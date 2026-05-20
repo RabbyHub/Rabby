@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
+import { getSqrtRatioAtUniv3Tick } from '@rabby-wallet/staking-sdk';
 
 import { ProtocolLogo, TokenLogos } from './PoolVisuals';
 import type {
@@ -8,7 +9,10 @@ import type {
   StakingPositionItem,
   StakingPositionSummary,
 } from '../hooks/useStakingPositionSummary';
-import type { StakingPendingAction } from '../hooks/useStakingPendingActions';
+import type {
+  StakingPendingAction,
+  StakingUniv3RangeBps,
+} from '../hooks/useStakingPendingActions';
 import type { StakingPool } from '../types';
 import { formatStakingAmount, formatStakingUsd } from '../utils/format';
 import { getActionSupported } from './DetailSectionUtils';
@@ -195,6 +199,7 @@ const PortfolioCard = ({
   pool,
   variant = 'supplied',
   emptyText,
+  rangeText,
   children,
 }: {
   title: string;
@@ -202,10 +207,16 @@ const PortfolioCard = ({
   pool: StakingPool;
   variant?: 'supplied' | 'rewards';
   emptyText: string;
+  rangeText?: string;
   children?: React.ReactNode;
 }) => (
   <div className={clsx('staking-position-card', `is-${variant}`)}>
-    <div className="staking-position-title">{title}</div>
+    <div className="staking-position-heading">
+      <div className="staking-position-title">{title}</div>
+      {rangeText ? (
+        <div className="staking-position-range">{rangeText}</div>
+      ) : null}
+    </div>
     <PortfolioRows rows={rows} pool={pool} emptyText={emptyText} />
     {children}
   </div>
@@ -291,14 +302,84 @@ const mergePositionAssets = (assets: StakingPositionAsset[]) => {
   return Array.from(merged.values());
 };
 
+const formatPositionRangePercent = (value: BigNumber) => {
+  if (!value.isFinite()) {
+    return '';
+  }
+
+  const absValue = value.abs();
+  const decimals = absValue.gte(100) ? 0 : absValue.gte(1) ? 1 : 2;
+  const rounded = absValue
+    .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+    .toFixed(decimals)
+    .replace(/\.0+$/, '');
+
+  return `${value.lt(0) ? '-' : ''}${rounded}%`;
+};
+
+const getSqrtPriceX96AsBigNumber = (value: string | bigint) =>
+  new BigNumber(value.toString());
+
+const getPositionRangeText = (
+  position: StakingPositionItem,
+  range?: StakingUniv3RangeBps
+) => {
+  if (range) {
+    return `Price Range: ${formatPositionRangePercent(
+      new BigNumber(range.lowerBps).div(-100)
+    )}~${formatPositionRangePercent(new BigNumber(range.upperBps).div(100))}`;
+  }
+
+  const raw = position.raw?.univ3;
+  if (!raw) {
+    return '';
+  }
+
+  try {
+    const currentSqrtPrice = getSqrtPriceX96AsBigNumber(
+      raw.poolState.sqrtPriceX96
+    );
+    if (!currentSqrtPrice.isFinite() || currentSqrtPrice.lte(0)) {
+      return '';
+    }
+
+    const lowerSqrtPrice = getSqrtPriceX96AsBigNumber(
+      getSqrtRatioAtUniv3Tick(raw.tickLower)
+    );
+    const upperSqrtPrice = getSqrtPriceX96AsBigNumber(
+      getSqrtRatioAtUniv3Tick(raw.tickUpper)
+    );
+    const lowerPercent = lowerSqrtPrice
+      .div(currentSqrtPrice)
+      .pow(2)
+      .minus(1)
+      .multipliedBy(100);
+    const upperPercent = upperSqrtPrice
+      .div(currentSqrtPrice)
+      .pow(2)
+      .minus(1)
+      .multipliedBy(100);
+
+    const lowerText = formatPositionRangePercent(lowerPercent);
+    const upperText = formatPositionRangePercent(upperPercent);
+    return lowerText && upperText
+      ? `Price Range: ${lowerText}~${upperText}`
+      : '';
+  } catch {
+    return '';
+  }
+};
+
 const PortfolioPositionCard = ({
   pool,
   position,
+  range,
   accountReady,
   onAction,
 }: {
   pool: StakingPool;
   position: StakingPositionItem;
+  range?: StakingUniv3RangeBps;
   accountReady: boolean;
   onAction: (action: StakingAction, position?: StakingPositionItem) => void;
 }) => {
@@ -314,6 +395,7 @@ const PortfolioPositionCard = ({
       rows={position.supplied}
       pool={pool}
       emptyText="No supplied assets"
+      rangeText={getPositionRangeText(position, range)}
     >
       <div className="staking-position-actions">
         <InlineActionButton
@@ -386,6 +468,7 @@ export const PortfolioTab = ({
   loading,
   error,
   pendingActions,
+  univ3PositionRanges,
   onAction,
 }: {
   pool: StakingPool;
@@ -394,6 +477,7 @@ export const PortfolioTab = ({
   loading: boolean;
   error?: Error;
   pendingActions: StakingPendingAction[];
+  univ3PositionRanges?: Record<string, StakingUniv3RangeBps>;
   onAction: (
     action: StakingAction,
     position?: StakingPositionItem,
@@ -441,6 +525,7 @@ export const PortfolioTab = ({
               key={position.id}
               pool={pool}
               position={position}
+              range={univ3PositionRanges?.[position.id]}
               accountReady={accountReady}
               onAction={onAction}
             />
