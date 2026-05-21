@@ -28,6 +28,8 @@ import { HistoryPage } from './History';
 import PerpsSingleCoin from './Perps/screen/SingleCoin';
 import { HistoryPage as PerpsHistoryPage } from './Perps/screen/HistoryPage';
 import ExploreMore from './Perps/screen/ExploreMore';
+import Staking from './Staking';
+import StakingDetail from './Staking/Detail';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
@@ -530,6 +532,12 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/perps/history/:coin">
           <PerpsHistoryPage />
+        </PrivateRoute>
+        <PrivateRoute exact path="/staking">
+          <Staking />
+        </PrivateRoute>
+        <PrivateRoute exact path="/staking/detail">
+          <StakingDetail />
         </PrivateRoute>
       </Switch>
 

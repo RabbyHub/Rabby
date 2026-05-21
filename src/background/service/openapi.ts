@@ -6,6 +6,74 @@ import { WebSignApiPlugin } from '@rabby-wallet/rabby-api/dist/plugins/web-sign'
 import fetchAdapter from 'background/utils/fetchAdapter';
 import { v4 as uuidv4 } from 'uuid';
 
+type StakingPoolListParams = {
+  q?: string;
+  chain_id?: string;
+  protocol_id?: string;
+  user_addr?: string;
+  start?: number;
+  limit?: number;
+  order_by?: 'tvl' | string;
+  order?: 'asc' | 'desc' | string;
+};
+
+type StakingFilterListParams = {
+  user_addr?: string;
+};
+
+type StakingPoolParams = {
+  pool_id: string;
+  user_addr?: string;
+};
+
+type StakingPoolCurveParams = {
+  pool_id: string;
+  metric?: 'tvl' | 'apr';
+};
+
+type OpenApiServiceWithStaking = OpenApiService & {
+  getStakingPoolList(params: StakingPoolListParams): Promise<any>;
+  getStakingFilterList(params?: StakingFilterListParams): Promise<any>;
+  getStakingPool(params: StakingPoolParams): Promise<any>;
+  getStakingPoolCurve(params: StakingPoolCurveParams): Promise<any>;
+};
+
+const mountStakingMethods = (
+  api: OpenApiService
+): OpenApiServiceWithStaking => {
+  const service = api as OpenApiServiceWithStaking;
+
+  service.getStakingPoolList = async (params) => {
+    const { data } = await service.request.get('/v1/staking/pool_list', {
+      params,
+    });
+    return data;
+  };
+
+  service.getStakingFilterList = async (params = {}) => {
+    const { data } = await service.request.get('/v1/staking/filter_list', {
+      params,
+    });
+    return data;
+  };
+
+  service.getStakingPool = async (params) => {
+    const { data } = await service.request.get('/v1/staking/pool', {
+      params,
+    });
+    return data;
+  };
+
+  service.getStakingPoolCurve = async (params) => {
+    const { data } = await service.request.get('/v1/staking/pool_curve', {
+      params,
+    });
+    return data;
+  };
+
+  return service;
+};
+
 class baseStore {
   store: {
     host: string;
@@ -97,11 +165,13 @@ if (!process.env.DEBUG) {
   testnetStore.testnetHost = INITIAL_TESTNET_OPENAPI_URL;
 }
 
-const service = new OpenApiService({
-  plugin: WebSignApiPlugin,
-  adapter: fetchAdapter,
-  store: proxyStore,
-});
+const service = mountStakingMethods(
+  new OpenApiService({
+    plugin: WebSignApiPlugin,
+    adapter: fetchAdapter,
+    store: proxyStore,
+  })
+);
 
 if (typeof window !== 'undefined') {
   service.initSync();

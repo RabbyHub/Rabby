@@ -1,0 +1,1116 @@
+.staking-list-page,
+.staking-detail-page,
+.staking-selector-popup {
+  --staking-popup-shadow: 0 -12px 20px rgba(19, 20, 26, 0.05);
+  --staking-popup-bg: var(--r-neutral-bg2);
+  --staking-search-bg: var(--r-neutral-card1);
+  --staking-search-border: var(--r-neutral-line);
+  --staking-skeleton-bg: var(--r-neutral-bg-4);
+  --staking-chart-placeholder-bg: var(--r-neutral-bg2);
+  --staking-segment-bg: var(--r-neutral-bg2);
+  --staking-segment-active-bg: var(--r-neutral-card1);
+  --staking-section-title-color: var(--r-neutral-black);
+  --staking-chart-tooltip-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+  --staking-position-card-bg: linear-gradient(101deg, rgba(var(--r-blue-light1-rgb), 0.3) 0%, rgba(255, 255, 255, 0.3) 100%);
+  --staking-position-rewards-border: rgba(135, 105, 12, 0.1);
+  --staking-position-rewards-bg: rgba(var(--r-orange-light-rgb), 0.2);
+  --staking-position-rewards-title: #87690c;
+}
+
+html.dark .staking-list-page,
+html.dark .staking-detail-page,
+html.dark .staking-selector-popup,
+body.dark .staking-list-page,
+body.dark .staking-detail-page,
+body.dark .staking-selector-popup {
+  --staking-popup-shadow: 0 -12px 20px rgba(0, 0, 0, 0.24);
+  --staking-search-bg: var(--r-neutral-card1);
+  --staking-search-border: var(--r-neutral-line);
+  --staking-skeleton-bg: var(--r-neutral-line);
+  --staking-chart-placeholder-bg: var(--r-neutral-card1);
+  --staking-segment-bg: var(--r-neutral-card1);
+  --staking-segment-active-bg: rgba(255, 255, 255, 0.12);
+  --staking-section-title-color: var(--r-neutral-title1);
+  --staking-chart-tooltip-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+  --staking-position-card-bg: linear-gradient(101deg, rgba(var(--r-blue-light1-rgb), 0.45) 0%, rgba(255, 255, 255, 0.06) 100%);
+  --staking-position-rewards-border: rgba(255, 198, 74, 0.2);
+  --staking-position-rewards-bg: rgba(var(--r-orange-light-rgb), 0.32);
+  --staking-position-rewards-title: rgba(255, 198, 74, 1);
+}
+
+.staking-list-page .staking-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 16px;
+  padding: 2px 4px;
+  border: 0.5px solid var(--r-neutral-line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--r-neutral-foot);
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.staking-list-page .staking-page-header,
+.staking-detail-page .staking-page-header {
+  height: 60px;
+  margin-bottom: 0;
+}
+
+.staking-list-page .staking-chip-icon {
+  width: 22px;
+  height: 18px;
+  padding: 2px 4px;
+}
+
+.staking-list-page .staking-holding-ribbon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 14px;
+  padding: 0 8px 2px;
+  border-radius: 0 8px 0 8px;
+  color: var(--r-blue-default);
+  background: var(--r-blue-light1);
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 600;
+}
+
+.staking-list-page .staking-filter-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 1 auto;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--r-neutral-card1);
+  color: var(--r-neutral-body);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.staking-list-page .staking-filter-trigger.is-selected.is-protocol {
+  max-width: 106px;
+}
+
+.staking-list-page .staking-filter-trigger.is-selected.is-chain {
+  max-width: 114px;
+}
+
+.staking-list-page .staking-filter-trigger.is-disabled {
+  opacity: 0.6;
+}
+
+.staking-list-page .staking-filter-trigger-main {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 32px;
+  padding: 0 12px;
+  gap: 2px;
+  flex: 1 1 auto;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.staking-list-page .staking-filter-trigger-main:disabled {
+  cursor: default;
+}
+
+.staking-list-page .staking-filter-trigger.is-selected .staking-filter-trigger-main {
+  padding-right: 4px;
+}
+
+.staking-list-page .staking-filter-trigger-label {
+  display: block;
+  max-width: 136px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staking-list-page .staking-filter-trigger.is-selected .staking-filter-trigger-label {
+  max-width: none;
+  min-width: 0;
+}
+
+.staking-list-page .staking-filter-trigger-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  line-height: 0;
+  color: var(--r-neutral-foot);
+}
+
+.staking-list-page .staking-filter-trigger-icon svg {
+  width: 13px;
+  height: 13px;
+  transform: translateY(-1px);
+}
+
+.staking-list-page .staking-filter-trigger-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--r-neutral-foot);
+}
+
+.staking-list-page .staking-filter-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 228px;
+  min-width: 0;
+  flex: 0 1 228px;
+  overflow: hidden;
+}
+
+.staking-list-page .staking-pool-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 64px;
+  padding: 14px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--r-neutral-card1);
+  text-align: left;
+}
+
+.staking-list-page .staking-pool-card:hover {
+  border: 1px solid var(--r-blue-default);
+  padding: 13px 11px;
+}
+
+.staking-list-page .staking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 360px;
+  margin: 12px auto 0;
+}
+
+.staking-list-page .staking-skeleton-row {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 14px 12px;
+  border-radius: 8px;
+  background: var(--r-neutral-card1);
+}
+
+.staking-list-page .staking-skeleton-avatar,
+.staking-list-page .staking-skeleton-title,
+.staking-list-page .staking-skeleton-tags span,
+.staking-list-page .staking-skeleton-metrics div,
+.staking-list-page .staking-skeleton-metrics span {
+  background: var(--staking-skeleton-bg);
+  border-radius: 999px;
+}
+
+.staking-list-page .staking-skeleton-avatar {
+  width: 34px;
+  height: 34px;
+}
+
+.staking-list-page .staking-skeleton-main {
+  margin-left: 8px;
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.staking-list-page .staking-skeleton-title {
+  width: 78px;
+  height: 16px;
+}
+
+.staking-list-page .staking-skeleton-tags {
+  display: flex;
+  gap: 4px;
+}
+
+.staking-list-page .staking-skeleton-tags span {
+  width: 32px;
+  height: 14px;
+}
+
+.staking-list-page .staking-skeleton-metrics {
+  display: flex;
+  flex: 0 0 100px;
+  align-items: flex-end;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.staking-list-page .staking-skeleton-metrics div {
+  width: 92px;
+  height: 16px;
+}
+
+.staking-list-page .staking-skeleton-metrics span {
+  width: 72px;
+  height: 14px;
+}
+
+.staking-list-page .staking-empty {
+  display: flex;
+  width: 362px;
+  height: 416px;
+  margin: 12px auto 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--r-neutral-foot);
+}
+
+.staking-list-page .staking-search.ant-input-affix-wrapper {
+  border-radius: 8px !important;
+  border-color: var(--staking-search-border) !important;
+  background: var(--staking-search-bg) !important;
+  box-shadow: none !important;
+}
+
+.staking-list-page .staking-search .ant-input {
+  background: transparent !important;
+  color: var(--r-neutral-title1);
+  font-size: 13px;
+}
+
+.staking-list-page .staking-search .ant-input-prefix,
+.staking-list-page .staking-search .ant-input-clear-icon {
+  color: var(--r-neutral-foot);
+}
+
+.staking-list-page .staking-search .ant-input::placeholder {
+  color: var(--r-neutral-foot);
+}
+
+.staking-list-page .staking-holding-filter {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.staking-list-page .staking-holding-label {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.staking-list-page .staking-holding-switch.ant-switch-small {
+  min-width: 32px;
+  width: 32px;
+  height: 16px;
+  flex-shrink: 0;
+  background: var(--r-neutral-line) !important;
+}
+
+.staking-list-page .staking-holding-switch.ant-switch-small.ant-switch-checked {
+  background: var(--r-blue-default) !important;
+}
+
+.staking-list-page .staking-holding-switch.ant-switch-small .ant-switch-handle {
+  width: 14px;
+  height: 14px;
+  top: 1px;
+  left: 1px;
+}
+
+.staking-list-page .staking-holding-switch.ant-switch-small.ant-switch-checked .ant-switch-handle {
+  left: calc(100% - 15px);
+}
+
+.staking-selector-popup .ant-drawer-content {
+  background: var(--staking-popup-bg) !important;
+  border-radius: 16px 16px 0 0;
+  box-shadow: var(--staking-popup-shadow);
+}
+
+.staking-selector-popup .ant-drawer-header {
+  height: 52px;
+  padding: 0;
+}
+
+.staking-selector-popup .ant-drawer-title {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 500;
+  color: var(--r-neutral-title1);
+}
+
+.staking-selector-popup .ant-drawer-close {
+  right: 20px;
+  top: 16px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+}
+
+.staking-selector-popup .ant-drawer-body {
+  height: calc(100% - 52px);
+  padding: 6px 20px 20px;
+  overflow: hidden;
+}
+
+.staking-selector-popup .staking-selector-popup-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 12px;
+}
+
+.staking-selector-popup .staking-selector-search.ant-input-affix-wrapper {
+  flex: 0 0 auto;
+  border-radius: 8px !important;
+  border-color: var(--staking-search-border) !important;
+  background: var(--staking-search-bg) !important;
+  box-shadow: none !important;
+}
+
+.custom-popup.staking-selector-popup.is-support-darkmode.is-new .staking-selector-search.ant-input-affix-wrapper {
+  border-color: var(--staking-search-border) !important;
+  background: var(--staking-search-bg) !important;
+}
+
+.staking-selector-popup .staking-selector-search .ant-input {
+  background: transparent !important;
+  color: var(--r-neutral-title1);
+  font-size: 13px;
+}
+
+.custom-popup.staking-selector-popup.is-support-darkmode.is-new .staking-selector-search.ant-input-affix-wrapper .ant-input {
+  background: transparent !important;
+}
+
+.staking-selector-popup .staking-selector-search .ant-input-prefix,
+.staking-selector-popup .staking-selector-search .ant-input-clear-icon {
+  color: var(--r-neutral-foot);
+}
+
+.staking-selector-popup .staking-selector-search .ant-input::placeholder {
+  color: var(--r-neutral-foot);
+}
+
+.staking-selector-popup .staking-selector-list {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.staking-selector-popup .staking-selector-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 60px;
+  padding: 14px 12px;
+  gap: 8px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--r-neutral-card1);
+  text-align: left;
+}
+
+.staking-selector-popup .staking-selector-row.is-selected {
+  border: 1px solid var(--r-blue-default);
+  padding: 13px 11px;
+}
+
+.staking-selector-popup .staking-selector-all-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--r-blue-light1);
+  color: var(--r-blue-default);
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.staking-selector-popup .staking-holding-ribbon {
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 14px;
+  padding: 0 8px 2px;
+  border-radius: 0 8px 0 8px;
+  color: var(--r-blue-default);
+  background: var(--r-blue-light1);
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 600;
+}
+
+.staking-selector-popup .staking-selector-empty {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 220px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--r-neutral-foot);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.staking-list-page .staking-empty.is-compact {
+  height: 220px;
+  margin-top: 0;
+}
+
+.staking-detail-page .staking-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 2px 4px;
+  border: 0.5px solid var(--r-neutral-line);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--r-neutral-foot);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-chip-icon {
+  width: 22px;
+  padding: 2px 4px;
+}
+
+.staking-detail-page .staking-chip-detail {
+  height: 18px;
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 400;
+}
+
+.staking-detail-page .staking-metric-switch {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 2px 3px;
+  border-radius: 4px;
+  background: var(--staking-segment-bg);
+}
+
+.staking-detail-page .staking-metric-switch-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  min-width: 41px;
+  padding: 2px 8px;
+  border: 0;
+  border-radius: 4px;
+  color: var(--r-neutral-foot);
+  background: transparent;
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.staking-detail-page .staking-metric-switch-item.is-active {
+  color: var(--r-neutral-title1);
+  background: var(--staking-segment-active-bg);
+  font-weight: 500;
+}
+
+.staking-detail-page .staking-chart-skeleton,
+.staking-detail-page .staking-chart-empty {
+  width: 360px;
+  height: 96px;
+  border-radius: 8px;
+  background: var(--staking-chart-placeholder-bg);
+}
+
+.staking-detail-page .staking-chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.staking-detail-page .staking-chart-tooltip {
+  min-width: 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 0.5px solid var(--r-neutral-line);
+  border-radius: 8px;
+  padding: 8px;
+  background: var(--r-neutral-card1);
+  color: var(--r-neutral-body);
+  box-shadow: var(--staking-chart-tooltip-shadow);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 400;
+}
+
+.staking-detail-page .staking-chart-tooltip-date {
+  color: var(--r-neutral-foot);
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-chart-tooltip-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.staking-detail-page .staking-chart-tooltip-marker {
+  width: 11px;
+  height: 11px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.staking-detail-page .staking-tabs {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  border-bottom: 0.5px solid var(--r-neutral-line);
+}
+
+.staking-detail-page .staking-tab-item {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--r-neutral-foot);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.staking-detail-page .staking-tab-item.is-active {
+  color: var(--r-blue-default);
+  font-weight: 600;
+}
+
+.staking-detail-page .staking-tab-line {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 133px;
+  height: 2px;
+  transform: translateX(-50%);
+  border-radius: 1px;
+  background: var(--r-blue-default);
+}
+
+.staking-detail-page .staking-tabs.is-three .staking-tab-line {
+  width: 100%;
+}
+
+.staking-detail-page .staking-link-value {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--r-neutral-title1);
+  font-size: 13px;
+  line-height: 20px;
+  padding: 0;
+}
+
+.staking-detail-page .staking-link-value:disabled {
+  color: var(--r-neutral-title1);
+}
+
+.staking-detail-page .staking-about-desc.is-collapsed {
+  max-height: 60px;
+  overflow: hidden;
+}
+
+.staking-detail-page .staking-about-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 41px;
+}
+
+.staking-detail-page .staking-security-tab {
+  display: flex;
+  width: 400px;
+  flex-direction: column;
+  padding: 0 16px 41px;
+}
+
+.staking-detail-page .staking-security-title-row {
+  display: flex;
+  width: 368px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.staking-detail-page .staking-security-title {
+  color: var(--staking-section-title-color);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.staking-detail-page .staking-security-table {
+  display: flex;
+  flex-direction: column;
+  width: 368px;
+  margin-top: 16px;
+}
+
+.staking-detail-page .staking-security-header,
+.staking-detail-page .staking-security-row {
+  display: grid;
+  grid-template-columns: 80px 80px 80px;
+  column-gap: 64px;
+  width: 368px;
+}
+
+.staking-detail-page .staking-security-header {
+  color: var(--r-neutral-foot);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 400;
+}
+
+.staking-detail-page .staking-security-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.staking-detail-page .staking-security-row {
+  min-height: 16px;
+  align-items: center;
+  color: var(--r-neutral-title1);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 400;
+}
+
+.staking-detail-page .staking-security-auditor {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-security-auditor-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  border-radius: 50%;
+  background: var(--r-neutral-line);
+}
+
+.staking-detail-page .staking-security-date {
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-security-action {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--r-neutral-title1);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-security-action svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 13px;
+}
+
+.staking-detail-page .staking-security-empty {
+  padding: 42px 0;
+  color: var(--r-neutral-foot);
+  text-align: center;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.staking-detail-page .staking-about-divider {
+  width: 360px;
+  height: 1px;
+  margin: 0 20px;
+  background: var(--r-neutral-line);
+  opacity: 0.5;
+}
+
+.staking-detail-page .staking-position-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 16px 41px;
+}
+
+@keyframes staking-pending-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.staking-detail-page .staking-pending-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 360px;
+  height: 48px;
+  margin: 0 auto;
+  padding: 0 15.5px;
+  border: 0.5px solid var(--r-neutral-line);
+  border-radius: 8px;
+  background: var(--r-neutral-card1);
+}
+
+.staking-detail-page .staking-pending-flow,
+.staking-detail-page .staking-pending-token-group,
+.staking-detail-page .staking-pending-token,
+.staking-detail-page .staking-pending-status {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.staking-detail-page .staking-pending-flow {
+  flex: 1 1 auto;
+  gap: 8px;
+  overflow: hidden;
+  color: var(--r-neutral-title1);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.staking-detail-page .staking-pending-token-group {
+  gap: 8px;
+  overflow: hidden;
+}
+
+.staking-detail-page .staking-pending-token {
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-pending-token span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.staking-detail-page .staking-pending-token-icon {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--r-neutral-card2);
+  color: var(--r-neutral-foot);
+  font-size: 10px;
+  line-height: 12px;
+  font-weight: 600;
+}
+
+.staking-detail-page .staking-pending-token-icon img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.staking-detail-page .staking-pending-plus,
+.staking-detail-page .staking-pending-arrow {
+  flex: 0 0 auto;
+  color: var(--r-neutral-foot);
+}
+
+.staking-detail-page .staking-pending-status {
+  flex: 0 0 auto;
+  gap: 6px;
+  color: var(--r-orange-default);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+}
+
+.staking-detail-page .staking-pending-spinner {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--r-orange-default);
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: staking-pending-spin 0.8s linear infinite;
+}
+
+.staking-detail-page .staking-position-card {
+  position: relative;
+  width: 368px;
+  border: 0.5px solid var(--r-blue-light1);
+  border-radius: 16px;
+  padding: 20px 16px;
+  background: var(--staking-position-card-bg);
+}
+
+.staking-detail-page .staking-position-card.is-rewards {
+  border-color: var(--staking-position-rewards-border);
+  background: var(--staking-position-rewards-bg);
+}
+
+.staking-detail-page .staking-position-new-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 368px;
+  border: 0.5px solid var(--r-blue-light1);
+  border-radius: 16px;
+  padding: 16px;
+  background: var(--staking-position-card-bg);
+}
+
+.staking-detail-page .staking-position-new-title {
+  color: var(--staking-section-title-color);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.staking-detail-page .staking-position-new-card .staking-inline-action {
+  flex: 0 0 132px;
+}
+
+.staking-detail-page .staking-position-title {
+  color: var(--staking-section-title-color);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 700;
+}
+
+.staking-detail-page .staking-position-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.staking-detail-page .staking-position-range {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  height: 20px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: var(--r-neutral-bg2);
+  color: var(--r-neutral-foot);
+  font-size: 12px;
+  line-height: 14px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-position-card.is-rewards .staking-position-title {
+  color: var(--staking-position-rewards-title);
+}
+
+.staking-detail-page .staking-position-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.staking-detail-page .staking-position-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 336px;
+  min-height: 20px;
+  color: var(--r-neutral-title1);
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+.staking-detail-page .staking-position-row-main {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.staking-detail-page .staking-position-row-amount {
+  margin-left: 0;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-position-row-value {
+  flex: 1 1 0;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.staking-detail-page .staking-position-empty {
+  margin-top: 16px;
+  color: var(--r-neutral-foot);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.staking-detail-page .staking-position-skeleton-row {
+  width: 336px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--staking-skeleton-bg);
+}
+
+.staking-detail-page .staking-position-skeleton-row.is-short {
+  width: 240px;
+}
+
+.staking-detail-page .staking-position-actions {
+  display: flex;
+  gap: 10px;
+  width: 336px;
+  margin-top: 32px;
+}
+
+.staking-detail-page .staking-position-card.is-rewards .staking-position-actions {
+  margin-top: 16px;
+}
+
+.staking-detail-page .staking-inline-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--r-blue-default);
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+  color: var(--r-blue-default);
+  background: transparent;
+}
+
+.staking-detail-page .staking-primary-action {
+  color: var(--r-neutral-title2);
+  background: var(--r-blue-default);
+}
+
+.staking-detail-page .staking-inline-action:disabled,
+.staking-detail-page .staking-primary-action:disabled {
+  opacity: 0.5;
+}
+
+.staking-detail-page .staking-bottom-action {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  width: 400px;
+  padding: 20px;
+  border-top: 1px solid transparent;
+  background: var(--r-neutral-bg1);
+}
+
+.staking-detail-page .staking-section-title {
+  color: var(--staking-section-title-color);
+}
+
+.staking-detail-page .staking-detail-loading-skeleton {
+  background: var(--staking-skeleton-bg);
+}
+
+.staking-detail-page .staking-bottom-action.has-divider {
+  border-top-color: var(--r-neutral-line);
+}
+
+.staking-detail-page .staking-primary-action {
+  display: flex;
+  width: 352px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 8px;
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+}
