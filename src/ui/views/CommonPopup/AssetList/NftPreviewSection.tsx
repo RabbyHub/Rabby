@@ -1,62 +1,37 @@
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import omit from 'lodash/omit';
 import { Skeleton } from 'antd';
 
-import { CollectionList, NFTItem } from '@rabby-wallet/rabby-api/dist/types';
+import type {
+  CollectionList,
+  NFTItem,
+} from '@rabby-wallet/rabby-api/dist/types';
 
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useNFTCollections } from '@/ui/hooks/useNFTCollections';
 import { useWallet } from '@/ui/utils';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
-import NftEmptyState from '@/ui/assets/dashboard/nft-empty-state.svg';
 import { ReactComponent as RcIconJump } from 'ui/assets/tokenDetail/IconJump.svg';
+
+export interface NftPreviewItem {
+  nft: NFTItem;
+  collection: Omit<CollectionList, 'nft_list'>;
+}
 
 interface Props {
   className?: string;
+  isLoading: boolean;
+  list: NftPreviewItem[];
   onOpenInTab?(): void;
 }
 
 export const NftPreviewSection: React.FC<Props> = ({
   className,
+  isLoading,
+  list,
   onOpenInTab,
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const currentAccount = useCurrentAccount();
-  const { collections, isLoading } = useNFTCollections(
-    currentAccount?.address,
-    {
-      preferCacheOnExists: true,
-    }
-  );
-
-  const list = React.useMemo(() => {
-    const result: {
-      nft: NFTItem;
-      collection: Omit<CollectionList, 'nft_list'>;
-    }[] = [];
-
-    collections
-      .filter((collection) => {
-        return !collection.is_hidden && collection.is_core;
-      })
-      .forEach((collection) => {
-        const baseCollection = omit(collection, 'nft_list');
-        collection.nft_list.forEach((nft) => {
-          result.push({
-            nft,
-            collection: baseCollection,
-          });
-        });
-      });
-
-    return result.sort(
-      (a, b) =>
-        (b?.collection?.credit_score || 0) - (a?.collection?.credit_score || 0)
-    );
-  }, [collections]);
 
   const handleOpenInTab = () => {
     if (onOpenInTab) {
@@ -107,14 +82,18 @@ export const NftPreviewSection: React.FC<Props> = ({
                   return (
                     <div
                       key={`${item.collection.chain}-${item.collection.id}-${item.nft.id}`}
-                      className="w-[48px] h-[48px] shrink-0 rounded-[4px] overflow-hidden bg-r-neutral-line"
+                      className="w-[48px] h-[48px] shrink-0 rounded-[4px] overflow-hidden bg-r-neutral-line border-[0.5px] border-rb-neutral-line"
                     >
                       <NFTAvatar
                         className="w-[48px] h-[48px]"
                         type={item.nft?.content_type}
                         content={item.nft?.content}
                         empty={
-                          <div className="w-[48px] h-[48px] rounded-[4px] bg-r-neutral-line" />
+                          <div className="w-[48px] h-[48px] bg-r-neutral-line flex items-center justify-center rounded-[4px]">
+                            <div className="text-[12px] leading-[16px] font-semibold text-r-neutral-foot">
+                              NFT
+                            </div>
+                          </div>
                         }
                       />
                     </div>

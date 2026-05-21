@@ -699,13 +699,12 @@ const GasAccountDepositTokenFormInner: React.FC<
       return estReceiveLabel;
     }
 
-    const defaultDepositUsdValue = getDefaultDepositUsdValue(minDepositPrice);
     const estRemainingBalance = new BigNumber(estReceiveUsdValue)
       .plus(currentGasAccountInfo?.account?.balance || 0)
       .minus(minDepositPrice);
 
     return t('page.gasAccount.depositPayPopup.topUpPayTips', {
-      topUpUsd: `$${defaultDepositUsdValue}`,
+      topUpUsd: formatUsdValue(minDepositPrice),
       balance: formatUsdValue(
         estRemainingBalance.lt(0) ? 0 : estRemainingBalance.toFixed()
       ),
