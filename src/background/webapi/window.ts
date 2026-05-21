@@ -28,6 +28,55 @@ const WINDOW_SIZE = {
   height: 600,
 };
 
+const isBoundsError = (error: unknown) => {
+  return (
+    error instanceof Error &&
+    /Invalid value for bounds?|visible screen space/i.test(error.message)
+  );
+};
+
+const reportWindowError = (message: string, error: unknown) => {
+  Sentry.captureException(
+    new Error(
+      `${message}: ${
+        error instanceof Error ? error.message : JSON.stringify(error)
+      }`
+    )
+  );
+};
+
+const createPopupWindow = ({ url, ...rest }) => {
+  return browser.windows.create({
+    focused: true,
+    url,
+    type: 'popup',
+    ...WINDOW_SIZE,
+    ...rest,
+  });
+};
+
+const createPopupWindowWithoutPosition = ({ url, ...rest }) => {
+  const { top: _top, left: _left, ...restWithoutPosition } = rest;
+  return createPopupWindow({ url, ...restWithoutPosition });
+};
+
+const createPopupWindowWithDefaultBounds = ({ url, ...rest }) => {
+  const {
+    top: _top,
+    left: _left,
+    width: _width,
+    height: _height,
+    ...restWithoutBounds
+  } = rest;
+
+  return browser.windows.create({
+    focused: true,
+    url,
+    type: 'popup',
+    ...restWithoutBounds,
+  });
+};
+
 const createFullScreenWindow = ({ url, ...rest }) => {
   return browser.windows.create({
     focused: true,
@@ -53,6 +102,8 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
 
   const top = cTop;
   const left = cLeft! + width! - WINDOW_SIZE.width;
+  const position =
+    Number.isFinite(top) && Number.isFinite(left) ? { top, left } : {};
 
   const currentWindow = await browser.windows.getLastFocused();
   let win;
@@ -61,33 +112,31 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
     win = await createFullScreenWindow({ url, ...rest });
   } else {
     try {
-      win = await browser.windows.create({
-        focused: true,
-        url,
-        type: 'popup',
-        top,
-        left,
-        ...WINDOW_SIZE,
-        ...rest,
-      });
+      win = await createPopupWindow({ url, ...position, ...rest });
     } catch (e) {
-      if (e.message && /Invalid value for bound/i.test(e.message)) {
-        win = await browser.windows.create({
-          focused: true,
-          url,
-          type: 'popup',
-          top: 0,
-          left: 0,
-          ...WINDOW_SIZE,
-          ...rest,
-        });
+      if (isBoundsError(e)) {
+        try {
+          win = await createPopupWindowWithoutPosition({ url, ...rest });
+        } catch (retryError) {
+          if (!isBoundsError(retryError)) {
+            throw retryError;
+          }
+          win = await createPopupWindowWithDefaultBounds({ url, ...rest });
+        }
       } else {
-        Sentry.captureException(`tx prompt error: ${JSON.stringify(e)}`);
+        reportWindowError('tx prompt error', e);
+        win = await createPopupWindowWithDefaultBounds({ url, ...rest });
       }
     }
   }
   // shim firefox
-  if (win.left !== left && currentWindow.state !== 'fullscreen') {
+  if (
+    win &&
+    Number.isFinite(top) &&
+    Number.isFinite(left) &&
+    win.left !== left &&
+    currentWindow.state !== 'fullscreen'
+  ) {
     try {
       await browser.windows.update(win.id!, { left, top });
     } catch (e) {

@@ -2040,15 +2040,33 @@ export class WalletController extends BaseController {
     const url = `index.html#/biometric-unlock-setup${from}`;
     const top = cTop;
     const left = cLeft! + width! - 500;
-    return Browser.windows.create({
-      focused: true,
-      url,
-      type: 'popup',
-      width: 400,
-      height: 460,
-      left,
-      top,
-    });
+    const createWindow = (position?: { left: number; top: number }) =>
+      Browser.windows.create({
+        focused: true,
+        url,
+        type: 'popup',
+        width: 400,
+        height: 460,
+        ...position,
+      });
+
+    try {
+      return await createWindow(
+        typeof top === 'number' && Number.isFinite(left)
+          ? { left, top }
+          : undefined
+      );
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        /Invalid value for bounds?|visible screen space/i.test(error.message)
+      ) {
+        return createWindow();
+      }
+
+      Sentry.captureException(error);
+      throw error;
+    }
   };
 
   openActionPopup = async () => {

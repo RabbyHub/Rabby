@@ -53,6 +53,13 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'ImKeyHardwareWaiting',
 ];
 
+const isBoundsError = (error: unknown) => {
+  return (
+    error instanceof Error &&
+    /Invalid value for bounds?|visible screen space/i.test(error.message)
+  );
+};
+
 export type StatsData = {
   signed: boolean;
   signedSuccess: boolean;
@@ -405,14 +412,39 @@ class NotificationService extends Events {
       winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = null;
     }
-    winMgr.openNotification(winProps).then((winId) => {
-      this.notifiWindowId = winId!;
-    });
+    winMgr
+      .openNotification(winProps)
+      .then((winId) => {
+        this.notifiWindowId = winId!;
+      })
+      .catch((e) => {
+        this.notifiWindowId = null;
+        this.unLock();
+        if (isBoundsError(e)) return;
+
+        Sentry.captureException(
+          new Error(
+            `openNotification failed: ${
+              e instanceof Error ? e.message : JSON.stringify(e)
+            }`
+          )
+        );
+      });
   };
 
   updateNotificationWinProps = (winProps: Windows.UpdateUpdateInfoType) => {
     if (this.notifiWindowId !== null) {
-      browser.windows.update(this.notifiWindowId!, winProps);
+      browser.windows.update(this.notifiWindowId!, winProps).catch((e) => {
+        if (isBoundsError(e)) return;
+
+        Sentry.captureException(
+          new Error(
+            `updateNotificationWinProps failed: ${
+              e instanceof Error ? e.message : JSON.stringify(e)
+            }`
+          )
+        );
+      });
     }
   };
 
