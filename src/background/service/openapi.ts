@@ -11,6 +11,7 @@ type StakingPoolListParams = {
   chain_id?: string;
   protocol_id?: string;
   user_addr?: string;
+  holding_only?: boolean;
   start?: number;
   limit?: number;
   order_by?: 'tvl' | string;

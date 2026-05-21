@@ -267,7 +267,6 @@ export const LpDepositContent = ({
   token1Disabled,
   rangeText,
   v2AddQuote,
-  v3DepositQuote,
 }: {
   isV3: boolean;
   isPositionAction: boolean;
@@ -288,7 +287,6 @@ export const LpDepositContent = ({
   token1Disabled?: boolean;
   rangeText: string;
   v2AddQuote?: LpUnusedQuote | null;
-  v3DepositQuote?: LpUnusedQuote | null;
 }) => (
   <>
     <LpRangeSelector
@@ -325,11 +323,6 @@ export const LpDepositContent = ({
       ) : null}
       <UnusedInfoRow
         quote={v2AddQuote}
-        token0Info={token0Info}
-        token1Info={token1Info}
-      />
-      <UnusedInfoRow
-        quote={v3DepositQuote}
         token0Info={token0Info}
         token1Info={token1Info}
       />
