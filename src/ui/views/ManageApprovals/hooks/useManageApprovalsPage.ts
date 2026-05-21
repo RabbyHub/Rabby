@@ -78,6 +78,27 @@ function sortTokenOrNFTApprovalsSpenderList(
   });
 }
 
+function getAssetApprovalTime(approval: AssetApprovalItem) {
+  return approval.list.reduce(
+    (latestApproveTime, spender) =>
+      Math.max(latestApproveTime, spender.last_approve_at || 0),
+    approval.$riskAboutValues.last_approve_at || 0
+  );
+}
+
+function sortByApprovalTimeDesc<T extends ApprovalItem>(left: T, right: T) {
+  const leftApprovalTime =
+    left.type === 'contract'
+      ? left.$riskAboutValues.last_approve_at || 0
+      : getAssetApprovalTime(left);
+  const rightApprovalTime =
+    right.type === 'contract'
+      ? right.$riskAboutValues.last_approve_at || 0
+      : getAssetApprovalTime(right);
+
+  return rightApprovalTime - leftApprovalTime;
+}
+
 function sortAssetApproval<T extends ApprovalItem>(approvals: T[]) {
   const dangerList: T[] = [];
   const warningList: T[] = [];
@@ -106,7 +127,7 @@ function sortAssetApproval<T extends ApprovalItem>(approvals: T[]) {
       ...dangerList,
       ...warningList,
       ...flatten(sortedSafeGroups.reverse()),
-    ],
+    ].sort(sortByApprovalTimeDesc),
   };
 }
 
@@ -155,7 +176,12 @@ function sortContractApproval(contractApprovals: ContractApprovalItem[]) {
   return [
     ...Object.values(riskBuckets).flat().sort(sortContractListAsCards),
     ...flatten(sortedSafeGroups.reverse()).sort(sortContractListAsCards),
-  ];
+  ].sort((left, right) => {
+    return (
+      sortByApprovalTimeDesc(left, right) ||
+      sortContractListAsCards(left, right)
+    );
+  });
 }
 
 export function encodeApprovalKey(approvalItem: ApprovalItem) {
