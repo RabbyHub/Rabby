@@ -1,5 +1,5 @@
-import type { PairedBitBox } from 'bitbox-api';
-import * as bitbox from 'bitbox-api';
+import type { PairedBitBox } from '@bitboxswiss/bitbox-api';
+import * as bitbox from '@bitboxswiss/bitbox-api';
 import { BitBox02BridgeInterface } from './bitbox02-bridge-interface';
 import browser from 'webextension-polyfill';
 import * as HDKey from 'hdkey';

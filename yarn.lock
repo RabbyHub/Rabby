@@ -1520,6 +1520,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bitboxswiss/bitbox-api@npm:0.1.1":
+  version: 0.1.1
+  resolution: "@bitboxswiss/bitbox-api@npm:0.1.1"
+  dependencies:
+    "@bufbuild/protobuf": "npm:2.11.0"
+  peerDependencies:
+    "@noble/ciphers": ^1.3.0
+    "@noble/curves": ^1.2.0
+    "@noble/hashes": ^1.8.0
+  checksum: 10c0/367991cddd8f5c76f4796c4ffb136f3bc3886204c6b8c8776a78b9afd07f51acb1dd62cda889125a3fe838039474c0b8d93a1c910ae79665982da8b6b8fdd225
+  languageName: node
+  linkType: hard
+
+"@bufbuild/protobuf@npm:2.11.0":
+  version: 2.11.0
+  resolution: "@bufbuild/protobuf@npm:2.11.0"
+  checksum: 10c0/d54fffd414660b823999cc321d26bd6c5f18a6e75343fc7d2588bda5be540ec542b557ac1f03d6d4b6e9d3e5596b2016e58cda173cd1858c043f0e846ece453f
+  languageName: node
+  linkType: hard
+
 "@chainsafe/as-sha256@npm:^0.3.1":
   version: 0.3.1
   resolution: "@chainsafe/as-sha256@npm:0.3.1"
@@ -10154,13 +10174,6 @@ __metadata:
   version: 2.0.0
   resolution: "bip66@npm:2.0.0"
   checksum: 10c0/01e65831aa37e9687738e5bec2895893409d1b4f40113dc5596c3aeb2989d61d75c849e88affc48b0ffded06cf2b1f69f8451b0576d7f4873b56783f16cfc994
-  languageName: node
-  linkType: hard
-
-"bitbox-api@npm:0.10.0":
-  version: 0.10.0
-  resolution: "bitbox-api@npm:0.10.0"
-  checksum: 10c0/c06f879cb113f5ec690b4cf4f0f87428b37bb7eade3d862f9ef2fd3a2031c527b5919712a39ae75a57bc3289bf224cbaa716a39fcd272e969f7124e2de2349a9
   languageName: node
   linkType: hard
 
@@ -21262,6 +21275,7 @@ __metadata:
     "@aave-dao/aave-address-book": "npm:4.47.14"
     "@aave/contract-helpers": "npm:1.37.1"
     "@aave/math-utils": "npm:1.37.1"
+    "@bitboxswiss/bitbox-api": "npm:0.1.1"
     "@coinbase/wallet-sdk": "npm:3.8.0-beta.3"
     "@debank/common": "npm:0.3.60"
     "@debank/festats": "npm:1.0.1"
@@ -21356,7 +21370,6 @@ __metadata:
     archiver: "npm:7.0.1"
     autoprefixer: "npm:10.2.5"
     bignumber.js: "npm:9.0.1"
-    bitbox-api: "npm:0.10.0"
     browserify-zlib: "npm:0.2.0"
     buffer: "npm:6.0.3"
     clipboard: "npm:2.0.8"

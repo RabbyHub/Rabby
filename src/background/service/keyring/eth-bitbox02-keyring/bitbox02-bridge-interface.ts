@@ -1,5 +1,5 @@
 import { JsonTx } from '@ethereumjs/tx';
-import type { PairedBitBox } from 'bitbox-api';
+import type { PairedBitBox } from '@bitboxswiss/bitbox-api';
 import * as HDKey from 'hdkey';
 
 export interface BitBox02BridgeInterface {
