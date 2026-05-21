@@ -332,6 +332,24 @@ const SendToken = () => {
     chainServerId: chainItem?.serverId,
     autoResetGasStoreOnChainChange: true,
   });
+  const prefetchDirectSendTx = useCallback(
+    (tx: Tx) => {
+      prefetch({
+        txs: [tx],
+        ga: {
+          category: 'Send',
+          source: 'sendToken',
+          trigger: filterRbiSource('sendToken', rbisource) && rbisource,
+        },
+        getContainer,
+      }).catch((error) => {
+        if (error !== MINI_SIGN_ERROR.PREFETCH_FAILURE) {
+          console.error('send token prefetch error', error);
+        }
+      });
+    },
+    [prefetch, rbisource]
+  );
   const consumeTopUpResumeGuard = useCallback(() => {
     const snapshot = topUpFormValuesRef.current.getSnapshot();
     if (!snapshot) {
@@ -910,6 +928,9 @@ const SendToken = () => {
             error === MINI_SIGN_ERROR.USER_CANCELLED ||
             error === MINI_SIGN_ERROR.CANT_PROCESS
           ) {
+            if (!awaitingTopUpResume && !depositFlowActive) {
+              prefetchDirectSendTx(params as Tx);
+            }
             return;
           }
 
@@ -1142,19 +1163,7 @@ const SendToken = () => {
           if (awaitingTopUpResume || depositFlowActive) {
             return;
           }
-          prefetch({
-            txs: [params as Tx],
-            ga: {
-              category: 'Send',
-              source: 'sendToken',
-              trigger: filterRbiSource('sendToken', rbisource) && rbisource,
-            },
-            getContainer,
-          }).catch((error) => {
-            if (error !== MINI_SIGN_ERROR.PREFETCH_FAILURE) {
-              console.error('send token prefetch error', error);
-            }
-          });
+          prefetchDirectSendTx(params as Tx);
         }
       } else {
         if (isCurrent) {
@@ -1193,7 +1202,7 @@ const SendToken = () => {
     currentAccount,
     currentToken,
     prefetch,
-    rbisource,
+    prefetchDirectSendTx,
     awaitingTopUpResume,
     depositFlowActive,
   ]);
