@@ -97,7 +97,10 @@ import {
   sortRisksDesc,
   useAddressRisks,
 } from '@/ui/hooks/useAddressRisk';
-import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
+import {
+  isGasAccountDepositFlowActive,
+  useGasAccountDepositFlowActive,
+} from '@/ui/views/GasAccount/hooks/runtime';
 // import { SendSlider } from '@/ui/component/SendLike/Slider';
 import { appIsDebugPkg } from '@/utils/env';
 import { add, debounce } from 'lodash';
@@ -928,7 +931,8 @@ const SendToken = () => {
             error === MINI_SIGN_ERROR.USER_CANCELLED ||
             error === MINI_SIGN_ERROR.CANT_PROCESS
           ) {
-            if (!awaitingTopUpResume && !depositFlowActive) {
+            const hasPendingTopUpResume = !!topUpFormValuesRef.current.getSnapshot();
+            if (!hasPendingTopUpResume && !isGasAccountDepositFlowActive()) {
               prefetchDirectSendTx(params as Tx);
             }
             return;
