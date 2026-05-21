@@ -1401,7 +1401,7 @@ export const LpActionModal = ({
     ? `-${formatRangeBps(v3QuotedRange.lowerBps)} / +${formatRangeBps(
         v3QuotedRange.upperBps
       )}`
-    : v3SelectedRange.label;
+    : '- / -';
 
   const handleRangePresetChange = useCallback((value: V3RangeOption) => {
     setPriceWarningAccepted(false);
@@ -1433,7 +1433,7 @@ export const LpActionModal = ({
   const popupHeight =
     action === 'deposit'
       ? isV3 && !isPositionAction
-        ? 520 + (needsPriceConfirm ? 24 : 0)
+        ? 490 + (needsPriceConfirm ? 24 : 0)
         : 460 + (needsPriceConfirm ? 24 : 0)
       : action === 'claim'
       ? 340
@@ -1502,7 +1502,6 @@ export const LpActionModal = ({
                   token1Disabled={token1InputDisabled}
                   rangeText={rangeText}
                   v2AddQuote={v2AddQuote}
-                  v3DepositQuote={v3DepositQuote}
                 />
               ) : null}
               {action === 'withdraw' ? (
