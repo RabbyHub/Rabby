@@ -1357,7 +1357,7 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconSettingsCodeCC,
-          content: <span>Perps: Include Watch-Mode Address (test only)</span>,
+          content: <span>Perps Accounts Include Watch Address</span>,
           rightIcon: (
             <Switch
               checked={perpsIncludeWatchForTest}
