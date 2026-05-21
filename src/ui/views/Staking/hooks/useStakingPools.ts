@@ -36,12 +36,13 @@ export const useStakingPools = ({
       chain_id: chainId || undefined,
       protocol_id: protocolId || undefined,
       user_addr: account?.address || undefined,
+      holding_only: myHoldingOnly && account?.address ? true : undefined,
       start,
       limit,
       order_by: 'tvl',
       order: 'desc',
     }),
-    [account?.address, chainId, limit, protocolId, q, start]
+    [account?.address, chainId, limit, myHoldingOnly, protocolId, q, start]
   );
 
   return useRequest(
@@ -53,20 +54,7 @@ export const useStakingPools = ({
         start,
         limit,
       });
-
-      if (!myHoldingOnly) {
-        return normalized;
-      }
-
-      const pools = normalized.pools.filter((pool) => pool.is_holding);
-      return {
-        ...normalized,
-        pools,
-        page: {
-          ...normalized.page,
-          total: pools.length,
-        },
-      };
+      return normalized;
     },
     {
       refreshDeps: [
