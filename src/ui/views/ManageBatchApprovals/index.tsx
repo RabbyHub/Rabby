@@ -172,7 +172,7 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
           rightSlot={
             <div className="flex items-center gap-[16px] ">
               <div
-                className="relative cursor-pointer text-r-neutral-title1 hit-slop-8"
+                className="relative cursor-pointer text-r-neutral-title1 hover:text-r-blue-default hit-slop-8"
                 onClick={() => {
                   openInTab('desktop.html#/desktop/manage-approvals');
                 }}

@@ -102,7 +102,8 @@ export const AssetListContainer: React.FC<Props> = ({
     !isPortfoliosLoading &&
     !displayPortfolios?.length &&
     !isAppPortfoliosLoading &&
-    !appPortfolios?.length;
+    !appPortfolios?.length &&
+    !search;
 
   React.useEffect(() => {
     onEmptyAssets(isEmptyAssets && !lpTokenMode);

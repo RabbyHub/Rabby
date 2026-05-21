@@ -415,6 +415,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
     await handleOpenLimitOrder({
       coin: selectedCoin,
+      dex: currentMarketData?.dexId ?? '',
       isBuy,
       size: directionSize,
       limitPx: orderLimitPrice,

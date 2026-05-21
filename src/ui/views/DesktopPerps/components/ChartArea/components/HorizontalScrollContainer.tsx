@@ -5,6 +5,7 @@ import React, {
   useEffect,
   ReactNode,
 } from 'react';
+import { flushSync } from 'react-dom';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 import clsx from 'clsx';
 
@@ -64,6 +65,15 @@ export const HorizontalScrollContainer: React.FC<HorizontalScrollContainerProps>
 
   const handleScrollRight = () => {
     if (!scrollRef.current) return;
+    // The arrows are conditionally rendered, so when the left arrow appears
+    // mid-animation (scrollLeft 0→>0) the container's clientWidth shrinks and
+    // the smooth-scroll target — clamped at scroll-time against the OLD
+    // clientWidth — leaves a sliver, preventing one click from reaching the
+    // right edge. Force the left arrow to commit synchronously first so
+    // scrollBy clamps against the new, smaller clientWidth.
+    if (!canScrollLeft) {
+      flushSync(() => setCanScrollLeft(true));
+    }
     scrollRef.current.scrollBy({ left: scrollStep, behavior: 'smooth' });
   };
 

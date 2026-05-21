@@ -43,6 +43,10 @@ const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
 const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
 const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
 const BUILD_ENV = process.env.RABBY_BUILD_ENV || '';
+const DEXIE_IMPORT_WRAPPER =
+  BUILD_ENV === 'pro' || BUILD_ENV === 'sourcemap'
+    ? 'import-wrapper-prod.mjs'
+    : 'import-wrapper.mjs';
 
 const MANIFEST_FILENAME = resolveManifestFilename({
   manifestType: MANIFEST_TYPE,
@@ -349,6 +353,7 @@ const config = {
   ],
   resolve: {
     alias: {
+      dexie$: paths.rootResolve(`node_modules/dexie/${DEXIE_IMPORT_WRAPPER}`),
       moment: require.resolve('dayjs'),
       '@debank/common': require.resolve('@debank/common/dist/index-rabby'),
     },

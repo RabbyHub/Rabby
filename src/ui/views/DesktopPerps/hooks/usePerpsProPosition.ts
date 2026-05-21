@@ -143,6 +143,7 @@ export const usePerpsProPosition = () => {
   const handleOpenMarketOrder = useMemoizedFn(
     async (params: {
       coin: string;
+      dex: string;
       isBuy: boolean;
       size: string;
       midPx: string;
@@ -156,6 +157,7 @@ export const usePerpsProPosition = () => {
           const sdk = getPerpsSDK();
           const {
             coin,
+            dex,
             isBuy,
             size,
             midPx,
@@ -194,6 +196,7 @@ export const usePerpsProPosition = () => {
                 price: avgPx,
               }),
             });
+            dispatch.perps.fetchClearinghouseState({ dex });
             return results?.response?.data?.statuses[0]?.filled as {
               totalSz: string;
               avgPx: string;
@@ -213,6 +216,7 @@ export const usePerpsProPosition = () => {
   const handleOpenLimitOrder = useMemoizedFn(
     async (params: {
       coin: string;
+      dex: string;
       isBuy: boolean;
       size: string;
       limitPx: string;
@@ -226,6 +230,7 @@ export const usePerpsProPosition = () => {
           const sdk = getPerpsSDK();
           const {
             coin,
+            dex,
             isBuy,
             size,
             limitPx,
@@ -271,6 +276,8 @@ export const usePerpsProPosition = () => {
                 }),
               });
             }
+            // Refresh on both resting and filled: isolated limit reserves margin.
+            dispatch.perps.fetchClearinghouseState({ dex });
             return resting?.oid || filled?.oid;
           } else {
             const msg = res?.response?.data?.statuses[0]?.error;
@@ -648,6 +655,7 @@ export const usePerpsProPosition = () => {
   const handleCloseWithMarketOrder = useMemoizedFn(
     async (params: {
       coin: string;
+      dex: string;
       size: string;
       midPx: string;
       isBuy: boolean;
@@ -656,7 +664,7 @@ export const usePerpsProPosition = () => {
       return withErrorHandler(
         async (p) => {
           const sdk = getPerpsSDK();
-          const { coin, isBuy, midPx, size, reduceOnly } = p;
+          const { coin, dex, isBuy, midPx, size, reduceOnly } = p;
           const res = await sdk.exchange?.marketOrderClose({
             coin,
             isBuy,
@@ -679,6 +687,7 @@ export const usePerpsProPosition = () => {
                 price: avgPx,
               }),
             });
+            dispatch.perps.fetchClearinghouseState({ dex });
             return res?.response?.data?.statuses[0]?.filled as {
               totalSz: string;
               avgPx: string;
@@ -711,6 +720,8 @@ export const usePerpsProPosition = () => {
               title: t('page.perps.toast.orderFilled'),
               description: t('page.perps.toast.closeAllPositionsSuccess'),
             });
+            // Close-all spans every dex, so refresh the full set.
+            dispatch.perps.fetchClearinghouseState();
             return true;
           }
         },
@@ -721,7 +732,12 @@ export const usePerpsProPosition = () => {
   );
 
   const handleUpdateMargin = useMemoizedFn(
-    async (coin: string, action: 'add' | 'reduce', margin: number) => {
+    async (
+      coin: string,
+      dex: string,
+      action: 'add' | 'reduce',
+      margin: number
+    ) => {
       return withErrorHandler(
         async (p) => {
           const sdk = getPerpsSDK();
@@ -739,12 +755,13 @@ export const usePerpsProPosition = () => {
                   : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
               ),
             });
+            dispatch.perps.fetchClearinghouseState({ dex: p.dex });
           } else {
             const msg = res?.response?.data?.statuses[0];
             throw new Error(msg || 'Update margin failed');
           }
         },
-        { coin, action, margin },
+        { coin, dex, action, margin },
         'Update margin failed'
       );
     }

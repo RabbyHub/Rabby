@@ -1,15 +1,12 @@
-import { RcIconNftEmpty } from '@/ui/assets/desktop/common';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useWallet } from '@/ui/utils';
+import { useNFTCollections } from '@/ui/hooks/useNFTCollections';
 import {
   CollectionList,
   NFTDetail,
   NFTItem,
   NFTListingOrder,
 } from '@rabby-wallet/rabby-api/dist/types';
-import { useRequest } from 'ahooks';
-import { message, Skeleton, Switch } from 'antd';
+import { Skeleton, Switch } from 'antd';
 import clsx from 'clsx';
 import { omit, range } from 'lodash';
 import React, { useEffect } from 'react';
@@ -29,7 +26,6 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
   selectChainId,
 }) => {
   const { t } = useTranslation();
-  const wallet = useWallet();
   const [isAll, setIsAll] = React.useState(false);
 
   const history = useHistory();
@@ -64,41 +60,41 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
   });
 
   const currentAccount = useCurrentAccount();
-
-  const { data: list, loading, runAsync } = useRequest(
-    async () => {
-      if (!currentAccount?.address) {
-        return [];
-      }
-      const collections = await wallet.openapi.collectionList({
-        id: currentAccount?.address,
-        isAll: isAll,
-        chainId: selectChainId,
-      });
-
-      const result: {
-        nft: NFTItem;
-        collection: Omit<CollectionList, 'nft_list'>;
-      }[] = [];
-
-      for (const collection of collections) {
-        if (!isAll && collection.is_hidden) {
-          continue;
-        }
-        collection.nft_list.forEach((nft) => {
-          result.push({ nft, collection: omit(collection, 'nft_list') });
-        });
-      }
-
-      return result;
-    },
-    {
-      refreshDeps: [isAll, currentAccount?.address, selectChainId],
-    }
+  const { collections, isLoading: loading, refresh } = useNFTCollections(
+    currentAccount?.address
   );
 
+  const list = React.useMemo(() => {
+    const result: {
+      nft: NFTItem;
+      collection: Omit<CollectionList, 'nft_list'>;
+    }[] = [];
+
+    collections.forEach((collection) => {
+      if (selectChainId && collection.chain !== selectChainId) {
+        return;
+      }
+      if (!isAll && (collection.is_hidden || !collection.is_core)) {
+        return;
+      }
+
+      const baseCollection = omit(collection, 'nft_list');
+      collection.nft_list.forEach((nft) => {
+        result.push({
+          nft,
+          collection: baseCollection,
+        });
+      });
+    });
+
+    return result.sort(
+      (a, b) =>
+        (b?.collection?.credit_score || 0) - (a?.collection?.credit_score || 0)
+    );
+  }, [collections, isAll, selectChainId]);
+
   useListenTxReload(() => {
-    runAsync();
+    refresh();
   });
 
   useEffect(() => {
@@ -148,7 +144,6 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
           </label>
         </header>
       )}
-      {loading}
       <main>
         <div className="flex items-center flex-wrap gap-[12px]">
           {loading ? (

@@ -6,7 +6,10 @@ import { usePerpsState } from './usePerpsState';
 import * as Sentry from '@sentry/browser';
 import { sleep, useWallet } from '@/ui/utils';
 import { PERPS_BUILDER_INFO } from '../constants';
-import { OrderResponse } from '@rabby-wallet/hyperliquid-sdk';
+import {
+  OrderResponse,
+  ClearinghouseState,
+} from '@rabby-wallet/hyperliquid-sdk';
 import { useTranslation } from 'react-i18next';
 
 export const usePerpsPosition = ({
@@ -154,7 +157,12 @@ export const usePerpsPosition = ({
   );
 
   const handleUpdateMargin = useMemoizedFn(
-    async (coin: string, action: 'add' | 'reduce', margin: number) => {
+    async (
+      coin: string,
+      dex: string,
+      action: 'add' | 'reduce',
+      margin: number
+    ) => {
       try {
         const sdk = getPerpsSDK();
         const res = await sdk.exchange?.updateIsolatedMargin({
@@ -172,7 +180,7 @@ export const usePerpsPosition = ({
                 : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
             ),
           });
-          dispatch.perps.fetchClearinghouseState();
+          dispatch.perps.fetchClearinghouseState({ dex });
         } else {
           const msg = res?.response?.data?.statuses[0];
           message.error({
@@ -208,13 +216,14 @@ export const usePerpsPosition = ({
   const handleClosePosition = useMemoizedFn(
     async (params: {
       coin: string;
+      dex: string;
       size: string;
       price: string;
       direction: 'Long' | 'Short';
     }) => {
       try {
         const sdk = getPerpsSDK();
-        const { coin, direction, price, size } = params;
+        const { coin, dex, direction, price, size } = params;
         const res = await sdk.exchange?.marketOrderClose({
           coin,
           isBuy: direction === 'Short',
@@ -225,7 +234,7 @@ export const usePerpsPosition = ({
 
         const filled = res?.response?.data?.statuses[0]?.filled;
         if (filled) {
-          dispatch.perps.fetchClearinghouseState();
+          dispatch.perps.fetchClearinghouseState({ dex });
           dispatch.perps.fetchUserHistoricalOrders();
           const { totalSz, avgPx } = filled;
           message.success({
@@ -293,6 +302,7 @@ export const usePerpsPosition = ({
   const handleOpenPosition = useMemoizedFn(
     async (params: {
       coin: string;
+      dex: string;
       size: string;
       leverage: number;
       direction: 'Long' | 'Short';
@@ -306,6 +316,7 @@ export const usePerpsPosition = ({
         const sdk = getPerpsSDK();
         const {
           coin,
+          dex,
           leverage,
           direction,
           size,
@@ -358,7 +369,7 @@ export const usePerpsPosition = ({
         const res = results[0];
         const filled = res?.response?.data?.statuses[0]?.filled;
         if (filled) {
-          dispatch.perps.fetchClearinghouseState();
+          dispatch.perps.fetchClearinghouseState({ dex });
 
           const { totalSz, avgPx } = filled;
           message.success({
@@ -458,7 +469,47 @@ export const usePerpsPosition = ({
     }
   );
 
+  const handleCloseAllPositions = useMemoizedFn(
+    async (clearinghouseState: ClearinghouseState) => {
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.closeAllPositions(
+          clearinghouseState,
+          0.08,
+          PERPS_BUILDER_INFO
+        );
+        if (res?.response?.data?.statuses[0]?.filled) {
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.closeAllPositionsSuccess'),
+          });
+          dispatch.perps.fetchClearinghouseState();
+          return true;
+        }
+      } catch (error: any) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return false;
+        }
+        console.error('PERPS closeAllPositions error', error);
+        message.error({
+          duration: 1.5,
+          content: error?.message || 'Close all positions error',
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS closeAllPositions error ' +
+              ' error: ' +
+              JSON.stringify(error)
+          )
+        );
+        return false;
+      }
+    }
+  );
+
   return {
+    handleCloseAllPositions,
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,

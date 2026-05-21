@@ -3,10 +3,12 @@ import { ApprovalsTabPane } from '../DesktopProfile/components/ApprovalsTabPane'
 import IconRabby from 'ui/assets/rabby.svg';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useWallet } from '@/ui/utils';
 import { useRabbyDispatch } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
+import { reportWebPageView } from '@/ui/utils/ga-event';
 
 export const DesktopManageApprovals = () => {
   const currentAccount = useCurrentAccount();
@@ -15,6 +17,10 @@ export const DesktopManageApprovals = () => {
   const dispatch = useRabbyDispatch();
   const handleAccountChange = useMemoizedFn((account) => {
     dispatch.account.changeAccountAsync(account);
+  });
+  const location = useLocation();
+  useMount(() => {
+    reportWebPageView(location.pathname);
   });
   return (
     <div className="h-full w-full overflow-auto bg-r-neutral-bg-2">

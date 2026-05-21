@@ -11,7 +11,7 @@ import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { useTranslation } from 'react-i18next';
 import { isNil } from 'lodash';
 import clsx from 'clsx';
-import { isLpToken } from '@/ui/utils/portfolio/lpToken';
+import { isLpToken, isUnknownToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from './components/LpTokenTag';
 import { UnknownTag } from '@/ui/component';
 
@@ -126,7 +126,7 @@ export const TokenItemAsset: React.FC<Props> = ({
               hover:text-r-blue-default hover:underline 
             `}
           />
-          {isNil(item.is_core) && (
+          {isUnknownToken(item) && (
             <UnknownTag className="ml-12 !bg-r-neutral-line flex-shrink-0" />
           )}
           {isLpToken(item) && (

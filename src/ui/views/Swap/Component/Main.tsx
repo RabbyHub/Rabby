@@ -608,14 +608,13 @@ export const Main = () => {
     if (awaitingTopUpResume || depositFlowActive) {
       return;
     }
-    closeSign();
     prefetch({
       txs: currentTxs || [],
       getContainer,
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
     });
-  }, [awaitingTopUpResume, closeSign, currentTxs, depositFlowActive, prefetch]);
+  }, [awaitingTopUpResume, currentTxs, depositFlowActive, prefetch]);
 
   useEffect(() => {
     if (!awaitingTopUpResume) {

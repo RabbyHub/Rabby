@@ -1,4 +1,3 @@
-import { ErrorType } from 'viem/_types/errors/utils';
 const sleep = (t: number) => new Promise((resolve) => setTimeout(resolve, t));
 
 type PollOptions<TData> = {
@@ -10,7 +9,9 @@ type PollOptions<TData> = {
   interval: number;
 };
 
-export type PollErrorType = ErrorType;
+export type PollErrorType<Name extends string = 'Error'> = Error & {
+  name: Name;
+};
 
 /**
  * @description Polls a function at a specified interval.

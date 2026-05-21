@@ -1,4 +1,3 @@
-import { is } from 'immer/dist/internal';
 import openapiService, { TxHistoryItem } from '@/background/service/openapi';
 import { Account } from '@/background/service/preference';
 import { UI_TYPE } from '@/constant/ui';

@@ -285,12 +285,12 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   );
 
   const visibleCategories = useMemo(() => {
-    const presentCategoryNames = new Set<string>();
+    const presentCategoryIds = new Set<string>();
     marketData.forEach((item) => {
-      if (item.category) presentCategoryNames.add(item.category);
+      if (item.categoryId) presentCategoryIds.add(item.categoryId);
     });
     const backendTabs = (marketDataCategories || [])
-      .filter((c) => !c.is_disable && presentCategoryNames.has(c.name))
+      .filter((c) => !c.is_disable && presentCategoryIds.has(c.id))
       .sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0))
       .map((c) => ({
         id: c.id,
@@ -324,7 +324,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     const categoryFiltered =
       selectedCategoryId === CATEGORY_ALL_ID || !selectedCategory
         ? marketData
-        : marketData.filter((item) => item.category === selectedCategory.name);
+        : marketData.filter((item) => item.categoryId === selectedCategory.id);
 
     const q = searchText.trim().toLowerCase();
     const filtered = q
