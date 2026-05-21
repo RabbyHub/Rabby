@@ -60,8 +60,13 @@ export const SelectAddressList = ({
     }
   }, [wallet, visible]);
 
+  // Production builds must never honor this flag even if a stale value sits in
+  // localStorage — gate the read with the same DEBUG check that hides the
+  // toggle in Settings.
   const includeWatchForTest = useMemo(
-    () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1',
+    () =>
+      !!process.env.DEBUG &&
+      localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1',
     []
   );
 
