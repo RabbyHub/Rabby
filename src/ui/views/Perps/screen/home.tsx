@@ -16,6 +16,7 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { ReactComponent as RcIconBackTopCC } from '@/ui/assets/perps/IconBackTopCC.svg';
+import { ReactComponent as RcIconBoldJump } from '@/ui/assets/perps/IconBoldJump.svg';
 import { ReactComponent as RcIconHyperLogo } from '@/ui/assets/perps/IconHyperLogo.svg';
 import { AssetPosition, HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { Button, message, Modal } from 'antd';
@@ -58,7 +59,6 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../DesktopPerps/utils';
 import { PerpsHeaderRight } from '../components/PerpsHeaderRight';
-import { OpenProModeEntry } from '../components/OpenProModeEntry';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { PerpsCategorySectionHeader } from '../components/PerpsCategorySectionHeader';
 import { usePerpsGroupedMarketData } from '../hooks/usePerpsGroupedMarketData';
@@ -427,8 +427,6 @@ export const Perps: React.FC = () => {
           </div>
         )}
 
-        <OpenProModeEntry />
-
         {isInitialized && Boolean(positionAndOpenOrders?.length) && (
           <div className="mt-20 mx-20">
             <div className="flex items-center mb-8 justify-between">
@@ -506,34 +504,23 @@ export const Perps: React.FC = () => {
         <div className="h-[96px]"></div>
         {isLogin && (
           <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2 z-20 flex gap-12">
-            <Button
-              block
-              disabled={!hasPermission}
-              size="large"
-              className="h-[48px] text-white text-15 font-medium rounded-[8px] border-none"
-              style={{ backgroundColor: 'var(--r-green-default, #2abb7f)' }}
+            <button
+              type="button"
+              className={clsx(
+                'w-full h-[48px] bg-r-blue-default text-r-neutral-title-2 text-15 font-medium',
+                'rounded-[6px]'
+                // 'border-[1px] border-solid border-rabby-blue-default',
+              )}
               onClick={() => {
-                setOpenPositionDirection('Long');
-                setSearchPopupVisible(true);
-                setOpenFromSource('openPosition');
+                wallet.openInDesktop('/desktop/perps');
+                window.close();
               }}
             >
-              {t('page.perps.long')}
-            </Button>
-            <Button
-              block
-              disabled={!hasPermission}
-              size="large"
-              className="h-[48px] text-white text-15 font-medium rounded-[8px] border-none"
-              style={{ backgroundColor: 'var(--r-red-default, #e34935)' }}
-              onClick={() => {
-                setOpenPositionDirection('Short');
-                setSearchPopupVisible(true);
-                setOpenFromSource('openPosition');
-              }}
-            >
-              {t('page.perps.short')}
-            </Button>
+              <div className="flex items-center justify-center gap-[8px]">
+                {t('page.dashboard.assets.openProMode')}
+                <RcIconBoldJump />
+              </div>
+            </button>
           </div>
         )}
       </div>
