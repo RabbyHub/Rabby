@@ -18,7 +18,16 @@ const shouldUseNftCollectionsDbCache = ({
   now?: number;
 }) => !forceRefresh && updatedAt > now - CACHE_VALID_DURATION;
 
-export const useNFTCollections = (userAddr: string | undefined) => {
+interface UseNFTCollectionsOptions {
+  preferCacheOnExists?: boolean;
+  visible?: boolean;
+}
+
+export const useNFTCollections = (
+  userAddr: string | undefined,
+  options?: UseNFTCollectionsOptions
+) => {
+  const { preferCacheOnExists = false, visible = true } = options || {};
   const wallet = useWallet();
   const abortProcess = useRef<AbortController>();
   const userAddrRef = useRef('');
@@ -69,6 +78,16 @@ export const useNFTCollections = (userAddr: string | undefined) => {
               address: userAddr,
               scene: NFT_SYNC_SCENE,
             })) || 0;
+
+          if (
+            preferCacheOnExists &&
+            currentCollections.length > 0 &&
+            !forceRefresh
+          ) {
+            applyCollections(currentCollections);
+            setLoading(false);
+            return;
+          }
 
           const shouldUseDbCache = shouldUseNftCollectionsDbCache({
             forceRefresh,
@@ -130,7 +149,7 @@ export const useNFTCollections = (userAddr: string | undefined) => {
         }
       }
     },
-    [applyCollections, setLoading, userAddr, wallet]
+    [applyCollections, preferCacheOnExists, setLoading, userAddr, wallet]
   );
 
   useEffect(() => {
@@ -142,7 +161,7 @@ export const useNFTCollections = (userAddr: string | undefined) => {
 
     if (userAddr) {
       timer = setTimeout(() => {
-        if (!isSameAddress(userAddr, userAddrRef.current)) {
+        if (!isSameAddress(userAddr, userAddrRef.current) && visible) {
           abortProcess.current?.abort();
           userAddrRef.current = userAddr;
           loadProcess();
@@ -159,7 +178,7 @@ export const useNFTCollections = (userAddr: string | undefined) => {
         clearTimeout(timer);
       }
     };
-  }, [applyCollections, loadProcess, setLoading, userAddr]);
+  }, [applyCollections, loadProcess, setLoading, userAddr, visible]);
 
   useEffect(() => {
     return () => {

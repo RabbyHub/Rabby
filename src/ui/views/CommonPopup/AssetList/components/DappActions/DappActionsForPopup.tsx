@@ -20,6 +20,7 @@ import { last } from 'lodash';
 const Wrapper = styled.div`
   display: flex;
   gap: 12px;
+  padding-top: 12px;
   padding-left: 12px;
   padding-right: 12px;
   padding-bottom: 16px;

@@ -41,7 +41,6 @@ import {
   RcIconDappsCC,
   RcIconManageCC,
   RcIconMobileSyncCC,
-  RcIconNftCC,
   RcIconPerpsCC,
   RcIconPointsCC,
   RcIconReceiveCC,
@@ -511,17 +510,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       content: t('page.dashboard.home.panel.settings'),
       onClick: onSettingClick,
     } as IPanelItem,
-    nft: {
-      icon: RcIconNftCC,
-      eventKey: 'NFT',
-      content: t('page.dashboard.home.panel.nft'),
-      onClick: async () => {
-        // history.push('/nft');
-        await wallet.openInDesktop('/desktop/profile/nft');
-        window.close();
-      },
-      isFullscreen: true,
-    } as IPanelItem,
     ecology: {
       icon: RcIconEco,
       eventKey: 'Ecology',
@@ -610,7 +598,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'perps',
       'points',
       'mobile',
-      'nft',
       'dapps',
       'convertDust',
     ];
