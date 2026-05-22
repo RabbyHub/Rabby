@@ -348,7 +348,7 @@ const ProtocolList = ({
     return list?.filter((item) => currentList?.indexOf(item) === -1);
   }, [currentList, list]);
 
-  if (!list?.length) return null;
+  if (!list) return null;
 
   return (
     <ProtocolListWrapper className={className}>
