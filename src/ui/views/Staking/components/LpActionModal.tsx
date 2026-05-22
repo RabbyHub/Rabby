@@ -59,6 +59,7 @@ import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionItem } from '../hooks/useStakingPositionSummary';
 import type { StakingUniv3RangeBps } from '../hooks/useStakingPendingActions';
 import { useStakingMiniSign } from '../hooks/useStakingMiniSign';
+import { getStakingTokenBalanceAmount } from '../utils/format';
 import { normalizeStakingPoolToPoolKey } from '../utils/poolKey';
 import {
   buildStakingMiniSignTxs,
@@ -307,7 +308,7 @@ const buildTokenBalanceInfo = async ({
     token.id
   );
   const decimals = apiToken?.decimals ?? token.decimals ?? 18;
-  const balance = String(apiToken?.amount ?? 0);
+  const balance = getStakingTokenBalanceAmount(apiToken, apiToken?.amount);
   const price = apiToken?.price ?? token.price;
 
   return {
@@ -326,6 +327,7 @@ const buildTokenBalanceInfo = async ({
       amount: Number(balance || 0),
       decimals,
       price: price ?? undefined,
+      raw_amount_hex_str: apiToken?.raw_amount_hex_str,
     } as TokenItem,
     balance,
     decimals,

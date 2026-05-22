@@ -119,7 +119,7 @@ export const LpAmountInputBlock = ({
           <span className="staking-lp-balance-text">
             {formatStakingAmount(tokenInfo?.balance || '0')}
           </span>
-          {onMax && !disabled ? (
+          {onMax ? (
             <button type="button" className="staking-lp-max" onClick={onMax}>
               Max
             </button>

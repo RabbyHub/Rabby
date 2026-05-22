@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { getSqrtRatioAtUniv3Tick } from '@rabby-wallet/staking-sdk';
 
 import { ProtocolLogo, TokenLogos } from './PoolVisuals';
+import { RewardsCardIcon, SuppliedCardIcon } from '../icons';
 import type {
   StakingPositionAsset,
   StakingPositionItem,
@@ -209,18 +210,25 @@ const PortfolioCard = ({
   emptyText: string;
   rangeText?: string;
   children?: React.ReactNode;
-}) => (
-  <div className={clsx('staking-position-card', `is-${variant}`)}>
-    <div className="staking-position-heading">
-      <div className="staking-position-title">{title}</div>
-      {rangeText ? (
-        <div className="staking-position-range">{rangeText}</div>
-      ) : null}
+}) => {
+  const CardIcon = variant === 'rewards' ? RewardsCardIcon : SuppliedCardIcon;
+
+  return (
+    <div className={clsx('staking-position-card', `is-${variant}`)}>
+      <CardIcon
+        className={clsx('staking-position-card-icon', `is-${variant}`)}
+      />
+      <div className="staking-position-heading">
+        <div className="staking-position-title">{title}</div>
+        {rangeText ? (
+          <div className="staking-position-range">{rangeText}</div>
+        ) : null}
+      </div>
+      <PortfolioRows rows={rows} pool={pool} emptyText={emptyText} />
+      {children}
     </div>
-    <PortfolioRows rows={rows} pool={pool} emptyText={emptyText} />
-    {children}
-  </div>
-);
+  );
+};
 
 const InlineActionButton = ({
   children,

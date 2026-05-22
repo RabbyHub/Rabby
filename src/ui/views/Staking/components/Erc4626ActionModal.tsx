@@ -28,7 +28,11 @@ import {
 } from './Erc4626ActionModalSections';
 import type { StakingPool } from '../types';
 import { useStakingMiniSign } from '../hooks/useStakingMiniSign';
-import { formatStakingAmount, formatStakingUsd } from '../utils/format';
+import {
+  formatStakingAmount,
+  formatStakingUsd,
+  getStakingTokenBalanceAmount,
+} from '../utils/format';
 import {
   buildStakingMiniSignTxs,
   getStakingMainTxHash,
@@ -99,7 +103,7 @@ export const Erc4626ActionModal = ({
   );
 
   const decimals = tokenInfo?.decimals ?? asset?.decimals ?? 18;
-  const balance = tokenInfo?.amount ?? 0;
+  const balance = getStakingTokenBalanceAmount(tokenInfo, tokenInfo?.amount);
   const tokenPrice = tokenInfo?.price ?? asset?.price;
   const actionToken = useMemo(
     () =>
@@ -113,6 +117,7 @@ export const Erc4626ActionModal = ({
             amount: Number(balance || 0),
             decimals,
             price: tokenPrice,
+            raw_amount_hex_str: tokenInfo?.raw_amount_hex_str,
           } as TokenItem)
         : null,
     [
@@ -122,6 +127,7 @@ export const Erc4626ActionModal = ({
       decimals,
       pool.chain_id,
       tokenInfo?.logo_url,
+      tokenInfo?.raw_amount_hex_str,
       tokenPrice,
     ]
   );
@@ -209,7 +215,7 @@ export const Erc4626ActionModal = ({
     }
   );
 
-  const maxAmount = String(balance || 0);
+  const maxAmount = balance;
   const amountNumber = new BigNumber(amount || '0');
   const maxAmountNumber = new BigNumber(maxAmount || '0');
   const depositAmountInvalid =
