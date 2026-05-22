@@ -32,6 +32,7 @@ import type {
   NFTApprovalContract,
   Spender,
 } from '@/background/service/openapi';
+import { checkCompareContractItem } from '../../DesktopProfile/components/ApprovalsTabPane/utils';
 
 export type {
   ApprovalItem,
@@ -129,6 +130,27 @@ function sortAssetApproval<T extends ApprovalItem>(approvals: T[]) {
       ...flatten(sortedSafeGroups.reverse()),
     ].sort(sortByApprovalTimeDesc),
   };
+}
+
+function sortContractApprovalTimeWithRiskFirst(
+  left: ContractApprovalItem,
+  right: ContractApprovalItem
+) {
+  const checkResult = checkCompareContractItem(
+    left,
+    right,
+    { field: 'last_approve_at', order: 'descend' },
+    'contractApprovalTime'
+  );
+
+  if (checkResult.shouldEarlyReturn) {
+    return -checkResult.keepRiskFirstReturnValue;
+  }
+
+  return (
+    (right.$riskAboutValues.last_approve_at || 0) -
+    (left.$riskAboutValues.last_approve_at || 0)
+  );
 }
 
 function sortContractApproval(contractApprovals: ContractApprovalItem[]) {
@@ -784,7 +806,9 @@ export function useManageApprovalsPage(options: {
   );
 
   const sortedContractList = React.useMemo(() => {
-    return sortContractApproval(Object.values(approvalsData.contractMap));
+    return Object.values(approvalsData.contractMap).sort(
+      sortContractApprovalTimeWithRiskFirst
+    );
   }, [approvalsData.contractMap]);
 
   const sortedAssetsList = React.useMemo(() => {
