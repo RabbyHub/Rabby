@@ -213,7 +213,7 @@ const flowContext = flow
     const {
       request: {
         data: { params, method },
-        session: { origin, name, icon },
+        session: { origin, name, icon, isFromRabby },
         isFromDesktopDapp,
       },
       mapMethod,
@@ -285,7 +285,7 @@ const flowContext = flow
               $ctx: ctx?.request?.data?.$ctx,
               method,
               data: ctx.request.data.params,
-              session: { origin, name, icon },
+              session: { origin, name, icon, isFromRabby },
             },
             account: ctx.request.account,
             origin,
