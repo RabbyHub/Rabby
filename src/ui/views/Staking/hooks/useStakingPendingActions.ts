@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import type { Account } from '@/background/service/preference';
 import { useWallet } from '@/ui/utils';
@@ -273,6 +274,7 @@ export const useStakingPendingActions = ({
   refreshPositionAsync: () => Promise<StakingPositionSummary | undefined>;
   onMintedUniv3TokenId: (tokenId: string, range?: StakingUniv3RangeBps) => void;
 }) => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const [pendingActions, setPendingActions] = useState<StakingPendingAction[]>(
     []
@@ -427,14 +429,14 @@ export const useStakingPendingActions = ({
       } catch (error) {
         if (mountedRef.current) {
           console.error('staking pending action error', error);
-          message.error('Staking transaction failed');
+          message.error(t('page.staking.error.transactionFailed'));
           removePendingAction(pending.id);
         }
       } finally {
         processingRef.current.delete(pending.id);
       }
     },
-    [account, isPendingActionActive, pool, removePendingAction, wallet]
+    [account, isPendingActionActive, pool, removePendingAction, t, wallet]
   );
 
   useEffect(() => {

@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
+import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 
 import { openInTab } from '@/ui/utils';
 import { getAddressScanLink } from '@/utils';
@@ -11,13 +13,13 @@ import { ExternalIcon } from '../icons';
 import type { StakingLink, StakingPool, StakingToken } from '../types';
 import { shortenStakingAddress } from '../utils/format';
 
-const getPoolLinks = (pool: StakingPool) => {
+const getPoolLinks = (pool: StakingPool, t: TFunction) => {
   const links: StakingLink[] = [];
 
   if (pool.protocol.site_url) {
     links.push({
       type: 'website',
-      name: 'Official Website',
+      name: t('page.staking.about.officialWebsite'),
       url: pool.protocol.site_url,
     });
   }
@@ -25,7 +27,7 @@ const getPoolLinks = (pool: StakingPool) => {
   if (pool.protocol.twitter_url) {
     links.push({
       type: 'twitter',
-      name: 'X(Twitter)',
+      name: t('page.staking.about.twitter'),
       url: pool.protocol.twitter_url,
     });
   }
@@ -49,7 +51,7 @@ const getTokenAddress = (token?: StakingToken) => token?.id || '-';
 const isLpPool = (pool: StakingPool) =>
   pool.type === 'univ2' || pool.type === 'univ3';
 
-const getUptime = (pool: StakingPool) => {
+const getUptime = (pool: StakingPool, t: TFunction) => {
   if (!pool.create_at) {
     return '-';
   }
@@ -59,7 +61,7 @@ const getUptime = (pool: StakingPool) => {
       ? dayjs(pool.create_at)
       : dayjs.unix(pool.create_at);
   const days = Math.max(dayjs().diff(createAt, 'day'), 0);
-  return `${days} days`;
+  return t('page.staking.about.days', { count: days });
 };
 
 const openPoolAddress = (pool: StakingPool) => {
@@ -151,6 +153,7 @@ const TokenAddressField = ({
 );
 
 const PoolInfoSection = ({ pool }: { pool: StakingPool }) => {
+  const { t } = useTranslation();
   const token1 = pool.tokens.supplies[0];
   const token2 = pool.tokens.supplies[1];
   const lpPool = isLpPool(pool);
@@ -158,32 +161,44 @@ const PoolInfoSection = ({ pool }: { pool: StakingPool }) => {
   return (
     <section className="px-[20px]">
       <div className="staking-section-title mb-[16px] text-[15px] leading-[18px] font-bold">
-        Pool
+        {t('page.staking.about.pool')}
       </div>
       <div className="grid grid-cols-2 gap-x-[48px] gap-y-[16px]">
-        <FieldBlock label="Address">
+        <FieldBlock label={t('page.staking.about.address')}>
           <AddressValue
             value={pool.pool_address}
             onClick={() => openPoolAddress(pool)}
           />
         </FieldBlock>
-        <FieldBlock label="Uptime">
+        <FieldBlock label={t('page.staking.about.uptime')}>
           <div className="text-[13px] leading-[20px] text-r-neutral-title1">
-            {getUptime(pool)}
+            {getUptime(pool, t)}
           </div>
         </FieldBlock>
-        <FieldBlock label={lpPool ? 'Token1' : 'Token'}>
+        <FieldBlock
+          label={
+            lpPool
+              ? t('page.staking.about.token1')
+              : t('page.staking.about.token')
+          }
+        >
           <TokenInline token={token1} chainServerId={pool.chain_id} />
         </FieldBlock>
-        <FieldBlock label={lpPool ? 'Token1 address' : 'Token address'}>
+        <FieldBlock
+          label={
+            lpPool
+              ? t('page.staking.about.token1Address')
+              : t('page.staking.about.tokenAddress')
+          }
+        >
           <TokenAddressField pool={pool} token={token1} />
         </FieldBlock>
         {lpPool ? (
           <>
-            <FieldBlock label="Token2">
+            <FieldBlock label={t('page.staking.about.token2')}>
               <TokenInline token={token2} chainServerId={pool.chain_id} />
             </FieldBlock>
-            <FieldBlock label="Token2 address">
+            <FieldBlock label={t('page.staking.about.token2Address')}>
               <TokenAddressField pool={pool} token={token2} />
             </FieldBlock>
           </>
@@ -194,16 +209,18 @@ const PoolInfoSection = ({ pool }: { pool: StakingPool }) => {
 };
 
 const AboutProtocolSection = ({ pool }: { pool: StakingPool }) => {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const description = pool.protocol.about?.description;
-  const links = useMemo(() => getPoolLinks(pool), [pool]);
-  const protocolName = pool.protocol.name || pool.protocol.id || 'Protocol';
+  const links = useMemo(() => getPoolLinks(pool, t), [pool, t]);
+  const protocolName =
+    pool.protocol.name || pool.protocol.id || t('page.staking.protocol');
   const collapsed = !!description && description.length > 150 && !expanded;
 
   return (
     <section className="px-[20px]">
       <div className="staking-section-title mb-[16px] text-[15px] leading-[18px] font-bold">
-        About {protocolName}
+        {t('page.staking.about.aboutProtocol', { protocol: protocolName })}
       </div>
       <div
         className={clsx(
@@ -211,7 +228,7 @@ const AboutProtocolSection = ({ pool }: { pool: StakingPool }) => {
           collapsed && 'is-collapsed'
         )}
       >
-        {description || 'No protocol description available.'}
+        {description || t('page.staking.about.noDescription')}
       </div>
       {description && description.length > 150 ? (
         <button
@@ -219,7 +236,9 @@ const AboutProtocolSection = ({ pool }: { pool: StakingPool }) => {
           className="mt-[4px] text-[13px] leading-[16px] font-medium text-r-blue-default"
           onClick={() => setExpanded((value) => !value)}
         >
-          {expanded ? 'Show less' : 'Show more'}
+          {expanded
+            ? t('page.staking.about.showLess')
+            : t('page.staking.about.showMore')}
         </button>
       ) : null}
       {links.length ? (

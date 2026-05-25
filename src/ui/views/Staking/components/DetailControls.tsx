@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 import type { DetailTabKey } from './DetailSectionUtils';
 
@@ -41,17 +42,40 @@ export const BottomActionBar = ({
   showDivider?: boolean;
   actionRef?: React.Ref<HTMLDivElement>;
 }) => (
-  <div
-    ref={actionRef}
-    className={clsx('staking-bottom-action', showDivider && 'has-divider')}
-  >
-    <button
-      type="button"
-      className="staking-primary-action"
-      disabled={disabled}
-      onClick={onClick}
-    >
-      Deposit
-    </button>
-  </div>
+  <BottomActionBarInner
+    actionRef={actionRef}
+    disabled={disabled}
+    showDivider={showDivider}
+    onClick={onClick}
+  />
 );
+
+const BottomActionBarInner = ({
+  disabled,
+  onClick,
+  showDivider,
+  actionRef,
+}: {
+  disabled?: boolean;
+  onClick: () => void;
+  showDivider?: boolean;
+  actionRef?: React.Ref<HTMLDivElement>;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div
+      ref={actionRef}
+      className={clsx('staking-bottom-action', showDivider && 'has-divider')}
+    >
+      <button
+        type="button"
+        className="staking-primary-action"
+        disabled={disabled}
+        onClick={onClick}
+      >
+        {t('page.staking.actions.deposit')}
+      </button>
+    </div>
+  );
+};

@@ -3,6 +3,7 @@ import { Button, Skeleton, message } from 'antd';
 import { useRequest } from 'ahooks';
 import BigNumber from 'bignumber.js';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 import {
   ERC4626_ABI,
@@ -51,9 +52,6 @@ interface Erc4626ActionModalProps {
   onSubmitted: (payload: { hash: string }) => void;
 }
 
-const getActionLabel = (action: Erc4626Action) =>
-  action === 'deposit' ? 'Deposit' : 'Withdraw';
-
 const toSdkPool = (pool: StakingPool) => (pool as unknown) as SdkStakingPool;
 
 const getAmountUsdText = (amount: string, price?: number | null) => {
@@ -72,6 +70,7 @@ export const Erc4626ActionModal = ({
   onCancel,
   onSubmitted,
 }: Erc4626ActionModalProps) => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const [amount, setAmount] = useState('');
   const [percent, setPercent] = useState(100);
@@ -87,7 +86,10 @@ export const Erc4626ActionModal = ({
   const asset = pool.tokens.supplies[0];
   const assetId = entry?.asset || asset?.id;
   const actionState = pool.actions?.[action];
-  const actionLabel = getActionLabel(action);
+  const actionLabel =
+    action === 'deposit'
+      ? t('page.staking.actions.deposit')
+      : t('page.staking.actions.withdraw');
 
   const { data: tokenInfo, loading: tokenLoading } = useRequest(
     async () => {
@@ -138,7 +140,7 @@ export const Erc4626ActionModal = ({
         return '0';
       }
       if (!entry) {
-        throw new Error('Unsupported ERC4626 pool');
+        throw new Error(t('page.staking.actionModal.unsupportedErc4626Pool'));
       }
 
       const rawMaxRedeem = await readStakingContract({
@@ -224,11 +226,11 @@ export const Erc4626ActionModal = ({
     amountNumber.lte(0) ||
     (maxAmountNumber.isFinite() && amountNumber.gt(maxAmountNumber));
   const disabledReason = !entry
-    ? 'Unsupported pool'
+    ? t('page.staking.actionModal.unsupportedPool')
     : !chainInfo
-    ? 'Unsupported chain'
+    ? t('page.staking.actionModal.unsupportedChain')
     : actionState?.is_supported !== true
-    ? actionState?.reason || 'Unavailable'
+    ? actionState?.reason || t('page.staking.actionModal.unavailable')
     : undefined;
   const selectedRedeemShares = useMemo(() => {
     try {
@@ -259,10 +261,10 @@ export const Erc4626ActionModal = ({
 
   const buildTxs = useCallback(async () => {
     if (!chainInfo) {
-      throw new Error('Unsupported chain');
+      throw new Error(t('page.staking.actionModal.unsupportedChain'));
     }
     if (!entry) {
-      throw new Error('Unsupported ERC4626 pool');
+      throw new Error(t('page.staking.actionModal.unsupportedErc4626Pool'));
     }
 
     const common = {
@@ -299,6 +301,7 @@ export const Erc4626ActionModal = ({
     entry,
     pool,
     selectedRedeemSharesRaw,
+    t,
     wallet,
   ]);
 
@@ -318,7 +321,9 @@ export const Erc4626ActionModal = ({
       });
       const hash = getStakingMainTxHash(hashes);
       if (hash) {
-        message.success(`${actionLabel} submitted`);
+        message.success(
+          t('page.staking.actionModal.submitted', { action: actionLabel })
+        );
         setAmount('');
         setPercent(100);
         setSubmitting(false);
@@ -333,13 +338,17 @@ export const Erc4626ActionModal = ({
         return;
       }
       console.error('staking erc4626 action error', error);
-      message.error(`Failed to submit ${actionLabel.toLowerCase()}`);
+      message.error(
+        t('page.staking.actionModal.submitFailed', {
+          action: actionLabel.toLowerCase(),
+        })
+      );
     } finally {
       if (!submitted) {
         setSubmitting(false);
       }
     }
-  }, [actionLabel, buildTxs, canSubmit, onSubmitted, sign]);
+  }, [actionLabel, buildTxs, canSubmit, onSubmitted, sign, t]);
 
   const onAmountChange = useCallback((value: string) => {
     if (value === '' || INPUT_NUMBER_RE.test(value)) {

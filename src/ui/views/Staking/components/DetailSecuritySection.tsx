@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { openInTab } from '@/ui/utils';
 
@@ -14,19 +15,24 @@ const AuditFirmBadge = () => (
 );
 
 export const SecurityTab = ({ pool }: { pool: StakingPool }) => {
+  const { t } = useTranslation();
   const audits = getStakingSecurityAudits(pool);
 
   return (
     <div className="staking-security-tab">
       <div className="staking-security-title-row">
-        <div className="staking-security-title">Certifications</div>
+        <div className="staking-security-title">
+          {t('page.staking.security.certifications')}
+        </div>
       </div>
       {audits.length ? (
         <div className="staking-security-table">
           <div className="staking-security-header">
-            <span>Certified by</span>
-            <span>Certified on</span>
-            <span className="text-right">Action</span>
+            <span>{t('page.staking.security.certifiedBy')}</span>
+            <span>{t('page.staking.security.certifiedOn')}</span>
+            <span className="text-right">
+              {t('page.staking.security.action')}
+            </span>
           </div>
           <div className="staking-security-rows">
             {audits.map((audit) => (
@@ -47,7 +53,7 @@ export const SecurityTab = ({ pool }: { pool: StakingPool }) => {
                   onClick={() => openInTab(audit.auditReportUrl, false)}
                   title={audit.auditScope}
                 >
-                  <span>View</span>
+                  <span>{t('page.staking.security.view')}</span>
                   <ExternalIcon />
                 </button>
               </div>
@@ -55,7 +61,9 @@ export const SecurityTab = ({ pool }: { pool: StakingPool }) => {
           </div>
         </div>
       ) : (
-        <div className="staking-security-empty">No certification data</div>
+        <div className="staking-security-empty">
+          {t('page.staking.security.noCertificationData')}
+        </div>
       )}
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Input, Switch, message } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import { PageHeader } from '@/ui/component';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
@@ -26,6 +27,7 @@ import './style.less';
 const PAGE_LIMIT = 50;
 
 const Staking = () => {
+  const { t } = useTranslation();
   const account = useRabbySelector((state) => state.account.currentAccount);
   const [search, setSearch] = useState('');
   const [chainId, setChainId] = useState<string | undefined>();
@@ -99,9 +101,9 @@ const Staking = () => {
 
   useEffect(() => {
     if (filtersError || poolsError) {
-      message.error('Failed to load staking data');
+      message.error(t('page.staking.error.failedLoadData'));
     }
-  }, [filtersError, poolsError]);
+  }, [filtersError, poolsError, t]);
 
   return (
     <div className="staking-list-page min-h-screen bg-r-neutral-bg2 text-r-neutral-title1">
@@ -110,7 +112,7 @@ const Staking = () => {
         forceShowBack
         isShowAccount
       >
-        Staking
+        {t('page.staking.title')}
       </PageHeader>
 
       <div className="px-[20px]">
@@ -121,7 +123,7 @@ const Staking = () => {
               <SearchIcon />
             </span>
           }
-          placeholder="Search Token"
+          placeholder={t('page.staking.searchToken')}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           allowClear
@@ -130,7 +132,7 @@ const Staking = () => {
         <div className="mt-[12px] flex h-[32px] items-center justify-between">
           <div className="staking-filter-list">
             <StakingFilterTrigger
-              placeholder="All Protocol"
+              placeholder={t('page.staking.filter.allProtocol')}
               variant="protocol"
               label={
                 selectedProtocol
@@ -147,7 +149,7 @@ const Staking = () => {
               onClear={() => setProtocolId(undefined)}
             />
             <StakingFilterTrigger
-              placeholder="All Chains"
+              placeholder={t('page.staking.filter.allChains')}
               variant="chain"
               label={selectedChain?.name}
               icon={
@@ -162,7 +164,7 @@ const Staking = () => {
           </div>
           <div className="staking-holding-filter">
             <span className="staking-holding-label text-[12px] leading-[14px] font-medium text-r-neutral-body">
-              My Holding
+              {t('page.staking.myHolding')}
             </span>
             <Switch
               size="small"
@@ -205,11 +207,11 @@ const Staking = () => {
             <StakingEmpty
               search=""
               myHoldingOnly={false}
-              description="Failed to load staking pools"
+              description={t('page.staking.error.failedLoadPools')}
               compact
             />
             <Button className="mt-[12px]" onClick={refreshPools}>
-              Retry
+              {t('page.staking.actions.retry')}
             </Button>
           </div>
         ) : pools.length ? (

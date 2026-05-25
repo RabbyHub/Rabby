@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { BackIcon } from '../icons';
 
@@ -12,16 +13,20 @@ export const ActionPopupTitle = ({
   onBack: () => void;
   className: string;
   backClassName: string;
-}) => (
-  <div className={className}>
-    <button
-      type="button"
-      className={backClassName}
-      onClick={onBack}
-      aria-label="Back"
-    >
-      <BackIcon />
-    </button>
-    <span>{title}</span>
-  </div>
-);
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className={className}>
+      <button
+        type="button"
+        className={backClassName}
+        onClick={onBack}
+        aria-label={t('global.back')}
+      >
+        <BackIcon />
+      </button>
+      <span>{title}</span>
+    </div>
+  );
+};

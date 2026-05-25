@@ -601,7 +601,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     staking: {
       icon: RcIconStakingCC,
       eventKey: 'Staking',
-      content: 'Staking',
+      content: t('page.dashboard.home.panel.staking'),
       onClick: () => {
         history.push('/staking');
       },

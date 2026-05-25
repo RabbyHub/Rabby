@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Input } from 'antd';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 
 import { Popup } from '@/ui/component';
@@ -84,6 +85,7 @@ export const StakingFilterTrigger = ({
   onClick: () => void;
   onClear: () => void;
 }) => {
+  const { t } = useTranslation();
   const selected = !!label;
 
   return (
@@ -115,7 +117,9 @@ export const StakingFilterTrigger = ({
         <button
           type="button"
           className="staking-filter-trigger-clear"
-          aria-label={`Clear ${placeholder}`}
+          aria-label={t('page.staking.filter.clearFilter', {
+            filter: placeholder,
+          })}
           onClick={(event) => {
             event.stopPropagation();
             onClear();
@@ -135,6 +139,7 @@ export const StakingPoolCard = ({
   pool: StakingPool;
   protocol: StakingProtocol;
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const feeTag = pool.tags?.find((tag) => /\d+(\.\d+)?%/.test(tag.name));
   const builtInTagNames = new Set([
@@ -183,7 +188,7 @@ export const StakingPoolCard = ({
 
       <div className="shrink-0 text-right">
         <div className="text-[15px] leading-[18px] font-medium text-r-neutral-title1">
-          {formatStakingTVL(pool.tvl)} TVL
+          {formatStakingTVL(pool.tvl)} {t('page.staking.metrics.tvl')}
         </div>
         <div className="mt-[2px] text-[13px] leading-[16px] text-r-neutral-foot">
           {formatStakingPercent(pool.apr)} {pool.metricLabel}
@@ -191,7 +196,9 @@ export const StakingPoolCard = ({
       </div>
 
       {pool.is_holding ? (
-        <span className="staking-holding-ribbon">Holding</span>
+        <span className="staking-holding-ribbon">
+          {t('page.staking.holding')}
+        </span>
       ) : null}
     </button>
   );
@@ -230,14 +237,15 @@ export const StakingEmpty = ({
   description?: string;
   compact?: boolean;
 }) => {
+  const { t } = useTranslation();
   const hasSearch = !!search.trim();
   const text =
     description ||
     (hasSearch
-      ? 'No pools found'
+      ? t('page.staking.empty.noPoolsFound')
       : myHoldingOnly
-      ? 'No holdings found'
-      : 'No staking pools found');
+      ? t('page.staking.empty.noHoldingsFound')
+      : t('page.staking.empty.noStakingPoolsFound'));
 
   return (
     <div className={clsx('staking-empty', compact && 'is-compact')}>
@@ -264,6 +272,7 @@ export const ProtocolSelectorPopup = ({
   onClose: () => void;
   onSelect: (protocolId?: string) => void;
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const filteredProtocols = useMemo(() => {
@@ -294,7 +303,7 @@ export const ProtocolSelectorPopup = ({
   return (
     <Popup
       visible={visible}
-      title="Select Protocol"
+      title={t('page.staking.filter.selectProtocol')}
       height={540}
       closable
       isNew
@@ -310,7 +319,7 @@ export const ProtocolSelectorPopup = ({
               <SearchIcon />
             </span>
           }
-          placeholder="Search by Name"
+          placeholder={t('page.staking.filter.searchByName')}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           allowClear
@@ -323,9 +332,11 @@ export const ProtocolSelectorPopup = ({
               className="staking-selector-row"
               onClick={() => handleSelect(undefined)}
             >
-              <span className="staking-selector-all-icon">All</span>
+              <span className="staking-selector-all-icon">
+                {t('page.staking.filter.all')}
+              </span>
               <span className="min-w-0 truncate text-[15px] leading-[18px] font-medium text-r-neutral-title1">
-                All Protocol
+                {t('page.staking.filter.allProtocol')}
               </span>
             </button>
           ) : null}
@@ -349,7 +360,9 @@ export const ProtocolSelectorPopup = ({
                   {protocol.name || protocol.id}
                 </span>
                 {hasHolding ? (
-                  <span className="staking-holding-ribbon">Holding</span>
+                  <span className="staking-holding-ribbon">
+                    {t('page.staking.holding')}
+                  </span>
                 ) : null}
               </button>
             );
@@ -358,7 +371,7 @@ export const ProtocolSelectorPopup = ({
           {!filteredProtocols.length ? (
             <div className="staking-selector-empty">
               <EmptyPoolsIcon />
-              <div>No protocols</div>
+              <div>{t('page.staking.empty.noProtocols')}</div>
             </div>
           ) : null}
         </div>
@@ -380,6 +393,7 @@ export const ChainSelectorPopup = ({
   onClose: () => void;
   onSelect: (chainId?: string) => void;
 }) => {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
 
   const filteredChains = useMemo(() => {
@@ -410,7 +424,7 @@ export const ChainSelectorPopup = ({
   return (
     <Popup
       visible={visible}
-      title="Select Chain"
+      title={t('page.staking.filter.selectChain')}
       height={540}
       closable
       isNew
@@ -426,7 +440,7 @@ export const ChainSelectorPopup = ({
               <SearchIcon />
             </span>
           }
-          placeholder="Search by Name"
+          placeholder={t('page.staking.filter.searchByName')}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           allowClear
@@ -439,9 +453,11 @@ export const ChainSelectorPopup = ({
               className="staking-selector-row"
               onClick={() => handleSelect(undefined)}
             >
-              <span className="staking-selector-all-icon">All</span>
+              <span className="staking-selector-all-icon">
+                {t('page.staking.filter.all')}
+              </span>
               <span className="min-w-0 truncate text-[15px] leading-[18px] font-medium text-r-neutral-title1">
-                All Chains
+                {t('page.staking.filter.allChains')}
               </span>
             </button>
           ) : null}
@@ -470,7 +486,7 @@ export const ChainSelectorPopup = ({
           {!filteredChains.length ? (
             <div className="staking-selector-empty">
               <EmptyPoolsIcon />
-              <div>No chains</div>
+              <div>{t('page.staking.empty.noChains')}</div>
             </div>
           ) : null}
         </div>

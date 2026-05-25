@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
+import { useTranslation } from 'react-i18next';
 import {
   Area,
   AreaChart,
@@ -44,8 +45,11 @@ const getMetricText = (pool: StakingPool, metric: StakingPoolCurveMetric) =>
     ? formatStakingPercent(pool.apr)
     : formatStakingTVL(pool.tvl);
 
-const getMetricLabel = (pool: StakingPool, metric: StakingPoolCurveMetric) =>
-  metric === 'apr' ? pool.metricLabel : 'TVL';
+const getMetricLabel = (
+  pool: StakingPool,
+  metric: StakingPoolCurveMetric,
+  tvlLabel: string
+) => (metric === 'apr' ? pool.metricLabel : tvlLabel);
 
 const getOrdinalSuffix = (day: number) => {
   if (day >= 11 && day <= 13) {
@@ -147,6 +151,7 @@ const PoolCurve = ({
   metric: StakingPoolCurveMetric;
   metricLabel: string;
 }) => {
+  const { t } = useTranslation();
   const curveColor =
     metric === 'apr' ? 'var(--r-green-default)' : 'var(--r-blue-default)';
   const chartData = useMemo(
@@ -165,7 +170,7 @@ const PoolCurve = ({
   if (!chartData.length) {
     return (
       <div className="staking-chart-empty text-r-neutral-foot">
-        No chart data
+        {t('page.staking.detail.noChartData')}
       </div>
     );
   }
@@ -225,23 +230,37 @@ const MetricSwitch = ({
   metric: StakingPoolCurveMetric;
   setMetric: (metric: StakingPoolCurveMetric) => void;
   pool: StakingPool;
-}) => (
-  <div className="staking-metric-switch">
-    {(['tvl', 'apr'] as StakingPoolCurveMetric[]).map((item) => (
-      <button
-        key={item}
-        type="button"
-        className={clsx(
-          'staking-metric-switch-item',
-          metric === item && 'is-active'
-        )}
-        onClick={() => setMetric(item)}
-      >
-        {item === 'tvl' ? 'TVL' : pool.metricLabel}
-      </button>
-    ))}
-  </div>
-);
+}) => <MetricSwitchInner metric={metric} setMetric={setMetric} pool={pool} />;
+
+const MetricSwitchInner = ({
+  metric,
+  setMetric,
+  pool,
+}: {
+  metric: StakingPoolCurveMetric;
+  setMetric: (metric: StakingPoolCurveMetric) => void;
+  pool: StakingPool;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="staking-metric-switch">
+      {(['tvl', 'apr'] as StakingPoolCurveMetric[]).map((item) => (
+        <button
+          key={item}
+          type="button"
+          className={clsx(
+            'staking-metric-switch-item',
+            metric === item && 'is-active'
+          )}
+          onClick={() => setMetric(item)}
+        >
+          {item === 'tvl' ? t('page.staking.metrics.tvl') : pool.metricLabel}
+        </button>
+      ))}
+    </div>
+  );
+};
 
 export const DetailSummary = ({
   pool,
@@ -256,38 +275,69 @@ export const DetailSummary = ({
   metric: StakingPoolCurveMetric;
   setMetric: (metric: StakingPoolCurveMetric) => void;
 }) => (
-  <div className="flex w-full flex-col gap-[16px] px-[20px] py-[10px]">
-    <div className="flex items-center gap-[12px]">
-      <TokenLogos
-        tokens={pool.tokens.supplies}
-        chainServerId={pool.chain_id}
-        size="detail"
-      />
-      <div className="flex min-w-0 flex-col gap-[6px]">
-        <div className="truncate text-[22px] leading-[20px] font-bold text-r-neutral-title1">
-          {pool.display_name || pool.name || pool.id}
-        </div>
-        <DetailTags pool={pool} />
-      </div>
-    </div>
-
-    <div className="flex w-full items-end justify-between">
-      <div className="flex items-end gap-[8px]">
-        <span className="text-[18px] leading-[20px] text-r-neutral-body">
-          {getMetricText(pool, metric)}
-        </span>
-        <span className="text-[13px] leading-[16px] font-semibold text-r-neutral-foot">
-          {getMetricLabel(pool, metric)}
-        </span>
-      </div>
-      <MetricSwitch metric={metric} setMetric={setMetric} pool={pool} />
-    </div>
-
-    <PoolCurve
-      points={curve}
-      loading={curveLoading}
-      metric={metric}
-      metricLabel={getMetricLabel(pool, metric)}
-    />
-  </div>
+  <DetailSummaryInner
+    pool={pool}
+    curve={curve}
+    curveLoading={curveLoading}
+    metric={metric}
+    setMetric={setMetric}
+  />
 );
+
+const DetailSummaryInner = ({
+  pool,
+  curve,
+  curveLoading,
+  metric,
+  setMetric,
+}: {
+  pool: StakingPool;
+  curve: StakingPoolCurvePoint[];
+  curveLoading: boolean;
+  metric: StakingPoolCurveMetric;
+  setMetric: (metric: StakingPoolCurveMetric) => void;
+}) => {
+  const { t } = useTranslation();
+  const metricLabel = getMetricLabel(
+    pool,
+    metric,
+    t('page.staking.metrics.tvl')
+  );
+
+  return (
+    <div className="flex w-full flex-col gap-[16px] px-[20px] py-[10px]">
+      <div className="flex items-center gap-[12px]">
+        <TokenLogos
+          tokens={pool.tokens.supplies}
+          chainServerId={pool.chain_id}
+          size="detail"
+        />
+        <div className="flex min-w-0 flex-col gap-[6px]">
+          <div className="truncate text-[22px] leading-[20px] font-bold text-r-neutral-title1">
+            {pool.display_name || pool.name || pool.id}
+          </div>
+          <DetailTags pool={pool} />
+        </div>
+      </div>
+
+      <div className="flex w-full items-end justify-between">
+        <div className="flex items-end gap-[8px]">
+          <span className="text-[18px] leading-[20px] text-r-neutral-body">
+            {getMetricText(pool, metric)}
+          </span>
+          <span className="text-[13px] leading-[16px] font-semibold text-r-neutral-foot">
+            {metricLabel}
+          </span>
+        </div>
+        <MetricSwitch metric={metric} setMetric={setMetric} pool={pool} />
+      </div>
+
+      <PoolCurve
+        points={curve}
+        loading={curveLoading}
+        metric={metric}
+        metricLabel={metricLabel}
+      />
+    </div>
+  );
+};

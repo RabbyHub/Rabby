@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 
 import { findChainByServerID } from '@/utils/chain';
 
@@ -182,18 +183,23 @@ export const PoolTypeTag = ({
   pool: StakingPool;
   size?: 'list' | 'detail';
 }) => {
+  const { t } = useTranslation();
   const className = clsx(
     size === 'detail' ? 'staking-chip staking-chip-detail' : 'staking-chip'
   );
 
   if (pool.type === 'erc4626') {
-    return <span className={className}>Yield</span>;
+    return <span className={className}>{t('page.staking.metrics.yield')}</span>;
   }
 
   return (
     <>
-      <span className={className}>LP</span>
-      <span className={className}>{pool.type === 'univ3' ? 'V3' : 'V2'}</span>
+      <span className={className}>{t('page.staking.metrics.lp')}</span>
+      <span className={className}>
+        {pool.type === 'univ3'
+          ? t('page.staking.metrics.v3')
+          : t('page.staking.metrics.v2')}
+      </span>
     </>
   );
 };

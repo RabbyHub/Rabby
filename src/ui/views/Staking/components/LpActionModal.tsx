@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js';
 import { formatUnits, parseUnits } from 'ethers/lib/utils';
 import type { TokenItem } from 'background/service/openapi';
 import type { Hex } from 'viem';
+import { useTranslation } from 'react-i18next';
 
 import {
   UNIV2_PAIR_ABI,
@@ -345,6 +346,7 @@ export const LpActionModal = ({
   onCancel,
   onSubmitted,
 }: LpActionModalProps) => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const { sign } = useStakingMiniSign({
     account,
@@ -378,10 +380,10 @@ export const LpActionModal = ({
   const token1 = pool.tokens.supplies[1];
   const title =
     action === 'deposit'
-      ? 'Deposit'
+      ? t('page.staking.actions.deposit')
       : action === 'withdraw'
-      ? 'Withdraw'
-      : 'Claim';
+      ? t('page.staking.actions.withdraw')
+      : t('page.staking.actions.claim');
   const isV2 = pool.type === 'univ2';
   const isV3 = pool.type === 'univ3';
   const isPositionAction = !!position?.raw?.univ3;
@@ -554,9 +556,9 @@ export const LpActionModal = ({
 
   const actionState = pool.actions?.[action];
   const disabledReason = !chainInfo
-    ? 'Unsupported chain'
+    ? t('page.staking.actionModal.unsupportedChain')
     : actionState?.is_supported !== true
-    ? actionState?.reason || 'Unavailable'
+    ? actionState?.reason || t('page.staking.actionModal.unavailable')
     : undefined;
 
   const raw0 = useMemo(() => {
@@ -766,10 +768,13 @@ export const LpActionModal = ({
     if (!symbols.length) {
       return '';
     }
-    return `Insufficient ${symbols.join(' & ')} balance`;
+    return t('page.staking.actionModal.insufficientBalance', {
+      symbols: symbols.join(' & '),
+    });
   }, [
     normalizedTokens.token0Info?.token.symbol,
     normalizedTokens.token1Info?.token.symbol,
+    t,
     token0Insufficient,
     token1Insufficient,
   ]);
@@ -886,7 +891,7 @@ export const LpActionModal = ({
 
   const buildUniv3ClaimAllTx = useCallback((): StakingTxBuildResult => {
     if (!chainInfo || !univ3Entry || !claimTargets.length) {
-      throw new Error('No claimable V3 position');
+      throw new Error(t('page.staking.actionModal.noClaimableRewards'));
     }
 
     const calls = claimTargets
@@ -915,11 +920,11 @@ export const LpActionModal = ({
         addressVerification: univ3Entry.verification,
       },
     };
-  }, [account.address, chainInfo, claimTargets, pool, univ3Entry]);
+  }, [account.address, chainInfo, claimTargets, pool, t, univ3Entry]);
 
   const buildTxs = useCallback(async () => {
     if (!chainInfo) {
-      throw new Error('Unsupported chain');
+      throw new Error(t('page.staking.actionModal.unsupportedChain'));
     }
 
     let buildResult: StakingTxBuildResult;
@@ -932,11 +937,11 @@ export const LpActionModal = ({
 
     if (isV2) {
       if (!univ2Entry) {
-        throw new Error('Failed to resolve V2 pool');
+        throw new Error(t('page.staking.actionModal.failedResolveV2Pool'));
       }
       if (action === 'deposit') {
         if (!v2AddQuote) {
-          throw new Error('Enter valid token amounts');
+          throw new Error(t('page.staking.actionModal.enterValidTokenAmounts'));
         }
         buildResult = buildUniv2AddLiquidityTx({
           ...common,
@@ -949,7 +954,7 @@ export const LpActionModal = ({
         });
       } else if (action === 'withdraw') {
         if (!v2WithdrawQuote) {
-          throw new Error('No LP position to withdraw');
+          throw new Error(t('page.staking.actionModal.noLpPositionToWithdraw'));
         }
         buildResult = buildUniv2RemoveLiquidityTx({
           ...common,
@@ -960,15 +965,15 @@ export const LpActionModal = ({
           deadline: toDeadline(),
         });
       } else {
-        throw new Error('V2 rewards are not supported');
+        throw new Error(t('page.staking.actionModal.v2RewardsUnsupported'));
       }
     } else if (isV3) {
       if (!univ3Entry) {
-        throw new Error('Failed to resolve V3 pool');
+        throw new Error(t('page.staking.actionModal.failedResolveV3Pool'));
       }
       if (action === 'deposit') {
         if (!v3DepositQuote) {
-          throw new Error('Enter valid token amounts');
+          throw new Error(t('page.staking.actionModal.enterValidTokenAmounts'));
         }
         if (position?.raw?.univ3) {
           buildResult = buildUniv3IncreaseLiquidityTx({
@@ -994,7 +999,9 @@ export const LpActionModal = ({
       } else if (action === 'withdraw') {
         const raw = position?.raw?.univ3;
         if (!raw || !v3WithdrawQuote) {
-          throw new Error('Select a V3 position to withdraw');
+          throw new Error(
+            t('page.staking.actionModal.selectV3PositionToWithdraw')
+          );
         }
         buildResult = buildUniv3DecreaseAndCollectTx({
           ...common,
@@ -1024,7 +1031,7 @@ export const LpActionModal = ({
         buildResult = buildUniv3ClaimAllTx();
       }
     } else {
-      throw new Error('Unsupported LP pool');
+      throw new Error(t('page.staking.actionModal.unsupportedLpPool'));
     }
 
     return buildStakingMiniSignTxs({
@@ -1044,6 +1051,7 @@ export const LpActionModal = ({
     isV3,
     pool,
     position,
+    t,
     univ2Entry,
     univ3Entry,
     v2AddQuote,
@@ -1073,7 +1081,9 @@ export const LpActionModal = ({
       const mainHash = getStakingMainTxHash(hashes);
 
       if (mainHash) {
-        message.success(`${title} submitted`);
+        message.success(
+          t('page.staking.actionModal.submitted', { action: title })
+        );
         setSubmitting(false);
         submitted = true;
         onSubmitted({
@@ -1092,7 +1102,11 @@ export const LpActionModal = ({
         return;
       }
       console.error('staking lp action error', error);
-      message.error(`Failed to submit ${title.toLowerCase()}`);
+      message.error(
+        t('page.staking.actionModal.submitFailed', {
+          action: title.toLowerCase(),
+        })
+      );
     } finally {
       if (!submitted) {
         setSubmitting(false);
@@ -1109,6 +1123,7 @@ export const LpActionModal = ({
     priceWarningAccepted,
     position,
     sign,
+    t,
     title,
     v3QuotedRange,
   ]);
@@ -1446,13 +1461,12 @@ export const LpActionModal = ({
   }, [onCancel]);
   const footerError = disabledReason || balanceError;
   const priceWarningTitle = priceDiffInfo
-    ? `Pool price: 1 ${priceDiffInfo.token0Symbol} = ${formatPriceNumber(
-        priceDiffInfo.poolPrice
-      )} ${priceDiffInfo.token1Symbol}; Market price: 1 ${
-        priceDiffInfo.token0Symbol
-      } = ${formatPriceNumber(priceDiffInfo.marketPrice)} ${
-        priceDiffInfo.token1Symbol
-      }`
+    ? t('page.staking.actionModal.poolPriceTitle', {
+        token0: priceDiffInfo.token0Symbol,
+        token1: priceDiffInfo.token1Symbol,
+        poolPrice: formatPriceNumber(priceDiffInfo.poolPrice),
+        marketPrice: formatPriceNumber(priceDiffInfo.marketPrice),
+      })
     : '';
   const submitDisabled =
     !canSubmit || (needsPriceConfirm && !priceWarningAccepted);

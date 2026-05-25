@@ -1,6 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
+import type { TFunction } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { getSqrtRatioAtUniv3Tick } from '@rabby-wallet/staking-sdk';
 
 import { ProtocolLogo, TokenLogos } from './PoolVisuals';
@@ -163,6 +165,7 @@ const PendingActionCard = ({
   pool: StakingPool;
   summary?: StakingPositionSummary;
 }) => {
+  const { t } = useTranslation();
   const tokens = getPendingActionTokens({ pending, pool, summary });
   const isProtocolToWallet =
     pending.action === 'withdraw' || pending.action === 'claim';
@@ -178,21 +181,27 @@ const PendingActionCard = ({
       </div>
       <div className="staking-pending-status">
         <span className="staking-pending-spinner" />
-        <span>Pending</span>
+        <span>{t('page.staking.portfolio.pending')}</span>
       </div>
     </div>
   );
 };
 
-const PortfolioCardSkeleton = () => (
-  <div className="staking-position-card">
-    <div className="staking-position-title">Supplied</div>
-    <div className="staking-position-rows">
-      <div className="staking-position-skeleton-row" />
-      <div className="staking-position-skeleton-row is-short" />
+const PortfolioCardSkeleton = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="staking-position-card">
+      <div className="staking-position-title">
+        {t('page.staking.portfolio.supplied')}
+      </div>
+      <div className="staking-position-rows">
+        <div className="staking-position-skeleton-row" />
+        <div className="staking-position-skeleton-row is-short" />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const PortfolioCard = ({
   title,
@@ -302,10 +311,13 @@ const getSqrtPriceX96AsBigNumber = (value: string | bigint) =>
 
 const getPositionRangeText = (
   position: StakingPositionItem,
-  range?: StakingUniv3RangeBps
+  range: StakingUniv3RangeBps | undefined,
+  t: TFunction
 ) => {
   if (range) {
-    return `Price Range: ${formatPositionRangePercent(
+    return `${t(
+      'page.staking.portfolio.priceRange'
+    )}: ${formatPositionRangePercent(
       new BigNumber(range.lowerBps).div(-100)
     )}~${formatPositionRangePercent(new BigNumber(range.upperBps).div(100))}`;
   }
@@ -343,7 +355,7 @@ const getPositionRangeText = (
     const lowerText = formatPositionRangePercent(lowerPercent);
     const upperText = formatPositionRangePercent(upperPercent);
     return lowerText && upperText
-      ? `Price Range: ${lowerText}~${upperText}`
+      ? `${t('page.staking.portfolio.priceRange')}: ${lowerText}~${upperText}`
       : '';
   } catch {
     return '';
@@ -363,6 +375,7 @@ const PortfolioPositionCard = ({
   accountReady: boolean;
   onAction: (action: StakingAction, position?: StakingPositionItem) => void;
 }) => {
+  const { t } = useTranslation();
   const depositDisabled = !accountReady || !getActionSupported(pool, 'deposit');
   const withdrawDisabled =
     !accountReady ||
@@ -371,11 +384,11 @@ const PortfolioPositionCard = ({
 
   return (
     <PortfolioCard
-      title="Supplied"
+      title={t('page.staking.portfolio.supplied')}
       rows={position.supplied}
       pool={pool}
-      emptyText="No supplied assets"
-      rangeText={getPositionRangeText(position, range)}
+      emptyText={t('page.staking.portfolio.noSuppliedAssets')}
+      rangeText={getPositionRangeText(position, range, t)}
     >
       <div className="staking-position-actions">
         <InlineActionButton
@@ -383,14 +396,14 @@ const PortfolioPositionCard = ({
           disabled={depositDisabled}
           onClick={() => onAction('deposit', position)}
         >
-          Deposit
+          {t('page.staking.actions.deposit')}
         </InlineActionButton>
         <InlineActionButton
           variant="secondary"
           disabled={withdrawDisabled}
           onClick={() => onAction('withdraw', position)}
         >
-          Withdraw
+          {t('page.staking.actions.withdraw')}
         </InlineActionButton>
       </div>
     </PortfolioCard>
@@ -414,6 +427,7 @@ const PortfolioRewardsCard = ({
     claimPositions?: StakingPositionItem[]
   ) => void;
 }) => {
+  const { t } = useTranslation();
   const rows = mergePositionAssets(positions.flatMap((item) => item.rewards));
   const claimDisabled =
     !accountReady || !rows.length || !getActionSupported(pool, 'claim');
@@ -424,11 +438,11 @@ const PortfolioRewardsCard = ({
 
   return (
     <PortfolioCard
-      title="Rewards"
+      title={t('page.staking.portfolio.rewards')}
       rows={rows}
       pool={pool}
       variant="rewards"
-      emptyText="No rewards"
+      emptyText={t('page.staking.portfolio.noRewards')}
     >
       <div className="staking-position-actions">
         <InlineActionButton
@@ -446,7 +460,7 @@ const PortfolioRewardsCard = ({
             );
           }}
         >
-          Claim
+          {t('page.staking.actions.claim')}
         </InlineActionButton>
       </div>
     </PortfolioCard>
@@ -476,6 +490,7 @@ export const PortfolioTab = ({
     claimPositions?: StakingPositionItem[]
   ) => void;
 }) => {
+  const { t } = useTranslation();
   const depositDisabled = !accountReady || !getActionSupported(pool, 'deposit');
   const withdrawDisabled =
     !accountReady || !getActionSupported(pool, 'withdraw');
@@ -528,18 +543,26 @@ export const PortfolioTab = ({
           </>
         ) : (
           <PortfolioCard
-            title="Supplied"
+            title={t('page.staking.portfolio.supplied')}
             rows={summary?.supplied || []}
             pool={pool}
-            emptyText={error ? 'Failed to load position' : 'No supplied assets'}
+            emptyText={
+              error
+                ? t('page.staking.error.failedLoadPosition')
+                : t('page.staking.portfolio.noSuppliedAssets')
+            }
           />
         )
       ) : (
         <PortfolioCard
-          title="Supplied"
+          title={t('page.staking.portfolio.supplied')}
           rows={summary?.supplied || []}
           pool={pool}
-          emptyText={error ? 'Failed to load position' : 'No supplied assets'}
+          emptyText={
+            error
+              ? t('page.staking.error.failedLoadPosition')
+              : t('page.staking.portfolio.noSuppliedAssets')
+          }
         >
           <div className="staking-position-actions">
             <InlineActionButton
@@ -547,14 +570,14 @@ export const PortfolioTab = ({
               disabled={depositDisabled}
               onClick={() => onAction('deposit', summary?.positions[0])}
             >
-              Deposit
+              {t('page.staking.actions.deposit')}
             </InlineActionButton>
             <InlineActionButton
               variant="secondary"
               disabled={withdrawDisabled}
               onClick={() => onAction('withdraw', summary?.positions[0])}
             >
-              Withdraw
+              {t('page.staking.actions.withdraw')}
             </InlineActionButton>
           </div>
         </PortfolioCard>

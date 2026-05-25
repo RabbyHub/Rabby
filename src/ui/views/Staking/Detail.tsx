@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { Button, Empty, message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 
 import { PageHeader } from '@/ui/component';
@@ -49,6 +50,7 @@ const getPoolIdFromSearch = (search: string) => {
 };
 
 const StakingDetail = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const account = useRabbySelector((state) => state.account.currentAccount);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -158,15 +160,24 @@ const StakingDetail = () => {
     () =>
       shouldShowPortfolio
         ? [
-            { key: 'portfolio' as const, label: 'Portfolio' },
-            { key: 'about' as const, label: 'About' },
-            { key: 'security' as const, label: 'Security' },
+            {
+              key: 'portfolio' as const,
+              label: t('page.staking.tabs.portfolio'),
+            },
+            { key: 'about' as const, label: t('page.staking.tabs.about') },
+            {
+              key: 'security' as const,
+              label: t('page.staking.tabs.security'),
+            },
           ]
         : [
-            { key: 'about' as const, label: 'About' },
-            { key: 'security' as const, label: 'Security' },
+            { key: 'about' as const, label: t('page.staking.tabs.about') },
+            {
+              key: 'security' as const,
+              label: t('page.staking.tabs.security'),
+            },
           ],
-    [shouldShowPortfolio]
+    [shouldShowPortfolio, t]
   );
   const displayedTab = tabs.some((tab) => tab.key === activeTab)
     ? activeTab
@@ -180,11 +191,11 @@ const StakingDetail = () => {
 
   useEffect(() => {
     if (detailError) {
-      message.error('Failed to load staking pool');
+      message.error(t('page.staking.error.failedLoadPool'));
     } else if (curveError) {
-      message.error('Failed to load staking chart');
+      message.error(t('page.staking.error.failedLoadChart'));
     }
-  }, [curveError, detailError]);
+  }, [curveError, detailError, t]);
 
   useEffect(() => {
     if (!visualPool || shouldShowPortfolio) {
@@ -271,7 +282,7 @@ const StakingDetail = () => {
       return;
     }
 
-    message.info('Unsupported staking action.');
+    message.info(t('page.staking.detail.unsupportedAction'));
   };
 
   const actionDisabled =
@@ -287,7 +298,7 @@ const StakingDetail = () => {
         forceShowBack
         isShowAccount
       >
-        Staking
+        {t('page.staking.title')}
       </PageHeader>
 
       {detailLoading && !visualPool ? (
@@ -387,14 +398,14 @@ const StakingDetail = () => {
         </>
       ) : detailError ? (
         <div className="pt-[56px] flex flex-col items-center">
-          <Empty description="Failed to load staking pool" />
+          <Empty description={t('page.staking.error.failedLoadPool')} />
           <Button className="mt-[12px]" onClick={refreshDetail}>
-            Retry
+            {t('page.staking.actions.retry')}
           </Button>
         </div>
       ) : (
         <div className="pt-[56px]">
-          <Empty description="Staking pool not found" />
+          <Empty description={t('page.staking.detail.poolNotFound')} />
         </div>
       )}
     </div>
