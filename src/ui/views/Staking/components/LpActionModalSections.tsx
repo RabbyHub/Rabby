@@ -445,6 +445,8 @@ const LpDepositContentInner = ({
 export const LpPercentActionContent = ({
   percent,
   onPercentChange,
+  selectedPresetPercent,
+  onPresetPercentChange,
   receive0,
   receive1,
   previewToken0,
@@ -453,6 +455,8 @@ export const LpPercentActionContent = ({
 }: {
   percent: number;
   onPercentChange: (value: number) => void;
+  selectedPresetPercent?: number | null;
+  onPresetPercentChange: (value: number) => void;
   receive0: bigint;
   receive1: bigint;
   previewToken0?: StakingToken;
@@ -462,6 +466,8 @@ export const LpPercentActionContent = ({
   <LpPercentActionContentInner
     percent={percent}
     onPercentChange={onPercentChange}
+    selectedPresetPercent={selectedPresetPercent}
+    onPresetPercentChange={onPresetPercentChange}
     receive0={receive0}
     receive1={receive1}
     previewToken0={previewToken0}
@@ -473,6 +479,8 @@ export const LpPercentActionContent = ({
 const LpPercentActionContentInner = ({
   percent,
   onPercentChange,
+  selectedPresetPercent,
+  onPresetPercentChange,
   receive0,
   receive1,
   previewToken0,
@@ -481,6 +489,8 @@ const LpPercentActionContentInner = ({
 }: {
   percent: number;
   onPercentChange: (value: number) => void;
+  selectedPresetPercent?: number | null;
+  onPresetPercentChange: (value: number) => void;
   receive0: bigint;
   receive1: bigint;
   previewToken0?: StakingToken;
@@ -510,8 +520,8 @@ const LpPercentActionContentInner = ({
             <button
               type="button"
               key={item}
-              className={clsx(percent === item && 'is-active')}
-              onClick={() => onPercentChange(item)}
+              className={clsx(selectedPresetPercent === item && 'is-active')}
+              onClick={() => onPresetPercentChange(item)}
             >
               {item}%
             </button>

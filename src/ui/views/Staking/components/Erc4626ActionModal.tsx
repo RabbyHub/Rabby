@@ -33,6 +33,7 @@ import {
   formatStakingAmount,
   formatStakingUsd,
   getStakingTokenBalanceAmount,
+  isStakingAmountPrecisionExceeded,
 } from '../utils/format';
 import {
   buildStakingMiniSignTxs,
@@ -74,6 +75,9 @@ export const Erc4626ActionModal = ({
   const wallet = useWallet();
   const [amount, setAmount] = useState('');
   const [percent, setPercent] = useState(100);
+  const [selectedPercentPreset, setSelectedPercentPreset] = useState<
+    number | null
+  >(100);
   const [submitting, setSubmitting] = useState(false);
   const chainInfo = findChainByServerID(pool.chain_id);
   const entry = useMemo(() => {
@@ -220,10 +224,15 @@ export const Erc4626ActionModal = ({
   const maxAmount = balance;
   const amountNumber = new BigNumber(amount || '0');
   const maxAmountNumber = new BigNumber(maxAmount || '0');
+  const amountPrecisionExceeded = isStakingAmountPrecisionExceeded(
+    amount,
+    decimals
+  );
   const depositAmountInvalid =
     !amount ||
     !amountNumber.isFinite() ||
     amountNumber.lte(0) ||
+    amountPrecisionExceeded ||
     (maxAmountNumber.isFinite() && amountNumber.gt(maxAmountNumber));
   const disabledReason = !entry
     ? t('page.staking.actionModal.unsupportedPool')
@@ -321,11 +330,9 @@ export const Erc4626ActionModal = ({
       });
       const hash = getStakingMainTxHash(hashes);
       if (hash) {
-        message.success(
-          t('page.staking.actionModal.submitted', { action: actionLabel })
-        );
         setAmount('');
         setPercent(100);
+        setSelectedPercentPreset(100);
         setSubmitting(false);
         submitted = true;
         onSubmitted({ hash });
@@ -359,6 +366,7 @@ export const Erc4626ActionModal = ({
   const resetAndCancel = () => {
     setAmount('');
     setPercent(100);
+    setSelectedPercentPreset(100);
     onCancel();
   };
 
@@ -374,8 +382,14 @@ export const Erc4626ActionModal = ({
   const redeemReceiveUsdText = formatStakingUsd(redeemReceiveUsd);
   const handlePercentChange = useCallback((value: number) => {
     setPercent(value);
+    setSelectedPercentPreset(null);
+  }, []);
+  const handlePercentPresetChange = useCallback((value: number) => {
+    setPercent(value);
+    setSelectedPercentPreset(value);
   }, []);
   const depositBalanceError = amountNumber.gt(maxAmountNumber);
+  const depositAmountError = depositBalanceError || amountPrecisionExceeded;
 
   return (
     <Popup
@@ -405,7 +419,7 @@ export const Erc4626ActionModal = ({
             {action === 'deposit' ? (
               <Erc4626DepositContent
                 amount={amount}
-                amountError={depositBalanceError}
+                amountError={depositAmountError}
                 amountUsdText={amountUsdText}
                 actionToken={actionToken}
                 assetSymbol={asset?.symbol}
@@ -417,6 +431,8 @@ export const Erc4626ActionModal = ({
               <Erc4626WithdrawContent
                 percent={percent}
                 onPercentChange={handlePercentChange}
+                selectedPresetPercent={selectedPercentPreset}
+                onPresetPercentChange={handlePercentPresetChange}
                 actionToken={actionToken}
                 previewRedeemLoading={previewRedeemLoading}
                 redeemReceiveText={redeemReceiveText}
@@ -430,6 +446,7 @@ export const Erc4626ActionModal = ({
                 disabledReason={disabledReason}
                 action={action}
                 depositBalanceError={depositBalanceError}
+                depositPrecisionError={amountPrecisionExceeded}
                 withdrawInvalid={withdrawInvalid}
                 assetSymbol={asset?.symbol}
               />

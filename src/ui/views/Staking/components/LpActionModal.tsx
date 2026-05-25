@@ -60,7 +60,10 @@ import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionItem } from '../hooks/useStakingPositionSummary';
 import type { StakingUniv3RangeBps } from '../hooks/useStakingPendingActions';
 import { useStakingMiniSign } from '../hooks/useStakingMiniSign';
-import { getStakingTokenBalanceAmount } from '../utils/format';
+import {
+  getStakingTokenBalanceAmount,
+  isStakingAmountPrecisionExceeded,
+} from '../utils/format';
 import { normalizeStakingPoolToPoolKey } from '../utils/poolKey';
 import {
   buildStakingMiniSignTxs,
@@ -363,6 +366,9 @@ export const LpActionModal = ({
   );
   const [priceWarningAccepted, setPriceWarningAccepted] = useState(false);
   const [percent, setPercent] = useState(100);
+  const [selectedPercentPreset, setSelectedPercentPreset] = useState<
+    number | null
+  >(100);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -373,6 +379,7 @@ export const LpActionModal = ({
       setV3RangePreset(V3_DEFAULT_RANGE_PRESET);
       setPriceWarningAccepted(false);
       setPercent(100);
+      setSelectedPercentPreset(100);
     }
   }, [visible]);
 
@@ -560,25 +567,46 @@ export const LpActionModal = ({
     : actionState?.is_supported !== true
     ? actionState?.reason || t('page.staking.actionModal.unavailable')
     : undefined;
+  const amount0PrecisionExceeded =
+    action === 'deposit' &&
+    !!amount0 &&
+    isStakingAmountPrecisionExceeded(
+      amount0,
+      normalizedTokens.token0Info?.decimals
+    );
+  const amount1PrecisionExceeded =
+    action === 'deposit' &&
+    !!amount1 &&
+    isStakingAmountPrecisionExceeded(
+      amount1,
+      normalizedTokens.token1Info?.decimals
+    );
+  const amountInputError = amount0PrecisionExceeded || amount1PrecisionExceeded;
 
   const raw0 = useMemo(() => {
     try {
+      if (amount0PrecisionExceeded) {
+        return '0';
+      }
       return normalizedTokens.token0Info
         ? toRawDecimal(amount0, normalizedTokens.token0Info.decimals)
         : '0';
     } catch {
       return '0';
     }
-  }, [amount0, normalizedTokens.token0Info]);
+  }, [amount0, amount0PrecisionExceeded, normalizedTokens.token0Info]);
   const raw1 = useMemo(() => {
     try {
+      if (amount1PrecisionExceeded) {
+        return '0';
+      }
       return normalizedTokens.token1Info
         ? toRawDecimal(amount1, normalizedTokens.token1Info.decimals)
         : '0';
     } catch {
       return '0';
     }
-  }, [amount1, normalizedTokens.token1Info]);
+  }, [amount1, amount1PrecisionExceeded, normalizedTokens.token1Info]);
 
   const token0BalanceRaw = useMemo(
     () => getTokenBalanceRaw(normalizedTokens.token0Info),
@@ -760,6 +788,8 @@ export const LpActionModal = ({
     action === 'deposit' && requiredRaw0ForBalance > token0BalanceRaw;
   const token1Insufficient =
     action === 'deposit' && requiredRaw1ForBalance > token1BalanceRaw;
+  const token0InputError = token0Insufficient || amount0PrecisionExceeded;
+  const token1InputError = token1Insufficient || amount1PrecisionExceeded;
   const balanceError = useMemo(() => {
     const symbols = [
       token0Insufficient ? normalizedTokens.token0Info?.token.symbol : null,
@@ -860,6 +890,9 @@ export const LpActionModal = ({
     if (action === 'deposit' && balanceError) {
       return false;
     }
+    if (action === 'deposit' && amountInputError) {
+      return false;
+    }
     if (action === 'deposit') {
       return isV2
         ? !!v2AddQuote &&
@@ -875,6 +908,7 @@ export const LpActionModal = ({
     return !!claimTargets.length;
   }, [
     action,
+    amountInputError,
     balanceError,
     claimTargets.length,
     disabledReason,
@@ -1081,9 +1115,6 @@ export const LpActionModal = ({
       const mainHash = getStakingMainTxHash(hashes);
 
       if (mainHash) {
-        message.success(
-          t('page.staking.actionModal.submitted', { action: title })
-        );
         setSubmitting(false);
         submitted = true;
         onSubmitted({
@@ -1427,6 +1458,12 @@ export const LpActionModal = ({
 
   const handlePercentChange = useCallback((value: number) => {
     setPercent(value);
+    setSelectedPercentPreset(null);
+  }, []);
+
+  const handlePercentPresetChange = useCallback((value: number) => {
+    setPercent(value);
+    setSelectedPercentPreset(value);
   }, []);
 
   const handlePriceWarningToggle = useCallback(() => {
@@ -1459,7 +1496,12 @@ export const LpActionModal = ({
   const handleCancel = useCallback(() => {
     onCancel();
   }, [onCancel]);
-  const footerError = disabledReason || balanceError;
+  const footerError =
+    disabledReason ||
+    balanceError ||
+    (amountInputError
+      ? t('page.staking.actionModal.enterValidTokenAmounts')
+      : '');
   const priceWarningTitle = priceDiffInfo
     ? t('page.staking.actionModal.poolPriceTitle', {
         token0: priceDiffInfo.token0Symbol,
@@ -1512,8 +1554,8 @@ export const LpActionModal = ({
                   onAmount1Change={handleAmount1Change}
                   onMax0={handleMax0}
                   onMax1={handleMax1}
-                  token0Insufficient={token0Insufficient}
-                  token1Insufficient={token1Insufficient}
+                  token0Insufficient={token0InputError}
+                  token1Insufficient={token1InputError}
                   token0Disabled={token0InputDisabled}
                   token1Disabled={token1InputDisabled}
                   rangeText={rangeText}
@@ -1524,6 +1566,8 @@ export const LpActionModal = ({
                 <LpPercentActionContent
                   percent={percent}
                   onPercentChange={handlePercentChange}
+                  selectedPresetPercent={selectedPercentPreset}
+                  onPresetPercentChange={handlePercentPresetChange}
                   receive0={receive0}
                   receive1={receive1}
                   previewToken0={previewToken0}

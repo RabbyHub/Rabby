@@ -94,6 +94,21 @@ export const getStakingTokenBalanceAmount = (
   return toStakingPlainAmount(fallback ?? token?.amount ?? 0);
 };
 
+export const isStakingAmountPrecisionExceeded = (
+  value: string,
+  decimals?: number
+) => {
+  if (!value || !value.includes('.')) {
+    return false;
+  }
+  if (typeof decimals !== 'number' || !Number.isFinite(decimals)) {
+    return false;
+  }
+
+  const decimalPlaces = value.split('.')[1]?.length || 0;
+  return decimalPlaces > Math.max(0, decimals);
+};
+
 export const shortenStakingAddress = (address?: string | null) => {
   if (!address) {
     return '-';

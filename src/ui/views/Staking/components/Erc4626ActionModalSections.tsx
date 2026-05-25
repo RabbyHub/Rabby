@@ -107,6 +107,8 @@ const Erc4626DepositContentInner = ({
 export const Erc4626WithdrawContent = ({
   percent,
   onPercentChange,
+  selectedPresetPercent,
+  onPresetPercentChange,
   actionToken,
   previewRedeemLoading,
   redeemReceiveText,
@@ -115,6 +117,8 @@ export const Erc4626WithdrawContent = ({
 }: {
   percent: number;
   onPercentChange: (value: number) => void;
+  selectedPresetPercent?: number | null;
+  onPresetPercentChange: (value: number) => void;
   actionToken?: TokenItem | null;
   previewRedeemLoading: boolean;
   redeemReceiveText: string;
@@ -124,6 +128,8 @@ export const Erc4626WithdrawContent = ({
   <Erc4626WithdrawContentInner
     percent={percent}
     onPercentChange={onPercentChange}
+    selectedPresetPercent={selectedPresetPercent}
+    onPresetPercentChange={onPresetPercentChange}
     actionToken={actionToken}
     previewRedeemLoading={previewRedeemLoading}
     redeemReceiveText={redeemReceiveText}
@@ -135,6 +141,8 @@ export const Erc4626WithdrawContent = ({
 const Erc4626WithdrawContentInner = ({
   percent,
   onPercentChange,
+  selectedPresetPercent,
+  onPresetPercentChange,
   actionToken,
   previewRedeemLoading,
   redeemReceiveText,
@@ -143,6 +151,8 @@ const Erc4626WithdrawContentInner = ({
 }: {
   percent: number;
   onPercentChange: (value: number) => void;
+  selectedPresetPercent?: number | null;
+  onPresetPercentChange: (value: number) => void;
   actionToken?: TokenItem | null;
   previewRedeemLoading: boolean;
   redeemReceiveText: string;
@@ -172,8 +182,8 @@ const Erc4626WithdrawContentInner = ({
             <button
               type="button"
               key={item}
-              className={clsx(percent === item && 'is-active')}
-              onClick={() => onPercentChange(item)}
+              className={clsx(selectedPresetPercent === item && 'is-active')}
+              onClick={() => onPresetPercentChange(item)}
             >
               {item}%
             </button>
@@ -214,12 +224,14 @@ export const Erc4626ActionError = ({
   disabledReason,
   action,
   depositBalanceError,
+  depositPrecisionError,
   withdrawInvalid,
   assetSymbol,
 }: {
   disabledReason?: string;
   action: Erc4626Action;
   depositBalanceError: boolean;
+  depositPrecisionError: boolean;
   withdrawInvalid: boolean;
   assetSymbol?: string;
 }) => {
@@ -235,6 +247,14 @@ export const Erc4626ActionError = ({
         {t('page.staking.actionModal.insufficientBalance', {
           symbols: assetSymbol || t('page.staking.actionModal.tokenFallback'),
         })}
+      </div>
+    );
+  }
+
+  if (action === 'deposit' && depositPrecisionError) {
+    return (
+      <div className="staking-action-error">
+        {t('page.staking.actionModal.enterValidTokenAmounts')}
       </div>
     );
   }
