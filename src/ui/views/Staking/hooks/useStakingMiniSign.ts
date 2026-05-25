@@ -44,7 +44,7 @@ export const useStakingMiniSign = ({
   account,
   chainServerId,
 }: {
-  account: Account;
+  account: Account | null | undefined;
   chainServerId: string;
 }) => {
   const { openUI, resetGasStore, close: closeSign } = useMiniSigner({

@@ -8,9 +8,25 @@ import React, {
 import { Button, Empty, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
+import type { Hex } from 'viem';
+
+import {
+  buildUniv3CollectTx,
+  encodeUniv3Collect,
+  encodeUniv3Multicall,
+  resolveUniv3PoolEntryWithClient,
+} from '@rabby-wallet/staking-sdk';
+import type {
+  StakingPool as SdkStakingPool,
+  StakingTxBuildResult,
+  Univ3PoolKey,
+} from '@rabby-wallet/staking-sdk';
 
 import { PageHeader } from '@/ui/component';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { useRabbySelector } from '@/ui/store';
+import { useWallet } from '@/ui/utils';
+import { findChainByServerID } from '@/utils/chain';
 
 import { Erc4626ActionModal } from './components/Erc4626ActionModal';
 import { LpActionModal } from './components/LpActionModal';
@@ -32,7 +48,18 @@ import type { StakingUniv3RangeBps } from './hooks/useStakingPendingActions';
 import { useStakingPositionSummary } from './hooks/useStakingPositionSummary';
 import type { StakingPositionItem } from './hooks/useStakingPositionSummary';
 import type { DetailTabKey, StakingAction } from './components/DetailSections';
-import type { StakingPoolCurveMetric, StakingProtocol } from './types';
+import type {
+  StakingPool,
+  StakingPoolCurveMetric,
+  StakingProtocol,
+} from './types';
+import { useStakingMiniSign } from './hooks/useStakingMiniSign';
+import { normalizeStakingPoolToPoolKey } from './utils/poolKey';
+import {
+  buildStakingMiniSignTxs,
+  createStakingReadContractClient,
+  getStakingMainTxHash,
+} from './utils/tx';
 import './style.less';
 
 type Erc4626Action = 'deposit' | 'withdraw';
@@ -49,9 +76,12 @@ const getPoolIdFromSearch = (search: string) => {
   return value || undefined;
 };
 
+const toSdkPool = (pool: StakingPool) => (pool as unknown) as SdkStakingPool;
+
 const StakingDetail = () => {
   const { t } = useTranslation();
   const location = useLocation();
+  const wallet = useWallet();
   const account = useRabbySelector((state) => state.account.currentAccount);
   const pageRef = useRef<HTMLDivElement>(null);
   const bottomActionAnchorRef = useRef<HTMLDivElement>(null);
@@ -66,6 +96,7 @@ const StakingDetail = () => {
     null
   );
   const [lpAction, setLpAction] = useState<PendingLpAction | null>(null);
+  const [claimSubmitting, setClaimSubmitting] = useState(false);
   const [localUniv3TokenIds, setLocalUniv3TokenIds] = useState<string[]>([]);
   const [localUniv3Ranges, setLocalUniv3Ranges] = useState<
     Record<string, StakingUniv3RangeBps>
@@ -131,6 +162,10 @@ const StakingDetail = () => {
     refreshCurveAsync,
     refreshPositionAsync,
     onMintedUniv3TokenId: handleMintedUniv3TokenId,
+  });
+  const { sign: signClaim } = useStakingMiniSign({
+    account,
+    chainServerId: visualPool?.chain_id || 'eth',
   });
 
   useEffect(() => {
@@ -259,6 +294,142 @@ const StakingDetail = () => {
     visualPool,
   ]);
 
+  const handleDirectClaim = useCallback(
+    async (
+      position?: StakingPositionItem,
+      claimPositions?: StakingPositionItem[]
+    ) => {
+      if (
+        !account ||
+        !visualPool ||
+        visualPool.type !== 'univ3' ||
+        claimSubmitting
+      ) {
+        return;
+      }
+
+      const claimTargets = position?.raw?.univ3
+        ? [position]
+        : (claimPositions || []).filter((item) => item.raw?.univ3);
+      if (!claimTargets.length) {
+        message.error(t('page.staking.actionModal.noClaimableRewards'));
+        return;
+      }
+
+      try {
+        setClaimSubmitting(true);
+        const chainInfo = findChainByServerID(visualPool.chain_id);
+        if (!chainInfo) {
+          throw new Error(t('page.staking.actionModal.unsupportedChain'));
+        }
+
+        const client = createStakingReadContractClient({
+          wallet,
+          chainServerId: visualPool.chain_id,
+          account,
+        });
+        const key = normalizeStakingPoolToPoolKey(visualPool) as Univ3PoolKey;
+        const univ3Entry = await resolveUniv3PoolEntryWithClient({
+          key,
+          client,
+        });
+        const common = {
+          pool: toSdkPool(visualPool),
+          from: account.address,
+          receiver: account.address,
+          evmChainId: chainInfo.id,
+          addressBook: [univ3Entry],
+        };
+        let buildResult: StakingTxBuildResult;
+
+        if (claimTargets.length === 1) {
+          const raw = claimTargets[0].raw!.univ3!;
+          buildResult = buildUniv3CollectTx({
+            ...common,
+            tokenId: raw.tokenId,
+            position: {
+              token0: raw.token0,
+              token1: raw.token1,
+              fee: raw.fee,
+            },
+          });
+        } else {
+          const calls = claimTargets.map((item) =>
+            encodeUniv3Collect({
+              tokenId: item.raw!.univ3!.tokenId,
+              receiver: account.address,
+            })
+          );
+          buildResult = {
+            tx: {
+              from: account.address as `0x${string}`,
+              to: univ3Entry.nonfungiblePositionManager,
+              data: encodeUniv3Multicall(calls as Hex[]),
+              value: '0x0',
+              chainId: chainInfo.id,
+            },
+            meta: {
+              poolId: visualPool.id,
+              chainId: visualPool.chain_id,
+              type: visualPool.type,
+              protocolId: visualPool.protocol.id,
+              addressVerification: univ3Entry.verification,
+            },
+          };
+        }
+
+        const { txs } = await buildStakingMiniSignTxs({
+          wallet,
+          chainServerId: visualPool.chain_id,
+          evmChainId: chainInfo.id,
+          account,
+          buildResult,
+        });
+        const hashes = await signClaim({
+          txs,
+          trigger: t('page.staking.actions.claim'),
+          logo: visualPool.protocol.logo_url,
+        });
+        const hash = getStakingMainTxHash(hashes);
+
+        if (hash) {
+          addPendingAction({
+            hash,
+            action: 'claim',
+            positionId: position?.id,
+            claimPositionIds: position
+              ? undefined
+              : claimTargets.map((item) => item.id),
+          });
+        }
+      } catch (error) {
+        if (
+          error === MINI_SIGN_ERROR.USER_CANCELLED ||
+          error === MINI_SIGN_ERROR.CANT_PROCESS
+        ) {
+          return;
+        }
+        console.error('staking claim action error', error);
+        message.error(
+          t('page.staking.actionModal.submitFailed', {
+            action: t('page.staking.actions.claim').toLowerCase(),
+          })
+        );
+      } finally {
+        setClaimSubmitting(false);
+      }
+    },
+    [
+      account,
+      addPendingAction,
+      claimSubmitting,
+      signClaim,
+      t,
+      visualPool,
+      wallet,
+    ]
+  );
+
   const handleAction = (
     action: StakingAction,
     position?: StakingPositionItem,
@@ -274,6 +445,11 @@ const StakingDetail = () => {
     }
 
     if (visualPool.type === 'univ2' || visualPool.type === 'univ3') {
+      if (visualPool.type === 'univ3' && action === 'claim') {
+        handleDirectClaim(position, claimPositions);
+        return;
+      }
+
       setLpAction({
         action,
         position,
@@ -294,9 +470,12 @@ const StakingDetail = () => {
       className="staking-detail-page min-h-screen bg-r-neutral-bg1 text-r-neutral-title1"
     >
       <PageHeader
-        className="staking-page-header mx-[20px]"
+        fixed
+        contentClassName="staking-page-header"
+        wrapperClassName="staking-page-header-wrap"
         forceShowBack
         isShowAccount
+        disableSwitchAccount
       >
         {t('page.staking.title')}
       </PageHeader>
