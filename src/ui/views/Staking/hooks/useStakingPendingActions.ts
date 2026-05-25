@@ -109,8 +109,8 @@ const createSnapshot = (
     }
     univ3Positions[position.id] = {
       liquidity: raw.liquidity,
-      tokensOwed0: raw.tokensOwed0,
-      tokensOwed1: raw.tokensOwed1,
+      tokensOwed0: raw.claimable0,
+      tokensOwed1: raw.claimable1,
     };
   });
 

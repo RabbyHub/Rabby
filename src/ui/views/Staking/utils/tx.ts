@@ -48,6 +48,7 @@ export const readStakingContract = async ({
   wallet,
   chainServerId,
   account,
+  from,
   address,
   abi,
   functionName,
@@ -56,6 +57,7 @@ export const readStakingContract = async ({
   wallet: Pick<WalletControllerType, 'requestETHRpc'>;
   chainServerId: string;
   account?: Account;
+  from?: Address;
   address: Address;
   abi: Abi;
   functionName: string;
@@ -71,6 +73,7 @@ export const readStakingContract = async ({
       method: 'eth_call',
       params: [
         {
+          ...(from ? { from } : {}),
           to: address,
           data,
         },

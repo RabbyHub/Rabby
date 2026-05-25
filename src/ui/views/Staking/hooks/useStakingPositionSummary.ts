@@ -57,6 +57,8 @@ export interface StakingUniv3PositionRaw {
   liquidity: string;
   tokensOwed0: string;
   tokensOwed1: string;
+  claimable0: string;
+  claimable1: string;
   poolState: Univ3QuotePoolState;
 }
 
@@ -96,6 +98,8 @@ const toBigInt = (value: unknown): bigint => {
 const isPositiveRaw = (value: bigint) => value > 0n;
 
 const tokenKey = (token?: StakingToken) => token?.id?.toLowerCase() || '';
+
+const MAX_UINT128 = (2n ** 128n - 1n).toString();
 
 const findTokenByAddress = (
   tokens: StakingToken[],
@@ -424,6 +428,54 @@ const buildAssetsForTokenAmounts = async ({
       )
   );
 
+const readUniv3ClaimableAmounts = async ({
+  wallet,
+  account,
+  pool,
+  entry,
+  tokenId,
+  fallback0,
+  fallback1,
+}: {
+  wallet: ReturnType<typeof useWallet>;
+  account: Account;
+  pool: StakingPool;
+  entry: Awaited<ReturnType<typeof resolveUniv3PoolEntryWithClient>>;
+  tokenId: string;
+  fallback0: bigint;
+  fallback1: bigint;
+}) => {
+  try {
+    const result = (await readStakingContract({
+      wallet,
+      chainServerId: pool.chain_id,
+      account,
+      from: account.address as `0x${string}`,
+      address: entry.nonfungiblePositionManager,
+      abi: UNIV3_NPM_ABI,
+      functionName: 'collect',
+      args: [
+        {
+          tokenId: BigInt(tokenId),
+          recipient: account.address,
+          amount0Max: BigInt(MAX_UINT128),
+          amount1Max: BigInt(MAX_UINT128),
+        },
+      ],
+    })) as readonly unknown[];
+
+    return {
+      amount0: toBigInt(result[0]),
+      amount1: toBigInt(result[1]),
+    };
+  } catch {
+    return {
+      amount0: fallback0,
+      amount1: fallback1,
+    };
+  }
+};
+
 const readUniv3PositionItem = async ({
   wallet,
   account,
@@ -511,13 +563,23 @@ const readUniv3PositionItem = async ({
       });
     }
 
+    const claimable = await readUniv3ClaimableAmounts({
+      wallet,
+      account,
+      pool,
+      entry,
+      tokenId,
+      fallback0: tokensOwed0,
+      fallback1: tokensOwed1,
+    });
+
     const rewards = await buildAssetsForTokenAmounts({
       wallet,
       account,
       pool,
       amounts: [
-        { token: token0, rawAmount: tokensOwed0 },
-        { token: token1, rawAmount: tokensOwed1 },
+        { token: token0, rawAmount: claimable.amount0 },
+        { token: token1, rawAmount: claimable.amount1 },
       ],
     });
 
@@ -537,6 +599,8 @@ const readUniv3PositionItem = async ({
           liquidity: liquidity.toString(),
           tokensOwed0: tokensOwed0.toString(),
           tokensOwed1: tokensOwed1.toString(),
+          claimable0: claimable.amount0.toString(),
+          claimable1: claimable.amount1.toString(),
           poolState,
         },
       },
@@ -619,8 +683,8 @@ const readUniv3Position = async ({
     if (!raw) {
       return;
     }
-    mergeRawAmount(rewardsRaw, token0, BigInt(raw.tokensOwed0));
-    mergeRawAmount(rewardsRaw, token1, BigInt(raw.tokensOwed1));
+    mergeRawAmount(rewardsRaw, token0, BigInt(raw.claimable0));
+    mergeRawAmount(rewardsRaw, token1, BigInt(raw.claimable1));
 
     if (BigInt(raw.liquidity) > 0n) {
       const quote = quoteUniv3DecreaseLiquidity({
