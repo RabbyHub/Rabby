@@ -471,11 +471,9 @@ const StakingDetail = () => {
     >
       <PageHeader
         fixed
-        contentClassName="staking-page-header"
+        contentClassName="staking-page-header switch-account thin-header"
         wrapperClassName="staking-page-header-wrap"
         forceShowBack
-        isShowAccount
-        disableSwitchAccount
       >
         {t('page.staking.title')}
       </PageHeader>

@@ -92,8 +92,9 @@ body.dark .staking-selector-popup {
   align-items: center;
   justify-content: center;
   flex: 0 1 auto;
+  box-sizing: border-box;
   height: 32px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 8px;
   overflow: hidden;
   background: var(--r-neutral-card1);
@@ -102,6 +103,19 @@ body.dark .staking-selector-popup {
   line-height: 14px;
   font-weight: 500;
   white-space: nowrap;
+}
+
+.staking-list-page .staking-filter-trigger:not(.is-selected):not(.is-disabled):hover {
+  border-color: var(--r-blue-default);
+  background: var(--r-neutral-card1);
+  color: var(--r-blue-default);
+}
+
+.staking-list-page .staking-filter-trigger:not(.is-selected).is-active,
+.staking-list-page .staking-filter-trigger:not(.is-selected):not(.is-disabled):active {
+  border-color: var(--r-blue-default);
+  background: var(--r-blue-light1);
+  color: var(--r-blue-default);
 }
 
 .staking-list-page .staking-filter-trigger.is-selected.is-protocol {
@@ -160,7 +174,7 @@ body.dark .staking-selector-popup {
   width: 14px;
   height: 14px;
   line-height: 0;
-  color: var(--r-neutral-foot);
+  color: currentColor;
 }
 
 .staking-list-page .staking-filter-trigger-icon svg {
@@ -441,19 +455,25 @@ body.dark .staking-selector-popup {
   position: relative;
   display: flex;
   align-items: center;
+  box-sizing: border-box;
   width: 100%;
   min-height: 60px;
-  padding: 14px 12px;
+  padding: 13px 11px;
   gap: 8px;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 8px;
   background: var(--r-neutral-card1);
   text-align: left;
 }
 
+.staking-selector-popup .staking-selector-row:hover {
+  border-color: var(--r-blue-default);
+}
+
+.staking-selector-popup .staking-selector-row:active,
 .staking-selector-popup .staking-selector-row.is-selected {
   border: 1px solid var(--r-blue-default);
-  padding: 13px 11px;
+  background: var(--r-blue-light1);
 }
 
 .staking-selector-popup .staking-selector-all-icon {

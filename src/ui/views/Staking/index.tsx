@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Input, Switch, message } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 
 import { PageHeader } from '@/ui/component';
 import { useDebouncedValue } from '@/ui/hooks/useDebounceValue';
@@ -25,16 +26,22 @@ import type { StakingFilterItem, StakingProtocol } from './types';
 import './style.less';
 
 const PAGE_LIMIT = 50;
+type StakingRouteState = {
+  stakingMyHoldingOnly?: boolean;
+};
 
 const Staking = () => {
   const { t } = useTranslation();
+  const history = useHistory<StakingRouteState | undefined>();
   const account = useRabbySelector((state) => state.account.currentAccount);
   const [search, setSearch] = useState('');
   const [chainId, setChainId] = useState<string | undefined>();
   const [protocolId, setProtocolId] = useState<string | undefined>();
   const [protocolSelectorVisible, setProtocolSelectorVisible] = useState(false);
   const [chainSelectorVisible, setChainSelectorVisible] = useState(false);
-  const [myHoldingOnly, setMyHoldingOnly] = useState(false);
+  const [myHoldingOnly, setMyHoldingOnly] = useState(
+    () => !!history.location.state?.stakingMyHoldingOnly
+  );
   const debouncedSearch = useDebouncedValue(search, 300);
 
   const {
@@ -105,6 +112,22 @@ const Staking = () => {
     }
   }, [filtersError, poolsError, t]);
 
+  const handleMyHoldingOnlyChange = useCallback(
+    (checked: boolean) => {
+      setMyHoldingOnly(checked);
+      history.replace({
+        pathname: history.location.pathname,
+        search: history.location.search,
+        hash: history.location.hash,
+        state: {
+          ...(history.location.state || {}),
+          stakingMyHoldingOnly: checked,
+        },
+      });
+    },
+    [history]
+  );
+
   return (
     <div className="staking-list-page min-h-screen bg-r-neutral-bg2 text-r-neutral-title1">
       <PageHeader
@@ -134,6 +157,7 @@ const Staking = () => {
             <StakingFilterTrigger
               placeholder={t('page.staking.filter.allProtocol')}
               variant="protocol"
+              active={protocolSelectorVisible}
               label={
                 selectedProtocol
                   ? selectedProtocol.name || selectedProtocol.id
@@ -151,6 +175,7 @@ const Staking = () => {
             <StakingFilterTrigger
               placeholder={t('page.staking.filter.allChains')}
               variant="chain"
+              active={chainSelectorVisible}
               label={selectedChain?.name}
               icon={
                 selectedChain ? (
@@ -171,7 +196,7 @@ const Staking = () => {
               className="staking-holding-switch"
               checked={myHoldingOnly}
               disabled={!account?.address}
-              onChange={setMyHoldingOnly}
+              onChange={handleMyHoldingOnlyChange}
             />
           </div>
         </div>

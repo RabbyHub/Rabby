@@ -73,6 +73,7 @@ export const StakingFilterTrigger = ({
   label,
   icon,
   variant,
+  active,
   disabled,
   onClick,
   onClear,
@@ -81,6 +82,7 @@ export const StakingFilterTrigger = ({
   label?: string;
   icon?: React.ReactNode;
   variant: 'protocol' | 'chain';
+  active?: boolean;
   disabled?: boolean;
   onClick: () => void;
   onClear: () => void;
@@ -94,6 +96,7 @@ export const StakingFilterTrigger = ({
         'staking-filter-trigger',
         `is-${variant}`,
         selected && 'is-selected',
+        active && 'is-active',
         disabled && 'is-disabled'
       )}
     >
@@ -303,7 +306,6 @@ export const ProtocolSelectorPopup = ({
   return (
     <Popup
       visible={visible}
-      title={t('page.staking.filter.selectProtocol')}
       height={540}
       closable
       isNew
@@ -424,7 +426,6 @@ export const ChainSelectorPopup = ({
   return (
     <Popup
       visible={visible}
-      title={t('page.staking.filter.selectChain')}
       height={540}
       closable
       isNew
