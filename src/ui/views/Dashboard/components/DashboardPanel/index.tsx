@@ -51,6 +51,7 @@ import {
   RcIconSwapCC,
   RcIconTransactionsCC,
   RcIconConvertDustCC,
+  RcIconStakingCC,
 } from 'ui/assets/dashboard/panel';
 
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -594,6 +595,14 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       },
       isFullscreen: true,
     } as IPanelItem,
+    staking: {
+      icon: RcIconStakingCC,
+      eventKey: 'Staking',
+      content: t('page.dashboard.home.panel.staking'),
+      onClick: () => {
+        history.push('/staking');
+      },
+    } as IPanelItem,
   };
 
   const defaultPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
@@ -610,6 +619,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'nft',
       'dapps',
       'convertDust',
+      'staking',
     ];
   }, []);
 
