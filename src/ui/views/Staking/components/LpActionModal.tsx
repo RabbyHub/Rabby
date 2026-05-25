@@ -314,6 +314,7 @@ const buildTokenBalanceInfo = async ({
   const decimals = apiToken?.decimals ?? token.decimals ?? 18;
   const balance = getStakingTokenBalanceAmount(apiToken, apiToken?.amount);
   const price = apiToken?.price ?? token.price;
+  const debankPrice = apiToken?.price;
 
   return {
     token: {
@@ -336,6 +337,7 @@ const buildTokenBalanceInfo = async ({
     balance,
     decimals,
     price,
+    debankPrice,
   };
 };
 
@@ -817,8 +819,12 @@ export const LpActionModal = ({
     ) {
       return null;
     }
-    const token0Price = new BigNumber(normalizedTokens.token0Info.price || 0);
-    const token1Price = new BigNumber(normalizedTokens.token1Info.price || 0);
+    const token0Price = new BigNumber(
+      normalizedTokens.token0Info.debankPrice || 0
+    );
+    const token1Price = new BigNumber(
+      normalizedTokens.token1Info.debankPrice || 0
+    );
     if (
       !token0Price.isFinite() ||
       !token1Price.isFinite() ||

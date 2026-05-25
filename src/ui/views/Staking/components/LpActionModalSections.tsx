@@ -22,6 +22,7 @@ export type LpActionModalTokenBalanceInfo = {
   balance: string;
   decimals: number;
   price?: number | null;
+  debankPrice?: number | null;
 };
 
 export type LpTokenInputSide = 'token0' | 'token1';
