@@ -57,6 +57,8 @@ import stats from '@/stats';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { usePerpsActions } from '../hooks/usePerpsActions';
 import { useActiveAssetSubscription } from '../hooks/useActiveAssetSubscription';
+import { PerpsLimitOrdersSection } from '../components/PerpsLimitOrdersSection';
+import { useDetailLimitOrders } from '../hooks/useLimitOrders';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { EnableUnifiedAccountPopup } from '../popup/EnableUnifiedAccountPopup';
@@ -257,6 +259,11 @@ export const PerpsSingleCoin = () => {
   const { activeAssetCtx, activeAssetData } = useActiveAssetSubscription(
     coin,
     currentPerpsAccount?.address
+  );
+
+  const detailLimitRows = useDetailLimitOrders(
+    coin,
+    activeAssetData?.leverage ?? null
   );
 
   const hasPosition = useMemo(() => {
@@ -992,6 +999,12 @@ export const PerpsSingleCoin = () => {
             </div>
           </>
         )}
+
+        <PerpsLimitOrdersSection
+          rows={detailLimitRows}
+          marketDataMap={marketDataMap}
+          className="mt-16"
+        />
 
         {!hasPosition && (
           <div className="mt-16">

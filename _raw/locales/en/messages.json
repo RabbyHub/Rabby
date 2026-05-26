@@ -827,9 +827,28 @@
       },
       "cancelAllOrdersPopup": {
         "title": "Confirm Cancel All Orders",
+        "cancelAllOrdersConfirmTitle": "Confirm Cancel ALL Orders",
+        "cancelAllOrdersConfirmMessage": "All your Limit Orders will be canceled",
         "description": "All your open orders will be cancelled."
       },
+      "limitOrders": "Limit Orders",
+      "cancelAll": "Cancel All",
+      "limitOrderDetail": {
+        "title": "Limit {{side}} {{pair}}",
+        "time": "Time",
+        "size": "Size",
+        "filled": "Filled",
+        "limitPrice": "Limit Price",
+        "marginUsage": "Margin Usage",
+        "cancelLimitOrder": "Cancel Limit Order",
+        "buy": "Buy",
+        "sell": "Sell"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Limit order canceled",
+        "cancelLimitOrdersSuccess": "{{count}} limit orders canceled",
+        "cancelLimitOrderError": "Failed to cancel limit order",
+        "limitOrderPlaced": "Limit {{direction}} {{coin}}: Size {{size}} placed at ${{price}}",
         "deposit": "Deposit successful",
         "depositTip": "{{amount}} USDC deposited",
         "success": "Success",
@@ -1584,7 +1603,23 @@
         "minimumOrderSize": "The minimum order size is $10",
         "maximumOrderSize": "The maximum order size is {{amount}}",
         "minMargin": "Minimum margin is {{amount}}",
-        "maxMargin": "Maximum margin is {{amount}}"
+        "maxMargin": "Maximum margin is {{amount}}",
+        "orderType": "Order Type",
+        "currentPrice": "Current Price",
+        "check": "Check",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Limit Price",
+        "mayExecuteImmediately": "This limit order may execute immediately",
+        "setLimitOrderBtn": "Set Limit Order"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Set Limit Buy Price",
+        "setLimitSellPrice": "Set Limit Sell Price",
+        "mid": "Mid",
+        "set": "Set",
+        "blockError": "Order price exceeds the 10% price protection limit.",
+        "warning": "Limit price is 5%+ away from the market price"
       },
       "PerpsEditMarginPopup": {
         "margin": "Margin",
