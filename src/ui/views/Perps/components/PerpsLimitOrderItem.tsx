@@ -8,7 +8,6 @@ import { TokenImg } from './TokenImg';
 import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
 import { computeFilledPct } from '../limitOrderUtils';
 
-/** 12 点钟方向起画的圆形成交进度环。 */
 const FilledProgressIcon: React.FC<{ percent: number; size?: number }> = ({
   percent,
   size = 14,
@@ -16,30 +15,27 @@ const FilledProgressIcon: React.FC<{ percent: number; size?: number }> = ({
   const r = (size - 2) / 2;
   const c = 2 * Math.PI * r;
   const clamped = Math.max(0, Math.min(100, percent));
-  const offset = c * (1 - clamped / 100);
   const center = size / 2;
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none">
       <circle
         cx={center}
         cy={center}
         r={r}
-        fill="none"
-        stroke="var(--r-neutral-line, #e0e5ec)"
+        stroke="var(--r-neutral-info, #C5C5CF)"
         strokeWidth={2}
       />
-      <circle
-        cx={center}
-        cy={center}
-        r={r}
-        fill="none"
-        stroke="var(--r-blue-default, #7084ff)"
-        strokeWidth={2}
-        strokeDasharray={c}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        transform={`rotate(-90 ${center} ${center})`}
-      />
+      {clamped > 0 && (
+        <circle
+          cx={center}
+          cy={center}
+          r={r}
+          stroke="var(--r-blue-default, #4C65FF)"
+          strokeWidth={2}
+          strokeDasharray={c}
+          strokeDashoffset={c * (1 - clamped / 100)}
+        />
+      )}
     </svg>
   );
 };
@@ -137,10 +133,10 @@ export const PerpsLimitOrderItem: React.FC<{
           {formatUsdValue(marginUsage)}
         </div>
         <div className="flex items-center gap-4 text-13 font-medium text-r-neutral-foot">
+          <FilledProgressIcon percent={filledPct} />
           <span>
             {t('page.perps.limitOrderDetail.filled')} {filledPct.toFixed(0)}%
           </span>
-          <FilledProgressIcon percent={filledPct} />
         </div>
       </div>
     </div>

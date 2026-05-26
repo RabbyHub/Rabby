@@ -1623,7 +1623,9 @@
         "mid": "Mid",
         "set": "Set",
         "blockError": "Order price exceeds the 10% price protection limit.",
-        "warning": "Limit price is 5%+ away from the market price"
+        "warning": "Limit price is 5%+ away from the market price",
+        "confirmTitle": "Review Limit Price",
+        "confirmMessage": "Limit price is 5%+ away from market price"
       },
       "PerpsEditMarginPopup": {
         "margin": "Margin",
