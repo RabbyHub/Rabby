@@ -2,8 +2,11 @@ import React, { useCallback, useMemo } from 'react';
 import type { Tx } from '@rabby-wallet/rabby-api/dist/types';
 
 import type { Account } from '@/background/service/preference';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { useWallet } from '@/ui/utils';
 
 const StakingSignHeader = ({
   logo,
@@ -47,6 +50,7 @@ export const useStakingMiniSign = ({
   account: Account | null | undefined;
   chainServerId: string;
 }) => {
+  const wallet = useWallet();
   const { openUI, resetGasStore, close: closeSign } = useMiniSigner({
     account,
     chainServerId,
@@ -71,9 +75,26 @@ export const useStakingMiniSign = ({
       trigger: string;
       logo?: string;
     }) => {
+      const runFullSign = async () => {
+        const hashes: string[] = [];
+        for (const tx of txs) {
+          hashes.push(
+            await wallet.sendRequest<string>({
+              method: 'eth_sendTransaction',
+              params: [tx],
+            })
+          );
+        }
+        return hashes;
+      };
+
+      if (!supportedDirectSign(account?.type || '')) {
+        return runFullSign();
+      }
+
       resetGasStore();
       closeSign();
-      return openUI({
+      const signerConfig = {
         txs,
         ga: {
           ...baseGa,
@@ -86,9 +107,26 @@ export const useStakingMiniSign = ({
         }),
         showSimulateChange: true,
         disableSignBtn: false,
-      });
+      };
+
+      try {
+        return await openUI(signerConfig);
+      } catch (error) {
+        if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+          throw error;
+        }
+        return runFullSign();
+      }
     },
-    [baseGa, chainServerId, closeSign, openUI, resetGasStore]
+    [
+      account?.type,
+      baseGa,
+      chainServerId,
+      closeSign,
+      openUI,
+      resetGasStore,
+      wallet,
+    ]
   );
 
   return {
