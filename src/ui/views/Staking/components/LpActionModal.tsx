@@ -128,8 +128,6 @@ const rawToDecimalInput = (raw: string | bigint, decimals: number) => {
   return text.includes('.') ? text.replace(/\.?0+$/, '') || '0' : text;
 };
 
-const minRaw = (left: bigint, right: bigint) => (left < right ? left : right);
-
 const toDeadline = () =>
   Math.floor(Date.now() / 1000 + DEFAULT_DEADLINE_SECONDS).toString();
 
@@ -1364,40 +1362,13 @@ export const LpActionModal = ({
     ]
   );
 
-  const getV2MaxRaw = useCallback(
-    (side: TokenInputSide) => {
-      if (!univ2Facts) {
-        return side === 'token0' ? token0BalanceRaw : token1BalanceRaw;
-      }
-      try {
-        if (side === 'token0') {
-          const maxByToken1 = quoteUniv2CounterAmount({
-            inputAmount: token1BalanceRaw,
-            inputReserve: univ2Facts.reserve1,
-            outputReserve: univ2Facts.reserve0,
-          });
-          return minRaw(token0BalanceRaw, maxByToken1);
-        }
-        const maxByToken0 = quoteUniv2CounterAmount({
-          inputAmount: token0BalanceRaw,
-          inputReserve: univ2Facts.reserve0,
-          outputReserve: univ2Facts.reserve1,
-        });
-        return minRaw(token1BalanceRaw, maxByToken0);
-      } catch {
-        return side === 'token0' ? token0BalanceRaw : token1BalanceRaw;
-      }
-    },
-    [token0BalanceRaw, token1BalanceRaw, univ2Facts]
-  );
-
   const handleMax0 = useCallback(() => {
     setPriceWarningAccepted(false);
     if (isV2 && normalizedTokens.token0Info) {
       setV2AmountsFromSide(
         'token0',
         rawToDecimalInput(
-          getV2MaxRaw('token0'),
+          token0BalanceRaw,
           normalizedTokens.token0Info.decimals
         )
       );
@@ -1413,12 +1384,12 @@ export const LpActionModal = ({
     setLastInputSide('token0');
     setAmount0(String(normalizedTokens.token0Info?.balance || '0'));
   }, [
-    getV2MaxRaw,
     isV2,
     isV3PositionDeposit,
     normalizedTokens.token0Info,
     setV2AmountsFromSide,
     setV3PositionAmountsFromSide,
+    token0BalanceRaw,
   ]);
 
   const handleMax1 = useCallback(() => {
@@ -1427,7 +1398,7 @@ export const LpActionModal = ({
       setV2AmountsFromSide(
         'token1',
         rawToDecimalInput(
-          getV2MaxRaw('token1'),
+          token1BalanceRaw,
           normalizedTokens.token1Info.decimals
         )
       );
@@ -1443,12 +1414,12 @@ export const LpActionModal = ({
     setLastInputSide('token1');
     setAmount1(String(normalizedTokens.token1Info?.balance || '0'));
   }, [
-    getV2MaxRaw,
     isV2,
     isV3PositionDeposit,
     normalizedTokens.token1Info,
     setV2AmountsFromSide,
     setV3PositionAmountsFromSide,
+    token1BalanceRaw,
   ]);
 
   const rangeText = v3QuotedRange
