@@ -50,7 +50,9 @@ export const PerpsLimitOrderItem: React.FC<{
   marginUsage: number;
   marketData?: MarketData;
   onClick: () => void;
-}> = ({ order, leverage, marginUsage, marketData, onClick }) => {
+  /** 点击币对名时触发（用于跳转到 SingleCoin）。未传则币对名无独立点击。 */
+  onCoinClick?: () => void;
+}> = ({ order, leverage, marginUsage, marketData, onClick, onCoinClick }) => {
   const { t } = useTranslation();
   const isBuy = order.side === 'B';
   const side = isBuy ? 'Long' : 'Short';
@@ -85,10 +87,27 @@ export const PerpsLimitOrderItem: React.FC<{
               ? t('page.perps.limitOrderDetail.buy')
               : t('page.perps.limitOrderDetail.sell')}
           </span>
-          <PerpsDisplayCoinName
-            item={marketData}
-            className="text-15 ml-4 font-medium"
-          />
+          {onCoinClick ? (
+            <span
+              className="group cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCoinClick();
+              }}
+            >
+              <PerpsDisplayCoinName
+                item={marketData}
+                className="text-15 ml-4 font-medium"
+                baseClassName="group-hover:text-r-blue-default"
+                quoteClassName="group-hover:text-r-blue-default"
+              />
+            </span>
+          ) : (
+            <PerpsDisplayCoinName
+              item={marketData}
+              className="text-15 ml-4 font-medium"
+            />
+          )}
         </div>
         <div className="flex items-center gap-6">
           <span

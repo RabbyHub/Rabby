@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useMemoizedFn } from 'ahooks';
+import { useHistory } from 'react-router-dom';
 import { MarketData } from '@/ui/models/perps';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
@@ -16,7 +17,9 @@ export const PerpsLimitOrdersSection: React.FC<{
   marketDataMap: Record<string, MarketData>;
   /** 外层容器 className，由调用页传入边距（首页 mt-20 mx-20 / 详情页 mt-16）。 */
   className?: string;
-}> = ({ rows, marketDataMap, className }) => {
+  /** 详情页传 true：当前已在该币种页面，禁用 item 内币对名跳转。 */
+  disableCoinNavigation?: boolean;
+}> = ({ rows, marketDataMap, className, disableCoinNavigation }) => {
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();
   const {
@@ -24,6 +27,7 @@ export const PerpsLimitOrdersSection: React.FC<{
     handleActionApproveStatus,
   } = usePerpsPosition();
   const [activeRow, setActiveRow] = useState<LimitOrderRow | null>(null);
+  const history = useHistory();
 
   const handleCancelAll = useMemoizedFn(() => {
     const modal = Modal.info({
@@ -108,6 +112,11 @@ export const PerpsLimitOrdersSection: React.FC<{
             marginUsage={row.marginUsage}
             marketData={marketDataMap[row.order.coin]}
             onClick={() => setActiveRow(row)}
+            onCoinClick={
+              disableCoinNavigation
+                ? undefined
+                : () => history.push(`/perps/single-coin/${row.order.coin}`)
+            }
           />
         ))}
       </div>

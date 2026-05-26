@@ -1004,6 +1004,7 @@ export const PerpsSingleCoin = () => {
           rows={detailLimitRows}
           marketDataMap={marketDataMap}
           className="mt-16"
+          disableCoinNavigation
         />
 
         {!hasPosition && (

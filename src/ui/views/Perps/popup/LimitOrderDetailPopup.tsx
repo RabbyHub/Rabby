@@ -68,6 +68,14 @@ export const LimitOrderDetailPopup: React.FC<{
             value={`${filledPct.toFixed(0)}%`}
           />
           <DetailRow
+            label={t('page.perps.limitOrderDetail.currentPrice')}
+            value={
+              marketData?.markPx
+                ? `$${splitNumberByStep(marketData.markPx)}`
+                : '-'
+            }
+          />
+          <DetailRow
             label={t('page.perps.limitOrderDetail.limitPrice')}
             value={`@ $${splitNumberByStep(order.limitPx)}`}
           />

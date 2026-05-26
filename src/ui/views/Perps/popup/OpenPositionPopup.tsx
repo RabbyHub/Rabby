@@ -409,7 +409,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     <>
       <div className="flex-1 px-20">
         <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-12 pb-4">
-          {t('page.perpsDetail.PerpsOpenPositionPopup.newPosition')}
+          {t('page.perpsDetail.PerpsOpenPositionPopup.openCoinPosition', {
+            coin: formatPerpsCoin(coin),
+          })}
         </div>
         <div className="flex mt-12 mb-12 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
           <div
@@ -476,7 +478,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             }
             titleExtra={
               <span
-                className="ml-8 text-12 text-r-blue-default bg-r-blue-light1 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
+                className="ml-8 text-12 text-r-neutral-title-1 bg-r-neutral-card2 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
                 onClick={() => {
                   if (marginModeDisabled) {
                     message.error(
@@ -678,7 +680,9 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const renderReviewMode = useMemoizedFn(() => (
     <>
       <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-12">
-        {t('page.perps.reviewOrder')}
+        {orderType === 'limit'
+          ? t('page.perpsDetail.PerpsOpenPositionPopup.checkLimitOrder')
+          : t('page.perpsDetail.PerpsOpenPositionPopup.checkMarketOrder')}
       </div>
 
       <div className="flex-1 px-20">
@@ -711,28 +715,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {direction} {leverage}x
               </div>
             </div>
-            <div className="flex justify-between items-center">
-              <div className="text-13 text-r-neutral-body">
-                {t('page.perpsDetail.PerpsOpenPositionPopup.orderType')}
-              </div>
-              <div className="text-13 text-r-neutral-title-1 font-medium">
-                {orderType === 'limit'
-                  ? t('page.perpsDetail.PerpsOpenPositionPopup.orderTypeLimit')
-                  : t(
-                      'page.perpsDetail.PerpsOpenPositionPopup.orderTypeMarket'
-                    )}
-              </div>
-            </div>
-            {orderType === 'limit' && (
-              <div className="flex justify-between items-center">
-                <div className="text-13 text-r-neutral-body">
-                  {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
-                </div>
-                <div className="text-13 text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(limitPx)}
-                </div>
-              </div>
-            )}
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
                 {t('page.perps.size')}
@@ -804,6 +786,16 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 ${splitNumberByStep(markPrice)}
               </div>
             </div>
+            {orderType === 'limit' && (
+              <div className="flex justify-between items-center">
+                <div className="text-13 text-r-neutral-body">
+                  {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
+                </div>
+                <div className="text-13 text-r-neutral-title-1 font-medium">
+                  ${splitNumberByStep(limitPx)}
+                </div>
+              </div>
+            )}
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body flex items-center gap-4">
                 {t('page.perps.estimatedLiquidationPrice')}
@@ -827,39 +819,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
         {/* Action Buttons */}
         <div className="fixed bottom-0 left-0 right-0">
-          {/* <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
-            <span>
-              {t('page.perpsDetail.PerpsClosePositionPopup.fee')}{' '}
-              {formatPercent(bothFee, 4)}
-            </span>
-            <Tooltip
-              overlayClassName={clsx('rectangle')}
-              placement="top"
-              title={
-                <div>
-                  <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.rabbyFeeTipsV2')}
-                  </div>
-                  <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.providerFeeTips', {
-                      fee: formatPercent(providerFee, 4),
-                    })}
-                  </div>
-                </div>
-              }
-              align={{ targetOffset: [0, 0] }}
-            >
-              <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-            </Tooltip>
-          </div> */}
-          {isMarketable && (
-            <div className="mx-20 mb-8 px-12 py-8 rounded-[6px] bg-r-orange-light text-13 font-medium text-r-orange-default text-center">
-              {t(
-                'page.perpsDetail.PerpsOpenPositionPopup.mayExecuteImmediately'
-              )}
-            </div>
-          )}
           <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+            {isMarketable && (
+              <div className="mx-20 mb-8 text-13 font-medium text-r-orange-default text-center">
+                {t(
+                  'page.perpsDetail.PerpsOpenPositionPopup.mayExecuteImmediately'
+                )}
+              </div>
+            )}
             <Button
               block
               size="large"
