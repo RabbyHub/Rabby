@@ -263,7 +263,7 @@ const SendNFT = () => {
 
   const getNFTTransferParams = useCallback(
     (amount: number): Record<string, any> | null => {
-      if (!nftItem || !chainInfo || !currentAccount) {
+      if (!nftItem || !chainInfo || !currentAccount?.address) {
         // throw new Error('Missing required data for NFT transfer');
         return null;
       }
@@ -313,7 +313,7 @@ const SendNFT = () => {
 
       return params;
     },
-    [nftItem, chainInfo, currentAccount, toAddress]
+    [nftItem, chainInfo, currentAccount?.address, toAddress]
   );
 
   const amount = form.getFieldValue('amount');
