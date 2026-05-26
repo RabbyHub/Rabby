@@ -330,7 +330,7 @@ export const LpDepositContent = ({
   token1Insufficient: boolean;
   token0Disabled?: boolean;
   token1Disabled?: boolean;
-  rangeText: string;
+  rangeText?: string;
   v2AddQuote?: LpUnusedQuote | null;
 }) => (
   <LpDepositContentInner
@@ -394,7 +394,7 @@ const LpDepositContentInner = ({
   token1Insufficient: boolean;
   token0Disabled?: boolean;
   token1Disabled?: boolean;
-  rangeText: string;
+  rangeText?: string;
   v2AddQuote?: LpUnusedQuote | null;
 }) => {
   const { t } = useTranslation();
@@ -427,7 +427,7 @@ const LpDepositContentInner = ({
         />
       </div>
       <div className="staking-lp-info">
-        {isV3 && !isPositionAction ? (
+        {isV3 && !isPositionAction && rangeText ? (
           <div className="staking-lp-info-row">
             <span>{t('page.staking.actionModal.range')}</span>
             <span>{rangeText}</span>

@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { message } from 'antd';
-import { useTranslation } from 'react-i18next';
 
 import type { Account } from '@/background/service/preference';
 import { useWallet } from '@/ui/utils';
@@ -11,6 +9,7 @@ import { waitForStakingTxReceipt } from '../utils/tx';
 import type { StakingTxReceipt } from '../utils/tx';
 
 export type StakingPendingActionKind = 'deposit' | 'withdraw' | 'claim';
+export type StakingPendingActionStatus = 'pending' | 'succeed' | 'failed';
 
 export interface StakingUniv3RangeBps {
   lowerBps: number;
@@ -21,6 +20,7 @@ export interface StakingPendingAction {
   id: string;
   hash: string;
   action: StakingPendingActionKind;
+  status: StakingPendingActionStatus;
   poolId: string;
   poolType: StakingPool['type'];
   positionId?: string;
@@ -274,7 +274,6 @@ export const useStakingPendingActions = ({
   refreshPositionAsync: () => Promise<StakingPositionSummary | undefined>;
   onMintedUniv3TokenId: (tokenId: string, range?: StakingUniv3RangeBps) => void;
 }) => {
-  const { t } = useTranslation();
   const wallet = useWallet();
   const [pendingActions, setPendingActions] = useState<StakingPendingAction[]>(
     []
@@ -324,9 +323,14 @@ export const useStakingPendingActions = ({
     processingRef.current.clear();
   }, [account?.address, pool?.id]);
 
-  const removePendingAction = useCallback((id: string) => {
-    setPendingActions((prev) => prev.filter((item) => item.id !== id));
-  }, []);
+  const updatePendingActionStatus = useCallback(
+    (id: string, status: StakingPendingActionStatus) => {
+      setPendingActions((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, status } : item))
+      );
+    },
+    []
+  );
 
   const addPendingAction = useCallback(
     (payload: AddStakingPendingActionPayload) => {
@@ -345,6 +349,7 @@ export const useStakingPendingActions = ({
             id: `${payload.hash}-${Date.now()}`,
             hash: payload.hash,
             action: payload.action,
+            status: 'pending',
             poolId: pool.id,
             poolType: pool.type,
             positionId: payload.positionId,
@@ -359,8 +364,10 @@ export const useStakingPendingActions = ({
     [pool]
   );
 
-  const isPendingActionActive = useCallback((id: string) => {
-    return pendingActionsRef.current.some((item) => item.id === id);
+  const isPendingActionPending = useCallback((id: string) => {
+    return pendingActionsRef.current.some(
+      (item) => item.id === id && item.status === 'pending'
+    );
   }, []);
 
   const processPendingAction = useCallback(
@@ -379,14 +386,14 @@ export const useStakingPendingActions = ({
           interval: 3000,
         });
 
-        if (!mountedRef.current || !isPendingActionActive(pending.id)) {
+        if (!mountedRef.current || !isPendingActionPending(pending.id)) {
           return;
         }
 
         while (
           !receipt &&
           mountedRef.current &&
-          isPendingActionActive(pending.id)
+          isPendingActionPending(pending.id)
         ) {
           await wait(DATA_REFRESH_INTERVAL);
           receipt = await waitForStakingTxReceipt({
@@ -411,7 +418,7 @@ export const useStakingPendingActions = ({
           }
         }
 
-        while (mountedRef.current && isPendingActionActive(pending.id)) {
+        while (mountedRef.current && isPendingActionPending(pending.id)) {
           const [, , nextSummary] = await Promise.all([
             refreshDetailAsyncRef.current().catch(() => undefined),
             refreshCurveAsyncRef.current?.().catch(() => undefined),
@@ -420,7 +427,7 @@ export const useStakingPendingActions = ({
 
           const latestSummary = nextSummary || positionSummaryRef.current;
           if (hasPendingResolved(pending, latestSummary)) {
-            removePendingAction(pending.id);
+            updatePendingActionStatus(pending.id, 'succeed');
             return;
           }
 
@@ -429,18 +436,20 @@ export const useStakingPendingActions = ({
       } catch (error) {
         if (mountedRef.current) {
           console.error('staking pending action error', error);
-          message.error(t('page.staking.error.transactionFailed'));
-          removePendingAction(pending.id);
+          updatePendingActionStatus(pending.id, 'failed');
         }
       } finally {
         processingRef.current.delete(pending.id);
       }
     },
-    [account, isPendingActionActive, pool, removePendingAction, t, wallet]
+    [account, isPendingActionPending, pool, updatePendingActionStatus, wallet]
   );
 
   useEffect(() => {
     pendingActions.forEach((pending) => {
+      if (pending.status !== 'pending') {
+        return;
+      }
       if (processingRef.current.has(pending.id)) {
         return;
       }

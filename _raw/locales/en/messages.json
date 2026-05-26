@@ -108,7 +108,7 @@
         "retry": "Retry"
       },
       "filter": {
-        "allProtocol": "All Protocol",
+        "allProtocol": "All Protocols",
         "allChains": "All Chains",
         "selectProtocol": "Select Protocol",
         "selectChain": "Select Chain",
@@ -120,7 +120,7 @@
       },
       "empty": {
         "noPoolsFound": "No pools found",
-        "noHoldingsFound": "No holdings found",
+        "noHoldingsFound": "You currently holding no positions.",
         "noStakingPoolsFound": "No staking pools found",
         "noProtocols": "No protocols",
         "noChains": "No chains"
@@ -180,6 +180,8 @@
       },
       "portfolio": {
         "pending": "Pending",
+        "succeed": "Succeed",
+        "failed": "Failed",
         "supplied": "Supplied",
         "rewards": "Rewards",
         "rewardsWithCount": "Rewards ({{count}})",
@@ -204,7 +206,7 @@
         "submitted": "{{action}} submitted",
         "submitFailed": "Failed to submit {{action}}",
         "confirmPoolPriceDifference": "Confirm pool price difference",
-        "poolPriceWarning": "Pool price differs from market price by more than 5%.",
+        "poolPriceWarning": "A 10% price impact cap creates arbitrage risks.",
         "poolPriceTitle": "Pool price: 1 {{token0}} = {{poolPrice}} {{token1}}; Market price: 1 {{token0}} = {{marketPrice}} {{token1}}",
         "failedResolveV2Pool": "Failed to resolve V2 pool",
         "failedResolveV3Pool": "Failed to resolve V3 pool",

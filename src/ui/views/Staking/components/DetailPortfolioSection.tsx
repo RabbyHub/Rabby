@@ -5,6 +5,8 @@ import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { getSqrtRatioAtUniv3Tick } from '@rabby-wallet/staking-sdk';
 
+import { SvgIcSuccess, SvgIcWarning } from '@/ui/assets';
+
 import { ProtocolLogo, TokenLogos } from './PoolVisuals';
 import { RewardsCardIcon, SuppliedCardIcon } from '../icons';
 import type {
@@ -171,6 +173,12 @@ const PendingActionCard = ({
     pending.action === 'withdraw' || pending.action === 'claim';
   const tokenGroup = <PendingTokenGroup tokens={tokens} />;
   const protocol = <ProtocolLogo protocol={pool.protocol} size={20} />;
+  const statusText =
+    pending.status === 'succeed'
+      ? t('page.staking.portfolio.succeed')
+      : pending.status === 'failed'
+      ? t('page.staking.portfolio.failed')
+      : t('page.staking.portfolio.pending');
 
   return (
     <div className="staking-pending-card">
@@ -179,9 +187,15 @@ const PendingActionCard = ({
         <span className="staking-pending-arrow">&rarr;</span>
         {isProtocolToWallet ? tokenGroup : protocol}
       </div>
-      <div className="staking-pending-status">
-        <span className="staking-pending-spinner" />
-        <span>{t('page.staking.portfolio.pending')}</span>
+      <div className={clsx('staking-pending-status', `is-${pending.status}`)}>
+        {pending.status === 'succeed' ? (
+          <SvgIcSuccess className="staking-pending-status-icon" />
+        ) : pending.status === 'failed' ? (
+          <SvgIcWarning className="staking-pending-status-icon" />
+        ) : (
+          <span className="staking-pending-spinner" />
+        )}
+        <span>{statusText}</span>
       </div>
     </div>
   );
