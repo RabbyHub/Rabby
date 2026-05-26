@@ -170,6 +170,7 @@ const Staking = () => {
     ? getDisplayChain(chainMap[chainId] || { id: chainId })
     : undefined;
   const initialLoading = poolsLoading && !poolList && !poolsError;
+  const hasActiveFilter = !!chainId || !!protocolId;
 
   useEffect(() => {
     if (filtersError || poolsError) {
@@ -321,6 +322,7 @@ const Staking = () => {
             <StakingEmpty
               search=""
               myHoldingOnly={false}
+              hasActiveFilter={false}
               description={t('page.staking.error.failedLoadPools')}
               compact
             />
@@ -342,6 +344,7 @@ const Staking = () => {
           <StakingEmpty
             search={debouncedSearch}
             myHoldingOnly={myHoldingOnly}
+            hasActiveFilter={hasActiveFilter}
           />
         )}
       </div>

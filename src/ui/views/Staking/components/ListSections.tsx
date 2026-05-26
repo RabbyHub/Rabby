@@ -13,7 +13,13 @@ import {
   ProtocolLogo,
   TokenLogos,
 } from './PoolVisuals';
-import { CloseIcon, DownIcon, EmptyPoolsIcon, SearchIcon } from '../icons';
+import {
+  CloseIcon,
+  DownIcon,
+  EmptyPoolsIcon,
+  NoHoldingIcon,
+  SearchIcon,
+} from '../icons';
 import type { StakingFilterItem, StakingPool, StakingProtocol } from '../types';
 import { formatStakingPercent, formatStakingTVL } from '../utils/format';
 
@@ -232,11 +238,13 @@ export const StakingSkeleton = () => (
 export const StakingEmpty = ({
   search,
   myHoldingOnly,
+  hasActiveFilter,
   description,
   compact,
 }: {
   search: string;
   myHoldingOnly: boolean;
+  hasActiveFilter?: boolean;
   description?: string;
   compact?: boolean;
 }) => {
@@ -244,18 +252,16 @@ export const StakingEmpty = ({
   const hasSearch = !!search.trim();
   const text =
     description ||
-    (hasSearch
-      ? t('page.staking.empty.noPoolsFound')
-      : myHoldingOnly
+    (myHoldingOnly
       ? t('page.staking.empty.noHoldingsFound')
+      : hasSearch || hasActiveFilter
+      ? t('page.staking.empty.noPoolsFound')
       : t('page.staking.empty.noStakingPoolsFound'));
 
   return (
     <div className={clsx('staking-empty', compact && 'is-compact')}>
-      <EmptyPoolsIcon />
-      <div className="mt-[12px] text-[15px] leading-[18px] font-medium text-r-neutral-foot">
-        {text}
-      </div>
+      <NoHoldingIcon />
+      <div className="staking-empty-text">{text}</div>
     </div>
   );
 };

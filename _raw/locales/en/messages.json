@@ -108,7 +108,7 @@
         "retry": "Retry"
       },
       "filter": {
-        "allProtocol": "All Protocol",
+        "allProtocol": "All Protocols",
         "allChains": "All Chains",
         "selectProtocol": "Select Protocol",
         "selectChain": "Select Chain",
@@ -120,7 +120,7 @@
       },
       "empty": {
         "noPoolsFound": "No pools found",
-        "noHoldingsFound": "No holdings found",
+        "noHoldingsFound": "You currently holding no positions.",
         "noStakingPoolsFound": "No staking pools found",
         "noProtocols": "No protocols",
         "noChains": "No chains"
