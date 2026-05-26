@@ -225,14 +225,14 @@ export const Erc4626ActionError = ({
   action,
   depositBalanceError,
   depositPrecisionError,
-  withdrawInvalid,
+  showWithdrawInvalidMessage,
   assetSymbol,
 }: {
   disabledReason?: string;
   action: Erc4626Action;
   depositBalanceError: boolean;
   depositPrecisionError: boolean;
-  withdrawInvalid: boolean;
+  showWithdrawInvalidMessage: boolean;
   assetSymbol?: string;
 }) => {
   const { t } = useTranslation();
@@ -259,7 +259,7 @@ export const Erc4626ActionError = ({
     );
   }
 
-  if (action === 'withdraw' && withdrawInvalid) {
+  if (action === 'withdraw' && showWithdrawInvalidMessage) {
     return (
       <div className="staking-action-error">
         {t('page.staking.actionModal.noWithdrawablePosition')}

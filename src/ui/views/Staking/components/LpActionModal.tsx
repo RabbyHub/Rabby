@@ -1426,7 +1426,7 @@ export const LpActionModal = ({
     ? `-${formatRangeBps(v3QuotedRange.lowerBps)} / +${formatRangeBps(
         v3QuotedRange.upperBps
       )}`
-    : '- / -';
+    : undefined;
 
   const handleRangePresetChange = useCallback((value: V3RangeOption) => {
     setPriceWarningAccepted(false);

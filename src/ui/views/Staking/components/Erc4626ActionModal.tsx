@@ -258,6 +258,7 @@ export const Erc4626ActionModal = ({
   const withdrawInvalid =
     action === 'withdraw' &&
     (selectedRedeemShares <= 0n || previewRedeemAssets <= 0n);
+  const showWithdrawInvalidMessage = withdrawInvalid && percent > 0;
   const canSubmit =
     !disabledReason &&
     (action === 'deposit'
@@ -447,7 +448,7 @@ export const Erc4626ActionModal = ({
                 action={action}
                 depositBalanceError={depositBalanceError}
                 depositPrecisionError={amountPrecisionExceeded}
-                withdrawInvalid={withdrawInvalid}
+                showWithdrawInvalidMessage={showWithdrawInvalidMessage}
                 assetSymbol={asset?.symbol}
               />
 
