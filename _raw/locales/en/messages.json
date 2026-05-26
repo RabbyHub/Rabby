@@ -180,6 +180,8 @@
       },
       "portfolio": {
         "pending": "Pending",
+        "succeed": "Succeed",
+        "failed": "Failed",
         "supplied": "Supplied",
         "rewards": "Rewards",
         "rewardsWithCount": "Rewards ({{count}})",
