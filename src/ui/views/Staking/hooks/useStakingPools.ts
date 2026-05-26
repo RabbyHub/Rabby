@@ -5,6 +5,7 @@ import { useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 
 import type {
+  StakingPool,
   StakingPoolListParams,
   StakingPoolListResponseApi,
 } from '../types';
@@ -47,14 +48,46 @@ export const useStakingPools = ({
 
   return useRequest(
     async () => {
-      const response = (await wallet.openapi.getStakingPoolList(
-        requestParams
-      )) as StakingPoolListResponseApi;
-      const normalized = normalizeStakingPoolList(response, {
-        start,
-        limit,
-      });
-      return normalized;
+      const allPools: StakingPool[] = [];
+      let total = 0;
+      let nextStart = start;
+      let pageLimit = limit;
+      let hasMore = true;
+
+      while (hasMore) {
+        const response = (await wallet.openapi.getStakingPoolList({
+          ...requestParams,
+          start: nextStart,
+          limit,
+        })) as StakingPoolListResponseApi;
+        const normalized = normalizeStakingPoolList(response, {
+          start: nextStart,
+          limit,
+        });
+
+        allPools.push(...normalized.pools);
+        total = normalized.page.total;
+        pageLimit = normalized.page.limit || limit;
+
+        if (
+          !normalized.pools.length ||
+          allPools.length >= total ||
+          normalized.pools.length < pageLimit
+        ) {
+          hasMore = false;
+        } else {
+          nextStart = normalized.page.start + pageLimit;
+        }
+      }
+
+      return {
+        pools: allPools,
+        page: {
+          start,
+          limit,
+          total,
+        },
+      };
     },
     {
       refreshDeps: [
