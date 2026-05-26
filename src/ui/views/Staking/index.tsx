@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Button, Input, Switch, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -29,18 +35,77 @@ const PAGE_LIMIT = 50;
 type StakingRouteState = {
   stakingMyHoldingOnly?: boolean;
 };
+type StakingQueryState = {
+  search: string;
+  chainId?: string;
+  protocolId?: string;
+  myHoldingOnly: boolean;
+};
+
+const STAKING_QUERY_KEYS = {
+  search: 'q',
+  chainId: 'chain_id',
+  protocolId: 'protocol_id',
+  myHoldingOnly: 'holding_only',
+} as const;
+
+const isQueryEnabled = (value: string | null) =>
+  value === '1' || value === 'true';
+
+const getStakingQueryState = (
+  search: string,
+  routeState?: StakingRouteState
+): StakingQueryState => {
+  const params = new URLSearchParams(search);
+  const holdingParam = params.get(STAKING_QUERY_KEYS.myHoldingOnly);
+
+  return {
+    search: params.get(STAKING_QUERY_KEYS.search) || '',
+    chainId: params.get(STAKING_QUERY_KEYS.chainId) || undefined,
+    protocolId: params.get(STAKING_QUERY_KEYS.protocolId) || undefined,
+    myHoldingOnly:
+      holdingParam === null
+        ? !!routeState?.stakingMyHoldingOnly
+        : isQueryEnabled(holdingParam),
+  };
+};
+
+const setNullableQueryParam = (
+  params: URLSearchParams,
+  key: string,
+  value?: string
+) => {
+  const normalized = value?.trim();
+  if (normalized) {
+    params.set(key, normalized);
+  } else {
+    params.delete(key);
+  }
+};
 
 const Staking = () => {
   const { t } = useTranslation();
   const history = useHistory<StakingRouteState | undefined>();
   const account = useRabbySelector((state) => state.account.currentAccount);
-  const [search, setSearch] = useState('');
-  const [chainId, setChainId] = useState<string | undefined>();
-  const [protocolId, setProtocolId] = useState<string | undefined>();
+  const initialQueryStateRef = useRef<StakingQueryState>();
+  if (!initialQueryStateRef.current) {
+    initialQueryStateRef.current = getStakingQueryState(
+      history.location.search,
+      history.location.state
+    );
+  }
+  const initialQueryState = initialQueryStateRef.current!;
+  const [search, setSearch] = useState(initialQueryState.search);
+  const [chainId, setChainId] = useState<string | undefined>(
+    initialQueryState.chainId
+  );
+  const [protocolId, setProtocolId] = useState<string | undefined>(
+    initialQueryState.protocolId
+  );
   const [protocolSelectorVisible, setProtocolSelectorVisible] = useState(false);
   const [chainSelectorVisible, setChainSelectorVisible] = useState(false);
-  const [myHoldingOnly, setMyHoldingOnly] = useState(
-    () => !!history.location.state?.stakingMyHoldingOnly
+  const [myHoldingOnly, setMyHoldingOnly] = useState<boolean>(
+    initialQueryState.myHoldingOnly
   );
   const debouncedSearch = useDebouncedValue(search, 300);
 
@@ -112,21 +177,45 @@ const Staking = () => {
     }
   }, [filtersError, poolsError, t]);
 
-  const handleMyHoldingOnlyChange = useCallback(
-    (checked: boolean) => {
-      setMyHoldingOnly(checked);
-      history.replace({
-        pathname: history.location.pathname,
-        search: history.location.search,
-        hash: history.location.hash,
-        state: {
-          ...(history.location.state || {}),
-          stakingMyHoldingOnly: checked,
-        },
-      });
-    },
-    [history]
-  );
+  useEffect(() => {
+    const params = new URLSearchParams(history.location.search);
+
+    setNullableQueryParam(params, STAKING_QUERY_KEYS.search, search);
+    setNullableQueryParam(params, STAKING_QUERY_KEYS.chainId, chainId);
+    setNullableQueryParam(params, STAKING_QUERY_KEYS.protocolId, protocolId);
+
+    if (myHoldingOnly) {
+      params.set(STAKING_QUERY_KEYS.myHoldingOnly, '1');
+    } else {
+      params.delete(STAKING_QUERY_KEYS.myHoldingOnly);
+    }
+
+    const nextSearchString = params.toString();
+    const nextSearch = nextSearchString ? `?${nextSearchString}` : '';
+    const currentState = (history.location.state || {}) as StakingRouteState;
+    const currentHoldingState = !!currentState.stakingMyHoldingOnly;
+
+    if (
+      history.location.search === nextSearch &&
+      currentHoldingState === myHoldingOnly
+    ) {
+      return;
+    }
+
+    history.replace({
+      pathname: history.location.pathname,
+      search: nextSearch,
+      hash: history.location.hash,
+      state: {
+        ...currentState,
+        stakingMyHoldingOnly: myHoldingOnly,
+      },
+    });
+  }, [chainId, history, myHoldingOnly, protocolId, search]);
+
+  const handleMyHoldingOnlyChange = useCallback((checked: boolean) => {
+    setMyHoldingOnly(checked);
+  }, []);
 
   return (
     <div className="staking-list-page min-h-screen bg-r-neutral-bg2 text-r-neutral-title1">
