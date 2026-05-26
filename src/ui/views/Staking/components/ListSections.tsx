@@ -307,7 +307,6 @@ export const ProtocolSelectorPopup = ({
     <Popup
       visible={visible}
       height={540}
-      closable
       isNew
       isSupportDarkMode
       className="staking-selector-popup"
@@ -321,10 +320,9 @@ export const ProtocolSelectorPopup = ({
               <SearchIcon />
             </span>
           }
-          placeholder={t('page.staking.filter.searchByName')}
+          placeholder={t('page.staking.filter.searchProtocol')}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          allowClear
         />
 
         <div className="staking-selector-list">
@@ -427,7 +425,6 @@ export const ChainSelectorPopup = ({
     <Popup
       visible={visible}
       height={540}
-      closable
       isNew
       isSupportDarkMode
       className="staking-selector-popup"
@@ -441,10 +438,9 @@ export const ChainSelectorPopup = ({
               <SearchIcon />
             </span>
           }
-          placeholder={t('page.staking.filter.searchByName')}
+          placeholder={t('page.staking.filter.searchChain')}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          allowClear
         />
 
         <div className="staking-selector-list">
