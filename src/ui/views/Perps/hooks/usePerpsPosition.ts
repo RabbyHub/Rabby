@@ -1,4 +1,4 @@
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import store, { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { getPerpsSDK } from '../sdkManager';
@@ -413,7 +413,7 @@ export const usePerpsPosition = ({
           };
         } else if (isLimit && resting) {
           // 限价单通常挂在盘口未成交 —— 视作成功，刷新挂单列表并提示已挂出。
-          dispatch.perps.fetchPositionOpenOrders();
+          dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
           message.success({
             duration: 1.5,
             content: t('page.perps.toast.limitOrderPlaced', {
@@ -576,9 +576,10 @@ export const usePerpsPosition = ({
               )
             );
           }
-          setTimeout(() => {
-            dispatch.perps.fetchPositionOpenOrders();
-          }, 1000);
+          const marketDataMap = store.getState().perps.marketDataMap;
+          dispatch.perps.fetchPositionOpenOrdersHttpForDexes({
+            dexes: orders.map((o) => marketDataMap[o.coin]?.dexId ?? ''),
+          });
           return true;
         }
 
