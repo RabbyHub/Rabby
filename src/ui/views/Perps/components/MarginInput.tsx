@@ -18,6 +18,8 @@ interface MarginInputProps {
   customAvailableText?: string;
   titleExtra?: React.ReactNode;
   availableExtra?: React.ReactNode;
+  /** 嵌入外层卡片时为 true，去掉自身的卡片背景/圆角/下边距。 */
+  embedded?: boolean;
 }
 
 export const MarginInput: React.FC<MarginInputProps> = ({
@@ -31,6 +33,7 @@ export const MarginInput: React.FC<MarginInputProps> = ({
   customAvailableText,
   titleExtra,
   availableExtra,
+  embedded,
 }) => {
   const { t } = useTranslation();
   const textColorClass =
@@ -96,24 +99,41 @@ export const MarginInput: React.FC<MarginInputProps> = ({
   };
 
   return (
-    <div className="bg-r-neutral-card1 rounded-[8px] mb-[12px] px-[16px] py-[16px]">
+    <div
+      className={clsx(
+        'px-[16px] py-[16px]',
+        !embedded && 'bg-r-neutral-card1 rounded-[8px] mb-[12px]'
+      )}
+    >
       <div className="flex items-center">
-        <div className="text-[16px] leading-[19px] font-medium text-r-blue-default">
+        <div className="text-17 font-bold text-r-neutral-title-1">
           {title}
-          <span className="text-[12px] leading-[16px]">({quoteAsset})</span>
+          <span>({quoteAsset})</span>
         </div>
         {titleExtra}
       </div>
-      <div className="flex items-center">
-        <div
-          className={clsx(
-            'text-[20px] leading-[24px] font-medium',
-            availableExtra ? 'text-r-red-default' : 'text-r-neutral-title-1'
-          )}
-        >
-          {new BigNumber(availableAmount)
-            .decimalPlaces(2, BigNumber.ROUND_DOWN)
-            .toFixed()}
+      <div className="flex items-center mb-[8px]">
+        <div className="flex items-baseline gap-[6px]">
+          <div
+            className={clsx(
+              'text-[20px] leading-[24px] font-medium',
+              availableExtra ? 'text-r-red-default' : 'text-r-neutral-title-1'
+            )}
+          >
+            {new BigNumber(availableAmount)
+              .decimalPlaces(2, BigNumber.ROUND_DOWN)
+              .toFixed()}
+          </div>
+          <div
+            className={clsx(
+              'text-[13px] leading-[16px] flex items-center gap-[6px]',
+              availableExtra ? 'text-r-red-default' : 'text-r-neutral-foot'
+            )}
+          >
+            {customAvailableText ||
+              t('page.perpsDetail.PerpsEditMarginPopup.available')}
+            {availableExtra}
+          </div>
         </div>
         <input
           className={clsx(
@@ -132,16 +152,6 @@ export const MarginInput: React.FC<MarginInputProps> = ({
           value={margin ? `${margin}` : ''}
           onChange={handleChange}
         />
-      </div>
-      <div
-        className={clsx(
-          'text-[13px] leading-[16px] mb-[8px] mt-[-4px] flex items-center gap-[6px]',
-          availableExtra ? 'text-r-red-default' : 'text-r-neutral-foot'
-        )}
-      >
-        {customAvailableText ||
-          t('page.perpsDetail.PerpsEditMarginPopup.available')}
-        {availableExtra}
       </div>
 
       <PerpsSlider

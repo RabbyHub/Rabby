@@ -16,6 +16,8 @@ interface LeverageInputProps {
   max: number;
   step?: number;
   errorMessage?: string | null;
+  /** 嵌入外层卡片时为 true，去掉自身的卡片背景/圆角/下边距。 */
+  embedded?: boolean;
 }
 
 export const LeverageInput: React.FC<LeverageInputProps> = ({
@@ -26,6 +28,7 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
   step,
   onChange,
   errorMessage,
+  embedded,
 }) => {
   const { t } = useTranslation();
   const textColorClass =
@@ -47,10 +50,13 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
   });
 
   return (
-    <div className="bg-r-neutral-card1 rounded-[8px] mb-[12px] px-[16px] py-[16px]">
-      <div className="text-[16px] leading-[19px] font-medium text-r-blue-default">
-        {title}
-      </div>
+    <div
+      className={clsx(
+        'px-[16px] py-[16px]',
+        !embedded && 'bg-r-neutral-card1 rounded-[8px] mb-[12px]'
+      )}
+    >
+      <div className="text-17 font-bold text-r-neutral-title-1">{title}</div>
       <div className="flex items-center mb-[8px]">
         <div className="flex items-end gap-[6px]">
           <div className="text-[13px] leading-[16px] text-r-neutral-foot pb-[2px]">
