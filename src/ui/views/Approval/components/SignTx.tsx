@@ -1158,22 +1158,24 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   }, [chain?.enum]);
 
   const explainTx = async (address: string) => {
-    let recommendNonce = '0x0';
+    let recommendNonce = updateNonce ? '0x0' : tx.nonce || '0x0';
     if (!isGnosisAccount && !isCoboArugsAccount) {
       try {
-        if (recommendNoncePromiseRef.current) {
-          recommendNonce = (await recommendNoncePromiseRef.current) || '0x0';
-          recommendNoncePromiseRef.current = null;
-        } else {
-          recommendNonce = await wallet.getRecommendNonce({
-            from: tx.from,
-            chainId,
-            nonceKey: (tx as TxWithTempoExtras<Tx>).nonceKey as
-              | string
-              | number
-              | bigint
-              | undefined,
-          });
+        if (updateNonce) {
+          if (recommendNoncePromiseRef.current) {
+            recommendNonce = (await recommendNoncePromiseRef.current) || '0x0';
+            recommendNoncePromiseRef.current = null;
+          } else {
+            recommendNonce = await wallet.getRecommendNonce({
+              from: tx.from,
+              chainId,
+              nonceKey: (tx as TxWithTempoExtras<Tx>).nonceKey as
+                | string
+                | number
+                | bigint
+                | undefined,
+            });
+          }
         }
         setRecommendNonce(recommendNonce);
       } catch (e) {

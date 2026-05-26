@@ -2293,7 +2293,7 @@
       "max-tips": "Bu değer, köprü için gaz maliyeti çıkarılarak hesaplanır.",
       "enable-it": "Etkinleştir",
       "no-route-found": "Rota bulunamadı",
-      "slippage-adjusted-refresh-quote": "滑点已调整。刷新路线。",
+      "slippage-adjusted-refresh-quote": "Slipaj ayarlandı. Rotayı yenile.",
       "select-chain": "Zincir Seç",
       "pendingTip": "Tx gönderildi. Tx uzun saatler boyunca beklemede kalırsa, ayarlardan beklemeyi temizlemeyi deneyebilirsiniz.",
       "need-to-approve-token-before-bridge": "Bridge öncesinde token onayı gerekiyor",
