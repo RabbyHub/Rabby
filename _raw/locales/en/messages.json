@@ -113,6 +113,8 @@
         "selectProtocol": "Select Protocol",
         "selectChain": "Select Chain",
         "searchByName": "Search by Name",
+        "searchProtocol": "Search protocol",
+        "searchChain": "Search chain",
         "all": "All",
         "clearFilter": "Clear {{filter}}"
       },
