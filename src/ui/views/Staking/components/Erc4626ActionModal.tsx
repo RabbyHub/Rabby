@@ -77,7 +77,7 @@ export const Erc4626ActionModal = ({
   const [percent, setPercent] = useState(100);
   const [selectedPercentPreset, setSelectedPercentPreset] = useState<
     number | null
-  >(100);
+  >(null);
   const [submitting, setSubmitting] = useState(false);
   const chainInfo = findChainByServerID(pool.chain_id);
   const entry = useMemo(() => {
@@ -333,7 +333,7 @@ export const Erc4626ActionModal = ({
       if (hash) {
         setAmount('');
         setPercent(100);
-        setSelectedPercentPreset(100);
+        setSelectedPercentPreset(null);
         setSubmitting(false);
         submitted = true;
         onSubmitted({ hash });
@@ -367,7 +367,7 @@ export const Erc4626ActionModal = ({
   const resetAndCancel = () => {
     setAmount('');
     setPercent(100);
-    setSelectedPercentPreset(100);
+    setSelectedPercentPreset(null);
     onCancel();
   };
 

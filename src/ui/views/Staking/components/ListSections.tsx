@@ -332,21 +332,6 @@ export const ProtocolSelectorPopup = ({
         />
 
         <div className="staking-selector-list">
-          {selectedProtocolId && !search.trim() ? (
-            <button
-              type="button"
-              className="staking-selector-row"
-              onClick={() => handleSelect(undefined)}
-            >
-              <span className="staking-selector-all-icon">
-                {t('page.staking.filter.all')}
-              </span>
-              <span className="min-w-0 truncate text-[15px] leading-[18px] font-medium text-r-neutral-title1">
-                {t('page.staking.filter.allProtocol')}
-              </span>
-            </button>
-          ) : null}
-
           {filteredProtocols.map((protocol) => {
             const hasHolding =
               protocol.is_holding || protocolHoldingMap[protocol.id];
@@ -450,21 +435,6 @@ export const ChainSelectorPopup = ({
         />
 
         <div className="staking-selector-list">
-          {selectedChainId && !search.trim() ? (
-            <button
-              type="button"
-              className="staking-selector-row"
-              onClick={() => handleSelect(undefined)}
-            >
-              <span className="staking-selector-all-icon">
-                {t('page.staking.filter.all')}
-              </span>
-              <span className="min-w-0 truncate text-[15px] leading-[18px] font-medium text-r-neutral-title1">
-                {t('page.staking.filter.allChains')}
-              </span>
-            </button>
-          ) : null}
-
           {filteredChains.map((filterChain) => {
             const chain = getDisplayChain(filterChain);
 

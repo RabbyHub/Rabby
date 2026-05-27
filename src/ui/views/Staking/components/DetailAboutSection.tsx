@@ -164,7 +164,7 @@ const PoolInfoSection = ({ pool }: { pool: StakingPool }) => {
         {t('page.staking.about.pool')}
       </div>
       <div className="grid grid-cols-2 gap-x-[48px] gap-y-[16px]">
-        <FieldBlock label={t('page.staking.about.address')}>
+        <FieldBlock label={t('page.staking.about.poolAddress')}>
           <AddressValue
             value={pool.pool_address}
             onClick={() => openPoolAddress(pool)}

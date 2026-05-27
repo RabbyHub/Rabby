@@ -23,7 +23,6 @@ import {
   getUniv3LiquidityForAmount0,
   getUniv3LiquidityForAmount1,
   quoteUniv2AddLiquidity,
-  quoteUniv2CounterAmount,
   quoteUniv3DecreaseLiquidity,
   quoteUniv3Liquidity,
   quoteUniv3RangeDeposit,
@@ -36,6 +35,7 @@ import type {
   Univ2PoolKey,
   Univ3PoolKey,
   Univ3QuotePoolState,
+  Univ3RangeStrategy,
 } from '@rabby-wallet/staking-sdk';
 
 import type { Account } from '@/background/service/preference';
@@ -75,6 +75,10 @@ import './actionModal.less';
 
 type LpAction = 'deposit' | 'withdraw' | 'claim';
 type V3PositionInputAvailability = TokenInputSide | 'both';
+type V3QuotedRangeForDisplay = StakingUniv3RangeBps & {
+  mode?: string;
+  side?: TokenInputSide;
+};
 
 interface LpActionModalProps {
   visible: boolean;
@@ -142,6 +146,24 @@ const getSelectedV3Range = (preset: V3RangeOption) =>
 
 const formatRangeBps = (bps: number) =>
   `${new BigNumber(bps).div(100).toFixed()}%`;
+
+const formatSignedRangeBps = (bps: number, sign: '-' | '+') =>
+  bps === 0 ? '0%' : `${sign}${formatRangeBps(bps)}`;
+
+const formatV3RangeText = (range: V3QuotedRangeForDisplay) => {
+  if (range.mode === 'single-sided') {
+    const sign = range.side === 'token1' ? '-' : '+';
+    return `${formatSignedRangeBps(
+      range.lowerBps,
+      sign
+    )} / ${formatSignedRangeBps(range.upperBps, sign)}`;
+  }
+
+  return `${formatSignedRangeBps(range.lowerBps, '-')} / ${formatSignedRangeBps(
+    range.upperBps,
+    '+'
+  )}`;
+};
 
 const formatPriceNumber = (value?: BigNumber | null) => {
   if (!value || !value.isFinite() || value.lte(0)) {
@@ -282,6 +304,50 @@ const multiplyRawByPercent = (raw: string, percent: number) =>
 
 const hasPositiveRaw = (raw?: string | bigint) => BigInt(raw || '0') > 0n;
 
+const getV3RangeStrategy = ({
+  raw0,
+  raw1,
+  selectedRange,
+}: {
+  raw0: string;
+  raw1: string;
+  selectedRange: { bps: number };
+}): Univ3RangeStrategy | null => {
+  const amount0Positive = hasPositiveRaw(raw0);
+  const amount1Positive = hasPositiveRaw(raw1);
+
+  if (!amount0Positive && !amount1Positive) {
+    return null;
+  }
+
+  if (amount0Positive && !amount1Positive) {
+    return {
+      type: 'single-sided',
+      side: 'token0',
+      widthBps: selectedRange.bps,
+      gapBps: 0,
+    };
+  }
+
+  if (!amount0Positive && amount1Positive) {
+    return {
+      type: 'single-sided',
+      side: 'token1',
+      widthBps: selectedRange.bps,
+      gapBps: 0,
+    };
+  }
+
+  return {
+    type: 'amount-ratio',
+    constraints: {
+      mustIncludeCurrentPrice: true,
+      targetWidthBps: selectedRange.bps,
+      maxWidthBps: selectedRange.bps,
+    },
+  };
+};
+
 const applySlippageToRaw = (raw: bigint, slippageBps = DEFAULT_SLIPPAGE_BPS) =>
   ((raw * BigInt(10000 - slippageBps)) / 10000n).toString();
 
@@ -368,7 +434,7 @@ export const LpActionModal = ({
   const [percent, setPercent] = useState(100);
   const [selectedPercentPreset, setSelectedPercentPreset] = useState<
     number | null
-  >(100);
+  >(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -379,7 +445,7 @@ export const LpActionModal = ({
       setV3RangePreset(V3_DEFAULT_RANGE_PRESET);
       setPriceWarningAccepted(false);
       setPercent(100);
-      setSelectedPercentPreset(100);
+      setSelectedPercentPreset(null);
     }
   }, [visible]);
 
@@ -395,6 +461,7 @@ export const LpActionModal = ({
   const isV3 = pool.type === 'univ3';
   const isPositionAction = !!position?.raw?.univ3;
   const isV3PositionDeposit = isV3 && isPositionAction && action === 'deposit';
+  const isV3RangeDeposit = isV3 && !isPositionAction && action === 'deposit';
 
   const { data: tokenInfos, loading: tokenLoading } = useRequest(
     async () => {
@@ -705,18 +772,20 @@ export const LpActionModal = ({
         });
       }
 
+      const rangeStrategy = getV3RangeStrategy({
+        raw0,
+        raw1,
+        selectedRange: v3SelectedRange,
+      });
+      if (!rangeStrategy) {
+        return null;
+      }
+
       return quoteUniv3RangeDeposit({
         poolState: univ3PoolState,
         amount0Desired: raw0,
         amount1Desired: raw1,
-        rangeStrategy: {
-          type: 'amount-ratio',
-          constraints: {
-            mustIncludeCurrentPrice: true,
-            targetWidthBps: v3SelectedRange.bps,
-            maxWidthBps: v3SelectedRange.bps,
-          },
-        },
+        rangeStrategy,
         slippageBps: DEFAULT_SLIPPAGE_BPS,
       });
     } catch {
@@ -790,6 +859,8 @@ export const LpActionModal = ({
     action === 'deposit' && requiredRaw1ForBalance > token1BalanceRaw;
   const token0InputError = token0Insufficient || amount0PrecisionExceeded;
   const token1InputError = token1Insufficient || amount1PrecisionExceeded;
+  const v3RangeDepositInputsComplete =
+    !isV3RangeDeposit || (amount0 !== '' && amount1 !== '');
   const balanceError = useMemo(() => {
     const symbols = [
       token0Insufficient ? normalizedTokens.token0Info?.token.symbol : null,
@@ -898,6 +969,9 @@ export const LpActionModal = ({
       return false;
     }
     if (action === 'deposit') {
+      if (!v3RangeDepositInputsComplete) {
+        return false;
+      }
       return isV2
         ? !!v2AddQuote &&
             (hasPositiveRaw(v2AddQuote.amount0) ||
@@ -920,6 +994,7 @@ export const LpActionModal = ({
     v2AddQuote,
     v2WithdrawQuote,
     v3DepositQuote,
+    v3RangeDepositInputsComplete,
     v3WithdrawQuote,
   ]);
 
@@ -1163,27 +1238,15 @@ export const LpActionModal = ({
     v3QuotedRange,
   ]);
 
-  const setV2AmountsFromSide = useCallback(
+  const getV2CounterValue = useCallback(
     (side: TokenInputSide, value: string) => {
-      setLastInputSide(side);
-      if (side === 'token0') {
-        setAmount0(value);
-      } else {
-        setAmount1(value);
-      }
-
       if (
         !value ||
         !univ2Facts ||
         !normalizedTokens.token0Info ||
         !normalizedTokens.token1Info
       ) {
-        if (side === 'token0') {
-          setAmount1('');
-        } else {
-          setAmount0('');
-        }
-        return;
+        return '';
       }
 
       try {
@@ -1196,42 +1259,60 @@ export const LpActionModal = ({
             ? normalizedTokens.token1Info.decimals
             : normalizedTokens.token0Info.decimals;
         const inputRaw = toRawDecimal(value, inputDecimals);
+
         if (safeBigInt(inputRaw) <= 0n) {
-          if (side === 'token0') {
-            setAmount1('');
-          } else {
-            setAmount0('');
-          }
-          return;
+          return '';
         }
-        const counterRaw =
-          side === 'token0'
-            ? quoteUniv2CounterAmount({
-                inputAmount: inputRaw,
-                inputReserve: univ2Facts.reserve0,
-                outputReserve: univ2Facts.reserve1,
-              })
-            : quoteUniv2CounterAmount({
-                inputAmount: inputRaw,
-                inputReserve: univ2Facts.reserve1,
-                outputReserve: univ2Facts.reserve0,
-              });
-        const counterValue = rawToDecimalInput(counterRaw, outputDecimals);
-        if (side === 'token0') {
-          setAmount1(counterValue);
-        } else {
-          setAmount0(counterValue);
-        }
+
+        const quote = quoteUniv2AddLiquidity({
+          reserve0: univ2Facts.reserve0,
+          reserve1: univ2Facts.reserve1,
+          amount0Desired: side === 'token0' ? inputRaw : undefined,
+          amount1Desired: side === 'token1' ? inputRaw : undefined,
+          slippageBps: DEFAULT_SLIPPAGE_BPS,
+        });
+        const counterRaw = side === 'token0' ? quote.amount1 : quote.amount0;
+        return rawToDecimalInput(counterRaw, outputDecimals);
       } catch {
-        if (side === 'token0') {
-          setAmount1('');
-        } else {
-          setAmount0('');
-        }
+        return '';
       }
     },
     [normalizedTokens.token0Info, normalizedTokens.token1Info, univ2Facts]
   );
+
+  const setV2AmountsFromSide = useCallback(
+    (side: TokenInputSide, value: string) => {
+      setLastInputSide(value ? side : null);
+      if (side === 'token0') {
+        setAmount0(value);
+        setAmount1(getV2CounterValue(side, value));
+      } else {
+        setAmount1(value);
+        setAmount0(getV2CounterValue(side, value));
+      }
+    },
+    [getV2CounterValue]
+  );
+
+  useEffect(() => {
+    if (action !== 'deposit' || !isV2 || !lastInputSide) {
+      return;
+    }
+
+    const sourceValue = lastInputSide === 'token0' ? amount0 : amount1;
+    const counterValue = getV2CounterValue(lastInputSide, sourceValue);
+
+    if (lastInputSide === 'token0') {
+      if (amount1 !== counterValue) {
+        setAmount1(counterValue);
+      }
+      return;
+    }
+
+    if (amount0 !== counterValue) {
+      setAmount0(counterValue);
+    }
+  }, [action, amount0, amount1, getV2CounterValue, isV2, lastInputSide]);
 
   const setV3PositionAmountsFromSide = useCallback(
     (side: TokenInputSide, value: string) => {
@@ -1381,11 +1462,18 @@ export const LpActionModal = ({
       );
       return;
     }
+    if (isV3RangeDeposit && normalizedTokens.token0Info) {
+      setLastInputSide('token0');
+      setAmount0(String(normalizedTokens.token0Info.balance || '0'));
+      setAmount1('0');
+      return;
+    }
     setLastInputSide('token0');
     setAmount0(String(normalizedTokens.token0Info?.balance || '0'));
   }, [
     isV2,
     isV3PositionDeposit,
+    isV3RangeDeposit,
     normalizedTokens.token0Info,
     setV2AmountsFromSide,
     setV3PositionAmountsFromSide,
@@ -1411,11 +1499,18 @@ export const LpActionModal = ({
       );
       return;
     }
+    if (isV3RangeDeposit && normalizedTokens.token1Info) {
+      setLastInputSide('token1');
+      setAmount0('0');
+      setAmount1(String(normalizedTokens.token1Info.balance || '0'));
+      return;
+    }
     setLastInputSide('token1');
     setAmount1(String(normalizedTokens.token1Info?.balance || '0'));
   }, [
     isV2,
     isV3PositionDeposit,
+    isV3RangeDeposit,
     normalizedTokens.token1Info,
     setV2AmountsFromSide,
     setV3PositionAmountsFromSide,
@@ -1423,9 +1518,7 @@ export const LpActionModal = ({
   ]);
 
   const rangeText = v3QuotedRange
-    ? `-${formatRangeBps(v3QuotedRange.lowerBps)} / +${formatRangeBps(
-        v3QuotedRange.upperBps
-      )}`
+    ? formatV3RangeText(v3QuotedRange as V3QuotedRangeForDisplay)
     : undefined;
 
   const handleRangePresetChange = useCallback((value: V3RangeOption) => {

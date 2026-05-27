@@ -155,6 +155,7 @@
       "about": {
         "pool": "Pool",
         "address": "Address",
+        "poolAddress": "Pool Address",
         "uptime": "Uptime",
         "days": "{{count}} days",
         "token": "Token",
