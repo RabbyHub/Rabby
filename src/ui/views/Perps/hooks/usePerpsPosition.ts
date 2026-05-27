@@ -390,6 +390,9 @@ export const usePerpsPosition = ({
         const resting = res?.response?.data?.statuses[0]?.resting;
         if (filled) {
           dispatch.perps.fetchClearinghouseState({ dex });
+          if (resting) {
+            dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
+          }
 
           const { totalSz, avgPx } = filled;
           message.success({
