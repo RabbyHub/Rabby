@@ -486,37 +486,41 @@ const StakingDetail = () => {
         </div>
       ) : visualPool ? (
         <>
-          <DetailSummary
-            pool={visualPool}
-            curve={curve}
-            curveLoading={curveLoading}
-            metric={metric}
-            setMetric={setMetric}
-          />
-
-          <div className="mt-[0px] bg-r-neutral-bg1">
-            <DetailTabs
-              tabs={tabs}
-              activeTab={displayedTab}
-              onChange={setActiveTab}
+          <div className="staking-detail-main">
+            <DetailSummary
+              pool={visualPool}
+              curve={curve}
+              curveLoading={curveLoading}
+              metric={metric}
+              setMetric={setMetric}
             />
-            <div className="pt-[20px]">
-              {displayedTab === 'portfolio' ? (
-                <PortfolioTab
-                  pool={visualPool}
-                  accountReady={!!account}
-                  summary={positionSummary}
-                  loading={positionLoading}
-                  error={positionError}
-                  pendingActions={pendingActions}
-                  univ3PositionRanges={localUniv3Ranges}
-                  onAction={handleAction}
-                />
-              ) : null}
-              {displayedTab === 'about' ? <AboutTab pool={visualPool} /> : null}
-              {displayedTab === 'security' ? (
-                <SecurityTab pool={visualPool} />
-              ) : null}
+
+            <div className="mt-[0px] bg-r-neutral-bg1">
+              <DetailTabs
+                tabs={tabs}
+                activeTab={displayedTab}
+                onChange={setActiveTab}
+              />
+              <div className="pt-[20px]">
+                {displayedTab === 'portfolio' ? (
+                  <PortfolioTab
+                    pool={visualPool}
+                    accountReady={!!account}
+                    summary={positionSummary}
+                    loading={positionLoading}
+                    error={positionError}
+                    pendingActions={pendingActions}
+                    univ3PositionRanges={localUniv3Ranges}
+                    onAction={handleAction}
+                  />
+                ) : null}
+                {displayedTab === 'about' ? (
+                  <AboutTab pool={visualPool} />
+                ) : null}
+                {displayedTab === 'security' ? (
+                  <SecurityTab pool={visualPool} />
+                ) : null}
+              </div>
             </div>
           </div>
 
