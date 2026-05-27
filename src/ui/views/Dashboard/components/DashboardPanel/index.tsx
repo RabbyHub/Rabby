@@ -78,6 +78,7 @@ const SCROLLBAR_TRACK_HEIGHT = 80;
 const SCROLLBAR_THUMB_HEIGHT = 50;
 const SCROLLBAR_THUMB_MAX_OFFSET =
   SCROLLBAR_TRACK_HEIGHT - SCROLLBAR_THUMB_HEIGHT;
+const SCROLLBAR_HIT_AREA_WIDTH = 13;
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -954,14 +955,17 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           </DndContext>
         </div>
       </div>
-      <div className="absolute right-[8px] top-[50%] translate-y-[-50%] h-[92px] w-[15px]">
+      <div className="absolute right-[3px] top-[50%] translate-y-[-50%] h-[92px] w-[13px]">
         <div
           ref={scrollbarTrackRef}
           className={clsx(
-            'absolute right-0 top-[6px] h-[80px] w-[15px] cursor-pointer select-none',
+            'absolute right-0 top-[6px] h-[80px] cursor-pointer select-none',
             isScrollbarDragging && 'cursor-grabbing'
           )}
-          style={{ touchAction: 'none' }}
+          style={{
+            touchAction: 'none',
+            width: SCROLLBAR_HIT_AREA_WIDTH,
+          }}
           onPointerDown={handleScrollbarPointerDown}
           onPointerMove={handleScrollbarPointerMove}
           onPointerUp={handleScrollbarPointerEnd}
@@ -974,7 +978,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           <div
             ref={scrollbarThumbRef}
             className={clsx(
-              'absolute right-0 top-0 z-10 h-[50px] w-[3px] rounded-full bg-r-blue-default',
+              'absolute right-[5px] top-0 z-10 h-[50px] w-[3px] rounded-full bg-r-blue-default',
               isScrollbarDragging ? 'cursor-grabbing' : 'cursor-grab'
             )}
             style={{
@@ -983,7 +987,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
               }px)`,
             }}
           ></div>
-          <div className="absolute bottom-0 right-0 top-0 w-[3px] rounded-full bg-r-blue-disable opacity-50"></div>
+          <div className="absolute bottom-0 right-[5px] top-0 w-[3px] rounded-full bg-r-blue-disable opacity-50"></div>
         </div>
       </div>
 
