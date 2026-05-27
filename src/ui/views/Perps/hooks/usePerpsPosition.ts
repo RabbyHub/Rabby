@@ -365,8 +365,7 @@ export const usePerpsPosition = ({
         const formattedTpTriggerPx = formatTriggerPx(tpTriggerPx);
         const formattedSlTriggerPx = formatTriggerPx(slTriggerPx);
 
-        // 限价单不附带 TP/SL：限价模式下 UI 已隐藏 TP/SL，避免把上次市价模式
-        // 残留的触发价静默挂到限价单上。
+        // Limit mode hides TP/SL — guard against stale market-mode triggers leaking in.
         if (!isLimit && (tpTriggerPx || slTriggerPx)) {
           promises.push(
             (async () => {
@@ -415,7 +414,7 @@ export const usePerpsPosition = ({
             oid: number;
           };
         } else if (isLimit && resting) {
-          // 限价单通常挂在盘口未成交 —— 视作成功，刷新挂单列表并提示已挂出。
+          // Resting (not filled) — treat as success and refresh open-orders list.
           dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
           message.success({
             duration: 1.5,

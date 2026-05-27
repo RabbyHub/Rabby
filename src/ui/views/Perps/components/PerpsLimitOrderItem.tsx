@@ -46,7 +46,6 @@ export const PerpsLimitOrderItem: React.FC<{
   marginUsage: number;
   marketData?: MarketData;
   onClick: () => void;
-  /** 点击币对名时触发（用于跳转到 SingleCoin）。未传则币对名无独立点击。 */
   onCoinClick?: () => void;
 }> = ({ order, leverage, marginUsage, marketData, onClick, onCoinClick }) => {
   const { t } = useTranslation();

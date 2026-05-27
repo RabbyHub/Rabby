@@ -143,7 +143,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     return marginValue * leverage;
   }, [margin, leverage]);
 
-  // 计算用的成交价：限价模式用用户填的限价，否则用标记价
   const effectivePx = React.useMemo(() => {
     if (orderType === 'limit' && limitPx && Number(limitPx) > 0) {
       return Number(limitPx);
@@ -151,7 +150,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     return markPrice;
   }, [orderType, limitPx, markPrice]);
 
-  // 限价单是否会立即穿越盘口成交（等效市价单）
   const isMarketable = React.useMemo(
     () =>
       orderType === 'limit' &&
@@ -169,7 +167,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const estimatedLiquidationPrice = React.useMemo(() => {
     if (!markPrice || !leverage) return 0;
     const maxLeverage = leverageRange[1];
-    // 会立即成交的限价单按标记价计算，否则按限价计算
     const basePx = isMarketable ? markPrice : effectivePx;
     return calLiquidationPrice(
       basePx,
@@ -278,7 +275,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     setSlTriggerPx('');
   });
 
-  // 切换市价/限价：切到限价时清空 TP/SL（限价模式不支持），并把限价默认填为标记价
+  // Limit mode drops TP/SL (unsupported) and seeds limitPx with markPrice.
   const switchOrderType = useMemoizedFn((next: PerpsOpenOrderType) => {
     setOrderType(next);
     if (next === 'limit') {
@@ -580,7 +577,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           </div>
           {orderType === 'market' && (
             <>
-              {/* TP/SL Section */}
               <div className="flex w-full py-12 items-center justify-between">
                 <div className="text-14 text-r-neutral-foot">
                   {direction === 'Long'

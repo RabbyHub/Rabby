@@ -15,9 +15,7 @@ import { LimitOrderRow } from '../hooks/useLimitOrders';
 export const PerpsLimitOrdersSection: React.FC<{
   rows: LimitOrderRow[];
   marketDataMap: Record<string, MarketData>;
-  /** 外层容器 className，由调用页传入边距（首页 mt-20 mx-20 / 详情页 mt-16）。 */
   className?: string;
-  /** 详情页传 true：当前已在该币种页面，禁用 item 内币对名跳转。 */
   disableCoinNavigation?: boolean;
 }> = ({ rows, marketDataMap, className, disableCoinNavigation }) => {
   const { t } = useTranslation();
