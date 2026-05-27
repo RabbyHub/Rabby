@@ -772,6 +772,10 @@ export const LpActionModal = ({
         });
       }
 
+      if (isV3RangeDeposit && (amount0 === '' || amount1 === '')) {
+        return null;
+      }
+
       const rangeStrategy = getV3RangeStrategy({
         raw0,
         raw1,
@@ -791,7 +795,18 @@ export const LpActionModal = ({
     } catch {
       return null;
     }
-  }, [action, isV3, position, raw0, raw1, univ3PoolState, v3SelectedRange]);
+  }, [
+    action,
+    amount0,
+    amount1,
+    isV3,
+    isV3RangeDeposit,
+    position,
+    raw0,
+    raw1,
+    univ3PoolState,
+    v3SelectedRange,
+  ]);
 
   const v3WithdrawQuote = useMemo(() => {
     const raw = position?.raw?.univ3;
@@ -860,6 +875,8 @@ export const LpActionModal = ({
   const token0InputError = token0Insufficient || amount0PrecisionExceeded;
   const token1InputError = token1Insufficient || amount1PrecisionExceeded;
   const v3RangeDepositInputsComplete =
+    !isV3RangeDeposit || (amount0 !== '' && amount1 !== '');
+  const v3RangeDepositHasPositiveAmount =
     !isV3RangeDeposit || hasPositiveRaw(raw0) || hasPositiveRaw(raw1);
   const balanceError = useMemo(() => {
     const symbols = [
@@ -972,6 +989,9 @@ export const LpActionModal = ({
       if (!v3RangeDepositInputsComplete) {
         return false;
       }
+      if (!v3RangeDepositHasPositiveAmount) {
+        return false;
+      }
       return isV2
         ? !!v2AddQuote &&
             hasPositiveRaw(v2AddQuote.amount0) &&
@@ -994,6 +1014,7 @@ export const LpActionModal = ({
     v2AddQuote,
     v2WithdrawQuote,
     v3DepositQuote,
+    v3RangeDepositHasPositiveAmount,
     v3RangeDepositInputsComplete,
     v3WithdrawQuote,
   ]);
@@ -1404,6 +1425,9 @@ export const LpActionModal = ({
 
   const handleAmount0Change = useCallback(
     (value: string) => {
+      if (token0InputDisabled) {
+        return;
+      }
       setPriceWarningAccepted(false);
       if (isV2) {
         setV2AmountsFromSide('token0', value);
@@ -1415,17 +1439,25 @@ export const LpActionModal = ({
       }
       setLastInputSide('token0');
       setAmount0(value);
+      if (isV3RangeDeposit && value !== '') {
+        setAmount1((current) => (current === '' ? '0' : current));
+      }
     },
     [
       isV2,
       isV3PositionDeposit,
+      isV3RangeDeposit,
       setV2AmountsFromSide,
       setV3PositionAmountsFromSide,
+      token0InputDisabled,
     ]
   );
 
   const handleAmount1Change = useCallback(
     (value: string) => {
+      if (token1InputDisabled) {
+        return;
+      }
       setPriceWarningAccepted(false);
       if (isV2) {
         setV2AmountsFromSide('token1', value);
@@ -1437,16 +1469,24 @@ export const LpActionModal = ({
       }
       setLastInputSide('token1');
       setAmount1(value);
+      if (isV3RangeDeposit && value !== '') {
+        setAmount0((current) => (current === '' ? '0' : current));
+      }
     },
     [
       isV2,
       isV3PositionDeposit,
+      isV3RangeDeposit,
       setV2AmountsFromSide,
       setV3PositionAmountsFromSide,
+      token1InputDisabled,
     ]
   );
 
   const handleMax0 = useCallback(() => {
+    if (token0InputDisabled) {
+      return;
+    }
     setPriceWarningAccepted(false);
     if (isV2 && normalizedTokens.token0Info) {
       setV2AmountsFromSide(
@@ -1468,7 +1508,7 @@ export const LpActionModal = ({
     if (isV3RangeDeposit && normalizedTokens.token0Info) {
       setLastInputSide('token0');
       setAmount0(String(normalizedTokens.token0Info.balance || '0'));
-      setAmount1('');
+      setAmount1((current) => (current === '' ? '0' : current));
       return;
     }
     setLastInputSide('token0');
@@ -1480,10 +1520,14 @@ export const LpActionModal = ({
     normalizedTokens.token0Info,
     setV2AmountsFromSide,
     setV3PositionAmountsFromSide,
+    token0InputDisabled,
     token0BalanceRaw,
   ]);
 
   const handleMax1 = useCallback(() => {
+    if (token1InputDisabled) {
+      return;
+    }
     setPriceWarningAccepted(false);
     if (isV2 && normalizedTokens.token1Info) {
       setV2AmountsFromSide(
@@ -1504,7 +1548,7 @@ export const LpActionModal = ({
     }
     if (isV3RangeDeposit && normalizedTokens.token1Info) {
       setLastInputSide('token1');
-      setAmount0('');
+      setAmount0((current) => (current === '' ? '0' : current));
       setAmount1(String(normalizedTokens.token1Info.balance || '0'));
       return;
     }
@@ -1517,6 +1561,7 @@ export const LpActionModal = ({
     normalizedTokens.token1Info,
     setV2AmountsFromSide,
     setV3PositionAmountsFromSide,
+    token1InputDisabled,
     token1BalanceRaw,
   ]);
 

@@ -159,7 +159,12 @@ const LpAmountInputBlockInner = ({
               {formatStakingAmount(tokenInfo?.balance || '0')}
             </span>
             {onMax ? (
-              <button type="button" className="staking-lp-max" onClick={onMax}>
+              <button
+                type="button"
+                className="staking-lp-max"
+                disabled={disabled}
+                onClick={onMax}
+              >
                 {t('page.staking.actions.max')}
               </button>
             ) : null}
