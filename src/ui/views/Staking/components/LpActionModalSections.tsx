@@ -71,6 +71,7 @@ export const LpAmountInputBlock = ({
   onMax,
   error,
   disabled,
+  maxDisabled,
 }: {
   label?: string;
   value: string;
@@ -79,6 +80,7 @@ export const LpAmountInputBlock = ({
   onMax?: () => void;
   error?: boolean;
   disabled?: boolean;
+  maxDisabled?: boolean;
 }) => (
   <LpAmountInputBlockInner
     label={label}
@@ -88,6 +90,7 @@ export const LpAmountInputBlock = ({
     onMax={onMax}
     error={error}
     disabled={disabled}
+    maxDisabled={maxDisabled}
   />
 );
 
@@ -99,6 +102,7 @@ const LpAmountInputBlockInner = ({
   onMax,
   error,
   disabled,
+  maxDisabled,
 }: {
   label?: string;
   value: string;
@@ -107,6 +111,7 @@ const LpAmountInputBlockInner = ({
   onMax?: () => void;
   error?: boolean;
   disabled?: boolean;
+  maxDisabled?: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -162,7 +167,7 @@ const LpAmountInputBlockInner = ({
               <button
                 type="button"
                 className="staking-lp-max"
-                disabled={disabled}
+                disabled={maxDisabled}
                 onClick={onMax}
               >
                 {t('page.staking.actions.max')}
@@ -321,6 +326,8 @@ export const LpDepositContent = ({
   token1Insufficient,
   token0Disabled,
   token1Disabled,
+  token0MaxDisabled,
+  token1MaxDisabled,
   rangeText,
   v2AddQuote,
 }: {
@@ -341,6 +348,8 @@ export const LpDepositContent = ({
   token1Insufficient: boolean;
   token0Disabled?: boolean;
   token1Disabled?: boolean;
+  token0MaxDisabled?: boolean;
+  token1MaxDisabled?: boolean;
   rangeText?: string;
   v2AddQuote?: LpUnusedQuote | null;
 }) => (
@@ -362,6 +371,8 @@ export const LpDepositContent = ({
     token1Insufficient={token1Insufficient}
     token0Disabled={token0Disabled}
     token1Disabled={token1Disabled}
+    token0MaxDisabled={token0MaxDisabled}
+    token1MaxDisabled={token1MaxDisabled}
     rangeText={rangeText}
     v2AddQuote={v2AddQuote}
   />
@@ -385,6 +396,8 @@ const LpDepositContentInner = ({
   token1Insufficient,
   token0Disabled,
   token1Disabled,
+  token0MaxDisabled,
+  token1MaxDisabled,
   rangeText,
   v2AddQuote,
 }: {
@@ -405,6 +418,8 @@ const LpDepositContentInner = ({
   token1Insufficient: boolean;
   token0Disabled?: boolean;
   token1Disabled?: boolean;
+  token0MaxDisabled?: boolean;
+  token1MaxDisabled?: boolean;
   rangeText?: string;
   v2AddQuote?: LpUnusedQuote | null;
 }) => {
@@ -426,6 +441,7 @@ const LpDepositContentInner = ({
           onMax={onMax0}
           error={token0Insufficient}
           disabled={token0Disabled}
+          maxDisabled={token0MaxDisabled}
         />
         <LpTokenSeparator />
         <LpAmountInputBlock
@@ -435,6 +451,7 @@ const LpDepositContentInner = ({
           onMax={onMax1}
           error={token1Insufficient}
           disabled={token1Disabled}
+          maxDisabled={token1MaxDisabled}
         />
       </div>
       <div className="staking-lp-info">

@@ -698,12 +698,18 @@ export const LpActionModal = ({
       tickUpper: raw.tickUpper,
     });
   }, [isV3PositionDeposit, position, univ3PoolState]);
+  const token0V3PositionUnavailable =
+    isV3PositionDeposit && v3PositionInputAvailability === 'token1';
+  const token1V3PositionUnavailable =
+    isV3PositionDeposit && v3PositionInputAvailability === 'token0';
   const token0InputDisabled =
-    isV3PositionDeposit &&
-    (v3PositionInputAvailability === 'token1' || lastInputSide === 'token1');
+    token0V3PositionUnavailable ||
+    (isV3PositionDeposit && lastInputSide === 'token1');
   const token1InputDisabled =
-    isV3PositionDeposit &&
-    (v3PositionInputAvailability === 'token0' || lastInputSide === 'token0');
+    token1V3PositionUnavailable ||
+    (isV3PositionDeposit && lastInputSide === 'token0');
+  const token0MaxDisabled = token0V3PositionUnavailable;
+  const token1MaxDisabled = token1V3PositionUnavailable;
   const v2InputSide = useMemo<TokenInputSide | null>(() => {
     if (!isV2 || action !== 'deposit') {
       return null;
@@ -1484,7 +1490,7 @@ export const LpActionModal = ({
   );
 
   const handleMax0 = useCallback(() => {
-    if (token0InputDisabled) {
+    if (token0MaxDisabled) {
       return;
     }
     setPriceWarningAccepted(false);
@@ -1520,12 +1526,12 @@ export const LpActionModal = ({
     normalizedTokens.token0Info,
     setV2AmountsFromSide,
     setV3PositionAmountsFromSide,
-    token0InputDisabled,
     token0BalanceRaw,
+    token0MaxDisabled,
   ]);
 
   const handleMax1 = useCallback(() => {
-    if (token1InputDisabled) {
+    if (token1MaxDisabled) {
       return;
     }
     setPriceWarningAccepted(false);
@@ -1561,8 +1567,8 @@ export const LpActionModal = ({
     normalizedTokens.token1Info,
     setV2AmountsFromSide,
     setV3PositionAmountsFromSide,
-    token1InputDisabled,
     token1BalanceRaw,
+    token1MaxDisabled,
   ]);
 
   const rangeText = v3QuotedRange
@@ -1676,6 +1682,8 @@ export const LpActionModal = ({
                   token1Insufficient={token1InputError}
                   token0Disabled={token0InputDisabled}
                   token1Disabled={token1InputDisabled}
+                  token0MaxDisabled={token0MaxDisabled}
+                  token1MaxDisabled={token1MaxDisabled}
                   rangeText={rangeText}
                   v2AddQuote={v2AddQuote}
                 />
