@@ -9,7 +9,6 @@ import { ReactComponent as RcIconEdit } from 'ui/assets/perps/IconEditCC.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { MarketData } from '@/ui/models/perps';
-import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
 import { formatTpOrSlPrice, validatePriceInput } from '../utils';
 import { computeLimitPriceDeviation } from '../limitOrderUtils';
@@ -28,24 +27,20 @@ const QUICK_OPTIONS: { label: string; pct: number | 'mid' }[] = [
 ];
 
 interface EditLimitPriceTagProps {
-  coin: string;
   markPrice: number;
   szDecimals: number;
   direction: 'Long' | 'Short';
   limitPx: string;
   currentAssetCtx?: MarketData;
-  activeAssetCtx?: WsActiveAssetCtx['ctx'] | null;
   onChange: (price: string) => void;
 }
 
 export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
-  coin,
   markPrice,
   szDecimals,
   direction,
   limitPx,
   currentAssetCtx,
-  activeAssetCtx,
   onChange,
 }) => {
   const { t } = useTranslation();
@@ -168,7 +163,7 @@ export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
         className="inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer bg-r-blue-light1"
         onClick={() => setPopupVisible(true)}
       >
-        <span className="text-14 font-bold leading-[18px] text-r-blue-default">
+        <span className="text-13 leading-[16px] font-medium text-r-blue-default">
           {limitPx ? `@ $${splitNumberByStep(limitPx)}` : '-'}
         </span>
         <RcIconEdit className="w-16 h-16 text-r-blue-default" />

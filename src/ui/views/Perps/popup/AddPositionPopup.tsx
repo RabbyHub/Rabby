@@ -240,6 +240,18 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                   item={currentAssetCtx}
                   className="text-[16px] font-medium"
                 />
+              </div>
+              <div className="flex items-center gap-4">
+                <div
+                  className={clsx(
+                    'px-4 h-[18px] rounded-[4px] text-12 font-medium flex items-center justify-center',
+                    direction === 'Long'
+                      ? 'bg-r-green-light text-r-green-default'
+                      : 'bg-r-red-light text-r-red-default'
+                  )}
+                >
+                  {direction} {leverage}x
+                </div>
                 <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
                   {leverageType === 'cross'
                     ? t('page.perps.cross')
@@ -259,18 +271,6 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
                     </Tooltip>
                   )}
                 </span>
-              </div>
-              <div className="flex items-center gap-4">
-                <div
-                  className={clsx(
-                    'px-4 h-[18px] rounded-[4px] text-12 font-medium flex items-center justify-center',
-                    direction === 'Long'
-                      ? 'bg-r-green-light text-r-green-default'
-                      : 'bg-r-red-light text-r-red-default'
-                  )}
-                >
-                  {direction} {leverage}x
-                </div>
                 <DistanceRiskTag
                   isLong={direction === 'Long'}
                   percent={formatPerpsPct(

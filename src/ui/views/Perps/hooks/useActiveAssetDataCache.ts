@@ -7,14 +7,14 @@ interface CacheEntry {
   ts: number;
 }
 
-const TTL = 10 * 60 * 1000; // 10 分钟
+const TTL = 10 * 60 * 1000; // 10 min
 const cache = new Map<string, CacheEntry>();
 const inflight = new Map<string, Promise<Leverage | null>>();
 
 const cacheKey = (coin: string, address: string) =>
   `${address.toLowerCase()}::${coin}`;
 
-/** 供详情页 WS 订阅回种缓存，让首页复用、省一次 REST。 */
+/** Detail-page WS seeds this so home reads skip an extra REST. */
 export const writeLeverageToCache = (
   coin: string,
   address: string,
@@ -23,7 +23,6 @@ export const writeLeverageToCache = (
   cache.set(cacheKey(coin, address), { leverage, ts: Date.now() });
 };
 
-/** 缓存优先；未命中或过期则 REST 拉取；并发同 key 去重；失败回退陈旧值。 */
 export const fetchLeverageWithCache = async (
   coin: string,
   address: string
@@ -44,7 +43,7 @@ export const fetchLeverageWithCache = async (
       return leverage;
     } catch (e) {
       console.error('getActiveAssetData failed', coin, e);
-      return hit?.leverage ?? null; // 回退陈旧值，好于直接 null
+      return hit?.leverage ?? null; // Stale beats null — null would zero out marginUsage.
     } finally {
       inflight.delete(key);
     }
@@ -54,19 +53,17 @@ export const fetchLeverageWithCache = async (
   return task;
 };
 
-/**
- * 批量拿币种杠杆。币种列表变化时并行拉取；拉取期间账号切换则丢弃结果。
- */
 export const useActiveAssetDataMap = (
   coins: string[],
   address?: string
 ): Record<string, Leverage> => {
   const [map, setMap] = useState<Record<string, Leverage>>({});
-  const key = coins.join('|'); // 内容相等的数组不重复拉取
+  // Sort so insertion-order differences (same set, different ordering) don't refetch.
+  const key = [...coins].sort().join('|');
 
   useEffect(() => {
     if (!address || coins.length === 0) {
-      setMap({});
+      setMap((prev) => (Object.keys(prev).length === 0 ? prev : {}));
       return;
     }
     let cancelled = false;
@@ -77,12 +74,22 @@ export const useActiveAssetDataMap = (
         return [coin, leverage] as const;
       })
     ).then((entries) => {
-      if (cancelled) return; // 账号/币种已变，丢弃
+      if (cancelled) return; // Account/coins changed mid-flight.
       const next: Record<string, Leverage> = {};
       entries.forEach(([coin, leverage]) => {
         if (leverage) next[coin] = leverage;
       });
-      setMap(next);
+      setMap((prev) => {
+        const prevKeys = Object.keys(prev);
+        const nextKeys = Object.keys(next);
+        if (
+          prevKeys.length === nextKeys.length &&
+          nextKeys.every((k) => prev[k] === next[k])
+        ) {
+          return prev;
+        }
+        return next;
+      });
     });
     return () => {
       cancelled = true;

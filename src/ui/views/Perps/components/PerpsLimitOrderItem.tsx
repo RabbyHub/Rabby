@@ -46,7 +46,6 @@ export const PerpsLimitOrderItem: React.FC<{
   marginUsage: number;
   marketData?: MarketData;
   onClick: () => void;
-  /** 点击币对名时触发（用于跳转到 SingleCoin）。未传则币对名无独立点击。 */
   onCoinClick?: () => void;
 }> = ({ order, leverage, marginUsage, marketData, onClick, onCoinClick }) => {
   const { t } = useTranslation();
@@ -74,10 +73,7 @@ export const PerpsLimitOrderItem: React.FC<{
             size={20}
           />
           <span
-            className={clsx(
-              'text-15 ml-4 font-medium',
-              isBuy ? 'text-r-green-default' : 'text-r-red-default'
-            )}
+            className={clsx('text-15 ml-4 font-medium text-r-neutral-title-1')}
           >
             {isBuy
               ? t('page.perps.limitOrderDetail.buy')

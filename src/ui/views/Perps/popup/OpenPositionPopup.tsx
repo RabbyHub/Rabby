@@ -17,11 +17,7 @@ import {
   formatTpOrSlPrice,
 } from '../utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import {
-  PERPS_EXCHANGE_FEE_NUMBER,
-  PERPS_MAX_NTL_VALUE,
-  PerpsOpenOrderType,
-} from '../constants';
+import { PERPS_MAX_NTL_VALUE, PerpsOpenOrderType } from '../constants';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { EditLimitPriceTag } from '../components/EditLimitPriceTag';
 import { isMarketableLimit } from '../limitOrderUtils';
@@ -38,7 +34,6 @@ import { MarginModePopup } from './MarginModePopup';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
-  providerFee: number;
   coin: string;
   markPrice: number;
   leverageRange: [number, number]; // [min, max]
@@ -80,7 +75,6 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
 export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   visible,
   direction: _direction,
-  providerFee,
   coin,
   markPrice,
   leverageRange,
@@ -143,7 +137,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     return marginValue * leverage;
   }, [margin, leverage]);
 
-  // 计算用的成交价：限价模式用用户填的限价，否则用标记价
   const effectivePx = React.useMemo(() => {
     if (orderType === 'limit' && limitPx && Number(limitPx) > 0) {
       return Number(limitPx);
@@ -151,7 +144,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     return markPrice;
   }, [orderType, limitPx, markPrice]);
 
-  // 限价单是否会立即穿越盘口成交（等效市价单）
   const isMarketable = React.useMemo(
     () =>
       orderType === 'limit' &&
@@ -169,7 +161,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const estimatedLiquidationPrice = React.useMemo(() => {
     if (!markPrice || !leverage) return 0;
     const maxLeverage = leverageRange[1];
-    // 会立即成交的限价单按标记价计算，否则按限价计算
     const basePx = isMarketable ? markPrice : effectivePx;
     return calLiquidationPrice(
       basePx,
@@ -190,10 +181,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     direction,
     pxDecimals,
   ]);
-
-  const bothFee = React.useMemo(() => {
-    return providerFee + PERPS_EXCHANGE_FEE_NUMBER;
-  }, [providerFee]);
 
   // 验证 margin 输入
   const marginValidation = React.useMemo(() => {
@@ -276,15 +263,16 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const resetInitValues = useMemoizedFn(() => {
     setTpTriggerPx('');
     setSlTriggerPx('');
+    setLimitPx('');
   });
 
-  // 切换市价/限价：切到限价时清空 TP/SL（限价模式不支持），并把限价默认填为标记价
+  // Limit mode drops TP/SL (unsupported) and seeds limitPx with markPrice.
   const switchOrderType = useMemoizedFn((next: PerpsOpenOrderType) => {
     setOrderType(next);
     if (next === 'limit') {
       setTpTriggerPx('');
       setSlTriggerPx('');
-      setLimitPx((prev) => prev || formatTpOrSlPrice(markPrice, szDecimals));
+      setLimitPx(formatTpOrSlPrice(markPrice, szDecimals));
     } else {
       setLimitPx('');
     }
@@ -547,9 +535,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
               </div>
               <EditLimitPriceTag
-                coin={coin}
                 currentAssetCtx={currentAssetCtx}
-                activeAssetCtx={activeAssetCtx}
                 markPrice={markPrice}
                 szDecimals={szDecimals}
                 direction={direction}
@@ -580,7 +566,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           </div>
           {orderType === 'market' && (
             <>
-              {/* TP/SL Section */}
               <div className="flex w-full py-12 items-center justify-between">
                 <div className="text-14 text-r-neutral-foot">
                   {direction === 'Long'
@@ -792,7 +777,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                   {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
                 </div>
                 <div className="text-13 text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(limitPx)}
+                  @ ${splitNumberByStep(limitPx)}
                 </div>
               </div>
             )}

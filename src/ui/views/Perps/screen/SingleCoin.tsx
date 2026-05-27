@@ -270,6 +270,8 @@ export const PerpsSingleCoin = () => {
     return !!currentPosition;
   }, [currentPosition]);
 
+  const hasLimitOrders = detailLimitRows.length > 0;
+
   const marginModeDisabled = currentAssetCtx?.onlyIsolated;
 
   useEffect(() => {
@@ -755,6 +757,7 @@ export const PerpsSingleCoin = () => {
                     handleActionApproveStatus={handleActionApproveStatus}
                     coin={coin}
                     markPrice={markPrice}
+                    currentAssetCtx={currentAssetCtx}
                     initTpOrSlPrice={currentTpOrSl.tpPrice || ''}
                     direction={positionData?.direction as 'Long' | 'Short'}
                     size={Number(positionData?.size || 0)}
@@ -843,6 +846,7 @@ export const PerpsSingleCoin = () => {
                     handleActionApproveStatus={handleActionApproveStatus}
                     coin={coin}
                     markPrice={markPrice}
+                    currentAssetCtx={currentAssetCtx}
                     entryPrice={Number(positionData?.entryPrice || 0)}
                     initTpOrSlPrice={currentTpOrSl.slPrice || ''}
                     direction={positionData?.direction as 'Long' | 'Short'}
@@ -971,7 +975,7 @@ export const PerpsSingleCoin = () => {
           disableCoinNavigation
         />
 
-        {!hasPosition && (
+        {!hasPosition && !hasLimitOrders && (
           <div className="mt-16">
             <PerpsAbout coin={coin} />
           </div>
@@ -1038,7 +1042,7 @@ export const PerpsSingleCoin = () => {
           <div className="h-[20px]" />
         )}
 
-        {hasPosition && (
+        {(hasPosition || hasLimitOrders) && (
           <div className="mb-16">
             <PerpsAbout coin={coin} />
           </div>
@@ -1150,7 +1154,6 @@ export const PerpsSingleCoin = () => {
         activeAssetCtx={activeAssetCtx}
         visible={openPositionVisible}
         direction={positionDirection}
-        providerFee={providerFee}
         maxNtlValue={Number(
           currentAssetCtx?.maxUsdValueSize || PERPS_MAX_NTL_VALUE
         )}

@@ -1,13 +1,10 @@
 import BigNumber from 'bignumber.js';
 import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 
-/**
- * 静态挂出的限价开/平仓单 —— 排除触发单（止盈/止损）与持仓绑定的 TP/SL。
- */
+/** Excludes trigger orders and position-attached TP/SL. */
 export const isLimitOrder = (order: OpenOrder): boolean =>
   !order.isTrigger && !order.isPositionTpsl && order.orderType === 'Limit';
 
-/** 成交百分比：(origSz - sz) / origSz * 100。sz 为剩余未成交数量。 */
 export const computeFilledPct = (origSz: string, sz: string): number => {
   const orig = new BigNumber(origSz || 0);
   if (orig.isZero()) return 0;
@@ -18,7 +15,6 @@ export const computeFilledPct = (origSz: string, sz: string): number => {
     .toNumber();
 };
 
-/** 保证金占用（USDC）：limitPx * origSz / leverage。 */
 export const computeMarginUsage = (
   limitPx: string,
   origSz: string,
@@ -31,7 +27,7 @@ export const computeMarginUsage = (
     .toNumber();
 };
 
-/** 限价相对标记价的偏离比例（绝对值）。非法输入返回 Infinity 以触发阻断。 */
+/** Returns Infinity on bad input so callers trip the block threshold. */
 export const computeLimitPriceDeviation = (
   limitPx: string,
   markPx: number
@@ -43,10 +39,7 @@ export const computeLimitPriceDeviation = (
   return Math.abs(limit - markPx) / markPx;
 };
 
-/**
- * 判断该限价单是否会立即穿越盘口成交（即等效于市价单）：
- * 买单限价 >= 标记价、卖单限价 <= 标记价。
- */
+/** Buy with limit >= mark or sell with limit <= mark — would cross the book immediately. */
 export const isMarketableLimit = (params: {
   direction: 'Long' | 'Short';
   limitPx: string;

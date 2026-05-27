@@ -32,10 +32,7 @@ const toRows = (
     })
     .sort((a, b) => b.marginUsage - a.marginUsage);
 
-/**
- * 首页限价单列表。有持仓的币种取持仓杠杆（store 里已有，免费）；
- * 仅有挂单的币种通过 REST getActiveAssetData（带缓存）补杠杆。
- */
+/** Prefer position leverage from store; REST-fetch only for orphan orders. */
 export const useHomeLimitOrders = (
   positionAndOpenOrders: AssetPosition[]
 ): LimitOrderRow[] => {
@@ -81,9 +78,7 @@ export const useHomeLimitOrders = (
   );
 };
 
-/**
- * 币对详情页限价单列表。杠杆由调用方从 WS activeAssetData 直接传入。
- */
+/** Caller supplies leverage from WS activeAssetData. */
 export const useDetailLimitOrders = (
   coin: string,
   leverage: Leverage | null

@@ -18,7 +18,6 @@ interface MarginInputProps {
   customAvailableText?: string;
   titleExtra?: React.ReactNode;
   availableExtra?: React.ReactNode;
-  /** 嵌入外层卡片时为 true，去掉自身的卡片背景/圆角/下边距。 */
   embedded?: boolean;
 }
 

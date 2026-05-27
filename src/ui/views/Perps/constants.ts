@@ -286,11 +286,6 @@ export const STABLECOIN_SLIPPAGE = 0.01;
 
 export type PerpsOpenOrderType = 'market' | 'limit';
 
-/** 限价与标记价偏离 >= 此值时，给出软提示（不阻断）。 */
 export const PERPS_LIMIT_PRICE_CONFIRM_PCT = 0.05;
-
-/** 限价与标记价偏离 >= 此值时，硬阻断（价格保护）。 */
 export const PERPS_LIMIT_PRICE_BLOCK_PCT = 0.1;
-
-/** 用户挂限价单的默认 Time-In-Force —— Good-Til-Cancel。 */
 export const PERPS_LIMIT_TIF_DEFAULT = 'Gtc' as const;
