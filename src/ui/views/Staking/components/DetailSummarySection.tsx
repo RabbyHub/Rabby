@@ -191,8 +191,9 @@ const PoolCurve = ({
           <YAxis hide domain={['auto', 'auto']} />
           <ChartTooltip
             cursor={{
-              stroke: curveColor,
+              stroke: 'var(--r-neutral-line)',
               strokeWidth: 1,
+              strokeDasharray: '3 3',
             }}
             content={(props) => (
               <CurveTooltip
@@ -211,9 +212,9 @@ const PoolCurve = ({
             dot={false}
             activeDot={{
               r: 4.5,
-              fill: curveColor,
+              fill: 'var(--r-neutral-card1)',
               stroke: curveColor,
-              strokeWidth: 0,
+              strokeWidth: 2,
             }}
           />
         </AreaChart>
