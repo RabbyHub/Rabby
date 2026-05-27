@@ -368,7 +368,7 @@ export const LpActionModal = ({
   const [percent, setPercent] = useState(100);
   const [selectedPercentPreset, setSelectedPercentPreset] = useState<
     number | null
-  >(100);
+  >(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -379,7 +379,7 @@ export const LpActionModal = ({
       setV3RangePreset(V3_DEFAULT_RANGE_PRESET);
       setPriceWarningAccepted(false);
       setPercent(100);
-      setSelectedPercentPreset(100);
+      setSelectedPercentPreset(null);
     }
   }, [visible]);
 
