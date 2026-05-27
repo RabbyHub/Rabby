@@ -270,7 +270,7 @@ const AddressManagement = () => {
     return (
       <div
         onClick={gotoAddAddress}
-        className="mt-24 h-[52px] flex items-center justify-center gap-[8px] bg-r-neutral-card-1 rounded-lg cursor-pointer"
+        className="mt-24 h-[52px] flex items-center justify-center gap-[8px] bg-r-neutral-card-1 rounded-lg cursor-pointer border border-solid border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light1 transition-colors"
       >
         <RcIconAddAddress
           viewBox="0 0 20 20"
@@ -486,13 +486,13 @@ const AddressManagement = () => {
         {enableSwitch
           ? t('page.manageAddress.current-address')
           : t('page.manageAddress.address-management')}
-        <div className="bg-r-neutral-card1 rounded absolute top-20 right-0 w-[32px] h-[28px] flex items-center justify-center">
+        <div
+          className="bg-r-neutral-card1 rounded absolute top-20 right-0 w-[32px] h-[28px] flex items-center justify-center cursor-pointer hover:bg-r-blue-light-1 transition-colors"
+          onClick={gotoAddAddress}
+        >
           <RcIconAddAddress
             viewBox="0 0 20 20"
-            className={clsx(
-              'text-r-blue-default w-[20px] h-[20px] cursor-pointer'
-            )}
-            onClick={gotoAddAddress}
+            className={clsx('text-r-blue-default w-[20px] h-[20px]')}
           />
         </div>
       </PageHeader>
