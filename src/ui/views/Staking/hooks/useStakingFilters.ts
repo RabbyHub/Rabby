@@ -23,6 +23,9 @@ export const useStakingFilters = () => {
     },
     {
       refreshDeps: [account?.address],
+      cacheKey: `staking-filters:${account?.address || 'no-account'}`,
+      staleTime: 60 * 1000,
+      cacheTime: 5 * 60 * 1000,
     }
   );
 };

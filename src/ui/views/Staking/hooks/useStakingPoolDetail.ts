@@ -30,6 +30,11 @@ export const useStakingPoolDetail = (poolId?: string) => {
     {
       ready: !!poolId,
       refreshDeps: [account?.address, poolId],
+      cacheKey: `staking-pool-detail:${account?.address || 'no-account'}:${
+        poolId || ''
+      }`,
+      staleTime: 0,
+      cacheTime: 5 * 60 * 1000,
     }
   );
 };

@@ -30,6 +30,9 @@ export const useStakingPoolCurve = (
     {
       ready: !!poolId,
       refreshDeps: [metric, poolId],
+      cacheKey: `staking-pool-curve:${poolId || ''}:${metric}`,
+      staleTime: 0,
+      cacheTime: 5 * 60 * 1000,
     }
   );
 };
