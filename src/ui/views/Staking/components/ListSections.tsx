@@ -110,7 +110,7 @@ export const StakingFilterTrigger = ({
         type="button"
         className="staking-filter-trigger-main"
         disabled={disabled}
-        onClick={onClick}
+        onClick={selected ? onClear : onClick}
       >
         {selected ? icon : null}
         <span className="staking-filter-trigger-label">

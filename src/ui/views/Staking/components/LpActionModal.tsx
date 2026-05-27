@@ -702,12 +702,8 @@ export const LpActionModal = ({
     isV3PositionDeposit && v3PositionInputAvailability === 'token1';
   const token1V3PositionUnavailable =
     isV3PositionDeposit && v3PositionInputAvailability === 'token0';
-  const token0InputDisabled =
-    token0V3PositionUnavailable ||
-    (isV3PositionDeposit && lastInputSide === 'token1');
-  const token1InputDisabled =
-    token1V3PositionUnavailable ||
-    (isV3PositionDeposit && lastInputSide === 'token0');
+  const token0InputDisabled = token0V3PositionUnavailable;
+  const token1InputDisabled = token1V3PositionUnavailable;
   const token0MaxDisabled = token0V3PositionUnavailable;
   const token1MaxDisabled = token1V3PositionUnavailable;
   const v2InputSide = useMemo<TokenInputSide | null>(() => {
@@ -1081,7 +1077,7 @@ export const LpActionModal = ({
       }
       if (action === 'deposit') {
         if (!v2AddQuote) {
-          throw new Error(t('page.staking.actionModal.enterValidTokenAmounts'));
+          throw new Error('Invalid token amounts');
         }
         buildResult = buildUniv2AddLiquidityTx({
           ...common,
@@ -1113,7 +1109,7 @@ export const LpActionModal = ({
       }
       if (action === 'deposit') {
         if (!v3DepositQuote) {
-          throw new Error(t('page.staking.actionModal.enterValidTokenAmounts'));
+          throw new Error('Invalid token amounts');
         }
         if (position?.raw?.univ3) {
           buildResult = buildUniv3IncreaseLiquidityTx({
@@ -1620,12 +1616,7 @@ export const LpActionModal = ({
   const handleCancel = useCallback(() => {
     onCancel();
   }, [onCancel]);
-  const footerError =
-    disabledReason ||
-    balanceError ||
-    (amountInputError
-      ? t('page.staking.actionModal.enterValidTokenAmounts')
-      : '');
+  const footerError = disabledReason || balanceError || '';
   const priceWarningTitle = priceDiffInfo
     ? t('page.staking.actionModal.poolPriceTitle', {
         token0: priceDiffInfo.token0Symbol,

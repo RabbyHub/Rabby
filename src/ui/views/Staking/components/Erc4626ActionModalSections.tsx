@@ -224,14 +224,12 @@ export const Erc4626ActionError = ({
   disabledReason,
   action,
   depositBalanceError,
-  depositPrecisionError,
   showWithdrawInvalidMessage,
   assetSymbol,
 }: {
   disabledReason?: string;
   action: Erc4626Action;
   depositBalanceError: boolean;
-  depositPrecisionError: boolean;
   showWithdrawInvalidMessage: boolean;
   assetSymbol?: string;
 }) => {
@@ -247,14 +245,6 @@ export const Erc4626ActionError = ({
         {t('page.staking.actionModal.insufficientBalance', {
           symbols: assetSymbol || t('page.staking.actionModal.tokenFallback'),
         })}
-      </div>
-    );
-  }
-
-  if (action === 'deposit' && depositPrecisionError) {
-    return (
-      <div className="staking-action-error">
-        {t('page.staking.actionModal.enterValidTokenAmounts')}
       </div>
     );
   }

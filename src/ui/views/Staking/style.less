@@ -114,7 +114,7 @@ body.dark .staking-selector-popup {
   white-space: nowrap;
 }
 
-.staking-list-page .staking-filter-trigger:not(.is-selected):not(.is-disabled):hover {
+.staking-list-page .staking-filter-trigger:not(.is-disabled):hover {
   border-color: var(--r-blue-default);
   background: var(--r-neutral-card1);
   color: var(--r-blue-default);
@@ -203,6 +203,10 @@ body.dark .staking-selector-popup {
   border: 0;
   background: transparent;
   color: var(--r-neutral-foot);
+}
+
+.staking-list-page .staking-filter-trigger:hover .staking-filter-trigger-clear {
+  color: var(--r-blue-default);
 }
 
 .staking-list-page .staking-filter-list {
@@ -1160,6 +1164,10 @@ body.dark .staking-selector-popup {
   font-weight: 500;
   color: var(--r-blue-default);
   background: transparent;
+}
+
+.staking-detail-page .staking-inline-action:not(:disabled):hover {
+  background: var(--r-blue-light1);
 }
 
 .staking-detail-page .staking-primary-action {

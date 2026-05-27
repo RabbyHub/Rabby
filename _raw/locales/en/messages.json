@@ -181,7 +181,7 @@
       },
       "portfolio": {
         "pending": "Pending",
-        "succeed": "Succeed",
+        "succeed": "Succeeded",
         "failed": "Failed",
         "supplied": "Supplied",
         "rewards": "Rewards",
@@ -211,7 +211,6 @@
         "poolPriceTitle": "Pool price: 1 {{token0}} = {{poolPrice}} {{token1}}; Market price: 1 {{token0}} = {{marketPrice}} {{token1}}",
         "failedResolveV2Pool": "Failed to resolve V2 pool",
         "failedResolveV3Pool": "Failed to resolve V3 pool",
-        "enterValidTokenAmounts": "Enter valid token amounts",
         "noLpPositionToWithdraw": "No LP position to withdraw",
         "v2RewardsUnsupported": "V2 rewards are not supported",
         "selectV3PositionToWithdraw": "Select a V3 position to withdraw"
