@@ -702,12 +702,8 @@ export const LpActionModal = ({
     isV3PositionDeposit && v3PositionInputAvailability === 'token1';
   const token1V3PositionUnavailable =
     isV3PositionDeposit && v3PositionInputAvailability === 'token0';
-  const token0InputDisabled =
-    token0V3PositionUnavailable ||
-    (isV3PositionDeposit && lastInputSide === 'token1');
-  const token1InputDisabled =
-    token1V3PositionUnavailable ||
-    (isV3PositionDeposit && lastInputSide === 'token0');
+  const token0InputDisabled = token0V3PositionUnavailable;
+  const token1InputDisabled = token1V3PositionUnavailable;
   const token0MaxDisabled = token0V3PositionUnavailable;
   const token1MaxDisabled = token1V3PositionUnavailable;
   const v2InputSide = useMemo<TokenInputSide | null>(() => {
