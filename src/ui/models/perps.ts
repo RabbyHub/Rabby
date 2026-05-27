@@ -1168,28 +1168,10 @@ export const perps = createModel<RootModel>()({
     },
 
     // Refresh single dex's openOrders right after a place/cancel; WS reconciles drift.
-    async fetchPositionOpenOrdersHttp(payload: { dex: string }, rootState) {
-      const address = rootState.perps.currentPerpsAccount?.address;
-      if (!address) return;
-      const { dex } = payload;
-      const sdk = getPerpsSDK();
-      let orders: OpenOrder[];
-      try {
-        orders = await sdk.info.getFrontendOpenOrders(
-          address,
-          dex || undefined
-        );
-      } catch (e) {
-        console.error('[fetchPositionOpenOrdersHttp] failed', dex, e);
-        return;
-      }
-      const latest = store.getState().perps;
-      if (latest.currentPerpsAccount?.address !== address) return;
-      const map = latest.marketDataMap;
-      const kept = latest.openOrders.filter(
-        (o) => (map[o.coin]?.dexId ?? '') !== dex
-      );
-      dispatch.perps.patchState({ openOrders: [...kept, ...orders] });
+    async fetchPositionOpenOrdersHttp(payload: { dex: string }) {
+      await dispatch.perps.fetchPositionOpenOrdersHttpForDexes({
+        dexes: [payload.dex],
+      });
     },
 
     // Multi-dex variant (Cancel-All): one batched flush.

@@ -31,18 +31,39 @@ export const LimitOrderDetailPopup: React.FC<{
   const { t } = useTranslation();
   const [loading, setLoading] = React.useState(false);
 
-  let body: React.ReactNode = null;
-  if (row) {
-    const { order, marginUsage } = row;
-    const isBuy = order.side === 'B';
-    const base = formatPerpsCoin(
-      marketData?.displayName || marketData?.name || order.coin
-    );
-    const quote = marketData?.quoteAsset || 'USDC';
-    const notional = new BigNumber(order.limitPx || 0).times(order.origSz || 0);
-    const filledPct = computeFilledPct(String(order.origSz), order.sz);
+  const popupProps = {
+    closable: true,
+    placement: 'bottom' as const,
+    visible,
+    onCancel: onClose,
+    height: 'fit-content' as const,
+    bodyStyle: {
+      padding: 0,
+      background: 'var(--r-neutral-bg2, #F2F4F7)',
+      borderRadius: '16px 16px 0 0',
+    },
+    closeIcon: (
+      <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-body mt-[-2px]" />
+    ),
+    destroyOnClose: true,
+    isSupportDarkMode: true,
+  };
 
-    body = (
+  if (!row) {
+    return <Popup {...popupProps} />;
+  }
+
+  const { order, marginUsage } = row;
+  const isBuy = order.side === 'B';
+  const base = formatPerpsCoin(
+    marketData?.displayName || marketData?.name || order.coin
+  );
+  const quote = marketData?.quoteAsset || 'USDC';
+  const notional = new BigNumber(order.limitPx || 0).times(order.origSz || 0);
+  const filledPct = computeFilledPct(String(order.origSz), order.sz);
+
+  return (
+    <Popup {...popupProps}>
       <div className="flex flex-col px-[20px] pb-[24px]">
         <div className="text-[18px] leading-[22px] font-medium text-r-neutral-title-1 text-center py-[16px]">
           {t('page.perps.limitOrderDetail.title', {
@@ -104,28 +125,6 @@ export const LimitOrderDetailPopup: React.FC<{
           {t('page.perps.limitOrderDetail.cancelLimitOrder')}
         </Button>
       </div>
-    );
-  }
-
-  return (
-    <Popup
-      closable
-      placement="bottom"
-      visible={visible}
-      onCancel={onClose}
-      height={'fit-content'}
-      bodyStyle={{
-        padding: 0,
-        background: 'var(--r-neutral-bg2, #F2F4F7)',
-        borderRadius: '16px 16px 0 0',
-      }}
-      closeIcon={
-        <RcIconCloseCC className="w-[20px] h-[20px] text-r-neutral-body mt-[-2px]" />
-      }
-      destroyOnClose
-      isSupportDarkMode
-    >
-      {body}
     </Popup>
   );
 };

@@ -557,7 +557,7 @@ export const usePerpsPosition = ({
         );
         const statuses = res?.response.data.statuses ?? [];
         const okCount = statuses.filter(
-          (item) => ((item as unknown) as string) === 'success'
+          (item) => typeof item === 'string' && item === 'success'
         ).length;
         const failCount = statuses.length - okCount;
 

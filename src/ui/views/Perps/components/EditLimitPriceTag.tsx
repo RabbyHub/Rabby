@@ -9,7 +9,6 @@ import { ReactComponent as RcIconEdit } from 'ui/assets/perps/IconEditCC.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { MarketData } from '@/ui/models/perps';
-import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
 import { formatTpOrSlPrice, validatePriceInput } from '../utils';
 import { computeLimitPriceDeviation } from '../limitOrderUtils';
@@ -28,24 +27,20 @@ const QUICK_OPTIONS: { label: string; pct: number | 'mid' }[] = [
 ];
 
 interface EditLimitPriceTagProps {
-  coin: string;
   markPrice: number;
   szDecimals: number;
   direction: 'Long' | 'Short';
   limitPx: string;
   currentAssetCtx?: MarketData;
-  activeAssetCtx?: WsActiveAssetCtx['ctx'] | null;
   onChange: (price: string) => void;
 }
 
 export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
-  coin,
   markPrice,
   szDecimals,
   direction,
   limitPx,
   currentAssetCtx,
-  activeAssetCtx,
   onChange,
 }) => {
   const { t } = useTranslation();

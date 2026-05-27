@@ -58,11 +58,12 @@ export const useActiveAssetDataMap = (
   address?: string
 ): Record<string, Leverage> => {
   const [map, setMap] = useState<Record<string, Leverage>>({});
-  const key = coins.join('|'); // Identity-different but equal arrays must not refetch.
+  // Sort so insertion-order differences (same set, different ordering) don't refetch.
+  const key = [...coins].sort().join('|');
 
   useEffect(() => {
     if (!address || coins.length === 0) {
-      setMap({});
+      setMap((prev) => (Object.keys(prev).length === 0 ? prev : {}));
       return;
     }
     let cancelled = false;
@@ -78,7 +79,17 @@ export const useActiveAssetDataMap = (
       entries.forEach(([coin, leverage]) => {
         if (leverage) next[coin] = leverage;
       });
-      setMap(next);
+      setMap((prev) => {
+        const prevKeys = Object.keys(prev);
+        const nextKeys = Object.keys(next);
+        if (
+          prevKeys.length === nextKeys.length &&
+          nextKeys.every((k) => prev[k] === next[k])
+        ) {
+          return prev;
+        }
+        return next;
+      });
     });
     return () => {
       cancelled = true;

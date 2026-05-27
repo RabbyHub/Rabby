@@ -17,11 +17,7 @@ import {
   formatTpOrSlPrice,
 } from '../utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import {
-  PERPS_EXCHANGE_FEE_NUMBER,
-  PERPS_MAX_NTL_VALUE,
-  PerpsOpenOrderType,
-} from '../constants';
+import { PERPS_MAX_NTL_VALUE, PerpsOpenOrderType } from '../constants';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { EditLimitPriceTag } from '../components/EditLimitPriceTag';
 import { isMarketableLimit } from '../limitOrderUtils';
@@ -38,7 +34,6 @@ import { MarginModePopup } from './MarginModePopup';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
-  providerFee: number;
   coin: string;
   markPrice: number;
   leverageRange: [number, number]; // [min, max]
@@ -80,7 +75,6 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
 export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   visible,
   direction: _direction,
-  providerFee,
   coin,
   markPrice,
   leverageRange,
@@ -187,10 +181,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     direction,
     pxDecimals,
   ]);
-
-  const bothFee = React.useMemo(() => {
-    return providerFee + PERPS_EXCHANGE_FEE_NUMBER;
-  }, [providerFee]);
 
   // 验证 margin 输入
   const marginValidation = React.useMemo(() => {
@@ -544,9 +534,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                 {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
               </div>
               <EditLimitPriceTag
-                coin={coin}
                 currentAssetCtx={currentAssetCtx}
-                activeAssetCtx={activeAssetCtx}
                 markPrice={markPrice}
                 szDecimals={szDecimals}
                 direction={direction}

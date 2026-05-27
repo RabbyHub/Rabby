@@ -1150,7 +1150,6 @@ export const PerpsSingleCoin = () => {
         activeAssetCtx={activeAssetCtx}
         visible={openPositionVisible}
         direction={positionDirection}
-        providerFee={providerFee}
         maxNtlValue={Number(
           currentAssetCtx?.maxUsdValueSize || PERPS_MAX_NTL_VALUE
         )}
