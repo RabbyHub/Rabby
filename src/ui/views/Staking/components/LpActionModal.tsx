@@ -23,7 +23,6 @@ import {
   getUniv3LiquidityForAmount0,
   getUniv3LiquidityForAmount1,
   quoteUniv2AddLiquidity,
-  quoteUniv2CounterAmount,
   quoteUniv3DecreaseLiquidity,
   quoteUniv3Liquidity,
   quoteUniv3RangeDeposit,
@@ -1163,27 +1162,15 @@ export const LpActionModal = ({
     v3QuotedRange,
   ]);
 
-  const setV2AmountsFromSide = useCallback(
+  const getV2CounterValue = useCallback(
     (side: TokenInputSide, value: string) => {
-      setLastInputSide(side);
-      if (side === 'token0') {
-        setAmount0(value);
-      } else {
-        setAmount1(value);
-      }
-
       if (
         !value ||
         !univ2Facts ||
         !normalizedTokens.token0Info ||
         !normalizedTokens.token1Info
       ) {
-        if (side === 'token0') {
-          setAmount1('');
-        } else {
-          setAmount0('');
-        }
-        return;
+        return '';
       }
 
       try {
@@ -1196,42 +1183,60 @@ export const LpActionModal = ({
             ? normalizedTokens.token1Info.decimals
             : normalizedTokens.token0Info.decimals;
         const inputRaw = toRawDecimal(value, inputDecimals);
+
         if (safeBigInt(inputRaw) <= 0n) {
-          if (side === 'token0') {
-            setAmount1('');
-          } else {
-            setAmount0('');
-          }
-          return;
+          return '';
         }
-        const counterRaw =
-          side === 'token0'
-            ? quoteUniv2CounterAmount({
-                inputAmount: inputRaw,
-                inputReserve: univ2Facts.reserve0,
-                outputReserve: univ2Facts.reserve1,
-              })
-            : quoteUniv2CounterAmount({
-                inputAmount: inputRaw,
-                inputReserve: univ2Facts.reserve1,
-                outputReserve: univ2Facts.reserve0,
-              });
-        const counterValue = rawToDecimalInput(counterRaw, outputDecimals);
-        if (side === 'token0') {
-          setAmount1(counterValue);
-        } else {
-          setAmount0(counterValue);
-        }
+
+        const quote = quoteUniv2AddLiquidity({
+          reserve0: univ2Facts.reserve0,
+          reserve1: univ2Facts.reserve1,
+          amount0Desired: side === 'token0' ? inputRaw : undefined,
+          amount1Desired: side === 'token1' ? inputRaw : undefined,
+          slippageBps: DEFAULT_SLIPPAGE_BPS,
+        });
+        const counterRaw = side === 'token0' ? quote.amount1 : quote.amount0;
+        return rawToDecimalInput(counterRaw, outputDecimals);
       } catch {
-        if (side === 'token0') {
-          setAmount1('');
-        } else {
-          setAmount0('');
-        }
+        return '';
       }
     },
     [normalizedTokens.token0Info, normalizedTokens.token1Info, univ2Facts]
   );
+
+  const setV2AmountsFromSide = useCallback(
+    (side: TokenInputSide, value: string) => {
+      setLastInputSide(value ? side : null);
+      if (side === 'token0') {
+        setAmount0(value);
+        setAmount1(getV2CounterValue(side, value));
+      } else {
+        setAmount1(value);
+        setAmount0(getV2CounterValue(side, value));
+      }
+    },
+    [getV2CounterValue]
+  );
+
+  useEffect(() => {
+    if (action !== 'deposit' || !isV2 || !lastInputSide) {
+      return;
+    }
+
+    const sourceValue = lastInputSide === 'token0' ? amount0 : amount1;
+    const counterValue = getV2CounterValue(lastInputSide, sourceValue);
+
+    if (lastInputSide === 'token0') {
+      if (amount1 !== counterValue) {
+        setAmount1(counterValue);
+      }
+      return;
+    }
+
+    if (amount0 !== counterValue) {
+      setAmount0(counterValue);
+    }
+  }, [action, amount0, amount1, getV2CounterValue, isV2, lastInputSide]);
 
   const setV3PositionAmountsFromSide = useCallback(
     (side: TokenInputSide, value: string) => {
