@@ -6,7 +6,6 @@ import { formatUnits } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
 import type { TokenItem } from 'background/service/openapi';
 
-import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { SwapSlider } from '@/ui/views/Swap/Component/Slider';
@@ -14,7 +13,11 @@ import { formatUsdValue } from '@/ui/utils';
 
 import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionItem } from '../hooks/useStakingPositionSummary';
-import { formatStakingAmount, formatStakingUsd } from '../utils/format';
+import {
+  formatStakingAmount,
+  formatStakingUsd,
+  normalizeStakingAmountInput,
+} from '../utils/format';
 
 export type LpActionModalTokenBalanceInfo = {
   token: StakingToken;
@@ -124,9 +127,12 @@ const LpAmountInputBlockInner = ({
             value={value}
             disabled={disabled}
             onChange={(event) => {
-              const next = event.target.value;
-              if (next === '' || INPUT_NUMBER_RE.test(next)) {
-                onChange(next === '' ? '' : filterNumber(next));
+              const next = normalizeStakingAmountInput(
+                event.target.value,
+                tokenInfo?.decimals
+              );
+              if (next !== null) {
+                onChange(next);
               }
             }}
           />

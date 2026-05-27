@@ -15,7 +15,6 @@ import type { StakingPool as SdkStakingPool } from '@rabby-wallet/staking-sdk';
 import type { TokenItem } from 'background/service/openapi';
 
 import type { Account } from '@/background/service/preference';
-import { INPUT_NUMBER_RE, filterNumber } from '@/constant/regexp';
 import { Popup } from '@/ui/component';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { formatUsdValue, useWallet } from '@/ui/utils';
@@ -34,6 +33,7 @@ import {
   formatStakingUsd,
   getStakingTokenBalanceAmount,
   isStakingAmountPrecisionExceeded,
+  normalizeStakingAmountInput,
 } from '../utils/format';
 import {
   buildStakingMiniSignTxs,
@@ -358,11 +358,15 @@ export const Erc4626ActionModal = ({
     }
   }, [actionLabel, buildTxs, canSubmit, onSubmitted, sign, t]);
 
-  const onAmountChange = useCallback((value: string) => {
-    if (value === '' || INPUT_NUMBER_RE.test(value)) {
-      setAmount(value === '' ? '' : filterNumber(value));
-    }
-  }, []);
+  const onAmountChange = useCallback(
+    (value: string) => {
+      const nextValue = normalizeStakingAmountInput(value, decimals);
+      if (nextValue !== null) {
+        setAmount(nextValue);
+      }
+    },
+    [decimals]
+  );
 
   const resetAndCancel = () => {
     setAmount('');

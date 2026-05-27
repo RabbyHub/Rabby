@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import type { TokenItem } from 'background/service/openapi';
 
+import { normalizeInputNumber } from '@/constant/regexp';
 import { formatTVL, formatTokenAmount, formatUsdValue } from '@/ui/utils';
 import { tokenAmountBn } from '@/ui/utils/token';
 
@@ -107,6 +108,36 @@ export const isStakingAmountPrecisionExceeded = (
 
   const decimalPlaces = value.split('.')[1]?.length || 0;
   return decimalPlaces > Math.max(0, decimals);
+};
+
+export const normalizeStakingAmountInput = (
+  value: string,
+  decimals?: number
+) => {
+  const normalized = normalizeInputNumber(value);
+  if (normalized === null) {
+    return null;
+  }
+
+  if (!normalized.includes('.')) {
+    return normalized;
+  }
+
+  if (typeof decimals !== 'number' || !Number.isFinite(decimals)) {
+    return normalized;
+  }
+
+  const safeDecimals = Math.max(0, decimals);
+  if (safeDecimals === 0) {
+    return null;
+  }
+
+  const decimalPlaces = normalized.split('.')[1]?.length || 0;
+  if (decimalPlaces > safeDecimals) {
+    return null;
+  }
+
+  return normalized;
 };
 
 export const shortenStakingAddress = (address?: string | null) => {

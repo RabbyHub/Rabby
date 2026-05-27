@@ -860,7 +860,7 @@ export const LpActionModal = ({
   const token0InputError = token0Insufficient || amount0PrecisionExceeded;
   const token1InputError = token1Insufficient || amount1PrecisionExceeded;
   const v3RangeDepositInputsComplete =
-    !isV3RangeDeposit || (amount0 !== '' && amount1 !== '');
+    !isV3RangeDeposit || hasPositiveRaw(raw0) || hasPositiveRaw(raw1);
   const balanceError = useMemo(() => {
     const symbols = [
       token0Insufficient ? normalizedTokens.token0Info?.token.symbol : null,
@@ -974,8 +974,8 @@ export const LpActionModal = ({
       }
       return isV2
         ? !!v2AddQuote &&
-            (hasPositiveRaw(v2AddQuote.amount0) ||
-              hasPositiveRaw(v2AddQuote.amount1))
+            hasPositiveRaw(v2AddQuote.amount0) &&
+            hasPositiveRaw(v2AddQuote.amount1)
         : !!v3DepositQuote &&
             (hasPositiveRaw(v3DepositQuote.amount0) ||
               hasPositiveRaw(v3DepositQuote.amount1));
@@ -1272,6 +1272,9 @@ export const LpActionModal = ({
           slippageBps: DEFAULT_SLIPPAGE_BPS,
         });
         const counterRaw = side === 'token0' ? quote.amount1 : quote.amount0;
+        if (counterRaw <= 0n) {
+          return '';
+        }
         return rawToDecimalInput(counterRaw, outputDecimals);
       } catch {
         return '';
@@ -1465,7 +1468,7 @@ export const LpActionModal = ({
     if (isV3RangeDeposit && normalizedTokens.token0Info) {
       setLastInputSide('token0');
       setAmount0(String(normalizedTokens.token0Info.balance || '0'));
-      setAmount1('0');
+      setAmount1('');
       return;
     }
     setLastInputSide('token0');
@@ -1501,7 +1504,7 @@ export const LpActionModal = ({
     }
     if (isV3RangeDeposit && normalizedTokens.token1Info) {
       setLastInputSide('token1');
-      setAmount0('0');
+      setAmount0('');
       setAmount1(String(normalizedTokens.token1Info.balance || '0'));
       return;
     }
