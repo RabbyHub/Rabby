@@ -46,6 +46,54 @@ const getPoolLinks = (pool: StakingPool, t: TFunction) => {
   });
 };
 
+const getTwitterHandleFromUrl = (url?: string | null) => {
+  if (!url) {
+    return '';
+  }
+
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, '').toLowerCase();
+    if (host !== 'twitter.com' && host !== 'x.com') {
+      return '';
+    }
+
+    const handle = parsed.pathname.split('/').filter(Boolean)[0];
+    if (!handle) {
+      return '';
+    }
+
+    const reservedPaths = ['home', 'intent', 'share', 'i'];
+    if (reservedPaths.includes(handle.toLowerCase())) {
+      return '';
+    }
+
+    return handle.replace(/^@/, '');
+  } catch {
+    return '';
+  }
+};
+
+const isTwitterLink = (link: StakingLink) => {
+  const label = `${link.type || ''} ${link.name || ''}`.toLowerCase();
+  return (
+    label.includes('twitter') ||
+    label.includes('x(') ||
+    !!getTwitterHandleFromUrl(link.url)
+  );
+};
+
+const getLinkDisplayText = (link: StakingLink) => {
+  if (isTwitterLink(link)) {
+    const handle = getTwitterHandleFromUrl(link.url);
+    if (handle) {
+      return `@${handle}`;
+    }
+  }
+
+  return link.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+};
+
 const getTokenAddress = (token?: StakingToken) => token?.id || '-';
 
 const isLpPool = (pool: StakingPool) =>
@@ -244,7 +292,10 @@ const AboutProtocolSection = ({ pool }: { pool: StakingPool }) => {
       {links.length ? (
         <div className="mt-[16px] grid grid-cols-2 gap-[16px]">
           {links.slice(0, 2).map((link) => (
-            <div key={`${link.type}-${link.url}`} className="min-w-0">
+            <div
+              key={`${link.type || link.name || 'link'}-${link.url}`}
+              className="min-w-0"
+            >
               <div className="text-[12px] leading-[14px] text-r-neutral-foot">
                 {link.name || link.type}
               </div>
@@ -255,9 +306,7 @@ const AboutProtocolSection = ({ pool }: { pool: StakingPool }) => {
               >
                 <ProtocolLogo protocol={pool.protocol} size={16} />
                 <span className="truncate text-[13px] leading-[16px]">
-                  {link.type === 'twitter'
-                    ? `@${protocolName}`
-                    : link.url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                  {getLinkDisplayText(link)}
                 </span>
                 <span className="shrink-0 text-r-neutral-foot">
                   <ExternalIcon />
