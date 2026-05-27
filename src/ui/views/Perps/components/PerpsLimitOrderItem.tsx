@@ -73,10 +73,7 @@ export const PerpsLimitOrderItem: React.FC<{
             size={20}
           />
           <span
-            className={clsx(
-              'text-15 ml-4 font-medium',
-              isBuy ? 'text-r-green-default' : 'text-r-red-default'
-            )}
+            className={clsx('text-15 ml-4 font-medium text-r-neutral-title-1')}
           >
             {isBuy
               ? t('page.perps.limitOrderDetail.buy')

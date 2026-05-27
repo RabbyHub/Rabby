@@ -263,6 +263,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const resetInitValues = useMemoizedFn(() => {
     setTpTriggerPx('');
     setSlTriggerPx('');
+    setLimitPx('');
   });
 
   // Limit mode drops TP/SL (unsupported) and seeds limitPx with markPrice.
@@ -271,7 +272,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     if (next === 'limit') {
       setTpTriggerPx('');
       setSlTriggerPx('');
-      setLimitPx((prev) => prev || formatTpOrSlPrice(markPrice, szDecimals));
+      setLimitPx(formatTpOrSlPrice(markPrice, szDecimals));
     } else {
       setLimitPx('');
     }
@@ -776,7 +777,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                   {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
                 </div>
                 <div className="text-13 text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(limitPx)}
+                  @ ${splitNumberByStep(limitPx)}
                 </div>
               </div>
             )}

@@ -163,7 +163,7 @@ export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
         className="inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer bg-r-blue-light1"
         onClick={() => setPopupVisible(true)}
       >
-        <span className="text-14 font-bold leading-[18px] text-r-blue-default">
+        <span className="text-13 leading-[16px] font-medium text-r-blue-default">
           {limitPx ? `@ $${splitNumberByStep(limitPx)}` : '-'}
         </span>
         <RcIconEdit className="w-16 h-16 text-r-blue-default" />

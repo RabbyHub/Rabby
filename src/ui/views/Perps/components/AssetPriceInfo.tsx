@@ -49,12 +49,11 @@ export const AssetPriceInfo = ({
       </div>
       <div
         className={clsx(
-          isPositiveChange ? 'text-r-green-default' : 'text-r-red-default',
+          'text-r-neutral-foot',
           'flex items-center justify-center text-13 font-medium'
         )}
       >
-        ${splitNumberByStep(markPrice)} ({isPositiveChange ? '+' : ''}
-        {formatPercent(dayDeltaPercent, 2)})
+        ${splitNumberByStep(markPrice)}
       </div>
     </div>
   );
