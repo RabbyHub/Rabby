@@ -213,6 +213,11 @@ function decodeTokenParam(tokenParam: string) {
   return { chain, id };
 }
 
+function normalizeSearchString(search = '') {
+  if (!search) return '';
+  return search.startsWith('?') ? search : `?${search}`;
+}
+
 const ChainSelectWrapper = styled.div`
   border: 1px solid transparent;
   border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
@@ -270,19 +275,26 @@ const SendToken = () => {
   const [balanceError, setBalanceError] = useState<string | null>(null);
 
   const persistPageStateCache = useCallback(
-    async (nextStateCache?: {
-      values?: FormSendToken;
-      currentToken?: TokenItem | null;
-      safeInfo?: {
-        chainId: number;
-        nonce: number;
-      };
-      fromGasAccountRedirect?: boolean;
-      topUpSnapshot?: SendTopUpSnapshot;
-    }) => {
+    async (
+      nextStateCache?: {
+        values?: FormSendToken;
+        currentToken?: TokenItem | null;
+        safeInfo?: {
+          chainId: number;
+          nonce: number;
+        };
+        fromGasAccountRedirect?: boolean;
+        topUpSnapshot?: SendTopUpSnapshot;
+      },
+      options?: {
+        search?: string;
+      }
+    ) => {
       await wallet.setPageStateCache({
         path: '/send-token',
-        search: history.location.search,
+        search: normalizeSearchString(
+          options?.search ?? history.location.search
+        ),
         params: {},
         states: {
           values: form.getFieldsValue(),
@@ -1061,8 +1073,8 @@ const SendToken = () => {
     }
   );
 
-  const replaceHistorySearch = useCallback(
-    (input: { token?: TokenItem; amount?: string }) => {
+  const buildHistorySearch = useCallback(
+    (input: { token?: TokenItem | null; amount?: string }) => {
       const { token, amount } = input;
       const searchParams = new URLSearchParams(history.location.search);
       if (token) {
@@ -1074,12 +1086,21 @@ const SendToken = () => {
         searchParams.set('amount', amount);
       }
 
-      history.replace({
-        pathname: history.location.pathname,
-        search: searchParams.toString(),
-      });
+      return normalizeSearchString(searchParams.toString());
     },
     [history]
+  );
+
+  const replaceHistorySearch = useCallback(
+    (input: { token?: TokenItem | null; amount?: string }) => {
+      const search = buildHistorySearch(input);
+      history.replace({
+        pathname: history.location.pathname,
+        search,
+      });
+      return search;
+    },
+    [buildHistorySearch, history]
   );
 
   const initialFormValues = {
@@ -1333,13 +1354,24 @@ const SendToken = () => {
         amount: resultAmount,
       };
 
-      await persistPageStateCache({
-        values: nextFormValues,
-        currentToken: targetToken,
-      });
-
       form.setFieldsValue(nextFormValues);
       setCacheAmount(resultAmount);
+
+      const nextSearch = updateHistoryState
+        ? replaceHistorySearch({
+            amount: resultAmount || '',
+          })
+        : undefined;
+
+      await persistPageStateCache(
+        {
+          values: nextFormValues,
+          currentToken: targetToken,
+        },
+        {
+          search: nextSearch,
+        }
+      );
 
       if (resultAmount) {
         if (updateSliderValue) {
@@ -1350,12 +1382,6 @@ const SendToken = () => {
         }
       } else {
         // setSliderPercentValue(0);
-      }
-
-      if (updateHistoryState) {
-        replaceHistorySearch({
-          amount: resultAmount || '',
-        });
       }
     },
     [
@@ -1547,10 +1573,9 @@ const SendToken = () => {
       }
       const account = (await wallet.syncGetCurrentAccount())!;
       const values = form.getFieldsValue();
-      if (
-        token.id !== currentToken?.id ||
-        token.chain !== currentToken?.chain
-      ) {
+      const tokenChanged =
+        token.id !== currentToken?.id || token.chain !== currentToken?.chain;
+      if (tokenChanged) {
         form.setFieldsValue({
           ...values,
           amount: '',
@@ -1564,16 +1589,19 @@ const SendToken = () => {
         ...prev,
         gasLimit: 0,
       }));
+      const nextSearch = replaceHistorySearch({
+        token: token,
+        ...(tokenChanged ? { amount: '' } : {}),
+      });
       if (!ignoreCache) {
-        await persistPageStateCache({ currentToken: token });
+        await persistPageStateCache(
+          { currentToken: token },
+          { search: nextSearch }
+        );
       }
       setBalanceError(null);
       setIsLoading(true);
       loadCurrentToken(token.id, token.chain, account.address);
-
-      replaceHistorySearch({
-        token: token,
-      });
     },
     [
       currentToken?.chain,
@@ -1911,12 +1939,34 @@ const SendToken = () => {
     try {
       const account = (await wallet.syncGetCurrentAccount())!;
       const qs = query2obj(history.location.search);
+      const cache = await wallet.getPageStateCache();
+      const isMatchedSendTokenCache =
+        cache?.path === history.location.pathname &&
+        (!cache.search ||
+          normalizeSearchString(cache.search) ===
+            normalizeSearchString(history.location.search));
+      const sendTokenCache = isMatchedSendTokenCache ? cache : null;
+      const cachedFormValues = sendTokenCache?.states?.values as
+        | FormSendToken
+        | undefined;
 
       const filledAmountRef = { current: false };
+      const restoreCachedValues = (token?: TokenItem | null) => {
+        if (!cachedFormValues) return false;
+        filledAmountRef.current = true;
+
+        form.setFieldsValue(cachedFormValues);
+        handleFormValuesChange(cachedFormValues, form.getFieldsValue(), {
+          token: token || sendTokenCache?.states.currentToken,
+          isInitFromCache: true,
+          updateSliderValue: true,
+        });
+        return true;
+      };
       const fillAmount = (token?: TokenItem) => {
         if (filledAmountRef.current) return;
 
-        if (qs.amount) {
+        if (Object.prototype.hasOwnProperty.call(qs, 'amount')) {
           filledAmountRef.current = true;
 
           const patchValues = { to: qs.to, amount: qs.amount };
@@ -1954,7 +2004,9 @@ const SendToken = () => {
           tokenChain,
           account.address
         );
-        fillAmount(tokenItem || undefined);
+        if (!restoreCachedValues(tokenItem)) {
+          fillAmount(tokenItem || undefined);
+        }
       } else if ((history.location.state as any)?.safeInfo) {
         const safeInfo: {
           nonce: number;
@@ -1981,35 +2033,22 @@ const SendToken = () => {
         const lastTimeSentToken = await wallet.getLastTimeSendToken();
         let needLoadToken: TokenItem | null = lastTimeSentToken || currentToken;
 
-        if (await wallet.hasPageStateCache()) {
-          const cache = await wallet.getPageStateCache();
-
-          if (cache?.path === history.location.pathname) {
-            if (
-              cache.states?.fromGasAccountRedirect &&
-              cache.states?.topUpSnapshot
-            ) {
-              topUpFormValuesRef.current.save(cache.states.topUpSnapshot);
-              setAwaitingTopUpResume(true);
-            }
-            if (cache.states.values) {
-              form.setFieldsValue(cache.states.values);
-              handleFormValuesChange(
-                cache.states.values,
-                form.getFieldsValue(),
-                {
-                  token: cache.states.currentToken,
-                  isInitFromCache: true,
-                  updateSliderValue: true,
-                }
-              );
-            }
-            if (cache.states.currentToken) {
-              needLoadToken = cache.states.currentToken;
-            }
-            if (cache.states.safeInfo) {
-              setSafeInfo(cache.states.safeInfo);
-            }
+        if (sendTokenCache) {
+          if (
+            sendTokenCache.states?.fromGasAccountRedirect &&
+            sendTokenCache.states?.topUpSnapshot
+          ) {
+            topUpFormValuesRef.current.save(
+              sendTokenCache.states.topUpSnapshot
+            );
+            setAwaitingTopUpResume(true);
+          }
+          restoreCachedValues(sendTokenCache.states.currentToken);
+          if (sendTokenCache.states.currentToken) {
+            needLoadToken = sendTokenCache.states.currentToken;
+          }
+          if (sendTokenCache.states.safeInfo) {
+            setSafeInfo(sendTokenCache.states.safeInfo);
           }
         }
         if (!needLoadToken) return;
