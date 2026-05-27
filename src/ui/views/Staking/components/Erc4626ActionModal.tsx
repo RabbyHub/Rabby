@@ -138,7 +138,7 @@ export const Erc4626ActionModal = ({
     ]
   );
 
-  const { data: maxRedeemRaw = '0', loading: maxRedeemLoading } = useRequest(
+  const { data: maxRedeemRawData, loading: maxRedeemLoading } = useRequest(
     async () => {
       if (!visible || action !== 'withdraw') {
         return '0';
@@ -171,6 +171,7 @@ export const Erc4626ActionModal = ({
     }
   );
 
+  const maxRedeemRaw = maxRedeemRawData || '0';
   const selectedRedeemSharesRaw = useMemo(() => {
     try {
       return (
@@ -183,7 +184,7 @@ export const Erc4626ActionModal = ({
   }, [maxRedeemRaw, percent]);
 
   const {
-    data: previewRedeemAssetsRaw = '0',
+    data: previewRedeemAssetsRawData,
     loading: previewRedeemLoading,
   } = useRequest(
     async () => {
@@ -221,6 +222,11 @@ export const Erc4626ActionModal = ({
     }
   );
 
+  const previewRedeemAssetsRaw = previewRedeemAssetsRawData || '0';
+  const withdrawPreviewReady =
+    action !== 'withdraw' ||
+    (maxRedeemRawData !== undefined &&
+      previewRedeemAssetsRawData !== undefined);
   const maxAmount = balance;
   const amountNumber = new BigNumber(amount || '0');
   const maxAmountNumber = new BigNumber(maxAmount || '0');
@@ -258,7 +264,12 @@ export const Erc4626ActionModal = ({
   const withdrawInvalid =
     action === 'withdraw' &&
     (selectedRedeemShares <= 0n || previewRedeemAssets <= 0n);
-  const showWithdrawInvalidMessage = withdrawInvalid && percent > 0;
+  const showWithdrawInvalidMessage =
+    withdrawInvalid &&
+    percent > 0 &&
+    withdrawPreviewReady &&
+    !maxRedeemLoading &&
+    !previewRedeemLoading;
   const canSubmit =
     !disabledReason &&
     (action === 'deposit'
@@ -451,7 +462,6 @@ export const Erc4626ActionModal = ({
                 disabledReason={disabledReason}
                 action={action}
                 depositBalanceError={depositBalanceError}
-                depositPrecisionError={amountPrecisionExceeded}
                 showWithdrawInvalidMessage={showWithdrawInvalidMessage}
                 assetSymbol={asset?.symbol}
               />

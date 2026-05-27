@@ -1081,7 +1081,7 @@ export const LpActionModal = ({
       }
       if (action === 'deposit') {
         if (!v2AddQuote) {
-          throw new Error(t('page.staking.actionModal.enterValidTokenAmounts'));
+          throw new Error('Invalid token amounts');
         }
         buildResult = buildUniv2AddLiquidityTx({
           ...common,
@@ -1113,7 +1113,7 @@ export const LpActionModal = ({
       }
       if (action === 'deposit') {
         if (!v3DepositQuote) {
-          throw new Error(t('page.staking.actionModal.enterValidTokenAmounts'));
+          throw new Error('Invalid token amounts');
         }
         if (position?.raw?.univ3) {
           buildResult = buildUniv3IncreaseLiquidityTx({
@@ -1620,12 +1620,7 @@ export const LpActionModal = ({
   const handleCancel = useCallback(() => {
     onCancel();
   }, [onCancel]);
-  const footerError =
-    disabledReason ||
-    balanceError ||
-    (amountInputError
-      ? t('page.staking.actionModal.enterValidTokenAmounts')
-      : '');
+  const footerError = disabledReason || balanceError || '';
   const priceWarningTitle = priceDiffInfo
     ? t('page.staking.actionModal.poolPriceTitle', {
         token0: priceDiffInfo.token0Symbol,
