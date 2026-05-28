@@ -71,6 +71,7 @@ import {
   getStakingMainTxHash,
   readStakingContract,
 } from '../utils/tx';
+import { isFullUniv3Withdraw } from '../utils/univ3Withdraw';
 import './actionModal.less';
 
 type LpAction = 'deposit' | 'withdraw' | 'claim';
@@ -1139,7 +1140,7 @@ export const LpActionModal = ({
             t('page.staking.actionModal.selectV3PositionToWithdraw')
           );
         }
-        buildResult = buildUniv3DecreaseAndCollectTx({
+        const v3WithdrawParams = {
           ...common,
           addressBook: [univ3Entry],
           tokenId: raw.tokenId,
@@ -1150,7 +1151,21 @@ export const LpActionModal = ({
           },
           ...v3WithdrawQuote.decreaseLiquidityParams,
           deadline: toDeadline(),
+        };
+        const shouldBurnToken = isFullUniv3Withdraw({
+          positionLiquidity: raw.liquidity,
+          withdrawLiquidity: v3WithdrawQuote.decreaseLiquidityParams.liquidity,
         });
+
+        buildResult = buildUniv3DecreaseAndCollectTx(
+          shouldBurnToken
+            ? {
+                ...v3WithdrawParams,
+                burnToken: true,
+                positionLiquidity: raw.liquidity,
+              }
+            : v3WithdrawParams
+        );
       } else if (claimTargets.length === 1 && claimTargets[0].raw?.univ3) {
         const raw = claimTargets[0].raw.univ3;
         buildResult = buildUniv3CollectTx({
