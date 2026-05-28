@@ -396,6 +396,8 @@ export const Erc4626ActionModal = ({
     .toNumber();
   const redeemReceiveText = formatStakingAmount(redeemReceiveAmount);
   const redeemReceiveUsdText = formatStakingUsd(redeemReceiveUsd);
+  const showRedeemPreviewPlaceholder =
+    previewRedeemLoading && previewRedeemAssetsRawData === undefined;
   const handlePercentChange = useCallback((value: number) => {
     setPercent(value);
     setSelectedPercentPreset(null);
@@ -450,7 +452,7 @@ export const Erc4626ActionModal = ({
                 selectedPresetPercent={selectedPercentPreset}
                 onPresetPercentChange={handlePercentPresetChange}
                 actionToken={actionToken}
-                previewRedeemLoading={previewRedeemLoading}
+                previewRedeemLoading={showRedeemPreviewPlaceholder}
                 redeemReceiveText={redeemReceiveText}
                 redeemReceiveUsdText={redeemReceiveUsdText}
                 assetSymbol={asset?.symbol}

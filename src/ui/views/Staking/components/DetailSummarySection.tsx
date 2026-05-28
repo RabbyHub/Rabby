@@ -191,7 +191,7 @@ const PoolCurve = ({
           <YAxis hide domain={['auto', 'auto']} />
           <ChartTooltip
             cursor={{
-              stroke: 'var(--r-neutral-line)',
+              stroke: 'rgba(var(--r-neutral-title1-rgb), 0.18)',
               strokeWidth: 1,
               strokeDasharray: '3 3',
             }}
@@ -212,7 +212,7 @@ const PoolCurve = ({
             dot={false}
             activeDot={{
               r: 4.5,
-              fill: 'var(--r-neutral-card1)',
+              fill: 'var(--r-neutral-title2)',
               stroke: curveColor,
               strokeWidth: 2,
             }}

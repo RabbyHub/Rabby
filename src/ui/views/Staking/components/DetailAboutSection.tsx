@@ -323,7 +323,6 @@ const AboutProtocolSection = ({ pool }: { pool: StakingPool }) => {
 export const AboutTab = ({ pool }: { pool: StakingPool }) => (
   <div className="staking-about-tab">
     <PoolInfoSection pool={pool} />
-    <div className="staking-about-divider" />
     <AboutProtocolSection pool={pool} />
   </div>
 );

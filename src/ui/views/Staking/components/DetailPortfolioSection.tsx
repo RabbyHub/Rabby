@@ -321,7 +321,8 @@ const formatPositionRangePercent = (value: BigNumber) => {
     .toFixed(decimals)
     .replace(/\.0+$/, '');
 
-  return `${value.lt(0) ? '-' : ''}${rounded}%`;
+  const sign = value.gt(0) ? '+' : value.lt(0) ? '-' : '';
+  return `${sign}${rounded}%`;
 };
 
 const getSqrtPriceX96AsBigNumber = (value: string | bigint) =>
