@@ -24,6 +24,8 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^ui/(.*)$': '<rootDir>/src/ui/$1',
     '^background/(.*)$': '<rootDir>/src/background/$1',
+    '^@rabby-wallet/staking-sdk$':
+      '<rootDir>/node_modules/@rabby-wallet/staking-sdk/dist/index.js',
   },
 
   // A list of paths to directories that Jest should use to search for files in
