@@ -122,6 +122,10 @@ const getPendingActionTokens = ({
   pool: StakingPool;
   summary?: StakingPositionSummary;
 }) => {
+  if (pending.displayTokens?.length) {
+    return pending.displayTokens;
+  }
+
   if (pending.action === 'claim') {
     const targetIds = pending.claimPositionIds?.length
       ? pending.claimPositionIds

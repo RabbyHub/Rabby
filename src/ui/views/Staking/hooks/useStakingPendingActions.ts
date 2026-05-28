@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Account } from '@/background/service/preference';
 import { useWallet } from '@/ui/utils';
 
-import type { StakingPool } from '../types';
+import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionSummary } from './useStakingPositionSummary';
 import { waitForStakingTxReceipt } from '../utils/tx';
 import type { StakingTxReceipt } from '../utils/tx';
@@ -26,6 +26,7 @@ export interface StakingPendingAction {
   positionId?: string;
   claimPositionIds?: string[];
   univ3Range?: StakingUniv3RangeBps;
+  displayTokens?: StakingToken[];
   submittedAt: number;
   baseline: StakingPositionSnapshot;
 }
@@ -88,6 +89,58 @@ const addRecordValue = (
 
 const getAssetKey = (asset: { token: { chain_id?: string; id: string } }) =>
   `${asset.token.chain_id || ''}-${asset.token.id}`.toLowerCase();
+
+const getPositiveAssets = <T extends { rawAmount?: string }>(assets: T[]) =>
+  assets.filter((asset) => safeBigInt(asset.rawAmount) > 0n);
+
+const getPendingActionDisplayTokens = ({
+  action,
+  pool,
+  positionId,
+  claimPositionIds,
+  summary,
+}: {
+  action: StakingPendingActionKind;
+  pool: StakingPool;
+  positionId?: string;
+  claimPositionIds?: string[];
+  summary?: StakingPositionSummary;
+}) => {
+  if (action === 'claim') {
+    const targetIds = claimPositionIds?.length
+      ? claimPositionIds
+      : positionId
+      ? [positionId]
+      : [];
+    const targetPositions = targetIds.length
+      ? (summary?.positions || []).filter((position) =>
+          targetIds.includes(position.id)
+        )
+      : summary?.positions || [];
+    const rewardTokens = getPositiveAssets(
+      targetPositions.flatMap((position) => position.rewards)
+    ).map((asset) => asset.token);
+
+    return rewardTokens.length
+      ? rewardTokens
+      : pool.tokens.rewards.length
+      ? pool.tokens.rewards
+      : pool.tokens.supplies;
+  }
+
+  if (action === 'withdraw') {
+    const position = positionId
+      ? summary?.positions.find((item) => item.id === positionId)
+      : undefined;
+    const suppliedTokens = getPositiveAssets(
+      position?.supplied || summary?.supplied || []
+    ).map((asset) => asset.token);
+
+    return suppliedTokens.length ? suppliedTokens : pool.tokens.supplies;
+  }
+
+  return pool.tokens.supplies;
+};
 
 const createSnapshot = (
   summary?: StakingPositionSummary
@@ -344,7 +397,6 @@ export const useStakingPendingActions = ({
         }
 
         return [
-          ...prev,
           {
             id: `${payload.hash}-${Date.now()}`,
             hash: payload.hash,
@@ -355,9 +407,17 @@ export const useStakingPendingActions = ({
             positionId: payload.positionId,
             claimPositionIds: payload.claimPositionIds,
             univ3Range: payload.univ3Range,
+            displayTokens: getPendingActionDisplayTokens({
+              action: payload.action,
+              pool,
+              positionId: payload.positionId,
+              claimPositionIds: payload.claimPositionIds,
+              summary: positionSummaryRef.current,
+            }),
             submittedAt: Date.now(),
             baseline: createSnapshot(positionSummaryRef.current),
           },
+          ...prev,
         ];
       });
     },
