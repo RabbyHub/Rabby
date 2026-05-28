@@ -1,9 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { GasAccountBlueLogo } from './GasAccountBlueLogo';
 import { GasAccountWrapperBg } from './WrapperBg';
 import { ReactComponent as RcIconNoRabbyFee } from '@/ui/assets/gas-account/empty-no-rabby-fee.svg';
+import { ReactComponent as RcIconGasAccountBlue } from '@/ui/assets/gas-account/gas-account-blue-combined-lg.svg';
 import { ReactComponent as RcIconSupportNetworks } from '@/ui/assets/global-cc.svg';
 import { ReactComponent as RcIconSupportTransactions } from '@/ui/assets/gas-account/empty-support-transactions.svg';
 
@@ -62,7 +61,7 @@ export const GasAccountBenefitsCard: React.FC = () => {
 
   return (
     <GasAccountWrapperBg className="flex h-[366px] w-full flex-col rounded-[8px] bg-r-neutral-card1 px-20 pt-24 pb-20">
-      <GasAccountBlueLogo className="mx-auto h-[56px] w-[56px]" />
+      <RcIconGasAccountBlue className="mx-auto h-[66px] w-[92px]" />
       <div className="mt-16 text-center text-[20px] font-semibold leading-[24px] text-r-neutral-title-1">
         {t('page.gasAccount.benefitCard.title')}
       </div>

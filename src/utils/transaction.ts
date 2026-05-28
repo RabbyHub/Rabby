@@ -390,11 +390,16 @@ export const getPendingTxs = async ({
   const { pendings } = await wallet.getTransactionHistory(address);
 
   return pendings
-    .filter((item) => new BigNumber(item.nonce).lt(recommendNonce))
+    .filter(
+      (item) =>
+        item.chainId === chainId && new BigNumber(item.nonce).lt(recommendNonce)
+    )
+    .sort((a, b) =>
+      new BigNumber(a.nonce).minus(new BigNumber(b.nonce)).toNumber()
+    )
     .reduce((result, item) => {
       return result.concat(item.txs.map((tx) => tx.rawTx));
     }, [] as Tx[])
-    .filter((item) => item.chainId === chainId)
     .map((item) => ({
       from: item.from,
       to: item.to,

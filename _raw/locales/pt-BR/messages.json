@@ -3412,7 +3412,7 @@
         "feeTipTooltipHype": "Uma taxa de ~0,00002 HYPE será cobrada para retirar para o EVM.",
         "hypeActivationFeeTip": "Uma taxa de ativação única de {{fee}} será cobrada pela Hyperliquid para o primeiro saque de HyperEVM.",
         "balance": "Saldo",
-        "chain": "链"
+        "chain": "Rede"
       },
       "home": {
         "entryPrice": "Preço de entrada",

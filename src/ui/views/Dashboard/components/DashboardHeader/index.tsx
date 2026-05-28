@@ -241,7 +241,13 @@ const GasAccountEntry = () => {
       ? pendingHardwareGasBalance
       : 0
   );
+  const isGasAccountBalanceLoading = isGasAccountLogin
+    ? gasAccountLoading && !gasAccount
+    : pendingHardwareAccount
+    ? pendingHardwareGasAccountLoading && !pendingHardwareGasAccountInfo
+    : gasAccountLoading;
   const isLowGasAccountBalance =
+    !isGasAccountBalanceLoading &&
     visibleGasAccountBalance < LOW_GAS_ACCOUNT_BALANCE;
 
   const handleClick = useCallback(

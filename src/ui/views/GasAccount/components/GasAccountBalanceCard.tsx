@@ -25,7 +25,7 @@ export const GasAccountBalanceCard: React.FC<{
             <span className="text-r-neutral-foot">{gasBalanceLabel}</span>
           </div>
         </div>
-        <GasAccountBlueLogo className="h-[92px] w-[66px] shrink-0" />
+        <GasAccountBlueLogo className="w-[92px] h-[54px] shrink-0" />
       </div>
     </GasAccountWrapperBg>
   );
