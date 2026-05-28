@@ -14,6 +14,7 @@ export type ProviderRequest<
     name: string;
     origin: string;
     icon: string;
+    isFromRabby?: boolean;
   } | null;
   account?: Account;
   origin?: string;
