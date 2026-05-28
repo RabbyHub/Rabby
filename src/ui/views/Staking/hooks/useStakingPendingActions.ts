@@ -270,10 +270,21 @@ const hasPendingResolved = (
     if (pending.poolType === 'univ3' && pending.positionId) {
       const baseline = pending.baseline.univ3Positions[pending.positionId];
       const current = next.univ3Positions[pending.positionId];
+      if (baseline) {
+        return (
+          !current ||
+          safeBigInt(current.liquidity) < safeBigInt(baseline.liquidity) ||
+          next.positionsCount < pending.baseline.positionsCount ||
+          hasAnyLowerValue(
+            next.suppliedByToken,
+            pending.baseline.suppliedByToken
+          )
+        );
+      }
+
       return (
-        !!baseline &&
-        (!current ||
-          safeBigInt(current.liquidity) < safeBigInt(baseline.liquidity))
+        next.positionsCount < pending.baseline.positionsCount ||
+        hasAnyLowerValue(next.suppliedByToken, pending.baseline.suppliedByToken)
       );
     }
 

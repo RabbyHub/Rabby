@@ -187,9 +187,12 @@ const StakingDetail = () => {
       )
     );
   }, [positionSummary]);
+  const hasActivePendingAction = pendingActions.some(
+    (pending) => pending.status === 'pending'
+  );
 
   const shouldShowPortfolio =
-    !!visualPool?.is_holding || pendingActions.length > 0 || hasPortfolioData;
+    !!visualPool?.is_holding || hasActivePendingAction || hasPortfolioData;
 
   const tabs = useMemo(
     () =>
