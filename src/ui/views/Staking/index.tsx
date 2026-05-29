@@ -221,7 +221,9 @@ const Staking = () => {
   return (
     <div className="staking-list-page min-h-screen bg-r-neutral-bg2 text-r-neutral-title1">
       <PageHeader
-        className="staking-page-header mx-[20px]"
+        fixed
+        contentClassName="staking-page-header"
+        wrapperClassName="staking-page-header-wrap"
         forceShowBack
         isShowAccount
       >
