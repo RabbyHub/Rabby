@@ -249,7 +249,7 @@ export const AssetListContainer: React.FC<Props> = ({
           }}
         >
           <NftPreviewSection
-            className="mt-[4px] cursor-pointer"
+            className="cursor-pointer"
             isLoading={isNftLoading}
             list={nftPreviewList}
           />
