@@ -209,6 +209,7 @@
         "confirmPoolPriceDifference": "Confirm pool price difference",
         "poolPriceWarning": "A 10% price impact cap creates arbitrage risks.",
         "poolPriceTitle": "Pool price: 1 {{token0}} = {{poolPrice}} {{token1}}; Market price: 1 {{token0}} = {{marketPrice}} {{token1}}",
+        "singleAssetDepositOnly": "The market price is outside your specified price range. Single-asset deposit only.",
         "failedResolveV2Pool": "Failed to resolve V2 pool",
         "failedResolveV3Pool": "Failed to resolve V3 pool",
         "noLpPositionToWithdraw": "No LP position to withdraw",
