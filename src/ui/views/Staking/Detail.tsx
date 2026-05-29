@@ -571,7 +571,7 @@ const StakingDetail = () => {
               position={lpAction.position}
               claimPositions={lpAction.claimPositions}
               onCancel={() => setLpAction(null)}
-              onSubmitted={({ hash, univ3Range }) => {
+              onSubmitted={({ hash, expectedBurnTokenId, univ3Range }) => {
                 addPendingAction({
                   hash,
                   action: lpAction.action,
@@ -579,6 +579,7 @@ const StakingDetail = () => {
                   claimPositionIds: lpAction.claimPositions?.map(
                     (position) => position.id
                   ),
+                  expectedBurnTokenId,
                   univ3Range,
                 });
                 setLpAction(null);

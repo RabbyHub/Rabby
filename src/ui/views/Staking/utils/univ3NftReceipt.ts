@@ -63,9 +63,11 @@ export const getMintedUniv3TokenId = (
 export const getBurnedUniv3TokenId = ({
   receipt,
   accountAddress,
+  tokenId,
 }: {
   receipt: StakingTxReceipt | null;
   accountAddress: string;
+  tokenId?: string;
 }) => {
   const fromTopic = normalizeAddressTopic(accountAddress);
 
@@ -80,9 +82,9 @@ export const getBurnedUniv3TokenId = ({
       topics[1]?.toLowerCase() === fromTopic &&
       topics[2]?.toLowerCase() === ZERO_ADDRESS_TOPIC
     ) {
-      const tokenId = tokenIdFromTopic(topics[3]);
-      if (tokenId) {
-        return tokenId;
+      const burnedTokenId = tokenIdFromTopic(topics[3]);
+      if (burnedTokenId && (!tokenId || burnedTokenId === tokenId)) {
+        return burnedTokenId;
       }
     }
   }
@@ -103,19 +105,28 @@ export const hasBurnedUniv3TokenId = ({
     return false;
   }
 
-  const fromTopic = normalizeAddressTopic(accountAddress);
+  return (
+    getBurnedUniv3TokenId({
+      receipt,
+      accountAddress,
+      tokenId,
+    }) === tokenId
+  );
+};
 
-  return getReceiptLogs(receipt).some((log) => {
-    if (!isReceiptTargetLog(receipt, log)) {
-      return false;
+export const isUniv3OwnerQueryForNonexistentTokenError = (error: unknown) => {
+  let message = '';
+  if (typeof error === 'string') {
+    message = error;
+  } else if (error && typeof error === 'object' && 'message' in error) {
+    message = String((error as { message?: unknown }).message || '');
+  } else {
+    try {
+      message = JSON.stringify(error);
+    } catch {
+      message = '';
     }
+  }
 
-    const topics = getLogTopics(log);
-    return (
-      topics[0]?.toLowerCase() === ERC721_TRANSFER_TOPIC &&
-      topics[1]?.toLowerCase() === fromTopic &&
-      topics[2]?.toLowerCase() === ZERO_ADDRESS_TOPIC &&
-      tokenIdFromTopic(topics[3]) === tokenId
-    );
-  });
+  return message.toLowerCase().includes('owner query for nonexistent token');
 };
