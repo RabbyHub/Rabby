@@ -6,6 +6,7 @@ import { useWallet } from '@/ui/utils';
 
 import type {
   StakingPool,
+  StakingPoolList,
   StakingPoolListParams,
   StakingPoolListResponseApi,
 } from '../types';
@@ -98,7 +99,7 @@ export const useStakingPools = ({
           nextStarts.push(nextStart);
         }
 
-        const remainingPages = await Promise.all(
+        const remainingPageResults = await Promise.allSettled(
           nextStarts.map(async (nextStart) => {
             const nextResponse = (await wallet.openapi.getStakingPoolList({
               ...requestParams,
@@ -112,7 +113,12 @@ export const useStakingPools = ({
           })
         );
 
-        remainingPages
+        remainingPageResults
+          .filter(
+            (result): result is PromiseFulfilledResult<StakingPoolList> =>
+              result.status === 'fulfilled'
+          )
+          .map((result) => result.value)
           .sort((a, b) => a.page.start - b.page.start)
           .forEach((page) => {
             allPools.push(...page.pools);
