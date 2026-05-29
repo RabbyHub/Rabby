@@ -86,6 +86,137 @@
       "completedTips": "Ongoing swap will continue processing",
       "priceImpact": "Price Impact Cap"
     },
+    "staking": {
+      "__skip_translation": [
+        "metrics.tvl",
+        "metrics.apr",
+        "metrics.apy",
+        "metrics.lp",
+        "metrics.v2",
+        "metrics.v3"
+      ],
+      "title": "Staking",
+      "searchToken": "Search Token",
+      "myHolding": "My Holding",
+      "holding": "Holding",
+      "protocol": "Protocol",
+      "actions": {
+        "deposit": "Deposit",
+        "withdraw": "Withdraw",
+        "claim": "Claim",
+        "max": "Max",
+        "retry": "Retry"
+      },
+      "filter": {
+        "allProtocol": "All Protocols",
+        "allChains": "All Chains",
+        "selectProtocol": "Select Protocol",
+        "selectChain": "Select Chain",
+        "searchByName": "Search by Name",
+        "searchProtocol": "Search protocol",
+        "searchChain": "Search chain",
+        "all": "All",
+        "clearFilter": "Clear {{filter}}"
+      },
+      "empty": {
+        "noPoolsFound": "No pools found",
+        "noHoldingsFound": "You currently holding no positions.",
+        "noStakingPoolsFound": "No staking pools found",
+        "noProtocols": "No protocols",
+        "noChains": "No chains"
+      },
+      "error": {
+        "failedLoadData": "Failed to load staking data",
+        "failedLoadPools": "Failed to load staking pools",
+        "failedLoadPool": "Failed to load staking pool",
+        "failedLoadChart": "Failed to load staking chart",
+        "failedLoadPosition": "Failed to load position",
+        "transactionFailed": "Staking transaction failed"
+      },
+      "metrics": {
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "yield": "Yield",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
+      },
+      "tabs": {
+        "portfolio": "Portfolio",
+        "about": "About",
+        "security": "Security"
+      },
+      "detail": {
+        "poolNotFound": "Staking pool not found",
+        "unsupportedAction": "Unsupported staking action.",
+        "noChartData": "No chart data"
+      },
+      "about": {
+        "pool": "Pool",
+        "address": "Address",
+        "poolAddress": "Pool Address",
+        "uptime": "Uptime",
+        "days": "{{count}} days",
+        "token": "Token",
+        "token1": "Token1",
+        "token2": "Token2",
+        "tokenAddress": "Token address",
+        "token1Address": "Token1 address",
+        "token2Address": "Token2 address",
+        "aboutProtocol": "About {{protocol}}",
+        "noDescription": "No protocol description available.",
+        "showMore": "Show more",
+        "showLess": "Show less",
+        "officialWebsite": "Official Website",
+        "twitter": "X(Twitter)"
+      },
+      "security": {
+        "certifications": "Certifications",
+        "certifiedBy": "Certified by",
+        "certifiedOn": "Certified on",
+        "action": "Action",
+        "view": "View",
+        "noCertificationData": "No certification data"
+      },
+      "portfolio": {
+        "pending": "Pending",
+        "succeed": "Succeeded",
+        "failed": "Failed",
+        "supplied": "Supplied",
+        "rewards": "Rewards",
+        "rewardsWithCount": "Rewards ({{count}})",
+        "priceRange": "Price Range",
+        "noSuppliedAssets": "No supplied assets",
+        "noRewards": "No rewards right now"
+      },
+      "actionModal": {
+        "receive": "Receive",
+        "setPriceRange": "Set Price Range",
+        "range": "Range",
+        "unused": "Unused",
+        "unsupportedPool": "Unsupported pool",
+        "unsupportedErc4626Pool": "Unsupported ERC4626 pool",
+        "unsupportedLpPool": "Unsupported LP pool",
+        "unsupportedChain": "Unsupported chain",
+        "unavailable": "Unavailable",
+        "tokenFallback": "token",
+        "insufficientBalance": "Insufficient {{symbols}} balance",
+        "noWithdrawablePosition": "No withdrawable position",
+        "noClaimableRewards": "No claimable rewards",
+        "submitted": "{{action}} submitted",
+        "submitFailed": "Failed to submit {{action}}",
+        "confirmPoolPriceDifference": "Confirm pool price difference",
+        "poolPriceWarning": "A 10% price impact cap creates arbitrage risks.",
+        "poolPriceTitle": "Pool price: 1 {{token0}} = {{poolPrice}} {{token1}}; Market price: 1 {{token0}} = {{marketPrice}} {{token1}}",
+        "singleAssetDepositOnly": "The market price is outside your specified price range. Single-asset deposit only.",
+        "failedResolveV2Pool": "Failed to resolve V2 pool",
+        "failedResolveV3Pool": "Failed to resolve V3 pool",
+        "noLpPositionToWithdraw": "No LP position to withdraw",
+        "v2RewardsUnsupported": "V2 rewards are not supported",
+        "selectV3PositionToWithdraw": "Select a V3 position to withdraw"
+      }
+    },
     "signTx": {
       "nftIn": "NFT in",
       "gasLimitNotEnough": "Gas limit is less than 21000. Transaction can't be submitted",
@@ -2579,7 +2710,8 @@
           "perpsPositions_other": "{{count}} Positions",
           "lending": "Lending",
           "dragTip": "Long-press feature to reorder",
-          "convertDust": "Convert Dust"
+          "convertDust": "Convert Dust",
+          "staking": "Staking"
         },
         "comingSoon": "Coming soon",
         "soon": "Soon",
