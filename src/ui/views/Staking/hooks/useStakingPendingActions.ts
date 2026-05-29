@@ -3,10 +3,18 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Account } from '@/background/service/preference';
 import { useWallet } from '@/ui/utils';
 
-import type { StakingPool } from '../types';
+import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionSummary } from './useStakingPositionSummary';
 import { waitForStakingTxReceipt } from '../utils/tx';
-import type { StakingTxReceipt } from '../utils/tx';
+import {
+  createStakingPositionSnapshot,
+  hasStakingPendingResolved,
+} from '../utils/pendingResolution';
+import type { StakingPositionSnapshot } from '../utils/pendingResolution';
+import {
+  getBurnedUniv3TokenId,
+  getMintedUniv3TokenId,
+} from '../utils/univ3NftReceipt';
 
 export type StakingPendingActionKind = 'deposit' | 'withdraw' | 'claim';
 export type StakingPendingActionStatus = 'pending' | 'succeed' | 'failed';
@@ -26,6 +34,7 @@ export interface StakingPendingAction {
   positionId?: string;
   claimPositionIds?: string[];
   univ3Range?: StakingUniv3RangeBps;
+  displayTokens?: StakingToken[];
   submittedAt: number;
   baseline: StakingPositionSnapshot;
 }
@@ -38,34 +47,12 @@ export interface AddStakingPendingActionPayload {
   univ3Range?: StakingUniv3RangeBps;
 }
 
-interface StakingPositionSnapshot {
-  positionsCount: number;
-  positionIds: string[];
-  suppliedByToken: Record<string, string>;
-  rewardsByToken: Record<string, string>;
-  univ3Positions: Record<
-    string,
-    {
-      liquidity: string;
-      tokensOwed0: string;
-      tokensOwed1: string;
-    }
-  >;
-}
-
-const ZERO_ADDRESS_TOPIC =
-  '0x0000000000000000000000000000000000000000000000000000000000000000';
-const ERC721_TRANSFER_TOPIC =
-  '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const DATA_REFRESH_INTERVAL = 3000;
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
-
-const normalizeAddressTopic = (address: string) =>
-  `0x${address.toLowerCase().replace(/^0x/, '').padStart(64, '0')}`;
 
 const safeBigInt = (value?: string | number | bigint | null) => {
   try {
@@ -75,186 +62,56 @@ const safeBigInt = (value?: string | number | bigint | null) => {
   }
 };
 
-const addRecordValue = (
-  record: Record<string, string>,
-  key: string,
-  value?: string | bigint
-) => {
-  if (!key) {
-    return;
-  }
-  record[key] = (safeBigInt(record[key]) + safeBigInt(value)).toString();
-};
+const getPositiveAssets = <T extends { rawAmount?: string }>(assets: T[]) =>
+  assets.filter((asset) => safeBigInt(asset.rawAmount) > 0n);
 
-const getAssetKey = (asset: { token: { chain_id?: string; id: string } }) =>
-  `${asset.token.chain_id || ''}-${asset.token.id}`.toLowerCase();
-
-const createSnapshot = (
-  summary?: StakingPositionSummary
-): StakingPositionSnapshot => {
-  const suppliedByToken: Record<string, string> = {};
-  const rewardsByToken: Record<string, string> = {};
-  const univ3Positions: StakingPositionSnapshot['univ3Positions'] = {};
-
-  (summary?.supplied || []).forEach((asset) => {
-    addRecordValue(suppliedByToken, getAssetKey(asset), asset.rawAmount);
-  });
-  (summary?.rewards || []).forEach((asset) => {
-    addRecordValue(rewardsByToken, getAssetKey(asset), asset.rawAmount);
-  });
-  (summary?.positions || []).forEach((position) => {
-    const raw = position.raw?.univ3;
-    if (!raw) {
-      return;
-    }
-    univ3Positions[position.id] = {
-      liquidity: raw.liquidity,
-      tokensOwed0: raw.claimable0,
-      tokensOwed1: raw.claimable1,
-    };
-  });
-
-  return {
-    positionsCount: summary?.positionsCount || 0,
-    positionIds: (summary?.positions || []).map((position) => position.id),
-    suppliedByToken,
-    rewardsByToken,
-    univ3Positions,
-  };
-};
-
-const hasAnyGreaterValue = (
-  next: Record<string, string>,
-  baseline: Record<string, string>
-) =>
-  Array.from(new Set([...Object.keys(next), ...Object.keys(baseline)])).some(
-    (key) => safeBigInt(next[key]) > safeBigInt(baseline[key])
-  );
-
-const hasAnyLowerValue = (
-  next: Record<string, string>,
-  baseline: Record<string, string>
-) =>
-  Array.from(new Set([...Object.keys(next), ...Object.keys(baseline)])).some(
-    (key) => safeBigInt(next[key]) < safeBigInt(baseline[key])
-  );
-
-const getPendingClaimPositionIds = (pending: StakingPendingAction) =>
-  pending.claimPositionIds?.length
-    ? pending.claimPositionIds
-    : pending.positionId
-    ? [pending.positionId]
-    : [];
-
-const hasClaimTargetsUpdated = (
-  pending: StakingPendingAction,
-  next: StakingPositionSnapshot
-) => {
-  const targetIds = getPendingClaimPositionIds(pending);
-  if (!targetIds.length) {
-    return hasAnyLowerValue(
-      next.rewardsByToken,
-      pending.baseline.rewardsByToken
-    );
-  }
-
-  return targetIds.some((id) => {
-    const baseline = pending.baseline.univ3Positions[id];
-    if (!baseline) {
-      return false;
-    }
-    const current = next.univ3Positions[id];
-    if (!current) {
-      return true;
-    }
-    const baselineOwed =
-      safeBigInt(baseline.tokensOwed0) + safeBigInt(baseline.tokensOwed1);
-    const currentOwed =
-      safeBigInt(current.tokensOwed0) + safeBigInt(current.tokensOwed1);
-    return currentOwed < baselineOwed;
-  });
-};
-
-const hasPendingResolved = (
-  pending: StakingPendingAction,
-  summary?: StakingPositionSummary
-) => {
-  const next = createSnapshot(summary);
-
-  if (pending.action === 'deposit') {
-    if (pending.poolType === 'univ3') {
-      if (pending.positionId) {
-        const baseline = pending.baseline.univ3Positions[pending.positionId];
-        const current = next.univ3Positions[pending.positionId];
-        return (
-          !!baseline &&
-          !!current &&
-          safeBigInt(current.liquidity) > safeBigInt(baseline.liquidity)
-        );
-      }
-
-      const hasNewPosition = next.positionIds.some(
-        (id) =>
-          !pending.baseline.positionIds.includes(id) &&
-          safeBigInt(next.univ3Positions[id]?.liquidity) > 0n
-      );
-      return (
-        hasNewPosition ||
-        hasAnyGreaterValue(
-          next.suppliedByToken,
-          pending.baseline.suppliedByToken
-        )
-      );
-    }
-
-    return hasAnyGreaterValue(
-      next.suppliedByToken,
-      pending.baseline.suppliedByToken
-    );
-  }
-
-  if (pending.action === 'withdraw') {
-    if (pending.poolType === 'univ3' && pending.positionId) {
-      const baseline = pending.baseline.univ3Positions[pending.positionId];
-      const current = next.univ3Positions[pending.positionId];
-      return (
-        !!baseline &&
-        (!current ||
-          safeBigInt(current.liquidity) < safeBigInt(baseline.liquidity))
-      );
-    }
-
-    return (
-      next.positionsCount < pending.baseline.positionsCount ||
-      hasAnyLowerValue(next.suppliedByToken, pending.baseline.suppliedByToken)
-    );
-  }
-
-  return hasClaimTargetsUpdated(pending, next);
-};
-
-const getMintedUniv3TokenId = (
-  receipt: StakingTxReceipt | null,
-  accountAddress: string
-) => {
-  const toTopic = normalizeAddressTopic(accountAddress);
-  const logs = Array.isArray(receipt?.logs) ? receipt?.logs : [];
-
-  for (const log of logs) {
-    const topics = Array.isArray((log as { topics?: string[] }).topics)
-      ? ((log as { topics?: string[] }).topics as string[])
+const getPendingActionDisplayTokens = ({
+  action,
+  pool,
+  positionId,
+  claimPositionIds,
+  summary,
+}: {
+  action: StakingPendingActionKind;
+  pool: StakingPool;
+  positionId?: string;
+  claimPositionIds?: string[];
+  summary?: StakingPositionSummary;
+}) => {
+  if (action === 'claim') {
+    const targetIds = claimPositionIds?.length
+      ? claimPositionIds
+      : positionId
+      ? [positionId]
       : [];
-    if (
-      topics[0]?.toLowerCase() === ERC721_TRANSFER_TOPIC &&
-      topics[1]?.toLowerCase() === ZERO_ADDRESS_TOPIC &&
-      topics[2]?.toLowerCase() === toTopic &&
-      topics[3]
-    ) {
-      return BigInt(topics[3]).toString();
-    }
+    const targetPositions = targetIds.length
+      ? (summary?.positions || []).filter((position) =>
+          targetIds.includes(position.id)
+        )
+      : summary?.positions || [];
+    const rewardTokens = getPositiveAssets(
+      targetPositions.flatMap((position) => position.rewards)
+    ).map((asset) => asset.token);
+
+    return rewardTokens.length
+      ? rewardTokens
+      : pool.tokens.rewards.length
+      ? pool.tokens.rewards
+      : pool.tokens.supplies;
   }
 
-  return '';
+  if (action === 'withdraw') {
+    const position = positionId
+      ? summary?.positions.find((item) => item.id === positionId)
+      : undefined;
+    const suppliedTokens = getPositiveAssets(
+      position?.supplied || summary?.supplied || []
+    ).map((asset) => asset.token);
+
+    return suppliedTokens.length ? suppliedTokens : pool.tokens.supplies;
+  }
+
+  return pool.tokens.supplies;
 };
 
 export const useStakingPendingActions = ({
@@ -344,7 +201,6 @@ export const useStakingPendingActions = ({
         }
 
         return [
-          ...prev,
           {
             id: `${payload.hash}-${Date.now()}`,
             hash: payload.hash,
@@ -355,9 +211,17 @@ export const useStakingPendingActions = ({
             positionId: payload.positionId,
             claimPositionIds: payload.claimPositionIds,
             univ3Range: payload.univ3Range,
+            displayTokens: getPendingActionDisplayTokens({
+              action: payload.action,
+              pool,
+              positionId: payload.positionId,
+              claimPositionIds: payload.claimPositionIds,
+              summary: positionSummaryRef.current,
+            }),
             submittedAt: Date.now(),
-            baseline: createSnapshot(positionSummaryRef.current),
+            baseline: createStakingPositionSnapshot(positionSummaryRef.current),
           },
+          ...prev,
         ];
       });
     },
@@ -418,6 +282,29 @@ export const useStakingPendingActions = ({
           }
         }
 
+        const burnedUniv3TokenId =
+          pending.action === 'withdraw' && pending.poolType === 'univ3'
+            ? getBurnedUniv3TokenId({
+                receipt,
+                accountAddress: account.address,
+              })
+            : '';
+
+        if (burnedUniv3TokenId) {
+          await Promise.all([
+            refreshDetailAsyncRef.current().catch(() => undefined),
+            refreshCurveAsyncRef.current?.().catch(() => undefined),
+            refreshPositionAsyncRef.current().catch(() => undefined),
+          ]);
+
+          if (!mountedRef.current || !isPendingActionPending(pending.id)) {
+            return;
+          }
+
+          updatePendingActionStatus(pending.id, 'succeed');
+          return;
+        }
+
         while (mountedRef.current && isPendingActionPending(pending.id)) {
           const [, , nextSummary] = await Promise.all([
             refreshDetailAsyncRef.current().catch(() => undefined),
@@ -426,7 +313,7 @@ export const useStakingPendingActions = ({
           ]);
 
           const latestSummary = nextSummary || positionSummaryRef.current;
-          if (hasPendingResolved(pending, latestSummary)) {
+          if (hasStakingPendingResolved(pending, latestSummary)) {
             updatePendingActionStatus(pending.id, 'succeed');
             return;
           }

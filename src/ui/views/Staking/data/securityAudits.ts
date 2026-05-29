@@ -9,6 +9,18 @@ export interface StakingSecurityAudit {
   certikLevel?: string;
 }
 
+const AUDIT_FIRM_LOGO_URLS: Record<string, string> = {
+  ABDK: 'https://abdk.consulting/apple-touch-icon.png',
+  Cantina:
+    'https://cdn.prod.website-files.com/6741f9996a3c2c0fa84c2df0/683456145faaf03b16ec2566_b6447adf6e671e14f304a7b06f730f80_Logomark%20color%20dark.svg',
+  ChainSecurity:
+    'https://cdn.prod.website-files.com/65cdd9991a6c6ef9a062357b/68c1f6f2f947ab7b8cf8fc86_CHAINSECURITY_ICON_PFP_BLUE.png',
+  DappOrg: 'https://avatars.githubusercontent.com/u/58847539?s=280&v=4',
+  PeckShield: 'https://avatars.githubusercontent.com/u/39812237?s=280&v=4',
+  SlowMist: 'https://www.slowmist.com/images/favicon.ico',
+  'Trail of Bits': 'https://trailofbits.com/images/Trail-of-bits-icon.png',
+};
+
 const AUDIT_DATE_ORDER: Record<string, number> = {
   Jan: 1,
   Feb: 2,
@@ -226,6 +238,9 @@ const AUDITS_BY_PROTOCOL_ID: Record<string, StakingSecurityAudit[]> = {
 };
 
 const normalizeKey = (value?: string | null) => value?.trim().toLowerCase();
+
+export const getStakingAuditFirmLogoUrl = (auditFirm: string) =>
+  AUDIT_FIRM_LOGO_URLS[auditFirm] || '';
 
 const getAuditDateValue = (auditDate: string) => {
   const [month, year] = auditDate.split('-');

@@ -4966,12 +4966,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/staking-sdk@npm:0.1.0-alpha.5":
-  version: 0.1.0-alpha.5
-  resolution: "@rabby-wallet/staking-sdk@npm:0.1.0-alpha.5"
+"@rabby-wallet/staking-sdk@npm:0.1.0-alpha.6":
+  version: 0.1.0-alpha.6
+  resolution: "@rabby-wallet/staking-sdk@npm:0.1.0-alpha.6"
   peerDependencies:
     viem: ">=2.17.4 <3"
-  checksum: 10c0/8aa0800f26f4936c9404f91f6b9cd6c7a89fe4b5f90f2148d203765917bc6d54dc95589e27d43e4210855c7e5c84ecf3163fc630191e996b6100418248df0a08
+  checksum: 10c0/c2888ed92778e9120e6f8c5ae7b4d642a825d0efeb320462ad333f3bc6c8725e8433df92dd4cc27ed6dcd6180da056693919fffe256dd6331975674bec82cc56
   languageName: node
   linkType: hard
 
@@ -21320,7 +21320,7 @@ __metadata:
     "@rabby-wallet/rabby-bridge": "npm:0.0.4-beta.2"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
     "@rabby-wallet/rabby-swap": "npm:0.0.77"
-    "@rabby-wallet/staking-sdk": "npm:0.1.0-alpha.5"
+    "@rabby-wallet/staking-sdk": "npm:0.1.0-alpha.6"
     "@rabby-wallet/widgets": "npm:1.0.9"
     "@rematch/core": "npm:2.2.0"
     "@rematch/select": "npm:3.1.2"

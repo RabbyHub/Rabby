@@ -6,13 +6,30 @@ import { openInTab } from '@/ui/utils';
 import { ExternalIcon } from '../icons';
 import {
   formatStakingAuditDate,
+  getStakingAuditFirmLogoUrl,
   getStakingSecurityAudits,
 } from '../data/securityAudits';
 import type { StakingPool } from '../types';
 
-const AuditFirmBadge = () => (
-  <span className="staking-security-auditor-icon" aria-hidden="true" />
-);
+const AuditFirmBadge = ({ auditFirm }: { auditFirm: string }) => {
+  const logoUrl = getStakingAuditFirmLogoUrl(auditFirm);
+
+  return (
+    <span className="staking-security-auditor-icon" aria-hidden="true">
+      {logoUrl ? (
+        <img
+          src={logoUrl}
+          alt=""
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={(event) => {
+            event.currentTarget.style.display = 'none';
+          }}
+        />
+      ) : null}
+    </span>
+  );
+};
 
 export const SecurityTab = ({ pool }: { pool: StakingPool }) => {
   const { t } = useTranslation();
@@ -41,7 +58,7 @@ export const SecurityTab = ({ pool }: { pool: StakingPool }) => {
                   className="staking-security-auditor"
                   title={audit.auditFirm}
                 >
-                  <AuditFirmBadge />
+                  <AuditFirmBadge auditFirm={audit.auditFirm} />
                   <span className="min-w-0 truncate">{audit.auditFirm}</span>
                 </div>
                 <div className="staking-security-date" title={audit.auditScope}>

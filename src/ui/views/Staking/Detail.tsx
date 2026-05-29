@@ -60,6 +60,7 @@ import {
   createStakingReadContractClient,
   getStakingMainTxHash,
 } from './utils/tx';
+import { shouldShowStakingPortfolio } from './utils/portfolioVisibility';
 import './style.less';
 
 type Erc4626Action = 'deposit' | 'withdraw';
@@ -187,9 +188,17 @@ const StakingDetail = () => {
       )
     );
   }, [positionSummary]);
+  const hasActivePendingAction = pendingActions.some(
+    (pending) => pending.status === 'pending'
+  );
 
-  const shouldShowPortfolio =
-    !!visualPool?.is_holding || pendingActions.length > 0 || hasPortfolioData;
+  const shouldShowPortfolio = shouldShowStakingPortfolio({
+    backendIsHolding: !!visualPool?.is_holding,
+    hasActivePendingAction,
+    hasPortfolioData,
+    positionSummaryLoaded: !!positionSummary && !positionLoading,
+    positionSummaryError: !!positionError,
+  });
 
   const tabs = useMemo(
     () =>

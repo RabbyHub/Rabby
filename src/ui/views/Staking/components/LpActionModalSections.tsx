@@ -8,6 +8,7 @@ import type { TokenItem } from 'background/service/openapi';
 
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
+import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { SwapSlider } from '@/ui/views/Swap/Component/Slider';
 import { formatUsdValue } from '@/ui/utils';
 
@@ -273,6 +274,21 @@ const LpTokenSeparator = () => (
   </div>
 );
 
+const SingleAssetDepositTip = ({ visible }: { visible?: boolean }) => {
+  const { t } = useTranslation();
+
+  if (!visible) {
+    return null;
+  }
+
+  return (
+    <div className="staking-lp-single-asset-tip">
+      <RcIconWarningCC className="staking-lp-single-asset-tip-icon" />
+      <span>{t('page.staking.actionModal.singleAssetDepositOnly')}</span>
+    </div>
+  );
+};
+
 const UnusedInfoRow = ({
   quote,
   token0Info,
@@ -424,6 +440,8 @@ const LpDepositContentInner = ({
   v2AddQuote?: LpUnusedQuote | null;
 }) => {
   const { t } = useTranslation();
+  const showSingleAssetTip =
+    isV3 && isPositionAction && (token0Disabled || token1Disabled);
 
   return (
     <>
@@ -454,6 +472,7 @@ const LpDepositContentInner = ({
           maxDisabled={token1MaxDisabled}
         />
       </div>
+      <SingleAssetDepositTip visible={showSingleAssetTip} />
       <div className="staking-lp-info">
         {isV3 && !isPositionAction && rangeText ? (
           <div className="staking-lp-info-row">

@@ -122,6 +122,10 @@ const getPendingActionTokens = ({
   pool: StakingPool;
   summary?: StakingPositionSummary;
 }) => {
+  if (pending.displayTokens?.length) {
+    return pending.displayTokens;
+  }
+
   if (pending.action === 'claim') {
     const targetIds = pending.claimPositionIds?.length
       ? pending.claimPositionIds
@@ -317,7 +321,8 @@ const formatPositionRangePercent = (value: BigNumber) => {
     .toFixed(decimals)
     .replace(/\.0+$/, '');
 
-  return `${value.lt(0) ? '-' : ''}${rounded}%`;
+  const sign = value.gt(0) ? '+' : value.lt(0) ? '-' : '';
+  return `${sign}${rounded}%`;
 };
 
 const getSqrtPriceX96AsBigNumber = (value: string | bigint) =>
@@ -513,7 +518,10 @@ export const PortfolioTab = ({
     (summary.positions.length > 0 ||
       getPositiveAssets(summary.supplied).length > 0 ||
       getPositiveAssets(summary.rewards).length > 0);
-  const showPendingOnly = pendingActions.length > 0 && !hasPortfolioContent;
+  const hasActivePendingAction = pendingActions.some(
+    (pending) => pending.status === 'pending'
+  );
+  const showPendingOnly = hasActivePendingAction && !hasPortfolioContent;
 
   if (loading && !summary && !pendingActions.length) {
     return (
@@ -565,7 +573,24 @@ export const PortfolioTab = ({
                 ? t('page.staking.error.failedLoadPosition')
                 : t('page.staking.portfolio.noSuppliedAssets')
             }
-          />
+          >
+            <div className="staking-position-actions">
+              <InlineActionButton
+                variant="primary"
+                disabled={depositDisabled}
+                onClick={() => onAction('deposit')}
+              >
+                {t('page.staking.actions.deposit')}
+              </InlineActionButton>
+              <InlineActionButton
+                variant="secondary"
+                disabled={withdrawDisabled || !summary?.positions.length}
+                onClick={() => onAction('withdraw', summary?.positions[0])}
+              >
+                {t('page.staking.actions.withdraw')}
+              </InlineActionButton>
+            </div>
+          </PortfolioCard>
         )
       ) : (
         <PortfolioCard

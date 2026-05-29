@@ -71,6 +71,7 @@ import {
   getStakingMainTxHash,
   readStakingContract,
 } from '../utils/tx';
+import { isFullUniv3Withdraw } from '../utils/univ3Withdraw';
 import './actionModal.less';
 
 type LpAction = 'deposit' | 'withdraw' | 'claim';
@@ -706,6 +707,8 @@ export const LpActionModal = ({
   const token1InputDisabled = token1V3PositionUnavailable;
   const token0MaxDisabled = token0V3PositionUnavailable;
   const token1MaxDisabled = token1V3PositionUnavailable;
+  const showSingleAssetDepositTip =
+    isV3PositionDeposit && (token0InputDisabled || token1InputDisabled);
   const v2InputSide = useMemo<TokenInputSide | null>(() => {
     if (!isV2 || action !== 'deposit') {
       return null;
@@ -1139,7 +1142,7 @@ export const LpActionModal = ({
             t('page.staking.actionModal.selectV3PositionToWithdraw')
           );
         }
-        buildResult = buildUniv3DecreaseAndCollectTx({
+        const v3WithdrawParams = {
           ...common,
           addressBook: [univ3Entry],
           tokenId: raw.tokenId,
@@ -1150,7 +1153,21 @@ export const LpActionModal = ({
           },
           ...v3WithdrawQuote.decreaseLiquidityParams,
           deadline: toDeadline(),
+        };
+        const shouldBurnToken = isFullUniv3Withdraw({
+          positionLiquidity: raw.liquidity,
+          withdrawLiquidity: v3WithdrawQuote.decreaseLiquidityParams.liquidity,
         });
+
+        buildResult = buildUniv3DecreaseAndCollectTx(
+          shouldBurnToken
+            ? {
+                ...v3WithdrawParams,
+                burnToken: true,
+                positionLiquidity: raw.liquidity,
+              }
+            : v3WithdrawParams
+        );
       } else if (claimTargets.length === 1 && claimTargets[0].raw?.univ3) {
         const raw = claimTargets[0].raw.univ3;
         buildResult = buildUniv3CollectTx({
@@ -1606,7 +1623,9 @@ export const LpActionModal = ({
 
   const popupHeight =
     action === 'deposit'
-      ? isV3 && !isPositionAction
+      ? showSingleAssetDepositTip
+        ? 444 + (needsPriceConfirm ? 24 : 0)
+        : isV3 && !isPositionAction
         ? 490 + (needsPriceConfirm ? 24 : 0)
         : 460 + (needsPriceConfirm ? 24 : 0)
       : action === 'claim'
