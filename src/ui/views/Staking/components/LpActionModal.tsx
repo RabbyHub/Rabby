@@ -91,6 +91,7 @@ interface LpActionModalProps {
   onCancel: () => void;
   onSubmitted: (payload: {
     hash: string;
+    expectedBurnTokenId?: string;
     univ3Range?: StakingUniv3RangeBps;
   }) => void;
 }
@@ -1027,6 +1028,19 @@ export const LpActionModal = ({
   const v3QuotedRange = (v3DepositQuote as {
     range?: StakingUniv3RangeBps;
   } | null)?.range;
+  const expectedBurnTokenId = useMemo(() => {
+    const raw = position?.raw?.univ3;
+    if (!isV3 || action !== 'withdraw' || !raw || !v3WithdrawQuote) {
+      return undefined;
+    }
+
+    return isFullUniv3Withdraw({
+      positionLiquidity: raw.liquidity,
+      withdrawLiquidity: v3WithdrawQuote.decreaseLiquidityParams.liquidity,
+    })
+      ? raw.tokenId
+      : undefined;
+  }, [action, isV3, position, v3WithdrawQuote]);
 
   const buildUniv3ClaimAllTx = useCallback((): StakingTxBuildResult => {
     if (!chainInfo || !univ3Entry || !claimTargets.length) {
@@ -1154,13 +1168,8 @@ export const LpActionModal = ({
           ...v3WithdrawQuote.decreaseLiquidityParams,
           deadline: toDeadline(),
         };
-        const shouldBurnToken = isFullUniv3Withdraw({
-          positionLiquidity: raw.liquidity,
-          withdrawLiquidity: v3WithdrawQuote.decreaseLiquidityParams.liquidity,
-        });
-
         buildResult = buildUniv3DecreaseAndCollectTx(
-          shouldBurnToken
+          expectedBurnTokenId
             ? {
                 ...v3WithdrawParams,
                 burnToken: true,
@@ -1200,6 +1209,7 @@ export const LpActionModal = ({
     buildUniv3ClaimAllTx,
     chainInfo,
     claimTargets,
+    expectedBurnTokenId,
     isV2,
     isV3,
     pool,
@@ -1238,6 +1248,7 @@ export const LpActionModal = ({
         submitted = true;
         onSubmitted({
           hash: mainHash,
+          expectedBurnTokenId,
           univ3Range:
             action === 'deposit' && isV3 && !position?.raw?.univ3
               ? v3QuotedRange
@@ -1267,6 +1278,7 @@ export const LpActionModal = ({
     action,
     buildTxs,
     canSubmit,
+    expectedBurnTokenId,
     isV3,
     needsPriceConfirm,
     onSubmitted,

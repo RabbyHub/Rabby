@@ -15,6 +15,7 @@ import {
   getBurnedUniv3TokenId,
   getMintedUniv3TokenId,
   hasBurnedUniv3TokenId,
+  isUniv3OwnerQueryForNonexistentTokenError,
 } from '@/ui/views/Staking/utils/univ3NftReceipt';
 import { shouldShowStakingPortfolio } from '@/ui/views/Staking/utils/portfolioVisibility';
 
@@ -277,8 +278,16 @@ describe('Univ3 withdraw burn handling', () => {
       getBurnedUniv3TokenId({
         receipt,
         accountAddress: USER,
+        tokenId: BURNED_TOKEN_ID,
       })
     ).toBe(BURNED_TOKEN_ID);
+    expect(
+      getBurnedUniv3TokenId({
+        receipt,
+        accountAddress: USER,
+        tokenId: TOKEN_ID,
+      })
+    ).toBe('');
     expect(
       hasBurnedUniv3TokenId({
         receipt,
@@ -376,6 +385,19 @@ describe('Univ3 withdraw burn handling', () => {
         accountAddress: USER,
         tokenId: TOKEN_ID,
       })
+    ).toBe(false);
+  });
+
+  it('recognizes the strict ownerOf nonexistent-token revert', () => {
+    expect(
+      isUniv3OwnerQueryForNonexistentTokenError(
+        new Error('execution reverted: ERC721: owner query for nonexistent token')
+      )
+    ).toBe(true);
+    expect(
+      isUniv3OwnerQueryForNonexistentTokenError(
+        new Error('network timeout while calling ownerOf')
+      )
     ).toBe(false);
   });
 

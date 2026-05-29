@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { UNIV3_NPM_ABI } from '@rabby-wallet/staking-sdk';
 
 import type { Account } from '@/background/service/preference';
 import { useWallet } from '@/ui/utils';
 
 import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionSummary } from './useStakingPositionSummary';
-import { waitForStakingTxReceipt } from '../utils/tx';
+import { readStakingContract, waitForStakingTxReceipt } from '../utils/tx';
+import type { StakingTxReceipt } from '../utils/tx';
 import {
   createStakingPositionSnapshot,
   hasStakingPendingResolved,
@@ -14,6 +16,7 @@ import type { StakingPositionSnapshot } from '../utils/pendingResolution';
 import {
   getBurnedUniv3TokenId,
   getMintedUniv3TokenId,
+  isUniv3OwnerQueryForNonexistentTokenError,
 } from '../utils/univ3NftReceipt';
 
 export type StakingPendingActionKind = 'deposit' | 'withdraw' | 'claim';
@@ -33,6 +36,7 @@ export interface StakingPendingAction {
   poolType: StakingPool['type'];
   positionId?: string;
   claimPositionIds?: string[];
+  expectedBurnTokenId?: string;
   univ3Range?: StakingUniv3RangeBps;
   displayTokens?: StakingToken[];
   submittedAt: number;
@@ -44,6 +48,7 @@ export interface AddStakingPendingActionPayload {
   action: StakingPendingActionKind;
   positionId?: string;
   claimPositionIds?: string[];
+  expectedBurnTokenId?: string;
   univ3Range?: StakingUniv3RangeBps;
 }
 
@@ -64,6 +69,11 @@ const safeBigInt = (value?: string | number | bigint | null) => {
 
 const getPositiveAssets = <T extends { rawAmount?: string }>(assets: T[]) =>
   assets.filter((asset) => safeBigInt(asset.rawAmount) > 0n);
+
+const getReceiptToAddress = (receipt: StakingTxReceipt | null) => {
+  const to = typeof receipt?.to === 'string' ? receipt.to : '';
+  return /^0x[0-9a-fA-F]{40}$/.test(to) ? (to as `0x${string}`) : undefined;
+};
 
 const getPendingActionDisplayTokens = ({
   action,
@@ -210,6 +220,7 @@ export const useStakingPendingActions = ({
             poolType: pool.type,
             positionId: payload.positionId,
             claimPositionIds: payload.claimPositionIds,
+            expectedBurnTokenId: payload.expectedBurnTokenId,
             univ3Range: payload.univ3Range,
             displayTokens: getPendingActionDisplayTokens({
               action: payload.action,
@@ -232,6 +243,16 @@ export const useStakingPendingActions = ({
     return pendingActionsRef.current.some(
       (item) => item.id === id && item.status === 'pending'
     );
+  }, []);
+
+  const refreshStakingData = useCallback(() => {
+    const tasks = [
+      () => refreshDetailAsyncRef.current(),
+      () => refreshCurveAsyncRef.current?.(),
+      () => refreshPositionAsyncRef.current(),
+    ];
+
+    void Promise.allSettled(tasks.map((task) => Promise.resolve().then(task)));
   }, []);
 
   const processPendingAction = useCallback(
@@ -282,39 +303,81 @@ export const useStakingPendingActions = ({
           }
         }
 
-        const burnedUniv3TokenId =
+        const expectedBurnTokenId =
           pending.action === 'withdraw' && pending.poolType === 'univ3'
-            ? getBurnedUniv3TokenId({
-                receipt,
-                accountAddress: account.address,
-              })
-            : '';
+            ? pending.expectedBurnTokenId
+            : undefined;
 
-        if (burnedUniv3TokenId) {
-          await Promise.all([
-            refreshDetailAsyncRef.current().catch(() => undefined),
-            refreshCurveAsyncRef.current?.().catch(() => undefined),
-            refreshPositionAsyncRef.current().catch(() => undefined),
-          ]);
+        if (expectedBurnTokenId) {
+          while (mountedRef.current && isPendingActionPending(pending.id)) {
+            const burnedUniv3TokenId = getBurnedUniv3TokenId({
+              receipt,
+              accountAddress: account.address,
+              tokenId: expectedBurnTokenId,
+            });
 
-          if (!mountedRef.current || !isPendingActionPending(pending.id)) {
-            return;
+            if (burnedUniv3TokenId) {
+              updatePendingActionStatus(pending.id, 'succeed');
+              refreshStakingData();
+              return;
+            }
+
+            const receiptTo = getReceiptToAddress(receipt);
+            if (receiptTo) {
+              try {
+                await readStakingContract({
+                  wallet,
+                  chainServerId: pool.chain_id,
+                  account,
+                  address: receiptTo,
+                  abi: UNIV3_NPM_ABI,
+                  functionName: 'ownerOf',
+                  args: [BigInt(expectedBurnTokenId)],
+                });
+              } catch (error) {
+                if (isUniv3OwnerQueryForNonexistentTokenError(error)) {
+                  if (
+                    !mountedRef.current ||
+                    !isPendingActionPending(pending.id)
+                  ) {
+                    return;
+                  }
+
+                  updatePendingActionStatus(pending.id, 'succeed');
+                  refreshStakingData();
+                  return;
+                }
+              }
+            }
+
+            await wait(DATA_REFRESH_INTERVAL);
+            receipt =
+              (await waitForStakingTxReceipt({
+                wallet,
+                chainServerId: pool.chain_id,
+                account,
+                hash: pending.hash,
+                attempts: 1,
+                interval: 0,
+              })) || receipt;
           }
 
-          updatePendingActionStatus(pending.id, 'succeed');
           return;
         }
 
         while (mountedRef.current && isPendingActionPending(pending.id)) {
-          const [, , nextSummary] = await Promise.all([
-            refreshDetailAsyncRef.current().catch(() => undefined),
-            refreshCurveAsyncRef.current?.().catch(() => undefined),
-            refreshPositionAsyncRef.current().catch(() => undefined),
+          const nextSummary = await refreshPositionAsyncRef
+            .current()
+            .catch(() => undefined);
+          void Promise.allSettled([
+            Promise.resolve().then(() => refreshDetailAsyncRef.current()),
+            Promise.resolve().then(() => refreshCurveAsyncRef.current?.()),
           ]);
 
           const latestSummary = nextSummary || positionSummaryRef.current;
           if (hasStakingPendingResolved(pending, latestSummary)) {
             updatePendingActionStatus(pending.id, 'succeed');
+            refreshStakingData();
             return;
           }
 
@@ -329,7 +392,14 @@ export const useStakingPendingActions = ({
         processingRef.current.delete(pending.id);
       }
     },
-    [account, isPendingActionPending, pool, updatePendingActionStatus, wallet]
+    [
+      account,
+      isPendingActionPending,
+      pool,
+      refreshStakingData,
+      updatePendingActionStatus,
+      wallet,
+    ]
   );
 
   useEffect(() => {
