@@ -100,7 +100,7 @@ export const MarginInput: React.FC<MarginInputProps> = ({
   return (
     <div
       className={clsx(
-        'px-[16px] py-[16px]',
+        'px-[16px] pt-[16px] pb-[20px]',
         !embedded && 'bg-r-neutral-card1 rounded-[8px] mb-[12px]'
       )}
     >
