@@ -84,7 +84,6 @@ const PoolItem = ({
 
 const ProtocolItemWrapper = styled.div`
   background: var(--r-neutral-card-1, #f2f4f7);
-  margin-bottom: 8px;
   border-radius: 8px;
 
   .title {
@@ -324,6 +323,9 @@ interface Props {
 
 const ProtocolListWrapper = styled.div`
   margin-top: 20px;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ProtocolList = ({
