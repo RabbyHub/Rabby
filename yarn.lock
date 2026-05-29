@@ -4902,9 +4902,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-api@npm:0.9.61":
-  version: 0.9.61
-  resolution: "@rabby-wallet/rabby-api@npm:0.9.61"
+"@rabby-wallet/rabby-api@npm:0.9.62":
+  version: 0.9.62
+  resolution: "@rabby-wallet/rabby-api@npm:0.9.62"
   dependencies:
     "@rabby-wallet/rabby-sign": "npm:0.4.0"
     axios: "npm:^0.27.2"
@@ -4915,7 +4915,7 @@ __metadata:
   peerDependencies:
     "@debank/common": ^0.3.9
     "@rabby-wallet/rabby-sign": ">= 0.3"
-  checksum: 10c0/42ea169ef06986595b1535067026e46d50b9b2ddd4075d836de7bc25bff95012cca16af8e0cc3b2953cc156d26cce123ac9e70cfb95d867b5ea2d1964d2fd414
+  checksum: 10c0/dc3acb525750977dd4c4f00a09d46e3e18d56d05f26377d008bf173b866f5b5fc710316ee3432265636d10abd694e5199e80b6adefd136447cb0e27b3a867014
   languageName: node
   linkType: hard
 
@@ -4966,12 +4966,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/staking-sdk@npm:0.1.0-alpha.7":
-  version: 0.1.0-alpha.7
-  resolution: "@rabby-wallet/staking-sdk@npm:0.1.0-alpha.7"
+"@rabby-wallet/staking-sdk@npm:0.1.0":
+  version: 0.1.0
+  resolution: "@rabby-wallet/staking-sdk@npm:0.1.0"
   dependencies:
     viem: "npm:2.47.6"
-  checksum: 10c0/9462f4cd98bedb98dadf4971a6bf2fb7afb27d3645a8eee91682c78032c74e7229c35cf30524c48ca84c275f8e6d9233d7a510147916cd940354c04cb9824725
+  checksum: 10c0/bc5a843bb1301f3a6c8e2849fbdca4ebe35d6e28832dd9685928b1d31c3de7830da06dcd1026b56c2a0b5ea883d089104c238b2798b722948540ebf33cf9e930
   languageName: node
   linkType: hard
 
@@ -21316,11 +21316,11 @@ __metadata:
     "@rabby-wallet/hyperliquid-sdk": "npm:1.1.7"
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.14"
-    "@rabby-wallet/rabby-api": "npm:0.9.61"
+    "@rabby-wallet/rabby-api": "npm:0.9.62"
     "@rabby-wallet/rabby-bridge": "npm:0.0.3"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
     "@rabby-wallet/rabby-swap": "npm:0.0.77"
-    "@rabby-wallet/staking-sdk": "npm:0.1.0-alpha.7"
+    "@rabby-wallet/staking-sdk": "npm:0.1.0"
     "@rabby-wallet/widgets": "npm:1.0.9"
     "@rematch/core": "npm:2.2.0"
     "@rematch/select": "npm:3.1.2"
