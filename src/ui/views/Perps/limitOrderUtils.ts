@@ -17,12 +17,12 @@ export const computeFilledPct = (origSz: string, sz: string): number => {
 
 export const computeMarginUsage = (
   limitPx: string,
-  origSz: string,
+  sz: string,
   leverage: number
 ): number => {
   if (!leverage || leverage <= 0) return 0;
   return new BigNumber(limitPx || 0)
-    .times(origSz || 0)
+    .times(sz || 0)
     .div(leverage)
     .toNumber();
 };

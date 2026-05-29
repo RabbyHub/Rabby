@@ -4123,6 +4123,8 @@
       "PerpsAutoCloseModal": {
         "noPosition": "まず証拠金を入力してください。",
         "priceBelow": "価格が下回っています",
+        "whenPriceAbove": "価格が上回ったとき",
+        "whenPriceBelow": "価格が下回ったとき",
         "stopLossTipsLong": "ストップロス価格は現在価格より低く設定する必要があります。",
         "takeProfit": "利確",
         "confirm": "確認",

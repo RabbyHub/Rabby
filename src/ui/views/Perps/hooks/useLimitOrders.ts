@@ -22,11 +22,7 @@ const toRows = (
     .map((order) => {
       const leverage = getLeverage(order.coin);
       const marginUsage = leverage
-        ? computeMarginUsage(
-            order.limitPx,
-            String(order.origSz),
-            leverage.value
-          )
+        ? computeMarginUsage(order.limitPx, String(order.sz), leverage.value)
         : 0;
       return { order, leverage, marginUsage };
     })

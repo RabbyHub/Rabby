@@ -4130,6 +4130,8 @@
         "confirm": "Onayla",
         "youLoss": "Kaybettin",
         "priceBelow": "Fiyat aşağıda",
+        "whenPriceAbove": "Fiyat üzerine çıktığında",
+        "whenPriceBelow": "Fiyat altına indiğinde",
         "priceAbove": "Fiyat Üstünde",
         "noPosition": "İlk önce marjin girmeniz gerekir.",
         "takeProfitTipsLong": "Kar alım fiyatı mevcut fiyattan daha yüksek olmalıdır.",

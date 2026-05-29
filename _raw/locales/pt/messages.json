@@ -4126,6 +4126,8 @@
         "youGain": "Você ganha",
         "stopLossTipsShortLiquidation": "O preço está acima do preço de liquidação ({{price}})",
         "priceBelow": "Preço abaixo",
+        "whenPriceAbove": "Quando o preço estiver acima",
+        "whenPriceBelow": "Quando o preço estiver abaixo",
         "title": "Fechamento automático de posição",
         "currentPrice": "Preço atual:",
         "EntryAndCurrentPrice": "Entrada: ${{entryPrice}} Atual: ${{currentPrice}}",

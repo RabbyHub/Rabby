@@ -4121,6 +4121,8 @@
         "stopLoss": "손절매",
         "noPosition": "먼저 마진을 입력해야 합니다.",
         "priceBelow": "가격 아래",
+        "whenPriceAbove": "가격이 위에 있을 때",
+        "whenPriceBelow": "가격이 아래에 있을 때",
         "cancel": "취소",
         "priceAbove": "가격이 위에 있습니다",
         "stopLossTipsLong": "손절가가 현재가보다 낮아야 합니다.",
