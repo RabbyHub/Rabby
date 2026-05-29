@@ -68,7 +68,7 @@ export const AssetList = ({
 
   return (
     <div ref={containerRef} className="pt-[12px] h-full overflow-auto">
-      <div className="px-[20px] pb-[12px]">
+      <div className="px-[20px] pb-[20px]">
         <div className="relative min-h-[32px]">
           <NetSwitchTabs
             value={selectedTab}
