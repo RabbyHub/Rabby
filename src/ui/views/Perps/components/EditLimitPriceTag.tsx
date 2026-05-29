@@ -160,7 +160,7 @@ export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
   return (
     <>
       <div
-        className="inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer bg-r-blue-light1"
+        className="inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer"
         onClick={() => setPopupVisible(true)}
       >
         <span className="text-13 leading-[16px] font-medium text-r-blue-default">

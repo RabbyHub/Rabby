@@ -264,7 +264,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
       <div
         className={clsx(
           'inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer',
-          'bg-r-blue-light1',
           disableEdit && 'opacity-50 cursor-not-allowed'
         )}
         onClick={async () => {

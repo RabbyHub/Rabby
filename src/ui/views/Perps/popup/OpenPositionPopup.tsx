@@ -466,7 +466,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             }
             titleExtra={
               <span
-                className="ml-8 text-12 text-r-neutral-title-1 bg-r-neutral-card2 px-6 py-2 rounded-[4px] cursor-pointer flex items-center gap-2"
+                className="ml-8 text-12 text-r-neutral-title-1 bg-r-neutral-card2 px-6 h-[22px] rounded-[4px] cursor-pointer flex items-center justify-center gap-2"
                 onClick={() => {
                   if (marginModeDisabled) {
                     message.error(
@@ -504,8 +504,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           />
         </div>
 
-        <div className="mb-20 bg-r-neutral-card1 rounded-[8px] flex flex-col px-16">
-          <div className="flex w-full py-12 justify-between items-center">
+        <div className="mb-20 bg-r-neutral-card1 rounded-[8px] flex flex-col px-16 py-8">
+          <div className="flex w-full py-8 justify-between items-center">
             <div className="text-14 text-r-neutral-foot">
               {t('page.perpsDetail.PerpsOpenPositionPopup.currentPrice')}
             </div>
@@ -513,7 +513,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               ${splitNumberByStep(markPrice)}
             </div>
           </div>
-          <div className="flex w-full py-12 justify-between items-center">
+          <div className="flex w-full py-8 justify-between items-center">
             <div className="text-14 text-r-neutral-foot">
               {t('page.perpsDetail.PerpsOpenPositionPopup.orderType')}
             </div>
@@ -530,7 +530,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
           </div>
           {orderType === 'limit' && (
-            <div className="flex w-full py-12 justify-between items-center">
+            <div className="flex w-full py-8 justify-between items-center">
               <div className="text-14 text-r-neutral-foot">
                 {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
               </div>
@@ -544,8 +544,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               />
             </div>
           )}
-          <div className="h-[0.5px] bg-r-neutral-line w-full" />
-          <div className="flex w-full py-12 justify-between items-center">
+          <div className="h-[0.5px] bg-r-neutral-line w-full my-8" />
+          <div className="flex w-full py-8 justify-between items-center">
             <div className="text-14 text-r-neutral-foot flex items-center gap-4 relative">
               {t('page.perps.size')}
               <TooltipWithMagnetArrow
@@ -566,7 +566,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           </div>
           {orderType === 'market' && (
             <>
-              <div className="flex w-full py-12 items-center justify-between">
+              <div className="flex w-full py-8 items-center justify-between">
                 <div className="text-14 text-r-neutral-foot">
                   {direction === 'Long'
                     ? t(
@@ -599,7 +599,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
                   }}
                 />
               </div>
-              <div className="flex w-full py-12 items-center justify-between">
+              <div className="flex w-full py-8 items-center justify-between">
                 <div className="text-14 text-r-neutral-foot">
                   {direction === 'Long'
                     ? t(
