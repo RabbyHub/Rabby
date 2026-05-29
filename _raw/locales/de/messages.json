@@ -4134,6 +4134,8 @@
         "stopLossWhenPriceAbove": "Stop-Loss, wenn der Preis darüber liegt",
         "stopLoss": "Stop-Loss",
         "priceBelow": "Preis unter",
+        "whenPriceAbove": "Wenn der Preis darüber liegt",
+        "whenPriceBelow": "Wenn der Preis darunter liegt",
         "stopLossExpectedPNL": "Stop-Loss erwarteter PnL",
         "takeProfitWhen": "Take-Profit-Wenn",
         "stopLossWhenPriceBelow": "Stop-Loss, wenn der Preis darunter liegt.",

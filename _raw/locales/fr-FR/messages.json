@@ -4460,6 +4460,8 @@
         "priceAbove": "Prix au-dessus",
         "cancel": "Annuler",
         "priceBelow": "Prix en dessous",
+        "whenPriceAbove": "Lorsque le prix est au-dessus",
+        "whenPriceBelow": "Lorsque le prix est en dessous",
         "takeProfitTipsLong": "Le prix de prise de profit doit être supérieur au prix actuel.",
         "takeProfit": "Prise de bénéfices",
         "stopLossTipsShortLiquidation": "Le prix est supérieur au prix de liquidation ({{price}})",

@@ -4135,6 +4135,8 @@
         "title": "Cierre automático de la posición",
         "stopLossTipsShortLiquidation": "El precio es mayor que el precio de liquidación ({{price}})",
         "priceBelow": "Precio por debajo",
+        "whenPriceAbove": "Cuando el precio esté por encima",
+        "whenPriceBelow": "Cuando el precio esté por debajo",
         "youLoss": "¡Perdiste!",
         "EntryAndCurrentPrice": "Precio de entrada: ${{entryPrice}} Precio actual: ${{currentPrice}}",
         "takeProfitWhenPriceAbove": "Tomar ganancia cuando el precio esté por encima",

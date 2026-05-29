@@ -1671,6 +1671,8 @@
         "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Current: ${{currentPrice}}",
         "priceAbove": "Price above",
         "priceBelow": "Price below",
+        "whenPriceAbove": "When Price Above",
+        "whenPriceBelow": "When Price Below",
         "youGain": "You gain",
         "youLoss": "You lose",
         "takeProfitExpectedPNL": "Take Profit Expected PNL",

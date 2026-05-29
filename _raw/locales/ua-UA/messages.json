@@ -4141,6 +4141,8 @@
         "confirm": "Підтвердити",
         "stopLossTipsLongLiquidation": "Ціна нижча за ліквідаційну ціну ({{price}})",
         "priceBelow": "Ціна нижче",
+        "whenPriceAbove": "Коли ціна вище",
+        "whenPriceBelow": "Коли ціна нижче",
         "stopLossTipsShort": "Ціна стоп-лосу повинна бути більшою за поточну ціну.",
         "takeProfitTipsShort": "Ціна тейк-профіту повинна бути нижчою за поточну ціну.",
         "stopLoss": "Стоп-лосс",

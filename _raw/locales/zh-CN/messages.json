@@ -4182,6 +4182,8 @@
         "stopLossTipsLong": "止损价必须低于当前价格。",
         "title": "自动平仓头寸",
         "priceBelow": "价格低于",
+        "whenPriceAbove": "当价格高于",
+        "whenPriceBelow": "当价格低于",
         "takeProfitExpectedPNL": "止盈 预计盈亏",
         "takeProfitWhen": "止盈条件",
         "stopLossTipsShortLiquidation": "价格高于爆仓价（{{price}}）",

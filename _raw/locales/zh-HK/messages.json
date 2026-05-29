@@ -4186,6 +4186,8 @@
         "stopLossTipsLongLiquidation": "價格低於爆倉價（{{price}}）",
         "stopLossWhenPriceAbove": "當價格高於時觤觸發止損",
         "priceBelow": "價格低於",
+        "whenPriceAbove": "當價格高於",
+        "whenPriceBelow": "當價格低於",
         "stopLossWhenPriceBelow": "止損單：當價格跌破"
       },
       "needDepositFirst": "你需要先存入資金。"

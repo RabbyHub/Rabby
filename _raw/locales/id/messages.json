@@ -4120,6 +4120,8 @@
       "PerpsAutoCloseModal": {
         "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Saat Ini: ${{currentPrice}}",
         "priceBelow": "Harga di bawah",
+        "whenPriceAbove": "Saat harga di atas",
+        "whenPriceBelow": "Saat harga di bawah",
         "confirm": "Konfirmasi",
         "youLoss": "Anda kalah",
         "stopLossWhenPriceAbove": "Stop Loss Ketika Harga Di Atas",

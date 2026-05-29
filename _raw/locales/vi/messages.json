@@ -4139,6 +4139,8 @@
         "takeProfitWhenPriceBelow": "Chốt lời khi giá xuống dưới",
         "takeProfitExpectedPNL": "Chốt lời PNL dự kiến",
         "priceBelow": "Giá thấp hơn",
+        "whenPriceAbove": "Khi giá cao hơn",
+        "whenPriceBelow": "Khi giá thấp hơn",
         "stopLossTipsLongLiquidation": "Giá thấp hơn giá thanh lý ({{price}})",
         "takeProfitWhen": "Chốt lời khi",
         "stopLossWhenPriceAbove": "Dừng lỗ khi giá vượt quá",

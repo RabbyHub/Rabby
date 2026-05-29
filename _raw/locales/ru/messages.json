@@ -4130,6 +4130,8 @@
         "stopLossTipsShort": "Цена стоп-лосса должна быть выше текущей цены.",
         "stopLossTipsLong": "Цена стоп-лосса должна быть ниже текущей цены.",
         "priceBelow": "Цена ниже",
+        "whenPriceAbove": "Когда цена выше",
+        "whenPriceBelow": "Когда цена ниже",
         "stopLoss": "Стоп-лосс",
         "stopLossWhen": "Стоп-лосс, когда",
         "currentPrice": "Текущая цена:",

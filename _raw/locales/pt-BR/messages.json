@@ -4127,6 +4127,8 @@
         "youLoss": "Você perdeu",
         "cancel": "Cancelar",
         "priceBelow": "Preço abaixo",
+        "whenPriceAbove": "Quando o preço estiver acima",
+        "whenPriceBelow": "Quando o preço estiver abaixo",
         "stopLossTipsLong": "O preço do stop loss deve ser menor que o preço atual.",
         "takeProfitWhen": "Tomar lucro quando",
         "EntryAndCurrentPrice": "Preço de entrada: ${{entryPrice}} Preço atual: ${{currentPrice}}",
