@@ -827,9 +827,29 @@
       },
       "cancelAllOrdersPopup": {
         "title": "Confirm Cancel All Orders",
+        "cancelAllOrdersConfirmTitle": "Confirm Cancel ALL Orders",
+        "cancelAllOrdersConfirmMessage": "All your Limit Orders will be canceled",
         "description": "All your open orders will be cancelled."
       },
+      "limitOrders": "Limit Orders",
+      "cancelAll": "Cancel All",
+      "limitOrderDetail": {
+        "title": "Limit {{side}} {{pair}}",
+        "time": "Time",
+        "size": "Size",
+        "filled": "Filled",
+        "currentPrice": "Current Price",
+        "limitPrice": "Limit Price",
+        "marginUsage": "Margin Usage",
+        "cancelLimitOrder": "Cancel Limit Order",
+        "buy": "Buy",
+        "sell": "Sell"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Limit order canceled",
+        "cancelLimitOrdersSuccess": "{{count}} limit orders canceled",
+        "cancelLimitOrderError": "Failed to cancel limit order",
+        "limitOrderPlaced": "Limit {{direction}} {{coin}}: Size {{size}} placed at ${{price}}",
         "deposit": "Deposit successful",
         "depositTip": "{{amount}} USDC deposited",
         "success": "Success",
@@ -1059,6 +1079,7 @@
       "currentPrice": "Current Price",
       "settings": "Settings",
       "details": "Details",
+      "info": "Info",
       "liquidationDistanceDown": "Going down <bold>{{percent}}</bold> will trigger liquidation",
       "liquidationDistanceUp": "Going up <bold>{{percent}}</bold> will trigger liquidation",
       "autoClose": "Auto Close",
@@ -1565,6 +1586,9 @@
       },
       "PerpsOpenPositionPopup": {
         "newPosition": "Open Position",
+        "openCoinPosition": "Open {{coin}} Position",
+        "checkMarketOrder": "Check Market Order",
+        "checkLimitOrder": "Check Limit Order",
         "margin": "Margin",
         "long": "Long",
         "short": "Short",
@@ -1584,7 +1608,25 @@
         "minimumOrderSize": "The minimum order size is $10",
         "maximumOrderSize": "The maximum order size is {{amount}}",
         "minMargin": "Minimum margin is {{amount}}",
-        "maxMargin": "Maximum margin is {{amount}}"
+        "maxMargin": "Maximum margin is {{amount}}",
+        "orderType": "Order Type",
+        "currentPrice": "Current Price",
+        "check": "Check",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Limit Price",
+        "mayExecuteImmediately": "This limit order may execute immediately",
+        "setLimitOrderBtn": "Set Limit Order"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Set Limit Buy Price",
+        "setLimitSellPrice": "Set Limit Sell Price",
+        "mid": "Mid",
+        "set": "Set",
+        "blockError": "Order price exceeds the 10% price protection limit.",
+        "warning": "Limit price is 5%+ away from the market price",
+        "confirmTitle": "Review Limit Price",
+        "confirmMessage": "Limit price is 5%+ away from market price"
       },
       "PerpsEditMarginPopup": {
         "margin": "Margin",
@@ -1629,6 +1671,8 @@
         "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Current: ${{currentPrice}}",
         "priceAbove": "Price above",
         "priceBelow": "Price below",
+        "whenPriceAbove": "When Price Above",
+        "whenPriceBelow": "When Price Below",
         "youGain": "You gain",
         "youLoss": "You lose",
         "takeProfitExpectedPNL": "Take Profit Expected PNL",

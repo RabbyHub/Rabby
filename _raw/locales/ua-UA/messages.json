@@ -3295,10 +3295,30 @@
         "title": "Підтвердити закриття всіх позицій"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "Підтвердити скасування ВСІХ ордерів",
+        "cancelAllOrdersConfirmMessage": "Усі ваші лімітні ордери будуть скасовані",
         "description": "Усі ваші відкриті ордери будуть скасовані.",
         "title": "Підтвердити скасування всіх ордерів"
       },
+      "limitOrders": "Лімітні ордери",
+      "cancelAll": "Скасувати все",
+      "limitOrderDetail": {
+        "title": "Ліміт {{side}} {{pair}}",
+        "time": "Час",
+        "size": "Розмір",
+        "filled": "Виконано",
+        "currentPrice": "Поточна ціна",
+        "limitPrice": "Лімітна ціна",
+        "marginUsage": "Використання маржі",
+        "cancelLimitOrder": "Скасувати лімітний ордер",
+        "buy": "Купити",
+        "sell": "Продати"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Лімітний ордер скасовано",
+        "cancelLimitOrdersSuccess": "{{count}} лімітних ордерів скасовано",
+        "cancelLimitOrderError": "Не вдалося скасувати лімітний ордер",
+        "limitOrderPlaced": "Ліміт {{direction}} {{coin}}: розмір {{size}} розміщено за ${{price}}",
         "success": "Успіх",
         "withdrawTip": "{{amount}} USDC успішно виведено",
         "deposit": "Поповнення успішно виконано",
@@ -3578,6 +3598,7 @@
       "directDepositFast": "Швидко, 0 Slippage",
       "settings": "Налаштування",
       "details": "Деталі",
+      "info": "Інформація",
       "marginMode": "Режим маржі",
       "unrealizedPnl": "Нереалізований PNL",
       "positionValue": "Значення позиції",
@@ -4037,6 +4058,17 @@
         "addSize": "Додати обсяг"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "Відкрити позицію {{coin}}",
+        "checkMarketOrder": "Перевірити ринковий ордер",
+        "checkLimitOrder": "Перевірити лімітний ордер",
+        "orderType": "Тип ордера",
+        "currentPrice": "Поточна ціна",
+        "check": "Перевірити",
+        "orderTypeMarket": "Ринковий",
+        "orderTypeLimit": "Лімітний",
+        "limitPrice": "Лімітна ціна",
+        "mayExecuteImmediately": "Цей лімітний ордер може виконатися негайно",
+        "setLimitOrderBtn": "Розмістити лімітний ордер",
         "free": "Безкоштовно",
         "available": "Доступно",
         "minMargin": "Мінімальна маржа становить {{amount}}",
@@ -4058,6 +4090,16 @@
         "stopLossWhenPriceBelow": "Стоп-лосс, коли ціна нижча за",
         "sizeTips": "Загальна вартість або кількість вашої позиції визначається маржею та кредитним плечем.",
         "takeProfitWhenPriceAbove": "Тейк-профіт, коли ціна перевищує"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Встановити лімітну ціну купівлі",
+        "setLimitSellPrice": "Встановити лімітну ціну продажу",
+        "mid": "Середня ціна",
+        "set": "Встановити",
+        "blockError": "Ціна ордера перевищує 10% ліміт захисту ціни.",
+        "warning": "Лімітна ціна відрізняється від ринкової більш ніж на 5%",
+        "confirmTitle": "Перевірити лімітну ціну",
+        "confirmMessage": "Лімітна ціна відрізняється від ринкової більш ніж на 5%"
       },
       "PerpsEditMarginPopup": {
         "upTo": "До",
@@ -4099,6 +4141,8 @@
         "confirm": "Підтвердити",
         "stopLossTipsLongLiquidation": "Ціна нижча за ліквідаційну ціну ({{price}})",
         "priceBelow": "Ціна нижче",
+        "whenPriceAbove": "Коли ціна вище",
+        "whenPriceBelow": "Коли ціна нижче",
         "stopLossTipsShort": "Ціна стоп-лосу повинна бути більшою за поточну ціну.",
         "takeProfitTipsShort": "Ціна тейк-профіту повинна бути нижчою за поточну ціну.",
         "stopLoss": "Стоп-лосс",

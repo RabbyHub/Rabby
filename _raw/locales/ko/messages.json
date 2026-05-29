@@ -3280,10 +3280,30 @@
         "description": "모든 미청산 포지션은 시장가로 청산됩니다."
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "모든 주문 취소 확인",
+        "cancelAllOrdersConfirmMessage": "모든 지정가 주문이 취소됩니다",
         "description": "모든 미체결 주문이 취소됩니다.",
         "title": "모든 주문 취소를 확인하시겠습니까?"
       },
+      "limitOrders": "지정가 주문",
+      "cancelAll": "모두 취소",
+      "limitOrderDetail": {
+        "title": "지정가 {{side}} {{pair}}",
+        "time": "시간",
+        "size": "수량",
+        "filled": "체결",
+        "currentPrice": "현재가",
+        "limitPrice": "지정가",
+        "marginUsage": "마진 사용량",
+        "cancelLimitOrder": "지정가 주문 취소",
+        "buy": "매수",
+        "sell": "매도"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "지정가 주문이 취소되었습니다",
+        "cancelLimitOrdersSuccess": "{{count}}개 지정가 주문이 취소되었습니다",
+        "cancelLimitOrderError": "지정가 주문 취소에 실패했습니다",
+        "limitOrderPlaced": "지정가 {{direction}} {{coin}}: 수량 {{size}}, 가격 ${{price}}로 주문됨",
         "success": "성공",
         "orderCancelled": "주문이 취소되었습니다",
         "withdraw": "출금 성공",
@@ -3565,6 +3585,7 @@
       "settings": "설정",
       "positionValue": "포지션 가치",
       "details": "세부정보",
+      "info": "정보",
       "crossMargin": "교차 마진",
       "currentPrice": "현재 가격",
       "isolatedMargin": "격리 마진",
@@ -4022,6 +4043,17 @@
         "sizeTips": "거래의 총 가치 또는 수량은 마진과 레버리지에 의해 설정됩니다."
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "{{coin}} 포지션 개시",
+        "checkMarketOrder": "시장가 주문 확인",
+        "checkLimitOrder": "지정가 주문 확인",
+        "orderType": "주문 유형",
+        "currentPrice": "현재가",
+        "check": "확인",
+        "orderTypeMarket": "시장가",
+        "orderTypeLimit": "지정가",
+        "limitPrice": "지정가",
+        "mayExecuteImmediately": "이 지정가 주문은 즉시 체결될 수 있습니다",
+        "setLimitOrderBtn": "지정가 주문하기",
         "margin": "마진",
         "rabbyFee": "Rabby 수수료",
         "maximumOrderSize": "최대 주문 수량은 {{amount}}입니다.",
@@ -4043,6 +4075,16 @@
         "sizeTips": "마진과 레버리지로 결정되는 포지션의 총 가치 또는 규모.",
         "size": "포지션 사이즈",
         "stopLossWhenPriceAbove": "가격이 상승하면 손절"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "지정가 매수가 설정",
+        "setLimitSellPrice": "지정가 매도가 설정",
+        "mid": "중간가",
+        "set": "설정",
+        "blockError": "주문 가격이 10% 가격 보호 한도를 초과합니다.",
+        "warning": "지정가가 시장 가격에서 5% 이상 차이가 납니다",
+        "confirmTitle": "지정가 확인",
+        "confirmMessage": "지정가가 시장 가격에서 5% 이상 차이가 납니다"
       },
       "PerpsEditMarginPopup": {
         "reduceMarginTooltip": "포지션 축소에 필요한 마진이 부족합니다.",
@@ -4079,6 +4121,8 @@
         "stopLoss": "손절매",
         "noPosition": "먼저 마진을 입력해야 합니다.",
         "priceBelow": "가격 아래",
+        "whenPriceAbove": "가격이 위에 있을 때",
+        "whenPriceBelow": "가격이 아래에 있을 때",
         "cancel": "취소",
         "priceAbove": "가격이 위에 있습니다",
         "stopLossTipsLong": "손절가가 현재가보다 낮아야 합니다.",

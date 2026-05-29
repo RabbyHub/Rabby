@@ -1167,6 +1167,54 @@ export const perps = createModel<RootModel>()({
       // dispatch.perps.patchState({ openOrders });
     },
 
+    // Refresh single dex's openOrders right after a place/cancel; WS reconciles drift.
+    async fetchPositionOpenOrdersHttp(payload: { dex: string }) {
+      await dispatch.perps.fetchPositionOpenOrdersHttpForDexes({
+        dexes: [payload.dex],
+      });
+    },
+
+    // Multi-dex variant (Cancel-All): one batched flush.
+    async fetchPositionOpenOrdersHttpForDexes(payload: { dexes: string[] }) {
+      const initial = store.getState().perps;
+      const address = initial.currentPerpsAccount?.address;
+      if (!address) return;
+      const unique = Array.from(new Set(payload.dexes));
+      if (unique.length === 0) return;
+      const sdk = getPerpsSDK();
+      const results = await Promise.all(
+        unique.map(async (dex) => {
+          try {
+            const orders = await sdk.info.getFrontendOpenOrders(
+              address,
+              dex || undefined
+            );
+            return { dex, orders };
+          } catch (e) {
+            console.error(
+              '[fetchPositionOpenOrdersHttpForDexes] failed',
+              dex,
+              e
+            );
+            return null;
+          }
+        })
+      );
+      const latest = store.getState().perps;
+      if (latest.currentPerpsAccount?.address !== address) return;
+      const successful = results.filter(
+        (r): r is { dex: string; orders: OpenOrder[] } => r !== null
+      );
+      if (successful.length === 0) return;
+      const successDexes = new Set(successful.map((r) => r.dex));
+      const map = latest.marketDataMap;
+      const kept = latest.openOrders.filter(
+        (o) => !successDexes.has(map[o.coin]?.dexId ?? '')
+      );
+      const fetched = successful.flatMap((r) => r.orders);
+      dispatch.perps.patchState({ openOrders: [...kept, ...fetched] });
+    },
+
     async fetchUserFillHistory() {
       const sdk = getPerpsSDK();
       const res = await sdk.info.getUserFills();

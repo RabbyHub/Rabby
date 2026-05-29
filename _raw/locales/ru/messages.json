@@ -3285,10 +3285,30 @@
         "title": "Подтвердить закрытие всех позиций"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "Подтвердите отмену ВСЕХ ордеров",
+        "cancelAllOrdersConfirmMessage": "Все ваши лимитные ордера будут отменены",
         "description": "Все ваши открытые ордеры будут отменены.",
         "title": "Подтвердить отмену всех ордеров"
       },
+      "limitOrders": "Лимитные ордера",
+      "cancelAll": "Отменить все",
+      "limitOrderDetail": {
+        "title": "Лимит {{side}} {{pair}}",
+        "time": "Время",
+        "size": "Размер",
+        "filled": "Исполнено",
+        "currentPrice": "Текущая цена",
+        "limitPrice": "Лимитная цена",
+        "marginUsage": "Использование маржи",
+        "cancelLimitOrder": "Отменить лимитный ордер",
+        "buy": "Купить",
+        "sell": "Продать"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Лимитный ордер отменён",
+        "cancelLimitOrdersSuccess": "{{count}} лимитных ордеров отменено",
+        "cancelLimitOrderError": "Не удалось отменить лимитный ордер",
+        "limitOrderPlaced": "Лимит {{direction}} {{coin}}: размер {{size}} размещён по ${{price}}",
         "marginUpdated": "Маржа обновлена",
         "withdraw": "Вывод средств выполнен успешно.",
         "cancelOrderSuccess": "Заказ отменён",
@@ -3568,6 +3588,7 @@
       "directDepositFast": "Быстро, 0 проскальзывание",
       "settings": "Настройки",
       "details": "Детали",
+      "info": "Информация",
       "marginMode": "Маржинальный режим",
       "isolatedMargin": "Изолированная маржа",
       "crossMargin": "Кросс-маржа",
@@ -4027,6 +4048,17 @@
         "addSize": "Добавить размер"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "Открыть позицию {{coin}}",
+        "checkMarketOrder": "Проверить рыночный ордер",
+        "checkLimitOrder": "Проверить лимитный ордер",
+        "orderType": "Тип ордера",
+        "currentPrice": "Текущая цена",
+        "check": "Проверить",
+        "orderTypeMarket": "Рыночный",
+        "orderTypeLimit": "Лимитный",
+        "limitPrice": "Лимитная цена",
+        "mayExecuteImmediately": "Этот лимитный ордер может быть исполнен сразу",
+        "setLimitOrderBtn": "Разместить лимитный ордер",
         "insufficientBalance": "Недостаточно средств",
         "minMargin": "Минимальная маржа составляет {{amount}}",
         "invalidNumber": "Неверное число",
@@ -4048,6 +4080,16 @@
         "free": "бесплатно",
         "providerFee": "Комиссия Hyperliquid",
         "rabbyFee": "Rabby Комиссия"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Установить лимитную цену покупки",
+        "setLimitSellPrice": "Установить лимитную цену продажи",
+        "mid": "Средняя цена",
+        "set": "Установить",
+        "blockError": "Цена ордера превышает 10% лимит защиты цены.",
+        "warning": "Лимитная цена отличается от рыночной более чем на 5%",
+        "confirmTitle": "Проверить лимитную цену",
+        "confirmMessage": "Лимитная цена отличается от рыночной более чем на 5%"
       },
       "PerpsEditMarginPopup": {
         "addMarginSuccess": "Маржа успешно добавлена.",
@@ -4088,6 +4130,8 @@
         "stopLossTipsShort": "Цена стоп-лосса должна быть выше текущей цены.",
         "stopLossTipsLong": "Цена стоп-лосса должна быть ниже текущей цены.",
         "priceBelow": "Цена ниже",
+        "whenPriceAbove": "Когда цена выше",
+        "whenPriceBelow": "Когда цена ниже",
         "stopLoss": "Стоп-лосс",
         "stopLossWhen": "Стоп-лосс, когда",
         "currentPrice": "Текущая цена:",

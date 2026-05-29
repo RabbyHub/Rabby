@@ -124,6 +124,18 @@ export const PositionItem: React.FC<{
               item={marketData}
               className="text-15 ml-4 font-medium"
             />
+          </div>
+          <div className="flex items-center gap-6">
+            <span
+              className={clsx(
+                'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',
+                isLong
+                  ? 'text-r-green-default bg-r-green-light'
+                  : 'text-r-red-default bg-r-red-light'
+              )}
+            >
+              {side} {leverageText}
+            </span>
             <TooltipWithMagnetArrow
               overlayClassName="rectangle"
               placement="top"
@@ -133,7 +145,7 @@ export const PositionItem: React.FC<{
                   : undefined
               }
             >
-              <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
+              <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot gap-2">
                 {leverageType === 'cross'
                   ? t('page.perps.cross')
                   : t('page.perps.isolated')}
@@ -147,19 +159,6 @@ export const PositionItem: React.FC<{
                 )}
               </span>
             </TooltipWithMagnetArrow>
-            {/* <RcIconArrowRight className="w-20 h-20 mr-[-6px] text-rb-neutral-foot" /> */}
-          </div>
-          <div className="flex items-center gap-6">
-            <span
-              className={clsx(
-                'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',
-                isLong
-                  ? 'text-r-green-default bg-r-green-light'
-                  : 'text-r-red-default bg-r-red-light'
-              )}
-            >
-              {side} {leverageText}
-            </span>
             {!hasStopLoss && (
               <DistanceRiskTag
                 isLong={isLong}
