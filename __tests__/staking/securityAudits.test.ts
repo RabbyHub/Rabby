@@ -1,5 +1,6 @@
 import {
   formatStakingAuditDate,
+  getStakingAuditFirmLogoUrl,
   getStakingSecurityAudits,
 } from '@/ui/views/Staking/data/securityAudits';
 import type { StakingPool } from '@/ui/views/Staking/types';
@@ -32,6 +33,31 @@ const createPool = (overrides: Partial<StakingPool>): StakingPool =>
   } as StakingPool);
 
 describe('staking security audits', () => {
+  it('uses company-hosted audit firm logos', () => {
+    expect(getStakingAuditFirmLogoUrl('Trail of Bits')).toBe(
+      'https://static-assets.debank.com/files/6521a907-4f7f-413f-b50c-fc9de004ec37.png'
+    );
+    expect(getStakingAuditFirmLogoUrl('SlowMist')).toBe(
+      'https://static-assets.debank.com/files/e9722bb9-0d62-46c4-b3e8-9802f88bf1dd.ico'
+    );
+    expect(getStakingAuditFirmLogoUrl('ChainSecurity')).toBe(
+      'https://static-assets.debank.com/files/40bc446a-9adb-4961-ab52-f10e4704e93e.png'
+    );
+    expect(getStakingAuditFirmLogoUrl('PeckShield')).toBe(
+      'https://static-assets.debank.com/files/7230e220-babd-43fb-bde3-8a5a6c7e255c.jpeg'
+    );
+    expect(getStakingAuditFirmLogoUrl('Cantina')).toBe(
+      'https://static-assets.debank.com/files/7d0e43c5-053d-44c6-827f-19e0b60ae9ea.svg'
+    );
+    expect(getStakingAuditFirmLogoUrl('ABDK')).toBe(
+      'https://static-assets.debank.com/files/b5e205ae-2916-4a2b-ae97-557756d340a5.png'
+    );
+    expect(getStakingAuditFirmLogoUrl('DappOrg')).toBe(
+      'https://static-assets.debank.com/files/90a4ae32-c7d8-40a4-9839-7317eb4835c9.png'
+    );
+    expect(getStakingAuditFirmLogoUrl('Unknown')).toBe('');
+  });
+
   it('uses protocol-version audits for all Uniswap V3 pairs', () => {
     const usdcEth = createPool({
       id: 'eth:0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
@@ -128,6 +154,35 @@ describe('staking security audits', () => {
 
     expect(audits).toHaveLength(9);
     expect(audits[0].auditScope).toBe('Spark Vaults V2 Audit');
+  });
+
+  it('stores audit risk metadata as locale-neutral values', () => {
+    const pool = createPool({
+      id: 'opaque-pool-id',
+      type: 'erc4626',
+      pool_address: '0x83F20F44975D03b1b09e64809B757c47f942bEEA',
+      protocol: {
+        id: 'spark',
+      },
+      tokens: {
+        supplies: [
+          {
+            id: '0x6b175474e89094c44da98b954eedeac495271d0f',
+            symbol: 'DAI',
+          },
+        ],
+        rewards: [],
+      },
+    });
+
+    const audit = getStakingSecurityAudits(pool).find(
+      (item) => item.auditScope === 'Savings DAI (sDAI)'
+    );
+
+    expect(audit).toMatchObject({
+      auditScore: '87.57',
+      riskLevel: 'low',
+    });
   });
 
   it('formats audit dates as MM/YYYY', () => {

@@ -1,24 +1,31 @@
 import type { StakingPool } from '../types';
 
+export type StakingAuditRiskLevel = 'low' | 'medium' | 'high';
+
 export interface StakingSecurityAudit {
   auditFirm: string;
   auditDate: string;
   auditScope: string;
   auditReportUrl: string;
-  certikScore?: string;
-  certikLevel?: string;
+  auditScore?: string;
+  riskLevel?: StakingAuditRiskLevel;
 }
 
 const AUDIT_FIRM_LOGO_URLS: Record<string, string> = {
-  ABDK: 'https://abdk.consulting/apple-touch-icon.png',
+  ABDK:
+    'https://static-assets.debank.com/files/b5e205ae-2916-4a2b-ae97-557756d340a5.png',
   Cantina:
-    'https://cdn.prod.website-files.com/6741f9996a3c2c0fa84c2df0/683456145faaf03b16ec2566_b6447adf6e671e14f304a7b06f730f80_Logomark%20color%20dark.svg',
+    'https://static-assets.debank.com/files/7d0e43c5-053d-44c6-827f-19e0b60ae9ea.svg',
   ChainSecurity:
-    'https://cdn.prod.website-files.com/65cdd9991a6c6ef9a062357b/68c1f6f2f947ab7b8cf8fc86_CHAINSECURITY_ICON_PFP_BLUE.png',
-  DappOrg: 'https://avatars.githubusercontent.com/u/58847539?s=280&v=4',
-  PeckShield: 'https://avatars.githubusercontent.com/u/39812237?s=280&v=4',
-  SlowMist: 'https://www.slowmist.com/images/favicon.ico',
-  'Trail of Bits': 'https://trailofbits.com/images/Trail-of-bits-icon.png',
+    'https://static-assets.debank.com/files/40bc446a-9adb-4961-ab52-f10e4704e93e.png',
+  DappOrg:
+    'https://static-assets.debank.com/files/90a4ae32-c7d8-40a4-9839-7317eb4835c9.png',
+  PeckShield:
+    'https://static-assets.debank.com/files/7230e220-babd-43fb-bde3-8a5a6c7e255c.jpeg',
+  SlowMist:
+    'https://static-assets.debank.com/files/e9722bb9-0d62-46c4-b3e8-9802f88bf1dd.ico',
+  'Trail of Bits':
+    'https://static-assets.debank.com/files/6521a907-4f7f-413f-b50c-fc9de004ec37.png',
 };
 
 const AUDIT_DATE_ORDER: Record<string, number> = {
@@ -41,15 +48,15 @@ const createAudit = (
   auditDate: string,
   auditScope: string,
   auditReportUrl: string,
-  certikScore?: string,
-  certikLevel?: string
+  auditScore?: string,
+  riskLevel?: StakingAuditRiskLevel
 ): StakingSecurityAudit => ({
   auditFirm,
   auditDate,
   auditScope,
   auditReportUrl,
-  certikScore,
-  certikLevel,
+  auditScore,
+  riskLevel,
 });
 
 const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
@@ -65,7 +72,7 @@ const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
     'DAI IR Strategy and sDAI Oracle',
     'https://docs.spark.fi/assets/Chainsecurity-DAI-IR-Strategy-and-sDAI-Oracle.pdf',
     '87.57',
-    '低风险'
+    'low'
   ),
   createAudit(
     'ChainSecurity',
@@ -73,7 +80,7 @@ const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
     'Savings DAI (sDAI)',
     'https://docs.spark.fi/assets/Chainsecurity-sDAI.pdf',
     '87.57',
-    '低风险'
+    'low'
   ),
   createAudit(
     'ChainSecurity',
@@ -81,7 +88,7 @@ const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
     'SparkLend Deployment Verification',
     'https://docs.spark.fi/assets/Chainsecurity-SparkLend-Deployment-Verification.pdf',
     '87.57',
-    '低风险'
+    'low'
   ),
   createAudit(
     'Cantina',
@@ -89,7 +96,7 @@ const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
     'Spark Liquidity Layer',
     'https://docs.spark.fi/assets/Cantina-Spark-Liquidity-Layer-2024-10-23.pdf',
     '87.57',
-    '低风险'
+    'low'
   ),
   createAudit(
     'ChainSecurity',
@@ -97,7 +104,7 @@ const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
     'Spark Liquidity Layer',
     'https://docs.spark.fi/assets/Chainsecurity-Spark-Liquidity-Layer-2024-10-22.pdf',
     '87.57',
-    '低风险'
+    'low'
   ),
   createAudit(
     'Cantina',
@@ -105,7 +112,7 @@ const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
     'Savings USDS (sUSDS)',
     'https://docs.spark.fi/assets/Cantina-sUSDS.pdf',
     '87.57',
-    '低风险'
+    'low'
   ),
   createAudit(
     'Cantina',
@@ -113,7 +120,7 @@ const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
     'Spark Liquidity Layer',
     'https://docs.spark.fi/assets/Cantina-Spark-Liquidity-Layer-2024-09-25.pdf',
     '87.57',
-    '低风险'
+    'low'
   ),
   createAudit(
     'ChainSecurity',
@@ -121,7 +128,7 @@ const SHARED_SPARK_V2_AUDITS: StakingSecurityAudit[] = [
     'Savings USDS (sUSDS)',
     'https://docs.spark.fi/assets/Chainsecurity-sUSDS.pdf',
     '87.57',
-    '低风险'
+    'low'
   ),
 ];
 
@@ -133,7 +140,7 @@ const AUDITS_BY_POOL_KEY: Record<string, StakingSecurityAudit[]> = {
       'DAI IR Strategy and sDAI Oracle',
       'https://docs.spark.fi/assets/Chainsecurity-DAI-IR-Strategy-and-sDAI-Oracle.pdf',
       '87.57',
-      '低风险'
+      'low'
     ),
     createAudit(
       'ChainSecurity',
@@ -141,7 +148,7 @@ const AUDITS_BY_POOL_KEY: Record<string, StakingSecurityAudit[]> = {
       'Savings DAI (sDAI)',
       'https://docs.spark.fi/assets/Chainsecurity-sDAI.pdf',
       '87.57',
-      '低风险'
+      'low'
     ),
   ],
   'erc4626-eth-susds': [
@@ -151,7 +158,7 @@ const AUDITS_BY_POOL_KEY: Record<string, StakingSecurityAudit[]> = {
       'Savings USDS (sUSDS)',
       'https://docs.spark.fi/assets/Cantina-sUSDS.pdf',
       '87.57',
-      '低风险'
+      'low'
     ),
     createAudit(
       'ChainSecurity',
@@ -159,7 +166,7 @@ const AUDITS_BY_POOL_KEY: Record<string, StakingSecurityAudit[]> = {
       'Savings USDS (sUSDS)',
       'https://docs.spark.fi/assets/Chainsecurity-sUSDS.pdf',
       '87.57',
-      '低风险'
+      'low'
     ),
   ],
   'erc4626-eth-speth': SHARED_SPARK_V2_AUDITS,
