@@ -714,7 +714,7 @@ export const PerpsSingleCoin = () => {
                 </span>
                 {positionData?.type === 'isolated' ? (
                   <div
-                    className="flex items-center justify-center gap-6 bg-r-blue-light-1 rounded-[8px] px-6 h-[26px] cursor-pointer"
+                    className="flex items-center justify-center gap-6 rounded-[8px] px-6 h-[26px] cursor-pointer"
                     onClick={async () => {
                       await handleActionApproveStatus();
                       setEditMarginVisible(true);

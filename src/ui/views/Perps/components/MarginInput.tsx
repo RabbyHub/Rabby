@@ -105,7 +105,7 @@ export const MarginInput: React.FC<MarginInputProps> = ({
       )}
     >
       <div className="flex items-center">
-        <div className="text-17 font-bold text-r-neutral-title-1">
+        <div className="text-[17px] font-bold text-r-neutral-title-1">
           {title}
           <span>({quoteAsset})</span>
         </div>
