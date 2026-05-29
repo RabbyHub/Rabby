@@ -11,11 +11,22 @@ import type {
 
 import { hasStakingPendingResolved } from '@/ui/views/Staking/utils/pendingResolution';
 import { isFullUniv3Withdraw } from '@/ui/views/Staking/utils/univ3Withdraw';
+import {
+  getMintedUniv3TokenId,
+  hasBurnedUniv3TokenId,
+} from '@/ui/views/Staking/utils/univ3NftReceipt';
+import { shouldShowStakingPortfolio } from '@/ui/views/Staking/utils/portfolioVisibility';
 
 const TOKEN_ID = '6869678';
+const BURNED_TOKEN_ID = '6869846';
 const POSITION_LIQUIDITY = '1042545038158242799';
 const USER = '0x000000000000000000000000000000000000dead';
+const OTHER_USER = '0x000000000000000000000000000000000000beef';
 const MAX_UINT128 = 2n ** 128n - 1n;
+const ZERO_ADDRESS_TOPIC =
+  '0x0000000000000000000000000000000000000000000000000000000000000000';
+const ERC721_TRANSFER_TOPIC =
+  '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 
 const univ3Entry: Univ3AddressBookEntry = {
   type: 'univ3',
@@ -111,6 +122,34 @@ const decodeMulticall = (data: Hex) => {
     })
   );
 };
+
+const addressTopic = (address: string) =>
+  `0x${address.toLowerCase().replace(/^0x/, '').padStart(64, '0')}`;
+
+const tokenTopic = (tokenId: string | bigint) =>
+  `0x${BigInt(tokenId).toString(16).padStart(64, '0')}`;
+
+const transferLog = ({
+  from,
+  to,
+  tokenId,
+}: {
+  from: string;
+  to: string;
+  tokenId: string;
+}) => ({
+  topics: [
+    ERC721_TRANSFER_TOPIC,
+    from === '0x0' ? ZERO_ADDRESS_TOPIC : addressTopic(from),
+    to === '0x0' ? ZERO_ADDRESS_TOPIC : addressTopic(to),
+    tokenTopic(tokenId),
+  ],
+});
+
+const receiptWithLogs = (...logs: Array<{ topics: string[] }>) => ({
+  status: '0x1',
+  logs,
+});
 
 describe('Univ3 withdraw burn handling', () => {
   it('treats only positive full-liquidity withdraws as burnable', () => {
@@ -217,5 +256,101 @@ describe('Univ3 withdraw burn handling', () => {
     );
 
     expect(resolved).toBe(true);
+  });
+
+  it('resolves V3 withdraw pending from an exact owner-to-zero burn log', () => {
+    const receipt = receiptWithLogs(
+      transferLog({
+        from: USER,
+        to: '0x0',
+        tokenId: BURNED_TOKEN_ID,
+      })
+    );
+
+    expect(
+      hasBurnedUniv3TokenId({
+        receipt,
+        accountAddress: USER,
+        tokenId: BURNED_TOKEN_ID,
+      })
+    ).toBe(true);
+    expect(
+      hasBurnedUniv3TokenId({
+        receipt,
+        accountAddress: USER,
+        tokenId: TOKEN_ID,
+      })
+    ).toBe(false);
+    expect(
+      hasBurnedUniv3TokenId({
+        receipt,
+        accountAddress: OTHER_USER,
+        tokenId: BURNED_TOKEN_ID,
+      })
+    ).toBe(false);
+    expect(
+      hasBurnedUniv3TokenId({
+        receipt,
+        accountAddress: USER,
+      })
+    ).toBe(false);
+  });
+
+  it('does not treat a V3 NFT mint log as a burn log', () => {
+    const receipt = receiptWithLogs(
+      transferLog({
+        from: '0x0',
+        to: USER,
+        tokenId: TOKEN_ID,
+      })
+    );
+
+    expect(getMintedUniv3TokenId(receipt, USER)).toBe(TOKEN_ID);
+    expect(
+      hasBurnedUniv3TokenId({
+        receipt,
+        accountAddress: USER,
+        tokenId: TOKEN_ID,
+      })
+    ).toBe(false);
+  });
+
+  it('does not show portfolio from stale backend holding after an empty summary is loaded', () => {
+    expect(
+      shouldShowStakingPortfolio({
+        backendIsHolding: true,
+        hasActivePendingAction: false,
+        hasPortfolioData: false,
+        positionSummaryLoaded: true,
+        positionSummaryError: false,
+      })
+    ).toBe(false);
+    expect(
+      shouldShowStakingPortfolio({
+        backendIsHolding: true,
+        hasActivePendingAction: false,
+        hasPortfolioData: false,
+        positionSummaryLoaded: false,
+        positionSummaryError: false,
+      })
+    ).toBe(true);
+    expect(
+      shouldShowStakingPortfolio({
+        backendIsHolding: true,
+        hasActivePendingAction: true,
+        hasPortfolioData: false,
+        positionSummaryLoaded: true,
+        positionSummaryError: false,
+      })
+    ).toBe(true);
+    expect(
+      shouldShowStakingPortfolio({
+        backendIsHolding: false,
+        hasActivePendingAction: false,
+        hasPortfolioData: true,
+        positionSummaryLoaded: true,
+        positionSummaryError: false,
+      })
+    ).toBe(true);
   });
 });

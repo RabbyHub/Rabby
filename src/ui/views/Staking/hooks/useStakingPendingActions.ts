@@ -6,12 +6,15 @@ import { useWallet } from '@/ui/utils';
 import type { StakingPool, StakingToken } from '../types';
 import type { StakingPositionSummary } from './useStakingPositionSummary';
 import { waitForStakingTxReceipt } from '../utils/tx';
-import type { StakingTxReceipt } from '../utils/tx';
 import {
   createStakingPositionSnapshot,
   hasStakingPendingResolved,
 } from '../utils/pendingResolution';
 import type { StakingPositionSnapshot } from '../utils/pendingResolution';
+import {
+  getMintedUniv3TokenId,
+  hasBurnedUniv3TokenId,
+} from '../utils/univ3NftReceipt';
 
 export type StakingPendingActionKind = 'deposit' | 'withdraw' | 'claim';
 export type StakingPendingActionStatus = 'pending' | 'succeed' | 'failed';
@@ -44,19 +47,12 @@ export interface AddStakingPendingActionPayload {
   univ3Range?: StakingUniv3RangeBps;
 }
 
-const ZERO_ADDRESS_TOPIC =
-  '0x0000000000000000000000000000000000000000000000000000000000000000';
-const ERC721_TRANSFER_TOPIC =
-  '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
 const DATA_REFRESH_INTERVAL = 3000;
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
-
-const normalizeAddressTopic = (address: string) =>
-  `0x${address.toLowerCase().replace(/^0x/, '').padStart(64, '0')}`;
 
 const safeBigInt = (value?: string | number | bigint | null) => {
   try {
@@ -116,30 +112,6 @@ const getPendingActionDisplayTokens = ({
   }
 
   return pool.tokens.supplies;
-};
-
-const getMintedUniv3TokenId = (
-  receipt: StakingTxReceipt | null,
-  accountAddress: string
-) => {
-  const toTopic = normalizeAddressTopic(accountAddress);
-  const logs = Array.isArray(receipt?.logs) ? receipt?.logs : [];
-
-  for (const log of logs) {
-    const topics = Array.isArray((log as { topics?: string[] }).topics)
-      ? ((log as { topics?: string[] }).topics as string[])
-      : [];
-    if (
-      topics[0]?.toLowerCase() === ERC721_TRANSFER_TOPIC &&
-      topics[1]?.toLowerCase() === ZERO_ADDRESS_TOPIC &&
-      topics[2]?.toLowerCase() === toTopic &&
-      topics[3]
-    ) {
-      return BigInt(topics[3]).toString();
-    }
-  }
-
-  return '';
 };
 
 export const useStakingPendingActions = ({
@@ -308,6 +280,29 @@ export const useStakingPendingActions = ({
             onMintedUniv3TokenIdRef.current(mintedTokenId, pending.univ3Range);
             await wait(0);
           }
+        }
+
+        if (
+          pending.action === 'withdraw' &&
+          pending.poolType === 'univ3' &&
+          hasBurnedUniv3TokenId({
+            receipt,
+            accountAddress: account.address,
+            tokenId: pending.positionId,
+          })
+        ) {
+          await Promise.all([
+            refreshDetailAsyncRef.current().catch(() => undefined),
+            refreshCurveAsyncRef.current?.().catch(() => undefined),
+            refreshPositionAsyncRef.current().catch(() => undefined),
+          ]);
+
+          if (!mountedRef.current || !isPendingActionPending(pending.id)) {
+            return;
+          }
+
+          updatePendingActionStatus(pending.id, 'succeed');
+          return;
         }
 
         while (mountedRef.current && isPendingActionPending(pending.id)) {
