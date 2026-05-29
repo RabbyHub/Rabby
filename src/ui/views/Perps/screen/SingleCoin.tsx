@@ -239,6 +239,10 @@ export const PerpsSingleCoin = () => {
       }));
     }
   );
+  useEffect(() => {
+    setCurrentTpOrSl({ tpPrice, slPrice });
+  }, [tpPrice, slPrice]);
+
   const {
     handleOpenPosition,
     handleClosePosition,
