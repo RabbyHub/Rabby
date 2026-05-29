@@ -707,6 +707,8 @@ export const LpActionModal = ({
   const token1InputDisabled = token1V3PositionUnavailable;
   const token0MaxDisabled = token0V3PositionUnavailable;
   const token1MaxDisabled = token1V3PositionUnavailable;
+  const showSingleAssetDepositTip =
+    isV3PositionDeposit && (token0InputDisabled || token1InputDisabled);
   const v2InputSide = useMemo<TokenInputSide | null>(() => {
     if (!isV2 || action !== 'deposit') {
       return null;
@@ -1621,7 +1623,9 @@ export const LpActionModal = ({
 
   const popupHeight =
     action === 'deposit'
-      ? isV3 && !isPositionAction
+      ? showSingleAssetDepositTip
+        ? 444 + (needsPriceConfirm ? 24 : 0)
+        : isV3 && !isPositionAction
         ? 490 + (needsPriceConfirm ? 24 : 0)
         : 460 + (needsPriceConfirm ? 24 : 0)
       : action === 'claim'
