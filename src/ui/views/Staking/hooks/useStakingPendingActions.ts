@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { UNIV3_NPM_ABI } from '@rabby-wallet/staking-sdk';
 
 import type { Account } from '@/background/service/preference';
@@ -53,11 +59,116 @@ export interface AddStakingPendingActionPayload {
 }
 
 const DATA_REFRESH_INTERVAL = 3000;
+const STAKING_PENDING_ACTIONS_STORAGE_PREFIX = 'rabby-staking-pending-actions';
 
 const wait = (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
+
+const isPlainRecord = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === 'object' && !Array.isArray(value);
+
+const isStakingPositionSnapshot = (
+  value: unknown
+): value is StakingPositionSnapshot =>
+  isPlainRecord(value) &&
+  typeof value.positionsCount === 'number' &&
+  Array.isArray(value.positionIds) &&
+  isPlainRecord(value.suppliedByToken) &&
+  isPlainRecord(value.rewardsByToken) &&
+  isPlainRecord(value.univ3Positions);
+
+const isStoredPendingAction = (
+  value: unknown,
+  poolId?: string,
+  poolType?: StakingPool['type']
+): value is StakingPendingAction => {
+  if (!poolId || !poolType || !isPlainRecord(value)) {
+    return false;
+  }
+
+  return (
+    typeof value.id === 'string' &&
+    typeof value.hash === 'string' &&
+    (value.action === 'deposit' ||
+      value.action === 'withdraw' ||
+      value.action === 'claim') &&
+    value.status === 'pending' &&
+    value.poolId === poolId &&
+    value.poolType === poolType &&
+    typeof value.submittedAt === 'number' &&
+    isStakingPositionSnapshot(value.baseline)
+  );
+};
+
+const getStakingPendingActionsStorageKey = (
+  accountAddress?: string,
+  pool?: StakingPool
+) => {
+  if (!accountAddress || !pool?.id) {
+    return '';
+  }
+
+  return [
+    STAKING_PENDING_ACTIONS_STORAGE_PREFIX,
+    accountAddress.toLowerCase(),
+    pool.chain_id,
+    pool.id,
+  ].join(':');
+};
+
+const readStakingPendingActionsFromStorage = (
+  storageKey: string,
+  poolId?: string,
+  poolType?: StakingPool['type']
+): StakingPendingAction[] => {
+  if (!storageKey || !poolId || !poolType || typeof window === 'undefined') {
+    return [];
+  }
+
+  try {
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw) {
+      return [];
+    }
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      window.localStorage.removeItem(storageKey);
+      return [];
+    }
+
+    return parsed.filter((item) =>
+      isStoredPendingAction(item, poolId, poolType)
+    );
+  } catch {
+    return [];
+  }
+};
+
+const writeStakingPendingActionsToStorage = (
+  storageKey: string,
+  pendingActions: StakingPendingAction[]
+) => {
+  if (!storageKey || typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    const pendingOnly = pendingActions.filter(
+      (pending) => pending.status === 'pending'
+    );
+    if (!pendingOnly.length) {
+      window.localStorage.removeItem(storageKey);
+      return;
+    }
+
+    window.localStorage.setItem(storageKey, JSON.stringify(pendingOnly));
+  } catch {
+    // Ignore storage quota/security errors; the in-memory banner still works.
+  }
+};
 
 const safeBigInt = (value?: string | number | bigint | null) => {
   try {
@@ -147,12 +258,17 @@ export const useStakingPendingActions = ({
   );
   const processingRef = useRef(new Set<string>());
   const mountedRef = useRef(true);
+  const isRestoringPendingActionsRef = useRef(false);
   const pendingActionsRef = useRef(pendingActions);
   const positionSummaryRef = useRef(positionSummary);
   const refreshDetailAsyncRef = useRef(refreshDetailAsync);
   const refreshCurveAsyncRef = useRef(refreshCurveAsync);
   const refreshPositionAsyncRef = useRef(refreshPositionAsync);
   const onMintedUniv3TokenIdRef = useRef(onMintedUniv3TokenId);
+  const pendingStorageKey = getStakingPendingActionsStorageKey(
+    account?.address,
+    pool
+  );
 
   useEffect(() => {
     mountedRef.current = true;
@@ -185,10 +301,26 @@ export const useStakingPendingActions = ({
     onMintedUniv3TokenIdRef.current = onMintedUniv3TokenId;
   }, [onMintedUniv3TokenId]);
 
-  useEffect(() => {
-    setPendingActions([]);
+  useLayoutEffect(() => {
     processingRef.current.clear();
-  }, [account?.address, pool?.id]);
+    isRestoringPendingActionsRef.current = true;
+    setPendingActions(
+      readStakingPendingActionsFromStorage(
+        pendingStorageKey,
+        pool?.id,
+        pool?.type
+      )
+    );
+  }, [pendingStorageKey, pool?.id, pool?.type]);
+
+  useLayoutEffect(() => {
+    if (isRestoringPendingActionsRef.current) {
+      isRestoringPendingActionsRef.current = false;
+      return;
+    }
+
+    writeStakingPendingActionsToStorage(pendingStorageKey, pendingActions);
+  }, [pendingActions, pendingStorageKey]);
 
   const updatePendingActionStatus = useCallback(
     (id: string, status: StakingPendingActionStatus) => {

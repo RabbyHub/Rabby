@@ -188,7 +188,7 @@
         "rewardsWithCount": "Rewards ({{count}})",
         "priceRange": "Price Range",
         "noSuppliedAssets": "No supplied assets",
-        "noRewards": "No rewards"
+        "noRewards": "No rewards right now"
       },
       "actionModal": {
         "receive": "Receive",
