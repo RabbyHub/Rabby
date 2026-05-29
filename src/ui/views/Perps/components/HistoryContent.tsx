@@ -59,7 +59,8 @@ export const HistoryContent: React.FC<{
   return (
     <div className="flex-1 mt-20">
       <div className="flex items-center justify-between mb-8">
-        <div className="text-13 font-medium text-r-neutral-title-1">
+        <div className="text-15 font-medium text-r-neutral-title-1 flex items-center gap-4">
+          <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
           {t('page.perps.history')}
         </div>
         {historyData.length > 3 ? (

@@ -233,11 +233,6 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
                   item={currentAssetCtx}
                   className="text-[16px] font-medium"
                 />
-                <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
-                  {leverageType === 'cross'
-                    ? t('page.perps.cross')
-                    : t('page.perps.isolated')}
-                </span>
               </div>
               <div className="flex items-center gap-4">
                 <div
@@ -250,12 +245,11 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
                 >
                   {direction} {leverage}x
                 </div>
-                <DistanceRiskTag
-                  isLong={direction === 'Long'}
-                  percent={formatPerpsPct(
-                    calculateDistanceToLiquidation(liquidationPx, markPrice)
-                  )}
-                />
+                <span className="ml-4 text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-card2 text-r-neutral-foot">
+                  {leverageType === 'cross'
+                    ? t('page.perps.cross')
+                    : t('page.perps.isolated')}
+                </span>
               </div>
             </div>
             <div className="flex flex-col items-end gap-5">

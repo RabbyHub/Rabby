@@ -256,6 +256,7 @@ const SendToken = () => {
   }, [search]);
 
   const currentAccount = useCurrentAccount();
+  const currentAccountAddress = currentAccount?.address;
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const chainItem = useMemo(() => findChain({ enum: chain }), [chain]);
   const [currentToken, setCurrentToken] = useState<TokenItem | null>(
@@ -666,7 +667,7 @@ const SendToken = () => {
 
   const getParams = React.useCallback(
     ({ amount }: FormSendToken) => {
-      if (!currentToken) {
+      if (!currentToken || !currentAccountAddress) {
         return {};
       }
       const chain = findChain({
@@ -699,7 +700,7 @@ const SendToken = () => {
       ] as const;
       const params: Record<string, any> = {
         chainId: chain.id,
-        from: currentAccount!.address,
+        from: currentAccountAddress,
         to: currentToken.id,
         value: '0x0',
         data: abiCoder.encodeFunctionCall(dataInput[0], dataInput[1]),
@@ -717,7 +718,13 @@ const SendToken = () => {
 
       return params;
     },
-    [currentAccount, currentToken, isNativeToken, safeInfo?.nonce, toAddress]
+    [
+      currentAccountAddress,
+      currentToken,
+      isNativeToken,
+      safeInfo?.nonce,
+      toAddress,
+    ]
   );
 
   const fetchGasList = useCallback(async () => {
@@ -1020,9 +1027,9 @@ const SendToken = () => {
           wallet.addCacheHistoryData(
             `${chain.enum}-${params.data || '0x'}`,
             {
-              address: currentAccount!.address,
+              address: currentAccountAddress,
               chainId: findChainByEnum(chain.enum)?.id || 0,
-              from: currentAccount!.address,
+              from: currentAccountAddress,
               to: toAddress,
               token: currentToken,
               amount: Number(amount),
@@ -1172,9 +1179,9 @@ const SendToken = () => {
           wallet.addCacheHistoryData(
             `${chain.enum}-${params.data || '0x'}`,
             {
-              address: currentAccount!.address,
+              address: currentAccountAddress,
               chainId: findChainByEnum(chain.enum)?.id || 0,
-              from: currentAccount!.address,
+              from: currentAccountAddress,
               to: toAddress,
               token: currentToken,
               amount: Number(amount),
@@ -1224,7 +1231,7 @@ const SendToken = () => {
     chainTokenGasFees.gasLimit,
     amount,
     address,
-    currentAccount,
+    currentAccountAddress,
     currentToken,
     prefetch,
     prefetchDirectSendTx,

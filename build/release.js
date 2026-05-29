@@ -8,13 +8,8 @@ const PROJECT_ROOT = path.resolve(__dirname, '..');
 const args = process.argv.slice(2);
 const isYesMode = args.includes('--yes') || args.includes('-y');
 
-function updateManifestVersion(version, p) {
-  const manifestPath = path.resolve(
-    PROJECT_ROOT,
-    'src/manifest',
-    p,
-    'manifest.json'
-  );
+function updateManifestVersion(version, p, filename = 'manifest.json') {
+  const manifestPath = path.resolve(PROJECT_ROOT, 'src/manifest', p, filename);
   const manifest = fs.readJSONSync(manifestPath);
   manifest.version = version;
   fs.writeJSONSync(manifestPath, manifest, { spaces: 2 });
@@ -82,6 +77,7 @@ async function bundle() {
   const buildStr = isDebug ? 'build:debug' : 'build:pro';
 
   updateManifestVersion(version, 'chrome-mv3');
+  updateManifestVersion(version, 'chrome-mv3', 'manifest.dev.json');
   updateManifestVersion(version, 'chrome-mv2');
   updateManifestVersion(version, 'firefox-mv2');
   // shell.env['sourcemap'] = true;

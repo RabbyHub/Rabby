@@ -3280,10 +3280,30 @@
         "description": "Tất cả các vị thế mở của bạn sẽ được đóng tại giá thị trường."
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "Xác nhận hủy TẤT CẢ lệnh",
+        "cancelAllOrdersConfirmMessage": "Tất cả lệnh Limit của bạn sẽ bị hủy",
         "title": "Xác nhận hủy tất cả lệnh",
         "description": "Tất cả các lệnh đang mở của bạn sẽ bị hủy."
       },
+      "limitOrders": "Lệnh Limit",
+      "cancelAll": "Hủy tất cả",
+      "limitOrderDetail": {
+        "title": "Limit {{side}} {{pair}}",
+        "time": "Thời gian",
+        "size": "Kích thước",
+        "filled": "Đã khớp",
+        "currentPrice": "Giá hiện tại",
+        "limitPrice": "Giá Limit",
+        "marginUsage": "Sử dụng ký quỹ",
+        "cancelLimitOrder": "Hủy lệnh Limit",
+        "buy": "Mua",
+        "sell": "Bán"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Lệnh Limit đã bị hủy",
+        "cancelLimitOrdersSuccess": "{{count}} lệnh Limit đã bị hủy",
+        "cancelLimitOrderError": "Hủy lệnh Limit thất bại",
+        "limitOrderPlaced": "Limit {{direction}} {{coin}}: Kích thước {{size}} đặt tại ${{price}}",
         "deposit": "Nạp tiền thành công",
         "withdraw": "Rút tiền thành công",
         "success": "Thành công",
@@ -3564,6 +3584,7 @@
       "currentPrice": "Giá hiện tại",
       "crossMargin": "Gửi đa tài sản",
       "details": "Chi tiết",
+      "info": "Thông tin",
       "settings": "Cài đặt",
       "marginMode": "Chế độ Ký quỹ",
       "positionValue": "Giá trị vị thế",
@@ -4022,6 +4043,17 @@
         "totalSize": "Tổng kích thước vị thế"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "Mở vị thế {{coin}}",
+        "checkMarketOrder": "Kiểm tra lệnh Market",
+        "checkLimitOrder": "Kiểm tra lệnh Limit",
+        "orderType": "Loại lệnh",
+        "currentPrice": "Giá hiện tại",
+        "check": "Kiểm tra",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Giá Limit",
+        "mayExecuteImmediately": "Lệnh Limit này có thể được khớp ngay",
+        "setLimitOrderBtn": "Đặt lệnh Limit",
         "free": "Miễn phí",
         "newPosition": "Mở vị thế",
         "leverage": "đòn bẩy",
@@ -4043,6 +4075,16 @@
         "available": "Có sẵn",
         "rabbyFee": "Rabby Phí",
         "size": "Kích thước"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Đặt giá mua Limit",
+        "setLimitSellPrice": "Đặt giá bán Limit",
+        "mid": "Giá giữa",
+        "set": "Đặt",
+        "blockError": "Giá lệnh vượt quá giới hạn bảo vệ giá 10%.",
+        "warning": "Giá Limit cách giá thị trường 5%+",
+        "confirmTitle": "Kiểm tra giá Limit",
+        "confirmMessage": "Giá Limit cách giá thị trường 5%+"
       },
       "PerpsEditMarginPopup": {
         "margin": "Ký quỹ",
@@ -4097,6 +4139,8 @@
         "takeProfitWhenPriceBelow": "Chốt lời khi giá xuống dưới",
         "takeProfitExpectedPNL": "Chốt lời PNL dự kiến",
         "priceBelow": "Giá thấp hơn",
+        "whenPriceAbove": "Khi giá cao hơn",
+        "whenPriceBelow": "Khi giá thấp hơn",
         "stopLossTipsLongLiquidation": "Giá thấp hơn giá thanh lý ({{price}})",
         "takeProfitWhen": "Chốt lời khi",
         "stopLossWhenPriceAbove": "Dừng lỗ khi giá vượt quá",

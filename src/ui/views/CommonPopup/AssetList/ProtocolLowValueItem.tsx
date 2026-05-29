@@ -41,7 +41,7 @@ export const ProtocolLowValueItem: React.FC<Props> = ({
   return (
     <div
       className={clsx(
-        'flex justify-between border border-transparent items-center mt-8 bg-r-neutral-card1 rounded-[8px] px-16',
+        'flex justify-between border border-transparent items-center bg-r-neutral-card1 rounded-[8px] px-16',
         'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-10',
         'cursor-pointer',
         className
@@ -78,7 +78,10 @@ export const ProtocolLowValueItem: React.FC<Props> = ({
           setVisible(false);
         }}
         bodyStyle={{
-          padding: '20px 20px 0',
+          padding: '20px 20px 12px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
         }}
         isSupportDarkMode
       >

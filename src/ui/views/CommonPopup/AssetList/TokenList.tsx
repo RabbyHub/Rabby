@@ -56,16 +56,11 @@ export const HomeTokenList = ({ list, isSearch, isNoResults, lpTokenMode }) => {
   const hasLowValueList = !!lowValueList?.length;
 
   return (
-    <div>
-      <div>
-        <TokenTable
-          list={isSearch ? list : currentList}
-          EmptyComponent={<div></div>}
-        />
-        {!isSearch && hasList && hasLowValueList && (
-          <TokenLowValueItem list={lowValueList} className="h-[48px]" />
-        )}
-      </div>
+    <div className="empty:hidden">
+      <TokenTable list={isSearch ? list : currentList} EmptyComponent={<></>} />
+      {!isSearch && hasList && hasLowValueList && (
+        <TokenLowValueItem list={lowValueList} className="h-[48px]" />
+      )}
     </div>
   );
 };

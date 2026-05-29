@@ -281,3 +281,11 @@ export const SPOT_STABLE_COIN_NAME: Record<
 
 export const PERPS_MIN_SWAP_AMOUNT = 15;
 export const STABLECOIN_SLIPPAGE = 0.01;
+
+// =============== Limit order open ===============
+
+export type PerpsOpenOrderType = 'market' | 'limit';
+
+export const PERPS_LIMIT_PRICE_CONFIRM_PCT = 0.05;
+export const PERPS_LIMIT_PRICE_BLOCK_PCT = 0.1;
+export const PERPS_LIMIT_TIF_DEFAULT = 'Gtc' as const;

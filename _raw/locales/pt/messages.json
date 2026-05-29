@@ -3280,10 +3280,30 @@
         "title": "Confirme o fechamento de todas as posições"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "Confirmar cancelamento de TODAS as ordens",
+        "cancelAllOrdersConfirmMessage": "Todas as suas ordens Limit serão canceladas",
         "description": "Todas as suas ordens em aberto serão canceladas.",
         "title": "Confirmar: cancelar todas as ordens"
       },
+      "limitOrders": "Ordens Limit",
+      "cancelAll": "Cancelar tudo",
+      "limitOrderDetail": {
+        "title": "Limite {{side}} {{pair}}",
+        "time": "Hora",
+        "size": "Tamanho",
+        "filled": "Executado",
+        "currentPrice": "Preço atual",
+        "limitPrice": "Preço limite",
+        "marginUsage": "Uso de margem",
+        "cancelLimitOrder": "Cancelar ordem Limit",
+        "buy": "Comprar",
+        "sell": "Vender"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Ordem Limit cancelada",
+        "cancelLimitOrdersSuccess": "{{count}} ordens Limit canceladas",
+        "cancelLimitOrderError": "Falha ao cancelar a ordem Limit",
+        "limitOrderPlaced": "Limite {{direction}} {{coin}}: Tamanho {{size}} colocado a ${{price}}",
         "success": "Sucesso",
         "cancelOrderSuccess": "A ordem foi cancelada.",
         "orderCancelled": "Ordem cancelada",
@@ -3570,6 +3590,7 @@
       "marginMode": "Modo de Margem",
       "currentPrice": "Preço Atual",
       "details": "Detalhes",
+      "info": "Informações",
       "crossMargin": "Margem Cruzada",
       "positionValue": "Valor da Posição",
       "liquidationDistanceUp": "Subindo <bold>{{percent}}</bold> irá acionar a liquidação",
@@ -4022,6 +4043,17 @@
         "liquidationPriceTips": "O preço em que a sua posição é automaticamente liquidada pela exchange para evitar perdas adicionais quando a sua margem cai abaixo do nível de margem de manutenção."
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "Abrir posição em {{coin}}",
+        "checkMarketOrder": "Revisar ordem Market",
+        "checkLimitOrder": "Revisar ordem Limit",
+        "orderType": "Tipo de ordem",
+        "currentPrice": "Preço atual",
+        "check": "Revisar",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Preço limite",
+        "mayExecuteImmediately": "Esta ordem Limit pode ser executada imediatamente",
+        "setLimitOrderBtn": "Colocar ordem Limit",
         "insufficientBalance": "Saldo insuficiente",
         "available": "Disponível",
         "leverage": "Alavancagem",
@@ -4043,6 +4075,16 @@
         "stopLossWhenPriceAbove": "Stop Loss quando o preço estiver acima",
         "maxMargin": "A margem máxima é {{amount}}",
         "sizeTips": "O valor total ou a quantidade da sua operação é definido pela margem e pela alavancagem."
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Definir preço limite de compra",
+        "setLimitSellPrice": "Definir preço limite de venda",
+        "mid": "Preço médio",
+        "set": "Definir",
+        "blockError": "O preço da ordem excede o limite de proteção de preço de 10%.",
+        "warning": "O preço Limit difere mais de 5% do preço de mercado",
+        "confirmTitle": "Revisar preço Limit",
+        "confirmMessage": "O preço Limit difere mais de 5% do preço de mercado"
       },
       "PerpsEditMarginPopup": {
         "insufficientBalance": "Saldo insuficiente",
@@ -4084,6 +4126,8 @@
         "youGain": "Você ganha",
         "stopLossTipsShortLiquidation": "O preço está acima do preço de liquidação ({{price}})",
         "priceBelow": "Preço abaixo",
+        "whenPriceAbove": "Quando o preço estiver acima",
+        "whenPriceBelow": "Quando o preço estiver abaixo",
         "title": "Fechamento automático de posição",
         "currentPrice": "Preço atual:",
         "EntryAndCurrentPrice": "Entrada: ${{entryPrice}} Atual: ${{currentPrice}}",

@@ -71,7 +71,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   const [inputFocused, setInputFocused] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const inputRef = React.useRef<any>(null);
-  const [activeOption, setActiveOption] = React.useState<number | null>(null);
 
   const hasPrice = initTpOrSlPrice && Number(initTpOrSlPrice) > 0;
   const disableEdit = !size || !margin;
@@ -90,7 +89,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
       validatePriceInput(value, szDecimals)
     ) {
       setAutoClosePrice(value);
-      setActiveOption(null);
     }
   });
 
@@ -198,7 +196,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   ]);
 
   const handleQuickOptionPress = useMemoizedFn((pct: number) => {
-    setActiveOption(pct);
     const pctValue = pct / 100;
     const costPrice =
       type === 'openPosition' ? markPrice : entryPrice || markPrice;
@@ -228,12 +225,9 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     if (modalVisible) {
       if (initTpOrSlPrice) {
         setAutoClosePrice(initTpOrSlPrice);
-        setActiveOption(null);
       } else {
         if (type === 'openPosition') {
           handleQuickOptionPress(5);
-        } else {
-          setActiveOption(null);
         }
       }
       const timer = setTimeout(() => {
@@ -242,7 +236,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
       return () => clearTimeout(timer);
     } else {
       setAutoClosePrice('');
-      setActiveOption(null);
     }
   }, [modalVisible, initTpOrSlPrice, type]);
 
@@ -264,7 +257,6 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
       <div
         className={clsx(
           'inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer',
-          'bg-r-blue-light1',
           disableEdit && 'opacity-50 cursor-not-allowed'
         )}
         onClick={async () => {
@@ -349,22 +341,10 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
           </div>
 
           <div className="w-full">
-            <div className="text-15 font-medium px-4 text-rb-neutral-title-1 mb-8">
+            <div className="text-13 font-medium text-rb-neutral-title-1 mb-8">
               {actionType === 'tp'
-                ? direction === 'Long'
-                  ? t(
-                      'page.perpsDetail.PerpsAutoCloseModal.takeProfitWhenPriceAbove'
-                    )
-                  : t(
-                      'page.perpsDetail.PerpsAutoCloseModal.takeProfitWhenPriceBelow'
-                    )
-                : direction === 'Long'
-                ? t(
-                    'page.perpsDetail.PerpsAutoCloseModal.stopLossWhenPriceBelow'
-                  )
-                : t(
-                    'page.perpsDetail.PerpsAutoCloseModal.stopLossWhenPriceAbove'
-                  )}
+                ? t('page.perpsDetail.PerpsAutoCloseModal.takeProfit')
+                : t('page.perpsDetail.PerpsAutoCloseModal.stopLoss')}
             </div>
 
             {/* Quick Option Buttons */}
@@ -375,9 +355,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                   className={clsx(
                     'flex-1 h-[40px] flex items-center justify-center rounded-[6px] cursor-pointer text-[14px] font-medium',
                     'border border-solid',
-                    activeOption === option.value
-                      ? 'bg-r-blue-light1 border-rabby-blue-default text-r-blue-default'
-                      : 'bg-r-neutral-line border-transparent text-r-neutral-body hover:border-rabby-blue-default'
+                    'bg-r-neutral-line border-transparent text-r-neutral-body hover:border-rabby-blue-default'
                   )}
                   onClick={() => handleQuickOptionPress(option.value)}
                 >
@@ -387,21 +365,19 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
               ))}
             </div>
 
+            <div className="text-13 font-medium text-rb-neutral-title-1 mb-8">
+              {(actionType === 'tp' && direction === 'Long') ||
+              (actionType === 'sl' && direction === 'Short')
+                ? t('page.perpsDetail.PerpsAutoCloseModal.whenPriceAbove')
+                : t('page.perpsDetail.PerpsAutoCloseModal.whenPriceBelow')}
+            </div>
+
             <div
               className={clsx(
                 'bg-r-neutral-card1 rounded-[12px] p-12 border  border-transparent border-solid',
                 inputFocused && 'border-rabby-blue-default'
               )}
             >
-              {/* <div className="text-12 font-medium text-rb-neutral-secondary mb-4">
-                {direction === 'Long'
-                  ? actionType === 'tp'
-                    ? t('page.perpsDetail.PerpsAutoCloseModal.priceAbove')
-                    : t('page.perpsDetail.PerpsAutoCloseModal.priceBelow')
-                  : actionType === 'tp'
-                  ? t('page.perpsDetail.PerpsAutoCloseModal.priceBelow')
-                  : t('page.perpsDetail.PerpsAutoCloseModal.priceAbove')}
-              </div> */}
               <input
                 ref={inputRef}
                 type="text"

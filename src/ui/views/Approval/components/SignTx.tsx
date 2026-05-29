@@ -404,6 +404,7 @@ interface SignTxProps<TData extends any[] = any[]> {
       origin: string;
       icon: string;
       name: string;
+      isFromRabby?: boolean;
     };
     data: TData;
     isGnosis?: boolean;
@@ -697,7 +698,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   } = useMemo(() => {
     return normalizeTxParams(
       params.data[0],
-      origin !== INTERNAL_REQUEST_ORIGIN
+      !params.session.isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
     );
   }, [params.data]);
 

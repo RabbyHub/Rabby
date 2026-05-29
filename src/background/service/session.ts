@@ -17,6 +17,8 @@ export class Session {
 
   isFromDesktopDapp: boolean | undefined = false;
 
+  isFromRabby: boolean | undefined = false;
+
   pms: PortMessage[] = [];
 
   pushMessage(event, data) {

@@ -18,7 +18,11 @@ import { useTranslation } from 'react-i18next';
 import { LpTokenSwitch } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenSwitch';
 import { HomePerpsPositionList } from './HomePerpsPositionList';
 import { uniqBy } from 'lodash';
+import omit from 'lodash/omit';
 import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
+import { NftPreviewSection } from './NftPreviewSection';
+import type { NftPreviewItem } from './NftPreviewSection';
+import { useNFTCollections } from '@/ui/hooks/useNFTCollections';
 
 interface Props {
   className?: string;
@@ -42,6 +46,13 @@ export const AssetListContainer: React.FC<Props> = ({
   const { currentAccount } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
   }));
+  const {
+    collections: nftCollections,
+    isLoading: isNftLoading,
+  } = useNFTCollections(currentAccount?.address, {
+    preferCacheOnExists: true,
+    visible,
+  });
 
   const { setApps } = useCommonPopupView();
   const {
@@ -95,6 +106,28 @@ export const AssetListContainer: React.FC<Props> = ({
     }
     return combinedPortfolios;
   }, [portfolios, appPortfolios, selectChainId]);
+  const nftPreviewList = useMemo<NftPreviewItem[]>(() => {
+    const result: NftPreviewItem[] = [];
+
+    nftCollections
+      .filter((collection) => {
+        return !collection.is_hidden && collection.is_core;
+      })
+      .forEach((collection) => {
+        const baseCollection = omit(collection, 'nft_list');
+        collection.nft_list.forEach((nft) => {
+          result.push({
+            nft,
+            collection: baseCollection,
+          });
+        });
+      });
+
+    return result.sort(
+      (a, b) =>
+        (b?.collection?.credit_score || 0) - (a?.collection?.credit_score || 0)
+    );
+  }, [nftCollections]);
 
   const isEmptyAssets =
     !isTokensLoading &&
@@ -103,6 +136,8 @@ export const AssetListContainer: React.FC<Props> = ({
     !displayPortfolios?.length &&
     !isAppPortfoliosLoading &&
     !appPortfolios?.length &&
+    !isNftLoading &&
+    !nftPreviewList.length &&
     !search;
 
   React.useEffect(() => {
@@ -171,41 +206,54 @@ export const AssetListContainer: React.FC<Props> = ({
           />
         </div>
       </div>
-      {isTokensLoading || isSearching || (lpTokenMode && isAllTokenLoading) ? (
-        <TokenListSkeleton />
-      ) : (
-        <div className="mt-[12px]">
+      <div className="flex flex-col gap-24 mt-12">
+        {isTokensLoading ||
+        isSearching ||
+        (lpTokenMode && isAllTokenLoading) ? (
+          <TokenListSkeleton />
+        ) : (
           <HomeTokenList
             list={sortTokens}
             isSearch={!!search}
             lpTokenMode={lpTokenMode}
             isNoResults={isNoResults}
           />
-        </div>
-      )}
-
-      <div
-        style={{
-          display: visible ? 'block' : 'none',
-        }}
-        className="pt-[24px]"
-      >
-        {isPortfoliosLoading && isAppPortfoliosLoading ? (
-          <TokenListSkeleton />
-        ) : (
-          <>
-            {visible && !search ? (
-              <HomePerpsPositionList needFetchMarket />
-            ) : null}
-            <ProtocolList
-              removeProtocol={removeProtocol}
-              appIds={appIds}
-              isSearch={!!search}
-              list={filteredPortfolios}
-              className="mt-0"
-            />
-          </>
         )}
+
+        <div
+          className="empty:hidden"
+          style={{
+            display: visible ? 'block' : 'none',
+          }}
+        >
+          {isPortfoliosLoading && isAppPortfoliosLoading ? (
+            <TokenListSkeleton />
+          ) : (
+            <>
+              {visible && !search ? (
+                <HomePerpsPositionList needFetchMarket />
+              ) : null}
+              <ProtocolList
+                removeProtocol={removeProtocol}
+                appIds={appIds}
+                isSearch={!!search}
+                list={filteredPortfolios}
+                className="mt-0"
+              />
+            </>
+          )}
+        </div>
+        <div
+          style={{
+            display: visible && !search ? 'block' : 'none',
+          }}
+        >
+          <NftPreviewSection
+            className="cursor-pointer"
+            isLoading={isNftLoading}
+            list={nftPreviewList}
+          />
+        </div>
       </div>
     </div>
   );
