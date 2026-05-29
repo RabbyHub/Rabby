@@ -12,8 +12,8 @@ import {
 } from '../utils/pendingResolution';
 import type { StakingPositionSnapshot } from '../utils/pendingResolution';
 import {
+  getBurnedUniv3TokenId,
   getMintedUniv3TokenId,
-  hasBurnedUniv3TokenId,
 } from '../utils/univ3NftReceipt';
 
 export type StakingPendingActionKind = 'deposit' | 'withdraw' | 'claim';
@@ -282,15 +282,15 @@ export const useStakingPendingActions = ({
           }
         }
 
-        if (
-          pending.action === 'withdraw' &&
-          pending.poolType === 'univ3' &&
-          hasBurnedUniv3TokenId({
-            receipt,
-            accountAddress: account.address,
-            tokenId: pending.positionId,
-          })
-        ) {
+        const burnedUniv3TokenId =
+          pending.action === 'withdraw' && pending.poolType === 'univ3'
+            ? getBurnedUniv3TokenId({
+                receipt,
+                accountAddress: account.address,
+              })
+            : '';
+
+        if (burnedUniv3TokenId) {
           await Promise.all([
             refreshDetailAsyncRef.current().catch(() => undefined),
             refreshCurveAsyncRef.current?.().catch(() => undefined),

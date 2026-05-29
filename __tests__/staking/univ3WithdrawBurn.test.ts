@@ -12,6 +12,7 @@ import type {
 import { hasStakingPendingResolved } from '@/ui/views/Staking/utils/pendingResolution';
 import { isFullUniv3Withdraw } from '@/ui/views/Staking/utils/univ3Withdraw';
 import {
+  getBurnedUniv3TokenId,
   getMintedUniv3TokenId,
   hasBurnedUniv3TokenId,
 } from '@/ui/views/Staking/utils/univ3NftReceipt';
@@ -22,6 +23,7 @@ const BURNED_TOKEN_ID = '6869846';
 const POSITION_LIQUIDITY = '1042545038158242799';
 const USER = '0x000000000000000000000000000000000000dead';
 const OTHER_USER = '0x000000000000000000000000000000000000beef';
+const OTHER_NFT_CONTRACT = '0x2222222222222222222222222222222222222222';
 const MAX_UINT128 = 2n ** 128n - 1n;
 const ZERO_ADDRESS_TOPIC =
   '0x0000000000000000000000000000000000000000000000000000000000000000';
@@ -130,14 +132,17 @@ const tokenTopic = (tokenId: string | bigint) =>
   `0x${BigInt(tokenId).toString(16).padStart(64, '0')}`;
 
 const transferLog = ({
+  address = univ3Entry.nonfungiblePositionManager,
   from,
   to,
   tokenId,
 }: {
+  address?: string;
   from: string;
   to: string;
   tokenId: string;
 }) => ({
+  address,
   topics: [
     ERC721_TRANSFER_TOPIC,
     from === '0x0' ? ZERO_ADDRESS_TOPIC : addressTopic(from),
@@ -148,6 +153,7 @@ const transferLog = ({
 
 const receiptWithLogs = (...logs: Array<{ topics: string[] }>) => ({
   status: '0x1',
+  to: univ3Entry.nonfungiblePositionManager,
   logs,
 });
 
@@ -268,6 +274,12 @@ describe('Univ3 withdraw burn handling', () => {
     );
 
     expect(
+      getBurnedUniv3TokenId({
+        receipt,
+        accountAddress: USER,
+      })
+    ).toBe(BURNED_TOKEN_ID);
+    expect(
       hasBurnedUniv3TokenId({
         receipt,
         accountAddress: USER,
@@ -296,6 +308,52 @@ describe('Univ3 withdraw burn handling', () => {
     ).toBe(false);
   });
 
+  it('detects a V3 burn receipt even when pending has no tokenId', () => {
+    const receipt = receiptWithLogs(
+      transferLog({
+        from: USER,
+        to: '0x0',
+        tokenId: BURNED_TOKEN_ID,
+      })
+    );
+
+    expect(
+      getBurnedUniv3TokenId({
+        receipt,
+        accountAddress: USER,
+      })
+    ).toBe(BURNED_TOKEN_ID);
+  });
+
+  it('does not detect burns from other users or other NFT contracts', () => {
+    expect(
+      getBurnedUniv3TokenId({
+        receipt: receiptWithLogs(
+          transferLog({
+            from: OTHER_USER,
+            to: '0x0',
+            tokenId: BURNED_TOKEN_ID,
+          })
+        ),
+        accountAddress: USER,
+      })
+    ).toBe('');
+
+    expect(
+      getBurnedUniv3TokenId({
+        receipt: receiptWithLogs(
+          transferLog({
+            address: OTHER_NFT_CONTRACT,
+            from: USER,
+            to: '0x0',
+            tokenId: BURNED_TOKEN_ID,
+          })
+        ),
+        accountAddress: USER,
+      })
+    ).toBe('');
+  });
+
   it('does not treat a V3 NFT mint log as a burn log', () => {
     const receipt = receiptWithLogs(
       transferLog({
@@ -306,6 +364,12 @@ describe('Univ3 withdraw burn handling', () => {
     );
 
     expect(getMintedUniv3TokenId(receipt, USER)).toBe(TOKEN_ID);
+    expect(
+      getBurnedUniv3TokenId({
+        receipt,
+        accountAddress: USER,
+      })
+    ).toBe('');
     expect(
       hasBurnedUniv3TokenId({
         receipt,
