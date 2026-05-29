@@ -425,6 +425,7 @@ body.dark .staking-lp-action-popup {
 
 .staking-lp-action-footer {
   flex-shrink: 0;
+  position: relative;
   width: 400px;
   padding: 24px 20px 20px;
   background: var(--staking-action-popup-bg);
@@ -638,8 +639,8 @@ body.dark .staking-lp-action-popup {
   gap: 8px;
   padding: 12px;
   border-radius: 8px;
-  background: var(--staking-action-control-bg);
-  color: var(--r-neutral-foot);
+  background: var(--rb-neutral-bg-gray, #f6f7f7);
+  color: var(--r-neutral-body);
   font-size: 13px;
   line-height: 16px;
   font-weight: 400;
@@ -650,7 +651,7 @@ body.dark .staking-lp-action-popup {
   height: 16px;
   flex-shrink: 0;
   margin-top: 2px;
-  color: var(--r-neutral-foot);
+  color: var(--r-neutral-body);
 }
 
 .staking-lp-info {
@@ -817,10 +818,17 @@ body.dark .staking-lp-action-popup {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-bottom: 4px;
+}
+
+.staking-lp-footer-messages.has-price-confirm {
+  margin-bottom: 8px;
 }
 
 .staking-lp-error {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  width: 360px;
   min-height: 16px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -837,7 +845,7 @@ body.dark .staking-lp-action-popup {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  color: var(--r-neutral-foot);
+  color: var(--r-neutral-body);
   font-size: 13px;
   line-height: 16px;
 }
@@ -858,7 +866,7 @@ body.dark .staking-lp-action-popup {
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 1px solid var(--r-neutral-line);
+  border: 1px solid var(--r-neutral-body);
   border-radius: 4px;
   background: transparent;
 }

@@ -663,7 +663,12 @@ export const LpFooterMessages = ({
   }
 
   return (
-    <div className="staking-lp-footer-messages">
+    <div
+      className={clsx(
+        'staking-lp-footer-messages',
+        needsPriceConfirm && 'has-price-confirm'
+      )}
+    >
       {footerError ? (
         <div className="staking-lp-error" title={footerError}>
           {footerError}
