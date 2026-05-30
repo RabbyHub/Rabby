@@ -2262,7 +2262,7 @@
         "maxPay": "Paiement maximum"
       },
       "batchRevokePermit2": {
-        "title": "Batch Revoke Permit2 Approval\n\n翻译：Révoquer par lot l'approbation Permit2"
+        "title": "Révocation groupée de l'approbation Permit2"
       },
       "revokePermit": {
         "title": "Révoquer l'approbation du token de permit"
@@ -3076,7 +3076,7 @@
       "depositSubmitted": "Dépôt soumis",
       "claimFreeGas": "Réclamer {{usdValue}} de gaz gratuit",
       "depositFailed": "Échec du dépôt",
-      "lowBalance": "Vous n'avez pas assez de gaz. Déposez du gaz pour garantir que les futures transactions se dérouleront sans accroc.",
+      "lowBalance": "Vous n'avez pas assez de gaz (＜$1.00). Déposez du gaz pour garantir le bon déroulement des transactions futures.",
       "gasBalance": "Solde de gaz",
       "loginSuccess": "Connexion réussie",
       "loginFailed": "Échec de la connexion"
@@ -3612,10 +3612,30 @@
         "title": "Confirmer la fermeture de toutes les positions"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "Confirmer l’annulation de TOUS les ordres",
+        "cancelAllOrdersConfirmMessage": "Tous vos ordres limite seront annulés",
         "description": "Tous vos ordres ouverts seront annulés.",
         "title": "Confirmer l'annulation de tous les ordres"
       },
+      "limitOrders": "Ordres limite",
+      "cancelAll": "Tout annuler",
+      "limitOrderDetail": {
+        "title": "Limite {{side}} {{pair}}",
+        "time": "Heure",
+        "size": "Taille",
+        "filled": "Exécuté",
+        "currentPrice": "Prix actuel",
+        "limitPrice": "Prix limite",
+        "marginUsage": "Utilisation de marge",
+        "cancelLimitOrder": "Annuler l’ordre limite",
+        "buy": "Acheter",
+        "sell": "Vendre"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Ordre limite annulé",
+        "cancelLimitOrdersSuccess": "{{count}} ordres limite annulés",
+        "cancelLimitOrderError": "Échec de l’annulation de l’ordre limite",
+        "limitOrderPlaced": "Limite {{direction}} {{coin}} : Taille {{size}} placée à ${{price}}",
         "cancelOrderSuccess": "L'ordre a été annulé",
         "success": "Succès",
         "depositTip": "{{amount}} USDC déposé",
@@ -3797,6 +3817,10 @@
         "hasPosition": "Position",
         "openPosition": "Position ouverte"
       },
+      "categories": {
+        "favorite": "Favoris",
+        "topVolume": "Top volume"
+      },
       "invitePopup": {
         "title": "Économisez sur les frais Hyperliquid",
         "activateFailed": "Échoué",
@@ -3897,6 +3921,7 @@
       "liquidationDistanceUp": "Augmenter de <bold>{{percent}}</bold> déclenchera la liquidation",
       "isolatedMargin": "Marge Isolée",
       "details": "Détails",
+      "info": "Infos",
       "positionValue": "Valeur de la position",
       "cannotChangeMarginModeWithOpenPositions": "Impossible de changer le mode de marge avec des positions ouvertes.",
       "isolatedMarginDesc": "Chaque position utilise sa propre marge. Les pertes sont limitées à cette position, mais elle peut être liquidée plus facilement.",
@@ -4350,6 +4375,17 @@
         "addSize": "Ajouter la taille de la position"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "Ouvrir une position {{coin}}",
+        "checkMarketOrder": "Vérifier l’ordre Market",
+        "checkLimitOrder": "Vérifier l’ordre Limit",
+        "orderType": "Type d’ordre",
+        "currentPrice": "Prix actuel",
+        "check": "Vérifier",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Prix limite",
+        "mayExecuteImmediately": "Cet ordre limite peut être exécuté immédiatement",
+        "setLimitOrderBtn": "Placer l’ordre limite",
         "insufficientBalance": "Solde insuffisant",
         "available": "Disponible",
         "maximumOrderSize": "La taille maximale de l'ordre est de {{amount}}.",
@@ -4371,6 +4407,16 @@
         "sizeTips": "La valeur totale ou la taille de votre position, déterminée par la marge et l’effet de levier.",
         "stopLossWhenPriceBelow": "Stop Loss lorsque le prix est inférieur à",
         "long": "Position longue"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Définir le prix limite d’achat",
+        "setLimitSellPrice": "Définir le prix limite de vente",
+        "mid": "Prix médian",
+        "set": "Définir",
+        "blockError": "Le prix de l’ordre dépasse la limite de protection de prix de 10 %.",
+        "warning": "Le prix limite s’écarte de plus de 5 % du prix du marché",
+        "confirmTitle": "Vérifier le prix limite",
+        "confirmMessage": "Le prix limite s’écarte de plus de 5 % du prix du marché"
       },
       "PerpsEditMarginPopup": {
         "insufficientBalance": "Solde insuffisant",
@@ -4414,6 +4460,8 @@
         "priceAbove": "Prix au-dessus",
         "cancel": "Annuler",
         "priceBelow": "Prix en dessous",
+        "whenPriceAbove": "Lorsque le prix est au-dessus",
+        "whenPriceBelow": "Lorsque le prix est en dessous",
         "takeProfitTipsLong": "Le prix de prise de profit doit être supérieur au prix actuel.",
         "takeProfit": "Prise de bénéfices",
         "stopLossTipsShortLiquidation": "Le prix est supérieur au prix de liquidation ({{price}})",

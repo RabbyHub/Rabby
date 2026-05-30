@@ -43,6 +43,18 @@ export function useSwitchNetTab(options?: { hideTestnetTab?: boolean }) {
   };
 }
 
+export function usePureNetSwitch() {
+  const [selectedTab, setSelectedTab] = useState<OptionType['key']>('mainnet');
+  const onTabChange = useCallback((key: OptionType['key']) => {
+    setSelectedTab(key);
+  }, []);
+
+  return {
+    selectedTab: selectedTab,
+    onTabChange,
+  };
+}
+
 export function useSwitchOptions() {
   const { t } = useTranslation();
 

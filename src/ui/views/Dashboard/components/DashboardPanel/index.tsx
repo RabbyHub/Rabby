@@ -39,10 +39,8 @@ import {
   RcIconApprovalsCC,
   RcIconBridgeCC,
   RcIconDappsCC,
-  RcIconGasAccountCC,
   RcIconManageCC,
   RcIconMobileSyncCC,
-  RcIconNftCC,
   RcIconPerpsCC,
   RcIconPointsCC,
   RcIconReceiveCC,
@@ -52,15 +50,11 @@ import {
   RcIconSwapCC,
   RcIconTransactionsCC,
   RcIconConvertDustCC,
+  RcIconStakingCC,
 } from 'ui/assets/dashboard/panel';
 
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
-import {
-  useGasAccountInfo,
-  useGasAccountInfoV2,
-  useGasAccountLogin,
-} from '@/ui/views/GasAccount/hooks';
 import { useMemoizedFn, useMount, useScroll } from 'ahooks';
 import { isEqual } from 'lodash';
 import {
@@ -79,6 +73,12 @@ import { getOriginFromUrl } from '@/utils';
 import BigNumber from 'bignumber.js';
 
 export const DragOverlayContext = createContext(false);
+
+const SCROLLBAR_TRACK_HEIGHT = 80;
+const SCROLLBAR_THUMB_HEIGHT = 50;
+const SCROLLBAR_THUMB_MAX_OFFSET =
+  SCROLLBAR_TRACK_HEIGHT - SCROLLBAR_THUMB_HEIGHT;
+const SCROLLBAR_HIT_AREA_WIDTH = 13;
 
 const GlobalStyle = createGlobalStyle`
   .rabby-dashboard-panel-container {
@@ -375,105 +375,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     isFullscreen?: boolean;
   };
 
-  const pendingHardwareAccount = useRabbySelector(
-    (state) => state.gasAccount.pendingHardwareAccount
-  );
-
   const IconPerps = RcIconPerpsCC;
-
-  const giftUsdValue = useRabbySelector((s) => s.gift.giftUsdValue);
-  const hasClaimedGift = useRabbySelector((s) => s.gift.hasClaimedGift);
-  const hasGiftEligibility = useMemo(() => {
-    return giftUsdValue > 0 && !hasClaimedGift;
-  }, [giftUsdValue, hasClaimedGift]);
-
-  const { value: gasAccount, loading: gasAccountLoading } = useGasAccountInfo();
-  const { isLogin: isGasAccountLogin } = useGasAccountLogin({
-    value: gasAccount,
-    loading: gasAccountLoading,
-  });
-  const {
-    value: pendingHardwareGasAccountInfo,
-    loading: pendingGasLoading,
-  } = useGasAccountInfoV2({
-    address: pendingHardwareAccount?.address,
-  });
-
-  const gasAccountBalance = gasAccount?.account?.balance || 0;
-  const pendingHardwareGasBalance =
-    pendingHardwareGasAccountInfo?.account?.balance || 0;
-  const visibleGasAccountBalance = Number(
-    isGasAccountLogin
-      ? gasAccountBalance
-      : pendingHardwareAccount
-      ? pendingHardwareGasBalance
-      : 0
-  );
-  const isLowGasAccountBalance = visibleGasAccountBalance < 0.1;
-
-  const gasAccountGiftBadgeNode = useMemo<React.ReactNode>(() => {
-    if (!hasGiftEligibility || isGasAccountLogin || pendingHardwareAccount) {
-      return null;
-    }
-
-    return (
-      <div className="absolute top-[6px] right-[6px]">
-        <div
-          className={clsx(
-            'text-r-green-default text-[10px] leading-[12px] font-medium',
-            'flex items-center px-[3px] py-[2px] rounded-[4px] bg-r-green-light'
-          )}
-        >
-          <RcIconGift viewBox="0 0 14 14" />
-        </div>
-      </div>
-    );
-  }, [
-    giftUsdValue,
-    hasGiftEligibility,
-    isGasAccountLogin,
-    pendingHardwareAccount,
-  ]);
-
-  const gasAccountSubContentNode = useMemo<React.ReactNode>(() => {
-    const balanceNode =
-      (gasAccountLoading && isGasAccountLogin) ||
-      (pendingGasLoading && pendingHardwareAccount?.address) ? (
-        <div className="absolute bottom-[6px] text-[11px] font-medium">
-          <Skeleton.Button
-            active={true}
-            className="h-[10px] block rounded-[2px]"
-            style={{ width: 42 }}
-          />
-        </div>
-      ) : (
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
-            isLowGasAccountBalance
-              ? 'text-r-orange-default'
-              : 'text-r-neutral-foot'
-          )}
-        >
-          {formatUsdValue(visibleGasAccountBalance || 0)}
-        </div>
-      );
-
-    return (
-      <>
-        {gasAccountGiftBadgeNode}
-        {gasAccountGiftBadgeNode ? null : balanceNode}
-      </>
-    );
-  }, [
-    gasAccountGiftBadgeNode,
-    gasAccountLoading,
-    isGasAccountLogin,
-    isLowGasAccountBalance,
-    pendingGasLoading,
-    pendingHardwareAccount?.address,
-    visibleGasAccountBalance,
-  ]);
 
   const perpsId = useRabbySelector((s) => s.innerDappFrame.perps);
 
@@ -523,19 +425,16 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           </div>
         );
       }
-      if (Number(availableBalance) > 0) {
-        return (
-          <div
-            className={clsx(
-              'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-            )}
-          >
-            {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
-          </div>
-        );
-      }
+      return (
+        <div
+          className={clsx(
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+          )}
+        >
+          {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
+        </div>
+      );
     }
-    return null;
   }, [
     perpsId,
     perpsFetching,
@@ -615,17 +514,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       content: t('page.dashboard.home.panel.settings'),
       onClick: onSettingClick,
     } as IPanelItem,
-    nft: {
-      icon: RcIconNftCC,
-      eventKey: 'NFT',
-      content: t('page.dashboard.home.panel.nft'),
-      onClick: async () => {
-        // history.push('/nft');
-        await wallet.openInDesktop('/desktop/profile/nft');
-        window.close();
-      },
-      isFullscreen: true,
-    } as IPanelItem,
     ecology: {
       icon: RcIconEco,
       eventKey: 'Ecology',
@@ -634,15 +522,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         setIsShowEcologyModal(true);
       },
     } as IPanelItem,
-    gasAccount: {
-      icon: RcIconGasAccountCC,
-      eventKey: 'GasAccount',
-      content: t('page.gasAccount.gasDeposit'),
-      onClick: () => {
-        history.push('/gas-account');
-      },
-      subContent: gasAccountSubContentNode,
-    } as IPanelItem,
+
     points: {
       icon: RcIconPointsCC,
       eventKey: 'Rabby Points',
@@ -709,6 +589,14 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       },
       isFullscreen: true,
     } as IPanelItem,
+    staking: {
+      icon: RcIconStakingCC,
+      eventKey: 'Staking',
+      content: t('page.dashboard.home.panel.staking'),
+      onClick: () => {
+        history.push('/staking');
+      },
+    } as IPanelItem,
   };
 
   const defaultPanelKeys = useMemo<(keyof typeof panelItems)[]>(() => {
@@ -722,11 +610,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'perps',
       'points',
       'mobile',
-      'nft',
-      'gasAccount',
-      // 'searchDapp',
       'dapps',
       'convertDust',
+      'staking',
     ];
   }, []);
 
@@ -812,14 +698,114 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   }, [activeId, panelItems]);
 
   const ref = useRef<HTMLDivElement | null>(null);
+  const scrollbarTrackRef = useRef<HTMLDivElement | null>(null);
+  const scrollbarThumbRef = useRef<HTMLDivElement | null>(null);
+  const scrollbarDragOffsetRef = useRef(SCROLLBAR_THUMB_HEIGHT / 2);
+  const isScrollbarDraggingRef = useRef(false);
+  const [isScrollbarDragging, setIsScrollbarDragging] = useState(false);
   const scroll = useScroll(ref);
   const scrollRatio = useMemo(() => {
     const top = scroll?.top ?? 0;
-    const height = ref.current?.getBoundingClientRect()?.height ?? 0;
-    const scrollHeight = ref.current?.scrollHeight ?? 440;
-    const ratio = top / (scrollHeight - height);
-    return ratio > 1 ? 1 : ratio;
+    const height = ref.current?.clientHeight ?? 0;
+    const scrollHeight = ref.current?.scrollHeight ?? 0;
+    const maxScrollTop = scrollHeight - height;
+
+    if (maxScrollTop <= 0) {
+      return 0;
+    }
+
+    const ratio = top / maxScrollTop;
+    return Math.min(Math.max(ratio, 0), 1);
   }, [scroll?.top]);
+
+  const scrollPanelFromScrollbar = useMemoizedFn((clientY: number) => {
+    const scrollContainer = ref.current;
+    const track = scrollbarTrackRef.current;
+
+    if (!scrollContainer || !track) {
+      return;
+    }
+
+    const maxScrollTop =
+      scrollContainer.scrollHeight - scrollContainer.clientHeight;
+
+    if (maxScrollTop <= 0 || SCROLLBAR_THUMB_MAX_OFFSET <= 0) {
+      return;
+    }
+
+    const trackTop = track.getBoundingClientRect().top;
+    const nextThumbOffset = Math.min(
+      Math.max(clientY - trackTop - scrollbarDragOffsetRef.current, 0),
+      SCROLLBAR_THUMB_MAX_OFFSET
+    );
+
+    scrollContainer.scrollTop =
+      (nextThumbOffset / SCROLLBAR_THUMB_MAX_OFFSET) * maxScrollTop;
+  });
+
+  const handleScrollbarPointerDown = useMemoizedFn(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const scrollContainer = ref.current;
+      const track = scrollbarTrackRef.current;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      if (
+        !scrollContainer ||
+        !track ||
+        scrollContainer.scrollHeight <= scrollContainer.clientHeight
+      ) {
+        return;
+      }
+
+      const trackTop = track.getBoundingClientRect().top;
+      const isThumbTarget =
+        scrollbarThumbRef.current?.contains(event.target as Node) ?? false;
+
+      if (isThumbTarget) {
+        const currentThumbOffset = scrollRatio * SCROLLBAR_THUMB_MAX_OFFSET;
+        scrollbarDragOffsetRef.current = Math.min(
+          Math.max(event.clientY - trackTop - currentThumbOffset, 0),
+          SCROLLBAR_THUMB_HEIGHT
+        );
+      } else {
+        scrollbarDragOffsetRef.current = SCROLLBAR_THUMB_HEIGHT / 2;
+      }
+
+      isScrollbarDraggingRef.current = true;
+      setIsScrollbarDragging(true);
+      event.currentTarget.setPointerCapture(event.pointerId);
+      scrollPanelFromScrollbar(event.clientY);
+    }
+  );
+
+  const handleScrollbarPointerMove = useMemoizedFn(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!isScrollbarDraggingRef.current) {
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+      scrollPanelFromScrollbar(event.clientY);
+    }
+  );
+
+  const handleScrollbarPointerEnd = useMemoizedFn(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (!isScrollbarDraggingRef.current) {
+        return;
+      }
+
+      isScrollbarDraggingRef.current = false;
+      setIsScrollbarDragging(false);
+
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+    }
+  );
 
   const { isDarkTheme } = useThemeMode();
 
@@ -969,15 +955,39 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
           </DndContext>
         </div>
       </div>
-      <div className="absolute right-[8px] top-[50%] translate-y-[-50%]">
-        <div className="w-[3px] h-[80px] rounded-full relative">
+      <div className="absolute right-[3px] top-[50%] translate-y-[-50%] h-[92px] w-[13px]">
+        <div
+          ref={scrollbarTrackRef}
+          className={clsx(
+            'absolute right-0 top-[6px] h-[80px] cursor-pointer select-none',
+            isScrollbarDragging && 'cursor-grabbing'
+          )}
+          style={{
+            touchAction: 'none',
+            width: SCROLLBAR_HIT_AREA_WIDTH,
+          }}
+          onPointerDown={handleScrollbarPointerDown}
+          onPointerMove={handleScrollbarPointerMove}
+          onPointerUp={handleScrollbarPointerEnd}
+          onPointerCancel={handleScrollbarPointerEnd}
+          onLostPointerCapture={() => {
+            isScrollbarDraggingRef.current = false;
+            setIsScrollbarDragging(false);
+          }}
+        >
           <div
-            className="w-[3px] h-[50px] bg-r-blue-default rounded-full relative z-10"
+            ref={scrollbarThumbRef}
+            className={clsx(
+              'absolute right-[5px] top-0 z-10 h-[50px] w-[3px] rounded-full bg-r-blue-default',
+              isScrollbarDragging ? 'cursor-grabbing' : 'cursor-grab'
+            )}
             style={{
-              transform: `translateY(${scrollRatio * 30}px)`,
+              transform: `translateY(${
+                scrollRatio * SCROLLBAR_THUMB_MAX_OFFSET
+              }px)`,
             }}
           ></div>
-          <div className="rounded-full absolute top-0 left-0 right-0 bottom-0 bg-r-blue-disable opacity-50"></div>
+          <div className="absolute bottom-0 right-[5px] top-0 w-[3px] rounded-full bg-r-blue-disable opacity-50"></div>
         </div>
       </div>
 

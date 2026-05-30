@@ -28,6 +28,9 @@ import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.s
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import './resizable-panels.css';
 import { useTranslation } from 'react-i18next';
+import { useMount } from 'ahooks';
+import { reportWebPageView } from '@/ui/utils/ga-event';
+import { useLocation } from 'react-router-dom';
 
 const Wrap = styled.div`
   width: 100%;
@@ -71,6 +74,11 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
     openPerpsPopup,
   } = usePerpsPopupNav();
   const { handleEnableUnifiedAccount } = usePerpsActions();
+
+  const location = useLocation();
+  useMount(() => {
+    reportWebPageView(location.pathname);
+  });
 
   return (
     <>

@@ -2747,7 +2747,7 @@
       "depositSubmitted": "Depósito enviado",
       "claimFreeGas": "Reclamar {{usdValue}} de gas gratis",
       "depositFailed": "Depósito fallido",
-      "lowBalance": "No tienes suficiente gas. Deposita gas para asegurar que las transacciones futuras transcurran sin problemas.",
+      "lowBalance": "No tienes suficiente gas (＜$1.00). Deposita gas para asegurar que las transacciones futuras se realicen sin problemas.",
       "gasBalance": "Saldo de gas",
       "loginSuccess": "Inicio de sesión exitoso",
       "loginFailed": "Inicio de sesión fallido"
@@ -3283,10 +3283,30 @@
         "description": "Todas tus posiciones abiertas se cerrarán al precio de mercado."
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "Confirmar cancelación de TODAS las órdenes",
+        "cancelAllOrdersConfirmMessage": "Todas tus órdenes Limit serán canceladas",
         "description": "Todas tus órdenes abiertas serán canceladas.",
         "title": "Confirmar la cancelación de todas las órdenes"
       },
+      "limitOrders": "Órdenes Limit",
+      "cancelAll": "Cancelar todas",
+      "limitOrderDetail": {
+        "title": "Limit {{side}} {{pair}}",
+        "time": "Hora",
+        "size": "Tamaño",
+        "filled": "Ejecutado",
+        "currentPrice": "Precio actual",
+        "limitPrice": "Precio límite",
+        "marginUsage": "Uso de margen",
+        "cancelLimitOrder": "Cancelar orden Limit",
+        "buy": "Comprar",
+        "sell": "Vender"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Orden Limit cancelada",
+        "cancelLimitOrdersSuccess": "{{count}} órdenes Limit canceladas",
+        "cancelLimitOrderError": "No se pudo cancelar la orden Limit",
+        "limitOrderPlaced": "Limit {{direction}} {{coin}}: Tamaño {{size}} colocado a ${{price}}",
         "marginUpdated": "Margen actualizado",
         "success": "Éxito",
         "closeAllPositionsSuccess": "Todas las posiciones se han cerrado con éxito.",
@@ -3468,6 +3488,10 @@
         "onePosition": "1 Posición",
         "searchPerps": "Buscar contratos perpetuos"
       },
+      "categories": {
+        "favorite": "Favoritos",
+        "topVolume": "Mayor volumen"
+      },
       "invitePopup": {
         "activateNow": "Activar ahora",
         "activateFailed": "Fallido",
@@ -3563,6 +3587,7 @@
       "crossMargin": "Margen cruzado",
       "unrealizedPnl": "PNL no realizado",
       "details": "Detalles",
+      "info": "Información",
       "currentPrice": "Precio Actual",
       "settings": "Configuraciones",
       "marginMode": "Modo de Margen",
@@ -4021,6 +4046,17 @@
         "liquidationPriceTips": "El precio al que tu posición se liquida automáticamente en la bolsa para evitar pérdidas adicionales cuando tu margen cae por debajo del nivel de margen de mantenimiento."
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "Abrir posición de {{coin}}",
+        "checkMarketOrder": "Revisar orden Market",
+        "checkLimitOrder": "Revisar orden Limit",
+        "orderType": "Tipo de orden",
+        "currentPrice": "Precio actual",
+        "check": "Revisar",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Precio límite",
+        "mayExecuteImmediately": "Esta orden Limit puede ejecutarse de inmediato",
+        "setLimitOrderBtn": "Colocar orden Limit",
         "available": "Disponible",
         "maximumOrderSize": "El tamaño máximo de la orden es {{amount}}.",
         "providerFee": "Comisión de Hyperliquid",
@@ -4042,6 +4078,16 @@
         "takeProfitWhenPriceAbove": "Tomar ganancia cuando el precio supere",
         "sizeTips": "El valor total o la cantidad de tu operación, determinado por el margen y el apalancamiento.",
         "stopLossWhenPriceAbove": "Orden de stop loss cuando el precio esté por encima"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Establecer precio de compra Limit",
+        "setLimitSellPrice": "Establecer precio de venta Limit",
+        "mid": "Precio medio",
+        "set": "Aplicar",
+        "blockError": "El precio de la orden supera el límite de protección de precio del 10%.",
+        "warning": "El precio Limit difiere en más del 5% del precio de mercado",
+        "confirmTitle": "Revisar precio Limit",
+        "confirmMessage": "El precio Limit difiere en más del 5% del precio de mercado"
       },
       "PerpsEditMarginPopup": {
         "insufficientBalance": "Saldo insuficiente",
@@ -4089,6 +4135,8 @@
         "title": "Cierre automático de la posición",
         "stopLossTipsShortLiquidation": "El precio es mayor que el precio de liquidación ({{price}})",
         "priceBelow": "Precio por debajo",
+        "whenPriceAbove": "Cuando el precio esté por encima",
+        "whenPriceBelow": "Cuando el precio esté por debajo",
         "youLoss": "¡Perdiste!",
         "EntryAndCurrentPrice": "Precio de entrada: ${{entryPrice}} Precio actual: ${{currentPrice}}",
         "takeProfitWhenPriceAbove": "Tomar ganancia cuando el precio esté por encima",

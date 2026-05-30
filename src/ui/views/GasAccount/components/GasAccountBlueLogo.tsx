@@ -13,7 +13,7 @@ export const GasAccountBlueLogo = (
       {...props}
       className={clsx('relative overflow-visible', props.className)}
     >
-      <RcIconGasAccountBlue className="absolute left-1/2 top-1/2 h-[65px] w-[92px] -translate-x-1/2 -translate-y-1/2" />
+      <RcIconGasAccountBlue className="absolute left-1/2 top-1/2 h-[54px] w-[92px] -translate-x-1/2 -translate-y-1/2" />
     </div>
   );
 };

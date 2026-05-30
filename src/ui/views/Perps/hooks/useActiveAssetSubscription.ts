@@ -4,6 +4,7 @@ import {
   WsActiveAssetData,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
+import { writeLeverageToCache } from './useActiveAssetDataCache';
 
 export const useActiveAssetSubscription = (coin: string, address?: string) => {
   const [activeAssetCtx, setActiveAssetCtx] = useState<
@@ -33,6 +34,9 @@ export const useActiveAssetSubscription = (coin: string, address?: string) => {
       address,
       (data) => {
         setActiveAssetData(data);
+        if (data?.leverage) {
+          writeLeverageToCache(coin, address, data.leverage);
+        }
       }
     );
     return () => {

@@ -476,7 +476,7 @@
         "customRPC": "Özel RPC kullanıldığında desteklenmez",
         "loginTips": "GasAccount girişini tamamlamak için bu işlem iptal edilecektir. Giriş yaptıktan sonra işlemi yeniden oluşturmanız gerekecek.",
         "depositTips": "GasAccount para yatırma işlemini tamamlamak için, bu işlem iptal edilecektir. Para yatırma işleminden sonra yeniden yapmanız gerekecek.",
-        "signWithHardwareWalletToUse": "```json\n{\"u_0\":\"{{brand}} ile imzalamalısınız\"}\n```"
+        "signWithHardwareWalletToUse": "{{brand}} ile imzalamalısınız"
       },
       "keystone": {
         "siging": "İmza isteği gönderiliyor",
@@ -2293,7 +2293,7 @@
       "max-tips": "Bu değer, köprü için gaz maliyeti çıkarılarak hesaplanır.",
       "enable-it": "Etkinleştir",
       "no-route-found": "Rota bulunamadı",
-      "slippage-adjusted-refresh-quote": "滑点已调整。刷新路线。",
+      "slippage-adjusted-refresh-quote": "Slipaj ayarlandı. Rotayı yenile.",
       "select-chain": "Zincir Seç",
       "pendingTip": "Tx gönderildi. Tx uzun saatler boyunca beklemede kalırsa, ayarlardan beklemeyi temizlemeyi deneyebilirsiniz.",
       "need-to-approve-token-before-bridge": "Bridge öncesinde token onayı gerekiyor",
@@ -2750,7 +2750,7 @@
       "depositSubmitted": "Deposit Submitted",
       "claimFreeGas": "Claim {{usdValue}} Free Gas",
       "depositFailed": "Deposit failed",
-      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "lowBalance": "Gazınız yetmiyor (＜$1.00). Gelecekteki işlemlerin sorunsuz ilerlemesini sağlamak için gaz yatırın.",
       "gasBalance": "Gas Balance",
       "loginSuccess": "Login Successful",
       "loginFailed": "Login Failed"
@@ -3286,10 +3286,30 @@
         "title": "Tüm Pozisyonları Kapatmayı Onayla"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "TÜM Emirleri İptal Etmeyi Onayla",
+        "cancelAllOrdersConfirmMessage": "Tüm Limit Emirleriniz iptal edilecek",
         "description": "Tüm açık emirleriniz iptal edilecek.",
         "title": "Tüm Emirleri İptal Etmeyi Onayla"
       },
+      "limitOrders": "Limit Emirleri",
+      "cancelAll": "Tümünü İptal Et",
+      "limitOrderDetail": {
+        "title": "Limit {{side}} {{pair}}",
+        "time": "Saat",
+        "size": "Büyüklük",
+        "filled": "Gerçekleşti",
+        "currentPrice": "Mevcut Fiyat",
+        "limitPrice": "Limit Fiyatı",
+        "marginUsage": "Marjin Kullanımı",
+        "cancelLimitOrder": "Limit Emrini İptal Et",
+        "buy": "Al",
+        "sell": "Sat"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Limit emri iptal edildi",
+        "cancelLimitOrdersSuccess": "{{count}} limit emri iptal edildi",
+        "cancelLimitOrderError": "Limit emri iptal edilemedi",
+        "limitOrderPlaced": "Limit {{direction}} {{coin}}: Boyut {{size}}, ${{price}} fiyatından verildi",
         "cancelTWAPOrderSuccess": "TWAP emri başarıyla iptal edildi.",
         "cancelOrderSuccess": "Emir iptal edildi.",
         "closeAllPositionsSuccess": "Tüm açık pozisyonlar başarıyla kapatıldı.",
@@ -3471,6 +3491,10 @@
         "empty": "Piyasalar bulunamadı",
         "searchPerps": "Sürekli Vadeli Sözleşmeleri Ara"
       },
+      "categories": {
+        "favorite": "Favoriler",
+        "topVolume": "En Yüksek Hacim"
+      },
       "invitePopup": {
         "activateFailed": "Başarısız",
         "title": "Hyperliquid ücretlerinden tasarruf edin",
@@ -3569,6 +3593,7 @@
       "openProModeInTab": "Sekme'de Pro Modunu Aç",
       "currentPrice": "Mevcut Fiyat",
       "details": "Ayrıntılar",
+      "info": "Bilgi",
       "liquidationDistanceUp": "Yükselme <bold>{{percent}}</bold> likidasyonu tetikleyecektir.",
       "isolatedMargin": "Ayrılmış Marj",
       "cannotChangeMarginModeWithOpenPositions": "Açık pozisyonlarla Marj Modu değiştirilemez.",
@@ -4024,6 +4049,17 @@
         "addSize": "Miktar Ekle"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "{{coin}} Pozisyonu Aç",
+        "checkMarketOrder": "Market Emrini Kontrol Et",
+        "checkLimitOrder": "Limit Emrini Kontrol Et",
+        "orderType": "Emir Türü",
+        "currentPrice": "Mevcut Fiyat",
+        "check": "Kontrol Et",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Limit Fiyatı",
+        "mayExecuteImmediately": "Bu limit emri hemen gerçekleşebilir",
+        "setLimitOrderBtn": "Limit Emri Ver",
         "insufficientBalance": "Yetersiz bakiye",
         "available": "Kullanılabilir",
         "invalidNumber": "Geçersiz sayı",
@@ -4045,6 +4081,16 @@
         "stopLossWhenPriceAbove": "Fiyat Üstünde Olduğunda Zarar Durdur Emri",
         "newPosition": "Pozisyon Aç",
         "stopLossWhenPriceBelow": "Fiyat Altında Olduğunda Zarar Durdur"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Limit Alış Fiyatı Belirle",
+        "setLimitSellPrice": "Limit Satış Fiyatı Belirle",
+        "mid": "Orta fiyat",
+        "set": "Ayarla",
+        "blockError": "Emir fiyatı %10 fiyat koruma limitini aşıyor.",
+        "warning": "Limit fiyatı piyasa fiyatından %5+ uzakta",
+        "confirmTitle": "Limit Fiyatını Gözden Geçir",
+        "confirmMessage": "Limit fiyatı piyasa fiyatından %5+ uzakta"
       },
       "PerpsEditMarginPopup": {
         "amountToReduce": "Azaltılacak Tutar",
@@ -4084,6 +4130,8 @@
         "confirm": "Onayla",
         "youLoss": "Kaybettin",
         "priceBelow": "Fiyat aşağıda",
+        "whenPriceAbove": "Fiyat üzerine çıktığında",
+        "whenPriceBelow": "Fiyat altına indiğinde",
         "priceAbove": "Fiyat Üstünde",
         "noPosition": "İlk önce marjin girmeniz gerekir.",
         "takeProfitTipsLong": "Kar alım fiyatı mevcut fiyattan daha yüksek olmalıdır.",

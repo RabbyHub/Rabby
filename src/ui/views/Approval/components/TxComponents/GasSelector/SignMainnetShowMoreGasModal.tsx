@@ -28,6 +28,7 @@ import { calcGasAccountUsd } from './directSignSummary';
 import { GasMethod } from '../GasSelectorHeader';
 import {
   canDisplaySharedGasAccountForApproval,
+  isGasAccountBalanceEnoughForDisplay,
   resolveApprovalGasMethod,
   resolveApprovalDisplayedGasLevelNotEnough,
   resolveApprovalGasLevelMethod,
@@ -73,6 +74,7 @@ type Props = {
     chain_not_support: boolean;
     err_msg?: string;
   };
+  pendingHardwareGasAccountBalance?: number;
   nativeTokenInsufficient?: boolean;
   isWalletConnect?: boolean;
   levelState: SignMainnetGasLevelState;
@@ -106,6 +108,7 @@ export const SignMainnetShowMoreGasModal = ({
   isSpeedUp,
   selectedGasCostUsdStr,
   gasAccountCost,
+  pendingHardwareGasAccountBalance,
   nativeTokenInsufficient,
   isWalletConnect = false,
   levelState,
@@ -255,29 +258,46 @@ export const SignMainnetShowMoreGasModal = ({
                 const isActive = selectedGas?.level === gas.level;
                 const isCustom = gas.level === 'custom';
                 const levelKey = gas.level as SignMainnetSupportedGasLevel;
+                const levelGasAccountResult = isCustom
+                  ? undefined
+                  : levelState[levelKey]?.gasAccountResult;
+                const displayGasAccountCost = isActive
+                  ? levelGasAccountResult || gasAccountCost
+                  : levelGasAccountResult;
 
                 const gasAccountChainSupported = isActive
-                  ? !!gasAccountCost && !gasAccountCost.chain_not_support
-                  : !levelState[levelKey]?.gasAccountResult?.chain_not_support;
+                  ? !!displayGasAccountCost &&
+                    !displayGasAccountCost.chain_not_support
+                  : !displayGasAccountCost?.chain_not_support;
+                const levelGasAccountBalanceEnough = isGasAccountBalanceEnoughForDisplay(
+                  {
+                    gasAccountCost: displayGasAccountCost,
+                    pendingHardwareGasAccountBalance,
+                  }
+                );
 
                 const levelSupportedUseGasAccount = canDisplaySharedGasAccountForApproval(
                   {
-                    gasAccountBalanceEnough: !!levelState[levelKey]
-                      ?.gasAccountResult?.balance_is_enough,
+                    gasAccountBalanceEnough: levelGasAccountBalanceEnough,
                     gasAccountChainSupported,
                     noCustomRPC: noCustomRPCEnabled,
-                    gasAccountErrMsg: gasAccountCost?.err_msg,
+                    gasAccountErrMsg: displayGasAccountCost?.err_msg,
                     isWalletConnect,
                   }
                 );
 
-                const levelNativeInsufficient = isCustom
-                  ? false
-                  : !!levelState[levelKey]?.nativeNotEnough;
+                const levelNativeNotEnough = isCustom
+                  ? undefined
+                  : levelState[levelKey]?.nativeNotEnough;
+                const levelNativeInsufficient = !!levelNativeNotEnough;
+                const displayNativeInsufficient =
+                  isActive && levelNativeNotEnough !== undefined
+                    ? levelNativeNotEnough
+                    : !!nativeTokenInsufficient;
 
                 const displayMethod = isActive
                   ? resolveApprovalGasMethod({
-                      nativeTokenInsufficient: !!nativeTokenInsufficient,
+                      nativeTokenInsufficient: displayNativeInsufficient,
                       gasAccountChainSupported,
                       noCustomRPC: noCustomRPCEnabled,
                       freeGasAvailable,
@@ -303,26 +323,23 @@ export const SignMainnetShowMoreGasModal = ({
                 const isNotEnough = resolveApprovalDisplayedGasLevelNotEnough({
                   isActive,
                   displayMethod,
-                  nativeTokenInsufficient: !!nativeTokenInsufficient,
-                  gasAccountBalanceEnough: gasAccountCost?.balance_is_enough,
+                  nativeTokenInsufficient: displayNativeInsufficient,
+                  gasAccountBalanceEnough: levelGasAccountBalanceEnough,
                   levelNativeInsufficient,
                   sharedGasAccountAvailable: levelSupportedUseGasAccount,
                 });
 
                 costUsd = isActive
                   ? displayMethod === 'gasAccount'
-                    ? calcGasAccountUsd(
+                    ? levelState[levelKey]?.gasAccount?.[1] ||
+                      calcGasAccountUsd(
                         (gasAccountCost?.gas_account_cost.estimate_tx_cost ||
                           0) + (gasAccountCost?.gas_account_cost.gas_cost || 0)
                       )
-                    : selectedGasCostUsdStr
+                    : levelState[levelKey]?.nativeUsd || selectedGasCostUsdStr
                   : costUsd;
 
                 const handleSelect = () => {
-                  if (shouldHideApprovalGasMethodTabs()) {
-                    onChangeGasMethod?.(displayMethod);
-                  }
-
                   if (gas.level === 'custom') {
                     onVisibleChange(false);
                     onEditCustomGas?.();

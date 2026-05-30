@@ -215,6 +215,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
       await handleOpenLimitOrder({
         coin: record.coin,
+        dex: marketData.dexId ?? '',
         isBuy,
         size: effectiveSize,
         limitPx: limitPrice,
@@ -251,6 +252,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       const size = new BigNumber(positionSize).toFixed(szDecimals);
       const res = await handleCloseWithMarketOrder({
         coin: record.coin,
+        dex: marketData.dexId ?? '',
         isBuy,
         size,
         midPx: String(midPrice),

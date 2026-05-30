@@ -2,6 +2,7 @@ import { BalanceTable, balanceSchema } from './balance';
 import { AppChainTable, appChainSchema } from './appChain';
 import { DefiTable, defiSchema } from './defi';
 import { HistoryTable, historySchema } from './history';
+import { nftSchema, NFTTable } from './nft';
 import { syncSchema, SyncTable } from './sync';
 import { tokenSchema, TokenTable } from './token';
 
@@ -25,9 +26,14 @@ export const schemaV4 = {
   appChain: appChainSchema,
 };
 
-export const schema = {
+export const schemaV5 = {
   ...schemaV4,
   balance: balanceSchema,
+};
+
+export const schema = {
+  ...schemaV5,
+  nft: nftSchema,
 };
 
 export type DexieEntityTable = HistoryTable &
@@ -35,4 +41,5 @@ export type DexieEntityTable = HistoryTable &
   TokenTable &
   DefiTable &
   AppChainTable &
-  BalanceTable;
+  BalanceTable &
+  NFTTable;

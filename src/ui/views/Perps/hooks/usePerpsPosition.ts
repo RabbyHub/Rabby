@@ -1,12 +1,20 @@
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import store, { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { getPerpsSDK } from '../sdkManager';
 import { usePerpsState } from './usePerpsState';
 import * as Sentry from '@sentry/browser';
 import { sleep, useWallet } from '@/ui/utils';
-import { PERPS_BUILDER_INFO } from '../constants';
-import { OrderResponse } from '@rabby-wallet/hyperliquid-sdk';
+import {
+  PERPS_BUILDER_INFO,
+  PERPS_LIMIT_TIF_DEFAULT,
+  PerpsOpenOrderType,
+} from '../constants';
+import {
+  OrderResponse,
+  ClearinghouseState,
+  OpenOrder,
+} from '@rabby-wallet/hyperliquid-sdk';
 import { useTranslation } from 'react-i18next';
 
 export const usePerpsPosition = ({
@@ -154,7 +162,12 @@ export const usePerpsPosition = ({
   );
 
   const handleUpdateMargin = useMemoizedFn(
-    async (coin: string, action: 'add' | 'reduce', margin: number) => {
+    async (
+      coin: string,
+      dex: string,
+      action: 'add' | 'reduce',
+      margin: number
+    ) => {
       try {
         const sdk = getPerpsSDK();
         const res = await sdk.exchange?.updateIsolatedMargin({
@@ -172,7 +185,7 @@ export const usePerpsPosition = ({
                 : 'page.perpsDetail.PerpsEditMarginPopup.reduceMarginSuccess'
             ),
           });
-          dispatch.perps.fetchClearinghouseState();
+          dispatch.perps.fetchClearinghouseState({ dex });
         } else {
           const msg = res?.response?.data?.statuses[0];
           message.error({
@@ -208,13 +221,14 @@ export const usePerpsPosition = ({
   const handleClosePosition = useMemoizedFn(
     async (params: {
       coin: string;
+      dex: string;
       size: string;
       price: string;
       direction: 'Long' | 'Short';
     }) => {
       try {
         const sdk = getPerpsSDK();
-        const { coin, direction, price, size } = params;
+        const { coin, dex, direction, price, size } = params;
         const res = await sdk.exchange?.marketOrderClose({
           coin,
           isBuy: direction === 'Short',
@@ -225,7 +239,7 @@ export const usePerpsPosition = ({
 
         const filled = res?.response?.data?.statuses[0]?.filled;
         if (filled) {
-          dispatch.perps.fetchClearinghouseState();
+          dispatch.perps.fetchClearinghouseState({ dex });
           dispatch.perps.fetchUserHistoricalOrders();
           const { totalSz, avgPx } = filled;
           message.success({
@@ -293,6 +307,7 @@ export const usePerpsPosition = ({
   const handleOpenPosition = useMemoizedFn(
     async (params: {
       coin: string;
+      dex: string;
       size: string;
       leverage: number;
       direction: 'Long' | 'Short';
@@ -301,11 +316,14 @@ export const usePerpsPosition = ({
       slTriggerPx?: string;
       marginMode?: 'cross' | 'isolated';
       isAddPosition?: boolean;
+      orderType?: PerpsOpenOrderType;
+      limitPx?: string;
     }) => {
       try {
         const sdk = getPerpsSDK();
         const {
           coin,
+          dex,
           leverage,
           direction,
           size,
@@ -313,6 +331,8 @@ export const usePerpsPosition = ({
           tpTriggerPx,
           slTriggerPx,
           marginMode = 'isolated',
+          orderType,
+          limitPx,
         } = params;
         if (!params.isAddPosition) {
           await sdk.exchange?.updateLeverage({
@@ -322,22 +342,31 @@ export const usePerpsPosition = ({
           });
         }
 
+        const isLimit = orderType === 'limit' && !!limitPx;
         const promises = [
-          sdk.exchange?.marketOrderOpen({
-            coin,
-            isBuy: direction === 'Long',
-            size,
-            midPx,
-            // tpTriggerPx,
-            // slTriggerPx,
-            builder: PERPS_BUILDER_INFO,
-          }),
+          isLimit
+            ? sdk.exchange?.limitOrderOpen({
+                coin,
+                isBuy: direction === 'Long',
+                size,
+                limitPx: limitPx as string,
+                tif: PERPS_LIMIT_TIF_DEFAULT,
+                builder: PERPS_BUILDER_INFO,
+              })
+            : sdk.exchange?.marketOrderOpen({
+                coin,
+                isBuy: direction === 'Long',
+                size,
+                midPx,
+                builder: PERPS_BUILDER_INFO,
+              }),
         ];
 
         const formattedTpTriggerPx = formatTriggerPx(tpTriggerPx);
         const formattedSlTriggerPx = formatTriggerPx(slTriggerPx);
 
-        if (tpTriggerPx || slTriggerPx) {
+        // Limit mode hides TP/SL — guard against stale market-mode triggers leaking in.
+        if (!isLimit && (tpTriggerPx || slTriggerPx)) {
           promises.push(
             (async () => {
               await sleep(10); // little delay to ensure nonce is correct
@@ -357,8 +386,12 @@ export const usePerpsPosition = ({
         const results = await Promise.all(promises);
         const res = results[0];
         const filled = res?.response?.data?.statuses[0]?.filled;
+        const resting = res?.response?.data?.statuses[0]?.resting;
         if (filled) {
-          dispatch.perps.fetchClearinghouseState();
+          dispatch.perps.fetchClearinghouseState({ dex });
+          if (resting) {
+            dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
+          }
 
           const { totalSz, avgPx } = filled;
           message.success({
@@ -379,6 +412,23 @@ export const usePerpsPosition = ({
             totalSz: string;
             avgPx: string;
             oid: number;
+          };
+        } else if (isLimit && resting) {
+          // Resting (not filled) — treat as success and refresh open-orders list.
+          dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.limitOrderPlaced', {
+              direction,
+              coin,
+              size,
+              price: limitPx,
+            }),
+          });
+          return {
+            totalSz: size,
+            avgPx: limitPx || '0',
+            oid: resting.oid,
           };
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;
@@ -458,11 +508,114 @@ export const usePerpsPosition = ({
     }
   );
 
+  const handleCloseAllPositions = useMemoizedFn(
+    async (clearinghouseState: ClearinghouseState) => {
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.closeAllPositions(
+          clearinghouseState,
+          0.08,
+          PERPS_BUILDER_INFO
+        );
+        if (res?.response?.data?.statuses[0]?.filled) {
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.closeAllPositionsSuccess'),
+          });
+          dispatch.perps.fetchClearinghouseState();
+          return true;
+        }
+      } catch (error: any) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) {
+          return false;
+        }
+        console.error('PERPS closeAllPositions error', error);
+        message.error({
+          duration: 1.5,
+          content: error?.message || 'Close all positions error',
+        });
+        Sentry.captureException(
+          new Error(
+            'PERPS closeAllPositions error ' +
+              ' error: ' +
+              JSON.stringify(error)
+          )
+        );
+        return false;
+      }
+    }
+  );
+
+  const handleCancelLimitOrders = useMemoizedFn(
+    async (orders: OpenOrder[]): Promise<boolean> => {
+      if (!orders.length) return false;
+      try {
+        const sdk = getPerpsSDK();
+        const res = await sdk.exchange?.cancelOrder(
+          orders.map((o) => ({ oid: o.oid, coin: o.coin }))
+        );
+        const statuses = res?.response.data.statuses ?? [];
+        const okCount = statuses.filter(
+          (item) => typeof item === 'string' && item === 'success'
+        ).length;
+        const failCount = statuses.length - okCount;
+
+        if (okCount > 0) {
+          message.success({
+            duration: 1.5,
+            content:
+              orders.length > 1
+                ? t('page.perps.toast.cancelLimitOrdersSuccess', {
+                    count: okCount,
+                  })
+                : t('page.perps.toast.cancelLimitOrderSuccess'),
+          });
+          if (failCount > 0) {
+            Sentry.captureException(
+              new Error(
+                'PERPS cancel limit orders partial fail: ' + JSON.stringify(res)
+              )
+            );
+          }
+          const marketDataMap = store.getState().perps.marketDataMap;
+          dispatch.perps.fetchPositionOpenOrdersHttpForDexes({
+            dexes: orders.map((o) => marketDataMap[o.coin]?.dexId ?? ''),
+          });
+          return true;
+        }
+
+        message.error({
+          duration: 1.5,
+          content: t('page.perps.toast.cancelLimitOrderError'),
+        });
+        Sentry.captureException(
+          new Error('PERPS cancel limit orders failed: ' + JSON.stringify(res))
+        );
+        return false;
+      } catch (error: any) {
+        const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
+        if (isExpired) return false;
+        message.error({
+          duration: 1.5,
+          content:
+            error?.message || t('page.perps.toast.cancelLimitOrderError'),
+        });
+        Sentry.captureException(
+          new Error('PERPS cancel limit orders error: ' + JSON.stringify(error))
+        );
+        return false;
+      }
+    }
+  );
+
   return {
+    handleCloseAllPositions,
     handleOpenPosition,
     handleClosePosition,
     handleSetAutoClose,
     handleCancelOrder,
+    handleCancelLimitOrders,
     handleUpdateMargin,
     handleStableCoinOrder,
     userFills,

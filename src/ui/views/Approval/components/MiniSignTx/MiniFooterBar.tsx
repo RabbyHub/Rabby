@@ -74,6 +74,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   getContainer?: DrawerProps['getContainer'];
   isFirstGasCostLoading?: boolean;
   isFirstGasLessLoading?: boolean;
+  disableAutoGasAccountSwitch?: boolean;
   directSubmit?: boolean;
   account?: Account;
   disableSignBtn?: boolean;
@@ -220,6 +221,7 @@ export const MiniFooterBar: React.FC<Props> = ({
   getContainer,
   isFirstGasCostLoading,
   isFirstGasLessLoading,
+  disableAutoGasAccountSwitch = false,
   isGasNotEnough,
   directSubmit,
   account: propsAccount,
@@ -297,6 +299,9 @@ export const MiniFooterBar: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
+    if (disableAutoGasAccountSwitch) {
+      return;
+    }
     if (isSetGasMethodRef.current) {
       return;
     }
@@ -333,6 +338,7 @@ export const MiniFooterBar: React.FC<Props> = ({
     directSubmit,
     canGotoUseGasAccount,
     canUseGasLess,
+    disableAutoGasAccountSwitch,
     isFirstGasCostLoading,
     isFirstGasLessLoading,
     onChangeGasAccount,
@@ -341,6 +347,25 @@ export const MiniFooterBar: React.FC<Props> = ({
   ]);
 
   const { isDarkTheme } = useThemeMode();
+  const showGasLessNotEnoughTip =
+    showGasLess &&
+    !payGasByGasAccount &&
+    (!securityLevel || !hasUnProcessSecurityResult) &&
+    !canUseGasLess &&
+    !isWatchAddr &&
+    shouldShowGasLessNotEnough({
+      showGasLess,
+      isGasNotEnough: !!isGasNotEnough,
+      payGasByGasAccount,
+      canUseGasLess,
+    });
+  const showNativePendingHardwareGasAccountTip =
+    showGasLess &&
+    !payGasByGasAccount &&
+    (!securityLevel || !hasUnProcessSecurityResult) &&
+    !canUseGasLess &&
+    !isWatchAddr &&
+    !!isGasNotEnough;
 
   if (!account) {
     return null;
@@ -390,13 +415,7 @@ export const MiniFooterBar: React.FC<Props> = ({
             }}
             gasLessConfig={gasLessConfig}
           />
-        ) : isWatchAddr ||
-          !shouldShowGasLessNotEnough({
-            showGasLess,
-            isGasNotEnough: !!isGasNotEnough,
-            payGasByGasAccount,
-            canUseGasLess,
-          }) ? null : (
+        ) : showGasLessNotEnoughTip ? (
           <GasLessNotEnough
             approvalUiStyle
             nativeTokenInsufficient={!!isGasNotEnough}
@@ -410,7 +429,24 @@ export const MiniFooterBar: React.FC<Props> = ({
             disableGasAccountDeposit={disableGasAccountDeposit}
             preserveApprovalContext={supportedDirectSign(account.type)}
           />
-        )
+        ) : null
+      ) : null}
+
+      {showNativePendingHardwareGasAccountTip ? (
+        <GasAccountTips
+          approvalUiStyle
+          gasAccountCost={gasAccountCost}
+          gasAccountAddress={gasAccountAddress}
+          isWalletConnect={isWalletConnect}
+          noCustomRPC={noCustomRPC}
+          nativeTokenInsufficient={!!isGasNotEnough}
+          onRedirectToDeposit={onRedirectToDeposit}
+          onOpenGasAccountDeposit={onOpenGasAccountDeposit}
+          disableGasAccountDeposit={disableGasAccountDeposit}
+          onChangeGasAccount={onChangeGasAccount}
+          preserveApprovalContext={supportedDirectSign(account.type)}
+          pendingHardwareOnly
+        />
       ) : null}
 
       {payGasByGasAccount && !gasAccountCanPay ? (

@@ -2515,7 +2515,7 @@
           "airdrop": "Airdrop",
           "arcadeDesc": "Spiele kostenlose Spiele, um Punkte für den S Airdrop zu verdienen.",
           "migrateBtn": "Demnächst verfügbar",
-          "migrateDesc": "请提供原文，以便我为您翻译成德语。",
+          "migrateDesc": "→",
           "airdropBtn": "Punkte verdienen",
           "socialsTitle": "Beteiligen Sie sich",
           "earnBtn": "Demnächst verfügbar",
@@ -2747,10 +2747,10 @@
       "depositSubmitted": "Einzahlung eingereicht",
       "claimFreeGas": "{{usdValue}} kostenloses Gas beanspruchen",
       "depositFailed": "Einzahlung fehlgeschlagen",
-      "lowBalance": "Sie haben nicht genug Gas. Zahlen Sie Gas ein, um sicherzustellen, dass zukünftige Transaktionen reibungslos verlaufen.",
       "gasBalance": "Gas-Guthaben",
       "loginSuccess": "Anmeldung erfolgreich",
-      "loginFailed": "Anmeldung fehlgeschlagen"
+      "loginFailed": "Anmeldung fehlgeschlagen",
+      "lowBalance": "Sie haben nicht genug Gas (＜$1.00). Zahlen Sie Gas ein, um sicherzustellen, dass zukünftige Transaktionen reibungslos ablaufen."
     },
     "safeMessageQueue": {
       "noData": "Keine Nachrichten",
@@ -3283,10 +3283,30 @@
         "description": "Alle Ihre offenen Positionen werden zum Marktpreis geschlossen."
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "ALLE Aufträge stornieren bestätigen",
+        "cancelAllOrdersConfirmMessage": "Alle Ihre Limit-Aufträge werden storniert",
         "description": "Alle offenen Aufträge werden storniert.",
         "title": "Bestätigen Sie das Stornieren aller Aufträge."
       },
+      "limitOrders": "Limit-Aufträge",
+      "cancelAll": "Alle stornieren",
+      "limitOrderDetail": {
+        "title": "Limit {{side}} {{pair}}",
+        "time": "Zeit",
+        "size": "Größe",
+        "filled": "Ausgeführt",
+        "currentPrice": "Aktueller Preis",
+        "limitPrice": "Limit-Preis",
+        "marginUsage": "Margin-Nutzung",
+        "cancelLimitOrder": "Limit-Auftrag stornieren",
+        "buy": "Kaufen",
+        "sell": "Verkaufen"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Limit-Auftrag storniert",
+        "cancelLimitOrdersSuccess": "{{count}} Limit-Aufträge storniert",
+        "cancelLimitOrderError": "Limit-Auftrag konnte nicht storniert werden",
+        "limitOrderPlaced": "Limit {{direction}} {{coin}}: Größe {{size}} platziert bei ${{price}}",
         "success": "Erfolg",
         "orderCancelled": "Auftrag storniert",
         "marginModeUpdated": "Margin-Modus geändert auf: {{mode}}",
@@ -3468,6 +3488,10 @@
         "searchPlaceholder": "Nach Perpetual-Kontrakten suchen",
         "openPosition": "Offene Position"
       },
+      "categories": {
+        "favorite": "Favoriten",
+        "topVolume": "Top-Volumen"
+      },
       "invitePopup": {
         "activateFailed": "Fehlgeschlagen",
         "activateNow": "Jetzt aktivieren",
@@ -3561,6 +3585,7 @@
       "fundingGains": "Finanzierungsgewinne",
       "directDepositFast": "Schnell, 0 Slippage",
       "details": "Details",
+      "info": "Info",
       "cannotChangeMarginModeWithOpenPositions": "Kann den Margin-Modus mit offenen Positionen nicht ändern.",
       "crossMargin": "Kreuzmargin",
       "positionValue": "Positionswert",
@@ -4021,6 +4046,17 @@
         "totalSize": "Gesamtgröße"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "{{coin}}-Position eröffnen",
+        "checkMarketOrder": "Market-Auftrag prüfen",
+        "checkLimitOrder": "Limit-Auftrag prüfen",
+        "orderType": "Auftragsart",
+        "currentPrice": "Aktueller Preis",
+        "check": "Prüfen",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Limit-Preis",
+        "mayExecuteImmediately": "Dieser Limit-Auftrag kann sofort ausgeführt werden",
+        "setLimitOrderBtn": "Limit-Auftrag platzieren",
         "maximumOrderSize": "Die maximale Ordergröße beträgt {{amount}}.",
         "size": "Positionsgröße",
         "leverage": "Hebel",
@@ -4042,6 +4078,16 @@
         "sizeTips": "Der Gesamtwert oder die Größe Ihres Handels wird durch Margin und Hebel bestimmt.",
         "short": "Short-Position",
         "minMargin": "Mindestmarge beträgt {{amount}}"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Limit-Kaufpreis festlegen",
+        "setLimitSellPrice": "Limit-Verkaufspreis festlegen",
+        "mid": "Mittelkurs",
+        "set": "Festlegen",
+        "blockError": "Der Auftragspreis überschreitet das 10%-Preisschutzlimit.",
+        "warning": "Der Limit-Preis weicht 5%+ vom Marktpreis ab",
+        "confirmTitle": "Limit-Preis prüfen",
+        "confirmMessage": "Der Limit-Preis weicht 5%+ vom Marktpreis ab"
       },
       "PerpsEditMarginPopup": {
         "insufficientBalance": "Unzureichendes Guthaben",
@@ -4088,6 +4134,8 @@
         "stopLossWhenPriceAbove": "Stop-Loss, wenn der Preis darüber liegt",
         "stopLoss": "Stop-Loss",
         "priceBelow": "Preis unter",
+        "whenPriceAbove": "Wenn der Preis darüber liegt",
+        "whenPriceBelow": "Wenn der Preis darunter liegt",
         "stopLossExpectedPNL": "Stop-Loss erwarteter PnL",
         "takeProfitWhen": "Take-Profit-Wenn",
         "stopLossWhenPriceBelow": "Stop-Loss, wenn der Preis darunter liegt.",

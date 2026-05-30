@@ -8,6 +8,7 @@ const config = {
   watchOptions: {
     ignored: ['**/public', '**/node_modules'],
     followSymlinks: false,
+    poll: 1000,
   },
   plugins: [
     new webpack.DefinePlugin({

@@ -83,6 +83,7 @@ import {
   cleanupBiometricCredential,
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
+import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -620,6 +621,9 @@ const SettingsInner = ({
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [biometricBusy, setBiometricBusy] = useState(false);
+  const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
+    () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
+  );
   const lockShortcutLabel = useMemo(() => {
     return detectClientOS() === 'darwin' ? '⌘ + L' : 'Ctrl + L';
   }, []);
@@ -1350,6 +1354,23 @@ const SettingsInner = ({
               window.close();
             }, 1500);
           },
+        },
+        {
+          leftIcon: RcIconSettingsCodeCC,
+          content: <span>Perps Accounts Include Watch Address</span>,
+          rightIcon: (
+            <Switch
+              checked={perpsIncludeWatchForTest}
+              onChange={(checked) => {
+                if (checked) {
+                  localStorage.setItem(PERPS_TEST_INCLUDE_WATCH_KEY, '1');
+                } else {
+                  localStorage.removeItem(PERPS_TEST_INCLUDE_WATCH_KEY);
+                }
+                setPerpsIncludeWatchForTest(checked);
+              }}
+            />
+          ),
         },
       ] as SettingItem[],
     },

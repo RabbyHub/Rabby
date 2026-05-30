@@ -477,7 +477,7 @@
         "notSupport": "{{0}}은(는) 지원되지 않습니다"
       },
       "signAndSubmitButton": "서명",
-      "requestFrom": "요청来自",
+      "requestFrom": "요청 출처",
       "gridPlusConnected": "GridPlus에 연결되었습니다.",
       "gridPlusNotConnected": "GridPlus는 연결되어 있지 않습니다",
       "keystoneConnected": "Keystone이 연결되었습니다.",
@@ -989,7 +989,7 @@
       "chain": "체인",
       "testnet-is-not-supported": "사용자 정의 네트워크는 지원되지 않습니다",
       "pendingTip": "Tx 제출됨. tx가 오랜 시간 동안 대기 중인 경우 설정에서 대기를 해제해 보세요.",
-      "completedTip": "체인上的 거래, 데이터를 디코딩하여 기록 생성",
+      "completedTip": "온체인 트랜잭션입니다. 데이터를 디코딩하여 기록을 생성합니다",
       "approve-x-symbol": "승인 {{symbol}}",
       "InSufficientTip": "거래 시뮬레이션 및 가스 추정을 수행하기 위한 잔액이 부족합니다. 원래 집계기 견적이 표시됩니다.",
       "get-quotes": "견적 받기",
@@ -1062,7 +1062,7 @@
       "understandRisks": "나는 위험을 이해하고 계속 진행하고 싶다.",
       "approve": "승인",
       "search-by-token-name-address": "토큰 이름 / 주소 검색",
-      "best-subtitle": "최고의気配는환율과가스비를포함한다가장낮은추정총비용으로결정됩니다。"
+      "best-subtitle": "최적의 견적은 환율과 가스비를 포함한 가장 낮은 예상 총 비용을 기준으로 결정됩니다."
     },
     "bridge": {
       "showMore": {
@@ -1426,9 +1426,9 @@
         "requestDeBankTestnetGasToken": "DeBank 테스트넷 가스 토큰 요청",
         "enableWhitelist": "화이트리스트 활성화",
         "DappAccount": {
-          "button": "啟用\n",
+          "button": "활성화\n",
           "title": "Dapp 주소를 독립적으로 전환하세요\n",
-          "desc": "啟用後，您可以獨立選擇連接到每個 Dapp 的地址。切換您的主要地址不會影響連接到每個 Dapp 的地址。\n"
+          "desc": "활성화하면 각 Dapp에 연결할 주소를 독립적으로 선택할 수 있습니다. 기본 주소를 전환해도 각 Dapp에 연결된 주소에는 영향을 주지 않습니다.\n"
         },
         "rateModalTriggerOnHome": {
           "description": "Rabby Wallet은 어떻게 평가하시나요?"
@@ -2514,7 +2514,7 @@
           "arcadeDesc": "무료 게임을 플레이하여 S 에어드랍을 위한 포인트를 얻으세요.",
           "airdropDesc": "~200 백만 S를 Opera와 Sonic 사용자에게 제공합니다.",
           "earnBtn": "곧 출시됩니다",
-          "migrateDesc": "죄송하지만 요청하신 번역을 제공할 수 없습니다.",
+          "migrateDesc": "→",
           "socialsTitle": "참여하기",
           "migrateTitle": "마이그레이트"
         },
@@ -2744,7 +2744,7 @@
       "depositSubmitted": "Deposit Submitted",
       "claimFreeGas": "Claim {{usdValue}} Free Gas",
       "depositFailed": "Deposit failed",
-      "lowBalance": "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",
+      "lowBalance": "gas가 부족합니다(＜$1.00). GasAccount에 gas를 예치하여 향후 거래가 원활히 진행되도록 하세요.",
       "gasBalance": "Gas Balance",
       "loginSuccess": "Login Successful",
       "loginFailed": "Login Failed"
@@ -3280,10 +3280,30 @@
         "description": "모든 미청산 포지션은 시장가로 청산됩니다."
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "모든 주문 취소 확인",
+        "cancelAllOrdersConfirmMessage": "모든 지정가 주문이 취소됩니다",
         "description": "모든 미체결 주문이 취소됩니다.",
         "title": "모든 주문 취소를 확인하시겠습니까?"
       },
+      "limitOrders": "지정가 주문",
+      "cancelAll": "모두 취소",
+      "limitOrderDetail": {
+        "title": "지정가 {{side}} {{pair}}",
+        "time": "시간",
+        "size": "수량",
+        "filled": "체결",
+        "currentPrice": "현재가",
+        "limitPrice": "지정가",
+        "marginUsage": "마진 사용량",
+        "cancelLimitOrder": "지정가 주문 취소",
+        "buy": "매수",
+        "sell": "매도"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "지정가 주문이 취소되었습니다",
+        "cancelLimitOrdersSuccess": "{{count}}개 지정가 주문이 취소되었습니다",
+        "cancelLimitOrderError": "지정가 주문 취소에 실패했습니다",
+        "limitOrderPlaced": "지정가 {{direction}} {{coin}}: 수량 {{size}}, 가격 ${{price}}로 주문됨",
         "success": "성공",
         "orderCancelled": "주문이 취소되었습니다",
         "withdraw": "출금 성공",
@@ -3376,11 +3396,11 @@
         "asset": "자산",
         "action": "작업",
         "value": "가치",
-        "buy": "买入",
-        "sell": "卖出",
+        "buy": "매수",
+        "sell": "매도",
         "transferDetailTitle": "전송",
-        "transferActionToSpot": "转账（从永续合约到现货）",
-        "transferActionToPerps": "转账（从现货到永续合约）"
+        "transferActionToSpot": "이체(Perps에서 스팟으로)",
+        "transferActionToPerps": "이체(스팟에서 Perps로)"
       },
       "logoutConfirmModal": {
         "desc": "현재의 무기한 계약 계정에서 로그아웃 중입니다. 이 주소로 로그인하면 언제든지 복구할 수 있습니다.",
@@ -3464,6 +3484,10 @@
         "searchPlaceholder": "무기한 계약 검색",
         "searchPosition": "포지션 검색",
         "openPosition": "포지션 진입"
+      },
+      "categories": {
+        "favorite": "즐겨찾기",
+        "topVolume": "거래량 상위"
       },
       "invitePopup": {
         "activateNow": "지금 활성화",
@@ -3561,6 +3585,7 @@
       "settings": "설정",
       "positionValue": "포지션 가치",
       "details": "세부정보",
+      "info": "정보",
       "crossMargin": "교차 마진",
       "currentPrice": "현재 가격",
       "isolatedMargin": "격리 마진",
@@ -3635,9 +3660,9 @@
       "PerpsAbout": {
         "title": "정보"
       },
-      "transferToSpot": "现货账户转账",
+      "transferToSpot": "스팟 계정으로 이체",
       "transferToPerps": "Perps로 이전",
-      "selectChainToWithdraw": "选择提现链"
+      "selectChainToWithdraw": "출금할 체인 선택"
     },
     "perpsPro": {
       "chatArea": {
@@ -4018,6 +4043,17 @@
         "sizeTips": "거래의 총 가치 또는 수량은 마진과 레버리지에 의해 설정됩니다."
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "{{coin}} 포지션 개시",
+        "checkMarketOrder": "시장가 주문 확인",
+        "checkLimitOrder": "지정가 주문 확인",
+        "orderType": "주문 유형",
+        "currentPrice": "현재가",
+        "check": "확인",
+        "orderTypeMarket": "시장가",
+        "orderTypeLimit": "지정가",
+        "limitPrice": "지정가",
+        "mayExecuteImmediately": "이 지정가 주문은 즉시 체결될 수 있습니다",
+        "setLimitOrderBtn": "지정가 주문하기",
         "margin": "마진",
         "rabbyFee": "Rabby 수수료",
         "maximumOrderSize": "최대 주문 수량은 {{amount}}입니다.",
@@ -4039,6 +4075,16 @@
         "sizeTips": "마진과 레버리지로 결정되는 포지션의 총 가치 또는 규모.",
         "size": "포지션 사이즈",
         "stopLossWhenPriceAbove": "가격이 상승하면 손절"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "지정가 매수가 설정",
+        "setLimitSellPrice": "지정가 매도가 설정",
+        "mid": "중간가",
+        "set": "설정",
+        "blockError": "주문 가격이 10% 가격 보호 한도를 초과합니다.",
+        "warning": "지정가가 시장 가격에서 5% 이상 차이가 납니다",
+        "confirmTitle": "지정가 확인",
+        "confirmMessage": "지정가가 시장 가격에서 5% 이상 차이가 납니다"
       },
       "PerpsEditMarginPopup": {
         "reduceMarginTooltip": "포지션 축소에 필요한 마진이 부족합니다.",
@@ -4075,6 +4121,8 @@
         "stopLoss": "손절매",
         "noPosition": "먼저 마진을 입력해야 합니다.",
         "priceBelow": "가격 아래",
+        "whenPriceAbove": "가격이 위에 있을 때",
+        "whenPriceBelow": "가격이 아래에 있을 때",
         "cancel": "취소",
         "priceAbove": "가격이 위에 있습니다",
         "stopLossTipsLong": "손절가가 현재가보다 낮아야 합니다.",

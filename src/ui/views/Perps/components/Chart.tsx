@@ -34,10 +34,8 @@ import clsx from 'clsx';
 import { MarketData } from '@/ui/models/perps';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
-import { splitNumberByStep, useWallet } from '@/ui/utils';
-import { obj2query } from '@/ui/utils/url';
+import { splitNumberByStep } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/perps/Iconfullscreen.svg';
 
 const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
@@ -678,7 +676,6 @@ export const PerpsChart = ({
   };
 }) => {
   const { t } = useTranslation();
-  const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const selectedInterval = useRabbySelector(
     (state) => state.perps.candleInterval
@@ -740,32 +737,10 @@ export const PerpsChart = ({
     return currentAssetCtx?.pxDecimals || 2;
   }, [currentAssetCtx]);
 
-  const currentPerpsAccount = useRabbySelector(
-    (state) => state.perps.currentPerpsAccount
-  );
-
   return (
     <div
       className={clsx('bg-r-neutral-card1 rounded-[12px] p-16 mb-20 relative')}
     >
-      {!chartHoverData.visible && (
-        <div
-          className="absolute top-12 right-12 cursor-pointer text-r-neutral-body p-4 rounded-[4px] hover:bg-r-neutral-bg3"
-          onClick={() => {
-            if (currentPerpsAccount) {
-              wallet.setPerpsCurrentAccount(currentPerpsAccount);
-              wallet.switchDesktopPerpsAccount(currentPerpsAccount);
-            }
-            wallet.openInDesktop(
-              `/desktop/perps?${obj2query({
-                coin: coin,
-              })}`
-            );
-          }}
-        >
-          <RcIconFullscreen className="text-r-neutral-body" />
-        </div>
-      )}
       <div className="text-center mb-8">
         {chartHoverData.visible ? (
           <div>

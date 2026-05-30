@@ -23,7 +23,6 @@ import { resolveEnsAddressByName } from '@/ui/utils/ens';
 import WatchLogo from 'ui/assets/watch-only-hero.svg';
 import { useCreateAddressActions } from './AddAddress/useCreateAddress';
 import { RcWatchAddressScan } from '../assets/add-address';
-import { is } from 'immer/dist/internal';
 
 const ImportWatchAddress: React.FC<{
   isInModal?: boolean;
