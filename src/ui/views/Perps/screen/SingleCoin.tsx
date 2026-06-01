@@ -57,6 +57,8 @@ import stats from '@/stats';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
 import { usePerpsActions } from '../hooks/usePerpsActions';
 import { useActiveAssetSubscription } from '../hooks/useActiveAssetSubscription';
+import { PerpsLimitOrdersSection } from '../components/PerpsLimitOrdersSection';
+import { useDetailLimitOrders } from '../hooks/useLimitOrders';
 import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { EnableUnifiedAccountPopup } from '../popup/EnableUnifiedAccountPopup';
@@ -259,9 +261,16 @@ export const PerpsSingleCoin = () => {
     currentPerpsAccount?.address
   );
 
+  const detailLimitRows = useDetailLimitOrders(
+    coin,
+    activeAssetData?.leverage ?? null
+  );
+
   const hasPosition = useMemo(() => {
     return !!currentPosition;
   }, [currentPosition]);
+
+  const hasLimitOrders = detailLimitRows.length > 0;
 
   const marginModeDisabled = currentAssetCtx?.onlyIsolated;
 
@@ -588,7 +597,8 @@ export const PerpsSingleCoin = () => {
           <>
             {/* Position Header */}
             <div className="flex items-center gap-6 mt-16 mb-8">
-              <div className="text-15 font-medium text-r-neutral-title-1">
+              <div className="text-15 font-medium text-r-neutral-title-1 flex items-center gap-4">
+                <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
                 {t('page.perps.position')}
               </div>
               <span
@@ -622,15 +632,14 @@ export const PerpsSingleCoin = () => {
               </span>
             </div>
 
-            {/* Position Summary */}
-            <div className="bg-r-neutral-card1 rounded-[12px] px-16">
-              <div className="flex flex-col items-center py-16">
+            <div className="bg-r-neutral-card1 rounded-[12px] px-12">
+              <div className="py-16">
                 <div className="text-13 text-r-neutral-body mb-4">
                   {t('page.perps.unrealizedPnl')}
                 </div>
                 <div
                   className={clsx(
-                    'text-20 font-bold',
+                    'text-24 font-bold',
                     positionData && positionData.pnl >= 0
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
@@ -641,26 +650,31 @@ export const PerpsSingleCoin = () => {
                     Math.abs(positionData?.pnl || 0).toFixed(2)
                   )}
                 </div>
-                <div className="text-13 text-r-neutral-body mt-4">
-                  {t('page.perps.positionValue')}{' '}
-                  <span className="text-r-neutral-title-1 font-bold">
-                    {formatUsdValue(Number(positionData?.positionValue || 0))}
-                  </span>
+              </div>
+              <div className="h-[0.5px] bg-r-neutral-line" />
+              <div className="flex justify-between text-13 py-12">
+                <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
+                  {t('page.perps.size')}
+                  <TooltipWithMagnetArrow
+                    overlayClassName="rectangle w-[max-content]"
+                    placement="top"
+                    title={t('page.perps.sizeTips')}
+                  >
+                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
+                  </TooltipWithMagnetArrow>
                 </div>
+                <span className="text-r-neutral-title-1 font-medium">
+                  $
+                  {splitNumberByStep(
+                    Number(positionData?.positionValue || 0).toFixed(2)
+                  )}{' '}
+                  = {positionData?.size} {formatPerpsCoin(coin)}
+                </span>
               </div>
             </div>
 
-            <div className="bg-r-neutral-card1 rounded-[12px] px-16 mt-8">
-              <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
-                  {t('page.perps.currentPrice')}
-                </span>
-                <span className="text-r-neutral-title-1 font-medium">
-                  ${splitNumberByStep(markPrice)}
-                </span>
-              </div>
-
-              <div className="flex text-13 py-16 flex-col gap-8">
+            <div className="bg-r-neutral-card1 rounded-[12px] px-12 mt-8">
+              <div className="flex text-13 py-12 flex-col gap-8">
                 <div className="flex justify-between">
                   <div className="text-r-neutral-body flex items-center gap-4 relative">
                     {t('page.perps.liquidationPrice')}
@@ -688,7 +702,7 @@ export const PerpsSingleCoin = () => {
             </div>
 
             {/* Settings */}
-            <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
+            <div className="text-15 font-medium text-r-neutral-title-1 mt-12 mb-8">
               {t('page.perps.settings')}
             </div>
             <div className="bg-r-neutral-card1 rounded-[12px] px-16">
@@ -700,7 +714,7 @@ export const PerpsSingleCoin = () => {
                 </span>
                 {positionData?.type === 'isolated' ? (
                   <div
-                    className="flex items-center justify-center gap-6 bg-r-blue-light-1 rounded-[8px] px-6 h-[26px] cursor-pointer"
+                    className="flex items-center justify-center gap-6 rounded-[8px] px-6 h-[26px] cursor-pointer"
                     onClick={async () => {
                       await handleActionApproveStatus();
                       setEditMarginVisible(true);
@@ -743,6 +757,7 @@ export const PerpsSingleCoin = () => {
                     handleActionApproveStatus={handleActionApproveStatus}
                     coin={coin}
                     markPrice={markPrice}
+                    currentAssetCtx={currentAssetCtx}
                     initTpOrSlPrice={currentTpOrSl.tpPrice || ''}
                     direction={positionData?.direction as 'Long' | 'Short'}
                     size={Number(positionData?.size || 0)}
@@ -831,6 +846,7 @@ export const PerpsSingleCoin = () => {
                     handleActionApproveStatus={handleActionApproveStatus}
                     coin={coin}
                     markPrice={markPrice}
+                    currentAssetCtx={currentAssetCtx}
                     entryPrice={Number(positionData?.entryPrice || 0)}
                     initTpOrSlPrice={currentTpOrSl.slPrice || ''}
                     direction={positionData?.direction as 'Long' | 'Short'}
@@ -903,7 +919,7 @@ export const PerpsSingleCoin = () => {
             </div>
 
             {/* Details */}
-            <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
+            <div className="text-15 font-medium text-r-neutral-title-1 mt-12 mb-8">
               {t('page.perps.details')}
             </div>
             <div className="bg-r-neutral-card1 rounded-[12px] px-16">
@@ -915,47 +931,6 @@ export const PerpsSingleCoin = () => {
                   ${splitNumberByStep(positionData?.entryPrice || 0)}
                 </span>
               </div>
-
-              <div className="flex justify-between text-13 py-16">
-                <div className="text-13 text-r-neutral-body flex items-center gap-4 relative">
-                  {t('page.perps.size')}
-                  <TooltipWithMagnetArrow
-                    overlayClassName="rectangle w-[max-content]"
-                    placement="top"
-                    title={t('page.perps.sizeTips')}
-                  >
-                    <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                  </TooltipWithMagnetArrow>
-                </div>
-                <span className="text-r-neutral-title-1 font-medium">
-                  $
-                  {splitNumberByStep(
-                    Number(positionData?.positionValue || 0).toFixed(2)
-                  )}{' '}
-                  = {positionData?.size} {formatPerpsCoin(coin)}
-                </span>
-              </div>
-
-              <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
-                  {t('page.perps.direction')}
-                </span>
-                <span className="text-r-neutral-title-1 font-medium">
-                  {positionData?.direction} {positionData?.leverage}x
-                </span>
-              </div>
-
-              <div className="flex justify-between text-13 py-16">
-                <span className="text-r-neutral-body">
-                  {t('page.perps.marginMode')}
-                </span>
-                <span className="text-r-neutral-title-1 font-medium">
-                  {positionData?.type === 'cross'
-                    ? t('page.perps.cross')
-                    : t('page.perps.isolated')}
-                </span>
-              </div>
-
               <div className="flex justify-between text-13 py-16">
                 <div className="text-r-neutral-body flex items-center gap-4 relative">
                   {Number(positionData?.fundingPayments || 0) < 0
@@ -993,17 +968,25 @@ export const PerpsSingleCoin = () => {
           </>
         )}
 
-        {!hasPosition && (
+        <PerpsLimitOrdersSection
+          rows={detailLimitRows}
+          marketDataMap={marketDataMap}
+          className="mt-16"
+          disableCoinNavigation
+        />
+
+        {!hasPosition && !hasLimitOrders && (
           <div className="mt-16">
             <PerpsAbout coin={coin} />
           </div>
         )}
 
         {/* Market Info Section */}
-        <div className="text-15 font-medium text-r-neutral-title-1 mt-16 mb-8">
-          Info
+        <div className="text-15 font-medium text-r-neutral-title-1 mt-24 mb-8 flex gap-4 items-center">
+          <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
+          {t('page.perps.info')}
         </div>
-        <div className="bg-r-neutral-line rounded-[12px] px-16">
+        <div className="bg-r-neutral-card1 rounded-[12px] px-16">
           <div className="flex justify-between text-13 py-16">
             <span className="text-r-neutral-body">
               {t('page.perps.dailyVolume')}
@@ -1059,7 +1042,7 @@ export const PerpsSingleCoin = () => {
           <div className="h-[20px]" />
         )}
 
-        {hasPosition && (
+        {(hasPosition || hasLimitOrders) && (
           <div className="mb-16">
             <PerpsAbout coin={coin} />
           </div>
@@ -1171,7 +1154,6 @@ export const PerpsSingleCoin = () => {
         activeAssetCtx={activeAssetCtx}
         visible={openPositionVisible}
         direction={positionDirection}
-        providerFee={providerFee}
         maxNtlValue={Number(
           currentAssetCtx?.maxUsdValueSize || PERPS_MAX_NTL_VALUE
         )}

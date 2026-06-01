@@ -3286,10 +3286,30 @@
         "title": "Tüm Pozisyonları Kapatmayı Onayla"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "TÜM Emirleri İptal Etmeyi Onayla",
+        "cancelAllOrdersConfirmMessage": "Tüm Limit Emirleriniz iptal edilecek",
         "description": "Tüm açık emirleriniz iptal edilecek.",
         "title": "Tüm Emirleri İptal Etmeyi Onayla"
       },
+      "limitOrders": "Limit Emirleri",
+      "cancelAll": "Tümünü İptal Et",
+      "limitOrderDetail": {
+        "title": "Limit {{side}} {{pair}}",
+        "time": "Saat",
+        "size": "Büyüklük",
+        "filled": "Gerçekleşti",
+        "currentPrice": "Mevcut Fiyat",
+        "limitPrice": "Limit Fiyatı",
+        "marginUsage": "Marjin Kullanımı",
+        "cancelLimitOrder": "Limit Emrini İptal Et",
+        "buy": "Al",
+        "sell": "Sat"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Limit emri iptal edildi",
+        "cancelLimitOrdersSuccess": "{{count}} limit emri iptal edildi",
+        "cancelLimitOrderError": "Limit emri iptal edilemedi",
+        "limitOrderPlaced": "Limit {{direction}} {{coin}}: Boyut {{size}}, ${{price}} fiyatından verildi",
         "cancelTWAPOrderSuccess": "TWAP emri başarıyla iptal edildi.",
         "cancelOrderSuccess": "Emir iptal edildi.",
         "closeAllPositionsSuccess": "Tüm açık pozisyonlar başarıyla kapatıldı.",
@@ -3573,6 +3593,7 @@
       "openProModeInTab": "Sekme'de Pro Modunu Aç",
       "currentPrice": "Mevcut Fiyat",
       "details": "Ayrıntılar",
+      "info": "Bilgi",
       "liquidationDistanceUp": "Yükselme <bold>{{percent}}</bold> likidasyonu tetikleyecektir.",
       "isolatedMargin": "Ayrılmış Marj",
       "cannotChangeMarginModeWithOpenPositions": "Açık pozisyonlarla Marj Modu değiştirilemez.",
@@ -4028,6 +4049,17 @@
         "addSize": "Miktar Ekle"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "{{coin}} Pozisyonu Aç",
+        "checkMarketOrder": "Market Emrini Kontrol Et",
+        "checkLimitOrder": "Limit Emrini Kontrol Et",
+        "orderType": "Emir Türü",
+        "currentPrice": "Mevcut Fiyat",
+        "check": "Kontrol Et",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Limit Fiyatı",
+        "mayExecuteImmediately": "Bu limit emri hemen gerçekleşebilir",
+        "setLimitOrderBtn": "Limit Emri Ver",
         "insufficientBalance": "Yetersiz bakiye",
         "available": "Kullanılabilir",
         "invalidNumber": "Geçersiz sayı",
@@ -4049,6 +4081,16 @@
         "stopLossWhenPriceAbove": "Fiyat Üstünde Olduğunda Zarar Durdur Emri",
         "newPosition": "Pozisyon Aç",
         "stopLossWhenPriceBelow": "Fiyat Altında Olduğunda Zarar Durdur"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Limit Alış Fiyatı Belirle",
+        "setLimitSellPrice": "Limit Satış Fiyatı Belirle",
+        "mid": "Orta fiyat",
+        "set": "Ayarla",
+        "blockError": "Emir fiyatı %10 fiyat koruma limitini aşıyor.",
+        "warning": "Limit fiyatı piyasa fiyatından %5+ uzakta",
+        "confirmTitle": "Limit Fiyatını Gözden Geçir",
+        "confirmMessage": "Limit fiyatı piyasa fiyatından %5+ uzakta"
       },
       "PerpsEditMarginPopup": {
         "amountToReduce": "Azaltılacak Tutar",
@@ -4088,6 +4130,8 @@
         "confirm": "Onayla",
         "youLoss": "Kaybettin",
         "priceBelow": "Fiyat aşağıda",
+        "whenPriceAbove": "Fiyat üzerine çıktığında",
+        "whenPriceBelow": "Fiyat altına indiğinde",
         "priceAbove": "Fiyat Üstünde",
         "noPosition": "İlk önce marjin girmeniz gerekir.",
         "takeProfitTipsLong": "Kar alım fiyatı mevcut fiyattan daha yüksek olmalıdır.",

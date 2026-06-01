@@ -3323,10 +3323,30 @@
         "description": "您所有的未平仓头寸将以市价平仓。"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "确认取消所有挂单",
+        "cancelAllOrdersConfirmMessage": "您所有的限价单将被取消",
         "description": "您所有未成交的挂单将被取消。",
         "title": "确认取消所有订单"
       },
+      "limitOrders": "限价单",
+      "cancelAll": "取消全部",
+      "limitOrderDetail": {
+        "title": "限价 {{side}} {{pair}}",
+        "time": "时间",
+        "size": "数量",
+        "filled": "已成交",
+        "currentPrice": "现价",
+        "limitPrice": "限价",
+        "marginUsage": "保证金占用",
+        "cancelLimitOrder": "取消限价单",
+        "buy": "买入",
+        "sell": "卖出"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "限价单已取消",
+        "cancelLimitOrdersSuccess": "{{count}} 个限价单已取消",
+        "cancelLimitOrderError": "取消限价单失败",
+        "limitOrderPlaced": "限价 {{direction}} {{coin}}：数量 {{size}}，价格 ${{price}}",
         "success": "成功",
         "stopLossSuccess": "止损设置成功",
         "depositTip": "{{amount}} USDC 已存入",
@@ -3617,6 +3637,7 @@
       "isolatedMarginDesc": "每个头寸使用独立的保证金。损失仅限于该头寸，但更容易被清算。",
       "liquidationDistanceDown": "下跌 <bold>{{percent}}</bold> 将触发清算",
       "details": "详情",
+      "info": "市场信息",
       "crossMarginDesc": "所有头寸共享相同的保证金。这减少了单一头寸被强制平仓的风险，但在极端市场波动中，所有交叉保证金资金都有可能被损失。",
       "newUserGuide": {
         "learnMore": "了解更多"
@@ -4065,6 +4086,17 @@
         "liquidationPriceTips": "当您的保证金跌破维持保证金水平时，交易所为了防止进一步亏损而自动平仓的价格（即强平价）。"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "{{coin}} 开仓",
+        "checkMarketOrder": "预览市价单",
+        "checkLimitOrder": "预览限价单",
+        "orderType": "订单类型",
+        "currentPrice": "现价",
+        "check": "预览",
+        "orderTypeMarket": "市价",
+        "orderTypeLimit": "限价",
+        "limitPrice": "限价",
+        "mayExecuteImmediately": "此限价单可能立即成交",
+        "setLimitOrderBtn": "下限价单",
         "margin": "保证金",
         "short": "做空",
         "available": "可用",
@@ -4086,6 +4118,16 @@
         "rabbyFee": "Rabby 手续费",
         "free": "可用保证金",
         "size": "数量"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "设置买入限价",
+        "setLimitSellPrice": "设置卖出限价",
+        "mid": "中间价",
+        "set": "设置",
+        "blockError": "订单价格超出 10% 价格保护上限。",
+        "warning": "限价偏离市场价格 5% 以上",
+        "confirmTitle": "确认限价",
+        "confirmMessage": "限价偏离市场价格 5% 以上"
       },
       "PerpsEditMarginPopup": {
         "reduceMarginSuccess": "保证金已成功降低",
@@ -4140,6 +4182,8 @@
         "stopLossTipsLong": "止损价必须低于当前价格。",
         "title": "自动平仓头寸",
         "priceBelow": "价格低于",
+        "whenPriceAbove": "当价格高于",
+        "whenPriceBelow": "当价格低于",
         "takeProfitExpectedPNL": "止盈 预计盈亏",
         "takeProfitWhen": "止盈条件",
         "stopLossTipsShortLiquidation": "价格高于爆仓价（{{price}}）",

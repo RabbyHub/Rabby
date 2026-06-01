@@ -39,6 +39,8 @@ import {
   supportedDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PositionItem } from '../components/PositionItem';
+import { PerpsLimitOrdersSection } from '../components/PerpsLimitOrdersSection';
+import { useHomeLimitOrders } from '../hooks/useLimitOrders';
 import BigNumber from 'bignumber.js';
 import { AssetItem } from '../components/AssetMetaItem';
 import NewUserProcessPopup from '../popup/NewUserProcessPopup';
@@ -103,6 +105,7 @@ export const Perps: React.FC = () => {
   } = usePerpsState({
     setDeleteAgentModalVisible,
   });
+  const homeLimitRows = useHomeLimitOrders(positionAndOpenOrders);
   const { isDarkTheme } = useThemeMode();
   const { handleEnableUnifiedAccount } = usePerpsActions();
   const { isUnifiedAccount } = usePerpsAccount();
@@ -470,6 +473,14 @@ export const Perps: React.FC = () => {
                 ))}
             </div>
           </div>
+        )}
+
+        {isInitialized && (
+          <PerpsLimitOrdersSection
+            rows={homeLimitRows}
+            marketDataMap={marketDataMap}
+            className="mt-20 mx-20"
+          />
         )}
 
         {isInitialized && (

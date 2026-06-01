@@ -193,6 +193,7 @@ export const TransactionItem = ({
           name: originTx?.site?.name,
           icon: originTx?.site?.icon,
           origin: originTx?.site?.origin,
+          isFromRabby: true,
         }
       : undefined;
 

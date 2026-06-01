@@ -1,6 +1,6 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { formatUsdValue } from '@/ui/utils';
+import { formatNumber, formatUsdValue } from '@/ui/utils';
 import { PerpsSlider } from '../components/PerpsSlider';
 import { useTranslation } from 'react-i18next';
 import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
@@ -84,7 +84,7 @@ export const MarginEditInput: React.FC<MarginEditInputProps> = ({
             Min
           </div>
           <div className="text-rb-neutral-secondary text-[12px] leading-[16px] font-medium">
-            {formatUsdValue(minMargin, PERPS_MARGIN_SIGNIFICANT_DIGITS)}
+            {formatNumber(minMargin)}
           </div>
         </div>
         <input
@@ -118,7 +118,7 @@ export const MarginEditInput: React.FC<MarginEditInputProps> = ({
             Max
           </div>
           <div className="text-rb-neutral-secondary text-[12px] leading-[16px] font-medium">
-            {formatUsdValue(maxMargin, PERPS_MARGIN_SIGNIFICANT_DIGITS)}
+            {formatNumber(maxMargin)}
           </div>
         </div>
       </div>

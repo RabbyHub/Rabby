@@ -1,0 +1,135 @@
+import React, { useCallback, useMemo } from 'react';
+import type { Tx } from '@rabby-wallet/rabby-api/dist/types';
+
+import type { Account } from '@/background/service/preference';
+import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
+import { IconWithChain } from '@/ui/component/TokenWithChain';
+import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useMiniSigner } from '@/ui/hooks/useSigner';
+import { useWallet } from '@/ui/utils';
+
+const StakingSignHeader = ({
+  logo,
+  chain,
+  title,
+}: {
+  logo?: string;
+  chain?: string;
+  title: string;
+}) => {
+  return React.createElement(
+    'div',
+    {
+      className: 'flex flex-col items-center w-full justify-center mb-[-6px]',
+    },
+    React.createElement(
+      'div',
+      { className: 'flex items-center justify-center w-full' },
+      React.createElement(IconWithChain, {
+        iconUrl: logo,
+        chainServerId: chain || 'eth',
+        width: '24px',
+        height: '24px',
+        isShowChainTooltip: true,
+      }),
+      React.createElement(
+        'div',
+        {
+          className: 'ml-[8px] font-medium text-[20px] text-r-neutral-title-1',
+        },
+        title
+      )
+    )
+  );
+};
+
+export const useStakingMiniSign = ({
+  account,
+  chainServerId,
+}: {
+  account: Account | null | undefined;
+  chainServerId: string;
+}) => {
+  const wallet = useWallet();
+  const { openUI, resetGasStore, close: closeSign } = useMiniSigner({
+    account,
+    chainServerId,
+    autoResetGasStoreOnChainChange: true,
+  });
+
+  const baseGa = useMemo(
+    () => ({
+      category: 'Staking',
+      source: 'Staking',
+    }),
+    []
+  );
+
+  const sign = useCallback(
+    async ({
+      txs,
+      trigger,
+      logo,
+    }: {
+      txs: Tx[];
+      trigger: string;
+      logo?: string;
+    }) => {
+      const runFullSign = async () => {
+        const hashes: string[] = [];
+        for (const tx of txs) {
+          hashes.push(
+            await wallet.sendRequest<string>({
+              method: 'eth_sendTransaction',
+              params: [tx],
+            })
+          );
+        }
+        return hashes;
+      };
+
+      if (!supportedDirectSign(account?.type || '')) {
+        return runFullSign();
+      }
+
+      resetGasStore();
+      closeSign();
+      const signerConfig = {
+        txs,
+        ga: {
+          ...baseGa,
+          trigger,
+        },
+        title: React.createElement(StakingSignHeader, {
+          title: trigger,
+          logo,
+          chain: chainServerId,
+        }),
+        showSimulateChange: true,
+        disableSignBtn: false,
+      };
+
+      try {
+        return await openUI(signerConfig);
+      } catch (error) {
+        if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
+          throw error;
+        }
+        return runFullSign();
+      }
+    },
+    [
+      account?.type,
+      baseGa,
+      chainServerId,
+      closeSign,
+      openUI,
+      resetGasStore,
+      wallet,
+    ]
+  );
+
+  return {
+    sign,
+  };
+};

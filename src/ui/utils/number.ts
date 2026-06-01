@@ -162,6 +162,47 @@ export const formatUsdValue = (
   return '<$0.01';
 };
 
+export const formatTVL = (
+  value: string | number,
+  roundingMode = BigNumber.ROUND_HALF_UP as BigNumber.RoundingMode
+) => {
+  const bnValue = new BigNumber(value);
+  if (bnValue.isNaN()) {
+    return value.toString();
+  }
+
+  const absoluteValue = bnValue.abs();
+
+  if (absoluteValue.lt(1e6)) {
+    return formatUsdValue(value, roundingMode);
+  }
+
+  const formatCompactValue = (amount: BigNumber) => {
+    if (amount.gte(1e9)) {
+      return `${formatNumber(
+        amount.div(1e9).toFixed(),
+        2,
+        undefined,
+        roundingMode
+      )}B`;
+    }
+    if (amount.gte(1e6)) {
+      return `${formatNumber(
+        amount.div(1e6).toFixed(),
+        2,
+        undefined,
+        roundingMode
+      )}M`;
+    }
+    return `${formatNumber(amount.toFixed(), 2, undefined, roundingMode)}`;
+  };
+
+  if (bnValue.lt(0)) {
+    return `-$${formatCompactValue(absoluteValue)}`;
+  }
+  return `$${formatCompactValue(bnValue)}`;
+};
+
 export type CurrencyLike = {
   code?: string;
   symbol: string;

@@ -3280,10 +3280,30 @@
         "title": "Konfirmasi Tutup Semua Posisi"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "Konfirmasi Pembatalan SEMUA Pesanan",
+        "cancelAllOrdersConfirmMessage": "Semua Pesanan Limit Anda akan dibatalkan",
         "description": "Semua pesanan terbuka Anda akan dibatalkan.",
         "title": "Konfirmasi Pembatalan Semua Pesanan"
       },
+      "limitOrders": "Pesanan Limit",
+      "cancelAll": "Batalkan Semua",
+      "limitOrderDetail": {
+        "title": "Limit {{side}} {{pair}}",
+        "time": "Waktu",
+        "size": "Ukuran",
+        "filled": "Terisi",
+        "currentPrice": "Harga Saat Ini",
+        "limitPrice": "Harga Limit",
+        "marginUsage": "Penggunaan Margin",
+        "cancelLimitOrder": "Batalkan Pesanan Limit",
+        "buy": "Beli",
+        "sell": "Jual"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "Pesanan Limit dibatalkan",
+        "cancelLimitOrdersSuccess": "{{count}} pesanan Limit dibatalkan",
+        "cancelLimitOrderError": "Gagal membatalkan pesanan Limit",
+        "limitOrderPlaced": "Limit {{direction}} {{coin}}: Ukuran {{size}} ditempatkan di ${{price}}",
         "withdraw": "Penarikan Berhasil",
         "withdrawTip": "{{amount}} USDC telah berhasil ditarik",
         "orderPlaced": "Pesanan telah ditempatkan.",
@@ -3563,6 +3583,7 @@
       "directDepositFast": "Cepat, 0 Slippage",
       "positionValue": "Nilai Posisi",
       "details": "Detail",
+      "info": "Info",
       "marginMode": "Mode Margin",
       "currentPrice": "Harga Saat Ini",
       "isolatedMargin": "Margin Terpisah",
@@ -4022,6 +4043,17 @@
         "liquidationPriceTips": "Harga di mana posisi Anda secara otomatis ditutup oleh bursa untuk mencegah kerugian lebih lanjut ketika margin Anda jatuh di bawah tingkat margin pemeliharaan."
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "Buka Posisi {{coin}}",
+        "checkMarketOrder": "Periksa Pesanan Market",
+        "checkLimitOrder": "Periksa Pesanan Limit",
+        "orderType": "Tipe Pesanan",
+        "currentPrice": "Harga Saat Ini",
+        "check": "Periksa",
+        "orderTypeMarket": "Market",
+        "orderTypeLimit": "Limit",
+        "limitPrice": "Harga Limit",
+        "mayExecuteImmediately": "Pesanan Limit ini dapat dieksekusi segera",
+        "setLimitOrderBtn": "Tempatkan Pesanan Limit",
         "margin": "Margin",
         "available": "Tersedia",
         "short": "Jual Pendek",
@@ -4043,6 +4075,16 @@
         "invalidNumber": "Nomor tidak valid",
         "size": "Ukuran",
         "minMargin": "Margin minimum adalah {{amount}}"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "Atur Harga Beli Limit",
+        "setLimitSellPrice": "Atur Harga Jual Limit",
+        "mid": "Harga tengah",
+        "set": "Atur",
+        "blockError": "Harga pesanan melebihi batas perlindungan harga 10%.",
+        "warning": "Harga Limit menyimpang 5%+ dari harga pasar",
+        "confirmTitle": "Periksa Harga Limit",
+        "confirmMessage": "Harga Limit menyimpang 5%+ dari harga pasar"
       },
       "PerpsEditMarginPopup": {
         "title": "Sesuaikan Margin",
@@ -4078,6 +4120,8 @@
       "PerpsAutoCloseModal": {
         "EntryAndCurrentPrice": "Entry: ${{entryPrice}} Saat Ini: ${{currentPrice}}",
         "priceBelow": "Harga di bawah",
+        "whenPriceAbove": "Saat harga di atas",
+        "whenPriceBelow": "Saat harga di bawah",
         "confirm": "Konfirmasi",
         "youLoss": "Anda kalah",
         "stopLossWhenPriceAbove": "Stop Loss Ketika Harga Di Atas",

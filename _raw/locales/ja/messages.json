@@ -3283,10 +3283,30 @@
         "description": "保有中のすべての未決済ポジションは、市場価格で決済されます。"
       },
       "cancelAllOrdersPopup": {
+        "cancelAllOrdersConfirmTitle": "すべての注文をキャンセルしますか？",
+        "cancelAllOrdersConfirmMessage": "すべての指値注文がキャンセルされます",
         "title": "すべての注文をキャンセルしますか？",
         "description": "すべての未約定注文はキャンセルされます。"
       },
+      "limitOrders": "指値注文",
+      "cancelAll": "すべてキャンセル",
+      "limitOrderDetail": {
+        "title": "指値 {{side}} {{pair}}",
+        "time": "時間",
+        "size": "サイズ",
+        "filled": "約定済み",
+        "currentPrice": "現在価格",
+        "limitPrice": "指値価格",
+        "marginUsage": "証拠金使用額",
+        "cancelLimitOrder": "指値注文をキャンセル",
+        "buy": "買い",
+        "sell": "売り"
+      },
       "toast": {
+        "cancelLimitOrderSuccess": "指値注文がキャンセルされました",
+        "cancelLimitOrdersSuccess": "{{count}}件の指値注文がキャンセルされました",
+        "cancelLimitOrderError": "指値注文のキャンセルに失敗しました",
+        "limitOrderPlaced": "指値 {{direction}} {{coin}}：サイズ {{size}} を ${{price}} で発注",
         "marginUpdated": "証拠金を更新しました",
         "cancelFailed": "キャンセルに失敗しました",
         "withdrawTip": "{{amount}} USDC が正常に引き出されました",
@@ -3565,6 +3585,7 @@
       "openPositionTips": "無期限契約の取引には、投資額および担保の突然かつ全損につながる可能性を含む、重大なリスクが伴います。高いレバレッジと市場のボラティリティのため、すべてのユーザーに適しているとは限りません。価格はファンディングレートと流動性の影響を受けることがあり、通知なしに自動清算されることがあります。市場データはHyperliquidによって提供されます。",
       "directDepositFast": "迅速、スリッページなし",
       "details": "詳細情報",
+      "info": "情報",
       "positionValue": "ポジションの価値",
       "currentPrice": "現在の価格",
       "settings": "設定",
@@ -4025,6 +4046,17 @@
         "sizeTips": "取引の総額または数量は、証拠金とレバレッジによって決定されます。"
       },
       "PerpsOpenPositionPopup": {
+        "openCoinPosition": "{{coin}} ポジションを開設",
+        "checkMarketOrder": "成行注文を確認",
+        "checkLimitOrder": "指値注文を確認",
+        "orderType": "注文タイプ",
+        "currentPrice": "現在価格",
+        "check": "確認",
+        "orderTypeMarket": "成行",
+        "orderTypeLimit": "指値",
+        "limitPrice": "指値価格",
+        "mayExecuteImmediately": "この指値注文はすぐに約定する可能性があります",
+        "setLimitOrderBtn": "指値注文を発注",
         "leverage": "レバレッジ",
         "margin": "証拠金",
         "available": "利用可能",
@@ -4046,6 +4078,16 @@
         "insufficientBalance": "証拠金不足",
         "maximumOrderSize": "最大注文数量は{{amount}}です",
         "minMargin": "最低証拠金は {{amount}}"
+      },
+      "PerpEditLimitPriceTag": {
+        "setLimitBuyPrice": "指値買い価格を設定",
+        "setLimitSellPrice": "指値売り価格を設定",
+        "mid": "中値",
+        "set": "設定",
+        "blockError": "注文価格が10%の価格保護上限を超えています。",
+        "warning": "指値価格が市場価格から5%以上離れています",
+        "confirmTitle": "指値価格を確認",
+        "confirmMessage": "指値価格が市場価格から5%以上離れています"
       },
       "PerpsEditMarginPopup": {
         "addMargin": "証拠金を追加",
@@ -4081,6 +4123,8 @@
       "PerpsAutoCloseModal": {
         "noPosition": "まず証拠金を入力してください。",
         "priceBelow": "価格が下回っています",
+        "whenPriceAbove": "価格が上回ったとき",
+        "whenPriceBelow": "価格が下回ったとき",
         "stopLossTipsLong": "ストップロス価格は現在価格より低く設定する必要があります。",
         "takeProfit": "利確",
         "confirm": "確認",

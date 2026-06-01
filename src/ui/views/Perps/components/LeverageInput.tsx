@@ -16,6 +16,7 @@ interface LeverageInputProps {
   max: number;
   step?: number;
   errorMessage?: string | null;
+  embedded?: boolean;
 }
 
 export const LeverageInput: React.FC<LeverageInputProps> = ({
@@ -26,6 +27,7 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
   step,
   onChange,
   errorMessage,
+  embedded,
 }) => {
   const { t } = useTranslation();
   const textColorClass =
@@ -47,13 +49,16 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
   });
 
   return (
-    <div className="bg-r-neutral-card1 rounded-[8px] mb-[12px] px-[16px] py-[16px]">
-      <div className="text-[16px] leading-[19px] font-medium text-r-blue-default">
-        {title}
-      </div>
+    <div
+      className={clsx(
+        'px-[16px] pb-[16px] pt-[20px]',
+        !embedded && 'bg-r-neutral-card1 rounded-[8px] mb-[12px]'
+      )}
+    >
+      <div className="text-17 font-bold text-r-neutral-title-1">{title}</div>
       <div className="flex items-center mb-[8px]">
-        <div className="flex items-end gap-[6px]">
-          <div className="text-[13px] leading-[16px] text-r-neutral-foot pb-[2px]">
+        <div className="flex items-center gap-[6px]">
+          <div className="text-[13px] leading-[16px] text-r-neutral-foot">
             {t('page.perpsDetail.PerpsEditMarginPopup.upTo')}
           </div>
           <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
