@@ -364,28 +364,6 @@ export const BridgeShowMore = ({
         <div />
       </div>
 
-      <div className="flex items-center justify-center gap-8 mb-8">
-        <div
-          className={clsx(
-            'flex items-center opacity-50',
-            'cursor-pointer',
-            'text-r-neutral-foot text-12'
-          )}
-          onClick={() => setOpen((e) => !e)}
-        >
-          <span>{t('page.bridge.showMore.title')}</span>
-          <IconArrowDownCC
-            viewBox="0 0 14 14"
-            width={14}
-            height={14}
-            className={clsx(
-              'transition-transform',
-              open && 'rotate-180 translate-y-1'
-            )}
-          />
-        </div>
-      </div>
-
       <div className={clsx('overflow-hidden', !open && 'h-0')}>
         {!sourceAlwaysShow && sourceContentRender()}
         {!showSlippageError && (
@@ -445,6 +423,28 @@ export const BridgeShowMore = ({
             </Tooltip>
           </ListItem>
         ) : null}
+      </div>
+
+      <div className="flex items-center justify-center gap-8 mt-8">
+        <div
+          className={clsx(
+            'flex items-center opacity-50',
+            'cursor-pointer',
+            'text-r-neutral-foot text-12'
+          )}
+          onClick={() => setOpen((e) => !e)}
+        >
+          <span>{t('page.bridge.showMore.title')}</span>
+          <IconArrowDownCC
+            viewBox="0 0 14 14"
+            width={14}
+            height={14}
+            className={clsx(
+              'transition-transform',
+              open && 'rotate-180 translate-y-1'
+            )}
+          />
+        </div>
       </div>
     </div>
   );
