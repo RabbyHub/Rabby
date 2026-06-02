@@ -470,7 +470,7 @@ const ImportKeyOrSeed: React.FC<{
                     />
                   </Form.Item>
                   {pkOnPrivateKey ? (
-                    <div className="mt-12 flex justify-between items-center text-[13px] font-medium text-r-neutral-title-1">
+                    <div className="mt-12 flex justify-between items-center text-[13px] font-medium text-r-neutral-foot">
                       <div>{t('page.addressDetail.address')}</div>
                       <div>{ellipsisAddress(pkOnPrivateKey)}</div>
                     </div>
