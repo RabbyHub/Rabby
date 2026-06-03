@@ -1,7 +1,6 @@
 /**
- * Shadow DOM style injection. Widget is dark-only by product decision (decoupled
- * from Rabby's theme preference). Uses `adoptedStyleSheets` to bypass the host
- * page's CSP `style-src`.
+ * Dark-only by product decision (decoupled from Rabby's theme preference).
+ * adoptedStyleSheets bypasses the host page's CSP `style-src`.
  */
 
 // Relative import: theme-colors is a .js file and webpack's TSConfigPathsPlugin
@@ -29,9 +28,15 @@ const STYLES = `
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    /* so scrollbars don't flash during the expand transition */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* legacy Edge/IE */
+  }
+  *::-webkit-scrollbar {
+    display: none; /* WebKit/Blink */
   }
 
-  /* Widget = transparent chrome; bg comes from header (bg-2) and body (bg-3) children */
+  /* Transparent chrome — bg comes from the header/body children */
   .rabby-perps-widget {
     position: fixed;
     display: flex;
@@ -49,7 +54,6 @@ const STYLES = `
       box-shadow 0.22s ease;
   }
 
-  /* Rounded only on the inward-facing side when docked */
   .rabby-perps-widget.dock-right {
     border-radius: 16px 0 0 16px;
   }
@@ -57,7 +61,7 @@ const STYLES = `
     border-radius: 0 16px 16px 0;
   }
 
-  /* transition: none so the pointer-follow position update isn't laggy */
+  /* no transition so pointer-follow isn't laggy */
   .rabby-perps-widget.dragging {
     border-radius: 16px;
     cursor: grabbing;
@@ -71,8 +75,7 @@ const STYLES = `
     cursor: default;
   }
 
-  /* Bottom-half ball: container is bottom-anchored (set inline) so the panel grows
-   * upward instead of off-screen. Layout order stays header-on-top, panel-below. */
+  /* Bottom-anchored (inline) so the panel grows upward instead of off-screen */
 
   .rabby-perps-widget__header {
     display: flex;
@@ -145,8 +148,7 @@ const STYLES = `
     color: var(--rb-red-default);
   }
 
-  /* display:none (not opacity:0) so they don't contribute to widget's intrinsic
-   * min-width — sparkline inside body would otherwise prevent shrinking. */
+  /* display:none (not opacity:0) so it doesn't add to the widget's min-width */
   .rabby-perps-widget__address {
     display: none;
     font-size: 12px;
@@ -193,6 +195,12 @@ const STYLES = `
     cursor: pointer;
     overflow: hidden;
     transition: background 0.15s ease;
+  }
+  .rabby-perps-card:hover {
+    background: var(--rb-neutral-bg-2);
+  }
+  .rabby-perps-card:active {
+    background: var(--rb-neutral-bg-4);
   }
   .rabby-perps-card__top {
     display: flex;

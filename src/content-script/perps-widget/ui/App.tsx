@@ -17,13 +17,18 @@ const COLLAPSED_HEIGHT = 32;
 const HIDE_PANEL_DELAY_MS = 200;
 /** Movement under this many px is treated as click/hover, not drag */
 const DRAG_INTENT_THRESHOLD_PX = 5;
+/** Gap kept between the docked ball and the top/bottom viewport edges */
+const EDGE_SAFE_MARGIN_PX = 12;
 
 function computeDefaultY(): number {
   return Math.max(0, window.innerHeight - 80);
 }
 
 function clampY(y: number): number {
-  return Math.max(0, Math.min(y, window.innerHeight - COLLAPSED_HEIGHT));
+  return Math.max(
+    EDGE_SAFE_MARGIN_PX,
+    Math.min(y, window.innerHeight - COLLAPSED_HEIGHT - EDGE_SAFE_MARGIN_PX)
+  );
 }
 
 function dockSideFor(x: number): 'left' | 'right' {
@@ -111,12 +116,14 @@ export const App: React.FC = () => {
   // Threshold-gated drag so a hover-and-click doesn't accidentally pick up the widget.
   const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
     if (e.button !== 0) return;
+    // keeps the grab point aligned with the cursor
+    const rect = e.currentTarget.getBoundingClientRect();
     dragStateRef.current = {
       pointerId: e.pointerId,
       startX: e.clientX,
       startY: e.clientY,
-      origX: pos.x,
-      origY: pos.y,
+      origX: e.clientX - COLLAPSED_WIDTH / 2,
+      origY: rect.top,
       intent: 'maybe',
     };
 
@@ -137,7 +144,9 @@ export const App: React.FC = () => {
         setIsExpanded(false);
         clearHideTimer();
       }
-      setPos({ x: s.origX + dx, y: clampY(s.origY + dy) });
+      // Track the cursor 1:1 while dragging (no clamp) so the ball never lags
+      // behind the pointer at the screen edges; clamp + dock happen on release.
+      setPos({ x: s.origX + dx, y: s.origY + dy });
     };
 
     const onUp = (): void => {
@@ -147,9 +156,11 @@ export const App: React.FC = () => {
         setIsDragging(false);
         setPos((prev) => {
           const side = dockSideFor(prev.x);
+          // Dock x to the nearest edge; clamp y back into the viewport now that
+          // dragging tracked the cursor freely. This docked position is persisted.
           const snapped = {
             x: side === 'left' ? 0 : window.innerWidth - COLLAPSED_WIDTH,
-            y: prev.y,
+            y: clampY(prev.y),
           };
           saveBallPosition(snapped).catch(() => {});
           return snapped;
