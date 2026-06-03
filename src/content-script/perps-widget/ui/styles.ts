@@ -194,6 +194,12 @@ const STYLES = `
     overflow: hidden;
     transition: background 0.15s ease;
   }
+  .rabby-perps-card:hover {
+    background: var(--rb-neutral-bg-2);
+  }
+  .rabby-perps-card:active {
+    background: var(--rb-neutral-bg-4);
+  }
   .rabby-perps-card__top {
     display: flex;
     align-items: center;
