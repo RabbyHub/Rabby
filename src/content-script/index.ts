@@ -93,6 +93,16 @@ if (!isManifestV3) {
   injectProviderScript(false);
 }
 
+const getHardcodedBlockedHosts = (): string[] => {
+  const hosts = ['app.hyperliquid.xyz'];
+  try {
+    hosts.push(new URL(browser.runtime.getURL('')).hostname);
+  } catch {
+    // best-effort: skip if the extension origin can't be resolved
+  }
+  return hosts;
+};
+
 (async () => {
   try {
     if (window.top !== window) return;
@@ -116,7 +126,10 @@ if (!isManifestV3) {
     );
     await bootPerpsWidget({
       enabled: true,
-      blockedHosts: Array.isArray(blockedHosts) ? blockedHosts : [],
+      blockedHosts: [
+        ...getHardcodedBlockedHosts(),
+        ...(Array.isArray(blockedHosts) ? blockedHosts : []),
+      ],
     });
   } catch (err) {
     console.warn('[perps-widget] bootstrap failed', err);
