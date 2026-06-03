@@ -6,7 +6,6 @@ import {
   PERPS_MAX_NTL_VALUE,
   PERPS_POSITION_RISK_LEVEL,
   PerpsQuoteAsset,
-  COLLATERAL_TOKEN_TO_QUOTE,
 } from './constants';
 import { useWallet, WalletController } from '@/ui/utils';
 import { KEYRING_CLASS } from '@/constant';
@@ -51,30 +50,15 @@ export const getPxDecimals = (markPx: string) => {
   return decimalPart.length;
 };
 
-/**
- * Determine quote asset from Meta.collateralToken.
- */
-export const getQuoteAssetFromMeta = (meta: Meta): PerpsQuoteAsset => {
-  return COLLATERAL_TOKEN_TO_QUOTE[meta.collateralToken] ?? 'USDC';
-};
-
-export const normalizeHyperliquidCoinForLogo = (coin: string) => {
-  if (!coin) {
-    return '';
-  }
-  // Keep km:* untouched, but drop k-prefix for meme perps like kPEPE -> PEPE.
-  if (coin.startsWith('k') && !coin.startsWith('km:')) {
-    return coin.slice(1);
-  }
-  return coin;
-};
-
-export const getHyperliquidCoinLogoUrl = (coin: string) => {
-  const iconKey = normalizeHyperliquidCoinForLogo(coin);
-  if (!iconKey) {
-    return '';
-  }
-  return `https://app.hyperliquid.xyz/coins/${iconKey}.svg`;
+import { getQuoteAssetFromMeta } from '@/utils/perps/quoteAsset';
+import {
+  normalizeHyperliquidCoinForLogo,
+  getHyperliquidCoinLogoUrl,
+} from '@/utils/perps/coinLogo';
+export {
+  getQuoteAssetFromMeta,
+  normalizeHyperliquidCoinForLogo,
+  getHyperliquidCoinLogoUrl,
 };
 
 export const formatMarkData = (

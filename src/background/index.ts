@@ -67,6 +67,17 @@ import { testnetOpenapiService } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
 import lendingService from './service/lending';
+import perpsLive from './service/perpsLive';
+import { PERPS_LIVE_PORT_NAME } from '@/utils/message/perpsLive';
+
+/** Controller methods the perps widget content-script may call via runtime.sendMessage */
+const PERPS_WIDGET_RPC_ALLOWLIST = new Set<string>([
+  'getPerpsWidgetEnabled',
+  'getPerpsWidgetBlockedHosts',
+  'getPerpsWidgetBallPosition',
+  'setPerpsWidgetBallPosition',
+  'openInDesktop',
+]);
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
@@ -142,6 +153,9 @@ async function restoreAppState() {
   await transactionsService.init();
   await lendingService.init();
   await innerDappFrameService.init();
+
+  // WS is lazy — subscribes only after the first content-script port attaches
+  perpsLive.boot();
 
   await walletController.tryUnlock();
 
@@ -222,6 +236,34 @@ async function restoreAppState() {
           ready: true,
         },
       });
+      return;
+    }
+    // Native chrome.runtime.onMessage requires explicit `sendResponse(...)` + `return true`
+    // on async paths — returning a Promise would let Chrome close the channel immediately.
+    if (message?.type === 'controller' && typeof message.method === 'string') {
+      if (!PERPS_WIDGET_RPC_ALLOWLIST.has(message.method)) return;
+      const params = Array.isArray(message.params) ? message.params : [];
+      try {
+        const res = (walletController as any)[message.method](...params);
+        if (res && typeof (res as any).then === 'function') {
+          Promise.resolve(res).then(
+            (value) => sendResponse(value),
+            (err) => {
+              console.warn(
+                '[perps-widget rpc] async error',
+                message.method,
+                err
+              );
+              sendResponse(undefined);
+            }
+          );
+          return true;
+        }
+        sendResponse(res);
+      } catch (err) {
+        console.warn('[perps-widget rpc] sync error', message.method, err);
+        sendResponse(undefined);
+      }
     }
   });
 
@@ -340,6 +382,12 @@ keyringService.on('resetPassword', async () => {
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
+  // perpsLive owns this port; bypass the generic page-provider routing below
+  if (port.name === PERPS_LIVE_PORT_NAME) {
+    perpsLive.attachPort(port);
+    return;
+  }
+
   if (
     port.name === 'popup' ||
     port.name === 'notification' ||
