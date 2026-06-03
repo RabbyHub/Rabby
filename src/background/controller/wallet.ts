@@ -6739,6 +6739,19 @@ export class WalletController extends BaseController {
   getPerpsInviteConfig = perpsService.getInviteConfig;
   setPerpsInviteConfig = perpsService.setInviteConfig;
 
+  /* Perps float widget RPC */
+  getPerpsWidgetEnabled = () => preferenceService.getPerpsWidgetEnabled();
+  setPerpsWidgetEnabled = (v: boolean) =>
+    preferenceService.setPerpsWidgetEnabled(v);
+  getPerpsWidgetBlockedHosts = () =>
+    preferenceService.getPerpsWidgetBlockedHosts();
+  setPerpsWidgetBlockedHosts = (hosts: string[]) =>
+    preferenceService.setPerpsWidgetBlockedHosts(hosts);
+  getPerpsWidgetBallPosition = () =>
+    preferenceService.getPerpsWidgetBallPosition();
+  setPerpsWidgetBallPosition = (pos: { x: number; y: number } | null) =>
+    preferenceService.setPerpsWidgetBallPosition(pos);
+
   signPerpsSendSetReferrer = async ({
     address,
     typedData,

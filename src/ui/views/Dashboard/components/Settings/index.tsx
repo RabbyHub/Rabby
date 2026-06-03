@@ -29,6 +29,7 @@ import { ReactComponent as RcIconCurrency } from 'ui/assets/settings/currency.sv
 import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
 import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
+import { ReactComponent as RcIconPerps } from 'ui/assets/dashboard/panel/perps-cc.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -621,6 +622,8 @@ const SettingsInner = ({
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
   const [biometricSupported, setBiometricSupported] = useState(false);
   const [biometricBusy, setBiometricBusy] = useState(false);
+  const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
+  const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
   const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
     () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
   );
@@ -747,6 +750,18 @@ const SettingsInner = ({
     }
   );
 
+  const handleTogglePerpsWidget = useMemoizedFn(async (checked: boolean) => {
+    setPerpsWidgetBusy(true);
+    try {
+      await wallet.setPerpsWidgetEnabled(checked);
+      setPerpsWidgetEnabled(checked);
+    } catch (error) {
+      message.error((error as Error)?.message || 'Failed to update setting');
+    } finally {
+      setPerpsWidgetBusy(false);
+    }
+  });
+
   const handleClickClearWatchMode = () => {
     confirm({
       className: 'modal-support-darkmode',
@@ -826,6 +841,19 @@ const SettingsInner = ({
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    wallet
+      .getPerpsWidgetEnabled()
+      .then((v) => {
+        if (mounted) setPerpsWidgetEnabled(!!v);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, [wallet]);
 
   useEffect(() => {
     if (!visible) return;
@@ -986,6 +1014,20 @@ const SettingsInner = ({
               }
               loading={biometricBusy}
               onChange={handleToggleBiometricUnlock}
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconPerps,
+          leftIconClassName: 'text-r-neutral-body',
+          className: 'js-setting-perps-widget',
+          content: t('page.dashboard.settings.settings.perpsFloatWidget'),
+          rightIcon: (
+            <Switch
+              checked={perpsWidgetEnabled}
+              disabled={perpsWidgetBusy}
+              loading={perpsWidgetBusy}
+              onChange={handleTogglePerpsWidget}
             />
           ),
         },

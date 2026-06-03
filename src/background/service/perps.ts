@@ -6,6 +6,8 @@ import { bytesToHex, publicToAddress } from '@ethereumjs/util';
 import { keyringService } from '.';
 import { SendApproveParams } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 export interface AgentWalletInfo {
   vault: string;
   preference: {
@@ -333,6 +335,10 @@ class PerpsService {
     } else {
       this.store.currentAccount = null;
     }
+    eventBus.emit(
+      EVENTS.PERPS.WIDGET_ACCOUNT_CHANGED,
+      account ? account.address : null
+    );
   };
 
   getLastUsedAccount = async () => {

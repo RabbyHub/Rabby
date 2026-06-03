@@ -92,3 +92,33 @@ browser.runtime.onMessage.addListener(onMessageSetUpExtensionStreams);
 if (!isManifestV3) {
   injectProviderScript(false);
 }
+
+(async () => {
+  try {
+    if (window.top !== window) return;
+    // Disabled is the default, so gate on `enabled` first and skip the second
+    // round-trip entirely on the (hot) every-page-load path when it's off.
+    const enabled = (await browser.runtime.sendMessage({
+      type: 'controller',
+      method: 'getPerpsWidgetEnabled',
+      params: [],
+    })) as boolean;
+    if (!enabled) return;
+    const blockedHosts = (await browser.runtime.sendMessage({
+      type: 'controller',
+      method: 'getPerpsWidgetBlockedHosts',
+      params: [],
+    })) as string[];
+    // webpackMode: 'eager' inlines the widget into content-script.js. Without it,
+    // strict-CSP hosts (Google, GitHub) reject the chunk fetched from chrome-extension://.
+    const { bootPerpsWidget } = await import(
+      /* webpackMode: "eager" */ './perps-widget'
+    );
+    await bootPerpsWidget({
+      enabled: true,
+      blockedHosts: Array.isArray(blockedHosts) ? blockedHosts : [],
+    });
+  } catch (err) {
+    console.warn('[perps-widget] bootstrap failed', err);
+  }
+})();
