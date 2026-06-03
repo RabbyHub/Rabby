@@ -87,6 +87,16 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
+  React.useEffect(() => {
+    // A hidden tab (e.g. a card click opened the Pro tab) fires no mouseleave, so
+    // collapse the panel here instead of leaving it stuck open.
+    const onVisibility = (): void => {
+      if (document.hidden) setIsExpanded(false);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => document.removeEventListener('visibilitychange', onVisibility);
+  }, []);
+
   const clearHideTimer = (): void => {
     if (hidePanelTimer.current != null) {
       window.clearTimeout(hidePanelTimer.current);
