@@ -303,8 +303,18 @@ class PerpsLiveService {
       : [];
     const wasEmpty = this.rawDexStates.length === 0;
     this.rawDexStates = states;
+
+    if (states.length === 0) {
+      // No live perps state (e.g. all positions closed). Drop the cached snapshot
+      // and notify content scripts so stale positions/PnL aren't left on screen.
+      if (this.latest !== null) {
+        this.latest = null;
+        this.broadcast({ type: 'CLEARED' });
+      }
+      return;
+    }
+
     this.scheduleRebuild();
-    if (states.length === 0) return;
     if (wasEmpty) {
       // First data for this account — prime klines for the initial top-N.
       this.refreshKlines();
