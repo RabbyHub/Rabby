@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PerpsLivePosition } from '@/utils/message/perpsLive';
-import { Sparkline } from './Sparkline';
+import { Sparkline, samePrices } from './Sparkline';
 import { STRINGS } from './strings';
 import {
   formatPnl,
@@ -16,7 +16,7 @@ interface PositionCardProps {
   position: PerpsLivePosition;
 }
 
-export const PositionCard: React.FC<PositionCardProps> = ({ position }) => {
+const PositionCardImpl: React.FC<PositionCardProps> = ({ position }) => {
   const pnlNumber = Number(position.unrealizedPnl);
   const isPnlPos = pnlNumber >= 0;
   const dayChangePos =
@@ -48,7 +48,7 @@ export const PositionCard: React.FC<PositionCardProps> = ({ position }) => {
           />
           <span className="rabby-perps-card__name">
             {formatCoinName(position.displayName)}
-            <span className="rabby-perps-quoteAsset">
+            <span className="rabby-perps-card__quoteAsset">
               /{position.quoteAsset}
             </span>
           </span>
@@ -95,3 +95,27 @@ export const PositionCard: React.FC<PositionCardProps> = ({ position }) => {
     </div>
   );
 };
+
+// Each snapshot recreates position objects, so a reference-based memo never bails.
+// Compare the fields this card actually renders so idle positions skip re-rendering.
+function positionPropsEqual(
+  prev: PositionCardProps,
+  next: PositionCardProps
+): boolean {
+  const a = prev.position;
+  const b = next.position;
+  return (
+    a.coin === b.coin &&
+    a.displayName === b.displayName &&
+    a.quoteAsset === b.quoteAsset &&
+    a.direction === b.direction &&
+    a.leverage.value === b.leverage.value &&
+    a.markPx === b.markPx &&
+    a.dayChangePct === b.dayChangePct &&
+    a.unrealizedPnl === b.unrealizedPnl &&
+    a.logoUrl === b.logoUrl &&
+    samePrices(a.sparkline, b.sparkline)
+  );
+}
+
+export const PositionCard = React.memo(PositionCardImpl, positionPropsEqual);

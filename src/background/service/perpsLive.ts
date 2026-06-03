@@ -334,15 +334,19 @@ class PerpsLiveService {
     this.scheduleRebuild();
   }
 
+  /** Flatten a dex state's assetPositions to its non-empty position rows. */
+  private extractPositions(
+    state: ClearinghouseState
+  ): AssetPosition['position'][] {
+    return (state?.assetPositions ?? [])
+      .map((ap: AssetPosition) => ap?.position)
+      .filter(Boolean);
+  }
+
   private getTopCoins(n: number): string[] {
     const candidates: { coin: string; absValue: number }[] = [];
     for (const [, state] of this.rawDexStates) {
-      const rawPositions: AssetPosition['position'][] = (
-        state?.assetPositions ?? []
-      )
-        .map((ap: AssetPosition) => ap?.position)
-        .filter(Boolean);
-      for (const p of rawPositions) {
+      for (const p of this.extractPositions(state)) {
         candidates.push({
           coin: p.coin,
           absValue: Math.abs(Number(p.positionValue || 0)),
@@ -379,13 +383,7 @@ class PerpsLiveService {
       accountValueSum += Number(summary?.accountValue ?? 0);
       totalMarginUsedSum += Number(summary?.totalMarginUsed ?? 0);
 
-      const rawPositions: AssetPosition['position'][] = (
-        state?.assetPositions ?? []
-      )
-        .map((ap: AssetPosition) => ap?.position)
-        .filter(Boolean);
-
-      for (const p of rawPositions) {
+      for (const p of this.extractPositions(state)) {
         const szi = Number(p.szi || 0);
         const absSzi = Math.abs(szi);
         // Protocol: positionValue = |szi| × markPx.
@@ -410,7 +408,7 @@ class PerpsLiveService {
         positions.push({
           coin: p.coin,
           quoteAsset,
-          displayName: `${tokenLabel}`,
+          displayName: tokenLabel,
           tokenLabel,
           logoUrl,
           direction: szi >= 0 ? 'long' : 'short',

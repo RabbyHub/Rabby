@@ -10,7 +10,16 @@ interface SparklineProps {
 
 const FALLBACK_LINE_COLOR = 'rgba(255, 255, 255, 0.16)';
 
-export const Sparkline: React.FC<SparklineProps> = ({
+export function samePrices(a: number[], b: number[]): boolean {
+  if (a === b) return true;
+  if (!a || !b || a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
+const SparklineImpl: React.FC<SparklineProps> = ({
   prices,
   width = 125,
   height = 40,
@@ -99,3 +108,11 @@ export const Sparkline: React.FC<SparklineProps> = ({
     </svg>
   );
 };
+
+export const Sparkline = React.memo(
+  SparklineImpl,
+  (prev, next) =>
+    prev.width === next.width &&
+    prev.height === next.height &&
+    samePrices(prev.prices, next.prices)
+);

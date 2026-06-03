@@ -384,6 +384,13 @@ keyringService.on('resetPassword', async () => {
 browser.runtime.onConnect.addListener((port) => {
   // perpsLive owns this port; bypass the generic page-provider routing below
   if (port.name === PERPS_LIVE_PORT_NAME) {
+    // Fail-closed: only this extension's own content-scripts (which always run
+    // in a tab) may subscribe to the live perps feed. Guards against a future
+    // externally_connectable entry turning this into an open positions/PnL leak.
+    if (port.sender?.id !== browser.runtime.id || !port.sender?.tab) {
+      port.disconnect();
+      return;
+    }
     perpsLive.attachPort(port);
     return;
   }

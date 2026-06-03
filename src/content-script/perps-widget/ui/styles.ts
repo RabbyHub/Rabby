@@ -308,21 +308,6 @@ const STYLES = `
   .rabby-perps-widget__footer-text:hover {
     color: var(--rb-neutral-foot);
   }
-
-  .rabby-perps-widget__banner {
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: var(--rb-red-light-1);
-    color: var(--rb-red-default);
-    font-size: 12px;
-    font-weight: 500;
-  }
-  .rabby-perps-widget__loading {
-    padding: 24px 12px;
-    text-align: center;
-    color: var(--rb-neutral-foot);
-    font-size: 13px;
-  }
 `;
 
 let cachedSheet: CSSStyleSheet | null = null;

@@ -78,14 +78,6 @@
       "matches": [
         "<all_urls>"
       ]
-    },
-    {
-      "resources": [
-        "images/icon-32.png"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
     }
   ]
 }

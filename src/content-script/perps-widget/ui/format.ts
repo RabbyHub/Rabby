@@ -20,12 +20,6 @@ export function formatPnl(value: string | number): string {
   return `${sign}$${withCommas(abs, 2)}`;
 }
 
-export function formatUsd(value: string | number): string {
-  const n = typeof value === 'string' ? Number(value) : value;
-  if (!Number.isFinite(n)) return '$0';
-  return `$${withCommas(n, 2)}`;
-}
-
 export function formatCoinName(coin: string | undefined): string {
   if (coin && coin.includes(':')) {
     // is hip-3 coin

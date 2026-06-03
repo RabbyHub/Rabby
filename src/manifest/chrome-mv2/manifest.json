@@ -64,7 +64,6 @@
     "contextMenus"
   ],
   "web_accessible_resources": [
-    "pageProvider.js",
-    "images/icon-32.png"
+    "pageProvider.js"
   ]
 }

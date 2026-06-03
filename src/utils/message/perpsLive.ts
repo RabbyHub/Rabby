@@ -45,7 +45,4 @@ export type PerpsLiveBroadcast =
   | { type: 'CLEARED' }
   | { type: 'WS_STATE'; state: PerpsLiveWsState };
 
-/** Reserved for client→SW snapshot re-fetch request; unused in v1 */
-export type PerpsLiveRequest = { type: 'REQUEST_LATEST' };
-
 export const PERPS_LIVE_PORT_NAME = 'perps-live';

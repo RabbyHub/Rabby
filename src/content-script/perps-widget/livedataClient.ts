@@ -12,7 +12,6 @@ import {
 } from '@/utils/message/perpsLive';
 
 type SnapshotListener = (snapshot: PerpsLiveSnapshot | null) => void;
-type WsStateListener = (state: PerpsLiveWsState) => void;
 type TeardownCallback = () => void;
 
 class LivedataClient {
@@ -21,7 +20,6 @@ class LivedataClient {
   private wsState: PerpsLiveWsState = 'closed';
 
   private snapshotListeners = new Set<SnapshotListener>();
-  private wsStateListeners = new Set<WsStateListener>();
   private teardownCallbacks = new Set<TeardownCallback>();
 
   private reconnectTimer: number | null = null;
@@ -78,17 +76,12 @@ class LivedataClient {
         break;
       case 'WS_STATE':
         this.wsState = msg.state;
-        this.notifyWsState();
         break;
     }
   }
 
   private notifySnapshot(): void {
     for (const l of this.snapshotListeners) l(this.latest);
-  }
-
-  private notifyWsState(): void {
-    for (const l of this.wsStateListeners) l(this.wsState);
   }
 
   getLatest(): PerpsLiveSnapshot | null {
@@ -104,14 +97,6 @@ class LivedataClient {
     listener(this.latest);
     return () => {
       this.snapshotListeners.delete(listener);
-    };
-  }
-
-  subscribeWsState(listener: WsStateListener): () => void {
-    this.wsStateListeners.add(listener);
-    listener(this.wsState);
-    return () => {
-      this.wsStateListeners.delete(listener);
     };
   }
 

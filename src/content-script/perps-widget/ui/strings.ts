@@ -6,6 +6,4 @@ export const STRINGS = {
       ? 'View more detail in web'
       : `${count} position${count > 1 ? 's' : ''} hidden, view in web`,
   pnl: 'PNL',
-  connectionLost: 'Connection lost, reconnecting...',
-  loading: 'Loading...',
 };

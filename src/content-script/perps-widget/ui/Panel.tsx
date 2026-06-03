@@ -12,15 +12,19 @@ interface PanelProps {
   snapshot: PerpsLiveSnapshot | null;
 }
 
-export const Panel: React.FC<PanelProps> = ({ snapshot }) => {
-  const positions = snapshot?.positions ?? [];
-  const sorted = [...positions].sort(
-    (a, b) =>
-      Math.abs(Number(b.positionValue || 0)) -
-      Math.abs(Number(a.positionValue || 0))
-  );
-  const top = sorted.slice(0, TOP_N);
-  const hiddenCount = Math.max(0, sorted.length - TOP_N);
+const PanelImpl: React.FC<PanelProps> = ({ snapshot }) => {
+  const positions = snapshot?.positions;
+  const { top, hiddenCount } = React.useMemo(() => {
+    const sorted = [...(positions ?? [])].sort(
+      (a, b) =>
+        Math.abs(Number(b.positionValue || 0)) -
+        Math.abs(Number(a.positionValue || 0))
+    );
+    return {
+      top: sorted.slice(0, TOP_N),
+      hiddenCount: Math.max(0, sorted.length - TOP_N),
+    };
+  }, [positions]);
 
   const handleFooterClick = (): void => {
     openInDesktopPerps();
@@ -49,3 +53,4 @@ export const Panel: React.FC<PanelProps> = ({ snapshot }) => {
     </div>
   );
 };
+export const Panel = React.memo(PanelImpl);

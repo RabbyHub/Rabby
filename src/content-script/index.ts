@@ -96,19 +96,19 @@ if (!isManifestV3) {
 (async () => {
   try {
     if (window.top !== window) return;
-    const [enabled, blockedHosts] = await Promise.all([
-      browser.runtime.sendMessage({
-        type: 'controller',
-        method: 'getPerpsWidgetEnabled',
-        params: [],
-      }) as Promise<boolean>,
-      browser.runtime.sendMessage({
-        type: 'controller',
-        method: 'getPerpsWidgetBlockedHosts',
-        params: [],
-      }) as Promise<string[]>,
-    ]);
+    // Disabled is the default, so gate on `enabled` first and skip the second
+    // round-trip entirely on the (hot) every-page-load path when it's off.
+    const enabled = (await browser.runtime.sendMessage({
+      type: 'controller',
+      method: 'getPerpsWidgetEnabled',
+      params: [],
+    })) as boolean;
     if (!enabled) return;
+    const blockedHosts = (await browser.runtime.sendMessage({
+      type: 'controller',
+      method: 'getPerpsWidgetBlockedHosts',
+      params: [],
+    })) as string[];
     // webpackMode: 'eager' inlines the widget into content-script.js. Without it,
     // strict-CSP hosts (Google, GitHub) reject the chunk fetched from chrome-extension://.
     const { bootPerpsWidget } = await import(
