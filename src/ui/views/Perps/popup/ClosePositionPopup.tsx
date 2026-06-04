@@ -9,6 +9,8 @@ import { useMemoizedFn } from 'ahooks';
 import { formatPercent } from '../utils';
 import { PERPS_EXCHANGE_FEE_NUMBER, PERPS_MINI_USD_VALUE } from '../constants';
 import { PerpsSlider } from '../components/PerpsSlider';
+import { MarketSlippage } from '../components/MarketSlippage';
+import { useMarketSlippage } from '../hooks/useMarketSlippage';
 
 interface ClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   visible: boolean;
@@ -72,6 +74,19 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
   const closedPnl = useMemo(() => {
     return (pnl * closePercent) / 100;
   }, [pnl, closePercent]);
+
+  // Close trades opposite the position: long -> sell (bids), short -> buy (asks)
+  const {
+    slippage,
+    depthInsufficient,
+    isReady: slippageReady,
+  } = useMarketSlippage({
+    coin,
+    isBuy: direction === 'Short',
+    size: Number(positionSize) * (closePercent / 100),
+    markPrice,
+    enabled: visible,
+  });
 
   const bothFee = useMemo(() => {
     return providerFee + PERPS_EXCHANGE_FEE_NUMBER;
@@ -179,6 +194,11 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                   {splitNumberByStep(Math.abs(closedPnl).toFixed(2))}
                 </span>
               </div>
+              <MarketSlippage
+                visible={slippageReady && Number(positionSize) > 0}
+                slippage={slippage}
+                depthInsufficient={depthInsufficient}
+              />
             </div>
           </div>
 
