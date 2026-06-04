@@ -21,7 +21,6 @@ import { useRabbySelector } from '@/ui/store';
 import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { TopPermissionTips } from './components/TopPermissionTips';
-import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import usePerpsProState from './hooks/usePerpsProState';
 import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
@@ -100,7 +99,6 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                   onChange={switchPerpsAccount}
                 />
                 <AccountActions />
-                <SwitchThemeBtn />
               </div>
             </div>
             <TopPermissionTips />
