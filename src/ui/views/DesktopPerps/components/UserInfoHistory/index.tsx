@@ -172,14 +172,14 @@ export const UserInfoHistory: React.FC = () => {
               className={clsx(
                 'px-[16px] py-[16px] text-[14px] flex items-center gap-[4px]',
                 activeTab === tab.key
-                  ? 'text-r-blue-default'
+                  ? 'text-rb-neutral-title-1'
                   : 'hover:text-rb-neutral-title-1 text-rb-neutral-secondary'
               )}
               onClick={() => setActiveTab(tab.key)}
             >
               {tab.label}
               {tab.number ? (
-                <div className="h-[16px] px-6 text-[12px] text-rb-brand-default bg-rb-brand-light-1 rounded-[4px] flex items-center justify-center">
+                <div className="h-[16px] px-6 text-[12px] text-rb-neutral-title-1 bg-rb-neutral-bg-2 rounded-[4px] flex items-center justify-center">
                   {tab.number}
                 </div>
               ) : null}

@@ -181,9 +181,12 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
     if (el && container) {
       const containerRect = container.getBoundingClientRect();
       const elRect = el.getBoundingClientRect();
+      // Fixed-length underline, centered under the active tab.
+      const INDICATOR_WIDTH = 20;
+      const elCenter = elRect.left - containerRect.left + elRect.width / 2;
       setIndicatorStyle({
-        left: elRect.left - containerRect.left,
-        width: elRect.width,
+        left: elCenter - INDICATOR_WIDTH / 2,
+        width: INDICATOR_WIDTH,
       });
     }
   }, [activeTabKey, advancedLabel]);
