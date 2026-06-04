@@ -72,6 +72,7 @@ import {
   readStakingContract,
 } from '../utils/tx';
 import { isFullUniv3Withdraw } from '../utils/univ3Withdraw';
+import { getStakingRawAssetsUsdValue, reportStakingTx } from '../utils/report';
 import './actionModal.less';
 
 type LpAction = 'deposit' | 'withdraw' | 'claim';
@@ -1042,6 +1043,66 @@ export const LpActionModal = ({
       : undefined;
   }, [action, isV3, position, v3WithdrawQuote]);
 
+  const getReportUsdValue = useCallback(() => {
+    const reportToken0 = normalizedTokens.token0Info?.token || token0;
+    const reportToken1 = normalizedTokens.token1Info?.token || token1;
+
+    if (action === 'deposit') {
+      const quote = isV2 ? v2AddQuote : v3DepositQuote;
+      return getStakingRawAssetsUsdValue([
+        {
+          token: reportToken0,
+          rawAmount: quote?.amount0,
+        },
+        {
+          token: reportToken1,
+          rawAmount: quote?.amount1,
+        },
+      ]);
+    }
+
+    if (action === 'withdraw') {
+      const amount0 = isV2
+        ? v2WithdrawQuote?.amount0
+        : v3WithdrawQuote?.estimatedCollectAmount0;
+      const amount1 = isV2
+        ? v2WithdrawQuote?.amount1
+        : v3WithdrawQuote?.estimatedCollectAmount1;
+
+      return getStakingRawAssetsUsdValue([
+        {
+          token: reportToken0,
+          rawAmount: amount0,
+        },
+        {
+          token: reportToken1,
+          rawAmount: amount1,
+        },
+      ]);
+    }
+
+    return getStakingRawAssetsUsdValue(
+      claimTargets.flatMap((item) =>
+        item.rewards.map((asset) => ({
+          token: asset.token,
+          rawAmount: asset.rawAmount,
+        }))
+      )
+    );
+  }, [
+    action,
+    claimTargets,
+    isV2,
+    normalizedTokens.token0Info?.token,
+    normalizedTokens.token1Info?.token,
+    token0,
+    token1,
+    v2AddQuote,
+    v2WithdrawQuote,
+    v3DepositQuote,
+    v3WithdrawQuote,
+  ]);
+
   const buildUniv3ClaimAllTx = useCallback((): StakingTxBuildResult => {
     if (!chainInfo || !univ3Entry || !claimTargets.length) {
       throw new Error(t('page.staking.actionModal.noClaimableRewards'));
@@ -1244,6 +1305,15 @@ export const LpActionModal = ({
       const mainHash = getStakingMainTxHash(hashes);
 
       if (mainHash) {
+        reportStakingTx({
+          account,
+          pool,
+          txId: mainHash,
+          txType: action,
+          poolAddress: isV2 ? univ2Entry?.pair : univ3Entry?.pool,
+          usdValue: getReportUsdValue(),
+        });
+
         setSubmitting(false);
         submitted = true;
         onSubmitted({
@@ -1279,13 +1349,18 @@ export const LpActionModal = ({
     buildTxs,
     canSubmit,
     expectedBurnTokenId,
+    getReportUsdValue,
     isV3,
+    isV2,
     needsPriceConfirm,
     onSubmitted,
     priceWarningAccepted,
+    pool,
     position,
     sign,
     t,
+    univ2Entry?.pair,
+    univ3Entry?.pool,
     title,
     v3QuotedRange,
   ]);
