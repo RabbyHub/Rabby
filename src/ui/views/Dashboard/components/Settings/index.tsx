@@ -843,16 +843,10 @@ const SettingsInner = ({
   }, []);
 
   useEffect(() => {
-    let mounted = true;
     wallet
       .getPerpsWidgetEnabled()
-      .then((v) => {
-        if (mounted) setPerpsWidgetEnabled(!!v);
-      })
+      .then((v) => setPerpsWidgetEnabled(!!v))
       .catch(() => {});
-    return () => {
-      mounted = false;
-    };
   }, [wallet]);
 
   useEffect(() => {
