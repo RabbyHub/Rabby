@@ -49,9 +49,9 @@ const STYLES = `
     overflow: hidden;
     cursor: grab;
     transition:
-      max-height 0.22s cubic-bezier(0.32, 0.72, 0, 1),
-      border-radius 0.22s cubic-bezier(0.32, 0.72, 0, 1),
-      box-shadow 0.22s ease;
+      max-height 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+      border-radius 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+      box-shadow 0.5s ease;
   }
 
   .rabby-perps-widget.dock-right {
@@ -86,7 +86,7 @@ const STYLES = `
     flex-shrink: 0;
     cursor: grab;
     background: var(--rb-neutral-bg-2);
-    transition: padding 0.22s, height 0.22s;
+    transition: padding 0.5s, height 0.5s;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__header {
     justify-content: space-between;
@@ -109,7 +109,7 @@ const STYLES = `
     justify-content: center;
     width: 20px;
     height: 20px;
-    transition: width 0.22s, height 0.22s;
+    transition: width 0.5s, height 0.5s;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__logo {
     width: 24px;
@@ -126,7 +126,7 @@ const STYLES = `
     bottom: -2px;
     width: 10px;
     height: 10px;
-    transition: width 0.22s, height 0.22s;
+    transition: width 0.5s, height 0.5s;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__logo-badge {
     width: 12px;
@@ -135,7 +135,7 @@ const STYLES = `
   .rabby-perps-widget__pnl {
     font-size: 14px;
     font-weight: 500;
-    transition: font-size 0.22s;
+    transition: font-size 0.5s;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__pnl {
     font-size: 14px;
@@ -152,9 +152,9 @@ const STYLES = `
   .rabby-perps-widget__address {
     display: none;
     font-size: 12px;
-    color: var(--rb-neutral-foot);
+    color: var(--rb-neutral-secondary);
     opacity: 0;
-    transition: opacity 0.18s ease-out 0.06s;
+    transition: opacity 0.5s ease-out 0.06s;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__address {
     display: inline-block;
@@ -168,7 +168,7 @@ const STYLES = `
     gap: 12px;
     background: var(--rb-neutral-bg-3);
     opacity: 0;
-    transition: opacity 0.18s ease-out 0.06s;
+    transition: opacity 0.5s ease-out 0.06s;
     overflow-y: auto;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__body {
@@ -194,7 +194,7 @@ const STYLES = `
     border: 1px solid var(--rb-neutral-line);
     cursor: pointer;
     overflow: hidden;
-    transition: background 0.15s ease;
+    transition: background 0.5s ease;
   }
   .rabby-perps-card:hover {
     background: var(--rb-neutral-bg-2);
@@ -232,6 +232,7 @@ const STYLES = `
   }
   .rabby-perps-card__quoteAsset {
     color: var(--rb-neutral-foot);
+    font-weight: 400;
   }
   .rabby-perps-card__direction {
     display: inline-flex;
@@ -311,7 +312,7 @@ const STYLES = `
   }
   .rabby-perps-widget__footer-text {
     cursor: pointer;
-    transition: color 0.15s ease;
+    transition: color 0.5s ease;
   }
   .rabby-perps-widget__footer-text:hover {
     color: var(--rb-neutral-foot);
