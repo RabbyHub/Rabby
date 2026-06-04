@@ -75,6 +75,11 @@ export const useStakingMiniSign = ({
       trigger: string;
       logo?: string;
     }) => {
+      const ga = {
+        ...baseGa,
+        trigger,
+      };
+
       const runFullSign = async () => {
         const hashes: string[] = [];
         for (const tx of txs) {
@@ -82,8 +87,18 @@ export const useStakingMiniSign = ({
             await wallet.sendRequest<string>({
               method: 'eth_sendTransaction',
               params: [tx],
+              $ctx: {
+                ga,
+              },
             })
           );
+        }
+        if (process.env.DEBUG) {
+          console.debug('[staking sign hashes]', {
+            mode: 'full',
+            trigger,
+            hashes,
+          });
         }
         return hashes;
       };
@@ -96,10 +111,7 @@ export const useStakingMiniSign = ({
       closeSign();
       const signerConfig = {
         txs,
-        ga: {
-          ...baseGa,
-          trigger,
-        },
+        ga,
         title: React.createElement(StakingSignHeader, {
           title: trigger,
           logo,
@@ -110,7 +122,15 @@ export const useStakingMiniSign = ({
       };
 
       try {
-        return await openUI(signerConfig);
+        const hashes = await openUI(signerConfig);
+        if (process.env.DEBUG) {
+          console.debug('[staking sign hashes]', {
+            mode: 'direct',
+            trigger,
+            hashes,
+          });
+        }
+        return hashes;
       } catch (error) {
         if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
           throw error;
