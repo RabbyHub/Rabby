@@ -206,7 +206,6 @@ export const DesktopProfile: React.FC<{
       >
         <div className="main-content flex-1 pb-[20px]">
           <div className="layout-container">
-            {/* <DesktopNav /> */}
             <div
               className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
               style={{

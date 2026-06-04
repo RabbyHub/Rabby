@@ -129,9 +129,13 @@ export const UserInfoHistory: React.FC = () => {
     if (activeButton && container) {
       const containerRect = container.getBoundingClientRect();
       const buttonRect = activeButton.getBoundingClientRect();
+      // Fixed-length underline, centered under the active tab.
+      const INDICATOR_WIDTH = 20;
+      const buttonCenter =
+        buttonRect.left - containerRect.left + buttonRect.width / 2;
       setIndicatorStyle({
-        left: buttonRect.left - containerRect.left,
-        width: buttonRect.width,
+        left: buttonCenter - INDICATOR_WIDTH / 2,
+        width: INDICATOR_WIDTH,
       });
     }
   }, [activeTab, tabs]);
@@ -169,7 +173,7 @@ export const UserInfoHistory: React.FC = () => {
                 'px-[16px] py-[16px] text-[14px] flex items-center gap-[4px]',
                 activeTab === tab.key
                   ? 'text-r-blue-default'
-                  : 'hover:text-r-blue-default text-r-neutral-foot'
+                  : 'hover:text-rb-neutral-title-1 text-rb-neutral-secondary'
               )}
               onClick={() => setActiveTab(tab.key)}
             >
@@ -191,7 +195,7 @@ export const UserInfoHistory: React.FC = () => {
         />
       </div>
       <div className="flex-1 overflow-hidden min-h-0">
-        <div className="text-r-neutral-foot text-[12px] whitespace-nowrap h-full">
+        <div className="text-rb-neutral-secondary text-[12px] whitespace-nowrap h-full">
           {ActiveComponent ? <ActiveComponent /> : null}
         </div>
       </div>

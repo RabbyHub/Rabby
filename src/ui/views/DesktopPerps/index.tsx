@@ -18,10 +18,8 @@ import { TransferToPerpsModal } from './modal/TransferToPerpsModal';
 import { usePerpsPopupNav } from './hooks/usePerpsPopupNav';
 import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
 import { useRabbySelector } from '@/ui/store';
-import { DesktopNav } from '@/ui/component/DesktopNav';
 import { AccountActions } from './components/AccountActions';
 import { TopPermissionTips } from './components/TopPermissionTips';
-import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import usePerpsProState from './hooks/usePerpsProState';
 import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
@@ -86,7 +84,6 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         <div className="flex flex-1 pb-16">
           <div className="flex flex-col flex-1 min-w-0">
             <div className="flex items-center justify-between mt-20 mb-12 px-[12px]">
-              {/* <DesktopNav showRightItems={false} /> */}
               <div className="flex items-center gap-[6px] text-rb-neutral-title-1">
                 <RcIconRabbyCC />
                 <span className="text-[20px] leading-[24px] font-bold">
@@ -100,7 +97,6 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                   onChange={switchPerpsAccount}
                 />
                 <AccountActions />
-                <SwitchThemeBtn />
               </div>
             </div>
             <TopPermissionTips />

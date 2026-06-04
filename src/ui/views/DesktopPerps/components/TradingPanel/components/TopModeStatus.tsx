@@ -237,7 +237,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               'h-[28px] mr-20 text-13 font-medium transition-colors',
               orderType === tab.value
                 ? 'text-rb-neutral-title-1'
-                : 'text-rb-neutral-foot hover:text-rb-neutral-title-1'
+                : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
             )}
           >
             {tab.label}
@@ -250,7 +250,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
             'inline-flex items-center transition-colors',
             isAdvancedSelected
               ? 'text-rb-neutral-title-1'
-              : 'text-rb-neutral-foot hover:text-rb-neutral-title-1'
+              : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
           )}
         >
           <span
