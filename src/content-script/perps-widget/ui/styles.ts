@@ -41,7 +41,7 @@ const STYLES = `
     position: fixed;
     display: flex;
     flex-direction: column;
-    max-height: 40px;
+    max-height: 48px;
     color: var(--rb-neutral-title-1);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
     pointer-events: auto;
@@ -81,8 +81,8 @@ const STYLES = `
     display: flex;
     align-items: center;
     gap: 4px;
-    padding: 8px 16px;
-    height: 40px;
+    padding: 12px 16px;
+    height: 48px;
     flex-shrink: 0;
     cursor: grab;
     background: var(--rb-neutral-bg-2);
@@ -90,8 +90,8 @@ const STYLES = `
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__header {
     justify-content: space-between;
-    padding: 16px 20px;
-    height: 56px;
+    padding: 12px 16px;
+    height: 48px;
   }
   .rabby-perps-widget.dragging .rabby-perps-widget__header {
     cursor: grabbing;
@@ -107,9 +107,8 @@ const STYLES = `
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
-    transition: width 0.5s, height 0.5s;
+    width: 24px;
+    height: 24px;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__logo {
     width: 24px;
@@ -124,9 +123,8 @@ const STYLES = `
     position: absolute;
     right: -2px;
     bottom: -2px;
-    width: 10px;
-    height: 10px;
-    transition: width 0.5s, height 0.5s;
+    width: 12px;
+    height: 12px;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__logo-badge {
     width: 12px;
@@ -134,8 +132,7 @@ const STYLES = `
   }
   .rabby-perps-widget__pnl {
     font-size: 14px;
-    font-weight: 500;
-    transition: font-size 0.5s;
+    font-weight: 700;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__pnl {
     font-size: 14px;

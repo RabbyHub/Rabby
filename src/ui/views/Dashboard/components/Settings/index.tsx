@@ -29,7 +29,7 @@ import { ReactComponent as RcIconCurrency } from 'ui/assets/settings/currency.sv
 import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosystem-cc.svg';
 import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
 import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
-import { ReactComponent as RcIconPerps } from 'ui/assets/dashboard/panel/perps-cc.svg';
+import { ReactComponent as RcIconPerps } from 'ui/assets/dashboard/panel/perps-float-cc.svg';
 import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
@@ -843,16 +843,10 @@ const SettingsInner = ({
   }, []);
 
   useEffect(() => {
-    let mounted = true;
     wallet
       .getPerpsWidgetEnabled()
-      .then((v) => {
-        if (mounted) setPerpsWidgetEnabled(!!v);
-      })
+      .then((v) => setPerpsWidgetEnabled(!!v))
       .catch(() => {});
-    return () => {
-      mounted = false;
-    };
   }, [wallet]);
 
   useEffect(() => {
