@@ -222,10 +222,13 @@ export const App: React.FC = () => {
       style={containerStyle}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
-      onPointerDown={handlePointerDown}
       role="dialog"
     >
-      <div className="rabby-perps-widget__header">
+      {/* Drag is bound to the header only, so the expanded panel body isn't a drag target */}
+      <div
+        className="rabby-perps-widget__header"
+        onPointerDown={handlePointerDown}
+      >
         <div className="rabby-perps-widget__header-left">
           <Ball totalPnl={snapshot!.totalUnrealizedPnl} />
         </div>

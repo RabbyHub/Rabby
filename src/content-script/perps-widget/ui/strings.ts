@@ -3,7 +3,7 @@
 export const STRINGS = {
   hiddenPositions: (count: number): string =>
     count === 0
-      ? 'View more detail in web'
-      : `${count} position${count > 1 ? 's' : ''} hidden, view in web`,
+      ? 'Open Pro Mode to view more details'
+      : `${count} position${count > 1 ? 's' : ''} hidden, View all in Pro Mode`,
   pnl: 'PNL',
 };

@@ -232,12 +232,13 @@ export const PERPS_MINI_USD_VALUE = 10; // $10
 export const PERPS_INVITE_URL = `https://app.hyperliquid.xyz/join/${PERPS_REFERENCE_CODE}`;
 
 // =============== Multi-stablecoin / HIP-3 ===============
+import type { PerpsQuoteAsset } from '@/utils/perps/quoteAsset';
 import {
-  PerpsQuoteAsset,
   ALL_PERPS_QUOTE_ASSETS,
   COLLATERAL_TOKEN_TO_QUOTE,
 } from '@/utils/perps/quoteAsset';
-export { PerpsQuoteAsset, ALL_PERPS_QUOTE_ASSETS, COLLATERAL_TOKEN_TO_QUOTE };
+export type { PerpsQuoteAsset };
+export { ALL_PERPS_QUOTE_ASSETS, COLLATERAL_TOKEN_TO_QUOTE };
 
 export const STABLE_COIN_INDEX_ID_MAP: Record<PerpsQuoteAsset, number> = {
   USDC: 0,
