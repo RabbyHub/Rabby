@@ -43,7 +43,7 @@ const REBUILD_DEBOUNCE_MS = 150;
 /** Keep WS alive across tab-switch flicker after the last port disconnects */
 const GRACE_STOP_MS = 30 * 1000;
 const WS_RETRY_MS = 5 * 1000;
-/** markPx is reverse-derived (live); firstOpen barely moves within 10 min */
+/** Sparkline candles barely move within 10 min */
 const KLINE_REFRESH_MS = 10 * 60 * 1000;
 const KLINE_LOOKBACK_MS = 24 * 60 * 60 * 1000;
 const KLINE_INTERVAL = '1h';
@@ -55,9 +55,16 @@ const CATALOG_REFRESH_MS = 24 * 60 * 60 * 1000;
 
 interface KlineCacheEntry {
   prices: number[];
-  /** Precise t-24h baseline for dayChangePct */
-  firstOpen: number | null;
   fetchedAt: number;
+}
+
+/** Live market ctx per coin from the activeAssetCtx WS — source of truth for markPx + dayChange */
+interface AssetCtxEntry {
+  /** Server-formatted markPx string (rendered as-is, no re-derive) */
+  markPx: string;
+  markPxNum: number;
+  /** Price 24h ago; dayChange = (markPx - prevDayPx) / prevDayPx */
+  prevDayPx: number;
 }
 
 type DexClearinghousePair = [string, ClearinghouseState];
@@ -94,6 +101,11 @@ class PerpsLiveService {
   private klineRefreshing = false;
   /** Last on-demand kline kick timestamp, for ON_DEMAND_KLINE_COOLDOWN_MS rate-limiting */
   private lastKlineKickAt = 0;
+
+  /** Live markPx + prevDayPx per coin, keyed by Hyperliquid coin string */
+  private assetCtxCache = new Map<string, AssetCtxEntry>();
+  /** Per-coin activeAssetCtx WS subscriptions, reconciled to the position set */
+  private assetCtxSubs = new Map<string, { unsubscribe: () => void }>();
 
   /** Keyed by Hyperliquid coin string. DeBank's `t.name` is already in that format — `t.dex_id` is redundant */
   private tokenCatalog = new Map<string, PerpTopTokenV3>();
@@ -270,6 +282,7 @@ class PerpsLiveService {
       this.pendingRebuildTimer = null;
     }
     // tokenCatalog / dexLookup intentionally retained across accounts.
+    this.clearAssetCtxSubscriptions();
     this.rawDexStates = [];
     this.klineCache.clear();
     this.klineRefreshing = false;
@@ -307,6 +320,7 @@ class PerpsLiveService {
     if (states.length === 0) {
       // No live perps state (e.g. all positions closed). Drop the cached snapshot
       // and notify content scripts so stale positions/PnL aren't left on screen.
+      this.clearAssetCtxSubscriptions();
       if (this.latest !== null) {
         this.latest = null;
         this.broadcast({ type: 'CLEARED' });
@@ -314,6 +328,7 @@ class PerpsLiveService {
       return;
     }
 
+    this.syncAssetCtxSubscriptions();
     this.scheduleRebuild();
     if (wasEmpty) {
       // First data for this account — prime klines for the initial top-N.
@@ -367,6 +382,72 @@ class PerpsLiveService {
     return candidates.slice(0, n).map(({ coin }) => coin);
   }
 
+  /** Distinct coins across all open positions (markPx/dayChange are needed for each). */
+  private getPositionCoins(): string[] {
+    const coins = new Set<string>();
+    for (const [, state] of this.rawDexStates) {
+      for (const p of this.extractPositions(state)) {
+        if (p.coin) coins.add(p.coin);
+      }
+    }
+    return Array.from(coins);
+  }
+
+  /** Reconcile per-coin activeAssetCtx subscriptions to the current position set. */
+  private syncAssetCtxSubscriptions(): void {
+    if (!this.sdk) return;
+    const sdk = this.sdk;
+    const needed = new Set(this.getPositionCoins());
+
+    // Subscribe coins newly entered.
+    for (const coin of needed) {
+      if (this.assetCtxSubs.has(coin)) continue;
+      try {
+        const sub = sdk.ws.subscribeToActiveAssetCtx(coin, (data) => {
+          // The SDK fans every activeAssetCtx push to ALL ctx callbacks, so each
+          // closure must keep only its own coin's data.
+          if (!data || data.coin !== coin) return;
+          const markPxNum = Number(data.ctx?.markPx);
+          if (!Number.isFinite(markPxNum)) return;
+          const prevDayPx = Number(data.ctx?.prevDayPx);
+          this.assetCtxCache.set(coin, {
+            markPx: data.ctx.markPx,
+            markPxNum,
+            prevDayPx: Number.isFinite(prevDayPx) ? prevDayPx : 0,
+          });
+          this.scheduleRebuild();
+        });
+        this.assetCtxSubs.set(coin, sub);
+      } catch (err) {
+        console.warn('[perpsLive] activeAssetCtx subscribe failed', coin, err);
+      }
+    }
+
+    // Unsubscribe coins no longer held.
+    for (const coin of Array.from(this.assetCtxSubs.keys())) {
+      if (needed.has(coin)) continue;
+      try {
+        this.assetCtxSubs.get(coin)?.unsubscribe();
+      } catch {
+        /* ignore */
+      }
+      this.assetCtxSubs.delete(coin);
+      this.assetCtxCache.delete(coin);
+    }
+  }
+
+  private clearAssetCtxSubscriptions(): void {
+    for (const sub of this.assetCtxSubs.values()) {
+      try {
+        sub.unsubscribe();
+      } catch {
+        /* ignore */
+      }
+    }
+    this.assetCtxSubs.clear();
+    this.assetCtxCache.clear();
+  }
+
   private scheduleRebuild(): void {
     if (this.pendingRebuildTimer != null) return;
     this.pendingRebuildTimer = setTimeout(() => {
@@ -396,15 +477,23 @@ class PerpsLiveService {
       for (const p of this.extractPositions(state)) {
         const szi = Number(p.szi || 0);
         const absSzi = Math.abs(szi);
-        // Protocol: positionValue = |szi| × markPx.
-        const markPxNum =
+
+        // markPx + dayChange come from the live activeAssetCtx WS subscription.
+        // Reverse-derive (positionValue / |szi|) only as a transient fallback,
+        // before this coin's first ctx push arrives, so the price isn't blank.
+        const ctxEntry = this.assetCtxCache.get(p.coin);
+        const derivedMarkPx =
           absSzi > 0 ? Number(p.positionValue || 0) / absSzi : 0;
-        const markPxStr = alignDecimals(markPxNum, p.entryPx);
+        const markPxNum = ctxEntry ? ctxEntry.markPxNum : derivedMarkPx;
+        const markPxStr = ctxEntry
+          ? ctxEntry.markPx
+          : alignDecimals(derivedMarkPx, p.entryPx);
+
+        const prevDayPx = ctxEntry?.prevDayPx ?? 0;
+        const dayChangePct =
+          prevDayPx > 0 ? (markPxNum - prevDayPx) / prevDayPx : null;
 
         const klineEntry = this.klineCache.get(p.coin);
-        const dayBase = klineEntry?.firstOpen ?? null;
-        const dayChangePct =
-          dayBase && dayBase > 0 ? (markPxNum - dayBase) / dayBase : null;
 
         const tokenInfo = this.tokenCatalog.get(p.coin);
         const colonIdx = p.coin.indexOf(':');
@@ -503,9 +592,7 @@ class PerpsLiveService {
           if (this.currentAddress !== address) return;
           const arr: CandleSnapshot = candles;
           const prices = arr.map((c) => Number(c.c)).filter(Number.isFinite);
-          const firstOpenRaw = arr.length > 0 ? Number(arr[0].o) : NaN;
-          const firstOpen = Number.isFinite(firstOpenRaw) ? firstOpenRaw : null;
-          this.klineCache.set(coin, { prices, firstOpen, fetchedAt: now });
+          this.klineCache.set(coin, { prices, fetchedAt: now });
         } catch (err) {
           console.warn('[perpsLive] candleSnapshot failed', coin, err);
         }
