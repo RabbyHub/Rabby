@@ -1389,6 +1389,7 @@
           "biometricUnlockHint": "Use biometrics to unlock on this device.",
           "biometricUnlock": "Desbloquear com Biometria",
           "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
+          "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
           "searchCurrency": "Pesquisar moeda"
         },
@@ -3906,6 +3907,7 @@
         "liquidationPriceTooltip": "O risco da posição é baixo, então não há preço de liquidação por enquanto. Observe que aumentar a posição ou reduzir a margem aumentará o risco.",
         "deposit": "Depósito",
         "addFundsToGetStarted": "Adicione fundos para começar",
+        "notAvailableInRegion": "Não disponível na sua região.",
         "Sell": "Vender",
         "cost": "Custo",
         "Buy": "Comprar",

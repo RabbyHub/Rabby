@@ -1319,6 +1319,7 @@
           "switchPasswordForNonWhitelistedTx": "Beyaz listeye alınmamış transferler için şifre",
           "biometricUnlock": "Biyometriklerle Kilidi Açma",
           "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açmayı desteklememektedir.",
+          "perpsFloatWidget": "Perps Kayan Widget'ı",
           "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın.",
           "currency": "Para Birimi",
           "searchCurrency": "Para birimi ara"
@@ -3911,6 +3912,7 @@
         "buyLong": "Satın Al / Uzun Pozisyon",
         "enableTrading": "Süresiz Vadeli İşlemleri Etkinleştir",
         "addFundsToGetStarted": "Fon ekleyin ve başlayın",
+        "notAvailableInRegion": "Bölgenizde kullanılamıyor.",
         "deposit": "Teminat Deposito",
         "Sell": "Satışı Yap",
         "price": "Fiyat",

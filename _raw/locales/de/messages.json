@@ -1320,6 +1320,7 @@
           "biometricUnlock": "Mit biometrischen Daten entsperren",
           "biometricUnlockHint": "Verwende biometrische Daten, um dieses Gerät zu entsperren.",
           "biometricUnlockUnsupported": "Dieses Gerät unterstützt keine biometrische Entsperrung.",
+          "perpsFloatWidget": "Perps-Floating-Widget",
           "currency": "Währung",
           "searchCurrency": "Währung suchen"
         },
@@ -3909,6 +3910,7 @@
         "randomizeTooltip": "Randomisiert das Timing und die Größe von Teilaufträgen, um die Vorhersagbarkeit zu verringern.",
         "deposit": "Einzahlen",
         "addFundsToGetStarted": "Geld hinzufügen, um zu starten",
+        "notAvailableInRegion": "In deiner Region nicht verfügbar.",
         "long": "Long",
         "max": "MAX",
         "cost": "Kosten",

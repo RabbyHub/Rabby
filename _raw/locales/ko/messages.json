@@ -1388,6 +1388,7 @@
           "switchPasswordForNonWhitelistedTx": "비공식 화이트리스트 전송을 위한 비밀번호",
           "biometricUnlock": "바이오메트릭스로 잠금 해제",
           "biometricUnlockUnsupported": "이 장치는 생체 인식 잠금 해제를 지원하지 않습니다.",
+          "perpsFloatWidget": "Perps 플로팅 위젯",
           "biometricUnlockHint": "이 장치에서 생체 인식을 사용하여 잠금을 해제하세요.",
           "currency": "통화",
           "searchCurrency": "통화 검색"
@@ -3906,6 +3907,7 @@
         "sizeSkewTooltip": "종가와 시작가 간의 비율.\n예를 들어, 사이즈 스큐가 2.0이면 종가에 대한 지정가 주문은 시작가의 두 배 크기로 배치된다.\n사이즈 스큐가 1.0이면 동일한 크기의 주문이 생성된다.",
         "deposit": "입금",
         "addFundsToGetStarted": "자금을 추가하여 시작하세요",
+        "notAvailableInRegion": "현재 지역에서는 사용할 수 없습니다.",
         "orderCount": "주문 수량",
         "Buy": "구매",
         "long": "롱",

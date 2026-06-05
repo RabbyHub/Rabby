@@ -1389,6 +1389,7 @@
           "biometricUnlock": "Mở khóa bằng Sinh trắc học",
           "biometricUnlockHint": "Sử dụng sinh trắc học để mở khóa trên thiết bị này.",
           "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học.",
+          "perpsFloatWidget": "Tiện ích nổi Perps",
           "currency": "Tiền tệ",
           "searchCurrency": "Tìm kiếm tiền tệ"
         },
@@ -3906,6 +3907,7 @@
         "currentPosition": "Vị trí hiện tại",
         "deposit": "Nạp tiền",
         "addFundsToGetStarted": "Thêm tiền để bắt đầu",
+        "notAvailableInRegion": "Không khả dụng ở khu vực của bạn.",
         "price": "Giá",
         "action": "Hành động",
         "Sell": "Bán",

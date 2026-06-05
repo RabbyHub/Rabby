@@ -272,6 +272,7 @@
           "switchPasswordForNonWhitelistedTx": "非白名单转账的密碼",
           "biometricUnlock": "使用生物识别解锁",
           "biometricUnlockUnsupported": "此設備不支持生物識別解鎖。",
+          "perpsFloatWidget": "永續合約懸浮視窗",
           "biometricUnlockHint": "使用生物识别技术在此设备上解锁。",
           "currency": "貨幣",
           "searchCurrency": "搜尋貨幣"
@@ -3949,6 +3950,7 @@
         "sizeSkewTooltip": "結束價格與起始價格之比。例如，若大小偏斜為 2.0，則結束價格的限價單下單量為起始價格限價單下單量的兩倍。大小偏斜為 1.0 時，兩筆訂單大小相等。",
         "deposit": "存入",
         "addFundsToGetStarted": "添加资金以开始使用",
+        "notAvailableInRegion": "您所在的地區暫不支援。",
         "orderCount": "訂單數量",
         "short": "做空",
         "max": "最大值",
