@@ -1428,7 +1428,7 @@ const SettingsInner = ({
             });
 
             reportSettings('feedback');
-            openInTab('https://debank.com/hi/0a110032');
+            openInTab('https://support.rabby.io/en/');
           },
           rightIcon: (
             <ThemeIcon
