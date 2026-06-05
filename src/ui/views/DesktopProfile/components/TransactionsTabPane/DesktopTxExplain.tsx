@@ -6,6 +6,7 @@ import {
 } from '@/constant/gas-account';
 import { NameAndAddress, TxAvatar } from '@/ui/component';
 import { isSameAddress } from '@/ui/utils';
+import { findChainByServerID } from '@/utils/chain';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { getTokenSymbol } from 'ui/utils/token';
@@ -20,6 +21,10 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
   const project = data.project_item;
   const { t } = useTranslation();
   let tokenURL = '';
+  const chain = findChainByServerID(data.chain);
+  const chainDepositAddress = chain
+    ? L2_DEPOSIT_ADDRESS_MAP[chain.enum]
+    : undefined;
 
   const projectName = (
     <span>
@@ -79,9 +84,8 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
   } else if (
     data.cate_id === 'send' &&
     data.other_addr &&
-    Object.values(L2_DEPOSIT_ADDRESS_MAP).includes(
-      data.other_addr.toLowerCase()
-    )
+    chainDepositAddress &&
+    isSameAddress(data.other_addr, chainDepositAddress)
   ) {
     tokenURL = data.sends?.[0]?.token?.logo_url || '';
     // gas deposit
