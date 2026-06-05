@@ -40,16 +40,14 @@ const PanelImpl: React.FC<PanelProps> = ({ snapshot }) => {
         </div>
       )}
 
-      {hiddenCount > 0 && (
-        <div className="rabby-perps-widget__footer">
-          <span
-            className="rabby-perps-widget__footer-text"
-            onClick={handleFooterClick}
-          >
-            {STRINGS.hiddenPositions(hiddenCount)}
-          </span>
-        </div>
-      )}
+      <div className="rabby-perps-widget__footer">
+        <span
+          className="rabby-perps-widget__footer-text"
+          onClick={handleFooterClick}
+        >
+          {STRINGS.hiddenPositions(hiddenCount)}
+        </span>
+      </div>
     </div>
   );
 };
