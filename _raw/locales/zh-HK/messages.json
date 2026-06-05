@@ -259,6 +259,7 @@
         "reset": "恢復初始設定",
         "save": "保存",
         "settings": {
+          "perpsFloatWidget": "永續合約懸浮視窗",
           "customRpc": "修改 RPC URL",
           "enableWhitelistForSendingAssets": "啟用轉賬白名單",
           "label": "設定",
@@ -3880,6 +3881,7 @@
         "sound": "啟用聲音"
       },
       "tradingPanel": {
+        "notAvailableInRegion": "您所在的地區暫不支援。",
         "slippagePage": {
           "maxSlippage": "最大滑點",
           "title": "調整最大滑點",

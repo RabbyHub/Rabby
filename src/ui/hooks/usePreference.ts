@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { DARK_MODE_TYPE } from '@/constant';
 import { getUiType } from '../utils';
@@ -36,6 +37,14 @@ function useIsDarkMode() {
 const uiTypes = getUiType();
 
 function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
+  // The Perps pro page lives must be always dark.
+  if (
+    uiTypes.isDesktop &&
+    window.location.hash?.split('?')[0]?.startsWith('#/desktop/perps')
+  ) {
+    return true;
+  }
+
   const userSelectedDark = themeMode === DARK_MODE_TYPE.dark;
   const useSystemAndOnDark =
     themeMode === DARK_MODE_TYPE.system && isDarkOnSystem;
@@ -83,6 +92,8 @@ export function useThemeModeOnMain() {
 
   const isDarkOnSystem = useIsDarkMode();
 
+  const location = useLocation();
+
   useEffect(() => {
     (async () => {
       await dispatch.preference.getPreference('themeMode');
@@ -92,6 +103,10 @@ export function useThemeModeOnMain() {
   useLayoutEffect(() => {
     const isDark = isFinalDarkMode(themeMode, isDarkOnSystem);
     const root = document.documentElement;
+    // Skip when the resolved theme already matches the DOM.
+    if (isDark === root.classList.contains(darkModeClassName)) {
+      return;
+    }
     root.classList.add('no-transitions');
     if (isDark) {
       // see https://v2.tailwindcss.com/docs/dark-mode
@@ -103,7 +118,7 @@ export function useThemeModeOnMain() {
     requestAnimationFrame(() => {
       root.classList.remove('no-transitions');
     });
-  }, [themeMode, isDarkOnSystem]);
+  }, [themeMode, isDarkOnSystem, location.pathname]);
 }
 
 export function useThemeMode() {

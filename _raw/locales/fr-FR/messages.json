@@ -1043,6 +1043,7 @@
           "switchPasswordForNonWhitelistedTx": "Mot de passe pour les transferts non autorisés",
           "biometricUnlockHint": "Utilisez des biométries pour déverrouiller cet appareil.",
           "biometricUnlockUnsupported": "Cet appareil ne prend pas en charge le déverrouillage biométrique.",
+          "perpsFloatWidget": "Widget flottant Perps",
           "biometricUnlock": "Déverrouiller avec des biométriques",
           "currency": "Devise",
           "searchCurrency": "Rechercher une devise"
@@ -4239,6 +4240,7 @@
         "tpSlTips": "Passez des ordres simples de prise de bénéfice et de stop loss sur le marché. Pour des fonctionnalités avancées telles que des prix limités ou des prises de bénéfice et de stop loss partiels, définissez les ordres de prise de bénéfice et de stop loss dans une position ouverte.",
         "deposit": "Dépôt",
         "addFundsToGetStarted": "Ajoutez des fonds pour commencer",
+        "notAvailableInRegion": "Non disponible dans votre région.",
         "short": "Short",
         "size": "Taille",
         "Buy": "Acheter",

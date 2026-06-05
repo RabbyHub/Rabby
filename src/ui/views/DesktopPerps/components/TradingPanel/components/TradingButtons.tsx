@@ -18,6 +18,7 @@ const useTradingGate = ({
   orderSide?: OrderSide;
 }) => {
   const { t } = useTranslation();
+  const hasPermission = useRabbySelector((s) => s.perps.hasPermission);
 
   const {
     quoteAsset,
@@ -30,33 +31,35 @@ const useTradingGate = ({
   } = usePerpsTradingGate({ orderSide });
 
   const bannerNode = useMemo(() => {
+    const banner = (text: React.ReactNode) => (
+      <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
+        <RcIconInfoCC className="text-r-orange-default" />
+        <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
+          {text}
+        </div>
+      </div>
+    );
+
+    // Region gate trumps everything: if trading isn't allowed here, nothing else applies.
+    if (!hasPermission) {
+      return banner(t('page.perpsPro.tradingPanel.notAvailableInRegion'));
+    }
     // Priority matches gateButton: needDepositFirst > needEnableTrading > needSwapStableCoin > error.
     // needEnableTrading suppresses the banner (the enable-trading button alone is enough),
     // but a pending deposit still needs the banner above it.
     if (needDepositFirst) {
-      return (
-        <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
-          <RcIconInfoCC className="text-r-orange-default" />
-          <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
-            {t('page.perpsPro.tradingPanel.addFundsToGetStarted')}
-          </div>
-        </div>
-      );
+      return banner(t('page.perpsPro.tradingPanel.addFundsToGetStarted'));
     }
     if (needEnableTrading) return null;
     if (!error && !needSwapStableCoin) return null;
-    return (
-      <div className="bg-r-orange-light rounded-[8px] px-[12px] py-[8px] flex items-center gap-[4px]">
-        <RcIconInfoCC className="text-r-orange-default" />
-        <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
-          {needSwapStableCoin
-            ? t('page.perps.PerpsSpotSwap.swapBeforeTrading', { quoteAsset })
-            : error}
-        </div>
-      </div>
+    return banner(
+      needSwapStableCoin
+        ? t('page.perps.PerpsSpotSwap.swapBeforeTrading', { quoteAsset })
+        : error
     );
   }, [
     error,
+    hasPermission,
     needDepositFirst,
     needSwapStableCoin,
     quoteAsset,

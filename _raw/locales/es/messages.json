@@ -1321,6 +1321,7 @@
           "biometricUnlock": "Desbloquear con biometría",
           "biometricUnlockHint": "Usa biometría para desbloquear en este dispositivo.",
           "biometricUnlockUnsupported": "Este dispositivo no soporta el desbloqueo biométrico.",
+          "perpsFloatWidget": "Widget flotante de Perps",
           "currency": "Moneda",
           "searchCurrency": "Buscar moneda"
         },
@@ -3910,6 +3911,7 @@
         "reduceOnly": "Solo reducir posición",
         "deposit": "Depositar",
         "addFundsToGetStarted": "Añade fondos para comenzar",
+        "notAvailableInRegion": "No disponible en tu región.",
         "cost": "Costo",
         "price": "Precio",
         "sellTrigger": "Venta de activación",

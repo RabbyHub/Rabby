@@ -7,8 +7,12 @@ export const PrivateRouteGuard = ({ children }) => {
   const location = useLocation();
   const [isBooted, setIsBooted] = useState(false);
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const to = !isBooted ? '/welcome' : !isUnlocked ? '/unlock' : null;
+  const [checkedPath, setCheckedPath] = useState<string | null>(null);
+  // `from` lets Unlock return here instead of the default page.
+  const unlockTo = `/unlock?from=${encodeURIComponent(
+    location.pathname + location.search
+  )}`;
+  const to = !isBooted ? '/welcome' : unlockTo;
 
   useEffect(() => {
     let cancelled = false;
@@ -22,7 +26,7 @@ export const PrivateRouteGuard = ({ children }) => {
       }
       setIsBooted(booted);
       setIsUnlocked(unlocked);
-      setIsReady(true);
+      setCheckedPath(location.pathname);
     };
     init();
     return () => {
@@ -30,8 +34,19 @@ export const PrivateRouteGuard = ({ children }) => {
     };
   }, [location.pathname, wallet]);
 
-  if (!isReady) return <></>;
-  return !to ? children : <Redirect to={to} />;
+  // Keep children mounted across route switches (keep-alive).
+  if (isUnlocked) {
+    return children;
+  }
+  // Wait for a recheck — a stale "locked" right after unlock-nav would bounce back here.
+  if (checkedPath !== location.pathname) {
+    return <></>;
+  }
+  // Guards keep running on /unlock; redirecting again would nest `from` and loop.
+  if (location.pathname === '/unlock') {
+    return <></>;
+  }
+  return <Redirect to={to} />;
 };
 
 const PrivateRoute = ({ children, ...rest }) => {

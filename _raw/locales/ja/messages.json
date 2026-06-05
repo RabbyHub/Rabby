@@ -1321,6 +1321,7 @@
           "biometricUnlock": "生体認証でロック解除",
           "biometricUnlockHint": "このデバイスでバイオメトリクスを使用してロックを解除します。",
           "biometricUnlockUnsupported": "このデバイスは生体認証によるロック解除をサポートしていません。",
+          "perpsFloatWidget": "パーペチュアル・フローティングウィジェット",
           "currency": "通貨",
           "searchCurrency": "通貨を検索"
         },
@@ -3910,6 +3911,7 @@
         "tpSlTips": "シンプルな成行の利確/損切り注文を出します。限定価格や部分的な利確/損切りといった高度な機能を使う場合は、開いているポジションで利確/損切りを設定してください。",
         "deposit": "入金",
         "addFundsToGetStarted": "資金を追加して開始します",
+        "notAvailableInRegion": "お住まいの地域ではご利用いただけません。",
         "action": "アクション",
         "Sell": "売却",
         "max": "最大値",
