@@ -50,13 +50,8 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
     tokenURL = data.sends?.[0]?.token?.logo_url || '';
     interAddressExplain = (
       <>
-        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {t('page.transactions.explain.depositedGas')}
-        </div>
-        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {t('page.transactions.explain.To')}{' '}
-          {t('page.transactions.explain.gasDeposit')}
-        </div>
+        <div className="tx-explain-title">Deposited Gas</div>
+        <div className="tx-explain-desc">To Gas Deposit</div>
       </>
     );
   } else if (isCancel) {
@@ -91,13 +86,8 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
     // gas deposit
     interAddressExplain = (
       <>
-        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {t('page.transactions.explain.depositedGas')}
-        </div>
-        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {t('page.transactions.explain.To')}{' '}
-          {t('page.transactions.explain.gasDeposit')}
-        </div>
+        <div className="tx-explain-title">Deposited Gas</div>
+        <div className="tx-explain-desc">To Gas Deposit</div>
       </>
     );
   } else if (
@@ -109,13 +99,8 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
     // gas received
     interAddressExplain = (
       <>
-        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {t('page.transactions.explain.receivedGas')}
-        </div>
-        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {t('page.transactions.explain.From')}{' '}
-          {t('page.transactions.explain.gasDeposit')}
-        </div>
+        <div className="tx-explain-title">Received Gas</div>
+        <div className="tx-explain-desc">From Gas Deposit</div>
       </>
     );
   } else if (
@@ -127,13 +112,8 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
     // gas withdraw
     interAddressExplain = (
       <>
-        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {t('page.transactions.explain.withdrawGas')}
-        </div>
-        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
-          {t('page.transactions.explain.From')}{' '}
-          {t('page.transactions.explain.gasDeposit')}
-        </div>
+        <div className="tx-explain-title">Withdrawn Gas</div>
+        <div className="tx-explain-desc">From Gas Deposit</div>
       </>
     );
   } else {

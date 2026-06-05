@@ -4576,7 +4576,13 @@
         "transactionFailed": "ステーキング取引に失敗しました"
       },
       "metrics": {
-        "yield": "利回り"
+        "yield": "利回り",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "ポートフォリオ",

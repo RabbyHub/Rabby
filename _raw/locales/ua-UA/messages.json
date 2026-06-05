@@ -4588,7 +4588,13 @@
         "transactionFailed": "Транзакція стейкінгу не вдалася"
       },
       "metrics": {
-        "yield": "Дохідність"
+        "yield": "Дохідність",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Портфель",

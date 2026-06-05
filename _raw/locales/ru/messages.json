@@ -4578,7 +4578,13 @@
         "transactionFailed": "Транзакция стейкинга не удалась"
       },
       "metrics": {
-        "yield": "Доходность"
+        "yield": "Доходность",
+        "tvl": "ТВЛ",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Портфель",

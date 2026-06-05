@@ -4622,7 +4622,13 @@
         "transactionFailed": "質押交易失敗"
       },
       "metrics": {
-        "yield": "收益率"
+        "yield": "收益率",
+        "tvl": "總鎖倉量",
+        "apr": "年利率",
+        "apy": "年收益率",
+        "lp": "流動性提供者",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "投資組合",
