@@ -15,6 +15,7 @@ import {
   getUiType,
 } from 'ui/utils';
 import { getChain } from '@/utils';
+import { findChain } from '@/utils/chain';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
@@ -123,9 +124,27 @@ const TokenDetail = ({
       }),
       (item) => -item.time_at
     );
+    const txs = displayList.map((item) => ({
+      chainId: findChain({ serverId: item.chain })?.id,
+      hash: item.id,
+    }));
+    const checks = await wallet
+      .checkIsGasDepositTxs(txs)
+      .catch(() => [] as boolean[]);
+    const list = displayList.map((item, index) => {
+      if (!checks[index]) {
+        return item;
+      }
+
+      return {
+        ...item,
+        isGasDeposit: true,
+      };
+    });
+
     return {
-      last: last(displayList)?.time_at,
-      list: displayList,
+      last: last(list)?.time_at,
+      list,
     };
   };
 

@@ -4953,6 +4953,15 @@ export class WalletController extends BaseController {
     type
   ) =>
     transactionHistoryService.getRecentTxHistory(address, hash, chainId, type);
+  updateBridgeGasAccountTx: typeof transactionHistoryService.updateBridgeGasAccountTx = (
+    params
+  ) => transactionHistoryService.updateBridgeGasAccountTx(params);
+  checkIsGasDepositTx: typeof transactionHistoryService.checkIsGasDepositTx = (
+    params
+  ) => transactionHistoryService.checkIsGasDepositTx(params);
+  checkIsGasDepositTxs: typeof transactionHistoryService.checkIsGasDepositTxs = (
+    params
+  ) => transactionHistoryService.checkIsGasDepositTxs(params);
   completeBridgeTxHistory = (
     from_tx_id: string,
     chainId: number,
