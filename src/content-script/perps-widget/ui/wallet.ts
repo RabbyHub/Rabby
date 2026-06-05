@@ -2,15 +2,28 @@
 
 import browser from 'webextension-polyfill';
 
+function isExtensionContextValid(): boolean {
+  return !!browser?.runtime?.id;
+}
+
 function controllerCall<T = unknown>(
   method: string,
   params: unknown[] = []
 ): Promise<T> {
-  return browser.runtime.sendMessage({
-    type: 'controller',
-    method,
-    params,
-  }) as Promise<T>;
+  if (!isExtensionContextValid()) {
+    return Promise.reject(new Error('Rabby extension context invalidated'));
+  }
+  // Wrap so a synchronous "context invalidated" throw still surfaces as a
+  // rejected promise instead of an uncaught TypeError at the call site.
+  try {
+    return browser.runtime.sendMessage({
+      type: 'controller',
+      method,
+      params,
+    }) as Promise<T>;
+  } catch (e) {
+    return Promise.reject(e);
+  }
 }
 
 export function openInDesktopPerps(coin?: string): void {
