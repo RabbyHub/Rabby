@@ -275,6 +275,7 @@
           "switchPasswordForNonWhitelistedTx": "非白名单转账的密码",
           "biometricUnlock": "通过生物识别解锁",
           "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
+          "perpsFloatWidget": "永续合约悬浮窗",
           "biometricUnlockHint": "使用生物识别在此设备上解锁。"
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
@@ -3956,6 +3957,7 @@
         "limitPrice": "限价",
         "deposit": "充值",
         "addFundsToGetStarted": "添加资金以开始使用",
+        "notAvailableInRegion": "您所在的地区暂不支持。",
         "price": "价格",
         "action": "操作",
         "orderCount": "订单数量",

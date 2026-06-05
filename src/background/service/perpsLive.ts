@@ -618,7 +618,7 @@ class PerpsLiveService {
   private async refreshTokenCatalog(): Promise<void> {
     try {
       const list = await openapiService.getPerpTopTokenListV3?.({
-        lang: 'en',
+        dex_id: 'all',
       });
       if (!Array.isArray(list)) return;
       this.tokenCatalog.clear();

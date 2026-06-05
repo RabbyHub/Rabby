@@ -1390,6 +1390,7 @@
           "biometricUnlock": "Buka dengan Biometrik",
           "biometricUnlockHint": "Gunakan biometrik untuk membuka kunci di perangkat ini.",
           "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
+          "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang"
         },
@@ -3907,6 +3908,7 @@
         "tpMustBeLowerThanCurrentPrice": "Harga ambil untung harus lebih rendah daripada harga saat ini",
         "deposit": "Setor",
         "addFundsToGetStarted": "Tambahkan dana untuk memulai",
+        "notAvailableInRegion": "Tidak tersedia di wilayah Anda.",
         "cost": "Biaya",
         "short": "Pendek",
         "price": "Harga",

@@ -199,6 +199,13 @@ const Main = () => {
             event_category: 'Settings Snapshot',
           }
         );
+
+        ga4.fireEvent(
+          `PerpsFloating_${preference.perpsWidgetEnabled ? 'On' : 'Off'}`,
+          {
+            event_category: 'Settings Snapshot',
+          }
+        );
         wallet.updateGa4EventTime(Date.now());
       }
     })();

@@ -19,7 +19,6 @@ import { usePerpsPopupNav } from './hooks/usePerpsPopupNav';
 import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
 import { useRabbySelector } from '@/ui/store';
 import { AccountActions } from './components/AccountActions';
-import { TopPermissionTips } from './components/TopPermissionTips';
 import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
 import usePerpsProState from './hooks/usePerpsProState';
 import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
@@ -99,7 +98,6 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                 <AccountActions />
               </div>
             </div>
-            <TopPermissionTips />
             <div className="flex flex-1 min-w-0 min-h-0 border-t border-b  border-solid border-rb-neutral-line overflow-hidden bg-rb-neutral-bg-1">
               {/* [chart + order book] + UserInfoHistory，can be resized vertically */}
               <div className="flex-[4] flex flex-col min-w-0 min-h-0 border-r border-solid border-rb-neutral-line overflow-hidden">

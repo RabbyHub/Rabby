@@ -1321,6 +1321,7 @@
           "biometricUnlockHint": "Use biometria para desbloquear neste dispositivo.",
           "biometricUnlock": "Desbloquear com Biométricos",
           "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
+          "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
           "searchCurrency": "Pesquisar moeda"
         },
@@ -3912,6 +3913,7 @@
         "reduceOnlyTips": "Esta ordem não abrirá uma nova posição, independentemente do tamanho da ordem. Ela será comparada à posição existente no momento da execução.",
         "deposit": "Depósito",
         "addFundsToGetStarted": "Adicione fundos para começar.",
+        "notAvailableInRegion": "Não disponível na sua região.",
         "price": "Preço",
         "cost": "Custo",
         "Sell": "Vender",

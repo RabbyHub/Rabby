@@ -1323,6 +1323,7 @@
           "switchPasswordForNonWhitelistedTx": "Пароль для нестандартних трансакцій",
           "biometricUnlock": "Розблокувати за допомогою біометрії",
           "biometricUnlockUnsupported": "Цей пристрій не підтримує біометричне розблокування.",
+          "perpsFloatWidget": "Плаваючий віджет Perps",
           "biometricUnlockHint": "Використовуйте біометрію для розблокування на цьому пристрої.",
           "currency": "Валюта",
           "searchCurrency": "Пошук валюти"
@@ -3922,6 +3923,7 @@
         "tpSlTips": "Розміщує прості ринкові ордери TP/SL. Для розширених функцій, таких як обмежені ціни або часткові TP/SL, встановіть TP/SL у відкритій позиції.",
         "deposit": "Депозит",
         "addFundsToGetStarted": "Додайте кошти, щоб почати",
+        "notAvailableInRegion": "Недоступно у вашому регіоні.",
         "estimatedPnlWillBe": "Ваш приблизительный PnL будет",
         "action": "Дія",
         "sideShortSell": "шорт (продати)",
