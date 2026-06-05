@@ -8,13 +8,7 @@
       "explain": {
         "unknown": "Interaksi kontrak",
         "cancel": "Transaksi menunggu dibatalkan",
-        "approve": "Setujui {{amount}} {{symbol}} untuk {{project}}",
-        "gasDeposit": "Setor Gas",
-        "depositedGas": "Gas Disetor",
-        "To": "Ke",
-        "receivedGas": "Gas Diterima",
-        "From": "Dari",
-        "withdrawGas": "Gas Ditarik"
+        "approve": "Setujui {{amount}} {{symbol}} untuk {{project}}"
       },
       "txHistory": {
         "scamToolTip": "Transaksi ini dilakukan oleh penipu untuk mengirim token dan NFT penipuan. Mohon hindari berinteraksi dengannya.",
@@ -4579,13 +4573,7 @@
         "transactionFailed": "Transaksi staking gagal"
       },
       "metrics": {
-        "yield": "Imbal hasil",
-        "tvl": "TVL",
-        "apr": "APR",
-        "apy": "APY",
-        "lp": "LP",
-        "v2": "V2",
-        "v3": "V3"
+        "yield": "Imbal hasil"
       },
       "tabs": {
         "portfolio": "Portofolio",

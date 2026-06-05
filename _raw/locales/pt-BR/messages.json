@@ -9,13 +9,7 @@
       "explain": {
         "approve": "Aprovar {{amount}} {{symbol}} para {{project}}",
         "unknown": "Interação com Contrato",
-        "cancel": "Transações pendentes canceladas",
-        "gasDeposit": "Depósito de Gas",
-        "depositedGas": "Gas Depositado",
-        "To": "Para",
-        "receivedGas": "Gas Recebido",
-        "From": "De",
-        "withdrawGas": "Gas Retirado"
+        "cancel": "Transações pendentes canceladas"
       },
       "txHistory": {
         "tipInputData": "A transação inclui uma mensagem",
@@ -4584,13 +4578,7 @@
         "transactionFailed": "Transação de staking falhou"
       },
       "metrics": {
-        "yield": "Rendimento",
-        "tvl": "TVL",
-        "apr": "TAE",
-        "apy": "APY",
-        "lp": "LP",
-        "v2": "V2",
-        "v3": "V3"
+        "yield": "Rendimento"
       },
       "tabs": {
         "portfolio": "Portfólio",

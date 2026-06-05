@@ -47,13 +47,7 @@
       "explain": {
         "approve": "授权 {{project}} 使用 {{amount}} {{symbol}}",
         "cancel": "取消了待完成的交易",
-        "unknown": "合约交互",
-        "gasDeposit": "存入 Gas",
-        "depositedGas": "已存入的 Gas",
-        "To": "发送至",
-        "receivedGas": "已收到的 Gas",
-        "From": "来自",
-        "withdrawGas": "已提取的 Gas"
+        "unknown": "合约交互"
       },
       "modalViewMessage": {
         "title": "查看留言"
@@ -4628,13 +4622,7 @@
         "transactionFailed": "质押交易失败"
       },
       "metrics": {
-        "yield": "收益率",
-        "tvl": "总锁仓量",
-        "apr": "年化收益率",
-        "apy": "年化百分率收益",
-        "lp": "流动性凭证",
-        "v2": "V2",
-        "v3": "V3"
+        "yield": "收益率"
       },
       "tabs": {
         "portfolio": "投资组合",

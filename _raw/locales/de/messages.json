@@ -9,13 +9,7 @@
       "explain": {
         "approve": "{{amount}} {{symbol}} für {{project}} genehmigen",
         "unknown": "Smart Contract-Interaktion",
-        "cancel": "Eine ausstehende Transaktion wurde abgebrochen",
-        "gasDeposit": "Gas-Einzahlung",
-        "depositedGas": "Eingezahltes Gas",
-        "To": "An",
-        "receivedGas": "Erhaltenes Gas",
-        "From": "Von",
-        "withdrawGas": "Abgehobenes Gas"
+        "cancel": "Eine ausstehende Transaktion wurde abgebrochen"
       },
       "txHistory": {
         "tipInputData": "Die Transaktion enthält eine Nachricht",
@@ -4582,13 +4576,7 @@
         "transactionFailed": "Staking-Transaktion fehlgeschlagen"
       },
       "metrics": {
-        "yield": "Rendite",
-        "tvl": "TVL",
-        "apr": "APR",
-        "apy": "APY",
-        "lp": "LP",
-        "v2": "V2",
-        "v3": "V3"
+        "yield": "Rendite"
       },
       "tabs": {
         "portfolio": "Portfolio",

@@ -9,13 +9,7 @@
       "explain": {
         "approve": "Подтвердить {{amount}} {{symbol}} для {{project}}",
         "unknown": "Вызов контракта",
-        "cancel": "Отменена ожидающая транзакция",
-        "gasDeposit": "Пополнение газа",
-        "depositedGas": "Внесённый газ",
-        "To": "Кому",
-        "receivedGas": "Полученный газ",
-        "From": "От",
-        "withdrawGas": "Выведенный газ"
+        "cancel": "Отменена ожидающая транзакция"
       },
       "txHistory": {
         "tipInputData": "Транзакция включает сообщение",
@@ -4584,13 +4578,7 @@
         "transactionFailed": "Транзакция стейкинга не удалась"
       },
       "metrics": {
-        "yield": "Доходность",
-        "tvl": "ТВЛ",
-        "apr": "APR",
-        "apy": "APY",
-        "lp": "LP",
-        "v2": "V2",
-        "v3": "V3"
+        "yield": "Доходность"
       },
       "tabs": {
         "portfolio": "Портфель",
