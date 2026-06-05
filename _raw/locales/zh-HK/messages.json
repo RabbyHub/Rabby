@@ -258,6 +258,7 @@
         "reset": "恢覆初始設置",
         "save": "保存",
         "settings": {
+          "perpsFloatWidget": "永續合約懸浮視窗",
           "customRpc": "修改 RPC URL",
           "enableWhitelistForSendingAssets": "啟用轉賬白名單",
           "label": "設置",
@@ -272,7 +273,6 @@
           "switchPasswordForNonWhitelistedTx": "非白名单转账的密碼",
           "biometricUnlock": "使用生物识别解锁",
           "biometricUnlockUnsupported": "此設備不支持生物識別解鎖。",
-          "perpsFloatWidget": "永續合約懸浮視窗",
           "biometricUnlockHint": "使用生物识别技术在此设备上解锁。",
           "currency": "貨幣",
           "searchCurrency": "搜尋貨幣"
