@@ -4573,7 +4573,13 @@
         "transactionFailed": "Giao dịch staking thất bại"
       },
       "metrics": {
-        "yield": "Lợi suất"
+        "yield": "Lợi suất",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Danh mục",

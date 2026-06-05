@@ -4579,7 +4579,13 @@
         "transactionFailed": "Staking işlemi başarısız oldu"
       },
       "metrics": {
-        "yield": "Getiri"
+        "yield": "Getiri",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Portföy",

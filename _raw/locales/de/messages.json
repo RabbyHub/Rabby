@@ -4576,7 +4576,13 @@
         "transactionFailed": "Staking-Transaktion fehlgeschlagen"
       },
       "metrics": {
-        "yield": "Rendite"
+        "yield": "Rendite",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Portfolio",

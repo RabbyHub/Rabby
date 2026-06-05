@@ -4622,7 +4622,13 @@
         "transactionFailed": "质押交易失败"
       },
       "metrics": {
-        "yield": "收益率"
+        "yield": "收益率",
+        "tvl": "总锁仓量",
+        "apr": "年化收益率",
+        "apy": "年化百分率收益",
+        "lp": "流动性凭证",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "投资组合",

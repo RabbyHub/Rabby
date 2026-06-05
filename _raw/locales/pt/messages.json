@@ -4573,7 +4573,13 @@
         "transactionFailed": "Transação de staking falhou"
       },
       "metrics": {
-        "yield": "Rendimento"
+        "yield": "Rendimento",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Portefólio",
