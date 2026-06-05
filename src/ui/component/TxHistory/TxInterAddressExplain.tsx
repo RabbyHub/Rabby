@@ -20,7 +20,6 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
   const isCancel = data.cate_id === 'cancel';
   const isApprove = data.cate_id === 'approve';
   const project = data.project_item;
-  console.log('TxInterAddressExplain', data);
   const { t } = useTranslation();
   let tokenURL = '';
 

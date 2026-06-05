@@ -1,5 +1,11 @@
 import { TxHistoryItemRow } from '@/db/schema/history';
+import {
+  GAS_ACCOUNT_RECEIVED_ADDRESS,
+  GAS_ACCOUNT_WITHDRAWED_ADDRESS,
+  L2_DEPOSIT_ADDRESS_MAP,
+} from '@/constant/gas-account';
 import { NameAndAddress, TxAvatar } from '@/ui/component';
+import { isSameAddress } from '@/ui/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { getTokenSymbol } from 'ui/utils/token';
@@ -69,6 +75,62 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
         {`${getTokenSymbol(approveToken)} for `}
         {projectName}
       </div>
+    );
+  } else if (
+    data.cate_id === 'send' &&
+    data.other_addr &&
+    Object.values(L2_DEPOSIT_ADDRESS_MAP).includes(
+      data.other_addr.toLowerCase()
+    )
+  ) {
+    tokenURL = data.sends?.[0]?.token?.logo_url || '';
+    // gas deposit
+    interAddressExplain = (
+      <>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {t('page.transactions.explain.depositedGas')}
+        </div>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {t('page.transactions.explain.To')}{' '}
+          {t('page.transactions.explain.gasDeposit')}
+        </div>
+      </>
+    );
+  } else if (
+    data.cate_id === 'receive' &&
+    data.tx?.from_addr &&
+    isSameAddress(data.tx.from_addr, GAS_ACCOUNT_RECEIVED_ADDRESS)
+  ) {
+    tokenURL = data.receives?.[0]?.token?.logo_url || '';
+    // gas received
+    interAddressExplain = (
+      <>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {t('page.transactions.explain.receivedGas')}
+        </div>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {t('page.transactions.explain.From')}{' '}
+          {t('page.transactions.explain.gasDeposit')}
+        </div>
+      </>
+    );
+  } else if (
+    data.cate_id === 'receive' &&
+    data.tx?.from_addr &&
+    isSameAddress(data.tx.from_addr, GAS_ACCOUNT_WITHDRAWED_ADDRESS)
+  ) {
+    tokenURL = data.receives?.[0]?.token?.logo_url || '';
+    // gas withdraw
+    interAddressExplain = (
+      <>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {t('page.transactions.explain.withdrawGas')}
+        </div>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {t('page.transactions.explain.From')}{' '}
+          {t('page.transactions.explain.gasDeposit')}
+        </div>
+      </>
     );
   } else {
     interAddressExplain = (
