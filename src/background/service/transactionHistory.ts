@@ -878,6 +878,35 @@ class TxHistory {
     );
   };
 
+  checkIsGasDepositTxs = (
+    txs: Array<{
+      chainId?: number;
+      hash: string;
+    }>
+  ) => {
+    const gasDepositTxKeys = new Set<string>();
+
+    Object.values(this.store?.transactions || {}).forEach((addressTxMap) => {
+      Object.values(addressTxMap).forEach((txGroup) => {
+        txGroup.txs.forEach((tx) => {
+          if (!tx.isGasDeposit || !tx.hash) {
+            return;
+          }
+
+          gasDepositTxKeys.add(`${txGroup.chainId}:${tx.hash.toLowerCase()}`);
+        });
+      });
+    });
+
+    return txs.map((tx) => {
+      if (!tx.chainId || !tx.hash) {
+        return false;
+      }
+
+      return gasDepositTxKeys.has(`${tx.chainId}:${tx.hash.toLowerCase()}`);
+    });
+  };
+
   updateTxByTxRequest = (txRequest: TxRequest) => {
     const { chainId, from } = txRequest.signed_tx;
     const nonce = txRequest.nonce;

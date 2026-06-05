@@ -124,25 +124,23 @@ const TokenDetail = ({
       }),
       (item) => -item.time_at
     );
-    const list = await Promise.all(
-      displayList.map(async (item) => {
-        const isGasDeposit = await wallet
-          .checkIsGasDepositTx({
-            chainId: findChain({ serverId: item.chain })?.id,
-            hash: item.id,
-          })
-          .catch(() => false);
+    const txs = displayList.map((item) => ({
+      chainId: findChain({ serverId: item.chain })?.id,
+      hash: item.id,
+    }));
+    const checks = await wallet
+      .checkIsGasDepositTxs(txs)
+      .catch(() => [] as boolean[]);
+    const list = displayList.map((item, index) => {
+      if (!checks[index]) {
+        return item;
+      }
 
-        if (!isGasDeposit) {
-          return item;
-        }
-
-        return {
-          ...item,
-          isGasDeposit: true,
-        };
-      })
-    );
+      return {
+        ...item,
+        isGasDeposit: true,
+      };
+    });
 
     return {
       last: last(list)?.time_at,
