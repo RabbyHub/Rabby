@@ -3874,6 +3874,7 @@
         "sound": "啟用聲音"
       },
       "tradingPanel": {
+        "notAvailableInRegion": "您所在的地區暫不支援。",
         "slippagePage": {
           "maxSlippage": "最大滑點",
           "title": "調整最大滑點",
@@ -3961,7 +3962,6 @@
         "estimatedPnlWillBe": "您的預估盈虧將為",
         "slTriggerMoreThanOrderPrice": "您的止损触发价应高于您的订单价格",
         "buyTrigger": "買入觸發器",
-        "notAvailableInRegion": "您所在的地區暫不支援。",
         "tpTriggerLessThanOrderPrice": "您的 TP 触发价格应低于您的订单价格。",
         "size": "規模",
         "slTriggerLessThanOrderPrice": "您的止损触发价格应低于您的订单价格。",
