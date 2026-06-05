@@ -13,7 +13,7 @@ import {
 import { isSameAddress } from '@/ui/utils';
 
 type TxInterAddressExplainProps = {
-  data: TxHistoryItemRow;
+  data: TxHistoryItemRow & { isGasDeposit?: boolean };
 };
 
 export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
@@ -38,7 +38,20 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
 
   let interAddressExplain;
 
-  if (isCancel) {
+  if (data.isGasDeposit) {
+    tokenURL = data.sends?.[0]?.token?.logo_url || '';
+    interAddressExplain = (
+      <>
+        <div className="tx-explain-title">
+          {t('page.transactions.explain.depositedGas')}
+        </div>
+        <div className="tx-explain-desc">
+          {t('page.transactions.explain.To')}{' '}
+          {t('page.transactions.explain.gasDeposit')}
+        </div>
+      </>
+    );
+  } else if (isCancel) {
     interAddressExplain = (
       <div className="tx-explain-title">
         {t('page.transactions.explain.cancel')}
@@ -133,8 +146,8 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
         <img src={tokenURL} alt="" className="tx-icon rounded-full" />
       ) : (
         <TxAvatar
-          src={data.project_item?.logo_url}
-          cateId={data.cate_id}
+          src={data.isGasDeposit ? undefined : data.project_item?.logo_url}
+          cateId={data.isGasDeposit ? 'send' : data.cate_id}
           className="tx-icon"
         ></TxAvatar>
       )}

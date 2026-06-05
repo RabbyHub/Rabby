@@ -46,6 +46,7 @@ export interface TransactionHistoryItem {
   pushType?: TxPushType;
   reqId?: string;
   isWithdrawed?: boolean;
+  isGasDeposit?: boolean;
   explain?: TransactionGroup['explain'];
   action?: TransactionGroup['action'];
 }
@@ -813,6 +814,69 @@ class TxHistory {
       },
     });
   }
+
+  updateBridgeGasAccountTx = ({
+    address,
+    chainId,
+    hash,
+  }: {
+    address: string;
+    chainId?: number;
+    hash: string;
+  }) => {
+    if (!chainId || !hash) {
+      return;
+    }
+
+    const normalizedAddress = address.toLowerCase();
+    const txGroups = Object.values(
+      this.store.transactions[normalizedAddress] || {}
+    );
+
+    for (const txGroup of txGroups) {
+      if (txGroup.chainId !== chainId) {
+        continue;
+      }
+
+      const tx = txGroup.txs.find(
+        (item) =>
+          item.hash?.toLowerCase() === hash.toLowerCase() &&
+          isSameAddress(item.rawTx.from, address)
+      );
+
+      if (tx) {
+        this.updateSingleTx({
+          ...tx,
+          isGasDeposit: true,
+        });
+        return;
+      }
+    }
+  };
+
+  checkIsGasDepositTx = ({
+    chainId,
+    hash,
+  }: {
+    chainId?: number;
+    hash: string;
+  }) => {
+    if (!chainId || !hash) {
+      return false;
+    }
+
+    const normalizedHash = hash.toLowerCase();
+
+    return Object.values(this.store?.transactions || {}).some((addressTxMap) =>
+      Object.values(addressTxMap).some(
+        (txGroup) =>
+          txGroup.chainId === chainId &&
+          txGroup.txs.some(
+            (tx) => tx.isGasDeposit && tx.hash?.toLowerCase() === normalizedHash
+          )
+      )
+    );
+  };
 
   updateTxByTxRequest = (txRequest: TxRequest) => {
     const { chainId, from } = txRequest.signed_tx;

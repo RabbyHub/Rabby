@@ -1,10 +1,14 @@
 import { useQueryDbHistory } from '@/db/hooks/history';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { findChain } from '@/utils/chain';
+import { TxHistoryItemRow } from '@/db/schema/history';
 import { Switch } from 'antd';
+import { useRequest } from 'ahooks';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 import { Empty } from 'ui/component';
+import { useWallet } from 'ui/utils';
 import { DesktopHistoryItem } from './DesktopHistoryItem';
 import { DesktopLoading } from './DesktopLoading';
 
@@ -19,6 +23,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
 }) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
+  const wallet = useWallet();
 
   const [isHideScam, setIsHideScam] = React.useState(true);
 
@@ -27,6 +32,53 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
     isFilterScam: isHideScam,
     serverChainId: selectChainId,
   });
+
+  const dataKey = React.useMemo(
+    () => (data || []).map((item) => `${item.chain}:${item.id}`).join('|'),
+    [data]
+  );
+
+  const { data: gasDepositKeySet } = useRequest(
+    async () => {
+      if (!data?.length) {
+        return new Set<string>();
+      }
+
+      const entries = await Promise.all(
+        data.map(async (item) => {
+          const isGasDeposit = await wallet
+            .checkIsGasDepositTx({
+              chainId: findChain({ serverId: item.chain })?.id,
+              hash: item.id,
+            })
+            .catch(() => false);
+          return [`${item.chain}:${item.id}`, isGasDeposit] as const;
+        })
+      );
+
+      return new Set(
+        entries.filter(([, isGasDeposit]) => isGasDeposit).map(([key]) => key)
+      );
+    },
+    {
+      refreshDeps: [dataKey],
+    }
+  );
+
+  const displayData = React.useMemo(
+    () =>
+      (data || []).map((item) => {
+        if (!gasDepositKeySet?.has(`${item.chain}:${item.id}`)) {
+          return item;
+        }
+
+        return {
+          ...item,
+          isGasDeposit: true,
+        } as TxHistoryItemRow & { isGasDeposit?: boolean };
+      }),
+    [data, gasDepositKeySet]
+  );
 
   const isEmpty = (data?.length || 0) <= 0 && !loading;
 
@@ -53,7 +105,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
             />
           ) : (
             <Virtuoso
-              data={data}
+              data={displayData}
               customScrollParent={scrollContainerRef?.current || undefined}
               increaseViewportBy={200}
               itemContent={(_, item) => (

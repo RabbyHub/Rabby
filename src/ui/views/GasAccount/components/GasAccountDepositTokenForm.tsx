@@ -1010,6 +1010,16 @@ const GasAccountDepositTokenFormInner: React.FC<
         usdValue,
       });
 
+      const markBridgeGasAccountTx = (
+        submittedDeposit: SubmittedDepositTxInfo
+      ) => {
+        wallet.updateBridgeGasAccountTx({
+          address: account.address,
+          chainId: findChainByServerID(token.chain)?.id,
+          hash: submittedDeposit.trackingTxHash,
+        });
+      };
+
       if (!canUseMiniSign) {
         const bridgeTxHashes = await wallet.submitGasAccountDepositTxs({
           account,
@@ -1022,7 +1032,12 @@ const GasAccountDepositTokenFormInner: React.FC<
           scene: onWaitDepositResult ? 'in_tx_flow' : 'recharge',
         });
 
-        return buildSubmittedDepositTxInfo(bridgeTxHashes);
+        const submittedDeposit = buildSubmittedDepositTxInfo(bridgeTxHashes);
+        if (submittedDeposit) {
+          markBridgeGasAccountTx(submittedDeposit);
+        }
+
+        return submittedDeposit;
       }
 
       const bridgeTxHashes = (await openMiniSignDeposit(bridgeTxs)) || [];
@@ -1031,6 +1046,8 @@ const GasAccountDepositTokenFormInner: React.FC<
       if (!submittedDeposit) {
         return null;
       }
+
+      markBridgeGasAccountTx(submittedDeposit);
 
       await afterBridgeTopUpGasAccount({
         chainServerId: token.chain,

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { getTokenSymbol } from 'ui/utils/token';
 
 type TxInterAddressExplainProps = {
-  data: TxHistoryItemRow;
+  data: TxHistoryItemRow & { isGasDeposit?: boolean };
 };
 
 export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
@@ -13,6 +13,7 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
   const isApprove = data.cate_id === 'approve';
   const project = data.project_item;
   const { t } = useTranslation();
+  let tokenURL = '';
 
   const projectName = (
     <span>
@@ -34,7 +35,20 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
 
   let interAddressExplain;
 
-  if (isCancel) {
+  if (data.isGasDeposit) {
+    tokenURL = data.sends?.[0]?.token?.logo_url || '';
+    interAddressExplain = (
+      <>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {t('page.transactions.explain.depositedGas')}
+        </div>
+        <div className="text-[14px] leading-[17px] text-r-neutral-title1">
+          {t('page.transactions.explain.To')}{' '}
+          {t('page.transactions.explain.gasDeposit')}
+        </div>
+      </>
+    );
+  } else if (isCancel) {
     interAddressExplain = (
       <div className="text-[14px] leading-[17px] text-r-neutral-title1">
         {t('page.transactions.explain.cancel')}
@@ -73,8 +87,11 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
   return (
     <div className="flex items-center gap-[8px]">
       <TxAvatar
-        src={data.project_item?.logo_url}
-        cateId={data.cate_id}
+        src={
+          tokenURL ||
+          (data.isGasDeposit ? undefined : data.project_item?.logo_url)
+        }
+        cateId={data.isGasDeposit ? 'send' : data.cate_id}
         className="w-[32px] h-[32px] rounded-[4px]"
       ></TxAvatar>
       <div className="flex flex-col gap-[6px]">{interAddressExplain}</div>
