@@ -11,6 +11,14 @@ import {
   PERPS_LIVE_PORT_NAME,
 } from '@/utils/message/perpsLive';
 
+/** Extension upgrade/disable/uninstall flips runtime.id to undefined. */
+function isExtensionContextValid(): boolean {
+  return !!browser?.runtime?.id;
+}
+
+/** Poll interval for the context-invalidation watch. */
+const CONTEXT_WATCH_MS = 2000;
+
 type SnapshotListener = (snapshot: PerpsLiveSnapshot | null) => void;
 type TeardownCallback = () => void;
 
@@ -24,15 +32,25 @@ class LivedataClient {
 
   private reconnectTimer: number | null = null;
   private started = false;
+  /** Set once the context is gone for good — blocks any further reconnect/start. */
+  private dead = false;
+  /** See startContextWatch. */
+  private contextWatchTimer: number | null = null;
 
   start(): void {
-    if (this.started) return;
+    if (this.started || this.dead) return;
     this.started = true;
     this.connect();
+    this.startContextWatch();
   }
 
   private connect(): void {
-    if (this.port) return;
+    if (this.dead || this.port) return;
+    // Context already dead — don't reconnect onto a dead runtime.
+    if (!isExtensionContextValid()) {
+      this.teardown();
+      return;
+    }
     try {
       this.port = browser.runtime.connect({ name: PERPS_LIVE_PORT_NAME });
     } catch {
@@ -43,8 +61,7 @@ class LivedataClient {
     this.port.onMessage.addListener((msg: unknown) => {
       this.handle(msg as PerpsLiveBroadcast);
     });
-    // SW upgrade / crash disconnects the port. SDK has its own WS reconnect;
-    // this is a second safety net for the port channel itself.
+    // Reconnect on disconnect; a dead context is caught by connect() + the watch.
     this.port.onDisconnect.addListener(() => {
       this.port = null;
       this.scheduleReconnect();
@@ -52,11 +69,24 @@ class LivedataClient {
   }
 
   private scheduleReconnect(): void {
-    if (this.reconnectTimer != null) return;
+    if (this.dead || this.reconnectTimer != null) return;
     this.reconnectTimer = window.setTimeout(() => {
       this.reconnectTimer = null;
       this.connect();
     }, 1500);
+  }
+
+  /**
+   * Reliable teardown trigger: extension reload does NOT fire port.onDisconnect on an
+   * orphaned content script, but it flips runtime.id to undefined. Poll for that.
+   */
+  private startContextWatch(): void {
+    if (this.contextWatchTimer != null) return;
+    this.contextWatchTimer = window.setInterval(() => {
+      if (!isExtensionContextValid()) {
+        this.teardown();
+      }
+    }, CONTEXT_WATCH_MS);
   }
 
   private handle(msg: PerpsLiveBroadcast): void {
@@ -100,7 +130,46 @@ class LivedataClient {
     };
   }
 
+  /** Context died for good: stop timers/port and fire teardown callbacks so the orphaned widget removes itself. */
+  private teardown(): void {
+    if (this.dead) return;
+    this.dead = true;
+    if (this.reconnectTimer != null) {
+      window.clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    if (this.contextWatchTimer != null) {
+      window.clearInterval(this.contextWatchTimer);
+      this.contextWatchTimer = null;
+    }
+    if (this.port) {
+      try {
+        this.port.disconnect();
+      } catch {
+        /* ignore */
+      }
+      this.port = null;
+    }
+    for (const cb of this.teardownCallbacks) {
+      try {
+        cb();
+      } catch {
+        /* ignore */
+      }
+    }
+    this.teardownCallbacks.clear();
+  }
+
   registerTeardown(cb: TeardownCallback): () => void {
+    // teardown may have already fired before the UI registered.
+    if (this.dead) {
+      try {
+        cb();
+      } catch {
+        /* ignore */
+      }
+      return () => {};
+    }
     this.teardownCallbacks.add(cb);
     return () => {
       this.teardownCallbacks.delete(cb);
