@@ -8,7 +8,13 @@
       "explain": {
         "approve": "Phê duyệt {{amount}} {{symbol}} cho {{project}}",
         "unknown": "Tương tác hợp đồng",
-        "cancel": "Hủy bỏ một giao dịch đang chờ xử lý"
+        "cancel": "Hủy bỏ một giao dịch đang chờ xử lý",
+        "gasDeposit": "Nạp Gas",
+        "depositedGas": "Gas đã nạp",
+        "To": "Đến",
+        "receivedGas": "Gas đã nhận",
+        "From": "Từ",
+        "withdrawGas": "Gas đã rút"
       },
       "txHistory": {
         "tipInputData": "Giao dịch bao gồm một tin nhắn",
@@ -4573,7 +4579,13 @@
         "transactionFailed": "Giao dịch staking thất bại"
       },
       "metrics": {
-        "yield": "Lợi suất"
+        "yield": "Lợi suất",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Danh mục",

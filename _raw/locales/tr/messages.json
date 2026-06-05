@@ -9,7 +9,13 @@
       "explain": {
         "approve": "{{project}} için {{amount}} {{symbol}} onayla",
         "unknown": "Sözleşme Etkileşimi",
-        "cancel": "Bekleyen işlem iptal edildi"
+        "cancel": "Bekleyen işlem iptal edildi",
+        "gasDeposit": "Gaz Yatırma",
+        "depositedGas": "Yatırılan Gaz",
+        "To": "Kime",
+        "receivedGas": "Alınan Gaz",
+        "From": "Kimden",
+        "withdrawGas": "Çekilen Gaz"
       },
       "txHistory": {
         "parseInputDataError": "Mesajı ayrıştırma başarısız oldu",
@@ -4579,7 +4585,13 @@
         "transactionFailed": "Staking işlemi başarısız oldu"
       },
       "metrics": {
-        "yield": "Getiri"
+        "yield": "Getiri",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Portföy",

@@ -9,7 +9,13 @@
       "explain": {
         "approve": "{{project}}用に{{amount}} {{symbol}}を承認",
         "unknown": "契約の対話",
-        "cancel": "保留中の取引をキャンセル"
+        "cancel": "保留中の取引をキャンセル",
+        "gasDeposit": "ガスDeposit",
+        "depositedGas": "Deposit済みガス",
+        "To": "宛先",
+        "receivedGas": "受領ガス",
+        "From": "送信元",
+        "withdrawGas": "引出済みガス"
       },
       "txHistory": {
         "tipInputData": "取引にはメッセージが含まれています",
@@ -4576,7 +4582,13 @@
         "transactionFailed": "ステーキング取引に失敗しました"
       },
       "metrics": {
-        "yield": "利回り"
+        "yield": "利回り",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "ポートフォリオ",

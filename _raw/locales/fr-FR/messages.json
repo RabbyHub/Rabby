@@ -2502,7 +2502,13 @@
       "explain": {
         "approve": "Approuver {{amount}} {{symbol}} pour {{project}}",
         "cancel": "A annulé une transaction en attente",
-        "unknown": "Interaction avec un contrat"
+        "unknown": "Interaction avec un contrat",
+        "gasDeposit": "Dépôt de gaz",
+        "depositedGas": "Gaz déposé",
+        "To": "À",
+        "receivedGas": "Gaz reçu",
+        "From": "De",
+        "withdrawGas": "Gaz retiré"
       },
       "title": "Transactions",
       "filterScam": {
@@ -4905,7 +4911,13 @@
         "transactionFailed": "La transaction de staking a échoué"
       },
       "metrics": {
-        "yield": "Rendement"
+        "yield": "Rendement",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Portefeuille",

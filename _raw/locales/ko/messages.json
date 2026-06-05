@@ -8,7 +8,13 @@
       "explain": {
         "unknown": "계약 상호작용",
         "cancel": "보류 중인 거래가 취소되었습니다.",
-        "approve": "승인 {{amount}} {{symbol}} for {{project}}"
+        "approve": "승인 {{amount}} {{symbol}} for {{project}}",
+        "gasDeposit": "가스 입금",
+        "depositedGas": "입금된 가스",
+        "To": "받는 사람",
+        "receivedGas": "받은 가스",
+        "From": "보낸 사람",
+        "withdrawGas": "출금된 가스"
       },
       "txHistory": {
         "parseInputDataError": "메시지 파싱 실패",
@@ -4573,7 +4579,13 @@
         "transactionFailed": "스테이킹 트랜잭션 실패"
       },
       "metrics": {
-        "yield": "수익률"
+        "yield": "수익률",
+        "tvl": "총 잠금 가치",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "포트폴리오",

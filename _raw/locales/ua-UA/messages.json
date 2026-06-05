@@ -9,7 +9,13 @@
       "explain": {
         "approve": "Затвердити {{amount}} {{symbol}} для {{project}}",
         "unknown": "Взаємодія з контрактами",
-        "cancel": "Скасувати незавершену транзакцію"
+        "cancel": "Скасувати незавершену транзакцію",
+        "gasDeposit": "Поповнення Gas",
+        "depositedGas": "Внесений Gas",
+        "To": "Кому",
+        "receivedGas": "Отриманий Gas",
+        "From": "Від",
+        "withdrawGas": "Виведений Gas"
       },
       "txHistory": {
         "tipInputData": "Транзакція містить повідомлення",
@@ -4588,7 +4594,13 @@
         "transactionFailed": "Транзакція стейкінгу не вдалася"
       },
       "metrics": {
-        "yield": "Дохідність"
+        "yield": "Дохідність",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
       },
       "tabs": {
         "portfolio": "Портфель",
