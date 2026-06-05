@@ -43,10 +43,11 @@ const REBUILD_DEBOUNCE_MS = 150;
 /** Keep WS alive across tab-switch flicker after the last port disconnects */
 const GRACE_STOP_MS = 30 * 1000;
 const WS_RETRY_MS = 5 * 1000;
-/** Sparkline candles barely move within 10 min */
-const KLINE_REFRESH_MS = 10 * 60 * 1000;
+/** Aligned to the 15m candle period: each refresh picks up one newly closed candle (the live tail is driven by ctx markPx, not this) */
+const KLINE_REFRESH_MS = 15 * 60 * 1000;
 const KLINE_LOOKBACK_MS = 24 * 60 * 60 * 1000;
-const KLINE_INTERVAL = '1h';
+/** 15m over 24h ≈ 96 points → ~1.3px/point on the 125px sparkline (1h/24pt looked jagged) */
+const KLINE_INTERVAL = '15m';
 /** UI only renders top-3 cards */
 const TOP_N_KLINE = 3;
 /** Min gap between WS-driven (on-demand) kline kicks; bounds retries if a fetch keeps failing */
@@ -77,6 +78,20 @@ function alignDecimals(value: number, refStr: string | undefined): string {
   if (dotIdx === -1) return Math.round(value).toString();
   const decimals = Math.min(refStr.length - dotIdx - 1, 8);
   return value.toFixed(decimals);
+}
+
+/**
+ * Append the live markPx as the trailing sparkline point so the tail tracks price
+ * in real time. Appends (not replaces) to avoid assuming the last candle is the
+ * in-progress one; the extra point sits next to a near-equal close, so it's invisible.
+ */
+function appendLivePrice(
+  prices: number[] | undefined,
+  livePx: number
+): number[] {
+  const base = prices ?? [];
+  if (base.length === 0 || !Number.isFinite(livePx) || livePx <= 0) return base;
+  return [...base, livePx];
 }
 
 class PerpsLiveService {
@@ -524,7 +539,7 @@ class PerpsLiveService {
           marginUsed: p.marginUsed,
           liquidationPx: p.liquidationPx ?? null,
           dayChangePct,
-          sparkline: klineEntry?.prices ?? [],
+          sparkline: appendLivePrice(klineEntry?.prices, markPxNum),
         });
 
         totalPnlSum += Number(p.unrealizedPnl || 0);
