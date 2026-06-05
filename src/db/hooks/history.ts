@@ -2,7 +2,9 @@ import openapiService, { TxHistoryItem } from '@/background/service/openapi';
 import { Account } from '@/background/service/preference';
 import { UI_TYPE } from '@/constant/ui';
 import { isSupportDBAccount } from '@/utils/account';
+import { findChain } from '@/utils/chain';
 import { transformToHistory } from '@/utils/history';
+import { useWallet } from '@/ui/utils';
 import { useInfiniteScroll, useRequest } from 'ahooks';
 import Dexie from 'dexie';
 import { last, sortBy, has } from 'lodash';
@@ -10,6 +12,11 @@ import { db } from '..';
 import { historyDbService } from '../services/historyDbService';
 import { useEffect, useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { TxHistoryItemRow } from '../schema/history';
+
+export type TxHistoryItemWithGasDeposit = TxHistoryItemRow & {
+  isGasDeposit?: boolean;
+};
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
   // return useQuery({
@@ -52,6 +59,7 @@ export const useQueryDbHistory = (options: {
   serverChainId?: string;
 }) => {
   const { account, isFilterScam, serverChainId } = options;
+  const wallet = useWallet();
 
   const { loading: isSyncing } = useSyncDbHistory({ account });
 
@@ -120,8 +128,54 @@ export const useQueryDbHistory = (options: {
     return list;
   }, [dbHistory, list, isSupportAccount]);
 
+  const resultKey = useMemo(
+    () => result.map((item) => `${item.chain}:${item.id}`).join('|'),
+    [result]
+  );
+
+  const { data: gasDepositKeySet } = useRequest(
+    async () => {
+      if (!result.length) {
+        return new Set<string>();
+      }
+
+      const txs = result.map((item) => ({
+        chainId: findChain({ serverId: item.chain })?.id,
+        hash: item.id,
+      }));
+      const checks = await wallet
+        .checkIsGasDepositTxs(txs)
+        .catch(() => [] as boolean[]);
+      const entries = result.map(
+        (item, index) => [`${item.chain}:${item.id}`, !!checks[index]] as const
+      );
+
+      return new Set(
+        entries.filter(([, isGasDeposit]) => isGasDeposit).map(([key]) => key)
+      );
+    },
+    {
+      refreshDeps: [resultKey],
+    }
+  );
+
+  const enrichedResult = useMemo<TxHistoryItemWithGasDeposit[]>(
+    () =>
+      result.map((item) => {
+        if (!gasDepositKeySet?.has(`${item.chain}:${item.id}`)) {
+          return item;
+        }
+
+        return {
+          ...item,
+          isGasDeposit: true,
+        };
+      }),
+    [gasDepositKeySet, result]
+  );
+
   return {
-    data: result,
+    data: enrichedResult,
     loading: !isSupportAccount ? loading : isSyncing || dbHistory === undefined,
   };
 };

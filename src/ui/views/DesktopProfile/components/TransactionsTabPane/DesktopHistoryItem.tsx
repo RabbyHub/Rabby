@@ -19,7 +19,7 @@ import { DesktopTxExplain } from './DesktopTxExplain';
 import { TxHistoryItemRow } from '@/db/schema/history';
 
 type HistoryItemProps = {
-  data: TxHistoryItemRow;
+  data: TxHistoryItemRow & { isGasDeposit?: boolean };
 };
 
 export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
