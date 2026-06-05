@@ -755,6 +755,9 @@ const SettingsInner = ({
     try {
       await wallet.setPerpsWidgetEnabled(checked);
       setPerpsWidgetEnabled(checked);
+      ga4.fireEvent(`PerpsFloating_${checked ? 'On' : 'Off'}`, {
+        event_category: 'Settings Snapshot',
+      });
     } catch (error) {
       message.error((error as Error)?.message || 'Failed to update setting');
     } finally {
