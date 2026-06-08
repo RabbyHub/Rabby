@@ -181,9 +181,12 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
     if (el && container) {
       const containerRect = container.getBoundingClientRect();
       const elRect = el.getBoundingClientRect();
+      // Fixed-length underline, centered under the active tab.
+      const INDICATOR_WIDTH = 20;
+      const elCenter = elRect.left - containerRect.left + elRect.width / 2;
       setIndicatorStyle({
-        left: elRect.left - containerRect.left,
-        width: elRect.width,
+        left: elCenter - INDICATOR_WIDTH / 2,
+        width: INDICATOR_WIDTH,
       });
     }
   }, [activeTabKey, advancedLabel]);
@@ -237,7 +240,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               'h-[28px] mr-20 text-13 font-medium transition-colors',
               orderType === tab.value
                 ? 'text-rb-neutral-title-1'
-                : 'text-rb-neutral-foot hover:text-rb-neutral-title-1'
+                : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
             )}
           >
             {tab.label}
@@ -250,7 +253,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
             'inline-flex items-center transition-colors',
             isAdvancedSelected
               ? 'text-rb-neutral-title-1'
-              : 'text-rb-neutral-foot hover:text-rb-neutral-title-1'
+              : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
           )}
         >
           <span

@@ -6,7 +6,7 @@
         "desc": "Tidak ditemukan transaksi di <1>supported chains</1>"
       },
       "explain": {
-        "unknown": "Contract Interaction",
+        "unknown": "Interaksi kontrak",
         "cancel": "Transaksi menunggu dibatalkan",
         "approve": "Setujui {{amount}} {{symbol}} untuk {{project}}"
       },
@@ -42,14 +42,14 @@
       "gasAccount": {
         "estimatedGas": "Estimasi Gas:",
         "currentTxCost": "Jumlah gas yang dikirim ke alamat Anda:",
-        "totalCost": "Total cost: ",
+        "totalCost": "Total biaya: ",
         "maxGas": "Max Gas:",
         "gasCost": "Biaya gas untuk mentransfer gas ke alamat Anda:",
         "sendGas": "Gas transfer ke Anda untuk transaksi saat ini:",
         "description": "Menggunakan GasAccount untuk membayar biaya gas. Lihat detail pembayaran di bawah ini:"
       },
       "balanceChange": {
-        "tokenIn": "Token in",
+        "tokenIn": "Token masuk",
         "tokenOut": "Token keluar",
         "successTitle": "Hasil Simulasi",
         "failedTitle": "Simulasi Gagal",
@@ -64,13 +64,13 @@
         "content": "RPC kustom Anda tidak tersedia saat ini. Anda dapat menonaktifkannya dan melanjutkan tanda tangan menggunakan RPC resmi Rabby."
       },
       "swap": {
-        "minReceive": "Minimum Receive",
+        "minReceive": "Minimum diterima",
         "payToken": "Bayar",
         "title": "Tukar Token",
         "receiveToken": "Terima",
         "simulationNotSupport": "Simulasi transaksi tidak didukung di chain ini",
         "slippageFailToLoad": "Gagal memuat",
-        "valueDiff": "Value diff",
+        "valueDiff": "Selisih nilai",
         "simulationFailed": "Simulasi transaksi gagal",
         "failLoadReceiveToken": "Gagal memuat",
         "notPaymentAddress": "Bukan alamat pembayaran",
@@ -159,7 +159,7 @@
       "cancelTx": {
         "title": "Batalkan Transaksi Menunggu",
         "txToBeCanceled": "Transaksi yang akan dibatalkan",
-        "gasPriceAlert": "Atur harga gas saat ini lebih dari {{value}} Gwei untuk membatalkan transaksi yang tertunda"
+        "gasPriceAlert": "Atur Gas Price saat ini lebih dari {{value}} Gwei untuk membatalkan transaksi yang tertunda"
       },
       "submitMultisig": {
         "title": "Kirim Transaksi Multisig",
@@ -178,7 +178,7 @@
         "title": "Cabut Persetujuan Permit2"
       },
       "batchRevokePermit2": {
-        "title": "Batch Revoke Permit2 Approval"
+        "title": "Cabut persetujuan Permit2 massal"
       },
       "revokePermit": {
         "title": "Cabut Izin Persetujuan Token"
@@ -267,7 +267,7 @@
         "descTipWarningBoth": "Tanda tangan dapat menyebabkan perubahan aset dan memverifikasi kepemilikan alamat",
         "interactContract": "Interaksi kontrak"
       },
-      "manuallySetGasLimitAlert": "Anda telah menyetel Batas Gas secara manual ke",
+      "manuallySetGasLimitAlert": "Anda telah menyetel Gas Limit secara manual ke",
       "nonceLowerThanExpect": "Nonce terlalu rendah, nilai minimal harus {{0}}",
       "gasLimitLessThanExpect": "Gas limit rendah. Ada 1% kemungkinan transaksi ini gagal.",
       "canOnlyUseImportedAddress": "Anda tidak dapat menandatangani transaksi dengan alamat watch-only.",
@@ -279,27 +279,27 @@
       "gasLimitModifyOnlyNecessaryAlert": "Modifikasi hanya jika diperlukan",
       "gasAccountForGas": "Gunakan USD dari GasAccount saya untuk membayar gas",
       "nonceTitle": "Nonce",
-      "gasPriceTitle": "Harga Gas (Gwei)",
-      "gasLimitTitle": "Batas gas",
-      "gasLimitEmptyAlert": "Silakan masukkan batas gas",
+      "gasPriceTitle": "Gas Price (Gwei)",
+      "gasLimitTitle": "Gas Limit",
+      "gasLimitEmptyAlert": "Silakan masukkan Gas Limit",
       "recommendGasLimitTip": "Est. {{est}}. Saat ini {{current}}x, rekomendasikan",
-      "gasLimitMinValueAlert": "Batas gas harus lebih dari 21000",
+      "gasLimitMinValueAlert": "Gas Limit harus lebih dari 21000",
       "gasPriceMedian": "Median dari 100 transaksi on-chain terakhir:",
       "multiSigChainNotMatch": "Alamat multi-tanda tangan tidak ada di rantai ini dan tidak dapat memulai transaksi.",
       "maxPriorityFee": "Max Priority Fee (Gwei)",
       "gasNotRequireForSafeTransaction": "Biaya gas tidak diperlukan untuk transaksi Safe",
       "nativeTokenForGas": "Gunakan token {{tokenName}} di {{chainName}} untuk membayar gas",
-      "gasLimitLessThanGasUsed": "Batas gas terlalu rendah. Ada 95% kemungkinan transaksi ini mungkin gagal.",
+      "gasLimitLessThanGasUsed": "Gas Limit terlalu rendah. Ada 95% kemungkinan transaksi ini mungkin gagal.",
       "noGasRequired": "Tidak ada gas yang diperlukan",
-      "gasLimitNotEnough": "Batas gas kurang dari 21000. Transaksi tidak dapat diajukan.",
+      "gasLimitNotEnough": "Gas Limit kurang dari 21000. Transaksi tidak dapat diajukan.",
       "myNativeTokenBalance": "Saldo Gas saya:",
       "failToFetchGasCost": "Gagal memperkirakan gas",
       "hardwareSupport1559Alert": "Pastikan firmware dompet perangkat keras Anda telah diperbarui ke versi yang mendukung EIP 1559.",
       "safeAdminSigned": "Ditandatangani",
-      "eip1559Desc1": "Di rantai yang mendukung EIP-1559, Biaya Prioritas adalah tip untuk penambang agar memproses transaksi Anda. Anda dapat menghemat biaya gas akhir Anda dengan menurunkan Biaya Prioritas, yang mungkin memerlukan lebih banyak waktu untuk transaksi diproses.",
+      "eip1559Desc1": "Pada chain yang mendukung EIP-1559, Priority Fee adalah tip untuk miner agar memproses transaksi Anda. Dengan menurunkan Priority Fee, Anda bisa menghemat biaya gas akhir, tetapi transaksi mungkin membutuhkan waktu lebih lama untuk diproses.",
       "enoughSafeSigCollected": "Cukup tanda tangan yang dikumpulkan",
       "moreSafeSigNeeded": "Butuh {{0}} tanda tangan lagi untuk mengonfirmasi",
-      "eip1559Desc2": "Di sini di Rabby, Biaya Prioritas (Tip) = Biaya Maksimum - Biaya Dasar. Setelah Anda mengatur Biaya Prioritas Maksimum, Biaya Dasar akan dikurangi dari jumlah tersebut dan sisanya akan diberikan sebagai tip kepada penambang.",
+      "eip1559Desc2": "Di Rabby, Priority Fee (tip) = Max Fee - Base Fee. Setelah Anda mengatur Max Priority Fee, Base Fee akan dikurangkan darinya, dan sisanya diberikan kepada miner sebagai tip.",
       "unwrap": "Unwrap Token",
       "wrapToken": "Wrap Token",
       "transacted": "Transacted sebelum",
@@ -359,14 +359,14 @@
       "trustValueTitle": "Nilai kepercayaan",
       "errorRetry": {
         "alreadySubmitted": "Transaksi sudah diajukan. Transaksi duplikat terdeteksi.",
-        "gasExceedsBlockGasLimit": "Gas melebihi batas gas blok. Silakan sesuaikan dan coba lagi.",
+        "gasExceedsBlockGasLimit": "Gas melebihi Gas Limit blok. Silakan sesuaikan dan coba lagi.",
         "nonceTooHigh": "Nonce terlalu tinggi. Silakan sesuaikan nonce dan coba lagi.",
-        "gasLimitTooLow": "Batas gas terlalu rendah",
+        "gasLimitTooLow": "Gas Limit terlalu rendah",
         "InvalidTx": "Transaksi tidak valid.",
         "defaultTips": "Ada yang salah. Silakan coba lagi nanti.",
         "insufficient": "Saldo gas Anda tidak cukup untuk menutupi biaya gas jaringan. Tambahkan dana untuk gas dan coba lagi.",
         "nonceTooLow": "Nonce terlalu rendah. Kami akan memperbaruinya menjadi {{nonce}}. Klik “Retry” untuk mengonfirmasi dan mencoba lagi.",
-        "gasPriceTooLow": "Harga gas terlalu rendah. Kami akan menyesuaikannya sebesar 30% untuk membantu konfirmasi transaksi Anda. Klik \"Coba Lagi\" untuk mengonfirmasi dan mencoba lagi."
+        "gasPriceTooLow": "Gas Price terlalu rendah. Kami akan menyesuaikannya sebesar 30% untuk membantu konfirmasi transaksi Anda. Klik \"Coba Lagi\" untuk mengonfirmasi dan mencoba lagi."
       },
       "addLiquidity": {
         "poolPrice": "Harga Pool",
@@ -382,9 +382,9 @@
       "gasless": {
         "unavailable": "Saldo Gas Anda tidak cukup",
         "notEnough": "Saldo gas tidak cukup",
-        "watchUnavailableTip": "Alamat hanya untuk dilihat tidak didukung untuk Gas Gratis",
+        "watchUnavailableTip": "Alamat watch-only tidak mendukung Free Gas",
         "rabbyPayGas": "Rabby akan membayar untuk gas yang diperlukan – cukup tandatangani.",
-        "GetFreeGasToSign": "Dapatkan Gas Gratis",
+        "GetFreeGasToSign": "Dapatkan Free Gas",
         "walletConnectUnavailableTip": "Dompet seluler yang terhubung melalui WalletConnect tidak didukung untuk Free Gas",
         "customRpcUnavailableTip": "Custom RPC tidak didukung untuk Free Gas"
       },
@@ -399,7 +399,7 @@
         "loginTips": "Untuk menyelesaikan login GasAccount, transaksi ini akan dibuang. Anda perlu membuat ulang setelah login.",
         "chainNotSupported": "Rantai ini tidak didukung oleh GasAccount",
         "depositTips": "Untuk menyelesaikan setoran GasAccount, transaksi ini akan dibatalkan. Anda perlu membuatnya kembali setelah setoran.",
-        "notEnough": "GasAccount tidak cukup",
+        "notEnough": "Gas tidak cukup. Saldo Gas: {{usd}}",
         "signWithHardwareWalletToUse": "Anda perlu menandatangani dengan {{brand}} untuk menggunakan"
       },
       "walletConnect": {
@@ -423,13 +423,13 @@
         "seedPhrase": "Seed Phrase alamat",
         "privateKey": "Alamat Kunci Pribadi",
         "keystone": "Alamat Keystone",
-        "seedPhraseWithPassphrase": "Seed Phrase address (Passphrase)",
+        "seedPhraseWithPassphrase": "Alamat seed phrase (Passphrase)",
         "trezor": "Alamat Trezor",
         "coboSafe": "Cobo Argus Alamat",
-        "onekey": "OneKey address",
-        "airgap": "AirGap address",
+        "onekey": "Alamat OneKey",
+        "airgap": "Alamat AirGap",
         "watchAddress": "Tidak dapat menandatangani dengan alamat lihat-saja",
-        "coolwallet": "CoolWallet address",
+        "coolwallet": "Alamat CoolWallet",
         "bitbox": "BitBox02 alamat"
       },
       "qrcode": {
@@ -515,13 +515,13 @@
         "approvalExpiretime": "Waktu kedaluwarsa persetujuan"
       },
       "swapTokenOrder": {
-        "title": "Token Order"
+        "title": "Order token"
       },
       "sellNFT": {
         "receiveToken": "Terima token",
         "specificBuyer": "Pembeli spesifik",
         "listNFT": "Daftar NFT",
-        "title": "NFT Order"
+        "title": "Order NFT"
       },
       "signMultiSig": {
         "title": "Konfirmasi Transaksi"
@@ -560,10 +560,10 @@
           "unknown": "Tidak Dikenal"
         },
         "tips": {
-          "pendingBroadcastRetryBtn": "Re-broadcast",
+          "pendingBroadcastRetryBtn": "Broadcast ulang",
           "pendingBroadcastBtn": "Siarkan sekarang",
           "pendingBroadcastRetry": "Siaran gagal. Upaya terakhir: {{pushAt}}",
-          "pendingDetail": "Hanya satu transaksi yang akan diselesaikan, dan hampir selalu yang memiliki harga gas tertinggi.",
+          "pendingDetail": "Hanya satu transaksi yang akan diselesaikan, dan hampir selalu yang memiliki Gas Price tertinggi.",
           "canNotCancel": "Tidak dapat mempercepat atau membatalkan: Bukan txn tertunda pertama",
           "pendingBroadcast": "Mode hemat gas: menunggu biaya jaringan yang lebih rendah. Maksimal {{deadline}} jam tunggu."
         },
@@ -600,7 +600,7 @@
               "tips": "Hanya didukung untuk transaksi yang belum disiarkan"
             },
             "onChainCancel": {
-              "title": "On-chain Cancel",
+              "title": "Pembatalan on-chain",
               "desc": "Transaksi baru untuk membatalkan, memerlukan gas"
             },
             "removeLocalPendingTx": {
@@ -615,7 +615,7 @@
           "title": "Batalkan transaksi"
         },
         "MempoolList": {
-          "reBroadcastBtn": "Re-broadcast",
+          "reBroadcastBtn": "Broadcast ulang",
           "title": "Muncul di {{count}} node RPC",
           "empty": "Tidak ditemukan di node mana pun"
         },
@@ -666,7 +666,7 @@
           "placeholder": "Masukkan Catatan Alamat"
         },
         "addedAsContacts": "Ditambahkan sebagai kontak",
-        "editAddressNote": "Edit address note",
+        "editAddressNote": "Edit catatan alamat",
         "error": "Gagal menambah ke kontak"
       },
       "allowTransferModal": {
@@ -684,8 +684,8 @@
           "fast": "Cepat"
         },
         "confirm": "Konfirmasi",
-        "popupTitle": "Atur Harga Gas (Gwei)",
-        "popupDesc": "Biaya gas akan dipotong dari jumlah transfer berdasarkan harga gas yang Anda atur."
+        "popupTitle": "Atur Gas Price (Gwei)",
+        "popupDesc": "Biaya gas akan dicadangkan dari jumlah transfer berdasarkan Gas Price yang Anda atur"
       },
       "header": {
         "title": "Kirim"
@@ -894,7 +894,7 @@
       "revokeModal": {
         "totalRevoked": "Total:",
         "approvalCount_one": "{{count}} persetujuan",
-        "batchRevoke": "Batch Revoke",
+        "batchRevoke": "Cabut massal",
         "revokeOneByOne": "Cabut Satu per Satu",
         "approvalCount_other": "{{count}} persetujuan",
         "approvalCount_zero": "{{count}} persetujuan",
@@ -934,8 +934,8 @@
     "gasTopUp": {
       "Amount": "Jumlah",
       "Continue": "Lanjutkan",
-      "topUpChain": "Top Up Chain",
-      "title": "Top Up Gas Instan",
+      "topUpChain": "Chain top up",
+      "title": "Instant Gas Top Up",
       "InsufficientBalance": "Tidak ada cukup saldo di alamat kontrak Rabby untuk rantai saat ini. Silakan coba lagi nanti.",
       "description": "Isi ulang gas dengan mengirimkan kami token yang tersedia di rantai lain. Transfer instan segera setelah pembayaran Anda dikonfirmasi, tanpa menunggu untuk menjadi tidak dapat dibatalkan.",
       "hightGasFees": "Jumlah pengisian ulang ini terlalu kecil karena jaringan target memerlukan biaya gas yang tinggi.",
@@ -948,7 +948,7 @@
       "Token": "Token",
       "Deposit-tip": "Deposit dengan USDC/USDT",
       "Balance": "Saldo",
-      "payment": "Pembayaran Pengisian Gas",
+      "payment": "Pembayaran Gas Top Up",
       "Payment-Token": "Token Pembayaran",
       "Select-payment-token": "Pilih token pembayaran",
       "service-fee-tip": "Dengan menyediakan layanan untuk Gas Top Up, Rabby harus menanggung kerugian fluktuasi token dan biaya gas untuk top up. Oleh karena itu, biaya layanan sebesar 20% dikenakan."
@@ -960,7 +960,7 @@
         "rate": "Tarif biaya",
         "bridgeDesc": "Rabby Wallet akan selalu menemukan suku bunga terbaik dari agregator teratas dan memverifikasi keandalan tawaran mereka. Rabby mengenakan biaya 0,25%, yang secara otomatis termasuk dalam kutipan.",
         "title": "Rabby biaya",
-        "swapDesc": "Rabby Wallet akan selalu menemukan tarif terbaik dari agregator teratas dan memverifikasi keandalan tawaran mereka. Rabby mengenakan biaya 0,25% (0% untuk pembungkus), yang secara otomatis termasuk dalam kutipan."
+        "swapDesc": "Rabby Wallet akan selalu menemukan nilai tukar terbaik dari aggregator teratas dan memverifikasi keandalan penawaran mereka. Rabby mengenakan biaya 0,25% (0% untuk Wrap), yang otomatis disertakan dalam quote."
       },
       "lowCreditModal": {
         "title": "Token ini memiliki nilai kredit yang rendah",
@@ -969,13 +969,13 @@
       "Pending": "Menunggu",
       "not-supported": "Tidak didukung",
       "slippage_tolerance": "Toleransi slippage:",
-      "gas-x-price": "Harga gas: {{price}} Gwei.",
+      "gas-x-price": "Gas Price: {{price}} Gwei.",
       "no-transaction-records": "Tidak ada catatan transaksi",
       "swap-history": "Riwayat swap",
       "approve-x-symbol": "Setujui {{symbol}}",
       "title": "Tukar",
       "testnet-is-not-supported": "Jaringan kustom tidak didukung",
-      "actual-slippage": "Actual Slippage:",
+      "actual-slippage": "Slippage aktual:",
       "approve-and-swap": "Setujui dan Tukar melalui {{name}}",
       "InSufficientTip": "Saldo tidak cukup untuk melakukan simulasi transaksi dan estimasi gas. Kutipan aggregator asli ditampilkan.",
       "slippage-adjusted-refresh-quote": "Slippage disesuaikan. Segarkan kutipan.",
@@ -1031,7 +1031,7 @@
       "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Penawaran yang dipilih sangat berbeda dari tarif saat ini, dapat menyebabkan kerugian besar",
       "tradingSettingTip2": "2. Rabby tidak bertanggung jawab atas risiko yang timbul dari kontrak pertukaran",
       "i-understand-and-accept-it": "Saya mengerti dan menerimanya",
-      "directlySwap": "Membungkus token {{symbol}} secara langsung dengan kontrak pintar",
+      "directlySwap": "Wrap token {{symbol}} langsung melalui smart contract",
       "enable-exchanges": "Aktifkan Pertukaran",
       "cex": "Cex",
       "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "Transaksi mungkin akan di-front-run karena toleransi slippage yang tinggi",
@@ -1055,7 +1055,7 @@
       "price-impact": "Dampak Harga",
       "two-step-approve": "Tandatangani 2 transaksi untuk mengubah allowance",
       "insufficient-balance": "Saldo tidak cukup",
-      "gas-fee": "GasFee: {{gasUsed}}",
+      "gas-fee": "Biaya gas: {{gasUsed}}",
       "loss-tips": "Anda kehilangan {{usd}}. Cobalah jumlah yang lebih kecil di pasar kecil.",
       "two-step-approve-details": "Token USDT memerlukan 2 transaksi untuk mengubah allowance. Pertama, Anda perlu mengatur allowance ke nol, dan hanya kemudian menetapkan nilai allowance yang baru.",
       "estimate": "Perkiraan:",
@@ -1084,7 +1084,7 @@
         "balance": "Nilai Saldo",
         "title": "Pilih dari pasangan token yang didukung",
         "noData": "Tidak Ada Pasangan Token yang Didukung",
-        "tokenPair": "Token Pair"
+        "tokenPair": "Pasangan token"
       },
       "To": "Untuk",
       "Balance": "Saldo:",
@@ -1104,7 +1104,7 @@
       "BridgeTokenPair": "Jembatan Token Pasangan",
       "detail-tx": "Detail",
       "best": "Terbaik",
-      "duration": "{{duration}} min",
+      "duration": "{{duration}} menit",
       "no-transaction-records": "Tidak ada catatan transaksi",
       "Completed": "Selesai",
       "title": "Jembatan",
@@ -1113,9 +1113,9 @@
       "estimated-value": "≈ {{value}}",
       "need-to-approve-token-before-bridge": "Perlu menyetujui token sebelum jembatan",
       "slippage-adjusted-refresh-quote": "Slippage disesuaikan. Segarkan rute.",
-      "gas-x-price": "Gas price: {{price}} Gwei.",
+      "gas-x-price": "Gas Price: {{price}} Gwei.",
       "unlimited-allowance": "Izin Tidak Terbatas",
-      "gas-fee": "GasFee: {{gasUsed}}",
+      "gas-fee": "Biaya gas: {{gasUsed}}",
       "approve-x-symbol": "Setujui {{symbol}}",
       "history": "Riwayat Jembatan",
       "completedTip": "Transaksi di on chain, mendekode data untuk menghasilkan catatan",
@@ -1216,7 +1216,7 @@
           "rabbyPoints": "Rabby Points",
           "transactions": "Transaksi",
           "receive": "Terima",
-          "gasTopUp": "Pengisian Gas",
+          "gasTopUp": "Gas Top Up",
           "more": "Lebih banyak",
           "ecology": "Ekosistem",
           "feedback": "Umpan Balik",
@@ -1225,7 +1225,7 @@
           "bridge": "Jembatan",
           "send": "Kirim",
           "approvals": "Persetujuan",
-          "mobile": "Mobile Sync",
+          "mobile": "Sinkronisasi seluler",
           "perps": "Perps",
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
@@ -1236,7 +1236,8 @@
           "perpsPositions_one": "{{count}} Posisi",
           "lending": "Peminjaman",
           "dragTip": "Fitur tekan lama untuk mengurutkan ulang",
-          "convertDust": "Konversi Dust"
+          "convertDust": "Konversi Dust",
+          "staking": "Staking"
         },
         "queue": {
           "title": "Antrian",
@@ -1258,7 +1259,7 @@
         "transactionsNeedToSign": "transaksi perlu ditandatangani",
         "pendingCount": "1 Menunggu",
         "view": "Lihat",
-        "pendingCountPlural": "{{countStr}} Pendings",
+        "pendingCountPlural": "{{countStr}} tertunda",
         "missingDataTooltip": "Saldo mungkin tidak diperbarui karena masalah jaringan saat ini dengan {{text}}.",
         "rejectAll": "Tolak Semua",
         "appChainTips": "Akun Hyperliquid tidak termasuk",
@@ -1324,11 +1325,11 @@
       "rabbyBadge": {
         "learnMore": "Pelajari Lebih Lanjut",
         "enterClaimCode": "Masukkan kode klaim",
-        "imageLabel": "rabby badge",
+        "imageLabel": "badge Rabby",
         "title": "Klaim Lencana Rabby untuk",
         "claim": "Klaim",
         "goToSwap": "Pergi ke Swap",
-        "freeGasTitle": "Klaim Lencana Gas Gratis untuk",
+        "freeGasTitle": "Klaim Free Gas Badge untuk",
         "swapTip": "Anda perlu menyelesaikan pertukaran dengan dex terkemuka dalam Rabby Wallet terlebih dahulu.",
         "freeGasTip": "Silakan tanda tangani transaksi menggunakan Free Gas. Tombol 'Free Gas' akan muncul secara otomatis ketika gas Anda tidak cukup.",
         "rabbyFreeGasUserNo": "Rabby Free Gas Pengguna No.{{num}}",
@@ -1367,7 +1368,7 @@
           "lockWallet": "Kunci Dompet",
           "manageAddress": "Kelola Alamat",
           "rabbyPoints": "Rabby Points",
-          "gasTopUp": "Pengisian Gas",
+          "gasTopUp": "Gas Top Up",
           "label": "Fitur",
           "connectedDapp": "Dapps Terkoneksi",
           "signatureRecord": "Rekaman Tanda Tangan",
@@ -1389,6 +1390,7 @@
           "biometricUnlock": "Buka dengan Biometrik",
           "biometricUnlockHint": "Gunakan biometrik untuk membuka kunci di perangkat ini.",
           "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
+          "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang"
         },
@@ -1473,7 +1475,7 @@
         "blockedTip": "Token yang diblokir tidak akan ditampilkan dalam daftar token",
         "notSupported": "Token di jaringan ini tidak didukung",
         "customizedButton": "token kustom",
-        "scamTx": "Scam tx",
+        "scamTx": "Tx scam",
         "customizedButtons": "token kustom",
         "notSelectedCustom": "Token tidak terdaftar oleh Rabby. Itu akan ditambahkan ke daftar token jika Anda menghidupkannya.",
         "blockedListTitle": "token yang diblokir",
@@ -1662,7 +1664,7 @@
       "title": "NFT",
       "starred": "Diberi Bintang ({{count}})",
       "all": "Semua",
-      "floorPrice": "/ Floor Price:",
+      "floorPrice": "/ Harga floor:",
       "noNft": "Tidak ada NFT"
     },
     "newAddress": {
@@ -1674,7 +1676,7 @@
         "addressEns": "Alamat / ENS",
         "scanQRCode": "Pindai kode QR dengan dompet yang kompatibel dengan WalletConnect",
         "notAValidAddress": "Alamat tidak valid",
-        "walletConnect": "Wallet connect",
+        "walletConnect": "WalletConnect",
         "required": "Silakan masukkan alamat",
         "description": "Lacak alamat dompet publik mana pun",
         "content": "Tambahkan Alamat Hanya Tonton"
@@ -1847,26 +1849,26 @@
         },
         "ledger": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Pada 3 alamat pertama, terdapat alamat yang digunakan di on-chain.",
-            "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto. Dalam 3 alamat pertama, terdapat alamat yang digunakan di on-chain.",
-            "bip44": "BIP44 Standar: HDpath yang ditentukan oleh protokol BIP44. Di 3 alamat pertama, ada alamat yang digunakan di chain."
+            "ledgerLive": "Ledger Live: HD path resmi Ledger. Pada 3 alamat pertama, terdapat alamat yang digunakan di on-chain.",
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto. Dalam 3 alamat pertama, terdapat alamat yang digunakan di on-chain.",
+            "bip44": "BIP44 Standar: HD path yang ditentukan oleh protokol BIP44. Di 3 alamat pertama, ada alamat yang digunakan di chain."
           },
           "hdPathTypeNoChain": {
-            "legacy": "Legacy: HD path yang digunakan oleh MEW / Mycrypto. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain.",
-            "bip44": "BIP44 Standar: Jalur HD yang ditentukan oleh protokol BIP44. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain.",
-            "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain."
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain.",
+            "bip44": "BIP44 Standar: HD path yang ditentukan oleh protokol BIP44. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain.",
+            "ledgerLive": "Ledger Live: HD path resmi Ledger. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain."
           }
         },
         "trezor": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Jalur HD resmi Ledger.",
-            "legacy": "Legacy: HD path yang digunakan oleh MEW / Mycrypto.",
-            "bip44": "BIP44: HDpath yang ditentukan oleh protokol BIP44."
+            "ledgerLive": "Ledger Live: HD path resmi Ledger.",
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto.",
+            "bip44": "BIP44: HD path yang ditentukan oleh protokol BIP44."
           },
           "hdPathTypeNoChain": {
-            "ledgerLive": "Ledger Live: Jalur HD resmi Ledger.",
-            "bip44": "BIP44: HDpath didefinisikan oleh protokol BIP44.",
-            "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto."
+            "ledgerLive": "Ledger Live: HD path resmi Ledger.",
+            "bip44": "BIP44: HD path didefinisikan oleh protokol BIP44.",
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto."
           },
           "message": {
             "disconnected": "{{0}}Connect telah berhenti. Silakan segarkan halaman untuk terhubung lagi."
@@ -1874,33 +1876,33 @@
         },
         "onekey": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath ditentukan oleh protokol BIP44."
+            "bip44": "BIP44: HD path ditentukan oleh protokol BIP44."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath yang ditentukan oleh protokol BIP44."
+            "bip44": "BIP44: HD path yang ditentukan oleh protokol BIP44."
           }
         },
         "mnemonic": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Ledger official HD path.",
-            "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto.",
-            "default": "Default: Jalur HD Default untuk mengimpor frasa seed digunakan.",
-            "bip44": "Standar BIP44: HDpath yang ditentukan oleh protokol BIP44."
+            "ledgerLive": "Ledger Live: HD path resmi Ledger.",
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto.",
+            "default": "Default: HD path default digunakan saat mengimpor seed phrase.",
+            "bip44": "Standar BIP44: HD path yang ditentukan oleh protokol BIP44."
           },
           "hdPathTypeNoChain": {
-            "default": "Default: Jalur HD Default untuk mengimpor frase seed digunakan."
+            "default": "Default: HD path default digunakan saat mengimpor seed phrase."
           }
         },
         "gridplus": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Di 3 alamat pertama, terdapat alamat yang digunakan di on-chain.",
-            "bip44": "BIP44 Standard: HDpath yang ditentukan oleh protokol BIP44. Di 3 alamat pertama, terdapat alamat yang digunakan di on-chain.",
-            "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto. Pada 3 alamat pertama, terdapat alamat yang digunakan di on-chain."
+            "ledgerLive": "Ledger Live: HD path resmi Ledger. Di 3 alamat pertama, terdapat alamat yang digunakan di on-chain.",
+            "bip44": "BIP44 Standard: HD path yang ditentukan oleh protokol BIP44. Di 3 alamat pertama, terdapat alamat yang digunakan di on-chain.",
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto. Pada 3 alamat pertama, terdapat alamat yang digunakan di on-chain."
           },
           "hdPathTypeNochain": {
-            "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain.",
-            "bip44": "Standar BIP44: Jalur HD yang ditentukan oleh protokol BIP44. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain.",
-            "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain."
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain.",
+            "bip44": "Standar BIP44: HD path yang ditentukan oleh protokol BIP44. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain.",
+            "ledgerLive": "Ledger Live: HD path resmi Ledger. Pada 3 alamat pertama, tidak ada alamat yang digunakan di on-chain."
           },
           "switch": {
             "title": "Beralih ke perangkat GridPlus yang baru",
@@ -1910,22 +1912,22 @@
         },
         "keystone": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath ditentukan oleh protokol BIP44.",
-            "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Anda hanya dapat mengelola 10 alamat dengan jalur Ledger Live.",
-            "legacy": "Legacy: HD path yang digunakan oleh MEW / Mycrypto."
+            "bip44": "BIP44: HD path ditentukan oleh protokol BIP44.",
+            "ledgerLive": "Ledger Live: HD path resmi Ledger. Anda hanya dapat mengelola 10 alamat dengan jalur Ledger Live.",
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto."
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44: HDpath ditentukan oleh protokol BIP44.",
-            "legacy": "Legacy: Jalur HD yang digunakan oleh MEW / Mycrypto.",
-            "ledgerLive": "Ledger Live: Jalur HD resmi Ledger. Anda hanya dapat mengelola 10 alamat dengan jalur Ledger Live."
+            "bip44": "BIP44: HD path ditentukan oleh protokol BIP44.",
+            "legacy": "Legacy: HD path yang digunakan oleh MEW / MyCrypto.",
+            "ledgerLive": "Ledger Live: HD path resmi Ledger. Anda hanya dapat mengelola 10 alamat dengan jalur Ledger Live."
           }
         },
         "bitbox02": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath yang ditentukan oleh protokol BIP44."
+            "bip44": "BIP44: HD path yang ditentukan oleh protokol BIP44."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath yang ditentukan oleh protokol BIP44."
+            "bip44": "BIP44: HD path yang ditentukan oleh protokol BIP44."
           },
           "disconnected": "Tidak dapat terhubung ke BitBox02. Silakan muat ulang halaman untuk mencoba terhubung lagi. Alasan: {{0}}"
         },
@@ -1947,7 +1949,7 @@
         "waiting": "Menunggu",
         "addresses": "Alamat",
         "hideOnChainInformation": "Sembunyikan informasi on-chain",
-        "usedChains": "Used chains",
+        "usedChains": "Chain yang digunakan",
         "manageKeystone": "Kelola Keystone",
         "addressesIn": "Alamat di {{0}}",
         "manageImKey": "Kelola imKey",
@@ -1962,12 +1964,12 @@
         "done": "Selesai",
         "manageCoolwallet": "Kelola CoolWallet",
         "connectedToTrezor": "Terhubung ke Trezor",
-        "customAddressHdPath": "Jalur HD Alamat Kustom",
+        "customAddressHdPath": "HD path Alamat Kustom",
         "selectIndexTip": "Pilih nomor seri alamat untuk memulai dari:",
         "manageAddressFrom": "Kelola alamat dari {{0}} ke {{1}}",
         "addressesInRabby": "Alamat di Rabby{{0}}",
         "manageImtokenOffline": "Kelola imToken",
-        "selectHdPath": "Pilih jalur HD:",
+        "selectHdPath": "Pilih HD path:",
         "importBtn": "Impor ({{count}})",
         "nonAddr": "Belum ada alamat yang ditambahkan untuk frasa seed ini. Anda dapat menghapus frasa ini di Rabby Extension > Kelola Alamat."
       },
@@ -2003,7 +2005,7 @@
       "addFromCurrentSeedPhrase": "Tambahkan dari Seed Phrase Saat Ini",
       "importYourKeystore": "Impor KeyStore Anda",
       "trezor": {
-        "title": "Connect Trezor"
+        "title": "Hubungkan Trezor"
       },
       "addNewAddress": "Buat Alamat Baru",
       "addMoreAddresses": "Tambahkan Lebih Banyak Alamat",
@@ -2064,7 +2066,7 @@
       "title": "Tambahkan Jaringan Kustom ke Rabby",
       "requestsReceived": "1 permintaan diterima",
       "requestRabbyToSupport": "Minta Rabby untuk Mendukung",
-      "chainId": "Chain ID:",
+      "chainId": "ID chain:",
       "addChain": "Tambah Testnet",
       "chainNotSupport": "Rabby belum mendukung rantai yang diminta.",
       "requestsReceivedPlural": "{{count}} permintaan diterima",
@@ -2152,7 +2154,7 @@
       "source": "Sumber",
       "delete-address": "Hapus alamat",
       "assets": "Aset",
-      "hd-path": "Jalur HD",
+      "hd-path": "HD path",
       "address-detail": "Detail Alamat",
       "safeModuleAddress": "Alamat Modul Aman",
       "add-to-whitelist": "Tambahkan ke Daftar Putih",
@@ -2318,13 +2320,13 @@
         "predictTime": "Diperkirakan akan dikemas dalam"
       },
       "TxStatus": {
-        "reBroadcastBtn": "Re-broadcast",
+        "reBroadcastBtn": "Broadcast ulang",
         "pendingBroadcast": "Pending: Untuk disiarkan",
-        "pendingBroadcasted": "Pending: Broadcasted",
+        "pendingBroadcasted": "Tertunda: sudah dibroadcast",
         "completed": "Selesai"
       },
       "TxHash": {
-        "hash": "Tx Hash"
+        "hash": "Hash tx"
       },
       "TxTimeline": {
         "broadcastedCount_ordinal_few": "{{count}}rd siaran",
@@ -2339,7 +2341,7 @@
         "col": {
           "nodeName": "Nama node",
           "txStatus": "Status Transaksi",
-          "nodeOperator": "Node operator"
+          "nodeOperator": "Operator node"
         },
         "txStatus": {
           "appearedOnce": "Muncul sekali",
@@ -2350,14 +2352,14 @@
       },
       "PendingTxList": {
         "filterBaseFee": {
-          "label": "Hanya memenuhi persyaratan biaya dasar",
-          "tooltip": "Tampilkan hanya transaksi yang harga gasnya memenuhi persyaratan biaya dasar blok"
+          "label": "Hanya memenuhi persyaratan Base Fee",
+          "tooltip": "Tampilkan hanya transaksi yang Gas Price-nya memenuhi persyaratan Base Fee blok"
         },
         "col": {
           "interact": "Berinteraksi dengan",
           "balanceChange": "Perubahan saldo",
           "actionType": "Jenis aksi",
-          "gasPrice": "Harga Gas",
+          "gasPrice": "Gas Price",
           "action": "Aksi Transaksi"
         },
         "titleSameNotFound": "Tidak Ada Peringkat yang Sama dengan Saat Ini",
@@ -2381,7 +2383,7 @@
         },
         "noError": "Tidak ditemukan kesalahan",
         "noLoss": "Tidak ada kehilangan yang ditemukan",
-        "title": "Pre-pack Check",
+        "title": "Pemeriksaan pra-paket",
         "error": "{{count}} kesalahan ditemukan",
         "loss": "{{lossCount}} kehilangan ditemukan",
         "desc": "Simulasi dijalankan di blok terbaru, diperbarui {{time}}"
@@ -2394,7 +2396,7 @@
     },
     "dappSearch": {
       "searchResult": {
-        "totalDapps": "Total <2>{{count}}</2> Dapps",
+        "totalDapps": "Total <2>{{count}}</2> Dapp",
         "foundDapps": "Ditemukan <2>{{count}}</2> Dapps"
       },
       "selectChain": "Pilih Rantai",
@@ -2464,7 +2466,7 @@
     "customTestnet": {
       "CustomTestnetForm": {
         "rpcUrl": "RPC URL",
-        "id": "Chain ID",
+        "id": "ID chain",
         "rpcUrlRequired": "Silakan masukkan URL RPC",
         "blockExplorerUrl": "URL penjelajah blok (Opsional)",
         "idRequired": "Silakan masukkan chain id",
@@ -2609,8 +2611,8 @@
       "cancelTitle": "On-chain Batalkan",
       "speedUpTitle": "Percepat",
       "signWithOneKey": "Tanda dengan OneKey",
-      "cancleDesc": "Harga gas meningkat {{percent}} untuk pembatalan yang lebih cepat",
-      "speedUpDesc": "Harga gas meningkat {{percent}} untuk percepatan yang lebih cepat"
+      "cancleDesc": "Gas Price dinaikkan {{percent}} agar pembatalan lebih cepat",
+      "speedUpDesc": "Gas Price dinaikkan {{percent}} agar transaksi lebih cepat"
     },
     "gasAccount": {
       "history": {
@@ -2622,7 +2624,7 @@
         "login": "Masuk GasAccount",
         "desc": "Bayar Biaya Gas di Semua Rantai",
         "title": "Setor USDC / USDT",
-        "loginAndClaim": "Masuk dan Klaim $2.00",
+        "loginAndClaim": "Masuk dan klaim {{usdValue}}",
         "loginTips1": "Bayar biaya gas untuk",
         "learnAbout": "Pelajari lebih lanjut tentang GasAccount",
         "loginTips2": "alamat mana pun di mana pun",
@@ -2634,7 +2636,7 @@
       },
       "gasAccountList": {
         "address": "Alamat",
-        "gasAccountBalance": "Gas Balance"
+        "gasAccountBalance": "Saldo"
       },
       "logoutConfirmModal": {
         "logout": "Keluar",
@@ -2713,7 +2715,7 @@
       "withdrawDisabledIAP": "Penarikan dinonaktifkan karena saldo Anda termasuk dana fiat, yang tidak dapat ditarik. Hubungi dukungan untuk menarik saldo token Anda.",
       "risk": "Alamat Anda saat ini terdeteksi berisiko, jadi fitur ini tidak tersedia.",
       "switchAccount": "Alihkan GasAccount",
-      "gasToken": "Gas Token",
+      "gasToken": "Token gas",
       "about": {
         "title1": "Apa itu GasAccount",
         "title4": "Apakah GasAccount aman",
@@ -2742,7 +2744,7 @@
       "depositNow": "Setor Sekarang",
       "signWithPendingHardwareToUse": "Tanda tangani dengan {{addressAlias}} untuk menggunakan",
       "depositSubmitted": "Setoran Terkirim",
-      "claimFreeGas": "Klaim {{usdValue}} Gas Gratis",
+      "claimFreeGas": "Klaim {{usdValue}} Free Gas",
       "depositFailed": "Setoran Gagal",
       "lowBalance": "Anda tidak memiliki cukup gas(<$1.00). Simpan gas untuk memastikan transaksi di masa depan berjalan lancar.",
       "gasBalance": "Saldo Gas",
@@ -2915,7 +2917,7 @@
           "title": "Data akan disimpan:",
           "records": "Rekaman Tanda Tangan",
           "hardware": "Dompet Donasi Perangkat Keras Impor",
-          "safe": "Imported Safe Wallets",
+          "safe": "Safe Wallet yang diimpor",
           "watch": "Kontak dan Alamat Hanya Tonton"
         },
         "button": "Konfirmasi Atur Ulang",
@@ -2982,7 +2984,7 @@
         "searchPlaceHolder": "Cari Nama Token / Alamat"
       },
       "tokenItem": {
-        "gasToken": "Gas Token",
+        "gasToken": "Token gas",
         "verifyDangerTips": "Ini adalah token penipuan",
         "Issuedby": "Diterbitkan oleh",
         "FDV": "FDV",
@@ -3044,7 +3046,7 @@
         "added": "Alamat ditambahkan ke whitelist",
         "removed": "Alamat whitelist dihapus",
         "repeated": "Alamat saat ini sudah ada di whitelist.",
-        "tooltip": "Whitelist address"
+        "tooltip": "Alamat whitelist"
       },
       "address": "Alamat",
       "exchangeAddress": "Alamat Pertukaran",
@@ -3138,7 +3140,7 @@
           "unfoldProtocols": "Buka {{count}} Protokol",
           "lpToken": "LP-Token",
           "foldDifis": "Lipat {{count}} Defis",
-          "unfoldDifis": "Unfold {{count}} Defis"
+          "unfoldDifis": "Buka {{count}} DeFi"
         },
         "hidden": {
           "hideSmall": "Sembunyikan token dengan saldo kecil.",
@@ -3201,11 +3203,11 @@
           "lastSale": "Penjualan terakhir",
           "noOffer": "Belum ada tawaran",
           "platform": "Platform:",
-          "collectionFloor": "Collection floor",
+          "collectionFloor": "Floor koleksi",
           "nft": "NFT",
           "topOffer": "Penawaran Terbaik",
           "rarity": "Keberagaman",
-          "edit": "Edit Listing",
+          "edit": "Edit listing",
           "listing": "Listing di Opensea",
           "send": "Kirim",
           "listedFor": "{{count}} terdaftar untuk",
@@ -3223,11 +3225,11 @@
           "nft": "NFT",
           "createListing": "Buat daftar",
           "topOffer": "Penawaran Terbaik",
-          "editListing": "Edit Listing",
+          "editListing": "Edit listing",
           "floorDifference": "Perbedaan lantai",
           "quantity": "Kuantitas",
-          "total": "Total listing price",
-          "totalEst": "Total est. proceeds",
+          "total": "Total harga listing",
+          "totalEst": "Total hasil estimasi",
           "platformFee": "Biaya platform Opensea ({{fee}}%)",
           "approveAndList": "Setujui dan Daftarkan",
           "listedAs": "Terdaftar sebagai",
@@ -3250,8 +3252,8 @@
           "offer": "Tawarkan",
           "platformFeeTips": "Biaya ini adalah biaya layanan OpenSea.",
           "creatorFeeTips": "Pendapatan kreator akan dibayar oleh penjual.",
-          "rabbyFee": "Rabby fee (0%)",
-          "totalEst": "Total est. proceeds",
+          "rabbyFee": "Biaya Rabby (0%)",
+          "totalEst": "Total hasil estimasi",
           "platform": "Platform",
           "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
           "creatorFee": "Biaya pencipta ({{fee}}%)"
@@ -3319,7 +3321,7 @@
         "twapSliceFilled": "Potongan TWAP Terisi",
         "sellFilledContent": "Terjual {{sz}} / {{origSz}} {{coin}} terisi @{{price}} USDC",
         "orderCancelled": "Pesanan dibatalkan",
-        "terminalTwap": "Terminal TWAP",
+        "terminalTwap": "Akhiri TWAP",
         "closeAllPositionsSuccess": "Semua posisi telah ditutup dengan sukses.",
         "cancelTWAPOrderSuccess": "Pesanan TWAP berhasil dibatalkan.",
         "cancelOrderError": "Gagal membatalkan pesanan",
@@ -3404,7 +3406,7 @@
       },
       "logoutConfirmModal": {
         "title": "Keluar dari alamat saat ini",
-        "desc": "Anda sedang keluar dari akun perdagangan perpetual Anda saat ini. Anda bisa memulihkannya kapan saja dengan masuk menggunakan alamat ini."
+        "desc": "Anda sedang keluar dari akun Perps saat ini. Anda bisa memulihkannya kapan saja dengan masuk menggunakan alamat ini."
       },
       "depositAmountPopup": {
         "feeTipTooltip": "Biaya penarikan yang dikenakan oleh Hyperliquid: $1",
@@ -3447,7 +3449,7 @@
         "activatedAddress": "Diaktifkan",
         "noPosition": "Tidak ada posisi",
         "notActivatedAddress": "Belum Diaktifkan",
-        "hyperliquidBalance": "Saldo Perpetual",
+        "hyperliquidBalance": "Saldo Perps",
         "position": "Posisi",
         "positions": "Posisi",
         "selectAddress": "Pilih Alamat"
@@ -3481,9 +3483,9 @@
         "hasPosition": "Posisi",
         "onePosition": "1 Posisi",
         "empty": "Tidak ada pasar yang ditemukan",
-        "searchPerps": "Cari Kontrak Perpetual",
+        "searchPerps": "Cari Perps",
         "searchPosition": "Cari posisi terbuka",
-        "searchPlaceholder": "Cari kontrak perpetual"
+        "searchPlaceholder": "Cari Perps"
       },
       "categories": {
         "favorite": "Favorit",
@@ -3501,7 +3503,7 @@
       "withdraw": "Tarik Dana",
       "positions": "Posisi",
       "deposit": "Setoran",
-      "title": "kontrak perpetual",
+      "title": "Perps",
       "pending": "Tertunda",
       "permissionTips": "Posisi terbuka tidak didukung di wilayah Anda.",
       "seeMore": "Lihat Selengkapnya",
@@ -3512,7 +3514,7 @@
       "position": "Posisi",
       "directDeposit": "Setoran Langsung",
       "selectTokenToDeposit": "Pilih Token untuk Deposit",
-      "learnAboutPerps": "Pelajari tentang Kontrak Perpetual",
+      "learnAboutPerps": "Pelajari Perps",
       "marginCross": "Margin (Silang)",
       "size": "Ukuran posisi",
       "completed": "Selesai",
@@ -3528,7 +3530,7 @@
       "openInterest": "Minat Terbuka",
       "stopLossTipsLong": "Harga stop loss harus lebih rendah dari harga saat ini.",
       "deleteAgentModal": "Anda telah mencapai jumlah agen maksimum. Apakah Anda ingin menghapus agen yang ada untuk membuat yang baru?",
-      "logInTips": "Masuk dengan alamat Anda dan setor dana untuk mulai memperdagangkan kontrak perpetual.",
+      "logInTips": "Masuk dengan alamat Anda dan setor dana untuk mulai memperdagangkan Perps.",
       "price": "Harga",
       "rabbyFeeTipsV2": "Biaya Rabby: 0,02%",
       "deleteAgentSuccess": "Agen berhasil dihapus.",
@@ -3543,7 +3545,7 @@
       "autoClose": "Penutupan posisi otomatis",
       "insufficientBalance": "Saldo tidak cukup",
       "cross": "Margin silang",
-      "explorePerps": "Jelajahi Kontrak Perpetual",
+      "explorePerps": "Jelajahi Perps",
       "leverageRangeMinError": "Leverage minimum adalah {{min}}x",
       "isolated": "Margin Terisolasi",
       "margin": "Margin",
@@ -3568,7 +3570,7 @@
       "TakeProfit": "Ambil Untung",
       "liquidation": "Likuidasi posisi",
       "short": "Posisi Pendek",
-      "tradePerps": "Perdagangan Perpetual",
+      "tradePerps": "Trade Perps",
       "sizeTips": "Nilai total atau jumlah perdagangan Anda, ditentukan oleh margin dan leverage.",
       "estimatedLiquidationPrice": "Perkiraan Harga Likuidasi",
       "openPositionTips": "Perdagangan kontrak perpetual mengandung risiko yang signifikan, termasuk potensi kehilangan mendadak dan total atas investasi dan jaminan Anda akibat leverage yang tinggi dan volatilitas pasar, dan mungkin tidak sesuai untuk semua pengguna. Harga dapat dipengaruhi oleh tingkat pendanaan dan likuiditas, dan Anda mungkin terkena likuidasi otomatis tanpa pemberitahuan. Data pasar disediakan oleh Hyperliquid.",
@@ -3906,6 +3908,7 @@
         "tpMustBeLowerThanCurrentPrice": "Harga ambil untung harus lebih rendah daripada harga saat ini",
         "deposit": "Setor",
         "addFundsToGetStarted": "Tambahkan dana untuk memulai",
+        "notAvailableInRegion": "Tidak tersedia di wilayah Anda.",
         "cost": "Biaya",
         "short": "Pendek",
         "price": "Harga",
@@ -3934,7 +3937,7 @@
         "hour": "jam",
         "tpTriggerLessThanOrderPrice": "Harga pemicu TP Anda harus kurang dari harga pesanan Anda.",
         "max": "MAKSIMUM",
-        "totalTime": "Total Time (5m-24h)",
+        "totalTime": "Total waktu (5m-24j)",
         "maxDurationTwap": "Durasi maksimum untuk menjalankan pesanan TWAP adalah",
         "orderTypeTooltipScale": "Scaled Orders memungkinkan Anda untuk membagi jumlah menjadi beberapa suborder untuk meminimalkan dampak pasar.",
         "orderTypeTooltipTwap": "TWAP (Time-Weighted Average Price) adalah strategi eksekusi perdagangan algoritmik yang bertujuan untuk mencapai harga eksekusi rata-rata yang mendekati harga rata-rata berbobot waktu dari periode yang ditentukan oleh pengguna.",
@@ -3978,16 +3981,16 @@
         "markPrice": "Harga Mark:"
       },
       "accountInfo": {
-        "totalBalance": "Total Balance",
+        "totalBalance": "Total saldo",
         "availableBalance": "Saldo yang Tersedia",
         "deposit": "Setor",
         "withdraw": "Tarik",
         "crossMarginRatio": "Rasio Margin Silang",
         "accountEquity": "Aset Akun",
-        "unrealizedPnl": "Unrealized P&L",
+        "unrealizedPnl": "P&L belum terealisasi",
         "accountEquityTip": "Saldo + PNL yang Belum Direalisasikan (perkiraan nilai akun jika semua posisi ditutup)",
         "balance": "Saldo",
-        "balanceTip": "Total Net Transfers + Total Realized Profit + Total Net Funding Fees",
+        "balanceTip": "Total transfer bersih + total laba terealisasi + total biaya funding bersih",
         "maintenanceMargin": "Margin pemeliharaan",
         "crossMarginRatioTips": "Margin Pemeliharaan / Nilai Portfolio. Posisi cross Anda akan dilikuidasi jika Rasio Margin mencapai 100%.",
         "crossAccountLeverage": "Leveraged Akun Silang",
@@ -4035,7 +4038,7 @@
     },
     "perpsDetail": {
       "PerpsAddPositionPopup": {
-        "totalSize": "Total Size",
+        "totalSize": "Total ukuran",
         "addToShort": "Tambahkan ke Short",
         "addToLong": "Tambah ke Long",
         "addSize": "Tambahkan Ukuran",
@@ -4060,7 +4063,7 @@
         "long": "Panjang",
         "free": "Gratis",
         "insufficientBalance": "Saldo tidak cukup",
-        "providerFee": "Hyperliquid Fee",
+        "providerFee": "Biaya Hyperliquid",
         "rabbyFee": "Biaya Rabby",
         "leverage": "Leverage",
         "stopLossWhenPriceBelow": "Hentikan Kerugian Ketika Harga Di Bawah",
@@ -4090,7 +4093,7 @@
         "title": "Sesuaikan Margin",
         "margin": "Margin",
         "reduceMargin": "Kurangi Margin",
-        "perpsBalance": "Saldo Perpetual",
+        "perpsBalance": "Saldo Perps",
         "available": "Tersedia",
         "addMargin": "Tambahkan Margin",
         "liqPrice": "Harga Likuidasi",
@@ -4113,7 +4116,7 @@
         "amount": "Jumlah",
         "total": "Total",
         "fee": "Biaya",
-        "closedPnl": "Closed PNL",
+        "closedPnl": "PNL ditutup",
         "title": "Tutup Posisi",
         "minimumWarning": "Jumlah penutupan minimum adalah {{percent}}%"
       },
@@ -4136,7 +4139,7 @@
         "takeProfitWhenPriceAbove": "Ambil Keuntungan Ketika Harga Di Atas",
         "stopLossExpectedPNL": "Stop Loss Diperkirakan PNL",
         "cancel": "Batalkan",
-        "stopLoss": "Stop Loss",
+        "stopLoss": "Stop loss",
         "takeProfitExpectedPNL": "Ambil Untung PNL yang Diharapkan",
         "stopLossTipsShort": "Harga stop loss harus lebih tinggi daripada harga saat ini",
         "stopLossWhenPriceBelow": "Hentikan Kerugian Saat Harga Di Bawah",
@@ -4155,11 +4158,12 @@
         "emodeNoAssets": "Kami tidak dapat menemukan aset yang terkait dengan pencarian Anda. Cobalah lagi dengan kategori yang berbeda.",
         "needSupply": "Untuk meminjam, Anda perlu menyediakan aset sebagai jaminan.",
         "singleAssetUnavailableForEmode": "Tidak tersedia untuk dipinjam. Keluar dari E-Mode untuk mengakses.",
-        "emode": "Beberapa aset tidak tersedia untuk dipinjam dalam E-Mode. Keluar dari E-Mode untuk mengakses semua aset."
+        "emode": "Beberapa aset tidak tersedia untuk dipinjam dalam E-Mode. Keluar dari E-Mode untuk mengakses semua aset.",
+        "isolated": "Daya pinjam dan aset dibatasi karena mode Isolasi."
       },
       "list": {
         "headers": {
-          "totalBorrowed": "Total Borrowed",
+          "totalBorrowed": "Total dipinjam",
           "my_assets": "Aset Saya",
           "myBorrows": "Pinjaman saya",
           "token_balance": "Token/Saldo",
@@ -4253,7 +4257,7 @@
         "availableToSupply": "Tersedia untuk Menyediakan",
         "mySupply": "Pasokan Saya",
         "title": "Rincian Pasokan",
-        "totalSupplied": "Total Supplied",
+        "totalSupplied": "Total disuplai",
         "noBalance": "Tidak ada saldo",
         "collateral": "Jaminan",
         "reachCap": "Aset ini telah mencapai batas pasokannya. Tidak ada yang tersedia untuk dipasok dari pasar ini.",
@@ -4272,9 +4276,9 @@
         "liquidationTitle": "Likuidasi:",
         "desc": "Nilai likuidasi",
         "risky": "Berisiko",
-        "over3title": "Health factor > 3.0:",
+        "over3title": "Faktor kesehatan > 3.0:",
         "over3desc": "Posisi Anda aman",
-        "below1title": "Health Factor ≤ 1.0:",
+        "below1title": "Faktor kesehatan ≤ 1.0:",
         "below1desc": "Posisi Anda berisiko dilikuidasi.",
         "warningText": "Faktor Kesehatan Anda terlalu rendah. Untuk menghindari likuidasi:\n1. Lunasi sebagian atau seluruh pinjaman Anda\n2. Tambahkan lebih banyak jaminan",
         "introText": "Faktor Kesehatan Anda menunjukkan seberapa aman posisi pinjaman Anda. Jika turun terlalu rendah, jaminan Anda dapat dilikuidasi.",
@@ -4320,7 +4324,8 @@
         "debtSwapSelector": {
           "header": {
             "assets": "Token/Balansi",
-            "borrow": "Peminjaman saya"
+            "borrow": "Peminjaman saya",
+            "apy": "APY"
           },
           "title": "Pilih Token Pinjaman"
         },
@@ -4411,9 +4416,9 @@
           "title": "Dapatkan Bunga dengan aset Anda",
           "endDesc": "Anda belum memiliki setoran. Lihat aset yang direkomendasikan di bawah ini untuk mulai menghasilkan bunga."
         },
-        "totalBorrowed": "Total Borrowed",
+        "totalBorrowed": "Total dipinjam",
         "eMode": "E-Mode",
-        "totalSupplied": "Total Supplied",
+        "totalSupplied": "Total disuplai",
         "healthFactorTip": "Faktor kesehatan menunjukkan keamanan posisi Anda",
         "healthFactor": "Faktor Kesehatan",
         "netWorth": "Kekayaan Bersih",
@@ -4438,7 +4443,8 @@
         "token": "Token",
         "actions": "Tindakan",
         "type": "Tipe",
-        "collateral": "Kollateral"
+        "collateral": "Kollateral",
+        "apy": "APY"
       },
       "supplyList": {
         "collapse": "Runtuh",
@@ -4448,24 +4454,24 @@
         "collapse": "Runtuh",
         "more": "Lebih banyak token untuk dipinjam"
       },
-      "supplyApy": "Supply APY",
+      "supplyApy": "APY suplai",
       "gotIt": "Diterima",
       "title": "Peminjaman",
       "supplied": "Disuplai",
-      "totalBorrowed": "Total borrowed",
+      "totalBorrowed": "Total dipinjam",
       "netApy": "Net APY",
       "supplyBalance": "Saldo Pasokan",
       "isolate": "terpisah",
-      "totalSupply": "Total Supply",
-      "borrowApy": "Borrow APY",
+      "totalSupply": "Total suplai",
+      "borrowApy": "APY pinjaman",
       "borrowBalance": "Saldo Peminjaman",
       "noData": "Tidak ada data",
       "netWorth": "Kekayaan bersih",
       "estNetApy": "Est. net APY",
-      "totalBorrow": "Total Borrow",
+      "totalBorrow": "Total pinjaman",
       "submitted": "dikirimkan",
       "borrowed": "Dipinjam",
-      "totalSupplied": "Total supplied",
+      "totalSupplied": "Total disuplai",
       "estDailyEarning": "Est.Pendapatan Harian",
       "isolateTip": "Ini adalah pasar terpisah",
       "searchMarket": "Cari Pasar",
@@ -4510,7 +4516,7 @@
       "done": "Selesai",
       "conversionProgress": "Kemajuan konversi",
       "slippageTolerance": "Toleransi selip",
-      "singleTransactionGasLimit": "Batas Gas Transaksi Tunggal",
+      "singleTransactionGasLimit": "Gas Limit Transaksi Tunggal",
       "startConvert": "Mulai konversi",
       "unsupportedWalletType": "Hanya alamat kunci privat dan seed phrase yang didukung.",
       "stop": "Berhenti",
@@ -4526,6 +4532,129 @@
       "swapFailed": "Swap gagal, {{reason}}",
       "completedTips": "Swap yang sedang berlangsung akan terus diproses",
       "priceImpact": "Batas Dampak Harga"
+    },
+    "staking": {
+      "title": "Staking",
+      "searchToken": "Cari Token",
+      "myHolding": "Posisi Saya",
+      "holding": "Posisi",
+      "protocol": "Protokol",
+      "actions": {
+        "deposit": "Setor",
+        "withdraw": "Tarik",
+        "claim": "Klaim",
+        "max": "Maks.",
+        "retry": "Coba lagi"
+      },
+      "filter": {
+        "allProtocol": "Semua Protokol",
+        "allChains": "Semua Chain",
+        "selectProtocol": "Pilih Protokol",
+        "selectChain": "Pilih Chain",
+        "searchByName": "Cari berdasarkan Nama",
+        "searchProtocol": "Cari protokol",
+        "searchChain": "Cari chain",
+        "all": "Semua",
+        "clearFilter": "Hapus {{filter}}"
+      },
+      "empty": {
+        "noPoolsFound": "Tidak ada pool ditemukan",
+        "noHoldingsFound": "Saat ini Anda tidak memiliki posisi.",
+        "noStakingPoolsFound": "Tidak ada pool staking ditemukan",
+        "noProtocols": "Tidak ada protokol",
+        "noChains": "Tidak ada chain"
+      },
+      "error": {
+        "failedLoadData": "Gagal memuat data staking",
+        "failedLoadPools": "Gagal memuat pool staking",
+        "failedLoadPool": "Gagal memuat pool staking",
+        "failedLoadChart": "Gagal memuat grafik staking",
+        "failedLoadPosition": "Gagal memuat posisi",
+        "transactionFailed": "Transaksi staking gagal"
+      },
+      "metrics": {
+        "yield": "Imbal hasil",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
+      },
+      "tabs": {
+        "portfolio": "Portofolio",
+        "about": "Tentang",
+        "security": "Keamanan"
+      },
+      "detail": {
+        "poolNotFound": "Pool staking tidak ditemukan",
+        "unsupportedAction": "Aksi staking tidak didukung.",
+        "noChartData": "Tidak ada data grafik"
+      },
+      "about": {
+        "pool": "Pool",
+        "address": "Alamat",
+        "poolAddress": "Alamat Pool",
+        "uptime": "Waktu aktif",
+        "days": "{{count}} hari",
+        "token": "Token",
+        "token1": "Token1",
+        "token2": "Token2",
+        "tokenAddress": "Alamat token",
+        "token1Address": "Alamat Token1",
+        "token2Address": "Alamat Token2",
+        "aboutProtocol": "Tentang {{protocol}}",
+        "noDescription": "Deskripsi protokol tidak tersedia.",
+        "showMore": "Tampilkan lebih banyak",
+        "showLess": "Tampilkan lebih sedikit",
+        "officialWebsite": "Situs Web Resmi",
+        "twitter": "X (Twitter)"
+      },
+      "security": {
+        "certifications": "Sertifikasi",
+        "certifiedBy": "Disertifikasi oleh",
+        "certifiedOn": "Disertifikasi pada",
+        "action": "Aksi",
+        "view": "Lihat",
+        "noCertificationData": "Tidak ada data sertifikasi"
+      },
+      "portfolio": {
+        "pending": "Tertunda",
+        "succeed": "Berhasil",
+        "failed": "Gagal",
+        "supplied": "Disediakan",
+        "rewards": "Reward",
+        "rewardsWithCount": "Reward ({{count}})",
+        "priceRange": "Rentang Harga",
+        "noSuppliedAssets": "Tidak ada aset yang disediakan",
+        "noRewards": "Belum ada reward"
+      },
+      "actionModal": {
+        "receive": "Terima",
+        "setPriceRange": "Atur Rentang Harga",
+        "range": "Rentang",
+        "unused": "Tidak digunakan",
+        "unsupportedPool": "Pool tidak didukung",
+        "unsupportedErc4626Pool": "Pool ERC4626 tidak didukung",
+        "unsupportedLpPool": "Pool LP tidak didukung",
+        "unsupportedChain": "Chain tidak didukung",
+        "unavailable": "Tidak tersedia",
+        "tokenFallback": "token",
+        "insufficientBalance": "Saldo {{symbols}} tidak cukup",
+        "noWithdrawablePosition": "Tidak ada posisi yang dapat ditarik",
+        "noClaimableRewards": "Tidak ada reward yang dapat diklaim",
+        "submitted": "{{action}} dikirim",
+        "submitFailed": "Gagal mengirim {{action}}",
+        "confirmPoolPriceDifference": "Konfirmasi perbedaan harga pool",
+        "poolPriceWarning": "Batas dampak harga 10% dapat menimbulkan risiko arbitrase.",
+        "poolPriceTitle": "Harga pool: 1 {{token0}} = {{poolPrice}} {{token1}}; harga pasar: 1 {{token0}} = {{marketPrice}} {{token1}}",
+        "singleAssetDepositOnly": "Harga pasar berada di luar rentang harga yang Anda tentukan. Hanya setoran satu aset.",
+        "failedResolveV2Pool": "Gagal menemukan pool V2",
+        "failedResolveV3Pool": "Gagal menemukan pool V3",
+        "noLpPositionToWithdraw": "Tidak ada posisi LP untuk ditarik",
+        "v2RewardsUnsupported": "Reward V2 tidak didukung",
+        "selectV3PositionToWithdraw": "Pilih posisi V3 untuk ditarik"
+      }
     },
     "manageBatchApprovals": {
       "cols": {
@@ -4625,10 +4754,10 @@
         "notWhitelisted": "Alamat ini tidak terdaftar dalam daftar putih"
       },
       "EditModal": {
-        "title": "Edit address note"
+        "title": "Edit catatan alamat"
       },
       "EditWhitelist": {
-        "title": "Edit Whitelist",
+        "title": "Edit whitelist",
         "backModalTitle": "Buang Perubahan",
         "backModalContent": "Perubahan yang Anda buat tidak akan disimpan",
         "save": "Simpan ke Whitelist ({{count}})",
@@ -4639,7 +4768,7 @@
           "title": "Simpan ke Whitelist"
         },
         "whitelistUpdated": "Whitelist Diperbarui",
-        "editWhitelist": "Edit Whitelist",
+        "editWhitelist": "Edit whitelist",
         "title": "Pilih Alamat",
         "whitelistDisabled": "Whitelist dinonaktifkan. Anda dapat mengirim aset ke alamat mana pun.",
         "whitelistEnabled": "Whitelist telah diaktifkan. Anda hanya dapat mengirim aset ke alamat yang terdaftar atau Anda dapat menonaktifkannya di \"Pengaturan\"."
@@ -4687,7 +4816,7 @@
           "title": "HARGA"
         },
         "usdValue": {
-          "title": "USD VALUE"
+          "title": "NILAI USD"
         }
       },
       "bridge": {
@@ -4824,7 +4953,7 @@
     "Clear": "Bersihkan",
     "ok": "Baik",
     "refresh": "Muat Ulang",
-    "scamTx": "Scam tx",
+    "scamTx": "Tx scam",
     "next": "Selanjutnya",
     "proceedButton": "Lanjutkan",
     "Done": "Selesai",
@@ -4861,7 +4990,7 @@
       "notFindChain": "Tidak dapat menemukan rantai {{chain}}",
       "txPushFailed": "Transaksi dorong gagal",
       "notFoundTxGnosisKeyring": "Tidak ada transaksi yang ditemukan di Gnosis keyring",
-      "invalidChainId": "Invalid chain id",
+      "invalidChainId": "ID chain tidak valid",
       "generateCacheAliasNames": "[GenerateCacheAliasNames]: perlu setidaknya satu alamat",
       "notFoundGnosisKeyring": "Tidak ada keyring Gnosis ditemukan",
       "unlock": "anda perlu membuka kunci wallet terlebih dahulu",

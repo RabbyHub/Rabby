@@ -224,7 +224,7 @@ function useClientParseTx({
 }
 
 type HistoryItemProps = {
-  data: TxHistoryItemRow;
+  data: TxHistoryItemRow & { isGasDeposit?: boolean };
   onViewInputData?: (ctx: HistoryItemActionContext) => void;
 };
 

@@ -11,3 +11,9 @@ export const L2_DEPOSIT_ADDRESS_MAP: Record<string, string> = {
 };
 
 export const LOW_GAS_ACCOUNT_BALANCE = 1;
+
+export const GAS_ACCOUNT_WITHDRAWED_ADDRESS =
+  '0xad003006ceb0934012c289d1cfdb1db915998f74';
+
+export const GAS_ACCOUNT_RECEIVED_ADDRESS =
+  '0x91604f590d66ace8975eed6bd16cf55647d1c499';
