@@ -366,6 +366,7 @@ export const useBridge = () => {
   );
   const [quoteList, setQuotesList] = useState<SelectedBridgeQuote[]>([]);
   const fetchIdRef = useRef(0);
+  const [quoteRequestId, setQuoteRequestId] = useState(0);
   const [pending, setPending] = useState(false);
 
   const setSelectedBridgeQuote = useCallback((quote?: SelectedBridgeQuote) => {
@@ -384,6 +385,7 @@ export const useBridge = () => {
 
   useLayoutEffect(() => {
     fetchIdRef.current += 1;
+    setQuoteRequestId(fetchIdRef.current);
     setQuotesList([]);
     setRecommendFromToken(undefined);
     setSelectedBridgeQuote(undefined);
@@ -412,6 +414,7 @@ export const useBridge = () => {
     if (canRunQuoteRequest && toToken) {
       refreshTokensInfo();
       const currentFetchId = fetchIdRef.current;
+      setQuoteRequestId(currentFetchId);
 
       const isCurrentRequest = () => currentFetchId === fetchIdRef.current;
       const originData: Omit<BridgeQuote, 'tx'>[] = [];
@@ -851,6 +854,8 @@ export const useBridge = () => {
 
     openQuotesList,
     quoteLoading: displayQuoteLoading,
+    allQuotesLoaded,
+    quoteRequestId,
     setQuotesList,
     quoteList: quoteListForDisplay,
 

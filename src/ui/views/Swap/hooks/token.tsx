@@ -213,7 +213,6 @@ export const useTokenPair = (userAddress: string) => {
     defaultToken: defaultSelectedToToken,
     refreshTokenId,
   });
-
   const {
     lowCreditToken,
     lowCreditVisible,
@@ -621,9 +620,12 @@ export const useTokenPair = (userAddress: string) => {
   }, [slippageObj.autoSlippage, isWrapToken, isStableCoin]);
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
+  const fetchIdRef = useRef(0);
+  const [quoteRequestId, setQuoteRequestId] = useState(0);
 
   useLayoutEffect(() => {
     fetchIdRef.current += 1;
+    setQuoteRequestId(fetchIdRef.current);
     setQuotesList([]);
     setActiveProvider(undefined);
     setPending(canRunQuoteRequest);
@@ -682,7 +684,6 @@ export const useTokenPair = (userAddress: string) => {
     onSetAutoSlippage: setAutoSlippage,
   });
 
-  const fetchIdRef = useRef(0);
   const { getAllQuotes, validSlippage } = useQuoteMethods();
   const [
     { loading: quoteLoading, error: quotesError },
@@ -695,6 +696,7 @@ export const useTokenPair = (userAddress: string) => {
 
     fetchIdRef.current += 1;
     const currentFetchId = fetchIdRef.current;
+    setQuoteRequestId(currentFetchId);
     if (canRunQuoteRequest && receiveToken && !isDraggingSlider) {
       refreshTokensInfo();
 
@@ -1089,6 +1091,8 @@ export const useTokenPair = (userAddress: string) => {
     //quote
     openQuotesList,
     quoteLoading: displayQuoteLoading,
+    allQuotesLoaded,
+    quoteRequestId,
     quoteList: quoteListForDisplay,
     currentProvider,
     setActiveProvider,
