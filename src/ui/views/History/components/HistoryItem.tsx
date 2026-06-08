@@ -260,7 +260,7 @@ export const HistoryItem = ({ data, onViewInputData }: HistoryItemProps) => {
           )}
         >
           <div className="time">{sinceTime(data.time_at)}</div>
-          <div className="txs-history-card-header-right flex items-center justify-end flex-shrink-1 w-[100%]">
+          <div className="txs-history-card-header-right flex items-center justify-end shrink-1 w-[100%]">
             <TxId chain={data.chain} id={data.id} />
             {/* {addressType === AddressType.CONTRACT && !data.is_scam && (
               <ViewMessageTriggerForContract

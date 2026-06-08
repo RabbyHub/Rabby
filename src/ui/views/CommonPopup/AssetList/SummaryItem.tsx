@@ -22,7 +22,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
 
   return (
     <TCell className="py-8 flex gap-12 w-[40%] items-center">
-      <div className="relative flex-shrink-0 flex">
+      <div className="relative shrink-0 flex">
         <Image
           className="w-24 h-24 rounded-full"
           src={isSmallAssets ? HideAssets : item.logo_url || IconUnknown}
@@ -60,7 +60,7 @@ const TokenItemAsset: React.FC<Props> = ({ item }) => {
           ) : null}
         </div>
         {!isSmallAssets && (
-          <div className="text-r-neutral-body text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden">
+          <div className="text-r-neutral-body text-12 leading-[14px] whitespace-nowrap text-ellipsis overflow-hidden">
             @{isNil(item.price) ? '-' : formatUsdValue(item.price || 0)}
           </div>
         )}
@@ -84,7 +84,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
         )}
         <span
           className={clsx({
-            'text-r-neutral-body text-12 leading-[14px] whitespace-nowrap overflow-ellipsis overflow-hidden': !isSmallAssets,
+            'text-r-neutral-body text-12 leading-[14px] whitespace-nowrap text-ellipsis overflow-hidden': !isSmallAssets,
             'text-r-neutral-title-1 text-13 font-medium leading-[15px]': isSmallAssets,
           })}
         >

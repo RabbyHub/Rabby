@@ -190,7 +190,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               <span
                 className={clsx(
                   'text-13 text-r-neutral-foot',
-                  'overflow-hidden overflow-ellipsis whitespace-nowrap'
+                  'overflow-hidden text-ellipsis whitespace-nowrap'
                 )}
               >
                 {t('page.bridge.via-bridge', {
@@ -221,7 +221,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             />
             <span
               className={clsx(
-                'text-[16px] font-medium text-rabby-neutral-title1 overflow-hidden overflow-ellipsis whitespace-nowrap',
+                'text-[16px] font-medium text-rabby-neutral-title1 overflow-hidden text-ellipsis whitespace-nowrap',
                 props.onlyShow ? 'max-w-[126px]' : 'max-w-[138px]'
               )}
               title={formatTokenAmount(props.to_token_amount)}

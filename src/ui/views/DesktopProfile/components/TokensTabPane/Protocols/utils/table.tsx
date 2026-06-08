@@ -50,7 +50,7 @@ export function getTokens(
               canClickToken={!!token?.id && !!token?.chain}
               isNft={false}
               textClassName={cx(
-                'text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden',
+                'text-r-neutral-title1 text-14 whitespace-nowrap text-ellipsis overflow-hidden',
                 'no-underline',
                 !!token?.id && !!token?.chain
                   ? 'cursor-pointer hover:text-r-blue-default hover:underline '
@@ -108,7 +108,7 @@ export function TokensAmount({
                 canClickToken={!!v?.id && !!v?.chain}
                 isNft={false}
                 textClassName={cx(
-                  'text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden',
+                  'text-r-neutral-title1 text-14 whitespace-nowrap text-ellipsis overflow-hidden',
                   'no-underline',
                   !!v?.id && !!v?.chain
                     ? 'cursor-pointer hover:text-r-blue-default hover:underline '

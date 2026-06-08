@@ -123,7 +123,7 @@ export const WithdrawConfirmPopup = ({
                 }
               }}
             >
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 {isChecked ? (
                   <RcIconChecked width={20} height={20} viewBox="0 0 24 24" />
                 ) : (

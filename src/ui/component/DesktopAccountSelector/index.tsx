@@ -377,7 +377,7 @@ const AccountList: React.FC<{
                 'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2'
               )}
             >
-              <RcIconAddWalletCC className="flex-shrink-0" />
+              <RcIconAddWalletCC className="shrink-0" />
               <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
                 {t('component.DesktopSelectAccountList.addAddresses')}
               </div>

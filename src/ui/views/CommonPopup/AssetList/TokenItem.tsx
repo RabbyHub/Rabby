@@ -145,7 +145,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
   );
 
   return (
-    <TCell className="py-8 flex gap-10 items-center flex-shrink-1 flex-1">
+    <TCell className="py-8 flex gap-10 items-center shrink-1 flex-1">
       <div className="relative h-[32px]">
         <Image
           className="w-32 h-32 rounded-full"
@@ -178,7 +178,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
           )}
         >
           <LpContainer>
-            <span className="text-r-neutral-title-1 font-medium text-15 leading-[18px] whitespace-nowrap overflow-ellipsis overflow-hidden inner-symbol">
+            <span className="text-r-neutral-title-1 font-medium text-15 leading-[18px] whitespace-nowrap text-ellipsis overflow-hidden inner-symbol">
               {item.symbol}
             </span>
             {isUnknownToken(item) && <UnknownTag className="ml-2" />}
@@ -193,7 +193,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
               </span>
             )}
           </LpContainer>
-          <span className="text-r-neutral-foot text-13 leading-[16px] truncate whitespace-nowrap overflow-ellipsis overflow-hidden">
+          <span className="text-r-neutral-foot text-13 leading-[16px] truncate whitespace-nowrap text-ellipsis overflow-hidden">
             {item._amountStr}
           </span>
         </div>

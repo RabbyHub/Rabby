@@ -100,7 +100,7 @@ const BridgeOrNative = ({
               hover:bg-blue-light/10 hover:border-rabby-blue-default
               rounded-[6px] px-12 py-6"
               >
-                <span className="text-r-neutral-title-1 text-13 font-medium truncate max-w-[170px]  overflow-ellipsis whitespace-nowrap">
+                <span className="text-r-neutral-title-1 text-13 font-medium truncate max-w-[170px]  text-ellipsis whitespace-nowrap">
                   {tokenEntity?.domain_id}
                 </span>
                 <ThemeIcon

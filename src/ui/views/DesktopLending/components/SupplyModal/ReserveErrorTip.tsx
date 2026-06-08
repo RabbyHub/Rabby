@@ -57,7 +57,7 @@ export const ReserveErrorTip: React.FC<{
         <RcIconWarningCC
           width={12}
           height={12}
-          className="text-rb-red-default flex-shrink-0 inline -mt-2 mr-2"
+          className="text-rb-red-default shrink-0 inline -mt-2 mr-2"
         />
         {errorMessage}
       </span>

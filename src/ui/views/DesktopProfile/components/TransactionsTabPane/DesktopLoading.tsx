@@ -19,7 +19,7 @@ export const DesktopLoading = ({
             className="flex h-[100px] items-center border-b-[0.5px]  border-rabby-neutral-line"
           >
             {/* Column 1 - Time and Hash */}
-            <div className="min-w-[230px] flex-shrink-0 w-[25%]">
+            <div className="min-w-[230px] shrink-0 w-[25%]">
               <Skeleton.Button
                 active={active}
                 className="h-[13px] mb-[6px] block"
@@ -30,7 +30,7 @@ export const DesktopLoading = ({
                   active={active}
                   size={16}
                   shape="circle"
-                  className="flex-shrink-0"
+                  className="shrink-0"
                 />
                 <Skeleton.Button
                   active={active}
@@ -61,7 +61,7 @@ export const DesktopLoading = ({
                   active={active}
                   size={16}
                   shape="circle"
-                  className="flex-shrink-0"
+                  className="shrink-0"
                 />
                 <Skeleton.Button
                   active={active}
@@ -74,7 +74,7 @@ export const DesktopLoading = ({
                   active={active}
                   size={16}
                   shape="circle"
-                  className="flex-shrink-0"
+                  className="shrink-0"
                 />
                 <Skeleton.Button
                   active={active}
@@ -85,7 +85,7 @@ export const DesktopLoading = ({
             </div>
 
             {/* Column 4 - Gas Fee and Status */}
-            <div className="min-w-[250px] flex-shrink-0 text-right w-[25%]">
+            <div className="min-w-[250px] shrink-0 text-right w-[25%]">
               <Skeleton.Button
                 active={active}
                 className="h-[14px] block ml-auto"

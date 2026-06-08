@@ -223,7 +223,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
               })}
             </div>
             <div
-              className="text-12 font-medium text-r-blue-default cursor-pointer flex-shrink-0 flex items-center gap-2 leading-[20px]"
+              className="text-12 font-medium text-r-blue-default cursor-pointer shrink-0 flex items-center gap-2 leading-[20px]"
               onClick={() => onSwap?.()}
             >
               {t('page.perps.PerpsSpotSwap.toSwapEntry')}
@@ -256,7 +256,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
                 <RcIconArrowRight className="w-[20px] h-[20px] text-r-blue-default" />
               </div>
             </div>
-            <div className="relative w-[90px] h-[56px] flex-shrink-0">
+            <div className="relative w-[90px] h-[56px] shrink-0">
               <img
                 src={isDarkTheme ? perpsGuideBgDark : perpsGuideBg}
                 className="absolute bottom-0 right-0 w-[90px] h-[29px]"

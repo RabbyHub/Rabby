@@ -48,7 +48,7 @@ const PendingTxs = ({ pendingTxCount }: Props) => {
     <Wrapper
       className={clsx(
         'transition-all ease-in-out',
-        'whitespace-nowrap overflow-hidden overflow-ellipsis'
+        'whitespace-nowrap overflow-hidden text-ellipsis'
       )}
       onClick={handleClickPendingTxs}
     >

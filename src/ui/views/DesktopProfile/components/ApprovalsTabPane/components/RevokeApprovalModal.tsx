@@ -109,11 +109,11 @@ function ApprovalAmountInfo({
           align={{ offset: [0, 3] }}
           arrowPointAtCenter
         >
-          <div className="text-12 font-nomral text-r-neutral-foot inline-flex justify-end">
-            <span className="whitespace-pre max-w-[8em] overflow-hidden overflow-ellipsis flex-shrink-1">
+          <div className="text-12 font-normal text-r-neutral-foot inline-flex justify-end">
+            <span className="whitespace-pre max-w-[8em] overflow-hidden text-ellipsis shrink-1">
               {balanceNumText}
             </span>
-            <span className="flex-shrink-0">{balanceUnitText}</span>
+            <span className="shrink-0">{balanceUnitText}</span>
           </div>
         </Tooltip>
       )}
@@ -300,7 +300,7 @@ export const RevokeApprovalModal = (props: {
               {'spender' in spenderHost ? (
                 <div className="flex flex-col ml-[8px]">
                   <div className="text-13 text-r-neutral-title1 font-medium leading-[15px] inline-flex items-center justify-start">
-                    <span className="inline-block whitespace-nowrap max-w-[180px] overflow-hidden overflow-ellipsis">
+                    <span className="inline-block whitespace-nowrap max-w-[180px] overflow-hidden text-ellipsis">
                       {itemName}
                     </span>
 
@@ -315,7 +315,7 @@ export const RevokeApprovalModal = (props: {
                         }}
                         src={RcIconExternal}
                         className={clsx(
-                          'w-[12px] h-[12px] ml-6 cursor-pointer flex-shrink-0'
+                          'w-[12px] h-[12px] ml-6 cursor-pointer shrink-0'
                         )}
                       />
                     )}
@@ -337,7 +337,7 @@ export const RevokeApprovalModal = (props: {
                 />
               )}
 
-              <div className="ml-auto flex items-center justify-between flex-shrink-0">
+              <div className="ml-auto flex items-center justify-between shrink-0">
                 <ApprovalAmountInfo
                   className="mr-[8px]"
                   {...(spenderValues
@@ -434,7 +434,7 @@ export const RevokeApprovalModal = (props: {
                 />
               </div>
 
-              <div className="ml-auto flex justify-center items-center flex-shrink-0">
+              <div className="ml-auto flex justify-center items-center shrink-0">
                 {item.type === 'token' && spendValues && (
                   <ApprovalAmountInfo
                     amountValue={spendValues.displayAmountText}
@@ -529,11 +529,11 @@ export const RevokeApprovalModal = (props: {
       }
     >
       <div className="flex flex-col h-[100%]">
-        <div className="mt-0 mb-0 flex-shrink-0">
+        <div className="mt-0 mb-0 shrink-0">
           <ApprovalContractItem data={[item]} index={0} />
         </div>
 
-        <section className="mb-[6px] flex justify-between items-center flex-shrink-0">
+        <section className="mb-[6px] flex justify-between items-center shrink-0">
           <span className="text-12 text-r-neutral-title1">{subTitle}</span>
           <div
             className={clsx(
@@ -551,7 +551,7 @@ export const RevokeApprovalModal = (props: {
 
         <section
           className={clsx(
-            'max-h-[100%] overflow-x-hidden pb-[12px] flex-shrink-1 approval-list'
+            'max-h-[100%] overflow-x-hidden pb-[12px] shrink-1 approval-list'
           )}
           style={{
             overflowY: 'overlay',

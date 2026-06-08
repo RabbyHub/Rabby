@@ -300,7 +300,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                       onClick={() => setTokenSelectVisible(true)}
                       className={clsx(
                         'flex items-center justify-center gap-6 pl-6 pr-8 h-32 rounded-[8px] border border-solid border-transparent',
-                        'bg-r-neutral-card-2 cursor-pointer flex-shrink-0',
+                        'bg-r-neutral-card-2 cursor-pointer shrink-0',
                         'hover:border-rabby-blue-default hover:text-rb-brand-default'
                       )}
                     >

@@ -259,7 +259,7 @@ export const ProtocolItem = ({
                   chain: protocol.name,
                 })}
               >
-                <div className="text-r-neutral-foot ml-[4px] mr-[2px] flex-shrink-0">
+                <div className="text-r-neutral-foot ml-[4px] mr-[2px] shrink-0">
                   <RcIconInfoCC />
                 </div>
               </Tooltip>
