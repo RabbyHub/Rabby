@@ -64,7 +64,13 @@ const commonConfig = {
   devtool: 'inline-cheap-module-source-map',
   watch: !isHot,
   watchOptions: {
-    ignored: ['**/public', '**/node_modules'],
+    ignored: [
+      '**/public',
+      '**/node_modules',
+      '**/dist/**',
+      '**/dist-mv2/**',
+      '**/tmp/**',
+    ],
     followSymlinks: false,
   },
   output: {
