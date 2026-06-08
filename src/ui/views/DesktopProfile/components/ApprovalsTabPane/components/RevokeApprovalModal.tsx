@@ -253,7 +253,7 @@ export const RevokeApprovalModal = (props: {
           <div
             key={index}
             className={clsx(
-              'relative px-[16px] h-[56px] bg-r-neutral-card1 cursor-pointer border border-transparent  hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
+              'relative px-[16px] h-[56px] bg-r-neutral-card1 cursor-pointer border border-transparent  hover:border-rabby-blue-default  hover:bg-r-blue-light1/10 hover:rounded-[6px] hover:z-10',
               isLastOne && 'rounded-b-[6px]',
               'first:mt-0 first:rounded-t-[6px] dark:bg-[#292c37] dark:hover:bg-r-blue-light1'
             )}
@@ -389,7 +389,7 @@ export const RevokeApprovalModal = (props: {
         <div
           key={spender.id}
           className={clsx(
-            'relative px-[16px] bg-r-neutral-card1 cursor-pointer border border-transparent hover:border-rabby-blue-default  hover:bg-r-blue-light1 hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
+            'relative px-[16px] bg-r-neutral-card1 cursor-pointer border border-transparent hover:border-rabby-blue-default  hover:bg-r-blue-light1/10 hover:rounded-[6px] hover:z-10',
             isLastOne && 'rounded-b-[6px]',
             'first:rounded-t-[6px]',
             !risky ? 'h-[51px] ' : 'flex-col pt-[13px]'
@@ -538,7 +538,7 @@ export const RevokeApprovalModal = (props: {
           <div
             className={clsx(
               isSelectedAll ? 'w-[80px]' : 'w-[67px]',
-              'h-[22px] text-12 cursor-pointer flex items-center justify-center bg-blue-light bg-opacity-[0.2] text-center text-blue-light rounded-[2px]'
+              'h-[22px] text-12 cursor-pointer flex items-center justify-center bg-r-blue-light-1 text-center text-r-blue-default rounded-[2px]'
             )}
             onClick={handleSelectAll}
           >

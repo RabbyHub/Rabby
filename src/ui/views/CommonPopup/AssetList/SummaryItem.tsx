@@ -100,8 +100,8 @@ const TokenItemPercent: React.FC<Props> = ({ item }) => {
     <TCell className="relative py-8 w-[30%]">
       <div
         className={clsx(
-          'h-[32px] bg-opacity-20 rounded-[2px]',
-          item._value > 0 ? 'bg-[#27C193]' : 'bg-[#EC5151]'
+          'h-[32px] rounded-[2px]',
+          item._value > 0 ? 'bg-[#27C193]/20' : 'bg-[#EC5151]/20'
         )}
         style={{ width: `${item._percent}%` }}
       />

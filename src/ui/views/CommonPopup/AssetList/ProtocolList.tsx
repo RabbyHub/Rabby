@@ -220,8 +220,7 @@ export const ProtocolItem = ({
           className={clsx(
             'group flex items-center justify-start',
             'title border border-solid bg-r-neutral-card1 border-transparent rounded-[8px] h-[48px] pr-14',
-            'hover:bg-blue-light',
-            'hover:bg-opacity-10',
+            'hover:bg-blue-light/10',
             'hover:border-blue-light'
           )}
           onClick={onClickTitle}

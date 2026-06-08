@@ -313,7 +313,7 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
         'group cursor-pointer',
         'h-[60px] mt-8 px-12 justify-between',
         'rounded-[8px] border border-transparent bg-r-neutral-card1',
-        'hover:border-blue-light active:bg-opacity-10'
+        'hover:border-blue-light active:bg-r-neutral-card1/10'
       )}
     >
       <TokenItemAsset item={item} showButtons={showButtons} />

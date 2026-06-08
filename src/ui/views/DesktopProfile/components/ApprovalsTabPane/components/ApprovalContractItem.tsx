@@ -61,7 +61,7 @@ export const ApprovalContractItem = ({
       className={clsx(
         'bg-r-neutral-card1 mb-[12px] rounded-[6px] border border-transparent contract-approval-item',
         onSelect &&
-          'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-[0.1] cursor-pointer'
+          'hover:border-blue-light hover:bg-blue-light/10 cursor-pointer'
       )}
       key={item.id + item.chain}
       onClick={handleClick}
@@ -69,6 +69,7 @@ export const ApprovalContractItem = ({
       <div
         className={clsx(
           'token-approval-item px-[16px] pt-[11px] pb-[10px] hover:bg-transparent hover:border-transparent',
+          'flex items-center gap-x-[4px]',
           !onSelect && 'cursor-auto'
         )}
       >
