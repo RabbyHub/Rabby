@@ -232,11 +232,11 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
             : PANEL_WIDTH + PANEL_WIDTH_DELTA,
       }}
     >
-      <div className="mb-[32px] text-[24px] leading-[29px] font-medium text-r-neutral-title1 flex-shrink-0">
+      <div className="mb-[32px] text-[24px] leading-[29px] font-medium text-r-neutral-title1 shrink-0">
         {t('page.desktopSmallSwap.selectLowValueTokens')}
       </div>
 
-      <div className="flex items-center gap-[12px] mb-[16px] flex-shrink-0">
+      <div className="flex items-center gap-[12px] mb-[16px] shrink-0">
         {thresholds.map((item) => {
           const active = item.value === currentThreshold;
           return (
@@ -354,7 +354,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
                     style={{ width: COLUMN_WIDTH.token }}
                   >
                     <div className="flex items-center gap-[10px] min-w-0">
-                      <div className="relative w-[24px] h-[24px] flex-shrink-0">
+                      <div className="relative w-[24px] h-[24px] shrink-0">
                         <Image
                           className="w-full h-full block rounded-full"
                           src={record.logo_url || IconUnknown}

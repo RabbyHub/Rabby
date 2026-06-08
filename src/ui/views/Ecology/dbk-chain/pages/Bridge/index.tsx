@@ -198,7 +198,7 @@ export const DbkChainBridge = () => {
                 </div>
               </div>
             </div>
-            <div className="text-r-neutral-foot flex-shrink-0">
+            <div className="text-r-neutral-foot shrink-0">
               <RcIconArrow />
             </div>
             <div className="flex-1 min-w-0">
@@ -286,7 +286,7 @@ export const DbkChainBridge = () => {
           <div className="rounded-[8px] border-[0.5px] border-rabby-neutral-line p-[12px]">
             <div className="flex flex-col gap-[12px]">
               <div className="flex items-center gap-[12px]">
-                <div className="text-[13px] text-r-neutral-body leading-[16px] flex-shrink-0">
+                <div className="text-[13px] text-r-neutral-body leading-[16px] shrink-0">
                   {t('page.ecology.dbk.bridge.info.toAddress')}
                 </div>
                 <div className="ml-auto min-w-0">
@@ -299,7 +299,7 @@ export const DbkChainBridge = () => {
                 </div>
               </div>
               <div className="flex items-center gap-[12px]">
-                <div className="text-[13px] text-r-neutral-body leading-[16px] flex-shrink-0">
+                <div className="text-[13px] text-r-neutral-body leading-[16px] shrink-0">
                   {t('page.ecology.dbk.bridge.info.receiveOn', {
                     chainName: targetChain?.name,
                   })}
@@ -312,7 +312,7 @@ export const DbkChainBridge = () => {
                 </div>
               </div>
               <div className="flex items-center gap-[12px]">
-                <div className="text-[13px] text-r-neutral-body leading-[16px] flex-shrink-0">
+                <div className="text-[13px] text-r-neutral-body leading-[16px] shrink-0">
                   {t('page.ecology.dbk.bridge.info.completeTime')}
                 </div>
                 <div className="ml-auto  min-w-0">
@@ -322,7 +322,7 @@ export const DbkChainBridge = () => {
                 </div>
               </div>
               <div className="flex items-center gap-[12px]">
-                <div className="text-[13px] text-r-neutral-body leading-[16px flex-shrink-0]">
+                <div className="text-[13px] text-r-neutral-body leading-[16px shrink-0]">
                   {t('page.ecology.dbk.bridge.info.gasFee')}
                 </div>
                 <div className="ml-auto min-w-0">

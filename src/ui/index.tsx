@@ -1,5 +1,8 @@
 import browser from 'webextension-polyfill';
 
+import './style/tailwind.css';
+import './style/cssvars.css';
+import './style/cssvars-custom.css';
 import './style/index.less';
 import './app';
 

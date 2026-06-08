@@ -103,7 +103,7 @@ export const SubmitActions: React.FC<Props> = ({
                 gasLess && 'gasLess',
                 gasLessThemeColor && 'gasLessConfig',
                 'w-[246px] h-[48px] rounded-[8px]',
-                'disabled:text-opacity-40 disabled:bg-blue-light disabled:bg-opacity-40 border-transparent',
+                'disabled:text-white/40 disabled:bg-blue-light/40 border-transparent',
                 'before:content-none'
               )}
               style={

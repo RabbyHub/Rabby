@@ -173,7 +173,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
             isInIsolationMode) && (
             <RcIconWarningCC
               viewBox="0 0 16 16"
-              className={`w-14 h-14 flex-shrink-0 ${
+              className={`w-14 h-14 shrink-0 ${
                 isInIsolationMode
                   ? 'text-rb-orange-default'
                   : 'text-r-neutral-info'
@@ -242,7 +242,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
       <h2
         className={clsx(
           'text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12',
-          'flex-shrink-0 h-[24px]'
+          'shrink-0 h-[24px]'
         )}
       >
         {t('page.lending.borrowDetail.actions')}
@@ -274,7 +274,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                     width={12}
                     height={12}
                     className={clsx(
-                      'ml-[3px] flex-shrink-0 inline-block',
+                      'ml-[3px] shrink-0 inline-block',
                       sortDirection === 'asc' && sortField === 'debt'
                         ? '-rotate-90'
                         : 'rotate-90'
@@ -295,14 +295,14 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                     width={12}
                     height={12}
                     className={clsx(
-                      'ml-[3px] flex-shrink-0 inline-block',
+                      'ml-[3px] shrink-0 inline-block',
                       sortDirection === 'asc' && sortField === 'apy'
                         ? '-rotate-90'
                         : 'rotate-90'
                     )}
                   />
                 </div>
-                <span className="w-[80px] flex-shrink-0" />
+                <span className="w-[80px] shrink-0" />
               </div>
               {dataList.map((row) => {
                 if (row.type === 'toggle_fold') {
@@ -327,7 +327,7 @@ export const BorrowListModal: React.FC<BorrowListModalProps> = ({
                           width={12}
                           height={12}
                           className={clsx(
-                            'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
+                            'text-r-neutral-foot shrink-0 inline-block transition-transform',
                             !foldHideList ? '-rotate-90' : 'rotate-90'
                           )}
                         />

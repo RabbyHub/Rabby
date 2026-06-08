@@ -160,7 +160,7 @@ export const UserInfoHistory: React.FC = () => {
     <div className="flex-1 h-full bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">
       <div
         ref={tabsContainerRef}
-        className="relative flex border-b border-solid border-rb-neutral-line flex-shrink-0"
+        className="relative flex border-b border-solid border-rb-neutral-line shrink-0"
       >
         {tabs.map((tab) => {
           return (

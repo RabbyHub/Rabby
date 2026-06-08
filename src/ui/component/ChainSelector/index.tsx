@@ -81,7 +81,7 @@ const ChainSelector = ({
             showCustomRPCToolTip
           />
         </div>
-        <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+        <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
           {findChainByEnum(value)?.name}
         </span>
         <ArrowDownSVG className={clsx('icon')} />

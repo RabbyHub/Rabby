@@ -68,7 +68,7 @@ export const AccountSelector = forwardRef<HTMLDivElement, Props>(
           {value ? (
             <CurrentAccount account={value} />
           ) : (
-            <div className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+            <div className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
               Select Address
             </div>
           )}
@@ -104,7 +104,7 @@ const CurrentAccount = ({ account }: { account: Account }) => {
       <div className="mr-6">
         <img src={addressTypeIcon} className="brand-icon" alt="" />
       </div>
-      <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+      <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
         {alias}
       </span>
     </>

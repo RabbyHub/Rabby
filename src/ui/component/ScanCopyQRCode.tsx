@@ -92,7 +92,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
           {!qrcodeURL ? (
             <div
               className={clsx(
-                'bg-rabby-neutral-card1 bg-opacity-70 absolute inset-0',
+                'bg-rabby-neutral-card1/70 absolute inset-0',
                 'flex items-center justify-center'
               )}
             >

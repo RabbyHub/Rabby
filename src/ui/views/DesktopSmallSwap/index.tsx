@@ -221,7 +221,7 @@ const DesktopSmallSwapContent: React.FC = () => {
   return (
     <div className={clsx('h-full overflow-auto bg-r-neutral-bg-2')}>
       <div className="max-w-[1248px] min-w-[1200px] mx-auto px-[24px] pt-[32px] pb-[40px] h-full flex flex-col">
-        <header className="flex items-end justify-between gap-[24px] mb-[32px] flex-shrink-0">
+        <header className="flex items-end justify-between gap-[24px] mb-[32px] shrink-0">
           <div className="min-w-0">
             <div className="flex items-center gap-[16px]">
               <img src={IconRabby} alt="Rabby" />
@@ -246,7 +246,7 @@ const DesktopSmallSwapContent: React.FC = () => {
         </header>
 
         {chainList?.length ? (
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <ChainPillList
               data={chainList}
               value={chainServerId}
@@ -265,7 +265,7 @@ const DesktopSmallSwapContent: React.FC = () => {
             disabled={task.disabled}
           />
 
-          <div className="flex-shrink-0 flex items-center">
+          <div className="shrink-0 flex items-center">
             <div
               className="w-[64px] h-[64px] rounded-full border border-rabby-neutral-line bg-r-neutral-card-1 flex items-center justify-center text-r-neutral-foot"
               style={{ boxShadow: '0 12px 24px rgba(25, 41, 69, 0.08)' }}

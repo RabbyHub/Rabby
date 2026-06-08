@@ -801,7 +801,7 @@ function CommonTokenItem(props: {
                     <LpTokenTag
                       size={14}
                       inModal
-                      iconClassName="text-r-neutral-foot flex-shrink-0"
+                      iconClassName="text-r-neutral-foot shrink-0"
                       protocolName={token.protocol_id || ''}
                     />
                   )}
@@ -820,7 +820,7 @@ function CommonTokenItem(props: {
                     <LpTokenTag
                       size={14}
                       inModal
-                      iconClassName="text-r-neutral-foot flex-shrink-0"
+                      iconClassName="text-r-neutral-foot shrink-0"
                       protocolName={token.protocol_id || ''}
                     />
                   )}

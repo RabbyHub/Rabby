@@ -610,7 +610,7 @@ export const SignMainnetGasSelectorHeader = ({
     gasMethod && props.onChangeGasMethod && !props.disabled ? (
       <div
         className={clsx(
-          'p-2 rounded-md flex items-center relative flex-shrink-0 mr-8',
+          'p-2 rounded-md flex items-center relative shrink-0 mr-8',
           'border-[0.5px] border-solid border-rabby-neutral-line'
         )}
       >
@@ -647,7 +647,7 @@ export const SignMainnetGasSelectorHeader = ({
         />
       </div>
     ) : (
-      <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot mr-8" />
+      <GasLogoSVG className="shrink-0 text-r-neutral-foot mr-8" />
     );
 
   const gasCostAmountStr = useMemo(() => {

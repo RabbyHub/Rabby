@@ -378,7 +378,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1 whitespace-nowrap">
       {/* Control Bar */}
-      <div className="flex items-center justify-between px-[12px] py-[6px] flex-shrink-0">
+      <div className="flex items-center justify-between px-[12px] py-[6px] shrink-0">
         {/* View Mode Switcher */}
         <div className="flex items-center gap-[8px]">
           <button
@@ -499,7 +499,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-10 px-[12px] py-[5px] text-[11px] text-r-neutral-foot flex-shrink-0">
+      <div className="grid grid-cols-10 px-[12px] py-[5px] text-[11px] text-r-neutral-foot shrink-0">
         <span className="col-span-3 text-left">
           {t('page.perpsPro.orderBook.price')}
         </span>

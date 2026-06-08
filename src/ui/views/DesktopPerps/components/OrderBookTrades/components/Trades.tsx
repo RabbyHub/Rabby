@@ -32,7 +32,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1">
       {/* Header */}
-      <div className="flex items-center justify-between px-[8px] py-[6px] text-[11px] text-r-neutral-foot flex-shrink-0">
+      <div className="flex items-center justify-between px-[8px] py-[6px] text-[11px] text-r-neutral-foot shrink-0">
         <span className="min-w-[60px] text-left">
           {t('page.perpsPro.orderBook.price')} (USD)
         </span>

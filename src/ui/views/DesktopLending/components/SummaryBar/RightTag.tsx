@@ -66,7 +66,7 @@ export const RightMarketTabInfo: React.FC = () => {
                 />
               </span>
               <span className="text-[12px] leading-[14px] font-medium whitespace-nowrap">
-                <div className="text-[#9AE8FF] max-w-[100px] overflow-ellipsis overflow-hidden">
+                <div className="text-[#9AE8FF] max-w-[100px] text-ellipsis overflow-hidden">
                   {currentEmode?.label || ''}
                 </div>
               </span>

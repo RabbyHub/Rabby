@@ -20,7 +20,7 @@ const TransactionWebsiteWrapper = styled.a`
 
 export const TransactionWebsite = ({ site }: { site: ConnectedSite }) => {
   return site.origin === INTERNAL_REQUEST_ORIGIN ? (
-    <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-r-neutral-foot text-12">
+    <span className="flex-1 whitespace-nowrap text-ellipsis overflow-hidden text-r-neutral-foot text-12">
       Rabby Wallet
     </span>
   ) : (

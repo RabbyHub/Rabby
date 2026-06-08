@@ -160,7 +160,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
       <div className="mt-8 px-16 py-12 rounded-[6px] bg-rb-orange-light-1 flex items-center gap-4">
         <RcIconWarningCC
           viewBox="0 0 16 16"
-          className="w-14 h-14 text-rb-orange-default flex-shrink-0"
+          className="w-14 h-14 text-rb-orange-default shrink-0"
         />
         <span className="text-[14px] leading-[18px] text-rb-orange-default">
           {t('page.lending.modalDesc.isolatedSupplyDesc')}
@@ -179,7 +179,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
       <h2
         className={clsx(
           'text-[20px] leading-[24px] font-medium text-center text-r-neutral-title-1 mb-12',
-          'flex-shrink-0 h-[24px]'
+          'shrink-0 h-[24px]'
         )}
       >
         {t('page.lending.supplyDetail.actions')}
@@ -212,7 +212,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                     width={12}
                     height={12}
                     className={clsx(
-                      'w-3 h-3 flex-shrink-0 inline-block',
+                      'w-3 h-3 shrink-0 inline-block',
                       sortDirection === 'asc' && sortField === 'tvl'
                         ? '-rotate-90'
                         : 'rotate-90'
@@ -234,7 +234,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                     width={12}
                     height={12}
                     className={clsx(
-                      'w-3 h-3 flex-shrink-0 inline-block',
+                      'w-3 h-3 shrink-0 inline-block',
                       sortDirection === 'asc' && sortField === 'apy'
                         ? '-rotate-90'
                         : 'rotate-90'
@@ -256,14 +256,14 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                     width={12}
                     height={12}
                     className={clsx(
-                      'w-3 h-3 flex-shrink-0 inline-block',
+                      'w-3 h-3 shrink-0 inline-block',
                       sortDirection === 'asc' && sortField === 'balance'
                         ? '-rotate-90'
                         : 'rotate-90'
                     )}
                   />
                 </span>
-                <span className="w-[80px] flex-shrink-0" />
+                <span className="w-[80px] shrink-0" />
               </div>
               {dataList.map((row) => {
                 if (row.type === 'toggle_fold') {
@@ -288,7 +288,7 @@ export const SupplyListModal: React.FC<SupplyListModalProps> = ({
                           width={12}
                           height={12}
                           className={clsx(
-                            'text-r-neutral-foot flex-shrink-0 inline-block transition-transform',
+                            'text-r-neutral-foot shrink-0 inline-block transition-transform',
                             !foldHideList ? '-rotate-90' : 'rotate-90'
                           )}
                         />

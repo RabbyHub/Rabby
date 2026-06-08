@@ -1980,7 +1980,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         setCanProcess(false);
         setCantProcessReason(
           <div className="flex items-center gap-6">
-            <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
+            <img src={IconGnosis} alt="" className="w-[24px] shrink-0" />
             {t('page.signTx.multiSigChainNotMatch')}
           </div>
         );

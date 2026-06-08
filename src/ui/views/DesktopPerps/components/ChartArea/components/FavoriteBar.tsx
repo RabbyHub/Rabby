@@ -50,7 +50,7 @@ export const FavoriteBar: React.FC<FavoriteBarProps> = ({ onSelectCoin }) => {
               return (
                 <div
                   key={coin}
-                  className="group flex items-center gap-[4px] cursor-pointer flex-shrink-0"
+                  className="group flex items-center gap-[4px] cursor-pointer shrink-0"
                   onClick={() => onSelectCoin(coin)}
                 >
                   <span className="text-[12px] text-r-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
