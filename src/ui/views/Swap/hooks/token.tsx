@@ -39,9 +39,49 @@ import {
 } from '@/utils/transaction';
 import { isTempoChain } from '@/utils/tempo';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
+import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
+
+const getDexQuoteReceiveAmount = (
+  quote: TDexQuoteData,
+  receiveToken: TokenItem
+) =>
+  new BigNumber(quote.data?.toTokenAmount || 0)
+    .div(10 ** (quote.data?.toTokenDecimals || receiveToken.decimals))
+    .toString();
+
+const isDexQuoteSelectable = (quote: TDexQuoteData) =>
+  !quote.loading &&
+  !!quote.data &&
+  !!quote.preExecResult &&
+  !!quote.preExecResult.isSdkPass;
+
+const getDexQuoteScore = ({
+  quote,
+  receiveToken,
+  inSufficient,
+}: {
+  quote: TDexQuoteData;
+  receiveToken: TokenItem;
+  inSufficient: boolean;
+}) => {
+  if (!isDexQuoteSelectable(quote)) {
+    return new BigNumber(Number.MIN_SAFE_INTEGER);
+  }
+
+  const price = receiveToken.price ? receiveToken.price : 1;
+  const receiveUsdValue = new BigNumber(
+    getDexQuoteReceiveAmount(quote, receiveToken)
+  ).times(price);
+
+  if (inSufficient) {
+    return receiveUsdValue;
+  }
+
+  return receiveUsdValue.minus(quote.preExecResult?.gasUsdValue || 0);
+};
 
 const useTokenInfo = ({
   userAddress,
@@ -173,7 +213,6 @@ export const useTokenPair = (userAddress: string) => {
     defaultToken: defaultSelectedToToken,
     refreshTokenId,
   });
-
   const {
     lowCreditToken,
     lowCreditVisible,
@@ -581,9 +620,12 @@ export const useTokenPair = (userAddress: string) => {
   }, [slippageObj.autoSlippage, isWrapToken, isStableCoin]);
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
+  const fetchIdRef = useRef(0);
+  const [quoteRequestId, setQuoteRequestId] = useState(0);
 
   useLayoutEffect(() => {
     fetchIdRef.current += 1;
+    setQuoteRequestId(fetchIdRef.current);
     setQuotesList([]);
     setActiveProvider(undefined);
     setPending(canRunQuoteRequest);
@@ -642,7 +684,6 @@ export const useTokenPair = (userAddress: string) => {
     onSetAutoSlippage: setAutoSlippage,
   });
 
-  const fetchIdRef = useRef(0);
   const { getAllQuotes, validSlippage } = useQuoteMethods();
   const [
     { loading: quoteLoading, error: quotesError },
@@ -655,6 +696,7 @@ export const useTokenPair = (userAddress: string) => {
 
     fetchIdRef.current += 1;
     const currentFetchId = fetchIdRef.current;
+    setQuoteRequestId(currentFetchId);
     if (canRunQuoteRequest && receiveToken && !isDraggingSlider) {
       refreshTokensInfo();
 
@@ -759,89 +801,108 @@ export const useTokenPair = (userAddress: string) => {
     previousDepositFlowActiveRef.current = depositFlowActive;
   }, [cancelQuoteDebounce, depositFlowActive, setRefreshId]);
 
-  useEffect(() => {
-    if (
-      !quoteLoading &&
-      !pending &&
-      receiveToken &&
-      quoteList.every((q, idx) => !q.loading)
-    ) {
-      const sortIncludeGasFee = true;
-      const sortedList = [
-        ...(quoteList?.sort((a, b) => {
-          const getNumber = (quote: typeof a) => {
-            const price = receiveToken.price ? receiveToken.price : 1;
-            if (inSufficient) {
-              return new BigNumber(quote.data?.toTokenAmount || 0)
-                .div(
-                  10 ** (quote.data?.toTokenDecimals || receiveToken.decimals)
-                )
-                .times(price);
-            }
-            if (!quote.preExecResult || !quote.preExecResult.isSdkPass) {
-              return new BigNumber(Number.MIN_SAFE_INTEGER);
-            }
-            const balanceChangeReceiveTokenAmount =
-              new BigNumber(quote.data?.toTokenAmount || 0)
-                .div(
-                  10 ** (quote?.data?.toTokenDecimals || receiveToken.decimals)
-                )
-                .toString() || 0;
-
-            if (sortIncludeGasFee) {
-              return new BigNumber(balanceChangeReceiveTokenAmount)
-                .times(price)
-                .minus(quote?.preExecResult?.gasUsdValue || 0);
-            }
-
-            return new BigNumber(balanceChangeReceiveTokenAmount).times(price);
-          };
-          return getNumber(b).minus(getNumber(a)).toNumber();
-        }) || []),
-      ];
-      setActiveProvider(undefined);
-      if (sortedList?.[0]) {
-        const bestQuote = sortedList[0];
-        const { preExecResult } = bestQuote;
-
-        setBestQuoteDex(bestQuote.name);
-
-        setActiveProvider((preItem) =>
-          !bestQuote.preExecResult || !bestQuote.preExecResult.isSdkPass
-            ? undefined
-            : preItem?.manualClick
-            ? preItem
-            : {
-                name: bestQuote.name,
-                quote: bestQuote.data,
-                preExecResult: bestQuote.preExecResult,
-                gasPrice: preExecResult?.gasPrice,
-                shouldApproveToken: !!preExecResult?.shouldApproveToken,
-                shouldTwoStepApprove: !!preExecResult?.shouldTwoStepApprove,
-                error: !preExecResult,
-                halfBetterRate: '',
-                quoteWarning: undefined,
-                actualReceiveAmount:
-                  new BigNumber(bestQuote.data?.toTokenAmount || 0)
-                    .div(
-                      10 **
-                        (bestQuote?.data?.toTokenDecimals ||
-                          receiveToken.decimals)
-                    )
-                    .toString() || '',
-                gasUsd: preExecResult?.gasUsd,
-              }
-        );
-      }
+  const rawQuoteLoading = quoteLoading || pending;
+  const allQuotesLoaded = !rawQuoteLoading;
+  const quoteListForDisplay = useMemo(() => {
+    if (allQuotesLoaded || !payToken || !receiveToken) {
+      return quoteList;
     }
+
+    return quoteList.filter((quote) => {
+      if (quote.loading) {
+        return false;
+      }
+
+      if (!quote.data) {
+        return true;
+      }
+
+      return !isQuoteReceiveValueTooLowForEarlyDisplay({
+        fromToken: payToken,
+        toToken: receiveToken,
+        fromAmount: inputAmount,
+        toAmount: getDexQuoteReceiveAmount(quote, receiveToken),
+      });
+    });
+  }, [allQuotesLoaded, inputAmount, payToken, quoteList, receiveToken]);
+  const selectableQuoteListForDisplay = useMemo(
+    () => quoteListForDisplay.filter(isDexQuoteSelectable),
+    [quoteListForDisplay]
+  );
+  const displayQuoteLoading =
+    rawQuoteLoading && selectableQuoteListForDisplay.length === 0;
+
+  useEffect(() => {
+    if (selectableQuoteListForDisplay.length) {
+      setShowMoreVisible(true);
+    }
+  }, [selectableQuoteListForDisplay.length]);
+
+  useEffect(() => {
+    if (!canRunQuoteRequest || !receiveToken) {
+      return;
+    }
+
+    if (!selectableQuoteListForDisplay.length) {
+      if (allQuotesLoaded) {
+        setBestQuoteDex('');
+        setActiveProvider(undefined);
+      }
+      return;
+    }
+
+    const sortedList = [...selectableQuoteListForDisplay].sort((a, b) =>
+      getDexQuoteScore({
+        quote: b,
+        receiveToken,
+        inSufficient,
+      })
+        .minus(
+          getDexQuoteScore({
+            quote: a,
+            receiveToken,
+            inSufficient,
+          })
+        )
+        .toNumber()
+    );
+    const bestQuote = sortedList[0];
+    const { preExecResult } = bestQuote;
+
+    if (!bestQuote.data || !preExecResult) {
+      return;
+    }
+
+    setBestQuoteDex(bestQuote.name);
+
+    setActiveProvider((preItem) =>
+      preItem?.manualClick
+        ? preItem
+        : {
+            name: bestQuote.name,
+            quote: bestQuote.data,
+            preExecResult,
+            gasPrice: preExecResult.gasPrice,
+            shouldApproveToken: !!preExecResult.shouldApproveToken,
+            shouldTwoStepApprove: !!preExecResult.shouldTwoStepApprove,
+            error: false,
+            halfBetterRate: '',
+            quoteWarning: undefined,
+            actualReceiveAmount: getDexQuoteReceiveAmount(
+              bestQuote,
+              receiveToken
+            ),
+            gasUsd: preExecResult.gasUsd,
+          }
+    );
   }, [
-    quoteList,
-    quoteLoading,
+    allQuotesLoaded,
+    canRunQuoteRequest,
+    selectableQuoteListForDisplay,
     receiveToken?.id,
     receiveToken?.chain,
+    receiveToken,
     inSufficient,
-
-    pending,
   ]);
 
   if (quotesError) {
@@ -1029,8 +1090,10 @@ export const useTokenPair = (userAddress: string) => {
 
     //quote
     openQuotesList,
-    quoteLoading: quoteLoading || pending,
-    quoteList,
+    quoteLoading: displayQuoteLoading,
+    allQuotesLoaded,
+    quoteRequestId,
+    quoteList: quoteListForDisplay,
     currentProvider,
     setActiveProvider,
 
