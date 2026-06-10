@@ -521,7 +521,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   };
 
   return (
-    <div className="space-y-[16px]">
+    <div className="space-y-[18px]">
       <OrderSideAndFunds
         availableBalance={availableBalance}
         quoteAsset={quoteAsset}
@@ -555,7 +555,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
               options={bboStrategyOptions}
               onSelect={(key) => setBboStrategy(key as BboStrategy)}
             >
-              <div className="flex-1 h-[44px] flex items-center justify-between px-[11px] rounded-[8px] border border-solid border-rb-neutral-line bg-rb-neutral-bg-5 cursor-pointer">
+              <div className="flex-1 h-[44px] flex items-center justify-between px-[6px] rounded-[6px] border border-solid border-rb-neutral-line bg-rb-neutral-bg-5 cursor-pointer">
                 <span className="text-[15px] font-medium text-rb-neutral-title-1">
                   {bboStrategyOptions.find((o) => o.key === bboStrategy)
                     ?.label || 'Counterparty 1'}
@@ -582,7 +582,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           >
             <div
               className={clsx(
-                'min-w-[64px] h-[44px] relative flex items-center justify-center text-center font-medium text-15 rounded-[8px] border border-solid cursor-pointer',
+                'min-w-[64px] h-[44px] relative flex items-center justify-center text-center font-medium text-15 rounded-[6px] border border-solid cursor-pointer',
                 bboEnabled
                   ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default'
                   : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent'
