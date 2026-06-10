@@ -1,4 +1,6 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import type { UserFeedbackItem } from '@rabby-wallet/rabby-api/dist/types';
+import { Button } from 'antd';
 import clsx from 'clsx';
 import {
   KEYRING_CLASS,
@@ -13,7 +15,7 @@ import { useInterval } from 'react-use';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-1.svg';
 import WatchLogo from 'ui/assets/waitcup.svg';
 
-import { AddressViewer } from 'ui/component';
+import { AddressViewer, Popup } from 'ui/component';
 import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { formatUsdValue, useWallet } from 'ui/utils';
 
@@ -42,6 +44,12 @@ import PendingTxs from '../PendingTxs';
 import Queue from '../Queue';
 import Tooltip from 'antd/es/tooltip';
 import { LOW_GAS_ACCOUNT_BALANCE } from '@/constant/gas-account';
+import { ReactComponent as RcIconFeedbackCC } from '@/ui/assets/feedback-popup/entry-hi.svg';
+import { RcIconSuccessCC } from '@/ui/assets/desktop/common';
+import {
+  useLatestRepliedFeedbacks,
+  useViewingFeedback,
+} from '@/ui/component/ScreenshotContextMenu/hooks';
 
 const Container = styled.div`
   width: 100%;
@@ -179,6 +187,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
           </div>
 
           <div className="flex-shrink-0 min-w-0 ml-auto flex items-center gap-[4px]">
+            <FeedbackEntry />
             <GasAccountEntry />
 
             <div
@@ -210,6 +219,132 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
       )}
       <SeedPhraseBackupAlert className="absolute left-0 right-0 bottom-0" />
     </Container>
+  );
+};
+
+const FeedbackEntry = () => {
+  const { t } = useTranslation();
+  const { lastRepliedFeedback } = useLatestRepliedFeedbacks();
+  const { startViewingFeedback } = useViewingFeedback();
+
+  const handleClick = useCallback(
+    (evt: React.MouseEvent<HTMLDivElement>) => {
+      evt.preventDefault();
+      evt.stopPropagation();
+
+      if (!lastRepliedFeedback) return;
+
+      startViewingFeedback(lastRepliedFeedback);
+
+      matomoRequestEvent({
+        category: 'Click_Header',
+        action: 'Click_Setting',
+      });
+
+      ga4.fireEvent('Click_Setting', {
+        event_category: 'Click_Header',
+      });
+    },
+    [lastRepliedFeedback, startViewingFeedback]
+  );
+
+  if (lastRepliedFeedback?.status !== 'complete') {
+    return null;
+  }
+
+  return (
+    <>
+      <Tooltip
+        title={t('Feedback')}
+        placement="bottom"
+        overlayClassName="rectangle"
+        align={{
+          offset: [0, -6],
+        }}
+      >
+        <div
+          className={clsx(
+            'p-[6px] rounded-[5px] cursor-pointer text-r-neutral-title-2 shrink-0',
+            'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
+          )}
+          onClick={handleClick}
+        >
+          <RcIconFeedbackCC className="w-[20px] h-[20px]" />
+        </div>
+      </Tooltip>
+      <FeedbackResponsePopup lastRepliedFeedback={lastRepliedFeedback} />
+    </>
+  );
+};
+
+const FeedbackResponsePopup = ({
+  lastRepliedFeedback,
+}: {
+  lastRepliedFeedback: UserFeedbackItem;
+}) => {
+  const { viewingFeedback, finishViewFeedback } = useViewingFeedback();
+  const feedback = viewingFeedback || lastRepliedFeedback;
+  const visible = !!viewingFeedback && feedback?.status === 'complete';
+  const imageUrl = feedback?.image_url_list?.[0];
+  const comment = feedback?.comment;
+
+  return (
+    <Popup
+      visible={visible}
+      title="Feedback"
+      height={560}
+      closable
+      zIndex={2147483647}
+      onCancel={finishViewFeedback}
+      onClose={finishViewFeedback}
+      bodyStyle={{ padding: '20px 20px 24px' }}
+    >
+      <div className="flex h-full flex-col">
+        <div className="relative flex-1 overflow-y-auto pl-[24px] pr-[2px]">
+          <div className="absolute left-[7px] top-[16px] bottom-[22px] w-[2px] bg-r-blue-default" />
+
+          <div className="relative mb-[28px]">
+            <div className="absolute left-[-22px] top-[4px] h-[16px] w-[16px] rounded-full border-[4px] border-r-blue-default bg-r-neutral-bg1" />
+            <div className="text-[16px] leading-[19px] font-medium text-r-neutral-title1">
+              Issue Description
+            </div>
+            <div className="mt-[12px] rounded-[8px] bg-r-neutral-card1 p-[12px]">
+              {feedback?.content ? (
+                <div className="mb-[10px] whitespace-pre-wrap break-words text-[13px] leading-[18px] text-r-neutral-body">
+                  {feedback.content}
+                </div>
+              ) : null}
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt="Feedback screenshot"
+                  className="block max-h-[220px] w-full rounded-[6px] object-contain"
+                />
+              ) : null}
+            </div>
+          </div>
+
+          <div className="relative">
+            <RcIconSuccessCC className="absolute left-[-26px] top-[0px] h-[24px] w-[24px] text-r-blue-default" />
+            <div className="text-[16px] leading-[19px] font-medium text-r-neutral-title1">
+              Replied
+            </div>
+            <div className="mt-[12px] whitespace-pre-wrap break-words rounded-[8px] bg-r-neutral-card1 p-[12px] text-[13px] leading-[18px] text-r-neutral-body">
+              {comment}
+            </div>
+          </div>
+        </div>
+
+        <Button
+          type="primary"
+          block
+          className="mt-[20px] h-[48px]"
+          onClick={finishViewFeedback}
+        >
+          OK
+        </Button>
+      </div>
+    </Popup>
   );
 };
 
