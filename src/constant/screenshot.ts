@@ -1,0 +1,4 @@
+export const SCREENSHOT_CONTEXT_MENU_ID = 'rabby-screenshot-context-menu';
+
+export const SCREENSHOT_CONTEXT_MENU_CLICKED =
+  'RABBY_SCREENSHOT_CONTEXT_MENU_CLICKED';

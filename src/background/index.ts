@@ -84,6 +84,10 @@ import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
+import {
+  SCREENSHOT_CONTEXT_MENU_CLICKED,
+  SCREENSHOT_CONTEXT_MENU_ID,
+} from '@/constant/screenshot';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -95,6 +99,42 @@ dayjs.extend(utc);
 const { PortMessage } = Message;
 
 let appStoreLoaded = false;
+
+const initScreenshotContextMenu = async () => {
+  if (!browser.contextMenus) return;
+
+  const onClicked = (info: browser.Menus.OnClickData) => {
+    if (info.menuItemId !== SCREENSHOT_CONTEXT_MENU_ID) return;
+
+    browser.runtime
+      .sendMessage({
+        pageUrl: info.pageUrl,
+        type: SCREENSHOT_CONTEXT_MENU_CLICKED,
+      })
+      .catch(() => {
+        // The popup may close when the browser-native context menu is used.
+      });
+  };
+
+  browser.contextMenus.onClicked.removeListener(onClicked);
+  browser.contextMenus.onClicked.addListener(onClicked);
+
+  try {
+    await browser.contextMenus.remove(SCREENSHOT_CONTEXT_MENU_ID);
+  } catch (error) {
+    // The menu may not exist yet.
+  }
+
+  await browser.contextMenus.create({
+    id: SCREENSHOT_CONTEXT_MENU_ID,
+    title: 'Screenshot',
+    contexts: ['page'],
+    documentUrlPatterns: [
+      `${browser.runtime.getURL('popup.html')}*`,
+      `${browser.runtime.getURL('notification.html')}*`,
+    ],
+  });
+};
 
 Sentry.init({
   dsn:
@@ -228,6 +268,7 @@ async function restoreAppState() {
   }
   await sendReadyMessageToTabs();
   subscribeTxCompleted({ preferenceService });
+  await initScreenshotContextMenu();
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {
