@@ -64,7 +64,13 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   const priceChangePercent = currentMarketData.prevDayPx
     ? (priceChange / Number(currentMarketData.prevDayPx)) * 100
     : 0;
-  const isPositive = priceChange >= 0;
+  const isPriceUp = priceChange > 0;
+  const isPriceDown = priceChange < 0;
+  const changeColorClass = isPriceUp
+    ? 'text-rb-green-default'
+    : isPriceDown
+    ? 'text-rb-red-default'
+    : 'text-rb-neutral-secondary';
 
   const calculateChangeValue = (prevDayPx: string, markPx: string) => {
     if (!prevDayPx) return 0;
@@ -77,74 +83,80 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   );
 
   return (
-    <div className="flex items-center justify-center px-[16px] border-b border-solid border-rb-neutral-line h-[56px]">
+    <div className="flex items-center px-[12px] border-b border-solid border-rb-neutral-line h-[65px] min-w-0">
       {/* Coin Dropdown - Only this area is clickable for dropdown */}
       <CoinDropdown coin={coin} onSelectCoin={onSelectCoin} />
 
+      <div className="mr-[24px] flex flex-col flex-shrink-0 min-w-[96px]">
+        <span
+          className={clsx(
+            'text-[20px] leading-[24px] font-medium',
+            changeColorClass
+          )}
+        >
+          {currentMarketData.markPx
+            ? splitNumberByStep(Number(currentMarketData.markPx))
+            : '-'}
+        </span>
+        {currentMarketData.markPx && currentMarketData.prevDayPx ? (
+          <span
+            className={clsx(
+              'text-[12px] leading-[14px] font-medium',
+              changeColorClass
+            )}
+          >
+            {isPriceUp ? '+' : isPriceDown ? '-' : ''}
+            {splitNumberByStep(Math.abs(changeValue))} / {isPriceUp ? '+' : ''}
+            {priceChangePercent.toFixed(2)}%
+          </span>
+        ) : (
+          <span className="text-[12px] leading-[14px] text-rb-neutral-secondary">
+            -
+          </span>
+        )}
+      </div>
+
       {/* Market Data - Display only, not clickable */}
-      <HorizontalScrollContainer className="flex items-center gap-24">
-        <div className="flex flex-col">
+      <HorizontalScrollContainer className="flex items-center gap-[24px]">
+        <div className="flex flex-col gap-[3px]">
           <div>
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.markTips')}
               needCursor={false}
-              className="text-[12px] leading-[18px] text-rb-neutral-secondary"
+              className="text-[12px] leading-[20px] text-rb-neutral-secondary"
             >
               {t('page.perpsPro.chatArea.mark')}
             </DashedUnderlineText>
           </div>
-          <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
+          <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
             {currentMarketData.markPx
               ? `$${splitNumberByStep(Number(currentMarketData.markPx))}`
               : '-'}
           </span>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-[3px]">
           <div>
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.oracleTips')}
               needCursor={false}
-              className="text-[12px] leading-[18px] text-rb-neutral-secondary"
+              className="text-[12px] leading-[20px] text-rb-neutral-secondary"
             >
               {t('page.perpsPro.chatArea.oracle')}
             </DashedUnderlineText>
           </div>
-          <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
+          <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
             {currentMarketData.oraclePx
               ? `$${splitNumberByStep(Number(currentMarketData.oraclePx))}`
               : '-'}
           </span>
         </div>
 
-        <div className="flex flex-col">
-          <span className="text-[12px] leading-[18px] text-rb-neutral-secondary">
-            {t('page.perpsPro.chatArea.24hChange')}
-          </span>
-          {currentMarketData.markPx && currentMarketData.prevDayPx ? (
-            <span
-              className={clsx(
-                'text-[12px] leading-[18px] font-medium',
-                isPositive ? 'text-r-green-default' : 'text-r-red-default'
-              )}
-            >
-              {isPositive ? '+' : '-'}
-              {`$${splitNumberByStep(Math.abs(changeValue))}`} /{' '}
-              {isPositive ? '+' : ''}
-              {priceChangePercent.toFixed(2)}%
-            </span>
-          ) : (
-            <span className="text-[13px] leading-[18px] font-medium text-r-neutral-foot">
-              -
-            </span>
-          )}
-        </div>
-
-        <div className="flex flex-col">
-          <span className="text-[12px] leading-[18px] text-rb-neutral-secondary">
+        <div className="flex flex-col gap-[3px]">
+          <span className="text-[12px] leading-[20px] text-rb-neutral-secondary">
             {t('page.perpsPro.chatArea.24hVol')}
           </span>
-          <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
+          <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
             {currentMarketData.dayNtlVlm
               ? `$${splitNumberByStep(
                   Number(currentMarketData.dayNtlVlm).toFixed(2)
@@ -153,17 +165,17 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           </span>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-[3px]">
           <div>
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.openInterestTips')}
               needCursor={false}
-              className="text-[12px] leading-[18px] text-rb-neutral-secondary"
+              className="text-[12px] leading-[20px] text-rb-neutral-secondary"
             >
               {t('page.perpsPro.chatArea.openInterest')}
             </DashedUnderlineText>
           </div>
-          <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
+          <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
             {currentMarketData.openInterest && currentMarketData.markPx
               ? `$${splitNumberByStep(
                   (
@@ -175,35 +187,35 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           </span>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-[3px]">
           <div>
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.fundingTips')}
               needCursor={false}
-              className="text-[12px] leading-[18px] text-rb-neutral-secondary"
+              className="text-[12px] leading-[20px] text-rb-neutral-secondary"
             >
               {t('page.perpsPro.chatArea.fundingCountdown')}
             </DashedUnderlineText>
           </div>
           {currentMarketData.funding ? (
-            <span className="text-[12px] leading-[18px]">
+            <span className="text-[12px] leading-[14px] font-medium">
               <span
                 className={clsx(
-                  'text-[12px] leading-[18px]',
+                  'text-[12px] leading-[14px]',
                   Number(currentMarketData.funding) > 0
-                    ? 'text-r-green-default'
-                    : 'text-r-red-default'
+                    ? 'text-rb-green-default'
+                    : 'text-rb-red-default'
                 )}
               >
                 {formatPercent(Number(currentMarketData.funding), 4)}
               </span>
-              <span className="text-[12px] leading-[18px] text-rb-neutral-secondary">
+              <span className="text-[12px] leading-[14px] text-rb-neutral-title-1">
                 {' '}
                 / {countdown}
               </span>
             </span>
           ) : (
-            <span className="text-[12px] leading-[18px] text-r-neutral-foot">
+            <span className="text-[12px] leading-[14px] text-rb-neutral-foot">
               -
             </span>
           )}
