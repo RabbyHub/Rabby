@@ -103,7 +103,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
   return (
     <Popup
       placement="bottom"
-      height={420}
+      height={440}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -202,32 +202,6 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             </div>
           </div>
 
-          {/* <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
-            <span>
-              {t('page.perpsDetail.PerpsClosePositionPopup.fee')}{' '}
-              {formatPercent(bothFee, 4)}
-            </span>
-            <Tooltip
-              overlayClassName={clsx('rectangle')}
-              placement="top"
-              title={
-                <div>
-                  <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.rabbyFeeTipsV2')}
-                  </div>
-                  <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.providerFeeTips', {
-                      fee: formatPercent(providerFee, 4),
-                    })}
-                  </div>
-                </div>
-              }
-              align={{ targetOffset: [0, 0] }}
-            >
-              <RcIconInfo className="text-rb-neutral-info w-15 h-15" />
-            </Tooltip>
-          </div> */}
-          {/* Action Button */}
           <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 flex flex-col">
             <Button
               block
