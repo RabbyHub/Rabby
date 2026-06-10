@@ -317,7 +317,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
   };
 
   return (
-    <div className="space-y-[16px]">
+    <div className="space-y-[18px]">
       <OrderSideAndFunds
         availableBalance={availableBalance}
         quoteAsset={quoteAsset}

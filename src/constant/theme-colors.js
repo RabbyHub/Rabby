@@ -148,6 +148,7 @@ const appThemeColors = {
     'neutral-bg-3': 'rgba(249, 249, 249, 1)',
     'neutral-bg-4': 'rgba(235, 237, 240, 1)',
     'neutral-bg-5': 'rgba(224, 229, 236, 0.5)',
+    'neutral-bg-page': 'rgba(246, 247, 247, 1)',
     'neutral-line': 'rgba(224, 229, 236, 1)',
     'neutral-title-1': 'rgba(25, 41, 69, 1)',
     /** @deprecated just for compability, use classcial's, not next's */
@@ -205,6 +206,7 @@ const appThemeColors = {
     'neutral-bg-3': 'rgba(28, 28, 29, 1)',
     'neutral-bg-4': 'rgba(56, 59, 65, 1)',
     'neutral-bg-5': 'rgba(47, 49, 53, 0.5)',
+    'neutral-bg-page': 'rgba(0, 0, 0, 1)',
     'neutral-line': 'rgba(47, 49, 53, 1)',
     'neutral-title-1': 'rgba(247, 250, 252, 1)',
     /** @deprecated just for compability, use classcial's, not next's */

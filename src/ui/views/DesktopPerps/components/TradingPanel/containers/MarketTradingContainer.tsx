@@ -310,7 +310,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
   return (
     <>
-      <div className="space-y-[16px]">
+      <div className="space-y-[18px]">
         {/* Available Funds */}
         <OrderSideAndFunds
           availableBalance={availableBalance}
@@ -337,7 +337,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         <div className="h-[1px] bg-rb-neutral-line" />
 
         {/* TP/SL, Reduce Only, and Slippage */}
-        <div className="flex flex-col gap-[8px]">
+        <div className="flex flex-col gap-[18px]">
           <PerpsCheckbox
             checked={tpslConfig.enabled}
             onChange={(enabled) => {
