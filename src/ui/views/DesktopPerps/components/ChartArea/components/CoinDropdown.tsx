@@ -570,6 +570,16 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
 
   return (
     <div className="mr-[24px] flex items-center gap-[6px]">
+      <div
+        className="flex items-center justify-center w-[16px] h-[16px] shrink-0 cursor-pointer"
+        onClick={(e) => handleToggleFavorite(coin, e)}
+      >
+        {favoritedCoins.includes(coin) ? (
+          <RcIconStarFilled className="text-r-yellow-default" />
+        ) : (
+          <RcIconStar className="text-r-neutral-foot" />
+        )}
+      </div>
       <Dropdown
         overlay={dropdownMenu}
         // trigger={['click']}
