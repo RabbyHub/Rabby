@@ -967,7 +967,7 @@ export const BridgeContent = () => {
     }
     const canPrefetchCurrentTxs =
       !!txs?.length &&
-      selectedBridgeQuoteIsBestQuote &&
+      shouldPreExecSelectedBridgeQuote &&
       !!builtBridgeTxsKeyRef.current &&
       builtBridgeTxsKeyRef.current === selectedBridgeQuoteBuildKeyRef.current;
     if (!canPrefetchCurrentTxs) {
@@ -1001,7 +1001,7 @@ export const BridgeContent = () => {
     canUseDirectSubmitTx,
     depositFlowActive,
     selectedBridgeQuoteBuildKey,
-    selectedBridgeQuoteIsBestQuote,
+    shouldPreExecSelectedBridgeQuote,
     rbiSource,
   ]);
 

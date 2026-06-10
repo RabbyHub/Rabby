@@ -729,7 +729,7 @@ export const Main = () => {
     const canPrefetchCurrentTxs =
       canUseDirectSubmitTx &&
       !!currentTxs?.length &&
-      activeProviderIsBestQuote &&
+      shouldPreExecActiveProvider &&
       !!builtSwapTxsKeyRef.current &&
       builtSwapTxsKeyRef.current === activeProviderBuildKeyRef.current;
     if (!canPrefetchCurrentTxs) {
@@ -755,7 +755,7 @@ export const Main = () => {
     });
   }, [
     activeProviderBuildKey,
-    activeProviderIsBestQuote,
+    shouldPreExecActiveProvider,
     awaitingTopUpResume,
     canUseDirectSubmitTx,
     currentTxs,
