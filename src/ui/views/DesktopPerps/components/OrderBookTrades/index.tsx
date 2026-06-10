@@ -66,8 +66,8 @@ export const OrderBookTrades: React.FC = () => {
           className={clsx(
             'flex-1 px-[16px] items-center justify-center text-[12px] font-medium transition-colors',
             activeTab === 'orderbook'
-              ? 'text-r-blue-default'
-              : 'text-r-neutral-foot hover:text-r-blue-default'
+              ? 'text-rb-neutral-title-1'
+              : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
           )}
           onClick={() => setActiveTab('orderbook')}
         >
@@ -77,23 +77,22 @@ export const OrderBookTrades: React.FC = () => {
           className={clsx(
             'flex-1 px-[16px] items-center justify-center text-[12px] font-medium transition-colors',
             activeTab === 'trades'
-              ? 'text-r-blue-default'
-              : 'text-r-neutral-foot hover:text-r-blue-default'
+              ? 'text-rb-neutral-title-1'
+              : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
           )}
           onClick={() => setActiveTab('trades')}
         >
           {t('page.perpsPro.orderBook.trades')}
         </button>
-        {/* Sliding indicator */}
+        {/* Sliding indicator: fixed 20px length, centered under the active tab */}
         <div
           className={clsx(
-            'absolute bottom-0 h-[2px] bg-rb-brand-default transition-transform duration-300 ease-out',
-            'w-1/2'
+            'absolute bottom-0 h-[2px] w-[20px] bg-rb-brand-default -translate-x-1/2',
+            'transition-[left] duration-300 ease-out'
           )}
           style={{
-            transform: `translateX(${
-              activeTab === 'orderbook' ? '0%' : '100%'
-            })`,
+            // Each tab is half the width, so its center sits at 25% / 75%.
+            left: activeTab === 'orderbook' ? '25%' : '75%',
           }}
         />
       </div>

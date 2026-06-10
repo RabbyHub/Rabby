@@ -126,7 +126,7 @@
         "amount": "승인 금액:"
       },
       "revokeTokenApprove": {
-        "revokeFrom": "Revoke from",
+        "revokeFrom": "다음에서 취소",
         "title": "토큰 승인 취소",
         "revokeToken": "토큰 권한 회수"
       },
@@ -159,7 +159,7 @@
       "cancelTx": {
         "title": "대기 중인 거래 취소",
         "txToBeCanceled": "거래가 취소될 예정입니다",
-        "gasPriceAlert": "현재 가스 가격을 {{value}} Gwei 이상으로 설정하여 대기 중인 거래를 취소하세요."
+        "gasPriceAlert": "현재 Gas Price를 {{value}} Gwei 이상으로 설정하여 대기 중인 거래를 취소하세요."
       },
       "submitMultisig": {
         "multisigAddress": "다중서명 주소",
@@ -219,7 +219,7 @@
         "selfHostConfirm": {
           "button": "OK",
           "title": "Rabby의 안전 서비스로 전환하세요",
-          "content": "안전한 API를 사용할 수 없습니다. 지갑 기능을 유지하려면 Rabby에서 배포한 Safe 서비스로 전환하세요. <strong>모든 Safe 서명자는 거래를 승인하기 위해 Rabby Wallet을 사용해야 합니다.<strong>"
+          "content": "안전한 API를 사용할 수 없습니다. 지갑 기능을 유지하려면 Rabby에서 배포한 Safe 서비스로 전환하세요. <strong>모든 Safe 서명자는 거래를 승인하기 위해 Rabby Wallet을 사용해야 합니다.</strong>"
         }
       },
       "SafeNonceSelector": {
@@ -272,36 +272,36 @@
       "gasMoreButton": "더보기",
       "nftIn": "NFT에",
       "gasSelectorTitle": "가스",
-      "gasLimitLessThanGasUsed": "가스 한도가 너무 낮습니다. 거래가 실패할 확률은 95%입니다.",
+      "gasLimitLessThanGasUsed": "Gas Limit가 너무 낮습니다. 거래가 실패할 확률은 95%입니다.",
       "nativeTokenNotEngouthForGas": "거래를 위한 Gas 잔고가 충분하지 않습니다.",
-      "gasLimitNotEnough": "가스 한도가 21000보다 작습니다. 거래를 제출할 수 없습니다.",
+      "gasLimitNotEnough": "Gas Limit가 21000보다 작습니다. 거래를 제출할 수 없습니다.",
       "multiSigChainNotMatch": "멀티 서명 주소는 이 체인에 없으며 거래를 시작할 수 없습니다.",
       "manuallySetGasLimitAlert": "Gas 한도를 수동으로 설정했습니다.",
       "canOnlyUseImportedAddress": "감시 전용 주소로는 거래에 서명할 수 없습니다.",
       "nonceLowerThanExpect": "Nonce가 너무 낮습니다. 최소값은 {{0}}이어야 합니다.",
-      "gasLimitLessThanExpect": "가스 한도가 낮습니다. 거래가 실패할 확률은 1%입니다.",
+      "gasLimitLessThanExpect": "Gas Limit가 낮습니다. 거래가 실패할 확률은 1%입니다.",
       "safeAddressNotSupportChain": "현재 안전 주소는 {{0}} 체인에서 지원되지 않습니다.",
       "gasNotRequireForSafeTransaction": "Safe 거래에서는 Gas fee가 필요하지 않습니다.",
-      "gasLimitEmptyAlert": "가스 한도를 입력하세요",
-      "maxPriorityFee": "최대 우선 요금 (Gwei)",
-      "gasLimitTitle": "가스 한도",
+      "gasLimitEmptyAlert": "Gas Limit를 입력하세요",
+      "maxPriorityFee": "Max Priority Fee (Gwei)",
+      "gasLimitTitle": "Gas Limit",
       "recommendGasLimitTip": "Est. {{est}}. Current {{current}}x, 추천합니다",
       "nonceTitle": "Nonce",
       "gasAccountForGas": "GasAccount에서 USD를 사용하여 가스를 지불합니다.",
       "nativeTokenForGas": "{{chainName}}에서 가스를 지불하기 위해 {{tokenName}} 토큰을 사용하세요.",
-      "gasPriceTitle": "가스 가격 (Gwei)",
+      "gasPriceTitle": "Gas Price (Gwei)",
       "myNativeTokenBalance": "내 가스 잔액:",
       "gasPriceMedian": "최근 100개의 온체인 거래의 중간값:",
       "hardwareSupport1559Alert": "하드웨어 지갑 펌웨어가 EIP 1559를 지원하는 버전으로 업그레이드되었는지 확인하세요.",
-      "gasLimitMinValueAlert": "가스 한도는 21000보다 커야 합니다.",
+      "gasLimitMinValueAlert": "Gas Limit는 21000보다 커야 합니다.",
       "safeAdminSigned": "서명됨",
-      "wrapToken": "토큰 래핑",
+      "wrapToken": "Wrap Token",
       "moreSafeSigNeeded": "추가로 {{0}}개의 서명이 필요합니다.",
       "gasLimitModifyOnlyNecessaryAlert": "필요할 때만 수정하십시오",
-      "unwrap": "토큰 풀기",
+      "unwrap": "Unwrap Token",
       "enoughSafeSigCollected": "서명 수집 완료",
-      "eip1559Desc1": "EIP-1559를 지원하는 블록체인에서는 Priority Fee가 광부들이 당신의 트랜잭션을 처리하기 위한 팁입니다. Priority Fee를 낮추면 최종 가스 비용을 절약할 수 있지만, 이는 트랜잭션 처리에 더 많은 시간을 소요할 수 있습니다.",
-      "eip1559Desc2": "여기 Rabby에서 우선 수수료(팁) = 최대 수수료 - 기본 수수료입니다. 최대 우선 수수료를 설정한 후, 기본 수수료가 차감되며 나머지는 채굴자에게 팁으로 지급됩니다.",
+      "eip1559Desc1": "EIP-1559를 지원하는 체인에서 Priority Fee는 트랜잭션 처리를 위해 miner에게 지급하는 팁입니다. Priority Fee를 낮추면 최종 gas 비용을 줄일 수 있지만, 트랜잭션 처리에는 시간이 더 걸릴 수 있습니다.",
+      "eip1559Desc2": "Rabby에서는 Priority Fee(팁) = Max Fee - Base Fee입니다. Max Priority Fee를 설정하면 Base Fee가 먼저 차감되고, 남은 금액이 miner에게 팁으로 지급됩니다.",
       "viewRaw": "원본 보기",
       "nftCollection": "NFT 컬렉션",
       "chain": "체인",
@@ -359,13 +359,13 @@
       "contract": "스마트 계약 주소",
       "errorRetry": {
         "InvalidTx": "유효하지 않은 거래입니다.",
-        "gasLimitTooLow": "가스 한도가 너무 낮습니다",
+        "gasLimitTooLow": "Gas Limit가 너무 낮습니다",
         "defaultTips": "문제가 발생했습니다. 나중에 다시 시도해주세요.",
         "nonceTooHigh": "Nonce가 너무 높습니다. nonce를 조정하고 다시 시도하십시오.",
         "alreadySubmitted": "거래가 이미 제출되었습니다. 중복 거래가 감지되었습니다.",
-        "gasExceedsBlockGasLimit": "가스가 블록 가스 한도를 초과했습니다. 조정 후 다시 시도하세요.",
+        "gasExceedsBlockGasLimit": "가스가 블록 Gas Limit를 초과했습니다. 조정 후 다시 시도하세요.",
         "nonceTooLow": "Nonce가 너무 낮습니다. {{nonce}}로 업데이트하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
-        "gasPriceTooLow": "가스 가격이 너무 낮습니다. 트랜잭션이 확인되도록 30% 조정하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
+        "gasPriceTooLow": "Gas Price가 너무 낮습니다. 트랜잭션이 확인되도록 30% 조정하겠습니다. “재시도”를 클릭하여 확인하고 다시 시도하세요.",
         "insufficient": "당신의 가스 잔액이 네트워크 가스 요금을 충당하기에 충분하지 않습니다. 가스를 위한 자금을 추가하고 다시 시도하세요."
       },
       "addLiquidity": {
@@ -383,13 +383,13 @@
         "notEnough": "가스 잔액이 충분하지 않습니다.",
         "customRpcUnavailableTip": "Free Gas에 대한 사용자 지정 RPC는 지원되지 않습니다.",
         "watchUnavailableTip": "Watch-only 주소는 Free Gas에 대해 지원되지 않습니다.",
-        "GetFreeGasToSign": "무료 가스 받기",
+        "GetFreeGasToSign": "Free Gas 받기",
         "rabbyPayGas": "Rabby는 필요한 가스를 지불할 것입니다 – 그냥 서명하세요",
-        "walletConnectUnavailableTip": "WalletConnect를 통해 연결된 모바일 지갑은 무료 가스를 지원하지 않습니다.",
-        "unavailable": "귀하의 Gas Balance가 충분하지 않습니다."
+        "walletConnectUnavailableTip": "WalletConnect를 통해 연결된 모바일 지갑은 Free Gas를 지원하지 않습니다.",
+        "unavailable": "Gas 잔액이 부족합니다"
       },
       "gasAccount": {
-        "notEnough": "GasAccount는 충분하지 않습니다.",
+        "notEnough": "Gas가 부족합니다. Gas 잔액: {{usd}}",
         "customRPC": "사용자 지정 RPC를 사용할 때 지원되지 않음",
         "deposit": "입금",
         "gotIt": "알겠습니다",
@@ -565,7 +565,7 @@
           "pendingBroadcastRetry": "전송에 실패했습니다. 마지막 시도: {{pushAt}}",
           "canNotCancel": "속도를 높이거나 취소할 수 없습니다: 첫 번째 보류 중인 txn이 아닙니다",
           "pendingBroadcast": "가스 절약 모드: 더 낮은 네트워크 수수료를 기다리는 중. 최대 {{deadline}}h 대기.",
-          "pendingDetail": "오직 하나의 거래만 완료되며, 거의 항상 가장 높은 가스 가격을 가진 거래입니다."
+          "pendingDetail": "오직 하나의 거래만 완료되며, 거의 항상 가장 높은 Gas Price를 가진 거래입니다."
         },
         "status": {
           "failed": "실패했습니다",
@@ -684,8 +684,8 @@
           "custom": "맞춤형"
         },
         "confirm": "확인",
-        "popupTitle": "가스 가격 설정 (Gwei)",
-        "popupDesc": "가스 비용은 설정한 가스 가격을 기준으로 전송 금액에서 예약됩니다."
+        "popupTitle": "Gas Price 설정 (Gwei)",
+        "popupDesc": "설정한 Gas Price를 기준으로 전송 금액에서 gas 비용이 예약됩니다"
       },
       "header": {
         "title": "보내기"
@@ -831,8 +831,8 @@
             "modalTitle_one": "총 <2>{{count}}</2> 서명이 필요합니다.",
             "modalContent": "같은 Permit2 계약의 승인은 동일한 서명 아래 함께 패키징됩니다."
           },
-          "btnText_one": "Revoke ({{count}})",
-          "btnText_other": "Revoke ({{count}})",
+          "btnText_one": "취소 ({{count}})",
+          "btnText_other": "취소 ({{count}})",
           "btnText_zero": "철회",
           "notSupport7702Title": "지원하지 않는 주소 유형",
           "notSupport7702Content": "EIP-7702 위임 취소는 개인 키 또는 시드 문구 주소에 대해서만 지원됩니다."
@@ -852,7 +852,7 @@
             "contractTrustValue": "계약 신뢰 가치",
             "myApprovedAssets": "내 승인된 자산",
             "myApprovalTime": "내 승인 시간",
-            "revokeTrends": "24h Revoke Trends"
+            "revokeTrends": "24시간 취소 추세"
           },
           "columnTip": {
             "contractTrustValueDanger": "계약 신뢰 가치 < $10,000",
@@ -941,7 +941,7 @@
       "Payment-Token": "결제 토큰",
       "Loading_Tokens": "토큰 로딩 중...",
       "InsufficientBalanceTips": "잔액이 부족합니다",
-      "title": "즉시 Gas 충전",
+      "title": "Instant Gas Top Up",
       "payment": "가스 충전 결제",
       "Including-service-fee": "{{fee}} 서비스 수수료 포함",
       "InsufficientBalance": "현재 체인에서 Rabby의 계약 주소에 잔액이 부족합니다. 나중에 다시 시도해 주세요.",
@@ -959,7 +959,7 @@
         "button": "알겠어요",
         "rate": "수수료 비율",
         "wallet": "지갑",
-        "swapDesc": "Rabby Wallet는 항상 최고의 집계기에서 가능한 최상의 요금을 찾아내고, 그들의 제안의 신뢰성을 확인합니다. Rabby는 0.25%의 수수료를 부과하며(포장에 대해 0%), 이는 자동으로 견적에 포함됩니다.",
+        "swapDesc": "Rabby Wallet은 항상 주요 애그리게이터에서 가능한 최적의 환율을 찾고, 해당 오퍼의 신뢰성을 검증합니다. Rabby는 0.25% 수수료를 부과하며(Wrap은 0%), 이 수수료는 quote에 자동으로 포함됩니다.",
         "bridgeDesc": "Rabby Wallet은 항상 최고의 집계기에서 가장 좋은 환율을 찾고, 그들의 제안의 신뢰성을 검증합니다. Rabby는 0.25%의 수수료를 부과하며, 이는 자동으로 견적에 포함됩니다."
       },
       "lowCreditModal": {
@@ -977,7 +977,7 @@
       "swap-history": "스왑 기록",
       "price-expired-refresh-quote": "가격이 만료되었습니다. 견적을 새로 고침하세요.",
       "Completed": "완료됨",
-      "gas-x-price": "가스 가격: {{price}} Gwei.",
+      "gas-x-price": "Gas Price: {{price}} Gwei.",
       "slippage-adjusted-refresh-quote": "슬리피지 조정됨. 견적 새로 고침.",
       "approve-and-swap": "{{name}}를 통해 승인하고 교환하세요",
       "title": "스왑",
@@ -995,18 +995,18 @@
       "get-quotes": "견적 받기",
       "edit": "편집",
       "best": "최고",
-      "wrap-contract": "랩 계약",
+      "wrap-contract": "Wrap Contract",
       "insufficient-balance": "잔액이 부족합니다",
       "this-exchange-is-not-enabled-to-trade-by-you": "이 거래소는 귀하에 의해 거래할 수 없습니다.",
       "there-is-no-fee-and-slippage-for-this-trade": "이 거래에는 슬ippage가 없습니다.",
       "minimum-received": "최소 수신",
       "preferMEV": "MEV Guarded를 선호하세요",
-      "no-fee-for-wrap": "Rabby로 포장할 때 수수료 없음",
+      "no-fee-for-wrap": "Wrap에는 Rabby 수수료가 없습니다",
       "enable-it": "사용 가능하게 하세요",
       "rates-from-cex": "CEX에서의 요금",
       "sort-with-gas": "가스로 정렬",
       "security-verification-failed": "보안 검증 실패",
-      "no-slippage-for-wrap": "랩을 위한 슬리피지가 없습니다.",
+      "no-slippage-for-wrap": "Wrap에는 슬리피지가 없습니다",
       "est-payment": "예상 결제:",
       "the-following-swap-rates-are-found": "다음 요금이 발견되었습니다",
       "tradingSettingTips": "{{viewCount}} 개의 거래소가 견적을 제공하며, {{tradeCount}} 개의 거래소에서 거래가 가능합니다.",
@@ -1017,7 +1017,7 @@
       "rabby-fee": "Rabby 수수료",
       "unable-to-fetch-the-price": "가격을 가져올 수 없습니다.",
       "approve-tips": "1. 승인 → 2. 스왑",
-      "directlySwap": "스마트 계약을 통해 {{symbol}} 토큰을 직접 래핑하기",
+      "directlySwap": "스마트 컨트랙트로 {{symbol}} 토큰을 직접 Wrap",
       "hidden-no-quote-rates_one": "{{count}} 비율을 사용할 수 없습니다",
       "by-transaction-simulation-the-quote-is-valid": "거래 시뮬레이션을 통해 인용이 유효합니다.",
       "fail-to-simulate-transaction": "거래 시뮬레이션에 실패했습니다",
@@ -1033,14 +1033,14 @@
       "i-understand-and-accept-it": "나는 그것을 이해하고 수용합니다.",
       "select-token": "토큰 선택",
       "fetch-best-quote": "가장 좋은 견적 가져오기",
-      "gas-fee": "GasFee: {{gasUsed}}",
+      "gas-fee": "Gas 수수료: {{gasUsed}}",
       "rate": "비율",
       "enable-exchanges": "거래소 활성화",
       "confirm": "확인",
       "slippage-tolerance": "슬리피지 허용 한도",
       "two-step-approve": "2개의 거래에 서명하여 허용량을 변경하십시오.",
       "dex": "덱스",
-      "no-fees-for-wrap": "Rabby로 Wrapping 시 수수료 없음",
+      "no-fees-for-wrap": "Wrap에는 Rabby 수수료가 없습니다",
       "est-receiving": "예상 수신:",
       "enable-trading": "거래 활성화",
       "actual": "실제:",
@@ -1112,9 +1112,9 @@
       "no-route-found": "경로를 찾을 수 없습니다",
       "via-bridge": "{{bridge}}를 통해",
       "bridge-via-x": "{{name}}에서 브릿지",
-      "gas-fee": "GasFee: {{gasUsed}}",
+      "gas-fee": "Gas 수수료: {{gasUsed}}",
       "bridge-cost": "브리지 비용",
-      "gas-x-price": "가스 가격: {{price}} Gwei.",
+      "gas-x-price": "Gas Price: {{price}} Gwei.",
       "estimated-value": "≈ {{value}}",
       "tokenPairPlaceholder": "토큰 쌍 선택",
       "unlimited-allowance": "무제한 허용량",
@@ -1185,7 +1185,7 @@
       "delete-private-key-modal-title_one": "{{count}} 개의 개인 키 주소 삭제",
       "delete-title_one": "{{count}} {{brand}} 주소 삭제",
       "delete-seed-phrase-title_one": "시드 구문과 그 {{count}} 주소를 삭제합니다.",
-      "hd-path": "HD 경로:",
+      "hd-path": "HD path:",
       "delete-title_other": "{{count}} {{brand}} 주소 삭제",
       "delete-private-key-modal-title_other": "{{count}} 개의 개인 키 주소 삭제",
       "sort-by-address-note": "주소 메모로 정렬",
@@ -1213,7 +1213,7 @@
         "panel": {
           "swap": "스왑",
           "bridge": "브리지",
-          "mobile": "Mobile Sync",
+          "mobile": "모바일 동기화",
           "more": "더 보기",
           "feedback": "피드백",
           "rabbyPoints": "Rabby 포인트",
@@ -1226,7 +1226,7 @@
           "approvals": "승인",
           "manageAddress": "주소 관리",
           "ecology": "생태계",
-          "perps": "퍼프",
+          "perps": "Perps",
           "gasAccount": "GasAccount",
           "dapps": "Dapps",
           "setting": "설정",
@@ -1236,7 +1236,8 @@
           "perpsPositions_other": "{{count}} 포지션",
           "lending": "대출",
           "dragTip": "길게 눌러서 재배치하기",
-          "convertDust": "더스트 변환"
+          "convertDust": "더스트 변환",
+          "staking": "스테이킹"
         },
         "queue": {
           "count": "{{count}} 에서",
@@ -1285,7 +1286,7 @@
         "pinned": "고정됨",
         "notConnected": "연결되지 않음",
         "noPinnedDapps": "고정된 dapps가 없습니다.",
-        "metamaskModeTooltip": "이 Dapp에서 Rabby에 연결할 수 없나요? <1>MetaMask 모드</1>를 활성화해 보세요.",
+        "metamaskModeTooltip": "이 Dapp에서 Rabby에 연결할 수 없나요? <1>MetaMask Mode</1>를 활성화해 보세요.",
         "metamaskTooltip": "이 dapp에서 MetaMask를 사용하는 것을 선호합니다. 언제든지 설정에서 Settings > MetaMask Preferred Dapps에서 이 설정을 업데이트하세요.",
         "metamaskModeTooltipNew": "Rabby Wallet는 Dapp에서 \"MetaMask\"를 선택하면 연결됩니다. 이를 관리하려면 More > MetaMask로 가장하여 Rabby 연결을 선택하세요.",
         "connectedDapp": "Rabby는 현재 Dapp에 연결되어 있지 않습니다. 연결하려면 Dapp 웹페이지에서 연결 버튼을 찾아 클릭하세요."
@@ -1328,7 +1329,7 @@
         "enterClaimCode": "청구 코드 입력",
         "claim": "청구",
         "viewOnDebank": "DeBank에서 보기",
-        "rabbyFreeGasUserNo": "Rabby 무료 가스 사용자 번호.{{num}}",
+        "rabbyFreeGasUserNo": "Rabby Free Gas 사용자 번호.{{num}}",
         "claimSuccess": "청구 성공",
         "goToSwap": "스왑 하러 가기",
         "learnMore": "자세히 알아보기",
@@ -1338,7 +1339,7 @@
         "freeGasTip": "트랜잭션을 Free Gas를 사용하여 서명해 주세요. 가스가 부족할 때 'Free Gas' 버튼이 자동으로 나타납니다.",
         "freeGasNoCode": "아래 버튼을 클릭하여 DeBank를 방문하고 현재 주소를 사용하여 클레임 코드를 가져오세요.",
         "swapTip": "Rabby Wallet 내에서 주목할 만한 dex와 스왑을 완료해야 합니다.",
-        "freeGasTitle": "무료 가스 배지를 요청하세요"
+        "freeGasTitle": "Free Gas Badge 받기"
       },
       "contacts": {
         "noData": "데이터 없음",
@@ -1388,6 +1389,7 @@
           "switchPasswordForNonWhitelistedTx": "비공식 화이트리스트 전송을 위한 비밀번호",
           "biometricUnlock": "바이오메트릭스로 잠금 해제",
           "biometricUnlockUnsupported": "이 장치는 생체 인식 잠금 해제를 지원하지 않습니다.",
+          "perpsFloatWidget": "Perps 플로팅 위젯",
           "biometricUnlockHint": "이 장치에서 생체 인식을 사용하여 잠금을 해제하세요.",
           "currency": "통화",
           "searchCurrency": "통화 검색"
@@ -1635,7 +1637,7 @@
       "MetamaskModePopup": {
         "title": "메타마스크 모드",
         "toastSuccess": "활성화됨. 페이지를 새로 고쳐서 다시 연결하세요.",
-        "footerText": "MetaMask 모드의 더 보기 > MetaMask 모드에서 더 많은 Dapps를 추가하세요.",
+        "footerText": "MetaMask Mode의 더 보기 > MetaMask Mode에서 더 많은 Dapps를 추가하세요.",
         "enableDesc": "메타마스크와만 작동하는 Dapp의 경우 활성화하세요",
         "desc": "Dapp에서 Rabby에 연결할 수 없는 경우, 메타마스크 모드를 활성화하고 메타마스크 옵션을 선택하여 연결하세요."
       },
@@ -1847,26 +1849,26 @@
         },
         "ledger": {
           "hdPathType": {
-            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HDpath입니다. 처음 3개의 주소에는 온체인에서 사용되는 주소가 있습니다.",
-            "ledgerLive": "Ledger Live: Ledger 공식 HD 경로. 처음 3개의 주소는 온체인에서 사용되는 주소입니다.",
-            "legacy": "레거시: MEW / Mycrypto에서 사용되는 HD 경로. 처음 3개의 주소에는 온체인에서 사용되는 주소가 있습니다."
+            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HD path입니다. 처음 3개의 주소에는 온체인에서 사용되는 주소가 있습니다.",
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path. 처음 3개의 주소는 온체인에서 사용되는 주소입니다.",
+            "legacy": "레거시: MEW / MyCrypto에서 사용되는 HD path. 처음 3개의 주소에는 온체인에서 사용되는 주소가 있습니다."
           },
           "hdPathTypeNoChain": {
-            "ledgerLive": "Ledger Live: Ledger 공식 HD 경로. 처음 3개의 주소에서는 온체인에서 사용된 주소가 없습니다.",
-            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HD 경로. 처음 3개의 주소에는 온체인에서 사용된 주소가 없습니다.",
-            "legacy": "레거시: MEW / Mycrypto에서 사용되는 HD 경로. 처음 3개의 주소에는 온체인에서 사용되는 주소가 없습니다."
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path. 처음 3개의 주소에서는 온체인에서 사용된 주소가 없습니다.",
+            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HD path. 처음 3개의 주소에는 온체인에서 사용된 주소가 없습니다.",
+            "legacy": "레거시: MEW / MyCrypto에서 사용되는 HD path. 처음 3개의 주소에는 온체인에서 사용되는 주소가 없습니다."
           }
         },
         "trezor": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Ledger official HD path.",
-            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HDpath.",
-            "legacy": "레거시: MEW / Mycrypto에서 사용되는 HD 경로."
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path.",
+            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD path.",
+            "legacy": "레거시: MEW / MyCrypto에서 사용되는 HD path."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HDpath.",
-            "ledgerLive": "Ledger Live: Ledger 공식 HD 경로.",
-            "legacy": "전통: MEW / Mycrypto에서 사용된 HD 경로."
+            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD path.",
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path.",
+            "legacy": "전통: MEW / MyCrypto에서 사용된 HD path."
           },
           "message": {
             "disconnected": "{{0}}Connect이 중단되었습니다. 페이지를 새로 고쳐서 다시 연결하십시오."
@@ -1874,33 +1876,33 @@
         },
         "onekey": {
           "hdPathType": {
-            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD 경로."
+            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD path."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HDpath."
+            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD path."
           }
         },
         "mnemonic": {
           "hdPathType": {
-            "legacy": "레거시: MEW / Mycrypto에서 사용되는 HD 경로.",
-            "ledgerLive": "Ledger Live: Ledger 공식 HD 경로.",
-            "default": "기본값: 시드 구문을 가져올 때 기본 HD 경로가 사용됩니다.",
-            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HDpath."
+            "legacy": "레거시: MEW / MyCrypto에서 사용되는 HD path.",
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path.",
+            "default": "기본값: seed phrase를 가져올 때 기본 HD path가 사용됩니다.",
+            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HD path."
           },
           "hdPathTypeNoChain": {
-            "default": "기본값: 시드 구문을 가져오기 위해 기본 HD 경로가 사용됩니다."
+            "default": "기본값: seed phrase를 가져올 때 기본 HD path가 사용됩니다."
           }
         },
         "gridplus": {
           "hdPathType": {
-            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HDpath. 처음 3개의 주소에는 온체인에서 사용되는 주소가 포함되어 있습니다.",
-            "ledgerLive": "Ledger Live: Ledger 공식 HD 경로. 첫 3개의 주소에는 온체인에서 사용되는 주소가 있습니다.",
-            "legacy": "레거시: MEW / Mycrypto에서 사용되는 HD 경로. 처음 3개의 주소에는 온체인에서 사용되는 주소가 있습니다."
+            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HD path. 처음 3개의 주소에는 온체인에서 사용되는 주소가 포함되어 있습니다.",
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path. 첫 3개의 주소에는 온체인에서 사용되는 주소가 있습니다.",
+            "legacy": "레거시: MEW / MyCrypto에서 사용되는 HD path. 처음 3개의 주소에는 온체인에서 사용되는 주소가 있습니다."
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HD 경로. 처음 3개의 주소에서는 온체인에서 사용된 주소가 없습니다.",
-            "ledgerLive": "Ledger Live: Ledger 공식 HD 경로. 처음 3개의 주소에는 체인에서 사용된 주소가 없습니다.",
-            "legacy": "유산: MEW / Mycrypto에서 사용하는 HD 경로. 처음 3개의 주소에서는 온체인에서 사용되는 주소가 없습니다."
+            "bip44": "BIP44 표준: BIP44 프로토콜에 의해 정의된 HD path. 처음 3개의 주소에서는 온체인에서 사용된 주소가 없습니다.",
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path. 처음 3개의 주소에는 체인에서 사용된 주소가 없습니다.",
+            "legacy": "유산: MEW / MyCrypto에서 사용하는 HD path. 처음 3개의 주소에서는 온체인에서 사용되는 주소가 없습니다."
           },
           "switch": {
             "title": "새로운 GridPlus 장치로 전환하세요",
@@ -1910,22 +1912,22 @@
         },
         "keystone": {
           "hdPathType": {
-            "legacy": "레거시: MEW / Mycrypto에서 사용되는 HD 경로.",
-            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HDpath.",
-            "ledgerLive": "Ledger Live: Ledger 공식 HD 경로. Ledger Live 경로로는 10개의 주소만 관리할 수 있습니다."
+            "legacy": "레거시: MEW / MyCrypto에서 사용되는 HD path.",
+            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD path.",
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path. Ledger Live path로는 10개의 주소만 관리할 수 있습니다."
           },
           "hdPathTypeNochain": {
-            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HDpath.",
-            "ledgerLive": "Ledger Live: Ledger 공식 HD 경로. Ledger Live 경로로는 10개의 주소만 관리할 수 있습니다.",
-            "legacy": "레거시: MEW / Mycrypto에서 사용되는 HD 경로."
+            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD path.",
+            "ledgerLive": "Ledger Live: Ledger 공식 HD path. Ledger Live path로는 10개의 주소만 관리할 수 있습니다.",
+            "legacy": "레거시: MEW / MyCrypto에서 사용되는 HD path."
           }
         },
         "bitbox02": {
           "hdPathType": {
-            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HDpath."
+            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD path."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HDpath."
+            "bip44": "BIP44: BIP44 프로토콜에 의해 정의된 HD path."
           },
           "disconnected": "BitBox02에 연결할 수 없습니다. 다시 연결하려면 페이지를 새로 고치십시오. 이유: {{0}}"
         },
@@ -1949,7 +1951,7 @@
         "loadingAddress": "주소를 로드 중 {{0}}/{{1}}",
         "clickToGetInfo": "체인에서 정보를 얻으려면 클릭하세요.",
         "manageAddressFrom": "{{0}}에서 {{1}}로 주소 관리",
-        "selectHdPath": "HD 경로 선택:",
+        "selectHdPath": "HD path 선택:",
         "selectIndexTip": "주소 시작 시리얼 번호를 선택하세요:",
         "connectedToLedger": "Ledger에 연결됨",
         "manageGridplus": "GridPlus 관리",
@@ -1968,7 +1970,7 @@
         "manageCoolwallet": "CoolWallet 관리",
         "manageKeystone": "Keystone 관리",
         "advancedSettings": "고급 설정",
-        "customAddressHdPath": "사용자 정의 주소 HD 경로",
+        "customAddressHdPath": "사용자 정의 주소 HD path",
         "nonAddr": "이 시드 문구에 대해 추가된 주소가 없습니다. Rabby Extension > 주소 관리에서 이 문구를 삭제할 수 있습니다."
       },
       "keystore": {
@@ -1982,7 +1984,7 @@
         "addCoboArgusAddress": "Cobo Argus 주소 추가",
         "invalidAddress": "잘못된 주소",
         "whichChainIsYourCoboAddressOn": "cobo 주소는 어느 체인에 있나요?",
-        "inputSafeModuleAddress": "안전 모듈 주소 입력",
+        "inputSafeModuleAddress": "Safe Module 주소 입력",
         "findTheAssociatedSafeAddress": "연관된 안전 주소를 찾으세요",
         "import": "가져오기"
       },
@@ -2151,7 +2153,7 @@
       "address": "주소",
       "admins": "관리자",
       "delete-address": "주소 삭제",
-      "hd-path": "HD 경로",
+      "hd-path": "HD path",
       "assets": "자산",
       "edit-memo-title": "주소 메모 수정",
       "qr-code": "QR 코드",
@@ -2350,14 +2352,14 @@
       },
       "PendingTxList": {
         "filterBaseFee": {
-          "label": "기본 요금 요구사항만 충족합니다.",
-          "tooltip": "블록의 기본 수수료 요건을 충족하는 가스 요금만 표시합니다."
+          "label": "Base Fee 요구사항만 충족합니다",
+          "tooltip": "블록의 Base Fee 요건을 충족하는 Gas Price의 트랜잭션만 표시합니다"
         },
         "col": {
           "action": " 거래 동작",
           "balanceChange": "잔액 변경",
           "actionType": "액션 유형",
-          "gasPrice": "가스 가격",
+          "gasPrice": "Gas Price",
           "interact": "상호작용하다"
         },
         "titleSameNotFound": "현재와 동일한 순위 없음",
@@ -2395,7 +2397,7 @@
     "dappSearch": {
       "searchResult": {
         "totalDapps": "총 <2>{{count}}</2> Dapps",
-        "foundDapps": "Found <2>{{count}}</2> Dapps"
+        "foundDapps": "<2>{{count}}</2>개의 Dapp 찾음"
       },
       "expand": "확장",
       "emptyFavorite": "즐겨찾기 Dapp 없음",
@@ -2539,7 +2541,7 @@
           "mintNFTBtn": "민트",
           "bridgeBtn": "브릿지",
           "mintNFTDesc": "DBK 체인의 증인이 되세요",
-          "mintNFT": "DBK 제네시스 NFT 민트",
+          "mintNFT": "DBK Genesis NFT 민트",
           "bridgePoweredBy": "OP Superchain에 의해 구동됩니다.",
           "bridge": "DBK 체인으로 브리지"
         },
@@ -2608,8 +2610,8 @@
       "signWithLedger": "Ledger로 서명하기",
       "speedUpTitle": "속도 향상",
       "cancelTitle": "온체인 취소",
-      "cancleDesc": "가스 가격이 더 빠른 취소를 위해 {{percent}} 증가했습니다.",
-      "speedUpDesc": "가스 가격이 더 빠른 속도를 위해 {{percent}}만큼 증가했습니다.",
+      "cancleDesc": "더 빠른 취소를 위해 Gas Price가 {{percent}} 증가했습니다",
+      "speedUpDesc": "더 빠른 처리를 위해 Gas Price가 {{percent}} 증가했습니다",
       "signWithOneKey": "OneKey으로 서명하십시오."
     },
     "gasAccount": {
@@ -2622,7 +2624,7 @@
         "title": "USDC / USDT 입금",
         "desc": "모든 체인에서 가스 요금 지불",
         "login": "GasAccount에 로그인",
-        "loginAndClaim": "로그인하고 $2.00를 받으세요.",
+        "loginAndClaim": "로그인하고 {{usdValue}} 받기",
         "loginTips2": "모든 체인의 모든 주소",
         "loginTips3": "가스가 없을 때",
         "learnAbout": "GasAccount에 대해 더 알아보기",
@@ -2634,7 +2636,7 @@
       },
       "gasAccountList": {
         "address": "주소",
-        "gasAccountBalance": "가스 잔고"
+        "gasAccountBalance": "잔액"
       },
       "logoutConfirmModal": {
         "logout": "로그아웃",
@@ -2696,7 +2698,7 @@
         "button": "DeBank에서 보기"
       },
       "GasAccountDepositTipPopup": {
-        "title": "가스계좌 열기 및 입금",
+        "title": "GasAccount 열기 및 입금",
         "gotIt": "알겠습니다"
       },
       "switchLoginAddressBeforeDeposit": {
@@ -2738,16 +2740,16 @@
         "topUpPayTips": "필요한 Gas: {{topUpUsd}}, 잔여 Gas 예상: {{balance}}"
       },
       "gasFee": "Gas fee",
-      "gasDeposit": "Gas Deposit",
-      "depositNow": "Deposit Now",
-      "signWithPendingHardwareToUse": "Sign with {{addressAlias}} to use",
-      "depositSubmitted": "Deposit Submitted",
-      "claimFreeGas": "Claim {{usdValue}} Free Gas",
-      "depositFailed": "Deposit failed",
+      "gasDeposit": "Gas 입금",
+      "depositNow": "지금 입금",
+      "signWithPendingHardwareToUse": "사용하려면 {{addressAlias}}(으)로 서명하세요",
+      "depositSubmitted": "입금이 제출되었습니다",
+      "claimFreeGas": "{{usdValue}} Free Gas 받기",
+      "depositFailed": "입금 실패",
       "lowBalance": "gas가 부족합니다(＜$1.00). GasAccount에 gas를 예치하여 향후 거래가 원활히 진행되도록 하세요.",
-      "gasBalance": "Gas Balance",
-      "loginSuccess": "Login Successful",
-      "loginFailed": "Login Failed"
+      "gasBalance": "Gas 잔액",
+      "loginSuccess": "로그인 성공",
+      "loginFailed": "로그인 실패"
     },
     "safeMessageQueue": {
       "loading": "로드 중 메시지",
@@ -3137,8 +3139,8 @@
           "unfoldProtocols": "{{count}} 프로토콜 펼치기",
           "foldProtocols": "Fold {{count}} 프로토콜",
           "lpToken": "LP-Token",
-          "unfoldDifis": "Unfold {{count}} Defis",
-          "foldDifis": "Fold {{count}} Defis"
+          "unfoldDifis": "{{count}}개의 DeFi 펼치기",
+          "foldDifis": "{{count}}개의 DeFi 접기"
         },
         "hidden": {
           "showAll": "모두 보기",
@@ -3403,7 +3405,7 @@
         "transferActionToPerps": "이체(스팟에서 Perps로)"
       },
       "logoutConfirmModal": {
-        "desc": "현재의 무기한 계약 계정에서 로그아웃 중입니다. 이 주소로 로그인하면 언제든지 복구할 수 있습니다.",
+        "desc": "현재의 Perps 계정에서 로그아웃 중입니다. 이 주소로 로그인하면 언제든지 복구할 수 있습니다.",
         "title": "현재 주소에서 로그아웃"
       },
       "depositAmountPopup": {
@@ -3445,7 +3447,7 @@
       },
       "accountSelector": {
         "notActivatedAddress": "활성화되지 않음",
-        "hyperliquidBalance": "무기한 선물 잔고",
+        "hyperliquidBalance": "Perps 잔액",
         "noPosition": "포지션 없음",
         "activatedAddress": "활성화됨",
         "selectAddress": "주소 선택",
@@ -3478,10 +3480,10 @@
       },
       "searchPerpsPopup": {
         "onePosition": "1 포지션",
-        "searchPerps": "무기한 선물 검색",
+        "searchPerps": "Perps 검색",
         "empty": "시장 정보를 찾을 수 없습니다",
         "hasPosition": "포지션",
-        "searchPlaceholder": "무기한 계약 검색",
+        "searchPlaceholder": "Perps 검색",
         "searchPosition": "포지션 검색",
         "openPosition": "포지션 진입"
       },
@@ -3499,11 +3501,11 @@
       },
       "closeAll": "모두 청산",
       "dailyVolume": "24시간 거래량",
-      "title": "무기한 계약",
+      "title": "Perps",
       "confirm": "확인",
       "positions": "포지션",
       "availableToTrade": "거래 가능",
-      "tradePerps": "무기한 선물 거래",
+      "tradePerps": "Perps 거래",
       "entryPrice": "진입가",
       "stopLossTipsLong": "손절가가 현재가보다 낮아야 합니다.",
       "deleteAgentSuccess": "에이전트가 성공적으로 삭제되었습니다.",
@@ -3511,11 +3513,11 @@
       "StopLoss": "손절매",
       "openShort": "숏 포지션 열기",
       "liquidationPrice": "청산가",
-      "learnAboutPerps": "무기한 선물에 대해 알아보기",
+      "learnAboutPerps": "Perps 알아보기",
       "deposit": "입금",
       "stopLossWhen": "손절가 설정",
       "reviewOrder": "주문 확인",
-      "logInPerpsAccount": "내 무기한 계약 계정에 로그인",
+      "logInPerpsAccount": "내 Perps 계정에 로그인",
       "leverage": "레버리지",
       "cross": "크로스 마진",
       "closeShort": "숏 포지션 청산",
@@ -3529,7 +3531,7 @@
       "back": "뒤로",
       "closeLong": "롱 포지션 청산",
       "selectTokenToDeposit": "예치할 토큰을 선택하세요",
-      "logInTips": "지갑 주소로 로그인하고 자금을 예치하여 무기한 계약 거래를 시작하세요.",
+      "logInTips": "지갑 주소로 로그인하고 자금을 예치하여 Perps 거래를 시작하세요.",
       "timeAgo": "{{time}} 전",
       "lastUsed": "최근 사용",
       "pending": "대기 중",
@@ -3565,7 +3567,7 @@
       "stopLossTipsLongLiquidation": "현재 가격이 청산가({{price}})보다 낮습니다.",
       "fee": "수수료",
       "providerFeeTips": "Hyperliquid 수수료: {{fee}}",
-      "explorePerps": "무기한 계약 살펴보기",
+      "explorePerps": "Perps 살펴보기",
       "size": "포지션 규모",
       "deleteAgentModal": "에이전트의 최대 수에 도달했습니다.\n새로운 에이전트를 만들기 위해 기존 에이전트를 삭제하시겠습니까?",
       "margin": "마진",
@@ -3609,7 +3611,7 @@
       },
       "EnableUnifiedAccount": {
         "title": "통합 계정 활성화",
-        "desc": "통합 계정은 거래 경험을 간소화하는 권장 계정 모드입니다. 현물 및 Perp 잔액은 모든 토큰에 대해 통합되며, 사용 가능한 모든 자산에 대해 크로스 마진이 지원됩니다.",
+        "desc": "통합 계정은 거래 경험을 간소화하는 권장 계정 모드입니다. 모든 토큰의 Spot 및 Perps 잔액이 합쳐지며, 사용 가능한 모든 자산에서 cross margin이 지원됩니다.",
         "confirm": "확인",
         "enable": "활성화",
         "cancel": "취소",
@@ -3644,7 +3646,7 @@
         "from": "출발",
         "to": "받는 곳",
         "spot": "현물",
-        "perps": "퍼프스",
+        "perps": "Perps",
         "balance": "잔액",
         "amount": "수량",
         "max": "최대",
@@ -3906,6 +3908,7 @@
         "sizeSkewTooltip": "종가와 시작가 간의 비율.\n예를 들어, 사이즈 스큐가 2.0이면 종가에 대한 지정가 주문은 시작가의 두 배 크기로 배치된다.\n사이즈 스큐가 1.0이면 동일한 크기의 주문이 생성된다.",
         "deposit": "입금",
         "addFundsToGetStarted": "자금을 추가하여 시작하세요",
+        "notAvailableInRegion": "현재 지역에서는 사용할 수 없습니다.",
         "orderCount": "주문 수량",
         "Buy": "구매",
         "long": "롱",
@@ -4000,9 +4003,9 @@
         "unifiedAccountRatioTips": "포트폴리오 청산 위험도를 나타냅니다. 값이 95%를 초과하면 포트폴리오가 청산될 수 있습니다.",
         "unifiedAccountLeverage": "통합 계정 레버리지",
         "unifiedAccountLeverageTips": "통합 계정 레버리지 = 총 교차 포지션 가치 / 총 담보금 잔액",
-        "perpsMaintenanceMargin": "퍼프스 유지 증거금",
-        "perpsPortfolioValue": "퍼프스 포트폴리오 가치",
-        "perpsUnrealizedPnl": "퍼프스 미실현 손익"
+        "perpsMaintenanceMargin": "Perps 유지 증거금",
+        "perpsPortfolioValue": "Perps 포트폴리오 가치",
+        "perpsUnrealizedPnl": "Perps 미실현 PNL"
       },
       "accountActions": {
         "positionCount": "{{count}} 포지션",
@@ -4105,7 +4108,7 @@
         "exceedMaxReduction": "최대 감소 한도를 초과했습니다.",
         "reduceMargin": "마진 축소",
         "upTo": "최대",
-        "perpsBalance": "무기한 계약 잔액"
+        "perpsBalance": "Perps 잔액"
       },
       "PerpsClosePositionPopup": {
         "title": "포지션 청산",
@@ -4155,7 +4158,8 @@
         "singleAssetUnavailableForEmode": "대출할 수 없습니다. 접근하려면 E-Mode를 종료하세요.",
         "canBorrow": "제공한 담보에 따라 대출 한도까지 대출할 수 있습니다.",
         "emodeNoAssets": "귀하의 검색과 관련된 자산을 찾을 수 없습니다. 다른 카테고리로 다시 시도해 보세요.",
-        "emode": "일부 자산은 E-Mode에서 빌릴 수 없습니다. 모든 자산에 접근하려면 E-Mode를 종료하세요."
+        "emode": "일부 자산은 E-Mode에서 빌릴 수 없습니다. 모든 자산에 접근하려면 E-Mode를 종료하세요.",
+        "isolated": "격리 모드로 인해 차입 한도와 자산이 제한됩니다."
       },
       "list": {
         "headers": {
@@ -4169,7 +4173,7 @@
           "myBorrows": "내 대출"
         },
         "item": {
-          "wrapperToken": "{{name}}에 대한 래핑된 토큰"
+          "wrapperToken": "{{name}}용 Wrapped token"
         }
       },
       "repayDetail": {
@@ -4320,7 +4324,8 @@
         "debtSwapSelector": {
           "header": {
             "borrow": "내 대출",
-            "assets": "토큰/잔고"
+            "assets": "토큰/잔고",
+            "apy": "APY"
           },
           "title": "대출 토큰 선택"
         },
@@ -4438,7 +4443,8 @@
         "myAssets": "내 자산",
         "type": "유형",
         "actions": "작업",
-        "token": "토큰"
+        "token": "토큰",
+        "apy": "APY"
       },
       "supplyList": {
         "collapse": "무너짐",
@@ -4510,7 +4516,7 @@
       "done": "완료",
       "conversionProgress": "전환 진행률",
       "slippageTolerance": "슬리피지 허용 범위",
-      "singleTransactionGasLimit": "단일 트랜잭션 가스 한도",
+      "singleTransactionGasLimit": "단일 트랜잭션 Gas Limit",
       "startConvert": "전환 시작",
       "unsupportedWalletType": "개인 키와 시드 구문 주소만 지원됩니다.",
       "stop": "중지",
@@ -4526,6 +4532,129 @@
       "swapFailed": "스왑 실패, {{reason}}",
       "completedTips": "진행 중인 스왑은 계속 처리됩니다",
       "priceImpact": "가격 영향 상한"
+    },
+    "staking": {
+      "title": "스테이킹",
+      "searchToken": "토큰 검색",
+      "myHolding": "내 보유 포지션",
+      "holding": "보유",
+      "protocol": "프로토콜",
+      "actions": {
+        "deposit": "예치",
+        "withdraw": "출금",
+        "claim": "청구",
+        "max": "최대",
+        "retry": "다시 시도"
+      },
+      "filter": {
+        "allProtocol": "모든 프로토콜",
+        "allChains": "모든 체인",
+        "selectProtocol": "프로토콜 선택",
+        "selectChain": "체인 선택",
+        "searchByName": "이름으로 검색",
+        "searchProtocol": "프로토콜 검색",
+        "searchChain": "체인 검색",
+        "all": "전체",
+        "clearFilter": "{{filter}} 지우기"
+      },
+      "empty": {
+        "noPoolsFound": "풀을 찾을 수 없습니다",
+        "noHoldingsFound": "현재 보유 중인 포지션이 없습니다.",
+        "noStakingPoolsFound": "스테이킹 풀을 찾을 수 없습니다",
+        "noProtocols": "프로토콜 없음",
+        "noChains": "체인 없음"
+      },
+      "error": {
+        "failedLoadData": "스테이킹 데이터를 불러오지 못했습니다",
+        "failedLoadPools": "스테이킹 풀을 불러오지 못했습니다",
+        "failedLoadPool": "스테이킹 풀을 불러오지 못했습니다",
+        "failedLoadChart": "스테이킹 차트를 불러오지 못했습니다",
+        "failedLoadPosition": "포지션을 불러오지 못했습니다",
+        "transactionFailed": "스테이킹 트랜잭션 실패"
+      },
+      "metrics": {
+        "yield": "수익률",
+        "tvl": "총 잠금 가치",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
+      },
+      "tabs": {
+        "portfolio": "포트폴리오",
+        "about": "정보",
+        "security": "보안"
+      },
+      "detail": {
+        "poolNotFound": "스테이킹 풀을 찾을 수 없습니다",
+        "unsupportedAction": "지원되지 않는 스테이킹 작업입니다.",
+        "noChartData": "차트 데이터 없음"
+      },
+      "about": {
+        "pool": "풀",
+        "address": "주소",
+        "poolAddress": "풀 주소",
+        "uptime": "가동 기간",
+        "days": "{{count}}일",
+        "token": "토큰",
+        "token1": "Token1",
+        "token2": "Token2",
+        "tokenAddress": "토큰 주소",
+        "token1Address": "Token1 주소",
+        "token2Address": "Token2 주소",
+        "aboutProtocol": "{{protocol}} 정보",
+        "noDescription": "사용 가능한 프로토콜 설명이 없습니다.",
+        "showMore": "더 보기",
+        "showLess": "접기",
+        "officialWebsite": "공식 웹사이트",
+        "twitter": "X(Twitter)"
+      },
+      "security": {
+        "certifications": "인증",
+        "certifiedBy": "인증 기관",
+        "certifiedOn": "인증일",
+        "action": "작업",
+        "view": "보기",
+        "noCertificationData": "인증 데이터 없음"
+      },
+      "portfolio": {
+        "pending": "대기 중",
+        "succeed": "성공",
+        "failed": "실패",
+        "supplied": "공급됨",
+        "rewards": "보상",
+        "rewardsWithCount": "보상({{count}})",
+        "priceRange": "가격 범위",
+        "noSuppliedAssets": "공급한 자산 없음",
+        "noRewards": "현재 보상이 없습니다"
+      },
+      "actionModal": {
+        "receive": "받기",
+        "setPriceRange": "가격 범위 설정",
+        "range": "범위",
+        "unused": "미사용",
+        "unsupportedPool": "지원되지 않는 풀",
+        "unsupportedErc4626Pool": "지원되지 않는 ERC4626 풀",
+        "unsupportedLpPool": "지원되지 않는 LP 풀",
+        "unsupportedChain": "지원되지 않는 체인",
+        "unavailable": "사용할 수 없음",
+        "tokenFallback": "토큰",
+        "insufficientBalance": "{{symbols}} 잔액 부족",
+        "noWithdrawablePosition": "출금 가능한 포지션 없음",
+        "noClaimableRewards": "청구 가능한 보상 없음",
+        "submitted": "{{action}} 제출됨",
+        "submitFailed": "{{action}} 제출 실패",
+        "confirmPoolPriceDifference": "풀 가격 차이 확인",
+        "poolPriceWarning": "10% 가격 영향 한도는 차익거래 위험을 만들 수 있습니다.",
+        "poolPriceTitle": "풀 가격: 1 {{token0}} = {{poolPrice}} {{token1}}; 시장 가격: 1 {{token0}} = {{marketPrice}} {{token1}}",
+        "singleAssetDepositOnly": "시장 가격이 지정한 가격 범위를 벗어났습니다. 단일 자산 예치만 가능합니다.",
+        "failedResolveV2Pool": "V2 풀 확인 실패",
+        "failedResolveV3Pool": "V3 풀 확인 실패",
+        "noLpPositionToWithdraw": "출금할 LP 포지션 없음",
+        "v2RewardsUnsupported": "V2 보상은 지원되지 않습니다",
+        "selectV3PositionToWithdraw": "출금할 V3 포지션을 선택하세요"
+      }
     },
     "manageBatchApprovals": {
       "cols": {

@@ -165,6 +165,10 @@ export interface PreferenceStore {
   desktopTokensAllMode?: boolean;
 
   sceneAccountMap?: Record<string, Account | null>;
+
+  perpsWidgetEnabled?: boolean;
+  perpsWidgetBlockedHosts?: string[];
+  perpsWidgetBallPosition?: { x: number; y: number } | null;
 }
 
 export interface AddressSortStore {
@@ -253,6 +257,9 @@ class PreferenceService {
         desktopTokensAllMode: false,
         dashboardPanelOrder: [],
         sceneAccountMap: {},
+        perpsWidgetEnabled: false,
+        perpsWidgetBlockedHosts: [],
+        perpsWidgetBallPosition: null,
       },
     });
 
@@ -387,6 +394,36 @@ class PreferenceService {
     if (!this.store.sceneAccountMap) {
       this.store.sceneAccountMap = {};
     }
+    if (this.store.perpsWidgetEnabled == null) {
+      this.store.perpsWidgetEnabled = false;
+    }
+    if (!Array.isArray(this.store.perpsWidgetBlockedHosts)) {
+      this.store.perpsWidgetBlockedHosts = [];
+    }
+    if (this.store.perpsWidgetBallPosition === undefined) {
+      this.store.perpsWidgetBallPosition = null;
+    }
+  };
+
+  getPerpsWidgetEnabled = () => this.store.perpsWidgetEnabled === true;
+  setPerpsWidgetEnabled = (v: boolean) => {
+    this.store.perpsWidgetEnabled = v;
+    eventBus.emit(EVENTS.PERPS.WIDGET_ENABLED_CHANGED, v);
+  };
+
+  getPerpsWidgetBlockedHosts = (): string[] =>
+    this.store.perpsWidgetBlockedHosts ?? [];
+  setPerpsWidgetBlockedHosts = (hosts: string[]) => {
+    this.store.perpsWidgetBlockedHosts = Array.isArray(hosts) ? hosts : [];
+    eventBus.emit(
+      EVENTS.PERPS.WIDGET_BLOCKED_HOSTS_CHANGED,
+      this.store.perpsWidgetBlockedHosts
+    );
+  };
+
+  getPerpsWidgetBallPosition = () => this.store.perpsWidgetBallPosition ?? null;
+  setPerpsWidgetBallPosition = (pos: { x: number; y: number } | null) => {
+    this.store.perpsWidgetBallPosition = pos;
   };
 
   hasConfirmSafeSelfHost = (networkId: string) => {

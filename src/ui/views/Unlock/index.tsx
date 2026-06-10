@@ -204,7 +204,6 @@ const Unlock = () => {
   });
 
   const [run] = useWalletRequest(wallet.unlock, {
-    onSuccess: handleUnlockSuccess,
     onError(err) {
       pendingUnlockTypeRef.current = null;
       console.log('error', err);

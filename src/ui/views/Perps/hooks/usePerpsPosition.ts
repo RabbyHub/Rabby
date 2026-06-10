@@ -389,7 +389,7 @@ export const usePerpsPosition = ({
         const resting = res?.response?.data?.statuses[0]?.resting;
         if (filled) {
           dispatch.perps.fetchClearinghouseState({ dex });
-          if (resting) {
+          if (resting || tpTriggerPx || slTriggerPx) {
             dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
           }
 

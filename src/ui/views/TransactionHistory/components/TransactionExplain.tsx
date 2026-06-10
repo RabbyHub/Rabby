@@ -24,6 +24,7 @@ export const TransactionExplain = ({
   isSubmitFailed,
   isCancel,
   isWithdrawed,
+  isGasDeposit,
   onOpenScan,
   action,
 }: {
@@ -31,6 +32,7 @@ export const TransactionExplain = ({
   isSubmitFailed: boolean;
   isCancel: boolean;
   isWithdrawed: boolean;
+  isGasDeposit?: boolean;
   explain?: ExplainTxResponse;
   action?: TransactionGroup['action'];
   onOpenScan(): void;
@@ -44,6 +46,14 @@ export const TransactionExplain = ({
     let content: string | React.ReactNode = t(
       'page.activities.signedTx.explain.unknown'
     );
+    if (isGasDeposit) {
+      icon = <img className="icon icon-explain" src={IconUser} />;
+      content = t('page.transactions.explain.depositedGas');
+      return {
+        icon,
+        content,
+      };
+    }
     if (action) {
       const actionData = action.actionData;
       content = getActionTypeText(actionData);

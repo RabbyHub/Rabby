@@ -40,6 +40,11 @@ import {
   getStakingMainTxHash,
   readStakingContract,
 } from '../utils/tx';
+import {
+  getStakingDecimalAssetsUsdValue,
+  getStakingRawAssetsUsdValue,
+  reportStakingTx,
+} from '../utils/report';
 import './actionModal.less';
 
 type Erc4626Action = 'deposit' | 'withdraw';
@@ -342,6 +347,36 @@ export const Erc4626ActionModal = ({
       });
       const hash = getStakingMainTxHash(hashes);
       if (hash) {
+        const usdValue =
+          action === 'deposit'
+            ? getStakingDecimalAssetsUsdValue([
+                {
+                  amount,
+                  price: tokenPrice,
+                },
+              ])
+            : getStakingRawAssetsUsdValue([
+                {
+                  token: asset
+                    ? {
+                        ...asset,
+                        decimals,
+                        price: tokenPrice,
+                      }
+                    : undefined,
+                  rawAmount: previewRedeemAssetsRaw,
+                },
+              ]);
+
+        reportStakingTx({
+          account,
+          pool,
+          txId: hash,
+          txType: action,
+          poolAddress: entry?.vault,
+          usdValue,
+        });
+
         setAmount('');
         setPercent(100);
         setSelectedPercentPreset(null);
@@ -367,7 +402,23 @@ export const Erc4626ActionModal = ({
         setSubmitting(false);
       }
     }
-  }, [actionLabel, buildTxs, canSubmit, onSubmitted, sign, t]);
+  }, [
+    account,
+    action,
+    actionLabel,
+    amount,
+    asset,
+    buildTxs,
+    canSubmit,
+    decimals,
+    entry?.vault,
+    onSubmitted,
+    pool,
+    previewRedeemAssetsRaw,
+    sign,
+    t,
+    tokenPrice,
+  ]);
 
   const onAmountChange = useCallback(
     (value: string) => {

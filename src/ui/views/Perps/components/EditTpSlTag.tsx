@@ -283,7 +283,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
             disableEdit ? 'text-r-blue-disable' : 'text-r-blue-default'
           )}
         >
-          {hasPrice ? `$${splitNumberByStep(initTpOrSlPrice)}` : '-'}
+          {hasPrice ? `$${splitNumberByStep(initTpOrSlPrice)}` : '--'}
         </span>
         {hasPrice ? (
           <RcIconDelete className={clsx('w-16 h-16', 'text-r-neutral-foot')} />

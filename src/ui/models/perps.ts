@@ -1055,6 +1055,7 @@ export const perps = createModel<RootModel>()({
     ) {
       const { account, isPro } = payload;
       await rootState.app.wallet.setPerpsCurrentAccount(account);
+      rootState.app.wallet.switchDesktopPerpsAccount(account);
       // await dispatch.perps.refreshData();
       if (!isPro) {
         dispatch.perps.fetchUserHistoricalOrders();

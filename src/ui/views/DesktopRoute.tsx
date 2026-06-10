@@ -5,7 +5,6 @@ import { PrivateRoute, PrivateRouteGuard } from 'ui/component';
 import { PortalHost } from '../component/PortalHost';
 import { CommonPopup } from './CommonPopup';
 import { DesktopProfile } from './DesktopProfile';
-import { DesktopInnerDapp } from './DesktopDappIframe';
 import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
@@ -30,19 +29,14 @@ declare global {
 
 const Main = () => {
   const location = useLocation();
-  const isDappIframeRoute = location.pathname === '/desktop/prediction';
   const isPerpsRoute = location.pathname === '/desktop/perps';
   const isProfileRoute = location.pathname.startsWith('/desktop/profile');
   const isLendingRoute = location.pathname === '/desktop/lending';
 
-  const hasMountedDappIframeRef = useRef(false);
   const hasMountedPerpsRef = useRef(false);
   const hasMountedProfileRef = useRef(false);
   const hasMountedLendingRef = useRef(false);
 
-  if (isDappIframeRoute) {
-    hasMountedDappIframeRef.current = true;
-  }
   if (isPerpsRoute) {
     hasMountedPerpsRef.current = true;
   }
@@ -96,19 +90,6 @@ const Main = () => {
           </div>
         </PrivateRouteGuard>
       ) : null}
-      {hasMountedDappIframeRef.current ? (
-        <PrivateRouteGuard>
-          <div
-            className={clsx('h-full', isDappIframeRoute ? 'block' : 'hidden')}
-          >
-            <DesktopInnerDapp
-              isActive={isDappIframeRoute}
-              type={'prediction'}
-            />
-          </div>
-        </PrivateRouteGuard>
-      ) : null}
-
       {hasMountedLendingRef.current ? (
         <PrivateRouteGuard>
           <div className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}>

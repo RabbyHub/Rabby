@@ -88,7 +88,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.markTips')}
               needCursor={false}
-              className="text-[12px] leading-[18px] text-r-neutral-foot"
+              className="text-[12px] leading-[18px] text-rb-neutral-secondary"
             >
               {t('page.perpsPro.chatArea.mark')}
             </DashedUnderlineText>
@@ -105,7 +105,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.oracleTips')}
               needCursor={false}
-              className="text-[12px] leading-[18px] text-r-neutral-foot"
+              className="text-[12px] leading-[18px] text-rb-neutral-secondary"
             >
               {t('page.perpsPro.chatArea.oracle')}
             </DashedUnderlineText>
@@ -118,7 +118,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col">
-          <span className="text-[12px] leading-[18px] text-r-neutral-foot">
+          <span className="text-[12px] leading-[18px] text-rb-neutral-secondary">
             {t('page.perpsPro.chatArea.24hChange')}
           </span>
           {currentMarketData.markPx && currentMarketData.prevDayPx ? (
@@ -141,7 +141,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col">
-          <span className="text-[12px] leading-[18px] text-r-neutral-foot">
+          <span className="text-[12px] leading-[18px] text-rb-neutral-secondary">
             {t('page.perpsPro.chatArea.24hVol')}
           </span>
           <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
@@ -158,7 +158,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.openInterestTips')}
               needCursor={false}
-              className="text-[12px] leading-[18px] text-r-neutral-foot"
+              className="text-[12px] leading-[18px] text-rb-neutral-secondary"
             >
               {t('page.perpsPro.chatArea.openInterest')}
             </DashedUnderlineText>
@@ -180,7 +180,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.fundingTips')}
               needCursor={false}
-              className="text-[12px] leading-[18px] text-r-neutral-foot"
+              className="text-[12px] leading-[18px] text-rb-neutral-secondary"
             >
               {t('page.perpsPro.chatArea.fundingCountdown')}
             </DashedUnderlineText>
@@ -197,7 +197,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               >
                 {formatPercent(Number(currentMarketData.funding), 4)}
               </span>
-              <span className="text-[12px] leading-[18px] text-r-neutral-foot">
+              <span className="text-[12px] leading-[18px] text-rb-neutral-secondary">
                 {' '}
                 / {countdown}
               </span>

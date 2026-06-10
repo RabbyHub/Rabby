@@ -4953,6 +4953,15 @@ export class WalletController extends BaseController {
     type
   ) =>
     transactionHistoryService.getRecentTxHistory(address, hash, chainId, type);
+  updateBridgeGasAccountTx: typeof transactionHistoryService.updateBridgeGasAccountTx = (
+    params
+  ) => transactionHistoryService.updateBridgeGasAccountTx(params);
+  checkIsGasDepositTx: typeof transactionHistoryService.checkIsGasDepositTx = (
+    params
+  ) => transactionHistoryService.checkIsGasDepositTx(params);
+  checkIsGasDepositTxs: typeof transactionHistoryService.checkIsGasDepositTxs = (
+    params
+  ) => transactionHistoryService.checkIsGasDepositTxs(params);
   completeBridgeTxHistory = (
     from_tx_id: string,
     chainId: number,
@@ -6738,6 +6747,19 @@ export class WalletController extends BaseController {
   };
   getPerpsInviteConfig = perpsService.getInviteConfig;
   setPerpsInviteConfig = perpsService.setInviteConfig;
+
+  /* Perps float widget RPC */
+  getPerpsWidgetEnabled = () => preferenceService.getPerpsWidgetEnabled();
+  setPerpsWidgetEnabled = (v: boolean) =>
+    preferenceService.setPerpsWidgetEnabled(v);
+  getPerpsWidgetBlockedHosts = () =>
+    preferenceService.getPerpsWidgetBlockedHosts();
+  setPerpsWidgetBlockedHosts = (hosts: string[]) =>
+    preferenceService.setPerpsWidgetBlockedHosts(hosts);
+  getPerpsWidgetBallPosition = () =>
+    preferenceService.getPerpsWidgetBallPosition();
+  setPerpsWidgetBallPosition = (pos: { x: number; y: number } | null) =>
+    preferenceService.setPerpsWidgetBallPosition(pos);
 
   signPerpsSendSetReferrer = async ({
     address,

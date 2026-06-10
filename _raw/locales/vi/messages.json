@@ -135,7 +135,7 @@
         "title": "Gửi NFT"
       },
       "nftApprove": {
-        "title": "NFT Approval",
+        "title": "Phê duyệt NFT",
         "approveNFT": "Phê duyệt NFT",
         "nftContractTrustValueTip": "Giá trị tin cậy đề cập đến giá trị NFT cao nhất được chi tiêu bởi hợp đồng này. Một giá trị tin cậy thấp cho thấy có thể có rủi ro hoặc không hoạt động trong 180 ngày."
       },
@@ -268,7 +268,7 @@
         "description": "Mô tả"
       },
       "nonceTitle": "Nonce",
-      "gasLimitTitle": "Giới hạn Gas",
+      "gasLimitTitle": "Gas Limit",
       "noGasRequired": "Không cần gas",
       "failToFetchGasCost": "Không thể ước lượng gas",
       "nativeTokenNotEngouthForGas": "Số dư Gas không đủ cho giao dịch",
@@ -283,25 +283,25 @@
       "manuallySetGasLimitAlert": "Bạn đã thiết lập giới hạn Gas theo cách thủ công thành",
       "nftIn": "NFT trong",
       "gasMoreButton": "Thêm",
-      "gasLimitNotEnough": "Giới hạn Gas ít hơn 21000. Giao dịch không thể được gửi.",
+      "gasLimitNotEnough": "Gas Limit ít hơn 21000. Giao dịch không thể được gửi.",
       "gasNotRequireForSafeTransaction": "Phí gas không cần thiết cho các giao dịch Safe.",
-      "gasPriceTitle": "Giá Gas (Gwei)",
+      "gasPriceTitle": "Gas Price (Gwei)",
       "multiSigChainNotMatch": "Địa chỉ đa chữ ký không nằm trên chuỗi này và không thể khởi tạo giao dịch.",
       "gasAccountForGas": "Sử dụng USD từ GasAccount của tôi để thanh toán gas",
       "safeAddressNotSupportChain": "Địa chỉ an toàn hiện tại không được hỗ trợ trên chuỗi {{0}}.",
       "gasPriceMedian": "Giá trị trung vị của 100 giao dịch on-chain gần nhất:",
       "nonceLowerThanExpect": "Nonce quá thấp, tối thiểu nên là {{0}}",
-      "gasLimitLessThanGasUsed": "Giới hạn Gas quá thấp. Có 95% khả năng giao dịch có thể thất bại.",
+      "gasLimitLessThanGasUsed": "Gas Limit quá thấp. Có 95% khả năng giao dịch có thể thất bại.",
       "moreSafeSigNeeded": "Cần {{0}} chữ ký nữa để xác nhận",
-      "gasLimitLessThanExpect": "Giới hạn Gas quá thấp. Có 1% khả năng giao dịch có thể thất bại.",
+      "gasLimitLessThanExpect": "Gas Limit quá thấp. Có 1% khả năng giao dịch có thể thất bại.",
       "hardwareSupport1559Alert": "Đảm bảo firmware của ví phần cứng của bạn đã được nâng cấp lên phiên bản hỗ trợ EIP 1559.",
-      "maxPriorityFee": "Phí Đặc Quyền Tối Đa (Gwei)",
+      "maxPriorityFee": "Max Priority Fee (Gwei)",
       "canOnlyUseImportedAddress": "Bạn không thể ký các giao dịch bằng địa chỉ chỉ xem.",
-      "wrapToken": "Gói Token",
-      "eip1559Desc2": "Tại Rabby, Phí Ưu Tiên (Tip) = Phí Tối Đa - Phí Cơ Bản. Sau khi bạn thiết lập Phí Ưu Tiên Tối Đa, Phí Cơ Bản sẽ được trừ từ đó và phần còn lại sẽ được tip cho thợ mỏ.",
+      "wrapToken": "Wrap Token",
+      "eip1559Desc2": "Trong Rabby, Priority Fee (tip) = Max Fee - Base Fee. Sau khi bạn đặt Max Priority Fee, Base Fee sẽ được trừ trước, phần còn lại sẽ được tip cho miner.",
       "safeAdminSigned": "Đã ký",
-      "unwrap": "Gỡ mã Token",
-      "eip1559Desc1": "Trên các chuỗi hỗ trợ EIP-1559, Phí Ưu Tiên là tiền boa cho các thợ đào để xử lý giao dịch của bạn. Bạn có thể tiết kiệm chi phí gas cuối cùng của mình bằng cách giảm Phí Ưu Tiên, điều này có thể tốn thêm thời gian để giao dịch được xử lý.",
+      "unwrap": "Unwrap Token",
+      "eip1559Desc1": "Trên các chain hỗ trợ EIP-1559, Priority Fee là khoản tip cho miner để xử lý giao dịch của bạn. Giảm Priority Fee có thể giúp tiết kiệm chi phí gas cuối cùng, nhưng giao dịch có thể mất nhiều thời gian hơn để được xử lý.",
       "safeServiceNotAvailable": "Dịch vụ Safe hiện không khả dụng, vui lòng thử lại sau.",
       "nftCollection": "Bộ sưu tập NFT",
       "popularity": "Sự phổ biến",
@@ -354,12 +354,12 @@
       "trustValueTitle": "Giá trị tin cậy",
       "typedDataMessage": "Ký tên Dữ liệu Đã đánh máy",
       "addressSource": "Nguồn địa chỉ",
-      "maxPriorityFeeDisabledAlert": "Vui lòng đặt Giá Gas trước.",
+      "maxPriorityFeeDisabledAlert": "Vui lòng đặt Gas Price trước.",
       "label": "Nhãn",
       "contract": "Địa chỉ hợp đồng thông minh",
       "errorRetry": {
         "defaultTips": "Có điều gì đó không đúng. Vui lòng thử lại sau.",
-        "gasLimitTooLow": "Giới hạn Gas quá thấp",
+        "gasLimitTooLow": "Gas Limit quá thấp",
         "nonceTooLow": "Nonce quá thấp. Chúng tôi sẽ cập nhật nó thành {{nonce}}. Nhấn \"Retry\" để xác nhận và thử lại.",
         "gasExceedsBlockGasLimit": "Gas vượt quá giới hạn gas của khối. Vui lòng điều chỉnh và thử lại.",
         "alreadySubmitted": "Giao dịch đã được nộp. Phát hiện giao dịch trùng lặp.",
@@ -382,7 +382,7 @@
       "gasless": {
         "notEnough": "Số dư Gas không đủ",
         "unavailable": "Số dư Gas của bạn không đủ",
-        "GetFreeGasToSign": "Nhận Gas miễn phí",
+        "GetFreeGasToSign": "Nhận Free Gas",
         "customRpcUnavailableTip": "RPC tùy chỉnh không được hỗ trợ cho Free Gas",
         "walletConnectUnavailableTip": "Ví dụ ví di động kết nối qua WalletConnect không được hỗ trợ cho Free Gas.",
         "rabbyPayGas": "Rabby sẽ thanh toán cho gas cần thiết – chỉ cần ký vào thôi",
@@ -390,7 +390,7 @@
       },
       "gasAccount": {
         "useGasAccount": "Sử dụng GasAccount",
-        "notEnough": "GasAccount không đủ",
+        "notEnough": "Không đủ Gas. Số dư Gas: {{usd}}",
         "customRPC": "Không được hỗ trợ khi sử dụng RPC tùy chỉnh",
         "WalletConnectTips": "WalletConnect không được hỗ trợ bởi GasAccount",
         "gotIt": "Đã hiểu",
@@ -464,7 +464,7 @@
         "txRejected": "Giao dịch bị từ chối",
         "siging": "Gửi yêu cầu ký",
         "notConnected": "Ví của bạn chưa được kết nối. Vui lòng kết nối lại.",
-        "signError": "Ledger sign error:",
+        "signError": "Lỗi ký Ledger:",
         "resent": "Gửi lại",
         "txRejectedByLedger": "Giao dịch bị từ chối trên Ledger của bạn",
         "updateFirmwareAlert": "Vui lòng cập nhật firmware và Ethereum App trên Ledger của bạn.",
@@ -684,8 +684,8 @@
           "slow": "Chậm"
         },
         "confirm": "Xác nhận",
-        "popupTitle": "Đặt giá Gas (Gwei)",
-        "popupDesc": "Chi phí gas sẽ được trừ từ số tiền chuyển dựa trên giá gas mà bạn đã đặt."
+        "popupTitle": "Đặt Gas Price (Gwei)",
+        "popupDesc": "Chi phí gas sẽ được giữ lại từ số tiền chuyển dựa trên Gas Price bạn đặt"
       },
       "header": {
         "title": "Gửi"
@@ -852,7 +852,7 @@
             "contractTrustValue": "Giá trị Tin cậy Hợp đồng",
             "myApprovalTime": "Thời gian phê duyệt của tôi",
             "myApprovedAssets": "Tài sản đã được phê duyệt của tôi",
-            "revokeTrends": "24h Revoke Trends"
+            "revokeTrends": "Xu hướng thu hồi 24h"
           },
           "columnTip": {
             "contractTrustValueWarning": "Giá trị niềm tin hợp đồng < $100,000",
@@ -937,7 +937,7 @@
       "payment": "Thanh toán nạp Gas",
       "Select-payment-token": "Chọn mã thông báo thanh toán",
       "Confirm": "Xác nhận",
-      "title": "Nạp Gas Ngay Lập Tức",
+      "title": "Gas Top Up Ngay Lập Tức",
       "Loading_Tokens": "Đang tải Token...",
       "No_Tokens": "Không có token",
       "Continue": "Tiếp tục",
@@ -950,7 +950,7 @@
       "InsufficientBalance": "Không đủ số dư trong địa chỉ hợp đồng của Rabby cho chuỗi hiện tại. Vui lòng thử lại sau.",
       "Deposit-tip": "Nạp với USDC/USDT",
       "description": "Nạp gas bằng cách gửi cho chúng tôi các token có sẵn trên chuỗi khác. Chuyển tiền ngay khi thanh toán của bạn được xác nhận, không cần phải chờ đợi cho đến khi nó không thể đảo ngược.",
-      "service-fee-tip": "Bằng cách cung cấp dịch vụ Nạp Gas, Rabby phải chịu mất mát từ sự biến động của token và phí gas cho việc nạp. Do đó, một khoản phí dịch vụ 20% sẽ được tính.",
+      "service-fee-tip": "Bằng cách cung cấp dịch vụ Gas Top Up, Rabby phải chịu mất mát từ sự biến động của token và phí gas cho việc nạp. Do đó, một khoản phí dịch vụ 20% sẽ được tính.",
       "Balance": "Số dư"
     },
     "swap": {
@@ -960,7 +960,7 @@
         "title": "Rabby phí",
         "button": "Đã hiểu",
         "bridgeDesc": "Rabby Wallet sẽ luôn tìm ra tỷ lệ tốt nhất có thể từ các nhà tổng hợp hàng đầu và xác minh độ tin cậy của các ưu đãi của họ. Rabby tính phí 0,25%, khoản phí này sẽ tự động được bao gồm trong báo giá.",
-        "swapDesc": "Rabby Wallet sẽ luôn tìm ra tỷ lệ tốt nhất từ các nhà tổng hợp hàng đầu và xác minh độ tin cậy của các đề nghị của họ. Rabby tính phí 0,25% (0% cho việc bọc), được tự động bao gồm trong báo giá."
+        "swapDesc": "Rabby Wallet luôn tìm tỷ giá tốt nhất từ các aggregator hàng đầu và xác minh độ tin cậy của báo giá. Rabby tính phí 0,25% (0% cho Wrap), khoản phí này được tự động bao gồm trong quote."
       },
       "lowCreditModal": {
         "title": "Token này có giá trị tín dụng thấp.",
@@ -973,7 +973,7 @@
       "swap-history": "Lịch sử hoán đổi",
       "gas-x-price": "Giá gas: {{price}} Gwei.",
       "title": "Hoán đổi",
-      "actual-slippage": "Actual Slippage:",
+      "actual-slippage": "Trượt giá thực tế:",
       "Completed": "Hoàn tất",
       "get-quotes": "Nhận báo giá",
       "slippage_tolerance": "Toleransi slippage:",
@@ -1017,12 +1017,12 @@
       "need-to-approve-token-before-swap": "Cần chấp thuận token trước khi hoán đổi",
       "Gas-fee-too-high": "Phí Gas quá cao",
       "there-is-no-fee-and-slippage-for-this-trade": "Giao dịch này không bị trượt giá.",
-      "directlySwap": "Gói các token {{symbol}} trực tiếp với hợp đồng thông minh",
+      "directlySwap": "Wrap token {{symbol}} trực tiếp bằng smart contract",
       "fail-to-simulate-transaction": "Không thể mô phỏng giao dịch",
       "tradingSettingTips": "{{viewCount}} sàn giao dịch cung cấp báo giá, và {{tradeCount}} cho phép giao dịch",
       "approve-tips": "1.Chấp thuận → 2.Hoán đổi",
       "preferMEVTip": "Bật tính năng \"MEV Guarded\" cho các giao dịch hoán đổi Ethereum để giảm rủi ro tấn công sandwich. Lưu ý: tính năng này không được hỗ trợ nếu bạn sử dụng RPC tùy chỉnh hoặc địa chỉ wallet connect.",
-      "est-difference": "Est. Difference:",
+      "est-difference": "Chênh lệch ước tính:",
       "QuoteLessWarning": "Số tiền nhận được được ước tính từ mô phỏng giao dịch của Rabby. Đề nghị được cung cấp bởi dex là {{receive}}. Bạn sẽ nhận được {{diff}} ít hơn so với đề nghị mong đợi.",
       "usd-after-fees": "≈ {{usd}}",
       "this-exchange-is-not-enabled-to-trade-by-you": "Giao dịch này không được phép thực hiện bởi bạn.",
@@ -1031,7 +1031,7 @@
       "fetch-best-quote": "Lấy báo giá tốt nhất",
       "exchanges": "Sàn giao dịch",
       "max": "TỐI ĐA",
-      "gas-fee": "GasFee: {{gasUsed}}",
+      "gas-fee": "Phí gas: {{gasUsed}}",
       "price-impact": "Tác động giá",
       "confirm": "Xác nhận",
       "enable-trading": "Kích hoạt Giao dịch",
@@ -1097,7 +1097,7 @@
       "select-chain": "Chọn Chuỗi",
       "estimate": "Ước tính:",
       "no-quote-found": "Không tìm thấy báo giá. Vui lòng thử các cặp token khác.",
-      "gas-fee": "GasFee: {{gasUsed}}",
+      "gas-fee": "Phí gas: {{gasUsed}}",
       "the-following-bridge-route-are-found": "Tìm thấy lộ trình sau đây",
       "Balance": "Số dư:",
       "no-quote": "Không báo giá",
@@ -1111,7 +1111,7 @@
       "detail-tx": "Chi tiết",
       "recommendFromToken": "Bridge từ <1></1> cho một báo giá hiện có",
       "bridgeTo": "Cầu đến",
-      "est-difference": "Est. Difference:",
+      "est-difference": "Chênh lệch ước tính:",
       "aggregator-not-enabled": "Trình tổng hợp này không được bạn bật để giao dịch.",
       "price-impact": "Tác động giá",
       "tokenPairPlaceholder": "Chọn Cặp Token",
@@ -1190,7 +1190,7 @@
       "delete-seed-phrase-title_one": "Xóa cụm từ hạt giống và {{count}} địa chỉ của nó",
       "delete-empty-seed-phrase": "Xóa cụm từ hạt giống và địa chỉ 0 của nó",
       "delete-title_one": "Xóa {{count}} địa chỉ {{brand}}",
-      "hd-path": "HD đường dẫn:",
+      "hd-path": "HD path:",
       "no-address-under-seed-phrase": "Bạn chưa nhập bất kỳ địa chỉ nào dưới cụm từ hạt giống này.",
       "delete-all-addresses-and-the-seed-phrase": "Xóa tất cả địa chỉ và cụm từ hạt giống",
       "enterThePassphrase": "Nhập cụm mật khẩu",
@@ -1214,14 +1214,14 @@
           "receive": "Nhận",
           "swap": "Hoán đổi",
           "send": "Gửi",
-          "mobile": "Mobile Sync",
+          "mobile": "Đồng bộ di động",
           "nft": "NFT",
           "transactions": "Giao dịch",
           "queue": "Hàng đợi",
           "ecology": "Hệ sinh thái",
           "bridge": "Cầu",
           "rabbyPoints": "Rabby Points",
-          "gasTopUp": "Nạp Gas",
+          "gasTopUp": "Gas Top Up",
           "manageAddress": "Quản lý Địa chỉ",
           "approvals": "Phê duyệt",
           "more": "Hơn nữa",
@@ -1236,7 +1236,8 @@
           "perpsPositions_one": "{{count}} Vị trí",
           "lending": "Cho vay",
           "dragTip": "Tính năng nhấn giữ để sắp xếp lại",
-          "convertDust": "Chuyển đổi Dust"
+          "convertDust": "Chuyển đổi Dust",
+          "staking": "Staking"
         },
         "queue": {
           "title": "Hàng đợi",
@@ -1284,7 +1285,7 @@
         "disconnected": "Ngắt kết nối",
         "pinned": "Ghim lại",
         "disconnectAll": "Ngắt kết nối tất cả",
-        "metamaskModeTooltip": "Không thể kết nối Rabby trên Dapp này? Hãy thử bật <1>Chế độ MetaMask</1>",
+        "metamaskModeTooltip": "Không thể kết nối Rabby trên Dapp này? Hãy thử bật <1>MetaMask Mode</1>",
         "connectedDapp": "Rabby không được kết nối với Dapp hiện tại. Để kết nối, hãy tìm và nhấn nút kết nối trên trang web của Dapp.",
         "metamaskModeTooltipNew": "Ví dụ Rabby Wallet sẽ kết nối khi bạn chọn \"MetaMask\" trên Dapp. Bạn có thể quản lý điều này trong More > Connect Rabby bằng cách giả dạng như MetaMask.",
         "recentlyConnected": "Gần đây đã kết nối",
@@ -1323,7 +1324,7 @@
       },
       "rabbyBadge": {
         "claim": "Yêu cầu",
-        "imageLabel": "rabby badge",
+        "imageLabel": "huy hiệu Rabby",
         "rabbyFreeGasUserNo": "Rabby Free Gas Người dùng Số {{num}}",
         "enterClaimCode": "Nhập mã yêu cầu",
         "viewOnDebank": "Xem trên DeBank",
@@ -1332,7 +1333,7 @@
         "learnMore": "Tìm hiểu thêm",
         "title": "Nhận Rabby Badge cho",
         "freeGasTip": "Vui lòng ký một giao dịch bằng cách sử dụng Free Gas. Nút 'Free Gas' sẽ xuất hiện tự động khi gas của bạn không đủ.",
-        "freeGasTitle": "Nhận Gas Badge MIỄN PHÍ cho",
+        "freeGasTitle": "Nhận Free Gas Badge cho",
         "noCode": "Bạn chưa kích hoạt mã yêu cầu cho địa chỉ này.",
         "learnMoreOnDebank": "Tìm hiểu thêm trên DeBank",
         "goToSwap": "Đi đến Swap",
@@ -1367,9 +1368,9 @@
           "searchDapps": "Tìm kiếm Dapps",
           "connectedDapp": "Dapps đã kết nối",
           "lockWallet": "Khóa Ví",
-          "signatureRecord": "Signature Record",
+          "signatureRecord": "Lịch sử chữ ký",
           "label": "Tính năng",
-          "gasTopUp": "Nạp Gas",
+          "gasTopUp": "Gas Top Up",
           "manageAddress": "Quản lý Địa chỉ",
           "ecosystem": "Hệ sinh thái"
         },
@@ -1389,6 +1390,7 @@
           "biometricUnlock": "Mở khóa bằng Sinh trắc học",
           "biometricUnlockHint": "Sử dụng sinh trắc học để mở khóa trên thiết bị này.",
           "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học.",
+          "perpsFloatWidget": "Tiện ích nổi Perps",
           "currency": "Tiền tệ",
           "searchCurrency": "Tìm kiếm tiền tệ"
         },
@@ -1464,7 +1466,7 @@
         "receive": "Nhận",
         "blockedButtons": "token bị chặn",
         "send": "Gửi",
-        "scamTx": "Scam tx",
+        "scamTx": "Tx lừa đảo",
         "blocked": "Bị chặn",
         "swap": "Hoán đổi",
         "customizedButtons": "token tùy chỉnh",
@@ -1634,10 +1636,10 @@
       },
       "MetamaskModePopup": {
         "title": "MetaMask Mode",
-        "footerText": "Thêm nhiều Dapps vào chế độ MetaMask trong Thêm > Chế độ MetaMask",
+        "footerText": "Thêm nhiều Dapps vào chế độ MetaMask trong Thêm > MetaMask Mode",
         "toastSuccess": "Đã bật. Làm mới trang để kết nối lại.",
         "enableDesc": "Bật nếu Dapp chỉ hoạt động với MetaMask",
-        "desc": "Nếu bạn không thể kết nối Rabby trên một Dapp, hãy bật Chế độ MetaMask và kết nối bằng cách chọn tùy chọn MetaMask."
+        "desc": "Nếu bạn không thể kết nối Rabby trên một Dapp, hãy bật MetaMask Mode và kết nối bằng cách chọn tùy chọn MetaMask."
       },
       "offlineChain": {
         "chain": "{{chain}} sẽ sớm không được tích hợp.",
@@ -1847,26 +1849,26 @@
         },
         "ledger": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
-            "legacy": "Legacy: Đường dẫn HD được sử dụng bởi MEW / Mycrypto. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
-            "bip44": "Tiêu chuẩn BIP44: HDpath được định nghĩa bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi."
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
+            "bip44": "Tiêu chuẩn BIP44: HD path được định nghĩa bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi."
           },
           "hdPathTypeNoChain": {
-            "legacy": "Di sản: Đường dẫn HD được sử dụng bởi MEW / Mycrypto. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
-            "bip44": "Tiêu chuẩn BIP44: Đường dẫn HD được định nghĩa bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi."
+            "legacy": "Di sản: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
+            "bip44": "Tiêu chuẩn BIP44: HD path được định nghĩa bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi."
           }
         },
         "trezor": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger.",
-            "bip44": "BIP44: HDpath được xác định bởi giao thức BIP44.",
-            "legacy": "Legacy: HD path được sử dụng bởi MEW / Mycrypto."
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger.",
+            "bip44": "BIP44: HD path được xác định bởi giao thức BIP44.",
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto."
           },
           "hdPathTypeNoChain": {
-            "legacy": "Legacy: HD path được sử dụng bởi MEW / Mycrypto.",
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger.",
-            "bip44": "BIP44: HDpath được định nghĩa bởi giao thức BIP44."
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto.",
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger.",
+            "bip44": "BIP44: HD path được định nghĩa bởi giao thức BIP44."
           },
           "message": {
             "disconnected": "{{0}}Connect đã dừng lại. Vui lòng làm mới trang để kết nối lại."
@@ -1874,32 +1876,32 @@
         },
         "onekey": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath được xác định bởi giao thức BIP44."
+            "bip44": "BIP44: HD path được xác định bởi giao thức BIP44."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath được xác định bởi giao thức BIP44."
+            "bip44": "BIP44: HD path được xác định bởi giao thức BIP44."
           }
         },
         "mnemonic": {
           "hdPathType": {
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger.",
-            "default": "Mặc định: Đường dẫn HD mặc định để nhập cụm từ hạt giống được sử dụng.",
-            "legacy": "Di sản: Đường HD được sử dụng bởi MEW / Mycrypto.",
-            "bip44": "Tiêu chuẩn BIP44: HDpath được xác định bởi giao thức BIP44."
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger.",
+            "default": "Mặc định: sử dụng HD path mặc định khi nhập seed phrase.",
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto.",
+            "bip44": "Tiêu chuẩn BIP44: HD path được xác định bởi giao thức BIP44."
           },
           "hdPathTypeNoChain": {
-            "default": "Mặc định: Đường dẫn HD mặc định để nhập cụm từ hạt giống được sử dụng."
+            "default": "Mặc định: sử dụng HD path mặc định khi nhập seed phrase."
           }
         },
         "gridplus": {
           "hdPathType": {
-            "legacy": "Di sản: Đường dẫn HD được sử dụng bởi MEW / Mycrypto. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
-            "bip44": "Tiêu chuẩn BIP44: HDpath được xác định bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi."
+            "legacy": "Di sản: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
+            "bip44": "Tiêu chuẩn BIP44: HD path được xác định bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi."
           },
           "hdPathTypeNochain": {
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
-            "legacy": "Di sản: Đường dẫn HD được sử dụng bởi MEW / Mycrypto. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
+            "legacy": "Di sản: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
             "bip44": "BIP44 Standard: HD path được xác định bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi."
           },
           "switch": {
@@ -1910,22 +1912,22 @@
         },
         "keystone": {
           "hdPathType": {
-            "bip44": "BIP44: Đường HDpath được xác định bởi giao thức BIP44.",
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger. Bạn chỉ có thể quản lý 10 địa chỉ với đường dẫn Ledger Live.",
-            "legacy": "Legacy: HD path được sử dụng bởi MEW / Mycrypto."
+            "bip44": "BIP44: Đường HD path được xác định bởi giao thức BIP44.",
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Bạn chỉ có thể quản lý 10 địa chỉ với đường dẫn Ledger Live.",
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto."
           },
           "hdPathTypeNochain": {
-            "legacy": "Di sản: Đường dẫn HD được sử dụng bởi MEW / Mycrypto.",
-            "ledgerLive": "Ledger Live: Đường dẫn HD chính thức của Ledger. Bạn chỉ có thể quản lý 10 địa chỉ với đường dẫn Ledger Live.",
-            "bip44": "BIP44: HDpath được xác định bởi giao thức BIP44."
+            "legacy": "Di sản: HD path được sử dụng bởi MEW / MyCrypto.",
+            "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Bạn chỉ có thể quản lý 10 địa chỉ với đường dẫn Ledger Live.",
+            "bip44": "BIP44: HD path được xác định bởi giao thức BIP44."
           }
         },
         "bitbox02": {
           "hdPathType": {
-            "bip44": "BIP44: HDpath được xác định bởi giao thức BIP44."
+            "bip44": "BIP44: HD path được xác định bởi giao thức BIP44."
           },
           "hdPathTypeNoChain": {
-            "bip44": "BIP44: HDpath được xác định bởi giao thức BIP44."
+            "bip44": "BIP44: HD path được xác định bởi giao thức BIP44."
           },
           "disconnected": "Không thể kết nối với BitBox02. Vui lòng làm mới trang để kết nối lại. Lý do: {{0}}"
         },
@@ -1948,11 +1950,11 @@
         "addToRabby": "Thêm vào Rabby",
         "firstTransactionTime": "Thời gian giao dịch đầu tiên",
         "clickToGetInfo": "Nhấn để lấy thông tin trên chuỗi",
-        "selectHdPath": "Chọn đường dẫn HD:",
+        "selectHdPath": "Chọn HD path:",
         "advancedSettings": "Cài đặt Nâng cao",
         "selectIndexTip": "Chọn số serial của địa chỉ để bắt đầu từ:",
         "manageAddressFrom": "Quản lý địa chỉ từ {{0}} đến {{1}}",
-        "customAddressHdPath": "Đường dẫn HD địa chỉ tùy chỉnh",
+        "customAddressHdPath": "HD path địa chỉ tùy chỉnh",
         "manageImtokenOffline": "Quản lý imToken",
         "manageNgraveZero": "Quản lý NGRAVE ZERO",
         "manageImKey": "Quản lý imKey",
@@ -2067,7 +2069,7 @@
       "title": "Thêm Mạng Tùy Chỉnh vào Rabby",
       "requestsReceivedPlural": "{{count}} yêu cầu đã nhận",
       "chainNotSupport": "Chuỗi được yêu cầu hiện chưa được Rabby hỗ trợ.",
-      "chainId": "Chain ID:",
+      "chainId": "ID chuỗi:",
       "testnetTip": "Vui lòng bật \"Enable Testnets\" dưới \"More\" trước khi kết nối với testnets.",
       "requestRabbyToSupport": "Yêu cầu Rabby hỗ trợ",
       "chainNotSupportYet": "Chuỗi yêu cầu chưa được Rabby hỗ trợ.",
@@ -2164,7 +2166,7 @@
       "tx-requires": "Bất kỳ giao dịch nào đều yêu cầu <2>{{num}}</2> xác nhận.",
       "delete-address": "Xóa địa chỉ",
       "edit-memo-title": "Chỉnh sửa ghi chú địa chỉ",
-      "hd-path": "HD Đường dẫn",
+      "hd-path": "HD path",
       "coboSafeErrorModule": "Địa chỉ đã hết hạn, vui lòng xóa và nhập lại địa chỉ.",
       "delete-desc": "Trước khi bạn xóa, hãy lưu ý những điểm sau để hiểu cách bảo vệ tài sản của bạn.",
       "address": "Địa chỉ",
@@ -2324,15 +2326,15 @@
         "reBroadcastBtn": "Phát lại"
       },
       "TxHash": {
-        "hash": "Tx Hash"
+        "hash": "Hash tx"
       },
       "TxTimeline": {
         "broadcastedCount_ordinal_one": "{{count}}st phát sóng",
         "broadcastedCount_ordinal_two": "{{count}}nd phát sóng",
         "pending": "Đang kiểm tra trạng thái...",
-        "broadcastedCount_ordinal_few": "{{count}}rd broadcast",
+        "broadcastedCount_ordinal_few": "Lần broadcast thứ {{count}}",
         "created": "Giao dịch đã được tạo",
-        "broadcastedCount_ordinal_other": "{{count}} phát sóng thứ {{count}}",
+        "broadcastedCount_ordinal_other": "Lần phát broadcast thứ {{count}}",
         "broadcasted": "Gần đây đã được phát sóng"
       },
       "MempoolList": {
@@ -2350,12 +2352,12 @@
       },
       "PendingTxList": {
         "filterBaseFee": {
-          "label": "Chỉ đáp ứng yêu cầu mức phí cơ bản",
-          "tooltip": "Chỉ hiển thị các giao dịch có Gas Price đáp ứng yêu cầu về Base fee của khối."
+          "label": "Chỉ đáp ứng yêu cầu Base Fee",
+          "tooltip": "Chỉ hiển thị các giao dịch có Gas Price đáp ứng yêu cầu Base Fee của khối"
         },
         "col": {
           "interact": "Tương tác với",
-          "gasPrice": "Giá Gas",
+          "gasPrice": "Gas Price",
           "action": "Hành động Giao dịch",
           "balanceChange": "Thay đổi số dư",
           "actionType": "Loại hành động"
@@ -2602,14 +2604,14 @@
       "status": {
         "txSending": "Gửi yêu cầu ký",
         "txSigned": "Đã ký. Đang tạo giao dịch",
-        "txSendings": "Gửi yêu cầu ký ({ {current}}/{{total}})",
+        "txSendings": "Đang gửi yêu cầu ký ({{current}}/{{total}})",
         "txCreated": "Giao dịch đã được tạo"
       },
       "signWithLedger": "Ký với Ledger",
       "cancelTitle": "Hủy trên chuỗi",
       "speedUpTitle": "Tăng tốc",
-      "speedUpDesc": "Giá gas đã tăng {{percent}} để tăng tốc độ nhanh hơn",
-      "cancleDesc": "Giá gas tăng {{percent}} để hủy nhanh hơn.",
+      "speedUpDesc": "Gas Price đã tăng {{percent}} để giao dịch nhanh hơn",
+      "cancleDesc": "Gas Price đã tăng {{percent}} để hủy nhanh hơn",
       "signWithOneKey": "Ký với OneKey"
     },
     "gasAccount": {
@@ -2622,7 +2624,7 @@
         "gotIt": "Đã hiểu",
         "title": "Nạp USDC / USDT",
         "desc": "Thanh toán phí Gas trên tất cả các chuỗi",
-        "loginAndClaim": "Đăng nhập và Nhận $2.00",
+        "loginAndClaim": "Đăng nhập và nhận {{usdValue}}",
         "loginTips1": "Thanh toán phí gas cho",
         "learnAbout": "Tìm hiểu thêm về GasAccount",
         "loginTips3": "khi bạn hết gas",
@@ -2634,7 +2636,7 @@
       },
       "gasAccountList": {
         "address": "Địa chỉ",
-        "gasAccountBalance": "Số dư Gas"
+        "gasAccountBalance": "Số dư"
       },
       "logoutConfirmModal": {
         "logout": "Đăng xuất",
@@ -2742,7 +2744,7 @@
       "depositNow": "Nạp ngay",
       "signWithPendingHardwareToUse": "Ký với {{addressAlias}} để sử dụng",
       "depositSubmitted": "Đã nạp",
-      "claimFreeGas": "Nhận {{usdValue}} gas miễn phí",
+      "claimFreeGas": "Nhận {{usdValue}} Free Gas",
       "depositFailed": "Nạp thất bại",
       "lowBalance": "Bạn không có đủ gas(＜$1.00). Nạp gas để đảm bảo các giao dịch trong tương lai diễn ra suôn sẻ.",
       "gasBalance": "Số dư gas",
@@ -2894,7 +2896,7 @@
     },
     "metamaskModeDapps": {
       "title": "Quản lý Dapps Được phép",
-      "desc": "Chế độ MetaMask đã được bật cho các Dapps sau đây. Bạn có thể kết nối Rabby bằng cách chọn tùy chọn MetaMask."
+      "desc": "MetaMask Mode đã được bật cho các Dapps sau đây. Bạn có thể kết nối Rabby bằng cách chọn tùy chọn MetaMask."
     },
     "forgotPassword": {
       "home": {
@@ -3137,7 +3139,7 @@
           "foldProtocols": "Gấp {{count}} Protocols",
           "allTokenMode": "Tất cả chế độ Token",
           "lpToken": "LP-Token",
-          "foldDifis": "Fold {{count}} Defis",
+          "foldDifis": "Thu gọn {{count}} DeFi",
           "unfoldDifis": "Mở khóa {{count}} Defis"
         },
         "hidden": {
@@ -3288,7 +3290,7 @@
       "limitOrders": "Lệnh Limit",
       "cancelAll": "Hủy tất cả",
       "limitOrderDetail": {
-        "title": "Limit {{side}} {{pair}}",
+        "title": "Lệnh giới hạn {{side}} {{pair}}",
         "time": "Thời gian",
         "size": "Kích thước",
         "filled": "Đã khớp",
@@ -3446,7 +3448,7 @@
       "accountSelector": {
         "activatedAddress": "Đã kích hoạt",
         "notActivatedAddress": "Chưa kích hoạt",
-        "hyperliquidBalance": "Số dư hợp đồng vĩnh viễn",
+        "hyperliquidBalance": "Số dư Perps",
         "noPosition": "Chưa có vị thế",
         "positions": "Vị trí",
         "position": "Vị trí",
@@ -3481,9 +3483,9 @@
         "onePosition": "1 Vị thế",
         "openPosition": "Mở vị thế",
         "searchPosition": "Tìm vị thế",
-        "searchPlaceholder": "Tìm kiếm hợp đồng vĩnh viễn",
+        "searchPlaceholder": "Tìm kiếm Perps",
         "hasPosition": "Vị thế",
-        "searchPerps": "Tìm kiếm hợp đồng vĩnh viễn"
+        "searchPerps": "Tìm kiếm Perps"
       },
       "categories": {
         "favorite": "Yêu thích",
@@ -3506,14 +3508,14 @@
       "yourPosition": "Vị thế của bạn",
       "seeMore": "Xem thêm",
       "availableBalance": "Có sẵn: {{balance}}",
-      "learnAboutPerps": "Tìm hiểu về hợp đồng vĩnh viễn",
+      "learnAboutPerps": "Tìm hiểu về Perps",
       "closeLong": "Đóng vị thế mua",
       "providerFeeTips": "Phí Hyperliquid: {{fee}}",
       "history": "Lịch sử",
       "position": "Vị thế",
       "directDeposit": "Gửi tiền trực tiếp",
       "close": "Đóng vị thế",
-      "title": "Hợp đồng vĩnh viễn",
+      "title": "Perps",
       "stopLoss": "Lệnh dừng lỗ",
       "sizeTips": "Tổng giá trị hoặc khối lượng giao dịch của bạn được xác định bởi ký quỹ và đòn bẩy.",
       "add": "Thêm",
@@ -3531,7 +3533,7 @@
       "withdraw": "Rút tiền",
       "reviewOrder": "Xem lại lệnh",
       "back": "Quay lại",
-      "tradePerps": "Giao dịch hợp đồng vĩnh viễn",
+      "tradePerps": "Giao dịch Perps",
       "leverageRangeMaxError": "Đòn bẩy tối đa là {{max}}x",
       "openInterest": "Tổng số hợp đồng đang mở",
       "rabbyFeeTipsV2": "Rabby phí: 0,02%",
@@ -3540,7 +3542,7 @@
       "stopLossTipsShort": "Giá dừng lỗ phải cao hơn giá hiện tại.",
       "StopLoss": "Lệnh dừng lỗ",
       "isolated": "Ký quỹ cô lập",
-      "explorePerps": "Khám phá hợp đồng vĩnh viễn",
+      "explorePerps": "Khám phá Perps",
       "selectTokenToDeposit": "Chọn Token để nạp",
       "leverageRangeMinError": "Đòn bẩy tối thiểu là {{min}}x",
       "takeProfitTipsLong": "Giá chốt lời phải cao hơn giá hiện tại.",
@@ -3562,9 +3564,9 @@
       "deleteAgentModal": "Bạn đã đạt tối đa số lượng đại lý. Bạn có muốn xóa một đại lý hiện có để tạo một đại lý mới không?",
       "stopLossTipsLong": "Giá dừng lỗ phải thấp hơn giá hiện tại.",
       "size": "Kích thước vị thế",
-      "logInPerpsAccount": "Đăng nhập vào tài khoản hợp đồng vĩnh viễn của tôi",
+      "logInPerpsAccount": "Đăng nhập vào tài khoản Perps của tôi",
       "entryPrice": "Giá mở vị thế",
-      "logInTips": "Đăng nhập bằng địa chỉ ví của bạn và nạp tiền để bắt đầu giao dịch hợp đồng vĩnh viễn.",
+      "logInTips": "Đăng nhập bằng địa chỉ ví của bạn và nạp tiền để bắt đầu giao dịch Perps.",
       "long": "Vị thế mua",
       "cross": "ký quỹ chéo",
       "marginIsolated": "Ký quỹ cô lập",
@@ -3906,6 +3908,7 @@
         "currentPosition": "Vị trí hiện tại",
         "deposit": "Nạp tiền",
         "addFundsToGetStarted": "Thêm tiền để bắt đầu",
+        "notAvailableInRegion": "Không khả dụng ở khu vực của bạn.",
         "price": "Giá",
         "action": "Hành động",
         "Sell": "Bán",
@@ -4100,7 +4103,7 @@
         "addMarginSuccess": "Nạp ký quỹ thành công",
         "addMargin": "Nạp ký quỹ",
         "liqPrice": "Giá thanh lý",
-        "perpsBalance": "Số dư hợp đồng vĩnh viễn",
+        "perpsBalance": "Số dư Perps",
         "upTo": "Tối đa",
         "upto": "Tối đa",
         "amountToAdd": "Số tiền ký quỹ cần thêm",
@@ -4155,7 +4158,8 @@
         "singleAssetUnavailableForEmode": "Không khả dụng để vay. Thoát khỏi E-Mode để truy cập.",
         "canBorrow": "Bạn có thể vay dựa trên tài sản thế chấp mà bạn cung cấp, lên đến giới hạn vay.",
         "emodeNoAssets": "Chúng tôi không tìm thấy bất kỳ tài sản nào liên quan đến tìm kiếm của bạn. Hãy thử lại với một danh mục khác.",
-        "emode": "Một số tài sản không có sẵn để vay trong E-Mode. Thoát E-Mode để truy cập tất cả tài sản."
+        "emode": "Một số tài sản không có sẵn để vay trong E-Mode. Thoát E-Mode để truy cập tất cả tài sản.",
+        "isolated": "Khả năng vay và tài sản bị giới hạn do chế độ Isolation."
       },
       "list": {
         "headers": {
@@ -4169,7 +4173,7 @@
           "my_assets": "Tài sản của tôi"
         },
         "item": {
-          "wrapperToken": "Token được bọc cho {{name}}"
+          "wrapperToken": "Wrapped token cho {{name}}"
         }
       },
       "repayDetail": {
@@ -4320,7 +4324,8 @@
         "debtSwapSelector": {
           "header": {
             "assets": "Token/Số dư",
-            "borrow": "Các khoản vay của tôi"
+            "borrow": "Các khoản vay của tôi",
+            "apy": "APY"
           },
           "title": "Chọn Token Mượn"
         },
@@ -4438,7 +4443,8 @@
         "actions": "Hành động",
         "token": "Token",
         "collateral": "Tài sản thế chấp",
-        "myAssets": "Tài sản của tôi"
+        "myAssets": "Tài sản của tôi",
+        "apy": "APY"
       },
       "supplyList": {
         "collapse": "Sụp đổ",
@@ -4510,7 +4516,7 @@
       "done": "Hoàn tất",
       "conversionProgress": "Tiến trình chuyển đổi",
       "slippageTolerance": "Chênh lệch giá cho phép",
-      "singleTransactionGasLimit": "Giới hạn Gas giao dịch đơn",
+      "singleTransactionGasLimit": "Gas Limit giao dịch đơn",
       "startConvert": "Bắt đầu chuyển đổi",
       "unsupportedWalletType": "Chỉ hỗ trợ địa chỉ từ private key và seed phrase.",
       "stop": "Dừng",
@@ -4522,10 +4528,133 @@
       "noLowValueTokensFound": "Không tìm thấy token giá trị thấp",
       "selectedTokens": "Token đã chọn",
       "totalValue": "Tổng giá trị",
-      "moreChains": "+{{count}} chains",
+      "moreChains": "+{{count}} chuỗi",
       "swapFailed": "Hoán đổi thất bại, {{reason}}",
       "completedTips": "Hoán đổi đang diễn ra sẽ tiếp tục xử lý",
       "priceImpact": "Giới hạn Biến động Giá"
+    },
+    "staking": {
+      "title": "Staking",
+      "searchToken": "Tìm token",
+      "myHolding": "Vị thế của tôi",
+      "holding": "Vị thế",
+      "protocol": "Giao thức",
+      "actions": {
+        "deposit": "Nạp",
+        "withdraw": "Rút",
+        "claim": "Nhận",
+        "max": "Tối đa",
+        "retry": "Thử lại"
+      },
+      "filter": {
+        "allProtocol": "Tất cả giao thức",
+        "allChains": "Tất cả chain",
+        "selectProtocol": "Chọn giao thức",
+        "selectChain": "Chọn chain",
+        "searchByName": "Tìm theo tên",
+        "searchProtocol": "Tìm giao thức",
+        "searchChain": "Tìm chain",
+        "all": "Tất cả",
+        "clearFilter": "Xóa {{filter}}"
+      },
+      "empty": {
+        "noPoolsFound": "Không tìm thấy pool",
+        "noHoldingsFound": "Bạn hiện không có vị thế nào.",
+        "noStakingPoolsFound": "Không tìm thấy pool staking",
+        "noProtocols": "Không có giao thức",
+        "noChains": "Không có chain"
+      },
+      "error": {
+        "failedLoadData": "Không thể tải dữ liệu staking",
+        "failedLoadPools": "Không thể tải pool staking",
+        "failedLoadPool": "Không thể tải pool staking",
+        "failedLoadChart": "Không thể tải biểu đồ staking",
+        "failedLoadPosition": "Không thể tải vị thế",
+        "transactionFailed": "Giao dịch staking thất bại"
+      },
+      "metrics": {
+        "yield": "Lợi suất",
+        "tvl": "TVL",
+        "apr": "APR",
+        "apy": "APY",
+        "lp": "LP",
+        "v2": "V2",
+        "v3": "V3"
+      },
+      "tabs": {
+        "portfolio": "Danh mục",
+        "about": "Giới thiệu",
+        "security": "Bảo mật"
+      },
+      "detail": {
+        "poolNotFound": "Không tìm thấy pool staking",
+        "unsupportedAction": "Hành động staking không được hỗ trợ.",
+        "noChartData": "Không có dữ liệu biểu đồ"
+      },
+      "about": {
+        "pool": "Pool",
+        "address": "Địa chỉ",
+        "poolAddress": "Địa chỉ pool",
+        "uptime": "Thời gian hoạt động",
+        "days": "{{count}} ngày",
+        "token": "Token",
+        "token1": "Token1",
+        "token2": "Token2",
+        "tokenAddress": "Địa chỉ token",
+        "token1Address": "Địa chỉ Token1",
+        "token2Address": "Địa chỉ Token2",
+        "aboutProtocol": "Giới thiệu {{protocol}}",
+        "noDescription": "Không có mô tả giao thức.",
+        "showMore": "Hiển thị thêm",
+        "showLess": "Thu gọn",
+        "officialWebsite": "Trang web chính thức",
+        "twitter": "X (Twitter)"
+      },
+      "security": {
+        "certifications": "Chứng nhận",
+        "certifiedBy": "Được chứng nhận bởi",
+        "certifiedOn": "Chứng nhận vào",
+        "action": "Hành động",
+        "view": "Xem",
+        "noCertificationData": "Không có dữ liệu chứng nhận"
+      },
+      "portfolio": {
+        "pending": "Đang chờ",
+        "succeed": "Thành công",
+        "failed": "Thất bại",
+        "supplied": "Đã cung cấp",
+        "rewards": "Phần thưởng",
+        "rewardsWithCount": "Phần thưởng ({{count}})",
+        "priceRange": "Khoảng giá",
+        "noSuppliedAssets": "Không có tài sản đã cung cấp",
+        "noRewards": "Hiện không có phần thưởng"
+      },
+      "actionModal": {
+        "receive": "Nhận",
+        "setPriceRange": "Đặt khoảng giá",
+        "range": "Khoảng",
+        "unused": "Chưa dùng",
+        "unsupportedPool": "Pool không được hỗ trợ",
+        "unsupportedErc4626Pool": "Pool ERC4626 không được hỗ trợ",
+        "unsupportedLpPool": "Pool LP không được hỗ trợ",
+        "unsupportedChain": "Chain không được hỗ trợ",
+        "unavailable": "Không khả dụng",
+        "tokenFallback": "token",
+        "insufficientBalance": "Số dư {{symbols}} không đủ",
+        "noWithdrawablePosition": "Không có vị thế có thể rút",
+        "noClaimableRewards": "Không có phần thưởng có thể nhận",
+        "submitted": "Đã gửi {{action}}",
+        "submitFailed": "Không thể gửi {{action}}",
+        "confirmPoolPriceDifference": "Xác nhận chênh lệch giá pool",
+        "poolPriceWarning": "Giới hạn tác động giá 10% tạo ra rủi ro chênh lệch giá.",
+        "poolPriceTitle": "Giá pool: 1 {{token0}} = {{poolPrice}} {{token1}}; giá thị trường: 1 {{token0}} = {{marketPrice}} {{token1}}",
+        "singleAssetDepositOnly": "Giá thị trường nằm ngoài khoảng giá bạn đã đặt. Chỉ có thể nạp một tài sản.",
+        "failedResolveV2Pool": "Không thể xác định pool V2",
+        "failedResolveV3Pool": "Không thể xác định pool V3",
+        "noLpPositionToWithdraw": "Không có vị thế LP để rút",
+        "v2RewardsUnsupported": "Phần thưởng V2 không được hỗ trợ",
+        "selectV3PositionToWithdraw": "Chọn một vị thế V3 để rút"
+      }
     },
     "manageBatchApprovals": {
       "cols": {
@@ -4816,7 +4945,7 @@
     }
   },
   "global": {
-    "scamTx": "Scam tx",
+    "scamTx": "Tx lừa đảo",
     "ok": "OK",
     "appName": "Ví dụ ví Rabby",
     "copied": "Sao chép",
