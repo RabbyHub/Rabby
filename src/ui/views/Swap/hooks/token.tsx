@@ -873,28 +873,51 @@ export const useTokenPair = (userAddress: string) => {
       return;
     }
 
+    const buildActiveProvider = (
+      quote: TDexQuoteData,
+      manualClick?: boolean
+    ): QuoteProvider | undefined => {
+      const quotePreExecResult = quote.preExecResult;
+
+      if (!quote.data || !quotePreExecResult) {
+        return undefined;
+      }
+
+      return {
+        ...(manualClick ? { manualClick } : {}),
+        name: quote.name,
+        quote: quote.data,
+        preExecResult: quotePreExecResult,
+        gasPrice: quotePreExecResult.gasPrice,
+        shouldApproveToken: !!quotePreExecResult.shouldApproveToken,
+        shouldTwoStepApprove: !!quotePreExecResult.shouldTwoStepApprove,
+        error: false,
+        halfBetterRate: '',
+        quoteWarning: undefined,
+        actualReceiveAmount: getDexQuoteReceiveAmount(quote, receiveToken),
+        gasUsd: quotePreExecResult.gasUsd,
+      };
+    };
+    const bestActiveProvider = buildActiveProvider(bestQuote);
+
+    if (!bestActiveProvider) {
+      return;
+    }
+
     setBestQuoteDex(bestQuote.name);
 
-    setActiveProvider((preItem) =>
-      preItem?.manualClick
-        ? preItem
-        : {
-            name: bestQuote.name,
-            quote: bestQuote.data,
-            preExecResult,
-            gasPrice: preExecResult.gasPrice,
-            shouldApproveToken: !!preExecResult.shouldApproveToken,
-            shouldTwoStepApprove: !!preExecResult.shouldTwoStepApprove,
-            error: false,
-            halfBetterRate: '',
-            quoteWarning: undefined,
-            actualReceiveAmount: getDexQuoteReceiveAmount(
-              bestQuote,
-              receiveToken
-            ),
-            gasUsd: preExecResult.gasUsd,
-          }
-    );
+    setActiveProvider((preItem) => {
+      const refreshedManualQuote = preItem?.manualClick
+        ? selectableQuoteListForDisplay.find(
+            (quote) => quote.name === preItem.name
+          )
+        : undefined;
+      const manualActiveProvider = refreshedManualQuote
+        ? buildActiveProvider(refreshedManualQuote, true)
+        : undefined;
+
+      return manualActiveProvider || bestActiveProvider;
+    });
   }, [
     allQuotesLoaded,
     canRunQuoteRequest,
