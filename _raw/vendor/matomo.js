@@ -1,10 +1,16 @@
 var _paq = (window._paq = window._paq || []);
-/* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-_paq.push(['trackPageView']);
-_paq.push(['enableLinkTracking']);
 (function () {
-  const handleExtensionId = function (result) {
+  const handleStorage = function (result) {
+    if (
+      !result.preference ||
+      result.preference.userDataTrackingOptOut === true
+    ) {
+      return;
+    }
+
     var u = 'https://matomo.debank.com/';
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
     _paq.push(['setTrackerUrl', u + 'matomo.php']);
     _paq.push(['setSiteId', '2']);
     if (result.extensionId) {
@@ -21,9 +27,11 @@ _paq.push(['enableLinkTracking']);
   setTimeout(() => {
     // is MV3
     if (chrome.runtime.getManifest().manifest_version === 3) {
-      chrome.storage.local.get('extensionId').then(handleExtensionId);
+      chrome.storage.local
+        .get(['preference', 'extensionId'])
+        .then(handleStorage);
     } else {
-      chrome.storage.local.get('extensionId', handleExtensionId);
+      chrome.storage.local.get(['preference', 'extensionId'], handleStorage);
     }
   }, 500);
 })();

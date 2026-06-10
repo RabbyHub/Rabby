@@ -20,7 +20,15 @@ const CreatePassword = () => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const [run, loading] = useWalletRequest(wallet.boot, {
+  const bootWithPrivacyAgreement = useCallback(
+    async (password: string) => {
+      await wallet.setUserDataTrackingOptOut(false);
+      return wallet.boot(password);
+    },
+    [wallet]
+  );
+
+  const [run, loading] = useWalletRequest(bootWithPrivacyAgreement, {
     onSuccess() {
       const { handle } = location.state;
       handle?.(history);

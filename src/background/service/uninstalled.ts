@@ -2,6 +2,7 @@ import { createPersistStore } from 'background/utils';
 import { keyringService, transactionHistoryService } from '.';
 import { KEYRING_CLASS } from '@/constant';
 import browser from 'webextension-polyfill';
+import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 
 export type UninstalledStore = {
   imported: boolean;
@@ -96,26 +97,35 @@ class Uninstalled {
     }
   };
 
-  setUninstalled = () => {
-    let search = '';
-    if (this.store.imported) {
-      search = 'i';
-    }
-    if (this.store.wallet) {
-      search += 'w';
-    }
+  setUninstalled = async () => {
+    try {
+      if (!(await shouldReportUserBehaviorData())) {
+        await browser.runtime.setUninstallURL('');
+        return;
+      }
 
-    if (this.store.tx) {
-      search += 't';
+      let search = '';
+      if (this.store.imported) {
+        search = 'i';
+      }
+      if (this.store.wallet) {
+        search += 'w';
+      }
+
+      if (this.store.tx) {
+        search += 't';
+      }
+      if (this.store.local) {
+        search += 'l';
+      }
+      await browser.runtime.setUninstallURL(
+        `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}&v=${
+          browser.runtime.getManifest().version
+        }`
+      );
+    } catch (e) {
+      // ignore
     }
-    if (this.store.local) {
-      search += 'l';
-    }
-    browser.runtime.setUninstallURL(
-      `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}&v=${
-        browser.runtime.getManifest().version
-      }`
-    );
   };
 }
 

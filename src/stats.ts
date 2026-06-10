@@ -1,3 +1,23 @@
 import StatsReport, { SITE } from '@debank/festats';
+import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 
-export default new StatsReport(SITE.rabby);
+type EventParams = Record<string, number | string | boolean>;
+
+let statsReport: StatsReport | null = null;
+
+const getStatsReport = () => {
+  if (!statsReport) {
+    statsReport = new StatsReport(SITE.rabby);
+  }
+  return statsReport;
+};
+
+export default {
+  report: async (name: string, params: EventParams) => {
+    if (!(await shouldReportUserBehaviorData())) {
+      return;
+    }
+
+    return getStatsReport().report(name, params);
+  },
+};

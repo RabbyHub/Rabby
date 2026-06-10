@@ -1940,6 +1940,14 @@ export class WalletController extends BaseController {
     return preferenceService.setIsShowTestnet(value);
   };
 
+  getUserDataTrackingOptOut = () => {
+    return preferenceService.getUserDataTrackingOptOut();
+  };
+
+  setUserDataTrackingOptOut = (value: boolean) => {
+    return preferenceService.setUserDataTrackingOptOut(value);
+  };
+
   setDesktopTokensAllMode = (value: boolean) => {
     return preferenceService.setDesktopTokensAllMode(value);
   };
