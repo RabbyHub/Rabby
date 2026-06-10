@@ -344,52 +344,23 @@ export const useQuoteMethods = () => {
       ]);
 
       const getGasPrice = () => {
-        let gasPrice = 0;
-        let selectedGasLevel: string | null = null;
-        let selectionSource:
-          | 'custom-gas-price'
-          | 'last-gas-level'
-          | 'normal-fallback'
-          | 'missing-last-gas-level-fallback' = 'normal-fallback';
         if (
           lastTimeGas?.lastTimeSelect === 'gasPrice' &&
           lastTimeGas.gasPrice
         ) {
-          // use cached gasPrice if exist
-          gasPrice = lastTimeGas.gasPrice;
-          selectedGasLevel = null;
-          selectionSource = 'custom-gas-price';
-        } else if (
-          lastTimeGas?.lastTimeSelect &&
-          lastTimeGas?.lastTimeSelect === 'gasLevel'
-        ) {
-          const target = gasMarket.find(
-            (item) => item.level === lastTimeGas?.gasLevel
-          )!;
-          if (target) {
-            gasPrice = target.price;
-            selectedGasLevel = target.level;
-            selectionSource = 'last-gas-level';
-          } else {
-            const normalGasLevel = gasMarket.find(
-              (item) => item.level === 'normal'
-            );
-            gasPrice = normalGasLevel?.price || 0;
-            selectedGasLevel = normalGasLevel?.level || null;
-            selectionSource = 'missing-last-gas-level-fallback';
-          }
-        } else {
-          // no cache, use the fast level in gasMarket
-          const normalGasLevel = gasMarket.find(
-            (item) => item.level === 'normal'
-          );
-          gasPrice = normalGasLevel?.price || 0;
-          selectedGasLevel = normalGasLevel?.level || null;
+          return {
+            gasPrice: lastTimeGas.gasPrice,
+            selectedGasLevel: null,
+            selectionSource: 'custom-gas-price' as const,
+          };
         }
+        const normalGasLevel = gasMarket.find(
+          (item) => item.level === 'normal'
+        );
         return {
-          gasPrice,
-          selectedGasLevel,
-          selectionSource,
+          gasPrice: normalGasLevel?.price || 0,
+          selectedGasLevel: normalGasLevel?.level || null,
+          selectionSource: 'normal-fallback' as const,
         };
       };
 
