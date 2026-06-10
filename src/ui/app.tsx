@@ -17,6 +17,7 @@ import store from './store';
 
 import { getSentryEnv, isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
+import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -25,6 +26,13 @@ Sentry.init({
     'https://f4a992c621c55f48350156a32da4778d@o4507018303438848.ingest.us.sentry.io/4507018389749760',
   release: process.env.release,
   environment: getSentryEnv(),
+  autoSessionTracking: false,
+  beforeSend: async (event) => {
+    if (!(await shouldReportUserBehaviorData())) {
+      return null;
+    }
+    return event;
+  },
   ignoreErrors: [
     'ResizeObserver loop limit exceeded',
     'ResizeObserver loop completed with undelivered notifications',

@@ -2,7 +2,12 @@
  * @jest-environment jsdom
  */
 import browser from 'webextension-polyfill';
-import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
+import eventBus from '@/eventBus';
+import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
+import {
+  resetUserDataTrackingCache,
+  shouldReportUserBehaviorData,
+} from '@/utils/user-data-tracking';
 
 jest.mock('webextension-polyfill', () => ({
   storage: {
@@ -17,6 +22,7 @@ const mockStorageGet = browser.storage.local.get as jest.Mock;
 describe('shouldReportUserBehaviorData', () => {
   beforeEach(() => {
     mockStorageGet.mockReset();
+    resetUserDataTrackingCache();
   });
 
   test('returns false when preference is not created yet', async () => {
@@ -43,6 +49,65 @@ describe('shouldReportUserBehaviorData', () => {
     });
 
     await expect(shouldReportUserBehaviorData()).resolves.toBe(true);
+  });
+
+  test('uses cached value after first storage read', async () => {
+    mockStorageGet.mockResolvedValue({
+      preference: {
+        userDataTrackingOptOut: false,
+      },
+    });
+
+    await expect(shouldReportUserBehaviorData()).resolves.toBe(true);
+    await expect(shouldReportUserBehaviorData()).resolves.toBe(true);
+    expect(mockStorageGet).toHaveBeenCalledTimes(1);
+  });
+
+  test('updates cache from UI storeChanged event', async () => {
+    mockStorageGet.mockResolvedValue({
+      preference: {
+        userDataTrackingOptOut: true,
+      },
+    });
+
+    await expect(shouldReportUserBehaviorData()).resolves.toBe(false);
+
+    eventBus.emit(BROADCAST_TO_UI_EVENTS.storeChanged, {
+      bgStoreName: 'preference',
+      changedKey: 'userDataTrackingOptOut',
+      changedKeys: ['userDataTrackingOptOut'],
+      partials: {
+        userDataTrackingOptOut: false,
+      },
+    });
+
+    await expect(shouldReportUserBehaviorData()).resolves.toBe(true);
+    expect(mockStorageGet).toHaveBeenCalledTimes(1);
+  });
+
+  test('updates cache from background broadcast event', async () => {
+    mockStorageGet.mockResolvedValue({
+      preference: {
+        userDataTrackingOptOut: false,
+      },
+    });
+
+    await expect(shouldReportUserBehaviorData()).resolves.toBe(true);
+
+    eventBus.emit('broadcastToUI', {
+      method: BROADCAST_TO_UI_EVENTS.storeChanged,
+      params: {
+        bgStoreName: 'preference',
+        changedKey: 'userDataTrackingOptOut',
+        changedKeys: ['userDataTrackingOptOut'],
+        partials: {
+          userDataTrackingOptOut: true,
+        },
+      },
+    });
+
+    await expect(shouldReportUserBehaviorData()).resolves.toBe(false);
+    expect(mockStorageGet).toHaveBeenCalledTimes(1);
   });
 
   test('treats missing field on existing preference as an old user', async () => {
