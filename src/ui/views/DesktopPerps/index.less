@@ -93,6 +93,60 @@
   border-color: var(--rb-red-default) !important;
 }
 
+.desktop-perps-topbar-account {
+  height: 26px !important;
+  border-radius: 6px !important;
+  padding: 3px 12px !important;
+  gap: 6px !important;
+  opacity: 1;
+
+  > div {
+    font-size: 12px !important;
+    line-height: 14px !important;
+    color: var(--rb-neutral-foot) !important;
+  }
+
+  img {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  > svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+
+  &:hover {
+    color: var(--rb-brand-default) !important;
+  }
+}
+
+.desktop-perps-status-track {
+  animation: desktop-perps-status-marquee 42s linear infinite;
+  will-change: transform;
+}
+
+.desktop-perps-status-ticker:hover .desktop-perps-status-track {
+  animation-play-state: paused;
+}
+
+@keyframes desktop-perps-status-marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desktop-perps-status-track {
+    animation: none;
+    transform: none;
+  }
+}
+
 html.dark {
   .perps-slider-tip-inner,
   .ant-tooltip-inner {
@@ -108,4 +162,3 @@ html.dark {
     background-color: var(--rb-neutral-bg-4);
   }
 }
-

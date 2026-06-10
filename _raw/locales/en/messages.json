@@ -1353,6 +1353,9 @@
         "8hrFunding": "8h Funding",
         "categoryAll": "ALL"
       },
+      "topBar": {
+        "favoriteEmpty": "Your favorite list is empty"
+      },
       "userInfo": {
         "tab": {
           "__skip_translation": ["twap"],
