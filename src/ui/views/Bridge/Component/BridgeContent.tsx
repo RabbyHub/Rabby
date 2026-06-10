@@ -536,6 +536,9 @@ export const BridgeContent = () => {
     !!selectedBridgeQuote &&
     bestQuoteId.aggregatorId === selectedBridgeQuote.aggregator.id &&
     bestQuoteId.bridgeId === selectedBridgeQuote.bridge_id;
+  const selectedBridgeQuoteIsManualQuote = !!selectedBridgeQuote?.manualClick;
+  const shouldPreExecSelectedBridgeQuote =
+    selectedBridgeQuoteIsBestQuote || selectedBridgeQuoteIsManualQuote;
 
   const buildBridgeTxsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null
@@ -859,9 +862,16 @@ export const BridgeContent = () => {
       !canUseDirectSubmitTx ||
       btnDisabled ||
       !selectedBridgeQuoteBuildKey ||
-      !selectedBridgeQuoteIsBestQuote ||
+      !shouldPreExecSelectedBridgeQuote ||
       awaitingTopUpResume ||
       depositFlowActive
+    ) {
+      return clearBuildTimer;
+    }
+
+    if (
+      builtBridgeTxsKeyRef.current === selectedBridgeQuoteBuildKey ||
+      runBuildSwapTxsKeyRef.current === selectedBridgeQuoteBuildKey
     ) {
       return clearBuildTimer;
     }
@@ -873,17 +883,21 @@ export const BridgeContent = () => {
       tracker.finalBuildKey = '';
     }
 
+    const isManualPreExec = selectedBridgeQuoteIsManualQuote;
     const phase = allQuotesLoaded ? 'final' : 'early';
-    if (!allQuotesLoaded && tracker.earlyBuildKey) {
-      return clearBuildTimer;
-    }
-    if (allQuotesLoaded) {
-      if (
-        tracker.finalBuildKey === selectedBridgeQuoteBuildKey ||
-        tracker.earlyBuildKey === selectedBridgeQuoteBuildKey
-      ) {
-        tracker.finalBuildKey = selectedBridgeQuoteBuildKey;
+
+    if (!isManualPreExec) {
+      if (!allQuotesLoaded && tracker.earlyBuildKey) {
         return clearBuildTimer;
+      }
+      if (allQuotesLoaded) {
+        if (
+          tracker.finalBuildKey === selectedBridgeQuoteBuildKey ||
+          tracker.earlyBuildKey === selectedBridgeQuoteBuildKey
+        ) {
+          tracker.finalBuildKey = selectedBridgeQuoteBuildKey;
+          return clearBuildTimer;
+        }
       }
     }
 
@@ -906,19 +920,28 @@ export const BridgeContent = () => {
         return;
       }
 
-      if (phase === 'early') {
-        if (allQuotesLoadedRef.current || latestTracker.earlyBuildKey) {
-          return;
-        }
-        latestTracker.earlyBuildKey = scheduledBuildKey;
-      } else {
+      if (isManualPreExec) {
         if (
-          !allQuotesLoadedRef.current ||
-          latestTracker.finalBuildKey === scheduledBuildKey
+          builtBridgeTxsKeyRef.current === scheduledBuildKey ||
+          runBuildSwapTxsKeyRef.current === scheduledBuildKey
         ) {
           return;
         }
-        latestTracker.finalBuildKey = scheduledBuildKey;
+      } else {
+        if (phase === 'early') {
+          if (allQuotesLoadedRef.current || latestTracker.earlyBuildKey) {
+            return;
+          }
+          latestTracker.earlyBuildKey = scheduledBuildKey;
+        } else {
+          if (
+            !allQuotesLoadedRef.current ||
+            latestTracker.finalBuildKey === scheduledBuildKey
+          ) {
+            return;
+          }
+          latestTracker.finalBuildKey = scheduledBuildKey;
+        }
       }
 
       runBuildBridgeTxsForKey(scheduledBuildKey);
@@ -929,7 +952,8 @@ export const BridgeContent = () => {
     canUseDirectSubmitTx,
     btnDisabled,
     selectedBridgeQuoteBuildKey,
-    selectedBridgeQuoteIsBestQuote,
+    shouldPreExecSelectedBridgeQuote,
+    selectedBridgeQuoteIsManualQuote,
     allQuotesLoaded,
     quoteRequestId,
     awaitingTopUpResume,

@@ -251,6 +251,9 @@ export const Main = () => {
 
   const activeProviderIsBestQuote =
     !!activeProvider && !!bestQuoteDex && activeProvider.name === bestQuoteDex;
+  const activeProviderIsManualQuote = !!activeProvider?.manualClick;
+  const shouldPreExecActiveProvider =
+    activeProviderIsBestQuote || activeProviderIsManualQuote;
 
   const { runAsync: gotoSwap, loading: isSubmitLoading } = useRequest(
     async () => {
@@ -908,9 +911,16 @@ export const Main = () => {
       swapBtnDisabled ||
       !canUseDirectSubmitTx ||
       !activeProviderBuildKey ||
-      !activeProviderIsBestQuote ||
+      !shouldPreExecActiveProvider ||
       awaitingTopUpResume ||
       depositFlowActive
+    ) {
+      return clearBuildTimer;
+    }
+
+    if (
+      builtSwapTxsKeyRef.current === activeProviderBuildKey ||
+      runBuildSwapTxsKeyRef.current === activeProviderBuildKey
     ) {
       return clearBuildTimer;
     }
@@ -922,17 +932,21 @@ export const Main = () => {
       tracker.finalBuildKey = '';
     }
 
+    const isManualPreExec = activeProviderIsManualQuote;
     const phase = allQuotesLoaded ? 'final' : 'early';
-    if (!allQuotesLoaded && tracker.earlyBuildKey) {
-      return clearBuildTimer;
-    }
-    if (allQuotesLoaded) {
-      if (
-        tracker.finalBuildKey === activeProviderBuildKey ||
-        tracker.earlyBuildKey === activeProviderBuildKey
-      ) {
-        tracker.finalBuildKey = activeProviderBuildKey;
+
+    if (!isManualPreExec) {
+      if (!allQuotesLoaded && tracker.earlyBuildKey) {
         return clearBuildTimer;
+      }
+      if (allQuotesLoaded) {
+        if (
+          tracker.finalBuildKey === activeProviderBuildKey ||
+          tracker.earlyBuildKey === activeProviderBuildKey
+        ) {
+          tracker.finalBuildKey = activeProviderBuildKey;
+          return clearBuildTimer;
+        }
       }
     }
 
@@ -955,19 +969,28 @@ export const Main = () => {
         return;
       }
 
-      if (phase === 'early') {
-        if (allQuotesLoadedRef.current || latestTracker.earlyBuildKey) {
-          return;
-        }
-        latestTracker.earlyBuildKey = scheduledBuildKey;
-      } else {
+      if (isManualPreExec) {
         if (
-          !allQuotesLoadedRef.current ||
-          latestTracker.finalBuildKey === scheduledBuildKey
+          builtSwapTxsKeyRef.current === scheduledBuildKey ||
+          runBuildSwapTxsKeyRef.current === scheduledBuildKey
         ) {
           return;
         }
-        latestTracker.finalBuildKey = scheduledBuildKey;
+      } else {
+        if (phase === 'early') {
+          if (allQuotesLoadedRef.current || latestTracker.earlyBuildKey) {
+            return;
+          }
+          latestTracker.earlyBuildKey = scheduledBuildKey;
+        } else {
+          if (
+            !allQuotesLoadedRef.current ||
+            latestTracker.finalBuildKey === scheduledBuildKey
+          ) {
+            return;
+          }
+          latestTracker.finalBuildKey = scheduledBuildKey;
+        }
       }
 
       runBuildSwapTxsForKey(scheduledBuildKey);
@@ -978,7 +1001,8 @@ export const Main = () => {
     swapBtnDisabled,
     canUseDirectSubmitTx,
     activeProviderBuildKey,
-    activeProviderIsBestQuote,
+    shouldPreExecActiveProvider,
+    activeProviderIsManualQuote,
     allQuotesLoaded,
     quoteRequestId,
     awaitingTopUpResume,

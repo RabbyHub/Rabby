@@ -713,7 +713,15 @@ export const useBridge = () => {
       let useQuote = bestQuote;
 
       setOriSelectedBridgeQuote((preItem) => {
-        useQuote = preItem?.manualClick ? preItem : bestQuote;
+        const refreshedManualQuote = preItem?.manualClick
+          ? selectableBridgeQuoteList.find(
+              (quote) => getBridgeQuoteKey(quote) === getBridgeQuoteKey(preItem)
+            )
+          : undefined;
+
+        useQuote = refreshedManualQuote
+          ? { ...refreshedManualQuote, manualClick: true }
+          : bestQuote;
         return preItem;
       });
 
