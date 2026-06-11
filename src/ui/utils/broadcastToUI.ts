@@ -21,6 +21,7 @@ type AllBackgroundStores = {
   preference: import('@/background/service/preference').PreferenceStore;
   currency: import('@/background/service/currency').CurrencyStore;
   whitelist: import('@/background/service/whitelist').WhitelistStore;
+  feedback: import('@/background/service/feedback').FeedbackServiceStore;
 };
 
 // type StoreRootModel = import('@/ui/models').RootModel;
