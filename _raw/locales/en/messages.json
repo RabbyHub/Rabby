@@ -1658,7 +1658,12 @@
       "editTpSl": {
         "entryPrice": "Entry Price:",
         "markPrice": "Mark Price:",
-        "title": "Configure TP/SL",
+        "entryCurrentPrice": "Entry Price / Current Price",
+        "title": "TP/SL for entire position",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "triggerPrice": "Trigger Price",
+        "estimatedPnlWillBe": "Your estimated PnL will be",
         "gain": "Gain",
         "loss": "Loss",
         "cancelTp": "Cancel TP",
