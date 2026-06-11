@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
 
 /** Threshold above which a market order is flagged as low-liquidity. */
-export const PERPS_SLIPPAGE_THRESHOLD = 0.05;
+export const PERPS_SLIPPAGE_THRESHOLD = 0.005;
 /** Threshold above which the slippage value is highlighted (warning). */
-export const PERPS_SLIPPAGE_WARNING = 0.01;
+export const PERPS_SLIPPAGE_WARNING = 0.001;
 
 export interface BookLevel {
   px: string;
