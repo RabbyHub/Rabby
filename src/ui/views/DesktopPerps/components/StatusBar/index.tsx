@@ -21,6 +21,9 @@ import { formatPerpsCoin } from '../../utils';
 import type { MarketData } from '@/ui/models/perps';
 
 const MARQUEE_PIXELS_PER_SECOND = 21;
+const TICKER_EXTRA_VISIBLE_ITEMS = 3;
+const TICKER_FALLBACK_MARKET_COUNT = 12;
+const TICKER_ITEM_GAP = 24;
 
 const getPriceChangePercent = (markPx?: string, prevDayPx?: string) => {
   const mark = Number(markPx || 0);
@@ -60,8 +63,10 @@ export const StatusBar: React.FC = () => {
   const marketData = useRabbySelector((state) => state.perps.marketData);
   const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
   const dispatch = useRabbyDispatch();
+  const tickerViewportRef = useRef<HTMLDivElement>(null);
   const tickerTrackRef = useRef<HTMLDivElement>(null);
   const tickerLoopRef = useRef<HTMLDivElement>(null);
+  const tickerMeasureRef = useRef<HTMLDivElement>(null);
   const tickerOffsetRef = useRef(0);
   const tickerLoopWidthRef = useRef(0);
   const tickerLastFrameTimeRef = useRef<number | null>(null);
@@ -69,38 +74,99 @@ export const StatusBar: React.FC = () => {
   const tickerPrefersReducedMotionRef = useRef(false);
   const [isConnected, setIsConnected] = useState(true);
   const [tickerMarketIds, setTickerMarketIds] = useState<string[]>([]);
+  const [tickerVisibleCount, setTickerVisibleCount] = useState(
+    TICKER_FALLBACK_MARKET_COUNT
+  );
   const { t } = useTranslation();
 
   const sortedTickerMarketIds = useMemo(() => {
     return [...marketData]
       .filter((item) => Number(item.markPx || 0) > 0)
       .sort((a, b) => Number(b.dayNtlVlm || 0) - Number(a.dayNtlVlm || 0))
-      .slice(0, 12)
       .map((item) => item.name);
   }, [marketData]);
 
-  const sortedTickerMarketKey = useMemo(() => sortedTickerMarketIds.join('|'), [
-    sortedTickerMarketIds,
+  const targetTickerMarketIds = useMemo(() => {
+    return sortedTickerMarketIds.slice(0, tickerVisibleCount);
+  }, [sortedTickerMarketIds, tickerVisibleCount]);
+
+  const targetTickerMarketKey = useMemo(() => targetTickerMarketIds.join('|'), [
+    targetTickerMarketIds,
   ]);
 
   useEffect(() => {
     setTickerMarketIds((prev) => {
-      if (sortedTickerMarketIds.length === 0) return [];
+      if (targetTickerMarketIds.length === 0) return [];
       if (
-        prev.length === sortedTickerMarketIds.length &&
-        prev.every((coin) => sortedTickerMarketIds.includes(coin))
+        prev.length === targetTickerMarketIds.length &&
+        prev.every((coin) => targetTickerMarketIds.includes(coin))
       ) {
         return prev;
       }
-      return sortedTickerMarketIds;
+      return targetTickerMarketIds;
     });
-  }, [sortedTickerMarketKey, sortedTickerMarketIds]);
+  }, [targetTickerMarketKey, targetTickerMarketIds]);
 
   const tickerMarkets = useMemo(() => {
     return tickerMarketIds
       .map((coin) => marketDataMap[coin])
       .filter(Boolean) as MarketData[];
   }, [marketDataMap, tickerMarketIds]);
+
+  const syncTickerVisibleCount = useCallback(() => {
+    const viewport = tickerViewportRef.current;
+    const measure = tickerMeasureRef.current;
+    const viewportWidth = viewport?.getBoundingClientRect().width || 0;
+    const measuredItems = measure
+      ? (Array.from(measure.children) as HTMLElement[])
+      : [];
+
+    const fallbackCount = Math.min(
+      sortedTickerMarketIds.length,
+      TICKER_FALLBACK_MARKET_COUNT
+    );
+
+    if (!viewportWidth || measuredItems.length === 0) {
+      setTickerVisibleCount((prev) =>
+        prev === fallbackCount ? prev : fallbackCount
+      );
+      return fallbackCount;
+    }
+
+    let visibleCount = 0;
+    let usedWidth = 0;
+
+    for (const item of measuredItems) {
+      const itemWidth = item.getBoundingClientRect().width;
+      if (!itemWidth) continue;
+
+      const nextWidth =
+        visibleCount === 0
+          ? itemWidth
+          : usedWidth + TICKER_ITEM_GAP + itemWidth;
+
+      if (nextWidth <= viewportWidth || visibleCount === 0) {
+        visibleCount += 1;
+        usedWidth = nextWidth;
+      } else {
+        break;
+      }
+    }
+
+    const nextCount =
+      visibleCount > 0
+        ? Math.min(
+            sortedTickerMarketIds.length,
+            visibleCount + TICKER_EXTRA_VISIBLE_ITEMS
+          )
+        : fallbackCount;
+
+    setTickerVisibleCount((prev) =>
+      prev === nextCount ? prev : nextCount
+    );
+
+    return nextCount;
+  }, [sortedTickerMarketIds.length]);
 
   const syncTickerLoopWidth = useCallback(() => {
     const loop = tickerLoopRef.current;
@@ -118,8 +184,32 @@ export const StatusBar: React.FC = () => {
   }, []);
 
   useLayoutEffect(() => {
+    syncTickerVisibleCount();
     syncTickerLoopWidth();
   });
+
+  useLayoutEffect(() => {
+    syncTickerVisibleCount();
+    window.addEventListener('resize', syncTickerVisibleCount);
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        syncTickerVisibleCount();
+      });
+      if (tickerViewportRef.current) {
+        resizeObserver.observe(tickerViewportRef.current);
+      }
+      if (tickerMeasureRef.current) {
+        resizeObserver.observe(tickerMeasureRef.current);
+      }
+    }
+
+    return () => {
+      window.removeEventListener('resize', syncTickerVisibleCount);
+      resizeObserver?.disconnect();
+    };
+  }, [syncTickerVisibleCount, targetTickerMarketKey]);
 
   useEffect(() => {
     const sdk = getPerpsSDK();
@@ -255,7 +345,7 @@ export const StatusBar: React.FC = () => {
   const RcIconVolume = soundEnabled ? RcIconOpenVolume : RcIconClosedVolume;
 
   const renderTickerItem = useCallback(
-    (item: MarketData, key: string) => {
+    (item: MarketData, key: string, isMeasure = false) => {
       const priceChange = getPriceChangePercent(item.markPx, item.prevDayPx);
       const isPositive = priceChange > 0;
       const isNegative = priceChange < 0;
@@ -268,7 +358,10 @@ export const StatusBar: React.FC = () => {
           type="button"
           key={key}
           className="desktop-perps-status-item"
-          onClick={() => handleSelectTickerMarket(item.name)}
+          tabIndex={isMeasure ? -1 : undefined}
+          onClick={
+            isMeasure ? undefined : () => handleSelectTickerMarket(item.name)
+          }
         >
           <span className="desktop-perps-status-item-name text-rb-neutral-foot">
             {pair}
@@ -300,6 +393,7 @@ export const StatusBar: React.FC = () => {
       </div>
 
       <div
+        ref={tickerViewportRef}
         className="desktop-perps-status-ticker flex-1 min-w-0 overflow-hidden"
         onMouseEnter={handleTickerMouseEnter}
         onMouseLeave={handleTickerMouseLeave}
@@ -324,6 +418,21 @@ export const StatusBar: React.FC = () => {
             </div>
           </div>
         ) : null}
+        <div
+          ref={tickerMeasureRef}
+          className="desktop-perps-status-measure"
+          aria-hidden
+        >
+          {sortedTickerMarketIds.map((coin) => {
+            const item = marketDataMap[coin];
+            if (!item) return null;
+            return renderTickerItem(
+              item,
+              `${item.dexId || 'hyper'}-${item.name}-measure`,
+              true
+            );
+          })}
+        </div>
       </div>
 
       <div className="desktop-perps-status-actions flex items-center gap-[12px]">

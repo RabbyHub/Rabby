@@ -261,6 +261,27 @@
   will-change: transform;
 }
 
+.desktop-perps-status-ticker {
+  position: relative;
+}
+
+.desktop-perps-status-measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 24px;
+  pointer-events: none;
+  visibility: hidden;
+  white-space: nowrap;
+
+  .desktop-perps-status-item {
+    pointer-events: none;
+  }
+}
+
 .desktop-perps-status-loop {
   display: flex;
   align-items: center;
