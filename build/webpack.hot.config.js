@@ -359,15 +359,6 @@ const uiConfig = {
           },
           {
             loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [
-                  require('postcss-nested'),
-                  require('postcss-custom-properties'),
-                  require('autoprefixer'),
-                ],
-              },
-            },
           },
         ],
       },
