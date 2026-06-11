@@ -53,7 +53,7 @@ export const MarketSlippage: React.FC<MarketSlippageProps> = ({
             {t('page.perps.lowLiquiditySwitchLimit')}
           </div>
           <div
-            className="flex-shrink-0 cursor-pointer text-12 font-medium text-r-blue-default"
+            className="flex-shrink-0 cursor-pointer text-12 px-6 h-[18px] flex items-center font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px]"
             onClick={onSwitchToLimit}
           >
             {t('page.perps.switchToLimit')}
