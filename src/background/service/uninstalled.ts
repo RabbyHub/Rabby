@@ -2,7 +2,6 @@ import { createPersistStore } from 'background/utils';
 import { keyringService, transactionHistoryService } from '.';
 import { KEYRING_CLASS } from '@/constant';
 import browser from 'webextension-polyfill';
-import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 
 export type UninstalledStore = {
   imported: boolean;
@@ -99,11 +98,6 @@ class Uninstalled {
 
   setUninstalled = async () => {
     try {
-      if (!(await shouldReportUserBehaviorData())) {
-        await browser.runtime.setUninstallURL('');
-        return;
-      }
-
       let search = '';
       if (this.store.imported) {
         search = 'i';
