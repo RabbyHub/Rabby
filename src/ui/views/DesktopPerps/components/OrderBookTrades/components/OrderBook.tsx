@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK, getBboSDK } from '@/ui/views/Perps/sdkManager';
 import { splitNumberByStep } from '@/ui/utils';
-import { Dropdown, Menu, Select, Skeleton } from 'antd';
+import { Dropdown, Menu, Select, Skeleton, Tooltip } from 'antd';
 import { ReactComponent as RcIconBuySell } from '@/ui/assets/perps/icon-buy-sell.svg';
 import { ReactComponent as RcIconBuy } from '@/ui/assets/perps/icon-buy.svg';
 import { ReactComponent as RcIconSell } from '@/ui/assets/perps/icon-sell.svg';
@@ -99,6 +99,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   }, [currentMarketData, selectedCoin]);
 
   const quoteAsset = marketDataMap[selectedCoin]?.quoteAsset ?? 'USDC';
+  const pxDecimals = marketDataMap[selectedCoin]?.pxDecimals ?? 2;
 
   const markPx = useMemo(() => {
     if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
@@ -245,48 +246,98 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     eventBus.emit(EVENTS.PERPS.HANDLE_CLICK_PRICE, price.toString());
   }, []);
 
+  const buildOrderTooltip = useCallback(
+    (orders: OrderBookLevel[], startIndex: number) => {
+      const levels = orders.slice(startIndex, startIndex + 3);
+      if (!levels.length) return null;
+
+      const sumSize = levels.reduce((sum, item) => sum + item.size, 0);
+      const sumUsd = levels.reduce(
+        (sum, item) => sum + Number(item.price) * item.size,
+        0
+      );
+      const avgPrice =
+        levels.reduce((sum, item) => sum + Number(item.price), 0) /
+        levels.length;
+
+      return (
+        <div className="desktop-perps-orderbook-tooltip-content">
+          <div className="desktop-perps-orderbook-tooltip-row">
+            <span>{t('page.perpsPro.orderBook.avgPrice')}</span>
+            <span>{splitNumberByStep(avgPrice.toFixed(pxDecimals))}</span>
+          </div>
+          <div className="desktop-perps-orderbook-tooltip-row">
+            <span>
+              {t('page.perpsPro.orderBook.sumBase', {
+                base: formatPerpsCoin(selectedCoin),
+              })}
+            </span>
+            <span>{splitNumberByStep(sumSize.toFixed(szDecimals))}</span>
+          </div>
+          <div className="desktop-perps-orderbook-tooltip-row">
+            <span>{t('page.perpsPro.orderBook.sumUsd')}</span>
+            <span>{splitNumberByStep(sumUsd.toFixed(2))}</span>
+          </div>
+        </div>
+      );
+    },
+    [pxDecimals, selectedCoin, szDecimals, t]
+  );
+
   const renderOrderRow = (
     order: OrderBookLevel,
     type: 'bid' | 'ask',
-    maxTotal: number
+    maxTotal: number,
+    index: number,
+    orders: OrderBookLevel[]
   ) => {
     const depthPercent = maxTotal > 0 ? (order.total / maxTotal) * 100 : 0;
+    const tooltipContent = buildOrderTooltip(orders, index);
 
     return (
-      <div
+      <Tooltip
         key={`${type}-${order.price}`}
-        onClick={() => handleClickPrice(Number(order.price))}
-        className={clsx(
-          'relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
-          isDarkTheme ? 'hover:bg-r-neutral-card-1' : 'hover:bg-rb-neutral-bg-0'
-        )}
+        placement={type === 'ask' ? 'bottomRight' : 'topRight'}
+        title={tooltipContent}
+        overlayClassName="desktop-perps-orderbook-tooltip"
+        mouseEnterDelay={0.15}
       >
-        {/* Depth background */}
         <div
+          onClick={() => handleClickPrice(Number(order.price))}
           className={clsx(
-            'absolute left-0 top-0 bottom-0 transition-[width] duration-200 ease-out',
-            type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
+            'relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
+            isDarkTheme
+              ? 'hover:bg-r-neutral-card-1'
+              : 'hover:bg-rb-neutral-bg-0'
           )}
-          style={{ width: `${depthPercent}%` }}
-        />
-
-        <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
-          <span
+        >
+          {/* Depth background */}
+          <div
             className={clsx(
-              'font-medium col-span-3 text-left group-hover:font-bold',
-              type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
+              'absolute left-0 top-0 bottom-0 transition-[width] duration-200 ease-out',
+              type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
             )}
-          >
-            {splitNumberByStep(order.price)}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium col-span-3 text-right">
-            {formatValue(order.size)}
-          </span>
-          <span className="text-r-neutral-title-1 font-medium col-span-4 text-right">
-            {formatValue(order.total)}
-          </span>
+            style={{ width: `${depthPercent}%` }}
+          />
+
+          <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
+            <span
+              className={clsx(
+                'font-medium col-span-3 text-left group-hover:font-bold',
+                type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
+              )}
+            >
+              {splitNumberByStep(order.price)}
+            </span>
+            <span className="text-r-neutral-title-1 font-medium col-span-3 text-right">
+              {formatValue(order.size)}
+            </span>
+            <span className="text-r-neutral-title-1 font-medium col-span-4 text-right">
+              {formatValue(order.total)}
+            </span>
+          </div>
         </div>
-      </div>
+      </Tooltip>
     );
   };
 
@@ -538,7 +589,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   'flex-1': viewMode === 'Both',
                 })}
               >
-                {displayAsks.map((ask) => renderOrderRow(ask, 'ask', maxTotal))}
+                {displayAsks.map((ask, index) =>
+                  renderOrderRow(ask, 'ask', maxTotal, index, displayAsks)
+                )}
               </div>
             )}
             {Boolean(latestTrade?.price) && (
@@ -571,7 +624,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   'flex-1': viewMode === 'Both',
                 })}
               >
-                {displayBids.map((bid) => renderOrderRow(bid, 'bid', maxTotal))}
+                {displayBids.map((bid, index) =>
+                  renderOrderRow(bid, 'bid', maxTotal, index, displayBids)
+                )}
               </div>
             )}
           </>
