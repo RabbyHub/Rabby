@@ -15,7 +15,7 @@ import { ReactComponent as RcIconClosedVolume } from '@/ui/assets/perps/IconClos
 import { ReactComponent as RcIconDocs } from '@/ui/assets/perps/IconDocument.svg';
 import { useTranslation } from 'react-i18next';
 import { openInTab, splitNumberByStep } from '@/ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import store, { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { playSound } from '@/ui/utils/sound';
 import { formatPerpsCoin } from '../../utils';
 import type { MarketData } from '@/ui/models/perps';
@@ -24,6 +24,49 @@ const MARQUEE_PIXELS_PER_SECOND = 21;
 const TICKER_EXTRA_VISIBLE_ITEMS = 3;
 const TICKER_FALLBACK_MARKET_COUNT = 12;
 const TICKER_ITEM_GAP = 24;
+const TICKER_STRUCTURE_SYNC_MS = 5000;
+const TICKER_STRUCTURE_POLL_MS = 500;
+const TICKER_VALUE_SYNC_MS = 500;
+
+type TickerMarket = Pick<
+  MarketData,
+  | 'name'
+  | 'displayName'
+  | 'quoteAsset'
+  | 'dexId'
+  | 'dayNtlVlm'
+  | 'markPx'
+  | 'prevDayPx'
+>;
+
+const toTickerMarket = (item: MarketData): TickerMarket => ({
+  name: item.name,
+  displayName: item.displayName,
+  quoteAsset: item.quoteAsset,
+  dexId: item.dexId,
+  dayNtlVlm: item.dayNtlVlm,
+  markPx: item.markPx,
+  prevDayPx: item.prevDayPx,
+});
+
+const getSortedTickerMarkets = () => {
+  return store
+    .getState()
+    .perps.marketData.filter((item) => Number(item.markPx || 0) > 0)
+    .sort((a, b) => Number(b.dayNtlVlm || 0) - Number(a.dayNtlVlm || 0))
+    .map(toTickerMarket);
+};
+
+const getTickerStructureKey = (markets: TickerMarket[]) => {
+  return markets
+    .map(
+      (item) =>
+        `${item.dexId || 'hyper'}:${item.name}:${item.displayName}:${
+          item.quoteAsset || 'USDC'
+        }`
+    )
+    .join('|');
+};
 
 const getPriceChangePercent = (markPx?: string, prevDayPx?: string) => {
   const mark = Number(markPx || 0);
@@ -60,58 +103,71 @@ const OnlineStatus: React.FC<{ online: boolean }> = ({ online }) => {
 
 export const StatusBar: React.FC = () => {
   const soundEnabled = useRabbySelector((state) => state.perps.soundEnabled);
-  const marketData = useRabbySelector((state) => state.perps.marketData);
-  const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
   const dispatch = useRabbyDispatch();
   const tickerViewportRef = useRef<HTMLDivElement>(null);
   const tickerTrackRef = useRef<HTMLDivElement>(null);
   const tickerLoopRef = useRef<HTMLDivElement>(null);
   const tickerMeasureRef = useRef<HTMLDivElement>(null);
+  const tickerStructureKeyRef = useRef('');
+  const tickerStructureLastSyncAtRef = useRef(0);
   const tickerOffsetRef = useRef(0);
   const tickerLoopWidthRef = useRef(0);
   const tickerLastFrameTimeRef = useRef<number | null>(null);
   const tickerPausedRef = useRef(false);
   const tickerPrefersReducedMotionRef = useRef(false);
   const [isConnected, setIsConnected] = useState(true);
-  const [tickerMarketIds, setTickerMarketIds] = useState<string[]>([]);
+  const [tickerStructureMarkets, setTickerStructureMarkets] = useState<
+    TickerMarket[]
+  >([]);
+  const [tickerValueMap, setTickerValueMap] = useState<
+    Record<string, TickerMarket>
+  >({});
   const [tickerVisibleCount, setTickerVisibleCount] = useState(
     TICKER_FALLBACK_MARKET_COUNT
   );
   const { t } = useTranslation();
 
-  const sortedTickerMarketIds = useMemo(() => {
-    return [...marketData]
-      .filter((item) => Number(item.markPx || 0) > 0)
-      .sort((a, b) => Number(b.dayNtlVlm || 0) - Number(a.dayNtlVlm || 0))
+  const tickerStructureKey = useMemo(
+    () => getTickerStructureKey(tickerStructureMarkets),
+    [tickerStructureMarkets]
+  );
+
+  const tickerMarketNames = useMemo(() => {
+    return tickerStructureMarkets
+      .slice(0, tickerVisibleCount)
       .map((item) => item.name);
-  }, [marketData]);
+  }, [tickerStructureMarkets, tickerVisibleCount]);
 
-  const targetTickerMarketIds = useMemo(() => {
-    return sortedTickerMarketIds.slice(0, tickerVisibleCount);
-  }, [sortedTickerMarketIds, tickerVisibleCount]);
-
-  const targetTickerMarketKey = useMemo(() => targetTickerMarketIds.join('|'), [
-    targetTickerMarketIds,
+  const tickerMarketNamesKey = useMemo(() => tickerMarketNames.join('|'), [
+    tickerMarketNames,
   ]);
 
-  useEffect(() => {
-    setTickerMarketIds((prev) => {
-      if (targetTickerMarketIds.length === 0) return [];
-      if (
-        prev.length === targetTickerMarketIds.length &&
-        prev.every((coin) => targetTickerMarketIds.includes(coin))
-      ) {
-        return prev;
-      }
-      return targetTickerMarketIds;
-    });
-  }, [targetTickerMarketKey, targetTickerMarketIds]);
-
   const tickerMarkets = useMemo(() => {
-    return tickerMarketIds
-      .map((coin) => marketDataMap[coin])
-      .filter(Boolean) as MarketData[];
-  }, [marketDataMap, tickerMarketIds]);
+    return tickerStructureMarkets
+      .slice(0, tickerVisibleCount)
+      .map((item) => tickerValueMap[item.name] || item);
+  }, [tickerStructureMarkets, tickerValueMap, tickerVisibleCount]);
+
+  const syncTickerStructure = useCallback((force = false) => {
+    const now = Date.now();
+    if (
+      !force &&
+      tickerStructureKeyRef.current &&
+      now - tickerStructureLastSyncAtRef.current < TICKER_STRUCTURE_SYNC_MS
+    ) {
+      return;
+    }
+
+    tickerStructureLastSyncAtRef.current = now;
+    const nextMarkets = getSortedTickerMarkets();
+    const nextKey = getTickerStructureKey(nextMarkets);
+    if (tickerStructureKeyRef.current === nextKey) {
+      return;
+    }
+
+    tickerStructureKeyRef.current = nextKey;
+    setTickerStructureMarkets(nextMarkets);
+  }, []);
 
   const syncTickerVisibleCount = useCallback(() => {
     const viewport = tickerViewportRef.current;
@@ -122,7 +178,7 @@ export const StatusBar: React.FC = () => {
       : [];
 
     const fallbackCount = Math.min(
-      sortedTickerMarketIds.length,
+      tickerStructureMarkets.length,
       TICKER_FALLBACK_MARKET_COUNT
     );
 
@@ -156,17 +212,15 @@ export const StatusBar: React.FC = () => {
     const nextCount =
       visibleCount > 0
         ? Math.min(
-            sortedTickerMarketIds.length,
+            tickerStructureMarkets.length,
             visibleCount + TICKER_EXTRA_VISIBLE_ITEMS
           )
         : fallbackCount;
 
-    setTickerVisibleCount((prev) =>
-      prev === nextCount ? prev : nextCount
-    );
+    setTickerVisibleCount((prev) => (prev === nextCount ? prev : nextCount));
 
     return nextCount;
-  }, [sortedTickerMarketIds.length]);
+  }, [tickerStructureMarkets.length]);
 
   const syncTickerLoopWidth = useCallback(() => {
     const loop = tickerLoopRef.current;
@@ -185,11 +239,6 @@ export const StatusBar: React.FC = () => {
 
   useLayoutEffect(() => {
     syncTickerVisibleCount();
-    syncTickerLoopWidth();
-  });
-
-  useLayoutEffect(() => {
-    syncTickerVisibleCount();
     window.addEventListener('resize', syncTickerVisibleCount);
 
     let resizeObserver: ResizeObserver | null = null;
@@ -200,16 +249,64 @@ export const StatusBar: React.FC = () => {
       if (tickerViewportRef.current) {
         resizeObserver.observe(tickerViewportRef.current);
       }
-      if (tickerMeasureRef.current) {
-        resizeObserver.observe(tickerMeasureRef.current);
-      }
     }
 
     return () => {
       window.removeEventListener('resize', syncTickerVisibleCount);
       resizeObserver?.disconnect();
     };
-  }, [syncTickerVisibleCount, targetTickerMarketKey]);
+  }, [syncTickerVisibleCount, tickerStructureKey]);
+
+  // Keep layout measurement off the high-frequency all-market ticker stream.
+  useEffect(() => {
+    syncTickerStructure(true);
+    const interval = setInterval(syncTickerStructure, TICKER_STRUCTURE_POLL_MS);
+    return () => clearInterval(interval);
+  }, [syncTickerStructure]);
+
+  useEffect(() => {
+    if (tickerMarketNames.length === 0) {
+      setTickerValueMap({});
+      return;
+    }
+
+    const tickerNames = tickerMarketNames;
+    const syncTickerValues = () => {
+      const latestMap = store.getState().perps.marketDataMap;
+      setTickerValueMap((prev) => {
+        let changed = false;
+        const next: Record<string, TickerMarket> = {};
+
+        tickerNames.forEach((name) => {
+          const latest = latestMap[name];
+          const nextItem = latest ? toTickerMarket(latest) : prev[name];
+          if (!nextItem) return;
+          next[name] = nextItem;
+
+          const prevItem = prev[name];
+          if (
+            !prevItem ||
+            prevItem.markPx !== nextItem.markPx ||
+            prevItem.prevDayPx !== nextItem.prevDayPx ||
+            prevItem.displayName !== nextItem.displayName ||
+            prevItem.quoteAsset !== nextItem.quoteAsset
+          ) {
+            changed = true;
+          }
+        });
+
+        if (Object.keys(prev).length !== Object.keys(next).length) {
+          changed = true;
+        }
+
+        return changed ? next : prev;
+      });
+    };
+
+    syncTickerValues();
+    const interval = setInterval(syncTickerValues, TICKER_VALUE_SYNC_MS);
+    return () => clearInterval(interval);
+  }, [tickerMarketNames]);
 
   useEffect(() => {
     const sdk = getPerpsSDK();
@@ -238,19 +335,10 @@ export const StatusBar: React.FC = () => {
     syncTickerLoopWidth();
     window.addEventListener('resize', syncTickerLoopWidth);
 
-    let resizeObserver: ResizeObserver | null = null;
-    if (typeof ResizeObserver !== 'undefined' && tickerLoopRef.current) {
-      resizeObserver = new ResizeObserver(() => {
-        syncTickerLoopWidth();
-      });
-      resizeObserver.observe(tickerLoopRef.current);
-    }
-
     return () => {
       window.removeEventListener('resize', syncTickerLoopWidth);
-      resizeObserver?.disconnect();
     };
-  }, [tickerMarkets.length, syncTickerLoopWidth]);
+  }, [tickerMarkets.length, tickerMarketNamesKey, syncTickerLoopWidth]);
 
   useLayoutEffect(() => {
     const track = tickerTrackRef.current;
@@ -345,7 +433,7 @@ export const StatusBar: React.FC = () => {
   const RcIconVolume = soundEnabled ? RcIconOpenVolume : RcIconClosedVolume;
 
   const renderTickerItem = useCallback(
-    (item: MarketData, key: string, isMeasure = false) => {
+    (item: TickerMarket, key: string, isMeasure = false) => {
       const priceChange = getPriceChangePercent(item.markPx, item.prevDayPx);
       const isPositive = priceChange > 0;
       const isNegative = priceChange < 0;
@@ -423,9 +511,7 @@ export const StatusBar: React.FC = () => {
           className="desktop-perps-status-measure"
           aria-hidden
         >
-          {sortedTickerMarketIds.map((coin) => {
-            const item = marketDataMap[coin];
-            if (!item) return null;
+          {tickerStructureMarkets.map((item) => {
             return renderTickerItem(
               item,
               `${item.dexId || 'hyper'}-${item.name}-measure`,
