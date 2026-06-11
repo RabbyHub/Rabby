@@ -5,12 +5,13 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { getPerpsSDK, getBboSDK } from '@/ui/views/Perps/sdkManager';
 import { splitNumberByStep } from '@/ui/utils';
-import { Dropdown, Menu, Select, Skeleton, Tooltip } from 'antd';
+import { Dropdown, Menu, Select, Skeleton } from 'antd';
 import { ReactComponent as RcIconBuySell } from '@/ui/assets/perps/icon-buy-sell.svg';
 import { ReactComponent as RcIconBuy } from '@/ui/assets/perps/icon-buy.svg';
 import { ReactComponent as RcIconSell } from '@/ui/assets/perps/icon-sell.svg';
@@ -40,6 +41,14 @@ interface OrderBookLevel {
   total: number;
 }
 
+interface OrderBookTooltipState {
+  type: 'bid' | 'ask';
+  index: number;
+  top: number;
+  left: number;
+  alignLeft: boolean;
+}
+
 export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   latestTrade,
 }) => {
@@ -58,6 +67,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
   const [bids, setBids] = useState<OrderBookLevel[]>([]);
   const [asks, setAsks] = useState<OrderBookLevel[]>([]);
+  const [hoveredOrder, setHoveredOrder] = useState<OrderBookTooltipState | null>(
+    null
+  );
 
   // Dynamic row count based on container height
   const ORDER_ROW_HEIGHT = 24;
@@ -129,6 +141,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
 
   useEffect(() => {
     setAggregationIndex(0);
+    setHoveredOrder(null);
   }, [selectedCoin]);
 
   const selectedAggregation = useMemo(() => {
@@ -246,6 +259,34 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     eventBus.emit(EVENTS.PERPS.HANDLE_CLICK_PRICE, price.toString());
   }, []);
 
+  const updateTooltipPosition = useCallback(
+    (
+      type: 'bid' | 'ask',
+      index: number,
+      rowElement: HTMLDivElement | null
+    ) => {
+      if (!rowElement || !contentRef.current) return;
+
+      const rowRect = rowElement.getBoundingClientRect();
+      const containerRect = contentRef.current.getBoundingClientRect();
+      const hasRoomOnLeft = containerRect.left >= 190;
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+      const centerTop = rowRect.top + rowRect.height / 2;
+
+      setHoveredOrder({
+        type,
+        index,
+        top: Math.min(Math.max(centerTop, 44), Math.max(44, viewportHeight - 44)),
+        left: hasRoomOnLeft
+          ? containerRect.left - 10
+          : containerRect.left + containerRect.width + 10,
+        alignLeft: hasRoomOnLeft,
+      });
+    },
+    []
+  );
+
   const buildOrderTooltip = useCallback(
     (orders: OrderBookLevel[], startIndex: number) => {
       const levels = orders.slice(startIndex, startIndex + 3);
@@ -292,52 +333,47 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     orders: OrderBookLevel[]
   ) => {
     const depthPercent = maxTotal > 0 ? (order.total / maxTotal) * 100 : 0;
-    const tooltipContent = buildOrderTooltip(orders, index);
-
     return (
-      <Tooltip
+      <div
         key={`${type}-${order.price}`}
-        placement={type === 'ask' ? 'bottomRight' : 'topRight'}
-        title={tooltipContent}
-        overlayClassName="desktop-perps-orderbook-tooltip"
-        mouseEnterDelay={0.15}
+        onMouseEnter={(e) =>
+          updateTooltipPosition(type, index, e.currentTarget)
+        }
+        onMouseMove={(e) => updateTooltipPosition(type, index, e.currentTarget)}
+        onClick={() => handleClickPrice(Number(order.price))}
+        className={clsx(
+          'relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
+          isDarkTheme
+            ? 'hover:bg-r-neutral-card-1'
+            : 'hover:bg-rb-neutral-bg-0'
+        )}
       >
+        {/* Depth background */}
         <div
-          onClick={() => handleClickPrice(Number(order.price))}
           className={clsx(
-            'relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
-            isDarkTheme
-              ? 'hover:bg-r-neutral-card-1'
-              : 'hover:bg-rb-neutral-bg-0'
+            'absolute left-0 top-0 bottom-0 transition-[width] duration-200 ease-out',
+            type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
           )}
-        >
-          {/* Depth background */}
-          <div
-            className={clsx(
-              'absolute left-0 top-0 bottom-0 transition-[width] duration-200 ease-out',
-              type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
-            )}
-            style={{ width: `${depthPercent}%` }}
-          />
+          style={{ width: `${depthPercent}%` }}
+        />
 
-          <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
-            <span
-              className={clsx(
-                'font-medium col-span-3 text-left group-hover:font-bold',
-                type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
-              )}
-            >
-              {splitNumberByStep(order.price)}
-            </span>
-            <span className="text-r-neutral-title-1 font-medium col-span-3 text-right">
-              {formatValue(order.size)}
-            </span>
-            <span className="text-r-neutral-title-1 font-medium col-span-4 text-right">
-              {formatValue(order.total)}
-            </span>
-          </div>
+        <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
+          <span
+            className={clsx(
+              'font-medium col-span-3 text-left group-hover:font-bold',
+              type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
+            )}
+          >
+            {splitNumberByStep(order.price)}
+          </span>
+          <span className="text-r-neutral-title-1 font-medium col-span-3 text-right">
+            {formatValue(order.size)}
+          </span>
+          <span className="text-r-neutral-title-1 font-medium col-span-4 text-right">
+            {formatValue(order.total)}
+          </span>
         </div>
-      </Tooltip>
+      </div>
     );
   };
 
@@ -388,6 +424,31 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   }, [displayBids, displayAsks]);
 
   const isLoading = bids.length === 0 && asks.length === 0;
+
+  const hoveredOrders = hoveredOrder?.type === 'ask' ? displayAsks : displayBids;
+  const tooltipContent =
+    hoveredOrder && hoveredOrders[hoveredOrder.index]
+      ? buildOrderTooltip(hoveredOrders, hoveredOrder.index)
+      : null;
+
+  const tooltipOverlay =
+    hoveredOrder && tooltipContent && typeof document !== 'undefined'
+      ? createPortal(
+          <div
+            className="desktop-perps-orderbook-tooltip-overlay"
+            style={{
+              left: hoveredOrder.left,
+              top: hoveredOrder.top,
+              transform: hoveredOrder.alignLeft
+                ? 'translate(-100%, -50%)'
+                : 'translate(0, -50%)',
+            }}
+          >
+            {tooltipContent}
+          </div>,
+          document.body
+        )
+      : null;
 
   const priceChange = currentMarketData?.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)
@@ -564,7 +625,11 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </span>
       </div>
 
-      <div ref={contentRef} className="flex-1 flex flex-col overflow-hidden">
+      <div
+        ref={contentRef}
+        className="flex-1 flex flex-col overflow-hidden"
+        onMouseLeave={() => setHoveredOrder(null)}
+      >
         {isLoading ? (
           <>
             <div className="flex-1 flex flex-col gap-2 justify-end">
@@ -632,6 +697,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           </>
         )}
       </div>
+      {tooltipOverlay}
     </div>
   );
 };

@@ -268,19 +268,18 @@
   padding-right: 24px;
 }
 
-.desktop-perps-orderbook-tooltip {
-  .ant-tooltip-inner {
-    min-width: 172px;
-    padding: 8px 10px;
-    border: 1px solid var(--rb-neutral-line);
-    border-radius: 6px;
-    background: var(--rb-neutral-bg-4);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
-  }
-
-  .ant-tooltip-arrow-content {
-    background: var(--rb-neutral-bg-4);
-  }
+.desktop-perps-orderbook-tooltip-overlay {
+  position: fixed;
+  z-index: 1100;
+  width: max-content;
+  min-width: 152px;
+  max-width: 188px;
+  padding: 8px 10px;
+  pointer-events: none;
+  border: 1px solid var(--rb-neutral-line);
+  border-radius: 6px;
+  background: var(--rb-neutral-bg-4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
 }
 
 .desktop-perps-orderbook-tooltip-content {
