@@ -76,6 +76,10 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
     }
   );
 
+  const isPerpsTopbarAccount = className
+    ?.split(/\s+/)
+    .includes('desktop-perps-topbar-account');
+
   return (
     <>
       <Popover
@@ -103,13 +107,19 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
       >
         <div
           aria-disabled={disabled}
+          aria-expanded={isOpen}
           className={clsx(
-            'h-[32px] pl-[12px] px-[10px] rounded-[8px]',
+            isPerpsTopbarAccount
+              ? 'border border-solid'
+              : 'h-[32px] pl-[12px] px-[10px] rounded-[8px] border border-rb-neutral-line',
             'flex items-center gap-[6px]',
-            'border border-rb-neutral-line',
             disabled
               ? 'cursor-not-allowed opacity-50'
-              : 'cursor-pointer hover:bg-rb-brand-light-1 hover:border-rb-brand-default',
+              : clsx(
+                  'cursor-pointer',
+                  !isPerpsTopbarAccount &&
+                    'hover:bg-rb-brand-light-1 hover:border-rb-brand-default'
+                ),
             className
           )}
         >

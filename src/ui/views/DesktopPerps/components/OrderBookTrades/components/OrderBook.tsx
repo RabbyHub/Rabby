@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +41,14 @@ interface OrderBookLevel {
   total: number;
 }
 
+interface OrderBookTooltipState {
+  type: 'bid' | 'ask';
+  index: number;
+  top: number;
+  left: number;
+  alignLeft: boolean;
+}
+
 export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   latestTrade,
 }) => {
@@ -58,6 +67,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
   const [bids, setBids] = useState<OrderBookLevel[]>([]);
   const [asks, setAsks] = useState<OrderBookLevel[]>([]);
+  const [
+    hoveredOrder,
+    setHoveredOrder,
+  ] = useState<OrderBookTooltipState | null>(null);
 
   // Dynamic row count based on container height
   const ORDER_ROW_HEIGHT = 24;
@@ -99,6 +112,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   }, [currentMarketData, selectedCoin]);
 
   const quoteAsset = marketDataMap[selectedCoin]?.quoteAsset ?? 'USDC';
+  const pxDecimals = marketDataMap[selectedCoin]?.pxDecimals ?? 2;
 
   const markPx = useMemo(() => {
     if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
@@ -128,6 +142,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
 
   useEffect(() => {
     setAggregationIndex(0);
+    setHoveredOrder(null);
   }, [selectedCoin]);
 
   const selectedAggregation = useMemo(() => {
@@ -245,16 +260,86 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     eventBus.emit(EVENTS.PERPS.HANDLE_CLICK_PRICE, price.toString());
   }, []);
 
+  const updateTooltipPosition = useCallback(
+    (type: 'bid' | 'ask', index: number, rowElement: HTMLDivElement | null) => {
+      if (!rowElement || !contentRef.current) return;
+
+      const rowRect = rowElement.getBoundingClientRect();
+      const containerRect = contentRef.current.getBoundingClientRect();
+      const hasRoomOnLeft = containerRect.left >= 190;
+      const viewportHeight =
+        window.innerHeight || document.documentElement.clientHeight;
+      const centerTop = rowRect.top + rowRect.height / 2;
+
+      setHoveredOrder({
+        type,
+        index,
+        top: Math.min(
+          Math.max(centerTop, 44),
+          Math.max(44, viewportHeight - 44)
+        ),
+        left: hasRoomOnLeft
+          ? containerRect.left - 10
+          : containerRect.left + containerRect.width + 10,
+        alignLeft: hasRoomOnLeft,
+      });
+    },
+    []
+  );
+
+  const buildOrderTooltip = useCallback(
+    (orders: OrderBookLevel[], startIndex: number) => {
+      const levels = orders.slice(startIndex, startIndex + 3);
+      if (!levels.length) return null;
+
+      const sumSize = levels.reduce((sum, item) => sum + item.size, 0);
+      const sumUsd = levels.reduce(
+        (sum, item) => sum + Number(item.price) * item.size,
+        0
+      );
+      const avgPrice =
+        levels.reduce((sum, item) => sum + Number(item.price), 0) /
+        levels.length;
+
+      return (
+        <div className="desktop-perps-orderbook-tooltip-content">
+          <div className="desktop-perps-orderbook-tooltip-row">
+            <span>{t('page.perpsPro.orderBook.avgPrice')}</span>
+            <span>{splitNumberByStep(avgPrice.toFixed(pxDecimals))}</span>
+          </div>
+          <div className="desktop-perps-orderbook-tooltip-row">
+            <span>
+              {t('page.perpsPro.orderBook.sumBase', {
+                base: formatPerpsCoin(selectedCoin),
+              })}
+            </span>
+            <span>{splitNumberByStep(sumSize.toFixed(szDecimals))}</span>
+          </div>
+          <div className="desktop-perps-orderbook-tooltip-row">
+            <span>{t('page.perpsPro.orderBook.sumUsd')}</span>
+            <span>{splitNumberByStep(sumUsd.toFixed(2))}</span>
+          </div>
+        </div>
+      );
+    },
+    [pxDecimals, selectedCoin, szDecimals, t]
+  );
+
   const renderOrderRow = (
     order: OrderBookLevel,
     type: 'bid' | 'ask',
-    maxTotal: number
+    maxTotal: number,
+    index: number,
+    orders: OrderBookLevel[]
   ) => {
     const depthPercent = maxTotal > 0 ? (order.total / maxTotal) * 100 : 0;
-
     return (
       <div
         key={`${type}-${order.price}`}
+        onMouseEnter={(e) =>
+          updateTooltipPosition(type, index, e.currentTarget)
+        }
+        onMouseMove={(e) => updateTooltipPosition(type, index, e.currentTarget)}
         onClick={() => handleClickPrice(Number(order.price))}
         className={clsx(
           'relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
@@ -337,6 +422,32 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   }, [displayBids, displayAsks]);
 
   const isLoading = bids.length === 0 && asks.length === 0;
+
+  const hoveredOrders =
+    hoveredOrder?.type === 'ask' ? displayAsks : displayBids;
+  const tooltipContent =
+    hoveredOrder && hoveredOrders[hoveredOrder.index]
+      ? buildOrderTooltip(hoveredOrders, hoveredOrder.index)
+      : null;
+
+  const tooltipOverlay =
+    hoveredOrder && tooltipContent && typeof document !== 'undefined'
+      ? createPortal(
+          <div
+            className="desktop-perps-orderbook-tooltip-overlay"
+            style={{
+              left: hoveredOrder.left,
+              top: hoveredOrder.top,
+              transform: hoveredOrder.alignLeft
+                ? 'translate(-100%, -50%)'
+                : 'translate(0, -50%)',
+            }}
+          >
+            {tooltipContent}
+          </div>,
+          document.body
+        )
+      : null;
 
   const priceChange = currentMarketData?.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)
@@ -513,7 +624,11 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </span>
       </div>
 
-      <div ref={contentRef} className="flex-1 flex flex-col overflow-hidden">
+      <div
+        ref={contentRef}
+        className="flex-1 flex flex-col overflow-hidden"
+        onMouseLeave={() => setHoveredOrder(null)}
+      >
         {isLoading ? (
           <>
             <div className="flex-1 flex flex-col gap-2 justify-end">
@@ -538,7 +653,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   'flex-1': viewMode === 'Both',
                 })}
               >
-                {displayAsks.map((ask) => renderOrderRow(ask, 'ask', maxTotal))}
+                {displayAsks.map((ask, index) =>
+                  renderOrderRow(ask, 'ask', maxTotal, index, displayAsks)
+                )}
               </div>
             )}
             {Boolean(latestTrade?.price) && (
@@ -571,12 +688,15 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   'flex-1': viewMode === 'Both',
                 })}
               >
-                {displayBids.map((bid) => renderOrderRow(bid, 'bid', maxTotal))}
+                {displayBids.map((bid, index) =>
+                  renderOrderRow(bid, 'bid', maxTotal, index, displayBids)
+                )}
               </div>
             )}
           </>
         )}
       </div>
+      {tooltipOverlay}
     </div>
   );
 };

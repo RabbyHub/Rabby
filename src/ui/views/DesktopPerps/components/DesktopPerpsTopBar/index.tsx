@@ -18,6 +18,11 @@ import { AccountActions } from '../AccountActions';
 
 const FAVORITES_SCROLL_STEP = 320;
 
+const DEFAULT_SCROLL_STATE = {
+  canScrollLeft: false,
+  canScrollRight: false,
+};
+
 const getPriceChangePercent = (markPx?: string, prevDayPx?: string) => {
   const mark = Number(markPx || 0);
   const prev = Number(prevDayPx || 0);
@@ -30,7 +35,7 @@ export const DesktopPerpsTopBar: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const { login: switchPerpsAccount } = usePerpsProState();
   const favoritesScrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollRight, setCanScrollRight] = useState(false);
+  const [scrollState, setScrollState] = useState(DEFAULT_SCROLL_STATE);
 
   const {
     currentPerpsAccount,
@@ -46,44 +51,61 @@ export const DesktopPerpsTopBar: React.FC = () => {
 
   const isEmpty = sortedCoins.length === 0;
 
-  const updateCanScrollRight = useCallback(() => {
+  const updateScrollState = useCallback(() => {
     const container = favoritesScrollRef.current;
     if (!container) {
-      setCanScrollRight(false);
+      setScrollState(DEFAULT_SCROLL_STATE);
       return;
     }
 
     const { scrollLeft, scrollWidth, clientWidth } = container;
-    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+    const nextState = {
+      canScrollLeft: scrollLeft > 1,
+      canScrollRight: scrollLeft + clientWidth < scrollWidth - 1,
+    };
+
+    setScrollState((prev) =>
+      prev.canScrollLeft === nextState.canScrollLeft &&
+      prev.canScrollRight === nextState.canScrollRight
+        ? prev
+        : nextState
+    );
   }, []);
 
   useEffect(() => {
     if (isEmpty) {
-      setCanScrollRight(false);
+      setScrollState(DEFAULT_SCROLL_STATE);
       return;
     }
 
     const container = favoritesScrollRef.current;
     if (!container) return;
 
-    const rafId = requestAnimationFrame(updateCanScrollRight);
-    const handleScroll = () => updateCanScrollRight();
+    const rafId = requestAnimationFrame(updateScrollState);
+    const handleScroll = () => updateScrollState();
     container.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', updateCanScrollRight);
+    window.addEventListener('resize', updateScrollState);
 
     let resizeObserver: ResizeObserver | null = null;
     if (typeof ResizeObserver !== 'undefined') {
-      resizeObserver = new ResizeObserver(updateCanScrollRight);
+      resizeObserver = new ResizeObserver(updateScrollState);
       resizeObserver.observe(container);
     }
 
     return () => {
       cancelAnimationFrame(rafId);
       container.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', updateCanScrollRight);
+      window.removeEventListener('resize', updateScrollState);
       resizeObserver?.disconnect();
     };
-  }, [isEmpty, sortedCoins.length, updateCanScrollRight]);
+  }, [isEmpty, sortedCoins.length, updateScrollState]);
+
+  const handleScrollFavoritesLeft = useCallback(() => {
+    favoritesScrollRef.current?.scrollBy({
+      left: -FAVORITES_SCROLL_STEP,
+      behavior: 'smooth',
+    });
+  }, []);
 
   const handleScrollFavoritesRight = useCallback(() => {
     favoritesScrollRef.current?.scrollBy({
@@ -93,11 +115,11 @@ export const DesktopPerpsTopBar: React.FC = () => {
   }, []);
 
   return (
-    <div className="mx-[6px] mt-[6px] h-[48px] shrink-0 rounded-[6px] bg-rb-neutral-bg-1 flex items-center gap-[24px] px-[12px] min-w-0">
+    <div className="desktop-perps-topbar mx-[6px] mt-[6px] h-[48px] rounded-[6px] bg-rb-neutral-bg-1 flex items-center gap-[24px] px-[12px] min-w-0">
       <div className="flex flex-1 min-w-0 items-center gap-[12px] overflow-hidden">
-        <RcIconTopBarLogo className="w-[24px] h-[24px] shrink-0" />
+        <RcIconTopBarLogo className="desktop-perps-topbar-logo w-[24px] h-[24px]" />
 
-        <div className="h-[12px] w-0 border-l border-solid border-rb-neutral-line shrink-0" />
+        <div className="desktop-perps-topbar-divider h-[12px] w-0 border-l border-solid border-rb-neutral-line" />
 
         {isEmpty ? (
           <div className="text-[12px] leading-[14px] text-rb-neutral-secondary truncate">
@@ -105,7 +127,17 @@ export const DesktopPerpsTopBar: React.FC = () => {
           </div>
         ) : (
           <div className="flex flex-1 min-w-0 items-center gap-[8px] overflow-hidden">
-            <RcIconStar className="w-[16px] h-[16px] text-rb-orange-default shrink-0" />
+            <RcIconStar className="desktop-perps-topbar-favorite-star w-[16px] h-[16px] text-rb-orange-default" />
+            {scrollState.canScrollLeft ? (
+              <button
+                type="button"
+                aria-label="Scroll favorites left"
+                className="desktop-perps-topbar-favorites-arrow desktop-perps-topbar-favorites-arrow-left"
+                onClick={handleScrollFavoritesLeft}
+              >
+                <RcIconOverflowArrow className="desktop-perps-topbar-overflow-icon desktop-perps-topbar-overflow-icon-left" />
+              </button>
+            ) : null}
             <div
               ref={favoritesScrollRef}
               className="flex flex-1 min-w-0 items-center gap-[24px] overflow-x-auto scrollbar-hide whitespace-nowrap"
@@ -128,7 +160,7 @@ export const DesktopPerpsTopBar: React.FC = () => {
                   <button
                     type="button"
                     key={coin}
-                    className="group flex shrink-0 items-center gap-[6px] border-0 bg-transparent p-0 text-[12px] leading-[14px] cursor-pointer"
+                    className="desktop-perps-topbar-favorite-item group flex items-center gap-[6px] border-0 bg-transparent p-0 text-[12px] leading-[14px] cursor-pointer"
                     onClick={() => dispatch.perps.updateSelectedCoin(coin)}
                   >
                     <span className="text-rb-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
@@ -151,21 +183,21 @@ export const DesktopPerpsTopBar: React.FC = () => {
                 );
               })}
             </div>
-            {canScrollRight ? (
+            {scrollState.canScrollRight ? (
               <button
                 type="button"
-                aria-label="Scroll favorites"
-                className="flex h-[20px] w-[20px] shrink-0 items-center justify-center border-0 bg-transparent p-0 text-rb-neutral-secondary hover:text-rb-neutral-title-1 cursor-pointer"
+                aria-label="Scroll favorites right"
+                className="desktop-perps-topbar-favorites-arrow desktop-perps-topbar-favorites-arrow-right"
                 onClick={handleScrollFavoritesRight}
               >
-                <RcIconOverflowArrow className="h-[6.25px] w-[11.25px] -rotate-90" />
+                <RcIconOverflowArrow className="desktop-perps-topbar-overflow-icon desktop-perps-topbar-overflow-icon-right" />
               </button>
             ) : null}
           </div>
         )}
       </div>
 
-      <div className="desktop-perps-topbar-actions flex shrink-0 items-center gap-[12px]">
+      <div className="desktop-perps-topbar-actions flex items-center gap-[12px]">
         <DesktopAccountSelector
           scene="perps"
           value={currentPerpsAccount}

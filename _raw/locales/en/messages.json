@@ -1455,7 +1455,15 @@
           "marketCloseBtn": "Market Close",
           "dontShowAgain": "Don't show this again",
           "confirmCloseAllTitle": "Confirm Close All Positions",
-          "confirmCloseAllDesc": "All your open positions will be closed at market price and cancel all orders."
+          "confirmCloseAllDesc": "All your open positions will be closed at market price and cancel all orders.",
+          "positionSize": "Position Size",
+          "orderPrice": "Order Price",
+          "marketPrice": "Market Price",
+          "buy": "Buy",
+          "sell": "Sell",
+          "buyToSell": "Buy to sell",
+          "sellToBuy": "Sell to buy",
+          "reverseAction": "{{side}} {{size}} {{coin}} to Reverse"
         },
         "openOrders": {
           "__skip_translation": ["ro"],
@@ -1643,16 +1651,22 @@
         "confirm": "Confirm"
       },
       "editMargin": {
-        "title": "Manage Margin",
+        "title": "Manage margin",
         "configureMargin": "Configure Margin",
         "longLiquidationTips": "Going down {{percent}} will trigger liquidation",
         "shortLiquidationTips": "Going up {{percent}} will trigger liquidation",
-        "currentPosition": "Current Position"
+        "currentPosition": "Current Position",
+        "currentPrice": "Current Price"
       },
       "editTpSl": {
         "entryPrice": "Entry Price:",
         "markPrice": "Mark Price:",
-        "title": "Configure TP/SL",
+        "entryCurrentPrice": "Entry Price / Current Price",
+        "title": "TP/SL for entire position",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "triggerPrice": "Trigger Price",
+        "estimatedPnlWillBe": "Your estimated PnL will be",
         "gain": "Gain",
         "loss": "Loss",
         "cancelTp": "Cancel TP",
@@ -1710,7 +1724,10 @@
         "noTrades": "No trades",
         "viewBoth": "Both",
         "viewBids": "Bids",
-        "viewAsks": "Asks"
+        "viewAsks": "Asks",
+        "avgPrice": "Avg. Price",
+        "sumBase": "Sum {{base}}",
+        "sumUsd": "Sum USD"
       }
     },
     "perpsDetail": {

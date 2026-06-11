@@ -45,7 +45,9 @@ export const AccountActions: React.FC<AccountActionsProps> = ({
       <div
         className={clsx(
           'flex items-center gap-[8px]',
-          compact ? 'h-[26px]' : 'pl-[6px] pr-[6px] h-[32px]'
+          compact
+            ? 'desktop-perps-topbar-account-actions-inner'
+            : 'pl-[6px] pr-[6px] h-[32px]'
         )}
       >
         <button
@@ -53,7 +55,7 @@ export const AccountActions: React.FC<AccountActionsProps> = ({
           className={clsx(
             'px-[12px] font-medium flex items-center justify-center border border-solid',
             compact
-              ? 'h-[26px] rounded-[6px] text-[12px] leading-[14px] border-rb-neutral-line text-rb-neutral-foot hover:border-rb-brand-default hover:text-rb-brand-default'
+              ? 'desktop-perps-topbar-deposit-button'
               : 'ml-6 h-[32px] rounded-[8px] text-13 border-rb-brand-default text-rb-brand-default'
           )}
         >
@@ -67,7 +69,7 @@ export const AccountActions: React.FC<AccountActionsProps> = ({
             className={clsx(
               'px-[12px] rounded-[6px] font-medium flex items-center gap-[8px] cursor-pointer justify-center',
               compact
-                ? 'h-[26px] text-[12px] leading-[14px]'
+                ? 'desktop-perps-topbar-pending-button'
                 : 'h-[28px] text-[15px] leading-[18px]',
               'bg-rb-orange-light-1 text-rb-orange-default'
             )}

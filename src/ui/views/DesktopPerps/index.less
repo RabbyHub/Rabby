@@ -93,17 +93,72 @@
   border-color: var(--rb-red-default) !important;
 }
 
+.desktop-perps-topbar,
+.desktop-perps-topbar-logo,
+.desktop-perps-topbar-divider,
+.desktop-perps-topbar-favorite-star,
+.desktop-perps-topbar-favorite-item,
+.desktop-perps-topbar-favorites-arrow,
+.desktop-perps-topbar-actions,
+.desktop-perps-topbar-account-actions-inner,
+.desktop-perps-topbar-deposit-button,
+.desktop-perps-topbar-pending-button,
+.desktop-perps-status-side,
+.desktop-perps-status-actions,
+.desktop-perps-status-loop,
+.desktop-perps-status-item {
+  flex-shrink: 0;
+}
+
+.desktop-perps-topbar-favorites-arrow {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--rb-neutral-secondary);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--rb-neutral-title-1);
+  }
+}
+
+.desktop-perps-topbar-overflow-icon {
+  width: 11.25px;
+  height: 6.25px;
+}
+
+.desktop-perps-topbar-overflow-icon-left {
+  transform: rotate(90deg);
+}
+
+.desktop-perps-topbar-overflow-icon-right {
+  transform: rotate(-90deg);
+}
+
 .desktop-perps-topbar-account {
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  width: 113px !important;
   height: 26px !important;
   border-radius: 6px !important;
   padding: 3px 12px !important;
   gap: 6px !important;
   opacity: 1;
+  background: transparent !important;
+  border-color: var(--rb-neutral-line) !important;
 
   > div {
     font-size: 12px !important;
     line-height: 14px !important;
     color: var(--rb-neutral-foot) !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   img {
@@ -117,33 +172,245 @@
   }
 
   &:hover {
-    color: var(--rb-brand-default) !important;
+    background: transparent !important;
+    border-color: var(--rb-neutral-title-1) !important;
+  }
+
+  &:hover > div,
+  &:hover > svg,
+  &:active > div,
+  &:active > svg,
+  &[aria-expanded='true'] > div,
+  &[aria-expanded='true'] > svg {
+    color: var(--rb-neutral-title-1) !important;
+  }
+
+  &:active,
+  &[aria-expanded='true'] {
+    background: var(--rb-neutral-bg-3) !important;
+    border-color: var(--rb-neutral-title-1) !important;
+  }
+}
+
+.desktop-perps-topbar-account-actions-inner {
+  height: 26px !important;
+}
+
+.desktop-perps-topbar-deposit-button {
+  box-sizing: border-box !important;
+  min-width: 69px !important;
+  height: 26px !important;
+  border-radius: 6px !important;
+  border-color: var(--rb-neutral-line) !important;
+  background: transparent !important;
+  color: var(--rb-neutral-foot) !important;
+  font-size: 12px !important;
+  line-height: 14px !important;
+  white-space: nowrap !important;
+
+  &:hover {
+    border-color: var(--rb-neutral-title-1) !important;
+    background: transparent !important;
+    color: var(--rb-neutral-title-1) !important;
+  }
+
+  &:active {
+    border-color: var(--rb-neutral-title-1) !important;
+    background: var(--rb-neutral-bg-3) !important;
+    color: var(--rb-neutral-title-1) !important;
+  }
+}
+
+.desktop-perps-topbar-pending-button {
+  box-sizing: border-box !important;
+  height: 26px !important;
+  font-size: 12px !important;
+  line-height: 14px !important;
+  white-space: nowrap !important;
+}
+
+.desktop-perps-status-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14px;
+  font-variant-numeric: tabular-nums;
+
+  .desktop-perps-status-item-name,
+  .desktop-perps-status-item-price {
+    transition: color 0.15s ease;
+  }
+
+  &:hover {
+    .desktop-perps-status-item-name,
+    .desktop-perps-status-item-price {
+      color: var(--rb-brand-default);
+    }
   }
 }
 
 .desktop-perps-status-track {
-  animation: desktop-perps-status-marquee 42s linear infinite;
+  transform: translate3d(0, 0, 0);
   will-change: transform;
 }
 
-.desktop-perps-status-ticker:hover .desktop-perps-status-track {
-  animation-play-state: paused;
+.desktop-perps-status-ticker {
+  position: relative;
 }
 
-@keyframes desktop-perps-status-marquee {
-  from {
-    transform: translateX(0);
+.desktop-perps-status-measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: max-content;
+  align-items: center;
+  gap: 24px;
+  pointer-events: none;
+  visibility: hidden;
+  white-space: nowrap;
+
+  .desktop-perps-status-item {
+    pointer-events: none;
+  }
+}
+
+.desktop-perps-status-loop {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-right: 24px;
+}
+
+.desktop-perps-orderbook-tooltip-overlay {
+  position: fixed;
+  z-index: 1100;
+  width: max-content;
+  min-width: 152px;
+  max-width: 188px;
+  padding: 8px 10px;
+  pointer-events: none;
+  border: 1px solid var(--rb-neutral-line);
+  border-radius: 6px;
+  background: var(--rb-neutral-bg-4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+}
+
+.desktop-perps-orderbook-tooltip-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.desktop-perps-orderbook-tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: var(--rb-neutral-foot);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  white-space: nowrap;
+
+  span:last-child {
+    color: var(--rb-neutral-title-1);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.desktop-perps-modal-surface {
+  .ant-modal-content {
+    background: var(--rb-neutral-bg-1);
+    border: 2px solid var(--r-neutral-line);
+    border-radius: 8px;
+    box-shadow: 0 16px 24px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
   }
 
-  to {
-    transform: translateX(-50%);
+  .ant-modal-close {
+    top: 18px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--rb-neutral-body);
   }
+
+  .ant-modal-close-x {
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+  }
+}
+
+.desktop-perps-manage-margin-slider.ant-slider {
+  margin: 0;
+  padding: 5px 0;
+
+  .ant-slider-rail,
+  &:hover .ant-slider-rail {
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--rb-neutral-bg-4) !important;
+  }
+
+  .ant-slider-track,
+  &:hover .ant-slider-track {
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--rb-brand-default) !important;
+  }
+
+  .ant-slider-step {
+    height: 6px;
+  }
+
+  .ant-slider-handle,
+  &:hover > .ant-slider-handle,
+  .ant-slider-handle:hover {
+    width: 16px !important;
+    height: 16px !important;
+    margin-top: -5px !important;
+    border: 0 !important;
+    background-color: var(--rb-brand-default) !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  .ant-slider-handle::before,
+  .ant-slider-handle::after {
+    display: none !important;
+    content: none !important;
+  }
+}
+
+.desktop-perps-manage-margin-distance-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--rb-light-neutral-info);
+}
+
+.desktop-perps-tpsl-confirm.ant-btn-primary[disabled],
+.desktop-perps-tpsl-confirm.ant-btn-primary[disabled]:hover,
+.desktop-perps-tpsl-confirm.ant-btn-primary[disabled]:focus,
+.desktop-perps-tpsl-confirm.ant-btn-primary[disabled]:active {
+  color: var(--r-neutral-title-2) !important;
+  background-color: var(--rb-brand-disable) !important;
+  border-color: var(--rb-brand-disable) !important;
+  opacity: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .desktop-perps-status-track {
-    animation: none;
-    transform: none;
+    transform: none !important;
   }
 }
 

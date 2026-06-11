@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { Modal, Button, Tooltip } from 'antd';
+import React, { useMemo } from 'react';
+import { Modal, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -13,12 +13,10 @@ import {
   calTransferMarginRequired,
   formatPerpsPct,
 } from '../../Perps/utils';
-import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../../Perps/constants';
-import { TokenImg } from '../../Perps/components/TokenImg';
-import { MarginEditInput } from '../../Perps/components/MarginEditInput';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { formatPerpsCoin } from '../utils';
 import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
+import { DesktopPerpsSliderV2 } from '../components/DesktopPerpsSliderV2';
+import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 
 export interface EditMarginPopupProps {
   visible: boolean;
@@ -39,16 +37,13 @@ export interface EditMarginPopupProps {
 export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
   visible,
   direction,
-  coin,
   leverage,
-  entryPrice,
   availableBalance,
   onCancel,
   onConfirm,
   liquidationPx,
   positionSize,
   marginUsed,
-  pnl,
   currentAssetCtx,
 }) => {
   const pxDecimals = currentAssetCtx?.pxDecimals || 2;
@@ -92,6 +87,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
     positionSize,
     pxDecimals,
     noChangeMargin,
+    marginNormalized,
   ]);
 
   const minMargin = useMemo(() => {
@@ -112,20 +108,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
       new BigNumber(max).decimalPlaces(2, BigNumber.ROUND_DOWN).toNumber(),
       minMargin
     );
-  }, [availableBalance, marginUsed]);
-
-  const availableToReduce = useMemo(() => {
-    const transferMarginRequired = calTransferMarginRequired(
-      markPrice,
-      positionSize,
-      leverage
-    );
-    return Number(
-      Math.max(marginUsed - transferMarginRequired, 0).toFixed(
-        PERPS_MARGIN_SIGNIFICANT_DIGITS
-      )
-    );
-  }, [markPrice, positionSize, leverage, marginUsed]);
+  }, [availableBalance, marginUsed, minMargin]);
 
   // 验证 margin 输入
   const marginValidation = React.useMemo(() => {
@@ -182,9 +165,23 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
     return percent;
   }, [liquidationPx, markPrice]);
 
-  const canReduce = useMemo(() => {
-    return availableToReduce > 0.01;
-  }, [availableToReduce]);
+  const handleMarginInputChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      let value = e.target.value;
+      if (value.startsWith('$')) {
+        value = value.slice(1);
+      }
+      if (/^\d*\.?\d*$/.test(value) || value === '') {
+        setMargin(value);
+      }
+    },
+    []
+  );
+
+  const sliderValue = useMemo(() => {
+    if (!marginNormalized) return minMargin;
+    return Math.min(Math.max(marginNormalized, minMargin), maxMargin);
+  }, [marginNormalized, minMargin, maxMargin]);
 
   const { runAsync: handleConfirm, loading } = useRequest(
     async () => {
@@ -212,107 +209,121 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
       onCancel={onCancel}
       footer={null}
       width={400}
-      className="modal-support-darkmode"
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-manage-margin-modal"
+      closeIcon={
+        <RcIconCloseCC className="w-[20px] h-[20px] text-rb-neutral-body" />
+      }
     >
-      <div className="flex flex-col min-h-[520px] bg-r-neutral-bg2">
-        <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2">
+      <div className="flex flex-col min-h-[540px] bg-rb-neutral-bg-1">
+        <div className="relative flex h-[56px] flex-shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
           {t('page.perpsPro.editMargin.title')}
         </div>
 
-        <div className="flex-1 px-20 overflow-y-auto pb-24">
-          <section className="mb-[12px]">
-            <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-              {t('page.perpsPro.editMargin.currentPosition')}
+        <div className="flex-1 px-[20px] overflow-y-auto pb-24">
+          <section className="flex items-center justify-between pt-[10px]">
+            <div className="flex flex-col gap-[3px]">
+              <PerpsDisplayCoinName
+                item={currentAssetCtx}
+                separator="-"
+                className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1"
+              />
+              <div
+                className={clsx(
+                  'flex h-[16px] w-max items-center rounded-[3px] px-[4px]',
+                  'text-[10px] leading-[16px] font-medium',
+                  direction === 'Long'
+                    ? 'bg-rb-green-light-2 text-rb-green-default'
+                    : 'bg-rb-red-light-2 text-rb-red-default'
+                )}
+              >
+                {direction.toLowerCase()} {leverage}x
+              </div>
             </div>
-            <div className="flex items-center justify-between p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
-              <div className="flex flex-col gap-8">
-                <div className="flex items-center gap-6">
-                  <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={28} />
-                  <PerpsDisplayCoinName
-                    item={currentAssetCtx}
-                    className="text-[16px] font-medium"
-                  />
-                </div>
-                <div className="flex items-center gap-4">
-                  <div
-                    className={clsx(
-                      'px-4 h-[18px] rounded-[4px] text-12 font-medium flex items-center justify-center',
-                      direction === 'Long'
-                        ? 'bg-r-green-light text-r-green-default'
-                        : 'bg-r-red-light text-r-red-default'
-                    )}
-                  >
-                    {direction} {leverage}x
-                  </div>
-                  <Tooltip
-                    overlayClassName="rectangle"
-                    title={
-                      direction === 'Long'
-                        ? t('page.perpsPro.editMargin.longLiquidationTips', {
-                            percent: currentDistanceToLiquidationPercent,
-                          })
-                        : t('page.perpsPro.editMargin.shortLiquidationTips', {
-                            percent: currentDistanceToLiquidationPercent,
-                          })
-                    }
-                  >
-                    <div className="flex items-center gap-[2px] border border-rb-neutral-line rounded-[4px] px-[4px]">
-                      <RcIconAlarmCC className="text-rb-neutral-info" />
-                      <div className="text-rb-neutral-foot font-medium text-[12px] leading-[16px]">
-                        {currentDistanceToLiquidationPercent}
-                      </div>
-                    </div>
-                  </Tooltip>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-5">
-                <span className="text-[15px] leading-[20px] font-bold text-r-neutral-title-1">
-                  {formatUsdValue(marginUsed)}
-                </span>
-                <span
-                  className={clsx(
-                    'text-[13px] leading-[18px] font-medium',
-                    pnl >= 0 ? 'text-r-green-default' : 'text-r-red-default'
-                  )}
-                >
-                  {pnl >= 0 ? '+' : '-'}$
-                  {splitNumberByStep(Math.abs(pnl || 0).toFixed(2))}
-                </span>
-              </div>
+            <div className="flex flex-col items-end gap-[3px] text-[12px] font-medium">
+              <span className="leading-[20px] text-rb-neutral-secondary">
+                {t('page.perpsPro.editMargin.currentPrice')}
+              </span>
+              <span className="text-r-neutral-title-1">
+                {splitNumberByStep(markPrice.toFixed(pxDecimals))}
+              </span>
             </div>
           </section>
+
+          <div className="my-[24px] h-0 border-t border-solid border-rb-neutral-line" />
 
           <section>
-            <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
+            <div className="mb-[12px] text-[14px] leading-[17px] font-semibold text-r-neutral-title-1">
               {t('page.perpsPro.editMargin.configureMargin')}
             </div>
-            <MarginEditInput
-              title={t('page.perpsDetail.PerpsEditMarginPopup.margin')}
-              placeholder={`$${marginUsed.toFixed(2)}`}
-              minMargin={minMargin}
-              maxMargin={maxMargin}
-              sliderDisabled={maxMargin <= minMargin}
-              margin={margin}
-              onMarginChange={setMargin}
-              errorMessage={
-                marginValidation.error ? marginValidation.errorMessage : null
-              }
-            />
+            <div className="relative h-[172px] overflow-hidden rounded-[8px] bg-rb-neutral-bg-2">
+              <button
+                type="button"
+                className="absolute left-[16px] top-[29px] flex h-[26px] items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
+                onClick={() => setMargin(minMargin.toString())}
+              >
+                Min
+              </button>
+              <input
+                className={clsx(
+                  'absolute left-1/2 top-[21px] h-[42px] w-[184px] -translate-x-1/2 bg-transparent border-0 px-[12px] text-center outline-none',
+                  'text-[36px] leading-[42px] font-extrabold',
+                  marginValidation.error
+                    ? 'text-rb-red-default'
+                    : 'text-r-neutral-title-1'
+                )}
+                value={margin ? `$${margin}` : ''}
+                placeholder={`$${marginUsed.toFixed(2)}`}
+                onChange={handleMarginInputChange}
+              />
+              <button
+                type="button"
+                className="absolute right-[16px] top-[29px] flex h-[26px] items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
+                onClick={() => setMargin(maxMargin.toString())}
+              >
+                MAX
+              </button>
+              <div className="absolute left-[16px] right-[16px] top-[61px] flex h-[16px] items-center justify-between px-[9px] text-[12px] leading-[16px] font-medium text-rb-neutral-secondary">
+                <span>{formatUsdValue(minMargin)}</span>
+                <span>{formatUsdValue(maxMargin)}</span>
+              </div>
+              <div className="absolute left-[16px] right-[16px] top-[85px] h-[42px]">
+                <DesktopPerpsSliderV2
+                  className="desktop-perps-manage-margin-slider"
+                  disabled={maxMargin <= minMargin}
+                  min={minMargin}
+                  max={maxMargin}
+                  step={0.01}
+                  value={sliderValue}
+                  onChange={(value) => {
+                    if (typeof value === 'number') {
+                      setMargin(value.toFixed(2));
+                    }
+                  }}
+                />
+              </div>
+              {marginValidation.error ? (
+                <div className="absolute left-[16px] right-[16px] top-[124px] flex h-[32px] items-center gap-[4px] rounded-[8px] bg-rb-orange-light-1 px-[12px] text-[12px] leading-[14px] text-rb-orange-default">
+                  <RcIconInfoCC className="h-[16px] w-[16px] flex-shrink-0" />
+                  <span className="truncate">
+                    {marginValidation.errorMessage}
+                  </span>
+                </div>
+              ) : null}
+            </div>
           </section>
 
-          <section className="space-y-[12px]">
+          <section className="mt-[12px] space-y-[12px]">
             <div className="flex items-center justify-between">
-              <span className="text-r-neutral-body text-[13px] leading-[16px]">
+              <span className="text-rb-neutral-foot text-[13px] leading-[16px]">
                 {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
               </span>
               <div>
-                <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
+                <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
                   $
                   {splitNumberByStep(Number(liquidationPx).toFixed(pxDecimals))}
                 </span>
                 {margin && estimatedLiquidationPrice && (
-                  <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
+                  <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
                     {' '}
                     → $
                     {splitNumberByStep(
@@ -323,18 +334,18 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-r-neutral-body text-[13px] leading-[16px]">
+              <span className="text-rb-neutral-foot text-[13px] leading-[16px]">
                 {t('page.perpsDetail.PerpsEditMarginPopup.liqDistance')}
               </span>
               <div className="flex items-center">
-                <div className="flex items-center">
-                  <RcIconAlarmCC className="text-rb-neutral-info" />
-                  <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
+                <div className="flex items-center gap-[6px]">
+                  <RcIconAlarmCC className="desktop-perps-manage-margin-distance-icon" />
+                  <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
                     {currentDistanceToLiquidationPercent}
                   </span>
                 </div>
                 {margin && estimatedLiquidationPrice && (
-                  <span className="text-r-neutral-title-1 font-medium text-[13px] leading-[16px]">
+                  <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
                     {' '}
                     →{' '}
                     {formatPerpsPct(
@@ -350,29 +361,14 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
           </section>
         </div>
 
-        <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
-          <div className="flex items-center gap-[16px]">
-            <Button
-              block
-              size="large"
-              type="ghost"
-              onClick={onCancel}
-              className={clsx(
-                'h-[44px]',
-                'text-blue-light',
-                'border-blue-light',
-                'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
-                'before:content-none'
-              )}
-            >
-              {t('global.Cancel')}
-            </Button>
+        <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
+          <div className="flex items-center">
             <Button
               block
               size="large"
               type="primary"
               loading={loading}
-              className="h-[44px] text-15 font-medium"
+              className="h-[48px] text-15 font-medium rounded-[6px]"
               disabled={!marginValidation.isValid || noChangeMargin}
               onClick={handleConfirm}
             >
