@@ -3,13 +3,10 @@ import { useRequest } from 'ahooks';
 import type { UserFeedbackItem } from '@rabby-wallet/rabby-api/dist/types';
 import { __DEV__ } from '@/utils/env';
 import { useWallet } from '@/ui/utils';
-
-type LocalUserFeedbackItem = Pick<UserFeedbackItem, 'id' | 'create_at'>;
+import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
+import type { LocalUserFeedbackItem } from '@/background/service/feedback';
 
 const LATEST_LOCAL_FEEDBACK_LIMIT = 10;
-const SCREENSHOT_FEEDBACK_STORAGE_KEY = 'rabby:screenshot-feedbacks';
-const SCREENSHOT_FEEDBACK_STORE_CHANGED =
-  'RABBY_SCREENSHOT_FEEDBACK_STORE_CHANGED';
 const SCREENSHOT_FEEDBACK_VIEWING_CHANGED =
   'RABBY_SCREENSHOT_FEEDBACK_VIEWING_CHANGED';
 
@@ -20,91 +17,54 @@ const sortFeedbackItemByCreateAtDesc = (
   b: Pick<UserFeedbackItem, 'create_at'>
 ) => b.create_at - a.create_at;
 
-const emitStoreChanged = () => {
-  window.dispatchEvent(new Event(SCREENSHOT_FEEDBACK_STORE_CHANGED));
-};
-
 const emitViewingChanged = () => {
   window.dispatchEvent(new Event(SCREENSHOT_FEEDBACK_VIEWING_CHANGED));
 };
 
-const normalizeFeedbacks = (feedbacks: LocalUserFeedbackItem[]) => {
-  const uniqueFeedbacks = new Map<string, LocalUserFeedbackItem>();
-
-  feedbacks.forEach((item) => {
-    if (!item?.id) return;
-    uniqueFeedbacks.set(item.id, item);
-  });
-
-  return Array.from(uniqueFeedbacks.values())
-    .sort(sortFeedbackItemByCreateAtDesc)
-    .slice(0, LATEST_LOCAL_FEEDBACK_LIMIT);
-};
-
-const getLocalFeedbacks = (): LocalUserFeedbackItem[] => {
-  try {
-    const raw = localStorage.getItem(SCREENSHOT_FEEDBACK_STORAGE_KEY);
-    if (!raw) return [];
-
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-
-    return normalizeFeedbacks(parsed);
-  } catch (error) {
-    console.error('Failed to read screenshot feedbacks', error);
-    return [];
-  }
-};
-
-const setLocalFeedbacks = (feedbacks: LocalUserFeedbackItem[]) => {
-  localStorage.setItem(
-    SCREENSHOT_FEEDBACK_STORAGE_KEY,
-    JSON.stringify(normalizeFeedbacks(feedbacks))
-  );
-  emitStoreChanged();
-};
-
-const onFeedbackSubmitted = (
-  feedback: string | Pick<UserFeedbackItem, 'id' | 'create_at'>
-) => {
-  const item =
-    typeof feedback === 'string'
-      ? {
-          id: feedback,
-          create_at: Date.now(),
-        }
-      : feedback;
-
-  if (!item?.id) return;
-
-  setLocalFeedbacks([item, ...getLocalFeedbacks()]);
-};
-
-const removeLocalFeedback = (id: string) => {
-  setLocalFeedbacks(getLocalFeedbacks().filter((item) => item.id !== id));
-};
-
-const clearFeedbacks = () => {
-  setLocalFeedbacks([]);
-};
-
 export function useScreenshotFeedbacks() {
-  const [feedbacks, setFeedbacks] = useState(getLocalFeedbacks);
+  const wallet = useWallet();
+  const [feedbacks, setFeedbacks] = useState<LocalUserFeedbackItem[]>([]);
+
+  const loadFeedbacks = useCallback(async () => {
+    const nextFeedbacks = await wallet.getScreenshotFeedbacks();
+    setFeedbacks(nextFeedbacks);
+  }, [wallet]);
+
+  const onFeedbackSubmitted = useCallback(
+    async (feedback: string | Pick<UserFeedbackItem, 'id' | 'create_at'>) => {
+      await wallet.onScreenshotFeedbackSubmitted(feedback);
+      await loadFeedbacks();
+    },
+    [loadFeedbacks, wallet]
+  );
+
+  const removeLocalFeedback = useCallback(
+    async (id: string) => {
+      await wallet.removeScreenshotFeedback(id);
+      await loadFeedbacks();
+    },
+    [loadFeedbacks, wallet]
+  );
+
+  const clearFeedbacks = useCallback(async () => {
+    await wallet.clearScreenshotFeedbacks();
+    await loadFeedbacks();
+  }, [loadFeedbacks, wallet]);
 
   useEffect(() => {
-    const handleChange = () => setFeedbacks(getLocalFeedbacks());
+    loadFeedbacks();
 
-    window.addEventListener(SCREENSHOT_FEEDBACK_STORE_CHANGED, handleChange);
-    window.addEventListener('storage', handleChange);
+    const dispose = onBackgroundStoreChanged('feedback', ({ partials }) => {
+      if (partials.screenshotFeedbacks) {
+        setFeedbacks(partials.screenshotFeedbacks);
+        return;
+      }
 
-    return () => {
-      window.removeEventListener(
-        SCREENSHOT_FEEDBACK_STORE_CHANGED,
-        handleChange
-      );
-      window.removeEventListener('storage', handleChange);
-    };
-  }, []);
+      loadFeedbacks();
+    });
+
+    return dispose;
+  }, [loadFeedbacks]);
 
   return {
     feedbacks,
@@ -134,9 +94,9 @@ export function useLatestRepliedFeedbacks() {
     async () => {
       if (!localFeedbackIds.length) return undefined;
 
-      const remoteFeedbacks = await wallet.openapi.getUserFeedbackList(
+      const remoteFeedbacks = (await wallet.openapi.getUserFeedbackList(
         localFeedbackIds
-      );
+      )) as UserFeedbackItem[];
       const repliedFeedbacks = remoteFeedbacks
         .filter((item) => item.status === 'complete')
         .sort(sortFeedbackItemByCreateAtDesc);
@@ -144,9 +104,11 @@ export function useLatestRepliedFeedbacks() {
       return repliedFeedbacks[0];
     },
     {
-      pollingInterval: __DEV__ ? 5 * 1000 : 30 * 1000,
-      pollingWhenHidden: true,
+      // pollingInterval: __DEV__ ? 5 * 1000 : 30 * 1000,
+      // pollingWhenHidden: true,
       refreshDeps: [localFeedbackIds.join(',')],
+      staleTime: 30 * 1000,
+      cacheKey: `latest-replied-feedback-${localFeedbackIds.join(',')}`,
     }
   );
 
@@ -154,6 +116,7 @@ export function useLatestRepliedFeedbacks() {
 }
 
 export function useViewingFeedback() {
+  const { removeLocalFeedback } = useScreenshotFeedbacks();
   const [currentViewingFeedback, setCurrentViewingFeedback] = useState(
     viewingFeedback
   );
@@ -169,7 +132,7 @@ export function useViewingFeedback() {
     }
     viewingFeedback = null;
     emitViewingChanged();
-  }, []);
+  }, [removeLocalFeedback]);
 
   useEffect(() => {
     const handleChange = () => setCurrentViewingFeedback(viewingFeedback);

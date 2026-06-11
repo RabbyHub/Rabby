@@ -60,6 +60,7 @@ import {
   perpsService,
   transactionsService,
   innerDappFrameService,
+  feedbackService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -132,6 +133,8 @@ const initScreenshotContextMenu = async () => {
     documentUrlPatterns: [
       `${browser.runtime.getURL('popup.html')}*`,
       `${browser.runtime.getURL('notification.html')}*`,
+      `${browser.runtime.getURL('index.html')}*`,
+      `${browser.runtime.getURL('desktop.html')}*`,
     ],
   });
 };
@@ -193,6 +196,7 @@ async function restoreAppState() {
   await transactionsService.init();
   await lendingService.init();
   await innerDappFrameService.init();
+  await feedbackService.init();
 
   // WS is lazy — subscribes only after the first content-script port attaches
   perpsLive.boot();

@@ -44,7 +44,7 @@ import PendingTxs from '../PendingTxs';
 import Queue from '../Queue';
 import Tooltip from 'antd/es/tooltip';
 import { LOW_GAS_ACCOUNT_BALANCE } from '@/constant/gas-account';
-import { ReactComponent as RcIconFeedbackCC } from '@/ui/assets/feedback-popup/entry-hi.svg';
+import { ReactComponent as RcIconFeedbackCC } from '@/ui/assets/icon-feedback-cc.svg';
 import { RcIconSuccessCC } from '@/ui/assets/desktop/common';
 import {
   useLatestRepliedFeedbacks,
@@ -236,14 +236,14 @@ const FeedbackEntry = () => {
 
       startViewingFeedback(lastRepliedFeedback);
 
-      matomoRequestEvent({
-        category: 'Click_Header',
-        action: 'Click_Setting',
-      });
+      // matomoRequestEvent({
+      //   category: 'Click_Header',
+      //   action: 'Click_Setting',
+      // });
 
-      ga4.fireEvent('Click_Setting', {
-        event_category: 'Click_Header',
-      });
+      // ga4.fireEvent('Click_Setting', {
+      //   event_category: 'Click_Header',
+      // });
     },
     [lastRepliedFeedback, startViewingFeedback]
   );
@@ -254,24 +254,15 @@ const FeedbackEntry = () => {
 
   return (
     <>
-      <Tooltip
-        title={t('Feedback')}
-        placement="bottom"
-        overlayClassName="rectangle"
-        align={{
-          offset: [0, -6],
-        }}
+      <div
+        className={clsx(
+          'p-[6px] rounded-[5px] cursor-pointer text-r-neutral-title-2 shrink-0',
+          'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
+        )}
+        onClick={handleClick}
       >
-        <div
-          className={clsx(
-            'p-[6px] rounded-[5px] cursor-pointer text-r-neutral-title-2 shrink-0',
-            'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]'
-          )}
-          onClick={handleClick}
-        >
-          <RcIconFeedbackCC className="w-[20px] h-[20px]" />
-        </div>
-      </Tooltip>
+        <RcIconFeedbackCC className="w-[20px] h-[20px]" />
+      </div>
       <FeedbackResponsePopup lastRepliedFeedback={lastRepliedFeedback} />
     </>
   );
@@ -290,47 +281,56 @@ const FeedbackResponsePopup = ({
 
   return (
     <Popup
-      visible={visible}
-      title="Feedback"
-      height={560}
-      closable
-      zIndex={2147483647}
+      open={visible}
+      title="Response from Rabby Support"
+      height={'fit-content'}
+      closable={false}
       onCancel={finishViewFeedback}
       onClose={finishViewFeedback}
-      bodyStyle={{ padding: '20px 20px 24px' }}
+      bodyStyle={{ padding: '20px 24px 24px 24px' }}
     >
       <div className="flex h-full flex-col">
-        <div className="relative flex-1 overflow-y-auto pl-[24px] pr-[2px]">
-          <div className="absolute left-[7px] top-[16px] bottom-[22px] w-[2px] bg-r-blue-default" />
-
-          <div className="relative mb-[28px]">
-            <div className="absolute left-[-22px] top-[4px] h-[16px] w-[16px] rounded-full border-[4px] border-r-blue-default bg-r-neutral-bg1" />
-            <div className="text-[16px] leading-[19px] font-medium text-r-neutral-title1">
-              Issue Description
-            </div>
-            <div className="mt-[12px] rounded-[8px] bg-r-neutral-card1 p-[12px]">
-              {feedback?.content ? (
-                <div className="mb-[10px] whitespace-pre-wrap break-words text-[13px] leading-[18px] text-r-neutral-body">
-                  {feedback.content}
-                </div>
-              ) : null}
-              {imageUrl ? (
-                <img
-                  src={imageUrl}
-                  alt="Feedback screenshot"
-                  className="block max-h-[220px] w-full rounded-[6px] object-contain"
-                />
-              ) : null}
+        <div className="relative flex-1 pl-[8px]">
+          <div className="relative pb-[28px] pl-[16px] pr-[2px]">
+            <div className="absolute left-0 top-0 h-[16px] w-[16px] rounded-full bg-r-blue-default translate-x-[-50%]" />
+            <div className="absolute left-0 top-[0] bottom-[0px] w-[1px] bg-r-blue-default" />
+            <div className="relative top-[-2px]">
+              <div className="text-[16px] leading-[19px] font-medium text-r-neutral-title1">
+                Here’s the issue you reported:
+              </div>
+              <div className="mt-[12px] rounded-[12px] bg-r-neutral-card2 p-[12px]">
+                {feedback?.content ? (
+                  <div className="mb-[8px] whitespace-pre-wrap break-words text-[14px] leading-[16px] text-r-neutral-foot">
+                    {feedback.content}
+                  </div>
+                ) : null}
+                {imageUrl ? (
+                  <div className="w-[96px] h-[96px] rounded-[12px] overflow-hidden">
+                    <img
+                      src={imageUrl}
+                      alt="Feedback screenshot"
+                      className="w-full"
+                    />
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
 
-          <div className="relative">
-            <RcIconSuccessCC className="absolute left-[-26px] top-[0px] h-[24px] w-[24px] text-r-blue-default" />
-            <div className="text-[16px] leading-[19px] font-medium text-r-neutral-title1">
-              Replied
-            </div>
-            <div className="mt-[12px] whitespace-pre-wrap break-words rounded-[8px] bg-r-neutral-card1 p-[12px] text-[13px] leading-[18px] text-r-neutral-body">
-              {comment}
+          <div className="relative pl-[16px] pr-[2px]">
+            <RcIconSuccessCC
+              viewBox="0 0 24 24"
+              className="absolute left-0 top-0 w-[16px] h-[16px] text-r-green-default translate-x-[-50%]"
+            />
+            <div className="relative top-[-2px]">
+              <div className="text-[16px] leading-[19px] font-medium text-r-neutral-title1">
+                Rabby Support has replied:
+              </div>
+              <div className="mt-[12px] rounded-[12px] bg-r-neutral-card2 p-[12px]">
+                <div className="whitespace-pre-wrap break-words text-[14px] leading-[16px] text-r-neutral-foot">
+                  {comment}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -338,7 +338,7 @@ const FeedbackResponsePopup = ({
         <Button
           type="primary"
           block
-          className="mt-[20px] h-[48px]"
+          className="mt-[24px] h-[48px]"
           onClick={finishViewFeedback}
         >
           OK

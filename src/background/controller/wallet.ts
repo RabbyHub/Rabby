@@ -37,6 +37,7 @@ import {
   miscService,
   lendingService,
   innerDappFrameService,
+  feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import buildinProvider, {
@@ -6803,6 +6804,12 @@ export class WalletController extends BaseController {
 
   setReportGasLevel = miscService.setCurrentGasLevel;
   getReportGasLevel = miscService.getCurrentGasLevel;
+
+  getScreenshotFeedbacks = feedbackService.getScreenshotFeedbacks;
+  onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
+  removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
+  clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
+
   checkIsApprovedForAll = async ({
     owner,
     operator,

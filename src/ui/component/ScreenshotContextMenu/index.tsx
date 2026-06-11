@@ -181,7 +181,10 @@ export const ScreenshotContextMenu = () => {
 
   useEffect(() => {
     const uiType = getUiType();
-    if (!uiType.isPop && !uiType.isNotification) return;
+    const isScreenshotTarget =
+      uiType.isPop || uiType.isNotification || uiType.isTab || uiType.isDesktop;
+
+    if (!isScreenshotTarget) return;
 
     const onMessage = (message) => {
       if (message?.type !== SCREENSHOT_CONTEXT_MENU_CLICKED) return;
@@ -214,7 +217,7 @@ export const ScreenshotContextMenu = () => {
     <>
       <Modal
         centered
-        className="rabby-screenshot-modal"
+        className="rabby-screenshot-modal modal-support-darkmode"
         footer={false}
         visible={modalVisible}
         width={360}
@@ -245,6 +248,7 @@ export const ScreenshotContextMenu = () => {
               value={description}
               autoFocus
               rows={3}
+              className="resize-none bg-r-neutral-bg-2"
               onChange={(event) => setDescription(event.target.value)}
             />
             <div className="flex items-center justify-center mt-[12px]">
