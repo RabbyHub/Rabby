@@ -107,7 +107,7 @@ export function useLatestRepliedFeedbacks() {
       // pollingInterval: __DEV__ ? 5 * 1000 : 30 * 1000,
       // pollingWhenHidden: true,
       refreshDeps: [localFeedbackIds.join(',')],
-      staleTime: 30 * 1000,
+      staleTime: 10 * 1000,
       cacheKey: `latest-replied-feedback-${localFeedbackIds.join(',')}`,
     }
   );

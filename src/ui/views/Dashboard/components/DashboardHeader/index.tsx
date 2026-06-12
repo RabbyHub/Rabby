@@ -159,6 +159,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
                 <AddressViewer
                   address={currentAccount.address}
                   showArrow={false}
+                  ellipsis="short"
                   className="text-[12px] leading-[14px] text-r-neutral-title2 opacity-60"
                 />
               )}
