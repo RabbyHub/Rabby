@@ -44,10 +44,6 @@ type SideAction =
       type: 'none';
     }
   | {
-      type: 'cancel';
-      oid: number;
-    }
-  | {
       type: 'modify';
       oid: number;
       triggerPx: string;
@@ -58,16 +54,15 @@ type SideAction =
     };
 
 const MODE_OPTIONS: {
-  value: TPSLSettingMode;
+  value: Extract<TPSLSettingMode, 'pnl' | 'roi'>;
   label: string;
 }[] = [
-  { value: 'price', label: 'Price' },
   { value: 'pnl', label: 'PNL' },
   { value: 'roi', label: 'ROI' },
 ];
 
 const EMPTY_SIDE_STATE: TpslSideState = {
-  mode: 'price',
+  mode: 'pnl',
   triggerPrice: '',
   modeValue: '',
   estimatedPnl: '',
@@ -85,15 +80,20 @@ const getOrderOid = (position: PositionFormatData, side: TpslSide) => {
   return side === 'tp' ? position.tpItem?.oid : position.slItem?.oid;
 };
 
-const getDefaultMode = (position: PositionFormatData, side: TpslSide) => {
-  if (getOrderTriggerPx(position, side)) {
-    return 'price';
-  }
-  return side === 'tp' ? 'pnl' : 'roi';
+const getDefaultMode = (): TPSLSettingMode => {
+  return 'pnl';
 };
 
 const stripDecorations = (value: string) => {
-  return value.replace(',', '.').replace(/[$,%\s]/g, '');
+  return value.replace(/,/g, '').replace(/[$%\s]/g, '');
+};
+
+const sanitizeTriggerPriceInput = (value: string, szDecimals: number) => {
+  const next = stripDecorations(value).replace(/[+-]/g, '');
+  if (validatePriceInput(next, szDecimals)) {
+    return next;
+  }
+  return null;
 };
 
 const sanitizeUnsignedDecimal = (value: string) => {
@@ -310,7 +310,7 @@ const getInitialSideState = ({
   t: ReturnType<typeof useTranslation>['t'];
 }) => {
   const triggerPx = getOrderTriggerPx(position, side);
-  const mode = getDefaultMode(position, side);
+  const mode = getDefaultMode();
   const baseState: TpslSideState = {
     ...EMPTY_SIDE_STATE,
     mode,
@@ -357,7 +357,7 @@ const resolveSideAction = (
       : '';
 
   if (oid && existingTrigger && !nextTrigger) {
-    return { type: 'cancel', oid };
+    return { type: 'none' };
   }
 
   if (oid && existingTrigger && nextTrigger) {
@@ -397,8 +397,11 @@ export const EditTpSlModal: React.FC<Props> = ({
   });
   const [slState, setSlState] = React.useState<TpslSideState>({
     ...EMPTY_SIDE_STATE,
-    mode: 'roi',
+    mode: 'pnl',
   });
+  const [cancelingSide, setCancelingSide] = React.useState<TpslSide | null>(
+    null
+  );
 
   const {
     handleSetAutoClose,
@@ -435,8 +438,8 @@ export const EditTpSlModal: React.FC<Props> = ({
 
   const updateSideByTrigger = useMemoizedFn(
     (side: TpslSide, triggerPrice: string) => {
-      const value = stripDecorations(triggerPrice);
-      if (!validatePriceInput(value, szDecimals)) {
+      const value = sanitizeTriggerPriceInput(triggerPrice, szDecimals);
+      if (value === null) {
         return;
       }
 
@@ -499,6 +502,7 @@ export const EditTpSlModal: React.FC<Props> = ({
 
   const updateSideMode = useMemoizedFn(
     (side: TpslSide, mode: TPSLSettingMode) => {
+      if (mode === 'price') return;
       const setter = side === 'tp' ? setTpState : setSlState;
       setter((prev) => {
         const nextState = {
@@ -516,38 +520,17 @@ export const EditTpSlModal: React.FC<Props> = ({
           t,
         });
       });
-
-      try {
-        localStorage.setItem(
-          `perps_tpsl_mode_${side === 'tp' ? 'takeProfit' : 'stopLoss'}`,
-          mode
-        );
-      } catch (e) {
-        // ignore localStorage errors
-      }
     }
   );
 
-  const clearSide = useMemoizedFn((side: TpslSide) => {
-    const setter = side === 'tp' ? setTpState : setSlState;
-    setter((prev) => ({
-      ...prev,
-      triggerPrice: '',
-      modeValue: '',
-      estimatedPnl: '',
-      estimatedPnlPercent: '',
-      error: '',
-    }));
-  });
-
-  const tpAction = useMemo(
-    () => resolveSideAction(position, 'tp', tpState),
-    [position, tpState]
-  );
-  const slAction = useMemo(
-    () => resolveSideAction(position, 'sl', slState),
-    [position, slState]
-  );
+  const tpAction = useMemo(() => resolveSideAction(position, 'tp', tpState), [
+    position,
+    tpState,
+  ]);
+  const slAction = useMemo(() => resolveSideAction(position, 'sl', slState), [
+    position,
+    slState,
+  ]);
 
   const hasAnyAction = tpAction.type !== 'none' || slAction.type !== 'none';
   const hasError = Boolean(tpState.error || slState.error);
@@ -577,6 +560,35 @@ export const EditTpSlModal: React.FC<Props> = ({
     }
   );
 
+  const cancelSideImmediately = useMemoizedFn(async (side: TpslSide) => {
+    const oid = getOrderOid(position, side);
+    if (!oid || cancelingSide) return;
+
+    setCancelingSide(side);
+    try {
+      await handleCancelOrder([
+        {
+          coin: position.coin,
+          oid,
+        },
+      ]);
+      dispatch.perps.fetchPositionOpenOrders();
+      onConfirm?.();
+      onCancel();
+    } catch (error) {
+      console.error('Failed to cancel TP/SL order:', error);
+      perpsToast.error({
+        title: t('page.perps.toast.cancelFailed'),
+        description:
+          error instanceof Error
+            ? error.message
+            : t('page.perps.toast.cancelOrderError'),
+      });
+    } finally {
+      setCancelingSide(null);
+    }
+  });
+
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
       const direction = position.direction;
@@ -584,22 +596,6 @@ export const EditTpSlModal: React.FC<Props> = ({
         tp: tpAction,
         sl: slAction,
       };
-
-      const cancelParams = (['tp', 'sl'] as const)
-        .map((side) => {
-          const action = actions[side];
-          return action.type === 'cancel'
-            ? {
-                coin: position.coin,
-                oid: action.oid,
-              }
-            : null;
-        })
-        .filter(Boolean) as { coin: string; oid: number }[];
-
-      if (cancelParams.length) {
-        await handleCancelOrder(cancelParams);
-      }
 
       const modifyTp =
         actions.tp.type === 'modify'
@@ -625,10 +621,8 @@ export const EditTpSlModal: React.FC<Props> = ({
         });
       }
 
-      const createTp =
-        actions.tp.type === 'create' ? actions.tp.triggerPx : '';
-      const createSl =
-        actions.sl.type === 'create' ? actions.sl.triggerPx : '';
+      const createTp = actions.tp.type === 'create' ? actions.tp.triggerPx : '';
+      const createSl = actions.sl.type === 'create' ? actions.sl.triggerPx : '';
 
       if (createTp || createSl) {
         await handleSetAutoClose({
@@ -684,13 +678,16 @@ export const EditTpSlModal: React.FC<Props> = ({
     }
 
     const pnl = Number(state.estimatedPnl);
+    const roi = Number(state.estimatedPnlPercent || 0);
     return (
       <span
         className={pnl >= 0 ? 'text-rb-green-default' : 'text-rb-red-default'}
       >
         {pnl >= 0 ? '+' : '-'}
         {formatUsdValue(Math.abs(pnl))}
-        .
+        {state.estimatedPnlPercent
+          ? ` (${roi >= 0 ? '+' : '-'}${Math.abs(roi).toFixed(2)}%)`
+          : ''}
       </span>
     );
   };
@@ -706,8 +703,11 @@ export const EditTpSlModal: React.FC<Props> = ({
       : t('page.perpsPro.editTpSl.cancelSl');
     const modeLabel =
       MODE_OPTIONS.find((option) => option.value === state.mode)?.label ||
-      'Price';
-    const hasContent = Boolean(state.triggerPrice || state.modeValue);
+      'PNL';
+    const hasExistingOrder = Boolean(
+      getOrderOid(position, side) && getOrderTriggerPx(position, side)
+    );
+    const isCanceling = cancelingSide === side;
 
     return (
       <section className="flex flex-col gap-[12px]">
@@ -715,14 +715,15 @@ export const EditTpSlModal: React.FC<Props> = ({
           <div className="text-[14px] leading-[17px] font-semibold text-r-neutral-title-1">
             {label}
           </div>
-          {hasContent ? (
+          {hasExistingOrder ? (
             <button
               type="button"
-              className="flex items-center gap-[6px] border-0 bg-transparent p-0 text-[14px] leading-[17px] text-rb-neutral-body hover:text-rb-brand-default"
-              onClick={() => clearSide(side)}
+              className="flex items-center gap-[6px] border-0 bg-transparent p-0 text-[14px] leading-[17px] text-rb-neutral-body hover:text-rb-brand-default disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={Boolean(cancelingSide)}
+              onClick={() => cancelSideImmediately(side)}
             >
               <RcIconPerpsTpslDelete className="block h-[14px] w-[14px] flex-shrink-0" />
-              {cancelLabel}
+              {isCanceling ? `${cancelLabel}...` : cancelLabel}
             </button>
           ) : null}
         </div>
@@ -747,19 +748,15 @@ export const EditTpSlModal: React.FC<Props> = ({
               'focus-within:border-rb-brand-default hover:border-rb-brand-default'
             )}
           >
-            {state.mode === 'price' ? (
-              <span className="min-w-0 text-[15px] leading-[18px] font-medium text-r-neutral-title-1" />
-            ) : (
-              <input
-                value={state.modeValue}
-                inputMode="decimal"
-                onChange={(e) => updateSideByModeValue(side, e.target.value)}
-                className={clsx(
-                  'min-w-0 flex-1 border-0 bg-transparent p-0 text-[15px] leading-[18px] font-medium outline-none',
-                  isTp ? 'text-rb-green-default' : 'text-rb-red-default'
-                )}
-              />
-            )}
+            <input
+              value={state.modeValue}
+              inputMode="decimal"
+              onChange={(e) => updateSideByModeValue(side, e.target.value)}
+              className={clsx(
+                'min-w-0 flex-1 border-0 bg-transparent p-0 text-[15px] leading-[18px] font-medium outline-none',
+                isTp ? 'text-rb-green-default' : 'text-rb-red-default'
+              )}
+            />
             <Dropdown
               trigger={['click']}
               overlay={renderModeMenu(side)}
@@ -862,7 +859,7 @@ export const EditTpSlModal: React.FC<Props> = ({
             type="primary"
             className="desktop-perps-tpsl-confirm h-[48px] rounded-[6px] text-15 font-medium"
             loading={loading}
-            disabled={!canSubmit || loading}
+            disabled={!canSubmit || loading || Boolean(cancelingSide)}
             onClick={runSubmit}
           >
             {t('global.confirm')}
