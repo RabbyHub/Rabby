@@ -68,7 +68,7 @@ const Checkbox = ({
         }}
       >
         {checkIcon ??
-          (checked && (
+          (checkState && (
             <ThemeIcon src={IconCheck} className="icon icon-check" />
           ))}
       </div>
