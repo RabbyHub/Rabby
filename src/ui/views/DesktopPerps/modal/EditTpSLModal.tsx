@@ -1,23 +1,23 @@
-import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
-import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
+import { MarketData } from '@/ui/models/perps';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { Button, message, Modal } from 'antd';
+import { Button, Dropdown, Menu, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import { noop } from 'lodash';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import { usePerpsPosition } from '../../Perps/hooks/usePerpsPosition';
+import { ReactComponent as RcIconPerpsTpslDelete } from '@/ui/assets/perps/IconPerpsTpslDelete.svg';
+import { ReactComponent as RcIconArrowDownPerpsCC } from '@/ui/assets/perps/icon-arrow-down.svg';
 import { formatTpOrSlPrice, validatePriceInput } from '../../Perps/utils';
-import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
-import { PerpsPositionCard } from '../components/PerpsPositionCard';
+import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
 import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
 import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
 import perpsToast from '../components/PerpsToast';
 import stats from '@/stats';
-import { useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { getStatsReportSide } from '../utils';
+import { TPSLSettingMode } from '../types';
 
 export interface Props {
   visible: boolean;
@@ -28,22 +28,355 @@ export interface Props {
   marketData: MarketData;
 }
 
-const calculatePnl = ({
+type TpslSide = 'tp' | 'sl';
+
+type TpslSideState = {
+  mode: TPSLSettingMode;
+  triggerPrice: string;
+  modeValue: string;
+  estimatedPnl: string;
+  estimatedPnlPercent: string;
+  error: string;
+};
+
+type SideAction =
+  | {
+      type: 'none';
+    }
+  | {
+      type: 'modify';
+      oid: number;
+      triggerPx: string;
+    }
+  | {
+      type: 'create';
+      triggerPx: string;
+    };
+
+const MODE_OPTIONS: {
+  value: Extract<TPSLSettingMode, 'pnl' | 'roi'>;
+  label: string;
+}[] = [
+  { value: 'pnl', label: 'PNL' },
+  { value: 'roi', label: 'ROI%' },
+];
+
+const EMPTY_SIDE_STATE: TpslSideState = {
+  mode: 'pnl',
+  triggerPrice: '',
+  modeValue: '',
+  estimatedPnl: '',
+  estimatedPnlPercent: '',
+  error: '',
+};
+
+const getOrderTriggerPx = (position: PositionFormatData, side: TpslSide) => {
+  return side === 'tp'
+    ? position.tpItem?.triggerPx || ''
+    : position.slItem?.triggerPx || '';
+};
+
+const getOrderOid = (position: PositionFormatData, side: TpslSide) => {
+  return side === 'tp' ? position.tpItem?.oid : position.slItem?.oid;
+};
+
+const getDefaultMode = (): TPSLSettingMode => {
+  return 'pnl';
+};
+
+const stripDecorations = (value: string) => {
+  return value.replace(/,/g, '').replace(/[$%\s]/g, '');
+};
+
+const sanitizeTriggerPriceInput = (value: string, szDecimals: number) => {
+  const next = stripDecorations(value).replace(/[+-]/g, '');
+  if (validatePriceInput(next, szDecimals)) {
+    return next;
+  }
+  return null;
+};
+
+const sanitizeUnsignedDecimal = (value: string) => {
+  const next = stripDecorations(value).replace(/[+-]/g, '');
+  if (/^\d*\.?\d{0,2}$/.test(next)) {
+    return next;
+  }
+  return null;
+};
+
+const parseModeValue = (side: TpslSide, value: string) => {
+  const clean = sanitizeUnsignedDecimal(value);
+  if (!clean || clean === '.') {
+    return null;
+  }
+  const numeric = Number(clean);
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return null;
+  }
+  return side === 'tp' ? numeric : -numeric;
+};
+
+const formatModeValueFromNumber = (value: number, decimals = 2) => {
+  if (!Number.isFinite(value) || value === 0) return '';
+  return new BigNumber(Math.abs(value))
+    .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
+    .toString();
+};
+
+const calculatePnlByTrigger = ({
   position,
-  extPrice,
+  triggerPrice,
 }: {
   position: PositionFormatData;
-  extPrice: number;
+  triggerPrice: string;
 }) => {
-  const withSize = position.direction === 'Long' ? 1 : -1;
-  const pnl =
-    (Number(extPrice) - Number(position.entryPx)) *
-    Number(position.size) *
-    withSize;
-  const costValue =
-    (Number(position.size) * Number(position.entryPx)) / position.leverage;
-  const percent = (pnl / costValue) * 100;
-  return { pnl, percent };
+  const trigger = Number(triggerPrice);
+  const entryPrice = Number(position.entryPx);
+  const size = Number(position.size);
+  if (!trigger || !entryPrice || !size) {
+    return {
+      pnl: new BigNumber(0),
+      roi: new BigNumber(0),
+    };
+  }
+
+  const sideMultiplier = position.direction === 'Long' ? 1 : -1;
+  const pnl = new BigNumber(trigger)
+    .minus(entryPrice)
+    .times(size)
+    .times(sideMultiplier);
+  const margin = new BigNumber(size).times(entryPrice).div(position.leverage);
+  const roi = margin.gt(0) ? pnl.div(margin).times(100) : new BigNumber(0);
+
+  return { pnl, roi };
+};
+
+const getTriggerFromPnl = ({
+  position,
+  pnl,
+  szDecimals,
+}: {
+  position: PositionFormatData;
+  pnl: number;
+  szDecimals: number;
+}) => {
+  const entryPrice = new BigNumber(position.entryPx || 0);
+  const size = new BigNumber(position.size || 0);
+  if (!entryPrice.gt(0) || !size.gt(0)) return '';
+
+  const priceDelta = new BigNumber(pnl).div(size);
+  const trigger =
+    position.direction === 'Long'
+      ? entryPrice.plus(priceDelta)
+      : entryPrice.minus(priceDelta);
+
+  if (!trigger.gt(0)) return '';
+  return formatTpOrSlPrice(trigger.toNumber(), szDecimals);
+};
+
+const getTriggerFromRoi = ({
+  position,
+  roi,
+  szDecimals,
+}: {
+  position: PositionFormatData;
+  roi: number;
+  szDecimals: number;
+}) => {
+  const entryPrice = new BigNumber(position.entryPx || 0);
+  const size = new BigNumber(position.size || 0);
+  if (!entryPrice.gt(0) || !size.gt(0) || !position.leverage) return '';
+
+  const margin = size.times(entryPrice).div(position.leverage);
+  const pnl = margin.times(roi).div(100);
+  return getTriggerFromPnl({
+    position,
+    pnl: pnl.toNumber(),
+    szDecimals,
+  });
+};
+
+const getValidationError = ({
+  position,
+  side,
+  triggerPrice,
+  markPrice,
+  t,
+}: {
+  position: PositionFormatData;
+  side: TpslSide;
+  triggerPrice: string;
+  markPrice: number;
+  t: ReturnType<typeof useTranslation>['t'];
+}) => {
+  if (!triggerPrice || Number(triggerPrice) === 0) {
+    return '';
+  }
+  if (!markPrice) {
+    return '';
+  }
+
+  const trigger = Number(triggerPrice);
+
+  if (side === 'tp') {
+    if (position.direction === 'Long' && trigger <= markPrice) {
+      return t('page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsLong');
+    }
+    if (position.direction === 'Short' && trigger >= markPrice) {
+      return t('page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsShort');
+    }
+  }
+
+  if (side === 'sl') {
+    if (position.direction === 'Long' && trigger >= markPrice) {
+      return t('page.perpsDetail.PerpsAutoCloseModal.stopLossTipsLong');
+    }
+    if (position.direction === 'Short' && trigger <= markPrice) {
+      return t('page.perpsDetail.PerpsAutoCloseModal.stopLossTipsShort');
+    }
+  }
+
+  return '';
+};
+
+const hydrateSideFromTrigger = ({
+  position,
+  side,
+  state,
+  triggerPrice,
+  szDecimals,
+  markPrice,
+  t,
+  syncModeValue = true,
+}: {
+  position: PositionFormatData;
+  side: TpslSide;
+  state: TpslSideState;
+  triggerPrice: string;
+  szDecimals: number;
+  markPrice: number;
+  t: ReturnType<typeof useTranslation>['t'];
+  syncModeValue?: boolean;
+}): TpslSideState => {
+  if (!triggerPrice || Number(triggerPrice) === 0) {
+    return {
+      ...state,
+      triggerPrice,
+      modeValue: syncModeValue ? '' : state.modeValue,
+      estimatedPnl: '',
+      estimatedPnlPercent: '',
+      error: '',
+    };
+  }
+
+  const { pnl, roi } = calculatePnlByTrigger({ position, triggerPrice });
+  const modeValue =
+    state.mode === 'pnl'
+      ? formatModeValueFromNumber(pnl.toNumber())
+      : state.mode === 'roi'
+      ? formatModeValueFromNumber(roi.toNumber())
+      : '';
+
+  return {
+    ...state,
+    triggerPrice,
+    modeValue: syncModeValue ? modeValue : state.modeValue,
+    estimatedPnl: pnl.toFixed(2),
+    estimatedPnlPercent: roi.toFixed(2),
+    error: getValidationError({
+      position,
+      side,
+      triggerPrice,
+      markPrice,
+      t,
+    }),
+  };
+};
+
+const getInitialSideState = ({
+  position,
+  side,
+  szDecimals,
+  markPrice,
+  t,
+}: {
+  position: PositionFormatData;
+  side: TpslSide;
+  szDecimals: number;
+  markPrice: number;
+  t: ReturnType<typeof useTranslation>['t'];
+}) => {
+  const triggerPx = getOrderTriggerPx(position, side);
+  const mode = getDefaultMode();
+  const baseState: TpslSideState = {
+    ...EMPTY_SIDE_STATE,
+    mode,
+  };
+
+  if (!triggerPx || Number(triggerPx) <= 0) {
+    return baseState;
+  }
+
+  return hydrateSideFromTrigger({
+    position,
+    side,
+    state: baseState,
+    triggerPrice: validatePriceInput(triggerPx, szDecimals)
+      ? triggerPx
+      : formatTpOrSlPrice(Number(triggerPx), szDecimals),
+    szDecimals,
+    markPrice,
+    t,
+  });
+};
+
+const isSameTrigger = (left?: string, right?: string) => {
+  if (!left && !right) return true;
+  if (!left || !right) return false;
+  const leftBN = new BigNumber(left);
+  const rightBN = new BigNumber(right);
+  if (leftBN.isNaN() || rightBN.isNaN()) {
+    return left === right;
+  }
+  return leftBN.eq(rightBN);
+};
+
+const resolveSideAction = (
+  position: PositionFormatData,
+  side: TpslSide,
+  state: TpslSideState
+): SideAction => {
+  const oid = getOrderOid(position, side);
+  const existingTrigger = getOrderTriggerPx(position, side);
+  const nextTrigger =
+    state.triggerPrice && Number(state.triggerPrice) > 0
+      ? state.triggerPrice
+      : '';
+
+  if (oid && existingTrigger && !nextTrigger) {
+    return { type: 'none' };
+  }
+
+  if (oid && existingTrigger && nextTrigger) {
+    return isSameTrigger(existingTrigger, nextTrigger)
+      ? { type: 'none' }
+      : { type: 'modify', oid, triggerPx: nextTrigger };
+  }
+
+  if (!oid && nextTrigger) {
+    return { type: 'create', triggerPx: nextTrigger };
+  }
+
+  return { type: 'none' };
+};
+
+const getCancelOrderSuccessTitle = (
+  position: PositionFormatData,
+  side: TpslSide
+) => {
+  const orderAction = position.direction === 'Long' ? 'Sell' : 'Buy';
+  const orderType = side === 'tp' ? 'Take Profit' : 'Stop Loss';
+  return `${orderType} ${orderAction} Order Canceled`;
 };
 
 export const EditTpSlModal: React.FC<Props> = ({
@@ -54,248 +387,27 @@ export const EditTpSlModal: React.FC<Props> = ({
   onConfirm,
 }) => {
   const { t } = useTranslation();
-
+  const dispatch = useRabbyDispatch();
   const currentPerpsAccount = useRabbySelector(
     (store) => store.perps.currentPerpsAccount
   );
-  // todo tp sl from props
-  const [tpPrice, setTpPrice] = React.useState<string>('');
-  const [slPrice, setSlPrice] = React.useState<string>('');
-  const [gainPct, setGainPct] = React.useState<string>('');
-  const [lossPct, setLossPct] = React.useState<string>('');
-  const resetForm = useMemoizedFn(() => {
-    setTpPrice('');
-    setSlPrice('');
-    setGainPct('');
-    setLossPct('');
+
+  const szDecimals = marketData.szDecimals ?? 5;
+  const pxDecimals = marketData.pxDecimals ?? 2;
+  const currentPrice = Number(marketData.markPx || position.markPx || 0);
+  const markPrice = currentPrice || Number(position.markPx || 0);
+
+  const [tpState, setTpState] = React.useState<TpslSideState>({
+    ...EMPTY_SIDE_STATE,
+    mode: 'pnl',
   });
-
-  const szDecimals = marketData.szDecimals;
-
-  const ensurePriceFormat = useMemoizedFn((price: string) => {
-    if (!validatePriceInput(price, szDecimals)) {
-      return formatTpOrSlPrice(Number(price), szDecimals);
-    } else {
-      return price;
-    }
+  const [slState, setSlState] = React.useState<TpslSideState>({
+    ...EMPTY_SIDE_STATE,
+    mode: 'pnl',
   });
-
-  useEffect(() => {
-    if (visible) {
-      // Initialize with existing prices if available
-      const existingTpPrice = position.tpItem?.triggerPx || '';
-      const existingSlPrice = position.slItem?.triggerPx || '';
-
-      if (existingTpPrice && Number(existingTpPrice) > 0) {
-        handlePriceChange(ensurePriceFormat(existingTpPrice), 'tp');
-      }
-      if (existingSlPrice && Number(existingSlPrice) > 0) {
-        handlePriceChange(ensurePriceFormat(existingSlPrice), 'sl');
-      }
-    } else {
-      resetForm();
-    }
-  }, [visible]);
-
-  const handlePriceChange = useMemoizedFn(
-    (price: string, type: 'tp' | 'sl') => {
-      let value = price.replace(',', '.');
-      if (value.startsWith('$')) {
-        value = value.slice(1);
-      }
-      if (
-        (/^\d*\.?\d*$/.test(value) || value === '') &&
-        validatePriceInput(value, szDecimals)
-      ) {
-        if (type === 'tp') {
-          setTpPrice(value);
-          if (value && Number(value) > 0) {
-            const { pnl, percent } = calculatePnl({
-              position,
-              extPrice: Number(value),
-            });
-            // Gain %: positive = profit, negative = loss
-            setGainPct(percent ? percent.toFixed(2) : '');
-          } else {
-            setGainPct('');
-          }
-        } else {
-          setSlPrice(value);
-          if (value && Number(value) > 0) {
-            const { pnl, percent } = calculatePnl({
-              position,
-              extPrice: Number(value),
-            });
-            // Loss %: positive = loss, negative = profit (invert the sign)
-            setLossPct(percent ? (-percent).toFixed(2) : '');
-          } else {
-            setLossPct('');
-          }
-        }
-      }
-    }
+  const [cancelingSide, setCancelingSide] = React.useState<TpslSide | null>(
+    null
   );
-
-  const handlePercentChange = useMemoizedFn(
-    (percent: string, type: 'tp' | 'sl') => {
-      // Allow numbers, decimal point, and negative sign
-      if (/^-?\d*\.?\d*$/.test(percent) || percent === '' || percent === '-') {
-        if (type === 'tp') {
-          setGainPct(percent);
-        } else {
-          setLossPct(percent);
-        }
-
-        // Calculate price from percentage
-        if (percent && percent !== '-' && Number(percent) !== 0) {
-          let pctValue = Number(percent) / 100;
-
-          // For Loss %: positive means loss, negative means profit
-          // So we need to invert the sign for calculation
-          if (type === 'sl') {
-            pctValue = -pctValue;
-          }
-
-          const costValue =
-            (Number(position.size) * Number(position.entryPx)) /
-            position.leverage;
-          const pnlUsdValue = costValue * pctValue;
-          const size = Number(position.size);
-          const priceDifference = pnlUsdValue / size;
-          const entryPrice = Number(position.entryPx);
-
-          let newPrice: number;
-          // Calculate based on the actual pnl direction
-          if (position.direction === 'Long') {
-            // Long: higher price = profit, lower price = loss
-            newPrice = entryPrice + priceDifference;
-          } else {
-            // Short: lower price = profit, higher price = loss
-            newPrice = entryPrice - priceDifference;
-          }
-
-          const newPriceStr = formatTpOrSlPrice(newPrice, szDecimals);
-          if (type === 'tp') {
-            setTpPrice(newPriceStr);
-          } else {
-            setSlPrice(newPriceStr);
-          }
-        } else {
-          // Clear price if percent is empty or just '-'
-          if (type === 'tp') {
-            setTpPrice('');
-          } else {
-            setSlPrice('');
-          }
-        }
-      }
-    }
-  );
-
-  const tpPnl = useMemo(() => {
-    if (!tpPrice) {
-      return '';
-    }
-
-    return calculatePnl({
-      position,
-      extPrice: Number(tpPrice),
-    }).pnl.toFixed(2);
-  }, [tpPrice, position]);
-
-  const slPnl = useMemo(() => {
-    if (!slPrice) {
-      return '';
-    }
-
-    return calculatePnl({
-      position,
-      extPrice: Number(slPrice),
-    }).pnl.toFixed(2);
-  }, [slPrice, position]);
-
-  // Validate TP price
-  const tpValidation = useMemo(() => {
-    const resObj = {
-      isValid: true,
-      error: '',
-      errorMessage: '',
-    };
-
-    if (!tpPrice || Number(tpPrice) === 0) {
-      return resObj;
-    }
-
-    const tpValue = Number(tpPrice);
-    const markPrice = Number(position.markPx);
-
-    if (position.direction === 'Long' && tpValue <= markPrice) {
-      resObj.isValid = false;
-      resObj.error = 'invalid_tp_long';
-      resObj.errorMessage = t(
-        'page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsLong'
-      );
-    }
-    if (position.direction === 'Short' && tpValue >= markPrice) {
-      resObj.isValid = false;
-      resObj.error = 'invalid_tp_short';
-      resObj.errorMessage = t(
-        'page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsShort'
-      );
-    }
-
-    return resObj;
-  }, [tpPrice, position, t]);
-
-  // Validate SL price
-  const slValidation = useMemo(() => {
-    const resObj = {
-      isValid: true,
-      error: '',
-      errorMessage: '',
-    };
-
-    if (!slPrice || Number(slPrice) === 0) {
-      return resObj;
-    }
-
-    const slValue = Number(slPrice);
-    const markPrice = Number(position.markPx);
-
-    if (position.direction === 'Long' && slValue >= markPrice) {
-      resObj.isValid = false;
-      resObj.error = 'invalid_sl_long';
-      resObj.errorMessage = t(
-        'page.perpsDetail.PerpsAutoCloseModal.stopLossTipsLong'
-      );
-    }
-
-    if (position.direction === 'Short' && slValue <= markPrice) {
-      resObj.isValid = false;
-      resObj.error = 'invalid_sl_short';
-      resObj.errorMessage = t(
-        'page.perpsDetail.PerpsAutoCloseModal.stopLossTipsShort'
-      );
-    }
-
-    return resObj;
-  }, [slPrice, position, t]);
-
-  const canSubmit = useMemo(() => {
-    // At least one price should be set
-    if (!tpPrice && !slPrice) {
-      return false;
-    }
-    // If TP is set, it must be valid
-    if (tpPrice && !tpValidation.isValid) {
-      return false;
-    }
-    // If SL is set, it must be valid
-    if (slPrice && !slValidation.isValid) {
-      return false;
-    }
-    return true;
-  }, [tpPrice, slPrice, tpValidation.isValid, slValidation.isValid]);
 
   const {
     handleSetAutoClose,
@@ -303,151 +415,251 @@ export const EditTpSlModal: React.FC<Props> = ({
     handleCancelOrder,
   } = usePerpsProPosition();
 
+  const resetForm = useMemoizedFn(() => {
+    setTpState(
+      getInitialSideState({
+        position,
+        side: 'tp',
+        szDecimals,
+        markPrice,
+        t,
+      })
+    );
+    setSlState(
+      getInitialSideState({
+        position,
+        side: 'sl',
+        szDecimals,
+        markPrice,
+        t,
+      })
+    );
+  });
+
+  useEffect(() => {
+    if (visible) {
+      resetForm();
+    }
+  }, [visible, resetForm]);
+
+  const updateSideByTrigger = useMemoizedFn(
+    (side: TpslSide, triggerPrice: string) => {
+      const value = sanitizeTriggerPriceInput(triggerPrice, szDecimals);
+      if (value === null) {
+        return;
+      }
+
+      const setter = side === 'tp' ? setTpState : setSlState;
+      setter((prev) =>
+        hydrateSideFromTrigger({
+          position,
+          side,
+          state: prev,
+          triggerPrice: value,
+          szDecimals,
+          markPrice,
+          t,
+        })
+      );
+    }
+  );
+
+  const updateSideByModeValue = useMemoizedFn(
+    (side: TpslSide, modeValue: string) => {
+      const clean = sanitizeUnsignedDecimal(modeValue);
+      if (clean === null) {
+        return;
+      }
+
+      const setter = side === 'tp' ? setTpState : setSlState;
+      setter((prev) => {
+        const numericValue = parseModeValue(side, clean);
+        const triggerPrice =
+          numericValue === null
+            ? ''
+            : prev.mode === 'pnl'
+            ? getTriggerFromPnl({
+                position,
+                pnl: numericValue,
+                szDecimals,
+              })
+            : getTriggerFromRoi({
+                position,
+                roi: numericValue,
+                szDecimals,
+              });
+
+        return hydrateSideFromTrigger({
+          position,
+          side,
+          state: {
+            ...prev,
+            modeValue: clean,
+          },
+          triggerPrice,
+          szDecimals,
+          markPrice,
+          t,
+          syncModeValue: false,
+        });
+      });
+    }
+  );
+
+  const updateSideMode = useMemoizedFn(
+    (side: TpslSide, mode: TPSLSettingMode) => {
+      if (mode === 'price') return;
+      const setter = side === 'tp' ? setTpState : setSlState;
+      setter((prev) => {
+        const nextState = {
+          ...prev,
+          mode,
+          modeValue: '',
+        };
+        return hydrateSideFromTrigger({
+          position,
+          side,
+          state: nextState,
+          triggerPrice: prev.triggerPrice,
+          szDecimals,
+          markPrice,
+          t,
+        });
+      });
+    }
+  );
+
+  const tpAction = useMemo(() => resolveSideAction(position, 'tp', tpState), [
+    position,
+    tpState,
+  ]);
+  const slAction = useMemo(() => resolveSideAction(position, 'sl', slState), [
+    position,
+    slState,
+  ]);
+
+  const hasAnyAction = tpAction.type !== 'none' || slAction.type !== 'none';
+  const hasError = Boolean(tpState.error || slState.error);
+  const canSubmit = hasAnyAction && !hasError;
+
+  const reportCreateStats = useMemoizedFn(
+    (side: TpslSide, triggerPx: string) => {
+      const isBuy = position.direction === 'Short';
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type:
+          side === 'tp' ? 'position take profit' : 'position stop loss',
+        leverage: position.leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, true),
+        margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
+        coin: position.coin,
+        size: position.size,
+        price: triggerPx,
+        trade_usd_value: new BigNumber(triggerPx)
+          .times(position.size)
+          .toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
+      });
+    }
+  );
+
+  const cancelSideImmediately = useMemoizedFn(async (side: TpslSide) => {
+    const oid = getOrderOid(position, side);
+    if (!oid || cancelingSide) return;
+
+    setCancelingSide(side);
+    try {
+      await handleCancelOrder(
+        [
+          {
+            coin: position.coin,
+            oid,
+          },
+        ],
+        {
+          successToast: {
+            title: getCancelOrderSuccessTitle(position, side),
+          },
+        }
+      );
+      dispatch.perps.fetchPositionOpenOrders();
+      onConfirm?.();
+      onCancel();
+    } catch (error) {
+      console.error('Failed to cancel TP/SL order:', error);
+      perpsToast.error({
+        title: t('page.perps.toast.cancelFailed'),
+        description:
+          error instanceof Error
+            ? error.message
+            : t('page.perps.toast.cancelOrderError'),
+      });
+    } finally {
+      setCancelingSide(null);
+    }
+  });
+
   const { loading, runAsync: runSubmit } = useRequest(
     async () => {
       const direction = position.direction;
-      const isBuy = direction === 'Short';
-      if (position.tpItem && position.slItem) {
-        // both have tp and sl
+      const actions = {
+        tp: tpAction,
+        sl: slAction,
+      };
+
+      const modifyTp =
+        actions.tp.type === 'modify'
+          ? {
+              triggerPx: actions.tp.triggerPx,
+              oid: actions.tp.oid,
+            }
+          : undefined;
+      const modifySl =
+        actions.sl.type === 'modify'
+          ? {
+              triggerPx: actions.sl.triggerPx,
+              oid: actions.sl.oid,
+            }
+          : undefined;
+
+      if (modifyTp || modifySl) {
         await handleModifyTpSlOrders({
           coin: position.coin,
           direction,
-          tp: {
-            triggerPx: Number(tpPrice).toString(),
-            oid: position.tpItem.oid,
-          },
-          sl: {
-            triggerPx: Number(slPrice).toString(),
-            oid: position.slItem.oid,
-          },
+          tp: modifyTp,
+          sl: modifySl,
         });
+      }
+
+      const createTp = actions.tp.type === 'create' ? actions.tp.triggerPx : '';
+      const createSl = actions.sl.type === 'create' ? actions.sl.triggerPx : '';
+
+      if (createTp || createSl) {
+        await handleSetAutoClose({
+          coin: position.coin,
+          tpTriggerPx: createTp,
+          slTriggerPx: createSl,
+          direction,
+        });
+        if (createTp) {
+          reportCreateStats('tp', createTp);
+        }
+        if (createSl) {
+          reportCreateStats('sl', createSl);
+        }
+      }
+
+      if ((modifyTp || modifySl) && !createTp && !createSl) {
         perpsToast.success({
           title: t('page.perps.toast.success'),
           description: t('page.perps.toast.setAutoCloseSuccess'),
         });
-      } else if (!position.tpItem && !position.slItem) {
-        // both not have tp and sl
-        const tpTriggerPx = new BigNumber(tpPrice).isNaN() ? '' : tpPrice;
-        const slTriggerPx = new BigNumber(slPrice).isNaN() ? '' : slPrice;
-        await handleSetAutoClose({
-          coin: position.coin,
-          tpTriggerPx,
-          slTriggerPx,
-          direction,
-        });
-        tpTriggerPx &&
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'position take profit',
-            leverage: position.leverage.toString(),
-            trade_side: getStatsReportSide(isBuy, true),
-            margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
-            coin: position.coin,
-            size: position.size,
-            price: tpTriggerPx,
-            trade_usd_value: new BigNumber(tpTriggerPx)
-              .times(position.size)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
-        slTriggerPx &&
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'position stop loss',
-            leverage: position.leverage.toString(),
-            trade_side: getStatsReportSide(isBuy, true),
-            margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
-            coin: position.coin,
-            size: position.size,
-            price: slTriggerPx,
-            trade_usd_value: new BigNumber(slTriggerPx)
-              .times(position.size)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
-      } else {
-        // only have tp
-        if (position.tpItem) {
-          await handleModifyTpSlOrders({
-            coin: position.coin,
-            direction,
-            tp: {
-              triggerPx: Number(tpPrice).toString(),
-              oid: position.tpItem.oid,
-            },
-          });
-          if (!new BigNumber(slPrice).isNaN()) {
-            await sleep(10);
-            await handleSetAutoClose({
-              coin: position.coin,
-              tpTriggerPx: '',
-              slTriggerPx: slPrice,
-              direction,
-            });
-            slPrice &&
-              stats.report('perpsTradeHistory', {
-                created_at: new Date().getTime(),
-                user_addr: currentPerpsAccount?.address || '',
-                trade_type: 'position stop loss',
-                leverage: position.leverage.toString(),
-                trade_side: getStatsReportSide(isBuy, true),
-                margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
-                coin: position.coin,
-                size: position.size,
-                price: slPrice,
-                trade_usd_value: new BigNumber(slPrice)
-                  .times(position.size)
-                  .toFixed(2),
-                service_provider: 'hyperliquid',
-                app_version: process.env.release || '0',
-                address_type: currentPerpsAccount?.type || '',
-              });
-          }
-        } else if (position.slItem) {
-          // only have sl
-          await handleModifyTpSlOrders({
-            coin: position.coin,
-            direction,
-            sl: {
-              triggerPx: Number(slPrice).toString(),
-              oid: position.slItem.oid,
-            },
-          });
-          if (!new BigNumber(tpPrice).isNaN()) {
-            await sleep(10);
-            await handleSetAutoClose({
-              coin: position.coin,
-              tpTriggerPx: tpPrice,
-              slTriggerPx: '',
-              direction,
-            });
-            tpPrice &&
-              stats.report('perpsTradeHistory', {
-                created_at: new Date().getTime(),
-                user_addr: currentPerpsAccount?.address || '',
-                trade_type: 'position take profit',
-                leverage: position.leverage.toString(),
-                trade_side: getStatsReportSide(isBuy, true),
-                margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
-                coin: position.coin,
-                size: position.size,
-                price: tpPrice,
-                trade_usd_value: new BigNumber(tpPrice)
-                  .times(position.size)
-                  .toFixed(2),
-                service_provider: 'hyperliquid',
-                app_version: process.env.release || '0',
-                address_type: currentPerpsAccount?.type || '',
-              });
-          }
-        }
       }
+
+      dispatch.perps.fetchPositionOpenOrders();
     },
     {
       manual: true,
@@ -456,6 +668,151 @@ export const EditTpSlModal: React.FC<Props> = ({
       },
     }
   );
+
+  const renderModeMenu = (side: TpslSide) => (
+    <Menu
+      className="bg-r-neutral-bg1"
+      onClick={({ key }) => updateSideMode(side, key as TPSLSettingMode)}
+    >
+      {MODE_OPTIONS.map((option) => (
+        <Menu.Item
+          className="text-r-neutral-title1 hover:bg-r-blue-light1"
+          key={option.value}
+        >
+          {option.label}
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
+
+  const renderPnlText = (state: TpslSideState) => {
+    if (!state.triggerPrice || !state.estimatedPnl) {
+      return <span className="text-rb-neutral-foot">-</span>;
+    }
+
+    const pnl = Number(state.estimatedPnl);
+    const roi = Number(state.estimatedPnlPercent || 0);
+    return (
+      <span
+        className={pnl >= 0 ? 'text-rb-green-default' : 'text-rb-red-default'}
+      >
+        {pnl >= 0 ? '+' : '-'}
+        {formatUsdValue(Math.abs(pnl))}
+        {state.estimatedPnlPercent
+          ? `(${roi >= 0 ? '+' : '-'}${Math.abs(roi).toFixed(2)}%)`
+          : ''}
+      </span>
+    );
+  };
+
+  const renderSideSection = (side: TpslSide) => {
+    const state = side === 'tp' ? tpState : slState;
+    const isTp = side === 'tp';
+    const label = isTp
+      ? t('page.perpsPro.editTpSl.takeProfit')
+      : t('page.perpsPro.editTpSl.stopLoss');
+    const cancelLabel = isTp
+      ? t('page.perpsPro.editTpSl.cancelTp')
+      : t('page.perpsPro.editTpSl.cancelSl');
+    const modeLabel =
+      MODE_OPTIONS.find((option) => option.value === state.mode)?.label ||
+      'PNL';
+    const signedModeValue = Number(
+      state.mode === 'roi' ? state.estimatedPnlPercent : state.estimatedPnl
+    );
+    const modeValueSign =
+      Number.isFinite(signedModeValue) && signedModeValue !== 0
+        ? signedModeValue > 0
+          ? '+'
+          : '-'
+        : isTp
+        ? '+'
+        : '-';
+    const hasExistingOrder = Boolean(
+      getOrderOid(position, side) && getOrderTriggerPx(position, side)
+    );
+    const isCanceling = cancelingSide === side;
+
+    return (
+      <section className="flex flex-col gap-[12px]">
+        <div className="flex items-center justify-between">
+          <div className="text-[14px] leading-[17px] font-semibold text-r-neutral-title-1">
+            {label}
+          </div>
+          {hasExistingOrder ? (
+            <button
+              type="button"
+              className="flex items-center gap-[6px] border-0 bg-transparent p-0 text-[14px] leading-[17px] text-rb-neutral-body hover:text-rb-brand-default disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={Boolean(cancelingSide)}
+              onClick={() => cancelSideImmediately(side)}
+            >
+              <RcIconPerpsTpslDelete className="block h-[14px] w-[14px] flex-shrink-0" />
+              {isCanceling ? `${cancelLabel}...` : cancelLabel}
+            </button>
+          ) : null}
+        </div>
+        <div className="flex items-start gap-[8px]">
+          <input
+            value={state.triggerPrice}
+            inputMode="decimal"
+            placeholder={t('page.perpsPro.editTpSl.triggerPrice')}
+            onChange={(e) => updateSideByTrigger(side, e.target.value)}
+            className={clsx(
+              'h-[44px] min-w-0 flex-1 rounded-[8px] border border-solid bg-rb-neutral-bg-5 px-[12px]',
+              'text-[15px] leading-[18px] font-medium text-r-neutral-title-1 outline-none',
+              'placeholder:text-rb-neutral-info',
+              state.error ? 'border-rb-red-default' : 'border-rb-neutral-line',
+              'focus:border-rb-brand-default hover:border-rb-brand-default'
+            )}
+          />
+          <div
+            className={clsx(
+              'flex h-[44px] w-[143px] items-center justify-between rounded-[8px] border border-solid bg-rb-neutral-bg-5 px-[12px]',
+              state.error ? 'border-rb-red-default' : 'border-rb-neutral-line',
+              'focus-within:border-rb-brand-default hover:border-rb-brand-default'
+            )}
+          >
+            {state.modeValue ? (
+              <span className="mr-[2px] flex-shrink-0 text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+                {modeValueSign}
+              </span>
+            ) : null}
+            <input
+              value={state.modeValue}
+              inputMode="decimal"
+              onChange={(e) => updateSideByModeValue(side, e.target.value)}
+              className={clsx(
+                'min-w-0 flex-1 border-0 bg-transparent p-0 text-[15px] leading-[18px] font-medium outline-none',
+                'text-r-neutral-title-1'
+              )}
+            />
+            <Dropdown
+              trigger={['click']}
+              overlay={renderModeMenu(side)}
+              transitionName=""
+            >
+              <button
+                type="button"
+                className="ml-[8px] flex flex-shrink-0 items-center gap-[3px] border-0 bg-transparent p-0 text-[15px] leading-[18px] text-rb-neutral-foot"
+              >
+                {modeLabel}
+                <RcIconArrowDownPerpsCC className="h-[14px] w-[14px] text-rb-neutral-foot" />
+              </button>
+            </Dropdown>
+          </div>
+        </div>
+        <div className="text-[12px] leading-[14px] text-rb-neutral-foot">
+          {t('page.perpsPro.editTpSl.estimatedPnlWillBe')}{' '}
+          {renderPnlText(state)}
+        </div>
+        {state.error ? (
+          <div className="text-[12px] leading-[14px] text-rb-red-default">
+            {state.error}
+          </div>
+        ) : null}
+      </section>
+    );
+  };
 
   return (
     <Modal
@@ -472,229 +829,70 @@ export const EditTpSlModal: React.FC<Props> = ({
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
-      className="modal-support-darkmode"
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-tpsl-modal"
+      closeIcon={
+        <RcIconCloseCC className="w-[20px] h-[20px] text-rb-neutral-body" />
+      }
     >
-      <div className="flex flex-col min-h-[520px] bg-r-neutral-bg2">
-        <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2">
+      <div className="flex min-h-[540px] flex-col bg-rb-neutral-bg-1">
+        <div className="relative flex h-[56px] flex-shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
           {t('page.perpsPro.editTpSl.title')}
         </div>
 
-        <div className="flex-1 px-20 overflow-y-auto pb-24">
-          <section className="mb-[12px] mt-4">
-            <div className="text-[12px] leading-[16px] text-rb-neutral-foot font-medium flex items-center justify-center">
-              <span>{t('page.perpsPro.editTpSl.entryPrice')}</span>
-              <span className="text-r-neutral-title-1 ml-4 mr-8">
-                ${splitNumberByStep(position.entryPx)}
-              </span>
-              <span>{t('page.perpsPro.editTpSl.markPrice')}</span>
-              <span className="text-r-neutral-title-1 ml-4">
-                ${splitNumberByStep(position.markPx)}
-              </span>
-            </div>
-          </section>
-          <section className="mb-[12px]">
-            <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-              {t('page.perpsPro.editTpSl.currentPosition')}
-            </div>
-            <PerpsPositionCard position={position} marketData={marketData} />
-          </section>
-
-          <section className="mb-[8px]">
-            <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-              {t('page.perpsPro.editTpSl.title')}
-            </div>
-            <div className="space-y-[8px]">
-              <div className="flex items-center gap-[8px]">
-                <DesktopPerpsInput
-                  prefix={
-                    <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      {t('page.perpsPro.editTpSl.tp')}
-                    </span>
-                  }
-                  value={tpPrice}
-                  onChange={(e) => {
-                    handlePriceChange(e.target.value, 'tp');
-                  }}
-                  className={clsx(
-                    'text-right',
-                    tpValidation.error && 'border-r-red-default'
-                  )}
-                />
-                <DesktopPerpsInput
-                  prefix={
-                    <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      {t('page.perpsPro.editTpSl.gain')}
-                    </span>
-                  }
-                  className="text-right"
-                  value={gainPct}
-                  onChange={(e) => {
-                    handlePercentChange(e.target.value, 'tp');
-                  }}
-                  suffix={
-                    <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      %
-                    </span>
-                  }
-                />
+        <div className="flex-1 px-[20px] overflow-y-auto pb-24">
+          <section className="flex items-center justify-between pt-[10px]">
+            <div className="flex flex-col gap-[3px]">
+              <PerpsDisplayCoinName
+                item={marketData}
+                separator="-"
+                className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1"
+              />
+              <div
+                className={clsx(
+                  'flex h-[16px] w-max items-center rounded-[3px] px-[4px]',
+                  'text-[10px] leading-[16px] font-medium',
+                  position.direction === 'Long'
+                    ? 'bg-rb-green-light-2 text-rb-green-default'
+                    : 'bg-rb-red-light-2 text-rb-red-default'
+                )}
+              >
+                {position.direction.toLowerCase()} {position.leverage}x
               </div>
-              {position.tpItem && (
-                <div className="flex items-center justify-end">
-                  <div
-                    className="text-rb-brand-default cursor-pointer bg-rb-brand-light-1 rounded-[4px] text-right px-4 py-2 text-[12px] leading-[14px] flex items-center justify-center"
-                    onClick={() => {
-                      handleCancelOrder([
-                        {
-                          coin: position.coin,
-                          oid: position.tpItem!.oid,
-                        },
-                      ]);
-                      onCancel();
-                    }}
-                  >
-                    {t('page.perpsPro.editTpSl.cancelTp')}
-                  </div>
-                </div>
-              )}
-              {tpValidation.error && (
-                <div className="text-[12px] text-r-red-default font-medium">
-                  {tpValidation.errorMessage}
-                </div>
-              )}
-              <div className="flex items-center gap-[8px]">
-                <DesktopPerpsInput
-                  prefix={
-                    <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      {t('page.perpsPro.editTpSl.sl')}
-                    </span>
-                  }
-                  value={slPrice}
-                  onChange={(e) => {
-                    handlePriceChange(e.target.value, 'sl');
-                  }}
-                  className={clsx(
-                    'text-right',
-                    slValidation.error && 'border-r-red-default'
-                  )}
-                />
-                <DesktopPerpsInput
-                  prefix={
-                    <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      {t('page.perpsPro.editTpSl.loss')}
-                    </span>
-                  }
-                  className="text-right"
-                  suffix={
-                    <span className="text-[12px] leading-[14px] text-r-neutral-foot font-medium">
-                      %
-                    </span>
-                  }
-                  value={lossPct}
-                  onChange={(e) => {
-                    handlePercentChange(e.target.value, 'sl');
-                  }}
-                />
+            </div>
+            <div className="flex flex-col items-end gap-[3px] text-[12px] font-medium">
+              <span className="leading-[20px] text-rb-neutral-secondary">
+                {t('page.perpsPro.editTpSl.entryCurrentPrice')}
+              </span>
+              <div className="flex items-center gap-[3px] text-r-neutral-title-1">
+                <span>{splitNumberByStep(position.entryPx)}</span>
+                <span>/</span>
+                <span>
+                  {splitNumberByStep(currentPrice.toFixed(pxDecimals))}
+                </span>
               </div>
-              {position.slItem && (
-                <div className="flex items-center justify-end">
-                  <div
-                    className="text-rb-brand-default cursor-pointer bg-rb-brand-light-1 rounded-[4px] text-right px-4 py-2 text-[12px] leading-[14px] flex items-center justify-center"
-                    onClick={() => {
-                      handleCancelOrder([
-                        {
-                          coin: position.coin,
-                          oid: position.slItem!.oid,
-                        },
-                      ]);
-                      onCancel();
-                    }}
-                  >
-                    {t('page.perpsPro.editTpSl.cancelSl')}
-                  </div>
-                </div>
-              )}
-              {slValidation.error && (
-                <div className="text-[12px] text-r-red-default font-medium">
-                  {slValidation.errorMessage}
-                </div>
-              )}
             </div>
           </section>
 
-          <section className="space-y-[8px]">
-            <div className="flex items-center justify-between">
-              <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                {t('page.perpsPro.editTpSl.takeProfitExpectedPnl')}
-              </div>
-              <div
-                className={clsx(
-                  'font-medium text-[12px] leading-[14px]',
-                  tpPnl && Number(tpPnl) < 0
-                    ? 'text-r-red-default'
-                    : 'text-r-green-default'
-                )}
-              >
-                {tpPnl
-                  ? `${Number(tpPnl) >= 0 ? '+' : ''}${formatUsdValue(
-                      Number(tpPnl)
-                    )}`
-                  : '-'}
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                {t('page.perpsPro.editTpSl.stopLossExpectedPnl')}
-              </div>
-              <div
-                className={clsx(
-                  'font-medium text-[12px] leading-[14px]',
-                  slPnl && Number(slPnl) < 0
-                    ? 'text-r-red-default'
-                    : 'text-r-green-default'
-                )}
-              >
-                {slPnl
-                  ? `${Number(slPnl) >= 0 ? '+' : ''}${formatUsdValue(
-                      Number(slPnl)
-                    )}`
-                  : '-'}
-              </div>
-            </div>
-          </section>
+          <div className="my-[24px] h-0 border-t border-solid border-rb-neutral-line" />
+
+          <div className="flex flex-col gap-[24px]">
+            {renderSideSection('tp')}
+            {renderSideSection('sl')}
+          </div>
         </div>
 
-        <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
-          <div className="flex items-center gap-[16px]">
-            <Button
-              block
-              size="large"
-              type="ghost"
-              onClick={onCancel}
-              className={clsx(
-                'h-[44px]',
-                'text-blue-light',
-                'border-blue-light',
-                'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
-                'before:content-none'
-              )}
-            >
-              {t('global.Cancel')}
-            </Button>
-            <Button
-              block
-              size="large"
-              type="primary"
-              className="h-[44px] text-15 font-medium"
-              loading={loading}
-              disabled={!canSubmit || loading}
-              onClick={async () => {
-                await runSubmit();
-              }}
-            >
-              {t('global.confirm')}
-            </Button>
-          </div>
+        <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
+          <Button
+            block
+            size="large"
+            type="primary"
+            className="desktop-perps-tpsl-confirm h-[48px] rounded-[6px] text-15 font-medium"
+            loading={loading}
+            disabled={!canSubmit || loading || Boolean(cancelingSide)}
+            onClick={runSubmit}
+          >
+            {t('global.confirm')}
+          </Button>
         </div>
       </div>
     </Modal>

@@ -1,17 +1,15 @@
-import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
+import { MarketData } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { Button, Modal, Tooltip } from 'antd';
+import { Button, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useEffect, useMemo } from 'react';
-import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
 import { useTranslation } from 'react-i18next';
-import { useSetState } from 'react-use';
+import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
-import { DesktopPerpsSlider } from '../components/DesktopPerpsSlider';
 import { PerpsPositionCard } from '../components/PerpsPositionCard';
 import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
 import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
@@ -25,7 +23,9 @@ import {
 import { PositionSizeInputAndSlider } from '../components/TradingPanel/components/PositionSizeInputAndSlider';
 import { PositionSize } from '../types';
 import stats from '@/stats';
-import { getStatsReportSide } from '../utils';
+import { formatPerpsCoin, getStatsReportSide } from '../utils';
+import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
+import { ReactComponent as RcIconReverseArrowDown } from '@/ui/assets/perps/icon-reverse-arrow-down.svg';
 
 export interface Props {
   visible: boolean;
@@ -48,6 +48,9 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
 
   const currentPerpsAccount = useRabbySelector(
     (store) => store.perps.currentPerpsAccount
+  );
+  const sizeDisplayUnit = useRabbySelector(
+    (store) => store.perps.sizeDisplayUnit
   );
   const marketPrice = marketData.markPx;
   const szDecimals = marketData.szDecimals;
@@ -249,36 +252,6 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     );
   };
 
-  const reverseEstimatedLiquidationPrice = useMemo(() => {
-    const markPrice = Number(marketData.markPx);
-    if (!markPrice) return 0;
-    const maxLeverage = marketData.maxLeverage;
-    return calLiquidationPrice(
-      markPrice,
-      Number(position.marginUsed),
-      position.direction === 'Long' ? 'Short' : 'Long',
-      Number(position.size),
-      Number(position.size) * markPrice,
-      maxLeverage
-    ).toFixed(marketData.pxDecimals);
-  }, [
-    marketData.pxDecimals,
-    marketData.markPx,
-    position.marginUsed,
-    position.size,
-    position.direction,
-    marketData.maxLeverage,
-  ]);
-
-  const liquidationDistance = useMemo(
-    () =>
-      calculateDistanceToLiquidation(
-        reverseEstimatedLiquidationPrice,
-        marketData.markPx
-      ),
-    [reverseEstimatedLiquidationPrice, marketData.markPx]
-  );
-
   const validation = React.useMemo(() => {
     if (type === 'reverse') {
       return {
@@ -327,26 +300,267 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     handleMidClick();
   }, []);
 
-  const newPosition = useMemo(() => {
-    if (type !== 'reverse') {
-      return null;
+  const baseAsset = formatPerpsCoin(position.coin);
+  const quoteAsset = marketData.quoteAsset || 'USDC';
+  const reverseDexTag = useMemo(() => {
+    const marketName = marketData.name || '';
+    if (!marketName.includes(':')) return '';
+
+    return marketName.split(':')[0]?.toUpperCase() || '';
+  }, [marketData.name]);
+
+  const reverseMarginModeLabel =
+    position.type === 'cross' ? 'Cross' : 'Isolated';
+
+  const formattedPositionSize = useMemo(() => {
+    if (sizeDisplayUnit === 'usd') {
+      return `${splitNumberByStep(
+        new BigNumber(position.size || 0).times(marketPrice || 0).toFixed(2)
+      )} ${quoteAsset}`;
+    }
+
+    return `${splitNumberByStep(position.size || 0)} ${baseAsset}`;
+  }, [baseAsset, marketPrice, position.size, quoteAsset, sizeDisplayUnit]);
+
+  const reverseOrderSize = useMemo(
+    () =>
+      new BigNumber(position.size || 0).times(2).toFixed(marketData.szDecimals),
+    [marketData.szDecimals, position.size]
+  );
+
+  const reverseActionDisplay = useMemo(() => {
+    if (sizeDisplayUnit === 'usd') {
+      return {
+        size: new BigNumber(reverseOrderSize || 0)
+          .times(marketPrice || 0)
+          .toFixed(2),
+        coin: quoteAsset,
+      };
     }
 
     return {
-      ...position,
-      direction:
-        position.direction === 'Long' ? 'Short' : ('Long' as 'Long' | 'Short'),
-      entryPx: marketPrice,
-      liquidationDistancePercent: formatPerpsPct(liquidationDistance),
+      size: reverseOrderSize,
+      coin: baseAsset,
     };
-  }, [position.size, positionSize.amount, marketPrice, liquidationDistance]);
+  }, [baseAsset, marketPrice, quoteAsset, reverseOrderSize, sizeDisplayUnit]);
+
+  const reverseActionSide =
+    position.direction === 'Long'
+      ? t('page.perpsPro.userInfo.positionInfo.sell')
+      : t('page.perpsPro.userInfo.positionInfo.buy');
+
+  const reverseDirection =
+    position.direction === 'Long' ? ('Short' as const) : ('Long' as const);
+
+  const reverseEstimatedLiquidationPrice = useMemo(() => {
+    const markPrice = Number(marketData.markPx);
+    const margin = Number(position.marginUsed);
+    const positionSize = Number(position.size);
+    const maxLeverage = Number(marketData.maxLeverage);
+
+    if (!markPrice || !margin || !positionSize || !maxLeverage) {
+      return 0;
+    }
+
+    return calLiquidationPrice(
+      markPrice,
+      margin,
+      reverseDirection,
+      positionSize,
+      positionSize * markPrice,
+      maxLeverage
+    );
+  }, [
+    marketData.markPx,
+    marketData.maxLeverage,
+    position.marginUsed,
+    position.size,
+    reverseDirection,
+  ]);
+
+  const reverseLiquidationDistance = useMemo(() => {
+    if (!reverseEstimatedLiquidationPrice || !Number(marketData.markPx)) {
+      return 0;
+    }
+
+    return calculateDistanceToLiquidation(
+      reverseEstimatedLiquidationPrice,
+      marketData.markPx
+    );
+  }, [reverseEstimatedLiquidationPrice, marketData.markPx]);
+
+  const reverseLiquidationRiskText = useMemo(() => {
+    if (
+      !reverseEstimatedLiquidationPrice ||
+      !Number.isFinite(reverseLiquidationDistance)
+    ) {
+      return '';
+    }
+
+    return t(
+      reverseDirection === 'Long'
+        ? 'page.perpsPro.userInfo.distanceRiskTag.goingDown'
+        : 'page.perpsPro.userInfo.distanceRiskTag.goingUp',
+      {
+        percent: formatPerpsPct(reverseLiquidationDistance),
+      }
+    );
+  }, [
+    reverseDirection,
+    reverseEstimatedLiquidationPrice,
+    reverseLiquidationDistance,
+    t,
+  ]);
+
+  const renderReverseTag = (
+    children: React.ReactNode,
+    variant: 'brand' | 'neutral' | 'long' | 'short'
+  ) => {
+    return (
+      <span
+        className={clsx(
+          'flex h-[16px] shrink-0 items-center rounded-[4px] px-[4px] text-[10px] leading-[16px] font-medium',
+          variant === 'brand' && 'bg-rb-brand-light-2 text-rb-brand-default',
+          variant === 'neutral' && 'bg-rb-neutral-bg-4 text-rb-neutral-foot',
+          variant === 'long' && 'bg-rb-green-light-2 text-rb-green-default',
+          variant === 'short' && 'bg-rb-red-light-2 text-rb-red-default'
+        )}
+      >
+        {children}
+      </span>
+    );
+  };
+
+  const renderReverseMarketName = () => {
+    return (
+      <PerpsDisplayCoinName
+        item={marketData}
+        separator="-"
+        className="text-[16px] leading-[20px]"
+        baseClassName="font-medium text-r-neutral-title-1"
+        quoteClassName="font-normal text-r-neutral-title-1"
+      />
+    );
+  };
+
+  const renderReversePositionCard = (direction: 'Long' | 'Short') => {
+    const isLong = direction === 'Long';
+    return (
+      <div className="rounded-[6px] border border-solid border-rb-neutral-line p-[12px]">
+        <div className="mb-[18px] flex h-[20px] items-center gap-[4px]">
+          {renderReverseMarketName()}
+          {renderReverseTag(reverseMarginModeLabel, 'neutral')}
+          {renderReverseTag(
+            `${direction.toLowerCase()} ${position.leverage}x`,
+            isLong ? 'long' : 'short'
+          )}
+        </div>
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col gap-[3px]">
+            <span className="text-[12px] leading-[14px] text-rb-neutral-secondary">
+              {t('page.perpsPro.userInfo.positionInfo.positionSize')}
+            </span>
+            <span className="text-[12px] leading-[16px] font-semibold text-r-neutral-title-1">
+              {formattedPositionSize}
+            </span>
+          </div>
+          <div className="flex flex-col items-end gap-[3px]">
+            <span className="text-[12px] leading-[14px] text-rb-neutral-secondary">
+              {t('page.perpsPro.userInfo.positionInfo.orderPrice')}
+            </span>
+            <span className="text-[12px] leading-[16px] font-semibold text-r-neutral-title-1">
+              {t('page.perpsPro.userInfo.positionInfo.marketPrice')}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  if (type === 'reverse') {
+    return (
+      <div className="flex min-h-[540px] flex-col bg-rb-neutral-bg-1">
+        <div className="relative flex h-[56px] flex-shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
+          {t('page.perpsPro.userInfo.positionInfo.reversePosition')}
+        </div>
+
+        <div className="flex-1 px-[20px] overflow-y-auto pb-24">
+          <section className="flex items-center justify-between pt-[10px]">
+            <div className="flex flex-col gap-[3px]">
+              {renderReverseMarketName()}
+              <div className="flex items-center gap-[3px]">
+                {reverseDexTag
+                  ? renderReverseTag(reverseDexTag, 'brand')
+                  : null}
+                {renderReverseTag(
+                  position.direction === 'Long'
+                    ? t('page.perpsPro.userInfo.positionInfo.buyToSell')
+                    : t('page.perpsPro.userInfo.positionInfo.sellToBuy'),
+                  'neutral'
+                )}
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-[3px] text-[12px] font-medium">
+              <span className="leading-[20px] text-rb-neutral-secondary">
+                {t('page.perpsPro.editMargin.currentPrice')}
+              </span>
+              <span className="text-r-neutral-title-1">
+                {splitNumberByStep(
+                  Number(marketPrice || 0).toFixed(marketData.pxDecimals || 2)
+                )}
+              </span>
+            </div>
+          </section>
+
+          <section className="mt-[24px] flex flex-col gap-[12px]">
+            {renderReversePositionCard(position.direction)}
+
+            <div className="flex items-center gap-[3px]">
+              <div className="h-0 flex-1 border-t border-solid border-rb-neutral-line" />
+              <div className="flex items-center gap-[4px] rounded-[3px] bg-rb-neutral-bg-4 px-[12px] py-[3px] text-[12px] leading-[16px] text-rb-neutral-foot">
+                <RcIconReverseArrowDown className="h-[16px] w-[16px]" />
+                {t('page.perpsPro.userInfo.positionInfo.reverseAction', {
+                  side: reverseActionSide,
+                  size: splitNumberByStep(reverseActionDisplay.size),
+                  coin: reverseActionDisplay.coin,
+                })}
+              </div>
+              <div className="h-0 flex-1 border-t border-solid border-rb-neutral-line" />
+            </div>
+
+            {renderReversePositionCard(reverseDirection)}
+          </section>
+        </div>
+
+        <div className="bottom-0 left-0 right-0 flex flex-col gap-[12px] border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
+          {reverseLiquidationRiskText ? (
+            <div className="flex h-[32px] items-center gap-[4px] overflow-hidden rounded-[8px] bg-rb-orange-light-1 px-[12px] text-rb-orange-default">
+              <RcIconInfoCC className="h-[16px] w-[16px] flex-shrink-0" />
+              <div className="min-w-0 flex-1 truncate text-[12px] leading-[14px]">
+                {reverseLiquidationRiskText}
+              </div>
+            </div>
+          ) : null}
+          <Button
+            block
+            size="large"
+            type="primary"
+            className="h-[48px] text-15 font-medium rounded-[6px]"
+            loading={loading}
+            disabled={!validation.isValid}
+            onClick={runSubmit}
+          >
+            {btnText}
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-[520px] bg-r-neutral-bg2">
       <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-12">
-        {type === 'reverse'
-          ? t('page.perpsPro.userInfo.positionInfo.reversePosition')
-          : t('page.perpsPro.userInfo.positionInfo.closePosition')}
+        {t('page.perpsPro.userInfo.positionInfo.closePosition')}
       </div>
 
       <div className="flex-1 px-20 overflow-y-auto pb-24">
@@ -359,158 +573,113 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           </div>
           <PerpsPositionCard position={position} marketData={marketData} />
         </section>
-        {type !== 'reverse' ? (
-          <>
-            <section className="mb-[12px]">
-              <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-                {t('page.perpsPro.userInfo.positionInfo.configure')}
-              </div>
-              <div>
-                {type === 'limit' ? (
-                  <div className="flex items-center gap-[12px] mb-[12px]">
-                    <DesktopPerpsInput
-                      className="flex-1 text-right"
-                      prefix={
-                        <span className="text-[13px] leading-[16px] text-r-neutral-foot font-medium">
-                          {t('page.perpsPro.userInfo.positionInfo.limitPrice')}
-                        </span>
-                      }
-                      value={limitPrice}
-                      onChange={(e) => {
-                        handleLimitPriceChange(e.target.value);
-                      }}
-                      suffix={
-                        <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
-                          USD
-                        </span>
-                      }
-                    />
+        <section className="mb-[12px]">
+          <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
+            {t('page.perpsPro.userInfo.positionInfo.configure')}
+          </div>
+          <div>
+            {type === 'limit' ? (
+              <div className="flex items-center gap-[12px] mb-[12px]">
+                <DesktopPerpsInput
+                  className="flex-1 text-right"
+                  prefix={
+                    <span className="text-[13px] leading-[16px] text-r-neutral-foot font-medium">
+                      {t('page.perpsPro.userInfo.positionInfo.limitPrice')}
+                    </span>
+                  }
+                  value={limitPrice}
+                  onChange={(e) => {
+                    handleLimitPriceChange(e.target.value);
+                  }}
+                  suffix={
+                    <span className="text-[13px] leading-[16px] font-medium text-rb-neutral-title-1">
+                      USD
+                    </span>
+                  }
+                />
 
-                    <div
-                      className={clsx(
-                        'cursor-pointer w-[88px] py-[12px]',
-                        'rounded-[8px] bg-rb-neutral-bg-1',
-                        'text-center text-[13px] leading-[16px] font-medium text-rb-neutral-title-1 hover:border-rb-brand-default border border-solid border-transparent'
-                      )}
-                      onClick={handleMidClick}
-                    >
-                      {t('page.perpsPro.userInfo.positionInfo.mid')}
-                    </div>
-                  </div>
-                ) : null}
-                <div className="space-y-[16px]">
-                  <PositionSizeInputAndSlider
-                    defaultMax={true}
-                    price={type === 'limit' ? limitPrice : marketPrice}
-                    maxTradeSize={position.size}
-                    positionSize={positionSize}
-                    setPositionSize={setPositionSize}
-                    percentage={percentage}
-                    setPercentage={setPercentage}
-                    baseAsset={position.coin}
-                    quoteAsset="USD"
-                    szDecimals={marketData.szDecimals}
-                    priceChangeUsdValue={true}
-                    pinToAmount={true}
-                  />
+                <div
+                  className={clsx(
+                    'cursor-pointer w-[88px] py-[12px]',
+                    'rounded-[8px] bg-rb-neutral-bg-1',
+                    'text-center text-[13px] leading-[16px] font-medium text-rb-neutral-title-1 hover:border-rb-brand-default border border-solid border-transparent'
+                  )}
+                  onClick={handleMidClick}
+                >
+                  {t('page.perpsPro.userInfo.positionInfo.mid')}
                 </div>
               </div>
-            </section>
-            <section className="space-y-[8px]">
-              {(type === 'market' || type === 'limit') && (
-                <div className="flex items-center justify-between">
-                  <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                    {t('page.perpsPro.userInfo.positionInfo.receive')}
-                  </div>
-                  {validation.isValid ? (
-                    <div
-                      className={clsx(
-                        'font-medium text-r-neutral-title-1 text-[12px] leading-[14px]'
-                      )}
-                    >
-                      {formatUsdValue(receiveAmount.toNumber())}
-                    </div>
-                  ) : (
-                    <div
-                      className={clsx(
-                        'font-medium text-r-neutral-title-1  text-[12px] leading-[14px]'
-                      )}
-                    >
-                      -
-                    </div>
+            ) : null}
+            <div className="space-y-[16px]">
+              <PositionSizeInputAndSlider
+                defaultMax={true}
+                price={type === 'limit' ? limitPrice : marketPrice}
+                maxTradeSize={position.size}
+                positionSize={positionSize}
+                setPositionSize={setPositionSize}
+                percentage={percentage}
+                setPercentage={setPercentage}
+                baseAsset={position.coin}
+                quoteAsset="USD"
+                szDecimals={marketData.szDecimals}
+                priceChangeUsdValue={true}
+                pinToAmount={true}
+              />
+            </div>
+          </div>
+        </section>
+        <section className="space-y-[8px]">
+          {(type === 'market' || type === 'limit') && (
+            <div className="flex items-center justify-between">
+              <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
+                {t('page.perpsPro.userInfo.positionInfo.receive')}
+              </div>
+              {validation.isValid ? (
+                <div
+                  className={clsx(
+                    'font-medium text-r-neutral-title-1 text-[12px] leading-[14px]'
                   )}
+                >
+                  {formatUsdValue(receiveAmount.toNumber())}
+                </div>
+              ) : (
+                <div
+                  className={clsx(
+                    'font-medium text-r-neutral-title-1  text-[12px] leading-[14px]'
+                  )}
+                >
+                  -
                 </div>
               )}
-              <div className="flex items-center justify-between">
-                <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                  {t('page.perpsPro.userInfo.positionInfo.closedPnl')}
-                </div>
-                {validation.isValid ? (
-                  <div
-                    className={clsx(
-                      'font-medium text-[12px] leading-[14px]',
-                      closedPnl.isLessThan(0)
-                        ? 'text-r-red-default'
-                        : 'text-r-green-default'
-                    )}
-                  >
-                    {closedPnl.isGreaterThanOrEqualTo(0) ? '+' : '-'}$
-                    {splitNumberByStep(closedPnl.abs().toFixed(2))}
-                  </div>
-                ) : (
-                  <div
-                    className={clsx(
-                      'font-medium text-r-neutral-title-1 text-[12px] leading-[14px]'
-                    )}
-                  >
-                    -
-                  </div>
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
+              {t('page.perpsPro.userInfo.positionInfo.closedPnl')}
+            </div>
+            {validation.isValid ? (
+              <div
+                className={clsx(
+                  'font-medium text-[12px] leading-[14px]',
+                  closedPnl.isLessThan(0)
+                    ? 'text-r-red-default'
+                    : 'text-r-green-default'
                 )}
+              >
+                {closedPnl.isGreaterThanOrEqualTo(0) ? '+' : '-'}$
+                {splitNumberByStep(closedPnl.abs().toFixed(2))}
               </div>
-            </section>
-          </>
-        ) : newPosition ? (
-          <>
-            <section className="mb-[12px]">
-              <div className="text-[13px] leading-[16px] text-rb-neutral-foot font-medium mb-[8px]">
-                {t('page.perpsPro.userInfo.positionInfo.newPosition')}
+            ) : (
+              <div
+                className={clsx(
+                  'font-medium text-r-neutral-title-1 text-[12px] leading-[14px]'
+                )}
+              >
+                -
               </div>
-              <PerpsPositionCard
-                position={newPosition}
-                marketData={marketData}
-                isShowPnl={false}
-              />
-            </section>
-            <section className="space-y-[8px]">
-              <div className="flex items-center justify-between">
-                <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                  {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
-                </div>
-                <div
-                  className={clsx(
-                    'font-medium text-rb-neutral-title-1 text-[12px] leading-[14px]'
-                  )}
-                >
-                  ${splitNumberByStep(reverseEstimatedLiquidationPrice)}
-                </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="text-r-neutral-foot text-[12px] leading-[14px] font-medium">
-                  {t('page.perpsDetail.PerpsEditMarginPopup.liqDistance')}
-                </div>
-                <div
-                  className={clsx(
-                    'font-medium flex items-center flex-row text-[12px] leading-[14px] gap-4',
-                    'text-rb-neutral-title-1'
-                  )}
-                >
-                  <RcIconAlarmCC className="text-rb-neutral-info" />
-                  {formatPerpsPct(liquidationDistance)}
-                </div>
-              </div>
-            </section>
-          </>
-        ) : null}
+            )}
+          </div>
+        </section>
       </div>
 
       <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
@@ -576,8 +745,13 @@ export const ClosePositionModal: React.FC<Props> = ({
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
-      className="modal-support-darkmode"
-      closeIcon={<RcIconCloseCC className="w-[20px] h-[20px]" />}
+      className={clsx(
+        'modal-support-darkmode',
+        type === 'reverse' && 'desktop-perps-modal-surface'
+      )}
+      closeIcon={
+        <RcIconCloseCC className="w-[20px] h-[20px] text-rb-neutral-body" />
+      }
     >
       <ClosePositionModalContent
         onCancel={onCancel}

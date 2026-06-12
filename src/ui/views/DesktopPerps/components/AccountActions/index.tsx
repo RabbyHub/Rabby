@@ -14,7 +14,13 @@ import { Skeleton, Tooltip } from 'antd';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 import usePerpsPopupNav from '../../hooks/usePerpsPopupNav';
 
-export const AccountActions: React.FC = () => {
+interface AccountActionsProps {
+  compact?: boolean;
+}
+
+export const AccountActions: React.FC<AccountActionsProps> = ({
+  compact = false,
+}) => {
   const { t } = useTranslation();
 
   // Get pending history count
@@ -29,14 +35,28 @@ export const AccountActions: React.FC = () => {
   }, [openPerpsPopup]);
 
   return (
-    <div className="flex items-center gap-[12px]">
+    <div
+      className={clsx(
+        'flex items-center',
+        compact ? 'gap-[8px]' : 'gap-[12px]'
+      )}
+    >
       {/* Available Balance */}
-      <div className="flex items-center gap-[8px] pl-[6px] pr-[6px] h-[32px]">
+      <div
+        className={clsx(
+          'flex items-center gap-[8px]',
+          compact
+            ? 'desktop-perps-topbar-account-actions-inner'
+            : 'pl-[6px] pr-[6px] h-[32px]'
+        )}
+      >
         <button
           onClick={handleDeposit}
           className={clsx(
-            'ml-6 px-[12px] h-[32px] rounded-[8px] text-13 font-medium flex items-center justify-center',
-            'border border-rb-brand-default text-rb-brand-default'
+            'px-[12px] font-medium flex items-center justify-center border border-solid cursor-pointer',
+            compact
+              ? 'desktop-perps-topbar-deposit-button'
+              : 'ml-6 h-[32px] rounded-[8px] text-13 border-rb-brand-default text-rb-brand-default'
           )}
         >
           {t('page.perpsPro.accountActions.deposit')}
@@ -47,7 +67,10 @@ export const AccountActions: React.FC = () => {
           <div
             onClick={handleDeposit}
             className={clsx(
-              'px-[12px] h-[28px] rounded-[6px] text-[15px] leading-[18px] font-medium flex items-center gap-[8px] cursor-pointer justify-center',
+              'px-[12px] rounded-[6px] font-medium flex items-center gap-[8px] cursor-pointer justify-center',
+              compact
+                ? 'desktop-perps-topbar-pending-button'
+                : 'h-[28px] text-[15px] leading-[18px]',
               'bg-rb-orange-light-1 text-rb-orange-default'
             )}
           >

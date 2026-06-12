@@ -99,7 +99,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col bg-rb-neutral-bg-1">
-      <div className="flex-1 min-h-0 p-8">
+      <div className="flex-1 min-h-0">
         <TradingViewIframeChart
           coin={coin}
           interval={propInterval as any}
@@ -110,7 +110,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           lineTagInfo={lineTagInfo}
           widgetConfig={desktopWidgetConfig}
           onIntervalChange={onIntervalChange}
-          className="w-full h-full rounded-[8px]"
+          className="w-full h-full"
         />
       </div>
     </div>
