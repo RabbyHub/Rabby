@@ -159,6 +159,7 @@ export const useQuoteMethods = () => {
       userAddress,
       nonce,
       chainInfo,
+      dexId,
     }: {
       payToken: TokenItem;
       receiveToken: TokenItem;
@@ -167,6 +168,7 @@ export const useQuoteMethods = () => {
       userAddress: string;
       nonce: string;
       chainInfo: NonNullable<ReturnType<typeof findChainByEnum>>;
+      dexId?: DEX_ENUM;
     }) => {
       if (isSwapWrapToken(payToken.id, receiveToken.id, chain)) {
         const data = await walletOpenapi.estimateGasUsd({
@@ -181,9 +183,32 @@ export const useQuoteMethods = () => {
           updateNonce: true,
           pending_tx_list: [],
         });
-        return data.gas_used || data.safe_gas_used || 0;
+        const gasUsed = data.gas_used || data.safe_gas_used || 0;
+        console.log('[Swap][QuoteGasUsed]', {
+          dexId,
+          chain,
+          chainServerId: chainInfo.serverId,
+          source: 'estimateGasUsd',
+          gas_used: data.gas_used,
+          safe_gas_used: data.safe_gas_used,
+          resolvedGasUsed: gasUsed,
+        });
+        return gasUsed;
       }
-      return quote.gasUsed || 0;
+      const gasUsed = quote.gasUsed || 0;
+      const quoteOrigin = quote.origin as
+        | (NonNullable<QuoteResult['origin']> & { gas_used?: number })
+        | undefined;
+      console.log('[Swap][QuoteGasUsed]', {
+        dexId,
+        chain,
+        chainServerId: chainInfo.serverId,
+        source: 'swap_quote',
+        quoteGasUsed: quote.gasUsed,
+        originGasUsed: quoteOrigin?.gas_used ?? quoteOrigin?.gas?.gas_used,
+        resolvedGasUsed: gasUsed,
+      });
+      return gasUsed;
     },
     [walletOpenapi]
   );
@@ -313,46 +338,66 @@ export const useQuoteMethods = () => {
               userAddress,
               nonce,
               chainInfo,
+              dexId,
             })
         ),
       ]);
 
       const getGasPrice = () => {
-        let gasPrice = 0;
         if (
           lastTimeGas?.lastTimeSelect === 'gasPrice' &&
           lastTimeGas.gasPrice
         ) {
-          // use cached gasPrice if exist
-          gasPrice = lastTimeGas.gasPrice;
-        } else if (
-          lastTimeGas?.lastTimeSelect &&
-          lastTimeGas?.lastTimeSelect === 'gasLevel'
-        ) {
-          const target = gasMarket.find(
-            (item) => item.level === lastTimeGas?.gasLevel
-          )!;
-          if (target) {
-            gasPrice = target.price;
-          } else {
-            gasPrice =
-              gasMarket.find((item) => item.level === 'normal')?.price || 0;
-          }
-        } else {
-          // no cache, use the fast level in gasMarket
-          gasPrice =
-            gasMarket.find((item) => item.level === 'normal')?.price || 0;
+          return {
+            gasPrice: lastTimeGas.gasPrice,
+            selectedGasLevel: null,
+            selectionSource: 'custom-gas-price' as const,
+          };
         }
-        return gasPrice;
+        const normalGasLevel = gasMarket.find(
+          (item) => item.level === 'normal'
+        );
+        return {
+          gasPrice: normalGasLevel?.price || 0,
+          selectedGasLevel: normalGasLevel?.level || null,
+          selectionSource: 'normal-fallback' as const,
+        };
       };
 
-      const gasPrice = getGasPrice();
+      const { gasPrice, selectedGasLevel, selectionSource } = getGasPrice();
 
       const gasUsdValue = new BigNumber(gasUsed)
         .times(gasPrice)
         .div(10 ** nativeToken.decimals)
         .times(nativeToken.price)
         .toString(10);
+      const gasUsd = formatUsdValue(gasUsdValue);
+
+      console.log('[Swap][QuoteGasPrice]', {
+        dexId,
+        chain,
+        chainServerId: chainInfo.serverId,
+        gas_used: gasUsed,
+        gasPrice,
+        selectedGasLevel,
+        selectionSource,
+        lastTimeGas,
+        gasMarket: gasMarket.map((item) => ({
+          level: item.level,
+          price: item.price,
+          baseFee: item.base_fee,
+          priorityPrice: item.priority_price,
+          estimatedSeconds: item.estimated_seconds,
+        })),
+        nativeToken: {
+          id: nativeToken.id,
+          symbol: nativeToken.symbol,
+          decimals: nativeToken.decimals,
+          price: nativeToken.price,
+        },
+        gasUsdValue,
+        gasUsd,
+      });
 
       return {
         shouldApproveToken: !tokenApproved,
@@ -360,7 +405,7 @@ export const useQuoteMethods = () => {
         gasPrice,
         gasUsed,
         gasUsdValue,
-        gasUsd: formatUsdValue(gasUsdValue),
+        gasUsd,
       };
     },
     [
@@ -482,6 +527,18 @@ export const useQuoteMethods = () => {
                 shouldTwoStepApprove: false,
               },
             };
+            console.log('[Swap][QuoteGasPrice]', {
+              dexId,
+              chain,
+              chainServerId: chainInfo.serverId,
+              reason: 'insufficient-balance',
+              gas_used: 0,
+              gasPrice: 0,
+              selectedGasLevel: null,
+              selectionSource: null,
+              gasUsdValue: '0',
+              gasUsd: '0',
+            });
             setQuote?.(quote);
             return quote;
           }
@@ -527,6 +584,7 @@ export const useQuoteMethods = () => {
                   userAddress,
                   nonce,
                   chainInfo,
+                  dexId,
                 }),
             };
 
