@@ -24,6 +24,7 @@ import {
 import { ForgotPassword } from './ForgotPassword/ForgotPassword';
 import { useSyncCurrentAccount } from '../utils/withAccountChange';
 import { useSyncDbHistory } from '@/db/hooks/history';
+import { ScreenshotContextMenu } from '../component/ScreenshotContextMenu';
 const UiType = getUiType();
 const AsyncMainRoute = lazy(() =>
   UiType.isDesktop ? import('./DesktopRoute') : import('./MainRoute')
@@ -143,6 +144,7 @@ const App = ({ wallet }: { wallet: any }) => {
     <WalletProvider wallet={wallet}>
       <Router>
         <Main />
+        <ScreenshotContextMenu />
       </Router>
     </WalletProvider>
   );

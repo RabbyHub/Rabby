@@ -5000,6 +5000,15 @@
     "UnknownTag": {
       "label": "Unknown",
       "tooltip": "Unknown token, please do your own research."
+    },
+    "screenshotModal": {
+      "title": "Screenshot to Report Bug",
+      "placeholder": "Describe the issue"
+    },
+    "feedbackPopup": {
+      "title": "Response from Rabby Support",
+      "issueReported": "Here’s the issue you reported:",
+      "issueReplied": "Rabby Support has replied:"
     }
   },
   "global": {
@@ -5038,7 +5047,8 @@
     "tryAgain": "Try Again",
     "notSupportTesntnet": "Not supported for custom network",
     "collapse": "Collapse",
-    "Yes": "Yes"
+    "Yes": "Yes",
+    "Submit": "Submit"
   },
   "background": {
     "error": {
@@ -5068,6 +5078,9 @@
       "txFailedMoreContent": "{{chain}} #{{nonce}} failed. Click to view more.",
       "completed": "Transaction completed",
       "failed": "Transaction failed"
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Screenshot to report bug"
     },
     "alias": {
       "HdKeyring": "Seed Phrase",

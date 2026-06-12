@@ -61,6 +61,7 @@ import {
   perpsService,
   transactionsService,
   innerDappFrameService,
+  feedbackService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
@@ -150,6 +151,7 @@ async function restoreAppState() {
   await transactionsService.init();
   await lendingService.init();
   await innerDappFrameService.init();
+  await feedbackService.init();
 
   // WS is lazy — subscribes only after the first content-script port attaches
   perpsLive.boot();
@@ -474,11 +476,15 @@ browser.runtime.onConnect.addListener((port) => {
       });
     }
 
+    feedbackService.setScreenshotContextMenuVisible(true).catch(() => {
+      // Reset the native menu for newly opened extension pages.
+    });
+
     browser.runtime.sendMessage({
       type: 'pageOpened',
     });
     eventBus.addEventListener(EVENTS.broadcastToUI, boardcastCallback);
-    port.onDisconnect.addListener(() => {
+    port.onDisconnect.addListener((p) => {
       browser.runtime.sendMessage({
         type: 'pageClosed',
       });

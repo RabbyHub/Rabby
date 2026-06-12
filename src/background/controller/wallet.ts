@@ -6,7 +6,16 @@ import {
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isEqual, last, pick, sortBy, truncate, uniq } from 'lodash';
+import {
+  capitalize,
+  groupBy,
+  isEqual,
+  last,
+  pick,
+  sortBy,
+  truncate,
+  uniq,
+} from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -37,6 +46,7 @@ import {
   miscService,
   lendingService,
   innerDappFrameService,
+  feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import buildinProvider, {
@@ -214,6 +224,183 @@ import {
   BalanceCacheData,
   normalizeBalanceCacheData,
 } from '@/db/schema/balance';
+
+type ScreenshotFeedbackPageInfo = {
+  uiType?: string;
+  pageUrl?: string;
+  routePath?: string;
+  userAgent?: string;
+  userAgentData?: {
+    architecture?: string;
+    bitness?: string;
+    brands?: { brand: string; version: string }[];
+    fullVersionList?: { brand: string; version: string }[];
+    mobile?: boolean;
+    model?: string;
+    platform?: string;
+    platformVersion?: string;
+    uaFullVersion?: string;
+  };
+  language?: string;
+  platform?: string;
+  viewport?: {
+    width: number;
+    height: number;
+    dpr: number;
+  };
+  screen?: {
+    width: number;
+    height: number;
+    availWidth: number;
+    availHeight: number;
+  };
+};
+
+type ScreenshotFeedbackExtra = {
+  currentScreen?: string;
+  pageInfo?: ScreenshotFeedbackPageInfo;
+  appVersionText: string;
+  appVersion: string;
+  appBuildNumber: string;
+  appBuildRevision: string;
+  applicationId?: string;
+  extensionVersion: string;
+  extensionName?: string;
+  totalBalanceText?: string;
+  myCallableAddressCount?: number;
+  myUncallableAddressCount?: number;
+  myFirstAddress?: string;
+  myFirstImportedAddress?: string;
+  myCurrentAddress?: string;
+  mySceneAddresses?: Record<string, string>;
+  systemName?: string;
+  systemVersion?: string;
+  deviceModel?: string;
+  manufacturer?: string;
+  userAgent?: string;
+  language?: string;
+  platform?: string;
+  themeMode?: DARK_MODE_TYPE;
+};
+
+type PostUserFeedbackParams = {
+  content: string;
+  image: string;
+  pageInfo?: ScreenshotFeedbackPageInfo;
+  totalBalanceText?: string;
+};
+
+const getSystemNameFromUserAgent = (userAgent?: string, platform?: string) => {
+  const value = `${platform || ''} ${userAgent || ''}`;
+
+  if (/windows/i.test(value)) return 'Windows';
+  if (/android/i.test(value)) return 'Android';
+  if (/iphone|ipad|ipod/i.test(value)) return 'iOS';
+  if (/macintosh|mac os/i.test(value)) return 'macOS';
+  if (/linux/i.test(value)) return 'Linux';
+
+  return platform;
+};
+
+const getSystemVersionFromUserAgent = (userAgent?: string) => {
+  if (!userAgent) return undefined;
+
+  const windowsVersion = userAgent.match(/Windows NT ([0-9.]+)/i)?.[1];
+  if (windowsVersion) return windowsVersion;
+
+  const androidVersion = userAgent.match(/Android ([0-9.]+)/i)?.[1];
+  if (androidVersion) return androidVersion;
+
+  const iosVersion = userAgent
+    .match(/(?:CPU (?:iPhone )?OS|CPU OS) ([0-9_]+)/i)?.[1]
+    ?.replace(/_/g, '.');
+  if (iosVersion) return iosVersion;
+
+  const macVersion = userAgent
+    .match(/Mac OS X ([0-9_]+)/i)?.[1]
+    ?.replace(/_/g, '.');
+  if (macVersion) return macVersion;
+
+  return undefined;
+};
+
+const getDeviceModelFromUserAgent = (
+  userAgent?: string,
+  systemName?: string
+) => {
+  if (!userAgent) return undefined;
+
+  if (systemName === 'iOS') {
+    if (/ipad/i.test(userAgent)) return 'iPad';
+    if (/iphone/i.test(userAgent)) return 'iPhone';
+    if (/ipod/i.test(userAgent)) return 'iPod';
+  }
+
+  if (systemName === 'macOS') return 'Mac';
+  if (systemName === 'Windows') return 'Windows PC';
+
+  const androidModel = userAgent
+    .match(/Android [^;]+;\s*([^;)]+?)(?:\s+Build\/|;|\))/i)?.[1]
+    ?.trim();
+  if (androidModel) return androidModel;
+
+  return undefined;
+};
+
+const inferManufacturer = (params: {
+  deviceModel?: string;
+  systemName?: string;
+  userAgent?: string;
+}) => {
+  const { deviceModel, systemName, userAgent } = params;
+  const value = `${deviceModel || ''} ${userAgent || ''}`;
+
+  if (systemName === 'iOS' || systemName === 'macOS') return 'Apple';
+  if (/pixel/i.test(value)) return 'Google';
+  if (/\bSM-|samsung/i.test(value)) return 'Samsung';
+  if (/huawei/i.test(value)) return 'Huawei';
+  if (/honor/i.test(value)) return 'Honor';
+  if (/\bmi\b|redmi|xiaomi/i.test(value)) return 'Xiaomi';
+  if (/oneplus/i.test(value)) return 'OnePlus';
+  if (/oppo/i.test(value)) return 'OPPO';
+  if (/vivo/i.test(value)) return 'vivo';
+  if (/motorola|moto/i.test(value)) return 'Motorola';
+
+  return undefined;
+};
+
+const getScreenshotFeedbackDeviceInfo = (
+  pageInfo?: ScreenshotFeedbackPageInfo
+) => {
+  const userAgent =
+    pageInfo?.userAgent ||
+    (typeof navigator !== 'undefined' ? navigator.userAgent : undefined);
+  const platform =
+    pageInfo?.userAgentData?.platform ||
+    pageInfo?.platform ||
+    (typeof navigator !== 'undefined' ? navigator.platform : undefined);
+  const systemName =
+    pageInfo?.userAgentData?.platform ||
+    getSystemNameFromUserAgent(userAgent, platform);
+  const systemVersion =
+    pageInfo?.userAgentData?.platformVersion ||
+    getSystemVersionFromUserAgent(userAgent);
+  const deviceModel =
+    pageInfo?.userAgentData?.model ||
+    getDeviceModelFromUserAgent(userAgent, systemName);
+  const manufacturer = inferManufacturer({
+    deviceModel,
+    systemName,
+    userAgent,
+  });
+
+  return {
+    deviceModel,
+    manufacturer,
+    systemName,
+    systemVersion,
+  };
+};
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -6808,6 +6995,123 @@ export class WalletController extends BaseController {
 
   setReportGasLevel = miscService.setCurrentGasLevel;
   getReportGasLevel = miscService.getCurrentGasLevel;
+
+  getScreenshotFeedbacks = feedbackService.getScreenshotFeedbacks;
+  onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
+  removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
+  clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
+  setScreenshotContextMenuVisible =
+    feedbackService.setScreenshotContextMenuVisible;
+
+  getScreenshotFeedbackExtra = async ({
+    pageInfo,
+  }: Pick<
+    PostUserFeedbackParams,
+    'pageInfo'
+  >): Promise<ScreenshotFeedbackExtra> => {
+    const version = process.env.release || '0';
+    const manifest = Browser.runtime.getManifest();
+    const manifestVersion = manifest.version || version;
+    const deviceInfo = getScreenshotFeedbackDeviceInfo(pageInfo);
+    const extra: ScreenshotFeedbackExtra = {
+      // source: 'extension_screenshot',
+      currentScreen: pageInfo?.routePath || pageInfo?.pageUrl,
+      pageInfo,
+      appVersionText: version,
+      appVersion: version,
+      appBuildNumber: manifestVersion,
+      appBuildRevision: process.env.RABBY_BUILD_GIT_HASH || '',
+      applicationId: Browser.runtime.id,
+      extensionVersion: manifestVersion,
+      extensionName: manifest.name,
+      // totalBalanceText,
+      systemName: deviceInfo.systemName,
+      systemVersion: deviceInfo.systemVersion,
+      deviceModel: deviceInfo.deviceModel,
+      manufacturer: deviceInfo.manufacturer,
+      userAgent:
+        pageInfo?.userAgent ||
+        (typeof navigator !== 'undefined' ? navigator.userAgent : undefined),
+      language:
+        pageInfo?.language ||
+        (typeof navigator !== 'undefined' ? navigator.language : undefined),
+      platform:
+        pageInfo?.platform ||
+        (typeof navigator !== 'undefined' ? navigator.platform : undefined),
+    };
+
+    try {
+      const accounts = await keyringService.getAllVisibleAccountsArray();
+      const importedAccounts = accounts.filter(
+        (item) =>
+          item.type !== KEYRING_TYPE.WatchAddressKeyring &&
+          item.type !== KEYRING_TYPE.GnosisKeyring
+      );
+
+      extra.myCallableAddressCount = accounts.length;
+      extra.myUncallableAddressCount = importedAccounts.length;
+      extra.myFirstAddress = accounts[0]?.address;
+      extra.myFirstImportedAddress = importedAccounts[0]?.address;
+    } catch (error) {
+      console.error('Failed to get screenshot feedback accounts extra', error);
+    }
+
+    try {
+      const currentAccount = preferenceService.getCurrentAccount();
+
+      extra.myCurrentAddress = currentAccount?.address;
+    } catch (error) {
+      console.error(
+        'Failed to get screenshot feedback current account extra',
+        error
+      );
+    }
+
+    try {
+      const mySceneAddresses: Record<string, string> = {};
+      const perpsAccount = await perpsService.getCurrentAccount();
+
+      if (perpsAccount?.address) {
+        mySceneAddresses.Perps = perpsAccount.address;
+      }
+      const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
+      if (gasAccount?.account?.address) {
+        mySceneAddresses.GasAccount = gasAccount?.account?.address;
+      }
+      extra.mySceneAddresses = mySceneAddresses;
+    } catch (error) {
+      console.error(
+        'Failed to get screenshot feedback scene account extra',
+        error
+      );
+    }
+
+    try {
+      extra.themeMode = preferenceService.getThemeMode();
+    } catch (error) {
+      console.error('Failed to get screenshot feedback theme extra', error);
+    }
+
+    return extra;
+  };
+
+  postUserFeedback = async ({
+    content,
+    image,
+    pageInfo,
+  }: PostUserFeedbackParams) => {
+    const extra = await this.getScreenshotFeedbackExtra({
+      pageInfo,
+    });
+
+    return openapiService.postUserFeedback({
+      content,
+      image_url_list: image ? [image] : [],
+      title: '',
+      extra,
+    });
+  };
+
   checkIsApprovedForAll = async ({
     owner,
     operator,
