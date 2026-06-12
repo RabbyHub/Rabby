@@ -23,7 +23,6 @@ import {
 } from '@/ui/assets/desktop/common';
 import { Trade } from '..';
 import { getPerpTickOptions } from '../../../utils';
-import { useThemeMode } from '@/ui/hooks/usePreference';
 import { formatPerpsCoin } from '../../../utils';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
@@ -63,7 +62,6 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     marketEstSize,
     quoteUnit,
   } = useRabbySelector((state) => state.perps);
-  const { isDarkTheme } = useThemeMode();
   const dispatch = useRabbyDispatch();
   const [viewMode, setViewMode] = useState<ViewMode>('Both');
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
@@ -359,6 +357,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   ) => {
     const depthPercent = maxTotal > 0 ? (order.total / maxTotal) * 100 : 0;
     const isInHoverRange = getIsInHoverRange(type, index);
+    const isHoveredRow =
+      hoveredOrder?.type === type && hoveredOrder.index === index;
+    const shouldFillNextGap =
+      isInHoverRange && getIsInHoverRange(type, index + 1);
     return (
       <div
         key={`${type}-${order.price}`}
@@ -368,20 +370,18 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         onMouseMove={(e) => updateTooltipPosition(type, index, e.currentTarget)}
         onClick={() => handleClickPrice(Number(order.price))}
         className={clsx(
-          'relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
-          isInHoverRange
-            ? isDarkTheme
-              ? 'bg-r-neutral-card-1'
-              : 'bg-rb-neutral-bg-0'
-            : isDarkTheme
-            ? 'hover:bg-r-neutral-card-1'
-            : 'hover:bg-rb-neutral-bg-0'
+          'desktop-perps-orderbook-row relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
+          `desktop-perps-orderbook-row-${type}`,
+          isInHoverRange && 'is-hover-range',
+          isHoveredRow && 'is-hovered-row',
+          shouldFillNextGap && 'is-hover-gap-fill'
         )}
       >
         {/* Depth background */}
         <div
           className={clsx(
-            'absolute left-0 top-0 bottom-0 transition-[width] duration-200 ease-out',
+            'absolute top-0 bottom-0 transition-[width] duration-200 ease-out',
+            type === 'bid' ? 'left-0' : 'right-0',
             type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
           )}
           style={{ width: `${depthPercent}%` }}
