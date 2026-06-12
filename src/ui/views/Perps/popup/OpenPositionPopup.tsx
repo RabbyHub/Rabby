@@ -33,6 +33,7 @@ import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 import stats from '@/stats';
 import { useRabbySelector } from '@/ui/store';
 import { MarginModePopup } from './MarginModePopup';
+import './OpenPositionPopup.less';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -101,6 +102,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     (state) => state.perps.currentPerpsAccount
   );
   const [isReviewMode, setIsReviewMode] = React.useState(false);
+
+  const [orderTypeFlashing, setOrderTypeFlashing] = React.useState(false);
 
   const [direction, setDirection] = React.useState<'Long' | 'Short'>(
     _direction
@@ -321,6 +324,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
   const handleSwitchToLimit = useMemoizedFn(() => {
     switchOrderType('limit');
+
+    setOrderTypeFlashing(true);
     setIsReviewMode(false);
   });
 
@@ -532,7 +537,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               ${splitNumberByStep(markPrice)}
             </div>
           </div>
-          <div className="flex w-full py-8 justify-between items-center">
+          <div className="relative flex w-full py-8 justify-between items-center">
+            <div
+              className={clsx(
+                'perps-ordertype-flash-overlay',
+                orderTypeFlashing && 'is-flashing'
+              )}
+              onAnimationEnd={() => setOrderTypeFlashing(false)}
+            />
             <div className="text-14 text-r-neutral-foot">
               {t('page.perpsDetail.PerpsOpenPositionPopup.orderType')}
             </div>
