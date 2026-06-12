@@ -14,6 +14,8 @@ export interface MarketSlippageProps {
   visible?: boolean;
   wrapperClassName?: string;
   rowClassName?: string;
+  labelClassName?: string;
+  valueClassName?: string;
 }
 
 /** Est. Slippage row (value colored <1% neutral / 1%~5% amber / >=5% red) plus a switch-to-limit banner over threshold. */
@@ -24,6 +26,8 @@ export const MarketSlippage: React.FC<MarketSlippageProps> = ({
   visible = true,
   wrapperClassName,
   rowClassName,
+  labelClassName,
+  valueClassName,
 }) => {
   const { t } = useTranslation();
   if (!visible) return null;
@@ -40,10 +44,12 @@ export const MarketSlippage: React.FC<MarketSlippageProps> = ({
   return (
     <div className={wrapperClassName}>
       <div className={clsx('flex items-center justify-between', rowClassName)}>
-        <div className="text-13 text-r-neutral-body">
+        <div className={clsx(labelClassName || 'text-13 text-r-neutral-body')}>
           {t('page.perps.expectedSlippage')}
         </div>
-        <div className={clsx('text-13 font-medium', valueColor)}>
+        <div
+          className={clsx(valueClassName || 'text-13 font-medium', valueColor)}
+        >
           {(slippage * 100).toFixed(2)}%
         </div>
       </div>
