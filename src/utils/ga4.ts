@@ -1,5 +1,6 @@
 import Browser from 'webextension-polyfill';
 import { appIsDev } from './env';
+import { shouldReportUserBehaviorData } from './user-data-tracking';
 
 const GA_ENDPOINT = 'https://www.google-analytics.com/mp/collect';
 const GA_DEBUG_ENDPOINT = 'https://www.google-analytics.com/debug/mp/collect';
@@ -73,6 +74,10 @@ class Analytics {
       [key: string]: any;
     } = {}
   ) {
+    if (!(await shouldReportUserBehaviorData())) {
+      return;
+    }
+
     // Configure session id and engagement time if not present, for more details see:
     // https://developers.google.com/analytics/devguides/collection/protocol/ga4/sending-events?client_type=gtag#recommended_parameters_for_reports
     if (!params.session_id) {

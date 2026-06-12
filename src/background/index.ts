@@ -4,6 +4,7 @@ import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
 import { appIsDev, getSentryEnv, isManifestV3 } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Message, sendReadyMessageToTabs } from '@/utils/message';
+import { RABBY_SENTRY_IGNORE_ERRORS } from '@/utils/sentry';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
 import fetchAdapter from 'background/utils/fetchAdapter';
@@ -85,6 +86,7 @@ import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
+import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -102,19 +104,14 @@ Sentry.init({
     'https://f4a992c621c55f48350156a32da4778d@o4507018303438848.ingest.us.sentry.io/4507018389749760',
   release: process.env.release,
   environment: getSentryEnv(),
-  ignoreErrors: [
-    'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
-    'Failed to fetch',
-    'TransportOpenUserCancelled',
-    'Non-Error promise rejection captured with keys: message, stack',
-    'Non-Error promise rejection captured with keys: message',
-    /Non-Error promise rejection captured with keys/,
-    /\[From .*\]/, // error from custom rpc
-    /AxiosError/,
-    /WebSocket connection failed/,
-    /Could not establish connection/,
-    /HttpRequestError/,
-  ],
+  autoSessionTracking: false,
+  beforeSend: async (event) => {
+    if (!(await shouldReportUserBehaviorData())) {
+      return null;
+    }
+    return event;
+  },
+  ignoreErrors: RABBY_SENTRY_IGNORE_ERRORS,
 });
 
 async function restoreAppState() {
