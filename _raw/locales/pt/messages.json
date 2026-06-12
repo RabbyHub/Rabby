@@ -4043,9 +4043,9 @@
         "amount": "Quantidade",
         "viewAsks": "Ofertas",
         "trades": "Negociações",
-        "avgPrice": "Avg. Price",
-        "sumBase": "Sum {{base}}",
-        "sumUsd": "Sum USD"
+        "avgPrice": "Preço Médio",
+        "sumBase": "Soma {{base}}",
+        "sumUsd": "Soma USD"
       },
       "editMargin": {
         "configureMargin": "Configurar Margem",
