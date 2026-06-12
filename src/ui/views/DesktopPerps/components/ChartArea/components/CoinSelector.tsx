@@ -49,8 +49,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     if (markPx && isPerpsRoute) {
       const price = splitNumberByStep(Number(markPx));
       const base = formatPerpsCoin(marketMeta?.displayName || coin);
-      const quote = marketMeta?.quoteAsset || 'USDC';
-      document.title = `$${price} | ${base}/${quote} | Rabby`;
+      document.title = `$${price} | ${base} | Rabby`;
     } else {
       document.title = originalTitle;
     }
@@ -58,13 +57,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     return () => {
       document.title = originalTitle;
     };
-  }, [
-    coin,
-    currentMarketData?.markPx,
-    isPerpsRoute,
-    marketMeta?.displayName,
-    marketMeta?.quoteAsset,
-  ]);
+  }, [coin, currentMarketData?.markPx, isPerpsRoute, marketMeta?.displayName]);
 
   const priceChange = currentMarketData.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)
