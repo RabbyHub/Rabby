@@ -258,7 +258,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
             <div className="relative h-[172px] overflow-hidden rounded-[8px] bg-rb-neutral-bg-2">
               <button
                 type="button"
-                className="absolute left-[16px] top-[29px] flex h-[26px] items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
+                className="absolute left-[16px] top-[29px] flex h-[26px] cursor-pointer items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
                 onClick={() => setMargin(minMargin.toString())}
               >
                 Min
@@ -277,7 +277,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               />
               <button
                 type="button"
-                className="absolute right-[16px] top-[29px] flex h-[26px] items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
+                className="absolute right-[16px] top-[29px] flex h-[26px] cursor-pointer items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
                 onClick={() => setMargin(maxMargin.toString())}
               >
                 MAX
