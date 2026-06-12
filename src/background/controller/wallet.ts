@@ -267,8 +267,8 @@ type ScreenshotFeedbackExtra = {
   extensionVersion: string;
   extensionName?: string;
   totalBalanceText?: string;
-  countOfMyAccounts?: number;
-  countOfMyImportedAccounts?: number;
+  myCallableAddressCount?: number;
+  myUncallableAddressCount?: number;
   myFirstAddress?: string;
   myFirstImportedAddress?: string;
   myCurrentAddress?: string;
@@ -7044,8 +7044,8 @@ export class WalletController extends BaseController {
           item.type !== KEYRING_TYPE.GnosisKeyring
       );
 
-      extra.countOfMyAccounts = accounts.length;
-      extra.countOfMyImportedAccounts = importedAccounts.length;
+      extra.myCallableAddressCount = accounts.length;
+      extra.myUncallableAddressCount = importedAccounts.length;
       extra.myFirstAddress = accounts[0]?.address;
       extra.myFirstImportedAddress = importedAccounts[0]?.address;
     } catch (error) {
@@ -7063,31 +7063,24 @@ export class WalletController extends BaseController {
       );
     }
 
-    // try {
-    //   const sceneAccountMap = (preferenceService.getPreference(
-    //     'sceneAccountMap'
-    //   ) || {}) as Record<string, Account | null>;
-    //   const mySceneAddresses = Object.entries(sceneAccountMap).reduce(
-    //     (result, [scene, account]) => {
-    //       if (account?.address) {
-    //         result[capitalize(scene)] = account.address;
-    //       }
-    //       return result;
-    //     },
-    //     {} as Record<string, string>
-    //   );
-    //   const perpsAccount = await perpsService.getCurrentAccount();
+    try {
+      const mySceneAddresses: Record<string, string> = {};
+      const perpsAccount = await perpsService.getCurrentAccount();
 
-    //   if (perpsAccount?.address) {
-    //     mySceneAddresses.perps = perpsAccount.address;
-    //   }
-    //   extra.mySceneAddresses = mySceneAddresses;
-    // } catch (error) {
-    //   console.error(
-    //     'Failed to get screenshot feedback scene account extra',
-    //     error
-    //   );
-    // }
+      if (perpsAccount?.address) {
+        mySceneAddresses.Perps = perpsAccount.address;
+      }
+      const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
+      if (gasAccount?.account?.address) {
+        mySceneAddresses.GasAccount = gasAccount?.account?.address;
+      }
+      extra.mySceneAddresses = mySceneAddresses;
+    } catch (error) {
+      console.error(
+        'Failed to get screenshot feedback scene account extra',
+        error
+      );
+    }
 
     try {
       extra.themeMode = preferenceService.getThemeMode();
