@@ -293,13 +293,21 @@
 
   &.is-hovered-row::before {
     position: absolute;
-    top: 0;
     right: 0;
     left: 0;
     z-index: 2;
-    border-top: 1px dashed rgba(var(--rb-neutral-title-1-rgb), 0.82);
     content: '';
     pointer-events: none;
+  }
+
+  &.desktop-perps-orderbook-row-ask.is-hovered-row::before {
+    top: 0;
+    border-top: 1px dashed rgba(var(--rb-neutral-title-1-rgb), 0.82);
+  }
+
+  &.desktop-perps-orderbook-row-bid.is-hovered-row::before {
+    bottom: 0;
+    border-bottom: 1px dashed rgba(var(--rb-neutral-title-1-rgb), 0.82);
   }
 
   &.is-hover-gap-fill::after {
