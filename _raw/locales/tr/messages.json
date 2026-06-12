@@ -3778,7 +3778,15 @@
           "confirmCloseAllTitle": "Tüm Pozisyonları Kapatmayı Onayla",
           "marketCloseBtn": "Piyasa Kapatma",
           "marketCloseDesc": "Bu, pozisyonu hemen kapatmayı deneyecektir.",
-          "confirmCloseAllDesc": "Tüm açık pozisyonlar piyasa fiyatından kapatılacak ve tüm emirler iptal edilecektir."
+          "confirmCloseAllDesc": "Tüm açık pozisyonlar piyasa fiyatından kapatılacak ve tüm emirler iptal edilecektir.",
+          "positionSize": "Pozisyon Büyüklüğü",
+          "orderPrice": "Emir Fiyatı",
+          "marketPrice": "Piyasa Fiyatı",
+          "buy": "Al",
+          "sell": "Sat",
+          "buyToSell": "Satmak için al",
+          "sellToBuy": "Satın almak için sat",
+          "reverseAction": "{{side}} {{size}} {{coin}} Tersine Çevir"
         },
         "openOrders": {
           "time": "Zaman",
@@ -3987,7 +3995,12 @@
         "tp": "Kâr Al",
         "cancelTp": "Kâr Al Emrini İptal Et",
         "takeProfitExpectedPnl": "Kâr Al, Beklenen PnL",
-        "cancelSl": "Stop-Loss'u İptal Et"
+        "cancelSl": "Stop-Loss'u İptal Et",
+        "entryCurrentPrice": "Giriş Fiyatı / Güncel Fiyat",
+        "takeProfit": "Kâr Al",
+        "stopLoss": "Zarar Durdur",
+        "triggerPrice": "Tetikleme Fiyatı",
+        "estimatedPnlWillBe": "Tahmini PnL'niz olacak"
       },
       "accountInfo": {
         "totalBalance": "Toplam Bakiye",
@@ -4035,14 +4048,21 @@
         "trades": "İşlemler",
         "viewBoth": "İkisi de",
         "viewAsks": "Satış Teklifleri",
-        "viewBids": "Alım Emirleri"
+        "viewBids": "Alım Emirleri",
+        "avgPrice": "Ortalama Fiyat",
+        "sumBase": "{{base}} Toplam",
+        "sumUsd": "USD Toplam"
       },
       "editMargin": {
         "title": "Marjini Yönetimi",
         "shortLiquidationTips": "Yükselme {{percent}} likidasyonu tetikleyecektir.",
         "configureMargin": "Marjin Ayarla",
         "longLiquidationTips": "{{percent}} düşmek tasfiye işlemini tetikleyecektir.",
-        "currentPosition": "Mevcut Pozisyon"
+        "currentPosition": "Mevcut Pozisyon",
+        "currentPrice": "Mevcut Fiyat"
+      },
+      "topBar": {
+        "favoriteEmpty": "Favori listeniz boş"
       }
     },
     "perpsDetail": {
@@ -4951,6 +4971,15 @@
     "UnknownTag": {
       "label": "Bilinmeyen",
       "tooltip": "Bilinmeyen token, lütfen kendi araştırmanızı yapın."
+    },
+    "screenshotModal": {
+      "title": "Hata Bildirmek için Ekran Görüntüsü",
+      "placeholder": "Sorunu açıklayın"
+    },
+    "feedbackPopup": {
+      "title": "Rabby Destek'ten Yanıt",
+      "issueReported": "İşte bildirdiğiniz sorun:",
+      "issueReplied": "Rabby Destek yanıtladı:"
     }
   },
   "global": {
@@ -4989,7 +5018,8 @@
     "tryAgain": "Tekrar Dene",
     "appDescription": "Ethereum ve EVM için gideceğiniz cüzdan.",
     "collapse": "Daralt",
-    "Yes": "Evet"
+    "Yes": "Evet",
+    "Submit": "Gönder"
   },
   "background": {
     "error": {
@@ -5036,6 +5066,9 @@
         "actionCancel": "İşlem iptal edildi",
         "deviceNeedsWebHIDPermission": "Cihaz bulunamadı veya WebHID izni gerekiyor"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Hata bildirmek için ekran görüntüsü"
     }
   },
   "constant": {

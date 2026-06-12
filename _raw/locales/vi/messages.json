@@ -3772,7 +3772,15 @@
           "dontShowAgain": "Không hiển thị lại điều này nữa",
           "marketCloseDesc": "Điều này sẽ cố gắng đóng vị thế ngay lập tức.",
           "confirmCloseAllTitle": "Xác nhận Đóng Tất Cả Vị Thế",
-          "confirmCloseAllDesc": "Tất cả các vị thế mở của bạn sẽ được đóng ở giá thị trường và hủy tất cả các lệnh."
+          "confirmCloseAllDesc": "Tất cả các vị thế mở của bạn sẽ được đóng ở giá thị trường và hủy tất cả các lệnh.",
+          "positionSize": "Quy mô vị thế",
+          "orderPrice": "Giá lệnh",
+          "marketPrice": "Giá thị trường",
+          "buy": "Mua",
+          "sell": "Bán",
+          "buyToSell": "Mua để bán",
+          "sellToBuy": "Bán để mua",
+          "reverseAction": "Đảo ngược {{size}} {{coin}} {{side}}"
         },
         "openOrders": {
           "time": "Thời gian",
@@ -3981,7 +3989,12 @@
         "gain": "Lợi nhuận",
         "confirm": "Xác nhận",
         "stopLossExpectedPnl": "Lệnh dừng lỗ: PnL kỳ vọng",
-        "loss": "lỗ"
+        "loss": "lỗ",
+        "entryCurrentPrice": "Giá vào / Giá hiện tại",
+        "takeProfit": "Chốt lời",
+        "stopLoss": "Cắt lỗ",
+        "triggerPrice": "Giá kích hoạt",
+        "estimatedPnlWillBe": "Lợi nhuận ước tính của bạn sẽ là"
       },
       "accountInfo": {
         "withdraw": "Rút tiền",
@@ -4029,14 +4042,21 @@
         "noTrades": "Chưa có giao dịch",
         "markPrice": "Giá tham chiếu",
         "trades": "Giao dịch",
-        "viewAsks": "Giá bán"
+        "viewAsks": "Giá bán",
+        "avgPrice": "Giá TB",
+        "sumBase": "Tổng {{base}}",
+        "sumUsd": "Tổng USD"
       },
       "editMargin": {
         "longLiquidationTips": "Giảm {{percent}} sẽ kích hoạt việc thanh lý",
         "currentPosition": "Vị trí hiện tại",
         "configureMargin": "Cấu hình Biên độ",
         "shortLiquidationTips": "Đi lên {{percent}} sẽ kích hoạt thanh lý",
-        "title": "Quản lý Margin"
+        "title": "Quản lý Margin",
+        "currentPrice": "Giá Hiện Tại"
+      },
+      "topBar": {
+        "favoriteEmpty": "Danh sách yêu thích của bạn trống"
       }
     },
     "perpsDetail": {
@@ -4945,6 +4965,15 @@
     "UnknownTag": {
       "label": "Không xác định",
       "tooltip": "Token không xác định, vui lòng tự nghiên cứu."
+    },
+    "screenshotModal": {
+      "title": "Chụp màn hình để báo lỗi",
+      "placeholder": "Mô tả vấn đề"
+    },
+    "feedbackPopup": {
+      "title": "Phản hồi từ Hỗ trợ Rabby",
+      "issueReported": "Đây là vấn đề bạn đã báo cáo:",
+      "issueReplied": "Hỗ trợ Rabby đã trả lời:"
     }
   },
   "global": {
@@ -4983,7 +5012,8 @@
     "proceedButton": "Tiến hành",
     "appDescription": "Ví dụ ví của bạn cho Ethereum và EVM",
     "collapse": "Thu gọn",
-    "Yes": "Có"
+    "Yes": "Có",
+    "Submit": "Gửi"
   },
   "background": {
     "error": {
@@ -5030,6 +5060,9 @@
         "actionCancel": "Thao tác đã được hủy",
         "deviceNeedsWebHIDPermission": "Không tìm thấy thiết bị hoặc cần quyền WebHID"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Ảnh chụp màn hình để báo cáo lỗi"
     }
   },
   "constant": {

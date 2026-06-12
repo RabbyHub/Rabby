@@ -3772,7 +3772,15 @@
           "invalidPrice": "잘못된 가격",
           "marketCloseDesc": "이것은 포지션을 즉시 종료하려고 시도합니다.",
           "confirmCloseAllTitle": "모든 포지션 종료 확인",
-          "confirmCloseAllDesc": "모든 열린 포지션은 시장 가격으로 종료되며 모든 주문이 취소됩니다."
+          "confirmCloseAllDesc": "모든 열린 포지션은 시장 가격으로 종료되며 모든 주문이 취소됩니다.",
+          "positionSize": "포지션 사이즈",
+          "orderPrice": "주문 가격",
+          "marketPrice": "시장 가격",
+          "buy": "매수",
+          "sell": "매도",
+          "buyToSell": "매수 전환 매도",
+          "sellToBuy": "매도 전환 매수",
+          "reverseAction": "{{side}} {{size}} {{coin}} 역전"
         },
         "openOrders": {
           "time": "시간",
@@ -3981,7 +3989,12 @@
         "gain": "이익",
         "cancelSl": "손절매 취소",
         "stopLossExpectedPnl": "손절 시 예상 손익",
-        "takeProfitExpectedPnl": "이익실현 예상 손익"
+        "takeProfitExpectedPnl": "이익실현 예상 손익",
+        "entryCurrentPrice": "진입가 / 현재가",
+        "takeProfit": "이익실현",
+        "stopLoss": "손절매",
+        "triggerPrice": "트리거 가격",
+        "estimatedPnlWillBe": "예상 손익은"
       },
       "accountInfo": {
         "totalBalance": "총 잔액",
@@ -4029,14 +4042,21 @@
         "title": "호가창",
         "price": "가격",
         "viewBoth": "둘 다",
-        "trades": "체결 내역"
+        "trades": "체결 내역",
+        "avgPrice": "평균 가격",
+        "sumBase": "{{base}} 합계",
+        "sumUsd": "USD 합계"
       },
       "editMargin": {
         "configureMargin": "마진 설정",
         "title": "마진 관리",
         "currentPosition": "현재 포지션",
         "shortLiquidationTips": "{{percent}} 상승할 경우 청산이 활성화됩니다",
-        "longLiquidationTips": "{{percent}} 만큼 하락하면 청산이 발생합니다."
+        "longLiquidationTips": "{{percent}} 만큼 하락하면 청산이 발생합니다.",
+        "currentPrice": "현재 가격"
+      },
+      "topBar": {
+        "favoriteEmpty": "즐겨찾기 목록이 비어 있습니다"
       }
     },
     "perpsDetail": {
@@ -4945,6 +4965,15 @@
     "UnknownTag": {
       "label": "알 수 없음",
       "tooltip": "알 수 없는 토큰입니다. 반드시 직접 조사하세요."
+    },
+    "screenshotModal": {
+      "title": "버그 신고를 위한 스크린샷",
+      "placeholder": "문제를 설명해 주세요"
+    },
+    "feedbackPopup": {
+      "title": "Rabby Support의 응답",
+      "issueReported": "귀하가 보고하신 문제:",
+      "issueReplied": "Rabby Support가 회신했습니다:"
     }
   },
   "global": {
@@ -4983,7 +5012,8 @@
     "unknownNFT": "알 수 없는 NFT",
     "appDescription": "Ethereum 및 EVM을 위한 당신의 필수 지갑",
     "collapse": "접기",
-    "Yes": "예"
+    "Yes": "예",
+    "Submit": "제출"
   },
   "background": {
     "error": {
@@ -5030,6 +5060,9 @@
         "actionCancel": "작업이 취소되었습니다",
         "deviceNeedsWebHIDPermission": "장치를 찾을 수 없거나 WebHID 권한이 필요합니다"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "버그를 보고하려면 스크린샷을 찍으세요"
     }
   },
   "constant": {

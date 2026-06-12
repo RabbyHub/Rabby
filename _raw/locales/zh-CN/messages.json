@@ -35,7 +35,8 @@
     "notSupportTesntnet": "不支持自定义网络",
     "appDescription": "你首选的以太坊和 EVM 钱包",
     "collapse": "折叠",
-    "Yes": "是"
+    "Yes": "是",
+    "Submit": "提交"
   },
   "page": {
     "transactions": {
@@ -3821,7 +3822,15 @@
           "marketCloseTitle": "市场平仓",
           "marketCloseDesc": "这将尝试立即平仓。",
           "invalidPrice": "无效价格",
-          "confirmCloseAllDesc": "所有未平仓仓位都将按市价平仓，并取消所有订单。"
+          "confirmCloseAllDesc": "所有未平仓仓位都将按市价平仓，并取消所有订单。",
+          "positionSize": "仓位大小",
+          "orderPrice": "订单价格",
+          "marketPrice": "市场价格",
+          "buy": "买入",
+          "sell": "卖出",
+          "buyToSell": "买入转卖出",
+          "sellToBuy": "卖出转买入",
+          "reverseAction": "{{side}}{{size}}{{coin}}反向"
         },
         "openOrders": {
           "tpSl": "止盈/止损",
@@ -4030,7 +4039,12 @@
         "gain": "盈利",
         "cancelTp": "取消止盈",
         "takeProfitExpectedPnl": "止盈的预期盈亏",
-        "stopLossExpectedPnl": "止损的预期盈亏"
+        "stopLossExpectedPnl": "止损的预期盈亏",
+        "entryCurrentPrice": "入场价格 / 当前价格",
+        "takeProfit": "止盈",
+        "stopLoss": "止损",
+        "triggerPrice": "触发价格",
+        "estimatedPnlWillBe": "您预计的盈亏将为"
       },
       "accountInfo": {
         "balance": "余额",
@@ -4078,14 +4092,21 @@
         "viewBoth": "双向",
         "total": "合计",
         "viewBids": "买盘",
-        "trades": "成交记录"
+        "trades": "成交记录",
+        "avgPrice": "均价",
+        "sumBase": "合计 {{base}}",
+        "sumUsd": "合计 USD"
       },
       "editMargin": {
         "configureMargin": "配置保证金",
         "currentPosition": "当前头寸",
         "shortLiquidationTips": "上涨 {{percent}} 将触发清算",
         "title": "管理保证金",
-        "longLiquidationTips": "下跌 {{percent}} 将触发清算"
+        "longLiquidationTips": "下跌 {{percent}} 将触发清算",
+        "currentPrice": "当前价格"
+      },
+      "topBar": {
+        "favoriteEmpty": "您的收藏列表为空"
       }
     },
     "perpsDetail": {
@@ -4994,6 +5015,15 @@
     "UnknownTag": {
       "label": "未知",
       "tooltip": "未知代币，请自行研究。"
+    },
+    "screenshotModal": {
+      "title": "截屏以报告问题",
+      "placeholder": "描述问题"
+    },
+    "feedbackPopup": {
+      "title": "Rabby Support 的回复",
+      "issueReported": "以下是您报告的问题：",
+      "issueReplied": "Rabby Support 已回复："
     }
   },
   "background": {

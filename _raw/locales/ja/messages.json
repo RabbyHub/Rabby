@@ -3775,7 +3775,15 @@
           "marketCloseTitle": "マーケットクローズポジション",
           "marketCloseDesc": "この操作はポジションを直ちにクローズしようとします。",
           "confirmCloseAllTitle": "すべてのポジションをクローズすることを確認してください",
-          "confirmCloseAllDesc": "すべてのオープンポジションはマーケット価格でクローズされ、すべての注文はキャンセルされます。"
+          "confirmCloseAllDesc": "すべてのオープンポジションはマーケット価格でクローズされ、すべての注文はキャンセルされます。",
+          "positionSize": "ポジションサイズ",
+          "orderPrice": "注文価格",
+          "marketPrice": "市場価格",
+          "buy": "買い",
+          "sell": "売り",
+          "buyToSell": "買って売る",
+          "sellToBuy": "売って買う",
+          "reverseAction": "{{side}} {{size}} {{coin}} を反転"
         },
         "openOrders": {
           "price": "価格",
@@ -3984,7 +3992,12 @@
         "cancelTp": "利確をキャンセル",
         "loss": "含み損",
         "stopLossExpectedPnl": "ストップロス 想定損益",
-        "entryPrice": "エントリープライス："
+        "entryPrice": "エントリープライス：",
+        "entryCurrentPrice": "エントリー価格 / 現在価格",
+        "takeProfit": "利確",
+        "stopLoss": "損切り",
+        "triggerPrice": "トリガー価格",
+        "estimatedPnlWillBe": "推定損益は以下になります"
       },
       "accountInfo": {
         "crossAccountLeverage": "クロスアカウント・レバレッジ",
@@ -4032,14 +4045,21 @@
         "amount": "数量",
         "viewAsks": "売り板",
         "trades": "取引履歴",
-        "title": "オーダーブック"
+        "title": "オーダーブック",
+        "avgPrice": "平均価格",
+        "sumBase": "{{base}} 合計",
+        "sumUsd": "USD 合計"
       },
       "editMargin": {
         "longLiquidationTips": "{{percent}} 減少すると清算が発動します",
         "title": "マージン管理",
         "configureMargin": "マージンを設定する",
         "currentPosition": "現在のポジション",
-        "shortLiquidationTips": "{{percent}} 上昇すると、清算が発動します。"
+        "shortLiquidationTips": "{{percent}} 上昇すると、清算が発動します。",
+        "currentPrice": "現在の価格"
+      },
+      "topBar": {
+        "favoriteEmpty": "お気に入りのリストは空です"
       }
     },
     "perpsDetail": {
@@ -4948,6 +4968,15 @@
     "UnknownTag": {
       "label": "不明",
       "tooltip": "不明なトークン。自己責任で調査してください。"
+    },
+    "screenshotModal": {
+      "title": "バグ報告用のスクリーンショット",
+      "placeholder": "問題を説明してください"
+    },
+    "feedbackPopup": {
+      "title": "Rabbyサポートからの回答",
+      "issueReported": "報告された問題は以下の通りです：",
+      "issueReplied": "Rabbyサポートから返信がありました："
     }
   },
   "global": {
@@ -4986,7 +5015,8 @@
     "tryAgain": "再試行してください",
     "appDescription": "EthereumおよびEVMのためのあなたの定番ウォレット",
     "collapse": "折りたたむ",
-    "Yes": "はい"
+    "Yes": "はい",
+    "Submit": "送信"
   },
   "background": {
     "error": {
@@ -5033,6 +5063,9 @@
         "actionCancel": "操作がキャンセルされました",
         "deviceNeedsWebHIDPermission": "デバイスが見つからないか、WebHIDの権限が必要です"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "バグを報告するためにスクリーンショットを撮る"
     }
   },
   "constant": {

@@ -3777,7 +3777,15 @@
           "marketCloseTitle": "Fechar Posição de Mercado",
           "marketCloseDesc": "Isso tentará fechar a posição imediatamente.",
           "confirmCloseAllTitle": "Confirmar Fechar Todas as Posições",
-          "confirmCloseAllDesc": "Todas as suas posições abertas serão fechadas a preço de mercado e todos os pedidos serão cancelados."
+          "confirmCloseAllDesc": "Todas as suas posições abertas serão fechadas a preço de mercado e todos os pedidos serão cancelados.",
+          "positionSize": "Tamanho da Posição",
+          "orderPrice": "Preço do Pedido",
+          "marketPrice": "Preço de Mercado",
+          "buy": "Comprar",
+          "sell": "Vender",
+          "buyToSell": "Comprar para vender",
+          "sellToBuy": "Vender para comprar",
+          "reverseAction": "{{side}} {{size}} {{coin}} para Inverter"
         },
         "openOrders": {
           "cancel": "Cancelar",
@@ -3986,7 +3994,12 @@
         "cancelTp": "Cancelar TP",
         "tp": "Lucro",
         "stopLossExpectedPnl": "P/L esperado do stop loss",
-        "markPrice": "Preço de marcação:"
+        "markPrice": "Preço de marcação:",
+        "entryCurrentPrice": "Preço de Entrada / Preço Atual",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "triggerPrice": "Preço de Trigger",
+        "estimatedPnlWillBe": "Seu PnL estimado será"
       },
       "accountInfo": {
         "balance": "Saldo",
@@ -4034,14 +4047,21 @@
         "noTrades": "Sem negociações",
         "markPrice": "Preço de marcação",
         "trades": "Negociações",
-        "viewAsks": "Ordens de venda"
+        "viewAsks": "Ordens de venda",
+        "avgPrice": "Preço Médio",
+        "sumBase": "Soma {{base}}",
+        "sumUsd": "Soma USD"
       },
       "editMargin": {
         "configureMargin": "Configurar Margem",
         "shortLiquidationTips": "Subir {{percent}} acionará a liquidação",
         "currentPosition": "Posição Atual",
         "longLiquidationTips": "A queda de {{percent}} acionará a liquidação",
-        "title": "Gerenciar Margem"
+        "title": "Gerenciar Margem",
+        "currentPrice": "Preço Atual"
+      },
+      "topBar": {
+        "favoriteEmpty": "Sua lista de favoritos está vazia"
       }
     },
     "perpsDetail": {
@@ -4951,6 +4971,15 @@
     "UnknownTag": {
       "label": "Desconhecido",
       "tooltip": "Token desconhecido, faça sua própria pesquisa."
+    },
+    "screenshotModal": {
+      "title": "Captura de tela para relatar erro",
+      "placeholder": "Descreva o problema"
+    },
+    "feedbackPopup": {
+      "title": "Resposta do Suporte Rabby",
+      "issueReported": "Este é o problema que você reportou:",
+      "issueReplied": "O Suporte Rabby respondeu:"
     }
   },
   "global": {
@@ -4989,7 +5018,8 @@
     "Nonce": "Nonce",
     "appDescription": "Sua carteira de referência para Ethereum e EVM",
     "collapse": "Recolher",
-    "Yes": "Sim"
+    "Yes": "Sim",
+    "Submit": "Enviar"
   },
   "background": {
     "error": {
@@ -5038,6 +5068,9 @@
         "actionCancel": "Operação cancelada",
         "deviceNeedsWebHIDPermission": "Dispositivo não encontrado ou precisa de permissão WebHID"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Captura de tela para reportar bug"
     }
   },
   "constant": {

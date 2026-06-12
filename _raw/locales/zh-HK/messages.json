@@ -35,7 +35,8 @@
     "notSupportTesntnet": "不支援自訂網絡",
     "appDescription": "你首選的以太坊和 EVM 錢包",
     "collapse": "摺疊",
-    "Yes": "是"
+    "Yes": "是",
+    "Submit": "提交"
   },
   "page": {
     "transactions": {
@@ -3821,7 +3822,15 @@
           "confirmCloseAllTitle": "確認關閉所有倉位",
           "dontShowAgain": "不再顯示此內容",
           "marketCloseDesc": "這將嘗試立即平倉。",
-          "confirmCloseAllDesc": "所有未平倉倉位都將按市價平倉，並取消所有訂單。"
+          "confirmCloseAllDesc": "所有未平倉倉位都將按市價平倉，並取消所有訂單。",
+          "positionSize": "倉位大小",
+          "orderPrice": "訂單價格",
+          "marketPrice": "市場價格",
+          "buy": "買入",
+          "sell": "賣出",
+          "buyToSell": "買入平賣",
+          "sellToBuy": "賣出平買",
+          "reverseAction": "{{side}} {{size}} {{coin}} 反向"
         },
         "openOrders": {
           "cancel": "取消",
@@ -4030,7 +4039,12 @@
         "stopLossExpectedPnl": "止蝕預期盈虧",
         "sl": "止蝕",
         "entryPrice": "入場價：",
-        "confirm": "確認"
+        "confirm": "確認",
+        "entryCurrentPrice": "進場價 / 當前價",
+        "takeProfit": "止盈",
+        "stopLoss": "止損",
+        "triggerPrice": "觸發價",
+        "estimatedPnlWillBe": "您的預計損益將為"
       },
       "accountInfo": {
         "totalBalance": "總餘額",
@@ -4078,14 +4092,21 @@
         "viewBids": "買盤",
         "title": "訂單簿",
         "amount": "數量",
-        "trades": "成交"
+        "trades": "成交",
+        "avgPrice": "平均價格",
+        "sumBase": "合計 {{base}}",
+        "sumUsd": "合計 USD"
       },
       "editMargin": {
         "shortLiquidationTips": "上漲 {{percent}} 將觸發強平",
         "title": "管理保證金",
         "currentPosition": "當前持倉",
         "configureMargin": "配置保證金",
-        "longLiquidationTips": "下跌 {{percent}} 將觸發強平"
+        "longLiquidationTips": "下跌 {{percent}} 將觸發強平",
+        "currentPrice": "當前價格"
+      },
+      "topBar": {
+        "favoriteEmpty": "您的最愛列表是空的"
       }
     },
     "perpsDetail": {
@@ -4994,6 +5015,15 @@
     "UnknownTag": {
       "label": "未知",
       "tooltip": "未知代幣，請自行研究。"
+    },
+    "screenshotModal": {
+      "title": "截圖以報告錯誤",
+      "placeholder": "描述問題"
+    },
+    "feedbackPopup": {
+      "title": "Rabby 支援團隊的回覆",
+      "issueReported": "以下是您舉報的問題：",
+      "issueReplied": "Rabby 支援團隊已回覆："
     }
   },
   "background": {
