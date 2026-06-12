@@ -7,12 +7,19 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
 import { PerpsPositionCard } from '../components/PerpsPositionCard';
 import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
 import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
-import { formatTpOrSlPrice, validatePriceInput } from '../../Perps/utils';
+import {
+  calculateDistanceToLiquidation,
+  calLiquidationPrice,
+  formatPerpsPct,
+  formatTpOrSlPrice,
+  validatePriceInput,
+} from '../../Perps/utils';
 import { PositionSizeInputAndSlider } from '../components/TradingPanel/components/PositionSizeInputAndSlider';
 import { PositionSize } from '../types';
 import stats from '@/stats';
@@ -345,6 +352,66 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   const reverseDirection =
     position.direction === 'Long' ? ('Short' as const) : ('Long' as const);
 
+  const reverseEstimatedLiquidationPrice = useMemo(() => {
+    const markPrice = Number(marketData.markPx);
+    const margin = Number(position.marginUsed);
+    const positionSize = Number(position.size);
+    const maxLeverage = Number(marketData.maxLeverage);
+
+    if (!markPrice || !margin || !positionSize || !maxLeverage) {
+      return 0;
+    }
+
+    return calLiquidationPrice(
+      markPrice,
+      margin,
+      reverseDirection,
+      positionSize,
+      positionSize * markPrice,
+      maxLeverage
+    );
+  }, [
+    marketData.markPx,
+    marketData.maxLeverage,
+    position.marginUsed,
+    position.size,
+    reverseDirection,
+  ]);
+
+  const reverseLiquidationDistance = useMemo(() => {
+    if (!reverseEstimatedLiquidationPrice || !Number(marketData.markPx)) {
+      return 0;
+    }
+
+    return calculateDistanceToLiquidation(
+      reverseEstimatedLiquidationPrice,
+      marketData.markPx
+    );
+  }, [reverseEstimatedLiquidationPrice, marketData.markPx]);
+
+  const reverseLiquidationRiskText = useMemo(() => {
+    if (
+      !reverseEstimatedLiquidationPrice ||
+      !Number.isFinite(reverseLiquidationDistance)
+    ) {
+      return '';
+    }
+
+    return t(
+      reverseDirection === 'Long'
+        ? 'page.perpsPro.userInfo.distanceRiskTag.goingDown'
+        : 'page.perpsPro.userInfo.distanceRiskTag.goingUp',
+      {
+        percent: formatPerpsPct(reverseLiquidationDistance),
+      }
+    );
+  }, [
+    reverseDirection,
+    reverseEstimatedLiquidationPrice,
+    reverseLiquidationDistance,
+    t,
+  ]);
+
   const renderReverseTag = (
     children: React.ReactNode,
     variant: 'brand' | 'neutral' | 'long' | 'short'
@@ -465,7 +532,15 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           </section>
         </div>
 
-        <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
+        <div className="bottom-0 left-0 right-0 flex flex-col gap-[12px] border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
+          {reverseLiquidationRiskText ? (
+            <div className="flex h-[32px] items-center gap-[4px] overflow-hidden rounded-[8px] bg-rb-orange-light-1 px-[12px] text-rb-orange-default">
+              <RcIconInfoCC className="h-[16px] w-[16px] flex-shrink-0" />
+              <div className="min-w-0 flex-1 truncate text-[12px] leading-[14px]">
+                {reverseLiquidationRiskText}
+              </div>
+            </div>
+          ) : null}
           <Button
             block
             size="large"
