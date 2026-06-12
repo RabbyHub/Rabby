@@ -4,6 +4,7 @@ import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
 import { appIsDev, getSentryEnv, isManifestV3 } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Message, sendReadyMessageToTabs } from '@/utils/message';
+import { RABBY_SENTRY_IGNORE_ERRORS } from '@/utils/sentry';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
 import fetchAdapter from 'background/utils/fetchAdapter';
@@ -109,19 +110,7 @@ Sentry.init({
     }
     return event;
   },
-  ignoreErrors: [
-    'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
-    'Failed to fetch',
-    'TransportOpenUserCancelled',
-    'Non-Error promise rejection captured with keys: message, stack',
-    'Non-Error promise rejection captured with keys: message',
-    /Non-Error promise rejection captured with keys/,
-    /\[From .*\]/, // error from custom rpc
-    /AxiosError/,
-    /WebSocket connection failed/,
-    /Could not establish connection/,
-    /HttpRequestError/,
-  ],
+  ignoreErrors: RABBY_SENTRY_IGNORE_ERRORS,
 });
 
 async function restoreAppState() {
