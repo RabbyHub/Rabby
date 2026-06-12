@@ -1,13 +1,17 @@
 var _paq = (window._paq = window._paq || []);
 (function () {
+  var matomoClientLoaded = false;
+
   const handleStorage = function (result) {
     if (
+      matomoClientLoaded ||
       !result.preference ||
       result.preference.userDataTrackingOptOut === true
     ) {
       return;
     }
 
+    matomoClientLoaded = true;
     var u = 'https://matomo.debank.com/';
     /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
     _paq.push(['trackPageView']);
@@ -24,7 +28,7 @@ var _paq = (window._paq = window._paq || []);
     s.parentNode.insertBefore(g, s);
   };
 
-  setTimeout(() => {
+  const syncStorage = function () {
     // is MV3
     if (chrome.runtime.getManifest().manifest_version === 3) {
       chrome.storage.local
@@ -33,5 +37,17 @@ var _paq = (window._paq = window._paq || []);
     } else {
       chrome.storage.local.get(['preference', 'extensionId'], handleStorage);
     }
+  };
+
+  chrome.storage.onChanged.addListener(function (changes, areaName) {
+    if (areaName !== 'local' || !changes.preference) {
+      return;
+    }
+
+    syncStorage();
+  });
+
+  setTimeout(() => {
+    syncStorage();
   }, 500);
 })();

@@ -1,7 +1,9 @@
 import StatsReport, { SITE } from '@debank/festats';
 import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 
-type EventParams = Record<string, number | string | boolean>;
+type StatsReportParams = Parameters<StatsReport['report']>[1];
+
+export type EventParams = Record<string, number | string | boolean | undefined>;
 
 let statsReport: StatsReport | null = null;
 
@@ -12,12 +14,24 @@ const getStatsReport = () => {
   return statsReport;
 };
 
+const omitUndefinedParams = (params: EventParams) => {
+  const result: StatsReportParams = {};
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (typeof value !== 'undefined') {
+      result[key] = value;
+    }
+  });
+
+  return result;
+};
+
 export default {
   report: async (name: string, params: EventParams) => {
     if (!(await shouldReportUserBehaviorData())) {
       return;
     }
 
-    return getStatsReport().report(name, params);
+    return getStatsReport().report(name, omitUndefinedParams(params));
   },
 };
