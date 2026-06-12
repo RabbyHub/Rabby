@@ -295,6 +295,16 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
 
   const baseAsset = formatPerpsCoin(position.coin);
   const quoteAsset = marketData.quoteAsset || 'USDC';
+  const reverseDexTag = useMemo(() => {
+    const marketName = marketData.name || '';
+    if (!marketName.includes(':')) return '';
+
+    return marketName.split(':')[0]?.toUpperCase() || '';
+  }, [marketData.name]);
+
+  const reverseMarginModeLabel =
+    position.type === 'cross' ? 'Cross' : 'Isolated';
+
   const formattedPositionSize = useMemo(() => {
     if (sizeDisplayUnit === 'usd') {
       return `${splitNumberByStep(
@@ -311,6 +321,22 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     [marketData.szDecimals, position.size]
   );
 
+  const reverseActionDisplay = useMemo(() => {
+    if (sizeDisplayUnit === 'usd') {
+      return {
+        size: new BigNumber(reverseOrderSize || 0)
+          .times(marketPrice || 0)
+          .toFixed(2),
+        coin: quoteAsset,
+      };
+    }
+
+    return {
+      size: reverseOrderSize,
+      coin: baseAsset,
+    };
+  }, [baseAsset, marketPrice, quoteAsset, reverseOrderSize, sizeDisplayUnit]);
+
   const reverseActionSide =
     position.direction === 'Long'
       ? t('page.perpsPro.userInfo.positionInfo.sell')
@@ -319,34 +345,48 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   const reverseDirection =
     position.direction === 'Long' ? ('Short' as const) : ('Long' as const);
 
-  const renderReversePositionCard = (
-    direction: 'Long' | 'Short',
-    showMarginMode: boolean
+  const renderReverseTag = (
+    children: React.ReactNode,
+    variant: 'brand' | 'neutral' | 'long' | 'short'
   ) => {
+    return (
+      <span
+        className={clsx(
+          'flex h-[16px] shrink-0 items-center rounded-[4px] px-[4px] text-[10px] leading-[16px] font-medium',
+          variant === 'brand' && 'bg-rb-brand-light-2 text-rb-brand-default',
+          variant === 'neutral' && 'bg-rb-neutral-bg-4 text-rb-neutral-foot',
+          variant === 'long' && 'bg-rb-green-light-2 text-rb-green-default',
+          variant === 'short' && 'bg-rb-red-light-2 text-rb-red-default'
+        )}
+      >
+        {children}
+      </span>
+    );
+  };
+
+  const renderReverseMarketName = () => {
+    return (
+      <PerpsDisplayCoinName
+        item={marketData}
+        separator="-"
+        className="text-[16px] leading-[20px]"
+        baseClassName="font-medium text-r-neutral-title-1"
+        quoteClassName="font-normal text-r-neutral-title-1"
+      />
+    );
+  };
+
+  const renderReversePositionCard = (direction: 'Long' | 'Short') => {
     const isLong = direction === 'Long';
     return (
       <div className="rounded-[6px] border border-solid border-rb-neutral-line p-[12px]">
         <div className="mb-[18px] flex h-[20px] items-center gap-[4px]">
-          <PerpsDisplayCoinName
-            item={marketData}
-            separator="-"
-            className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1"
-          />
-          {showMarginMode ? (
-            <span className="flex h-[16px] items-center rounded-[4px] bg-rb-brand-light-2 px-[4px] text-[10px] leading-[16px] font-medium text-rb-brand-default">
-              {position.type === 'cross' ? 'Cross' : 'Isolated'}
-            </span>
-          ) : null}
-          <span
-            className={clsx(
-              'flex h-[16px] items-center rounded-[4px] px-[4px] text-[10px] leading-[16px] font-medium',
-              isLong
-                ? 'bg-rb-green-light-2 text-rb-green-default'
-                : 'bg-rb-red-light-2 text-rb-red-default'
-            )}
-          >
-            {direction.toLowerCase()} {position.leverage}x
-          </span>
+          {renderReverseMarketName()}
+          {renderReverseTag(reverseMarginModeLabel, 'neutral')}
+          {renderReverseTag(
+            `${direction.toLowerCase()} ${position.leverage}x`,
+            isLong ? 'long' : 'short'
+          )}
         </div>
         <div className="flex items-start justify-between">
           <div className="flex flex-col gap-[3px]">
@@ -380,20 +420,17 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         <div className="flex-1 px-[20px] overflow-y-auto pb-24">
           <section className="flex items-center justify-between pt-[10px]">
             <div className="flex flex-col gap-[3px]">
-              <PerpsDisplayCoinName
-                item={marketData}
-                separator="-"
-                className="text-[16px] leading-[20px] font-medium text-r-neutral-title-1"
-              />
+              {renderReverseMarketName()}
               <div className="flex items-center gap-[3px]">
-                <span className="flex h-[16px] items-center rounded-[4px] bg-rb-neutral-bg-4 px-[4px] text-[10px] leading-[16px] font-medium text-rb-neutral-foot">
-                  {position.type === 'cross' ? 'Cross' : 'Isolated'}
-                </span>
-                <span className="flex h-[16px] items-center rounded-[4px] bg-rb-neutral-bg-4 px-[4px] text-[10px] leading-[16px] font-medium text-rb-neutral-foot">
-                  {position.direction === 'Long'
+                {reverseDexTag
+                  ? renderReverseTag(reverseDexTag, 'brand')
+                  : null}
+                {renderReverseTag(
+                  position.direction === 'Long'
                     ? t('page.perpsPro.userInfo.positionInfo.buyToSell')
-                    : t('page.perpsPro.userInfo.positionInfo.sellToBuy')}
-                </span>
+                    : t('page.perpsPro.userInfo.positionInfo.sellToBuy'),
+                  'neutral'
+                )}
               </div>
             </div>
             <div className="flex flex-col items-end gap-[3px] text-[12px] font-medium">
@@ -409,7 +446,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
           </section>
 
           <section className="mt-[24px] flex flex-col gap-[12px]">
-            {renderReversePositionCard(position.direction, true)}
+            {renderReversePositionCard(position.direction)}
 
             <div className="flex items-center gap-[3px]">
               <div className="h-0 flex-1 border-t border-solid border-rb-neutral-line" />
@@ -417,14 +454,14 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
                 <RcIconReverseArrowDown className="h-[16px] w-[16px]" />
                 {t('page.perpsPro.userInfo.positionInfo.reverseAction', {
                   side: reverseActionSide,
-                  size: splitNumberByStep(reverseOrderSize),
-                  coin: baseAsset,
+                  size: splitNumberByStep(reverseActionDisplay.size),
+                  coin: reverseActionDisplay.coin,
                 })}
               </div>
               <div className="h-0 flex-1 border-t border-solid border-rb-neutral-line" />
             </div>
 
-            {renderReversePositionCard(reverseDirection, false)}
+            {renderReversePositionCard(reverseDirection)}
           </section>
         </div>
 

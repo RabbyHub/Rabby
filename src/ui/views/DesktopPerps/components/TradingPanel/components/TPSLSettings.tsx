@@ -27,7 +27,7 @@ const MODE_OPTIONS: {
   label: string;
 }[] = [
   { value: 'pnl', label: 'PNL' },
-  { value: 'roi', label: 'ROI' },
+  { value: 'roi', label: 'ROI%' },
 ];
 
 const stripNumberDecorations = (value: string) => {
@@ -377,7 +377,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
           {pnl >= 0 ? '+' : '-'}
           {formatUsdValue(Math.abs(pnl))}
           {item.estimatedPnlPercent
-            ? ` (${percent >= 0 ? '+' : '-'}${Math.abs(percent).toFixed(2)}%)`
+            ? `(${percent >= 0 ? '+' : '-'}${Math.abs(percent).toFixed(2)}%)`
             : ''}
         </span>
       </div>
@@ -425,9 +425,6 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
             placeholder={modeLabel}
             className={clsx(
               'text-left w-[128px]',
-              type === 'takeProfit'
-                ? 'desktop-perps-tpsl-positive-input'
-                : 'desktop-perps-tpsl-negative-input',
               hasError && 'perps-input-error'
             )}
             suffix={

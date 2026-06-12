@@ -58,7 +58,7 @@ const MODE_OPTIONS: {
   label: string;
 }[] = [
   { value: 'pnl', label: 'PNL' },
-  { value: 'roi', label: 'ROI' },
+  { value: 'roi', label: 'ROI%' },
 ];
 
 const EMPTY_SIDE_STATE: TpslSideState = {
@@ -104,11 +104,6 @@ const sanitizeUnsignedDecimal = (value: string) => {
   return null;
 };
 
-const formatSignedInput = (side: TpslSide, value: string) => {
-  if (!value) return '';
-  return `${side === 'tp' ? '+' : '-'}${value}`;
-};
-
 const parseModeValue = (side: TpslSide, value: string) => {
   const clean = sanitizeUnsignedDecimal(value);
   if (!clean || clean === '.') {
@@ -123,9 +118,9 @@ const parseModeValue = (side: TpslSide, value: string) => {
 
 const formatModeValueFromNumber = (value: number, decimals = 2) => {
   if (!Number.isFinite(value) || value === 0) return '';
-  return `${value > 0 ? '+' : '-'}${new BigNumber(Math.abs(value))
+  return new BigNumber(Math.abs(value))
     .decimalPlaces(decimals, BigNumber.ROUND_DOWN)
-    .toString()}`;
+    .toString();
 };
 
 const calculatePnlByTrigger = ({
@@ -252,6 +247,7 @@ const hydrateSideFromTrigger = ({
   szDecimals,
   markPrice,
   t,
+  syncModeValue = true,
 }: {
   position: PositionFormatData;
   side: TpslSide;
@@ -260,12 +256,13 @@ const hydrateSideFromTrigger = ({
   szDecimals: number;
   markPrice: number;
   t: ReturnType<typeof useTranslation>['t'];
+  syncModeValue?: boolean;
 }): TpslSideState => {
   if (!triggerPrice || Number(triggerPrice) === 0) {
     return {
       ...state,
       triggerPrice,
-      modeValue: '',
+      modeValue: syncModeValue ? '' : state.modeValue,
       estimatedPnl: '',
       estimatedPnlPercent: '',
       error: '',
@@ -283,7 +280,7 @@ const hydrateSideFromTrigger = ({
   return {
     ...state,
     triggerPrice,
-    modeValue,
+    modeValue: syncModeValue ? modeValue : state.modeValue,
     estimatedPnl: pnl.toFixed(2),
     estimatedPnlPercent: roi.toFixed(2),
     error: getValidationError({
@@ -371,6 +368,15 @@ const resolveSideAction = (
   }
 
   return { type: 'none' };
+};
+
+const getCancelOrderSuccessTitle = (
+  position: PositionFormatData,
+  side: TpslSide
+) => {
+  const orderAction = position.direction === 'Long' ? 'Sell' : 'Buy';
+  const orderType = side === 'tp' ? 'Take Profit' : 'Stop Loss';
+  return `${orderType} ${orderAction} Order Canceled`;
 };
 
 export const EditTpSlModal: React.FC<Props> = ({
@@ -467,7 +473,6 @@ export const EditTpSlModal: React.FC<Props> = ({
 
       const setter = side === 'tp' ? setTpState : setSlState;
       setter((prev) => {
-        const nextModeValue = formatSignedInput(side, clean);
         const numericValue = parseModeValue(side, clean);
         const triggerPrice =
           numericValue === null
@@ -489,12 +494,13 @@ export const EditTpSlModal: React.FC<Props> = ({
           side,
           state: {
             ...prev,
-            modeValue: nextModeValue,
+            modeValue: clean,
           },
           triggerPrice,
           szDecimals,
           markPrice,
           t,
+          syncModeValue: false,
         });
       });
     }
@@ -566,12 +572,19 @@ export const EditTpSlModal: React.FC<Props> = ({
 
     setCancelingSide(side);
     try {
-      await handleCancelOrder([
+      await handleCancelOrder(
+        [
+          {
+            coin: position.coin,
+            oid,
+          },
+        ],
         {
-          coin: position.coin,
-          oid,
-        },
-      ]);
+          successToast: {
+            title: getCancelOrderSuccessTitle(position, side),
+          },
+        }
+      );
       dispatch.perps.fetchPositionOpenOrders();
       onConfirm?.();
       onCancel();
@@ -686,7 +699,7 @@ export const EditTpSlModal: React.FC<Props> = ({
         {pnl >= 0 ? '+' : '-'}
         {formatUsdValue(Math.abs(pnl))}
         {state.estimatedPnlPercent
-          ? ` (${roi >= 0 ? '+' : '-'}${Math.abs(roi).toFixed(2)}%)`
+          ? `(${roi >= 0 ? '+' : '-'}${Math.abs(roi).toFixed(2)}%)`
           : ''}
       </span>
     );
@@ -704,6 +717,17 @@ export const EditTpSlModal: React.FC<Props> = ({
     const modeLabel =
       MODE_OPTIONS.find((option) => option.value === state.mode)?.label ||
       'PNL';
+    const signedModeValue = Number(
+      state.mode === 'roi' ? state.estimatedPnlPercent : state.estimatedPnl
+    );
+    const modeValueSign =
+      Number.isFinite(signedModeValue) && signedModeValue !== 0
+        ? signedModeValue > 0
+          ? '+'
+          : '-'
+        : isTp
+        ? '+'
+        : '-';
     const hasExistingOrder = Boolean(
       getOrderOid(position, side) && getOrderTriggerPx(position, side)
     );
@@ -748,13 +772,18 @@ export const EditTpSlModal: React.FC<Props> = ({
               'focus-within:border-rb-brand-default hover:border-rb-brand-default'
             )}
           >
+            {state.modeValue ? (
+              <span className="mr-[2px] flex-shrink-0 text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+                {modeValueSign}
+              </span>
+            ) : null}
             <input
               value={state.modeValue}
               inputMode="decimal"
               onChange={(e) => updateSideByModeValue(side, e.target.value)}
               className={clsx(
                 'min-w-0 flex-1 border-0 bg-transparent p-0 text-[15px] leading-[18px] font-medium outline-none',
-                isTp ? 'text-rb-green-default' : 'text-rb-red-default'
+                'text-r-neutral-title-1'
               )}
             />
             <Dropdown

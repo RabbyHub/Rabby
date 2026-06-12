@@ -53,7 +53,7 @@ export const AccountActions: React.FC<AccountActionsProps> = ({
         <button
           onClick={handleDeposit}
           className={clsx(
-            'px-[12px] font-medium flex items-center justify-center border border-solid',
+            'px-[12px] font-medium flex items-center justify-center border border-solid cursor-pointer',
             compact
               ? 'desktop-perps-topbar-deposit-button'
               : 'ml-6 h-[32px] rounded-[8px] text-13 border-rb-brand-default text-rb-brand-default'

@@ -885,7 +885,15 @@ export const usePerpsProPosition = () => {
   );
 
   const handleCancelOrder = useMemoizedFn(
-    async (params: CancelOrderParams[]) => {
+    async (
+      params: CancelOrderParams[],
+      options?: {
+        successToast?: {
+          title: string;
+          description?: string;
+        };
+      }
+    ) => {
       return withErrorHandler(
         async () => {
           const sdk = getPerpsSDK();
@@ -896,18 +904,20 @@ export const usePerpsProPosition = () => {
             )
           ) {
             const num = params.length;
-            perpsToast.success({
-              title:
-                num > 1
-                  ? t('page.perps.toast.ordersCancelled')
-                  : t('page.perps.toast.orderCancelled'),
-              description:
-                num > 1
-                  ? t('page.perps.toast.cancelAllOrderSuccess', {
-                      count: num,
-                    })
-                  : t('page.perps.toast.cancelOrderSuccess'),
-            });
+            perpsToast.success(
+              options?.successToast || {
+                title:
+                  num > 1
+                    ? t('page.perps.toast.ordersCancelled')
+                    : t('page.perps.toast.orderCancelled'),
+                description:
+                  num > 1
+                    ? t('page.perps.toast.cancelAllOrderSuccess', {
+                        count: num,
+                      })
+                    : t('page.perps.toast.cancelOrderSuccess'),
+              }
+            );
             setTimeout(() => {
               dispatch.perps.fetchPositionOpenOrders();
             }, 100);

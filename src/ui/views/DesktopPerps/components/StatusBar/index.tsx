@@ -445,13 +445,13 @@ export const StatusBar: React.FC = () => {
         <button
           type="button"
           key={key}
-          className="desktop-perps-status-item"
+          className="desktop-perps-status-item group"
           tabIndex={isMeasure ? -1 : undefined}
           onClick={
             isMeasure ? undefined : () => handleSelectTickerMarket(item.name)
           }
         >
-          <span className="desktop-perps-status-item-name text-rb-neutral-foot">
+          <span className="desktop-perps-status-item-name text-rb-neutral-foot transition-colors group-hover:text-rb-brand-default">
             {pair}
           </span>
           <span
@@ -475,74 +475,79 @@ export const StatusBar: React.FC = () => {
   );
 
   return (
-    <div className="fixed bottom-[6px] left-[6px] right-[6px] h-[32px] rounded-[6px] bg-rb-neutral-bg-1 flex items-center overflow-hidden px-[12px] z-30 gap-[12px]">
-      <div className="desktop-perps-status-side flex items-center">
-        <OnlineStatus online={isConnected} />
-      </div>
-
-      <div
-        ref={tickerViewportRef}
-        className="desktop-perps-status-ticker flex-1 min-w-0 overflow-hidden"
-        onMouseEnter={handleTickerMouseEnter}
-        onMouseLeave={handleTickerMouseLeave}
-      >
-        {tickerMarkets.length > 0 ? (
-          <div
-            ref={tickerTrackRef}
-            className="desktop-perps-status-track flex w-max items-center"
-          >
-            <div ref={tickerLoopRef} className="desktop-perps-status-loop">
-              {tickerMarkets.map((item) =>
-                renderTickerItem(item, `${item.dexId || 'hyper'}-${item.name}`)
-              )}
-            </div>
-            <div className="desktop-perps-status-loop" aria-hidden>
-              {tickerMarkets.map((item) =>
-                renderTickerItem(
-                  item,
-                  `${item.dexId || 'hyper'}-${item.name}-duplicate`
-                )
-              )}
-            </div>
-          </div>
-        ) : null}
-        <div
-          ref={tickerMeasureRef}
-          className="desktop-perps-status-measure"
-          aria-hidden
-        >
-          {tickerStructureMarkets.map((item) => {
-            return renderTickerItem(
-              item,
-              `${item.dexId || 'hyper'}-${item.name}-measure`,
-              true
-            );
-          })}
+    <div className="fixed bottom-0 left-0 right-0 bg-rb-neutral-bg-page p-[6px] z-30">
+      <div className="h-[32px] rounded-[6px] bg-rb-neutral-bg-1 flex items-center overflow-hidden px-[12px] gap-[12px]">
+        <div className="desktop-perps-status-side flex items-center">
+          <OnlineStatus online={isConnected} />
         </div>
-      </div>
 
-      <div className="desktop-perps-status-actions flex items-center gap-[12px]">
-        <button
-          type="button"
-          title={t('page.perpsPro.statusBar.sound')}
-          className="flex h-[20px] w-[20px] items-center justify-center border-0 bg-transparent p-0 text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-          onClick={handleToggleSound}
+        <div
+          ref={tickerViewportRef}
+          className="desktop-perps-status-ticker flex-1 min-w-0 overflow-hidden"
+          onMouseEnter={handleTickerMouseEnter}
+          onMouseLeave={handleTickerMouseLeave}
         >
-          <RcIconVolume className="h-[20px] w-[20px]" />
-        </button>
-        <div className="h-[12px] w-0 border-l border-solid border-rb-neutral-line" />
-        <RcIconTwitter
-          className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-          onClick={handleOpenTwitter}
-        />
-        <RcIconDiscord
-          className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-          onClick={handleOpenDiscord}
-        />
-        <RcIconDocs
-          className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-          onClick={handleOpenDocs}
-        />
+          {tickerMarkets.length > 0 ? (
+            <div
+              ref={tickerTrackRef}
+              className="desktop-perps-status-track flex w-max items-center"
+            >
+              <div ref={tickerLoopRef} className="desktop-perps-status-loop">
+                {tickerMarkets.map((item) =>
+                  renderTickerItem(
+                    item,
+                    `${item.dexId || 'hyper'}-${item.name}`
+                  )
+                )}
+              </div>
+              <div className="desktop-perps-status-loop" aria-hidden>
+                {tickerMarkets.map((item) =>
+                  renderTickerItem(
+                    item,
+                    `${item.dexId || 'hyper'}-${item.name}-duplicate`
+                  )
+                )}
+              </div>
+            </div>
+          ) : null}
+          <div
+            ref={tickerMeasureRef}
+            className="desktop-perps-status-measure"
+            aria-hidden
+          >
+            {tickerStructureMarkets.map((item) => {
+              return renderTickerItem(
+                item,
+                `${item.dexId || 'hyper'}-${item.name}-measure`,
+                true
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="desktop-perps-status-actions flex items-center gap-[12px]">
+          <button
+            type="button"
+            title={t('page.perpsPro.statusBar.sound')}
+            className="flex h-[20px] w-[20px] items-center justify-center border-0 bg-transparent p-0 text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+            onClick={handleToggleSound}
+          >
+            <RcIconVolume className="h-[20px] w-[20px]" />
+          </button>
+          <div className="h-[12px] w-0 border-l border-solid border-rb-neutral-line" />
+          <RcIconTwitter
+            className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+            onClick={handleOpenTwitter}
+          />
+          <RcIconDiscord
+            className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+            onClick={handleOpenDiscord}
+          />
+          <RcIconDocs
+            className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
+            onClick={handleOpenDocs}
+          />
+        </div>
       </div>
     </div>
   );
