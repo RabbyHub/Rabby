@@ -3996,11 +3996,11 @@
         "cancelTp": "Kâr Al Emrini İptal Et",
         "takeProfitExpectedPnl": "Kâr Al, Beklenen PnL",
         "cancelSl": "Stop-Loss'u İptal Et",
-        "entryCurrentPrice": "Entry Price / Current Price",
-        "takeProfit": "Take Profit",
-        "stopLoss": "Stop Loss",
-        "triggerPrice": "Trigger Price",
-        "estimatedPnlWillBe": "Your estimated PnL will be"
+        "entryCurrentPrice": "Giriş Fiyatı / Güncel Fiyat",
+        "takeProfit": "Kâr Al",
+        "stopLoss": "Zarar Durdur",
+        "triggerPrice": "Tetikleme Fiyatı",
+        "estimatedPnlWillBe": "Tahmini PnL'niz olacak"
       },
       "accountInfo": {
         "totalBalance": "Toplam Bakiye",

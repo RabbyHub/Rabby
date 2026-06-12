@@ -4967,8 +4967,8 @@
       "tooltip": "Token không xác định, vui lòng tự nghiên cứu."
     },
     "screenshotModal": {
-      "title": "截圖舉報錯誤",
-      "placeholder": "描述問題"
+      "title": "Chụp màn hình để báo lỗi",
+      "placeholder": "Mô tả vấn đề"
     },
     "feedbackPopup": {
       "title": "Phản hồi từ Hỗ trợ Rabby",

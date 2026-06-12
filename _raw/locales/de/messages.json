@@ -3993,11 +3993,11 @@
         "cancelTp": "Take-Profit-Auftrag stornieren",
         "tp": "Take-Profit-Order",
         "cancelSl": "Stop-Loss stornieren",
-        "entryCurrentPrice": "Entry Price / Current Price",
-        "takeProfit": "Take Profit",
-        "stopLoss": "Stop Loss",
-        "triggerPrice": "Trigger Price",
-        "estimatedPnlWillBe": "Your estimated PnL will be"
+        "entryCurrentPrice": "Einstiegspreis / Aktueller Preis",
+        "takeProfit": "Take-Profit",
+        "stopLoss": "Stop-Loss",
+        "triggerPrice": "Auslösepreis",
+        "estimatedPnlWillBe": "Ihr geschätzter PnL beträgt"
       },
       "accountInfo": {
         "availableBalance": "Verfügbares Guthaben",

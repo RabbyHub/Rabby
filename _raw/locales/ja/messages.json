@@ -3778,12 +3778,12 @@
           "confirmCloseAllDesc": "すべてのオープンポジションはマーケット価格でクローズされ、すべての注文はキャンセルされます。",
           "positionSize": "ポジションサイズ",
           "orderPrice": "注文価格",
-          "marketPrice": "市场价格",
+          "marketPrice": "市場価格",
           "buy": "買い",
           "sell": "売り",
           "buyToSell": "買って売る",
           "sellToBuy": "売って買う",
-          "reverseAction": "{{side}} {{size}} {{coin}} を反向"
+          "reverseAction": "{{side}} {{size}} {{coin}} を反転"
         },
         "openOrders": {
           "price": "価格",

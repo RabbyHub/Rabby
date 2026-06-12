@@ -3773,14 +3773,14 @@
           "marketCloseDesc": "Isso tentará fechar a posição imediatamente.",
           "marketCloseTitle": "Fechar Posição de Mercado",
           "confirmCloseAllDesc": "Todas as suas posições abertas serão fechadas ao preço de mercado e todos os pedidos serão cancelados.",
-          "positionSize": "Position Size",
-          "orderPrice": "Order Price",
-          "marketPrice": "Market Price",
-          "buy": "Buy",
-          "sell": "Sell",
-          "buyToSell": "Buy to sell",
-          "sellToBuy": "Sell to buy",
-          "reverseAction": "{{side}} {{size}} {{coin}} to Reverse"
+          "positionSize": "Tamanho da posição",
+          "orderPrice": "Preço da ordem",
+          "marketPrice": "Preço de mercado",
+          "buy": "Comprar",
+          "sell": "Vender",
+          "buyToSell": "Comprar para vender",
+          "sellToBuy": "Vender para comprar",
+          "reverseAction": "{{side}} {{size}} {{coin}} para inverter"
         },
         "openOrders": {
           "cancel": "Cancelar",
