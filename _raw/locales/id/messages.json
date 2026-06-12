@@ -3772,7 +3772,15 @@
           "marketCloseTitle": "Tutup Posisi Pasar",
           "confirmCloseAllTitle": "Konfirmasi Tutup Semua Posisi",
           "marketCloseDesc": "Ini akan mencoba untuk segera menutup posisi.",
-          "confirmCloseAllDesc": "Semua posisi terbuka Anda akan ditutup pada harga pasar dan membatalkan semua pesanan."
+          "confirmCloseAllDesc": "Semua posisi terbuka Anda akan ditutup pada harga pasar dan membatalkan semua pesanan.",
+          "positionSize": "Ukuran Posisi",
+          "orderPrice": "Harga Pesanan",
+          "marketPrice": "Harga Pasar",
+          "buy": "Beli",
+          "sell": "Jual",
+          "buyToSell": "Beli untuk menjual",
+          "sellToBuy": "Jual untuk membeli",
+          "reverseAction": "{{side}} {{size}} {{coin}} untuk Reverse"
         },
         "openOrders": {
           "price": "Harga",
@@ -3981,7 +3989,12 @@
         "title": "Konfigurasi TP/SL",
         "stopLossExpectedPnl": "Stop loss yang diharapkan PnL",
         "takeProfitExpectedPnl": "Ambil keuntungan yang diharapkan PnL",
-        "markPrice": "Harga Mark:"
+        "markPrice": "Harga Mark:",
+        "entryCurrentPrice": "Harga Entry / Harga Saat Ini",
+        "takeProfit": "Ambil Profit",
+        "stopLoss": "Stop Loss",
+        "triggerPrice": "Harga Pemicu",
+        "estimatedPnlWillBe": "Estimasi PnL Anda adalah"
       },
       "accountInfo": {
         "totalBalance": "Total saldo",
@@ -4029,14 +4042,21 @@
         "viewBoth": "Keduanya",
         "time": "Waktu",
         "total": "Total",
-        "viewAsks": "Permintaan"
+        "viewAsks": "Permintaan",
+        "avgPrice": "Harga Rata-rata",
+        "sumBase": "Jumlah {{base}}",
+        "sumUsd": "Jumlah USD"
       },
       "editMargin": {
         "currentPosition": "Posisi Saat Ini",
         "title": "Kelola Margin",
         "configureMargin": "Atur Margin",
         "longLiquidationTips": "Penurunan {{percent}} akan memicu likuidasi",
-        "shortLiquidationTips": "Naik {{percent}} akan memicu likuidasi"
+        "shortLiquidationTips": "Naik {{percent}} akan memicu likuidasi",
+        "currentPrice": "Harga Saat Ini"
+      },
+      "topBar": {
+        "favoriteEmpty": "Daftar favorit Anda kosong"
       }
     },
     "perpsDetail": {
@@ -4945,6 +4965,15 @@
     "UnknownTag": {
       "label": "Tidak dikenal",
       "tooltip": "Token tidak dikenal, silakan lakukan riset sendiri."
+    },
+    "screenshotModal": {
+      "title": "Tangkapan Layar untuk Melaporkan Bug",
+      "placeholder": "Jelaskan masalahnya"
+    },
+    "feedbackPopup": {
+      "title": "Respons dari Dukungan Rabby",
+      "issueReported": "Berikut adalah masalah yang Anda laporkan:",
+      "issueReplied": "Dukungan Rabby telah membalas:"
     }
   },
   "global": {
@@ -4983,7 +5012,8 @@
     "backButton": "Kembali",
     "appDescription": "Dompet andalan Anda untuk Ethereum dan EVM",
     "collapse": "Tutup",
-    "Yes": "Ya"
+    "Yes": "Ya",
+    "Submit": "Kirim"
   },
   "background": {
     "error": {
@@ -5030,6 +5060,9 @@
         "actionCancel": "Operasi dibatalkan",
         "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebHID"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Tangkapan layar untuk melaporkan bug"
     }
   },
   "constant": {

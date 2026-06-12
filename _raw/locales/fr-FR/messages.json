@@ -44,6 +44,9 @@
       "submitted": "Transaction envoyée",
       "txCompleteMoreContent": "{{chain}} #{{nonce}} finalisée. Cliquer pour en voir plus.",
       "txFailedMoreContent": "{{chain}} #{{nonce}} a échoué. Cliquer pour en voir plus."
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Capture d'écran pour signaler un bug"
     }
   },
   "component": {
@@ -275,6 +278,15 @@
     "UnknownTag": {
       "label": "Inconnu",
       "tooltip": "Jeton inconnu, faites vos propres recherches."
+    },
+    "screenshotModal": {
+      "title": "Capture d'écran pour signaler un bug",
+      "placeholder": "Décrivez le problème"
+    },
+    "feedbackPopup": {
+      "title": "Réponse du support Rabby",
+      "issueReported": "Voici le problème que vous avez signalé :",
+      "issueReplied": "Le support Rabby a répondu :"
     }
   },
   "constant": {
@@ -326,7 +338,8 @@
     "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé",
     "appDescription": "Votre portefeuille de référence pour Ethereum et EVM",
     "collapse": "Réduire",
-    "Yes": "Oui"
+    "Yes": "Oui",
+    "Submit": "Soumettre"
   },
   "page": {
     "activities": {
@@ -4104,7 +4117,15 @@
           "dontShowAgain": "Ne pas montrer ceci à nouveau",
           "confirmCloseAllTitle": "Confirmer la fermeture de toutes les positions",
           "marketCloseDesc": "Cela tentera de fermer immédiatement la position.",
-          "confirmCloseAllDesc": "Toutes vos positions ouvertes seront fermées au prix du marché et toutes les commandes seront annulées."
+          "confirmCloseAllDesc": "Toutes vos positions ouvertes seront fermées au prix du marché et toutes les commandes seront annulées.",
+          "positionSize": "Taille de la position",
+          "orderPrice": "Prix de l'ordre",
+          "marketPrice": "Prix du marché",
+          "buy": "Acheter",
+          "sell": "Vendre",
+          "buyToSell": "Acheter pour vendre",
+          "sellToBuy": "Vendre pour acheter",
+          "reverseAction": "{{side}} {{size}} {{coin}} pour inverser"
         },
         "openOrders": {
           "cancel": "Annuler",
@@ -4313,7 +4334,12 @@
         "stopLossExpectedPnl": "Stop loss PnL attendu",
         "cancelTp": "Annuler la prise de bénéfices",
         "gain": "gain",
-        "takeProfitExpectedPnl": "Prise de profit prévue : PnL attendu"
+        "takeProfitExpectedPnl": "Prise de profit prévue : PnL attendu",
+        "entryCurrentPrice": "Prix d'entrée / Prix actuel",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "triggerPrice": "Prix de déclenchement",
+        "estimatedPnlWillBe": "Votre PnL estimé sera"
       },
       "accountInfo": {
         "totalBalance": "Solde total",
@@ -4361,14 +4387,21 @@
         "trades": "Transactions",
         "time": "Temps",
         "noTrades": "Aucune transaction",
-        "viewBids": "Ordres d'achat"
+        "viewBids": "Ordres d'achat",
+        "avgPrice": "Prix moyen",
+        "sumBase": "Somme {{base}}",
+        "sumUsd": "Somme USD"
       },
       "editMargin": {
         "title": "Gérer la marge",
         "currentPosition": "Position actuelle",
         "configureMargin": "Configurer la marge",
         "shortLiquidationTips": "Monter de {{percent}} déclenchera la liquidation.",
-        "longLiquidationTips": "Une baisse de {{percent}} déclenchera la liquidation."
+        "longLiquidationTips": "Une baisse de {{percent}} déclenchera la liquidation.",
+        "currentPrice": "Prix actuel"
+      },
+      "topBar": {
+        "favoriteEmpty": "Votre liste de favoris est vide"
       }
     },
     "perpsDetail": {

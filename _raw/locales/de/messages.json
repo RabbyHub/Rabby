@@ -3775,7 +3775,15 @@
           "marketCloseTitle": "Markt Position Schließen",
           "marketCloseDesc": "Dies wird versuchen, die Position sofort zu schließen.",
           "confirmCloseAllTitle": "Alle Positionen schließen bestätigen",
-          "confirmCloseAllDesc": "Alle Ihre offenen Positionen werden zum Marktpreis geschlossen und alle Aufträge werden storniert."
+          "confirmCloseAllDesc": "Alle Ihre offenen Positionen werden zum Marktpreis geschlossen und alle Aufträge werden storniert.",
+          "positionSize": "Positionsgröße",
+          "orderPrice": "Orderpreis",
+          "marketPrice": "Marktpreis",
+          "buy": "Kaufen",
+          "sell": "Verkaufen",
+          "buyToSell": "Kaufen zum Verkaufen",
+          "sellToBuy": "Verkaufen zum Kaufen",
+          "reverseAction": "{{side}} {{size}} {{coin}} umkehren"
         },
         "openOrders": {
           "type": "Typ",
@@ -3984,7 +3992,12 @@
         "takeProfitExpectedPnl": "Take-Profit erwartetes PnL",
         "cancelTp": "Take-Profit-Auftrag stornieren",
         "tp": "Take-Profit-Order",
-        "cancelSl": "Stop-Loss stornieren"
+        "cancelSl": "Stop-Loss stornieren",
+        "entryCurrentPrice": "Entry Price / Current Price",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "triggerPrice": "Trigger Price",
+        "estimatedPnlWillBe": "Your estimated PnL will be"
       },
       "accountInfo": {
         "availableBalance": "Verfügbares Guthaben",
@@ -4032,14 +4045,21 @@
         "amount": "Betrag",
         "viewAsks": "Briefkurse",
         "trades": "Transaktionen",
-        "total": "Gesamt"
+        "total": "Gesamt",
+        "avgPrice": "Durchschnittlicher Preis",
+        "sumBase": "Summe {{base}}",
+        "sumUsd": "Summe USD"
       },
       "editMargin": {
         "currentPosition": "Aktuelle Position",
         "configureMargin": "Margin konfigurieren",
         "shortLiquidationTips": "Ein Anstieg um {{percent}} wird die Liquidation auslösen.",
         "longLiquidationTips": "Das Abfallen um {{percent}} wird die Liquidation auslösen.",
-        "title": "Margin verwalten"
+        "title": "Margin verwalten",
+        "currentPrice": "Aktueller Preis"
+      },
+      "topBar": {
+        "favoriteEmpty": "Ihre Favoritenliste ist leer"
       }
     },
     "perpsDetail": {
@@ -4948,6 +4968,15 @@
     "UnknownTag": {
       "label": "Unbekannt",
       "tooltip": "Unbekanntes Token, bitte recherchieren Sie selbst."
+    },
+    "screenshotModal": {
+      "title": "Screenshot zum Melden eines Fehlers",
+      "placeholder": "Beschreiben Sie das Problem"
+    },
+    "feedbackPopup": {
+      "title": "Antwort von Rabby Support",
+      "issueReported": "Hier ist das Problem, das Sie gemeldet haben:",
+      "issueReplied": "Rabby Support hat geantwortet:"
     }
   },
   "global": {
@@ -4986,7 +5015,8 @@
     "notSupportTesntnet": "Für benutzerdefiniertes Netzwerk nicht unterstützt",
     "appDescription": "Ihr bevorzugtes Wallet für Ethereum und EVM",
     "collapse": "Einklappen",
-    "Yes": "Ja"
+    "Yes": "Ja",
+    "Submit": "Absenden"
   },
   "background": {
     "error": {
@@ -5033,6 +5063,9 @@
         "actionCancel": "Vorgang abgebrochen",
         "deviceNeedsWebHIDPermission": "Gerät nicht gefunden oder Zugriff erforderlich"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Screenshot zum Melden von Fehlern"
     }
   },
   "constant": {

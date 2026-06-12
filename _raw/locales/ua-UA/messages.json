@@ -3787,7 +3787,15 @@
           "dontShowAgain": "Не показувати це знову",
           "confirmCloseAllTitle": "Підтвердити закриття всіх позицій",
           "marketCloseDesc": "Це спробує відразу закрити позицію.",
-          "confirmCloseAllDesc": "Всі ваші відкриті позиції будуть закриті за ринковою ціною, а всі ордери будуть скасовані."
+          "confirmCloseAllDesc": "Всі ваші відкриті позиції будуть закриті за ринковою ціною, а всі ордери будуть скасовані.",
+          "positionSize": "Розмір позиції",
+          "orderPrice": "Ціна ордера",
+          "marketPrice": "Ринкова ціна",
+          "buy": "Купити",
+          "sell": "Продати",
+          "buyToSell": "Купити, щоб продати",
+          "sellToBuy": "Продати, щоб купити",
+          "reverseAction": "{{side}} {{size}} {{coin}} щоб розвернути"
         },
         "openOrders": {
           "price": "Ціна",
@@ -3996,7 +4004,12 @@
         "cancelSl": "Скасувати стоп-лосс",
         "tp": "Ціль прибутку",
         "takeProfitExpectedPnl": "Тейк-профіт: очікуваний PnL",
-        "stopLossExpectedPnl": "Очікуваний PnL за стоп-лоссом"
+        "stopLossExpectedPnl": "Очікуваний PnL за стоп-лоссом",
+        "entryCurrentPrice": "Ціна входу / Поточна ціна",
+        "takeProfit": "Тейк-профіт",
+        "stopLoss": "Стоп-лос",
+        "triggerPrice": "Тригерна ціна",
+        "estimatedPnlWillBe": "Ваш очікуваний PnL буде"
       },
       "accountInfo": {
         "totalBalance": "Загальний баланс",
@@ -4044,14 +4057,21 @@
         "viewBids": "Заявки на купівлю",
         "trades": "Сделки",
         "markPrice": "Позначена ціна",
-        "viewAsks": "Пропозиції продажу"
+        "viewAsks": "Пропозиції продажу",
+        "avgPrice": "Середня ціна",
+        "sumBase": "Сума {{base}}",
+        "sumUsd": "Сума USD"
       },
       "editMargin": {
         "configureMargin": "Налаштувати Маржу",
         "currentPosition": "Поточна позиція",
         "title": "Управління маржею",
         "longLiquidationTips": "Зниження на {{percent}} викликатиме ліквідацію",
-        "shortLiquidationTips": "Зростання на {{percent}} спровокує ліквідацію"
+        "shortLiquidationTips": "Зростання на {{percent}} спровокує ліквідацію",
+        "currentPrice": "Поточна ціна"
+      },
+      "topBar": {
+        "favoriteEmpty": "Ваш список улюблених порожній"
       }
     },
     "perpsDetail": {
@@ -4960,6 +4980,15 @@
     "UnknownTag": {
       "label": "Невідомо",
       "tooltip": "Невідомий токен, будь ласка, проведіть власне дослідження."
+    },
+    "screenshotModal": {
+      "title": "Знімок екрана для повідомлення про помилку",
+      "placeholder": "Опишіть проблему"
+    },
+    "feedbackPopup": {
+      "title": "Відповідь від служби підтримки Rabby",
+      "issueReported": "Ось проблема, яку ви повідомили:",
+      "issueReplied": "Служба підтримки Rabby відповіла:"
     }
   },
   "global": {
@@ -5006,7 +5035,8 @@
     "Done": "Готово",
     "appDescription": "Ваш улюблений гаманець для Ethereum та EVM",
     "collapse": "Згорнути",
-    "Yes": "Так"
+    "Yes": "Так",
+    "Submit": "Надіслати"
   },
   "background": {
     "error": {
@@ -5053,6 +5083,9 @@
         "actionCancel": "Операція скасована",
         "deviceNeedsWebHIDPermission": "Пристрій не знайдено або потрібен дозвіл WebHID"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Знімок екрана для повідомлення про помилку"
     }
   },
   "constant": {

@@ -3777,7 +3777,15 @@
           "marketCloseTitle": "Закрыть позицию на рынке",
           "confirmCloseAllTitle": "Подтвердить закрытие всех позиций",
           "confirmCloseAllDesc": "Все ваши открытые позиции будут закрыты по рыночной цене, и все заказы будут отменены.",
-          "marketCloseDesc": "Это попытается немедленно закрыть позицию."
+          "marketCloseDesc": "Это попытается немедленно закрыть позицию.",
+          "positionSize": "Размер позиции",
+          "orderPrice": "Цена ордера",
+          "marketPrice": "Рыночная цена",
+          "buy": "Купить",
+          "sell": "Продать",
+          "buyToSell": "Купить для продажи",
+          "sellToBuy": "Продать для покупки",
+          "reverseAction": "{{side}} {{size}} {{coin}} для разворота"
         },
         "openOrders": {
           "cancelAll": "Отменить все",
@@ -3986,7 +3994,12 @@
         "sl": "Стоп-лосс",
         "gain": "прибыль",
         "stopLossExpectedPnl": "Ожидаемая PnL по стоп-лоссу",
-        "takeProfitExpectedPnl": "Тейк-профит: ожидаемая PnL"
+        "takeProfitExpectedPnl": "Тейк-профит: ожидаемая PnL",
+        "entryCurrentPrice": "Цена входа / Текущая цена",
+        "takeProfit": "Тейк-профит",
+        "stopLoss": "Стоп-лосс",
+        "triggerPrice": "Триггерная цена",
+        "estimatedPnlWillBe": "Ваша оценочная PnL составит"
       },
       "accountInfo": {
         "availableBalance": "Доступный баланс",
@@ -4034,14 +4047,21 @@
         "viewBids": "Заявки на покупку",
         "title": "Книга заявок",
         "viewAsks": "Заявки на продажу",
-        "amount": "Объём"
+        "amount": "Объём",
+        "avgPrice": "Средняя цена",
+        "sumBase": "Сумма {{base}}",
+        "sumUsd": "Сумма USD"
       },
       "editMargin": {
         "configureMargin": "Настроить маржу",
         "title": "Управление маржой",
         "shortLiquidationTips": "Рост на {{percent}} приведет к ликвидации",
         "currentPosition": "Текущая позиция",
-        "longLiquidationTips": "Снижение на {{percent}} приведет к ликвидации"
+        "longLiquidationTips": "Снижение на {{percent}} приведет к ликвидации",
+        "currentPrice": "Текущая цена"
+      },
+      "topBar": {
+        "favoriteEmpty": "Ваш список избранного пуст"
       }
     },
     "perpsDetail": {
@@ -4950,6 +4970,15 @@
     "UnknownTag": {
       "label": "Неизвестно",
       "tooltip": "Неизвестный токен, пожалуйста, проведите собственное исследование."
+    },
+    "screenshotModal": {
+      "title": "Скриншот для сообщения об ошибке",
+      "placeholder": "Опишите проблему"
+    },
+    "feedbackPopup": {
+      "title": "Ответ от поддержки Rabby",
+      "issueReported": "Вот проблема, которую вы сообщили:",
+      "issueReplied": "Поддержка Rabby ответила:"
     }
   },
   "global": {
@@ -4988,7 +5017,8 @@
     "notSupportTesntnet": "Эта своя сеть поддерживается",
     "appDescription": "Ваш кошелек для Ethereum и EVM",
     "collapse": "Свернуть",
-    "Yes": "Да"
+    "Yes": "Да",
+    "Submit": "Отправить"
   },
   "background": {
     "error": {
@@ -5035,6 +5065,9 @@
         "actionCancel": "Операция отменена",
         "deviceNeedsWebHIDPermission": "Устройство не найдено или требует разрешения WebHID"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Скриншот для сообщения об ошибке"
     }
   },
   "constant": {
