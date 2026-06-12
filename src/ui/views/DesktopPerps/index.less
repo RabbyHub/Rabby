@@ -143,7 +143,9 @@
 .desktop-perps-topbar-account {
   box-sizing: border-box !important;
   flex-shrink: 0 !important;
-  width: 113px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 180px !important;
   height: 26px !important;
   border-radius: 6px !important;
   padding: 3px 12px !important;
@@ -156,6 +158,7 @@
     font-size: 12px !important;
     line-height: 14px !important;
     color: var(--rb-neutral-foot) !important;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -210,7 +213,7 @@
 
   &:hover {
     border-color: var(--rb-neutral-title-1) !important;
-    background: transparent;
+    background: var(--rb-neutral-bg-4);
     color: var(--rb-neutral-title-1);
   }
 
@@ -243,16 +246,8 @@
   line-height: 14px;
   font-variant-numeric: tabular-nums;
 
-  .desktop-perps-status-item-name,
   .desktop-perps-status-item-price {
     transition: color 0.15s ease;
-  }
-
-  &:hover {
-    .desktop-perps-status-item-name,
-    .desktop-perps-status-item-price {
-      color: var(--rb-brand-default);
-    }
   }
 }
 
