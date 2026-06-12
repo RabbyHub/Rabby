@@ -11,6 +11,7 @@ import {
 import clsx from 'clsx';
 import Checkbox from '../Checkbox';
 import { useScreenshotFeedbacks } from './hooks';
+import { useTranslation } from 'react-i18next';
 
 const SCREENSHOT_MODAL_Z_INDEX = 2147483647;
 
@@ -134,6 +135,7 @@ export const ScreenshotContextMenu = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [description, setDescription] = useState('');
   const [includeOperationLogs, setIncludeOperationLogs] = useState(true);
+  const { t } = useTranslation();
 
   const { loading: submitting, run: submitFeedback } = useRequest(
     async (params: SubmitScreenshotFeedbackParams) => {
@@ -249,7 +251,7 @@ export const ScreenshotContextMenu = () => {
         <div className="flex flex-col h-[500px]">
           <header className="px-[20px]">
             <h2 className="text-center text-[20px] leading-[24px] font-medium text-r-neutral-title1 py-[16px]">
-              Screenshot to Report Bug
+              {t('component.screenshotModal.title')}
             </h2>
           </header>
           <main className="min-h-0 flex-1 px-[20px]">
@@ -263,7 +265,7 @@ export const ScreenshotContextMenu = () => {
               </div>
             ) : null}
             <Input.TextArea
-              placeholder="Describe the issue"
+              placeholder={t('component.screenshotModal.placeholder')}
               value={description}
               autoFocus
               rows={3}
@@ -306,7 +308,7 @@ export const ScreenshotContextMenu = () => {
                 }
               >
                 <span className="text-rabby-neutral-body text-13 font-normal">
-                  Send operation logs to Rabby as well
+                  {t('component.screenshotModal.sendLogs')}
                 </span>
               </Checkbox>
             </div>
@@ -329,7 +331,7 @@ export const ScreenshotContextMenu = () => {
                 'flex items-center justify-center gap-2'
               )}
             >
-              Cancel
+              {t('global.Cancel')}
             </button>
             <Button
               type="primary"
@@ -339,7 +341,7 @@ export const ScreenshotContextMenu = () => {
               loading={submitting}
               disabled={!screenshot}
             >
-              Submit
+              {t('global.Submit')}
             </Button>
           </footer>
         </div>
