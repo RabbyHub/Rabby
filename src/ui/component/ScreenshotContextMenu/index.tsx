@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Input, Modal, message } from 'antd';
 import { snapdom } from '@zumer/snapdom';
-import { useRequest } from 'ahooks';
+import { useMount, useRequest } from 'ahooks';
 import browser from 'webextension-polyfill';
-import { getUiType, useWallet } from '@/ui/utils';
+import { getUITypeName, getUiType, useWallet } from '@/ui/utils';
 import {
   SCREENSHOT_CONTEXT_MENU_CLICKED,
   SCREENSHOT_FEEDBACK_ENTRY_CLICKED,
@@ -99,6 +99,28 @@ const uploadScreenshot = async (screenshot: string) => {
   return imageUrl;
 };
 
+const getScreenshotFeedbackPageInfo = () => {
+  return {
+    uiType: getUITypeName(),
+    pageUrl: window.location.href,
+    routePath: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+    userAgent: window.navigator.userAgent,
+    language: window.navigator.language,
+    platform: window.navigator.platform,
+    viewport: {
+      width: window.innerWidth,
+      height: window.innerHeight,
+      dpr: window.devicePixelRatio,
+    },
+    screen: {
+      width: window.screen.width,
+      height: window.screen.height,
+      availWidth: window.screen.availWidth,
+      availHeight: window.screen.availHeight,
+    },
+  };
+};
+
 type SubmitScreenshotFeedbackParams = {
   description: string;
   includeOperationLogs: boolean;
@@ -117,18 +139,11 @@ export const ScreenshotContextMenu = () => {
     async (params: SubmitScreenshotFeedbackParams) => {
       const imageUrl = await uploadScreenshot(params.screenshot);
 
-      return wallet.openapi.postUserFeedback({
+      return wallet.postUserFeedback({
         content: params.description,
-        image_url_list: [imageUrl],
-        title: '',
-        extra: {},
-        // extra: {
-        //   include_operation_logs: params.includeOperationLogs,
-        //   page_url: window.location.href,
-        //   source: 'extension_screenshot',
-        //   user_agent: window.navigator.userAgent,
-        //   version: process.env.release || '0',
-        // },
+        image: imageUrl,
+        includeOperationLogs: params.includeOperationLogs,
+        pageInfo: getScreenshotFeedbackPageInfo(),
       });
     },
     {
@@ -164,7 +179,7 @@ export const ScreenshotContextMenu = () => {
   }, []);
 
   const handleConfirm = useCallback(() => {
-    if (!description.trim() || !screenshot || submitting) return;
+    if (!screenshot || submitting) return;
 
     submitFeedback({
       description: description.trim(),
@@ -213,6 +228,10 @@ export const ScreenshotContextMenu = () => {
     }
   }, [modalVisible]);
 
+  useMount(() => {
+    wallet.setScreenshotContextMenuVisible(true);
+  });
+
   return (
     <>
       <Modal
@@ -244,11 +263,12 @@ export const ScreenshotContextMenu = () => {
               </div>
             ) : null}
             <Input.TextArea
-              placeholder="Describe the issue (required)"
+              placeholder="Describe the issue"
               value={description}
               autoFocus
               rows={3}
-              className="resize-none bg-r-neutral-bg-2"
+              maxLength={300}
+              className="resize-none bg-r-neutral-bg-2 text-r-neutral-title1"
               onChange={(event) => setDescription(event.target.value)}
             />
             <div className="flex items-center justify-center mt-[12px]">
@@ -317,7 +337,7 @@ export const ScreenshotContextMenu = () => {
               className="w-1/2 h-[48px]"
               onClick={handleConfirm}
               loading={submitting}
-              disabled={!description.trim() || !screenshot}
+              disabled={!screenshot}
             >
               Submit
             </Button>
