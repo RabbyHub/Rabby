@@ -11,10 +11,11 @@ const StyledInput = styled(Input)`
 
   /* With prefix/suffix (affix wrapper) */
   &.ant-input-affix-wrapper {
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid var(--rb-neutral-line, #e0e5ec);
     background: var(--rb-neutral-bg-5, #fff);
     height: 44px;
+    padding: 0 6px;
     transition: border-color 0.2s;
 
     &:hover,
@@ -45,14 +46,14 @@ const StyledInput = styled(Input)`
 
   /* Without prefix/suffix (plain input) */
   &.ant-input {
-    border-radius: 8px;
+    border-radius: 6px;
     border: 1px solid var(--rb-neutral-line, #e0e5ec);
     background: var(--rb-neutral-bg-5, #fff);
     height: 44px;
     font-size: 15px;
     color: var(--rb-neutral-title-1, #111827);
     font-weight: 500;
-    padding: 0 11px;
+    padding: 0 6px;
     transition: border-color 0.2s;
 
     &:hover,

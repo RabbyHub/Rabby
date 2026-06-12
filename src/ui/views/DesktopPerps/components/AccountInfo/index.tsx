@@ -150,14 +150,14 @@ export const AccountInfo: React.FC = () => {
   const handleWithdrawClick = () => openPerpsPopup('withdraw');
 
   return (
-    <div className="w-full h-full flex flex-col shrink-0 overflow-hidden">
-      <div className="flex-1 overflow-auto p-[16px] min-h-0">
-        <div className="flex items-center gap-[8px] mb-[16px]">
+    <div className="w-full shrink-0 overflow-hidden">
+      <div className="px-[12px] pt-[24px] pb-[36px]">
+        <div className="flex items-center gap-[6px] mb-[12px]">
           <button
             type="button"
             className={clsx(
-              'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center hover:border-rb-brand-default border border-solid border-transparent',
-              'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
+              'w-full bg-rb-neutral-bg-5 rounded-[6px] h-[32px] flex items-center justify-center hover:border-rb-brand-default border border-solid border-transparent',
+              'text-[12px] leading-[14px] font-medium text-rb-neutral-body'
             )}
             onClick={handleDepositClick}
           >
@@ -166,8 +166,8 @@ export const AccountInfo: React.FC = () => {
           <button
             type="button"
             className={clsx(
-              'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center hover:border-rb-brand-default border border-solid border-transparent',
-              'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
+              'w-full bg-rb-neutral-bg-5 rounded-[6px] h-[32px] flex items-center justify-center hover:border-rb-brand-default border border-solid border-transparent',
+              'text-[12px] leading-[14px] font-medium text-rb-neutral-body'
             )}
             onClick={handleWithdrawClick}
           >
@@ -175,171 +175,119 @@ export const AccountInfo: React.FC = () => {
           </button>
         </div>
 
-        {isUnifiedAccount ? (
-          <div className="space-y-[8px] text-[12px] leading-[14px]">
-            <div className="text-r-neutral-title-1 font-medium mb-[4px]">
-              {t('page.perpsPro.accountInfo.unifiedAccountSummary')}
+        <div className="space-y-[12px] text-[12px] leading-[14px]">
+          <div className="flex items-center justify-between">
+            <div className="text-rb-neutral-title-1">
+              {t('page.perpsPro.accountInfo.totalBalance')}
             </div>
+            <div className="text-rb-neutral-title-1">
+              {formatUsdValue(perpsPortfolioValue, BigNumber.ROUND_DOWN)}
+            </div>
+          </div>
 
-            <div className="flex items-center justify-between">
-              <DashedUnderlineText
-                needCursor={false}
-                tooltipText={t(
-                  'page.perpsPro.accountInfo.unifiedAccountRatioTips'
-                )}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.unifiedAccountRatio')}
-              </DashedUnderlineText>
-              <div className="font-medium flex items-center gap-[4px]">
-                <span className="text-r-neutral-title-1 flex items-center">
+          <div className="flex items-center justify-between">
+            <DashedUnderlineText
+              tooltipText={t('page.perpsPro.accountInfo.balanceTip')}
+              needCursor={false}
+              className="text-rb-neutral-title-1"
+            >
+              {t('page.perpsPro.accountInfo.availableBalance')}
+            </DashedUnderlineText>
+            <div className="text-rb-neutral-title-1">
+              {formatUsdValue(customBalance, BigNumber.ROUND_DOWN)}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="text-rb-neutral-foot">
+              {isUnifiedAccount
+                ? t('page.perpsPro.accountInfo.perpsUnrealizedPnl')
+                : t('page.perpsPro.accountInfo.unrealizedPnl')}
+            </div>
+            <div
+              className={clsx(
+                positionAllPnl >= 0
+                  ? 'text-rb-green-default'
+                  : 'text-rb-red-default'
+              )}
+            >
+              {positionAllPnl >= 0 ? '+' : '-'}
+              {formatUsdValue(Math.abs(positionAllPnl), BigNumber.ROUND_DOWN)}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <DashedUnderlineText
+              needCursor={false}
+              tooltipText={t(
+                isUnifiedAccount
+                  ? 'page.perpsPro.accountInfo.unifiedAccountRatioTips'
+                  : 'page.perpsPro.accountInfo.crossMarginRatioTips'
+              )}
+              className="text-rb-neutral-foot"
+            >
+              {t(
+                isUnifiedAccount
+                  ? 'page.perpsPro.accountInfo.unifiedAccountRatio'
+                  : 'page.perpsPro.accountInfo.crossMarginRatio'
+              )}
+            </DashedUnderlineText>
+            <div className="flex items-center gap-[4px]">
+              {isUnifiedAccount ? (
+                <span className="text-rb-neutral-title-1 flex items-center">
                   <RatioGaugeIcon ratio={marginRatioNum} />
                 </span>
-                <span style={{ color: ratioColor(marginRatioNum) }}>
-                  {marginRatioText}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <DashedUnderlineText
-                needCursor={false}
-                tooltipText={t(
-                  'page.perpsPro.accountInfo.maintenanceMarginTips'
-                )}
-                className="text-rb-neutral-foot"
+              ) : null}
+              <span
+                className={clsx(!isUnifiedAccount && 'text-rb-neutral-title-1')}
+                style={
+                  isUnifiedAccount
+                    ? { color: ratioColor(marginRatioNum) }
+                    : undefined
+                }
               >
-                {t('page.perpsPro.accountInfo.perpsMaintenanceMargin')}
-              </DashedUnderlineText>
-              <div className="text-r-neutral-title-1 font-medium">
-                {formatUsdValue(
-                  Number(clearinghouseState?.crossMaintenanceMarginUsed || 0),
-                  BigNumber.ROUND_DOWN
-                )}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <DashedUnderlineText
-                needCursor={false}
-                tooltipText={t(
-                  'page.perpsPro.accountInfo.unifiedAccountLeverageTips'
-                )}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.unifiedAccountLeverage')}
-              </DashedUnderlineText>
-              <div className="text-r-neutral-title-1 font-medium">
-                {isNaN(accountLeverage) ? '0' : accountLeverage.toFixed(2)}x
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-rb-neutral-foot">
-                {t('page.perpsPro.accountInfo.perpsPortfolioValue')}
-              </div>
-              <div className="text-r-neutral-title-1 font-medium">
-                {formatUsdValue(perpsPortfolioValue, BigNumber.ROUND_DOWN)}
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-rb-neutral-foot">
-                {t('page.perpsPro.accountInfo.perpsUnrealizedPnl')}
-              </div>
-              <div
-                className={clsx(
-                  'font-medium',
-                  positionAllPnl >= 0
-                    ? 'text-rb-green-default'
-                    : 'text-rb-red-default'
-                )}
-              >
-                {positionAllPnl >= 0 ? '+' : '-'}
-                {formatUsdValue(Math.abs(positionAllPnl), BigNumber.ROUND_DOWN)}
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-[8px] text-[12px] leading-[14px]">
-            <div className="text-r-neutral-title-1 font-medium mb-[4px]">
-              {t('page.perpsPro.accountInfo.accountSummary')}
-            </div>
-            <div className="flex items-center justify-between">
-              <DashedUnderlineText
-                tooltipText={t('page.perpsPro.accountInfo.balanceTip')}
-                needCursor={false}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.availableBalance')}
-              </DashedUnderlineText>
-              <div className="text-r-neutral-title-1 font-medium">
-                {formatUsdValue(customBalance, BigNumber.ROUND_DOWN)}
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="text-rb-neutral-foot">
-                {t('page.perpsPro.accountInfo.unrealizedPnl')}
-              </div>
-              <div
-                className={clsx(
-                  'font-medium',
-                  positionAllPnl >= 0
-                    ? 'text-rb-green-default'
-                    : 'text-rb-red-default'
-                )}
-              >
-                {positionAllPnl >= 0 ? '+' : '-'}
-                {formatUsdValue(Math.abs(positionAllPnl), BigNumber.ROUND_DOWN)}
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <DashedUnderlineText
-                needCursor={false}
-                tooltipText={t(
-                  'page.perpsPro.accountInfo.crossMarginRatioTips'
-                )}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.crossMarginRatio')}
-              </DashedUnderlineText>
-              <div className="text-r-neutral-title-1 font-medium">
                 {marginRatioText}
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <DashedUnderlineText
-                needCursor={false}
-                tooltipText={t(
-                  'page.perpsPro.accountInfo.maintenanceMarginTips'
-                )}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.maintenanceMargin')}
-              </DashedUnderlineText>
-              <div className="text-r-neutral-title-1 font-medium">
-                {formatUsdValue(
-                  Number(clearinghouseState?.crossMaintenanceMarginUsed || 0),
-                  BigNumber.ROUND_DOWN
-                )}
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <DashedUnderlineText
-                needCursor={false}
-                tooltipText={t(
-                  'page.perpsPro.accountInfo.crossAccountLeverageTips'
-                )}
-                className="text-rb-neutral-foot"
-              >
-                {t('page.perpsPro.accountInfo.crossAccountLeverage')}
-              </DashedUnderlineText>
-              <div className="text-r-neutral-title-1 font-medium">
-                {isNaN(accountLeverage) ? '0' : accountLeverage.toFixed(2)}x
-              </div>
+              </span>
             </div>
           </div>
-        )}
+
+          <div className="flex items-center justify-between">
+            <DashedUnderlineText
+              needCursor={false}
+              tooltipText={t('page.perpsPro.accountInfo.maintenanceMarginTips')}
+              className="text-rb-neutral-foot"
+            >
+              {t('page.perpsPro.accountInfo.maintenanceMargin')}
+            </DashedUnderlineText>
+            <div className="text-rb-neutral-title-1">
+              {formatUsdValue(
+                Number(clearinghouseState?.crossMaintenanceMarginUsed || 0),
+                BigNumber.ROUND_DOWN
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <DashedUnderlineText
+              needCursor={false}
+              tooltipText={t(
+                isUnifiedAccount
+                  ? 'page.perpsPro.accountInfo.unifiedAccountLeverageTips'
+                  : 'page.perpsPro.accountInfo.crossAccountLeverageTips'
+              )}
+              className="text-rb-neutral-foot"
+            >
+              {t(
+                isUnifiedAccount
+                  ? 'page.perpsPro.accountInfo.unifiedAccountLeverage'
+                  : 'page.perpsPro.accountInfo.crossAccountLeverage'
+              )}
+            </DashedUnderlineText>
+            <div className="text-rb-neutral-title-1">
+              {isNaN(accountLeverage) ? '0' : accountLeverage.toFixed(2)}x
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

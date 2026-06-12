@@ -6,6 +6,7 @@ import { TradingPanel } from './components/TradingPanel';
 import { UserInfoHistory } from './components/UserInfoHistory';
 import { AccountInfo } from './components/AccountInfo';
 import { StatusBar } from './components/StatusBar';
+import { DesktopPerpsTopBar } from './components/DesktopPerpsTopBar';
 import './index.less';
 import { usePerpsProInit } from './hooks/usePerpsProInit';
 import {
@@ -17,14 +18,8 @@ import { EnableUnifiedAccountModal } from './modal/EnableUnifiedAccountModal';
 import { TransferToPerpsModal } from './modal/TransferToPerpsModal';
 import { usePerpsPopupNav } from './hooks/usePerpsPopupNav';
 import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
-import { useRabbySelector } from '@/ui/store';
-import { AccountActions } from './components/AccountActions';
-import { DesktopAccountSelector } from '@/ui/component/DesktopAccountSelector';
-import usePerpsProState from './hooks/usePerpsProState';
-import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import './resizable-panels.css';
-import { useTranslation } from 'react-i18next';
 import { useMount } from 'ahooks';
 import { reportWebPageView } from '@/ui/utils/ga-event';
 import { useLocation } from 'react-router-dom';
@@ -32,10 +27,9 @@ import { useLocation } from 'react-router-dom';
 const Wrap = styled.div`
   width: 100%;
   min-height: 100vh;
-  background: var(--rb-neutral-bg-1, #fff);
+  background: var(--rb-neutral-bg-page, #f6f7f7);
   display: flex;
   flex-direction: column;
-  padding-bottom: 32px;
 `;
 
 export type PopupType =
@@ -50,13 +44,6 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   isActive = true,
 }) => {
   usePerpsProInit(isActive);
-
-  const { t } = useTranslation();
-
-  const currentPerpsAccount = useRabbySelector(
-    (s) => s.perps.currentPerpsAccount
-  );
-  const { login: switchPerpsAccount } = usePerpsProState();
 
   const {
     action,
@@ -80,56 +67,57 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   return (
     <>
       <Wrap>
-        <div className="flex flex-1 pb-16">
-          <div className="flex flex-col flex-1 min-w-0">
-            <div className="flex items-center justify-between mt-20 mb-12 px-[12px]">
-              <div className="flex items-center gap-[6px] text-rb-neutral-title-1">
-                <RcIconRabbyCC />
-                <span className="text-[20px] leading-[24px] font-bold">
-                  {t('component.DesktopNav.perps')}
-                </span>
-              </div>
-              <div className="flex items-center gap-[12px]">
-                <DesktopAccountSelector
-                  scene="perps"
-                  value={currentPerpsAccount}
-                  onChange={switchPerpsAccount}
-                />
-                <AccountActions />
-              </div>
-            </div>
-            <div className="flex flex-1 min-w-0 min-h-0 border-t border-b  border-solid border-rb-neutral-line overflow-hidden bg-rb-neutral-bg-1">
-              {/* [chart + order book] + UserInfoHistory，can be resized vertically */}
-              <div className="flex-[4] flex flex-col min-w-0 min-h-0 border-r border-solid border-rb-neutral-line overflow-hidden">
-                <PanelGroup
-                  direction="vertical"
-                  autoSaveId="perps-layout-vertical"
-                >
-                  <Panel defaultSize={65} minSize={25} maxSize={80}>
-                    <div className="flex h-full">
-                      <div className="flex-[3] min-w-0 border-r border-solid border-rb-neutral-line">
-                        <ChartArea />
-                      </div>
-                      <div className="flex-1 max-w-[340px] min-w-0">
-                        <OrderBookTrades />
-                      </div>
-                    </div>
-                  </Panel>
-                  <PanelResizeHandle className="h-[4px]" />
-                  <Panel minSize={20}>
-                    <UserInfoHistory />
-                  </Panel>
-                </PanelGroup>
-              </div>
+        <DesktopPerpsTopBar />
 
-              {/* TradingPanel + AccountInfo */}
-              <div className="flex-1 max-w-[340px] shrink-0 flex flex-col min-h-0 overflow-hidden">
-                <div className="h-[680px] shrink-0 overflow-hidden border-b border-solid border-rb-neutral-line">
+        <div className="flex flex-1 min-h-0 overflow-x-auto px-[6px] pt-[6px] pb-[44px]">
+          <div className="flex flex-1 min-w-[1180px] min-h-0 gap-[6px]">
+            {/* [chart + order book] + UserInfoHistory, can be resized vertically */}
+            <div
+              className="flex flex-col min-w-0 min-h-0 overflow-hidden"
+              // Left rail is 80%; inside it chart/order book split 77.5/22.5,
+              // preserving chart : order book : actions = 62% : 18% : 20%.
+              style={{ flex: '1 1 80%' }}
+            >
+              <PanelGroup
+                direction="vertical"
+                autoSaveId="perps-layout-vertical-v2"
+              >
+                <Panel defaultSize={74.2} minSize={35} maxSize={82}>
+                  <div className="flex h-full gap-[6px]">
+                    <div
+                      className="min-w-[560px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                      style={{ flex: '1 1 77.5%' }}
+                    >
+                      <ChartArea />
+                    </div>
+                    <div
+                      className="min-w-[280px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                      style={{ flex: '0 0 22.5%' }}
+                    >
+                      <OrderBookTrades />
+                    </div>
+                  </div>
+                </Panel>
+                <PanelResizeHandle className="h-[6px] rounded-[6px]" />
+                <Panel minSize={18}>
+                  <div className="h-full rounded-[6px] overflow-hidden bg-rb-neutral-bg-1">
+                    <UserInfoHistory />
+                  </div>
+                </Panel>
+              </PanelGroup>
+            </div>
+
+            {/* TradingPanel + AccountInfo */}
+            <div
+              className="min-w-[340px] shrink-0 min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+              style={{ flex: '0 0 20%' }}
+            >
+              <div className="flex h-full min-h-0 flex-col">
+                <div className="flex-1 min-h-0">
                   <TradingPanel />
                 </div>
-                <div className="flex-1 min-h-[366px] overflow-auto">
-                  <AccountInfo />
-                </div>
+                <div className="mx-[12px] h-[1px] shrink-0 bg-rb-neutral-line" />
+                <AccountInfo />
               </div>
             </div>
           </div>

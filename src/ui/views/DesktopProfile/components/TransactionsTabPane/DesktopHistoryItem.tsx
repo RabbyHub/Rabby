@@ -17,6 +17,9 @@ import IconUnknown from 'ui/assets/token-default.svg';
 import { ellipsis } from '@/ui/utils/address';
 import { DesktopTxExplain } from './DesktopTxExplain';
 import { TxHistoryItemRow } from '@/db/schema/history';
+import { ReactComponent as RcIconCopyCC } from 'ui/assets/icon-copy-cc.svg';
+import { copyTextToClipboard } from '@/ui/utils/clipboard';
+import { message } from 'antd';
 
 type HistoryItemProps = {
   data: TxHistoryItemRow & { isGasDeposit?: boolean };
@@ -78,6 +81,13 @@ export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
           >
             {ellipsis(data.id)}
           </a>
+          <RcIconCopyCC
+            className="cursor-pointer text-r-neutral-foot"
+            onClick={() => {
+              copyTextToClipboard(data.id);
+              message.success(t('global.copied'));
+            }}
+          />
         </div>
       </div>
 

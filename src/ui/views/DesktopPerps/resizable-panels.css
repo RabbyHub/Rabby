@@ -5,7 +5,8 @@
   position: relative;
   z-index: 10;
   transition: background-color 0.2s ease;
-  background-color: var(--rb-neutral-line, #e5e8ef);
+  border-radius: 6px;
+  background-color: var(--rb-neutral-bg-page, #f6f7f7);
 }
 
 /* Expand clickable area with pseudo element */
@@ -34,7 +35,7 @@
 /* Hover and drag states */
 [data-panel-resize-handle-id][data-resize-handle-state='hover'],
 [data-panel-resize-handle-id][data-resize-handle-state='drag'] {
-  background-color: var(--r-blue-default, #7084ff) !important;
+  background-color: var(--rb-brand-default, #7084ff) !important;
 }
 
 /* Cursor styles */
@@ -60,4 +61,3 @@
 [data-panel-group] {
   transition: none;
 }
-

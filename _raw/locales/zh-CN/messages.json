@@ -3599,6 +3599,9 @@
       "stopLossTipsShort": "止损价必须高于当前价",
       "seeMore": "查看更多",
       "estimatedLiquidationPrice": "预计爆仓价",
+      "expectedSlippage": "预计滑点",
+      "lowLiquiditySwitchLimit": " 流动性不足，切换到限价单。",
+      "switchToLimit": "切换",
       "yourPosition": "你的持仓",
       "fee": "手续费",
       "closeLong": "平多",
@@ -5021,6 +5024,9 @@
       "completed": "交易已完成",
       "txCompleteMoreContent": "{{chain}} #{{nonce}} 交易已完成，点击查看更多",
       "txFailedMoreContent": "{{chain}} #{{nonce}} 交易失败，点击查看更多"
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "截图反馈问题"
     },
     "alias": {
       "HdKeyring": "助记词",

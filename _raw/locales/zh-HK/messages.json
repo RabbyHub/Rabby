@@ -3609,6 +3609,9 @@
       "openShort": "開空倉",
       "liquidation": "爆倉",
       "estimatedLiquidationPrice": "預估平倉價",
+      "expectedSlippage": "預估滑點",
+      "lowLiquiditySwitchLimit": " 流動性不足，切換至限價單。",
+      "switchToLimit": "切換",
       "leverageRangeMinError": "最低槓桿為 {{min}}x",
       "direction": "方向",
       "sizeTips": "你的交易的總價值或數量，由保證金與槓桿決定。",
@@ -5021,6 +5024,9 @@
       "completed": "交易已完成",
       "txCompleteMoreContent": "{{chain}} #{{nonce}} 交易已完成，點擊查看更多",
       "txFailedMoreContent": "{{chain}} #{{nonce}} 交易失敗，點擊查看更多"
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "截圖回報問題"
     },
     "alias": {
       "HdKeyring": "助記詞",

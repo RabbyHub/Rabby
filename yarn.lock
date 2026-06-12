@@ -8841,6 +8841,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@zumer/snapdom@npm:2.12.0":
+  version: 2.12.0
+  resolution: "@zumer/snapdom@npm:2.12.0"
+  checksum: 10c0/f6c782debd8625ba893da678effd5f535f2ff4dfa5d0dafae0ea003f8cef05466c04ed9b48c24e4819cba0d78889f231845d256b7426d1b2168e5412d2b16c02
+  languageName: node
+  linkType: hard
+
 "@zxing/browser@npm:0.0.10":
   version: 0.0.10
   resolution: "@zxing/browser@npm:0.0.10"
@@ -21517,6 +21524,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:7.1.1"
     "@typescript-eslint/typescript-estree": "npm:7.1.1"
     "@welldone-software/why-did-you-render": "npm:6.2.1"
+    "@zumer/snapdom": "npm:2.12.0"
     "@zxing/browser": "npm:0.0.10"
     "@zxing/library": "npm:0.8.0"
     ahooks: "npm:3.7.8"

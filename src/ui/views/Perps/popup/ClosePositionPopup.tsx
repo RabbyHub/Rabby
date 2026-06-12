@@ -9,6 +9,8 @@ import { useMemoizedFn } from 'ahooks';
 import { formatPercent } from '../utils';
 import { PERPS_EXCHANGE_FEE_NUMBER, PERPS_MINI_USD_VALUE } from '../constants';
 import { PerpsSlider } from '../components/PerpsSlider';
+import { MarketSlippage } from '../components/MarketSlippage';
+import { useMarketSlippage } from '../hooks/useMarketSlippage';
 
 interface ClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   visible: boolean;
@@ -73,6 +75,19 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
     return (pnl * closePercent) / 100;
   }, [pnl, closePercent]);
 
+  // Close trades opposite the position: long -> sell (bids), short -> buy (asks)
+  const {
+    slippage,
+    depthInsufficient,
+    isReady: slippageReady,
+  } = useMarketSlippage({
+    coin,
+    isBuy: direction === 'Short',
+    size: Number(positionSize) * (closePercent / 100),
+    markPrice,
+    enabled: visible,
+  });
+
   const bothFee = useMemo(() => {
     return providerFee + PERPS_EXCHANGE_FEE_NUMBER;
   }, [providerFee]);
@@ -88,7 +103,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
   return (
     <Popup
       placement="bottom"
-      height={420}
+      height={440}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -179,35 +194,16 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                   {splitNumberByStep(Math.abs(closedPnl).toFixed(2))}
                 </span>
               </div>
+              <MarketSlippage
+                visible={slippageReady && Number(positionSize) > 0}
+                slippage={slippage}
+                depthInsufficient={depthInsufficient}
+                labelClassName="text-14 font-medium text-rb-neutral-body leading-[18px]"
+                valueClassName="text-17 font-bold leading-[22px]"
+              />
             </div>
           </div>
 
-          {/* <div className="flex items-center justify-center gap-4 text-13 text-r-neutral-foot mb-12">
-            <span>
-              {t('page.perpsDetail.PerpsClosePositionPopup.fee')}{' '}
-              {formatPercent(bothFee, 4)}
-            </span>
-            <Tooltip
-              overlayClassName={clsx('rectangle')}
-              placement="top"
-              title={
-                <div>
-                  <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.rabbyFeeTipsV2')}
-                  </div>
-                  <div className="text-13 text-r-neutral-title-2">
-                    {t('page.perps.providerFeeTips', {
-                      fee: formatPercent(providerFee, 4),
-                    })}
-                  </div>
-                </div>
-              }
-              align={{ targetOffset: [0, 0] }}
-            >
-              <RcIconInfo className="text-rb-neutral-info w-15 h-15" />
-            </Tooltip>
-          </div> */}
-          {/* Action Button */}
           <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 flex flex-col">
             <Button
               block

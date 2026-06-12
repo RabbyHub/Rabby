@@ -7,6 +7,7 @@ import { openInTab } from '../webapi';
 import { useWallet } from '../WalletContext';
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
+import { useHideScreenshotContextMenu } from '@/ui/hooks/useScreenshotContextMenuVisible';
 
 export interface Props {
   children?: React.ReactNode;
@@ -31,6 +32,8 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
       document.documentElement.classList.remove('dark');
     }, 0);
   }, [themeMode]);
+
+  useHideScreenshotContextMenu();
 
   return (
     <section

@@ -86,6 +86,9 @@ import {
 } from '@/ui/utils/biometric';
 import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
 
+const showUserDataTrackingOptOutTestSetting =
+  process.env.NODE_ENV !== 'production' || !!process.env.DEBUG;
+
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
   return [
@@ -654,6 +657,9 @@ const SettingsInner = ({
   const isShowTestnet = useRabbySelector(
     (state) => state.preference.isShowTestnet
   );
+  const userDataTrackingOptOut = useRabbySelector(
+    (state) => state.preference.userDataTrackingOptOut
+  );
   const themeMode = useRabbySelector((state) => state.preference.themeMode);
 
   const openapiStore = useRabbySelector((state) => state.openapi);
@@ -764,6 +770,15 @@ const SettingsInner = ({
       setPerpsWidgetBusy(false);
     }
   });
+
+  const handleToggleUserDataTrackingOptOut = useMemoizedFn(
+    async (checked: boolean) => {
+      await dispatch.preference.setUserDataTrackingOptOut(checked);
+      message.success(
+        `User behavior tracking ${checked ? 'opted out' : 'enabled'}`
+      );
+    }
+  );
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -1051,6 +1066,22 @@ const SettingsInner = ({
             />
           ),
         },
+        ...(showUserDataTrackingOptOutTestSetting
+          ? [
+              {
+                leftIcon: RcIconSettingsCodeCC,
+                leftIconClassName: 'text-r-neutral-body',
+                content: 'Test: Opt out of user behavior tracking',
+                description: 'Blocks GA, Matomo, festats and Sentry uploads.',
+                rightIcon: (
+                  <Switch
+                    checked={!!userDataTrackingOptOut}
+                    onChange={handleToggleUserDataTrackingOptOut}
+                  />
+                ),
+              },
+            ]
+          : []),
         {
           leftIcon: RcIconCustomTestnet,
           content: t('page.dashboard.settings.settings.customTestnet'),

@@ -8,3 +8,4 @@ export { default as localeMigration } from './localeMigration';
 export { default as metamaskModeSiteMigration } from './metamaskModeSiteMigration';
 export { default as siteAccountMigration } from './siteAccountMigration';
 export { default as siteAccountMigrationEmpty } from './siteAccountMigrationEmpty';
+export { default as userDataTrackingOptOutMigration } from './userDataTrackingOptOutMigration';

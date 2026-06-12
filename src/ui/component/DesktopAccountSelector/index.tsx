@@ -103,6 +103,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
       >
         <div
           aria-disabled={disabled}
+          aria-expanded={isOpen}
           className={clsx(
             'h-[32px] pl-[12px] px-[10px] rounded-[8px]',
             'flex items-center gap-[6px]',
