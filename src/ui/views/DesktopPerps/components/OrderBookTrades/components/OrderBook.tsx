@@ -38,7 +38,9 @@ interface AggregationConfig {
 interface OrderBookLevel {
   price: string;
   size: number;
+  usdSize: number;
   total: number;
+  totalUsd: number;
 }
 
 interface OrderBookTooltipState {
@@ -67,9 +69,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   const [aggregationIndex, setAggregationIndex] = useState<number>(0);
   const [bids, setBids] = useState<OrderBookLevel[]>([]);
   const [asks, setAsks] = useState<OrderBookLevel[]>([]);
-  const [hoveredOrder, setHoveredOrder] = useState<OrderBookTooltipState | null>(
-    null
-  );
+  const [
+    hoveredOrder,
+    setHoveredOrder,
+  ] = useState<OrderBookTooltipState | null>(null);
 
   // Dynamic row count based on container height
   const ORDER_ROW_HEIGHT = 24;
@@ -190,20 +193,38 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
 
         const processedBids: OrderBookLevel[] = [];
         let totalBids = 0;
+        let totalBidsUsd = 0;
         for (const level of data.levels[0] || []) {
           const price = level.px;
           const size = Number(level.sz);
+          const usdSize = Number(price) * size;
           totalBids += size;
-          processedBids.push({ price, size, total: totalBids });
+          totalBidsUsd += usdSize;
+          processedBids.push({
+            price,
+            size,
+            usdSize,
+            total: totalBids,
+            totalUsd: totalBidsUsd,
+          });
         }
 
         const processedAsks: OrderBookLevel[] = [];
         let totalAsks = 0;
+        let totalAsksUsd = 0;
         for (const level of data.levels[1] || []) {
           const price = level.px;
           const size = Number(level.sz);
+          const usdSize = Number(price) * size;
           totalAsks += size;
-          processedAsks.push({ price, size, total: totalAsks });
+          totalAsksUsd += usdSize;
+          processedAsks.push({
+            price,
+            size,
+            usdSize,
+            total: totalAsks,
+            totalUsd: totalAsksUsd,
+          });
         }
 
         setBids(processedBids);
@@ -243,16 +264,14 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     };
   }, [selectedCoin, aggregationIndex, aggregationLevels]);
 
-  const formatValue = useCallback(
-    (value: number) => {
-      if (quoteUnit === 'usd' && currentMarketData) {
-        return splitNumberByStep(
-          (value * Number(currentMarketData.markPx)).toFixed(0)
-        );
+  const formatLevelValue = useCallback(
+    (baseValue: number, usdValue: number) => {
+      if (quoteUnit === 'usd') {
+        return splitNumberByStep(usdValue.toFixed(0));
       }
-      return splitNumberByStep(value.toFixed(szDecimals));
+      return splitNumberByStep(baseValue.toFixed(szDecimals));
     },
-    [quoteUnit, currentMarketData, szDecimals]
+    [quoteUnit, szDecimals]
   );
 
   const handleClickPrice = useCallback((price: number) => {
@@ -260,11 +279,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   }, []);
 
   const updateTooltipPosition = useCallback(
-    (
-      type: 'bid' | 'ask',
-      index: number,
-      rowElement: HTMLDivElement | null
-    ) => {
+    (type: 'bid' | 'ask', index: number, rowElement: HTMLDivElement | null) => {
       if (!rowElement || !contentRef.current) return;
 
       const rowRect = rowElement.getBoundingClientRect();
@@ -277,7 +292,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       setHoveredOrder({
         type,
         index,
-        top: Math.min(Math.max(centerTop, 44), Math.max(44, viewportHeight - 44)),
+        top: Math.min(
+          Math.max(centerTop, 44),
+          Math.max(44, viewportHeight - 44)
+        ),
         left: hasRoomOnLeft
           ? containerRect.left - 10
           : containerRect.left + containerRect.width + 10,
@@ -287,19 +305,25 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     []
   );
 
-  const buildOrderTooltip = useCallback(
-    (orders: OrderBookLevel[], startIndex: number) => {
-      const levels = orders.slice(startIndex, startIndex + 3);
-      if (!levels.length) return null;
+  const getIsInHoverRange = useCallback(
+    (type: 'bid' | 'ask', index: number) => {
+      if (!hoveredOrder || hoveredOrder.type !== type) return false;
+      return type === 'bid'
+        ? index <= hoveredOrder.index
+        : index >= hoveredOrder.index;
+    },
+    [hoveredOrder]
+  );
 
-      const sumSize = levels.reduce((sum, item) => sum + item.size, 0);
-      const sumUsd = levels.reduce(
-        (sum, item) => sum + Number(item.price) * item.size,
-        0
-      );
-      const avgPrice =
-        levels.reduce((sum, item) => sum + Number(item.price), 0) /
-        levels.length;
+  const buildOrderTooltip = useCallback(
+    (orders: OrderBookLevel[], hoverIndex: number) => {
+      const order = orders[hoverIndex];
+      if (!order || !order.total || !order.totalUsd) return null;
+
+      const sumSize = order.total;
+      const sumUsd = order.totalUsd;
+      const avgPrice = sumSize ? sumUsd / sumSize : 0;
+      if (!avgPrice) return null;
 
       return (
         <div className="desktop-perps-orderbook-tooltip-content">
@@ -310,7 +334,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           <div className="desktop-perps-orderbook-tooltip-row">
             <span>
               {t('page.perpsPro.orderBook.sumBase', {
-                base: formatPerpsCoin(selectedCoin),
+                base: formatPerpsCoin(
+                  marketDataMap[selectedCoin]?.displayName || selectedCoin
+                ),
               })}
             </span>
             <span>{splitNumberByStep(sumSize.toFixed(szDecimals))}</span>
@@ -322,17 +348,17 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </div>
       );
     },
-    [pxDecimals, selectedCoin, szDecimals, t]
+    [marketDataMap, pxDecimals, selectedCoin, szDecimals, t]
   );
 
   const renderOrderRow = (
     order: OrderBookLevel,
     type: 'bid' | 'ask',
     maxTotal: number,
-    index: number,
-    orders: OrderBookLevel[]
+    index: number
   ) => {
     const depthPercent = maxTotal > 0 ? (order.total / maxTotal) * 100 : 0;
+    const isInHoverRange = getIsInHoverRange(type, index);
     return (
       <div
         key={`${type}-${order.price}`}
@@ -343,7 +369,11 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         onClick={() => handleClickPrice(Number(order.price))}
         className={clsx(
           'relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
-          isDarkTheme
+          isInHoverRange
+            ? isDarkTheme
+              ? 'bg-r-neutral-card-1'
+              : 'bg-rb-neutral-bg-0'
+            : isDarkTheme
             ? 'hover:bg-r-neutral-card-1'
             : 'hover:bg-rb-neutral-bg-0'
         )}
@@ -367,10 +397,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             {splitNumberByStep(order.price)}
           </span>
           <span className="text-r-neutral-title-1 font-medium col-span-3 text-right">
-            {formatValue(order.size)}
+            {formatLevelValue(order.size, order.usdSize)}
           </span>
           <span className="text-r-neutral-title-1 font-medium col-span-4 text-right">
-            {formatValue(order.total)}
+            {formatLevelValue(order.total, order.totalUsd)}
           </span>
         </div>
       </div>
@@ -425,7 +455,8 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
 
   const isLoading = bids.length === 0 && asks.length === 0;
 
-  const hoveredOrders = hoveredOrder?.type === 'ask' ? displayAsks : displayBids;
+  const hoveredOrders =
+    hoveredOrder?.type === 'ask' ? displayAsks : displayBids;
   const tooltipContent =
     hoveredOrder && hoveredOrders[hoveredOrder.index]
       ? buildOrderTooltip(hoveredOrders, hoveredOrder.index)
@@ -655,7 +686,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 })}
               >
                 {displayAsks.map((ask, index) =>
-                  renderOrderRow(ask, 'ask', maxTotal, index, displayAsks)
+                  renderOrderRow(ask, 'ask', maxTotal, index)
                 )}
               </div>
             )}
@@ -690,7 +721,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 })}
               >
                 {displayBids.map((bid, index) =>
-                  renderOrderRow(bid, 'bid', maxTotal, index, displayBids)
+                  renderOrderRow(bid, 'bid', maxTotal, index)
                 )}
               </div>
             )}
