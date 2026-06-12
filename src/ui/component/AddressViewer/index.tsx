@@ -7,7 +7,7 @@ import './style.less';
 interface AddressViewProps {
   address: string;
   onClick?(): void;
-  ellipsis?: boolean;
+  ellipsis?: boolean | 'short';
   showArrow?: boolean;
   className?: string;
   showImportIcon?: boolean;
@@ -36,7 +36,7 @@ export default ({
       >
         {showIndex && index >= 0 && <div className="number-index">{index}</div>}
         {ellipsis
-          ? ellipsisAddress(address.toLowerCase())
+          ? ellipsisAddress(address.toLowerCase(), ellipsis === 'short')
           : address?.toLowerCase()}
       </div>
       {showArrow && (

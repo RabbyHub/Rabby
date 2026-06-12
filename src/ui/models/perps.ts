@@ -119,11 +119,26 @@ export interface AccountHistoryItem {
   usdValue: string;
 }
 
+const VALID_TPSL_MODES = ['price', 'pnl', 'roi'] as const;
+
+const getSavedTpslMode = (
+  type: 'takeProfit' | 'stopLoss'
+): 'price' | 'pnl' | 'roi' => {
+  try {
+    const val = localStorage.getItem(`perps_tpsl_mode_${type}`);
+    if (val && (VALID_TPSL_MODES as readonly string[]).includes(val)) {
+      return val as 'price' | 'pnl' | 'roi';
+    }
+  } catch (e) {
+    // ignore
+  }
+  return 'price';
+};
+
 export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
   enabled: false,
   takeProfit: {
-    settingMode: 'pnl',
-    triggerPrice: '',
+    settingMode: 'price',
     value: '',
     error: '',
     buyTriggerPrice: '',
@@ -132,8 +147,7 @@ export const DEFAULT_TPSL_CONFIG: TPSLConfig = {
     estimatedPnlPercent: '',
   },
   stopLoss: {
-    settingMode: 'pnl',
-    triggerPrice: '',
+    settingMode: 'price',
     value: '',
     error: '',
     buyTriggerPrice: '',
@@ -149,8 +163,14 @@ const getInitTradingState = () => ({
   tradingReduceOnly: false,
   tradingTpslConfig: {
     ...DEFAULT_TPSL_CONFIG,
-    takeProfit: { ...DEFAULT_TPSL_CONFIG.takeProfit },
-    stopLoss: { ...DEFAULT_TPSL_CONFIG.stopLoss },
+    takeProfit: {
+      ...DEFAULT_TPSL_CONFIG.takeProfit,
+      settingMode: getSavedTpslMode('takeProfit'),
+    },
+    stopLoss: {
+      ...DEFAULT_TPSL_CONFIG.stopLoss,
+      settingMode: getSavedTpslMode('stopLoss'),
+    },
   },
   bboPrices: { asks1: '', asks5: '', bids1: '', bids5: '' },
 });

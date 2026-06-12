@@ -6,7 +6,16 @@ import {
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
 import { ethers, Contract } from 'ethers';
-import { groupBy, isEqual, last, pick, sortBy, truncate, uniq } from 'lodash';
+import {
+  capitalize,
+  groupBy,
+  isEqual,
+  last,
+  pick,
+  sortBy,
+  truncate,
+  uniq,
+} from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
@@ -221,6 +230,17 @@ type ScreenshotFeedbackPageInfo = {
   pageUrl?: string;
   routePath?: string;
   userAgent?: string;
+  userAgentData?: {
+    architecture?: string;
+    bitness?: string;
+    brands?: { brand: string; version: string }[];
+    fullVersionList?: { brand: string; version: string }[];
+    mobile?: boolean;
+    model?: string;
+    platform?: string;
+    platformVersion?: string;
+    uaFullVersion?: string;
+  };
   language?: string;
   platform?: string;
   viewport?: {
@@ -247,14 +267,16 @@ type ScreenshotFeedbackExtra = {
   extensionVersion: string;
   extensionName?: string;
   totalBalanceText?: string;
-  countOfMyAccounts?: number;
-  countOfMyImportedAccounts?: number;
+  myCallableAddressCount?: number;
+  myUncallableAddressCount?: number;
   myFirstAddress?: string;
   myFirstImportedAddress?: string;
   myCurrentAddress?: string;
   mySceneAddresses?: Record<string, string>;
   systemName?: string;
   systemVersion?: string;
+  deviceModel?: string;
+  manufacturer?: string;
   userAgent?: string;
   language?: string;
   platform?: string;
@@ -267,6 +289,118 @@ type PostUserFeedbackParams = {
   includeOperationLogs?: boolean;
   pageInfo?: ScreenshotFeedbackPageInfo;
   totalBalanceText?: string;
+};
+
+const getSystemNameFromUserAgent = (userAgent?: string, platform?: string) => {
+  const value = `${platform || ''} ${userAgent || ''}`;
+
+  if (/windows/i.test(value)) return 'Windows';
+  if (/android/i.test(value)) return 'Android';
+  if (/iphone|ipad|ipod/i.test(value)) return 'iOS';
+  if (/macintosh|mac os/i.test(value)) return 'macOS';
+  if (/linux/i.test(value)) return 'Linux';
+
+  return platform;
+};
+
+const getSystemVersionFromUserAgent = (userAgent?: string) => {
+  if (!userAgent) return undefined;
+
+  const windowsVersion = userAgent.match(/Windows NT ([0-9.]+)/i)?.[1];
+  if (windowsVersion) return windowsVersion;
+
+  const androidVersion = userAgent.match(/Android ([0-9.]+)/i)?.[1];
+  if (androidVersion) return androidVersion;
+
+  const iosVersion = userAgent
+    .match(/(?:CPU (?:iPhone )?OS|CPU OS) ([0-9_]+)/i)?.[1]
+    ?.replace(/_/g, '.');
+  if (iosVersion) return iosVersion;
+
+  const macVersion = userAgent
+    .match(/Mac OS X ([0-9_]+)/i)?.[1]
+    ?.replace(/_/g, '.');
+  if (macVersion) return macVersion;
+
+  return undefined;
+};
+
+const getDeviceModelFromUserAgent = (
+  userAgent?: string,
+  systemName?: string
+) => {
+  if (!userAgent) return undefined;
+
+  if (systemName === 'iOS') {
+    if (/ipad/i.test(userAgent)) return 'iPad';
+    if (/iphone/i.test(userAgent)) return 'iPhone';
+    if (/ipod/i.test(userAgent)) return 'iPod';
+  }
+
+  if (systemName === 'macOS') return 'Mac';
+  if (systemName === 'Windows') return 'Windows PC';
+
+  const androidModel = userAgent
+    .match(/Android [^;]+;\s*([^;)]+?)(?:\s+Build\/|;|\))/i)?.[1]
+    ?.trim();
+  if (androidModel) return androidModel;
+
+  return undefined;
+};
+
+const inferManufacturer = (params: {
+  deviceModel?: string;
+  systemName?: string;
+  userAgent?: string;
+}) => {
+  const { deviceModel, systemName, userAgent } = params;
+  const value = `${deviceModel || ''} ${userAgent || ''}`;
+
+  if (systemName === 'iOS' || systemName === 'macOS') return 'Apple';
+  if (/pixel/i.test(value)) return 'Google';
+  if (/\bSM-|samsung/i.test(value)) return 'Samsung';
+  if (/huawei/i.test(value)) return 'Huawei';
+  if (/honor/i.test(value)) return 'Honor';
+  if (/\bmi\b|redmi|xiaomi/i.test(value)) return 'Xiaomi';
+  if (/oneplus/i.test(value)) return 'OnePlus';
+  if (/oppo/i.test(value)) return 'OPPO';
+  if (/vivo/i.test(value)) return 'vivo';
+  if (/motorola|moto/i.test(value)) return 'Motorola';
+
+  return undefined;
+};
+
+const getScreenshotFeedbackDeviceInfo = (
+  pageInfo?: ScreenshotFeedbackPageInfo
+) => {
+  const userAgent =
+    pageInfo?.userAgent ||
+    (typeof navigator !== 'undefined' ? navigator.userAgent : undefined);
+  const platform =
+    pageInfo?.userAgentData?.platform ||
+    pageInfo?.platform ||
+    (typeof navigator !== 'undefined' ? navigator.platform : undefined);
+  const systemName =
+    pageInfo?.userAgentData?.platform ||
+    getSystemNameFromUserAgent(userAgent, platform);
+  const systemVersion =
+    pageInfo?.userAgentData?.platformVersion ||
+    getSystemVersionFromUserAgent(userAgent);
+  const deviceModel =
+    pageInfo?.userAgentData?.model ||
+    getDeviceModelFromUserAgent(userAgent, systemName);
+  const manufacturer = inferManufacturer({
+    deviceModel,
+    systemName,
+    userAgent,
+  });
+
+  return {
+    deviceModel,
+    manufacturer,
+    systemName,
+    systemVersion,
+  };
 };
 
 const stashKeyrings: Record<string | number, any> = {};
@@ -6866,16 +7000,15 @@ export class WalletController extends BaseController {
     feedbackService.setScreenshotContextMenuVisible;
 
   getScreenshotFeedbackExtra = async ({
-    includeOperationLogs = true,
     pageInfo,
-    totalBalanceText,
   }: Pick<
     PostUserFeedbackParams,
-    'includeOperationLogs' | 'pageInfo' | 'totalBalanceText'
+    'pageInfo'
   >): Promise<ScreenshotFeedbackExtra> => {
     const version = process.env.release || '0';
     const manifest = Browser.runtime.getManifest();
     const manifestVersion = manifest.version || version;
+    const deviceInfo = getScreenshotFeedbackDeviceInfo(pageInfo);
     const extra: ScreenshotFeedbackExtra = {
       // source: 'extension_screenshot',
       currentScreen: pageInfo?.routePath || pageInfo?.pageUrl,
@@ -6887,9 +7020,11 @@ export class WalletController extends BaseController {
       applicationId: Browser.runtime.id,
       extensionVersion: manifestVersion,
       extensionName: manifest.name,
-      totalBalanceText,
-      // systemName: 'browser_extension',
-      // systemVersion: manifestVersion,
+      // totalBalanceText,
+      systemName: deviceInfo.systemName,
+      systemVersion: deviceInfo.systemVersion,
+      deviceModel: deviceInfo.deviceModel,
+      manufacturer: deviceInfo.manufacturer,
       userAgent:
         pageInfo?.userAgent ||
         (typeof navigator !== 'undefined' ? navigator.userAgent : undefined),
@@ -6901,62 +7036,50 @@ export class WalletController extends BaseController {
         (typeof navigator !== 'undefined' ? navigator.platform : undefined),
     };
 
-    if (includeOperationLogs) {
-      try {
-        const accounts = await keyringService.getAllVisibleAccountsArray();
-        const importedAccounts = accounts.filter(
-          (item) =>
-            item.type !== KEYRING_TYPE.WatchAddressKeyring &&
-            item.type !== KEYRING_TYPE.GnosisKeyring
-        );
+    try {
+      const accounts = await keyringService.getAllVisibleAccountsArray();
+      const importedAccounts = accounts.filter(
+        (item) =>
+          item.type !== KEYRING_TYPE.WatchAddressKeyring &&
+          item.type !== KEYRING_TYPE.GnosisKeyring
+      );
 
-        extra.countOfMyAccounts = accounts.length;
-        extra.countOfMyImportedAccounts = importedAccounts.length;
-        extra.myFirstAddress = accounts[0]?.address;
-        extra.myFirstImportedAddress = importedAccounts[0]?.address;
-      } catch (error) {
-        console.error(
-          'Failed to get screenshot feedback accounts extra',
-          error
-        );
+      extra.myCallableAddressCount = accounts.length;
+      extra.myUncallableAddressCount = importedAccounts.length;
+      extra.myFirstAddress = accounts[0]?.address;
+      extra.myFirstImportedAddress = importedAccounts[0]?.address;
+    } catch (error) {
+      console.error('Failed to get screenshot feedback accounts extra', error);
+    }
+
+    try {
+      const currentAccount = preferenceService.getCurrentAccount();
+
+      extra.myCurrentAddress = currentAccount?.address;
+    } catch (error) {
+      console.error(
+        'Failed to get screenshot feedback current account extra',
+        error
+      );
+    }
+
+    try {
+      const mySceneAddresses: Record<string, string> = {};
+      const perpsAccount = await perpsService.getCurrentAccount();
+
+      if (perpsAccount?.address) {
+        mySceneAddresses.Perps = perpsAccount.address;
       }
-
-      try {
-        const currentAccount = preferenceService.getCurrentAccount();
-
-        extra.myCurrentAddress = currentAccount?.address;
-      } catch (error) {
-        console.error(
-          'Failed to get screenshot feedback current account extra',
-          error
-        );
+      const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
+      if (gasAccount?.account?.address) {
+        mySceneAddresses.GasAccount = gasAccount?.account?.address;
       }
-
-      try {
-        const sceneAccountMap = (preferenceService.getPreference(
-          'sceneAccountMap'
-        ) || {}) as Record<string, Account | null>;
-        const mySceneAddresses = Object.entries(sceneAccountMap).reduce(
-          (result, [scene, account]) => {
-            if (account?.address) {
-              result[scene] = account.address;
-            }
-            return result;
-          },
-          {} as Record<string, string>
-        );
-        const perpsAccount = await perpsService.getCurrentAccount();
-
-        if (perpsAccount?.address) {
-          mySceneAddresses.perps = perpsAccount.address;
-        }
-        extra.mySceneAddresses = mySceneAddresses;
-      } catch (error) {
-        console.error(
-          'Failed to get screenshot feedback scene account extra',
-          error
-        );
-      }
+      extra.mySceneAddresses = mySceneAddresses;
+    } catch (error) {
+      console.error(
+        'Failed to get screenshot feedback scene account extra',
+        error
+      );
     }
 
     try {
@@ -6973,13 +7096,12 @@ export class WalletController extends BaseController {
     image,
     includeOperationLogs = true,
     pageInfo,
-    totalBalanceText,
   }: PostUserFeedbackParams) => {
-    const extra = await this.getScreenshotFeedbackExtra({
-      includeOperationLogs,
-      pageInfo,
-      totalBalanceText,
-    });
+    const extra = includeOperationLogs
+      ? await this.getScreenshotFeedbackExtra({
+          pageInfo,
+        })
+      : {};
 
     return openapiService.postUserFeedback({
       content,

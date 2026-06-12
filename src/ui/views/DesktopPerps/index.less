@@ -143,7 +143,9 @@
 .desktop-perps-topbar-account {
   box-sizing: border-box !important;
   flex-shrink: 0 !important;
-  width: 113px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 180px !important;
   height: 26px !important;
   border-radius: 6px !important;
   padding: 3px 12px !important;
@@ -156,6 +158,7 @@
     font-size: 12px !important;
     line-height: 14px !important;
     color: var(--rb-neutral-foot) !important;
+    min-width: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -210,7 +213,7 @@
 
   &:hover {
     border-color: var(--rb-neutral-title-1) !important;
-    background: transparent !important;
+    background: var(--rb-neutral-bg-4) !important;
     color: var(--rb-neutral-title-1) !important;
   }
 
@@ -244,16 +247,8 @@
   line-height: 14px;
   font-variant-numeric: tabular-nums;
 
-  .desktop-perps-status-item-name,
   .desktop-perps-status-item-price {
     transition: color 0.15s ease;
-  }
-
-  &:hover {
-    .desktop-perps-status-item-name,
-    .desktop-perps-status-item-price {
-      color: var(--rb-brand-default);
-    }
   }
 }
 
@@ -288,6 +283,44 @@
   align-items: center;
   gap: 24px;
   padding-right: 24px;
+}
+
+.desktop-perps-orderbook-row {
+  &:hover,
+  &.is-hover-range {
+    background: var(--rb-neutral-bg-2);
+  }
+
+  &.is-hovered-row::before {
+    position: absolute;
+    right: 0;
+    left: 0;
+    z-index: 2;
+    content: '';
+    pointer-events: none;
+  }
+
+  &.desktop-perps-orderbook-row-ask.is-hovered-row::before {
+    top: 0;
+    border-top: 1px dashed rgba(var(--rb-neutral-title-1-rgb), 0.82);
+  }
+
+  &.desktop-perps-orderbook-row-bid.is-hovered-row::before {
+    bottom: 0;
+    border-bottom: 1px dashed rgba(var(--rb-neutral-title-1-rgb), 0.82);
+  }
+
+  &.is-hover-gap-fill::after {
+    position: absolute;
+    right: 0;
+    bottom: -2px;
+    left: 0;
+    z-index: 1;
+    height: 2px;
+    background: var(--rb-neutral-bg-2);
+    content: '';
+    pointer-events: none;
+  }
 }
 
 .desktop-perps-orderbook-tooltip-overlay {
@@ -393,6 +426,8 @@
 }
 
 .desktop-perps-manage-margin-distance-icon {
+  display: block;
+  flex-shrink: 0;
   width: 16px;
   height: 16px;
   color: var(--rb-light-neutral-info);
@@ -406,14 +441,6 @@
   background-color: var(--rb-brand-disable) !important;
   border-color: var(--rb-brand-disable) !important;
   opacity: 1;
-}
-
-.desktop-perps-tpsl-positive-input.ant-input-affix-wrapper .ant-input {
-  color: var(--rb-green-default);
-}
-
-.desktop-perps-tpsl-negative-input.ant-input-affix-wrapper .ant-input {
-  color: var(--rb-red-default);
 }
 
 @media (prefers-reduced-motion: reduce) {

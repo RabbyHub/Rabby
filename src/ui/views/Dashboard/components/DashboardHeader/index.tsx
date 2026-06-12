@@ -159,6 +159,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
                 <AddressViewer
                   address={currentAccount.address}
                   showArrow={false}
+                  ellipsis="short"
                   className="text-[12px] leading-[14px] text-r-neutral-title2 opacity-60"
                 />
               )}
@@ -278,29 +279,30 @@ const FeedbackResponsePopup = ({
   const visible = !!viewingFeedback && feedback?.status === 'complete';
   const imageUrl = feedback?.image_url_list?.[0];
   const comment = feedback?.comment;
+  const { t } = useTranslation();
 
   return (
     <Popup
       open={visible}
-      title="Response from Rabby Support"
+      title={t('component.feedbackPopup.title')}
       height={'fit-content'}
       closable={false}
       onCancel={finishViewFeedback}
       onClose={finishViewFeedback}
       bodyStyle={{ padding: '20px 24px 24px 24px' }}
     >
-      <div className="flex h-full flex-col">
-        <div className="relative flex-1 pl-[8px]">
+      <div className="flex max-h-[460px] flex-col">
+        <div className="relative flex-1 min-h-0 pl-[8px] overflow-auto">
           <div className="relative pb-[28px] pl-[16px] pr-[2px]">
             <div className="absolute left-0 top-0 h-[16px] w-[16px] rounded-full bg-r-blue-default translate-x-[-50%]" />
             <div className="absolute left-0 top-[0] bottom-[0px] w-[1px] bg-r-blue-default" />
             <div className="relative top-[-2px]">
               <div className="text-[16px] leading-[19px] font-medium text-r-neutral-title1">
-                Here’s the issue you reported:
+                {t('component.feedbackPopup.issueReported')}
               </div>
               <div className="mt-[12px] rounded-[12px] bg-r-neutral-card2 p-[12px]">
                 {feedback?.content ? (
-                  <div className="mb-[8px] whitespace-pre-wrap break-words text-[14px] leading-[16px] text-r-neutral-foot">
+                  <div className="mb-[8px] whitespace-pre-wrap break-words text-[14px] leading-[16px] text-r-neutral-body">
                     {feedback.content}
                   </div>
                 ) : null}
@@ -324,10 +326,10 @@ const FeedbackResponsePopup = ({
             />
             <div className="relative top-[-2px]">
               <div className="text-[16px] leading-[19px] font-medium text-r-neutral-title1">
-                Rabby Support has replied:
+                {t('component.feedbackPopup.issueReplied')}
               </div>
               <div className="mt-[12px] rounded-[12px] bg-r-neutral-card2 p-[12px]">
-                <div className="whitespace-pre-wrap break-words text-[14px] leading-[16px] text-r-neutral-foot">
+                <div className="whitespace-pre-wrap break-words text-[14px] leading-[16px] text-r-neutral-body">
                   {comment}
                 </div>
               </div>
@@ -338,10 +340,10 @@ const FeedbackResponsePopup = ({
         <Button
           type="primary"
           block
-          className="mt-[24px] h-[48px]"
+          className="mt-[24px] h-[48px] shrink-0 flex-shrink-0"
           onClick={finishViewFeedback}
         >
-          OK
+          {t('global.ok')}
         </Button>
       </div>
     </Popup>

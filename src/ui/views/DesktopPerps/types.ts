@@ -56,8 +56,7 @@ export type SizeDisplayUnit = 'base' | 'usd';
 
 export interface TPSLConfigItem {
   settingMode: TPSLSettingMode;
-  triggerPrice: string; // trigger price shown in the left TP/SL input
-  value: string; // USDC amount in PNL mode, percentage in ROI mode
+  value: string; // unified input value (price in Price mode, USDC amount in PNL mode, percentage in ROI mode)
   error: string;
   // Computed trigger prices for both directions (used in PNL/ROI modes)
   buyTriggerPrice: string;

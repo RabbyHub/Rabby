@@ -1,6 +1,7 @@
 import type { UserFeedbackItem } from '@rabby-wallet/rabby-api/dist/types';
 import { createPersistStore } from 'background/utils';
 import browser from 'webextension-polyfill';
+import i18n, { addResourceBundle } from './i18n';
 import {
   SCREENSHOT_CONTEXT_MENU_CLICKED,
   SCREENSHOT_CONTEXT_MENU_ID,
@@ -18,6 +19,9 @@ const sortFeedbackItemByCreateAtDesc = (
   a: Pick<UserFeedbackItem, 'create_at'>,
   b: Pick<UserFeedbackItem, 'create_at'>
 ) => b.create_at - a.create_at;
+
+const getScreenshotContextMenuTitle = () =>
+  i18n.t('background.feedback.screenshotContextMenuTitle');
 
 class FeedbackService {
   store: FeedbackServiceStore = {
@@ -43,6 +47,9 @@ class FeedbackService {
   private initScreenshotContextMenu = async () => {
     if (!browser.contextMenus) return;
 
+    i18n.off('languageChanged', this.handleLanguageChanged);
+    i18n.on('languageChanged', this.handleLanguageChanged);
+
     const onClicked = (info: browser.Menus.OnClickData) => {
       if (info.menuItemId !== SCREENSHOT_CONTEXT_MENU_ID) return;
 
@@ -67,7 +74,7 @@ class FeedbackService {
 
     await browser.contextMenus.create({
       id: SCREENSHOT_CONTEXT_MENU_ID,
-      title: 'Screenshot to report bug',
+      title: getScreenshotContextMenuTitle(),
       contexts: ['all'],
       documentUrlPatterns: [
         `${browser.runtime.getURL('popup.html')}*`,
@@ -76,6 +83,23 @@ class FeedbackService {
         `${browser.runtime.getURL('desktop.html')}*`,
       ],
     });
+  };
+
+  private handleLanguageChanged = async (lng: string) => {
+    await addResourceBundle(lng);
+    await this.updateScreenshotContextMenuTitle();
+  };
+
+  private updateScreenshotContextMenuTitle = async () => {
+    if (!browser.contextMenus) return;
+
+    try {
+      await browser.contextMenus.update(SCREENSHOT_CONTEXT_MENU_ID, {
+        title: getScreenshotContextMenuTitle(),
+      });
+    } catch (error) {
+      // The menu may not exist yet.
+    }
   };
 
   setScreenshotContextMenuVisible = async (visible: boolean) => {

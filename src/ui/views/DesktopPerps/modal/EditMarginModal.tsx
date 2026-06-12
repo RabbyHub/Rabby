@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
+import { ReactComponent as RcIconManageMarginAlarmCC } from '@/ui/assets/perps/icon-alarm-manage-margin-cc.svg';
 import { useRequest } from 'ahooks';
 import { MarketData } from '@/ui/models/perps';
 import {
@@ -150,6 +150,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
 
     return { isValid: true, error: null };
   }, [margin, t, minMargin, maxMargin]);
+  const hasMarginError = Boolean(marginValidation.error);
 
   React.useEffect(() => {
     if (visible) {
@@ -164,6 +165,16 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
     );
     return percent;
   }, [liquidationPx, markPrice]);
+
+  const estimatedDistanceToLiquidationPercent = useMemo(() => {
+    if (!margin || !estimatedLiquidationPrice) {
+      return '';
+    }
+
+    return formatPerpsPct(
+      calculateDistanceToLiquidation(estimatedLiquidationPrice, markPrice)
+    );
+  }, [estimatedLiquidationPrice, margin, markPrice]);
 
   const handleMarginInputChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -252,13 +263,18 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
           <div className="my-[24px] h-0 border-t border-solid border-rb-neutral-line" />
 
           <section>
-            <div className="mb-[12px] text-[14px] leading-[17px] font-semibold text-r-neutral-title-1">
+            <div className="mb-[12px] text-[14px] leading-[20px] font-semibold text-r-neutral-title-1">
               {t('page.perpsPro.editMargin.configureMargin')}
             </div>
-            <div className="relative h-[172px] overflow-hidden rounded-[8px] bg-rb-neutral-bg-2">
+            <div
+              className={clsx(
+                'relative overflow-hidden rounded-[8px] bg-rb-neutral-bg-2',
+                hasMarginError ? 'h-[172px]' : 'h-[124px]'
+              )}
+            >
               <button
                 type="button"
-                className="absolute left-[16px] top-[29px] flex h-[26px] items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
+                className="absolute left-[16px] top-[29px] flex h-[26px] cursor-pointer items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
                 onClick={() => setMargin(minMargin.toString())}
               >
                 Min
@@ -277,7 +293,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               />
               <button
                 type="button"
-                className="absolute right-[16px] top-[29px] flex h-[26px] items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
+                className="absolute right-[16px] top-[29px] flex h-[26px] cursor-pointer items-center rounded-[8px] border-0 bg-rb-brand-light-1 px-[8px] text-[14px] font-bold leading-[18px] text-rb-brand-default"
                 onClick={() => setMargin(maxMargin.toString())}
               >
                 MAX
@@ -286,7 +302,12 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
                 <span>{formatUsdValue(minMargin)}</span>
                 <span>{formatUsdValue(maxMargin)}</span>
               </div>
-              <div className="absolute left-[16px] right-[16px] top-[85px] h-[42px]">
+              <div
+                className={clsx(
+                  'absolute left-[16px] right-[16px]',
+                  hasMarginError ? 'top-[85px] h-[42px]' : 'top-[92px] h-[16px]'
+                )}
+              >
                 <DesktopPerpsSliderV2
                   className="desktop-perps-manage-margin-slider"
                   disabled={maxMargin <= minMargin}
@@ -301,7 +322,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
                   }}
                 />
               </div>
-              {marginValidation.error ? (
+              {hasMarginError ? (
                 <div className="absolute left-[16px] right-[16px] top-[124px] flex h-[32px] items-center gap-[4px] rounded-[8px] bg-rb-orange-light-1 px-[12px] text-[12px] leading-[14px] text-rb-orange-default">
                   <RcIconInfoCC className="h-[16px] w-[16px] flex-shrink-0" />
                   <span className="truncate">
@@ -337,25 +358,14 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               <span className="text-rb-neutral-foot text-[13px] leading-[16px]">
                 {t('page.perpsDetail.PerpsEditMarginPopup.liqDistance')}
               </span>
-              <div className="flex items-center">
-                <div className="flex items-center gap-[6px]">
-                  <RcIconAlarmCC className="desktop-perps-manage-margin-distance-icon" />
-                  <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
-                    {currentDistanceToLiquidationPercent}
-                  </span>
-                </div>
-                {margin && estimatedLiquidationPrice && (
-                  <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
-                    {' '}
-                    →{' '}
-                    {formatPerpsPct(
-                      calculateDistanceToLiquidation(
-                        estimatedLiquidationPrice,
-                        markPrice
-                      )
-                    )}
-                  </span>
-                )}
+              <div className="flex items-center gap-[6px]">
+                <RcIconManageMarginAlarmCC className="desktop-perps-manage-margin-distance-icon" />
+                <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
+                  {currentDistanceToLiquidationPercent}
+                  {estimatedDistanceToLiquidationPercent
+                    ? ` → ${estimatedDistanceToLiquidationPercent}`
+                    : ''}
+                </span>
               </div>
             </div>
           </section>
