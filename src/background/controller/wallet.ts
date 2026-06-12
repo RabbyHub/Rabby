@@ -286,7 +286,6 @@ type ScreenshotFeedbackExtra = {
 type PostUserFeedbackParams = {
   content: string;
   image: string;
-  includeOperationLogs?: boolean;
   pageInfo?: ScreenshotFeedbackPageInfo;
   totalBalanceText?: string;
 };
@@ -7094,14 +7093,11 @@ export class WalletController extends BaseController {
   postUserFeedback = async ({
     content,
     image,
-    includeOperationLogs = true,
     pageInfo,
   }: PostUserFeedbackParams) => {
-    const extra = includeOperationLogs
-      ? await this.getScreenshotFeedbackExtra({
-          pageInfo,
-        })
-      : {};
+    const extra = await this.getScreenshotFeedbackExtra({
+      pageInfo,
+    });
 
     return openapiService.postUserFeedback({
       content,
