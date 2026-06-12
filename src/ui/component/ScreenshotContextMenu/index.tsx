@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Input, Modal, message } from 'antd';
 import { snapdom } from '@zumer/snapdom';
-import { useMount, useRequest } from 'ahooks';
+import { useRequest } from 'ahooks';
 import browser from 'webextension-polyfill';
 import { getUITypeName, getUiType, useWallet } from '@/ui/utils';
 import {
@@ -9,7 +9,6 @@ import {
   SCREENSHOT_FEEDBACK_ENTRY_CLICKED,
 } from '@/constant/screenshot';
 import clsx from 'clsx';
-import Checkbox from '../Checkbox';
 import { useScreenshotFeedbacks } from './hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -162,7 +161,6 @@ const getScreenshotFeedbackPageInfo = async () => {
 
 type SubmitScreenshotFeedbackParams = {
   description: string;
-  includeOperationLogs: boolean;
   screenshot: string;
 };
 
@@ -172,7 +170,6 @@ export const ScreenshotContextMenu = () => {
   const [screenshot, setScreenshot] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [description, setDescription] = useState('');
-  const [includeOperationLogs, setIncludeOperationLogs] = useState(true);
   const { t } = useTranslation();
 
   const { loading: submitting, run: submitFeedback } = useRequest(
@@ -182,7 +179,6 @@ export const ScreenshotContextMenu = () => {
       return wallet.postUserFeedback({
         content: params.description,
         image: imageUrl,
-        includeOperationLogs: params.includeOperationLogs,
         pageInfo: await getScreenshotFeedbackPageInfo(),
       });
     },
@@ -210,7 +206,6 @@ export const ScreenshotContextMenu = () => {
 
     setScreenshot(dataUrl);
     setDescription('');
-    setIncludeOperationLogs(true);
     setModalVisible(true);
   }, []);
 
@@ -223,16 +218,9 @@ export const ScreenshotContextMenu = () => {
 
     submitFeedback({
       description: description.trim(),
-      includeOperationLogs,
       screenshot,
     });
-  }, [
-    description,
-    includeOperationLogs,
-    screenshot,
-    submitFeedback,
-    submitting,
-  ]);
+  }, [description, screenshot, submitFeedback, submitting]);
 
   useEffect(() => {
     const uiType = getUiType();
@@ -264,13 +252,8 @@ export const ScreenshotContextMenu = () => {
     if (!modalVisible) {
       setScreenshot('');
       setDescription('');
-      setIncludeOperationLogs(true);
     }
   }, [modalVisible]);
-
-  useMount(() => {
-    wallet.setScreenshotContextMenuVisible(true);
-  });
 
   return (
     <>
@@ -311,45 +294,6 @@ export const ScreenshotContextMenu = () => {
               className="resize-none bg-r-neutral-bg-2 text-r-neutral-title1"
               onChange={(event) => setDescription(event.target.value)}
             />
-            <div className="flex items-center justify-center mt-[12px]">
-              <Checkbox
-                checked={includeOperationLogs}
-                type="square"
-                onChange={setIncludeOperationLogs}
-                unCheckBackground="transparent"
-                width="14px"
-                height="14px"
-                checkBoxClassName={clsx(
-                  'rounded-[2px] border border-solid',
-                  !includeOperationLogs
-                    ? 'border-rabby-neutral-foot'
-                    : 'border-rabby-blue-default'
-                )}
-                checkIcon={
-                  includeOperationLogs ? (
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <rect
-                        width="14"
-                        height="14"
-                        rx="2"
-                        fill="var(--r-blue-default, #4c65ff)"
-                      />
-                      <path
-                        d="M3 7L5.66667 10L11 4"
-                        stroke="white"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  ) : null
-                }
-              >
-                <span className="text-rabby-neutral-body text-13 font-normal">
-                  {t('component.screenshotModal.sendLogs')}
-                </span>
-              </Checkbox>
-            </div>
           </main>
           <footer
             className={clsx(
