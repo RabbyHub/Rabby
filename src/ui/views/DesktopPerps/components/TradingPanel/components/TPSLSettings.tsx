@@ -64,6 +64,10 @@ const getMargin = (entryPrice: number, tradeSize: string, leverage: number) => {
   return entryBN.times(sizeBN).div(leverage);
 };
 
+const getRecalcSource = (item: TPSLConfigItem): UpdateSource => {
+  return item.lastEditSource || (item.value ? 'modeValue' : 'trigger');
+};
+
 const calcTriggerPricesFromPnl = ({
   pnl,
   price,
@@ -283,6 +287,10 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
         item: {
           ...config[type],
           ...updates,
+          lastEditSource:
+            source === 'trigger' || source === 'modeValue'
+              ? source
+              : config[type].lastEditSource,
           settingMode:
             updates.settingMode === 'price'
               ? 'pnl'
@@ -317,7 +325,7 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
       newConfig[type] = applyDerivedValues({
         item: current,
         type,
-        source: current.value ? 'modeValue' : 'trigger',
+        source: getRecalcSource(current),
         priceNum,
         tradeSize,
         leverage,

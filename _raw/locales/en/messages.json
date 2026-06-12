@@ -1648,7 +1648,7 @@
         "confirm": "Confirm"
       },
       "editMargin": {
-        "title": "Manage margin",
+        "title": "Manage Margin",
         "configureMargin": "Configure Margin",
         "longLiquidationTips": "Going down {{percent}} will trigger liquidation",
         "shortLiquidationTips": "Going up {{percent}} will trigger liquidation",
