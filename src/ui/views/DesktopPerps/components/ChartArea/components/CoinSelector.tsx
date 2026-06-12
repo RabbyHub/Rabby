@@ -26,11 +26,16 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     (state) => state.perps
   );
   const countdown = useHourlyCountdown();
+  const marketMeta = marketDataMap[coin];
   const currentMarketData = useMemo(() => {
+    const fallbackMarketData = marketDataMap[coin] || {};
     if (wsActiveAssetCtx && wsActiveAssetCtx.coin === coin) {
-      return wsActiveAssetCtx.ctx;
+      return {
+        ...fallbackMarketData,
+        ...wsActiveAssetCtx.ctx,
+      };
     }
-    return marketDataMap[coin] || {};
+    return fallbackMarketData;
   }, [marketDataMap, wsActiveAssetCtx, coin]);
 
   const location = useLocation();
@@ -43,11 +48,8 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
 
     if (markPx && isPerpsRoute) {
       const price = splitNumberByStep(Number(markPx));
-      const md = currentMarketData as
-        | { displayName?: string; quoteAsset?: string }
-        | undefined;
-      const base = formatPerpsCoin(md?.displayName || coin);
-      const quote = md?.quoteAsset || 'USDC';
+      const base = formatPerpsCoin(marketMeta?.displayName || coin);
+      const quote = marketMeta?.quoteAsset || 'USDC';
       document.title = `$${price} | ${base}/${quote} | Rabby`;
     } else {
       document.title = originalTitle;
@@ -56,7 +58,13 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     return () => {
       document.title = originalTitle;
     };
-  }, [coin, currentMarketData?.markPx, isPerpsRoute]);
+  }, [
+    coin,
+    currentMarketData?.markPx,
+    isPerpsRoute,
+    marketMeta?.displayName,
+    marketMeta?.quoteAsset,
+  ]);
 
   const priceChange = currentMarketData.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)

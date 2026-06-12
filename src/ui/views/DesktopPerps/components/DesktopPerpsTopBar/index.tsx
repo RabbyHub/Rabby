@@ -115,7 +115,7 @@ export const DesktopPerpsTopBar: React.FC = () => {
   }, []);
 
   return (
-    <div className="desktop-perps-topbar mx-[6px] mt-[6px] h-[48px] rounded-[6px] bg-rb-neutral-bg-1 flex items-center gap-[24px] px-[12px] min-w-0">
+    <div className="desktop-perps-topbar mx-[6px] mt-[6px] h-[38px] rounded-[6px] bg-rb-neutral-bg-1 flex items-center gap-[24px] px-[12px] min-w-0">
       <div className="flex flex-1 min-w-0 items-center gap-[12px] overflow-hidden">
         <RcIconTopBarLogo className="desktop-perps-topbar-logo w-[24px] h-[24px]" />
 
