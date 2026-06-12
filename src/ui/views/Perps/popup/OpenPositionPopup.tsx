@@ -20,6 +20,8 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { PERPS_MAX_NTL_VALUE, PerpsOpenOrderType } from '../constants';
 import { EditTpSlTag } from '../components/EditTpSlTag';
 import { EditLimitPriceTag } from '../components/EditLimitPriceTag';
+import { MarketSlippage } from '../components/MarketSlippage';
+import { useMarketSlippage } from '../hooks/useMarketSlippage';
 import { isMarketableLimit } from '../limitOrderUtils';
 import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
@@ -31,6 +33,7 @@ import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 import stats from '@/stats';
 import { useRabbySelector } from '@/ui/store';
 import { MarginModePopup } from './MarginModePopup';
+import './OpenPositionPopup.less';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -100,6 +103,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   );
   const [isReviewMode, setIsReviewMode] = React.useState(false);
 
+  const [orderTypeFlashing, setOrderTypeFlashing] = React.useState(false);
+
   const [direction, setDirection] = React.useState<'Long' | 'Short'>(
     _direction
   );
@@ -156,6 +161,18 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     if (!effectivePx || !tradeAmount) return '0';
     return Number(tradeAmount / effectivePx).toFixed(szDecimals);
   }, [tradeAmount, effectivePx, szDecimals]);
+
+  const {
+    slippage,
+    depthInsufficient,
+    isReady: slippageReady,
+  } = useMarketSlippage({
+    coin,
+    isBuy: direction === 'Long',
+    size: Number(tradeSize),
+    markPrice,
+    enabled: visible && orderType === 'market',
+  });
 
   // 计算预估清算价格
   const estimatedLiquidationPrice = React.useMemo(() => {
@@ -304,6 +321,13 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   const handleBackToEdit = () => {
     setIsReviewMode(false);
   };
+
+  const handleSwitchToLimit = useMemoizedFn(() => {
+    switchOrderType('limit');
+
+    setOrderTypeFlashing(true);
+    setIsReviewMode(false);
+  });
 
   const dayDelta = useMemo(() => {
     const prevDayPx = Number(
@@ -513,7 +537,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
               ${splitNumberByStep(markPrice)}
             </div>
           </div>
-          <div className="flex w-full py-8 justify-between items-center">
+          <div className="relative flex w-full py-8 justify-between items-center">
+            <div
+              className={clsx(
+                'perps-ordertype-flash-overlay',
+                orderTypeFlashing && 'is-flashing'
+              )}
+              onAnimationEnd={() => setOrderTypeFlashing(false)}
+            />
             <div className="text-14 text-r-neutral-foot">
               {t('page.perpsDetail.PerpsOpenPositionPopup.orderType')}
             </div>
@@ -756,7 +787,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         </div>
 
         {/* Price and Fee Section */}
-        <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-20">
+        <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-12">
           <div className="space-y-16">
             <div className="flex justify-between items-center">
               <div className="text-13 text-r-neutral-body flex items-center gap-4">
@@ -801,6 +832,15 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
           </div>
         </div>
+        {orderType === 'market' && slippageReady && Number(tradeSize) > 0 && (
+          <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-12">
+            <MarketSlippage
+              slippage={slippage}
+              depthInsufficient={depthInsufficient}
+              onSwitchToLimit={handleSwitchToLimit}
+            />
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="fixed bottom-0 left-0 right-0">
