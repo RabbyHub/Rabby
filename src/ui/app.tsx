@@ -17,6 +17,7 @@ import store from './store';
 
 import { getSentryEnv, isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
+import { RABBY_SENTRY_IGNORE_ERRORS } from '@/utils/sentry';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -25,22 +26,7 @@ Sentry.init({
     'https://f4a992c621c55f48350156a32da4778d@o4507018303438848.ingest.us.sentry.io/4507018389749760',
   release: process.env.release,
   environment: getSentryEnv(),
-  ignoreErrors: [
-    'ResizeObserver loop limit exceeded',
-    'ResizeObserver loop completed with undelivered notifications',
-    'Network Error',
-    'Request limit exceeded.',
-    'Non-Error promise rejection captured with keys: code, message',
-    'Non-Error promise rejection captured with keys: message, stack',
-    'Failed to fetch',
-    'Non-Error promise rejection captured with keys: message',
-    /Non-Error promise rejection captured/,
-    /\[From .*\]/, // error from custom rpc
-    /AxiosError/,
-    /WebSocket connection failed/,
-    /Could not establish connection/,
-    /HttpRequestError/,
-  ],
+  ignoreErrors: RABBY_SENTRY_IGNORE_ERRORS,
 });
 
 function initAppMeta() {
