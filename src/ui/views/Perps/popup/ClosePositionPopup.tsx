@@ -198,6 +198,8 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 visible={slippageReady && Number(positionSize) > 0}
                 slippage={slippage}
                 depthInsufficient={depthInsufficient}
+                labelClassName="text-14 font-medium text-rb-neutral-body leading-[18px]"
+                valueClassName="text-17 font-bold leading-[22px]"
               />
             </div>
           </div>

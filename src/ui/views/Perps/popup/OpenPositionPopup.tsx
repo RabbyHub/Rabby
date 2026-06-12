@@ -820,16 +820,15 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
             </div>
           </div>
         </div>
-        <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-12">
-          <MarketSlippage
-            visible={
-              orderType === 'market' && slippageReady && Number(tradeSize) > 0
-            }
-            slippage={slippage}
-            depthInsufficient={depthInsufficient}
-            onSwitchToLimit={handleSwitchToLimit}
-          />
-        </div>
+        {orderType === 'market' && slippageReady && Number(tradeSize) > 0 && (
+          <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-12">
+            <MarketSlippage
+              slippage={slippage}
+              depthInsufficient={depthInsufficient}
+              onSwitchToLimit={handleSwitchToLimit}
+            />
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="fixed bottom-0 left-0 right-0">
