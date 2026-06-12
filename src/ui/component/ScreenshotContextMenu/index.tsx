@@ -100,12 +100,50 @@ const uploadScreenshot = async (screenshot: string) => {
   return imageUrl;
 };
 
-const getScreenshotFeedbackPageInfo = () => {
+const getScreenshotFeedbackUserAgentData = async () => {
+  const userAgentData = (window.navigator as any).userAgentData;
+
+  if (!userAgentData) return undefined;
+
+  try {
+    const highEntropyValues =
+      (await userAgentData.getHighEntropyValues?.([
+        'architecture',
+        'bitness',
+        'fullVersionList',
+        'model',
+        'platform',
+        'platformVersion',
+        'uaFullVersion',
+      ])) || {};
+
+    return {
+      architecture: highEntropyValues.architecture,
+      bitness: highEntropyValues.bitness,
+      brands: userAgentData.brands,
+      fullVersionList: highEntropyValues.fullVersionList,
+      mobile: userAgentData.mobile,
+      model: highEntropyValues.model,
+      platform: highEntropyValues.platform || userAgentData.platform,
+      platformVersion: highEntropyValues.platformVersion,
+      uaFullVersion: highEntropyValues.uaFullVersion,
+    };
+  } catch (error) {
+    return {
+      brands: userAgentData.brands,
+      mobile: userAgentData.mobile,
+      platform: userAgentData.platform,
+    };
+  }
+};
+
+const getScreenshotFeedbackPageInfo = async () => {
   return {
     uiType: getUITypeName(),
     pageUrl: window.location.href,
     routePath: `${window.location.pathname}${window.location.search}${window.location.hash}`,
     userAgent: window.navigator.userAgent,
+    userAgentData: await getScreenshotFeedbackUserAgentData(),
     language: window.navigator.language,
     platform: window.navigator.platform,
     viewport: {
@@ -145,7 +183,7 @@ export const ScreenshotContextMenu = () => {
         content: params.description,
         image: imageUrl,
         includeOperationLogs: params.includeOperationLogs,
-        pageInfo: getScreenshotFeedbackPageInfo(),
+        pageInfo: await getScreenshotFeedbackPageInfo(),
       });
     },
     {
