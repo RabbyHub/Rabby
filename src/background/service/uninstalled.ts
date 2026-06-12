@@ -96,26 +96,30 @@ class Uninstalled {
     }
   };
 
-  setUninstalled = () => {
-    let search = '';
-    if (this.store.imported) {
-      search = 'i';
-    }
-    if (this.store.wallet) {
-      search += 'w';
-    }
+  setUninstalled = async () => {
+    try {
+      let search = '';
+      if (this.store.imported) {
+        search = 'i';
+      }
+      if (this.store.wallet) {
+        search += 'w';
+      }
 
-    if (this.store.tx) {
-      search += 't';
+      if (this.store.tx) {
+        search += 't';
+      }
+      if (this.store.local) {
+        search += 'l';
+      }
+      await browser.runtime.setUninstallURL(
+        `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}&v=${
+          browser.runtime.getManifest().version
+        }`
+      );
+    } catch (e) {
+      // ignore
     }
-    if (this.store.local) {
-      search += 'l';
-    }
-    browser.runtime.setUninstallURL(
-      `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}&v=${
-        browser.runtime.getManifest().version
-      }`
-    );
   };
 }
 

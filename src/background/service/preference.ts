@@ -122,6 +122,7 @@ export interface PreferenceStore {
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
   sendEnableTime?: number;
   ga4EventTime?: number;
+  userDataTrackingOptOut?: boolean;
   customizedToken?: Token[];
   blockedToken?: Token[];
   collectionStarred?: Token[];
@@ -251,6 +252,7 @@ class PreferenceService {
         biometricUnlockIv: '',
         unlockPreferredMethod: 'biometric',
         ga4EventTime: 0,
+        userDataTrackingOptOut: true,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
         desktopTabIds: {},
@@ -390,6 +392,9 @@ class PreferenceService {
 
     if (this.store.ga4EventTime) {
       this.store.ga4EventTime = 0;
+    }
+    if (this.store.userDataTrackingOptOut == null) {
+      this.store.userDataTrackingOptOut = false;
     }
     if (!this.store.sceneAccountMap) {
       this.store.sceneAccountMap = {};
@@ -956,6 +961,12 @@ class PreferenceService {
   };
   updateSendEnableTime = (time: number) => {
     this.store.sendEnableTime = time;
+  };
+  getUserDataTrackingOptOut = () => {
+    return this.store.userDataTrackingOptOut === true;
+  };
+  setUserDataTrackingOptOut = (value: boolean) => {
+    this.store.userDataTrackingOptOut = value;
   };
   getNeedSwitchWalletCheck = () => {
     if (this.store.needSwitchWalletCheck == null) {

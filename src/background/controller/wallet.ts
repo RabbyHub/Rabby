@@ -107,7 +107,7 @@ import KeystoneKeyring, {
   MemStoreDataReady,
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
-import stats from '@/stats';
+import stats, { EventParams } from '@/stats';
 import {
   generateAliasName,
   isFullVersionAccountType,
@@ -1938,6 +1938,14 @@ export class WalletController extends BaseController {
 
   setIsShowTestnet = (value: boolean) => {
     return preferenceService.setIsShowTestnet(value);
+  };
+
+  getUserDataTrackingOptOut = () => {
+    return preferenceService.getUserDataTrackingOptOut();
+  };
+
+  setUserDataTrackingOptOut = (value: boolean) => {
+    return preferenceService.setUserDataTrackingOptOut(value);
   };
 
   setDesktopTokensAllMode = (value: boolean) => {
@@ -5363,10 +5371,7 @@ export class WalletController extends BaseController {
 
   removeCollectionStarred = preferenceService.removeCollectionStarred;
 
-  reportStats = (
-    name: string,
-    params: Record<string, string | number | boolean>
-  ) => {
+  reportStats = (name: string, params: EventParams) => {
     stats.report(name, params);
   };
   getNeedSwitchWalletCheck = preferenceService.getNeedSwitchWalletCheck;
