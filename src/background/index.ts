@@ -479,6 +479,10 @@ browser.runtime.onConnect.addListener((port) => {
       });
     }
 
+    feedbackService.setScreenshotContextMenuVisible(true).catch(() => {
+      // Reset the native menu for newly opened extension pages.
+    });
+
     browser.runtime.sendMessage({
       type: 'pageOpened',
     });

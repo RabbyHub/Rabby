@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Input, Modal, message } from 'antd';
 import { snapdom } from '@zumer/snapdom';
-import { useMount, useRequest } from 'ahooks';
+import { useRequest } from 'ahooks';
 import browser from 'webextension-polyfill';
 import { getUITypeName, getUiType, useWallet } from '@/ui/utils';
 import {
@@ -267,10 +267,6 @@ export const ScreenshotContextMenu = () => {
       setIncludeOperationLogs(true);
     }
   }, [modalVisible]);
-
-  useMount(() => {
-    wallet.setScreenshotContextMenuVisible(true);
-  });
 
   return (
     <>
