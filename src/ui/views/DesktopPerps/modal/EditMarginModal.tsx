@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';
+import { ReactComponent as RcIconManageMarginAlarmCC } from '@/ui/assets/perps/icon-alarm-manage-margin-cc.svg';
 import { useRequest } from 'ahooks';
 import { MarketData } from '@/ui/models/perps';
 import {
@@ -164,6 +164,16 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
     );
     return percent;
   }, [liquidationPx, markPrice]);
+
+  const estimatedDistanceToLiquidationPercent = useMemo(() => {
+    if (!margin || !estimatedLiquidationPrice) {
+      return '';
+    }
+
+    return formatPerpsPct(
+      calculateDistanceToLiquidation(estimatedLiquidationPrice, markPrice)
+    );
+  }, [estimatedLiquidationPrice, margin, markPrice]);
 
   const handleMarginInputChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -337,25 +347,14 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               <span className="text-rb-neutral-foot text-[13px] leading-[16px]">
                 {t('page.perpsDetail.PerpsEditMarginPopup.liqDistance')}
               </span>
-              <div className="flex items-center">
-                <div className="flex items-center gap-[6px]">
-                  <RcIconAlarmCC className="desktop-perps-manage-margin-distance-icon" />
-                  <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
-                    {currentDistanceToLiquidationPercent}
-                  </span>
-                </div>
-                {margin && estimatedLiquidationPrice && (
-                  <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
-                    {' '}
-                    →{' '}
-                    {formatPerpsPct(
-                      calculateDistanceToLiquidation(
-                        estimatedLiquidationPrice,
-                        markPrice
-                      )
-                    )}
-                  </span>
-                )}
+              <div className="flex items-center gap-[6px]">
+                <RcIconManageMarginAlarmCC className="desktop-perps-manage-margin-distance-icon" />
+                <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
+                  {currentDistanceToLiquidationPercent}
+                  {estimatedDistanceToLiquidationPercent
+                    ? ` → ${estimatedDistanceToLiquidationPercent}`
+                    : ''}
+                </span>
               </div>
             </div>
           </section>
