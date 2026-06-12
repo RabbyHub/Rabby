@@ -22,7 +22,7 @@ export const RiskBanner: React.FC<RiskBannerProps> = ({ text, className }) => {
         className
       )}
     >
-      <RcIconWaringCC className="flex-shrink-0" />
+      <RcIconWaringCC className="shrink-0" />
       <span className="text-[12px] leading-[14px] font-medium">{text}</span>
     </div>
   );

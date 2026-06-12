@@ -63,7 +63,7 @@ export const TokenAmountItem: React.FC<Props> = ({
           text={
             <div
               onClick={onEdit}
-              className="overflow-hidden overflow-ellipsis flex justify-between items-center"
+              className="overflow-hidden text-ellipsis flex justify-between items-center"
             >
               <div
                 className={clsx(

@@ -88,7 +88,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
       {/* Coin Dropdown - Only this area is clickable for dropdown */}
       <CoinDropdown coin={coin} onSelectCoin={onSelectCoin} />
 
-      <div className="mr-[24px] flex flex-col flex-shrink-0 min-w-[96px]">
+      <div className="mr-[24px] flex flex-col shrink-0 min-w-[96px]">
         <span
           className={clsx(
             'text-[20px] leading-[24px] font-medium',

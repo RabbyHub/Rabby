@@ -54,7 +54,7 @@ export const HistoryPage = () => {
         {t('page.transactions.title')}
       </PageHeader>
       {isShowTestnet && (
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <NetSwitchTabs value={selectedTab} onTabChange={onTabChange} />
         </div>
       )}

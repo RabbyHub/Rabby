@@ -133,7 +133,7 @@ const AccountItem = ({
       <div className="account-info flex-1">
         <p className="name">
           <div className="flex items-center gap-4">
-            <span className="inline-block max-w-[180px] overflow-hidden overflow-ellipsis whitespace-nowrap text-r-neutral-title-1">
+            <span className="inline-block max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap text-r-neutral-title-1">
               {account.alianName}
             </span>
             {onClick && whitelistEnable && isInWhiteList && (

@@ -80,7 +80,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
         className={clsx(
           'relative translate-x-0 overflow-hidden',
           'bg-r-neutral-card-1 rounded-[16px]',
-          'flex-shrink-0 py-[24px] px-[32px] flex flex-col'
+          'shrink-0 py-[24px] px-[32px] flex flex-col'
         )}
         style={{
           boxShadow: '0 16px 40px rgba(25, 41, 69, 0.06)',
@@ -114,7 +114,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                 )}
               >
                 +
-                <div className="relative w-[28px] h-[28px] flex-shrink-0">
+                <div className="relative w-[28px] h-[28px] shrink-0">
                   <Image
                     className="w-full h-full block rounded-full"
                     src={token?.logo_url || IconUnknown}
@@ -173,7 +173,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
             </div>
 
             <div className="mb-[32px] flex items-center gap-[16px]">
-              <div className="relative w-[46px] h-[46px] flex-shrink-0">
+              <div className="relative w-[46px] h-[46px] shrink-0">
                 <Image
                   className="w-full h-full block rounded-full"
                   rootClassName="w-full h-full"

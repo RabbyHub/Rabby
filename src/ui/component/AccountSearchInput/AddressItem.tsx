@@ -67,7 +67,7 @@ const AddressItem = memo(
       <div
         className={clsx(
           'searched-account-item relative',
-          'group hover:bg-blue-light hover:bg-opacity-[0.1]',
+          'group hover:bg-blue-light/10',
           className
         )}
         onClick={(e) => {

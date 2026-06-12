@@ -88,7 +88,7 @@ export const InModalApprovalAssetRow: React.FC<InModalApprovalAssetRowProps> = (
           checked={isSelected}
           indeterminate={false}
           onChange={handleToggleSelection}
-          className="flex-shrink-0"
+          className="shrink-0"
         />
         <div className="flex items-center gap-[8px] flex-1 min-w-0">
           <AssetAvatar

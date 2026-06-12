@@ -121,7 +121,7 @@ const UserListDrawer = ({
       <UserListDrawerWrapper>
         <div className="origin">
           <img src={logo} className="logo" />
-          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+          <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
             {origin}
           </span>
         </div>

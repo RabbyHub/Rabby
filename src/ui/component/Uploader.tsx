@@ -71,7 +71,7 @@ const Uploader = ({ onChange, accept, className }: UploaderProps) => {
       {uploadState === UPLOADER_STATE.SELECTED && (
         <div className="text-13 text-gray-comment w-full">
           <ThemeIcon src={RcIconFileJson} className="mb-12 block mx-auto" />
-          <div className="overflow-ellipsis overflow-hidden whitespace-nowrap max-w-[80%] mx-auto">
+          <div className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[80%] mx-auto">
             {filename}
           </div>
         </div>

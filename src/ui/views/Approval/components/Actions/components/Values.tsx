@@ -423,7 +423,7 @@ const AddressWithCopy = ({
 
 const Text = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+    <div className="overflow-hidden text-ellipsis whitespace-nowrap">
       {children}
     </div>
   );

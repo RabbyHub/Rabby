@@ -358,35 +358,35 @@ export const LendingList: React.FC = () => {
         {loading ? (
           <LendingListSkeleton />
         ) : filteredData.length > 0 ? (
-          <Table className="!w-full ml-0 mr-0">
+          <Table className="w-full ml-0 mr-0">
             <THeader
               className="w-full justify-between bg-rb-neutral-bg-1 px-[20px] py-[12px] sticky top-0 z-10"
               rowClassName="px-[16px]"
             >
               <THeadCell className="flex-1 min-w-0 normal-case">
                 <div className="flex items-center gap-[32px]">
-                  <span className="flex-shrink-0 min-w-[180px]">
+                  <span className="shrink-0 min-w-[180px]">
                     {t('page.lending.table.token')}
                   </span>
-                  <span className="flex-shrink-0 min-w-[120px]">
+                  <span className="shrink-0 min-w-[120px]">
                     {t('page.lending.table.type')}
                   </span>
-                  <span className="flex-shrink-0 min-w-[120px]">
+                  <span className="shrink-0 min-w-[120px]">
                     {t('page.lending.table.apy')}
                   </span>
-                  <span className="flex-shrink-0 min-w-[100px]">
+                  <span className="shrink-0 min-w-[100px]">
                     {t('page.lending.table.myAssets')}
                   </span>
                 </div>
               </THeadCell>
-              <THeadCell className="w-[88px] flex-shrink-0 normal-case flex justify-start">
+              <THeadCell className="w-[88px] shrink-0 normal-case flex justify-start">
                 <div className="flex items-center justify-center">
                   {t('page.lending.table.collateral')}
                 </div>
               </THeadCell>
               <THeadCell
                 className={clsx(
-                  'flex-shrink-0',
+                  'shrink-0',
                   hasDebtSwapButton ? 'w-[430px]' : 'w-[300px]'
                 )}
               >

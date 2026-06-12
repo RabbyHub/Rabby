@@ -150,7 +150,7 @@ export const AccountInfo: React.FC = () => {
   const handleWithdrawClick = () => openPerpsPopup('withdraw');
 
   return (
-    <div className="w-full flex-shrink-0 overflow-hidden">
+    <div className="w-full shrink-0 overflow-hidden">
       <div className="px-[12px] pt-[24px] pb-[36px]">
         <div className="flex items-center gap-[6px] mb-[12px]">
           <button

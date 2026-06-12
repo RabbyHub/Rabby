@@ -82,7 +82,7 @@ export const CoboArgusInfo = ({ address }: { address: string }) => {
               {accountDetail?.safeModuleAddress}
               <img
                 src={IconCopy}
-                className="w-14 h-14 flex-shrink-0 cursor-pointer"
+                className="w-14 h-14 shrink-0 cursor-pointer"
                 onClick={() => {
                   if (accountDetail?.safeModuleAddress) {
                     copyAddress(accountDetail?.safeModuleAddress);

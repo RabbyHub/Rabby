@@ -480,7 +480,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   if (type === 'reverse') {
     return (
       <div className="flex min-h-[540px] flex-col bg-rb-neutral-bg-1">
-        <div className="relative flex h-[56px] flex-shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
+        <div className="relative flex h-[56px] shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
           {t('page.perpsPro.userInfo.positionInfo.reversePosition')}
         </div>
 
@@ -535,7 +535,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         <div className="bottom-0 left-0 right-0 flex flex-col gap-[12px] border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
           {reverseLiquidationRiskText ? (
             <div className="flex h-[32px] items-center gap-[4px] overflow-hidden rounded-[8px] bg-rb-orange-light-1 px-[12px] text-rb-orange-default">
-              <RcIconInfoCC className="h-[16px] w-[16px] flex-shrink-0" />
+              <RcIconInfoCC className="h-[16px] w-[16px] shrink-0" />
               <div className="min-w-0 flex-1 truncate text-[12px] leading-[14px]">
                 {reverseLiquidationRiskText}
               </div>

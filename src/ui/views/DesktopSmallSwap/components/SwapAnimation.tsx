@@ -125,7 +125,7 @@ export const SwapAnimation: React.FC<SwapAnimationProps> = ({
     <Container className={clsx('relative w-[80px] h-[24px]', className)}>
       <div className="flex items-center gap-[18px]">
         <div className="flex items-center gap-[12px]">
-          <div className="relative w-[24px] h-[24px] flex-shrink-0 from-token">
+          <div className="relative w-[24px] h-[24px] shrink-0 from-token">
             <Image
               className="w-full h-full block rounded-full"
               src={fromToken?.logo_url || IconUnknown}
@@ -142,7 +142,7 @@ export const SwapAnimation: React.FC<SwapAnimationProps> = ({
           <div className="w-[9px] h-[9px] rounded-full bg-r-blue-default dot">
             <div className="dot-inner"></div>
           </div>
-          <div className="relative w-[24px] h-[24px] flex-shrink-0 to-token">
+          <div className="relative w-[24px] h-[24px] shrink-0 to-token">
             <Image
               className="w-full h-full block rounded-full"
               src={toToken?.logo_url || IconUnknown}

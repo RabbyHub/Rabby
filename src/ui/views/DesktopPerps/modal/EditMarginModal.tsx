@@ -226,7 +226,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
       }
     >
       <div className="flex flex-col min-h-[540px] bg-rb-neutral-bg-1">
-        <div className="relative flex h-[56px] flex-shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
+        <div className="relative flex h-[56px] shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
           {t('page.perpsPro.editMargin.title')}
         </div>
 
@@ -324,7 +324,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               </div>
               {hasMarginError ? (
                 <div className="absolute left-[16px] right-[16px] top-[124px] flex h-[32px] items-center gap-[4px] rounded-[8px] bg-rb-orange-light-1 px-[12px] text-[12px] leading-[14px] text-rb-orange-default">
-                  <RcIconInfoCC className="h-[16px] w-[16px] flex-shrink-0" />
+                  <RcIconInfoCC className="h-[16px] w-[16px] shrink-0" />
                   <span className="truncate">
                     {marginValidation.errorMessage}
                   </span>

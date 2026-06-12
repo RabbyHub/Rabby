@@ -1337,9 +1337,7 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconSettingsCodeCC,
-          content: (
-            <div className="flex-shrink-0">Mock Exposure Rate Guidance</div>
-          ),
+          content: <div className="shrink-0">Mock Exposure Rate Guidance</div>,
           rightIcon: (
             <div className="flex items-center justify-end gap-8">
               <Button

@@ -200,7 +200,7 @@ export const TokenList = ({
           <div className="row" key={l.id}>
             <div className="td flex items-center pr-4">
               <AssetAvatar token={l} />
-              <span className="ml-8 overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <span className="ml-8 overflow-hidden text-ellipsis whitespace-nowrap">
                 {l._symbol}
               </span>
             </div>

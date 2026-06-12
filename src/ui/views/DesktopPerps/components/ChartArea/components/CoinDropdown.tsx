@@ -128,9 +128,9 @@ const MarketRowComponent = memo(
           }}
         >
           {/* Left: Star + Logo + Symbol */}
-          <div className="flex items-center gap-[8px] w-[250px] flex-shrink-0">
+          <div className="flex items-center gap-[8px] w-[250px] shrink-0">
             <div
-              className="flex items-center justify-center w-[16px] h-[16px] flex-shrink-0"
+              className="flex items-center justify-center w-[16px] h-[16px] shrink-0"
               onClick={(e) => onToggleFavorite(marketItem.name, e)}
             >
               {isFavorited ? (
@@ -474,7 +474,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         <div className="flex items-center gap-[12px] px-[8px] py-[12px]">
           <div
             className={clsx(
-              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[250px] flex-shrink-0',
+              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[250px] shrink-0',
               sortField === 'name' && 'text-r-neutral-title-1 font-medium'
             )}
             onClick={() => handleSort('name')}

@@ -746,7 +746,7 @@ export const EditTpSlModal: React.FC<Props> = ({
               disabled={Boolean(cancelingSide)}
               onClick={() => cancelSideImmediately(side)}
             >
-              <RcIconPerpsTpslDelete className="block h-[14px] w-[14px] flex-shrink-0" />
+              <RcIconPerpsTpslDelete className="block h-[14px] w-[14px] shrink-0" />
               {isCanceling ? `${cancelLabel}...` : cancelLabel}
             </button>
           ) : null}
@@ -773,7 +773,7 @@ export const EditTpSlModal: React.FC<Props> = ({
             )}
           >
             {state.modeValue ? (
-              <span className="mr-[2px] flex-shrink-0 text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
+              <span className="mr-[2px] shrink-0 text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
                 {modeValueSign}
               </span>
             ) : null}
@@ -793,7 +793,7 @@ export const EditTpSlModal: React.FC<Props> = ({
             >
               <button
                 type="button"
-                className="ml-[8px] flex flex-shrink-0 items-center gap-[3px] border-0 bg-transparent p-0 text-[15px] leading-[18px] text-rb-neutral-foot"
+                className="ml-[8px] flex shrink-0 items-center gap-[3px] border-0 bg-transparent p-0 text-[15px] leading-[18px] text-rb-neutral-foot"
               >
                 {modeLabel}
                 <RcIconArrowDownPerpsCC className="h-[14px] w-[14px] text-rb-neutral-foot" />
@@ -835,7 +835,7 @@ export const EditTpSlModal: React.FC<Props> = ({
       }
     >
       <div className="flex min-h-[540px] flex-col bg-rb-neutral-bg-1">
-        <div className="relative flex h-[56px] flex-shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
+        <div className="relative flex h-[56px] shrink-0 items-center justify-center px-[56px] text-center text-20 font-medium text-r-neutral-title-1">
           {t('page.perpsPro.editTpSl.title')}
         </div>
 

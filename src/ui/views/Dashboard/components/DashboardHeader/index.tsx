@@ -163,7 +163,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
                   className="text-[12px] leading-[14px] text-r-neutral-title2 opacity-60"
                 />
               )}
-              <IconArrowRight className="flex-shrink-0" />
+              <IconArrowRight className="shrink-0" />
             </div>
 
             <RcIconCopy
@@ -187,7 +187,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
             />
           </div>
 
-          <div className="flex-shrink-0 min-w-0 ml-auto flex items-center gap-[4px]">
+          <div className="shrink-0 min-w-0 ml-auto flex items-center gap-[4px]">
             <FeedbackEntry />
             <GasAccountEntry />
 
@@ -340,7 +340,7 @@ const FeedbackResponsePopup = ({
         <Button
           type="primary"
           block
-          className="mt-[24px] h-[48px] shrink-0 flex-shrink-0"
+          className="mt-[24px] h-[48px] shrink-0"
           onClick={finishViewFeedback}
         >
           {t('global.ok')}
@@ -417,9 +417,9 @@ const GasAccountEntry = () => {
         onClick={handleClick}
       >
         {isLowGasAccountBalance ? (
-          <RcIconGasLowCC className="flex-shrink-0" />
+          <RcIconGasLowCC className="shrink-0" />
         ) : (
-          <RcIconGasFullCC className="flex-shrink-0" />
+          <RcIconGasFullCC className="shrink-0" />
         )}
         <div
           className={clsx(
