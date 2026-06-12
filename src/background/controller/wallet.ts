@@ -216,6 +216,59 @@ import {
   normalizeBalanceCacheData,
 } from '@/db/schema/balance';
 
+type ScreenshotFeedbackPageInfo = {
+  uiType?: string;
+  pageUrl?: string;
+  routePath?: string;
+  userAgent?: string;
+  language?: string;
+  platform?: string;
+  viewport?: {
+    width: number;
+    height: number;
+    dpr: number;
+  };
+  screen?: {
+    width: number;
+    height: number;
+    availWidth: number;
+    availHeight: number;
+  };
+};
+
+type ScreenshotFeedbackExtra = {
+  currentScreen?: string;
+  pageInfo?: ScreenshotFeedbackPageInfo;
+  appVersionText: string;
+  appVersion: string;
+  appBuildNumber: string;
+  appBuildRevision: string;
+  applicationId?: string;
+  extensionVersion: string;
+  extensionName?: string;
+  totalBalanceText?: string;
+  countOfMyAccounts?: number;
+  countOfMyImportedAccounts?: number;
+  myFirstAddress?: string;
+  myFirstImportedAddress?: string;
+  myCurrentAddress?: string;
+  mySceneAddresses?: Record<string, string>;
+  systemName?: string;
+  systemVersion?: string;
+  userAgent?: string;
+  language?: string;
+  platform?: string;
+  themeMode?: DARK_MODE_TYPE;
+};
+
+type PostUserFeedbackParams = {
+  content: string;
+  image: string;
+  includeOperationLogs?: boolean;
+  pageInfo?: ScreenshotFeedbackPageInfo;
+  totalBalanceText?: string;
+};
+
 const stashKeyrings: Record<string | number, any> = {};
 
 const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
@@ -6809,6 +6862,132 @@ export class WalletController extends BaseController {
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
   removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
   clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
+  setScreenshotContextMenuVisible =
+    feedbackService.setScreenshotContextMenuVisible;
+
+  getScreenshotFeedbackExtra = async ({
+    includeOperationLogs = true,
+    pageInfo,
+    totalBalanceText,
+  }: Pick<
+    PostUserFeedbackParams,
+    'includeOperationLogs' | 'pageInfo' | 'totalBalanceText'
+  >): Promise<ScreenshotFeedbackExtra> => {
+    const version = process.env.release || '0';
+    const manifest = Browser.runtime.getManifest();
+    const manifestVersion = manifest.version || version;
+    const extra: ScreenshotFeedbackExtra = {
+      // source: 'extension_screenshot',
+      currentScreen: pageInfo?.routePath || pageInfo?.pageUrl,
+      pageInfo,
+      appVersionText: version,
+      appVersion: version,
+      appBuildNumber: manifestVersion,
+      appBuildRevision: process.env.RABBY_BUILD_GIT_HASH || '',
+      applicationId: Browser.runtime.id,
+      extensionVersion: manifestVersion,
+      extensionName: manifest.name,
+      totalBalanceText,
+      // systemName: 'browser_extension',
+      // systemVersion: manifestVersion,
+      userAgent:
+        pageInfo?.userAgent ||
+        (typeof navigator !== 'undefined' ? navigator.userAgent : undefined),
+      language:
+        pageInfo?.language ||
+        (typeof navigator !== 'undefined' ? navigator.language : undefined),
+      platform:
+        pageInfo?.platform ||
+        (typeof navigator !== 'undefined' ? navigator.platform : undefined),
+    };
+
+    if (includeOperationLogs) {
+      try {
+        const accounts = await keyringService.getAllVisibleAccountsArray();
+        const importedAccounts = accounts.filter(
+          (item) =>
+            item.type !== KEYRING_TYPE.WatchAddressKeyring &&
+            item.type !== KEYRING_TYPE.GnosisKeyring
+        );
+
+        extra.countOfMyAccounts = accounts.length;
+        extra.countOfMyImportedAccounts = importedAccounts.length;
+        extra.myFirstAddress = accounts[0]?.address;
+        extra.myFirstImportedAddress = importedAccounts[0]?.address;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback accounts extra',
+          error
+        );
+      }
+
+      try {
+        const currentAccount = preferenceService.getCurrentAccount();
+
+        extra.myCurrentAddress = currentAccount?.address;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback current account extra',
+          error
+        );
+      }
+
+      try {
+        const sceneAccountMap = (preferenceService.getPreference(
+          'sceneAccountMap'
+        ) || {}) as Record<string, Account | null>;
+        const mySceneAddresses = Object.entries(sceneAccountMap).reduce(
+          (result, [scene, account]) => {
+            if (account?.address) {
+              result[scene] = account.address;
+            }
+            return result;
+          },
+          {} as Record<string, string>
+        );
+        const perpsAccount = await perpsService.getCurrentAccount();
+
+        if (perpsAccount?.address) {
+          mySceneAddresses.perps = perpsAccount.address;
+        }
+        extra.mySceneAddresses = mySceneAddresses;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback scene account extra',
+          error
+        );
+      }
+    }
+
+    try {
+      extra.themeMode = preferenceService.getThemeMode();
+    } catch (error) {
+      console.error('Failed to get screenshot feedback theme extra', error);
+    }
+
+    return extra;
+  };
+
+  postUserFeedback = async ({
+    content,
+    image,
+    includeOperationLogs = true,
+    pageInfo,
+    totalBalanceText,
+  }: PostUserFeedbackParams) => {
+    const extra = await this.getScreenshotFeedbackExtra({
+      includeOperationLogs,
+      pageInfo,
+      totalBalanceText,
+    });
+
+    return openapiService.postUserFeedback({
+      content,
+      image_url_list: image ? [image] : [],
+      title: '',
+      extra,
+    });
+  };
 
   checkIsApprovedForAll = async ({
     owner,
