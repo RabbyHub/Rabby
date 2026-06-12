@@ -5022,6 +5022,9 @@
       "txCompleteMoreContent": "{{chain}} #{{nonce}} 交易已完成，點擊查看更多",
       "txFailedMoreContent": "{{chain}} #{{nonce}} 交易失敗，點擊查看更多"
     },
+    "feedback": {
+      "screenshotContextMenuTitle": "截圖回報問題"
+    },
     "alias": {
       "HdKeyring": "助記詞",
       "simpleKeyring": "私鑰",
