@@ -322,7 +322,7 @@ export const DbkChainBridge = () => {
                 </div>
               </div>
               <div className="flex items-center gap-[12px]">
-                <div className="text-[13px] text-r-neutral-body leading-[16px shrink-0]">
+                <div className="text-[13px] text-r-neutral-body leading-[16px] shrink-0">
                   {t('page.ecology.dbk.bridge.info.gasFee')}
                 </div>
                 <div className="ml-auto min-w-0">
