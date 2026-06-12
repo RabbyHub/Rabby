@@ -187,7 +187,7 @@
 
   &:active,
   &[aria-expanded='true'] {
-    background: var(--rb-neutral-bg-3) !important;
+    background: var(--rb-neutral-bg-4) !important;
     border-color: var(--rb-neutral-title-1) !important;
   }
 }
@@ -216,7 +216,7 @@
 
   &:active {
     border-color: var(--rb-neutral-title-1) !important;
-    background: var(--rb-neutral-bg-3);
+    background: var(--rb-neutral-bg-4);
     color: var(--rb-neutral-title-1);
   }
 }
@@ -405,6 +405,14 @@
   background-color: var(--rb-brand-disable) !important;
   border-color: var(--rb-brand-disable) !important;
   opacity: 1;
+}
+
+.desktop-perps-tpsl-positive-input.ant-input-affix-wrapper .ant-input {
+  color: var(--rb-green-default);
+}
+
+.desktop-perps-tpsl-negative-input.ant-input-affix-wrapper .ant-input {
+  color: var(--rb-red-default);
 }
 
 @media (prefers-reduced-motion: reduce) {
