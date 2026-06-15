@@ -279,7 +279,7 @@ export const ScreenshotContextMenu = () => {
             {screenshot ? (
               <div className="rounded-[8px] border-[1px] border-rabby-neutral-line mb-[16px]">
                 <img
-                  className="w-full mb-[12px] h-[200px] object-contain"
+                  className="w-full h-[274px] object-contain"
                   src={screenshot}
                   alt="Rabby popup screenshot"
                 />
@@ -289,7 +289,7 @@ export const ScreenshotContextMenu = () => {
               placeholder={t('component.screenshotModal.placeholder')}
               value={description}
               autoFocus
-              rows={3}
+              rows={2}
               maxLength={300}
               className="resize-none bg-r-neutral-bg-2 text-r-neutral-title1"
               onChange={(event) => setDescription(event.target.value)}
