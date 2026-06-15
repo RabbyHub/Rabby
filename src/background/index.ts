@@ -119,6 +119,7 @@ async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
+  keyringService.sanitizeUnencryptedKeyringDataInStore();
   await openapiService.init();
   await testnetOpenapiService.init();
 

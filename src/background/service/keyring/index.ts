@@ -29,12 +29,7 @@ import GnosisKeyring, {
 } from './eth-gnosis-keyring';
 import preference, { Account } from '../preference';
 import i18n from '../i18n';
-import {
-  KEYRING_TYPE,
-  EVENTS,
-  KEYRING_CLASS,
-  HARDWARE_KEYRING_TYPES,
-} from 'consts';
+import { KEYRING_TYPE, EVENTS, KEYRING_CLASS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
@@ -53,6 +48,7 @@ import {
 } from 'background/utils/password';
 import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
+import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
 
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
@@ -80,6 +76,11 @@ export type KeyringSerializedData<T = any> = {
   type: string;
   data: T;
 };
+
+const sanitizeKeyringDataForUnencryptedStore = (
+  item: KeyringSerializedData
+): KeyringSerializedData =>
+  sanitizeUnencryptedKeyringData(item, KEYRING_CLASS.HARDWARE.GRIDPLUS);
 
 interface MemStoreState {
   isUnlocked: boolean;
@@ -965,7 +966,7 @@ export class KeyringService extends EventEmitter {
     const unencryptedKeyringData = serializedKeyrings
       .map(({ type, data }) => {
         if (!UNENCRYPTED_IGNORE_KEYRING.includes(type as any)) {
-          return { type, data };
+          return sanitizeKeyringDataForUnencryptedStore({ type, data });
         }
 
         // maybe empty keyring
@@ -996,6 +997,29 @@ export class KeyringService extends EventEmitter {
     });
 
     return true;
+  }
+
+  sanitizeUnencryptedKeyringDataInStore() {
+    const { unencryptedKeyringData } = this.store.getState();
+
+    if (!Array.isArray(unencryptedKeyringData)) {
+      return;
+    }
+
+    const sanitized = unencryptedKeyringData.map(
+      sanitizeKeyringDataForUnencryptedStore
+    );
+    const changed = sanitized.some((item, index) => {
+      return item !== unencryptedKeyringData[index];
+    });
+
+    if (!changed) {
+      return;
+    }
+
+    this.store.updateState({
+      unencryptedKeyringData: sanitized,
+    });
   }
 
   /**
