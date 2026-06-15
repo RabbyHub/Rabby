@@ -36,7 +36,7 @@ export default ({
       >
         {showIndex && index >= 0 && <div className="number-index">{index}</div>}
         {ellipsis
-          ? ellipsisAddress(address.toLowerCase(), ellipsis === 'short')
+          ? ellipsisAddress(address.toLowerCase())
           : address?.toLowerCase()}
       </div>
       {showArrow && (
