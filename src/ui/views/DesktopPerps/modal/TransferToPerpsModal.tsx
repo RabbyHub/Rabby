@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Modal, Button, Input, message } from 'antd';
+import { Modal, Button, message } from 'antd';
+import { ThousandsInput } from '../components/ThousandsInput';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -241,7 +242,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
             </div>
             <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-14 mb-16">
               <div className="flex items-center gap-8">
-                <Input
+                <ThousandsInput
                   bordered={false}
                   size="large"
                   value={amount}
