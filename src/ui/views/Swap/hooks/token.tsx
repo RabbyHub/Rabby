@@ -172,9 +172,6 @@ export const useTokenPair = (userAddress: string) => {
   );
   const [refreshTokenId, updateRefreshTokenId] = useState(0);
   const reloadTxRefreshPausedRef = useRef(false);
-  const setReloadTxRefreshPaused = useCallback((paused: boolean) => {
-    reloadTxRefreshPausedRef.current = paused;
-  }, []);
   const refreshTokensInfo = useCallback(
     () => updateRefreshTokenId((e) => e + 1),
     [updateRefreshTokenId]
@@ -240,11 +237,19 @@ export const useTokenPair = (userAddress: string) => {
   > = useCallback((p) => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
     }
 
-    if (p && !depositFlowActiveRef.current) {
+    if (
+      p &&
+      !depositFlowActiveRef.current &&
+      !reloadTxRefreshPausedRef.current
+    ) {
       expiredTimer.current = setTimeout(() => {
-        if (!depositFlowActiveRef.current) {
+        if (
+          !depositFlowActiveRef.current &&
+          !reloadTxRefreshPausedRef.current
+        ) {
           setRefreshId((e) => e + 1);
         }
       }, 1000 * 20);
@@ -689,7 +694,7 @@ export const useTokenPair = (userAddress: string) => {
     { loading: quoteLoading, error: quotesError },
     getQuotes,
   ] = useAsyncFn(async () => {
-    if (depositFlowActiveRef.current) {
+    if (depositFlowActiveRef.current || reloadTxRefreshPausedRef.current) {
       setPending(false);
       return;
     }
@@ -767,7 +772,7 @@ export const useTokenPair = (userAddress: string) => {
   ]);
 
   useEffect(() => {
-    if (canRunQuoteRequest) {
+    if (canRunQuoteRequest && !reloadTxRefreshPausedRef.current) {
       setPending(true);
     } else {
       setPending(false);
@@ -787,10 +792,30 @@ export const useTokenPair = (userAddress: string) => {
     [getQuotes]
   );
 
+  const setReloadTxRefreshPaused = useCallback(
+    (paused: boolean) => {
+      reloadTxRefreshPausedRef.current = paused;
+
+      if (!paused) {
+        return;
+      }
+
+      fetchIdRef.current += 1;
+      setPending(false);
+      cancelQuoteDebounce();
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
+      }
+    },
+    [cancelQuoteDebounce]
+  );
+
   useEffect(() => {
     if (depositFlowActive) {
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
       }
       setPending(false);
       cancelQuoteDebounce();
@@ -839,7 +864,11 @@ export const useTokenPair = (userAddress: string) => {
   }, [selectableQuoteListForDisplay.length]);
 
   useEffect(() => {
-    if (!canRunQuoteRequest || !receiveToken) {
+    if (
+      reloadTxRefreshPausedRef.current ||
+      !canRunQuoteRequest ||
+      !receiveToken
+    ) {
       return;
     }
 
@@ -960,12 +989,14 @@ export const useTokenPair = (userAddress: string) => {
   useEffect(() => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
     }
   }, [payToken?.id, receiveToken?.id, chain, inputAmount]);
 
   useEffect(() => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
     }
   }, [inSufficientCanGetQuote]);
 
@@ -1071,6 +1102,7 @@ export const useTokenPair = (userAddress: string) => {
   const clearExpiredTimer = useCallback(() => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
     }
   }, []);
 
@@ -1078,7 +1110,7 @@ export const useTokenPair = (userAddress: string) => {
     return () => {
       clearExpiredTimer();
     };
-  }, []);
+  }, [clearExpiredTimer]);
 
   return {
     setReloadTxRefreshPaused,
@@ -1127,7 +1159,6 @@ export const useTokenPair = (userAddress: string) => {
     swapUseSlider,
     onChangeSlider,
 
-    clearExpiredTimer,
     lowCreditToken,
     lowCreditVisible,
     setLowCreditToken,

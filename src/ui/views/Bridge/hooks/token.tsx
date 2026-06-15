@@ -169,9 +169,6 @@ export const useBridge = () => {
 
   const [refreshTokenId, updateRefreshTokenId] = useState(0);
   const reloadTxRefreshPausedRef = useRef(false);
-  const setReloadTxRefreshPaused = useCallback((paused: boolean) => {
-    reloadTxRefreshPausedRef.current = paused;
-  }, []);
 
   const refreshTokensInfo = useCallback(
     () => updateRefreshTokenId((e) => e + 1),
@@ -370,12 +367,21 @@ export const useBridge = () => {
   const [pending, setPending] = useState(false);
 
   const setSelectedBridgeQuote = useCallback((quote?: SelectedBridgeQuote) => {
-    if (!quote?.manualClick && expiredTimer.current) {
+    if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
     }
-    if (!quote?.manualClick && quote && !depositFlowActiveRef.current) {
+    if (
+      !quote?.manualClick &&
+      quote &&
+      !depositFlowActiveRef.current &&
+      !reloadTxRefreshPausedRef.current
+    ) {
       expiredTimer.current = setTimeout(() => {
-        if (!depositFlowActiveRef.current) {
+        if (
+          !depositFlowActiveRef.current &&
+          !reloadTxRefreshPausedRef.current
+        ) {
           setRefreshId((e) => e + 1);
         }
       }, 1000 * 30);
@@ -405,7 +411,7 @@ export const useBridge = () => {
     { loading: quoteLoading, error: quotesError },
     getQuoteList,
   ] = useAsyncFn(async () => {
-    if (depositFlowActiveRef.current) {
+    if (depositFlowActiveRef.current || reloadTxRefreshPausedRef.current) {
       setPending(false);
       return;
     }
@@ -611,7 +617,7 @@ export const useBridge = () => {
   ]);
 
   useEffect(() => {
-    if (canRunQuoteRequest) {
+    if (canRunQuoteRequest && !reloadTxRefreshPausedRef.current) {
       setPending(true);
     } else {
       setPending(false);
@@ -626,10 +632,30 @@ export const useBridge = () => {
     [getQuoteList]
   );
 
+  const setReloadTxRefreshPaused = useCallback(
+    (paused: boolean) => {
+      reloadTxRefreshPausedRef.current = paused;
+
+      if (!paused) {
+        return;
+      }
+
+      fetchIdRef.current += 1;
+      setPending(false);
+      cancelDebounce();
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
+      }
+    },
+    [cancelDebounce]
+  );
+
   useEffect(() => {
     if (depositFlowActive) {
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
       }
       setPending(false);
       cancelDebounce();
@@ -682,7 +708,7 @@ export const useBridge = () => {
     rawQuoteLoading && selectableBridgeQuoteList.length === 0;
 
   useEffect(() => {
-    if (!canRunQuoteRequest || !toToken) {
+    if (reloadTxRefreshPausedRef.current || !canRunQuoteRequest || !toToken) {
       return;
     }
 
@@ -748,8 +774,15 @@ export const useBridge = () => {
   const clearExpiredTimer = useCallback(() => {
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
     }
   }, []);
+
+  useEffect(() => {
+    return () => {
+      clearExpiredTimer();
+    };
+  }, [clearExpiredTimer]);
 
   const { search } = useLocation();
   const [searchObj] = useState<{
@@ -839,7 +872,6 @@ export const useBridge = () => {
 
   return {
     setReloadTxRefreshPaused,
-    clearExpiredTimer,
 
     fromChain,
     fromToken,

@@ -151,7 +151,6 @@ export const Main = () => {
     swapUseSlider,
     onChangeSlider,
 
-    clearExpiredTimer,
     lowCreditToken,
     lowCreditVisible,
     setLowCreditToken,
@@ -846,7 +845,6 @@ export const Main = () => {
             'approveSwap'
           );
         }
-        clearExpiredTimer();
         setMiniSignLoading(true);
 
         const hashes = await openDirect({
@@ -925,6 +923,12 @@ export const Main = () => {
       return clearBuildTimer;
     }
 
+    builtSwapTxsKeyRef.current = '';
+    prefetchedSwapTxsKeyRef.current = '';
+    mutateTxs([]);
+    runBuildSwapTxsRef.current = undefined;
+    runBuildSwapTxsKeyRef.current = '';
+
     const tracker = swapAutoPreExecRef.current;
     if (tracker.requestId !== quoteRequestId) {
       tracker.requestId = quoteRequestId;
@@ -949,12 +953,6 @@ export const Main = () => {
         }
       }
     }
-
-    builtSwapTxsKeyRef.current = '';
-    prefetchedSwapTxsKeyRef.current = '';
-    mutateTxs([]);
-    runBuildSwapTxsRef.current = undefined;
-    runBuildSwapTxsKeyRef.current = '';
 
     const scheduledBuildKey = activeProviderBuildKey;
     const scheduledQuoteRequestId = quoteRequestId;
