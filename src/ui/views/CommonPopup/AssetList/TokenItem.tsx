@@ -276,13 +276,11 @@ const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
         </div>
         {isNumber(item.price_24h_change) && (
           <div
-            className={clsx(
-              'font-normal text-13 leading-[16px] text-r-neutral-foot',
-              {
-                'text-green': item.price_24h_change > 0,
-                'text-red-forbidden': item.price_24h_change < 0,
-              }
-            )}
+            className={clsx('font-normal text-13 leading-[16px]', {
+              'text-green': item.price_24h_change > 0,
+              'text-red-forbidden': item.price_24h_change < 0,
+              'text-r-neutral-foot': !item.price_24h_change,
+            })}
           >
             ({item.price_24h_change > 0 ? '+' : ''}
             {(item.price_24h_change * 100).toFixed(2)}%)
