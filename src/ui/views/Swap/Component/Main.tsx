@@ -69,6 +69,7 @@ import {
   shouldIgnoreAmountChangeInMaxMode,
 } from '@/ui/utils/form';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
+import { buildFingerprint } from '@/ui/component/MiniSignV2/domain/ctx';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -78,6 +79,8 @@ const getContainer = isTab
   : isDesktop
   ? '.js-rabby-desktop-swap-container'
   : undefined;
+
+const BUILD_SWAP_TXS_DEBOUNCE_MS = 500;
 
 const getDisabledTips: SelectChainItemProps['disabledTips'] = (ctx) => {
   const chainItem = findChainByServerID(ctx.chain.serverId);
@@ -137,6 +140,8 @@ export const Main = () => {
 
     openQuotesList,
     quoteLoading,
+    allQuotesLoaded,
+    quoteRequestId,
     quoteList,
 
     currentProvider: activeProvider,
@@ -146,7 +151,6 @@ export const Main = () => {
     swapUseSlider,
     onChangeSlider,
 
-    clearExpiredTimer,
     lowCreditToken,
     lowCreditVisible,
     setLowCreditToken,
@@ -207,6 +211,48 @@ export const Main = () => {
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
+
+  const activeProviderBuildKey = useMemo(() => {
+    if (!activeProvider?.quote || !payToken || !receiveToken) {
+      return '';
+    }
+
+    return [
+      chain,
+      payToken.id,
+      receiveToken.id,
+      inputAmount,
+      slippage,
+      activeProvider.name,
+      activeProvider.shouldApproveToken ? '1' : '0',
+      activeProvider.shouldTwoStepApprove ? '1' : '0',
+      activeProvider.quote.toTokenAmount,
+      activeProvider.quote.tx?.to || '',
+      activeProvider.quote.tx?.value || '',
+      activeProvider.quote.tx?.data || '',
+    ].join('|');
+  }, [
+    activeProvider?.name,
+    activeProvider?.quote,
+    activeProvider?.shouldApproveToken,
+    activeProvider?.shouldTwoStepApprove,
+    chain,
+    inputAmount,
+    payToken,
+    receiveToken,
+    slippage,
+  ]);
+  const activeProviderBuildKeyRef = useRef(activeProviderBuildKey);
+
+  useEffect(() => {
+    activeProviderBuildKeyRef.current = activeProviderBuildKey;
+  }, [activeProviderBuildKey]);
+
+  const activeProviderIsBestQuote =
+    !!activeProvider && !!bestQuoteDex && activeProvider.name === bestQuoteDex;
+  const activeProviderIsManualQuote = !!activeProvider?.manualClick;
+  const shouldPreExecActiveProvider =
+    activeProviderIsBestQuote || activeProviderIsManualQuote;
 
   const { runAsync: gotoSwap, loading: isSubmitLoading } = useRequest(
     async () => {
@@ -291,8 +337,13 @@ export const Main = () => {
     }
   );
 
-  const buildSwapTxs = useMemoizedFn(async () => {
+  const buildSwapTxs = useMemoizedFn(async (expectedBuildKey?: string) => {
     if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
+      const buildKey = expectedBuildKey || activeProviderBuildKeyRef.current;
+      if (expectedBuildKey && buildKey !== activeProviderBuildKeyRef.current) {
+        return;
+      }
+
       try {
         const result = await wallet.buildDexSwap(
           {
@@ -357,6 +408,13 @@ export const Main = () => {
             },
           }
         );
+        if (
+          expectedBuildKey &&
+          buildKey !== activeProviderBuildKeyRef.current
+        ) {
+          return;
+        }
+        builtSwapTxsKeyRef.current = buildKey;
         return result;
       } catch (error) {
         console.error(error);
@@ -371,6 +429,59 @@ export const Main = () => {
     mutate: mutateTxs,
   } = useRequest(buildSwapTxs, {
     manual: true,
+  });
+  const runBuildSwapTxsRef = useRef<ReturnType<typeof runBuildSwapTxs>>();
+  const runBuildSwapTxsKeyRef = useRef('');
+  const buildSwapTxsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const builtSwapTxsKeyRef = useRef('');
+  const prefetchedSwapTxsKeyRef = useRef('');
+  const swapAutoPreExecRef = useRef({
+    requestId: 0,
+    earlyBuildKey: '',
+    finalBuildKey: '',
+  });
+  const quoteRequestIdRef = useRef(quoteRequestId);
+  const allQuotesLoadedRef = useRef(allQuotesLoaded);
+
+  useEffect(() => {
+    quoteRequestIdRef.current = quoteRequestId;
+  }, [quoteRequestId]);
+
+  useEffect(() => {
+    allQuotesLoadedRef.current = allQuotesLoaded;
+  }, [allQuotesLoaded]);
+
+  useEffect(() => {
+    quoteRequestIdRef.current = quoteRequestId;
+    swapAutoPreExecRef.current = {
+      requestId: quoteRequestId,
+      earlyBuildKey: '',
+      finalBuildKey: '',
+    };
+    builtSwapTxsKeyRef.current = '';
+    prefetchedSwapTxsKeyRef.current = '';
+    mutateTxs([]);
+    runBuildSwapTxsRef.current = undefined;
+    runBuildSwapTxsKeyRef.current = '';
+    if (buildSwapTxsTimerRef.current) {
+      clearTimeout(buildSwapTxsTimerRef.current);
+      buildSwapTxsTimerRef.current = null;
+    }
+  }, [quoteRequestId]);
+
+  const runBuildSwapTxsForKey = useMemoizedFn((buildKey: string) => {
+    const buildPromise = runBuildSwapTxs(buildKey);
+    runBuildSwapTxsRef.current = buildPromise;
+    runBuildSwapTxsKeyRef.current = buildKey;
+    buildPromise.finally(() => {
+      if (runBuildSwapTxsRef.current === buildPromise) {
+        runBuildSwapTxsRef.current = undefined;
+        runBuildSwapTxsKeyRef.current = '';
+      }
+    });
+    return buildPromise;
   });
 
   const currentAccount = useCurrentAccount();
@@ -451,6 +562,8 @@ export const Main = () => {
 
     if (!shouldTwoStepSwap || (shouldTwoStepSwap && !isApprove)) {
       setApprovePending(false);
+      builtSwapTxsKeyRef.current = '';
+      prefetchedSwapTxsKeyRef.current = '';
       mutateTxs();
       refresh((e) => e + 1);
       handleAmountChange('');
@@ -598,6 +711,10 @@ export const Main = () => {
 
     if (comparison.isChanged && !shouldIgnore) {
       closeSign();
+      builtSwapTxsKeyRef.current = '';
+      prefetchedSwapTxsKeyRef.current = '';
+      runBuildSwapTxsRef.current = undefined;
+      runBuildSwapTxsKeyRef.current = '';
       return true;
     }
 
@@ -608,13 +725,42 @@ export const Main = () => {
     if (awaitingTopUpResume || depositFlowActive) {
       return;
     }
+    const canPrefetchCurrentTxs =
+      canUseDirectSubmitTx &&
+      !!currentTxs?.length &&
+      shouldPreExecActiveProvider &&
+      !!builtSwapTxsKeyRef.current &&
+      builtSwapTxsKeyRef.current === activeProviderBuildKeyRef.current;
+    if (!canPrefetchCurrentTxs) {
+      return;
+    }
+    const prefetchKey = [
+      builtSwapTxsKeyRef.current,
+      buildFingerprint(currentTxs || []),
+    ].join('|');
+    if (prefetchedSwapTxsKeyRef.current === prefetchKey) {
+      return;
+    }
+    prefetchedSwapTxsKeyRef.current = prefetchKey;
     prefetch({
       txs: currentTxs || [],
       getContainer,
       // checkGasFeeTooHigh: true,
       // enableSecurityEngine: true,
+    }).catch(() => {
+      if (prefetchedSwapTxsKeyRef.current === prefetchKey) {
+        prefetchedSwapTxsKeyRef.current = '';
+      }
     });
-  }, [awaitingTopUpResume, currentTxs, depositFlowActive, prefetch]);
+  }, [
+    activeProviderBuildKey,
+    shouldPreExecActiveProvider,
+    awaitingTopUpResume,
+    canUseDirectSubmitTx,
+    currentTxs,
+    depositFlowActive,
+    prefetch,
+  ]);
 
   useEffect(() => {
     if (!awaitingTopUpResume) {
@@ -642,6 +788,10 @@ export const Main = () => {
     topUpFormValuesRef.current.clear();
     setAwaitingTopUpResume(false);
     closeSign();
+    builtSwapTxsKeyRef.current = '';
+    prefetchedSwapTxsKeyRef.current = '';
+    runBuildSwapTxsRef.current = undefined;
+    runBuildSwapTxsKeyRef.current = '';
   }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   const handleSwap = useMemoizedFn(async () => {
@@ -657,10 +807,25 @@ export const Main = () => {
 
     if (canUseDirectSubmitTx) {
       try {
-        let txsForSigning = currentTxs;
+        if (buildSwapTxsTimerRef.current) {
+          clearTimeout(buildSwapTxsTimerRef.current);
+          buildSwapTxsTimerRef.current = null;
+        }
+        const currentBuildKey = activeProviderBuildKeyRef.current;
+        const canReuseCurrentTxs =
+          !!currentBuildKey &&
+          builtSwapTxsKeyRef.current === currentBuildKey &&
+          !!currentTxs?.length;
+        let txsForSigning = canReuseCurrentTxs ? currentTxs : undefined;
         const formChangedDuringTopUp = consumeTopUpResumeGuard();
-        if (formChangedDuringTopUp) {
-          const rebuiltTxs = await runBuildSwapTxs();
+        if (formChangedDuringTopUp || !txsForSigning?.length) {
+          const reusableBuildPromise =
+            runBuildSwapTxsKeyRef.current === currentBuildKey
+              ? runBuildSwapTxsRef.current
+              : undefined;
+          const buildPromise =
+            reusableBuildPromise || runBuildSwapTxsForKey(currentBuildKey);
+          const rebuiltTxs = await buildPromise;
           if (!rebuiltTxs?.length) {
             return;
           }
@@ -680,7 +845,6 @@ export const Main = () => {
             'approveSwap'
           );
         }
-        clearExpiredTimer();
         setMiniSignLoading(true);
 
         const hashes = await openDirect({
@@ -709,6 +873,8 @@ export const Main = () => {
 
         if (error === MINI_SIGN_ERROR.USER_CANCELLED) {
           refresh((e) => e + 1);
+          builtSwapTxsKeyRef.current = '';
+          prefetchedSwapTxsKeyRef.current = '';
           mutateTxs([]);
         } else if (error === MINI_SIGN_ERROR.CANT_PROCESS) {
           setTimeout(() => {
@@ -732,19 +898,111 @@ export const Main = () => {
   });
 
   useEffect(() => {
-    if (!swapBtnDisabled && activeProvider) {
-      if (awaitingTopUpResume || depositFlowActive) {
-        return;
+    const clearBuildTimer = () => {
+      if (buildSwapTxsTimerRef.current) {
+        clearTimeout(buildSwapTxsTimerRef.current);
+        buildSwapTxsTimerRef.current = null;
       }
-      if (canUseDirectSubmitTx) {
-        mutateTxs([]);
-        runBuildSwapTxs();
+    };
+
+    if (
+      swapBtnDisabled ||
+      !canUseDirectSubmitTx ||
+      !activeProviderBuildKey ||
+      !shouldPreExecActiveProvider ||
+      awaitingTopUpResume ||
+      depositFlowActive
+    ) {
+      return clearBuildTimer;
+    }
+
+    if (
+      builtSwapTxsKeyRef.current === activeProviderBuildKey ||
+      runBuildSwapTxsKeyRef.current === activeProviderBuildKey
+    ) {
+      return clearBuildTimer;
+    }
+
+    builtSwapTxsKeyRef.current = '';
+    prefetchedSwapTxsKeyRef.current = '';
+    mutateTxs([]);
+    runBuildSwapTxsRef.current = undefined;
+    runBuildSwapTxsKeyRef.current = '';
+
+    const tracker = swapAutoPreExecRef.current;
+    if (tracker.requestId !== quoteRequestId) {
+      tracker.requestId = quoteRequestId;
+      tracker.earlyBuildKey = '';
+      tracker.finalBuildKey = '';
+    }
+
+    const isManualPreExec = activeProviderIsManualQuote;
+    const phase = allQuotesLoaded ? 'final' : 'early';
+
+    if (!isManualPreExec) {
+      if (!allQuotesLoaded && tracker.earlyBuildKey) {
+        return clearBuildTimer;
+      }
+      if (allQuotesLoaded) {
+        if (
+          tracker.finalBuildKey === activeProviderBuildKey ||
+          tracker.earlyBuildKey === activeProviderBuildKey
+        ) {
+          tracker.finalBuildKey = activeProviderBuildKey;
+          return clearBuildTimer;
+        }
       }
     }
+
+    const scheduledBuildKey = activeProviderBuildKey;
+    const scheduledQuoteRequestId = quoteRequestId;
+    buildSwapTxsTimerRef.current = setTimeout(() => {
+      buildSwapTxsTimerRef.current = null;
+      const latestTracker = swapAutoPreExecRef.current;
+      if (
+        quoteRequestIdRef.current !== scheduledQuoteRequestId ||
+        latestTracker.requestId !== scheduledQuoteRequestId ||
+        activeProviderBuildKeyRef.current !== scheduledBuildKey
+      ) {
+        return;
+      }
+
+      if (isManualPreExec) {
+        if (
+          builtSwapTxsKeyRef.current === scheduledBuildKey ||
+          runBuildSwapTxsKeyRef.current === scheduledBuildKey
+        ) {
+          return;
+        }
+      } else {
+        if (phase === 'early') {
+          if (allQuotesLoadedRef.current || latestTracker.earlyBuildKey) {
+            return;
+          }
+          latestTracker.earlyBuildKey = scheduledBuildKey;
+        } else {
+          if (
+            !allQuotesLoadedRef.current ||
+            latestTracker.finalBuildKey === scheduledBuildKey
+          ) {
+            return;
+          }
+          latestTracker.finalBuildKey = scheduledBuildKey;
+        }
+      }
+
+      runBuildSwapTxsForKey(scheduledBuildKey);
+    }, BUILD_SWAP_TXS_DEBOUNCE_MS);
+
+    return clearBuildTimer;
   }, [
     swapBtnDisabled,
     canUseDirectSubmitTx,
-    activeProvider,
+    activeProviderBuildKey,
+    shouldPreExecActiveProvider,
+    activeProviderIsManualQuote,
+    allQuotesLoaded,
+    quoteRequestId,
     awaitingTopUpResume,
     depositFlowActive,
   ]);
