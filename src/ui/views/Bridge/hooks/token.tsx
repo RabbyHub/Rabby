@@ -367,6 +367,10 @@ export const useBridge = () => {
   const [pending, setPending] = useState(false);
 
   const setSelectedBridgeQuote = useCallback((quote?: SelectedBridgeQuote) => {
+    if (reloadTxRefreshPausedRef.current) {
+      return;
+    }
+
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;

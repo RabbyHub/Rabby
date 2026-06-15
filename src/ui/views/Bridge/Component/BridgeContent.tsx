@@ -551,6 +551,7 @@ export const BridgeContent = () => {
   });
   const quoteRequestIdRef = useRef(quoteRequestId);
   const allQuotesLoadedRef = useRef(allQuotesLoaded);
+  const submitTxRef = useRef(false);
 
   useEffect(() => {
     quoteRequestIdRef.current = quoteRequestId;
@@ -561,6 +562,10 @@ export const BridgeContent = () => {
   }, [allQuotesLoaded]);
 
   useEffect(() => {
+    if (submitTxRef.current) {
+      return;
+    }
+
     quoteRequestIdRef.current = quoteRequestId;
     bridgeAutoPreExecRef.current = {
       requestId: quoteRequestId,
@@ -716,6 +721,7 @@ export const BridgeContent = () => {
   }, [buildTopUpSnapshot, closeSign]);
 
   const handleBridge = useMemoizedFn(async () => {
+    submitTxRef.current = true;
     setReloadTxRefreshPaused(true);
     if (canUseDirectSubmitTx) {
       consumeTopUpResumeGuard();
@@ -781,12 +787,14 @@ export const BridgeContent = () => {
         console.error('bridge direct sign error', error);
       } finally {
         setMiniSignLoading(false);
+        submitTxRef.current = false;
         setReloadTxRefreshPaused(false);
       }
     } else {
       try {
         await gotoBridge();
       } finally {
+        submitTxRef.current = false;
         setReloadTxRefreshPaused(false);
       }
     }
@@ -861,6 +869,7 @@ export const BridgeContent = () => {
       btnDisabled ||
       !selectedBridgeQuoteBuildKey ||
       !shouldPreExecSelectedBridgeQuote ||
+      submitTxRef.current ||
       awaitingTopUpResume ||
       depositFlowActive
     ) {
@@ -911,6 +920,7 @@ export const BridgeContent = () => {
       buildBridgeTxsTimerRef.current = null;
       const latestTracker = bridgeAutoPreExecRef.current;
       if (
+        submitTxRef.current ||
         quoteRequestIdRef.current !== scheduledQuoteRequestId ||
         latestTracker.requestId !== scheduledQuoteRequestId ||
         selectedBridgeQuoteBuildKeyRef.current !== scheduledBuildKey
@@ -960,7 +970,7 @@ export const BridgeContent = () => {
 
   useEffect(() => {
     if (!canUseDirectSubmitTx) return;
-    if (awaitingTopUpResume || depositFlowActive) {
+    if (submitTxRef.current || awaitingTopUpResume || depositFlowActive) {
       return;
     }
     const canPrefetchCurrentTxs =

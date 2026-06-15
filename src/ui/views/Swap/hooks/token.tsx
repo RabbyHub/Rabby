@@ -235,16 +235,16 @@ export const useTokenPair = (userAddress: string) => {
   const setActiveProvider: React.Dispatch<
     React.SetStateAction<QuoteProvider | undefined>
   > = useCallback((p) => {
+    if (reloadTxRefreshPausedRef.current) {
+      return;
+    }
+
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
     }
 
-    if (
-      p &&
-      !depositFlowActiveRef.current &&
-      !reloadTxRefreshPausedRef.current
-    ) {
+    if (p && !depositFlowActiveRef.current) {
       expiredTimer.current = setTimeout(() => {
         if (
           !depositFlowActiveRef.current &&
