@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, Button, Dropdown, Menu, Input } from 'antd';
+import { Modal, Button, Dropdown, Menu } from 'antd';
+import { ThousandsInput } from '../components/ThousandsInput';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -204,7 +205,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                 </div>
               </div>
               <div className="flex items-center gap-8">
-                <Input
+                <ThousandsInput
                   bordered={false}
                   size="large"
                   value={amount}

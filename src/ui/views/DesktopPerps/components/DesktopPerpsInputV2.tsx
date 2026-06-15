@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, InputProps } from 'antd';
 import styled from 'styled-components';
+import { useThousandsInput } from '../hooks/useThousandsInput';
 
 const StyledInput = styled(Input)`
   input::-webkit-inner-spin-button,
@@ -75,5 +76,17 @@ interface DesktopPerpsInputV2Props extends InputProps {}
 export const DesktopPerpsInputV2: React.FC<DesktopPerpsInputV2Props> = (
   props
 ) => {
-  return <StyledInput placeholder="0" {...props} />;
+  const { ref, value, onChange } = useThousandsInput(
+    props.value,
+    props.onChange
+  );
+  return (
+    <StyledInput
+      placeholder="0"
+      {...props}
+      value={value}
+      onChange={onChange}
+      ref={ref}
+    />
+  );
 };
