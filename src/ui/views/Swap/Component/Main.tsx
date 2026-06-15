@@ -444,6 +444,7 @@ export const Main = () => {
   });
   const quoteRequestIdRef = useRef(quoteRequestId);
   const allQuotesLoadedRef = useRef(allQuotesLoaded);
+  const submitTxRef = useRef(false);
 
   useEffect(() => {
     quoteRequestIdRef.current = quoteRequestId;
@@ -454,6 +455,10 @@ export const Main = () => {
   }, [allQuotesLoaded]);
 
   useEffect(() => {
+    if (submitTxRef.current) {
+      return;
+    }
+
     quoteRequestIdRef.current = quoteRequestId;
     swapAutoPreExecRef.current = {
       requestId: quoteRequestId,
@@ -722,7 +727,7 @@ export const Main = () => {
   }, [buildTopUpSnapshot, closeSign]);
 
   useEffect(() => {
-    if (awaitingTopUpResume || depositFlowActive) {
+    if (submitTxRef.current || awaitingTopUpResume || depositFlowActive) {
       return;
     }
     const canPrefetchCurrentTxs =
@@ -795,12 +800,14 @@ export const Main = () => {
   }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   const handleSwap = useMemoizedFn(async () => {
+    submitTxRef.current = true;
     setReloadTxRefreshPaused(true);
     if (!isTab) {
       dispatch.swap.setRecentSwapToToken(receiveToken);
     }
     if (!isSupportedChain) {
       setSwapDappOpen(true);
+      submitTxRef.current = false;
       setReloadTxRefreshPaused(false);
       return;
     }
@@ -885,6 +892,7 @@ export const Main = () => {
         }
       } finally {
         setMiniSignLoading(false);
+        submitTxRef.current = false;
         setReloadTxRefreshPaused(false);
       }
       return;
@@ -892,6 +900,7 @@ export const Main = () => {
       try {
         await gotoSwap();
       } finally {
+        submitTxRef.current = false;
         setReloadTxRefreshPaused(false);
       }
     }
@@ -910,6 +919,7 @@ export const Main = () => {
       !canUseDirectSubmitTx ||
       !activeProviderBuildKey ||
       !shouldPreExecActiveProvider ||
+      submitTxRef.current ||
       awaitingTopUpResume ||
       depositFlowActive
     ) {
@@ -960,6 +970,7 @@ export const Main = () => {
       buildSwapTxsTimerRef.current = null;
       const latestTracker = swapAutoPreExecRef.current;
       if (
+        submitTxRef.current ||
         quoteRequestIdRef.current !== scheduledQuoteRequestId ||
         latestTracker.requestId !== scheduledQuoteRequestId ||
         activeProviderBuildKeyRef.current !== scheduledBuildKey
