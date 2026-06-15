@@ -37,7 +37,9 @@ const getViewportSize = () => {
 
 const captureBySnapdom = async () => {
   const viewport = getViewportSize();
-  const image = await snapdom.toPng(document.body, {
+  const captureTarget = document.documentElement;
+
+  const image = await snapdom.toPng(captureTarget, {
     backgroundColor: getComputedStyle(document.body).backgroundColor,
     dpr: window.devicePixelRatio,
     fast: true,
