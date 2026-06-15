@@ -193,7 +193,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
       className="modal-support-darkmode desktop-perps-deposit-withdraw-modal"
     >
       <PopupContainer>
-        <div className="bg-r-neutral-bg-2 h-[520px] flex flex-col h-full relative overflow-hidden desktop-perps-deposit-withdraw-content">
+        <div className="bg-r-neutral-bg-2 h-[520px] flex flex-col relative overflow-hidden desktop-perps-deposit-withdraw-content">
           <div className="px-20 pt-16 flex-1 pb-24">
             <div className="flex items-center justify-center gap-8 mb-16 relative">
               <div
