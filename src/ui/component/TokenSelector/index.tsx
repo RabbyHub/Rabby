@@ -527,7 +527,7 @@ const TokenSelector = ({
           )}
         >
           <Input
-            className={clsx({ active: isInputActive }, 'bg-r-neutral-card2')}
+            className={clsx({ active: isInputActive })}
             size="large"
             prefix={<img src={IconSearch} />}
             // Search by Name / Address
