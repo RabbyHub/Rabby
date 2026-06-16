@@ -4967,7 +4967,7 @@
       "tooltip": "Token tidak dikenal, silakan lakukan riset sendiri."
     },
     "screenshotModal": {
-      "title": "Tangkapan Layar untuk Melaporkan Bug",
+      "title": "Tangkapan layar untuk masukan",
       "placeholder": "Jelaskan masalahnya"
     },
     "feedbackPopup": {
@@ -5062,7 +5062,7 @@
       }
     },
     "feedback": {
-      "screenshotContextMenuTitle": "Tangkapan layar untuk melaporkan bug"
+      "screenshotContextMenuTitle": "Tangkapan layar untuk masukan"
     }
   },
   "constant": {

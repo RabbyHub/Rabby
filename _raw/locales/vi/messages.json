@@ -4967,7 +4967,7 @@
       "tooltip": "Token không xác định, vui lòng tự nghiên cứu."
     },
     "screenshotModal": {
-      "title": "Chụp màn hình để báo lỗi",
+      "title": "Ảnh chụp màn hình để phản hồi",
       "placeholder": "Mô tả vấn đề"
     },
     "feedbackPopup": {
@@ -5062,7 +5062,7 @@
       }
     },
     "feedback": {
-      "screenshotContextMenuTitle": "Ảnh chụp màn hình để báo cáo lỗi"
+      "screenshotContextMenuTitle": "Ảnh chụp màn hình để phản hồi"
     }
   },
   "constant": {

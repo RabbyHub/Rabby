@@ -4967,7 +4967,7 @@
       "tooltip": "알 수 없는 토큰입니다. 반드시 직접 조사하세요."
     },
     "screenshotModal": {
-      "title": "버그 신고를 위한 스크린샷",
+      "title": "피드백용 스크린샷",
       "placeholder": "문제를 설명해 주세요"
     },
     "feedbackPopup": {
@@ -5062,7 +5062,7 @@
       }
     },
     "feedback": {
-      "screenshotContextMenuTitle": "버그를 보고하려면 스크린샷을 찍으세요"
+      "screenshotContextMenuTitle": "피드백용 스크린샷"
     }
   },
   "constant": {
