@@ -3994,7 +3994,9 @@
         "takeProfit": "이익실현",
         "stopLoss": "손절매",
         "triggerPrice": "트리거 가격",
-        "estimatedPnlWillBe": "예상 손익은"
+        "estimatedPnlWillBe": "예상 손익은",
+        "triggerHigherThanLiquidation": "트리거 가격은 청산 가격 {{price}}보다 높아야 합니다",
+        "triggerLowerThanLiquidation": "트리거 가격은 청산 가격 {{price}}보다 낮아야 합니다"
       },
       "accountInfo": {
         "totalBalance": "총 잔액",

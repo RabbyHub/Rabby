@@ -3997,7 +3997,9 @@
         "takeProfit": "Take-Profit",
         "stopLoss": "Stop-Loss",
         "triggerPrice": "Auslösepreis",
-        "estimatedPnlWillBe": "Ihr geschätzter PnL beträgt"
+        "estimatedPnlWillBe": "Ihr geschätzter PnL beträgt",
+        "triggerHigherThanLiquidation": "Der Triggerpreis muss über dem Liquidationspreis {{price}} liegen",
+        "triggerLowerThanLiquidation": "Der Triggerpreis muss unter dem Liquidationspreis {{price}} liegen"
       },
       "accountInfo": {
         "availableBalance": "Verfügbares Guthaben",

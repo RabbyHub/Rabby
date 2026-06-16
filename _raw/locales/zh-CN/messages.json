@@ -4044,7 +4044,9 @@
         "takeProfit": "止盈",
         "stopLoss": "止损",
         "triggerPrice": "触发价格",
-        "estimatedPnlWillBe": "您预计的盈亏将为"
+        "estimatedPnlWillBe": "您预计的盈亏将为",
+        "triggerHigherThanLiquidation": "触发价格应高于爆仓价格 {{price}}",
+        "triggerLowerThanLiquidation": "触发价格应低于爆仓价格 {{price}}"
       },
       "accountInfo": {
         "balance": "余额",

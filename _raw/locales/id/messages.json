@@ -3994,7 +3994,9 @@
         "takeProfit": "Ambil Profit",
         "stopLoss": "Stop Loss",
         "triggerPrice": "Harga Pemicu",
-        "estimatedPnlWillBe": "Estimasi PnL Anda adalah"
+        "estimatedPnlWillBe": "Estimasi PnL Anda adalah",
+        "triggerHigherThanLiquidation": "Harga pemicu harus lebih tinggi dari harga likuidasi {{price}}",
+        "triggerLowerThanLiquidation": "Harga pemicu harus lebih rendah dari harga likuidasi {{price}}"
       },
       "accountInfo": {
         "totalBalance": "Total saldo",

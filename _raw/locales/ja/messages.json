@@ -3997,7 +3997,9 @@
         "takeProfit": "利確",
         "stopLoss": "損切り",
         "triggerPrice": "トリガー価格",
-        "estimatedPnlWillBe": "推定損益は以下になります"
+        "estimatedPnlWillBe": "推定損益は以下になります",
+        "triggerHigherThanLiquidation": "トリガー価格は清算価格 {{price}} より高くする必要があります",
+        "triggerLowerThanLiquidation": "トリガー価格は清算価格 {{price}} より低くする必要があります"
       },
       "accountInfo": {
         "crossAccountLeverage": "クロスアカウント・レバレッジ",

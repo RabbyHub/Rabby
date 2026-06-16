@@ -3997,7 +3997,9 @@
         "takeProfit": "Take Profit",
         "stopLoss": "Stop Loss",
         "triggerPrice": "Precio de Activación",
-        "estimatedPnlWillBe": "Su PnL estimado será"
+        "estimatedPnlWillBe": "Su PnL estimado será",
+        "triggerHigherThanLiquidation": "El precio de activación debe ser superior al precio de liquidación {{price}}",
+        "triggerLowerThanLiquidation": "El precio de activación debe ser inferior al precio de liquidación {{price}}"
       },
       "accountInfo": {
         "availableBalance": "Saldo disponible",

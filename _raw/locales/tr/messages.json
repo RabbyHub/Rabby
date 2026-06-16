@@ -4000,7 +4000,9 @@
         "takeProfit": "Kâr Al",
         "stopLoss": "Zarar Durdur",
         "triggerPrice": "Tetikleme Fiyatı",
-        "estimatedPnlWillBe": "Tahmini PnL'niz olacak"
+        "estimatedPnlWillBe": "Tahmini PnL'niz olacak",
+        "triggerHigherThanLiquidation": "Tetikleme fiyatı likidasyon fiyatı {{price}} değerinden yüksek olmalıdır",
+        "triggerLowerThanLiquidation": "Tetikleme fiyatı likidasyon fiyatı {{price}} değerinden düşük olmalıdır"
       },
       "accountInfo": {
         "totalBalance": "Toplam Bakiye",

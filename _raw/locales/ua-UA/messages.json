@@ -4009,7 +4009,9 @@
         "takeProfit": "Тейк-профіт",
         "stopLoss": "Стоп-лос",
         "triggerPrice": "Тригерна ціна",
-        "estimatedPnlWillBe": "Ваш очікуваний PnL буде"
+        "estimatedPnlWillBe": "Ваш очікуваний PnL буде",
+        "triggerHigherThanLiquidation": "Ціна спрацювання має бути вищою за ціну ліквідації {{price}}",
+        "triggerLowerThanLiquidation": "Ціна спрацювання має бути нижчою за ціну ліквідації {{price}}"
       },
       "accountInfo": {
         "totalBalance": "Загальний баланс",

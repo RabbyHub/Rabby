@@ -4339,7 +4339,9 @@
         "takeProfit": "Take Profit",
         "stopLoss": "Stop Loss",
         "triggerPrice": "Prix de déclenchement",
-        "estimatedPnlWillBe": "Votre PnL estimé sera"
+        "estimatedPnlWillBe": "Votre PnL estimé sera",
+        "triggerHigherThanLiquidation": "Le prix de déclenchement doit être supérieur au prix de liquidation {{price}}",
+        "triggerLowerThanLiquidation": "Le prix de déclenchement doit être inférieur au prix de liquidation {{price}}"
       },
       "accountInfo": {
         "totalBalance": "Solde total",

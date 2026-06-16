@@ -29,9 +29,10 @@ export interface Props {
 }
 
 type TpslSide = 'tp' | 'sl';
+type TpslModalMode = Extract<TPSLSettingMode, 'pnl' | 'roi'>;
 
 type TpslSideState = {
-  mode: TPSLSettingMode;
+  mode: TpslModalMode;
   triggerPrice: string;
   modeValue: string;
   estimatedPnl: string;
@@ -54,7 +55,7 @@ type SideAction =
     };
 
 const MODE_OPTIONS: {
-  value: Extract<TPSLSettingMode, 'pnl' | 'roi'>;
+  value: TpslModalMode;
   label: string;
 }[] = [
   { value: 'pnl', label: 'PNL' },
@@ -80,8 +81,8 @@ const getOrderOid = (position: PositionFormatData, side: TpslSide) => {
   return side === 'tp' ? position.tpItem?.oid : position.slItem?.oid;
 };
 
-const getDefaultMode = (): TPSLSettingMode => {
-  return 'pnl';
+const getDefaultMode = (mode?: TPSLSettingMode): TpslModalMode => {
+  return mode === 'roi' ? 'roi' : 'pnl';
 };
 
 const stripDecorations = (value: string) => {
@@ -196,29 +197,98 @@ const getTriggerFromRoi = ({
   });
 };
 
+const getFormattedLiquidationPrice = (
+  position: PositionFormatData,
+  pxDecimals: number
+) => {
+  const liquidationPrice = new BigNumber(position.liquidationPx || 0);
+  if (!liquidationPrice.gt(0)) return '';
+  return `$${splitNumberByStep(liquidationPrice.toFixed(pxDecimals))}`;
+};
+
+const getStopLossLiquidationError = ({
+  position,
+  side,
+  triggerPrice,
+  pxDecimals,
+  t,
+  validateEmptyTrigger = false,
+}: {
+  position: PositionFormatData;
+  side: TpslSide;
+  triggerPrice: string;
+  pxDecimals: number;
+  t: ReturnType<typeof useTranslation>['t'];
+  validateEmptyTrigger?: boolean;
+}) => {
+  if (side !== 'sl') return '';
+
+  const liquidationPrice = new BigNumber(position.liquidationPx || 0);
+  if (!liquidationPrice.gt(0)) return '';
+
+  const formattedPrice = getFormattedLiquidationPrice(position, pxDecimals);
+
+  if (!triggerPrice || Number(triggerPrice) === 0) {
+    if (!validateEmptyTrigger) return '';
+    if (position.direction === 'Long') {
+      return t('page.perpsPro.editTpSl.triggerHigherThanLiquidation', {
+        price: formattedPrice,
+      });
+    }
+    return '';
+  }
+
+  const trigger = new BigNumber(triggerPrice);
+  if (trigger.isNaN()) return '';
+
+  if (position.direction === 'Long' && trigger.lte(liquidationPrice)) {
+    return t('page.perpsPro.editTpSl.triggerHigherThanLiquidation', {
+      price: formattedPrice,
+    });
+  }
+
+  if (position.direction === 'Short' && trigger.gte(liquidationPrice)) {
+    return t('page.perpsPro.editTpSl.triggerLowerThanLiquidation', {
+      price: formattedPrice,
+    });
+  }
+
+  return '';
+};
+
 const getValidationError = ({
   position,
   side,
   triggerPrice,
   markPrice,
+  pxDecimals,
   t,
+  validateEmptyTrigger = false,
 }: {
   position: PositionFormatData;
   side: TpslSide;
   triggerPrice: string;
   markPrice: number;
+  pxDecimals: number;
   t: ReturnType<typeof useTranslation>['t'];
+  validateEmptyTrigger?: boolean;
 }) => {
   if (!triggerPrice || Number(triggerPrice) === 0) {
-    return '';
-  }
-  if (!markPrice) {
-    return '';
+    return getStopLossLiquidationError({
+      position,
+      side,
+      triggerPrice,
+      pxDecimals,
+      t,
+      validateEmptyTrigger,
+    });
   }
 
   const trigger = Number(triggerPrice);
 
   if (side === 'tp') {
+    if (!markPrice) return '';
+
     if (position.direction === 'Long' && trigger <= markPrice) {
       return t('page.perpsDetail.PerpsAutoCloseModal.takeProfitTipsLong');
     }
@@ -228,6 +298,17 @@ const getValidationError = ({
   }
 
   if (side === 'sl') {
+    const liquidationError = getStopLossLiquidationError({
+      position,
+      side,
+      triggerPrice,
+      pxDecimals,
+      t,
+    });
+    if (liquidationError) return liquidationError;
+
+    if (!markPrice) return '';
+
     if (position.direction === 'Long' && trigger >= markPrice) {
       return t('page.perpsDetail.PerpsAutoCloseModal.stopLossTipsLong');
     }
@@ -246,8 +327,10 @@ const hydrateSideFromTrigger = ({
   triggerPrice,
   szDecimals,
   markPrice,
+  pxDecimals,
   t,
   syncModeValue = true,
+  validateEmptyTrigger = false,
 }: {
   position: PositionFormatData;
   side: TpslSide;
@@ -255,8 +338,10 @@ const hydrateSideFromTrigger = ({
   triggerPrice: string;
   szDecimals: number;
   markPrice: number;
+  pxDecimals: number;
   t: ReturnType<typeof useTranslation>['t'];
   syncModeValue?: boolean;
+  validateEmptyTrigger?: boolean;
 }): TpslSideState => {
   if (!triggerPrice || Number(triggerPrice) === 0) {
     return {
@@ -265,7 +350,15 @@ const hydrateSideFromTrigger = ({
       modeValue: syncModeValue ? '' : state.modeValue,
       estimatedPnl: '',
       estimatedPnlPercent: '',
-      error: '',
+      error: getValidationError({
+        position,
+        side,
+        triggerPrice,
+        markPrice,
+        pxDecimals,
+        t,
+        validateEmptyTrigger,
+      }),
     };
   }
 
@@ -288,6 +381,7 @@ const hydrateSideFromTrigger = ({
       side,
       triggerPrice,
       markPrice,
+      pxDecimals,
       t,
     }),
   };
@@ -298,19 +392,22 @@ const getInitialSideState = ({
   side,
   szDecimals,
   markPrice,
+  pxDecimals,
+  mode,
   t,
 }: {
   position: PositionFormatData;
   side: TpslSide;
   szDecimals: number;
   markPrice: number;
+  pxDecimals: number;
+  mode: TpslModalMode;
   t: ReturnType<typeof useTranslation>['t'];
 }) => {
   const triggerPx = getOrderTriggerPx(position, side);
-  const mode = getDefaultMode();
   const baseState: TpslSideState = {
     ...EMPTY_SIDE_STATE,
-    mode,
+    mode: getDefaultMode(mode),
   };
 
   if (!triggerPx || Number(triggerPx) <= 0) {
@@ -326,6 +423,7 @@ const getInitialSideState = ({
       : formatTpOrSlPrice(Number(triggerPx), szDecimals),
     szDecimals,
     markPrice,
+    pxDecimals,
     t,
   });
 };
@@ -391,6 +489,9 @@ export const EditTpSlModal: React.FC<Props> = ({
   const currentPerpsAccount = useRabbySelector(
     (store) => store.perps.currentPerpsAccount
   );
+  const tpslModePreferences = useRabbySelector(
+    (store) => store.perps.tpslModePreferences
+  );
 
   const szDecimals = marketData.szDecimals ?? 5;
   const pxDecimals = marketData.pxDecimals ?? 2;
@@ -422,6 +523,8 @@ export const EditTpSlModal: React.FC<Props> = ({
         side: 'tp',
         szDecimals,
         markPrice,
+        pxDecimals,
+        mode: tpslModePreferences.tp,
         t,
       })
     );
@@ -431,6 +534,8 @@ export const EditTpSlModal: React.FC<Props> = ({
         side: 'sl',
         szDecimals,
         markPrice,
+        pxDecimals,
+        mode: tpslModePreferences.sl,
         t,
       })
     );
@@ -458,6 +563,7 @@ export const EditTpSlModal: React.FC<Props> = ({
           triggerPrice: value,
           szDecimals,
           markPrice,
+          pxDecimals,
           t,
         })
       );
@@ -499,16 +605,21 @@ export const EditTpSlModal: React.FC<Props> = ({
           triggerPrice,
           szDecimals,
           markPrice,
+          pxDecimals,
           t,
           syncModeValue: false,
+          validateEmptyTrigger: numericValue !== null,
         });
       });
     }
   );
 
   const updateSideMode = useMemoizedFn(
-    (side: TpslSide, mode: TPSLSettingMode) => {
-      if (mode === 'price') return;
+    (side: TpslSide, mode: TpslModalMode) => {
+      dispatch.perps.updateTpslModePreference({
+        side,
+        mode,
+      });
       const setter = side === 'tp' ? setTpState : setSlState;
       setter((prev) => {
         const nextState = {
@@ -523,6 +634,7 @@ export const EditTpSlModal: React.FC<Props> = ({
           triggerPrice: prev.triggerPrice,
           szDecimals,
           markPrice,
+          pxDecimals,
           t,
         });
       });
@@ -672,7 +784,7 @@ export const EditTpSlModal: React.FC<Props> = ({
   const renderModeMenu = (side: TpslSide) => (
     <Menu
       className="bg-r-neutral-bg1"
-      onClick={({ key }) => updateSideMode(side, key as TPSLSettingMode)}
+      onClick={({ key }) => updateSideMode(side, key as TpslModalMode)}
     >
       {MODE_OPTIONS.map((option) => (
         <Menu.Item

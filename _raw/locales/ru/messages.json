@@ -3999,7 +3999,9 @@
         "takeProfit": "Тейк-профит",
         "stopLoss": "Стоп-лосс",
         "triggerPrice": "Триггерная цена",
-        "estimatedPnlWillBe": "Ваша оценочная PnL составит"
+        "estimatedPnlWillBe": "Ваша оценочная PnL составит",
+        "triggerHigherThanLiquidation": "Цена срабатывания должна быть выше цены ликвидации {{price}}",
+        "triggerLowerThanLiquidation": "Цена срабатывания должна быть ниже цены ликвидации {{price}}"
       },
       "accountInfo": {
         "availableBalance": "Доступный баланс",
