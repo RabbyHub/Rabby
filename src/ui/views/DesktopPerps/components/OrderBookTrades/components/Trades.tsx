@@ -32,7 +32,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1">
       {/* Header */}
-      <div className="flex items-center justify-between px-[8px] py-[6px] text-[11px] text-r-neutral-foot shrink-0">
+      <div className="flex items-center justify-between px-[8px] py-[6px] text-[11px] text-rb-neutral-secondary shrink-0">
         <span className="min-w-[60px] text-left">
           {t('page.perpsPro.orderBook.price')} (USD)
         </span>
@@ -48,7 +48,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
       {/* Trades List */}
       <div className="flex-1 overflow-y-auto trades-container-no-scrollbar">
         {trades.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-r-neutral-foot text-[12px]">
+          <div className="flex items-center justify-center h-full text-rb-neutral-secondary text-[12px]">
             {t('page.perpsPro.orderBook.noTrades')}
           </div>
         ) : (

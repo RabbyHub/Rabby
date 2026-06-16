@@ -382,7 +382,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           className={clsx(
             'absolute top-0 bottom-0 transition-[width] duration-200 ease-out',
             type === 'bid' ? 'left-0' : 'right-0',
-            type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
+            type === 'bid' ? 'bg-rb-green-light-1' : 'bg-r-red-light-1'
           )}
           style={{ width: `${depthPercent}%` }}
         />
@@ -390,16 +390,16 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
           <span
             className={clsx(
-              'font-medium col-span-3 text-left group-hover:font-bold',
-              type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
+              'col-span-3 text-left group-hover:font-bold',
+              type === 'bid' ? 'text-rb-green-default' : 'text-r-red-default'
             )}
           >
             {splitNumberByStep(order.price)}
           </span>
-          <span className="text-r-neutral-title-1 font-medium col-span-3 text-right">
+          <span className="text-rb-neutral-title-1 col-span-3 text-right">
             {formatLevelValue(order.size, order.usdSize)}
           </span>
-          <span className="text-r-neutral-title-1 font-medium col-span-4 text-right">
+          <span className="text-rb-neutral-title-1 col-span-4 text-right">
             {formatLevelValue(order.total, order.totalUsd)}
           </span>
         </div>
@@ -642,7 +642,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-10 px-[12px] py-[5px] text-[11px] text-r-neutral-foot shrink-0">
+      <div className="grid grid-cols-10 px-[12px] py-[5px] text-[11px] text-rb-neutral-secondary shrink-0">
         <span className="col-span-3 text-left">
           {t('page.perpsPro.orderBook.price')}
         </span>
@@ -695,7 +695,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 <div className="flex items-center gap-[6px]">
                   <span
                     className={clsx(
-                      'text-[20px] font-bold',
+                      'text-[20px] font-medium',
                       latestTrade?.side === 'buy'
                         ? 'text-rb-green-default'
                         : 'text-rb-red-default'
@@ -705,9 +705,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   </span>
 
                   <span
-                    className={clsx(
-                      'text-[16px] text-rb-neutral-secondary font-medium'
-                    )}
+                    className={clsx('text-[16px] text-rb-neutral-secondary')}
                   >
                     {splitNumberByStep(markPx)}
                   </span>
