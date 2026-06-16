@@ -35,7 +35,7 @@
 /* Hover and drag states */
 [data-panel-resize-handle-id][data-resize-handle-state='hover'],
 [data-panel-resize-handle-id][data-resize-handle-state='drag'] {
-  background-color: var(--rb-brand-default, #7084ff) !important;
+  background-color: var(--rb-neutral-info, #c5c5cf) !important;
 }
 
 /* Cursor styles */
