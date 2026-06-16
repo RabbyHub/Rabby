@@ -197,6 +197,40 @@ const getTriggerFromRoi = ({
   });
 };
 
+const calculatePnlByModeValue = ({
+  position,
+  mode,
+  modeValue,
+}: {
+  position: PositionFormatData;
+  mode: TpslModalMode;
+  modeValue: number;
+}) => {
+  if (mode === 'pnl') {
+    const pnl = new BigNumber(modeValue);
+    const size = new BigNumber(position.size || 0);
+    const entryPrice = new BigNumber(position.entryPx || 0);
+    const margin = size.times(entryPrice).div(position.leverage || 1);
+    const roi = margin.gt(0) ? pnl.div(margin).times(100) : new BigNumber(0);
+
+    return {
+      pnl,
+      roi,
+    };
+  }
+
+  const roi = new BigNumber(modeValue);
+  const size = new BigNumber(position.size || 0);
+  const entryPrice = new BigNumber(position.entryPx || 0);
+  const margin = size.times(entryPrice).div(position.leverage || 1);
+  const pnl = margin.times(roi).div(100);
+
+  return {
+    pnl,
+    roi,
+  };
+};
+
 const getFormattedLiquidationPrice = (
   position: PositionFormatData,
   pxDecimals: number
@@ -613,7 +647,7 @@ export const EditTpSlModal: React.FC<Props> = ({
                 szDecimals,
               });
 
-        return hydrateSideFromTrigger({
+        const nextState = hydrateSideFromTrigger({
           position,
           side,
           state: {
@@ -628,6 +662,22 @@ export const EditTpSlModal: React.FC<Props> = ({
           syncModeValue: false,
           validateEmptyTrigger: numericValue !== null,
         });
+
+        if (numericValue === null) {
+          return nextState;
+        }
+
+        const { pnl, roi } = calculatePnlByModeValue({
+          position,
+          mode: prev.mode,
+          modeValue: numericValue,
+        });
+
+        return {
+          ...nextState,
+          estimatedPnl: pnl.toFixed(2),
+          estimatedPnlPercent: roi.toFixed(2),
+        };
       });
     }
   );
@@ -822,6 +872,10 @@ export const EditTpSlModal: React.FC<Props> = ({
 
     const pnl = Number(state.estimatedPnl);
     const roi = Number(state.estimatedPnlPercent || 0);
+    const roiAbsText =
+      state.mode === 'roi' && state.modeValue
+        ? state.modeValue
+        : formatModeValueFromNumber(roi) || '0.00';
     return (
       <span
         className={pnl >= 0 ? 'text-rb-green-default' : 'text-rb-red-default'}
@@ -829,7 +883,7 @@ export const EditTpSlModal: React.FC<Props> = ({
         {pnl >= 0 ? '+' : '-'}
         {formatUsdValue(Math.abs(pnl))}
         {state.estimatedPnlPercent
-          ? `(${roi >= 0 ? '+' : '-'}${Math.abs(roi).toFixed(2)}%)`
+          ? `(${roi >= 0 ? '+' : '-'}${roiAbsText}%)`
           : ''}
       </span>
     );
