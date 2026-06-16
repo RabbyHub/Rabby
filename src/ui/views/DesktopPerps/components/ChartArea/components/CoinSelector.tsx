@@ -101,10 +101,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </span>
         {currentMarketData.markPx && currentMarketData.prevDayPx ? (
           <span
-            className={clsx(
-              'text-[12px] leading-[14px] font-medium',
-              changeColorClass
-            )}
+            className={clsx('text-[12px] leading-[14px]', changeColorClass)}
           >
             {isPriceUp ? '+' : isPriceDown ? '-' : ''}
             {splitNumberByStep(Math.abs(changeValue))} / {isPriceUp ? '+' : ''}

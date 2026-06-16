@@ -28,6 +28,7 @@ import { EVENTS } from '@/constant';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
 import { PerpsCheckbox } from '../../TradingPanel/components/PerpsCheckbox';
+import { ThousandsNativeInput } from '../../ThousandsNativeInput';
 
 const CLOSE_PERCENTAGES = [10, 25, 50, 75, 100];
 
@@ -538,7 +539,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         overlayClassName="rectangle"
         title={priceTooltipContent}
       >
-        <input
+        <ThousandsNativeInput
           className={clsx(
             'w-[68px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
             'bg-transparent text-r-neutral-title-1',
@@ -598,7 +599,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             </div>
           }
         >
-          <input
+          <ThousandsNativeInput
             ref={sizeInputRef}
             className={clsx(
               'w-[60px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',

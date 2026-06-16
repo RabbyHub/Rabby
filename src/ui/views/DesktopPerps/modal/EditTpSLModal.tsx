@@ -14,6 +14,7 @@ import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinNam
 import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
 import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
 import perpsToast from '../components/PerpsToast';
+import { ThousandsNativeInput } from '../components/ThousandsNativeInput';
 import stats from '@/stats';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { getStatsReportSide } from '../utils';
@@ -936,7 +937,7 @@ export const EditTpSlModal: React.FC<Props> = ({
           ) : null}
         </div>
         <div className="flex items-start gap-[8px]">
-          <input
+          <ThousandsNativeInput
             value={state.triggerPrice}
             inputMode="decimal"
             placeholder={t('page.perpsPro.editTpSl.triggerPrice')}
@@ -961,7 +962,7 @@ export const EditTpSlModal: React.FC<Props> = ({
                 {modeValueSign}
               </span>
             ) : null}
-            <input
+            <ThousandsNativeInput
               value={state.modeValue}
               inputMode="decimal"
               onChange={(e) => updateSideByModeValue(side, e.target.value)}

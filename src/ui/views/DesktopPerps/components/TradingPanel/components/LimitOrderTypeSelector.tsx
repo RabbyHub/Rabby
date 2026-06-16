@@ -33,7 +33,7 @@ export const LimitOrderTypeSelector: React.FC<LimitOrderTypeSelectorProps> = ({
   return (
     <div
       className={clsx(
-        'flex items-center gap-[4px] text-[12px] text-rb-neutral-secondary font-medium'
+        'flex items-center gap-[4px] text-[12px] text-rb-neutral-secondary'
       )}
     >
       TIF

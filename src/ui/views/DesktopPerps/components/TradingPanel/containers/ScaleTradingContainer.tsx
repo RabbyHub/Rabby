@@ -404,7 +404,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   };
 
   return (
-    <div className="space-y-[10px]">
+    <div className="flex flex-col gap-[12px]">
       <OrderSideAndFunds
         availableBalance={availableBalance}
         quoteAsset={quoteAsset}
@@ -419,7 +419,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           onChange={handleStartPriceChange}
           className="text-left"
           suffix={
-            <span className="text-15 font-medium text-rb-neutral-title-1">
+            <span className="text-15 text-rb-neutral-title-1">
               {quoteAsset}
             </span>
           }
@@ -435,7 +435,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           onChange={handleEndPriceChange}
           className="text-left"
           suffix={
-            <span className="text-15 font-medium text-rb-neutral-title-1">
+            <span className="text-15 text-rb-neutral-title-1">
               {quoteAsset}
             </span>
           }
@@ -462,7 +462,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           }}
           className="text-left"
           suffix={
-            <span className="text-15 font-medium text-rb-neutral-title-1">
+            <span className="text-15 text-rb-neutral-title-1">
               {formatPerpsCoin(selectedCoin)}
             </span>
           }
@@ -550,7 +550,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.orderValue')}
           </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
+          <span className="text-r-neutral-title-1 text-[13px]">
             {orderSummary.orderValue}
           </span>
         </div>
@@ -559,7 +559,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.marginUsage')}
           </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
+          <span className="text-r-neutral-title-1 text-[13px]">
             {orderSummary.marginUsage}
           </span>
         </div>

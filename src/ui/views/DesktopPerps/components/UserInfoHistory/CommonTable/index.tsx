@@ -42,6 +42,13 @@ const Wrapper = styled.div`
     flex-direction: column;
   }
 
+  /* Columns keep their fixed widths as a baseline; when the container is wider
+     the extra space is distributed across the columns (option A: stretch),
+     and when narrower the body scrolls horizontally. */
+  .ant-table table {
+    min-width: 100%;
+  }
+
   .ant-table-container {
     flex: 1;
     overflow: hidden;
@@ -75,24 +82,25 @@ const Wrapper = styled.div`
   }
 
   .ant-table-thead > tr > th {
-    color: var(--rb-neutral-foot, #6a7587);
+    color: var(--rb-neutral-secondary, #9a9ca9);
     font-size: 13px;
     font-weight: 400;
     background-color: var(--rb-neutral-bg-1, #fff);
     border: none;
 
-    padding: 12px 8px;
+    height: 38px;
+    padding: 0 8px;
 
     &::before {
       display: none !important;
     }
 
     &:first-child {
-      padding-left: 16px;
+      padding-left: 12px;
     }
 
     &:last-child {
-      padding-right: 16px;
+      padding-right: 12px;
     }
 
     &.ant-table-column-has-sorters {
@@ -102,7 +110,7 @@ const Wrapper = styled.div`
       transition: none;
 
       .ant-table-column-sorters {
-        padding: 12px 0;
+        padding: 0;
       }
 
       /* Hover state */
@@ -124,25 +132,36 @@ const Wrapper = styled.div`
   }
 
   .ant-table-tbody > tr > td {
-    border-bottom: none;
+    height: 44px;
+    vertical-align: middle;
+    /* 1px gap between content rows, painted in the panel background colour. */
+    border-bottom: 1px solid var(--rb-neutral-bg-1, #fff);
 
-    padding: 8px;
+    padding: 0 8px;
 
     &:first-child {
-      padding-left: 16px;
+      padding-left: 12px;
     }
 
     &:last-child {
-      padding-right: 16px;
+      padding-right: 12px;
     }
 
     .is-long-bg {
-      background: linear-gradient(to right, #58c66920, #58c66900);
-      border-left: 2px solid var(--rb-green-default, #58c669);
+      background: linear-gradient(
+        to right,
+        rgba(var(--rb-green-default-rgb), 0.125),
+        rgba(var(--rb-green-default-rgb), 0)
+      );
+      border-left: 2px solid var(--rb-green-default, #2abb7f);
     }
     .is-short-bg {
-      background: linear-gradient(to right, #ff453a20, #ff453a00);
-      border-left: 2px solid var(--rb-red-default, #ff453a);
+      background: linear-gradient(
+        to right,
+        rgba(var(--rb-red-default-rgb), 0.125),
+        rgba(var(--rb-red-default-rgb), 0)
+      );
+      border-left: 2px solid var(--rb-red-default, #e34935);
     }
   }
 
@@ -178,23 +197,24 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
     }
 
     .ant-table-thead > tr > th {
-      color: var(--rb-neutral-foot, #6a7587);
+      color: var(--rb-neutral-secondary, #9a9ca9);
       font-size: 13px;
       font-weight: 400;
       background-color: var(--rb-neutral-bg-1, #fff);
       border: none;
-      padding: 12px 8px;
+      height: 38px;
+      padding: 0 8px;
 
       &::before {
         display: none !important;
       }
 
       &:first-child {
-        padding-left: 16px;
+        padding-left: 12px;
       }
 
       &:last-child {
-        padding-right: 16px;
+        padding-right: 12px;
       }
 
       &.ant-table-column-has-sorters {
@@ -204,7 +224,7 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
         transition: none;
 
         .ant-table-column-sorters {
-          padding: 12px 0;
+          padding: 0;
         }
 
         &:hover {
@@ -250,11 +270,11 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
       box-sizing: border-box;
 
       &:first-child {
-        padding-left: 16px;
+        padding-left: 12px;
       }
 
       &:last-child {
-        padding-right: 16px;
+        padding-right: 12px;
       }
     }
   }

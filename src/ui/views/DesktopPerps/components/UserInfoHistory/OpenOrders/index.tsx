@@ -99,11 +99,11 @@ export const OpenOrders: React.FC = () => {
               className={clsx(
                 'absolute top-0 left-0 right-0 bottom-0',
                 'flex flex-col justify-center',
-                'pl-[16px] py-[8px]',
+                'pl-[12px] py-[8px]',
                 record.side === 'B' ? 'is-long-bg' : 'is-short-bg'
               )}
             >
-              <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 mb-[2px] flex flex-col">
+              <div className="text-[13px] leading-[16px] text-r-neutral-title-1 mb-[2px] flex flex-col">
                 <span
                   onClick={() => dispatch.perps.updateSelectedCoin(record.coin)}
                   className="group cursor-pointer"
@@ -162,7 +162,7 @@ export const OpenOrders: React.FC = () => {
               <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                 -
               </div>
-              <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+              <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
                 -
               </div>
             </div>
@@ -177,7 +177,7 @@ export const OpenOrders: React.FC = () => {
                         .toNumber()
                     )}
               </div>
-              <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+              <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
                 {record.origSz} {formatPerpsCoin(record.coin)}
               </div>
             </div>
@@ -326,7 +326,7 @@ export const OpenOrders: React.FC = () => {
               <button
                 type="button"
                 className={clsx(
-                  'bg-rb-neutral-bg-4 rounded-[8px] py-[9px] px-[12px] h-[32px] w-[88px]',
+                  'bg-rb-neutral-bg-5 rounded-[8px] py-[9px] px-[12px] h-[32px] w-[88px]',
                   'border border-transparent',
                   'hover:border-rb-brand-default',
                   'text-[12px] leading-[14px]  text-r-neutral-title-1'

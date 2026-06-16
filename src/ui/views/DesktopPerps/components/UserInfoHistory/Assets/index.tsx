@@ -114,7 +114,7 @@ export const Assets: React.FC = () => {
         width: 100,
         sorter: (a, b) => a.label.localeCompare(b.label),
         render: (_, record) => (
-          <div className="text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
+          <div className="text-[13px] leading-[16px] text-r-neutral-title-1">
             {record.label}
           </div>
         ),
@@ -168,7 +168,7 @@ export const Assets: React.FC = () => {
               : t('page.perpsPro.userInfo.assets.transferToPerps');
           return (
             <a
-              className="text-[13px] leading-[16px] text-r-blue-default cursor-pointer font-medium"
+              className="text-[13px] leading-[16px] text-r-blue-default cursor-pointer"
               onClick={() => onActionClick(record)}
             >
               {label}

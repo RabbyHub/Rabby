@@ -375,7 +375,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   });
 
   return (
-    <div className="w-full gap-[12px] flex flex-col">
+    <div className="w-full gap-[6px] flex flex-col">
       {/* Size label */}
       <div className="flex items-center justify-between">
         <span className="text-rb-neutral-secondary text-[12px]">
@@ -398,7 +398,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
           onBlur={() => setIsFocused(false)}
           suffix={
             <div
-              className="text-15 font-medium text-rb-neutral-title-1 px-[8px] h-[28px] flex items-center gap-[6px] cursor-pointer whitespace-nowrap bg-rb-neutral-line rounded-[6px]"
+              className="text-15 text-rb-neutral-title-1 px-[8px] h-[28px] flex items-center gap-[6px] cursor-pointer whitespace-nowrap bg-rb-neutral-line rounded-[6px]"
               onClick={handleChangeUnit}
             >
               {unitLabel}

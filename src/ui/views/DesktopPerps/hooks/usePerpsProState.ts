@@ -246,14 +246,7 @@ export const usePerpsProState = () => {
         dispatch.perps.fetchUserAbstraction('');
       }, 100);
     } catch (e: any) {
-      console.error('Failed to agentSetAbstraction:', e);
-      Sentry.captureException(
-        new Error(
-          `PERPS agentSetAbstraction failed: ${
-            e?.message ? String(e.message) : String(e)
-          }`
-        )
-      );
+      console.log('Failed to agentSetAbstraction:', e);
     }
   });
 

@@ -4,7 +4,11 @@ import React from 'react';
 import styled from 'styled-components';
 
 const StyledSlider = styled(Slider)<{ isDark: boolean }>`
+  margin-top: 6px;
+  margin-bottom: 6px;
+
   .ant-slider-rail {
+    height: 1px;
     background-color: ${({ isDark }) =>
       isDark ? 'var(--rb-neutral-bg-2)' : 'var(--r-neutral-line)'};
   }
@@ -15,6 +19,7 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
 
   .ant-slider-track,
   &:hover .ant-slider-track {
+    height: 1px;
     background: var(--r-blue-default, #7084ff);
   }
 
@@ -24,15 +29,17 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
   }
 
   .ant-slider-handle {
-    margin-top: -10px;
+    margin-top: -12px;
     width: 24px;
     height: 24px;
     background-color: transparent;
-    overflow: hidden;
     border: none;
     box-shadow: none;
 
-    &::before,
+    &::before {
+      display: none;
+    }
+
     &::after {
       position: absolute;
       content: '';
@@ -40,19 +47,11 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
       left: 50%;
       transform: translate(-50%, -50%);
       border-radius: 50%;
-    }
-
-    &::before {
-      width: 16px;
-      height: 16px;
-      background-color: white;
-      filter: drop-shadow(0px 2px 4px rgba(112, 132, 255, 0.4));
-    }
-
-    &::after {
       width: 12px;
       height: 12px;
-      background-color: var(--r-blue-default, #7084ff);
+      background-color: #fff;
+      border: 1px solid var(--r-blue-default, #7084ff);
+      box-shadow: 0px 2px 4px rgba(112, 132, 255, 0.4);
     }
 
     &:hover {
@@ -62,15 +61,16 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
   }
 
   .ant-slider-dot {
-    width: 8px;
-    height: 8px;
-    border: 6px solid var(--rb-neutral-line);
-    background-color: var(--rb-neutral-line);
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--rb-neutral-line);
+    background-color: var(--rb-neutral-bg-1);
     top: -4px;
   }
 
   .ant-slider-dot-active {
     border-color: var(--r-blue-default, #7084ff);
+    background-color: var(--r-blue-default, #7084ff);
   }
 
   &:hover .ant-slider-dot {

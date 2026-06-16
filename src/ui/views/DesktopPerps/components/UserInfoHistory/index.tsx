@@ -160,7 +160,7 @@ export const UserInfoHistory: React.FC = () => {
     <div className="flex-1 h-full bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">
       <div
         ref={tabsContainerRef}
-        className="relative flex border-b border-solid border-rb-neutral-line shrink-0"
+        className="relative flex gap-[36px] px-[12px] border-b border-solid border-rb-neutral-line shrink-0 overflow-x-auto trades-container-no-scrollbar"
       >
         {tabs.map((tab) => {
           return (
@@ -170,7 +170,7 @@ export const UserInfoHistory: React.FC = () => {
                 tabRefs.current[tab.key] = el;
               }}
               className={clsx(
-                'px-[16px] py-[16px] text-[14px] flex items-center gap-[4px]',
+                'py-[12px] text-[14px] font-medium flex items-center gap-[4px] shrink-0 whitespace-nowrap',
                 activeTab === tab.key
                   ? 'text-rb-neutral-title-1'
                   : 'hover:text-rb-neutral-title-1 text-rb-neutral-secondary'
@@ -178,11 +178,7 @@ export const UserInfoHistory: React.FC = () => {
               onClick={() => setActiveTab(tab.key)}
             >
               {tab.label}
-              {tab.number ? (
-                <div className="h-[16px] px-6 text-[12px] text-rb-neutral-title-1 bg-rb-neutral-bg-2 rounded-[4px] flex items-center justify-center">
-                  {tab.number}
-                </div>
-              ) : null}
+              {tab.number ? <span>({tab.number})</span> : null}
             </button>
           );
         })}

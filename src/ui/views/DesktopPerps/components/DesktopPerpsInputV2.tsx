@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, InputProps } from 'antd';
 import styled from 'styled-components';
+import { useThousandsInput } from '../hooks/useThousandsInput';
 
 const StyledInput = styled(Input)`
   input::-webkit-inner-spin-button,
@@ -12,10 +13,10 @@ const StyledInput = styled(Input)`
   /* With prefix/suffix (affix wrapper) */
   &.ant-input-affix-wrapper {
     border-radius: 6px;
-    border: 1px solid var(--rb-neutral-line, #e0e5ec);
+    border: none;
     background: var(--rb-neutral-bg-5, #fff);
     height: 44px;
-    padding: 0 6px;
+    padding: 0 6px 0 12px;
     transition: border-color 0.2s;
 
     &:hover,
@@ -29,9 +30,9 @@ const StyledInput = styled(Input)`
       border: none;
       border-radius: 0;
       box-shadow: none;
-      font-size: 15px;
+      font-size: 14px;
       color: var(--rb-neutral-title-1, #111827);
-      font-weight: 500;
+      font-weight: 400;
 
       &::placeholder {
         color: var(--rb-neutral-foot, #6b7280);
@@ -47,13 +48,13 @@ const StyledInput = styled(Input)`
   /* Without prefix/suffix (plain input) */
   &.ant-input {
     border-radius: 6px;
-    border: 1px solid var(--rb-neutral-line, #e0e5ec);
+    border: none;
     background: var(--rb-neutral-bg-5, #fff);
     height: 44px;
-    font-size: 15px;
+    font-size: 14px;
     color: var(--rb-neutral-title-1, #111827);
-    font-weight: 500;
-    padding: 0 6px;
+    font-weight: 400;
+    padding: 0 6px 0 12px;
     transition: border-color 0.2s;
 
     &:hover,
@@ -75,5 +76,17 @@ interface DesktopPerpsInputV2Props extends InputProps {}
 export const DesktopPerpsInputV2: React.FC<DesktopPerpsInputV2Props> = (
   props
 ) => {
-  return <StyledInput placeholder="0" {...props} />;
+  const { ref, value, onChange } = useThousandsInput(
+    props.value,
+    props.onChange
+  );
+  return (
+    <StyledInput
+      placeholder="0"
+      {...props}
+      value={value}
+      onChange={onChange}
+      ref={ref}
+    />
+  );
 };
