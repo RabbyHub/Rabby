@@ -320,6 +320,18 @@ const getValidationError = ({
   return '';
 };
 
+const getDerivedTriggerUnavailableError = ({
+  side,
+  t,
+}: {
+  side: TpslSide;
+  t: ReturnType<typeof useTranslation>['t'];
+}) => {
+  return side === 'tp'
+    ? t('page.perpsPro.editTpSl.tpTriggerInvalid')
+    : t('page.perpsPro.editTpSl.slTriggerInvalid');
+};
+
 const hydrateSideFromTrigger = ({
   position,
   side,
@@ -344,21 +356,27 @@ const hydrateSideFromTrigger = ({
   validateEmptyTrigger?: boolean;
 }): TpslSideState => {
   if (!triggerPrice || Number(triggerPrice) === 0) {
+    const validationError = getValidationError({
+      position,
+      side,
+      triggerPrice,
+      markPrice,
+      pxDecimals,
+      t,
+      validateEmptyTrigger,
+    });
+
     return {
       ...state,
       triggerPrice,
       modeValue: syncModeValue ? '' : state.modeValue,
       estimatedPnl: '',
       estimatedPnlPercent: '',
-      error: getValidationError({
-        position,
-        side,
-        triggerPrice,
-        markPrice,
-        pxDecimals,
-        t,
-        validateEmptyTrigger,
-      }),
+      error:
+        validationError ||
+        (validateEmptyTrigger
+          ? getDerivedTriggerUnavailableError({ side, t })
+          : ''),
     };
   }
 
