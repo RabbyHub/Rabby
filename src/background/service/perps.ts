@@ -26,6 +26,17 @@ export type ApproveSignatures = (SendApproveParams & {
   type: 'approveAgent' | 'approveBuilderFee';
 })[];
 
+export type PerpsTpslModePreference = 'pnl' | 'roi';
+export type PerpsTpslModePreferences = Record<
+  'tp' | 'sl',
+  PerpsTpslModePreference
+>;
+
+const DEFAULT_TPSL_MODE_PREFERENCES: PerpsTpslModePreferences = {
+  tp: 'pnl',
+  sl: 'pnl',
+};
+
 export interface PerpsServiceStore {
   agentVaults: string; // encrypted JSON string of {[address: string]: string}
   agentPreferences: {
@@ -53,6 +64,7 @@ export interface PerpsServiceStore {
   selectedCoin: string;
   skipMarketCloseConfirm: boolean;
   candleInterval: string;
+  tpslModePreferences: PerpsTpslModePreferences;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -90,6 +102,7 @@ class PerpsService {
         selectedCoin: 'BTC',
         skipMarketCloseConfirm: false,
         candleInterval: '15M',
+        tpslModePreferences: DEFAULT_TPSL_MODE_PREFERENCES,
       },
     });
 
@@ -459,6 +472,33 @@ class PerpsService {
     };
   };
 
+  getTpslModePreferences = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return {
+      ...DEFAULT_TPSL_MODE_PREFERENCES,
+      ...(this.store.tpslModePreferences || {}),
+    };
+  };
+
+  setTpslModePreference = async (
+    side: 'tp' | 'sl',
+    mode: PerpsTpslModePreference
+  ) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    if (!['tp', 'sl'].includes(side)) return;
+    if (!['pnl', 'roi'].includes(mode)) return;
+
+    this.store.tpslModePreferences = {
+      ...DEFAULT_TPSL_MODE_PREFERENCES,
+      ...(this.store.tpslModePreferences || {}),
+      [side]: mode,
+    };
+  };
+
   getMarketSlippage = async () => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
@@ -598,6 +638,7 @@ class PerpsService {
       selectedCoin: 'BTC',
       skipMarketCloseConfirm: false,
       candleInterval: '15M',
+      tpslModePreferences: DEFAULT_TPSL_MODE_PREFERENCES,
     };
     this.memoryState.agentWallets = {};
   };

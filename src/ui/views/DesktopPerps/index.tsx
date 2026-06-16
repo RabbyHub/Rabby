@@ -75,7 +75,8 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
             <div
               className="flex flex-col min-w-0 min-h-0 overflow-hidden"
               // Left rail is 80%; inside it chart/order book split 77.5/22.5,
-              // preserving chart : order book : actions = 62% : 18% : 20%.
+              // preserving chart : order book : actions = 62% : 18% : 20%
+              // until the order book or action rail reaches its 340px cap.
               style={{ flex: '1 1 80%' }}
             >
               <PanelGroup
@@ -91,7 +92,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                       <ChartArea />
                     </div>
                     <div
-                      className="min-w-[280px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                      className="min-w-[280px] max-w-[340px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
                       style={{ flex: '0 0 22.5%' }}
                     >
                       <OrderBookTrades />
@@ -109,7 +110,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 
             {/* TradingPanel + AccountInfo */}
             <div
-              className="min-w-[340px] shrink-0 min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+              className="min-w-[340px] max-w-[340px] shrink-0 min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
               style={{ flex: '0 0 20%' }}
             >
               <div className="flex h-full min-h-0 flex-col">

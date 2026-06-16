@@ -1684,7 +1684,11 @@
         "currentPosition": "Current Position",
         "tp": "TP",
         "sl": "SL",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "triggerHigherThanLiquidation": "The trigger price should be higher than the liquidation price {{price}}",
+        "triggerLowerThanLiquidation": "The trigger price should be lower than the liquidation price {{price}}",
+        "tpTriggerInvalid": "The TP trigger price is invalid and will not be set",
+        "slTriggerInvalid": "The SL trigger price is invalid and will not be set"
       },
       "accountInfo": {
         "available": "Available: ",

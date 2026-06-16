@@ -51,6 +51,7 @@ export const AccountActions: React.FC<AccountActionsProps> = ({
         )}
       >
         <button
+          type="button"
           onClick={handleDeposit}
           className={clsx(
             'px-[12px] font-medium flex items-center justify-center border border-solid cursor-pointer',
