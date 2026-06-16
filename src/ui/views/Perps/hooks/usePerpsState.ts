@@ -203,7 +203,10 @@ export const usePerpsState = ({
   const checkExtraAgent = useMemoizedFn(
     async (account, agentAddress: string) => {
       // self-sign: master signs its own orders, there is no agent to expire.
-      if (isSelfSignPerpsAccount(account.type)) {
+      if (
+        isSelfSignPerpsAccount(account.type) ||
+        account.type === KEYRING_CLASS.WATCH
+      ) {
         return { isExpired: false };
       }
       const sdk = getPerpsSDK();
