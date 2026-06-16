@@ -164,7 +164,7 @@ export const TradeHistory: React.FC = () => {
                     .toFixed(2)
                 )}{' '}
               </div>
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
                 {Math.abs(Number(record.sz || 0))}{' '}
                 {formatPerpsCoin(record.coin)}
               </div>

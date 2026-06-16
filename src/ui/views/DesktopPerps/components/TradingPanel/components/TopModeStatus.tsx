@@ -227,7 +227,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         {/* Row 2: Order type tabs */}
         <div
           ref={tabsContainerRef}
-          className="relative flex h-[32px] items-center border-b border-solid border-rb-neutral-line"
+          className="relative flex h-[38px] items-center border-b border-solid border-rb-neutral-line"
         >
           {PRIMARY_TABS.map((tab) => (
             <button
@@ -238,7 +238,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               }}
               onClick={() => onOrderTypeChange(tab.value)}
               className={clsx(
-                'h-[32px] mr-20 text-[13px] font-medium transition-colors',
+                'h-[38px] mr-20 text-[13px] font-medium transition-colors',
                 orderType === tab.value
                   ? 'text-rb-neutral-title-1'
                   : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
@@ -250,7 +250,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
           <div
             className={clsx(
-              'h-[32px] text-[13px] font-medium',
+              'h-[38px] text-[13px] font-medium',
               'inline-flex items-center transition-colors',
               isAdvancedSelected
                 ? 'text-rb-neutral-title-1'
@@ -261,7 +261,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               ref={(el) => {
                 tabRefs.current['advanced'] = el;
               }}
-              className="cursor-pointer h-[32px] inline-flex items-center"
+              className="cursor-pointer h-[38px] inline-flex items-center"
               onClick={() => onOrderTypeChange(lastAdvancedType)}
             >
               {advancedLabel}
@@ -274,7 +274,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               }))}
               onSelect={(key) => onOrderTypeChange(key as OrderType)}
             >
-              <span className="inline-flex items-center cursor-pointer pl-[3px] h-[32px]">
+              <span className="inline-flex items-center cursor-pointer pl-[3px] h-[38px]">
                 <RcIconArrowDownPerpsCC className="w-[14px] h-[14px] text-rb-neutral-secondary" />
               </span>
             </PerpsDropdown>
