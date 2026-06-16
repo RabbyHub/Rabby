@@ -646,7 +646,9 @@ export const BridgeContent = () => {
     !depositFlowActive;
   const canPrepareDirectSign = canUseDirectSubmitTx && canBuildBridgeTxs;
   const directSignTxPreparing =
-    canPrepareDirectSign && (buildTxsLoading || !txs?.length);
+    canPrepareDirectSign &&
+    !submitTxRef.current &&
+    (buildTxsLoading || !txs?.length);
   const buildTopUpSnapshot = useCallback(
     (): BridgeTopUpSnapshot => ({
       amount: amount || '',
@@ -724,28 +726,36 @@ export const BridgeContent = () => {
     submitTxRef.current = true;
     setReloadTxRefreshPaused(true);
     if (canUseDirectSubmitTx) {
-      consumeTopUpResumeGuard();
       setMiniSignLoading(true);
-      setFetchingBridgeQuote(true);
       try {
         if (buildBridgeTxsTimerRef.current) {
           clearTimeout(buildBridgeTxsTimerRef.current);
           buildBridgeTxsTimerRef.current = null;
         }
         const currentBuildKey = selectedBridgeQuoteBuildKeyRef.current;
-        const reusableBuildPromise =
-          runBuildBridgeTxsKeyRef.current === currentBuildKey
-            ? runBuildBridgeTxsRef.current
-            : undefined;
-        const buildPromise =
-          reusableBuildPromise || runBuildBridgeTxsForKey(currentBuildKey);
-        const builtTxs = await buildPromise;
-        setFetchingBridgeQuote(false);
-        if (!builtTxs?.length) {
-          throw MINI_SIGN_ERROR.PREFETCH_FAILURE;
+        const canReuseCurrentTxs =
+          !!currentBuildKey &&
+          builtBridgeTxsKeyRef.current === currentBuildKey &&
+          !!txs?.length;
+        let txsForSigning = canReuseCurrentTxs ? txs : undefined;
+        const formChangedDuringTopUp = consumeTopUpResumeGuard();
+        if (formChangedDuringTopUp || !txsForSigning?.length) {
+          setFetchingBridgeQuote(true);
+          const reusableBuildPromise =
+            runBuildBridgeTxsKeyRef.current === currentBuildKey
+              ? runBuildBridgeTxsRef.current
+              : undefined;
+          const buildPromise =
+            reusableBuildPromise || runBuildBridgeTxsForKey(currentBuildKey);
+          const builtTxs = await buildPromise;
+          setFetchingBridgeQuote(false);
+          if (!builtTxs?.length) {
+            throw MINI_SIGN_ERROR.PREFETCH_FAILURE;
+          }
+          txsForSigning = builtTxs;
         }
         await openDirect({
-          txs: builtTxs,
+          txs: txsForSigning,
           getContainer,
           ga: {
             category: 'Bridge',
