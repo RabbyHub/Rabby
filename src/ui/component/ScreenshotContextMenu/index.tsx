@@ -66,10 +66,10 @@ function isElementInViewport(el: Node): boolean {
   const vWidth = window.innerWidth || document.documentElement.clientWidth;
 
   return (
-    rect.bottom > 0 &&
-    rect.right > 0 &&
-    rect.top < vHeight &&
-    rect.left < vWidth
+    rect.bottom >= 0 &&
+    rect.right >= 0 &&
+    rect.top <= vHeight &&
+    rect.left <= vWidth
   );
 }
 
@@ -83,23 +83,11 @@ const captureBySnapdom = async () => {
     fast: true,
     height: viewport.height,
     width: viewport.width,
-    filter: isElementInViewport,
-    filterMode: 'remove',
+    // filter: isElementInViewport,
+    // filterMode: 'remove',
+    exclude: ['.ant-drawer:not(.ant-drawer-open)'],
+    excludeMode: 'remove',
   });
-
-  console.log(
-    (
-      await snapdom.toSvg(captureTarget, {
-        backgroundColor: getComputedStyle(document.body).backgroundColor,
-        dpr: window.devicePixelRatio,
-        fast: true,
-        height: viewport.height,
-        width: viewport.width,
-        filter: isElementInViewport,
-        filterMode: 'remove',
-      })
-    ).src
-  );
 
   return image.src;
 };
