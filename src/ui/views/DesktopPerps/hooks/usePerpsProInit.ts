@@ -1,11 +1,16 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { usePerpsDefaultAccount } from '../../Perps/hooks/usePerpsDefaultAccount';
-import { getPerpsSDK } from '../../Perps/sdkManager';
+import {
+  getPerpsSDK,
+  applyPerpsSigner,
+  isSelfSignPerpsAccount,
+  initPerpsAgentAccount,
+} from '../../Perps/sdkManager';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
-import { PERPS_AGENT_NAME } from '../../Perps/constants';
 import { usePerpsProState } from './usePerpsProState';
+import { checkSelfSignBuilderFee } from '../../Perps/utils';
 import { preloadSound } from '@/ui/utils/sound';
 import { DARK_MODE_TYPE } from '@/constant';
 import { useRequest } from 'ahooks';
@@ -133,18 +138,25 @@ export const usePerpsProInit = (isActive = true) => {
         if (!initAccount) {
           return false;
         }
+        // self-sign passive init: install externalSign, log in, mark builder-fee
+        // status. No signing — signs lazily on the first user action.
+        if (isSelfSignPerpsAccount(initAccount.type)) {
+          await applyPerpsSigner(initAccount, wallet);
+          await dispatch.perps.loginPerpsAccount({
+            account: initAccount,
+            isPro: true,
+          });
+          checkSelfSignBuilderFee();
+          await dispatch.perps.fetchMarketData(undefined);
+          dispatch.perps.setInitialized(true);
+          return true;
+        }
         const {
           vault,
           agentAddress,
         } = await wallet.getOrCreatePerpsAgentWallet(initAccount.address);
-        const sdk = getPerpsSDK();
         // 开始恢复登录态
-        sdk.initAccount(
-          initAccount.address,
-          vault,
-          agentAddress,
-          PERPS_AGENT_NAME
-        );
+        initPerpsAgentAccount(initAccount.address, vault, agentAddress);
         await dispatch.perps.loginPerpsAccount({
           account: initAccount,
           isPro: true,

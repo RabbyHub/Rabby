@@ -5,12 +5,33 @@ import { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
 import {
   PERPS_MAX_NTL_VALUE,
   PERPS_POSITION_RISK_LEVEL,
+  PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PerpsQuoteAsset,
 } from './constants';
 import { useWallet, WalletController } from '@/ui/utils';
 import { KEYRING_CLASS } from '@/constant';
 import { getPerpsSDK } from './sdkManager';
 import store from '@/ui/store';
+
+// Matches Hyperliquid's "Builder fee has not been approved" order rejection.
+const BUILDER_FEE_NOT_APPROVED_RE = /builder fee has not been approved/i;
+export const isBuilderFeeNotApprovedError = (errorMessage?: string): boolean =>
+  !!errorMessage && BUILDER_FEE_NOT_APPROVED_RE.test(errorMessage);
+
+// self-sign has no agent — only the builder fee can be pending. Shared by both
+// perps init flows; uses store.dispatch so it can live outside the hooks.
+export const checkSelfSignBuilderFee = async () => {
+  try {
+    const maxFee = await getPerpsSDK().info.getMaxBuilderFee(
+      PERPS_BUILD_FEE_RECEIVE_ADDRESS
+    );
+    store.dispatch.perps.setAccountNeedApproveAgent(false);
+    store.dispatch.perps.setAccountNeedApproveBuilderFee(!maxFee);
+  } catch (e) {
+    // best-effort; keep current flags
+    console.error('Failed to check self-sign builder fee:', e);
+  }
+};
 
 /**
  * Wait until both the user clearinghouseState and the global asset ticker

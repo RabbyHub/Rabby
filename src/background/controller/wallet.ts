@@ -6931,11 +6931,13 @@ export class WalletController extends BaseController {
       return {
         vault: resp.vault,
         agentAddress: resp.agentAddress,
+        isCreate: true,
       };
     } else {
       return {
         vault: res.vault,
         agentAddress: res.preference.agentAddress,
+        isCreate: false,
       };
     }
   };
