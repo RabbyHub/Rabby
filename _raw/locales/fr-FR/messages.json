@@ -262,7 +262,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Ajouter une adresse",
-      "smallSwapDisabledTips": "Actuellement, seules les adresses de clé privée et de phrase de récupération sont prises en charge."
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "Ceci est un jeton de fournisseur de liquidité (LP)",
@@ -4886,7 +4886,7 @@
       "slippageTolerance": "Tolérance de slippage",
       "singleTransactionGasLimit": "Gas Limit pour une seule transaction",
       "startConvert": "Démarrer la conversion",
-      "unsupportedWalletType": "Seules les adresses de clé privée et de phrase de graine sont prises en charge.",
+      "unsupportedWalletType": "",
       "stop": "Arrêter",
       "selectLowValueTokens": "Sélectionner les jetons de faible valeur",
       "tokenColumn": "Jeton",

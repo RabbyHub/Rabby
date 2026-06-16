@@ -4541,7 +4541,7 @@
       "slippageTolerance": "슬리피지 허용 범위",
       "singleTransactionGasLimit": "단일 트랜잭션 Gas Limit",
       "startConvert": "전환 시작",
-      "unsupportedWalletType": "개인 키와 시드 구문 주소만 지원됩니다.",
+      "unsupportedWalletType": "",
       "stop": "중지",
       "selectLowValueTokens": "낮은 가치 토큰 선택",
       "tokenColumn": "토큰",
@@ -4949,7 +4949,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "주소 추가",
-      "smallSwapDisabledTips": "현재 개인 키 및 시드 문구 주소만 지원됩니다."
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "이는 유동성 공급자(LP) 토큰입니다.",

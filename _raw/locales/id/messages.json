@@ -4541,7 +4541,7 @@
       "slippageTolerance": "Toleransi selip",
       "singleTransactionGasLimit": "Gas Limit Transaksi Tunggal",
       "startConvert": "Mulai konversi",
-      "unsupportedWalletType": "Hanya alamat kunci privat dan seed phrase yang didukung.",
+      "unsupportedWalletType": "",
       "stop": "Berhenti",
       "selectLowValueTokens": "Pilih Token Bernilai Rendah",
       "tokenColumn": "Token",
@@ -4949,7 +4949,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Tambah alamat",
-      "smallSwapDisabledTips": "Saat ini hanya alamat kunci privat dan frase seed yang didukung."
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "Ini adalah token penyedia likuiditas (LP)",

@@ -4547,7 +4547,7 @@
       "slippageTolerance": "Kayma toleransı",
       "singleTransactionGasLimit": "Tek İşlem Gas Limit",
       "startConvert": "Dönüştürmeyi başlat",
-      "unsupportedWalletType": "Yalnızca özel anahtar ve kurtarma cümlesi adresleri desteklenir.",
+      "unsupportedWalletType": "",
       "stop": "Durdur",
       "selectLowValueTokens": "Düşük Değerli Tokenları Seç",
       "tokenColumn": "Token",
@@ -4955,7 +4955,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adres ekle",
-      "smallSwapDisabledTips": "Şu anda yalnızca özel anahtar ve kurtarma ifadesi adresleri desteklenmektedir."
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",

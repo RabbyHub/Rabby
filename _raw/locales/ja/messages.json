@@ -4544,7 +4544,7 @@
       "slippageTolerance": "スリッページ許容範囲",
       "singleTransactionGasLimit": "単一トランザクションのGas Limit",
       "startConvert": "変換を開始",
-      "unsupportedWalletType": "秘密鍵とシードフレーズのアドレスのみサポートされています。",
+      "unsupportedWalletType": "",
       "stop": "停止",
       "selectLowValueTokens": "低価値トークンを選択",
       "tokenColumn": "トークン",
@@ -4952,7 +4952,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加",
-      "smallSwapDisabledTips": "現在、秘密鍵とシードフレーズのアドレスのみサポートされています。"
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "これは流動性プロバイダー(LP)トークンです。",

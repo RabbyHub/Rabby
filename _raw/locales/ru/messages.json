@@ -4546,7 +4546,7 @@
       "slippageTolerance": "Допуск проскальзывания",
       "singleTransactionGasLimit": "Gas Limit для одной транзакции",
       "startConvert": "Начать конвертацию",
-      "unsupportedWalletType": "Поддерживаются только адреса с приватным ключом и seed фразой.",
+      "unsupportedWalletType": "",
       "stop": "Остановить",
       "selectLowValueTokens": "Выберите низкоценные токены",
       "tokenColumn": "Токен",
@@ -4954,7 +4954,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Добавить адрес",
-      "smallSwapDisabledTips": "На данный момент поддерживаются только адреса с закрытым ключом и сид-фразой."
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "Это токен поставщика ликвидности (LP)",

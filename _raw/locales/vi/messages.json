@@ -4541,7 +4541,7 @@
       "slippageTolerance": "Chênh lệch giá cho phép",
       "singleTransactionGasLimit": "Gas Limit giao dịch đơn",
       "startConvert": "Bắt đầu chuyển đổi",
-      "unsupportedWalletType": "Chỉ hỗ trợ địa chỉ từ private key và seed phrase.",
+      "unsupportedWalletType": "",
       "stop": "Dừng",
       "selectLowValueTokens": "Chọn Token giá trị thấp",
       "tokenColumn": "Token",
@@ -4949,7 +4949,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Thêm địa chỉ",
-      "smallSwapDisabledTips": "Hiện tại chỉ hỗ trợ địa chỉ từ private key và seed phrase."
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "Đây là một token nhà cung cấp thanh khoản (LP)",

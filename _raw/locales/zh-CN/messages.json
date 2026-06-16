@@ -4570,7 +4570,7 @@
       "singleTransactionGasLimit": "单笔交易 Gas Limit",
       "startConvert": "一键兑换",
       "stop": "停止兑换",
-      "unsupportedWalletType": "目前只支持私钥助记词类型的地址",
+      "unsupportedWalletType": "",
       "conversionProgress": "兑换进度",
       "completedTitle": "兑换完成！",
       "done": "完成",
@@ -4999,7 +4999,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址",
-      "smallSwapDisabledTips": "目前仅支持私钥和助记词地址。"
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "这是一个流动性提供者(LP)代币",
