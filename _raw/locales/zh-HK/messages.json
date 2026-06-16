@@ -4044,9 +4044,7 @@
         "takeProfit": "止盈",
         "stopLoss": "止損",
         "triggerPrice": "觸發價",
-        "estimatedPnlWillBe": "您的預計損益將為",
-        "triggerHigherThanLiquidation": "觸發價格應高於爆倉價格 {{price}}",
-        "triggerLowerThanLiquidation": "觸發價格應低於爆倉價格 {{price}}"
+        "estimatedPnlWillBe": "您的預計損益將為"
       },
       "accountInfo": {
         "totalBalance": "總餘額",

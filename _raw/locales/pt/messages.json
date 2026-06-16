@@ -3994,9 +3994,7 @@
         "takeProfit": "Obter Lucro",
         "stopLoss": "Stop Loss",
         "triggerPrice": "Preço de Trigger",
-        "estimatedPnlWillBe": "Sua PnL estimada será",
-        "triggerHigherThanLiquidation": "O preço de gatilho deve ser maior que o preço de liquidação {{price}}",
-        "triggerLowerThanLiquidation": "O preço de gatilho deve ser menor que o preço de liquidação {{price}}"
+        "estimatedPnlWillBe": "Sua PnL estimada será"
       },
       "accountInfo": {
         "availableBalance": "Saldo disponível",

@@ -3994,9 +3994,7 @@
         "takeProfit": "Chốt lời",
         "stopLoss": "Cắt lỗ",
         "triggerPrice": "Giá kích hoạt",
-        "estimatedPnlWillBe": "Lợi nhuận ước tính của bạn sẽ là",
-        "triggerHigherThanLiquidation": "Giá kích hoạt phải cao hơn giá thanh lý {{price}}",
-        "triggerLowerThanLiquidation": "Giá kích hoạt phải thấp hơn giá thanh lý {{price}}"
+        "estimatedPnlWillBe": "Lợi nhuận ước tính của bạn sẽ là"
       },
       "accountInfo": {
         "withdraw": "Rút tiền",
