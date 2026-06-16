@@ -20,6 +20,8 @@ import { ExchangeSettingRow } from './ExchangeSettingRow';
 import { SelectPopup } from './SelectPopup';
 import { SwapAnimation } from './SwapAnimation';
 import { ReactComponent as RcIconFailed } from '@/ui/assets/small-swap/failed.svg';
+import { SwapActionButton } from './SwapActionButton';
+import { SwapActionLedgerButton } from './SwapActionLedgerButton';
 
 type ReceiveSummaryProps = {
   totalValue?: number;
@@ -286,6 +288,9 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
             </div>
 
             <div className="mt-auto pt-[24px]">
+              <SwapActionButton task={task} account={account} />
+            </div>
+            {/* <div className="mt-auto pt-[24px]">
               {task?.status === 'idle' ? (
                 isSupported ? (
                   <Button
@@ -332,7 +337,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                   {t('page.desktopSmallSwap.stop')}
                 </button>
               )}
-            </div>
+            </div> */}
           </>
         )}
       </section>
