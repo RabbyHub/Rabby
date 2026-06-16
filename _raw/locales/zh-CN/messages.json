@@ -277,7 +277,8 @@
           "biometricUnlock": "通过生物识别解锁",
           "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
           "perpsFloatWidget": "永续合约悬浮窗",
-          "biometricUnlockHint": "使用生物识别在此设备上解锁。"
+          "biometricUnlockHint": "使用生物识别在此设备上解锁。",
+          "dataAnalysis ": "数据分析"
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "更新版本",
