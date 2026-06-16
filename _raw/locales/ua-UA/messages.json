@@ -4556,7 +4556,7 @@
       "slippageTolerance": "Допуск slippage",
       "singleTransactionGasLimit": "Gas Limit однієї транзакції",
       "startConvert": "Почати конвертацію",
-      "unsupportedWalletType": "Підтримуються лише адреси з приватним ключем та seed-фразою.",
+      "unsupportedWalletType": "",
       "stop": "Стоп",
       "selectLowValueTokens": "Виберіть токени з низькою вартістю",
       "tokenColumn": "Токен",
@@ -4964,7 +4964,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Додати адресу",
-      "smallSwapDisabledTips": "Наразі підтримуються лише адреси з приватним ключем та seed-фразою."
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "Це токен постачальника ліквідності (LP)",

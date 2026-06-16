@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ReactComponent as RcIconArrowRightCC } from 'ui/assets/arrow-right-1-cc.svg';
 import IconRabby from 'ui/assets/rabby.svg';
-import { SWAP_SUPPORT_CHAINS } from '@/constant';
+import { KEYRING_CLASS, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { db } from '@/db';
 import { useWallet } from '@/ui/utils';
 import { useTokens } from '@/ui/utils/portfolio/token';

@@ -1,5 +1,5 @@
 import { Account } from '@/background/service/preference';
-import { KEYRING_TYPE } from '@/constant';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { RcIconWaringCC } from '@/ui/assets/desktop/common';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -20,6 +20,8 @@ import { ExchangeSettingRow } from './ExchangeSettingRow';
 import { SelectPopup } from './SelectPopup';
 import { SwapAnimation } from './SwapAnimation';
 import { ReactComponent as RcIconFailed } from '@/ui/assets/small-swap/failed.svg';
+import { SwapActionButton } from './SwapActionButton';
+import { SwapActionLedgerButton } from './SwapActionLedgerButton';
 
 type ReceiveSummaryProps = {
   totalValue?: number;
@@ -51,6 +53,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
   const isSupported = !!([
     KEYRING_TYPE.HdKeyring,
     KEYRING_TYPE.SimpleKeyring,
+    KEYRING_CLASS.HARDWARE.LEDGER,
   ] as string[]).includes(account?.type || '');
 
   const isShowTips = useMemo(() => {
@@ -285,6 +288,9 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
             </div>
 
             <div className="mt-auto pt-[24px]">
+              <SwapActionButton task={task} account={account} />
+            </div>
+            {/* <div className="mt-auto pt-[24px]">
               {task?.status === 'idle' ? (
                 isSupported ? (
                   <Button
@@ -331,7 +337,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
                   {t('page.desktopSmallSwap.stop')}
                 </button>
               )}
-            </div>
+            </div> */}
           </>
         )}
       </section>

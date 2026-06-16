@@ -1,5 +1,5 @@
 import { Account } from '@/background/service/preference';
-import { KEYRING_TYPE } from '@/constant';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { ReactComponent as RcArrowDownSVG } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
 import { RcIconAddWalletCC } from '@/ui/assets/desktop/profile';
@@ -9,7 +9,7 @@ import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { isSameAccount } from '@/utils/account';
+import { isSameAccount, isSupportSmallSwapAccount } from '@/utils/account';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { Popover, Tooltip } from 'antd';
@@ -323,11 +323,7 @@ const AccountList: React.FC<{
             : false;
 
           const disabled =
-            scene === 'smallSwap' &&
-            !([
-              KEYRING_TYPE.HdKeyring,
-              KEYRING_TYPE.SimpleKeyring,
-            ] as string[]).includes(item.type);
+            scene === 'smallSwap' && !isSupportSmallSwapAccount(item);
 
           return (
             <div
