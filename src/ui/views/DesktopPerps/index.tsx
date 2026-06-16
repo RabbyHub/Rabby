@@ -98,7 +98,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                     </div>
                   </div>
                 </Panel>
-                <PanelResizeHandle className="h-[2px] rounded-[6px]" />
+                <PanelResizeHandle className="h-[6px] rounded-[6px]" />
                 <Panel minSize={18}>
                   <div className="h-full rounded-[6px] overflow-hidden bg-rb-neutral-bg-1">
                     <UserInfoHistory />
@@ -116,7 +116,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                 <div className="flex-1 min-h-0">
                   <TradingPanel />
                 </div>
-                <div className="mx-[12px] h-[1px] shrink-0 bg-rb-neutral-line" />
+                <div className="h-[1px] shrink-0 bg-rb-neutral-line" />
                 <AccountInfo />
               </div>
             </div>
