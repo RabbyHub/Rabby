@@ -46,7 +46,7 @@
       "txFailedMoreContent": "{{chain}} #{{nonce}} a échoué. Cliquer pour en voir plus."
     },
     "feedback": {
-      "screenshotContextMenuTitle": "Capture d'écran pour signaler un bug"
+      "screenshotContextMenuTitle": "Capture d'écran pour le feedback"
     }
   },
   "component": {
@@ -280,7 +280,7 @@
       "tooltip": "Jeton inconnu, faites vos propres recherches."
     },
     "screenshotModal": {
-      "title": "Capture d'écran pour signaler un bug",
+      "title": "Capture d'écran pour le feedback",
       "placeholder": "Décrivez le problème"
     },
     "feedbackPopup": {

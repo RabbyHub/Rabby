@@ -4970,7 +4970,7 @@
       "tooltip": "Unbekanntes Token, bitte recherchieren Sie selbst."
     },
     "screenshotModal": {
-      "title": "Screenshot zum Melden eines Fehlers",
+      "title": "Screenshot für Feedback",
       "placeholder": "Beschreiben Sie das Problem"
     },
     "feedbackPopup": {
@@ -5065,7 +5065,7 @@
       }
     },
     "feedback": {
-      "screenshotContextMenuTitle": "Screenshot zum Melden von Fehlern"
+      "screenshotContextMenuTitle": "Screenshot für Feedback"
     }
   },
   "constant": {

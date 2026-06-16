@@ -4973,7 +4973,7 @@
       "tooltip": "Bilinmeyen token, lütfen kendi araştırmanızı yapın."
     },
     "screenshotModal": {
-      "title": "Hata Bildirmek için Ekran Görüntüsü",
+      "title": "Geri bildirim için ekran görüntüsü",
       "placeholder": "Sorunu açıklayın"
     },
     "feedbackPopup": {
@@ -5068,7 +5068,7 @@
       }
     },
     "feedback": {
-      "screenshotContextMenuTitle": "Hata bildirmek için ekran görüntüsü"
+      "screenshotContextMenuTitle": "Geri bildirim için ekran görüntüsü"
     }
   },
   "constant": {

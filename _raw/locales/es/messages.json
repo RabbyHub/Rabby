@@ -4970,7 +4970,7 @@
       "tooltip": "Token desconocido, por favor haz tu propia investigación."
     },
     "screenshotModal": {
-      "title": "Captura de pantalla para reportar error",
+      "title": "Captura de pantalla para enviar comentarios",
       "placeholder": "Describe el problema"
     },
     "feedbackPopup": {
@@ -5065,7 +5065,7 @@
       }
     },
     "feedback": {
-      "screenshotContextMenuTitle": "Captura de pantalla para reportar un error"
+      "screenshotContextMenuTitle": "Captura de pantalla para enviar comentarios"
     }
   },
   "constant": {
