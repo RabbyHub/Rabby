@@ -72,17 +72,6 @@ export const usePerpsProInit = (isActive = true) => {
     }
   }, [selectedCoin, isActive]);
 
-  const checkIsNeedSetDarkTheme = async () => {
-    const isNeedSetDarkTheme = await wallet.getPerpsIsNeedSetDarkTheme();
-    if (isNeedSetDarkTheme) {
-      dispatch.preference.switchThemeMode(DARK_MODE_TYPE.dark);
-    }
-  };
-
-  useEffect(() => {
-    checkIsNeedSetDarkTheme();
-  }, []);
-
   useEffect(() => {
     preloadSound('/sounds/order-filled.mp3');
   }, []);
