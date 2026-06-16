@@ -4892,16 +4892,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/hyperliquid-sdk@npm:1.1.8":
-  version: 1.1.8
-  resolution: "@rabby-wallet/hyperliquid-sdk@npm:1.1.8"
+"@rabby-wallet/hyperliquid-sdk@npm:1.1.9":
+  version: 1.1.9
+  resolution: "@rabby-wallet/hyperliquid-sdk@npm:1.1.9"
   dependencies:
     "@ethereumjs/util": "npm:9.0.0"
     "@metamask/eth-sig-util": "npm:5.1.0"
     "@msgpack/msgpack": "npm:3.1.2"
     "@noble/hashes": "npm:1.8.0"
     ethereum-cryptography: "npm:2.2.1"
-  checksum: 10c0/dfcc25b9cde5fa6bd6a1ae6613958aace760125846b8ce6ee05866c2e42a024e695fd74b9bbe06ccab9f1190270557b50b6b4b90f1e164c874ed8792a3e73927
+  checksum: 10c0/24b88f2beb72b3d4e32411bdbf39ff207b8b48a0da1b1b3dc9805b60d37d293d493d8bc179525ef7fe4dbde106cc78fe66bec067aeaa1b88b9fc1433c561c5e0
   languageName: node
   linkType: hard
 
@@ -21478,7 +21478,7 @@ __metadata:
     "@rabby-wallet/eth-walletconnect-keyring": "npm:2.1.7"
     "@rabby-wallet/eth-watch-keyring": "npm:1.0.0"
     "@rabby-wallet/gnosis-sdk": "npm:1.4.9"
-    "@rabby-wallet/hyperliquid-sdk": "npm:1.1.8"
+    "@rabby-wallet/hyperliquid-sdk": "npm:1.1.9"
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.14"
     "@rabby-wallet/rabby-api": "npm:0.9.62"
