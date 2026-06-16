@@ -4970,7 +4970,7 @@
       "tooltip": "不明なトークン。自己責任で調査してください。"
     },
     "screenshotModal": {
-      "title": "バグ報告用のスクリーンショット",
+      "title": "フィードバック用スクリーンショット",
       "placeholder": "問題を説明してください"
     },
     "feedbackPopup": {
@@ -5065,7 +5065,7 @@
       }
     },
     "feedback": {
-      "screenshotContextMenuTitle": "バグを報告するためにスクリーンショットを撮る"
+      "screenshotContextMenuTitle": "フィードバック用スクリーンショット"
     }
   },
   "constant": {

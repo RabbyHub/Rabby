@@ -4972,7 +4972,7 @@
       "tooltip": "Неизвестный токен, пожалуйста, проведите собственное исследование."
     },
     "screenshotModal": {
-      "title": "Скриншот для сообщения об ошибке",
+      "title": "Скриншот для отзыва",
       "placeholder": "Опишите проблему"
     },
     "feedbackPopup": {
@@ -5067,7 +5067,7 @@
       }
     },
     "feedback": {
-      "screenshotContextMenuTitle": "Скриншот для сообщения об ошибке"
+      "screenshotContextMenuTitle": "Скриншот для отзыва"
     }
   },
   "constant": {
