@@ -1,5 +1,5 @@
 import { Account } from '@/background/service/preference';
-import { KEYRING_TYPE } from '@/constant';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { RcIconWaringCC } from '@/ui/assets/desktop/common';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -51,6 +51,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
   const isSupported = !!([
     KEYRING_TYPE.HdKeyring,
     KEYRING_TYPE.SimpleKeyring,
+    KEYRING_CLASS.HARDWARE.LEDGER,
   ] as string[]).includes(account?.type || '');
 
   const isShowTips = useMemo(() => {
