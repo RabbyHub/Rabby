@@ -57,7 +57,7 @@ export const TradingPanel: React.FC = () => {
   return (
     <>
       <div className="h-full w-full flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-scroll trades-container-no-scrollbar px-[12px] pt-[18px] pb-[18px] min-h-0">
+        <div className="flex-1 overflow-y-scroll trades-container-no-scrollbar px-[12px] pt-[12px] pb-[24px] min-h-0">
           <div className="space-y-[18px]">
             <TopModeStatus
               orderType={orderType}

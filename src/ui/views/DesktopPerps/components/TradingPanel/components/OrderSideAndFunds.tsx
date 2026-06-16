@@ -54,7 +54,7 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
         {t('page.perpsPro.tradingPanel.availableFunds')}
       </span>
       <span
-        className="text-rb-neutral-title-1 text-[12px] font-medium flex items-center gap-[4px] cursor-pointer"
+        className="text-rb-neutral-title-1 text-[12px] flex items-center gap-[4px] cursor-pointer"
         onClick={handleClick}
       >
         {splitNumberByStep(

@@ -310,7 +310,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
   return (
     <>
-      <div className="space-y-[16px]">
+      <div className="flex flex-col gap-[12px]">
         {/* Available Funds */}
         <OrderSideAndFunds
           availableBalance={availableBalance}
@@ -334,7 +334,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           reduceOnly={reduceOnly}
         />
 
-        <div className="h-[1px] bg-rb-neutral-line" />
+        <div className="h-[1px] bg-rb-neutral-line my-[12px]" />
 
         {/* TP/SL, Reduce Only, and Slippage */}
         <div className="flex flex-col gap-[8px]">
@@ -382,7 +382,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
             </span>
             <span
               onClick={handleSetSlippage}
-              className="text-r-neutral-title-1 font-medium text-[12px] cursor-pointer underline decoration-dashed underline-offset-2"
+              className="text-r-neutral-title-1 text-[12px] cursor-pointer underline decoration-dashed underline-offset-2"
             >
               {slippageDisplay}
             </span>

@@ -47,7 +47,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
             <span className="text-rb-neutral-secondary text-[12px] whitespace-nowrap">
               {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
             </span>
-            <span className="text-rb-neutral-title-1 font-medium text-[12px] whitespace-nowrap">
+            <span className="text-rb-neutral-title-1 text-[12px] whitespace-nowrap">
               {buy.liqPrice || '-'}
             </span>
           </div>
@@ -55,7 +55,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
             <span className="text-rb-neutral-secondary text-[12px] whitespace-nowrap">
               {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
             </span>
-            <span className="text-rb-neutral-title-1 font-medium text-[12px] whitespace-nowrap">
+            <span className="text-rb-neutral-title-1 text-[12px] whitespace-nowrap">
               {sell.liqPrice || '-'}
             </span>
           </div>
@@ -68,7 +68,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
           <span className="text-rb-neutral-secondary text-[12px] whitespace-nowrap">
             {t('page.perpsPro.tradingPanel.cost')}
           </span>
-          <span className="text-rb-neutral-title-1 font-medium text-[12px] whitespace-nowrap">
+          <span className="text-rb-neutral-title-1 text-[12px] whitespace-nowrap">
             {buy.cost}
           </span>
         </div>
@@ -76,7 +76,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
           <span className="text-rb-neutral-secondary text-[12px] whitespace-nowrap">
             {t('page.perpsPro.tradingPanel.cost')}
           </span>
-          <span className="text-rb-neutral-title-1 font-medium text-[12px] whitespace-nowrap">
+          <span className="text-rb-neutral-title-1 text-[12px] whitespace-nowrap">
             {sell.cost}
           </span>
         </div>
@@ -88,7 +88,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
           <span className="text-rb-neutral-secondary text-[12px] whitespace-nowrap">
             {t('page.perpsPro.tradingPanel.max')}
           </span>
-          <span className="text-rb-neutral-title-1 font-medium text-[12px] whitespace-nowrap">
+          <span className="text-rb-neutral-title-1 text-[12px] whitespace-nowrap">
             {formatMax(buy.max)}
           </span>
         </div>
@@ -96,7 +96,7 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
           <span className="text-rb-neutral-secondary text-[12px] whitespace-nowrap">
             {t('page.perpsPro.tradingPanel.max')}
           </span>
-          <span className="text-rb-neutral-title-1 font-medium text-[12px] whitespace-nowrap">
+          <span className="text-rb-neutral-title-1 text-[12px] whitespace-nowrap">
             {formatMax(sell.max)}
           </span>
         </div>

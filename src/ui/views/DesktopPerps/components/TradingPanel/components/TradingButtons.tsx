@@ -34,7 +34,7 @@ const useTradingGate = ({
     const banner = (text: React.ReactNode) => (
       <div className="bg-r-orange-light rounded-[6px] px-[12px] py-[8px] flex items-center gap-[4px]">
         <RcIconInfoCC className="text-r-orange-default" />
-        <div className="flex-1 text-left font-medium text-[12px] leading-[14px] text-r-orange-default">
+        <div className="flex-1 text-left text-[12px] leading-[14px] text-r-orange-default">
           {text}
         </div>
       </div>

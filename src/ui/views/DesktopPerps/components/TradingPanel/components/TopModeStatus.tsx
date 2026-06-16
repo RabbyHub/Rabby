@@ -193,7 +193,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
   return (
     <>
-      <div className="flex flex-col gap-[12px]">
+      <div className="flex flex-col gap-[6px]">
         {/* Row 1: Margin mode + Leverage — fill width */}
         <div className="flex items-center gap-[6px]">
           <Tooltip
@@ -204,7 +204,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
             <div
               onClick={handleMarginModeClick}
               className={clsx(
-                'h-[28px] flex-1 rounded-[6px] flex items-center justify-center text-[12px] font-medium border border-solid bg-rb-neutral-bg-5',
+                'h-[28px] flex-1 rounded-[6px] flex items-center justify-center text-[12px] border border-solid bg-rb-neutral-bg-5',
                 marginModeDisabledReason
                   ? 'text-rb-neutral-foot border-transparent cursor-not-allowed opacity-60'
                   : 'text-rb-neutral-title-1 border-transparent cursor-pointer hover:border-rb-brand-default'
@@ -218,7 +218,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
           <div
             onClick={handleLeverageClick}
-            className="h-[28px] flex-1 flex items-center justify-center rounded-[6px] text-[12px] text-rb-neutral-title-1 border border-solid border-transparent font-medium cursor-pointer hover:border-rb-brand-default bg-rb-neutral-bg-5"
+            className="h-[28px] flex-1 flex items-center justify-center rounded-[6px] text-[12px] text-rb-neutral-title-1 border border-solid border-transparent cursor-pointer hover:border-rb-brand-default bg-rb-neutral-bg-5"
           >
             {leverage}x
           </div>
@@ -227,7 +227,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         {/* Row 2: Order type tabs */}
         <div
           ref={tabsContainerRef}
-          className="relative flex h-[38px] items-center border-b border-solid border-rb-neutral-line"
+          className="relative flex h-[38px] items-center border-b border-solid border-rb-neutral-line -mx-[12px] px-[12px]"
         >
           {PRIMARY_TABS.map((tab) => (
             <button
