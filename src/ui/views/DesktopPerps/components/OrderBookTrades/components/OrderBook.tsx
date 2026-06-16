@@ -382,7 +382,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           className={clsx(
             'absolute top-0 bottom-0 transition-[width] duration-200 ease-out',
             type === 'bid' ? 'left-0' : 'right-0',
-            type === 'bid' ? 'bg-rb-green-light-1' : 'bg-r-red-light-1'
+            type === 'bid' ? 'bg-rb-green-light-1' : 'bg-rb-red-light-1'
           )}
           style={{ width: `${depthPercent}%` }}
         />

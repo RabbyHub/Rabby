@@ -164,7 +164,7 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
             style={{
               boxShadow:
                 buyHovered && !buyDisabled && !buyError
-                  ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
+                  ? '0px 8px 16px rgba(var(--rb-green-default-rgb), 0.3)'
                   : 'none',
             }}
             onMouseEnter={() => setBuyHovered(true)}
@@ -188,7 +188,7 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
             style={{
               boxShadow:
                 sellHovered && !sellDisabled && !sellError
-                  ? '0px 8px 16px rgba(227, 73, 53, 0.3)'
+                  ? '0px 8px 16px rgba(var(--rb-red-default-rgb), 0.3)'
                   : 'none',
             }}
             onMouseEnter={() => setSellHovered(true)}
@@ -247,8 +247,8 @@ export const TradingButton: React.FC<TradingButtonProps> = ({
             boxShadow:
               hovered && isValid && !error
                 ? orderSide === OrderSide.BUY
-                  ? '0px 8px 16px rgba(42, 187, 127, 0.3)'
-                  : '0px 8px 16px rgba(227, 73, 53, 0.3)'
+                  ? '0px 8px 16px rgba(var(--rb-green-default-rgb), 0.3)'
+                  : '0px 8px 16px rgba(var(--rb-red-default-rgb), 0.3)'
                 : 'none',
           }}
           onMouseEnter={() => setHovered(true)}

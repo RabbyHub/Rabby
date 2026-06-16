@@ -148,12 +148,20 @@ const Wrapper = styled.div`
     }
 
     .is-long-bg {
-      background: linear-gradient(to right, #58c66920, #58c66900);
-      border-left: 2px solid var(--rb-green-default, #58c669);
+      background: linear-gradient(
+        to right,
+        rgba(var(--rb-green-default-rgb), 0.125),
+        rgba(var(--rb-green-default-rgb), 0)
+      );
+      border-left: 2px solid var(--rb-green-default, #2abb7f);
     }
     .is-short-bg {
-      background: linear-gradient(to right, #ff453a20, #ff453a00);
-      border-left: 2px solid var(--rb-red-default, #ff453a);
+      background: linear-gradient(
+        to right,
+        rgba(var(--rb-red-default-rgb), 0.125),
+        rgba(var(--rb-red-default-rgb), 0)
+      );
+      border-left: 2px solid var(--rb-red-default, #e34935);
     }
   }
 
