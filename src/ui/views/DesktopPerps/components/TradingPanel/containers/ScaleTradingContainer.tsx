@@ -410,7 +410,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         quoteAsset={quoteAsset}
       />
 
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
           {t('page.perpsPro.tradingPanel.startPrice')}
         </span>
@@ -426,7 +426,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
           {t('page.perpsPro.tradingPanel.endPrice')}
         </span>
@@ -442,7 +442,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
           {t('page.perpsPro.tradingPanel.size')}
         </span>
@@ -469,7 +469,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
           {t('page.perpsPro.tradingPanel.orderCount')}
         </span>
@@ -480,7 +480,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
         <Tooltip
           placement="topLeft"
           overlayClassName={clsx('rectangle')}

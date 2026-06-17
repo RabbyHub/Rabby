@@ -170,7 +170,7 @@ export const UserInfoHistory: React.FC = () => {
                 tabRefs.current[tab.key] = el;
               }}
               className={clsx(
-                'py-[12px] text-[14px] font-medium flex items-center gap-[4px] shrink-0 whitespace-nowrap',
+                'h-[38px] text-[12px] font-medium flex items-center justify-center gap-[4px] shrink-0 whitespace-nowrap',
                 activeTab === tab.key
                   ? 'text-rb-neutral-title-1'
                   : 'hover:text-rb-neutral-title-1 text-rb-neutral-secondary'

@@ -138,7 +138,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         label: level.displayPrice.toString(),
       };
     });
-  }, [szDecimals, selectedCoin, isInitialized]);
+    // Depend on `markPx > 0` (a boundary signal) rather than markPx itself:
+    // recompute only when price crosses the 0 boundary (no price → has price),
+    // not on every WS tick. The tick options only care about price magnitude.
+  }, [markPx > 0, szDecimals, selectedCoin, isInitialized]);
 
   useEffect(() => {
     setAggregationIndex(0);
@@ -598,7 +601,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
-                'hover:border-rb-brand-default border border-solid border-transparent',
+                'hover:border-rb-brand-default border border-solid',
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
             >
@@ -635,7 +638,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
-                'hover:border-rb-brand-default border border-solid border-transparent',
+                'hover:border-rb-brand-default border border-solid',
                 'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
               )}
             >
@@ -700,7 +703,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 onMouseEnter={clearHoveredOrder}
                 onMouseMove={clearHoveredOrder}
               >
-                <div className="flex items-center gap-[6px]">
+                <div className="flex items-baseline gap-[6px]">
                   <span
                     onClick={(e) =>
                       handleClickPrice(Number(latestTrade?.price))
@@ -718,7 +721,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   <span
                     onClick={(e) => handleClickPrice(Number(markPx))}
                     className={clsx(
-                      'text-[16px] text-rb-neutral-secondary cursor-pointer'
+                      'text-[14px] text-rb-neutral-secondary cursor-pointer'
                     )}
                   >
                     {splitNumberByStep(markPx)}
