@@ -1,6 +1,6 @@
 import { sleep, useWallet } from '@/ui/utils';
 import { playSound } from '@/ui/utils/sound';
-import { getPerpsSDK } from '../../Perps/sdkManager';
+import { getPerpsSDK, isSelfSignPerpsAccount } from '../../Perps/sdkManager';
 import {
   PERPS_BUILDER_INFO,
   PERPS_BUILDER_INFO_PRO,
@@ -20,7 +20,10 @@ import { useTranslation } from 'react-i18next';
 import { LimitOrderType, MarginMode } from '../types';
 import { removeTrailingZeros } from '../components/TradingPanel/utils';
 import BigNumber from 'bignumber.js';
-import { formatTpOrSlPrice } from '../../Perps/utils';
+import {
+  formatTpOrSlPrice,
+  isBuilderFeeNotApprovedError,
+} from '../../Perps/utils';
 import { SignAction, usePerpsProState } from './usePerpsProState';
 import { useMemo } from 'react';
 import { KEYRING_CLASS } from '@/constant';
@@ -84,6 +87,10 @@ export const usePerpsProPosition = () => {
       if (!masterAddress) {
         return false;
       }
+      // self-sign master signs its own orders — there is no agent to expire.
+      if (isSelfSignPerpsAccount(currentPerpsAccount?.type)) {
+        return false;
+      }
 
       const agentWalletPreference = await wallet.getAgentWalletPreference(
         masterAddress
@@ -120,6 +127,15 @@ export const usePerpsProPosition = () => {
       } catch (error) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
         if (isExpired) {
+          return;
+        }
+        // builder fee not approved yet — flag for re-prompt, skip Sentry.
+        if (isBuilderFeeNotApprovedError(error?.message)) {
+          dispatch.perps.setAccountNeedApproveBuilderFee(true);
+          perpsToast.error({
+            title: 'Builder fee not approved',
+            description: 'Please try again',
+          });
           return;
         }
         console.error('PERPS', errorMessage, error);
