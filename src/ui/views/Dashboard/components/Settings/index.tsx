@@ -60,6 +60,8 @@ import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
+
 import IconIntro from 'ui/assets/dashboard/dapp-account-intro.png';
 
 import stats from '@/stats';
@@ -1071,9 +1073,8 @@ const SettingsInner = ({
           ),
         },
         {
-          leftIcon: RcIconSettingsCodeCC,
+          leftIcon: RcIconDataAnalysisCC,
           leftIconClassName: 'text-r-neutral-body',
-          className: 'js-setting-perps-widget',
           content: t('page.dashboard.settings.settings.dataAnalysis '),
           rightIcon: (
             <Switch
