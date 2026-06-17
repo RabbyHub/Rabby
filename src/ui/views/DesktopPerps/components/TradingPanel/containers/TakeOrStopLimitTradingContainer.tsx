@@ -527,7 +527,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         quoteAsset={quoteAsset}
       />
 
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] mt-[6px] mb-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
           {t('page.perpsPro.tradingPanel.triggerPrice')}
         </span>
@@ -545,7 +545,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         </div>
       </div>
 
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] mb-[6px]">
         <span className="text-rb-neutral-secondary text-[12px]">
           {t('page.perpsPro.tradingPanel.limitPrice')}
         </span>

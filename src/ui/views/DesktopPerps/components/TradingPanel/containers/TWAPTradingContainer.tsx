@@ -300,21 +300,23 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         quoteAsset={quoteAsset}
       />
 
-      <PositionSizeInputAndSlider
-        price={midPrice}
-        maxBuyTradeSize={maxBuyTradeSize}
-        maxSellTradeSize={maxSellTradeSize}
-        positionSize={positionSize}
-        setPositionSize={setPositionSize}
-        percentage={percentage}
-        setPercentage={setPercentage}
-        baseAsset={selectedCoin}
-        quoteAsset={quoteAsset}
-        szDecimals={szDecimals}
-        sizeDisplayUnit={sizeDisplayUnit}
-        onUnitChange={setSizeDisplayUnit}
-        reduceOnly={reduceOnly}
-      />
+      <div className="mt-[6px]">
+        <PositionSizeInputAndSlider
+          price={midPrice}
+          maxBuyTradeSize={maxBuyTradeSize}
+          maxSellTradeSize={maxSellTradeSize}
+          positionSize={positionSize}
+          setPositionSize={setPositionSize}
+          percentage={percentage}
+          setPercentage={setPercentage}
+          baseAsset={selectedCoin}
+          quoteAsset={quoteAsset}
+          szDecimals={szDecimals}
+          sizeDisplayUnit={sizeDisplayUnit}
+          onUnitChange={setSizeDisplayUnit}
+          reduceOnly={reduceOnly}
+        />
+      </div>
 
       <div className="h-[1px] bg-rb-neutral-line my-[12px]" />
 
