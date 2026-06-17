@@ -48,7 +48,7 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
           </div>
           {isEmpty ? (
             <Empty
-              title={t('page.transactions.empty.title')}
+              title={t('page.transactions.empty.noTxInThreeMonth')}
               className="pt-[108px]"
             />
           ) : (
