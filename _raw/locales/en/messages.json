@@ -4,7 +4,9 @@
       "title": "Transactions",
       "empty": {
         "title": "No transactions",
-        "desc": " No transactions found on <1>supported chains</1>"
+        "desc": " No transactions found on <1>supported chains</1>",
+        "noTxInThreeMonth": "No Transaction history in 90 Days",
+        "descThreeMonths": "No Transaction history in 90 Days on <2>supported chains</2>"
       },
       "explain": {
         "approve": "Approve {{amount}} {{symbol}} for {{project}}",
