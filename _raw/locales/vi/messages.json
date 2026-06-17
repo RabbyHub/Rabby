@@ -3,7 +3,9 @@
     "transactions": {
       "empty": {
         "title": "Không có giao dịch nào",
-        "desc": "Không tìm thấy giao dịch trên <1>các chuỗi được hỗ trợ</1>"
+        "desc": "Không tìm thấy giao dịch trên <1>các chuỗi được hỗ trợ</1>",
+        "noTxInThreeMonth": "Không có lịch sử giao dịch trong 90 ngày",
+        "descThreeMonths": "Không có lịch sử giao dịch trong 90 ngày trên <2>các chain được hỗ trợ</2>"
       },
       "explain": {
         "approve": "Phê duyệt {{amount}} {{symbol}} cho {{project}}",
@@ -1392,7 +1394,8 @@
           "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học.",
           "perpsFloatWidget": "Tiện ích nổi Perps",
           "currency": "Tiền tệ",
-          "searchCurrency": "Tìm kiếm tiền tệ"
+          "searchCurrency": "Tìm kiếm tiền tệ",
+          "dataAnalysis": "Phân tích dữ liệu"
         },
         "1Hour": "1 giờ",
         "7Days": "7 ngày",
@@ -3994,7 +3997,11 @@
         "takeProfit": "Chốt lời",
         "stopLoss": "Cắt lỗ",
         "triggerPrice": "Giá kích hoạt",
-        "estimatedPnlWillBe": "Lợi nhuận ước tính của bạn sẽ là"
+        "estimatedPnlWillBe": "Lợi nhuận ước tính của bạn sẽ là",
+        "triggerHigherThanLiquidation": "Giá kích hoạt nên cao hơn giá thanh lý {{price}}",
+        "triggerLowerThanLiquidation": "Giá kích hoạt nên thấp hơn giá thanh lý {{price}}",
+        "tpTriggerInvalid": "Giá kích hoạt TP không hợp lệ và sẽ không được đặt",
+        "slTriggerInvalid": "Giá kích hoạt SL không hợp lệ và sẽ không được đặt"
       },
       "accountInfo": {
         "withdraw": "Rút tiền",
@@ -4541,7 +4548,7 @@
       "slippageTolerance": "Chênh lệch giá cho phép",
       "singleTransactionGasLimit": "Gas Limit giao dịch đơn",
       "startConvert": "Bắt đầu chuyển đổi",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "Loại địa chỉ này không được hỗ trợ",
       "stop": "Dừng",
       "selectLowValueTokens": "Chọn Token giá trị thấp",
       "tokenColumn": "Token",
@@ -4554,7 +4561,13 @@
       "moreChains": "+{{count}} chuỗi",
       "swapFailed": "Hoán đổi thất bại, {{reason}}",
       "completedTips": "Hoán đổi đang diễn ra sẽ tiếp tục xử lý",
-      "priceImpact": "Giới hạn Biến động Giá"
+      "priceImpact": "Giới hạn Biến động Giá",
+      "LedgerBtn": {
+        "start": "Bắt đầu với Ledger",
+        "confirm": "Vui lòng xác nhận với Ledger",
+        "continue": "Tiếp tục",
+        "send": "Đang gửi yêu cầu ký"
+      }
     },
     "staking": {
       "title": "Staking",
@@ -4949,7 +4962,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Thêm địa chỉ",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "Loại địa chỉ này không được hỗ trợ"
     },
     "LpTokenTag": {
       "title": "Đây là một token nhà cung cấp thanh khoản (LP)",

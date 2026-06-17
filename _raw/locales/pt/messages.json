@@ -3,7 +3,9 @@
     "transactions": {
       "empty": {
         "desc": "Nenhuma transação encontrada em <1>chains suportados</1>",
-        "title": "Sem transações"
+        "title": "Sem transações",
+        "noTxInThreeMonth": "Sem histórico de transações em 90 dias",
+        "descThreeMonths": "Sem histórico de transações em 90 dias em <2>chains suportadas</2>"
       },
       "explain": {
         "unknown": "Interação com Contratos",
@@ -1392,7 +1394,8 @@
           "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
           "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
-          "searchCurrency": "Pesquisar moeda"
+          "searchCurrency": "Pesquisar moeda",
+          "dataAnalysis": "Análise de Dados"
         },
         "cancel": "Cancelar",
         "7Days": "7 dias",
@@ -3994,7 +3997,11 @@
         "takeProfit": "Obter Lucro",
         "stopLoss": "Stop Loss",
         "triggerPrice": "Preço de Trigger",
-        "estimatedPnlWillBe": "Sua PnL estimada será"
+        "estimatedPnlWillBe": "Sua PnL estimada será",
+        "triggerHigherThanLiquidation": "O preço de gatilho deve ser maior que o preço de liquidação {{price}}",
+        "triggerLowerThanLiquidation": "O preço de gatilho deve ser menor que o preço de liquidação {{price}}",
+        "tpTriggerInvalid": "O preço de gatilho do TP é inválido e não será definido",
+        "slTriggerInvalid": "O preço de gatilho do SL é inválido e não será definido"
       },
       "accountInfo": {
         "availableBalance": "Saldo disponível",
@@ -4541,7 +4548,7 @@
       "slippageTolerance": "Tolerância de slippage",
       "singleTransactionGasLimit": "Gas Limit de Transação Única",
       "startConvert": "Iniciar conversão",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "Este tipo de endereço não é suportado",
       "stop": "Parar",
       "selectLowValueTokens": "Selecionar Tokens de Baixo Valor",
       "tokenColumn": "Token",
@@ -4554,7 +4561,13 @@
       "moreChains": "+{{count}} cadeias",
       "swapFailed": "Troca falhou, {{reason}}",
       "completedTips": "Troca em andamento continuará processando",
-      "priceImpact": "Limite de Impacto de Preço"
+      "priceImpact": "Limite de Impacto de Preço",
+      "LedgerBtn": {
+        "start": "Começar com Ledger",
+        "confirm": "Por favor, confirme com Ledger",
+        "continue": "Continuar",
+        "send": "Enviando solicitação de assinatura"
+      }
     },
     "staking": {
       "title": "Staking",
@@ -4949,7 +4962,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adicionar endereço",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "Este tipo de endereço não é suportado"
     },
     "LpTokenTag": {
       "title": "Este é um token de provedor de liquidez (LP)",

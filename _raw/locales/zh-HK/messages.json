@@ -43,7 +43,9 @@
       "title": "交易記錄",
       "empty": {
         "desc": "在<1>支援的鏈</1>上找不到交易",
-        "title": "沒有交易"
+        "title": "沒有交易",
+        "noTxInThreeMonth": "過去 90 天沒有交易記錄",
+        "descThreeMonths": "過去 90 天在 <2>supported chains</2> 上沒有交易記錄"
       },
       "explain": {
         "approve": "授權 {{project}} 使用 {{amount}} {{symbol}}",
@@ -277,7 +279,8 @@
           "biometricUnlockUnsupported": "此裝置不支援生物識別解鎖。",
           "biometricUnlockHint": "使用生物識別技術在此設備上解锁。",
           "currency": "貨幣",
-          "searchCurrency": "搜尋貨幣"
+          "searchCurrency": "搜尋貨幣",
+          "dataAnalysis": "數據分析"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "更新版本",
@@ -4044,7 +4047,11 @@
         "takeProfit": "止盈",
         "stopLoss": "止損",
         "triggerPrice": "觸發價",
-        "estimatedPnlWillBe": "您的預計損益將為"
+        "estimatedPnlWillBe": "您的預計損益將為",
+        "triggerHigherThanLiquidation": "觸發價應高於強平價 {{price}}",
+        "triggerLowerThanLiquidation": "觸發價應低於強平價 {{price}}",
+        "tpTriggerInvalid": "止盈觸發價無效，將不會設定",
+        "slTriggerInvalid": "止損觸發價無效，將不會設定"
       },
       "accountInfo": {
         "totalBalance": "總餘額",
@@ -4591,7 +4598,7 @@
       "slippageTolerance": "滑點容許範圍",
       "singleTransactionGasLimit": "單筆交易 Gas Limit",
       "startConvert": "開始轉換",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "此地址類型不受支援",
       "stop": "停止",
       "selectLowValueTokens": "選擇低價值代幣",
       "tokenColumn": "代幣",
@@ -4604,7 +4611,13 @@
       "moreChains": "+{{count}} 條鏈",
       "swapFailed": "交換失敗，{{reason}}",
       "completedTips": "正在進行的交換將繼續處理",
-      "priceImpact": "價格影響上限"
+      "priceImpact": "價格影響上限",
+      "LedgerBtn": {
+        "start": "使用 Ledger 開始",
+        "confirm": "請使用 Ledger 確認",
+        "continue": "繼續",
+        "send": "發送簽名請求"
+      }
     },
     "staking": {
       "title": "質押",
@@ -4999,7 +5012,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "新增地址",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "此地址類型不受支援"
     },
     "LpTokenTag": {
       "title": "這是一個流動性提供者(LP)代幣",

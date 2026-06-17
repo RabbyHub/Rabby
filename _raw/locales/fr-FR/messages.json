@@ -262,7 +262,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Ajouter une adresse",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "Ce type d'adresse n'est pas pris en charge"
     },
     "LpTokenTag": {
       "title": "Ceci est un jeton de fournisseur de liquidité (LP)",
@@ -1059,7 +1059,8 @@
           "perpsFloatWidget": "Widget flottant Perps",
           "biometricUnlock": "Déverrouiller avec des biométriques",
           "currency": "Devise",
-          "searchCurrency": "Rechercher une devise"
+          "searchCurrency": "Rechercher une devise",
+          "dataAnalysis": "Analyse des données"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -2510,7 +2511,9 @@
     "transactions": {
       "empty": {
         "desc": "Aucune transaction trouvée sur les <1>chaînes compatibles</1>",
-        "title": "Aucune transaction"
+        "title": "Aucune transaction",
+        "noTxInThreeMonth": "Aucune historique de transactions depuis 90 jours",
+        "descThreeMonths": "Aucune historique de transactions depuis 90 jours sur <2>les chaînes prises en charge</2>"
       },
       "explain": {
         "approve": "Approuver {{amount}} {{symbol}} pour {{project}}",
@@ -4339,7 +4342,11 @@
         "takeProfit": "Take Profit",
         "stopLoss": "Stop Loss",
         "triggerPrice": "Prix de déclenchement",
-        "estimatedPnlWillBe": "Votre PnL estimé sera"
+        "estimatedPnlWillBe": "Votre PnL estimé sera",
+        "triggerHigherThanLiquidation": "Le prix de déclenchement doit être supérieur au prix de liquidation {{price}}",
+        "triggerLowerThanLiquidation": "Le prix de déclenchement doit être inférieur au prix de liquidation {{price}}",
+        "tpTriggerInvalid": "Le prix de déclenchement du TP n'est pas valide et ne sera pas défini",
+        "slTriggerInvalid": "Le prix de déclenchement du SL n'est pas valide et ne sera pas défini"
       },
       "accountInfo": {
         "totalBalance": "Solde total",
@@ -4886,7 +4893,7 @@
       "slippageTolerance": "Tolérance de slippage",
       "singleTransactionGasLimit": "Gas Limit pour une seule transaction",
       "startConvert": "Démarrer la conversion",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "Ce type d'adresse n'est pas pris en charge",
       "stop": "Arrêter",
       "selectLowValueTokens": "Sélectionner les jetons de faible valeur",
       "tokenColumn": "Jeton",
@@ -4899,7 +4906,13 @@
       "moreChains": "+{{count}} chaînes",
       "swapFailed": "Échec de l'échange, {{reason}}",
       "completedTips": "L'échange en cours continuera à être traité",
-      "priceImpact": "Plafond de l'incidence sur le prix"
+      "priceImpact": "Plafond de l'incidence sur le prix",
+      "LedgerBtn": {
+        "start": "Démarrer avec Ledger",
+        "confirm": "Veuillez confirmer avec Ledger",
+        "continue": "Continuer",
+        "send": "Envoi de la demande de signature"
+      }
     },
     "staking": {
       "title": "Staking",

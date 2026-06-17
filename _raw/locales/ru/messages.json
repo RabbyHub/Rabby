@@ -4,7 +4,9 @@
       "title": "Транзакции",
       "empty": {
         "title": "Нет транзакций",
-        "desc": "Транзакции не найдены в <1>поддерживаемых сетях</1>"
+        "desc": "Транзакции не найдены в <1>поддерживаемых сетях</1>",
+        "noTxInThreeMonth": "Нет истории транзакций за 90 дней",
+        "descThreeMonths": "Нет истории транзакций за 90 дней на <2>поддерживаемых блокчейнах</2>"
       },
       "explain": {
         "approve": "Подтвердить {{amount}} {{symbol}} для {{project}}",
@@ -1324,7 +1326,8 @@
           "perpsFloatWidget": "Плавающий виджет Perps",
           "biometricUnlockHint": "Используйте биометрию для разблокировки на этом устройстве.",
           "currency": "Валюта",
-          "searchCurrency": "Поиск валюты"
+          "searchCurrency": "Поиск валюты",
+          "dataAnalysis": "Анализ данных"
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",
@@ -3999,7 +4002,11 @@
         "takeProfit": "Тейк-профит",
         "stopLoss": "Стоп-лосс",
         "triggerPrice": "Триггерная цена",
-        "estimatedPnlWillBe": "Ваша оценочная PnL составит"
+        "estimatedPnlWillBe": "Ваша оценочная PnL составит",
+        "triggerHigherThanLiquidation": "The trigger price should be higher than the liquidation price {{price}}",
+        "triggerLowerThanLiquidation": "The trigger price should be lower than the liquidation price {{price}}",
+        "tpTriggerInvalid": "The TP trigger price is invalid and will not be set",
+        "slTriggerInvalid": "The SL trigger price is invalid and will not be set"
       },
       "accountInfo": {
         "availableBalance": "Доступный баланс",
@@ -4546,7 +4553,7 @@
       "slippageTolerance": "Допуск проскальзывания",
       "singleTransactionGasLimit": "Gas Limit для одной транзакции",
       "startConvert": "Начать конвертацию",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "Этот тип адреса не поддерживается",
       "stop": "Остановить",
       "selectLowValueTokens": "Выберите низкоценные токены",
       "tokenColumn": "Токен",
@@ -4559,7 +4566,13 @@
       "moreChains": "+{{count}} цепей",
       "swapFailed": "Неудачный обмен, {{reason}}",
       "completedTips": "Текущий обмен будет продолжать обрабатываться",
-      "priceImpact": "Лимит влияния на цену"
+      "priceImpact": "Лимит влияния на цену",
+      "LedgerBtn": {
+        "start": "Начните с Ledger",
+        "confirm": "Пожалуйста, подтвердите с Ledger",
+        "continue": "Продолжить",
+        "send": "Отправка запроса на подпись"
+      }
     },
     "staking": {
       "title": "Стейкинг",
@@ -4954,7 +4967,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Добавить адрес",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "Этот тип адреса не поддерживается"
     },
     "LpTokenTag": {
       "title": "Это токен поставщика ликвидности (LP)",

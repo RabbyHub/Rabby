@@ -43,7 +43,9 @@
       "title": "交易记录",
       "empty": {
         "desc": "在<1>支持的链</1>上找不到交易",
-        "title": "没有交易"
+        "title": "没有交易",
+        "noTxInThreeMonth": "No Transaction history in 90 Days",
+        "descThreeMonths": "No Transaction history in 90 Days on <2>supported chains</2>"
       },
       "explain": {
         "approve": "授权 {{project}} 使用 {{amount}} {{symbol}}",
@@ -4045,7 +4047,11 @@
         "takeProfit": "止盈",
         "stopLoss": "止损",
         "triggerPrice": "触发价格",
-        "estimatedPnlWillBe": "您预计的盈亏将为"
+        "estimatedPnlWillBe": "您预计的盈亏将为",
+        "triggerHigherThanLiquidation": "触发价格应高于清算价格 {{price}}",
+        "triggerLowerThanLiquidation": "触发价格应低于清算价格 {{price}}",
+        "tpTriggerInvalid": "TP 触发价格无效，将不会设置",
+        "slTriggerInvalid": "SL 触发价格无效，将不会设置"
       },
       "accountInfo": {
         "balance": "余额",
@@ -4571,7 +4577,7 @@
       "singleTransactionGasLimit": "单笔交易 Gas Limit",
       "startConvert": "一键兑换",
       "stop": "停止兑换",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "此地址类型不支持",
       "conversionProgress": "兑换进度",
       "completedTitle": "兑换完成！",
       "done": "完成",
@@ -4605,7 +4611,13 @@
       "statusColumn": "兑换状态",
       "noLowValueTokensFound": "暂无资产",
       "moreChains": "+{{count}} 条链",
-      "priceImpact": "价差上限"
+      "priceImpact": "价差上限",
+      "LedgerBtn": {
+        "start": "开始使用 Ledger",
+        "confirm": "请在 Ledger 上确认",
+        "continue": "继续",
+        "send": "正在发送签名请求"
+      }
     },
     "staking": {
       "title": "质押",
@@ -5000,7 +5012,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "不支持此地址类型"
     },
     "LpTokenTag": {
       "title": "这是一个流动性提供者(LP)代币",
