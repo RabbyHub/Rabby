@@ -60,6 +60,8 @@ import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
+
 import IconIntro from 'ui/assets/dashboard/dapp-account-intro.png';
 
 import stats from '@/stats';
@@ -86,9 +88,6 @@ import {
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
 import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
-
-const showUserDataTrackingOptOutTestSetting =
-  process.env.NODE_ENV !== 'production' || !!process.env.DEBUG;
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -628,6 +627,8 @@ const SettingsInner = ({
   const [biometricBusy, setBiometricBusy] = useState(false);
   const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
   const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
+  const [dataAnalysisPending, setDataAnalysisPending] = useState(false);
+
   const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
     () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
   );
@@ -774,10 +775,14 @@ const SettingsInner = ({
 
   const handleToggleUserDataTrackingOptOut = useMemoizedFn(
     async (checked: boolean) => {
-      await dispatch.preference.setUserDataTrackingOptOut(checked);
-      message.success(
-        `User behavior tracking ${checked ? 'opted out' : 'enabled'}`
-      );
+      try {
+        setDataAnalysisPending(true);
+        await dispatch.preference.setUserDataTrackingOptOut(!checked);
+      } catch (error) {
+        message.error((error as Error)?.message || 'Failed to update setting');
+      } finally {
+        setDataAnalysisPending(false);
+      }
     }
   );
 
@@ -1067,22 +1072,19 @@ const SettingsInner = ({
             />
           ),
         },
-        ...(showUserDataTrackingOptOutTestSetting
-          ? [
-              {
-                leftIcon: RcIconSettingsCodeCC,
-                leftIconClassName: 'text-r-neutral-body',
-                content: 'Test: Opt out of user behavior tracking',
-                description: 'Blocks GA, Matomo, festats and Sentry uploads.',
-                rightIcon: (
-                  <Switch
-                    checked={!!userDataTrackingOptOut}
-                    onChange={handleToggleUserDataTrackingOptOut}
-                  />
-                ),
-              },
-            ]
-          : []),
+        {
+          leftIcon: RcIconDataAnalysisCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.settings.dataAnalysis'),
+          rightIcon: (
+            <Switch
+              checked={!userDataTrackingOptOut}
+              onChange={handleToggleUserDataTrackingOptOut}
+              loading={dataAnalysisPending}
+              disabled={dataAnalysisPending}
+            />
+          ),
+        },
         {
           leftIcon: RcIconCustomTestnet,
           content: t('page.dashboard.settings.settings.customTestnet'),
