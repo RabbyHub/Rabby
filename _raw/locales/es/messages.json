@@ -4544,7 +4544,7 @@
       "slippageTolerance": "Tolerancia de deslizamiento",
       "singleTransactionGasLimit": "Gas Limit de transacción única",
       "startConvert": "Iniciar conversión",
-      "unsupportedWalletType": "Solo se admiten direcciones de clave privada y frase semilla.",
+      "unsupportedWalletType": "",
       "stop": "Detener",
       "selectLowValueTokens": "Seleccionar tokens de bajo valor",
       "tokenColumn": "Token",
@@ -4952,7 +4952,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Agregar dirección",
-      "smallSwapDisabledTips": "Actualmente solo se admiten direcciones de clave privada y frase semilla."
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "Este es un token de proveedor de liquidez (LP)",

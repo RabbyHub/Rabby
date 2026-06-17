@@ -49,7 +49,7 @@
       "slippageTolerance": "Slippage tolerance",
       "singleTransactionGasLimit": "Single Transaction Gas Limit",
       "startConvert": "Start convert",
-      "unsupportedWalletType": "Only private key and seed phrase addresses are supported.",
+      "unsupportedWalletType": "This address type is not supported",
       "stop": "Stop",
       "selectLowValueTokens": "Select Low-Value Tokens",
       "tokenColumn": "Token",
@@ -84,7 +84,13 @@
         "success": "Swap successful"
       },
       "completedTips": "Ongoing swap will continue processing",
-      "priceImpact": "Price Impact Cap"
+      "priceImpact": "Price Impact Cap",
+      "LedgerBtn": {
+        "start": "Start with Ledger",
+        "confirm": "Please confirm with Ledger",
+        "continue": "Continue",
+        "send": "Sending signing request"
+      }
     },
     "staking": {
       "__skip_translation": [
@@ -5006,7 +5012,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Add address",
-      "smallSwapDisabledTips": "Currently only private key and seed phrase addresses are supported."
+      "smallSwapDisabledTips": "This address type is not supported"
     },
     "LpTokenTag": {
       "title": "This is a liquidity provider(LP) token",

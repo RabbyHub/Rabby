@@ -1,5 +1,5 @@
 import { Account } from '@/background/service/preference';
-import { DEX } from '@/constant';
+import { DEX, KEYRING_TYPE } from '@/constant';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { useRabbySelector } from '@/ui/store';
 import { formatAmount, useWallet, WalletControllerType } from '@/ui/utils';
@@ -14,7 +14,7 @@ import {
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
-import { last, random } from 'lodash';
+import { last, random, flatten, omit } from 'lodash';
 import PQueue from 'p-queue';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ import {
 } from '../../Swap/hooks';
 import { twoStepChains } from '../../Swap/hooks/twoStepSwap';
 import { DEFAULT_MAX_GAS_COST, DEFAULT_PRICE_IMPACT } from '../constant';
+import { sendTransaction } from '@/ui/utils/sendTransaction';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
@@ -445,67 +446,77 @@ export const useBatchSwapTask = (options: {
               ? txs.map((tx) => [tx])
               : [txs];
 
-            for (const txsGroup of txsArray) {
-              await prefetch({
-                txs: txsGroup,
-                onPreExecChange(p) {
-                  console.log('preExec change', p);
-                  result.preExecResult = p;
-                },
-                onPreExecError() {
-                  console.log('preExec error');
-                  result.isSimulationFailed = true;
-                },
-              });
-              const res = await openDirect({
-                txs: txsGroup,
-                onPreExecError() {
-                  result.isSimulationFailed = true;
-                },
-                isHideErrorUI: true,
-                autoUseGasFree: true,
-              });
+            if (
+              [KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(
+                account?.type as any
+              )
+            ) {
+              for (const txsGroup of txsArray) {
+                await prefetch({
+                  txs: txsGroup,
+                  onPreExecChange(p) {
+                    console.log('preExec change', p);
+                    result.preExecResult = p;
+                  },
+                  onPreExecError() {
+                    console.log('preExec error');
+                    result.isSimulationFailed = true;
+                  },
+                });
+                const res = await openDirect({
+                  txs: txsGroup,
+                  onPreExecError() {
+                    result.isSimulationFailed = true;
+                  },
+                  isHideErrorUI: true,
+                  autoUseGasFree: true,
+                });
 
-              result.txHash = last(res) || '';
-              if (result.txHash) {
-                try {
-                  await waitForTxCompleted({
-                    hash: result.txHash,
-                    wallet,
-                    chainServerId: options.chain.serverId,
-                  });
-                } catch (e) {
-                  throw new Error(
-                    t('page.desktopSmallSwap.failReason.transactionFailed')
-                  );
+                result.txHash = last(res) || '';
+                if (result.txHash) {
+                  try {
+                    await waitForTxCompleted({
+                      hash: result.txHash,
+                      wallet,
+                      chainServerId: options.chain.serverId,
+                    });
+                  } catch (e) {
+                    throw new Error(
+                      t('page.desktopSmallSwap.failReason.transactionFailed')
+                    );
+                  }
                 }
               }
+            } else {
+              for (const tx of flatten(txsArray)) {
+                const res = await sendTransaction({
+                  tx: omit(tx, 'swapPreferMEVGuarded'),
+                  ignoreGasCheck,
+                  wallet,
+                  chainServerId: options.chain.serverId,
+                  sig: gasAccount?.sig,
+                  autoUseGasAccount: true,
+                  onProgress: (status) => {
+                    if (isTaskCancelled()) {
+                      return;
+                    }
+                    if (status === 'builded') {
+                      setTxStatus('sended');
+                    } else if (status === 'signed') {
+                      setTxStatus('signed');
+                    }
+                  },
+                  // ga: {
+                  //   category: 'Swap',
+                  //   source: 'swap',
+                  // },
+                });
+                result.txHash = res.txHash;
+                result.preExecResult = res.preExecResult;
+                result.isSimulationFailed = !res.preExecResult?.pre_exec
+                  ?.success;
+              }
             }
-
-            // result = await sendTransaction({
-            //   tx,
-            //   ignoreGasCheck,
-            //   wallet,
-            //   chainServerId: options.chain.serverId,
-            //   sig: gasAccount?.sig,
-            //   autoUseGasAccount: true,
-            //   pushType,
-            //   onProgress: (status) => {
-            //     if (isTaskCancelled()) {
-            //       return;
-            //     }
-
-            //     if (status === 'builded') {
-            //       setTxStatus('sended');
-            //     } else if (status === 'signed') {
-            //       setTxStatus('signed');
-            //     }
-            //   },
-            //   ga: {
-            //     category: 'Swap',
-            //     source: 'swap',
-            //   },
-            // });
             console.log('sendTransaction result', result);
             throwIfTaskCancelled();
             // 预执行失败
@@ -541,7 +552,7 @@ export const useBatchSwapTask = (options: {
             }
 
             console.log('batch swap task error', e);
-            console.error('transaction error', e, e.message);
+            console.error('transaction error', e, { name: e.name }, e.message);
             if (!isTaskCancelled()) {
               setStatusDict((prev) => ({
                 ...prev,
@@ -550,6 +561,8 @@ export const useBatchSwapTask = (options: {
                   message:
                     e === 'Gas not enough'
                       ? t('page.desktopSmallSwap.failReason.gasNotEnough')
+                      : e.name === 'SubmitTxFailed'
+                      ? t('page.desktopSmallSwap.failReason.submitFailed')
                       : e.message ||
                         t('page.desktopSmallSwap.failReason.submitFailed'),
                   createdAt: Date.now(),

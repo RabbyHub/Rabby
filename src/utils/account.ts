@@ -274,3 +274,14 @@ export const isSupportDBAccount = (account?: Account | null) => {
     )
   );
 };
+
+export const isSupportSmallSwapAccount = (account?: Account | null) => {
+  if (!account) {
+    return false;
+  }
+  return ([
+    KEYRING_CLASS.MNEMONIC,
+    KEYRING_CLASS.PRIVATE_KEY,
+    KEYRING_CLASS.HARDWARE.LEDGER,
+  ] as string[]).includes(account.type);
+};

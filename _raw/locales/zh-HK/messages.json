@@ -4591,7 +4591,7 @@
       "slippageTolerance": "滑點容許範圍",
       "singleTransactionGasLimit": "單筆交易 Gas Limit",
       "startConvert": "開始轉換",
-      "unsupportedWalletType": "只支援私鑰和助記詞地址。",
+      "unsupportedWalletType": "",
       "stop": "停止",
       "selectLowValueTokens": "選擇低價值代幣",
       "tokenColumn": "代幣",
@@ -4999,7 +4999,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "新增地址",
-      "smallSwapDisabledTips": "目前僅支援私鑰及助記詞地址。"
+      "smallSwapDisabledTips": ""
     },
     "LpTokenTag": {
       "title": "這是一個流動性提供者(LP)代幣",
