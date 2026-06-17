@@ -805,6 +805,18 @@ class PreferenceService {
   };
   getLastTimeGasSelection = (chainId: keyof GasCache): ChainGas | null => {
     const cache = this.store.gasCache[chainId];
+    if (cache && cache.lastTimeSelect === 'gasPrice') {
+      if (Date.now() <= (cache.expireAt || 0)) {
+        return cache;
+      }
+      if (cache.gasLevel) {
+        return {
+          lastTimeSelect: 'gasLevel',
+          gasLevel: cache.gasLevel,
+        };
+      }
+      return null;
+    }
     return cache;
   };
 
