@@ -365,6 +365,28 @@ export const useBridge = () => {
   const fetchIdRef = useRef(0);
   const [quoteRequestId, setQuoteRequestId] = useState(0);
   const [pending, setPending] = useState(false);
+  const quoteFormKey = useMemo(
+    () =>
+      [
+        canRunQuoteRequest ? '1' : '0',
+        userAddress || '',
+        fromToken?.id || '',
+        toToken?.id || '',
+        fromChain || '',
+        toChain || '',
+        amount || '',
+      ].join('|'),
+    [
+      amount,
+      canRunQuoteRequest,
+      fromChain,
+      fromToken?.id,
+      toChain,
+      toToken?.id,
+      userAddress,
+    ]
+  );
+  const quoteFormKeyRef = useRef(quoteFormKey);
 
   const setSelectedBridgeQuote = useCallback((quote?: SelectedBridgeQuote) => {
     if (reloadTxRefreshPausedRef.current) {
@@ -394,22 +416,25 @@ export const useBridge = () => {
   }, []);
 
   useLayoutEffect(() => {
+    const shouldResetQuote = quoteFormKeyRef.current !== quoteFormKey;
+    quoteFormKeyRef.current = quoteFormKey;
+
     fetchIdRef.current += 1;
     setQuoteRequestId(fetchIdRef.current);
-    setQuotesList([]);
+    setQuotesList((quotes) =>
+      shouldResetQuote
+        ? []
+        : quotes.map((quote) => ({
+            ...quote,
+            loading: true,
+          }))
+    );
     setRecommendFromToken(undefined);
-    setSelectedBridgeQuote(undefined);
+    if (shouldResetQuote) {
+      setSelectedBridgeQuote(undefined);
+    }
     setPending(canRunQuoteRequest);
-  }, [
-    canRunQuoteRequest,
-    userAddress,
-    fromToken?.id,
-    toToken?.id,
-    fromChain,
-    toChain,
-    amount,
-    slippageObj.slippage,
-  ]);
+  }, [canRunQuoteRequest, quoteFormKey, slippageObj.slippage]);
 
   const [
     { loading: quoteLoading, error: quotesError },
