@@ -1074,7 +1074,7 @@ const SettingsInner = ({
         {
           leftIcon: RcIconDataAnalysisCC,
           leftIconClassName: 'text-r-neutral-body',
-          content: t('page.dashboard.settings.settings.dataAnalysis '),
+          content: t('page.dashboard.settings.settings.dataAnalysis'),
           rightIcon: (
             <Switch
               checked={!userDataTrackingOptOut}

@@ -2926,7 +2926,7 @@
           "biometricUnlockHint": "Use biometrics to unlock on this device.",
           "biometricUnlockUnsupported": "This device does not support biometric unlock.",
           "perpsFloatWidget": "Perps Floating Widget",
-          "dataAnalysis ": "Data Analysis"
+          "dataAnalysis": "Data Analysis"
         },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
