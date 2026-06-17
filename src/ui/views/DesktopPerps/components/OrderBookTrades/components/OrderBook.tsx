@@ -691,11 +691,17 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               </div>
             )}
             {Boolean(latestTrade?.price) && (
-              <div className="flex items-center justify-between px-[12px] h-40">
+              <div
+                onMouseEnter={() => setHoveredOrder(null)}
+                className="flex items-center justify-between px-[12px] h-40"
+              >
                 <div className="flex items-center gap-[6px]">
                   <span
+                    onClick={(e) =>
+                      handleClickPrice(Number(latestTrade?.price))
+                    }
                     className={clsx(
-                      'text-[20px] font-medium',
+                      'text-[20px] font-medium cursor-pointer',
                       latestTrade?.side === 'buy'
                         ? 'text-rb-green-default'
                         : 'text-rb-red-default'
@@ -705,7 +711,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   </span>
 
                   <span
-                    className={clsx('text-[16px] text-rb-neutral-secondary')}
+                    onClick={(e) => handleClickPrice(Number(markPx))}
+                    className={clsx(
+                      'text-[16px] text-rb-neutral-secondary cursor-pointer'
+                    )}
                   >
                     {splitNumberByStep(markPx)}
                   </span>

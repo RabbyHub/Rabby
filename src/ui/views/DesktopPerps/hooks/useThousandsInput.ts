@@ -24,6 +24,21 @@ export interface ThousandsCore {
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
+// A "content" char is part of the actual number (digit / dot / minus); anything
+// else — the thousands ',' and value prefixes like '$' — is decoration.
+// Anchoring the caret on content chars keeps it correct even when a prefix is
+// added or removed by the parent (e.g. the leading '$' on deposit/margin inputs).
+const isContentChar = (ch: string) =>
+  (ch >= '0' && ch <= '9') || ch === '.' || ch === '-';
+
+const countContent = (s: string) => {
+  let n = 0;
+  for (let i = 0; i < s.length; i += 1) {
+    if (isContentChar(s[i])) n += 1;
+  }
+  return n;
+};
+
 /**
  * Shared core: formats the controlled value, strips separators back out before
  * forwarding to the parent onChange (existing validation/state logic stays
@@ -46,10 +61,8 @@ export const useThousandsCore = (
     const el = e.target;
     const rawDisplay = el.value;
     const selectionStart = el.selectionStart ?? rawDisplay.length;
-    // chars left of the caret, excluding separators — used to restore it later
-    caretRef.current = rawDisplay
-      .slice(0, selectionStart)
-      .replace(/,/g, '').length;
+    // content chars left of the caret — used to restore it after reformatting
+    caretRef.current = countContent(rawDisplay.slice(0, selectionStart));
     // hand the parent a separator-free value; its onChange stays unchanged
     el.value = rawDisplay.replace(/,/g, '');
     onChange?.(e);
@@ -66,7 +79,7 @@ export const useThousandsCore = (
     let idx = 0;
     let count = 0;
     while (idx < dv.length && count < want) {
-      if (dv[idx] !== ',') count += 1;
+      if (isContentChar(dv[idx])) count += 1;
       idx += 1;
     }
     dom.setSelectionRange(idx, idx);

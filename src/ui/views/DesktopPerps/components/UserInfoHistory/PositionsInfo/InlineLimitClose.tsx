@@ -311,7 +311,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       ),
       content: (
         <div className="flex items-center justify-center flex-col gap-12">
-          <div className="text-[16px] font-bold text-r-neutral-title-1 text-center">
+          <div className="text-[16px] text-r-neutral-title-1 text-center">
             {t('page.perpsPro.userInfo.positionInfo.marketCloseTitle')}
           </div>
           <div className="text-[13px] leading-[16px] text-rb-neutral-foot text-center mb-[20px]">
@@ -495,7 +495,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       <div className="flex items-center gap-[6px]">
         {/* Market link */}
         <span
-          className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
+          className="text-rb-brand-default cursor-pointer text-[12px] hover:text-r-neutral-title-1 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             if (!marketLoading) handleMarketCloseWithConfirm();
@@ -515,7 +515,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         >
           <span
             className={clsx(
-              'cursor-pointer font-bold text-[12px] transition-colors text-rb-brand-default hover:text-r-neutral-title-1'
+              'cursor-pointer text-[12px] transition-colors text-rb-brand-default hover:text-r-neutral-title-1'
             )}
             onClick={(e) => {
               e.stopPropagation();
