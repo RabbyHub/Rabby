@@ -404,14 +404,14 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   };
 
   return (
-    <div className="space-y-[10px]">
+    <div className="flex flex-col gap-[12px]">
       <OrderSideAndFunds
         availableBalance={availableBalance}
         quoteAsset={quoteAsset}
       />
 
-      <div className="flex flex-col gap-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.startPrice')}
         </span>
         <DesktopPerpsInput
@@ -419,15 +419,15 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           onChange={handleStartPriceChange}
           className="text-left"
           suffix={
-            <span className="text-15 font-medium text-rb-neutral-title-1">
+            <span className="text-15 text-rb-neutral-title-1">
               {quoteAsset}
             </span>
           }
         />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.endPrice')}
         </span>
         <DesktopPerpsInput
@@ -435,15 +435,15 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           onChange={handleEndPriceChange}
           className="text-left"
           suffix={
-            <span className="text-15 font-medium text-rb-neutral-title-1">
+            <span className="text-15 text-rb-neutral-title-1">
               {quoteAsset}
             </span>
           }
         />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.size')}
         </span>
         <DesktopPerpsInput
@@ -462,15 +462,15 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           }}
           className="text-left"
           suffix={
-            <span className="text-15 font-medium text-rb-neutral-title-1">
+            <span className="text-15 text-rb-neutral-title-1">
               {formatPerpsCoin(selectedCoin)}
             </span>
           }
         />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.orderCount')}
         </span>
         <DesktopPerpsInput
@@ -480,13 +480,13 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-[6px]">
+      <div className="flex flex-col gap-[6px] mt-[6px]">
         <Tooltip
           placement="topLeft"
           overlayClassName={clsx('rectangle')}
           title={t('page.perpsPro.tradingPanel.sizeSkewTooltip')}
         >
-          <span className="text-rb-neutral-secondary text-[12px] cursor-help">
+          <span className="text-rb-neutral-secondary text-12 cursor-help">
             {t('page.perpsPro.tradingPanel.sizeSkew')}
           </span>
         </Tooltip>
@@ -499,7 +499,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Action Radio */}
       <div className="flex flex-col gap-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.action')}
         </span>
         <div className="flex items-center gap-[16px]">
@@ -550,7 +550,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.orderValue')}
           </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
+          <span className="text-r-neutral-title-1 text-[13px]">
             {orderSummary.orderValue}
           </span>
         </div>
@@ -559,7 +559,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.marginUsage')}
           </span>
-          <span className="text-r-neutral-title-1 font-medium text-[13px]">
+          <span className="text-r-neutral-title-1 text-[13px]">
             {orderSummary.marginUsage}
           </span>
         </div>

@@ -142,12 +142,19 @@
 
 .desktop-perps-topbar-account {
   box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   flex-shrink: 0 !important;
   width: auto !important;
   min-width: 0 !important;
   max-width: 180px !important;
   height: 26px !important;
+  min-height: 26px !important;
+  max-height: 26px !important;
   border-radius: 6px !important;
+  border-width: 1px !important;
+  border-style: solid !important;
   padding: 3px 12px !important;
   gap: 6px !important;
   opacity: 1;
@@ -196,31 +203,49 @@
 }
 
 .desktop-perps-topbar-account-actions-inner {
-  height: 26px;
+  height: 26px !important;
+  min-height: 26px !important;
+  max-height: 26px !important;
+  display: flex;
+  align-items: center;
 }
 
-.desktop-perps-topbar-deposit-button {
-  box-sizing: border-box;
-  min-width: 69px;
-  height: 26px;
-  border-radius: 6px;
-  border-color: var(--rb-neutral-line) !important;
-  background: transparent;
-  color: var(--rb-neutral-foot);
-  font-size: 12px;
-  line-height: 14px;
-  white-space: nowrap;
+button.desktop-perps-topbar-deposit-button {
+  appearance: none !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  min-width: 69px !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  max-height: 26px !important;
+  margin: 0 !important;
+  padding: 3px 12px !important;
+  border: 1px solid var(--rb-neutral-line) !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: var(--rb-neutral-foot) !important;
+  font-size: 12px !important;
+  line-height: 14px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
 
   &:hover {
     border-color: var(--rb-neutral-title-1) !important;
-    background: var(--rb-neutral-bg-4);
-    color: var(--rb-neutral-title-1);
+    background: transparent !important;
+    color: var(--rb-neutral-title-1) !important;
+  }
+
+  &:focus {
+    outline: none !important;
   }
 
   &:active {
     border-color: var(--rb-neutral-title-1) !important;
-    background: var(--rb-neutral-bg-4);
-    color: var(--rb-neutral-title-1);
+    background: var(--rb-neutral-bg-4) !important;
+    color: var(--rb-neutral-title-1) !important;
   }
 }
 
@@ -349,7 +374,7 @@
   gap: 20px;
   color: var(--rb-neutral-foot);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 14px;
   white-space: nowrap;
 

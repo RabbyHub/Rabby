@@ -28,6 +28,7 @@ import { EVENTS } from '@/constant';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
 import { PerpsCheckbox } from '../../TradingPanel/components/PerpsCheckbox';
+import { ThousandsNativeInput } from '../../ThousandsNativeInput';
 
 const CLOSE_PERCENTAGES = [10, 25, 50, 75, 100];
 
@@ -45,7 +46,7 @@ const MarketCloseCheckbox: React.FC<{
         setChecked(val);
         onChange(val);
       }}
-      title={<span className="text-r-neutral-foot text-[12px]">{title}</span>}
+      title={<span className="text-r-neutral-foot text-12">{title}</span>}
     />
   );
 };
@@ -310,7 +311,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       ),
       content: (
         <div className="flex items-center justify-center flex-col gap-12">
-          <div className="text-[16px] font-bold text-r-neutral-title-1 text-center">
+          <div className="text-[16px] text-r-neutral-title-1 text-center">
             {t('page.perpsPro.userInfo.positionInfo.marketCloseTitle')}
           </div>
           <div className="text-[13px] leading-[16px] text-rb-neutral-foot text-center mb-[20px]">
@@ -388,7 +389,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     if (!priceNum) return null;
     const pnlIsUp = estPnl >= 0;
     return (
-      <div className="text-[12px] space-y-[2px]">
+      <div className="text-12 space-y-[2px]">
         <div>Price: {splitNumberByStep(limitPrice)}</div>
         {Boolean(Number(estPnl)) && (
           <div>
@@ -412,7 +413,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     const coin = formatPerpsCoin(record.coin);
     const pnlIsUp = estPnl >= 0;
     return (
-      <div className="text-[12px] space-y-[2px]">
+      <div className="text-12 space-y-[2px]">
         {sizeDisplayUnit === 'usd' ? (
           <>
             <div>
@@ -465,7 +466,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
           return (
             <div
               key={order.oid}
-              className="flex items-center justify-between gap-[28px] text-[12px]"
+              className="flex items-center justify-between gap-[28px] text-12"
             >
               <span>
                 {splitNumberByStep(orderSize)} {coinUnit} to be closed @$
@@ -494,7 +495,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       <div className="flex items-center gap-[6px]">
         {/* Market link */}
         <span
-          className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors"
+          className="text-rb-brand-default cursor-pointer text-12 hover:text-r-neutral-title-1 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             if (!marketLoading) handleMarketCloseWithConfirm();
@@ -514,7 +515,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         >
           <span
             className={clsx(
-              'cursor-pointer font-bold text-[12px] transition-colors text-rb-brand-default hover:text-r-neutral-title-1'
+              'cursor-pointer text-12 transition-colors text-rb-brand-default hover:text-r-neutral-title-1'
             )}
             onClick={(e) => {
               e.stopPropagation();
@@ -538,7 +539,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         overlayClassName="rectangle"
         title={priceTooltipContent}
       >
-        <input
+        <ThousandsNativeInput
           className={clsx(
             'w-[68px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
             'bg-transparent text-r-neutral-title-1',
@@ -598,7 +599,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             </div>
           }
         >
-          <input
+          <ThousandsNativeInput
             ref={sizeInputRef}
             className={clsx(
               'w-[60px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',

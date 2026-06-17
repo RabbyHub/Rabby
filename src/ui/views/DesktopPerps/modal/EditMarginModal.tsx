@@ -16,6 +16,7 @@ import {
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
 import { DesktopPerpsSliderV2 } from '../components/DesktopPerpsSliderV2';
+import { ThousandsNativeInput } from '../components/ThousandsNativeInput';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 
 export interface EditMarginPopupProps {
@@ -279,7 +280,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               >
                 Min
               </button>
-              <input
+              <ThousandsNativeInput
                 className={clsx(
                   'absolute left-1/2 top-[21px] h-[42px] w-[184px] -translate-x-1/2 bg-transparent border-0 px-[12px] text-center outline-none',
                   'text-[36px] leading-[42px] font-extrabold',

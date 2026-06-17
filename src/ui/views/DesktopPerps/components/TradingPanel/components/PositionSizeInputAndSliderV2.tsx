@@ -301,10 +301,10 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
         positionSize.amount && Number(price)
           ? calcAssetNotionalByAmount(positionSize.amount, price)
           : '0';
-      const display = `${actualNotional} ${unit}`;
+      const display = `${splitNumberByStep(actualNotional)} ${unit}`;
       return { buyPreview: display, sellPreview: display };
     }
-    const display = `${positionSize.amount || '0'} ${unit}`;
+    const display = `${splitNumberByStep(positionSize.amount || '0')} ${unit}`;
     return { buyPreview: display, sellPreview: display };
   }, [
     quoteAsset,
@@ -335,7 +335,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     }
     // Input is in USDC → tooltip shows base equivalent
     const coin = formatPerpsCoin(baseAsset);
-    return `≈ ${positionSize.amount} ${coin}`;
+    return `≈ ${splitNumberByStep(positionSize.amount)} ${coin}`;
   }, [
     positionSize.amount,
     positionSize.notionalValue,
@@ -375,10 +375,10 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
   });
 
   return (
-    <div className="w-full gap-[12px] flex flex-col">
+    <div className="w-full gap-[6px] flex flex-col">
       {/* Size label */}
       <div className="flex items-center justify-between">
-        <span className="text-rb-neutral-secondary text-[12px]">
+        <span className="text-rb-neutral-secondary text-[12px] leading-[14px]">
           {t('page.perpsPro.tradingPanel.size')}
         </span>
       </div>
@@ -398,7 +398,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
           onBlur={() => setIsFocused(false)}
           suffix={
             <div
-              className="text-15 font-medium text-rb-neutral-title-1 px-[8px] h-[28px] flex items-center gap-[6px] cursor-pointer whitespace-nowrap bg-rb-neutral-line rounded-[6px]"
+              className="text-15 text-rb-neutral-title-1 px-[8px] h-[28px] flex items-center gap-[6px] cursor-pointer whitespace-nowrap bg-rb-neutral-line rounded-[6px]"
               onClick={handleChangeUnit}
             >
               {unitLabel}
@@ -422,7 +422,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
         />
       </div>
 
-      <div className="flex items-center justify-between text-[12px]">
+      <div className="flex flex-wrap items-center justify-between gap-x-[8px] gap-y-[4px] text-12">
         <div className="flex items-center gap-[4px]">
           <span className="text-rb-neutral-secondary">
             {t('page.perpsPro.tradingPanel.Buy')}

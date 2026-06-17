@@ -32,10 +32,36 @@
   bottom: -4px;
 }
 
-/* Hover and drag states */
-[data-panel-resize-handle-id][data-resize-handle-state='hover'],
-[data-panel-resize-handle-id][data-resize-handle-state='drag'] {
-  background-color: var(--rb-brand-default, #7084ff) !important;
+/* Visual indicator bar — 2px, centered inside the handle so the spacing
+   between panels stays 6px and only the hover/drag border shrinks to 2px. */
+[data-panel-resize-handle-id]::after {
+  content: '';
+  position: absolute;
+  border-radius: 6px;
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+}
+
+[data-panel-resize-handle-id][data-panel-group-direction='horizontal']::after {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+}
+
+[data-panel-resize-handle-id][data-panel-group-direction='vertical']::after {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+/* Hover and drag states — show only the 2px indicator, not the full handle */
+[data-panel-resize-handle-id][data-resize-handle-state='hover']::after,
+[data-panel-resize-handle-id][data-resize-handle-state='drag']::after {
+  background-color: var(--rb-neutral-info, #c5c5cf);
 }
 
 /* Cursor styles */

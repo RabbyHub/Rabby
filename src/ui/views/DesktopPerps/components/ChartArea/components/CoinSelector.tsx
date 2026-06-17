@@ -101,10 +101,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </span>
         {currentMarketData.markPx && currentMarketData.prevDayPx ? (
           <span
-            className={clsx(
-              'text-[12px] leading-[14px] font-medium',
-              changeColorClass
-            )}
+            className={clsx('text-[12px] leading-[14px]', changeColorClass)}
           >
             {isPriceUp ? '+' : isPriceDown ? '-' : ''}
             {splitNumberByStep(Math.abs(changeValue))} / {isPriceUp ? '+' : ''}
@@ -129,7 +126,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               {t('page.perpsPro.chatArea.mark')}
             </DashedUnderlineText>
           </div>
-          <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+          <span className="text-[12px] leading-[14px] text-rb-neutral-title-1">
             {currentMarketData.markPx
               ? `$${splitNumberByStep(Number(currentMarketData.markPx))}`
               : '-'}
@@ -146,7 +143,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               {t('page.perpsPro.chatArea.oracle')}
             </DashedUnderlineText>
           </div>
-          <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+          <span className="text-[12px] leading-[14px] text-rb-neutral-title-1">
             {currentMarketData.oraclePx
               ? `$${splitNumberByStep(Number(currentMarketData.oraclePx))}`
               : '-'}
@@ -157,7 +154,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           <span className="text-[12px] leading-[20px] text-rb-neutral-secondary">
             {t('page.perpsPro.chatArea.24hVol')}
           </span>
-          <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+          <span className="text-[12px] leading-[14px] text-rb-neutral-title-1">
             {currentMarketData.dayNtlVlm
               ? `$${splitNumberByStep(
                   Number(currentMarketData.dayNtlVlm).toFixed(2)
@@ -176,7 +173,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               {t('page.perpsPro.chatArea.openInterest')}
             </DashedUnderlineText>
           </div>
-          <span className="text-[12px] leading-[14px] font-medium text-rb-neutral-title-1">
+          <span className="text-[12px] leading-[14px] text-rb-neutral-title-1">
             {currentMarketData.openInterest && currentMarketData.markPx
               ? `$${splitNumberByStep(
                   (
@@ -199,7 +196,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
             </DashedUnderlineText>
           </div>
           {currentMarketData.funding ? (
-            <span className="text-[12px] leading-[14px] font-medium">
+            <span className="text-[12px] leading-[14px]">
               <span
                 className={clsx(
                   'text-[12px] leading-[14px]',

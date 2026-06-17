@@ -138,7 +138,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         label: level.displayPrice.toString(),
       };
     });
-  }, [szDecimals, selectedCoin, isInitialized]);
+    // Depend on `markPx > 0` (a boundary signal) rather than markPx itself:
+    // recompute only when price crosses the 0 boundary (no price → has price),
+    // not on every WS tick. The tick options only care about price magnitude.
+  }, [markPx > 0, szDecimals, selectedCoin, isInitialized]);
 
   useEffect(() => {
     setAggregationIndex(0);
@@ -303,6 +306,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     []
   );
 
+  const clearHoveredOrder = useCallback(() => {
+    setHoveredOrder(null);
+  }, []);
+
   const getIsInHoverRange = useCallback(
     (type: 'bid' | 'ask', index: number) => {
       if (!hoveredOrder || hoveredOrder.type !== type) return false;
@@ -370,7 +377,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         onMouseMove={(e) => updateTooltipPosition(type, index, e.currentTarget)}
         onClick={() => handleClickPrice(Number(order.price))}
         className={clsx(
-          'desktop-perps-orderbook-row relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
+          'desktop-perps-orderbook-row relative flex items-center justify-between px-[12px] h-[24px] text-[12px] leading-[14px] cursor-pointer group',
           `desktop-perps-orderbook-row-${type}`,
           isInHoverRange && 'is-hover-range',
           isHoveredRow && 'is-hovered-row',
@@ -390,16 +397,16 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
           <span
             className={clsx(
-              'font-medium col-span-3 text-left group-hover:font-bold',
-              type === 'bid' ? 'text-rb-green-default' : 'text-rb-red-default'
+              'col-span-3 text-left group-hover:font-bold',
+              type === 'bid' ? 'text-rb-green-default' : 'text-r-red-default'
             )}
           >
             {splitNumberByStep(order.price)}
           </span>
-          <span className="text-r-neutral-title-1 font-medium col-span-3 text-right">
+          <span className="text-rb-neutral-title-1 col-span-3 text-right">
             {formatLevelValue(order.size, order.usdSize)}
           </span>
-          <span className="text-r-neutral-title-1 font-medium col-span-4 text-right">
+          <span className="text-rb-neutral-title-1 col-span-4 text-right">
             {formatLevelValue(order.total, order.totalUsd)}
           </span>
         </div>
@@ -521,9 +528,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1 whitespace-nowrap">
       {/* Control Bar */}
-      <div className="flex items-center justify-between px-[12px] py-[6px] shrink-0">
+      <div className="flex items-center justify-between py-[8px] px-[8px] pr-[10px] shrink-0">
         {/* View Mode Switcher */}
-        <div className="flex items-center gap-[8px]">
+        <div className="flex items-center gap-[3px]">
           <button
             className={clsx(
               'opacity-50',
@@ -562,7 +569,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           </button>
         </div>
 
-        <div className="flex items-center gap-12">
+        <div className="flex items-center gap-[6px]">
           <Dropdown
             transitionName=""
             forceRender={true}
@@ -594,8 +601,8 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
-                'hover:border-rb-brand-default border border-solid border-transparent',
-                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+                'hover:border-rb-brand-default border border-solid',
+                'text-[12px] leading-[14px] text-rb-neutral-title-1'
               )}
             >
               {quoteUnit === 'base'
@@ -631,8 +638,8 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
-                'hover:border-rb-brand-default border border-solid border-transparent',
-                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+                'hover:border-rb-brand-default border border-solid',
+                'text-[12px] leading-[14px] text-rb-neutral-title-1'
               )}
             >
               {selectedAggregation?.label || ''}
@@ -642,7 +649,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-10 px-[12px] py-[5px] text-[11px] text-r-neutral-foot shrink-0">
+      <div className="grid grid-cols-10 px-[12px] py-[5px] text-[11px] text-rb-neutral-secondary shrink-0">
         <span className="col-span-3 text-left">
           {t('page.perpsPro.orderBook.price')}
         </span>
@@ -659,7 +666,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       <div
         ref={contentRef}
         className="flex-1 flex flex-col overflow-hidden"
-        onMouseLeave={() => setHoveredOrder(null)}
+        onMouseLeave={clearHoveredOrder}
       >
         {isLoading ? (
           <>
@@ -691,11 +698,18 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               </div>
             )}
             {Boolean(latestTrade?.price) && (
-              <div className="flex items-center justify-between px-[12px] h-40">
+              <div
+                className="flex items-center justify-between px-[12px] h-40"
+                onMouseEnter={clearHoveredOrder}
+                onMouseMove={clearHoveredOrder}
+              >
                 <div className="flex items-center gap-[6px]">
                   <span
+                    onClick={(e) =>
+                      handleClickPrice(Number(latestTrade?.price))
+                    }
                     className={clsx(
-                      'text-[20px] font-bold',
+                      'text-[20px] font-medium cursor-pointer',
                       latestTrade?.side === 'buy'
                         ? 'text-rb-green-default'
                         : 'text-rb-red-default'
@@ -705,8 +719,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   </span>
 
                   <span
+                    onClick={(e) => handleClickPrice(Number(markPx))}
                     className={clsx(
-                      'text-[16px] text-rb-neutral-secondary font-medium'
+                      'text-[14px] text-rb-neutral-secondary cursor-pointer'
                     )}
                   >
                     {splitNumberByStep(markPx)}

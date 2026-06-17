@@ -521,14 +521,14 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   };
 
   return (
-    <div className="space-y-[18px]">
+    <div className="flex flex-col gap-[12px]">
       <OrderSideAndFunds
         availableBalance={availableBalance}
         quoteAsset={quoteAsset}
       />
 
-      <div className="flex flex-col gap-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+      <div className="flex flex-col gap-[6px] mt-[6px] mb-[6px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.triggerPrice')}
         </span>
         <div className="flex items-center gap-8">
@@ -537,7 +537,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
             onChange={handleTriggerPriceChange}
             className="text-left"
             suffix={
-              <span className="text-15 font-medium text-rb-neutral-title-1">
+              <span className="text-15 text-rb-neutral-title-1">
                 {quoteAsset}
               </span>
             }
@@ -545,8 +545,8 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         </div>
       </div>
 
-      <div className="flex flex-col gap-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+      <div className="flex flex-col gap-[6px] mb-[6px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.limitPrice')}
         </span>
         <div className="flex items-center gap-8">
@@ -556,7 +556,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
               onSelect={(key) => setBboStrategy(key as BboStrategy)}
             >
               <div className="flex-1 h-[44px] flex items-center justify-between px-[6px] rounded-[6px] border border-solid border-rb-neutral-line bg-rb-neutral-bg-5 cursor-pointer">
-                <span className="text-[15px] font-medium text-rb-neutral-title-1">
+                <span className="text-[15px] text-rb-neutral-title-1">
                   {bboStrategyOptions.find((o) => o.key === bboStrategy)
                     ?.label || 'Counterparty 1'}
                 </span>
@@ -569,7 +569,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
               onChange={handleLimitPriceChange}
               className="text-left"
               suffix={
-                <span className="text-15 font-medium text-rb-neutral-title-1">
+                <span className="text-15 text-rb-neutral-title-1">
                   {quoteAsset}
                 </span>
               }
@@ -582,7 +582,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           >
             <div
               className={clsx(
-                'min-w-[64px] h-[44px] relative flex items-center justify-center text-center font-medium text-15 rounded-[6px] border border-solid cursor-pointer',
+                'min-w-[64px] h-[44px] relative flex items-center justify-center text-center text-15 rounded-[6px] border border-solid cursor-pointer',
                 bboEnabled
                   ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default'
                   : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent'
@@ -612,7 +612,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         reduceOnly={reduceOnly}
       />
 
-      <div className="h-[1px] bg-rb-neutral-line" />
+      <div className="h-[1px] bg-rb-neutral-line my-[12px]" />
 
       <div className="flex items-center justify-between">
         <PerpsCheckbox

@@ -27,6 +27,7 @@ import { HistoryPopup } from './HistoryPopup';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { DepositPending } from './DepositPending';
 import { DashedUnderlineText } from '../DashedUnderlineText';
+import { ThousandsNativeInput } from '../ThousandsNativeInput';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/perps/IconInfo.svg';
 
 export type DepositWithdrawModalType = 'deposit' | 'withdraw';
@@ -279,7 +280,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 {/* Amount input + token pill */}
                 <div className="bg-r-neutral-card1 rounded-[8px] px-16 py-24 mb-12">
                   <div className="flex items-center gap-12">
-                    <input
+                    <ThousandsNativeInput
                       ref={inputRef}
                       className={clsx(
                         'flex-1 text-[28px] leading-[34px] font-medium bg-transparent border-none p-0 outline-none focus:outline-none min-w-0',
@@ -346,7 +347,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               <>
                 <div className="bg-r-neutral-card1 rounded-[8px] px-20 py-20 mb-12">
                   <div className="flex flex-col items-center justify-center">
-                    <input
+                    <ThousandsNativeInput
                       ref={inputRef}
                       className={clsx(
                         'text-[32px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none',
@@ -431,7 +432,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
             )}
 
             <div className="mt-12 space-y-8">
-              {type === 'withdraw' && (
+              {type === 'withdraw' && !amountValidation.errorMessage && (
                 <>
                   <div className="flex items-center justify-between text-13">
                     <Tooltip

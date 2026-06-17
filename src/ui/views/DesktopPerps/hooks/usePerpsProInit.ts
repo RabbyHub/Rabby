@@ -40,6 +40,7 @@ export const usePerpsProInit = (isActive = true) => {
   useEffect(() => {
     dispatch.perps.initQuoteUnit(undefined);
     dispatch.perps.initFavoritedCoins(undefined);
+    dispatch.perps.initTpslModePreferences(undefined);
     dispatch.perps.initMarketSlippage(undefined);
     dispatch.perps.initSoundEnabled(undefined);
     dispatch.perps.initSkipMarketCloseConfirm(undefined);
@@ -76,17 +77,6 @@ export const usePerpsProInit = (isActive = true) => {
       });
     }
   }, [selectedCoin, isActive]);
-
-  const checkIsNeedSetDarkTheme = async () => {
-    const isNeedSetDarkTheme = await wallet.getPerpsIsNeedSetDarkTheme();
-    if (isNeedSetDarkTheme) {
-      dispatch.preference.switchThemeMode(DARK_MODE_TYPE.dark);
-    }
-  };
-
-  useEffect(() => {
-    checkIsNeedSetDarkTheme();
-  }, []);
 
   useEffect(() => {
     preloadSound('/sounds/order-filled.mp3');
