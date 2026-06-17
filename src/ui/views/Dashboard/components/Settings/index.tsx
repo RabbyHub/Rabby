@@ -1656,6 +1656,8 @@ const SettingsInner = ({
         <div className={clsx('content')}>
           {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
 
+          <RateModalTriggerOnSettings className="mb-[16px]" />
+
           {Object.values(renderData).map((group, idxl1) => {
             return (
               <div key={`g-${idxl1}`} className="setting-block">
@@ -1713,7 +1715,7 @@ const SettingsInner = ({
         isVisible={isShowEcology}
         onClose={() => setIsShowEcologyModal(false)}
       />
-      <RateModalTriggerOnSettings className="mb-[16px]" />
+
       <Contacts
         visible={contactsVisible}
         onCancel={() => {
