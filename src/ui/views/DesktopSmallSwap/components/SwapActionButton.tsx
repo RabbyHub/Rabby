@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 import { Button, Tooltip } from 'antd';
 import { Account } from '@/background/service/preference';
@@ -6,17 +6,15 @@ import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { SwapActionLedgerButton } from './SwapActionLedgerButton';
+import { isSupportSmallSwapAccount } from '@/utils/account';
 
 export const SwapActionButton: React.FC<{
   task?: BatchSwapTaskType | null;
   account?: Account | null;
 }> = ({ task, account }) => {
-  const isSupported = !!([
-    KEYRING_TYPE.HdKeyring,
-    KEYRING_TYPE.SimpleKeyring,
-    KEYRING_CLASS.HARDWARE.LEDGER,
-  ] as string[]).includes(account?.type || '');
-
+  const isSupported = useMemo(() => isSupportSmallSwapAccount(account), [
+    account,
+  ]);
   const { t } = useTranslation();
 
   if (!task) {
@@ -24,7 +22,7 @@ export const SwapActionButton: React.FC<{
   }
 
   if (account?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
-    return <SwapActionLedgerButton task={task} onDone={() => {}} />;
+    return <SwapActionLedgerButton task={task} />;
   }
   return (
     <>

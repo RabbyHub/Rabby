@@ -39,8 +39,7 @@ const LegerIcon = WALLET_BRAND_CONTENT.LEDGER.icon;
 
 export const SwapActionLedgerButton: React.FC<{
   task: BatchSwapTaskType;
-  onDone: () => void;
-}> = ({ task, onDone }) => {
+}> = ({ task }) => {
   const { t } = useTranslation();
   const { status } = useLedgerStatus();
   const currentApprovalIndex = task.currentTaskIndex;
