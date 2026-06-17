@@ -306,6 +306,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     []
   );
 
+  const clearHoveredOrder = useCallback(() => {
+    setHoveredOrder(null);
+  }, []);
+
   const getIsInHoverRange = useCallback(
     (type: 'bid' | 'ask', index: number) => {
       if (!hoveredOrder || hoveredOrder.type !== type) return false;
@@ -662,7 +666,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       <div
         ref={contentRef}
         className="flex-1 flex flex-col overflow-hidden"
-        onMouseLeave={() => setHoveredOrder(null)}
+        onMouseLeave={clearHoveredOrder}
       >
         {isLoading ? (
           <>
@@ -694,8 +698,12 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               </div>
             )}
             {Boolean(latestTrade?.price) && (
-              <div className="flex items-center justify-between px-[12px] h-40">
-                <div className="flex items-baseline gap-[6px]">
+              <div
+                className="flex items-center justify-between px-[12px] h-40"
+                onMouseEnter={clearHoveredOrder}
+                onMouseMove={clearHoveredOrder}
+              >
+                <div className="flex items-center gap-[6px]">
                   <span
                     onClick={(e) =>
                       handleClickPrice(Number(latestTrade?.price))
