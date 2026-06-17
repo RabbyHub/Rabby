@@ -4,7 +4,9 @@
       "title": "Транзакції",
       "empty": {
         "title": "Немає транзакцій",
-        "desc": " Не знайдено транзакцій на <1>підтримуваних мережах</1>"
+        "desc": " Не знайдено транзакцій на <1>підтримуваних мережах</1>",
+        "noTxInThreeMonth": "Немає історії транзакцій за 90 днів",
+        "descThreeMonths": "Немає історії транзакцій за 90 днів на <2>підтримуваних мережах</2>"
       },
       "explain": {
         "approve": "Затвердити {{amount}} {{symbol}} для {{project}}",
@@ -1326,7 +1328,8 @@
           "perpsFloatWidget": "Плаваючий віджет Perps",
           "biometricUnlockHint": "Використовуйте біометрію для розблокування на цьому пристрої.",
           "currency": "Валюта",
-          "searchCurrency": "Пошук валюти"
+          "searchCurrency": "Пошук валюти",
+          "dataAnalysis": "Аналіз даних"
         },
         "aboutUs": "Про нас",
         "currentVersion": "Поточна версія",
@@ -4009,7 +4012,11 @@
         "takeProfit": "Тейк-профіт",
         "stopLoss": "Стоп-лос",
         "triggerPrice": "Тригерна ціна",
-        "estimatedPnlWillBe": "Ваш очікуваний PnL буде"
+        "estimatedPnlWillBe": "Ваш очікуваний PnL буде",
+        "triggerHigherThanLiquidation": "Тригерна ціна має бути вищою за ціну ліквідації {{price}}",
+        "triggerLowerThanLiquidation": "Тригерна ціна має бути нижчою за ціну ліквідації {{price}}",
+        "tpTriggerInvalid": "Тригерна ціна TP недійсна і не буде встановлена",
+        "slTriggerInvalid": "Тригерна ціна SL недійсна і не буде встановлена"
       },
       "accountInfo": {
         "totalBalance": "Загальний баланс",
@@ -4556,7 +4563,7 @@
       "slippageTolerance": "Допуск slippage",
       "singleTransactionGasLimit": "Gas Limit однієї транзакції",
       "startConvert": "Почати конвертацію",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "Цей тип адреси не підтримується",
       "stop": "Стоп",
       "selectLowValueTokens": "Виберіть токени з низькою вартістю",
       "tokenColumn": "Токен",
@@ -4569,7 +4576,13 @@
       "moreChains": "+{{count}} ланцюжків",
       "swapFailed": "Конвертація не вдалася, {{reason}}",
       "completedTips": "Поточна конвертація продовжить обробку",
-      "priceImpact": "Ліміт цінового впливу"
+      "priceImpact": "Ліміт цінового впливу",
+      "LedgerBtn": {
+        "start": "Почати з Ledger",
+        "confirm": "Підтвердьте, будь ласка, через Ledger",
+        "continue": "Продовжити",
+        "send": "Надсилання запиту на підписання"
+      }
     },
     "staking": {
       "title": "Стейкінг",
@@ -4964,7 +4977,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Додати адресу",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "Цей тип адреси не підтримується"
     },
     "LpTokenTag": {
       "title": "Це токен постачальника ліквідності (LP)",

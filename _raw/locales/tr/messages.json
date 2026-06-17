@@ -4,7 +4,9 @@
       "title": "İşlemler",
       "empty": {
         "title": "İşlem yok",
-        "desc": "<1>Desteklenen zincirlerde</1> işlem bulunamadı"
+        "desc": "<1>Desteklenen zincirlerde</1> işlem bulunamadı",
+        "noTxInThreeMonth": "Son 90 günde işlem geçmişi yok",
+        "descThreeMonths": "<2>Desteklenen zincirlerde</2> son 90 günde işlem geçmişi yok"
       },
       "explain": {
         "approve": "{{project}} için {{amount}} {{symbol}} onayla",
@@ -1323,7 +1325,8 @@
           "perpsFloatWidget": "Perps Kayan Widget'ı",
           "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın.",
           "currency": "Para Birimi",
-          "searchCurrency": "Para birimi ara"
+          "searchCurrency": "Para birimi ara",
+          "dataAnalysis": "Veri Analizi"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",
@@ -4000,7 +4003,11 @@
         "takeProfit": "Kâr Al",
         "stopLoss": "Zarar Durdur",
         "triggerPrice": "Tetikleme Fiyatı",
-        "estimatedPnlWillBe": "Tahmini PnL'niz olacak"
+        "estimatedPnlWillBe": "Tahmini PnL'niz olacak",
+        "triggerHigherThanLiquidation": "Tetikleme fiyatı, likidasyon fiyatı {{price}}'den yüksek olmalıdır",
+        "triggerLowerThanLiquidation": "Tetikleme fiyatı, likidasyon fiyatı {{price}}'den düşük olmalıdır",
+        "tpTriggerInvalid": "TP tetikleme fiyatı geçersizdir ve ayarlanmayacak",
+        "slTriggerInvalid": "SL tetikleme fiyatı geçersizdir ve ayarlanmayacak"
       },
       "accountInfo": {
         "totalBalance": "Toplam Bakiye",
@@ -4547,7 +4554,7 @@
       "slippageTolerance": "Kayma toleransı",
       "singleTransactionGasLimit": "Tek İşlem Gas Limit",
       "startConvert": "Dönüştürmeyi başlat",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "Bu adres türü desteklenmiyor",
       "stop": "Durdur",
       "selectLowValueTokens": "Düşük Değerli Tokenları Seç",
       "tokenColumn": "Token",
@@ -4560,7 +4567,13 @@
       "moreChains": "+{{count}} zincir",
       "swapFailed": "Swap başarısız oldu, {{reason}}",
       "completedTips": "Devam eden swap işlemi işlenmeye devam edecek",
-      "priceImpact": "Fiyat Etkisi Üst Limiti"
+      "priceImpact": "Fiyat Etkisi Üst Limiti",
+      "LedgerBtn": {
+        "start": "Ledger ile Başla",
+        "confirm": "Lütfen Ledger ile onaylayın",
+        "continue": "Devam",
+        "send": "İmza isteği gönderiliyor"
+      }
     },
     "staking": {
       "title": "Staking",
@@ -4955,7 +4968,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adres ekle",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "Bu adres türü desteklenmiyor"
     },
     "LpTokenTag": {
       "title": "Bu bir likidite sağlayıcı (LP) tokenıdır.",

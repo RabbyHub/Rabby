@@ -3,7 +3,9 @@
     "transactions": {
       "empty": {
         "title": "Tidak ada transaksi",
-        "desc": "Tidak ditemukan transaksi di <1>supported chains</1>"
+        "desc": "Tidak ditemukan transaksi di <1>supported chains</1>",
+        "noTxInThreeMonth": "Tidak ada riwayat transaksi dalam 90 hari",
+        "descThreeMonths": "Tidak ada riwayat transaksi dalam 90 hari pada <2>rantai yang didukung</2>"
       },
       "explain": {
         "unknown": "Interaksi kontrak",
@@ -1392,7 +1394,8 @@
           "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
           "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
-          "searchCurrency": "Cari mata uang"
+          "searchCurrency": "Cari mata uang",
+          "dataAnalysis": "Analisis Data"
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",
@@ -3994,7 +3997,11 @@
         "takeProfit": "Ambil Profit",
         "stopLoss": "Stop Loss",
         "triggerPrice": "Harga Pemicu",
-        "estimatedPnlWillBe": "Estimasi PnL Anda adalah"
+        "estimatedPnlWillBe": "Estimasi PnL Anda adalah",
+        "triggerHigherThanLiquidation": "Harga pemicu harus lebih tinggi dari harga likuidasi {{price}}",
+        "triggerLowerThanLiquidation": "Harga pemicu harus lebih rendah dari harga likuidasi {{price}}",
+        "tpTriggerInvalid": "Harga pemicu TP tidak valid dan tidak akan disetel",
+        "slTriggerInvalid": "Harga pemicu SL tidak valid dan tidak akan disetel"
       },
       "accountInfo": {
         "totalBalance": "Total saldo",
@@ -4541,7 +4548,7 @@
       "slippageTolerance": "Toleransi selip",
       "singleTransactionGasLimit": "Gas Limit Transaksi Tunggal",
       "startConvert": "Mulai konversi",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "Jenis alamat ini tidak didukung",
       "stop": "Berhenti",
       "selectLowValueTokens": "Pilih Token Bernilai Rendah",
       "tokenColumn": "Token",
@@ -4554,7 +4561,13 @@
       "moreChains": "+{{count}} rantai",
       "swapFailed": "Swap gagal, {{reason}}",
       "completedTips": "Swap yang sedang berlangsung akan terus diproses",
-      "priceImpact": "Batas Dampak Harga"
+      "priceImpact": "Batas Dampak Harga",
+      "LedgerBtn": {
+        "start": "Mulai dengan Ledger",
+        "confirm": "Harap konfirmasi dengan Ledger",
+        "continue": "Lanjutkan",
+        "send": "Mengirim permintaan penandatanganan"
+      }
     },
     "staking": {
       "title": "Staking",
@@ -4949,7 +4962,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Tambah alamat",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "Jenis alamat ini tidak didukung"
     },
     "LpTokenTag": {
       "title": "Ini adalah token penyedia likuiditas (LP)",

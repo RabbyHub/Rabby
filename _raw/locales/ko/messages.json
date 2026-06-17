@@ -3,7 +3,9 @@
     "transactions": {
       "empty": {
         "title": "거래가 없습니다",
-        "desc": "<1>지원되는 체인</1>에서 거래를 찾을 수 없습니다."
+        "desc": "<1>지원되는 체인</1>에서 거래를 찾을 수 없습니다.",
+        "noTxInThreeMonth": "90일 이내 거래 내역 없음",
+        "descThreeMonths": "90일 이내 <2>지원되는 체인</2>의 거래 내역 없음"
       },
       "explain": {
         "unknown": "계약 상호작용",
@@ -1392,7 +1394,8 @@
           "perpsFloatWidget": "Perps 플로팅 위젯",
           "biometricUnlockHint": "이 장치에서 생체 인식을 사용하여 잠금을 해제하세요.",
           "currency": "통화",
-          "searchCurrency": "통화 검색"
+          "searchCurrency": "통화 검색",
+          "dataAnalysis": "데이터 분석"
         },
         "save": "저장",
         "inputOpenapiHost": "openapi 호스트를 입력하세요",
@@ -3994,7 +3997,11 @@
         "takeProfit": "이익실현",
         "stopLoss": "손절매",
         "triggerPrice": "트리거 가격",
-        "estimatedPnlWillBe": "예상 손익은"
+        "estimatedPnlWillBe": "예상 손익은",
+        "triggerHigherThanLiquidation": "트리거 가격은 청산가 {{price}}보다 높아야 합니다",
+        "triggerLowerThanLiquidation": "트리거 가격은 청산가 {{price}}보다 낮아야 합니다",
+        "tpTriggerInvalid": "TP 트리거 가격이 유효하지 않아 설정되지 않습니다",
+        "slTriggerInvalid": "SL 트리거 가격이 유효하지 않아 설정되지 않습니다"
       },
       "accountInfo": {
         "totalBalance": "총 잔액",
@@ -4541,7 +4548,7 @@
       "slippageTolerance": "슬리피지 허용 범위",
       "singleTransactionGasLimit": "단일 트랜잭션 Gas Limit",
       "startConvert": "전환 시작",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "이 주소 유형은 지원되지 않습니다",
       "stop": "중지",
       "selectLowValueTokens": "낮은 가치 토큰 선택",
       "tokenColumn": "토큰",
@@ -4554,7 +4561,13 @@
       "moreChains": "+{{count}}개 체인",
       "swapFailed": "스왑 실패, {{reason}}",
       "completedTips": "진행 중인 스왑은 계속 처리됩니다",
-      "priceImpact": "가격 영향 상한"
+      "priceImpact": "가격 영향 상한",
+      "LedgerBtn": {
+        "start": "Ledger로 시작",
+        "confirm": "Ledger에서 확인해 주세요",
+        "continue": "계속",
+        "send": "서명 요청 전송 중"
+      }
     },
     "staking": {
       "title": "스테이킹",
@@ -4949,7 +4962,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "주소 추가",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "이 주소 유형은 지원되지 않습니다"
     },
     "LpTokenTag": {
       "title": "이는 유동성 공급자(LP) 토큰입니다.",

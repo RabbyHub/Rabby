@@ -4,7 +4,9 @@
       "title": "取引",
       "empty": {
         "title": "取引なし",
-        "desc": "<1>対応しているチェーン</1>で取引が見つかりません"
+        "desc": "<1>対応しているチェーン</1>で取引が見つかりません",
+        "noTxInThreeMonth": "90日以内の取引履歴がありません",
+        "descThreeMonths": "<2>サポートされているチェーン</2>で90日以内の取引履歴がありません"
       },
       "explain": {
         "approve": "{{project}}用に{{amount}} {{symbol}}を承認",
@@ -1323,7 +1325,8 @@
           "biometricUnlockUnsupported": "このデバイスは生体認証によるロック解除をサポートしていません。",
           "perpsFloatWidget": "パーペチュアル・フローティングウィジェット",
           "currency": "通貨",
-          "searchCurrency": "通貨を検索"
+          "searchCurrency": "通貨を検索",
+          "dataAnalysis": "データ分析"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
@@ -3997,7 +4000,11 @@
         "takeProfit": "利確",
         "stopLoss": "損切り",
         "triggerPrice": "トリガー価格",
-        "estimatedPnlWillBe": "推定損益は以下になります"
+        "estimatedPnlWillBe": "推定損益は以下になります",
+        "triggerHigherThanLiquidation": "トリガー価格は清算価格 {{price}}より高くする必要があります",
+        "triggerLowerThanLiquidation": "トリガー価格は清算価格 {{price}}より低くする必要があります",
+        "tpTriggerInvalid": "TPトリガー価格は無効であり、設定されません",
+        "slTriggerInvalid": "SLトリガー価格は無効であり、設定されません"
       },
       "accountInfo": {
         "crossAccountLeverage": "クロスアカウント・レバレッジ",
@@ -4544,7 +4551,7 @@
       "slippageTolerance": "スリッページ許容範囲",
       "singleTransactionGasLimit": "単一トランザクションのGas Limit",
       "startConvert": "変換を開始",
-      "unsupportedWalletType": "",
+      "unsupportedWalletType": "このアドレスタイプはサポートされていません",
       "stop": "停止",
       "selectLowValueTokens": "低価値トークンを選択",
       "tokenColumn": "トークン",
@@ -4557,7 +4564,13 @@
       "moreChains": "+{{count}}チェーン",
       "swapFailed": "スワップに失敗しました、{{reason}}",
       "completedTips": "進行中のスワップは処理を継続します",
-      "priceImpact": "気配値変動上限"
+      "priceImpact": "気配値変動上限",
+      "LedgerBtn": {
+        "start": "Ledgerで始める",
+        "confirm": "Ledgerで確認してください",
+        "continue": "続ける",
+        "send": "署名リクエストを送信中"
+      }
     },
     "staking": {
       "title": "ステーキング",
@@ -4952,7 +4965,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加",
-      "smallSwapDisabledTips": ""
+      "smallSwapDisabledTips": "このアドレス種子はサポートされていません"
     },
     "LpTokenTag": {
       "title": "これは流動性プロバイダー(LP)トークンです。",
