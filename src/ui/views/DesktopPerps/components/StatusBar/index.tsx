@@ -24,9 +24,8 @@ const MARQUEE_PIXELS_PER_SECOND = 21;
 const TICKER_EXTRA_VISIBLE_ITEMS = 3;
 const TICKER_FALLBACK_MARKET_COUNT = 12;
 const TICKER_ITEM_GAP = 24;
-const TICKER_STRUCTURE_SYNC_MS = 5000;
-const TICKER_STRUCTURE_POLL_MS = 500;
-const TICKER_VALUE_SYNC_MS = 500;
+const TICKER_PENDING_SYNC_MS = 500;
+const TICKER_TEXT_WIDTH_TOLERANCE = 1;
 
 type TickerMarket = Pick<
   MarketData,
@@ -39,6 +38,23 @@ type TickerMarket = Pick<
   | 'prevDayPx'
 >;
 
+type TickerDisplayText = {
+  pair: string;
+  change: string;
+  price: string;
+  isPositive: boolean;
+  isNegative: boolean;
+};
+
+type TickerTextWidthBudget = {
+  changeText: string;
+  changeWidth: number;
+  priceText: string;
+  priceWidth: number;
+};
+
+type TickerTextWidthBudgetMap = Record<string, TickerTextWidthBudget>;
+
 const toTickerMarket = (item: MarketData): TickerMarket => ({
   name: item.name,
   displayName: item.displayName,
@@ -50,20 +66,31 @@ const toTickerMarket = (item: MarketData): TickerMarket => ({
 });
 
 const getSortedTickerMarkets = () => {
-  return store
-    .getState()
-    .perps.marketData.filter((item) => Number(item.markPx || 0) > 0)
+  const { marketData, wsActiveAssetCtx } = store.getState().perps;
+
+  return marketData
+    .map((item) => {
+      if (wsActiveAssetCtx?.coin !== item.name) {
+        return item;
+      }
+
+      return {
+        ...item,
+        ...wsActiveAssetCtx.ctx,
+      };
+    })
+    .filter((item) => Number(item.markPx || 0) > 0)
     .sort((a, b) => Number(b.dayNtlVlm || 0) - Number(a.dayNtlVlm || 0))
     .map(toTickerMarket);
 };
 
-const getTickerStructureKey = (markets: TickerMarket[]) => {
+const getTickerSnapshotKey = (markets: TickerMarket[]) => {
   return markets
     .map(
       (item) =>
         `${item.dexId || 'hyper'}:${item.name}:${item.displayName}:${
           item.quoteAsset || 'USDC'
-        }`
+        }:${item.markPx || ''}:${item.prevDayPx || ''}`
     )
     .join('|');
 };
@@ -73,6 +100,65 @@ const getPriceChangePercent = (markPx?: string, prevDayPx?: string) => {
   const prev = Number(prevDayPx || 0);
   if (!mark || !prev) return 0;
   return ((mark - prev) / prev) * 100;
+};
+
+const getTickerDisplayText = (item: TickerMarket): TickerDisplayText => {
+  const priceChange = getPriceChangePercent(item.markPx, item.prevDayPx);
+  const isPositive = priceChange > 0;
+  const isNegative = priceChange < 0;
+  const pair = `${formatPerpsCoin(item.displayName || item.name)}-${
+    item.quoteAsset || 'USDC'
+  }`;
+  const change = `${isPositive ? '+' : ''}${priceChange.toFixed(2)}%`;
+  const price = splitNumberByStep(Number(item.markPx));
+
+  return {
+    pair,
+    change,
+    price,
+    isPositive,
+    isNegative,
+  };
+};
+
+const isSameTickerStructure = (a: TickerMarket, b: TickerMarket) => {
+  return (
+    a.name === b.name &&
+    a.dexId === b.dexId &&
+    a.displayName === b.displayName &&
+    a.quoteAsset === b.quoteAsset
+  );
+};
+
+const isSameTickerValue = (a?: TickerMarket, b?: TickerMarket) => {
+  if (!a || !b) return a === b;
+  return (
+    isSameTickerStructure(a, b) &&
+    a.markPx === b.markPx &&
+    a.prevDayPx === b.prevDayPx &&
+    a.dayNtlVlm === b.dayNtlVlm
+  );
+};
+
+const isSameTickerWidthBudgetMap = (
+  a: TickerTextWidthBudgetMap,
+  b: TickerTextWidthBudgetMap
+) => {
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) return false;
+
+  return aKeys.every((key) => {
+    const aItem = a[key];
+    const bItem = b[key];
+    return (
+      Boolean(bItem) &&
+      aItem.changeText === bItem.changeText &&
+      aItem.changeWidth === bItem.changeWidth &&
+      aItem.priceText === bItem.priceText &&
+      aItem.priceWidth === bItem.priceWidth
+    );
+  });
 };
 
 const OnlineStatus: React.FC<{ online: boolean }> = ({ online }) => {
@@ -108,65 +194,179 @@ export const StatusBar: React.FC = () => {
   const tickerTrackRef = useRef<HTMLDivElement>(null);
   const tickerLoopRef = useRef<HTMLDivElement>(null);
   const tickerMeasureRef = useRef<HTMLDivElement>(null);
-  const tickerStructureKeyRef = useRef('');
-  const tickerStructureLastSyncAtRef = useRef(0);
+  const tickerTextMeasureCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const tickerTextMeasureFontRef = useRef('400 12px sans-serif');
+  const tickerPendingMarketsRef = useRef<TickerMarket[]>([]);
+  const tickerPendingSnapshotKeyRef = useRef('');
+  const tickerDisplaySnapshotKeyRef = useRef('');
+  const tickerSnapshotMarketsRef = useRef<TickerMarket[]>([]);
+  const tickerVisibleCountRef = useRef(TICKER_FALLBACK_MARKET_COUNT);
+  const tickerWidthBudgetRef = useRef<TickerTextWidthBudgetMap>({});
   const tickerOffsetRef = useRef(0);
   const tickerLoopWidthRef = useRef(0);
   const tickerLastFrameTimeRef = useRef<number | null>(null);
   const tickerPausedRef = useRef(false);
   const tickerPrefersReducedMotionRef = useRef(false);
   const [isConnected, setIsConnected] = useState(true);
-  const [tickerStructureMarkets, setTickerStructureMarkets] = useState<
+  const [tickerSnapshotMarkets, setTickerSnapshotMarkets] = useState<
     TickerMarket[]
   >([]);
-  const [tickerValueMap, setTickerValueMap] = useState<
+  const [tickerLiveValueMap, setTickerLiveValueMap] = useState<
     Record<string, TickerMarket>
   >({});
+  const [
+    tickerWidthBudget,
+    setTickerWidthBudget,
+  ] = useState<TickerTextWidthBudgetMap>({});
   const [tickerVisibleCount, setTickerVisibleCount] = useState(
     TICKER_FALLBACK_MARKET_COUNT
   );
   const { t } = useTranslation();
 
-  const tickerStructureKey = useMemo(
-    () => getTickerStructureKey(tickerStructureMarkets),
-    [tickerStructureMarkets]
+  const tickerSnapshotKey = useMemo(
+    () => getTickerSnapshotKey(tickerSnapshotMarkets),
+    [tickerSnapshotMarkets]
   );
 
-  const tickerMarketNames = useMemo(() => {
-    return tickerStructureMarkets
-      .slice(0, tickerVisibleCount)
-      .map((item) => item.name);
-  }, [tickerStructureMarkets, tickerVisibleCount]);
-
-  const tickerMarketNamesKey = useMemo(() => tickerMarketNames.join('|'), [
-    tickerMarketNames,
-  ]);
-
   const tickerMarkets = useMemo(() => {
-    return tickerStructureMarkets
+    return tickerSnapshotMarkets
       .slice(0, tickerVisibleCount)
-      .map((item) => tickerValueMap[item.name] || item);
-  }, [tickerStructureMarkets, tickerValueMap, tickerVisibleCount]);
+      .map((item) => tickerLiveValueMap[item.name] || item);
+  }, [tickerLiveValueMap, tickerSnapshotMarkets, tickerVisibleCount]);
 
-  const syncTickerStructure = useCallback((force = false) => {
-    const now = Date.now();
-    if (
-      !force &&
-      tickerStructureKeyRef.current &&
-      now - tickerStructureLastSyncAtRef.current < TICKER_STRUCTURE_SYNC_MS
-    ) {
-      return;
+  const syncTickerTextMeasureFont = useCallback(() => {
+    const sample =
+      tickerLoopRef.current?.querySelector<HTMLElement>(
+        '.desktop-perps-status-item-price'
+      ) ||
+      tickerMeasureRef.current?.querySelector<HTMLElement>(
+        '.desktop-perps-status-item-price'
+      );
+    if (!sample || typeof window === 'undefined') return;
+
+    const style = window.getComputedStyle(sample);
+    tickerTextMeasureFontRef.current =
+      style.font ||
+      `${style.fontStyle} ${style.fontVariant} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }, []);
+
+  const measureTickerTextWidth = useCallback((text: string) => {
+    if (typeof document === 'undefined') {
+      return Number.POSITIVE_INFINITY;
     }
 
-    tickerStructureLastSyncAtRef.current = now;
-    const nextMarkets = getSortedTickerMarkets();
-    const nextKey = getTickerStructureKey(nextMarkets);
-    if (tickerStructureKeyRef.current === nextKey) {
-      return;
+    if (!tickerTextMeasureCanvasRef.current) {
+      tickerTextMeasureCanvasRef.current = document.createElement('canvas');
     }
 
-    tickerStructureKeyRef.current = nextKey;
-    setTickerStructureMarkets(nextMarkets);
+    const context = tickerTextMeasureCanvasRef.current.getContext('2d');
+    if (!context) {
+      return Number.POSITIVE_INFINITY;
+    }
+
+    context.font = tickerTextMeasureFontRef.current;
+    return context.measureText(text).width;
+  }, []);
+
+  const isTickerTextWithinBudget = useCallback(
+    (text: string, baseText: string, width: number) => {
+      return (
+        text.length <= baseText.length ||
+        measureTickerTextWidth(text) <= width + TICKER_TEXT_WIDTH_TOLERANCE
+      );
+    },
+    [measureTickerTextWidth]
+  );
+
+  const isTickerValueWidthSafe = useCallback(
+    (item: TickerMarket, budget: TickerTextWidthBudget) => {
+      const text = getTickerDisplayText(item);
+      return (
+        isTickerTextWithinBudget(
+          text.change,
+          budget.changeText,
+          budget.changeWidth
+        ) &&
+        isTickerTextWithinBudget(
+          text.price,
+          budget.priceText,
+          budget.priceWidth
+        )
+      );
+    },
+    [isTickerTextWithinBudget]
+  );
+
+  const syncLiveTickerValues = useCallback(
+    (latestMarkets: TickerMarket[]) => {
+      const snapshotMarkets = tickerSnapshotMarketsRef.current;
+      const visibleCount = tickerVisibleCountRef.current;
+      const budgets = tickerWidthBudgetRef.current;
+      if (snapshotMarkets.length === 0 || visibleCount === 0) return;
+
+      const latestMap = latestMarkets.reduce((acc, item) => {
+        acc[item.name] = item;
+        return acc;
+      }, {} as Record<string, TickerMarket>);
+      const visibleSnapshotMarkets = snapshotMarkets.slice(0, visibleCount);
+
+      setTickerLiveValueMap((prev) => {
+        let changed = false;
+        const next: Record<string, TickerMarket> = {};
+
+        visibleSnapshotMarkets.forEach((snapshotItem) => {
+          const latestItem = latestMap[snapshotItem.name];
+          const budget = budgets[snapshotItem.name];
+          const prevItem = prev[snapshotItem.name];
+
+          if (
+            latestItem &&
+            budget &&
+            isSameTickerStructure(snapshotItem, latestItem) &&
+            isTickerValueWidthSafe(latestItem, budget)
+          ) {
+            next[snapshotItem.name] = latestItem;
+          } else if (
+            prevItem &&
+            isSameTickerStructure(snapshotItem, prevItem)
+          ) {
+            next[snapshotItem.name] = prevItem;
+          }
+
+          if (!isSameTickerValue(prevItem, next[snapshotItem.name])) {
+            changed = true;
+          }
+        });
+
+        if (Object.keys(prev).length !== Object.keys(next).length) {
+          changed = true;
+        }
+
+        return changed ? next : prev;
+      });
+    },
+    [isTickerValueWidthSafe]
+  );
+
+  const commitTickerSnapshot = useCallback((markets?: TickerMarket[]) => {
+    const nextMarkets = markets || tickerPendingMarketsRef.current;
+    const nextKey =
+      markets || !tickerPendingSnapshotKeyRef.current
+        ? getTickerSnapshotKey(nextMarkets)
+        : tickerPendingSnapshotKeyRef.current;
+
+    if (tickerDisplaySnapshotKeyRef.current === nextKey) {
+      return false;
+    }
+
+    tickerDisplaySnapshotKeyRef.current = nextKey;
+    tickerSnapshotMarketsRef.current = nextMarkets;
+    tickerOffsetRef.current = 0;
+    tickerLoopWidthRef.current = 0;
+    tickerLastFrameTimeRef.current = null;
+    setTickerLiveValueMap({});
+    setTickerSnapshotMarkets(nextMarkets);
+    return true;
   }, []);
 
   const syncTickerVisibleCount = useCallback(() => {
@@ -178,7 +378,7 @@ export const StatusBar: React.FC = () => {
       : [];
 
     const fallbackCount = Math.min(
-      tickerStructureMarkets.length,
+      tickerSnapshotMarkets.length,
       TICKER_FALLBACK_MARKET_COUNT
     );
 
@@ -191,10 +391,32 @@ export const StatusBar: React.FC = () => {
 
     let visibleCount = 0;
     let usedWidth = 0;
+    const nextWidthBudget: TickerTextWidthBudgetMap = {};
+    let hasReachedViewportWidth = false;
 
     for (const item of measuredItems) {
       const itemWidth = item.getBoundingClientRect().width;
       if (!itemWidth) continue;
+
+      const tickerName = item.dataset.tickerName;
+      const changeEl = item.querySelector<HTMLElement>(
+        '.desktop-perps-status-item-change'
+      );
+      const priceEl = item.querySelector<HTMLElement>(
+        '.desktop-perps-status-item-price'
+      );
+      if (tickerName && changeEl && priceEl) {
+        nextWidthBudget[tickerName] = {
+          changeText: changeEl.textContent || '',
+          changeWidth: Math.ceil(changeEl.getBoundingClientRect().width),
+          priceText: priceEl.textContent || '',
+          priceWidth: Math.ceil(priceEl.getBoundingClientRect().width),
+        };
+      }
+
+      if (hasReachedViewportWidth) {
+        continue;
+      }
 
       const nextWidth =
         visibleCount === 0
@@ -205,22 +427,27 @@ export const StatusBar: React.FC = () => {
         visibleCount += 1;
         usedWidth = nextWidth;
       } else {
-        break;
+        hasReachedViewportWidth = true;
       }
     }
 
     const nextCount =
       visibleCount > 0
         ? Math.min(
-            tickerStructureMarkets.length,
+            tickerSnapshotMarkets.length,
             visibleCount + TICKER_EXTRA_VISIBLE_ITEMS
           )
         : fallbackCount;
 
+    tickerVisibleCountRef.current = nextCount;
+    tickerWidthBudgetRef.current = nextWidthBudget;
     setTickerVisibleCount((prev) => (prev === nextCount ? prev : nextCount));
+    setTickerWidthBudget((prev) =>
+      isSameTickerWidthBudgetMap(prev, nextWidthBudget) ? prev : nextWidthBudget
+    );
 
     return nextCount;
-  }, [tickerStructureMarkets.length]);
+  }, [tickerSnapshotMarkets.length]);
 
   const syncTickerLoopWidth = useCallback(() => {
     const loop = tickerLoopRef.current;
@@ -238,6 +465,7 @@ export const StatusBar: React.FC = () => {
   }, []);
 
   useLayoutEffect(() => {
+    syncTickerTextMeasureFont();
     syncTickerVisibleCount();
     window.addEventListener('resize', syncTickerVisibleCount);
 
@@ -255,58 +483,34 @@ export const StatusBar: React.FC = () => {
       window.removeEventListener('resize', syncTickerVisibleCount);
       resizeObserver?.disconnect();
     };
-  }, [syncTickerVisibleCount, tickerStructureKey]);
-
-  // Keep layout measurement off the high-frequency all-market ticker stream.
-  useEffect(() => {
-    syncTickerStructure(true);
-    const interval = setInterval(syncTickerStructure, TICKER_STRUCTURE_POLL_MS);
-    return () => clearInterval(interval);
-  }, [syncTickerStructure]);
+  }, [syncTickerTextMeasureFont, syncTickerVisibleCount, tickerSnapshotKey]);
 
   useEffect(() => {
-    if (tickerMarketNames.length === 0) {
-      setTickerValueMap({});
-      return;
-    }
+    // Poll latest ticker data into refs; commit layout only at loop boundaries.
+    const syncPendingTickerSnapshot = (forceCommit = false) => {
+      const nextMarkets = getSortedTickerMarkets();
+      const nextKey = getTickerSnapshotKey(nextMarkets);
+      tickerPendingMarketsRef.current = nextMarkets;
+      tickerPendingSnapshotKeyRef.current = nextKey;
 
-    const tickerNames = tickerMarketNames;
-    const syncTickerValues = () => {
-      const latestMap = store.getState().perps.marketDataMap;
-      setTickerValueMap((prev) => {
-        let changed = false;
-        const next: Record<string, TickerMarket> = {};
-
-        tickerNames.forEach((name) => {
-          const latest = latestMap[name];
-          const nextItem = latest ? toTickerMarket(latest) : prev[name];
-          if (!nextItem) return;
-          next[name] = nextItem;
-
-          const prevItem = prev[name];
-          if (
-            !prevItem ||
-            prevItem.markPx !== nextItem.markPx ||
-            prevItem.prevDayPx !== nextItem.prevDayPx ||
-            prevItem.displayName !== nextItem.displayName ||
-            prevItem.quoteAsset !== nextItem.quoteAsset
-          ) {
-            changed = true;
-          }
-        });
-
-        if (Object.keys(prev).length !== Object.keys(next).length) {
-          changed = true;
-        }
-
-        return changed ? next : prev;
-      });
+      if (
+        forceCommit ||
+        !tickerDisplaySnapshotKeyRef.current ||
+        tickerPrefersReducedMotionRef.current
+      ) {
+        commitTickerSnapshot(nextMarkets);
+      } else {
+        syncLiveTickerValues(nextMarkets);
+      }
     };
 
-    syncTickerValues();
-    const interval = setInterval(syncTickerValues, TICKER_VALUE_SYNC_MS);
+    syncPendingTickerSnapshot(true);
+    const interval = setInterval(
+      syncPendingTickerSnapshot,
+      TICKER_PENDING_SYNC_MS
+    );
     return () => clearInterval(interval);
-  }, [tickerMarketNames]);
+  }, [commitTickerSnapshot, syncLiveTickerValues]);
 
   useEffect(() => {
     const sdk = getPerpsSDK();
@@ -338,7 +542,7 @@ export const StatusBar: React.FC = () => {
     return () => {
       window.removeEventListener('resize', syncTickerLoopWidth);
     };
-  }, [tickerMarkets.length, tickerMarketNamesKey, syncTickerLoopWidth]);
+  }, [tickerMarkets.length, tickerSnapshotKey, syncTickerLoopWidth]);
 
   useLayoutEffect(() => {
     const track = tickerTrackRef.current;
@@ -372,10 +576,14 @@ export const StatusBar: React.FC = () => {
       if (tickerPrefersReducedMotionRef.current) {
         track.style.transform = 'translate3d(0, 0, 0)';
       } else if (!tickerPausedRef.current && loopWidth > 0) {
-        tickerOffsetRef.current =
-          (tickerOffsetRef.current +
-            elapsedSeconds * MARQUEE_PIXELS_PER_SECOND) %
-          loopWidth;
+        const nextOffset =
+          tickerOffsetRef.current + elapsedSeconds * MARQUEE_PIXELS_PER_SECOND;
+        if (nextOffset >= loopWidth) {
+          commitTickerSnapshot();
+          tickerOffsetRef.current = 0;
+        } else {
+          tickerOffsetRef.current = nextOffset;
+        }
         track.style.transform = `translate3d(${-tickerOffsetRef.current}px, 0, 0)`;
       }
 
@@ -393,7 +601,7 @@ export const StatusBar: React.FC = () => {
       }
       tickerLastFrameTimeRef.current = null;
     };
-  }, [tickerMarkets.length, syncTickerLoopWidth]);
+  }, [commitTickerSnapshot, tickerMarkets.length, syncTickerLoopWidth]);
 
   const handleOpenTwitter = () => {
     openInTab('https://twitter.com/Rabby_io');
@@ -434,45 +642,65 @@ export const StatusBar: React.FC = () => {
 
   const renderTickerItem = useCallback(
     (item: TickerMarket, key: string, isMeasure = false) => {
-      const priceChange = getPriceChangePercent(item.markPx, item.prevDayPx);
-      const isPositive = priceChange > 0;
-      const isNegative = priceChange < 0;
-      const pair = `${formatPerpsCoin(item.displayName || item.name)}-${
-        item.quoteAsset || 'USDC'
-      }`;
+      const text = getTickerDisplayText(item);
+      const widthBudget = isMeasure ? null : tickerWidthBudget[item.name];
 
       return (
         <button
           type="button"
           key={key}
           className="desktop-perps-status-item group"
+          data-ticker-name={item.name}
           tabIndex={isMeasure ? -1 : undefined}
           onClick={
             isMeasure ? undefined : () => handleSelectTickerMarket(item.name)
           }
         >
           <span className="desktop-perps-status-item-name text-rb-neutral-foot transition-colors group-hover:text-rb-brand-default">
-            {pair}
+            {text.pair}
           </span>
           <span
             className={clsx(
               'desktop-perps-status-item-change',
-              isPositive && 'text-rb-green-default',
-              isNegative && 'text-rb-red-default',
-              !isPositive && !isNegative && 'text-rb-neutral-secondary'
+              text.isPositive && 'text-rb-green-default',
+              text.isNegative && 'text-rb-red-default',
+              !text.isPositive &&
+                !text.isNegative &&
+                'text-rb-neutral-secondary'
             )}
+            style={
+              widthBudget?.changeWidth
+                ? { width: widthBudget.changeWidth }
+                : undefined
+            }
           >
-            {isPositive ? '+' : ''}
-            {priceChange.toFixed(2)}%
+            {text.change}
           </span>
-          <span className="desktop-perps-status-item-price text-rb-neutral-secondary">
-            {splitNumberByStep(Number(item.markPx))}
+          <span
+            className="desktop-perps-status-item-price text-rb-neutral-secondary"
+            style={
+              widthBudget?.priceWidth
+                ? { width: widthBudget.priceWidth }
+                : undefined
+            }
+          >
+            {text.price}
           </span>
         </button>
       );
     },
-    [handleSelectTickerMarket]
+    [handleSelectTickerMarket, tickerWidthBudget]
   );
+
+  const tickerMeasureItems = useMemo(() => {
+    return tickerSnapshotMarkets.map((item) =>
+      renderTickerItem(
+        item,
+        `${item.dexId || 'hyper'}-${item.name}-measure`,
+        true
+      )
+    );
+  }, [renderTickerItem, tickerSnapshotMarkets]);
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-rb-neutral-bg-page p-[6px] z-30">
@@ -515,13 +743,7 @@ export const StatusBar: React.FC = () => {
             className="desktop-perps-status-measure"
             aria-hidden
           >
-            {tickerStructureMarkets.map((item) => {
-              return renderTickerItem(
-                item,
-                `${item.dexId || 'hyper'}-${item.name}-measure`,
-                true
-              );
-            })}
+            {tickerMeasureItems}
           </div>
         </div>
 
