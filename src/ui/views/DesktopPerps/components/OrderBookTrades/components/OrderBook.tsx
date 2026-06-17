@@ -695,7 +695,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             )}
             {Boolean(latestTrade?.price) && (
               <div className="flex items-center justify-between px-[12px] h-40">
-                <div className="flex items-center gap-[6px]">
+                <div className="flex items-baseline gap-[6px]">
                   <span
                     onClick={(e) =>
                       handleClickPrice(Number(latestTrade?.price))
@@ -713,7 +713,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                   <span
                     onClick={(e) => handleClickPrice(Number(markPx))}
                     className={clsx(
-                      'text-[16px] text-rb-neutral-secondary cursor-pointer'
+                      'text-[14px] text-rb-neutral-secondary cursor-pointer'
                     )}
                   >
                     {splitNumberByStep(markPx)}

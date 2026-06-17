@@ -127,7 +127,7 @@ export const Assets: React.FC = () => {
         sorter: (a, b) => a.total - b.total,
         render: (_, record) => (
           <div className="text-[13px] leading-[16px] text-r-neutral-title-1">
-            {new BigNumber(record.total).toFixed(4)} {record.coin}
+            {new BigNumber(record.total).toFixed(2)} {record.coin}
           </div>
         ),
       },
@@ -149,7 +149,7 @@ export const Assets: React.FC = () => {
                   : 'text-[13px] leading-[16px] text-r-neutral-title-1'
               }
             >
-              {new BigNumber(record.available).toFixed(4)} {record.coin}
+              {new BigNumber(record.available).toFixed(2)} {record.coin}
             </div>
           );
         },
