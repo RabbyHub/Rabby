@@ -5017,7 +5017,7 @@
       "tooltip": "未知代币，请自行研究。"
     },
     "screenshotModal": {
-      "title": "截屏以报告问题",
+      "title": "截图反馈",
       "placeholder": "描述问题"
     },
     "feedbackPopup": {
@@ -5056,7 +5056,7 @@
       "txFailedMoreContent": "{{chain}} #{{nonce}} 交易失败，点击查看更多"
     },
     "feedback": {
-      "screenshotContextMenuTitle": "截图反馈问题"
+      "screenshotContextMenuTitle": "截图反馈"
     },
     "alias": {
       "HdKeyring": "助记词",

@@ -37,12 +37,16 @@ const getViewportSize = () => {
 
 const captureBySnapdom = async () => {
   const viewport = getViewportSize();
-  const image = await snapdom.toPng(document.body, {
+  const captureTarget = document.documentElement;
+
+  const image = await snapdom.toPng(captureTarget, {
     backgroundColor: getComputedStyle(document.body).backgroundColor,
     dpr: window.devicePixelRatio,
     fast: true,
     height: viewport.height,
     width: viewport.width,
+    exclude: ['.ant-drawer:not(.ant-drawer-open)', '.hidden'],
+    excludeMode: 'remove',
   });
 
   return image.src;
@@ -275,11 +279,11 @@ export const ScreenshotContextMenu = () => {
               {t('component.screenshotModal.title')}
             </h2>
           </header>
-          <main className="min-h-0 flex-1 px-[20px]">
+          <main className="min-h-0 flex-1 px-[20px] flex flex-col pb-[16px]">
             {screenshot ? (
               <div className="rounded-[8px] border-[1px] border-rabby-neutral-line mb-[16px]">
                 <img
-                  className="w-full mb-[12px] h-[200px] object-contain"
+                  className="w-full h-[254px] object-contain"
                   src={screenshot}
                   alt="Rabby popup screenshot"
                 />
@@ -289,9 +293,8 @@ export const ScreenshotContextMenu = () => {
               placeholder={t('component.screenshotModal.placeholder')}
               value={description}
               autoFocus
-              rows={3}
               maxLength={300}
-              className="resize-none bg-r-neutral-bg-2 text-r-neutral-title1"
+              className="resize-none bg-r-neutral-bg-2 text-r-neutral-title1 min-h-0 flex-1"
               onChange={(event) => setDescription(event.target.value)}
             />
           </main>

@@ -1649,65 +1649,74 @@ const SettingsInner = ({
 
   return (
     <div className="popup-settings">
-      <div className="content">
-        {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
-        <EcosystemBanner
-          isVisible={isShowEcology}
-          onClose={() => setIsShowEcologyModal(false)}
-        />
-        <RateModalTriggerOnSettings className="mb-[16px]" />
-        {Object.values(renderData).map((group, idxl1) => {
-          return (
-            <div key={`g-${idxl1}`} className="setting-block">
-              <div className="setting-title">{group.label}</div>
-              <div className="setting-items">
-                {group.items.map((data, idxl2) => (
-                  <Field
-                    key={`g-${idxl1}-item-${idxl2}`}
-                    leftIcon={
-                      <ThemeIcon
-                        src={data.leftIcon}
-                        className={clsx('icon', data.leftIconClassName)}
-                        style={data.leftIconStyle}
-                      />
-                    }
-                    rightIcon={
-                      data.rightIcon || (
+      <div
+        className={
+          'absolute top-0 right-0 bottom-0 left-0 overflow-auto px-[20px] pt-[20px]'
+        }
+      >
+        <div className={clsx('content')}>
+          {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
+
+          <RateModalTriggerOnSettings className="mb-[16px]" />
+
+          {Object.values(renderData).map((group, idxl1) => {
+            return (
+              <div key={`g-${idxl1}`} className="setting-block">
+                <div className="setting-title">{group.label}</div>
+                <div className="setting-items">
+                  {group.items.map((data, idxl2) => (
+                    <Field
+                      key={`g-${idxl1}-item-${idxl2}`}
+                      leftIcon={
                         <ThemeIcon
-                          src={RcIconArrowRight}
-                          className="icon icon-arrow-right"
+                          src={data.leftIcon}
+                          className={clsx('icon', data.leftIconClassName)}
+                          style={data.leftIconStyle}
                         />
-                      )
-                    }
-                    onClick={data.onClick}
-                    className={clsx(
-                      data.className,
-                      data.description ? 'has-desc' : null
-                    )}
-                  >
-                    {data.content}
-                    {data.description && (
-                      <p className="desc">{data.description}</p>
-                    )}
-                  </Field>
-                ))}
+                      }
+                      rightIcon={
+                        data.rightIcon || (
+                          <ThemeIcon
+                            src={RcIconArrowRight}
+                            className="icon icon-arrow-right"
+                          />
+                        )
+                      }
+                      onClick={data.onClick}
+                      className={clsx(
+                        data.className,
+                        data.description ? 'has-desc' : null
+                      )}
+                    >
+                      {data.content}
+                      {data.description && (
+                        <p className="desc">{data.description}</p>
+                      )}
+                    </Field>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-      <footer className="footer">
-        <div className="px-8 py-2 rounded hover:bg-r-blue-light-1 inline-block">
-          <img
-            className="inline-block cursor-pointer"
-            src={LogoRabby}
-            alt="https://rabby.io"
-            onClick={() => {
-              openInTab('https://rabby.io', false);
-            }}
-          />
+            );
+          })}
         </div>
-      </footer>
+        <footer className="footer">
+          <div className="px-8 py-2 rounded hover:bg-r-blue-light-1 inline-block">
+            <img
+              className="inline-block cursor-pointer"
+              src={LogoRabby}
+              alt="https://rabby.io"
+              onClick={() => {
+                openInTab('https://rabby.io', false);
+              }}
+            />
+          </div>
+        </footer>
+      </div>
+      <EcosystemBanner
+        isVisible={isShowEcology}
+        onClose={() => setIsShowEcologyModal(false)}
+      />
+
       <Contacts
         visible={contactsVisible}
         onCancel={() => {
