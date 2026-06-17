@@ -70,14 +70,14 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         <DesktopPerpsTopBar />
 
         <div className="flex flex-1 min-h-0 overflow-x-auto px-[6px] pt-[6px] pb-[44px]">
-          <div className="flex flex-1 min-w-[1180px] min-h-0 gap-[6px]">
+          <div className="flex flex-1 min-w-[1280px] min-h-0 gap-[6px]">
             {/* [chart + order book] + UserInfoHistory, can be resized vertically */}
             <div
               className="flex flex-col min-w-0 min-h-0 overflow-hidden"
-              // Left rail is 80%; inside it chart/order book split 77.5/22.5,
-              // preserving chart : order book : actions = 62% : 18% : 20%
-              // until the order book or action rail reaches its 340px cap.
-              style={{ flex: '1 1 80%' }}
+              // Left rail fills the space left by the trade panel. Inside it the
+              // order book is clamp(260px, 18vw, 320px) and the chart takes the
+              // rest, keeping ~chart : order book : panel = 62% : 18% : 20%.
+              style={{ flex: '1 1 0%' }}
             >
               <PanelGroup
                 direction="vertical"
@@ -87,13 +87,17 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
                   <div className="flex h-full gap-[6px]">
                     <div
                       className="min-w-[560px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-                      style={{ flex: '1 1 77.5%' }}
+                      style={{ flex: '1 1 0%' }}
                     >
                       <ChartArea />
                     </div>
                     <div
-                      className="min-w-[280px] max-w-[340px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-                      style={{ flex: '0 0 22.5%' }}
+                      className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                      style={{
+                        flexGrow: 0,
+                        flexShrink: 0,
+                        flexBasis: 'clamp(260px, 18vw, 320px)',
+                      }}
                     >
                       <OrderBookTrades />
                     </div>
@@ -110,8 +114,12 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 
             {/* TradingPanel + AccountInfo */}
             <div
-              className="min-w-[340px] max-w-[340px] shrink-0 min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-              style={{ flex: '0 0 20%' }}
+              className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+              style={{
+                flexGrow: 0,
+                flexShrink: 0,
+                flexBasis: 'clamp(276px, 20vw, 336px)',
+              }}
             >
               <div className="flex h-full min-h-0 flex-col">
                 <div className="flex-1 min-h-0">

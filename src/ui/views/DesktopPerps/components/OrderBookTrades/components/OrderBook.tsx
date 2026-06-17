@@ -377,7 +377,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         onMouseMove={(e) => updateTooltipPosition(type, index, e.currentTarget)}
         onClick={() => handleClickPrice(Number(order.price))}
         className={clsx(
-          'desktop-perps-orderbook-row relative flex items-center justify-between px-[12px] h-[24px] text-[12px] cursor-pointer group',
+          'desktop-perps-orderbook-row relative flex items-center justify-between px-[12px] h-[24px] text-[12px] leading-[14px] cursor-pointer group',
           `desktop-perps-orderbook-row-${type}`,
           isInHoverRange && 'is-hover-range',
           isHoveredRow && 'is-hovered-row',
@@ -528,9 +528,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1 whitespace-nowrap">
       {/* Control Bar */}
-      <div className="flex items-center justify-between px-[12px] py-[6px] shrink-0">
+      <div className="flex items-center justify-between py-[8px] px-[8px] pr-[10px] shrink-0">
         {/* View Mode Switcher */}
-        <div className="flex items-center gap-[8px]">
+        <div className="flex items-center gap-[3px]">
           <button
             className={clsx(
               'opacity-50',
@@ -569,7 +569,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           </button>
         </div>
 
-        <div className="flex items-center gap-12">
+        <div className="flex items-center gap-[6px]">
           <Dropdown
             transitionName=""
             forceRender={true}
@@ -602,7 +602,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
                 'hover:border-rb-brand-default border border-solid',
-                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+                'text-[12px] leading-[14px] text-rb-neutral-title-1'
               )}
             >
               {quoteUnit === 'base'
@@ -639,7 +639,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
                 'border border-rb-neutral-line rounded-[6px]',
                 'hover:border-rb-brand-default border border-solid',
-                'text-[12px] leading-[14px] font-medium text-rb-neutral-title-1'
+                'text-[12px] leading-[14px] text-rb-neutral-title-1'
               )}
             >
               {selectedAggregation?.label || ''}
