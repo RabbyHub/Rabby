@@ -432,7 +432,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
             )}
 
             <div className="mt-12 space-y-8">
-              {type === 'withdraw' && (
+              {type === 'withdraw' && !amountValidation.errorMessage && (
                 <>
                   <div className="flex items-center justify-between text-13">
                     <Tooltip

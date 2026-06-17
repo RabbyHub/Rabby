@@ -301,10 +301,10 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
         positionSize.amount && Number(price)
           ? calcAssetNotionalByAmount(positionSize.amount, price)
           : '0';
-      const display = `${actualNotional} ${unit}`;
+      const display = `${splitNumberByStep(actualNotional)} ${unit}`;
       return { buyPreview: display, sellPreview: display };
     }
-    const display = `${positionSize.amount || '0'} ${unit}`;
+    const display = `${splitNumberByStep(positionSize.amount || '0')} ${unit}`;
     return { buyPreview: display, sellPreview: display };
   }, [
     quoteAsset,
@@ -335,7 +335,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     }
     // Input is in USDC → tooltip shows base equivalent
     const coin = formatPerpsCoin(baseAsset);
-    return `≈ ${positionSize.amount} ${coin}`;
+    return `≈ ${splitNumberByStep(positionSize.amount)} ${coin}`;
   }, [
     positionSize.amount,
     positionSize.notionalValue,
