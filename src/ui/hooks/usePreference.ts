@@ -73,6 +73,7 @@ function isFinalDarkMode(themeMode: DARK_MODE_TYPE, isDarkOnSystem: boolean) {
         '#/import/hardware/qrcode',
 
         '#/dapp-search',
+        '#/sync',
         '#/approval-manage',
 
         '#/send-token',

@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { openInTab } from '../webapi';
 import { useWallet } from '../WalletContext';
 import clsx from 'clsx';
-import { useRabbySelector } from '@/ui/store';
 import { useHideScreenshotContextMenu } from '@/ui/hooks/useScreenshotContextMenuVisible';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export interface Props {
   children?: React.ReactNode;
@@ -25,22 +25,24 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
     });
   }, []);
 
-  const themeMode = useRabbySelector((state) => state.preference.themeMode);
+  const { isDarkTheme } = useThemeMode();
 
   React.useEffect(() => {
     setTimeout(() => {
       document.documentElement.classList.remove('dark');
     }, 0);
-  }, [themeMode]);
+  }, [isDarkTheme]);
 
   useHideScreenshotContextMenu();
 
   return (
     <section
-      className={clsx(
-        'h-full overflow-y-auto',
-        'flex flex-col bg-r-blue-default'
-      )}
+      className={clsx('h-full overflow-y-auto', 'flex flex-col')}
+      style={{
+        background: isDarkTheme
+          ? 'linear-gradient(0deg, rgba(0, 0, 0, 0.50) 0%, rgba(0, 0, 0, 0.50) 100%), var(--r-blue-default, #7084FF)'
+          : 'var(--r-blue-default, #7084FF)',
+      }}
     >
       <header className="flex flex-col items-center justify-center mt-[42px] text-center">
         <h1 className="text-r-neutral-title2 text-[40px] leading-[48px] font-bold">
