@@ -227,6 +227,7 @@ const ImportWatchAddress: React.FC<{
       disableKeyDownEvent={disableKeydown}
       onBackClick={handleClickBack}
       NextButtonContent={t('global.confirm')}
+      footerClassName="lg:bottom-0"
       nextDisabled={!isValidAddr}
     >
       {contextHolder}
