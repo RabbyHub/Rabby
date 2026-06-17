@@ -549,7 +549,7 @@ export const PositionsInfo: React.FC = () => {
         title: (
           <div className="flex">
             <div
-              className="text-rb-brand-default cursor-pointer text-[12px] hover:text-r-neutral-title-1 transition-colors whitespace-nowrap"
+              className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors whitespace-nowrap"
               onClick={handleClickCloseAll}
             >
               MKT Close ALL
@@ -579,7 +579,7 @@ export const PositionsInfo: React.FC = () => {
               <button
                 type="button"
                 className={clsx(
-                  'bg-rb-neutral-bg-5 rounded-[4px] px-[14px] h-[24px]',
+                  'bg-rb-neutral-bg-5 rounded-[4px] px-12 h-24',
                   'border border-transparent',
                   'hover:border-rb-brand-default',
                   'text-[12px] leading-[14px]  text-r-neutral-title-1'
