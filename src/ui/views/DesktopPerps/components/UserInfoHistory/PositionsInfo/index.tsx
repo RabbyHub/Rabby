@@ -549,7 +549,7 @@ export const PositionsInfo: React.FC = () => {
         title: (
           <div className="flex">
             <div
-              className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors whitespace-nowrap"
+              className="text-rb-brand-default cursor-pointer text-[12px] hover:text-r-neutral-title-1 transition-colors whitespace-nowrap"
               onClick={handleClickCloseAll}
             >
               MKT Close ALL
