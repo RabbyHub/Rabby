@@ -83,7 +83,8 @@ const Wrapper = styled.div`
 
   .ant-table-thead > tr > th {
     color: var(--rb-neutral-secondary, #9a9ca9);
-    font-size: 13px;
+    font-size: 12px;
+    line-height: 14px;
     font-weight: 400;
     background-color: var(--rb-neutral-bg-1, #fff);
     border: none;
@@ -198,7 +199,8 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
 
     .ant-table-thead > tr > th {
       color: var(--rb-neutral-secondary, #9a9ca9);
-      font-size: 13px;
+      font-size: 12px;
+      line-height: 14px;
       font-weight: 400;
       background-color: var(--rb-neutral-bg-1, #fff);
       border: none;
