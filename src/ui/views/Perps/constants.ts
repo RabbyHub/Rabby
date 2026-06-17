@@ -60,8 +60,8 @@ export const HYPE_SEND_ASSET_TOKEN_MAP = {
   USDE: 'USDE:0x2e6d84f2d7ca82e6581e03523e4389f7',
   USDH: 'USDH:0x54e00a5988577cb0b0c9ab0cb6ef7f4b',
 };
-// default 0.00002 HYPE, add 0.00002 buffer for price fluctuation
-export const HYPE_GAS_FEE_IN_HYPE = 0.00004;
+// default 0.0004 HYPE, add 0.0006 buffer for price fluctuation
+export const HYPE_GAS_FEE_IN_HYPE = 0.001;
 
 export const HYPE_USDC_TOKEN_ITEM = {
   id: HYPE_USDC_TOKEN_ID,

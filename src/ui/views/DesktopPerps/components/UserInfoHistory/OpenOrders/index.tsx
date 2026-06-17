@@ -19,10 +19,11 @@ import { formatPerpsCoin } from '../../../utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 
 export const OpenOrders: React.FC = () => {
-  const { openOrders: orders, marketDataMap } = useRabbySelector(
+  const { openOrders: _orders, marketDataMap } = useRabbySelector(
     (store) => store.perps
   );
 
+  const orders = _orders.filter((o) => o.coin.includes('@') === false); // filter out spot orders
   const { isDarkTheme } = useThemeMode();
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
