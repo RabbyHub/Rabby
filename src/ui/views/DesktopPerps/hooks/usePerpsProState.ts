@@ -295,9 +295,12 @@ export const usePerpsProState = () => {
       );
 
       setTimeout(() => {
-        handleSafeSetReference();
         handleSafeSetUnifiedAccount();
       }, 100);
+      // delay a bit to avoid same nonces
+      setTimeout(() => {
+        handleSafeSetReference();
+      }, 200);
       const [approveAgentRes, approveBuilderFeeRes] = results;
       console.log('sendApproveAgentRes', approveAgentRes);
       console.log('sendApproveBuilderFeeRes', approveBuilderFeeRes);
