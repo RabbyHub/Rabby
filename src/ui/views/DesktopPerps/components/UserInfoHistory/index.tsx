@@ -170,7 +170,7 @@ export const UserInfoHistory: React.FC = () => {
                 tabRefs.current[tab.key] = el;
               }}
               className={clsx(
-                'h-[38px] text-[12px] font-medium flex items-center justify-center gap-[4px] shrink-0 whitespace-nowrap',
+                'h-[38px] text-12 font-medium flex items-center justify-center gap-[4px] shrink-0 whitespace-nowrap',
                 activeTab === tab.key
                   ? 'text-rb-neutral-title-1'
                   : 'hover:text-rb-neutral-title-1 text-rb-neutral-secondary'
@@ -191,7 +191,7 @@ export const UserInfoHistory: React.FC = () => {
         />
       </div>
       <div className="flex-1 overflow-hidden min-h-0">
-        <div className="text-rb-neutral-secondary text-[12px] whitespace-nowrap h-full">
+        <div className="text-rb-neutral-secondary text-12 whitespace-nowrap h-full">
           {ActiveComponent ? <ActiveComponent /> : null}
         </div>
       </div>

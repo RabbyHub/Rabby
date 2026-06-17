@@ -324,7 +324,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       />
 
       <div className="flex flex-col gap-[6px] mt-[6px] mb-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.triggerPrice')}
         </span>
         <div className="flex items-center gap-8">

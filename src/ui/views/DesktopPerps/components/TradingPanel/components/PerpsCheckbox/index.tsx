@@ -107,10 +107,10 @@ export const PerpsCheckbox = ({
             placement="top"
             trigger="hover"
           >
-            <span className="text-r-neutral-title-1 text-[12px]">{title}</span>
+            <span className="text-r-neutral-title-1 text-12">{title}</span>
           </Tooltip>
         ) : (
-          <span className="text-r-neutral-title-1 text-[12px]">{title}</span>
+          <span className="text-r-neutral-title-1 text-12">{title}</span>
         ))}
     </Checkbox>
   );

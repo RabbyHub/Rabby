@@ -53,18 +53,18 @@ export const FavoriteBar: React.FC<FavoriteBarProps> = ({ onSelectCoin }) => {
                   className="group flex items-center gap-[4px] cursor-pointer shrink-0"
                   onClick={() => onSelectCoin(coin)}
                 >
-                  <span className="text-[12px] text-r-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
+                  <span className="text-12 text-r-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
                     {formatPerpsCoin(marketData.displayName || coin)}
                     <span className="text-r-neutral-foot group-hover:text-rb-brand-default transition-colors">
                       -{marketData.quoteAsset || 'USDC'}
                     </span>
                   </span>
-                  <span className="text-[12px] text-r-neutral-title-1">
+                  <span className="text-12 text-r-neutral-title-1">
                     ${splitNumberByStep(Number(marketData.markPx))}
                   </span>
                   <span
                     className={clsx(
-                      'text-[12px]',
+                      'text-12',
                       isPositive ? 'text-r-green-default' : 'text-r-red-default'
                     )}
                   >
