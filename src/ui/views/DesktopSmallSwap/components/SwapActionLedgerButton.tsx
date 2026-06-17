@@ -97,18 +97,7 @@ export const SwapActionLedgerButton: React.FC<{
             className="flex-1 flex items-center justify-center gap-[8px] h-[60px] rounded-[8px] font-medium text-[18px] leading-[20px]"
           >
             <img src={LegerIcon} className="size-[24px]" />
-            <span>Start with Ledger</span>
-          </Button>
-        )}
-
-        {task.status === 'completed' && (
-          <Button
-            type="primary"
-            block
-            className="flex-1 h-[60px] rounded-[8px] text-[18px] leading-[20px]"
-            onClick={onDone}
-          >
-            {t('page.approvals.revokeModal.done')}
+            <div>{t('page.desktopSmallSwap.LedgerBtn.start')}</div>
           </Button>
         )}
 
@@ -119,7 +108,7 @@ export const SwapActionLedgerButton: React.FC<{
             className="flex-1 h-[60px] rounded-[8px] text-[18px] leading-[20px]"
             onClick={task.continue}
           >
-            {t('page.approvals.revokeModal.resume')}
+            {t('page.desktopSmallSwap.LedgerBtn.continue')}
           </Button>
         )}
       </div>
@@ -135,14 +124,11 @@ export const SwapActionLedgerButton: React.FC<{
             >
               <div className="relative">
                 <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
-                  <LoadingOutlined className="text-r-blue-default text-[32px]" />
+                  <LoadingOutlined className="text-r-neutral-title-2 text-[32px]" />
                 </div>
                 <img src={LegerIcon} className="size-[24px]" />
               </div>
-              <div>
-                Confirm with Ledger ({currentApprovalIndex + 1}/{totalApprovals}
-                )
-              </div>
+              <div>{t('page.desktopSmallSwap.LedgerBtn.confirm')}</div>
               {/* <Dots /> */}
             </div>
           ) : task.txStatus === 'signed' ? (
@@ -159,7 +145,7 @@ export const SwapActionLedgerButton: React.FC<{
                 </div>
                 <img src={LegerIcon} className="size-[24px]" />
               </div>
-              <span>Signed. Creating transaction</span>
+              <div>{t('page.desktopSmallSwap.LedgerBtn.send')}</div>
               {/* <Dots /> */}
             </div>
           ) : (
@@ -176,7 +162,7 @@ export const SwapActionLedgerButton: React.FC<{
                 </div>
                 <img src={LegerIcon} className="size-[24px]" />
               </div>
-              <span>Sending signing request</span>
+              <div>{t('page.desktopSmallSwap.LedgerBtn.send')}</div>
               {/* <Dots /> */}
             </div>
           )}

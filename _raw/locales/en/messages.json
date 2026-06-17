@@ -84,7 +84,13 @@
         "success": "Swap successful"
       },
       "completedTips": "Ongoing swap will continue processing",
-      "priceImpact": "Price Impact Cap"
+      "priceImpact": "Price Impact Cap",
+      "LedgerBtn": {
+        "start": "Start with Ledger",
+        "confirm": "Please confirm with Ledger",
+        "continue": "Continue",
+        "send": "Sending signing request"
+      }
     },
     "staking": {
       "__skip_translation": [
