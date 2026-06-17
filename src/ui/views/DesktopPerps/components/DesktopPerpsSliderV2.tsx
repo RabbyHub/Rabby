@@ -112,6 +112,10 @@ export const DesktopPerpsSliderV2 = (
 
   React.useEffect(() => {
     if (!dragging) return;
+    // Kill text selection across the whole page during the drag, so a fast
+    // drag doesn't extend the browser's selection range into other modules
+    // (the "selected"/highlighted state on the order panel's labels, etc.).
+    document.body.style.userSelect = 'none';
     const onMouseMove = (e: MouseEvent) => {
       lastMousePos.current = { x: e.clientX, y: e.clientY };
     };
@@ -121,6 +125,7 @@ export const DesktopPerpsSliderV2 = (
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
     return () => {
+      document.body.style.userSelect = '';
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -133,7 +138,12 @@ export const DesktopPerpsSliderV2 = (
       onMouseLeave={() => {
         if (!dragging) setHovered(false);
       }}
-      onMouseDown={() => setDragging(true)}
+      onMouseDown={() => {
+        // Set synchronously (before any mousemove) so the selection never
+        // starts; the effect below restores it on mouseup.
+        document.body.style.userSelect = 'none';
+        setDragging(true);
+      }}
       onMouseMove={(e) => {
         lastMousePos.current = { x: e.clientX, y: e.clientY };
       }}
