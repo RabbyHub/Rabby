@@ -35,44 +35,6 @@ const getViewportSize = () => {
   };
 };
 
-const SNAPDOM_RENDER_INFRA_TAGS = new Set([
-  'HEAD',
-  'STYLE',
-  'LINK',
-  'DEFS',
-  'SYMBOL',
-  'LINEARGRADIENT',
-  'RADIALGRADIENT',
-  'PATTERN',
-  'MASK',
-  'CLIPPATH',
-  'FILTER',
-]);
-
-function isElementInViewport(el: Node): boolean {
-  if (!(el instanceof Element)) return true;
-
-  if (
-    el === document.documentElement ||
-    el === document.body ||
-    el === document.head ||
-    SNAPDOM_RENDER_INFRA_TAGS.has(el.tagName)
-  ) {
-    return true;
-  }
-
-  const rect = el.getBoundingClientRect();
-  const vHeight = window.innerHeight || document.documentElement.clientHeight;
-  const vWidth = window.innerWidth || document.documentElement.clientWidth;
-
-  return (
-    rect.bottom >= 0 &&
-    rect.right >= 0 &&
-    rect.top <= vHeight &&
-    rect.left <= vWidth
-  );
-}
-
 const captureBySnapdom = async () => {
   const viewport = getViewportSize();
   const captureTarget = document.documentElement;
@@ -83,9 +45,7 @@ const captureBySnapdom = async () => {
     fast: true,
     height: viewport.height,
     width: viewport.width,
-    // filter: isElementInViewport,
-    // filterMode: 'remove',
-    exclude: ['.ant-drawer:not(.ant-drawer-open)'],
+    exclude: ['.ant-drawer:not(.ant-drawer-open)', '.hidden'],
     excludeMode: 'remove',
   });
 
