@@ -665,7 +665,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         )}
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between h-14">
         <PerpsCheckbox
           checked={reduceOnly}
           onChange={(checked) => {

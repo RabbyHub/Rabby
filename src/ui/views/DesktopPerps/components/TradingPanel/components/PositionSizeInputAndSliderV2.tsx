@@ -422,7 +422,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-x-[8px] gap-y-[4px] text-[12px]">
+      <div className="flex flex-wrap items-center justify-between gap-x-[8px] gap-y-[4px] text-12">
         <div className="flex items-center gap-[4px]">
           <span className="text-rb-neutral-secondary">
             {t('page.perpsPro.tradingPanel.Buy')}
