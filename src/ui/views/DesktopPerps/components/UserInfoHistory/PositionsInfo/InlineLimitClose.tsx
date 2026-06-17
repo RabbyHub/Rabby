@@ -46,7 +46,7 @@ const MarketCloseCheckbox: React.FC<{
         setChecked(val);
         onChange(val);
       }}
-      title={<span className="text-r-neutral-foot text-[12px]">{title}</span>}
+      title={<span className="text-r-neutral-foot text-12">{title}</span>}
     />
   );
 };
@@ -389,7 +389,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     if (!priceNum) return null;
     const pnlIsUp = estPnl >= 0;
     return (
-      <div className="text-[12px] space-y-[2px]">
+      <div className="text-12 space-y-[2px]">
         <div>Price: {splitNumberByStep(limitPrice)}</div>
         {Boolean(Number(estPnl)) && (
           <div>
@@ -413,7 +413,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     const coin = formatPerpsCoin(record.coin);
     const pnlIsUp = estPnl >= 0;
     return (
-      <div className="text-[12px] space-y-[2px]">
+      <div className="text-12 space-y-[2px]">
         {sizeDisplayUnit === 'usd' ? (
           <>
             <div>
@@ -466,7 +466,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
           return (
             <div
               key={order.oid}
-              className="flex items-center justify-between gap-[28px] text-[12px]"
+              className="flex items-center justify-between gap-[28px] text-12"
             >
               <span>
                 {splitNumberByStep(orderSize)} {coinUnit} to be closed @$
@@ -495,7 +495,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
       <div className="flex items-center gap-[6px]">
         {/* Market link */}
         <span
-          className="text-rb-brand-default cursor-pointer text-[12px] hover:text-r-neutral-title-1 transition-colors"
+          className="text-rb-brand-default cursor-pointer text-12 hover:text-r-neutral-title-1 transition-colors"
           onClick={(e) => {
             e.stopPropagation();
             if (!marketLoading) handleMarketCloseWithConfirm();
@@ -515,7 +515,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         >
           <span
             className={clsx(
-              'cursor-pointer text-[12px] transition-colors text-rb-brand-default hover:text-r-neutral-title-1'
+              'cursor-pointer text-12 transition-colors text-rb-brand-default hover:text-r-neutral-title-1'
             )}
             onClick={(e) => {
               e.stopPropagation();

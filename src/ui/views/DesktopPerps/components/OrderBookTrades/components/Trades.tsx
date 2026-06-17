@@ -48,7 +48,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
       {/* Trades List */}
       <div className="flex-1 overflow-y-auto trades-container-no-scrollbar">
         {trades.length === 0 ? (
-          <div className="flex items-center justify-center h-full text-rb-neutral-secondary text-[12px]">
+          <div className="flex items-center justify-center h-full text-rb-neutral-secondary text-12">
             {t('page.perpsPro.orderBook.noTrades')}
           </div>
         ) : (
@@ -56,7 +56,7 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
             <div
               key={`${trade.time}-${index}`}
               onClick={() => handleClickPrice(trade.price)}
-              className="flex items-center justify-between px-[8px] py-[4px] text-[12px] hover:bg-rb-neutral-bg-2 cursor-pointer group"
+              className="flex items-center justify-between px-[8px] py-[4px] text-12 hover:bg-rb-neutral-bg-2 cursor-pointer group"
             >
               <span
                 className={clsx(

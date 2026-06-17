@@ -322,7 +322,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Total Time Section */}
       <div className="flex flex-col gap-[8px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.totalTime')}
         </span>
 
@@ -384,7 +384,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
         {/* Max duration + Number of Orders info */}
         {maxDurationMins >= 5 && (
-          <div className="text-rb-neutral-secondary text-[12px]">
+          <div className="text-rb-neutral-secondary text-12">
             {t('page.perpsPro.tradingPanel.maxDurationTwap')}{' '}
             <span className="text-rb-neutral-title-1">
               {maxDurationDisplay}
@@ -392,7 +392,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
             .
           </div>
         )}
-        <div className="text-rb-neutral-secondary text-[12px]">
+        <div className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.numberOfOrders')}{' '}
           <span className="text-rb-neutral-title-1">{numberOfOrders}</span>
         </div>
