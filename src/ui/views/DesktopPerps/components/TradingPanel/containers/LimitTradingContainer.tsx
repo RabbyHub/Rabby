@@ -564,7 +564,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       />
 
       <div className="flex flex-col gap-[6px] mt-[6px] mb-[6px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+        <span className="text-rb-neutral-secondary text-[12px] leading-[14px]">
           {t('page.perpsPro.tradingPanel.price')}
         </span>
         <div className="flex items-center gap-8">

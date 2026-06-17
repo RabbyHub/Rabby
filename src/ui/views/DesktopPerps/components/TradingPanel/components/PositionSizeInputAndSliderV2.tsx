@@ -378,7 +378,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     <div className="w-full gap-[6px] flex flex-col">
       {/* Size label */}
       <div className="flex items-center justify-between">
-        <span className="text-rb-neutral-secondary text-[12px]">
+        <span className="text-rb-neutral-secondary text-[12px] leading-[14px]">
           {t('page.perpsPro.tradingPanel.size')}
         </span>
       </div>
