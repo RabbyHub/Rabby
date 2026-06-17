@@ -44,8 +44,8 @@
       "empty": {
         "desc": "在<1>支持的链</1>上找不到交易",
         "title": "没有交易",
-        "noTxInThreeMonth": "No Transaction history in 90 Days",
-        "descThreeMonths": "No Transaction history in 90 Days on <2>supported chains</2>"
+        "noTxInThreeMonth": "90 天内无交易记录",
+        "descThreeMonths": "90 天内在<2>支持的链</2>上无交易记录"
       },
       "explain": {
         "approve": "授权 {{project}} 使用 {{amount}} {{symbol}}",

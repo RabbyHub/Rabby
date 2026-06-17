@@ -45,7 +45,7 @@
         "desc": "在<1>支援的鏈</1>上找不到交易",
         "title": "沒有交易",
         "noTxInThreeMonth": "過去 90 天沒有交易記錄",
-        "descThreeMonths": "過去 90 天在 <2>supported chains</2> 上沒有交易記錄"
+        "descThreeMonths": "過去 90 天在 <2>支援的鏈</2> 上沒有交易記錄"
       },
       "explain": {
         "approve": "授權 {{project}} 使用 {{amount}} {{symbol}}",

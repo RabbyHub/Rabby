@@ -4003,10 +4003,10 @@
         "stopLoss": "Стоп-лосс",
         "triggerPrice": "Триггерная цена",
         "estimatedPnlWillBe": "Ваша оценочная PnL составит",
-        "triggerHigherThanLiquidation": "The trigger price should be higher than the liquidation price {{price}}",
-        "triggerLowerThanLiquidation": "The trigger price should be lower than the liquidation price {{price}}",
-        "tpTriggerInvalid": "The TP trigger price is invalid and will not be set",
-        "slTriggerInvalid": "The SL trigger price is invalid and will not be set"
+        "triggerHigherThanLiquidation": "Триггерная цена должна быть выше цены ликвидации {{price}}",
+        "triggerLowerThanLiquidation": "Триггерная цена должна быть ниже цены ликвидации {{price}}",
+        "tpTriggerInvalid": "Триггерная цена TP недействительна и не будет установлена",
+        "slTriggerInvalid": "Триггерная цена SL недействительна и не будет установлена"
       },
       "accountInfo": {
         "availableBalance": "Доступный баланс",
