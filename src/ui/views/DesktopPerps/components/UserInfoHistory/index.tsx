@@ -48,7 +48,9 @@ export const UserInfoHistory: React.FC = () => {
 
   const tabs: Tab[] = useMemo(() => {
     const assetPositionNum = clearinghouseState?.assetPositions?.length || 0;
-    const openOrdersNum = openOrders.length;
+    const openOrdersNum = openOrders.filter(
+      (o) => o.coin.includes('@') === false
+    ).length;
     const twapNum = twapStates.length;
     // Non-unified mode shows two rows: USDC(Spot) + USDC(Perps).
     const assetsNum = isUnifiedAccount ? ALL_PERPS_QUOTE_ASSETS.length : 2;
