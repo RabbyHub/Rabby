@@ -1,4 +1,7 @@
-import { shouldIgnoreSentryError } from '@/utils/sentry';
+import {
+  sanitizeSentryBreadcrumbUrl,
+  shouldIgnoreSentryError,
+} from '@/utils/sentry';
 
 describe('Sentry ignored errors', () => {
   test.each([
@@ -48,5 +51,15 @@ describe('Sentry ignored errors', () => {
     expect(
       shouldIgnoreSentryError(new Error('RPC request failed without URL'))
     ).toBe(false);
+  });
+});
+
+describe('Sentry breadcrumb privacy', () => {
+  test('removes query parameters, fragments, and wallet identifiers', () => {
+    expect(
+      sanitizeSentryBreadcrumbUrl(
+        'https://api.example/account/0x0123456789abcdef0123456789abcdef01234567?token=secret#details'
+      )
+    ).toBe('https://api.example/account/[redacted]');
   });
 });

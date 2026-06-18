@@ -1,5 +1,11 @@
 export type SentryIgnorePattern = string | RegExp;
 
+export const sanitizeSentryBreadcrumbUrl = (value: string) => {
+  const withoutQueryOrFragment = value.split(/[?#]/, 1)[0];
+
+  return withoutQueryOrFragment.replace(/0x[a-f\d]{40,64}/gi, '[redacted]');
+};
+
 export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'ResizeObserver loop limit exceeded',
   'ResizeObserver loop completed with undelivered notifications',
