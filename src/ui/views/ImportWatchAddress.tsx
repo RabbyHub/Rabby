@@ -20,6 +20,7 @@ import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
 import { resolveEnsAddressByName } from '@/ui/utils/ens';
+import { resolveInsAddressByName } from '@/ui/utils/ins';
 import WatchLogo from 'ui/assets/watch-only-hero.svg';
 import { useCreateAddressActions } from './AddAddress/useCreateAddress';
 import { RcWatchAddressScan } from '../assets/add-address';
@@ -158,7 +159,10 @@ const ImportWatchAddress: React.FC<{
     () =>
       debounce(async (address: string) => {
         try {
-          const result = await resolveEnsAddressByName(address, wallet);
+          const isIgra = address?.trim().toLowerCase().endsWith('.igra');
+          const result = isIgra
+            ? await resolveInsAddressByName(address)
+            : await resolveEnsAddressByName(address, wallet);
           setDisableKeydown(true);
           if (result && result.addr && result.addr.startsWith('0x')) {
             setEnsResult(result);
