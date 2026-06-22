@@ -210,7 +210,11 @@ const AddressManagement = () => {
           action: 'address-backup',
         },
       });
-      browser.action.openPopup();
+      try {
+        await browser.action.openPopup();
+      } catch (e) {
+        console.error('open popup failed', e);
+      }
     } else {
       await AuthenticationModal({
         confirmText: t('global.confirm'),

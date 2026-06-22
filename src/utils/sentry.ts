@@ -40,7 +40,10 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
 
   // Chrome storage quota/disk errors are environmental and not actionable in Rabby.
   /IO error: .*FILE_ERROR_NO_SPACE.*ChromeMethodBFE/,
+  /IO error: .*FILE_ERROR_FAILED.*ChromeMethodBFE: \d+::WritableFileSync::\d+/,
   /Unable to create writable file.*ChromeMethodBFE/,
+  /Internal error opening backing store for indexedDB\.open\./,
+  /Encountered full disk while opening backing store for indexedDB\.open\./,
 
   // Browser API denials caused by unfocused documents or revoked transient permission.
   /^(Error: )?NotAllowedError: Permission denied\.$/,
