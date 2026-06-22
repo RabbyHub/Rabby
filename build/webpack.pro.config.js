@@ -32,7 +32,7 @@ const config = {
         authToken: process.env.SENTRY_AUTH_TOKEN,
       }),
     ,
-    true && new SecSDK({
+    false && new SecSDK({
       dev: true
     }),
   ].filter(Boolean),

@@ -16,7 +16,7 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
       'process.env.DEBUG': true,
     }),
-    true &&
+    false &&
       new SecSDK({
         dev: true,
       }),
