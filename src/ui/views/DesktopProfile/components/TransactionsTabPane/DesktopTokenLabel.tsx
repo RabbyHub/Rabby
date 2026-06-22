@@ -42,7 +42,7 @@ export const DesktopTokenLabel: React.FC<Props> = ({
           'ml-2',
           'truncate',
           {
-            'underline cursor-pointer': canClickToken,
+            'cursor-pointer': canClickToken,
           },
           textClassName
         )}
