@@ -483,7 +483,6 @@ export const TransactionItem = ({
                       className={clsx('icon icon-action size-[20px]', {
                         'cursor-not-allowed': !canCancel,
                       })}
-                      viewBox="0 0 20 20"
                       src={RcIconSpeedup}
                       onClick={() => handleClickSpeedUp()}
                     />
