@@ -511,5 +511,120 @@
       },
       "disallow": []
     }
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/quote.js": {
+    "global": {
+      "allow": {
+        "navigator": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/recharts/node_modules/lodash/_freeGlobal.js": {
+    "global": {
+      "allow": {
+        "Buffer": "r",
+        "process": "r",
+        "__core-js_shared__": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/dexie/dist/dexie.js": {
+    "global": {
+      "allow": {
+        "Blob": "r",
+        "File": "r",
+        "FileList": "r",
+        "FileSystemFileHandle": "r",
+        "FileSystemDirectoryHandle": "r",
+        "ImageBitmap": "r",
+        "ImageData": "r",
+        "CryptoKey": "r",
+        "Float8Array": "r",
+        "Int64Array": "r",
+        "Uint64Array": "r",
+        "IDBKeyRange": "r",
+        "Promise": "rw"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/readable-stream/lib/_stream_writable.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_writable.js": {
+    "global": {
+      "allow": {
+        "localStorage": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@rabby-wallet/rabby-api/node_modules/lodash/lodash.js": {
+    "global": {
+      "allow": {
+        "process": "r",
+        "__core-js_shared__": "r",
+        "_": "rw",
+        "Buffer": "r",
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/worldwide.js": {
+    "global": {
+      "allow": {
+        "__SENTRY__": "rw",
+        "crypto": "r",
+        "nw": "r",
+        "chrome": "r",
+        "document": "r",
+        "top": "r",
+        "console": "r",
+        "SENTRY_RELEASE": "r",
+        "SENTRY_SDK_SOURCE": "r",
+        "fetch": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/antd/node_modules/lodash/_freeGlobal.js": {
+    "global": {
+      "allow": {
+        "__core-js_shared__": "r",
+        "Buffer": "r",
+        "process": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@metamask/utils/node_modules/lodash/lodash.js": {
+    "global": {
+      "allow": {
+        "process": "r",
+        "__core-js_shared__": "r",
+        "_": "rw",
+        "Buffer": "r",
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/@ethersproject/random/lib.esm/random.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      },
+      "disallow": []
+    }
   }
 }

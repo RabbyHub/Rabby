@@ -18,7 +18,7 @@ const config = {
     }),
     true &&
       new SecSDK({
-        dev: true,
+        dev: false,
       }),
   ].filter(Boolean),
 };
