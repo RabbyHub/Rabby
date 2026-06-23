@@ -16,10 +16,10 @@ const PasswordFormItem = styled(Form.Item)`
   }
 
   .ant-form-item-explain {
-    position: absolute;
+    /* position: absolute;
     top: calc(100% + 4px);
     left: 0;
-    width: 100%;
+    width: 100%; */
   }
 `;
 
