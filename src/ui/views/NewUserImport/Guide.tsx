@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card } from '@/ui/component/NewUserImport';
 import rabbyLogo from '@/ui/assets/unlock/rabby.svg';
 import { Button } from 'antd';
@@ -8,6 +8,9 @@ import { useTranslation } from 'react-i18next';
 import BackgroundSVG from '@/ui/assets/new-user-import/guide-bg.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { LangSelector } from '@/ui/component/LangSelector';
+import { useMount } from 'react-use';
+import { getUiType } from '@/ui/utils';
+import { useUnmount } from 'ahooks';
 
 export const Guide = () => {
   const { t } = useTranslation();
@@ -22,7 +25,19 @@ export const Guide = () => {
   }, []);
 
   const { isDarkTheme } = useThemeMode();
+  const UiType = getUiType();
 
+  useEffect(() => {
+    if (UiType.isTab || UiType.isDesktop) {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  useUnmount(() => {
+    if (isDarkTheme && !document.documentElement.classList.contains('dark')) {
+      document.documentElement.classList.add('dark');
+    }
+  });
   return (
     <div className="h-full relative flex items-center justify-center">
       <img

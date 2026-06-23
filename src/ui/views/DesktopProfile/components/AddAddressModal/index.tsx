@@ -22,7 +22,7 @@ import WalletConnectTemplate from '@/ui/views/WalletConnect';
 import { useMemoizedFn } from 'ahooks';
 import { Modal, ModalProps } from 'antd';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export const AddAddressModal: React.FC = () => {
   const state = useRabbySelector(
@@ -34,6 +34,16 @@ export const AddAddressModal: React.FC = () => {
   );
   const dispatch = useRabbyDispatch();
   const importType = state.importType;
+
+  const isBlackCloseIcon = useMemo(() => {
+    return [
+      'add-new-address',
+      'import-key-or-seed',
+      'hardware-wallets',
+      'institutional-wallets',
+    ].includes(importType);
+  }, [importType]);
+
   return (
     <Modal
       visible={state.visible}
@@ -50,9 +60,7 @@ export const AddAddressModal: React.FC = () => {
         <SvgIconCross
           className={clsx(
             'w-[14px] fill-current',
-            importType === 'add-from-current-seed-phrase'
-              ? 'text-r-neutral-foot'
-              : 'text-r-neutral-title-2'
+            isBlackCloseIcon ? 'text-r-neutral-foot' : 'text-r-neutral-title-2'
           )}
         />
       }
