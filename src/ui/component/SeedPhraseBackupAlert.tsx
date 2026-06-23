@@ -63,7 +63,11 @@ export const SeedPhraseBackupAlert: React.FC<{
           action: 'address-backup',
         },
       });
-      browser.action.openPopup();
+      try {
+        await browser.action.openPopup();
+      } catch (e) {
+        console.error('open popup failed', e);
+      }
       // history.push({
       //   pathname: `${history.location.pathname}`,
       //   search: `?${obj2query({

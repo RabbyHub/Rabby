@@ -1,4 +1,7 @@
-import { shouldIgnoreSentryError } from '@/utils/sentry';
+import {
+  sanitizeSentryBreadcrumbUrl,
+  shouldIgnoreSentryError,
+} from '@/utils/sentry';
 
 describe('Sentry ignored errors', () => {
   test.each([
@@ -7,7 +10,10 @@ describe('Sentry ignored errors', () => {
     'No SW',
     'Error: Could not establish connection. Receiving end does not exist.',
     'IO error: .../000205.log: FILE_ERROR_NO_SPACE (ChromeMethodBFE: 3::WritableFileAppend::8)',
+    'IO error: .../063441.ldb: FILE_ERROR_FAILED (ChromeMethodBFE: 6::WritableFileSync::1)',
     'Unable to create writable file ... (ChromeMethodBFE: 3::CreateWritableFile::8)',
+    'DatabaseClosedError: UnknownError Internal error opening backing store for indexedDB.open.\n UnknownError: Internal error opening backing store for indexedDB.open.',
+    'DatabaseClosedError: QuotaExceededError Encountered full disk while opening backing store for indexedDB.open.\n QuotaExceededError: Encountered full disk while opening backing store for indexedDB.open.',
     'Could not find an active browser window.',
     'UnknownError: Internal error.',
     'Non-Error promise rejection captured with keys: message',
@@ -48,5 +54,15 @@ describe('Sentry ignored errors', () => {
     expect(
       shouldIgnoreSentryError(new Error('RPC request failed without URL'))
     ).toBe(false);
+  });
+});
+
+describe('Sentry breadcrumb privacy', () => {
+  test('removes query parameters, fragments, and wallet identifiers', () => {
+    expect(
+      sanitizeSentryBreadcrumbUrl(
+        'https://api.example/account/0x0123456789abcdef0123456789abcdef01234567?token=secret#details'
+      )
+    ).toBe('https://api.example/account/[redacted]');
   });
 });
