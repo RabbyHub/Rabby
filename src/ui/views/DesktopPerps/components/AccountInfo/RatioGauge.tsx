@@ -34,7 +34,13 @@ export const RatioGaugeIcon: React.FC<{ ratio: number }> = ({ ratio }) => {
   const needleAngle = clamped * 270;
 
   return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      aria-hidden="true"
+    >
       <path
         d="M12.0239 3.31396C13.0137 4.46988 13.612 5.97091 13.612 7.612C13.612 9.07327 13.1374 10.4234 12.3347 11.5179L11.3859 10.569C11.9562 9.72484 12.2895 8.70743 12.2895 7.612C12.2895 6.33618 11.8376 5.16611 11.0854 4.25244L12.0239 3.31396Z"
         fill={GAUGE_RED}
