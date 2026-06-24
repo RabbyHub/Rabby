@@ -47,12 +47,16 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
     top: cTop,
     left: cLeft,
     width,
+    height,
   } = await browser.windows.getLastFocused({
     windowTypes: ['normal'],
   } as Windows.GetInfo);
 
   const top = cTop;
   const left = cLeft! + width! - WINDOW_SIZE.width;
+  const optionHeight = rest.height || 600;
+  const maxHeight = (height || 1000) - 40;
+  const finalHeight = Math.min(optionHeight, Math.max(maxHeight, 600));
 
   const currentWindow = await browser.windows.getLastFocused();
   let win;
@@ -69,6 +73,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
         left,
         ...WINDOW_SIZE,
         ...rest,
+        height: finalHeight,
       });
     } catch (e) {
       if (e.message && /Invalid value for bound/i.test(e.message)) {
@@ -80,6 +85,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
           left: 0,
           ...WINDOW_SIZE,
           ...rest,
+          height: finalHeight,
         });
       } else {
         Sentry.captureException(`tx prompt error: ${JSON.stringify(e)}`);
