@@ -71,9 +71,14 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   return (
     <>
       <Wrap>
-        <DesktopPerpsTopBar />
+        {/* Fixed top bar — mirrors the fixed StatusBar at the bottom (sticky;
+            content scrolls underneath). bg-page masks content behind the card.
+            Its 50px footprint (6 + 38 + 6 gap) is reserved by the row's pt below. */}
+        <div className="fixed top-0 left-0 right-0 z-30 bg-rb-neutral-bg-page">
+          <DesktopPerpsTopBar />
+        </div>
 
-        <div className="flex flex-1 min-h-0 overflow-x-auto px-[6px] pt-[6px] pb-[44px]">
+        <div className="flex flex-1 min-h-0 overflow-x-auto px-[6px] pt-[50px] pb-[44px]">
           {/* Floor so panels aren't crushed on short viewports; 810 lets the
               dominant 1080p fit without a page scroll (this runs as a browser tab
               that loses ~160px of height to chrome). Below it the outer row
