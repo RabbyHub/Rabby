@@ -120,8 +120,10 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               </PanelGroup>
             </div>
 
-            {/* Two boxes split by a 6px gap (no drag handle); the 74.2/25.8 ratio
-                matches the left rail's default split so the seam lines up. */}
+            {/* Two boxes split by a 6px gap (no drag handle). TradingPanel takes
+                the remaining height (scrolls internally); AccountInfo sizes to its
+                own content so the summary is always fully shown (no clip / no dead
+                space) and adapts across account types (e.g. PM has one extra row). */}
             <div
               className="flex flex-col min-h-0 overflow-hidden gap-[6px]"
               style={{
@@ -132,13 +134,13 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
             >
               <div
                 className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-                style={{ flex: '74.2 1 0%' }}
+                style={{ flex: '1 1 0%' }}
               >
                 <TradingPanel />
               </div>
               <div
-                className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-                style={{ flex: '25.8 1 0%' }}
+                className="shrink-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                style={{ flex: '0 0 auto' }}
               >
                 <AccountInfo />
               </div>

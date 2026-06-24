@@ -1723,7 +1723,20 @@
         "unifiedAccountLeverageTips": "Unified Account Leverage = Total Cross Positions Value / Total Collateral Balance.",
         "perpsMaintenanceMargin": "Perps Maintenance Margin",
         "perpsPortfolioValue": "Perps Portfolio Value",
-        "perpsUnrealizedPnl": "Perps Unrealized PNL"
+        "perpsUnrealizedPnl": "Perps Unrealized PNL",
+        "perpsAccountSummary": "Perps Account Summary",
+        "portfolioMarginSummary": "Portfolio Margin Summary",
+        "portfolioMarginRatio": "Portfolio Margin Ratio",
+        "portfolioMarginRatioTips": "Maintenance Margin / LTV-adjusted Portfolio Value. When the value is greater than 95%, your portfolio may be liquidated.",
+        "marginBalance": "Margin Balance",
+        "marginBalanceTips": "Margin Balance = Wallet Balance + Unrealized PNL. Your positions will be liquidated once Margin Balance <= Maintenance Margin.",
+        "totalCollateralBalance": "Total Collateral Balance",
+        "totalCollateralBalanceTips": "Total value of the collateral backing your unified account.",
+        "ltvAdjustedPortfolioValue": "LTV-adjusted Portfolio Value",
+        "ltvAdjustedPortfolioValueTips": "Total portfolio value after each asset's LTV haircut; must stay above the maintenance requirement.",
+        "borrowCapUsed": "Borrow Cap Used",
+        "borrowCapUsedTips": "When this value is 100%, further collateral will not contribute to portfolio margin",
+        "portfolioValue": "Portfolio Value"
       },
       "accountActions": {
         "pending": "Pending",

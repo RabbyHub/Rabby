@@ -21,6 +21,9 @@ import {
   UserTwapSliceFill,
   WsAllClearinghouseStates,
   SpotClearinghouseState,
+  SpotMeta,
+  FFastAssetCtx,
+  WsFastAssetCtxs,
   UserAbstractionResp,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
@@ -233,7 +236,16 @@ export interface PerpsState {
     balances: SpotBalance[];
     balancesMap: Record<string, SpotBalance>;
     tokenToAvailableAfterMaintenance: [number, string][] | null;
+    // Portfolio-margin account-level fields (passed through from the WS spotState)
+    portfolioMarginEnabled?: boolean;
+    portfolioMarginRatio?: string;
+    tokenToPortfolioBorrowRatio?: [number, string][];
   };
+  // Combined spot+perp mark/mid price map from the `fastAssetCtxs` WS feed,
+  // merged across delta frames. Keyed by coin (perp) / '@index' (spot) / '#n'.
+  spotAssetCtxs: Record<string, FFastAssetCtx>;
+  // Static spot metadata (token list + pair universe); fetched once on login.
+  spotMeta: SpotMeta | null;
   userAbstraction: UserAbstractionResp;
   historicalOrders: UserHistoricalOrders[];
   userFunding: WsUserFunding['fundings'];
@@ -353,7 +365,12 @@ export const perps = createModel<RootModel>()({
       balances: [],
       balancesMap: {},
       tokenToAvailableAfterMaintenance: null,
+      portfolioMarginEnabled: false,
+      portfolioMarginRatio: undefined,
+      tokenToPortfolioBorrowRatio: undefined,
     },
+    spotAssetCtxs: {},
+    spotMeta: null,
     userFunding: [],
     nonFundingLedgerUpdates: [],
     twapStates: [],
@@ -380,6 +397,18 @@ export const perps = createModel<RootModel>()({
         ...state,
         ...payload,
       };
+    },
+
+    // fastAssetCtxs frames are deltas: the first frame is a snapshot, later
+    // frames carry only updated coins and omit unchanged fields. Merge per-coin
+    // so a markPx-only (or midPx-only) update doesn't wipe the other field.
+    mergeFastAssetCtxs(state, payload: WsFastAssetCtxs) {
+      if (!payload) return state;
+      const next: Record<string, FFastAssetCtx> = { ...state.spotAssetCtxs };
+      for (const coin of Object.keys(payload)) {
+        next[coin] = { ...next[coin], ...payload[coin] };
+      }
+      return { ...state, spotAssetCtxs: next };
     },
 
     patchStatsListBySnapshot(
@@ -1081,6 +1110,18 @@ export const perps = createModel<RootModel>()({
       }
     },
 
+    // Static spot metadata (token list + pair universe). Fetched once on login;
+    // maps a held token name -> its spot pair key ('@index') for spot pricing.
+    async fetchSpotMeta() {
+      try {
+        const sdk = getPerpsSDK();
+        const spotMeta = await sdk.info.getSpotMeta();
+        dispatch.perps.patchState({ spotMeta });
+      } catch (error) {
+        console.error('Failed to fetch spot meta:', error);
+      }
+    },
+
     async loginPerpsAccount(
       payload: {
         account: Account;
@@ -1105,6 +1146,7 @@ export const perps = createModel<RootModel>()({
 
       // dispatch.perps.startPolling(undefined);
       dispatch.perps.fetchUserAbstraction(account.address);
+      dispatch.perps.fetchSpotMeta();
       dispatch.perps.fetchPerpPermission(account.address);
       setTimeout(() => {
         // avoid 429 error
@@ -1418,6 +1460,15 @@ export const perps = createModel<RootModel>()({
         dispatch.perps.updateMarketData(ctxs);
       });
       subscriptions.push(unsubscribeAllDexsAssetCtxs);
+
+      // Combined spot+perp fast price feed (supersedes the throttled
+      // allDexsAssetCtxs/sac feeds). Decoded by the SDK; merged as deltas here.
+      const {
+        unsubscribe: unsubscribeFastAssetCtxs,
+      } = sdk.ws.subscribeToFastAssetCtxs((data) => {
+        dispatch.perps.mergeFastAssetCtxs(data);
+      });
+      subscriptions.push(unsubscribeFastAssetCtxs);
       const {
         unsubscribe: unsubscribeClearinghouseState,
       } = sdk.ws.subscribeToAllDexsClearinghouseState(address, (data) => {
