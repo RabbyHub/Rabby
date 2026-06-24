@@ -52,7 +52,7 @@ export const AddAddressModal: React.FC = () => {
           addAddress: { visible: false, importType: '' },
         });
       }}
-      width={400}
+      width={403}
       centered
       closable
       className="modal-support-darkmode"
