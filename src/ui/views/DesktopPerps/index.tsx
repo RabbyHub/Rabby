@@ -26,7 +26,11 @@ import { useLocation } from 'react-router-dom';
 
 const Wrap = styled.div`
   width: 100%;
-  min-height: 100vh;
+  /* Definite height, not min-height: min-height computes to auto (indefinite),
+     which breaks h-full resolution on the right rail and lets TradingPanel's
+     content push the whole row taller. */
+  height: 100vh;
+  overflow: hidden;
   background: var(--rb-neutral-bg-page, #f6f7f7);
   display: flex;
   flex-direction: column;
@@ -70,7 +74,11 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         <DesktopPerpsTopBar />
 
         <div className="flex flex-1 min-h-0 overflow-x-auto px-[6px] pt-[6px] pb-[44px]">
-          <div className="flex flex-1 min-w-[1280px] min-h-0 gap-[6px]">
+          {/* Floor so panels aren't crushed on short viewports; 810 lets the
+              dominant 1080p fit without a page scroll (this runs as a browser tab
+              that loses ~160px of height to chrome). Below it the outer row
+              scrolls while the top bar and fixed status bar stay pinned. */}
+          <div className="flex flex-1 min-w-[1280px] min-h-[810px] gap-[6px]">
             {/* [chart + order book] + UserInfoHistory, can be resized vertically */}
             <div
               className="flex flex-col min-w-0 min-h-0 overflow-hidden"
@@ -112,20 +120,26 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               </PanelGroup>
             </div>
 
-            {/* TradingPanel + AccountInfo */}
+            {/* Two boxes split by a 6px gap (no drag handle); the 74.2/25.8 ratio
+                matches the left rail's default split so the seam lines up. */}
             <div
-              className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+              className="flex flex-col min-h-0 overflow-hidden gap-[6px]"
               style={{
                 flexGrow: 0,
                 flexShrink: 0,
                 flexBasis: 'clamp(276px, 20vw, 336px)',
               }}
             >
-              <div className="flex h-full min-h-0 flex-col">
-                <div className="flex-1 min-h-0">
-                  <TradingPanel />
-                </div>
-                <div className="h-[1px] shrink-0 bg-rb-neutral-line" />
+              <div
+                className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                style={{ flex: '74.2 1 0%' }}
+              >
+                <TradingPanel />
+              </div>
+              <div
+                className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                style={{ flex: '25.8 1 0%' }}
+              >
                 <AccountInfo />
               </div>
             </div>
