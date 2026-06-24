@@ -355,13 +355,11 @@ export const DesktopProfile: React.FC<{
           </div>
         </div>
         <aside
-          className={clsx(
-            'flex-shrink-0 sticky z-20 top-0 h-full flex flex-col'
-          )}
+          className={clsx('shrink-0 sticky z-20 top-0 h-full flex flex-col')}
           // style={{ top: DESKTOP_NAV_HEIGHT }}
         >
           {/* <div
-            className="flex items-center justify-end flex-shrink-0"
+            className="flex items-center justify-end shrink-0"
             style={{ height: `${DESKTOP_NAV_HEIGHT}px` }}
           >
             <SwitchThemeBtn />

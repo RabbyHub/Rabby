@@ -1,20 +1,23 @@
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { Slider, SliderSingleProps } from 'antd';
 import React from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
 const StyledSlider = styled(Slider)<{ isDark: boolean }>`
-  .ant-slider-rail {
+  margin-top: 6px;
+  margin-bottom: 6px;
+
+  .ant-slider-rail,
+  &:hover .ant-slider-rail {
+    height: 2px;
     background-color: ${({ isDark }) =>
       isDark ? 'var(--rb-neutral-bg-2)' : 'var(--r-neutral-line)'};
   }
 
-  &:hover .ant-slider-rail {
-    background-color: var(--r-blue-light-2);
-  }
-
   .ant-slider-track,
   &:hover .ant-slider-track {
+    height: 2px;
     background: var(--r-blue-default, #7084ff);
   }
 
@@ -24,15 +27,17 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
   }
 
   .ant-slider-handle {
-    margin-top: -10px;
+    margin-top: -12px;
     width: 24px;
     height: 24px;
     background-color: transparent;
-    overflow: hidden;
     border: none;
     box-shadow: none;
 
-    &::before,
+    &::before {
+      display: none;
+    }
+
     &::after {
       position: absolute;
       content: '';
@@ -40,19 +45,11 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
       left: 50%;
       transform: translate(-50%, -50%);
       border-radius: 50%;
-    }
-
-    &::before {
-      width: 16px;
-      height: 16px;
-      background-color: white;
-      filter: drop-shadow(0px 2px 4px rgba(112, 132, 255, 0.4));
-    }
-
-    &::after {
       width: 12px;
       height: 12px;
-      background-color: var(--r-blue-default, #7084ff);
+      background-color: var(--rb-brand-default, #7084ff);
+      border: 1.3px solid var(--r-neutral-body, #d3d8e0);
+      box-shadow: 0px 2px 4px rgba(112, 132, 255, 0.4);
     }
 
     &:hover {
@@ -61,24 +58,21 @@ const StyledSlider = styled(Slider)<{ isDark: boolean }>`
     }
   }
 
-  .ant-slider-dot {
-    width: 8px;
-    height: 8px;
-    border: 6px solid var(--rb-neutral-line);
-    background-color: var(--rb-neutral-line);
+  /* Inactive marks (right of handle): 9px, bg-4 fill + line ring */
+  .ant-slider-dot,
+  &:hover .ant-slider-dot {
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--rb-neutral-line, #2f3135);
+    background-color: var(--rb-neutral-bg-4, #383b41);
     top: -4px;
   }
 
-  .ant-slider-dot-active {
-    border-color: var(--r-blue-default, #7084ff);
-  }
-
-  &:hover .ant-slider-dot {
-    border-color: var(--r-blue-light-2);
-  }
-
+  /* Active marks (passed, left of handle): 9px, brand fill + neutral-body ring */
+  .ant-slider-dot-active,
   &:hover .ant-slider-dot-active {
-    border-color: var(--r-blue-default, #7084ff);
+    border-color: var(--r-neutral-body, #d3d8e0);
+    background-color: var(--rb-brand-default, #7084ff);
   }
 `;
 
@@ -118,6 +112,10 @@ export const DesktopPerpsSliderV2 = (
 
   React.useEffect(() => {
     if (!dragging) return;
+    // Kill text selection across the whole page during the drag, so a fast
+    // drag doesn't extend the browser's selection range into other modules
+    // (the "selected"/highlighted state on the order panel's labels, etc.).
+    document.body.style.userSelect = 'none';
     const onMouseMove = (e: MouseEvent) => {
       lastMousePos.current = { x: e.clientX, y: e.clientY };
     };
@@ -127,6 +125,7 @@ export const DesktopPerpsSliderV2 = (
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
     return () => {
+      document.body.style.userSelect = '';
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -138,6 +137,12 @@ export const DesktopPerpsSliderV2 = (
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => {
         if (!dragging) setHovered(false);
+      }}
+      onMouseDown={() => {
+        // Set synchronously (before any mousemove) so the selection never
+        // starts; the effect below restores it on mouseup.
+        document.body.style.userSelect = 'none';
+        setDragging(true);
       }}
       onMouseMove={(e) => {
         lastMousePos.current = { x: e.clientX, y: e.clientY };
@@ -156,6 +161,26 @@ export const DesktopPerpsSliderV2 = (
           sliderProps.onChange?.(value);
         }}
       />
+      {/* While dragging, a full-viewport overlay catches the cursor so fast
+          drags don't fire hover/mouse events on other modules (orderbook,
+          trades, etc.). rc-slider listens on `document`, and these events
+          bubble overlay → document, so the drag itself keeps working. */}
+      {dragging &&
+        createPortal(
+          <div
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 9999,
+              cursor: 'pointer',
+              userSelect: 'none',
+            }}
+          />,
+          document.body
+        )}
     </div>
   );
 };

@@ -122,16 +122,16 @@ export const TokenItemAsset: React.FC<Props> = ({
             isNft={false}
             textClassName={`
               cursor-pointer no-underline
-              text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
+              text-r-neutral-title1 text-14 whitespace-nowrap text-ellipsis overflow-hidden
               hover:text-r-blue-default hover:underline 
             `}
           />
           {isUnknownToken(item) && (
-            <UnknownTag className="ml-12 !bg-r-neutral-line flex-shrink-0" />
+            <UnknownTag className="ml-12 !bg-r-neutral-line shrink-0" />
           )}
           {isLpToken(item) && (
             <LpTokenTag
-              iconClassName="ml-4 inline-flex flex-shrink-0"
+              iconClassName="ml-4 inline-flex shrink-0"
               protocolName={item.protocol_id || ''}
             />
           )}
@@ -215,7 +215,7 @@ export const TestnetTokenItemAsset: React.FC<TestnetTokenItemProps> = ({
           isNft={false}
           textClassName={`
             cursor-pointer no-underline
-            text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
+            text-r-neutral-title1 text-14 whitespace-nowrap text-ellipsis overflow-hidden
             hover:text-r-blue-default hover:underline 
           `}
         />
@@ -242,7 +242,7 @@ const TokenItemAmount: React.FC<Props> = ({ item }) => {
         isNft={false}
         textClassName={`
             cursor-pointer no-underline
-            text-r-neutral-title1 text-14 whitespace-nowrap overflow-ellipsis overflow-hidden
+            text-r-neutral-title1 text-14 whitespace-nowrap text-ellipsis overflow-hidden
             hover:text-r-blue-default hover:underline 
           `}
       />

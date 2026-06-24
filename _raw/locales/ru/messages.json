@@ -4,7 +4,9 @@
       "title": "Транзакции",
       "empty": {
         "title": "Нет транзакций",
-        "desc": "Транзакции не найдены в <1>поддерживаемых сетях</1>"
+        "desc": "Транзакции не найдены в <1>поддерживаемых сетях</1>",
+        "noTxInThreeMonth": "Нет истории транзакций за 90 дней",
+        "descThreeMonths": "Нет истории транзакций за 90 дней на <2>поддерживаемых блокчейнах</2>"
       },
       "explain": {
         "approve": "Подтвердить {{amount}} {{symbol}} для {{project}}",
@@ -1324,7 +1326,8 @@
           "perpsFloatWidget": "Плавающий виджет Perps",
           "biometricUnlockHint": "Используйте биометрию для разблокировки на этом устройстве.",
           "currency": "Валюта",
-          "searchCurrency": "Поиск валюты"
+          "searchCurrency": "Поиск валюты",
+          "dataAnalysis": "Анализ данных"
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",
@@ -3573,6 +3576,9 @@
       "stopLoss": "Стоп-лосс",
       "isolated": "Изолированная маржа",
       "estimatedLiquidationPrice": "Расчётная цена ликвидации",
+      "expectedSlippage": "Расчётное проскальзывание",
+      "lowLiquiditySwitchLimit": " Низкая ликвидность, переключитесь на лимитный ордер.",
+      "switchToLimit": "Переключить",
       "leverageRangeMaxError": "Максимальное кредитное плечо составляет {{max}}x",
       "explorePerps": "Изучить Perps",
       "providerFeeTips": "Комиссия Hyperliquid: {{fee}}",
@@ -3774,7 +3780,15 @@
           "marketCloseTitle": "Закрыть позицию на рынке",
           "confirmCloseAllTitle": "Подтвердить закрытие всех позиций",
           "confirmCloseAllDesc": "Все ваши открытые позиции будут закрыты по рыночной цене, и все заказы будут отменены.",
-          "marketCloseDesc": "Это попытается немедленно закрыть позицию."
+          "marketCloseDesc": "Это попытается немедленно закрыть позицию.",
+          "positionSize": "Размер позиции",
+          "orderPrice": "Цена ордера",
+          "marketPrice": "Рыночная цена",
+          "buy": "Купить",
+          "sell": "Продать",
+          "buyToSell": "Купить для продажи",
+          "sellToBuy": "Продать для покупки",
+          "reverseAction": "{{side}} {{size}} {{coin}} для разворота"
         },
         "openOrders": {
           "cancelAll": "Отменить все",
@@ -3983,7 +3997,16 @@
         "sl": "Стоп-лосс",
         "gain": "прибыль",
         "stopLossExpectedPnl": "Ожидаемая PnL по стоп-лоссу",
-        "takeProfitExpectedPnl": "Тейк-профит: ожидаемая PnL"
+        "takeProfitExpectedPnl": "Тейк-профит: ожидаемая PnL",
+        "entryCurrentPrice": "Цена входа / Текущая цена",
+        "takeProfit": "Тейк-профит",
+        "stopLoss": "Стоп-лосс",
+        "triggerPrice": "Триггерная цена",
+        "estimatedPnlWillBe": "Ваша оценочная PnL составит",
+        "triggerHigherThanLiquidation": "Триггерная цена должна быть выше цены ликвидации {{price}}",
+        "triggerLowerThanLiquidation": "Триггерная цена должна быть ниже цены ликвидации {{price}}",
+        "tpTriggerInvalid": "Триггерная цена TP недействительна и не будет установлена",
+        "slTriggerInvalid": "Триггерная цена SL недействительна и не будет установлена"
       },
       "accountInfo": {
         "availableBalance": "Доступный баланс",
@@ -4031,14 +4054,21 @@
         "viewBids": "Заявки на покупку",
         "title": "Книга заявок",
         "viewAsks": "Заявки на продажу",
-        "amount": "Объём"
+        "amount": "Объём",
+        "avgPrice": "Средняя цена",
+        "sumBase": "Сумма {{base}}",
+        "sumUsd": "Сумма USD"
       },
       "editMargin": {
         "configureMargin": "Настроить маржу",
         "title": "Управление маржой",
         "shortLiquidationTips": "Рост на {{percent}} приведет к ликвидации",
         "currentPosition": "Текущая позиция",
-        "longLiquidationTips": "Снижение на {{percent}} приведет к ликвидации"
+        "longLiquidationTips": "Снижение на {{percent}} приведет к ликвидации",
+        "currentPrice": "Текущая цена"
+      },
+      "topBar": {
+        "favoriteEmpty": "Ваш список избранного пуст"
       }
     },
     "perpsDetail": {
@@ -4523,7 +4553,7 @@
       "slippageTolerance": "Допуск проскальзывания",
       "singleTransactionGasLimit": "Gas Limit для одной транзакции",
       "startConvert": "Начать конвертацию",
-      "unsupportedWalletType": "Поддерживаются только адреса с приватным ключом и seed фразой.",
+      "unsupportedWalletType": "Этот тип адреса не поддерживается",
       "stop": "Остановить",
       "selectLowValueTokens": "Выберите низкоценные токены",
       "tokenColumn": "Токен",
@@ -4536,7 +4566,13 @@
       "moreChains": "+{{count}} цепей",
       "swapFailed": "Неудачный обмен, {{reason}}",
       "completedTips": "Текущий обмен будет продолжать обрабатываться",
-      "priceImpact": "Лимит влияния на цену"
+      "priceImpact": "Лимит влияния на цену",
+      "LedgerBtn": {
+        "start": "Начните с Ledger",
+        "confirm": "Пожалуйста, подтвердите с Ledger",
+        "continue": "Продолжить",
+        "send": "Отправка запроса на подпись"
+      }
     },
     "staking": {
       "title": "Стейкинг",
@@ -4931,7 +4967,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Добавить адрес",
-      "smallSwapDisabledTips": "На данный момент поддерживаются только адреса с закрытым ключом и сид-фразой."
+      "smallSwapDisabledTips": "Этот тип адреса не поддерживается"
     },
     "LpTokenTag": {
       "title": "Это токен поставщика ликвидности (LP)",
@@ -4947,6 +4983,15 @@
     "UnknownTag": {
       "label": "Неизвестно",
       "tooltip": "Неизвестный токен, пожалуйста, проведите собственное исследование."
+    },
+    "screenshotModal": {
+      "title": "Скриншот для отзыва",
+      "placeholder": "Опишите проблему"
+    },
+    "feedbackPopup": {
+      "title": "Ответ от поддержки Rabby",
+      "issueReported": "Вот проблема, которую вы сообщили:",
+      "issueReplied": "Поддержка Rabby ответила:"
     }
   },
   "global": {
@@ -4985,7 +5030,8 @@
     "notSupportTesntnet": "Эта своя сеть поддерживается",
     "appDescription": "Ваш кошелек для Ethereum и EVM",
     "collapse": "Свернуть",
-    "Yes": "Да"
+    "Yes": "Да",
+    "Submit": "Отправить"
   },
   "background": {
     "error": {
@@ -5032,6 +5078,9 @@
         "actionCancel": "Операция отменена",
         "deviceNeedsWebHIDPermission": "Устройство не найдено или требует разрешения WebHID"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Скриншот для отзыва"
     }
   },
   "constant": {

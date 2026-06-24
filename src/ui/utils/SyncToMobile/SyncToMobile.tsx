@@ -7,6 +7,8 @@ import { openInTab } from '../webapi';
 import { useWallet } from '../WalletContext';
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
+import { useHideScreenshotContextMenu } from '@/ui/hooks/useScreenshotContextMenuVisible';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 export interface Props {
   children?: React.ReactNode;
@@ -15,6 +17,7 @@ export interface Props {
 export const SyncToMobile: React.FC<Props> = ({ children }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
+  const { isDarkTheme } = useThemeMode();
 
   React.useEffect(() => {
     wallet.isUnlocked().then((isUnlocked) => {
@@ -32,11 +35,15 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
     }, 0);
   }, [themeMode]);
 
+  useHideScreenshotContextMenu();
+
   return (
     <section
       className={clsx(
         'h-full overflow-y-auto',
-        'flex flex-col bg-r-blue-default'
+        'flex flex-col bg-r-blue-default',
+        isDarkTheme &&
+          "relative before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.4)]"
       )}
     >
       <header className="flex flex-col items-center justify-center mt-[42px] text-center">

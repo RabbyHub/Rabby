@@ -132,7 +132,12 @@ export const ImportCoboArgus: React.FC<{
         {(step === 'add-address' || step === 'select-address') &&
           t('page.newAddress.coboSafe.addCoboArgusAddress')}
       </Header>
-      <div className="p-20 h-[calc(100vh-180px)] overflow-y-scroll pb-[100px]">
+      <div
+        className={clsx(
+          'p-20 overflow-y-scroll pb-[100px]',
+          isInModal ? 'h-[420px]' : 'h-[calc(100vh-180px)]'
+        )}
+      >
         {step === 'select-chain' && (
           <ChainList checked={selectedChain} onChecked={setSelectedChain} />
         )}

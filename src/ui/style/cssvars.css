@@ -131,6 +131,7 @@
   --rb-light-neutral-bg-3: rgba(249, 249, 249, 1);
   --rb-light-neutral-bg-4: rgba(235, 237, 240, 1);
   --rb-light-neutral-bg-5: rgba(224, 229, 236, 0.5);
+  --rb-light-neutral-bg-page: rgba(246, 247, 247, 1);
   --rb-light-neutral-line: rgba(224, 229, 236, 1);
   --rb-light-neutral-title-1: rgba(25, 41, 69, 1);
   --rb-light-neutral-title-2: rgba(255, 255, 255, 1);
@@ -179,6 +180,7 @@
   --rb-dark-neutral-bg-3: rgba(28, 28, 29, 1);
   --rb-dark-neutral-bg-4: rgba(56, 59, 65, 1);
   --rb-dark-neutral-bg-5: rgba(47, 49, 53, 0.5);
+  --rb-dark-neutral-bg-page: rgba(0, 0, 0, 1);
   --rb-dark-neutral-line: rgba(47, 49, 53, 1);
   --rb-dark-neutral-title-1: rgba(247, 250, 252, 1);
   --rb-dark-neutral-title-2: rgba(255, 255, 255, 1);
@@ -357,6 +359,8 @@
   --rb-neutral-bg-4: var(--rb-light-neutral-bg-4);
   --rb-neutral-bg-5-rgb: 224, 229, 236;
   --rb-neutral-bg-5: var(--rb-light-neutral-bg-5);
+  --rb-neutral-bg-page-rgb: 246, 247, 247;
+  --rb-neutral-bg-page: var(--rb-light-neutral-bg-page);
   --rb-neutral-line-rgb: 224, 229, 236;
   --rb-neutral-line: var(--rb-light-neutral-line);
   --rb-neutral-title-1-rgb: 25, 41, 69;
@@ -547,6 +551,8 @@ html.dark, body.dark {
   --rb-neutral-bg-4: var(--rb-dark-neutral-bg-4);
   --rb-neutral-bg-5-rgb: 47, 49, 53;
   --rb-neutral-bg-5: var(--rb-dark-neutral-bg-5);
+  --rb-neutral-bg-page-rgb: 0, 0, 0;
+  --rb-neutral-bg-page: var(--rb-dark-neutral-bg-page);
   --rb-neutral-line-rgb: 47, 49, 53;
   --rb-neutral-line: var(--rb-dark-neutral-line);
   --rb-neutral-title-1-rgb: 247, 250, 252;

@@ -1,5 +1,5 @@
 import { Account } from '@/background/service/preference';
-import { KEYRING_TYPE } from '@/constant';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { ReactComponent as RcArrowDownSVG } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import { RcIconCopyCC } from '@/ui/assets/desktop/common';
 import { RcIconAddWalletCC } from '@/ui/assets/desktop/profile';
@@ -9,7 +9,7 @@ import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { isSameAccount } from '@/utils/account';
+import { isSameAccount, isSupportSmallSwapAccount } from '@/utils/account';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { Popover, Tooltip } from 'antd';
@@ -103,6 +103,7 @@ export const DesktopAccountSelector: React.FC<DesktopAccountSelectorProps> = ({
       >
         <div
           aria-disabled={disabled}
+          aria-expanded={isOpen}
           className={clsx(
             'h-[32px] pl-[12px] px-[10px] rounded-[8px]',
             'flex items-center gap-[6px]',
@@ -322,11 +323,7 @@ const AccountList: React.FC<{
             : false;
 
           const disabled =
-            scene === 'smallSwap' &&
-            !([
-              KEYRING_TYPE.HdKeyring,
-              KEYRING_TYPE.SimpleKeyring,
-            ] as string[]).includes(item.type);
+            scene === 'smallSwap' && !isSupportSmallSwapAccount(item);
 
           return (
             <div
@@ -377,7 +374,7 @@ const AccountList: React.FC<{
                 'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2'
               )}
             >
-              <RcIconAddWalletCC className="flex-shrink-0" />
+              <RcIconAddWalletCC className="shrink-0" />
               <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
                 {t('component.DesktopSelectAccountList.addAddresses')}
               </div>

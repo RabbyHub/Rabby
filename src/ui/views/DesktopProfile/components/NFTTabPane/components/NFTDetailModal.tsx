@@ -150,7 +150,7 @@ const Content: React.FC<Props> = (props) => {
       </h1>
       <div className="px-[20px] pb-[20px]">
         <div className="flex items-start gap-[16px]">
-          <div className="relative flex-shrink-0">
+          <div className="relative shrink-0">
             <NFTAvatar
               className="w-[340px] h-[340px]"
               type={nft?.content_type}

@@ -34,7 +34,11 @@ import {
   PerpsQuoteAsset,
   CANDLE_MENU_KEY_V2,
 } from '../views/Perps/constants';
-import { ApproveSignatures } from '@/background/service/perps';
+import type {
+  ApproveSignatures,
+  PerpsTpslModePreference,
+  PerpsTpslModePreferences,
+} from '@/background/service/perps';
 import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
@@ -120,6 +124,10 @@ export interface AccountHistoryItem {
 }
 
 const VALID_TPSL_MODES = ['price', 'pnl', 'roi'] as const;
+const DEFAULT_POSITION_TPSL_MODE_PREFERENCES: PerpsTpslModePreferences = {
+  tp: 'pnl',
+  sl: 'pnl',
+};
 
 const getSavedTpslMode = (
   type: 'takeProfit' | 'stopLoss'
@@ -204,6 +212,7 @@ export interface PerpsState {
   selectedTokenDetail: PerpTopTokenV3 | null;
   favoritedCoins: string[];
   marginModePreferences: Record<string, 'cross' | 'isolated'>;
+  tpslModePreferences: PerpsTpslModePreferences;
   chartInterval: string;
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
@@ -328,6 +337,7 @@ export const perps = createModel<RootModel>()({
     selectedCoin: 'BTC',
     favoritedCoins: [],
     marginModePreferences: {},
+    tpslModePreferences: DEFAULT_POSITION_TPSL_MODE_PREFERENCES,
     chartInterval: '15m',
     wsActiveAssetCtx: null,
     wsActiveAssetData: null,
@@ -919,6 +929,31 @@ export const perps = createModel<RootModel>()({
         marginModePreferences: {
           ...state.marginModePreferences,
           [payload.coin]: payload.mode,
+        },
+      };
+    },
+
+    setTpslModePreferences(state, payload: PerpsTpslModePreferences) {
+      return {
+        ...state,
+        tpslModePreferences: {
+          ...DEFAULT_POSITION_TPSL_MODE_PREFERENCES,
+          ...(payload || {}),
+        },
+      };
+    },
+
+    patchTpslModePreference(
+      state,
+      payload: { side: 'tp' | 'sl'; mode: PerpsTpslModePreference }
+    ) {
+      if (!payload.side) return state;
+      return {
+        ...state,
+        tpslModePreferences: {
+          ...DEFAULT_POSITION_TPSL_MODE_PREFERENCES,
+          ...state.tpslModePreferences,
+          [payload.side]: payload.mode,
         },
       };
     },
@@ -1707,6 +1742,35 @@ export const perps = createModel<RootModel>()({
         );
       } catch (error) {
         console.error('Failed to save margin mode preference:', error);
+      }
+    },
+
+    async initTpslModePreferences(_, rootState) {
+      try {
+        const preferences = await rootState.app.wallet.getPerpsTpslModePreferences();
+        dispatch.perps.setTpslModePreferences(
+          preferences || DEFAULT_POSITION_TPSL_MODE_PREFERENCES
+        );
+      } catch (error) {
+        console.error('Failed to load TP/SL mode preferences:', error);
+        dispatch.perps.setTpslModePreferences(
+          DEFAULT_POSITION_TPSL_MODE_PREFERENCES
+        );
+      }
+    },
+
+    async updateTpslModePreference(
+      payload: { side: 'tp' | 'sl'; mode: PerpsTpslModePreference },
+      rootState
+    ) {
+      try {
+        dispatch.perps.patchTpslModePreference(payload);
+        await rootState.app.wallet.setPerpsTpslModePreference(
+          payload.side,
+          payload.mode
+        );
+      } catch (error) {
+        console.error('Failed to save TP/SL mode preference:', error);
       }
     },
 

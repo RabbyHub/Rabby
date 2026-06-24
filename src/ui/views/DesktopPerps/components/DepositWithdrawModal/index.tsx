@@ -27,6 +27,7 @@ import { HistoryPopup } from './HistoryPopup';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { DepositPending } from './DepositPending';
 import { DashedUnderlineText } from '../DashedUnderlineText';
+import { ThousandsNativeInput } from '../ThousandsNativeInput';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/perps/IconInfo.svg';
 
 export type DepositWithdrawModalType = 'deposit' | 'withdraw';
@@ -193,7 +194,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
       className="modal-support-darkmode desktop-perps-deposit-withdraw-modal"
     >
       <PopupContainer>
-        <div className="bg-r-neutral-bg-2 h-[520px] flex flex-col h-full relative overflow-hidden desktop-perps-deposit-withdraw-content">
+        <div className="bg-r-neutral-bg-2 h-[520px] flex flex-col relative overflow-hidden desktop-perps-deposit-withdraw-content">
           <div className="px-20 pt-16 flex-1 pb-24">
             <div className="flex items-center justify-center gap-8 mb-16 relative">
               <div
@@ -279,7 +280,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 {/* Amount input + token pill */}
                 <div className="bg-r-neutral-card1 rounded-[8px] px-16 py-24 mb-12">
                   <div className="flex items-center gap-12">
-                    <input
+                    <ThousandsNativeInput
                       ref={inputRef}
                       className={clsx(
                         'flex-1 text-[28px] leading-[34px] font-medium bg-transparent border-none p-0 outline-none focus:outline-none min-w-0',
@@ -300,7 +301,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                       onClick={() => setTokenSelectVisible(true)}
                       className={clsx(
                         'flex items-center justify-center gap-6 pl-6 pr-8 h-32 rounded-[8px] border border-solid border-transparent',
-                        'bg-r-neutral-card-2 cursor-pointer flex-shrink-0',
+                        'bg-r-neutral-card-2 cursor-pointer shrink-0',
                         'hover:border-rabby-blue-default hover:text-rb-brand-default'
                       )}
                     >
@@ -346,7 +347,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               <>
                 <div className="bg-r-neutral-card1 rounded-[8px] px-20 py-20 mb-12">
                   <div className="flex flex-col items-center justify-center">
-                    <input
+                    <ThousandsNativeInput
                       ref={inputRef}
                       className={clsx(
                         'text-[32px] font-medium bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none',
@@ -431,7 +432,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
             )}
 
             <div className="mt-12 space-y-8">
-              {type === 'withdraw' && (
+              {type === 'withdraw' && !amountValidation.errorMessage && (
                 <>
                   <div className="flex items-center justify-between text-13">
                     <Tooltip

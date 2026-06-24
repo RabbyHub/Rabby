@@ -1234,14 +1234,14 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
 
         {isExceedMaxLtvAfterSwap ? (
           <div className="mb-12 rounded-[8px] border border-rb-red-default bg-rb-red-light-1 px-12 py-10 flex items-start gap-8">
-            <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-red-default mt-[1px]" />
+            <RcIconWarningCC className="w-16 h-16 shrink-0 text-rb-red-default mt-[1px]" />
             <span className="text-[13px] leading-[16px] text-rb-red-default">
               {t('page.lending.debtSwap.maxLtvWarning')}
             </span>
           </div>
         ) : isLiquidatable ? (
           <div className="mb-12 rounded-[8px] border border-rb-red-default bg-rb-red-light-1 px-12 py-10 flex items-start gap-8">
-            <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-red-default mt-[1px]" />
+            <RcIconWarningCC className="w-16 h-16 shrink-0 text-rb-red-default mt-[1px]" />
             <span className="text-[13px] leading-[16px] text-rb-red-default">
               {t('page.lending.debtSwap.lpDangerWarning')}
             </span>
@@ -1252,7 +1252,7 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
           <>
             {!!riskDesc && (
               <div className="mb-8 rounded-[8px] border border-rb-orange-default bg-rb-orange-light-1 px-12 py-10 flex items-start gap-8">
-                <RcIconWarningCC className="w-16 h-16 flex-shrink-0 text-rb-orange-default mt-[1px]" />
+                <RcIconWarningCC className="w-16 h-16 shrink-0 text-rb-orange-default mt-[1px]" />
                 <span className="text-[13px] leading-[16px] text-rb-orange-default">
                   {riskDesc}
                 </span>

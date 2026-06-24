@@ -85,7 +85,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
               'bg-r-orange-light'
             )}
           >
-            <RcIconWarningCC className="flex-shrink-0 text-r-orange-default" />
+            <RcIconWarningCC className="shrink-0 text-r-orange-default" />
             <div>
               <div className="text-[13px] leading-[16px] font-medium text-r-orange-default">
                 {t('page.manageApprovals.EIP7702Panel.unsupportedAddressType')}
@@ -180,7 +180,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
                   <div className="flex items-center gap-[8px]">
                     <img
                       src={chain?.logo}
-                      className="w-[28px] h-[28px] flex-shrink-0"
+                      className="w-[28px] h-[28px] shrink-0"
                     />
                     <div className="text-[15px] leading-[18px] font-medium text-r-neutral-title1">
                       {ellipsisAddress(item.delegatedAddress).toLowerCase()}

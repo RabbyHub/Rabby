@@ -74,7 +74,7 @@ export const PerpsDisplayCoinName: React.FC<Props> = ({
         </span>
       </span>
       {Boolean(dexName) && showDexTag && (
-        <span className="ml-8 px-6 h-[18px] flex items-center text-12 font-medium text-rb-brand-default bg-rb-brand-light-1 rounded-[4px]">
+        <span className="ml-8 px-6 h-[18px] flex items-center text-12 font-medium text-rb-neutral-body bg-rb-neutral-bg-4 rounded-[4px]">
           {dexName}
         </span>
       )}

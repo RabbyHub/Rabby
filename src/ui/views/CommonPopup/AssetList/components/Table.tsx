@@ -1,11 +1,12 @@
 import clsx from 'clsx';
 import React from 'react';
+import { twMerge } from 'tailwind-merge';
 
 export const Table: React.FC<React.HTMLProps<HTMLTableElement>> = (attrs) => {
   return (
     <div
       {...attrs}
-      className={clsx('w-screen block -mx-20', attrs.className)}
+      className={twMerge('w-screen block -mx-20', attrs.className)}
     />
   );
 };

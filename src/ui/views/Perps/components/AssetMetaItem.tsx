@@ -41,13 +41,13 @@ const RankBadge: React.FC<{ rank: number }> = ({ rank }) => {
   const MedalIcon = MEDAL_ICON[rank];
   if (MedalIcon) {
     return (
-      <div className="w-[20px] h-[20px] flex items-center justify-center flex-shrink-0">
+      <div className="w-[20px] h-[20px] flex items-center justify-center shrink-0">
         <MedalIcon width={20} height={20} />
       </div>
     );
   }
   return (
-    <div className="w-[20px] h-[20px] flex items-center justify-center text-13 font-bold text-r-neutral-title-1 flex-shrink-0">
+    <div className="w-[20px] h-[20px] flex items-center justify-center text-13 font-bold text-r-neutral-title-1 shrink-0">
       {rank}
     </div>
   );

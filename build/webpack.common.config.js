@@ -172,6 +172,15 @@ const config = {
           },
           {
             loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require('postcss-nested'),
+                  require('postcss-custom-properties'),
+                  require('autoprefixer'),
+                ],
+              },
+            },
           },
           {
             loader: 'less-loader',

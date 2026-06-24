@@ -16,7 +16,7 @@ export const BorrowToCapTip: React.FC<{ className?: string }> = ({
       <RcIconWarningCC
         width={12}
         height={12}
-        className="text-rb-red-default flex-shrink-0 -mt-2 mr-2"
+        className="text-rb-red-default shrink-0 -mt-2 mr-2"
       />
       <span className="text-[13px] leading-[15px] font-medium text-rb-red-default">
         {t('page.lending.borrowOverview.reachCapTip')}

@@ -123,7 +123,7 @@ function AddressRow({
                 <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
               )}
             </div>
-            <span className={clsx('ml-[3px] favorite-star flex-shrink-0')}>
+            <span className={clsx('ml-[3px] favorite-star shrink-0')}>
               <ThemeIcon
                 onClick={(e) => {
                   e.stopPropagation();

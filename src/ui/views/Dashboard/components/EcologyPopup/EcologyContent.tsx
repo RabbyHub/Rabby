@@ -27,7 +27,7 @@ export const EcologyContent = () => {
             <img
               src={item.logo}
               alt={item.name + ' logo'}
-              className="w-[24px] h-[24px] flex-shrink-0"
+              className="w-[24px] h-[24px] shrink-0"
             />
             <div className="text-r-neutral-title-1 text-[15px] font-medium flex-1">
               {item?.name}

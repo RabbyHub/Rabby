@@ -411,7 +411,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
         >
           <RcIconWarningCC
             viewBox="0 0 16 16"
-            className="w-12 h-12 flex-shrink-0 mt-2"
+            className="w-12 h-12 shrink-0 mt-2"
           />
           <span className="text-[13px] leading-[16px] font-medium flex-1">
             {desc}
@@ -466,7 +466,7 @@ export const ToggleCollateralModal: React.FC<ToggleCollateralModalProps> = ({
           <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-red-light-1">
             <RcIconWarningCC
               viewBox="0 0 16 16"
-              className="w-15 h-15 text-rb-red-default flex-shrink-0"
+              className="w-15 h-15 text-rb-red-default shrink-0"
             />
             <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
               {t('page.lending.risk.toggleCollateralWarning')}

@@ -683,6 +683,32 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
   right: -6px;
 }
 
+/* Unify all red/green to the Rabby (-r) palette on the Perps pro page only.
+   That page is locked to dark and tagged with `perps-pro-theme` on <html>
+   (see usePreference). Remapping the -rb green/red tokens (default + tints)
+   to -r here keeps every rb-green/red usage consistent with the Rabby palette,
+   without affecting other desktop pages. */
+html.perps-pro-theme {
+  --rb-green-default: var(--r-green-default);
+  --rb-green-default-rgb: var(--r-green-default-rgb);
+  --rb-green-default-light: rgba(var(--r-green-default-rgb), 0.7);
+  --rb-green-default-light-rgb: var(--r-green-default-rgb);
+  --rb-green-light-1: rgba(var(--r-green-default-rgb), 0.14);
+  --rb-green-light-1-rgb: var(--r-green-default-rgb);
+  --rb-green-light-2: rgba(var(--r-green-default-rgb), 0.27);
+  --rb-green-light-2-rgb: var(--r-green-default-rgb);
+  --rb-green-light-4: rgba(var(--r-green-default-rgb), 0.8);
+  --rb-green-light-4-rgb: var(--r-green-default-rgb);
+  --rb-red-default: var(--r-red-default);
+  --rb-red-default-rgb: var(--r-red-default-rgb);
+  --rb-red-light-1: rgba(var(--r-red-default-rgb), 0.1);
+  --rb-red-light-1-rgb: var(--r-red-default-rgb);
+  --rb-red-light-2: rgba(var(--r-red-default-rgb), 0.2);
+  --rb-red-light-2-rgb: var(--r-red-default-rgb);
+  --rb-red-light-4: rgba(var(--r-red-default-rgb), 0.85);
+  --rb-red-light-4-rgb: var(--r-red-default-rgb);
+}
+
 html[desktop] {
   .ant-switch {
     background: var(--rb-neutral-line, #e0e5ec);

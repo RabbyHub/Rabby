@@ -552,7 +552,7 @@ const AddressManagement = () => {
                     className="mx-[16px] mb-[16px] px-[8px] h-[28px] bg-[rgba(0,0,0,0.1)] rounded-[4px] flex items-center cursor-pointer"
                     onClick={handleBackupSeedPhrase}
                   >
-                    <div className="w-[6px] h-[6px] rounded-full bg-r-orange-default flex-shrink-0" />
+                    <div className="w-[6px] h-[6px] rounded-full bg-r-orange-default shrink-0" />
                     <span className="text-13 text-r-orange-default font-medium flex-1 ml-[4px]">
                       {t('page.manageAddress.seedPhraseNotBackedUp')}
                     </span>

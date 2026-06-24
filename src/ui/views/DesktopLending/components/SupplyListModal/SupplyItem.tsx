@@ -65,7 +65,7 @@ export const SupplyItem = ({
         <span
           className={clsx(
             'text-[13px] leading-[18px] font-medium text-r-neutral-title-1 w-[130px]',
-            'flex-shrink-0 text-left'
+            'shrink-0 text-left'
           )}
         >
           {formatListNetWorth(Number(data.reserve.totalLiquidityUSD || '0'))}
@@ -73,7 +73,7 @@ export const SupplyItem = ({
         <span
           className={clsx(
             'text-[13px] leading-[20px] font-medium text-rb-green-default w-[126px]',
-            'flex-shrink-0 text-left'
+            'shrink-0 text-left'
           )}
         >
           {formatApy(Number(data.reserve.supplyAPY || '0'))}
@@ -81,7 +81,7 @@ export const SupplyItem = ({
         <span
           className={clsx(
             'text-[13px] leading-[20px] font-medium text-r-neutral-title-1 w-[150px]',
-            'flex-shrink-0 text-left'
+            'shrink-0 text-left'
           )}
         >
           {formatUsdValue(Number(data.walletBalanceUSD || '0'))}
@@ -100,7 +100,7 @@ export const SupplyItem = ({
             type="button"
             disabled
             className={clsx(
-              'min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
+              'min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] shrink-0',
               'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
               'opacity-50 bg-rb-neutral-bg-4'
             )}
@@ -113,7 +113,7 @@ export const SupplyItem = ({
           type="button"
           disabled={disableSupplyButton}
           className={clsx(
-            'min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
+            'min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] shrink-0',
             'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
             !disableSupplyButton && 'hover:bg-rb-brand-light-1',
             disableSupplyButton && 'opacity-50 bg-rb-neutral-bg-4'

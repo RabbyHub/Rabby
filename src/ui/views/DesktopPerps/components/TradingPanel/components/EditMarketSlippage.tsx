@@ -142,7 +142,7 @@ export const EditMarketSlippage: React.FC<EditMarketSlippageProps> = ({
               }
             />
             {error && (
-              <div className="text-[12px] text-r-red-default text-center">
+              <div className="text-12 text-r-red-default text-center">
                 {error}
               </div>
             )}

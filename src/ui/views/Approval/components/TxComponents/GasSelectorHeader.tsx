@@ -806,7 +806,7 @@ const GasSelectorHeader = ({
               />
             </div>
           ) : (
-            <GasLogoSVG className="flex-shrink-0 text-r-neutral-foot" />
+            <GasLogoSVG className="shrink-0 text-r-neutral-foot" />
           )}
           <div className="ml-8 gas-selector-card-content">
             {disabled ? (
@@ -932,7 +932,7 @@ const GasSelectorHeader = ({
             )}
           </div>
           {!gasMethod && gas.success ? (
-            <div className="mt-2 flex-shrink-1 text-r-neutral-body text-14 gas-amount">
+            <div className="mt-2 shrink-1 text-r-neutral-body text-14 gas-amount">
               {isGasHovering
                 ? calcGasEstimated(selectedGas?.estimated_seconds)
                 : `~${gasCostAmountStr}`}

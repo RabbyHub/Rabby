@@ -5,7 +5,7 @@ import {
   OffscreenCommunicationEvents,
 } from '@/constant/offscreen-communication';
 import browser from 'webextension-polyfill';
-import * as bitbox from 'bitbox-api';
+import * as bitbox from '@bitboxswiss/bitbox-api';
 
 export function initBitBox02() {
   const bridge = new BitBox02Bridge();

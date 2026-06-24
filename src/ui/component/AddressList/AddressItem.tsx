@@ -271,7 +271,7 @@ const AddressItem = memo(
             </div>
           </div>
           {keyring && (
-            <div className="action-button flex items-center flex-shrink-0 cursor-pointer">
+            <div className="action-button flex items-center shrink-0 cursor-pointer">
               {ActionButton && (
                 <ActionButton
                   data={account.address}

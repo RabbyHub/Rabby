@@ -273,7 +273,7 @@ export const DesktopPerpsSelectAccountList: React.FC<{
                 background: 'rgba(76, 101, 255, 0.08)',
               }}
             >
-              <RcIconAddWalletCC className="flex-shrink-0" />
+              <RcIconAddWalletCC className="shrink-0" />
               <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
                 {t('component.DesktopSelectAccountList.addAddresses')}
               </div>

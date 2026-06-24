@@ -108,6 +108,7 @@ import { ImportSeedOrKey } from './NewUserImport/ImportSeedOrKey';
 import { BiometricUnlockSetup } from './BiometricUnlockSetup';
 import { ManageApprovals } from './ManageApprovals';
 import { ManageBatchRevokeApprovals } from './ManageBatchApprovals';
+import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 
 declare global {
   interface Window {
@@ -118,13 +119,22 @@ declare global {
 const LogPageView = () => {
   const path = window.location.hash.replace(/#/, '');
 
-  ga4.firePageViewEvent({
-    pageLocation: path,
-  });
-  if (window._paq) {
-    window._paq.push(['setCustomUrl', path]);
-    window._paq.push(['trackPageView']);
-  }
+  useEffect(() => {
+    ga4.firePageViewEvent({
+      pageLocation: path,
+    });
+
+    const trackMatomoPageView = async () => {
+      if (!window._paq || !(await shouldReportUserBehaviorData())) {
+        return;
+      }
+
+      window._paq.push(['setCustomUrl', path]);
+      window._paq.push(['trackPageView']);
+    };
+
+    trackMatomoPageView();
+  }, [path]);
 
   return null;
 };

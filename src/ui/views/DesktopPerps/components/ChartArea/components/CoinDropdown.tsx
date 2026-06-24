@@ -128,9 +128,9 @@ const MarketRowComponent = memo(
           }}
         >
           {/* Left: Star + Logo + Symbol */}
-          <div className="flex items-center gap-[8px] w-[250px] flex-shrink-0">
+          <div className="flex items-center gap-[8px] w-[250px] shrink-0">
             <div
-              className="flex items-center justify-center w-[16px] h-[16px] flex-shrink-0"
+              className="flex items-center justify-center w-[16px] h-[16px] shrink-0"
               onClick={(e) => onToggleFavorite(marketItem.name, e)}
             >
               {isFavorited ? (
@@ -250,7 +250,6 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     favoritedCoins,
     marketDataMap,
     marketDataCategories,
-    selectedTokenDetail,
   } = useRabbySelector((state) => state.perps);
 
   const marketItem = marketDataMap[coin];
@@ -475,7 +474,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         <div className="flex items-center gap-[12px] px-[8px] py-[12px]">
           <div
             className={clsx(
-              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[250px] flex-shrink-0',
+              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[250px] shrink-0',
               sortField === 'name' && 'text-r-neutral-title-1 font-medium'
             )}
             onClick={() => handleSort('name')}
@@ -570,9 +569,9 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   );
 
   return (
-    <div className="mr-32 flex items-center gap-[8px] py-[4px]">
+    <div className="mr-[24px] flex items-center gap-[6px]">
       <div
-        className="flex items-center justify-center w-[16px] h-[16px] flex-shrink-0 cursor-pointer"
+        className="flex items-center justify-center w-[16px] h-[16px] shrink-0 cursor-pointer"
         onClick={(e) => handleToggleFavorite(coin, e)}
       >
         {favoritedCoins.includes(coin) ? (
@@ -589,29 +588,20 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         onVisibleChange={setDropdownVisible}
         placement="bottomLeft"
       >
-        <div className="flex items-center gap-[8px] cursor-pointer transition-colors rounded-[6px] min-w-[90px] justify-center">
+        <div className="flex items-center gap-[6px] cursor-pointer transition-colors rounded-[6px]">
           <TokenImg
             logoUrl={marketItem?.logoUrl || ''}
             withDirection={false}
-            size={24}
+            size={20}
           />
-          <div className="flex flex-col">
-            <div className="flex items-center gap-[8px]">
-              <PerpsDisplayCoinName
-                item={marketItem}
-                separator="-"
-                className="text-[20px] leading-[24px] font-bold"
-                quoteClassName="text-r-neutral-title-1"
-                showDexTag
-              />
-              <RcIconArrowDown className="text-r-neutral-secondary" />
-            </div>
-            {selectedTokenDetail?.brief ? (
-              <div className="text-[12px] leading-[14px] text-r-neutral-foot mt-[2px]">
-                {selectedTokenDetail.brief}
-              </div>
-            ) : null}
-          </div>
+          <PerpsDisplayCoinName
+            item={marketItem}
+            separator="-"
+            className="text-[20px] leading-[24px] font-medium"
+            quoteClassName="text-r-neutral-title-1"
+            showDexTag
+          />
+          <RcIconArrowDown className="w-[16px] h-[16px] text-r-neutral-secondary" />
         </div>
       </Dropdown>
     </div>

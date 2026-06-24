@@ -2,6 +2,7 @@ import React, { memo, ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 import cx from 'clsx';
 import { Button } from 'antd';
+import { twMerge } from 'tailwind-merge';
 
 interface StrayFooterProps {
   className?: string;
@@ -33,13 +34,10 @@ const StrayFooter = memo(
   ({ className, children, isFixed = true }: StrayFooterProps) => {
     return (
       <div
-        className={cx(
+        className={twMerge(
           'bottom-0 left-0 w-full flex lg:bottom-[-24px]',
           className,
-          {
-            fixed: isFixed,
-            absolute: !isFixed,
-          }
+          isFixed ? 'fixed' : 'absolute'
         )}
       >
         {children}

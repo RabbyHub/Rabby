@@ -180,7 +180,7 @@ const AddressItem = memo(
                 : 'group',
               !isCurrentAccount &&
                 !enableSwitch &&
-                'hover:bg-r-blue-light-1 hover:bg-opacity-[0.1]',
+                'hover:bg-r-blue-light-1/10',
               {
                 'is-switch': enableSwitch,
               }
@@ -200,7 +200,7 @@ const AddressItem = memo(
                 'rabby-address-item-left',
                 !isCurrentAccount &&
                   enableSwitch &&
-                  'hover:bg-r-blue-light-1 hover:bg-opacity-[0.1]',
+                  'hover:bg-r-blue-light-1/10',
                 isCurrentAccount && 'w-[calc(100%-34px)] pr-0'
               )}
             >

@@ -35,14 +35,17 @@
     "notSupportTesntnet": "不支持自定义网络",
     "appDescription": "你首选的以太坊和 EVM 钱包",
     "collapse": "折叠",
-    "Yes": "是"
+    "Yes": "是",
+    "Submit": "提交"
   },
   "page": {
     "transactions": {
       "title": "交易记录",
       "empty": {
         "desc": "在<1>支持的链</1>上找不到交易",
-        "title": "没有交易"
+        "title": "没有交易",
+        "noTxInThreeMonth": "90 天内无交易记录",
+        "descThreeMonths": "90 天内在<2>支持的链</2>上无交易记录"
       },
       "explain": {
         "approve": "授权 {{project}} 使用 {{amount}} {{symbol}}",
@@ -276,7 +279,8 @@
           "biometricUnlock": "通过生物识别解锁",
           "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
           "perpsFloatWidget": "永续合约悬浮窗",
-          "biometricUnlockHint": "使用生物识别在此设备上解锁。"
+          "biometricUnlockHint": "使用生物识别在此设备上解锁。",
+          "dataAnalysis": "数据分析"
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "更新版本",
@@ -3599,6 +3603,9 @@
       "stopLossTipsShort": "止损价必须高于当前价",
       "seeMore": "查看更多",
       "estimatedLiquidationPrice": "预计爆仓价",
+      "expectedSlippage": "预计滑点",
+      "lowLiquiditySwitchLimit": " 流动性不足，切换到限价单。",
+      "switchToLimit": "切换",
       "yourPosition": "你的持仓",
       "fee": "手续费",
       "closeLong": "平多",
@@ -3818,7 +3825,15 @@
           "marketCloseTitle": "市场平仓",
           "marketCloseDesc": "这将尝试立即平仓。",
           "invalidPrice": "无效价格",
-          "confirmCloseAllDesc": "所有未平仓仓位都将按市价平仓，并取消所有订单。"
+          "confirmCloseAllDesc": "所有未平仓仓位都将按市价平仓，并取消所有订单。",
+          "positionSize": "仓位大小",
+          "orderPrice": "订单价格",
+          "marketPrice": "市场价格",
+          "buy": "买入",
+          "sell": "卖出",
+          "buyToSell": "买入转卖出",
+          "sellToBuy": "卖出转买入",
+          "reverseAction": "{{side}}{{size}}{{coin}}反向"
         },
         "openOrders": {
           "tpSl": "止盈/止损",
@@ -4027,7 +4042,16 @@
         "gain": "盈利",
         "cancelTp": "取消止盈",
         "takeProfitExpectedPnl": "止盈的预期盈亏",
-        "stopLossExpectedPnl": "止损的预期盈亏"
+        "stopLossExpectedPnl": "止损的预期盈亏",
+        "entryCurrentPrice": "入场价格 / 当前价格",
+        "takeProfit": "止盈",
+        "stopLoss": "止损",
+        "triggerPrice": "触发价格",
+        "estimatedPnlWillBe": "您预计的盈亏将为",
+        "triggerHigherThanLiquidation": "触发价格应高于清算价格 {{price}}",
+        "triggerLowerThanLiquidation": "触发价格应低于清算价格 {{price}}",
+        "tpTriggerInvalid": "TP 触发价格无效，将不会设置",
+        "slTriggerInvalid": "SL 触发价格无效，将不会设置"
       },
       "accountInfo": {
         "balance": "余额",
@@ -4075,14 +4099,21 @@
         "viewBoth": "双向",
         "total": "合计",
         "viewBids": "买盘",
-        "trades": "成交记录"
+        "trades": "成交记录",
+        "avgPrice": "均价",
+        "sumBase": "合计 {{base}}",
+        "sumUsd": "合计 USD"
       },
       "editMargin": {
         "configureMargin": "配置保证金",
         "currentPosition": "当前头寸",
         "shortLiquidationTips": "上涨 {{percent}} 将触发清算",
         "title": "管理保证金",
-        "longLiquidationTips": "下跌 {{percent}} 将触发清算"
+        "longLiquidationTips": "下跌 {{percent}} 将触发清算",
+        "currentPrice": "当前价格"
+      },
+      "topBar": {
+        "favoriteEmpty": "您的收藏列表为空"
       }
     },
     "perpsDetail": {
@@ -4546,7 +4577,7 @@
       "singleTransactionGasLimit": "单笔交易 Gas Limit",
       "startConvert": "一键兑换",
       "stop": "停止兑换",
-      "unsupportedWalletType": "目前只支持私钥助记词类型的地址",
+      "unsupportedWalletType": "此地址类型不支持",
       "conversionProgress": "兑换进度",
       "completedTitle": "兑换完成！",
       "done": "完成",
@@ -4580,7 +4611,13 @@
       "statusColumn": "兑换状态",
       "noLowValueTokensFound": "暂无资产",
       "moreChains": "+{{count}} 条链",
-      "priceImpact": "价差上限"
+      "priceImpact": "价差上限",
+      "LedgerBtn": {
+        "start": "开始使用 Ledger",
+        "confirm": "请在 Ledger 上确认",
+        "continue": "继续",
+        "send": "正在发送签名请求"
+      }
     },
     "staking": {
       "title": "质押",
@@ -4975,7 +5012,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址",
-      "smallSwapDisabledTips": "目前仅支持私钥和助记词地址。"
+      "smallSwapDisabledTips": "不支持此地址类型"
     },
     "LpTokenTag": {
       "title": "这是一个流动性提供者(LP)代币",
@@ -4991,6 +5028,15 @@
     "UnknownTag": {
       "label": "未知",
       "tooltip": "未知代币，请自行研究。"
+    },
+    "screenshotModal": {
+      "title": "截图反馈",
+      "placeholder": "描述问题"
+    },
+    "feedbackPopup": {
+      "title": "Rabby Support 的回复",
+      "issueReported": "以下是您报告的问题：",
+      "issueReplied": "Rabby Support 已回复："
     }
   },
   "background": {
@@ -5021,6 +5067,9 @@
       "completed": "交易已完成",
       "txCompleteMoreContent": "{{chain}} #{{nonce}} 交易已完成，点击查看更多",
       "txFailedMoreContent": "{{chain}} #{{nonce}} 交易失败，点击查看更多"
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "截图反馈"
     },
     "alias": {
       "HdKeyring": "助记词",

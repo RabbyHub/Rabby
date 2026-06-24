@@ -10,6 +10,7 @@ import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
 import Spin from '../Spin';
 
 import './index.css';
+import clsx from 'clsx';
 
 interface StrayPageProps {
   header?: StrayHeaderProps;
@@ -76,6 +77,7 @@ interface StrayPageWithButtonProps {
   isScrollContainer?: boolean;
   disableKeyDownEvent?: boolean;
   custom?: boolean;
+  footerClassName?: string;
 }
 
 export const StrayPageWithButton = ({
@@ -104,6 +106,7 @@ export const StrayPageWithButton = ({
   disableKeyDownEvent = false,
   nextLoading = false,
   custom = false,
+  footerClassName,
 }: StrayPageWithButtonProps &
   StrayFooterNavProps & {
     style?: React.CSSProperties;
@@ -156,7 +159,7 @@ export const StrayPageWithButton = ({
             hideNextButton={hideNextButton}
             BackButtonContent={t('global.back')}
             NextButtonContent={NextButtonContent || t('global.next')}
-            className="z-10 footer"
+            className={clsx('z-10 footer', footerClassName)}
           />
         </Form>
       </div>

@@ -318,32 +318,26 @@ export const useQuoteMethods = () => {
       ]);
 
       const getGasPrice = () => {
-        let gasPrice = 0;
         if (
           lastTimeGas?.lastTimeSelect === 'gasPrice' &&
           lastTimeGas.gasPrice
         ) {
-          // use cached gasPrice if exist
-          gasPrice = lastTimeGas.gasPrice;
-        } else if (
-          lastTimeGas?.lastTimeSelect &&
-          lastTimeGas?.lastTimeSelect === 'gasLevel'
-        ) {
-          const target = gasMarket.find(
-            (item) => item.level === lastTimeGas?.gasLevel
-          )!;
-          if (target) {
-            gasPrice = target.price;
-          } else {
-            gasPrice =
-              gasMarket.find((item) => item.level === 'normal')?.price || 0;
-          }
-        } else {
-          // no cache, use the fast level in gasMarket
-          gasPrice =
-            gasMarket.find((item) => item.level === 'normal')?.price || 0;
+          return lastTimeGas.gasPrice;
         }
-        return gasPrice;
+
+        if (lastTimeGas?.lastTimeSelect === 'gasLevel') {
+          const targetGasLevel = gasMarket.find(
+            (item) => item.level === lastTimeGas.gasLevel
+          );
+          if (targetGasLevel) {
+            return targetGasLevel.price;
+          }
+        }
+
+        const normalGasLevel = gasMarket.find(
+          (item) => item.level === 'normal'
+        );
+        return normalGasLevel?.price || 0;
       };
 
       const gasPrice = getGasPrice();
@@ -353,6 +347,7 @@ export const useQuoteMethods = () => {
         .div(10 ** nativeToken.decimals)
         .times(nativeToken.price)
         .toString(10);
+      const gasUsd = formatUsdValue(gasUsdValue);
 
       return {
         shouldApproveToken: !tokenApproved,
@@ -360,7 +355,7 @@ export const useQuoteMethods = () => {
         gasPrice,
         gasUsed,
         gasUsdValue,
-        gasUsd: formatUsdValue(gasUsdValue),
+        gasUsd,
       };
     },
     [
@@ -440,7 +435,6 @@ export const useQuoteMethods = () => {
 
         const data = await getData();
 
-        console.log('log swapQuoteResult');
         stats.report('swapQuoteResult', {
           dex: dexId,
           chain,

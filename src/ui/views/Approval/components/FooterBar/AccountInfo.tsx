@@ -96,7 +96,7 @@ export const AccountInfo: React.FC<Props> = ({
               ref={nicknameRef}
               className={clsx(
                 'text-r-neutral-body text-[15px]',
-                'overflow-ellipsis whitespace-nowrap overflow-hidden',
+                'text-ellipsis whitespace-nowrap overflow-hidden',
                 'leading-[20px]'
               )}
             >

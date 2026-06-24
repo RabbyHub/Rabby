@@ -11,7 +11,7 @@ import {
   isSameAddress,
 } from 'ui/utils';
 import rabbyLogo from '@/ui/assets/unlock/rabby.svg';
-import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
+import unlockBackground from '@/ui/assets/unlock/background.svg';
 import { ReactComponent as BiometricsSVG } from '@/ui/assets/unlock/biometrics.svg';
 import { ReactComponent as PasswordSwitchSVG } from '@/ui/assets/dashboard/settings/password.svg';
 import { ReactComponent as BiometricSwitchSVG } from '@/ui/assets/dashboard/settings/biometric.svg';
@@ -46,6 +46,19 @@ const BiometricsImage = styled.div`
   margin-top: 28px;
   display: flex;
   justify-content: center;
+`;
+
+const UnlockPage = styled.div`
+  background-color: #ecf3ff;
+  background-image: url(${unlockBackground});
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+
+  html.dark & {
+    background-color: var(--r-neutral-bg-1);
+    background-image: none;
+  }
 `;
 
 const UnlockMethodSwitch = styled.button`
@@ -334,8 +347,7 @@ const Unlock = () => {
 
   return (
     <FullscreenContainer isUnlock>
-      <div className="unlock page-has-ant-input relative h-full min-h-[550px]">
-        <BackgroundSVG className="absolute inset-0 z-[-1]" />
+      <UnlockPage className="unlock page-has-ant-input relative h-full min-h-[550px]">
         <div className="pt-[124px]">
           {showBiometricSwitch && (
             <div className="w-full absolute top-32 left-0 right-0 flex justify-center z-10">
@@ -469,7 +481,7 @@ const Unlock = () => {
             </footer>
           </Form>
         )}
-      </div>
+      </UnlockPage>
     </FullscreenContainer>
   );
 };

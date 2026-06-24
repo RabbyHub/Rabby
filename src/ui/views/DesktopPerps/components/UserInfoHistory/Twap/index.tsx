@@ -387,7 +387,7 @@ export const Twap: React.FC = () => {
               className={clsx(
                 'absolute top-0 left-0 right-0 bottom-0',
                 'flex flex-col justify-center',
-                'pl-[16px] py-[8px]',
+                'pl-[12px] py-[8px]',
                 record.side === 'B' ? 'is-long-bg' : 'is-short-bg'
               )}
             >
@@ -411,7 +411,7 @@ export const Twap: React.FC = () => {
                 }}
               >
                 <div className="flex flex-col gap-[4px]">
-                  <div className="text-[13px] leading-[16px] font-semibold text-r-neutral-title-1 gap-6 flex items-center flex-row">
+                  <div className="text-[13px] leading-[16px] text-r-neutral-title-1 gap-6 flex items-center flex-row">
                     <span
                       className="group cursor-pointer"
                       onClick={(e) => {
@@ -438,7 +438,7 @@ export const Twap: React.FC = () => {
                       />
                     )}
                   </div>
-                  <div className="text-[12px] leading-[14px] font-medium text-r-neutral-foot">
+                  <div className="text-[12px] leading-[14px] text-rb-neutral-secondary">
                     {sideName} ({sliceCount} slices)
                   </div>
                 </div>
@@ -469,7 +469,7 @@ export const Twap: React.FC = () => {
                   </span>
                 )}
               </div>
-              <div className="text-rb-neutral-foot">
+              <div className="text-rb-neutral-secondary">
                 {record.executedSz} / {Number(record.sz)}
               </div>
             </div>
@@ -671,7 +671,7 @@ export const Twap: React.FC = () => {
     <div className="flex flex-col h-full">
       {/* Tabs */}
       <div
-        className="flex bg-rb-neutral-bg-4 p-[2px] rounded-[8px] ml-16 mt-10"
+        className="flex bg-rb-neutral-bg-4 p-[2px] rounded-[8px] ml-12 mt-10"
         style={{ width: 'fit-content' }}
       >
         <div

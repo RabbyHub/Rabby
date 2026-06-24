@@ -60,12 +60,15 @@ import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
+
 import IconIntro from 'ui/assets/dashboard/dapp-account-intro.png';
 
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
 import semver from 'semver-compare';
-import { Contacts, RecentConnections } from '..';
+import Contacts from '../Contacts';
+import RecentConnections from '../RecentConnections';
 import SwitchThemeModal from './components/SwitchThemeModal';
 import { CurrencyModal } from './components/CurrencyModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -624,6 +627,8 @@ const SettingsInner = ({
   const [biometricBusy, setBiometricBusy] = useState(false);
   const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
   const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
+  const [dataAnalysisPending, setDataAnalysisPending] = useState(false);
+
   const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
     () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
   );
@@ -653,6 +658,9 @@ const SettingsInner = ({
   const AUTO_LOCK_OPTIONS = useAutoLockOptions();
   const isShowTestnet = useRabbySelector(
     (state) => state.preference.isShowTestnet
+  );
+  const userDataTrackingOptOut = useRabbySelector(
+    (state) => state.preference.userDataTrackingOptOut
   );
   const themeMode = useRabbySelector((state) => state.preference.themeMode);
 
@@ -764,6 +772,19 @@ const SettingsInner = ({
       setPerpsWidgetBusy(false);
     }
   });
+
+  const handleToggleUserDataTrackingOptOut = useMemoizedFn(
+    async (checked: boolean) => {
+      try {
+        setDataAnalysisPending(true);
+        await dispatch.preference.setUserDataTrackingOptOut(!checked);
+      } catch (error) {
+        message.error((error as Error)?.message || 'Failed to update setting');
+      } finally {
+        setDataAnalysisPending(false);
+      }
+    }
+  );
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -1052,6 +1073,19 @@ const SettingsInner = ({
           ),
         },
         {
+          leftIcon: RcIconDataAnalysisCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.settings.dataAnalysis'),
+          rightIcon: (
+            <Switch
+              checked={!userDataTrackingOptOut}
+              onChange={handleToggleUserDataTrackingOptOut}
+              loading={dataAnalysisPending}
+              disabled={dataAnalysisPending}
+            />
+          ),
+        },
+        {
           leftIcon: RcIconCustomTestnet,
           content: t('page.dashboard.settings.settings.customTestnet'),
           onClick: () => {
@@ -1306,9 +1340,7 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconSettingsCodeCC,
-          content: (
-            <div className="flex-shrink-0">Mock Exposure Rate Guidance</div>
-          ),
+          content: <div className="shrink-0">Mock Exposure Rate Guidance</div>,
           rightIcon: (
             <div className="flex items-center justify-end gap-8">
               <Button
@@ -1619,65 +1651,74 @@ const SettingsInner = ({
 
   return (
     <div className="popup-settings">
-      <div className="content">
-        {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
-        <EcosystemBanner
-          isVisible={isShowEcology}
-          onClose={() => setIsShowEcologyModal(false)}
-        />
-        <RateModalTriggerOnSettings className="mb-[16px]" />
-        {Object.values(renderData).map((group, idxl1) => {
-          return (
-            <div key={`g-${idxl1}`} className="setting-block">
-              <div className="setting-title">{group.label}</div>
-              <div className="setting-items">
-                {group.items.map((data, idxl2) => (
-                  <Field
-                    key={`g-${idxl1}-item-${idxl2}`}
-                    leftIcon={
-                      <ThemeIcon
-                        src={data.leftIcon}
-                        className={clsx('icon', data.leftIconClassName)}
-                        style={data.leftIconStyle}
-                      />
-                    }
-                    rightIcon={
-                      data.rightIcon || (
+      <div
+        className={
+          'absolute top-0 right-0 bottom-0 left-0 overflow-auto px-[20px] pt-[20px]'
+        }
+      >
+        <div className={clsx('content')}>
+          {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
+
+          <RateModalTriggerOnSettings className="mb-[16px]" />
+
+          {Object.values(renderData).map((group, idxl1) => {
+            return (
+              <div key={`g-${idxl1}`} className="setting-block">
+                <div className="setting-title">{group.label}</div>
+                <div className="setting-items">
+                  {group.items.map((data, idxl2) => (
+                    <Field
+                      key={`g-${idxl1}-item-${idxl2}`}
+                      leftIcon={
                         <ThemeIcon
-                          src={RcIconArrowRight}
-                          className="icon icon-arrow-right"
+                          src={data.leftIcon}
+                          className={clsx('icon', data.leftIconClassName)}
+                          style={data.leftIconStyle}
                         />
-                      )
-                    }
-                    onClick={data.onClick}
-                    className={clsx(
-                      data.className,
-                      data.description ? 'has-desc' : null
-                    )}
-                  >
-                    {data.content}
-                    {data.description && (
-                      <p className="desc">{data.description}</p>
-                    )}
-                  </Field>
-                ))}
+                      }
+                      rightIcon={
+                        data.rightIcon || (
+                          <ThemeIcon
+                            src={RcIconArrowRight}
+                            className="icon icon-arrow-right"
+                          />
+                        )
+                      }
+                      onClick={data.onClick}
+                      className={clsx(
+                        data.className,
+                        data.description ? 'has-desc' : null
+                      )}
+                    >
+                      {data.content}
+                      {data.description && (
+                        <p className="desc">{data.description}</p>
+                      )}
+                    </Field>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
-      <footer className="footer">
-        <div className="px-8 py-2 rounded hover:bg-r-blue-light-1 inline-block">
-          <img
-            className="inline-block cursor-pointer"
-            src={LogoRabby}
-            alt="https://rabby.io"
-            onClick={() => {
-              openInTab('https://rabby.io', false);
-            }}
-          />
+            );
+          })}
         </div>
-      </footer>
+        <footer className="footer">
+          <div className="px-8 py-2 rounded hover:bg-r-blue-light-1 inline-block">
+            <img
+              className="inline-block cursor-pointer"
+              src={LogoRabby}
+              alt="https://rabby.io"
+              onClick={() => {
+                openInTab('https://rabby.io', false);
+              }}
+            />
+          </div>
+        </footer>
+      </div>
+      <EcosystemBanner
+        isVisible={isShowEcology}
+        onClose={() => setIsShowEcologyModal(false)}
+      />
+
       <Contacts
         visible={contactsVisible}
         onCancel={() => {

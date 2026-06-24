@@ -42,7 +42,7 @@ const AccountAlias = ({ address }: { address: string }) => {
           KEYRING_ICONS[account.type]
         }
       />
-      <span className="flex-1 overflow-hidden overflow-ellipsis whitespace-nowrap">
+      <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
         {account.alianName}
       </span>
     </Wrapper>

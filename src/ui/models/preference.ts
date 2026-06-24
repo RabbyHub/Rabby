@@ -34,6 +34,7 @@ interface PreferenceState {
   autoLockTime: number;
   hiddenBalance: boolean;
   isShowTestnet: boolean;
+  userDataTrackingOptOut: boolean;
   addressSortStore: AddressSortStore;
   themeMode: DARK_MODE_TYPE;
   reserveGasOnSendToken: boolean;
@@ -72,6 +73,7 @@ export const preference = createModel<RootModel>()({
     autoLockTime: 0,
     hiddenBalance: false,
     isShowTestnet: false,
+    userDataTrackingOptOut: true,
     addressSortStore: {} as AddressSortStore,
     themeMode: DARK_MODE_TYPE.system,
     reserveGasOnSendToken: false,
@@ -259,6 +261,14 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.setIsShowTestnet(value);
       dispatch.preference.getPreference('isShowTestnet');
+    },
+
+    async setUserDataTrackingOptOut(value: boolean, store) {
+      dispatch.preference.setField({
+        userDataTrackingOptOut: value,
+      });
+      await store.app.wallet.setUserDataTrackingOptOut(value);
+      dispatch.preference.getPreference('userDataTrackingOptOut');
     },
 
     async setDesktopTokensAllMode(value: boolean, store) {

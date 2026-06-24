@@ -4,7 +4,9 @@
       "title": "Transações",
       "empty": {
         "title": "Sem transações",
-        "desc": " Sem transações encontradas na <1>rede suportada</1>"
+        "desc": " Sem transações encontradas na <1>rede suportada</1>",
+        "noTxInThreeMonth": "Sem histórico de transações em 90 dias",
+        "descThreeMonths": "Sem histórico de transações em 90 dias em <2>redes suportadas</2>"
       },
       "explain": {
         "approve": "Aprovar {{amount}} {{symbol}} para {{project}}",
@@ -1323,7 +1325,8 @@
           "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
           "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
-          "searchCurrency": "Pesquisar moeda"
+          "searchCurrency": "Pesquisar moeda",
+          "dataAnalysis": "Análise de Dados"
         },
         "aboutUs": "Sobre nós",
         "currentVersion": "Versão Atual",
@@ -3514,6 +3517,9 @@
       "marginIsolated": "Margem (Isolada)",
       "back": "Voltar",
       "estimatedLiquidationPrice": "Preço de liquidação estimado",
+      "expectedSlippage": "Slippage estimado",
+      "lowLiquiditySwitchLimit": " Baixa liquidez, mude para ordem limite.",
+      "switchToLimit": "Mudar",
       "confirm": "Confirmar",
       "leverageRangeMinError": "A alavancagem mínima é {{min}}x",
       "add": "Adicionar",
@@ -3774,7 +3780,15 @@
           "marketCloseTitle": "Fechar Posição de Mercado",
           "marketCloseDesc": "Isso tentará fechar a posição imediatamente.",
           "confirmCloseAllTitle": "Confirmar Fechar Todas as Posições",
-          "confirmCloseAllDesc": "Todas as suas posições abertas serão fechadas a preço de mercado e todos os pedidos serão cancelados."
+          "confirmCloseAllDesc": "Todas as suas posições abertas serão fechadas a preço de mercado e todos os pedidos serão cancelados.",
+          "positionSize": "Tamanho da Posição",
+          "orderPrice": "Preço do Pedido",
+          "marketPrice": "Preço de Mercado",
+          "buy": "Comprar",
+          "sell": "Vender",
+          "buyToSell": "Comprar para vender",
+          "sellToBuy": "Vender para comprar",
+          "reverseAction": "{{side}} {{size}} {{coin}} para Inverter"
         },
         "openOrders": {
           "cancel": "Cancelar",
@@ -3983,7 +3997,16 @@
         "cancelTp": "Cancelar TP",
         "tp": "Lucro",
         "stopLossExpectedPnl": "P/L esperado do stop loss",
-        "markPrice": "Preço de marcação:"
+        "markPrice": "Preço de marcação:",
+        "entryCurrentPrice": "Preço de Entrada / Preço Atual",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "triggerPrice": "Preço de Trigger",
+        "estimatedPnlWillBe": "Seu PnL estimado será",
+        "triggerHigherThanLiquidation": "O preço de gatilho deve ser maior que o preço de liquidação {{price}}",
+        "triggerLowerThanLiquidation": "O preço de gatilho deve ser menor que o preço de liquidação {{price}}",
+        "tpTriggerInvalid": "O preço de gatilho do TP é inválido e não será definido",
+        "slTriggerInvalid": "O preço de gatilho do SL é inválido e não será definido"
       },
       "accountInfo": {
         "balance": "Saldo",
@@ -4031,14 +4054,21 @@
         "noTrades": "Sem negociações",
         "markPrice": "Preço de marcação",
         "trades": "Negociações",
-        "viewAsks": "Ordens de venda"
+        "viewAsks": "Ordens de venda",
+        "avgPrice": "Preço Médio",
+        "sumBase": "Soma {{base}}",
+        "sumUsd": "Soma USD"
       },
       "editMargin": {
         "configureMargin": "Configurar Margem",
         "shortLiquidationTips": "Subir {{percent}} acionará a liquidação",
         "currentPosition": "Posição Atual",
         "longLiquidationTips": "A queda de {{percent}} acionará a liquidação",
-        "title": "Gerenciar Margem"
+        "title": "Gerenciar Margem",
+        "currentPrice": "Preço Atual"
+      },
+      "topBar": {
+        "favoriteEmpty": "Sua lista de favoritos está vazia"
       }
     },
     "perpsDetail": {
@@ -4523,7 +4553,7 @@
       "slippageTolerance": "Tolerância de slippage",
       "singleTransactionGasLimit": "Gas Limit de Transação Única",
       "startConvert": "Iniciar conversão",
-      "unsupportedWalletType": "Apenas endereços de chave privada e frase-semente são suportados.",
+      "unsupportedWalletType": "Este tipo de endereço não é suportado",
       "stop": "Parar",
       "selectLowValueTokens": "Selecionar Tokens de Baixo Valor",
       "tokenColumn": "Token",
@@ -4536,7 +4566,13 @@
       "moreChains": "+{{count}} cadeias",
       "swapFailed": "Troca falhou, {{reason}}",
       "completedTips": "A troca em andamento continuará processando",
-      "priceImpact": "Limite de Impacto no Preço"
+      "priceImpact": "Limite de Impacto no Preço",
+      "LedgerBtn": {
+        "start": "Começar com Ledger",
+        "confirm": "Por favor, confirme com Ledger",
+        "continue": "Continuar",
+        "send": "Enviando solicitação de assinatura"
+      }
     },
     "staking": {
       "title": "Staking",
@@ -4932,7 +4968,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Adicionar endereço",
-      "smallSwapDisabledTips": "Atualmente, apenas endereços de chave privada e seed phrase são suportados."
+      "smallSwapDisabledTips": "Este tipo de endereço não é suportado"
     },
     "LpTokenTag": {
       "title": "Este é um token de provedor de liquidez (LP)",
@@ -4948,6 +4984,15 @@
     "UnknownTag": {
       "label": "Desconhecido",
       "tooltip": "Token desconhecido, faça sua própria pesquisa."
+    },
+    "screenshotModal": {
+      "title": "Captura de tela para feedback",
+      "placeholder": "Descreva o problema"
+    },
+    "feedbackPopup": {
+      "title": "Resposta do Suporte Rabby",
+      "issueReported": "Este é o problema que você reportou:",
+      "issueReplied": "O Suporte Rabby respondeu:"
     }
   },
   "global": {
@@ -4986,7 +5031,8 @@
     "Nonce": "Nonce",
     "appDescription": "Sua carteira de referência para Ethereum e EVM",
     "collapse": "Recolher",
-    "Yes": "Sim"
+    "Yes": "Sim",
+    "Submit": "Enviar"
   },
   "background": {
     "error": {
@@ -5035,6 +5081,9 @@
         "actionCancel": "Operação cancelada",
         "deviceNeedsWebHIDPermission": "Dispositivo não encontrado ou precisa de permissão WebHID"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Captura de tela para feedback"
     }
   },
   "constant": {

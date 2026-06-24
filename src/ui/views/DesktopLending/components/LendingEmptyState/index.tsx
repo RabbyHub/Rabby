@@ -134,7 +134,7 @@ export const LendingEmptyState: React.FC<{
             >
               {t('page.lending.list.headers.my_assets')}
             </span>
-            <span className="w-[80px] flex-shrink-0" />
+            <span className="w-[80px] shrink-0" />
           </div>
           {filterReserves.map((item) => (
             <SupplyItem

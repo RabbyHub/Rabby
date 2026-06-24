@@ -27,7 +27,7 @@ export const TopUserItem = (props: User) => {
       className={clsx(
         'h-[56px] pl-[20px] pr-[4px] py-[12px] flex items-center',
         props.showCurrentUser &&
-          'absolute w-full bottom-0 bg-r-neutral-bg-1 bg-opacity-95 border-0 border-t-[0.5px] border-rabby-neutral-line  backdrop-blur-[4px]',
+          'absolute w-full bottom-0 bg-r-neutral-bg-1/95 border-0 border-t-[0.5px] border-rabby-neutral-line  backdrop-blur-[4px]',
         props.className
       )}
     >

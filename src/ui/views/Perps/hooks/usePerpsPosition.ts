@@ -16,6 +16,7 @@ import {
   OpenOrder,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { useTranslation } from 'react-i18next';
+import { isBuilderFeeNotApprovedError } from '../utils';
 
 export const usePerpsPosition = ({
   setCurrentTpOrSl,
@@ -48,6 +49,21 @@ export const usePerpsPosition = ({
     // '.15' -> '0.15'
     return px ? Number(px).toString() : undefined;
   };
+
+  // builder fee not approved — flag for re-prompt; true means "handled, stop".
+  const judgeIsBuilderFeeNeedApprove = useMemoizedFn(
+    (errorMessage?: string) => {
+      if (!isBuilderFeeNotApprovedError(errorMessage)) {
+        return false;
+      }
+      dispatch.perps.setAccountNeedApproveBuilderFee(true);
+      message.error({
+        duration: 1.5,
+        content: 'Builder fee not approved, please try again',
+      });
+      return true;
+    }
+  );
 
   const handleSetAutoClose = useMemoizedFn(
     async (params: {
@@ -88,6 +104,9 @@ export const usePerpsPosition = ({
       } catch (error) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
         if (isExpired) {
+          return;
+        }
+        if (judgeIsBuilderFeeNeedApprove(error?.message)) {
           return;
         }
         const errorText = params.tpTriggerPx
@@ -284,6 +303,9 @@ export const usePerpsPosition = ({
         if (isExpired) {
           return null;
         }
+        if (judgeIsBuilderFeeNeedApprove(e?.message)) {
+          return null;
+        }
         console.error('close position error', e);
         message.error({
           // className: 'toast-message-2025-center',
@@ -452,6 +474,9 @@ export const usePerpsPosition = ({
         if (isExpired) {
           return;
         }
+        if (judgeIsBuilderFeeNeedApprove(error?.message)) {
+          return;
+        }
         console.error(error);
         message.error({
           // className: 'toast-message-2025-center',
@@ -487,6 +512,9 @@ export const usePerpsPosition = ({
       } catch (error: any) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
         if (isExpired) {
+          return false;
+        }
+        if (judgeIsBuilderFeeNeedApprove(error?.message)) {
           return false;
         }
         console.error('PERPS stableCoinOrder error', error);
@@ -528,6 +556,9 @@ export const usePerpsPosition = ({
       } catch (error: any) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
         if (isExpired) {
+          return false;
+        }
+        if (judgeIsBuilderFeeNeedApprove(error?.message)) {
           return false;
         }
         console.error('PERPS closeAllPositions error', error);
@@ -596,6 +627,7 @@ export const usePerpsPosition = ({
       } catch (error: any) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
         if (isExpired) return false;
+        if (judgeIsBuilderFeeNeedApprove(error?.message)) return false;
         message.error({
           duration: 1.5,
           content:

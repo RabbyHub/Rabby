@@ -7,7 +7,7 @@ import './style.less';
 interface AddressViewProps {
   address: string;
   onClick?(): void;
-  ellipsis?: boolean;
+  ellipsis?: boolean | 'short';
   showArrow?: boolean;
   className?: string;
   showImportIcon?: boolean;

@@ -245,7 +245,7 @@ export const AssetListContainer: React.FC<Props> = ({
         </div>
         <div
           style={{
-            display: visible && !search ? 'block' : 'none',
+            display: visible && !search && !selectChainId ? 'block' : 'none',
           }}
         >
           <NftPreviewSection

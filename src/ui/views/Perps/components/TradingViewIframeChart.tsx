@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from 'react';
+import browser from 'webextension-polyfill';
 import type { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
 
@@ -330,6 +331,21 @@ const getTradingViewBaseUrl = () => {
   return local || DEFAULT_TRADINGVIEW_URL;
 };
 
+const isTradingViewExternalUrl = (url?: unknown): url is string => {
+  if (typeof url !== 'string') return false;
+
+  try {
+    const parsed = new URL(url);
+    return (
+      parsed.protocol === 'https:' &&
+      (parsed.hostname === 'tradingview.com' ||
+        parsed.hostname.endsWith('.tradingview.com'))
+    );
+  } catch (error) {
+    return false;
+  }
+};
+
 export const normalizeTradingViewLocale = (lang: string) => {
   const normalized = (lang || 'en').toLowerCase();
 
@@ -616,6 +632,13 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
             stateRef.current.onIntervalChange?.(
               resolutionToInterval(resolution)
             );
+          }
+        } else if (message.event === 'openExternalUrl') {
+          const url = message.payload?.url;
+          if (isTradingViewExternalUrl(url)) {
+            browser.tabs.create({ active: true, url }).catch(() => {
+              window.open(url, '_blank', 'noopener,noreferrer');
+            });
           }
         }
         return;

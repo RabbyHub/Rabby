@@ -33,7 +33,7 @@ export const LimitOrderTypeSelector: React.FC<LimitOrderTypeSelectorProps> = ({
   return (
     <div
       className={clsx(
-        'flex items-center gap-[4px] text-[12px] text-rb-neutral-secondary font-medium'
+        'flex items-center gap-[3px] text-12 text-rb-neutral-secondary'
       )}
     >
       TIF
@@ -41,7 +41,7 @@ export const LimitOrderTypeSelector: React.FC<LimitOrderTypeSelectorProps> = ({
         options={options}
         onSelect={(key) => onChange(key as LimitOrderType)}
       >
-        <div className="text-[12px] text-rb-neutral-title-1 flex items-center gap-[2px] cursor-pointer">
+        <div className="text-12 text-rb-neutral-title-1 flex items-center gap-[3px] cursor-pointer h-14">
           {OPTIONS.find((opt) => opt.value === value)?.label}
           <RcIconArrowDownCC className="text-rb-neutral-secondary" />
         </div>

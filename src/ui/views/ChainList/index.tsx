@@ -18,7 +18,7 @@ const List = ({ list }: { list: Chain[] }) => {
                 title={item.name}
                 className="rectangle w-[max-content]"
               >
-                <span className="overflow-hidden overflow-ellipsis">
+                <span className="overflow-hidden text-ellipsis">
                   {item.name}
                 </span>
               </TooltipWithMagnetArrow>

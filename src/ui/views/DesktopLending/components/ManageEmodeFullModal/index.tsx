@@ -427,7 +427,7 @@ const ManageEmodeFullContent: React.FC<ManageEmodeFullModalProps> = ({
             <div className="flex items-center gap-8 py-8 px-10 rounded-[8px] bg-rb-neutral-card-1">
               <RcIconWarningCC
                 viewBox="0 0 16 16"
-                className="w-12 h-12 text-rb-red-default flex-shrink-0 -mt-2"
+                className="w-12 h-12 text-rb-red-default shrink-0 -mt-2"
               />
               <span className="text-[14px] leading-[18px] font-medium text-rb-red-default flex-1">
                 {desc}

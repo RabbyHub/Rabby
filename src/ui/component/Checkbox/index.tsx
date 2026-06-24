@@ -67,7 +67,10 @@ const Checkbox = ({
           backgroundColor: checkState ? background : unCheckBackground,
         }}
       >
-        {checkIcon ?? <ThemeIcon src={IconCheck} className="icon icon-check" />}
+        {checkIcon ??
+          (checkState && (
+            <ThemeIcon src={IconCheck} className="icon icon-check" />
+          ))}
       </div>
       {children && <div className="rabby-checkbox__label">{children}</div>}
     </div>

@@ -101,7 +101,7 @@ export const ResetConfirm: React.FC<{
           className={clsx(
             'h-[52px] rounded-[8px]',
             'border-rabby-neutral-line bg-r-neutral-bg1 hover:border-rabby-blue-default focus:border-rabby-blue-default',
-            'text-r-neutral-title1 text-15 placeholder-r-neutral-foot placeholder-opacity-70'
+            'text-r-neutral-title1 text-15 placeholder-r-neutral-foot/70'
           )}
           size="large"
         />
@@ -123,7 +123,7 @@ export const ResetConfirm: React.FC<{
           className={clsx(
             'h-[48px] shadow-none rounded-[6px]',
             'text-[15px] font-medium',
-            'disabled:text-opacity-40 disabled:bg-r-red-default disabled:opacity-50 border-transparent',
+            'disabled:text-white/40 disabled:bg-r-red-default disabled:opacity-50 border-transparent',
             'before:content-none'
           )}
         >

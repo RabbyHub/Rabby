@@ -52,7 +52,7 @@ export const BorrowErrorTip: React.FC<{
     >
       <span
         className={clsx(
-          'flex-shrink-0 w-[18px] h-[18px] rounded-full',
+          'shrink-0 w-[18px] h-[18px] rounded-full',
           'flex items-center justify-center',
           'bg-rb-orange-default text-[12px]'
         )}

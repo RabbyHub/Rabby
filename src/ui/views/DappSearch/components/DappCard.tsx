@@ -87,7 +87,7 @@ export const DappCard = ({
           <FallbackImage
             url={data.logo_url || ''}
             origin={`https://${data.id}`}
-            className="rounded-full flex-shrink-0"
+            className="rounded-full shrink-0"
             width="32px"
           />
           <div className="min-w-0">

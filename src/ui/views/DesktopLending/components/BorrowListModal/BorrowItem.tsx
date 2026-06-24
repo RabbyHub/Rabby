@@ -73,7 +73,7 @@ export const BorrowItem = ({
         <span
           className={clsx(
             'text-[13px] leading-[18px] font-medium text-r-neutral-title-1 w-[150px]',
-            'flex-shrink-0 text-left'
+            'shrink-0 text-left'
           )}
         >
           {formatListNetWorth(Number(data.reserve.totalDebtUSD || '0'))}
@@ -81,7 +81,7 @@ export const BorrowItem = ({
         <span
           className={clsx(
             'text-[13px] leading-[20px] font-medium text-r-neutral-title-1 w-[150px]',
-            'flex-shrink-0 text-left'
+            'shrink-0 text-left'
           )}
         >
           {formatApy(Number(data.reserve.variableBorrowAPY || '0'))}
@@ -93,7 +93,7 @@ export const BorrowItem = ({
             type="button"
             disabled
             className={clsx(
-              'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
+              'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] shrink-0',
               'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
               'opacity-50 bg-rb-neutral-bg-4'
             )}
@@ -105,7 +105,7 @@ export const BorrowItem = ({
         <button
           type="button"
           className={clsx(
-            'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] flex-shrink-0',
+            'ml-8 min-w-[120px] h-[36px] flex items-center justify-center rounded-[6px] shrink-0',
             'bg-rb-neutral-bg-2 text-[13px] font-medium text-r-neutral-title-1',
             'hover:bg-rb-brand-light-1 hover:text-rb-brand-default'
           )}

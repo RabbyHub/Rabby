@@ -43,8 +43,6 @@ const rabbyAppColors = getRabbyColors(appThemeColors, rabbyAppCssPrefix);
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  mode: 'jit',
-  purge: ['./src/ui/**/*.{ts,tsx,html}'],
   theme: {
     spacing: [
       0,

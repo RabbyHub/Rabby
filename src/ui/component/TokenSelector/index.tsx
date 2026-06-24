@@ -527,7 +527,7 @@ const TokenSelector = ({
           )}
         >
           <Input
-            className={clsx({ active: isInputActive }, 'bg-r-neutral-card2')}
+            className={clsx({ active: isInputActive })}
             size="large"
             prefix={<img src={IconSearch} />}
             // Search by Name / Address
@@ -801,7 +801,7 @@ function CommonTokenItem(props: {
                     <LpTokenTag
                       size={14}
                       inModal
-                      iconClassName="text-r-neutral-foot flex-shrink-0"
+                      iconClassName="text-r-neutral-foot shrink-0"
                       protocolName={token.protocol_id || ''}
                     />
                   )}
@@ -820,7 +820,7 @@ function CommonTokenItem(props: {
                     <LpTokenTag
                       size={14}
                       inModal
-                      iconClassName="text-r-neutral-foot flex-shrink-0"
+                      iconClassName="text-r-neutral-foot shrink-0"
                       protocolName={token.protocol_id || ''}
                     />
                   )}

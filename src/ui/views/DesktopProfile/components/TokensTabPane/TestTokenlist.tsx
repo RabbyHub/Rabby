@@ -96,7 +96,7 @@ const CustomTestnetTokenTable: React.FC<TableProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <Table className="!w-full ml-0 mr-0">
+    <Table className="w-full ml-0 mr-0">
       <THeader
         className="w-full justify-between bg-rb-neutral-bg-1 rounded-[6px] py-8"
         rowClassName="px-8"

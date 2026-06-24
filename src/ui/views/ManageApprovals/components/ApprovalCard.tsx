@@ -78,7 +78,7 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
             checked={selected}
             indeterminate={partial}
             onChange={onToggle}
-            className="flex-shrink-0"
+            className="shrink-0"
           />
           <div className="flex items-center gap-[8px] min-w-0 flex-1">
             <AssetAvatar

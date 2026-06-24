@@ -56,7 +56,7 @@ export const MarginModePopup: React.FC<MarginModePopupProps> = ({
           >
             <div
               className={clsx(
-                'w-16 h-16 rounded-full border-[2px] border-solid mt-2 flex-shrink-0 flex items-center justify-center',
+                'w-16 h-16 rounded-full border-[2px] border-solid mt-2 shrink-0 flex items-center justify-center',
                 pendingMode === 'cross'
                   ? 'border-rabby-blue-default'
                   : 'border-rabby-neutral-foot'
@@ -86,7 +86,7 @@ export const MarginModePopup: React.FC<MarginModePopupProps> = ({
           >
             <div
               className={clsx(
-                'w-16 h-16 rounded-full border-[2px] border-solid mt-2 flex-shrink-0 flex items-center justify-center',
+                'w-16 h-16 rounded-full border-[2px] border-solid mt-2 shrink-0 flex items-center justify-center',
                 pendingMode === 'isolated'
                   ? 'border-rabby-blue-default'
                   : 'border-rabby-neutral-foot'

@@ -44,6 +44,9 @@
       "submitted": "Transaction envoyée",
       "txCompleteMoreContent": "{{chain}} #{{nonce}} finalisée. Cliquer pour en voir plus.",
       "txFailedMoreContent": "{{chain}} #{{nonce}} a échoué. Cliquer pour en voir plus."
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "Capture d'écran pour le feedback"
     }
   },
   "component": {
@@ -259,7 +262,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Ajouter une adresse",
-      "smallSwapDisabledTips": "Actuellement, seules les adresses de clé privée et de phrase de récupération sont prises en charge."
+      "smallSwapDisabledTips": "Ce type d'adresse n'est pas pris en charge"
     },
     "LpTokenTag": {
       "title": "Ceci est un jeton de fournisseur de liquidité (LP)",
@@ -275,6 +278,15 @@
     "UnknownTag": {
       "label": "Inconnu",
       "tooltip": "Jeton inconnu, faites vos propres recherches."
+    },
+    "screenshotModal": {
+      "title": "Capture d'écran pour le feedback",
+      "placeholder": "Décrivez le problème"
+    },
+    "feedbackPopup": {
+      "title": "Réponse du support Rabby",
+      "issueReported": "Voici le problème que vous avez signalé :",
+      "issueReplied": "Le support Rabby a répondu :"
     }
   },
   "constant": {
@@ -326,7 +338,8 @@
     "notSupportTesntnet": "Non pris en charge pour le réseau personnalisé",
     "appDescription": "Votre portefeuille de référence pour Ethereum et EVM",
     "collapse": "Réduire",
-    "Yes": "Oui"
+    "Yes": "Oui",
+    "Submit": "Soumettre"
   },
   "page": {
     "activities": {
@@ -1046,7 +1059,8 @@
           "perpsFloatWidget": "Widget flottant Perps",
           "biometricUnlock": "Déverrouiller avec des biométriques",
           "currency": "Devise",
-          "searchCurrency": "Rechercher une devise"
+          "searchCurrency": "Rechercher une devise",
+          "dataAnalysis": "Analyse des données"
         },
         "supportedChains": "Chaînes prises en charge",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -2497,7 +2511,9 @@
     "transactions": {
       "empty": {
         "desc": "Aucune transaction trouvée sur les <1>chaînes compatibles</1>",
-        "title": "Aucune transaction"
+        "title": "Aucune transaction",
+        "noTxInThreeMonth": "Aucune historique de transactions depuis 90 jours",
+        "descThreeMonths": "Aucune historique de transactions depuis 90 jours sur <2>les chaînes prises en charge</2>"
       },
       "explain": {
         "approve": "Approuver {{amount}} {{symbol}} pour {{project}}",
@@ -3861,6 +3877,9 @@
       "explorePerps": "Explorer les Perps",
       "entryPrice": "Prix d'entrée",
       "estimatedLiquidationPrice": "Prix de liquidation estimé",
+      "expectedSlippage": "Slippage estimé",
+      "lowLiquiditySwitchLimit": " Faible liquidité, passez à l'ordre limite.",
+      "switchToLimit": "Changer",
       "leverageRangeMinError": "Le levier minimum est de {{min}}x",
       "fee": "Frais",
       "size": "Taille de position",
@@ -4101,7 +4120,15 @@
           "dontShowAgain": "Ne pas montrer ceci à nouveau",
           "confirmCloseAllTitle": "Confirmer la fermeture de toutes les positions",
           "marketCloseDesc": "Cela tentera de fermer immédiatement la position.",
-          "confirmCloseAllDesc": "Toutes vos positions ouvertes seront fermées au prix du marché et toutes les commandes seront annulées."
+          "confirmCloseAllDesc": "Toutes vos positions ouvertes seront fermées au prix du marché et toutes les commandes seront annulées.",
+          "positionSize": "Taille de la position",
+          "orderPrice": "Prix de l'ordre",
+          "marketPrice": "Prix du marché",
+          "buy": "Acheter",
+          "sell": "Vendre",
+          "buyToSell": "Acheter pour vendre",
+          "sellToBuy": "Vendre pour acheter",
+          "reverseAction": "{{side}} {{size}} {{coin}} pour inverser"
         },
         "openOrders": {
           "cancel": "Annuler",
@@ -4310,7 +4337,16 @@
         "stopLossExpectedPnl": "Stop loss PnL attendu",
         "cancelTp": "Annuler la prise de bénéfices",
         "gain": "gain",
-        "takeProfitExpectedPnl": "Prise de profit prévue : PnL attendu"
+        "takeProfitExpectedPnl": "Prise de profit prévue : PnL attendu",
+        "entryCurrentPrice": "Prix d'entrée / Prix actuel",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "triggerPrice": "Prix de déclenchement",
+        "estimatedPnlWillBe": "Votre PnL estimé sera",
+        "triggerHigherThanLiquidation": "Le prix de déclenchement doit être supérieur au prix de liquidation {{price}}",
+        "triggerLowerThanLiquidation": "Le prix de déclenchement doit être inférieur au prix de liquidation {{price}}",
+        "tpTriggerInvalid": "Le prix de déclenchement du TP n'est pas valide et ne sera pas défini",
+        "slTriggerInvalid": "Le prix de déclenchement du SL n'est pas valide et ne sera pas défini"
       },
       "accountInfo": {
         "totalBalance": "Solde total",
@@ -4358,14 +4394,21 @@
         "trades": "Transactions",
         "time": "Temps",
         "noTrades": "Aucune transaction",
-        "viewBids": "Ordres d'achat"
+        "viewBids": "Ordres d'achat",
+        "avgPrice": "Prix moyen",
+        "sumBase": "Somme {{base}}",
+        "sumUsd": "Somme USD"
       },
       "editMargin": {
         "title": "Gérer la marge",
         "currentPosition": "Position actuelle",
         "configureMargin": "Configurer la marge",
         "shortLiquidationTips": "Monter de {{percent}} déclenchera la liquidation.",
-        "longLiquidationTips": "Une baisse de {{percent}} déclenchera la liquidation."
+        "longLiquidationTips": "Une baisse de {{percent}} déclenchera la liquidation.",
+        "currentPrice": "Prix actuel"
+      },
+      "topBar": {
+        "favoriteEmpty": "Votre liste de favoris est vide"
       }
     },
     "perpsDetail": {
@@ -4850,7 +4893,7 @@
       "slippageTolerance": "Tolérance de slippage",
       "singleTransactionGasLimit": "Gas Limit pour une seule transaction",
       "startConvert": "Démarrer la conversion",
-      "unsupportedWalletType": "Seules les adresses de clé privée et de phrase de graine sont prises en charge.",
+      "unsupportedWalletType": "Ce type d'adresse n'est pas pris en charge",
       "stop": "Arrêter",
       "selectLowValueTokens": "Sélectionner les jetons de faible valeur",
       "tokenColumn": "Jeton",
@@ -4863,7 +4906,13 @@
       "moreChains": "+{{count}} chaînes",
       "swapFailed": "Échec de l'échange, {{reason}}",
       "completedTips": "L'échange en cours continuera à être traité",
-      "priceImpact": "Plafond de l'incidence sur le prix"
+      "priceImpact": "Plafond de l'incidence sur le prix",
+      "LedgerBtn": {
+        "start": "Démarrer avec Ledger",
+        "confirm": "Veuillez confirmer avec Ledger",
+        "continue": "Continuer",
+        "send": "Envoi de la demande de signature"
+      }
     },
     "staking": {
       "title": "Staking",

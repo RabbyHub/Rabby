@@ -81,7 +81,7 @@ const CollateralTokenPopup = ({
         <div className="px-[18px] pt-[6px] pb-[4px]">
           {hasLtvZeroCollateral ? (
             <div className="mb-[8px] flex items-start gap-[4px] rounded-[8px] bg-rb-orange-light-1 px-[12px] py-[8px]">
-              <RcIconWarningCC className="mt-[1px] h-[14px] w-[14px] flex-shrink-0 text-rb-orange-default" />
+              <RcIconWarningCC className="mt-[1px] h-[14px] w-[14px] shrink-0 text-rb-orange-default" />
               <span className="text-[12px] leading-[16px] text-rb-orange-default">
                 {t('page.lending.repayWithAToken.zeroLtvCollateralTips')}
               </span>
@@ -128,10 +128,10 @@ const CollateralTokenPopup = ({
                       {token.symbol}
                     </span>
                   </div>
-                  <span className="w-[70px] flex-shrink-0 text-center text-[14px] leading-[17px] font-medium text-r-neutral-title-1">
+                  <span className="w-[70px] shrink-0 text-center text-[14px] leading-[17px] font-medium text-r-neutral-title-1">
                     {formatApy(Number(token.variableBorrowAPY || '0'))}
                   </span>
-                  <span className="min-w-[96px] flex-shrink-0 text-right text-[14px] leading-[17px] font-medium text-r-neutral-title-1">
+                  <span className="min-w-[96px] shrink-0 text-right text-[14px] leading-[17px] font-medium text-r-neutral-title-1">
                     {token.balance === '0'
                       ? '$0'
                       : formatListNetWorth(

@@ -50,11 +50,11 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
 
   return (
     <div className="flex items-center justify-between">
-      <span className="text-rb-neutral-secondary text-[12px]">
+      <span className="text-rb-neutral-secondary text-12">
         {t('page.perpsPro.tradingPanel.availableFunds')}
       </span>
       <span
-        className="text-rb-neutral-title-1 text-[12px] font-medium flex items-center gap-[4px] cursor-pointer"
+        className="text-rb-neutral-title-1 text-12 flex items-center gap-[4px] cursor-pointer"
         onClick={handleClick}
       >
         {splitNumberByStep(

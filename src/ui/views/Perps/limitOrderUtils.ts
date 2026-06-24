@@ -3,7 +3,10 @@ import { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 
 /** Excludes trigger orders and position-attached TP/SL. */
 export const isLimitOrder = (order: OpenOrder): boolean =>
-  !order.isTrigger && !order.isPositionTpsl && order.orderType === 'Limit';
+  !order.isTrigger &&
+  !order.isPositionTpsl &&
+  order.orderType === 'Limit' &&
+  order.coin.includes('@') === false; // filter out spot orders with coin like "@123"
 
 export const computeFilledPct = (origSz: string, sz: string): number => {
   const orig = new BigNumber(origSz || 0);

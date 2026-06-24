@@ -50,7 +50,7 @@ const RiskCheck = () => {
             className={clsx('flex justify-start gap-8', 'px-12')}
           >
             <IconDotCC
-              className="mt-6 text-rabby-blue-default flex-shrink-0"
+              className="mt-6 text-rabby-blue-default shrink-0"
               viewBox="0 0 8 8"
             />
             <span className="text-15 text-r-neutral-title1 font-normal">

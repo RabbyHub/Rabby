@@ -35,8 +35,8 @@ const Wraper = styled.div`
   left: 0;
   top: 0;
   background-color: var(--r-neutral-bg1, #fff);
-  transform: translateX(100%);
-  transition: transform 0.3s;
+  translate: 100%;
+  transition: translate 0.3s;
   border-radius: 16px 16px 0px 0px;
   padding: 20px 0 0 0;
 

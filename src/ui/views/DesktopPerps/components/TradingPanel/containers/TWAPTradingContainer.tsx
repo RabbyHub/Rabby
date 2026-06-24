@@ -294,33 +294,35 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   };
 
   return (
-    <div className="space-y-[12px]">
+    <div className="flex flex-col gap-[12px]">
       <OrderSideAndFunds
         availableBalance={availableBalance}
         quoteAsset={quoteAsset}
       />
 
-      <PositionSizeInputAndSlider
-        price={midPrice}
-        maxBuyTradeSize={maxBuyTradeSize}
-        maxSellTradeSize={maxSellTradeSize}
-        positionSize={positionSize}
-        setPositionSize={setPositionSize}
-        percentage={percentage}
-        setPercentage={setPercentage}
-        baseAsset={selectedCoin}
-        quoteAsset={quoteAsset}
-        szDecimals={szDecimals}
-        sizeDisplayUnit={sizeDisplayUnit}
-        onUnitChange={setSizeDisplayUnit}
-        reduceOnly={reduceOnly}
-      />
+      <div className="mt-[6px]">
+        <PositionSizeInputAndSlider
+          price={midPrice}
+          maxBuyTradeSize={maxBuyTradeSize}
+          maxSellTradeSize={maxSellTradeSize}
+          positionSize={positionSize}
+          setPositionSize={setPositionSize}
+          percentage={percentage}
+          setPercentage={setPercentage}
+          baseAsset={selectedCoin}
+          quoteAsset={quoteAsset}
+          szDecimals={szDecimals}
+          sizeDisplayUnit={sizeDisplayUnit}
+          onUnitChange={setSizeDisplayUnit}
+          reduceOnly={reduceOnly}
+        />
+      </div>
 
-      <div className="h-[1px] bg-rb-neutral-line" />
+      <div className="h-[1px] bg-rb-neutral-line my-[12px]" />
 
       {/* Total Time Section */}
       <div className="flex flex-col gap-[8px]">
-        <span className="text-rb-neutral-secondary text-[12px]">
+        <span className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.totalTime')}
         </span>
 
@@ -331,7 +333,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
             onChange={handleHourInputChange}
             className="flex-1 text-left"
             suffix={
-              <span className="text-15 font-medium text-rb-neutral-title-1">
+              <span className="text-15 text-rb-neutral-title-1">
                 {t('page.perpsPro.tradingPanel.hour')}
               </span>
             }
@@ -341,7 +343,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
             onChange={handleMinuteInputChange}
             className="flex-1 text-left"
             suffix={
-              <span className="text-15 font-medium text-rb-neutral-title-1">
+              <span className="text-15 text-rb-neutral-title-1">
                 {t('page.perpsPro.tradingPanel.min')}
               </span>
             }
@@ -360,7 +362,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
               <div
                 key={preset.label}
                 className={clsx(
-                  'flex-1 h-[32px] flex items-center justify-center text-center font-medium text-[13px] rounded-[6px] border border-solid',
+                  'flex-1 h-[32px] flex items-center justify-center text-center text-[13px] rounded-[6px] border border-solid',
                   isActive
                     ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default cursor-pointer'
                     : isDisabled
@@ -382,19 +384,17 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
         {/* Max duration + Number of Orders info */}
         {maxDurationMins >= 5 && (
-          <div className="text-rb-neutral-secondary text-[12px]">
+          <div className="text-rb-neutral-secondary text-12">
             {t('page.perpsPro.tradingPanel.maxDurationTwap')}{' '}
-            <span className="font-medium text-rb-neutral-title-1">
+            <span className="text-rb-neutral-title-1">
               {maxDurationDisplay}
             </span>
             .
           </div>
         )}
-        <div className="text-rb-neutral-secondary text-[12px]">
+        <div className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.numberOfOrders')}{' '}
-          <span className="font-medium text-rb-neutral-title-1">
-            {numberOfOrders}
-          </span>
+          <span className="text-rb-neutral-title-1">{numberOfOrders}</span>
         </div>
       </div>
 

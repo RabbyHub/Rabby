@@ -322,12 +322,12 @@ export const PositionsInfo: React.FC = () => {
               className={clsx(
                 'absolute top-0 left-0 right-0 bottom-0',
                 'flex flex-col justify-center',
-                'pl-[16px] py-[8px]',
+                'pl-[12px] py-[8px]',
                 record.direction === 'Long' ? 'is-long-bg' : 'is-short-bg'
               )}
             >
               <div>
-                <div className="group text-[13px] leading-[16px] font-medium text-r-neutral-title-1 mb-[2px]">
+                <div className="group text-[13px] leading-[16px] text-r-neutral-title-1 mb-[2px]">
                   <PerpsDisplayCoinName
                     item={
                       marketDataMap[record.coin] || {
@@ -343,7 +343,7 @@ export const PositionsInfo: React.FC = () => {
                 </div>
                 <div
                   className={clsx(
-                    'text-[12px] leading-[14px] font-medium',
+                    'text-[12px] leading-[14px]',
                     record.direction === 'Long'
                       ? 'text-rb-green-default'
                       : 'text-rb-red-default'
@@ -351,7 +351,7 @@ export const PositionsInfo: React.FC = () => {
                 >
                   <span
                     className={clsx(
-                      'text-[12px] leading-[14px] font-medium hover:font-bold hover:text-rb-brand-default cursor-pointer'
+                      'text-[12px] leading-[14px] hover:font-bold hover:text-rb-brand-default cursor-pointer'
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -370,7 +370,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.size'),
         key: 'positionValue',
-        width: 160,
+        width: 120,
         dataIndex: 'positionValue',
         sorter: (a, b) => Number(a.positionValue) - Number(b.positionValue),
         render: (_, record) => {
@@ -379,7 +379,7 @@ export const PositionsInfo: React.FC = () => {
               <div className="text-[12px] leading-[14px]  text-r-neutral-title-1 mb-[4px]">
                 {formatUsdValue(record.positionValue || 0)}
               </div>
-              <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+              <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
                 {Number(record.size)} {formatPerpsCoin(record.coin)}
               </div>
             </div>
@@ -389,7 +389,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.markEntry'),
         key: 'entryPx',
-        width: 100,
+        width: 95,
         dataIndex: 'entryPx',
         sorter: (a, b) => Number(a.entryPx) - Number(b.entryPx),
         render: (_, record) => {
@@ -398,7 +398,7 @@ export const PositionsInfo: React.FC = () => {
               <div className="text-[12px] leading-[14px]  text-r-neutral-title-1 mb-[4px]">
                 ${splitNumberByStep(record.markPx)}
               </div>
-              <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+              <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
                 ${splitNumberByStep(record.entryPx || 0)}
               </div>
             </div>
@@ -408,7 +408,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.liqPrice'),
         key: 'liquidationPx',
-        width: 100,
+        width: 85,
         dataIndex: 'liquidationPx',
         sorter: (a, b) => Number(a.liquidationPx) - Number(b.liquidationPx),
         render: (_, record) => {
@@ -443,7 +443,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.margin'),
         key: 'marginUsed',
-        width: 140,
+        width: 100,
         dataIndex: 'marginUsed',
         sorter: (a, b) => Number(a.marginUsed) - Number(b.marginUsed),
         render: (_, record) => {
@@ -453,7 +453,7 @@ export const PositionsInfo: React.FC = () => {
                 <div className="text-[12px] leading-[14px]  text-r-neutral-title-1 mb-[4px]">
                   {formatUsdValue(Number(record.marginUsed || 0))}
                 </div>
-                <div className="text-[12px] leading-[14px]  text-rb-neutral-foot">
+                <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
                   {record.type === 'cross' ? 'Cross' : 'Isolated'}
                 </div>
               </div>
@@ -479,7 +479,7 @@ export const PositionsInfo: React.FC = () => {
             {t('page.perpsPro.userInfo.tab.unrealizedPnl')}
           </DashedUnderlineText>
         ),
-        width: 120,
+        width: 105,
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
         sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),
@@ -527,7 +527,7 @@ export const PositionsInfo: React.FC = () => {
           </DashedUnderlineText>
         ),
         key: 'fundingPayments',
-        width: 100,
+        width: 75,
         dataIndex: 'fundingPayments',
         sorter: (a, b) =>
           Number(a.sinceOpenFunding) - Number(b.sinceOpenFunding),
@@ -549,7 +549,7 @@ export const PositionsInfo: React.FC = () => {
         title: (
           <div className="flex">
             <div
-              className="text-rb-brand-default cursor-pointer font-bold text-[12px] hover:text-r-neutral-title-1 transition-colors whitespace-nowrap"
+              className="text-rb-brand-default cursor-pointer text-[12px] hover:text-r-neutral-title-1 transition-colors whitespace-nowrap"
               onClick={handleClickCloseAll}
             >
               MKT Close ALL
@@ -557,7 +557,7 @@ export const PositionsInfo: React.FC = () => {
           </div>
         ),
         key: 'closeAction',
-        width: 260,
+        width: 256,
         dataIndex: 'closeAction',
         render: (_, record) => {
           return (
@@ -571,16 +571,15 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.positionInfo.reverse'),
         key: 'reverse',
-        align: 'center',
         dataIndex: 'reverse',
-        width: 100,
+        width: 90,
         render: (_, record) => {
           return (
-            <div className="flex justify-center">
+            <div className="flex">
               <button
                 type="button"
                 className={clsx(
-                  'bg-rb-neutral-bg-4 rounded-[4px] px-[10px] h-[24px]',
+                  'bg-rb-neutral-bg-5 rounded-[4px] px-12 h-24',
                   'border border-transparent',
                   'hover:border-rb-brand-default',
                   'text-[12px] leading-[14px]  text-r-neutral-title-1'
@@ -601,8 +600,7 @@ export const PositionsInfo: React.FC = () => {
       {
         title: t('page.perpsPro.userInfo.tab.tpSl'),
         key: 'children',
-        align: 'center',
-        width: 140,
+        width: 175,
         dataIndex: 'children',
         render: (_, record) => {
           const tpPrice = record.tpItem?.triggerPx;
@@ -630,7 +628,7 @@ export const PositionsInfo: React.FC = () => {
           if (record.needSeeMoreOrder) {
             return (
               <div
-                className="text-[12px] leading-[14px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default flex item-center justify-center"
+                className="text-[12px] leading-[14px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default flex item-center"
                 onClick={(e) => {
                   e.stopPropagation();
                   eventBus.emit(
@@ -646,11 +644,11 @@ export const PositionsInfo: React.FC = () => {
 
           if (hasNoTpSl) {
             return (
-              <div className="flex items-center justify-center">
+              <div className="flex items-center">
                 <button
                   type="button"
                   className={clsx(
-                    'bg-rb-neutral-bg-4 rounded-[4px] px-[14px] h-[24px]',
+                    'bg-rb-neutral-bg-5 rounded-[4px] px-[14px] h-[24px]',
                     'border border-transparent',
                     'hover:border-rb-brand-default',
                     'text-[12px] leading-[14px]  text-r-neutral-title-1'
@@ -668,7 +666,7 @@ export const PositionsInfo: React.FC = () => {
           }
 
           return (
-            <div className="flex items-center justify-center gap-[6px]">
+            <div className="flex items-center gap-[6px]">
               <div className="flex flex-col gap-[4px]">
                 <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
                   {tpPrice ? (

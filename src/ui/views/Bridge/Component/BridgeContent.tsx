@@ -56,6 +56,7 @@ import {
   shouldIgnoreAmountChangeInMaxMode,
 } from '@/ui/utils/form';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
+import { buildFingerprint } from '@/ui/component/MiniSignV2/domain/ctx';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -65,6 +66,8 @@ const getContainer = isTab
   : isDesktop
   ? '.js-rabby-desktop-swap-container'
   : undefined;
+
+const BUILD_BRIDGE_TXS_DEBOUNCE_MS = 500;
 
 export const BridgeContent = () => {
   interface BridgeTopUpSnapshot {
@@ -96,6 +99,8 @@ export const BridgeContent = () => {
 
     openQuotesList,
     quoteLoading,
+    allQuotesLoaded,
+    quoteRequestId,
     quoteList,
     setQuotesList,
 
@@ -117,7 +122,6 @@ export const BridgeContent = () => {
     setAutoSlippage,
     setIsCustomSlippage,
 
-    clearExpiredTimer,
     maxNativeTokenGasPrice,
     setMaxNativeTokenGasPrice,
     inSufficientCanGetQuote,
@@ -319,13 +323,60 @@ export const BridgeContent = () => {
     maxNativeTokenGasPrice,
   ]);
 
-  const buildTxs = useMemoizedFn(async () => {
+  const selectedBridgeQuoteBuildKey = useMemo(() => {
+    if (!selectedBridgeQuote || !fromToken || !toToken) {
+      return '';
+    }
+
+    return [
+      fromToken.chain,
+      fromToken.id,
+      toToken.chain,
+      toToken.id,
+      amount,
+      slippageState,
+      selectedBridgeQuote.aggregator.id,
+      selectedBridgeQuote.bridge_id,
+      selectedBridgeQuote.shouldApproveToken ? '1' : '0',
+      selectedBridgeQuote.shouldTwoStepApprove ? '1' : '0',
+      selectedBridgeQuote.to_token_amount,
+      selectedBridgeQuote.approve_contract_id || '',
+      selectedBridgeQuote.tx?.to || '',
+      selectedBridgeQuote.tx?.value || '',
+      selectedBridgeQuote.tx?.data || '',
+      JSON.stringify(selectedBridgeQuote.quote_key || {}),
+      maxNativeTokenGasPrice || '',
+    ].join('|');
+  }, [
+    amount,
+    fromToken,
+    maxNativeTokenGasPrice,
+    selectedBridgeQuote,
+    slippageState,
+    toToken,
+  ]);
+  const selectedBridgeQuoteBuildKeyRef = useRef(selectedBridgeQuoteBuildKey);
+
+  useEffect(() => {
+    selectedBridgeQuoteBuildKeyRef.current = selectedBridgeQuoteBuildKey;
+  }, [selectedBridgeQuoteBuildKey]);
+
+  const buildTxs = useMemoizedFn(async (expectedBuildKey?: string) => {
     if (
       !inSufficient &&
       fromToken &&
       toToken &&
       selectedBridgeQuote?.bridge_id
     ) {
+      const buildKey =
+        expectedBuildKey || selectedBridgeQuoteBuildKeyRef.current;
+      if (
+        expectedBuildKey &&
+        buildKey !== selectedBridgeQuoteBuildKeyRef.current
+      ) {
+        return;
+      }
+
       try {
         // setFetchingBridgeQuote(true);
         const tx = await pRetry(
@@ -361,7 +412,15 @@ export const BridgeContent = () => {
           toChainId: toToken.chain,
           status: tx ? 'success' : 'fail',
         });
-        return wallet.buildBridgeToken(
+
+        if (
+          expectedBuildKey &&
+          buildKey !== selectedBridgeQuoteBuildKeyRef.current
+        ) {
+          return;
+        }
+
+        const result = await wallet.buildBridgeToken(
           {
             approveId: selectedBridgeQuote.approve_contract_id,
             to: tx.to,
@@ -413,6 +472,14 @@ export const BridgeContent = () => {
             },
           }
         );
+        if (
+          expectedBuildKey &&
+          buildKey !== selectedBridgeQuoteBuildKeyRef.current
+        ) {
+          return;
+        }
+        builtBridgeTxsKeyRef.current = buildKey;
+        return result;
       } catch (error) {
         setQuotesList((pre) =>
           pre?.filter(
@@ -443,11 +510,13 @@ export const BridgeContent = () => {
   const {
     data: txs,
     loading: buildTxsLoading,
-    runAsync: runBuildSwapTxs,
+    runAsync: runBuildBridgeTxs,
     mutate: mutateTxs,
   } = useRequest(buildTxs, {
     manual: true,
   });
+  const runBuildBridgeTxsRef = useRef<ReturnType<typeof runBuildBridgeTxs>>();
+  const runBuildBridgeTxsKeyRef = useRef('');
 
   const currentAccount = useCurrentAccount();
 
@@ -461,7 +530,71 @@ export const BridgeContent = () => {
     return !!impact?.showLoss;
   }, [fromToken, amount, selectedBridgeQuote?.to_token_amount, toToken]);
 
-  const runBuildSwapTxsRef = useRef<ReturnType<typeof runBuildSwapTxs>>();
+  const selectedBridgeQuoteIsBestQuote =
+    !!bestQuoteId &&
+    !!selectedBridgeQuote &&
+    bestQuoteId.aggregatorId === selectedBridgeQuote.aggregator.id &&
+    bestQuoteId.bridgeId === selectedBridgeQuote.bridge_id;
+  const selectedBridgeQuoteIsManualQuote = !!selectedBridgeQuote?.manualClick;
+  const shouldPreExecSelectedBridgeQuote =
+    selectedBridgeQuoteIsBestQuote || selectedBridgeQuoteIsManualQuote;
+
+  const buildBridgeTxsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+  const builtBridgeTxsKeyRef = useRef('');
+  const prefetchedBridgeTxsKeyRef = useRef('');
+  const bridgeAutoPreExecRef = useRef({
+    requestId: 0,
+    earlyBuildKey: '',
+    finalBuildKey: '',
+  });
+  const quoteRequestIdRef = useRef(quoteRequestId);
+  const allQuotesLoadedRef = useRef(allQuotesLoaded);
+  const submitTxRef = useRef(false);
+
+  useEffect(() => {
+    quoteRequestIdRef.current = quoteRequestId;
+  }, [quoteRequestId]);
+
+  useEffect(() => {
+    allQuotesLoadedRef.current = allQuotesLoaded;
+  }, [allQuotesLoaded]);
+
+  useEffect(() => {
+    if (submitTxRef.current) {
+      return;
+    }
+
+    quoteRequestIdRef.current = quoteRequestId;
+    bridgeAutoPreExecRef.current = {
+      requestId: quoteRequestId,
+      earlyBuildKey: '',
+      finalBuildKey: '',
+    };
+    builtBridgeTxsKeyRef.current = '';
+    prefetchedBridgeTxsKeyRef.current = '';
+    mutateTxs([]);
+    runBuildBridgeTxsRef.current = undefined;
+    runBuildBridgeTxsKeyRef.current = '';
+    if (buildBridgeTxsTimerRef.current) {
+      clearTimeout(buildBridgeTxsTimerRef.current);
+      buildBridgeTxsTimerRef.current = null;
+    }
+  }, [quoteRequestId]);
+
+  const runBuildBridgeTxsForKey = useMemoizedFn((buildKey: string) => {
+    const buildPromise = runBuildBridgeTxs(buildKey);
+    runBuildBridgeTxsRef.current = buildPromise;
+    runBuildBridgeTxsKeyRef.current = buildKey;
+    buildPromise.finally(() => {
+      if (runBuildBridgeTxsRef.current === buildPromise) {
+        runBuildBridgeTxsRef.current = undefined;
+        runBuildBridgeTxsKeyRef.current = '';
+      }
+    });
+    return buildPromise;
+  });
 
   const noQuote =
     inSufficientCanGetQuote &&
@@ -513,7 +646,9 @@ export const BridgeContent = () => {
     !depositFlowActive;
   const canPrepareDirectSign = canUseDirectSubmitTx && canBuildBridgeTxs;
   const directSignTxPreparing =
-    canPrepareDirectSign && (buildTxsLoading || !txs?.length);
+    canPrepareDirectSign &&
+    !submitTxRef.current &&
+    (buildTxsLoading || !txs?.length);
   const buildTopUpSnapshot = useCallback(
     (): BridgeTopUpSnapshot => ({
       amount: amount || '',
@@ -573,7 +708,14 @@ export const BridgeContent = () => {
 
     if (comparison.isChanged && !shouldIgnore) {
       closeSign();
-      runBuildSwapTxsRef.current = undefined;
+      if (buildBridgeTxsTimerRef.current) {
+        clearTimeout(buildBridgeTxsTimerRef.current);
+        buildBridgeTxsTimerRef.current = null;
+      }
+      builtBridgeTxsKeyRef.current = '';
+      prefetchedBridgeTxsKeyRef.current = '';
+      runBuildBridgeTxsRef.current = undefined;
+      runBuildBridgeTxsKeyRef.current = '';
       return true;
     }
 
@@ -581,22 +723,39 @@ export const BridgeContent = () => {
   }, [buildTopUpSnapshot, closeSign]);
 
   const handleBridge = useMemoizedFn(async () => {
+    submitTxRef.current = true;
     setReloadTxRefreshPaused(true);
     if (canUseDirectSubmitTx) {
-      consumeTopUpResumeGuard();
       setMiniSignLoading(true);
-      setFetchingBridgeQuote(true);
       try {
-        const buildPromise = runBuildSwapTxsRef.current || runBuildSwapTxs();
-        runBuildSwapTxsRef.current = buildPromise;
-        const builtTxs = await buildPromise;
-        setFetchingBridgeQuote(false);
-        if (!builtTxs?.length) {
-          throw MINI_SIGN_ERROR.PREFETCH_FAILURE;
+        if (buildBridgeTxsTimerRef.current) {
+          clearTimeout(buildBridgeTxsTimerRef.current);
+          buildBridgeTxsTimerRef.current = null;
         }
-        clearExpiredTimer();
+        const currentBuildKey = selectedBridgeQuoteBuildKeyRef.current;
+        const canReuseCurrentTxs =
+          !!currentBuildKey &&
+          builtBridgeTxsKeyRef.current === currentBuildKey &&
+          !!txs?.length;
+        let txsForSigning = canReuseCurrentTxs ? txs : undefined;
+        const formChangedDuringTopUp = consumeTopUpResumeGuard();
+        if (formChangedDuringTopUp || !txsForSigning?.length) {
+          setFetchingBridgeQuote(true);
+          const reusableBuildPromise =
+            runBuildBridgeTxsKeyRef.current === currentBuildKey
+              ? runBuildBridgeTxsRef.current
+              : undefined;
+          const buildPromise =
+            reusableBuildPromise || runBuildBridgeTxsForKey(currentBuildKey);
+          const builtTxs = await buildPromise;
+          setFetchingBridgeQuote(false);
+          if (!builtTxs?.length) {
+            throw MINI_SIGN_ERROR.PREFETCH_FAILURE;
+          }
+          txsForSigning = builtTxs;
+        }
         await openDirect({
-          txs: builtTxs,
+          txs: txsForSigning,
           getContainer,
           ga: {
             category: 'Bridge',
@@ -617,12 +776,16 @@ export const BridgeContent = () => {
             gotoBridge();
           },
         });
+        builtBridgeTxsKeyRef.current = '';
+        prefetchedBridgeTxsKeyRef.current = '';
         mutateTxs([]);
         handleAmountChange('');
       } catch (error) {
         setFetchingBridgeQuote(false);
         if (error == MINI_SIGN_ERROR.USER_CANCELLED) {
           refresh((e) => e + 1);
+          builtBridgeTxsKeyRef.current = '';
+          prefetchedBridgeTxsKeyRef.current = '';
           mutateTxs([]);
         } else if (error === MINI_SIGN_ERROR.CANT_PROCESS) {
           setTimeout(() => {
@@ -634,12 +797,14 @@ export const BridgeContent = () => {
         console.error('bridge direct sign error', error);
       } finally {
         setMiniSignLoading(false);
+        submitTxRef.current = false;
         setReloadTxRefreshPaused(false);
       }
     } else {
       try {
         await gotoBridge();
       } finally {
+        submitTxRef.current = false;
         setReloadTxRefreshPaused(false);
       }
     }
@@ -702,26 +867,138 @@ export const BridgeContent = () => {
   });
 
   useEffect(() => {
-    if (!btnDisabled && selectedBridgeQuote) {
-      if (awaitingTopUpResume || depositFlowActive) {
+    const clearBuildTimer = () => {
+      if (buildBridgeTxsTimerRef.current) {
+        clearTimeout(buildBridgeTxsTimerRef.current);
+        buildBridgeTxsTimerRef.current = null;
+      }
+    };
+
+    if (
+      !canUseDirectSubmitTx ||
+      btnDisabled ||
+      !selectedBridgeQuoteBuildKey ||
+      !shouldPreExecSelectedBridgeQuote ||
+      submitTxRef.current ||
+      awaitingTopUpResume ||
+      depositFlowActive
+    ) {
+      return clearBuildTimer;
+    }
+
+    if (
+      builtBridgeTxsKeyRef.current === selectedBridgeQuoteBuildKey ||
+      runBuildBridgeTxsKeyRef.current === selectedBridgeQuoteBuildKey
+    ) {
+      return clearBuildTimer;
+    }
+
+    builtBridgeTxsKeyRef.current = '';
+    prefetchedBridgeTxsKeyRef.current = '';
+    mutateTxs([]);
+    runBuildBridgeTxsRef.current = undefined;
+    runBuildBridgeTxsKeyRef.current = '';
+
+    const tracker = bridgeAutoPreExecRef.current;
+    if (tracker.requestId !== quoteRequestId) {
+      tracker.requestId = quoteRequestId;
+      tracker.earlyBuildKey = '';
+      tracker.finalBuildKey = '';
+    }
+
+    const isManualPreExec = selectedBridgeQuoteIsManualQuote;
+    const phase = allQuotesLoaded ? 'final' : 'early';
+
+    if (!isManualPreExec) {
+      if (!allQuotesLoaded && tracker.earlyBuildKey) {
+        return clearBuildTimer;
+      }
+      if (allQuotesLoaded) {
+        if (
+          tracker.finalBuildKey === selectedBridgeQuoteBuildKey ||
+          tracker.earlyBuildKey === selectedBridgeQuoteBuildKey
+        ) {
+          tracker.finalBuildKey = selectedBridgeQuoteBuildKey;
+          return clearBuildTimer;
+        }
+      }
+    }
+
+    const scheduledBuildKey = selectedBridgeQuoteBuildKey;
+    const scheduledQuoteRequestId = quoteRequestId;
+    buildBridgeTxsTimerRef.current = setTimeout(() => {
+      buildBridgeTxsTimerRef.current = null;
+      const latestTracker = bridgeAutoPreExecRef.current;
+      if (
+        submitTxRef.current ||
+        quoteRequestIdRef.current !== scheduledQuoteRequestId ||
+        latestTracker.requestId !== scheduledQuoteRequestId ||
+        selectedBridgeQuoteBuildKeyRef.current !== scheduledBuildKey
+      ) {
         return;
       }
-      mutateTxs([]);
-      runBuildSwapTxsRef.current = runBuildSwapTxs();
-    }
+
+      if (isManualPreExec) {
+        if (
+          builtBridgeTxsKeyRef.current === scheduledBuildKey ||
+          runBuildBridgeTxsKeyRef.current === scheduledBuildKey
+        ) {
+          return;
+        }
+      } else {
+        if (phase === 'early') {
+          if (allQuotesLoadedRef.current || latestTracker.earlyBuildKey) {
+            return;
+          }
+          latestTracker.earlyBuildKey = scheduledBuildKey;
+        } else {
+          if (
+            !allQuotesLoadedRef.current ||
+            latestTracker.finalBuildKey === scheduledBuildKey
+          ) {
+            return;
+          }
+          latestTracker.finalBuildKey = scheduledBuildKey;
+        }
+      }
+
+      runBuildBridgeTxsForKey(scheduledBuildKey);
+    }, BUILD_BRIDGE_TXS_DEBOUNCE_MS);
+
+    return clearBuildTimer;
   }, [
     canUseDirectSubmitTx,
     btnDisabled,
-    selectedBridgeQuote,
+    selectedBridgeQuoteBuildKey,
+    shouldPreExecSelectedBridgeQuote,
+    selectedBridgeQuoteIsManualQuote,
+    allQuotesLoaded,
+    quoteRequestId,
     awaitingTopUpResume,
     depositFlowActive,
   ]);
 
   useEffect(() => {
     if (!canUseDirectSubmitTx) return;
-    if (awaitingTopUpResume || depositFlowActive) {
+    if (submitTxRef.current || awaitingTopUpResume || depositFlowActive) {
       return;
     }
+    const canPrefetchCurrentTxs =
+      !!txs?.length &&
+      shouldPreExecSelectedBridgeQuote &&
+      !!builtBridgeTxsKeyRef.current &&
+      builtBridgeTxsKeyRef.current === selectedBridgeQuoteBuildKeyRef.current;
+    if (!canPrefetchCurrentTxs) {
+      return;
+    }
+    const prefetchKey = [
+      builtBridgeTxsKeyRef.current,
+      buildFingerprint(txs || []),
+    ].join('|');
+    if (prefetchedBridgeTxsKeyRef.current === prefetchKey) {
+      return;
+    }
+    prefetchedBridgeTxsKeyRef.current = prefetchKey;
     prefetch({
       txs: txs || [],
       getContainer,
@@ -730,6 +1007,10 @@ export const BridgeContent = () => {
         source: 'bridge',
         trigger: rbiSource,
       },
+    }).catch(() => {
+      if (prefetchedBridgeTxsKeyRef.current === prefetchKey) {
+        prefetchedBridgeTxsKeyRef.current = '';
+      }
     });
   }, [
     awaitingTopUpResume,
@@ -737,6 +1018,8 @@ export const BridgeContent = () => {
     txs,
     canUseDirectSubmitTx,
     depositFlowActive,
+    selectedBridgeQuoteBuildKey,
+    shouldPreExecSelectedBridgeQuote,
     rbiSource,
   ]);
 
@@ -766,7 +1049,14 @@ export const BridgeContent = () => {
     topUpFormValuesRef.current.clear();
     setAwaitingTopUpResume(false);
     closeSign();
-    runBuildSwapTxsRef.current = undefined;
+    if (buildBridgeTxsTimerRef.current) {
+      clearTimeout(buildBridgeTxsTimerRef.current);
+      buildBridgeTxsTimerRef.current = null;
+    }
+    builtBridgeTxsKeyRef.current = '';
+    prefetchedBridgeTxsKeyRef.current = '';
+    runBuildBridgeTxsRef.current = undefined;
+    runBuildBridgeTxsKeyRef.current = '';
   }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
   const [showMoreOpen, setShowMoreOpen] = useState(false);

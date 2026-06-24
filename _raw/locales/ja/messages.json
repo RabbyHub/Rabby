@@ -4,7 +4,9 @@
       "title": "取引",
       "empty": {
         "title": "取引なし",
-        "desc": "<1>対応しているチェーン</1>で取引が見つかりません"
+        "desc": "<1>対応しているチェーン</1>で取引が見つかりません",
+        "noTxInThreeMonth": "90日以内の取引履歴がありません",
+        "descThreeMonths": "<2>サポートされているチェーン</2>で90日以内の取引履歴がありません"
       },
       "explain": {
         "approve": "{{project}}用に{{amount}} {{symbol}}を承認",
@@ -1323,7 +1325,8 @@
           "biometricUnlockUnsupported": "このデバイスは生体認証によるロック解除をサポートしていません。",
           "perpsFloatWidget": "パーペチュアル・フローティングウィジェット",
           "currency": "通貨",
-          "searchCurrency": "通貨を検索"
+          "searchCurrency": "通貨を検索",
+          "dataAnalysis": "データ分析"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
@@ -3555,6 +3558,9 @@
       "takeProfitTipsLong": "利確価格は現在の価格より高くなければなりません",
       "entryPrice": "エントリープライス",
       "estimatedLiquidationPrice": "概算清算価格",
+      "expectedSlippage": "概算スリッページ",
+      "lowLiquiditySwitchLimit": " 流動性が低いため、指値注文に切り替えてください。",
+      "switchToLimit": "切り替え",
       "long": "ロング",
       "takeProfitWhen": "利確価格を設定",
       "stopLossTipsShortLiquidation": "価格は清算価格を上回っています（{{price}}）",
@@ -3772,7 +3778,15 @@
           "marketCloseTitle": "マーケットクローズポジション",
           "marketCloseDesc": "この操作はポジションを直ちにクローズしようとします。",
           "confirmCloseAllTitle": "すべてのポジションをクローズすることを確認してください",
-          "confirmCloseAllDesc": "すべてのオープンポジションはマーケット価格でクローズされ、すべての注文はキャンセルされます。"
+          "confirmCloseAllDesc": "すべてのオープンポジションはマーケット価格でクローズされ、すべての注文はキャンセルされます。",
+          "positionSize": "ポジションサイズ",
+          "orderPrice": "注文価格",
+          "marketPrice": "市場価格",
+          "buy": "買い",
+          "sell": "売り",
+          "buyToSell": "買って売る",
+          "sellToBuy": "売って買う",
+          "reverseAction": "{{side}} {{size}} {{coin}} を反転"
         },
         "openOrders": {
           "price": "価格",
@@ -3981,7 +3995,16 @@
         "cancelTp": "利確をキャンセル",
         "loss": "含み損",
         "stopLossExpectedPnl": "ストップロス 想定損益",
-        "entryPrice": "エントリープライス："
+        "entryPrice": "エントリープライス：",
+        "entryCurrentPrice": "エントリー価格 / 現在価格",
+        "takeProfit": "利確",
+        "stopLoss": "損切り",
+        "triggerPrice": "トリガー価格",
+        "estimatedPnlWillBe": "推定損益は以下になります",
+        "triggerHigherThanLiquidation": "トリガー価格は清算価格 {{price}}より高くする必要があります",
+        "triggerLowerThanLiquidation": "トリガー価格は清算価格 {{price}}より低くする必要があります",
+        "tpTriggerInvalid": "TPトリガー価格は無効であり、設定されません",
+        "slTriggerInvalid": "SLトリガー価格は無効であり、設定されません"
       },
       "accountInfo": {
         "crossAccountLeverage": "クロスアカウント・レバレッジ",
@@ -4029,14 +4052,21 @@
         "amount": "数量",
         "viewAsks": "売り板",
         "trades": "取引履歴",
-        "title": "オーダーブック"
+        "title": "オーダーブック",
+        "avgPrice": "平均価格",
+        "sumBase": "{{base}} 合計",
+        "sumUsd": "USD 合計"
       },
       "editMargin": {
         "longLiquidationTips": "{{percent}} 減少すると清算が発動します",
         "title": "マージン管理",
         "configureMargin": "マージンを設定する",
         "currentPosition": "現在のポジション",
-        "shortLiquidationTips": "{{percent}} 上昇すると、清算が発動します。"
+        "shortLiquidationTips": "{{percent}} 上昇すると、清算が発動します。",
+        "currentPrice": "現在の価格"
+      },
+      "topBar": {
+        "favoriteEmpty": "お気に入りのリストは空です"
       }
     },
     "perpsDetail": {
@@ -4521,7 +4551,7 @@
       "slippageTolerance": "スリッページ許容範囲",
       "singleTransactionGasLimit": "単一トランザクションのGas Limit",
       "startConvert": "変換を開始",
-      "unsupportedWalletType": "秘密鍵とシードフレーズのアドレスのみサポートされています。",
+      "unsupportedWalletType": "このアドレスタイプはサポートされていません",
       "stop": "停止",
       "selectLowValueTokens": "低価値トークンを選択",
       "tokenColumn": "トークン",
@@ -4534,7 +4564,13 @@
       "moreChains": "+{{count}}チェーン",
       "swapFailed": "スワップに失敗しました、{{reason}}",
       "completedTips": "進行中のスワップは処理を継続します",
-      "priceImpact": "気配値変動上限"
+      "priceImpact": "気配値変動上限",
+      "LedgerBtn": {
+        "start": "Ledgerで始める",
+        "confirm": "Ledgerで確認してください",
+        "continue": "続ける",
+        "send": "署名リクエストを送信中"
+      }
     },
     "staking": {
       "title": "ステーキング",
@@ -4929,7 +4965,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加",
-      "smallSwapDisabledTips": "現在、秘密鍵とシードフレーズのアドレスのみサポートされています。"
+      "smallSwapDisabledTips": "このアドレス種子はサポートされていません"
     },
     "LpTokenTag": {
       "title": "これは流動性プロバイダー(LP)トークンです。",
@@ -4945,6 +4981,15 @@
     "UnknownTag": {
       "label": "不明",
       "tooltip": "不明なトークン。自己責任で調査してください。"
+    },
+    "screenshotModal": {
+      "title": "フィードバック用スクリーンショット",
+      "placeholder": "問題を説明してください"
+    },
+    "feedbackPopup": {
+      "title": "Rabbyサポートからの回答",
+      "issueReported": "報告された問題は以下の通りです：",
+      "issueReplied": "Rabbyサポートから返信がありました："
     }
   },
   "global": {
@@ -4983,7 +5028,8 @@
     "tryAgain": "再試行してください",
     "appDescription": "EthereumおよびEVMのためのあなたの定番ウォレット",
     "collapse": "折りたたむ",
-    "Yes": "はい"
+    "Yes": "はい",
+    "Submit": "送信"
   },
   "background": {
     "error": {
@@ -5030,6 +5076,9 @@
         "actionCancel": "操作がキャンセルされました",
         "deviceNeedsWebHIDPermission": "デバイスが見つからないか、WebHIDの権限が必要です"
       }
+    },
+    "feedback": {
+      "screenshotContextMenuTitle": "フィードバック用スクリーンショット"
     }
   },
   "constant": {

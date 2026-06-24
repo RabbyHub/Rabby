@@ -40,7 +40,7 @@ const Queue = ({ count, className }: QueueProps) => {
         className,
         'ease-in-out',
         'group',
-        'whitespace-nowrap overflow-hidden overflow-ellipsis',
+        'whitespace-nowrap overflow-hidden text-ellipsis',
         'flex justify-end'
       )}
     >

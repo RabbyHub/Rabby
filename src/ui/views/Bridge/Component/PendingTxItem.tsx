@@ -809,7 +809,7 @@ export const BridgePendingTxItem = ({
       <div
         className={clsx(
           'flex items-center justify-between cursor-pointer rounded-[8px] px-[16px] py-[14px]',
-          'hover:bg-blue-light hover:bg-opacity-[0.1] hover:border-rabby-blue-default border border-transparent',
+          'hover:bg-blue-light/10 hover:border-rabby-blue-default border border-transparent',
           'bg-r-neutral-card-1'
         )}
         onClick={handlePress}
