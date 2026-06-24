@@ -159,7 +159,7 @@ const MarketRowComponent = memo(
           {/* Right: Data columns - 5 columns with custom widths */}
           <div className="flex flex-1">
             {/* Last Price */}
-            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
+            <div className="text-[13px] text-r-neutral-body text-start flex-1">
               ${splitNumberByStep(Number(marketItem.markPx))}
             </div>
 
@@ -179,19 +179,19 @@ const MarketRowComponent = memo(
             {/* 8hr Funding */}
             <div
               className={clsx(
-                'text-[13px] text-r-neutral-title-1 text-start flex-1'
+                'text-[13px] text-r-neutral-body text-start flex-1'
               )}
             >
               {formatPercent(Number(marketItem.funding), 4)}
             </div>
 
             {/* Volume */}
-            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
+            <div className="text-[13px] text-r-neutral-body text-start flex-1">
               {formatUsdValueKMB(Number(marketItem.dayNtlVlm))}
             </div>
 
             {/* Open Interest */}
-            <div className="text-[13px] text-r-neutral-title-1 text-start flex-1">
+            <div className="text-[13px] text-r-neutral-body text-start flex-1">
               {formatUsdValueKMB(
                 Number(marketItem.openInterest) * Number(marketItem.markPx)
               )}

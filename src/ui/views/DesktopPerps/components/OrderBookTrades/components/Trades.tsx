@@ -7,7 +7,7 @@ import { splitNumberByStep } from '@/ui/utils';
 import dayjs from 'dayjs';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import { formatPerpsCoin } from '../../../utils';
+import { formatPerpsCoin, formatPerpsValueKMB } from '../../../utils';
 interface Trade {
   time: number;
   price: string;
@@ -20,6 +20,9 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
   selectedCoin,
 }) => {
   const { t } = useTranslation();
+  const szDecimals = useRabbySelector(
+    (state) => state.perps.marketDataMap[selectedCoin]?.szDecimals ?? 5
+  );
 
   const formatTime = (timestamp: number) => {
     return dayjs(timestamp).format('HH:mm:ss');
@@ -68,10 +71,10 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
               >
                 {splitNumberByStep(trade.price)}
               </span>
-              <span className="min-w-[90px] text-right text-r-neutral-title-1">
-                {splitNumberByStep(trade.size)}
+              <span className="min-w-[90px] text-right text-r-neutral-body">
+                {formatPerpsValueKMB(trade.size, szDecimals)}
               </span>
-              <span className="min-w-[60px] text-right text-r-neutral-title-1">
+              <span className="min-w-[60px] text-right text-r-neutral-body">
                 {formatTime(trade.time)}
               </span>
             </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -26,7 +26,11 @@ import { useLocation } from 'react-router-dom';
 
 const Wrap = styled.div`
   width: 100%;
-  min-height: 100vh;
+  /* Definite height, not min-height: min-height computes to auto (indefinite),
+     which breaks h-full resolution on the right rail and lets TradingPanel's
+     content push the whole row taller. */
+  height: 100vh;
+  overflow: hidden;
   background: var(--rb-neutral-bg-page, #f6f7f7);
   display: flex;
   flex-direction: column;
@@ -44,6 +48,17 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   isActive = true,
 }) => {
   usePerpsProInit(isActive);
+
+  // The Perps pro page (its own desktop tab) uses 350 as its regular weight.
+  // Tagging the document body lets the single default rule cascade everywhere —
+  // including portaled modals / tooltips / toasts — so individual elements can
+  // just inherit instead of hardcoding the regular weight.
+  useLayoutEffect(() => {
+    document.body.classList.add('perps-pro-page');
+    return () => {
+      document.body.classList.remove('perps-pro-page');
+    };
+  }, []);
 
   const {
     action,
@@ -67,10 +82,19 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   return (
     <>
       <Wrap>
-        <DesktopPerpsTopBar />
+        {/* Fixed top bar — mirrors the fixed StatusBar at the bottom (sticky;
+            content scrolls underneath). bg-page masks content behind the card.
+            Its 50px footprint (6 + 38 + 6 gap) is reserved by the row's pt below. */}
+        <div className="fixed top-0 left-0 right-0 z-30 bg-rb-neutral-bg-page">
+          <DesktopPerpsTopBar />
+        </div>
 
-        <div className="flex flex-1 min-h-0 overflow-x-auto px-[6px] pt-[6px] pb-[44px]">
-          <div className="flex flex-1 min-w-[1280px] min-h-0 gap-[6px]">
+        <div className="flex flex-1 min-h-0 overflow-x-auto px-[6px] pt-[50px] pb-[44px]">
+          {/* Floor so panels aren't crushed on short viewports; 810 lets the
+              dominant 1080p fit without a page scroll (this runs as a browser tab
+              that loses ~160px of height to chrome). Below it the outer row
+              scrolls while the top bar and fixed status bar stay pinned. */}
+          <div className="flex flex-1 min-w-[1280px] min-h-[810px] gap-[6px]">
             {/* [chart + order book] + UserInfoHistory, can be resized vertically */}
             <div
               className="flex flex-col min-w-0 min-h-0 overflow-hidden"
@@ -112,20 +136,28 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               </PanelGroup>
             </div>
 
-            {/* TradingPanel + AccountInfo */}
+            {/* Two boxes split by a 6px gap (no drag handle). TradingPanel takes
+                the remaining height (scrolls internally); AccountInfo sizes to its
+                own content so the summary is always fully shown (no clip / no dead
+                space) and adapts across account types (e.g. PM has one extra row). */}
             <div
-              className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+              className="flex flex-col min-h-0 overflow-hidden gap-[6px]"
               style={{
                 flexGrow: 0,
                 flexShrink: 0,
                 flexBasis: 'clamp(276px, 20vw, 336px)',
               }}
             >
-              <div className="flex h-full min-h-0 flex-col">
-                <div className="flex-1 min-h-0">
-                  <TradingPanel />
-                </div>
-                <div className="h-[1px] shrink-0 bg-rb-neutral-line" />
+              <div
+                className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                style={{ flex: '1 1 0%' }}
+              >
+                <TradingPanel />
+              </div>
+              <div
+                className="shrink-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                style={{ flex: '0 0 auto' }}
+              >
                 <AccountInfo />
               </div>
             </div>

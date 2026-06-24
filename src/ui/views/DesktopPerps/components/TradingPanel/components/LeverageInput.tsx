@@ -55,7 +55,7 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
           <div className="text-[13px] leading-[16px] text-r-neutral-foot pb-[2px]">
             {t('page.perpsDetail.PerpsEditMarginPopup.upTo')}
           </div>
-          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1">
+          <div className="text-[20px] leading-[24px] font-medium text-r-neutral-body">
             {max}x
           </div>
         </div>
@@ -69,7 +69,7 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
               'placeholder-r-neutral-foot',
               errorMessage?.length
                 ? 'text-r-red-default'
-                : 'text-r-neutral-title-1'
+                : 'text-r-neutral-body'
             )}
             style={{
               background: 'transparent',
@@ -93,7 +93,7 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
                 ? 'text-r-neutral-foot'
                 : errorMessage?.length
                 ? 'text-r-red-default'
-                : 'text-r-neutral-title-1'
+                : 'text-r-neutral-body'
             )}
           >
             x
