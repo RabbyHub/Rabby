@@ -35,9 +35,7 @@ const SummaryRow: React.FC<{ row: SummaryRowData }> = ({ row }) => (
         </span>
       </div>
     ) : (
-      <span className="text-r-neutral-title-1 font-medium">
-        {row.valueText}
-      </span>
+      <span className="text-r-neutral-body font-medium">{row.valueText}</span>
     )}
   </div>
 );
@@ -58,7 +56,7 @@ const EquityValue: React.FC<{ col: EquityCol }> = ({ col }) => {
     );
   }
   return (
-    <span className="text-r-neutral-title-1 font-medium">{col.valueText}</span>
+    <span className="text-r-neutral-body font-medium">{col.valueText}</span>
   );
 };
 

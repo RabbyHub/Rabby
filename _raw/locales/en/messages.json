@@ -1751,6 +1751,8 @@
         "trades": "Trades",
         "price": "Price",
         "amount": "Amount",
+        "size": "Size",
+        "sum": "Sum",
         "total": "Total",
         "markPrice": "Mark Price",
         "time": "Time",

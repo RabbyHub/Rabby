@@ -122,7 +122,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               {t('page.perpsPro.chatArea.mark')}
             </DashedUnderlineText>
           </div>
-          <span className="text-12 text-rb-neutral-title-1">
+          <span className="text-12 text-rb-neutral-body">
             {currentMarketData.markPx
               ? `$${splitNumberByStep(Number(currentMarketData.markPx))}`
               : '-'}
@@ -139,7 +139,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               {t('page.perpsPro.chatArea.oracle')}
             </DashedUnderlineText>
           </div>
-          <span className="text-12 text-rb-neutral-title-1">
+          <span className="text-12 text-rb-neutral-body">
             {currentMarketData.oraclePx
               ? `$${splitNumberByStep(Number(currentMarketData.oraclePx))}`
               : '-'}
@@ -147,10 +147,12 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col gap-[3px]">
-          <span className="text-12 text-rb-neutral-secondary">
-            {t('page.perpsPro.chatArea.24hVol')}
-          </span>
-          <span className="text-12 text-rb-neutral-title-1">
+          <div>
+            <span className="text-12 text-rb-neutral-secondary">
+              {t('page.perpsPro.chatArea.24hVol')}
+            </span>
+          </div>
+          <span className="text-12 text-rb-neutral-body">
             {currentMarketData.dayNtlVlm
               ? `$${splitNumberByStep(
                   Number(currentMarketData.dayNtlVlm).toFixed(2)
@@ -169,7 +171,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               {t('page.perpsPro.chatArea.openInterest')}
             </DashedUnderlineText>
           </div>
-          <span className="text-12 text-rb-neutral-title-1">
+          <span className="text-12 text-rb-neutral-body">
             {currentMarketData.openInterest && currentMarketData.markPx
               ? `$${splitNumberByStep(
                   (
@@ -203,7 +205,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
               >
                 {formatPercent(Number(currentMarketData.funding), 4)}
               </span>
-              <span className="text-12 text-rb-neutral-title-1">
+              <span className="text-12 text-rb-neutral-body">
                 {' '}
                 / {countdown}
               </span>

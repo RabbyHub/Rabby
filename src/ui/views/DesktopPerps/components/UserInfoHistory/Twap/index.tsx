@@ -183,7 +183,7 @@ export const Twap: React.FC = () => {
         width: 180,
         sorter: (a, b) => a.fill.time - b.fill.time,
         render: (_, record) => (
-          <div className="text-[13px] leading-[16px] text-r-neutral-title-1">
+          <div className="text-[13px] leading-[16px] text-r-neutral-body">
             {dayjs(record.fill.time).format('YYYY/MM/DD HH:mm:ss')}
           </div>
         ),
@@ -245,7 +245,7 @@ export const Twap: React.FC = () => {
           const pxDecimals = marketDataMap[record.fill.coin]?.pxDecimals || 2;
           const px = new BigNumber(record.fill.px).toFixed(pxDecimals);
           return (
-            <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] text-r-neutral-body">
               {splitNumberByStep(px)}
             </div>
           );
@@ -258,7 +258,7 @@ export const Twap: React.FC = () => {
         dataIndex: 'sz',
         sorter: (a, b) => Number(a.fill.sz) - Number(b.fill.sz),
         render: (_, record) => (
-          <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
+          <div className="text-[12px] leading-[14px] text-r-neutral-body">
             {splitNumberByStep(Number(record.fill.sz))}{' '}
             {formatPerpsCoin(record.fill.coin)}
           </div>
@@ -273,7 +273,7 @@ export const Twap: React.FC = () => {
           new BigNumber(a.fill.px).times(a.fill.sz).toNumber() -
           new BigNumber(b.fill.px).times(b.fill.sz).toNumber(),
         render: (_, record) => (
-          <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
+          <div className="text-[12px] leading-[14px] text-r-neutral-body">
             {splitNumberByStep(
               new BigNumber(record.fill.px)
                 .times(new BigNumber(record.fill.sz).abs())
@@ -298,7 +298,7 @@ export const Twap: React.FC = () => {
             );
           }
           return (
-            <div className="text-[12px] leading-[14px] text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px] text-r-neutral-body">
               {splitNumberByStep(Number(fee).toFixed(2))} USD
             </div>
           );
@@ -460,11 +460,11 @@ export const Twap: React.FC = () => {
             .toFixed(1);
 
           return (
-            <div className="text-[12px] leading-[14px]  flex flex-col gap-[4px] text-rb-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  flex flex-col gap-[4px] text-rb-neutral-body">
               <div className="flex items-center gap-[4px]">
                 {record.executedSz}
                 {record.randomize && (
-                  <span className="text-rb-orange-default text-[12px] leading-[14px] font-normal">
+                  <span className="text-rb-orange-default text-[12px] leading-[14px]">
                     {t('page.perpsPro.userInfo.randomized')}
                   </span>
                 )}
@@ -482,7 +482,7 @@ export const Twap: React.FC = () => {
         width: 130,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {calculateAveragePrice(record)}
             </div>
           );
@@ -494,7 +494,7 @@ export const Twap: React.FC = () => {
         width: 180,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {calculateRunningTime(record)}
             </div>
           );
@@ -552,7 +552,7 @@ export const Twap: React.FC = () => {
         sorter: (a, b) => a.timestamp - b.timestamp,
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {dayjs(record.timestamp).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );

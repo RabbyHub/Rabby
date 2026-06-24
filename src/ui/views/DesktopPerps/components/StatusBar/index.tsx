@@ -82,7 +82,7 @@ const OnlineStatus: React.FC<{ online: boolean }> = ({ online }) => {
       className={clsx(
         'flex h-[20px] w-[60px] items-center justify-center gap-[4px] rounded-[4px] border-[0.5px] border-solid text-[12px] leading-[14px] font-medium',
         online
-          ? 'border-rb-green-default text-rb-green-default bg-rb-green-light-1'
+          ? 'border-rb-green-default text-rb-green-default bg-rb-green-light-1 opacity-80'
           : 'border-rb-neutral-line text-rb-neutral-secondary bg-rb-neutral-bg-2'
       )}
     >
@@ -456,16 +456,18 @@ export const StatusBar: React.FC = () => {
           </span>
           <span
             className={clsx(
-              'desktop-perps-status-item-change',
-              isPositive && 'text-rb-green-default',
-              isNegative && 'text-rb-red-default',
+              'desktop-perps-status-item-change transition-opacity',
+              isPositive &&
+                'text-rb-green-default opacity-80 group-hover:opacity-100',
+              isNegative &&
+                'text-rb-red-default opacity-80 group-hover:opacity-100',
               !isPositive && !isNegative && 'text-rb-neutral-secondary'
             )}
           >
             {isPositive ? '+' : ''}
             {priceChange.toFixed(2)}%
           </span>
-          <span className="desktop-perps-status-item-price text-rb-neutral-secondary">
+          <span className="desktop-perps-status-item-price text-rb-neutral-secondary transition-colors group-hover:text-rb-neutral-title-1">
             {splitNumberByStep(Number(item.markPx))}
           </span>
         </button>

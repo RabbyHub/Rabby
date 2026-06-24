@@ -33,7 +33,7 @@ export const PerpsPositionCard: React.FC<PerpsPositionCardProps> = ({
           </span>
         </div>
         <div className="flex flex-row gap-4">
-          <span className="text-[16px] leading-[20px] font-bold text-rb-neutral-title-1">
+          <span className="text-[16px] leading-[20px] font-bold text-rb-neutral-body">
             {formatUsdValue(position.marginUsed || 0)}
           </span>
           <span className="text-[16px] leading-[20px] font-medium text-rb-neutral-foot">

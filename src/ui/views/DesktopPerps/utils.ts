@@ -578,3 +578,27 @@ export const formatPerpsValueWithUsdc = (num: string | number) => {
   const string = new BigNumber(num).toFixed(2);
   return `${splitNumberByStep(string)} USDC`;
 };
+
+/**
+ * Order book / trades number formatter. Abbreviates values >= 1K with K/M/B
+ * suffixes (no currency prefix — the unit lives in the column header), and
+ * keeps a plain number below 1K. `decimals` sets the sub-1K precision
+ * (defaults to 2).
+ */
+export const formatPerpsValueKMB = (
+  value: string | number,
+  decimals = 2
+): string => {
+  const bn = new BigNumber(value);
+  const num = bn.toNumber();
+  if (num >= 1e9) {
+    return `${(num / 1e9).toFixed(2)}B`;
+  }
+  if (num >= 1e6) {
+    return `${(num / 1e6).toFixed(2)}M`;
+  }
+  if (num >= 1e3) {
+    return `${(num / 1e3).toFixed(2)}K`;
+  }
+  return splitNumberByStep(bn.toFixed(decimals));
+};

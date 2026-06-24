@@ -25,7 +25,7 @@ const StyledInput = styled(Input)`
       box-shadow: none;
       font-size: 13px;
       line-height: 16px;
-      color: var(--rb-neutral-title-1, #111827);
+      color: var(--rb-neutral-body, #111827);
       font-weight: 500;
 
       &::placeholder {

@@ -169,8 +169,8 @@ export const DesktopPerpsTopBar: React.FC = () => {
                     <span
                       className={clsx(
                         'transition-colors',
-                        isPositive && 'text-rb-green-default',
-                        isNegative && 'text-rb-red-default',
+                        isPositive && 'text-rb-green-default opacity-80',
+                        isNegative && 'text-rb-red-default opacity-80',
                         !isPositive &&
                           !isNegative &&
                           'text-rb-neutral-secondary'

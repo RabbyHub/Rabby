@@ -59,7 +59,7 @@ export const FundingHistory: React.FC = () => {
         sorter: (a, b) => dayjs(a.time).unix() - dayjs(b.time).unix(),
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px]  text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px]  text-r-neutral-body">
               {dayjs(record.time).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
@@ -100,7 +100,7 @@ export const FundingHistory: React.FC = () => {
         sorter: (a, b) => Number(a.szi) - Number(b.szi),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {splitNumberByStep(Math.abs(Number(record.szi)))}{' '}
               {formatPerpsCoin(record.coin)}
             </div>
@@ -171,7 +171,7 @@ export const FundingHistory: React.FC = () => {
         sorter: (a, b) => Number(a.fundingRate) - Number(b.fundingRate),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {new BigNumber(record.fundingRate).times(100).toFixed(5)}%
             </div>
           );

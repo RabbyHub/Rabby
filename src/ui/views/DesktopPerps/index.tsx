@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -48,6 +48,17 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   isActive = true,
 }) => {
   usePerpsProInit(isActive);
+
+  // The Perps pro page (its own desktop tab) uses 350 as its regular weight.
+  // Tagging the document body lets the single default rule cascade everywhere —
+  // including portaled modals / tooltips / toasts — so individual elements can
+  // just inherit instead of hardcoding the regular weight.
+  useLayoutEffect(() => {
+    document.body.classList.add('perps-pro-page');
+    return () => {
+      document.body.classList.remove('perps-pro-page');
+    };
+  }, []);
 
   const {
     action,
