@@ -216,11 +216,11 @@ const ImportGnosisAddress: React.FC<{
           )}
         </div>
       </div>
-      <footer className="footer fixed bottom-0 left-0 right-0 p-[20px]">
+      <footer className="footer fixed bottom-0 left-0 right-0 px-[20px] py-[18px] bg-transparent">
         <Button
           type="primary"
           size="large"
-          className="w-full h-[42px]"
+          className="w-full h-[44px]"
           disabled={loading || !!errorMessage || !chainList?.length}
           onClick={() =>
             handleNext(
