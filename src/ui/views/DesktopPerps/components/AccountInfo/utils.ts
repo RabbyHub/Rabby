@@ -163,9 +163,8 @@ export const usdcMarkPx = (
   if (!anyPair) return 0;
   const pairPx = spotAssetCtxs[anyPair.name]?.markPx;
   if (!pairPx) return 0;
-  const quoteName = spotMeta.tokens.find(
-    (t) => t.index === anyPair.tokens[1]
-  )?.name;
+  const quoteName = spotMeta.tokens.find((t) => t.index === anyPair.tokens[1])
+    ?.name;
   if (!quoteName || quoteName === tokenName) return 0;
   return (Number(pairPx) || 0) * usdcMarkPx(quoteName, spotAssetCtxs, spotMeta);
 };

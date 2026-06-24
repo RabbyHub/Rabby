@@ -60,7 +60,11 @@ export const usePerpsAccountSummary = (): AccountSummary => {
   const spotMeta = useRabbySelector((s) => s.perps.spotMeta);
   const marketDataMap = useRabbySelector((s) => s.perps.marketDataMap);
 
-  const { accountValue, isUnifiedAccount, isPortfolioMargin } = usePerpsAccount();
+  const {
+    accountValue,
+    isUnifiedAccount,
+    isPortfolioMargin,
+  } = usePerpsAccount();
 
   return useMemo<AccountSummary>(() => {
     const tk = (k: string) => t(`page.perpsPro.accountInfo.${k}`);
@@ -129,7 +133,11 @@ export const usePerpsAccountSummary = (): AccountSummary => {
           },
         ],
         equityCols: [
-          { key: 'pv', label: tk('portfolioValue'), valueText: usd(portfolioValue) },
+          {
+            key: 'pv',
+            label: tk('portfolioValue'),
+            valueText: usd(portfolioValue),
+          },
           pnlCol,
         ],
       };
@@ -171,7 +179,11 @@ export const usePerpsAccountSummary = (): AccountSummary => {
           },
         ],
         equityCols: [
-          { key: 'pv', label: tk('portfolioValue'), valueText: usd(portfolioValue) },
+          {
+            key: 'pv',
+            label: tk('portfolioValue'),
+            valueText: usd(portfolioValue),
+          },
           pnlCol,
         ],
       };
