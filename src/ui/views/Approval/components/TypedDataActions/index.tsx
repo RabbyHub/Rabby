@@ -39,7 +39,7 @@ import { ActionWrapper } from '../ActionWrapper';
 import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
-import { MessageWrapper } from '../TextActions';
+import { HighlightedSignMessageText, MessageWrapper } from '../TextActions';
 import { Divide } from '../Divide';
 import { Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
@@ -399,7 +399,9 @@ const Actions = ({
               {t('page.signTx.typedDataMessage')}
             </span>
           </div>
-          <div className="content">{message}</div>
+          <div className="content">
+            <HighlightedSignMessageText text={message} />
+          </div>
         </MessageWrapper>
       </Card>
     </>
