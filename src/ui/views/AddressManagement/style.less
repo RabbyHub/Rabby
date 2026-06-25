@@ -5,6 +5,20 @@
   height: 100vh;
   // padding-bottom: 118px;
 
+  .address-page-header {
+    height: 60px;
+    padding-top: 0;
+    margin-bottom: 10px;
+
+    .icon-back-container {
+      bottom: 20px;
+    }
+
+    .icon-close {
+      bottom: 20px;
+    }
+  }
+
   .address-wrap-with-padding {
     margin-bottom: 0;
 
@@ -48,11 +62,14 @@
     display: flex;
     align-items: center;
     width: 100%;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
 
     &-container {
       .icon-delete-container {
         display: flex;
         opacity: 0;
+        color: var(--r-neutral-foot, #6a7587);
+        transition: color 0.15s ease, opacity 0.15s ease;
       }
       &:hover {
         .icon-delete-container {
@@ -61,15 +78,25 @@
       }
       .icon-delete {
         &:hover {
-          g {
-            stroke: #ec5151;
-          }
+          color: var(--r-red-default, #ec5151);
+        }
+        &:active {
+          color: #d93f3f;
         }
       }
     }
 
-    &:hover {
-      border: 1px solid var(--r-blue-default, #7084ff);
+    &.is-detail:hover {
+      border-color: var(--r-blue-default, #7084ff);
+      background: var(--r-neutral-card-1, #fff);
+      .icon-star {
+        opacity: 1;
+      }
+    }
+
+    &.is-detail:active {
+      border-color: var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light-2, #dbe0ff);
       .icon-star {
         opacity: 1;
       }
@@ -143,18 +170,28 @@
         border-top-left-radius: 6px;
         border-bottom-left-radius: 6px;
         border: 1px solid transparent;
+        transition: border-color 0.15s ease, background-color 0.15s ease;
         &:hover {
-          border: 1px solid var(--r-blue-default, #7084ff);
+          border-color: var(--r-blue-default, #7084ff);
           background: var(--r-blue-light-1, #eef1ff);
+        }
+        &:active {
+          border-color: var(--r-blue-default, #7084ff);
+          background: var(--r-blue-light-2, #dbe0ff);
         }
       }
       .rabby-address-item-arrow {
         border: 1px solid transparent;
         border-top-right-radius: 6px;
         border-bottom-right-radius: 6px;
+        transition: border-color 0.15s ease, background-color 0.15s ease;
         &:hover {
-          border: 1px solid var(--r-blue-default, #7084ff);
+          border-color: var(--r-blue-default, #7084ff);
           background: var(--r-blue-light-1, #eef1ff);
+        }
+        &:active {
+          border-color: var(--r-blue-default, #7084ff);
+          background: var(--r-blue-light-2, #dbe0ff);
         }
       }
       &:hover {
@@ -277,6 +314,62 @@
     }
     .chromelike-scrollbar();
   }
+
+  .address-header-add {
+    border: 1px solid transparent;
+    color: var(--r-neutral-title-1, #192945);
+
+    svg path {
+      stroke: currentColor;
+    }
+
+    &:hover {
+      border-color: var(--r-blue-default, #7084ff);
+      background: var(--r-neutral-card-1, #fff);
+      color: var(--r-blue-default, #7084ff);
+    }
+
+    &:active {
+      border-color: var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light-2, #dbe0ff);
+      color: var(--r-blue-default, #7084ff);
+    }
+  }
+
+  .address-add-button {
+    color: var(--r-neutral-title-1, #192945);
+    border: 1px solid transparent;
+    background: var(--r-neutral-card-1, #fff);
+
+    svg path {
+      stroke: currentColor;
+    }
+
+    &:hover:not(:active) {
+      color: var(--r-blue-default, #7084ff);
+      border-color: var(--r-blue-default, #7084ff);
+      background: var(--r-neutral-card-1, #fff);
+    }
+
+    &:active,
+    &:has(:active) {
+      color: var(--r-blue-default, #7084ff);
+      border-color: var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light-2, #dbe0ff);
+    }
+  }
+
+  .address-manage-link {
+    &:hover {
+      color: var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light-1, #eef1ff);
+    }
+
+    &:active {
+      color: var(--r-blue-default, #7084ff);
+      background: var(--r-blue-light-2, #dbe0ff);
+    }
+  }
 }
 
 .custom-private-popup {
@@ -303,7 +396,7 @@
   padding-right: 4px;
 
   &.searching {
-    width: 220px;
+    width: 200px;
     .search-input .ant-input-suffix {
       opacity: 1;
     }
@@ -311,7 +404,7 @@
 
   &:has(> .search-input:hover),
   &:has(> .search-input.ant-input-affix-wrapper-focused) {
-    width: 220px;
+    width: 200px;
     border-color: var(--r-blue-default, #7084ff);
     .ant-input-suffix {
       opacity: 1;
@@ -327,6 +420,11 @@
     border-right: 0.5px solid var(--r-neutral-line, #d3d8e0);
 
     &:hover {
+      color: var(--r-blue-default, #7084ff);
+    }
+
+    &:active {
+      background: var(--r-blue-light-2, #dbe0ff);
       color: var(--r-blue-default, #7084ff);
     }
 
