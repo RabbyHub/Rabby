@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import BackgroundSVG from '@/ui/assets/new-user-import/guide-bg.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { LangSelector } from '@/ui/component/LangSelector';
-import { useMount } from 'react-use';
 import { getUiType } from '@/ui/utils';
 import { useUnmount } from 'ahooks';
 

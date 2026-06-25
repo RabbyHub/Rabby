@@ -223,7 +223,7 @@ const ImportGnosisAddress: React.FC<{
       <footer className="footer shrink-0 px-[20px] py-[18px] bg-transparent">
         <Button
           type="primary"
-          // size="large"
+          size="large"
           className="w-full h-[44px]"
           disabled={loading || !!errorMessage || !chainList?.length}
           onClick={() =>
