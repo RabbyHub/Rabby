@@ -572,7 +572,7 @@ const AddressManagement = () => {
           onChange={(e) => setSearchKeyword(e.target.value)}
         />
         <div
-          className="address-manage-link flex items-center cursor-pointer rounded-[6px] h-[32px] px-[8px] mr-[-8px] transition-colors"
+          className="flex items-center cursor-pointer"
           onClick={gotoManageAddress}
         >
           <span>{t('page.manageAddress.manage-address')}</span>
