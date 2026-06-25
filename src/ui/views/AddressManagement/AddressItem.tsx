@@ -163,7 +163,7 @@ const AddressItem = memo(
           <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0 justify-center items-center">
             <RcIconDeleteAddress
               viewBox="0 0 16 16"
-              className="cursor-pointer w-[20px] h-[20px] icon icon-delete"
+              className="cursor-pointer icon icon-delete"
               onClick={deleteAccount}
             />
           </div>
