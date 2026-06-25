@@ -113,7 +113,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
       {/* Market Data - Display only, not clickable */}
       <HorizontalScrollContainer className="flex items-center gap-[24px]">
         <div className="flex flex-col gap-[3px]">
-          <div>
+          <div className="flex">
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.markTips')}
               needCursor={false}
@@ -130,7 +130,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col gap-[3px]">
-          <div>
+          <div className="flex">
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.oracleTips')}
               needCursor={false}
@@ -147,7 +147,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col gap-[3px]">
-          <div>
+          <div className="flex">
             <span className="text-12 text-rb-neutral-secondary">
               {t('page.perpsPro.chatArea.24hVol')}
             </span>
@@ -162,7 +162,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col gap-[3px]">
-          <div>
+          <div className="flex">
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.openInterestTips')}
               needCursor={false}
@@ -184,7 +184,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
         </div>
 
         <div className="flex flex-col gap-[3px]">
-          <div>
+          <div className="flex">
             <DashedUnderlineText
               tooltipText={t('page.perpsPro.chatArea.fundingTips')}
               needCursor={false}

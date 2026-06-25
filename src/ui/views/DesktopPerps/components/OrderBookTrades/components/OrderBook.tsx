@@ -396,7 +396,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
           <span
             className={clsx(
-              'col-span-3 text-left group-hover:font-bold',
+              'col-span-4 text-left group-hover:font-bold',
               type === 'bid' ? 'text-rb-green-default' : 'text-r-red-default'
             )}
           >
@@ -405,7 +405,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           <span className="text-rb-neutral-body col-span-3 text-right">
             {formatLevelValue(order.size, order.usdSize)}
           </span>
-          <span className="text-rb-neutral-body col-span-4 text-right">
+          <span className="text-rb-neutral-body col-span-3 text-right">
             {formatLevelValue(order.total, order.totalUsd)}
           </span>
         </div>
@@ -498,7 +498,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         className="flex items-center justify-between px-[12px] h-[20px]"
       >
         <div className="grid grid-cols-10 items-center w-full">
-          <span className="col-span-3">
+          <span className="col-span-4">
             <Skeleton.Button
               active
               className="h-[14px] block rounded-[4px]"
@@ -512,7 +512,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               style={{ width: 50, minWidth: 50 }}
             />
           </span>
-          <span className="col-span-4 flex justify-end">
+          <span className="col-span-3 flex justify-end">
             <Skeleton.Button
               active
               className="h-[14px] block rounded-[4px]"

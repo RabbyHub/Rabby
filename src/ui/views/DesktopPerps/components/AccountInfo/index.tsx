@@ -1,8 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
-import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
-import { formatUsdValue } from '@/ui/utils';
+import { formatPerpsUsd } from './utils';
 import { DashedUnderlineText } from '../DashedUnderlineText';
 import { usePerpsPopupNav } from '@/ui/views/DesktopPerps/hooks/usePerpsPopupNav';
 import { RatioGaugeIcon, ratioColor } from './RatioGauge';
@@ -51,7 +50,7 @@ const EquityValue: React.FC<{ col: EquityCol }> = ({ col }) => {
         )}
       >
         {pnl >= 0 ? '+' : '-'}
-        {formatUsdValue(Math.abs(pnl), BigNumber.ROUND_DOWN)}
+        {formatPerpsUsd(Math.abs(pnl))}
       </span>
     );
   }
@@ -93,7 +92,7 @@ export const AccountInfo: React.FC = () => {
         <div className="flex items-start gap-[8px] mb-[16px]">
           {summary.equityCols.map((col) => (
             <div key={col.key} className="flex-1 min-w-0">
-              <div className="text-rb-neutral-foot mb-[4px]">
+              <div className="text-rb-neutral-foot mb-[4px] flex">
                 {col.tooltip ? (
                   <DashedUnderlineText
                     needCursor={false}

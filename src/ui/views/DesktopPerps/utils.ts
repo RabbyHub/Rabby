@@ -433,6 +433,17 @@ const calcAccountValueByAllDexs = (
   }, 0);
 };
 
+// Cross-margin equity summed across all dexes (mirrors calcAccountValueByAllDexs
+// for marginSummary). Used as the Cross Margin Ratio denominator so it shares the
+// all-dex scope of the already-aggregated crossMaintenanceMarginUsed numerator.
+const calcCrossAccountValueByAllDexs = (
+  allClearinghouseState: [string, ClearinghouseState][]
+) => {
+  return allClearinghouseState.reduce((acc, item) => {
+    return acc + Number(item[1]?.crossMarginSummary?.accountValue || 0);
+  }, 0);
+};
+
 /**
  * the official ratio buckets it by collateral token, so we keep a flat
  * `crossMaintByDex` map (dex name → that dex's `crossMaintenanceMarginUsed`)
@@ -469,7 +480,15 @@ export const formatAllDexsClearinghouseState = (
     assetPositions: assetPositions,
     crossMaintenanceMarginUsed: crossMaintenanceMarginUsed.toString(),
     crossMaintByDex,
-    crossMarginSummary: hyperDexState?.crossMarginSummary || {},
+    crossMarginSummary: {
+      ...(hyperDexState?.crossMarginSummary || {}),
+      // Aggregate cross equity across all dexes (matches HL's kRZ) so the Cross
+      // Margin Ratio / Margin Balance use the all-dex scope, consistent with the
+      // aggregated crossMaintenanceMarginUsed. Single-dex accounts are unchanged.
+      accountValue: calcCrossAccountValueByAllDexs(
+        allClearinghouseState
+      ).toString(),
+    },
     marginSummary: {
       ...hyperDexState.marginSummary,
       accountValue: calcAccountValueByAllDexs(allClearinghouseState).toString(),
