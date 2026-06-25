@@ -321,6 +321,34 @@ const applyAssetCtxsToList = (
   });
 };
 
+// Overlay fresh markPx/midPx from the fastAssetCtxs feed onto the perp
+// marketData list (matched by coin name). fastAssetCtxs is HL's upgraded combined
+// feed that supersedes the throttled allDexsAssetCtxs for PRICES; the rest of each
+// ctx (oraclePx / funding / openInterest / ...) still comes from allDexsAssetCtxs
+// via applyAssetCtxsToList. Returns the same reference when nothing changed so the
+// map rebuild + re-render is skipped.
+const overlayFastCtxsToMarketData = (
+  list: MarketData[],
+  fastCtxs: WsFastAssetCtxs
+): MarketData[] => {
+  let changed = false;
+  const next = list.map((item) => {
+    const fc = fastCtxs[item.name];
+    if (!fc) return item;
+    const markPx = fc.markPx != null ? fc.markPx : item.markPx;
+    const midPx = fc.midPx != null ? fc.midPx : item.midPx;
+    if (markPx === item.markPx && midPx === item.midPx) return item;
+    changed = true;
+    return {
+      ...item,
+      markPx,
+      midPx,
+      pxDecimals: getPxDecimals(String(markPx ?? item.markPx ?? '')),
+    };
+  });
+  return changed ? next : list;
+};
+
 export const perps = createModel<RootModel>()({
   state: {
     // clearinghouseState: null,
@@ -404,11 +432,28 @@ export const perps = createModel<RootModel>()({
     // so a markPx-only (or midPx-only) update doesn't wipe the other field.
     mergeFastAssetCtxs(state, payload: WsFastAssetCtxs) {
       if (!payload) return state;
-      const next: Record<string, FFastAssetCtx> = { ...state.spotAssetCtxs };
+      // 1) spot price map — collateral valuation (AccountInfo PM/unified rows).
+      const nextSpot: Record<string, FFastAssetCtx> = {
+        ...state.spotAssetCtxs,
+      };
       for (const coin of Object.keys(payload)) {
-        next[coin] = { ...next[coin], ...payload[coin] };
+        nextSpot[coin] = { ...nextSpot[coin], ...payload[coin] };
       }
-      return { ...state, spotAssetCtxs: next };
+      // 2) Overlay fresh perp markPx/midPx onto marketData (fastAssetCtxs is the
+      //    upgraded combined feed; allDexsAssetCtxs was throttled post-upgrade).
+      const nextMarketData = overlayFastCtxsToMarketData(
+        state.marketData,
+        payload
+      );
+      return {
+        ...state,
+        spotAssetCtxs: nextSpot,
+        marketData: nextMarketData,
+        marketDataMap:
+          nextMarketData === state.marketData
+            ? state.marketDataMap
+            : buildMarketDataMap(nextMarketData),
+      };
     },
 
     patchStatsListBySnapshot(
