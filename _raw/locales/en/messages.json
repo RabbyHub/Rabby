@@ -1335,6 +1335,14 @@
       "newUserGuide": {
         "learnMore": "Learn More"
       },
+      "perpsWidgetGuide": {
+        "title": "Positions, On Hover",
+        "bulletViewPositions": "View positions and PnL on any webpage",
+        "bulletPrices": "Prices and PnL in one place",
+        "bulletToggle": "Turn it on or off anytime",
+        "later": "Later",
+        "open": "Open"
+      },
       "invitePopup": {
         "title": "Save on Hyperliquid Fees",
         "activatedSuccess": "4% Hyperliquid fee savings activated",
