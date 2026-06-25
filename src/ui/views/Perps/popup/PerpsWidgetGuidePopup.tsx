@@ -4,8 +4,7 @@ import clsx from 'clsx';
 import Popup from '@/ui/component/Popup';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import perpsWidgetGuideGif from '@/ui/assets/perps/perps-widget-guide.gif';
-
-const perpsWidgetGuideFallback = '';
+import perpsWidgetGuideFallback from '@/ui/assets/perps/perps-widget-guide-fallback.jpg';
 
 interface PerpsWidgetGuidePopupProps {
   visible: boolean;
@@ -34,8 +33,7 @@ export const PerpsWidgetGuidePopup: React.FC<PerpsWidgetGuidePopupProps> = ({
     t('page.perps.perpsWidgetGuide.bulletPrices'),
     t('page.perps.perpsWidgetGuide.bulletToggle'),
   ];
-  const shouldShowFallback = imageLoadFailed && perpsWidgetGuideFallback;
-  const imageSrc = shouldShowFallback
+  const imageSrc = imageLoadFailed
     ? perpsWidgetGuideFallback
     : perpsWidgetGuideGif;
 
@@ -67,16 +65,16 @@ export const PerpsWidgetGuidePopup: React.FC<PerpsWidgetGuidePopupProps> = ({
         </div>
 
         <div className="mx-20 h-[270px] shrink-0 overflow-hidden rounded-[12px] bg-r-neutral-foot">
-          {imageLoadFailed && !perpsWidgetGuideFallback ? (
-            <div className="h-full w-full bg-r-neutral-foot" />
-          ) : (
-            <img
-              src={imageSrc}
-              alt=""
-              className="block h-full w-full object-cover"
-              onError={() => setImageLoadFailed(true)}
-            />
-          )}
+          <img
+            src={imageSrc}
+            alt=""
+            className="block h-full w-full object-cover"
+            onError={() => {
+              if (!imageLoadFailed) {
+                setImageLoadFailed(true);
+              }
+            }}
+          />
         </div>
 
         <div className="flex h-[79px] shrink-0 flex-col gap-6 px-20 pt-16">
