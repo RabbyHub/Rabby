@@ -62,14 +62,12 @@
     display: flex;
     align-items: center;
     width: 100%;
-    transition: border-color 0.15s ease, background-color 0.15s ease;
 
     &-container {
       .icon-delete-container {
         display: flex;
         opacity: 0;
         color: var(--r-neutral-foot, #6a7587);
-        transition: color 0.15s ease, opacity 0.15s ease;
       }
       &:hover {
         .icon-delete-container {
@@ -81,7 +79,7 @@
           color: var(--r-red-default, #ec5151);
         }
         &:active {
-          color: #d93f3f;
+          color: var(--r-red-default, #ec5151);
         }
       }
     }
@@ -170,7 +168,6 @@
         border-top-left-radius: 6px;
         border-bottom-left-radius: 6px;
         border: 1px solid transparent;
-        transition: border-color 0.15s ease, background-color 0.15s ease;
         &:hover {
           border-color: var(--r-blue-default, #7084ff);
           background: var(--r-neutral-card-1, #fff);
@@ -184,7 +181,6 @@
         border: 1px solid transparent;
         border-top-right-radius: 6px;
         border-bottom-right-radius: 6px;
-        transition: border-color 0.15s ease, background-color 0.15s ease;
         &:hover {
           border-color: var(--r-blue-default, #7084ff);
           background: var(--r-neutral-card-1, #fff);
