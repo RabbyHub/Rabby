@@ -421,8 +421,7 @@ class PreferenceService {
     eventBus.emit(EVENTS.PERPS.WIDGET_ENABLED_CHANGED, v);
   };
 
-  getPerpsWidgetGuideShown = () =>
-    this.store.perpsWidgetGuideShown === true;
+  getPerpsWidgetGuideShown = () => this.store.perpsWidgetGuideShown === true;
   setPerpsWidgetGuideShown = (v: boolean) => {
     this.store.perpsWidgetGuideShown = v;
   };

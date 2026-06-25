@@ -6948,8 +6948,7 @@ export class WalletController extends BaseController {
   getPerpsWidgetEnabled = () => preferenceService.getPerpsWidgetEnabled();
   setPerpsWidgetEnabled = (v: boolean) =>
     preferenceService.setPerpsWidgetEnabled(v);
-  getPerpsWidgetGuideShown = () =>
-    preferenceService.getPerpsWidgetGuideShown();
+  getPerpsWidgetGuideShown = () => preferenceService.getPerpsWidgetGuideShown();
   setPerpsWidgetGuideShown = (v: boolean) =>
     preferenceService.setPerpsWidgetGuideShown(v);
   getPerpsWidgetBlockedHosts = () =>
