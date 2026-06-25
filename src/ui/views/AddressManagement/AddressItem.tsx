@@ -17,7 +17,7 @@ import React, {
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/address/bold-right-arrow.svg';
-import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
+import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete-current-color.svg';
 
 import { AddressViewer } from 'ui/component';
 import { splitNumberByStep, useAlias } from 'ui/utils';
@@ -160,9 +160,10 @@ const AddressItem = memo(
     return (
       <div className={clsx(className, 'rabby-address-item-container relative')}>
         {canFastDeleteAccount && (
-          <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center">
+          <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0 justify-center items-center">
             <RcIconDeleteAddress
-              className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
+              viewBox="0 0 16 16"
+              className="cursor-pointer w-[20px] h-[20px] icon icon-delete"
               onClick={deleteAccount}
             />
           </div>
@@ -175,15 +176,8 @@ const AddressItem = memo(
           <div
             className={clsx(
               'rabby-address-item relative',
-              isCurrentAccount
-                ? 'bg-blue-light hover:bg-blue-light pr-0'
-                : 'group',
-              !isCurrentAccount &&
-                !enableSwitch &&
-                'hover:bg-r-blue-light-1/10',
-              {
-                'is-switch': enableSwitch,
-              }
+              isCurrentAccount ? 'is-current bg-blue-light pr-0' : 'group',
+              !isCurrentAccount && (enableSwitch ? 'is-switch' : 'is-detail')
             )}
             onClick={enableSwitch ? onSwitchCurrentAccount : onClick}
           >
@@ -198,9 +192,6 @@ const AddressItem = memo(
             <div
               className={clsx(
                 'rabby-address-item-left',
-                !isCurrentAccount &&
-                  enableSwitch &&
-                  'hover:bg-r-blue-light-1/10',
                 isCurrentAccount && 'w-[calc(100%-34px)] pr-0'
               )}
             >
