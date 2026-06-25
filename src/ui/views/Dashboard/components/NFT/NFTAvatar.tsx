@@ -40,6 +40,8 @@ const isValidHttpUrl = (url?: string): boolean => {
     if (
       hostname === 'localhost' ||
       hostname === '127.0.0.1' ||
+      hostname === '0.0.0.0' ||
+      hostname === '::1' ||
       hostname.startsWith('10.') ||
       hostname.startsWith('192.168.') ||
       /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)

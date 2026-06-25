@@ -532,7 +532,15 @@ class GnosisKeyring extends EventEmitter {
     const safeProvider = new SafeProvider({
       provider: {
         request: async ({ method, params }) => {
-          return provider.send(method, params);
+          if (typeof (provider as any).request === 'function') {
+            return (provider as any).request({ method, params });
+          }
+
+          if (typeof (provider as any).send === 'function') {
+            return (provider as any).send(method, params);
+          }
+
+          throw new Error('Unsupported provider interface: expected provider.request or provider.send');
         },
       },
     });
@@ -549,7 +557,7 @@ class GnosisKeyring extends EventEmitter {
     const tx = {
       data: multiSendCallData,
       from: address,
-      to: multiSendContract.getAddress(),
+      to: await multiSendContract.getAddress(),
       value: '0',
       operation: Number(Operation.DELEGATE), // DelegateCall
     };
