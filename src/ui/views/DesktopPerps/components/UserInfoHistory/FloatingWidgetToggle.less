@@ -1,0 +1,87 @@
+.desktop-perps-floating-widget-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  color: var(--rb-neutral-secondary);
+  gap: 6px;
+  width: 132px;
+  height: 38px;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: var(--rb-neutral-title-1);
+  }
+}
+
+.desktop-perps-floating-widget-toggle-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &.is-busy {
+    opacity: 0.6;
+  }
+}
+
+.desktop-perps-floating-widget-toggle-label {
+  width: 92px;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  text-align: left;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.desktop-perps-floating-widget-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: inherit;
+  cursor: default;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.desktop-perps-floating-widget-tooltip {
+  max-width: 320px !important;
+
+  .ant-tooltip-inner {
+    width: 308px;
+    min-height: 58px;
+    padding: 12px 8px !important;
+    border-radius: 6px !important;
+    background: var(--rb-neutral-bg-2) !important;
+    box-shadow: none;
+    color: var(--rb-neutral-title-2) !important;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 17px;
+    white-space: pre-wrap;
+  }
+
+  .ant-tooltip-arrow {
+    display: block !important;
+  }
+
+  .ant-tooltip-arrow-content {
+    background: var(--rb-neutral-bg-2) !important;
+  }
+}
