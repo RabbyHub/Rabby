@@ -58,7 +58,7 @@ export const computeUnifiedAccountRatio = ({
   const dexQuoteCache: Record<string, PerpsQuoteAsset | undefined> = {};
   const lookupDexQuote = (dexName: string) => {
     if (dexName in dexQuoteCache) return dexQuoteCache[dexName];
-    const sample = (Object.values(marketDataMap) as MarketData[]).find(
+    const sample = Object.values(marketDataMap).find(
       (m) => (m.dexId || '') === (dexName || '')
     );
     dexQuoteCache[dexName] = sample?.quoteAsset;
@@ -154,14 +154,21 @@ export const usdcMarkPx = (
     (u) => u.tokens[0] === tokenIndex && u.tokens[1] === usdcIndex
   );
   if (usdcPair) {
-    const px = spotAssetCtxs[usdcPair.name]?.markPx;
+    // fastAssetCtxs keys spot entries by `@index`; only the single canonical
+    // pair (PURR/USDC) carries a human name. Look up by `@index`, fall back
+    // to the universe name for safety.
+    const px =
+      spotAssetCtxs['@' + usdcPair.index]?.markPx ??
+      spotAssetCtxs[usdcPair.name]?.markPx;
     return px ? Number(px) || 0 : 0;
   }
 
   // Non-USDC-quoted pair: chain through the quote token's USDC price.
   const anyPair = spotMeta.universe.find((u) => u.tokens[0] === tokenIndex);
   if (!anyPair) return 0;
-  const pairPx = spotAssetCtxs[anyPair.name]?.markPx;
+  const pairPx =
+    spotAssetCtxs['@' + anyPair.index]?.markPx ??
+    spotAssetCtxs[anyPair.name]?.markPx;
   if (!pairPx) return 0;
   const quoteName = spotMeta.tokens.find((t) => t.index === anyPair.tokens[1])
     ?.name;

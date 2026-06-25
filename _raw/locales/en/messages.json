@@ -1710,7 +1710,7 @@
         "availableBalance": "Available Balance",
         "unrealizedPnl": "Unrealized P&L",
         "crossMarginRatio": "Cross Margin Ratio",
-        "crossMarginRatioTips": "Maintenance Margin / Portfolio Value. Your cross positions will be liquidated if Margin Ratio reaches 100%.",
+        "crossMarginRatioTips": "Maintenance Margin / Margin Balance. Your cross positions will be liquidated if Margin Ratio reaches 100%.",
         "crossAccountLeverage": "Cross Account Leverage",
         "crossAccountLeverageTips": "Cross Account Leverage = Total Cross Position Value / Cross Account Value.",
         "maintenanceMargin": "Maintenance margin",
