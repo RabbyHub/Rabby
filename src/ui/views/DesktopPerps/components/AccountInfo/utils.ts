@@ -15,6 +15,33 @@ type SpotBalance = {
   available: string;
 };
 
+const PERPS_USD_FORMAT: BigNumber.Format = {
+  prefix: '',
+  decimalSeparator: '.',
+  groupSeparator: ',',
+  groupSize: 3,
+  secondaryGroupSize: 0,
+  fractionGroupSeparator: ' ',
+  fractionGroupSize: 0,
+  suffix: '',
+};
+
+/**
+ * Account-info USD display. formatUsdValue drops decimals above 1,000,000,
+ * abbreviates above 1e9 as "B", and collapses tiny values to "<$0.01"; here we
+ * always show exactly 2 decimals with thousands grouping so every figure in the
+ * panel is consistent.
+ */
+export const formatPerpsUsd = (
+  value: number | string,
+  roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN
+): string => {
+  const bn = new BigNumber(value || 0);
+  if (bn.isNaN()) return '$0.00';
+  const sign = bn.isNegative() ? '-' : '';
+  return `${sign}$${bn.abs().toFormat(2, roundingMode, PERPS_USD_FORMAT)}`;
+};
+
 /**
  * Hyperliquid Unified Account Ratio (per official docs):
  *

@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue } from '@/ui/utils';
 import { formatPerpsPct } from '@/ui/views/Perps/utils';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 import {
@@ -13,6 +12,7 @@ import {
   computeSpotPortfolioValue,
   computeTotalCollateralBalance,
   computeLtvAdjustedPortfolioValue,
+  formatPerpsUsd,
 } from './utils';
 
 export type AccountSummaryKind = 'perps' | 'unified' | 'portfolioMargin';
@@ -42,7 +42,7 @@ export interface AccountSummary {
   equityCols: EquityCol[];
 }
 
-const usd = (v: number) => formatUsdValue(v, BigNumber.ROUND_DOWN);
+const usd = (v: number) => formatPerpsUsd(v);
 
 /**
  * Normalizes the perps account into the rows the AccountInfo panel renders, by
@@ -136,6 +136,7 @@ export const usePerpsAccountSummary = (): AccountSummary => {
           {
             key: 'pv',
             label: tk('portfolioValue'),
+            tooltip: tk('portfolioValuePortfolioMarginTips'),
             valueText: usd(portfolioValue),
           },
           pnlCol,
@@ -182,6 +183,7 @@ export const usePerpsAccountSummary = (): AccountSummary => {
           {
             key: 'pv',
             label: tk('portfolioValue'),
+            tooltip: tk('portfolioValueUnifiedTips'),
             valueText: usd(portfolioValue),
           },
           pnlCol,
