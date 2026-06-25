@@ -5,7 +5,7 @@ import {
   TokenEntityDetail,
 } from '@rabby-wallet/rabby-api/dist/types';
 import IconNoFind from 'ui/assets/tokenDetail/IconNoFind.svg';
-import { Button, Image } from 'antd';
+import { Button, Image, message } from 'antd';
 import clsx from 'clsx';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import { useTranslation } from 'react-i18next';
@@ -322,47 +322,51 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
       enum: site?.chain,
     });
     setCurrentChain(chain);
-    if (chain?.isTestnet) {
-      if (account) {
-        const { address } = params.data.options;
-        const isAdded = await wallet.isAddedCustomTestnetToken({
-          id: address,
-          chainId: chain.id,
-        });
-        const result = await wallet.getCustomTestnetToken({
-          chainId: chain.id,
-          address: account?.address,
-          tokenId: address,
-        });
-        setCustomTestnetToken(result);
-        setIsCustomTestnetTokenAdded(isAdded);
-      }
-    } else {
-      const customTokens = await wallet.getCustomizedToken();
-      if (account) {
-        const { address } = params.data.options;
-        const result = await wallet.openapi.searchToken(
-          account.address,
-          address,
-          undefined,
-          true
-        );
-        setTokens(result);
-        if (result.length === 1) {
-          setToken(result[0]);
-        }
-        if (result.length > 1) {
-          setChainSelectorVisible(true);
-        }
-        const token = result[0];
-        if (token) {
-          const target = findChain({
-            serverId: token.chain,
+    try {
+      if (chain?.isTestnet) {
+        if (account) {
+          const { address } = params.data.options;
+          const isAdded = await wallet.isAddedCustomTestnetToken({
+            id: address,
+            chainId: chain.id,
           });
-          setCurrentChain(target || CHAINS[CHAINS_ENUM.ETH]);
+          const result = await wallet.getCustomTestnetToken({
+            chainId: chain.id,
+            address: account?.address,
+            tokenId: address,
+          });
+          setCustomTestnetToken(result);
+          setIsCustomTestnetTokenAdded(isAdded);
         }
+      } else {
+        const customTokens = await wallet.getCustomizedToken();
+        if (account) {
+          const { address } = params.data.options;
+          const result = await wallet.openapi.searchToken(
+            account.address,
+            address,
+            undefined,
+            true
+          );
+          setTokens(result);
+          if (result.length === 1) {
+            setToken(result[0]);
+          }
+          if (result.length > 1) {
+            setChainSelectorVisible(true);
+          }
+          const token = result[0];
+          if (token) {
+            const target = findChain({
+              serverId: token.chain,
+            });
+            setCurrentChain(target || CHAINS[CHAINS_ENUM.ETH]);
+          }
+        }
+        setCustomTokens(customTokens);
       }
-      setCustomTokens(customTokens);
+    } catch (e) {
+      console.error(e);
     }
 
     setIsLoading(false);
