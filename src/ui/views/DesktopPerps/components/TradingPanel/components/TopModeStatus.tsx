@@ -250,7 +250,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
           <div
             className={clsx(
-              'h-[38px] text-[13px] font-medium',
+              'h-[38px] text-12 font-medium',
               'inline-flex items-center transition-colors',
               isAdvancedSelected
                 ? 'text-rb-neutral-title-1'

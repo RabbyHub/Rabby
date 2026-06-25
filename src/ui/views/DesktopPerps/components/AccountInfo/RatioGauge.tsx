@@ -6,10 +6,11 @@ import React from 'react';
 const RATIO_DANGER = 2 / 3;
 const RATIO_WARNING = 1 / 3;
 
-// Exact hex from the design spec (iOS-style system colors).
-const GAUGE_GREEN = '#58C669';
-const GAUGE_ORANGE = '#FF9F0A';
-const GAUGE_RED = '#FF453A';
+// Gauge zone colors use theme tokens so they match the rest of the app and
+// adapt to light/dark.
+const GAUGE_GREEN = 'var(--rb-green-default)';
+const GAUGE_ORANGE = 'var(--rb-orange-default)';
+const GAUGE_RED = 'var(--rb-red-default)';
 
 export const ratioColor = (ratio: number) => {
   if (ratio >= RATIO_DANGER) return GAUGE_RED;

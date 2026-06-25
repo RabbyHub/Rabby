@@ -1719,6 +1719,7 @@
         "unifiedAccountSummary": "Unified Account Summary",
         "unifiedAccountRatio": "Unified Account Ratio",
         "unifiedAccountRatioTips": "Represents the risk of portfolio liquidation. When the value is greater than 95%, your portfolio may be liquidated.",
+        "unifiedAccountRatioFormulaTips": "Maintenance Margin / Total Collateral Balance. When the value is greater than 95%, your portfolio may be liquidated.",
         "unifiedAccountLeverage": "Unified Account Leverage",
         "unifiedAccountLeverageTips": "Unified Account Leverage = Total Cross Positions Value / Total Collateral Balance.",
         "perpsMaintenanceMargin": "Perps Maintenance Margin",

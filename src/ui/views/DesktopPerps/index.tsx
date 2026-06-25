@@ -35,7 +35,7 @@ const Wrap = styled.div`
 `;
 
 // Fixed so TradingPanel's bottom edge lines up with the left top block.
-const RIGHT_PANEL_HEIGHT = 636;
+const RIGHT_PANEL_HEIGHT = 663;
 
 // Persisted in px (not %) so a resize only stretches the bottom, never the top;
 // new key drops the stale percentage data.

@@ -60,9 +60,9 @@ const EquityValue: React.FC<{ col: EquityCol }> = ({ col }) => {
 };
 
 const actionButtonClass = clsx(
-  'w-full bg-rb-neutral-bg-4 rounded-[8px] h-[32px] flex items-center justify-center',
+  'w-full bg-rb-neutral-bg-5 rounded-[8px] h-[32px] flex items-center justify-center',
   'border border-solid border-transparent hover:border-rb-brand-default',
-  'text-[12px] leading-[14px] font-medium text-r-neutral-title-1'
+  'text-12 text-r-neutral-title-1'
 );
 
 export const AccountInfo: React.FC = () => {
