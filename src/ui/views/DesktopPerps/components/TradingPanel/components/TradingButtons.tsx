@@ -151,7 +151,7 @@ export const TradingButtons: React.FC<TradingButtonsProps> = ({
   const [sellHovered, setSellHovered] = useState(false);
 
   return (
-    <div className="flex flex-col gap-[12px]">
+    <div className="flex flex-col gap-[12px] mt-12">
       {bannerNode}
       {gateButton ?? (
         <div className="flex items-center gap-[6px]">
