@@ -1428,6 +1428,14 @@
           "assets": "Assets",
           "about": "About"
         },
+        "floatingWidget": {
+          "label": "Floating Widget",
+          "tooltip": "· Show your account PnL in a floating widget while\n  browsing other pages.\n· Hidden on the trading page and Hyperliquid.",
+          "enabledToastTitle": "Floating widget enabled",
+          "enabledToastDescription": "It will appear when you browse other pages.",
+          "disabledToastTitle": "Floating widget disabled",
+          "updateFailed": "Failed to update setting"
+        },
         "emptyMessage": {
           "openOrders": "No open orders",
           "positions": "No positions",

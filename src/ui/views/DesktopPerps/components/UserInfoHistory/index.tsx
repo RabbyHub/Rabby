@@ -20,6 +20,7 @@ import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
 import { ALL_PERPS_QUOTE_ASSETS } from '@/ui/views/Perps/constants';
+import { FloatingWidgetToggle } from './FloatingWidgetToggle';
 
 interface Tab {
   key: string;
@@ -160,37 +161,40 @@ export const UserInfoHistory: React.FC = () => {
 
   return (
     <div className="flex-1 h-full bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">
-      <div
-        ref={tabsContainerRef}
-        className="relative flex gap-[36px] px-[12px] border-b border-solid border-rb-neutral-line shrink-0 overflow-x-auto trades-container-no-scrollbar"
-      >
-        {tabs.map((tab) => {
-          return (
-            <button
-              key={tab.key}
-              ref={(el) => {
-                tabRefs.current[tab.key] = el;
-              }}
-              className={clsx(
-                'h-[38px] text-12 font-medium flex items-center justify-center gap-[4px] shrink-0 whitespace-nowrap',
-                activeTab === tab.key
-                  ? 'text-rb-neutral-title-1'
-                  : 'hover:text-rb-neutral-title-1 text-rb-neutral-secondary'
-              )}
-              onClick={() => setActiveTab(tab.key)}
-            >
-              {tab.label}
-              {tab.number ? <span>({tab.number})</span> : null}
-            </button>
-          );
-        })}
+      <div className="h-[38px] px-[12px] border-b-[0.5px] border-solid border-rb-neutral-line shrink-0 flex items-center justify-between gap-[24px]">
         <div
-          className="absolute bottom-0 h-[2px] bg-rb-brand-default transition-all duration-300 ease-out"
-          style={{
-            left: indicatorStyle.left,
-            width: indicatorStyle.width,
-          }}
-        />
+          ref={tabsContainerRef}
+          className="relative flex h-full min-w-0 flex-1 gap-[36px] overflow-x-auto trades-container-no-scrollbar"
+        >
+          {tabs.map((tab) => {
+            return (
+              <button
+                key={tab.key}
+                ref={(el) => {
+                  tabRefs.current[tab.key] = el;
+                }}
+                className={clsx(
+                  'h-[38px] text-12 font-medium flex items-center justify-center gap-[4px] shrink-0 whitespace-nowrap',
+                  activeTab === tab.key
+                    ? 'text-rb-neutral-title-1'
+                    : 'hover:text-rb-neutral-title-1 text-rb-neutral-secondary'
+                )}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label}
+                {tab.number ? <span>({tab.number})</span> : null}
+              </button>
+            );
+          })}
+          <div
+            className="absolute bottom-0 h-[2px] bg-rb-brand-default transition-all duration-300 ease-out"
+            style={{
+              left: indicatorStyle.left,
+              width: indicatorStyle.width,
+            }}
+          />
+        </div>
+        <FloatingWidgetToggle />
       </div>
       <div className="flex-1 overflow-hidden min-h-0">
         <div className="text-rb-neutral-secondary text-12 whitespace-nowrap h-full">
