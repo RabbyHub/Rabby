@@ -123,12 +123,65 @@ const SETTLEMENT_TOKEN_IDS = new Set(
   Object.keys(COLLATERAL_TOKEN_TO_QUOTE).map(Number)
 );
 
+type SpotUniversePair = SpotMeta['universe'][number];
+
 /**
- * USDC-quoted mark price of a spot token, mirroring the HL frontend resolver:
- * USDC -> 1; outcome ('+') tokens via the '#' price key; otherwise resolve
- * tokenName -> spot pair (@index) via spotMeta (preferring the USDC pair) and
- * read its markPx, chaining through the quote token's USDC price when the pair
- * is not USDC-quoted. Returns 0 when unresolved (matches HL).
+ * usdcMarkPx runs per balance and the summary recomputes on every price tick,
+ * so resolution must be O(1), not a linear scan over tokens/universe. Keyed on
+ * the spotMeta object via WeakMap so a refetch rebuilds and the old one is GC-able.
+ */
+interface SpotPriceIndex {
+  tokenIndexByName: Map<string, number>;
+  tokenNameByIndex: Map<number, string>;
+  usdcPairByBase: Map<number, SpotUniversePair>;
+  anyPairByBase: Map<number, SpotUniversePair>;
+}
+
+const spotPriceIndexCache = new WeakMap<SpotMeta, SpotPriceIndex>();
+
+const getSpotPriceIndex = (spotMeta: SpotMeta): SpotPriceIndex => {
+  const cached = spotPriceIndexCache.get(spotMeta);
+  if (cached) return cached;
+
+  const tokenIndexByName = new Map<string, number>();
+  const tokenNameByIndex = new Map<number, string>();
+  for (const tk of spotMeta.tokens) {
+    tokenIndexByName.set(tk.name, tk.index);
+    tokenNameByIndex.set(tk.index, tk.name);
+  }
+  const usdcIndex = tokenIndexByName.get('USDC') ?? USDC_TOKEN_ID;
+
+  // Keep the FIRST match per base to mirror the previous `.find(...)` semantics.
+  const usdcPairByBase = new Map<number, SpotUniversePair>();
+  const anyPairByBase = new Map<number, SpotUniversePair>();
+  for (const u of spotMeta.universe) {
+    const base = u.tokens[0];
+    if (!anyPairByBase.has(base)) anyPairByBase.set(base, u);
+    if (u.tokens[1] === usdcIndex && !usdcPairByBase.has(base)) {
+      usdcPairByBase.set(base, u);
+    }
+  }
+
+  const index: SpotPriceIndex = {
+    tokenIndexByName,
+    tokenNameByIndex,
+    usdcPairByBase,
+    anyPairByBase,
+  };
+  spotPriceIndexCache.set(spotMeta, index);
+  return index;
+};
+
+const pairMarkPx = (
+  pair: SpotUniversePair,
+  spotAssetCtxs: SpotAssetCtxs
+): string | undefined =>
+  spotAssetCtxs['@' + pair.index]?.markPx ?? spotAssetCtxs[pair.name]?.markPx;
+
+/**
+ * USDC-quoted mark price of a spot token (mirrors the HL frontend resolver).
+ * fastAssetCtxs keys spot by `@index`; only the canonical PURR/USDC pair carries
+ * a human name, so look up by `@index` and fall back to the universe name.
  */
 export const usdcMarkPx = (
   tokenName: string,
@@ -145,33 +198,22 @@ export const usdcMarkPx = (
 
   if (!spotMeta) return 0;
 
-  const tokenIndex = spotMeta.tokens.find((t) => t.name === tokenName)?.index;
+  const index = getSpotPriceIndex(spotMeta);
+  const tokenIndex = index.tokenIndexByName.get(tokenName);
   if (tokenIndex == null) return 0;
-  const usdcIndex =
-    spotMeta.tokens.find((t) => t.name === 'USDC')?.index ?? USDC_TOKEN_ID;
 
-  const usdcPair = spotMeta.universe.find(
-    (u) => u.tokens[0] === tokenIndex && u.tokens[1] === usdcIndex
-  );
+  const usdcPair = index.usdcPairByBase.get(tokenIndex);
   if (usdcPair) {
-    // fastAssetCtxs keys spot entries by `@index`; only the single canonical
-    // pair (PURR/USDC) carries a human name. Look up by `@index`, fall back
-    // to the universe name for safety.
-    const px =
-      spotAssetCtxs['@' + usdcPair.index]?.markPx ??
-      spotAssetCtxs[usdcPair.name]?.markPx;
+    const px = pairMarkPx(usdcPair, spotAssetCtxs);
     return px ? Number(px) || 0 : 0;
   }
 
   // Non-USDC-quoted pair: chain through the quote token's USDC price.
-  const anyPair = spotMeta.universe.find((u) => u.tokens[0] === tokenIndex);
+  const anyPair = index.anyPairByBase.get(tokenIndex);
   if (!anyPair) return 0;
-  const pairPx =
-    spotAssetCtxs['@' + anyPair.index]?.markPx ??
-    spotAssetCtxs[anyPair.name]?.markPx;
+  const pairPx = pairMarkPx(anyPair, spotAssetCtxs);
   if (!pairPx) return 0;
-  const quoteName = spotMeta.tokens.find((t) => t.index === anyPair.tokens[1])
-    ?.name;
+  const quoteName = index.tokenNameByIndex.get(anyPair.tokens[1]);
   if (!quoteName || quoteName === tokenName) return 0;
   return (Number(pairPx) || 0) * usdcMarkPx(quoteName, spotAssetCtxs, spotMeta);
 };
