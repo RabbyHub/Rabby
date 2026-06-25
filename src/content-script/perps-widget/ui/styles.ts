@@ -217,6 +217,8 @@ const STYLES = `
     height: 16px;
     border-radius: 50%;
     flex-shrink: 0;
+    /* White circle so transparent / dark token icons stay visible. */
+    background: #fff;
   }
   .rabby-perps-card__name {
     font-size: 13px;

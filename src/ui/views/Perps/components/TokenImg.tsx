@@ -19,8 +19,10 @@ export const TokenImg = ({
 }: TokenImgProps) => {
   return (
     <div className="relative flex">
+      {/* White circle behind the logo so transparent / dark token icons stay
+          visible on the dark UI. */}
       <Image
-        className={`w-${size} h-${size} rounded-full`}
+        className={`w-${size} h-${size} rounded-full bg-white`}
         src={logoUrl || IconUnknown}
         fallback={IconUnknown}
         preview={false}
