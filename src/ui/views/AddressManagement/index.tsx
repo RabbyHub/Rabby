@@ -590,12 +590,12 @@ const AddressManagement = () => {
             key={addressSortStore.sortType + debouncedSearchKeyword}
             height={
               currentAccountIndex === -1
-                ? 471
+                ? 461
                 : hasStatusBar
-                ? 368
+                ? 358
                 : showBackupWarning
-                ? 382
-                : 426
+                ? 372
+                : 416
             }
             width="100%"
             itemData={filteredAccounts}
