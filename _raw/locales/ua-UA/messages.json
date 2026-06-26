@@ -4044,7 +4044,6 @@
         "perpsMaintenanceMargin": "Маржа підтримки Perps",
         "perpsPortfolioValue": "Вартість портфеля Perps",
         "perpsUnrealizedPnl": "Нереалізований PNL Perps",
-        "unifiedAccountRatioFormulaTips": "Маржа підтримки / Загальний баланс застави. Коли значення перевищує 95%, ваш портфель може бути ліквідовано.",
         "perpsAccountSummary": "Зведення рахунку Perps",
         "portfolioMarginSummary": "Зведення Portfolio Margin",
         "portfolioMarginRatio": "Коефіцієнт Portfolio Margin",

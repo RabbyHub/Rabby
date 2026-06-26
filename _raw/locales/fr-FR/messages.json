@@ -4374,7 +4374,6 @@
         "perpsMaintenanceMargin": "Marge de maintenance des Perps",
         "perpsPortfolioValue": "Valeur du portefeuille des Perps",
         "perpsUnrealizedPnl": "PNL non réalisé des Perps",
-        "unifiedAccountRatioFormulaTips": "Marge de maintenance / Solde total des garanties. Lorsque la valeur est supérieure à 95%, votre portefeuille peut être liquidé.",
         "perpsAccountSummary": "Résumé du compte Perps",
         "portfolioMarginSummary": "Résumé de la marge de portefeuille",
         "portfolioMarginRatio": "Ratio de marge de portefeuille",

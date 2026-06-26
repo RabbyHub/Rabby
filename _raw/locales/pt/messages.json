@@ -4029,7 +4029,6 @@
         "perpsMaintenanceMargin": "Margem de Manutenção de Perps",
         "perpsPortfolioValue": "Valor do Portfólio de Perps",
         "perpsUnrealizedPnl": "PNL Não Realizado de Perps",
-        "unifiedAccountRatioFormulaTips": "Margem de Manutenção / Saldo Total de Colateral. Quando o valor é maior que 95%, o seu portfólio pode ser liquidado.",
         "perpsAccountSummary": "Resumo da Conta de Perps",
         "portfolioMarginSummary": "Resumo da Margem de Portfólio",
         "portfolioMarginRatio": "Índice da Margem de Portfólio",

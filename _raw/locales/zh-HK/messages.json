@@ -4079,7 +4079,6 @@
         "perpsMaintenanceMargin": "Perps 維持保證金",
         "perpsPortfolioValue": "Perps 投資組合價值",
         "perpsUnrealizedPnl": "Perps 未實現盈虧",
-        "unifiedAccountRatioFormulaTips": "維持保證金 / 總抵押品餘額。當數值高於 95% 時，你的投資組合可能會被清算。",
         "perpsAccountSummary": "Perps 帳戶概覽",
         "portfolioMarginSummary": "投資組合保證金概覽",
         "portfolioMarginRatio": "投資組合保證金比率",

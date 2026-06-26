@@ -167,7 +167,7 @@ export const usePerpsAccountSummary = (): AccountSummary => {
           {
             key: 'ratio',
             label: tk('unifiedAccountRatio'),
-            tooltip: tk('unifiedAccountRatioFormulaTips'),
+            tooltip: tk('unifiedAccountRatioTips'),
             valueText: formatPerpsPct(ratio),
             gaugeRatio: ratio,
           },

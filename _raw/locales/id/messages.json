@@ -4029,7 +4029,6 @@
         "perpsMaintenanceMargin": "Margin Pemeliharaan Perps",
         "perpsPortfolioValue": "Nilai Portofolio Perps",
         "perpsUnrealizedPnl": "PNL Belum Terealisasi Perps",
-        "unifiedAccountRatioFormulaTips": "Margin Pemeliharaan / Total Saldo Jaminan. Ketika nilainya lebih dari 95%, portofolio Anda mungkin akan dilikuidasi.",
         "perpsAccountSummary": "Ringkasan Akun Perps",
         "portfolioMarginSummary": "Ringkasan Portfolio Margin",
         "portfolioMarginRatio": "Rasio Portfolio Margin",

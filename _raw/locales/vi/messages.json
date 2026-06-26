@@ -4029,7 +4029,6 @@
         "perpsMaintenanceMargin": "Ký quỹ Duy trì Perps",
         "perpsPortfolioValue": "Giá trị danh mục Perps",
         "perpsUnrealizedPnl": "PNL chưa thực hiện của Perps",
-        "unifiedAccountRatioFormulaTips": "Ký quỹ duy trì / Tổng số dư tài sản thế chấp. Khi giá trị lớn hơn 95%, danh mục đầu tư của bạn có thể bị thanh lý.",
         "perpsAccountSummary": "Tổng quan tài khoản Perps",
         "portfolioMarginSummary": "Tổng quan Portfolio Margin",
         "portfolioMarginRatio": "Tỷ lệ Portfolio Margin",
