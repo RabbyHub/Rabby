@@ -18,6 +18,7 @@ import store from './store';
 import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 import { getSentryConfig } from '@/utils/sentry-config';
+import { Button } from 'antd';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -150,20 +151,27 @@ const compensateUnlockedOnceFlag = async () => {
 const rootContainer = document.getElementById('root');
 const root = rootContainer ? createRoot(rootContainer) : null;
 
-const renderSentryErrorFallback: Sentry.FallbackRender = () => (
-  <div className="fixed inset-0 flex flex-col items-center justify-center gap-[16px] bg-rb-neutral-bg-1">
-    <div className="text-[16px] font-semibold text-rb-neutral-title-1">
-      {i18n.t('global.failed')}
+const renderSentryErrorFallback: Sentry.FallbackRender = ({
+  error,
+  componentStack,
+  resetError,
+}) => {
+  return (
+    <div className="fixed inset-0 flex flex-col items-center justify-center gap-[16px] bg-rb-neutral-bg-2">
+      <div className="p-[20px] space-y-[8px] max-w-full">
+        <h2 className="text-r-neutral-title-1">Something went wrong</h2>
+        <details className="text-r-neutral-body overflow-auto">
+          <summary>Error details</summary>
+          <p>{error?.toString()}</p>
+          <p>{componentStack}</p>
+        </details>
+        <Button type="primary" onClick={resetError}>
+          Try again
+        </Button>
+      </div>
     </div>
-    <button
-      type="button"
-      className="h-[40px] px-[32px] rounded-[16px] bg-rb-brand-light-1 text-rb-brand-default text-[15px] font-semibold hover:bg-rb-brand-light-2"
-      onClick={() => window.location.reload()}
-    >
-      {i18n.t('global.refresh')}
-    </button>
-  </div>
-);
+  );
+};
 
 const main = async () => {
   portMessageChannel.connect(getUITypeName());
@@ -186,7 +194,9 @@ const main = async () => {
       root?.render(
         <Sentry.ErrorBoundary
           fallback={renderSentryErrorFallback}
-          beforeCapture={(scope) => scope.setTag('error_boundary', 'root')}
+          beforeCapture={(scope) => {
+            scope.setTag('error_boundary', 'root');
+          }}
         >
           <Provider store={store}>
             <Views wallet={wallet} />
