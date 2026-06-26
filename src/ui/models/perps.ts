@@ -1191,7 +1191,7 @@ export const perps = createModel<RootModel>()({
 
       // dispatch.perps.startPolling(undefined);
       dispatch.perps.fetchUserAbstraction(account.address);
-      dispatch.perps.fetchSpotMeta();
+      isPro && dispatch.perps.fetchSpotMeta();
       dispatch.perps.fetchPerpPermission(account.address);
       setTimeout(() => {
         // avoid 429 error
