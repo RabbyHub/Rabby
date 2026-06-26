@@ -4032,7 +4032,6 @@
         "perpsMaintenanceMargin": "Perps 維持証拠金",
         "perpsPortfolioValue": "Perps ポートフォリオ価値",
         "perpsUnrealizedPnl": "Perps 未実現 PNL",
-        "unifiedAccountRatioFormulaTips": "維持証拠金 / 全担保残高。値が 95% を超えると、ポートフォリオが清算される可能性があります。",
         "perpsAccountSummary": "Perps アカウント概要",
         "portfolioMarginSummary": "ポートフォリオマージン概要",
         "portfolioMarginRatio": "ポートフォリオマージン比率",

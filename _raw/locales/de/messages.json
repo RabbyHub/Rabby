@@ -4032,7 +4032,6 @@
         "perpsMaintenanceMargin": "Perps Maintenance-Marge",
         "perpsPortfolioValue": "Perps Portfoliowert",
         "perpsUnrealizedPnl": "Perps nicht realisierter PNL",
-        "unifiedAccountRatioFormulaTips": "Maintenance-Marge / Gesamte Sicherheitenbilanz. Wenn der Wert größer als 95% ist, kann Ihr Portfolio liquidiert werden.",
         "perpsAccountSummary": "Perps Kontoübersicht",
         "portfolioMarginSummary": "Portfolio-Margin-Übersicht",
         "portfolioMarginRatio": "Portfolio-Margin-Verhältnis",

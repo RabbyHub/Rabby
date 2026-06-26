@@ -4079,7 +4079,6 @@
         "perpsMaintenanceMargin": "Perps 维持保证金",
         "perpsPortfolioValue": "Perps 投资组合价值",
         "perpsUnrealizedPnl": "Perps 未实现盈亏",
-        "unifiedAccountRatioFormulaTips": "维持保证金 / 总抵押品余额。当该数值大于 95% 时，您的投资组合可能被强制平仓。",
         "perpsAccountSummary": "Perps 账户概览",
         "portfolioMarginSummary": "组合保证金概览",
         "portfolioMarginRatio": "组合保证金率",

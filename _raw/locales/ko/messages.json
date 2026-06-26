@@ -4029,7 +4029,6 @@
         "perpsMaintenanceMargin": "Perps 유지 증거금",
         "perpsPortfolioValue": "Perps 포트폴리오 가치",
         "perpsUnrealizedPnl": "Perps 미실현 PNL",
-        "unifiedAccountRatioFormulaTips": "유지 증거금 / 총 담보금 잔액. 값이 95%를 초과하면 포트폴리오가 청산될 수 있습니다.",
         "perpsAccountSummary": "Perps 계정 요약",
         "portfolioMarginSummary": "포트폴리오 마진 요약",
         "portfolioMarginRatio": "포트폴리오 마진 비율",

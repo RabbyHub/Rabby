@@ -183,7 +183,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
           {/* Sized to fully fit the right rail (636 + gap + AccountInfo ≈300, PM
               4-row) so shorter viewports scroll (overflow-auto) instead of
               clipping the bottom. */}
-          <div className="flex flex-1 min-w-[1280px] min-h-[950px] gap-[6px]">
+          <div className="flex flex-1 min-w-[1280px] min-h-[1150px] gap-[6px]">
             {/* [chart + order book] + UserInfoHistory, can be resized vertically */}
             <div
               ref={leftRailRef}

@@ -4034,7 +4034,6 @@
         "perpsMaintenanceMargin": "Маржа поддержки Perps",
         "perpsPortfolioValue": "Стоимость портфеля Perps",
         "perpsUnrealizedPnl": "Нереализованный PnL Perps",
-        "unifiedAccountRatioFormulaTips": "Поддерживающая маржа / Общий залоговый баланс. Когда значение превышает 95%, ваш портфель может быть ликвидирован.",
         "perpsAccountSummary": "Сводка по счёту Perps",
         "portfolioMarginSummary": "Сводка по портфельной марже",
         "portfolioMarginRatio": "Коэффициент портфельной маржи",

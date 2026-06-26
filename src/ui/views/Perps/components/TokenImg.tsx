@@ -19,10 +19,17 @@ export const TokenImg = ({
 }: TokenImgProps) => {
   return (
     <div className="relative flex">
-      {/* White circle behind the logo so transparent / dark token icons stay
-          visible on the dark UI. */}
+      {/* bg-white keeps transparent / dark icons visible on the dark UI.
+          Mask (not border-radius) shapes the circle: Chromium doesn't
+          anti-alias border-radius on a composited <img> → jagged edges. */}
       <Image
         className={`w-${size} h-${size} rounded-full bg-white`}
+        style={{
+          WebkitMaskImage:
+            'radial-gradient(circle closest-side, #000 calc(100% - 1px), transparent 100%)',
+          maskImage:
+            'radial-gradient(circle closest-side, #000 calc(100% - 1px), transparent 100%)',
+        }}
         src={logoUrl || IconUnknown}
         fallback={IconUnknown}
         preview={false}

@@ -4035,7 +4035,6 @@
         "perpsMaintenanceMargin": "Perps Bakım Marjı",
         "perpsPortfolioValue": "Perps Portföy Değeri",
         "perpsUnrealizedPnl": "Perps Gerçekleşmemiş K/Z",
-        "unifiedAccountRatioFormulaTips": "Bakım Marjı / Toplam Teminat Bakiyesi. Değer %95'ten büyük olduğunda, portföyünüz tasfiye edilebilir.",
         "perpsAccountSummary": "Perps Hesap Özeti",
         "portfolioMarginSummary": "Portföy Marjı Özeti",
         "portfolioMarginRatio": "Portföy Marjı Oranı",
