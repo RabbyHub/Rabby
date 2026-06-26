@@ -74,7 +74,10 @@ export const DesktopTokenChange = ({
                 isNft={isNft}
                 token={token}
                 onClose={onClose}
-                textClassName="text-[14px] leading-[17px] text-r-neutral-body"
+                textClassName={clsx(
+                  'text-[14px] leading-[17px] text-r-neutral-body',
+                  isNft || !canClickToken ? '' : 'underline'
+                )}
                 canClickToken={isNft ? false : canClickToken}
               />
             </div>
@@ -124,7 +127,10 @@ export const DesktopTokenChange = ({
                 isNft={isNft}
                 token={token}
                 onClose={onClose}
-                textClassName="text-[14px] leading-[17px] text-r-green-default"
+                textClassName={clsx(
+                  'text-[14px] leading-[17px] text-r-green-default',
+                  canClickToken ? 'underline' : ''
+                )}
                 canClickToken={canClickToken}
               />
             </div>
