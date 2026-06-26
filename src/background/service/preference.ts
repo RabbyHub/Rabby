@@ -168,6 +168,7 @@ export interface PreferenceStore {
   sceneAccountMap?: Record<string, Account | null>;
 
   perpsWidgetEnabled?: boolean;
+  perpsWidgetGuideShown?: boolean;
   perpsWidgetBlockedHosts?: string[];
   perpsWidgetBallPosition?: { x: number; y: number } | null;
 }
@@ -260,6 +261,7 @@ class PreferenceService {
         dashboardPanelOrder: [],
         sceneAccountMap: {},
         perpsWidgetEnabled: false,
+        perpsWidgetGuideShown: false,
         perpsWidgetBlockedHosts: [],
         perpsWidgetBallPosition: null,
       },
@@ -402,6 +404,9 @@ class PreferenceService {
     if (this.store.perpsWidgetEnabled == null) {
       this.store.perpsWidgetEnabled = false;
     }
+    if (this.store.perpsWidgetGuideShown == null) {
+      this.store.perpsWidgetGuideShown = false;
+    }
     if (!Array.isArray(this.store.perpsWidgetBlockedHosts)) {
       this.store.perpsWidgetBlockedHosts = [];
     }
@@ -414,6 +419,11 @@ class PreferenceService {
   setPerpsWidgetEnabled = (v: boolean) => {
     this.store.perpsWidgetEnabled = v;
     eventBus.emit(EVENTS.PERPS.WIDGET_ENABLED_CHANGED, v);
+  };
+
+  getPerpsWidgetGuideShown = () => this.store.perpsWidgetGuideShown === true;
+  setPerpsWidgetGuideShown = (v: boolean) => {
+    this.store.perpsWidgetGuideShown = v;
   };
 
   getPerpsWidgetBlockedHosts = (): string[] =>
