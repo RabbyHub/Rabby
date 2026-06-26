@@ -3670,7 +3670,15 @@
       },
       "transferToSpot": "Transfer ke Spot",
       "transferToPerps": "Transfer ke Perps",
-      "selectChainToWithdraw": "Pilih Chain untuk Withdrawal"
+      "selectChainToWithdraw": "Pilih Chain untuk Withdrawal",
+      "perpsWidgetGuide": {
+        "title": "PNL Anda Selalu dalam Pandangan",
+        "bulletViewPositions": "Pantau posisi teratas Anda di halaman web mana pun",
+        "bulletPrices": "Arahkan kursor untuk melihat data pasar dan PNL",
+        "bulletToggle": "Nyalakan atau matikan kapan saja",
+        "later": "Belum Sekarang",
+        "open": "Aktifkan Widget"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3838,6 +3846,14 @@
           "transferToPerps": "Transfer ke Perps",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Widget Mengambang",
+          "tooltip": "· Tampilkan PnL akun Anda di widget mengambang saat\n  menjelajahi halaman lain.\n· Tersembunyi di halaman trading dan Hyperliquid.",
+          "enabledToastTitle": "Widget mengambang diaktifkan",
+          "enabledToastDescription": "Widget akan muncul saat Anda menjelajahi halaman lain.",
+          "disabledToastTitle": "Widget mengambang dinonaktifkan",
+          "updateFailed": "Gagal memperbarui pengaturan"
         }
       },
       "statusBar": {

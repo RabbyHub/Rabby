@@ -3673,7 +3673,15 @@
       },
       "transferToSpot": "現物へ振替",
       "transferToPerps": "Perpsへ移転",
-      "selectChainToWithdraw": "出金先のチェーンを選択"
+      "selectChainToWithdraw": "出金先のチェーンを選択",
+      "perpsWidgetGuide": {
+        "title": "あなたのPNLは常に見える場所に",
+        "bulletViewPositions": "任意のウェブページでトップポジションを追跡。",
+        "bulletPrices": "ホバーして市場データとPNLを表示。",
+        "bulletToggle": "いつでもオンまたはオフに切り替え可能。",
+        "later": "今はいい",
+        "open": "ウィジェットを有効化"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3841,6 +3849,14 @@
           "transferToPerps": "Perpsへ移転",
           "usdcSpot": "USDC(現物)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "フローティングウィジェット",
+          "tooltip": "· 他のページを閲覧中に、フローティングウィジェットでアカウントのPnLを表示します。\n· 取引ページとHyperliquidでは非表示になります。",
+          "enabledToastTitle": "フローティングウィジェットが有効になりました",
+          "enabledToastDescription": "他のページを閲覧すると表示されます。",
+          "disabledToastTitle": "フローティングウィジェットが無効になりました",
+          "updateFailed": "設定の更新に失敗しました"
         }
       },
       "statusBar": {

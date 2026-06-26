@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import Popup from '@/ui/component/Popup';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
-import perpsWidgetGuideGif from '@/ui/assets/perps/perps-widget-guide.gif';
 import perpsWidgetGuideFallback from '@/ui/assets/perps/perps-widget-guide-fallback.jpg';
+
+const PERPS_WIDGET_GUIDE_VIDEO_URL =
+  'https://static-assets.rabby.io/files/da65d7ef-d6d9-40e8-82e5-e6e32607b78a.mp4';
 
 interface PerpsWidgetGuidePopupProps {
   visible: boolean;
@@ -20,11 +22,11 @@ export const PerpsWidgetGuidePopup: React.FC<PerpsWidgetGuidePopupProps> = ({
   onCancel,
 }) => {
   const { t } = useTranslation();
-  const [imageLoadFailed, setImageLoadFailed] = React.useState(false);
+  const [videoLoadFailed, setVideoLoadFailed] = React.useState(false);
 
   React.useEffect(() => {
     if (visible) {
-      setImageLoadFailed(false);
+      setVideoLoadFailed(false);
     }
   }, [visible]);
 
@@ -33,9 +35,6 @@ export const PerpsWidgetGuidePopup: React.FC<PerpsWidgetGuidePopupProps> = ({
     t('page.perps.perpsWidgetGuide.bulletPrices'),
     t('page.perps.perpsWidgetGuide.bulletToggle'),
   ];
-  const imageSrc = imageLoadFailed
-    ? perpsWidgetGuideFallback
-    : perpsWidgetGuideGif;
 
   return (
     <Popup
@@ -65,16 +64,26 @@ export const PerpsWidgetGuidePopup: React.FC<PerpsWidgetGuidePopupProps> = ({
         </div>
 
         <div className="mx-20 h-[270px] shrink-0 overflow-hidden rounded-[12px] bg-r-neutral-foot">
-          <img
-            src={imageSrc}
-            alt=""
-            className="block h-full w-full object-cover"
-            onError={() => {
-              if (!imageLoadFailed) {
-                setImageLoadFailed(true);
-              }
-            }}
-          />
+          {videoLoadFailed ? (
+            <img
+              src={perpsWidgetGuideFallback}
+              alt=""
+              className="block h-full w-full object-cover"
+            />
+          ) : (
+            <video
+              className="block h-full w-full object-cover"
+              src={PERPS_WIDGET_GUIDE_VIDEO_URL}
+              poster={perpsWidgetGuideFallback}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              aria-hidden
+              onError={() => setVideoLoadFailed(true)}
+            />
+          )}
         </div>
 
         <div className="flex h-[79px] shrink-0 flex-col gap-6 px-20 pt-16">

@@ -3675,7 +3675,15 @@
       },
       "transferToSpot": "Перевод на спот",
       "transferToPerps": "Перевести в Perps",
-      "selectChainToWithdraw": "Выберите сеть для вывода"
+      "selectChainToWithdraw": "Выберите сеть для вывода",
+      "perpsWidgetGuide": {
+        "title": "Ваш PNL всегда на виду",
+        "bulletViewPositions": "Отслеживайте свои лучшие позиции на любой веб-странице.",
+        "bulletPrices": "Наведите курсор, чтобы просмотреть рыночные данные и PNL.",
+        "bulletToggle": "Включайте и выключайте его в любое время.",
+        "later": "Не сейчас",
+        "open": "Включить виджет"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3843,6 +3851,14 @@
           "transferToPerps": "Перевести в Perps",
           "usdcSpot": "USDC(Спот)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Плавающий виджет",
+          "tooltip": "· Показывайте PnL вашего аккаунта в плавающем виджете при\n  просмотре других страниц.\n· Скрыт на странице торговли и Hyperliquid.",
+          "enabledToastTitle": "Плавающий виджет включён",
+          "enabledToastDescription": "Он будет отображаться при просмотре других страниц.",
+          "disabledToastTitle": "Плавающий виджет выключен",
+          "updateFailed": "Не удалось обновить настройку"
         }
       },
       "statusBar": {

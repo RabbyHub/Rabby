@@ -3670,7 +3670,15 @@
       },
       "transferToSpot": "Chuyển sang Spot",
       "transferToPerps": "Chuyển sang Perps",
-      "selectChainToWithdraw": "Chọn Chain để rút"
+      "selectChainToWithdraw": "Chọn Chain để rút",
+      "perpsWidgetGuide": {
+        "title": "PNL Của Bạn Luôn Trong Tầm Nhìn",
+        "bulletViewPositions": "Theo dõi các vị thế hàng đầu trên bất kỳ trang web nào.",
+        "bulletPrices": "Di chuột để xem dữ liệu thị trường và PNL.",
+        "bulletToggle": "Bật hoặc tắt bất cứ lúc nào.",
+        "later": "Không, cảm ơn",
+        "open": "Bật Widget"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3838,6 +3846,14 @@
           "transferToPerps": "Chuyển sang Perps",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Widget Nổi",
+          "tooltip": "· Hiển thị PnL tài khoản của bạn trong một widget nổi khi\n  duyệt các trang khác.\n· Ẩn trên trang giao dịch và Hyperliquid.",
+          "enabledToastTitle": "Widget nổi đã bật",
+          "enabledToastDescription": "Nó sẽ xuất hiện khi bạn duyệt các trang khác.",
+          "disabledToastTitle": "Widget nổi đã tắt",
+          "updateFailed": "Cập nhật cài đặt thất bại"
         }
       },
       "statusBar": {

@@ -3673,7 +3673,15 @@
       },
       "transferToSpot": "Transferir a Spot",
       "transferToPerps": "Transferir a Perps",
-      "selectChainToWithdraw": "Seleccionar Chain para Retirar"
+      "selectChainToWithdraw": "Seleccionar Chain para Retirar",
+      "perpsWidgetGuide": {
+        "title": "Tu PNL siempre a la vista",
+        "bulletViewPositions": "Rastrea tus principales posiciones en cualquier página web.",
+        "bulletPrices": "Pasa el cursor para ver datos del mercado y PNL.",
+        "bulletToggle": "Actívalo o desactívalo en cualquier momento.",
+        "later": "Ahora no",
+        "open": "Activar Widget"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3841,6 +3849,14 @@
           "transferToPerps": "Transferir a Perps",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Widget Flotante",
+          "tooltip": "· Muestra el PnL de tu cuenta en un widget flotante mientras\n  navegas por otras páginas.\n· Oculto en la página de trading y Hyperliquid.",
+          "enabledToastTitle": "Widget flotante habilitado",
+          "enabledToastDescription": "Aparecerá cuando navegues por otras páginas.",
+          "disabledToastTitle": "Widget flotante deshabilitado",
+          "updateFailed": "Error al actualizar la configuración"
         }
       },
       "statusBar": {

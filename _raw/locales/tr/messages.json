@@ -3676,7 +3676,15 @@
       },
       "transferToSpot": "Spot'a Aktar",
       "transferToPerps": "Perps'e Aktar",
-      "selectChainToWithdraw": "Çekmek İçin Zincir Seç"
+      "selectChainToWithdraw": "Çekmek İçin Zincir Seç",
+      "perpsWidgetGuide": {
+        "title": "PNL'iniz her zaman görünür",
+        "bulletViewPositions": "Herhangi bir web sayfasında en önemli pozisyonlarınızı takip edin.",
+        "bulletPrices": "Piyasa verilerini ve PNL'yi görüntülemek için üzerine gelin.",
+        "bulletToggle": "İstediğiniz zaman açıp kapatın.",
+        "later": "Şimdi değil",
+        "open": "Widget'ı etkinleştir"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3844,6 +3852,14 @@
           "transferToPerps": "Perps'e Aktar",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Kayan Widget",
+          "tooltip": "· Hesabınızın PnL'sini diğer sayfalara göz atarken bir kayan widget'ta gösterin.\n· İşlem sayfasında ve Hyperliquid'de gizlidir.",
+          "enabledToastTitle": "Kayan widget etkinleştirildi",
+          "enabledToastDescription": "Diğer sayfalara göz atarken görünecektir.",
+          "disabledToastTitle": "Kayan widget devre dışı bırakıldı",
+          "updateFailed": "Ayar güncellenemedi"
         }
       },
       "statusBar": {
