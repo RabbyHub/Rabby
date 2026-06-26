@@ -183,7 +183,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     const isDefaultAgg = aggregationIndex === 0;
 
     // Main subscription: display data at current aggregation level
-    const { unsubscribe } = sdk.ws.subscribeToL2Book(
+    const { unsubscribe } = sdk.ws.subscribeToFastL2(
       {
         coin: selectedCoin,
         nSigFigs: currentAggregation?.nSigFigs || 5,
