@@ -1,22 +1,4 @@
 {
-  "node_modules/@aave/contract-helpers/dist/esm/commons/utils.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "BigNumber": "r",
-        "BigNumberJs": "r",
-        "expect": "r",
-        "utils": "r"
-      },
-      "allow": {
-        "BigNumber": "r",
-        "BigNumberJs": "r",
-        "expect": "r",
-        "utils": "r"
-      },
-      "dynamic": []
-    }
-  },
   "node_modules/@ant-design/icons/lib/icons/CheckCircleFilled.js": {
     "enable": true,
     "global": {
@@ -4182,6 +4164,18 @@
       "dynamic": []
     }
   },
+  "node_modules/@ethersproject/hash/lib.esm/namehash.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "toUtf8String": "r"
+      },
+      "allow": {
+        "toUtf8String": "r"
+      },
+      "dynamic": []
+    }
+  },
   "node_modules/@ethersproject/providers/lib.esm/base-provider.js": {
     "enable": true,
     "global": {
@@ -7060,26 +7054,6 @@
       "allow": {
         "AsyncIterator": "r",
         "SuppressedError": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@paraswap/sdk/dist/sdk.esm.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "ContractMethod": "r",
-        "SwapSide": "r",
-        "URLSearchParams": "r",
-        "assert": "r",
-        "regeneratorRuntime": "rw"
-      },
-      "allow": {
-        "ContractMethod": "r",
-        "SwapSide": "r",
-        "URLSearchParams": "r",
-        "assert": "r",
-        "regeneratorRuntime": "rw"
       },
       "dynamic": []
     }

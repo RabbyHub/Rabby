@@ -11,7 +11,6 @@ import {
 } from '../component/MiniSignV2/components';
 import clsx from 'clsx';
 import { DesktopPerpsEntry } from './DesktopPerps/entry';
-import { DesktopLendingEntry } from './DesktopLending/entry';
 import { AddAddressModal } from './DesktopProfile/components/AddAddressModal';
 import { useRabbyDispatch } from '../store';
 import { useEventBusListener } from '../hooks/useEventBusListener';
@@ -31,7 +30,6 @@ const Main = () => {
   const location = useLocation();
   const isPerpsRoute = location.pathname === '/desktop/perps';
   const isProfileRoute = location.pathname.startsWith('/desktop/profile');
-  const isLendingRoute = location.pathname === '/desktop/lending';
 
   const hasMountedPerpsRef = useRef(false);
   const hasMountedProfileRef = useRef(false);
@@ -42,9 +40,6 @@ const Main = () => {
   }
   if (isProfileRoute) {
     hasMountedProfileRef.current = true;
-  }
-  if (isLendingRoute) {
-    hasMountedLendingRef.current = true;
   }
 
   const dispatch = useRabbyDispatch();
@@ -87,13 +82,6 @@ const Main = () => {
         <PrivateRouteGuard>
           <div className={clsx('h-full', isPerpsRoute ? 'block' : 'hidden')}>
             <DesktopPerpsEntry isActive={isPerpsRoute} />
-          </div>
-        </PrivateRouteGuard>
-      ) : null}
-      {hasMountedLendingRef.current ? (
-        <PrivateRouteGuard>
-          <div className={clsx('h-full', isLendingRoute ? 'block' : 'hidden')}>
-            <DesktopLendingEntry isActive={isLendingRoute} />
           </div>
         </PrivateRouteGuard>
       ) : null}
