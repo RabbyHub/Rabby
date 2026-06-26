@@ -1336,12 +1336,12 @@
         "learnMore": "Learn More"
       },
       "perpsWidgetGuide": {
-        "title": "Positions, On Hover",
-        "bulletViewPositions": "View positions and PnL on any webpage",
-        "bulletPrices": "Prices and PnL in one place",
-        "bulletToggle": "Turn it on or off anytime",
-        "later": "Later",
-        "open": "Open"
+        "title": "Your PNL Always in View",
+        "bulletViewPositions": "Track your top positions on any webpage.",
+        "bulletPrices": "Hover to view market data and P&L.",
+        "bulletToggle": "Turn it on or off anytime.",
+        "later": "Not Now",
+        "open": "Enable Widget"
       },
       "invitePopup": {
         "title": "Save on Hyperliquid Fees",
