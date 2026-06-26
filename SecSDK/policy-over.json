@@ -626,5 +626,13 @@
       },
       "disallow": []
     }
+  },
+  "node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/websocket-client.js": {
+    "global": {
+      "allow": {
+        "atob": "r"
+      },
+      "disallow": []
+    }
   }
 }

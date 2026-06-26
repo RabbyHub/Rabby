@@ -9248,6 +9248,7 @@
       },
       "allow": {
         "WebSocket": "r",
+        "atob": "r",
         "clearInterval": "r",
         "console": "r",
         "setInterval": "r",
@@ -13349,6 +13350,34 @@
       "dynamic": []
     }
   },
+  "node_modules/fflate/lib/browser.cjs": {
+    "enable": true,
+    "global": {
+      "access": {
+        "Blob": "r",
+        "TextDecoder": "r",
+        "TextEncoder": "r",
+        "URL": "r",
+        "Worker": "r",
+        "onmessage": "rw",
+        "postMessage": "r",
+        "queueMicrotask": "r",
+        "setTimeout": "r"
+      },
+      "allow": {
+        "Blob": "r",
+        "TextDecoder": "r",
+        "TextEncoder": "r",
+        "URL": "r",
+        "Worker": "r",
+        "onmessage": "rw",
+        "postMessage": "r",
+        "queueMicrotask": "r",
+        "setTimeout": "r"
+      },
+      "dynamic": []
+    }
+  },
   "node_modules/get-intrinsic/index.js": {
     "enable": true,
     "global": {
@@ -15592,40 +15621,6 @@
       },
       "allow": {
         "process": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/react-resizable-panels/dist/react-resizable-panels.browser.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "AbortController": "r",
-        "HTMLElement": "r",
-        "SVGElement": "r",
-        "ShadowRoot": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "document": "r",
-        "getComputedStyle": "r",
-        "localStorage": "r",
-        "matchMedia": "r",
-        "setTimeout": "r",
-        "useContext": "r"
-      },
-      "allow": {
-        "AbortController": "r",
-        "HTMLElement": "r",
-        "SVGElement": "r",
-        "ShadowRoot": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "document": "r",
-        "getComputedStyle": "r",
-        "localStorage": "r",
-        "matchMedia": "r",
-        "setTimeout": "r",
-        "useContext": "r"
       },
       "dynamic": []
     }
