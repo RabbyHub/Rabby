@@ -1,23 +1,28 @@
-import BigNumber from 'bignumber.js';
-import { Hex, numberToHex } from 'viem';
+import { Hex, numberToHex, trim } from 'viem';
 
-//minium 46000;
-export const EIP7702RevokeMiniGasLimit = 60000;
+/**
+ * Minimum gas limit required for EIP-7702 revoke operations (setting delegation to the zero address).
+ * This value includes intrinsic gas, authorization overhead, and a safety margin to prevent
+ * out-of-gas reverts when clearing delegation.
+ */
+export const EIP7702_REVOKE_MIN_GAS_LIMIT = 60_000n;
 
+/**
+ * Removes leading zero bytes from a hex string.
+ * Uses viem's `trim` utility for reliable byte-level trimming and better edge-case handling.
+ */
 export function removeLeadingZeroes(value: Hex | undefined): Hex | undefined {
-  if (!value) {
-    return value;
-  }
-
-  if (value === '0x0') {
-    return '0x';
-  }
-
-  return (value.replace?.(/^0x(00)+/u, '0x') as Hex) ?? value;
+  if (!value) return value;
+  return trim(value, { dir: 'left' });
 }
 
-export const getEIP7702MiniGasLimit = (gaslimit: number | string) => {
-  return new BigNumber(gaslimit || 0).gte(EIP7702RevokeMiniGasLimit)
-    ? numberToHex(new BigNumber(gaslimit || 0).toNumber())
-    : numberToHex(EIP7702RevokeMiniGasLimit);
+/**
+ * Returns a gas limit (as hex) that is guaranteed to be at least `EIP7702_REVOKE_MIN_GAS_LIMIT`.
+ * Useful when preparing revoke transactions to avoid under-gas reverts.
+ */
+export const getEIP7702MiniGasLimit = (gaslimit: number | string | bigint | undefined): Hex => {
+  const input = gaslimit != null ? BigInt(gaslimit) : 0n;
+  const finalGas = input >= EIP7702_REVOKE_MIN_GAS_LIMIT ? input : EIP7702_REVOKE_MIN_GAS_LIMIT;
+
+  return numberToHex(finalGas);
 };
