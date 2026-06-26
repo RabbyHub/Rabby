@@ -21624,7 +21624,6 @@ __metadata:
     react-redux: "npm:8.0.1"
     react-refresh: "npm:0.18.0"
     react-refresh-typescript: "npm:2.0.11"
-    react-resizable-panels: "npm:3.0.6"
     react-router-dom: "npm:5.3.4"
     react-use: "npm:17.2.4"
     react-virtuoso: "npm:4.6.1"
@@ -22454,16 +22453,6 @@ __metadata:
   version: 0.18.0
   resolution: "react-refresh@npm:0.18.0"
   checksum: 10c0/34a262f7fd803433a534f50deb27a148112a81adcae440c7d1cbae7ef14d21ea8f2b3d783e858cb7698968183b77755a38b4d4b5b1d79b4f4689c2f6d358fff2
-  languageName: node
-  linkType: hard
-
-"react-resizable-panels@npm:3.0.6":
-  version: 3.0.6
-  resolution: "react-resizable-panels@npm:3.0.6"
-  peerDependencies:
-    react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-    react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-  checksum: 10c0/e6a6a2a7f438aaf3d4411c39626c1cab5c23af6f25d5ff1fdb8446916388fec549be63d65c47fe17bcc82522b1b5fc7fffa77a550ca9d0b8d21e340d83bdb3c0
   languageName: node
   linkType: hard
 

@@ -6,6 +6,7 @@ import { TradingPanel } from './components/TradingPanel';
 import { UserInfoHistory } from './components/UserInfoHistory';
 import { AccountInfo } from './components/AccountInfo';
 import { StatusBar } from './components/StatusBar';
+import { ResizableVSplit } from './components/ResizableVSplit';
 import { DesktopPerpsTopBar } from './components/DesktopPerpsTopBar';
 import './index.less';
 import { usePerpsProInit } from './hooks/usePerpsProInit';
@@ -34,50 +35,12 @@ const Wrap = styled.div`
   flex-direction: column;
 `;
 
-// Fixed so TradingPanel's bottom edge lines up with the left top block.
+// Fixed so TradingPanel's bottom edge lines up with the left top block; also the
+// left rail's default top-block height.
 const RIGHT_PANEL_HEIGHT = 663;
 
-// Persisted in px (not %) so a resize only stretches the bottom, never the top;
-// new key drops the stale percentage data.
+// Persisted in px (not %) so a resize only stretches the bottom, never the top.
 const TOP_HEIGHT_KEY = 'perps-layout-top-height-v1';
-const DEFAULT_TOP_HEIGHT = RIGHT_PANEL_HEIGHT;
-// Previous drag limits: top 35%–82% of the rail (keeps the bottom ≥ 18%).
-const MIN_TOP_RATIO = 0.35;
-const MAX_TOP_RATIO = 0.82;
-const HANDLE_HEIGHT = 6;
-
-const readStoredTopHeight = () => {
-  const raw = Number(localStorage.getItem(TOP_HEIGHT_KEY));
-  return Number.isFinite(raw) && raw > 0 ? raw : DEFAULT_TOP_HEIGHT;
-};
-
-// Mirrors the old react-resizable-panels handle look (consistency).
-const VResizeHandle = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  height: ${HANDLE_HEIGHT}px;
-  border-radius: 6px;
-  cursor: row-resize;
-  background-color: var(--rb-neutral-bg-page, #f6f7f7);
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 2px;
-    transform: translateY(-50%);
-    border-radius: 6px;
-    background-color: transparent;
-    transition: background-color 0.2s ease;
-  }
-
-  &:hover::after,
-  &.dragging::after {
-    background-color: var(--rb-neutral-info, #c5c5cf);
-  }
-`;
 
 export type PopupType =
   | DepositWithdrawModalType
@@ -122,53 +85,6 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
     reportWebPageView(location.pathname);
   });
 
-  // Top block keeps a fixed px height; the bottom block flexes, so window
-  // resizes only stretch the bottom.
-  const leftRailRef = React.useRef<HTMLDivElement>(null);
-  const topBlockRef = React.useRef<HTMLDivElement>(null);
-  const [topHeight, setTopHeight] = React.useState(readStoredTopHeight);
-  const topHeightRef = React.useRef(topHeight);
-  const [isDragging, setIsDragging] = React.useState(false);
-
-  const handleResizeStart = React.useCallback((e: React.PointerEvent) => {
-    e.preventDefault();
-    const startY = e.clientY;
-    const startH = topHeightRef.current;
-    setIsDragging(true);
-    document.body.style.userSelect = 'none';
-    document.body.style.cursor = 'row-resize';
-
-    const onMove = (ev: PointerEvent) => {
-      const railHeight = leftRailRef.current?.clientHeight ?? 0;
-      let next = startH + (ev.clientY - startY);
-      if (railHeight > 0) {
-        const minH = railHeight * MIN_TOP_RATIO;
-        const maxH = railHeight * MAX_TOP_RATIO - HANDLE_HEIGHT;
-        next = Math.min(Math.max(next, minH), maxH);
-      }
-      next = Math.round(next);
-      topHeightRef.current = next;
-      // Mutate the DOM directly (no per-move React re-render) to keep the drag
-      // smooth; React state is committed once, on pointer up.
-      if (topBlockRef.current) {
-        topBlockRef.current.style.height = `${next}px`;
-      }
-    };
-
-    const onUp = () => {
-      setIsDragging(false);
-      document.body.style.userSelect = '';
-      document.body.style.cursor = '';
-      document.removeEventListener('pointermove', onMove);
-      document.removeEventListener('pointerup', onUp);
-      setTopHeight(topHeightRef.current);
-      localStorage.setItem(TOP_HEIGHT_KEY, String(topHeightRef.current));
-    };
-
-    document.addEventListener('pointermove', onMove);
-    document.addEventListener('pointerup', onUp);
-  }, []);
-
   return (
     <>
       <Wrap>
@@ -184,46 +100,40 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
               4-row) so shorter viewports scroll (overflow-auto) instead of
               clipping the bottom. */}
           <div className="flex flex-1 min-w-[1280px] min-h-[1150px] gap-[6px]">
-            {/* [chart + order book] + UserInfoHistory, can be resized vertically */}
-            <div
-              ref={leftRailRef}
+            {/* [chart + order book] over UserInfoHistory, split by a draggable
+                handle. Left rail fills the space left by the trade panel; inside
+                the top block the order book is clamp(260px, 18vw, 320px) and the
+                chart takes the rest (~chart : order book : panel = 62:18:20). The
+                top keeps a fixed px height so window resizes flex only the bottom. */}
+            <ResizableVSplit
               className="flex flex-col min-w-0 min-h-0 overflow-hidden"
-              // Left rail fills the space left by the trade panel. Inside it the
-              // order book is clamp(260px, 18vw, 320px) and the chart takes the
-              // rest, keeping ~chart : order book : panel = 62% : 18% : 20%.
               style={{ flex: '1 1 0%' }}
-            >
-              {/* Fixed px height — window resizes flex only the bottom, not this. */}
-              <div
-                ref={topBlockRef}
-                className="flex gap-[6px] min-h-0"
-                style={{ height: topHeight, flexShrink: 0 }}
-              >
-                <div
-                  className="min-w-[560px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-                  style={{ flex: '1 1 0%' }}
-                >
-                  <ChartArea />
-                </div>
-                <div
-                  className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-                  style={{
-                    flexGrow: 0,
-                    flexShrink: 0,
-                    flexBasis: 'clamp(260px, 18vw, 320px)',
-                  }}
-                >
-                  <OrderBookTrades />
-                </div>
-              </div>
-              <VResizeHandle
-                className={isDragging ? 'dragging' : undefined}
-                onPointerDown={handleResizeStart}
-              />
-              <div className="flex-1 min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1">
-                <UserInfoHistory />
-              </div>
-            </div>
+              storageKey={TOP_HEIGHT_KEY}
+              defaultTopHeight={RIGHT_PANEL_HEIGHT}
+              topClassName="flex gap-[6px] min-h-0"
+              bottomClassName="flex-1 min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+              top={
+                <>
+                  <div
+                    className="min-w-[560px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                    style={{ flex: '1 1 0%' }}
+                  >
+                    <ChartArea />
+                  </div>
+                  <div
+                    className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                    style={{
+                      flexGrow: 0,
+                      flexShrink: 0,
+                      flexBasis: 'clamp(260px, 18vw, 320px)',
+                    }}
+                  >
+                    <OrderBookTrades />
+                  </div>
+                </>
+              }
+              bottom={<UserInfoHistory />}
+            />
 
             {/* TradingPanel fixed (aligns with the left top block). AccountInfo
                 grows to fill the bottom but never shrinks below its content, so
