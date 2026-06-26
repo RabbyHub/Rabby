@@ -209,7 +209,7 @@ export const CustomTestnetTokenDetail = ({
                 </span>
                 <ThemeIcon
                   src={RcIconExternal}
-                  className="w-14 cursor-pointer"
+                  className="w-14 cursor-pointer text-r-neutral-foot"
                   onClick={() => {
                     handleClickLink(token);
                   }}
