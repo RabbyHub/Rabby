@@ -3670,7 +3670,15 @@
       },
       "transferToSpot": "스팟 계정으로 이체",
       "transferToPerps": "Perps로 이전",
-      "selectChainToWithdraw": "출금할 체인 선택"
+      "selectChainToWithdraw": "출금할 체인 선택",
+      "perpsWidgetGuide": {
+        "title": "손익은 항상 확인할 수 있습니다",
+        "bulletViewPositions": "모든 웹페이지에서 상위 포지션을 추적하세요.",
+        "bulletPrices": "마우스를 올려 시장 데이터와 손익을 확인하세요.",
+        "bulletToggle": "언제든지 켜거나 끌 수 있습니다.",
+        "later": "지금은 아닙니다",
+        "open": "위젯 활성화"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3838,6 +3846,14 @@
           "transferToPerps": "Perps로 이전",
           "usdcSpot": "USDC(현물)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "플로팅 위젯",
+          "tooltip": "· 다른 페이지를 탐색하는 동안 플로팅 위젯에서 계정 손익(PnL)을 표시합니다.\n· 거래 페이지 및 Hyperliquid에서는 숨겨집니다.",
+          "enabledToastTitle": "플로팅 위젯 활성화됨",
+          "enabledToastDescription": "다른 페이지를 탐색할 때 나타납니다.",
+          "disabledToastTitle": "플로팅 위젯 비활성화됨",
+          "updateFailed": "설정 업데이트 실패"
         }
       },
       "statusBar": {

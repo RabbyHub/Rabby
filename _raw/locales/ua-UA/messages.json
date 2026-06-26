@@ -3685,7 +3685,15 @@
       },
       "transferToSpot": "Переказ на спот",
       "transferToPerps": "Переказ на Perps",
-      "selectChainToWithdraw": "Вибрати ланцюг для виведення"
+      "selectChainToWithdraw": "Вибрати ланцюг для виведення",
+      "perpsWidgetGuide": {
+        "title": "Ваш PNL завжди на виду",
+        "bulletViewPositions": "Відстежуйте свої топ позиції на будь-якій веб-сторінці.",
+        "bulletPrices": "Наведіть курсор, щоб переглянути ринкові дані та PNL.",
+        "bulletToggle": "Увімкніть або вимкніть будь-коли.",
+        "later": "Зараз ні",
+        "open": "Увімкнути віджет"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3853,6 +3861,14 @@
           "transferToPerps": "Переказ на Perps",
           "usdcSpot": "USDC (Спот)",
           "usdcPerps": "USDC (Perps)"
+        },
+        "floatingWidget": {
+          "label": "Плаваючий віджет",
+          "tooltip": "· Показувати PnL вашого акаунту у плаваючому віджеті під час\n  перегляду інших сторінок.\n· Приховано на сторінці торгівлі та Hyperliquid.",
+          "enabledToastTitle": "Плаваючий віджет увімкнено",
+          "enabledToastDescription": "Він з'являтиметься, коли ви переглядатимете інші сторінки.",
+          "disabledToastTitle": "Плаваючий віджет вимкнено",
+          "updateFailed": "Не вдалося оновити налаштування"
         }
       },
       "statusBar": {

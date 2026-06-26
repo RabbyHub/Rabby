@@ -3673,7 +3673,15 @@
       },
       "transferToSpot": "Zu Spot überweisen",
       "transferToPerps": "Zu Perps überweisen",
-      "selectChainToWithdraw": "Kette für Auszahlung wählen"
+      "selectChainToWithdraw": "Kette für Auszahlung wählen",
+      "perpsWidgetGuide": {
+        "title": "Ihre PNL immer im Blick",
+        "bulletViewPositions": "Verfolgen Sie Ihre Top-Positionen auf jeder Webseite.",
+        "bulletPrices": "Bewegen Sie den Mauszeiger, um Marktdaten und PNL anzuzeigen.",
+        "bulletToggle": "Jederzeit ein- oder ausschalten.",
+        "later": "Jetzt nicht",
+        "open": "Widget aktivieren"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3841,6 +3849,14 @@
           "transferToPerps": "Zu Perps überweisen",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Floating Widget",
+          "tooltip": "· Zeigt dein Konto-PnL in einem Floating Widget an, während du andere Seiten besuchst.\n· Ausgeblendet auf der Handelsseite und Hyperliquid.",
+          "enabledToastTitle": "Floating Widget aktiviert",
+          "enabledToastDescription": "Es wird angezeigt, wenn du andere Seiten besuchst.",
+          "disabledToastTitle": "Floating Widget deaktiviert",
+          "updateFailed": "Einstellung konnte nicht aktualisiert werden"
         }
       },
       "statusBar": {

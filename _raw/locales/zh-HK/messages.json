@@ -3720,7 +3720,15 @@
       },
       "transferToSpot": "轉入現貨",
       "transferToPerps": "轉入 Perps",
-      "selectChainToWithdraw": "選擇要提現的鏈"
+      "selectChainToWithdraw": "選擇要提現的鏈",
+      "perpsWidgetGuide": {
+        "title": "您的 PNL 一覽無遺",
+        "bulletViewPositions": "在任何網頁上追蹤您的首選持倉。",
+        "bulletPrices": "懸停以查看市場數據和 PNL。",
+        "bulletToggle": "隨時開啟或關閉。",
+        "later": "稍後再說",
+        "open": "啟用小工具"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3888,6 +3896,14 @@
           "transferToPerps": "轉入 Perps",
           "usdcSpot": "USDC(現貨)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "浮動小工具",
+          "tooltip": "· 瀏覽其他頁面時，在浮動小工具中顯示你的帳戶盈虧。\n· 在交易頁面和 Hyperliquid 上隱藏。",
+          "enabledToastTitle": "浮動小工具已啟用",
+          "enabledToastDescription": "當你瀏覽其他頁面時它會出現。",
+          "disabledToastTitle": "浮動小工具已停用",
+          "updateFailed": "更新設定失敗"
         }
       },
       "statusBar": {

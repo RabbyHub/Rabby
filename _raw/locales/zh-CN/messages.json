@@ -3896,6 +3896,14 @@
           "transferToPerps": "转入 Perps",
           "usdcSpot": "USDC（现货）",
           "usdcPerps": "USDC（Perps）"
+        },
+        "floatingWidget": {
+          "label": "浮动小部件",
+          "tooltip": "· 在浏览其他页面时，在浮动小部件中显示您的账户盈亏。\n· 在交易页面和 Hyperliquid 上隐藏。",
+          "enabledToastTitle": "浮动小部件已启用",
+          "enabledToastDescription": "在您浏览其他页面时它会出现。",
+          "disabledToastTitle": "浮动小部件已禁用",
+          "updateFailed": "更新设置失败"
         }
       },
       "statusBar": {
