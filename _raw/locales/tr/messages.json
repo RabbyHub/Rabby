@@ -3678,12 +3678,12 @@
       "transferToPerps": "Perps'e Aktar",
       "selectChainToWithdraw": "Çekmek İçin Zincir Seç",
       "perpsWidgetGuide": {
-        "title": "PNL 始终可见",
-        "bulletViewPositions": "在任何网页上追踪你的仓位",
-        "bulletPrices": "悬停查看市场数据和 PNL",
-        "bulletToggle": "随时开关",
-        "later": "稍后再说",
-        "open": "启用小组件"
+        "title": "PNL'iniz her zaman görünür",
+        "bulletViewPositions": "Herhangi bir web sayfasında en önemli pozisyonlarınızı takip edin.",
+        "bulletPrices": "Piyasa verilerini ve PNL'yi görüntülemek için üzerine gelin.",
+        "bulletToggle": "İstediğiniz zaman açıp kapatın.",
+        "later": "Şimdi değil",
+        "open": "Widget'ı etkinleştir"
       }
     },
     "perpsPro": {
