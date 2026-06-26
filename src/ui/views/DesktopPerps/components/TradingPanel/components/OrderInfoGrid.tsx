@@ -43,19 +43,19 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
       {/* Liq. Price row (hidden when reduceOnly) */}
       {!reduceOnly && !hideLiqPrice && (
         <div className="flex items-baseline justify-between gap-x-[8px]">
-          <div className="flex-1 min-w-0 flex items-baseline gap-x-[4px]">
+          <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-[4px] gap-y-[2px]">
             <span className="text-rb-neutral-secondary text-12 whitespace-nowrap shrink-0">
               {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
             </span>
-            <span className="text-rb-neutral-title-1 text-12 min-w-0 truncate">
+            <span className="text-rb-neutral-body text-12">
               {buy.liqPrice || '-'}
             </span>
           </div>
-          <div className="flex-1 min-w-0 flex items-baseline justify-end gap-x-[4px]">
+          <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-end gap-x-[4px] gap-y-[2px]">
             <span className="text-rb-neutral-secondary text-12 whitespace-nowrap shrink-0">
               {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
             </span>
-            <span className="text-rb-neutral-title-1 text-12 min-w-0 truncate">
+            <span className="text-rb-neutral-body text-12">
               {sell.liqPrice || '-'}
             </span>
           </div>
@@ -64,39 +64,35 @@ export const OrderInfoGrid: React.FC<OrderInfoGridProps> = ({
 
       {/* Cost row */}
       <div className="flex items-baseline justify-between gap-x-[8px]">
-        <div className="flex-1 min-w-0 flex items-baseline gap-x-[4px]">
+        <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-[4px] gap-y-[2px]">
           <span className="text-rb-neutral-secondary text-12 whitespace-nowrap shrink-0">
             {t('page.perpsPro.tradingPanel.cost')}
           </span>
-          <span className="text-rb-neutral-title-1 text-12 min-w-0 truncate">
-            {buy.cost}
-          </span>
+          <span className="text-rb-neutral-body text-12">{buy.cost}</span>
         </div>
-        <div className="flex-1 min-w-0 flex items-baseline justify-end gap-x-[4px]">
+        <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-end gap-x-[4px] gap-y-[2px]">
           <span className="text-rb-neutral-secondary text-12 whitespace-nowrap shrink-0">
             {t('page.perpsPro.tradingPanel.cost')}
           </span>
-          <span className="text-rb-neutral-title-1 text-12 min-w-0 truncate">
-            {sell.cost}
-          </span>
+          <span className="text-rb-neutral-body text-12">{sell.cost}</span>
         </div>
       </div>
 
       {/* Max row */}
       <div className="flex items-baseline justify-between gap-x-[8px]">
-        <div className="flex-1 min-w-0 flex items-baseline gap-x-[4px]">
+        <div className="flex-1 min-w-0 flex flex-wrap items-baseline gap-x-[4px] gap-y-[2px]">
           <span className="text-rb-neutral-secondary text-12 whitespace-nowrap shrink-0">
             {t('page.perpsPro.tradingPanel.max')}
           </span>
-          <span className="text-rb-neutral-title-1 text-12 min-w-0 truncate">
+          <span className="text-rb-neutral-body text-12">
             {formatMax(buy.max)}
           </span>
         </div>
-        <div className="flex-1 min-w-0 flex items-baseline justify-end gap-x-[4px]">
+        <div className="flex-1 min-w-0 flex flex-wrap items-baseline justify-end gap-x-[4px] gap-y-[2px]">
           <span className="text-rb-neutral-secondary text-12 whitespace-nowrap shrink-0">
             {t('page.perpsPro.tradingPanel.max')}
           </span>
-          <span className="text-rb-neutral-title-1 text-12 min-w-0 truncate">
+          <span className="text-rb-neutral-body text-12">
             {formatMax(sell.max)}
           </span>
         </div>

@@ -238,7 +238,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               }}
               onClick={() => onOrderTypeChange(tab.value)}
               className={clsx(
-                'h-[38px] mr-20 text-[13px] font-medium transition-colors',
+                'h-[38px] mr-20 text-12 font-medium transition-colors',
                 orderType === tab.value
                   ? 'text-rb-neutral-title-1'
                   : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
@@ -250,7 +250,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
           <div
             className={clsx(
-              'h-[38px] text-[13px] font-medium',
+              'h-[38px] text-12 font-medium',
               'inline-flex items-center transition-colors',
               isAdvancedSelected
                 ? 'text-rb-neutral-title-1'

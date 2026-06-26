@@ -414,7 +414,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         separator="-"
         className="text-[16px] leading-[20px]"
         baseClassName="font-medium text-r-neutral-title-1"
-        quoteClassName="font-normal text-r-neutral-title-1"
+        quoteClassName="text-r-neutral-title-1"
       />
     );
   };

@@ -31,8 +31,7 @@ const StyledInput = styled(Input)`
       border-radius: 0;
       box-shadow: none;
       font-size: 14px;
-      color: var(--rb-neutral-title-1, #111827);
-      font-weight: 400;
+      color: var(--rb-neutral-body, #111827);
 
       &::placeholder {
         color: var(--rb-neutral-foot, #6b7280);
@@ -52,8 +51,7 @@ const StyledInput = styled(Input)`
     background: var(--rb-neutral-bg-5, #fff);
     height: 44px;
     font-size: 14px;
-    color: var(--rb-neutral-title-1, #111827);
-    font-weight: 400;
+    color: var(--rb-neutral-body, #111827);
     padding: 0 6px 0 12px;
     transition: border-color 0.2s;
 

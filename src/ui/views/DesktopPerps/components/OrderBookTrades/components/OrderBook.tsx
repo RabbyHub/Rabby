@@ -23,7 +23,7 @@ import {
 } from '@/ui/assets/desktop/common';
 import { Trade } from '..';
 import { getPerpTickOptions } from '../../../utils';
-import { formatPerpsCoin } from '../../../utils';
+import { formatPerpsCoin, formatPerpsValueKMB } from '../../../utils';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -73,7 +73,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   ] = useState<OrderBookTooltipState | null>(null);
 
   // Dynamic row count based on container height
-  const ORDER_ROW_HEIGHT = 24;
+  const ORDER_ROW_HEIGHT = 20;
   const MIDDLE_PRICE_HEIGHT = 40;
   const contentRef = useRef<HTMLDivElement>(null);
   const [containerHeight, setContainerHeight] = useState(0);
@@ -267,10 +267,9 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
 
   const formatLevelValue = useCallback(
     (baseValue: number, usdValue: number) => {
-      if (quoteUnit === 'usd') {
-        return splitNumberByStep(usdValue.toFixed(0));
-      }
-      return splitNumberByStep(baseValue.toFixed(szDecimals));
+      return quoteUnit === 'usd'
+        ? formatPerpsValueKMB(usdValue, 2)
+        : formatPerpsValueKMB(baseValue, szDecimals);
     },
     [quoteUnit, szDecimals]
   );
@@ -344,11 +343,11 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 ),
               })}
             </span>
-            <span>{splitNumberByStep(sumSize.toFixed(szDecimals))}</span>
+            <span>{formatPerpsValueKMB(sumSize, szDecimals)}</span>
           </div>
           <div className="desktop-perps-orderbook-tooltip-row">
             <span>{t('page.perpsPro.orderBook.sumUsd')}</span>
-            <span>{splitNumberByStep(sumUsd.toFixed(2))}</span>
+            <span>{formatPerpsValueKMB(sumUsd, 2)}</span>
           </div>
         </div>
       );
@@ -377,7 +376,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         onMouseMove={(e) => updateTooltipPosition(type, index, e.currentTarget)}
         onClick={() => handleClickPrice(Number(order.price))}
         className={clsx(
-          'desktop-perps-orderbook-row relative flex items-center justify-between px-[12px] h-[24px] text-[12px] leading-[14px] cursor-pointer group',
+          'desktop-perps-orderbook-row relative flex items-center justify-between px-[12px] h-[20px] text-[12px] leading-[14px] cursor-pointer group',
           `desktop-perps-orderbook-row-${type}`,
           isInHoverRange && 'is-hover-range',
           isHoveredRow && 'is-hovered-row',
@@ -397,16 +396,16 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         <div className="relative z-10 grid grid-cols-10 items-center justify-between w-full">
           <span
             className={clsx(
-              'col-span-3 text-left group-hover:font-bold',
+              'col-span-4 text-left group-hover:font-bold',
               type === 'bid' ? 'text-rb-green-default' : 'text-r-red-default'
             )}
           >
             {splitNumberByStep(order.price)}
           </span>
-          <span className="text-rb-neutral-title-1 col-span-3 text-right">
+          <span className="text-rb-neutral-body col-span-3 text-right">
             {formatLevelValue(order.size, order.usdSize)}
           </span>
-          <span className="text-rb-neutral-title-1 col-span-4 text-right">
+          <span className="text-rb-neutral-body col-span-3 text-right">
             {formatLevelValue(order.total, order.totalUsd)}
           </span>
         </div>
@@ -496,10 +495,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
     return new Array(count).fill(null).map((_, index) => (
       <div
         key={index}
-        className="flex items-center justify-between px-[12px] h-[24px]"
+        className="flex items-center justify-between px-[12px] h-[20px]"
       >
         <div className="grid grid-cols-10 items-center w-full">
-          <span className="col-span-3">
+          <span className="col-span-4">
             <Skeleton.Button
               active
               className="h-[14px] block rounded-[4px]"
@@ -513,7 +512,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               style={{ width: 50, minWidth: 50 }}
             />
           </span>
-          <span className="col-span-4 flex justify-end">
+          <span className="col-span-3 flex justify-end">
             <Skeleton.Button
               active
               className="h-[14px] block rounded-[4px]"
@@ -528,7 +527,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1 whitespace-nowrap">
       {/* Control Bar */}
-      <div className="flex items-center justify-between py-[8px] px-[8px] pr-[10px] shrink-0">
+      <div className="flex items-center justify-between py-[8px] px-[8px] pr-[6px] shrink-0">
         {/* View Mode Switcher */}
         <div className="flex items-center gap-[3px]">
           <button
@@ -600,7 +599,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               className={clsx(
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
-                'border border-rb-neutral-line rounded-[6px]',
+                'border border-transparent rounded-[6px]',
                 'hover:border-rb-brand-default border border-solid',
                 'text-[12px] leading-[14px] text-rb-neutral-title-1'
               )}
@@ -637,7 +636,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               className={clsx(
                 'inline-flex items-center justify-between',
                 'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
-                'border border-rb-neutral-line rounded-[6px]',
+                'border border-transparent rounded-[6px]',
                 'hover:border-rb-brand-default border border-solid',
                 'text-[12px] leading-[14px] text-rb-neutral-title-1'
               )}
@@ -649,16 +648,16 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-10 px-[12px] py-[5px] text-[11px] text-rb-neutral-secondary shrink-0">
-        <span className="col-span-3 text-left">
-          {t('page.perpsPro.orderBook.price')}
+      <div className="grid grid-cols-10 px-[12px] h-20 text-[11px] text-rb-neutral-secondary shrink-0">
+        <span className="col-span-4 text-left">
+          {t('page.perpsPro.orderBook.price')} ({quoteAsset})
         </span>
         <span className="col-span-3 text-right">
-          {t('page.perpsPro.orderBook.amount')} (
+          {t('page.perpsPro.orderBook.size')} (
           {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : quoteAsset})
         </span>
-        <span className="col-span-4 text-right">
-          {t('page.perpsPro.orderBook.total')} (
+        <span className="col-span-3 text-right">
+          {t('page.perpsPro.orderBook.sum')} (
           {quoteUnit === 'base' ? formatPerpsCoin(selectedCoin) : quoteAsset})
         </span>
       </div>
@@ -670,7 +669,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
       >
         {isLoading ? (
           <>
-            <div className="flex-1 flex flex-col gap-2 justify-end">
+            <div className="flex-1 flex flex-col justify-end">
               {renderSkeletonRows(rowCount)}
             </div>
             <div className="flex items-center px-[12px] h-40">
@@ -680,7 +679,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
                 style={{ width: 100, minWidth: 100 }}
               />
             </div>
-            <div className="flex-1 flex flex-col gap-2">
+            <div className="flex-1 flex flex-col">
               {renderSkeletonRows(rowCount)}
             </div>
           </>
@@ -688,7 +687,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           <>
             {(viewMode === 'Both' || viewMode === 'Asks') && (
               <div
-                className={clsx('overflow-hidden gap-2 flex flex-col', {
+                className={clsx('overflow-hidden flex flex-col justify-end', {
                   'flex-1': viewMode === 'Both',
                 })}
               >
@@ -731,7 +730,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
             )}
             {(viewMode === 'Both' || viewMode === 'Bids') && (
               <div
-                className={clsx('overflow-hidden gap-2 flex flex-col', {
+                className={clsx('overflow-hidden flex flex-col', {
                   'flex-1': viewMode === 'Both',
                 })}
               >

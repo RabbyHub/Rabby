@@ -376,7 +376,7 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div>
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1 mb-[4px]">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-body mb-[4px]">
                 {formatUsdValue(record.positionValue || 0)}
               </div>
               <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
@@ -395,7 +395,7 @@ export const PositionsInfo: React.FC = () => {
         render: (_, record) => {
           return (
             <div>
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1 mb-[4px]">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-body mb-[4px]">
                 ${splitNumberByStep(record.markPx)}
               </div>
               <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
@@ -432,7 +432,7 @@ export const PositionsInfo: React.FC = () => {
                   </div>
                 </Tooltip>
               ) : (
-                <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                   -
                 </div>
               )}
@@ -450,7 +450,7 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div className="flex items-center gap-[12px]">
               <div>
-                <div className="text-[12px] leading-[14px]  text-r-neutral-title-1 mb-[4px]">
+                <div className="text-[12px] leading-[14px]  text-r-neutral-body mb-[4px]">
                   {formatUsdValue(Number(record.marginUsed || 0))}
                 </div>
                 <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
@@ -668,7 +668,7 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div className="flex items-center gap-[6px]">
               <div className="flex flex-col gap-[4px]">
-                <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                   {tpPrice ? (
                     <div>
                       ${splitNumberByStep(tpPrice)}{' '}
@@ -691,7 +691,7 @@ export const PositionsInfo: React.FC = () => {
                     </div>
                   )}
                 </div>
-                <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+                <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                   {slPrice ? (
                     <div>
                       ${splitNumberByStep(slPrice)}{' '}

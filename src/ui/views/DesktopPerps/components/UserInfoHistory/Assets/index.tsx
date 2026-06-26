@@ -126,7 +126,7 @@ export const Assets: React.FC = () => {
         width: 200,
         sorter: (a, b) => a.total - b.total,
         render: (_, record) => (
-          <div className="text-[13px] leading-[16px] text-r-neutral-title-1">
+          <div className="text-[13px] leading-[16px] text-r-neutral-body">
             {new BigNumber(record.total).toFixed(2)} {record.coin}
           </div>
         ),
@@ -146,7 +146,7 @@ export const Assets: React.FC = () => {
               className={
                 isLow
                   ? 'text-[13px] leading-[16px] text-r-neutral-foot'
-                  : 'text-[13px] leading-[16px] text-r-neutral-title-1'
+                  : 'text-[13px] leading-[16px] text-r-neutral-body'
               }
             >
               {new BigNumber(record.available).toFixed(2)} {record.coin}
