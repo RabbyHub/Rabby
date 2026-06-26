@@ -22,10 +22,8 @@ import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import clsx from 'clsx';
 
 const Footer = styled.div`
-  height: 84px;
   border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  background: var(--r-neutral-bg1, rgba(255, 255, 255, 0.06));
-  padding: 20px;
+  padding: 18px 20px;
   display: flex;
   justify-content: center;
 `;
@@ -182,7 +180,13 @@ export const CustomTestnet = ({
         </div>
       )}
       <Footer>
-        <Button size="large" type="primary" block onClick={handleAddClick}>
+        <Button
+          size="large"
+          type="primary"
+          className="h-[44px]"
+          block
+          onClick={handleAddClick}
+        >
           {t('page.customTestnet.add')}
         </Button>
       </Footer>
