@@ -160,17 +160,19 @@ export const DesktopPerpsTopBar: React.FC = () => {
                   <button
                     type="button"
                     key={coin}
-                    className="desktop-perps-topbar-favorite-item group flex items-center gap-[6px] border-0 bg-transparent p-0 text-[12px] leading-[14px] cursor-pointer"
+                    className="desktop-perps-topbar-favorite-item group flex items-center gap-[6px] border-0 bg-transparent p-0 text-12  cursor-pointer"
                     onClick={() => dispatch.perps.updateSelectedCoin(coin)}
                   >
-                    <span className="text-rb-neutral-title-1 group-hover:text-rb-brand-default transition-colors">
+                    <span className="text-rb-neutral-body group-hover:text-rb-brand-default transition-colors">
                       {base}-{quote}
                     </span>
                     <span
                       className={clsx(
-                        'transition-colors',
-                        isPositive && 'text-rb-green-default opacity-80',
-                        isNegative && 'text-rb-red-default opacity-80',
+                        'transition-opacity',
+                        isPositive &&
+                          'text-rb-green-default opacity-80 group-hover:opacity-100',
+                        isNegative &&
+                          'text-rb-red-default opacity-80 group-hover:opacity-100',
                         !isPositive &&
                           !isNegative &&
                           'text-rb-neutral-secondary'

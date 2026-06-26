@@ -25,7 +25,7 @@ const SummaryRow: React.FC<{ row: SummaryRowData }> = ({ row }) => (
       <span className="text-rb-neutral-foot">{row.label}</span>
     )}
     {row.gaugeRatio != null ? (
-      <div className="font-medium flex items-center gap-[4px]">
+      <div className="flex items-center gap-[4px]">
         <span className="text-r-neutral-title-1 flex items-center">
           <RatioGaugeIcon ratio={row.gaugeRatio} />
         </span>
@@ -34,7 +34,7 @@ const SummaryRow: React.FC<{ row: SummaryRowData }> = ({ row }) => (
         </span>
       </div>
     ) : (
-      <span className="text-r-neutral-body font-medium">{row.valueText}</span>
+      <span className="text-r-neutral-body">{row.valueText}</span>
     )}
   </div>
 );
@@ -45,7 +45,7 @@ const EquityValue: React.FC<{ col: EquityCol }> = ({ col }) => {
     return (
       <span
         className={clsx(
-          'font-medium',
+          'text-12',
           pnl >= 0 ? 'text-rb-green-default' : 'text-rb-red-default'
         )}
       >
@@ -54,13 +54,11 @@ const EquityValue: React.FC<{ col: EquityCol }> = ({ col }) => {
       </span>
     );
   }
-  return (
-    <span className="text-r-neutral-body font-medium">{col.valueText}</span>
-  );
+  return <span className="text-12 text-r-neutral-body">{col.valueText}</span>;
 };
 
 const actionButtonClass = clsx(
-  'w-full bg-rb-neutral-bg-5 rounded-[8px] h-[32px] flex items-center justify-center',
+  'w-full bg-rb-neutral-bg-5 rounded-[6px] h-[32px] flex items-center justify-center',
   'border border-solid border-transparent hover:border-rb-brand-default',
   'text-12 text-r-neutral-title-1'
 );
@@ -92,7 +90,7 @@ export const AccountInfo: React.FC = () => {
         <div className="flex items-start gap-[8px] mb-[16px]">
           {summary.equityCols.map((col) => (
             <div key={col.key} className="flex-1 min-w-0">
-              <div className="text-rb-neutral-foot mb-[4px] flex">
+              <div className="text-rb-neutral-foot mb-[3px] flex">
                 {col.tooltip ? (
                   <DashedUnderlineText
                     needCursor={false}
@@ -105,7 +103,7 @@ export const AccountInfo: React.FC = () => {
                   col.label
                 )}
               </div>
-              <div className="text-[14px] leading-[16px]">
+              <div className="text-12 flex">
                 <EquityValue col={col} />
               </div>
             </div>

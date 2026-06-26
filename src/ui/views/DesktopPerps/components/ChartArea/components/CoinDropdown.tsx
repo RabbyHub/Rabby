@@ -569,9 +569,9 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   );
 
   return (
-    <div className="mr-[24px] flex items-center gap-[6px]">
+    <div className="mr-[24px] flex items-center">
       <div
-        className="flex items-center justify-center w-[16px] h-[16px] shrink-0 cursor-pointer"
+        className="flex items-center justify-center w-[24px] h-[24px] mx-[12px] shrink-0 cursor-pointer rounded-[3px] border border-solid border-rb-neutral-line"
         onClick={(e) => handleToggleFavorite(coin, e)}
       >
         {favoritedCoins.includes(coin) ? (
@@ -601,7 +601,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
             quoteClassName="text-r-neutral-title-1"
             showDexTag
           />
-          <RcIconArrowDown className="w-[16px] h-[16px] text-r-neutral-secondary" />
+          <RcIconArrowDown className="text-r-neutral-secondary" />
         </div>
       </Dropdown>
     </div>
