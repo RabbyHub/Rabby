@@ -465,9 +465,10 @@ export const TransactionItem = ({
                     ? null
                     : t('page.activities.signedTx.tips.canNotCancel')
                 }
-                overlayClassName="rectangle cant-cancel__tooltip"
+                overlayClassName="rectangle"
                 placement="topRight"
                 autoAdjustOverflow={false}
+                arrowPointAtCenter
               >
                 <div className="flex items-center">
                   <Tooltip
@@ -479,7 +480,7 @@ export const TransactionItem = ({
                     overlayClassName="rectangle"
                   >
                     <ThemeIcon
-                      className={clsx('icon icon-action', {
+                      className={clsx('icon icon-action size-[20px]', {
                         'cursor-not-allowed': !canCancel,
                       })}
                       src={RcIconSpeedup}
@@ -496,7 +497,7 @@ export const TransactionItem = ({
                     overlayClassName="rectangle"
                   >
                     <ThemeIcon
-                      className={clsx('icon icon-action', {
+                      className={clsx('icon icon-action size-[20px]', {
                         'cursor-not-allowed': !canCancel,
                       })}
                       src={RcIconCancel}

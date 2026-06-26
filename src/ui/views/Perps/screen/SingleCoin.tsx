@@ -1248,7 +1248,7 @@ export const PerpsSingleCoin = () => {
             dex: currentAssetCtx?.dexId ?? '',
             size: sizeStr,
             direction: positionData?.direction as 'Long' | 'Short',
-            price: activeAssetCtx?.markPx || '0',
+            price: activeAssetCtx?.markPx || currentAssetCtx?.markPx || '0',
           });
           if (res) {
             const isBuy = positionData?.direction === 'Long';

@@ -384,7 +384,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
             </span>
             <span
               onClick={handleSetSlippage}
-              className="text-r-neutral-title-1 text-12 cursor-pointer underline decoration-dashed underline-offset-2"
+              className="text-r-neutral-body text-12 cursor-pointer underline decoration-dashed underline-offset-2"
             >
               {slippageDisplay}
             </span>

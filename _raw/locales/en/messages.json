@@ -1335,6 +1335,14 @@
       "newUserGuide": {
         "learnMore": "Learn More"
       },
+      "perpsWidgetGuide": {
+        "title": "Your PNL Always in View",
+        "bulletViewPositions": "Track your top positions on any webpage.",
+        "bulletPrices": "Hover to view market data and PNL.",
+        "bulletToggle": "Turn it on or off anytime.",
+        "later": "Not Now",
+        "open": "Enable Widget"
+      },
       "invitePopup": {
         "title": "Save on Hyperliquid Fees",
         "activatedSuccess": "4% Hyperliquid fee savings activated",
@@ -1419,6 +1427,14 @@
           "orderHistory": "Order History",
           "assets": "Assets",
           "about": "About"
+        },
+        "floatingWidget": {
+          "label": "Floating Widget",
+          "tooltip": "· Show your account PnL in a floating widget while\n  browsing other pages.\n· Hidden on the trading page and Hyperliquid.",
+          "enabledToastTitle": "Floating widget enabled",
+          "enabledToastDescription": "It will appear when you browse other pages.",
+          "disabledToastTitle": "Floating widget disabled",
+          "updateFailed": "Failed to update setting"
         },
         "emptyMessage": {
           "openOrders": "No open orders",
@@ -1710,7 +1726,7 @@
         "availableBalance": "Available Balance",
         "unrealizedPnl": "Unrealized P&L",
         "crossMarginRatio": "Cross Margin Ratio",
-        "crossMarginRatioTips": "Maintenance Margin / Portfolio Value. Your cross positions will be liquidated if Margin Ratio reaches 100%.",
+        "crossMarginRatioTips": "Maintenance Margin / Margin Balance. Your cross positions will be liquidated if Margin Ratio reaches 100%.",
         "crossAccountLeverage": "Cross Account Leverage",
         "crossAccountLeverageTips": "Cross Account Leverage = Total Cross Position Value / Cross Account Value.",
         "maintenanceMargin": "Maintenance margin",
@@ -1723,7 +1739,22 @@
         "unifiedAccountLeverageTips": "Unified Account Leverage = Total Cross Positions Value / Total Collateral Balance.",
         "perpsMaintenanceMargin": "Perps Maintenance Margin",
         "perpsPortfolioValue": "Perps Portfolio Value",
-        "perpsUnrealizedPnl": "Perps Unrealized PNL"
+        "perpsUnrealizedPnl": "Perps Unrealized PNL",
+        "perpsAccountSummary": "Perps Account Summary",
+        "portfolioMarginSummary": "Portfolio Margin Summary",
+        "portfolioMarginRatio": "Portfolio Margin Ratio",
+        "portfolioMarginRatioTips": "Maintenance Margin / LTV-adjusted Portfolio Value. When the value is greater than 95%, your portfolio may be liquidated.",
+        "marginBalance": "Margin Balance",
+        "marginBalanceTips": "Margin Balance = Wallet Balance + Unrealized PNL. Your positions will be liquidated once Margin Balance <= Maintenance Margin.",
+        "totalCollateralBalance": "Total Collateral Balance",
+        "totalCollateralBalanceTips": "Total value of the collateral backing your unified account.",
+        "ltvAdjustedPortfolioValue": "LTV-adjusted Portfolio Value",
+        "ltvAdjustedPortfolioValueTips": "Total portfolio value after each asset's LTV haircut; must stay above the maintenance requirement.",
+        "borrowCapUsed": "Borrow Cap Used",
+        "borrowCapUsedTips": "When this value is 100%, further collateral will not contribute to portfolio margin",
+        "portfolioValue": "Portfolio Value",
+        "portfolioValueUnifiedTips": "Portfolio Value includes the value of spot assets in your Unified Account.",
+        "portfolioValuePortfolioMarginTips": "Portfolio Value includes the value of spot assets in your Portfolio Margin Account."
       },
       "accountActions": {
         "pending": "Pending",
@@ -1738,6 +1769,8 @@
         "trades": "Trades",
         "price": "Price",
         "amount": "Amount",
+        "size": "Size",
+        "sum": "Sum",
         "total": "Total",
         "markPrice": "Mark Price",
         "time": "Time",

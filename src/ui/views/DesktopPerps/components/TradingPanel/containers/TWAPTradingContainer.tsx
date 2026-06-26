@@ -386,15 +386,12 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         {maxDurationMins >= 5 && (
           <div className="text-rb-neutral-secondary text-12">
             {t('page.perpsPro.tradingPanel.maxDurationTwap')}{' '}
-            <span className="text-rb-neutral-title-1">
-              {maxDurationDisplay}
-            </span>
-            .
+            <span className="text-rb-neutral-body">{maxDurationDisplay}</span>.
           </div>
         )}
         <div className="text-rb-neutral-secondary text-12">
           {t('page.perpsPro.tradingPanel.numberOfOrders')}{' '}
-          <span className="text-rb-neutral-title-1">{numberOfOrders}</span>
+          <span className="text-rb-neutral-body">{numberOfOrders}</span>
         </div>
       </div>
 

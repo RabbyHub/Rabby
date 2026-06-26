@@ -78,12 +78,30 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
   const [newUserGuideDismissed, setNewUserGuideDismissed] = useState(true);
 
   useEffect(() => {
-    wallet.getHasDismissedNewUserGuideV2().then((dismissed) => {
-      setNewUserGuideDismissed(!!dismissed);
-    });
+    let isCancelled = false;
+    wallet
+      .getHasDismissedNewUserGuideV2()
+      .then((dismissed) => {
+        if (!isCancelled) {
+          setNewUserGuideDismissed(!!dismissed);
+        }
+      })
+      .catch(() => {
+        // Keep the guide hidden if the stored dismissal state cannot be read.
+      });
+    return () => {
+      isCancelled = true;
+    };
   }, [wallet]);
 
   const showNewUserGuide = isNewUser && !newUserGuideDismissed;
+
+  const dismissNewUserGuide = () => {
+    setNewUserGuideDismissed(true);
+    Promise.resolve(wallet.setHasDismissedNewUserGuideV2(true)).catch(() => {
+      // Local dismissal still applies for the current popup session.
+    });
+  };
 
   const handleDeposit = () => {
     if (currentPerpsAccount) {
@@ -240,8 +258,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
             className="absolute top-8 right-8 w-[16px] h-[16px] flex items-center justify-center cursor-pointer text-r-neutral-foot hover:text-r-blue-default z-10"
             onClick={(e) => {
               e.stopPropagation();
-              setNewUserGuideDismissed(true);
-              wallet.setHasDismissedNewUserGuideV2(true);
+              dismissNewUserGuide();
             }}
           >
             <RcIconCloseCC className="w-[16px] h-[16px] " />

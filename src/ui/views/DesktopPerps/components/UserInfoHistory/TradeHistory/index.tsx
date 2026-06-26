@@ -57,7 +57,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => a.time - b.time,
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px]  text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px]  text-r-neutral-body">
               {dayjs(record.time).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
@@ -101,7 +101,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => Number(a.sz) - Number(b.sz),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {Math.abs(Number(record.sz || 0))} {formatPerpsCoin(record.coin)}
             </div>
           );
@@ -138,7 +138,7 @@ export const TradeHistory: React.FC = () => {
           const pxDecimals = marketDataMap[record.coin]?.pxDecimals || 2;
           const px = new BigNumber(record.px).toFixed(pxDecimals);
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               ${splitNumberByStep(px)}
             </div>
           );
@@ -156,7 +156,7 @@ export const TradeHistory: React.FC = () => {
         render: (_, record) => {
           return (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                 $
                 {splitNumberByStep(
                   new BigNumber(record.px)
@@ -180,7 +180,7 @@ export const TradeHistory: React.FC = () => {
         sorter: (a, b) => Number(a.fee) - Number(b.fee),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               ${splitNumberByStep(Number(record.fee).toFixed(2))}
             </div>
           );

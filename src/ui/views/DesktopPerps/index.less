@@ -1,3 +1,11 @@
+/* Regular weight on the Perps pro page is 350. Set on the tagged document body
+   so it cascades to the page and every portaled surface (modals / tooltips /
+   toasts); heavier utilities (medium/semibold/bold) still override. Elements
+   should inherit this rather than hardcoding `font-weight: 400`. */
+body.perps-pro-page {
+  font-weight: 350;
+}
+
 .trades-container-no-scrollbar {
   &::-webkit-scrollbar {
     display: none;
@@ -267,7 +275,6 @@ button.desktop-perps-topbar-deposit-button {
   white-space: nowrap;
   font-family: inherit;
   font-size: 12px;
-  font-weight: 400;
   line-height: 14px;
   font-variant-numeric: tabular-nums;
 
@@ -380,7 +387,6 @@ button.desktop-perps-topbar-deposit-button {
   gap: 20px;
   color: var(--rb-neutral-foot);
   font-size: 12px;
-  font-weight: 400;
   line-height: 14px;
   white-space: nowrap;
 

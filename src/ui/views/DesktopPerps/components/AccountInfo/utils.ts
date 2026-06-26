@@ -1,11 +1,45 @@
 import BigNumber from 'bignumber.js';
-import { MarketData, MarketDataMap } from '@/ui/models/perps';
-import { getSpotBalanceKey, PerpsQuoteAsset } from '@/ui/views/Perps/constants';
-import { AggregatedClearinghouseState } from '../../utils';
+import { USDC_TOKEN_ID } from '@rabby-wallet/hyperliquid-sdk';
+import type { SpotMeta, FFastAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
+import { getSpotBalanceKey } from '@/ui/views/Perps/constants';
+import type { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
+import { COLLATERAL_TOKEN_TO_QUOTE } from '@/utils/perps/quoteAsset';
+import type { MarketData, MarketDataMap } from '@/ui/models/perps';
+import type {
+  AggregatedClearinghouseState,
+  SpotBalance as PmSpotBalance,
+} from '../../utils';
 
 type SpotBalance = {
   total: string;
   available: string;
+};
+
+const PERPS_USD_FORMAT: BigNumber.Format = {
+  prefix: '',
+  decimalSeparator: '.',
+  groupSeparator: ',',
+  groupSize: 3,
+  secondaryGroupSize: 0,
+  fractionGroupSeparator: ' ',
+  fractionGroupSize: 0,
+  suffix: '',
+};
+
+/**
+ * Account-info USD display. formatUsdValue drops decimals above 1,000,000,
+ * abbreviates above 1e9 as "B", and collapses tiny values to "<$0.01"; here we
+ * always show exactly 2 decimals with thousands grouping so every figure in the
+ * panel is consistent.
+ */
+export const formatPerpsUsd = (
+  value: number | string,
+  roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN
+): string => {
+  const bn = new BigNumber(value || 0);
+  if (bn.isNaN()) return '$0.00';
+  const sign = bn.isNegative() ? '-' : '';
+  return `${sign}$${bn.abs().toFormat(2, roundingMode, PERPS_USD_FORMAT)}`;
 };
 
 /**
@@ -51,7 +85,7 @@ export const computeUnifiedAccountRatio = ({
   const dexQuoteCache: Record<string, PerpsQuoteAsset | undefined> = {};
   const lookupDexQuote = (dexName: string) => {
     if (dexName in dexQuoteCache) return dexQuoteCache[dexName];
-    const sample = (Object.values(marketDataMap) as MarketData[]).find(
+    const sample = Object.values(marketDataMap).find(
       (m) => (m.dexId || '') === (dexName || '')
     );
     dexQuoteCache[dexName] = sample?.quoteAsset;
@@ -86,7 +120,8 @@ export const computeUnifiedAccountRatio = ({
       if (ratio.gt(maxRatio)) maxRatio = ratio;
     }
   }
-  return maxRatio.toNumber();
+  // HL clamps the unified account ratio to [0, 1].
+  return BigNumber.min(maxRatio, 1).toNumber();
 };
 
 /**
@@ -97,11 +132,195 @@ export const computeUnifiedAccountRatio = ({
 export const computeCrossMarginRatio = (
   clearinghouseState: AggregatedClearinghouseState | null
 ): number => {
+  // HL: crossMaintenanceMarginUsed / (crossMarginSummary.accountValue + 1e-8).
   const denom = new BigNumber(
     clearinghouseState?.crossMarginSummary?.accountValue || 0
-  );
-  if (!denom.gt(0)) return 0;
+  ).plus(1e-8);
   return new BigNumber(clearinghouseState?.crossMaintenanceMarginUsed || 0)
     .dividedBy(denom)
     .toNumber();
+};
+
+// ===== Portfolio Margin / spot-collateral pricing (1:1 with the HL frontend) =====
+
+export type SpotAssetCtxs = Record<string, FFastAssetCtx>;
+
+// Settlement (quote) stablecoin token ids: USDC=0, USDT=268, USDE=235, USDH=360.
+const SETTLEMENT_TOKEN_IDS = new Set(
+  Object.keys(COLLATERAL_TOKEN_TO_QUOTE).map(Number)
+);
+
+type SpotUniversePair = SpotMeta['universe'][number];
+
+/**
+ * usdcMarkPx runs per balance and the summary recomputes on every price tick,
+ * so resolution must be O(1), not a linear scan over tokens/universe. Keyed on
+ * the spotMeta object via WeakMap so a refetch rebuilds and the old one is GC-able.
+ */
+interface SpotPriceIndex {
+  tokenIndexByName: Map<string, number>;
+  tokenNameByIndex: Map<number, string>;
+  usdcPairByBase: Map<number, SpotUniversePair>;
+  anyPairByBase: Map<number, SpotUniversePair>;
+}
+
+const spotPriceIndexCache = new WeakMap<SpotMeta, SpotPriceIndex>();
+
+const getSpotPriceIndex = (spotMeta: SpotMeta): SpotPriceIndex => {
+  const cached = spotPriceIndexCache.get(spotMeta);
+  if (cached) return cached;
+
+  const tokenIndexByName = new Map<string, number>();
+  const tokenNameByIndex = new Map<number, string>();
+  for (const tk of spotMeta.tokens) {
+    tokenIndexByName.set(tk.name, tk.index);
+    tokenNameByIndex.set(tk.index, tk.name);
+  }
+  const usdcIndex = tokenIndexByName.get('USDC') ?? USDC_TOKEN_ID;
+
+  // Keep the FIRST match per base to mirror the previous `.find(...)` semantics.
+  const usdcPairByBase = new Map<number, SpotUniversePair>();
+  const anyPairByBase = new Map<number, SpotUniversePair>();
+  for (const u of spotMeta.universe) {
+    const base = u.tokens[0];
+    if (!anyPairByBase.has(base)) anyPairByBase.set(base, u);
+    if (u.tokens[1] === usdcIndex && !usdcPairByBase.has(base)) {
+      usdcPairByBase.set(base, u);
+    }
+  }
+
+  const index: SpotPriceIndex = {
+    tokenIndexByName,
+    tokenNameByIndex,
+    usdcPairByBase,
+    anyPairByBase,
+  };
+  spotPriceIndexCache.set(spotMeta, index);
+  return index;
+};
+
+const pairMarkPx = (
+  pair: SpotUniversePair,
+  spotAssetCtxs: SpotAssetCtxs
+): string | undefined =>
+  spotAssetCtxs['@' + pair.index]?.markPx ?? spotAssetCtxs[pair.name]?.markPx;
+
+/**
+ * USDC-quoted mark price of a spot token (mirrors the HL frontend resolver).
+ * fastAssetCtxs keys spot by `@index`; only the canonical PURR/USDC pair carries
+ * a human name, so look up by `@index` and fall back to the universe name.
+ */
+export const usdcMarkPx = (
+  tokenName: string,
+  spotAssetCtxs: SpotAssetCtxs,
+  spotMeta: SpotMeta | null | undefined
+): number => {
+  if (!tokenName) return 0;
+  if (tokenName === 'USDC') return 1;
+
+  if (tokenName.startsWith('+')) {
+    const px = spotAssetCtxs['#' + tokenName.slice(1)]?.markPx;
+    return px ? Number(px) || 0 : 0;
+  }
+
+  if (!spotMeta) return 0;
+
+  const index = getSpotPriceIndex(spotMeta);
+  const tokenIndex = index.tokenIndexByName.get(tokenName);
+  if (tokenIndex == null) return 0;
+
+  const usdcPair = index.usdcPairByBase.get(tokenIndex);
+  if (usdcPair) {
+    const px = pairMarkPx(usdcPair, spotAssetCtxs);
+    return px ? Number(px) || 0 : 0;
+  }
+
+  // Non-USDC-quoted pair: chain through the quote token's USDC price.
+  const anyPair = index.anyPairByBase.get(tokenIndex);
+  if (!anyPair) return 0;
+  const pairPx = pairMarkPx(anyPair, spotAssetCtxs);
+  if (!pairPx) return 0;
+  const quoteName = index.tokenNameByIndex.get(anyPair.tokens[1]);
+  if (!quoteName || quoteName === tokenName) return 0;
+  return (Number(pairPx) || 0) * usdcMarkPx(quoteName, spotAssetCtxs, spotMeta);
+};
+
+/** Z3: total spot portfolio USD value = sum(balance.total * usdcMarkPx). */
+export const computeSpotPortfolioValue = (
+  balances: PmSpotBalance[],
+  spotAssetCtxs: SpotAssetCtxs,
+  spotMeta: SpotMeta | null | undefined
+): number => {
+  let total = new BigNumber(0);
+  for (const b of balances || []) {
+    const px = usdcMarkPx(b.coin, spotAssetCtxs, spotMeta);
+    total = total.plus(new BigNumber(b.total || 0).times(px));
+  }
+  return total.toNumber();
+};
+
+/** Unified Total Collateral Balance = sum(settlement-token balance.total * price). */
+export const computeTotalCollateralBalance = (
+  balances: PmSpotBalance[],
+  spotAssetCtxs: SpotAssetCtxs,
+  spotMeta: SpotMeta | null | undefined
+): number => {
+  let total = new BigNumber(0);
+  for (const b of balances || []) {
+    if (!SETTLEMENT_TOKEN_IDS.has(b.token)) continue;
+    const px = usdcMarkPx(b.coin, spotAssetCtxs, spotMeta);
+    total = total.plus(new BigNumber(b.total || 0).times(px));
+  }
+  return total.toNumber();
+};
+
+/**
+ * PM LTV-adjusted Portfolio Value (HL's leverage denominator):
+ * sum(balance.total * price * weight); weight = 1 for settlement assets, else
+ * the token's ltv (e.g. 0.5 for HYPE/UBTC) when ltv>0, else 0.
+ */
+export const computeLtvAdjustedPortfolioValue = (
+  balances: PmSpotBalance[],
+  spotAssetCtxs: SpotAssetCtxs,
+  spotMeta: SpotMeta | null | undefined
+): number => {
+  let total = new BigNumber(0);
+  for (const b of balances || []) {
+    let weight = 0;
+    if (SETTLEMENT_TOKEN_IDS.has(b.token)) {
+      weight = 1;
+    } else {
+      const ltv = Number(b.ltv || 0);
+      weight = ltv > 0 ? ltv : 0;
+    }
+    if (weight === 0) continue;
+    const px = usdcMarkPx(b.coin, spotAssetCtxs, spotMeta);
+    total = total.plus(new BigNumber(b.total || 0).times(px).times(weight));
+  }
+  return total.toNumber();
+};
+
+/** Portfolio Margin Ratio: read verbatim from the server (already a 0..1 fraction). */
+export const computePortfolioMarginRatio = (
+  spotState: { portfolioMarginRatio?: string } | null | undefined
+): number => {
+  return Number(spotState?.portfolioMarginRatio || 0);
+};
+
+/**
+ * Borrow Cap Used: the USDC (settlement, token id 0) entry of
+ * tokenToPortfolioBorrowRatio, clamped to [0, 1]. HL reads ONLY the USDC entry,
+ * not a max over tokens.
+ */
+export const computeBorrowCapUsed = (
+  spotState:
+    | { tokenToPortfolioBorrowRatio?: [number, string][] }
+    | null
+    | undefined
+): number => {
+  const entry = (spotState?.tokenToPortfolioBorrowRatio || []).find(
+    ([tokenId]) => tokenId === USDC_TOKEN_ID
+  );
+  const ratio = entry ? Number(entry[1]) || 0 : 0;
+  return Math.min(1, ratio);
 };

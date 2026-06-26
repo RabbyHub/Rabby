@@ -19,3 +19,6 @@ flake.nix
 flake.lock
 .envrc
 src/manifest/chrome-mv3/manifest.local.json
+
+# Local agent specs/plans — not part of the repo
+docs/superpowers/

@@ -73,6 +73,8 @@ import {
   getSavedHomeScrollTop,
   setSavedHomeScrollTop,
 } from './homeScrollState';
+import { PerpsWidgetGuidePopup } from '../popup/PerpsWidgetGuidePopup';
+import { ga4 } from '@/utils/ga4';
 
 export const Perps: React.FC = () => {
   const history = useHistory();
@@ -168,9 +170,16 @@ export const Perps: React.FC = () => {
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   const [newUserProcessVisible, setNewUserProcessVisible] = useState(false);
+  const [perpsWidgetGuideVisible, setPerpsWidgetGuideVisible] = useState(false);
+  const [perpsWidgetGuideEligible, setPerpsWidgetGuideEligible] = useState(
+    false
+  );
+  const [perpsWidgetGuideOpening, setPerpsWidgetGuideOpening] = useState(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const didRestoreScrollRef = useRef(false);
+  const didCheckPerpsWidgetGuideRef = useRef(false);
+  const didShowPerpsWidgetGuideRef = useRef(false);
 
   const saveScroll = useCallback(() => {
     const el = scrollContainerRef.current;
@@ -190,6 +199,73 @@ export const Perps: React.FC = () => {
     dispatch.perps.initCandleInterval(undefined);
     dispatch.perps.initMarginModePreferences(undefined);
   }, []);
+
+  useEffect(() => {
+    if (!isInitialized || didCheckPerpsWidgetGuideRef.current) {
+      return;
+    }
+
+    let isCancelled = false;
+    didCheckPerpsWidgetGuideRef.current = true;
+    Promise.all([
+      wallet.getPerpsWidgetEnabled(),
+      wallet.getPerpsWidgetGuideShown(),
+    ])
+      .then(([enabled, guideShown]) => {
+        if (!isCancelled && !enabled && !guideShown) {
+          setPerpsWidgetGuideEligible(true);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to check perps widget guide status', error);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isInitialized, wallet]);
+
+  useEffect(() => {
+    if (
+      !perpsWidgetGuideEligible ||
+      perpsWidgetGuideVisible ||
+      newUserProcessVisible ||
+      didShowPerpsWidgetGuideRef.current
+    ) {
+      return;
+    }
+
+    didShowPerpsWidgetGuideRef.current = true;
+    setPerpsWidgetGuideVisible(true);
+    Promise.resolve(wallet.setPerpsWidgetGuideShown(true)).catch((error) => {
+      console.error('Failed to mark perps widget guide as shown', error);
+    });
+  }, [
+    newUserProcessVisible,
+    perpsWidgetGuideEligible,
+    perpsWidgetGuideVisible,
+    wallet,
+  ]);
+
+  const handleClosePerpsWidgetGuide = useMemoizedFn(() => {
+    setPerpsWidgetGuideVisible(false);
+  });
+
+  const handleOpenPerpsWidgetGuide = useMemoizedFn(async () => {
+    setPerpsWidgetGuideOpening(true);
+    try {
+      await wallet.setPerpsWidgetEnabled(true);
+      ga4.fireEvent('PerpsFloating_On', {
+        event_category: 'Settings Snapshot',
+      });
+      setPerpsWidgetGuideVisible(false);
+    } catch (error) {
+      message.error((error as Error)?.message || 'Failed to update setting');
+    } finally {
+      setPerpsWidgetGuideOpening(false);
+    }
+  });
+
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
@@ -668,6 +744,12 @@ export const Perps: React.FC = () => {
           await handleActionApproveStatus();
           handleSafeSetReference();
         }}
+      />
+      <PerpsWidgetGuidePopup
+        visible={perpsWidgetGuideVisible}
+        openLoading={perpsWidgetGuideOpening}
+        onOpen={handleOpenPerpsWidgetGuide}
+        onCancel={handleClosePerpsWidgetGuide}
       />
     </div>
   );

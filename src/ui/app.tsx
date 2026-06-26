@@ -15,27 +15,14 @@ import type { WalletControllerType } from 'ui/utils/WalletContext';
 
 import store from './store';
 
-import { getSentryEnv, isManifestV3 } from '@/utils/env';
+import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
-import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
-import { RABBY_SENTRY_IGNORE_ERRORS } from '@/utils/sentry';
+import { getSentryConfig } from '@/utils/sentry-config';
+import { Button } from 'antd';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
-Sentry.init({
-  dsn:
-    'https://f4a992c621c55f48350156a32da4778d@o4507018303438848.ingest.us.sentry.io/4507018389749760',
-  release: process.env.release,
-  environment: getSentryEnv(),
-  autoSessionTracking: false,
-  beforeSend: async (event) => {
-    if (!(await shouldReportUserBehaviorData())) {
-      return null;
-    }
-    return event;
-  },
-  ignoreErrors: RABBY_SENTRY_IGNORE_ERRORS,
-});
+Sentry.init(getSentryConfig());
 
 function initAppMeta() {
   const head = document.querySelector('head');
@@ -164,6 +151,28 @@ const compensateUnlockedOnceFlag = async () => {
 const rootContainer = document.getElementById('root');
 const root = rootContainer ? createRoot(rootContainer) : null;
 
+const renderSentryErrorFallback: Sentry.FallbackRender = ({
+  error,
+  componentStack,
+  resetError,
+}) => {
+  return (
+    <div className="fixed inset-0 flex flex-col items-center justify-center gap-[16px] bg-rb-neutral-bg-2">
+      <div className="p-[20px] space-y-[8px] max-w-full">
+        <h2 className="text-r-neutral-title-1">Something went wrong</h2>
+        <details className="text-r-neutral-body overflow-auto">
+          <summary>Error details</summary>
+          <p>{error?.toString()}</p>
+          <p>{componentStack}</p>
+        </details>
+        <Button type="primary" onClick={resetError}>
+          Try again
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 const main = async () => {
   portMessageChannel.connect(getUITypeName());
   await compensateUnlockedOnceFlag();
@@ -183,9 +192,16 @@ const main = async () => {
     addResourceBundle(locale).then(() => {
       changeLanguage(locale);
       root?.render(
-        <Provider store={store}>
-          <Views wallet={wallet} />
-        </Provider>
+        <Sentry.ErrorBoundary
+          fallback={renderSentryErrorFallback}
+          beforeCapture={(scope) => {
+            scope.setTag('error_boundary', 'root');
+          }}
+        >
+          <Provider store={store}>
+            <Views wallet={wallet} />
+          </Provider>
+        </Sentry.ErrorBoundary>
       );
     });
   });

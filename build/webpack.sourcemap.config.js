@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const { sentryWebpackPlugin } = require("@sentry/webpack-plugin");
+const { createSentryWebpackPlugin } = require('./sentry');
 
 const config = {
   mode: 'production',
@@ -9,23 +9,10 @@ const config = {
     maxAssetSize: 2500000,
   },
   plugins: [
-    new webpack.SourceMapDevToolPlugin(),
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
-    sentryWebpackPlugin({
-      include: './dist',
-      ignoreFile: '.sentrycliignore',
-      ignore: ['node_modules', 'webpack.config.js'],
-      configFile: 'sentry.properties',
-      release: {
-        name: process.env.VERSION
-      },
-      org: process.env.SENTRY_ORG,
-      project: process.env.SENTRY_PROJECT,
-
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-    }),
+    createSentryWebpackPlugin('sourcemap'),
   ],
 };
 

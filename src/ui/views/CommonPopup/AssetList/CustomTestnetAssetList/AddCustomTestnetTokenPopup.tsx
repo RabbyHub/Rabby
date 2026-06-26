@@ -256,7 +256,9 @@ export const AddCustomTestnetTokenContent = ({
             <Input
               ref={inputRef}
               autoFocus
-              className={inModal ? 'bg-rb-neutral-card-1' : ''}
+              className={
+                inModal ? 'bg-rb-neutral-card-1' : 'bg-r-neutral-card-2'
+              }
               placeholder={t(
                 'page.dashboard.assets.AddTestnetToken.tokenAddressPlaceholder'
               )}

@@ -76,8 +76,9 @@ const StrayFooterNav = memo(
       <StrayFooter className={className} isFixed={footerFixed}>
         <div
           className={cx(
-            'py-20 px-20 w-full flex justify-center stray-footer-nav',
-            hasDivider && 'bg-r-neutral-bg-1 border-t-r-neutral-line border-t'
+            'py-[18px] px-20 w-full flex justify-center stray-footer-nav',
+            hasDivider &&
+              'bg-transparent border-t-r-neutral-line border-t-[0.5px]'
           )}
         >
           {hasBack && (
@@ -85,7 +86,7 @@ const StrayFooterNav = memo(
               disabled={backDisabled}
               onClick={handleBack}
               size="large"
-              className="flex-1 mr-16 lg:h-[52px]"
+              className="flex-1 mr-16 h-[44px]"
             >
               {BackButtonContent}
             </Button>
@@ -96,7 +97,7 @@ const StrayFooterNav = memo(
               htmlType="submit"
               onClick={onNextClick}
               size="large"
-              className={cx('lg:h-[52px]', 'flex-1')}
+              className={cx('h-[44px]', 'flex-1')}
               type="primary"
               loading={nextLoading}
             >

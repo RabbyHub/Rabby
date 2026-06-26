@@ -550,7 +550,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.orderValue')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-body text-[13px]">
             {orderSummary.orderValue}
           </span>
         </div>
@@ -559,7 +559,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
           <span className="text-r-neutral-foot text-[13px]">
             {t('page.perpsPro.tradingPanel.marginUsage')}
           </span>
-          <span className="text-r-neutral-title-1 text-[13px]">
+          <span className="text-r-neutral-body text-[13px]">
             {orderSummary.marginUsage}
           </span>
         </div>

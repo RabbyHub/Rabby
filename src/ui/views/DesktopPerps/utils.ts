@@ -33,6 +33,11 @@ export interface SpotBalance {
   total: string;
   hold: string;
   available: string;
+  // Portfolio-margin per-token fields (present for PM accounts on eligible collateral)
+  ltv?: string;
+  borrowed?: string;
+  supplied?: string;
+  spotHold?: string;
 }
 
 export const getPositionDirection = (
@@ -428,6 +433,17 @@ const calcAccountValueByAllDexs = (
   }, 0);
 };
 
+// Cross-margin equity summed across all dexes (mirrors calcAccountValueByAllDexs
+// for marginSummary). Used as the Cross Margin Ratio denominator so it shares the
+// all-dex scope of the already-aggregated crossMaintenanceMarginUsed numerator.
+const calcCrossAccountValueByAllDexs = (
+  allClearinghouseState: [string, ClearinghouseState][]
+) => {
+  return allClearinghouseState.reduce((acc, item) => {
+    return acc + Number(item[1]?.crossMarginSummary?.accountValue || 0);
+  }, 0);
+};
+
 /**
  * the official ratio buckets it by collateral token, so we keep a flat
  * `crossMaintByDex` map (dex name → that dex's `crossMaintenanceMarginUsed`)
@@ -464,7 +480,15 @@ export const formatAllDexsClearinghouseState = (
     assetPositions: assetPositions,
     crossMaintenanceMarginUsed: crossMaintenanceMarginUsed.toString(),
     crossMaintByDex,
-    crossMarginSummary: hyperDexState?.crossMarginSummary || {},
+    crossMarginSummary: {
+      ...(hyperDexState?.crossMarginSummary || {}),
+      // Aggregate cross equity across all dexes (matches HL's kRZ) so the Cross
+      // Margin Ratio / Margin Balance use the all-dex scope, consistent with the
+      // aggregated crossMaintenanceMarginUsed. Single-dex accounts are unchanged.
+      accountValue: calcCrossAccountValueByAllDexs(
+        allClearinghouseState
+      ).toString(),
+    },
     marginSummary: {
       ...hyperDexState.marginSummary,
       accountValue: calcAccountValueByAllDexs(allClearinghouseState).toString(),
@@ -479,14 +503,22 @@ export const formatAllDexsClearinghouseState = (
 export const formatSpotState = (spotState: SpotClearinghouseState) => {
   // `tokenToAvailableAfterMaintenance` is the server-computed net free
   // collateral per token (after LTV weighting and existing-position MM).
-  // Surfaced raw so consumers can decide how to use it based on the user's
-  // abstraction mode — portfolio margin needs it, unifiedAccount has its own
-  // accounting via stablecoin totals.
   const tokenToAvailableAfterMaintenance = Array.isArray(
     spotState?.tokenToAvailableAfterMaintenance
   )
     ? spotState.tokenToAvailableAfterMaintenance ?? null
     : null;
+
+  // Portfolio-margin account-level fields (server-computed; present only for PM
+  // accounts). Surfaced raw so AccountInfo can read the PM ratio / borrow ratio
+  // verbatim, exactly as the Hyperliquid frontend does.
+  const portfolioMarginEnabled = spotState?.portfolioMarginEnabled;
+  const portfolioMarginRatio = spotState?.portfolioMarginRatio;
+  const tokenToPortfolioBorrowRatio = Array.isArray(
+    spotState?.tokenToPortfolioBorrowRatio
+  )
+    ? spotState.tokenToPortfolioBorrowRatio
+    : undefined;
 
   if (!spotState || !spotState.balances || spotState.balances.length === 0) {
     return {
@@ -495,35 +527,45 @@ export const formatSpotState = (spotState: SpotClearinghouseState) => {
       balances: [] as SpotBalance[],
       balancesMap: {} as Record<string, SpotBalance>,
       tokenToAvailableAfterMaintenance,
+      portfolioMarginEnabled,
+      portfolioMarginRatio,
+      tokenToPortfolioBorrowRatio,
     };
   }
 
-  // Only extract the 4 stablecoins we support (USDC/USDT/USDE/USDH)
+  // Keep ALL balances (not just the 4 stablecoins): portfolio-margin pricing
+  // needs volatile collateral (HYPE/UBTC/...) too. Per-token PM fields
+  // (ltv/borrowed/supplied/spotHold) are passed through for the PM layout.
+  const balances: SpotBalance[] = spotState.balances.map((b) => {
+    const available = new BigNumber(b.total || '0')
+      .minus(b.hold || '0')
+      .toString();
+    return {
+      coin: b.coin, // Hyperliquid's quirk: USDT is returned as 'USDT0'
+      token: b.token,
+      total: b.total || '0',
+      hold: b.hold || '0',
+      available,
+      ltv: b.ltv,
+      borrowed: b.borrowed,
+      supplied: b.supplied,
+      spotHold: b.spotHold,
+    };
+  });
+
+  // accountValue / availableToTrade stay the SETTLEMENT-stablecoin sums (1:1 USD)
+  // for backward-compat with unified-account consumers. Full portfolio /
+  // collateral USD values are computed separately from fastAssetCtxs prices.
   const STABLECOIN_TOKEN_IDS = new Set(
     Object.keys(COLLATERAL_TOKEN_TO_QUOTE).map(Number)
   );
-
-  const balances: SpotBalance[] = spotState.balances
-    .filter((b) => STABLECOIN_TOKEN_IDS.has(b.token))
-    .map((b) => {
-      const available = new BigNumber(b.total || '0')
-        .minus(b.hold || '0')
-        .toString();
-      return {
-        coin: b.coin, // Hyperliquid's quirk: USDT is returned as 'USDT0'
-        token: b.token,
-        total: b.total || '0',
-        hold: b.hold || '0',
-        available,
-      };
-    });
-
-  // Assumes all stablecoins at 1:1 USD parity (matches Hyperliquid internal accounting)
-  const totalAccountValue = balances
+  const stableBalances = balances.filter((b) =>
+    STABLECOIN_TOKEN_IDS.has(b.token)
+  );
+  const totalAccountValue = stableBalances
     .reduce((sum, b) => sum.plus(b.total), new BigNumber(0))
     .toString();
-
-  const totalAvailable = balances
+  const totalAvailable = stableBalances
     .reduce((sum, b) => sum.plus(b.available), new BigNumber(0))
     .toString();
 
@@ -538,6 +580,9 @@ export const formatSpotState = (spotState: SpotClearinghouseState) => {
     balances,
     balancesMap,
     tokenToAvailableAfterMaintenance,
+    portfolioMarginEnabled,
+    portfolioMarginRatio,
+    tokenToPortfolioBorrowRatio,
   };
 };
 
@@ -551,4 +596,28 @@ export const getStatsReportSide = (isBuy: boolean, isReduceOnly: boolean) => {
 export const formatPerpsValueWithUsdc = (num: string | number) => {
   const string = new BigNumber(num).toFixed(2);
   return `${splitNumberByStep(string)} USDC`;
+};
+
+/**
+ * Order book / trades number formatter. Abbreviates values >= 1K with K/M/B
+ * suffixes (no currency prefix — the unit lives in the column header), and
+ * keeps a plain number below 1K. `decimals` sets the sub-1K precision
+ * (defaults to 2).
+ */
+export const formatPerpsValueKMB = (
+  value: string | number,
+  decimals = 2
+): string => {
+  const bn = new BigNumber(value);
+  const num = bn.toNumber();
+  if (num >= 1e9) {
+    return `${(num / 1e9).toFixed(2)}B`;
+  }
+  if (num >= 1e6) {
+    return `${(num / 1e6).toFixed(2)}M`;
+  }
+  if (num >= 1e3) {
+    return `${(num / 1e3).toFixed(2)}K`;
+  }
+  return splitNumberByStep(bn.toFixed(decimals));
 };
