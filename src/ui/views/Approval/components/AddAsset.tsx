@@ -1,52 +1,46 @@
 import {
-  TokenItem,
-  TxHistoryResult,
-  TxHistoryItem,
-  TokenEntityDetail,
-} from '@rabby-wallet/rabby-api/dist/types';
-import IconNoFind from 'ui/assets/tokenDetail/IconNoFind.svg';
-import { Button, Image, message } from 'antd';
-import clsx from 'clsx';
-import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
-import { useTranslation } from 'react-i18next';
-import React, { useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
-import BigNumber from 'bignumber.js';
-import { CHAINS, CHAINS_ENUM } from 'consts';
-import { HistoryItem } from 'ui/views/Dashboard/components/TokenDetailPopup/HistoryItem';
-import {
-  formatTokenAmount,
-  formatUsdValue,
-  useApproval,
-  useWallet,
-  openInTab,
-  isSameAddress,
-  ellipsisOverflowedText,
-  splitNumberByStep,
-} from 'ui/utils';
-import { Copy, Spin } from 'ui/component';
-import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
-import { CopyChecked } from 'ui/component/CopyChecked';
-import { getTokenSymbol } from 'ui/utils/token';
-import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
-import { ellipsis } from 'ui/utils/address';
-import { Account, Token } from 'background/service/preference';
-import { ReactComponent as RcIconExternalCC } from 'ui/assets/open-external-cc.svg';
-import IconUnknown from 'ui/assets/icon-unknown-1.svg';
-import IconWarning from 'ui/assets/icon-subtract.svg';
-import { findChain } from '@/utils/chain';
-import {
   CustomTestnetToken,
   TestnetChain,
 } from '@/background/service/customTestnet';
-import IconTokenDefault from '@/ui/assets/token-default.svg';
-import { Chain } from '@/types/chain';
-import { getAddressScanLink, getTxScanLink } from '@/utils';
-import { TokenCharts } from '@/ui/component/TokenChart';
-import TokenChainAndContract from '../../Dashboard/components/TokenDetailPopup/TokenInfo';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { transformToHistory } from '@/utils/history';
 import { TxHistoryItemRow } from '@/db/schema/history';
+import { Chain } from '@/types/chain';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { TokenCharts } from '@/ui/component/TokenChart';
+import { getAddressScanLink } from '@/utils';
+import { findChain } from '@/utils/chain';
+import { transformToHistory } from '@/utils/history';
+import {
+  TokenEntityDetail,
+  TokenItem,
+  TxHistoryItem,
+  TxHistoryResult,
+} from '@rabby-wallet/rabby-api/dist/types';
+import { Button, Image } from 'antd';
+import { Account, Token } from 'background/service/preference';
+import clsx from 'clsx';
+import { CHAINS, CHAINS_ENUM } from 'consts';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
+import IconWarning from 'ui/assets/icon-subtract.svg';
+import IconUnknown from 'ui/assets/icon-unknown-1.svg';
+import IconNoFind from 'ui/assets/tokenDetail/IconNoFind.svg';
+import { Copy, Spin } from 'ui/component';
+import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
+import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
+import {
+  ellipsisOverflowedText,
+  isSameAddress,
+  openInTab,
+  splitNumberByStep,
+  useApproval,
+  useWallet,
+} from 'ui/utils';
+import { ellipsis } from 'ui/utils/address';
+import { getTokenSymbol } from 'ui/utils/token';
+import { HistoryItem } from 'ui/views/Dashboard/components/TokenDetailPopup/HistoryItem';
+import TokenChainAndContract from '../../Dashboard/components/TokenDetailPopup/TokenInfo';
 
 interface AddAssetProps {
   params: {
@@ -381,7 +375,6 @@ const AddAsset = ({ params, account }: AddAssetProps) => {
       page_count: 10,
       token_id: token.id,
     });
-    const { project_dict, cate_dict, token_dict, history_list: list } = history;
     const displayList = transformToHistory({
       data: history,
     });
