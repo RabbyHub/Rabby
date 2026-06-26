@@ -4231,6 +4231,7 @@
         "global": "r"
       },
       "allow": {
+        "crypto": "r",
         "global": "r"
       },
       "dynamic": []
@@ -6167,8 +6168,14 @@
         "global": "r"
       },
       "allow": {
+        "Buffer": "r",
+        "_": "rw",
+        "__core-js_shared__": "r",
+        "clearTimeout": "r",
         "define": "r",
-        "global": "r"
+        "global": "r",
+        "process": "r",
+        "setTimeout": "r"
       },
       "dynamic": []
     }
@@ -9241,6 +9248,7 @@
       },
       "allow": {
         "WebSocket": "r",
+        "atob": "r",
         "clearInterval": "r",
         "console": "r",
         "setInterval": "r",
@@ -9534,8 +9542,14 @@
         "global": "r"
       },
       "allow": {
+        "Buffer": "r",
+        "_": "rw",
+        "__core-js_shared__": "r",
+        "clearTimeout": "r",
         "define": "r",
-        "global": "r"
+        "global": "r",
+        "process": "r",
+        "setTimeout": "r"
       },
       "dynamic": []
     }
@@ -9575,6 +9589,16 @@
     }
   },
   "node_modules/@rabby-wallet/rabby-swap/dist/dexs/rabby.js": {
+    "enable": true,
+    "global": {
+      "access": {},
+      "allow": {
+        "navigator": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/quote.js": {
     "enable": true,
     "global": {
       "access": {},
@@ -10167,129 +10191,295 @@
       "dynamic": []
     }
   },
-  "node_modules/@sentry/hub/esm/hub.js": {
+  "node_modules/@sentry/core/build/esm/asyncContext/index.js": {
     "enable": true,
     "global": {
       "access": {
-        "logger": "r"
+        "getMainCarrier": "r",
+        "getSentryCarrier": "r"
       },
       "allow": {
-        "logger": "r"
+        "getMainCarrier": "r",
+        "getSentryCarrier": "r"
       },
       "dynamic": []
     }
   },
-  "node_modules/@sentry/minimal/esm/index.js": {
+  "node_modules/@sentry/core/build/esm/attributes.js": {
     "enable": true,
     "global": {
       "access": {
-        "__assign": "r",
-        "__spread": "r"
+        "isPrimitive": "r"
       },
       "allow": {
-        "__assign": "r",
-        "__spread": "r"
+        "isPrimitive": "r"
       },
       "dynamic": []
     }
   },
-  "node_modules/@sentry/utils/esm/is.js": {
+  "node_modules/@sentry/core/build/esm/currentScopes.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "getAsyncContextStrategy": "r",
+        "getMainCarrier": "r"
+      },
+      "allow": {
+        "getAsyncContextStrategy": "r",
+        "getMainCarrier": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/debug-build.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "__SENTRY_DEBUG__": "r"
+      },
+      "allow": {
+        "__SENTRY_DEBUG__": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/exports.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "DEBUG_BUILD": "r",
+        "debug": "r",
+        "getClient": "r",
+        "getCurrentScope": "r",
+        "getIsolationScope": "r",
+        "isThenable": "r",
+        "startNewTrace": "r",
+        "timestampInSeconds": "r",
+        "uuid4": "r",
+        "withIsolationScope": "r"
+      },
+      "allow": {
+        "DEBUG_BUILD": "r",
+        "debug": "r",
+        "getClient": "r",
+        "getCurrentScope": "r",
+        "getIsolationScope": "r",
+        "isThenable": "r",
+        "startNewTrace": "r",
+        "timestampInSeconds": "r",
+        "uuid4": "r",
+        "withIsolationScope": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/tracing/dynamicSamplingContext.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "addNonEnumerableProperty": "r",
+        "dynamicSamplingContextToSentryBaggageHeader": "r"
+      },
+      "allow": {
+        "addNonEnumerableProperty": "r",
+        "dynamicSamplingContextToSentryBaggageHeader": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/tracing/utils.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "addNonEnumerableProperty": "r",
+        "makeWeakRef": "r"
+      },
+      "allow": {
+        "addNonEnumerableProperty": "r",
+        "makeWeakRef": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/baggage.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "DEBUG_BUILD": "r",
+        "debug": "r"
+      },
+      "allow": {
+        "DEBUG_BUILD": "r",
+        "debug": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/debug-ids.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "normalizeStackTracePath": "r"
+      },
+      "allow": {
+        "normalizeStackTracePath": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/dsn.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "console": "r"
+      },
+      "allow": {
+        "console": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/hasSpansEnabled.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "__SENTRY_TRACING__": "r"
+      },
+      "allow": {
+        "__SENTRY_TRACING__": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/is.js": {
     "enable": true,
     "global": {
       "access": {
         "Element": "r",
-        "Event": "r"
+        "Event": "r",
+        "Request": "r"
       },
       "allow": {
         "Element": "r",
-        "Event": "r"
+        "Event": "r",
+        "Request": "r"
       },
       "dynamic": []
     }
   },
-  "node_modules/@sentry/utils/esm/misc.js": {
+  "node_modules/@sentry/core/build/esm/utils/misc.js": {
     "enable": true,
     "global": {
       "access": {
-        "document": "r",
+        "snipLine": "r"
+      },
+      "allow": {
+        "snipLine": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/normalizationHints.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "addNonEnumerableProperty": "r"
+      },
+      "allow": {
+        "addNonEnumerableProperty": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/normalize.js": {
+    "enable": true,
+    "global": {
+      "access": {
         "global": "r"
       },
       "allow": {
-        "ApplicationCache": "r",
-        "AudioTrackList": "r",
-        "ChannelMergerNode": "r",
-        "CryptoOperation": "r",
-        "EventSource": "r",
-        "EventTarget": "r",
-        "FileReader": "r",
-        "HTMLUnknownElement": "r",
-        "IDBDatabase": "r",
-        "IDBRequest": "r",
-        "IDBTransaction": "r",
-        "KeyOperation": "r",
-        "MediaController": "r",
-        "MessagePort": "r",
-        "ModalWindow": "r",
-        "Node": "r",
-        "Notification": "r",
+        "global": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/object.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "isPrimitive": "r"
+      },
+      "allow": {
+        "isPrimitive": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/spanUtils.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "SEMANTIC_ATTRIBUTE_SENTRY_CUSTOM_SPAN_NAME": "r",
+        "SEMANTIC_ATTRIBUTE_SENTRY_SOURCE": "r",
+        "SPAN_STATUS_OK": "r",
+        "SPAN_STATUS_UNSET": "r",
+        "_getSpanForScope": "r",
+        "addNonEnumerableProperty": "r",
+        "console": "r",
+        "generateSentryTraceHeader": "r",
+        "generateTraceparentHeader": "r",
+        "getAsyncContextStrategy": "r",
+        "getCurrentScope": "r",
+        "getMainCarrier": "r"
+      },
+      "allow": {
+        "SEMANTIC_ATTRIBUTE_SENTRY_CUSTOM_SPAN_NAME": "r",
+        "SEMANTIC_ATTRIBUTE_SENTRY_SOURCE": "r",
+        "SPAN_STATUS_OK": "r",
+        "SPAN_STATUS_UNSET": "r",
+        "_getSpanForScope": "r",
+        "addNonEnumerableProperty": "r",
+        "console": "r",
+        "generateSentryTraceHeader": "r",
+        "generateTraceparentHeader": "r",
+        "getAsyncContextStrategy": "r",
+        "getCurrentScope": "r",
+        "getMainCarrier": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/time.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "GLOBAL_OBJ": "r",
+        "safeDateNow": "r",
+        "withRandomSafeContext": "r"
+      },
+      "allow": {
+        "GLOBAL_OBJ": "r",
+        "safeDateNow": "r",
+        "withRandomSafeContext": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/core/build/esm/utils/worldwide.js": {
+    "enable": true,
+    "global": {
+      "access": {},
+      "allow": {
         "SENTRY_RELEASE": "r",
-        "SVGElementInstance": "r",
-        "Screen": "r",
-        "TextTrack": "r",
-        "TextTrackCue": "r",
-        "TextTrackList": "r",
-        "WebSocket": "r",
-        "WebSocketWorker": "r",
-        "Window": "r",
-        "Worker": "r",
-        "XMLHttpRequest": "r",
-        "XMLHttpRequestEventTarget": "r",
-        "XMLHttpRequestUpload": "r",
+        "SENTRY_SDK_SOURCE": "r",
         "__SENTRY__": "rw",
         "chrome": "r",
         "console": "r",
         "crypto": "r",
         "document": "r",
-        "fetch": "rw",
-        "global": "r",
-        "history": "r",
-        "location": "r",
-        "navigator": "r",
-        "onerror": "rw",
-        "onpopstate": "rw",
-        "onunhandledrejection": "rw",
-        "performance": "r",
-        "requestAnimationFrame": "rw",
-        "setInterval": "rw",
-        "setTimeout": "rw"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@sentry/utils/esm/node.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "process": "r"
-      },
-      "allow": {
-        "process": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@sentry/utils/esm/object.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "CustomEvent": "r",
-        "document": "r",
-        "global": "r"
-      },
-      "allow": {
-        "CustomEvent": "r",
-        "document": "r",
-        "global": "r"
+        "fetch": "r",
+        "nw": "r",
+        "top": "r"
       },
       "dynamic": []
     }
@@ -11540,7 +11730,10 @@
         "global": "r"
       },
       "allow": {
-        "global": "r"
+        "Buffer": "r",
+        "__core-js_shared__": "r",
+        "global": "r",
+        "process": "r"
       },
       "dynamic": []
     }
@@ -13115,6 +13308,34 @@
     }
   },
   "node_modules/fflate/esm/browser.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "Blob": "r",
+        "TextDecoder": "r",
+        "TextEncoder": "r",
+        "URL": "r",
+        "Worker": "r",
+        "onmessage": "rw",
+        "postMessage": "r",
+        "queueMicrotask": "r",
+        "setTimeout": "r"
+      },
+      "allow": {
+        "Blob": "r",
+        "TextDecoder": "r",
+        "TextEncoder": "r",
+        "URL": "r",
+        "Worker": "r",
+        "onmessage": "rw",
+        "postMessage": "r",
+        "queueMicrotask": "r",
+        "setTimeout": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/fflate/lib/browser.cjs": {
     "enable": true,
     "global": {
       "access": {
@@ -15389,40 +15610,6 @@
       "dynamic": []
     }
   },
-  "node_modules/react-resizable-panels/dist/react-resizable-panels.browser.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "AbortController": "r",
-        "HTMLElement": "r",
-        "SVGElement": "r",
-        "ShadowRoot": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "document": "r",
-        "getComputedStyle": "r",
-        "localStorage": "r",
-        "matchMedia": "r",
-        "setTimeout": "r",
-        "useContext": "r"
-      },
-      "allow": {
-        "AbortController": "r",
-        "HTMLElement": "r",
-        "SVGElement": "r",
-        "ShadowRoot": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "document": "r",
-        "getComputedStyle": "r",
-        "localStorage": "r",
-        "matchMedia": "r",
-        "setTimeout": "r",
-        "useContext": "r"
-      },
-      "dynamic": []
-    }
-  },
   "node_modules/react-resize-detector/node_modules/lodash/_freeGlobal.js": {
     "enable": true,
     "global": {
@@ -15691,6 +15878,7 @@
       },
       "allow": {
         "global": "r",
+        "localStorage": "r",
         "process": "r",
         "setImmediate": "r"
       },
@@ -15782,7 +15970,10 @@
         "global": "r"
       },
       "allow": {
-        "global": "r"
+        "Buffer": "r",
+        "__core-js_shared__": "r",
+        "global": "r",
+        "process": "r"
       },
       "dynamic": []
     }
@@ -16037,6 +16228,7 @@
       },
       "allow": {
         "global": "r",
+        "localStorage": "r",
         "process": "r"
       },
       "dynamic": []
