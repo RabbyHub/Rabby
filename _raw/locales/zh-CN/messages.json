@@ -3657,6 +3657,14 @@
       "newUserGuide": {
         "learnMore": "了解更多"
       },
+      "perpsWidgetGuide": {
+        "title": "盈亏始终一目了然",
+        "bulletViewPositions": "无论浏览哪个网页，都能随时掌握持仓。",
+        "bulletPrices": "鼠标悬停即可查看行情数据和各持仓盈亏。",
+        "bulletToggle": "随时开启或关闭悬浮窗。",
+        "later": "暂不启用",
+        "open": "启用悬浮窗"
+      },
       "addFunds": "添加资金",
       "crossMarginLiqPriceTip": "在全仓保证金模式下，单个仓位的强平价仅为参考估算。",
       "selectTokenToWithdraw": "选择提现代币",
