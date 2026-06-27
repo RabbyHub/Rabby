@@ -87,7 +87,10 @@ const ImportWatchAddress: React.FC<{
       address: result,
     });
     setIsValidAddr(true);
-    setTags([`ENS: ${ensResult!.name}`]);
+    const tagPrefix = ensResult!.name?.toLowerCase().endsWith('.igra')
+      ? 'INS'
+      : 'ENS';
+    setTags([`${tagPrefix}: ${ensResult!.name}`]);
     setEnsResult(null);
   };
   const handleKeyDown = useMemo(() => {
