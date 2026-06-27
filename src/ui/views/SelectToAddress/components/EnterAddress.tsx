@@ -19,6 +19,7 @@ import { isSameAddress, useAlias, useCexId, useWallet } from 'ui/utils';
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { resolveEnsAddressByName } from '@/ui/utils/ens';
+import { resolveInsAddressByName } from '@/ui/utils/ins';
 import { AccountList } from './AccountList';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
@@ -151,7 +152,10 @@ export const EnterAddress = ({
     (result: string) => {
       setInputAddress(result);
       // setIsValidAddr(true);
-      setTags([`ENS: ${ensResult?.name || ''}`]);
+      const tagPrefix = ensResult?.name?.toLowerCase().endsWith('.igra')
+        ? 'INS'
+        : 'ENS';
+      setTags([`${tagPrefix}: ${ensResult?.name || ''}`]);
       setEnsResult(null);
     },
     [ensResult?.name]
@@ -182,7 +186,10 @@ export const EnterAddress = ({
         setTags([]);
         if (!isValidAddress(address)) {
           try {
-            const result = await resolveEnsAddressByName(address, wallet);
+            const isIgra = address?.trim().toLowerCase().endsWith('.igra');
+            const result = isIgra
+              ? await resolveInsAddressByName(address)
+              : await resolveEnsAddressByName(address, wallet);
             if (result && result.addr) {
               setEnsResult(result);
               // setIsValidAddr(true);
