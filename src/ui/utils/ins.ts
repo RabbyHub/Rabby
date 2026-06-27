@@ -44,6 +44,11 @@ export const resolveInsAddressByName = async (
       address?: string;
     };
     if (!data?.exists || !data?.address) return null;
+    // Reject anything that isn't a real EVM address - the watch-import
+    // flow only checks startsWith('0x') downstream so we have to be
+    // strict here. Rejecting at the resolver boundary matches what
+    // resolveEnsAddressByName does in ./ens.ts.
+    if (!/^0x[a-fA-F0-9]{40}$/.test(data.address)) return null;
     return {
       addr: data.address,
       name: input.toLowerCase(),
