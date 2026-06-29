@@ -58,7 +58,7 @@ export const OrderHistory: React.FC = () => {
           b.status.localeCompare(a.status),
         render: (_, record) => {
           return (
-            <div className="text-[13px] leading-[16px]  text-r-neutral-title-1">
+            <div className="text-[13px] leading-[16px]  text-r-neutral-body">
               {dayjs(record.statusTimestamp).format('YYYY/MM/DD HH:mm:ss')}
             </div>
           );
@@ -146,7 +146,7 @@ export const OrderHistory: React.FC = () => {
         // sorter: (a, b) => Number(a.order.sz) - Number(b.order.sz),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {Number(record.order.origSz) === 0 ? (
                 '-'
               ) : (
@@ -170,7 +170,7 @@ export const OrderHistory: React.FC = () => {
             : Number(record.order.origSz);
 
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {record.status !== 'filled' ? (
                 '-'
               ) : (
@@ -199,7 +199,7 @@ export const OrderHistory: React.FC = () => {
             : record.order.origSz;
           return (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                 {record.order.orderType.includes('Market')
                   ? '-'
                   : `$${splitNumberByStep(
@@ -221,7 +221,7 @@ export const OrderHistory: React.FC = () => {
         // sorter: (a, b) => Number(a.order.limitPx) - Number(b.order.limitPx),
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {record.order.orderType.includes('Market')
                 ? 'Market'
                 : `$${splitNumberByStep(record.order.limitPx)}`}

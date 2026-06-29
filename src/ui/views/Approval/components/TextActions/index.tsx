@@ -21,6 +21,7 @@ import { Divide } from '../Divide';
 import { ParsedTextActionData } from '@rabby-wallet/rabby-action';
 import { findChain } from '@/utils/chain';
 import { Account } from '@/background/service/preference';
+import { tokenizeSignMessageText } from '../signMessageHighlighter';
 
 const { TabPane } = Tabs;
 
@@ -73,11 +74,29 @@ export const MessageWrapper = styled.div`
     padding: 0 16px 16px;
     /* font-family: 'Roboto Mono'; */
   }
+  .message-highlight {
+    color: var(--r-blue-default, #7084ff);
+    font-weight: 500;
+  }
   &.no-action {
     .content {
     }
   }
 `;
+
+export const HighlightedSignMessageText = ({ text }: { text: string }) => (
+  <>
+    {tokenizeSignMessageText(text).map((token, index) =>
+      token.type === 'text' ? (
+        <React.Fragment key={`text-${index}`}>{token.value}</React.Fragment>
+      ) : (
+        <span key={`${token.type}-${index}`} className="message-highlight">
+          {token.value}
+        </span>
+      )
+    )}
+  </>
+);
 
 const Actions = ({
   data,
@@ -223,7 +242,9 @@ const Actions = ({
           <div className="title">
             <div className="title-text">{t('page.signText.title')}</div>
           </div>
-          <div className="content">{message}</div>
+          <div className="content">
+            <HighlightedSignMessageText text={message} />
+          </div>
         </MessageWrapper>
       </Card>
     </>

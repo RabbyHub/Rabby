@@ -3675,7 +3675,15 @@
       },
       "transferToSpot": "Transferir para Spot",
       "transferToPerps": "Transferir para Perps",
-      "selectChainToWithdraw": "Selecionar Rede para Retirar"
+      "selectChainToWithdraw": "Selecionar Rede para Retirar",
+      "perpsWidgetGuide": {
+        "title": "Seu PNL Sempre Visível",
+        "bulletViewPositions": "Acompanhe suas principais posições em qualquer página da web.",
+        "bulletPrices": "Passe o mouse para ver dados de mercado e PNL.",
+        "bulletToggle": "Ative ou desative a qualquer momento.",
+        "later": "Agora não",
+        "open": "Ativar Widget"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3843,6 +3851,14 @@
           "transferToPerps": "Transferir para Perps",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Widget Flutuante",
+          "tooltip": "· Mostre o PnL da sua conta em um widget flutuante enquanto\n  navega em outras páginas.\n· Oculto na página de trading e Hyperliquid.",
+          "enabledToastTitle": "Widget flutuante ativado",
+          "enabledToastDescription": "Ele aparecerá quando você navegar em outras páginas.",
+          "disabledToastTitle": "Widget flutuante desativado",
+          "updateFailed": "Falha ao atualizar configuração"
         }
       },
       "statusBar": {
@@ -4019,7 +4035,7 @@
         "crossAccountLeverageTips": "Alavancagem de Conta Cruzada = Valor Total da Posição Cruzada / Valor da Conta Cruzada",
         "accountEquity": "Patrimônio da Conta",
         "balanceTip": "Total de Transferências Líquidas + Total de Lucro Realizado + Total de Taxas de Financiamento Líquidas",
-        "crossMarginRatioTips": "Margem de Manutenção / Valor da Carteira.\nSuas posições cruzadas serão liquidadas se o índice de margem atingir 100%.",
+        "crossMarginRatioTips": "Margem de Manutenção / Saldo de Margem.\nSuas posições cruzadas serão liquidadas se o índice de margem atingir 100%.",
         "accountEquityTip": "Saldo + PnL não realizado (valor aproximado da conta caso todas as posições fossem fechadas)",
         "unrealizedPnl": "P/L não realizado",
         "crossAccountLeverage": "Alavancagem de Conta Cruzada",
@@ -4033,7 +4049,22 @@
         "unifiedAccountLeverageTips": "Alavancagem da Conta Unificada = Valor Total das Posições Cruzadas / Saldo Total de Colateral.",
         "perpsMaintenanceMargin": "Margem de Manutenção de Perps",
         "perpsPortfolioValue": "Valor do Portfólio de Perps",
-        "perpsUnrealizedPnl": "PNL Não Realizado de Perps"
+        "perpsUnrealizedPnl": "PNL Não Realizado de Perps",
+        "perpsAccountSummary": "Resumo da Conta de Perps",
+        "portfolioMarginSummary": "Resumo da Margem de Portfólio",
+        "portfolioMarginRatio": "Índice de Margem de Portfólio",
+        "portfolioMarginRatioTips": "Margem de Manutenção / Valor do Portfólio Ajustado por LTV. Quando o valor é maior que 95%, seu portfólio pode ser liquidado.",
+        "marginBalance": "Saldo de Margem",
+        "marginBalanceTips": "Saldo de Margem = Saldo da Carteira + PNL Não Realizado. Suas posições serão liquidadas quando o Saldo de Margem <= Margem de Manutenção.",
+        "totalCollateralBalance": "Saldo Total de Colateral",
+        "totalCollateralBalanceTips": "Valor total do colateral que respalda sua conta unificada.",
+        "ltvAdjustedPortfolioValue": "Valor do Portfólio Ajustado por LTV",
+        "ltvAdjustedPortfolioValueTips": "Valor total do portfólio após o desconto de LTV de cada ativo; deve permanecer acima do requisito de manutenção.",
+        "borrowCapUsed": "Limite de Empréstimo Utilizado",
+        "borrowCapUsedTips": "Quando esse valor for 100%, o colateral adicional não contribuirá para a margem de portfólio",
+        "portfolioValue": "Valor do Portfólio",
+        "portfolioValueUnifiedTips": "O Valor do Portfólio inclui o valor dos ativos à vista na sua Conta Unificada.",
+        "portfolioValuePortfolioMarginTips": "O Valor do Portfólio inclui o valor dos ativos à vista na sua Conta de Margem de Portfólio."
       },
       "accountActions": {
         "deposit": "Depósito",
@@ -4045,6 +4076,8 @@
       },
       "orderBook": {
         "amount": "Quantidade",
+        "size": "Tamanho",
+        "sum": "Soma",
         "viewBoth": "Ambos",
         "price": "Preço",
         "total": "Total",

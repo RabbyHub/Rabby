@@ -3676,7 +3676,15 @@
       },
       "transferToSpot": "Spot'a Aktar",
       "transferToPerps": "Perps'e Aktar",
-      "selectChainToWithdraw": "Çekmek İçin Zincir Seç"
+      "selectChainToWithdraw": "Çekmek İçin Zincir Seç",
+      "perpsWidgetGuide": {
+        "title": "PNL'iniz her zaman görünür",
+        "bulletViewPositions": "Herhangi bir web sayfasında en önemli pozisyonlarınızı takip edin.",
+        "bulletPrices": "Piyasa verilerini ve PNL'yi görüntülemek için üzerine gelin.",
+        "bulletToggle": "İstediğiniz zaman açıp kapatın.",
+        "later": "Şimdi değil",
+        "open": "Widget'ı etkinleştir"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3844,6 +3852,14 @@
           "transferToPerps": "Perps'e Aktar",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Kayan Widget",
+          "tooltip": "· Hesabınızın PnL'sini diğer sayfalara göz atarken bir kayan widget'ta gösterin.\n· İşlem sayfasında ve Hyperliquid'de gizlidir.",
+          "enabledToastTitle": "Kayan widget etkinleştirildi",
+          "enabledToastDescription": "Diğer sayfalara göz atarken görünecektir.",
+          "disabledToastTitle": "Kayan widget devre dışı bırakıldı",
+          "updateFailed": "Ayar güncellenemedi"
         }
       },
       "statusBar": {
@@ -4023,7 +4039,7 @@
         "balanceTip": "Toplam Net Transferler + Toplam Gerçekleşen Kâr + Toplam Net Finansman Ücretleri",
         "crossAccountLeverageTips": "Çapraz Hesap Kaldıraç Oranı = Toplam Çapraz Pozisyon Değeri / Çapraz Hesap Değeri",
         "accountEquity": "Hesap Özsermayesi",
-        "crossMarginRatioTips": "Bakım Marjı / Portföy Değeri. Çapraz pozisyonlarınız, Marj Oranı yüzde 100'e ulaştığında tasfiye edilecektir.",
+        "crossMarginRatioTips": "Bakım Marjı / Marj Bakiyesi. Çapraz pozisyonlarınız, Marj Oranı yüzde 100'e ulaştığında tasfiye edilecektir.",
         "accountEquityTip": "Bakiye + Gerçekleşmemiş Kâr/Zarar (tüm pozisyonlar kapatıldığında yaklaşık hesap değeri)",
         "available": "Mevcut:",
         "accountSummary": "Hesap Özeti",
@@ -4034,7 +4050,22 @@
         "unifiedAccountLeverageTips": "Birleşik Hesap Kaldıraç = Toplam Çapraz Pozisyon Değeri / Toplam Teminat Bakiyesi.",
         "perpsMaintenanceMargin": "Perps Bakım Marjı",
         "perpsPortfolioValue": "Perps Portföy Değeri",
-        "perpsUnrealizedPnl": "Perps Gerçekleşmemiş K/Z"
+        "perpsUnrealizedPnl": "Perps Gerçekleşmemiş K/Z",
+        "perpsAccountSummary": "Perps Hesap Özeti",
+        "portfolioMarginSummary": "Portföy Marjı Özeti",
+        "portfolioMarginRatio": "Portföy Marjı Oranı",
+        "portfolioMarginRatioTips": "Bakım Marjı / LTV ayarlı Portföy Değeri. Değer %95'ten büyük olduğunda, portföyünüz tasfiye edilebilir.",
+        "marginBalance": "Marj Bakiyesi",
+        "marginBalanceTips": "Marj Bakiyesi = Cüzdan Bakiyesi + Gerçekleşmemiş PNL. Marj Bakiyesi <= Bakım Marjı olduğunda pozisyonlarınız tasfiye edilecektir.",
+        "totalCollateralBalance": "Toplam Teminat Bakiyesi",
+        "totalCollateralBalanceTips": "Birleşik hesabınızı destekleyen teminatın toplam değeri.",
+        "ltvAdjustedPortfolioValue": "LTV ayarlı Portföy Değeri",
+        "ltvAdjustedPortfolioValueTips": "Her varlığın LTV indirimi uygulandıktan sonraki toplam portföy değeri; bakım gereksiniminin üzerinde kalmalıdır.",
+        "borrowCapUsed": "Kullanılan Borçlanma Limiti",
+        "borrowCapUsedTips": "Bu değer %100 olduğunda, ek teminat portföy marjına katkıda bulunmayacaktır",
+        "portfolioValue": "Portföy Değeri",
+        "portfolioValueUnifiedTips": "Portföy Değeri, Birleşik Hesabınızdaki spot varlıkların değerini içerir.",
+        "portfolioValuePortfolioMarginTips": "Portföy Değeri, Portföy Marjı Hesabınızdaki spot varlıkların değerini içerir."
       },
       "accountActions": {
         "pending": "Beklemede",
@@ -4052,6 +4083,8 @@
         "markPrice": "İşaret Fiyatı",
         "title": "Emir Defteri",
         "amount": "Miktar",
+        "size": "Boyut",
+        "sum": "Toplam",
         "trades": "İşlemler",
         "viewBoth": "İkisi de",
         "viewAsks": "Satış Teklifleri",

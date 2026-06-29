@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -6,6 +6,7 @@ import { TradingPanel } from './components/TradingPanel';
 import { UserInfoHistory } from './components/UserInfoHistory';
 import { AccountInfo } from './components/AccountInfo';
 import { StatusBar } from './components/StatusBar';
+import { ResizableVSplit } from './components/ResizableVSplit';
 import { DesktopPerpsTopBar } from './components/DesktopPerpsTopBar';
 import './index.less';
 import { usePerpsProInit } from './hooks/usePerpsProInit';
@@ -18,19 +19,28 @@ import { EnableUnifiedAccountModal } from './modal/EnableUnifiedAccountModal';
 import { TransferToPerpsModal } from './modal/TransferToPerpsModal';
 import { usePerpsPopupNav } from './hooks/usePerpsPopupNav';
 import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
-import './resizable-panels.css';
 import { useMount } from 'ahooks';
 import { reportWebPageView } from '@/ui/utils/ga-event';
 import { useLocation } from 'react-router-dom';
 
 const Wrap = styled.div`
   width: 100%;
-  min-height: 100vh;
+  /* Definite height, not min-height: min-height computes to auto (indefinite),
+     which breaks h-full resolution on the right rail and lets TradingPanel's
+     content push the whole row taller. */
+  height: 100vh;
+  overflow: hidden;
   background: var(--rb-neutral-bg-page, #f6f7f7);
   display: flex;
   flex-direction: column;
 `;
+
+// Fixed so TradingPanel's bottom edge lines up with the left top block; also the
+// left rail's default top-block height.
+const RIGHT_PANEL_HEIGHT = 663;
+
+// Persisted in px (not %) so a resize only stretches the bottom, never the top.
+const TOP_HEIGHT_KEY = 'perps-layout-top-height-v1';
 
 export type PopupType =
   | DepositWithdrawModalType
@@ -44,6 +54,17 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   isActive = true,
 }) => {
   usePerpsProInit(isActive);
+
+  // The Perps pro page (its own desktop tab) uses 350 as its regular weight.
+  // Tagging the document body lets the single default rule cascade everywhere —
+  // including portaled modals / tooltips / toasts — so individual elements can
+  // just inherit instead of hardcoding the regular weight.
+  useLayoutEffect(() => {
+    document.body.classList.add('perps-pro-page');
+    return () => {
+      document.body.classList.remove('perps-pro-page');
+    };
+  }, []);
 
   const {
     action,
@@ -67,65 +88,74 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   return (
     <>
       <Wrap>
-        <DesktopPerpsTopBar />
+        {/* Fixed top bar — mirrors the fixed StatusBar at the bottom (sticky;
+            content scrolls underneath). bg-page masks content behind the card.
+            Its 50px footprint (6 + 38 + 6 gap) is reserved by the row's pt below. */}
+        <div className="fixed top-0 left-0 right-0 z-30 bg-rb-neutral-bg-page">
+          <DesktopPerpsTopBar />
+        </div>
 
-        <div className="flex flex-1 min-h-0 overflow-x-auto px-[6px] pt-[6px] pb-[44px]">
-          <div className="flex flex-1 min-w-[1280px] min-h-0 gap-[6px]">
-            {/* [chart + order book] + UserInfoHistory, can be resized vertically */}
-            <div
+        <div className="flex flex-1 min-h-0 overflow-auto px-[6px] pt-[50px] pb-[44px]">
+          {/* Sized to fully fit the right rail (636 + gap + AccountInfo ≈300, PM
+              4-row) so shorter viewports scroll (overflow-auto) instead of
+              clipping the bottom. */}
+          <div className="flex flex-1 min-w-[1280px] min-h-[1150px] gap-[6px]">
+            {/* [chart + order book] over UserInfoHistory, split by a draggable
+                handle. Left rail fills the space left by the trade panel; inside
+                the top block the order book is clamp(260px, 18vw, 320px) and the
+                chart takes the rest (~chart : order book : panel = 62:18:20). The
+                top keeps a fixed px height so window resizes flex only the bottom. */}
+            <ResizableVSplit
               className="flex flex-col min-w-0 min-h-0 overflow-hidden"
-              // Left rail fills the space left by the trade panel. Inside it the
-              // order book is clamp(260px, 18vw, 320px) and the chart takes the
-              // rest, keeping ~chart : order book : panel = 62% : 18% : 20%.
               style={{ flex: '1 1 0%' }}
-            >
-              <PanelGroup
-                direction="vertical"
-                autoSaveId="perps-layout-vertical-v2"
-              >
-                <Panel defaultSize={74.2} minSize={35} maxSize={82}>
-                  <div className="flex h-full gap-[6px]">
-                    <div
-                      className="min-w-[560px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-                      style={{ flex: '1 1 0%' }}
-                    >
-                      <ChartArea />
-                    </div>
-                    <div
-                      className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
-                      style={{
-                        flexGrow: 0,
-                        flexShrink: 0,
-                        flexBasis: 'clamp(260px, 18vw, 320px)',
-                      }}
-                    >
-                      <OrderBookTrades />
-                    </div>
+              storageKey={TOP_HEIGHT_KEY}
+              defaultTopHeight={RIGHT_PANEL_HEIGHT}
+              topClassName="flex gap-[6px] min-h-0"
+              bottomClassName="flex-1 min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+              top={
+                <>
+                  <div
+                    className="min-w-[560px] min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                    style={{ flex: '1 1 0%' }}
+                  >
+                    <ChartArea />
                   </div>
-                </Panel>
-                <PanelResizeHandle className="h-[6px] rounded-[6px]" />
-                <Panel minSize={18}>
-                  <div className="h-full rounded-[6px] overflow-hidden bg-rb-neutral-bg-1">
-                    <UserInfoHistory />
+                  <div
+                    className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                    style={{
+                      flexGrow: 0,
+                      flexShrink: 0,
+                      flexBasis: 'clamp(260px, 18vw, 320px)',
+                    }}
+                  >
+                    <OrderBookTrades />
                   </div>
-                </Panel>
-              </PanelGroup>
-            </div>
+                </>
+              }
+              bottom={<UserInfoHistory />}
+            />
 
-            {/* TradingPanel + AccountInfo */}
+            {/* TradingPanel fixed (aligns with the left top block). AccountInfo
+                grows to fill the bottom but never shrinks below its content, so
+                the summary stays fully shown. */}
             <div
-              className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+              className="flex flex-col min-h-0 overflow-hidden gap-[6px]"
               style={{
                 flexGrow: 0,
                 flexShrink: 0,
                 flexBasis: 'clamp(276px, 20vw, 336px)',
               }}
             >
-              <div className="flex h-full min-h-0 flex-col">
-                <div className="flex-1 min-h-0">
-                  <TradingPanel />
-                </div>
-                <div className="h-[1px] shrink-0 bg-rb-neutral-line" />
+              <div
+                className="min-h-0 rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                style={{ flex: `0 0 ${RIGHT_PANEL_HEIGHT}px` }}
+              >
+                <TradingPanel />
+              </div>
+              <div
+                className="rounded-[6px] overflow-hidden bg-rb-neutral-bg-1"
+                style={{ flex: '1 0 auto' }}
+              >
                 <AccountInfo />
               </div>
             </div>

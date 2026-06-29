@@ -160,7 +160,7 @@ export const OpenOrders: React.FC = () => {
         render: (_, record) => {
           return Number(record.origSz) === 0 ? (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                 -
               </div>
               <div className="text-[12px] leading-[14px]  text-rb-neutral-secondary">
@@ -169,7 +169,7 @@ export const OpenOrders: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                 {record.orderType.includes('Market')
                   ? 'Market'
                   : formatUsdValue(
@@ -194,7 +194,7 @@ export const OpenOrders: React.FC = () => {
         render: (_, record) => {
           // todo
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {Number(record.origSz) === 0 ? (
                 '-'
               ) : (
@@ -216,7 +216,7 @@ export const OpenOrders: React.FC = () => {
         dataIndex: 'limitPx',
         render: (_, record) => {
           return (
-            <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+            <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               {record.orderType.includes('Market')
                 ? 'Market'
                 : `$${splitNumberByStep(record.limitPx)}`}
@@ -294,13 +294,13 @@ export const OpenOrders: React.FC = () => {
 
           return (
             <div className="space-y-[4px]">
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                 {tpItem?.triggerPx
                   ? `$${splitNumberByStep(tpItem.triggerPx)} `
                   : '-'}
               </div>
 
-              <div className="text-[12px] leading-[14px]  text-r-neutral-title-1">
+              <div className="text-[12px] leading-[14px]  text-r-neutral-body">
                 {slItem?.triggerPx
                   ? `$${splitNumberByStep(slItem.triggerPx)}`
                   : '-'}

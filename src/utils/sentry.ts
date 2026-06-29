@@ -1,5 +1,11 @@
 export type SentryIgnorePattern = string | RegExp;
 
+export const sanitizeSentryBreadcrumbUrl = (value: string) => {
+  const withoutQueryOrFragment = value.split(/[?#]/, 1)[0];
+
+  return withoutQueryOrFragment.replace(/0x[a-f\d]{40,64}/gi, '[redacted]');
+};
+
 export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'ResizeObserver loop limit exceeded',
   'ResizeObserver loop completed with undelivered notifications',
@@ -34,7 +40,10 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
 
   // Chrome storage quota/disk errors are environmental and not actionable in Rabby.
   /IO error: .*FILE_ERROR_NO_SPACE.*ChromeMethodBFE/,
+  /IO error: .*FILE_ERROR_FAILED.*ChromeMethodBFE: \d+::WritableFileSync::\d+/,
   /Unable to create writable file.*ChromeMethodBFE/,
+  /Internal error opening backing store for indexedDB\.open\./,
+  /Encountered full disk while opening backing store for indexedDB\.open\./,
 
   // Browser API denials caused by unfocused documents or revoked transient permission.
   /^(Error: )?NotAllowedError: Permission denied\.$/,

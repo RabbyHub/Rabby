@@ -210,7 +210,11 @@ const AddressManagement = () => {
           action: 'address-backup',
         },
       });
-      browser.action.openPopup();
+      try {
+        await browser.action.openPopup();
+      } catch (e) {
+        console.error('open popup failed', e);
+      }
     } else {
       await AuthenticationModal({
         confirmText: t('global.confirm'),
@@ -270,14 +274,11 @@ const AddressManagement = () => {
     return (
       <div
         onClick={gotoAddAddress}
-        className="mt-24 h-[52px] flex items-center justify-center gap-[8px] bg-r-neutral-card-1 rounded-lg cursor-pointer border border-solid border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light1 transition-colors"
+        className="address-add-button mt-20 h-[52px] flex items-center justify-center gap-[8px] rounded-lg cursor-pointer transition-colors"
       >
-        <RcIconAddAddress
-          viewBox="0 0 20 20"
-          className={clsx('text-r-blue-default w-[20px] h-[20px] ')}
-        />
+        <RcIconAddAddress className={clsx('w-[20px] h-[20px]')} />
 
-        <span className="text-13 text-r-blue-default font-medium">
+        <span className="text-13 font-medium">
           {t('page.manageAddress.addNewAddress')}
         </span>
       </div>
@@ -460,13 +461,13 @@ const AddressManagement = () => {
 
   const getItemSize = React.useCallback(
     (i: number) => {
-      const lastAddAddrBtn = 52 + 24;
+      const lastAddAddrBtn = 52 + 20;
       const lastPadding =
         i === filteredAccounts.length - 1 ? 24 + lastAddAddrBtn : 0;
       if (addressSortStore.sortType === 'addressType') {
         return (
           52 * (filteredAccounts as typeof accountsList[])[i].length +
-          16 +
+          20 +
           lastPadding
         );
       }
@@ -482,18 +483,15 @@ const AddressManagement = () => {
 
   return (
     <div className="page-address-management px-0 overflow-hidden">
-      <PageHeader className="pt-[24px] mx-[20px]">
+      <PageHeader className="address-page-header mx-[20px]">
         {enableSwitch
           ? t('page.manageAddress.current-address')
           : t('page.manageAddress.address-management')}
         <div
-          className="bg-r-neutral-card1 rounded absolute top-20 right-0 w-[32px] h-[28px] flex items-center justify-center cursor-pointer hover:bg-r-blue-light-1 transition-colors"
+          className="address-header-add rounded absolute top-20 right-0 w-[32px] h-[28px] flex items-center justify-center cursor-pointer transition-colors"
           onClick={gotoAddAddress}
         >
-          <RcIconAddAddress
-            viewBox="0 0 20 20"
-            className={clsx('text-r-blue-default w-[20px] h-[20px]')}
-          />
+          <RcIconAddAddress className={clsx('w-[20px] h-[20px]')} />
         </div>
       </PageHeader>
       {currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
@@ -568,13 +566,13 @@ const AddressManagement = () => {
           </div>
         </>
       )}
-      <div className="flex justify-between items-center text-r-neutral-body text-13 px-20 py-[12px]">
+      <div className="address-toolbar flex justify-between items-center text-r-neutral-body text-13 px-20 pt-[20px] pb-[8px]">
         <SortInput
           value={searchKeyword}
           onChange={(e) => setSearchKeyword(e.target.value)}
         />
         <div
-          className="flex items-center cursor-pointer "
+          className="flex items-center cursor-pointer"
           onClick={gotoManageAddress}
         >
           <span>{t('page.manageAddress.manage-address')}</span>
@@ -592,12 +590,12 @@ const AddressManagement = () => {
             key={addressSortStore.sortType + debouncedSearchKeyword}
             height={
               currentAccountIndex === -1
-                ? 471
+                ? 461
                 : hasStatusBar
-                ? 368
+                ? 358
                 : showBackupWarning
-                ? 382
-                : 426
+                ? 372
+                : 416
             }
             width="100%"
             itemData={filteredAccounts}

@@ -340,12 +340,12 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
                 {t('page.perpsDetail.PerpsEditMarginPopup.liqPrice')}
               </span>
               <div>
-                <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
+                <span className="text-rb-neutral-body text-[13px] leading-[16px]">
                   $
                   {splitNumberByStep(Number(liquidationPx).toFixed(pxDecimals))}
                 </span>
                 {margin && estimatedLiquidationPrice && (
-                  <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
+                  <span className="text-rb-neutral-body text-[13px] leading-[16px]">
                     {' '}
                     → $
                     {splitNumberByStep(
@@ -361,7 +361,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
               </span>
               <div className="flex items-center gap-[6px]">
                 <RcIconManageMarginAlarmCC className="desktop-perps-manage-margin-distance-icon" />
-                <span className="text-rb-neutral-body font-normal text-[13px] leading-[16px]">
+                <span className="text-rb-neutral-body text-[13px] leading-[16px]">
                   {currentDistanceToLiquidationPercent}
                   {estimatedDistanceToLiquidationPercent
                     ? ` → ${estimatedDistanceToLiquidationPercent}`

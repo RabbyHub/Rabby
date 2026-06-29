@@ -3670,7 +3670,15 @@
       },
       "transferToSpot": "Transfer ke Spot",
       "transferToPerps": "Transfer ke Perps",
-      "selectChainToWithdraw": "Pilih Chain untuk Withdrawal"
+      "selectChainToWithdraw": "Pilih Chain untuk Withdrawal",
+      "perpsWidgetGuide": {
+        "title": "PNL Anda Selalu dalam Pandangan",
+        "bulletViewPositions": "Pantau posisi teratas Anda di halaman web mana pun",
+        "bulletPrices": "Arahkan kursor untuk melihat data pasar dan PNL",
+        "bulletToggle": "Nyalakan atau matikan kapan saja",
+        "later": "Belum Sekarang",
+        "open": "Aktifkan Widget"
+      }
     },
     "perpsPro": {
       "chatArea": {
@@ -3838,6 +3846,14 @@
           "transferToPerps": "Transfer ke Perps",
           "usdcSpot": "USDC(Spot)",
           "usdcPerps": "USDC(Perps)"
+        },
+        "floatingWidget": {
+          "label": "Widget Mengambang",
+          "tooltip": "· Tampilkan PnL akun Anda di widget mengambang saat\n  menjelajahi halaman lain.\n· Tersembunyi di halaman trading dan Hyperliquid.",
+          "enabledToastTitle": "Widget mengambang diaktifkan",
+          "enabledToastDescription": "Widget akan muncul saat Anda menjelajahi halaman lain.",
+          "disabledToastTitle": "Widget mengambang dinonaktifkan",
+          "updateFailed": "Gagal memperbarui pengaturan"
         }
       },
       "statusBar": {
@@ -4015,7 +4031,7 @@
         "balance": "Saldo",
         "balanceTip": "Total transfer bersih + total laba terealisasi + total biaya funding bersih",
         "maintenanceMargin": "Margin pemeliharaan",
-        "crossMarginRatioTips": "Margin Pemeliharaan / Nilai Portfolio. Posisi cross Anda akan dilikuidasi jika Rasio Margin mencapai 100%.",
+        "crossMarginRatioTips": "Margin Pemeliharaan / Saldo Margin. Posisi cross Anda akan dilikuidasi jika Rasio Margin mencapai 100%.",
         "crossAccountLeverage": "Leveraged Akun Silang",
         "maintenanceMarginTips": "Nilai portofolio minimum yang diperlukan untuk mempertahankan posisi silang Anda tetap terbuka",
         "crossAccountLeverageTips": "Leverage Akun Silang = Total Nilai Posisi Silang / Nilai Akun Silang.",
@@ -4028,7 +4044,22 @@
         "unifiedAccountLeverageTips": "Leverage Akun Terpadu = Total Nilai Posisi Cross / Total Saldo Jaminan.",
         "perpsMaintenanceMargin": "Margin Pemeliharaan Perps",
         "perpsPortfolioValue": "Nilai Portofolio Perps",
-        "perpsUnrealizedPnl": "PNL Belum Terealisasi Perps"
+        "perpsUnrealizedPnl": "PNL Belum Terealisasi Perps",
+        "perpsAccountSummary": "Ringkasan Akun Perps",
+        "portfolioMarginSummary": "Ringkasan Portfolio Margin",
+        "portfolioMarginRatio": "Rasio Portfolio Margin",
+        "portfolioMarginRatioTips": "Margin Pemeliharaan / Nilai Portofolio yang Disesuaikan dengan LTV. Ketika nilainya lebih dari 95%, portofolio Anda mungkin akan dilikuidasi.",
+        "marginBalance": "Saldo Margin",
+        "marginBalanceTips": "Saldo Margin = Saldo Dompet + PNL Belum Terealisasi. Posisi Anda akan dilikuidasi ketika Saldo Margin <= Margin Pemeliharaan.",
+        "totalCollateralBalance": "Total Saldo Jaminan",
+        "totalCollateralBalanceTips": "Total nilai jaminan yang menjamin akun terpadu Anda.",
+        "ltvAdjustedPortfolioValue": "Nilai Portofolio yang Disesuaikan dengan LTV",
+        "ltvAdjustedPortfolioValueTips": "Total nilai portofolio setelah pemotongan LTV pada setiap aset; harus tetap di atas persyaratan pemeliharaan.",
+        "borrowCapUsed": "Batas Pinjaman Terpakai",
+        "borrowCapUsedTips": "Ketika nilai ini 100%, jaminan tambahan tidak akan berkontribusi pada portfolio margin",
+        "portfolioValue": "Nilai Portofolio",
+        "portfolioValueUnifiedTips": "Nilai Portofolio mencakup nilai aset spot di Akun Terpadu Anda.",
+        "portfolioValuePortfolioMarginTips": "Nilai Portofolio mencakup nilai aset spot di Akun Portfolio Margin Anda."
       },
       "accountActions": {
         "pending": "Menunggu",
@@ -4040,6 +4071,8 @@
       },
       "orderBook": {
         "amount": "Jumlah",
+        "size": "Ukuran",
+        "sum": "Jumlah Total",
         "price": "Harga",
         "viewBids": "Penawaran",
         "trades": "Perdagangan",

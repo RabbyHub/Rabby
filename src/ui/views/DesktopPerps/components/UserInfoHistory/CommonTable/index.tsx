@@ -85,7 +85,9 @@ const Wrapper = styled.div`
     color: var(--rb-neutral-secondary, #9a9ca9);
     font-size: 12px;
     line-height: 14px;
-    font-weight: 400;
+    /* antd forces table headers to 500; keep an explicit 350 so they match the
+       page's regular weight (plain inheritance can't override antd here). */
+    font-weight: 350;
     background-color: var(--rb-neutral-bg-1, #fff);
     border: none;
 
@@ -201,7 +203,9 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
       color: var(--rb-neutral-secondary, #9a9ca9);
       font-size: 12px;
       line-height: 14px;
-      font-weight: 400;
+      /* antd forces table headers to 500; keep an explicit 350 so they match the
+         page's regular weight (plain inheritance can't override antd here). */
+      font-weight: 350;
       background-color: var(--rb-neutral-bg-1, #fff);
       border: none;
       height: 38px;

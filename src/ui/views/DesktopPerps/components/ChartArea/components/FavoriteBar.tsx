@@ -59,7 +59,7 @@ export const FavoriteBar: React.FC<FavoriteBarProps> = ({ onSelectCoin }) => {
                       -{marketData.quoteAsset || 'USDC'}
                     </span>
                   </span>
-                  <span className="text-12 text-r-neutral-title-1">
+                  <span className="text-12 text-r-neutral-body">
                     ${splitNumberByStep(Number(marketData.markPx))}
                   </span>
                   <span

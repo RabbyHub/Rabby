@@ -3657,6 +3657,14 @@
       "newUserGuide": {
         "learnMore": "了解更多"
       },
+      "perpsWidgetGuide": {
+        "title": "盈亏始终一目了然",
+        "bulletViewPositions": "无论浏览哪个网页，都能随时掌握持仓。",
+        "bulletPrices": "鼠标悬停即可查看行情数据和各持仓盈亏。",
+        "bulletToggle": "随时开启或关闭悬浮窗。",
+        "later": "暂不启用",
+        "open": "启用悬浮窗"
+      },
       "addFunds": "添加资金",
       "crossMarginLiqPriceTip": "在全仓保证金模式下，单个仓位的强平价仅为参考估算。",
       "selectTokenToWithdraw": "选择提现代币",
@@ -3888,6 +3896,14 @@
           "transferToPerps": "转入 Perps",
           "usdcSpot": "USDC（现货）",
           "usdcPerps": "USDC（Perps）"
+        },
+        "floatingWidget": {
+          "label": "浮动小部件",
+          "tooltip": "· 在浏览其他页面时，在浮动小部件中显示您的账户盈亏。\n· 在交易页面和 Hyperliquid 上隐藏。",
+          "enabledToastTitle": "浮动小部件已启用",
+          "enabledToastDescription": "在您浏览其他页面时它会出现。",
+          "disabledToastTitle": "浮动小部件已禁用",
+          "updateFailed": "更新设置失败"
         }
       },
       "statusBar": {
@@ -4058,7 +4074,7 @@
         "availableBalance": "可用余额",
         "maintenanceMargin": "维持保证金",
         "totalBalance": "总余额",
-        "crossMarginRatioTips": "维持保证金 / 组合价值。若保证金率达到 100%，你的全仓头寸将被强平。",
+        "crossMarginRatioTips": "维持保证金 / 保证金余额。若保证金率达到 100%，你的全仓头寸将被强平。",
         "withdraw": "提币",
         "accountEquity": "账户权益",
         "maintenanceMarginTips": "维持跨头寸所需的最低组合价值",
@@ -4078,7 +4094,22 @@
         "unifiedAccountLeverageTips": "统一账户杠杆 = 交叉仓位总价值 / 总抵押品余额。",
         "perpsMaintenanceMargin": "Perps 维持保证金",
         "perpsPortfolioValue": "Perps 投资组合价值",
-        "perpsUnrealizedPnl": "Perps 未实现盈亏"
+        "perpsUnrealizedPnl": "Perps 未实现盈亏",
+        "perpsAccountSummary": "Perps 账户概览",
+        "portfolioMarginSummary": "组合保证金概览",
+        "portfolioMarginRatio": "组合保证金率",
+        "portfolioMarginRatioTips": "维持保证金 / LTV 调整后投资组合价值。当该数值大于 95% 时，您的投资组合可能被强制平仓。",
+        "marginBalance": "保证金余额",
+        "marginBalanceTips": "保证金余额 = 钱包余额 + 未实现盈亏。当保证金余额 <= 维持保证金时，您的仓位将被强制平仓。",
+        "totalCollateralBalance": "总抵押品余额",
+        "totalCollateralBalanceTips": "为您的统一账户提供担保的抵押品总价值。",
+        "ltvAdjustedPortfolioValue": "LTV 调整后投资组合价值",
+        "ltvAdjustedPortfolioValueTips": "对每项资产进行 LTV 折算后的投资组合总价值；该值须始终高于维持保证金要求。",
+        "borrowCapUsed": "借款额度使用率",
+        "borrowCapUsedTips": "当该数值为 100% 时，新增抵押品将不再计入组合保证金。",
+        "portfolioValue": "投资组合价值",
+        "portfolioValueUnifiedTips": "投资组合价值包含您统一账户中现货资产的价值。",
+        "portfolioValuePortfolioMarginTips": "投资组合价值包含您组合保证金账户中现货资产的价值。"
       },
       "accountActions": {
         "available": "可用",
@@ -4094,6 +4125,8 @@
         "markPrice": "标记价",
         "title": "订单簿",
         "amount": "数量",
+        "size": "数量",
+        "sum": "累计",
         "noTrades": "暂无成交记录",
         "viewAsks": "卖单",
         "viewBoth": "双向",

@@ -427,13 +427,13 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
           <span className="text-rb-neutral-secondary">
             {t('page.perpsPro.tradingPanel.Buy')}
           </span>
-          <span className="text-rb-neutral-title-1">{buyPreview}</span>
+          <span className="text-rb-neutral-body">{buyPreview}</span>
         </div>
         <div className="flex items-center gap-[4px]">
           <span className="text-rb-neutral-secondary">
             {t('page.perpsPro.tradingPanel.Sell')}
           </span>
-          <span className="text-rb-neutral-title-1">{sellPreview}</span>
+          <span className="text-rb-neutral-body">{sellPreview}</span>
         </div>
       </div>
     </div>

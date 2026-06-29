@@ -542,7 +542,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         <ThousandsNativeInput
           className={clsx(
             'w-[68px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
-            'bg-transparent text-r-neutral-title-1',
+            'bg-transparent text-r-neutral-body',
             'border border-solid',
             !isPriceValid
               ? 'border-rb-red-default'
@@ -603,7 +603,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
             ref={sizeInputRef}
             className={clsx(
               'w-[60px] h-[24px] px-[6px] text-[11px] rounded-[4px] outline-none',
-              'bg-transparent text-r-neutral-title-1',
+              'bg-transparent text-r-neutral-body',
               'border border-solid',
               isSizeOverMax || sizeNum <= 0
                 ? 'border-rb-red-default'

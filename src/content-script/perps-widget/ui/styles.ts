@@ -217,6 +217,20 @@ const STYLES = `
     height: 16px;
     border-radius: 50%;
     flex-shrink: 0;
+    /* White circle so transparent / dark token icons stay visible.
+       Mask (not border-radius) shapes the circle: Chromium doesn't
+       anti-alias border-radius on a composited <img> → jagged edges. */
+    background: #fff;
+    -webkit-mask-image: radial-gradient(
+      circle closest-side,
+      #000 calc(100% - 1px),
+      transparent 100%
+    );
+    mask-image: radial-gradient(
+      circle closest-side,
+      #000 calc(100% - 1px),
+      transparent 100%
+    );
   }
   .rabby-perps-card__name {
     font-size: 13px;

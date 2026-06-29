@@ -85,7 +85,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             </span>
           </Tooltip>
         )}
-        <span className="text-r-neutral-title-1 font-medium text-12">
+        <span className="text-r-neutral-body font-medium text-12">
           {data.liquidationPrice || '-'}
         </span>
       </div>
@@ -95,7 +95,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <span className="text-r-neutral-foot text-12">
           {t('page.perpsPro.tradingPanel.orderValue')}
         </span>
-        <span className="text-r-neutral-title-1 font-medium text-12">
+        <span className="text-r-neutral-body font-medium text-12">
           {data.orderValue}
         </span>
       </div>
@@ -105,7 +105,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <span className="text-r-neutral-foot text-12">
           {t('page.perpsPro.tradingPanel.marginRequired')}
         </span>
-        <span className="text-r-neutral-title-1 font-medium text-12">
+        <span className="text-r-neutral-body font-medium text-12">
           {data.marginRequired}
         </span>
       </div>
@@ -115,7 +115,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         <span className="text-r-neutral-foot text-12">
           {t('page.perpsPro.tradingPanel.marginUsage')}
         </span>
-        <span className="text-r-neutral-title-1 font-medium text-12">
+        <span className="text-r-neutral-body font-medium text-12">
           {data.marginUsage}
         </span>
       </div>
@@ -130,7 +130,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             onClick={() => {
               handleSetSlippage?.();
             }}
-            className="text-r-neutral-title-1 font-medium text-12"
+            className="text-r-neutral-body font-medium text-12"
           >
             {data.slippage}
           </DashedUnderlineText>
