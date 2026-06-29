@@ -218,7 +218,9 @@ export const ScreenshotContextMenu = () => {
   }, []);
 
   const handleConfirm = useCallback(() => {
-    if (!screenshot || submitting) return;
+    if (!screenshot || !description.trim() || submitting) {
+      return;
+    }
 
     submitFeedback({
       description: description.trim(),
@@ -290,7 +292,7 @@ export const ScreenshotContextMenu = () => {
               </div>
             ) : null}
             <Input.TextArea
-              placeholder={t('component.screenshotModal.placeholder')}
+              placeholder={t('component.screenshotModal.placeholderRequired')}
               value={description}
               autoFocus
               maxLength={300}
@@ -324,7 +326,7 @@ export const ScreenshotContextMenu = () => {
               className="w-1/2 h-[48px]"
               onClick={handleConfirm}
               loading={submitting}
-              disabled={!screenshot}
+              disabled={!screenshot || !description.trim()}
             >
               {t('global.Submit')}
             </Button>
