@@ -14,6 +14,7 @@ export const getSentryConfig = (): BrowserOptions => ({
   dsn: SENTRY_DSN,
   release: process.env.release,
   environment: getSentryEnv(),
+  skipBrowserExtensionCheck: true,
   integrations: (defaultIntegrations) =>
     defaultIntegrations.filter(
       (integration) => integration.name !== 'BrowserSession'
