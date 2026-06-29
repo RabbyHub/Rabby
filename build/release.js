@@ -1,4 +1,5 @@
 const path = require('path');
+const crypto = require('crypto');
 const { prompt, BooleanPrompt } = require('enquirer');
 const fs = require('fs-extra');
 const shell = require('shelljs');
@@ -25,6 +26,47 @@ function updateManifestVersion(version, p, filename = 'manifest.json') {
   const manifest = fs.readJSONSync(manifestPath);
   manifest.version = version;
   fs.writeJSONSync(manifestPath, manifest, { spaces: 2 });
+}
+
+function stringToUUID(value) {
+  const hash = crypto.createHash('sha256').update(value).digest('hex');
+  const variant = ['8', '9', 'a', 'b'][hash.slice(16, 17).charCodeAt(0) % 4];
+
+  return [
+    hash.slice(0, 8),
+    hash.slice(8, 12),
+    `4${hash.slice(13, 16)}`,
+    `${variant}${hash.slice(17, 20)}`,
+    hash.slice(20, 32),
+  ].join('-');
+}
+
+function seedSourceMapDebugIds(distDir) {
+  const bundlePaths = shell
+    .find(distDir)
+    .filter((filePath) => /\.(c|m)?js$/.test(filePath));
+
+  let seededCount = 0;
+
+  bundlePaths.forEach((bundlePath) => {
+    const sourceMapPath = `${bundlePath}.map`;
+
+    if (!fs.existsSync(sourceMapPath)) {
+      return;
+    }
+
+    const relativeBundlePath = path.relative(distDir, bundlePath);
+    const bundleContent = fs.readFileSync(bundlePath, 'utf8');
+    const sourceMap = fs.readJSONSync(sourceMapPath);
+
+    sourceMap.debug_id = stringToUUID(
+      `${relativeBundlePath}\n${bundleContent}`
+    );
+    fs.writeFileSync(sourceMapPath, JSON.stringify(sourceMap));
+    seededCount += 1;
+  });
+
+  console.log(`[Rabby] Seeded ${seededCount} sourcemap debug ids`);
 }
 
 function moveSourceMapsToTmp(distDir, targetDir) {
@@ -132,9 +174,10 @@ async function bundle() {
   if (isMV3) {
     execOrThrow(`cross-env VERSION=${version} yarn ${buildStr}`);
   } else {
-    execOrThrow(`cross-env VERSION=${version} yarn ${buildStr}:mv-2`);
+    execOrThrow(`cross-env VERSION=${version} yarn ${buildStr}:mv2`);
   }
   if (!isDebug) {
+    seedSourceMapDebugIds(distDir);
     execOrThrow(
       `${shellQuote(SENTRY_CLI)} sourcemaps inject ${shellQuote(distDir)}`
     );

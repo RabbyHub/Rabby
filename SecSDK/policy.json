@@ -12296,6 +12296,18 @@
       "dynamic": []
     }
   },
+  "node_modules/css-loader/dist/runtime/cssWithMappingToString.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "btoa": "r"
+      },
+      "allow": {
+        "btoa": "r"
+      },
+      "dynamic": []
+    }
+  },
   "node_modules/dayjs/dayjs.min.js": {
     "enable": true,
     "global": {
