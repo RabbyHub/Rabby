@@ -132,7 +132,7 @@ async function bundle() {
   if (isMV3) {
     execOrThrow(`cross-env VERSION=${version} yarn ${buildStr}`);
   } else {
-    execOrThrow(`cross-env VERSION=${version} yarn ${buildStr}:mv-2`);
+    execOrThrow(`cross-env VERSION=${version} yarn ${buildStr}:mv2`);
   }
   if (!isDebug) {
     execOrThrow(
