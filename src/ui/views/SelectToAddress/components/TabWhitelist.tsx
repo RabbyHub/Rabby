@@ -66,6 +66,16 @@ const WhitelistItemWrapper = styled.div`
       opacity: 1;
     }
   }
+
+  &.is-whitelist-item-dragging {
+    .icon-delete-container,
+    .edit-pen,
+    .copy-icon {
+      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  }
 `;
 
 const isTab = getUiType().isTab;
@@ -200,6 +210,7 @@ const SortableWhitelistItem = ({
     <WhitelistItemWrapper
       ref={setNodeRef}
       style={style}
+      className={clsx(isDragging && 'is-whitelist-item-dragging')}
       onPointerDownCapture={handleDndDisabledPointerDownCapture}
       {...attributes}
       {...listeners}
