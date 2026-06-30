@@ -209,7 +209,11 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                   bordered={false}
                   size="large"
                   value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    // Unsigned decimal only — reject letters, signs, extra dots.
+                    if (/^\d*\.?\d*$/.test(v)) setAmount(v);
+                  }}
                   placeholder="0"
                   className="flex-1 p-0 text-[28px] leading-[34px] font-medium text-r-neutral-title-1"
                   disabled={submitting}
