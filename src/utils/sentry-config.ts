@@ -21,22 +21,7 @@ export const getSentryConfig = (): BrowserOptions => ({
     ),
   enhanceFetchErrorMessages: 'report-only',
   maxBreadcrumbs: 50,
-  dataCollection: {
-    userInfo: false,
-    cookies: false,
-    httpHeaders: {
-      request: false,
-      response: false,
-    },
-    httpBodies: [],
-    queryParams: false,
-    genAI: {
-      inputs: false,
-      outputs: false,
-    },
-    stackFrameVariables: false,
-    frameContextLines: 5,
-  },
+  sendDefaultPii: true,
   beforeBreadcrumb: (breadcrumb) => {
     // Console output and clicked DOM text may contain wallet data.
     if (

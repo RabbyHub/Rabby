@@ -54,7 +54,8 @@ export const sendReadyMessageToTabs = async () => {
         .catch((error) => {
           // An error may happen if the contentscript is blocked from loading,
           // and thus there is no runtime.onMessage handler to listen to the message.
-          Sentry.captureException(error);
+          // Sentry.captureException(error);
+          // console.error(error);
         });
     }
   }

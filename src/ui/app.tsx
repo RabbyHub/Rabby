@@ -173,6 +173,20 @@ const renderSentryErrorFallback: Sentry.FallbackRender = ({
   );
 };
 
+const Test = () => {
+  throw new Error('test');
+
+  return (
+    <Button
+      type="primary"
+      onClick={() => {
+        throw new Error('test');
+      }}
+    >
+      test
+    </Button>
+  );
+};
 const main = async () => {
   portMessageChannel.connect(getUITypeName());
   await compensateUnlockedOnceFlag();
@@ -199,6 +213,7 @@ const main = async () => {
           }}
         >
           <Provider store={store}>
+            <Test />
             <Views wallet={wallet} />
           </Provider>
         </Sentry.ErrorBoundary>
