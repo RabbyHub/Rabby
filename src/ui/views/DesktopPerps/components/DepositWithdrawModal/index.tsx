@@ -75,6 +75,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     isWithdrawLoading,
     quoteLoading,
     bridgeQuote,
+    quoteFailed,
     inputRef,
 
     // Computed
@@ -162,14 +163,15 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   }, [bridgeQuote]);
 
   const quoteError = useMemo(() => {
+    // Show only after a real failure, never during the debounce wait.
     return type === 'deposit' &&
       !isDirectDeposit &&
       isValidAmount &&
       !quoteLoading &&
-      !bridgeQuote?.tx
+      quoteFailed
       ? t('page.perps.depositAmountPopup.fetchQuoteFailed')
       : '';
-  }, [bridgeQuote, quoteLoading, type, isDirectDeposit, t, isValidAmount]);
+  }, [quoteFailed, quoteLoading, type, isDirectDeposit, t, isValidAmount]);
 
   return (
     <Modal

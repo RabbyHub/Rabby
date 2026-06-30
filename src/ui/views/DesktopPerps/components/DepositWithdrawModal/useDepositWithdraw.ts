@@ -61,6 +61,12 @@ interface PerpBridgeHistory {
   tx: Tx;
 }
 
+// Store the intent, not a value snapshot, so a percentage/Max pick re-derives
+// as the balance settles asynchronously instead of freezing a stale value.
+type AmountMode =
+  | { type: 'manual'; raw: string }
+  | { type: 'percentage'; pct: number };
+
 export const useDepositWithdraw = (
   visible: boolean,
   type: DepositWithdrawModalType,
@@ -76,13 +82,15 @@ export const useDepositWithdraw = (
     (state) => state.perps.currentPerpsAccount
   );
   // State
-  const [usdValue, setUsdValue] = useState<string>('');
+  const [amountMode, setAmountMode] = useState<AmountMode>({
+    type: 'manual',
+    raw: '',
+  });
   const [isWithdrawLoading, setIsWithdrawLoading] = useState(false);
   const [tokenSelectVisible, setTokenSelectVisible] = useState(false);
   const [selectedToken, setSelectedToken] = useState<TokenItem | null>(null);
   const [tokenList, setTokenList] = useState<TokenItem[]>([]);
   const [tokenListLoading, setTokenListLoading] = useState(false);
-  const [gasPrice, setGasPrice] = useState<number>(0);
   const [isPreparingSign, setIsPreparingSign] = useState(false);
   // Withdraw: which chain is the user withdrawing to (arb | hyper)
   const [selectChainId, setSelectChainId] = useState<string>(
@@ -99,6 +107,9 @@ export const useDepositWithdraw = (
     setCacheBridgeHistory,
   ] = useState<PerpBridgeHistory | null>(null);
   const [bridgeQuote, setBridgeQuote] = useState<PerpBridgeQuote | null>(null);
+  // Track failure explicitly: inferring it from `!quoteLoading && !bridgeQuote?.tx`
+  // also matched the 300ms debounce wait before the quote starts, flashing the error.
+  const [quoteFailed, setQuoteFailed] = useState(false);
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -227,16 +238,16 @@ export const useDepositWithdraw = (
   // Reset state when modal closes
   useEffect(() => {
     if (!visible) {
-      setUsdValue('');
+      setAmountMode({ type: 'manual', raw: '' });
       setSelectedToken(null);
       setChainSelectVisible(false);
       setIsWithdrawLoading(false);
-      setGasPrice(0);
       setTokenSelectVisible(false);
       setMiniSignTx(null);
       setCacheUsdValue(0);
       setQuoteLoading(false);
       setBridgeQuote(null);
+      setQuoteFailed(false);
       setCacheBridgeHistory(null);
       setIsPreparingSign(false);
       typedDataSignatureStore.close();
@@ -346,11 +357,15 @@ export const useDepositWithdraw = (
   ]);
 
   const depositMaxUsdValue = useMemo(() => {
+    // Same source as the Max compute so the displayed max and the validation
+    // max can't disagree; `amount` fallback for rows missing raw_amount_hex_str.
+    const rawAmount = tokenAmountBn(tokenInfo);
+    const tokenAmount = rawAmount.gt(0)
+      ? rawAmount
+      : new BigNumber(tokenInfo?.amount || 0);
     return isDirectDeposit
-      ? tokenAmountBn(tokenInfo).toNumber()
-      : new BigNumber(tokenInfo?.amount || 0)
-          .times(new BigNumber(tokenInfo?.price || 0))
-          .toNumber();
+      ? tokenAmount.toNumber()
+      : tokenAmount.times(new BigNumber(tokenInfo?.price || 0)).toNumber();
   }, [tokenInfo, isDirectDeposit]);
 
   const chainInfo = useMemo(() => {
@@ -387,6 +402,77 @@ export const useDepositWithdraw = (
     return wallet.gasMarketV2({ chainId: selectedToken.chain });
   }, [selectedToken?.chain]);
 
+  // Reserve gas on a native-token Max so the wallet keeps enough to pay the tx;
+  // null when it doesn't apply.
+  const maxGasReserve = useMemo(() => {
+    if (!tokenIsNativeToken || !gasList) return null;
+    const normalPrice = gasList.find((e) => e.level === 'normal')?.price || 0;
+    const enough = new BigNumber(tokenInfo?.raw_amount_hex_str || 0, 16).gte(
+      new BigNumber(gasLimit).times(normalPrice)
+    );
+    if (!enough) return null;
+    return {
+      normalPrice,
+      reserveTokenAmount: new BigNumber(gasLimit)
+        .times(normalPrice)
+        .div(10 ** nativeTokenDecimals),
+    };
+  }, [tokenIsNativeToken, gasList, tokenInfo, gasLimit, nativeTokenDecimals]);
+
+  // Derived so it can't go stale after the amount is edited; pinned only for a
+  // native-token Max, matching the prior Max-only behavior.
+  const gasPrice = useMemo(() => {
+    if (
+      amountMode.type === 'percentage' &&
+      amountMode.pct === 1 &&
+      maxGasReserve
+    ) {
+      return maxGasReserve.normalPrice;
+    }
+    return 0;
+  }, [amountMode, maxGasReserve]);
+
+  // Derived so a percentage pick follows the settling balance. manual is
+  // returned verbatim to keep intermediate typing ('5.'); '' (never '0'/'NaN')
+  // is required by the readers' empty-string contract.
+  const usdValue = useMemo(() => {
+    if (amountMode.type === 'manual') return amountMode.raw;
+    const pct = amountMode.pct;
+    // Decide after rounding, so a sub-1e-6 (or NaN) base yields '' not '0'.
+    const toAmount = (bn: BigNumber) => {
+      const v = bn.decimalPlaces(6, BigNumber.ROUND_DOWN);
+      return v.gt(0) ? v.toFixed() : '';
+    };
+
+    if (type === 'withdraw') {
+      return toAmount(new BigNumber(withdrawMaxBalance).times(pct));
+    }
+
+    // deposit
+    if (pct === 1) {
+      if (maxGasReserve) {
+        const val = tokenAmountBn(tokenInfo).minus(
+          maxGasReserve.reserveTokenAmount
+        );
+        return toAmount(val.times(tokenInfo?.price || 0));
+      }
+      if (isDirectDeposit) {
+        return toAmount(tokenAmountBn(tokenInfo));
+      }
+      return toAmount(tokenAmountBn(tokenInfo).times(tokenInfo?.price || 0));
+    }
+
+    return toAmount(new BigNumber(depositMaxUsdValue).times(pct));
+  }, [
+    amountMode,
+    type,
+    withdrawMaxBalance,
+    depositMaxUsdValue,
+    isDirectDeposit,
+    tokenInfo,
+    maxGasReserve,
+  ]);
+
   const canUseDirectSubmitTx = useMemo(
     () => supportedDirectSign(currentPerpsAccount?.type || ''),
     [currentPerpsAccount?.type]
@@ -402,7 +488,7 @@ export const useDepositWithdraw = (
 
   const resetFormValue = useMemoizedFn(() => {
     resetBridgeQuote();
-    setUsdValue('');
+    setAmountMode({ type: 'manual', raw: '' });
     setCacheUsdValue(0);
   });
 
@@ -498,6 +584,7 @@ export const useDepositWithdraw = (
       }
     } else if (token.id !== ARB_USDC_TOKEN_ID) {
       setQuoteLoading(true);
+      setQuoteFailed(false);
       const txs: Tx[] = [];
       try {
         if (abortControllerRef.current) {
@@ -615,10 +702,12 @@ export const useDepositWithdraw = (
           return res.tx;
         } else {
           resetBridgeQuote();
+          setQuoteFailed(true);
         }
       } catch (error) {
         console.error('getPerpBridgeQuote error', error);
         resetBridgeQuote();
+        setQuoteFailed(true);
       }
     } else {
       resetBridgeQuote();
@@ -672,6 +761,12 @@ export const useDepositWithdraw = (
     selectedToken,
     isHypeDeposit,
   ]);
+
+  // Clear optimistically on input change so the debounce wait isn't shown as an
+  // error; updateMiniSignTx re-sets it only on a real failure.
+  useEffect(() => {
+    setQuoteFailed(false);
+  }, [usdValue, selectedToken]);
 
   const postPerpBridgeQuote = useMemoizedFn(async (hash: string) => {
     if (!hash || !cacheBridgeHistory) {
@@ -969,81 +1064,17 @@ export const useDepositWithdraw = (
     }
   });
 
-  // Handle percentage click
-  const handlePercentageClick = useCallback(
-    (percentage: number) => {
-      if (type === 'withdraw') {
-        const value = new BigNumber(withdrawMaxBalance)
-          .times(percentage)
-          .decimalPlaces(6, BigNumber.ROUND_DOWN)
-          .toFixed();
-        setUsdValue(value);
-      } else {
-        if (percentage === 1) {
-          // Max logic
-          if (tokenIsNativeToken && gasList) {
-            const checkGasIsEnough = (price: number) => {
-              return new BigNumber(tokenInfo?.raw_amount_hex_str || 0, 16).gte(
-                new BigNumber(gasLimit).times(price)
-              );
-            };
-            const normalPrice =
-              gasList?.find((e) => e.level === 'normal')?.price || 0;
-            const isNormalEnough = checkGasIsEnough(normalPrice);
-            if (isNormalEnough) {
-              const val = tokenAmountBn(tokenInfo).minus(
-                new BigNumber(gasLimit)
-                  .times(normalPrice)
-                  .div(10 ** nativeTokenDecimals)
-              );
-              setUsdValue(
-                val
-                  .times(tokenInfo?.price || 0)
-                  .decimalPlaces(6, BigNumber.ROUND_DOWN)
-                  .toFixed()
-              );
-              setGasPrice(normalPrice);
-              return;
-            }
-          }
-          setGasPrice(0);
-          if (isDirectDeposit) {
-            setUsdValue(tokenAmountBn(tokenInfo).toString());
-          } else {
-            setUsdValue(
-              tokenAmountBn(tokenInfo)
-                ?.times(tokenInfo?.price || 0)
-                .decimalPlaces(6, BigNumber.ROUND_DOWN)
-                .toFixed()
-            );
-          }
-        } else {
-          const value = new BigNumber(depositMaxUsdValue)
-            .times(percentage)
-            .decimalPlaces(6, BigNumber.ROUND_DOWN)
-            .toFixed();
-          setUsdValue(value);
-        }
-      }
-    },
-    [
-      type,
-      availableBalance,
-      depositMaxUsdValue,
-      tokenIsNativeToken,
-      gasList,
-      tokenInfo,
-      gasLimit,
-      nativeTokenDecimals,
-      isDirectDeposit,
-    ]
-  );
+  // Record intent only; the usdValue memo derives the amount so it tracks the
+  // settling balance instead of freezing a snapshot.
+  const handlePercentageClick = useCallback((percentage: number) => {
+    setAmountMode({ type: 'percentage', pct: percentage });
+  }, []);
 
   // Handle token select
   const handleTokenSelect = useCallback((token: TokenItem) => {
     setSelectedToken(token);
     setTokenSelectVisible(false);
-    setUsdValue('');
+    setAmountMode({ type: 'manual', raw: '' });
   }, []);
 
   const handleCloseTokenSelect = useCallback(() => {
@@ -1051,7 +1082,8 @@ export const useDepositWithdraw = (
   }, []);
 
   const handleUsdValueChange = useCallback((value: string) => {
-    setUsdValue(value);
+    // Verbatim, no normalization, so intermediate typing states survive.
+    setAmountMode({ type: 'manual', raw: value });
   }, []);
 
   const estReceiveUsdValue = useMemo(() => {
@@ -1070,7 +1102,7 @@ export const useDepositWithdraw = (
     if (first) {
       setSelectedToken(first);
     }
-    setUsdValue('');
+    setAmountMode({ type: 'manual', raw: '' });
   });
 
   return {
@@ -1086,6 +1118,7 @@ export const useDepositWithdraw = (
     isWithdrawLoading,
     quoteLoading,
     bridgeQuote,
+    quoteFailed,
     inputRef,
     selectChainId,
     chainSelectVisible,
