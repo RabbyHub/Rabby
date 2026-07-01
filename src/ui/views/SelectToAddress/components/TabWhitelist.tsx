@@ -1,6 +1,6 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import React, { useMemo, useRef } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,8 @@ import {
   closestCenter,
   DndContext,
   DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
   MeasuringStrategy,
   PointerSensor,
   useSensor,
@@ -303,6 +305,24 @@ export default function TabWhitelist({
     })
   );
 
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeOverlayWidth, setActiveOverlayWidth] = useState<number | null>(
+    null
+  );
+
+  const activeWhitelistItem = useMemo(() => {
+    if (!activeId) {
+      return null;
+    }
+
+    const activeIndex = sortableWhitelistIds.findIndex((id) => id === activeId);
+    if (activeIndex === -1) {
+      return null;
+    }
+
+    return allAccounts[activeIndex] || null;
+  }, [activeId, allAccounts, sortableWhitelistIds]);
+
   const suppressClickRef = useRef(false);
   const resetSuppressClick = () => {
     window.setTimeout(() => {
@@ -310,16 +330,25 @@ export default function TabWhitelist({
     }, 0);
   };
 
-  const handleDragStart = () => {
+  const resetActiveDragState = () => {
+    setActiveId(null);
+    setActiveOverlayWidth(null);
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
     suppressClickRef.current = true;
+    setActiveId(String(event.active.id));
+    setActiveOverlayWidth(event.active.rect.current.initial?.width ?? null);
   };
 
   const handleDragCancel = () => {
+    resetActiveDragState();
     resetSuppressClick();
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    resetActiveDragState();
 
     if (!over || active.id === over.id) {
       resetSuppressClick();
@@ -433,6 +462,33 @@ export default function TabWhitelist({
                     />
                   ))}
                 </SortableContext>
+                <DragOverlay
+                  dropAnimation={{
+                    duration: 200,
+                    easing: 'ease',
+                  }}
+                  style={{
+                    cursor: 'grabbing',
+                  }}
+                >
+                  {activeWhitelistItem ? (
+                    <WhitelistItemWrapper
+                      className="is-whitelist-item-dragging"
+                      style={{
+                        marginTop: 0,
+                        width: activeOverlayWidth ?? undefined,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <WhitelistItemContent
+                        item={activeWhitelistItem}
+                        onDelete={() => {}}
+                        onSelect={() => {}}
+                        suppressClickRef={suppressClickRef}
+                      />
+                    </WhitelistItemWrapper>
+                  ) : null}
+                </DragOverlay>
               </DndContext>
             ) : (
               allAccounts.map((item, index) => (
