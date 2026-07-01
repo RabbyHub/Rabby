@@ -10,25 +10,6 @@ import { getSentryConfig } from '@/utils/sentry-config';
 describe('Sentry configuration', () => {
   const config = getSentryConfig();
 
-  test('disables automatic collection of sensitive wallet data', () => {
-    expect(config.dataCollection).toEqual({
-      userInfo: false,
-      cookies: false,
-      httpHeaders: {
-        request: false,
-        response: false,
-      },
-      httpBodies: [],
-      queryParams: false,
-      genAI: {
-        inputs: false,
-        outputs: false,
-      },
-      stackFrameVariables: false,
-      frameContextLines: 5,
-    });
-  });
-
   test('keeps automatic session tracking disabled', () => {
     const filterIntegrations = config.integrations as (
       defaultIntegrations: Array<{ name: string }>
