@@ -47,7 +47,7 @@ export const LeverageInput: React.FC<LeverageInputProps> = ({
 
   return (
     <div className="bg-r-neutral-card1 rounded-[8px] mb-[12px] px-[16px] py-[16px]">
-      <div className="text-[16px] leading-[19px] font-medium text-r-blue-default">
+      <div className="text-[16px] leading-[19px] font-medium text-rb-neutral-title-1">
         {title}
       </div>
       <div className="flex items-center mb-[8px]">
