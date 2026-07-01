@@ -9237,6 +9237,7 @@
         "setTimeout": "r"
       },
       "allow": {
+        "Buffer": "r",
         "WebSocket": "r",
         "atob": "r",
         "clearInterval": "r",
@@ -12531,14 +12532,13 @@
       "dynamic": []
     }
   },
-  "node_modules/dexie/dist/dexie.js": {
+  "node_modules/dexie/dist/dexie.min.js": {
     "enable": true,
     "global": {
       "access": {
         "AbortController": "r",
         "BroadcastChannel": "r",
         "CustomEvent": "r",
-        "SuppressedError": "r",
         "addEventListener": "r",
         "clearInterval": "r",
         "clearTimeout": "r",
@@ -12572,7 +12572,6 @@
         "ImageData": "r",
         "Int64Array": "r",
         "Promise": "rw",
-        "SuppressedError": "r",
         "Uint64Array": "r",
         "addEventListener": "r",
         "clearInterval": "r",
@@ -12594,7 +12593,7 @@
       "dynamic": []
     }
   },
-  "node_modules/dexie/import-wrapper.mjs": {
+  "node_modules/dexie/import-wrapper-prod.mjs": {
     "enable": true,
     "global": {
       "access": {},
