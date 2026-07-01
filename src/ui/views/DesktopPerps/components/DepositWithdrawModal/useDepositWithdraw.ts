@@ -390,7 +390,7 @@ export const useDepositWithdraw = (
   }, [selectedToken, chainInfo?.nativeTokenAddress]);
 
   const nativeTokenDecimals = useMemo(
-    () => chainInfo?.nativeTokenDecimals || 1e18,
+    () => chainInfo?.nativeTokenDecimals || 18,
     [chainInfo?.nativeTokenDecimals]
   );
 
@@ -568,6 +568,16 @@ export const useDepositWithdraw = (
   // Update mini sign tx for deposit
   const updateMiniSignTx = useMemoizedFn(async () => {
     if (!visible || type === 'withdraw' || !selectedToken) return;
+    // During a token switch, `_tokenInfo` (async) lags `selectedToken`, so building
+    // now would encode the previous token's decimals/chain into the new deposit.
+    if (
+      _tokenInfo &&
+      (_tokenInfo.id !== selectedToken.id ||
+        _tokenInfo.chain !== selectedToken.chain)
+    ) {
+      setMiniSignTx(null);
+      return;
+    }
     const value = Number(usdValue) || 0;
     if (value < 5 || value > depositMaxUsdValue) return;
 
