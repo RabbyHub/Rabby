@@ -194,9 +194,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                       onClick={onDeposit}
                       disabled={submitting}
                       className={clsx(
-                        'inline-flex items-center justify-center w-16 h-16 rounded-[4px]',
-                        'text-r-blue-default hover:bg-rb-brand-light-1',
-                        'disabled:opacity-60 disabled:cursor-not-allowed'
+                        'inline-flex items-center justify-center w-16 h-16 rounded-[4px]'
                       )}
                     >
                       <RcIconAddDeposit />
