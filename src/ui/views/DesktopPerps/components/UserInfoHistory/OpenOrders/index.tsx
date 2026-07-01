@@ -36,55 +36,6 @@ export const OpenOrders: React.FC = () => {
     );
   });
 
-  const handleClickCloseAll = useMemoizedFn(async () => {
-    const modal = Modal.info({
-      width: 360,
-      closable: false,
-      maskClosable: true,
-      centered: true,
-      title: null,
-      className: clsx(
-        'perps-bridge-swap-modal perps-close-all-position-modal',
-        isDarkTheme
-          ? 'perps-bridge-swap-modal-dark'
-          : 'perps-bridge-swap-modal-light'
-      ),
-      content: (
-        <>
-          <div className="flex items-center justify-center flex-col gap-12 bg-r-neutral-bg2 rounded-lg">
-            <div className="text-[17px] font-bold text-r-neutral-title-1 text-center">
-              {t('page.perps.cancelAllOrdersPopup.title')}
-            </div>
-            <div className="text-15  text-r-neutral-title-1 text-center">
-              {t('page.perps.cancelAllOrdersPopup.description')}
-            </div>
-            <div className="flex items-center justify-center w-full gap-12 mt-20">
-              <PerpsBlueBorderedButton
-                block
-                onClick={() => {
-                  modal.destroy();
-                }}
-              >
-                {t('page.manageAddress.cancel')}
-              </PerpsBlueBorderedButton>
-              <Button
-                size="large"
-                block
-                type="primary"
-                onClick={async () => {
-                  handleCloseAll();
-                  modal.destroy();
-                }}
-              >
-                {t('page.manageAddress.confirm')}
-              </Button>
-            </div>
-          </div>
-        </>
-      ),
-    });
-  });
-
   const columns = useMemo<ColumnType<OpenOrder>[]>(
     () => [
       {

@@ -66,9 +66,9 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
       }}
       closeIcon={ModalCloseIcon}
       destroyOnClose
-      className="modal-support-darkmode desktop-perps-margin-mode-modal"
+      className="modal-support-darkmode desktop-perps-modal-surface  desktop-perps-margin-mode-modal"
     >
-      <div className="bg-r-neutral-bg-2 flex flex-col h-full">
+      <div className="bg-rb-neutral-bg-0 flex flex-col h-full">
         <div className="px-20 pt-16 flex-1 pb-24">
           {/* Title */}
           <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">

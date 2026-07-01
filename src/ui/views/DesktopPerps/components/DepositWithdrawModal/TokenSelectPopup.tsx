@@ -27,6 +27,7 @@ interface TokenSelectPopupProps {
   onSelect: (token: TokenItem) => void;
   tokenList: TokenItem[];
   tokenListLoading: boolean;
+  selectedToken: TokenItem | null;
   mode?: 'deposit' | 'withdraw';
   /**
    * Withdraw mode: items with balance to render (preferred over WITHDRAW_TOKEN_LIST).
@@ -40,6 +41,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
   onCancel,
   onSelect,
   tokenList,
+  selectedToken,
   tokenListLoading,
   mode = 'deposit',
   withdrawItems,
@@ -124,12 +126,12 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           key={item.id}
           style={style}
           className={clsx(
-            'flex justify-between items-center h-[48px] mb-8 border border-transparent',
-            'bg-r-neutral-card1 rounded-[8px] px-16',
-            'text-13 font-medium text-r-neutral-title-1',
-            isDisabled
-              ? 'opacity-50'
-              : 'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light-1'
+            'flex justify-between items-center h-[48px] mb-6 border',
+            'bg-rb-neutral-bg-5 rounded-[6px] px-16',
+            'text-13 font-medium text-rb-neutral-title-1 cursor-pointer',
+            selectedToken?.id === item.id && selectedToken?.chain === item.chain
+              ? 'border-rabby-blue-default'
+              : 'border-transparent hover:border-rabby-blue-default'
           )}
           onClick={() => {
             if (isDisabled) return;
@@ -142,7 +144,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               {getTokenSymbol(item)}
             </span>
             {isDirectDepositToken(item) && !isWithdrawMode && (
-              <div className="flex items-center gap-4 text-[11px] font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-6 py-2">
+              <div className="flex items-center gap-4 text-[11px] font-medium text-r-blue-default bg-rb-blue-light-1 rounded-[4px] px-6 py-2">
                 <svg
                   width="8"
                   height="10"
@@ -210,7 +212,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       push={false}
       getContainer={getContainer}
     >
-      <div className="flex flex-col h-full pt-16 px-16 bg-r-neutral-bg2 rounded-t-[16px]">
+      <div className="flex flex-col h-full pt-16 px-16 bg-rb-neutral-bg-2 rounded-t-[16px]">
         {/* Token Select Header */}
         <div className="text-[20px] font-medium text-r-neutral-title-1 text-center mb-16">
           {isWithdrawMode
@@ -225,7 +227,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               {new Array(7).fill(null).map((_, index) => (
                 <div
                   key={index}
-                  className="flex justify-between items-center h-[48px] mb-8 border border-transparent bg-r-neutral-card-1 rounded-[8px] px-16 w-full"
+                  className="flex justify-between items-center h-[48px] mb-6 border border-transparent bg-rb-neutral-bg-5 rounded-[6px] px-16 w-full"
                 >
                   <div className="flex items-center gap-12">
                     <Skeleton.Avatar active={true} size={24} shape="circle" />

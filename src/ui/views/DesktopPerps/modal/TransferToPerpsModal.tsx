@@ -190,7 +190,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
       width={400}
       zIndex={zIndex}
       closable={!submitting}
-      closeIcon={<RcIconCloseCC className="w-14 text-r-neutral-title-1" />}
+      closeIcon={<RcIconCloseCC className="w-14 text-rb-neutral-title-1" />}
       bodyStyle={{ padding: 0, height: '520px', maxHeight: '520px' }}
       maskStyle={{
         zIndex: zIndex ?? 1000,
@@ -199,48 +199,48 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
       }}
       maskClosable={!submitting}
       keyboard={!submitting}
-      className="modal-support-darkmode desktop-perps-transfer-to-perps-modal"
+      className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-transfer-to-perps-modal"
     >
       <PopupContainer>
         <div className="bg-rb-neutral-bg-0 h-[520px] flex flex-col relative overflow-hidden desktop-perps-transfer-to-perps-content">
           <div className="px-20 pt-16 pb-20 flex-1 flex flex-col">
-            <h3 className="text-[18px] font-medium text-r-neutral-title-1 text-center mb-20">
+            <h3 className="text-[18px] font-medium text-rb-neutral-title-1 text-center mb-20">
               {t('page.perps.PerpsTransferToPerps.title')}
             </h3>
 
-            <div className="text-13 text-r-neutral-title-1 mb-8">
+            <div className="text-13 text-rb-neutral-title-1 mb-8">
               {t('page.perps.PerpsTransferToPerps.title')}
             </div>
-            <div className="relative bg-r-neutral-card1 rounded-[12px] px-16 py-14 mb-16">
+            <div className="relative bg-rb-neutral-bg-2 rounded-[12px] px-16 py-14 mb-16">
               <div className="flex items-center mb-12">
-                <span className="text-r-neutral-foot text-13 w-40">
+                <span className="text-rb-neutral-foot text-13 w-40">
                   {t('page.perps.PerpsTransferToPerps.from')}
                 </span>
-                <span className="text-r-neutral-title-1 text-15 font-medium">
+                <span className="text-rb-neutral-title-1 text-15 font-medium">
                   {t('page.perps.PerpsTransferToPerps.spot')}
                 </span>
               </div>
               <div className="flex items-center">
-                <span className="text-r-neutral-foot text-13 w-40">
+                <span className="text-rb-neutral-foot text-13 w-40">
                   {t('page.perps.PerpsTransferToPerps.to')}
                 </span>
-                <span className="text-r-neutral-title-1 text-15 font-medium">
+                <span className="text-rb-neutral-title-1 text-15 font-medium">
                   {t('page.perps.PerpsTransferToPerps.perps')}
                 </span>
               </div>
-              <RcIconTransferCC className="absolute right-16 top-1/2 -translate-y-1/2 text-r-neutral-foot" />
+              <RcIconTransferCC className="absolute right-16 top-1/2 -translate-y-1/2 text-rb-neutral-foot" />
             </div>
 
             <div className="flex justify-between items-center mb-8">
-              <span className="text-13 text-r-neutral-title-1">
+              <span className="text-13 text-rb-neutral-title-1">
                 {t('page.perps.PerpsTransferToPerps.amount')}
               </span>
-              <span className="text-r-neutral-foot text-13">
+              <span className="text-rb-neutral-foot text-13">
                 {t('page.perps.PerpsTransferToPerps.balance')}:
                 {balanceNum.toFixed(2)} USDC
               </span>
             </div>
-            <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-14 mb-16">
+            <div className="bg-rb-neutral-bg-2 rounded-[12px] px-16 py-14 mb-16">
               <div className="flex items-center gap-8">
                 <ThousandsInput
                   bordered={false}
@@ -252,7 +252,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
                     if (/^\d*\.?\d*$/.test(v)) setAmount(v);
                   }}
                   placeholder="0"
-                  className="flex-1 p-0 text-[28px] leading-[34px] font-medium text-r-neutral-title-1"
+                  className="flex-1 p-0 text-[28px] leading-[34px] font-medium text-rb-neutral-title-1"
                   disabled={submitting}
                 />
                 <div
@@ -281,8 +281,8 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
                   onClick={() => handlePercent(p)}
                   className={clsx(
                     'flex-1 h-[36px] rounded-[8px] text-13 font-medium',
-                    'bg-r-neutral-card1 border border-solid border-transparent',
-                    'text-r-neutral-title-1',
+                    'bg-rb-neutral-bg-2 border border-solid border-transparent',
+                    'text-rb-neutral-foot',
                     'hover:border-rb-brand-default hover:text-rb-brand-default',
                     'disabled:opacity-60 disabled:cursor-not-allowed'
                   )}
@@ -300,7 +300,9 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
             ) : null}
 
             <div className="flex-1" />
+          </div>
 
+          <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
             <Button
               block
               size="large"
