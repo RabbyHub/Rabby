@@ -78,6 +78,13 @@ const WhitelistItemWrapper = styled.div`
       pointer-events: none !important;
     }
   }
+
+  &.is-whitelist-item-drag-overlay {
+    .whitelist-item {
+      border-color: var(--r-blue-default, #7084ff) !important;
+      background-color: var(--r-blue-light1, #eef1ff) !important;
+    }
+  }
 `;
 
 const isTab = getUiType().isTab;
@@ -473,7 +480,7 @@ export default function TabWhitelist({
                 >
                   {activeWhitelistItem ? (
                     <WhitelistItemWrapper
-                      className="is-whitelist-item-dragging"
+                      className="is-whitelist-item-dragging is-whitelist-item-drag-overlay"
                       style={{
                         marginTop: 0,
                         width: activeOverlayWidth ?? undefined,
