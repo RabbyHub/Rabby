@@ -6,6 +6,7 @@ import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetail
 import { Checkbox } from '@/ui/component';
 import clsx from 'clsx';
 import { PerpsCheckbox } from './PerpsCheckbox';
+import { formatPerpsCoin } from '../../../utils';
 
 interface MarginModeModalProps {
   visible: boolean;
@@ -13,6 +14,9 @@ interface MarginModeModalProps {
   coinSymbol?: string;
   onConfirm: (mode: MarginMode) => Promise<void>;
   onCancel: () => void;
+  // When provided, the modal is absolutely positioned (anchored below a
+  // trigger) instead of screen-centred. The mask stays unchanged.
+  positionStyle?: React.CSSProperties;
 }
 
 export const MarginModeModal: React.FC<MarginModeModalProps> = ({
@@ -21,6 +25,7 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
   coinSymbol = 'ETH',
   onConfirm,
   onCancel,
+  positionStyle,
 }) => {
   const [isConfirming, setIsConfirming] = React.useState(false);
   const { t } = useTranslation();
@@ -55,24 +60,25 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
       onCancel={onCancel}
       footer={null}
       width={400}
-      centered
+      centered={!positionStyle}
+      style={positionStyle}
       bodyStyle={{
         padding: 0,
       }}
       maskStyle={{
         zIndex: 1000,
-        backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
       closeIcon={ModalCloseIcon}
       destroyOnClose
-      className="modal-support-darkmode desktop-perps-margin-mode-modal"
+      className="modal-support-darkmode desktop-perps-modal-surface  desktop-perps-margin-mode-modal"
     >
-      <div className="bg-r-neutral-bg-2 flex flex-col h-full">
+      <div className="bg-rb-neutral-bg-0 flex flex-col h-full">
         <div className="px-20 pt-16 flex-1 pb-24">
           {/* Title */}
-          <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">
-            {coinSymbol} {t('page.perpsPro.marginMode.title') || 'Margin Mode'}
+          <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-start mb-16">
+            {formatPerpsCoin(coinSymbol)}{' '}
+            {t('page.perpsPro.marginMode.title') || 'Margin Mode'}
           </h3>
 
           {/* Options */}

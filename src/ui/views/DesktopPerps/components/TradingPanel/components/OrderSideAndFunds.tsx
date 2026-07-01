@@ -53,7 +53,7 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
       <span className="text-rb-neutral-secondary text-12">
         {t('page.perpsPro.tradingPanel.availableFunds')}
       </span>
-      <span
+      <div
         className="text-rb-neutral-body text-12 flex items-center gap-[4px] cursor-pointer"
         onClick={handleClick}
       >
@@ -67,7 +67,7 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
         ) : (
           <RcIconAddDeposit />
         )}
-      </span>
+      </div>
     </div>
   );
 };

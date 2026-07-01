@@ -526,7 +526,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   }
 
   return (
-    <div className="flex flex-col min-h-[520px] bg-r-neutral-bg2">
+    <div className="flex flex-col min-h-[520px] bg-rb-neutral-bg-0">
       <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-12">
         {t('page.perpsPro.userInfo.positionInfo.closePosition')}
       </div>
@@ -650,7 +650,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         </section>
       </div>
 
-      <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-r-neutral-bg2">
+      <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-0">
         <div className="flex items-center gap-[16px]">
           <Button
             block
@@ -713,10 +713,7 @@ export const ClosePositionModal: React.FC<Props> = ({
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
-      className={clsx(
-        'modal-support-darkmode',
-        type === 'reverse' && 'desktop-perps-modal-surface'
-      )}
+      className={clsx('modal-support-darkmode', 'desktop-perps-modal-surface')}
       closeIcon={
         <RcIconCloseCC className="w-[20px] h-[20px] text-rb-neutral-body" />
       }

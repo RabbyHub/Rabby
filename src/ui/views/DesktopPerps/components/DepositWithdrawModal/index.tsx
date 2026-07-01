@@ -75,6 +75,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     isWithdrawLoading,
     quoteLoading,
     bridgeQuote,
+    quoteFailed,
     inputRef,
 
     // Computed
@@ -162,14 +163,15 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
   }, [bridgeQuote]);
 
   const quoteError = useMemo(() => {
+    // Show only after a real failure, never during the debounce wait.
     return type === 'deposit' &&
       !isDirectDeposit &&
       isValidAmount &&
       !quoteLoading &&
-      !bridgeQuote?.tx
+      quoteFailed
       ? t('page.perps.depositAmountPopup.fetchQuoteFailed')
       : '';
-  }, [bridgeQuote, quoteLoading, type, isDirectDeposit, t, isValidAmount]);
+  }, [quoteFailed, quoteLoading, type, isDirectDeposit, t, isValidAmount]);
 
   return (
     <Modal
@@ -191,10 +193,10 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
         )
       }
       closable={!historyVisible}
-      className="modal-support-darkmode desktop-perps-deposit-withdraw-modal"
+      className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-deposit-withdraw-modal"
     >
       <PopupContainer>
-        <div className="bg-r-neutral-bg-2 h-[520px] flex flex-col relative overflow-hidden desktop-perps-deposit-withdraw-content">
+        <div className="bg-rb-neutral-bg-0 h-[520px] flex flex-col relative overflow-hidden desktop-perps-deposit-withdraw-content">
           <div className="px-20 pt-16 flex-1 pb-24">
             <div className="flex items-center justify-center gap-8 mb-16 relative">
               <div
@@ -224,7 +226,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 <div
                   onClick={() => setChainSelectVisible(true)}
                   className={clsx(
-                    'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between px-16 h-[56px] border border-solid border-transparent mb-16',
+                    'bg-rb-neutral-bg-2 rounded-[8px] w-full flex items-center justify-between px-16 h-[56px] border border-solid border-transparent mb-16',
                     'hover:border-rabby-blue-default cursor-pointer'
                   )}
                 >
@@ -278,7 +280,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 </div>
 
                 {/* Amount input + token pill */}
-                <div className="bg-r-neutral-card1 rounded-[8px] px-16 py-24 mb-12">
+                <div className="bg-rb-neutral-bg-2 rounded-[8px] px-16 py-24 mb-12">
                   <div className="flex items-center gap-12">
                     <ThousandsNativeInput
                       ref={inputRef}
@@ -328,7 +330,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                       onClick={() => handlePercentageClick(option.value)}
                       className={clsx(
                         'flex-1 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
-                        'bg-r-neutral-card1 border border-solid border-transparent text-r-neutral-title-1',
+                        'bg-rb-neutral-bg-2 border border-solid border-transparent text-rb-neutral-foot',
                         'hover:border-rabby-blue-default hover:text-rb-brand-default'
                       )}
                     >
@@ -345,7 +347,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               </>
             ) : (
               <>
-                <div className="bg-r-neutral-card1 rounded-[8px] px-20 py-20 mb-12">
+                <div className="bg-rb-neutral-bg-2 rounded-[8px] px-20 py-20 mb-12">
                   <div className="flex flex-col items-center justify-center">
                     <ThousandsNativeInput
                       ref={inputRef}
@@ -367,7 +369,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                         }
                       }}
                     />
-                    <div className="text-13 text-r-neutral-body mt-8 flex items-center">
+                    <div className="text-13 text-rb-neutral-body mt-8 flex items-center">
                       {t('page.perps.balanceAvailable', {
                         balance: formatUsdValue(
                           depositMaxUsdValue,
@@ -383,9 +385,10 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                         key={option.value}
                         onClick={() => handlePercentageClick(option.value)}
                         className={clsx(
-                          'px-20 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
-                          'hover:bg-rb-brand-light-1 hover:text-rb-brand-default',
-                          'bg-r-neutral-bg-2 text-r-neutral-body'
+                          'px-20 h-[36px] flex items-center justify-center rounded-[6px] text-13',
+                          'border border-solid border-transparent',
+                          'hover:bg-rb-brand-light-1 hover:text-rb-brand-default hover:border-rb-brand-default',
+                          'bg-rb-neutral-bg-5 text-rb-neutral-foot'
                         )}
                       >
                         {option.label}
@@ -405,11 +408,11 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     setTokenSelectVisible(true);
                   }}
                   className={clsx(
-                    'bg-r-neutral-card1 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
+                    'bg-rb-neutral-bg-2 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
                     'hover:border-rabby-blue-default cursor-pointer'
                   )}
                 >
-                  <div className="text-r-neutral-body text-13">
+                  <div className="text-rb-neutral-body text-13">
                     {t('page.perps.depositAmountPopup.payWith')}
                   </div>
                   <div className="flex items-center">
@@ -448,7 +451,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                         {t('page.perps.depositAmountPopup.hyperliquidFeeLabel')}
                       </DashedUnderlineText>
                     </Tooltip>
-                    <span className="text-r-neutral-title-1">
+                    <span className="text-rb-neutral-body">
                       {isHypeWithdraw
                         ? `$${new BigNumber(hypeGasFeeUsd)
                             .decimalPlaces(6)
@@ -460,7 +463,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     <span className="text-r-neutral-foot">
                       {t('page.perps.depositAmountPopup.estTimeLabel')}
                     </span>
-                    <span className="text-r-neutral-title-1">
+                    <span className="text-rb-neutral-body">
                       {isHypeWithdraw ? '~2s' : '~5 min'}
                     </span>
                   </div>
@@ -468,11 +471,11 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     <span className="text-r-neutral-foot">
                       {t('page.perps.depositAmountPopup.estReceiveLabel')}
                     </span>
-                    <span className="text-r-neutral-title-1">
+                    <span className="text-rb-neutral-body">
                       {usdValue && isValidAmount
                         ? formatUsdValue(
                             isHypeWithdraw
-                              ? Number(usdValue)
+                              ? Math.max(0, Number(usdValue) - hypeGasFeeUsd)
                               : Math.max(0, Number(usdValue) - 1),
                             BigNumber.ROUND_DOWN
                           )
@@ -509,7 +512,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                         style={{ width: 60 }}
                       />
                     ) : (
-                      <span className="text-r-neutral-title-1">
+                      <span className="text-rb-neutral-body">
                         {quoteError ? '-' : formatUsdValue(estReceiveUsdValue)}
                       </span>
                     )}
@@ -525,7 +528,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                         style={{ width: 60 }}
                       />
                     ) : (
-                      <span className="text-r-neutral-title-1">
+                      <span className="text-rb-neutral-body">
                         {quoteError ? '-' : `~${estTimeMinutes} min`}
                       </span>
                     )}
@@ -567,6 +570,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
           visible={tokenSelectVisible}
           onCancel={handleCloseTokenSelect}
           onSelect={handleTokenSelect}
+          selectedToken={selectedToken}
           tokenList={tokenList}
           tokenListLoading={tokenListLoading}
           mode={type}

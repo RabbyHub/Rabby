@@ -39,11 +39,11 @@ export const ChainSelectPopup: React.FC<ChainSelectPopupProps> = ({
       push={false}
       getContainer={getContainer}
     >
-      <div className="flex flex-col h-full pt-16 px-16 bg-r-neutral-bg2 rounded-t-[16px]">
+      <div className="flex flex-col h-full pt-16 px-16 bg-rb-neutral-bg-2 rounded-t-[16px]">
         <div className="text-[20px] font-medium text-r-neutral-title-1 text-center mb-16">
           {t('page.perps.selectChainToWithdraw')}
         </div>
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-6">
           {WITHDRAW_CHAINS.map((c) => {
             const chain = findChainByServerID(c.serverChain);
             return (
@@ -51,11 +51,11 @@ export const ChainSelectPopup: React.FC<ChainSelectPopupProps> = ({
                 key={c.serverChain}
                 onClick={() => onSelect(c.serverChain)}
                 className={clsx(
-                  'flex items-center h-[48px] px-16 rounded-[8px] cursor-pointer border border-solid',
-                  'bg-r-neutral-card1 text-13 text-r-neutral-title-1 font-medium',
+                  'flex items-center h-[48px] px-16 rounded-[6px] cursor-pointer border border-solid',
+                  'bg-rb-neutral-bg-5 text-13 text-rb-neutral-title-1 font-medium',
                   selected === c.serverChain
-                    ? 'border-rabby-blue-default bg-r-blue-light-1'
-                    : 'border-transparent hover:border-rabby-blue-default hover:bg-r-blue-light-1'
+                    ? 'border-rabby-blue-default'
+                    : 'border-transparent hover:border-rabby-blue-default'
                 )}
               >
                 {chain?.logo && (

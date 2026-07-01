@@ -4,6 +4,11 @@
    should inherit this rather than hardcoding `font-weight: 400`. */
 body.perps-pro-page {
   font-weight: 350;
+
+  /* Override the token, not the utility: `.font-medium` is `!important` inside
+     `@layer utilities`, so an unlayered override can never win regardless of
+     specificity. Re-pointing the var cascades to every `.font-medium` here. */
+  --font-weight-medium: 450;
 }
 
 .trades-container-no-scrollbar {

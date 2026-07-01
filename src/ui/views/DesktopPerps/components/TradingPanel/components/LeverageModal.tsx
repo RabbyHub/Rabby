@@ -14,6 +14,9 @@ interface LeverageModalProps {
   coinSymbol?: string;
   onConfirm: (leverage: number) => Promise<void>;
   onCancel: () => void;
+  // When provided, the modal is absolutely positioned (anchored below a
+  // trigger) instead of screen-centred. The mask stays unchanged.
+  positionStyle?: React.CSSProperties;
 }
 
 export const LeverageModal: React.FC<LeverageModalProps> = ({
@@ -23,6 +26,7 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
   coinSymbol = 'ETH',
   onConfirm,
   onCancel,
+  positionStyle,
 }) => {
   const [isConfirming, setIsConfirming] = React.useState(false);
   const { t } = useTranslation();
@@ -89,23 +93,23 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
       onCancel={onCancel}
       footer={null}
       width={400}
-      centered
+      centered={!positionStyle}
+      style={positionStyle}
       bodyStyle={{
         padding: 0,
       }}
       maskStyle={{
         zIndex: 1000,
-        backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
       closeIcon={ModalCloseIcon}
       destroyOnClose
-      className="modal-support-darkmode desktop-perps-margin-mode-modal"
+      className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-margin-mode-modal"
     >
-      <div className="bg-r-neutral-bg-2 flex flex-col h-full">
+      <div className="bg-rb-neutral-bg-0 flex flex-col h-full">
         <div className="px-20 pt-16 flex-1 pb-24">
           {/* Title */}
-          <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-center mb-16">
+          <h3 className="text-[16px] font-medium text-rb-neutral-title-1 text-start mb-16">
             {t('page.perpsPro.leverage.title')}
           </h3>
 

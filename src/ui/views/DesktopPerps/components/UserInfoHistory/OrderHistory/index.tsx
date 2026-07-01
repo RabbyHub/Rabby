@@ -82,7 +82,7 @@ export const OrderHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
-        // width: 100,
+        width: 142,
         sorter: (a, b) => a.order.coin.localeCompare(b.order.coin),
         render: (_, record) => {
           return (
@@ -297,7 +297,7 @@ export const OrderHistory: React.FC = () => {
       defaultSortField="statusTimestamp"
       defaultSortOrder="descend"
       virtual
-      rowHeight={32}
+      rowHeight={28}
     />
   );
 };

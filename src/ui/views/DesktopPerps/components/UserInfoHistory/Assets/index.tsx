@@ -191,7 +191,7 @@ export const Assets: React.FC = () => {
       showSorterTooltip={false}
       defaultSortField="total"
       defaultSortOrder="descend"
-      rowHeight={32}
+      rowHeight={28}
       tableLayout="fixed"
     />
   );

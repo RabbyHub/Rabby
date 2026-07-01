@@ -1616,7 +1616,7 @@ export const perps = createModel<RootModel>()({
           if (!isSnapshot) {
             handleUpdateHistoricalOrders(
               orderHistory,
-              rootState.perps.soundEnabled
+              store.getState().perps.soundEnabled
             );
           }
 
@@ -1665,7 +1665,7 @@ export const perps = createModel<RootModel>()({
           if (!isSnapshot) {
             handleUpdateTwapSliceFills(
               twapSliceFills,
-              rootState.perps.soundEnabled
+              store.getState().perps.soundEnabled
             );
           }
 
