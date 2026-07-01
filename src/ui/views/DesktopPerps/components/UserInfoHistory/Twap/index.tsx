@@ -352,7 +352,7 @@ export const Twap: React.FC = () => {
           return (
             <div className="flex items-center">
               <div
-                className="text-[12px] px-[16px] h-[28px] flex items-center justify-center bg-rb-red-light-1 text-rb-red-default cursor-pointer rounded-[8px]"
+                className="text-12 px-12 h-24 flex items-center justify-center bg-rb-red-light-1 text-rb-red-default cursor-pointer rounded-[3px]"
                 onClick={() =>
                   handleCancelTWAPOrder({
                     coin: record.coin,
@@ -660,6 +660,7 @@ export const Twap: React.FC = () => {
         columns={sliceColumns}
         pagination={false}
         showHeader={false}
+        rowHeight={28}
         rowKey={(slice) =>
           `${record.twapId}-${record.status}-${slice.fill.tid}`
         }
@@ -723,7 +724,7 @@ export const Twap: React.FC = () => {
             defaultSortField="time"
             defaultSortOrder="descend"
             virtual
-            rowHeight={32}
+            rowHeight={28}
           />
         ) : (
           <CommonTable

@@ -244,7 +244,7 @@ export const TradeHistory: React.FC = () => {
       defaultSortField="time"
       defaultSortOrder="descend"
       virtual
-      rowHeight={48}
+      rowHeight={44}
     ></CommonTable>
   );
 };

@@ -327,10 +327,10 @@ export const OpenOrders: React.FC = () => {
               <button
                 type="button"
                 className={clsx(
-                  'bg-rb-neutral-bg-5 rounded-[8px] py-[9px] px-[12px] h-[32px] w-[88px]',
+                  'bg-rb-neutral-bg-5 rounded-[3px] px-12 h-24 flex items-center justify-center',
                   'border border-transparent',
                   'hover:border-rb-brand-default',
-                  'text-[12px] leading-[14px]  text-r-neutral-title-1'
+                  'text-12 text-r-neutral-title-1'
                 )}
                 onClick={() => {
                   handleCancelOrder([{ oid: record.oid, coin: record.coin }]);
