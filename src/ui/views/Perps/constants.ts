@@ -60,7 +60,13 @@ export const HYPE_SEND_ASSET_TOKEN_MAP = {
   USDE: 'USDE:0x2e6d84f2d7ca82e6581e03523e4389f7',
   USDH: 'USDH:0x54e00a5988577cb0b0c9ab0cb6ef7f4b',
 };
-// default 0.0004 HYPE, add 0.0006 buffer for price fluctuation
+// Core->EVM gas is paid in HYPE, but auto-deducted from the transferred
+// stablecoin when the account holds no HYPE, so a withdrawal must reserve it.
+// https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/hyperevm/hypercore-less-than-greater-than-hyperevm-transfers
+export const HYPE_CORE_TO_EVM_GAS = 200_000;
+// Absorbs base-fee swings before the next block executes + HYPE/USD slippage.
+export const HYPE_GAS_RESERVE_BUFFER = 2;
+// Fallback when the live gas estimate is unavailable.
 export const HYPE_GAS_FEE_IN_HYPE = 0.001;
 
 export const HYPE_USDC_TOKEN_ITEM = {

@@ -474,7 +474,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                       {usdValue && isValidAmount
                         ? formatUsdValue(
                             isHypeWithdraw
-                              ? Number(usdValue)
+                              ? Math.max(0, Number(usdValue) - hypeGasFeeUsd)
                               : Math.max(0, Number(usdValue) - 1),
                             BigNumber.ROUND_DOWN
                           )

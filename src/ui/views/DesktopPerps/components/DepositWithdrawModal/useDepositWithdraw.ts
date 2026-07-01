@@ -27,7 +27,6 @@ import {
   WITHDRAW_CHAIN_TOKENS,
   PerpsQuoteAsset,
   getSpotBalanceKey,
-  HYPE_GAS_FEE_IN_HYPE,
 } from '@/ui/views/Perps/constants';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -49,6 +48,7 @@ import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { Account } from '@/background/service/preference';
 import { sortTokenList } from '../../utils';
 import { usePerpsAccount } from '@/ui/views/Perps/hooks/usePerpsAccount';
+import { useHypeWithdrawGasReserve } from '@/ui/views/Perps/hooks/useHypeWithdrawGasReserve';
 import { useTwoStepSwap } from '@/ui/views/Swap/hooks/twoStepSwap';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
@@ -153,13 +153,16 @@ export const useDepositWithdraw = (
       });
   }, [visible, currentPerpsAccount?.address, selectedToken]);
 
-  const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
+  // Re-render only when HYPE price changes, not on every marketDataMap update.
+  const hypePrice = useRabbySelector((state) =>
+    Number(state.perps.marketDataMap?.['HYPE']?.markPx || 0)
+  );
 
-  // Gas fee for every HyperEVM withdrawal
-  const hypeGasFeeUsd = useMemo(() => {
-    const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
-    return new BigNumber(HYPE_GAS_FEE_IN_HYPE).times(hypePrice).toNumber();
-  }, [marketDataMap]);
+  // No-HYPE accounts get the gas auto-deducted from the stablecoin, so reserve it.
+  const hypeGasFeeUsd = useHypeWithdrawGasReserve({
+    enabled: visible && type === 'withdraw',
+    hypePrice,
+  });
 
   // Fetch token info
   const { value: _tokenInfo } = useAsync(async () => {
