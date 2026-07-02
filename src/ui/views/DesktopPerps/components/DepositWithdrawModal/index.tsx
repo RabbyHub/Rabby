@@ -181,24 +181,44 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
       width={400}
       centered
       zIndex={zIndex}
-      bodyStyle={{ padding: 0, height: '520px', maxHeight: '520px' }}
+      bodyStyle={{ padding: 0, height: '540px', maxHeight: '540px' }}
       maskStyle={{
         zIndex: zIndex ?? 1000,
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
-      closeIcon={
-        historyVisible ? null : (
-          <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
-        )
-      }
-      closable={!historyVisible}
+      // closeIcon={
+      //   historyVisible ? null : (
+      //     <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
+      //   )
+      // }
+      closable={false}
       className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-deposit-withdraw-modal"
     >
       <PopupContainer>
-        <div className="bg-rb-neutral-bg-0 h-[520px] flex flex-col relative overflow-hidden desktop-perps-deposit-withdraw-content">
+        <div className="bg-rb-neutral-bg-0 h-[540px] flex flex-col relative overflow-hidden desktop-perps-deposit-withdraw-content">
           <div className="px-20 pt-16 flex-1 pb-24">
-            <div className="flex items-center justify-center gap-8 mb-16 relative">
+            <div className="pb-12 flex items-center justify-between relative">
+              <div
+                className="cursor-pointer p-4 -ml-4 text-r-neutral-title-1 hover:text-r-blue-default"
+                onClick={() => setHistoryVisible(true)}
+              >
+                {pendingCount > 0 ? (
+                  <DepositPending pendingCount={pendingCount} />
+                ) : (
+                  <RcIconHistory className="w-20 h-20" />
+                )}
+              </div>
+              <h3 className="text-[20px] font-medium text-r-neutral-title-1 absolute left-1/2 -translate-x-1/2">
+                {type === 'deposit'
+                  ? t('page.perps.deposit')
+                  : t('page.perps.withdraw')}
+              </h3>
+              <div className="cursor-pointer p-4 -mr-4" onClick={onCancel}>
+                <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
+              </div>
+            </div>
+            {/* <div className="flex items-center justify-center gap-8 mb-16 relative">
               <div
                 className="absolute left-0 top-1/2 -translate-y-1/2 cursor-pointer text-r-neutral-title-1 hover:text-r-blue-default"
                 onClick={() => setHistoryVisible(true)}
@@ -215,18 +235,18 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                   ? t('page.perps.deposit')
                   : t('page.perps.withdraw')}
               </h3>
-            </div>
+            </div> */}
 
             {type === 'withdraw' ? (
               <>
                 {/* Chain selector */}
-                <div className="text-13 text-r-neutral-foot mb-8">
+                <div className="text-15 text-r-neutral-title-1 font-medium mb-8">
                   {t('page.perps.depositAmountPopup.chain')}
                 </div>
                 <div
                   onClick={() => setChainSelectVisible(true)}
                   className={clsx(
-                    'bg-rb-neutral-bg-2 rounded-[8px] w-full flex items-center justify-between px-16 h-[56px] border border-solid border-transparent mb-16',
+                    'bg-rb-neutral-bg-2 rounded-[6px] w-full flex items-center justify-between px-16 h-[56px] border border-solid border-transparent mb-24',
                     'hover:border-rabby-blue-default cursor-pointer'
                   )}
                 >
@@ -250,8 +270,8 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 </div>
 
                 {/* Amount label + balance */}
-                <div className="flex items-center justify-between mb-8">
-                  <span className="text-13 text-r-neutral-foot">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-15 text-r-neutral-title-1 font-medium">
                     {t('page.perps.depositAmountPopup.amount')}
                   </span>
                   <div className="text-13 text-r-neutral-foot flex items-center">
@@ -280,7 +300,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 </div>
 
                 {/* Amount input + token pill */}
-                <div className="bg-rb-neutral-bg-2 rounded-[8px] px-16 py-24 mb-12">
+                <div className="bg-rb-neutral-bg-2 rounded-[6px] px-16 py-24 mb-6">
                   <div className="flex items-center gap-12">
                     <ThousandsNativeInput
                       ref={inputRef}
@@ -302,7 +322,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     <div
                       onClick={() => setTokenSelectVisible(true)}
                       className={clsx(
-                        'flex items-center justify-center gap-6 pl-6 pr-8 h-32 rounded-[8px] border border-solid border-transparent',
+                        'flex items-center justify-center gap-6 pl-6 pr-8 h-32 rounded-[6px] border border-solid border-transparent',
                         'bg-r-neutral-card-2 cursor-pointer shrink-0',
                         'hover:border-rabby-blue-default hover:text-rb-brand-default'
                       )}
@@ -323,13 +343,13 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                 </div>
 
                 {/* Percent buttons */}
-                <div className="flex items-center justify-between gap-8 mb-12">
+                <div className="flex items-center justify-between gap-6 mb-12">
                   {PERCENTAGE_OPTIONS.map((option) => (
                     <button
                       key={option.value}
                       onClick={() => handlePercentageClick(option.value)}
                       className={clsx(
-                        'flex-1 h-[36px] flex items-center justify-center rounded-[8px] text-13 font-medium',
+                        'flex-1 h-[36px] flex items-center justify-center rounded-[6px] text-13 font-medium',
                         'bg-rb-neutral-bg-2 border border-solid border-transparent text-rb-neutral-foot',
                         'hover:border-rabby-blue-default hover:text-rb-brand-default'
                       )}
@@ -347,7 +367,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               </>
             ) : (
               <>
-                <div className="bg-rb-neutral-bg-2 rounded-[8px] px-20 py-20 mb-12">
+                <div className="bg-rb-neutral-bg-2 rounded-[6px] px-20 py-20 mb-12">
                   <div className="flex flex-col items-center justify-center">
                     <ThousandsNativeInput
                       ref={inputRef}
@@ -408,7 +428,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     setTokenSelectVisible(true);
                   }}
                   className={clsx(
-                    'bg-rb-neutral-bg-2 rounded-[8px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
+                    'bg-rb-neutral-bg-2 rounded-[6px] w-full flex items-center justify-between text-13 px-16 h-[48px] border border-solid border-transparent',
                     'hover:border-rabby-blue-default cursor-pointer'
                   )}
                 >
@@ -434,7 +454,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               </>
             )}
 
-            <div className="mt-12 space-y-8">
+            <div className="mt-24 space-y-12">
               {type === 'withdraw' && !amountValidation.errorMessage && (
                 <>
                   <div className="flex items-center justify-between text-13">
@@ -508,7 +528,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     {quoteLoading ? (
                       <Skeleton.Button
                         active
-                        className="h-[16px] rounded-[4px]"
+                        className="h-[16px] rounded-[3px]"
                         style={{ width: 60 }}
                       />
                     ) : (
@@ -524,7 +544,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     {quoteLoading ? (
                       <Skeleton.Button
                         active
-                        className="h-[16px] rounded-[4px]"
+                        className="h-[16px] rounded-[3px]"
                         style={{ width: 60 }}
                       />
                     ) : (
@@ -556,7 +576,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               }
               size="large"
               type="primary"
-              className="w-full h-[44px] rounded-[8px] text-[14px] font-medium"
+              className="w-full h-[44px] rounded-[6px] text-[14px] font-medium"
             >
               {type === 'deposit'
                 ? shouldTwoStep && twoStepIsApprove

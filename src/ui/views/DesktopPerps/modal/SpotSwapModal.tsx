@@ -206,7 +206,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
       zIndex={zIndex}
       closable={!submitting}
       closeIcon={<RcIconCloseCC className="w-14 text-r-neutral-title-1" />}
-      bodyStyle={{ padding: 0, height: '520px', maxHeight: '520px' }}
+      bodyStyle={{ padding: 0, height: '540px', maxHeight: '540px' }}
       maskStyle={{
         zIndex: zIndex ?? 1000,
         backdropFilter: 'blur(8px)',
@@ -217,7 +217,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
       className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-spot-swap-modal"
     >
       <PopupContainer>
-        <div className="bg-rb-neutral-bg-0 h-[520px] flex flex-col relative overflow-hidden">
+        <div className="bg-rb-neutral-bg-0 h-[540px] flex flex-col relative overflow-hidden">
           <div className="px-20 pt-16 pb-20 flex-1 flex flex-col">
             <h3 className="text-[18px] font-medium text-rb-neutral-title-1 text-center mb-20">
               {t('page.perps.PerpsSpotSwap.title')}
@@ -248,10 +248,10 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                       onClick={onDeposit}
                       disabled={submitting}
                       className={clsx(
-                        'inline-flex items-center justify-center w-16 h-16 rounded-[4px]'
+                        'group inline-flex items-center justify-center w-16 h-16 rounded-[4px]'
                       )}
                     >
-                      <RcIconAddDeposit />
+                      <RcIconAddDeposit className="group-hover:[&>path:first-child]:fill-r-blue-default group-hover:[&>path:first-child]:[fill-opacity:1]" />
                     </button>
                   )}
                 </div>

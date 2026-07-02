@@ -54,7 +54,7 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
         {t('page.perpsPro.tradingPanel.availableFunds')}
       </span>
       <div
-        className="text-rb-neutral-body text-12 flex items-center gap-[4px] cursor-pointer"
+        className="group text-rb-neutral-body text-12 flex items-center gap-[4px] cursor-pointer"
         onClick={handleClick}
       >
         {splitNumberByStep(
@@ -65,7 +65,7 @@ export const OrderSideAndFunds: React.FC<AvailableFundsProps> = ({
           /* Quote needs a swap and user has none of it — surface the swap entry. */
           <RcIconSwitchCC className="text-rb-neutral-foot" />
         ) : (
-          <RcIconAddDeposit />
+          <RcIconAddDeposit className="group-hover:[&>path:first-child]:fill-r-blue-default group-hover:[&>path:first-child]:[fill-opacity:1]" />
         )}
       </div>
     </div>
