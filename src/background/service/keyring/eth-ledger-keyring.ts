@@ -17,18 +17,22 @@ import {
   GetAppAndVersionCommand,
   OpenAppDeviceAction,
   isSuccessCommandResult,
-  type DeviceManagementKit,
-  type DeviceSessionId,
-  type ExecuteDeviceActionReturnType,
+} from '@ledgerhq/device-management-kit';
+
+import type {
+  DeviceManagementKit,
+  DeviceSessionId,
+  ExecuteDeviceActionReturnType,
 } from '@ledgerhq/device-management-kit';
 import {
   webHidIdentifier,
   webHidTransportFactory,
 } from '@ledgerhq/device-transport-kit-web-hid';
-import {
-  SignerEthBuilder,
-  type Signature,
-  type SignerEth,
+import { SignerEthBuilder } from '@ledgerhq/device-signer-kit-ethereum';
+
+import type {
+  Signature,
+  SignerEth,
 } from '@ledgerhq/device-signer-kit-ethereum';
 import { firstValueFrom, filter, map, take, timeout } from 'rxjs';
 import { is1559Tx } from '@/utils/transaction';
