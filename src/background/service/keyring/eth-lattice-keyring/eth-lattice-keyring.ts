@@ -32,6 +32,13 @@ class LatticeKeyring extends OldLatticeKeyring {
   appName = 'Rabby';
   static type = keyringType;
   type = keyringType;
+  pairingCredsRefreshed = false;
+
+  consumePairingCredsRefreshed() {
+    const refreshed = this.pairingCredsRefreshed;
+    this.pairingCredsRefreshed = false;
+    return refreshed;
+  }
 
   resetPairingCreds() {
     this.creds = {
@@ -55,7 +62,9 @@ class LatticeKeyring extends OldLatticeKeyring {
 
       this.resetPairingCreds();
       try {
-        return await super.unlock(bypassOnStateData);
+        const result = await super.unlock(bypassOnStateData);
+        this.pairingCredsRefreshed = true;
+        return result;
       } catch (retryErr) {
         this.creds = cachedCreds;
         throw retryErr;

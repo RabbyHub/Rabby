@@ -52,6 +52,8 @@ describe('GridPlus LatticeKeyring', () => {
     expect(parentPrototype.unlock).toHaveBeenCalledTimes(2);
     expect(devicesSeen).toEqual(['old-device', null]);
     expect(keyring.accounts).toEqual([]);
+    expect(keyring.consumePairingCredsRefreshed()).toBe(true);
+    expect(keyring.consumePairingCredsRefreshed()).toBe(false);
   });
 
   it('does not retry when there are no cached pairing creds', async () => {
@@ -64,6 +66,7 @@ describe('GridPlus LatticeKeyring', () => {
     await expect(keyring.unlock()).rejects.toThrow('connector closed');
 
     expect(parentPrototype.unlock).toHaveBeenCalledTimes(1);
+    expect(keyring.consumePairingCredsRefreshed()).toBe(false);
   });
 
   it('restores cached creds when retrying with fresh pairing fails', async () => {
@@ -83,5 +86,6 @@ describe('GridPlus LatticeKeyring', () => {
 
     expect(parentPrototype.unlock).toHaveBeenCalledTimes(2);
     expect(keyring.creds).toEqual(oldCreds);
+    expect(keyring.consumePairingCredsRefreshed()).toBe(false);
   });
 });
