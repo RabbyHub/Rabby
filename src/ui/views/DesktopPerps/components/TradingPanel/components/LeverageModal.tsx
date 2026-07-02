@@ -3,8 +3,7 @@ import { Button, message, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { DesktopPerpsSlider } from '../../DesktopPerpsSlider';
 import clsx from 'clsx';
-import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
-import { RcIconInfoCC } from '@/ui/assets/desktop/common';
+import { SvgIconCross } from 'ui/assets';
 import { LeverageInput } from './LeverageInput';
 
 interface LeverageModalProps {
@@ -102,7 +101,9 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
         zIndex: 1000,
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
-      closeIcon={ModalCloseIcon}
+      closeIcon={
+        <SvgIconCross className="w-14 fill-current text-rb-neutral-body" />
+      }
       destroyOnClose
       className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-margin-mode-modal"
     >
@@ -128,11 +129,7 @@ export const LeverageModal: React.FC<LeverageModalProps> = ({
             }
           />
         </div>
-        <div
-          className={clsx(
-            'border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16'
-          )}
-        >
+        <div className={clsx('px-20 pb-16')}>
           <Button
             loading={isConfirming}
             onClick={handleConfirm}

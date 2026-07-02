@@ -5,6 +5,7 @@ import { MarginMode } from '../../../types';
 import { ModalCloseIcon } from '@/ui/views/DesktopProfile/components/TokenDetailModal';
 import { Checkbox } from '@/ui/component';
 import clsx from 'clsx';
+import { SvgIconCross } from 'ui/assets';
 import { PerpsCheckbox } from './PerpsCheckbox';
 import { formatPerpsCoin } from '../../../utils';
 
@@ -69,7 +70,9 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
         zIndex: 1000,
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
-      closeIcon={ModalCloseIcon}
+      closeIcon={
+        <SvgIconCross className="w-14 fill-current text-rb-neutral-body" />
+      }
       destroyOnClose
       className="modal-support-darkmode desktop-perps-modal-surface  desktop-perps-margin-mode-modal"
     >
@@ -95,6 +98,8 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
             >
               <div className="flex items-start gap-[8px]">
                 <PerpsCheckbox
+                  variant="radio-check"
+                  size={16}
                   checked={selectedMode === MarginMode.CROSS}
                   onChange={() => handleModeSelect(MarginMode.CROSS)}
                 />
@@ -121,6 +126,8 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
             >
               <div className="flex items-start gap-[8px]">
                 <PerpsCheckbox
+                  variant="radio-check"
+                  size={16}
                   checked={selectedMode === MarginMode.ISOLATED}
                   onChange={() => handleModeSelect(MarginMode.ISOLATED)}
                 />
@@ -137,11 +144,7 @@ export const MarginModeModal: React.FC<MarginModeModalProps> = ({
             </div>
           </div>
         </div>
-        <div
-          className={clsx(
-            'border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16'
-          )}
-        >
+        <div className={clsx('px-20 pb-16')}>
           <Button
             loading={isConfirming}
             onClick={handleConfirm}

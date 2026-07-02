@@ -189,12 +189,19 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       supportedChains,
       isWithdrawMode,
       withdrawBalanceMap,
+      // The row's selected-highlight reads selectedToken; without it here the
+      // memoized renderer keeps a stale closure and the highlight lags a click
+      // behind (most visible in withdraw mode, which changes no other dep).
+      selectedToken,
     ]
   );
 
-  // Withdraw uses a tighter sheet so the unified height matches ChainSelectPopup.
-  const popupHeight = isWithdrawMode ? 360 : 460;
-  const listHeight = popupHeight - 66;
+  // Deposit's token list is unbounded → fixed 460 sheet with an internal
+  // virtual-scrolling list. Withdraw is a small fixed set → size the sheet to
+  // its content (header area ≈ 66px) plus a 24px bottom padding, no scroll.
+  const rows = sortedTokenList?.length || 0;
+  const popupHeight = isWithdrawMode ? 66 + rows * 56 + 24 : 460;
+  const listHeight = isWithdrawMode ? rows * 56 : popupHeight - 66;
 
   return (
     <Popup
@@ -212,7 +219,12 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
       push={false}
       getContainer={getContainer}
     >
-      <div className="flex flex-col h-full pt-16 px-16 bg-rb-neutral-bg-2 rounded-t-[16px]">
+      <div
+        className={clsx(
+          'flex flex-col h-full pt-16 px-16 bg-rb-neutral-bg-2 rounded-t-[16px]',
+          isWithdrawMode && 'pb-24'
+        )}
+      >
         {/* Token Select Header */}
         <div className="text-[20px] font-medium text-r-neutral-title-1 text-center mb-16">
           {isWithdrawMode
