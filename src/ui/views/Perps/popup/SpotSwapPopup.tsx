@@ -153,10 +153,10 @@ const Content: React.FC<SpotSwapContentProps> = ({
                 onClick={onDeposit}
                 disabled={submitting}
                 className={clsx(
-                  'inline-flex items-center justify-center w-[16px] h-[16px] rounded-[4px]'
+                  'group inline-flex items-center justify-center w-[16px] h-[16px] rounded-[4px]'
                 )}
               >
-                <RcIconAddDeposit className="w-[14px] h-[14px]" />
+                <RcIconAddDeposit className="w-[14px] h-[14px] group-hover:[&>path:first-child]:fill-r-blue-default group-hover:[&>path:first-child]:[fill-opacity:1]" />
               </button>
             )}
           </div>

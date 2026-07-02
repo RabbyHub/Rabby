@@ -671,16 +671,13 @@ export const Twap: React.FC = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Tabs */}
-      <div
-        className="flex bg-rb-neutral-bg-4 p-[2px] rounded-[8px] ml-12 mt-10"
-        style={{ width: 'fit-content' }}
-      >
+      <div className="flex items-center gap-[6px] ml-12 mt-6 font-medium">
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
+            'px-[12px] py-[6px] text-12 rounded-[6px] cursor-pointer',
             activeTab === 'active'
-              ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
-              : 'text-r-neutral-foot bg-rb-neutral-bg-4'
+              ? 'text-rb-neutral-body bg-rb-neutral-bg-2'
+              : 'text-rb-neutral-foot hover:text-rb-neutral-body'
           )}
           onClick={() => setActiveTab('active')}
         >
@@ -688,10 +685,10 @@ export const Twap: React.FC = () => {
         </div>
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
+            'px-[12px] py-[6px] text-12 rounded-[6px] cursor-pointer',
             activeTab === 'history'
-              ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
-              : 'text-r-neutral-foot bg-rb-neutral-bg-4'
+              ? 'text-rb-neutral-body bg-rb-neutral-bg-2'
+              : 'text-rb-neutral-foot hover:text-rb-neutral-body'
           )}
           onClick={() => setActiveTab('history')}
         >
@@ -699,10 +696,10 @@ export const Twap: React.FC = () => {
         </div>
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
+            'px-[12px] py-[6px] text-12 rounded-[6px] cursor-pointer',
             activeTab === 'filled'
-              ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
-              : 'text-r-neutral-foot bg-rb-neutral-bg-4'
+              ? 'text-rb-neutral-body bg-rb-neutral-bg-2'
+              : 'text-rb-neutral-foot hover:text-rb-neutral-body'
           )}
           onClick={() => setActiveTab('filled')}
         >

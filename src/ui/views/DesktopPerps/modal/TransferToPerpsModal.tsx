@@ -191,7 +191,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
       zIndex={zIndex}
       closable={!submitting}
       closeIcon={<RcIconCloseCC className="w-14 text-rb-neutral-title-1" />}
-      bodyStyle={{ padding: 0, height: '520px', maxHeight: '520px' }}
+      bodyStyle={{ padding: 0, height: '540px', maxHeight: '540px' }}
       maskStyle={{
         zIndex: zIndex ?? 1000,
         backdropFilter: 'blur(8px)',
@@ -202,7 +202,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
       className="modal-support-darkmode desktop-perps-modal-surface desktop-perps-transfer-to-perps-modal"
     >
       <PopupContainer>
-        <div className="bg-rb-neutral-bg-0 h-[520px] flex flex-col relative overflow-hidden desktop-perps-transfer-to-perps-content">
+        <div className="bg-rb-neutral-bg-0 h-[540px] flex flex-col relative overflow-hidden desktop-perps-transfer-to-perps-content">
           <div className="px-20 pt-16 pb-20 flex-1 flex flex-col">
             <h3 className="text-[18px] font-medium text-rb-neutral-title-1 text-center mb-20">
               {t('page.perps.PerpsTransferToPerps.title')}
