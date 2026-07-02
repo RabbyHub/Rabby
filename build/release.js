@@ -170,7 +170,9 @@ async function bundle() {
   updateManifestVersion(version, 'chrome-mv3', 'manifest.dev.json');
   updateManifestVersion(version, 'chrome-mv2');
   updateManifestVersion(version, 'firefox-mv2');
-  shell.env['sourcemap'] = true;
+  if (!isDebug) {
+    shell.env['sourcemap'] = true;
+  }
   if (isMV3) {
     execOrThrow(`cross-env VERSION=${version} yarn ${buildStr}`);
   } else {
@@ -183,6 +185,8 @@ async function bundle() {
     );
     moveSourceMapsToTmp(distDir, tmpSourceMapDir);
   }
+  shell.rm('-rf', './dist/*.js.map');
+  shell.rm('-rf', './dist-mv2/*.js.map');
   return [version, isDebug, isRelease, isMV3];
 }
 async function packed([version, isDebug, , isMV3]) {
