@@ -66,10 +66,88 @@ const HD_PATH_TYPE = {
 };
 
 const ETH_APP_NAME = 'Ethereum';
+const LEDGER_ERROR_KEYS = [
+  '_tag',
+  'name',
+  'message',
+  'statusCode',
+  'statusText',
+  'errorCode',
+  'reason',
+  'code',
+  'originalError',
+  'cause',
+];
 
 let dmk: DeviceManagementKit | null = null;
 let sessionId: DeviceSessionId | null = null;
 let ethSigner: SignerEth | null = null;
+
+const stringifyLedgerErrorValue = (value: unknown, key?: string): string => {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') {
+    return key?.toLowerCase().includes('code')
+      ? `0x${value.toString(16)}`
+      : String(value);
+  }
+  if (typeof value === 'boolean') return String(value);
+  if (value instanceof Error) return value.message || value.name;
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => stringifyLedgerErrorValue(item))
+      .filter(Boolean)
+      .join(' ');
+  }
+  if (typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    const parts = LEDGER_ERROR_KEYS.map((item) =>
+      stringifyLedgerErrorValue(record[item], item)
+    ).filter(Boolean);
+    if (parts.length) return [...new Set(parts)].join(' ');
+    const message = String(value);
+    if (message && message !== '[object Object]') return message;
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return '';
+    }
+  }
+  return String(value);
+};
+
+const normalizeLedgerStatusWord = (value: unknown) => {
+  if (typeof value === 'number') return value.toString(16);
+  if (typeof value === 'string')
+    return value.replace(/^0x/iu, '').toLowerCase();
+  return '';
+};
+
+const getLedgerStatusWord = (err: unknown) => {
+  const value = err as any;
+  const code = normalizeLedgerStatusWord(
+    value?.statusCode ??
+      value?.errorCode ??
+      value?.originalError?.statusCode ??
+      value?.originalError?.errorCode
+  );
+
+  if (code) return code;
+  return value?._tag === 'RefusedByUserDAError' ? '6985' : '';
+};
+
+export const getLedgerErrorMessage = (err: unknown, fallback: string) =>
+  [stringifyLedgerErrorValue(err) || fallback, getLedgerStatusWord(err)]
+    .filter(Boolean)
+    .reduce((message, statusWord) => {
+      const normalizedStatus = `0x${statusWord}`;
+      return message.toLowerCase().includes(normalizedStatus)
+        ? message
+        : `${message} ${normalizedStatus}`;
+    });
+
+const toLedgerError = (err: unknown, fallback: string) =>
+  new Error(getLedgerErrorMessage(err, fallback));
 
 const getDmk = () => {
   if (!dmk) {
@@ -98,7 +176,10 @@ const runDeviceAction = async <Output>(
           case DeviceActionStatus.Completed:
             return state.output;
           case DeviceActionStatus.Error:
-            throw state.error;
+            throw toLedgerError(
+              state.error,
+              'Ledger: Unknown device action error'
+            );
           case DeviceActionStatus.Stopped:
             throw new Error('Ledger: Operation stopped');
           default:
@@ -451,8 +532,9 @@ class LedgerBridgeKeyring {
         throw new Error('Ledger: The transaction signature is not valid');
       }
     } catch (err: any) {
-      throw new Error(
-        err.toString() || 'Ledger: Unknown error while signing transaction'
+      throw toLedgerError(
+        err,
+        'Ledger: Unknown error while signing transaction'
       );
     }
   }
@@ -487,9 +569,7 @@ class LedgerBridgeKeyring {
       }
       return signature;
     } catch (e: any) {
-      throw new Error(
-        e.toString() || 'Ledger: Unknown error while signing message'
-      );
+      throw toLedgerError(e, 'Ledger: Unknown error while signing message');
     }
   }
 
@@ -541,9 +621,7 @@ class LedgerBridgeKeyring {
       }
       return signature;
     } catch (e: any) {
-      throw new Error(
-        e.toString() || 'Ledger: Unknown error while signing message'
-      );
+      throw toLedgerError(e, 'Ledger: Unknown error while signing message');
     }
   }
 
