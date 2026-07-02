@@ -1,7 +1,7 @@
-import {
-  DeviceManagementKitBuilder,
-  type DeviceSessionId,
-} from '@ledgerhq/device-management-kit';
+import { DeviceManagementKitBuilder } from '@ledgerhq/device-management-kit';
+
+import type { DeviceSessionId } from '@ledgerhq/device-management-kit';
+
 import {
   webHidIdentifier,
   webHidTransportFactory,
