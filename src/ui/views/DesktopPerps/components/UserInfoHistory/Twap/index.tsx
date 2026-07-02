@@ -671,7 +671,7 @@ export const Twap: React.FC = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Tabs */}
-      <div className="flex items-center gap-[6px] ml-12 mt-6 font-medium">
+      <div className="flex items-center gap-[6px] ml-12 my-6 font-medium">
         <div
           className={clsx(
             'px-[12px] py-[6px] text-12 rounded-[6px] cursor-pointer',

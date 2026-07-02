@@ -44,7 +44,7 @@ const CoinOption = ({ coin }: { coin: PerpsQuoteAsset }) => {
   const Icon = COIN_ICON_MAP[coin];
   return (
     <div className="flex items-center text-rb-neutral-title-1 gap-8">
-      <Icon className="w-16 h-16" />
+      <Icon className="w-[20px] h-[20px]" />
       <span>{coin}</span>
     </div>
   );
@@ -171,27 +171,64 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
 
   const activeSelectedCoin = coinSelectFor === 'to' ? toCoin : fromCoin;
 
-  const renderCoinPill = (coin: PerpsQuoteAsset, side: 'from' | 'to') => {
+  const renderCoinButton = (
+    coin: PerpsQuoteAsset,
+    side: 'from' | 'to',
+    variant: 'row' | 'pill'
+  ) => {
     const locked = !!disableSwitch;
+    const Icon = COIN_ICON_MAP[coin];
+    const onClick = () => {
+      if (!locked && !submitting) setCoinSelectFor(side);
+    };
+
+    if (variant === 'row') {
+      // "Swap to": full-width bg-2 row, coin on the left, chevron on the right.
+      return (
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={locked || submitting}
+          className={clsx(
+            'w-full flex items-center justify-between',
+            'bg-rb-neutral-bg-2 rounded-[6px] px-16 py-[12px]',
+            'border border-solid border-transparent',
+            !(locked || submitting) && 'hover:border-rb-brand-default',
+            'disabled:cursor-default'
+          )}
+        >
+          <div className="flex items-center gap-6">
+            <Icon className="w-[20px] h-[20px]" />
+            <span className="text-13 text-rb-neutral-title-1">{coin}</span>
+          </div>
+          {!locked && (
+            <RcIconArrowDownCC className="w-[14px] h-[14px] text-rb-neutral-secondary" />
+          )}
+        </button>
+      );
+    }
+
+    // "From": compact card-2 pill sitting inside the amount box.
     return (
       <button
         type="button"
-        onClick={() => {
-          if (!locked && !submitting) setCoinSelectFor(side);
-        }}
+        onClick={onClick}
+        disabled={locked || submitting}
         className={clsx(
-          'inline-flex items-center justify-between gap-6',
-          'px-10 h-32 rounded-[6px]',
-          'border border-solid border-rb-neutral-line',
-          'bg-transparent',
-          'text-[14px] leading-[16px] font-medium text-rb-neutral-title-1',
+          'shrink-0 flex items-center gap-6',
+          'bg-r-neutral-card-2 rounded-[6px] p-[6px]',
+          'border border-solid border-transparent',
           !(locked || submitting) && 'hover:border-rb-brand-default',
           'disabled:cursor-default'
         )}
-        disabled={locked || submitting}
       >
-        <CoinOption coin={coin} />
-        {!locked && <RcIconArrowDownCC className="text-rb-neutral-secondary" />}
+        <Icon className="w-[20px] h-[20px]" />
+        <span className="text-15 leading-[20px] text-rb-neutral-title-1">
+          {coin}
+        </span>
+        {!locked && (
+          <RcIconArrowDownCC className="w-[20px] h-[20px] text-rb-neutral-secondary" />
+        )}
       </button>
     );
   };
@@ -218,25 +255,31 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
     >
       <PopupContainer>
         <div className="bg-rb-neutral-bg-0 h-[540px] flex flex-col relative overflow-hidden">
-          <div className="px-20 pt-16 pb-20 flex-1 flex flex-col">
-            <h3 className="text-[18px] font-medium text-rb-neutral-title-1 text-center mb-20">
+          {/* Header */}
+          <div className="shrink-0 h-[56px] flex items-center justify-center">
+            <h3 className="m-0 text-[20px] font-medium text-rb-neutral-title-1 text-center">
               {t('page.perps.PerpsSpotSwap.title')}
             </h3>
+          </div>
 
-            <div className="mb-12 bg-rb-neutral-bg-2 rounded-[12px] px-16 py-14 flex items-center justify-between">
-              <span className="text-rb-neutral-title-1 text-15 font-medium">
+          {/* Body */}
+          <div className="flex-1 flex flex-col gap-[24px] px-20 py-[12px] overflow-hidden">
+            {/* Swap to */}
+            <div className="flex flex-col gap-6">
+              <span className="text-15 font-medium text-rb-neutral-title-1">
                 {t('page.perps.PerpsSpotSwap.to')}
               </span>
-              {renderCoinPill(toCoin, 'to')}
+              {renderCoinButton(toCoin, 'to', 'row')}
             </div>
 
-            <div className="mb-12 bg-rb-neutral-bg-2 rounded-[12px] px-16 pt-14 pb-16">
-              <div className="flex justify-between items-center mb-10">
-                <span className="text-rb-neutral-title-1 text-15 font-medium">
+            {/* From */}
+            <div className="flex flex-col gap-6">
+              <div className="flex items-center justify-between">
+                <span className="text-15 font-medium text-rb-neutral-title-1">
                   {t('page.perps.PerpsSpotSwap.from')}
                 </span>
-                <div className="flex items-center gap-6">
-                  <span className="text-rb-neutral-foot text-12">
+                <div className="flex items-center gap-4">
+                  <span className="text-13 text-rb-neutral-foot">
                     {t('page.perps.PerpsSpotSwap.balance')}:{' '}
                     {fromBalanceBN
                       .decimalPlaces(4, BigNumber.ROUND_DOWN)
@@ -256,7 +299,8 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-8">
+
+              <div className="bg-rb-neutral-bg-2 rounded-[6px] px-[18px] py-[24px] flex items-center justify-between gap-8">
                 <ThousandsInput
                   bordered={false}
                   size="large"
@@ -267,38 +311,44 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                     if (/^\d*\.?\d*$/.test(v)) setAmount(v);
                   }}
                   placeholder="0"
-                  className="flex-1 p-0 text-[28px] leading-[34px] font-medium text-rb-neutral-title-1"
+                  className="flex-1 p-0 text-[28px] leading-[36px] font-medium text-rb-neutral-title-1"
                   disabled={submitting}
                 />
-                {renderCoinPill(fromCoin, 'from')}
+                {renderCoinButton(fromCoin, 'from', 'pill')}
+              </div>
+
+              {/* Percent shortcuts */}
+              <div className="flex gap-6">
+                {[0.25, 0.5, 0.75, 1].map((p) => (
+                  <button
+                    key={p}
+                    onClick={() => handlePercent(p)}
+                    className={clsx(
+                      'flex-1 h-[36px] rounded-[6px] text-13',
+                      'bg-rb-neutral-bg-2 border border-solid border-transparent',
+                      'text-rb-neutral-body',
+                      'hover:border-rb-brand-default hover:text-rb-brand-default',
+                      'disabled:opacity-60 disabled:cursor-not-allowed'
+                    )}
+                    disabled={submitting}
+                  >
+                    {p === 1
+                      ? t('page.perps.PerpsSpotSwap.max')
+                      : `${p * 100}%`}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <div className="flex gap-8 mb-16">
-              {[0.25, 0.5, 0.75, 1].map((p) => (
-                <button
-                  key={p}
-                  onClick={() => handlePercent(p)}
-                  className={clsx(
-                    'flex-1 h-[36px] rounded-[8px] text-13 font-medium',
-                    'bg-rb-neutral-bg-2 border border-solid border-transparent',
-                    'text-rb-neutral-foot',
-                    'hover:border-rb-brand-default hover:text-rb-brand-default',
-                    'disabled:opacity-60 disabled:cursor-not-allowed'
-                  )}
-                  disabled={submitting}
-                >
-                  {p === 1 ? t('page.perps.PerpsSpotSwap.max') : `${p * 100}%`}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex justify-between items-center text-13">
+            {/* Est. receive */}
+            <div className="flex justify-between items-center">
               {errorMessage ? (
-                <span className="text-r-red-default">{errorMessage}</span>
+                <span className="text-13 text-r-red-default">
+                  {errorMessage}
+                </span>
               ) : (
                 <>
-                  <span className="text-rb-neutral-foot gap-4 flex items-center">
+                  <span className="text-13 text-rb-neutral-foot gap-4 flex items-center">
                     {t('page.perps.PerpsSpotSwap.estReceive')}
                     <TooltipWithMagnetArrow
                       overlayClassName="rectangle w-[max-content]"
@@ -308,22 +358,21 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
                       <RcIconInfo className="text-rb-neutral-foot relative" />
                     </TooltipWithMagnetArrow>
                   </span>
-                  <span className="text-rb-neutral-title-1 font-medium">
+                  <span className="text-13 text-rb-neutral-body">
                     {receiveAmountStr} {toCoin}
                   </span>
                 </>
               )}
             </div>
-
-            <div className="flex-1" />
           </div>
 
-          <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+          {/* Footer */}
+          <div className="shrink-0 border-t-[0.5px] border-solid border-rb-neutral-line px-20 py-16">
             <Button
               block
               size="large"
               type="primary"
-              className="h-[44px] rounded-[8px] text-15 font-medium"
+              className="h-[48px] rounded-[6px] text-15 font-medium"
               disabled={!canSubmit}
               loading={submitting}
               onClick={handleSwap}

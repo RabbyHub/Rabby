@@ -23,11 +23,16 @@ export const ChainSelectPopup: React.FC<ChainSelectPopupProps> = ({
   const { t } = useTranslation();
   const { getContainer } = usePopupContainer();
 
+  // Small fixed chain set → size the sheet to its content (header area ≈ 66px)
+  // plus a 24px bottom padding, instead of a fixed 360.
+  const rows = WITHDRAW_CHAINS.length;
+  const popupHeight = 66 + rows * 48 + (rows - 1) * 6 + 24;
+
   return (
     <Popup
       visible={visible}
       onCancel={onCancel}
-      height={360}
+      height={popupHeight}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
@@ -39,7 +44,7 @@ export const ChainSelectPopup: React.FC<ChainSelectPopupProps> = ({
       push={false}
       getContainer={getContainer}
     >
-      <div className="flex flex-col h-full pt-16 px-16 bg-rb-neutral-bg-2 rounded-t-[16px]">
+      <div className="flex flex-col h-full pt-16 px-16 pb-24 bg-rb-neutral-bg-2 rounded-t-[16px]">
         <div className="text-[20px] font-medium text-r-neutral-title-1 text-center mb-16">
           {t('page.perps.selectChainToWithdraw')}
         </div>

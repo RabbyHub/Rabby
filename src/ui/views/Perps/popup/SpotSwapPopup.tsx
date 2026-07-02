@@ -65,7 +65,7 @@ const Content: React.FC<SpotSwapContentProps> = ({
     const Icon = QUOTE_ASSET_ICON_MAP[coin];
     return (
       <div className="flex items-center gap-8 text-r-neutral-title-1">
-        <Icon className="w-16 h-16" />
+        <Icon className="w-20 h-20" />
         <span>{coin}</span>
       </div>
     );

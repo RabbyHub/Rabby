@@ -11,7 +11,6 @@ import {
   HYPE_SEND_ASSET_TOKEN_MAP,
   getSpotBalanceKey,
 } from '@/ui/views/Perps/constants';
-import { QUOTE_ASSET_ICON_MAP } from '@/ui/views/Perps/components/quoteAssetIcons';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useMemoizedFn } from 'ahooks';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
