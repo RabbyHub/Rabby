@@ -4781,6 +4781,9 @@ export class WalletController extends BaseController {
 
     if (needUnlock) {
       await keyring?.unlock?.();
+      if (!isNew && type === KEYRING_CLASS.HARDWARE.GRIDPLUS) {
+        await keyringService.persistAllKeyrings();
+      }
     }
 
     return stashKeyringId;
