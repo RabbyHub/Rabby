@@ -33,6 +33,36 @@ class LatticeKeyring extends OldLatticeKeyring {
   static type = keyringType;
   type = keyringType;
 
+  resetPairingCreds() {
+    this.creds = {
+      deviceID: null,
+      password: null,
+      endpoint: null,
+    };
+    this.sdkSession = null;
+  }
+
+  async unlock(bypassOnStateData = false) {
+    const hadCreds = this._hasCreds();
+    const cachedCreds = hadCreds ? { ...this.creds } : null;
+
+    try {
+      return await super.unlock(bypassOnStateData);
+    } catch (err) {
+      if (!hadCreds) {
+        throw err;
+      }
+
+      this.resetPairingCreds();
+      try {
+        return await super.unlock(bypassOnStateData);
+      } catch (retryErr) {
+        this.creds = cachedCreds;
+        throw retryErr;
+      }
+    }
+  }
+
   async _getCreds() {
     if (!isManifestV3) {
       return super._getCreds();
