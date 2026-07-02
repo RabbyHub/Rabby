@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPageWithButton } from 'ui/component';
 import { hasConnectedLedgerDevice } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
@@ -9,6 +8,7 @@ import './style.less';
 import { query2obj } from '@/ui/utils/url';
 import { LedgerBanner } from './LedgerBanner';
 import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
+import { isLedgerWebHIDSupported } from '@/ui/utils/ledger-dmk';
 
 const LedgerConnect = () => {
   const history = useHistory();
@@ -19,7 +19,7 @@ const LedgerConnect = () => {
   const isReconnect = !!qs.reconnect;
 
   const onSubmit = async () => {
-    const supportWebHID = await TransportWebHID.isSupported();
+    const supportWebHID = isLedgerWebHIDSupported();
     const hasConnectedLedger = await hasConnectedLedgerDevice();
 
     if (isReconnect) {
