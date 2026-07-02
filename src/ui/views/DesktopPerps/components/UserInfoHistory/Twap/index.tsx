@@ -352,7 +352,7 @@ export const Twap: React.FC = () => {
           return (
             <div className="flex items-center">
               <div
-                className="text-[12px] px-[16px] h-[28px] flex items-center justify-center bg-rb-red-light-1 text-rb-red-default cursor-pointer rounded-[8px]"
+                className="text-12 px-12 h-24 flex items-center justify-center bg-rb-red-light-1 text-rb-red-default cursor-pointer rounded-[3px]"
                 onClick={() =>
                   handleCancelTWAPOrder({
                     coin: record.coin,
@@ -660,6 +660,7 @@ export const Twap: React.FC = () => {
         columns={sliceColumns}
         pagination={false}
         showHeader={false}
+        rowHeight={28}
         rowKey={(slice) =>
           `${record.twapId}-${record.status}-${slice.fill.tid}`
         }
@@ -670,16 +671,13 @@ export const Twap: React.FC = () => {
   return (
     <div className="flex flex-col h-full">
       {/* Tabs */}
-      <div
-        className="flex bg-rb-neutral-bg-4 p-[2px] rounded-[8px] ml-12 mt-10"
-        style={{ width: 'fit-content' }}
-      >
+      <div className="flex items-center gap-[6px] ml-12 my-6 font-medium">
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
+            'px-[12px] py-[6px] text-12 rounded-[6px] cursor-pointer',
             activeTab === 'active'
-              ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
-              : 'text-r-neutral-foot bg-rb-neutral-bg-4'
+              ? 'text-rb-neutral-body bg-rb-neutral-bg-2'
+              : 'text-rb-neutral-foot hover:text-rb-neutral-body'
           )}
           onClick={() => setActiveTab('active')}
         >
@@ -687,10 +685,10 @@ export const Twap: React.FC = () => {
         </div>
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
+            'px-[12px] py-[6px] text-12 rounded-[6px] cursor-pointer',
             activeTab === 'history'
-              ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
-              : 'text-r-neutral-foot bg-rb-neutral-bg-4'
+              ? 'text-rb-neutral-body bg-rb-neutral-bg-2'
+              : 'text-rb-neutral-foot hover:text-rb-neutral-body'
           )}
           onClick={() => setActiveTab('history')}
         >
@@ -698,10 +696,10 @@ export const Twap: React.FC = () => {
         </div>
         <div
           className={clsx(
-            'px-[8px] py-[6px] text-[12px]  cursor-pointer',
+            'px-[12px] py-[6px] text-12 rounded-[6px] cursor-pointer',
             activeTab === 'filled'
-              ? 'text-rb-neutral-body bg-rb-neutral-bg-1 rounded-[8px]'
-              : 'text-r-neutral-foot bg-rb-neutral-bg-4'
+              ? 'text-rb-neutral-body bg-rb-neutral-bg-2'
+              : 'text-rb-neutral-foot hover:text-rb-neutral-body'
           )}
           onClick={() => setActiveTab('filled')}
         >
@@ -723,7 +721,7 @@ export const Twap: React.FC = () => {
             defaultSortField="time"
             defaultSortOrder="descend"
             virtual
-            rowHeight={32}
+            rowHeight={28}
           />
         ) : (
           <CommonTable

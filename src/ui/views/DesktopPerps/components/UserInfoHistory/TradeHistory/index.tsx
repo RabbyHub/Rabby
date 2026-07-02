@@ -67,7 +67,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
-        width: '10%',
+        width: '13%',
         sorter: (a, b) => a.coin.localeCompare(b.coin),
         render: (_, record) => {
           return (
@@ -149,7 +149,7 @@ export const TradeHistory: React.FC = () => {
         key: 'tradeValue',
         dataIndex: 'tradeValue',
         // width: 180,
-        width: '15%',
+        width: '14%',
         sorter: (a, b) =>
           new BigNumber(a.px).times(new BigNumber(a.sz).abs()).toNumber() -
           new BigNumber(b.px).times(new BigNumber(b.sz).abs()).toNumber(),
@@ -176,7 +176,7 @@ export const TradeHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.fee'),
         key: 'fee',
         dataIndex: 'fee',
-        width: '10%',
+        width: '8%',
         sorter: (a, b) => Number(a.fee) - Number(b.fee),
         render: (_, record) => {
           return (
@@ -244,7 +244,7 @@ export const TradeHistory: React.FC = () => {
       defaultSortField="time"
       defaultSortOrder="descend"
       virtual
-      rowHeight={48}
+      rowHeight={44}
     ></CommonTable>
   );
 };

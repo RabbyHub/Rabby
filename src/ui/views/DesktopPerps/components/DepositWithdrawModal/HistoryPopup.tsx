@@ -127,7 +127,7 @@ export const HistoryPopup: React.FC<HistoryPopupProps> = ({
   }
 
   return (
-    <div className="absolute inset-0 bg-r-neutral-bg-2 z-10 flex flex-col">
+    <div className="absolute inset-0 bg-rb-neutral-bg-0 z-10 flex flex-col">
       {/* Header */}
       <div className="px-20 pt-16 pb-12 flex items-center justify-between relative">
         <div className="cursor-pointer p-4 -ml-4" onClick={onClose}>
@@ -148,7 +148,7 @@ export const HistoryPopup: React.FC<HistoryPopupProps> = ({
             <HistoryAccountItemRow key={`${item.hash}-${index}`} data={item} />
           ))
         ) : (
-          <div className="flex items-center justify-center gap-8 bg-r-neutral-bg-1 rounded-[8px] p-20 h-[120px] flex-col">
+          <div className="flex items-center justify-center gap-8 bg-rb-neutral-bg-2 rounded-[8px] p-20 h-[120px] flex-col">
             <ThemeIcon src={RcIconNoSrc} className="w-24 h-24" />
             <div className="text-13 text-r-neutral-foot">
               {t('page.gasAccount.history.noHistory')}
