@@ -102,6 +102,7 @@ export interface TradingViewLineTagInfo {
     orderType?: string;
     triggerType?: string;
     triggerCondition?: string;
+    tpslType?: string;
     price?: number;
     limitPx?: number | string;
     triggerPx?: number | string;
@@ -110,6 +111,10 @@ export interface TradingViewLineTagInfo {
     origSz?: string | number;
     isTrigger?: boolean;
     isTwap?: boolean;
+    isPositionTpsl?: boolean;
+    reduceOnly?: boolean;
+    expectedPnl?: string | number;
+    expectedPnlText?: string;
   }>;
   position?: {
     entryPrice?: number;
@@ -430,6 +435,29 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     if (!iframeRef.current?.contentWindow) return;
     iframeRef.current.contentWindow.postMessage(message, iframeOrigin);
   };
+
+  useEffect(() => {
+    const handleDocumentPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      const iframe = iframeRef.current;
+      if (iframe && target instanceof Node && iframe.contains(target)) return;
+
+      postToIframe({
+        channel: BRIDGE_CHANNEL,
+        kind: 'command',
+        command: 'closeDisplayMenu',
+      });
+    };
+
+    document.addEventListener('pointerdown', handleDocumentPointerDown, true);
+    return () => {
+      document.removeEventListener(
+        'pointerdown',
+        handleDocumentPointerDown,
+        true
+      );
+    };
+  }, [iframeOrigin]);
 
   const stateRef = useRef({
     coin,
