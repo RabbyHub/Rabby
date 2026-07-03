@@ -5029,7 +5029,8 @@
     },
     "screenshotModal": {
       "title": "Знімок екрана для відгуку",
-      "placeholder": "Опишіть проблему"
+      "placeholder": "Опишіть проблему",
+      "placeholderRequired": "Опишіть проблему (обов'язково)"
     },
     "feedbackPopup": {
       "title": "Відповідь від служби підтримки Rabby",

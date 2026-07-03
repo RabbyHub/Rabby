@@ -5014,7 +5014,8 @@
     },
     "screenshotModal": {
       "title": "Ảnh chụp màn hình để phản hồi",
-      "placeholder": "Mô tả vấn đề"
+      "placeholder": "Mô tả vấn đề",
+      "placeholderRequired": "Mô tả vấn đề (bắt buộc)"
     },
     "feedbackPopup": {
       "title": "Phản hồi từ Hỗ trợ Rabby",

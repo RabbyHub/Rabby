@@ -5014,7 +5014,8 @@
     },
     "screenshotModal": {
       "title": "Captura de ecrã para feedback",
-      "placeholder": "Descreva o problema"
+      "placeholder": "Descreva o problema",
+      "placeholderRequired": "Descreva o problema (obrigatório)"
     },
     "feedbackPopup": {
       "title": "Resposta do Suporte Rabby",

@@ -5014,7 +5014,8 @@
     },
     "screenshotModal": {
       "title": "Tangkapan layar untuk masukan",
-      "placeholder": "Jelaskan masalahnya"
+      "placeholder": "Jelaskan masalahnya",
+      "placeholderRequired": "Jelaskan masalah (wajib)"
     },
     "feedbackPopup": {
       "title": "Respons dari Dukungan Rabby",
