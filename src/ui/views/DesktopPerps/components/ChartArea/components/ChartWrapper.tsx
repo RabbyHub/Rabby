@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbySelector } from '@/ui/store';
-import { splitNumberByStep } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import {
   normalizeTradingViewLocale,
   TradingViewIframeChart,
@@ -45,6 +45,36 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
     const currentPosition = clearinghouseState?.assetPositions.find(
       (item) => item.position.coin === coin
     )?.position;
+    const formatSignedUsdValue = (value?: BigNumber) => {
+      if (!value || !value.isFinite()) return '';
+
+      const prefix = value.gt(0) ? '+' : value.lt(0) ? '-' : '';
+      return `${prefix}${formatUsdValue(value.abs().toFixed())}`;
+    };
+    const getPositionTpslExpectedPnl = (
+      triggerPx?: string | number
+    ): BigNumber | undefined => {
+      if (!currentPosition) return undefined;
+
+      const triggerPrice = new BigNumber(triggerPx || 0);
+      const entryPrice = new BigNumber(currentPosition.entryPx || 0);
+      const signedSize = new BigNumber(currentPosition.szi || 0);
+      if (
+        !triggerPrice.isFinite() ||
+        triggerPrice.lte(0) ||
+        !entryPrice.isFinite() ||
+        entryPrice.lte(0) ||
+        !signedSize.isFinite() ||
+        signedSize.isZero()
+      ) {
+        return undefined;
+      }
+
+      const size = signedSize.abs();
+      return signedSize.gt(0)
+        ? triggerPrice.minus(entryPrice).times(size)
+        : entryPrice.minus(triggerPrice).times(size);
+    };
     const formatSize = (size?: string | number, price?: string | number) => {
       const sizeBn = new BigNumber(size || 0).abs();
       if (sizeBn.isZero()) return '';
@@ -121,20 +151,33 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
       })
       .map((order) => {
         const linePrice = getOrderLinePrice(order);
+        const expectedPnl = order.isPositionTpsl
+          ? getPositionTpslExpectedPnl(linePrice)
+          : undefined;
 
         return {
           id: order.oid,
           oid: order.oid,
           side: order.side,
           orderType: order.orderType,
+          tpslType:
+            order.orderType === 'Take Profit Market'
+              ? 'tp'
+              : order.orderType === 'Stop Market'
+              ? 'sl'
+              : undefined,
           triggerCondition: order.triggerCondition,
           isTrigger: order.isTrigger,
+          isPositionTpsl: order.isPositionTpsl,
+          reduceOnly: order.reduceOnly,
           price: linePrice,
           limitPx: order.limitPx,
           triggerPx: order.triggerPx,
           sz: order.sz,
           origSz: order.origSz,
           size: formatSize(getOrderSize(order), linePrice),
+          expectedPnl: expectedPnl?.toFixed(),
+          expectedPnlText: formatSignedUsdValue(expectedPnl),
         };
       });
     const liquidationPrice = currentPosition?.liquidationPx;
