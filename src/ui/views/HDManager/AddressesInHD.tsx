@@ -112,9 +112,6 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
           })
         );
 
-        if (exitRef.current) {
-          return;
-        }
         setAccountList((prev) => [...prev, ...accountsWithAliasName]);
         setLoading(false);
 
@@ -126,18 +123,13 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
         }
       }
     } catch (e) {
-      if (!exitRef.current) {
-        message.error({
-          content: getMessageContentFromError(e),
-          key: 'ledger-error',
-        });
-        exitRef.current = true;
-      }
+      message.error({
+        content: getMessageContentFromError(e),
+        key: 'ledger-error',
+      });
+      exitRef.current = true;
     }
     stoppedRef.current = true;
-    if (exitRef.current) {
-      return;
-    }
     // maybe stop by manual, so we need restart
     if (i !== index + maxCountRef.current) {
       runGetAccounts();
@@ -162,7 +154,6 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
   React.useEffect(() => {
     return () => {
       exitRef.current = true;
-      stoppedRef.current = true;
     };
   }, []);
 
