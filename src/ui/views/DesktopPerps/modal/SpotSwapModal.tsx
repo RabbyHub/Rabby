@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import clsx from 'clsx';
-import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import { SvgIconCross } from '@/ui/assets';
 import {
   PopupContainer,
   usePopupContainer,
@@ -70,7 +70,9 @@ const CoinSelectPopup: React.FC<{
       height={sheetHeight}
       isSupportDarkMode
       closable
-      closeIcon={<RcIconCloseCC className="w-14 text-r-neutral-title-1" />}
+      closeIcon={
+        <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
+      }
       keyboard={false}
       push={false}
       getContainer={getContainer}
@@ -78,9 +80,9 @@ const CoinSelectPopup: React.FC<{
       // antd's default body padding. Wrapping the children in another bg/padding
       // div would double both (old --r-neutral-bg-1 rim + 24px + 16px padding).
       bodyStyle={{ padding: 0 }}
-      drawerStyle={{ background: 'var(--rb-neutral-bg-0)' }}
+      // drawerStyle={{ background: 'var(--rb-neutral-bg-0)' }}
     >
-      <div className="flex flex-col h-full pt-16 px-16">
+      <div className="flex flex-col h-full pt-16 px-16 bg-rb-neutral-bg-2 rounded-t-[16px]">
         <div className="text-[20px] font-medium text-rb-neutral-title-1 text-center mb-16">
           {t('component.TokenSelector.header.title')}
         </div>
@@ -159,6 +161,14 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
   const [coinSelectFor, setCoinSelectFor] = React.useState<
     'from' | 'to' | null
   >(null);
+
+  // The Modal is destroyOnClose, but this flag lives outside the Modal's
+  // children — reset it so a reopen doesn't remount the picker as open.
+  React.useLayoutEffect(() => {
+    if (!visible) {
+      setCoinSelectFor(null);
+    }
+  }, [visible]);
 
   const handleSelectCoin = (coin: PerpsQuoteAsset) => {
     if (coinSelectFor === 'to') {
@@ -240,9 +250,15 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
       footer={null}
       centered
       width={400}
+      // Remount the whole content (picker included) fresh on every open, so
+      // nothing — frozen Drawer motion, half-played leave — can survive a
+      // close and bleed into the next open.
+      destroyOnClose
       zIndex={zIndex}
       closable={!submitting}
-      closeIcon={<RcIconCloseCC className="w-14 text-r-neutral-title-1" />}
+      closeIcon={
+        <SvgIconCross className="w-14 fill-current text-r-neutral-title-1" />
+      }
       bodyStyle={{ padding: 0, height: '540px', maxHeight: '540px' }}
       maskStyle={{
         zIndex: zIndex ?? 1000,

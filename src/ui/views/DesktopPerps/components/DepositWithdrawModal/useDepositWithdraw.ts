@@ -243,6 +243,7 @@ export const useDepositWithdraw = (
     if (!visible) {
       setAmountMode({ type: 'manual', raw: '' });
       setSelectedToken(null);
+      setSelectChainId(ARB_USDC_TOKEN_SERVER_CHAIN);
       setChainSelectVisible(false);
       setIsWithdrawLoading(false);
       setTokenSelectVisible(false);

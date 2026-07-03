@@ -242,7 +242,10 @@ export const ProtocolItem = ({
             onClick={(evt) => {
               evt.stopPropagation();
               if (protocol.id === 'hyperliquid') {
+                wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount!);
                 wallet.openInDesktop('/desktop/perps');
+                window.close();
               } else {
                 openInTab(
                   protocol.id === 'hyperliquid' && isShowPerpsInvite

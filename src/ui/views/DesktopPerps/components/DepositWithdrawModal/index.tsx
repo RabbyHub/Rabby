@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useLayoutEffect, useMemo, useState } from 'react';
 import { Button, Modal, Skeleton, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -55,6 +55,14 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [historyVisible, setHistoryVisible] = useState(false);
+
+  // The Modal is destroyOnClose, but this flag lives outside the Modal's
+  // children — reset it so a reopen doesn't remount HistoryPopup as open.
+  useLayoutEffect(() => {
+    if (!visible) {
+      setHistoryVisible(false);
+    }
+  }, [visible]);
 
   // Get pending history count
   const localLoadingHistory = useRabbySelector(
@@ -180,6 +188,10 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
       footer={null}
       width={400}
       centered
+      // Remount the whole content (popups included) fresh on every open, so
+      // nothing — frozen Drawer motion, stale scroll, half-played leave —
+      // can survive a close and bleed into the next open.
+      destroyOnClose
       zIndex={zIndex}
       bodyStyle={{ padding: 0, height: '540px', maxHeight: '540px' }}
       maskStyle={{
