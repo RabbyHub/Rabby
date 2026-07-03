@@ -144,7 +144,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               {getTokenSymbol(item)}
             </span>
             {isDirectDepositToken(item) && !isWithdrawMode && (
-              <div className="flex items-center gap-4 text-[11px] font-medium text-r-blue-default bg-rb-blue-light-1 rounded-[4px] px-6 py-2">
+              <div className="flex items-center gap-4 text-[11px] font-medium text-rb-brand-default bg-[#424962] rounded-[4px] px-6 py-2">
                 <svg
                   width="8"
                   height="10"
