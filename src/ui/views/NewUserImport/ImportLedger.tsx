@@ -2,6 +2,7 @@ import { HARDWARE_KEYRING_TYPES, NEXT_KEYRING_ICONS } from '@/constant';
 import { Card } from '@/ui/component/NewUserImport';
 import { useWallet } from '@/ui/utils';
 import { isLedgerLockError, LedgerHDPathType } from '@/ui/utils/ledger';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { useMemoizedFn, useMount, useRequest } from 'ahooks';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
@@ -9,7 +10,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
-import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
 
 const RcLogo = NEXT_KEYRING_ICONS[HARDWARE_KEYRING_TYPES.Ledger.type].rcLight;
 
@@ -28,7 +28,8 @@ export const NewUserImportLedger = () => {
       }
 
       const parent = window.opener;
-      await requestLedgerHIDPermission();
+      const transport = await TransportWebHID.create();
+      await transport.close();
       await wallet.authorizeLedgerHIDPermission();
 
       if (parent) {

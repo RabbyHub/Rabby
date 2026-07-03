@@ -1,0 +1,43 @@
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
+index 4842adc..687b6de 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/Eth.js
+@@ -169,7 +169,11 @@ export default class Eth {
+                 await this.provideNFTInformation(nft);
+             }
+             for (const data of resolution.erc20Tokens) {
+-                await this.provideERC20TokenInformation(data);
++                try {
++                    await this.provideERC20TokenInformation(data);
++                } catch (e) {
++                    console.warn("Failed to provide ERC20 token information, continuing with blind signing:", e);
++                }
+             }
+         }
+         const rawTx = Buffer.from(rawTxHex, "hex");
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js
+index c3deee8..2556634 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/contracts.js
+@@ -10,7 +10,7 @@ export const loadInfosForContractMethod = async (contractAddress, selector, chai
+     if (pluginBaseURL) {
+         const url = `${pluginBaseURL}/plugins/ethereum.json`;
+         data = await axios
+-            .get(`${pluginBaseURL}/plugins/ethereum.json`)
++            .get(`${pluginBaseURL}/plugins/ethereum.json`, { timeout: 5000 })
+             .then(r => r.data)
+             .catch(e => {
+             log("error", "could not fetch from " + url + ": " + String(e));
+diff --git a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/erc20.js b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/erc20.js
+index 0374c81..3050694 100644
+--- a/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/erc20.js
++++ b/node_modules/@ledgerhq/hw-app-eth/lib-es/services/ledger/erc20.js
+@@ -12,7 +12,7 @@ export const findERC20SignaturesInfo = async (userLoadConfig, chainId) => {
+         return null;
+     const url = `${cryptoassetsBaseURL}/evm/${chainId}/erc20-signatures.json`;
+     const blob = await axios
+-        .get(url)
++        .get(url, { timeout: 5000 })
+         .then(({ data }) => {
+         if (!data || typeof data !== "string") {
+             throw new Error(`ERC20 signatures for chainId ${chainId} file is malformed ${url}`);

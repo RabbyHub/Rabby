@@ -2,6 +2,7 @@ import {
   recoverPersonalSignature,
   recoverTypedSignature,
   SignTypedDataVersion,
+  TypedDataUtils,
 } from '@metamask/eth-sig-util';
 import {
   toChecksumAddress,
@@ -10,31 +11,9 @@ import {
   bytesToHex,
 } from '@ethereumjs/util';
 import { RLP, utils } from '@ethereumjs/rlp';
-import {
-  CloseAppCommand,
-  DeviceActionStatus,
-  DeviceManagementKitBuilder,
-  GetAppAndVersionCommand,
-  OpenAppDeviceAction,
-  isSuccessCommandResult,
-} from '@ledgerhq/device-management-kit';
-
-import type {
-  DeviceManagementKit,
-  DeviceSessionId,
-  ExecuteDeviceActionReturnType,
-} from '@ledgerhq/device-management-kit';
-import {
-  webHidIdentifier,
-  webHidTransportFactory,
-} from '@ledgerhq/device-transport-kit-web-hid';
-import { SignerEthBuilder } from '@ledgerhq/device-signer-kit-ethereum';
-
-import type {
-  Signature,
-  SignerEth,
-} from '@ledgerhq/device-signer-kit-ethereum';
-import { firstValueFrom, filter, map, take, timeout } from 'rxjs';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import Transport from '@ledgerhq/hw-transport';
+import LedgerEth from '@ledgerhq/hw-app-eth';
 import { is1559Tx } from '@/utils/transaction';
 import {
   TransactionFactory,
@@ -65,146 +44,7 @@ const HD_PATH_TYPE = {
   [HD_PATH_BASE['LedgerLive']]: HDPathType.LedgerLive,
 };
 
-const ETH_APP_NAME = 'Ethereum';
-const LEDGER_ERROR_KEYS = [
-  '_tag',
-  'name',
-  'message',
-  'statusCode',
-  'statusText',
-  'errorCode',
-  'reason',
-  'code',
-  'originalError',
-  'cause',
-];
-
-let dmk: DeviceManagementKit | null = null;
-let sessionId: DeviceSessionId | null = null;
-let ethSigner: SignerEth | null = null;
-
-const stringifyLedgerErrorValue = (value: unknown, key?: string): string => {
-  if (value == null) return '';
-  if (typeof value === 'string') return value;
-  if (typeof value === 'number') {
-    return key?.toLowerCase().includes('code')
-      ? `0x${value.toString(16)}`
-      : String(value);
-  }
-  if (typeof value === 'boolean') return String(value);
-  if (value instanceof Error) return value.message || value.name;
-  if (Array.isArray(value)) {
-    return value
-      .map((item) => stringifyLedgerErrorValue(item))
-      .filter(Boolean)
-      .join(' ');
-  }
-  if (typeof value === 'object') {
-    const record = value as Record<string, unknown>;
-    const parts = LEDGER_ERROR_KEYS.map((item) =>
-      stringifyLedgerErrorValue(record[item], item)
-    ).filter(Boolean);
-    if (parts.length) return [...new Set(parts)].join(' ');
-    const message = String(value);
-    if (message && message !== '[object Object]') return message;
-    try {
-      return JSON.stringify(value);
-    } catch {
-      return '';
-    }
-  }
-  return String(value);
-};
-
-const normalizeLedgerStatusWord = (value: unknown) => {
-  if (typeof value === 'number') return value.toString(16);
-  if (typeof value === 'string')
-    return value.replace(/^0x/iu, '').toLowerCase();
-  return '';
-};
-
-const getLedgerStatusWord = (err: unknown) => {
-  const value = err as any;
-  const code = normalizeLedgerStatusWord(
-    value?.statusCode ??
-      value?.errorCode ??
-      value?.originalError?.statusCode ??
-      value?.originalError?.errorCode
-  );
-
-  if (code) return code;
-  return value?._tag === 'RefusedByUserDAError' ? '6985' : '';
-};
-
-export const getLedgerErrorMessage = (err: unknown, fallback: string) =>
-  [stringifyLedgerErrorValue(err) || fallback, getLedgerStatusWord(err)]
-    .filter(Boolean)
-    .reduce((message, statusWord) => {
-      const normalizedStatus = `0x${statusWord}`;
-      return message.toLowerCase().includes(normalizedStatus)
-        ? message
-        : `${message} ${normalizedStatus}`;
-    });
-
-const toLedgerError = (err: unknown, fallback: string) =>
-  new Error(getLedgerErrorMessage(err, fallback));
-
-const getDmk = () => {
-  if (!dmk) {
-    dmk = new DeviceManagementKitBuilder()
-      .addTransport(webHidTransportFactory)
-      .build();
-  }
-
-  return dmk;
-};
-
-const runDeviceAction = async <Output>(
-  action: ExecuteDeviceActionReturnType<Output, any, any>
-): Promise<Output> => {
-  return firstValueFrom(
-    action.observable.pipe(
-      filter(
-        (state) =>
-          state.status === DeviceActionStatus.Completed ||
-          state.status === DeviceActionStatus.Error ||
-          state.status === DeviceActionStatus.Stopped
-      ),
-      take(1),
-      map((state) => {
-        switch (state.status) {
-          case DeviceActionStatus.Completed:
-            return state.output;
-          case DeviceActionStatus.Error:
-            throw toLedgerError(
-              state.error,
-              'Ledger: Unknown device action error'
-            );
-          case DeviceActionStatus.Stopped:
-            throw new Error('Ledger: Operation stopped');
-          default:
-            throw new Error('Ledger: Unexpected device action state');
-        }
-      })
-    )
-  );
-};
-
-const toLegacySignaturePayload = (signature: Signature) => {
-  const v = signature.v.toString(16).padStart(2, '0');
-
-  return {
-    r: stripHexPrefix(signature.r),
-    s: stripHexPrefix(signature.s),
-    v,
-  };
-};
-
-const toSignatureHex = (signature: Signature) => {
-  const payload = toLegacySignaturePayload(signature);
-
-  return `0x${payload.r}${payload.s}${payload.v}`;
-};
+let ethApp: LedgerEth | null = null;
 
 interface Account {
   address: string;
@@ -228,6 +68,7 @@ class LedgerBridgeKeyring {
   paths: Record<string, number>;
   hdPath: any;
   accounts: any;
+  transport: null | Transport;
   hasHIDPermission: null | boolean;
   usedHDPathTypeList: Record<string, HDPathType> = {};
 
@@ -238,6 +79,7 @@ class LedgerBridgeKeyring {
     this.unlockedAccount = 0;
     this.paths = {};
     this.hasHIDPermission = null;
+    this.transport = null;
     this.usedHDPathTypeList = {};
     this.deserialize(opts);
 
@@ -298,7 +140,7 @@ class LedgerBridgeKeyring {
   }
 
   isUnlocked() {
-    return !!ethSigner && !!sessionId;
+    return !!ethApp;
   }
 
   setAccountToUnlock(index) {
@@ -309,48 +151,25 @@ class LedgerBridgeKeyring {
     this.hdPath = hdPath;
   }
 
-  async makeApp() {
-    if (ethSigner && sessionId) {
-      return;
-    }
-
-    const kit = getDmk();
-    let devices;
-    try {
-      devices = await firstValueFrom(
-        kit.listenToAvailableDevices({ transport: webHidIdentifier }).pipe(
-          filter((availableDevices) => availableDevices.length > 0),
-          take(1),
-          timeout({ first: 15000 })
-        )
-      );
-    } catch (e: any) {
-      if (e.name === 'TimeoutError') {
-        throw new Error('Ledger: No connected Ledger device found');
+  async makeApp(signing = false) {
+    if (!ethApp) {
+      try {
+        this.transport = await TransportWebHID.create();
+        ethApp = new LedgerEth(this.transport);
+      } catch (e: any) {
+        if (!e.message?.includes('The device is already open')) {
+          console.error(e);
+        }
       }
-
-      throw e;
     }
-
-    sessionId = await kit.connect({
-      device: devices[0],
-    });
-    ethSigner = new SignerEthBuilder({
-      dmk: kit,
-      sessionId,
-    }).build();
   }
 
   async cleanUp() {
-    const currentSessionId = sessionId;
-    ethSigner = null;
-    sessionId = null;
-
-    if (currentSessionId && dmk) {
-      await dmk.disconnect({ sessionId: currentSessionId }).catch(() => {
-        // The device may already be gone or closed by the OS app command.
-      });
+    ethApp = null;
+    if (this.transport) {
+      await this.transport.close();
     }
+    this.transport = null;
   }
 
   async unlock(hdPath?, force?: boolean): Promise<string> {
@@ -365,12 +184,9 @@ class LedgerBridgeKeyring {
     await this.makeApp();
     let res: { address: string };
     try {
-      res = await this.getLedgerAddress(path);
-    } catch (e: any) {
-      if (
-        e.name === 'DisconnectedDeviceDuringOperation' ||
-        e.name === 'DeviceDisconnectedWhileSendingError'
-      ) {
+      res = await ethApp!.getAddress(path, false, true);
+    } catch (e) {
+      if (e.name === 'DisconnectedDeviceDuringOperation') {
         await this.cleanUp();
         return this.unlock(hdPath, force);
       } else {
@@ -514,16 +330,9 @@ class LedgerBridgeKeyring {
 
   async _signTransaction(address, rawTxHex, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
-    await this.makeApp();
+    await this.makeApp(true);
     try {
-      const res = toLegacySignaturePayload(
-        await runDeviceAction(
-          ethSigner!.signTransaction(
-            this._toLedgerPath(hdPath),
-            Buffer.from(rawTxHex, 'hex')
-          )
-        )
-      );
+      const res = await ethApp!.signTransaction(hdPath, rawTxHex);
       const newOrMutatedTx = handleSigning(res);
       const valid = newOrMutatedTx.verifySignature();
       if (valid) {
@@ -532,9 +341,8 @@ class LedgerBridgeKeyring {
         throw new Error('Ledger: The transaction signature is not valid');
       }
     } catch (err: any) {
-      throw toLedgerError(
-        err,
-        'Ledger: Unknown error while signing transaction'
+      throw new Error(
+        err.toString() || 'Ledger: Unknown error while signing transaction'
       );
     }
   }
@@ -546,16 +354,18 @@ class LedgerBridgeKeyring {
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(withAccount, message) {
     try {
-      await this.makeApp();
+      await this.makeApp(true);
       const hdPath = await this.unlockAccountByAddress(withAccount);
-      const signature = toSignatureHex(
-        await runDeviceAction(
-          ethSigner!.signMessage(
-            this._toLedgerPath(hdPath),
-            Buffer.from(stripHexPrefix(message), 'hex')
-          )
-        )
+      const res = await ethApp!.signPersonalMessage(
+        hdPath,
+        stripHexPrefix(message)
       );
+      // let v: string | number = res.v - 27;
+      let v = res.v.toString(16);
+      if (v.length < 2) {
+        v = `0${v}`;
+      }
+      const signature = `0x${res.r}${res.s}${v}`;
       const addressSignedWith = recoverPersonalSignature({
         data: message,
         signature,
@@ -569,7 +379,9 @@ class LedgerBridgeKeyring {
       }
       return signature;
     } catch (e: any) {
-      throw toLedgerError(e, 'Ledger: Unknown error while signing message');
+      throw new Error(
+        e.toString() || 'Ledger: Unknown error while signing message'
+      );
     }
   }
 
@@ -603,12 +415,53 @@ class LedgerBridgeKeyring {
 
     const hdPath = await this.unlockAccountByAddress(withAccount);
     try {
-      await this.makeApp();
-      const signature = toSignatureHex(
-        await runDeviceAction(
-          ethSigner!.signTypedData(this._toLedgerPath(hdPath), data)
-        )
-      );
+      await this.makeApp(true);
+
+      let res: {
+        v: number;
+        s: string;
+        r: string;
+      };
+
+      // https://github.com/LedgerHQ/ledger-live/blob/5bae039273beeeb02d8640d778fd7bf5f7fd3776/libs/coin-evm/src/hw-signMessage.ts#L68C7-L79C10
+      try {
+        res = await ethApp!.signEIP712Message(hdPath, data);
+      } catch (e) {
+        const shouldFallbackOnHashedMethod =
+          'statusText' in e && e.statusText === 'INS_NOT_SUPPORTED';
+        if (!shouldFallbackOnHashedMethod) throw e;
+
+        const {
+          domain,
+          types,
+          primaryType,
+          message,
+        } = TypedDataUtils.sanitizeData(data);
+        const domainSeparatorHex = TypedDataUtils.hashStruct(
+          'EIP712Domain',
+          domain,
+          types,
+          SignTypedDataVersion.V4
+        ).toString('hex');
+        const hashStructMessageHex = TypedDataUtils.hashStruct(
+          primaryType as string,
+          message,
+          types,
+          SignTypedDataVersion.V4
+        ).toString('hex');
+
+        res = await ethApp!.signEIP712HashedMessage(
+          hdPath,
+          domainSeparatorHex,
+          hashStructMessageHex
+        );
+      }
+
+      let v = res.v.toString(16);
+      if (v.length < 2) {
+        v = `0${v}`;
+      }
+      const signature = `0x${res.r}${res.s}${v}`;
       const addressSignedWith = recoverTypedSignature({
         data,
         signature,
@@ -621,7 +474,9 @@ class LedgerBridgeKeyring {
       }
       return signature;
     } catch (e: any) {
-      throw toLedgerError(e, 'Ledger: Unknown error while signing message');
+      throw new Error(
+        e.toString() || 'Ledger: Unknown error while signing message'
+      );
     }
   }
 
@@ -729,7 +584,7 @@ class LedgerBridgeKeyring {
   }
   private async getPathBasePublicKey(hdPathType: HDPathType) {
     const pathBase = this.getHDPathBase(hdPathType);
-    const res = await this.getLedgerAddress(pathBase);
+    const res = await ethApp!.getAddress(pathBase, false, true);
 
     return res.publicKey;
   }
@@ -755,7 +610,7 @@ class LedgerBridgeKeyring {
     const hdPathType = this.getHDPathType(detail.hdPath);
 
     // Account
-    const res = await this.getLedgerAddress(detail.hdPath);
+    const res = await ethApp!.getAddress(detail.hdPath, false, true);
     const addressInDevice = res.address;
 
     // The address is not the same, so we don't need to fix
@@ -791,8 +646,10 @@ class LedgerBridgeKeyring {
     await this.unlock();
     const addresses = await this.getAccounts();
     const pathBase = this.hdPath;
-    const { publicKey: currentPublicKey } = await this.getLedgerAddress(
-      pathBase
+    const { publicKey: currentPublicKey } = await ethApp!.getAddress(
+      pathBase,
+      false,
+      true
     );
     const hdPathType = this.getHDPathTypeFromPath(pathBase);
     const accounts: Account[] = [];
@@ -819,7 +676,7 @@ class LedgerBridgeKeyring {
       ) {
         const info = this.getAccountInfo(address);
         if (info?.index === 1) {
-          const res = await this.getLedgerAddress(detail.hdPath);
+          const res = await ethApp!.getAddress(detail.hdPath, false, true);
           if (isSameAddress(res.address, address)) {
             accounts.push(info);
           }
@@ -872,45 +729,30 @@ class LedgerBridgeKeyring {
     return this.usedHDPathTypeList[key];
   }
 
-  private async getLedgerAddress(path: string) {
-    await this.makeApp();
+  openEthApp = (): Promise<Buffer> => {
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
+    }
 
-    return runDeviceAction(
-      ethSigner!.getAddress(this._toLedgerPath(path), {
-        checkOnDevice: false,
-        returnChainCode: true,
-      })
-    );
-  }
-
-  openEthApp = async (): Promise<void> => {
-    await this.makeApp();
-
-    await runDeviceAction(
-      getDmk().executeDeviceAction({
-        sessionId: sessionId!,
-        deviceAction: new OpenAppDeviceAction({
-          input: {
-            appName: ETH_APP_NAME,
-          },
-        }),
-      })
+    return this.transport.send(
+      0xe0,
+      0xd8,
+      0x00,
+      0x00,
+      Buffer.from('Ethereum', 'ascii')
     );
   };
 
-  quitApp = async (): Promise<void> => {
-    await this.makeApp();
-
-    const result = await getDmk().sendCommand({
-      sessionId: sessionId!,
-      command: new CloseAppCommand(),
-    });
-
-    if (!isSuccessCommandResult(result)) {
-      throw result.error;
+  quitApp = (): Promise<Buffer> => {
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
     }
 
-    await this.cleanUp();
+    return this.transport.send(0xb0, 0xa7, 0x00, 0x00);
   };
 
   getAppAndVersion = async (): Promise<{
@@ -919,16 +761,29 @@ class LedgerBridgeKeyring {
   }> => {
     await this.makeApp();
 
-    const result = await getDmk().sendCommand({
-      sessionId: sessionId!,
-      command: new GetAppAndVersionCommand(),
-    });
-
-    if (!isSuccessCommandResult(result)) {
-      throw result.error;
+    if (!this.transport) {
+      throw new Error(
+        'Ledger transport is not initialized. You must call setTransport first.'
+      );
     }
 
-    const { name: appName, version } = result.data;
+    const response = await this.transport.send(0xb0, 0x01, 0x00, 0x00);
+
+    let i = 0;
+    // eslint-disable-next-line no-plusplus
+    const format = response[i++];
+
+    if (format !== 1) {
+      throw new Error('getAppAndVersion: format not supported');
+    }
+
+    // eslint-disable-next-line no-plusplus
+    const nameLength = response[i++];
+    const appName = response.slice(i, (i += nameLength)).toString('ascii');
+    // eslint-disable-next-line no-plusplus
+    const versionLength = response[i++];
+    const version = response.slice(i, (i += versionLength)).toString('ascii');
+
     return {
       appName,
       version,
