@@ -671,7 +671,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           className={clsx(
             'fixed bottom-0 left-0 right-0 ',
             'border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16',
-            'bg-r-neutral-card-2'
+            'bg-r-neutral-bg-2'
           )}
         >
           <Button

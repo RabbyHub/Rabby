@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { OrderBook } from './components/OrderBook';
@@ -14,14 +14,20 @@ export interface Trade {
 
 export const OrderBookTrades: React.FC = () => {
   const { t } = useTranslation();
-  const { selectedCoin } = useRabbySelector((state) => state.perps);
+  const selectedCoin = useRabbySelector((state) => state.perps.selectedCoin);
   const [activeTab, setActiveTab] = useState<'orderbook' | 'trades'>(
     'orderbook'
   );
 
   const [trades, setTrades] = useState<Trade[]>([]);
+  // Buffer trades and flush once per frame: the WS snapshot burst fires this
+  // callback (unbatched, outside React) many times in a row, and >50 sync
+  // setStates trip React's max update-depth guard.
+  const tradesBufferRef = useRef<Trade[]>([]);
+  const flushRafRef = useRef<number | null>(null);
 
   useEffect(() => {
+    tradesBufferRef.current = [];
     setTrades([]);
   }, [selectedCoin]);
 
@@ -41,16 +47,27 @@ export const OrderBookTrades: React.FC = () => {
           side: (trade.side === 'B' ? 'buy' : 'sell') as 'buy' | 'sell',
         }));
 
-        setTrades((prevTrades) => {
-          // Add new trades to the beginning and keep only the latest 300
-          const combined = [...newTrades, ...prevTrades];
-          return combined.slice(0, 300);
-        });
+        // Newest first, keep only the latest 300 — accumulate across burst calls.
+        tradesBufferRef.current = [
+          ...newTrades,
+          ...tradesBufferRef.current,
+        ].slice(0, 300);
+
+        if (flushRafRef.current == null) {
+          flushRafRef.current = requestAnimationFrame(() => {
+            flushRafRef.current = null;
+            setTrades(tradesBufferRef.current);
+          });
+        }
       }
     });
 
     return () => {
       unsubscribe();
+      if (flushRafRef.current != null) {
+        cancelAnimationFrame(flushRafRef.current);
+        flushRafRef.current = null;
+      }
     };
   }, [selectedCoin]);
 

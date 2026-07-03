@@ -28,9 +28,9 @@ import {
   WITHDRAW_CHAIN_TOKENS,
   WITHDRAW_CHAINS,
   PerpsQuoteAsset,
-  HYPE_GAS_FEE_IN_HYPE,
 } from '../constants';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
+import { useHypeWithdrawGasReserve } from '../hooks/useHypeWithdrawGasReserve';
 import { getPerpsSDK } from '../sdkManager';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
@@ -117,11 +117,14 @@ export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
       .catch(() => setHypeTransferFee('0'));
   }, [visible, currentPerpsAccount?.address, selectedToken]);
 
-  const marketDataMap = useRabbySelector((state) => state.perps.marketDataMap);
-  const hypeGasFeeUsd = useMemo(() => {
-    const hypePrice = Number(marketDataMap?.['HYPE']?.markPx || 0);
-    return new BigNumber(HYPE_GAS_FEE_IN_HYPE).times(hypePrice).toNumber();
-  }, [marketDataMap]);
+  // Re-render only when HYPE price changes, not on every marketDataMap update.
+  const hypePrice = useRabbySelector((state) =>
+    Number(state.perps.marketDataMap?.['HYPE']?.markPx || 0)
+  );
+  const hypeGasFeeUsd = useHypeWithdrawGasReserve({
+    enabled: Boolean(visible),
+    hypePrice,
+  });
 
   const isHypeWithdraw = useMemo(
     () => selectChainId !== ARB_USDC_TOKEN_SERVER_CHAIN,

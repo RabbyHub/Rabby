@@ -4,6 +4,11 @@
    should inherit this rather than hardcoding `font-weight: 400`. */
 body.perps-pro-page {
   font-weight: 350;
+
+  /* Override the token, not the utility: `.font-medium` is `!important` inside
+     `@layer utilities`, so an unlayered override can never win regardless of
+     specificity. Re-pointing the var cascades to every `.font-medium` here. */
+  --font-weight-medium: 450;
 }
 
 .trades-container-no-scrollbar {
@@ -399,7 +404,7 @@ button.desktop-perps-topbar-deposit-button {
 .desktop-perps-modal-surface {
   .ant-modal-content {
     background: var(--rb-neutral-bg-1);
-    border: 2px solid var(--r-neutral-line);
+    border: 1px solid var(--r-neutral-line);
     border-radius: 8px;
     box-shadow: 0 16px 24px rgba(0, 0, 0, 0.1);
     overflow: hidden;

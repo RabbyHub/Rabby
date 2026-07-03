@@ -7,7 +7,44 @@ import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import ResizeObserver from 'rc-resize-observer';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 
-const Wrapper = styled.div`
+// Two stacked triangles used as the column sort indicator. The active direction
+// (up = ascend, down = descend) is painted with the title colour, the other
+// stays muted. `order === null` keeps both muted (the hover / inactive look).
+const activeIconColor = 'var(--rb-neutral-title-1)';
+const inactiveIconColor = 'var(--rb-neutral-secondary)';
+
+const SortIcon: React.FC<{ order: 'ascend' | 'descend' | null }> = ({
+  order,
+}) => {
+  const upColor = order === 'ascend' ? activeIconColor : inactiveIconColor;
+  const downColor = order === 'descend' ? activeIconColor : inactiveIconColor;
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="12"
+      height="12"
+      viewBox="0 0 12 12"
+      fill="none"
+    >
+      {/* upward triangle (top) — highlighted when ascending */}
+      <path
+        d="M3 4.5L6 1.5L9 4.5L3 4.5Z"
+        style={{ fill: upColor, stroke: upColor }}
+        strokeWidth="0.75"
+        strokeLinejoin="round"
+      />
+      {/* downward triangle (bottom) — highlighted when descending */}
+      <path
+        d="M9 7.5L6 10.5L3 7.5H9Z"
+        style={{ fill: downColor, stroke: downColor }}
+        strokeWidth="0.75"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
+const Wrapper = styled.div<{ $rowHeight?: number }>`
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -132,10 +169,29 @@ const Wrapper = styled.div`
     .ant-table-column-sorter {
       display: none;
     }
+
+    /* Custom sort indicator: hidden until the header is hovered (muted look) or
+       the column is the active sort (highlighted look). */
+    .sort-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 12px;
+      height: 12px;
+      margin-left: 4px;
+      vertical-align: middle;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover .sort-icon,
+    &.ant-table-column-sort .sort-icon {
+      opacity: 1;
+    }
   }
 
   .ant-table-tbody > tr > td {
-    height: 44px;
+    height: ${({ $rowHeight }) => $rowHeight ?? 44}px;
     vertical-align: middle;
     /* 1px gap between content rows, painted in the panel background colour. */
     border-bottom: 1px solid var(--rb-neutral-bg-1, #fff);
@@ -246,6 +302,25 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
       .ant-table-column-sorter {
         display: none;
       }
+
+      /* Custom sort indicator: hidden until hovered (muted) or active sort
+         (highlighted). */
+      .sort-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 12px;
+        height: 12px;
+        margin-left: 4px;
+        vertical-align: middle;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      &:hover .sort-icon,
+      &.ant-table-column-sort .sort-icon {
+        opacity: 1;
+      }
     }
 
     /* Hide the empty body in header-only table */
@@ -271,7 +346,10 @@ const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
     .virtual-cell {
       flex: 1;
       // flex-shrink: 0;
-      padding: 8px;
+      /* No vertical padding: the row height is fixed and content is centred via
+         align-items:center, so vertical padding would only push content past the
+         row edge once the height shrinks (28px single-line / 44px two-line). */
+      padding: 0 8px;
       // overflow: hidden;
       box-sizing: border-box;
 
@@ -373,10 +451,10 @@ export const CommonTable = <T extends object>({
   onChange,
   dataSource,
   defaultSortField,
-  defaultSortOrder = 'ascend',
+  defaultSortOrder = 'descend',
   emptyMessage,
   virtual = false,
-  rowHeight = 48,
+  rowHeight = 44,
   ...restProps
 }: CommonTableProps<T>) => {
   const { isDarkTheme } = useThemeMode();
@@ -412,13 +490,14 @@ export const CommonTable = <T extends object>({
           singleSorter.order = newOrder;
         }
       } else {
+        // First click on a new column sorts descending.
         setSortedInfo({
           field: clickedField || null,
-          order: clickedField ? 'ascend' : null,
+          order: clickedField ? 'descend' : null,
         });
 
         if (singleSorter && clickedField) {
-          singleSorter.order = 'ascend';
+          singleSorter.order = 'descend';
         }
       }
 
@@ -449,14 +528,10 @@ export const CommonTable = <T extends object>({
         title: (
           <>
             {renderedTitle}
-            <span
-              className="w-[16px] text-center"
-              style={{
-                opacity:
-                  sortedInfo.field === fieldKey && sortedInfo.order ? 1 : 0,
-              }}
-            >
-              {sortedInfo.order === 'ascend' ? '↑' : '↓'}
+            <span className="sort-icon">
+              <SortIcon
+                order={sortedInfo.field === fieldKey ? sortedInfo.order : null}
+              />
             </span>
           </>
         ),
@@ -533,7 +608,7 @@ export const CommonTable = <T extends object>({
 
   if (dataSource.length === 0) {
     return (
-      <Wrapper>
+      <Wrapper $rowHeight={rowHeight}>
         <div className="flex flex-col items-center justify-center gap-[4px] pt-[100px]">
           <RcIconEmpty className="text-rb-neutral-foot" />
           <div className="text-[12px] leading-[14px] text-rb-neutral-foot text-center">
@@ -582,7 +657,7 @@ export const CommonTable = <T extends object>({
   }
 
   return (
-    <Wrapper>
+    <Wrapper $rowHeight={rowHeight}>
       <Table<T>
         {...restProps}
         dataSource={sortedData}
