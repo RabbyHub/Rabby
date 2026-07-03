@@ -1,11 +1,14 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import BigNumber from 'bignumber.js';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useRabbySelector } from '@/ui/store';
+import { splitNumberByStep } from '@/ui/utils';
 import {
   normalizeTradingViewLocale,
   TradingViewIframeChart,
 } from '@/ui/views/Perps/components/TradingViewIframeChart';
+import { formatPerpsCoin } from '../../../utils';
 
 interface ChartWrapperProps {
   coin: string;
@@ -18,9 +21,12 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   interval: propInterval,
   onIntervalChange,
 }) => {
-  const { marketDataMap, clearinghouseState, openOrders } = useRabbySelector(
-    (state) => state.perps
-  );
+  const {
+    marketDataMap,
+    clearinghouseState,
+    openOrders,
+    sizeDisplayUnit,
+  } = useRabbySelector((state) => state.perps);
   const { isDarkTheme } = useThemeMode();
   const { i18n } = useTranslation();
 
@@ -33,35 +39,139 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   }, [currentMarketData]);
 
   const lineTagInfo = useMemo(() => {
-    const tpPrice = openOrders.find(
-      (order) =>
-        order.coin === coin &&
-        order.orderType === 'Take Profit Market' &&
-        order.isTrigger &&
-        order.reduceOnly
-    )?.triggerPx;
-    const slPrice = openOrders.find(
-      (order) =>
-        order.coin === coin &&
-        order.orderType === 'Stop Market' &&
-        order.isTrigger &&
-        order.reduceOnly
-    )?.triggerPx;
-    const liquidationPrice = clearinghouseState?.assetPositions.find(
+    const quoteAsset = currentMarketData.quoteAsset || 'USDC';
+    const baseAsset = formatPerpsCoin(currentMarketData.displayName || coin);
+    const markPrice = Number(currentMarketData.markPx || 0);
+    const currentPosition = clearinghouseState?.assetPositions.find(
       (item) => item.position.coin === coin
-    )?.position.liquidationPx;
-    const entryPrice = clearinghouseState?.assetPositions.find(
-      (item) => item.position.coin === coin
-    )?.position.entryPx;
+    )?.position;
+    const formatSize = (size?: string | number, price?: string | number) => {
+      const sizeBn = new BigNumber(size || 0).abs();
+      if (sizeBn.isZero()) return '';
+
+      if (sizeDisplayUnit === 'usd') {
+        const sizePrice = Number(price || markPrice || 0);
+        if (!Number.isFinite(sizePrice) || sizePrice <= 0) return '';
+
+        return `${splitNumberByStep(
+          sizeBn.times(sizePrice).toFixed(2)
+        )} ${quoteAsset}`;
+      }
+
+      return `${splitNumberByStep(sizeBn.toString())} ${baseAsset}`;
+    };
+    const firstPositiveValue = (
+      ...values: Array<string | number | undefined | null>
+    ): string | number | undefined => {
+      for (const value of values) {
+        if (value === null || value === undefined) continue;
+        const valueBn = new BigNumber(value || 0);
+        if (valueBn.isFinite() && valueBn.gt(0)) {
+          return value;
+        }
+      }
+
+      return undefined;
+    };
+    const firstNonZeroValue = (
+      ...values: Array<string | number | undefined | null>
+    ): string | number | undefined => {
+      for (const value of values) {
+        if (value === null || value === undefined) continue;
+        const valueBn = new BigNumber(value || 0);
+        if (valueBn.isFinite() && !valueBn.isZero()) {
+          return value;
+        }
+      }
+
+      return undefined;
+    };
+    const isTriggerOrder = (order: typeof openOrders[number]) => {
+      const orderType = String(order.orderType || '').toLowerCase();
+      return (
+        !!order.isTrigger ||
+        orderType.includes('trigger') ||
+        orderType.includes('stop') ||
+        orderType.includes('take profit')
+      );
+    };
+    const getOrderLinePrice = (order: typeof openOrders[number]) => {
+      const price = isTriggerOrder(order)
+        ? firstPositiveValue(order.triggerPx, order.limitPx)
+        : firstPositiveValue(order.limitPx, order.triggerPx);
+
+      return Number(price || 0);
+    };
+    const getOrderSize = (order: typeof openOrders[number]) => {
+      const explicitSize = firstPositiveValue(order.sz, order.origSz);
+      if (explicitSize) return explicitSize;
+
+      if (isTriggerOrder(order)) {
+        return firstNonZeroValue(currentPosition?.szi);
+      }
+
+      return undefined;
+    };
+    const currentOrders = openOrders
+      .filter((order) => {
+        if (order.coin !== coin) return false;
+
+        const orderType = String(order.orderType || '').toLowerCase();
+        return !orderType.includes('twap');
+      })
+      .map((order) => {
+        const linePrice = getOrderLinePrice(order);
+
+        return {
+          id: order.oid,
+          oid: order.oid,
+          side: order.side,
+          orderType: order.orderType,
+          triggerCondition: order.triggerCondition,
+          isTrigger: order.isTrigger,
+          price: linePrice,
+          limitPx: order.limitPx,
+          triggerPx: order.triggerPx,
+          sz: order.sz,
+          origSz: order.origSz,
+          size: formatSize(getOrderSize(order), linePrice),
+        };
+      });
+    const liquidationPrice = currentPosition?.liquidationPx;
+    const entryPrice = currentPosition?.entryPx;
+
     return {
-      tpPrice: Number(tpPrice || 0),
-      slPrice: Number(slPrice || 0),
       liquidationPrice: Number(
         Number(liquidationPrice || 0).toFixed(pxDecimals)
       ),
       entryPrice: Number(entryPrice || 0),
+      currentOrders,
+      position: currentPosition
+        ? {
+            entryPrice: Number(entryPrice || 0),
+            avgPrice: Number(entryPrice || 0),
+            pnl: currentPosition.unrealizedPnl,
+            unrealizedPnl: currentPosition.unrealizedPnl,
+            size: formatSize(currentPosition.szi, currentMarketData.markPx),
+            sz: formatSize(currentPosition.szi, currentMarketData.markPx),
+            szi: currentPosition.szi,
+            liquidationPrice: Number(
+              Number(liquidationPrice || 0).toFixed(pxDecimals)
+            ),
+            liquidationPx: Number(
+              Number(liquidationPrice || 0).toFixed(pxDecimals)
+            ),
+          }
+        : undefined,
     };
-  }, [coin, openOrders, clearinghouseState, pxDecimals]);
+  }, [
+    coin,
+    openOrders,
+    clearinghouseState,
+    pxDecimals,
+    currentMarketData,
+    sizeDisplayUnit,
+  ]);
 
   const chartLocale = useMemo(() => {
     return normalizeTradingViewLocale(i18n.language);

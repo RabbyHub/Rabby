@@ -91,10 +91,37 @@ export interface TradingViewHoverData {
 }
 
 export interface TradingViewLineTagInfo {
-  tpPrice: number;
-  slPrice: number;
-  liquidationPrice: number;
-  entryPrice: number;
+  tpPrice?: number;
+  slPrice?: number;
+  liquidationPrice?: number;
+  entryPrice?: number;
+  currentOrders?: Array<{
+    id?: string | number;
+    oid?: string | number;
+    side?: string;
+    orderType?: string;
+    triggerType?: string;
+    triggerCondition?: string;
+    price?: number;
+    limitPx?: number | string;
+    triggerPx?: number | string;
+    size?: string | number;
+    sz?: string | number;
+    origSz?: string | number;
+    isTrigger?: boolean;
+    isTwap?: boolean;
+  }>;
+  position?: {
+    entryPrice?: number;
+    avgPrice?: number;
+    pnl?: string | number;
+    unrealizedPnl?: string | number;
+    size?: string | number;
+    sz?: string | number;
+    szi?: string | number;
+    liquidationPrice?: number;
+    liquidationPx?: number;
+  };
 }
 
 interface TradingViewIframeChartProps {
