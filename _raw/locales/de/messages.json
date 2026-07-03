@@ -5017,7 +5017,8 @@
     },
     "screenshotModal": {
       "title": "Screenshot für Feedback",
-      "placeholder": "Beschreiben Sie das Problem"
+      "placeholder": "Beschreiben Sie das Problem",
+      "placeholderRequired": "Beschreiben Sie das Problem (erforderlich)"
     },
     "feedbackPopup": {
       "title": "Antwort von Rabby Support",

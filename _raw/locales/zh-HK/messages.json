@@ -5064,7 +5064,8 @@
     },
     "screenshotModal": {
       "title": "截圖回饋",
-      "placeholder": "描述問題"
+      "placeholder": "描述問題",
+      "placeholderRequired": "描述問題（必填）"
     },
     "feedbackPopup": {
       "title": "Rabby 支援團隊的回覆",

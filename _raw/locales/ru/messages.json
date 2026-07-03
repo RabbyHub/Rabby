@@ -5019,7 +5019,8 @@
     },
     "screenshotModal": {
       "title": "Скриншот для отзыва",
-      "placeholder": "Опишите проблему"
+      "placeholder": "Опишите проблему",
+      "placeholderRequired": "Опишите проблему (обязательно)"
     },
     "feedbackPopup": {
       "title": "Ответ от поддержки Rabby",

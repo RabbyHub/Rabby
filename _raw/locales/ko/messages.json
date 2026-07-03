@@ -5014,7 +5014,8 @@
     },
     "screenshotModal": {
       "title": "피드백용 스크린샷",
-      "placeholder": "문제를 설명해 주세요"
+      "placeholder": "문제를 설명해 주세요",
+      "placeholderRequired": "문제를 설명해 주세요 (필수)"
     },
     "feedbackPopup": {
       "title": "Rabby Support의 응답",
