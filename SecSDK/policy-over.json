@@ -685,5 +685,14 @@
   },
   "node_modules/@sentry/core/build/esm/utils/time.js": {
     "enable": false
+  },
+  "node_modules/@sentry/utils/esm/global.js": {
+    "global": {
+      "allow": {
+        "performance": "r",
+        "__SENTRY__": "rw"
+      },
+      "disallow": []
+    }
   }
 }
