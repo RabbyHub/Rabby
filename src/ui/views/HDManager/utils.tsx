@@ -197,7 +197,6 @@ const useSelectedAccounts = () => {
 // so we need a queue to control the request.
 const useTaskQueue = ({ keyring }) => {
   const queueRef = React.useRef(new PQueue({ concurrency: 1 }));
-  const disposedRef = React.useRef(false);
   const history = useHistory();
   const { t } = useTranslation();
 
@@ -206,11 +205,7 @@ const useTaskQueue = ({ keyring }) => {
   }, []);
 
   React.useEffect(() => {
-    disposedRef.current = false;
-    const handleError = (e) => {
-      if (disposedRef.current) {
-        return;
-      }
+    queueRef.current.on('error', (e) => {
       console.error(e);
       Sentry.captureException(e);
       message.error({
@@ -220,12 +215,9 @@ const useTaskQueue = ({ keyring }) => {
       if (keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS) {
         history.goBack();
       }
-    };
-    queueRef.current.on('error', handleError);
+    });
 
     return () => {
-      disposedRef.current = true;
-      queueRef.current.off('error', handleError);
       queueRef.current.clear();
     };
   }, []);
