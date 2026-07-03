@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import { StrayPage } from 'ui/component';
 import { query2obj } from 'ui/utils/url';
@@ -15,7 +16,6 @@ import { useKeystoneUSBErrorCatcher } from '@/ui/utils/keystone';
 import { getImKeyFirstImKeyDevice } from '@/ui/utils/imKey';
 import { getOneKeyFirstOneKeyDevice } from '@/ui/utils/onekey';
 import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
-import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);
@@ -69,7 +69,8 @@ const RequestPermission = () => {
     if (type === 'ledger') {
       const parent = window.opener;
       try {
-        await requestLedgerHIDPermission();
+        const transport = await TransportWebHID.create();
+        await transport.close();
         await wallet.authorizeLedgerHIDPermission();
         if (isReconnect) {
           wallet.activeFirstApproval();

@@ -179,7 +179,10 @@ export const isStringOrNumber = (data) => {
 
 export const hasConnectedLedgerDevice = async () => {
   const devices = await navigator.hid?.getDevices();
-  return !!devices?.some((device) => device.vendorId === ledgerUSBVendorId);
+  return (
+    devices?.filter((device) => device.vendorId === ledgerUSBVendorId).length >
+    0
+  );
 };
 
 export const hasConnectedImKeyDevice = async () => {

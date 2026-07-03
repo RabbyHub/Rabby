@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import { Result } from '@rabby-wallet/rabby-security-engine';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { Button, Drawer, Modal, Skeleton } from 'antd';
 import { useScroll } from 'react-use';
 import { useSize, useDebounceFn } from 'ahooks';
@@ -67,7 +68,6 @@ import {
   MultiAction,
   TypeDataActionItem,
 } from '@rabby-wallet/rabby-api/dist/types';
-import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
 
 interface SignTypedDataProps {
   method: string;
@@ -495,7 +495,8 @@ const SignTypedData = ({
 
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
-        await requestLedgerHIDPermission();
+        const transport = await TransportWebHID.create();
+        await transport.close();
       } catch (e) {
         // ignore transport create error when ledger is not connected, it works but idk why
         console.log(e);
