@@ -5529,52 +5529,6 @@
       "dynamic": []
     }
   },
-  "node_modules/@ledgerhq/hw-app-eth/node_modules/semver/internal/debug.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "console": "r",
-        "process": "r"
-      },
-      "allow": {
-        "console": "r",
-        "process": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/hw-transport-webhid/lib-es/TransportWebHID.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "Buffer": "r",
-        "navigator": "r"
-      },
-      "allow": {
-        "Buffer": "r",
-        "navigator": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/hw-transport/lib-es/Transport.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "setTimeout": "r"
-      },
-      "allow": {
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "setTimeout": "r"
-      },
-      "dynamic": []
-    }
-  },
   "node_modules/@ledgerhq/logs/lib-es/index.js": {
     "enable": true,
     "global": {
