@@ -888,6 +888,34 @@ export const useBridge = () => {
     searchObj?.payTokenId,
   ]);
 
+  useEffect(() => {
+    const targetSearchChain =
+      searchObj?.toChain || searchObj?.toChainServerId
+        ? findChain({
+            enum: searchObj.toChain,
+            serverId: searchObj.toChainServerId,
+          })
+        : undefined;
+
+    if (
+      !toChain ||
+      toToken ||
+      searchObj?.toTokenId ||
+      (targetSearchChain && targetSearchChain.enum !== toChain)
+    ) {
+      return;
+    }
+
+    setToToken(getChainDefaultToken(toChain));
+  }, [
+    searchObj?.toChain,
+    searchObj?.toChainServerId,
+    searchObj?.toTokenId,
+    setToToken,
+    toChain,
+    toToken,
+  ]);
+
   const isSetMaxRef = useRef(false);
   useEffect(() => {
     if (isSetMaxRef.current) {
