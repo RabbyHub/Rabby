@@ -60,12 +60,57 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
 
       return `${splitNumberByStep(sizeBn.toString())} ${baseAsset}`;
     };
-    const getOrderLinePrice = (order: typeof openOrders[number]) => {
-      return Number(
-        order.isTrigger
-          ? order.triggerPx || order.limitPx
-          : order.limitPx || order.triggerPx
+    const firstPositiveValue = (
+      ...values: Array<string | number | undefined | null>
+    ): string | number | undefined => {
+      for (const value of values) {
+        if (value === null || value === undefined) continue;
+        const valueBn = new BigNumber(value || 0);
+        if (valueBn.isFinite() && valueBn.gt(0)) {
+          return value;
+        }
+      }
+
+      return undefined;
+    };
+    const firstNonZeroValue = (
+      ...values: Array<string | number | undefined | null>
+    ): string | number | undefined => {
+      for (const value of values) {
+        if (value === null || value === undefined) continue;
+        const valueBn = new BigNumber(value || 0);
+        if (valueBn.isFinite() && !valueBn.isZero()) {
+          return value;
+        }
+      }
+
+      return undefined;
+    };
+    const isTriggerOrder = (order: typeof openOrders[number]) => {
+      const orderType = String(order.orderType || '').toLowerCase();
+      return (
+        !!order.isTrigger ||
+        orderType.includes('trigger') ||
+        orderType.includes('stop') ||
+        orderType.includes('take profit')
       );
+    };
+    const getOrderLinePrice = (order: typeof openOrders[number]) => {
+      const price = isTriggerOrder(order)
+        ? firstPositiveValue(order.triggerPx, order.limitPx)
+        : firstPositiveValue(order.limitPx, order.triggerPx);
+
+      return Number(price || 0);
+    };
+    const getOrderSize = (order: typeof openOrders[number]) => {
+      const explicitSize = firstPositiveValue(order.sz, order.origSz);
+      if (explicitSize) return explicitSize;
+
+      if (isTriggerOrder(order)) {
+        return firstNonZeroValue(currentPosition?.szi);
+      }
+
+      return undefined;
     };
     const currentOrders = openOrders
       .filter((order) => {
@@ -89,7 +134,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           triggerPx: order.triggerPx,
           sz: order.sz,
           origSz: order.origSz,
-          size: formatSize(order.sz || order.origSz, linePrice),
+          size: formatSize(getOrderSize(order), linePrice),
         };
       });
     const liquidationPrice = currentPosition?.liquidationPx;
