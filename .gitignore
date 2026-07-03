@@ -11,6 +11,7 @@ yarn-error
 .claude/settings.local.json
 .claude/CLAUDE.local.md
 tmp/*.zip
+tmp/sourcemaps/
 tmp/inv-batch.json
 tmp/styled-components-id-mappings.*
 
