@@ -5874,6 +5874,7 @@
     "global": {
       "access": {
         "A": "r",
+        "B": "r",
         "C": "r",
         "E": "r",
         "F": "r",
@@ -5882,7 +5883,6 @@
         "L": "r",
         "M": "r",
         "N": "r",
-        "O": "r",
         "R": "r",
         "T": "r",
         "U": "r",
@@ -5903,6 +5903,7 @@
       },
       "allow": {
         "A": "r",
+        "B": "r",
         "C": "r",
         "E": "r",
         "F": "r",
@@ -5911,7 +5912,6 @@
         "L": "r",
         "M": "r",
         "N": "r",
-        "O": "r",
         "R": "r",
         "T": "r",
         "U": "r",
@@ -6975,18 +6975,6 @@
       "dynamic": []
     }
   },
-  "node_modules/@ledgerhq/devices/lib-es/hid-framing.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "Buffer": "r"
-      },
-      "allow": {
-        "Buffer": "r"
-      },
-      "dynamic": []
-    }
-  },
   "node_modules/@ledgerhq/devices/node_modules/semver/internal/debug.js": {
     "enable": true,
     "global": {
@@ -6997,78 +6985,6 @@
       "allow": {
         "console": "r",
         "process": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/errors/lib-es/helpers.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "console": "r"
-      },
-      "allow": {
-        "console": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/hw-app-eth/node_modules/semver/internal/debug.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "console": "r",
-        "process": "r"
-      },
-      "allow": {
-        "console": "r",
-        "process": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/hw-transport-webhid/lib-es/TransportWebHID.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "Buffer": "r",
-        "navigator": "r"
-      },
-      "allow": {
-        "Buffer": "r",
-        "navigator": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/hw-transport/lib-es/Transport.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "setTimeout": "r"
-      },
-      "allow": {
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "setTimeout": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/logs/lib-es/index.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "__ledgerLogsListen": "rw",
-        "console": "r"
-      },
-      "allow": {
-        "__ledgerLogsListen": "rw",
-        "console": "r"
       },
       "dynamic": []
     }
@@ -12706,18 +12622,6 @@
         "TextDecoder": "r",
         "TextEncoder": "r",
         "btoa": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/aes-js/index.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "define": "r"
-      },
-      "allow": {
-        "define": "r"
       },
       "dynamic": []
     }
