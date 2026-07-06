@@ -13,6 +13,8 @@ import { RLP, utils } from '@ethereumjs/rlp';
 import {
   CloseAppCommand,
   DeviceActionStatus,
+  DeviceSessionStateType,
+  DeviceStatus,
   DeviceManagementKitBuilder,
   GetAppAndVersionCommand,
   OpenAppDeviceAction,
@@ -21,6 +23,7 @@ import {
 
 import type {
   DeviceManagementKit,
+  DeviceSessionState,
   DeviceSessionId,
   ExecuteDeviceActionReturnType,
 } from '@ledgerhq/device-management-kit';
@@ -66,6 +69,10 @@ const HD_PATH_TYPE = {
 };
 
 const ETH_APP_NAME = 'Ethereum';
+const LEDGER_DISCOVERY_TIMEOUT = 15000;
+const LEDGER_BUSY_RECHECK_TIMEOUT = 10000;
+const LEDGER_APP_OPEN_TIMEOUT = 30000;
+const LEDGER_DEVICE_ACTION_TIMEOUT = 60000;
 const LEDGER_ERROR_KEYS = [
   '_tag',
   'name',
@@ -82,6 +89,7 @@ const LEDGER_ERROR_KEYS = [
 let dmk: DeviceManagementKit | null = null;
 let sessionId: DeviceSessionId | null = null;
 let ethSigner: SignerEth | null = null;
+let makeAppPromise: Promise<void> | null = null;
 
 const stringifyLedgerErrorValue = (value: unknown, key?: string): string => {
   if (value == null) return '';
@@ -149,6 +157,11 @@ export const getLedgerErrorMessage = (err: unknown, fallback: string) =>
 const toLedgerError = (err: unknown, fallback: string) =>
   new Error(getLedgerErrorMessage(err, fallback));
 
+const delay = (ms: number) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
 const getDmk = () => {
   if (!dmk) {
     dmk = new DeviceManagementKitBuilder()
@@ -160,34 +173,48 @@ const getDmk = () => {
 };
 
 const runDeviceAction = async <Output>(
-  action: ExecuteDeviceActionReturnType<Output, any, any>
+  action: ExecuteDeviceActionReturnType<Output, any, any>,
+  timeoutMs = LEDGER_DEVICE_ACTION_TIMEOUT
 ): Promise<Output> => {
-  return firstValueFrom(
-    action.observable.pipe(
-      filter(
-        (state) =>
-          state.status === DeviceActionStatus.Completed ||
-          state.status === DeviceActionStatus.Error ||
-          state.status === DeviceActionStatus.Stopped
-      ),
-      take(1),
-      map((state) => {
-        switch (state.status) {
-          case DeviceActionStatus.Completed:
-            return state.output;
-          case DeviceActionStatus.Error:
-            throw toLedgerError(
-              state.error,
-              'Ledger: Unknown device action error'
-            );
-          case DeviceActionStatus.Stopped:
-            throw new Error('Ledger: Operation stopped');
-          default:
-            throw new Error('Ledger: Unexpected device action state');
-        }
-      })
-    )
-  );
+  try {
+    return await firstValueFrom(
+      action.observable.pipe(
+        filter(
+          (state) =>
+            state.status === DeviceActionStatus.Completed ||
+            state.status === DeviceActionStatus.Error ||
+            state.status === DeviceActionStatus.Stopped
+        ),
+        timeout({ first: timeoutMs }),
+        take(1),
+        map((state) => {
+          switch (state.status) {
+            case DeviceActionStatus.Completed:
+              return state.output;
+            case DeviceActionStatus.Error:
+              throw toLedgerError(
+                state.error,
+                'Ledger: Unknown device action error'
+              );
+            case DeviceActionStatus.Stopped:
+              throw new Error('Ledger: Operation stopped');
+            default:
+              throw new Error('Ledger: Unexpected device action state');
+          }
+        })
+      )
+    );
+  } catch (e: any) {
+    if (e.name === 'TimeoutError') {
+      try {
+        action.cancel();
+      } catch {
+        // Preserve the timeout as the actionable error.
+      }
+      throw new Error('Ledger: Operation timed out');
+    }
+    throw e;
+  }
 };
 
 const toLegacySignaturePayload = (signature: Signature) => {
@@ -309,36 +336,168 @@ class LedgerBridgeKeyring {
     this.hdPath = hdPath;
   }
 
+  private async getCurrentSessionState() {
+    if (!sessionId || !dmk) {
+      return null;
+    }
+
+    try {
+      return await firstValueFrom(
+        dmk.getDeviceSessionState({ sessionId }).pipe(take(1))
+      );
+    } catch {
+      await this.cleanUp();
+      return null;
+    }
+  }
+
+  private buildSigner() {
+    if (!dmk || !sessionId) {
+      return;
+    }
+    ethSigner = new SignerEthBuilder({
+      dmk,
+      sessionId,
+    }).build();
+  }
+
+  private async hasActiveSession() {
+    const state = await this.getCurrentSessionState();
+
+    if (!state) {
+      return false;
+    }
+
+    if (state.deviceStatus === DeviceStatus.NOT_CONNECTED) {
+      await this.cleanUp();
+      return false;
+    }
+
+    if (!ethSigner) {
+      this.buildSigner();
+    }
+
+    return !!ethSigner;
+  }
+
   async makeApp() {
-    if (ethSigner && sessionId) {
+    if (await this.hasActiveSession()) {
       return;
     }
 
-    const kit = getDmk();
-    let devices;
-    try {
-      devices = await firstValueFrom(
-        kit.listenToAvailableDevices({ transport: webHidIdentifier }).pipe(
-          filter((availableDevices) => availableDevices.length > 0),
-          take(1),
-          timeout({ first: 15000 })
-        )
-      );
-    } catch (e: any) {
-      if (e.name === 'TimeoutError') {
-        throw new Error('Ledger: No connected Ledger device found');
-      }
-
-      throw e;
+    if (makeAppPromise) {
+      await makeAppPromise;
+      return;
     }
 
-    sessionId = await kit.connect({
-      device: devices[0],
-    });
-    ethSigner = new SignerEthBuilder({
-      dmk: kit,
-      sessionId,
-    }).build();
+    makeAppPromise = (async () => {
+      if (await this.hasActiveSession()) {
+        return;
+      }
+
+      const kit = getDmk();
+      let devices;
+      try {
+        devices = await firstValueFrom(
+          kit.listenToAvailableDevices({ transport: webHidIdentifier }).pipe(
+            filter((availableDevices) => availableDevices.length > 0),
+            take(1),
+            timeout({ first: LEDGER_DISCOVERY_TIMEOUT })
+          )
+        );
+      } catch (e: any) {
+        if (e.name === 'TimeoutError') {
+          throw new Error('Ledger: No connected Ledger device found');
+        }
+
+        throw e;
+      }
+
+      if (devices.length > 1) {
+        throw new Error('Ledger: Multiple Ledger devices detected');
+      }
+
+      const nextSessionId = await kit.connect({
+        device: devices[0],
+        sessionRefresherOptions: {
+          isRefresherDisabled: false,
+        },
+      });
+      sessionId = nextSessionId;
+      this.buildSigner();
+      await this.ensureDeviceReady();
+    })();
+
+    try {
+      await makeAppPromise;
+    } finally {
+      makeAppPromise = null;
+    }
+  }
+
+  private async ensureDeviceReady() {
+    const state = await this.getCurrentSessionState();
+
+    if (!state) {
+      throw new Error('Ledger: Device disconnected');
+    }
+
+    if (state.deviceStatus === DeviceStatus.CONNECTED) {
+      return state;
+    }
+
+    if (state.deviceStatus === DeviceStatus.BUSY) {
+      await delay(LEDGER_BUSY_RECHECK_TIMEOUT);
+      const nextState = await this.getCurrentSessionState();
+      if (nextState?.deviceStatus !== DeviceStatus.BUSY) {
+        if (!nextState) {
+          throw new Error('Ledger: Device disconnected');
+        }
+        return this.assertDeviceReady(nextState);
+      }
+      throw new Error('Ledger: Device busy');
+    }
+
+    return this.assertDeviceReady(state);
+  }
+
+  private assertDeviceReady(state: DeviceSessionState) {
+    switch (state.deviceStatus) {
+      case DeviceStatus.CONNECTED:
+        return state;
+      case DeviceStatus.LOCKED:
+        throw new Error('Ledger: Device is locked 0x5515');
+      case DeviceStatus.NOT_CONNECTED:
+        throw new Error('Ledger: Device disconnected');
+      case DeviceStatus.BUSY:
+        throw new Error('Ledger: Device busy');
+      default:
+        throw new Error('Ledger: Unexpected device state');
+    }
+  }
+
+  private async ensureEthApp() {
+    await this.makeApp();
+    const state = await this.ensureDeviceReady();
+
+    if (
+      state.sessionStateType !== DeviceSessionStateType.Connected &&
+      state.currentApp.name === ETH_APP_NAME
+    ) {
+      return;
+    }
+
+    await runDeviceAction(
+      getDmk().executeDeviceAction({
+        sessionId: sessionId!,
+        deviceAction: new OpenAppDeviceAction({
+          input: {
+            appName: ETH_APP_NAME,
+          },
+        }),
+      }),
+      LEDGER_APP_OPEN_TIMEOUT
+    );
   }
 
   async cleanUp() {
@@ -362,14 +521,17 @@ class LedgerBridgeKeyring {
     }
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
 
-    await this.makeApp();
     let res: { address: string };
     try {
       res = await this.getLedgerAddress(path);
     } catch (e: any) {
+      const message = e?.message || '';
       if (
         e.name === 'DisconnectedDeviceDuringOperation' ||
-        e.name === 'DeviceDisconnectedWhileSendingError'
+        e.name === 'DeviceDisconnectedWhileSendingError' ||
+        /DisconnectedDeviceDuringOperation|DeviceDisconnectedWhileSendingError/i.test(
+          message
+        )
       ) {
         await this.cleanUp();
         return this.unlock(hdPath, force);
@@ -514,13 +676,14 @@ class LedgerBridgeKeyring {
 
   async _signTransaction(address, rawTxHex, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
-    await this.makeApp();
+    await this.ensureEthApp();
     try {
       const res = toLegacySignaturePayload(
         await runDeviceAction(
           ethSigner!.signTransaction(
             this._toLedgerPath(hdPath),
-            Buffer.from(rawTxHex, 'hex')
+            Buffer.from(rawTxHex, 'hex'),
+            { skipOpenApp: true }
           )
         )
       );
@@ -546,13 +709,14 @@ class LedgerBridgeKeyring {
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(withAccount, message) {
     try {
-      await this.makeApp();
       const hdPath = await this.unlockAccountByAddress(withAccount);
+      await this.ensureEthApp();
       const signature = toSignatureHex(
         await runDeviceAction(
           ethSigner!.signMessage(
             this._toLedgerPath(hdPath),
-            Buffer.from(stripHexPrefix(message), 'hex')
+            Buffer.from(stripHexPrefix(message), 'hex'),
+            { skipOpenApp: true }
           )
         )
       );
@@ -600,13 +764,18 @@ class LedgerBridgeKeyring {
         'Ledger: Only version 4 of typed data signing is supported'
       );
     }
+    if (!data?.domain || !data?.types || !data?.message) {
+      throw new Error('Ledger: Typed data payload is incomplete');
+    }
 
     const hdPath = await this.unlockAccountByAddress(withAccount);
     try {
-      await this.makeApp();
+      await this.ensureEthApp();
       const signature = toSignatureHex(
         await runDeviceAction(
-          ethSigner!.signTypedData(this._toLedgerPath(hdPath), data)
+          ethSigner!.signTypedData(this._toLedgerPath(hdPath), data, {
+            skipOpenApp: true,
+          })
         )
       );
       const addressSignedWith = recoverTypedSignature({
@@ -873,33 +1042,24 @@ class LedgerBridgeKeyring {
   }
 
   private async getLedgerAddress(path: string) {
-    await this.makeApp();
+    await this.ensureEthApp();
 
     return runDeviceAction(
       ethSigner!.getAddress(this._toLedgerPath(path), {
         checkOnDevice: false,
         returnChainCode: true,
+        skipOpenApp: true,
       })
     );
   }
 
   openEthApp = async (): Promise<void> => {
-    await this.makeApp();
-
-    await runDeviceAction(
-      getDmk().executeDeviceAction({
-        sessionId: sessionId!,
-        deviceAction: new OpenAppDeviceAction({
-          input: {
-            appName: ETH_APP_NAME,
-          },
-        }),
-      })
-    );
+    await this.ensureEthApp();
   };
 
   quitApp = async (): Promise<void> => {
     await this.makeApp();
+    await this.ensureDeviceReady();
 
     const result = await getDmk().sendCommand({
       sessionId: sessionId!,
@@ -918,6 +1078,7 @@ class LedgerBridgeKeyring {
     version: string;
   }> => {
     await this.makeApp();
+    await this.ensureDeviceReady();
 
     const result = await getDmk().sendCommand({
       sessionId: sessionId!,

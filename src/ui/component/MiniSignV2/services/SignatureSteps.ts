@@ -55,7 +55,10 @@ import type {
   SecurityResult,
   SignerConfig,
 } from '@/ui/component/MiniSignV2/domain/types';
-import { isLedgerLockError } from '@/ui/utils/ledger';
+import {
+  isLedgerConnectionRecoverableError,
+  isLedgerLockError,
+} from '@/ui/utils/ledger';
 import { t } from 'i18next';
 import AuthenticationModalPromise from '../../AuthenticationModal';
 import { DrawerProps, ModalProps } from 'antd';
@@ -1120,7 +1123,7 @@ export class SignatureSteps {
       if (
         !(
           isLedgerLockError(msg) ||
-          msg === 'DISCONNECTED' ||
+          isLedgerConnectionRecoverableError(msg) ||
           msg === 'No OneKey Device found'
         )
       ) {

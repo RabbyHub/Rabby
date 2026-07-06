@@ -52,7 +52,7 @@
     "@keystonehq/hw-transport-webusb": "0.3.2",
     "@keystonehq/metamask-airgapped-keyring": "0.15.1",
     "@ledgerhq/context-module": "2.1.0",
-    "@ledgerhq/device-management-kit": "1.7.0",
+    "@ledgerhq/device-management-kit": "1.7.1",
     "@ledgerhq/device-signer-kit-ethereum": "1.16.0",
     "@ledgerhq/device-transport-kit-web-hid": "1.2.4",
     "@ledgerhq/devices": "8.4.4",

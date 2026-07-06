@@ -2,7 +2,10 @@ import { useWallet } from '@/ui/utils';
 import { useMemoizedFn } from 'ahooks';
 import React, { useMemo, useState } from 'react';
 import _ from 'lodash';
-import { isLedgerLockError } from '@/ui/utils/ledger';
+import {
+  isLedgerConnectionRecoverableError,
+  isLedgerLockError,
+} from '@/ui/utils/ledger';
 import { useSetDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 
@@ -116,7 +119,7 @@ export const useBatchSignPersonalMessageTask = ({
           if (
             !(
               isLedgerLockError(msg) ||
-              msg === 'DISCONNECTED' ||
+              isLedgerConnectionRecoverableError(msg) ||
               msg === 'No OneKey Device found'
             )
           ) {
