@@ -3887,9 +3887,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ledgerhq/device-management-kit@npm:1.7.0":
-  version: 1.7.0
-  resolution: "@ledgerhq/device-management-kit@npm:1.7.0"
+"@ledgerhq/device-management-kit@npm:1.7.1":
+  version: 1.7.1
+  resolution: "@ledgerhq/device-management-kit@npm:1.7.1"
   dependencies:
     "@noble/hashes": "npm:^1.8.0"
     "@sentry/minimal": "npm:6.19.7"
@@ -3903,7 +3903,7 @@ __metadata:
     xstate: "npm:5.19.2"
   peerDependencies:
     rxjs: 7.8.2
-  checksum: 10c0/e04f115cdecd2da948bc41ae7c9fb1c1c62c9929c758ee5a46e62ad0bf94226b9e3296984a47a73d0f2c6df8e4c502980378b92fce274b65b2b12925c3a8bed1
+  checksum: 10c0/9b93fb33d9f2014884a039dbb3ac160e95824bac9f72a653ba47479679f9cd40c019d04d76aef91f192daefb97fdc641ac2969cec781a5e866bfd5ac49294dfc
   languageName: node
   linkType: hard
 
@@ -21470,7 +21470,7 @@ __metadata:
     "@keystonehq/hw-transport-webusb": "npm:0.3.2"
     "@keystonehq/metamask-airgapped-keyring": "npm:0.15.1"
     "@ledgerhq/context-module": "npm:2.1.0"
-    "@ledgerhq/device-management-kit": "npm:1.7.0"
+    "@ledgerhq/device-management-kit": "npm:1.7.1"
     "@ledgerhq/device-signer-kit-ethereum": "npm:1.16.0"
     "@ledgerhq/device-transport-kit-web-hid": "npm:1.2.4"
     "@ledgerhq/devices": "npm:8.4.4"

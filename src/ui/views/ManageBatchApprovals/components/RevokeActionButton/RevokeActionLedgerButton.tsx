@@ -8,7 +8,11 @@ import { EVENTS, WALLET_BRAND_CONTENT } from '@/constant';
 import { ReactComponent as LedgerPressSVG } from '@/ui/assets/ledger/press.svg';
 import { Dots } from '@/ui/views/Approval/components/Popup/Dots';
 import eventBus from '@/eventBus';
-import { isLedgerLockError } from '@/ui/utils/ledger';
+import {
+  isLedgerConnectionRecoverableError,
+  isLedgerDisconnectedError,
+  isLedgerLockError,
+} from '@/ui/utils/ledger';
 import { Ledger } from '@/ui/views/CommonPopup/Ledger';
 import { Modal, Popup } from '@/ui/component';
 import { BatchRevokeTaskType } from '../../hooks/useBatchRevokeTask';
@@ -49,11 +53,15 @@ export const RevokeActionLedgerButton: React.FC<{
 
   React.useEffect(() => {
     const listener = (msg) => {
-      if (isLedgerLockError(msg) || msg === 'DISCONNECTED') {
+      const message = String(msg || '');
+      if (
+        isLedgerLockError(message) ||
+        isLedgerConnectionRecoverableError(message)
+      ) {
         setVisibleLedgerConnectModal(true);
         task.pause();
 
-        if (msg !== 'DISCONNECTED') {
+        if (!isLedgerDisconnectedError(message)) {
           task.addRevokeTask(task.currentApprovalRef.current!, 1);
         }
       }

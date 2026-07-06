@@ -1,6 +1,17 @@
 jest.mock(
   '@ledgerhq/device-management-kit',
   () => ({
+    DeviceStatus: {
+      CONNECTED: 'CONNECTED',
+      LOCKED: 'LOCKED',
+      BUSY: 'BUSY',
+      NOT_CONNECTED: 'NOT CONNECTED',
+    },
+    DeviceSessionStateType: {
+      Connected: 0,
+      ReadyWithoutSecureChannel: 1,
+      ReadyWithSecureChannel: 2,
+    },
     DeviceActionStatus: {},
     DeviceManagementKitBuilder: jest.fn(),
     CloseAppCommand: jest.fn(),
