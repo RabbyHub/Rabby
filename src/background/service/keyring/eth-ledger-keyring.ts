@@ -349,6 +349,32 @@ class LedgerBridgeKeyring {
       await this.cleanUp();
       return null;
     }
+
+    const kit = getDmk();
+    let devices;
+    try {
+      devices = await firstValueFrom(
+        kit.listenToAvailableDevices({ transport: webHidIdentifier }).pipe(
+          filter((availableDevices) => availableDevices.length > 0),
+          take(1),
+          timeout({ first: 15000 })
+        )
+      );
+    } catch (e: any) {
+      if (e.name === 'TimeoutError') {
+        throw new Error('Ledger: No connected Ledger device found');
+      }
+
+      throw e;
+    }
+
+    sessionId = await kit.connect({
+      device: devices[0],
+    });
+    ethSigner = new SignerEthBuilder({
+      dmk: kit,
+      sessionId,
+    }).build();
   }
 
   private buildSigner() {

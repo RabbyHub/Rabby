@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Tooltip } from 'antd';
 import { PerpsDropdown } from './PerpsDropdown';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +37,10 @@ const ADVANCED_OPTIONS: { value: OrderType; label: string }[] = [
 const isPrimaryTab = (type: OrderType) =>
   PRIMARY_TABS.some((t) => t.value === type);
 
+// Anchored margin-mode / leverage modals keep their original 400px width and
+// are right-aligned to the trigger row, expanding leftward.
+const ANCHOR_MODAL_WIDTH = 400;
+
 export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   orderType,
   onOrderTypeChange,
@@ -63,6 +67,27 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   const [showLeverageModal, setShowLeverageModal] = React.useState(false);
   const { t } = useTranslation();
 
+  // Each modal anchors to its own trigger box: the margin-mode modal aligns to
+  // the margin-mode button's right edge, the leverage modal to the leverage
+  // button's right edge.
+  const marginBoxRef = useRef<HTMLDivElement | null>(null);
+  const leverageBoxRef = useRef<HTMLDivElement | null>(null);
+  const [modalPos, setModalPos] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
+
+  const computeModalPos = useMemoizedFn((el: HTMLElement | null) => {
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    // Sit just below the box; align the modal's right edge to the box's right
+    // edge so the fixed-width panel expands leftward.
+    setModalPos({
+      top: rect.bottom + 6,
+      left: rect.right - ANCHOR_MODAL_WIDTH,
+    });
+  });
+
   const { handleUpdateMarginModeLeverage } = usePerpsProPosition();
 
   const handleLeverageConfirm = useMemoizedFn(async (newLeverage: number) => {
@@ -83,6 +108,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   });
 
   const handleLeverageClick = () => {
+    computeModalPos(leverageBoxRef.current);
     setShowLeverageModal(true);
   };
 
@@ -98,6 +124,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
 
   const handleMarginModeClick = () => {
     if (marginModeDisabledReason) return;
+    computeModalPos(marginBoxRef.current);
     setShowMarginModeModal(true);
   };
 
@@ -117,6 +144,27 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
       });
     setShowMarginModeModal(false);
   });
+
+  // Keep the anchored modal aligned to its trigger box when the viewport resizes.
+  useEffect(() => {
+    if (!showMarginModeModal && !showLeverageModal) return;
+    const onResize = () =>
+      computeModalPos(
+        showMarginModeModal ? marginBoxRef.current : leverageBoxRef.current
+      );
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [showMarginModeModal, showLeverageModal, computeModalPos]);
+
+  const anchoredStyle: React.CSSProperties | undefined = modalPos
+    ? {
+        position: 'absolute',
+        top: modalPos.top,
+        left: modalPos.left,
+        margin: 0,
+        paddingBottom: 0,
+      }
+    : undefined;
 
   const LAST_ADVANCED_KEY = 'perps_last_advanced_order_type';
 
@@ -202,6 +250,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
             overlayClassName="rectangle w-[max-content]"
           >
             <div
+              ref={marginBoxRef}
               onClick={handleMarginModeClick}
               className={clsx(
                 'h-[28px] flex-1 rounded-[6px] flex items-center justify-center text-12 border border-solid bg-rb-neutral-bg-5',
@@ -217,6 +266,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
           </Tooltip>
 
           <div
+            ref={leverageBoxRef}
             onClick={handleLeverageClick}
             className="h-[28px] flex-1 flex items-center justify-center rounded-[6px] text-12 text-rb-neutral-title-1 border border-solid border-transparent cursor-pointer hover:border-rb-brand-default bg-rb-neutral-bg-5"
           >
@@ -304,6 +354,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         coinSymbol={selectedCoin}
         onConfirm={handleMarginModeConfirm}
         onCancel={() => setShowMarginModeModal(false)}
+        positionStyle={anchoredStyle}
       />
 
       {/* Leverage Modal */}
@@ -314,6 +365,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
         coinSymbol={selectedCoin}
         onConfirm={handleLeverageConfirm}
         onCancel={() => setShowLeverageModal(false)}
+        positionStyle={anchoredStyle}
       />
     </>
   );

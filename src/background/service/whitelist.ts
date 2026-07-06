@@ -39,6 +39,37 @@ class WhitelistService {
     this.store.whitelists = addresses.map((address) => address.toLowerCase());
   };
 
+  updateWhitelistOrder = (addresses: string[]) => {
+    if (!Array.isArray(addresses)) {
+      throw new Error('Invalid whitelist order');
+    }
+
+    const current = this.store.whitelists.map((address) =>
+      address.toLowerCase()
+    );
+    const next = addresses.map((address) => {
+      if (typeof address !== 'string' || !address) {
+        throw new Error('Invalid whitelist order');
+      }
+      return address.toLowerCase();
+    });
+
+    const currentSet = new Set(current);
+    const nextSet = new Set(next);
+
+    if (
+      current.length !== next.length ||
+      currentSet.size !== current.length ||
+      nextSet.size !== next.length ||
+      current.some((address) => !nextSet.has(address)) ||
+      next.some((address) => !currentSet.has(address))
+    ) {
+      throw new Error('Invalid whitelist order');
+    }
+
+    this.store.whitelists = next;
+  };
+
   removeWhitelist = (address: string) => {
     if (!this.store.whitelists.find((item) => isSameAddress(item, address)))
       return;

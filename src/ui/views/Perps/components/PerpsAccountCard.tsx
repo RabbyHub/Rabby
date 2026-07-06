@@ -232,7 +232,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
                     key={b.coin}
                     className="inline-flex items-center gap-4 text-12 font-medium text-r-neutral-title-1"
                   >
-                    <Icon className="w-[16px] h-[16px]" />
+                    <Icon className="w-20 h-20" />
                     <span>
                       {formatUsdValue(b.available, BigNumber.ROUND_DOWN)}
                     </span>

@@ -5071,7 +5071,8 @@
     },
     "screenshotModal": {
       "title": "Screenshot to Feedback",
-      "placeholder": "Describe the issue"
+      "placeholder": "Describe the issue",
+      "placeholderRequired": "Describe the issue (required)"
     },
     "feedbackPopup": {
       "title": "Response from Rabby Support",

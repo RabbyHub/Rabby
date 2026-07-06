@@ -124,8 +124,7 @@ export const Card = ({
               />
             </div>
           )}
-          {!!title && <div>{title}</div>}
-          {!!step && <Step step={step} />}
+          {title ? <div>{title}</div> : step ? <Step step={step} /> : null}
         </div>
         {children}
       </StyledCard>
