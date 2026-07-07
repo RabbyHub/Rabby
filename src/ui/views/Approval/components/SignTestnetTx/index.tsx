@@ -212,6 +212,7 @@ export const SignTestnetTx = ({
 }: SignTxProps) => {
   const { isGnosis } = params;
   const currentAccount = params.isGnosis ? params.account! : $account;
+  const rawDappGasLimit = params.data[0]?.gas ?? params.data[0]?.gasLimit;
 
   const {
     data = '0x',
@@ -263,7 +264,7 @@ export const SignTestnetTx = ({
         ? maxFeePerGas
         : intToHex(maxFeePerGas);
     }
-    if (gasPrice) {
+    if (gasPrice != null) {
       result = isHexString(gasPrice) ? gasPrice : intToHex(parseInt(gasPrice));
     }
     if (Number.isNaN(Number(result))) {
@@ -271,12 +272,37 @@ export const SignTestnetTx = ({
     }
     return result;
   };
+  const getDappGasPrice = () => {
+    let result = '';
+    if (gasPrice != null) {
+      result = isHexString(gasPrice) ? gasPrice : intToHex(parseInt(gasPrice));
+    }
+    if (Number.isNaN(Number(result))) {
+      result = '';
+    }
+    return result;
+  };
+  const dappGasPrice = getDappGasPrice();
+  const getDappGasLimit = () => {
+    if (rawDappGasLimit == null) {
+      return '';
+    }
+    const result =
+      typeof rawDappGasLimit === 'string' && isHexString(rawDappGasLimit)
+        ? rawDappGasLimit
+        : intToHex(parseInt(rawDappGasLimit, 10));
+    if (Number.isNaN(Number(result))) {
+      return '';
+    }
+    return result;
+  };
+  const dappGasLimit = getDappGasLimit();
 
   const [tx, setTx] = useState<Tx>({
     chainId,
     data: data || '0x', // can not execute with empty string, use 0x instead
     from,
-    gas: gas || params.data[0].gasLimit,
+    gas: dappGasLimit || gas || params.data[0].gasLimit,
     gasPrice: getGasPrice(),
     nonce,
     to: to ? toChecksumAddress(to) : to,
@@ -297,6 +323,12 @@ export const SignTestnetTx = ({
 
   const { data: gasUsed, runAsync: runGetGasUsed } = useRequest(
     async () => {
+      if (dappGasLimit) {
+        if (!gasLimit) {
+          setGasLimit(dappGasLimit);
+        }
+        return dappGasLimit;
+      }
       try {
         let estimateGas = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
@@ -323,12 +355,6 @@ export const SignTestnetTx = ({
             recommendGasLimit = new BigNumber(blockGasLimit)
               .times(buffer)
               .toFixed(0);
-          }
-          if (tx.gas || tx.gasLimit) {
-            recommendGasLimit = Math.max(
-              Number(tx.gas || tx.gasLimit),
-              Number(recommendGasLimit)
-            ).toString();
           }
           setGasLimit(
             `0x${new BigNumber(recommendGasLimit).integerValue().toString(16)}`
@@ -419,18 +445,27 @@ export const SignTestnetTx = ({
         }
       }
       let customGasPrice = 0;
+      let useDappGasPrice = false;
       const lastTimeGas = await runGetLastTimeGasSelection();
-      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
-        // use cached gasPrice if exist
-        customGasPrice = lastTimeGas.gasPrice;
-      }
-      if (
-        isSpeedUp ||
-        isCancel ||
-        ((isSend || isSwap || isBridge) && tx.gasPrice)
-      ) {
-        // use gasPrice set by dapp when it's a speedup or cancel tx
-        customGasPrice = parseInt(tx.gasPrice!);
+      if (dappGasPrice) {
+        customGasPrice = parseInt(dappGasPrice);
+        useDappGasPrice = true;
+      } else {
+        if (
+          lastTimeGas?.lastTimeSelect === 'gasPrice' &&
+          lastTimeGas.gasPrice
+        ) {
+          // use cached gasPrice if exist
+          customGasPrice = lastTimeGas.gasPrice;
+        }
+        if (
+          isSpeedUp ||
+          isCancel ||
+          ((isSend || isSwap || isBridge) && tx.gasPrice)
+        ) {
+          // use gasPrice set by dapp when it's a speedup or cancel tx
+          customGasPrice = parseInt(tx.gasPrice!);
+        }
       }
       const gasUsed = await runGetGasUsed();
       const recommendNonce = await runGetNonce();
@@ -442,6 +477,7 @@ export const SignTestnetTx = ({
       let gas: GasLevel | null = null;
 
       if (
+        useDappGasPrice ||
         ((isSend || isSwap || isBridge) && customGasPrice) ||
         isSpeedUp ||
         isCancel ||
