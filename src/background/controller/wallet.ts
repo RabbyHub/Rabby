@@ -449,6 +449,10 @@ export class WalletController extends BaseController {
     whitelistService.setWhitelist(addresses);
   };
 
+  updateWhitelistOrder = async (addresses: string[]) => {
+    whitelistService.updateWhitelistOrder(addresses);
+  };
+
   addWhitelist = async (password: string, address: string) => {
     await this.verifyPassword(password);
     whitelistService.addWhitelist(address);
@@ -4777,6 +4781,13 @@ export class WalletController extends BaseController {
 
     if (needUnlock) {
       await keyring?.unlock?.();
+      if (
+        !isNew &&
+        type === KEYRING_CLASS.HARDWARE.GRIDPLUS &&
+        keyring?.consumePairingCredsRefreshed?.()
+      ) {
+        await keyringService.persistAllKeyrings();
+      }
     }
 
     return stashKeyringId;

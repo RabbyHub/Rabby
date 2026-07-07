@@ -5024,13 +5024,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-bridge@npm:0.0.4":
-  version: 0.0.4
-  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.4"
+"@rabby-wallet/rabby-bridge@npm:0.0.6":
+  version: 0.0.6
+  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.6"
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.9.58"
-  checksum: 10c0/f0e283f2a887482acada85635310b9c17e0e372f973f61744394dff7b3c3a17df789fedc22d6e96d879fb2887ea6bd41f8767a4abe55c20a91d3aa42fd1505ef
+  checksum: 10c0/4704afbc24ec29b8e49c7956b0b4cb41e7d296573c5191ce8255ddaaafb59a9b2fce86ac34286eaf9aafc9582a7b7f9c4a2a114c01367a7b35cc0a54f1d6e2fb
   languageName: node
   linkType: hard
 
@@ -5056,9 +5056,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-swap@npm:0.0.77":
-  version: 0.0.77
-  resolution: "@rabby-wallet/rabby-swap@npm:0.0.77"
+"@rabby-wallet/rabby-swap@npm:0.0.78":
+  version: 0.0.78
+  resolution: "@rabby-wallet/rabby-swap@npm:0.0.78"
   dependencies:
     "@ethersproject/abi": "npm:^5.7.0"
     axios: "npm:^0.27.2"
@@ -5067,7 +5067,7 @@ __metadata:
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.6.28"
-  checksum: 10c0/1affa50381284ea88b6b4cbc7fc88ce184eb284347ccb129b2439658497459142f98f4ad106193afa46b2994500f5dad237c15eddbf9b03b8f90ee4a7307f5a2
+  checksum: 10c0/a5db65309c7484d7a4c5c45f3028a585d783a0b0613c62f66d38c3f97f085e4b4b8a5e59836d9e053b25174f5f9837e8179cb274be6b251480a9b63a326cbdf0
   languageName: node
   linkType: hard
 
@@ -21499,9 +21499,9 @@ __metadata:
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.14"
     "@rabby-wallet/rabby-api": "npm:0.9.62"
-    "@rabby-wallet/rabby-bridge": "npm:0.0.4"
+    "@rabby-wallet/rabby-bridge": "npm:0.0.6"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
-    "@rabby-wallet/rabby-swap": "npm:0.0.77"
+    "@rabby-wallet/rabby-swap": "npm:0.0.78"
     "@rabby-wallet/staking-sdk": "npm:0.1.0"
     "@rabby-wallet/widgets": "npm:1.0.9"
     "@rematch/core": "npm:2.2.0"

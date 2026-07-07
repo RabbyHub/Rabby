@@ -11,6 +11,29 @@ import { appIsDev } from '@/utils/env';
 import wallet from '../wallet';
 import { metamaskModeService } from '@/background/service/metamaskModeService';
 import { ProviderRequest } from './type';
+import { ga4 } from '@/utils/ga4';
+
+const TAB_CHECKIN_DEDUPE_MS = 100;
+const TAB_CHECKIN_TTL_MS = 2 * 1000;
+const lastTabCheckinAt = new Map<string, number>();
+
+const shouldSkipTabCheckin = (origin: string) => {
+  const now = Date.now();
+
+  for (const [key, time] of lastTabCheckinAt) {
+    if (now - time > TAB_CHECKIN_TTL_MS) {
+      lastTabCheckinAt.delete(key);
+    }
+  }
+
+  const last = lastTabCheckinAt.get(origin) || 0;
+  if (now - last < TAB_CHECKIN_DEDUPE_MS) {
+    return true;
+  }
+
+  lastTabCheckinAt.set(origin, now);
+  return false;
+};
 
 const networkIdMap: {
   [key: string]: string;
@@ -28,6 +51,12 @@ const tabCheckin = ({
   const site = permissionService.getSite(origin);
   if (site) {
     permissionService.updateConnectSite(origin, { ...site, icon, name }, true);
+  }
+  if (site?.isConnected && !shouldSkipTabCheckin(origin)) {
+    ga4.fireEvent('Dapp_Connected', {
+      event_category: 'Dapp Usage',
+      event_label: origin,
+    });
   }
 };
 

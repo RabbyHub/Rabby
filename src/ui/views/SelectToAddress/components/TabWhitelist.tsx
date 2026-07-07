@@ -1,12 +1,28 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
-import { useHistory, useLocation } from 'react-router-dom';
-import { isValidAddress } from '@ethereumjs/util';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { Button, message, Switch, Tabs } from 'antd';
+import { Button, message, Switch } from 'antd';
+import {
+  closestCenter,
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  MeasuringStrategy,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 import { EmptyWhitelistHolder } from '../components/EmptyWhitelistHolder';
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
@@ -17,14 +33,13 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { groupBy } from 'lodash';
 import { findAccountByPriority } from '@/utils/account';
 import { padWatchAccount } from '../util';
+import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
 
 // icons
-import { ReactComponent as RcIconAddWhitelist } from '@/ui/assets/address/add-whitelist.svg';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import qs from 'qs';
-import { Account } from '@rabby-wallet/eth-walletconnect-keyring/type';
 
 const WhitelistItemWrapper = styled.div`
   background-color: var(--r-neutral-card1);
@@ -53,6 +68,28 @@ const WhitelistItemWrapper = styled.div`
       opacity: 1;
     }
   }
+
+  &.is-whitelist-item-dragging {
+    .icon-delete-container,
+    .edit-pen,
+    .copy-icon {
+      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  }
+
+  &.is-whitelist-item-drag-overlay {
+    box-sizing: border-box;
+    border: 1px solid var(--r-blue-default, #7084ff);
+    background-color: var(--r-blue-light1, #eef1ff);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.13);
+
+    .whitelist-item {
+      border-color: transparent !important;
+      background-color: var(--r-blue-light1, #eef1ff) !important;
+    }
+  }
 `;
 
 const isTab = getUiType().isTab;
@@ -60,17 +97,158 @@ const isDesktop = getUiType().isDesktop;
 const getContainer =
   isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
 
+const DND_DISABLED_SELECTOR = '.icon-delete-container, .edit-pen, .copy-icon';
+
+const handleDndDisabledPointerDownCapture: React.PointerEventHandler<HTMLDivElement> = (
+  event
+) => {
+  const target = event.target;
+  if (target instanceof Element && target.closest(DND_DISABLED_SELECTOR)) {
+    event.stopPropagation();
+  }
+};
+
+const WhitelistItemContent = ({
+  item,
+  onDelete,
+  onSelect,
+  suppressClickRef,
+}: {
+  item: IDisplayedAccountWithBalance;
+  onDelete: (address: string) => void;
+  onSelect: (account: IDisplayedAccountWithBalance) => void;
+  suppressClickRef: React.MutableRefObject<boolean>;
+}) => {
+  return (
+    <>
+      <div
+        className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center"
+        onPointerDown={(event) => event.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <RcIconDeleteAddress
+          className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete(item.address);
+          }}
+        />
+      </div>
+      <AccountItem
+        getContainer={getContainer}
+        className="group whitelist-item"
+        balance={0}
+        showWhitelistIcon
+        allowEditAlias
+        hideBalance
+        address={item.address}
+        alias={ellipsisAddress(item.address)}
+        type={item.type}
+        brandName={item.brandName}
+        onClick={() => {
+          if (suppressClickRef.current) {
+            return;
+          }
+          onSelect(item);
+        }}
+      />
+    </>
+  );
+};
+
+const StaticWhitelistItem = ({
+  item,
+  isFirstAfterPwdHint,
+  onDelete,
+  onSelect,
+  suppressClickRef,
+}: {
+  item: IDisplayedAccountWithBalance;
+  isFirstAfterPwdHint: boolean;
+  onDelete: (address: string) => void;
+  onSelect: (account: IDisplayedAccountWithBalance) => void;
+  suppressClickRef: React.MutableRefObject<boolean>;
+}) => {
+  return (
+    <WhitelistItemWrapper
+      {...(isFirstAfterPwdHint && {
+        style: { marginTop: 0 },
+      })}
+      onPointerDownCapture={handleDndDisabledPointerDownCapture}
+    >
+      <WhitelistItemContent
+        item={item}
+        onDelete={onDelete}
+        onSelect={onSelect}
+        suppressClickRef={suppressClickRef}
+      />
+    </WhitelistItemWrapper>
+  );
+};
+
+const SortableWhitelistItem = ({
+  id,
+  item,
+  isFirstAfterPwdHint,
+  onDelete,
+  onSelect,
+  suppressClickRef,
+}: {
+  id: string;
+  item: IDisplayedAccountWithBalance;
+  isFirstAfterPwdHint: boolean;
+  onDelete: (address: string) => void;
+  onSelect: (account: IDisplayedAccountWithBalance) => void;
+  suppressClickRef: React.MutableRefObject<boolean>;
+}) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id,
+  });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    cursor: isDragging ? 'grabbing' : 'grab',
+    opacity: isDragging ? 0.4 : 1,
+    ...(isFirstAfterPwdHint ? { marginTop: 0 } : {}),
+  };
+
+  return (
+    <WhitelistItemWrapper
+      ref={setNodeRef}
+      style={style}
+      className={clsx(isDragging && 'is-whitelist-item-dragging')}
+      onPointerDownCapture={handleDndDisabledPointerDownCapture}
+      {...attributes}
+      {...listeners}
+    >
+      <WhitelistItemContent
+        item={item}
+        onDelete={onDelete}
+        onSelect={onSelect}
+        suppressClickRef={suppressClickRef}
+      />
+    </WhitelistItemWrapper>
+  );
+};
+
 export default function TabWhitelist({
   unimportedBalances = {},
   handleChange,
   onManagePwdForNonWhitelistedTx,
 }: {
   unimportedBalances: Record<string, number>;
-  handleChange: (account: Account) => void;
+  handleChange: (account: IDisplayedAccountWithBalance) => void;
   onManagePwdForNonWhitelistedTx: () => void;
 }) {
   const history = useHistory();
-  const { search } = useLocation();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -80,13 +258,15 @@ export default function TabWhitelist({
     whitelist: s.whitelist.whitelist,
   }));
 
-  const importedWhitelistAccounts = useMemo(() => {
+  const importedWhitelistAccounts = useMemo<
+    IDisplayedAccountWithBalance[]
+  >(() => {
     const groupAccounts = groupBy(accountsList, (item) =>
       item.address.toLowerCase()
     );
     const uniqueAccounts = Object.values(groupAccounts).map((item) =>
       findAccountByPriority(item)
-    );
+    ) as IDisplayedAccountWithBalance[];
     return [...uniqueAccounts].filter((a) =>
       whitelist?.some((w) => isSameAddress(w, a.address))
     );
@@ -101,13 +281,7 @@ export default function TabWhitelist({
     }, {});
   }, [importedWhitelistAccounts]);
 
-  const unimportedWhitelistAccounts = useMemo(() => {
-    return whitelist
-      ?.filter((w) => !importedWhitelistAccountMap[w.toLowerCase()])
-      .map((w) => padWatchAccount(w));
-  }, [importedWhitelistAccountMap, whitelist]);
-
-  const allAccounts = useMemo(() => {
+  const allAccounts = useMemo<IDisplayedAccountWithBalance[]>(() => {
     return (whitelist || []).map((address) => {
       const lowerAddress = address.toLowerCase();
       const importedAccount = importedWhitelistAccountMap[lowerAddress];
@@ -122,6 +296,94 @@ export default function TabWhitelist({
       };
     });
   }, [importedWhitelistAccountMap, unimportedBalances, whitelist]);
+
+  const sortableWhitelistIds = useMemo(
+    () => (whitelist || []).map((address) => address.toLowerCase()),
+    [whitelist]
+  );
+
+  const canSortWhitelist = useMemo(() => {
+    return (
+      allAccounts.length > 1 &&
+      new Set(sortableWhitelistIds).size === sortableWhitelistIds.length
+    );
+  }, [allAccounts.length, sortableWhitelistIds]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
+
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeOverlayWidth, setActiveOverlayWidth] = useState<number | null>(
+    null
+  );
+
+  const activeWhitelistItem = useMemo(() => {
+    if (!activeId) {
+      return null;
+    }
+
+    const activeIndex = sortableWhitelistIds.findIndex((id) => id === activeId);
+    if (activeIndex === -1) {
+      return null;
+    }
+
+    return allAccounts[activeIndex] || null;
+  }, [activeId, allAccounts, sortableWhitelistIds]);
+
+  const suppressClickRef = useRef(false);
+  const resetSuppressClick = () => {
+    window.setTimeout(() => {
+      suppressClickRef.current = false;
+    }, 0);
+  };
+
+  const resetActiveDragState = () => {
+    setActiveId(null);
+    setActiveOverlayWidth(null);
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    suppressClickRef.current = true;
+    setActiveId(String(event.active.id));
+    setActiveOverlayWidth(event.active.rect.current.initial?.width ?? null);
+  };
+
+  const handleDragCancel = () => {
+    resetActiveDragState();
+    resetSuppressClick();
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    resetActiveDragState();
+
+    if (!over || active.id === over.id) {
+      resetSuppressClick();
+      return;
+    }
+
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    const oldIndex = sortableWhitelistIds.findIndex((id) => id === activeId);
+    const newIndex = sortableWhitelistIds.findIndex((id) => id === overId);
+
+    if (oldIndex === -1 || newIndex === -1) {
+      resetSuppressClick();
+      return;
+    }
+
+    const nextWhitelist = [...whitelist];
+    const [removed] = nextWhitelist.splice(oldIndex, 1);
+    nextWhitelist.splice(newIndex, 0, removed);
+
+    dispatch.whitelist.updateWhitelistOrder(nextWhitelist);
+    resetSuppressClick();
+  };
 
   const handleDeleteWhitelist = async (address: string) => {
     await wallet.removeWhitelist(address);
@@ -176,37 +438,84 @@ export default function TabWhitelist({
       >
         <div className="h-full">
           {allAccounts.length > 0 ? (
-            allAccounts.map((item, index) => (
-              <WhitelistItemWrapper
-                key={`${item.address}-${item.type}`}
-                {...(index === 0 &&
-                  isEnabledPwdForNonWhitelistedTx && {
-                    style: { marginTop: 0 },
-                  })}
+            canSortWhitelist ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                measuring={{
+                  droppable: { strategy: MeasuringStrategy.Always },
+                }}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragCancel={handleDragCancel}
+                autoScroll={{
+                  threshold: {
+                    x: 0,
+                    y: 0.2,
+                  },
+                  acceleration: 10,
+                }}
               >
-                <div className="absolute icon-delete-container w-[20px] left-[-20px] h-full top-0  justify-center items-center">
-                  <RcIconDeleteAddress
-                    className="cursor-pointer w-[16px] h-[16px] icon icon-delete"
-                    onClick={() => handleDeleteWhitelist(item.address)}
-                  />
-                </div>
-                <AccountItem
-                  getContainer={getContainer}
-                  className="group whitelist-item"
-                  balance={0}
-                  showWhitelistIcon
-                  allowEditAlias
-                  hideBalance
-                  address={item.address}
-                  alias={ellipsisAddress(item.address)}
-                  type={item.type}
-                  brandName={item.brandName}
-                  onClick={() => {
-                    handleChange(item);
+                <SortableContext
+                  items={sortableWhitelistIds}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {allAccounts.map((item, index) => (
+                    <SortableWhitelistItem
+                      key={sortableWhitelistIds[index]}
+                      id={sortableWhitelistIds[index]}
+                      item={item}
+                      isFirstAfterPwdHint={
+                        index === 0 && !!isEnabledPwdForNonWhitelistedTx
+                      }
+                      onDelete={handleDeleteWhitelist}
+                      onSelect={handleChange}
+                      suppressClickRef={suppressClickRef}
+                    />
+                  ))}
+                </SortableContext>
+                <DragOverlay
+                  dropAnimation={{
+                    duration: 200,
+                    easing: 'ease',
                   }}
+                  style={{
+                    cursor: 'grabbing',
+                  }}
+                >
+                  {activeWhitelistItem ? (
+                    <WhitelistItemWrapper
+                      className="is-whitelist-item-dragging is-whitelist-item-drag-overlay"
+                      style={{
+                        marginTop: 0,
+                        width: activeOverlayWidth ?? undefined,
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      <WhitelistItemContent
+                        item={activeWhitelistItem}
+                        onDelete={() => {}}
+                        onSelect={() => {}}
+                        suppressClickRef={suppressClickRef}
+                      />
+                    </WhitelistItemWrapper>
+                  ) : null}
+                </DragOverlay>
+              </DndContext>
+            ) : (
+              allAccounts.map((item, index) => (
+                <StaticWhitelistItem
+                  key={`${item.address}-${item.type}-${index}`}
+                  item={item}
+                  isFirstAfterPwdHint={
+                    index === 0 && !!isEnabledPwdForNonWhitelistedTx
+                  }
+                  onDelete={handleDeleteWhitelist}
+                  onSelect={handleChange}
+                  suppressClickRef={suppressClickRef}
                 />
-              </WhitelistItemWrapper>
-            ))
+              ))
+            )
           ) : (
             <EmptyWhitelistHolder
               onAddWhitelist={async () => {

@@ -43,6 +43,8 @@ const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
 const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
 const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
 const BUILD_ENV = process.env.RABBY_BUILD_ENV || '';
+const disableStyleSourceMap =
+  !!process.env.sourcemap || BUILD_ENV === 'sourcemap';
 const DEXIE_IMPORT_WRAPPER =
   BUILD_ENV === 'pro' || BUILD_ENV === 'sourcemap'
     ? 'import-wrapper-prod.mjs'
@@ -168,11 +170,13 @@ const config = {
             loader: 'css-loader',
             options: {
               importLoaders: 1,
+              ...(disableStyleSourceMap ? { sourceMap: false } : {}),
             },
           },
           {
             loader: 'postcss-loader',
             options: {
+              ...(disableStyleSourceMap ? { sourceMap: false } : {}),
               postcssOptions: {
                 plugins: [
                   require('postcss-nested'),
@@ -185,6 +189,7 @@ const config = {
           {
             loader: 'less-loader',
             options: {
+              ...(disableStyleSourceMap ? { sourceMap: false } : {}),
               lessOptions: {
                 javascriptEnabled: true,
               },
@@ -212,10 +217,14 @@ const config = {
             loader: 'css-loader',
             options: {
               importLoaders: 1,
+              ...(disableStyleSourceMap ? { sourceMap: false } : {}),
             },
           },
           {
             loader: 'postcss-loader',
+            options: {
+              ...(disableStyleSourceMap ? { sourceMap: false } : {}),
+            },
           },
         ],
       },

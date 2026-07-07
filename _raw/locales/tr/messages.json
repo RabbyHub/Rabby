@@ -5020,7 +5020,8 @@
     },
     "screenshotModal": {
       "title": "Geri bildirim için ekran görüntüsü",
-      "placeholder": "Sorunu açıklayın"
+      "placeholder": "Sorunu açıklayın",
+      "placeholderRequired": "Sorunu açıklayın (gerekli)"
     },
     "feedbackPopup": {
       "title": "Rabby Destek'ten Yanıt",

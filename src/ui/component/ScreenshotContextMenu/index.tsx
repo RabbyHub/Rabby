@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Input, Modal, message } from 'antd';
 import { snapdom } from '@zumer/snapdom';
+import type { SnapdomOptions, SnapdomPlugin } from '@zumer/snapdom';
 import { useRequest } from 'ahooks';
 import browser from 'webextension-polyfill';
 import { getUITypeName, getUiType, useWallet } from '@/ui/utils';
@@ -13,6 +14,19 @@ import { useScreenshotFeedbacks } from './hooks';
 import { useTranslation } from 'react-i18next';
 
 const SCREENSHOT_MODAL_Z_INDEX = 2147483647;
+const VIRTUOSO_VIEWPORT_SELECTOR =
+  '[data-virtuoso-scroller="true"] [data-viewport-type="element"]';
+
+const fixVirtuosoSnapshotPlugin: SnapdomPlugin = {
+  name: 'fix-virtuoso-snapshot',
+  afterClone({ clone }) {
+    clone?.querySelectorAll(VIRTUOSO_VIEWPORT_SELECTOR).forEach((node) => {
+      if (node instanceof HTMLElement) {
+        node.style.top = '0px';
+      }
+    });
+  },
+};
 
 const waitForPaint = () =>
   new Promise<void>((resolve) => {
@@ -35,19 +49,26 @@ const getViewportSize = () => {
   };
 };
 
+const getSnapdomOptions = (viewport: {
+  height: number;
+  width: number;
+}): SnapdomOptions => ({
+  backgroundColor: getComputedStyle(document.body).backgroundColor,
+  dpr: window.devicePixelRatio,
+  fast: true,
+  height: viewport.height,
+  width: viewport.width,
+  exclude: ['.ant-drawer:not(.ant-drawer-open)', '.hidden'],
+  excludeMode: 'remove',
+  plugins: [fixVirtuosoSnapshotPlugin],
+});
+
 const captureBySnapdom = async () => {
   const viewport = getViewportSize();
   const captureTarget = document.documentElement;
+  const snapdomOptions = getSnapdomOptions(viewport);
 
-  const image = await snapdom.toPng(captureTarget, {
-    backgroundColor: getComputedStyle(document.body).backgroundColor,
-    dpr: window.devicePixelRatio,
-    fast: true,
-    height: viewport.height,
-    width: viewport.width,
-    exclude: ['.ant-drawer:not(.ant-drawer-open)', '.hidden'],
-    excludeMode: 'remove',
-  });
+  const image = await snapdom.toPng(captureTarget, snapdomOptions);
 
   return image.src;
 };
@@ -218,7 +239,9 @@ export const ScreenshotContextMenu = () => {
   }, []);
 
   const handleConfirm = useCallback(() => {
-    if (!screenshot || submitting) return;
+    if (!screenshot || !description.trim() || submitting) {
+      return;
+    }
 
     submitFeedback({
       description: description.trim(),
@@ -290,7 +313,7 @@ export const ScreenshotContextMenu = () => {
               </div>
             ) : null}
             <Input.TextArea
-              placeholder={t('component.screenshotModal.placeholder')}
+              placeholder={t('component.screenshotModal.placeholderRequired')}
               value={description}
               autoFocus
               maxLength={300}
@@ -324,7 +347,7 @@ export const ScreenshotContextMenu = () => {
               className="w-1/2 h-[48px]"
               onClick={handleConfirm}
               loading={submitting}
-              disabled={!screenshot}
+              disabled={!screenshot || !description.trim()}
             >
               {t('global.Submit')}
             </Button>

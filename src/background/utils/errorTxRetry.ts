@@ -1,9 +1,7 @@
 import { hexToNumber, isHex } from 'viem';
 import { getRecommendNonce } from '../controller/walletUtils/sign';
 import { intToHex } from '@ethereumjs/util';
-import i18n from '@/i18n';
-
-const t = i18n.t;
+import i18n from '../service/i18n';
 
 export type RetryUpdateType = 'nonce' | 'gasPrice' | 'origin' | false;
 
@@ -81,111 +79,81 @@ const setRetryTxRecommendNonce = async ({
 
 type HintRule = {
   keywords: string[];
-  result:
-    | ((params?: { nonce?: string }) => [string, RetryUpdateType])
-    | [string, RetryUpdateType];
+  messageKey: string;
+  retryType: RetryUpdateType;
+  getOptions?: (params: { nonce?: string | number }) => Record<string, unknown>;
 };
 
-const defaultHint: HintRule['result'] = [
-  'Something is wrong. Please retry later.',
-  false,
-];
 const hintRules: HintRule[] = [
   {
     keywords: ['insufficient funds for gas'],
-    result: [
-      // 'Your gas balance isn’t enough to cover the network gas fee. Add funds for gas and try again.',
-      t('page.signTx.errorRetry.insufficient'),
-      false,
-    ],
+    messageKey: 'page.signTx.errorRetry.insufficient',
+    retryType: false,
   },
   {
     keywords: [
       'max fee per gas less than block base fee',
       'transaction underpriced',
     ],
-    result: [
-      // 'Gas price too low. We’ll adjust it by 30% to help your transaction confirm. Click “Retry” to confirm and try again.',
-      t('page.signTx.errorRetry.gasPriceTooLow'),
-      'gasPrice',
-    ],
+    messageKey: 'page.signTx.errorRetry.gasPriceTooLow',
+    retryType: 'gasPrice',
   },
   {
     keywords: ['nonce too low'],
-    result: (params) => [
-      // `Nonce too low. We’ll update it to ${
-      //   params?.nonce
-      //     ? isHex(params?.nonce)
-      //       ? hexToNumber(params?.nonce as `0x${string}`) + 1
-      //       : typeof params?.nonce === 'number'
-      //       ? params?.nonce + 1
-      //       : ''
-      //     : ''
-      // }. Click “Retry” to confirm and try again.`,
-      t('page.signTx.errorRetry.nonceTooLow', {
-        nonce: params?.nonce
-          ? isHex(params?.nonce)
-            ? hexToNumber(params?.nonce as `0x${string}`)
-            : typeof params?.nonce === 'number'
-            ? params?.nonce
-            : ''
-          : '',
-      }),
-      'nonce',
-    ],
+    messageKey: 'page.signTx.errorRetry.nonceTooLow',
+    retryType: 'nonce',
+    getOptions: (params) => ({
+      nonce: params?.nonce
+        ? typeof params.nonce === 'string' && isHex(params.nonce)
+          ? hexToNumber(params.nonce as `0x${string}`)
+          : typeof params.nonce === 'number'
+          ? params.nonce
+          : ''
+        : '',
+    }),
   },
   {
     keywords: ['nonce too high'],
-    result: [
-      // 'Nonce too high. Please adjust the nonce and try again.'
-      t('page.signTx.errorRetry.nonceTooHigh'),
-      false,
-    ],
+    messageKey: 'page.signTx.errorRetry.nonceTooHigh',
+    retryType: false,
   },
   {
     keywords: ['already known'],
-    result: [
-      // 'Transaction already submitted. Duplicate transaction detected.',
-      t('page.signTx.errorRetry.alreadySubmitted'),
-      false,
-    ],
+    messageKey: 'page.signTx.errorRetry.alreadySubmitted',
+    retryType: false,
   },
   {
     keywords: ['exceeds block gas limit'],
-    result: [
-      // 'Gas exceeds block gas limit. Please adjust and try again.',
-      t('page.signTx.errorRetry.gasExceedsBlockGasLimit'),
-      false,
-    ],
+    messageKey: 'page.signTx.errorRetry.gasExceedsBlockGasLimit',
+    retryType: false,
   },
   {
     keywords: ['invalid transaction', 'invalid sender'],
-    result: [
-      // 'Invalid transaction. '
-      t('page.signTx.errorRetry.InvalidTx'),
-      false,
-    ],
+    messageKey: 'page.signTx.errorRetry.InvalidTx',
+    retryType: false,
   },
   {
     keywords: ['intrinsic gas too low'],
-    result: [
-      // 'Gas limit too low. Please adjust and try again.'
-      t('page.signTx.errorRetry.gasLimitTooLow'),
-      false,
-    ],
+    messageKey: 'page.signTx.errorRetry.gasLimitTooLow',
+    retryType: false,
   },
 ];
 
-const getTxFailedResult = (origin: string, params?: { nonce?: string }) => {
+const getTxFailedResult = (
+  origin: string,
+  params?: { nonce?: string | number }
+): [string, RetryUpdateType] => {
   const lowerText = origin.toLowerCase();
 
   for (const rule of hintRules) {
     if (
       rule.keywords.some((keyword) => lowerText.includes(keyword.toLowerCase()))
     ) {
-      return typeof rule.result === 'function'
-        ? rule.result?.({ nonce: getRetryTxRecommendNonce(), ...params })
-        : rule.result;
+      const options = { nonce: getRetryTxRecommendNonce(), ...params };
+      return [
+        i18n.t(rule.messageKey, rule.getOptions?.(options)),
+        rule.retryType,
+      ];
     }
   }
 

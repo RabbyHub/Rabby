@@ -4164,6 +4164,16 @@
       "dynamic": []
     }
   },
+  "node_modules/@ethersproject/hash/lib.esm/id.js": {
+    "enable": true,
+    "global": {
+      "access": {},
+      "allow": {
+        "navigator": "r"
+      },
+      "dynamic": []
+    }
+  },
   "node_modules/@ethersproject/hash/lib.esm/namehash.js": {
     "enable": true,
     "global": {
@@ -7926,8 +7936,14 @@
         "global": "r"
       },
       "allow": {
+        "Buffer": "r",
+        "_": "rw",
+        "__core-js_shared__": "r",
+        "clearTimeout": "r",
         "define": "r",
-        "global": "r"
+        "global": "r",
+        "process": "r",
+        "setTimeout": "r"
       },
       "dynamic": []
     }
@@ -9221,6 +9237,7 @@
         "setTimeout": "r"
       },
       "allow": {
+        "Buffer": "r",
         "WebSocket": "r",
         "atob": "r",
         "clearInterval": "r",
@@ -10166,7 +10183,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/asyncContext/index.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "getMainCarrier": "r",
@@ -10180,7 +10197,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/attributes.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "isPrimitive": "r"
@@ -10192,7 +10209,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/currentScopes.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "getAsyncContextStrategy": "r",
@@ -10206,7 +10223,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/debug-build.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "__SENTRY_DEBUG__": "r"
@@ -10218,7 +10235,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/exports.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "DEBUG_BUILD": "r",
@@ -10248,7 +10265,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/tracing/dynamicSamplingContext.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "addNonEnumerableProperty": "r",
@@ -10262,7 +10279,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/tracing/utils.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "addNonEnumerableProperty": "r",
@@ -10276,7 +10293,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/baggage.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "DEBUG_BUILD": "r",
@@ -10290,7 +10307,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/debug-ids.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "normalizeStackTracePath": "r"
@@ -10302,7 +10319,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/dsn.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "console": "r"
@@ -10314,7 +10331,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/hasSpansEnabled.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "__SENTRY_TRACING__": "r"
@@ -10326,7 +10343,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/is.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "Element": "r",
@@ -10342,7 +10359,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/misc.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "snipLine": "r"
@@ -10354,7 +10371,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/normalizationHints.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "addNonEnumerableProperty": "r"
@@ -10366,7 +10383,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/normalize.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "global": "r"
@@ -10378,7 +10395,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/object.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "isPrimitive": "r"
@@ -10390,7 +10407,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/spanUtils.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "SEMANTIC_ATTRIBUTE_SENTRY_CUSTOM_SPAN_NAME": "r",
@@ -10424,7 +10441,7 @@
     }
   },
   "node_modules/@sentry/core/build/esm/utils/time.js": {
-    "enable": true,
+    "enable": false,
     "global": {
       "access": {
         "GLOBAL_OBJ": "r",
@@ -10435,25 +10452,6 @@
         "GLOBAL_OBJ": "r",
         "safeDateNow": "r",
         "withRandomSafeContext": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@sentry/core/build/esm/utils/worldwide.js": {
-    "enable": true,
-    "global": {
-      "access": {},
-      "allow": {
-        "SENTRY_RELEASE": "r",
-        "SENTRY_SDK_SOURCE": "r",
-        "__SENTRY__": "rw",
-        "chrome": "r",
-        "console": "r",
-        "crypto": "r",
-        "document": "r",
-        "fetch": "r",
-        "nw": "r",
-        "top": "r"
       },
       "dynamic": []
     }
@@ -12560,8 +12558,21 @@
       },
       "allow": {
         "AbortController": "r",
+        "Blob": "r",
         "BroadcastChannel": "r",
+        "CryptoKey": "r",
         "CustomEvent": "r",
+        "File": "r",
+        "FileList": "r",
+        "FileSystemDirectoryHandle": "r",
+        "FileSystemFileHandle": "r",
+        "Float8Array": "r",
+        "IDBKeyRange": "r",
+        "ImageBitmap": "r",
+        "ImageData": "r",
+        "Int64Array": "r",
+        "Promise": "rw",
+        "Uint64Array": "r",
         "addEventListener": "r",
         "clearInterval": "r",
         "clearTimeout": "r",
@@ -13939,7 +13950,10 @@
         "global": "r"
       },
       "allow": {
-        "global": "r"
+        "Buffer": "r",
+        "__core-js_shared__": "r",
+        "global": "r",
+        "process": "r"
       },
       "dynamic": []
     }
@@ -14245,6 +14259,7 @@
       },
       "allow": {
         "global": "r",
+        "localStorage": "r",
         "process": "r"
       },
       "dynamic": []
@@ -16163,6 +16178,16 @@
       "allow": {
         "console": "r",
         "process": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/split-on-first/index.js": {
+    "enable": true,
+    "global": {
+      "access": {},
+      "allow": {
+        "WebSocket": "r"
       },
       "dynamic": []
     }

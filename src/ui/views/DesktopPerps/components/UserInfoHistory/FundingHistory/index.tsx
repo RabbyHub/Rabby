@@ -192,7 +192,7 @@ export const FundingHistory: React.FC = () => {
       defaultSortField="time"
       defaultSortOrder="descend"
       virtual
-      rowHeight={32}
+      rowHeight={28}
     />
   );
 };
