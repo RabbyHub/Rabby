@@ -33,15 +33,47 @@
     .token-amount-input {
       margin-bottom: 0;
       padding: 20px;
+      height: 106px;
+      gap: 12px;
+
+      .token-amount-input__main-row {
+        gap: 12px;
+      }
+
+      .token-amount-input__bottom-row {
+        height: 18px;
+        min-height: 18px;
+      }
 
       .left {
-        padding: 8px 12px;
+        min-width: 96px;
+        width: fit-content;
+        max-width: 136px;
+        height: 34px;
+        padding: 4px;
         border-radius: 100px;
         border-left: none;
         background: var(--r-neutral-card-2, #f2f4f7);
+        overflow: hidden;
       }
       .left:hover {
         background: var(--r-blue-light2, #eef1ff);
+      }
+      .left .token-input__symbol {
+        max-width: 50px;
+        margin-left: 6px;
+        color: var(--r-neutral-title1, #192945);
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 20px;
+      }
+      .left > .text-r-neutral-foot {
+        margin-left: 2px !important;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .right .ant-input {
         font-weight: 700;

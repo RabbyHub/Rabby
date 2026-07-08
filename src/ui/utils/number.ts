@@ -2,6 +2,69 @@ import BigNumber from 'bignumber.js';
 
 const Sub_Numbers = '₀₁₂₃₄₅₆₇₈₉';
 
+const AMOUNT_DECIMAL_SEPARATOR_RE = /^\d+,\d*$/;
+const AMOUNT_GROUPED_INPUT_RE = /^[1-9]\d{0,2}(?:,\d{3})+(?:\.\d*)?$/;
+export const AMOUNT_INPUT_NUMBER_RE = /^\d*(\.\d*)?$/;
+
+export const normalizeAmountInput = (inputValue: number | string) => {
+  const value = String(inputValue);
+
+  if (AMOUNT_GROUPED_INPUT_RE.test(value)) {
+    return value;
+  }
+
+  if (AMOUNT_DECIMAL_SEPARATOR_RE.test(value)) {
+    return value.replace(',', '.');
+  }
+
+  return value;
+};
+
+export const truncateAmountToDecimals = (
+  inputValue: string,
+  tokenDecimals?: number | null
+) => {
+  if (tokenDecimals === undefined || tokenDecimals === null) {
+    return inputValue;
+  }
+
+  const decimalsLimit =
+    Number.isFinite(tokenDecimals) && tokenDecimals > 0
+      ? Math.floor(tokenDecimals)
+      : 0;
+  const [whole, decimals] = inputValue.split('.');
+
+  if (decimals === undefined) {
+    return inputValue;
+  }
+
+  if (decimalsLimit === 0) {
+    return whole;
+  }
+
+  if (decimals.length <= decimalsLimit) {
+    return inputValue;
+  }
+
+  return `${whole}.${decimals.slice(0, decimalsLimit)}`;
+};
+
+export const formatTokenAmountInput = (
+  inputValue: number | string,
+  tokenDecimals?: number | null
+) => {
+  const normalizedValue = normalizeAmountInput(inputValue);
+
+  if (
+    !AMOUNT_INPUT_NUMBER_RE.test(normalizedValue) &&
+    !AMOUNT_GROUPED_INPUT_RE.test(normalizedValue)
+  ) {
+    return normalizedValue;
+  }
+
+  return truncateAmountToDecimals(normalizedValue, tokenDecimals);
+};
+
 export const splitNumberByStep = (
   num: number | string,
   step = 3,
