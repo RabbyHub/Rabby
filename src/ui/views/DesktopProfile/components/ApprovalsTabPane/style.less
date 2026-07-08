@@ -75,7 +75,7 @@
       thead.ant-table-thead
       > tr
       > th.am-virtual-table-head-cell {
-      background: var(--rb-neutral-bg-3, #f9f9f9);
+      background: var(--rb-neutral-bg-3, #f9f9f9) !important;
     }
 
     .ant-table-container table > thead > tr:first-child th:first-child {
@@ -310,8 +310,8 @@
         // padding-top: @cell-padding-y;
 
         .am-virtual-table-cell-inner {
-          // border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
-          border: none;
+          border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
+          // border: none;
           font-size: 14px;
           line-height: 17px;
           font-weight: 400;
@@ -324,14 +324,16 @@
         }
 
         &.is-first-cell > .am-virtual-table-cell-inner {
-          border: none;
+          // border: none;
+          border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
           // border-left: 1px solid transparent;
           // border-top-left-radius: @radius-value;
           // border-bottom-left-radius: @radius-value;
         }
 
         &.is-last-cell > .am-virtual-table-cell-inner {
-          border: none;
+          // border: none;
+          border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
           // border-right: 1px solid transparent;
           // border-top-right-radius: @radius-value;
           // border-bottom-right-radius: @radius-value;
@@ -368,7 +370,7 @@
 
         &.is-selected-row-cell {
           .am-virtual-table-cell-inner {
-            border: none;
+            // border: none;
             // border-top: 1px solid var(--r-blue-default, #7084ff);
             // border-bottom: 1px solid var(--r-blue-default, #7084ff);
             // background: var(--r-blue-light1, #eef1ff);
@@ -376,14 +378,14 @@
           }
 
           &.is-first-cell > .am-virtual-table-cell-inner {
-            border: none;
+            // border: none;
             // border-left: 1px solid var(--r-blue-default, #7084ff);
             // border-top-left-radius: @radius-value;
             // border-bottom-left-radius: @radius-value;
           }
 
           &.is-last-cell > .am-virtual-table-cell-inner {
-            border: none;
+            // border: none;
             // border-right: 1px solid var(--r-blue-default, #7084ff);
             // border-top-right-radius: @radius-value;
             // border-bottom-right-radius: @radius-value;
