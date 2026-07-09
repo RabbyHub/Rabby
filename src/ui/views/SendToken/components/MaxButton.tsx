@@ -13,8 +13,8 @@ export const SendMaxButton = styled.div`
   cursor: pointer;
   user-select: none;
   margin-left: 4px;
-  background-color: #edf0ff;
-  color: #4c65ff;
+  background-color: var(--r-blue-light1);
+  color: var(--r-blue-default);
   border-radius: 10px;
   &:hover {
     background-color: var(--r-blue-light2);
