@@ -422,6 +422,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     const base = getTradingViewBaseUrl();
     const url = new URL(base);
     url.searchParams.set('source', 'rabby');
+    url.searchParams.set('version', process.env.release || '0');
     return url.toString();
   }, []);
 
