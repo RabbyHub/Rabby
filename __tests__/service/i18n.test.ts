@@ -24,6 +24,8 @@ describe('getFirstPreferredLangCode', () => {
     ['zh-TW', 'zh-HK'],
     ['zh-Hant', 'zh-HK'],
     ['fr-CA', 'fr-FR'],
+    ['uk', 'uk-UA'],
+    ['uk-UA', 'uk-UA'],
   ])('maps %s to %s', async (uiLanguage, expectedLanguage) => {
     mockGetUILanguage.mockReturnValue(uiLanguage);
 
