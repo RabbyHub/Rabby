@@ -8,6 +8,89 @@
   color: var(--r-neutral-title-1, #192945);
   display: flex;
   margin-bottom: 6px;
+
+  &__main-row {
+    gap: 12px;
+    height: 36px;
+  }
+
+  &__bottom-row {
+    gap: 16px;
+    min-height: 18px;
+  }
+
+  &__amount-area {
+    display: flex;
+    align-items: center;
+    height: 36px;
+  }
+
+  &__prefix {
+    flex-shrink: 0;
+    font-weight: 700;
+    line-height: 36px;
+    color: var(--r-neutral-title1, #192945);
+  }
+
+  &__input-wrap {
+    position: relative;
+    min-width: 0;
+    flex: 1;
+    height: 36px;
+  }
+
+  &__display-text {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 36px;
+    line-height: 36px;
+    font-weight: 700;
+    color: var(--r-neutral-title1, #192945);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  &__measure {
+    position: absolute;
+    left: 0;
+    top: 0;
+    visibility: hidden;
+    pointer-events: none;
+    white-space: pre;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 36px;
+  }
+
+  &__quote {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    gap: 4px;
+    color: var(--r-neutral-foot, #6a7587);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 18px;
+  }
+
+  &__quote--clickable {
+    cursor: pointer;
+  }
+
+  &__quote-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__switch-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
   .left {
     display: flex;
     align-items: center;
@@ -32,7 +115,7 @@
   .right {
     flex: 1;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     .ant-input {
       padding: 0;
       font-weight: 700;

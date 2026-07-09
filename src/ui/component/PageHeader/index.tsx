@@ -38,6 +38,7 @@ const PageHeader = ({
   disableSwitchAccount,
   showCurrentAccount,
   onSwitchAccountClick,
+  onBeforeSwitchAccountChange,
 }: {
   children: ReactNode;
   canBack?: boolean;
@@ -57,6 +58,7 @@ const PageHeader = ({
   disableSwitchAccount?: boolean;
   showCurrentAccount?: Account;
   onSwitchAccountClick?: () => void;
+  onBeforeSwitchAccountChange?: (nextAccount: Account) => void | Promise<void>;
 }) => {
   const history = useHistory();
 
@@ -90,6 +92,7 @@ const PageHeader = ({
               disableSwitch={disableSwitchAccount}
               currentAccount={showCurrentAccount || currentAccount}
               onSwitchAccountClick={onSwitchAccountClick}
+              onBeforeSwitchAccountChange={onBeforeSwitchAccountChange}
             />
           ) : null}
         </div>
@@ -131,10 +134,12 @@ const AccountSwitchInner = ({
   currentAccount,
   disableSwitch,
   onSwitchAccountClick,
+  onBeforeSwitchAccountChange,
 }: {
   currentAccount: Account;
   disableSwitch?: boolean;
   onSwitchAccountClick?: () => void;
+  onBeforeSwitchAccountChange?: (nextAccount: Account) => void | Promise<void>;
 }) => {
   const addressTypeIcon = useBrandIcon({
     address: currentAccount?.address,
@@ -201,7 +206,15 @@ const AccountSwitchInner = ({
               ) as HTMLDivElement) || document.body
             : document.body
         }
-        onChange={(val) => {
+        onChange={async (val) => {
+          try {
+            await onBeforeSwitchAccountChange?.(val);
+          } catch (error) {
+            console.error(
+              '[PageHeader] onBeforeSwitchAccountChange error',
+              error
+            );
+          }
           dispatch.account.changeAccountAsync(val);
           setIsShowModal(false);
         }}

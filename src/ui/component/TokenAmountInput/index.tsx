@@ -18,7 +18,7 @@ import React, {
 } from 'react';
 import useSearchToken from 'ui/hooks/useSearchToken';
 import useSortToken from 'ui/hooks/useSortTokens';
-import { formatUsdValue, splitNumberByStep, useWallet } from 'ui/utils';
+import { formatUsdValue, useWallet } from 'ui/utils';
 import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import TokenWithChain from '../TokenWithChain';
@@ -28,6 +28,7 @@ import { SendMaxButton } from '@/ui/views/SendToken/components/MaxButton';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { ReactComponent as RcArrowDown } from './icons/arrow-down.svg';
+import { ReactComponent as RcIconAmountModeSwitch } from '@/ui/assets/send-token/amount-mode-switch.svg';
 import styled from 'styled-components';
 import { RiskWarningTitle } from '../RiskWarningTitle';
 import BigNumber from 'bignumber.js';
@@ -52,6 +53,14 @@ interface TokenAmountInputProps {
   getContainer?: DrawerProps['getContainer'];
   balanceNumText?: string;
   handleClickMaxButton?: () => void;
+  displayValue?: string;
+  displayValueText?: string;
+  inputPrefixText?: string;
+  quoteText?: string;
+  showQuote?: boolean;
+  canSwitchMode?: boolean;
+  onSwitchMode?: () => void;
+  onInputValueChange?: (amount: string) => string | false | void;
   disableItemCheck?: (
     token: TokenItem
   ) => {
@@ -63,18 +72,30 @@ interface TokenAmountInputProps {
 }
 
 const DEFAULT_EXCLUDE_TOKENS: TokenItem['id'][] = [];
+const AMOUNT_MAX_FONT_SIZE = 28;
+const AMOUNT_MIN_FONT_SIZE = 18;
+const AMOUNT_FONT_SIZE_STEP = 2;
 
-const StyledInput = styled(Input)`
+const StyledInput = styled(Input)<{
+  $fontSize: number;
+  $hasDisplayText?: boolean;
+}>`
   color: var(--r-neutral-title1, #192945);
-  font-size: 28px !important;
+  font-size: ${({ $fontSize }) => $fontSize}px !important;
   font-style: normal;
   font-weight: 700;
   line-height: 36px;
   background: transparent !important;
   padding-left: 0;
+  padding-right: 0;
+  ${({ $hasDisplayText }) =>
+    $hasDisplayText
+      ? 'color: transparent !important; caret-color: transparent;'
+      : ''}
   &::placeholder {
-    color: var(--r-neutral-foot, #6a7587);
-    font-size: 28px !important;
+    color: ${({ $hasDisplayText }) =>
+      $hasDisplayText ? 'transparent' : 'var(--r-neutral-foot, #6a7587)'};
+    font-size: ${({ $fontSize }) => $fontSize}px !important;
     font-style: normal;
     font-weight: 700;
     line-height: 36px;
@@ -109,6 +130,14 @@ const TokenAmountInput = ({
   getContainer,
   balanceNumText,
   handleClickMaxButton,
+  displayValue,
+  displayValueText,
+  inputPrefixText,
+  quoteText,
+  showQuote = true,
+  canSwitchMode,
+  onSwitchMode,
+  onInputValueChange,
   insufficientError,
   isLoading,
   initLoading,
@@ -323,14 +352,98 @@ const TokenAmountInput = ({
     setChainServerId(token?.chain || '');
   }, [token?.chain, setChainServerId]);
 
+  const amountInputAreaRef = useRef<HTMLDivElement>(null);
+  const amountMeasureRef = useRef<HTMLSpanElement>(null);
+  const [amountInputAreaWidth, setAmountInputAreaWidth] = useState(0);
+  const [
+    amountTextWidthAtBaseFontSize,
+    setAmountTextWidthAtBaseFontSize,
+  ] = useState(0);
+  const displayInputValue = displayValue ?? value ?? '';
+  const actualInputValue = displayValueText ? '' : displayInputValue;
+  const amountMeasureValue = displayValueText || displayInputValue || '0';
+  const amountMeasureText = `${inputPrefixText || ''}${amountMeasureValue}`;
+
+  useLayoutEffect(() => {
+    const node = amountInputAreaRef.current;
+    if (!node) {
+      return;
+    }
+
+    const updateWidth = () => {
+      setAmountInputAreaWidth(node.clientWidth);
+    };
+
+    updateWidth();
+
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateWidth);
+      return () => window.removeEventListener('resize', updateWidth);
+    }
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    setAmountTextWidthAtBaseFontSize(
+      amountMeasureRef.current?.offsetWidth || 0
+    );
+  }, [amountMeasureText]);
+
+  const amountFontSize = useMemo(() => {
+    if (!amountInputAreaWidth || !amountTextWidthAtBaseFontSize) {
+      return AMOUNT_MAX_FONT_SIZE;
+    }
+
+    for (
+      let fontSize = AMOUNT_MAX_FONT_SIZE;
+      fontSize >= AMOUNT_MIN_FONT_SIZE;
+      fontSize -= AMOUNT_FONT_SIZE_STEP
+    ) {
+      if (
+        (amountTextWidthAtBaseFontSize * fontSize) / AMOUNT_MAX_FONT_SIZE <=
+        amountInputAreaWidth
+      ) {
+        return fontSize;
+      }
+    }
+
+    return AMOUNT_MIN_FONT_SIZE;
+  }, [amountInputAreaWidth, amountTextWidthAtBaseFontSize]);
+
+  useEffect(() => {
+    const input = tokenInputRef.current?.input;
+    if (!input || amountFontSize !== AMOUNT_MIN_FONT_SIZE) {
+      return;
+    }
+
+    input.scrollLeft = input.scrollWidth;
+  }, [actualInputValue, amountFontSize]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextValue = normalizeInputNumber(e.target.value);
+    const rawValue = e.target.value;
+
+    if (onInputValueChange) {
+      const nextValue = onInputValueChange(rawValue);
+      if (nextValue === false) {
+        return;
+      }
+
+      if (typeof nextValue === 'string') {
+        onChange?.(nextValue);
+        return;
+      }
+    }
+
+    const nextValue = normalizeInputNumber(rawValue);
     if (nextValue !== null) {
       onChange?.(nextValue);
     }
   };
 
-  const useValue = useMemo(() => {
+  const fallbackQuoteText = useMemo(() => {
     if (token && value) {
       return formatUsdValue(
         new BigNumber(value).multipliedBy(token.price || 0).toString()
@@ -338,26 +451,59 @@ const TokenAmountInput = ({
     }
     return '$0.00';
   }, [token, value]);
+  const amountQuoteText = quoteText ?? fallbackQuoteText;
 
   const chainSelectorRef = useRef<ChainSelectorInSend>(null);
 
   return (
     <div className={clsx('token-amount-input flex-col gap-[13px]', className)}>
-      <div className="flex items-start gap-16">
-        <div className="right relative min-w-0 flex-1 pt-[5px] overflow-hidden">
-          <StyledInput
-            ref={tokenInputRef}
-            placeholder="0"
-            className={clsx(
-              'h-[36px]',
-              insufficientError && 'text-rabby-red-default'
+      <div className="token-amount-input__main-row flex items-start">
+        <div
+          ref={amountInputAreaRef}
+          className="right token-amount-input__amount-area relative min-w-0 flex-1 overflow-hidden"
+        >
+          {!!inputPrefixText && (
+            <span
+              className={clsx(
+                'token-amount-input__prefix',
+                insufficientError && 'text-rabby-red-default'
+              )}
+              style={{ fontSize: amountFontSize }}
+            >
+              {inputPrefixText}
+            </span>
+          )}
+          <div className="token-amount-input__input-wrap">
+            <StyledInput
+              ref={tokenInputRef}
+              placeholder={displayValueText ? '' : '0'}
+              $fontSize={amountFontSize}
+              $hasDisplayText={!!displayValueText}
+              className={clsx(
+                'h-[36px]',
+                insufficientError && 'text-rabby-red-default'
+              )}
+              autoFocus
+              value={actualInputValue}
+              size="large"
+              onChange={handleChange}
+              title={displayValueText || displayInputValue}
+            />
+            {!!displayValueText && (
+              <span
+                className={clsx(
+                  'token-amount-input__display-text',
+                  insufficientError && 'text-rabby-red-default'
+                )}
+                style={{ fontSize: amountFontSize }}
+              >
+                {displayValueText}
+              </span>
             )}
-            autoFocus
-            value={value}
-            size="large"
-            onChange={handleChange}
-            title={value}
-          />
+          </div>
+          <span ref={amountMeasureRef} className="token-amount-input__measure">
+            {amountMeasureText}
+          </span>
         </div>
 
         <div className="left shrink-0" onClick={handleSelectToken}>
@@ -373,8 +519,9 @@ const TokenAmountInput = ({
             <>
               {!!token && (
                 <TokenWithChain
-                  width="24px"
-                  height="24px"
+                  width="26px"
+                  height="26px"
+                  chainSize={14}
                   token={token}
                   // hideChainIcon
                   hideConer
@@ -403,12 +550,25 @@ const TokenAmountInput = ({
           </div>
         </div>
       </div>
-      <div className="flex items-center justify-between gap-16">
-        <div
-          className="text-r-neutral-foot font-normal text-[13px] min-w-0 flex-1 truncate"
-          title={useValue}
-        >
-          {useValue}
+      <div className="token-amount-input__bottom-row flex items-center justify-between">
+        <div className="min-w-0 flex-1">
+          {showQuote && !!amountQuoteText && (
+            <div
+              className={clsx(
+                'token-amount-input__quote',
+                canSwitchMode && 'token-amount-input__quote--clickable'
+              )}
+              title={amountQuoteText}
+              onClick={canSwitchMode ? onSwitchMode : undefined}
+            >
+              <span className="token-amount-input__quote-text">
+                {amountQuoteText}
+              </span>
+              {canSwitchMode && (
+                <RcIconAmountModeSwitch className="token-amount-input__switch-icon" />
+              )}
+            </div>
+          )}
         </div>
         <div className="flex shrink-0 items-center">
           <div className="flex items-center">
