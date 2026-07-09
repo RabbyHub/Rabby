@@ -59,6 +59,12 @@ const isDexQuoteSelectable = (quote: TDexQuoteData) =>
   !!quote.preExecResult &&
   !!quote.preExecResult.isSdkPass;
 
+const isTokenOnChain = (token: TokenItem | undefined, chain: CHAINS_ENUM) => {
+  const chainInfo = findChainByEnum(chain);
+
+  return !!token && !!chainInfo && token.chain === chainInfo.serverId;
+};
+
 const getDexQuoteScore = ({
   quote,
   receiveToken,
@@ -149,13 +155,27 @@ export const useTokenPair = (userAddress: string) => {
     defaultSelectedFromToken,
     defaultSelectedToToken,
   } = useRabbySelector((state) => {
+    const selectedChain = state.swap.selectedChain || CHAINS_ENUM.ETH;
+    const selectedFromToken = isTokenOnChain(
+      state.swap.selectedFromToken,
+      selectedChain
+    )
+      ? state.swap.selectedFromToken
+      : undefined;
+    const selectedToToken = isTokenOnChain(
+      state.swap.selectedToToken,
+      selectedChain
+    )
+      ? state.swap.selectedToToken
+      : undefined;
+
     return {
       initialSelectedChain: state.swap.$$initialSelectedChain,
-      oChain: state.swap.selectedChain || CHAINS_ENUM.ETH,
-      defaultSelectedFromToken: state.swap.selectedFromToken,
+      oChain: selectedChain,
+      defaultSelectedFromToken: selectedFromToken,
       defaultSelectedToToken:
-        state.swap.selectedToToken?.id !== state.swap.selectedFromToken?.id
-          ? state.swap.selectedToToken
+        selectedToToken?.id !== selectedFromToken?.id
+          ? selectedToToken
           : undefined,
     };
   });
