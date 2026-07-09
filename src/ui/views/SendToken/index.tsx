@@ -130,6 +130,7 @@ import {
   buildAmountInputQueryFields,
   createUsdAmountInputUrlState,
   getNextUsdPriceSnapshot,
+  getUsdAmountInputDisplayState,
   isValidUsdPrice,
   normalizeUsdAmountInputUrlStateForTokenAmount,
   normalizeAmountInputTokenKey,
@@ -362,6 +363,7 @@ const SendToken = () => {
   const amountInputUrlStateRef = useRef<SendAmountInputUrlState | null>(
     paramAmountInputState
   );
+  const shouldClearAmountForAccountChangeRef = useRef(false);
   const [usdPriceSnapshot, setUsdPriceSnapshot] = useState<{
     tokenKey: string;
     price: number | null;
@@ -1226,13 +1228,34 @@ const SendToken = () => {
     [buildHistorySearch, history]
   );
 
+  const paramFormAmount = useMemo(
+    () => normalizeInputNumber(paramAmount) || '',
+    [paramAmount]
+  );
   const initialFormValues = {
     to: toAddress,
-    amount: normalizeInputNumber(paramAmount) || '',
+    amount: paramFormAmount,
   };
   const watchedAmount = Form.useWatch('amount', form);
   const formAmount = watchedAmount || '';
   const displayFormAmount = formAmount || form.getFieldValue('amount') || '';
+  const displayAmountForUsd = useMemo(() => {
+    if (displayFormAmount) {
+      return displayFormAmount;
+    }
+
+    return amountInputMode === 'usd' &&
+      paramAmountInputState &&
+      watchedAmount === undefined
+      ? paramFormAmount
+      : '';
+  }, [
+    amountInputMode,
+    displayFormAmount,
+    paramAmountInputState,
+    paramFormAmount,
+    watchedAmount,
+  ]);
   const amount = useSyncStaleValue(formAmount, 300);
   const address = form.getFieldValue('to');
   const currentTokenKey = useMemo(() => getSendAmountTokenKey(currentToken), [
@@ -1252,11 +1275,11 @@ const SendToken = () => {
   }, []);
   const amountInputHasValue = useMemo(() => {
     if (amountInputMode === 'usd') {
-      return Boolean(usdInputValue || displayFormAmount);
+      return Boolean(usdInputValue || displayAmountForUsd);
     }
 
     return Boolean(displayFormAmount);
-  }, [amountInputMode, displayFormAmount, usdInputValue]);
+  }, [amountInputMode, displayAmountForUsd, displayFormAmount, usdInputValue]);
 
   useEffect(() => {
     if (!currentToken) {
@@ -1293,14 +1316,85 @@ const SendToken = () => {
   const activeUsdPrice =
     amountInputMode === 'usd' ? snapshotUsdPrice : currentTokenUsdPrice;
   const canEnterUsdMode = Boolean(currentTokenUsdPrice);
+  const getAmountInputUrlStateForTokenAmount = useCallback(
+    (
+      tokenAmount = '',
+      overrides?: Partial<
+        Pick<
+          SendAmountInputUrlState,
+          'usdInputValue' | 'usdPrice' | 'isUsdMaxAmountActive'
+        >
+      >
+    ) => {
+      if (amountInputMode !== 'usd') {
+        return null;
+      }
+
+      const restoredState =
+        amountInputUrlStateRef.current?.tokenKey === currentTokenKey
+          ? amountInputUrlStateRef.current
+          : null;
+      const nextState = createUsdAmountInputUrlState({
+        tokenKey: currentTokenKey,
+        usdInputValue:
+          overrides?.usdInputValue ??
+          restoredState?.usdInputValue ??
+          usdInputValue,
+        usdPrice:
+          overrides?.usdPrice ?? restoredState?.usdPrice ?? activeUsdPrice,
+        isUsdMaxAmountActive:
+          overrides?.isUsdMaxAmountActive ??
+          restoredState?.isUsdMaxAmountActive ??
+          isUsdMaxAmountActive,
+      });
+
+      return normalizeUsdAmountInputUrlStateForTokenAmount(
+        nextState,
+        tokenAmount
+      );
+    },
+    [
+      activeUsdPrice,
+      amountInputMode,
+      currentTokenKey,
+      isUsdMaxAmountActive,
+      usdInputValue,
+    ]
+  );
   const restoredAmountInputState = amountInputUrlStateRef.current;
+  const amountInputDisplayState = useMemo(() => {
+    if (amountInputMode !== 'usd') {
+      return {
+        state: null,
+        usdInputValue: '',
+        shouldShowSmallUsdMaxAmount: false,
+      };
+    }
+
+    const state =
+      getAmountInputUrlStateForTokenAmount(displayAmountForUsd) ||
+      restoredAmountInputState ||
+      paramAmountInputState;
+
+    return getUsdAmountInputDisplayState({
+      state,
+      tokenAmount: displayAmountForUsd,
+    });
+  }, [
+    amountInputMode,
+    displayAmountForUsd,
+    getAmountInputUrlStateForTokenAmount,
+    paramAmountInputState,
+    restoredAmountInputState,
+  ]);
+  const effectiveAmountInputState = amountInputDisplayState.state;
   const hasValidRestoredUsdInputState =
     amountInputMode === 'usd' &&
-    !!restoredAmountInputState &&
-    isValidUsdPrice(restoredAmountInputState.usdPrice);
+    !!effectiveAmountInputState &&
+    isValidUsdPrice(effectiveAmountInputState.usdPrice);
   const isRestoredUsdStateForCurrentToken =
     hasValidRestoredUsdInputState &&
-    restoredAmountInputState?.tokenKey === currentTokenKey;
+    effectiveAmountInputState?.tokenKey === currentTokenKey;
   const shouldShowAmountModeSwitch =
     canEnterUsdMode || hasValidRestoredUsdInputState;
   const shouldShowAmountQuote =
@@ -1317,31 +1411,12 @@ const SendToken = () => {
         >
       >
     ) => {
-      if (amountInputMode !== 'usd') {
-        return null;
-      }
-
-      const nextState = createUsdAmountInputUrlState({
-        tokenKey: currentTokenKey,
-        usdInputValue: overrides?.usdInputValue ?? usdInputValue,
-        usdPrice: overrides?.usdPrice ?? activeUsdPrice,
-        isUsdMaxAmountActive:
-          overrides?.isUsdMaxAmountActive ?? isUsdMaxAmountActive,
-      });
-
-      return normalizeUsdAmountInputUrlStateForTokenAmount(
-        nextState,
-        displayFormAmount
+      return getAmountInputUrlStateForTokenAmount(
+        displayAmountForUsd,
+        overrides
       );
     },
-    [
-      activeUsdPrice,
-      amountInputMode,
-      currentTokenKey,
-      displayFormAmount,
-      isUsdMaxAmountActive,
-      usdInputValue,
-    ]
+    [displayAmountForUsd, getAmountInputUrlStateForTokenAmount]
   );
 
   const getCurrentAmountInputQueryFields = useCallback(() => {
@@ -1724,15 +1799,44 @@ const SendToken = () => {
         ...form.getFieldsValue(),
         amount: nextAmount,
       };
+      const nextAmountInputState =
+        opts?.amountInputState !== undefined
+          ? opts.amountInputState
+          : amountInputMode === 'usd'
+          ? getAmountInputUrlStateForTokenAmount(nextAmount)
+          : undefined;
       form.setFieldsValue(nextValues);
       handleFormValuesChange(null, nextValues, {
         updateSliderValue: opts?.updateSliderValue,
         updateHistoryState: opts?.updateHistoryState,
-        amountInputState: opts?.amountInputState,
+        ...(nextAmountInputState !== undefined && {
+          amountInputState: nextAmountInputState,
+        }),
       });
     },
-    [form, handleFormValuesChange]
+    [
+      amountInputMode,
+      form,
+      getAmountInputUrlStateForTokenAmount,
+      handleFormValuesChange,
+    ]
   );
+
+  const clearAmountForAccountChange = useCallback(async () => {
+    shouldClearAmountForAccountChangeRef.current = true;
+    cancelClickedMax();
+    resetAmountInputState();
+
+    const nextValues = {
+      ...form.getFieldsValue(),
+      amount: '',
+    };
+    form.setFieldsValue(nextValues);
+    await handleFormValuesChange({ amount: '' }, nextValues, {
+      updateSliderValue: true,
+      amountInputState: null,
+    });
+  }, [cancelClickedMax, form, handleFormValuesChange, resetAmountInputState]);
 
   const previousAccountAddress = usePrevious(currentAccount?.address);
   useEffect(() => {
@@ -1740,25 +1844,17 @@ const SendToken = () => {
       previousAccountAddress &&
       !isSameAddress(previousAccountAddress, currentAccount?.address || '')
     ) {
-      resetAmountInputState();
-      form.setFieldsValue({ amount: '' });
-      handleFormValuesChange(
-        { amount: '' },
-        {
-          ...form.getFieldsValue(),
-          amount: '',
-        },
-        {
-          updateSliderValue: true,
-        }
-      );
+      clearAmountForAccountChange().catch((error) => {
+        console.error(
+          '[SendToken] clear amount on account change error',
+          error
+        );
+      });
     }
   }, [
     previousAccountAddress,
     currentAccount?.address,
-    form,
-    handleFormValuesChange,
-    resetAmountInputState,
+    clearAmountForAccountChange,
   ]);
 
   const estimateGasOnChain = useCallback(
@@ -2217,8 +2313,17 @@ const SendToken = () => {
         ...values,
         amount,
       };
+      const nextAmountInputState =
+        amountInputMode === 'usd'
+          ? getAmountInputUrlStateForTokenAmount(amount)
+          : undefined;
       form.setFieldsValue(newValues);
-      handleFormValuesChange(null, newValues, { updateSliderValue });
+      handleFormValuesChange(null, newValues, {
+        updateSliderValue,
+        ...(amountInputMode === 'usd' && {
+          amountInputState: nextAmountInputState,
+        }),
+      });
 
       setTimeout(() => {
         setRefreshId((e) => e + 1);
@@ -2232,6 +2337,8 @@ const SendToken = () => {
       loadGasListAndResolve,
       couldReserveGas,
       form,
+      amountInputMode,
+      getAmountInputUrlStateForTokenAmount,
       handleFormValuesChange,
       setShowGasReserved,
       estimateGasOnChain,
@@ -2455,23 +2562,42 @@ const SendToken = () => {
       const account = (await wallet.syncGetCurrentAccount())!;
       const qs = query2obj(history.location.search);
       const cache = await wallet.getPageStateCache();
+      const shouldClearAmountForAccountChange =
+        shouldClearAmountForAccountChangeRef.current;
+      if (shouldClearAmountForAccountChange) {
+        shouldClearAmountForAccountChangeRef.current = false;
+      }
       const isMatchedSendTokenCache =
         cache?.path === history.location.pathname &&
         (!cache.search ||
           normalizeSearchString(cache.search) ===
             normalizeSearchString(history.location.search));
       const sendTokenCache = isMatchedSendTokenCache ? cache : null;
-      const cachedFormValues = sendTokenCache?.states?.values as
+      const rawCachedFormValues = sendTokenCache?.states?.values as
         | FormSendToken
         | undefined;
-      const cachedAmountInputState = sendTokenCache?.states
-        ?.amountInputState as SendAmountInputUrlState | null | undefined;
+      const cachedFormValues =
+        shouldClearAmountForAccountChange && rawCachedFormValues
+          ? {
+              ...rawCachedFormValues,
+              amount: '',
+            }
+          : rawCachedFormValues;
+      const cachedAmountInputState = shouldClearAmountForAccountChange
+        ? null
+        : (sendTokenCache?.states?.amountInputState as
+            | SendAmountInputUrlState
+            | null
+            | undefined);
+      const amountInputStateToRestore = shouldClearAmountForAccountChange
+        ? null
+        : paramAmountInputState || cachedAmountInputState || null;
       const restoreAmountInputState = (
         token?: TokenItem | null,
         tokenAmount = ''
       ) => {
         return applyRestoredAmountInputState(
-          paramAmountInputState || cachedAmountInputState || null,
+          amountInputStateToRestore,
           token,
           tokenAmount
         );
@@ -2497,6 +2623,7 @@ const SendToken = () => {
       };
       const fillAmount = (token?: TokenItem) => {
         if (filledAmountRef.current) return;
+        if (shouldClearAmountForAccountChange) return;
 
         if (Object.prototype.hasOwnProperty.call(qs, 'amount')) {
           filledAmountRef.current = true;
@@ -2695,18 +2822,16 @@ const SendToken = () => {
   }, [currentToken, clickedMax, selectedGasLevel]);
 
   const tokenSymbol = currentToken ? getTokenSymbol(currentToken) : '';
-  const safeFormAmount = useMemo(() => getSafeAmountBn(displayFormAmount), [
-    displayFormAmount,
+  const safeFormAmount = useMemo(() => getSafeAmountBn(displayAmountForUsd), [
+    displayAmountForUsd,
   ]);
   const shouldShowSmallUsdMaxAmountText =
     amountInputMode === 'usd' &&
-    shouldDisplaySmallUsdMaxAmount({
-      tokenAmount: displayFormAmount,
-      usdPrice: activeUsdPrice,
-      isUsdMaxAmountActive,
-    });
+    amountInputDisplayState.shouldShowSmallUsdMaxAmount;
   const amountInputDisplayValue =
-    amountInputMode === 'usd' ? usdInputValue : undefined;
+    amountInputMode === 'usd'
+      ? amountInputDisplayState.usdInputValue
+      : undefined;
   const amountInputDisplayValueText = shouldShowSmallUsdMaxAmountText
     ? SMALL_USD_AMOUNT_TEXT
     : undefined;
@@ -2767,6 +2892,16 @@ const SendToken = () => {
           isShowAccount
           canBack={!(isTab || isDesktop)}
           className="mb-[10px]"
+          onBeforeSwitchAccountChange={async (nextAccount) => {
+            if (
+              currentAccount?.address &&
+              isSameAddress(currentAccount.address, nextAccount.address)
+            ) {
+              return;
+            }
+
+            await clearAmountForAccountChange();
+          }}
           rightSlot={
             isTab || isDesktop ? null : (
               <div

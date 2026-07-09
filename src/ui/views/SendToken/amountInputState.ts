@@ -158,6 +158,29 @@ export function normalizeUsdAmountInputUrlStateForTokenAmount(
   };
 }
 
+export function getUsdAmountInputDisplayState(input: {
+  state?: SendAmountInputUrlState | null;
+  tokenAmount?: string | number | null;
+}) {
+  const normalizedState = normalizeUsdAmountInputUrlStateForTokenAmount(
+    input.state,
+    input.tokenAmount
+  );
+  const shouldShowSmallUsdMaxAmount = shouldDisplaySmallUsdMaxAmount({
+    tokenAmount: input.tokenAmount,
+    usdPrice: normalizedState?.usdPrice,
+    isUsdMaxAmountActive: normalizedState?.isUsdMaxAmountActive,
+  });
+
+  return {
+    state: normalizedState,
+    usdInputValue: shouldShowSmallUsdMaxAmount
+      ? ''
+      : normalizedState?.usdInputValue || '',
+    shouldShowSmallUsdMaxAmount,
+  };
+}
+
 function getQueryValue(
   query: URLSearchParams | Record<string, string>,
   key: string

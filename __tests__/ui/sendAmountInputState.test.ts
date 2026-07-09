@@ -3,6 +3,7 @@ import {
   buildAmountInputQueryFields,
   createUsdAmountInputUrlState,
   getNextUsdPriceSnapshot,
+  getUsdAmountInputDisplayState,
   normalizeUsdAmountInputUrlStateForTokenAmount,
   parseAmountInputUrlState,
   shouldDisplaySmallUsdMaxAmount,
@@ -60,6 +61,36 @@ describe('send amount input url state', () => {
     applyAmountInputUrlStateToSearchParams(searchParams, null);
 
     expect(searchParams.get('amount')).toBe('1');
+    expect(searchParams.get('amountInputMode')).toBeNull();
+    expect(searchParams.get('usdInputValue')).toBeNull();
+    expect(searchParams.get('usdPrice')).toBeNull();
+    expect(searchParams.get('usdTokenKey')).toBeNull();
+    expect(searchParams.get('usdMax')).toBeNull();
+  });
+
+  it('clears only USD query fields when sender account reset keeps send context', () => {
+    const searchParams = new URLSearchParams({
+      to: '0x0000000000000000000000000000000000000001',
+      type: 'send-token',
+      token: 'eth:eth',
+      amount: '',
+      rbisource: 'dashboard',
+      amountInputMode: 'usd',
+      usdInputValue: '100',
+      usdPrice: '3000',
+      usdTokenKey: 'eth:eth',
+      usdMax: '1',
+    });
+
+    applyAmountInputUrlStateToSearchParams(searchParams, null);
+
+    expect(searchParams.get('to')).toBe(
+      '0x0000000000000000000000000000000000000001'
+    );
+    expect(searchParams.get('type')).toBe('send-token');
+    expect(searchParams.get('token')).toBe('eth:eth');
+    expect(searchParams.get('amount')).toBe('');
+    expect(searchParams.get('rbisource')).toBe('dashboard');
     expect(searchParams.get('amountInputMode')).toBeNull();
     expect(searchParams.get('usdInputValue')).toBeNull();
     expect(searchParams.get('usdPrice')).toBeNull();
@@ -176,5 +207,51 @@ describe('send amount input url state', () => {
     expect(
       normalizeUsdAmountInputUrlStateForTokenAmount(state, '0.00001')
     ).toEqual(state);
+  });
+
+  it('builds small USD max display state without exposing token amount', () => {
+    const state = createUsdAmountInputUrlState({
+      tokenKey: 'eth:eth',
+      usdInputValue: '0.00',
+      usdPrice: 1000,
+      isUsdMaxAmountActive: true,
+    });
+
+    expect(
+      getUsdAmountInputDisplayState({
+        state,
+        tokenAmount: '0.000003',
+      })
+    ).toEqual({
+      state: {
+        mode: 'usd',
+        usdInputValue: '',
+        usdPrice: 1000,
+        tokenKey: 'eth:eth',
+        isUsdMaxAmountActive: true,
+      },
+      usdInputValue: '',
+      shouldShowSmallUsdMaxAmount: true,
+    });
+  });
+
+  it('keeps normal USD display state for non-small max amount', () => {
+    const state = createUsdAmountInputUrlState({
+      tokenKey: 'eth:eth',
+      usdInputValue: '0.01',
+      usdPrice: 1000,
+      isUsdMaxAmountActive: true,
+    });
+
+    expect(
+      getUsdAmountInputDisplayState({
+        state,
+        tokenAmount: '0.00001',
+      })
+    ).toEqual({
+      state,
+      usdInputValue: '0.01',
+      shouldShowSmallUsdMaxAmount: false,
+    });
   });
 });
