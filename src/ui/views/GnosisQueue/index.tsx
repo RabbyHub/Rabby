@@ -61,7 +61,7 @@ export const GnosisQueue: React.FC<{
       )}
     >
       {isInModal ? (
-        <div className="text-[20px] leading-[24px] font-medium text-center py-[16px]">
+        <div className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 text-center py-[16px]">
           {t('page.safeQueue.title', {
             total: total,
           })}
