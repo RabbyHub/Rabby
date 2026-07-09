@@ -241,12 +241,19 @@ export const ProtocolItem = ({
             )}
             onClick={(evt) => {
               evt.stopPropagation();
-              openInTab(
-                protocol.id === 'hyperliquid' && isShowPerpsInvite
-                  ? PERPS_INVITE_URL
-                  : protocol.site_url,
-                false
-              );
+              if (protocol.id === 'hyperliquid') {
+                wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount!);
+                wallet.openInDesktop('/desktop/perps');
+                window.close();
+              } else {
+                openInTab(
+                  protocol.id === 'hyperliquid' && isShowPerpsInvite
+                    ? PERPS_INVITE_URL
+                    : protocol.site_url,
+                  false
+                );
+              }
             }}
           >
             <span className="name items-center truncate min-w-0">

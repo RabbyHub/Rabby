@@ -1678,7 +1678,6 @@ export const WHITELIST_SPENDER = [
   { chain: 'eth', address: '0x2c9b3d4e7a82feec1843c1e0e6f1c8fdcb7a1680' },
   { chain: 'eth', address: '0x2cd982b72a0a516b1215030fd9d272dee773e743' },
   { chain: 'eth', address: '0x2d78057084ca467c322a46c2530fe9679feb5779' },
-  { chain: 'eth', address: '0x2d7d5b1706653796602617350571b3f8999b950c' },
   { chain: 'eth', address: '0x2db1ec186acdeaf7d0fc78bffe335560b0fe0085' },
   { chain: 'eth', address: '0x2de5ae18750fbf82821212194d59acc989469cdd' },
   { chain: 'eth', address: '0x2e5dbaa86fca7cb73f060300c55b51c72f1b8554' },

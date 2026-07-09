@@ -5,6 +5,7 @@ import {
 } from '@rabby-wallet/rabby-swap';
 import { ensureChainHashValid, findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
+import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 
 export const DEX_SUPPORT_CHAINS = Object.entries(RS_DEX_SUPPORT_CHAINS).reduce(
   (accu, [dexItem, value]) => {
@@ -55,6 +56,257 @@ type StableCoinMapT = Record<StableCoin, Partial<Record<CHAINS_ENUM, string>>>;
 type StablecoinAggregatedByChainT = Partial<
   Record<CHAINS_ENUM, Partial<Record<StableCoin, string>>>
 >;
+
+export const DEFAULT_SWAP_TO_TOKEN_ITEM_BY_CHAIN_SERVER_ID: Record<
+  string,
+  TokenItem
+> = {
+  avax: {
+    id: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e',
+    chain: 'avax',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    display_symbol: null,
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/avax_token/logo_url/0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e/511c3401e4cf1db72608249c7d5a01e6.png',
+    protocol_id: '',
+    price: 1.001201441730076,
+    price_24h_change: 0.000035006609682264496,
+    time_at: 1637802339,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  eth: {
+    id: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+    chain: 'eth',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    display_symbol: null,
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/eth_token/logo_url/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/fffcd27b9efff5a86ab942084c05924d.png',
+    protocol_id: '',
+    price: 1.001201441730076,
+    price_24h_change: 0.00031114040028824136,
+    time_at: 1533324504,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  base: {
+    id: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
+    chain: 'base',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    display_symbol: null,
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/eth_token/logo_url/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/fffcd27b9efff5a86ab942084c05924d.png',
+    protocol_id: '',
+    price: 1.001201441730076,
+    price_24h_change: 0,
+    time_at: 1692383789,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  bsc: {
+    id: '0x55d398326f99059ff775485246999027b3197955',
+    chain: 'bsc',
+    name: 'Tether USD',
+    symbol: 'USDT',
+    display_symbol: null,
+    optimized_symbol: 'USDT',
+    decimals: 18,
+    logo_url:
+      'https://static.debank.com/image/coin/logo_url/usdt/23af7472292cb41dc39b3f1146ead0fe.png',
+    protocol_id: '',
+    price: 0.99846,
+    price_24h_change: -0.00018024513338135663,
+    time_at: 1599201028,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  hyper: {
+    id: '0xb88339cb7199b77e23db6e890353e22632ba630f',
+    chain: 'hyper',
+    name: 'USDC',
+    symbol: 'USDC',
+    display_symbol: null,
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
+    protocol_id: '',
+    price: 1.0009102967576549,
+    price_24h_change: -0.00039471711751804434,
+    time_at: 1755006480,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  op: {
+    id: '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
+    chain: 'op',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    display_symbol: null,
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/eth_token/logo_url/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48/fffcd27b9efff5a86ab942084c05924d.png',
+    protocol_id: '',
+    price: 1.001201441730076,
+    price_24h_change: 0.00010012014417294115,
+    time_at: 1668453318,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  matic: {
+    id: '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
+    chain: 'matic',
+    name: 'USDT0',
+    symbol: 'USDT0',
+    display_symbol: null,
+    optimized_symbol: 'USDT0',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/matic_token/logo_url/0xc2132d05d31c914a87c6611c10748aeb04b58e8f/3a2803ff6129961e8fa48f8b66d06735.png',
+    protocol_id: 'matic_usdt0',
+    price: 0.99839,
+    price_24h_change: -0.0001502042778178157,
+    time_at: 1599512847,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  sonic: {
+    id: '0x29219dd400f2bf60e5a23d13be72b486d4038894',
+    chain: 'sonic',
+    name: 'USDC',
+    symbol: 'USDC',
+    display_symbol: null,
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
+    protocol_id: '',
+    price: 1.001201441730076,
+    price_24h_change: 0.00010004001600640258,
+    time_at: 1734449128,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  uni: {
+    id: '0x078d782b760474a361dda0af3839290b0ef57ad6',
+    chain: 'uni',
+    name: 'USDC',
+    symbol: 'USDC',
+    display_symbol: null,
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
+    protocol_id: '',
+    price: 1.001201441730076,
+    price_24h_change: 0.00010012014417294115,
+    time_at: 1730847151,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  arb: {
+    id: '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
+    chain: 'arb',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    display_symbol: null,
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/arb_token/logo_url/0xaf88d065e77c8cc2239327c5edb3a432268e5831/fffcd27b9efff5a86ab942084c05924d.png',
+    protocol_id: '',
+    price: 1.001201441730076,
+    price_24h_change: 0,
+    time_at: 1667248932,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  monad: {
+    id: '0x754704bc059f8c67012fed69bc8a327a5aafb603',
+    chain: 'monad',
+    name: 'USDC',
+    symbol: 'USDC',
+    display_symbol: 'USDC',
+    optimized_symbol: 'USDC',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
+    protocol_id: '',
+    price: 1.001201441730076,
+    price_24h_change: 0.00010004001600640258,
+    time_at: 1758031902,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+  plasma: {
+    id: '0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb',
+    chain: 'plasma',
+    name: 'USDT0',
+    symbol: 'USDT0',
+    display_symbol: null,
+    optimized_symbol: 'USDT0',
+    decimals: 6,
+    logo_url:
+      'https://static.debank.com/image/plasma_token/logo_url/0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb/8bba37fddc2774e06a94b8952e3e3ad7.png',
+    protocol_id: 'plasma_usdt0',
+    price: 0.99839,
+    price_24h_change: -0.00014019206312651232,
+    time_at: 1757345331,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    amount: 0,
+  },
+};
+
+export const getDefaultSwapToTokenItem = (chain?: CHAINS_ENUM) => {
+  const chainInfo = chain ? findChainByEnum(chain) : undefined;
+  const token = chainInfo
+    ? DEFAULT_SWAP_TO_TOKEN_ITEM_BY_CHAIN_SERVER_ID[chainInfo.serverId]
+    : undefined;
+  return token
+    ? {
+        ...token,
+        is_scam: false,
+        is_suspicious: false,
+        low_credit_score: false,
+        raw_amount: '0',
+        raw_amount_hex_str: '0x0',
+      }
+    : undefined;
+};
 
 const stablecoinAddressMap: StableCoinMapT = {
   usdt: {

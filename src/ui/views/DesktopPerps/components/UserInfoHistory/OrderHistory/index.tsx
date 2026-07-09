@@ -18,6 +18,22 @@ import { DashedUnderlineText } from '../../DashedUnderlineText';
 import { formatPerpsOrderStatus } from '@/ui/views/DesktopPerps/utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 
+// The order table has many columns. Instead of squeezing them until values
+// overflow, give the whole table a minimum width: above it the columns stretch
+// to fill, below it the entire table (header + virtualized body together)
+// scrolls horizontally. Only one overall min-width is set — no per-column
+// widths — so antd distributes the space across columns automatically.
+const TableScrollX = styled.div`
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+`;
+
+const TableMinWidth = styled.div`
+  height: 100%;
+  min-width: 1300px;
+`;
+
 export const OrderHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const historicalOrders = useRabbySelector((store) => {
@@ -82,7 +98,7 @@ export const OrderHistory: React.FC = () => {
         title: t('page.perpsPro.userInfo.tab.coin'),
         key: 'coin',
         dataIndex: 'coin',
-        // width: 100,
+        width: 142,
         sorter: (a, b) => a.order.coin.localeCompare(b.order.coin),
         render: (_, record) => {
           return (
@@ -286,18 +302,22 @@ export const OrderHistory: React.FC = () => {
     [marketDataMap]
   );
   return (
-    <CommonTable
-      emptyMessage={t('page.perpsPro.userInfo.emptyMessage.openOrders')}
-      dataSource={list}
-      columns={columns}
-      pagination={false}
-      bordered={false}
-      showSorterTooltip={false}
-      rowKey={(record) => `${record.order.oid}-${record.status}`}
-      defaultSortField="statusTimestamp"
-      defaultSortOrder="descend"
-      virtual
-      rowHeight={32}
-    />
+    <TableScrollX>
+      <TableMinWidth>
+        <CommonTable
+          emptyMessage={t('page.perpsPro.userInfo.emptyMessage.openOrders')}
+          dataSource={list}
+          columns={columns}
+          pagination={false}
+          bordered={false}
+          showSorterTooltip={false}
+          rowKey={(record) => `${record.order.oid}-${record.status}`}
+          defaultSortField="statusTimestamp"
+          defaultSortOrder="descend"
+          virtual
+          rowHeight={28}
+        />
+      </TableMinWidth>
+    </TableScrollX>
   );
 };

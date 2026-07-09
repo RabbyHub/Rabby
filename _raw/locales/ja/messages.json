@@ -5017,7 +5017,8 @@
     },
     "screenshotModal": {
       "title": "フィードバック用スクリーンショット",
-      "placeholder": "問題を説明してください"
+      "placeholder": "問題を説明してください",
+      "placeholderRequired": "問題を説明してください（必須）"
     },
     "feedbackPopup": {
       "title": "Rabbyサポートからの回答",

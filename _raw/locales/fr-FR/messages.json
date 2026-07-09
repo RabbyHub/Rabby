@@ -281,7 +281,8 @@
     },
     "screenshotModal": {
       "title": "Capture d'écran pour le feedback",
-      "placeholder": "Décrivez le problème"
+      "placeholder": "Décrivez le problème",
+      "placeholderRequired": "Décrivez le problème (obligatoire)"
     },
     "feedbackPopup": {
       "title": "Réponse du support Rabby",

@@ -14,28 +14,14 @@ export const getSentryConfig = (): BrowserOptions => ({
   dsn: SENTRY_DSN,
   release: process.env.release,
   environment: getSentryEnv(),
+  skipBrowserExtensionCheck: true,
   integrations: (defaultIntegrations) =>
     defaultIntegrations.filter(
       (integration) => integration.name !== 'BrowserSession'
     ),
   enhanceFetchErrorMessages: 'report-only',
   maxBreadcrumbs: 50,
-  dataCollection: {
-    userInfo: false,
-    cookies: false,
-    httpHeaders: {
-      request: false,
-      response: false,
-    },
-    httpBodies: [],
-    queryParams: false,
-    genAI: {
-      inputs: false,
-      outputs: false,
-    },
-    stackFrameVariables: false,
-    frameContextLines: 5,
-  },
+  sendDefaultPii: true,
   beforeBreadcrumb: (breadcrumb) => {
     // Console output and clicked DOM text may contain wallet data.
     if (
