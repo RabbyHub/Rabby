@@ -14,13 +14,30 @@ export const getFirstPreferredLangCode = async () => {
     userPreferredLocaleCodes = [];
   }
   let firstPreferredLangCode = 'en';
+  const supportedLocales = LANGS.map((item) => ({
+    item,
+    locale: new Intl.Locale(item.code),
+  }));
   for (const code of userPreferredLocaleCodes) {
-    const lang = LANGS.find((item) => {
-      return (
-        code.toLowerCase() === item.code.toLowerCase() ||
-        item.code.toLowerCase() === code.toLowerCase().split('-')[0]
-      );
-    });
+    const preferredLocale = new Intl.Locale(code);
+    const maximizedPreferredLocale = preferredLocale.maximize();
+    const lang =
+      supportedLocales.find(
+        ({ locale }) => locale.baseName === preferredLocale.baseName
+      )?.item ||
+      supportedLocales.find(
+        ({ locale }) =>
+          locale.language === preferredLocale.language &&
+          !locale.script &&
+          !locale.region
+      )?.item ||
+      supportedLocales.find(({ locale }) => {
+        const supportedLocale = locale.maximize();
+        return (
+          supportedLocale.language === maximizedPreferredLocale.language &&
+          supportedLocale.script === maximizedPreferredLocale.script
+        );
+      })?.item;
     if (lang) {
       firstPreferredLangCode = lang.code;
       break;
