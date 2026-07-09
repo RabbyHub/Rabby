@@ -1,6 +1,8 @@
 import {
   applyAmountInputUrlStateToSearchParams,
+  areAmountInputTokenAmountsEqual,
   buildAmountInputQueryFields,
+  chooseRestoredUsdAmountInputState,
   createUsdAmountInputUrlState,
   getNextUsdPriceSnapshot,
   getUsdAmountInputDisplayState,
@@ -10,6 +12,15 @@ import {
 } from '@/ui/views/SendToken/amountInputState';
 
 describe('send amount input url state', () => {
+  it('compares restored token amounts by numeric value', () => {
+    expect(areAmountInputTokenAmountsEqual('1', '1.0')).toBe(true);
+    expect(areAmountInputTokenAmountsEqual('0.1000', '0.1')).toBe(true);
+    expect(areAmountInputTokenAmountsEqual('', '0')).toBe(false);
+    expect(areAmountInputTokenAmountsEqual('1', '1.0001')).toBe(false);
+    expect(areAmountInputTokenAmountsEqual('abc', 'abc')).toBe(true);
+    expect(areAmountInputTokenAmountsEqual('abc', '1')).toBe(false);
+  });
+
   it('serializes and parses USD input state', () => {
     const state = createUsdAmountInputUrlState({
       tokenKey: 'ETH:0xAbC',
@@ -28,6 +39,40 @@ describe('send amount input url state', () => {
     expect(
       parseAmountInputUrlState(buildAmountInputQueryFields(state))
     ).toEqual(state);
+  });
+
+  it('prefers non-empty cached USD input over empty URL USD state for the same token', () => {
+    const paramState = createUsdAmountInputUrlState({
+      tokenKey: 'eth:eth',
+      usdInputValue: '',
+      usdPrice: 3000,
+    });
+    const cachedState = createUsdAmountInputUrlState({
+      tokenKey: 'eth:eth',
+      usdInputValue: '99.99',
+      usdPrice: 3000,
+    });
+
+    expect(chooseRestoredUsdAmountInputState({ paramState, cachedState })).toBe(
+      cachedState
+    );
+  });
+
+  it('keeps non-empty URL USD input ahead of cached state', () => {
+    const paramState = createUsdAmountInputUrlState({
+      tokenKey: 'eth:eth',
+      usdInputValue: '12.34',
+      usdPrice: 3000,
+    });
+    const cachedState = createUsdAmountInputUrlState({
+      tokenKey: 'eth:eth',
+      usdInputValue: '99.99',
+      usdPrice: 3000,
+    });
+
+    expect(chooseRestoredUsdAmountInputState({ paramState, cachedState })).toBe(
+      paramState
+    );
   });
 
   it('rejects malformed USD state', () => {

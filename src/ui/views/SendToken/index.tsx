@@ -128,6 +128,7 @@ import {
   USD_INPUT_RE,
   applyAmountInputUrlStateToSearchParams,
   buildAmountInputQueryFields,
+  chooseRestoredUsdAmountInputState,
   createUsdAmountInputUrlState,
   getNextUsdPriceSnapshot,
   getUsdAmountInputDisplayState,
@@ -181,6 +182,7 @@ type FormSendToken = {
 };
 
 const SMALL_USD_AMOUNT_TEXT = '<0.01';
+const AMOUNT_BALANCE_ERROR_QUERY_KEY = 'amountBalanceError';
 
 type SendTopUpSnapshot = {
   amount: string;
@@ -196,6 +198,22 @@ function getSendAmountTokenKey(token?: Pick<TokenItem, 'chain' | 'id'> | null) {
 function getSafeAmountBn(amount?: string | number | BigNumber | null) {
   const bn = new BigNumber(amount || 0);
   return bn.isFinite() && !bn.isNaN() ? bn : new BigNumber(0);
+}
+
+function isSendAmountGreaterThanBalance(
+  amount: string | number | BigNumber,
+  token?: TokenItem | null
+) {
+  if (!token) {
+    return false;
+  }
+
+  const amountBn = getSafeAmountBn(amount);
+  const balanceBn = new BigNumber(token.raw_amount_hex_str || 0).div(
+    10 ** token.decimals
+  );
+
+  return amountBn.gt(balanceBn);
 }
 
 function getValidTokenDecimals(decimals?: number | null) {
@@ -333,6 +351,7 @@ const SendToken = () => {
     toAddressType,
     paramAmount,
     paramAmountInputState,
+    paramAmountBalanceError,
   } = useMemo(() => {
     const query = new URLSearchParams(search);
     return {
@@ -340,9 +359,10 @@ const SendToken = () => {
       toAddressType: query.get('type') || '',
       paramAmount: query.get('amount') || '',
       paramAmountInputState: parseAmountInputUrlState(query),
+      paramAmountBalanceError:
+        query.get(AMOUNT_BALANCE_ERROR_QUERY_KEY) === '1',
     };
   }, [search]);
-
   const currentAccount = useCurrentAccount();
   const currentAccountAddress = currentAccount?.address;
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
@@ -359,11 +379,13 @@ const SendToken = () => {
   const [isUsdMaxAmountActive, setIsUsdMaxAmountActive] = useState(
     () => paramAmountInputState?.isUsdMaxAmountActive || false
   );
-  const lastUsdInputTokenAmountRef = useRef('');
   const amountInputUrlStateRef = useRef<SendAmountInputUrlState | null>(
     paramAmountInputState
   );
   const shouldClearAmountForAccountChangeRef = useRef(false);
+  const persistPageStateCacheQueueRef = useRef<Promise<void>>(
+    Promise.resolve()
+  );
   const [usdPriceSnapshot, setUsdPriceSnapshot] = useState<{
     tokenKey: string;
     price: number | null;
@@ -382,9 +404,17 @@ const SendToken = () => {
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState<string | null>(null);
+  const [
+    balanceErrorDisplayOverride,
+    setBalanceErrorDisplayOverride,
+  ] = useState(() => paramAmountBalanceError);
+
+  useEffect(() => {
+    setBalanceErrorDisplayOverride(paramAmountBalanceError);
+  }, [paramAmountBalanceError]);
 
   const persistPageStateCache = useCallback(
-    async (
+    (
       nextStateCache?: {
         values?: FormSendToken;
         currentToken?: TokenItem | null;
@@ -400,20 +430,27 @@ const SendToken = () => {
         search?: string;
       }
     ) => {
-      await wallet.setPageStateCache({
-        path: '/send-token',
-        search: normalizeSearchString(
-          options?.search ?? history.location.search
-        ),
-        params: {},
-        states: {
-          values: form.getFieldsValue(),
-          currentToken,
-          safeInfo,
-          amountInputState: amountInputUrlStateRef.current,
-          ...nextStateCache,
-        },
-      });
+      const nextTask = persistPageStateCacheQueueRef.current
+        .catch(() => undefined)
+        .then(() =>
+          wallet.setPageStateCache({
+            path: '/send-token',
+            search: normalizeSearchString(
+              options?.search ?? history.location.search
+            ),
+            params: {},
+            states: {
+              values: form.getFieldsValue(),
+              currentToken,
+              safeInfo,
+              amountInputState: amountInputUrlStateRef.current,
+              ...nextStateCache,
+            },
+          })
+        );
+
+      persistPageStateCacheQueueRef.current = nextTask.catch(() => undefined);
+      return nextTask;
     },
     [wallet, history, form, currentToken, safeInfo]
   );
@@ -1189,6 +1226,7 @@ const SendToken = () => {
       token?: TokenItem | null;
       amount?: string;
       amountInputState?: SendAmountInputUrlState | null;
+      amountBalanceError?: boolean;
     }) => {
       const { token, amount } = input;
       const searchParams = new URLSearchParams(history.location.search);
@@ -1206,6 +1244,13 @@ const SendToken = () => {
           input.amountInputState
         );
       }
+      if (Object.prototype.hasOwnProperty.call(input, 'amountBalanceError')) {
+        if (input.amountBalanceError) {
+          searchParams.set(AMOUNT_BALANCE_ERROR_QUERY_KEY, '1');
+        } else {
+          searchParams.delete(AMOUNT_BALANCE_ERROR_QUERY_KEY);
+        }
+      }
 
       return normalizeSearchString(searchParams.toString());
     },
@@ -1217,6 +1262,7 @@ const SendToken = () => {
       token?: TokenItem | null;
       amount?: string;
       amountInputState?: SendAmountInputUrlState | null;
+      amountBalanceError?: boolean;
     }) => {
       const search = buildHistorySearch(input);
       history.replace({
@@ -1270,7 +1316,6 @@ const SendToken = () => {
     setAmountInputMode('token');
     setUsdInputValue('');
     setIsUsdMaxAmountActive(false);
-    lastUsdInputTokenAmountRef.current = '';
     amountInputUrlStateRef.current = null;
   }, []);
   const amountInputHasValue = useMemo(() => {
@@ -1360,6 +1405,60 @@ const SendToken = () => {
       isUsdMaxAmountActive,
       usdInputValue,
     ]
+  );
+  const getDerivedAmountInputStateForTokenAmount = useCallback(
+    (
+      tokenAmount = '',
+      overrides?: Partial<Pick<SendAmountInputUrlState, 'isUsdMaxAmountActive'>>
+    ) => {
+      if (amountInputMode !== 'usd' || !activeUsdPrice) {
+        return null;
+      }
+
+      const nextIsUsdMaxAmountActive =
+        overrides?.isUsdMaxAmountActive ??
+        amountInputUrlStateRef.current?.isUsdMaxAmountActive ??
+        isUsdMaxAmountActive;
+      const nextUsdInputValue = shouldDisplaySmallUsdMaxAmount({
+        tokenAmount,
+        usdPrice: activeUsdPrice,
+        isUsdMaxAmountActive: nextIsUsdMaxAmountActive,
+      })
+        ? ''
+        : formatUsdInputValueFromTokenAmount(tokenAmount, activeUsdPrice);
+
+      return normalizeUsdAmountInputUrlStateForTokenAmount(
+        createUsdAmountInputUrlState({
+          tokenKey: currentTokenKey,
+          usdInputValue: nextUsdInputValue,
+          usdPrice: activeUsdPrice,
+          isUsdMaxAmountActive: nextIsUsdMaxAmountActive,
+        }),
+        tokenAmount
+      );
+    },
+    [activeUsdPrice, amountInputMode, currentTokenKey, isUsdMaxAmountActive]
+  );
+  const applyDerivedAmountInputStateForTokenAmount = useCallback(
+    (
+      tokenAmount = '',
+      overrides?: Partial<Pick<SendAmountInputUrlState, 'isUsdMaxAmountActive'>>
+    ) => {
+      const nextState = getDerivedAmountInputStateForTokenAmount(
+        tokenAmount,
+        overrides
+      );
+
+      if (!nextState) {
+        return nextState;
+      }
+
+      setUsdInputValue(nextState.usdInputValue);
+      setIsUsdMaxAmountActive(nextState.isUsdMaxAmountActive);
+      amountInputUrlStateRef.current = nextState;
+      return nextState;
+    },
+    [getDerivedAmountInputStateForTokenAmount]
   );
   const restoredAmountInputState = amountInputUrlStateRef.current;
   const amountInputDisplayState = useMemo(() => {
@@ -1475,7 +1574,6 @@ const SendToken = () => {
       setAmountInputMode('usd');
       setUsdInputValue(nextState.usdInputValue);
       setIsUsdMaxAmountActive(nextState.isUsdMaxAmountActive);
-      lastUsdInputTokenAmountRef.current = tokenAmount;
       amountInputUrlStateRef.current = nextState;
       return nextState;
     },
@@ -1721,14 +1819,12 @@ const SendToken = () => {
         }
       }
 
-      if (
-        targetToken &&
-        new BigNumber(resultAmount || 0).isGreaterThan(
-          new BigNumber(targetToken.raw_amount_hex_str || 0).div(
-            10 ** targetToken.decimals
-          )
-        )
-      ) {
+      const hasInsufficientBalance = isSendAmountGreaterThanBalance(
+        resultAmount || 0,
+        targetToken
+      );
+      setBalanceErrorDisplayOverride(hasInsufficientBalance);
+      if (hasInsufficientBalance) {
         // Insufficient balance
         setBalanceError(t('page.sendToken.balanceError.insufficientBalance'));
       } else {
@@ -1747,6 +1843,7 @@ const SendToken = () => {
         ? replaceHistorySearch({
             amount: resultAmount || '',
             amountInputState: nextAmountInputState,
+            amountBalanceError: hasInsufficientBalance,
           })
         : undefined;
 
@@ -1803,7 +1900,7 @@ const SendToken = () => {
         opts?.amountInputState !== undefined
           ? opts.amountInputState
           : amountInputMode === 'usd'
-          ? getAmountInputUrlStateForTokenAmount(nextAmount)
+          ? applyDerivedAmountInputStateForTokenAmount(nextAmount)
           : undefined;
       form.setFieldsValue(nextValues);
       handleFormValuesChange(null, nextValues, {
@@ -1816,8 +1913,8 @@ const SendToken = () => {
     },
     [
       amountInputMode,
+      applyDerivedAmountInputStateForTokenAmount,
       form,
-      getAmountInputUrlStateForTokenAmount,
       handleFormValuesChange,
     ]
   );
@@ -1969,19 +2066,21 @@ const SendToken = () => {
         const currentValues = form.getFieldsValue();
         if (currentValues.amount && result) {
           const amount = currentValues.amount;
-          if (
-            new BigNumber(amount || 0).isGreaterThan(
-              new BigNumber(result.raw_amount_hex_str || 0).div(
-                10 ** result.decimals
-              )
-            )
-          ) {
+          const hasInsufficientBalance = isSendAmountGreaterThanBalance(
+            amount || 0,
+            result
+          );
+          setBalanceErrorDisplayOverride(hasInsufficientBalance);
+          if (hasInsufficientBalance) {
             setBalanceError(
               t('page.sendToken.balanceError.insufficientBalance')
             );
           } else {
             setBalanceError(null);
           }
+        } else {
+          setBalanceErrorDisplayOverride(false);
+          setBalanceError(null);
         }
       }
       setIsLoading(false);
@@ -2008,11 +2107,44 @@ const SendToken = () => {
       }
 
       setIsUsdMaxAmountActive(false);
-      lastUsdInputTokenAmountRef.current = '';
       amountInputUrlStateRef.current = null;
       return normalizedValue;
     },
     [currentToken?.decimals]
+  );
+
+  const persistAmountInputStateForAmount = useCallback(
+    (tokenAmount: string, amountInputState: SendAmountInputUrlState | null) => {
+      const hasInsufficientBalance = isSendAmountGreaterThanBalance(
+        tokenAmount || 0,
+        currentToken
+      );
+      setBalanceErrorDisplayOverride(hasInsufficientBalance);
+
+      const nextValues = {
+        ...form.getFieldsValue(),
+        amount: tokenAmount,
+      };
+      const nextSearch = replaceHistorySearch({
+        amount: tokenAmount,
+        amountInputState,
+        amountBalanceError: hasInsufficientBalance,
+      });
+
+      persistPageStateCache(
+        {
+          values: nextValues,
+          currentToken,
+          amountInputState,
+        },
+        {
+          search: nextSearch,
+        }
+      ).catch((error) => {
+        console.error('[SendToken] persist amount input state failed', error);
+      });
+    },
+    [currentToken, form, persistPageStateCache, replaceHistorySearch]
   );
 
   const handleUsdAmountInputChange = useCallback(
@@ -2046,16 +2178,22 @@ const SendToken = () => {
 
       setUsdInputValue(normalizedValue);
       setIsUsdMaxAmountActive(false);
-      lastUsdInputTokenAmountRef.current = tokenAmount;
-      amountInputUrlStateRef.current = createUsdAmountInputUrlState({
+      const nextAmountInputState = createUsdAmountInputUrlState({
         tokenKey: currentTokenKey,
         usdInputValue: normalizedValue,
         usdPrice: activeUsdPrice,
         isUsdMaxAmountActive: false,
       });
+      amountInputUrlStateRef.current = nextAmountInputState;
+      persistAmountInputStateForAmount(tokenAmount, nextAmountInputState);
       return tokenAmount;
     },
-    [activeUsdPrice, currentToken?.decimals, currentTokenKey]
+    [
+      activeUsdPrice,
+      currentToken?.decimals,
+      currentTokenKey,
+      persistAmountInputStateForAmount,
+    ]
   );
 
   const handleAmountInputValueChange = useCallback(
@@ -2068,49 +2206,6 @@ const SendToken = () => {
     },
     [amountInputMode, handleTokenAmountInputChange, handleUsdAmountInputChange]
   );
-
-  useEffect(() => {
-    if (amountInputMode !== 'usd' || !activeUsdPrice) {
-      return;
-    }
-
-    const tokenAmount = formAmount || '';
-    if (lastUsdInputTokenAmountRef.current === tokenAmount) {
-      return;
-    }
-
-    const shouldShowSmallUsdMaxAmount = shouldDisplaySmallUsdMaxAmount({
-      tokenAmount,
-      usdPrice: activeUsdPrice,
-      isUsdMaxAmountActive,
-    });
-    const nextUsdInputValue = shouldShowSmallUsdMaxAmount
-      ? ''
-      : formatUsdInputValueFromTokenAmount(tokenAmount, activeUsdPrice);
-
-    setUsdInputValue(nextUsdInputValue);
-    const nextAmountInputState = normalizeUsdAmountInputUrlStateForTokenAmount(
-      createUsdAmountInputUrlState({
-        tokenKey: currentTokenKey,
-        usdInputValue: nextUsdInputValue,
-        usdPrice: activeUsdPrice,
-        isUsdMaxAmountActive,
-      }),
-      tokenAmount
-    );
-    amountInputUrlStateRef.current = nextAmountInputState;
-    replaceHistorySearch({
-      amount: tokenAmount,
-      amountInputState: nextAmountInputState,
-    });
-  }, [
-    activeUsdPrice,
-    amountInputMode,
-    currentTokenKey,
-    formAmount,
-    isUsdMaxAmountActive,
-    replaceHistorySearch,
-  ]);
 
   const clearAmountInputValue = useCallback(() => {
     const nextValues = {
@@ -2144,7 +2239,6 @@ const SendToken = () => {
 
     setUsdInputValue('');
     setIsUsdMaxAmountActive(false);
-    lastUsdInputTokenAmountRef.current = '';
     amountInputUrlStateRef.current = nextAmountInputState;
     clearAmountInputValue();
     setAmountInputMode(nextAmountInputMode);
@@ -2179,6 +2273,7 @@ const SendToken = () => {
         token: token,
         ...(tokenChanged ? { amount: '' } : {}),
         amountInputState: tokenChanged ? null : amountInputUrlStateRef.current,
+        ...(tokenChanged ? { amountBalanceError: false } : {}),
       });
       if (!ignoreCache) {
         await persistPageStateCache(
@@ -2187,6 +2282,9 @@ const SendToken = () => {
         );
       }
       setBalanceError(null);
+      if (tokenChanged) {
+        setBalanceErrorDisplayOverride(false);
+      }
       setIsLoading(true);
       loadCurrentToken(token.id, token.chain, account.address);
     },
@@ -2315,7 +2413,9 @@ const SendToken = () => {
       };
       const nextAmountInputState =
         amountInputMode === 'usd'
-          ? getAmountInputUrlStateForTokenAmount(amount)
+          ? applyDerivedAmountInputStateForTokenAmount(amount, {
+              isUsdMaxAmountActive: true,
+            })
           : undefined;
       form.setFieldsValue(newValues);
       handleFormValuesChange(null, newValues, {
@@ -2338,7 +2438,7 @@ const SendToken = () => {
       couldReserveGas,
       form,
       amountInputMode,
-      getAmountInputUrlStateForTokenAmount,
+      applyDerivedAmountInputStateForTokenAmount,
       handleFormValuesChange,
       setShowGasReserved,
       estimateGasOnChain,
@@ -2412,7 +2512,6 @@ const SendToken = () => {
   const handleClickMaxButton = useCallback(async () => {
     if (amountInputMode === 'usd') {
       setIsUsdMaxAmountActive(true);
-      lastUsdInputTokenAmountRef.current = '';
       amountInputUrlStateRef.current = createUsdAmountInputUrlState({
         tokenKey: currentTokenKey,
         usdInputValue,
@@ -2591,7 +2690,10 @@ const SendToken = () => {
             | undefined);
       const amountInputStateToRestore = shouldClearAmountForAccountChange
         ? null
-        : paramAmountInputState || cachedAmountInputState || null;
+        : chooseRestoredUsdAmountInputState({
+            paramState: paramAmountInputState,
+            cachedState: cachedAmountInputState,
+          });
       const restoreAmountInputState = (
         token?: TokenItem | null,
         tokenAmount = ''
@@ -2828,6 +2930,8 @@ const SendToken = () => {
   const shouldShowSmallUsdMaxAmountText =
     amountInputMode === 'usd' &&
     amountInputDisplayState.shouldShowSmallUsdMaxAmount;
+  const amountInputInsufficientError =
+    !!balanceError || balanceErrorDisplayOverride;
   const amountInputDisplayValue =
     amountInputMode === 'usd'
       ? amountInputDisplayState.usdInputValue
@@ -2939,6 +3043,12 @@ const SendToken = () => {
               cexInfo={addressDesc?.cex}
               onClick={() => {
                 const amountInputQueryFields = getCurrentAmountInputQueryFields();
+                const amountBalanceErrorQueryFields: Record<
+                  string,
+                  string
+                > = amountInputInsufficientError
+                  ? { [AMOUNT_BALANCE_ERROR_QUERY_KEY]: '1' }
+                  : {};
                 if (isDesktop) {
                   history.push(
                     `${history.location.pathname}?${obj2query({
@@ -2953,6 +3063,7 @@ const SendToken = () => {
                       }),
                       amount: form.getFieldValue('amount') || '',
                       ...amountInputQueryFields,
+                      ...amountBalanceErrorQueryFields,
                     })}`
                   );
                 } else {
@@ -2967,6 +3078,7 @@ const SendToken = () => {
                       }),
                       amount: form.getFieldValue('amount') || '',
                       ...amountInputQueryFields,
+                      ...amountBalanceErrorQueryFields,
                     })}`
                   );
                 }
@@ -3071,7 +3183,7 @@ const SendToken = () => {
                       initLoading={initLoading}
                       disableItemCheck={disableItemCheck}
                       balanceNumText={balanceNumText}
-                      insufficientError={!!balanceError}
+                      insufficientError={amountInputInsufficientError}
                       handleClickMaxButton={handleClickMaxButton}
                       displayValue={amountInputDisplayValue}
                       displayValueText={amountInputDisplayValueText}
