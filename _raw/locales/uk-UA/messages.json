@@ -1637,6 +1637,7 @@
         "verifySeedPhrase": "Перевірити ключову фразу",
         "fillInTheBackupSeedPhraseInOrder": "Заповнити резервну фразу по порядку",
         "wordPhrase": "Моя seed-фраза складається з <1>{{count}}</1> слів",
+        "wordPhraseSelected": "Моя seed-фраза складається з <1>{{count}} слів</1>",
         "clearAll": "Очистити все",
         "isItSafeToImportItInRabby": {
           "question": "Чи безпечно імпортувати його в Rabby?",
@@ -1652,6 +1653,7 @@
         "invalidContent": "Недійсний вміст",
         "passphrase": "Парольна фраза",
         "wordPhraseAndPassphrase": "Моя seed-фраза складається з <1>{{count}}</1> слів із паролем",
+        "wordPhraseAndPassphraseSelected": "Моя seed-фраза складається з <1>{{count}} слів</1> із паролем",
         "slip39SeedPhrasePlaceholder_other": "Введіть тут {{count}}-й частину вашої seed фрази",
         "inputInvalidCount_one": "Вхідні дані не відповідають нормам Seed Phrase, будь ласка, перевірте.",
         "importQuestion2": "Моя семантична фраза зберігається лише на моєму пристрої. Rabby не може отримати до неї доступ.",
