@@ -10632,6 +10632,7 @@
       "access": {
         "WebSocket": "r",
         "clearInterval": "r",
+        "clearTimeout": "r",
         "console": "r",
         "setInterval": "r",
         "setTimeout": "r"
@@ -10641,6 +10642,7 @@
         "WebSocket": "r",
         "atob": "r",
         "clearInterval": "r",
+        "clearTimeout": "r",
         "console": "r",
         "setInterval": "r",
         "setTimeout": "r"
