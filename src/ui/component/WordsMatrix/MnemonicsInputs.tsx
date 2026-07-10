@@ -634,7 +634,7 @@ function MnemonicsInputs({
                             >
                               {{ count } as any}
                             </b>
-                            words with password
+                            with password
                           </Trans>
                         </div>
                       </Menu.Item>
@@ -723,8 +723,8 @@ function MnemonicsInputs({
                   t={t}
                   i18nKey={
                     needPassphrase
-                      ? 'page.newAddress.seedPhrase.wordPhraseAndPassphrase'
-                      : 'page.newAddress.seedPhrase.wordPhrase'
+                      ? 'page.newAddress.seedPhrase.wordPhraseAndPassphraseSelected'
+                      : 'page.newAddress.seedPhrase.wordPhraseSelected'
                   }
                   values={{ count: mnemonicsCount }}
                 >
@@ -748,7 +748,12 @@ function MnemonicsInputs({
                   }
                   values={{ SLIP39: 'SLIP 39' }}
                 >
-                  <span />
+                  My seed phrase is
+                  <b
+                    style={{
+                      color: 'var(--r-blue-default, #7084ff)',
+                    }}
+                  />
                 </Trans>
               )}
             </span>
