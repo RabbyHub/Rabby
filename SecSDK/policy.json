@@ -10640,6 +10640,7 @@
       "allow": {
         "Buffer": "r",
         "WebSocket": "r",
+        "addEventListener": "r",
         "atob": "r",
         "clearInterval": "r",
         "clearTimeout": "r",
