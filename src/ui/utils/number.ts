@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import { normalizeInputNumber } from '@/constant/regexp';
 
 const Sub_Numbers = '₀₁₂₃₄₅₆₇₈₉';
 
@@ -64,6 +65,11 @@ export const formatTokenAmountInput = (
 
   return truncateAmountToDecimals(normalizedValue, tokenDecimals);
 };
+
+export const normalizeAmountInputValue = (
+  inputValue: number | string,
+  decimalLimit?: number | null
+) => normalizeInputNumber(formatTokenAmountInput(inputValue, decimalLimit));
 
 export const splitNumberByStep = (
   num: number | string,

@@ -43,8 +43,8 @@ import { obj2query, query2obj } from 'ui/utils/url';
 import {
   coerceFloat,
   formatTokenAmount,
-  formatTokenAmountInput,
   formatUsdValue,
+  normalizeAmountInputValue,
 } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import {
@@ -1070,18 +1070,7 @@ const SendToken = () => {
             },
           });
 
-          handleFormValuesChange(
-            {
-              amount: '',
-            },
-            {
-              ...form.getFieldsValue(),
-              amount: '',
-            },
-            {
-              updateHistoryState: true,
-            }
-          );
+          clearAmountAfterSuccessfulSend();
           const hash = hashes[hashes.length - 1];
           if (hash) {
             await handleMiniSignResolve();
@@ -1205,9 +1194,7 @@ const SendToken = () => {
 
         if (isTab || isDesktop) {
           await promise;
-          form.setFieldsValue({
-            amount: '',
-          });
+          clearAmountAfterSuccessfulSend();
         } else {
           window.close();
         }
@@ -1883,6 +1870,39 @@ const SendToken = () => {
     ]
   );
 
+  const clearAmountAfterSuccessfulSend = useCallback(() => {
+    cancelClickedMax();
+
+    const nextAmountInputState =
+      amountInputMode === 'usd'
+        ? getAmountInputUrlStateForTokenAmount('', {
+            usdInputValue: '',
+            isUsdMaxAmountActive: false,
+          })
+        : null;
+
+    setUsdInputValue('');
+    setIsUsdMaxAmountActive(false);
+    amountInputUrlStateRef.current = nextAmountInputState;
+
+    const nextValues = {
+      ...form.getFieldsValue(),
+      amount: '',
+    };
+    handleFormValuesChange({ amount: '' }, nextValues, {
+      updateHistoryState: true,
+      amountInputState: nextAmountInputState,
+    }).catch((error) => {
+      console.error('[SendToken] clear amount after send failed', error);
+    });
+  }, [
+    amountInputMode,
+    cancelClickedMax,
+    form,
+    getAmountInputUrlStateForTokenAmount,
+    handleFormValuesChange,
+  ]);
+
   const updateAmountValue = useCallback(
     (
       nextAmount: string,
@@ -2100,8 +2120,10 @@ const SendToken = () => {
 
   const handleTokenAmountInputChange = useCallback(
     (value: string) => {
-      const nextValue = formatTokenAmountInput(value, currentToken?.decimals);
-      const normalizedValue = normalizeInputNumber(nextValue);
+      const normalizedValue = normalizeAmountInputValue(
+        value,
+        currentToken?.decimals
+      );
       if (normalizedValue === null) {
         return false;
       }
@@ -2153,8 +2175,7 @@ const SendToken = () => {
         return false;
       }
 
-      const nextValue = formatTokenAmountInput(value, 2);
-      const normalizedValue = normalizeInputNumber(nextValue);
+      const normalizedValue = normalizeAmountInputValue(value, 2);
       if (normalizedValue === null || !USD_INPUT_RE.test(normalizedValue)) {
         return false;
       }
@@ -3193,6 +3214,7 @@ const SendToken = () => {
                       canSwitchMode={canSwitchAmountMode}
                       onSwitchMode={handleAmountInputModeSwitch}
                       onInputValueChange={handleAmountInputValueChange}
+                      amountInputOverflowPosition={clickedMax ? 'start' : 'end'}
                       isLoading={isLoading}
                       getContainer={getContainer}
                       // onStartSelectChain={() => {
