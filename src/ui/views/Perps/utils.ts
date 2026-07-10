@@ -64,18 +64,22 @@ export const waitForInitialWsData = (timeoutMs = 5000): Promise<void> => {
   });
 };
 
-// Hyperliquid perp price tick: decimals ≤ 6 - szDecimals AND at most 5
-// significant figures (matching the official HL UI, e.g. BTC at 64,026
-// has 5 integer digits so its tick is a whole number — no decimals).
-// Prices below 1 keep leading zeros out of the sig-figs count, so only
-// the szDecimals bound applies. Derived from the price MAGNITUDE (stable
-// across ticks), not the printed decimal length of a given price string.
+// Hyperliquid price-axis precision, ported from the official app bundle:
+// decimals = clamp(4 - floor(log10(0.95 * px)), 0, cap) — i.e. 5
+// significant figures derived from the price magnitude (BTC at 64,026 →
+// whole numbers; 0.123456 → 5 decimals). The ×0.95 is HL's hysteresis:
+// prices just above a power of ten keep the finer precision, so the axis
+// doesn't flap when hovering around a boundary (it also keeps log10 away
+// from exact powers of ten where floats have edges). We cap by
+// 6 - szDecimals (the perp tick bound) where HL's chart caps by a flat 6;
+// ours is never looser. Recomputed per tick but only changes when the
+// price crosses a magnitude.
 export const getPxDecimals = (szDecimals: number, refPx?: string | number) => {
   const maxBySz = Math.max(0, 6 - Number(szDecimals ?? 0));
-  const px = Number(refPx);
-  if (!Number.isFinite(px) || px < 1) return maxBySz;
-  const intDigits = String(Math.trunc(px)).length;
-  return Math.min(maxBySz, Math.max(0, 5 - intDigits));
+  const px = Math.abs(Number(refPx));
+  if (!Number.isFinite(px) || px === 0) return maxBySz;
+  const sigDecimals = 4 - Math.floor(Math.log10(0.95 * px));
+  return Math.max(0, Math.min(sigDecimals, maxBySz));
 };
 
 import { getQuoteAssetFromMeta } from '@/utils/perps/quoteAsset';
