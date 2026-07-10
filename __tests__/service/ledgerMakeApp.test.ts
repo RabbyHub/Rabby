@@ -1,4 +1,4 @@
-import { of, throwError } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 
 const mockListenToAvailableDevices = jest.fn();
 const mockConnect = jest.fn();
@@ -13,6 +13,10 @@ const mockSetChain = jest.fn();
 const mockSetBlindSigningReporter = jest.fn();
 const mockContextModuleBuild = jest.fn();
 const mockWithContextModule = jest.fn();
+let mockRuntimeMessageListener: ((request: any) => void) | undefined;
+const mockRuntimeOnMessageAddListener = jest.fn((listener) => {
+  mockRuntimeMessageListener = listener;
+});
 
 const connectedState = {
   deviceStatus: 'CONNECTED',
@@ -73,6 +77,14 @@ jest.mock(
   { virtual: true }
 );
 
+jest.mock('webextension-polyfill', () => ({
+  runtime: {
+    onMessage: {
+      addListener: mockRuntimeOnMessageAddListener,
+    },
+  },
+}));
+
 jest.mock(
   '@ledgerhq/context-module',
   () => ({
@@ -112,7 +124,7 @@ jest.mock('@/background/utils', () => ({
 }));
 
 jest.mock('@/utils/env', () => ({
-  isManifestV3: false,
+  isManifestV3: true,
 }));
 
 import LedgerBridgeKeyring from 'background/service/keyring/eth-ledger-keyring';
@@ -391,6 +403,57 @@ describe('LedgerBridgeKeyring makeApp', () => {
     } finally {
       await keyring.cleanUp();
     }
+  });
+
+  it('cancels a hanging device action on the offscreen Ledger disconnect event', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    const cancel = jest.fn();
+    const dashboardState = {
+      ...connectedState,
+      currentApp: {
+        name: 'BOLOS',
+        version: '1.0.0',
+      },
+    };
+    const actionState$ = new Subject<any>();
+    let rejection: Error | undefined;
+
+    mockConnect.mockResolvedValueOnce('session-1');
+    mockGetDeviceSessionState.mockReturnValue(of(dashboardState));
+    mockExecuteDeviceAction.mockReturnValueOnce({
+      observable: actionState$,
+      cancel,
+    });
+
+    const operation = keyring.openEthApp().catch((error) => {
+      rejection = error;
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(mockExecuteDeviceAction).toHaveBeenCalledTimes(1);
+
+    actionState$.next({
+      status: 'pending',
+      intermediateValue: {
+        requiredUserInteraction: 'none',
+      },
+    });
+    expect(mockRuntimeMessageListener).toBeDefined();
+    mockRuntimeMessageListener!({
+      target: 'extension-offscreen',
+      event: 'ledger-device-disconnect',
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const rejectionAfterDisconnect = rejection;
+    if (!rejectionAfterDisconnect) {
+      actionState$.error(new Error('test cleanup'));
+    }
+    await operation;
+
+    expect(rejectionAfterDisconnect?.message).toBe(
+      'Ledger: Device disconnected'
+    );
+    expect(cancel).toHaveBeenCalledTimes(1);
   });
 
   it('cancels an app open action that never finishes', async () => {
