@@ -46,7 +46,15 @@ import type {
   BlindSigningReporter,
   TypedDataContextLoader,
 } from '@ledgerhq/context-module';
-import { firstValueFrom, filter, map, take, timeout } from 'rxjs';
+import {
+  firstValueFrom,
+  filter,
+  map,
+  merge,
+  Subject,
+  take,
+  timeout,
+} from 'rxjs';
 import { is1559Tx } from '@/utils/transaction';
 import {
   TransactionFactory,
@@ -99,6 +107,31 @@ let dmk: DeviceManagementKit | null = null;
 let sessionId: DeviceSessionId | null = null;
 let ethSigner: SignerEth | null = null;
 let makeAppPromise: Promise<void> | null = null;
+const ledgerSessionClosed$ = new Subject<void>();
+
+const cleanUpLedgerSession = async () => {
+  const currentSessionId = sessionId;
+  ledgerSessionClosed$.next();
+  ethSigner = null;
+  sessionId = null;
+
+  if (currentSessionId && dmk) {
+    await dmk.disconnect({ sessionId: currentSessionId }).catch(() => {
+      // The device may already be gone or closed by the OS app command.
+    });
+  }
+};
+
+if (isManifestV3) {
+  Browser.runtime.onMessage.addListener((request) => {
+    if (
+      request.target === OffscreenCommunicationTarget.extension &&
+      request.event === LedgerAction.ledgerDeviceDisconnect
+    ) {
+      void cleanUpLedgerSession();
+    }
+  });
+}
 
 const ledgerClearSigningDisabledTypedDataLoader: TypedDataContextLoader = {
   load: async () => ({
@@ -207,9 +240,26 @@ const runDeviceAction = async <Output>(
   action: ExecuteDeviceActionReturnType<Output, any, any>,
   timeoutMs = LEDGER_DEVICE_ACTION_TIMEOUT
 ): Promise<Output> => {
+  const cancelAction = () => {
+    try {
+      action.cancel();
+    } catch {
+      // Preserve the error that caused the cancellation.
+    }
+  };
+
   try {
+    const observable = merge(
+      action.observable,
+      ledgerSessionClosed$.pipe(
+        map(() => {
+          throw new Error('Ledger: Device disconnected');
+        })
+      )
+    );
+
     return await firstValueFrom(
-      action.observable.pipe(
+      observable.pipe(
         filter((state) => {
           if (
             state.status === DeviceActionStatus.Pending &&
@@ -246,12 +296,11 @@ const runDeviceAction = async <Output>(
     );
   } catch (e: any) {
     if (e.name === 'TimeoutError') {
-      try {
-        action.cancel();
-      } catch {
-        // Preserve the timeout as the actionable error.
-      }
+      cancelAction();
       throw new Error('Ledger: Operation timed out');
+    }
+    if (e.message === 'Ledger: Device disconnected') {
+      cancelAction();
     }
     throw e;
   }
@@ -308,17 +357,6 @@ class LedgerBridgeKeyring {
     this.hasHIDPermission = null;
     this.usedHDPathTypeList = {};
     this.deserialize(opts);
-
-    if (isManifestV3) {
-      Browser.runtime.onMessage.addListener((request) => {
-        if (
-          request.target === OffscreenCommunicationTarget.extension &&
-          request.event === LedgerAction.ledgerDeviceDisconnect
-        ) {
-          this.cleanUp();
-        }
-      });
-    }
   }
 
   serialize() {
@@ -562,15 +600,7 @@ class LedgerBridgeKeyring {
   }
 
   async cleanUp() {
-    const currentSessionId = sessionId;
-    ethSigner = null;
-    sessionId = null;
-
-    if (currentSessionId && dmk) {
-      await dmk.disconnect({ sessionId: currentSessionId }).catch(() => {
-        // The device may already be gone or closed by the OS app command.
-      });
-    }
+    await cleanUpLedgerSession();
   }
 
   async unlock(
