@@ -2,7 +2,47 @@
   "page": {
     "newAddress": {
       "seedPhrase": {
-        "slip39SeedPhraseWithPassphrase": ""
+        "importTips": "你可以將完整的秘密恢復短語貼到第一個欄位中",
+        "whatIsASeedPhrase": {
+          "question": "甚麼是助記詞？",
+          "answer": "由 12、18 或 24 個單詞組成、用於控制你資產的短語。"
+        },
+        "isItSafeToImportItInRabby": {
+          "question": "將助記詞匯入 Rabby 安全嗎？",
+          "answer": "安全。助記詞只會儲存在你的本機瀏覽器中，只有你可以存取。"
+        },
+        "importError": "[CreateMnemonics] 未預期的步驟 {{0}}",
+        "importQuestion1": "如果我遺失或分享助記詞，我將永久失去資產的存取權限",
+        "importQuestion2": "我的助記詞只儲存在我的裝置上，Rabby 無法存取",
+        "importQuestion3": "如果我在未備份助記詞的情況下解除安裝 Rabby，Rabby 將無法復原助記詞",
+        "importQuestion4": "如果我在未備份助記詞的情況下解除安裝 Rabby，Rabby 無法為我找回助記詞。",
+        "riskTips": "開始之前，請閱讀並牢記以下安全提示。",
+        "showSeedPhrase": "顯示助記詞",
+        "backup": "備份助記詞",
+        "backupTips": "備份助記詞時，請確保沒有其他人正在查看你的螢幕",
+        "copy": "複製助記詞",
+        "saved": "我已儲存助記詞",
+        "pleaseSelectWords": "請選擇單詞",
+        "verificationFailed": "驗證失敗",
+        "createdSuccessfully": "建立成功",
+        "verifySeedPhrase": "驗證助記詞",
+        "fillInTheBackupSeedPhraseInOrder": "請按順序填寫已備份的助記詞",
+        "wordPhrase": "我的助記詞有 <1>{{count}}</1> 個單詞",
+        "wordPhraseAndPassphrase": "我的助記詞有 <1>{{count}}</1> 個單詞，並設有密碼",
+        "slip39SeedPhrase": "我的助記詞是 <1>{{SLIP39}}</1>",
+        "slip39SeedPhraseWithPassphrase": "我的助記詞是 <1>{{SLIP39}}</1>，並設有密碼",
+        "slip39SeedPhrasePlaceholder_one": "在此輸入你的第 {{count}} 份助記詞份額",
+        "slip39SeedPhrasePlaceholder_two": "在此輸入你的第 {{count}} 份助記詞份額",
+        "slip39SeedPhrasePlaceholder_few": "在此輸入你的第 {{count}} 份助記詞份額",
+        "slip39SeedPhrasePlaceholder_other": "在此輸入你的第 {{count}} 份助記詞份額",
+        "clearAll": "全部清除",
+        "pastedAndClear": "已貼上並清除剪貼簿",
+        "invalidContent": "內容無效",
+        "inputInvalidCount_one": "1 項輸入不符合助記詞規範，請檢查。",
+        "inputInvalidCount_other": "{{count}} 項輸入不符合助記詞規範，請檢查。",
+        "passphrase": "密碼",
+        "showMoreOptions": "顯示更多選項",
+        "inputInvalid": "偵測到無效單詞，請檢查已標示的單詞。"
       }
     }
   }
