@@ -77,6 +77,7 @@ export const Quotes = ({
 
   const [bestQuoteAmount, bestQuoteGasUsd] = useMemo(() => {
     const bestQuote = sortedList?.[0];
+    console.log('sortedList', sortedList);
     const receiveTokenAmount =
       new BigNumber(bestQuote?.data?.toTokenAmount || 0)
         .div(
@@ -84,10 +85,10 @@ export const Quotes = ({
             (bestQuote?.data?.toTokenDecimals || other.receiveToken.decimals)
         )
         .toString() || '0';
-
+    console.log('bestQuote', bestQuote);
     return [
       inSufficient
-        ? new BigNumber(bestQuote.data?.toTokenAmount || 0)
+        ? new BigNumber(bestQuote?.data?.toTokenAmount || 0)
             .div(
               10 **
                 (bestQuote?.data?.toTokenDecimals ||
@@ -96,7 +97,7 @@ export const Quotes = ({
             )
             .toString(10)
         : receiveTokenAmount,
-      bestQuote?.isDex ? bestQuote.preExecResult?.gasUsdValue || '0' : '0',
+      bestQuote?.isDex ? bestQuote?.preExecResult?.gasUsdValue || '0' : '0',
     ];
   }, [inSufficient, other?.receiveToken, sortedList]);
 
