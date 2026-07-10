@@ -34,15 +34,16 @@
 
   &__input-wrap {
     position: relative;
+    display: flex;
+    align-items: center;
     min-width: 0;
     flex: 1;
     height: 36px;
+    cursor: text;
   }
 
   &__display-text {
-    position: absolute;
-    left: 0;
-    top: 0;
+    flex-shrink: 0;
     height: 36px;
     line-height: 36px;
     font-weight: 700;

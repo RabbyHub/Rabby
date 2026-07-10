@@ -91,12 +91,10 @@ const StyledInput = styled(Input)<{
   font-weight: 700;
   line-height: 36px;
   background: transparent !important;
+  min-width: 0;
+  flex: 1;
   padding-left: 0;
   padding-right: 0;
-  ${({ $hasDisplayText }) =>
-    $hasDisplayText
-      ? 'color: transparent !important; caret-color: transparent;'
-      : ''}
   &::placeholder {
     color: ${({ $hasDisplayText }) =>
       $hasDisplayText ? 'transparent' : 'var(--r-neutral-foot, #6a7587)'};
@@ -376,9 +374,7 @@ const TokenAmountInput = ({
     overflowPosition: amountInputOverflowPosition,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value;
-
+  const applyInputValue = (rawValue: string) => {
     if (onInputValueChange) {
       const nextValue = onInputValueChange(rawValue);
       if (nextValue === false) {
@@ -395,6 +391,21 @@ const TokenAmountInput = ({
     if (nextValue !== null) {
       onChange?.(nextValue);
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    applyInputValue(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (displayValueText && (e.key === 'Backspace' || e.key === 'Delete')) {
+      e.preventDefault();
+      applyInputValue('');
+    }
+  };
+
+  const handleInputWrapClick = () => {
+    tokenInputRef.current?.focus();
   };
 
   const fallbackQuoteText = useMemo(() => {
@@ -427,7 +438,21 @@ const TokenAmountInput = ({
               {inputPrefixText}
             </span>
           )}
-          <div className="token-amount-input__input-wrap">
+          <div
+            className="token-amount-input__input-wrap"
+            onClick={displayValueText ? handleInputWrapClick : undefined}
+          >
+            {!!displayValueText && (
+              <span
+                className={clsx(
+                  'token-amount-input__display-text',
+                  insufficientError && 'text-rabby-red-default'
+                )}
+                style={{ fontSize: amountFontSize }}
+              >
+                {displayValueText}
+              </span>
+            )}
             <StyledInput
               ref={tokenInputRef}
               placeholder={displayValueText ? '' : '0'}
@@ -441,19 +466,9 @@ const TokenAmountInput = ({
               value={actualInputValue}
               size="large"
               onChange={handleChange}
+              onKeyDown={handleKeyDown}
               title={displayValueText || displayInputValue}
             />
-            {!!displayValueText && (
-              <span
-                className={clsx(
-                  'token-amount-input__display-text',
-                  insufficientError && 'text-rabby-red-default'
-                )}
-                style={{ fontSize: amountFontSize }}
-              >
-                {displayValueText}
-              </span>
-            )}
           </div>
           <span ref={amountMeasureRef} className="token-amount-input__measure">
             {amountMeasureText}
