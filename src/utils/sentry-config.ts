@@ -42,7 +42,6 @@ export const getSentryConfig = (): BrowserOptions => ({
     return breadcrumb;
   },
   beforeSend: async (event, hint) => {
-    console.log('Sentry beforeSend', event, hint);
     if (!(await shouldReportUserBehaviorData())) {
       return null;
     }
