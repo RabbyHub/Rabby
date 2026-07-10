@@ -1066,7 +1066,7 @@ export const EditTpSlModal: React.FC<Props> = ({
           </div>
         </div>
 
-        <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
+        <div className="bottom-0 left-0 right-0 border-t border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
           <Button
             block
             size="large"

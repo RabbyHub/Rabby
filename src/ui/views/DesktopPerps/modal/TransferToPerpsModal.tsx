@@ -301,7 +301,7 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
             <div className="flex-1" />
           </div>
 
-          <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+          <div className="border-t border-solid border-rabby-neutral-line px-20 py-16">
             <Button
               block
               size="large"
