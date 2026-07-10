@@ -43,7 +43,10 @@ import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
-import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import {
+  DirectSignToConfirmBtn,
+  RiskTipsWrapper,
+} from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { DbkButton } from '../../Ecology/dbk-chain/components/DbkButton';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
@@ -628,6 +631,8 @@ export const BridgeContent = () => {
     !showLoss;
 
   const showRiskTips = isSlippageHigh || isSlippageLow || showLoss;
+  const bridgeButtonDisabled =
+    !isSupportedChain && externalDapps.length > 0 ? false : btnDisabled;
 
   const [miniSignLoading, setMiniSignLoading] = useState(false);
   const topUpFormValuesRef = useRef(
@@ -1298,63 +1303,65 @@ export const BridgeContent = () => {
                   loading={miniSignLoading}
                 />
               ) : (
-                <Button
-                  loading={fetchingBridgeQuote}
-                  type="primary"
-                  block
-                  size="large"
-                  className="h-[48px] text-white text-[16px] font-medium"
-                  onClick={() => {
-                    if (showExternalDappTips && externalDapps.length > 0) {
-                      setExternalDappOpen(true);
-                      return;
-                    }
-                    if (fetchingBridgeQuote) return;
-                    if (!selectedBridgeQuote) {
-                      refresh((e) => e + 1);
-
-                      return;
-                    }
-                    if (selectedBridgeQuote?.shouldTwoStepApprove) {
-                      return Modal.confirm({
-                        width: 360,
-                        closable: true,
-                        centered: true,
-                        className: twoStepApproveCn,
-                        title: null,
-                        content: (
-                          <>
-                            <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                              Sign 2 transactions to change allowance
-                            </div>
-                            <div className="text-13 leading-[17px]  text-r-neutral-body">
-                              Token USDT requires 2 transactions to change
-                              allowance. First you would need to reset allowance
-                              to zero, and only then set new allowance value.
-                            </div>
-                          </>
-                        ),
-                        okText: 'Proceed with two step approve',
-
-                        onOk() {
-                          // gotoBridge();
-                          handleBridge();
-                        },
-                      });
-                    }
-                    // gotoBridge();
-                    handleBridge();
-                  }}
-                  disabled={
-                    !isSupportedChain && externalDapps.length > 0
-                      ? false
-                      : canUseDirectSubmitTx
-                      ? btnDisabled
-                      : btnDisabled
-                  }
+                <RiskTipsWrapper
+                  showRiskTips={showRiskTips && !bridgeButtonDisabled}
+                  riskReset={bridgeButtonDisabled}
                 >
-                  {btnText}
-                </Button>
+                  {({ riskDisabled }) => (
+                    <Button
+                      loading={fetchingBridgeQuote}
+                      type="primary"
+                      block
+                      size="large"
+                      className="h-[48px] text-white text-[16px] font-medium"
+                      onClick={() => {
+                        if (showExternalDappTips && externalDapps.length > 0) {
+                          setExternalDappOpen(true);
+                          return;
+                        }
+                        if (fetchingBridgeQuote) return;
+                        if (!selectedBridgeQuote) {
+                          refresh((e) => e + 1);
+
+                          return;
+                        }
+                        if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                          return Modal.confirm({
+                            width: 360,
+                            closable: true,
+                            centered: true,
+                            className: twoStepApproveCn,
+                            title: null,
+                            content: (
+                              <>
+                                <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                                  Sign 2 transactions to change allowance
+                                </div>
+                                <div className="text-13 leading-[17px]  text-r-neutral-body">
+                                  Token USDT requires 2 transactions to change
+                                  allowance. First you would need to reset
+                                  allowance to zero, and only then set new
+                                  allowance value.
+                                </div>
+                              </>
+                            ),
+                            okText: 'Proceed with two step approve',
+
+                            onOk() {
+                              // gotoBridge();
+                              handleBridge();
+                            },
+                          });
+                        }
+                        // gotoBridge();
+                        handleBridge();
+                      }}
+                      disabled={bridgeButtonDisabled || riskDisabled}
+                    >
+                      {btnText}
+                    </Button>
+                  )}
+                </RiskTipsWrapper>
               )}
             </TooltipWithMagnetArrow>
           )}

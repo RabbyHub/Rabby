@@ -57,7 +57,10 @@ import {
   ExternalSwapBridgeDappTips,
   SwapBridgeDappPopup,
 } from '@/ui/component/ExternalSwapBridgeDappPopup';
-import { DirectSignToConfirmBtn } from '@/ui/component/ToConfirmButton';
+import {
+  DirectSignToConfirmBtn,
+  RiskTipsWrapper,
+} from '@/ui/component/ToConfirmButton';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { PendingTxItem } from './PendingTxItem';
 import { useTwoStepSwap } from '../hooks/twoStepSwap';
@@ -1461,56 +1464,61 @@ export const Main = () => {
                 riskReset={swapBtnDisabled}
               />
             ) : (
-              <Button
-                type="primary"
-                block
-                size="large"
-                className="h-[48px] text-white text-[16px] font-medium"
-                loading={isSubmitLoading}
-                onClick={() => {
-                  if (!isSupportedChain && externalDapps.length > 0) {
-                    setSwapDappOpen(true);
-                    return;
-                  }
-                  if (!activeProvider) {
-                    console.log('refresh 4');
-                    refresh((e) => e + 1);
-                    return;
-                  }
-                  if (activeProvider?.shouldTwoStepApprove) {
-                    return Modal.confirm({
-                      width: 360,
-                      closable: true,
-                      centered: true,
-                      className: twoStepApproveCn,
-                      title: null,
-                      content: (
-                        <>
-                          <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                            {t('page.swap.two-step-approve')}
-                          </div>
-                          <div className="text-13 leading-[17px]  text-r-neutral-body">
-                            {t('page.swap.two-step-approve-details')}
-                          </div>
-                        </>
-                      ),
-                      okText: t('page.swap.process-with-two-step-approve'),
-                      onOk() {
-                        // gotoSwap();
-                        handleSwap();
-                      },
-                    });
-                  }
-                  // gotoSwap();
-                  // runBuildSwapTxs();
-                  handleSwap();
-                }}
-                disabled={
-                  canUseDirectSubmitTx ? swapBtnDisabled : swapBtnDisabled
-                }
+              <RiskTipsWrapper
+                showRiskTips={showRiskTips && !swapBtnDisabled}
+                riskReset={swapBtnDisabled}
               >
-                {btnText}
-              </Button>
+                {({ riskDisabled }) => (
+                  <Button
+                    type="primary"
+                    block
+                    size="large"
+                    className="h-[48px] text-white text-[16px] font-medium"
+                    loading={isSubmitLoading}
+                    onClick={() => {
+                      if (!isSupportedChain && externalDapps.length > 0) {
+                        setSwapDappOpen(true);
+                        return;
+                      }
+                      if (!activeProvider) {
+                        console.log('refresh 4');
+                        refresh((e) => e + 1);
+                        return;
+                      }
+                      if (activeProvider?.shouldTwoStepApprove) {
+                        return Modal.confirm({
+                          width: 360,
+                          closable: true,
+                          centered: true,
+                          className: twoStepApproveCn,
+                          title: null,
+                          content: (
+                            <>
+                              <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                                {t('page.swap.two-step-approve')}
+                              </div>
+                              <div className="text-13 leading-[17px]  text-r-neutral-body">
+                                {t('page.swap.two-step-approve-details')}
+                              </div>
+                            </>
+                          ),
+                          okText: t('page.swap.process-with-two-step-approve'),
+                          onOk() {
+                            // gotoSwap();
+                            handleSwap();
+                          },
+                        });
+                      }
+                      // gotoSwap();
+                      // runBuildSwapTxs();
+                      handleSwap();
+                    }}
+                    disabled={swapBtnDisabled || riskDisabled}
+                  >
+                    {btnText}
+                  </Button>
+                )}
+              </RiskTipsWrapper>
             )}
           </TooltipWithMagnetArrow>
         </div>
