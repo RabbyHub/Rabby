@@ -47,7 +47,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
   marginUsed,
   currentAssetCtx,
 }) => {
-  const pxDecimals = currentAssetCtx?.pxDecimals || 2;
+  const pxDecimals = currentAssetCtx?.pxDecimals ?? 2;
   const leverageMax = currentAssetCtx?.maxLeverage || 5;
   const { t } = useTranslation();
   const [margin, setMargin] = React.useState('');
@@ -372,7 +372,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
           </section>
         </div>
 
-        <div className="bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
+        <div className="bottom-0 left-0 right-0 border-t border-solid border-rabby-neutral-line px-20 py-16 bg-rb-neutral-bg-1">
           <div className="flex items-center">
             <Button
               block

@@ -734,7 +734,7 @@ export const PerpsChart = ({
   }, [activeAssetCtx, currentAssetCtx, dayDelta]);
 
   const decimals = useMemo(() => {
-    return currentAssetCtx?.pxDecimals || 2;
+    return currentAssetCtx?.pxDecimals ?? 2;
   }, [currentAssetCtx]);
 
   return (

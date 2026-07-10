@@ -35,7 +35,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
   }, [marketDataMap, coin]);
 
   const pxDecimals = useMemo(() => {
-    return currentMarketData.pxDecimals || 2;
+    return currentMarketData.pxDecimals ?? 2;
   }, [currentMarketData]);
 
   const lineTagInfo = useMemo(() => {
