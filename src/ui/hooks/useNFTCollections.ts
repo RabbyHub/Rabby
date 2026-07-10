@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { isSameAddress } from '../utils';
 import { useSafeState } from '../utils/safeState';
 import { useWallet } from '../utils/WalletContext';
+import { commonCollectionsFilter } from '../utils/portfolio/collections';
 
 const shouldUseNftCollectionsDbCache = ({
   forceRefresh = false,
@@ -118,10 +119,11 @@ export const useNFTCollections = (
       }
 
       try {
-        currentCollections = await wallet.openapi.collectionList({
+        const remoteCurrentCollections = await wallet.openapi.collectionList({
           id: userAddr,
           isAll: true,
         });
+        currentCollections = commonCollectionsFilter(remoteCurrentCollections);
 
         if (currentAbort.signal.aborted) {
           setLoading(false);

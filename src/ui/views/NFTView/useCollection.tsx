@@ -3,6 +3,7 @@ import React from 'react';
 import { CollectionList } from '@rabby-wallet/rabby-api/dist/types';
 import { useRabbySelector } from '@/ui/store';
 import { Token } from '@/background/service/preference';
+import { commonCollectionsFilter } from '@/ui/utils/portfolio/collections';
 
 export const useCollection = () => {
   const wallet = useWallet();
@@ -29,7 +30,7 @@ export const useCollection = () => {
         isAll: false,
       });
 
-      setList(collections);
+      setList(commonCollectionsFilter(collections));
     } catch (e) {
       console.error(e);
     } finally {
