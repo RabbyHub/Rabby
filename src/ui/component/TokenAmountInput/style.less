@@ -78,6 +78,12 @@
     cursor: pointer;
   }
 
+  &__quote--clickable:hover {
+    .token-amount-input__switch-icon rect {
+      fill: var(--rb-blue-light-1);
+    }
+  }
+
   &__quote-text {
     min-width: 0;
     overflow: hidden;
@@ -98,7 +104,7 @@
     cursor: pointer;
     width: fit-content;
     &:hover {
-      background: var(--r-blue-light2,#eef1ff)
+      background: var(--r-blue-light2, #eef1ff);
     }
     .token-input__symbol {
       max-width: 50px;

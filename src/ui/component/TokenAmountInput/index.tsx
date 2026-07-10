@@ -35,6 +35,10 @@ import BigNumber from 'bignumber.js';
 import { ChainSelectorInSend } from '@/ui/views/SendToken/components/ChainSelectorInSend';
 import { Chain } from '@debank/common';
 import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
+import {
+  AmountInputOverflowPosition,
+  useAutoSizeAmountInput,
+} from '@/ui/hooks/useAutoSizeAmountInput';
 
 interface TokenAmountInputProps {
   token: TokenItem | null;
@@ -61,6 +65,7 @@ interface TokenAmountInputProps {
   canSwitchMode?: boolean;
   onSwitchMode?: () => void;
   onInputValueChange?: (amount: string) => string | false | void;
+  amountInputOverflowPosition?: AmountInputOverflowPosition;
   disableItemCheck?: (
     token: TokenItem
   ) => {
@@ -138,6 +143,7 @@ const TokenAmountInput = ({
   canSwitchMode,
   onSwitchMode,
   onInputValueChange,
+  amountInputOverflowPosition,
   insufficientError,
   isLoading,
   initLoading,
@@ -352,75 +358,23 @@ const TokenAmountInput = ({
     setChainServerId(token?.chain || '');
   }, [token?.chain, setChainServerId]);
 
-  const amountInputAreaRef = useRef<HTMLDivElement>(null);
-  const amountMeasureRef = useRef<HTMLSpanElement>(null);
-  const [amountInputAreaWidth, setAmountInputAreaWidth] = useState(0);
-  const [
-    amountTextWidthAtBaseFontSize,
-    setAmountTextWidthAtBaseFontSize,
-  ] = useState(0);
   const displayInputValue = displayValue ?? value ?? '';
   const actualInputValue = displayValueText ? '' : displayInputValue;
   const amountMeasureValue = displayValueText || displayInputValue || '0';
   const amountMeasureText = `${inputPrefixText || ''}${amountMeasureValue}`;
-
-  useLayoutEffect(() => {
-    const node = amountInputAreaRef.current;
-    if (!node) {
-      return;
-    }
-
-    const updateWidth = () => {
-      setAmountInputAreaWidth(node.clientWidth);
-    };
-
-    updateWidth();
-
-    if (typeof ResizeObserver === 'undefined') {
-      window.addEventListener('resize', updateWidth);
-      return () => window.removeEventListener('resize', updateWidth);
-    }
-
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
-  useLayoutEffect(() => {
-    setAmountTextWidthAtBaseFontSize(
-      amountMeasureRef.current?.offsetWidth || 0
-    );
-  }, [amountMeasureText]);
-
-  const amountFontSize = useMemo(() => {
-    if (!amountInputAreaWidth || !amountTextWidthAtBaseFontSize) {
-      return AMOUNT_MAX_FONT_SIZE;
-    }
-
-    for (
-      let fontSize = AMOUNT_MAX_FONT_SIZE;
-      fontSize >= AMOUNT_MIN_FONT_SIZE;
-      fontSize -= AMOUNT_FONT_SIZE_STEP
-    ) {
-      if (
-        (amountTextWidthAtBaseFontSize * fontSize) / AMOUNT_MAX_FONT_SIZE <=
-        amountInputAreaWidth
-      ) {
-        return fontSize;
-      }
-    }
-
-    return AMOUNT_MIN_FONT_SIZE;
-  }, [amountInputAreaWidth, amountTextWidthAtBaseFontSize]);
-
-  useEffect(() => {
-    const input = tokenInputRef.current?.input;
-    if (!input || amountFontSize !== AMOUNT_MIN_FONT_SIZE) {
-      return;
-    }
-
-    input.scrollLeft = input.scrollWidth;
-  }, [actualInputValue, amountFontSize]);
+  const {
+    containerRef: amountInputAreaRef,
+    measureRef: amountMeasureRef,
+    fontSize: amountFontSize,
+  } = useAutoSizeAmountInput({
+    inputRef: tokenInputRef,
+    inputValue: actualInputValue,
+    measureText: amountMeasureText,
+    maxFontSize: AMOUNT_MAX_FONT_SIZE,
+    minFontSize: AMOUNT_MIN_FONT_SIZE,
+    fontSizeStep: AMOUNT_FONT_SIZE_STEP,
+    overflowPosition: amountInputOverflowPosition,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value;

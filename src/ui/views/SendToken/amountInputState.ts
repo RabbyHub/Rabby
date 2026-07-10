@@ -40,36 +40,6 @@ export function isValidUsdPrice(price?: number | string | null) {
   return Number.isFinite(numericPrice) && numericPrice > 0;
 }
 
-export function areAmountInputTokenAmountsEqual(
-  a?: string | number | null,
-  b?: string | number | null
-) {
-  const left = a ?? '';
-  const right = b ?? '';
-
-  if (left === right) {
-    return true;
-  }
-
-  if (left === '' || right === '') {
-    return false;
-  }
-
-  const leftBn = new BigNumber(left);
-  const rightBn = new BigNumber(right);
-
-  if (
-    !leftBn.isFinite() ||
-    leftBn.isNaN() ||
-    !rightBn.isFinite() ||
-    rightBn.isNaN()
-  ) {
-    return false;
-  }
-
-  return leftBn.eq(rightBn);
-}
-
 export function createUsdAmountInputUrlState(input: {
   tokenKey: string;
   usdInputValue: string;
