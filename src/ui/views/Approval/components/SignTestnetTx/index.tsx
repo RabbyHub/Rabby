@@ -575,6 +575,7 @@ export const SignTestnetTx = ({
           chainId: chain.serverId,
           sender: currentAccount.address,
           walletProvider: {
+            ethRpc: wallet.requestETHRpc,
             findChain,
             ALIAS_ADDRESS,
             hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
