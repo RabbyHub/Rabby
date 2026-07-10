@@ -32,6 +32,17 @@ jest.mock(
 );
 
 jest.mock(
+  '@ledgerhq/context-module',
+  () => ({
+    ContextModuleBuilder: jest.fn(),
+    ContextModuleChainID: {
+      Ethereum: 'ethereum',
+    },
+  }),
+  { virtual: true }
+);
+
+jest.mock(
   '@ledgerhq/device-signer-kit-ethereum',
   () => ({
     SignerEthBuilder: jest.fn(),

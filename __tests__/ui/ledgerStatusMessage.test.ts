@@ -18,6 +18,8 @@ import {
 describe('Ledger status message helpers', () => {
   test('detects Ledger lock status words', () => {
     expect(isLedgerLockError('Ledger: Device is locked 0x5515')).toBe(true);
+    expect(isLedgerLockError('DeviceLockedError')).toBe(true);
+    expect(isLedgerLockError('Ledger: Device is locked')).toBe(true);
     expect(isLedgerLockError('Ledger: Device disconnected')).toBe(false);
   });
 

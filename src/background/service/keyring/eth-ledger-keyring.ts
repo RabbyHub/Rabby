@@ -18,6 +18,7 @@ import {
   DeviceManagementKitBuilder,
   GetAppAndVersionCommand,
   OpenAppDeviceAction,
+  UserInteractionRequired,
   isSuccessCommandResult,
 } from '@ledgerhq/device-management-kit';
 
@@ -32,11 +33,19 @@ import {
   webHidTransportFactory,
 } from '@ledgerhq/device-transport-kit-web-hid';
 import { SignerEthBuilder } from '@ledgerhq/device-signer-kit-ethereum';
+import {
+  ContextModuleBuilder,
+  ContextModuleChainID,
+} from '@ledgerhq/context-module';
 
 import type {
   Signature,
   SignerEth,
 } from '@ledgerhq/device-signer-kit-ethereum';
+import type {
+  BlindSigningReporter,
+  TypedDataContextLoader,
+} from '@ledgerhq/context-module';
 import { firstValueFrom, filter, map, take, timeout } from 'rxjs';
 import { is1559Tx } from '@/utils/transaction';
 import {
@@ -91,6 +100,25 @@ let sessionId: DeviceSessionId | null = null;
 let ethSigner: SignerEth | null = null;
 let makeAppPromise: Promise<void> | null = null;
 
+const ledgerClearSigningDisabledTypedDataLoader: TypedDataContextLoader = {
+  load: async () => ({
+    type: 'error',
+    error: new Error('Ledger clear signing disabled'),
+  }),
+};
+
+const noOpBlindSigningReporter = ({
+  report: async () => undefined,
+} as unknown) as BlindSigningReporter;
+
+const getBasicEthContextModule = () =>
+  new ContextModuleBuilder({})
+    .setChain(ContextModuleChainID.Ethereum)
+    .setBlindSigningReporter(noOpBlindSigningReporter)
+    .removeDefaultLoaders()
+    .addTypedDataLoader(ledgerClearSigningDisabledTypedDataLoader)
+    .build();
+
 const stringifyLedgerErrorValue = (value: unknown, key?: string): string => {
   if (value == null) return '';
   if (typeof value === 'string') return value;
@@ -123,6 +151,9 @@ const stringifyLedgerErrorValue = (value: unknown, key?: string): string => {
   }
   return String(value);
 };
+
+const isLedgerConnectionOpeningError = (value: unknown) =>
+  /connectionopeningerror/iu.test(stringifyLedgerErrorValue(value));
 
 const normalizeLedgerStatusWord = (value: unknown) => {
   if (typeof value === 'number') return value.toString(16);
@@ -179,12 +210,21 @@ const runDeviceAction = async <Output>(
   try {
     return await firstValueFrom(
       action.observable.pipe(
-        filter(
-          (state) =>
+        filter((state) => {
+          if (
+            state.status === DeviceActionStatus.Pending &&
+            state.intermediateValue?.requiredUserInteraction ===
+              UserInteractionRequired.UnlockDevice
+          ) {
+            throw new Error('Ledger: Device is locked 0x5515');
+          }
+
+          return (
             state.status === DeviceActionStatus.Completed ||
             state.status === DeviceActionStatus.Error ||
             state.status === DeviceActionStatus.Stopped
-        ),
+          );
+        }),
         timeout({ first: timeoutMs }),
         take(1),
         map((state) => {
@@ -257,6 +297,7 @@ class LedgerBridgeKeyring {
   accounts: any;
   hasHIDPermission: null | boolean;
   usedHDPathTypeList: Record<string, HDPathType> = {};
+  private unlockPromise: Promise<string> | null = null;
 
   constructor(opts = {}) {
     this.accountDetails = {};
@@ -358,7 +399,9 @@ class LedgerBridgeKeyring {
     ethSigner = new SignerEthBuilder({
       dmk,
       sessionId,
-    }).build();
+    })
+      .withContextModule(getBasicEthContextModule())
+      .build();
   }
 
   private async hasActiveSession() {
@@ -437,6 +480,7 @@ class LedgerBridgeKeyring {
 
   private async ensureDeviceReady() {
     const state = await this.getCurrentSessionState();
+    console.log('Ledger: Current device state ensureDeviceReady', state);
 
     if (!state) {
       throw new Error('Ledger: Device disconnected');
@@ -476,9 +520,10 @@ class LedgerBridgeKeyring {
     }
   }
 
-  private async ensureEthApp() {
+  private async ensureEthApp(recoverConnectionOpening = true): Promise<void> {
     await this.makeApp();
     const state = await this.ensureDeviceReady();
+    console.log('Ledger: Current device state', state);
 
     if (
       state.sessionStateType !== DeviceSessionStateType.Connected &&
@@ -487,17 +532,33 @@ class LedgerBridgeKeyring {
       return;
     }
 
-    await runDeviceAction(
-      getDmk().executeDeviceAction({
-        sessionId: sessionId!,
-        deviceAction: new OpenAppDeviceAction({
-          input: {
-            appName: ETH_APP_NAME,
-          },
+    try {
+      await runDeviceAction(
+        getDmk().executeDeviceAction({
+          sessionId: sessionId!,
+          deviceAction: new OpenAppDeviceAction({
+            input: {
+              appName: ETH_APP_NAME,
+            },
+          }),
         }),
-      }),
-      LEDGER_APP_OPEN_TIMEOUT
-    );
+        LEDGER_APP_OPEN_TIMEOUT
+      );
+    } catch (e) {
+      if (!recoverConnectionOpening || !isLedgerConnectionOpeningError(e)) {
+        if (!recoverConnectionOpening && isLedgerConnectionOpeningError(e)) {
+          if (typeof e === 'object' && e !== null) {
+            (e as {
+              ledgerConnectionRecoveryAttempted?: boolean;
+            }).ledgerConnectionRecoveryAttempted = true;
+          }
+        }
+        throw e;
+      }
+
+      await this.cleanUp();
+      await this.ensureEthApp(false);
+    }
   }
 
   async cleanUp() {
@@ -512,7 +573,31 @@ class LedgerBridgeKeyring {
     }
   }
 
-  async unlock(hdPath?, force?: boolean): Promise<string> {
+  async unlock(
+    hdPath?,
+    force?: boolean,
+    retryConnectionOpening = true
+  ): Promise<string> {
+    if (this.unlockPromise) {
+      return this.unlockPromise;
+    }
+
+    const promise = this.unlockInternal(hdPath, force, retryConnectionOpening);
+    this.unlockPromise = promise;
+    try {
+      return await promise;
+    } finally {
+      if (this.unlockPromise === promise) {
+        this.unlockPromise = null;
+      }
+    }
+  }
+
+  private async unlockInternal(
+    hdPath?,
+    force?: boolean,
+    retryConnectionOpening = true
+  ): Promise<string> {
     if (force) {
       hdPath = this.hdPath;
     }
@@ -526,15 +611,19 @@ class LedgerBridgeKeyring {
       res = await this.getLedgerAddress(path);
     } catch (e: any) {
       const message = e?.message || '';
-      if (
+      const isDisconnected =
         e.name === 'DisconnectedDeviceDuringOperation' ||
         e.name === 'DeviceDisconnectedWhileSendingError' ||
         /DisconnectedDeviceDuringOperation|DeviceDisconnectedWhileSendingError/i.test(
           message
-        )
-      ) {
+        );
+      const isConnectionOpening =
+        retryConnectionOpening &&
+        !e?.ledgerConnectionRecoveryAttempted &&
+        isLedgerConnectionOpeningError(e);
+      if (isDisconnected || isConnectionOpening) {
         await this.cleanUp();
-        return this.unlock(hdPath, force);
+        return this.unlockInternal(hdPath, force, false);
       } else {
         throw e;
       }

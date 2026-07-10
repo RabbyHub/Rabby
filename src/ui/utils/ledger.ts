@@ -53,6 +53,7 @@ export const useLedgerDeviceConnected = () => {
 };
 
 const LEDGER_LOCK_ERROR_CODES = ['0x5515', '0x6b0c', '0x650f'];
+const LEDGER_LOCK_ERROR_MARKERS = ['devicelockederror', 'device is locked'];
 const LEDGER_DISCONNECTED_ERROR_MARKERS = [
   'device disconnected',
   'no connected ledger device found',
@@ -66,7 +67,10 @@ const LEDGER_CONNECTION_OPENING_ERROR_MARKERS = [
 ];
 
 export const isLedgerLockError = (message = '') =>
-  LEDGER_LOCK_ERROR_CODES.some((code) => message.includes(code));
+  LEDGER_LOCK_ERROR_CODES.some((code) => message.includes(code)) ||
+  LEDGER_LOCK_ERROR_MARKERS.some((marker) =>
+    message.toLowerCase().includes(marker)
+  );
 
 export const isLedgerDisconnectedError = (message = '') =>
   message === 'DISCONNECTED' ||
