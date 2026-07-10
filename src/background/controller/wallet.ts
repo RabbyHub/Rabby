@@ -408,7 +408,7 @@ const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 
 const gnosisPQueue = new PQueue({
   interval: 1000,
-  intervalCap: 5,
+  intervalCap: 10,
   carryoverConcurrencyCount: false,
   concurrency: 2,
 });

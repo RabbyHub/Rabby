@@ -621,11 +621,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'transactions',
       'security',
       'perps',
-      'points',
+      'staking',
       'mobile',
       'dapps',
       'convertDust',
-      'staking',
+      'points',
     ];
   }, []);
 
