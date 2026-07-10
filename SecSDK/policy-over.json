@@ -580,7 +580,8 @@
     "global": {
       "allow": {
         "atob": "r",
-        "Buffer": "r"
+        "Buffer": "r",
+        "addEventListener": "r"
       },
       "disallow": []
     }

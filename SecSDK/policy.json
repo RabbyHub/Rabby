@@ -10632,6 +10632,7 @@
       "access": {
         "WebSocket": "r",
         "clearInterval": "r",
+        "clearTimeout": "r",
         "console": "r",
         "setInterval": "r",
         "setTimeout": "r"
@@ -10639,8 +10640,10 @@
       "allow": {
         "Buffer": "r",
         "WebSocket": "r",
+        "addEventListener": "r",
         "atob": "r",
         "clearInterval": "r",
+        "clearTimeout": "r",
         "console": "r",
         "setInterval": "r",
         "setTimeout": "r"
