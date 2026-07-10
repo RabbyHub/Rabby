@@ -68,7 +68,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   onDepositPress,
   onSwapPress,
 }) => {
-  const pxDecimals = currentAssetCtx?.pxDecimals || 2;
+  const pxDecimals = currentAssetCtx?.pxDecimals ?? 2;
   const szDecimals = currentAssetCtx?.szDecimals || 0;
   const leverageMax = currentAssetCtx?.maxLeverage || 5;
   const { t } = useTranslation();

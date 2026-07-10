@@ -412,7 +412,7 @@ export const PerpsSingleCoin = () => {
             entryPrice: Number(currentPosition.position.entryPx || 0),
             liquidationPrice: Number(
               currentPosition.position.liquidationPx || 0
-            ).toFixed(currentAssetCtx?.pxDecimals || 2),
+            ).toFixed(currentAssetCtx?.pxDecimals ?? 2),
             autoClose: false, // This would come from SDK
             direction:
               Number(currentPosition.position.szi || 0) > 0 ? 'Long' : 'Short',
@@ -789,7 +789,7 @@ export const PerpsSingleCoin = () => {
                     margin={Number(positionData?.marginUsed || 0)}
                     leverage={positionData?.leverage || 1}
                     liqPrice={Number(positionData?.liquidationPrice || 0)}
-                    pxDecimals={currentAssetCtx?.pxDecimals || 2}
+                    pxDecimals={currentAssetCtx?.pxDecimals ?? 2}
                     szDecimals={currentAssetCtx?.szDecimals || 0}
                     actionType="tp"
                     entryPrice={Number(positionData?.entryPrice || 0)}
@@ -879,7 +879,7 @@ export const PerpsSingleCoin = () => {
                     margin={Number(positionData?.marginUsed || 0)}
                     leverage={positionData?.leverage || 1}
                     liqPrice={Number(positionData?.liquidationPrice || 0)}
-                    pxDecimals={currentAssetCtx?.pxDecimals || 2}
+                    pxDecimals={currentAssetCtx?.pxDecimals ?? 2}
                     szDecimals={currentAssetCtx?.szDecimals || 0}
                     actionType="sl"
                     type="hasPosition"
@@ -1192,7 +1192,7 @@ export const PerpsSingleCoin = () => {
           currentAssetCtx?.maxUsdValueSize || PERPS_MAX_NTL_VALUE
         )}
         coin={coin}
-        pxDecimals={currentAssetCtx?.pxDecimals || 2}
+        pxDecimals={currentAssetCtx?.pxDecimals ?? 2}
         szDecimals={currentAssetCtx?.szDecimals || 0}
         leverageRange={[1, currentAssetCtx?.maxLeverage || 5]}
         markPrice={markPrice}
@@ -1376,7 +1376,7 @@ export const PerpsSingleCoin = () => {
 
           <RiskLevelPopup
             direction={positionData.direction as 'Long' | 'Short'}
-            pxDecimals={currentAssetCtx?.pxDecimals || 2}
+            pxDecimals={currentAssetCtx?.pxDecimals ?? 2}
             visible={riskPopupVisible}
             liquidationPrice={Number(
               currentPosition?.position.liquidationPx || 0

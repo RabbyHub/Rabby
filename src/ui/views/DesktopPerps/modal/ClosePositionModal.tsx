@@ -482,7 +482,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
               </span>
               <span className="text-r-neutral-title-1">
                 {splitNumberByStep(
-                  Number(marketPrice || 0).toFixed(marketData.pxDecimals || 2)
+                  Number(marketPrice || 0).toFixed(marketData.pxDecimals ?? 2)
                 )}
               </span>
             </div>

@@ -47,7 +47,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
   marginUsed,
   currentAssetCtx,
 }) => {
-  const pxDecimals = currentAssetCtx?.pxDecimals || 2;
+  const pxDecimals = currentAssetCtx?.pxDecimals ?? 2;
   const leverageMax = currentAssetCtx?.maxLeverage || 5;
   const { t } = useTranslation();
   const [margin, setMargin] = React.useState('');

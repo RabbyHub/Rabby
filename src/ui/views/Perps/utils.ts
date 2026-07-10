@@ -64,11 +64,18 @@ export const waitForInitialWsData = (timeoutMs = 5000): Promise<void> => {
   });
 };
 
-export const getPxDecimals = (markPx: string) => {
-  const parts = markPx.split('.');
-  if (!parts[1]) return 2;
-  const decimalPart = parts[1];
-  return decimalPart.length;
+// Hyperliquid perp price tick: decimals ≤ 6 - szDecimals AND at most 5
+// significant figures (matching the official HL UI, e.g. BTC at 64,026
+// has 5 integer digits so its tick is a whole number — no decimals).
+// Prices below 1 keep leading zeros out of the sig-figs count, so only
+// the szDecimals bound applies. Derived from the price MAGNITUDE (stable
+// across ticks), not the printed decimal length of a given price string.
+export const getPxDecimals = (szDecimals: number, refPx?: string | number) => {
+  const maxBySz = Math.max(0, 6 - Number(szDecimals ?? 0));
+  const px = Number(refPx);
+  if (!Number.isFinite(px) || px < 1) return maxBySz;
+  const intDigits = String(Math.trunc(px)).length;
+  return Math.min(maxBySz, Math.max(0, 5 - intDigits));
 };
 
 import { getQuoteAssetFromMeta } from '@/utils/perps/quoteAsset';
@@ -150,8 +157,8 @@ export const formatMarkData = (
           maxUsdValueSize: String(nextTier?.lowerBound ?? PERPS_MAX_NTL_VALUE),
           szDecimals: Number(hlDataAsset.szDecimals ?? 0),
           onlyIsolated: hlDataAsset.onlyIsolated,
+          pxDecimals: getPxDecimals(Number(hlDataAsset.szDecimals ?? 0)),
           // Price fields initialized empty; filled by WebSocket AssetCtx updates.
-          pxDecimals: 2,
           dayBaseVlm: '0',
           dayNtlVlm: '0',
           funding: '0',

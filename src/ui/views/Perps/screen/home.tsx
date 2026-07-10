@@ -350,7 +350,7 @@ export const Perps: React.FC = () => {
           ? 'Long'
           : ('Short' as 'Long' | 'Short'),
       currentPrice: markPrice,
-      pxDecimals: marketDataItem?.pxDecimals || 2,
+      pxDecimals: marketDataItem?.pxDecimals ?? 2,
       liquidationPrice,
     };
   }, [riskPopupCoin, positionAndOpenOrders, marketDataMap]);
@@ -729,7 +729,7 @@ export const Perps: React.FC = () => {
         <RiskLevelPopup
           visible={riskPopupVisible}
           direction={riskPopupData.direction}
-          pxDecimals={riskPopupData?.pxDecimals || 2}
+          pxDecimals={riskPopupData?.pxDecimals ?? 2}
           liquidationPrice={riskPopupData.liquidationPrice}
           markPrice={Number(marketDataMap[riskPopupCoin]?.markPx || 0)}
           onClose={() => {
