@@ -1,14 +1,18 @@
 import styled from 'styled-components';
 
 export const SendMaxButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 510;
   height: 18px;
-  line-height: 15px;
-  padding: 2px 8px;
+  line-height: 14px;
+  padding: 0;
   cursor: pointer;
-  user-select: nonce;
-  margin-left: 6px;
+  user-select: none;
+  margin-left: 4px;
   background-color: var(--r-blue-light1);
   color: var(--r-blue-default);
   border-radius: 10px;
