@@ -41,6 +41,16 @@ describe('Sentry ignored errors', () => {
     ).toBe(false);
   });
 
+  test('ignores a Request timeout Error', () => {
+    expect(shouldIgnoreSentryError(new Error('Request timeout'))).toBe(true);
+  });
+
+  test('keeps contextual timeout errors reportable', () => {
+    expect(
+      shouldIgnoreSentryError(new Error('Request timeout while signing'))
+    ).toBe(false);
+  });
+
   test.each([
     'HTTP request failed',
     'HTTP request failed. URL: https://custom-rpc.example',
