@@ -199,6 +199,28 @@ const TokenAmountInput = ({
     }));
   }, []);
 
+  const applyInputValue = useCallback(
+    (rawValue: string) => {
+      if (onInputValueChange) {
+        const nextValue = onInputValueChange(rawValue);
+        if (nextValue === false) {
+          return;
+        }
+
+        if (typeof nextValue === 'string') {
+          onChange?.(nextValue);
+          return;
+        }
+      }
+
+      const nextValue = normalizeInputNumber(rawValue);
+      if (nextValue !== null) {
+        onChange?.(nextValue);
+      }
+    },
+    [onChange, onInputValueChange]
+  );
+
   useLayoutEffect(() => {
     if (amountFocus && !tokenSelectorVisible) {
       tokenInputRef.current?.focus();
@@ -207,14 +229,14 @@ const TokenAmountInput = ({
 
   const handleCurrentTokenChange = useCallback(
     (token: TokenItem) => {
-      onChange && onChange('');
+      applyInputValue('');
       onTokenChange(token);
       setTokenSelectorVisible(false);
       setLpTokenMode(false);
       tokenInputRef.current?.focus();
       setChainServerId(token?.chain);
     },
-    [onChange, onTokenChange, setChainServerId]
+    [applyInputValue, onTokenChange, setChainServerId]
   );
 
   const handleTokenSelectorClose = useCallback(() => {
@@ -373,25 +395,6 @@ const TokenAmountInput = ({
     fontSizeStep: AMOUNT_FONT_SIZE_STEP,
     overflowPosition: amountInputOverflowPosition,
   });
-
-  const applyInputValue = (rawValue: string) => {
-    if (onInputValueChange) {
-      const nextValue = onInputValueChange(rawValue);
-      if (nextValue === false) {
-        return;
-      }
-
-      if (typeof nextValue === 'string') {
-        onChange?.(nextValue);
-        return;
-      }
-    }
-
-    const nextValue = normalizeInputNumber(rawValue);
-    if (nextValue !== null) {
-      onChange?.(nextValue);
-    }
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     applyInputValue(e.target.value);
