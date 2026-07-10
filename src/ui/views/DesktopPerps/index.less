@@ -9,6 +9,19 @@ body.perps-pro-page {
      `@layer utilities`, so an unlayered override can never win regardless of
      specificity. Re-pointing the var cascades to every `.font-medium` here. */
   --font-weight-medium: 450;
+
+  /* All divider/border lines on this page render at 80% opacity. Re-pointing
+     the line tokens here (instead of touching every utility/rule) cascades to
+     the whole subtree, including portaled modals / dropdowns / toasts. */
+  --rb-neutral-line: rgba(var(--rb-neutral-line-rgb), 0.8);
+  --r-neutral-line: rgba(var(--r-neutral-line-rgb), 0.8);
+}
+
+/* Dark `--r-neutral-line` is white at 0.1 alpha (its -rgb var is plain 255s),
+   so "80% of current" is 0.1 x 0.8 = 0.08 — a flat 0.8 would blow it out. */
+html.dark body.perps-pro-page,
+body.dark.perps-pro-page {
+  --r-neutral-line: rgba(var(--r-neutral-line-rgb), 0.08);
 }
 
 .trades-container-no-scrollbar {

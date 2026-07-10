@@ -55,16 +55,18 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 }) => {
   usePerpsProInit(isActive);
 
-  // The Perps pro page (its own desktop tab) uses 350 as its regular weight.
-  // Tagging the document body lets the single default rule cascade everywhere —
-  // including portaled modals / tooltips / toasts — so individual elements can
-  // just inherit instead of hardcoding the regular weight.
+  // Tagging the document body lets the page-scoped token overrides in
+  // index.less (350 regular weight, 80%-alpha line colors) cascade everywhere —
+  // including portaled modals / tooltips / toasts. Keyed to isActive, not
+  // mount: the page stays mounted (hidden) after leaving /desktop/perps, and
+  // the tag must not leak onto the other desktop views.
   useLayoutEffect(() => {
+    if (!isActive) return;
     document.body.classList.add('perps-pro-page');
     return () => {
       document.body.classList.remove('perps-pro-page');
     };
-  }, []);
+  }, [isActive]);
 
   const {
     action,

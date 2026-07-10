@@ -152,7 +152,7 @@ export const EditMarketSlippage: React.FC<EditMarketSlippageProps> = ({
 
       <div
         className={clsx(
-          'border-t-[0.5px] bg-rb-neutral-bg-2 border-solid border-rabby-neutral-line px-20 py-16'
+          'border-t bg-rb-neutral-bg-2 border-solid border-rabby-neutral-line px-20 py-16'
         )}
       >
         <div className="flex items-center gap-[16px]">

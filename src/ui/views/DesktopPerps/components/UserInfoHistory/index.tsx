@@ -161,7 +161,7 @@ export const UserInfoHistory: React.FC = () => {
 
   return (
     <div className="flex-1 h-full bg-rb-neutral-bg-1 flex flex-col min-w-0 overflow-hidden">
-      <div className="h-[38px] px-[12px] border-b-[0.5px] border-solid border-rb-neutral-line shrink-0 flex items-center justify-between gap-[24px]">
+      <div className="h-[38px] px-[12px] border-b border-solid border-rb-neutral-line shrink-0 flex items-center justify-between gap-[24px]">
         <div
           ref={tabsContainerRef}
           className="relative flex h-full min-w-0 flex-1 gap-[36px] overflow-x-auto trades-container-no-scrollbar"
