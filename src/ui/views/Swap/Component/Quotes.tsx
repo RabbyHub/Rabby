@@ -84,10 +84,9 @@ export const Quotes = ({
             (bestQuote?.data?.toTokenDecimals || other.receiveToken.decimals)
         )
         .toString() || '0';
-
     return [
       inSufficient
-        ? new BigNumber(bestQuote.data?.toTokenAmount || 0)
+        ? new BigNumber(bestQuote?.data?.toTokenAmount || 0)
             .div(
               10 **
                 (bestQuote?.data?.toTokenDecimals ||
@@ -96,7 +95,7 @@ export const Quotes = ({
             )
             .toString(10)
         : receiveTokenAmount,
-      bestQuote?.isDex ? bestQuote.preExecResult?.gasUsdValue || '0' : '0',
+      bestQuote?.isDex ? bestQuote?.preExecResult?.gasUsdValue || '0' : '0',
     ];
   }, [inSufficient, other?.receiveToken, sortedList]);
 

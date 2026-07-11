@@ -378,6 +378,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   const IconPerps = RcIconPerpsCC;
 
   const perpsId = useRabbySelector((s) => s.innerDappFrame.perps);
+  const hiddenBalance = useRabbySelector((s) => s.preference.hiddenBalance);
 
   const {
     availableBalance,
@@ -399,6 +400,17 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const perpsSubContentNode = useMemo<React.ReactNode>(() => {
     if (perpsId === 'hyperliquid') {
+      if (hiddenBalance) {
+        return (
+          <div
+            className={clsx(
+              'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+            )}
+          >
+            *****
+          </div>
+        );
+      }
       if (perpsFetching) {
         return (
           <div className="absolute bottom-[6px] text-[11px] font-medium">
@@ -437,6 +449,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     }
   }, [
     perpsId,
+    hiddenBalance,
     perpsFetching,
     availableBalance,
     perpsPositionInfo,
@@ -608,11 +621,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       'transactions',
       'security',
       'perps',
-      'points',
+      'staking',
       'mobile',
       'dapps',
       'convertDust',
-      'staking',
+      'points',
     ];
   }, []);
 

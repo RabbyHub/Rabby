@@ -45,6 +45,7 @@ import { getFormattedIpfsUrl } from '../utils/ipfs';
 import { storage } from '../webapi';
 import RPCService, { RPCServiceStore } from './rpc';
 import dayjs from 'dayjs';
+// import openapiService from './openapi';
 
 const MAX_READ_CONTRACT_TIME = 15_000;
 
@@ -1386,6 +1387,42 @@ export const fakeTestnetOpenapi = {
     });
 
     return customTestnetTokenToTokenItem(customToken);
+  },
+  // for testnet, we don't have a real API to get contract info, so we return null
+  getContractInfo: async (id: string, chainId: string) => {
+    return null;
+  },
+  // addrDesc: openapiService.addrDesc,
+  addrDesc: async (id: string) => {
+    return {
+      desc: {},
+    };
+  },
+  hasTransfer: async (chainId: string, from: string, to: string) => {
+    return {
+      has_transfer: false,
+    };
+  },
+  hasInteraction: async (addr: string, chainId: string, contractId: string) => {
+    return {
+      has_interaction: false,
+    };
+  },
+  isTokenContract: async (chainId: string, id: string) => {
+    return {
+      is_token: false,
+    };
+  },
+  depositCexSupport: async (id: string, chainId: string, cexId: string) => {
+    return {
+      support: false,
+    };
+  },
+  addrUsedChainList: async (id: string) => {
+    return [];
+  },
+  checkSpoofing: async ({ from, to }: { from: string; to: string }) => {
+    return { is_spoofing: false };
   },
 };
 

@@ -166,7 +166,7 @@ const OnlineStatus: React.FC<{ online: boolean }> = ({ online }) => {
   return (
     <div
       className={clsx(
-        'flex h-[20px] w-[60px] items-center justify-center gap-[4px] rounded-[4px] border-[0.5px] border-solid text-[12px] leading-[14px] font-medium',
+        'flex h-[20px] w-[60px] items-center justify-center gap-[4px] rounded-[4px] border border-solid text-[12px] leading-[14px] font-medium',
         online
           ? 'border-rb-green-default text-rb-green-default bg-rb-green-light-1 opacity-80'
           : 'border-rb-neutral-line text-rb-neutral-secondary bg-rb-neutral-bg-2'

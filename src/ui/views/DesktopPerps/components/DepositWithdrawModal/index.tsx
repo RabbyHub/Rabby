@@ -570,7 +570,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
             </div>
           </div>
 
-          <div className="border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16">
+          <div className="border-t border-solid border-rabby-neutral-line px-20 py-16">
             <Button
               loading={
                 type === 'deposit'
