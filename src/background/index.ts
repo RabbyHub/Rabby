@@ -421,10 +421,13 @@ browser.runtime.onConnect.addListener((port) => {
           case 'controller':
           default:
             if (data.method) {
-              const res = walletController[data.method].apply(
-                null,
-                data.params
-              );
+              const controllerMethod = walletController[data.method];
+              if (typeof controllerMethod !== 'function') {
+                throw new Error(
+                  `Unknown wallet controller method: ${String(data.method)}`
+                );
+              }
+              const res = controllerMethod.call(null, ...data.params);
               if (!IS_FIREFOX) {
                 return res;
               }
