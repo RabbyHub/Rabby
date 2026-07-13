@@ -554,6 +554,7 @@ const SignTypedData = ({
       sender: currentAccount.address,
       chainId: chainServerId || CHAINS.ETH.serverId,
       walletProvider: {
+        ethRpc: wallet.requestETHRpc,
         hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
         hasAddress: wallet.hasAddress,
         getWhitelist: wallet.getWhitelist,
