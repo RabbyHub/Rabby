@@ -120,9 +120,11 @@ class Uninstalled {
         search += 'l';
       }
       await browser.runtime.setUninstallURL(
-        `https://rabby.io/uninstalled?r=${encodeURIComponent(search)}&v=${
-          browser.runtime.getManifest().version
-        }&lang=${encodeURIComponent(i18n.language)}`
+        `https://rabby-io-git-feat-update-uninstall-1-debanker.vercel.app/uninstalled?r=${encodeURIComponent(
+          search
+        )}&v=${browser.runtime.getManifest().version}&lang=${encodeURIComponent(
+          i18n.language
+        )}`
       );
     } catch (e) {
       // ignore
