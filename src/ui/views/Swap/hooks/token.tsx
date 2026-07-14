@@ -2,7 +2,10 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
+import {
+  isSameTypeTokenPair,
+  WrapTokenAddressMap,
+} from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import {
   useCallback,
@@ -44,6 +47,7 @@ import { getDefaultSwapToTokenItem } from '@/constant/dex-swap';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
+const FREE_TOKEN_PAIR_AUTO_SLIPPAGE = '0.1';
 
 const getDexQuoteReceiveAmount = (
   quote: TDexQuoteData,
@@ -609,6 +613,15 @@ export const useTokenPair = (userAddress: string) => {
     return false;
   }, [payToken, receiveToken]);
 
+  const isFreeTokenPair = useMemo(
+    () => isSameTypeTokenPair(payToken, receiveToken),
+    [payToken, receiveToken]
+  );
+
+  const autoSlippageValue = isFreeTokenPair
+    ? FREE_TOKEN_PAIR_AUTO_SLIPPAGE
+    : getSwapAutoSlippageValue(isStableCoin);
+
   const [isWrapToken, wrapTokenSymbol] = useMemo(() => {
     if (payToken?.id && receiveToken?.id) {
       const res = isSwapWrapToken(payToken?.id, receiveToken?.id, chain);
@@ -643,14 +656,19 @@ export const useTokenPair = (userAddress: string) => {
       feeRate
     ) && inSufficientCanGetQuote;
 
+  const [autoSuggestSlippage, setAutoSuggestSlippage] = useState(
+    autoSlippageValue
+  );
+
   useEffect(() => {
     if (isWrapToken) {
       setFeeRate('0');
     }
     if (slippageObj.autoSlippage) {
-      slippageObj.setSlippage(getSwapAutoSlippageValue(isStableCoin));
+      slippageObj.setSlippage(autoSlippageValue);
+      setAutoSuggestSlippage(autoSlippageValue);
     }
-  }, [slippageObj.autoSlippage, isWrapToken, isStableCoin]);
+  }, [slippageObj.autoSlippage, isWrapToken, autoSlippageValue]);
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
   const fetchIdRef = useRef(0);
@@ -702,10 +720,6 @@ export const useTokenPair = (userAddress: string) => {
 
   const [pending, setPending] = useState(false);
 
-  const [autoSuggestSlippage, setAutoSuggestSlippage] = useState(
-    getSwapAutoSlippageValue(isStableCoin)
-  );
-
   const setAutoSlippage = useCallback(() => {
     slippageObj.setAutoSlippage(true);
   }, [slippageObj.setAutoSlippage]);
@@ -737,7 +751,12 @@ export const useTokenPair = (userAddress: string) => {
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
       let slippage = slippageObj.slippage;
-      if (slippageObj.autoSlippage) {
+      if (slippageObj.autoSlippage && isFreeTokenPair) {
+        slippage = autoSlippageValue;
+        if (currentFetchId === fetchIdRef.current) {
+          setAutoSuggestSlippage(slippage);
+        }
+      } else if (slippageObj.autoSlippage) {
         try {
           const suggestSlippage = await wallet.openapi.suggestSlippage({
             chain_id: findChainByEnum(chain)!.serverId,
@@ -796,6 +815,8 @@ export const useTokenPair = (userAddress: string) => {
     feeRate,
     slippageObj.slippage,
     slippageObj.autoSlippage,
+    isFreeTokenPair,
+    autoSlippageValue,
     isDraggingSlider,
   ]);
 
@@ -1220,6 +1241,7 @@ export const useTokenPair = (userAddress: string) => {
     inputAmount,
 
     isWrapToken,
+    isFreeTokenPair,
     wrapTokenSymbol,
     inSufficient,
     inSufficientCanGetQuote,

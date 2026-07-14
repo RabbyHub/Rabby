@@ -6,6 +6,7 @@ import {
   DEX_ENUM,
   DEX_ROUTER_WHITELIST,
   DEX_SPENDER_WHITELIST,
+  isSameTypeTokenPair,
   UNI_NATIVE_TO_ADDRESSES,
   WrapTokenAddressMap,
 } from '@rabby-wallet/rabby-swap';
@@ -425,7 +426,7 @@ export const useQuoteMethods = () => {
                   ? undefined
                   : Number(feeAfterDiscount) || 0,
               chain,
-              fee: true,
+              fee: !isSameTypeTokenPair(payToken, receiveToken),
               chainServerId: chainInfo.serverId,
               nativeTokenAddress: chainInfo.nativeTokenAddress,
               insufficient: inSufficient,

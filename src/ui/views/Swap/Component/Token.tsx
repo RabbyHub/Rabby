@@ -17,6 +17,7 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import { QuoteProvider } from '../hooks';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
+import { isSameTypeTokenPair } from '@rabby-wallet/rabby-swap';
 
 const StyledInput = styled(Input)`
   &,
@@ -62,6 +63,7 @@ const StyledInput = styled(Input)`
 interface SwapTokenItemProps {
   type: 'from' | 'to';
   token?: TokenItem;
+  freePairBaseToken?: TokenItem;
   value: string;
   chainId: string;
   onTokenChange: (token: TokenItem) => void;
@@ -83,6 +85,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
   const {
     type,
     token,
+    freePairBaseToken,
     value,
     onTokenChange,
     onValueChange,
@@ -108,6 +111,16 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
   const inputRef = useRef<InputRef>();
 
   const isFrom = type === 'from';
+
+  const tokenItemExtra = useCallback(
+    (candidateToken: TokenItem) =>
+      !isFrom && isSameTypeTokenPair(freePairBaseToken, candidateToken) ? (
+        <span className="shrink-0 rounded-[3px] bg-r-green-light px-4 text-[10px] font-medium leading-[16px] text-r-green-default">
+          Free
+        </span>
+      ) : null,
+    [freePairBaseToken, isFrom]
+  );
 
   const handleTokenModalOpen = useCallback(() => {
     if (!isFrom) {
@@ -234,6 +247,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             tokenRender={tokenRender}
             // supportChains={SWAP_SUPPORT_CHAINS}
             useSwapTokenList={!isFrom}
+            tokenItemExtra={isFrom ? undefined : tokenItemExtra}
             disabledTips={t('page.swap.insufficient-balance')}
             getContainer={getContainer}
             onStartSelectChain={onStartSelectChain}
