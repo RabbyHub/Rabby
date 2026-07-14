@@ -94,6 +94,7 @@ interface CommonProps {
   onStartSelectChain?: () => void;
   onOpenTokenModal?: () => void;
   onSelectRecentToken?: (token: TokenItem) => void;
+  tokenItemExtra?: (token: TokenItem) => React.ReactNode;
 }
 
 interface BridgeFromProps extends CommonProps {
@@ -136,6 +137,7 @@ const TokenSelect = forwardRef<
       onStartSelectChain,
       onOpenTokenModal,
       onSelectRecentToken,
+      tokenItemExtra,
     },
     ref
   ) => {
@@ -365,6 +367,7 @@ const TokenSelect = forwardRef<
             showLpTokenSwitch={isFromMode}
             onStartSelectChain={onStartSelectChain}
             onSelectRecentToken={onSelectRecentToken}
+            tokenItemExtra={tokenItemExtra}
           />
         </>
       );
@@ -435,6 +438,7 @@ const TokenSelect = forwardRef<
           setLpTokenMode={setLpTokenMode}
           showLpTokenSwitch={isFromMode}
           onStartSelectChain={onStartSelectChain}
+          tokenItemExtra={tokenItemExtra}
         />
       </>
     );

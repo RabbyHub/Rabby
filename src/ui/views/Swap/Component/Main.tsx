@@ -127,6 +127,7 @@ export const Main = () => {
 
     payTokenIsGasToken,
     isWrapToken,
+    isFreeTokenPair,
     inSufficient,
 
     slippageState,
@@ -1301,6 +1302,7 @@ export const Main = () => {
             }
             value={receiveTokenDisplayValue}
             token={receiveToken}
+            freePairBaseToken={payToken}
             onTokenChange={(token) => {
               const chainItem = findChainByServerID(token.chain);
               if (chainItem?.enum !== chain) {
@@ -1397,6 +1399,7 @@ export const Main = () => {
               setIsCustomSlippage={setIsCustomSlippage}
               type="swap"
               isWrapToken={isWrapToken}
+              isRabbyFeeFree={isFreeTokenPair}
               isBestQuote={
                 !!activeProvider &&
                 !!bestQuoteDex &&

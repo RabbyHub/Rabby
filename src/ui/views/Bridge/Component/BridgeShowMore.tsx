@@ -119,6 +119,7 @@ export const BridgeShowMore = ({
   autoSuggestSlippage,
   insufficient = false,
   signatureInstance,
+  isRabbyFeeFree = false,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -156,6 +157,7 @@ export const BridgeShowMore = ({
   autoSuggestSlippage?: string;
   supportDirectSign?: boolean;
   signatureInstance: SignatureManager;
+  isRabbyFeeFree?: boolean;
 }) => {
   const { t } = useTranslation();
   const sourceAlwaysShow = type === 'bridge';
@@ -328,9 +330,36 @@ export const BridgeShowMore = ({
     );
   }, [data, quoteLoading, toToken, fromToken]);
 
+  const rabbyFeeContentRender = () => (
+    <ListItem
+      name={t('page.swap.rabbyFee.title')}
+      className={isRabbyFeeFree ? 'h-18' : 'mt-12 h-18'}
+    >
+      <div
+        className={clsx(
+          'text-12 font-medium',
+          isRabbyFeeFree
+            ? 'text-r-green-default'
+            : isWrapToken
+            ? 'text-r-neutral-foot'
+            : 'text-r-blue-default cursor-pointer'
+        )}
+        onClick={isRabbyFeeFree ? undefined : openFeePopup}
+      >
+        {isRabbyFeeFree
+          ? 'Free'
+          : isWrapToken && type === 'swap'
+          ? t('page.swap.no-fees-for-wrap')
+          : RABBY_FEE}
+      </div>
+    </ListItem>
+  );
+
   return (
     <div className="mx-16">
       <div className="space-y-16">
+        {isRabbyFeeFree && rabbyFeeContentRender()}
+
         {sourceAlwaysShow && sourceContentRender()}
 
         {lostValueContentRender()}
@@ -382,21 +411,7 @@ export const BridgeShowMore = ({
           />
         )}
 
-        <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
-          <div
-            className={clsx(
-              'text-12 font-medium',
-              isWrapToken
-                ? 'text-r-neutral-foot'
-                : 'text-r-blue-default cursor-pointer'
-            )}
-            onClick={openFeePopup}
-          >
-            {isWrapToken && type === 'swap'
-              ? t('page.swap.no-fees-for-wrap')
-              : RABBY_FEE}
-          </div>
-        </ListItem>
+        {!isRabbyFeeFree && rabbyFeeContentRender()}
 
         {showMEVGuardedSwitch && type === 'swap' ? (
           <ListItem
