@@ -42,7 +42,7 @@ export const ListByAssets: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-[8px]">
+    <div className="flex flex-col gap-[8px] pb-[16px]">
       {displaySortedAssetApprovalList.map((assetApproval) => {
         const selection = parseApprovalSpenderSelection(
           assetApproval,
