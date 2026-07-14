@@ -267,7 +267,7 @@ const Receive = () => {
         )}
       />
       <OfflineChainNotify
-        className="w-full"
+        className="receive-offline-chain-notify w-full"
         itemClassName="rounded-[8px] mb-[8px]"
       />
 
@@ -317,7 +317,7 @@ const Receive = () => {
           {t('global.copyAddress')}
         </button>
       </div>
-      <div className="page-receive-footer absolute">
+      <div className="page-receive-footer">
         <img
           src="/images/logo-white.svg"
           className="h-[28px] opacity-50"
