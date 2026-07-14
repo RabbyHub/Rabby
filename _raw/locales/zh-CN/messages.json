@@ -327,6 +327,7 @@
         "biometricUnlockEnableFailed": "无法启用生物识别解锁",
         "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
         "biometricUnlockSetupDesc": "确认你的密码以激活生物识别解锁。",
+        "clearPendingCheckbox": "同时重置我的本地 nonce 数据和签名记录",
         "biometricUnlockSetupTitle": "启用生物识别解锁"
       },
       "tokenDetail": {
@@ -2871,6 +2872,8 @@
         "title": "导入私钥",
         "pasteCleared": "已粘贴并清除剪贴板",
         "createWallet": "创建钱包",
+        "placeholder": "输入私钥",
+        "required": "请输入私钥",
         "noWallet": "还没有助记词或私钥吗？"
       },
       "PasswordCard": {

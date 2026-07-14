@@ -1370,6 +1370,7 @@
         "biometricUnlockDisableFailed": "Не удалось отключить биометрическую разблокировку.",
         "biometricUnlockUnsupported": "Это устройство не поддерживает биометрическую разблокировку.",
         "biometricUnlockSetupDesc": "Подтвердите свой пароль для активации биометрического разблокирования.",
+        "clearPendingCheckbox": "Также сбросить локальные данные nonce и историю подписей",
         "biometricUnlockSetupTitle": "Включить биометрическую разблокировку"
       },
       "tokenDetail": {
@@ -2787,6 +2788,8 @@
         "title": "Импортировать Private Key",
         "pasteCleared": "Вставлено и буфер обмена очищен",
         "createWallet": "Создать кошелек",
+        "placeholder": "Введите приватный ключ",
+        "required": "Пожалуйста, введите приватный ключ",
         "noWallet": "У вас еще нет seed-фразы или приватного ключа?"
       },
       "PasswordCard": {

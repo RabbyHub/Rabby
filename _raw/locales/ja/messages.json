@@ -1368,6 +1368,7 @@
         "biometricUnlockDisableFailed": "生体認証ロックの無効化に失敗しました",
         "biometricUnlockUnsupported": "このデバイスは生体認証解除をサポートしていません。",
         "biometricUnlockSetupDesc": "バイオメトリックロック解除を有効にするには、パスワードを確認してください。",
+        "clearPendingCheckbox": "ローカルの nonce データと署名履歴もリセットする",
         "biometricUnlockSetupTitle": "バイオメトリックロック解除を有効にする",
         "biometricUnlockEnableFailed": "生体認証のアンロックを有効にできませんでした。"
       },
@@ -2785,6 +2786,8 @@
         "title": "秘密鍵のインポート",
         "pasteCleared": "貼り付けてクリップボードをクリアしました",
         "createWallet": "ウォレットを作成する",
+        "placeholder": "秘密鍵を入力",
+        "required": "秘密鍵を入力してください",
         "noWallet": "まだシードフレーズやプライベートキーを持っていませんか？"
       },
       "PasswordCard": {

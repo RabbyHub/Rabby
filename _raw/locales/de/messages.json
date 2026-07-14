@@ -1369,6 +1369,7 @@
         "biometricUnlockDisabled": "Biometrische Entsperrung deaktiviert",
         "biometricUnlockEnabled": "Biometrische Entsperrung aktiviert.",
         "biometricUnlockSetupDesc": "Bestätigen Sie Ihr Passwort, um die biometrische Entsperrung zu aktivieren.",
+        "clearPendingCheckbox": "Auch meine lokalen Nonce-Daten und Signaturaufzeichnungen zurücksetzen",
         "biometricUnlockUnsupported": "Dieses Gerät unterstützt keine biometrische Entsperrung."
       },
       "tokenDetail": {
@@ -2785,6 +2786,8 @@
         "title": "Privaten Schlüssel importieren",
         "pasteCleared": "Eingefügt und Zwischenablage geleert",
         "createWallet": "Wallet erstellen",
+        "placeholder": "Privaten Schlüssel eingeben",
+        "required": "Bitte privaten Schlüssel eingeben",
         "noWallet": "Hast du noch keinen Seed-Satz oder privaten Schlüssel?"
       },
       "PasswordCard": {

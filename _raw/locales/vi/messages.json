@@ -1461,6 +1461,7 @@
         "biometricUnlockUnsupported": "Thiết bị này không hỗ trợ mở khóa sinh trắc học.",
         "biometricUnlockEnableFailed": "Không thể bật mở khóa sinh trắc học",
         "biometricUnlockSetupDesc": "Xác nhận mật khẩu của bạn để kích hoạt mở khóa sinh trắc học.",
+        "clearPendingCheckbox": "Đồng thời đặt lại dữ liệu nonce cục bộ và lịch sử chữ ký",
         "biometricUnlockDisabled": "Mở khóa sinh trắc học đã bị vô hiệu hóa",
         "biometricUnlockPasswordPlaceholder": "Nhập mật khẩu"
       },
@@ -2782,7 +2783,9 @@
         "title": "Nhập Khóa Riêng",
         "pasteCleared": "Dán và đã xóa clipboard",
         "noWallet": "Chưa có cụm từ hạt giống hoặc khóa riêng tư?",
-        "createWallet": "Tạo ví"
+        "createWallet": "Tạo ví",
+        "placeholder": "Nhập khóa riêng tư",
+        "required": "Vui lòng nhập khóa riêng tư"
       },
       "PasswordCard": {
         "form": {
