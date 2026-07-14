@@ -324,6 +324,7 @@
         "biometricUnlockEnabled": "啟用生物識別解鎖。",
         "biometricUnlockDisableFailed": "無法停用生物識別解鎖",
         "biometricUnlockSetupDesc": "確認你的密碼以啟用生物識別解鎖。",
+        "clearPendingCheckbox": "同時重設我的本地 nonce 資料和簽署記錄",
         "biometricUnlockDisabled": "已停用生物識別解鎖",
         "biometricUnlockEnableFailed": "無法啟用生物識別解鎖",
         "biometricUnlockUnsupported": "此設備不支援生物識別解鎖。",
@@ -2830,6 +2831,8 @@
         "title": "匯入 私鑰",
         "pasteCleared": "已貼上並清除此剪貼簿內容",
         "createWallet": "創建錢包",
+        "placeholder": "輸入私鑰",
+        "required": "請輸入私鑰",
         "noWallet": "尚未擁有種子短語或私鑰？"
       },
       "PasswordCard": {

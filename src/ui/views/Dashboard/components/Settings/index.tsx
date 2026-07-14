@@ -399,7 +399,7 @@ const ResetAccountModal = ({
               onChange={setClearNonce}
             >
               <span className="text-13 text-r-neutral-body">
-                Also reset my local nonce data and signature record
+                {t('page.dashboard.settings.clearPendingCheckbox')}
               </span>
             </Checkbox>
           </div>

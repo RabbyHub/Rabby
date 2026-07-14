@@ -1462,6 +1462,7 @@
         "biometricUnlockDisableFailed": "Gagal menonaktifkan kunci biometrik",
         "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
         "biometricUnlockSetupDesc": "Konfirmasi kata sandi Anda untuk mengaktifkan pembukaan kunci biometrik.",
+        "clearPendingCheckbox": "Atur ulang juga data nonce lokal dan catatan tanda tangan saya",
         "biometricUnlockDisabled": "Biometric unlock dinonaktifkan"
       },
       "tokenDetail": {
@@ -2782,6 +2783,8 @@
         "title": "Impor Kunci Pribadi",
         "pasteCleared": "Ditempelkan dan clipboard dibersihkan",
         "createWallet": "Buat dompet",
+        "placeholder": "Masukkan private key",
+        "required": "Harap masukkan private key",
         "noWallet": "Belum memiliki seed phrase atau private key?"
       },
       "PasswordCard": {

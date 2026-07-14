@@ -144,7 +144,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
         <div className="text-[13px] leading-[16px] text-r-neutral-foot mb-[8px]">
           {t('page.manageApprovals.EIP7702Panel.delegatedAddressDesc')}
         </div>
-        <div className="flex flex-col gap-[8px]">
+        <div className="flex flex-col gap-[8px] pb-[16px]">
           {isLoading ? (
             <SkeletonLoading />
           ) : rows.length ? (

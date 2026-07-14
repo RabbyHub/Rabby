@@ -1104,6 +1104,7 @@
         "biometricUnlockDisableFailed": "Échec de la désactivation du déverrouillage biométrique",
         "biometricUnlockUnsupported": "Cet appareil ne prend pas en charge le déverrouillage biométrique.",
         "biometricUnlockSetupDesc": "Confirmez votre mot de passe pour activer le déverrouillage biométrique.",
+        "clearPendingCheckbox": "Réinitialiser également mes données de nonce locales et mon historique de signatures",
         "biometricUnlockEnabled": "Déverrouillage par biométrie activé.",
         "biometricUnlockSetupTitle": "Activer le déverrouillage biométrique",
         "biometricUnlockEnableFailed": "Échec de l'activation du déverrouillage biométrique"
@@ -3128,6 +3129,8 @@
         "title": "Importer une clé privée",
         "pasteCleared": "Collé et presse-papiers effacé",
         "createWallet": "Créer un portefeuille",
+        "placeholder": "Saisissez la clé privée",
+        "required": "Veuillez saisir la clé privée",
         "noWallet": "Vous n'avez pas encore de phrase de récupération ou de clé privée ?"
       },
       "PasswordCard": {
