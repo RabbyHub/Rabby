@@ -11,13 +11,11 @@ import { pickKeyringThemeIcon } from '@/utils/account';
 import IconDanger from '@/ui/assets/sign/security-engine/danger.svg';
 import { ReactComponent as IconArrowRight } from '@/ui/assets/sign/arrow-right-lite.svg';
 import ViewMore from './Actions/components/ViewMore';
-import {
-  SignMessageAddressData,
-  SignMessageAddressTagKind,
-} from './signMessageAddressData';
+import { SignMessageAddressData } from './signMessageAddressData';
 
 const Trigger = styled.button<{
-  $kind: SignMessageAddressTagKind;
+  $danger: boolean;
+  $alias: boolean;
 }>`
   box-sizing: content-box;
   position: absolute;
@@ -29,21 +27,19 @@ const Trigger = styled.button<{
   padding: 2px 2px 2px 6px;
   overflow: hidden;
   border: 0.5px solid
-    ${({ $kind }) =>
-      $kind === 'malicious'
+    ${({ $danger, $alias }) =>
+      $danger
         ? ' var(--r-red-default, #E34935)'
-        : $kind === 'alias'
+        : $alias
         ? 'var(--r-blue-default, #4C65FF)'
         : 'var(--r-neutral-line, #E0E5EC)'};
   border-radius: 4px;
-  background: ${({ $kind }) =>
-    $kind === 'malicious'
-      ? 'var(--r-red-light, #fce5e5)'
-      : 'var(--r-neutral-card1, #fff)'};
-  color: ${({ $kind }) =>
-    $kind === 'malicious'
+  background: ${({ $danger }) =>
+    $danger ? 'var(--r-red-light, #fce5e5)' : 'var(--r-neutral-card1, #fff)'};
+  color: ${({ $danger, $alias }) =>
+    $danger
       ? 'var(--r-red-default, #ec5151)'
-      : $kind === 'alias'
+      : $alias
       ? 'var(--r-blue-default, #7084ff)'
       : 'var(--r-neutral-body, #3e495e)'};
   font-size: 13px;
@@ -100,17 +96,16 @@ const Trigger = styled.button<{
 interface Props {
   chain: Chain;
   data: SignMessageAddressData;
+  danger: boolean;
   triggerRef: React.Ref<HTMLButtonElement>;
 }
 
-const SignMessageAddressTag = ({ chain, data, triggerRef }: Props) => {
+const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const addressInfo = data;
   const { address } = addressInfo;
   const alias = addressInfo?.alias;
-  const isMalicious = !!addressInfo?.isMalicious;
-  const kinds = addressInfo?.kinds || [];
   const protocol = addressInfo?.protocol || null;
   const importedAccountIcon = useBrandIcon({
     address,
@@ -121,37 +116,30 @@ const SignMessageAddressTag = ({ chain, data, triggerRef }: Props) => {
     ? importedAccountIcon
     : pickKeyringThemeIcon(KEYRING_CLASS.WATCH);
 
-  if (!kinds.length) return null;
-
   const token = addressInfo.token;
-  const kind = kinds[0];
-  const label =
-    kind === 'malicious'
-      ? alias || ellipsisAddress(address)
-      : kind === 'alias'
-      ? alias
-      : kind === 'token'
-      ? token
-        ? getTokenSymbol(token)
-        : ''
-      : protocol?.name || '';
-  const icon = isMalicious
+  const hasAlias = !!alias;
+  const opensTokenDetail = !!token && !danger;
+  const label = danger
+    ? alias || ellipsisAddress(address)
+    : alias || (token ? getTokenSymbol(token) : protocol?.name || '');
+  const icon = danger
     ? IconDanger
-    : kind === 'alias'
-    ? aliasIcon
-    : kind === 'token'
-    ? token?.logo_url
+    : hasAlias
+    ? token?.logo_url || protocol?.logo_url || aliasIcon
+    : token
+    ? token.logo_url
     : protocol?.logo_url;
   const trigger = (
     <Trigger
       ref={triggerRef}
       type="button"
-      $kind={kind}
+      $danger={danger}
+      $alias={hasAlias}
       aria-label={label}
       title={label}
       style={{ visibility: 'hidden' }}
       onClick={
-        kind === 'token' && token
+        opensTokenDetail && token
           ? () => dispatch.sign.openTokenDetailPopup(token)
           : undefined
       }
@@ -164,7 +152,7 @@ const SignMessageAddressTag = ({ chain, data, triggerRef }: Props) => {
     </Trigger>
   );
 
-  if (kind === 'token') return trigger;
+  if (opensTokenDetail) return trigger;
 
   return addressInfo.isContract ? (
     <ViewMore

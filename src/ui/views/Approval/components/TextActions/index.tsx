@@ -28,6 +28,7 @@ import {
 import { Chain } from 'background/service/openapi';
 import SignMessageAddressTag from '../SignMessageAddressTag';
 import {
+  getSignMessageAddressTagVisibility,
   SignMessageAddressData,
   SignMessageAddressDataMap,
 } from '../signMessageAddressData';
@@ -109,6 +110,13 @@ const AddressTagRail = styled.div`
   pointer-events: none;
 `;
 
+type AddressTag = {
+  id: string;
+  index: number;
+  data: SignMessageAddressData;
+  danger: boolean;
+};
+
 export const SignMessageContent = ({
   text,
   tokens,
@@ -126,19 +134,29 @@ export const SignMessageContent = ({
   );
   const contentRef = React.useRef<HTMLDivElement>(null);
   const anchorRefs = React.useRef<Record<number, HTMLSpanElement | null>>({});
-  const triggerRefs = React.useRef<Record<number, HTMLButtonElement | null>>(
+  const triggerRefs = React.useRef<Record<string, HTMLButtonElement | null>>(
     {}
   );
-  const addressTags = useMemo<
-    Array<{ index: number; data: SignMessageAddressData }>
-  >(() => {
+  const addressTags = useMemo<AddressTag[]>(() => {
     if (!chain) return [];
 
     return resolvedTokens.flatMap((token, index) => {
       if (token.type !== 'address') return [];
       const address = token.address || token.value;
       const data = addressData?.[address.toLowerCase()];
-      return data?.kinds.length ? [{ index, data }] : [];
+      if (!data) return [];
+
+      const { showDangerTag, showInfoTag } = getSignMessageAddressTagVisibility(
+        data
+      );
+      return [
+        ...(showDangerTag
+          ? [{ id: `${index}-danger`, index, data, danger: true }]
+          : []),
+        ...(showInfoTag
+          ? [{ id: `${index}-info`, index, data, danger: false }]
+          : []),
+      ];
     });
   }, [addressData, chain, resolvedTokens]);
 
@@ -147,14 +165,14 @@ export const SignMessageContent = ({
     if (!content || !addressTags.length) return;
 
     const updatePosition = () => {
-      addressTags.forEach(({ index }) => {
-        const trigger = triggerRefs.current[index];
+      addressTags.forEach(({ id }) => {
+        const trigger = triggerRefs.current[id];
         if (trigger) trigger.style.visibility = 'hidden';
       });
 
-      const measured = addressTags.flatMap(({ index }) => {
+      const measured = addressTags.flatMap(({ id, index }) => {
         const anchor = anchorRefs.current[index];
-        const trigger = triggerRefs.current[index];
+        const trigger = triggerRefs.current[id];
         const addressElement = anchor?.parentElement as HTMLElement | null;
         return anchor && trigger && addressElement
           ? [{ index, anchor, trigger, lineTop: addressElement.offsetTop }]
@@ -212,7 +230,14 @@ export const SignMessageContent = ({
             token.type === 'address'
               ? addressData?.[address.toLowerCase()]
               : undefined;
-          const hasTag = !!(chain && resolvedAddressData?.kinds.length);
+          const tagVisibility = resolvedAddressData
+            ? getSignMessageAddressTagVisibility(resolvedAddressData)
+            : null;
+          const hasTag = !!(
+            chain &&
+            tagVisibility &&
+            (tagVisibility.showDangerTag || tagVisibility.showInfoTag)
+          );
 
           return (
             <span
@@ -235,13 +260,14 @@ export const SignMessageContent = ({
       </div>
       <AddressTagRail>
         {chain
-          ? addressTags.map(({ index, data }) => (
+          ? addressTags.map(({ id, data, danger }) => (
               <SignMessageAddressTag
-                key={`address-tag-${index}`}
+                key={id}
                 chain={chain}
                 data={data}
+                danger={danger}
                 triggerRef={(element) => {
-                  triggerRefs.current[index] = element;
+                  triggerRefs.current[id] = element;
                 }}
               />
             ))
