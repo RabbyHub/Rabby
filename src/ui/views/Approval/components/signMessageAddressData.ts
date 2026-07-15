@@ -13,30 +13,6 @@ type SignMessageProtocol = {
   logo_url: string;
 };
 
-export type SignMessageAddressTagKind =
-  | 'malicious'
-  | 'alias'
-  | 'token'
-  | 'protocol';
-
-export const getSignMessageAddressTagKinds = ({
-  isMalicious,
-  alias,
-  isToken,
-  hasProtocol,
-}: {
-  isMalicious: boolean;
-  alias?: string;
-  isToken: boolean;
-  hasProtocol: boolean;
-}): SignMessageAddressTagKind[] => {
-  if (isMalicious) return alias ? ['malicious', 'alias'] : ['malicious'];
-  if (alias) return ['alias'];
-  if (isToken) return ['token'];
-  if (hasProtocol) return ['protocol'];
-  return [];
-};
-
 export interface SignMessageAddressData {
   address: string;
   addressDesc: AddrDescResponse['desc'] | null;
@@ -44,7 +20,6 @@ export interface SignMessageAddressData {
   alias?: string;
   isContract: boolean;
   isMalicious: boolean;
-  kinds: SignMessageAddressTagKind[];
   protocol: SignMessageProtocol | null;
   token: TokenItem | null;
   hasInteraction: boolean;
@@ -54,6 +29,19 @@ export interface SignMessageAddressData {
   hasReceiverMnemonicInWallet: boolean;
   localAccount: Account | null;
 }
+
+export const getSignMessageAddressTagVisibility = ({
+  isMalicious,
+  alias,
+  token,
+  protocol,
+}: Pick<
+  SignMessageAddressData,
+  'isMalicious' | 'alias' | 'token' | 'protocol'
+>) => ({
+  showDangerTag: isMalicious,
+  showInfoTag: !!alias || (!isMalicious && !!(token || protocol)),
+});
 
 export type SignMessageAddressDataMap = Record<string, SignMessageAddressData>;
 
@@ -196,12 +184,6 @@ export const resolveSignMessageAddressData = async ({
           alias,
           isContract,
           isMalicious,
-          kinds: getSignMessageAddressTagKinds({
-            isMalicious,
-            alias,
-            isToken: !!token,
-            hasProtocol: !!protocol,
-          }),
           protocol,
           token,
           hasInteraction: isContract ? relationship : false,
