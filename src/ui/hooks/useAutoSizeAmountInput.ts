@@ -10,8 +10,45 @@ import {
 
 export type AmountInputOverflowPosition = 'start' | 'end';
 
+export type AmountInputRef = RefObject<InputRef> | RefObject<HTMLInputElement>;
+
+type GetAutoSizeAmountFontSizeParams = {
+  containerWidth: number;
+  textWidthAtMaxFontSize: number;
+  maxFontSize: number;
+  minFontSize: number;
+  fontSizeStep: number;
+};
+
+export const getAutoSizeAmountFontSize = ({
+  containerWidth,
+  textWidthAtMaxFontSize,
+  maxFontSize,
+  minFontSize,
+  fontSizeStep,
+}: GetAutoSizeAmountFontSizeParams) => {
+  if (!containerWidth || !textWidthAtMaxFontSize) {
+    return maxFontSize;
+  }
+
+  for (
+    let nextFontSize = maxFontSize;
+    nextFontSize >= minFontSize;
+    nextFontSize -= fontSizeStep
+  ) {
+    if (
+      (textWidthAtMaxFontSize * nextFontSize) / maxFontSize <=
+      containerWidth
+    ) {
+      return nextFontSize;
+    }
+  }
+
+  return minFontSize;
+};
+
 type UseAutoSizeAmountInputParams = {
-  inputRef: RefObject<InputRef>;
+  inputRef: AmountInputRef;
   inputValue: string;
   measureText: string;
   maxFontSize: number;
@@ -60,35 +97,30 @@ export const useAutoSizeAmountInput = ({
     setTextWidthAtMaxFontSize(measureRef.current?.offsetWidth || 0);
   }, [measureText]);
 
-  const fontSize = useMemo(() => {
-    if (!containerWidth || !textWidthAtMaxFontSize) {
-      return maxFontSize;
-    }
-
-    for (
-      let nextFontSize = maxFontSize;
-      nextFontSize >= minFontSize;
-      nextFontSize -= fontSizeStep
-    ) {
-      if (
-        (textWidthAtMaxFontSize * nextFontSize) / maxFontSize <=
-        containerWidth
-      ) {
-        return nextFontSize;
-      }
-    }
-
-    return minFontSize;
-  }, [
-    containerWidth,
-    fontSizeStep,
-    maxFontSize,
-    minFontSize,
-    textWidthAtMaxFontSize,
-  ]);
+  const fontSize = useMemo(
+    () =>
+      getAutoSizeAmountFontSize({
+        containerWidth,
+        textWidthAtMaxFontSize,
+        maxFontSize,
+        minFontSize,
+        fontSizeStep,
+      }),
+    [
+      containerWidth,
+      fontSizeStep,
+      maxFontSize,
+      minFontSize,
+      textWidthAtMaxFontSize,
+    ]
+  );
 
   useEffect(() => {
-    const input = inputRef.current?.input;
+    const inputRefCurrent = inputRef.current;
+    const input =
+      inputRefCurrent && 'input' in inputRefCurrent
+        ? inputRefCurrent.input
+        : inputRefCurrent;
     if (!input) {
       return;
     }
@@ -98,7 +130,16 @@ export const useAutoSizeAmountInput = ({
       return;
     }
 
-    if (fontSize === minFontSize) {
+    const isFocused =
+      typeof document !== 'undefined' && document.activeElement === input;
+    const isEditingBeforeEnd =
+      isFocused &&
+      (input.selectionStart === null ||
+        input.selectionEnd === null ||
+        input.selectionStart < input.value.length ||
+        input.selectionEnd < input.value.length);
+
+    if (fontSize === minFontSize && !isEditingBeforeEnd) {
       input.scrollLeft = input.scrollWidth;
     }
   }, [fontSize, inputRef, inputValue, minFontSize, overflowPosition]);
