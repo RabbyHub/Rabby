@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { PrivateRoute } from 'ui/component';
+import { CUSTOM_RPC_ENABLED } from '@/constant';
 
 import Welcome from './Welcome';
 import NoAddress from './NoAddress';
@@ -514,9 +515,11 @@ const Main = () => {
         <PrivateRoute exact path="/dex-swap">
           <Swap />
         </PrivateRoute>
-        <PrivateRoute exact path="/custom-rpc">
-          <CustomRPC />
-        </PrivateRoute>
+        {CUSTOM_RPC_ENABLED && (
+          <PrivateRoute exact path="/custom-rpc">
+            <CustomRPC />
+          </PrivateRoute>
+        )}
         <PrivateRoute exact path="/custom-testnet">
           <CustomTestnet />
         </PrivateRoute>

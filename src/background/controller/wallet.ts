@@ -2877,10 +2877,10 @@ export class WalletController extends BaseController {
       enum: chainEnum,
     });
     if (chain?.isTestnet) {
-      if (enable) {
+      if (enable && RPCService.hasCustomRPC(chainEnum)) {
         customTestnetService.setCustomRPC({
           chainId: chain.id,
-          url: RPCService.getRPCByChain(chainEnum).url,
+          url: RPCService.getRPCByChain(chainEnum)!.url,
         });
       } else {
         customTestnetService.removeCustomRPC(chain.id);
