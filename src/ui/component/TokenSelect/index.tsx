@@ -262,13 +262,14 @@ const TokenSelect = forwardRef<
             (token) => token.chain === queryConds.chainServerId
           )
         : allDisplayTokens;
+      const searchedTokens = searchedTokenByQuery.map(abstractTokenToTokenItem);
       return uniqBy(
         queryConds.keyword
           ? isSwapTo
             ? contactAmountTokens(
                 // remoteSwapToSearchTokens获取的接口不好加amount，就从已推荐列表中找到amount合并进去
                 remoteSwapToSearchTokens || [],
-                swapTokenList || []
+                [...(swapTokenList || []), ...(searchedTokens || [])]
               )
                 ?.filter((e) => e.chain === queryConds.chainServerId)
                 .filter((e) =>
@@ -276,11 +277,7 @@ const TokenSelect = forwardRef<
                     ? true
                     : scamTokenFilter(e)
                 )
-            : concatAndSort(
-                searchedTokenByQuery.map(abstractTokenToTokenItem),
-                allTokens,
-                queryConds.keyword
-              )
+            : concatAndSort(searchedTokens, allTokens, queryConds.keyword)
           : allTokens,
         (token) => {
           return `${token.chain}-${token.id}`;
