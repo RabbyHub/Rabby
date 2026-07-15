@@ -157,7 +157,8 @@ export const GasAccountHistory = ({
             sign={'+'}
             borderT={index !== 0}
             isPending={true}
-            chainServerId={item?.chain_id}
+            // @ts-expect-error add from_chain_id
+            chainServerId={item?.chain_id || item?.from_chain_id}
             txId={item?.tx_id}
           />
         ))}
@@ -171,7 +172,8 @@ export const GasAccountHistory = ({
             sign={'-'}
             borderT={!txList.rechargeList.length ? index !== 0 : true}
             isPending={true}
-            chainServerId={item?.chain_id}
+            // @ts-expect-error add from_chain_id
+            chainServerId={item?.chain_id || item?.from_chain_id}
             txId={item?.tx_id}
           />
         ))}
