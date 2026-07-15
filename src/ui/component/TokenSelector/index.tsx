@@ -98,7 +98,6 @@ export interface TokenSelectorProps {
   setLpTokenMode?: (value: boolean) => void;
   showLpTokenSwitch?: boolean;
   onSelectRecentToken?: (token: TokenItem) => void;
-  tokenItemExtra?: (token: TokenItem) => React.ReactNode;
 }
 
 const filterTestnetTokenItem = (token: TokenItem) => {
@@ -131,7 +130,6 @@ const TokenSelector = ({
   lpTokenMode,
   setLpTokenMode,
   showLpTokenSwitch,
-  tokenItemExtra,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -451,7 +449,6 @@ const TokenSelector = ({
             setTokenDetail(token);
             setTokenDetailOpen(true);
           }}
-          tokenItemExtra={tokenItemExtra?.(token)}
         />
       );
     },
@@ -462,7 +459,6 @@ const TokenSelector = ({
       showCustomTestnetAssetList,
       selectedTab,
       supportChains,
-      tokenItemExtra,
     ]
   );
 
@@ -658,7 +654,6 @@ function CommonTokenItem(props: {
   type: TokenSelectorProps['type'];
   openTokenDetail: () => void;
   hideUsdValue?: boolean;
-  tokenItemExtra?: React.ReactNode;
 }) {
   const {
     externalMode,
@@ -672,7 +667,6 @@ function CommonTokenItem(props: {
     type,
     openTokenDetail,
     hideUsdValue,
-    tokenItemExtra,
   } = props;
 
   const { t } = useTranslation();
@@ -758,7 +752,6 @@ function CommonTokenItem(props: {
           data={token}
           onTokenPress={handleTokenPress}
           onClickTokenSymbol={onClickTokenSymbol}
-          tokenItemExtra={tokenItemExtra}
         />
       </Tooltip>
     );
@@ -796,14 +789,13 @@ function CommonTokenItem(props: {
             />
             <div className="flex flex-col gap-2">
               {showExchangeLogos ? (
-                <div className="flex items-center overflow-visible">
+                <div className="flex overflow-visible">
                   <span
                     className="symbol_click overflow-hidden truncate flex-1"
                     onClick={onClickTokenSymbol}
                   >
                     {getTokenSymbol(token)}
                   </span>
-                  {tokenItemExtra}
                   {isUnknownToken(token) && <UnknownTag className="ml-4" />}
                   {isLpToken(token) && (
                     <LpTokenTag
@@ -823,7 +815,6 @@ function CommonTokenItem(props: {
                   >
                     {getTokenSymbol(token)}
                   </span>
-                  {tokenItemExtra}
                   {isUnknownToken(token) && !isBridgeTo && <UnknownTag />}
                   {isLpToken(token) && (
                     <LpTokenTag
