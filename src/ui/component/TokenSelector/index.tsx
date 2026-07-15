@@ -789,7 +789,7 @@ function CommonTokenItem(props: {
             />
             <div className="flex flex-col gap-2">
               {showExchangeLogos ? (
-                <div className="flex overflow-visible">
+                <div className="flex overflow-visible items-center">
                   <span
                     className="symbol_click overflow-hidden truncate flex-1"
                     onClick={onClickTokenSymbol}
