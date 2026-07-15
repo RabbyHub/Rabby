@@ -500,7 +500,8 @@ export const BorrowModal: React.FC<BorrowModalProps> = ({
               value={_amount ?? ''}
               onValueChange={onAmountChange}
               placeholder="0"
-              className="text-right w-[200px] border-0 bg-transparent p-0 h-auto hover:border-r-0"
+              wrapperClassName="w-[200px]"
+              className="text-right w-full border-0 bg-transparent p-0 h-auto hover:border-r-0"
             />
           </div>
           <div className="w-full flex flex-row justify-between min-w-0 gap-4">
