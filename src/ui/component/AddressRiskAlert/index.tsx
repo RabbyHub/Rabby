@@ -399,11 +399,12 @@ export const AddressRiskAlert = ({
       } else {
         await wallet.removeWhitelist(address);
       }
-      onConfirm?.(
-        riskInfos?.addressDesc?.cex?.is_deposit
-          ? riskInfos?.addressDesc?.cex?.id
-          : undefined
-      );
+      const confirmedCexId = forWhitelist
+        ? editCex?.id
+        : riskInfos?.addressDesc?.cex?.is_deposit
+        ? riskInfos?.addressDesc?.cex?.id
+        : undefined;
+      onConfirm?.(confirmedCexId);
     } catch (e: any) {
       setPasswordError(true);
       form.setFields([
@@ -439,6 +440,8 @@ export const AddressRiskAlert = ({
   useEffect(() => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
   }, []);
+
+  const addressDescCex = forWhitelist ? undefined : riskInfos.addressDesc?.cex;
 
   return (
     <Drawer
@@ -489,12 +492,10 @@ export const AddressRiskAlert = ({
               type={targetAccount.type}
               address={address}
               cexInfo={{
-                id: editCex?.id || riskInfos.addressDesc?.cex?.id,
-                name: editCex?.name || riskInfos.addressDesc?.cex?.name,
-                logo: editCex?.logo || riskInfos.addressDesc?.cex?.logo_url,
-                isDeposit: editCex?.id
-                  ? true
-                  : riskInfos.addressDesc?.cex?.is_deposit,
+                id: editCex?.id || addressDescCex?.id,
+                name: editCex?.name || addressDescCex?.name,
+                logo: editCex?.logo || addressDescCex?.logo_url,
+                isDeposit: editCex?.id ? true : addressDescCex?.is_deposit,
               }}
               getContainer={getContainer}
               allowEditAlias={!forWhitelist}
