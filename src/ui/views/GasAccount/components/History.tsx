@@ -38,7 +38,7 @@ const HistoryItem = ({
   const { t } = useTranslation();
   const txDetailUrl =
     !isWithdraw && chainServerId && txId
-      ? findChainByServerID(chainServerId)?.scanLink.replace('_s_', txId)
+      ? findChainByServerID(chainServerId)?.scanLink?.replace('_s_', txId)
       : undefined;
 
   const gotoTxDetail = () => {
