@@ -1,4 +1,4 @@
-import { of, Subject, throwError } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 
 const mockListenToAvailableDevices = jest.fn();
 const mockConnect = jest.fn();
@@ -6,7 +6,8 @@ const mockDisconnect = jest.fn();
 const mockGetDeviceSessionState = jest.fn();
 const mockExecuteDeviceAction = jest.fn();
 const mockGetAddress = jest.fn();
-const mockContextModule = { clearSigning: false };
+const mockSignTransaction = jest.fn();
+const mockContextModule = { clearSigning: true };
 const mockRemoveDefaultLoaders = jest.fn();
 const mockAddTypedDataLoader = jest.fn();
 const mockSetChain = jest.fn();
@@ -17,6 +18,18 @@ let mockRuntimeMessageListener: ((request: any) => void) | undefined;
 const mockRuntimeOnMessageAddListener = jest.fn((listener) => {
   mockRuntimeMessageListener = listener;
 });
+
+const flushMicrotasks = async () => {
+  for (let i = 0; i < 10; i++) {
+    await Promise.resolve();
+  }
+};
+
+const waitForMockCall = async (mock: jest.Mock) => {
+  for (let i = 0; i < 100 && mock.mock.calls.length === 0; i++) {
+    await Promise.resolve();
+  }
+};
 
 const connectedState = {
   deviceStatus: 'CONNECTED',
@@ -109,6 +122,7 @@ jest.mock(
       withContextModule: mockWithContextModule.mockReturnThis(),
       build: () => ({
         getAddress: mockGetAddress,
+        signTransaction: mockSignTransaction,
       }),
     })),
   }),
@@ -132,7 +146,7 @@ import LedgerBridgeKeyring from 'background/service/keyring/eth-ledger-keyring';
 describe('LedgerBridgeKeyring makeApp', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockListenToAvailableDevices.mockReturnValue(of([{ id: 'ledger' }]));
+    mockListenToAvailableDevices.mockReturnValue(of([], [{ id: 'ledger' }]));
     mockDisconnect.mockResolvedValue(undefined);
     mockGetDeviceSessionState.mockReturnValue(of(connectedState));
     mockExecuteDeviceAction.mockReturnValue({
@@ -153,6 +167,64 @@ describe('LedgerBridgeKeyring makeApp', () => {
         },
       }),
     });
+  });
+
+  it('rejects as soon as the refreshed Ledger device list is empty', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    const devices$ = new BehaviorSubject<any[]>([]);
+    let rejection: Error | undefined;
+    mockListenToAvailableDevices.mockReturnValueOnce(devices$);
+
+    const operation = keyring.unlock("m/44'/60'/0'/0/0").catch((error) => {
+      rejection = error;
+    });
+
+    await waitForMockCall(mockListenToAvailableDevices);
+    expect(mockListenToAvailableDevices).toHaveBeenCalledTimes(1);
+
+    devices$.next([]);
+    await flushMicrotasks();
+
+    try {
+      expect(rejection?.message).toBe(
+        'Ledger: No connected Ledger device found'
+      );
+      expect(mockConnect).not.toHaveBeenCalled();
+    } finally {
+      if (!rejection) {
+        devices$.error(new Error('test cleanup'));
+      }
+      await operation;
+      await keyring.cleanUp();
+    }
+  });
+
+  it('stops a pending device refresh when the Ledger session is cleaned up', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    const devices$ = new BehaviorSubject<any[]>([]);
+    let rejection: Error | undefined;
+    mockListenToAvailableDevices.mockReturnValueOnce(devices$);
+
+    const operation = keyring.unlock("m/44'/60'/0'/0/0").catch((error) => {
+      rejection = error;
+    });
+    await waitForMockCall(mockListenToAvailableDevices);
+
+    await keyring.cleanUp();
+    await flushMicrotasks();
+
+    try {
+      expect(rejection?.message).toBe('Ledger: Device disconnected');
+      devices$.next([{ id: 'ledger' }]);
+      await flushMicrotasks();
+      expect(mockConnect).not.toHaveBeenCalled();
+    } finally {
+      if (!rejection) {
+        devices$.error(new Error('test cleanup'));
+      }
+      await operation;
+      await keyring.cleanUp();
+    }
   });
 
   it('shares a pending Ledger session open across concurrent callers', async () => {
@@ -186,25 +258,133 @@ describe('LedgerBridgeKeyring makeApp', () => {
     }
   });
 
-  it('builds the DMK signer with clear signing disabled', async () => {
+  it('releases the WebHID session once the operation chain is idle', async () => {
+    const keyring = new LedgerBridgeKeyring();
+
+    await keyring.unlock("m/44'/60'/0'/0/0");
+    expect(mockDisconnect).not.toHaveBeenCalled();
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(mockDisconnect).toHaveBeenCalledWith({ sessionId: 'session-1' });
+  });
+
+  it('releases the WebHID session when address preflight fails', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    mockGetDeviceSessionState.mockReturnValue(
+      of({
+        ...connectedState,
+        deviceStatus: 'LOCKED',
+      })
+    );
+
+    await expect(keyring.unlock("m/44'/60'/0'/0/0")).rejects.toThrow(
+      'Ledger: Device is locked 0x5515'
+    );
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(mockDisconnect).toHaveBeenCalledWith({ sessionId: 'session-1' });
+  });
+
+  it('releases the WebHID session when app close preflight fails', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    mockGetDeviceSessionState.mockReturnValue(
+      of({
+        ...connectedState,
+        deviceStatus: 'LOCKED',
+      })
+    );
+
+    await expect(keyring.quitApp()).rejects.toThrow(
+      'Ledger: Device is locked 0x5515'
+    );
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(mockDisconnect).toHaveBeenCalledWith({ sessionId: 'session-1' });
+  });
+
+  it('keeps the WebHID session while another device action is running', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    const firstActionState$ = new Subject<any>();
+    const secondActionState$ = new Subject<any>();
+    mockGetDeviceSessionState.mockReturnValue(
+      of({
+        ...connectedState,
+        currentApp: {
+          name: 'BOLOS',
+          version: '1.0.0',
+        },
+      })
+    );
+    mockExecuteDeviceAction
+      .mockReturnValueOnce({
+        observable: firstActionState$,
+        cancel: jest.fn(),
+      })
+      .mockReturnValueOnce({
+        observable: secondActionState$,
+        cancel: jest.fn(),
+      });
+
+    const firstOperation = keyring.openEthApp();
+    const secondOperation = keyring.openEthApp();
+    const secondResult = secondOperation.then(
+      () => undefined,
+      (error) => error
+    );
+
+    try {
+      for (
+        let i = 0;
+        i < 100 && mockExecuteDeviceAction.mock.calls.length < 2;
+        i++
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+      expect(mockExecuteDeviceAction).toHaveBeenCalledTimes(2);
+
+      firstActionState$.next({ status: 'completed', output: undefined });
+      await firstOperation;
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mockDisconnect).not.toHaveBeenCalled();
+
+      secondActionState$.next({ status: 'completed', output: undefined });
+      expect(await secondResult).toBeUndefined();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(mockDisconnect).toHaveBeenCalledWith({ sessionId: 'session-1' });
+    } finally {
+      firstActionState$.complete();
+      secondActionState$.complete();
+      await Promise.allSettled([firstOperation, secondOperation]);
+      await keyring.cleanUp();
+    }
+  });
+
+  it('builds the DMK signer with default clear signing and no origin token', async () => {
     const keyring = new LedgerBridgeKeyring();
 
     await keyring.unlock("m/44'/60'/0'/0/0");
 
-    expect(mockRemoveDefaultLoaders).toHaveBeenCalledTimes(1);
-    expect(mockAddTypedDataLoader).toHaveBeenCalledWith({
-      load: expect.any(Function),
+    const { ContextModuleBuilder } = jest.requireMock(
+      '@ledgerhq/context-module'
+    );
+    const { SignerEthBuilder } = jest.requireMock(
+      '@ledgerhq/device-signer-kit-ethereum'
+    );
+    expect(ContextModuleBuilder).toHaveBeenCalledWith({
+      networkTimeoutMs: 2000,
     });
+    expect(SignerEthBuilder.mock.calls[0][0]).not.toHaveProperty('originToken');
+    expect(mockRemoveDefaultLoaders).not.toHaveBeenCalled();
+    expect(mockAddTypedDataLoader).not.toHaveBeenCalled();
     expect(mockSetChain).toHaveBeenCalledWith('ethereum');
     expect(mockSetBlindSigningReporter).toHaveBeenCalledWith({
       report: expect.any(Function),
     });
     expect(mockWithContextModule).toHaveBeenCalledWith(mockContextModule);
 
-    const typedDataLoader = mockAddTypedDataLoader.mock.calls[0][0];
-    await expect(typedDataLoader.load()).resolves.toMatchObject({
-      type: 'error',
-    });
     const blindSigningReporter = mockSetBlindSigningReporter.mock.calls[0][0];
     await expect(blindSigningReporter.report()).resolves.toBeUndefined();
 
@@ -456,9 +636,14 @@ describe('LedgerBridgeKeyring makeApp', () => {
     expect(cancel).toHaveBeenCalledTimes(1);
   });
 
-  it('cancels an app open action that never finishes', async () => {
+  it('allows the user more than 30 seconds to open the Ethereum app', async () => {
+    jest.useFakeTimers();
     const keyring = new LedgerBridgeKeyring();
     const cancel = jest.fn();
+    const actionState$ = new Subject<any>();
+    let settled = false;
+    let rejection: Error | undefined;
+    mockConnect.mockResolvedValueOnce('session-1');
     mockGetDeviceSessionState.mockReturnValue(
       of({
         ...connectedState,
@@ -469,21 +654,155 @@ describe('LedgerBridgeKeyring makeApp', () => {
       })
     );
     mockExecuteDeviceAction.mockReturnValueOnce({
-      observable: throwError(() => ({
-        name: 'TimeoutError',
-      })),
+      observable: actionState$,
       cancel,
     });
 
-    await expect(keyring.openEthApp()).rejects.toThrow(
-      'Ledger: Operation timed out'
+    const operation = keyring.openEthApp().then(
+      () => {
+        settled = true;
+      },
+      (error) => {
+        settled = true;
+        rejection = error;
+      }
     );
-    expect(cancel).toHaveBeenCalledTimes(1);
-    await keyring.cleanUp();
+
+    try {
+      await waitForMockCall(mockExecuteDeviceAction);
+      expect(mockExecuteDeviceAction).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(30001);
+      await flushMicrotasks();
+
+      expect(settled).toBe(false);
+      expect(rejection).toBeUndefined();
+      expect(cancel).not.toHaveBeenCalled();
+
+      actionState$.next({
+        status: 'completed',
+        output: undefined,
+      });
+      await operation;
+      expect(settled).toBe(true);
+    } finally {
+      actionState$.next({
+        status: 'completed',
+        output: undefined,
+      });
+      await keyring.cleanUp();
+      jest.useRealTimers();
+    }
+  });
+
+  it('allows a transaction review to take more than 60 seconds', async () => {
+    jest.useFakeTimers();
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: {
+        [address]: {
+          hdPath: "m/44'/60'/0'/0/0",
+        },
+      },
+    });
+    const cancel = jest.fn();
+    const actionState$ = new Subject<any>();
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+      verifySignature: () => true,
+    } as any;
+    const signature = {
+      v: 27,
+      r: '1'.padStart(64, '0'),
+      s: '2'.padStart(64, '0'),
+    };
+    let result: unknown;
+    let rejection: Error | undefined;
+    mockConnect.mockResolvedValueOnce('session-1');
+    mockSignTransaction.mockReturnValueOnce({
+      observable: actionState$,
+      cancel,
+    });
+
+    const operation = keyring.signTransaction(address, tx).then(
+      (value) => {
+        result = value;
+      },
+      (error) => {
+        rejection = error;
+      }
+    );
+
+    try {
+      await waitForMockCall(mockSignTransaction);
+      expect(mockSignTransaction).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(60001);
+      await flushMicrotasks();
+
+      expect(result).toBeUndefined();
+      expect(rejection).toBeUndefined();
+      expect(cancel).not.toHaveBeenCalled();
+
+      actionState$.next({
+        status: 'completed',
+        output: signature,
+      });
+      await operation;
+      expect(result).toBe(tx);
+    } finally {
+      actionState$.next({
+        status: 'completed',
+        output: signature,
+      });
+      await keyring.cleanUp();
+      actionState$.complete();
+      jest.useRealTimers();
+    }
+  });
+
+  it('cleans up after another client corrupts the signature response', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: {
+        [address]: {
+          hdPath: "m/44'/60'/0'/0/0",
+        },
+      },
+    });
+    const cancel = jest.fn();
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    mockSignTransaction.mockReturnValueOnce({
+      observable: of({
+        status: 'error',
+        error: {
+          _tag: 'InvalidStatusWordError',
+          originalError: new Error('R is missing'),
+        },
+      }),
+      cancel,
+    });
+
+    try {
+      await expect(keyring.signTransaction(address, tx)).rejects.toThrow(
+        'Ledger: Device communication was interrupted. Close other apps using Ledger and try again.'
+      );
+      expect(cancel).toHaveBeenCalledTimes(1);
+      expect(mockDisconnect).toHaveBeenCalledWith({ sessionId: 'session-1' });
+    } finally {
+      await keyring.cleanUp();
+    }
   });
 
   it('rejects immediately when the Ledger action requires device unlock', async () => {
     const keyring = new LedgerBridgeKeyring();
+    const cancel = jest.fn();
     mockGetDeviceSessionState.mockReturnValue(
       of({
         ...connectedState,
@@ -500,13 +819,14 @@ describe('LedgerBridgeKeyring makeApp', () => {
           requiredUserInteraction: 'unlock-device',
         },
       }),
-      cancel: jest.fn(),
+      cancel,
     });
 
     try {
       await expect(keyring.openEthApp()).rejects.toThrow(
         'Ledger: Device is locked 0x5515'
       );
+      expect(cancel).toHaveBeenCalledTimes(1);
     } finally {
       await keyring.cleanUp();
     }
