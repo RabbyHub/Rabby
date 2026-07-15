@@ -563,6 +563,10 @@
         "gasExceedsBlockGasLimit": "Gas exceeds block gas limit. Please adjust and try again.",
         "InvalidTx": "Invalid transaction.",
         "gasLimitTooLow": "Gas limit too low"
+      },
+      "signMessageTag": {
+        "contract": "Contract:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {
