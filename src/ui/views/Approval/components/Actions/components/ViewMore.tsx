@@ -78,6 +78,8 @@ const PopupContainer = styled.div`
 const ViewMore = (
   props: Props & {
     children?: React.ReactNode;
+    inline?: boolean;
+    title?: React.ReactNode;
   }
 ) => {
   const [popupVisible, setPopupVisible] = useState(false);
@@ -105,12 +107,14 @@ const ViewMore = (
     }
   }, [props.type]);
 
+  const Trigger = props.inline ? 'span' : 'div';
+
   return (
     <>
       {props.children ? (
-        <div className="max-w-full" onClick={handleClickViewMore}>
+        <Trigger className="max-w-full" onClick={handleClickViewMore}>
           {props.children}
-        </div>
+        </Trigger>
       ) : (
         <span
           className="underline cursor-pointer"
@@ -131,7 +135,9 @@ const ViewMore = (
       >
         <PopupContainer>
           {props.type === 'contract' && <ContractPopup data={props.data} />}
-          {props.type === 'spender' && <SpenderPopup data={props.data} />}
+          {props.type === 'spender' && (
+            <SpenderPopup data={props.data} title={props.title} />
+          )}
           {props.type === 'nftSpender' && <NFTSpenderPopup data={props.data} />}
           {props.type === 'receiver' && <ReceiverPopup data={props.data} />}
           {props.type === 'nft' && <NFTPopup data={props.data} />}

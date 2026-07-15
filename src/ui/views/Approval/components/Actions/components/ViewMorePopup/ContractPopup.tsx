@@ -15,6 +15,7 @@ interface ContractData {
   } | null;
   bornAt: number | null;
   rank: number | null;
+  trustValue?: number | null;
   title?: string;
   hasInteraction: boolean;
 }
@@ -65,10 +66,8 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
           </Row>
         </Col>
         <Col>
-          <Row>{t('page.signTx.interacted')}</Row>
-          <Row>
-            <Values.Boolean value={data.hasInteraction} />
-          </Row>
+          <Row>{t('page.signTx.addressTypeTitle')}</Row>
+          <Row>{t('page.signTx.contract')}</Row>
         </Col>
         <Col>
           <Row>{t('page.signTx.deployTimeTitle')}</Row>
@@ -76,6 +75,20 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
             <Values.TimeSpan value={data.bornAt} />
           </Row>
         </Col>
+        {data.trustValue !== undefined && (
+          <Col>
+            <Row tip={t('page.signTx.tokenApprove.contractTrustValueTip')}>
+              {t('page.signTx.trustValue')}
+            </Row>
+            <Row>
+              {data.trustValue == null ? (
+                '-'
+              ) : (
+                <Values.USDValue value={data.trustValue} />
+              )}
+            </Row>
+          </Col>
+        )}
         <Col>
           <Row>{t('page.signTx.popularity')}</Row>
           <Row>
@@ -85,6 +98,12 @@ export const ContractPopup: React.FC<Props> = ({ data }) => {
                   data.chain.name,
                 ])
               : '-'}
+          </Row>
+        </Col>
+        <Col>
+          <Row>{t('page.signTx.interacted')}</Row>
+          <Row>
+            <Values.Boolean value={data.hasInteraction} />
           </Row>
         </Col>
         <Col>

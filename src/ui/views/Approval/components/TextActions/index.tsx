@@ -10,7 +10,7 @@ import VerifyAddress from './VerifyAddress';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
 import clsx from 'clsx';
-import { Popup } from 'ui/component';
+import { Copy, Popup } from 'ui/component';
 import { NoActionAlert } from '../NoActionAlert/NoActionAlert';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { CommonAction } from '../CommonAction';
@@ -21,11 +21,23 @@ import { Divide } from '../Divide';
 import { ParsedTextActionData } from '@rabby-wallet/rabby-action';
 import { findChain } from '@/utils/chain';
 import { Account } from '@/background/service/preference';
-import { tokenizeSignMessageText } from '../signMessageHighlighter';
+import {
+  SignMessageHighlightToken,
+  tokenizeSignMessageText,
+} from '../signMessageHighlighter';
+import { Chain } from 'background/service/openapi';
+import SignMessageAddressTag from '../SignMessageAddressTag';
+import {
+  SignMessageAddressData,
+  SignMessageAddressDataMap,
+} from '../signMessageAddressData';
+import { getSignMessageAddressTagLayouts } from '../signMessageAddressTagLayout';
 
 const { TabPane } = Tabs;
 
 export const MessageWrapper = styled.div`
+  position: relative;
+
   .title {
     display: flex;
     justify-content: center;
@@ -63,6 +75,7 @@ export const MessageWrapper = styled.div`
     }
   }
   .content {
+    position: relative;
     word-break: break-all;
     white-space: pre-wrap;
     font-size: 13px;
@@ -84,19 +97,159 @@ export const MessageWrapper = styled.div`
   }
 `;
 
-export const HighlightedSignMessageText = ({ text }: { text: string }) => (
-  <>
-    {tokenizeSignMessageText(text).map((token, index) =>
-      token.type === 'text' ? (
-        <React.Fragment key={`text-${index}`}>{token.value}</React.Fragment>
-      ) : (
-        <span key={`${token.type}-${index}`} className="message-highlight">
-          {token.value}
-        </span>
-      )
-    )}
-  </>
-);
+const AddressTagAnchor = styled.span`
+  display: inline-block;
+  width: 0;
+  height: 16px;
+`;
+
+const AddressTagRail = styled.div`
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+`;
+
+export const SignMessageContent = ({
+  text,
+  tokens,
+  chain,
+  addressData,
+}: {
+  text: string;
+  tokens?: SignMessageHighlightToken[];
+  chain?: Chain;
+  addressData?: SignMessageAddressDataMap;
+}) => {
+  const resolvedTokens = useMemo(
+    () => tokens || tokenizeSignMessageText(text),
+    [text, tokens]
+  );
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  const anchorRefs = React.useRef<Record<number, HTMLSpanElement | null>>({});
+  const triggerRefs = React.useRef<Record<number, HTMLButtonElement | null>>(
+    {}
+  );
+  const addressTags = useMemo<
+    Array<{ index: number; data: SignMessageAddressData }>
+  >(() => {
+    if (!chain) return [];
+
+    return resolvedTokens.flatMap((token, index) => {
+      if (token.type !== 'address') return [];
+      const address = token.address || token.value;
+      const data = addressData?.[address.toLowerCase()];
+      return data?.kinds.length ? [{ index, data }] : [];
+    });
+  }, [addressData, chain, resolvedTokens]);
+
+  React.useLayoutEffect(() => {
+    const content = contentRef.current;
+    if (!content || !addressTags.length) return;
+
+    const updatePosition = () => {
+      addressTags.forEach(({ index }) => {
+        const trigger = triggerRefs.current[index];
+        if (trigger) trigger.style.visibility = 'hidden';
+      });
+
+      const measured = addressTags.flatMap(({ index }) => {
+        const anchor = anchorRefs.current[index];
+        const trigger = triggerRefs.current[index];
+        const addressElement = anchor?.parentElement as HTMLElement | null;
+        return anchor && trigger && addressElement
+          ? [{ index, anchor, trigger, lineTop: addressElement.offsetTop }]
+          : [];
+      });
+      const layouts = getSignMessageAddressTagLayouts(
+        measured.map(({ anchor, lineTop }) => ({
+          lineTop,
+          anchorHeight: anchor.offsetHeight,
+        })),
+        {
+          contentTop: content.offsetTop,
+          scrollTop: content.scrollTop,
+          viewportHeight: content.clientHeight,
+        }
+      );
+
+      measured.forEach(({ trigger }, index) => {
+        const layout = layouts[index];
+        trigger.style.right = `${layout.right}px`;
+        trigger.style.top = `${layout.top}px`;
+        trigger.style.visibility = layout.visible ? 'visible' : 'hidden';
+      });
+    };
+
+    updatePosition();
+    const observer =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(updatePosition);
+    observer?.observe(content);
+    if (content.parentElement) observer?.observe(content.parentElement);
+    content.addEventListener('scroll', updatePosition, { passive: true });
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      observer?.disconnect();
+      content.removeEventListener('scroll', updatePosition);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [addressTags]);
+
+  return (
+    <>
+      <div className="content" ref={contentRef}>
+        {resolvedTokens.map((token, index) => {
+          if (token.type === 'text') {
+            return (
+              <React.Fragment key={`text-${index}`}>
+                {token.value}
+              </React.Fragment>
+            );
+          }
+          const address = token.address || token.value;
+          const resolvedAddressData =
+            token.type === 'address'
+              ? addressData?.[address.toLowerCase()]
+              : undefined;
+          const hasTag = !!(chain && resolvedAddressData?.kinds.length);
+
+          return (
+            <span
+              key={`${token.type}-${index}`}
+              className={clsx('message-highlight', {
+                'message-highlight--address': token.type === 'address',
+              })}
+            >
+              {hasTag ? (
+                <AddressTagAnchor
+                  ref={(element) => {
+                    anchorRefs.current[index] = element;
+                  }}
+                />
+              ) : null}
+              {token.value}
+            </span>
+          );
+        })}
+      </div>
+      <AddressTagRail>
+        {chain
+          ? addressTags.map(({ index, data }) => (
+              <SignMessageAddressTag
+                key={`address-tag-${index}`}
+                chain={chain}
+                data={data}
+                triggerRef={(element) => {
+                  triggerRefs.current[index] = element;
+                }}
+              />
+            ))
+          : null}
+      </AddressTagRail>
+    </>
+  );
+};
 
 const Actions = ({
   data,
@@ -107,6 +260,8 @@ const Actions = ({
   originLogo,
   chainId,
   account,
+  messageTokens,
+  addressData,
 }: {
   data: ParsedTextActionData | null;
   engineResults: Result[];
@@ -116,6 +271,8 @@ const Actions = ({
   originLogo?: string;
   chainId?: number;
   account: Account;
+  messageTokens?: SignMessageHighlightToken[];
+  addressData?: SignMessageAddressDataMap;
 }) => {
   const actionName = useMemo(() => {
     return getActionTypeText(data);
@@ -240,11 +397,17 @@ const Actions = ({
           })}
         >
           <div className="title">
-            <div className="title-text">{t('page.signText.title')}</div>
+            <div className="title-text flex items-center gap-4">
+              {t('page.signText.title')}
+              <Copy data={message} className="w-14 h-14" />
+            </div>
           </div>
-          <div className="content">
-            <HighlightedSignMessageText text={message} />
-          </div>
+          <SignMessageContent
+            text={message}
+            tokens={messageTokens}
+            chain={chain}
+            addressData={addressData}
+          />
         </MessageWrapper>
       </Card>
     </>
