@@ -132,7 +132,7 @@ export const PositionsInfo: React.FC = () => {
         // order.orderType === 'Limit'
       );
 
-      const pxDecimals = marketData.pxDecimals || 2;
+      const pxDecimals = marketData.pxDecimals ?? 2;
       const quoteAsset = marketData.quoteAsset || 'USDC';
 
       const liquidationDistance = calculateDistanceToLiquidation(

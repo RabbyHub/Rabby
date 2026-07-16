@@ -493,7 +493,10 @@ const ImportKeyOrSeed: React.FC<{
                       slip39GroupNumber={slip39GroupNumber}
                       isSlip39={isSlip39}
                       onSlip39Change={setIsSlip39}
-                      onModeChange={clearSeedPhraseErrors}
+                      onModeChange={() => {
+                        clearSeedPhraseErrors();
+                        formContentRef.current?.scrollTo(0, 0);
+                      }}
                       onPassphrase={setNeedPassphrase}
                       errMsgs={errMsgs}
                       onChange={checkSlip39Mnemonics}

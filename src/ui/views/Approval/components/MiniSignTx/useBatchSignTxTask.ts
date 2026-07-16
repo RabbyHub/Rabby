@@ -5,7 +5,10 @@ import { HardwareErrorCode } from '@onekeyfe/hd-shared';
 import { useMemoizedFn } from 'ahooks';
 import React, { useMemo, useRef, useState } from 'react';
 import _ from 'lodash';
-import { isLedgerLockError } from '@/ui/utils/ledger';
+import {
+  isLedgerConnectionRecoverableError,
+  isLedgerLockError,
+} from '@/ui/utils/ledger';
 import { useSetDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import BigNumber from 'bignumber.js';
 
@@ -169,7 +172,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
           if (
             !(
               isLedgerLockError(msg) ||
-              msg === 'DISCONNECTED' ||
+              isLedgerConnectionRecoverableError(msg) ||
               msg === 'No OneKey Device found'
             )
           ) {

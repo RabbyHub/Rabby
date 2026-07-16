@@ -14,7 +14,12 @@ import { ProcessActions } from '../FooterBar/ProcessActions';
 import { Dots } from '../Popup/Dots';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
-import { isLedgerLockError } from '@/ui/utils/ledger';
+import {
+  isLedgerConnectionOpeningError,
+  isLedgerConnectionRecoverableError,
+  isLedgerDisconnectedError,
+  isLedgerLockError,
+} from '@/ui/utils/ledger';
 import eventBus from '@/eventBus';
 import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
@@ -87,10 +92,16 @@ export const MiniLedgerAction: React.FC<Props> = ({
     visibleLedgerConnectModal,
     setVisibleLedgerConnectModal,
   ] = React.useState(false);
+  const [ledgerErrorMessage, setLedgerErrorMessage] = React.useState('');
 
   React.useEffect(() => {
     const listener = (msg) => {
-      if (isLedgerLockError(msg) || msg === 'DISCONNECTED') {
+      const message = String(msg || '');
+      setLedgerErrorMessage(message);
+      if (
+        isLedgerLockError(message) ||
+        isLedgerConnectionRecoverableError(message)
+      ) {
         setVisibleLedgerConnectModal(true);
         task.stop();
 
@@ -108,7 +119,9 @@ export const MiniLedgerAction: React.FC<Props> = ({
   }, []);
 
   const handleSubmit = useMemoizedFn(() => {
+    setLedgerErrorMessage('');
     if (status === 'DISCONNECTED') {
+      setLedgerErrorMessage('DISCONNECTED');
       setVisibleLedgerConnectModal(true);
       return;
     }
@@ -146,6 +159,43 @@ export const MiniLedgerAction: React.FC<Props> = ({
     [task.status, status]
   );
   const { t } = useTranslation();
+  const ledgerDisconnected =
+    status === 'DISCONNECTED' || isLedgerDisconnectedError(ledgerErrorMessage);
+  const ledgerConnectionOpening = isLedgerConnectionOpeningError(
+    ledgerErrorMessage
+  );
+  const ledgerLocked = isLedgerLockError(ledgerErrorMessage);
+  let pendingText = t('page.miniSignFooterBar.status.txSending');
+  if (ledgerDisconnected || ledgerConnectionOpening) {
+    pendingText = t('page.dashboard.hd.ledgerIsDisconnected');
+  } else if (ledgerLocked) {
+    pendingText = t('page.signFooterBar.ledger.unlockAlert');
+  } else if (total > 1) {
+    pendingText = t('page.miniSignFooterBar.status.txSendings', {
+      current: current + 1,
+      total,
+    });
+  }
+  const renderPendingStatus = (showIcon = false) => (
+    <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center flex items-center justify-center gap-2">
+      {showIcon ? (
+        <LedgerSVG
+          width={22}
+          height={22}
+          viewBox="0 0 28 28"
+          className="mr-6"
+        />
+      ) : null}
+      <div>
+        {pendingText}
+        {ledgerDisconnected ||
+        ledgerConnectionOpening ||
+        ledgerLocked ? null : (
+          <Dots />
+        )}
+      </div>
+    </div>
+  );
 
   if (!directSubmit) {
     return (
@@ -159,7 +209,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
             setVisibleLedgerConnectModal(false);
             // props.onCancel?.();
           }}
-          title={t('page.dashboard.hd.ledgerIsDisconnected')}
+          title={pendingText}
           maskStyle={{
             backgroundColor: 'transparent',
           }}
@@ -206,21 +256,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
             {t('page.miniSignFooterBar.status.txSigned')} <Dots />
           </div>
         ) : (
-          <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center">
-            {total > 1 ? (
-              <>
-                {t('page.miniSignFooterBar.status.txSendings', {
-                  current: current + 1,
-                  total: total,
-                })}
-                <Dots />
-              </>
-            ) : (
-              <>
-                {t('page.miniSignFooterBar.status.txSending')} <Dots />
-              </>
-            )}
-          </div>
+          renderPendingStatus()
         )}
       </>
     );
@@ -237,7 +273,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
           setVisibleLedgerConnectModal(false);
           props.onCancel?.();
         }}
-        title={t('page.dashboard.hd.ledgerIsDisconnected')}
+        title={pendingText}
         maskStyle={{
           backgroundColor: 'transparent',
         }}
@@ -286,28 +322,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
             {t('page.miniSignFooterBar.status.txSigned')} <Dots />
           </div>
         ) : (
-          <div className="rounded-[6px] bg-r-neutral-card2 p-[14px] text-r-neutral-body text-[16px] leading-[20px] font-medium text-center flex items-center justify-center gap-2">
-            <LedgerSVG
-              width={22}
-              height={22}
-              viewBox="0 0 28 28"
-              className="mr-6"
-            />
-
-            {total > 1 ? (
-              <div>
-                {t('page.miniSignFooterBar.status.txSendings', {
-                  current: current + 1,
-                  total: total,
-                })}
-                <Dots />
-              </div>
-            ) : (
-              <div>
-                {t('page.miniSignFooterBar.status.txSending')} <Dots />
-              </div>
-            )}
-          </div>
+          renderPendingStatus(true)
         )
       }
     </>

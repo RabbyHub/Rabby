@@ -144,7 +144,7 @@ export const Twap: React.FC = () => {
       return '-';
     }
 
-    const pxDecimals = marketDataMap[order.coin]?.pxDecimals || 2;
+    const pxDecimals = marketDataMap[order.coin]?.pxDecimals ?? 2;
 
     return `$${splitNumberByStep(
       totalNotional.dividedBy(totalSize).toFixed(pxDecimals)
@@ -242,7 +242,7 @@ export const Twap: React.FC = () => {
         dataIndex: 'px',
         sorter: (a, b) => Number(a.fill.px) - Number(b.fill.px),
         render: (_, record) => {
-          const pxDecimals = marketDataMap[record.fill.coin]?.pxDecimals || 2;
+          const pxDecimals = marketDataMap[record.fill.coin]?.pxDecimals ?? 2;
           const px = new BigNumber(record.fill.px).toFixed(pxDecimals);
           return (
             <div className="text-[12px] leading-[14px] text-r-neutral-body">

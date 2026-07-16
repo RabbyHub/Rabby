@@ -53,6 +53,13 @@ const TOP_N_KLINE = 3;
 /** Min gap between WS-driven (on-demand) kline kicks; bounds retries if a fetch keeps failing */
 const ON_DEMAND_KLINE_COOLDOWN_MS = 5 * 1000;
 const CATALOG_REFRESH_MS = 24 * 60 * 60 * 1000;
+const WS_WATCHDOG_INTERVAL_MS = 60 * 1000;
+/**
+ * With open positions the assetCtx WS pushes ~every second, so this much
+ * silence means the socket died without a close event (e.g. system sleep) or
+ * the SDK gave up reconnecting — it reports neither.
+ */
+const WS_STALE_MS = 3 * 60 * 1000;
 
 interface KlineCacheEntry {
   prices: number[];
@@ -110,6 +117,8 @@ class PerpsLiveService {
   private graceStopTimer: TimerHandle | null = null;
   private wsRetryTimer: TimerHandle | null = null;
   private klineTimer: TimerHandle | null = null;
+  private wsWatchdogTimer: TimerHandle | null = null;
+  private lastWsMessageAt = 0;
 
   private klineCache = new Map<string, KlineCacheEntry>();
   /** True while a refreshKlines fetch is awaiting; blocks overlapping runs */
@@ -240,6 +249,8 @@ class PerpsLiveService {
       );
 
       this.currentAddress = address;
+      this.lastWsMessageAt = Date.now();
+      this.startWsWatchdog();
       this.broadcastWsState('open');
       console.log('[perpsLive] ws open (all dexs) for', address);
     } catch (err) {
@@ -284,6 +295,7 @@ class PerpsLiveService {
         /* ignore */
       }
     }
+    this.stopWsWatchdog();
     if (this.klineTimer != null) {
       clearTimeout(this.klineTimer);
       this.klineTimer = null;
@@ -305,6 +317,38 @@ class PerpsLiveService {
     this.broadcastWsState('closed');
   }
 
+  /**
+   * The SDK can die silently (half-open socket, exhausted reconnects) while
+   * `currentAddress` stays set, so nothing would ever restart the stream;
+   * force the same full restart the settings toggle performs.
+   */
+  private startWsWatchdog(): void {
+    this.stopWsWatchdog();
+    this.wsWatchdogTimer = setInterval(() => {
+      if (!this.currentAddress || !this.sdk) return;
+      const quietFor = Date.now() - this.lastWsMessageAt;
+      // The quiet-period grace avoids stomping on an in-flight connect or the
+      // SDK's own reconnect backoff
+      const disconnected =
+        !this.sdk.ws.isConnected && quietFor > WS_WATCHDOG_INTERVAL_MS;
+      // With no positions the channel is legitimately quiet
+      const stale = this.rawDexStates.length > 0 && quietFor > WS_STALE_MS;
+      if (!disconnected && !stale) return;
+      console.log('[perpsLive] ws watchdog: restarting stream', {
+        disconnected,
+        stale,
+      });
+      this.startStream(this.currentAddress);
+    }, WS_WATCHDOG_INTERVAL_MS);
+  }
+
+  private stopWsWatchdog(): void {
+    if (this.wsWatchdogTimer != null) {
+      clearInterval(this.wsWatchdogTimer);
+      this.wsWatchdogTimer = null;
+    }
+  }
+
   private scheduleGraceStop(): void {
     if (this.graceStopTimer != null) return;
     this.graceStopTimer = setTimeout(() => {
@@ -324,6 +368,7 @@ class PerpsLiveService {
   }
 
   private onAllDexsClearinghouseStates(data: WsAllClearinghouseStates): void {
+    this.lastWsMessageAt = Date.now();
     const states: DexClearinghousePair[] = Array.isArray(
       data?.clearinghouseStates
     )
@@ -419,6 +464,8 @@ class PerpsLiveService {
       if (this.assetCtxSubs.has(coin)) continue;
       try {
         const sub = sdk.ws.subscribeToActiveAssetCtx(coin, (data) => {
+          // Any push proves the connection is alive, whichever coin it's for
+          this.lastWsMessageAt = Date.now();
           // The SDK fans every activeAssetCtx push to ALL ctx callbacks, so each
           // closure must keep only its own coin's data.
           if (!data || data.coin !== coin) return;

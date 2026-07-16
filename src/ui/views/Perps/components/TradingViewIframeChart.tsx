@@ -4,7 +4,9 @@ import type { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
 
 const BRIDGE_CHANNEL = 'rabby-tradingview-bridge-v1';
-const DEFAULT_TRADINGVIEW_URL = 'https://tradingview.rabby.io/';
+const DEFAULT_TRADINGVIEW_URL = process.env.DEBUG
+  ? 'https://tradingview-test.vercel.app/'
+  : 'https://tradingview.rabby.io/';
 
 type TradingViewResolution =
   | '1'
@@ -420,6 +422,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     const base = getTradingViewBaseUrl();
     const url = new URL(base);
     url.searchParams.set('source', 'rabby');
+    url.searchParams.set('version', process.env.release || '0');
     return url.toString();
   }, []);
 

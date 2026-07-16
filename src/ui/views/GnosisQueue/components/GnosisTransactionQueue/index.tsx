@@ -55,7 +55,7 @@ export const GnosisTransactionQueue = () => {
       address: account?.address,
     },
     {
-      refreshOnWindowFocus: UI_TYPE.isDesktop,
+      // refreshOnWindowFocus: UI_TYPE.isDesktop,
     }
   );
 

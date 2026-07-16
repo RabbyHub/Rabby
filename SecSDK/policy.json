@@ -4186,6 +4186,18 @@
       "dynamic": []
     }
   },
+  "node_modules/@ethersproject/json-wallets/node_modules/aes-js/index.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "define": "r"
+      },
+      "allow": {
+        "define": "r"
+      },
+      "dynamic": []
+    }
+  },
   "node_modules/@ethersproject/providers/lib.esm/base-provider.js": {
     "enable": true,
     "global": {
@@ -4304,6 +4316,20 @@
         "navigator": "r",
         "performance": "r",
         "setTimeout": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@inversifyjs/core/lib/esm/index.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "i": "r",
+        "n": "r"
+      },
+      "allow": {
+        "i": "r",
+        "n": "r"
       },
       "dynamic": []
     }
@@ -5491,14 +5517,1460 @@
       "dynamic": []
     }
   },
-  "node_modules/@ledgerhq/devices/lib-es/hid-framing.js": {
+  "node_modules/@ledgerhq/context-module/node_modules/reflect-metadata/Reflect.js": {
     "enable": true,
     "global": {
       "access": {
-        "Buffer": "r"
+        "crypto": "r",
+        "eval": "r",
+        "global": "r",
+        "msCrypto": "r"
       },
       "allow": {
-        "Buffer": "r"
+        "crypto": "r",
+        "eval": "r",
+        "global": "r",
+        "msCrypto": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ByteArrayBuilder.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "TextEncoder": "r"
+      },
+      "allow": {
+        "TextEncoder": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/BackupStorageCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "C": "r",
+        "c": "r",
+        "d": "r",
+        "e": "r",
+        "i": "r",
+        "p": "r",
+        "s": "r",
+        "u": "r"
+      },
+      "allow": {
+        "C": "r",
+        "c": "r",
+        "d": "r",
+        "e": "r",
+        "i": "r",
+        "p": "r",
+        "s": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/CloseAppCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "m": "r",
+        "o": "r",
+        "p": "r",
+        "r": "r"
+      },
+      "allow": {
+        "m": "r",
+        "o": "r",
+        "p": "r",
+        "r": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/DeleteLanguagePackCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "d": "r",
+        "g": "r",
+        "l": "r",
+        "m": "r",
+        "o": "r",
+        "s": "r",
+        "u": "r"
+      },
+      "allow": {
+        "d": "r",
+        "g": "r",
+        "l": "r",
+        "m": "r",
+        "o": "r",
+        "s": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetAppStorageInfoCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "C": "r",
+        "S": "r",
+        "c": "r",
+        "l": "r",
+        "p": "r",
+        "t": "r",
+        "u": "r"
+      },
+      "allow": {
+        "A": "r",
+        "C": "r",
+        "S": "r",
+        "c": "r",
+        "l": "r",
+        "p": "r",
+        "t": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetBackgroundImageSizeCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "c": "r",
+        "d": "r",
+        "g": "r",
+        "i": "r",
+        "o": "r",
+        "p": "r",
+        "s": "r",
+        "u": "r"
+      },
+      "allow": {
+        "c": "r",
+        "d": "r",
+        "g": "r",
+        "i": "r",
+        "o": "r",
+        "p": "r",
+        "s": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetBatteryStatusCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "E": "r",
+        "i": "r",
+        "m": "r",
+        "n": "r",
+        "p": "r",
+        "u": "r"
+      },
+      "allow": {
+        "E": "r",
+        "i": "r",
+        "m": "r",
+        "n": "r",
+        "p": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/ListAppsCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "C": "r",
+        "c": "r",
+        "g": "r",
+        "l": "r",
+        "o": "r",
+        "u": "r"
+      },
+      "allow": {
+        "A": "r",
+        "C": "r",
+        "c": "r",
+        "g": "r",
+        "l": "r",
+        "o": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/ListLanguagePackCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "C": "r",
+        "L": "r",
+        "a": "r",
+        "c": "r",
+        "d": "r",
+        "f": "r",
+        "l": "r",
+        "p": "r",
+        "s": "r"
+      },
+      "allow": {
+        "C": "r",
+        "L": "r",
+        "a": "r",
+        "c": "r",
+        "d": "r",
+        "f": "r",
+        "l": "r",
+        "p": "r",
+        "s": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/LoadCertificateCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "c": "r",
+        "d": "r",
+        "f": "r",
+        "i": "r",
+        "m": "r",
+        "n": "r",
+        "t": "r"
+      },
+      "allow": {
+        "c": "r",
+        "d": "r",
+        "f": "r",
+        "i": "r",
+        "m": "r",
+        "n": "r",
+        "t": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/OpenAppCommand.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "a": "r",
+        "d": "r",
+        "i": "r",
+        "o": "r",
+        "s": "r",
+        "t": "r"
+      },
+      "allow": {
+        "A": "r",
+        "a": "r",
+        "d": "r",
+        "i": "r",
+        "o": "r",
+        "s": "r",
+        "t": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/CallTaskInAppDeviceAction/CallTaskInAppDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "T": "r",
+        "c": "r",
+        "i": "r",
+        "k": "r",
+        "l": "r",
+        "o": "r",
+        "p": "r",
+        "s": "r",
+        "t": "r",
+        "u": "r"
+      },
+      "allow": {
+        "A": "r",
+        "T": "r",
+        "c": "r",
+        "i": "r",
+        "k": "r",
+        "l": "r",
+        "o": "r",
+        "p": "r",
+        "s": "r",
+        "t": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/GetDeviceMetadata/GetDeviceMetadataDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "E": "r",
+        "F": "r",
+        "G": "r",
+        "I": "r",
+        "L": "r",
+        "R": "r",
+        "S": "r",
+        "T": "r",
+        "U": "r",
+        "V": "r",
+        "b": "r",
+        "i": "r",
+        "k": "r",
+        "l": "r",
+        "o": "r",
+        "r": "r",
+        "s": "r",
+        "u": "r",
+        "x": "r"
+      },
+      "allow": {
+        "E": "r",
+        "F": "r",
+        "G": "r",
+        "I": "r",
+        "L": "r",
+        "R": "r",
+        "S": "r",
+        "T": "r",
+        "U": "r",
+        "V": "r",
+        "b": "r",
+        "i": "r",
+        "k": "r",
+        "l": "r",
+        "o": "r",
+        "r": "r",
+        "s": "r",
+        "u": "r",
+        "x": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/GetDeviceStatus/GetDeviceStatusDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "B": "r",
+        "C": "r",
+        "E": "r",
+        "F": "r",
+        "G": "r",
+        "I": "r",
+        "L": "r",
+        "M": "r",
+        "N": "r",
+        "R": "r",
+        "T": "r",
+        "U": "r",
+        "_": "r",
+        "b": "r",
+        "c": "r",
+        "f": "r",
+        "h": "r",
+        "k": "r",
+        "l": "r",
+        "p": "r",
+        "q": "r",
+        "r": "r",
+        "u": "r",
+        "v": "r",
+        "w": "r",
+        "x": "r"
+      },
+      "allow": {
+        "A": "r",
+        "B": "r",
+        "C": "r",
+        "E": "r",
+        "F": "r",
+        "G": "r",
+        "I": "r",
+        "L": "r",
+        "M": "r",
+        "N": "r",
+        "R": "r",
+        "T": "r",
+        "U": "r",
+        "_": "r",
+        "b": "r",
+        "c": "r",
+        "f": "r",
+        "h": "r",
+        "k": "r",
+        "l": "r",
+        "p": "r",
+        "q": "r",
+        "r": "r",
+        "u": "r",
+        "v": "r",
+        "w": "r",
+        "x": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/GoToDashboard/GoToDashboardDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "C": "r",
+        "G": "r",
+        "S": "r",
+        "T": "r",
+        "a": "r",
+        "b": "r",
+        "d": "r",
+        "g": "r",
+        "h": "r",
+        "m": "r",
+        "n": "r",
+        "o": "r",
+        "u": "r",
+        "v": "r",
+        "y": "r"
+      },
+      "allow": {
+        "A": "r",
+        "C": "r",
+        "G": "r",
+        "S": "r",
+        "T": "r",
+        "a": "r",
+        "b": "r",
+        "d": "r",
+        "g": "r",
+        "h": "r",
+        "m": "r",
+        "n": "r",
+        "o": "r",
+        "u": "r",
+        "v": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/InstallLanguagePackage/InstallLanguagePackageDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "C": "r",
+        "E": "r",
+        "G": "r",
+        "M": "r",
+        "P": "r",
+        "S": "r",
+        "T": "r",
+        "U": "r",
+        "V": "r",
+        "_": "r",
+        "f": "r",
+        "h": "r",
+        "m": "r",
+        "n": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "allow": {
+        "A": "r",
+        "C": "r",
+        "E": "r",
+        "G": "r",
+        "M": "r",
+        "P": "r",
+        "S": "r",
+        "T": "r",
+        "U": "r",
+        "V": "r",
+        "_": "r",
+        "f": "r",
+        "h": "r",
+        "m": "r",
+        "n": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/InstallOrUpdateApps/InstallOrUpdateAppsDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "D": "r",
+        "E": "r",
+        "I": "r",
+        "M": "r",
+        "O": "r",
+        "P": "r",
+        "S": "r",
+        "U": "r",
+        "a": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "i": "r",
+        "o": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "allow": {
+        "A": "r",
+        "D": "r",
+        "E": "r",
+        "I": "r",
+        "M": "r",
+        "O": "r",
+        "P": "r",
+        "S": "r",
+        "U": "r",
+        "a": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "i": "r",
+        "o": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/ListApps/ListAppsDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "D": "r",
+        "L": "r",
+        "c": "r",
+        "d": "r",
+        "e": "r",
+        "h": "r",
+        "i": "r",
+        "l": "r",
+        "m": "r",
+        "o": "r",
+        "p": "r"
+      },
+      "allow": {
+        "A": "r",
+        "D": "r",
+        "L": "r",
+        "c": "r",
+        "d": "r",
+        "e": "r",
+        "h": "r",
+        "i": "r",
+        "l": "r",
+        "m": "r",
+        "o": "r",
+        "p": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/ListAppsWithMetadata/ListAppsWithMetadataDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "D": "r",
+        "L": "r",
+        "M": "r",
+        "d": "r",
+        "g": "r",
+        "m": "r",
+        "n": "r",
+        "u": "r",
+        "v": "r",
+        "y": "r"
+      },
+      "allow": {
+        "A": "r",
+        "D": "r",
+        "L": "r",
+        "M": "r",
+        "d": "r",
+        "g": "r",
+        "m": "r",
+        "n": "r",
+        "u": "r",
+        "v": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/OpenAppDeviceAction/OpenAppDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "C": "r",
+        "D": "r",
+        "E": "r",
+        "O": "r",
+        "R": "r",
+        "c": "r",
+        "d": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "i": "r",
+        "l": "r",
+        "t": "r",
+        "u": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "allow": {
+        "C": "r",
+        "D": "r",
+        "E": "r",
+        "O": "r",
+        "R": "r",
+        "c": "r",
+        "d": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "i": "r",
+        "l": "r",
+        "t": "r",
+        "u": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/OpenAppWithDependencies/OpenAppWithDependenciesDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "D": "r",
+        "I": "r",
+        "M": "r",
+        "O": "r",
+        "S": "r",
+        "a": "r",
+        "d": "r",
+        "h": "r",
+        "m": "r",
+        "n": "r",
+        "v": "r"
+      },
+      "allow": {
+        "A": "r",
+        "D": "r",
+        "I": "r",
+        "M": "r",
+        "O": "r",
+        "S": "r",
+        "a": "r",
+        "d": "r",
+        "h": "r",
+        "m": "r",
+        "n": "r",
+        "v": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/SendCommandInAppDeviceAction/SendCommandInAppDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "C": "r",
+        "a": "r",
+        "c": "r",
+        "d": "r",
+        "i": "r",
+        "m": "r",
+        "n": "r",
+        "p": "r",
+        "s": "r",
+        "u": "r"
+      },
+      "allow": {
+        "A": "r",
+        "C": "r",
+        "a": "r",
+        "c": "r",
+        "d": "r",
+        "i": "r",
+        "m": "r",
+        "n": "r",
+        "p": "r",
+        "s": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/WaitForAppAndVersion/WaitForAppAndVersionDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "D": "r",
+        "E": "r",
+        "F": "r",
+        "I": "r",
+        "S": "r",
+        "V": "r",
+        "W": "r",
+        "_": "r",
+        "a": "r",
+        "d": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "i": "r",
+        "k": "r",
+        "p": "r",
+        "r": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "allow": {
+        "D": "r",
+        "E": "r",
+        "F": "r",
+        "I": "r",
+        "S": "r",
+        "V": "r",
+        "W": "r",
+        "_": "r",
+        "a": "r",
+        "d": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "i": "r",
+        "k": "r",
+        "p": "r",
+        "r": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/task/BackupAppStorageTask.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "c": "r",
+        "d": "r",
+        "g": "r",
+        "o": "r",
+        "u": "r"
+      },
+      "allow": {
+        "c": "r",
+        "d": "r",
+        "g": "r",
+        "o": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/task/BuildAppsInstallPlanTask.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "c": "r",
+        "d": "r",
+        "m": "r",
+        "p": "r",
+        "u": "r"
+      },
+      "allow": {
+        "c": "r",
+        "d": "r",
+        "m": "r",
+        "p": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/task/GetApplicationsMetadataTask.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "k": "r",
+        "m": "r",
+        "p": "r",
+        "v": "r",
+        "y": "r"
+      },
+      "allow": {
+        "k": "r",
+        "m": "r",
+        "p": "r",
+        "v": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/task/GetFirmwareMetadataTask.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "V": "r",
+        "g": "r",
+        "l": "r",
+        "m": "r",
+        "w": "r"
+      },
+      "allow": {
+        "V": "r",
+        "g": "r",
+        "l": "r",
+        "m": "r",
+        "w": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/task/PredictOutOfMemoryTask.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "d": "r",
+        "u": "r"
+      },
+      "allow": {
+        "d": "r",
+        "u": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/xstate-utils/XStateDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "S": "r",
+        "b": "r",
+        "c": "r",
+        "console": "r",
+        "d": "r",
+        "m": "r",
+        "y": "r"
+      },
+      "allow": {
+        "S": "r",
+        "b": "r",
+        "c": "r",
+        "console": "r",
+        "d": "r",
+        "m": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-model/model/DeviceModel.stub.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "o": "r"
+      },
+      "allow": {
+        "o": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-session/service/DefaultApduReceiverService.stub.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "i": "r",
+        "t": "r"
+      },
+      "allow": {
+        "i": "r",
+        "t": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-session/service/DefaultApduSenderService.stub.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "i": "r",
+        "t": "r"
+      },
+      "allow": {
+        "i": "r",
+        "t": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/logger-subscriber/service/ConsoleLogger.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "console": "r",
+        "e": "r"
+      },
+      "allow": {
+        "console": "r",
+        "e": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/logger-subscriber/service/WebLogsExporterLogger.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "Blob": "r",
+        "URL": "r",
+        "c": "r",
+        "document": "r",
+        "g": "r"
+      },
+      "allow": {
+        "Blob": "r",
+        "URL": "r",
+        "c": "r",
+        "document": "r",
+        "g": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/network/DmkNetworkClient.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "fetch": "r"
+      },
+      "allow": {
+        "fetch": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/network/DmkNetworkClientHelpers.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "AbortController": "r",
+        "Blob": "r",
+        "FormData": "r",
+        "ReadableStream": "r",
+        "URLSearchParams": "r",
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "allow": {
+        "AbortController": "r",
+        "Blob": "r",
+        "FormData": "r",
+        "ReadableStream": "r",
+        "URLSearchParams": "r",
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/secure-channel/device-action/GenuineCheck/GenuineCheckDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "C": "r",
+        "D": "r",
+        "E": "r",
+        "G": "r",
+        "I": "r",
+        "V": "r",
+        "f": "r",
+        "g": "r",
+        "k": "r",
+        "o": "r",
+        "p": "r",
+        "s": "r",
+        "u": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "allow": {
+        "C": "r",
+        "D": "r",
+        "E": "r",
+        "G": "r",
+        "I": "r",
+        "V": "r",
+        "f": "r",
+        "g": "r",
+        "k": "r",
+        "o": "r",
+        "p": "r",
+        "s": "r",
+        "u": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/secure-channel/device-action/InstallApp/InstallAppDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "D": "r",
+        "E": "r",
+        "L": "r",
+        "O": "r",
+        "S": "r",
+        "T": "r",
+        "V": "r",
+        "a": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "l": "r",
+        "m": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "allow": {
+        "A": "r",
+        "D": "r",
+        "E": "r",
+        "L": "r",
+        "O": "r",
+        "S": "r",
+        "T": "r",
+        "V": "r",
+        "a": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "l": "r",
+        "m": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/secure-channel/device-action/ListInstalledApps/ListInstalledAppsDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "D": "r",
+        "E": "r",
+        "I": "r",
+        "L": "r",
+        "V": "r",
+        "a": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "i": "r",
+        "l": "r",
+        "p": "r",
+        "w": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "allow": {
+        "A": "r",
+        "D": "r",
+        "E": "r",
+        "I": "r",
+        "L": "r",
+        "V": "r",
+        "a": "r",
+        "f": "r",
+        "g": "r",
+        "h": "r",
+        "i": "r",
+        "l": "r",
+        "p": "r",
+        "w": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/secure-channel/device-action/UninstallApp/UninstallAppDeviceAction.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "A": "r",
+        "D": "r",
+        "E": "r",
+        "I": "r",
+        "O": "r",
+        "S": "r",
+        "T": "r",
+        "U": "r",
+        "V": "r",
+        "a": "r",
+        "f": "r",
+        "i": "r",
+        "l": "r",
+        "m": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "allow": {
+        "A": "r",
+        "D": "r",
+        "E": "r",
+        "I": "r",
+        "O": "r",
+        "S": "r",
+        "T": "r",
+        "U": "r",
+        "V": "r",
+        "a": "r",
+        "f": "r",
+        "i": "r",
+        "l": "r",
+        "m": "r",
+        "v": "r",
+        "x": "r",
+        "y": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/secure-channel/task/ConnectToSecureChannelTask.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "D": "r",
+        "I": "r",
+        "O": "r",
+        "R": "r",
+        "T": "r",
+        "_": "r",
+        "d": "r",
+        "f": "r",
+        "i": "r",
+        "k": "r",
+        "m": "r",
+        "n": "r",
+        "w": "r",
+        "x": "r"
+      },
+      "allow": {
+        "D": "r",
+        "I": "r",
+        "O": "r",
+        "R": "r",
+        "T": "r",
+        "_": "r",
+        "d": "r",
+        "f": "r",
+        "i": "r",
+        "k": "r",
+        "m": "r",
+        "n": "r",
+        "w": "r",
+        "x": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/transport/model/DeviceConnectionStateMachine.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "allow": {
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/transport/model/TransportConnectedDevice.stub.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "i": "r",
+        "n": "r",
+        "o": "r",
+        "t": "r",
+        "vi": "r"
+      },
+      "allow": {
+        "i": "r",
+        "n": "r",
+        "o": "r",
+        "t": "r",
+        "vi": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/utils/ApplicationChecker.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "r": "r",
+        "s": "r"
+      },
+      "allow": {
+        "r": "r",
+        "s": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/di.stub.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "vi": "r"
+      },
+      "allow": {
+        "vi": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/model/DevicePinger.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "setTimeout": "r"
+      },
+      "allow": {
+        "setTimeout": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/secure-channel/model/Errors.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "l": "r",
+        "n": "r",
+        "o": "r",
+        "s": "r"
+      },
+      "allow": {
+        "l": "r",
+        "n": "r",
+        "o": "r",
+        "s": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/node_modules/reflect-metadata/Reflect.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "crypto": "r",
+        "eval": "r",
+        "global": "r",
+        "msCrypto": "r"
+      },
+      "allow": {
+        "crypto": "r",
+        "eval": "r",
+        "global": "r",
+        "msCrypto": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/node_modules/semver/internal/debug.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "console": "r",
+        "process": "r"
+      },
+      "allow": {
+        "console": "r",
+        "process": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/node_modules/uuid/dist/esm-browser/native.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "crypto": "r"
+      },
+      "allow": {
+        "crypto": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/node_modules/uuid/dist/esm-browser/rng.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "crypto": "r"
+      },
+      "allow": {
+        "crypto": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-management-kit/node_modules/uuid/dist/esm-browser/stringify.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "validate": "r"
+      },
+      "allow": {
+        "validate": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-signer-kit-ethereum/node_modules/reflect-metadata/Reflect.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "crypto": "r",
+        "eval": "r",
+        "global": "r",
+        "msCrypto": "r"
+      },
+      "allow": {
+        "crypto": "r",
+        "eval": "r",
+        "global": "r",
+        "msCrypto": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-transport-kit-web-hid/lib/esm/api/transport/WebHidApduSender.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "DOMException": "r",
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "allow": {
+        "DOMException": "r",
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-transport-kit-web-hid/lib/esm/api/transport/WebHidTransport.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "AbortController": "r",
+        "event": "r",
+        "navigator": "r"
+      },
+      "allow": {
+        "AbortController": "r",
+        "event": "r",
+        "navigator": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-transport-kit-web-hid/node_modules/uuid/dist/esm-browser/native.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "crypto": "r"
+      },
+      "allow": {
+        "crypto": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-transport-kit-web-hid/node_modules/uuid/dist/esm-browser/rng.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "crypto": "r"
+      },
+      "allow": {
+        "crypto": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@ledgerhq/device-transport-kit-web-hid/node_modules/uuid/dist/esm-browser/stringify.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "validate": "r"
+      },
+      "allow": {
+        "validate": "r"
       },
       "dynamic": []
     }
@@ -5513,78 +6985,6 @@
       "allow": {
         "console": "r",
         "process": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/errors/lib-es/helpers.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "console": "r"
-      },
-      "allow": {
-        "console": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/hw-app-eth/node_modules/semver/internal/debug.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "console": "r",
-        "process": "r"
-      },
-      "allow": {
-        "console": "r",
-        "process": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/hw-transport-webhid/lib-es/TransportWebHID.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "Buffer": "r",
-        "navigator": "r"
-      },
-      "allow": {
-        "Buffer": "r",
-        "navigator": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/hw-transport/lib-es/Transport.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "setTimeout": "r"
-      },
-      "allow": {
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "console": "r",
-        "setTimeout": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/@ledgerhq/logs/lib-es/index.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "__ledgerLogsListen": "rw",
-        "console": "r"
-      },
-      "allow": {
-        "__ledgerLogsListen": "rw",
-        "console": "r"
       },
       "dynamic": []
     }
@@ -9232,6 +10632,7 @@
       "access": {
         "WebSocket": "r",
         "clearInterval": "r",
+        "clearTimeout": "r",
         "console": "r",
         "setInterval": "r",
         "setTimeout": "r"
@@ -9239,8 +10640,10 @@
       "allow": {
         "Buffer": "r",
         "WebSocket": "r",
+        "addEventListener": "r",
         "atob": "r",
         "clearInterval": "r",
+        "clearTimeout": "r",
         "console": "r",
         "setInterval": "r",
         "setTimeout": "r"
@@ -10456,6 +11859,130 @@
       "dynamic": []
     }
   },
+  "node_modules/@sentry/hub/esm/flags.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "__SENTRY_DEBUG__": "r"
+      },
+      "allow": {
+        "__SENTRY_DEBUG__": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/hub/esm/hub.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "IS_DEBUG_BUILD": "r",
+        "logger": "r"
+      },
+      "allow": {
+        "IS_DEBUG_BUILD": "r",
+        "logger": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/minimal/esm/index.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "__assign": "r",
+        "__spread": "r"
+      },
+      "allow": {
+        "__assign": "r",
+        "__spread": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/utils/esm/flags.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "__SENTRY_DEBUG__": "r"
+      },
+      "allow": {
+        "__SENTRY_DEBUG__": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/utils/esm/global.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "global": "r"
+      },
+      "allow": {
+        "__SENTRY__": "rw",
+        "global": "r",
+        "performance": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/utils/esm/is.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "Element": "r",
+        "Event": "r"
+      },
+      "allow": {
+        "Element": "r",
+        "Event": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/utils/esm/misc.js": {
+    "enable": false,
+    "global": {
+      "access": {
+        "__assign": "r",
+        "addNonEnumerableProperty": "r",
+        "snipLine": "r"
+      },
+      "allow": {
+        "__assign": "r",
+        "addNonEnumerableProperty": "r",
+        "snipLine": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/@sentry/utils/esm/object.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "CustomEvent": "r",
+        "__assign": "r",
+        "htmlTreeAsString": "r",
+        "isElement": "r",
+        "isError": "r",
+        "isEvent": "r",
+        "isInstanceOf": "r",
+        "isPrimitive": "r",
+        "truncate": "r"
+      },
+      "allow": {
+        "CustomEvent": "r",
+        "__assign": "r",
+        "htmlTreeAsString": "r",
+        "isElement": "r",
+        "isError": "r",
+        "isEvent": "r",
+        "isInstanceOf": "r",
+        "isPrimitive": "r",
+        "truncate": "r"
+      },
+      "dynamic": []
+    }
+  },
   "node_modules/@trezor/connect-common/lib/messageChannel/abstract.js": {
     "enable": true,
     "global": {
@@ -11098,18 +12625,6 @@
         "TextDecoder": "r",
         "TextEncoder": "r",
         "btoa": "r"
-      },
-      "dynamic": []
-    }
-  },
-  "node_modules/aes-js/index.js": {
-    "enable": true,
-    "global": {
-      "access": {
-        "define": "r"
-      },
-      "allow": {
-        "define": "r"
       },
       "dynamic": []
     }
@@ -14092,6 +15607,22 @@
       "dynamic": []
     }
   },
+  "node_modules/isomorphic-ws/browser.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "MozWebSocket": "r",
+        "WebSocket": "r",
+        "global": "r"
+      },
+      "allow": {
+        "MozWebSocket": "r",
+        "WebSocket": "r",
+        "global": "r"
+      },
+      "dynamic": []
+    }
+  },
   "node_modules/js-md5/src/md5.js": {
     "enable": true,
     "global": {
@@ -14981,6 +16512,32 @@
         "Long": "r",
         "dcodeIO": "r",
         "global": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/purify-ts/esm/Codec.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "Either": "r",
+        "Just": "r",
+        "Left": "r",
+        "Maybe": "r",
+        "NonEmptyList": "r",
+        "Nothing": "r",
+        "Right": "r",
+        "identity": "r"
+      },
+      "allow": {
+        "Either": "r",
+        "Just": "r",
+        "Left": "r",
+        "Maybe": "r",
+        "NonEmptyList": "r",
+        "Nothing": "r",
+        "Right": "r",
+        "identity": "r"
       },
       "dynamic": []
     }
@@ -16090,6 +17647,46 @@
       },
       "allow": {
         "Buffer": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/rxjs/dist/esm5/internal/observable/empty.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "Observable": "r"
+      },
+      "allow": {
+        "Observable": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/rxjs/dist/esm5/internal/scheduler/intervalProvider.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "clearInterval": "r",
+        "setInterval": "r"
+      },
+      "allow": {
+        "clearInterval": "r",
+        "setInterval": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/rxjs/dist/esm5/internal/scheduler/timeoutProvider.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "clearTimeout": "r",
+        "setTimeout": "r"
+      },
+      "allow": {
+        "clearTimeout": "r",
+        "setTimeout": "r"
       },
       "dynamic": []
     }
@@ -17448,6 +19045,92 @@
       },
       "allow": {
         "global": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/xstate/actors/dist/xstate-actors.esm.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "AbortController": "r",
+        "XSTATE_STOP": "r",
+        "createActor": "r"
+      },
+      "allow": {
+        "AbortController": "r",
+        "XSTATE_STOP": "r",
+        "createActor": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/xstate/dev/dist/xstate-dev.esm.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "global": "r"
+      },
+      "allow": {
+        "global": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/xstate/dist/log-3d9d72a9.esm.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "XSTATE_ERROR": "r",
+        "cancel": "r",
+        "createErrorActorEvent": "r",
+        "evaluateGuard": "r",
+        "raise": "r",
+        "spawnChild": "r",
+        "stopChild": "r"
+      },
+      "allow": {
+        "XSTATE_ERROR": "r",
+        "cancel": "r",
+        "createErrorActorEvent": "r",
+        "evaluateGuard": "r",
+        "raise": "r",
+        "spawnChild": "r",
+        "stopChild": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/xstate/dist/raise-c17ec2bc.esm.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "clearTimeout": "r",
+        "console": "r",
+        "setTimeout": "r"
+      },
+      "allow": {
+        "clearTimeout": "r",
+        "console": "r",
+        "setTimeout": "r"
+      },
+      "dynamic": []
+    }
+  },
+  "node_modules/xstate/dist/xstate.esm.js": {
+    "enable": true,
+    "global": {
+      "access": {
+        "clearTimeout": "r",
+        "createActor": "r",
+        "setTimeout": "r",
+        "toArray": "r"
+      },
+      "allow": {
+        "clearTimeout": "r",
+        "createActor": "r",
+        "setTimeout": "r",
+        "toArray": "r"
       },
       "dynamic": []
     }

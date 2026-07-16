@@ -13,6 +13,7 @@ import {
   useSignatureStoreOf,
 } from '@/ui/component/MiniSignV2/state';
 import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
+
 export const ToConfirmBtn = (props: {
   title: React.ReactNode;
   onConfirm: () => void;
@@ -146,6 +147,87 @@ export const ToConfirmBtn = (props: {
   );
 };
 
+export const RiskTipsWrapper = ({
+  showRiskTips,
+  riskLabel,
+  riskReset,
+  containerClassName,
+  children,
+}: {
+  showRiskTips?: boolean;
+  riskLabel?: React.ReactNode;
+  riskReset?: boolean;
+  containerClassName?: string;
+  children: (options: {
+    riskDisabled: boolean;
+    resetRiskChecked: () => void;
+  }) => React.ReactNode;
+}) => {
+  const { t } = useTranslation();
+  const [riskChecked, setRiskChecked] = useState(false);
+
+  const resetRiskChecked = useCallback(() => {
+    setRiskChecked(false);
+  }, []);
+
+  const riskDisabled = showRiskTips ? !riskChecked : false;
+
+  useEffect(() => {
+    if (riskReset) {
+      setRiskChecked(false);
+    }
+  }, [riskReset]);
+
+  return (
+    <div
+      className={clsx('w-full flex flex-col gap-[15px]', containerClassName)}
+    >
+      {showRiskTips ? (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={riskChecked}
+            type="square"
+            onChange={setRiskChecked}
+            unCheckBackground="transparent"
+            width="14px"
+            height="14px"
+            checkBoxClassName={clsx(
+              'rounded-[2px] border border-solid',
+              !riskChecked
+                ? 'border-rabby-neutral-body'
+                : 'border-rabby-blue-default'
+            )}
+            checkIcon={
+              riskChecked ? (
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <rect
+                    width="14"
+                    height="14"
+                    rx="2"
+                    fill="var(--r-blue-default, #4c65ff)"
+                  />
+                  <path
+                    d="M3 7L5.66667 10L11 4"
+                    stroke="white"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              ) : null
+            }
+          >
+            <span className="text-rabby-neutral-body text-13 font-normal">
+              {riskLabel || t('page.swap.understandRisks')}
+            </span>
+          </Checkbox>
+        </div>
+      ) : null}
+      {children({ riskDisabled, resetRiskChecked })}
+    </div>
+  );
+};
+
 export const DirectSignToConfirmBtn = ({
   showRiskTips,
   riskLabel,
@@ -225,83 +307,32 @@ export const DirectSignToConfirmBtn = ({
       : !!loading || !txsCalcLength || hasForbiddenCheckError
     : false;
 
-  const { t } = useTranslation();
-  const [riskChecked, setRiskChecked] = useState(false);
-
-  const riskDisabled = showRiskTips ? !riskChecked : false;
-
   const isHardWallet = useMemo(() => {
     return supportedHardwareDirectSign(accountType || '');
   }, [accountType]);
 
-  const onCancel = useCallback(() => {
-    setRiskChecked(false);
-    if (propOnCancel) {
-      propOnCancel();
-    }
-  }, [propOnCancel]);
-
-  useEffect(() => {
-    if (riskReset) {
-      setRiskChecked(false);
-    }
-  }, [riskReset]);
-
   return (
-    <div
-      className={clsx('w-full flex flex-col gap-[15px]', containerClassName)}
+    <RiskTipsWrapper
+      showRiskTips={showRiskTips}
+      riskLabel={riskLabel}
+      riskReset={riskReset}
+      containerClassName={containerClassName}
     >
-      {showRiskTips ? (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            checked={riskChecked}
-            type="square"
-            onChange={setRiskChecked}
-            unCheckBackground="transparent"
-            width="14px"
-            height="14px"
-            checkBoxClassName={clsx(
-              'rounded-[2px] border border-solid',
-              !riskChecked
-                ? 'border-rabby-neutral-body'
-                : 'border-rabby-blue-default'
-            )}
-            checkIcon={
-              riskChecked ? (
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <rect
-                    width="14"
-                    height="14"
-                    rx="2"
-                    fill="var(--r-blue-default, #4c65ff)"
-                  />
-                  <path
-                    d="M3 7L5.66667 10L11 4"
-                    stroke="white"
-                    strokeWidth="1.25"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              ) : null
-            }
-          >
-            <span className="text-rabby-neutral-body text-13 font-normal">
-              {riskLabel || t('page.swap.understandRisks')}
-            </span>
-          </Checkbox>
-        </div>
-      ) : null}
-      <ToConfirmBtn
-        {...props}
-        isHardWallet={isHardWallet}
-        onCancel={onCancel}
-        disabled={
-          (overwriteDisabled
-            ? props.disabled
-            : props.disabled || disabledProcess) || riskDisabled
-        }
-      />
-    </div>
+      {({ riskDisabled, resetRiskChecked }) => (
+        <ToConfirmBtn
+          {...props}
+          isHardWallet={isHardWallet}
+          onCancel={() => {
+            resetRiskChecked();
+            propOnCancel?.();
+          }}
+          disabled={
+            (overwriteDisabled
+              ? props.disabled
+              : props.disabled || disabledProcess) || riskDisabled
+          }
+        />
+      )}
+    </RiskTipsWrapper>
   );
 };

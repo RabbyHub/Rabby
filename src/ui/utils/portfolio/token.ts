@@ -16,6 +16,7 @@ import { useSafeState } from '../safeState';
 import { useWallet } from '../WalletContext';
 import { AbstractPortfolioToken } from './types';
 import {
+  commonTokenFilter,
   defaultTokenFilter,
   includeLpTokensFilter,
   isLpToken,
@@ -31,6 +32,10 @@ import {
 } from './tokenUtils';
 
 let lastResetTokenListAddr = '';
+
+const filterCommonTokens = (tokens: TokenItem[]) => {
+  return tokens.filter(commonTokenFilter);
+};
 
 type UseTokensOptions = {
   visible?: boolean;
@@ -157,8 +162,10 @@ export const useTokens = (
     };
 
     const applyTokenItems = (tokens: TokenItem[]) => {
-      setHasValue(tokens.length > 0);
-      dispatchTokenList(sortTokenItems(tokens));
+      const validTokens = filterCommonTokens(tokens);
+
+      setHasValue(validTokens.length > 0);
+      dispatchTokenList(sortTokenItems(validTokens));
     };
 
     if (currentAbort.signal.aborted) {
@@ -182,7 +189,9 @@ export const useTokens = (
           }),
         ]);
       } else {
-        currentAllTokens = await tokenDbService.queryTokens(userAddr);
+        const dbTokens = await tokenDbService.queryTokens(userAddr);
+        // 此处用于处理DB残留的可疑token数据
+        currentAllTokens = filterCommonTokens(dbTokens);
 
         if (currentAbort.signal.aborted) {
           abortedFn();
@@ -270,10 +279,8 @@ export const useTokens = (
       return;
     }
 
-    currentAllTokens = replaceTokensWithLatest(
-      currentAllTokens,
-      tokenRes,
-      chainServerId
+    currentAllTokens = filterCommonTokens(
+      replaceTokensWithLatest(currentAllTokens, tokenRes, chainServerId)
     );
 
     if (shouldPersistTokenCache) {

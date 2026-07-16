@@ -383,7 +383,7 @@ export const SpotSwapModal: React.FC<SpotSwapModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="shrink-0 border-t-[0.5px] border-solid border-rb-neutral-line px-20 py-16">
+          <div className="shrink-0 border-t border-solid border-rb-neutral-line px-20 py-16">
             <Button
               block
               size="large"
