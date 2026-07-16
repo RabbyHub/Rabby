@@ -273,6 +273,11 @@ export const SignTestnetTx = ({
   };
   const getDappGasPrice = () => {
     let result = '';
+    if (maxFeePerGas != null) {
+      result = isHexString(maxFeePerGas)
+        ? maxFeePerGas
+        : intToHex(maxFeePerGas);
+    }
     if (gasPrice != null) {
       result = isHexString(gasPrice) ? gasPrice : intToHex(parseInt(gasPrice));
     }
