@@ -212,7 +212,6 @@ export const SignTestnetTx = ({
 }: SignTxProps) => {
   const { isGnosis } = params;
   const currentAccount = params.isGnosis ? params.account! : $account;
-  const rawDappGasLimit = params.data[0]?.gas ?? params.data[0]?.gasLimit;
 
   const {
     data = '0x',
@@ -283,26 +282,11 @@ export const SignTestnetTx = ({
     return result;
   };
   const dappGasPrice = getDappGasPrice();
-  const getDappGasLimit = () => {
-    if (rawDappGasLimit == null) {
-      return '';
-    }
-    const result =
-      typeof rawDappGasLimit === 'string' && isHexString(rawDappGasLimit)
-        ? rawDappGasLimit
-        : intToHex(parseInt(rawDappGasLimit, 10));
-    if (Number.isNaN(Number(result))) {
-      return '';
-    }
-    return result;
-  };
-  const dappGasLimit = getDappGasLimit();
-
   const [tx, setTx] = useState<Tx>({
     chainId,
     data: data || '0x', // can not execute with empty string, use 0x instead
     from,
-    gas: dappGasLimit || gas || params.data[0].gasLimit,
+    gas: gas || params.data[0].gasLimit,
     gasPrice: getGasPrice(),
     nonce,
     to: to ? toChecksumAddress(to) : to,
@@ -323,12 +307,6 @@ export const SignTestnetTx = ({
 
   const { data: gasUsed, runAsync: runGetGasUsed } = useRequest(
     async () => {
-      if (dappGasLimit) {
-        if (!gasLimit) {
-          setGasLimit(dappGasLimit);
-        }
-        return dappGasLimit;
-      }
       try {
         let estimateGas = await wallet.estimateCustomTestnetGas({
           address: currentAccount.address,
@@ -355,6 +333,12 @@ export const SignTestnetTx = ({
             recommendGasLimit = new BigNumber(blockGasLimit)
               .times(buffer)
               .toFixed(0);
+          }
+          if (tx.gas || tx.gasLimit) {
+            recommendGasLimit = Math.max(
+              Number(tx.gas || tx.gasLimit),
+              Number(recommendGasLimit)
+            ).toString();
           }
           setGasLimit(
             `0x${new BigNumber(recommendGasLimit).integerValue().toString(16)}`
