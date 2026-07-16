@@ -83,7 +83,7 @@ export const MessageWrapper = styled.div`
     line-height: 16px;
     font-weight: 400;
     color: var(--r-neutral-body, #3e495e);
-    height: 250px;
+    max-height: 544px;
     overflow-y: auto;
     padding: 0 16px 16px;
     /* font-family: 'Roboto Mono'; */
