@@ -273,6 +273,7 @@ export const SignTestnetTx = ({
   };
 
   const dappGasPrice = getGasPrice();
+  const isDappGasPriceRef = useRef(!!dappGasPrice);
   const [tx, setTx] = useState<Tx>({
     chainId,
     data: data || '0x', // can not execute with empty string, use 0x instead
@@ -660,6 +661,7 @@ export const SignTestnetTx = ({
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
+    isDappGasPriceRef.current = false;
     setSelectedGas({
       level: gas.level,
       front_tx_count: gas.front_tx_count,
@@ -763,7 +765,7 @@ export const SignTestnetTx = ({
     } else {
       selected.gasLevel = selectedGas.level;
     }
-    if (!isSpeedUp && !isCancel && !isSwap) {
+    if (!isSpeedUp && !isCancel && !isSwap && !isDappGasPriceRef.current) {
       await wallet.updateLastTimeGasSelection(chainId, selected);
     }
     const transaction: Tx = {
