@@ -13,7 +13,6 @@ import { SignMessageAddressData } from './signMessageAddressData';
 
 const Trigger = styled.button<{
   $danger: boolean;
-  $alias: boolean;
 }>`
   box-sizing: content-box;
   position: absolute;
@@ -25,20 +24,16 @@ const Trigger = styled.button<{
   padding: 2px 2px 2px 6px;
   overflow: hidden;
   border: 0.5px solid
-    ${({ $danger, $alias }) =>
+    ${({ $danger }) =>
       $danger
-        ? ' var(--r-red-default, #E34935)'
-        : $alias
-        ? 'var(--r-blue-default, #4C65FF)'
+        ? 'var(--r-red-default, #E34935)'
         : 'var(--r-neutral-line, #E0E5EC)'};
   border-radius: 4px;
   background: ${({ $danger }) =>
-    $danger ? 'var(--r-red-light, #fce5e5)' : 'var(--r-neutral-card1, #fff)'};
-  color: ${({ $danger, $alias }) =>
+    $danger ? 'var(--r-red-light, #fce5e5)' : 'var(--r-neutral-bg2, #f2f4f7)'};
+  color: ${({ $danger }) =>
     $danger
       ? 'var(--r-red-default, #ec5151)'
-      : $alias
-      ? 'var(--r-blue-default, #7084ff)'
       : 'var(--r-neutral-body, #3e495e)'};
   font-size: 13px;
   line-height: normal;
@@ -130,7 +125,6 @@ const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
       ref={triggerRef}
       type="button"
       $danger={danger}
-      $alias={hasAlias}
       aria-label={label}
       title={label}
       style={{ visibility: 'hidden' }}
