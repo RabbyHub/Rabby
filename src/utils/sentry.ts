@@ -12,7 +12,7 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'Network Error',
   'Request limit exceeded.',
   'Failed to fetch',
-  /^(Error: )?Request failed with status code 403$/,
+  /^(Error: )?Request failed with status code [1-5]\d{2}$/,
   /(^|\n)Request timeout($|\n)/i,
   'TransportOpenUserCancelled',
   'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
