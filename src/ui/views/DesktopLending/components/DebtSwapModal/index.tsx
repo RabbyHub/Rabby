@@ -1052,7 +1052,8 @@ export const DebtSwapModal: React.FC<DebtSwapModalProps> = ({
                   onValueChange={handleFromAmountChange}
                   placeholder="0"
                   fontSize={24}
-                  className="h-[40px] border-0 bg-transparent p-0 text-right font-medium leading-[40px] text-r-neutral-title-1 hover:border-r-0"
+                  wrapperClassName="w-full"
+                  className="w-full h-[40px] border-0 bg-transparent p-0 text-right font-medium leading-[40px] text-r-neutral-title-1 hover:border-r-0"
                 />
                 <div className="mt-12 flex items-center gap-8">
                   {fromAmount && new BigNumber(fromAmount).gt(0) ? (

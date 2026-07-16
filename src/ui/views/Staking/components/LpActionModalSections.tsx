@@ -1,11 +1,12 @@
 import React from 'react';
-import { Input } from 'antd';
+import { Input, InputRef } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { formatUnits } from 'ethers/lib/utils';
 import { useTranslation } from 'react-i18next';
 import type { TokenItem } from 'background/service/openapi';
 
+import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
 import { TokenWithChain } from '@/ui/component';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
@@ -115,6 +116,7 @@ const LpAmountInputBlockInner = ({
   maxDisabled?: boolean;
 }) => {
   const { t } = useTranslation();
+  const amountInputRef = React.useRef<InputRef>(null);
 
   return (
     <div
@@ -127,21 +129,35 @@ const LpAmountInputBlockInner = ({
       {label ? <div className="staking-lp-input-label">{label}</div> : null}
       <div className="staking-lp-input-row">
         <div className="staking-lp-input-main">
-          <Input
-            className="staking-lp-input ant-input"
-            placeholder="0"
-            value={value}
-            disabled={disabled}
-            onChange={(event) => {
-              const next = normalizeStakingAmountInput(
-                event.target.value,
-                tokenInfo?.decimals
-              );
-              if (next !== null) {
-                onChange(next);
-              }
-            }}
-          />
+          <AutoSizeAmountInput
+            inputRef={amountInputRef}
+            inputValue={value || '0'}
+            maxFontSize={32}
+            minFontSize={20}
+            fontSizeStep={2}
+            fontWeight={700}
+            className="w-full min-w-0 overflow-hidden"
+          >
+            {(fontSize) => (
+              <Input
+                ref={amountInputRef}
+                className="staking-lp-input ant-input"
+                style={{ fontSize }}
+                placeholder="0"
+                value={value}
+                disabled={disabled}
+                onChange={(event) => {
+                  const next = normalizeStakingAmountInput(
+                    event.target.value,
+                    tokenInfo?.decimals
+                  );
+                  if (next !== null) {
+                    onChange(next);
+                  }
+                }}
+              />
+            )}
+          </AutoSizeAmountInput>
           <div className="staking-lp-input-usd">
             {getTokenUsdText(value, tokenInfo?.price)}
           </div>

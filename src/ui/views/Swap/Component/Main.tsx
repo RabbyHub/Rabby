@@ -1302,7 +1302,6 @@ export const Main = () => {
             }
             value={receiveTokenDisplayValue}
             token={receiveToken}
-            freePairBaseToken={payToken}
             onTokenChange={(token) => {
               const chainItem = findChainByServerID(token.chain);
               if (chainItem?.enum !== chain) {

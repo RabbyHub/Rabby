@@ -88,9 +88,9 @@ const SecurityLevelTagWrapper = styled.div`
     border: 0.5px solid rgba(175, 22, 14, 0.5);
   }
   &.danger {
-    color: #ec5151;
-    background: #fce5e5;
-    border: 0.5px solid rgba(236, 81, 81, 0.5);
+    color: var(--r-red-default, #e34935);
+    background: var(--r-red-light, #fff2f0);
+    border: 0.5px solid var(--r-red-default, #e34935);
   }
   &.warning {
     color: #ffb020;

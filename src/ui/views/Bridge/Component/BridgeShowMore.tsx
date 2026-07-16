@@ -22,6 +22,7 @@ import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
+import { ReactComponent as RcIconFree } from '@/ui/assets/swap/free.svg';
 import styled from 'styled-components';
 import { findChainByServerID } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
@@ -339,27 +340,36 @@ export const BridgeShowMore = ({
         className={clsx(
           'text-12 font-medium',
           isRabbyFeeFree
-            ? 'text-r-green-default'
+            ? 'flex shrink-0 items-center gap-4'
             : isWrapToken
             ? 'text-r-neutral-foot'
             : 'text-r-blue-default cursor-pointer'
         )}
         onClick={isRabbyFeeFree ? undefined : openFeePopup}
       >
-        {isRabbyFeeFree
-          ? 'Free'
-          : isWrapToken && type === 'swap'
-          ? t('page.swap.no-fees-for-wrap')
-          : RABBY_FEE}
+        {isRabbyFeeFree ? (
+          <>
+            <span className="font-normal text-r-neutral-foot line-through">
+              {RABBY_FEE}
+            </span>
+            <RcIconFree
+              aria-hidden
+              className="h-16 w-[52px] shrink-0"
+              viewBox="0 0 52 16"
+            />
+          </>
+        ) : isWrapToken && type === 'swap' ? (
+          t('page.swap.no-fees-for-wrap')
+        ) : (
+          RABBY_FEE
+        )}
       </div>
     </ListItem>
   );
 
   return (
     <div className="mx-16">
-      <div className="space-y-16">
-        {isRabbyFeeFree && rabbyFeeContentRender()}
-
+      <div className={isRabbyFeeFree ? 'space-y-12' : 'space-y-16'}>
         {sourceAlwaysShow && sourceContentRender()}
 
         {lostValueContentRender()}
@@ -374,6 +384,8 @@ export const BridgeShowMore = ({
             signatureInstance={signatureInstance}
           />
         ) : null}
+
+        {isRabbyFeeFree && rabbyFeeContentRender()}
 
         {showSlippageError && (
           <BridgeSlippage

@@ -39,7 +39,7 @@ import { ActionWrapper } from '../ActionWrapper';
 import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
 import { OriginInfo } from '../OriginInfo';
 import { Card } from '../Card';
-import { HighlightedSignMessageText, MessageWrapper } from '../TextActions';
+import { MessageWrapper, SignMessageContent } from '../TextActions';
 import { Divide } from '../Divide';
 import { Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
@@ -48,6 +48,9 @@ import { noop } from '@/ui/utils';
 import { BalanceChangeWrapper } from '../TxComponents/BalanceChangeWrapper';
 import { ParseCommonResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { Account } from '@/background/service/preference';
+import { Copy } from 'ui/component';
+import { SignMessageHighlightToken } from '../signMessageHighlighter';
+import { SignMessageAddressDataMap } from '../signMessageAddressData';
 
 export interface MultiActionProps {
   actionList: ParsedTypedDataActionData[] | ParsedTransactionActionData[];
@@ -320,6 +323,8 @@ const Actions = ({
   typedDataActionData,
   account,
   multiAction,
+  messageTokens,
+  addressData,
 }: {
   data: ParsedTypedDataActionData | null;
   requireData: ActionRequireData;
@@ -332,6 +337,8 @@ const Actions = ({
   typedDataActionData?: ParseCommonResponse | null;
   account: Account;
   multiAction?: MultiActionProps;
+  messageTokens?: SignMessageHighlightToken[];
+  addressData?: SignMessageAddressDataMap;
 }) => {
   const { t } = useTranslation();
 
@@ -395,13 +402,17 @@ const Actions = ({
           })}
         >
           <div className="title">
-            <span className="title-text">
+            <span className="title-text flex items-center gap-4">
               {t('page.signTx.typedDataMessage')}
+              <Copy data={message} className="w-14 h-14" />
             </span>
           </div>
-          <div className="content">
-            <HighlightedSignMessageText text={message} />
-          </div>
+          <SignMessageContent
+            text={message}
+            tokens={messageTokens}
+            chain={chain}
+            addressData={addressData}
+          />
         </MessageWrapper>
       </Card>
     </>

@@ -30,6 +30,7 @@ import {
   getGasTokenBalance,
 } from '@/utils/transaction';
 import { isTempoChain } from '@/utils/tempo';
+import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
 
 const StyledInput = styled(Input)`
   color: var(--r-neutral-title1, #192945);
@@ -39,6 +40,7 @@ const StyledInput = styled(Input)`
   line-height: normal;
   background: transparent !important;
   padding-left: 0;
+  padding-right: 0;
   & > .ant-input {
     color: var(--r-neutral-title1, #192945);
     font-size: 24px;
@@ -117,7 +119,7 @@ export const BridgeToken = ({
   const isMaxRef = useRef(false);
   const isReserveMaxRef = useRef(false);
 
-  const inputRef = useRef<InputRef>();
+  const inputRef = useRef<InputRef>(null);
 
   const chainSelectorRef = useRef<ChainSelectorRef>(null);
 
@@ -422,17 +424,30 @@ export const BridgeToken = ({
               }}
             />
           ) : (
-            <StyledInput
-              className={clsx(
-                inSufficient && 'text-rabby-red-default',
-                valueLoading && 'opacity-50'
+            <AutoSizeAmountInput
+              inputRef={inputRef}
+              inputValue={String(value ?? '')}
+              maxFontSize={24}
+              minFontSize={16}
+              fontSizeStep={2}
+              fontWeight={500}
+              className="min-w-0 flex-1"
+            >
+              {(fontSize) => (
+                <StyledInput
+                  className={clsx(
+                    inSufficient && 'text-rabby-red-default',
+                    valueLoading && 'opacity-50'
+                  )}
+                  placeholder={showNoQuote ? t('page.bridge.no-quote') : '0'}
+                  value={value}
+                  onChange={inputChange}
+                  readOnly={disabled || !isFromToken}
+                  ref={inputRef}
+                  style={{ fontSize }}
+                />
               )}
-              placeholder={showNoQuote ? t('page.bridge.no-quote') : '0'}
-              value={value}
-              onChange={inputChange}
-              readOnly={disabled || !isFromToken}
-              ref={inputRef as any}
-            />
+            </AutoSizeAmountInput>
           )}
           {isToToken ? (
             <BridgeToTokenSelect

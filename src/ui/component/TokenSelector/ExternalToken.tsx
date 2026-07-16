@@ -32,7 +32,6 @@ const ExternalTokenRow = memo(
     className,
     disabled,
     onClickTokenSymbol,
-    tokenItemExtra,
   }: {
     data: TokenItemWithEntity;
     onTokenPress?(token: TokenItemWithEntity): void;
@@ -40,7 +39,6 @@ const ExternalTokenRow = memo(
     className?: string;
     disabled?: boolean;
     onClickTokenSymbol?: React.MouseEventHandler<HTMLSpanElement>;
-    tokenItemExtra?: React.ReactNode;
   }) => {
     const { t } = useTranslation();
 
@@ -82,7 +80,6 @@ const ExternalTokenRow = memo(
                 <span className="symbol_click" onClick={onClickTokenSymbol}>
                   {getTokenSymbol(data)}
                 </span>
-                {tokenItemExtra}
                 {isUnknownToken(data) && <UnknownTag className="ml-4 mr-4" />}
                 {isLpToken(data) && (
                   <LpTokenTag

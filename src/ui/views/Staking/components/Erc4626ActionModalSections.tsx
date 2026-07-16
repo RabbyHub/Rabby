@@ -1,9 +1,10 @@
 import React from 'react';
-import { Input } from 'antd';
+import { Input, InputRef } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import type { TokenItem } from 'background/service/openapi';
 
+import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
 import TokenWithChain from '@/ui/component/TokenWithChain';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { SwapSlider } from '@/ui/views/Swap/Component/Slider';
@@ -61,18 +62,33 @@ const Erc4626DepositContentInner = ({
   onMax: () => void;
 }) => {
   const { t } = useTranslation();
+  const amountInputRef = React.useRef<InputRef>(null);
 
   return (
     <div
       className={clsx('staking-action-amount-row', amountError && 'is-error')}
     >
       <div className="staking-action-amount-left">
-        <Input
-          className="staking-action-amount-input"
-          placeholder="0"
-          value={amount}
-          onChange={(event) => onAmountChange(event.target.value)}
-        />
+        <AutoSizeAmountInput
+          inputRef={amountInputRef}
+          inputValue={amount || '0'}
+          maxFontSize={32}
+          minFontSize={20}
+          fontSizeStep={2}
+          fontWeight={700}
+          className="w-full min-w-0 overflow-hidden"
+        >
+          {(fontSize) => (
+            <Input
+              ref={amountInputRef}
+              className="staking-action-amount-input"
+              style={{ fontSize }}
+              placeholder="0"
+              value={amount}
+              onChange={(event) => onAmountChange(event.target.value)}
+            />
+          )}
+        </AutoSizeAmountInput>
         <div className="staking-action-amount-usd">{amountUsdText}</div>
       </div>
       <div className="staking-action-token-side">
