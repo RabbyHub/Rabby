@@ -263,7 +263,7 @@ export const SignTestnetTx = ({
         ? maxFeePerGas
         : intToHex(maxFeePerGas);
     }
-    if (gasPrice) {
+    if (gasPrice != null) {
       result = isHexString(gasPrice) ? gasPrice : intToHex(parseInt(gasPrice));
     }
     if (Number.isNaN(Number(result))) {
@@ -271,7 +271,17 @@ export const SignTestnetTx = ({
     }
     return result;
   };
-
+  const getDappGasPrice = () => {
+    let result = '';
+    if (gasPrice != null) {
+      result = isHexString(gasPrice) ? gasPrice : intToHex(parseInt(gasPrice));
+    }
+    if (Number.isNaN(Number(result))) {
+      result = '';
+    }
+    return result;
+  };
+  const dappGasPrice = getDappGasPrice();
   const [tx, setTx] = useState<Tx>({
     chainId,
     data: data || '0x', // can not execute with empty string, use 0x instead
@@ -419,18 +429,27 @@ export const SignTestnetTx = ({
         }
       }
       let customGasPrice = 0;
+      let useDappGasPrice = false;
       const lastTimeGas = await runGetLastTimeGasSelection();
-      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
-        // use cached gasPrice if exist
-        customGasPrice = lastTimeGas.gasPrice;
-      }
-      if (
-        isSpeedUp ||
-        isCancel ||
-        ((isSend || isSwap || isBridge) && tx.gasPrice)
-      ) {
-        // use gasPrice set by dapp when it's a speedup or cancel tx
-        customGasPrice = parseInt(tx.gasPrice!);
+      if (dappGasPrice) {
+        customGasPrice = parseInt(dappGasPrice);
+        useDappGasPrice = true;
+      } else {
+        if (
+          lastTimeGas?.lastTimeSelect === 'gasPrice' &&
+          lastTimeGas.gasPrice
+        ) {
+          // use cached gasPrice if exist
+          customGasPrice = lastTimeGas.gasPrice;
+        }
+        if (
+          isSpeedUp ||
+          isCancel ||
+          ((isSend || isSwap || isBridge) && tx.gasPrice)
+        ) {
+          // use gasPrice set by dapp when it's a speedup or cancel tx
+          customGasPrice = parseInt(tx.gasPrice!);
+        }
       }
       const gasUsed = await runGetGasUsed();
       const recommendNonce = await runGetNonce();
@@ -442,6 +461,7 @@ export const SignTestnetTx = ({
       let gas: GasLevel | null = null;
 
       if (
+        useDappGasPrice ||
         ((isSend || isSwap || isBridge) && customGasPrice) ||
         isSpeedUp ||
         isCancel ||
