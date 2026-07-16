@@ -1,5 +1,5 @@
 import {
-  getSignMessageAddressTagVisibility,
+  getSignMessageAddressTagType,
   isSignMessageAddressMalicious,
   resolveSignMessageAddressData,
 } from '@/ui/views/Approval/components/signMessageAddressData';
@@ -9,37 +9,37 @@ const token = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
 const protocol = '0xe592427a0aece92de3edee1f18e0157c05861564';
 const unknown = '0x27b1fdb04752bbc536007a920d24acb045561c26';
 
-test('selects address tags without assigning the address a kind', () => {
+test('selects at most one address tag with danger priority', () => {
   expect(
-    getSignMessageAddressTagVisibility({
+    getSignMessageAddressTagType({
       isMalicious: true,
       alias: 'Treasury',
       token: {} as any,
       protocol: {} as any,
     })
-  ).toEqual({ showDangerTag: true, showInfoTag: true });
+  ).toBe('danger');
   expect(
-    getSignMessageAddressTagVisibility({
+    getSignMessageAddressTagType({
       isMalicious: false,
       alias: 'Treasury',
       token: {} as any,
       protocol: null,
     })
-  ).toEqual({ showDangerTag: false, showInfoTag: true });
+  ).toBe('info');
   expect(
-    getSignMessageAddressTagVisibility({
+    getSignMessageAddressTagType({
       isMalicious: false,
       token: {} as any,
       protocol: null,
     })
-  ).toEqual({ showDangerTag: false, showInfoTag: true });
+  ).toBe('info');
   expect(
-    getSignMessageAddressTagVisibility({
+    getSignMessageAddressTagType({
       isMalicious: false,
       token: null,
       protocol: null,
     })
-  ).toEqual({ showDangerTag: false, showInfoTag: false });
+  ).toBeNull();
 });
 
 test('uses address danger signals for EOAs and phishing for contracts', () => {

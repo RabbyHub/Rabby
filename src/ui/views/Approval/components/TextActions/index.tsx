@@ -28,7 +28,7 @@ import {
 import { Chain } from 'background/service/openapi';
 import SignMessageAddressTag from '../SignMessageAddressTag';
 import {
-  getSignMessageAddressTagVisibility,
+  getSignMessageAddressTagType,
   SignMessageAddressData,
   SignMessageAddressDataMap,
 } from '../signMessageAddressData';
@@ -146,16 +146,16 @@ export const SignMessageContent = ({
       const data = addressData?.[address.toLowerCase()];
       if (!data) return [];
 
-      const { showDangerTag, showInfoTag } = getSignMessageAddressTagVisibility(
-        data
-      );
+      const tagType = getSignMessageAddressTagType(data);
+      if (!tagType) return [];
+
       return [
-        ...(showDangerTag
-          ? [{ id: `${index}-danger`, index, data, danger: true }]
-          : []),
-        ...(showInfoTag
-          ? [{ id: `${index}-info`, index, data, danger: false }]
-          : []),
+        {
+          id: `${index}-${tagType}`,
+          index,
+          data,
+          danger: tagType === 'danger',
+        },
       ];
     });
   }, [addressData, chain, resolvedTokens]);
@@ -167,7 +167,11 @@ export const SignMessageContent = ({
     const updatePosition = () => {
       addressTags.forEach(({ id }) => {
         const trigger = triggerRefs.current[id];
-        if (trigger) trigger.style.visibility = 'hidden';
+        if (trigger) {
+          trigger.style.visibility = 'hidden';
+          trigger.style.removeProperty('right');
+          trigger.style.removeProperty('top');
+        }
       });
 
       const measured = addressTags.flatMap(({ id, index }) => {
@@ -192,9 +196,11 @@ export const SignMessageContent = ({
 
       measured.forEach(({ trigger }, index) => {
         const layout = layouts[index];
+        if (!layout) return;
+
         trigger.style.right = `${layout.right}px`;
         trigger.style.top = `${layout.top}px`;
-        trigger.style.visibility = layout.visible ? 'visible' : 'hidden';
+        trigger.style.visibility = 'visible';
       });
     };
 
@@ -230,14 +236,10 @@ export const SignMessageContent = ({
             token.type === 'address'
               ? addressData?.[address.toLowerCase()]
               : undefined;
-          const tagVisibility = resolvedAddressData
-            ? getSignMessageAddressTagVisibility(resolvedAddressData)
+          const tagType = resolvedAddressData
+            ? getSignMessageAddressTagType(resolvedAddressData)
             : null;
-          const hasTag = !!(
-            chain &&
-            tagVisibility &&
-            (tagVisibility.showDangerTag || tagVisibility.showInfoTag)
-          );
+          const hasTag = !!(chain && tagType);
 
           return (
             <span

@@ -30,7 +30,7 @@ export interface SignMessageAddressData {
   localAccount: Account | null;
 }
 
-export const getSignMessageAddressTagVisibility = ({
+export const getSignMessageAddressTagType = ({
   isMalicious,
   alias,
   token,
@@ -38,10 +38,11 @@ export const getSignMessageAddressTagVisibility = ({
 }: Pick<
   SignMessageAddressData,
   'isMalicious' | 'alias' | 'token' | 'protocol'
->) => ({
-  showDangerTag: isMalicious,
-  showInfoTag: !!alias || (!isMalicious && !!(token || protocol)),
-});
+>): 'danger' | 'info' | null => {
+  if (isMalicious) return 'danger';
+  if (alias || token || protocol) return 'info';
+  return null;
+};
 
 export type SignMessageAddressDataMap = Record<string, SignMessageAddressData>;
 
