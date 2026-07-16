@@ -2,12 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
-import { KEYRING_CLASS } from 'consts';
+import { KEYRING_TYPE } from 'consts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useRabbyDispatch } from '@/ui/store';
-import { ellipsisAddress } from '@/ui/utils/address';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { pickKeyringThemeIcon } from '@/utils/account';
 import IconDanger from '@/ui/assets/sign/security-engine/danger.svg';
 import { ReactComponent as IconArrowRight } from '@/ui/assets/sign/arrow-right-lite.svg';
 import ViewMore from './Actions/components/ViewMore';
@@ -107,25 +105,23 @@ const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
   const { address } = addressInfo;
   const alias = addressInfo?.alias;
   const protocol = addressInfo?.protocol || null;
-  const importedAccountIcon = useBrandIcon({
+  const aliasIcon = useBrandIcon({
     address,
-    brandName: addressInfo.localAccount?.brandName || '',
-    type: addressInfo.localAccount?.type || '',
+    brandName:
+      addressInfo.localAccount?.brandName || KEYRING_TYPE.WatchAddressKeyring,
+    type: addressInfo.localAccount?.type || KEYRING_TYPE.WatchAddressKeyring,
   });
-  const aliasIcon = addressInfo.localAccount
-    ? importedAccountIcon
-    : pickKeyringThemeIcon(KEYRING_CLASS.WATCH);
 
   const token = addressInfo.token;
   const hasAlias = !!alias;
-  const opensTokenDetail = !!token && !danger;
+  const opensTokenDetail = !!token && !danger && !hasAlias;
   const label = danger
-    ? alias || ellipsisAddress(address)
+    ? 'Danger'
     : alias || (token ? getTokenSymbol(token) : protocol?.name || '');
   const icon = danger
     ? IconDanger
     : hasAlias
-    ? token?.logo_url || protocol?.logo_url || aliasIcon
+    ? aliasIcon
     : token
     ? token.logo_url
     : protocol?.logo_url;

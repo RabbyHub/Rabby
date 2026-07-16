@@ -1,6 +1,6 @@
 import { getSignMessageAddressTagLayouts } from '@/ui/views/Approval/components/signMessageAddressTagLayout';
 
-test('places signing address tags by visible line without entering content flow', () => {
+test('lays out only visible signing address tags', () => {
   const layouts = getSignMessageAddressTagLayouts(
     [
       { lineTop: 32, anchorHeight: 16 },
@@ -14,11 +14,9 @@ test('places signing address tags by visible line without entering content flow'
     }
   );
 
-  expect(layouts).toMatchObject([
-    { top: 72, visible: true },
-    { top: 72, visible: true },
-    { top: 320, visible: false },
+  expect(layouts).toEqual([
+    { right: -14, top: 72 },
+    { right: 30, top: 72 },
+    null,
   ]);
-  expect(layouts[1].right - layouts[0].right).toBe(44);
-  expect(layouts[2].right).toBe(layouts[0].right);
 });
