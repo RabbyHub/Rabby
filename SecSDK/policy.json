@@ -11002,6 +11002,16 @@
       "dynamic": []
     }
   },
+  "node_modules/@rabby-wallet/rabby-swap/dist/tokenPools.js": {
+    "enable": true,
+    "global": {
+      "access": {},
+      "allow": {
+        "navigator": "r"
+      },
+      "dynamic": []
+    }
+  },
   "node_modules/@rabby-wallet/wc-browser-utils/node_modules/@walletconnect/window-getters/dist/cjs/index.js": {
     "enable": true,
     "global": {
