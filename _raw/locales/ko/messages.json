@@ -378,6 +378,10 @@
         "title": "유동성 추가",
         "priceDiff": "가격 차이",
         "receiver": "수신자"
+      },
+      "signMessageTag": {
+        "contract": "컨트랙트:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {

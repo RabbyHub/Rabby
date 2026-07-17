@@ -1921,6 +1921,10 @@
         "token0": "添加代币 1",
         "title": "添加流动性",
         "token1": "添加代币 2"
+      },
+      "signMessageTag": {
+        "contract": "合约：",
+        "eoa": "EOA："
       }
     },
     "signTypedData": {

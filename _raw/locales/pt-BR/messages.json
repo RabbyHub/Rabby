@@ -378,6 +378,10 @@
         "priceDiff": "Diferença de Preço",
         "token0": "Adicionar Token 1",
         "title": "Adicionar Liquidez"
+      },
+      "signMessageTag": {
+        "contract": "Contrato:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {

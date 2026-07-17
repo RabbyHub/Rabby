@@ -1921,6 +1921,10 @@
         "token1": "新增代幣 2",
         "priceDiff": "價格差異",
         "poolPrice": "池子價格"
+      },
+      "signMessageTag": {
+        "contract": "合約：",
+        "eoa": "EOA："
       }
     },
     "signTypedData": {

@@ -378,6 +378,10 @@
         "token0": "トークンを追加 1",
         "token1": "トークンを追加 2",
         "poolPrice": "プール価格"
+      },
+      "signMessageTag": {
+        "contract": "コントラクト:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {

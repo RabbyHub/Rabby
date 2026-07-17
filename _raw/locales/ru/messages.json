@@ -378,6 +378,10 @@
         "token1": "Добавить Token 2",
         "token0": "Добавить токен 1",
         "poolPrice": "Цена пула"
+      },
+      "signMessageTag": {
+        "contract": "Контракт:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {
