@@ -40,6 +40,7 @@ import {
   normalizeTypeData,
 } from './TypedDataActions/utils';
 import {
+  ContextActionData,
   Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
@@ -68,6 +69,9 @@ import {
   TypeDataActionItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
+import { tokenizeSignTypedDataMessage } from './signMessageHighlighter';
+import { addSignMessageOriginFallback } from './signMessageOrigin';
+import { useSignMessageAddressData } from './useSignMessageAddressData';
 
 interface SignTypedDataProps {
   method: string;
@@ -145,6 +149,7 @@ const SignTypedData = ({
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const securityEngineCtx = useRef<any>(null);
+  const isUnparsedAction = useRef(false);
   const logId = useRef('');
   const [isLoading, setIsLoading] = useState(true);
   const [isWatch, setIsWatch] = useState(false);
@@ -194,41 +199,6 @@ const SignTypedData = ({
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
-  const securityLevel = useMemo(() => {
-    const enableResults = engineResults.filter((result) => {
-      return result.enable && !currentTx.processedRules.includes(result.id);
-    });
-    if (enableResults.some((result) => result.level === Level.FORBIDDEN))
-      return Level.FORBIDDEN;
-    if (enableResults.some((result) => result.level === Level.DANGER))
-      return Level.DANGER;
-    if (enableResults.some((result) => result.level === Level.WARNING))
-      return Level.WARNING;
-    return undefined;
-  }, [engineResults, currentTx]);
-  const hasUnProcessSecurityResult = useMemo(() => {
-    const { processedRules } = currentTx;
-    const enableResults = engineResults.filter((item) => item.enable);
-    // const hasForbidden = enableResults.find(
-    //   (result) => result.level === Level.FORBIDDEN
-    // );
-    const hasSafe = !!enableResults.find(
-      (result) => result.level === Level.SAFE
-    );
-    const needProcess = enableResults.filter(
-      (result) =>
-        (result.level === Level.DANGER ||
-          result.level === Level.WARNING ||
-          result.level === Level.FORBIDDEN) &&
-        !processedRules.includes(result.id)
-    );
-    // if (hasForbidden) return true;
-    if (needProcess.length > 0) {
-      return !hasSafe;
-    } else {
-      return false;
-    }
-  }, [engineResults, currentTx]);
 
   const { data, session, method, isGnosis } = params;
   const [parsedMessage, setParsedMessage] = useState('');
@@ -296,6 +266,41 @@ const SignTypedData = ({
     }
   }, []);
 
+  const messageTokens = useMemo(() => {
+    if (!parsedMessage) return undefined;
+    if (isSignTypedDataV1) {
+      const fields = (Array.isArray(data[0]) ? data[0] : []) as Array<{
+        name: string;
+        type: string;
+        value: unknown;
+      }>;
+      const message = fields.reduce<Record<string, unknown>>(
+        (result, field) => {
+          result[field.name] = field.value;
+          return result;
+        },
+        {}
+      );
+      return tokenizeSignTypedDataMessage(
+        {
+          primaryType: 'RabbySignTypedDataV1',
+          types: {
+            RabbySignTypedDataV1: fields.map(({ name, type }) => ({
+              name,
+              type,
+            })),
+          },
+          message,
+        },
+        parsedMessage
+      );
+    }
+
+    return rawMessage
+      ? tokenizeSignTypedDataMessage(rawMessage, parsedMessage)
+      : undefined;
+  }, [data, isSignTypedDataV1, parsedMessage, rawMessage]);
+
   const chain = useMemo(() => {
     if (!isSignTypedDataV1 && normalizedSignTypedData) {
       let chainId;
@@ -309,8 +314,49 @@ const SignTypedData = ({
       }
     }
 
+    if (currentChainId) {
+      return findChain({ id: currentChainId }) || undefined;
+    }
+
     return undefined;
-  }, [data, isSignTypedDataV1, normalizedSignTypedData]);
+  }, [currentChainId, isSignTypedDataV1, normalizedSignTypedData]);
+  const addressData = useSignMessageAddressData({
+    tokens: messageTokens || [],
+    chain: chain || CHAINS.ETH,
+    accountAddress: currentAccount.address,
+  });
+
+  const securityLevel = useMemo(() => {
+    const enableResults = engineResults.filter((result) => {
+      return result.enable && !currentTx.processedRules.includes(result.id);
+    });
+    if (enableResults.some((result) => result.level === Level.FORBIDDEN))
+      return Level.FORBIDDEN;
+    if (enableResults.some((result) => result.level === Level.DANGER))
+      return Level.DANGER;
+    if (enableResults.some((result) => result.level === Level.WARNING))
+      return Level.WARNING;
+    return undefined;
+  }, [engineResults, currentTx]);
+  const hasUnProcessSecurityResult = useMemo(() => {
+    const { processedRules } = currentTx;
+    const enableResults = engineResults.filter((item) => item.enable);
+    const hasSafe = !!enableResults.find(
+      (result) => result.level === Level.SAFE
+    );
+    const needProcess = enableResults.filter(
+      (result) =>
+        (result.level === Level.DANGER ||
+          result.level === Level.WARNING ||
+          result.level === Level.FORBIDDEN) &&
+        !processedRules.includes(result.id)
+    );
+    if (needProcess.length > 0) {
+      return !hasSafe;
+    } else {
+      return false;
+    }
+  }, [engineResults, currentTx]);
 
   const getCurrentChainId = async () => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
@@ -571,6 +617,14 @@ const SignTypedData = ({
     return requireData;
   };
 
+  const withOriginFallback = (ctx: ContextActionData): ContextActionData =>
+    addSignMessageOriginFallback(ctx, {
+      isUnparsedAction: isUnparsedAction.current,
+      isInternalOrigin: params.session.origin === INTERNAL_REQUEST_ORIGIN,
+      message: parsedMessage,
+      origin: params.session.origin,
+    });
+
   const getSecurityEngineResult = async ({
     data,
     requireData,
@@ -584,7 +638,7 @@ const SignTypedData = ({
         id: Number(data.chainId),
       })?.serverId;
     }
-    const ctx = await formatSecurityEngineContext({
+    const baseCtx = await formatSecurityEngineContext({
       type: 'typed_data',
       actionData: data,
       requireData,
@@ -596,6 +650,7 @@ const SignTypedData = ({
       },
       origin: params.session.origin,
     });
+    const ctx = withOriginFallback(baseCtx);
     securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     return result;
@@ -612,7 +667,7 @@ const SignTypedData = ({
         id: Number(parsedActionData.chainId),
       })?.serverId;
     }
-    const ctx = await formatSecurityEngineContext({
+    const baseCtx = await formatSecurityEngineContext({
       type: 'typed_data',
       actionData: parsedActionData,
       requireData: actionRequireData,
@@ -624,6 +679,7 @@ const SignTypedData = ({
       },
       origin: params.session.origin,
     });
+    const ctx = withOriginFallback(baseCtx);
     const result = await executeEngine(ctx);
     setEngineResults(result);
   };
@@ -759,6 +815,7 @@ const SignTypedData = ({
   useEffect(() => {
     const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
     if (!loading) {
+      isUnparsedAction.current = typedDataActionData?.action === null;
       if (typedDataActionData) {
         logId.current = typedDataActionData.log_id;
         actionType.current = typedDataActionData?.action?.type || '';
@@ -929,6 +986,8 @@ const SignTypedData = ({
                   }
                 : undefined
             }
+            messageTokens={messageTokens}
+            addressData={addressData}
           />
         )}
         {isGnosisAccount && safeInfo && (

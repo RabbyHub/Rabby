@@ -7,6 +7,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
+  ContextActionData,
   Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
@@ -49,6 +50,10 @@ import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
 import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 import { ga4 } from '@/utils/ga4';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { addSignMessageOriginFallback } from './signMessageOrigin';
+import { tokenizeSignMessageText } from './signMessageHighlighter';
+import { useSignMessageAddressData } from './useSignMessageAddressData';
 
 interface SignTextProps {
   data: string[];
@@ -90,6 +95,7 @@ const SignText = ({
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const securityEngineCtx = useRef<any>(null);
+  const isUnparsedAction = useRef(false);
   const logId = useRef('');
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const [engineResults, setEngineResults] = useState<Result[]>([]);
@@ -99,10 +105,11 @@ const SignText = ({
   ] = useState<ParsedTextActionData | null>(null);
   const { executeEngine } = useSecurityEngine();
   const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
+    tokenDetail: s.sign.tokenDetail,
   }));
   const [chainId, setChainId] = useState<number | undefined>(undefined);
   const isGnosisAccount = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
@@ -111,6 +118,18 @@ const SignText = ({
   const [currentGnosisAdmin, setCurrentGnosisAdmin] = useState<Account | null>(
     null
   );
+  const messageTokens = useMemo(() => tokenizeSignMessageText(signText), [
+    signText,
+  ]);
+  const chain = useMemo(
+    () => (chainId ? findChain({ id: chainId }) || undefined : undefined),
+    [chainId]
+  );
+  const addressData = useSignMessageAddressData({
+    tokens: messageTokens,
+    chain,
+    accountAddress: currentAccount.address,
+  });
 
   const securityLevel = useMemo(() => {
     const enableResults = engineResults.filter((result) => {
@@ -257,8 +276,16 @@ const SignText = ({
     resolveApproval({});
   };
 
+  const withOriginFallback = (ctx: ContextActionData): ContextActionData =>
+    addSignMessageOriginFallback(ctx, {
+      isUnparsedAction: isUnparsedAction.current,
+      isInternalOrigin: session.origin === INTERNAL_REQUEST_ORIGIN,
+      message: signText,
+      origin: session.origin,
+    });
+
   const executeSecurityEngine = async () => {
-    const ctx = await formatSecurityEngineContext({
+    const baseCtx = await formatSecurityEngineContext({
       type: 'text',
       actionData: parsedActionData || ({} as any),
       origin: session.origin,
@@ -270,6 +297,7 @@ const SignText = ({
         hasAddress: wallet.hasAddress,
       },
     });
+    const ctx = withOriginFallback(baseCtx);
     securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     setEngineResults(result);
@@ -375,6 +403,7 @@ const SignText = ({
     sender: string
   ) => {
     logId.current = textActionData.log_id;
+    isUnparsedAction.current = textActionData.action === null;
     dispatch.securityEngine.init();
     if (
       currentAccount?.type &&
@@ -390,7 +419,7 @@ const SignText = ({
       sender,
     });
     setParsedActionData(parsed);
-    const ctx = await formatSecurityEngineContext({
+    const baseCtx = await formatSecurityEngineContext({
       type: 'text',
       actionData: parsed,
       origin: params.session.origin,
@@ -402,6 +431,8 @@ const SignText = ({
         hasAddress: wallet.hasAddress,
       },
     });
+    const ctx = withOriginFallback(baseCtx);
+    securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     setEngineResults(result);
     setIsLoading(false);
@@ -592,6 +623,8 @@ const SignText = ({
             engineResults={engineResults}
             raw={hexData}
             message={signText}
+            messageTokens={messageTokens}
+            addressData={addressData}
             origin={params.session.origin}
             originLogo={params.session.icon}
           />
@@ -673,7 +706,7 @@ const SignText = ({
           tooltipContent={cantProcessReason}
           onCancel={handleCancel}
           onSubmit={() => handleAllow()}
-          disabledProcess={isWatch || hasUnProcessSecurityResult}
+          disabledProcess={isLoading || isWatch || hasUnProcessSecurityResult}
           engineResults={engineResults}
           onIgnoreAllRules={handleIgnoreAllRules}
         />
@@ -685,6 +718,15 @@ const SignText = ({
         onUndo={handleUndoIgnore}
         onRuleEnableStatusChange={handleRuleEnableStatusChange}
         onClose={handleRuleDrawerClose}
+      />
+      <TokenDetailPopup
+        token={tokenDetail.selectToken}
+        visible={tokenDetail.popupVisible}
+        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        canClickToken={false}
+        hideOperationButtons
+        variant="add"
+        account={currentAccount}
       />
     </>
   );
