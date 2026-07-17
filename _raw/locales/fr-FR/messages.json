@@ -2344,6 +2344,10 @@
         "priceDiff": "Diff de prix",
         "poolPrice": "Prix du POOL",
         "title": "Ajouter de la liquidité"
+      },
+      "signMessageTag": {
+        "contract": "Contrat :",
+        "eoa": "EOA :"
       }
     },
     "signTypedData": {

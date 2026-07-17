@@ -378,6 +378,10 @@
         "marketPrice": "Harga Pasar",
         "priceDiff": "Harga Selisih",
         "token1": "Tambahkan Token 2"
+      },
+      "signMessageTag": {
+        "contract": "Kontrak:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {

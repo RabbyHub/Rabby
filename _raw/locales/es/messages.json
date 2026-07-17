@@ -378,6 +378,10 @@
         "marketPrice": "Precio de Mercado",
         "title": "Agregar Liquidez",
         "poolPrice": "Precio de POOL"
+      },
+      "signMessageTag": {
+        "contract": "Contrato:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {

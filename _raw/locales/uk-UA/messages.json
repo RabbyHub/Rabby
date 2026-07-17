@@ -378,6 +378,10 @@
         "receiver": "Отримувач",
         "token1": "Додати Token 2",
         "marketPrice": "Ринкова ціна"
+      },
+      "signMessageTag": {
+        "contract": "Контракт:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {

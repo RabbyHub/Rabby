@@ -378,6 +378,10 @@
         "title": "Liquidität hinzufügen",
         "marketPrice": "Marktpreis",
         "token0": "Token 1 hinzufügen"
+      },
+      "signMessageTag": {
+        "contract": "Vertrag:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {

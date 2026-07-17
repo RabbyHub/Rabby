@@ -378,6 +378,10 @@
         "priceDiff": "Sự chênh lệch giá",
         "receiver": "Người nhận",
         "token0": "Thêm Token 1"
+      },
+      "signMessageTag": {
+        "contract": "Hợp đồng:",
+        "eoa": "EOA:"
       }
     },
     "signFooterBar": {
