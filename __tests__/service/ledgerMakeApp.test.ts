@@ -374,7 +374,7 @@ describe('LedgerBridgeKeyring makeApp', () => {
       '@ledgerhq/device-signer-kit-ethereum'
     );
     expect(ContextModuleBuilder).toHaveBeenCalledWith({
-      networkTimeoutMs: 2000,
+      networkTimeoutMs: 5000,
     });
     expect(SignerEthBuilder.mock.calls[0][0]).not.toHaveProperty('originToken');
     expect(mockRemoveDefaultLoaders).not.toHaveBeenCalled();
