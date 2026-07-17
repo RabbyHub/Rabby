@@ -27,5 +27,4 @@ export { default as OfflineChainsService } from './offlineChain';
 export { default as perpsService } from './perps';
 export { default as miscService } from './misc';
 export { default as lendingService } from './lending';
-export * from './innerDappFrame';
 export { default as feedbackService } from './feedback';

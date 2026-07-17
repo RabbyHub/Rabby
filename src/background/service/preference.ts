@@ -650,8 +650,7 @@ class PreferenceService {
           'accountsChanged',
           [account.address.toLowerCase()],
           undefined,
-          undefined,
-          false
+          undefined
         );
       }
       syncStateToUI(BROADCAST_TO_UI_EVENTS.accountsChanged, account);
