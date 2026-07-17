@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import clsx from 'clsx';
 import { Skeleton } from 'antd';
 import { useAsync } from 'react-use';
-import { useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { useSceneAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { getHealthStatusColor } from '@/ui/views/DesktopLending/utils';
@@ -18,10 +17,8 @@ export const LendingSubContent = () => {
   const [currentAccount] = useSceneAccount({
     scene: 'lending',
   });
-  const lendingId = useRabbySelector((s) => s.innerDappFrame.lending);
 
   const { value: hfRaw, loading } = useAsync(async () => {
-    if (lendingId !== 'aave') return '';
     const address = currentAccount?.address;
     if (!address) return '';
     const marketKey =
@@ -39,14 +36,12 @@ export const LendingSubContent = () => {
           }
         : undefined
     );
-  }, [lendingId, currentAccount?.address]);
+  }, [currentAccount?.address]);
 
   const hfNumber = React.useMemo(() => {
     const num = Number(hfRaw);
     return isNumber(num) ? num : NaN;
   }, [hfRaw]);
-
-  if (lendingId !== 'aave') return null;
 
   const isDragOverlay = useContext(DragOverlayContext);
 

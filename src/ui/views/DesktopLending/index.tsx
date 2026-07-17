@@ -14,7 +14,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { SignatureRecordModal } from '../DesktopProfile/components/SignatureRecordModal';
 import { useLendingService } from './hooks/useLendingService';
 import { CustomMarket } from './config/market';
-import { DesktopDappSelector } from '@/ui/component/DesktopDappSelector';
 import { useSelectedMarket } from './hooks/market';
 import { SwitchThemeBtn } from '../DesktopProfile/components/SwitchThemeBtn';
 import { ReactComponent as RcIconRabbyCC } from '@/ui/assets/perps/IconRabbyCC.svg';
