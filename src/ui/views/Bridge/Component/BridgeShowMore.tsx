@@ -22,6 +22,7 @@ import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
+import { ReactComponent as RcIconFree } from '@/ui/assets/swap/free.svg';
 import styled from 'styled-components';
 import { findChainByServerID } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
@@ -119,6 +120,7 @@ export const BridgeShowMore = ({
   autoSuggestSlippage,
   insufficient = false,
   signatureInstance,
+  isRabbyFeeFree = false,
 }: {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
@@ -156,6 +158,7 @@ export const BridgeShowMore = ({
   autoSuggestSlippage?: string;
   supportDirectSign?: boolean;
   signatureInstance: SignatureManager;
+  isRabbyFeeFree?: boolean;
 }) => {
   const { t } = useTranslation();
   const sourceAlwaysShow = type === 'bridge';
@@ -328,9 +331,45 @@ export const BridgeShowMore = ({
     );
   }, [data, quoteLoading, toToken, fromToken]);
 
+  const rabbyFeeContentRender = () => (
+    <ListItem
+      name={t('page.swap.rabbyFee.title')}
+      className={isRabbyFeeFree ? 'h-18' : 'mt-12 h-18'}
+    >
+      <div
+        className={clsx(
+          'text-12 font-medium',
+          isRabbyFeeFree
+            ? 'flex shrink-0 items-center gap-4'
+            : isWrapToken
+            ? 'text-r-neutral-foot'
+            : 'text-r-blue-default cursor-pointer'
+        )}
+        onClick={isRabbyFeeFree ? undefined : openFeePopup}
+      >
+        {isRabbyFeeFree ? (
+          <>
+            <span className="font-normal text-r-neutral-foot line-through">
+              {RABBY_FEE}
+            </span>
+            <RcIconFree
+              aria-hidden
+              className="h-16 w-[52px] shrink-0"
+              viewBox="0 0 52 16"
+            />
+          </>
+        ) : isWrapToken && type === 'swap' ? (
+          t('page.swap.no-fees-for-wrap')
+        ) : (
+          RABBY_FEE
+        )}
+      </div>
+    </ListItem>
+  );
+
   return (
     <div className="mx-16">
-      <div className="space-y-16">
+      <div className={isRabbyFeeFree ? 'space-y-12' : 'space-y-16'}>
         {sourceAlwaysShow && sourceContentRender()}
 
         {lostValueContentRender()}
@@ -345,6 +384,8 @@ export const BridgeShowMore = ({
             signatureInstance={signatureInstance}
           />
         ) : null}
+
+        {isRabbyFeeFree && rabbyFeeContentRender()}
 
         {showSlippageError && (
           <BridgeSlippage
@@ -382,21 +423,7 @@ export const BridgeShowMore = ({
           />
         )}
 
-        <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
-          <div
-            className={clsx(
-              'text-12 font-medium',
-              isWrapToken
-                ? 'text-r-neutral-foot'
-                : 'text-r-blue-default cursor-pointer'
-            )}
-            onClick={openFeePopup}
-          >
-            {isWrapToken && type === 'swap'
-              ? t('page.swap.no-fees-for-wrap')
-              : RABBY_FEE}
-          </div>
-        </ListItem>
+        {!isRabbyFeeFree && rabbyFeeContentRender()}
 
         {showMEVGuardedSwitch && type === 'swap' ? (
           <ListItem
