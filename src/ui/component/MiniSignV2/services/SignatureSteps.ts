@@ -424,6 +424,7 @@ export class SignatureSteps {
               chainId: chain.serverId,
               sender: account.address,
               walletProvider: {
+                ethRpc: wallet.requestETHRpc,
                 findChain,
                 ALIAS_ADDRESS,
                 hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
@@ -482,6 +483,7 @@ export class SignatureSteps {
           chainId: chain.serverId,
           sender: account.address,
           walletProvider: {
+            ethRpc: wallet.requestETHRpc,
             hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
             hasAddress: wallet.hasAddress,
             getWhitelist: wallet.getWhitelist,

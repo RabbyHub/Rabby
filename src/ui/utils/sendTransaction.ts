@@ -517,6 +517,7 @@ export const sendTransaction = async ({
     chainId: chain.serverId,
     sender: address,
     walletProvider: {
+      ethRpc: wallet.requestETHRpc,
       hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
       hasAddress: wallet.hasAddress,
       getWhitelist: wallet.getWhitelist,
@@ -896,6 +897,7 @@ export const sendTransactionByMiniSignV2 = async ({
       chainId: chain.serverId,
       sender: currentAccount.address,
       walletProvider: {
+        ethRpc: wallet.requestETHRpc,
         hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
         hasAddress: wallet.hasAddress,
         getWhitelist: wallet.getWhitelist,

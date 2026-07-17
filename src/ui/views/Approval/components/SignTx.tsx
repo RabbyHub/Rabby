@@ -1308,6 +1308,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             chainId: chain.serverId,
             sender: address,
             walletProvider: {
+              ethRpc: wallet.requestETHRpc,
               findChain,
               ALIAS_ADDRESS,
               hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
@@ -1376,6 +1377,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         cex: cexInfo,
         sender: address,
         walletProvider: {
+          ethRpc: wallet.requestETHRpc,
           findChain,
           ALIAS_ADDRESS,
           hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
