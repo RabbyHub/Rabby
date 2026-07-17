@@ -8,6 +8,14 @@
       "disallow": []
     }
   },
+  "node_modules/@rabby-wallet/rabby-swap/dist/tokenPools.js": {
+    "global": {
+      "allow": {
+        "navigator": "r"
+      },
+      "disallow": []
+    }
+  },
   "node_modules/react-router/esm/react-router.js": {
     "global": {
       "allow": {
