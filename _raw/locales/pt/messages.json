@@ -1460,6 +1460,7 @@
         "biometricUnlockSetupTitle": "Ativar Desbloqueio Biométrico",
         "biometricUnlockDisableFailed": "Falha ao desativar o desbloqueio biométrico",
         "biometricUnlockSetupDesc": "Confirme sua senha para ativar o desbloqueio biométrico.",
+        "clearPendingCheckbox": "Também redefinir meus dados locais de nonce e o registo de assinaturas",
         "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
         "biometricUnlockEnableFailed": "Falha ao habilitar o desbloqueio biométrico",
         "biometricUnlockDisabled": "Desbloqueio biométrico desativado"
@@ -2782,6 +2783,8 @@
         "title": "Importar Chave Privada",
         "pasteCleared": "Colado e área de transferência limpa",
         "createWallet": "Criar uma carteira",
+        "placeholder": "Introduza a chave privada",
+        "required": "Introduza a chave privada",
         "noWallet": "Ainda não tem a frase-semente ou a chave privada?"
       },
       "PasswordCard": {

@@ -3,6 +3,7 @@ import {
   IPFS_DEFAULT_GATEWAY_URL,
   TOKEN_STANDARD,
 } from '@/constant/custom-testnet';
+import { CUSTOM_RPC_ENABLED } from '@/constant';
 import { customTestnetTokenToTokenItem } from '@/ui/utils/token';
 import { findChain, isSameTesnetToken, updateChainStore } from '@/utils/chain';
 import { ga4 } from '@/utils/ga4';
@@ -147,6 +148,7 @@ class CustomTestnetService {
     const rpcStorage: RPCServiceStore = await storage.get('rpc');
     Object.values(this.store.customTestnet).forEach((chain) => {
       const config =
+        CUSTOM_RPC_ENABLED &&
         rpcStorage.customRPC[chain.enum] &&
         rpcStorage.customRPC[chain.enum]?.enable
           ? { ...chain, rpcUrl: rpcStorage.customRPC[chain.enum].url }

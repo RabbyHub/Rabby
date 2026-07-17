@@ -1462,6 +1462,7 @@
         "biometricUnlockDisabled": "생체 인식 잠금 해제 사용 안 함",
         "biometricUnlockEnableFailed": "생체 인식 잠금 해제를 활성화하는 데 실패했습니다.",
         "biometricUnlockSetupDesc": "바이오메트릭 잠금을 활성화하려면 비밀번호를 확인하세요.",
+        "clearPendingCheckbox": "로컬 nonce 데이터와 서명 기록도 재설정",
         "biometricUnlockDisableFailed": "생체 인식 잠금 해제를 비활성화하는 데 실패했습니다."
       },
       "tokenDetail": {
@@ -2782,6 +2783,8 @@
         "title": "개인 키 가져오기",
         "pasteCleared": "붙여넣기 및 클립보드 지우기",
         "createWallet": "지갑 만들기",
+        "placeholder": "개인 키 입력",
+        "required": "개인 키를 입력해 주세요",
         "noWallet": "아직 시드 문구나 개인 키가 없으신가요?"
       },
       "PasswordCard": {

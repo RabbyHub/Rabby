@@ -1369,7 +1369,8 @@
         "biometricUnlockEnabled": "Biyometrik kilit açma etkinleştirildi.",
         "biometricUnlockDisableFailed": "Biyometrik kilidi devre dışı bırakmayı başaramadı",
         "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açma desteği sunmamaktadır.",
-        "biometricUnlockSetupDesc": "Parolanızı biyometrik kilidi etkinleştirmek için onaylayın."
+        "biometricUnlockSetupDesc": "Parolanızı biyometrik kilidi etkinleştirmek için onaylayın.",
+        "clearPendingCheckbox": "Yerel nonce verilerimi ve imza kayıtlarını da sıfırla"
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
@@ -2788,6 +2789,8 @@
         "pasteCleared": "Yapıştırıldı ve pano temizlendi",
         "title": "Özel Anahtarı İçe Aktar",
         "createWallet": "Cüzdan oluşturun",
+        "placeholder": "Özel anahtarı girin",
+        "required": "Lütfen özel anahtarı girin",
         "noWallet": "Henüz bir seed phrase veya özel anahtarınız yok mu?"
       },
       "PasswordCard": {

@@ -1369,7 +1369,8 @@
         "biometricUnlockUnsupported": "Este dispositivo no admite desbloqueo biométrico.",
         "biometricUnlockSetupTitle": "Habilitar Desbloqueo Biométrico",
         "biometricUnlockEnableFailed": "No se pudo habilitar el desbloqueo biométrico.",
-        "biometricUnlockSetupDesc": "Confirma tu contraseña para activar el desbloqueo biométrico."
+        "biometricUnlockSetupDesc": "Confirma tu contraseña para activar el desbloqueo biométrico.",
+        "clearPendingCheckbox": "Restablecer también mis datos de nonce locales y el registro de firmas"
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
@@ -2785,6 +2786,8 @@
         "title": "Importar Private Key",
         "pasteCleared": "Pegado y portapapeles borrado",
         "createWallet": "Crea una billetera",
+        "placeholder": "Introduce la clave privada",
+        "required": "Introduce la clave privada",
         "noWallet": "¿No tienes aún la frase semilla o la clave privada?"
       },
       "PasswordCard": {
