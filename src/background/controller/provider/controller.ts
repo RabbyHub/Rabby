@@ -560,8 +560,7 @@ class ProviderController extends BaseController {
       'accountsChanged',
       account,
       origin,
-      undefined,
-      req.isFromDesktopDapp
+      undefined
     );
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {

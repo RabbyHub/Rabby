@@ -68,8 +68,6 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
-import { INNER_DAPP_IDS, INNER_DAPP_LIST } from '@/constant/dappIframe';
-import { getOriginFromUrl } from '@/utils';
 import BigNumber from 'bignumber.js';
 
 export const DragOverlayContext = createContext(false);
@@ -377,7 +375,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const IconPerps = RcIconPerpsCC;
 
-  const perpsId = useRabbySelector((s) => s.innerDappFrame.perps);
   const hiddenBalance = useRabbySelector((s) => s.preference.hiddenBalance);
 
   const {
@@ -387,74 +384,59 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     positionPnl,
   } = usePerpsHomePnl();
 
-  const lighterAccount = useRabbySelector((s) => {
-    const url = INNER_DAPP_LIST.PERPS.find(
-      (e) => e.id === INNER_DAPP_IDS.LIGHTER
-    )?.url;
-    if (url?.startsWith('https://')) {
-      const LighterOrigin = getOriginFromUrl(url || '');
-      return s.innerDappFrame.innerDappAccounts[LighterOrigin];
-    }
-    return undefined;
-  });
-
   const perpsSubContentNode = useMemo<React.ReactNode>(() => {
-    if (perpsId === 'hyperliquid') {
-      if (hiddenBalance) {
-        return (
-          <div
-            className={clsx(
-              'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-            )}
-          >
-            *****
-          </div>
-        );
-      }
-      if (perpsFetching) {
-        return (
-          <div className="absolute bottom-[6px] text-[11px] font-medium">
-            <Skeleton.Button
-              active={true}
-              className="h-[10px] block rounded-[2px]"
-              style={{ width: 42 }}
-            />
-          </div>
-        );
-      }
-      if (perpsPositionInfo?.assetPositions?.length) {
-        return (
-          <div
-            className={clsx(
-              'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
-              positionPnl && positionPnl > 0
-                ? 'text-r-green-default'
-                : 'text-r-red-default'
-            )}
-          >
-            {positionPnl && positionPnl >= 0 ? '+' : '-'}$
-            {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
-          </div>
-        );
-      }
+    if (hiddenBalance) {
       return (
         <div
           className={clsx(
             'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
           )}
         >
-          {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
+          *****
         </div>
       );
     }
+    if (perpsFetching) {
+      return (
+        <div className="absolute bottom-[6px] text-[11px] font-medium">
+          <Skeleton.Button
+            active={true}
+            className="h-[10px] block rounded-[2px]"
+            style={{ width: 42 }}
+          />
+        </div>
+      );
+    }
+    if (perpsPositionInfo?.assetPositions?.length) {
+      return (
+        <div
+          className={clsx(
+            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
+            positionPnl && positionPnl > 0
+              ? 'text-r-green-default'
+              : 'text-r-red-default'
+          )}
+        >
+          {positionPnl && positionPnl >= 0 ? '+' : '-'}$
+          {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
+        </div>
+      );
+    }
+    return (
+      <div
+        className={clsx(
+          'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
+        )}
+      >
+        {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
+      </div>
+    );
   }, [
-    perpsId,
     hiddenBalance,
     perpsFetching,
     availableBalance,
     perpsPositionInfo,
     positionPnl,
-    lighterAccount,
   ]);
 
   const panelItems = {

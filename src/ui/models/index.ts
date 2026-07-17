@@ -28,7 +28,6 @@ import { directSubmitTx } from './directSubmitTx';
 import { gift } from './gift';
 import { perps } from './perps';
 import { desktopProfile } from './desktopProfile';
-import { innerDappFrame } from './innerDappFrame';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -59,7 +58,6 @@ export interface RootModel extends Models<RootModel> {
   gift: typeof gift;
   perps: typeof perps;
   desktopProfile: typeof desktopProfile;
-  innerDappFrame: typeof innerDappFrame;
 }
 
 export const models: RootModel = {
@@ -91,7 +89,6 @@ export const models: RootModel = {
   gift,
   perps,
   desktopProfile,
-  innerDappFrame,
 };
 
 export type RabbyDispatch = RematchDispatch<RootModel>;

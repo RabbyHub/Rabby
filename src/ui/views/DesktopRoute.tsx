@@ -33,7 +33,6 @@ const Main = () => {
 
   const hasMountedPerpsRef = useRef(false);
   const hasMountedProfileRef = useRef(false);
-  const hasMountedLendingRef = useRef(false);
 
   if (isPerpsRoute) {
     hasMountedPerpsRef.current = true;
