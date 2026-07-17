@@ -52,11 +52,6 @@ const Trigger = styled.button<{
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 
-  &:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 1px;
-  }
-
   &:hover .sign-message-address-tag__text,
   &:focus-visible .sign-message-address-tag__text {
     display: block;
@@ -67,7 +62,6 @@ const Trigger = styled.button<{
     height: 16px;
     flex: 0 0 16px;
     margin-right: 2px;
-    border-radius: 50%;
     object-fit: cover;
   }
 
@@ -128,6 +122,7 @@ const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
       aria-label={label}
       title={label}
       style={{ visibility: 'hidden' }}
+      onMouseDown={(event) => event.preventDefault()}
       onClick={
         opensTokenDetail && token
           ? () => dispatch.sign.openTokenDetailPopup(token)
@@ -135,7 +130,12 @@ const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
       }
     >
       {icon ? (
-        <img className="sign-message-address-tag__icon" src={icon} alt="" />
+        <img
+          className="sign-message-address-tag__icon"
+          src={icon}
+          alt=""
+          style={{ borderRadius: danger || hasAlias ? 0 : '50%' }}
+        />
       ) : null}
       <span className="sign-message-address-tag__text">{label}</span>
       <IconArrowRight className="sign-message-address-tag__arrow" />
