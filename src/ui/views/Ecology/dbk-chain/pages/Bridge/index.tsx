@@ -6,7 +6,7 @@ import { NameAndAddress } from '@/ui/component';
 import { formatAmount, formatUsdValue } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
-import { Input } from 'antd';
+import { Input, InputRef } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import styled from 'styled-components';
@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { sortBy } from 'lodash';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
+import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
 
 const Warper = styled.div`
   input::-webkit-outer-spin-button,
@@ -43,6 +44,7 @@ const Warper = styled.div`
 `;
 
 export const DbkChainBridge = () => {
+  const inputRef = React.useRef<InputRef>(null);
   const [isShowActivityPopup, setIsShowActivityPopup] = React.useState(false);
   const [
     isShowWithdrawConfirmPopup,
@@ -228,20 +230,34 @@ export const DbkChainBridge = () => {
             )}
           >
             <div className="flex items-center justify-between mb-[4px] gap-[6px]">
-              <Input
-                type="number"
-                value={payAmount}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  if (!/^\d*(\.\d*)?$/.test(v)) {
-                    return;
-                  }
-                  setPayAmount(v);
-                }}
+              <AutoSizeAmountInput
+                inputRef={inputRef}
+                inputValue={payAmount}
+                maxFontSize={28}
+                minFontSize={18}
+                fontSizeStep={2}
+                fontWeight={700}
                 className="min-w-0 flex-1"
-                autoFocus
-                placeholder="0"
-              ></Input>
+              >
+                {(fontSize) => (
+                  <Input
+                    ref={inputRef}
+                    type="number"
+                    value={payAmount}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      if (!/^\d*(\.\d*)?$/.test(v)) {
+                        return;
+                      }
+                      setPayAmount(v);
+                    }}
+                    className="min-w-0 w-full"
+                    style={{ fontSize }}
+                    autoFocus
+                    placeholder="0"
+                  />
+                )}
+              </AutoSizeAmountInput>
               {payToken ? (
                 <div className="flex items-center gap-[8px]">
                   <img

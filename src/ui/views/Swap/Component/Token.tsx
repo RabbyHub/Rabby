@@ -16,6 +16,7 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import { QuoteProvider } from '../hooks';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
+import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
 
 const StyledInput = styled(Input)`
   &,
@@ -28,6 +29,7 @@ const StyledInput = styled(Input)`
     background: transparent !important;
     font-size: 24px;
     text-align: right;
+    padding-left: 0;
     padding-right: 0;
   }
   &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
@@ -104,7 +106,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   const { t } = useTranslation();
 
-  const inputRef = useRef<InputRef>();
+  const inputRef = useRef<InputRef>(null);
 
   const isFrom = type === 'from';
 
@@ -273,20 +275,33 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             }}
           />
         ) : (
-          <StyledInput
-            spellCheck={false}
-            placeholder="0"
-            value={value}
-            onChange={onInputChange}
-            ref={inputRef as any}
-            readOnly={!isFrom}
-            className={clsx(
-              !isFrom && 'cursor-pointer',
-              isFrom && inSufficient && 'text-r-red-default',
-              valueLoading && 'opacity-50',
-              disabled && 'pointer-events-none'
+          <AutoSizeAmountInput
+            inputRef={inputRef}
+            inputValue={value}
+            maxFontSize={24}
+            minFontSize={16}
+            fontSizeStep={2}
+            fontWeight={500}
+            className="min-w-0 flex-1"
+          >
+            {(fontSize) => (
+              <StyledInput
+                spellCheck={false}
+                placeholder="0"
+                value={value}
+                onChange={onInputChange}
+                ref={inputRef}
+                readOnly={!isFrom}
+                style={{ fontSize }}
+                className={clsx(
+                  !isFrom && 'cursor-pointer',
+                  isFrom && inSufficient && 'text-r-red-default',
+                  valueLoading && 'opacity-50',
+                  disabled && 'pointer-events-none'
+                )}
+              />
             )}
-          />
+          </AutoSizeAmountInput>
         )}
       </div>
 
