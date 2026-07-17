@@ -55,6 +55,23 @@ export function getTimeSpan(times: number) {
   };
 }
 
+export const formatTimeSpanToMinutes = ({
+  d,
+  h,
+  m,
+}: {
+  d: number;
+  h: number;
+  m: number;
+}) =>
+  [
+    d > 0 ? `${d} day${d > 1 ? 's' : ''}` : '',
+    h > 0 ? `${h} hour${h > 1 ? 's' : ''}` : '',
+    m > 0 && d === 0 ? `${m} minute${m > 1 ? 's' : ''}` : '',
+  ]
+    .filter(Boolean)
+    .join(' ') || '1 minute';
+
 export const formatTimeReadable = (timeElapse: number) => {
   if (timeElapse < 0) return 'just now';
 

@@ -6,7 +6,7 @@ import { Chain, TokenItem } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
 import { isSameAddress, useHover, useWallet } from 'ui/utils';
-import { getTimeSpan } from 'ui/utils/time';
+import { formatTimeSpanToMinutes, getTimeSpan } from 'ui/utils/time';
 import { useRabbyDispatch } from 'ui/store';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
 import LogoWithText from './LogoWithText';
@@ -91,9 +91,11 @@ const TimeSpan = ({
 const TimeSpanFuture = ({
   from = Math.floor(Date.now() / 1000),
   to,
+  showMinutes = false,
 }: {
   from?: number;
   to: number;
+  showMinutes?: boolean;
 }) => {
   const timeSpan = useMemo(() => {
     if (!to) return '-';
@@ -107,6 +109,9 @@ const TimeSpanFuture = ({
     if (d >= 365000) {
       return 'Forever';
     }
+    if (showMinutes) {
+      return formatTimeSpanToMinutes({ d, h, m });
+    }
     if (d > 0) {
       return `${d} day${d > 1 ? 's' : ''}`;
     }
@@ -117,7 +122,7 @@ const TimeSpanFuture = ({
       return `${m} minutes`;
     }
     return '1 minute';
-  }, [from, to]);
+  }, [from, showMinutes, to]);
   return <>{timeSpan}</>;
 };
 
