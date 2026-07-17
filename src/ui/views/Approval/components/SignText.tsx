@@ -148,7 +148,7 @@ const SignText = ({
   }, [engineResults, currentTx]);
 
   const { value: textActionData, loading, error } = useAsync(async () => {
-    if (!isViewGnosisSafe) {
+    if (isGnosisAccount && !isViewGnosisSafe) {
       wallet.clearGnosisMessage();
     }
 

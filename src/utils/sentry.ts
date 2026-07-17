@@ -12,7 +12,9 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'Network Error',
   'Request limit exceeded.',
   'Failed to fetch',
+  /^(Error(?:\[[^\]]+\])?: )?Request failed with status code [1-5]\d{2}$/,
   /(^|\n)Request timeout($|\n)/i,
+  /The request took too long to respond\.[\s\S]*Details: The request timed out\./,
   'TransportOpenUserCancelled',
   'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
   'Non-Error promise rejection captured with keys: code, message',
@@ -37,6 +39,7 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   // Browser window/popup state can disappear while the extension is being opened.
   /Could not find an active browser window/,
   /No (last-focused|current) window/,
+  /No window with id: \d+\.?/,
   /Failed to open popup/,
 
   // Chrome storage quota/disk errors are environmental and not actionable in Rabby.

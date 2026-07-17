@@ -5,6 +5,7 @@ import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 import {
   RABBY_SENTRY_IGNORE_ERRORS,
   sanitizeSentryBreadcrumbUrl,
+  shouldIgnoreSentryError,
 } from '@/utils/sentry';
 
 const SENTRY_DSN =
@@ -47,6 +48,10 @@ export const getSentryConfig = (): BrowserOptions => ({
     }
 
     const originalException = hint?.originalException;
+
+    if (shouldIgnoreSentryError(originalException)) {
+      return null;
+    }
 
     // 判断是否是 plain object rejection（不是真正的 Error 实例）
     if (
