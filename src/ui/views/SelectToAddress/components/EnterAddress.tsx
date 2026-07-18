@@ -155,7 +155,7 @@ export const EnterAddress = ({
       setTags([`${ensResult?.protocol || 'ENS'}: ${ensResult?.name || ''}`]);
       setEnsResult(null);
     },
-    [ensResult?.name]
+    [ensResult?.name, ensResult?.protocol]
   );
 
   const handleKeyDown = useMemo(() => {
