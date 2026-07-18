@@ -19,7 +19,7 @@ import IconBack from 'ui/assets/icon-back.svg';
 import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
-import { resolveEnsAddressByName } from '@/ui/utils/ens';
+import { resolveAddressByName } from '@/ui/utils/ens';
 import WatchLogo from 'ui/assets/watch-only-hero.svg';
 import { useCreateAddressActions } from './AddAddress/useCreateAddress';
 import { RcWatchAddressScan } from '../assets/add-address';
@@ -40,6 +40,7 @@ const ImportWatchAddress: React.FC<{
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
     name: string;
+    protocol: 'ENS' | 'XDCID';
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
   const isWide = useMedia('(min-width: 401px)');
@@ -86,7 +87,7 @@ const ImportWatchAddress: React.FC<{
       address: result,
     });
     setIsValidAddr(true);
-    setTags([`ENS: ${ensResult!.name}`]);
+    setTags([`${ensResult!.protocol}: ${ensResult!.name}`]);
     setEnsResult(null);
   };
   const handleKeyDown = useMemo(() => {
@@ -158,7 +159,7 @@ const ImportWatchAddress: React.FC<{
     () =>
       debounce(async (address: string) => {
         try {
-          const result = await resolveEnsAddressByName(address, wallet);
+          const result = await resolveAddressByName(address, wallet);
           setDisableKeydown(true);
           if (result && result.addr && result.addr.startsWith('0x')) {
             setEnsResult(result);
@@ -327,7 +328,7 @@ function InputWithScanIcon({
     <div className="relative">
       <Input.TextArea
         placeholder={t('page.newAddress.addContacts.addressEns')}
-        maxLength={44}
+        maxLength={67}
         size="large"
         className="border-bright-on-active leading-normal min-h-[100px]"
         autoFocus
