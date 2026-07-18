@@ -18,7 +18,7 @@ import { isSameAddress, useAlias, useCexId, useWallet } from 'ui/utils';
 
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import { resolveEnsAddressByName } from '@/ui/utils/ens';
+import { resolveAddressByName } from '@/ui/utils/ens';
 import { AccountList } from './AccountList';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
@@ -97,6 +97,7 @@ export const EnterAddress = ({
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
     name: string;
+    protocol: 'ENS' | 'XDCID';
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
   const isValidAddr = useMemo(() => {
@@ -151,7 +152,7 @@ export const EnterAddress = ({
     (result: string) => {
       setInputAddress(result);
       // setIsValidAddr(true);
-      setTags([`ENS: ${ensResult?.name || ''}`]);
+      setTags([`${ensResult?.protocol || 'ENS'}: ${ensResult?.name || ''}`]);
       setEnsResult(null);
     },
     [ensResult?.name]
@@ -182,7 +183,7 @@ export const EnterAddress = ({
         setTags([]);
         if (!isValidAddress(address)) {
           try {
-            const result = await resolveEnsAddressByName(address, wallet);
+            const result = await resolveAddressByName(address, wallet);
             if (result && result.addr) {
               setEnsResult(result);
               // setIsValidAddr(true);
@@ -232,7 +233,7 @@ export const EnterAddress = ({
             $hasError={!isValidAddr && !filteredAccounts.length}
           >
             <Input.TextArea
-              maxLength={44}
+              maxLength={67}
               placeholder={t('page.selectToAddress.enterAddressOrENS')}
               allowClear={false}
               autoFocus
