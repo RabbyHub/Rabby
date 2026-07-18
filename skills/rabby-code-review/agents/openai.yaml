@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rabby Code Review"
+  short_description: "Review Rabby extension pull requests safely"
+  default_prompt: "Use $rabby-code-review to review a Rabby extension pull request."
