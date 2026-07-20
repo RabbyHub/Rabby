@@ -1,4 +1,84 @@
 {
+  "node_modules/@ledgerhq/device-signer-kit-ethereum/node_modules/ethers/lib.esm/crypto/crypto-browser.js": {
+    "global": {
+      "allow": {
+        "crypto": "r",
+        "msCrypto": "r"
+      }
+    }
+  },
+  "node_modules/@rabby-wallet/wc-socket-transport/dist/esm/index.js": {
+    "global": {
+      "allow": {
+        "WebSocket": "r"
+      }
+    }
+  },
+  "node_modules/ethers/lib.esm/index.js": {
+    "global": {
+      "allow": {
+        "_ethers": "rw"
+      }
+    }
+  },
+  "node_modules/pbkdf2/lib/async.js": {
+    "global": {
+      "allow": {
+        "crypto": "r"
+      }
+    }
+  },
+  "node_modules/rc-align/es/Align.js": {
+    "global": {
+      "allow": {
+        "addEventListener": "r",
+        "removeEventListener": "r"
+      }
+    }
+  },
+  "node_modules/rc-motion/es/util/motion.js": {
+    "global": {
+      "allow": {
+        "AnimationEvent": "r",
+        "TransitionEvent": "r"
+      }
+    }
+  },
+  "node_modules/@dnd-kit/core/dist/core.esm.js": {
+    "global": {
+      "allow": {
+        "scrollX": "r",
+        "scrollY": "r"
+      }
+    }
+  },
+  "node_modules/@dnd-kit/core/node_modules/@dnd-kit/utilities/dist/utilities.esm.js": {
+    "global": {
+      "allow": {
+        "Document": "r",
+        "HTMLElement": "r",
+        "SVGElement": "r"
+      }
+    }
+  },
+  "node_modules/@dnd-kit/sortable/node_modules/@dnd-kit/utilities/dist/utilities.esm.js": {
+    "global": {
+      "allow": {
+        "Document": "r",
+        "HTMLElement": "r",
+        "SVGElement": "r"
+      }
+    }
+  },
+  "node_modules/@dnd-kit/utilities/dist/utilities.esm.js": {
+    "global": {
+      "allow": {
+        "Document": "r",
+        "HTMLElement": "r",
+        "SVGElement": "r"
+      }
+    }
+  },
   "node_modules/react-dom/cjs/react-dom.development.js": {
     "global": {
       "allow": {
@@ -48,14 +128,6 @@
         "JS_SHA3_NO_COMMON_JS": "r",
         "JS_SHA3_NO_ARRAY_BUFFER": "r",
         "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@rabby-wallet/rabby-swap/dist/dexs/uniswap.js": {
-    "global": {
-      "allow": {
-        "navigator": "r"
       },
       "disallow": []
     }
@@ -129,42 +201,10 @@
       "disallow": []
     }
   },
-  "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js": {
-    "global": {
-      "allow": {
-        "localStorage": "r"
-      },
-      "disallow": []
-    }
-  },
   "node_modules/randomfill/browser.js": {
     "global": {
       "allow": {
         "crypto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/through2/node_modules/readable-stream/lib/_stream_writable.js": {
-    "global": {
-      "allow": {
-        "localStorage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@ledgerhq/evm-tools/node_modules/axios/lib/utils.js": {
-    "global": {
-      "allow": {
-        "postMessage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@ledgerhq/domain-service/node_modules/axios/lib/utils.js": {
-    "global": {
-      "allow": {
-        "postMessage": "r"
       },
       "disallow": []
     }
@@ -185,29 +225,7 @@
       "disallow": []
     }
   },
-  "node_modules/lodash.isequal/index.js": {
-    "global": {
-      "allow": {
-        "process": "r",
-        "__core-js_shared__": "r",
-        "Buffer": "r"
-      },
-      "disallow": []
-    }
-  },
   "node_modules/gridplus-sdk/node_modules/js-sha3/src/sha3.js": {
-    "global": {
-      "allow": {
-        "JS_SHA3_NO_COMMON_JS": "r",
-        "JS_SHA3_NO_ARRAY_BUFFER": "r",
-        "JS_SHA3_NO_NODE_JS": "r",
-        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
-        "JS_SHA3_NO_WINDOW": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/gridplus-sdk/node_modules/@ethersproject/keccak256/node_modules/js-sha3/src/sha3.js": {
     "global": {
       "allow": {
         "JS_SHA3_NO_COMMON_JS": "r",
@@ -255,22 +273,6 @@
     "global": {
       "allow": {
         "localStorage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@ethersproject/wallet/node_modules/@ethersproject/random/lib.esm/random.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/ethers/node_modules/@ethersproject/random/lib.esm/random.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
       },
       "disallow": []
     }
@@ -325,27 +327,11 @@
       "disallow": []
     }
   },
-  "node_modules/@onekeyfe/hd-transport/node_modules/protobufjs/src/util/minimal.js": {
-    "global": {
-      "allow": {
-        "dcodeIO": "r",
-        "Long": "r"
-      },
-      "disallow": []
-    }
-  },
   "node_modules/protobufjs/src/util/minimal.js": {
     "global": {
       "allow": {
         "dcodeIO": "r",
-        "Long": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@onekeyfe/hd-transport/node_modules/protobufjs/src/util/longbits.js": {
-    "global": {
-      "allow": {
+        "Long": "r",
         "process": "r"
       },
       "disallow": []
@@ -450,15 +436,6 @@
       "allow": {
         "document": "r",
         "navigator": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/bitbox-api/bitbox_api_bg.js": {
-    "global": {
-      "allow": {
-        "localStorage": "r",
-        "crypto": "r"
       },
       "disallow": []
     }
@@ -589,7 +566,8 @@
       "allow": {
         "atob": "r",
         "Buffer": "r",
-        "addEventListener": "r"
+        "addEventListener": "r",
+        "removeEventListener": "r"
       },
       "disallow": []
     }
@@ -703,5 +681,8 @@
       },
       "disallow": []
     }
+  },
+  "node_modules/@bitboxswiss/bitbox-api/dist/internal/transport-bridge.js": {
+    "enable": false
   }
 }
