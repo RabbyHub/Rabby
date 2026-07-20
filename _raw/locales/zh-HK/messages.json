@@ -3,30 +3,30 @@
     "copied": "已複製",
     "confirm": "確認",
     "next": "下一步",
-    "back": "後退",
+    "back": "返回",
     "ok": "好的",
-    "refresh": "刷新",
+    "refresh": "重新整理",
     "Cancel": "取消",
     "Clear": "清除",
     "Confirm": "確認",
-    "Save": "保存",
+    "Save": "儲存",
     "addButton": "新增",
     "assets": "資產",
-    "backButton": "後退",
+    "backButton": "返回",
     "cancelButton": "取消",
     "closeButton": "關閉",
     "confirmButton": "確認",
     "copyAddress": "複製地址",
     "editButton": "編輯",
     "failed": "失敗",
-    "gas": "礦工費",
+    "gas": "Gas",
     "proceedButton": "繼續",
     "scamTx": "詐騙交易",
     "unknownNFT": "未知 NFT",
     "watchModeAddress": "觀察模式地址",
     "appName": "Rabby Wallet",
     "Deleted": "已刪除",
-    "Loading": "加載中",
+    "Loading": "載入中",
     "Balance": "結餘",
     "Done": "完成",
     "nonce": "nonce",
@@ -34,7 +34,7 @@
     "tryAgain": "再試一次",
     "notSupportTesntnet": "不支援自訂網絡",
     "appDescription": "你首選的以太坊和 EVM 錢包",
-    "collapse": "摺疊",
+    "collapse": "收起",
     "Yes": "是",
     "Submit": "提交"
   },
@@ -49,8 +49,8 @@
       },
       "explain": {
         "approve": "授權 {{project}} 使用 {{amount}} {{symbol}}",
-        "cancel": "取消了待完成的交易",
-        "unknown": "合約交互"
+        "cancel": "取消了待處理交易",
+        "unknown": "合約互動"
       },
       "modalViewMessage": {
         "title": "查看留言"
@@ -58,11 +58,11 @@
       "txHistory": {
         "tipInputData": "這筆交易有留言",
         "parseInputDataError": "解析留言失敗",
-        "scamToolTip": "這筆交易是由騙子發起的，用於發送欺詐代幣和NFT。請避免與其交互。"
+        "scamToolTip": "這筆交易由詐騙者發起，用於發送詐騙代幣和 NFT。請勿與其互動。"
       },
       "filterScam": {
         "title": "隱藏欺詐交易",
-        "loading": "數據加載需要一定時間，且可能會有延遲",
+        "loading": "載入可能需要一些時間，資料也可能存在延遲",
         "btn": "隱藏欺詐交易",
         "button": "隱藏詐騙交易"
       },
@@ -78,7 +78,7 @@
       "feedback": {
         "directMessage": {
           "content": "發送私信",
-          "description": "在 DeBank 上與 Rabby Wallet 官方一對一聯繫"
+          "description": "在 DeBank 上與 Rabby Wallet 官方一對一聯絡"
         },
         "proposal": {
           "content": "發起提案",
@@ -101,18 +101,18 @@
           "collection": "系列",
           "chain": "鏈",
           "purchaseDate": "購買日期",
-          "lastPrice": "最後價格",
+          "lastPrice": "最近成交價",
           "sendTooltip": "目前僅支援 ERC 721 和 ERC 1155 NFT",
           "send": "發送"
         }
       },
       "home": {
-        "offline": "網絡已斷開，無法獲取數據",
+        "offline": "網絡已斷開，無法取得資料",
         "panel": {
           "swap": "兌換",
           "send": "發送",
           "receive": "接收",
-          "gasTopUp": "Gas Top Up",
+          "gasTopUp": "Gas 充值",
           "queue": "隊列",
           "transactions": "交易記錄",
           "approvals": "授權",
@@ -138,24 +138,24 @@
           "staking": "質押"
         },
         "comingSoon": "即將推出",
-        "soon": "很快",
+        "soon": "即將推出",
         "flip": "切換",
-        "metamaskIsInUseAndRabbyIsBanned": "正在使用 MetaMask，禁用 Rabby",
-        "rabbyIsInUseAndMetamaskIsBanned": "正在使用 Rabby，禁用 Metamask",
-        "refreshTheWebPageToTakeEffect": "刷新網頁即可生效",
+        "metamaskIsInUseAndRabbyIsBanned": "正在使用 MetaMask，停用 Rabby",
+        "rabbyIsInUseAndMetamaskIsBanned": "正在使用 Rabby，停用 Metamask",
+        "refreshTheWebPageToTakeEffect": "重新整理網頁即可生效",
         "transactionNeedsToSign": "筆交易需要簽名",
         "transactionsNeedToSign": "筆交易需要簽名",
         "view": "查看",
         "viewFirstOne": "查看第一個",
         "rejectAll": "全部拒絕",
-        "pendingCount": "1 待完成",
-        "pendingCountPlural": "{{countStr}} 待完成",
+        "pendingCount": "1 筆待處理交易",
+        "pendingCountPlural": "{{countStr}} 筆待處理交易",
         "queue": {
           "title": "隊列",
           "count": "{{count}} 筆"
         },
         "whatsNew": "更新內容",
-        "importType": "由 {{type}} 導入",
+        "importType": "由 {{type}} 匯入",
         "missingDataTooltip": "由於 {{text}} 目前存在網絡問題，地址結餘可能無法更新。",
         "chain": " 鏈、",
         "chainEnd": " 鏈",
@@ -164,8 +164,8 @@
       },
       "recentConnection": {
         "disconnected": "已斷開連接",
-        "rpcUnavailable": "自訂RPC 不可用",
-        "metamaskTooltip": "你選擇在該 Dapp 中優先使用 MetaMask。\n你可以在「更多」>「優先使用 MetaMask 連接的 Dapp」中更新此設定。",
+        "rpcUnavailable": "自訂 RPC 不可用",
+        "metamaskTooltip": "你選擇在該 Dapp 中優先使用 MetaMask。\n你可以隨時在「設定」>「優先使用 MetaMask 的 Dapp」中更新此設定。",
         "notConnected": "未連接",
         "connected": "已連接",
         "connectedDapp": "Rabby 未連接到目前 Dapp。請在 Dapp 網頁上點擊連接按鈕。",
@@ -189,28 +189,28 @@
         "metamaskModeTooltipNew": "當你在 Dapp 中選擇「MetaMask」時，Rabby Wallet 會自動連接。你可以在「更多」>「偽裝成 MetaMask 連接 Rabby」中管理此設定。"
       },
       "contacts": {
-        "noData": "沒有數據",
-        "noDataLabel": "沒有數據",
-        "oldContactList": "舊聯絡人列表",
-        "oldContactListDescription": "由於聯絡人功能和觀察地址合併，舊的聯絡人資料會備份於此。後續我們會刪除該列表。如果你需要繼續使用，請及時新增為聯絡人。"
+        "noData": "沒有資料",
+        "noDataLabel": "沒有資料",
+        "oldContactList": "舊聯絡人清單",
+        "oldContactListDescription": "由於聯絡人功能和觀察地址合併，舊的聯絡人資料會備份於此。後續我們會刪除該清單。如果你需要繼續使用，請及時新增為聯絡人。"
       },
       "rabbyBadge": {
         "claim": "領取",
         "claimSuccess": "領取成功",
-        "enterClaimCode": "輸入邀請碼",
+        "enterClaimCode": "輸入領取碼",
         "goToSwap": "完成兌換",
         "imageLabel": "Rabby 徽章",
-        "learnMoreOnDebank": "跳轉至 DeBank 領取",
-        "noCode": "你尚未激活該地址的邀請碼",
+        "learnMoreOnDebank": "在 DeBank 上了解更多",
+        "noCode": "你尚未啟用該地址的領取碼",
         "rabbyValuedUserNo": "Rabby 尊享用戶 No.{{num}}",
         "swapTip": "你需要先在 Rabby Wallet 中透過知名 DEX 完成一筆兌換。",
         "title": "領取 Rabby 徽章",
         "viewOnDebank": "在 DeBank 上查看",
-        "viewYourClaimCode": "查看你的邀請碼",
+        "viewYourClaimCode": "在 DeBank 上查看你的領取碼",
         "freeGasTitle": "領取 Free Gas 徽章",
         "freeGasTip": "請用 Free Gas 簽署一筆交易。當你的 Gas 不足時，「Free Gas」按鈕會自動出現。",
         "learnMore": "了解更多",
-        "freeGasNoCode": "請先點擊下方按鈕訪問 DeBank，並使用目前地址獲取領取碼。",
+        "freeGasNoCode": "請先點擊下方按鈕前往 DeBank，並使用目前地址取得領取碼。",
         "rabbyFreeGasUserNo": "Rabby Free Gas 用戶 No.{{num}}"
       },
       "security": {
@@ -230,12 +230,12 @@
         "backendServiceUrl": "後端服務網址",
         "cancel": "取消",
         "claimRabbyBadge": "領取 Rabby Badge",
-        "clearPending": "清除本地待處理交易",
+        "clearPending": "清除本機待處理交易",
         "clearPendingTip1": "此操作會從介面中移除待處理交易，幫助解決交易長時間在網絡中待處理的問題。",
         "clearPendingTip2": "此操作不會影響你的帳戶結餘，也不需要重新輸入助記詞。所有資產和帳戶資訊仍然安全。",
         "clearWatchAddressContent": "你確定刪除所有觀察地址嗎？",
         "clearWatchMode": "清除觀察地址",
-        "currentVersion": "當前版本",
+        "currentVersion": "目前版本",
         "disableWhitelist": "關閉轉賬白名單",
         "disableWhitelistTip": "關閉後你可以將資產發送到任何地址",
         "enableWhitelist": "啟用轉賬白名單",
@@ -248,7 +248,7 @@
           "signatureRecord": "簽名記錄",
           "searchDapps": "搜尋 Dapp",
           "rabbyPoints": "Rabby 積分",
-          "gasTopUp": "Gas Top Up",
+          "gasTopUp": "Gas 充值",
           "ecosystem": "生態系統"
         },
         "followUs": "關注我們",
@@ -257,10 +257,10 @@
         "lock": {
           "never": "永不"
         },
-        "pendingTransactionCleared": "待完成交易已清除",
+        "pendingTransactionCleared": "待處理交易已清除",
         "pleaseCheckYourHost": "請檢查你的 Host",
         "reset": "恢復初始設定",
-        "save": "保存",
+        "save": "儲存",
         "settings": {
           "perpsFloatWidget": "永續合約懸浮視窗",
           "customRpc": "修改 RPC URL",
@@ -268,37 +268,37 @@
           "label": "設定",
           "metamaskPreferredDapps": "優先使用 MetaMask 連接的 Dapp",
           "enableTestnets": "啟用測試網",
-          "currentLanguage": "當前語言",
+          "currentLanguage": "目前語言",
           "toggleThemeMode": "主題模式",
           "themeMode": "主題模式",
           "customTestnet": "新增自訂網絡",
           "metamaskMode": "以偽裝成 MetaMask 的方式連接 Rabby",
           "enableDappAccount": "為每個 Dapp 單獨切換地址",
           "switchPasswordForNonWhitelistedTx": "非白名單轉賬的密碼",
-          "biometricUnlock": "使用生物識別解锁",
+          "biometricUnlock": "使用生物識別解鎖",
           "biometricUnlockUnsupported": "此裝置不支援生物識別解鎖。",
-          "biometricUnlockHint": "使用生物識別技術在此設備上解锁。",
+          "biometricUnlockHint": "使用生物識別在此裝置上解鎖。",
           "currency": "貨幣",
           "searchCurrency": "搜尋貨幣",
-          "dataAnalysis": "數據分析"
+          "dataAnalysis": "資料分析"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
-        "updateAvailable": "更新版本",
+        "updateAvailable": "有可用更新",
         "updateVersion": {
           "content": "檢測到 Rabby Wallet 更新版本\n點擊查看如何手動更新",
-          "okText": "查看教程",
+          "okText": "查看教學",
           "successTip": "你正在使用最新版本",
           "title": "有可用的更新"
         },
         "warning": "警告",
-        "requestDeBankTestnetGasToken": "獲取 DeBank 測試網 Gas 代幣",
+        "requestDeBankTestnetGasToken": "取得 DeBank 測試網 Gas 代幣",
         "claimFreeGasBadge": "申請 Rabby Free Gas 徽章！",
-        "clearPendingWarningTip": "已移除的交易可能仍會在鏈上确認，除非將其替換。",
-        "supportedChains": "集成鏈",
+        "clearPendingWarningTip": "已移除的交易可能仍會在鏈上確認，除非將其替換。",
+        "supportedChains": "整合鏈",
         "DappAccount": {
-          "button": "啟用\n",
+          "button": "啟用",
           "title": "為每個 Dapp 單獨切換地址",
-          "desc": "啟用後，你可以為每個 Dapp 單獨選擇連接地址。切換主地址不會影響各 Dapp 已連接的地址。\n"
+          "desc": "啟用後，你可以為每個 Dapp 單獨選擇連接地址。切換主地址不會影響各 Dapp 已連接的地址。"
         },
         "rateModalTriggerOnHome": {
           "description": "你如何評價 Rabby Wallet？"
@@ -308,7 +308,7 @@
           "rateOnChromeStoreButton": "在 Chrome Web Store 上評分",
           "feedbackPlaceholder": "Rabby 重視你的反饋！",
           "thxDesc": "如果你喜歡 Rabby，在 Chrome 商店留下快速評價對我們來說意義重大。",
-          "feedbackDesc": "有反饋嗎？我们在聆听。",
+          "feedbackDesc": "有意見嗎？我們正在聆聽。",
           "thxTitle": "謝謝你！",
           "feedbackSuccess": "感謝你的反饋！"
         },
@@ -324,17 +324,17 @@
         "biometricUnlockEnabled": "啟用生物識別解鎖。",
         "biometricUnlockDisableFailed": "無法停用生物識別解鎖",
         "biometricUnlockSetupDesc": "確認你的密碼以啟用生物識別解鎖。",
-        "clearPendingCheckbox": "同時重設我的本地 nonce 資料和簽署記錄",
+        "clearPendingCheckbox": "同時重設我的本機 nonce 資料和簽名記錄",
         "biometricUnlockDisabled": "已停用生物識別解鎖",
         "biometricUnlockEnableFailed": "無法啟用生物識別解鎖",
-        "biometricUnlockUnsupported": "此設備不支援生物識別解鎖。",
+        "biometricUnlockUnsupported": "此裝置不支援生物識別解鎖。",
         "biometricUnlockSetupTitle": "啟用生物識別解鎖"
       },
       "tokenDetail": {
-        "blockedTip": "已隱藏的代幣將不會顯示在代幣列表中",
+        "blockedTip": "已隱藏的代幣將不會顯示在代幣清單中",
         "blocked": "隱藏",
         "selectedCustom": "該代幣未被 Rabby 收錄。\n你已手動新增該代幣。",
-        "notSelectedCustom": "該代幣未被 Rabby 收錄。\n你可以手動新增該代幣。",
+        "notSelectedCustom": "該代幣未被 Rabby 收錄。\n開啟開關後，它將加入代幣清單。",
         "customized": "已新增",
         "scamTx": "詐騙交易",
         "txFailed": "失敗",
@@ -351,21 +351,21 @@
         "Chain": "鏈",
         "ListedBy": "上架方",
         "verifyScamTips": "這是一個詐騙代幣",
-        "AddToMyTokenList": "加入我的代幣列表",
+        "AddToMyTokenList": "加入我的代幣清單",
         "OriginIssue": "在此區塊鏈上原生發行",
         "blockedListTitles": "已隱藏代幣",
         "SupportedExchanges": "支援的交易所",
         "OriginalToken": "原始代幣",
         "ContractAddress": "合約地址",
         "NoSupportedExchanges": "暫無支援的交易所",
-        "noIssuer": "無發行者資訊可用",
+        "noIssuer": "沒有可用的發行方資訊",
         "BridgeProvider": "跨鏈橋服務方",
         "customizedListTitle": "自訂代幣",
         "TokenName": "代幣名稱",
-        "blockedTips": "已隱藏的代幣不會顯示在代幣列表中",
+        "blockedTips": "已隱藏的代幣不會顯示在代幣清單中",
         "NoListedBy": "暫無上架方資訊",
         "BridgeIssue": "由第三方跨鏈橋發行的代幣",
-        "customizedHasAddedTips": "該代幣未被 Rabby 收錄。你已手動將其新增到代幣列表中。",
+        "customizedHasAddedTips": "該代幣未被 Rabby 收錄。你已手動將其新增到代幣清單中。",
         "customizedListTitles": "自訂代幣",
         "blockedListTitle": "已隱藏代幣",
         "maybeScamTips": "這是一個低品質代幣，可能存在詐騙風險。",
@@ -379,10 +379,10 @@
         "amount": "數量",
         "portfolio": {
           "nftTips": "根據本協議認可的地板價計算",
-          "fractionTips": "根據鏈接的 ERC20 代幣的價格進行計算"
+          "fractionTips": "根據關聯的 ERC20 代幣價格計算"
         },
         "tokenButton": {
-          "subTitle": "該列表中的代幣不會計算到總結餘中"
+          "subTitle": "該清單中的代幣不會計算到總結餘中"
         },
         "table": {
           "assetAmount": "資產 / 數量",
@@ -391,7 +391,7 @@
           "healthRate": "健康比率",
           "debtRatio": "負債比率",
           "unlockAt": "解鎖於",
-          "lentAgainst": "借出抵押物",
+          "lentAgainst": "貸款抵押品",
           "type": "類型",
           "strikePrice": "行使價格",
           "exerciseEnd": "行使結束",
@@ -409,17 +409,17 @@
           "percent": "百分比",
           "summaryTips": "資產價值除以總淨值",
           "summaryDescription": "協議中的所有資產（例如 LP 代幣）均解析為底層資產以進行統計計算",
-          "noMatch": "沒有匹配",
-          "lowValueDescription": "低價值資產將顯示在這里",
+          "noMatch": "沒有匹配結果",
+          "lowValueDescription": "低價值資產將顯示在這裡",
           "lowValueAssets": "{{count}} 個低價值資產",
           "review": "查看",
-          "noTokens": "沒有 代幣",
+          "noTokens": "沒有代幣",
           "searchToken": "搜尋代幣",
-          "lowValueAssets_0": "{{count}} 低價值代幣",
+          "lowValueAssets_0": "{{count}} 個低價值代幣",
           "lowValueAssets_other": "{{count}} 個低價值代幣",
           "noLpTokens": "沒有流動性提供者 (LP) 代幣",
           "lowValueDefis": "{{count}} 低價值 DeFi 資產",
-          "lowValueAssets_one": "{{count}} 低價值代幣"
+          "lowValueAssets_one": "{{count}} 個低價值代幣"
         },
         "noAssets": "沒有資產",
         "blockLinkText": "搜尋代幣地址以隱藏代幣",
@@ -438,10 +438,10 @@
           "tokenAddress": "代幣地址",
           "tokenAddressPlaceholder": "代幣地址",
           "notFound": "未找到代幣",
-          "isBuiltInToken": "代幣已受支援"
+          "isBuiltInToken": "已支援此代幣"
         },
         "AddTestnetToken": {
-          "title": "新增自訂測試網代幣",
+          "title": "新增自訂網絡代幣",
           "selectChain": "選擇鏈",
           "searching": "正在搜尋代幣",
           "tokenAddress": "代幣地址",
@@ -480,7 +480,7 @@
           "title": "確保你的 Keystone 3 Pro 位於首頁",
           "doc1": "插入一個 Keystone",
           "doc2": "輸入密碼以解鎖",
-          "doc3": "在裝置上批准連接電腦",
+          "doc3": "在裝置上確認連接電腦",
           "reconnect": "如果無法使用，請嘗試<1>從頭開始重新連接。</1>"
         },
         "howToSwitch": "如何切換",
@@ -492,13 +492,13 @@
         "ledgerIsDisconnected": "你的 Ledger 未連接",
         "onekeyIsDisconnected": "你的 OneKey 尚未連接",
         "trezor": {
-          "doc2": "解鎖你的設備",
-          "doc1": "請插入你的 Trezor 設備"
+          "doc2": "解鎖你的裝置",
+          "doc1": "請插入你的 Trezor 裝置"
         },
         "onekey": {
           "doc1": "安裝 <1>OneKey Bridge<1/>",
-          "doc3": "解鎖你的設備",
-          "doc2": "將你的 OneKey 設備插入。"
+          "doc3": "解鎖你的裝置",
+          "doc2": "將你的 OneKey 裝置插入。"
         }
       },
       "GnosisWrongChainAlertBar": {
@@ -520,8 +520,8 @@
         "chain": "{{chain}} 即將不再被整合。"
       },
       "recentConnectionGuide": {
-        "button": "明白了\n",
-        "title": "在此處切換用於 Dapp 連線的地址\n"
+        "button": "明白了",
+        "title": "在此切換用於連接 Dapp 的地址"
       },
       "rabbyPointsPopup": {
         "title": "Rabby 積分",
@@ -536,7 +536,7 @@
       "testnet": "測試網"
     },
     "nft": {
-      "floorPrice": "/ 地板價:",
+      "floorPrice": "/ 地板價：",
       "title": "NFT",
       "all": "全部",
       "starred": "已收藏 ({{count}})",
@@ -548,73 +548,73 @@
     },
     "newAddress": {
       "title": "新增地址",
-      "importSeedPhrase": "導入助記詞",
-      "importPrivateKey": "導入私鑰",
-      "importMyMetamaskAccount": "導入我的 MetaMask 帳戶",
+      "importSeedPhrase": "匯入助記詞",
+      "importPrivateKey": "匯入私鑰",
+      "importMyMetamaskAccount": "匯入我的 MetaMask 帳戶",
       "addContacts": {
         "required": "請輸入地址",
         "notAValidAddress": "無效地址",
         "scanViaMobileWallet": "透過手機錢包掃描",
         "scanViaPcCamera": "透過電腦攝像頭掃描",
-        "scanQRCode": "使用兼容 WalletConnect 的錢包掃描QR 碼",
+        "scanQRCode": "使用兼容 WalletConnect 的錢包掃描 QR 碼",
         "walletConnect": "WalletConnect",
         "walletConnectVPN": "如果你使用 VPN，WalletConnect 將會不穩定",
-        "cameraTitle": "請用相機掃描QR 碼",
+        "cameraTitle": "請用相機掃描 QR 碼",
         "addressEns": "輸入地址/ENS",
         "description": "追蹤任何公開錢包地址",
         "content": "新增僅觀察地址"
       },
       "unableToImport": {
-        "title": "無法導入",
-        "description": "不支援導入多個基於QR 碼的硬體錢包。\n請先刪除 {{0}} 中的所有地址，然後再導入新的設備"
+        "title": "無法匯入",
+        "description": "不支援匯入多個使用 QR 碼的硬件錢包。\n請先刪除 {{0}} 中的所有地址，然後再匯入新的裝置"
       },
-      "connectHardwareWallets": "連接硬體錢包",
+      "connectHardwareWallets": "連接硬件錢包",
       "connectMobileWalletApps": "連接手機錢包",
       "connectInstitutionalWallets": "連接機構錢包",
-      "createNewSeedPhrase": "創建新的助記詞",
-      "importKeystore": "導入 KeyStore",
-      "selectImportMethod": "選擇導入方式",
+      "createNewSeedPhrase": "建立新的助記詞",
+      "importKeystore": "匯入 KeyStore",
+      "selectImportMethod": "選擇匯入方式",
       "theSeedPhraseIsInvalidPleaseCheck": "助記詞無效，請檢查！",
       "seedPhrase": {
-        "importTips": "你可以將完整助記詞粘貼到第一個字段中",
+        "importTips": "你可以將完整助記詞貼上到第一個欄位中",
         "whatIsASeedPhrase": {
           "question": "什麼是助記詞？",
           "answer": "用於控制你的資產的 12、18 或 24 個單詞的短語。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "在 Rabby 中導入它安全嗎？",
-          "answer": "是的，它將存儲在你本地的瀏覽器上，並且只有你可以訪問。"
+          "question": "在 Rabby 中匯入它安全嗎？",
+          "answer": "是的，它將儲存在你本機的瀏覽器上，並且只有你可以存取。"
         },
         "importError": "[CreateMnemonics] 意外步驟 {{0}}",
         "importQuestion4": "如果我在未備份助記詞的情況下卸載 Rabby，Rabby 無法為我找回助記詞。",
         "riskTips": "在開始之前，請閱讀並牢記以下安全提示",
-        "showSeedPhrase": "創建助記詞",
+        "showSeedPhrase": "顯示助記詞",
         "backup": "備份助記詞",
-        "backupTips": "備份助記詞時，確保沒有其他人查看你的屏幕",
+        "backupTips": "備份助記詞時，確保沒有其他人查看你的螢幕",
         "copy": "複製助記詞",
         "saved": "我已備份",
         "pleaseSelectWords": "請選擇字詞",
         "verificationFailed": "驗證失敗",
-        "createdSuccessfully": "創建成功",
+        "createdSuccessfully": "建立成功",
         "verifySeedPhrase": "驗證助記詞",
         "fillInTheBackupSeedPhraseInOrder": "按順序填寫備份助記詞",
         "wordPhrase": "我的助記詞有 <1>{{count}}</1> 個單詞",
         "wordPhraseSelected": "我的助記詞有 <1>{{count}} 個單詞</1>",
-        "wordPhraseAndPassphrase": "我的助記詞有 <1>{{count}}</1> 個單詞，並設有通行密碼",
-        "wordPhraseAndPassphraseSelected": "我的助記詞有 <1>{{count}} 個單詞</1>，並設有通行密碼",
+        "wordPhraseAndPassphrase": "我的助記詞有 <1>{{count}}</1> 個單詞，並設有密碼短語",
+        "wordPhraseAndPassphraseSelected": "我的助記詞有 <1>{{count}} 個單詞</1>，並設有密碼短語",
         "slip39SeedPhrase": "我的助記詞是 <1>{{SLIP39}}</1>",
-        "slip39SeedPhraseWithPassphrase": "我的助記詞是 <1>{{SLIP39}}</1>，並設有通行密碼",
+        "slip39SeedPhraseWithPassphrase": "我的助記詞是 <1>{{SLIP39}}</1>，並設有密碼短語",
         "clearAll": "全部清除",
-        "pastedAndClear": "已貼上並清空剪切板",
+        "pastedAndClear": "已貼上並清空剪貼簿",
         "inputInvalidCount": "有{{count}} 處輸入內容不符合助記詞規範，請檢查",
-        "slip39SeedPhrasePlaceholder_one": "在此輸入你的第 {{count}} 份助記詞",
-        "slip39SeedPhrasePlaceholder_two": "在此輸入你的第 {{count}} 份助記詞",
-        "slip39SeedPhrasePlaceholder_few": "在此輸入你的第 {{count}} 份助記詞",
-        "slip39SeedPhrasePlaceholder_other": "在此輸入你的第 {{count}} 份助記詞",
+        "slip39SeedPhrasePlaceholder_one": "在此輸入你的第 {{count}} 份助記詞份額",
+        "slip39SeedPhrasePlaceholder_two": "在此輸入你的第 {{count}} 份助記詞份額",
+        "slip39SeedPhrasePlaceholder_few": "在此輸入你的第 {{count}} 份助記詞份額",
+        "slip39SeedPhrasePlaceholder_other": "在此輸入你的第 {{count}} 份助記詞份額",
         "invalidContent": "內容無效",
         "inputInvalidCount_one": "1 個輸入不符合助記詞規範，請檢查。",
         "inputInvalidCount_other": "{{count}} 個輸入不符合助記詞規範，請檢查。",
-        "passphrase": "通行密碼",
+        "passphrase": "密碼短語",
         "importQuestion2": "我的助記詞只儲存在我的裝置上。Rabby 無法存取它。",
         "importQuestion1": "如果我遺失或洩露助記詞，將永久失去對資產的存取權。",
         "importQuestion3": "如果我在未備份助記詞的情況下解除安裝 Rabby，Rabby 將無法幫我恢復。",
@@ -622,13 +622,13 @@
         "inputInvalid": "檢測到無效的單詞。請檢查高亮顯示的單詞。"
       },
       "metamask": {
-        "step1": "從 MetaMask 匯出助記詞或私鑰 <br /> <1>點擊查看教程 <1/></1>",
-        "step2": "在 Rabby 中導入助記詞或私鑰",
-        "step3": "導入完成，你的所有資產將自動展示<br />",
-        "how": "如何導入我的 MetaMask 帳戶？",
+        "step1": "從 MetaMask 匯出助記詞或私鑰 <br /> <1>點擊查看教學 <1/></1>",
+        "step2": "在 Rabby 中匯入助記詞或私鑰",
+        "step3": "匯入完成，你的所有資產將<br />自動顯示",
+        "how": "如何匯入我的 MetaMask 帳戶？",
         "step": "步驟",
-        "importSeedPhrase": "導入助記詞或私鑰",
-        "importSeedPhraseTips": "它只會存儲在本地瀏覽器上。 \nRabby 永遠不會訪問你的私人資訊。",
+        "importSeedPhrase": "匯入助記詞或私鑰",
+        "importSeedPhraseTips": "它只會儲存在本機瀏覽器上。\nRabby 永遠無法存取你的私密資訊。",
         "tipsDesc": "你的私鑰和助記詞不屬於 MetaMask 或任何具體錢包，它只屬於你自己。",
         "tips": "提示："
       },
@@ -637,55 +637,55 @@
         "placeholder": "輸入你的私鑰",
         "whatIsAPrivateKey": {
           "question": "什麼是私鑰？",
-          "answer": "用於控制你的資產的一串字符。"
+          "answer": "用於控制你的資產的一串字元。"
         },
         "isItSafeToImportItInRabby": {
-          "question": "在 Rabby 中導入它安全嗎？",
-          "answer": "是的，它將存儲在你本地的瀏覽器上，並且只有你可以訪問。"
+          "question": "在 Rabby 中匯入它安全嗎？",
+          "answer": "是的，它將儲存在你本機的瀏覽器上，並且只有你可以存取。"
         },
         "isItPossibleToImportKeystore": {
-          "question": "可以導入 KeyStore 嗎？",
-          "answer": "是的，你可以在此處<1>導入 KeyStore</1>。"
+          "question": "可以匯入 KeyStore 嗎？",
+          "answer": "是的，你可以在此處<1>匯入 KeyStore</1>。"
         },
         "notAValidPrivateKey": "無效私鑰",
         "repeatImportTips": {
-          "desc": "此地址已被導入。",
+          "desc": "此地址已被匯入。",
           "question": "你要切換到此地址嗎？"
         }
       },
-      "importedSuccessfully": "導入成功",
+      "importedSuccessfully": "匯入成功",
       "ledger": {
-        "title": "連接Ledger",
-        "cameraPermissionTitle": "允許Rabby訪問相機",
-        "cameraPermission1": "在瀏覽器彈出窗口中允許Rabby訪問攝像頭",
-        "allowRabbyPermissionsTitle": "允許 Rabby 獲取以下權限：",
-        "ledgerPermission1": "連接到 HID 設備",
-        "ledgerPermissionTip": "請點擊下面的“允許”，並在彈出窗口中授權訪問你的 Ledger",
+        "title": "連接 Ledger",
+        "cameraPermissionTitle": "允許 Rabby 存取相機",
+        "cameraPermission1": "在瀏覽器彈出視窗中允許 Rabby 存取相機",
+        "allowRabbyPermissionsTitle": "允許 Rabby 取得以下權限：",
+        "ledgerPermission1": "連接到 HID 裝置",
+        "ledgerPermissionTip": "請點擊下方的「允許」，並在彈出視窗中授權存取你的 Ledger",
         "permissionsAuthorized": "權限已授權",
         "nowYouCanReInitiateYourTransaction": "現在你可以重新發起你的交易",
         "allow": "允許",
         "error": {
           "ethereum_app_open_error": "請在你的 Ledger 裝置上安裝/接受 Ethereum 應用程式。",
-          "ethereum_app_not_installed_error": "請在你的 Ledger 設備上安裝 Ethereum 應用程式。",
+          "ethereum_app_not_installed_error": "請在你的 Ledger 裝置上安裝 Ethereum 應用程式。",
           "ethereum_app_unconfirmed_error": "你已拒絕開啟 Ethereum 應用程式的請求。",
-          "running_app_close_error": "未能關閉你 Ledger 設備上運行中的應用程式。"
+          "running_app_close_error": "未能關閉你 Ledger 裝置上運行中的應用程式。"
         }
       },
       "keystone": {
-        "title": "連接Keystone",
-        "allowRabbyPermissionsTitle": "允許Rabby訪問以下權限：",
-        "keystonePermission1": "連接至USB設備",
+        "title": "連接 Keystone",
+        "allowRabbyPermissionsTitle": "允許 Rabby 取得以下權限：",
+        "keystonePermission1": "連接至 USB 裝置",
         "keystonePermissionTip": "請點擊下方「允許」，並在彈出視窗中授權存取你的 Keystone；同時確保你的 Keystone 3 Pro 位於首頁。",
-        "noDeviceFoundError": "請插入一個Keystone",
+        "noDeviceFoundError": "請插入一個 Keystone",
         "deviceIsLockedError": "輸入密碼以解鎖",
-        "deviceRejectedExportAddress": "請批準與 Rabby 的連接",
-        "deviceIsBusy": "設備正在忙碌中",
+        "deviceRejectedExportAddress": "請在裝置上確認連接 Rabby",
+        "deviceIsBusy": "裝置正忙",
         "exportAddressJustAllowedOnHomePage": "僅在 Keystone 主頁上允許導出地址",
         "unknowError": "未知錯誤，請再試一次"
       },
       "onekey": {
-        "onekeyPermission1": "連接至USB裝置",
-        "allowRabbyPermissionsTitle": "允許Rabby存取以下權限：",
+        "onekeyPermission1": "連接至 USB 裝置",
+        "allowRabbyPermissionsTitle": "允許 Rabby 存取以下權限：",
         "onekeyPermissionTip": "請點擊下方「允許」，並在彈出視窗中授權存取你的 OneKey。如果彈窗中沒有出現 OneKey，請檢查裝置是否已正確連接電腦。",
         "whyOneKey": "為什麼選擇 OneKey？",
         "buyOneKey": "購買 OneKey",
@@ -695,20 +695,20 @@
         "connectYour": "連接你的",
         "viaWalletConnect": "透過 WalletConnect",
         "connectedSuccessfully": "連接成功",
-        "qrCodeError": "請檢查你的網絡或刷新QR 碼",
+        "qrCodeError": "請檢查你的網絡或重新整理 QR 碼",
         "qrCode": "QR 碼",
         "url": "網址",
-        "changeBridgeServer": "更改橋接服務器",
+        "changeBridgeServer": "更改橋接伺服器",
         "status": {
           "received": "掃描成功\n等待確認",
-          "rejected": "連接已取消\n請掃描QR 碼重試",
+          "rejected": "連接已取消\n請掃描 QR 碼重試",
           "brandError": "檢測到錯誤的錢包應用程式",
           "brandErrorDesc": "請用 {{brandName}} 進行連接",
           "accountError": "地址不匹配",
           "accountErrorDesc": "請切換手機錢包地址",
           "connected": "已連接",
-          "duplicate": "該地址已導入",
-          "default": "用你的{{brand}}掃描"
+          "duplicate": "該地址已匯入",
+          "default": "使用 {{brand}} 掃描"
         },
         "title": "與 {{brandName}} 連接",
         "disconnected": "已斷開連接",
@@ -734,17 +734,17 @@
         "tooltip": {
           "removed": "該地址已從 Rabby 中刪除",
           "added": "地址已新增至 Rabby",
-          "connectError": "連接已停止\n請刷新頁面以重新連接",
-          "disconnected": "無法連接到硬體錢包\n請嘗試重新連接"
+          "connectError": "連接已停止\n請重新整理頁面以重新連接",
+          "disconnected": "無法連接到硬件錢包\n請嘗試重新連接"
         },
-        "waiting": "加載中",
-        "clickToGetInfo": "點擊獲取鏈上資訊",
+        "waiting": "等待中",
+        "clickToGetInfo": "點擊取得鏈上資訊",
         "addToRabby": "新增到 Rabby",
         "basicInformation": "基本資訊",
         "addresses": "地址",
-        "loadingAddress": "正在加載 {{0}}/{{1}} 地址",
+        "loadingAddress": "正在載入 {{0}}/{{1}} 地址",
         "notes": "備註",
-        "getOnChainInformation": "獲取鏈上資訊",
+        "getOnChainInformation": "取得鏈上資訊",
         "hideOnChainInformation": "隱藏鏈上資訊",
         "usedChains": "使用過的鏈",
         "firstTransactionTime": "首次交易時間",
@@ -773,7 +773,7 @@
             "legacy": "Legacy：MEW / MyCrypto 使用的 HD path。"
           },
           "message": {
-            "disconnected": "{{0}}連接已停止\n請刷新頁面以重新連接"
+            "disconnected": "{{0}} 連接已停止\n請重新整理頁面以重新連接"
           }
         },
         "onekey": {
@@ -807,8 +807,8 @@
             "legacy": "Legacy：MEW / MyCrypto 使用的 HD path。前 3 個地址中沒有鏈上使用記錄"
           },
           "switch": {
-            "title": "切換到新的 GridPlus 設備",
-            "content": "不支援導入多個 GridPlus 設備。如果切換到新的 GridPlus 設備，需要在開始導入過程之前，刪除當前設備的所有地址"
+            "title": "切換到新的 GridPlus 裝置",
+            "content": "不支援匯入多個 GridPlus 裝置。如果切換到新的 GridPlus 裝置，需要在開始匯入過程之前，刪除目前裝置的所有地址"
           },
           "switchToAnotherGridplus": "切換到另一個 GridPlus"
         },
@@ -831,16 +831,16 @@
           "hdPathTypeNoChain": {
             "bip44": "BIP44：BIP44協議定義的 HD path"
           },
-          "disconnected": "無法連接到 BitBox02\n請刷新頁面以重新連接\n原因：{{0}}"
+          "disconnected": "無法連接到 BitBox02\n請重新整理頁面以重新連接\n原因：{{0}}"
         },
         "selectHdPath": "選擇 HD path：",
         "selectIndexTip": "選擇起始地址的序列號：",
         "manageAddressFrom": "管理從 {{0}} 到 {{1}} 的地址",
         "advancedSettings": "高級設定",
         "customAddressHdPath": "自訂地址 HD path",
-        "connectedToLedger": "連接 Ledger",
-        "connectedToTrezor": "連接 Trezor",
-        "connectedToOnekey": "連接 Onekey",
+        "connectedToLedger": "已連接 Ledger",
+        "connectedToTrezor": "已連接 Trezor",
+        "connectedToOnekey": "已連接 OneKey",
         "manageSeedPhrase": "管理助記詞",
         "manageGridplus": "管理 Gridplus",
         "manageImtokenOffline": "管理 imToken",
@@ -854,19 +854,19 @@
         "addressesInRabby": "Rabby 中的地址{{0}}",
         "qrCode": {
           "switch": {
-            "title": "切換到新的 {{0}} 設備",
-            "content": "不支援導入多個 {{0}} 設備。如果你切換到新的 {{0}} 設備，需要在開始導入過程之前，刪除當前設備的所有地址。"
+            "title": "切換到新的 {{0}} 裝置",
+            "content": "不支援匯入多個 {{0}} 裝置。如果你切換到新的 {{0}} 裝置，需要在開始匯入過程之前，刪除目前裝置的所有地址。"
           },
-          "switchAnother": "切換到另一個{{0}}"
+          "switchAnother": "切換到另一個 {{0}}"
         },
         "manageImKey": "管理 imKey",
         "importBtn": "匯入 ({{count}})",
         "nonAddr": "此助記詞尚未新增任何地址。你可以在 Rabby Extension > 管理地址中刪除此助記詞。"
       },
-      "importYourKeystore": "導入你的 KeyStore",
+      "importYourKeystore": "匯入你的 KeyStore",
       "incorrectPassword": "密碼錯誤",
       "keystore": {
-        "description": "選擇需要導入的 keystore 文件並輸入對應的密碼",
+        "description": "選擇需要匯入的 keystore 檔案並輸入對應的密碼",
         "password": {
           "required": "請輸入密碼",
           "placeholder": "密碼"
@@ -875,55 +875,55 @@
       "coboSafe": {
         "addCoboArgusAddress": "新增 Cobo Argus 地址",
         "findTheAssociatedSafeAddress": "查找關聯的 Safe 地址",
-        "import": "導入",
+        "import": "匯入",
         "inputSafeModuleAddress": "輸入 Safe Module 地址",
         "invalidAddress": "地址無效",
         "whichChainIsYourCoboAddressOn": "你的 Cobo 地址位於哪條鏈上"
       },
       "imkey": {
         "title": "連接 imKey",
-        "imkeyPermissionTip": "請點擊下方的「允許」，並在隨後的彈出窗口中授權訪問你的 imKey。"
+        "imkeyPermissionTip": "請點擊下方的「允許」，並在隨後的彈出視窗中授權存取你的 imKey。"
       },
-      "addFromCurrentSeedPhrase": "從當前助記詞新增",
+      "addFromCurrentSeedPhrase": "從目前助記詞新增",
       "firefoxLedgerDisableTips": "Ledger 不兼容 Firefox",
       "trezor": {
         "title": "連接 Trezor"
       },
-      "addNewAddress": "創建新地址",
-      "createANewSeedPhrase": "創建新的助記詞",
+      "addNewAddress": "建立新地址",
+      "createANewSeedPhrase": "建立新的助記詞",
       "moreWallets": "更多錢包",
-      "newSeedPhraseCreated": "已創建新助記詞",
+      "newSeedPhraseCreated": "已建立新助記詞",
       "addMoreAddresses": "新增更多地址",
       "importMoreWallets": "新增更多地址",
       "seedPhraseTab": "助記詞",
-      "watchAddress": "只讀地址",
-      "bulkImportPrivateKey": "批量導入私鑰",
-      "imported": "已導入前",
+      "watchAddress": "僅觀察地址",
+      "bulkImportPrivateKey": "批次匯入私鑰",
+      "imported": "之前已匯入",
       "addressAdded": "地址已新增",
       "addressAddedCount_one": "{{count}} 地址已新增",
-      "newAddressAdded": "新增地址",
+      "newAddressAdded": "新地址已新增",
       "bulkImportPrivateKeyInputTab": "輸入私鑰",
-      "addressImported": "地址已導入",
+      "addressImported": "地址已匯入",
       "privateKeyTab": "私鑰",
       "openExtensionToGetStarted": "打開 Rabby 擴展以開始使用",
-      "newAddressCreated": "新地址已創建",
+      "newAddressCreated": "新地址已建立",
       "addressAddedCount_other": "{{count}} 個地址已新增",
       "bulkImportPrivateKeySupport": "支援最多 1000 個 EVM 兼容私鑰",
-      "duplicateAddressesSkippedTitle": "部分地址已被導入",
+      "duplicateAddressesSkippedTitle": "部分地址已被匯入",
       "bulkImportPrivateKeyExceeded": "一次最多支援 {{count}} 個私鑰",
       "addMoreAddressesFromThisSeedPhrase": "從這個助記詞新增更多地址",
       "duplicateAddressesSkippedDesc_one": "{{count}} 個地址被跳過，因為它已經存在。",
       "bulkImportPrivateKeyInvalid": "某些私鑰無效。請刪除或重新輸入它們。",
-      "bulkImportPrivateKeyPlaceholder": "每個私鑰應該以新行或特殊字符分隔。",
+      "bulkImportPrivateKeyPlaceholder": "每個私鑰應該以新行或特殊字元分隔。",
       "duplicateAddressesSkippedDesc_other": "{{count}} 個地址已被跳過，因為它們已經存在。"
     },
     "activities": {
       "signedText": {
         "empty": {
-          "desc": "所有透過 Rabby 簽署的文本都將在此展示",
-          "title": "尚未簽署文本"
+          "desc": "所有透過 Rabby 簽署的文字都將在此顯示",
+          "title": "尚未簽署文字"
         },
-        "label": "簽署文本"
+        "label": "簽署文字"
       },
       "signedTx": {
         "common": {
@@ -935,15 +935,15 @@
           "unlimited": "無限"
         },
         "empty": {
-          "desc": "所有透過 Rabby 簽署的交易都將在此展示",
+          "desc": "所有透過 Rabby 簽署的交易都將在此顯示",
           "title": "尚未簽署交易"
         },
         "explain": {
           "approve": "授權 {{protocol}} 的 {{count}} {{token}}",
           "cancel": "取消 {{protocol}} 的 {{token}} 授權",
-          "cancelNFTCollectionApproval": "取消 {{protocol}} 的 NFT 合集授權",
+          "cancelNFTCollectionApproval": "取消 {{protocol}} 的 NFT 系列授權",
           "cancelSingleNFTApproval": "取消 {{protocol}} 的單一 NFT 授權",
-          "nftCollectionApproval": "{{protocol}} 的 NFT 合集授權",
+          "nftCollectionApproval": "{{protocol}} 的 NFT 系列授權",
           "send": "發送 {{amount}} {{symbol}}",
           "singleNFTApproval": "{{protocol}} 的單一 NFT 授權",
           "unknown": "未知交易"
@@ -961,7 +961,7 @@
         },
         "tips": {
           "canNotCancel": "無法加速或取消：不是第一個待完成的交易",
-          "pendingDetail": "只會有一筆交易成功完成，通常是 Gas Price 最高的那一筆。",
+          "pendingDetail": "只會有一筆交易成功完成，通常是 Gas 價格最高的那一筆。",
           "pendingBroadcastRetry": "廣播失敗，上次廣播時間：{{pushAt}}",
           "pendingBroadcastRetryBtn": "重新廣播",
           "pendingBroadcast": "已設定為省 Gas 廣播模式，將等待鏈上 Gas 較低時廣播。最晚會在建立後 {{deadline}} 小時廣播。",
@@ -996,21 +996,21 @@
               "desc": "發起新的鏈上交易來取消，需要支付 Gas 費用"
             },
             "removeLocalPendingTx": {
-              "title": "清除本地掛起",
+              "title": "清除本機待處理狀態",
               "desc": "移除介面中的待處理交易"
             }
           },
           "removeLocalPendingTx": {
-            "title": "本地刪除交易",
-            "desc": "此操作將在本機刪除待處理的事務。\n待處理的交易將來仍有可能成功提交。"
+            "title": "本機刪除交易",
+            "desc": "此操作將在本機刪除待處理的交易。\n該交易之後仍有可能成功提交。"
           }
         },
         "SkipNonceAlert": {
           "alert": "{{chainName}} 鏈上的 Nonce #{{nonce}} 被跳過，這可能導致後續待處理交易無法完成。你可以<5></5><6>發起一筆鏈上交易</6><7></7>來解決。",
-          "clearPendingAlert": "{{chainName}} 交易（{{nonces}}）已待處理超過 3 分鐘。你可以<5></5><6>在本地清除待處理狀態</6><7></7>並重新提交交易。"
+          "clearPendingAlert": "{{chainName}} 交易（{{nonces}}）已待處理超過 3 分鐘。你可以<5></5><6>在本機清除待處理狀態</6><7></7>並重新提交交易。"
         },
         "gas": {
-          "noCost": "無 Gas 成本"
+          "noCost": "無 Gas 費用"
         },
         "PredictTime": {
           "time": "預計打包時間為 {{time}}",
@@ -1018,7 +1018,7 @@
           "failed": "打包時間預測失敗"
         },
         "CancelTxConfirmPopup": {
-          "title": "清除本地待處理",
+          "title": "清除本機待處理狀態",
           "warning": "已移除的交易仍可能會在鏈上確認，除非它被替換。",
           "desc": "這將會從你的介面移除待處理交易。然後你可以發起一個新交易。"
         }
@@ -1029,10 +1029,10 @@
       "balance": "結餘",
       "noTokenFound": "未找到代幣",
       "noTokenFoundOnThisChain": "該鏈上未找到代幣",
-      "title": "新增代幣至 Rabby",
-      "tokenCustomized": "當前代幣已手動新增",
+      "title": "將自訂代幣新增至 Rabby",
+      "tokenCustomized": "目前代幣已手動新增",
       "tokenNotFound": "該合約地址上未找到代幣",
-      "tokenOnMultiChains": "多鏈上的代幣地址，\n請選擇一個",
+      "tokenOnMultiChains": "在多條鏈上找到此代幣地址，\n請選擇一條鏈",
       "tokenSupported": "Rabby 已支援該代幣",
       "hasAdded": "你已新增此代幣。"
     },
@@ -1044,7 +1044,7 @@
         "subTitleTokenAndNFT": "授權的代幣和 NFT",
         "title": "授權",
         "unSelectAll": "取消全選",
-        "tooltipPermit2": "此授權透過 Permit2 合約批准：\n{{ permit2Id }}"
+        "tooltipPermit2": "此授權由 Permit2 合約核准：\n{{ permit2Id }}"
       },
       "component": {
         "ApprovalContractItem": {
@@ -1054,8 +1054,8 @@
         "table": {
           "bodyEmpty": {
             "7702": "無 EIP-7702 委託",
-            "loadingText": "加載中...",
-            "noMatchText": "沒有匹配",
+            "loadingText": "載入中...",
+            "noMatchText": "沒有相符結果",
             "noDataText": "無授權"
           }
         },
@@ -1105,7 +1105,7 @@
         },
         "byContracts": {
           "columnTip": {
-            "contractTrustValue": "信任值是指授權並暴露給該合約的資產總價值，\n信任值低表示該合約存在風險或 180 天內不活躍",
+            "contractTrustValue": "信任值是指透過該合約花費的資產總價值。信任值較低表示該合約可能存在風險，或已 180 天沒有活動。",
             "contractTrustValueDanger": "合約信任值 < 10,000 美元",
             "contractTrustValueWarning": "合約信任值 < 100,000 美元"
           },
@@ -1120,7 +1120,7 @@
         "byEIP7702": {
           "columnTitle": {
             "delegatedAddress": "委託地址",
-            "currentAddress": "當前地址"
+            "currentAddress": "目前地址"
           }
         }
       },
@@ -1131,11 +1131,11 @@
         "cancelTitle": "取消餘下撤銷",
         "ledgerSending": "正在發送簽名請求（{{current}}/{{total}}）",
         "gasNotEnough": "Gas 不足，無法提交",
-        "confirmTitle": "一鍵批量撤銷",
-        "confirmRevokeLedger": "在一個任務列表中批量撤銷 {{count}} 個授權",
+        "confirmTitle": "一鍵批次撤銷",
+        "confirmRevokeLedger": "在一個任務清單中批次撤銷 {{count}} 個授權",
         "connectLedger": "連接 Ledger",
         "done": "完成",
-        "batchRevoke": "批量撤銷",
+        "batchRevoke": "批次撤銷",
         "waitInQueue": "排隊等待",
         "approvalCount_zero": "{{count}} 個授權",
         "revokeOneByOne": "逐個撤銷",
@@ -1144,24 +1144,24 @@
         "resume": "繼續",
         "pause": "暫停",
         "approvalCount_other": "{{count}} 個授權",
-        "confirmRevokePrivateKey": "使用助記詞或私鑰地址時，你可以一鍵批量撤銷 {{count}} 個授權。",
+        "confirmRevokePrivateKey": "使用助記詞或私鑰地址時，你可以一鍵批次撤銷 {{count}} 個授權。",
         "stillRevoke": "繼續撤銷",
         "paused": "已暫停",
         "cancelBody": "如果你關閉此頁面，剩餘的撤銷將不會被執行。",
         "signAndStartRevoke": "簽署並開始撤銷",
         "revoked": "已撤銷：",
-        "ledgerAlert": "請在你的 Ledger 設備上開啟 Ethereum App",
+        "ledgerAlert": "請在你的 Ledger 裝置上開啟 Ethereum App",
         "confirm": "確認",
         "ledgerSended": "請在 Ledger 上簽署請求 ({{current}}/{{total}})",
         "simulationFailed": "模擬失敗",
-        "ledgerSigned": "已簽名。創建交易（{{current}}/{{total}}）",
+        "ledgerSigned": "已簽名，正在建立交易（{{current}}/{{total}}）",
         "gasTooHigh": "Gas 費用較高",
         "submitTxFailed": "提交失敗",
-        "ledgerConfirmTitle": "使用 Ledger 批量撤銷",
+        "ledgerConfirmTitle": "使用 Ledger 批次撤銷",
         "revokeWithOneKey": "開始使用 OneKey 撤銷",
         "oneKeySended": "請在 OneKey 上簽署請求 ({{current}}/{{total}})",
-        "oneKeySending": "發送簽署請求 ({{current}}/{{total}})",
-        "oneKeySigned": "已簽署。正在創建交易 ({{current}}/{{total}})"
+        "oneKeySending": "正在發送簽名請求（{{current}}/{{total}}）",
+        "oneKeySigned": "已簽名，正在建立交易（{{current}}/{{total}}）"
       }
     },
     "connect": {
@@ -1175,8 +1175,8 @@
       "foundForbiddenRisk": "檢測到高危風險，\n無法連接",
       "listedBy": "收錄於",
       "manageWhiteBlackList": "管理白名單/黑名單",
-      "markAsBlockToast": "已加入黑名單",
-      "markAsTrustToast": "已加入白名單",
+      "markAsBlockToast": "已標記為已封鎖",
+      "markAsTrustToast": "已標記為可信",
       "markRemovedToast": "已刪除標記",
       "markRuleText": "我的標記",
       "myMark": "我的標記",
@@ -1189,7 +1189,7 @@
       "popularLevelLow": "低",
       "popularLevelMedium": "中等",
       "popularLevelVeryLow": "非常低",
-      "removedFromAll": "從所有列表中刪除",
+      "removedFromAll": "從所有清單中刪除",
       "selectChainToConnect": "選擇要連接的鏈",
       "sitePopularity": "網站熱度",
       "title": "連接 Dapp",
@@ -1204,7 +1204,7 @@
         "title": "選擇一個錢包來連接"
       },
       "otherWalletBtn": "連接其他錢包",
-      "connectAddress": "連接地址\n",
+      "connectAddress": "連接地址",
       "connected": "已連接"
     },
     "gasTopUp": {
@@ -1213,31 +1213,31 @@
       "Confirm": "確認",
       "Continue": "繼續",
       "Including-service-fee": "包含 {{fee}} 服務費",
-      "InsufficientBalance": "當前鏈的 Rabby 合約地址結餘不足，\n請稍後再試",
+      "InsufficientBalance": "目前鏈的 Rabby 合約地址結餘不足，\n請稍後再試",
       "InsufficientBalanceTips": "結餘不足",
-      "Loading_Tokens": "正在加載代幣...",
+      "Loading_Tokens": "正在載入代幣...",
       "No_Tokens": "沒有代幣",
-      "Deposit-tip": "使用 USDC/USDT 存款",
+      "Deposit-tip": "使用 USDC/USDT 充值",
       "Payment-Token": "支付代幣",
       "Select-payment-token": "選擇支付代幣",
       "Token": "代幣",
       "Value": "價值",
-      "description": "你可以向任意鏈充值 Gas，只需用已有鏈上的可用代幣支付。\n付款確認後立即到賬，無需等待，且不可撤銷。",
+      "description": "可使用其他鏈上的可用代幣為目標鏈補充 Gas。\n付款確認後即會到賬，無需等待交易達到最終性。",
       "hightGasFees": "該充值金額太小，目標網絡需要較高的 Gas 費",
-      "payment": "Gas Top Up 付款",
-      "service-fee-tip": "Rabby 透過提供 Gas Top Up 服務，需要承擔代幣波動的損失以及充值的 Gas 費用。\n因此要收取20%的服務費",
-      "title": "Instant Gas Top Up",
+      "payment": "Gas 充值付款",
+      "service-fee-tip": "Rabby 提供 Gas 充值服務時，需要承擔代幣價格波動和充值 Gas 費用。\n因此會收取 20% 的服務費",
+      "title": "即時 Gas 充值",
       "topUpChain": "充值鏈"
     },
     "manageAddress": {
       "add-address": "新增地址",
       "address-management": "地址管理",
-      "addressTypeTip": "由 {{type}} 導入",
+      "addressTypeTip": "由 {{type}} 匯入",
       "backup-seed-phrase": "備份助記詞",
       "cancel": "取消",
       "confirm": "確認",
       "confirm-delete": "確認刪除",
-      "current-address": "當前地址",
+      "current-address": "目前地址",
       "delete-all-addresses-and-the-seed-phrase": "刪除所有地址和助記詞",
       "delete-all-addresses-but-keep-the-seed-phrase": "刪除所有地址，但保留助記詞",
       "delete-checklist-1": "我明白如果我刪除這個地址，對應的私鑰及助記詞都將被刪除，Rabby 無法為我找回",
@@ -1255,27 +1255,27 @@
       "hd-path": "HD path:",
       "manage-address": "管理地址",
       "no-address": "無地址",
-      "no-address-under-seed-phrase": "你尚未在此助記詞下導入任何地址",
-      "no-match": "沒有匹配",
+      "no-address-under-seed-phrase": "你尚未在此助記詞下匯入任何地址",
+      "no-match": "沒有匹配結果",
       "private-key": "私鑰",
       "search": "搜尋",
       "seed-phrase": "助記詞",
       "seed-phrase-delete-title": "刪除助記詞？",
-      "update-balance-data": "刷新所有結餘",
+      "update-balance-data": "重新整理所有結餘",
       "whitelisted-address": "白名單地址",
-      "sort-by-balance": "按地址金額排序",
+      "sort-by-balance": "按結餘排序",
       "sort-by-address-type": "按地址類型排序",
       "sort-by-address-note": "按地址備註排序",
       "sort-address": "地址排序",
-      "enterThePassphrase": "輸入密碼詞",
-      "enterPassphraseTitle": "輸入密碼詞進行簽名",
-      "passphraseError": "密碼詞無效",
+      "enterThePassphrase": "輸入密碼短語",
+      "enterPassphraseTitle": "輸入密碼短語進行簽名",
+      "passphraseError": "密碼短語無效",
       "addNewAddress": "新增地址",
       "CurrentDappAddress": {
-        "desc": "切換 Dapp 地址\n"
+        "desc": "切換 Dapp 地址"
       },
-      "noSeedPhraseAddress": "此種子短語尚未新增任何地址。你可以新增一個地址或刪除該種子短語。",
-      "watch-address": "只讀模式",
+      "noSeedPhraseAddress": "此助記詞尚未新增任何地址。你可以新增一個地址或刪除該助記詞。",
+      "watch-address": "僅觀察",
       "deleteSuccess": "已成功刪除",
       "seedPhraseNotBackedUp": "錢包未備份",
       "backupSeedPhraseNow": "開始備份"
@@ -1284,25 +1284,25 @@
       "title": "在 {{chain}} 上接收 {{token}}",
       "watchModeAlert1": "這是一個觀察地址",
       "watchModeAlert2": "你確定用它來接收資產嗎？",
-      "receiveOn": "接收 {{token}} 到"
+      "receiveOn": "接收 {{token}} 的鏈："
     },
     "securityEngine": {
       "alertTriggerReason": "警報觸發原因：",
-      "currentValueIs": "當前值為 {{value}}",
+      "currentValueIs": "目前值為 {{value}}",
       "enableRule": "啟用規則",
       "forbiddenCantIgnore": "發現了不可忽視的高危風險",
       "ignoreAlert": "忽略警報",
-      "no": "不",
-      "riskProcessed": "風險已處理",
-      "ruleDetailTitle": "規則詳情",
-      "ruleDisabled": "安全規則已被禁用。\n為了你的安全，你可以隨時將其打開",
+      "no": "否",
+      "riskProcessed": "風險提示已忽略",
+      "ruleDetailTitle": "風險詳情",
+      "ruleDisabled": "安全規則已被停用。\n為了你的安全，你可以隨時重新啟用。",
       "understandRisk": "我理解並自行承擔任何損失",
       "undo": "撤消",
-      "unknownResult": "由於安全規則不可用，結果未知",
+      "unknownResult": "目前安全引擎不可用，因此結果未知",
       "viewRiskLevel": "查看風險級別",
       "viewRules": "查看安全規則",
       "whenTheValueIs": "當值為 {{value}} 時",
-      "yes": "是的"
+      "yes": "是"
     },
     "sendNFT": {
       "header": {
@@ -1326,8 +1326,8 @@
         "title": "至"
       },
       "sendButton": "發送",
-      "tipAddToContacts": "新增為聯系人",
-      "tipNotOnAddressList": "不在地址列表中",
+      "tipAddToContacts": "新增為聯絡人",
+      "tipNotOnAddressList": "不在地址清單中",
       "whitelistAlert__temporaryGranted": "已授權此次轉賬",
       "whitelistAlert__disabled": "轉賬白名單已關閉，你可以轉賬給任何地址",
       "whitelistAlert__notWhitelisted": "該地址不在白名單中。<1 /> 我同意授予本次轉賬臨時權限。",
@@ -1340,7 +1340,7 @@
       }
     },
     "sendToken": {
-      "addressNotInContract": "不在地址列表中，<1></1><2>新增為聯絡人</2>",
+      "addressNotInContract": "不在地址清單中，<1></1><2>新增為聯絡人</2>",
       "AddToContactsModal": {
         "addedAsContacts": "已新增為聯絡人",
         "editAddr": {
@@ -1365,15 +1365,15 @@
           "normal": "正常",
           "slow": "慢"
         },
-        "popupDesc": "會按你設定的 Gas Price，從轉帳金額中預留 Gas 費用",
-        "popupTitle": "設定 Gas Price (Gwei)"
+        "popupDesc": "會根據你設定的 Gas 價格，從轉賬金額中預留 Gas 費用",
+        "popupTitle": "設定 Gas 價格（Gwei）"
       },
       "header": {
         "title": "發送"
       },
       "modalConfirmAddToContacts": {
         "confirmText": "確認",
-        "title": "新增為聯系人"
+        "title": "新增為聯絡人"
       },
       "modalConfirmAllowTransferTo": {
         "cancelText": "取消",
@@ -1415,21 +1415,21 @@
       "max": "全部",
       "sectionMsgDataForEOA": {
         "title": "留言",
-        "currentIsOriginal": "當前輸入內容為原始數據，UTF-8 格式為:",
-        "currentIsUTF8": "當前輸入內容編碼為 UTF-8，原始數據是:",
+        "currentIsOriginal": "目前輸入的是原始資料，UTF-8 格式為：",
+        "currentIsUTF8": "目前輸入的是 UTF-8 編碼內容，原始資料為：",
         "placeholder": "可選"
       },
       "sectionMsgDataForContract": {
-        "simulation": "合約調用模擬",
-        "notHexData": "只支援 16 進制格式數據",
-        "title": "合約調用",
+        "simulation": "合約呼叫模擬：",
+        "notHexData": "僅支援十六進制資料",
+        "title": "合約呼叫",
         "placeholder": "可選",
-        "parseError": "合約調用模擬失敗"
+        "parseError": "合約呼叫解碼失敗"
       },
       "blockedTransactionCancelText": "我知道",
       "blockedTransactionContent": "此交易會與 OFAC 制裁名單中的地址互動。",
       "blockedTransaction": "封鎖交易",
-      "selectFromAddress": "選擇地址",
+      "selectFromAddress": "選擇付款地址",
       "noSupprotTokenForSafe": "你要發送代幣的 Safe 地址未在此鏈上部署。請在繼續前檢查，以免造成損失。",
       "noSupportTokenForChain": "接收地址是另一條鏈上的合約地址。請在繼續前檢查，以免造成損失。",
       "noSupprotTokenForDex": "此代幣可能不受該交易所支援。請在繼續之前檢查以避免損失。",
@@ -1445,7 +1445,7 @@
       }
     },
     "sendTokenComponents": {
-      "GasReserved": "預留 <1>0</1> {{ tokenName }} 用於 礦工費",
+      "GasReserved": "預留 <1>0</1> {{ tokenName }} 用於支付 Gas 費用",
       "SwitchReserveGas": "預留 Gas <1 />"
     },
     "signFooterBar": {
@@ -1453,15 +1453,15 @@
         "airgap": "AirGap 地址",
         "bitbox": "BitBox02 地址",
         "coolwallet": "CoolWallet 地址",
-        "keystone": "KeyStone 地址",
-        "onekey": "Onekey 地址",
+        "keystone": "Keystone 地址",
+        "onekey": "OneKey 地址",
         "privateKey": "私鑰地址",
         "safe": "Safe 地址",
         "seedPhrase": "助記詞地址",
         "trezor": "Trezor 地址",
         "watchAddress": "無法使用觀察地址進行簽名",
         "coboSafe": "Cobo Argus 地址",
-        "seedPhraseWithPassphrase": "助記詞地址（密碼）"
+        "seedPhraseWithPassphrase": "助記詞地址（密碼短語）"
       },
       "beginSigning": "開始簽名流程",
       "connectButton": "連接",
@@ -1473,17 +1473,17 @@
       "ledgerNotConnected": "Ledger 未連接",
       "keystoneNotConnected": "Keystone 未連接",
       "keystoneConnected": "Keystone 已連接",
-      "processRiskAlert": "請先處理所有警報",
+      "processRiskAlert": "請在簽名前先處理所有警報",
       "requestFrom": "請求來源",
-      "signAndSubmitButton": "簽名並提交",
+      "signAndSubmitButton": "簽名",
       "walletConnect": {
-        "chainSwitched": "你已在移動錢包上切換到不同的鏈\n請在手機錢包中切換到{{0}}",
-        "connectBeforeSign": "{{0}}未連接到 Rabby，請在簽名前連接",
+        "chainSwitched": "你已在手機錢包上切換到其他鏈\n請在手機錢包中切換到 {{0}}",
+        "connectBeforeSign": "{{0}} 未連接到 Rabby，請在簽名前連接",
         "connected": "已連接並準備好簽名",
         "connectedButCantSign": "已連接但無法簽名",
         "howToSwitch": "如何切換",
         "notConnectToMobile": "未連接到 {{brand}}",
-        "switchChainAlert": "請在手機錢包中切換到{{chain}}",
+        "switchChainAlert": "請在手機錢包中切換到 {{chain}}",
         "switchToCorrectAddress": "請在手機錢包中切換到正確地址",
         "wrongAddressAlert": "你已在手機錢包中切換到其他地址\n請在手機錢包中切換至正確地址",
         "latency": "延遲",
@@ -1500,33 +1500,33 @@
         "notConnected": "你的錢包未連接，請重新連接",
         "resent": "重試",
         "siging": "簽名請求發送中",
-        "signError": "Ledger 簽名錯誤:",
+        "signError": "Ledger 簽名錯誤：",
         "txRejected": "交易已拒絕",
         "txRejectedByLedger": "Ledger 上已拒絕該交易",
-        "unlockAlert": "請插入並解鎖你的 Ledger 設備，打開 Ethereum 應用程式",
+        "unlockAlert": "請插入並解鎖你的 Ledger 裝置，打開 Ethereum 應用程式",
         "updateFirmwareAlert": "請更新你的 Ledger 韌體版本及 Ethereum 應用程式",
-        "submitting": "已簽名，交易正在提交",
+        "submitting": "已簽名，正在建立交易",
         "resubmited": "已重新提交"
       },
       "qrcode": {
-        "afterSignDesc": "簽名確認後，請將 {{brand}} 的QR 碼放置於你的電腦攝像頭前",
-        "failedToGetExplain": "獲取解析失敗",
-        "getSig": "獲取簽名",
+        "afterSignDesc": "簽名後，請將 {{brand}} 上的 QR 碼對準電腦鏡頭",
+        "failedToGetExplain": "取得解析失敗",
+        "getSig": "取得簽名",
         "misMatchSignId": "交易資料不一致。請檢查交易詳情。",
-        "qrcodeDesc": "請用你的 {{brand}} 掃碼簽名。<br></br>簽名後，點擊下方按鈕獲取簽名。",
-        "sigCompleted": "交易已提交",
-        "sigReceived": "簽名已獲取",
+        "qrcodeDesc": "請用你的 {{brand}} 掃碼簽名。<br></br>簽名後，點擊下方按鈕取得簽名。",
+        "sigCompleted": "交易已建立",
+        "sigReceived": "簽名已取得",
         "signWith": "使用 {{brand}} 簽名",
-        "txFailed": "交易失敗",
-        "unknownQRCode": "錯誤：無法識別QR 碼",
+        "txFailed": "建立失敗",
+        "unknownQRCode": "錯誤：無法識別該 QR 碼",
         "txFailedBy": "無法 {{category}}",
         "retryTxFailedBy": "無法 {{category}}：請重試",
-        "txFailedRetry": "創建失敗：請重試"
+        "txFailedRetry": "建立失敗：請重試"
       },
       "keystone": {
         "signWith": "切換到{{method}}進行簽名",
-        "qrcodeDesc": "掃描以簽名。簽名後，點擊下面獲取簽名。對於USB，重新連接並授權以重新開始簽名過程",
-        "misMatchSignId": "交易數據不一致。請檢查交易詳情。",
+        "qrcodeDesc": "掃描 QR 碼進行簽名。簽名後，點擊下方按鈕取得簽名。使用 USB 時，請重新連接並授權，以重新開始簽名流程。",
+        "misMatchSignId": "交易資料不一致。請檢查交易詳情。",
         "unsupportedType": "錯誤：交易類型不支援或未知。",
         "siging": "正在發送簽名請求",
         "txRejected": "交易被拒絕",
@@ -1537,7 +1537,7 @@
         "shouldOpenKeystoneHomePageError": "確保你的 Keystone 3 Pro 位於首頁"
       },
       "resend": "重試",
-      "submitTx": "提交",
+      "submitTx": "提交交易",
       "testnet": "測試網",
       "mainnet": "主網",
       "imKeyNotConnected": "imKey 未連接",
@@ -1545,49 +1545,49 @@
       "gasless": {
         "unavailable": "Gas 餘額不足",
         "notEnough": "Gas 餘額不足",
-        "GetFreeGasToSign": "領取 Free Gas 繼續簽署",
-        "rabbyPayGas": "Rabby 將支付所需的 Gas 費用 - 只需簽名即可",
+        "GetFreeGasToSign": "領取 Free Gas",
+        "rabbyPayGas": "Rabby 將支付所需的 Gas 費用——你只需簽名即可",
         "customRpcUnavailableTip": "自訂 RPC 不支援 Free Gas",
         "walletConnectUnavailableTip": "透過 WalletConnect 連接的手機錢包不支援 Free Gas",
         "watchUnavailableTip": "僅觀察地址不支援 Free Gas"
       },
       "cancelTransaction": "取消交易",
       "detectedMultipleRequestsFromThisDapp": "檢測到來自此 Dapp 的多個請求",
-      "cancelCurrentTransaction": "取消當前交易",
+      "cancelCurrentTransaction": "取消目前交易",
       "cancelAll": "取消來自 Dapp 的所有 {{count}} 個請求",
-      "blockDappFromSendingRequests": "阻止 Dapp 在1分鐘內發送請求",
+      "blockDappFromSendingRequests": "阻止 Dapp 在 1 分鐘內發送請求",
       "cancelConnection": "取消連接",
-      "cancelCurrentConnection": "取消當前連接",
+      "cancelCurrentConnection": "取消目前連接",
       "gasAccount": {
-        "gotIt": "明白",
+        "gotIt": "明白了",
         "customRPC": "使用自訂 RPC 時不支援",
         "useGasAccount": "使用 GasAccount",
         "login": "登入",
         "loginFirst": "請先登入 GasAccount",
         "WalletConnectTips": "GasAccount 不支援 WalletConnect",
         "notEnough": "Gas 不足。Gas 餘額：{{usd}}",
-        "deposit": "存入",
+        "deposit": "充值",
         "chainNotSupported": "GasAccount 不支援此鏈",
-        "depositTips": "要完成GasAccount 存款，此交易將被丟棄。你需要在存款後重新進行交易。",
-        "loginTips": "要完成 GasAccount 登入，此交易將被放棄。你需要在登入後重新發起。",
-        "signWithHardwareWalletToUse": "你需要使用 {{brand}} 來簽署"
+        "depositTips": "要完成 GasAccount 充值，此交易將被捨棄。充值後，你需要重新發起交易。",
+        "loginTips": "要完成 GasAccount 登入，此交易將被捨棄。登入後，你需要重新發起交易。",
+        "signWithHardwareWalletToUse": "你需要使用 {{brand}} 簽名後才能使用"
       },
       "iGotIt": "我明白了"
     },
     "signText": {
       "createKey": {
         "description": "描述",
-        "interactDapp": "交互 Dapp"
+        "interactDapp": "與 Dapp 互動"
       },
-      "message": "資訊",
-      "title": "簽署文本",
+      "message": "文字訊息",
+      "title": "簽署文字",
       "sameSafeMessageAlert": "相同訊息已確認；無需額外簽名。"
     },
     "signTx": {
       "addressNote": "地址備註",
       "addressTypeTitle": "地址類型",
       "balanceChange": {
-        "errorTitle": "獲取結餘變化失敗",
+        "errorTitle": "取得結餘變化失敗",
         "failedTitle": "交易模擬失敗",
         "nftOut": "減少的 NFT",
         "noBalanceChange": "未檢測到結餘變化",
@@ -1610,7 +1610,7 @@
         "operationABIDesc": "操作從 ABI 解碼",
         "operationCantDecode": "操作未解碼",
         "payNativeToken": "支付 {{symbol}}",
-        "title": "合約調用",
+        "title": "合約呼叫",
         "suspectedReceiver": "異常地址",
         "receiver": "接收者地址"
       },
@@ -1623,44 +1623,44 @@
         "title": "部署合約"
       },
       "deployTimeTitle": "部署時間",
-      "eip1559Desc1": "在支援 EIP-1559 的鏈上，Priority Fee 是給礦工處理交易的小費。降低 Priority Fee 可以節省最終 Gas 費用，但交易處理時間可能會變長。",
-      "eip1559Desc2": "在 Rabby 中，Priority Fee（小費）= Max Fee - Base Fee。設定 Max Priority Fee 後，會先扣除 Base Fee，剩餘部分作為小費支付給礦工。",
+      "eip1559Desc1": "在支援 EIP-1559 的鏈上，優先費是支付給礦工處理交易的小費。降低優先費可以節省最終 Gas 費用，但交易處理時間可能會變長。",
+      "eip1559Desc2": "在 Rabby 中，優先費（小費）= 費用上限 - 基礎費。設定最高優先費後，會先扣除基礎費，餘額會作為小費支付給礦工。",
       "enoughSafeSigCollected": "已收集到足夠的簽名",
-      "failToFetchGasCost": "獲取礦工費失敗",
-      "importedAddress": "已導入地址",
+      "failToFetchGasCost": "無法估算 Gas 費用",
+      "importedAddress": "已匯入地址",
       "fakeTokenAlert": "這是由 Rabby 標記的詐騙代幣",
       "firstOnChain": "首次鏈上交易",
       "floorPrice": "地板價",
       "gasLimitEmptyAlert": "請輸入 Gas Limit",
-      "gasLimitLessThanExpect": "Gas Limit 較低，交易有 1% 的概率失敗",
-      "gasLimitLessThanGasUsed": "Gas Limit 過低，交易有 95% 的概率失敗",
+      "gasLimitLessThanExpect": "Gas Limit 較低，交易有 1% 的機率失敗",
+      "gasLimitLessThanGasUsed": "Gas Limit 過低，交易有 95% 的機率失敗",
       "gasLimitMinValueAlert": "Gas Limit 應大於 21000",
       "gasLimitModifyOnlyNecessaryAlert": "僅在必要時修改",
       "gasLimitNotEnough": "Gas Limit 小於 21000，交易無法提交",
       "gasLimitTitle": "Gas Limit",
       "gasMoreButton": "更多",
-      "gasNotRequireForSafeTransaction": "Safe 交易無需礦工費",
+      "gasNotRequireForSafeTransaction": "Safe 交易無需 Gas 費用",
       "gasPriceMedian": "最近 100 筆鏈上交易的中位數：",
-      "gasPriceTitle": "Gas Price (Gwei)",
-      "gasSelectorTitle": "礦工費",
-      "hardwareSupport1559Alert": "請確保你的硬體錢包韌體已升級至支援 EIP-1559 的版本",
-      "interactContract": "交互合約",
-      "interacted": "之前交互過",
+      "gasPriceTitle": "Gas 價格（Gwei）",
+      "gasSelectorTitle": "Gas",
+      "hardwareSupport1559Alert": "請確保你的硬件錢包韌體已升級至支援 EIP-1559 的版本",
+      "interactContract": "與合約互動",
+      "interacted": "之前互動過",
       "manuallySetGasLimitAlert": "你已手動將 Gas Limit 設定為",
-      "markAsBlock": "已標記為拉黑",
+      "markAsBlock": "已標記為封鎖",
       "markAsTrust": "已標記為信任",
       "markRemoved": "標記已刪除",
-      "maxPriorityFee": "Max Priority Fee (Gwei)",
-      "moreSafeSigNeeded": "還需要 {{0}} 次確認",
+      "maxPriorityFee": "最高優先費（Gwei）",
+      "moreSafeSigNeeded": "還需要 {{0}} 個簽名才能確認",
       "multiSigChainNotMatch": "多簽地址不在本鏈上，無法發起交易",
       "myMark": "我的標記",
-      "myNativeTokenBalance": "我的礦工費結餘：",
+      "myNativeTokenBalance": "我的 Gas 餘額：",
       "nativeTokenNotEngouthForGas": "錢包中的 Gas 結餘不足以發起交易",
-      "neverInteracted": "之前沒有交互過",
+      "neverInteracted": "之前沒有互動過",
       "neverTransacted": "之前沒有交易過",
       "nftApprove": {
         "approveNFT": "授權 NFT",
-        "nftContractTrustValueTip": "信任值是指授權並暴露給該合約的資產總價值，\n信任值低表示該合約存在風險或 180 天內不活躍",
+        "nftContractTrustValueTip": "信任值是指透過該合約花費的最高 NFT 價值。信任值較低表示該合約可能存在風險，或已 180 天沒有活動。",
         "title": "NFT 授權"
       },
       "nftCollection": "NFT 系列",
@@ -1668,7 +1668,7 @@
         "approveCollection": "授權 NFT 系列",
         "title": "NFT 系列授權"
       },
-      "nftIn": "增加的NFT",
+      "nftIn": "增加的 NFT",
       "noGasRequired": "無需 Gas",
       "noMark": "無標記",
       "nonceLowerThanExpect": "Nonce 太低，最小值應為 {{0}}",
@@ -1694,7 +1694,7 @@
       },
       "safeAddressNotSupportChain": "{{0}} 鏈不支援目前 Safe 地址",
       "safeAdminSigned": "已簽",
-      "scamTokenAlert": "根據 Rabby 的檢測，這可能是一個低質量的詐騙代幣",
+      "scamTokenAlert": "根據 Rabby 的檢測，這可能是低品質或詐騙代幣",
       "send": {
         "addressBalanceTitle": "地址結餘",
         "cexAddress": "中心化交易所地址",
@@ -1726,16 +1726,16 @@
         "title": "提交多簽交易"
       },
       "swap": {
-        "failLoadReceiveToken": "加載失敗",
+        "failLoadReceiveToken": "載入失敗",
         "minReceive": "最少收到",
-        "notPaymentAddress": "非當前付款地址",
+        "notPaymentAddress": "非目前付款地址",
         "unknownAddress": "未知地址",
-        "payToken": "賣出",
+        "payToken": "支付代幣",
         "receiveToken": "買入",
         "receiver": "接收地址",
         "simulationFailed": "交易模擬失敗",
         "simulationNotSupport": "該鏈暫不支援交易模擬",
-        "slippageFailToLoad": "滑點加載失敗",
+        "slippageFailToLoad": "滑點載入失敗",
         "slippageTolerance": "滑點容忍度",
         "title": "代幣兌換",
         "valueDiff": "價值差異"
@@ -1747,7 +1747,7 @@
         "amountPopupTitle": "授權額度",
         "approveTo": "授權給",
         "approveToken": "授權代幣",
-        "contractTrustValueTip": "信任值是指授權並暴露給該合約的資產總價值，\n信任值低表示該合約存在風險或 180 天內不活躍",
+        "contractTrustValueTip": "信任值是指透過該合約花費的資產總價值。信任值較低表示該合約可能存在風險，或已 180 天沒有活動。",
         "deployTimeLessThan": "部署時間 < {{value}} 天",
         "eoaAddress": "EOA 地址",
         "flagByRabby": "被 Rabby 標記為風險",
@@ -1762,25 +1762,25 @@
       "trusted": "信任",
       "unknownAction": "未知簽名類型",
       "unknownActionType": "未知操作類型",
-      "unwrap": "Unwrap Token",
-      "viewRaw": "查看原始數據",
-      "wrapToken": "Wrap Token",
-      "contractPopularity": "{{1}} 排名 No.{{0}}",
+      "unwrap": "解封代幣",
+      "viewRaw": "查看原始資料",
+      "wrapToken": "封裝代幣",
+      "contractPopularity": "在 {{1}} 中排名第 {{0}}",
       "myMarkWithContract": "我在 {{chainName}} 合約上的標記",
       "coboSafeNotPermission": "此委託地址無權發起此交易",
       "l2GasEstimateTooltip": "L2 鏈的 Gas 預估不包含 L1 Gas 費用，實際費用會高於目前預估。",
       "BroadcastMode": {
         "instant": {
           "title": "立即廣播",
-          "desc": "交易創建後將被立即廣播到鏈上節點"
+          "desc": "交易建立後將被立即廣播到鏈上節點"
         },
         "lowGas": {
           "title": "省 Gas 廣播",
-          "desc": "交易創建後會等鏈上Gas較低的時廣播從而節省Gas"
+          "desc": "交易建立後會等待鏈上 Gas 較低時再廣播，從而節省 Gas"
         },
         "mev": {
-          "title": "MEV 廣播",
-          "desc": "交易創建後會被廣播到指定MEV 節點"
+          "title": "MEV 保護模式",
+          "desc": "交易建立後會被廣播到指定的 MEV 節點"
         },
         "tips": {
           "notSupportChain": "目前鏈不支援該模式",
@@ -1790,9 +1790,9 @@
         },
         "lowGasDeadline": {
           "label": "最長等待時間",
-          "1h": "1h",
-          "4h": "4h",
-          "24h": "24h"
+          "1h": "1 小時",
+          "4h": "4 小時",
+          "24h": "24 小時"
         },
         "title": "廣播模式"
       },
@@ -1802,7 +1802,7 @@
           "replaceTitle": "替換隊列中的交易"
         },
         "error": {
-          "pendingList": "待處理交易列表載入失敗，<1/><2>重試</2>"
+          "pendingList": "待處理交易清單載入失敗，<1/><2>重試</2>"
         },
         "explain": {
           "contractCall": "合約呼叫",
@@ -1819,7 +1819,7 @@
         "descTipWarningPrivacy": "簽名可能會驗證地址所有權",
         "descTipWarningAssets": "簽名可能涉及資產變動",
         "descTipWarningBoth": "簽名可能導致資產變動，並驗證地址所有權",
-        "interactContract": "互動合約"
+        "interactContract": "與合約互動"
       },
       "customRPCErrorModal": {
         "title": "自訂 RPC 錯誤",
@@ -1835,8 +1835,8 @@
         "receiveAsset": "接收資產"
       },
       "chain": "鏈",
-      "importedDelegatedAddress": "已導入的委託地址",
-      "noDelegatedAddress": "無已導入的委託地址",
+      "importedDelegatedAddress": "已匯入的委託地址",
+      "noDelegatedAddress": "沒有已匯入的委託地址",
       "coboSafeCreate": {
         "safeWalletTitle": "Safe 錢包",
         "descriptionTitle": "描述",
@@ -1863,13 +1863,13 @@
       "hasInteraction": "之前有互動",
       "address": "地址",
       "advancedSettings": "高級設定",
-      "amount": "金額",
-      "contract": "智能合約",
+      "amount": "數量",
+      "contract": "智能合約地址",
       "trustValueTitle": "信任值",
-      "typedDataMessage": "簽署類型數據",
+      "typedDataMessage": "簽署類型化資料",
       "label": "標籤",
       "addressSource": "地址來源",
-      "maxPriorityFeeDisabledAlert": "請先設定 Gas Price",
+      "maxPriorityFeeDisabledAlert": "請先設定 Gas 價格",
       "gasAccount": {
         "estimatedGas": "預估 Gas：",
         "sendGas": "本次交易轉入你地址的 Gas：",
@@ -1889,7 +1889,7 @@
         "maxPay": "最高支付"
       },
       "batchRevokePermit2": {
-        "title": "批量撤銷 Permit2 授權"
+        "title": "批次撤銷 Permit2 授權"
       },
       "gasAccountForGas": "使用我的 GasAccount 中的 USD 支付 Gas 費用",
       "nativeTokenForGas": "使用 {{chainName}} 上的 {{tokenName}} 代幣支付 Gas 費用",
@@ -1908,9 +1908,9 @@
         "defaultTips": "出現錯誤。請稍後再試。",
         "nonceTooHigh": "Nonce 過高。請調整 nonce 並重試。",
         "alreadySubmitted": "交易已提交。檢測到重複交易。",
-        "gasExceedsBlockGasLimit": "超出區塊燃氣限制。請調整後再試。",
+        "gasExceedsBlockGasLimit": "Gas 超過區塊 Gas Limit。請調整後再試。",
         "nonceTooLow": "Nonce 太低。我們將更新為 {{nonce}}。點擊「重試」確認並再次嘗試。",
-        "gasPriceTooLow": "Gas Price 太低。我們會將其提高 30%，以幫助交易確認。點擊「重試」確認並再次嘗試。",
+        "gasPriceTooLow": "Gas 價格太低。我們會將其提高 30%，以幫助交易確認。點擊「重試」確認並再次嘗試。",
         "insufficient": "你的 Gas 結餘不足以支付網絡 Gas 費。請補充 Gas 後重試。"
       },
       "addLiquidity": {
@@ -1920,7 +1920,7 @@
         "token0": "新增代幣 1",
         "token1": "新增代幣 2",
         "priceDiff": "價格差異",
-        "poolPrice": "池子價格"
+        "poolPrice": "資金池價格"
       },
       "signMessageTag": {
         "contract": "合約：",
@@ -1935,10 +1935,10 @@
         "receiveNFT": "接收 NFT"
       },
       "contractCall": {
-        "operationDecoded": "操作解碼於"
+        "operationDecoded": "操作已從訊息中解碼"
       },
       "createKey": {
-        "title": "創建密鑰"
+        "title": "建立密鑰"
       },
       "permit": {
         "title": "代幣授權 Permit"
@@ -1949,7 +1949,7 @@
         "sigExpireTimeTip": "該簽名在鏈上有效的時間",
         "title": "代幣授權 Permit2"
       },
-      "safeCantSignText": "Safe 地址不支援簽署文本",
+      "safeCantSignText": "Safe 地址不支援簽署文字",
       "sellNFT": {
         "listNFT": "掛出 NFT",
         "receiveToken": "接收代幣",
@@ -1959,14 +1959,14 @@
       "signMultiSig": {
         "title": "確認交易"
       },
-      "signTypeDataOnChain": "在 {{chain}} 簽署類型數據",
+      "signTypeDataOnChain": "在 {{chain}} 簽署類型化資料",
       "swapTokenOrder": {
         "title": "代幣訂單"
       },
       "verifyAddress": {
         "title": "驗證地址"
       },
-      "safeCantSignTypedData": "這是一個 Safe 地址，僅支援簽署 EIP-712 類型資料或字串。"
+      "safeCantSignTypedData": "這是一個 Safe 地址，僅支援簽署 EIP-712 類型化資料或字串。"
     },
     "swap": {
       "Completed": "已完成",
@@ -1981,7 +1981,7 @@
       "by-transaction-simulation-the-quote-is-valid": "透過模擬交易，已驗證報價有效",
       "cex": "CEX",
       "chain": "鏈",
-      "completedTip": "鏈上交易，解碼數據生成記錄",
+      "completedTip": "鏈上交易，解碼資料生成記錄",
       "confirm": "確認",
       "dex": "DEX",
       "directlySwap": "直接透過智能合約 Wrap {{symbol}} 代幣",
@@ -1994,8 +1994,8 @@
       "est-receiving": "預計接收：",
       "exchanges": "交易所",
       "fail-to-simulate-transaction": "模擬交易失敗",
-      "gas-x-price": "Gas Price：{{price}} Gwei",
-      "get-quotes": "獲取報價",
+      "gas-x-price": "Gas 價格：{{price}} Gwei",
+      "get-quotes": "取得報價",
       "i-understand-and-accept-it": "我理解並接受",
       "insufficient-balance": "結餘不足",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "滑點過低，可能會因高波動性而導致交易失敗",
@@ -2003,10 +2003,10 @@
       "need-to-approve-token-before-swap": "兌換前需要授權代幣",
       "no-transaction-records": "無交易記錄",
       "not-supported": "不支援",
-      "pendingTip": "交易已提交。\n如果交易長時間處於待完成狀態，你可以嘗試點擊“更多”>“清除待完成”",
-      "price-expired-refresh-quote": "價格已過期，\n刷新報價",
-      "rabby-fee": "Rabby手續費",
-      "preferMEV": "優先 MEV 模式",
+      "pendingTip": "交易已提交。\n如果交易長時間處於待處理狀態，可嘗試在設定中清除待處理交易。",
+      "price-expired-refresh-quote": "價格已過期，\n重新整理報價",
+      "rabby-fee": "Rabby 手續費",
+      "preferMEV": "優先使用 MEV 保護",
       "preferMEVTip": "為 Ethereum 兌換啟用「MEV Guarded」功能，以降低遭受三明治攻擊的風險。注意：使用自訂 RPC 或 WalletConnect 地址時不支援此功能。",
       "rate": "匯率",
       "rates-from-cex": "來自 CEX 的匯率",
@@ -2014,32 +2014,32 @@
       "search-by-name-address": "搜尋名稱/地址",
       "security-verification-failed": "安全驗證失敗",
       "select-token": "選擇代幣",
-      "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "所選報價與當前價格差異較大，可能造成重大損失",
-      "slippage-adjusted-refresh-quote": "滑點調整，\n刷新報價",
-      "slippage-tolerance": "滑點",
-      "slippage_tolerance": "滑點：",
+      "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "所選報價與目前價格差異較大，可能造成重大損失",
+      "slippage-adjusted-refresh-quote": "滑點調整，\n重新整理報價",
+      "slippage-tolerance": "滑點容差",
+      "slippage_tolerance": "滑點容差：",
       "swap-from": "賣出",
       "swap-history": "兌換歷史",
       "swap-via-x": "透過 {{name}} 兌換",
       "testnet-is-not-supported": "不支援自訂網絡",
       "the-following-swap-rates-are-found": "發現以下兌換報價",
-      "sort-with-gas": "排序考慮gas",
-      "there-is-no-fee-and-slippage-for-this-trade": "此交易不收取任何費用和滑點",
+      "sort-with-gas": "按包含 Gas 費用的總成本排序",
+      "there-is-no-fee-and-slippage-for-this-trade": "此交易沒有滑點",
       "this-exchange-is-not-enabled-to-trade-by-you": "你未啟用該交易所進行交易",
       "this-token-pair-is-not-supported": "不支援該代幣對",
       "title": "兌換",
       "to": "買入",
       "trade": "交易",
-      "tradingSettingTip1": "1. 開啟後，你將直接與交易所合約進行交互",
+      "tradingSettingTip1": "1. 開啟後，你將直接與交易所合約互動",
       "tradingSettingTip2": "2. Rabby 不承擔因交易所合約產生的任何風險",
       "tradingSettingTips": "共 {{viewCount}} 個交易所提供報價，{{tradeCount}} 個允許直接交易",
       "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "由於滑點較高，交易可能會被搶先交易",
-      "unable-to-fetch-the-price": "無法獲取價格",
+      "unable-to-fetch-the-price": "無法取得價格",
       "unlimited-allowance": "無限額度",
       "view-quotes": "查看報價",
-      "wrap-contract": "Wrap Contract",
+      "wrap-contract": "封裝合約",
       "actual": "實際：",
-      "gas-fee": "礦工費：{{gasUsed}}",
+      "gas-fee": "Gas 費用：{{gasUsed}}",
       "estimate": "預估：",
       "no-slippage-for-wrap": "Wrap 無滑點",
       "rabbyFee": {
@@ -2047,7 +2047,7 @@
         "button": "知道了",
         "wallet": "錢包",
         "title": "Rabby 手續費",
-        "bridgeDesc": "Rabby Wallet 將始終從頂級聚合器中尋找最佳率，並驗證其報價的可靠性。Rabby 收取 0.25% 的費用，此費用已自動包含在報價中。",
+        "bridgeDesc": "Rabby Wallet 會始終從頂級聚合器中尋找最佳匯率，並驗證其報價的可靠性。Rabby 收取 0.25% 的費用，此費用已自動包含在報價中。",
         "swapDesc": "Rabby Wallet 會始終從頂級聚合器中找到最佳匯率，並驗證其報價的可靠性。Rabby 收取 0.25% 費用（Wrap 為 0%），該費用已自動包含在報價中。"
       },
       "lowCreditModal": {
@@ -2055,48 +2055,48 @@
         "desc": "低信用值通常表示高風險，例如蜜罐代幣或極低流動性。"
       },
       "no-quote-found": "找不到報價",
-      "approve-swap": "批准並交換",
+      "approve-swap": "授權並兌換",
       "max": "最大值",
       "Gas-fee-too-high": "Gas 費用太高",
       "hidden-no-quote-rates_other": "{{count}} 個報價不可用",
       "no-fee-for-wrap": "Wrap 不收取 Rabby 費用",
-      "approve-and-swap": "透過 {{name}} 批准並兌換",
-      "process-with-two-step-approve": "進行兩步批准",
-      "fetch-best-quote": "獲取最佳報價",
+      "approve-and-swap": "授權並透過 {{name}} 兌換",
+      "process-with-two-step-approve": "分兩步授權",
+      "fetch-best-quote": "正在取得最佳報價",
       "source": "來源",
       "price-impact": "價格影響",
       "Auto": "自動",
       "from": "從",
       "no-fees-for-wrap": "Wrap 不收取 Rabby 費用",
       "usd-after-fees": "≈ {{usd}}",
-      "two-step-approve-details": "USDT 需要 2 筆交易才能更改授權額度。你需要先將授權額度重置為 0，然後再設定新的授權額度。",
+      "two-step-approve-details": "USDT 需要 2 筆交易才能更改授權額度。你需要先將授權額度重設為 0，然後再設定新的授權額度。",
       "hidden-no-quote-rates_one": "{{count}} 個報價不可用",
       "No-available-quote": "沒有可用的報價",
-      "loss-tips": "你正在損失 {{usd}}。嘗試在小型市場中投入較少的金額。",
-      "two-step-approve": "簽署 2 筆交易以更改允許額",
+      "loss-tips": "目前報價預計損失 {{usd}}。此市場流動性較低，請嘗試較小的金額。",
+      "two-step-approve": "簽署 2 筆交易以更改授權額度",
       "understandRisks": "我明白風險並想繼續",
-      "approve": "批准",
+      "approve": "授權",
       "search-by-token-name-address": "搜尋代幣名稱 / 地址",
       "best-subtitle": "最佳報價由最低的預估總成本決定，包括匯率及 Gas 費用。"
     },
     "switchChain": {
-      "chainNotSupport": "Rabby尚不支援請求的鏈",
-      "title": "將自定網絡新增至 Rabby",
-      "testnetTip": "請在\"更多\"中打開“開啟測試網”後再發起測試網連接",
+      "chainNotSupport": "Rabby 尚不支援請求的鏈",
+      "title": "將自訂網絡新增至 Rabby",
+      "testnetTip": "請在「更多」中開啟「啟用測試網」後，再連接測試網",
       "chainNotSupportYet": "Rabby 尚未支援所請求的鏈",
       "chainId": "鏈 ID：",
       "unknownChain": "未知鏈",
       "requestsReceived": "收到 1 個請求",
       "requestsReceivedPlural": "收到 {{count}} 個請求",
       "requestRabbyToSupport": "請求 Rabby 支援",
-      "chainNotSupportAddChain": "Rabby 尚未集成所請求的鏈，你可以將其新增為自訂測試網絡",
+      "chainNotSupportAddChain": "Rabby 尚未整合所請求的鏈，你可以將其新增為自訂測試網絡",
       "addChain": "新增測試網絡",
-      "desc": "所請求的網絡尚未被 Rabby 集成，你可以手動新增它作為自訂網絡"
+      "desc": "所請求的網絡尚未被 Rabby 整合，你可以手動新增它作為自訂網絡"
     },
     "unlock": {
       "btn": {
         "unlock": "解鎖",
-        "biometric": "使用生物識別解锁",
+        "biometric": "使用生物識別解鎖",
         "unlockWithPassword": "用密碼解鎖"
       },
       "password": {
@@ -2104,10 +2104,10 @@
         "placeholder": "輸入密碼解鎖",
         "required": "輸入密碼解鎖"
       },
-      "btnForgotPassword": "忘記密碼?",
+      "btnForgotPassword": "忘記密碼？",
       "title": "Rabby Wallet",
       "description": "你首選的以太坊和 EVM 錢包",
-      "biometricFailed": "生物識別解锁失敗"
+      "biometricFailed": "生物識別解鎖失敗"
     },
     "addressDetail": {
       "add-to-whitelist": "新增到白名單",
@@ -2119,10 +2119,10 @@
       "address": "地址",
       "address-note": "地址備註",
       "admins": "管理員",
-      "assets": "結餘",
+      "assets": "資產",
       "delete-address": "刪除地址",
       "delete-desc": "在刪除之前，請記住以下幾點，以了解如何保護你的資產",
-      "direct-delete-desc": "該地址是一個{{renderBrand}}地址，Rabby不存儲該地址的私鑰或助記詞，你可以將其刪除",
+      "direct-delete-desc": "這是 {{renderBrand}} 地址。Rabby 不儲存其私鑰或助記詞，你可以直接將其刪除。",
       "edit-memo-title": "編輯地址備註",
       "hd-path": "HD path",
       "manage-addresses-under-this-seed-phrase": "管理此助記詞下的地址",
@@ -2130,17 +2130,17 @@
       "please-input-address-note": "請輸入地址備註",
       "qr-code": "QR 碼",
       "source": "來源",
-      "coboSafeErrorModule": "地址已過期，請刪除並重新導入地址。",
-      "importedDelegatedAddress": "已導入的委託地址",
+      "coboSafeErrorModule": "地址已過期，請刪除並重新匯入地址。",
+      "importedDelegatedAddress": "已匯入的委託地址",
       "safeModuleAddress": "Safe 模組地址",
       "manage-addresses-under": "在此 {{brand}} 下管理地址",
       "deleteSeedPhrase": {
         "title2": "刪除地址？",
         "option2": "刪除地址和助記詞",
         "option1": "刪除地址，保留助記詞",
-        "remainSeedPhrase": "你的助記詞仍保存在設備上。",
-        "keepSeedPhrase": "這是唯一與這個助記詞連結的地址。你想保留這個助記詞嗎？",
-        "check2": "我確認已備份私鑰或助記詞，並準備刪除。",
+        "remainSeedPhrase": "你的助記詞仍儲存在裝置上。",
+        "keepSeedPhrase": "這是唯一與此助記詞關聯的地址。你想保留此助記詞嗎？",
+        "check2": "我確認已備份私鑰或助記詞，並準備刪除此地址。",
         "check1": "我明白，刪除此地址也會刪除其私鑰和助記詞。Rabby 無法幫我恢復。",
         "onlyDeleteAddr": "僅移除此地址。你的助記詞不受影響，因為其他地址仍在使用它。",
         "title": "刪除地址和助記詞？",
@@ -2150,7 +2150,7 @@
         "title": "刪除地址和私鑰？",
         "sub-title": "此操作是永久性的。請檢查以下內容以保護你的資產：",
         "check1": "我明白，刪除此地址也會刪除其私鑰。Rabby 無法幫我恢復。",
-        "check2": "我確認已備份私鑰，並準備刪除。"
+        "check2": "我確認已備份私鑰或助記詞，並準備刪除此地址。"
       },
       "notBackup": "未備份"
     },
@@ -2163,13 +2163,13 @@
     },
     "customRpc": {
       "title": "修改 RPC URL",
-      "desc": "一旦修改，自訂 RPC 將替換 Rabby 的节点。若要继續使用 Rabby 的节点，請刪除自訂 RPC。",
+      "desc": "修改後，自訂 RPC 將取代 Rabby 的節點。若要繼續使用 Rabby 的節點，請刪除自訂 RPC。",
       "add": "修改 RPC URL",
       "empty": "無自訂 RPC URL",
       "opened": "已打開",
       "closed": "已關閉",
       "EditRPCModal": {
-        "invalidRPCUrl": " RPC URL 無效",
+        "invalidRPCUrl": "RPC URL 無效",
         "invalidChainId": "Chain ID 無效",
         "rpcAuthFailed": "RPC 驗證失敗",
         "title": "修改 RPC URL",
@@ -2182,20 +2182,20 @@
       }
     },
     "requestDebankTestnetGasToken": {
-      "title": "獲取 DeBank 測試網 Gas 代幣",
-      "mintedTip": "Rabby Badge 持有者每天可以獲取一次",
-      "notMintedTip": "僅 Rabby Badge 持有者可以獲取",
+      "title": "取得 DeBank 測試網 Gas 代幣",
+      "mintedTip": "Rabby Badge 持有者每天可以取得一次",
+      "notMintedTip": "僅 Rabby Badge 持有者可以取得",
       "claimBadgeBtn": "領取 Rabby Badge",
       "time": "每日額度",
-      "requested": "你今日已獲取過",
-      "requestBtn": "獲取"
+      "requested": "你今日已取得過",
+      "requestBtn": "取得"
     },
     "safeQueue": {
       "title": "隊列（{{total}}）",
-      "sameNonceWarning": "這些交易 Nonce相同，無法同時完成。一筆交易完成後，其他交易將被替代",
-      "loading": "加載待完成交易",
-      "noData": "暫無待完成交易",
-      "loadingFaild": "由於 Safe 服務器不穩定，暫時無法獲取數據，請5分鐘後重試",
+      "sameNonceWarning": "這些交易使用相同的 Nonce，因此互相衝突。執行其中一筆後，其他交易將被自動取代。",
+      "loading": "正在載入待處理交易",
+      "noData": "暫無待處理交易",
+      "loadingFaild": "由於 Safe 伺服器不穩定，暫時無法取得資料，請在 5 分鐘後重試",
       "accountSelectTitle": "你可以用任意地址提交交易",
       "LowerNonceError": "Nonce {{nonce}} 交易需要優先完成",
       "submitBtn": "提交交易",
@@ -2220,60 +2220,60 @@
       }
     },
     "importSuccess": {
-      "title": "成功導入",
+      "title": "匯入成功",
       "addressCount": "{{count}} 個地址",
-      "gnosisChainDesc": "該地址部署於  {{count}} 條鏈上"
+      "gnosisChainDesc": "該地址部署於 {{count}} 條鏈上"
     },
     "backupPrivateKey": {
       "alert": "此私鑰是你資產的憑證。請勿遺失或向他人透露，否則你可能永遠失去資產。請在安全的環境中查看並小心保管。",
-      "clickToShowQr": "點擊展示私鑰QR 碼",
-      "clickToShow": "點擊展示私鑰",
+      "clickToShowQr": "點擊顯示私鑰 QR 碼",
+      "clickToShow": "點擊顯示私鑰",
       "title": "備份私鑰"
     },
     "backupSeedPhrase": {
       "alert": "此助記詞是你資產的憑證。請勿遺失或向他人透露，否則你可能永遠失去資產。請在安全的環境中查看並小心保管。",
-      "clickToShow": "點擊展示助記詞",
+      "clickToShow": "點擊顯示助記詞",
       "copySeedPhrase": "複製助記詞",
       "title": "備份助記詞",
       "showQrCode": "顯示 QR 碼",
       "qrCodePopupTitle": "QR 碼",
       "qrCodePopupTips": "請勿將助記詞的 QR 碼分享給其他人。請在安全的環境中查看並小心保管。",
-      "doneButton": "我已保存助記詞"
+      "doneButton": "我已備份助記詞"
     },
     "ethSign": {
-      "alert": " 'eth_sign' 類型簽名會導致資產損失。為了你的安全， Rabby 不支援此類簽名"
+      "alert": "使用 'eth_sign' 簽名可能導致資產損失。為了你的安全，Rabby 不支援此簽名方式。"
     },
     "createPassword": {
       "agree": "我已閱讀並同意<1/> <2>服務條款</2>和<4>私隱政策</4>",
       "confirmPlaceholder": "確認密碼",
-      "passwordMin": "密碼長度至少需要8個字符",
+      "passwordMin": "密碼長度必須至少為 8 個字元",
       "confirmError": "密碼不匹配",
       "confirmRequired": "請確認密碼",
       "title": "設定密碼",
       "passwordRequired": "請輸入密碼",
-      "passwordPlaceholder": "密碼長度至少需要8個字符"
+      "passwordPlaceholder": "密碼長度必須至少為 8 個字元"
     },
     "welcome": {
       "step2": {
         "title": "自托管",
-        "desc": "私鑰存儲在本地，只有你可以訪問",
+        "desc": "私鑰儲存在本機，只有你可以存取",
         "btnText": "開始使用"
       },
       "step1": {
-        "title": "訪問所有 Dapp",
+        "title": "存取所有 Dapp",
         "desc": "Rabby 可連接到所有 MetaMask 支援的 Dapp"
       }
     },
     "importQrBase": {
       "btnText": "重試",
-      "desc": "請掃描 {{brandName}} 硬體錢包的QR 碼"
+      "desc": "請掃描 {{brandName}} 硬件錢包上的 QR 碼"
     },
     "importSafe": {
       "error": {
         "invalid": "無效地址",
         "required": "請輸入地址"
       },
-      "gnosisChainDesc": "該地址部署於  {{count}} 條鏈上",
+      "gnosisChainDesc": "該地址部署於 {{count}} 條鏈上",
       "loading": "正在查詢地址部署鏈",
       "placeholder": "請輸入地址",
       "title": "新增 Safe 地址"
@@ -2293,7 +2293,7 @@
       },
       "TxTimeline": {
         "pending": "正在檢查狀態...",
-        "created": "創建交易",
+        "created": "交易已建立",
         "broadcasted": "最近已廣播",
         "broadcastedCount_ordinal_one": "{{count}} 次廣播",
         "broadcastedCount_ordinal_two": "{{count}} 次廣播",
@@ -2314,24 +2314,24 @@
         "title": "出現在 {{count}} 個 RPC 節點中"
       },
       "PendingTxList": {
-        "title": "Gas Price 在所有待處理交易中排名 #{{rank}}",
+        "title": "Gas 價格在所有待處理交易中排名 #{{rank}}",
         "titleNotFound": "在所有待處理交易中沒有排名",
         "filterBaseFee": {
           "label": "僅符合 Base Fee 要求",
-          "tooltip": "僅顯示 Gas Price 符合區塊 Base Fee 要求的交易"
+          "tooltip": "僅顯示 Gas 價格符合區塊 Base Fee 要求的交易"
         },
         "col": {
-          "gasPrice": "Gas Price",
+          "gasPrice": "Gas 價格",
           "action": "交易操作",
           "balanceChange": "餘額變化",
           "actionType": "操作類型",
-          "interact": "與之交互"
+          "interact": "互動對象"
         },
-        "titleSame": "Gas Price 在同類待處理交易中排名 #{{rank}}",
-        "titleSameNotFound": "同類待處理交易中暫無 Gas Price 排名"
+        "titleSame": "Gas 價格在同類待處理交易中排名 #{{rank}}",
+        "titleSameNotFound": "同類待處理交易中暫無 Gas 價格排名"
       },
       "Empty": {
-        "noData": "未找到數據"
+        "noData": "未找到資料"
       },
       "PrePackInfo": {
         "col": {
@@ -2353,8 +2353,8 @@
       },
       "Predict": {
         "completed": "交易已完成",
-        "predictFailed": "預打包時間預測失敗",
-        "skipNonce": "你的地址在以太坊鏈上存在跳過 Nonce，導致當前交易無法完成"
+        "predictFailed": "打包時間預測失敗",
+        "skipNonce": "你的地址在 Ethereum 鏈上跳過了 Nonce，導致目前交易無法完成"
       }
     },
     "dappSearch": {
@@ -2375,7 +2375,7 @@
     },
     "rabbyPoints": {
       "title": "Rabby 積分",
-      "out-of-x-current-total-points": "總分發中的 {{total}} 分",
+      "out-of-x-current-total-points": "共分發 {{total}} 積分",
       "share-on": "分享至",
       "referral-code-copied": "推薦碼已複製",
       "earn-points": "賺取積分",
@@ -2393,12 +2393,12 @@
         "placeholder": "輸入推薦碼以獲得額外積分（選填）",
         "claim": "領取",
         "addressBalance": "錢包餘額",
-        "MetaMaskSwap": "MetaMask 交換",
+        "MetaMaskSwap": "MetaMask 兌換",
         "rabbyUser": "Rabby 活躍用戶",
         "rabbyValuedUserBadge": "Rabby 重要用戶徽章",
         "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
         "walletBalance": "錢包餘額",
-        "activeStats": "活動狀態",
+        "activeStats": "活躍狀態",
         "referral-code": "推薦碼",
         "invalid-code": "無效的推薦碼",
         "cantUseOwnCode": "你不能使用自己的推薦碼。",
@@ -2406,19 +2406,19 @@
       },
       "referralCode": {
         "referral-code-cannot-be-empty": "推薦碼不能為空",
-        "referral-code-cannot-exceed-15-characters": "推薦碼不能超過 15 個字符",
+        "referral-code-cannot-exceed-15-characters": "推薦碼不能超過 15 個字元",
         "referral-code-already-exists": "推薦碼已存在",
         "referral-code-available": "推薦碼可用",
         "my-referral-code": "我的推薦碼",
         "refer-a-new-user-to-get-50-points": "推薦新用戶獲得 50 積分",
-        "set-my-code": "設定我的代碼",
+        "set-my-code": "設定我的推薦碼",
         "set-my-referral-code": "設定我的推薦碼",
         "once-set-this-referral-code-is-permanent-and-cannot-change": "設定後，此推薦碼將永久不變，無法更改。",
-        "max-15-characters-use-numbers-and-letters-only": "最多 15 個字符，僅可使用數字和字母。",
+        "max-15-characters-use-numbers-and-letters-only": "最多 15 個字元，僅可使用數字和字母。",
         "confirm": "確認",
         "verifyAddressModal": {
           "verify-address": "驗證地址",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "請簽署此文本消息以驗證你是該地址的所有者",
+          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "請簽署此文字訊息以驗證你是該地址的所有者",
           "cancel": "取消",
           "sign": "簽署"
         }
@@ -2452,18 +2452,18 @@
         "empty": "未找到鏈",
         "tips": {
           "added": "你已新增此鏈",
-          "supported": "Rabby 錢包已集成該鏈"
+          "supported": "Rabby 錢包已整合該鏈"
         }
       },
       "signTx": {
-        "title": "交易數據"
+        "title": "交易資料"
       },
       "ConfirmModifyRpcModal": {
-        "desc": "該鏈已被 Rabby 集成。你是否需要修改其 RPC URL？"
+        "desc": "該鏈已被 Rabby 整合。你是否需要修改其 RPC URL？"
       }
     },
     "addChain": {
-      "title": "新增自訂網絡到 Rabby",
+      "title": "將自訂網絡新增至 Rabby",
       "desc": "Rabby 無法驗證自訂網絡的安全性。請僅新增可信任的網絡。"
     },
     "sign": {
@@ -2488,13 +2488,13 @@
       "tokenPairDrawer": {
         "tokenPair": "代幣對",
         "balance": "結餘價值",
-        "noData": "不支援的代幣配對",
+        "noData": "沒有支援的代幣配對",
         "title": "從支援的代幣配對中選擇"
       },
       "BridgeTokenPair": "跨鏈代幣對",
       "the-following-bridge-route-are-found": "找到以下路由",
       "Completed": "完成",
-      "gas-x-price": "Gas Price：{{price}} Gwei。",
+      "gas-x-price": "Gas 價格：{{price}} Gwei。",
       "Balance": "餘額：",
       "detail-tx": "詳細資訊",
       "title": "跨鏈",
@@ -2504,15 +2504,15 @@
       "history": "跨鏈記錄",
       "no-transaction-records": "沒有交易記錄",
       "actual": "實際：",
-      "getRoutes": "獲取路由",
-      "price-expired-refresh-route": "價格已過期。刷新路徑。",
-      "slippage-adjusted-refresh-quote": "滑点已调整。刷新路線。",
+      "getRoutes": "取得路由",
+      "price-expired-refresh-route": "價格已過期。重新整理路徑。",
+      "slippage-adjusted-refresh-quote": "滑點已調整。重新整理路線。",
       "Pending": "等待中",
-      "completedTip": "鏈上交易，解碼數據以生成記錄",
+      "completedTip": "鏈上交易，解碼資料以產生記錄",
       "To": "到",
       "estimate": "預估：",
       "no-quote": "沒有報價",
-      "unlimited-allowance": "無限許可",
+      "unlimited-allowance": "無限授權額度",
       "Select": "選擇",
       "bridgeTo": "橋接至",
       "gas-fee": "Gas 費：{{gasUsed}}",
@@ -2530,12 +2530,12 @@
       "price-impact": "價格影響",
       "rabby-fee": "Rabby 手續費",
       "est-payment": "預計付款：",
-      "max-tips": "此數值是透過扣除橋接的 gas 費用計算得出的。",
+      "max-tips": "此數值是透過扣除跨鏈的 Gas 費用計算得出。",
       "via-bridge": "透過 {{bridge}}",
-      "recommendFromToken": "從 <1></1> 獲取可用報價",
-      "pendingTip": "交易已提交。如果交易长時間處于待處理状態，你可以嘗試在設定中清除待處理項目。",
-      "approve-and-bridge": "批准和橋接",
-      "loss-tips": "你正在損失 {{usd}}。請嘗試不同的金額。",
+      "recommendFromToken": "從 <1></1> 跨鏈以取得可用報價",
+      "pendingTip": "交易已提交。如果交易長時間處於待處理狀態，可嘗試在設定中清除待處理交易。",
+      "approve-and-bridge": "授權並跨鏈",
+      "loss-tips": "目前報價預計損失 {{usd}}，請嘗試其他金額。",
       "est-receiving": "預計接收：",
       "duration": "{{duration}} 分鐘",
       "From": "從",
@@ -2544,23 +2544,23 @@
       "pendingItem": {
         "estimatedTime": "預計時間",
         "failed": "失敗",
-        "swap": "交換",
+        "swap": "兌換",
         "bridgeStatus": "橋接狀態",
         "completed": "完成",
         "sendingFrom": "從 {{chain}} 發送",
         "receivingTo": "在 {{chain}} 上接收",
         "beReturnFailed": "橋接失敗。你的資產已被返還。",
         "fromFailed": "交易未成功。請再試一次。",
-        "queued": "排队中",
+        "queued": "排隊中",
         "receivedDifferentTokenFromSource": "橋接失敗。在源鏈上返回了不同的代幣。",
         "pending": "待處理",
         "receivedDifferentTokenNeedSwap": "你收到了不同的代幣，可以將其兌換為你選擇的代幣。",
         "longTimeNoReceive": "網絡繁忙。這可能需要比平常更長的時間。請耐心等待。",
         "BridgeStatusUnavailable": "橋接狀態不可用。請檢查你的交易記錄以確認資金是否已到達。",
         "sendStatus": "發送狀態",
-        "swapStatus": "交換狀態"
+        "swapStatus": "兌換狀態"
       },
-      "best-subtitle": "最佳報價由預計總成本（包括 Gas 費用）及交付速度綜合決定。"
+      "best-subtitle": "最佳報價由預計總成本（包括 Gas 費用）及到賬速度綜合決定。"
     },
     "ecology": {
       "sonic": {
@@ -2572,7 +2572,7 @@
           "migrateTitle": "遷移",
           "earnDesc": "將你的 $S 質押",
           "airdropBtn": "賺取積分",
-          "arcadeDesc": "玩免費遊戲來賺取S空投的積分。",
+          "arcadeDesc": "玩免費遊戲，賺取 S 空投積分。",
           "migrateDesc": "→",
           "airdropDesc": "約 2 億枚 S 空投給 Opera 和 Sonic 用戶。",
           "migrateBtn": "即將推出",
@@ -2587,17 +2587,17 @@
           "retry": "重試",
           "errorTitle": "無法載入積分",
           "errorDesc": "載入你的積分時出現錯誤。請重試。",
-          "pointsDashboardBtn": "賺取積分開始",
+          "pointsDashboardBtn": "開始賺取積分",
           "sonicArcade": "Sonic Arcade",
-          "getReferralCode": "獲取推薦代碼",
+          "getReferralCode": "取得推薦碼",
           "pointsDashboard": "積分面板",
-          "sonicArcadeBtn": "開始使用"
+          "sonicArcadeBtn": "開始遊玩"
         }
       },
       "dbk": {
         "home": {
           "bridgeBtn": "跨鏈",
-          "bridge": "橋接到 DBK 鏈",
+          "bridge": "跨鏈至 DBK 鏈",
           "mintNFTDesc": "成為 DBK Chain 的見證者",
           "mintNFT": "鑄造 DBK Genesis NFT",
           "mintNFTBtn": "鑄造",
@@ -2605,12 +2605,12 @@
         },
         "bridge": {
           "tabs": {
-            "deposit": "存款",
+            "deposit": "存入",
             "withdraw": "提取"
           },
           "info": {
             "receiveOn": "在 {{chainName}} 接收",
-            "toAddress": "發送到",
+            "toAddress": "接收地址",
             "completeTime": "完成時間",
             "gasFee": "Gas 費"
           },
@@ -2619,57 +2619,57 @@
           },
           "ActivityPopup": {
             "status": {
-              "withdraw": "提款",
+              "withdraw": "提取",
               "deposit": "存入",
               "rootPublished": "狀態根已發布",
               "waitingToProve": "狀態根已發布",
-              "readyToProve": "準備好證明",
-              "proved": "已驗證",
-              "claimed": "已申領",
+              "readyToProve": "可提交證明",
+              "proved": "已證明",
+              "claimed": "已領取",
               "challengePeriod": "挑戰期",
               "readyToClaim": "準備領取"
             },
             "withdraw": "提取",
             "empty": "暫未有活動",
-            "deposit": "存款",
-            "claimBtn": "索取",
+            "deposit": "存入",
+            "claimBtn": "領取",
             "proveBtn": "證明",
             "title": "活動"
           },
           "WithdrawConfirmPopup": {
             "step3": "在 Ethereum 上領取",
-            "step2": "在 Ethereum 上验證",
+            "step2": "在 Ethereum 上證明",
             "btn": "提取",
-            "title": "DBK Chain 提現大約需要 7 天。",
-            "question2": "我明白，一旦提取啟動後，就不能加速或取消",
-            "question3": "我理解網絡費用是大約的，且會變動。",
-            "question1": "我明白在我證明提現後，到我的資金可以在 Ethereum 上被领取大約需要 7 天時間。",
-            "step1": "發起提現",
-            "tips": "提現包含 3 個步驟，需要 1 筆 DBK Chain 交易和 2 筆 Ethereum 交易。"
+            "title": "從 DBK Chain 提取資金大約需要 7 天",
+            "question2": "我明白，提取流程一旦啟動，便無法加快或取消。",
+            "question3": "我明白，網絡費用僅為估算值，實際費用可能變動。",
+            "question1": "我明白，證明提取交易後，資金大約需要 7 天才能在 Ethereum 上領取。",
+            "step1": "發起提取",
+            "tips": "提取包含 3 個步驟，需要 1 筆 DBK Chain 交易和 2 筆 Ethereum 交易。"
           },
           "labelTo": "至",
-          "labelFrom": "由"
+          "labelFrom": "從"
         },
         "minNFT": {
           "mintBtn": "鑄造",
           "myBalance": "我的餘額",
           "title": "DBK Genesis",
-          "minted": "鑄造"
+          "minted": "已鑄造"
         }
       }
     },
     "miniSignFooterBar": {
       "status": {
-        "txSigned": "已簽署。創建交易",
-        "txCreated": "交易已創建",
+        "txSigned": "已簽名，正在建立交易",
+        "txCreated": "交易已建立",
         "txSendings": "正在發送簽名請求（{{current}}/{{total}}）",
-        "txSending": "發送簽署請求"
+        "txSending": "正在發送簽名請求"
       },
-      "signWithLedger": "使用 Ledger 簽署",
+      "signWithLedger": "使用 Ledger 簽名",
       "signWithOneKey": "使用 OneKey 簽名",
       "speedUpTitle": "加速",
-      "cancleDesc": "已將 Gas Price 提高 {{percent}}，以更快取消交易",
-      "speedUpDesc": "已將 Gas Price 提高 {{percent}}，以加速交易",
+      "cancleDesc": "已將 Gas 價格提高 {{percent}}，以更快取消交易",
+      "speedUpDesc": "已將 Gas 價格提高 {{percent}}，以加速交易",
       "cancelTitle": "鏈上取消"
     },
     "gasAccount": {
@@ -2680,13 +2680,13 @@
       "loginInTip": {
         "gotIt": "明白",
         "login": "登入 GasAccount",
-        "title": "儲存 USDC / USDT",
+        "title": "充值 USDC / USDT",
         "desc": "支付所有鏈上的 Gas 費用",
         "loginAndClaim": "登入並領取 {{usdValue}}",
         "loginTips2": "任何鏈上的任何地址",
         "learnAbout": "了解更多關於 GasAccount 的資訊",
         "loginTips3": "當你沒有 Gas 的時候",
-        "loginTips1": "支付 Gas 費用以便于"
+        "loginTips1": "為以下地址支付 Gas："
       },
       "loginConfirmModal": {
         "title": "選擇一個地址登入",
@@ -2708,30 +2708,30 @@
         "depositSuccess": "充值成功",
         "gasDepositTitle": "Gas 充值",
         "zeroInvalidAmount": "金額不能為零",
-        "minAmountRequired": "最低存款金額為 ${{value}}",
+        "minAmountRequired": "最低充值金額為 ${{value}}",
         "paymentAddress": "支付錢包",
         "balanceLabel": "餘額",
         "insufficientBalanceLabel": "餘額不足",
         "unavailablePaymentWallet": "所選付款錢包不可用",
         "suggestedToken": "建議代幣",
-        "bridgeLabel": "跨鏈橋",
+        "bridgeLabel": "跨鏈",
         "estReceiveLabel": "預計收到：{{usd}}",
         "estReceiveTip": "服務透過 {{name}} 處理，可能有滑點",
         "depositFailed": "充值失敗，請重試",
-        "bridgeDepositFailed": "跨鏈橋充值失敗，請重試",
+        "bridgeDepositFailed": "跨鏈充值失敗，請重試",
         "noAvailableToken": "無可用代幣",
         "InsufficientToken": "代幣餘額不足"
       },
       "withdrawPopup": {
-        "withdrawalLimit": "提現限額",
-        "noEnoughGas": "金額太低，不足以支付 gas 費用。",
+        "withdrawalLimit": "提取限額",
+        "noEnoughGas": "金額太低，不足以支付 Gas 費用。",
         "selectRecipientAddress": "選擇接收地址",
         "amount": "金額",
         "noEnoughValuetBalance": "保險庫餘額不足。請切換鏈或稍後重試。",
         "selectDestinationChain": "選擇目的鏈",
         "title": "提取",
         "riskMessageFromAddress": "由於風險控制，提取限額取決於該地址的總存款金額。",
-        "riskMessageFromChain": "由於風險控制，提現限額取決於從此鏈存入的總金額。",
+        "riskMessageFromChain": "由於風險控制，提取限額取決於從此鏈存入的總金額。",
         "selectChain": "選擇鏈",
         "deductGasFees": "到賬金額將扣除 Gas 費用",
         "selectAddr": "選擇地址",
@@ -2742,8 +2742,8 @@
         "desc": "你可以將你的 GasAccount 餘額提取到你的 DeBank L2 錢包。登入你的 DeBank L2 錢包，根據需要將資金轉至支援的區塊鏈。",
         "to": "至",
         "WithdrawalAmount": "提款金額",
-        "noBalance": "没有餘額",
-        "withdrawalTip": "可提取餘額: {{amount}}",
+        "noBalance": "沒有餘額",
+        "withdrawalTip": "可提取餘額：{{amount}}",
         "amountTooLowCoverFee": "金額太低，無法支付 Gas 費用",
         "noEnoughValueBalance": "保險庫餘額不足。請切換鏈或稍後重試。"
       },
@@ -2752,16 +2752,16 @@
         "title": "已轉移到你的 DeBank L2 錢包"
       },
       "GasAccountDepositTipPopup": {
-        "title": "開啟GasAccount並存款",
+        "title": "開啟 GasAccount 並充值",
         "gotIt": "明白了"
       },
       "switchLoginAddressBeforeDeposit": {
-        "title": "存款前切換地址",
+        "title": "充值前切換地址",
         "desc": "請切換至你的登入地址。"
       },
       "noBalance": "沒有餘額",
       "title": "GasAccount",
-      "deposit": "存款",
+      "deposit": "充值",
       "withdraw": "提取",
       "logout": "登出目前的 GasAccount",
       "gasExceed": "GasAccount 餘額不能超過 $1000",
@@ -2771,8 +2771,8 @@
         "address": "地址",
         "gasAccountBalance": "餘額"
       },
-      "switchAccount": "切換 GasAccount",
-      "withdrawDisabledIAP": "提款功能已停用，因為你的餘額中包含法幣資金，這些資金無法提取。如需提取你的代幣餘額，請聯繫支援。",
+      "switchAccount": "切換錢包",
+      "withdrawDisabledIAP": "提款功能已停用，因為你的餘額中包含法幣資金，這些資金無法提取。如需提取你的代幣餘額，請聯絡支援。",
       "gasToken": "Gas 代幣",
       "about": {
         "title3": "GasAccount 是否有額外費用",
@@ -2780,15 +2780,15 @@
         "title1": "什麼是 GasAccount",
         "title2": "如何使用 GasAccount",
         "desc3": "Rabby Wallet 不收取額外費用。你只需支付交易本身的 Gas 費用，以及從 GasAccount 向你的地址發送 Gas 所需的少量 Gas 費用。",
-        "desc2": "將資金新增到你的 GasAccount 並將其用於任何交易。在簽署時，選擇使用原生代幣或 GasAccount 來支付手續費，隨時切換。",
+        "desc2": "將資金充值到 GasAccount 後，即可用於任何交易。簽名時可選擇使用原生代幣或 GasAccount 支付 Gas，並可隨時切換。",
         "desc1": "GasAccount 是一種新的 Gas 費用支付方式。你無需在每條鏈上分別準備原生代幣，只需使用一個帳戶，即可為所有鏈上的所有地址支付 Gas。簡單、可選，並且不再擔心缺少 Gas。",
-        "desc4": "GasAccount 無需合約批准或許可。你將資金存入 Rabby 的 GasAccount 地址，當需要時，Rabby 會將 Gas 發送到你的地址。設計上完全安全。"
+        "desc4": "GasAccount 無需任何合約授權或權限。你向 Rabby 的 GasAccount 地址充值，Rabby 會在需要時向你的地址發送 Gas。此機制在設計上充分保障安全。"
       },
       "benefitCard": {
         "title": "在所有鏈上支付 Gas 費用",
-        "subtitle": "當你沒有 Gas 時",
+        "subtitle": "當你的 Gas 不足時",
         "item1": "無 Rabby 費用",
-        "desc1": "無需支付額外費用來支付 Gas",
+        "desc1": "使用 Gas 支付功能無需額外費用",
         "item2": "支援所有網絡",
         "desc2": "在 80+ 網絡上自動支付 Gas",
         "item3": "支援所有交易",
@@ -2797,55 +2797,55 @@
       "depositPayPopup": {
         "topUpPayTips": "所需 Gas：{{topUpUsd}}，預計剩餘 Gas：{{balance}}"
       },
-      "gasFee": "燃料費",
-      "gasDeposit": "存入燃料",
-      "depositNow": "立即存入",
-      "signWithPendingHardwareToUse": "使用 {{addressAlias}} 簽署以使用",
-      "depositSubmitted": "已提交存入",
+      "gasFee": "Gas 費用",
+      "gasDeposit": "Gas 充值",
+      "depositNow": "立即充值",
+      "signWithPendingHardwareToUse": "使用 {{addressAlias}} 簽名後即可使用",
+      "depositSubmitted": "充值已提交",
       "claimFreeGas": "領取 {{usdValue}} Free Gas",
-      "depositFailed": "存入失敗",
-      "lowBalance": "你的 gas 不足(＜$1.00)。存入 gas 以確保未來交易順利進行。",
-      "gasBalance": "燃料餘額",
+      "depositFailed": "充值失敗",
+      "lowBalance": "你的 Gas 不足（＜$1.00）。充值 Gas 以確保後續交易順利進行。",
+      "gasBalance": "Gas 餘額",
       "loginSuccess": "登入成功",
       "loginFailed": "登入失敗"
     },
     "safeMessageQueue": {
       "noData": "沒有訊息",
-      "loading": "載入消息"
+      "loading": "正在載入訊息"
     },
     "newUserImport": {
       "guide": {
         "title": "歡迎來到 Rabby 錢包",
         "importAddress": "我已經有一個地址",
-        "createNewAddress": "創建一個新地址",
+        "createNewAddress": "建立新地址",
         "desc": "你首選的以太坊和 EVM 錢包"
       },
       "createNewAddress": {
-        "showSeedPhrase": "顯示 助記詞",
+        "showSeedPhrase": "顯示助記詞",
         "desc": "請閱讀並記住以下安全提示",
         "title": "在開始之前",
-        "tip2": "我的種子詞僅儲存在我的設備上。Rabby 無法訪問它。",
-        "tip3": "如果我在未備份我的種子短語的情况下卸載 Rabby，它將無法透過 Rabby 恢復。",
-        "tip1": "如果我丟失或分享我的 助記詞，我將永久失去對我的資產的访问權限。"
+        "tip2": "我的助記詞只儲存在我的裝置上。Rabby 無法存取它。",
+        "tip3": "如果我在未備份助記詞的情況下解除安裝 Rabby，Rabby 將無法幫我恢復。",
+        "tip1": "如果我遺失或洩露助記詞，將永久失去對資產的存取權。"
       },
       "importList": {
-        "title": "選擇導入方法"
+        "title": "選擇匯入方法"
       },
       "importPrivateKey": {
-        "title": "匯入 私鑰",
+        "title": "匯入私鑰",
         "pasteCleared": "已貼上並清除此剪貼簿內容",
-        "createWallet": "創建錢包",
+        "createWallet": "建立錢包",
         "placeholder": "輸入私鑰",
         "required": "請輸入私鑰",
-        "noWallet": "尚未擁有種子短語或私鑰？"
+        "noWallet": "還沒有助記詞或私鑰？"
       },
       "PasswordCard": {
         "form": {
           "password": {
             "required": "請輸入密碼",
             "label": "密碼",
-            "min": "密碼必須至少8個字符長",
-            "placeholder": "密碼（至少 8 個字符）"
+            "min": "密碼長度必須至少為 8 個字元",
+            "placeholder": "密碼（至少 8 個字元）"
           },
           "confirmPassword": {
             "label": "確認密碼",
@@ -2856,18 +2856,18 @@
         },
         "title": "設定密碼",
         "agree": "我同意<1/> <2>使用條款</2>和<4>私隱政策</4>",
-        "desc": "它將用於解鎖錢包和加密數據"
+        "desc": "此密碼將用於解鎖錢包和加密資料"
       },
       "successful": {
         "import": "匯入成功",
-        "create": "創建成功",
+        "create": "建立成功",
         "addMoreFrom": "從 {{name}} 新增更多地址",
         "start": "開始使用",
-        "addMoreAddr": "從這個 助記詞 新增更多地址",
+        "addMoreAddr": "從此助記詞新增更多地址",
         "openWallet": "開啟錢包",
-        "backupSeedPhraseNow": "立即備份種子短語",
-        "desc": "Rabby Wallet 随時可用！",
-        "backupSeedPhrase": "備份種子詞"
+        "backupSeedPhraseNow": "立即備份助記詞",
+        "desc": "你的 Rabby 錢包已準備就緒！",
+        "backupSeedPhrase": "備份助記詞"
       },
       "readyToUse": {
         "pin": "將 Rabby 錢包釘選",
@@ -2875,27 +2875,27 @@
           "step2": "將 Rabby Wallet 釘選至頂部",
           "step1": "點擊瀏覽器擴展圖標"
         },
-        "extensionTip": "点擊 <1/> 然後 <3/>",
+        "extensionTip": "點擊 <1/>，然後點擊 <3/>",
         "desc": "尋找 Rabby Wallet 並將其固定",
         "title": "你的 Rabby Wallet 已準備好！"
       },
       "importSeedPhrase": {
-        "title": "導入種子片語",
-        "createWallet": "創建一個錢包",
+        "title": "匯入助記詞",
+        "createWallet": "建立一個錢包",
         "noWallet": "還沒有助記詞或私鑰？"
       },
       "importOneKey": {
         "qrcode": {
-          "desc": "掃描 OneKey 硬體錢包上的 QR 碼"
+          "desc": "掃描 OneKey 硬件錢包上的 QR 碼"
         },
-        "title": "OneKey",
+        "title": "透過 USB 連接你的 OneKey 硬件錢包",
         "tip1": "1. 插入你的 OneKey 裝置",
         "tip2": "2. 解鎖你的裝置",
-        "tip3": "3. 請確保只連接一台 OneKey 設備",
+        "tip3": "3. 請確保只連接一台 OneKey 裝置",
         "connect": "連接 OneKey"
       },
       "importTrezor": {
-        "tip2": "2. 解鎖你的設備",
+        "tip2": "2. 解鎖你的裝置",
         "connect": "連接 Trezor",
         "tip1": "1. 插入你的 Trezor 裝置",
         "title": "Trezor"
@@ -2903,12 +2903,12 @@
       "ImportGridPlus": {
         "title": "GridPlus",
         "connect": "連接 GridPlus",
-        "tip1": "1. 打開你的 GridPlus 設備",
+        "tip1": "1. 打開你的 GridPlus 裝置",
         "tip2": "2. 透過 Lattice Connector 連接"
       },
       "importLedger": {
         "title": "Ledger",
-        "tip1": "插入你的 Ledger 設備。",
+        "tip1": "插入你的 Ledger 裝置。",
         "tip2": "輸入你的 PIN 以解鎖。",
         "tip3": "打開 Ethereum 應用程式。",
         "connect": "連接 Ledger"
@@ -2926,32 +2926,32 @@
           "tip2": "輸入你的密碼以解鎖",
           "connect": "連接 Keystone",
           "desc": "確保你的 Keystone 3 Pro 在主頁上",
-          "tip3": "批准連接到你的電腦"
+          "tip3": "在 Keystone 上確認連接電腦"
         },
         "qrcode": {
-          "desc": "掃描{{brandName}}硬體錢包上的QR 碼"
+          "desc": "掃描 {{brandName}} 硬件錢包上的 QR 碼"
         }
       },
       "importSafe": {
         "error": {
           "required": "請輸入地址",
-          "invalid": "非有效地址"
+          "invalid": "地址無效"
         },
         "placeholder": "輸入 Safe 地址",
         "title": "新增 Safe 地址",
         "loading": "正在搜尋此地址的已部署鏈"
       },
       "importHardwareList": {
-        "title": "選擇硬體錢包"
+        "title": "選擇硬件錢包"
       },
       "importSeedOrKey": {
         "privateKey": "私鑰",
-        "seedPhrase": "種子短語",
-        "title": "種子短語或私鑰"
+        "seedPhrase": "助記詞",
+        "title": "助記詞或私鑰"
       },
       "importWalletType": {
-        "hardwareWallet": "硬體錢包",
-        "seedOrKey": "助记詞或私鑰"
+        "hardwareWallet": "硬件錢包",
+        "seedOrKey": "助記詞或私鑰"
       }
     },
     "metamaskModeDapps": {
@@ -2962,36 +2962,36 @@
       "home": {
         "title": "忘記密碼",
         "button": "開始重設流程",
-        "description": "Rabby Wallet 不會存儲你的密碼，因此無法協助你找回。重設你的錢包以設定一個新的。",
-        "descriptionNoData": "Rabby Wallet 不會儲存你的密碼並無法協助你取回。如果忘記了密碼，請設定一個新密碼。",
+        "description": "Rabby Wallet 不會儲存你的密碼，也無法協助你找回。請重設 Rabby Wallet 並重新設定錢包。",
+        "descriptionNoData": "Rabby Wallet 不會儲存你的密碼，也無法協助你找回。如果忘記密碼，請設定新密碼。",
         "buttonNoData": "設定密碼"
       },
       "reset": {
         "alert": {
           "privateKey": "私鑰",
-          "seed": "助记詞",
+          "seed": "助記詞",
           "title": "資料將會被刪除並且無法恢復："
         },
         "tip": {
           "records": "簽名記錄",
           "whitelist": "白名單設定",
-          "hardware": "已匯入的硬體錢包",
-          "watch": "聯絡人及唯讀地址",
-          "title": "數據將被保留：",
-          "safe": "已導入的 Safe 錢包"
+          "hardware": "已匯入的硬件錢包",
+          "watch": "聯絡人及僅觀察地址",
+          "title": "以下資料將被保留：",
+          "safe": "已匯入的 Safe 錢包"
         },
         "title": "重設 Rabby Wallet",
         "button": "確認重設",
-        "confirm": "在框中輸入<1>RESET</1>以确認并继續",
-        "description": "Rabby 不會保存你的密碼，因此密碼遺失後無法找回。如果忘記密碼，只能重置錢包並重新設定密碼。",
-        "descriptionNoData": "Rabby 不會保存你的密碼，因此密碼遺失後無法找回。如果忘記密碼，只能重新設定密碼。"
+        "confirm": "在輸入框中輸入 <1>RESET</1> 以確認並繼續",
+        "description": "Rabby 不會儲存你的密碼，因此密碼遺失後無法找回。如果忘記密碼，只能重設錢包並重新設定密碼。",
+        "descriptionNoData": "Rabby 不會儲存你的密碼，因此密碼遺失後無法找回。如果忘記密碼，只能重新設定密碼。"
       },
       "tip": {
         "buttonNoData": "新增地址",
-        "title": "Rabby Wallet 重置完成",
+        "title": "Rabby Wallet 重設完成",
         "descriptionNoData": "新增你的地址以開始",
         "button": "設定密碼",
-        "description": "創建新密碼以繼續"
+        "description": "設定新密碼以繼續"
       },
       "success": {
         "title": "密碼設定成功",
@@ -3004,13 +3004,13 @@
     },
     "metamaskModeDappsGuide": {
       "toast": {
-        "enabled": "啟用偽裝。刷新 Dapp 以重新連接。",
+        "enabled": "偽裝已啟用。重新載入 Dapp 以重新連接。",
         "disabled": "偽裝已停用。重新載入 Dapp。"
       },
       "step1": "步驟 1",
       "noDappFound": "未找到 Dapp",
-      "title": "以伪装成 MetaMask 連接 Rabby",
-      "step1Desc": "允許 Rabby 在當前 Dapp 上偽裝成 MetaMask",
+      "title": "透過偽裝成 MetaMask 連接 Rabby",
+      "step1Desc": "允許 Rabby 在目前 Dapp 上偽裝成 MetaMask",
       "step2Desc": "重新整理並透過 MetaMask 連接",
       "step2": "步驟 2",
       "manage": "管理允許的 Dapp",
@@ -3019,17 +3019,17 @@
     "syncToMobile": {
       "downloadGooglePlay": "Google Play",
       "downloadAppleStore": "App Store",
-      "description": "你的地址數據會完全離線保存，加密，並透過QR 碼安全傳輸。",
+      "description": "你的地址資料全程保持離線，經加密後透過 QR 碼安全傳輸。",
       "title": "從 Rabby 擴展同步錢包地址至手機",
-      "steps2Description": "你的 QR 碼包含敏感數據。請保密並切勿與其他人分享。",
-      "clickToShowQr": "單擊選擇地址並顯示QR代碼",
-      "steps1": "下載 Rabby Mobile",
+      "steps2Description": "你的 QR 碼包含敏感資料。請妥善保管，切勿與任何人分享。",
+      "clickToShowQr": "點擊選擇地址並顯示 QR 碼",
+      "steps1": "1. 下載 Rabby Mobile",
       "steps2": "2. 使用 Rabby Mobile 掃描",
-      "disableSelectAddress": "不支援{{type}}地址的同步",
-      "disableSelectAddressWithPassphrase": "與密碼不支援{{type}}地址的同步",
-      "disableSelectAddressWithSlip39": "不支援{{type}}地址的同步39",
-      "selectedLenAddressesForSync_one": "選擇{{len}} 個同步地址",
-      "selectedLenAddressesForSync_other": "選擇{{len}} 個地址同步",
+      "disableSelectAddress": "不支援同步 {{type}} 地址",
+      "disableSelectAddressWithPassphrase": "不支援同步使用密碼短語的 {{type}} 地址",
+      "disableSelectAddressWithSlip39": "不支援同步使用 SLIP-39 的 {{type}} 地址",
+      "selectedLenAddressesForSync_one": "已選擇 {{len}} 個地址進行同步",
+      "selectedLenAddressesForSync_other": "已選擇 {{len}} 個地址進行同步",
       "selectAddress": {
         "title": "選擇要同步的地址"
       },
@@ -3048,17 +3048,17 @@
       "tokenItem": {
         "Issuedby": "發行方",
         "FDV": "FDV",
-        "listBy": "由 {{name}} 列表",
+        "listBy": "由 {{name}} 收錄",
         "gasToken": "Gas 代幣",
-        "scamWarningTips": "這是一個低質量的代幣，可能是一個詐騙。",
+        "scamWarningTips": "這是低品質代幣，可能存在詐騙風險。",
         "verifyDangerTips": "這是一個詐騙代幣"
       },
       "searchWeb": {
-        "searching": "結果為",
+        "searching": "相關結果：",
         "noResults": "無結果",
         "title": "所有結果",
         "searchTips": "搜尋網頁",
-        "noResult": "找不到结果 для"
+        "noResult": "沒有相關結果："
       }
     },
     "sendPoly": {
@@ -3071,25 +3071,25 @@
         "title": "白名單",
         "removeFromWhitelist": "從白名單中移除",
         "addWhitelist": "新增到白名單",
-        "addWhitelistDesc": "將受信任的地址加入白名單以便快速轉帳——下次無需確認",
+        "addWhitelistDesc": "將受信任的地址加入白名單以便快速轉賬——下次無需確認",
         "notWhitelist": "不是白名單地址"
       },
       "addWhitelist": {
         "title": "新增白名單地址",
-        "desc": "加入信任地址到白名單以便快速轉賬——下次無需确認"
+        "desc": "將可信地址加入白名單以便快速轉賬——下次無需確認"
       },
       "riskAlert": {
         "riskType": {
           "risks": {
             "scamAddress": "Rabby 標記的詐騙地址",
-            "dexNoDeposite": "並非 CEX 存款地址，資金可能會丟失",
+            "dexNoDeposite": "並非 CEX 充值地址，資金可能會丟失",
             "contractAddress": "檢測到合約地址，資金可能會丟失",
             "noSend": "你在180 天內未向此地址發送過交易"
           }
         },
         "title": "發送到此地址",
         "cexAddress": "{{cexName}} 地址",
-        "cexDepositAddress": "{{cexName}} 存款地址",
+        "cexDepositAddress": "{{cexName}} 充值地址",
         "understandRisks": "我明白風險並希望繼續",
         "AddToWhitelist": "加入白名單",
         "TransferBefore": "之前已轉移",
@@ -3099,14 +3099,14 @@
       "enterAddress": "輸入地址",
       "selectExchangeSource": "選擇交易所來源",
       "title": "發送至",
-      "sendToImportedAddress": "發送到已導入地址",
-      "selectImportedAddress": "選擇導入的地址",
+      "sendToImportedAddress": "發送至已匯入地址",
+      "selectImportedAddress": "選擇已匯入地址",
       "enterAddressOrENS": "輸入或搜尋地址"
     },
     "whitelist": {
       "tips": {
         "added": "地址已加入白名單",
-        "repeated": "當前地址已經在白名單上。",
+        "repeated": "目前地址已在白名單中。",
         "removed": "已刪除白名單地址",
         "tooltip": "白名單地址"
       },
@@ -3116,7 +3116,7 @@
       "invalidAddress": "此地址無效",
       "nameYourAddress": "為你的地址命名",
       "addSuccess": "新增成功",
-      "exchangeAddress": "交易地址",
+      "exchangeAddress": "交易所地址",
       "riskTitle": "新增白名單地址",
       "address": "地址",
       "title": "將地址新增到白名單",
@@ -3128,14 +3128,14 @@
     "selectToAddress": {
       "emptyWhitelist": {
         "title": "將地址新增到白名單",
-        "desc": "將可信地址新增到白名單以便快速轉賬 - 下次無需確認",
+        "desc": "將可信地址新增至白名單，即可快速轉賬；下次無需再次確認。",
         "addNow": "立即新增"
       },
       "whitelist": {
         "title": "白名單",
         "removeFromWhitelist": "從白名單中移除",
         "notWhitelist": "不是白名單地址",
-        "addWhitelistDesc": "將信任的地址新增到白名單，以便快速轉賬---下次無需確認",
+        "addWhitelistDesc": "將可信地址新增至白名單，即可快速轉賬；下次無需再次確認。",
         "addWhitelist": "將地址新增到白名單",
         "PwdForNonWhitelistedTx": {
           "enabledHint": "非白名單轉賬的密碼"
@@ -3143,32 +3143,32 @@
       },
       "addWhitelist": {
         "title": "將地址新增到白名單",
-        "desc": "將受信地址新增到白名單，以便快速轉賬---下次無需確認"
+        "desc": "將可信地址新增至白名單，即可快速轉賬；下次無需再次確認。"
       },
       "riskAlert": {
         "riskType": {
           "risks": {
-            "dexNoDeposite": "你正在向非托管交易所地址發送。",
-            "scamAddress": "你正在發送到一個詐騙地址",
+            "dexNoDeposite": "你正在向交易所的非充值地址發送資產",
+            "scamAddress": "你正在向詐騙地址轉賬",
             "contractAddress": "你正在發送到一個合約，資金可能會丟失",
-            "noSend": "你在180 天內没有向這個地址發送過交易"
+            "noSend": "你在過去 180 天內沒有向此地址發送過資產"
           }
         },
-        "TransferBeforeValue": "係",
+        "TransferBeforeValue": "是",
         "cexAddress": "{{cexName}} 地址",
         "passwordPlaceholder": "輸入密碼以繼續",
-        "TransferBefore": "轉移過",
+        "TransferBefore": "之前曾轉賬",
         "title": "發送到這個地址",
-        "cexDepositAddress": "{{cexName}} 存款地址",
+        "cexDepositAddress": "{{cexName}} 充值地址",
         "understandRisks": "我明白風險，並想繼續",
         "AddToWhitelist": "加入白名單"
       },
       "tabs": {
-        "imported": "已導入",
+        "imported": "已匯入",
         "whitelist": "白名單"
       },
       "positiveTips": {
-        "sentBefore": "最近發送的",
+        "sentBefore": "近期曾轉賬",
         "whitelistAddress": "白名單地址",
         "yourOwnAddress": "你自己的地址"
       },
@@ -3179,8 +3179,8 @@
       "enterAddressOrENS": "請輸入或搜尋地址",
       "title": "地址",
       "selectExchangeSource": "選擇交易所來源",
-      "sendToImportedAddress": "發送到導入地址",
-      "selectImportedAddress": "選擇已導入的地址"
+      "sendToImportedAddress": "發送到已匯入地址",
+      "selectImportedAddress": "選擇已匯入的地址"
     },
     "desktopProfile": {
       "CurveModal": {
@@ -3188,11 +3188,11 @@
         "appChainTips": "Hyperliquid & Polymarket 帳戶不包括在內"
       },
       "UpdateButton": {
-        "updating": "更新數據",
-        "updatedAgo": "數據於 <1/> <2>{{timeText}}</2> <3/> 前更新"
+        "updating": "正在更新資料",
+        "updatedAgo": "資料已於 <1/> <2>{{timeText}}</2> <3/> 前更新"
       },
       "ReachedEnd": {
-        "content": "你已到達結束。"
+        "content": "已經到底了"
       },
       "portfolio": {
         "headers": {
@@ -3219,124 +3219,124 @@
         },
         "table": {
           "chain": "鏈",
-          "amount": "金額",
+          "amount": "數量",
           "price": "價格",
           "token": "代幣",
           "tokenAddress": "代幣地址",
           "usdValue": "USD 價值"
         },
         "actions": {
-          "swap": "交換",
+          "swap": "兌換",
           "send": "發送"
         }
       },
       "button": {
         "queue": "隊列",
         "send": "發送",
-        "bridge": "橋接",
-        "pending": "{{pendingTxCount}} 待處理",
-        "swap": "交換"
+        "bridge": "跨鏈",
+        "pending": "{{pendingTxCount}} 筆待處理交易",
+        "swap": "兌換"
       },
       "tabs": {
-        "approvals": "批准",
-        "transactions": "交易",
+        "approvals": "授權",
+        "transactions": "交易記錄",
         "tokens": "代幣"
       },
       "nft": {
         "message": {
           "cancelFailedDesc": "請再試一次",
           "acceptSuccess": "成功出售",
-          "acceptFailed": "銷售失敗",
-          "listingFailed": "列表失敗",
+          "acceptFailed": "出售失敗",
+          "listingFailed": "上架失敗",
           "acceptSuccessDesc": "你已成功售出 {{name}}",
-          "cancelSuccess": "成功取消列表",
+          "cancelSuccess": "成功取消上架",
           "listingSuccess": "剛剛上架！",
           "listingFailedDesc": "請再試一次。",
           "cancelSuccessDesc": "你已成功取消了上架 {{name}}",
-          "listingSuccessDesc": "你已在 OpenSea 上列出 {{name}}",
+          "listingSuccessDesc": "你已在 OpenSea 上架 {{name}}",
           "acceptFailedDesc": "請再試一次。",
           "cancelFailed": "失敗！"
         },
         "detail": {
           "chain": "鏈",
           "supportPlatform": "支援平台：",
-          "noOffer": "尚未有任何優惠",
+          "noOffer": "暫無報價",
           "ending": "結束：",
-          "topOffer": "頂級優惠",
+          "topOffer": "最高報價",
           "rarity": "稀有度",
           "nft": "NFT",
-          "lastSale": "最後銷售",
-          "collectionFloor": "合集地板價",
-          "collection": "合集",
+          "lastSale": "最近成交",
+          "collectionFloor": "系列地板價",
+          "collection": "系列",
           "platform": "平台：",
           "accept": "接受",
-          "listedFor": "{{count}} 已列出",
+          "listedFor": "{{count}} 件，上架價為",
           "listing": "在 Opensea 上上架",
           "send": "發送",
-          "edit": "編輯列表",
-          "cancel": "取消列表"
+          "edit": "編輯上架資訊",
+          "cancel": "取消上架"
         },
         "cancelModal": {
-          "listingPrice": "上市價格",
-          "listing": "列表",
+          "listingPrice": "上架價格",
+          "listing": "上架 NFT",
           "cancelListing": "取消上架",
           "title": "取消上架"
         },
         "listingModal": {
           "nft": "NFT",
           "cost": "成本",
-          "listedAs": "列出為",
+          "listedAs": "上架價",
           "totalEst": "總預估收益",
           "quantity": "數量",
           "listOn": "在 OpenSea 上列出",
-          "createListing": "創建清單",
+          "createListing": "建立上架資訊",
           "rabbyFee": "Rabby 費用 (0%)",
-          "approveAndList": "批准和列出",
-          "topOffer": "熱門優惠",
+          "approveAndList": "授權並上架",
+          "topOffer": "最高報價",
           "creatorFee": "創作者手續費 ({{fee}}%)",
           "proceeds": "收益",
-          "floorDifference": "樓層差異",
-          "total": "總上市價格",
-          "floor": "地板",
+          "floorDifference": "與地板價差異",
+          "total": "總上架價格",
+          "floor": "地板價",
           "platformFee": "Opensea 平台費用 ({{fee}}%)",
           "platformFeeTips": "這個費用是 OpenSea 的服務費用。",
           "creatorFeeTips": "創作者收益將由賣方支付。",
-          "editListing": "編輯列表",
+          "editListing": "編輯上架資訊",
           "creatorFeeTips1": "創作者收益將由賣方支付。創作者收益是強制執行的。"
         },
         "acceptModal": {
           "floorDifference": "底價差異",
           "quantity": "數量",
           "rabbyFee": "Rabby 費用 (0%)",
-          "acceptOffer": "接受提議",
+          "acceptOffer": "接受報價",
           "offerPrice": "報價",
           "totalEst": "總估計收益",
-          "offer": "提供",
+          "offer": "報價",
           "creatorFeeTips": "創作者收益將由賣家支付。",
           "platformFee": "Opensea 平台手續費 ({{fee}}%)",
           "platform": "平台",
           "title": "接受報價",
           "platformFeeTips": "這個費用是 OpenSea 的服務收費。",
           "creatorFeeTips1": "創作者收益將由賣方支付。創作者收益是強制執行的。",
-          "creatorFee": "創建者費用（{{fee}}%）"
+          "creatorFee": "創作者費用（{{fee}}%）"
         },
         "hideLowValue": "隱藏低價值 NFT",
         "pending": "待處理",
-        "confirmingTx": "確認你的交易",
+        "confirmingTx": "正在確認你的交易",
         "empty": "沒有 NFT",
         "all": "全部"
       }
     },
     "dappIfame": {
       "serviceUnavailable": "服務不可用",
-      "predictionNotSupported": "預測功能在你當前的地區不受支援。",
-      "openPolymarket": "開啟 Polymarket...",
-      "reload": "重新加載",
-      "networkErrorTitle": "此網站無法訪問",
+      "predictionNotSupported": "你目前所在的地區不支援預測功能。",
+      "openPolymarket": "正在開啟 Polymarket...",
+      "reload": "重新載入",
+      "networkErrorTitle": "無法連線至此網站",
       "networkErrorDescription": "{{site}} 意外地關閉了連接。請檢查你的網絡。",
       "networkErrorDescriptionFallback": "網站意外關閉了連接。請檢查你的網絡。",
       "opening": "正在打開 {{name}}...",
-      "serviceNotSupported": "該服務在你當前的地區不受支援。"
+      "serviceNotSupported": "你目前所在的地區不支援此服務。"
     },
     "perps": {
       "closeAllPopup": {
@@ -3378,12 +3378,12 @@
         "orderPlaced": "已下單",
         "ordersCancelled": "所有訂單已取消",
         "limitOrderFilled": "限價委託已成交（{{percent}}%）",
-        "orderCancelled": "下單已取消",
+        "orderCancelled": "訂單已取消",
         "openLimitOrderSuccess": "限價委託已下單 {{direction}} {{coin}}-USD：數量 {{size}}，價格 ${{price}}",
         "marginUpdated": "保證金已更新",
         "buyFilledContent": "已買入 {{sz}} / {{origSz}} {{coin}}，成交於 @{{price}} USDC",
-        "terminalTwapSuccess": "終端 TWAP 訂單已成功",
-        "deposit": "充值成功",
+        "terminalTwapSuccess": "TWAP 訂單已成功終止",
+        "deposit": "存款成功",
         "twapSliceFilled": "TWAP 分段已成交",
         "orderFilled": "委託單已成交",
         "cancelOrderError": "撤單失敗",
@@ -3392,14 +3392,14 @@
         "sellFilledContentNoPercentage": "已賣出 {{sz}} {{coin}}，成交價 @{{price}} USDC",
         "withdrawTip": "{{amount}} USDC 已成功提取",
         "depositTip": "已存入 {{amount}} USDC",
-        "stopLossSuccess": "停損已成功設定",
-        "cancelTWAPOrderSuccess": "TWAP 下單已成功取消",
+        "stopLossSuccess": "止蝕設定成功",
+        "cancelTWAPOrderSuccess": "TWAP 委託已成功取消",
         "takeProfitSuccess": "止賺設定成功",
         "buyFilledContentNoPercentage": "已買入 {{sz}} {{coin}}，成交於 @{{price}} USDC",
         "openTPSlLimitOrderSuccess": "{{tpsl}} 限價委託已下單 {{direction}} {{coin}}-USD：數量 {{size}}，價格 ${{price}}",
         "openTWAPOrderSuccess": "TWAP 委託已開啟 {{direction}} {{coin}}-USD：下單量 {{size}}",
-        "terminalTwap": "終端時間加權平均價",
-        "openScaleOrderSuccess": "已下分階下單 {{direction}} {{coin}}-USD：大小 {{size}}",
+        "terminalTwap": "終止 TWAP",
+        "openScaleOrderSuccess": "分批委託已建立：{{direction}} {{coin}}-USD，數量 {{size}}",
         "openPositionSuccess": "{{direction}} {{coin}}-USD：下單量 {{size}}，價格 ${{price}}",
         "closePositionSuccess": "已平倉 {{direction}} {{coin}}-USD：數量 {{size}}，價格 ${{price}}",
         "sellFilledContent": "賣出 {{sz}} / {{origSz}} {{coin}}，已成交，成交價 @{{price}} USDC",
@@ -3417,7 +3417,7 @@
         "all": "全部",
         "oneHour": "1小時",
         "ytd": "年初至今",
-        "oneMonth": "1月",
+        "oneMonth": "1 個月",
         "oneWeek": "1週",
         "oneDay": "1日線"
       },
@@ -3428,10 +3428,10 @@
         "gotIt": "知道了",
         "fifthTitle": "強制平倉",
         "thirdTitle": "做空",
-        "fifthDescription": "每個倉位都會有爆倉價格。若市價觸及爆倉價格，你的倉位將被平倉。使用高槓桿會增加爆倉的風險。",
+        "fifthDescription": "每個倉位都有強平價。若市價觸及強平價，你的倉位將被強制平倉。使用高槓桿會增加強平風險。",
         "fourthDescription": "槓桿讓你以超過自己投入資金的金額進行交易。它可以同時增加你的收益與損失。",
         "secondTitle": "做多",
-        "firstDescription": "以永續合約為交易對象，你不僅是在交易資產。你是在交易你認為接下來會發生什麼。",
+        "firstDescription": "交易永續合約，不只是交易資產，更是在交易你對未來走勢的判斷。",
         "secondDescription": "當你預期價格會上升時，你會開做多倉位。若價格上升，你便會獲利；若價格下跌，你便會虧損。",
         "firstTitle": "掌握永續合約"
       },
@@ -3445,8 +3445,8 @@
           "closeLongTp": "平倉多單 止賺",
           "closeLongSl": "平多止蝕",
           "openShort": "開空倉位",
-          "closeShortLiquidation": "平空 爆倉",
-          "closeLongLiquidation": "平多倉位 爆倉"
+          "closeShortLiquidation": "空倉強平",
+          "closeLongLiquidation": "多倉強平"
         },
         "date": "日期",
         "tradeValue": "交易價值",
@@ -3455,19 +3455,19 @@
         "closedPnl": "已實現盈虧",
         "fee": "費用",
         "size": "合約張數",
-        "feeDesc": "當用戶進行交易時，會收取<1>交易費用</1>和<2>建構者費用</2>。",
+        "feeDesc": "用戶交易時會同時收取 <1>交易手續費</1> 和 <2>Builder 手續費</2>。",
         "amount": "數量",
         "asset": "資產",
         "action": "操作",
         "value": "價值",
         "buy": "買入",
         "sell": "賣出",
-        "transferDetailTitle": "轉帳",
+        "transferDetailTitle": "轉賬",
         "transferActionToSpot": "從 Perps 帳戶轉至現貨",
         "transferActionToPerps": "從現貨轉至 Perps 帳戶"
       },
       "logoutConfirmModal": {
-        "title": "登出當前地址",
+        "title": "登出目前地址",
         "desc": "你正在登出你目前的 Perps 帳戶。你可以隨時透過此地址登入以恢復該帳戶。"
       },
       "depositAmountPopup": {
@@ -3485,7 +3485,7 @@
         "estReceiveLabel": "預估可得",
         "hyperliquidFeeLabel": "Hyperliquid 手續費",
         "fetchQuoteFailed": "無法取得入金報價。請切換代幣。",
-        "goSwapTips": "僅支援 Arbitrum 上的 USDC 作為直接入金。請在入金前將你當前的代幣兌換為 USDC。",
+        "goSwapTips": "僅支援 Arbitrum 上的 USDC 作為直接入金。請在入金前將你目前的代幣兌換為 USDC。",
         "hyperliquidFeeLabelTooltip": "新用戶需支付一筆一次性啟動費用給 Hyperliquid。",
         "amount": "金額",
         "feeTipTooltipHype": "提取至 EVM 時將收取約 0.00002 HYPE 的費用。",
@@ -3497,9 +3497,9 @@
         "margin": "保證金",
         "size": "倉位大小",
         "markPrice": "標記價格",
-        "liquidationPrice": "爆倉價",
+        "liquidationPrice": "強平價",
         "entryPrice": "開倉價",
-        "pnl": "未實現盈虧"
+        "pnl": "盈虧"
       },
       "singleCoin": {
         "openInterestTips": "本合約上所有用戶的未平倉倉位總和。",
@@ -3519,26 +3519,26 @@
       "riskLevel": {
         "danger": {
           "title": "危險",
-          "description": "你的倉位正面臨高風險爆倉。距離爆倉價僅剩 3% 或以下。請考慮追加保證金或平倉以避免爆倉。"
+          "description": "你的倉位面臨很高的強平風險，距離強平價僅 3% 或以下。請考慮追加保證金或平倉，以避免強平。"
         },
         "warning": {
           "title": "警告",
-          "description": "你的倉位正逼近清算風險。距離強平價尚有 3% 至 8%。請密切留意你的倉位，並考慮增加保證金。"
+          "description": "你的倉位正接近強平風險，距離強平價為 3% 至 8%。請密切留意倉位，並考慮追加保證金。"
         },
         "safe": {
           "title": "安全",
           "description": "你的倉位處於安全水平。與強平價的距離超過 8%。請繼續留意市場狀況。"
         },
         "title": "風險等級",
-        "distanceLabel": "爆倉距離",
+        "distanceLabel": "強平距離",
         "liquidationDistance": "強平距離",
         "gotIt": "了解",
-        "subTitle": "實時爆倉距離（％）",
+        "subTitle": "實時強平距離（%）",
         "currentPrice": "現價",
         "liqDistanceTipsShort": "上漲 <1>{{distance}}</1> 將觸發強平。",
         "liqDistanceTipsLong": "下跌 <1>{{distance}}</1> 將觸發強平。",
-        "liquidationPrice": "平倉價格",
-        "liquidationDistanceTips": "爆倉距離（%）顯示當前價格與你的爆倉價格之距離。距離越大，倉位越安全；距離越小，爆倉風險越高。"
+        "liquidationPrice": "強平價",
+        "liquidationDistanceTips": "強平距離（%）表示現價與強平價之間的距離。距離越大，倉位越安全；距離越小，強平風險越高。"
       },
       "searchPerpsPopup": {
         "hasPosition": "持倉",
@@ -3559,13 +3559,13 @@
         "activatedSuccess": "已啟用 4% Hyperliquid 手續費優惠",
         "title": "在 Hyperliquid 的費用上節省開支",
         "hyperliquidFee": "Hyperliquid 交易手續費。",
-        "description": "使用 Rabby’s 代碼來啟用"
+        "description": "使用 Rabby 的代碼啟用"
       },
       "title": "Perps",
       "permissionTips": "在你所在的地區不支援開倉。",
       "takeProfit": "止賺",
       "dailyVolume": "24小時成交量",
-      "pending": "待處理",
+      "pending": "待成交",
       "explorePerps": "探索 Perps",
       "margin": "保證金",
       "long": "做多",
@@ -3586,7 +3586,7 @@
       "takeProfitWhen": "設定止賺價格",
       "deleteAgentSuccess": "代理已成功刪除",
       "rabbyFeeTipsV2": "Rabby 手續費：0.02%",
-      "closeAll": "關閉全部",
+      "closeAll": "全部平倉",
       "price": "價格",
       "close": "平倉",
       "stopLoss": "止蝕",
@@ -3594,19 +3594,19 @@
       "leverage": "槓桿",
       "stopLossTipsLong": "止蝕價格必須低於現價",
       "lastUsed": "最近使用",
-      "stopLossTipsShort": "止蝕價格必須高於當前價格",
+      "stopLossTipsShort": "止蝕價格必須高於目前價格",
       "fee": "手續費",
       "fundingRate": "資金費率",
       "marginIsolated": "逐倉保證金",
       "position": "倉位",
-      "directDeposit": "直接入賬",
+      "directDeposit": "直接存款",
       "minimumOrderSize": "最低下單量為 $10",
       "closeShort": "平空",
       "deposit": "存入保證金",
       "withdraw": "提取保證金",
       "availableToTrade": "可交易",
       "takeProfitTipsShort": "止賺價必須低於現價",
-      "fundingPayments": "資金費用支付",
+      "fundingPayments": "資金費收支",
       "maximumOrderSize": "最大下單量為 {{amount}}",
       "add": "新增",
       "leverageRangeMaxError": "最大槓桿為 {{max}}x",
@@ -3614,14 +3614,14 @@
       "openLong": "開多倉",
       "stopLossTipsLongLiquidation": "價格低於強平價（{{price}}）",
       "completed": "已完成",
-      "openInterest": "未平倉合約",
+      "openInterest": "未平倉量",
       "pnl": "盈虧",
-      "liquidationPrice": "爆倉價",
+      "liquidationPrice": "強平價",
       "yourPosition": "你的持倉",
       "stopLossTipsShortLiquidation": "價格高於強平價（{{price}}）",
       "openShort": "開空倉",
-      "liquidation": "爆倉",
-      "estimatedLiquidationPrice": "預估平倉價",
+      "liquidation": "強平",
+      "estimatedLiquidationPrice": "預估強平價",
       "expectedSlippage": "預估滑點",
       "lowLiquiditySwitchLimit": " 流動性不足，切換至限價單。",
       "switchToLimit": "切換",
@@ -3635,7 +3635,7 @@
       "cross": "全倉",
       "availableBalance": "可用餘額：{{balance}}",
       "providerFeeTips": "Hyperliquid 交易手續費：{{fee}}",
-      "review": "審核",
+      "review": "檢視",
       "fundingGains": "資金收益",
       "reviewOrder": "檢視訂單",
       "positions": "持倉",
@@ -3646,14 +3646,14 @@
       "TakeProfit": "止賺",
       "logInPerpsAccount": "登入我的 Perps 帳戶",
       "deleteAgentModal": "你已達到代理數量的上限。是否刪除現有的代理以建立新代理？",
-      "openPositionTips": "交易永續合約涉及重大風險，包括因高槓桿與市場波動而導致你的投資及抵押品的突然性及全面虧損風險，且未必適合所有用戶。價格可能受資金費率和流動性影響，且你可能在沒有通知的情況下被自動清算。市場數據由 Hyperliquid 提供。",
-      "directDepositFast": "快速，0 滑点",
+      "openPositionTips": "交易永續合約涉及重大風險，包括因高槓桿與市場波動而導致你的投資及抵押品的突然性及全面虧損風險，且未必適合所有用戶。價格可能受資金費率和流動性影響，且你可能在沒有通知的情況下被自動強制平倉。市場資料由 Hyperliquid 提供。",
+      "directDepositFast": "快速，零滑點",
       "details": "詳情",
       "info": "市場資訊",
       "marginMode": "保證金模式",
-      "currentPrice": "當前價格",
+      "currentPrice": "目前價格",
       "settings": "設定",
-      "openProModeInTab": "在標簽中開啟專业模式",
+      "openProModeInTab": "在新分頁開啟專業模式",
       "positionValue": "持倉價值",
       "isolatedMargin": "逐倉保證金",
       "cannotChangeMarginModeWithOpenPositions": "持倉狀態下無法更改保證金模式",
@@ -3662,7 +3662,7 @@
       "isolatedMarginDesc": "每個倉位使用獨立保證金。虧損僅限於該倉位，但更容易被強平。",
       "unrealizedPnl": "未實現盈虧",
       "crossMargin": "全倉保證金",
-      "crossMarginDesc": "所有倉位共享同一份保證金。這會降低單個倉位被強平的概率，但在極端市場波動中，全部全倉保證金資金都可能損失。",
+      "crossMarginDesc": "所有倉位共享同一份保證金。這會降低單個倉位被強平的機率，但在極端市場波動中，全部全倉保證金資金都可能損失。",
       "newUserGuide": {
         "learnMore": "了解更多"
       },
@@ -3672,7 +3672,7 @@
       "PerpsDepositCard": {
         "availableToTrade": "可用於交易：",
         "deposit": "存款",
-        "swap": "交換"
+        "swap": "兌換"
       },
       "EnableUnifiedAccount": {
         "title": "啟用統一帳戶",
@@ -3680,34 +3680,34 @@
         "confirm": "確認",
         "enable": "啟用",
         "cancel": "取消",
-        "importantTips": "啟用整合帳戶後，所有 USDC 抵押品將作為全倉保證金使用。",
+        "importantTips": "啟用統一帳戶後，所有 USDC 抵押品都將用作全倉保證金。",
         "important": "重要"
       },
       "PerpsSpotSwap": {
         "title": "兌換穩定幣",
         "from": "從",
-        "to": "交換至",
+        "to": "兌換為",
         "balance": "餘額",
         "estReceive": "預計收到",
-        "swapBtn": "交換",
+        "swapBtn": "兌換",
         "insufficientBalance": "餘額不足",
         "invalidAmount": "請輸入有效金額",
-        "minimumAmount": "最低交換金額為 {{amount}}",
+        "minimumAmount": "最低兌換金額為 {{amount}}",
         "max": "最大",
-        "toDeposit": "存款 →",
-        "swapBeforeTrading": "交易前將 USDC 交換為 {{quoteAsset}}",
+        "toDeposit": "前往存款 →",
+        "swapBeforeTrading": "交易前請先將 USDC 兌換為 {{quoteAsset}}",
         "enabledSuccess": "統一帳戶已啟用",
         "enableFailed": "啟用統一帳戶失敗",
-        "swapFailed": "交換失敗",
-        "swapSuccess": "交換成功完成",
+        "swapFailed": "兌換失敗",
+        "swapSuccess": "兌換成功",
         "estReceiveTooltip": "預計收到金額可能因市場價格波動而有所變動。",
         "buyAsset": "買入 {{asset}}",
         "sellAsset": "賣出 {{asset}}",
-        "toSwapEntry": "交換 →",
-        "toDepositEntry": "存款 →"
+        "toSwapEntry": "前往兌換 →",
+        "toDepositEntry": "前往存款 →"
       },
       "PerpsTransferToPerps": {
-        "title": "轉帳",
+        "title": "轉賬",
         "from": "從",
         "to": "到",
         "spot": "現貨",
@@ -3731,9 +3731,9 @@
       "transferToPerps": "轉入 Perps",
       "selectChainToWithdraw": "選擇要提現的鏈",
       "perpsWidgetGuide": {
-        "title": "您的 PNL 一覽無遺",
-        "bulletViewPositions": "在任何網頁上追蹤您的首選持倉。",
-        "bulletPrices": "懸停以查看市場數據和 PNL。",
+        "title": "你的 PNL 一覽無遺",
+        "bulletViewPositions": "在任何網頁上追蹤你的主要持倉。",
+        "bulletPrices": "懸停以查看市場資料和 PNL。",
         "bulletToggle": "隨時開啟或關閉。",
         "later": "稍後再說",
         "open": "啟用小工具"
@@ -3753,9 +3753,9 @@
         "openInterest": "未平倉量",
         "openInterestTips": "雙向未平倉量：本永續合約的多頭與空頭倉位之和。",
         "oracleTips": "由驗證節點報告的外部價格中位數，用於計算資金費率。",
-        "markTips": "用於計算保證金、計算未實現盈虧、清算，以及觸發止賺/止蝕訂單。",
+      "markTips": "用於保證金管理、計算未實現盈虧及強平，以及觸發止賺/止蝕訂單。",
         "symbol": "合約符號",
-        "fundingTips": "多頭對空頭的每小時資金費率（若為負，則空頭支付多頭）。資金費率不收取任何費用，這是用戶之間的點對點轉移，旨在將價格推向現貨價格。詳情請參閱說明文件。",
+        "fundingTips": "多頭對空頭的每小時資金費率（若為負，則空頭支付多頭）。資金費率不收取任何費用，這是用戶之間的點對點轉移，旨在將價格推向現貨價格。詳情請參閱說明檔案。",
         "categoryAll": "全部"
       },
       "userInfo": {
@@ -3784,7 +3784,7 @@
           "fundingTips": "自開倉以來的淨資金費用。若為負數，表示資金收益。",
           "rate": "資金費率",
           "openOrders": "未成交掛單",
-          "slice": "切片",
+          "slice": "分段",
           "closedPnl": "已實現盈虧",
           "positions": "倉位",
           "reduceOnly": "僅減倉",
@@ -3800,7 +3800,7 @@
           "size": "倉位大小",
           "orderHistory": "委託單歷史",
           "fundingTipsV2": "自開倉以來的淨資金費用。紅色（負值）表示已支付資金費用，綠色（正值）表示已收取資金費用。",
-          "fundingTipsBold": "這顯示自開倉以來你的總資金結算。<bold>綠色（正數）</bold>值表示你從其他交易者那裡獲得了收益，而<bold>紅色（負數）</bold>值則是你支付給他們的資金成本。",
+          "fundingTipsBold": "這裡顯示自開倉以來結算的資金費總額。<bold>綠色（正數）</bold>表示從其他交易者獲得的資金費收益，<bold>紅色（負數）</bold>表示已支付的資金費。",
           "assets": "資產",
           "about": "關於"
         },
@@ -3809,17 +3809,17 @@
           "positions": "無持倉",
           "fillHistory": "暫無成交歷史",
           "orderHistory": "尚無訂單歷史",
-          "activeTwap": "現時沒有活躍的TWAP",
+          "activeTwap": "目前沒有生效中的 TWAP",
           "openOrders": "目前沒有未成交的委託單",
           "tradeHistory": "暫無成交紀錄",
-          "twapHistory": "沒有TWAP歷史",
+          "twapHistory": "沒有 TWAP 紀錄",
           "assets": "無資產"
         },
         "positionInfo": {
           "limitPrice": "限價",
           "limitClose": "限價平倉",
           "closePosition": "平倉",
-          "closePositionMarketTips": "此操作將以當前市場價格立即平倉。",
+          "closePositionMarketTips": "此操作將以目前市價立即平倉。",
           "closeMarket": "市價平倉",
           "confirm": "確認",
           "closeAll": "全部平倉",
@@ -3827,19 +3827,19 @@
           "receive": "接收",
           "reverse": "反向",
           "closedPnl": "已平倉盈虧",
-          "currentPosition": "當前倉位",
+          "currentPosition": "目前倉位",
           "closePositionTips": "此操作將嘗試以你所選的限價價格平倉。",
           "viewOrders": "查看掛單",
           "newPosition": "新建倉位",
           "mid": "中間價",
           "reversePosition": "反向開倉",
           "close": "平倉",
-          "closePositionReverseTips": "這將以當前市場價格立即平倉你的倉位，並以同等倉位於相反方向開倉。",
+          "closePositionReverseTips": "這將以目前市場價格立即平倉你的倉位，並以同等倉位於相反方向開倉。",
           "closeLimit": "平倉限價委託",
-          "marketCloseBtn": "市場收盤",
+          "marketCloseBtn": "市價平倉",
           "invalidPrice": "無效價格",
-          "marketCloseTitle": "市場平倉",
-          "confirmCloseAllTitle": "確認關閉所有倉位",
+          "marketCloseTitle": "市價平倉",
+          "confirmCloseAllTitle": "確認平倉所有倉位",
           "dontShowAgain": "不再顯示此內容",
           "marketCloseDesc": "這將嘗試立即平倉。",
           "confirmCloseAllDesc": "所有未平倉倉位都將按市價平倉，並取消所有訂單。",
@@ -3848,8 +3848,8 @@
           "marketPrice": "市場價格",
           "buy": "買入",
           "sell": "賣出",
-          "buyToSell": "買入平賣",
-          "sellToBuy": "賣出平買",
+          "buyToSell": "買入轉賣出",
+          "sellToBuy": "賣出轉買入",
           "reverseAction": "{{side}} {{size}} {{coin}} 反向"
         },
         "openOrders": {
@@ -3867,7 +3867,7 @@
         },
         "distanceRiskTag": {
           "goingUp": "當價格上升 {{percent}}，將觸發強制平倉",
-          "goingDown": "下跌 {{percent}}% 將觸發強平"
+          "goingDown": "下跌 {{percent}} 將觸發強平"
         },
         "twap": {
           "terminated": "已終止",
@@ -3880,18 +3880,18 @@
         "history": "歷史",
         "fillHistory": "成交紀錄",
         "randomized": "(隨機化的)",
-        "active": "啟用",
+        "active": "生效中",
         "status": {
-          "rejected": "拒绝",
+          "rejected": "已拒絕",
           "canceled": "已取消",
           "partiallyFilled": "部分成交",
           "filled": "已成交",
-          "open": "開盤",
+          "open": "未成交",
           "triggered": "觸發",
-          "iocCancelRejected": "因 IOC 取消而被拒绝",
+          "iocCancelRejected": "因 IOC 取消而被拒絕",
           "minTradeNtlRejected": "由於最低交易 NTL 被拒絕",
           "perpMarginRejected": "永續合約保證金被拒絕",
-          "reduceOnlyCanceled": "由於僅可減少而被取消",
+          "reduceOnlyCanceled": "因僅減倉而取消",
           "badAloPxRejected": "ALO 價格異常，已拒絕",
           "siblingFilledCanceled": "因關聯訂單已成交而取消"
         },
@@ -3921,7 +3921,7 @@
         "sound": "啟用聲音"
       },
       "tradingPanel": {
-        "notAvailableInRegion": "您所在的地區暫不支援。",
+        "notAvailableInRegion": "你所在的地區暫不支援。",
         "slippagePage": {
           "maxSlippage": "最大滑點",
           "title": "調整最大滑點",
@@ -3950,14 +3950,14 @@
         "frequency": "頻率",
         "start": "開始",
         "randomizeTooltip": "隨機化子訂單的下單時機與下單量，以降低可預測性。",
-        "liquidationPrice": "爆倉價",
+        "liquidationPrice": "強平價",
         "slMustBeLowerThanCurrentPrice": "止蝕價格必須低於現價",
         "tpSl": "止賺 / 止蝕",
         "threeThirtySeconds": "30 秒",
         "runtimeTooLong": "執行時間必須小於 24 小時",
-        "runtime": "執行時",
+        "runtime": "執行時間",
         "stopLossExpectedPnL": "止蝕：預期損益",
-        "currentPosition": "當前倉位",
+        "currentPosition": "目前倉位",
         "runtimeTips": "（5分鐘-24小時）",
         "maximumOrderSize": "最大下單量為 {{amount}}。",
         "runtimeTooShort": "執行時間必須超過 5 分鐘",
@@ -3967,10 +3967,10 @@
         "sellShort": "賣出 / 做空",
         "triggerPrice": "觸發價",
         "marginRequired": "所需保證金",
-        "marginCross": "跨倉",
+        "marginCross": "全倉",
         "tpMustBeLowerThanCurrentPrice": "止賺價格必須低於現價",
         "marginIsolated": "逐倉保證金",
-        "startAndEndPriceMustBeDifferent": "開倉價與平倉價必須不同",
+        "startAndEndPriceMustBeDifferent": "起始價格與結束價格必須不同",
         "slSellMustBeLowerThanMidPrice": "止蝕賣出單的價格必須低於中間價",
         "randomize": "隨機化",
         "tpSellMustBeHigherThanMidPrice": "掛賣單價格必須高於中間價。",
@@ -3981,21 +3981,21 @@
         "liquidationPriceTooltip": "倉位風險較低，因此暫時沒有強平價。請注意，增加倉位或降低保證金將會增加風險。",
         "buyLong": "買入 / 開多",
         "enableTrading": "啟用永續合約交易",
-        "slMustBeHigherThanCurrentPrice": "停損價格必須高於現價。",
+        "slMustBeHigherThanCurrentPrice": "止蝕價格必須高於現價。",
         "takeProfitExpectedPnL": "止賺，預期盈虧",
         "minutes": "分鐘",
         "tpBuyMustBeLowerThanMidPrice": "買入委託價格必須低於中位價",
         "invalidSlPrice": "無效的止蝕價格",
         "minimumOrderSize": "最低下單量為 $10。",
         "slBuyMustBeHigherThanMidPrice": "買入停止單價格必須高於中間價",
-        "endPrice": "結算價",
-        "tpSlTips": "下單最簡單的市價止賺/止蝕單。對於進階功能，例如限價或部分止賺/止蝕，請在開倉倉位中設定止賺/止蝕。",
+        "endPrice": "結束價格",
+        "tpSlTips": "下達簡單的市價止賺/止蝕單。若要使用限價或部分止賺/止蝕等進階功能，請在未平倉倉位中設定止賺/止蝕。",
         "enterAmount": "請輸入數量",
         "aloTooLargeBuy": "ALO 限價委託價格必須低於最佳賣價。",
         "reduceOnlyTooLarge": "減倉過大",
         "aloTooLargeSell": "ALO 訂單價格必須高於最佳買價。",
         "minimumSuborderSize": "時間加權平均價格（TWAP）分單的最小下單量為 $10",
-        "sizeSkewTooltip": "結束價格與起始價格之比。例如，若大小偏斜為 2.0，則結束價格的限價委託下單量為起始價格限價委託下單量的兩倍。大小偏斜為 1.0 時，兩筆訂單大小相等。",
+        "sizeSkewTooltip": "結束價格與起始價格處下單量的比率。例如，若大小偏斜為 2.0，則結束價格的限價委託下單量為起始價格限價委託下單量的兩倍。大小偏斜為 1.0 時，兩筆訂單大小相等。",
         "deposit": "存入",
         "addFundsToGetStarted": "新增資金以開始使用",
         "orderCount": "訂單數量",
@@ -4004,29 +4004,29 @@
         "cost": "成本",
         "price": "價格",
         "long": "做多",
-        "action": "行動",
+        "action": "操作",
         "sideShortSell": "做空（賣出）",
         "estimatedPnlWillBe": "你的預估盈虧將為",
         "slTriggerMoreThanOrderPrice": "你的止蝕觸發價格應高於訂單價格。",
         "buyTrigger": "買入觸發器",
         "tpTriggerLessThanOrderPrice": "你的止賺觸發價格應低於訂單價格。",
-        "size": "規模",
+        "size": "數量",
         "slTriggerLessThanOrderPrice": "你的止蝕觸發價格應低於訂單價格。",
         "bboDisabledTooltip": "當 {{bboDisabledReason}} 被啟用時，BBO 不受支援",
         "sideLongBuy": "做多（買入）",
         "tpTriggerMoreThanOrderPrice": "你的止賺觸發價格應高於訂單價格。",
         "tpTriggerPriceIsZero": "你的止賺觸發價格為 0，進行 {{side}} 時不會設定。",
-        "Sell": "出售",
+        "Sell": "賣出",
         "orderTypeTooltipMarket": "市價委託會立即按目前最佳可用市場價格撮合。",
         "sellTrigger": "賣出觸發器",
-        "orderTypeTooltipStopMarket": "當指定價格達到時，停止市價委託會變為市價委託。請指定觸發價格以啟動該訂單。",
-        "orderTypeTooltipTakeLimit": "當指定的成交價格達到時，限價委託將變為限價訂單。請指定一個觸發價格以激活該訂單。",
-        "orderTypeTooltipTakeMarket": "當達到指定的成交價格時，市場訂單會變成市價訂單。指定一個觸發價格來啟動該訂單。",
+        "orderTypeTooltipStopMarket": "止蝕市價委託會在達到指定價格時轉為市價委託。請設定觸發價格以啟動訂單。",
+        "orderTypeTooltipTakeLimit": "止賺限價委託會在達到指定止賺價格時轉為限價委託。請設定觸發價格以啟動訂單。",
+        "orderTypeTooltipTakeMarket": "止賺市價委託會在達到指定止賺價格時轉為市價委託。請設定觸發價格以啟動訂單。",
         "orderTypeTooltipLimit": "限價委託是以指定價格或更優價格買入或賣出的訂單。限價委託不保證一定成交。",
         "slTriggerPriceIsZero": "你的止蝕觸發價格為 0，進行 {{side}} 時不會設定。",
         "Buy": "買入",
         "hour": "小時",
-        "min": "最小值",
+        "min": "分鐘",
         "maxDurationTwap": "TWAP 訂單最長執行時間為",
         "orderTypeTooltipStopLimit": "止蝕限價委託會在指定止蝕價格到達時變為限價委託。請指定觸發價格來啟動訂單。",
         "totalTime": "總時間 (5分鐘-24小時)",
@@ -4037,11 +4037,11 @@
       },
       "marginMode": {
         "title": "保證金模式",
-        "cross": "跨倉",
+        "cross": "全倉",
         "confirm": "確認",
         "isolated": "逐倉保證金",
-        "crossDescription": "所有跨倉倉位共用同一個跨保證金作為抵押。在清算發生時，你在此模式下的跨保證金餘額以及任何剩餘未平倉的跨倉倉位可能被沒收。",
-        "isolatedDescription": "透過分配給每個倉位的保證金量，管理個別倉位的風險。若逐倉倉位的保證金率達到 100%，該倉位將被清算。在此模式下，可以向個別倉位增添或提取保證金。",
+        "crossDescription": "所有全倉倉位共享同一份全倉保證金作為抵押。若發生強平，你的保證金餘額和剩餘全倉倉位都可能被沒收。",
+        "isolatedDescription": "透過為每個倉位分配保證金來管理個別風險。若逐倉倉位的保證金率達到 100%，該倉位將被強平。在此模式下，可為個別倉位追加或提取保證金。",
         "onlyIsolatedSupported": "此資產僅支援逐倉保證金模式",
         "cannotChange": "無法更改保證金模式"
       },
@@ -4061,31 +4061,31 @@
         "markPrice": "標記價格：",
         "tp": "止賺",
         "title": "設定止賺/止蝕",
-        "currentPosition": "當前倉位",
+        "currentPosition": "目前倉位",
         "cancelSl": "取消止蝕",
         "takeProfitExpectedPnl": "止賺預期盈虧",
         "stopLossExpectedPnl": "止蝕預期盈虧",
         "sl": "止蝕",
         "entryPrice": "入場價：",
         "confirm": "確認",
-        "entryCurrentPrice": "進場價 / 當前價",
-        "takeProfit": "止盈",
-        "stopLoss": "止損",
+        "entryCurrentPrice": "進場價 / 目前價",
+        "takeProfit": "止賺",
+        "stopLoss": "止蝕",
         "triggerPrice": "觸發價",
-        "estimatedPnlWillBe": "您的預計損益將為",
+        "estimatedPnlWillBe": "你的預計損益將為",
         "triggerHigherThanLiquidation": "觸發價應高於強平價 {{price}}",
         "triggerLowerThanLiquidation": "觸發價應低於強平價 {{price}}",
-        "tpTriggerInvalid": "止盈觸發價無效，將不會設定",
-        "slTriggerInvalid": "止損觸發價無效，將不會設定"
+        "tpTriggerInvalid": "止賺觸發價無效，將不會設定",
+        "slTriggerInvalid": "止蝕觸發價無效，將不會設定"
       },
       "accountInfo": {
         "totalBalance": "總餘額",
         "maintenanceMargin": "維持保證金",
         "balance": "餘額",
         "accountEquityTip": "餘額 + 未實現損益（若全部倉位平倉時的估算帳戶價值）",
-        "crossAccountLeverage": "跨帳戶槓桿",
-        "deposit": "充值",
-        "crossMarginRatio": "跨倉保證金比率",
+        "crossAccountLeverage": "全倉帳戶槓桿",
+        "deposit": "存款",
+        "crossMarginRatio": "全倉保證金率",
         "maintenanceMarginTips": "維持你的跨倉倉位所需的最低投資組合價值",
         "availableBalance": "可用餘額",
         "accountEquity": "帳戶權益",
@@ -4098,16 +4098,16 @@
         "accountSummary": "帳戶概覽",
         "unifiedAccountSummary": "統一帳戶概覽",
         "unifiedAccountRatio": "統一帳戶比率",
-        "unifiedAccountRatioTips": "代表投資組合被清算的風險。當數值高於95%時，你的投資組合可能會被清算。",
+        "unifiedAccountRatioTips": "代表投資組合的強平風險。當數值高於 95% 時，你的投資組合可能會被強平。",
         "unifiedAccountLeverage": "統一帳戶槓桿",
-        "unifiedAccountLeverageTips": "統一帳戶槓桿 = 總交叉倉位價值 / 總抵押品餘額。",
+        "unifiedAccountLeverageTips": "統一帳戶槓桿 = 全倉倉位總價值 / 抵押品總餘額。",
         "perpsMaintenanceMargin": "Perps 維持保證金",
         "perpsPortfolioValue": "Perps 投資組合價值",
         "perpsUnrealizedPnl": "Perps 未實現盈虧",
         "perpsAccountSummary": "Perps 帳戶概覽",
         "portfolioMarginSummary": "投資組合保證金概覽",
         "portfolioMarginRatio": "投資組合保證金比率",
-        "portfolioMarginRatioTips": "維持保證金 / LTV 調整後投資組合價值。當數值高於 95% 時，你的投資組合可能會被清算。",
+        "portfolioMarginRatioTips": "維持保證金 / LTV 調整後投資組合價值。當數值高於 95% 時，你的投資組合可能會被強平。",
         "marginBalance": "保證金餘額",
         "marginBalanceTips": "保證金餘額 = 錢包餘額 + 未實現盈虧。當保證金餘額 <= 維持保證金時，你的倉位將被強制平倉。",
         "totalCollateralBalance": "總抵押品餘額",
@@ -4123,7 +4123,7 @@
       "accountActions": {
         "available": "可用",
         "pending": "待處理",
-        "deposit": "充值",
+        "deposit": "存款",
         "positionCount": "{{count}} 個持倉",
         "onePosition": "1 個倉位",
         "availableBalanceTips": "可用資金"
@@ -4131,9 +4131,9 @@
       "orderBook": {
         "markPrice": "標記價格",
         "time": "時間",
-        "viewAsks": "賣出價",
+        "viewAsks": "賣盤",
         "noTrades": "暫無成交",
-        "viewBoth": "兩者皆可",
+        "viewBoth": "雙向",
         "total": "總額",
         "price": "價格",
         "viewBids": "買盤",
@@ -4149,13 +4149,13 @@
       "editMargin": {
         "shortLiquidationTips": "上漲 {{percent}} 將觸發強平",
         "title": "管理保證金",
-        "currentPosition": "當前持倉",
+        "currentPosition": "目前持倉",
         "configureMargin": "配置保證金",
         "longLiquidationTips": "下跌 {{percent}} 將觸發強平",
-        "currentPrice": "當前價格"
+        "currentPrice": "目前價格"
       },
       "topBar": {
-        "favoriteEmpty": "您的最愛列表是空的"
+        "favoriteEmpty": "你的最愛清單是空的"
       }
     },
     "perpsDetail": {
@@ -4195,7 +4195,7 @@
         "maximumOrderSize": "最大下單量為 {{amount}}",
         "size": "手數",
         "rabbyFee": "Rabby 手續費",
-        "free": "免費",
+        "free": "可用保證金",
         "takeProfitWhenPriceBelow": "當價格低於時止賺",
         "leverage": "槓桿倍率",
         "minimumOrderSize": "最低下單量為 10 美元",
@@ -4226,10 +4226,10 @@
         "currentPrice": "現價",
         "upTo": "最高可達",
         "perpsBalance": "Perps 餘額",
-        "amountToReduce": "需減少的數量",
+        "amountToReduce": "要減少的保證金",
         "exceedMaxReduction": "超過最大減倉量",
         "liqPrice": "強平價",
-        "liqDistance": "爆倉距離",
+        "liqDistance": "強平距離",
         "amountToAdd": "需追加的金額"
       },
       "PerpsClosePositionPopup": {
@@ -4248,10 +4248,10 @@
         "priceAbove": "價格高於",
         "stopLoss": "止蝕",
         "title": "自動平倉",
-        "takeProfitTipsLong": "止賺價格必須高於當前價格",
+        "takeProfitTipsLong": "止賺價格必須高於目前價格",
         "takeProfitWhen": "止賺條件",
         "stopLossTipsLong": "止蝕價格必須低於現價",
-        "youLoss": "你輸了",
+        "youLoss": "你將虧損",
         "youGain": "你獲利",
         "takeProfitWhenPriceAbove": "當價格高於時止賺",
         "cancel": "取消",
@@ -4264,9 +4264,9 @@
         "EntryAndCurrentPrice": "開倉價：${{entryPrice}} 現價：${{currentPrice}}",
         "takeProfitTipsShort": "止賺價必須低於現價。",
         "takeProfitExpectedPNL": "止賺 預期盈虧",
-        "stopLossExpectedPNL": "止蝕 預期未實現盈虧",
-        "stopLossTipsLongLiquidation": "價格低於爆倉價（{{price}}）",
-        "stopLossWhenPriceAbove": "當價格高於時觤觸發止蝕",
+        "stopLossExpectedPNL": "止蝕預期盈虧",
+        "stopLossTipsLongLiquidation": "價格低於強平價（{{price}}）",
+        "stopLossWhenPriceAbove": "當價格高於設定值時止蝕",
         "priceBelow": "價格低於",
         "whenPriceAbove": "當價格高於",
         "whenPriceBelow": "當價格低於",
@@ -4277,10 +4277,10 @@
     "lending": {
       "availableCard": {
         "needSupply": "如要借款，你需要先供應資產作為抵押品。",
-        "emode": "某些資產在 E-Mode 下不可借用。退出 E-Mode 以訪問所有資產。",
+        "emode": "某些資產在 E-Mode 下不可借用。退出 E-Mode 以使用所有資產。",
         "canBorrow": "你可以根據已供應的抵押品借款，最高不超過借款上限。",
         "emodeNoAssets": "找不到與搜尋相關的資產。請嘗試其他類別。",
-        "singleAssetUnavailableForEmode": "無法借款。退出 E-Mode 以查看。",
+        "singleAssetUnavailableForEmode": "無法借款。退出 E-Mode 後即可借用。",
         "isolated": "由於隔離模式，借貸額度和資產受限。"
       },
       "list": {
@@ -4295,7 +4295,7 @@
           "myBorrows": "我的借款"
         },
         "item": {
-          "wrapperToken": "{{name}} 的 Wrapped token"
+          "wrapperToken": "{{name}} 的封裝代幣"
         }
       },
       "repayDetail": {
@@ -4303,7 +4303,7 @@
           "wallet": "錢包餘額",
           "collateral": "抵押品"
         },
-        "repayWith": "使用此項還款",
+        "repayWith": "使用以下資產還款",
         "amountTitle": "餘額：",
         "actions": "償還",
         "approveAndRepay": "授權並還款"
@@ -4313,9 +4313,9 @@
         "actions": "供應",
         "amountTitle": "可用：",
         "supplyAPY": "供應年利率",
-        "collateralization": "抵押品化",
+        "collateralization": "抵押狀態",
         "supplyBalance": "供應餘額",
-        "approveAndSupply": "批准并提供",
+        "approveAndSupply": "授權並供應",
         "unavailable": "不可用",
         "enabled": "啟用",
         "availableToBorrow": "可借金額",
@@ -4335,34 +4335,34 @@
       "toggleCollateralModal": {
         "toggleRiskTexts": {
           "canNotUseThisCurrencyAsCollateral": "你不能將此資產用作抵押品。",
-          "doNotHaveSuppliesInThisCurrency": "你沒有供應此資產。",
+          "doNotHaveSuppliesInThisCurrency": "你沒有存入此資產。",
           "canNotSwitchUsageAsCollateralMode": "你不能切換此資產的抵押品使用模式，因為這會導致清算。",
           "zeroLTVWithdrawBlocked": "LTV 為 0 的資產（{{assets}}）必須先提取或停用為抵押品，才能執行此操作。"
         },
         "closeTitle": "確認停用",
-        "openTitle": "審核啟用",
+        "openTitle": "確認啟用",
         "exitIsolationModeTitle": "退出隔離模式",
         "riskToLiquidationText": "你不能切換此資產的抵押品使用模式，因為這會導致清算。",
         "enableIsolationModeTitle": "啟用隔離模式",
         "exitIsolationModeDesc": "你將退出隔離模式，其他代幣現在可以用作抵押品。",
         "openDesc": "將此資產作為抵押品可以提高你的借貸能力和健康指數。然而，如果你的健康指數降至 1 以下，則可能會被清算。",
         "closeDesc": "停用此資產作為抵押品會影響你的借貸能力和健康因子。",
-        "enableIsolationModeDesc": "你正在進入隔離模式。在隔離模式下，你不能供應其他資產作為抵押品。全局債務上限會限制隔離資產的借貸能力。如要退出隔離模式，請先停用 CRV 作為抵押品，再借入其他資產。"
+        "enableIsolationModeDesc": "你正在進入隔離模式。在隔離模式下，你不能供應其他資產作為抵押品。全域債務上限會限制隔離資產的借貸能力。如要退出隔離模式，請先停用 CRV 作為抵押品，再借入其他資產。"
       },
       "borrowDetail": {
-        "swapDebt": "交換",
+        "swapDebt": "兌換",
         "actions": "借入",
         "amountTitle": "可用：",
         "almostReachedWarning": "此資產的協議借款上限已達 100%，無法繼續借款。",
         "almostReachedError": "由於協議借款上限即將達到，最大可借金額受到限制。",
         "borrowed": "借入",
-        "approveAndBorrow": "批准和借款"
+        "approveAndBorrow": "授權並借款"
       },
       "popup": {
         "amount": "數量",
         "title": "交易概覽",
         "available": "可用",
-        "liquidationAt": "清算在 < 1.0",
+        "liquidationAt": "健康因子 < 1.0 時清算",
         "remainingDebt": "剩餘債務"
       },
       "borrowOverview": {
@@ -4377,7 +4377,7 @@
       "supplyOverview": {
         "collateral": "抵押品",
         "totalSupplied": "總供應量",
-        "availableToSupply": "可供提供",
+        "availableToSupply": "可供應",
         "walletBalance": "錢包餘額",
         "title": "供應詳情",
         "mySupply": "我的供應",
@@ -4399,23 +4399,23 @@
         "liquidationTitle": "清算：",
         "over3desc": "你的持倉是安全的",
         "over3title": "健康因子 > 3.0：",
-        "desc": "強平價值",
+        "desc": "清算價值",
         "below1desc": "你的倉位面臨被平倉的風險。",
         "below1title": "健康因子 ≤ 1.0:",
         "warningText": "你的健康因子過低。為避免被清算：\n1. 還清部分或全部貸款\n2. 新增更多抵押品",
-        "introText": "你的健康因子顯示你的借貸位置有多安全。如果它下降到過低，你的抵押品可能會被清算。",
-        "liquidation": "如果你的健康指標低於 1.0，你的部分抵押品可能會被自動出售以償還債務。將會適用清算罰金，從而導致你的抵押品部分虧損。"
+        "introText": "健康因子反映你的借貸倉位有多安全。若數值過低，你的抵押品可能會被清算。",
+        "liquidation": "如果你的健康因子降至 1.0 以下，部分抵押品可能會被自動出售以償還債務，並收取清算罰金，導致你損失部分抵押品。"
       },
       "modalDesc": {
         "availableToBorrow": "可借用金額",
-        "isolatedSupplyDesc": "抵押品使用受到限制，因為處于隔離模式。",
+        "isolatedSupplyDesc": "抵押品使用受到限制，因為目前處於隔離模式。",
         "isolatedTitle": "資產不能用作抵押品",
-        "maxLTV": "最大 LTV 比率代表特定抵押品的最大借貸能力。例如，如果一個抵押品的 LTV 為 75%，用戶可以每 1 ETH 抵押品借出最高 0.75 的 ETH 作為本金货幣。",
-        "availableToBorrowDesc": "你可以根据你提供的抵押品進行借款，直到達到借款上限為止。",
+        "maxLTV": "最大 LTV 比率表示特定抵押品的最大借款能力。例如，抵押品的 LTV 為 75% 時，每提供價值 1 ETH 的抵押品，最多可借入價值 0.75 ETH 的資產。",
+        "availableToBorrowDesc": "你可以根據已提供的抵押品借款，直至達到借款上限。",
         "lqDesc": "當清算發生時，清算人會代表借款人償還最高 50% 的未償還借款金額。作為回報，他們可以以折扣價購買抵押品，並將差額（清算罰金）作為獎勵。",
-        "globalIsolatedDesc": "在隔離模式下，你不能將其他資產作為抵押品。全球債務上限限制了隔離資產的借款能力。要退出隔離模式，需在借入其他資產之前禁用 UNI 作為抵押品。",
-        "isolatedDesc": "此資產只能在孤立模式下用作抵押品，在該模式下，你無法提供其他資產作為借款抵押品。在孤立模式下用作抵押的資產只能借到特定的債務上限。",
-        "maxAmount": "這是你根據所提供的所有抵押品可以借入的最大金額。你的總借貸能力是透過將每種抵押資產的市場價值乘以其最大貸款價值（Max LTV），然後將結果相加來計算的。"
+        "globalIsolatedDesc": "在隔離模式下，你無法將其他資產用作抵押品。全域債務上限會限制隔離資產的借款能力。如要退出隔離模式，請先停用 UNI 作為抵押品，再借入其他資產。",
+        "isolatedDesc": "此資產只能在隔離模式下用作抵押品；在此模式下，你無法提供其他資產作為借款抵押品。隔離模式下的抵押資產只能借款至特定的債務上限。",
+        "maxAmount": "這是根據你提供的全部抵押品計算出的最高可借金額。總借款額度的計算方式是：將每項抵押資產的市場價值乘以其最大 LTV，再將結果相加。"
       },
       "repayWithAToken": {
         "header": {
@@ -4423,12 +4423,12 @@
           "assets": "代幣"
         },
         "title": "選擇還款代幣",
-        "zeroLtvCollateralTips": "你目前的 LTV = 0 擔保品，因此根据擔保品還款規則，你只能先使用這些擔保品進行還款。"
+        "zeroLtvCollateralTips": "你目前持有以下 LTV = 0 的抵押品。根據抵押品還款規則，你只能先使用這些抵押品還款。"
       },
       "manageEmode": {
         "actions": {
-          "disable": "禁用 E-模式",
-          "enable": "啟用 E-模式"
+          "disable": "停用 E-Mode",
+          "enable": "啟用 E-Mode"
         },
         "guide": {
           "title": "效率模式 (E-Mode)",
@@ -4441,7 +4441,7 @@
           },
           "placeholder": "選擇",
           "label": "資產類別",
-          "desc": "此類別以外的所有借貸倉位必須關閉才能啟用此類別。"
+          "desc": "必須先結清此類別以外的所有借款倉位，才能啟用該類別。"
         },
         "debtSwapSelector": {
           "header": {
@@ -4466,35 +4466,35 @@
           },
           "title": "資產類別"
         },
-        "disableTitle": "禁用",
+        "disableTitle": "停用",
         "unavailable": "• 不可用",
         "enabled": "• 已啟用",
-        "title": "管理 E-模式",
-        "unavailableTips": "你當前的借貸資產不受支援。",
+        "title": "管理 E-Mode",
+        "unavailableTips": "你目前的借貸資產不受支援。",
         "description": "啟用 E-Mode 使你能夠最大化你的借貸能力。然而，借貸僅限於所選類別中的資產。"
       },
       "debtSwap": {
         "actions": {
-          "swapTo": "換成",
+          "swapTo": "兌換為",
           "borrowed": "借入",
           "amount": "數量",
-          "select": "選择",
-          "title": "債務交換"
+          "select": "選擇",
+          "title": "債務兌換"
         },
         "overview": {
           "title": "交易概覽",
           "borrowAPY": "借貸年利率",
-          "borrowValueAfter": "交換後的借款餘額"
+          "borrowValueAfter": "兌換後的借款餘額"
         },
         "button": {
-          "swap": "交換"
+          "swap": "兌換"
         },
-        "title": "交換借貸位置",
+        "title": "兌換借款倉位",
         "borrowBalance": "借款餘額",
-        "entryTips": "一鍵交換你的借入資產，減少步驟和費用。",
-        "lpRiskWarning": "低健康因子，交易後你的倉位將承擔更高的清算風險。",
-        "lpDangerWarning": "你在此交易後的健康系數將會極低，可能導致強制平倉。請選择其他資產或減少交易金額以確保安全。",
-        "priceImpactTips": "高價格影响（{{lostValue}}）。由于流動性低或订單规模小，此路徑可能會返回更多。",
+        "entryTips": "一鍵兌換已借入的資產，減少操作步驟和費用。",
+        "lpRiskWarning": "兌換後的健康因子較低，你的倉位將面臨更高的清算風險。",
+        "lpDangerWarning": "本次兌換後你的健康因子將極低，可能觸發清算。請選擇其他資產或減少兌換金額。",
+        "priceImpactTips": "價格影響較高（{{lostValue}}）。流動性較低或訂單量較小時，此路徑的返還金額可能有較大波動。",
         "maxLtvWarning": "抵押品不足以覆蓋新的借貸倉位。錢包必須仍有借貸能力才能執行債務切換。"
       },
       "repayWithCollateral": {
@@ -4503,7 +4503,7 @@
         },
         "overview": {
           "title": "交易概覽",
-          "collateralValueAfter": "還款後的抵押餘額",
+          "collateralValueAfter": "還款後的抵押品餘額",
           "borrowValueAfter": "還款後的借貸餘額"
         },
         "button": {
@@ -4527,7 +4527,7 @@
       },
       "actions": {
         "borrow": "借入",
-        "swap": "交換",
+        "swap": "兌換",
         "supply": "供應",
         "withdraw": "提取",
         "repay": "還款"
@@ -4539,16 +4539,16 @@
           "endDesc": "你尚未有任何存款。查看以下推薦資產以開始賺取利息。"
         },
         "totalSupplied": "總供應量",
-        "netWorth": "净資產",
+        "netWorth": "淨資產",
         "healthFactor": "健康因子",
         "totalBorrowed": "總借貸金額",
-        "eMode": "E-模式",
+        "eMode": "E-Mode",
         "healthFactorTip": "健康因子顯示你持倉的安全性",
         "more": "更多",
         "risky": "高風險",
-        "netApy": "净年化收益率",
+        "netApy": "淨年化收益率",
         "estDailyEarnings": "預計每日收益",
-        "lq": "如果跌破 1，可能會觸發清算。",
+        "lq": "如果健康因子跌破 1，可能會觸發清算。",
         "ethCorrelatedTip": "ETH 相關資產",
         "healthy": "健康"
       },
@@ -4561,7 +4561,7 @@
         "borrow": "借入"
       },
       "table": {
-        "actions": "行動",
+        "actions": "操作",
         "collateral": "抵押品",
         "type": "類型",
         "token": "代幣",
@@ -4570,14 +4570,14 @@
       },
       "supplyList": {
         "more": "更多代幣供應",
-        "collapse": "崩溃"
+        "collapse": "收起"
       },
       "borrowList": {
-        "collapse": "崩溃",
+        "collapse": "收起",
         "more": "更多代幣可借用"
       },
       "estDailyEarning": "預計每日收益",
-      "netApy": "净年化收益率",
+      "netApy": "淨年化收益率",
       "borrowBalance": "借款餘額",
       "supplied": "提供",
       "borrowed": "借用",
@@ -4590,8 +4590,8 @@
       "gotIt": "收到",
       "totalSupply": "總供應量",
       "isolate": "隔離",
-      "isolateTip": "這是一個孤立市場",
-      "noData": "無數據",
+      "isolateTip": "這是一個隔離市場",
+      "noData": "沒有資料",
       "borrowApy": "借貸年利率",
       "supplyBalance": "供應餘額",
       "submitted": "提交完成",
@@ -4600,7 +4600,7 @@
       "hf": "健康因子",
       "enterAmount": "輸入金額",
       "selectChain": "選擇區塊鏈",
-      "hfTitle": "健康因素",
+      "hfTitle": "健康因子",
       "searchMarket": "搜尋市場",
       "selectMarket": "選擇市場",
       "signFallback": {
@@ -4610,31 +4610,31 @@
     "desktopSmallSwap": {
       "failReason": {
         "missingRequiredParams": "缺少必要參數",
-        "quoteUnavailable": "無法獲取報價",
+        "quoteUnavailable": "無法取得報價",
         "gasCostTooHigh": "超出 Gas 費用限額",
         "priceImpactTooHigh": "價格影響過高",
-        "buildSwapTxsFailed": "無法建立交換交易",
-        "sendSwapTxFailed": "無法發送交換交易",
+        "buildSwapTxsFailed": "無法建立兌換交易",
+        "sendSwapTxFailed": "無法發送兌換交易",
         "transactionFailed": "交易失敗",
         "submitFailed": "無法提交交易",
         "gasNotEnough": "Gas 不足"
       },
       "stopTaskModal": {
-        "title": "停止當前的交換？",
-        "description": "如果現在停止，任何剩餘的交換都將無法完成。請注意，已完成的交換無法撤銷。",
-        "continueSwap": "繼續交換",
-        "stop": "停止交換"
+        "title": "停止目前的兌換？",
+        "description": "如果現在停止，剩餘兌換將無法完成。請注意，已完成的兌換無法撤銷。",
+        "continueSwap": "繼續兌換",
+        "stop": "停止兌換"
       },
       "status": {
         "pending": "正在兌換",
         "idle": "等待兌換",
         "success": "兌換成功"
       },
-      "title": "轉換灰塵代幣",
-      "description": "將低價值代幣轉換為gas代幣，簡化你的資產列表！",
+      "title": "兌換小額資產",
+      "description": "將低價值代幣兌換為 Gas 代幣，簡化資產清單！",
       "receiveTitle": "你將收到",
       "expectedToReceive": "預期收到",
-      "completedTitle": "灰塵代幣已轉換！",
+      "completedTitle": "小額資產兌換完成！",
       "done": "完成",
       "conversionProgress": "轉換進度",
       "slippageTolerance": "滑點容許範圍",
@@ -4651,8 +4651,8 @@
       "selectedTokens": "已選擇代幣",
       "totalValue": "總價值",
       "moreChains": "+{{count}} 條鏈",
-      "swapFailed": "交換失敗，{{reason}}",
-      "completedTips": "正在進行的交換將繼續處理",
+      "swapFailed": "兌換失敗，{{reason}}",
+      "completedTips": "正在進行的兌換將繼續處理",
       "priceImpact": "價格影響上限",
       "LedgerBtn": {
         "start": "使用 Ledger 開始",
@@ -4723,7 +4723,7 @@
         "pool": "池子",
         "address": "地址",
         "poolAddress": "質押池地址",
-        "uptime": "運行時間",
+        "uptime": "運行時長",
         "days": "{{count}} 天",
         "token": "代幣",
         "token1": "Token1",
@@ -4787,10 +4787,10 @@
     "manageBatchApprovals": {
       "cols": {
         "asset": "資產",
-        "revokeFrom": "撤銷授權",
+        "revokeFrom": "授權對象",
         "gasFee": "Gas 費用"
       },
-      "title": "批量撤銷",
+      "title": "批次撤銷",
       "stopTheRevokeProcess": "停止撤銷程序？",
       "leavingThisPageWillStopTheRevokeProcess": "離開此頁面將停止撤銷程序。",
       "startRevoke": "開始撤銷",
@@ -4809,7 +4809,7 @@
         "contractAddress": "合約地址"
       },
       "ApprovalContractPopup": {
-        "approvedAssetsAmountAndBalance": "已批准資產金額及餘額"
+        "approvedAssetsAmountAndBalance": "已授權資產金額及餘額"
       },
       "ApprovalCardAssetPopup": {
         "allApprovals": "所有授權",
@@ -4820,15 +4820,15 @@
       },
       "EIP7702Panel": {
         "unsupportedAddressType": "不支援的地址類型",
-        "unsupportedAddressTypeDesc": "撤銷 EIP-7702 授權僅支援私鑰或助記詞地址",
+        "unsupportedAddressTypeDesc": "僅支援使用私鑰或助記詞地址撤銷 EIP-7702 委託",
         "supportedChains": "支援的鏈",
         "delegatedAddressDesc": "委託地址",
         "notMatched": "不匹配",
-        "noApprovals": "無審批"
+        "noApprovals": "無授權"
       },
       "ListByAssets": {
-        "noApprovals": "無批准",
-        "notMatched": "未匹配"
+        "noApprovals": "無授權",
+        "notMatched": "不匹配"
       },
       "ListByContracts": {
         "noApprovals": "無授權",
@@ -4856,7 +4856,7 @@
     },
     "AddressList": {
       "AddressItem": {
-        "addressTypeTip": "由 {{type}} 導入"
+        "addressTypeTip": "由 {{type}} 匯入"
       }
     },
     "AuthenticationModal": {
@@ -4886,59 +4886,59 @@
       },
       "EditWhitelist": {
         "backModalTitle": "放棄修改",
-        "backModalContent": "你所做的改動不會被保存",
+        "backModalContent": "你所做的改動不會被儲存",
         "title": "編輯白名單",
-        "tip": "選擇地址加入白名單，點擊保存",
-        "save": "保存至白名單 ({{count}})"
+        "tip": "選擇要加入白名單的地址並儲存。",
+        "save": "儲存至白名單 ({{count}})"
       },
       "ListModal": {
         "title": "選擇地址",
-        "whitelistEnabled": "白名單已開啟。你只能轉賬給白名單中的地址。你也可以在 “更多” 中關閉白名單功能",
+        "whitelistEnabled": "白名單已啟用。你只能向白名單地址發送資產，也可以在「設定」中將其關閉。",
         "whitelistDisabled": "白名單已關閉。你可以轉賬給所有地址",
         "editWhitelist": "編輯白名單",
         "whitelistUpdated": "白名單已更新",
         "authModal": {
-          "title": "保存至白名單"
+          "title": "儲存至白名單"
         }
       }
     },
     "LoadingOverlay": {
-      "loadingData": "加載數據..."
+      "loadingData": "正在載入資料..."
     },
     "MultiSelectAddressList": {
-      "imported": "已導入"
+      "imported": "已匯入"
     },
     "NFTNumberInput": {
       "erc1155Tips": "你持有數量為 {{amount}}",
       "erc721Tips": "ERC 721 NFT 只支援單個發送"
     },
     "TiledSelect": {
-      "errMsg": "助記詞無效，請檢查！"
+      "errMsg": "助記詞順序錯誤，請檢查。"
     },
     "Uploader": {
-      "placeholder": "選擇 JSON 問姐"
+      "placeholder": "選擇 JSON 檔案"
     },
     "WalletConnectBridgeModal": {
-      "title": "跨鏈橋伺服器 URL",
-      "requiredMsg": "請輸入跨鏈橋伺服器 Host",
+      "title": "橋接伺服器 URL",
+      "requiredMsg": "請輸入橋接伺服器 Host",
       "invalidMsg": "請檢查你的 Host",
       "restore": "恢復初始設定"
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
         "mainnet": "整合網絡",
-        "testnet": "自定網絡"
+        "testnet": "自訂網絡"
       }
     },
     "ChainSelectorModal": {
       "searchPlaceholder": "搜尋鏈",
-      "noChains": "無匹配",
+      "noChains": "沒有可用的鏈",
       "addTestnet": "新增自訂網絡"
     },
     "TokenSelector": {
       "listTableHead": {
         "assetAmount": {
-          "title": "資產/金額"
+          "title": "資產/數量"
         },
         "price": {
           "title": "價格"
@@ -4960,7 +4960,7 @@
       "bridge": {
         "value": "價值",
         "token": "代幣",
-        "liquidityTips": "歷史交易量越高，橋接成功的可能性就越大。",
+        "liquidityTips": "歷史交易量越高，跨鏈成功的可能性就越大。",
         "liquidity": "流動性",
         "high": "高流動性",
         "low": "低流動性"
@@ -4979,34 +4979,34 @@
         "Collection": "系列",
         "Chain": "鏈",
         "PurschaseDate": "購買日期",
-        "LastPrice": "最後價格"
+        "LastPrice": "最近成交價"
       }
     },
     "signPermissionCheckModal": {
-      "title": "你已經設定該Dapp 僅簽名測試網",
-      "reconnect": "重新連接"
+      "title": "你已設定此 Dapp 僅可在測試網簽名",
+      "reconnect": "重新連接 Dapp"
     },
     "testnetCheckModal": {
-      "title": "請在\"更多\"中打開“開啟測試網”後再發起測試網簽名"
+      "title": "請在「更多」中開啟「啟用測試網」後，再發起測試網簽名"
     },
     "EcologyNavBar": {
       "providedBy": "由 {{chainName}} 提供"
     },
     "EcologyNoticeModal": {
-      "title": "通知",
+      "title": "注意事項",
       "notRemind": "不要再提醒我",
       "desc": "以下服務將由第三方生態合作夥伴直接提供。Rabby Wallet 不承擔這些服務的安全性責任。"
     },
     "ReserveGasPopup": {
       "fast": "正常",
       "instant": "快速",
-      "doNotReserve": "不要预留 Gas",
+      "doNotReserve": "不預留 Gas",
       "normal": "慢",
       "title": "預留 Gas"
     },
     "OpenExternalWebsiteModal": {
       "button": "繼續",
-      "content": "你即將訪問一個外部網站。Rabby Wallet 對該網站的內容或安全性不承擔責任。",
+      "content": "你即將前往外部網站。Rabby Wallet 不對該網站的內容或安全性負責。",
       "title": "你即將離開 Rabby Wallet"
     },
     "TokenChart": {
@@ -5018,29 +5018,29 @@
       "chainNotSupported": "不支援此鏈",
       "thirdPartyDappToProceed": "請用第三方 Dapp 進行操作",
       "noQuotesForChain": "此鏈尚無可用報價",
-      "help": "請聯絡該鏈的官方團隊以獲取支援",
+      "help": "請聯絡該鏈的官方團隊以取得支援",
       "viewDappOptions": "查看 Dapp 選項",
       "selectADapp": "選擇一個 Dapp",
-      "swapOnDapp": "在去中心化應用程式上兌換\n",
-      "bridgeOnDapp": "跨鏈 Dapp\n",
-      "noDapps": "此鏈上沒有任何 Dapp 可用\n"
+      "swapOnDapp": "在 Dapp 上兌換",
+      "bridgeOnDapp": "在 Dapp 上跨鏈",
+      "noDapps": "此鏈上沒有可用的 Dapp"
     },
     "AccountSelectorModal": {
-      "title": "選擇地址\n",
-      "searchPlaceholder": "搜尋地址\n"
+      "title": "選擇地址",
+      "searchPlaceholder": "搜尋地址"
     },
     "PageHeader": {
       "selectAccount": "選擇地址"
     },
     "ChainItem": {
-      "appChain": "在 {{chain}} 帐戶",
-      "hyperliquidCode": "使用 Rabby 的推薦代碼可节省 Hyperliquid 費用。"
+      "appChain": "在 {{chain}} 帳戶",
+      "hyperliquidCode": "使用 Rabby 的推薦碼可節省 Hyperliquid 手續費。"
     },
     "RiskTip": {
-      "title": "風險檢測到"
+      "title": "偵測到風險"
     },
     "DappActions": {
-      "queueDescription": "當前提取將進入等待隊列。一旦處理完成，可以提取到你的錢包。",
+      "queueDescription": "目前的提款將進入等候隊列。處理完成後，即可提取至你的錢包。",
       "manage": "管理"
     },
     "DesktopChainSelector": {
@@ -5057,7 +5057,7 @@
       "smallSwapDisabledTips": "此地址類型不受支援"
     },
     "LpTokenTag": {
-      "title": "這是一個流動性提供者(LP)代幣",
+      "title": "這是流動性提供者（LP）代幣",
       "description": "LP 代幣是由你已存入資產的 DeFi 協議發行的。它們作為那些資產的證明，但其價值不包括在你的總餘額中。",
       "descriptionFor": "這是一個 {{ protocolName }} 的流動性提供者 (LP) 代幣"
     },
@@ -5078,13 +5078,13 @@
     },
     "feedbackPopup": {
       "title": "Rabby 支援團隊的回覆",
-      "issueReported": "以下是您舉報的問題：",
+      "issueReported": "以下是你回報的問題：",
       "issueReplied": "Rabby 支援團隊已回覆："
     }
   },
   "background": {
     "error": {
-      "noCurrentAccount": "當前無賬戶",
+      "noCurrentAccount": "目前沒有帳戶",
       "invalidChainId": "無效的鏈 ID",
       "notFindChain": "無法找到 {{chain}} 鏈",
       "unknownAbi": "未知合約 ABI",
@@ -5092,16 +5092,16 @@
       "notFoundGnosisKeyring": "未找到 Gnosis keyring",
       "notFoundTxGnosisKeyring": "未找到 Gnosis keyring 的交易",
       "addKeyring404": "新增 Keyring 失敗，keyring 未定義",
-      "emptyAccount": "當前帳戶為空",
+      "emptyAccount": "目前帳戶為空",
       "generateCacheAliasNames": "[GenerateCacheAliasNames]: 至少需要一個地址",
       "invalidPrivateKey": "私鑰無效",
-      "invalidJson": "輸入的文件無效",
+      "invalidJson": "輸入的檔案無效",
       "invalidMnemonic": "助記詞無效，請檢查！",
       "notFoundKeyringByAddress": "找不到地址對應的密鑰鏈",
       "txPushFailed": "交易推送失敗",
       "unlock": "你需要先解鎖錢包",
-      "canNotUnlock": "無法解鎖，需先存在一個存儲庫",
-      "duplicateAccount": "地址已導入"
+      "canNotUnlock": "沒有先前的錢包資料，無法解鎖",
+      "duplicateAccount": "該帳戶已匯入"
     },
     "transactionWatcher": {
       "submitted": "交易已提交",
@@ -5117,7 +5117,7 @@
     "alias": {
       "HdKeyring": "助記詞",
       "simpleKeyring": "私鑰",
-      "watchAddressKeyring": "只观赏"
+      "watchAddressKeyring": "僅觀察"
     },
     "keyring": {
       "onekey": {
@@ -5126,23 +5126,23 @@
         "needUpgradeFirmware": "必須升級韌體才能使用裝置",
         "thisMethodNeedUpgradeFirmware": "使用該功能需要升級韌體，請在 OneKey 應用程式中升級韌體",
         "notAllowInBootloaderMode": "請在正常模式下使用",
-        "deviceCheckPassphraseStateError": "帳戶與當前裝置解鎖地址不匹配，請確認裝置與帳戶地址一致後重試",
+        "deviceCheckPassphraseStateError": "帳戶與目前裝置的解鎖地址不符，請確認裝置與帳戶地址一致後重試",
         "actionCancel": "操作已取消",
-        "deviceNeedsWebHIDPermission": "未找到設備或需要 WebHID 權限"
+        "deviceNeedsWebHIDPermission": "未找到裝置或需要 WebHID 權限"
       }
     }
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "HdKeyring": "透過助記詞創建",
-      "SimpleKeyring": "透過私鑰導入",
-      "WatchAddressKeyring": "只讀模式"
+      "HdKeyring": "透過助記詞建立",
+      "SimpleKeyring": "透過私鑰匯入",
+      "WatchAddressKeyring": "僅觀察"
     },
-    "IMPORTED_HD_KEYRING": "透過助記詞導入",
+    "IMPORTED_HD_KEYRING": "透過助記詞匯入",
     "SIGN_PERMISSION_OPTIONS": {
       "MAINNET_AND_TESTNET": "主網和測試網",
       "TESTNET": "僅限測試網"
     },
-    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "透過助記詞（密碼）導入"
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "透過助記詞（密碼短語）匯入"
   }
 }

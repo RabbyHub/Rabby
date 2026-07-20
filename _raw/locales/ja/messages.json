@@ -4,13 +4,13 @@
       "title": "取引",
       "empty": {
         "title": "取引なし",
-        "desc": "<1>対応しているチェーン</1>で取引が見つかりません",
+        "desc": " <1>対応しているチェーン</1>で取引が見つかりません",
         "noTxInThreeMonth": "90日以内の取引履歴がありません",
         "descThreeMonths": "<2>サポートされているチェーン</2>で90日以内の取引履歴がありません"
       },
       "explain": {
         "approve": "{{project}}用に{{amount}} {{symbol}}を承認",
-        "unknown": "契約の対話",
+        "unknown": "コントラクト操作",
         "cancel": "保留中の取引をキャンセル"
       },
       "txHistory": {
@@ -47,26 +47,26 @@
       "gasLimitLessThanGasUsed": "Gas Limitが非常に低い。取引が失敗する可能性が95%です",
       "nativeTokenNotEngouthForGas": "ウォレットに十分なガスがありません",
       "nonceLowerThanExpect": "Nonceが低すぎます、最低は{{0}}です",
-      "canOnlyUseImportedAddress": "署名にはインポートされたアドレスのみ使用できます",
+      "canOnlyUseImportedAddress": "閲覧専用アドレスではトランザクションに署名できません",
       "multiSigChainNotMatch": "マルチシグアドレスはこのチェーンになく、取引を開始できません",
-      "safeAddressNotSupportChain": "現在のセーフアドレスは{{0}}チェーンで対応していません",
+      "safeAddressNotSupportChain": "現在のSafeアドレスは{{0}}チェーンに対応していません",
       "noGasRequired": "ガスは必要ありません",
       "gasSelectorTitle": "ガス",
       "failToFetchGasCost": "ガスコストの取得に失敗",
       "gasMoreButton": "詳細",
       "manuallySetGasLimitAlert": "Gas Limitを手動で設定しました",
-      "gasNotRequireForSafeTransaction": "セーフトランザクションにはガス料が必要ありません",
-      "gasPriceTitle": "Gas Price (Gwei)",
-      "maxPriorityFee": "Max Priority Fee (Gwei)",
+      "gasNotRequireForSafeTransaction": "Safeトランザクションにはガス代がかかりません",
+      "gasPriceTitle": "ガス価格 (Gwei)",
+      "maxPriorityFee": "最大優先手数料 (Gwei)",
       "eip1559Desc1": "EIP-1559 対応チェーンでは、Priority Fee はトランザクションを処理するマイナーへのチップです。Priority Fee を下げると最終的な gas コストを抑えられますが、処理に時間がかかる場合があります。",
       "eip1559Desc2": "Rabby では、Priority Fee（チップ）= Max Fee - Base Fee です。Max Priority Fee を設定すると、そこから Base Fee が差し引かれ、残りがマイナーへのチップになります。",
       "hardwareSupport1559Alert": "ハードウェアウォレットのファームウェアがEIP 1559をサポートするバージョンにアップグレードされていることを確認してください",
       "gasLimitTitle": "Gas Limit",
-      "recommendGasLimitTip": "推定{{est}}。現在{{current}}倍、お勧めは",
+      "recommendGasLimitTip": "推定{{est}}。現在{{current}}倍、お勧めは ",
       "nonceTitle": "Nonce",
       "gasLimitModifyOnlyNecessaryAlert": "必要な場合にのみ修正してください",
-      "gasPriceMedian": "過去100回のオンチェーン取引の中央値：",
-      "myNativeTokenBalance": "私のガス残高：",
+      "gasPriceMedian": "過去100回のオンチェーン取引の中央値： ",
+      "myNativeTokenBalance": "私のガス残高： ",
       "gasLimitEmptyAlert": "Gas Limitを入力してください",
       "gasLimitMinValueAlert": "Gas Limitは21000以上である必要があります",
       "balanceChange": {
@@ -103,8 +103,8 @@
       "swapAndCross": {
         "title": "トークンを交換してクロスチェーン"
       },
-      "wrapToken": "Wrap Token",
-      "unwrap": "Unwrap Token",
+      "wrapToken": "トークンをラップ",
+      "unwrap": "トークンをアンラップ",
       "send": {
         "title": "トークンを送信",
         "sendToken": "トークンを送る",
@@ -133,13 +133,13 @@
         "deployTimeLessThan": "展開時間 < {{value}} 日",
         "amountPopupTitle": "金額",
         "flagByRabby": "Rabbyによってフラグが付けられた",
-        "contractTrustValueTip": "信頼値は、この契約に対して承認され、露出しているトータルトークンを指します。低い信頼値は、180日の非活動またはリスクを示しています。",
+        "contractTrustValueTip": "信頼値は、このコントラクトによって使用された資産の総額を示します。信頼値が低い場合、リスクがあるか、180日間利用されていない可能性があります。",
         "amount": "承認金額：",
         "exceed": "現在の残高を超えています"
       },
       "revokeTokenApprove": {
         "title": "トークン承認を取り消し",
-        "revokeFrom": "取り消し元",
+        "revokeFrom": "承認先",
         "revokeToken": "トークンを取り消す"
       },
       "sendNFT": {
@@ -190,7 +190,7 @@
         "title": "Permit2トークン承認を取り消す"
       },
       "unknownAction": "不明",
-      "interactContract": "コントラクトに関与",
+      "interactContract": "コントラクトを操作",
       "markAsTrust": "信頼されたとしてマーク",
       "markAsBlock": "ブロックされたとしてマーク",
       "interacted": "以前に関与",
@@ -226,12 +226,12 @@
       "noDelegatedAddress": "インポートされた委任アドレスがありません",
       "coboSafeNotPermission": "この委任アドレスは、このトランザクションを開始する権限がありません",
       "gasAccount": {
-        "currentTxCost": "送金されたガス量：",
-        "totalCost": "総コスト:",
-        "estimatedGas": "推定Gas：",
-        "sendGas": "現在のトランザクションに対するGasの送金:",
-        "gasCost": "ガスをあなたのアドレスに転送する際のガスコスト：",
-        "maxGas": "Max Gas: ",
+        "currentTxCost": "送金されたガス量： ",
+        "totalCost": "総コスト: ",
+        "estimatedGas": "推定Gas： ",
+        "sendGas": "現在のトランザクションに対するGasの送金: ",
+        "gasCost": "ガスをあなたのアドレスに転送する際のガスコスト： ",
+        "maxGas": "最大Gas： ",
         "description": "GasAccountを使用してガス料金を支払います。支払いの詳細は以下をご覧ください："
       },
       "customRPCErrorModal": {
@@ -249,7 +249,7 @@
         "maxPay": "最大支払い"
       },
       "batchRevokePermit2": {
-        "title": "一括 Revoke Permit2 Approval"
+        "title": "Permit2承認を一括取り消し"
       },
       "revokePermit": {
         "title": "許可トークン承認を取り消す"
@@ -290,10 +290,10 @@
         "explain": {
           "contractCall": "コントラクトコール",
           "send": "トークンを送信",
-          "unknown": "不明なTransaction"
+          "unknown": "不明なトランザクション"
         },
         "optionGroup": {
-          "replaceTitle": "キュー内のトランザクションを置き換える",
+          "replaceTitle": "キュー内のトランザクションを置き換える ",
           "recommendTitle": "推奨nonce"
         },
         "option": {
@@ -304,18 +304,18 @@
         }
       },
       "coboSafeCreate": {
-        "safeWalletTitle": "セーフ{Wallet}",
+        "safeWalletTitle": "Safe{Wallet}",
         "descriptionTitle": "説明",
         "title": "Cobo Safe を作成"
       },
       "coboSafeModificationRole": {
-        "title": "セーフロール変更を送信",
+        "title": "Safeのロール変更を送信",
         "descriptionTitle": "説明",
         "safeWalletTitle": "Safe{Wallet}"
       },
       "coboSafeModificationDelegatedAddress": {
         "descriptionTitle": "説明",
-        "safeWalletTitle": "セーフ{Wallet}",
+        "safeWalletTitle": "Safe{Wallet}",
         "title": "委任されたアドレス変更を提出"
       },
       "coboSafeModificationTokenApproval": {
@@ -344,18 +344,18 @@
       "advancedSettings": "詳細設定",
       "contract": "スマートコントラクト",
       "protocol": "プロトコル",
-      "amount": "量",
-      "maxPriorityFeeDisabledAlert": "最初にGas Priceを設定してください",
+      "amount": "金額",
+      "maxPriorityFeeDisabledAlert": "先にガス価格を設定してください",
       "label": "ラベル",
-      "trustValueTitle": "信頼の価値",
+      "trustValueTitle": "信頼値",
       "addressSource": "アドレスソース",
       "typedDataMessage": "型付きデータに署名",
       "primaryType": "プライマリタイプ",
-      "safeServiceNotAvailable": "安全サービスは現在利用できません。後で再試行してください。",
+      "safeServiceNotAvailable": "Safeサービスは現在利用できません。後でもう一度お試しください。",
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
-          "title": "RabbyのSafe Serviceに切り替える",
+          "title": "RabbyのSafeサービスに切り替える",
           "content": "Safe API は利用できません。Rabby によってデプロイされた Safe サービスに切り替えて、Safe を機能させ続けてください。<strong>すべての Safe 署名者は Rabby Wallet を使用してトランザクションを承認する必要があります。</strong>"
         }
       },
@@ -365,13 +365,13 @@
         "nonceTooHigh": "Nonceが高すぎます。nonceを調整して再試行してください。",
         "gasLimitTooLow": "ガス制限が低すぎます",
         "gasExceedsBlockGasLimit": "ガスがブロックのガス制限を超えています。調整して再試行してください。",
-        "nonceTooLow": "Nonceが低すぎます。{{nonce}}に更新します。“Retry”をクリックして確認し、再試行してください。",
+        "nonceTooLow": "Nonceが低すぎます。{{nonce}}に更新します。「再試行」をクリックして確認し、もう一度お試しください。",
         "insufficient": "あなたのガス残高は、ネットワークガス料金をカバーするには不十分です。ガスのために資金を追加して、もう一度お試しください。",
         "gasPriceTooLow": "Gas Priceが低すぎます。取引が確認できるように30％調整します。「再試行」をクリックして確認し、再度お試しください。",
         "alreadySubmitted": "取引はすでに提出されています。重複する取引が検出されました。"
       },
       "addLiquidity": {
-        "receiver": "受信者",
+        "receiver": "受取人",
         "title": "流動性の追加",
         "marketPrice": "市場価格",
         "priceDiff": "価格差",
@@ -421,17 +421,17 @@
         "coolwallet": "CoolWalletアドレス",
         "privateKey": "プライベートキーアドレス",
         "seedPhrase": "シードフレーズアドレス",
-        "watchAddress": "ウォッチオンリーアドレスで署名できません",
-        "safe": "セーフアドレス",
+        "watchAddress": "閲覧専用アドレスでは署名できません",
+        "safe": "Safeアドレス",
         "coboSafe": "Cobo Argusアドレス",
-        "seedPhraseWithPassphrase": "Seed Phrase アドレス（Passphrase）"
+        "seedPhraseWithPassphrase": "シードフレーズアドレス（パスフレーズ）"
       },
       "qrcode": {
         "signWith": "{{brand}}で署名",
         "failedToGetExplain": "説明の取得に失敗しました",
         "txFailed": "送信に失敗しました",
         "sigReceived": "署名が受け取られました",
-        "sigCompleted": "トランザクションが送信されました",
+        "sigCompleted": "トランザクションが作成されました",
         "getSig": "署名を取得",
         "qrcodeDesc": "署名するためにあなたの{{brand}}でスキャンしてください<br></br>署名した後、下のボタンをクリックして署名を受け取ってください",
         "misMatchSignId": "不一致のトランザクションデータです。トランザクションの詳細を確認してください",
@@ -463,7 +463,7 @@
       "mainnet": "メインネット",
       "gasless": {
         "GetFreeGasToSign": "Free Gas を受け取る",
-        "watchUnavailableTip": "Watch-only addressはFree Gasをサポートしていません",
+        "watchUnavailableTip": "閲覧専用アドレスでは無料ガスを利用できません",
         "unavailable": "Gas 残高が不足しています",
         "walletConnectUnavailableTip": "モバイルウォレットがWalletConnectを通じて接続されている場合、Free Gasはサポートされていません。",
         "notEnough": "Gas残高が足りません",
@@ -491,7 +491,7 @@
         "verifyPasswordError": "署名失敗、ロック解除後に再試行してください。",
         "siging": "署名リクエストを送信中",
         "shouldRetry": "エラーが発生しました。もう一度お試しください。",
-        "unsupportedType": "エラー: トランザクションタイプがサポートされていないか、未知です。",
+        "unsupportedType": "エラー：トランザクションタイプがサポートされていないか、不明です。",
         "shouldOpenKeystoneHomePageError": "Keystone 3 Pro をホームページに表示させてください。",
         "misMatchSignId": "トランザクションデータが一致しません。トランザクションの詳細を確認してください。",
         "hardwareRejectError": "Keystoneリクエストがキャンセルされました。続行するには、再承認してください。",
@@ -512,7 +512,7 @@
     },
     "signTypedData": {
       "signTypeDataOnChain": "{{chain}}の型付きデータに署名",
-      "safeCantSignText": "これはセーフアドレスであり、テキストに署名することはできません。",
+      "safeCantSignText": "Safeアドレスではテキストに署名できません。",
       "permit": {
         "title": "許可トークン承認"
       },
@@ -561,8 +561,8 @@
         },
         "common": {
           "unlimited": "無制限",
-          "unknownProtocol": "未知のプロトコル",
-          "unknown": "未知",
+          "unknownProtocol": "不明なプロトコル",
+          "unknown": "不明",
           "speedUp": "加速",
           "cancel": "キャンセル",
           "pendingDetail": "保留中の詳細"
@@ -570,8 +570,8 @@
         "tips": {
           "pendingDetail": "最も高いGas Priceを持つものがほとんどの場合、完了する唯一のトランザクションです",
           "canNotCancel": "スピードアップまたはキャンセルできません: 最初の保留中のtxnではありません",
-          "pendingBroadcastRetryBtn": "再放送",
-          "pendingBroadcastBtn": "今すぐBroadcast",
+          "pendingBroadcastRetryBtn": "再ブロードキャスト",
+          "pendingBroadcastBtn": "今すぐブロードキャスト",
           "pendingBroadcastRetry": "ブロードキャストに失敗しました。最終試行: {{pushAt}}",
           "pendingBroadcast": "ガス節約モード: ネットワーク手数料が低くなるのを待っています。最大 {{deadline}} 時間待ちます。"
         },
@@ -580,8 +580,8 @@
           "failed": "失敗",
           "submitFailed": "送信に失敗",
           "pending": "保留中",
-          "pendingBroadcast": "保留中: to be broadcasted",
-          "pendingBroadcasted": "保留中: broadcasted",
+          "pendingBroadcast": "保留中：ブロードキャスト待ち",
+          "pendingBroadcasted": "保留中：ブロードキャスト済み",
           "withdrawed": "クイックキャンセル",
           "pendingBroadcastFailed": "保留中: ブロードキャストに失敗しました"
         },
@@ -591,7 +591,7 @@
           "speedUp": "加速tx"
         },
         "explain": {
-          "unknown": "未知のトランザクション",
+          "unknown": "不明なトランザクション",
           "send": "{{amount}} {{symbol}}を送る",
           "cancel": "{{protocol}}の{{token}}承認をキャンセル",
           "approve": "{{protocol}}の{{count}} {{token}}を承認",
@@ -603,7 +603,7 @@
         "CancelTxPopup": {
           "options": {
             "removeLocalPendingTx": {
-              "title": "未処理のローカルをクリア",
+              "title": "ローカルの保留中トランザクションを削除",
               "desc": "インターフェースから保留中のトランザクションを削除する"
             },
             "quickCancel": {
@@ -618,7 +618,7 @@
           },
           "removeLocalPendingTx": {
             "title": "トランザクションをローカルで削除",
-            "desc": "このアクションにより、保留中のトランザクションがローカルで削除されます。\n保留中のトランザクションは今後も正常に送信される可能性があります。"
+            "desc": "この操作により、保留中のトランザクションがローカルから削除されます。ただし、今後オンチェーンに送信される可能性があります。"
           },
           "title": "トランザクションをキャンセル"
         },
@@ -641,13 +641,13 @@
           "alert": "Nonce #{{nonce}} は {{chainName}} チェーンでスキップされました。これにより、先に保留中のトランザクションが発生する可能性があります。<5></5> <6>チェーン上でトランザクションを送信</6> <7></7>して解決してください。"
         },
         "PredictTime": {
-          "failed": "パッキング時間の予測に失敗しました。",
-          "time": "予想されるパック完了時刻: {{time}}",
-          "noTime": "パッキング時間が予測されています"
+          "failed": "ブロック取り込み時間の予測に失敗しました。",
+          "time": "{{time}}以内にブロックへ取り込まれる見込み",
+          "noTime": "ブロック取り込み時間を予測中"
         },
         "CancelTxConfirmPopup": {
           "desc": "これにより、保留中のトランザクションがインターフェースから削除されます。その後、新しいトランザクションを開始できます。",
-          "title": "ローカルで保留をクリア",
+          "title": "ローカルの保留中トランザクションを削除",
           "warning": "削除されたトランザクションは、置き換えが行われない限り、依然としてオンチェーンで確認される可能性があります。"
         }
       },
@@ -661,7 +661,7 @@
     },
     "receive": {
       "title": "{{chain}}上で{{token}}を受け取る",
-      "watchModeAlert1": "これはウォッチモードのアドレスです。",
+      "watchModeAlert1": "これは閲覧専用アドレスです。",
       "watchModeAlert2": "資産を受け取るためにこれを使用してもよろしいですか？",
       "receiveOn": "{{token}}を受け取る"
     },
@@ -685,7 +685,7 @@
       "GasSelector": {
         "confirm": "確認",
         "level": {
-          "$unknown": "未知",
+          "$unknown": "不明",
           "custom": "カスタム",
           "fast": "速い",
           "normal": "ノーマル",
@@ -761,8 +761,8 @@
       "noSupprotTokenForSafe": "送信先のSafeアドレスはこのチェーンにデプロイされていません。損失を避けるために、進む前に確認してください。",
       "selectToken": "トークンを選択",
       "noSupprotTokenForDex_short": "この取引所ではサポートされていません。",
-      "noSupprotTokenForSafe_short": "このチェーンにはデプロイされていない安全なアドレスです",
-      "noSupportTokenForChain_short": "このチェーンにデプロイされていないコントラクトアドレス",
+      "noSupprotTokenForSafe_short": "Safeアドレスはこのチェーンにデプロイされていません ",
+      "noSupportTokenForChain_short": "このチェーンにデプロイされていないコントラクトアドレス ",
       "accountSelectorModal": {
         "title": "アドレスを選択"
       },
@@ -871,7 +871,7 @@
             "asset": "資産",
             "type": "タイプ",
             "approvedAmount": "承認数量",
-            "approvedSpender": "承認者",
+            "approvedSpender": "承認先",
             "myApprovalTime": "私の承認時刻"
           },
           "columnCell": {
@@ -900,18 +900,18 @@
       "revokeModal": {
         "approvalCount_one": "{{count}} 件の承認",
         "totalRevoked": "合計：",
-        "batchRevoke": "一括Revoke",
+        "batchRevoke": "一括取り消し",
         "resume": "続行",
-        "cancelTitle": "残りのRevokeをキャンセルする",
+        "cancelTitle": "残りの取り消しをキャンセルする",
         "confirmTitle": "ワンクリックで一括無効化",
         "signAndStartRevoke": "署名して取り消しを開始",
         "done": "完了",
         "pause": "一時停止",
-        "confirmRevokePrivateKey": "シードフレーズまたはプライベートキーアドレスを使用して、1クリックで{{count}}件の承認を一括で取り消すことができます。",
+        "confirmRevokePrivateKey": "シードフレーズまたはプライベートキーからインポートしたアドレスを使用すると、1クリックで{{count}}件の承認を一括で取り消せます。",
         "confirm": "確認",
-        "revokeOneByOne": "一つずつRevoke",
+        "revokeOneByOne": "1件ずつ取り消す",
         "revoked": "無効化済み:",
-        "cancelBody": "このページを閉じると、残りのrevokeは実行されません。",
+        "cancelBody": "このページを閉じると、残りの取り消しは実行されません。",
         "approvalCount_zero": "{{count}} 件の承認",
         "confirmRevokeLedger": "Ledgerアドレスを使用すると、1クリックで{{count}}件の承認を一括で取り消すことができます。",
         "approvalCount_other": "{{count}} 件の承認",
@@ -919,19 +919,19 @@
         "submitTxFailed": "提出に失敗しました",
         "ledgerAlert": "LedgerデバイスでEthereum Appを開いてください。",
         "gasTooHigh": "Gas 料金が高くなっています",
-        "stillRevoke": "まだRevoke",
+        "stillRevoke": "それでも取り消す",
         "paused": "一時停止しました",
         "ledgerSending": "署名要求を送信中 ({{current}}/{{total}})",
         "defaultFailed": "トランザクションが失敗しました",
         "ledgerSended": "Ledgerでリクエストに署名してください ({{current}}/{{total}})",
-        "revokeWithLedger": "Ledger でRevokeを開始",
+        "revokeWithLedger": "Ledgerで取り消しを開始",
         "waitInQueue": "キューで待機",
         "ledgerSigned": "署名済み。トランザクションを作成中 ({{current}}/{{total}})",
         "useGasAccount": "ガス残高が少なくなっています。GasAccountがガス料金をカバーします。",
         "simulationFailed": "シミュレーション失敗",
         "gasNotEnough": "Gasが不足しているため、送信できません",
         "ledgerConfirmTitle": "Ledgerでバッチ取り消し",
-        "revokeWithOneKey": "OneKey でリボークを開始",
+        "revokeWithOneKey": "OneKeyで取り消しを開始",
         "oneKeySended": "OneKey 上でリクエストに署名してください ({{current}}/{{total}})",
         "oneKeySending": "署名リクエストを送信中 ({{current}}/{{total}})",
         "oneKeySigned": "署名完了。トランザクションを作成中 ({{current}}/{{total}})"
@@ -950,7 +950,7 @@
       "payment": "Gas Top Up支払い",
       "Loading_Tokens": "トークンを読み込み中...",
       "Including-service-fee": "{{fee}} サービス料金を含む",
-      "service-fee-tip": "Gas Top Upのサービスを提供するため、Rabbyはトークンの変動とトップアップのガス手数料を負担しなければなりません。そのため、サービス料金として20％が請求されます。",
+      "service-fee-tip": "Gas Top Upサービスの提供にあたり、Rabbyはトークン価格の変動による損失とトップアップのガス手数料を負担します。そのため、20％のサービス手数料がかかります。",
       "Confirm": "確認",
       "Deposit-tip": "USDC/USDTで入金",
       "Value": "値",
@@ -970,14 +970,14 @@
       "gas-x-price": "Gas Price：{{price}} Gwei。",
       "no-transaction-records": "トランザクション履歴はありません",
       "swap-history": "スワップ履歴",
-      "InSufficientTip": "トランザクションのシミュレーションとガスの見積もりを行うには、残高が不足しています。元のアグリゲータの引用が表示されます",
+      "InSufficientTip": "トランザクションのシミュレーションとガスの見積もりを行うには、残高が不足しています。元のアグリゲータの見積もりを表示します",
       "testnet-is-not-supported": "カスタムネットワークはサポートされていません。",
       "not-supported": "サポートされていません",
-      "slippage-adjusted-refresh-quote": "スリッページが調整されました。引用を更新してください。",
-      "price-expired-refresh-quote": "価格の有効期限が切れました。引用を更新してください。",
+      "slippage-adjusted-refresh-quote": "スリッページが調整されました。見積もりを更新してください。",
+      "price-expired-refresh-quote": "価格の有効期限が切れました。見積もりを更新してください。",
       "approve-x-symbol": "{{symbol}} を承認",
       "swap-via-x": "{{name}} 経由でスワップ",
-      "get-quotes": "引用を取得",
+      "get-quotes": "見積もりを取得",
       "chain": "チェーン",
       "swap-from": "スワップ元",
       "to": "宛先",
@@ -994,16 +994,16 @@
       "fail-to-simulate-transaction": "トランザクションのシミュレーションに失敗しました",
       "security-verification-failed": "セキュリティの検証に失敗しました",
       "need-to-approve-token-before-swap": "スワップ前にトークンを承認する必要があります",
-      "this-exchange-is-not-enabled-to-trade-by-you": "この取引所はあなたによる取引が有効にされていません。",
+      "this-exchange-is-not-enabled-to-trade-by-you": "この取引所では取引できません。",
       "enable-it": "有効にする",
       "this-token-pair-is-not-supported": "トークンペアはサポートされていません",
       "QuoteLessWarning": "受け取り額は Rabby トランザクションのシミュレーションからの見積もりです。DEXが提供するオファーは {{receive}} です。期待されるオファーより {{diff}} 少なく受け取ります。",
       "by-transaction-simulation-the-quote-is-valid": "トランザクションのシミュレーションによると、見積もりは有効です",
-      "wrap-contract": "Wrap Contract",
+      "wrap-contract": "ラップコントラクト",
       "directlySwap": "スマートコントラクトで {{symbol}} トークンを直接 Wrap",
       "rates-from-cex": "CEX からのレート",
       "edit": "編集",
-      "tradingSettingTips": "{{viewCount}} つの取引所が引用を提供し、{{tradeCount}} つが取引を有効にしています",
+      "tradingSettingTips": "{{viewCount}} つの取引所が見積もりを提供し、{{tradeCount}} つで取引が有効です",
       "the-following-swap-rates-are-found": "以下のスワップレートが見つかりました",
       "est-payment": "推定支払い:",
       "est-receiving": "推定受け取り:",
@@ -1017,14 +1017,14 @@
       "select-token": "トークンを選択",
       "enable-exchanges": "取引所を有効にする",
       "exchanges": "取引所",
-      "view-quotes": "引用を表示",
+      "view-quotes": "見積もりを表示",
       "trade": "取引",
       "dex": "DEX",
       "cex": "CEX",
       "enable-trading": "取引を有効にする",
-      "i-understand-and-accept-it": "理解し、受け入れます",
+      "i-understand-and-accept-it": "内容を理解し、同意します",
       "confirm": "確認",
-      "tradingSettingTip1": "1. 一度有効にすると、取引所の契約と直接対話します",
+      "tradingSettingTip1": "1. 有効にすると、取引所のコントラクトを直接操作します",
       "tradingSettingTip2": "2. Rabby は取引所の契約から発生するリスクについて責任を負いません",
       "gas-fee": "ガス料金: {{gasUsed}}",
       "estimate": "見積もり:",
@@ -1046,7 +1046,7 @@
       "approve-swap": "承認してスワップ",
       "hidden-no-quote-rates_other": "{{count}} 件のレートは利用できません",
       "from": "から",
-      "Gas-fee-too-high": "Gas fee が高すぎます。",
+      "Gas-fee-too-high": "ガス代が高すぎます。",
       "approve-and-swap": "{{name}} で承認してスワップする",
       "no-slippage-for-wrap": "Wrap にスリッページはありません",
       "no-fee-for-wrap": "Wrap に Rabby 手数料はかかりません",
@@ -1054,7 +1054,7 @@
       "hidden-no-quote-rates_one": "{{count}} 件のレートは利用できません",
       "two-step-approve": "2 つのトランザクションに署名してアローワンスを変更してください。",
       "process-with-two-step-approve": "2段階承認を進める",
-      "usd-after-fees": "≈ {{usd}}",
+      "usd-after-fees": "≈ {{usd}} ",
       "no-fees-for-wrap": "Wrap に Rabby 手数料はかかりません",
       "Auto": "自動",
       "no-quote-found": "見積もりが見つかりませんでした",
@@ -1063,7 +1063,7 @@
       "price-impact": "価格への影響",
       "two-step-approve-details": "トークン USDT の許可変更には 2 つのトランザクションが必要です。まず、許可をゼロにリセットし、その後に新しい許可の値を設定する必要があります。",
       "No-available-quote": "利用できるレートはありません",
-      "loss-tips": "{{usd}}を失っています。小さな市場で少額を試してください。",
+      "loss-tips": "{{usd}}の損失が発生します。流動性の低い市場では、金額を減らしてお試しください。",
       "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
       "understandRisks": "リスクを理解しており、続けたいと思います。",
       "approve": "承認",
@@ -1116,7 +1116,7 @@
         "desc": "Dappアドレスを切り替える"
       },
       "noSeedPhraseAddress": "このシードフレーズに対して追加されたアドレスはありません。アドレスを追加するか、シードフレーズを削除できます。",
-      "watch-address": "ウォッチオンリー",
+      "watch-address": "閲覧専用",
       "deleteSuccess": "削除に成功しました",
       "seedPhraseNotBackedUp": "ウォレットがバックアップされていません",
       "backupSeedPhraseNow": "バックアップを開始する"
@@ -1128,7 +1128,7 @@
           "swap": "スワップ",
           "send": "送信",
           "receive": "受信",
-          "gasTopUp": "Gas Top Up",
+          "gasTopUp": "ガス補充",
           "queue": "キュー",
           "transactions": "トランザクション",
           "approvals": "承認",
@@ -1138,11 +1138,11 @@
           "nft": "NFT",
           "ecology": "エコシステム",
           "rabbyPoints": "Rabby Points",
-          "bridge": "Bridge",
+          "bridge": "ブリッジ",
           "mobile": "モバイル同期",
           "perps": "Perps",
           "gasAccount": "GasAccount",
-          "dapps": "Dapps",
+          "dapps": "DApp",
           "setting": "設定",
           "searchDapp": "Dappを検索",
           "settings": "設定",
@@ -1172,10 +1172,10 @@
         },
         "whatsNew": "新着情報",
         "importType": "{{type}} によってインポート",
-        "chainEnd": "チェーン",
-        "chain": "チェーン，",
+        "chainEnd": " チェーン",
+        "chain": " チェーン， ",
         "missingDataTooltip": "現在の{{text}}のネットワーク問題により、残高が更新されない場合があります。",
-        "appChainTips": "Hyperliquid アカウントは含まれていません",
+        "appChainTips": "HyperliquidとPolymarketのアカウントは含まれません",
         "slotAppChainTips": "{{appChainNames}} アカウントは含まれていません"
       },
       "recentConnection": {
@@ -1199,7 +1199,7 @@
         "dragToSort": "並べ替えるにはドラッグ",
         "recentlyConnected": "最近接続した",
         "noRecentlyConnectedDapps": "最近接続したDappはありません",
-        "dapps": "Dapps",
+        "dapps": "DApp",
         "noConnectedDapps": "接続されているDappsはありません",
         "metamaskModeTooltip": "このDappでRabbyに接続できませんか？<1>MetaMaskモード</1>を有効にしてみてください。",
         "metamaskModeTooltipNew": "Rabby Walletは、Dappで「MetaMask」を選択すると接続されます。これを管理するには、[その他] > [MetaMaskとして偽装してRabbyを接続]に進んでください。"
@@ -1237,20 +1237,20 @@
       },
       "rabbyBadge": {
         "imageLabel": "Rabby バッジ",
-        "title": "Rabby バッジをクレームする",
-        "enterClaimCode": "クレームコードを入力",
+        "title": "Rabbyバッジを受け取る：",
+        "enterClaimCode": "受取コードを入力",
         "swapTip": "Rabby Wallet内で注目のDEXでスワップを完了する必要があります。",
         "goToSwap": "スワップに進む",
-        "claim": "クレーム",
-        "viewYourClaimCode": "クレームコードを表示",
-        "noCode": "このアドレスでクレームコードを有効にしていません",
+        "claim": "受け取る",
+        "viewYourClaimCode": "DeBankで受取コードを確認",
+        "noCode": "このアドレスでは受取コードが有効になっていません",
         "learnMoreOnDebank": "DeBankで詳細を確認",
-        "rabbyValuedUserNo": "Rabby 評価ユーザー番号{{num}}",
-        "claimSuccess": "クレーム成功",
+        "rabbyValuedUserNo": "Rabby優良ユーザー No.{{num}}",
+        "claimSuccess": "受け取りに成功しました",
         "viewOnDebank": "DeBankで表示",
         "rabbyFreeGasUserNo": "Rabby Free Gas ユーザー No.{{num}}",
-        "freeGasTitle": "Free Gas Badge を請求",
-        "freeGasNoCode": "以下のボタンをクリックしてDeBankにアクセスし、現在のアドレスを使用してクレームコードを取得してください。",
+        "freeGasTitle": "Free Gasバッジを受け取る：",
+        "freeGasNoCode": "下のボタンからDeBankに移動し、現在のアドレスで受取コードを取得してください。",
         "learnMore": "詳細情報",
         "freeGasTip": "Free Gasを使用してトランザクションに署名してください。ガスが足りない場合は、'Free Gas' ボタンが自動的に表示されます。"
       },
@@ -1258,7 +1258,7 @@
         "noDataLabel": "データなし",
         "noData": "データがありません",
         "oldContactList": "古い連絡先リスト",
-        "oldContactListDescription": "連絡先とウォッチモードのアドレスの統合のため、古い連絡先はここにバックアップされ、しばらくしたらリストは削除されます。続けて使用する場合はタイムリーに追加してください。"
+        "oldContactListDescription": "連絡先と閲覧専用アドレスの統合に伴い、以前の連絡先をここに一時保存しています。この一覧は後日削除されるため、引き続き使用する連絡先は早めに追加してください。"
       },
       "security": {
         "tokenApproval": "トークン承認",
@@ -1282,18 +1282,18 @@
         "reset": "初期設定に戻す",
         "save": "保存",
         "pendingTransactionCleared": "保留中のトランザクションがクリアされました",
-        "clearPending": "ローカルで保留中をクリア",
+        "clearPending": "ローカルの保留中トランザクションを削除",
         "clearPendingTip1": "この操作により、インターフェースから保留中のトランザクションが削除され、ネットワーク上で長時間保留されていることによって引き起こされる問題の解決に役立ちます。",
         "clearPendingTip2": "これは、アカウント残高に影響を与えたり、シードフレーズを再入力する必要はありません。すべての資産とアカウントの詳細は安全に保たれます。",
         "autoLockTime": "自動ロック時間",
-        "claimRabbyBadge": "Rabby バッジをクレーム！",
+        "claimRabbyBadge": "Rabbyバッジを受け取る",
         "cancel": "キャンセル",
         "enableWhitelist": "ホワイトリストを有効にする",
         "disableWhitelist": "ホワイトリストを無効にする",
         "enableWhitelistTip": "有効にすると、Rabbyを使用してホワイトリスト内のアドレスにのみ資産を送信できます。",
         "disableWhitelistTip": "無効にすると、どのアドレスにでも資産を送信できます",
         "warning": "警告",
-        "clearWatchAddressContent": "すべてのウォッチモードアドレスを削除してもよろしいですか？",
+        "clearWatchAddressContent": "閲覧専用アドレスをすべて削除しますか？",
         "updateVersion": {
           "content": "新しいRabby Walletのアップデートが利用可能です。手動でアップデート方法を確認するにはクリックしてください。",
           "okText": "チュートリアルを見る",
@@ -1306,7 +1306,7 @@
           "signatureRecord": "署名レコード",
           "manageAddress": "アドレスを管理",
           "connectedDapp": "接続されたDapp",
-          "gasTopUp": "Gas Top Up",
+          "gasTopUp": "ガス補充",
           "searchDapps": "Dappsを検索",
           "rabbyPoints": "Rabby Points",
           "ecosystem": "エコシステム"
@@ -1322,7 +1322,7 @@
           "toggleThemeMode": "テーマモード",
           "customTestnet": "カスタムネットワークを追加",
           "metamaskMode": "MetaMaskとして偽装してRabbyを接続",
-          "enableDappAccount": "Dapp アドレスを個別に切り替える\n",
+          "enableDappAccount": "DAppアドレスを個別に切り替える",
           "switchPasswordForNonWhitelistedTx": "ホワイトリストに登録されていない転送のパスワード",
           "biometricUnlock": "生体認証でロック解除",
           "biometricUnlockHint": "このデバイスでバイオメトリクスを使用してロックを解除します。",
@@ -1338,19 +1338,19 @@
         "supportedChains": "統合されたチェーン",
         "followUs": "フォローする",
         "testnetBackendServiceUrl": "テストネットバックエンドサービスURL",
-        "clearWatchMode": "ウォッチモードをクリア",
+        "clearWatchMode": "閲覧専用アドレスをクリア",
         "requestDeBankTestnetGasToken": "DeBankテストネットガストークンをリクエスト",
         "clearPendingWarningTip": "削除されたトランザクションは、置き換えられない限り、まだオンチェーンで確認される可能性があります。",
         "DappAccount": {
-          "title": "Dappアドレスを個別に切り替える\n",
-          "button": "有効化\n",
-          "desc": "有効化後、各Dappに接続するアドレスを選択できます。メインアドレスの変更は、各Dappに接続されているアドレスに影響しません。\n"
+          "title": "DAppアドレスを個別に切り替える",
+          "button": "有効化",
+          "desc": "有効にすると、DAppごとに接続するアドレスを選択できます。メインアドレスを切り替えても、各DAppに接続済みのアドレスには影響しません。"
         },
         "rateModalTriggerOnHome": {
           "description": "Rabby Walletをどのように評価しますか？"
         },
         "rateModal": {
-          "submitFeedbackButton": "提出する",
+          "submitFeedbackButton": "送信",
           "feedbackSuccess": "フィードバックありがとうございます！",
           "rateOnChromeStoreButton": "Chrome ウェブストアでの評価",
           "feedbackDesc": "フィードバックはありますか？私たちはお聞きしています。",
@@ -1415,13 +1415,13 @@
         "ContractAddress": "コントラクトアドレス",
         "blockedTips": "ブロックされたトークンはトークンリストに表示されません。",
         "TokenName": "トークン名",
-        "ListedBy": "リストされたのは",
+        "ListedBy": "掲載元",
         "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。",
         "bridgeToEth": "Ethereumチェーンへのブリッジ",
         "bridge": "ブリッジ"
       },
       "assets": {
-        "usdValue": "USD 価値",
+        "usdValue": "USD換算額",
         "amount": "数量",
         "portfolio": {
           "nftTips": "このプロトコルが認識するフロア価格に基づいて計算されます。",
@@ -1433,7 +1433,7 @@
         "table": {
           "assetAmount": "アセット / 量",
           "price": "価格",
-          "useValue": "USD 価値",
+          "useValue": "USD換算額",
           "healthRate": "健康率",
           "debtRatio": "負債比率",
           "unlockAt": "アンロックまで",
@@ -1442,11 +1442,11 @@
           "strikePrice": "ストライク価格",
           "exerciseEnd": "行使終了",
           "tradePair": "トレードペア",
-          "side": "サイド",
+          "side": "方向",
           "leverage": "レバレッジ",
           "PL": "P&L",
           "unsupportedPoolType": "サポートされていないプールタイプ",
-          "claimable": "請求可能",
+          "claimable": "受取可能",
           "endAt": "終了日",
           "dailyUnlock": "デイリーアンロック",
           "pool": "プール",
@@ -1502,7 +1502,7 @@
         "addTokenEntryText": "トークン",
         "noTestnetAssets": "カスタムネットワーク資産なし",
         "customButtonText": "カスタムトークンを追加",
-        "side": "サイド",
+        "side": "方向",
         "price": "価格",
         "searchTokenPlaceholder": "トークンを検索",
         "openInTab": "Rabbyタブで開く",
@@ -1546,7 +1546,7 @@
         }
       },
       "GnosisWrongChainAlertBar": {
-        "warning": "Safe address does not support {{chain}}",
+        "warning": "Safeアドレスは{{chain}}に対応していません",
         "notDeployed": "あなたのSafeアドレスはこのチェーンではデプロイされていません。"
       },
       "echologyPopup": {
@@ -1554,13 +1554,13 @@
       },
       "MetamaskModePopup": {
         "title": "MetaMaskモード",
-        "footerText": "その他 > MetaMaskモードでMetaMaskモードにさらにDappを追加",
+        "footerText": "その他 > MetaMaskモードから、対象のDAppを追加できます",
         "desc": "RabbyをDappで接続できない場合は、MetaMaskモードを有効にし、MetaMaskオプションを選択して接続してください。",
         "enableDesc": "MetaMaskでのみ動作するDappの場合は有効にする",
         "toastSuccess": "有効になりました。ページを更新して再接続してください。"
       },
       "offlineChain": {
-        "tips": "{{chain}} Chainは{{date}}に統合されません。あなたの資産には影響はありませんが、総残高には含まれません。それらにアクセスするには、「More」でカスタムネットワークとして追加することができます。",
+        "tips": "{{chain}}は{{date}}以降、統合対象外になります。資産に影響はありませんが、合計残高には含まれません。アクセスするには、「その他」からカスタムネットワークとして追加してください。",
         "chain": "{{chain}} はまもなく統合されなくなります。"
       },
       "recentConnectionGuide": {
@@ -1634,25 +1634,25 @@
         "saved": "フレーズを保存しました",
         "pleaseSelectWords": "単語を選択してください",
         "verificationFailed": "検証に失敗しました",
-        "createdSuccessfully": "作成が成功しました",
+        "createdSuccessfully": "作成しました",
         "verifySeedPhrase": "シードフレーズを検証",
         "fillInTheBackupSeedPhraseInOrder": "バックアップシードフレーズを順番に入力してください",
         "wordPhrase": "私のシードフレーズは <1>{{count}}</1> 語です",
         "wordPhraseSelected": "私のシードフレーズは <1>{{count}} 語</1>です",
         "clearAll": "すべてクリア",
-        "slip39SeedPhrasePlaceholder_few": "{{count}} 番目のシードフレーズの共有をここに入力してください",
+        "slip39SeedPhrasePlaceholder_few": "ここに{{count}}番目のシードフレーズのシェアを入力してください",
         "slip39SeedPhrase": "私のシードフレーズは <1>{{SLIP39}}</1> です",
         "invalidContent": "無効なコンテンツ",
-        "slip39SeedPhrasePlaceholder_other": "ここにあなたの{{count}}番目のシードフレーズシェアを入力してください",
+        "slip39SeedPhrasePlaceholder_other": "ここに{{count}}番目のシードフレーズのシェアを入力してください",
         "passphrase": "パスフレーズ",
         "slip39SeedPhraseWithPassphrase": "私のシードフレーズはパスフレーズ付きの <1>{{SLIP39}}</1> です",
         "pastedAndClear": "貼り付けとクリップボードをクリアしました",
-        "slip39SeedPhrasePlaceholder_two": "ここに{{count}}番目のシードフレーズシェアを入力してください。",
+        "slip39SeedPhrasePlaceholder_two": "ここに{{count}}番目のシードフレーズのシェアを入力してください",
         "inputInvalidCount_other": "{{count}} 件の入力がシードフレーズの規範に適合していません。確認してください。",
         "inputInvalidCount_one": "1入力がシードフレーズの基準に合致していません。ご確認ください。",
         "wordPhraseAndPassphrase": "私のシードフレーズはパスフレーズ付きの <1>{{count}}</1> 語です",
         "wordPhraseAndPassphraseSelected": "私のシードフレーズはパスフレーズ付きの <1>{{count}} 語</1>です",
-        "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズシェアを入力してください。",
+        "slip39SeedPhrasePlaceholder_one": "ここに{{count}}番目のシードフレーズのシェアを入力してください",
         "importQuestion2": "私のシードフレーズは私のデバイスのみに保存されています。Rabbyはそれにアクセスできません。",
         "importQuestion1": "もし私がシードフレーズを失ったり共有したりすると、資産へのアクセスを永久に失うことになります。",
         "importQuestion3": "Rabbyをアンインストールしてシードフレーズをバックアップしなかった場合、Rabbyでは回復できません。",
@@ -1660,9 +1660,9 @@
         "inputInvalid": "無効な単語が検出されました。ハイライトされたものを確認してください。"
       },
       "metamask": {
-        "step1": "MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
+        "step1": " MetaMaskからシードフレーズまたはプライベートキーをエクスポートします <br /> <1>チュートリアルを表示するにはここをクリック<1/></1>",
         "step2": "Rabbyでシードフレーズまたはプライベートキーをインポートします",
-        "step3": "インポートが完了し、すべてのアセットが自動的に表示されます <br />",
+        "step3": "インポートが完了すると、<br />すべてのアセットが自動的に表示されます",
         "how": "MetaMaskアカウントをインポートする方法",
         "step": "ステップ",
         "importSeedPhrase": "シードフレーズまたはプライベートキーをインポート",
@@ -1691,7 +1691,7 @@
           "desc": "このアドレスはインポート済みです。"
         }
       },
-      "importedSuccessfully": "インポートが成功しました",
+      "importedSuccessfully": "インポートしました",
       "ledger": {
         "title": "Ledgerを接続",
         "cameraPermissionTitle": "Rabbyがカメラにアクセスする許可",
@@ -1710,9 +1710,9 @@
         }
       },
       "walletConnect": {
-        "connectYour": "接続する",
-        "viaWalletConnect": "を介してWallet Connect",
-        "connectedSuccessfully": "接続が成功しました",
+        "connectYour": "ウォレットを接続",
+        "viaWalletConnect": "WalletConnect経由",
+        "connectedSuccessfully": "接続しました",
         "qrCodeError": "ネットワークを確認するか、QRコードを更新してください",
         "qrCode": "QRコード",
         "url": "URL",
@@ -1788,7 +1788,7 @@
           "hdPathTypeNoChain": {
             "bip44": "BIP44: BIP44プロトコルで定義されたHD path。",
             "ledgerLive": "Ledger Live：Ledger 公式 HD path。",
-            "legacy": "従来: MEW / MyCrypto によって使用される HD path。"
+            "legacy": "レガシー：MEW / MyCryptoで使用されるHD path。"
           },
           "message": {
             "disconnected": "{{0}}接続が停止しました。ページを更新して接続し直してください。"
@@ -1834,12 +1834,12 @@
           "hdPathType": {
             "bip44": "BIP44: BIP44プロトコルで定義されたHD path。",
             "legacy": "レガシー：MEW / MyCryptoで使用されるHD path。",
-            "ledgerLive": "Ledger Live: offizieller HD path von Ledger. Ledger Live path では 10 個のアドレスしか管理できません。"
+            "ledgerLive": "Ledger Live：Ledger公式のHD path。Ledger Live pathでは10個のアドレスのみ管理できます。"
           },
           "hdPathTypeNochain": {
             "bip44": "BIP44: BIP44プロトコルで定義されたHD path。",
             "legacy": "レガシー: MEW / MyCryptoで使用されるHD path。",
-            "ledgerLive": "Ledger Live: offizieller HD path von Ledger. Ledger Live path では 10 のアドレスしか管理できません。"
+            "ledgerLive": "Ledger Live：Ledger公式のHD path。Ledger Live pathでは10個のアドレスのみ管理できます。"
           }
         },
         "bitbox02": {
@@ -1895,12 +1895,12 @@
         "invalidAddress": "無効なアドレス",
         "whichChainIsYourCoboAddressOn": "Coboアドレスが存在するチェーンを選択",
         "addCoboArgusAddress": "Cobo Argusアドレスを追加",
-        "findTheAssociatedSafeAddress": "関連するセーフアドレスを検索",
+        "findTheAssociatedSafeAddress": "関連するSafeアドレスを検索",
         "import": "インポート"
       },
       "imkey": {
         "title": "imKey に接続",
-        "imkeyPermissionTip": "以下のポップアップウィンドウで「Allow」をクリックして、あなたの imKey へのアクセスを許可してください。"
+        "imkeyPermissionTip": "以下のポップアップウィンドウで「許可」をクリックして、imKeyへのアクセスを許可してください。"
       },
       "keystone": {
         "keystonePermission1": "USBデバイスに接続",
@@ -1909,7 +1909,7 @@
         "allowRabbyPermissionsTitle": "Rabbyに以下の権限を許可する：",
         "deviceRejectedExportAddress": "Rabby への接続を承認",
         "keystonePermissionTip": "以下のポップアップウィンドウで \"許可\" をクリックして、Keystone へのアクセスを承認し、Keystone 3 Pro がホームページにあることを確認してください。",
-        "exportAddressJustAllowedOnHomePage": "エクスポートアドレスはホームページでのみ許可されています。",
+        "exportAddressJustAllowedOnHomePage": "Keystoneのホーム画面でのみアドレスをエクスポートできます。",
         "deviceIsLockedError": "パスワードを入力してロックを解除してください",
         "deviceIsBusy": "デバイスは使用中です",
         "unknowError": "不明なエラーが発生しました。再試行してください。"
@@ -2024,7 +2024,7 @@
       "viewRiskLevel": "リスクレベルを表示"
     },
     "connect": {
-      "listedBy": "リストされた提供元",
+      "listedBy": "掲載元",
       "sitePopularity": "サイトの人気",
       "myMark": "私のマーク",
       "flagByRabby": "Rabbyによってフラグ付け",
@@ -2087,7 +2087,7 @@
       "hd-path": "HD path",
       "manage-seed-phrase": "シードフレーズの管理",
       "manage-addresses-under-this-seed-phrase": "このシードフレーズの下のアドレスを管理",
-      "safeModuleAddress": "セーフモジュールのアドレス",
+      "safeModuleAddress": "Safeモジュールのアドレス",
       "coboSafeErrorModule": "アドレスが期限切れです。アドレスを削除して再インポートしてください。",
       "importedDelegatedAddress": "インポートされた委任アドレス",
       "manage-addresses-under": "この{{brand}}の下でアドレスを管理する",
@@ -2096,7 +2096,7 @@
         "option2": "アドレスとシードフレーズを削除",
         "sub-title": "このアクションは永久的です。資産を保護するために、以下をご確認ください：",
         "option1": "アドレスを削除、シードフレーズを保持",
-        "check2": "私はプライベートキーまたはシードフレーズをバックアップしたことを確認し、それを削除する準備ができています。",
+        "check2": "プライベートキーまたはシードフレーズをバックアップ済みで、このアドレスを削除する準備ができていることを確認します。",
         "title": "アドレスとシードフレーズを削除しますか？",
         "check1": "このアドレスを削除すると、そのプライベートキーとシードフレーズも削除されることを理解しています。Rabbyはそれらを回復することはできません。",
         "remainSeedPhrase": "あなたのシードフレーズはデバイスに残ります。",
@@ -2105,7 +2105,7 @@
       },
       "deletePrivateKey": {
         "sub-title": "このアクションは永久的です。資産を保護するために、以下を確認してください：",
-        "check2": "私はプライベートキーまたはシードフレーズをバックアップしたことを確認し、それを削除する準備ができました。",
+        "check2": "プライベートキーまたはシードフレーズをバックアップ済みで、このアドレスを削除する準備ができていることを確認します。",
         "title": "アドレスと秘密鍵を削除しますか？",
         "check1": "このアドレスを削除すると、そのプライベートキーも削除されることを理解しています。Rabbyはそれらを回復することはできません。"
       },
@@ -2142,7 +2142,7 @@
       "title": "DeBankテストネットガストークンのリクエスト",
       "mintedTip": "Rabbyバッジの所有者は1日に1回リクエストできます",
       "notMintedTip": "リクエストはRabbyバッジの所有者のみ利用可能です",
-      "claimBadgeBtn": "Rabbyバッジを請求",
+      "claimBadgeBtn": "Rabbyバッジを受け取る",
       "time": "1日あたり",
       "requested": "本日リクエストしました",
       "requestBtn": "リクエスト"
@@ -2172,7 +2172,7 @@
           "reject": "トランザクションを拒否"
         },
         "title": "このトランザクションの置き換え方法を選択します",
-        "desc": "署名されたトランザクションは削除できませんが、同じnonceを持つ新しいトランザクションで置き換えることができます。"
+        "desc": " 署名されたトランザクションは削除できませんが、同じnonceを持つ新しいトランザクションで置き換えることができます。"
       },
       "replaceBtn": "置換"
     },
@@ -2189,7 +2189,7 @@
       "qrCodePopupTitle": "QR コード",
       "showQrCode": "QRコードを表示",
       "qrCodePopupTips": "シードフレーズのQRコードを他人と共有しないでください。安全な環境で表示し、慎重に保管してください。",
-      "doneButton": "シードフレーズを保存しました"
+      "doneButton": "シードフレーズをバックアップしました"
     },
     "backupPrivateKey": {
       "title": "プライベートキーのバックアップ",
@@ -2208,7 +2208,7 @@
       "confirmRequired": "パスワードを確認してください",
       "confirmError": "パスワードが一致しません",
       "confirmPlaceholder": "パスワードを確認してください",
-      "agree": "<1/> <2>利用規約</2>および<4>プライバシーポリシー</4>を読み、同意します"
+      "agree": "<2>利用規約</2><1/>および<4>プライバシーポリシー</4>を読み、同意します"
     },
     "welcome": {
       "step1": {
@@ -2216,13 +2216,13 @@
         "desc": "RabbyはMetaMaskがサポートするすべてのDappsに接続します"
       },
       "step2": {
-        "title": "セルフカストディアル",
+        "title": "セルフカストディ",
         "desc": "プライベートキーはローカルに保存され、あなただけがアクセスできます",
         "btnText": "開始"
       }
     },
     "importSafe": {
-      "title": "セーフアドレスを追加",
+      "title": "Safeアドレスを追加",
       "placeholder": "アドレスを入力してください",
       "error": {
         "invalid": "有効なアドレスではありません",
@@ -2242,18 +2242,18 @@
       },
       "settingModal": {
         "confirmModal": {
-          "i-understand-and-accept-it": "私は理解し、受け入れます",
+          "i-understand-and-accept-it": "内容を理解し、同意します",
           "tip1": "有効にすると、このアグリゲーターから直接コントラクトとやり取りします。",
           "tip2": "2. Rabby は、このアグリゲーターのコントラクトから生じるいかなるリスクに対しても責任を負いません。",
           "title": "このアグリゲーターを使用して取引を有効にする"
         },
         "SupportedBridge": "サポートされているBridge:",
-        "title": "Bridge Aggregatorsで取引を有効にする",
+        "title": "ブリッジアグリゲーターで取引を有効にする",
         "confirm": "確認"
       },
       "tokenPairDrawer": {
         "tokenPair": "トークンペア",
-        "balance": "バランスバリュー",
+        "balance": "残高評価額",
         "noData": "サポートされているトークンペアはありません",
         "title": "サポートされているトークンペアから選択"
       },
@@ -2262,20 +2262,20 @@
       "no-transaction-records": "取引記録なし",
       "history": "ブリッジ履歴",
       "To": "に",
-      "title": "Bridge",
+      "title": "ブリッジ",
       "Select": "選択",
       "the-following-bridge-route-are-found": "ルートが見つかりました",
       "From": "から",
       "pendingTip": "Txが送信されました。Txが長時間保留状態の場合は、設定で保留をクリアすることを試みてください。",
       "select-chain": "チェーンを選択",
-      "Balance": "残高：",
+      "Balance": "残高： ",
       "best": "最高",
       "actual": "実際:",
       "detail-tx": "詳細",
       "BridgeTokenPair": "ブリッジのトークンペア",
-      "estimated-value": "≈ {{value}}",
-      "completedTip": "チェーントランザクション、データをデコードして記録を生成",
-      "bridgeTo": "橋接到",
+      "estimated-value": "≈ {{value}} ",
+      "completedTip": "トランザクションはオンチェーンで処理されました。データを解析して履歴を生成しています",
+      "bridgeTo": "ブリッジ先",
       "Amount": "数量",
       "tokenPairPlaceholder": "トークンペアを選択",
       "slippage-adjusted-refresh-quote": "スリッページが調整されました。ルートをリフレッシュしてください。",
@@ -2287,8 +2287,8 @@
       "approve-x-symbol": "{{symbol}} を承認",
       "gas-x-price": "Gas Price: {{price}} Gwei.",
       "duration": "{{duration}} 分",
-      "price-expired-refresh-route": "価格が無効になりました。ルートを更新してください。",
-      "aggregator-not-enabled": "このアグリゲーターはあなたによって取引が有効化されていません。",
+      "price-expired-refresh-route": "価格の有効期限が切れました。ルートを更新してください。",
+      "aggregator-not-enabled": "このアグリゲーターでは取引できません。",
       "recommendFromToken": "<1></1> からのブリッジの見積もりを取得",
       "getRoutes": "ルートを取得",
       "via-bridge": "{{bridge}} 経由",
@@ -2303,7 +2303,7 @@
       "price-impact": "価格影響",
       "est-payment": "推定支払額:",
       "max-tips": "この値は、bridgeのガスコストを差し引いた額で計算されます。",
-      "loss-tips": "損失しています {{usd}}。異なる金額を試してください。",
+      "loss-tips": "{{usd}}の損失が発生します。別の金額でお試しください。",
       "unlimited-allowance": "無制限の許可",
       "no-quote-found": "見積もりが見つかりませんでした。他のトークンペアをお試しください。",
       "bridgeDbkBtn": "DBK公式サービス経由でブリッジ",
@@ -2322,7 +2322,7 @@
         "longTimeNoReceive": "ネットワークが混雑しています。通常より時間がかかる場合があります。お待ちください。",
         "receivedDifferentTokenNeedSwap": "異なるトークンを受け取りました。選択したトークンにスワップできます。",
         "receivedDifferentTokenFromSource": "ブリッジに失敗しました。ソースチェーンで異なるトークンが返されました。",
-        "BridgeStatusUnavailable": "ブリッジステータスは利用できません。資金が到着したことを確認するために、transaction historyを確認してください。",
+        "BridgeStatusUnavailable": "ブリッジのステータスを取得できません。トランザクション履歴で資金が到着しているか確認してください。",
         "swapStatus": "スワップステータス",
         "sendStatus": "送信状況"
       },
@@ -2330,12 +2330,12 @@
     },
     "pendingDetail": {
       "Header": {
-        "predictTime": "予測されるパッケージング"
+        "predictTime": "ブロックに取り込まれる見込み"
       },
       "TxStatus": {
         "pendingBroadcasted": "保留中：放送済み",
         "completed": "完了",
-        "reBroadcastBtn": "再放送",
+        "reBroadcastBtn": "再ブロードキャスト",
         "pendingBroadcast": "保留中: 放送待ち"
       },
       "TxHash": {
@@ -2371,7 +2371,7 @@
         "col": {
           "action": "トランザクションアクション",
           "balanceChange": "残高の変動",
-          "gasPrice": "Gas Price",
+          "gasPrice": "ガス価格",
           "interact": "とやり取りする",
           "actionType": "アクションタイプ"
         },
@@ -2385,8 +2385,8 @@
       },
       "PrePackInfo": {
         "col": {
-          "prePackResults": "事前パック結果",
-          "prePackContent": "プリパックコンテンツ",
+          "prePackResults": "ブロック取り込み前の結果",
+          "prePackContent": "ブロック取り込み前の内容",
           "expectations": "期待",
           "difference": "結果を確認"
         },
@@ -2397,13 +2397,13 @@
         "noLoss": "損失は見つかりませんでした",
         "loss": "{{lossCount}} 件の損失が見つかりました",
         "noError": "エラーは見つかりませんでした",
-        "title": "事前パックチェック",
+        "title": "ブロック取り込み前チェック",
         "error": "{{count}} 件のエラーが見つかりました",
         "desc": "最新ブロックでシミュレーションを実行しました。更新日時：{{time}}"
       },
       "Predict": {
         "completed": "トランザクションが完了しました。",
-        "predictFailed": "パッキング時間の予測に失敗しました",
+        "predictFailed": "ブロック取り込み時間の予測に失敗しました",
         "skipNonce": "あなたのアドレスはEthereumチェーンでNonceがスキップされたため、現在のトランザクションを完了できません。"
       }
     },
@@ -2424,14 +2424,14 @@
     "rabbyPoints": {
       "claimItem": {
         "go": "行く",
-        "claim": "請求",
-        "claimed": "請求済み",
+        "claim": "受け取る",
+        "claimed": "受取済み",
         "disabledTip": "現在は獲得できるポイントがありません",
         "earnTip": "1日1回の制限があります。00:00 UTC+0以降にポイントを獲得してください。"
       },
       "claimModal": {
-        "addressBalance": "ウォレットバランス",
-        "claim": "請求",
+        "addressBalance": "ウォレット残高",
+        "claim": "受け取る",
         "rabbyUser": "Rabby アクティブユーザー",
         "placeholder": "リファラルコードを入力して追加ポイントを獲得 (オプション)",
         "MetaMaskSwap": "MetaMask Swap",
@@ -2439,7 +2439,7 @@
         "title": "初期ポイントを申請する",
         "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
         "season2": "シーズン2",
-        "rabbyValuedUserBadge": "Rabby Valued User Badge",
+        "rabbyValuedUserBadge": "Rabby優良ユーザーバッジ",
         "walletBalance": "ウォレット残高",
         "cantUseOwnCode": "自分の紹介コードを使用することはできません。",
         "referral-code": "紹介コード",
@@ -2471,7 +2471,7 @@
       "out-of-x-current-total-points": "{{total}} 点数の合計中",
       "earn-points": "ポイントを獲得",
       "referral-code-copied": "紹介コードをコピーしました。",
-      "initialPointsClaimEnded": "初期ポイント請求終了",
+      "initialPointsClaimEnded": "初期ポイントの受取期間は終了しました",
       "firstRoundEnded": "🎉 第1回のRabby Pointsは終了しました",
       "secondRoundEnded": "🎉 Rabby Points の第2ラウンドが終了しました",
       "code-set-successfully": "リファーラルコードが正常に設定されました"
@@ -2485,7 +2485,7 @@
         "rpcUrl": "RPC URL",
         "nativeTokenSymbolRequired": "通貨記号を入力してください",
         "id": "チェーン ID",
-        "blockExplorerUrl": "Block explorer URL（オプション）",
+        "blockExplorerUrl": "ブロックエクスプローラーURL（任意）",
         "nativeTokenSymbol": "通貨記号"
       },
       "AddFromChainList": {
@@ -2567,7 +2567,7 @@
             "receiveOn": "{{chainName}} で受信",
             "completeTime": "完了時間",
             "toAddress": "宛先",
-            "gasFee": "Gas fee"
+            "gasFee": "ガス代"
           },
           "error": {
             "notEnoughBalance": "残高不足"
@@ -2576,15 +2576,15 @@
             "status": {
               "withdraw": "出金",
               "deposit": "預け入れ",
-              "claimed": "クレーム済み",
+              "claimed": "受取済み",
               "challengePeriod": "チャレンジ期間",
               "rootPublished": "ステートルートが公開されました",
-              "readyToClaim": "受取り準備完了",
+              "readyToClaim": "受け取り準備完了",
               "proved": "証明済み",
               "readyToProve": "準備完了証明",
-              "waitingToProve": "ステートルート発表"
+              "waitingToProve": "ステートルート公開済み"
             },
-            "claimBtn": "請求",
+            "claimBtn": "受け取る",
             "proveBtn": "証明",
             "deposit": "入金",
             "empty": "まだアクティビティはありません",
@@ -2595,20 +2595,20 @@
             "step2": "Ethereumで証明する",
             "step1": "引き出しを開始",
             "question3": "ネットワーク手数料は概算であり、変更されることを理解しています。",
-            "step3": "Ethereumで請求する",
-            "title": "DBK Chain Withdrawal takes ～7日",
+            "step3": "Ethereumで受け取る",
+            "title": "DBK Chainからの出金には約7日かかります",
             "btn": "引き出し",
             "question2": "出金が開始されると、そのスピードアップやキャンセルはできないことを理解しています。",
-            "question1": "資金を出金したことを証明した後、Ethereum で資金が請求可能になるまで約 7 日かかることを理解しています。",
+            "question1": "出金を証明してから、Ethereumで資金を受け取れるようになるまで約7日かかることを理解しています。",
             "tips": "引き出しは3つのステップが必要であり、1つのDBK Chainトランザクションと2つのEthereumトランザクションが必要です。"
           },
-          "labelFrom": "From",
+          "labelFrom": "送信元",
           "labelTo": "に"
         },
         "minNFT": {
           "minted": "ミント済み",
           "title": "DBK Genesis",
-          "myBalance": "私の残高",
+          "myBalance": " 私の残高",
           "mintBtn": "ミント"
         }
       }
@@ -2678,7 +2678,7 @@
         "InsufficientToken": "トークン残高不足"
       },
       "withdrawPopup": {
-        "noEnoughValuetBalance": "Vault Balance insufficient. チェーンを切り替えるか、後でもう一度お試しください。",
+        "noEnoughValuetBalance": "Vaultの残高が不足しています。チェーンを切り替えるか、後でもう一度お試しください。",
         "selectRecipientAddress": "受取人のアドレスを選択",
         "recipientAddress": "受取人アドレス",
         "withdrawalLimit": "出金限度",
@@ -2686,7 +2686,7 @@
         "selectAddr": "アドレスを選択",
         "destinationChain": "送信先チェーン",
         "selectDestinationChain": "宛先チェーンを選択",
-        "amount": "量",
+        "amount": "金額",
         "title": "出金",
         "selectChain": "チェーンを選択",
         "noEligibleChain": "引き出し可能なチェーンがありません。",
@@ -2727,7 +2727,7 @@
         "gasAccountBalance": "残高"
       },
       "switchAccount": "GasAccount を切り替える",
-      "withdrawDisabledIAP": "引き出しは無効になっています。これは、バランスに法定通貨が含まれており、それらを引き出すことができないためです。トークン残高を引き出すには、サポートにお問い合わせください。",
+      "withdrawDisabledIAP": "残高に出金できない法定通貨資金が含まれるため、出金は無効です。トークン残高を出金するにはサポートにお問い合わせください。",
       "gasToken": "ガストークン",
       "about": {
         "title3": "GasAccountには追加料金がありますか？",
@@ -2747,7 +2747,7 @@
         "item2": "すべてのネットワークに対応",
         "desc2": "80以上のネットワークでの自動ガス支払い",
         "item3": "すべての取引に対応",
-        "desc3": "_swap、ブリッジ、送金、DAppsなど"
+        "desc3": "スワップ、ブリッジ、送金、DApp など"
       },
       "depositPayPopup": {
         "topUpPayTips": "必要なGas: {{topUpUsd}}, 残りのGas（推定）: {{balance}}"
@@ -2773,7 +2773,7 @@
         "createNewAddress": "新しいアドレスを作成",
         "importAddress": "すでにアドレスを持っています。",
         "title": "Rabby Walletへようこそ",
-        "desc": "EthereumおよびEVMのためのあなたの頼りになるウォレット"
+        "desc": "EthereumとEVMのための定番ウォレット"
       },
       "createNewAddress": {
         "showSeedPhrase": "シードフレーズを表示",
@@ -2784,7 +2784,7 @@
         "title": "始める前に"
       },
       "importList": {
-        "title": "インポート方法を選択"
+        "title": "インポート方法を選択 "
       },
       "importPrivateKey": {
         "title": "秘密鍵のインポート",
@@ -2894,7 +2894,7 @@
         },
         "title": "Safeアドレスを追加",
         "loading": "このアドレスのデプロイされたチェーンを検索しています",
-        "placeholder": "セーフアドレスを入力"
+        "placeholder": "Safeアドレスを入力"
       },
       "importHardwareList": {
         "title": "ハードウェアウォレットを選択してください"
@@ -2930,10 +2930,10 @@
         "tip": {
           "records": "署名記録",
           "whitelist": "ホワイトリスト設定",
-          "safe": "インポートされた Safe Wallets",
+          "safe": "インポートしたSafe Wallet",
           "watch": "連絡先と監視用アドレス",
           "hardware": "インポートされたハードウェアウォレット",
-          "title": "データの保持先："
+          "title": "保持されるデータ："
         },
         "button": "リセットを確認",
         "title": "Rabby Wallet をリセット",
@@ -2971,7 +2971,7 @@
     },
     "syncToMobile": {
       "downloadGooglePlay": "Google Play",
-      "steps2Description": "あなたのQRコードには機密データが含まれています。これを秘密にして、決して他人と共有しないでください。",
+      "steps2Description": " あなたのQRコードには機密データが含まれています。これを秘密にして、決して他人と共有しないでください。",
       "downloadAppleStore": "App Store",
       "steps1": "Rabby Mobile をダウンロードする",
       "description": "あなたのアドレスデータは完全にオフラインで保持され、暗号化され、QRコードを通じて安全に転送されます。",
@@ -2979,10 +2979,10 @@
       "title": "Rabby Extensionからモバイルへウォレットアドレスを同期",
       "clickToShowQr": "クリックしてアドレスを選択し、QRコードを表示します",
       "disableSelectAddress": "{{type}}アドレスのサポートされていない同期",
-      "disableSelectAddressWithPassphrase": "パスフレーズを使用した{{type}}アドレスのサポートされていない同期",
-      "disableSelectAddressWithSlip39": "slip39 を使用した {{type}} アドレスの同期はサポートされていません",
-      "selectedLenAddressesForSync_one": "selected {{len}} syncのアドレス",
-      "selectedLenAddressesForSync_other": "selected {{len}} syncのアドレス",
+      "disableSelectAddressWithPassphrase": "パスフレーズを使用する{{type}}アドレスは同期できません",
+      "disableSelectAddressWithSlip39": "SLIP-39を使用する{{type}}アドレスは同期できません",
+      "selectedLenAddressesForSync_one": "{{len}}件のアドレスを同期用に選択",
+      "selectedLenAddressesForSync_other": "{{len}}件のアドレスを同期用に選択",
       "selectAddress": {
         "title": "アドレスを選択して同期する"
       },
@@ -3046,7 +3046,7 @@
         "cexDepositAddress": "{{cexName}} 入金アドレス",
         "TransferBeforeValue": "はい",
         "passwordPlaceholder": "パスワードを入力して続けてください",
-        "TransferBefore": "以前に転送されました",
+        "TransferBefore": "送金履歴あり",
         "AddToWhitelist": "ホワイトリストに追加"
       },
       "title": "送信先",
@@ -3102,7 +3102,7 @@
         "riskType": {
           "risks": {
             "contractAddress": "契約に送信しています。資金が失われる可能性があります。",
-            "dexNoDeposite": "あなたは非預金取引所のアドレスに送信しています",
+            "dexNoDeposite": "入金に対応していない取引所アドレスに送金しようとしています",
             "scamAddress": "詐欺アドレスに送信しています",
             "noSend": "このアドレスには180日間送信していません。"
           }
@@ -3150,12 +3150,12 @@
       "portfolio": {
         "headers": {
           "wallet": "ウォレット",
-          "unfoldProtocols": "{{count}} プロトコルを展開",
+          "unfoldProtocols": "{{count}}件のプロトコルを展開",
           "allTokenMode": "すべてのトークンモード",
-          "foldProtocols": "Fold {{count}} プロトコル",
+          "foldProtocols": "{{count}}件のプロトコルを折りたたむ",
           "foldDifis": "{{count}} 件の DeFi を折りたたむ",
           "unfoldDifis": "{{count}}のDefisを展開",
-          "lpToken": "LP-Token"
+          "lpToken": "LPトークン"
         },
         "hidden": {
           "showAll": "すべて表示",
@@ -3172,7 +3172,7 @@
         },
         "table": {
           "tokenAddress": "トークンアドレス",
-          "usdValue": "USDの価値",
+          "usdValue": "USD換算額",
           "price": "価格",
           "token": "トークン",
           "amount": "金額",
@@ -3200,7 +3200,7 @@
           "acceptSuccess": "販売に成功しました",
           "acceptFailed": "販売失敗",
           "cancelSuccess": "リストが正常にキャンセルされました",
-          "listingFailedDesc": "再試してください。",
+          "listingFailedDesc": "もう一度お試しください。",
           "listingSuccess": "リストに追加されました！",
           "listingSuccessDesc": "{{name}}をOpenSeaにリストしました。",
           "cancelFailed": "失敗しました！",
@@ -3236,7 +3236,7 @@
           "listing": "リストing"
         },
         "listingModal": {
-          "listedAs": "リストされたとして",
+          "listedAs": "出品形式",
           "floor": "フロア",
           "total": "合計リスティング価格",
           "editListing": "リストを編集",
@@ -3252,9 +3252,9 @@
           "floorDifference": "フロア差",
           "rabbyFee": "Rabby 手数料 (0%)",
           "approveAndList": "承認とリスト",
-          "platformFee": "Openseaプラットフォーム手数料 ({{fee}}%)",
+          "platformFee": " Openseaプラットフォーム手数料 ({{fee}}%)",
           "creatorFeeTips": "クリエイターの収益は販売者によって支払われます。",
-          "creatorFeeTips1": "クリエイターの収益は販売者によって支払われます。クリエイターの収益は強制されます。",
+          "creatorFeeTips1": "クリエイターの収益は販売者によって支払われます。クリエイター収益の支払いは必須です。",
           "nft": "NFT"
         },
         "acceptModal": {
@@ -3270,8 +3270,8 @@
           "totalEst": "合計見込み収益",
           "creatorFeeTips": "クリエイターの収益は売り手から支払われます。",
           "platformFeeTips": "この手数料はOpenSeaのサービス料金です。",
-          "platformFee": "Openseaプラットフォーム手数料（{{fee}}％）",
-          "creatorFeeTips1": "クリエイターの収益は売り手によって支払われます。クリエイターの収益は強制されます。"
+          "platformFee": " Openseaプラットフォーム手数料（{{fee}}％）",
+          "creatorFeeTips1": "クリエイターの収益は売り手によって支払われます。クリエイター収益の支払いは必須です。"
         },
         "all": "すべて",
         "hideLowValue": "低価値のNFTを非表示にする",
@@ -3344,12 +3344,12 @@
         "leverageChanged": "レバレッジが変更されました: {{leverage}}",
         "buyFilledContent": "購入済み {{sz}} / {{origSz}} {{coin}}、約定価格 @{{price}} USDC",
         "cancelAllOrderSuccess": "{{count}} 件の注文をキャンセルしました",
-        "terminalTwapSuccess": "ターミナル TWAP 注文が正常に完了しました",
+        "terminalTwapSuccess": "TWAP注文を終了しました",
         "openLimitOrderSuccess": "指値注文を出しました {{direction}} {{coin}}-USD：サイズ {{size}}、価格 ${{price}}",
         "depositTip": "{{amount}} USDC が入金されました",
         "marginModeUpdated": "証拠金モードを {{mode}} に変更しました",
         "sellFilledContent": "売却済み {{sz}} / {{origSz}} {{coin}} 約定価格 @{{price}} USDC",
-        "terminalTwap": "端末 TWAP（時間加重平均価格）",
+        "terminalTwap": "TWAPを終了",
         "buyFilledContentNoPercentage": "{{sz}} {{coin}} をロングで約定しました @{{price}} USDC",
         "openTWAPOrderSuccess": "TWAP注文を開設しました {{direction}} {{coin}}-USD: サイズ {{size}}",
         "sellFilledContentNoPercentage": "売却 {{sz}} {{coin}} 約定済み @{{price}} USDC",
@@ -3384,7 +3384,7 @@
         "fifthTitle": "清算",
         "firstDescription": "無期限先物取引では、資産を売買しているだけではありません。次に起こるだろうと自分が思うことを取引しているのです。",
         "thirdDescription": "価格が下落すると予想する場合は、ショートポジションを取ります。価格が下落すれば、利益を得られます。価格が上昇すれば、損失を被ります。",
-        "firstTitle": "マスター永久先物取引",
+        "firstTitle": "無期限先物取引をマスター",
         "fourthDescription": "レバレッジを使うと、投入した資金以上の取引が可能になります。利益も損失も大きくなる可能性があります。",
         "thirdTitle": "ショートを開く"
       },
@@ -3397,8 +3397,8 @@
           "closeShortTp": "ショートを決済して利益確定",
           "closeLong": "ロングを決済",
           "closeLongTp": "ロングを決済して利確",
-          "closeShortLiquidation": "ショートを決済 ロスカット",
-          "closeShortSl": "ショートを決済\nストップロス",
+          "closeShortLiquidation": "ショートの強制決済",
+          "closeShortSl": "ショートのストップロス決済",
           "closeLongLiquidation": "ロングの強制決済"
         },
         "date": "日付",
@@ -3412,7 +3412,7 @@
         "amount": "数量",
         "asset": "資産",
         "action": "アクション",
-        "value": "価値",
+        "value": "評価額",
         "buy": "買い",
         "sell": "売り",
         "transferDetailTitle": "送金",
@@ -3472,7 +3472,7 @@
       "riskLevel": {
         "danger": {
           "title": "危険",
-          "description": "あなたのポジションはロスカットのリスクが高まっています。ロスカット価格までの距離は3％以下です。ロスカットを回避するために、追加証拠金を入れるか、ポジションを解消してください。"
+          "description": "あなたのポジションは清算のリスクが高まっています。清算価格までの距離は3％以下です。清算を回避するために、追加証拠金を入れるか、ポジションを解消してください。"
         },
         "warning": {
           "title": "警告",
@@ -3483,15 +3483,15 @@
           "description": "現在のポジションは安全な水準です。清算価格までの距離は8%を超えています。市場状況を引き続き監視してください。"
         },
         "gotIt": "了解しました",
-        "liquidationDistance": "ロスカット距離",
+        "liquidationDistance": "清算距離",
         "liquidationPrice": "清算価格",
         "currentPrice": "現在価格",
-        "subTitle": "リアルタイムのロスカット距離（%）",
+        "subTitle": "リアルタイムの清算距離（%）",
         "liquidationDistanceTips": "清算距離（％）は、現在の価格が清算価格からどれだけ離れているかを示します。距離が大きいほどポジションは安全になり、距離が小さいほど清算リスクが高くなります。",
-        "liqDistanceTipsShort": "価格が上昇すると <1>{{distance}}</1> によりロスカットが発動します。",
+        "liqDistanceTipsShort": "価格が<1>{{distance}}</1>上昇すると、強制決済が発生します。",
         "title": "リスクレベル",
         "distanceLabel": "清算までの距離",
-        "liqDistanceTipsLong": "下落すると <1>{{distance}}</1> が強制決済を引き起こします。"
+        "liqDistanceTipsLong": "価格が<1>{{distance}}</1>下落すると、強制決済が発生します。"
       },
       "searchPerpsPopup": {
         "empty": "市場が見つかりません",
@@ -3524,7 +3524,7 @@
       "deleteAgentSuccess": "エージェントの削除に成功しました",
       "add": "追加",
       "autoClose": "自動決済",
-      "marginIsolated": "分離証拠金",
+      "marginIsolated": "分離マージン",
       "selectTokenToDeposit": "入金するトークンを選択",
       "fundingRate": "ファンディングレート",
       "positions": "ポジション",
@@ -3585,19 +3585,19 @@
       "openShort": "ショートを開く",
       "stopLoss": "ストップロス",
       "fundingGains": "ファンディング利益",
-      "isolated": "アイソレーテッド・マージン",
+      "isolated": "分離マージン",
       "openInterest": "未決済建玉",
       "cross": "クロスマージン",
       "learnAboutPerps": "Perps について学ぶ",
       "pnl": "損益",
       "tradePerps": "Perps を取引",
-      "liquidationPrice": "ロスカット価格",
+      "liquidationPrice": "清算価格",
       "fundingPayments": "ファンディング支払い",
       "maximumOrderSize": "最大ポジションサイズは {{amount}} です",
       "providerFeeTips": "Hyperliquidの手数料: {{fee}}",
       "completed": "完了",
       "logInPerpsAccount": "Perps アカウントにログイン",
-      "marginCross": "証拠金（クロスマージン）",
+      "marginCross": "クロスマージン",
       "rabbyFeeTipsV2": "Rabby 手数料: 0.02%",
       "openPositionTips": "無期限契約の取引には、投資額および担保の突然かつ全損につながる可能性を含む、重大なリスクが伴います。高いレバレッジと市場のボラティリティのため、すべてのユーザーに適しているとは限りません。価格はファンディングレートと流動性の影響を受けることがあり、通知なしに自動清算されることがあります。市場データはHyperliquidによって提供されます。",
       "directDepositFast": "迅速、スリッページなし",
@@ -3617,13 +3617,13 @@
       "isolatedMarginDesc": "各ポジションはそれぞれ独自のマージンを使用します。損失はそのポジションに限定されますが、より簡単に清算される可能性があります。",
       "crossMarginDesc": "すべてのポジションは同じマージンを共有します。これにより、単一のポジションが清算される可能性が減りますが、すべてのクロスマージン資金は、極端な市場動向では失われる可能性があります。",
       "newUserGuide": {
-        "learnMore": "詳細を学ぶ"
+        "learnMore": "詳しく見る"
       },
       "addFunds": "資金を追加する",
       "crossMarginLiqPriceTip": "クロスマージンモードでは、単一ポジションの清算価格は参考用の推定値です。",
       "selectTokenToWithdraw": "出金するトークンを選択してください",
       "PerpsDepositCard": {
-        "availableToTrade": "取引可能：",
+        "availableToTrade": "取引可能： ",
         "deposit": "入金",
         "swap": "交換"
       },
@@ -3638,7 +3638,7 @@
       },
       "PerpsSpotSwap": {
         "title": "ステーブルコインを交換",
-        "from": "出金",
+        "from": "交換元",
         "to": "交換先",
         "balance": "残高",
         "estReceive": "推定受取額",
@@ -3653,7 +3653,7 @@
         "enableFailed": "統合アカウントの有効化に失敗しました",
         "swapFailed": "交換に失敗しました",
         "swapSuccess": "交換が完了しました",
-        "estReceiveTooltip": "推定受取額は市场价格の変動により異なります。",
+        "estReceiveTooltip": "推定受取額は市場価格の変動により異なります。",
         "buyAsset": "{{asset}}を購入",
         "sellAsset": "{{asset}}を売却",
         "toSwapEntry": "交換へ →",
@@ -3661,8 +3661,8 @@
       },
       "PerpsTransferToPerps": {
         "title": "送金",
-        "from": "出金",
-        "to": "到",
+        "from": "振替元",
+        "to": "送金先",
         "spot": "現物",
         "perps": "Perps",
         "balance": "残高",
@@ -3694,7 +3694,7 @@
     },
     "perpsPro": {
       "chatArea": {
-        "mark": "マーク",
+        "mark": "マーク価格",
         "searchMarkets": "市場を検索",
         "24hChange": "24時間変動",
         "lastPrice": "最新価格",
@@ -3706,7 +3706,7 @@
         "symbol": "シンボル",
         "24hVol": "24時間ボリューム",
         "8hrFunding": "8時間ファンディング",
-        "openInterest": "建玉",
+        "openInterest": "未決済建玉",
         "markTips": "無期限契約における証拠金管理、未実現PNLの算出、清算、TP/SL注文の発動に使用します。",
         "openInterestTips": "両建てオープン・インタレスト: 本契約におけるロングポジションとショートポジションの合計。",
         "categoryAll": "すべて"
@@ -3714,7 +3714,7 @@
       "userInfo": {
         "tab": {
           "creationTime": "作成日時",
-          "value": "バリュー",
+          "value": "評価額",
           "status": "ステータス",
           "filled": "約定済み",
           "orderHistory": "注文履歴",
@@ -3748,12 +3748,12 @@
           "averagePrice": "平均価格",
           "fundingTips": "ポジションを開設してからの純ファンディング支払い。負の値の場合はファンディング益を意味します。",
           "twap": "TWAP",
-          "terminate": "契約を終了",
+          "terminate": "終了",
           "tradeHistory": "約定履歴",
           "runningTimeTotal": "経過時間 / 合計",
           "unrealizedPnlTooltip": "マーク価格は未実現PNLを推定するために使用されます。実現PNLには取引価格のみが使用されます。",
-          "fundingTipsV2": "ポジションが開かれてからのネット資金。赤（負）の資金値は支払われた資金を示し、緑（正）の値は受け取った資金を示します。",
-          "fundingTipsBold": "これは、ポジションがオープンして以来の合計資金決済を示しています。<bold>グリーン（プラス）</bold>の値は、他のトレーダーから獲得したことを意味し、<bold>レッド（マイナス）</bold>の値は、彼らに支払った資金コストです。",
+          "fundingTipsV2": "ポジションを開いてからの純ファンディング額です。赤（マイナス）は支払ったファンディング、緑（プラス）は受け取ったファンディングを示します。",
+          "fundingTipsBold": "ポジションを開いてから決済されたファンディングの合計です。<bold>緑（プラス）</bold>は他のトレーダーから受け取った額、<bold>赤（マイナス）</bold>は他のトレーダーに支払ったファンディングコストを示します。",
           "assets": "資産",
           "about": "概要"
         },
@@ -3789,10 +3789,10 @@
           "mid": "ミッド価格",
           "reverse": "反転",
           "closeMarket": "市場価格で決済",
-          "marketCloseBtn": "マーケットクローズ",
+          "marketCloseBtn": "市場価格で決済",
           "invalidPrice": "無効な価格",
           "dontShowAgain": "再表示しない",
-          "marketCloseTitle": "マーケットクローズポジション",
+          "marketCloseTitle": "ポジションを市場価格で決済",
           "marketCloseDesc": "この操作はポジションを直ちにクローズしようとします。",
           "confirmCloseAllTitle": "すべてのポジションをクローズすることを確認してください",
           "confirmCloseAllDesc": "すべてのオープンポジションはマーケット価格でクローズされ、すべての注文はキャンセルされます。",
@@ -3803,7 +3803,7 @@
           "sell": "売り",
           "buyToSell": "買って売る",
           "sellToBuy": "売って買う",
-          "reverseAction": "{{side}} {{size}} {{coin}} を反転"
+          "reverseAction": "{{size}} {{coin}}を{{side}}してポジションを反転"
         },
         "openOrders": {
           "price": "価格",
@@ -3813,13 +3813,13 @@
           "time": "時間",
           "cancelAll": "すべてキャンセル",
           "orderValueSize": "注文金額 / ポジションサイズ",
-          "reduceOnly": "リデュースオンリー",
+          "reduceOnly": "建玉削減のみ",
           "type": "タイプ",
           "triggerConditions": "トリガー条件",
           "tpSl": "利確/損切"
         },
         "distanceRiskTag": {
-          "goingDown": "価格が{{percent}}% 下落すると、ロスカットが発生します。",
+          "goingDown": "価格が{{percent}}下落すると、清算が発生します。",
           "goingUp": "価格が{{percent}}上昇すると清算が発生します。"
         },
         "twap": {
@@ -3840,13 +3840,13 @@
           "rejected": "拒否されました",
           "partiallyFilled": "部分約定",
           "filled": "約定済み",
-          "reduceOnlyCanceled": "減少のみのためキャンセルされました",
+          "reduceOnlyCanceled": "減少のみのためキャンセルされました ",
           "open": "オープン",
           "badAloPxRejected": "不正な ALO PX のため拒否されました",
           "minTradeNtlRejected": "最小取引NTLのため拒否されました",
           "perpMarginRejected": "拒否されたパーペッツマージン",
           "iocCancelRejected": "IOCキャンセルのため拒否されました",
-          "siblingFilledCanceled": "兄弟注文が埋まったためキャンセルされました"
+          "siblingFilledCanceled": "関連注文が約定したためキャンセルされました"
         },
         "assets": {
           "columnAsset": "資産",
@@ -3861,7 +3861,7 @@
         },
         "floatingWidget": {
           "label": "フローティングウィジェット",
-          "tooltip": "· 他のページを閲覧中に、フローティングウィジェットでアカウントのPnLを表示します。\n· 取引ページとHyperliquidでは非表示になります。",
+          "tooltip": "· 他のページを閲覧中に、フローティングウィジェットで\n  アカウントのPnLを表示します。\n· 取引ページとHyperliquidでは非表示になります。",
           "enabledToastTitle": "フローティングウィジェットが有効になりました",
           "enabledToastDescription": "他のページを閲覧すると表示されます。",
           "disabledToastTitle": "フローティングウィジェットが無効になりました",
@@ -3902,13 +3902,13 @@
         "marginCross": "クロスマージン",
         "takeProfitExpectedPnL": "利確 予想損益",
         "runtime": "実行時",
-        "liquidationPrice": "ロスカット価格",
+        "liquidationPrice": "清算価格",
         "slSellMustBeLowerThanMidPrice": "ストップ売り注文価格はミッド価格より低く設定してください。",
         "sizePerSuborder": "サブオーダーごとのサイズ",
         "marginRequired": "必要証拠金",
         "sellShort": "売り / ショート",
         "orderValue": "注文金額",
-        "endPrice": "エンド価格",
+        "endPrice": "終了価格",
         "invalidTpPrice": "無効な利確価格",
         "end": "終了",
         "runtimeTooLong": "実行時間は24時間未満でなければなりません。",
@@ -3938,24 +3938,24 @@
         "slBuyMustBeHigherThanMidPrice": "ストップ買い注文の価格はミッド価格より高くなければなりません。",
         "marginUsage": "証拠金の利用状況",
         "runtimeTips": "(5分-24時間)",
-        "reduceOnly": "ポジション削減のみ",
+        "reduceOnly": "建玉削減のみ",
         "startPrice": "開始価格",
         "type": "注文種別",
         "tpSellMustBeHigherThanMidPrice": "売り指値価格はミッド価格より高く設定してください。",
-        "marginIsolated": "分離証拠金",
+        "marginIsolated": "分離マージン",
         "minimumSuborderSize": "TWAPサブオーダーの最小サイズは $10 です。",
         "reduceOnlyTooLarge": "リデュース・オンリー設定が大きすぎます",
-        "sizeSkewTooltip": "終値と開始価格の比率。例えば、サイズスキューが2.0の場合、終値を指値とする注文は開始価格の2倍の数量で出されます。サイズスキューが1.0の場合、等しい数量の注文が作成されます。",
+        "sizeSkewTooltip": "終了価格と開始価格における注文サイズの比率です。例えば、サイズスキューが2.0の場合、終了価格の指値注文は開始価格の注文の2倍の数量になります。1.0の場合は同じ数量の注文になります。",
         "tpSl": "利確 / 損切り",
         "tpSlTips": "シンプルな成行の利確/損切り注文を出します。限定価格や部分的な利確/損切りといった高度な機能を使う場合は、開いているポジションで利確/損切りを設定してください。",
         "deposit": "入金",
         "addFundsToGetStarted": "資金を追加して開始します",
         "notAvailableInRegion": "お住まいの地域ではご利用いただけません。",
         "action": "アクション",
-        "Sell": "売却",
+        "Sell": "売り",
         "max": "最大値",
         "cost": "コスト",
-        "Buy": "購入",
+        "Buy": "買い",
         "price": "価格",
         "long": "ロング",
         "buyTrigger": "購入トリガー",
@@ -3971,25 +3971,25 @@
         "slTriggerMoreThanOrderPrice": "あなたのSLトリガー価格は、あなたの注文価格よりも高い必要があります。",
         "orderTypeTooltipMarket": "市場注文は、最良の利用可能な市場価格に即座にマッチングされます。",
         "tpTriggerMoreThanOrderPrice": "あなたのTPトリガー価格は、注文価格よりも高くなければなりません。",
-        "slTriggerPriceIsZero": "あなたのSLトリガー価格は0で、{{side}}の際には設定されません。",
-        "tpTriggerPriceIsZero": "あなたのTPトリガープライスは0であり、{{side}}を行うときに設定されません。",
+        "slTriggerPriceIsZero": "SLトリガー価格が0のため、{{side}}ポジションの注文には設定されません。",
+        "tpTriggerPriceIsZero": "TPトリガー価格が0のため、{{side}}ポジションの注文には設定されません。",
         "hour": "時間",
         "min": "ミニマム",
         "totalTime": "総時間 (5分-24時間)",
-        "orderTypeTooltipTakeMarket": "市場注文は、指定されたテイクプライスに達したときに市場注文になります。注文を有効にするためにトリガープライスを指定してください。",
+        "orderTypeTooltipTakeMarket": "利確成行注文は、指定した利確価格に達すると成行注文になります。注文を有効にするトリガー価格を指定してください。",
         "orderTypeTooltipStopMarket": "指定した価格に達すると、ストップ・マーケット・オーダーはマーケット・オーダーになります。注文を有効にするためにトリガー価格を指定してください。",
         "maxDurationTwap": "TWAPオーダーの最大実行期間は",
         "slTriggerLessThanOrderPrice": "あなたのSLトリガー価格は、注文価格よりも低くする必要があります。",
         "orderTypeTooltipLimit": "リミットオーダーは、特定の価格またはそれ以上の価格で買うか売るための注文です。リミットオーダーは実行が保証されるものではありません。",
         "orderTypeTooltipStopLimit": "ストップリミット注文は、指定されたストップ価格に達したときにリミット注文になります。注文を有効にするためにトリガー価格を指定してください。",
-        "orderTypeTooltipTakeLimit": "リミットオーダーは、指定したテイクプライスに達したときにリミットオーダーになります。オーダーをアクティブにするためのトリガープライスを指定してください。",
+        "orderTypeTooltipTakeLimit": "利確指値注文は、指定した利確価格に達すると指値注文になります。注文を有効にするトリガー価格を指定してください。",
         "bboTips": "最良い入札オファー（BBO）とは、特定の時点におけるオーダーブック上での最良の売り価格と最良の買い価格を指します。BBOの注文は常に正確な最小ティックサイズを使用して出され、表示の好みに依存しない細かな正確な価格設定を保証します。",
         "orderTypeTooltipScale": "スケール注文を使用すると、金額を複数のサブオーダーに分割して市場への影響を最小限に抑えることができます。",
         "orderTypeTooltipTwap": "TWAP（時間加重平均価格）は、ユーザー指定の期間の時間加重平均価格に近い平均実行価格を達成することを目指すアルゴリズミックな取引執行戦略です。",
         "swapStableCoins": "ステーブルコインを交換"
       },
       "marginMode": {
-        "cross": "クロス証拠金",
+        "cross": "クロスマージン",
         "isolated": "分離マージン",
         "isolatedDescription": "各ポジションに割り当てる証拠金の額を設定することで、個別ポジションのリスクを管理します。分離証拠金ポジションの証拠金率が100%に達すると、そのポジションは清算されます。このモードでは、個別ポジションに証拠金を追加したり削除したりできます。",
         "title": "証拠金モード",
@@ -4047,7 +4047,7 @@
         "crossAccountLeverageTips": "クロスアカウント・レバレッジ = 総クロスポジション価値 / クロスアカウント価値",
         "crossMarginRatioTips": "維持証拠金 / 証拠金残高。クロス建玉は証拠金率が100%に達した場合に清算されます。",
         "accountEquityTip": "残高 + 未実現損益（全ポジションを決済した場合の概算口座価値）",
-        "available": "利用可能:",
+        "available": "利用可能: ",
         "accountSummary": "アカウント概要",
         "unifiedAccountSummary": "統合アカウント概要",
         "unifiedAccountRatio": "統合アカウント比率",
@@ -4204,20 +4204,20 @@
         "takeProfit": "利確",
         "confirm": "確認",
         "takeProfitTipsLong": "利確価格は現在の価格より高くなければならない。",
-        "youLoss": "あなたの負けです。",
+        "youLoss": "損失",
         "priceAbove": "価格が上回っています",
         "takeProfitTipsShort": "利確価格は現在価格より低くなければなりません。",
         "stopLossWhenPriceBelow": "価格が下回った場合のストップロス",
         "stopLossTipsLongLiquidation": "価格は清算価格より低いです（{{price}}）",
         "stopLossWhen": "ストップロス発動条件",
-        "currentPrice": "現在の価格：",
+        "currentPrice": "現在の価格： ",
         "stopLossTipsShort": "ストップロス価格は現在価格より高くなければなりません。",
         "takeProfitWhenPriceAbove": "価格が上回ったときに利確",
         "takeProfitExpectedPNL": "利確 予想損益",
         "stopLossTipsShortLiquidation": "価格は清算価格を上回っています（{{price}}）",
         "stopLoss": "ストップロス",
         "title": "自動ポジション決済",
-        "youGain": "利益を得る",
+        "youGain": "利益",
         "takeProfitWhen": "利確時",
         "stopLossWhenPriceAbove": "価格が上回ったときにストップロス",
         "takeProfitWhenPriceBelow": "価格が下回るときに利益を確定",
@@ -4231,7 +4231,7 @@
       "availableCard": {
         "needSupply": "借り入れるには、担保として資産を提供する必要があります。",
         "canBorrow": "あなたは提供した担保に基づいて、借入上限まで借りることができます。",
-        "singleAssetUnavailableForEmode": "借入不可用。退出 E-Mode 以访问。",
+        "singleAssetUnavailableForEmode": "借入できません。利用するには E-Mode を終了してください。",
         "emode": "E-Modeでは一部の資産は借りることができません。すべての資産にアクセスするにはE-Modeを終了してください。",
         "emodeNoAssets": "関連する資産が見つかりませんでした。別のカテゴリで再度お試しください。",
         "isolated": "分離モードのため、借入可能額と資産が制限されています。"
@@ -4248,7 +4248,7 @@
           "myBorrows": "私の借り入れ"
         },
         "item": {
-          "wrapperToken": "{{name}} の Wrapped token"
+          "wrapperToken": "{{name}}のラップトークン"
         }
       },
       "repayDetail": {
@@ -4257,14 +4257,14 @@
           "collateral": "担保"
         },
         "repayWith": "返済するには",
-        "amountTitle": "残高：",
+        "amountTitle": "残高： ",
         "actions": "返済",
         "approveAndRepay": "承認と返済"
       },
       "supplyDetail": {
-        "amountTitle": "利用可能:",
+        "amountTitle": "利用可能: ",
         "actions": "供給",
-        "supplied": "提供されました",
+        "supplied": "供給済み",
         "enabled": "有効",
         "availableToBorrow": "借入可能",
         "supplyAPY": "供給APY",
@@ -4276,7 +4276,7 @@
       },
       "withdrawDetail": {
         "remainingSupply": "残りの供給",
-        "amountTitle": "残高:",
+        "amountTitle": "残高: ",
         "actions": "引き出す"
       },
       "toggleCollateralDetail": {
@@ -4287,28 +4287,28 @@
       },
       "toggleCollateralModal": {
         "toggleRiskTexts": {
-          "doNotHaveSuppliesInThisCurrency": "この通貨には供給がありません。",
+          "doNotHaveSuppliesInThisCurrency": "この資産には預け入れがありません。",
           "canNotUseThisCurrencyAsCollateral": "この通貨を担保として使用することはできません",
           "zeroLTVWithdrawBlocked": "LTVがゼロの資産（{{assets}}）は、このアクションを実行するために引き出すか、担保として無効にする必要があります。",
-          "canNotSwitchUsageAsCollateralMode": "この通貨の担保モードとしての使用を切り替えることはできません。なぜなら、担保コールを引き起こす可能性があるからです。"
+          "canNotSwitchUsageAsCollateralMode": "清算リスクが生じるため、この資産を担保に切り替えることはできません。"
         },
         "closeTitle": "レビュー無効化",
         "openTitle": "レビューの有効化",
-        "exitIsolationModeTitle": "アイソレーションモードを終了する",
-        "exitIsolationModeDesc": "隔離モードを終了し、他のトークンを担保として使用できるようになります。",
-        "closeDesc": "この資産を担保として無効にすると、あなたの借入力とヘルスファクターに影響します。",
-        "riskToLiquidationText": "この通貨の担保モードに切り替えることはできません。担保コールが発生するためです。",
-        "enableIsolationModeTitle": "イソレーションモードを有効にする",
-        "openDesc": "この資産を担保として有効にすることで、借入能力とヘルスファクターが向上します。ただし、ヘルスファクターが1未満に下がると清算される可能性があります。",
-        "enableIsolationModeDesc": "アイソレーションモードに入ります。アイソレーションモードでは、他の資産を担保として提供することはできません。グローバルな負債上限が隔離された資産の借入可能額を制限します。別の資産を借りる前に、担保としてCRVを無効にしてアイソレーションモードを終了してください。"
+        "exitIsolationModeTitle": "分離モードを終了",
+        "exitIsolationModeDesc": "分離モードを終了すると、他のトークンを担保として使用できるようになります。",
+        "closeDesc": "この資産を担保から外すと、借入余力とヘルスファクターに影響します。",
+        "riskToLiquidationText": "清算リスクが生じるため、この資産を担保に切り替えることはできません。",
+        "enableIsolationModeTitle": "分離モードを有効にする",
+        "openDesc": "この資産を担保として有効にすると、借入余力とヘルスファクターが向上します。ただし、ヘルスファクターが1未満に下がると清算される可能性があります。",
+        "enableIsolationModeDesc": "分離モードでは、他の資産を担保として提供できません。全体の負債上限により、分離資産の借入可能額が制限されます。分離モードを終了するには、他の資産を借りる前にCRVを担保から外してください。"
       },
       "borrowDetail": {
         "actions": "借りる",
         "swapDebt": "スワップ",
-        "amountTitle": "利用可能:",
+        "amountTitle": "利用可能: ",
         "borrowed": "借入",
         "approveAndBorrow": "承認して借りる",
-        "almostReachedError": "借入可能的最大金额受到限制，因为协议借入上限快要达到。",
+        "almostReachedError": "プロトコルの借入上限に近づいているため、借入可能な最大額が制限されています。",
         "almostReachedWarning": "この資産のプロトコル借入上限は100％です。これ以上の借入はできません。"
       },
       "popup": {
@@ -4325,7 +4325,7 @@
         "totalBorrowed": "総借入額",
         "myBorrow": "私の借入",
         "borrowCap": "借入上限",
-        "reachCapTip": "この資産は借入上限に達しました。"
+        "reachCapTip": "この資産は借入上限に達しました。 "
       },
       "supplyOverview": {
         "collateral": "担保",
@@ -4342,7 +4342,7 @@
       "risk": {
         "warning": "この金額を借りると、あなたのヘルスファクターが清算のリスクがあるレベルに下がります。",
         "toggleCollateralWarning": "この資産を担保として無効にすると、あなたのヘルスファクターは清算のリスクがあるレベルに低下します。",
-        "withdrawWarning": "この金額を引き出すと、あなたのヘルスファクターが清算に対してリスクの高いレベルに下がります。",
+        "withdrawWarning": "この金額を引き出すと、ヘルスファクターが清算リスクの高い水準まで低下します。",
         "checkbox": "アラートを理解しましたので、続行します。",
         "emodeBlockWarning": "Eモードを無効にすると、清算のリスクがあるレベルまでヘルスファクターが低下します。",
         "blockEmodeWarning": "Eモードを無効にすることはできません。それは清算を引き起こす可能性があります。Eモードを終了するには、供給または借入ポジションを返済してください。"
@@ -4355,8 +4355,8 @@
         "below1desc": "あなたのポジションは清算のリスクにさらされています。",
         "over3title": "ヘルスファクター > 3.0:",
         "liquidationTitle": "清算:",
-        "introText": "あなたの健康係数は、あなたの借入ポジションがどれほど安全であるかを示しています。もしそれが低すぎると、あなたの担保が清算される可能性があります。",
-        "warningText": "あなたのヘルスファクターは低すぎます。清算を避けるために：\n1. ローンの一部または全額を返済してください\n2. さらに担保を追加してください",
+        "introText": " ヘルスファクターは借入ポジションの安全性を示します。低くなりすぎると、担保が清算される可能性があります。",
+        "warningText": "ヘルスファクターが低すぎます。清算を避けるには：\n1. 借入の一部または全額を返済する\n2. 担保を追加する",
         "liquidation": "あなたのヘルスファクターが1.0未満になると、債務を返済するために一部の担保が自動的に売却される可能性があります。清算ペナルティが適用され、担保の一部が失われることになります。"
       },
       "modalDesc": {
@@ -4364,8 +4364,8 @@
         "isolatedTitle": "資産は担保として使用できません",
         "availableToBorrowDesc": "担保資産に基づいて借り入れることができ、借入上限に達するまで可能です。",
         "isolatedSupplyDesc": "担保の使用は、隔離モードのため制限されています。",
-        "maxAmount": "これは、提供した担保に基づいて借りられる最大額です。あなたの総借入力は、各担保資産の市場価値にその最大LTVを掛け算し、結果を合算することで計算されます。",
-        "globalIsolatedDesc": "孤立モードでは、他の資産を担保として提供することはできません。グローバルな借入制限が孤立資産の借入力を制限します。孤立モードを終了するには、他の資産を借りる前にUNIを担保として無効にしてください。",
+        "maxAmount": "提供した担保に基づく最大借入額です。借入余力の合計は、各担保資産の市場価値に最大LTVを掛けた値の合計で算出されます。",
+        "globalIsolatedDesc": "分離モードでは、他の資産を担保として提供できません。全体の借入上限により、分離資産の借入余力が制限されます。分離モードを終了するには、他の資産を借りる前にUNIを担保から外してください。 ",
         "isolatedDesc": "この資産はアイソレーションモードでのみ担保として使用できます。このモードでは、借入に他の資産担保を供給することはできません。アイソレーションモードで担保として使用される資産は、特定の借入上限までしか借りることができません。",
         "maxLTV": "最大LTV比率は、特定の担保の最大借入可能額を示します。例えば、担保のLTVが75%の場合、ユーザーは1 ETHの担保に対して0.75に相当するETHを主通貨で借りることができます。",
         "lqDesc": "清算が発生すると、清算者は借入者に代わって未返済の借入金額の最大50%を返済します。その見返りに、彼らは担保を割引価格で購入でき、差額（清算ペナルティ）をボーナスとして保持することができます。"
@@ -4376,7 +4376,7 @@
           "assets": "トークン"
         },
         "title": "返済トークンを選択",
-        "zeroLtvCollateralTips": "以下のLTVが0の担保があるため、担保返済ルールに従って、まずこれらの担保で返済する必要があります。"
+        "zeroLtvCollateralTips": "以下のLTVが0の担保があるため、担保返済ルールに従って、まずこれらの担保で返済する必要があります。 "
       },
       "manageEmode": {
         "actions": {
@@ -4392,7 +4392,7 @@
           "header": {
             "asset": "資産"
           },
-          "placeholder": "選択する",
+          "placeholder": "選択",
           "label": "資産カテゴリ",
           "desc": "このカテゴリを有効にするには、このカテゴリの外にあるすべての借り入れポジションを閉じる必要があります。"
         },
@@ -4420,11 +4420,11 @@
           "title": "資産カテゴリ"
         },
         "disableTitle": "無効にする",
-        "unavailable": "• 利用不可用",
+        "unavailable": "• 利用不可",
         "title": "E-Modeを管理する",
         "enabled": "• 有効化",
-        "unavailableTips": "既存の貸し出し/借入資産はサポートされていません。",
-        "description": "E-Modeを有効にすると、借入力を最大化できます。ただし、借入は選択したカテゴリ内の資産に制限されています。"
+        "unavailableTips": "現在の貸付・借入資産はサポートされていません。",
+        "description": "E-Modeを有効にすると借入余力を最大化できます。ただし、借入は選択したカテゴリ内の資産に限られます。"
       },
       "debtSwap": {
         "actions": {
@@ -4443,12 +4443,12 @@
           "swap": "スワップ"
         },
         "borrowBalance": "借入残高",
-        "title": "スワップ 借りポジション",
+        "title": "借入ポジションをスワップ",
         "entryTips": "ワンクリックで借りた資産をスワップし、ステップと手数料を削減します。",
-        "lpRiskWarning": "スワップ後のヘルスファクターが低下しました。あなたのポジションは清算のリスクが高くなります。",
+        "lpRiskWarning": "スワップ後のヘルスファクターが低く、ポジションの清算リスクが高まります。",
         "priceImpactTips": "高い価格影響 ({{lostValue}})。このルートは流動性が低いか注文サイズが小さいために、より多くのリターンを得られる場合があります。",
-        "lpDangerWarning": "このスワップ後の健康係数は非常に低くなり、清算のリスクがあります。安全を保つために、別の資産を選択するか、スワップ金額を減らしてください。",
-        "maxLtvWarning": "新しい借入ポジションをカバーするのに十分な担保がありません。ウォレットには負債スイッチを行うために残っている借入力が必要です。"
+        "lpDangerWarning": "このスワップ後はヘルスファクターが非常に低くなり、清算される可能性があります。別の資産を選ぶか、スワップ額を減らしてください。",
+        "maxLtvWarning": "新しい借入ポジションをカバーする担保が不足しています。デットスワップを行うには借入余力が必要です。"
       },
       "repayWithCollateral": {
         "action": {
@@ -4503,7 +4503,7 @@
         "netApy": "ネットAPY",
         "estDailyEarnings": "推定日収入",
         "healthy": "健康",
-        "lq": "1を下回ると、清算がトリガーされる可能性があります。"
+        "lq": "ヘルスファクターが1を下回ると、清算される可能性があります。"
       },
       "market": {
         "core": "コアマーケット"
@@ -4523,10 +4523,10 @@
       },
       "supplyList": {
         "more": "より多くのトークンを供給",
-        "collapse": "崩壊"
+        "collapse": "折りたたむ"
       },
       "borrowList": {
-        "collapse": "崩壊",
+        "collapse": "折りたたむ",
         "more": "借りるためのトークンがさらに多くあります"
       },
       "noData": "データがありません",
@@ -4534,9 +4534,9 @@
       "supplyApy": "供給APY",
       "submitted": "提出されました",
       "totalSupplied": "総供給量",
-      "gotIt": "わかった",
+      "gotIt": "了解しました",
       "borrowApy": "借入APY",
-      "isolateTip": "これは隔離された市場です",
+      "isolateTip": "これは隔離市場です",
       "estNetApy": "推定ネットAPY",
       "estDailyEarning": "推定日収益",
       "totalSupply": "総供給量",
@@ -4545,7 +4545,7 @@
       "supplied": "供給済み",
       "supplyBalance": "供給残高",
       "netWorth": "純資産",
-      "isolate": "孤立",
+      "isolate": "隔離型",
       "borrowBalance": "借入残高",
       "totalBorrow": "合計借入",
       "netApy": "ネットAPY",
@@ -4579,15 +4579,15 @@
         "stop": "swapを停止"
       },
       "status": {
-        "pending": "交換中",
-        "idle": "交換待ち",
-        "success": "交換完了"
+        "pending": "スワップ中",
+        "idle": "スワップ待ち",
+        "success": "スワップ完了"
       },
-      "title": "Dustを変換",
+      "title": "ダストを変換",
       "description": "低価値トークンをガス代トークンに変換し、アセットリストを簡素化します！",
       "receiveTitle": "受取額",
       "expectedToReceive": "受取予定額",
-      "completedTitle": "Dustが変換されました！",
+      "completedTitle": "ダストの変換が完了しました！",
       "done": "完了",
       "conversionProgress": "変換進捗",
       "slippageTolerance": "スリッページ許容範囲",
@@ -4598,15 +4598,15 @@
       "selectLowValueTokens": "低価値トークンを選択",
       "tokenColumn": "トークン",
       "amountColumn": "数量",
-      "valueColumn": "価値",
+      "valueColumn": "評価額",
       "statusColumn": "ステータス",
       "noLowValueTokensFound": "低価値トークンが見つかりません",
       "selectedTokens": "選択されたトークン",
-      "totalValue": "合計価値",
+      "totalValue": "合計評価額",
       "moreChains": "+{{count}}チェーン",
       "swapFailed": "スワップに失敗しました、{{reason}}",
       "completedTips": "進行中のスワップは処理を継続します",
-      "priceImpact": "気配値変動上限",
+      "priceImpact": "価格影響の上限",
       "LedgerBtn": {
         "start": "Ledgerで始める",
         "confirm": "Ledgerで確認してください",
@@ -4623,7 +4623,7 @@
       "actions": {
         "deposit": "入金",
         "withdraw": "出金",
-        "claim": "請求",
+        "claim": "受け取る",
         "max": "最大",
         "retry": "再試行"
       },
@@ -4723,7 +4723,7 @@
         "tokenFallback": "トークン",
         "insufficientBalance": "{{symbols}}の残高が不足しています",
         "noWithdrawablePosition": "出金可能なポジションがありません",
-        "noClaimableRewards": "請求可能な報酬がありません",
+        "noClaimableRewards": "受取可能な報酬がありません",
         "submitted": "{{action}}を送信しました",
         "submitFailed": "{{action}}の送信に失敗しました",
         "confirmPoolPriceDifference": "プール価格差を確認",
@@ -4740,17 +4740,17 @@
     "manageBatchApprovals": {
       "cols": {
         "asset": "資産",
-        "revokeFrom": "リボーク元",
+        "revokeFrom": "承認先",
         "gasFee": "ガス手数料"
       },
-      "title": "批量撤销",
-      "stopTheRevokeProcess": "撤销プロセスを停止しますか？",
-      "leavingThisPageWillStopTheRevokeProcess": "このページを離れると、撤销プロセスが停止します。",
-      "startRevoke": "撤销を開始",
+      "title": "一括取り消し",
+      "stopTheRevokeProcess": "取り消し処理を停止しますか？",
+      "leavingThisPageWillStopTheRevokeProcess": "このページを離れると、取り消し処理が停止します。",
+      "startRevoke": "取り消しを開始",
       "continueRevoke": "続ける",
       "pauseRevoke": "一時停止",
       "revokeCompleted": "完了",
-      "canStillRevoke": "それでも撤销"
+      "canStillRevoke": "それでも取り消す"
     },
     "manageApprovals": {
       "tabs": {
@@ -4773,7 +4773,7 @@
       },
       "EIP7702Panel": {
         "unsupportedAddressType": "サポートされていないアドレス種別",
-        "unsupportedAddressTypeDesc": "EIP-7702権限の취소는、秘密鍵またはシードフレーズのアドレスのみサポートされています",
+        "unsupportedAddressTypeDesc": "EIP-7702権限の取り消しは、秘密鍵またはシードフレーズのアドレスでのみサポートされています",
         "supportedChains": "サポートチェーン",
         "delegatedAddressDesc": "委託アドレス",
         "notMatched": "一致なし",
@@ -4788,7 +4788,7 @@
         "notMatched": "一致しません"
       },
       "title": "承認",
-      "revoke": "取消",
+      "revoke": "取り消し",
       "approvals": "承認",
       "unselectAll": "すべて選択解除",
       "selectAll": "すべて選択"
@@ -4897,7 +4897,7 @@
           "title": "価格"
         },
         "usdValue": {
-          "title": "USD価値"
+          "title": "USD換算額"
         }
       },
       "searchInput": {
@@ -4969,14 +4969,14 @@
     "externalSwapBrideDappPopup": {
       "selectADapp": "Dappを選択してください",
       "chainNotSupported": "このチェーンではサポートされていません",
-      "noQuotesForChain": "このチェーンにはまだ利用可能な引用がありません",
+      "noQuotesForChain": "このチェーンで利用できる見積もりはまだありません",
       "help": "このチェーンの公式チームにサポートをお問い合わせください",
       "noDapp": "利用できるDappsはありません",
       "thirdPartyDappToProceed": "サードパーティのDappを使用して進めてください",
       "viewDappOptions": "Dappオプションを見る",
       "noDapps": "このチェーンには利用可能なDappがありません",
       "bridgeOnDapp": "Dapp上のブリッジ",
-      "swapOnDapp": "Dapp での交換\n"
+      "swapOnDapp": "DAppでスワップ"
     },
     "AccountSelectorModal": {
       "title": "アドレスを選択",
@@ -5007,7 +5007,7 @@
     },
     "DesktopSelectAccountList": {
       "addAddresses": "アドレスを追加",
-      "smallSwapDisabledTips": "このアドレス種子はサポートされていません"
+      "smallSwapDisabledTips": "このアドレス種別はサポートされていません"
     },
     "LpTokenTag": {
       "title": "これは流動性プロバイダー(LP)トークンです。",
@@ -5018,7 +5018,7 @@
       "selectAddress": "アドレスを選択してください"
     },
     "SeedPhraseBackupAlert": {
-      "message": "バックアップされていないウォレット。バックアップを開始します。"
+      "message": "ウォレットがバックアップされていません。バックアップを開始してください。"
     },
     "UnknownTag": {
       "label": "不明",
@@ -5048,7 +5048,7 @@
     "gas": "ガス",
     "unknownNFT": "不明なNFT",
     "copyAddress": "アドレスのコピー",
-    "watchModeAddress": "ウォッチモードアドレス",
+    "watchModeAddress": "閲覧専用アドレス",
     "assets": "資産",
     "Confirm": "確認",
     "Cancel": "キャンセル",
@@ -5069,7 +5069,7 @@
     "Nonce": "Nonce",
     "notSupportTesntnet": "カスタムネットワークには対応していません。",
     "tryAgain": "再試行してください",
-    "appDescription": "EthereumおよびEVMのためのあなたの定番ウォレット",
+    "appDescription": "EthereumとEVMのための定番ウォレット",
     "collapse": "折りたたむ",
     "Yes": "はい",
     "Submit": "送信"
@@ -5135,6 +5135,6 @@
       "MAINNET_AND_TESTNET": "メインネットおよびテストネット",
       "TESTNET": "テストネットのみ"
     },
-    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Seed Phrase (Passphrase) でインポート"
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "シードフレーズ（パスフレーズ）でインポート"
   }
 }
