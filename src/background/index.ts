@@ -114,7 +114,9 @@ setMessageErrorReporter((error) => {
     (error as { code?: unknown }).code === undefined
   ) {
     Sentry.captureException(error);
+    return true;
   }
+  return false;
 });
 
 async function restoreAppState() {

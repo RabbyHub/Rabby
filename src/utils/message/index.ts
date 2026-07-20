@@ -9,7 +9,9 @@ import { nanoid } from 'nanoid';
 
 const pQueue = new PQueue({ concurrency: 1000 });
 
-type MessageErrorReporter = (error: unknown) => void;
+/** Returns true when the error was actually captured, so the response can
+ * be flagged and the receiving page's Sentry skips its duplicate copy. */
+type MessageErrorReporter = (error: unknown) => boolean;
 
 /**
  * Message also runs in dapp pages / content-scripts, so it must not depend on
@@ -206,7 +208,9 @@ abstract class Message extends EventEmitter {
         e.data && (err.data = e.data);
 
         try {
-          messageErrorReporter?.(e);
+          if (messageErrorReporter?.(e)) {
+            err.reportedFromBackground = true;
+          }
         } catch (reportError) {
           // reporting must never break the response channel
         }
