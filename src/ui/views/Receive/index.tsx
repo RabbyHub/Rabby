@@ -90,7 +90,10 @@ const Receive = () => {
 
   const { t } = useTranslation();
 
-  const { data: safeSupportChains } = useRequest(
+  const {
+    data: safeSupportChains,
+    loading: safeSupportChainsLoading,
+  } = useRequest(
     async () => {
       if (!account?.address || account.type !== KEYRING_CLASS.GNOSIS) {
         return;
@@ -112,7 +115,16 @@ const Receive = () => {
     }
   );
 
+  const isSafeSupportChainsReady =
+    !!account.address &&
+    (account.type !== KEYRING_CLASS.GNOSIS ||
+      (!safeSupportChainsLoading && safeSupportChains !== undefined));
+
   const displayChains = useMemo(() => {
+    if (!isSafeSupportChainsReady) {
+      return [];
+    }
+
     let list = getChainList('mainnet');
     if (safeSupportChains) {
       list = list.filter((item) => safeSupportChains.includes(item.enum));
@@ -129,11 +141,11 @@ const Receive = () => {
       const idx = pinedList.indexOf(item.enum);
       return idx === -1 ? pinedList.length + 1 : idx;
     });
-    if (chain) {
+    if (chain && list.some((item) => item.enum === chain.enum)) {
       list = [chain, ...list.filter((item) => item.enum !== chain.enum)];
     }
     return list;
-  }, [chain, safeSupportChains]);
+  }, [chain, isSafeSupportChainsReady, safeSupportChains]);
 
   const shownChains = useMemo(() => {
     return displayChains.slice(0, 5);
@@ -325,7 +337,9 @@ const Receive = () => {
             <div
               className="qr-card-chain-list"
               onClick={() => {
-                setIsShowReceiveModal(true);
+                if (isSafeSupportChainsReady) {
+                  setIsShowReceiveModal(true);
+                }
               }}
             >
               {shownChains.map((item) => (
@@ -339,7 +353,9 @@ const Receive = () => {
               {restChainCount > 0 && (
                 <span className="qr-card-chain-count">+{restChainCount}</span>
               )}
-              <RcIconArrowRightCC className="qr-card-chain-arrow" />
+              {isSafeSupportChainsReady && (
+                <RcIconArrowRightCC className="qr-card-chain-arrow" />
+              )}
             </div>
           </div>
         </div>
@@ -376,7 +392,11 @@ const Receive = () => {
           onCancel={() => {
             setIsShowReceiveModal(false);
           }}
-          supportChains={safeSupportChains}
+          supportChains={
+            account.type === KEYRING_CLASS.GNOSIS
+              ? safeSupportChains || []
+              : safeSupportChains
+          }
           disabledTips={t(
             'page.dashboard.GnosisWrongChainAlertBar.notDeployed'
           )}

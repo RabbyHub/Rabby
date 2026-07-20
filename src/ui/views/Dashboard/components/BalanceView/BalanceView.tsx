@@ -334,7 +334,13 @@ export const BalanceView = ({
     return evmBalance !== balance;
   }, [evmBalance, balance]);
 
-  if (!isGnosis && !hasCustomNetwork && !chainBalancesWithValue?.length) {
+  if (
+    loadBalanceSuccess &&
+    !balanceLoading &&
+    !isGnosis &&
+    !hasCustomNetwork &&
+    !chainBalancesWithValue?.length
+  ) {
     return <ZeroAssets />;
   }
 
