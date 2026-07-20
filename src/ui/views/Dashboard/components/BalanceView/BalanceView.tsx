@@ -1,40 +1,41 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-  useMemo,
-} from 'react';
-import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
-import { useCommonPopupView, useWallet } from 'ui/utils';
-import { KEYRING_TYPE } from 'consts';
-import clsx from 'clsx';
-import { Skeleton } from 'antd';
-import { Chain } from '@debank/common';
-import { ChainList } from './ChainList';
-import { formChartData, useCurve } from './useCurve';
-import { CurvePoint, CurveThumbnail } from './CurveView';
+import type { Account } from '@/background/service/preference';
+import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
+import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
-import { useDebounce } from 'react-use';
-import { useRabbySelector } from '@/ui/store';
-import { BalanceLabel } from './BalanceLabel';
-import { useTranslation } from 'react-i18next';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { useCurrency } from '@/ui/hooks/useCurrency';
+import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
+import { useRabbySelector } from '@/ui/store';
+import { IExtractFromPromise } from '@/ui/utils/type';
 import { findChain } from '@/utils/chain';
+import { Chain } from '@debank/common';
+import { Skeleton } from 'antd';
+import clsx from 'clsx';
+import { KEYRING_TYPE } from 'consts';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'react-use';
+import { useCommonPopupView, useWallet } from 'ui/utils';
+import { useQueryProjects } from 'ui/utils/portfolio';
+import { OfflineChainNotify } from '../OfflineChainNotify';
+import { BalanceLabel } from './BalanceLabel';
+import { ChainList } from './ChainList';
+import { CurvePoint, CurveThumbnail } from './CurveView';
+import { formChartData, useCurve } from './useCurve';
 import {
   useHomeBalanceView,
   useRefreshHomeBalanceView,
 } from './useHomeBalanceView';
-import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
-import type { Account } from '@/background/service/preference';
-import { IExtractFromPromise } from '@/ui/utils/type';
-import { OfflineChainNotify } from '../OfflineChainNotify';
-import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
-import { useQueryProjects } from 'ui/utils/portfolio';
-import { useCurrency } from '@/ui/hooks/useCurrency';
+import { ZeroAssets } from './ZeroAssets';
 
 export const BalanceView = ({
   currentAccount,
@@ -96,11 +97,13 @@ export const BalanceView = ({
     currency,
   });
   const wallet = useWallet();
-  const [isGnosis, setIsGnosis] = useState(false);
   const [gnosisNetworks, setGnosisNetworks] = useState<Chain[]>([]);
   const [isHover, setHover] = useState(false);
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
   const [isDebounceHover, setIsDebounceHover] = useState(false);
+  const isGnosis = useMemo(() => {
+    return currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
+  }, [currentAccount?.type]);
 
   const {
     balance,
@@ -246,11 +249,9 @@ export const BalanceView = ({
     loadBalanceSuccess,
   ]);
 
-  useEffect(() => {
-    if (currentAccount) {
-      setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
-    }
-  }, [currentAccount]);
+  const hasCustomNetwork = useRabbySelector(
+    (store) => !!store.chains.testnetList?.length
+  );
 
   useEffect(() => {
     if (isGnosis) {
@@ -332,6 +333,10 @@ export const BalanceView = ({
   const showAppChainTips = useMemo(() => {
     return evmBalance !== balance;
   }, [evmBalance, balance]);
+
+  if (!isGnosis && !hasCustomNetwork && !chainBalancesWithValue?.length) {
+    return <ZeroAssets />;
+  }
 
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('w-full')}>

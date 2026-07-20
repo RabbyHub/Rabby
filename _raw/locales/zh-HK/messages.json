@@ -463,7 +463,8 @@
         "openProMode": "開啟專業模式",
         "openInTabV2": "在分頁打開",
         "noLpTokens": "沒有流動性提供者（LP）代幣",
-        "lowValueDescription": "低價值資產會顯示在這裡"
+        "lowValueDescription": "低價值資產會顯示在這裡",
+        "addAssets": "新增資產"
       },
       "hd": {
         "howToConnectLedger": "如何連接 Ledger",
@@ -528,7 +529,11 @@
         "desc": "在 Rabby Mobile 中查看你的積分。",
         "downloadIntro": "還沒有安裝 App？立即下載。"
       },
-      "noData": "沒有匹配的貨幣"
+      "noData": "沒有匹配的貨幣",
+      "ZeroAssets": {
+        "desc": "向錢包轉入資產，開始使用 Web3",
+        "addAssets": "新增資產"
+      }
     },
     "chainList": {
       "title": "{{count}} 條鏈已整合",
@@ -1281,10 +1286,11 @@
       "backupSeedPhraseNow": "開始備份"
     },
     "receive": {
-      "title": "在 {{chain}} 上接收 {{token}}",
+      "receiveTitle": "接收 {{token}}",
       "watchModeAlert1": "這是一個觀察地址",
       "watchModeAlert2": "你確定用它來接收資產嗎？",
-      "receiveOn": "接收 {{token}} 到"
+      "supportedChain": "支援的鏈：",
+      "addCustomNetwork": "新增自訂網絡"
     },
     "securityEngine": {
       "alertTriggerReason": "警報觸發原因：",

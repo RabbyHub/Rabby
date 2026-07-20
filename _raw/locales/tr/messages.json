@@ -660,10 +660,11 @@
       }
     },
     "receive": {
-      "title": "{{chain}} üzerinde {{token}} Yatır",
+      "receiveTitle": "{{token}} al",
       "watchModeAlert1": "Bu bir İzleme Modu adresidir.",
       "watchModeAlert2": "Varlıkları yatırmak için bunu kullanmak istediğinizden emin misiniz?",
-      "receiveOn": "{{token}} almayı kabul et"
+      "supportedChain": "Desteklenen zincir:",
+      "addCustomNetwork": "Özel ağ ekle"
     },
     "sendToken": {
       "addressNotInContract": "Adres listesinde değil. <1></1><2>Rehbere ekle</2>",
@@ -1507,7 +1508,8 @@
         "searchTokenPlaceholder": "Token Ara",
         "openInTab": "Rabby Sekmesinde Açın",
         "openProMode": "Pro Modu Açın",
-        "openInTabV2": "Sekmede Aç"
+        "openInTabV2": "Sekmede Aç",
+        "addAssets": "Varlık ekle"
       },
       "hd": {
         "howToConnectLedger": "Ledger Nasıl Bağlanır",
@@ -1572,7 +1574,11 @@
         "title": "Rabby Puanları",
         "downloadIntro": "Uygulamayı henüz indirmediniz mi? Şimdi indirin."
       },
-      "noData": "Eşleşen para birimi yok"
+      "noData": "Eşleşen para birimi yok",
+      "ZeroAssets": {
+        "desc": "Web3'ü kullanmak için cüzdanınıza para yatırın",
+        "addAssets": "Varlık ekle"
+      }
     },
     "nft": {
       "floorPrice": "Taban Fiyat:",

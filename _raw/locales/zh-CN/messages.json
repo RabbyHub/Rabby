@@ -463,7 +463,8 @@
         "openProMode": "开启专业模式",
         "openInTabV2": "在标签页中打开",
         "noLpTokens": "没有流动性提供者（LP）代币",
-        "lowValueDescription": "低价值资产会显示在这里"
+        "lowValueDescription": "低价值资产会显示在这里",
+        "addAssets": "添加资产"
       },
       "hd": {
         "howToConnectLedger": "如何连接 Ledger",
@@ -528,7 +529,11 @@
         "title": "Rabby 积分",
         "downloadIntro": "还没有安装 App？立即下载。"
       },
-      "noData": "无匹配的货币"
+      "noData": "无匹配的货币",
+      "ZeroAssets": {
+        "desc": "向钱包转入资产，开始使用 Web3",
+        "addAssets": "添加资产"
+      }
     },
     "chainList": {
       "title": "{{count}} 条链已集成",
@@ -1281,10 +1286,11 @@
       "deleteSuccess": "删除成功"
     },
     "receive": {
-      "title": "在 {{chain}} 上接收 {{token}}",
+      "receiveTitle": "接收 {{token}}",
       "watchModeAlert1": "这是一个观察地址",
       "watchModeAlert2": "你确定用它来接收资产吗？",
-      "receiveOn": "接收 {{token}} 到"
+      "supportedChain": "支持的链：",
+      "addCustomNetwork": "添加自定义网络"
     },
     "securityEngine": {
       "alertTriggerReason": "警报触发原因：",

@@ -15,6 +15,7 @@ import { SpecialTokenListPopup } from './components/TokenButton';
 import { TestnetChainList } from './TestnetChainList';
 import { useFilteredTokens } from './useFilteredTokens';
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { useHistory } from 'react-router-dom';
 
 export const AssetList = ({
   visible,
@@ -30,6 +31,7 @@ export const AssetList = ({
   const [selectTestnetChainId, setSelectTestnetChainId] = useState<
     string | null
   >(null);
+  const history = useHistory();
   const handleSelectChainChange = (id: string | null) => {
     setSelectChainId(id);
   };
@@ -100,10 +102,12 @@ export const AssetList = ({
                   type="primary"
                   className="w-[200px] h-[44px] mt-[50px]"
                   onClick={() => {
-                    setIsShowAddModal(true);
+                    // setIsShowAddModal(true);
+                    history.push('/receive');
+                    onClose?.();
                   }}
                 >
-                  {t('page.dashboard.assets.customButtonText')}
+                  {t('page.dashboard.assets.addAssets')}
                 </Button>
                 <AddCustomTokenPopup
                   visible={isShowAddModal}

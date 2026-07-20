@@ -1,39 +1,39 @@
+import { CHAINS_ENUM } from '@/types/chain';
+import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/receive/right-cc.svg';
 import { Modal } from '@/ui/component';
-import { Button, message } from 'antd';
+import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
+import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
+import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { copyAddress } from '@/ui/utils/clipboard';
+import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
+import { OfflineChainNotify } from '@/ui/views/Dashboard/components/OfflineChainNotify';
+import { findChain, findChainByEnum, getChainList } from '@/utils/chain';
+import { matomoRequestEvent } from '@/utils/matomo-request';
+import { getKRCategoryByType } from '@/utils/transaction';
+import { useRequest } from 'ahooks';
+import { Button } from 'antd';
 import { Account } from 'background/service/preference';
-import ClipboardJS from 'clipboard';
+import clsx from 'clsx';
 import {
-  CHAINS,
   KEYRING_CLASS,
   KEYRING_ICONS_WHITE,
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import QRCode from 'qrcode.react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { matomoRequestEvent } from '@/utils/matomo-request';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useHistory } from 'react-router-dom';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-1-cc.svg';
 import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
 import IconEye from 'ui/assets/icon-eye.svg';
-import IconSuccess from 'ui/assets/icon-success-1.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/icon-warning-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
-import { getKRCategoryByType } from '@/utils/transaction';
-import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
-import { findChain, findChainByEnum } from '@/utils/chain';
-import { useTranslation } from 'react-i18next';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { copyAddress } from '@/ui/utils/clipboard';
-import clsx from 'clsx';
-import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
-import { CHAINS_ENUM } from '@/types/chain';
-import { useRequest } from 'ahooks';
-import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
-import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
-import { OfflineChainNotify } from '@/ui/views/Dashboard/components/OfflineChainNotify';
+import { sortBy } from 'lodash';
+import { EditCustomTestnetModal } from '../CustomTestnet/components/EditTestnetModal';
+import { useThemeMode } from '@/ui/hooks/usePreference';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -70,26 +70,15 @@ const useAccount = () => {
   };
 };
 
-const useReceiveTitle = (search: string) => {
-  const { t } = useTranslation();
-  const qs = useMemo(() => query2obj(search), [search]);
-  const chain = findChainByEnum(qs.chain)?.name || 'EVM chains';
-  const token = qs.token || t('global.assets');
-
-  return t('page.receive.title', {
-    chain,
-    token,
-  });
-};
-
 const Receive = () => {
   const wallet = useWallet();
   const history = useHistory();
   const rbisource = useRbiSource();
   const [isShowAccount, setIsShowAccount] = useState(true);
+  const [isShowAddTestnetModal, setIsShowAddTestnetModal] = useState(false);
+  const { isDarkTheme } = useThemeMode();
 
   const account = useAccount();
-  const title = useReceiveTitle(history.location.search);
   const qs = useMemo(() => query2obj(history.location.search), [
     history.location.search,
   ]);
@@ -122,6 +111,35 @@ const Receive = () => {
       refreshDeps: [account?.address, account?.type],
     }
   );
+
+  const displayChains = useMemo(() => {
+    let list = getChainList('mainnet');
+    if (safeSupportChains) {
+      list = list.filter((item) => safeSupportChains.includes(item.enum));
+    }
+
+    const pinedList = [
+      CHAINS_ENUM.ETH,
+      CHAINS_ENUM.BASE,
+      CHAINS_ENUM.ARBITRUM,
+      CHAINS_ENUM.OP,
+      CHAINS_ENUM.BSC,
+    ];
+    list = sortBy(list, (item) => {
+      const idx = pinedList.indexOf(item.enum);
+      return idx === -1 ? pinedList.length + 1 : idx;
+    });
+    if (chain) {
+      list = [chain, ...list.filter((item) => item.enum !== chain.enum)];
+    }
+    return list;
+  }, [chain, safeSupportChains]);
+
+  const shownChains = useMemo(() => {
+    return displayChains.slice(0, 5);
+  }, [displayChains]);
+
+  const restChainCount = displayChains.length - shownChains.length;
 
   const handleCopyAddress = () => {
     matomoRequestEvent({
@@ -209,138 +227,182 @@ const Receive = () => {
     };
   }, [account?.type]);
   return (
-    <div className="page-receive bg-r-blue-default dark:bg-r-blue-disable relative">
-      <div className="page-nav">
-        <div
-          className="page-nav-left pointer"
-          onClick={() => {
-            history.goBack();
-          }}
-        >
-          <IconBack className="icon-back"></IconBack>
-        </div>
-        {isShowAccount && (
-          <div className="page-nav-content">
-            <div className="account">
-              <img
-                className="account-icon opacity-60"
-                src={
-                  WALLET_BRAND_CONTENT[account.brandName as string]?.image ||
-                  KEYRING_ICONS_WHITE[account.type as string]
-                }
-              />
-              <div className="account-content">
-                <div className="row">
-                  <div className="account-name" title={account.name}>
-                    {account.name}
-                  </div>
-                  <div
-                    className="account-balance truncate"
-                    title={splitNumberByStep((account.balance || 0).toFixed(2))}
-                  >
-                    ${splitNumberByStep((account.balance || 0).toFixed(2))}
-                  </div>
-                </div>
-                {account.type === KEYRING_CLASS.WATCH && (
-                  <div className="account-type">
-                    {t('global.watchModeAddress')}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        <div
-          className="page-nav-right pointer"
-          onClick={() => {
-            setIsShowAccount((v) => !v);
-          }}
-        >
-          {isShowAccount ? <img src={IconEye} /> : <img src={IconEyeHide} />}
-        </div>
-      </div>
-
-      <SeedPhraseBackupAlert
-        className={clsx(
-          'text-r-red-default bg-r-red-light rounded-[8px]',
-          'mb-[8px] mt-[-12px]'
-        )}
-      />
-      <OfflineChainNotify
-        className="receive-offline-chain-notify w-full"
-        itemClassName="rounded-[8px] mb-[8px]"
-      />
-
-      <div className="qr-card">
-        <div className="qr-card-header">
-          <div className="text-[17px] leading-[20px] font-medium text-r-neutral-title1 mb-[8px]">
-            {t('page.receive.receiveOn', {
-              token: qs.token || t('global.assets'),
-            })}
-          </div>
+    <>
+      <div className="page-receive bg-r-blue-default dark:bg-r-blue-disable relative">
+        <div className="page-nav">
           <div
-            className={clsx(
-              'px-[12px] py-[8px] bg-r-neutral-card-2 rounded-[8px]',
-              'inline-flex items-center',
-              'text-[13px] leading-[16px] font-medium text-r-neutral-title1',
-              'hover:bg-r-blue-light-1 hover:text-r-blue-default',
-              'cursor-pointer'
-            )}
+            className="page-nav-left pointer"
             onClick={() => {
-              setIsShowReceiveModal(true);
+              history.goBack();
             }}
           >
-            {chain?.logo ? (
-              <img
-                src={chain?.logo}
-                alt=""
-                className="w-[14px] h-[14px] mr-[4px]"
-              />
-            ) : null}
-            <div>{chain?.name || 'All EVM Chains'}</div>
-            <RcIconArrowRightCC />
+            <IconBack className="icon-back"></IconBack>
+          </div>
+          {isShowAccount && (
+            <div className="page-nav-content">
+              <div className="account">
+                <img
+                  className="account-icon opacity-60"
+                  src={
+                    WALLET_BRAND_CONTENT[account.brandName as string]?.image ||
+                    KEYRING_ICONS_WHITE[account.type as string]
+                  }
+                />
+                <div className="account-content">
+                  <div className="row">
+                    <div className="account-name" title={account.name}>
+                      {account.name}
+                    </div>
+                    <div
+                      className="account-balance truncate"
+                      title={splitNumberByStep(
+                        (account.balance || 0).toFixed(2)
+                      )}
+                    >
+                      ${splitNumberByStep((account.balance || 0).toFixed(2))}
+                    </div>
+                  </div>
+                  {account.type === KEYRING_CLASS.WATCH && (
+                    <div className="account-type">
+                      {t('global.watchModeAddress')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+          <div
+            className="page-nav-right pointer"
+            onClick={() => {
+              setIsShowAccount((v) => !v);
+            }}
+          >
+            {isShowAccount ? <img src={IconEye} /> : <img src={IconEyeHide} />}
           </div>
         </div>
-        <div className="qr-card-img">
-          {account?.address && <QRCode value={account.address} size={175} />}
+
+        <SeedPhraseBackupAlert
+          className={clsx(
+            'text-r-red-default bg-r-red-light rounded-[8px]',
+            'mb-[8px] mt-[-12px]'
+          )}
+        />
+        <OfflineChainNotify
+          className="receive-offline-chain-notify w-full"
+          itemClassName="rounded-[8px] mb-[8px]"
+        />
+
+        <div className="qr-card">
+          <div className="qr-card-header">
+            <div className="text-[17px] leading-[20px] font-medium text-r-neutral-title1">
+              {t('page.receive.receiveTitle', {
+                token: qs.token || t('global.assets'),
+              })}
+            </div>
+          </div>
+          <div className="qr-card-img">
+            {account?.address && <QRCode value={account.address} size={174} />}
+          </div>
+          <div className="qr-card-address">{account?.address}</div>
+          <button
+            type="button"
+            className="qr-card-btn"
+            onClick={handleCopyAddress}
+          >
+            <ThemeIcon
+              src={RcIconCopy}
+              className="icon-copy text-r-neutral-title-1"
+            />
+            {t('global.copyAddress')}
+          </button>
+          <div className="qr-card-divider" />
+          <div className="qr-card-chain">
+            <div className="qr-card-chain-label">
+              {t('page.receive.supportedChain')}
+            </div>
+            <div
+              className="qr-card-chain-list"
+              onClick={() => {
+                setIsShowReceiveModal(true);
+              }}
+            >
+              {shownChains.map((item) => (
+                <img
+                  key={item.enum}
+                  src={item.logo}
+                  alt={item.name}
+                  className="qr-card-chain-logo"
+                />
+              ))}
+              {restChainCount > 0 && (
+                <span className="qr-card-chain-count">+{restChainCount}</span>
+              )}
+              <RcIconArrowRightCC className="qr-card-chain-arrow" />
+            </div>
+          </div>
         </div>
-        <div className="qr-card-address text-13">{account?.address}</div>
-        <button
-          type="button"
-          className="qr-card-btn"
-          onClick={handleCopyAddress}
-        >
-          <ThemeIcon
-            src={RcIconCopy}
-            className="icon-copy text-r-neutral-title-1"
-          />
-          {t('global.copyAddress')}
-        </button>
-      </div>
-      <div className="page-receive-footer">
-        <img
-          src="/images/logo-white.svg"
-          className="h-[28px] opacity-50"
-          alt=""
+        {qs.isZero ? (
+          <footer className="text-center mt-[24px] text-[13px] leading-[16px] ">
+            <span
+              onClick={() => {
+                setIsShowAddTestnetModal(true);
+              }}
+              className="cursor-pointer text-r-neutral-title-2 underline underline-offset-auto"
+            >
+              {t('page.receive.addCustomNetwork')}
+            </span>
+          </footer>
+        ) : (
+          <div className="page-receive-footer hidden">
+            <img
+              src="/images/logo-white.svg"
+              className="h-[28px] opacity-50"
+              alt=""
+            />
+          </div>
+        )}
+        <ChainSelectorModal
+          className="receive-chain-select-modal"
+          showClosableIcon={false}
+          value={chainEnum}
+          visible={isShowReceiveModal}
+          showRPCStatus
+          onChange={(chain) => {
+            setChainEnum(chain);
+            setIsShowReceiveModal(false);
+          }}
+          onCancel={() => {
+            setIsShowReceiveModal(false);
+          }}
+          supportChains={safeSupportChains}
+          disabledTips={t(
+            'page.dashboard.GnosisWrongChainAlertBar.notDeployed'
+          )}
         />
       </div>
-      <ChainSelectorModal
-        className="receive-chain-select-modal"
-        showClosableIcon={false}
-        value={chainEnum}
-        visible={isShowReceiveModal}
-        showRPCStatus
-        onChange={(chain) => {
-          setChainEnum(chain);
-          setIsShowReceiveModal(false);
+      <EditCustomTestnetModal
+        ctx={{
+          ga: {
+            source: 'receive',
+          },
         }}
+        visible={isShowAddTestnetModal}
         onCancel={() => {
-          setIsShowReceiveModal(false);
+          setIsShowAddTestnetModal(false);
         }}
-        supportChains={safeSupportChains}
-        disabledTips={t('page.dashboard.GnosisWrongChainAlertBar.notDeployed')}
+        onConfirm={() => {
+          setIsShowAddTestnetModal(false);
+        }}
+        height={500}
+        maskStyle={
+          isDarkTheme
+            ? {
+                backgroundColor: 'transparent',
+              }
+            : undefined
+        }
       />
-    </div>
+    </>
   );
 };
 
