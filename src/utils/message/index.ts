@@ -9,6 +9,19 @@ import { nanoid } from 'nanoid';
 
 const pQueue = new PQueue({ concurrency: 1000 });
 
+type MessageErrorReporter = (error: unknown) => void;
+
+/**
+ * Message also runs in dapp pages / content-scripts, so it must not depend on
+ * any reporting SDK itself; hosts that have one (e.g. the background's Sentry)
+ * inject a reporter here to surface errors swallowed by the onRequest catch.
+ */
+let messageErrorReporter: MessageErrorReporter | undefined;
+
+export const setMessageErrorReporter = (reporter: MessageErrorReporter) => {
+  messageErrorReporter = reporter;
+};
+
 const sanitizeFeePayer = (feePayer: any) => {
   if (
     feePayer === null ||
@@ -191,6 +204,12 @@ abstract class Message extends EventEmitter {
         };
         e.code && (err.code = e.code);
         e.data && (err.data = e.data);
+
+        try {
+          messageErrorReporter?.(e);
+        } catch (reportError) {
+          // reporting must never break the response channel
+        }
       }
 
       this.send('response', { ident, res, err });
