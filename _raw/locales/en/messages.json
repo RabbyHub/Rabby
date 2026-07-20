@@ -845,11 +845,14 @@
       }
     },
     "receive": {
-      "receiveTitle": "Receive {{token}}",
+      "title": "Receive {{token}} on {{chain}}",
       "watchModeAlert1": "This is a Watch Mode address.",
       "watchModeAlert2": "Are you sure to use it to receive assets?",
-      "supportedChain": "Supported chain:",
-      "addCustomNetwork": "add custom network"
+      "receiveOn": "Receive {{token}} on",
+      "addAssets": "Add assets",
+      "receiveTitle": "Receive {{token}}",
+      "addCustomNetwork": "add custom network",
+      "supportedChain": "Supported chain:"
     },
     "sendToken": {
       "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",

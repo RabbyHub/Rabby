@@ -3,9 +3,9 @@
     "transactions": {
       "empty": {
         "title": "Không có giao dịch nào",
-        "desc": "Không tìm thấy giao dịch trên <1>các chuỗi được hỗ trợ</1>",
+        "desc": " Không tìm thấy giao dịch trên <1>các chuỗi được hỗ trợ</1>",
         "noTxInThreeMonth": "Không có lịch sử giao dịch trong 90 ngày",
-        "descThreeMonths": "Không có lịch sử giao dịch trong 90 ngày trên <2>các chain được hỗ trợ</2>"
+        "descThreeMonths": "Không có lịch sử giao dịch trong 90 ngày trên <2>các chuỗi được hỗ trợ</2>"
       },
       "explain": {
         "approve": "Phê duyệt {{amount}} {{symbol}} cho {{project}}",
@@ -36,18 +36,18 @@
       "showScamTips": "Hiển thị giao dịch lừa đảo"
     },
     "chainList": {
-      "mainnet": "Mainnets",
-      "testnet": "Testnets",
+      "mainnet": "Mạng chính",
+      "testnet": "Mạng thử nghiệm",
       "title": "{{count}} chuỗi được tích hợp"
     },
     "signTx": {
       "gasAccount": {
-        "totalCost": "Tổng chi phí:",
-        "currentTxCost": "Số lượng Gas đã gửi đến địa chỉ của bạn:",
-        "maxGas": "Max Gas:",
-        "estimatedGas": "Dự kiến Gas:",
-        "sendGas": "Gas chuyển cho bạn cho giao dịch hiện tại:",
-        "gasCost": "Chi phí gas để chuyển gas đến địa chỉ của bạn:",
+        "totalCost": "Tổng chi phí: ",
+        "currentTxCost": "Số lượng Gas đã gửi đến địa chỉ của bạn: ",
+        "maxGas": "Max Gas: ",
+        "estimatedGas": "Dự kiến Gas: ",
+        "sendGas": "Gas chuyển cho bạn cho giao dịch hiện tại: ",
+        "gasCost": "Chi phí gas để chuyển gas đến địa chỉ của bạn: ",
         "description": "Sử dụng GasAccount để thanh toán phí gas. Xem chi tiết thanh toán bên dưới:"
       },
       "balanceChange": {
@@ -67,7 +67,7 @@
       },
       "swap": {
         "slippageFailToLoad": "Không thể tải lên",
-        "slippageTolerance": "Tolerans trượt",
+        "slippageTolerance": "Mức trượt giá cho phép",
         "failLoadReceiveToken": "Không thể tải lên",
         "unknownAddress": "Địa chỉ không xác định",
         "valueDiff": "Giá trị khác biệt",
@@ -93,7 +93,7 @@
       },
       "swapLimitPay": {
         "maxPay": "Tối đa thanh toán",
-        "title": "Đổi hạn mức mã thông báo thanh toán"
+        "title": "Đổi hạn mức token thanh toán"
       },
       "send": {
         "sendToken": "Gửi token",
@@ -111,7 +111,7 @@
         "onMyWhitelist": "Trong danh sách trắng của tôi",
         "whitelistTitle": "Danh sách trắng",
         "fromMyPrivateKey": "Từ khóa riêng của tôi",
-        "fromMySeedPhrase": "Từ cụm từ hạt giống của tôi"
+        "fromMySeedPhrase": "Từ cụm từ khôi phục của tôi"
       },
       "tokenApprove": {
         "approveTo": "Chấp thuận để",
@@ -128,7 +128,7 @@
         "contractTrustValueTip": "Giá trị tin cậy đề cập đến tổng giá trị tài sản đã chi tiêu bởi hợp đồng này. Một giá trị tin cậy thấp cho thấy có thể có rủi ro hoặc không hoạt động trong 180 ngày."
       },
       "revokeTokenApprove": {
-        "revokeFrom": "Hủy bỏ từ",
+        "revokeFrom": "Bên được cấp quyền",
         "title": "Hủy phê duyệt token",
         "revokeToken": "Hủy bỏ token"
       },
@@ -220,8 +220,8 @@
       "safeTx": {
         "selfHostConfirm": {
           "button": "OK",
-          "title": "Chuyển sang dịch vụ An toàn của Rabby",
-          "content": "API an toàn không khả dụng. Chuyển sang dịch vụ Safe được triển khai bởi Rabby để giữ cho Safe của bạn hoạt động. <strong>Tất cả các người ký Safe phải sử dụng Rabby Wallet để ủy quyền giao dịch.</strong>"
+          "title": "Chuyển sang dịch vụ Safe của Rabby",
+          "content": "API Safe không khả dụng. Hãy chuyển sang dịch vụ Safe do Rabby triển khai để Safe của bạn tiếp tục hoạt động. <strong>Tất cả người ký Safe phải sử dụng Rabby Wallet để ủy quyền giao dịch.</strong>"
         }
       },
       "SafeNonceSelector": {
@@ -232,7 +232,7 @@
         },
         "optionGroup": {
           "recommendTitle": "Nonce được khuyến nghị",
-          "replaceTitle": "Thay thế giao dịch trong hàng đợi"
+          "replaceTitle": "Thay thế giao dịch trong hàng đợi "
         },
         "option": {
           "new": "Giao dịch mới"
@@ -249,7 +249,7 @@
       "coboSafeModificationRole": {
         "safeWalletTitle": "Safe{Wallet}",
         "descriptionTitle": "Mô tả",
-        "title": "Gửi sửa đổi vai trò an toàn"
+        "title": "Gửi thay đổi vai trò Safe"
       },
       "coboSafeModificationDelegatedAddress": {
         "title": "Gửi sửa đổi địa chỉ ủy quyền",
@@ -277,33 +277,33 @@
       "gasSelectorTitle": "Gas",
       "gasLimitModifyOnlyNecessaryAlert": "Chỉnh sửa chỉ khi cần thiết",
       "gasLimitEmptyAlert": "Vui lòng nhập giới hạn gas",
-      "myNativeTokenBalance": "Số dư Gas của tôi:",
+      "myNativeTokenBalance": "Số dư Gas của tôi: ",
       "gasLimitMinValueAlert": "Giới hạn gas phải lớn hơn 21000",
       "enoughSafeSigCollected": "Đã thu thập đủ chữ ký",
       "nativeTokenForGas": "Sử dụng token {{tokenName}} trên {{chainName}} để thanh toán gas",
-      "recommendGasLimitTip": "Est. {{est}}. Hiện tại {{current}}x, đề xuất",
+      "recommendGasLimitTip": "Est. {{est}}. Hiện tại {{current}}x, đề xuất ",
       "manuallySetGasLimitAlert": "Bạn đã thiết lập giới hạn Gas theo cách thủ công thành",
       "nftIn": "NFT trong",
       "gasMoreButton": "Thêm",
       "gasLimitNotEnough": "Gas Limit ít hơn 21000. Giao dịch không thể được gửi.",
       "gasNotRequireForSafeTransaction": "Phí gas không cần thiết cho các giao dịch Safe.",
-      "gasPriceTitle": "Gas Price (Gwei)",
+      "gasPriceTitle": "Giá gas (Gwei)",
       "multiSigChainNotMatch": "Địa chỉ đa chữ ký không nằm trên chuỗi này và không thể khởi tạo giao dịch.",
       "gasAccountForGas": "Sử dụng USD từ GasAccount của tôi để thanh toán gas",
-      "safeAddressNotSupportChain": "Địa chỉ an toàn hiện tại không được hỗ trợ trên chuỗi {{0}}.",
-      "gasPriceMedian": "Giá trị trung vị của 100 giao dịch on-chain gần nhất:",
+      "safeAddressNotSupportChain": "Địa chỉ Safe hiện tại không được hỗ trợ trên chuỗi {{0}}.",
+      "gasPriceMedian": "Giá trị trung vị của 100 giao dịch on-chain gần nhất: ",
       "nonceLowerThanExpect": "Nonce quá thấp, tối thiểu nên là {{0}}",
       "gasLimitLessThanGasUsed": "Gas Limit quá thấp. Có 95% khả năng giao dịch có thể thất bại.",
       "moreSafeSigNeeded": "Cần {{0}} chữ ký nữa để xác nhận",
       "gasLimitLessThanExpect": "Gas Limit quá thấp. Có 1% khả năng giao dịch có thể thất bại.",
       "hardwareSupport1559Alert": "Đảm bảo firmware của ví phần cứng của bạn đã được nâng cấp lên phiên bản hỗ trợ EIP 1559.",
-      "maxPriorityFee": "Max Priority Fee (Gwei)",
+      "maxPriorityFee": "Phí ưu tiên tối đa (Gwei)",
       "canOnlyUseImportedAddress": "Bạn không thể ký các giao dịch bằng địa chỉ chỉ xem.",
-      "wrapToken": "Wrap Token",
-      "eip1559Desc2": "Trong Rabby, Priority Fee (tip) = Max Fee - Base Fee. Sau khi bạn đặt Max Priority Fee, Base Fee sẽ được trừ trước, phần còn lại sẽ được tip cho miner.",
+      "wrapToken": "Bọc token",
+      "eip1559Desc2": "Trong Rabby, Priority Fee (tiền thưởng) = Max Fee - Base Fee. Sau khi bạn đặt Max Priority Fee, Base Fee sẽ được trừ trước và phần còn lại được trả cho thợ đào.",
       "safeAdminSigned": "Đã ký",
-      "unwrap": "Unwrap Token",
-      "eip1559Desc1": "Trên các chain hỗ trợ EIP-1559, Priority Fee là khoản tip cho miner để xử lý giao dịch của bạn. Giảm Priority Fee có thể giúp tiết kiệm chi phí gas cuối cùng, nhưng giao dịch có thể mất nhiều thời gian hơn để được xử lý.",
+      "unwrap": "Gỡ bọc token",
+      "eip1559Desc1": "Trên các chuỗi hỗ trợ EIP-1559, Priority Fee là khoản thưởng cho thợ đào để xử lý giao dịch của bạn. Giảm Priority Fee có thể giúp tiết kiệm chi phí gas cuối cùng, nhưng giao dịch có thể mất nhiều thời gian hơn để được xử lý.",
       "safeServiceNotAvailable": "Dịch vụ Safe hiện không khả dụng, vui lòng thử lại sau.",
       "nftCollection": "Bộ sưu tập NFT",
       "popularity": "Sự phổ biến",
@@ -312,17 +312,17 @@
       "unknownActionType": "Loại hành động không xác định",
       "contractAddress": "Địa chỉ hợp đồng",
       "protocolTitle": "Giao thức",
-      "noMark": "Không có dấu hiệu",
+      "noMark": "Không có nhãn",
       "viewRaw": "Xem thô",
       "trusted": "Được tin cậy",
       "interactContract": "Tương tác hợp đồng",
       "importedAddress": "Địa chỉ đã nhập",
-      "fakeTokenAlert": "Đây là một mã thông báo lừa đảo được đánh dấu bởi Rabby",
+      "fakeTokenAlert": "Đây là một token lừa đảo được đánh dấu bởi Rabby",
       "markRemoved": "Đánh dấu đã xóa",
       "neverTransacted": "Chưa bao giờ giao dịch trước đây",
       "unknownAction": "Loại Chữ Ký Không Xác Định",
       "neverInteracted": "Chưa từng tương tác trước đây",
-      "signTransactionOnChain": "Ký tên giao dịch {{chain}}",
+      "signTransactionOnChain": "Ký giao dịch trên {{chain}}",
       "blocked": "Bị chặn",
       "interacted": "Đã tương tác trước đây",
       "decodedTooltip": "Chữ ký này được giải mã bởi Rabby Wallet",
@@ -341,7 +341,7 @@
       "trustValue": "Giá trị tin cậy",
       "myMarkWithContract": "Dấu của tôi trên hợp đồng {{chainName}}",
       "firstOnChain": "Đầu tiên trên chuỗi",
-      "myMark": "Dấu ấn của tôi",
+      "myMark": "Nhãn của tôi",
       "addressTypeTitle": "Loại địa chỉ",
       "l2GasEstimateTooltip": "Ước tính gas cho chuỗi L2 không bao gồm phí gas L1. Phí thực tế sẽ cao hơn ước tính hiện tại.",
       "no": "Không",
@@ -354,20 +354,20 @@
       "yes": "Có",
       "primaryType": "Loại chính",
       "trustValueTitle": "Giá trị tin cậy",
-      "typedDataMessage": "Ký tên Dữ liệu Đã đánh máy",
+      "typedDataMessage": "Ký dữ liệu định kiểu",
       "addressSource": "Nguồn địa chỉ",
-      "maxPriorityFeeDisabledAlert": "Vui lòng đặt Gas Price trước.",
+      "maxPriorityFeeDisabledAlert": "Vui lòng đặt giá gas trước.",
       "label": "Nhãn",
       "contract": "Địa chỉ hợp đồng thông minh",
       "errorRetry": {
         "defaultTips": "Có điều gì đó không đúng. Vui lòng thử lại sau.",
         "gasLimitTooLow": "Gas Limit quá thấp",
-        "nonceTooLow": "Nonce quá thấp. Chúng tôi sẽ cập nhật nó thành {{nonce}}. Nhấn \"Retry\" để xác nhận và thử lại.",
+        "nonceTooLow": "Nonce quá thấp. Chúng tôi sẽ cập nhật thành {{nonce}}. Nhấn \"Thử lại\" để xác nhận và thử lại.",
         "gasExceedsBlockGasLimit": "Gas vượt quá giới hạn gas của khối. Vui lòng điều chỉnh và thử lại.",
         "alreadySubmitted": "Giao dịch đã được nộp. Phát hiện giao dịch trùng lặp.",
         "insufficient": "Số dư gas của bạn không đủ để trang trải phí gas mạng. Vui lòng thêm tiền vào gas và thử lại.",
         "nonceTooHigh": "Nonce quá cao. Vui lòng điều chỉnh nonce và thử lại.",
-        "gasPriceTooLow": "Giá gas quá thấp. Chúng tôi sẽ điều chỉnh nó tăng 30% để giúp giao dịch của bạn được xác nhận. Nhấn “Retry” để xác nhận và thử lại.",
+        "gasPriceTooLow": "Giá gas quá thấp. Chúng tôi sẽ tăng 30% để giúp giao dịch được xác nhận. Nhấn “Thử lại” để xác nhận và thử lại.",
         "InvalidTx": "Giao dịch không hợp lệ."
       },
       "addLiquidity": {
@@ -390,9 +390,9 @@
         "unavailable": "Số dư Gas của bạn không đủ",
         "GetFreeGasToSign": "Nhận Free Gas",
         "customRpcUnavailableTip": "RPC tùy chỉnh không được hỗ trợ cho Free Gas",
-        "walletConnectUnavailableTip": "Ví dụ ví di động kết nối qua WalletConnect không được hỗ trợ cho Free Gas.",
+        "walletConnectUnavailableTip": "Ví di động kết nối qua WalletConnect không thể sử dụng gas miễn phí.",
         "rabbyPayGas": "Rabby sẽ thanh toán cho gas cần thiết – chỉ cần ký vào thôi",
-        "watchUnavailableTip": "Địa chỉ chỉ xem không được hỗ trợ cho Free Gas"
+        "watchUnavailableTip": "Địa chỉ chỉ xem không thể sử dụng gas miễn phí"
       },
       "gasAccount": {
         "useGasAccount": "Sử dụng GasAccount",
@@ -414,7 +414,7 @@
         "chainSwitched": "Bạn đã chuyển sang một chuỗi khác trên ví di động. Vui lòng chuyển sang {{0}} trong ví di động.",
         "connectBeforeSign": "{{0}} chưa được kết nối với Rabby, vui lòng kết nối trước khi ký.",
         "notConnectToMobile": "Chưa kết nối với {{brand}}",
-        "sendingRequest": "Đang gửi yêu cầu xác nhận",
+        "sendingRequest": "Đang gửi yêu cầu ký",
         "latency": "Độ trễ",
         "connected": "Kết nối và sẵn sàng để ký",
         "connectedButCantSign": "Đã kết nối nhưng không thể ký.",
@@ -426,17 +426,17 @@
       },
       "addressTip": {
         "coolwallet": "Địa chỉ CoolWallet",
-        "seedPhrase": "Seed Phrase địa chỉ",
+        "seedPhrase": "Địa chỉ từ cụm từ khôi phục",
         "trezor": "Địa chỉ Trezor",
         "keystone": "Địa chỉ Keystone",
         "onekey": "Địa chỉ OneKey",
         "bitbox": "Địa chỉ BitBox02",
         "airgap": "Địa chỉ AirGap",
-        "privateKey": "Địa chỉ Khóa Riêng",
+        "privateKey": "Địa chỉ khóa riêng",
         "watchAddress": "Không thể ký với địa chỉ chỉ xem",
-        "safe": "Địa chỉ an toàn",
+        "safe": "Địa chỉ Safe",
         "coboSafe": "Cobo Argus Địa chỉ",
-        "seedPhraseWithPassphrase": "Câu địa chỉ Seed Phrase (Mật khẩu)"
+        "seedPhraseWithPassphrase": "Địa chỉ từ cụm từ khôi phục (cụm mật khẩu)"
       },
       "qrcode": {
         "txFailed": "Không thể tạo ra",
@@ -457,7 +457,7 @@
         "siging": "Gửi yêu cầu ký",
         "shouldRetry": "Đã xảy ra lỗi. Vui lòng thử lại.",
         "txRejected": "Giao dịch bị từ chối",
-        "mismatchedWalletError": "Ví dụ ví không khớp",
+        "mismatchedWalletError": "Ví không khớp",
         "verifyPasswordError": "Lỗi chữ ký, vui lòng thử lại sau khi mở khóa.",
         "signWith": "Chuyển sang {{method}} để ký",
         "shouldOpenKeystoneHomePageError": "Đảm bảo rằng Keystone 3 Pro của bạn nằm trên trang chủ",
@@ -486,7 +486,7 @@
       "keystoneNotConnected": "Keystone không được kết nối",
       "ignoreAll": "Bỏ qua tất cả",
       "keystoneConnected": "Keystone đã kết nối",
-      "signAndSubmitButton": "Đăng ký",
+      "signAndSubmitButton": "Ký",
       "processRiskAlert": "Vui lòng xử lý thông báo trước khi ký.",
       "gridPlusConnected": "GridPlus đã được kết nối",
       "gridPlusNotConnected": "GridPlus không được kết nối",
@@ -495,7 +495,7 @@
       "connecting": "Kết nối...",
       "beginSigning": "Bắt đầu quá trình ký",
       "imKeyConnected": "imKey đã được kết nối",
-      "testnet": "Testnet",
+      "testnet": "Mạng thử nghiệm",
       "resend": "Thử lại",
       "cancelConnection": "Hủy kết nối",
       "imKeyNotConnected": "imKey chưa được kết nối",
@@ -548,7 +548,7 @@
         "operationDecoded": "Hoạt động được giải mã từ thông điệp"
       },
       "safeCantSignText": "Đây là một địa chỉ Safe, và nó không thể được sử dụng để ký văn bản.",
-      "signTypeDataOnChain": "Ký tên Dữ liệu đã điền {{chain}}",
+      "signTypeDataOnChain": "Ký dữ liệu định kiểu trên {{chain}}",
       "safeCantSignTypedData": "Đây là một địa chỉ Safe, và nó chỉ hỗ trợ ký dữ liệu kiểu EIP-712 hoặc chuỗi."
     },
     "activities": {
@@ -566,7 +566,7 @@
           "speedUp": "Tăng tốc"
         },
         "tips": {
-          "pendingBroadcastRetryBtn": "Re-broadcast",
+          "pendingBroadcastRetryBtn": "Phát lại giao dịch",
           "pendingBroadcastBtn": "Phát sóng ngay bây giờ",
           "pendingDetail": "Chỉ một giao dịch sẽ được hoàn thành, và đó gần như luôn luôn là giao dịch có giá gas cao nhất.",
           "pendingBroadcastRetry": "Phát sóng không thành công. Lần thử cuối: {{pushAt}}",
@@ -610,7 +610,7 @@
               "desc": "Giao dịch mới để hủy, cần gas"
             },
             "removeLocalPendingTx": {
-              "title": "Xóa Đang Chờ Tại Địa Phương",
+              "title": "Xóa giao dịch chờ trên thiết bị",
               "desc": "Xóa giao dịch đang chờ từ giao diện"
             }
           },
@@ -639,12 +639,12 @@
           "alert": "Nonce #{{nonce}} bị bỏ qua trên chuỗi {{chainName}}. Điều này có thể gây ra các giao dịch đang chờ phía trước. <5></5> <6>Gửi một tx</6> <7></7> trên chuỗi để giải quyết."
         },
         "PredictTime": {
-          "failed": "Dự đoán thời gian đóng gói không thành công",
-          "noTime": "Thời gian đóng gói đang được dự đoán",
-          "time": "Dự kiến sẽ được đóng gói trong {{time}}"
+          "failed": "Dự đoán thời gian xác nhận thất bại",
+          "noTime": "Đang ước tính thời gian đưa vào block",
+          "time": "Dự kiến được đưa vào block trong {{time}}"
         },
         "CancelTxConfirmPopup": {
-          "title": "Xóa Lịch Sử Đợi Tại Địa Phương",
+          "title": "Xóa giao dịch chờ trên thiết bị",
           "desc": "Điều này sẽ xóa giao dịch đang chờ từ giao diện của bạn. Bạn sau đó có thể khởi động một giao dịch mới.",
           "warning": "Giao dịch đã bị xóa có thể vẫn được xác nhận trên chuỗi trừ khi nó bị thay thế."
         },
@@ -657,14 +657,13 @@
         },
         "label": "Văn bản"
       },
-      "title": "Tài liệu Chữ ký"
+      "title": "Lịch sử chữ ký"
     },
     "receive": {
       "watchModeAlert1": "Đây là một địa chỉ Chế độ Theo dõi.",
-      "receiveTitle": "Nhận {{token}}",
+      "title": "Nhận {{token}} trên {{chain}}",
       "watchModeAlert2": "Bạn có chắc chắn sử dụng nó để nhận tài sản không?",
-      "supportedChain": "Chuỗi được hỗ trợ:",
-      "addCustomNetwork": "Thêm mạng tùy chỉnh"
+      "receiveOn": "Nhận {{token}} trên"
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -757,13 +756,13 @@
       "blockedTransaction": "Giao dịch bị chặn",
       "blockedTransactionContent": "Giao dịch này tương tác với một địa chỉ nằm trong danh sách trừng phạt của OFAC.",
       "selectFromAddress": "Chọn từ Địa chỉ",
-      "noSupprotTokenForDex": "Mã thông báo này có thể không được sàn giao dịch này hỗ trợ. Hãy kiểm tra trước khi tiếp tục để tránh mất mát.",
+      "noSupprotTokenForDex": "Token này có thể không được sàn giao dịch này hỗ trợ. Hãy kiểm tra trước khi tiếp tục để tránh mất mát.",
       "noSupportTokenForChain": "Địa chỉ người nhận là địa chỉ hợp đồng trên một chuỗi khác. Kiểm tra trước khi tiếp tục để tránh mất mát.",
       "noSupprotTokenForSafe": "Địa chỉ Safe bạn đang gửi token đến không được triển khai trên chuỗi này. Kiểm tra trước khi tiếp tục để tránh bị mất mát.",
       "selectToken": "Chọn Token",
-      "noSupprotTokenForSafe_short": "Địa chỉ an toàn chưa được triển khai trên chuỗi này",
+      "noSupprotTokenForSafe_short": "Địa chỉ Safe chưa được triển khai trên chuỗi này ",
       "noSupprotTokenForDex_short": "Không được hỗ trợ bởi sàn giao dịch này",
-      "noSupportTokenForChain_short": "Địa chỉ hợp đồng chưa được triển khai trên chuỗi này",
+      "noSupportTokenForChain_short": "Địa chỉ hợp đồng chưa được triển khai trên chuỗi này ",
       "accountSelectorModal": {
         "title": "Chọn địa chỉ"
       },
@@ -815,8 +814,8 @@
         "title": "Phê duyệt trên {{ address }}"
       },
       "tab-switch": {
-        "assets": "Bởi Tài sản",
-        "contract": "Bằng Hợp Đồng",
+        "assets": "Theo tài sản",
+        "contract": "Theo hợp đồng",
         "eip-7702": "EIP-7702"
       },
       "component": {
@@ -841,8 +840,8 @@
           "btnText_other": "Hủy bỏ ({{count}})",
           "btnText_zero": "Hủy bỏ",
           "btnText_one": "Thu hồi ({{count}})",
-          "notSupport7702Title": "Địa chỉ loại không được hỗ trợ",
-          "notSupport7702Content": "Việt văn: Việc thu hồi các ủy quyền EIP-7702 chỉ được hỗ trợ cho các địa chỉ khóa riêng tư hoặc cụm từ hạt giống."
+          "notSupport7702Title": "Loại địa chỉ không được hỗ trợ",
+          "notSupport7702Content": "Việc thu hồi ủy quyền EIP-7702 chỉ được hỗ trợ cho địa chỉ dùng khóa riêng hoặc cụm từ khôi phục."
         },
         "ViewMore": {
           "text": "Xem thêm"
@@ -862,9 +861,9 @@
             "revokeTrends": "Xu hướng thu hồi 24h"
           },
           "columnTip": {
-            "contractTrustValueWarning": "Giá trị niềm tin hợp đồng < $100,000",
+            "contractTrustValueWarning": "Giá trị tin cậy hợp đồng < $100,000",
             "contractTrustValueDanger": "Giá trị tin cậy của hợp đồng < $10,000",
-            "contractTrustValue": "Giá trị niềm tin đề cập đến tổng giá trị tài sản đã chi tiêu bởi hợp đồng này. Một giá trị niềm tin thấp cho thấy hoặc là rủi ro hoặc là không hoạt động trong 180 ngày."
+            "contractTrustValue": "Giá trị tin cậy đề cập đến tổng giá trị tài sản đã chi tiêu bởi hợp đồng này. Một giá trị niềm tin thấp cho thấy hoặc là rủi ro hoặc là không hoạt động trong 180 ngày."
           }
         },
         "byAssets": {
@@ -872,7 +871,7 @@
             "type": "Kiểu",
             "asset": "Tài sản",
             "myApprovalTime": "Thời gian phê duyệt của tôi",
-            "approvedSpender": "Người chi tiêu được phê duyệt",
+            "approvedSpender": "Bên được cấp quyền",
             "approvedAmount": "Số tiền được phê duyệt"
           },
           "columnCell": {
@@ -895,7 +894,7 @@
         "unSelectAll": "Bỏ chọn tất cả",
         "subTitleContract": "Đã phê duyệt cho các hợp đồng sau",
         "selectAll": "Chọn tất cả",
-        "tooltipPermit2": "Sự phê duyệt này được phê duyệt qua hợp đồng Permit2:  \n{{ permit2Id }}",
+        "tooltipPermit2": "Sự phê duyệt này được phê duyệt qua hợp đồng Permit2:\n{{ permit2Id }}",
         "subTitleTokenAndNFT": "Token và NFT đã được phê duyệt"
       },
       "revokeModal": {
@@ -912,13 +911,13 @@
         "resume": "Tiếp tục",
         "approvalCount_zero": "{{count}} phê duyệt",
         "cancelTitle": "Hủy các yêu cầu thu hồi còn lại",
-        "revoked": "Revoked:",
+        "revoked": "Đã thu hồi:",
         "cancelBody": "Nếu bạn đóng trang này, các yêu cầu hủy bỏ còn lại sẽ không được thực hiện.",
         "done": "Xong",
         "pause": "Tạm dừng",
         "confirmRevokeLedger": "Sử dụng địa chỉ Ledger, bạn có thể thu hồi hàng loạt {{count}} phê duyệt chỉ với 1 cú nhấp chuột.",
         "defaultFailed": "Giao dịch thất bại",
-        "confirmRevokePrivateKey": "Bằng cách sử dụng cụm từ hạt giống hoặc địa chỉ khóa riêng, bạn có thể thu hồi {{count}} quyền phê duyệt chỉ với 1 cú nhấp chuột.",
+        "confirmRevokePrivateKey": "Bằng cách sử dụng cụm từ khôi phục hoặc địa chỉ khóa riêng, bạn có thể thu hồi {{count}} quyền phê duyệt chỉ với 1 cú nhấp chuột.",
         "confirmTitle": "Hủy nhiều lần với một cú nhấp chuột",
         "simulationFailed": "Mô phỏng không thành công",
         "paused": "Tạm dừng",
@@ -931,7 +930,7 @@
         "ledgerAlert": "Vui lòng mở ứng dụng Ethereum trên thiết bị Ledger của bạn",
         "useGasAccount": "Số dư gas của bạn thấp. GasAccount của bạn sẽ chi trả phí gas.",
         "ledgerSending": "Gửi yêu cầu ký ({{current}}/{{total}})",
-        "ledgerConfirmTitle": "Batch Revoke với Ledger",
+        "ledgerConfirmTitle": "Thu hồi hàng loạt bằng Ledger",
         "revokeWithOneKey": "Bắt đầu thu hồi với OneKey",
         "oneKeySended": "Vui lòng ký yêu cầu trên OneKey ({{current}}/{{total}})",
         "oneKeySending": "Đang gửi yêu cầu ký ({{current}}/{{total}})",
@@ -942,7 +941,7 @@
       "Amount": "Số tiền",
       "Value": "Giá trị",
       "payment": "Thanh toán nạp Gas",
-      "Select-payment-token": "Chọn mã thông báo thanh toán",
+      "Select-payment-token": "Chọn token thanh toán",
       "Confirm": "Xác nhận",
       "title": "Gas Top Up Ngay Lập Tức",
       "Loading_Tokens": "Đang tải Token...",
@@ -964,10 +963,10 @@
       "rabbyFee": {
         "wallet": "Ví",
         "rate": "Tỷ lệ phí",
-        "title": "Rabby phí",
+        "title": "Phí Rabby",
         "button": "Đã hiểu",
         "bridgeDesc": "Rabby Wallet sẽ luôn tìm ra tỷ lệ tốt nhất có thể từ các nhà tổng hợp hàng đầu và xác minh độ tin cậy của các ưu đãi của họ. Rabby tính phí 0,25%, khoản phí này sẽ tự động được bao gồm trong báo giá.",
-        "swapDesc": "Rabby Wallet luôn tìm tỷ giá tốt nhất từ các aggregator hàng đầu và xác minh độ tin cậy của báo giá. Rabby tính phí 0,25% (0% cho Wrap), khoản phí này được tự động bao gồm trong quote."
+        "swapDesc": "Rabby Wallet luôn tìm tỷ giá tốt nhất từ các trình tổng hợp hàng đầu và xác minh độ tin cậy của báo giá. Rabby tính phí 0,25% (0% khi bọc token), khoản phí này được tự động tính trong báo giá."
       },
       "lowCreditModal": {
         "title": "Token này có giá trị tín dụng thấp.",
@@ -983,13 +982,13 @@
       "actual-slippage": "Trượt giá thực tế:",
       "Completed": "Hoàn tất",
       "get-quotes": "Nhận báo giá",
-      "slippage_tolerance": "Toleransi slippage:",
+      "slippage_tolerance": "Mức trượt giá cho phép:",
       "approve-swap": "Phê duyệt và Hoán đổi",
       "approve-x-symbol": "Phê duyệt {{symbol}}",
       "not-supported": "Không được hỗ trợ",
       "amount-in": "Số lượng trong {{symbol}}",
       "swap-via-x": "Hoán đổi qua {{name}}",
-      "no-fee-for-wrap": "Không có phí Rabby cho Wrap",
+      "no-fee-for-wrap": "Không tính phí Rabby khi bọc token",
       "to": "Đến",
       "slippage-adjusted-refresh-quote": "Điều chỉnh trượt giá. Làm mới báo giá.",
       "testnet-is-not-supported": "Mạng tùy chỉnh không được hỗ trợ",
@@ -1006,9 +1005,9 @@
       "edit": "Chỉnh sửa",
       "rabby-fee": "Phí Rabby",
       "est-payment": "Est. Thanh toán:",
-      "no-slippage-for-wrap": "Không trượt giá cho Wrap",
+      "no-slippage-for-wrap": "Bọc token không bị trượt giá",
       "hidden-no-quote-rates_other": "{{count}} tỷ lệ không khả dụng",
-      "wrap-contract": "Wrap Contract",
+      "wrap-contract": "Hợp đồng wrap",
       "best": "Tốt nhất",
       "rates-from-cex": "Tỷ giá từ CEX",
       "hidden-no-quote-rates_one": "{{count}} tỷ lệ không khả dụng",
@@ -1024,17 +1023,17 @@
       "need-to-approve-token-before-swap": "Cần chấp thuận token trước khi hoán đổi",
       "Gas-fee-too-high": "Phí Gas quá cao",
       "there-is-no-fee-and-slippage-for-this-trade": "Giao dịch này không bị trượt giá.",
-      "directlySwap": "Wrap token {{symbol}} trực tiếp bằng smart contract",
+      "directlySwap": "Bọc token {{symbol}} trực tiếp qua hợp đồng thông minh",
       "fail-to-simulate-transaction": "Không thể mô phỏng giao dịch",
       "tradingSettingTips": "{{viewCount}} sàn giao dịch cung cấp báo giá, và {{tradeCount}} cho phép giao dịch",
       "approve-tips": "1.Chấp thuận → 2.Hoán đổi",
-      "preferMEVTip": "Bật tính năng \"MEV Guarded\" cho các giao dịch hoán đổi Ethereum để giảm rủi ro tấn công sandwich. Lưu ý: tính năng này không được hỗ trợ nếu bạn sử dụng RPC tùy chỉnh hoặc địa chỉ wallet connect.",
+      "preferMEVTip": "Bật tính năng \"MEV Guarded\" cho giao dịch hoán đổi Ethereum để giảm rủi ro tấn công sandwich. Lưu ý: tính năng này không được hỗ trợ nếu bạn sử dụng RPC tùy chỉnh hoặc địa chỉ WalletConnect.",
       "est-difference": "Chênh lệch ước tính:",
       "QuoteLessWarning": "Số tiền nhận được được ước tính từ mô phỏng giao dịch của Rabby. Đề nghị được cung cấp bởi dex là {{receive}}. Bạn sẽ nhận được {{diff}} ít hơn so với đề nghị mong đợi.",
-      "usd-after-fees": "≈ {{usd}}",
-      "this-exchange-is-not-enabled-to-trade-by-you": "Giao dịch này không được phép thực hiện bởi bạn.",
+      "usd-after-fees": "≈ {{usd}} ",
+      "this-exchange-is-not-enabled-to-trade-by-you": "Bạn không thể giao dịch qua sàn này.",
       "view-quotes": "Xem báo giá",
-      "slippage-tolerance": "Toleran trượt",
+      "slippage-tolerance": "Mức trượt giá cho phép",
       "fetch-best-quote": "Lấy báo giá tốt nhất",
       "exchanges": "Sàn giao dịch",
       "max": "TỐI ĐA",
@@ -1049,14 +1048,14 @@
       "enable-exchanges": "Kích hoạt Giao dịch",
       "actual": "Thực tế:",
       "select-token": "Chọn Token",
-      "no-fees-for-wrap": "Không có phí Rabby cho Wrap",
+      "no-fees-for-wrap": "Không tính phí Rabby khi bọc token",
       "cex": "Cex",
       "two-step-approve": "Ký 2 giao dịch để thay đổi quyền hạn",
       "transaction-might-be-frontrun-because-of-high-slippage-tolerance": "Giao dịch có thể bị frontrun vì độ trượt giá cao.",
       "two-step-approve-details": "Token USDT yêu cầu 2 giao dịch để thay đổi quyền cho phép. Đầu tiên, bạn cần đặt lại quyền cho phép về không, và chỉ sau đó đặt giá trị quyền cho phép mới.",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Slippage thấp có thể gây ra giao dịch bị thất bại do sự biến động cao.",
       "tradingSettingTip2": "2. Rabby không chịu trách nhiệm về bất kỳ rủi ro nào phát sinh từ hợp đồng của các sàn giao dịch",
-      "i-understand-and-accept-it": "Tôi hiểu và chấp nhận điều đó",
+      "i-understand-and-accept-it": "Tôi hiểu và đồng ý",
       "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Ưu đãi được chọn khác xa với tỷ lệ hiện tại, có thể gây ra tổn thất lớn.",
       "process-with-two-step-approve": "Tiến hành phê duyệt hai bước",
       "recommend-slippage": "Để ngăn chặn việc chạy trước, chúng tôi khuyên bạn nên đặt mức trượt giá dưới <2>{{ slippage }}</2>%",
@@ -1064,7 +1063,7 @@
       "Auto": "Tự động",
       "No-available-quote": "Không có báo giá nào khả dụng",
       "source": "Nguồn",
-      "loss-tips": "Bạn đang mất {{usd}}. Hãy thử một số tiền nhỏ hơn trong một thị trường nhỏ.",
+      "loss-tips": "Bạn sẽ lỗ {{usd}}. Với thị trường thanh khoản thấp, hãy thử số tiền nhỏ hơn.",
       "no-quote-found": "Không tìm thấy báo giá",
       "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục",
       "approve": "Chấp thuận",
@@ -1079,13 +1078,13 @@
       "settingModal": {
         "confirmModal": {
           "title": "Bật giao dịch với Aggregator này",
-          "i-understand-and-accept-it": "Tôi hiểu và chấp nhận điều đó",
+          "i-understand-and-accept-it": "Tôi hiểu và đồng ý",
           "tip2": "2. Rabby không chịu trách nhiệm cho bất kỳ rủi ro nào phát sinh từ hợp đồng của nhà tổng hợp này.",
           "tip1": "1. Khi được kích hoạt, bạn sẽ tương tác trực tiếp với hợp đồng từ trình tổng hợp này."
         },
         "confirm": "Xác nhận",
-        "SupportedBridge": "Cầu được hỗ trợ:",
-        "title": "Kích hoạt Bridge Aggregators để giao dịch"
+        "SupportedBridge": "Cầu nối được hỗ trợ:",
+        "title": "Bật trình tổng hợp cầu nối để giao dịch"
       },
       "tokenPairDrawer": {
         "tokenPair": "Cặp Token",
@@ -1095,7 +1094,7 @@
       },
       "history": "Lịch sử cầu",
       "Completed": "Hoàn thành",
-      "title": "Cầu",
+      "title": "Cầu nối",
       "From": "Từ",
       "To": "Đến",
       "Select": "Chọn",
@@ -1106,7 +1105,7 @@
       "no-quote-found": "Không tìm thấy báo giá. Vui lòng thử các cặp token khác.",
       "gas-fee": "Phí gas: {{gasUsed}}",
       "the-following-bridge-route-are-found": "Tìm thấy lộ trình sau đây",
-      "Balance": "Số dư:",
+      "Balance": "Số dư: ",
       "no-quote": "Không báo giá",
       "actual": "Thực tế:",
       "pendingTip": "Tx đã được gửi. Nếu tx đang chờ lâu, bạn có thể thử xóa trạng thái chờ trong cài đặt.",
@@ -1114,18 +1113,18 @@
       "getRoutes": "Lấy các lộ trình",
       "bridge-via-x": "Bridge trên {{name}}",
       "est-payment": "Est. Thanh toán:",
-      "estimated-value": "≈ {{value}}",
+      "estimated-value": "≈ {{value}} ",
       "detail-tx": "Chi tiết",
       "recommendFromToken": "Bridge từ <1></1> cho một báo giá hiện có",
-      "bridgeTo": "Cầu đến",
+      "bridgeTo": "Cầu nối đến",
       "est-difference": "Chênh lệch ước tính:",
-      "aggregator-not-enabled": "Trình tổng hợp này không được bạn bật để giao dịch.",
+      "aggregator-not-enabled": "Bạn không thể giao dịch qua trình tổng hợp này.",
       "price-impact": "Tác động giá",
       "tokenPairPlaceholder": "Chọn Cặp Token",
       "est-receiving": "Est. Nhận:",
       "best": "Tốt nhất",
       "approve-and-bridge": "Phê duyệt và Cầu nối",
-      "unlimited-allowance": "Số dư không giới hạn",
+      "unlimited-allowance": "Hạn mức không giới hạn",
       "no-route-found": "Không tìm thấy đường dẫn",
       "approve-x-symbol": "Chấp thuận {{symbol}}",
       "insufficient-balance": "Số dư không đủ",
@@ -1136,8 +1135,8 @@
       "BridgeTokenPair": "Cặp Token Bridge",
       "need-to-approve-token-before-bridge": "Cần phê duyệt token trước khi chuyển đổi.",
       "Amount": "Số lượng",
-      "rabby-fee": "Rabby phí",
-      "loss-tips": "Bạn đang mất {{usd}}. Hãy thử một số tiền khác.",
+      "rabby-fee": "Phí Rabby",
+      "loss-tips": "Bạn sẽ lỗ {{usd}}. Hãy thử số tiền khác.",
       "price-expired-refresh-route": "Giá đã hết hạn. Làm mới lộ trình.",
       "via-bridge": "qua {{bridge}}",
       "max-tips": "Giá trị này được tính bằng cách trừ chi phí gas cho cầu.",
@@ -1158,7 +1157,7 @@
         "beReturnFailed": "Cầu nối không thành công. Tài sản của bạn đã được hoàn trả.",
         "receivedDifferentTokenFromSource": "Cầu nối thất bại. Một token khác đã được trả về trên chuỗi nguồn.",
         "longTimeNoReceive": "Mạng đang bận. Điều này có thể mất thời gian hơn bình thường. Vui lòng chờ đợi một cách kiên nhẫn.",
-        "receivedDifferentTokenNeedSwap": "Bạn đã nhận một mã thông báo khác. Bạn có thể trao đổi nó với mã thông báo mà bạn đã chọn.",
+        "receivedDifferentTokenNeedSwap": "Bạn đã nhận một token khác. Bạn có thể trao đổi nó với token mà bạn đã chọn.",
         "sendStatus": "Gửi trạng thái",
         "swapStatus": "Trạng thái hoán đổi"
       },
@@ -1174,42 +1173,42 @@
       "update-balance-data": "Cập nhật dữ liệu số dư",
       "manage-address": "Quản lý Địa chỉ",
       "cancel": "Hủy bỏ",
-      "addressTypeTip": "Nhập khẩu bởi {{type}}",
+      "addressTypeTip": "Được nhập bằng {{type}}",
       "deleted": "Xóa bỏ",
       "current-address": "Địa chỉ hiện tại",
       "delete-desc": "Trước khi xóa, hãy ghi nhớ những điểm sau để hiểu cách bảo vệ tài sản của bạn.",
-      "delete-checklist-2": "Tôi xác nhận rằng tôi đã sao lưu private key hoặc Seed Phrase và tôi đã sẵn sàng để xóa nó bây giờ.",
-      "delete-checklist-1": "Tôi hiểu rằng nếu tôi xóa địa chỉ này, Khóa Riêng và Cụm Hạt tương ứng của địa chỉ này sẽ bị xóa và Rabby sẽ KHÔNG thể phục hồi nó.",
+      "delete-checklist-2": "Tôi xác nhận đã sao lưu khóa riêng hoặc cụm từ khôi phục và sẵn sàng xóa.",
+      "delete-checklist-1": "Tôi hiểu rằng nếu xóa địa chỉ này, khóa riêng và cụm từ khôi phục tương ứng cũng sẽ bị xóa, và Rabby KHÔNG thể khôi phục chúng.",
       "address-management": "Quản lý Địa chỉ",
       "confirm-delete": "Xác nhận xóa",
-      "passphraseError": "Mật khẩu không hợp lệ",
+      "passphraseError": "Cụm mật khẩu không hợp lệ",
       "sort-address": "Sắp xếp Địa chỉ",
       "add-address": "Thêm địa chỉ",
       "sort-by-balance": "Sắp xếp theo số dư",
       "sort-by-address-note": "Sắp xếp theo ghi chú địa chỉ",
       "delete-private-key-modal-title_other": "Xóa {{count}} địa chỉ khóa riêng",
       "addNewAddress": "Thêm Địa Chỉ Mới",
-      "seed-phrase": "Cụm từ hạt giống",
-      "delete-seed-phrase-title_other": "Xóa cụm từ hạt giống và {{count}} địa chỉ của nó",
+      "seed-phrase": "Cụm từ khôi phục",
+      "delete-seed-phrase-title_other": "Xóa cụm từ khôi phục và {{count}} địa chỉ của nó",
       "enterPassphraseTitle": "Nhập cụm mật khẩu để ký",
       "private-key": "Khóa riêng",
-      "backup-seed-phrase": "Sao lưu cụm từ hạt giống",
-      "delete-seed-phrase-title_one": "Xóa cụm từ hạt giống và {{count}} địa chỉ của nó",
-      "delete-empty-seed-phrase": "Xóa cụm từ hạt giống và địa chỉ 0 của nó",
+      "backup-seed-phrase": "Sao lưu cụm từ khôi phục",
+      "delete-seed-phrase-title_one": "Xóa cụm từ khôi phục và {{count}} địa chỉ của nó",
+      "delete-empty-seed-phrase": "Xóa cụm từ khôi phục và địa chỉ 0 của nó",
       "delete-title_one": "Xóa {{count}} địa chỉ {{brand}}",
       "hd-path": "HD path:",
-      "no-address-under-seed-phrase": "Bạn chưa nhập bất kỳ địa chỉ nào dưới cụm từ hạt giống này.",
-      "delete-all-addresses-and-the-seed-phrase": "Xóa tất cả địa chỉ và cụm từ hạt giống",
+      "no-address-under-seed-phrase": "Bạn chưa nhập bất kỳ địa chỉ nào dưới cụm từ khôi phục này.",
+      "delete-all-addresses-and-the-seed-phrase": "Xóa tất cả địa chỉ và cụm từ khôi phục",
       "enterThePassphrase": "Nhập cụm mật khẩu",
       "sort-by-address-type": "Sắp xếp theo loại địa chỉ",
       "delete-title_other": "Xóa {{count}} địa chỉ {{brand}}",
-      "seed-phrase-delete-title": "Xóa cụm từ hạt giống?",
+      "seed-phrase-delete-title": "Xóa cụm từ khôi phục?",
       "delete-all-addresses-but-keep-the-seed-phrase": "Xóa tất cả các địa chỉ, nhưng giữ lại cụm từ khôi phục",
-      "delete-seed-phrase": "Xóa cụm từ hạt giống",
+      "delete-seed-phrase": "Xóa cụm từ khôi phục",
       "CurrentDappAddress": {
-        "desc": "Đổi địa chỉ Dapp\n"
+        "desc": "Đổi địa chỉ DApp"
       },
-      "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ hạt giống.",
+      "noSeedPhraseAddress": "Không có địa chỉ nào được thêm cho cụm từ khôi phục này. Bạn có thể thêm một địa chỉ hoặc xóa cụm từ khôi phục.",
       "watch-address": "Chỉ xem",
       "deleteSuccess": "Xóa thành công",
       "seedPhraseNotBackedUp": "Ví không được sao lưu",
@@ -1226,12 +1225,12 @@
           "transactions": "Giao dịch",
           "queue": "Hàng đợi",
           "ecology": "Hệ sinh thái",
-          "bridge": "Cầu",
+          "bridge": "Cầu nối",
           "rabbyPoints": "Rabby Points",
-          "gasTopUp": "Gas Top Up",
+          "gasTopUp": "Nạp gas",
           "manageAddress": "Quản lý Địa chỉ",
           "approvals": "Phê duyệt",
-          "more": "Hơn nữa",
+          "more": "Thêm",
           "feedback": "Phản hồi",
           "perps": "Perps",
           "gasAccount": "GasAccount",
@@ -1239,8 +1238,8 @@
           "setting": "Cài đặt",
           "dapps": "Dapps",
           "settings": "Cài đặt",
-          "perpsPositions_other": "{{count}} Vị trí",
-          "perpsPositions_one": "{{count}} Vị trí",
+          "perpsPositions_other": "{{count}} vị thế",
+          "perpsPositions_one": "{{count}} vị thế",
           "lending": "Cho vay",
           "dragTip": "Tính năng nhấn giữ để sắp xếp lại",
           "convertDust": "Chuyển đổi Dust",
@@ -1264,12 +1263,12 @@
         "missingDataTooltip": "Số dư có thể không được cập nhật do sự cố mạng hiện tại với {{text}}.",
         "soon": "Sớm",
         "transactionsNeedToSign": "giao dịch cần ký",
-        "importType": "Nhập khẩu bởi {{type}}",
+        "importType": "Được nhập bằng {{type}}",
         "rabbyIsInUseAndMetamaskIsBanned": "Rabby đang được sử dụng và Metamask bị cấm",
-        "chainEnd": "chuỗi",
-        "chain": "chuỗi,",
+        "chainEnd": " chuỗi",
+        "chain": " chuỗi, ",
         "pendingCountPlural": "{{countStr}} Đang chờ xử lý",
-        "appChainTips": "Tài khoản Hyperliquid không được bao gồm",
+        "appChainTips": "Không bao gồm tài khoản Hyperliquid và Polymarket",
         "slotAppChainTips": "{{appChainNames}} Tài khoản không được bao gồm"
       },
       "recentConnection": {
@@ -1292,15 +1291,15 @@
         "disconnected": "Ngắt kết nối",
         "pinned": "Ghim lại",
         "disconnectAll": "Ngắt kết nối tất cả",
-        "metamaskModeTooltip": "Không thể kết nối Rabby trên Dapp này? Hãy thử bật <1>MetaMask Mode</1>",
+        "metamaskModeTooltip": "Không thể kết nối Rabby trên DApp này? Hãy thử bật <1>Chế độ MetaMask</1>.",
         "connectedDapp": "Rabby không được kết nối với Dapp hiện tại. Để kết nối, hãy tìm và nhấn nút kết nối trên trang web của Dapp.",
-        "metamaskModeTooltipNew": "Ví dụ Rabby Wallet sẽ kết nối khi bạn chọn \"MetaMask\" trên Dapp. Bạn có thể quản lý điều này trong More > Connect Rabby bằng cách giả dạng như MetaMask.",
+        "metamaskModeTooltipNew": "Rabby Wallet sẽ kết nối khi bạn chọn \"MetaMask\" trên DApp. Bạn có thể quản lý tùy chọn này tại Thêm > Kết nối Rabby bằng cách giả dạng MetaMask.",
         "recentlyConnected": "Gần đây đã kết nối",
         "metamaskTooltip": "Bạn thích sử dụng MetaMask với dapp này. Cập nhật cài đặt này bất cứ lúc nào trong Cài đặt > Dapps ưu tiên MetaMask."
       },
       "feedback": {
         "directMessage": {
-          "description": "Trò chuyện với Rabby Wallet Official trên DeBank",
+          "description": "Trò chuyện với tài khoản Rabby Wallet chính thức trên DeBank",
           "content": "Tin nhắn trực tiếp"
         },
         "proposal": {
@@ -1330,22 +1329,22 @@
         "listEmpty": "Bạn chưa có bất kỳ NFT nào."
       },
       "rabbyBadge": {
-        "claim": "Yêu cầu",
+        "claim": "Nhận",
         "imageLabel": "huy hiệu Rabby",
-        "rabbyFreeGasUserNo": "Rabby Free Gas Người dùng Số {{num}}",
-        "enterClaimCode": "Nhập mã yêu cầu",
+        "rabbyFreeGasUserNo": "Người dùng Rabby Free Gas số {{num}}",
+        "enterClaimCode": "Nhập mã nhận thưởng",
         "viewOnDebank": "Xem trên DeBank",
-        "viewYourClaimCode": "Xem mã yêu cầu của bạn trên DeBank",
-        "rabbyValuedUserNo": "Rabby Người dùng giá trị số {{num}}",
+        "viewYourClaimCode": "Xem mã nhận thưởng của bạn trên DeBank",
+        "rabbyValuedUserNo": "Người dùng Rabby danh giá số {{num}}",
         "learnMore": "Tìm hiểu thêm",
         "title": "Nhận Rabby Badge cho",
         "freeGasTip": "Vui lòng ký một giao dịch bằng cách sử dụng Free Gas. Nút 'Free Gas' sẽ xuất hiện tự động khi gas của bạn không đủ.",
         "freeGasTitle": "Nhận Free Gas Badge cho",
-        "noCode": "Bạn chưa kích hoạt mã yêu cầu cho địa chỉ này.",
+        "noCode": "Bạn chưa kích hoạt mã nhận thưởng cho địa chỉ này.",
         "learnMoreOnDebank": "Tìm hiểu thêm trên DeBank",
         "goToSwap": "Đi đến Swap",
-        "claimSuccess": "Yêu cầu thành công",
-        "freeGasNoCode": "Vui lòng nhấp vào nút bên dưới để truy cập DeBank và lấy mã yêu cầu bằng địa chỉ hiện tại của bạn trước.",
+        "claimSuccess": "Nhận thành công",
+        "freeGasNoCode": "Trước tiên, hãy nhấn nút bên dưới để mở DeBank và nhận mã thưởng bằng địa chỉ hiện tại.",
         "swapTip": "Bạn cần hoàn thành một giao dịch hoán đổi với dex nổi bật trong Rabby Wallet trước."
       },
       "contacts": {
@@ -1377,7 +1376,7 @@
           "lockWallet": "Khóa Ví",
           "signatureRecord": "Lịch sử chữ ký",
           "label": "Tính năng",
-          "gasTopUp": "Gas Top Up",
+          "gasTopUp": "Nạp gas",
           "manageAddress": "Quản lý Địa chỉ",
           "ecosystem": "Hệ sinh thái"
         },
@@ -1392,7 +1391,7 @@
           "enableWhitelistForSendingAssets": "Kích hoạt Danh sách Trắng Để Gửi Tài sản",
           "metamaskPreferredDapps": "MetaMask Dapps Ưa Thích",
           "themeMode": "Chế độ chủ đề",
-          "enableDappAccount": "Thay đổi địa chỉ Dapp độc lập\n",
+          "enableDappAccount": "Đổi riêng địa chỉ DApp",
           "switchPasswordForNonWhitelistedTx": "Mật khẩu cho các giao dịch không nằm trong danh sách trắng",
           "biometricUnlock": "Mở khóa bằng Sinh trắc học",
           "biometricUnlockHint": "Sử dụng sinh trắc học để mở khóa trên thiết bị này.",
@@ -1405,7 +1404,7 @@
         "1Hour": "1 giờ",
         "7Days": "7 ngày",
         "autoLockTime": "Thời gian tự động khóa",
-        "host": "Chủ sở hữu",
+        "host": "Máy chủ",
         "cancel": "Hủy bỏ",
         "enableWhitelist": "Kích hoạt Danh sách Trắng",
         "1Day": "1 ngày",
@@ -1420,7 +1419,7 @@
         "disableWhitelist": "Vô hiệu hóa Danh sách trắng",
         "10Minutes": "10 phút",
         "claimRabbyBadge": "Nhận huy hiệu Rabby!",
-        "clearPending": "Xóa Đang Chờ Tại Địa Phương",
+        "clearPending": "Xóa giao dịch chờ trên thiết bị",
         "enableWhitelistTip": "Khi được kích hoạt, bạn chỉ có thể gửi tài sản đến các địa chỉ trong danh sách trắng bằng cách sử dụng Rabby.",
         "clearWatchAddressContent": "Bạn có chắc chắn xóa tất cả địa chỉ Chế độ Xem không?",
         "disableWhitelistTip": "Bạn có thể gửi tài sản đến bất kỳ địa chỉ nào sau khi đã vô hiệu hóa.",
@@ -1436,9 +1435,9 @@
         "updateAvailable": "Cập nhật có sẵn",
         "clearPendingWarningTip": "Giao dịch đã xóa có thể vẫn được xác nhận trên chuỗi trừ khi nó bị thay thế.",
         "DappAccount": {
-          "button": "Bật\n",
-          "title": "Thay đổi địa chỉ DApp độc lập\n",
-          "desc": "Bật tính năng này, bạn có thể chọn địa chỉ kết nối với từng ứng dụng phi tập trung (Dapp) một cách độc lập. Thay đổi địa chỉ chính của bạn sẽ không ảnh hưởng đến địa chỉ đã kết nối với từng Dapp.\n"
+          "button": "Bật",
+          "title": "Đổi riêng địa chỉ DApp",
+          "desc": "Sau khi bật, bạn có thể chọn riêng địa chỉ kết nối với từng DApp. Việc đổi địa chỉ chính sẽ không ảnh hưởng đến địa chỉ đã kết nối với mỗi DApp."
         },
         "rateModalTriggerOnHome": {
           "description": "Bạn đánh giá như thế nào về Rabby Wallet?"
@@ -1499,7 +1498,7 @@
         "OriginIssue": "Được phát hành một cách tự nhiên trên blockchain này",
         "customizedListTitle": "token tùy chỉnh",
         "NoSupportedExchanges": "Không có sàn giao dịch nào được hỗ trợ.",
-        "verifyScamTips": "Đây là một mã thông báo lừa đảo",
+        "verifyScamTips": "Đây là một token lừa đảo",
         "customizedListTitles": "token tùy chỉnh",
         "ContractAddress": "Địa chỉ hợp đồng",
         "noIssuer": "Không có thông tin người phát hành nào có sẵn",
@@ -1527,23 +1526,23 @@
           "assetAmount": "Tài sản / Số lượng",
           "useValue": "Giá trị USD",
           "price": "Giá",
-          "lentAgainst": "VAY MƯỢN CHỐNG LẠI",
+          "lentAgainst": "TÀI SẢN ĐẢM BẢO KHOẢN VAY",
           "strikePrice": "Giá thực hiện",
           "debtRatio": "Tỷ lệ nợ",
           "type": "Loại",
           "unlockAt": "Mở khóa tại",
           "PL": "P&L",
           "pool": "POOL",
-          "side": "Bên",
+          "side": "Hướng",
           "token": "Token",
           "exerciseEnd": "Kết thúc bài tập",
           "unsupportedPoolType": "Loại pool không được hỗ trợ",
-          "leverage": "Tận dụng",
+          "leverage": "Đòn bẩy",
           "balanceValue": "Số dư / Giá trị",
           "dailyUnlock": "Mở khóa hàng ngày",
           "tradePair": "Cặp giao dịch",
           "noMatch": "Không khớp",
-          "claimable": "Có thể yêu cầu",
+          "claimable": "Có thể nhận",
           "endAt": "Kết thúc tại",
           "percent": "Phần trăm",
           "summaryTips": "Giá trị tài sản chia cho tổng giá trị ròng",
@@ -1599,8 +1598,7 @@
         "searchTokenPlaceholder": "Tìm kiếm Token",
         "openInTab": "Mở trong Rabby Tab",
         "openProMode": "Mở Chế Độ Chuyên Nghiệp",
-        "openInTabV2": "Mở trong Tab",
-        "addAssets": "Thêm tài sản"
+        "openInTabV2": "Mở trong Tab"
       },
       "hd": {
         "ledger": {
@@ -1645,30 +1643,26 @@
         "title": "Hệ sinh thái"
       },
       "MetamaskModePopup": {
-        "title": "MetaMask Mode",
-        "footerText": "Thêm nhiều Dapps vào chế độ MetaMask trong Thêm > MetaMask Mode",
+        "title": "Chế độ MetaMask",
+        "footerText": "Thêm DApp khác vào Chế độ MetaMask tại Thêm > Chế độ MetaMask.",
         "toastSuccess": "Đã bật. Làm mới trang để kết nối lại.",
         "enableDesc": "Bật nếu Dapp chỉ hoạt động với MetaMask",
-        "desc": "Nếu bạn không thể kết nối Rabby trên một Dapp, hãy bật MetaMask Mode và kết nối bằng cách chọn tùy chọn MetaMask."
+        "desc": "Nếu không thể kết nối Rabby trên một DApp, hãy bật Chế độ MetaMask rồi chọn MetaMask để kết nối."
       },
       "offlineChain": {
         "chain": "{{chain}} sẽ sớm không được tích hợp.",
-        "tips": "{{chain}} Chain sẽ không được tích hợp vào ngày {{date}}. Tài sản của bạn sẽ không bị ảnh hưởng nhưng sẽ không được bao gồm trong tổng số dư của bạn. Để truy cập vào chúng, bạn có thể thêm nó như một mạng tùy chỉnh trong “More”."
+        "tips": "{{chain}} sẽ không còn được tích hợp kể từ {{date}}. Tài sản của bạn không bị ảnh hưởng nhưng sẽ không được tính vào tổng số dư. Để truy cập, hãy thêm chuỗi này làm mạng tùy chỉnh trong “Thêm”."
       },
       "recentConnectionGuide": {
-        "title": "Thay đổi địa chỉ để kết nối DApp tại đây\n",
-        "button": "Rõ ràng\n"
+        "title": "Đổi địa chỉ kết nối DApp tại đây",
+        "button": "Đã hiểu"
       },
       "rabbyPointsPopup": {
         "title": "Rabby Points",
         "downloadIntro": "Chưa có ứng dụng? Tải xuống ngay.",
         "desc": "Kiểm tra điểm của bạn trong Rabby Mobile."
       },
-      "noData": "Không tìm thấy đơn vị tiền tệ phù hợp",
-      "ZeroAssets": {
-        "desc": "Nạp tiền vào ví để sử dụng Web3",
-        "addAssets": "Thêm tài sản"
-      }
+      "noData": "Không tìm thấy đơn vị tiền tệ phù hợp"
     },
     "nft": {
       "empty": {
@@ -1702,62 +1696,62 @@
       "seedPhrase": {
         "whatIsASeedPhrase": {
           "answer": "Một cụm từ gồm 12, 18 hoặc 24 từ được sử dụng để kiểm soát tài sản của bạn.",
-          "question": "Seed Phrase là gì?"
+          "question": "Cụm từ khôi phục là gì?"
         },
         "isItSafeToImportItInRabby": {
           "question": "Có an toàn khi nhập nó vào Rabby không?",
           "answer": "Có, nó sẽ được lưu trữ cục bộ trên trình duyệt của bạn và chỉ bạn có thể truy cập."
         },
-        "showSeedPhrase": "Hiện Seed Phrase",
+        "showSeedPhrase": "Hiển thị cụm từ khôi phục",
         "importError": "[CreateMnemonics] bước không mong đợi {{0}}",
-        "copy": "Sao chép cụm từ hạt giống",
+        "copy": "Sao chép cụm từ khôi phục",
         "backup": "Sao lưu cụm từ khôi phục",
         "importTips": "Bạn có thể dán toàn bộ cụm từ khôi phục bí mật của bạn vào trường đầu tiên.",
         "riskTips": "Trước khi bạn bắt đầu, vui lòng đọc và ghi nhớ các mẹo bảo mật sau đây.",
-        "backupTips": "Đảm bảo không ai khác đang nhìn vào màn hình của bạn khi bạn sao lưu cụm từ hạt giống.",
+        "backupTips": "Đảm bảo không ai khác đang nhìn vào màn hình của bạn khi bạn sao lưu cụm từ khôi phục.",
         "clearAll": "Xóa Tất Cả",
-        "passphrase": "Mật khẩu phụ",
-        "verifySeedPhrase": "Xác minh cụm từ hạt giống",
-        "slip39SeedPhrasePlaceholder_other": "Nhập chia sẻ cụm từ hạt giống {{count}} của bạn vào đây",
+        "passphrase": "Cụm mật khẩu",
+        "verifySeedPhrase": "Xác minh cụm từ khôi phục",
+        "slip39SeedPhrasePlaceholder_other": "Nhập phần thứ {{count}} của cụm từ khôi phục tại đây",
         "saved": "Tôi đã lưu cụm từ.",
         "createdSuccessfully": "Tạo thành công",
         "fillInTheBackupSeedPhraseInOrder": "Nhập cụm từ sao lưu theo thứ tự.",
-        "slip39SeedPhrasePlaceholder_two": "Nhập các phần chia seed phrase thứ {{count}} của bạn ở đây",
+        "slip39SeedPhrasePlaceholder_two": "Nhập phần thứ {{count}} của cụm từ khôi phục tại đây",
         "verificationFailed": "Xác minh không thành công",
-        "slip39SeedPhrasePlaceholder_few": "Nhập các phần chia seed phrase {{count}}rd của bạn ở đây",
+        "slip39SeedPhrasePlaceholder_few": "Nhập phần thứ {{count}} của cụm từ khôi phục tại đây",
         "pastedAndClear": "Dán và bộ nhớ tạm đã được xóa",
         "slip39SeedPhrase": "Cụm từ khôi phục của tôi là <1>{{SLIP39}}</1>",
         "pleaseSelectWords": "Vui lòng chọn từ",
         "importQuestion4": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục, Rabby sẽ không thể lấy lại cho tôi.",
-        "inputInvalidCount_other": "{{count}} inputs không tuân thủ các tiêu chuẩn Seed Phrase, vui lòng kiểm tra.",
-        "inputInvalidCount_one": "1 đầu vào không tuân thủ các tiêu chuẩn Seed Phrase, vui lòng kiểm tra.",
+        "inputInvalidCount_other": "{{count}} mục nhập không tuân thủ quy tắc của cụm từ khôi phục. Vui lòng kiểm tra.",
+        "inputInvalidCount_one": "1 mục nhập không tuân thủ quy tắc của cụm từ khôi phục. Vui lòng kiểm tra.",
         "invalidContent": "Nội dung không hợp lệ",
         "wordPhraseAndPassphrase": "Cụm từ khôi phục của tôi có <1>{{count}}</1> từ kèm mật khẩu",
         "wordPhraseAndPassphraseSelected": "Cụm từ khôi phục của tôi có <1>{{count}} từ</1> kèm mật khẩu",
         "wordPhrase": "Cụm từ khôi phục của tôi có <1>{{count}}</1> từ",
         "wordPhraseSelected": "Cụm từ khôi phục của tôi có <1>{{count}} từ</1>",
-        "slip39SeedPhrasePlaceholder_one": "Nhập các phần chia sẻ cụm từ hạt giống thứ {{count}} của bạn vào đây",
-        "slip39SeedPhraseWithPassphrase": "Cụm từ khôi phục của tôi là <1>{{SLIP39}}</1> kèm mật khẩu",
-        "importQuestion2": "Câu gốc của tôi chỉ được lưu trữ trên thiết bị của tôi. Rabby không thể truy cập nó.",
+        "slip39SeedPhrasePlaceholder_one": "Nhập phần thứ {{count}} của cụm từ khôi phục tại đây",
+        "slip39SeedPhraseWithPassphrase": "Cụm từ khôi phục của tôi là <1>{{SLIP39}}</1> kèm cụm mật khẩu",
+        "importQuestion2": "Cụm từ khôi phục của tôi chỉ được lưu trên thiết bị. Rabby không thể truy cập cụm từ này.",
         "importQuestion3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục của mình, nó sẽ không thể được phục hồi bởi Rabby.",
-        "importQuestion1": "Nếu tôi mất hoặc chia sẻ cụm từ hạt giống của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn.",
+        "importQuestion1": "Nếu tôi mất hoặc chia sẻ cụm từ khôi phục của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn.",
         "showMoreOptions": "Hiện thêm tùy chọn",
         "inputInvalid": "Các từ không hợp lệ đã được phát hiện. Vui lòng xem lại các từ được đánh dấu."
       },
       "metamask": {
         "tips": "Mẹo:",
-        "step2": "Nhập cụm từ hạt giống hoặc khóa riêng trong Rabby",
+        "step2": "Nhập cụm từ khôi phục hoặc khóa riêng trong Rabby",
         "step": "Bước",
         "how": "Làm thế nào để nhập tài khoản MetaMask của tôi?",
-        "step3": "Nhập khẩu đã hoàn tất và tất cả tài sản của bạn sẽ <br /> xuất hiện tự động.",
-        "tipsDesc": "Câu thần chú / khóa riêng của bạn không thuộc về MetaMask hay bất kỳ ví cụ thể nào; nó chỉ thuộc về bạn.",
-        "step1": "Xuất khẩu cụm từ hạt giống hoặc chìa khóa riêng từ MetaMask <br /> <1>Nhấp để xem hướng dẫn <1/></1>",
+        "step3": "Đã nhập xong và tất cả tài sản của bạn sẽ <br /> tự động xuất hiện.",
+        "tipsDesc": "Cụm từ khôi phục/khóa riêng không thuộc về MetaMask hay bất kỳ ví cụ thể nào; chúng chỉ thuộc về bạn.",
+        "step1": " Xuất cụm từ khôi phục hoặc khóa riêng từ MetaMask <br /> <1>Nhấp để xem hướng dẫn <1/></1>",
         "importSeedPhraseTips": "Nó sẽ chỉ được lưu trữ cục bộ trên trình duyệt. Rabby sẽ không bao giờ có quyền truy cập vào thông tin riêng tư của bạn.",
-        "importSeedPhrase": "Nhập cụm từ hạt giống hoặc khóa riêng"
+        "importSeedPhrase": "Nhập cụm từ khôi phục hoặc khóa riêng"
       },
       "privateKey": {
         "whatIsAPrivateKey": {
-          "question": "Khóa riêng tư là gì?",
+          "question": "Khóa riêng là gì?",
           "answer": "Một chuỗi chữ cái và số được sử dụng để kiểm soát tài sản của bạn."
         },
         "repeatImportTips": {
@@ -1772,9 +1766,9 @@
           "answer": "Vâng, bạn có thể <1> import KeyStore </1> ở đây.",
           "question": "Có thể nhập KeyStore không?"
         },
-        "required": "Vui lòng nhập Private key",
+        "required": "Vui lòng nhập Khóa riêng",
         "notAValidPrivateKey": "Không phải là một khóa riêng hợp lệ",
-        "placeholder": "Nhập Private key của bạn"
+        "placeholder": "Nhập Khóa riêng của bạn"
       },
       "ledger": {
         "error": {
@@ -1785,34 +1779,34 @@
         },
         "title": "Kết nối Ledger",
         "ledgerPermission1": "Kết nối với thiết bị HID",
-        "allowRabbyPermissionsTitle": "Cho phép Rabby quyền để:",
+        "allowRabbyPermissionsTitle": "Cho phép Rabby thực hiện:",
         "cameraPermissionTitle": "Cho phép Rabby truy cập camera",
         "allow": "Cho phép",
-        "ledgerPermissionTip": "Vui lòng nhấp vào \"Allow\" dưới đây và ủy quyền truy cập vào Ledger của bạn trong cửa sổ pop-up dưới đây.",
+        "ledgerPermissionTip": "Vui lòng nhấp vào \"Cho phép\" bên dưới và cấp quyền truy cập vào Ledger trong cửa sổ bật lên tiếp theo.",
         "permissionsAuthorized": "Quyền đã được cấp phép",
         "nowYouCanReInitiateYourTransaction": "Bây giờ bạn có thể khởi động lại giao dịch của mình.",
         "cameraPermission1": "Cho phép Rabby truy cập camera trong cửa sổ pop-up của trình duyệt"
       },
       "imkey": {
         "title": "Kết nối imKey",
-        "imkeyPermissionTip": "Vui lòng nhấp vào \"Allow\" bên dưới và cấp quyền truy cập vào imKey của bạn trong cửa sổ bật lên sau."
+        "imkeyPermissionTip": "Vui lòng nhấp vào \"Cho phép\" bên dưới và cấp quyền truy cập vào imKey trong cửa sổ bật lên tiếp theo."
       },
       "keystone": {
-        "allowRabbyPermissionsTitle": "Cho phép Rabby các quyền để:",
+        "allowRabbyPermissionsTitle": "Cho phép Rabby thực hiện:",
         "keystonePermission1": "Kết nối với thiết bị USB",
         "title": "Kết nối Keystone",
         "noDeviceFoundError": "Cắm một Keystone duy nhất",
         "unknowError": "Lỗi không xác định, vui lòng thử lại",
-        "keystonePermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào Keystone của bạn trong cửa sổ pop-up tiếp theo, và đảm bảo rằng Keystone 3 Pro của bạn đang ở trang chính.",
+        "keystonePermissionTip": "Vui lòng nhấn \"Cho phép\" bên dưới để cấp quyền truy cập vào Keystone trong cửa sổ bật lên tiếp theo, đồng thời đảm bảo Keystone 3 Pro đang ở trang chính.",
         "deviceRejectedExportAddress": "Chấp thuận kết nối với Rabby",
         "deviceIsBusy": "Thiết bị đang bận",
         "deviceIsLockedError": "Nhập mật khẩu để mở khóa",
-        "exportAddressJustAllowedOnHomePage": "Xuất khẩu địa chỉ chỉ được phép trên trang chủ"
+        "exportAddressJustAllowedOnHomePage": "Chỉ có thể xuất địa chỉ khi Keystone đang ở màn hình chính"
       },
       "onekey": {
         "onekeyPermission1": "Kết nối với thiết bị USB",
-        "allowRabbyPermissionsTitle": "Cho phép Rabby các quyền để:",
-        "onekeyPermissionTip": "Vui lòng nhấn \"Allow\" bên dưới để cấp quyền truy cập vào OneKey của bạn trong cửa sổ pop-up tiếp theo. Nếu OneKey không xuất hiện trong popup, vui lòng kiểm tra xem thiết bị của bạn đã kết nối đúng với máy tính chưa.",
+        "allowRabbyPermissionsTitle": "Cho phép Rabby thực hiện:",
+        "onekeyPermissionTip": "Vui lòng nhấn \"Cho phép\" bên dưới để cấp quyền truy cập vào OneKey trong cửa sổ bật lên tiếp theo. Nếu OneKey không xuất hiện, hãy kiểm tra xem thiết bị đã được kết nối đúng cách với máy tính chưa.",
         "whyOneKey": "Tại sao chọn OneKey?",
         "buyOneKey": "Mua OneKey",
         "haveOneKey": "Chưa có OneKey?"
@@ -1850,7 +1844,7 @@
         "disconnected": "Ngắt kết nối",
         "viaWalletConnect": "qua Wallet Connect",
         "connectedSuccessfully": "Kết nối thành công",
-        "changeBridgeServer": "Thay đổi máy chủ cầu nối",
+        "changeBridgeServer": "Thay đổi máy chủ bridge",
         "qrCode": "Mã QR",
         "title": "Kết nối với {{brandName}}",
         "connectYour": "Kết nối ví của bạn",
@@ -1870,7 +1864,7 @@
             "bip44": "Tiêu chuẩn BIP44: HD path được định nghĩa bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi."
           },
           "hdPathTypeNoChain": {
-            "legacy": "Di sản: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
             "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
             "bip44": "Tiêu chuẩn BIP44: HD path được định nghĩa bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi."
           }
@@ -1887,7 +1881,7 @@
             "bip44": "BIP44: HD path được định nghĩa bởi giao thức BIP44."
           },
           "message": {
-            "disconnected": "{{0}}Connect đã dừng lại. Vui lòng làm mới trang để kết nối lại."
+            "disconnected": "Kết nối với {{0}} đã dừng. Vui lòng làm mới trang để kết nối lại."
           }
         },
         "onekey": {
@@ -1901,23 +1895,23 @@
         "mnemonic": {
           "hdPathType": {
             "ledgerLive": "Ledger Live: HD path chính thức của Ledger.",
-            "default": "Mặc định: sử dụng HD path mặc định khi nhập seed phrase.",
+            "default": "Mặc định: sử dụng đường dẫn HD mặc định khi nhập cụm từ khôi phục.",
             "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto.",
             "bip44": "Tiêu chuẩn BIP44: HD path được xác định bởi giao thức BIP44."
           },
           "hdPathTypeNoChain": {
-            "default": "Mặc định: sử dụng HD path mặc định khi nhập seed phrase."
+            "default": "Mặc định: sử dụng đường dẫn HD mặc định khi nhập cụm từ khôi phục."
           }
         },
         "gridplus": {
           "hdPathType": {
-            "legacy": "Di sản: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
             "bip44": "Tiêu chuẩn BIP44: HD path được xác định bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi.",
             "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Trong 3 địa chỉ đầu tiên, có các địa chỉ được sử dụng trên chuỗi."
           },
           "hdPathTypeNochain": {
             "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
-            "legacy": "Di sản: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi.",
             "bip44": "BIP44 Standard: HD path được xác định bởi giao thức BIP44. Trong 3 địa chỉ đầu tiên, không có địa chỉ nào được sử dụng trên chuỗi."
           },
           "switch": {
@@ -1933,7 +1927,7 @@
             "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto."
           },
           "hdPathTypeNochain": {
-            "legacy": "Di sản: HD path được sử dụng bởi MEW / MyCrypto.",
+            "legacy": "Legacy: HD path được sử dụng bởi MEW / MyCrypto.",
             "ledgerLive": "Ledger Live: HD path chính thức của Ledger. Bạn chỉ có thể quản lý 10 địa chỉ với đường dẫn Ledger Live.",
             "bip44": "BIP44: HD path được xác định bởi giao thức BIP44."
           }
@@ -1981,13 +1975,13 @@
         "manageAirgap": "Quản lý AirGap",
         "addressesInRabby": "Địa chỉ trong Rabby{{0}}",
         "connectedToOnekey": "Kết nối với OneKey",
-        "manageSeedPhrase": "Quản lý Seed Phrase",
+        "manageSeedPhrase": "Quản lý cụm từ khôi phục",
         "connectedToLedger": "Kết nối với Ledger",
         "manageGridplus": "Quản lý GridPlus",
         "manageBitbox02": "Quản lý BitBox02",
         "importBtn": "Nhập ({{count}})",
         "addressesIn": "Địa chỉ trong {{0}}",
-        "nonAddr": "Chưa có địa chỉ nào được thêm cho cụm từ hạt giống này. Bạn có thể xóa cụm từ này trong Rabby Extension > Quản lý Địa chỉ."
+        "nonAddr": "Chưa có địa chỉ nào được thêm cho cụm từ khôi phục này. Bạn có thể xóa cụm từ này trong Rabby Extension > Quản lý Địa chỉ."
       },
       "keystore": {
         "password": {
@@ -1997,57 +1991,57 @@
         "description": "Chọn tệp keystore bạn muốn nhập và nhập mật khẩu tương ứng"
       },
       "coboSafe": {
-        "import": "Nhập khẩu",
-        "whichChainIsYourCoboAddressOn": "Cobo address của bạn đang ở chuỗi nào?",
+        "import": "Nhập",
+        "whichChainIsYourCoboAddressOn": "Địa chỉ Cobo của bạn nằm trên chuỗi nào?",
         "inputSafeModuleAddress": "Nhập địa chỉ Safe Module",
         "invalidAddress": "Địa chỉ không hợp lệ",
         "addCoboArgusAddress": "Thêm địa chỉ Cobo Argus",
-        "findTheAssociatedSafeAddress": "Tìm địa chỉ an toàn liên kết"
+        "findTheAssociatedSafeAddress": "Tìm địa chỉ Safe liên kết"
       },
-      "importPrivateKey": "Nhập Khóa Riêng",
+      "importPrivateKey": "Nhập khóa riêng",
       "title": "Thêm một Địa chỉ",
-      "importSeedPhrase": "Nhập cụm từ hạt giống",
+      "importSeedPhrase": "Nhập cụm từ khôi phục",
       "importMyMetamaskAccount": "Nhập Tài Khoản MetaMask Của Tôi",
       "firefoxLedgerDisableTips": "Ledger không tương thích với Firefox",
       "importKeystore": "Nhập KeyStore",
       "connectMobileWalletApps": "Kết nối ứng dụng ví di động",
-      "theSeedPhraseIsInvalidPleaseCheck": "Câu gốc là không hợp lệ, vui lòng kiểm tra!",
+      "theSeedPhraseIsInvalidPleaseCheck": "Cụm từ khôi phục không hợp lệ, vui lòng kiểm tra!",
       "connectInstitutionalWallets": "Kết nối Ví Tổ Chức",
       "connectHardwareWallets": "Kết nối ví phần cứng",
-      "selectImportMethod": "Chọn Phương Thức Nhập khẩu",
-      "createNewSeedPhrase": "Tạo cụm từ hạt giống mới",
-      "importedSuccessfully": "Nhập khẩu thành công",
+      "selectImportMethod": "Chọn phương thức nhập",
+      "createNewSeedPhrase": "Tạo cụm từ khôi phục mới",
+      "importedSuccessfully": "Đã nhập thành công",
       "importYourKeystore": "Nhập KeyStore của bạn",
       "incorrectPassword": "mật khẩu không chính xác",
-      "addFromCurrentSeedPhrase": "Thêm từ Câu Châm Ngôn Hiện Tại",
+      "addFromCurrentSeedPhrase": "Thêm từ cụm từ khôi phục hiện tại",
       "trezor": {
         "title": "Kết nối Trezor"
       },
       "importMoreWallets": "Thêm Địa Chỉ Khác",
       "addNewAddress": "Tạo Địa Chỉ Mới",
-      "createANewSeedPhrase": "Tạo một cụm từ hạt giống mới",
+      "createANewSeedPhrase": "Tạo một cụm từ khôi phục mới",
       "addMoreAddresses": "Thêm nhiều địa chỉ",
       "moreWallets": "Nhiều Ví",
       "addressImported": "Địa chỉ đã được nhập",
-      "privateKeyTab": "Khóa riêng tư",
+      "privateKeyTab": "Khóa riêng",
       "watchAddress": "Địa chỉ chỉ xem",
       "newAddressCreated": "Địa chỉ mới đã được tạo",
       "addressAdded": "Địa chỉ đã được thêm",
-      "bulkImportPrivateKeyInputTab": "Nhập Khóa Riêng",
-      "newSeedPhraseCreated": "Cụm từ hạt giống mới đã được tạo.",
+      "bulkImportPrivateKeyInputTab": "Nhập khóa riêng",
+      "newSeedPhraseCreated": "Cụm từ khôi phục mới đã được tạo.",
       "bulkImportPrivateKeyExceeded": "Hỗ trợ tới {{count}} khóa riêng cùng một lúc",
       "bulkImportPrivateKeyInvalid": "Một số khóa riêng tư không hợp lệ. Vui lòng xóa hoặc nhập lại chúng.",
       "duplicateAddressesSkippedDesc_other": "{{count}} địa chỉ đã bị bỏ qua vì chúng đã tồn tại.",
       "bulkImportPrivateKeyPlaceholder": "Mỗi khóa riêng tư nên được tách biệt bằng một dòng mới hoặc một ký tự đặc biệt.",
       "addressAddedCount_one": "{{count}} Địa chỉ đã được thêm",
       "imported": "Nhập trước",
-      "seedPhraseTab": "Câu nói hạt giống",
+      "seedPhraseTab": "Cụm từ khôi phục",
       "openExtensionToGetStarted": "Mở tiện ích mở rộng Rabby để bắt đầu",
       "newAddressAdded": "Địa chỉ mới đã được thêm",
       "duplicateAddressesSkippedTitle": "Một số địa chỉ đã được nhập khẩu.",
       "addressAddedCount_other": "{{count}} Địa chỉ Đã Thêm",
       "bulkImportPrivateKeySupport": "Hỗ trợ tối đa 1000 khóa riêng tư tương thích với EVM",
-      "addMoreAddressesFromThisSeedPhrase": "Thêm nhiều địa chỉ từ cụm từ hạt giống này",
+      "addMoreAddressesFromThisSeedPhrase": "Thêm nhiều địa chỉ từ cụm từ khôi phục này",
       "duplicateAddressesSkippedDesc_one": "{{count}} địa chỉ đã bị bỏ qua vì nó đã tồn tại.",
       "bulkImportPrivateKey": "Nhập hàng loạt khóa riêng tư"
     },
@@ -2062,9 +2056,9 @@
         "required": "Nhập mật khẩu để mở khóa",
         "placeholder": "Nhập mật khẩu để mở khóa"
       },
-      "title": "Ví dụ ví Rabby",
+      "title": "Rabby Wallet",
       "btnForgotPassword": "Quên mật khẩu?",
-      "description": "Ví dụ ví của bạn cho Ethereum và EVM",
+      "description": "Ví đáng tin cậy của bạn cho Ethereum và EVM",
       "biometricFailed": "Mở khóa sinh trắc học thất bại"
     },
     "addToken": {
@@ -2086,7 +2080,7 @@
       "requestsReceivedPlural": "{{count}} yêu cầu đã nhận",
       "chainNotSupport": "Chuỗi được yêu cầu hiện chưa được Rabby hỗ trợ.",
       "chainId": "ID chuỗi:",
-      "testnetTip": "Vui lòng bật \"Enable Testnets\" dưới \"More\" trước khi kết nối với testnets.",
+      "testnetTip": "Vui lòng bật \"Testnet\" trong \"Thêm\" trước khi kết nối với testnet.",
       "requestRabbyToSupport": "Yêu cầu Rabby hỗ trợ",
       "chainNotSupportYet": "Chuỗi yêu cầu chưa được Rabby hỗ trợ.",
       "chainNotSupportAddChain": "Chuỗi yêu cầu chưa được Rabby tích hợp. Bạn có thể thêm nó dưới dạng Testnet tùy chỉnh.",
@@ -2121,7 +2115,7 @@
     },
     "connect": {
       "SignTestnetPermission": {
-        "title": "Ký tên quyền hạn"
+        "title": "Ký cấp quyền"
       },
       "SelectWallet": {
         "title": "Chọn một Ví để Kết nối",
@@ -2159,24 +2153,24 @@
       "trusted": "Đáng tin cậy",
       "markRuleText": "Dấu của tôi",
       "removedFromAll": "Đã loại bỏ khỏi tất cả danh sách",
-      "connectAddress": "Kết nối địa chỉ\n",
+      "connectAddress": "Địa chỉ kết nối",
       "connected": "Kết nối"
     },
     "addressDetail": {
-      "backup-private-key": "Sao lưu Private Key",
+      "backup-private-key": "Sao lưu khóa riêng",
       "remove-from-whitelist": "Xóa khỏi Danh sách trắng",
-      "backup-seed-phrase": "Sao Lưu Cụm Từ Hạt Giống",
+      "backup-seed-phrase": "Sao lưu cụm từ khôi phục",
       "add-to-whitelist": "Thêm vào Danh sách Trắng",
       "address-detail": "Chi tiết địa chỉ",
       "source": "Nguồn",
       "admins": "Quản trị viên",
       "please-input-address-note": "Vui lòng nhập ghi chú địa chỉ",
       "importedDelegatedAddress": "Địa chỉ ủy quyền đã nhập",
-      "safeModuleAddress": "Địa chỉ Module An toàn",
+      "safeModuleAddress": "Địa chỉ mô-đun Safe",
       "assets": "Tài sản",
       "address-note": "Ghi chú địa chỉ",
       "manage-addresses-under": "Quản lý các địa chỉ dưới {{brand}}",
-      "manage-seed-phrase": "Quản lý Seed Phrase",
+      "manage-seed-phrase": "Quản lý cụm từ khôi phục",
       "qr-code": "Mã QR",
       "manage-addresses-under-this-seed-phrase": "Quản lý địa chỉ dưới cụm từ khởi động này",
       "tx-requires": "Bất kỳ giao dịch nào đều yêu cầu <2>{{num}}</2> xác nhận.",
@@ -2186,23 +2180,23 @@
       "coboSafeErrorModule": "Địa chỉ đã hết hạn, vui lòng xóa và nhập lại địa chỉ.",
       "delete-desc": "Trước khi bạn xóa, hãy lưu ý những điểm sau để hiểu cách bảo vệ tài sản của bạn.",
       "address": "Địa chỉ",
-      "direct-delete-desc": "Địa chỉ này là địa chỉ {{renderBrand}}, Rabby không lưu trữ khóa riêng hoặc cụm từ hạt giống cho địa chỉ này, bạn có thể xóa nó.",
+      "direct-delete-desc": "Địa chỉ này là địa chỉ {{renderBrand}}, Rabby không lưu trữ khóa riêng hoặc cụm từ khôi phục cho địa chỉ này, bạn có thể xóa nó.",
       "deleteSeedPhrase": {
         "title": "Xóa Địa Chỉ và Cụm Từ Khôi Phục?",
         "title2": "Xóa địa chỉ?",
-        "option2": "Xóa địa chỉ và cụm từ hạt giống",
-        "option1": "Xóa Địa Chỉ, Giữ Câu Chuyện Hạt Giống",
+        "option2": "Xóa địa chỉ và cụm từ khôi phục",
+        "option1": "Xóa địa chỉ, giữ cụm từ khôi phục",
         "remainSeedPhrase": "Những cụm từ khôi phục của bạn vẫn được lưu trữ trên thiết bị của bạn.",
-        "keepSeedPhrase": "Đây là địa chỉ duy nhất liên kết với cụm từ hạt giống này. Bạn có muốn giữ cụm từ hạt giống không?",
+        "keepSeedPhrase": "Đây là địa chỉ duy nhất liên kết với cụm từ khôi phục này. Bạn có muốn giữ cụm từ khôi phục không?",
         "sub-title": "Hành động này là vĩnh viễn. Vui lòng xem xét các điều sau để bảo vệ tài sản của bạn:",
-        "onlyDeleteAddr": "Chỉ địa chỉ này sẽ bị xóa. Câu bí mật của bạn không bị ảnh hưởng, vì các địa chỉ khác của bạn vẫn sử dụng nó.",
-        "check2": "Tôi xác nhận rằng tôi đã sao lưu Khóa Riêng hoặc Cụm Hạt giống của mình và tôi đã sẵn sàng để xóa nó.",
-        "check1": "Tôi hiểu rằng xóa địa chỉ này cũng sẽ xóa cả Khóa Riêng và Câu Câu Gốc của nó. Rabby không thể khôi phục chúng cho tôi."
+        "onlyDeleteAddr": "Chỉ địa chỉ này sẽ bị xóa. Cụm từ khôi phục không bị ảnh hưởng vì các địa chỉ khác vẫn đang sử dụng cụm từ này.",
+        "check2": "Tôi xác nhận đã sao lưu khóa riêng hoặc cụm từ khôi phục và sẵn sàng xóa địa chỉ này.",
+        "check1": "Tôi hiểu rằng việc xóa địa chỉ này cũng sẽ xóa khóa riêng và cụm từ khôi phục của địa chỉ. Rabby không thể khôi phục chúng cho tôi."
       },
       "deletePrivateKey": {
-        "check1": "Tôi hiểu rằng việc xóa địa chỉ này cũng sẽ xóa Khóa Riêng của nó. Rabby không thể khôi phục cho tôi.",
+        "check1": "Tôi hiểu rằng xóa địa chỉ này cũng sẽ xóa khóa riêng tương ứng. Rabby không thể khôi phục chúng.",
         "sub-title": "Hành động này là vĩnh viễn. Vui lòng xem xét những điều sau để bảo vệ tài sản của bạn:",
-        "check2": "Tôi xác nhận rằng tôi đã sao lưu Khóa Riêng hoặc Câu Gốc của mình và tôi sẵn sàng xóa nó.",
+        "check2": "Tôi xác nhận đã sao lưu khóa riêng hoặc cụm từ khôi phục và sẵn sàng xóa địa chỉ này.",
         "title": "Xóa địa chỉ và khóa riêng tư?"
       },
       "notBackup": "Không sao lưu"
@@ -2254,7 +2248,7 @@
           "send": "Gửi Token"
         },
         "title": "Chọn cách để thay thế giao dịch này",
-        "desc": "Một giao dịch đã được ký không thể bị xóa nhưng có thể được thay thế bằng một giao dịch mới với nonce giống nhau."
+        "desc": " Một giao dịch đã được ký không thể bị xóa nhưng có thể được thay thế bằng một giao dịch mới với nonce giống nhau."
       },
       "unknownProtocol": "Giao thức không xác định",
       "unlimited": "không giới hạn",
@@ -2275,26 +2269,26 @@
     "importSuccess": {
       "addressCount": "{{count}} địa chỉ",
       "gnosisChainDesc": "Địa chỉ này đã được phát hiện triển khai trên {{count}} chuỗi.",
-      "title": "Nhập khẩu thành công"
+      "title": "Đã nhập thành công"
     },
     "backupSeedPhrase": {
       "showQrCode": "Hiển thị QR Code",
       "qrCodePopupTitle": "Mã QR",
       "clickToShow": "Nhấn để hiển thị cụm từ khôi phục",
-      "title": "Sao lưu cụm từ hạt giống",
-      "qrCodePopupTips": "Không bao giờ chia sẻ mã QR cụm từ hạt giống cho người khác. Vui lòng xem nó trong một môi trường an toàn và giữ gìn cẩn thận.",
-      "copySeedPhrase": "Sao chép cụm từ hạt giống",
-      "alert": "Câu Seed Phrase này là thông tin xác thực cho tài sản của bạn. ĐỪNG làm mất hoặc tiết lộ cho người khác, nếu không bạn có thể mất tài sản của mình mãi mãi. Vui lòng xem nó trong một môi trường an toàn và giữ gìn cẩn thận.",
-      "doneButton": "Tôi đã lưu cụm từ khôi phục"
+      "title": "Sao lưu cụm từ khôi phục",
+      "qrCodePopupTips": "Không bao giờ chia sẻ mã QR cụm từ khôi phục cho người khác. Vui lòng xem nó trong một môi trường an toàn và giữ gìn cẩn thận.",
+      "copySeedPhrase": "Sao chép cụm từ khôi phục",
+      "alert": "Cụm từ khôi phục này là thông tin xác thực để truy cập tài sản của bạn. KHÔNG làm mất hoặc tiết lộ cho người khác, nếu không bạn có thể mất tài sản vĩnh viễn. Chỉ xem trong môi trường an toàn và bảo quản cẩn thận.",
+      "doneButton": "Tôi đã sao lưu cụm từ khôi phục"
     },
     "backupPrivateKey": {
-      "title": "Sao lưu Private Key",
-      "clickToShow": "Nhấn để hiển thị private key",
+      "title": "Sao lưu khóa riêng",
+      "clickToShow": "Nhấn để hiển thị khóa riêng",
       "clickToShowQr": "Nhấp để hiển thị mã QR khóa riêng tư",
       "alert": "Khóa riêng này là thông tin xác thực cho tài sản của bạn. ĐỪNG làm mất nó hoặc tiết lộ cho người khác, nếu không bạn có thể mất tài sản của mình mãi mãi. Xin vui lòng xem nó trong một môi trường an toàn và giữ gìn cẩn thận."
     },
     "ethSign": {
-      "alert": "Ký tên bằng 'eth_sign' có thể dẫn đến mất tài sản. Để đảm bảo an toàn cho bạn, Rabby không hỗ trợ phương pháp này."
+      "alert": "Ký bằng 'eth_sign' có thể dẫn đến mất tài sản. Vì sự an toàn của bạn, Rabby không hỗ trợ phương thức này."
     },
     "createPassword": {
       "passwordRequired": "Vui lòng nhập Mật khẩu",
@@ -2314,7 +2308,7 @@
       "step2": {
         "title": "Tự giữ",
         "btnText": "Bắt đầu",
-        "desc": "Private keys được lưu trữ cục bộ với quyền truy cập duy nhất của bạn."
+        "desc": "Các khóa riêng được lưu trữ cục bộ với quyền truy cập duy nhất của bạn."
       }
     },
     "importSafe": {
@@ -2333,7 +2327,7 @@
     },
     "pendingDetail": {
       "Header": {
-        "predictTime": "Dự đoán sẽ được đóng gói trong"
+        "predictTime": "Dự kiến được đưa vào block trong"
       },
       "TxStatus": {
         "pendingBroadcast": "Đang chờ: Sẽ được phát sóng",
@@ -2345,12 +2339,12 @@
         "hash": "Hash tx"
       },
       "TxTimeline": {
-        "broadcastedCount_ordinal_one": "{{count}}st phát sóng",
-        "broadcastedCount_ordinal_two": "{{count}}nd phát sóng",
+        "broadcastedCount_ordinal_one": "Lần phát sóng thứ {{count}}",
+        "broadcastedCount_ordinal_two": "Lần phát sóng thứ {{count}}",
         "pending": "Đang kiểm tra trạng thái...",
-        "broadcastedCount_ordinal_few": "Lần broadcast thứ {{count}}",
+        "broadcastedCount_ordinal_few": "Lần phát sóng thứ {{count}}",
         "created": "Giao dịch đã được tạo",
-        "broadcastedCount_ordinal_other": "Lần phát broadcast thứ {{count}}",
+        "broadcastedCount_ordinal_other": "Lần phát sóng thứ {{count}}",
         "broadcasted": "Gần đây đã được phát sóng"
       },
       "MempoolList": {
@@ -2373,7 +2367,7 @@
         },
         "col": {
           "interact": "Tương tác với",
-          "gasPrice": "Gas Price",
+          "gasPrice": "Giá gas",
           "action": "Hành động Giao dịch",
           "balanceChange": "Thay đổi số dư",
           "actionType": "Loại hành động"
@@ -2389,16 +2383,16 @@
       "PrePackInfo": {
         "col": {
           "expectations": "Kỳ vọng",
-          "prePackContent": "Nội dung trước đóng gói",
+          "prePackContent": "Nội dung trước khi đóng block",
           "difference": "Kiểm tra kết quả",
-          "prePackResults": "Kết quả trước khi đóng gói"
+          "prePackResults": "Kết quả trước khi đóng block"
         },
         "type": {
           "receive": "Nhận",
           "pay": "Thanh toán"
         },
         "noLoss": "Không tìm thấy mất mát",
-        "title": "Kiểm tra trước khi đóng gói",
+        "title": "Kiểm tra trước khi đóng block",
         "desc": "Mô phỏng được thực hiện trong khối mới nhất, đã cập nhật {{time}}",
         "error": "{{count}} lỗi được tìm thấy",
         "noError": "Không tìm thấy lỗi",
@@ -2406,7 +2400,7 @@
       },
       "Predict": {
         "completed": "Giao dịch đã hoàn tất",
-        "predictFailed": "Dự đoán thời gian đóng gói đã thất bại",
+        "predictFailed": "Dự đoán thời gian xác nhận thất bại",
         "skipNonce": "Địa chỉ của bạn đã bỏ qua Nonce trên chuỗi Ethereum, gây ra việc giao dịch hiện tại không thể hoàn thành."
       }
     },
@@ -2427,9 +2421,9 @@
     "rabbyPoints": {
       "claimItem": {
         "go": "Đi",
-        "claim": "Yêu cầu",
-        "disabledTip": "Hiện tại không có điểm nào để yêu cầu.",
-        "claimed": "Đã yêu cầu",
+        "claim": "Nhận",
+        "disabledTip": "Hiện không có điểm nào để nhận.",
+        "claimed": "Đã nhận",
         "earnTip": "Giới hạn một lần trong ngày. Vui lòng kiếm điểm sau 00:00 UTC+0"
       },
       "claimModal": {
@@ -2442,8 +2436,8 @@
         "placeholder": "Nhập mã giới thiệu để nhận thêm điểm (tùy chọn)",
         "referral-code": "Mã Giới Thiệu",
         "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "rabbyValuedUserBadge": "Huy hiệu Người Dùng Quý Giá Rabby",
-        "claim": "Yêu cầu",
+        "rabbyValuedUserBadge": "Huy hiệu Người dùng Rabby danh giá",
+        "claim": "Nhận",
         "activeStats": "Trạng thái hoạt động",
         "season2": "Mùa 2",
         "cantUseOwnCode": "Bạn không thể sử dụng mã giới thiệu của chính mình.",
@@ -2452,7 +2446,7 @@
       "referralCode": {
         "verifyAddressModal": {
           "cancel": "Hủy bỏ",
-          "sign": "Ký tên",
+          "sign": "Ký",
           "verify-address": "Xác minh địa chỉ",
           "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Vui lòng ký thông điệp văn bản này để xác nhận rằng bạn là chủ sở hữu của địa chỉ này."
         },
@@ -2470,11 +2464,11 @@
       },
       "top-100": "Top 100",
       "referral-code-copied": "Mã giới thiệu đã được sao chép",
-      "title": "Rabby Điểm",
+      "title": "Rabby Points",
       "earn-points": "Kiếm Điểm",
       "out-of-x-current-total-points": "Ngoài {{total}} Điểm Tổng Phân Phối",
       "share-on": "Chia sẻ trên",
-      "initialPointsClaimEnded": "Điểm đầu tiên đã kết thúc.",
+      "initialPointsClaimEnded": "Đợt nhận Điểm ban đầu đã kết thúc",
       "secondRoundEnded": "🎉 Vòng thứ hai của Rabby Points đã kết thúc",
       "firstRoundEnded": "🎉 Vòng đầu tiên của Rabby Points đã kết thúc",
       "code-set-successfully": "Mã giới thiệu đã được thiết lập thành công"
@@ -2532,7 +2526,7 @@
           "socialsTitle": "Tham gia",
           "airdropDesc": "~200 triệu S cho người dùng trên Opera và Sonic.",
           "migrateBtn": "Sắp ra mắt",
-          "earnDesc": "Đặt cược $S của bạn",
+          "earnDesc": "Stake $S của bạn",
           "arcadeDesc": "Chơi các trò chơi miễn phí để kiếm điểm cho airdrop S.",
           "arcadeBtn": "Chơi ngay"
         },
@@ -2556,10 +2550,10 @@
         "home": {
           "bridge": "Cầu đến DBK Chain",
           "mintNFT": "Mint DBK Genesis NFT",
-          "mintNFTBtn": "Đúc",
-          "bridgeBtn": "Cầu",
+          "mintNFTBtn": "Mint",
+          "bridgeBtn": "Cầu nối",
           "mintNFTDesc": "Hãy là nhân chứng của DBK Chain",
-          "bridgePoweredBy": "Được powered by OP Superchain"
+          "bridgePoweredBy": "Được hỗ trợ bởi OP Superchain"
         },
         "bridge": {
           "tabs": {
@@ -2580,18 +2574,18 @@
               "withdraw": "Rút tiền",
               "proved": "Đã chứng minh",
               "deposit": "Nạp tiền",
-              "rootPublished": "Công bố root trạng thái",
-              "waitingToProve": "Cây trạng thái gốc đã được công bố",
-              "claimed": "Đã yêu cầu",
+              "rootPublished": "State root đã được công bố",
+              "waitingToProve": "State root đã được công bố",
+              "claimed": "Đã nhận",
               "readyToProve": "Sẵn sàng để chứng minh",
               "challengePeriod": "Thời gian thách thức",
-              "readyToClaim": "Sẵn sàng để yêu cầu"
+              "readyToClaim": "Sẵn sàng nhận"
             },
             "deposit": "Gửi tiền",
             "empty": "Chưa có hoạt động nào",
             "withdraw": "Rút tiền",
             "title": "Hoạt động",
-            "claimBtn": "Yêu cầu",
+            "claimBtn": "Nhận",
             "proveBtn": "Chứng minh"
           },
           "WithdrawConfirmPopup": {
@@ -2602,17 +2596,17 @@
             "title": "Rút tiền DBK Chain mất khoảng ~7 ngày",
             "question2": "Tôi hiểu rằng một khi yêu cầu rút tiền được khởi động, nó không thể bị tăng tốc hoặc hủy bỏ.",
             "tips": "Rút tiền bao gồm một quy trình 3 bước, yêu cầu 1 giao dịch DBK Chain và 2 giao dịch Ethereum.",
-            "question1": "Tôi hiểu rằng sẽ mất ~7 ngày cho đến khi các khoản tiền của tôi có thể được yêu cầu trên Ethereum sau khi tôi xác minh việc rút tiền của mình.",
-            "step3": "Yêu cầu trên Ethereum"
+            "question1": "Tôi hiểu rằng sau khi xác minh lệnh rút, tôi sẽ phải chờ khoảng 7 ngày mới có thể nhận tiền trên Ethereum.",
+            "step3": "Nhận trên Ethereum"
           },
           "labelTo": "Đến",
           "labelFrom": "Từ"
         },
         "minNFT": {
-          "myBalance": "Số dư của tôi",
+          "myBalance": " Số dư của tôi",
           "mintBtn": "Mint",
           "title": "DBK Genesis",
-          "minted": "Minted"
+          "minted": "Đã mint"
         }
       }
     },
@@ -2663,7 +2657,7 @@
         "amount": "Số tiền",
         "title": "Gửi tiền",
         "invalidAmount": "Phải dưới 500",
-        "token": "Mã thông báo",
+        "token": "Token",
         "selectToken": "Chọn Token để gửi",
         "desc": "Nạp tiền vào Tài khoản DeBank L2 của Rabby mà không tính phí bổ sung—rút bất cứ lúc nào.",
         "paymentAddr": "Địa chỉ Thanh toán",
@@ -2690,7 +2684,7 @@
         "destinationChain": "Chuỗi đích",
         "noEligibleChain": "Không có chuỗi đủ điều kiện để rút tiền",
         "selectDestinationChain": "Chọn chuỗi đích",
-        "to": "Để",
+        "to": "Đến",
         "title": "Rút tiền",
         "recipientAddress": "Địa chỉ người nhận",
         "amount": "Số lượng",
@@ -2743,7 +2737,7 @@
         "desc3": "Rabby Wallet không tính phí bổ sung. Bạn chỉ phải trả phí gas cho giao dịch của mình và một lượng nhỏ gas để gửi gas đó từ GasAccount đến địa chỉ của bạn."
       },
       "benefitCard": {
-        "title": "Thanh toán phí Gas trên tất cả chains",
+        "title": "Thanh toán phí gas trên tất cả các chuỗi",
         "subtitle": "khi bạn hết gas",
         "item1": "Không có Phí Rabby",
         "desc1": "Không có phí bổ sung để trả gas",
@@ -2776,23 +2770,23 @@
         "importAddress": "Tôi đã có một địa chỉ",
         "title": "Chào mừng bạn đến với Rabby Wallet",
         "createNewAddress": "Tạo một địa chỉ mới",
-        "desc": "Ví dụ ví của bạn cho Ethereum và EVM"
+        "desc": "Ví đáng tin cậy của bạn cho Ethereum và EVM"
       },
       "createNewAddress": {
-        "showSeedPhrase": "Hiển thị cụm từ hạt giống",
+        "showSeedPhrase": "Hiển thị cụm từ khôi phục",
         "title": "Trước Khi Bạn Bắt Đầu",
         "desc": "Vui lòng đọc và ghi nhớ những mẹo bảo mật sau đây.",
         "tip3": "Nếu tôi gỡ cài đặt Rabby mà không sao lưu cụm từ khôi phục, nó không thể được khôi phục bởi Rabby.",
         "tip1": "Nếu tôi mất hoặc chia sẻ cụm từ khôi phục của mình, tôi sẽ mất quyền truy cập vào tài sản của mình vĩnh viễn.",
-        "tip2": "Câu nói hạt giống của tôi chỉ được lưu trữ trên thiết bị của tôi. Rabby không thể truy cập vào nó."
+        "tip2": "Cụm từ khôi phục của tôi chỉ được lưu trên thiết bị. Rabby không thể truy cập cụm từ này."
       },
       "importList": {
-        "title": "Chọn Phương Thức Nhập"
+        "title": "Chọn Phương Thức Nhập "
       },
       "importPrivateKey": {
-        "title": "Nhập Khóa Riêng",
+        "title": "Nhập khóa riêng",
         "pasteCleared": "Dán và đã xóa clipboard",
-        "noWallet": "Chưa có cụm từ hạt giống hoặc khóa riêng tư?",
+        "noWallet": "Chưa có cụm từ khôi phục hoặc khóa riêng tư?",
         "createWallet": "Tạo ví",
         "placeholder": "Nhập khóa riêng tư",
         "required": "Vui lòng nhập khóa riêng tư"
@@ -2819,13 +2813,13 @@
       "successful": {
         "create": "Tạo thành công",
         "start": "Bắt đầu",
-        "import": "Nhập khẩu thành công",
+        "import": "Đã nhập thành công",
         "addMoreFrom": "Thêm nhiều địa chỉ từ {{name}}",
-        "addMoreAddr": "Thêm nhiều địa chỉ từ cụm từ hạt giống này",
+        "addMoreAddr": "Thêm nhiều địa chỉ từ cụm từ khôi phục này",
         "openWallet": "Mở Ví",
         "desc": "Rabby Wallet đã sẵn sàng để sử dụng!",
         "backupSeedPhraseNow": "Sao lưu cụm từ khôi phục ngay bây giờ",
-        "backupSeedPhrase": "Sao lưu cụm từ hạt giống"
+        "backupSeedPhrase": "Sao lưu cụm từ khôi phục"
       },
       "readyToUse": {
         "pin": "Ghim Rabby Wallet",
@@ -2834,13 +2828,13 @@
           "step1": "Nhấn vào biểu tượng mở rộng trình duyệt"
         },
         "title": "Ví của bạn trên Rabby đã sẵn sàng!",
-        "extensionTip": "Click <1/> và sau đó <3/>",
+        "extensionTip": "Nhấp vào <1/> rồi <3/>",
         "desc": "Tìm Rabby Wallet và ghim nó"
       },
       "importSeedPhrase": {
         "title": "Nhập cụm từ khôi phục",
         "createWallet": "Tạo một ví",
-        "noWallet": "Bạn chưa có cụm từ hạt giống hoặc khóa riêng?"
+        "noWallet": "Bạn chưa có cụm từ khôi phục hoặc khóa riêng?"
       },
       "importOneKey": {
         "qrcode": {
@@ -2895,26 +2889,26 @@
           "required": "Vui lòng nhập địa chỉ",
           "invalid": "Không phải là một địa chỉ hợp lệ"
         },
-        "title": "Thêm Địa Chỉ An Toàn",
-        "placeholder": "Nhập địa chỉ an toàn",
+        "title": "Thêm địa chỉ Safe",
+        "placeholder": "Nhập địa chỉ Safe",
         "loading": "Đang tìm kiếm chuỗi đã triển khai của địa chỉ này"
       },
       "importHardwareList": {
         "title": "Chọn Ví Cứng"
       },
       "importSeedOrKey": {
-        "privateKey": "Khóa Riêng",
-        "seedPhrase": "Câu Châm Cứu",
-        "title": "Cụm từ hạt giống hoặc khóa riêng"
+        "privateKey": "Khóa riêng",
+        "seedPhrase": "Cụm từ khôi phục",
+        "title": "Cụm từ khôi phục hoặc khóa riêng"
       },
       "importWalletType": {
-        "seedOrKey": "Cụm từ hạt giống hoặc Khóa riêng",
-        "hardwareWallet": "Ví dụ: Ví phần cứng"
+        "seedOrKey": "Cụm từ khôi phục hoặc Khóa riêng",
+        "hardwareWallet": "Ví phần cứng"
       }
     },
     "metamaskModeDapps": {
       "title": "Quản lý Dapps Được phép",
-      "desc": "MetaMask Mode đã được bật cho các Dapps sau đây. Bạn có thể kết nối Rabby bằng cách chọn tùy chọn MetaMask."
+      "desc": "Chế độ MetaMask đã được bật cho các DApp sau. Bạn có thể kết nối Rabby bằng cách chọn MetaMask."
     },
     "forgotPassword": {
       "home": {
@@ -2926,15 +2920,15 @@
       },
       "reset": {
         "alert": {
-          "seed": "Câu cụ thể",
+          "seed": "Cụm từ khôi phục",
           "title": "Dữ liệu sẽ bị xóa và không thể khôi phục.",
           "privateKey": "Khóa riêng"
         },
         "tip": {
           "records": "Bản ghi chữ ký",
           "whitelist": "Cài đặt Danh sách trắng",
-          "hardware": "Ví dụ: Ví cứng đã nhập",
-          "safe": "Ví dụ ví an toàn đã nhập",
+          "hardware": "Ví phần cứng đã nhập",
+          "safe": "Ví Safe đã nhập",
           "title": "Dữ liệu sẽ được giữ:",
           "watch": "Danh bạ và Địa chỉ Chỉ Xem"
         },
@@ -2979,7 +2973,7 @@
       "steps1": "1. Tải xuống Rabby Mobile",
       "downloadGooglePlay": "Google Play",
       "disableSelectAddress": "Không hỗ trợ đồng bộ cho địa chỉ {{type}}",
-      "disableSelectAddressWithSlip39": "Không hỗ trợ đồng bộ cho địa chỉ {{type}} với slip39",
+      "disableSelectAddressWithSlip39": "Không hỗ trợ đồng bộ địa chỉ {{type}} dùng SLIP-39",
       "downloadAppleStore": "Cửa hàng ứng dụng",
       "clickToShowQr": "Nhấn để chọn địa chỉ và hiển thị mã QR",
       "disableSelectAddressWithPassphrase": "Không hỗ trợ đồng bộ cho địa chỉ {{type}} với cụm mật khẩu.",
@@ -2988,7 +2982,7 @@
       "steps2": "2. Quét bằng Rabby Mobile",
       "selectedLenAddressesForSync_one": "Đã chọn {{len}} địa chỉ để đồng bộ",
       "description": "Dữ liệu địa chỉ của bạn luôn ở chế độ ngoại tuyến, được mã hóa và được chuyển giao một cách an toàn qua mã QR.",
-      "steps2Description": "*Mã QR của bạn chứa dữ liệu nhạy cảm. Hãy giữ nó riêng tư và không bao giờ chia sẻ với ai.*",
+      "steps2Description": " *Mã QR của bạn chứa dữ liệu nhạy cảm. Hãy giữ nó riêng tư và không bao giờ chia sẻ với ai.*",
       "verifyPassword": "Xác thực Mật khẩu"
     },
     "search": {
@@ -3003,7 +2997,7 @@
       },
       "tokenItem": {
         "listBy": "Danh sách bởi {{name}}",
-        "verifyDangerTips": "Đây là một mã thông báo lừa đảo.",
+        "verifyDangerTips": "Đây là một token lừa đảo.",
         "Issuedby": "Phát hành bởi",
         "gasToken": "Token Gas",
         "FDV": "FDV",
@@ -3028,7 +3022,7 @@
         "removeFromWhitelist": "Xóa khỏi danh sách trắng",
         "addWhitelist": "Thêm vào danh sách trắng",
         "addWhitelistDesc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển khoản nhanh---không cần xác nhận lần sau",
-        "notWhitelist": "Không phải địa chỉ whitelist"
+        "notWhitelist": "Không phải địa chỉ trong danh sách trắng"
       },
       "addWhitelist": {
         "title": "Thêm địa chỉ danh sách trắng",
@@ -3037,7 +3031,7 @@
       "riskAlert": {
         "riskType": {
           "risks": {
-            "dexNoDeposite": "Không phải địa chỉ gửi CEX, có thể mất tiền.",
+            "dexNoDeposite": "Đây không phải địa chỉ nạp tiền của CEX; tài sản có thể bị mất.",
             "scamAddress": "Địa chỉ lừa đảo đã được Rabby đánh dấu",
             "contractAddress": "Địa chỉ hợp đồng được phát hiện, quỹ có thể bị mất.",
             "noSend": "Bạn chưa gửi đến địa chỉ này trong 180 ngày."
@@ -3048,12 +3042,12 @@
         "cexDepositAddress": "{{cexName}} Địa chỉ Nạp tiền",
         "understandRisks": "Tôi hiểu những rủi ro và muốn tiếp tục",
         "TransferBeforeValue": "Có",
-        "TransferBefore": "Chuyển trước",
+        "TransferBefore": "Đã từng chuyển",
         "passwordPlaceholder": "Nhập mật khẩu để tiếp tục",
         "AddToWhitelist": "Thêm vào Danh sách Trắng"
       },
       "selectImportedAddress": "Chọn địa chỉ đã nhập",
-      "sendToImportedAddress": "Gửi đến Địa chỉ Nhập khẩu",
+      "sendToImportedAddress": "Gửi đến địa chỉ đã nhập",
       "selectExchangeSource": "Chọn Nguồn Giao Dịch",
       "title": "Gửi đến",
       "enterAddress": "Nhập địa chỉ",
@@ -3106,13 +3100,13 @@
           "risks": {
             "scamAddress": "Bạn đang gửi đến một địa chỉ lừa đảo",
             "contractAddress": "Bạn đang gửi đến một hợp đồng, tiền có thể bị mất.",
-            "dexNoDeposite": "Bạn đang gửi đến một địa chỉ sàn giao dịch không phải là nơi gửi tiền",
+            "dexNoDeposite": "Bạn đang gửi đến địa chỉ sàn không hỗ trợ nạp tiền",
             "noSend": "Bạn chưa gửi đến địa chỉ này trong 180 ngày."
           }
         },
         "TransferBeforeValue": "Có",
         "title": "Gửi tới địa chỉ này",
-        "TransferBefore": "Đã chuyển trước",
+        "TransferBefore": "Đã từng chuyển",
         "passwordPlaceholder": "Nhập mật khẩu để tiếp tục",
         "cexAddress": "{{cexName}} Địa chỉ",
         "cexDepositAddress": "{{cexName}} Địa chỉ Gửi tiền",
@@ -3120,7 +3114,7 @@
         "AddToWhitelist": "Thêm vào Danh sách trắng"
       },
       "tabs": {
-        "imported": "Nhập khẩu",
+        "imported": "Đã nhập",
         "whitelist": "Đã được đưa vào danh sách trắng"
       },
       "positiveTips": {
@@ -3153,8 +3147,8 @@
       "portfolio": {
         "headers": {
           "wallet": "Ví",
-          "unfoldProtocols": "Mở {{count}} Giao thức",
-          "foldProtocols": "Gấp {{count}} Protocols",
+          "unfoldProtocols": "Mở rộng {{count}} giao thức",
+          "foldProtocols": "Thu gọn {{count}} giao thức",
           "allTokenMode": "Tất cả chế độ Token",
           "lpToken": "LP-Token",
           "foldDifis": "Thu gọn {{count}} DeFi",
@@ -3188,7 +3182,7 @@
       },
       "button": {
         "send": "Gửi",
-        "bridge": "Cầu",
+        "bridge": "Cầu nối",
         "queue": "Hàng đợi",
         "pending": "{{pendingTxCount}} Đang chờ",
         "swap": "Hoán đổi"
@@ -3208,7 +3202,7 @@
           "listingFailedDesc": "Vui lòng thử lại.",
           "cancelFailed": "Thất bại!",
           "acceptFailedDesc": "Vui lòng thử lại.",
-          "listingFailed": "Đăng ký không thành công",
+          "listingFailed": "Niêm yết thất bại",
           "acceptSuccessDesc": "Bạn đã bán {{name}} thành công",
           "acceptSuccess": "Đã bán thành công",
           "cancelSuccess": "Hủy niêm yết thành công"
@@ -3223,7 +3217,7 @@
           "noOffer": "Chưa có ưu đãi nào",
           "collectionFloor": "Sàn giao dịch bộ sưu tập",
           "supportPlatform": "Nền tảng được hỗ trợ:",
-          "rarity": "Rarity",
+          "rarity": "Độ hiếm",
           "collection": "Bộ sưu tập",
           "edit": "Chỉnh sửa Danh sách",
           "accept": "Chấp nhận",
@@ -3247,18 +3241,18 @@
           "floor": "Sàn",
           "createListing": "Tạo danh sách",
           "floorDifference": "Chênh lệch sàn",
-          "listedAs": "Được liệt kê là",
+          "listedAs": "Niêm yết dưới dạng",
           "approveAndList": "Phê duyệt và Liệt kê",
-          "creatorFeeTips": "Từ thiện của người sáng tạo sẽ được trả bởi người bán.",
+          "creatorFeeTips": "Thu nhập của người sáng tạo sẽ do người bán chi trả.",
           "platformFeeTips": "Phí này là khoản phí dịch vụ của OpenSea.",
           "creatorFeeTips1": "Người bán sẽ trả thu nhập cho người sáng tạo. Thu nhập của người sáng tạo được thực thi.",
           "listOn": "Liên kết trên OpenSea",
           "proceeds": "Tiền thu được",
-          "platformFee": "Phí nền tảng Opensea ({{fee}}%)",
+          "platformFee": " Phí nền tảng Opensea ({{fee}}%)",
           "quantity": "Số lượng",
-          "rabbyFee": "Rabby phí (0%)",
+          "rabbyFee": "Phí Rabby (0%)",
           "topOffer": "Ưu đãi hàng đầu",
-          "creatorFee": "Phí người tạo ({{fee}}%)"
+          "creatorFee": "Phí nhà sáng tạo ({{fee}}%)"
         },
         "acceptModal": {
           "totalEst": "Tổng ước tính thu nhập",
@@ -3266,10 +3260,10 @@
           "offerPrice": "Giá đề nghị",
           "acceptOffer": "Chấp nhận Đề nghị",
           "platformFeeTips": "Phí này là chi phí dịch vụ của OpenSea.",
-          "platformFee": "Phí nền tảng Opensea ({{fee}}%)",
-          "rabbyFee": "Rabby phí (0%)",
+          "platformFee": " Phí nền tảng Opensea ({{fee}}%)",
+          "rabbyFee": "Phí Rabby (0%)",
           "floorDifference": "Chênh lệch sàn",
-          "creatorFee": "Phí người sáng tạo ({{fee}}%)",
+          "creatorFee": "Phí nhà sáng tạo ({{fee}}%)",
           "creatorFeeTips": "Thu nhập của người sáng tạo sẽ được thanh toán bởi người bán.",
           "offer": "Cung cấp",
           "title": "Chấp nhận đề xuất",
@@ -3313,7 +3307,7 @@
         "size": "Kích thước",
         "filled": "Đã khớp",
         "currentPrice": "Giá hiện tại",
-        "limitPrice": "Giá Limit",
+        "limitPrice": "Giá giới hạn",
         "marginUsage": "Sử dụng ký quỹ",
         "cancelLimitOrder": "Hủy lệnh Limit",
         "buy": "Mua",
@@ -3344,16 +3338,16 @@
         "orderFilled": "Lệnh đã được thực thi",
         "buyFilledContentNoPercentage": "Đã mua {{sz}} {{coin}} tại @{{price}} USDC",
         "orderPlaced": "Lệnh đã được đặt",
-        "terminalTwapSuccess": "Lệnh TWAP trên Terminal đã được thực hiện thành công.",
+        "terminalTwapSuccess": "Đã kết thúc lệnh TWAP.",
         "setAutoCloseSuccess": "Đóng vị thế tự động đã được thiết lập thành công",
         "limitOrderFilled": "Lệnh giới hạn đã được thực thi ({{percent}}%)",
-        "terminalTwap": "Giao diện TWAP",
+        "terminalTwap": "Kết thúc TWAP",
         "cancelFailed": "Hủy lệnh thất bại",
         "sellFilledContent": "đã bán {{sz}} / {{origSz}} {{coin}} được khớp tại giá @{{price}} USDC",
         "cancelAllOrderSuccess": "Đã hủy thành công {{count}} lệnh",
         "openTPSlLimitOrderSuccess": "{{tpsl}} lệnh giới hạn đã được đặt {{direction}} {{coin}}-USD: Khối lượng {{size}} tại giá ${{price}}",
         "openLimitOrderSuccess": "Lệnh giới hạn đã được đặt {{direction}} {{coin}}-USD: Kích thước {{size}} tại giá ${{price}}",
-        "openScaleOrderSuccess": "Lệnh gia tăng vị thế đã được đặt {{direction}} {{coin}}-USD: Kích thước {{size}}",
+        "openScaleOrderSuccess": "Lệnh theo thang đã được đặt {{direction}} {{coin}}-USD: Khối lượng {{size}}",
         "openPositionSuccess": "{{direction}} {{coin}}-USD: Khối lượng {{size}} tại giá ${{price}}",
         "openTWAPOrderSuccess": "Lệnh TWAP đã mở {{direction}} {{coin}}-USD: Kích thước {{size}}",
         "buyFilledContent": "Đã mua {{sz}} / {{origSz}} {{coin}} khớp tại @{{price}} USDC",
@@ -3389,13 +3383,13 @@
         "thirdDescription": "Khi bạn dự đoán giá sẽ giảm, bạn mở vị thế bán khống. Nếu giá giảm, bạn kiếm được lợi nhuận. Nếu giá tăng, bạn thua lỗ.",
         "secondDescription": "Khi bạn kỳ vọng giá sẽ tăng, bạn mở vị thế dài (long). Nếu giá tăng, bạn có lợi. Nếu giá giảm, bạn thua.",
         "secondTitle": "Mở vị thế dài",
-        "firstTitle": "Master Hợp đồng tương lai vĩnh viễn"
+        "firstTitle": "Làm chủ hợp đồng tương lai vĩnh viễn"
       },
       "historyDetail": {
         "title": {
-          "closeLong": "Đóng vị thế dài",
+          "closeLong": "Đóng vị thế mua",
           "closeShort": "Đóng vị thế bán khống",
-          "closeLongTp": "Đóng vị thế dài\nChốt lời",
+          "closeLongTp": "Đóng vị thế mua để chốt lời",
           "openShort": "Mở vị thế bán khống",
           "closeLongLiquidation": "Đóng vị thế dài - Thanh lý",
           "openLong": "Mở vị thế Long",
@@ -3411,7 +3405,7 @@
         "size": "Kích thước vị thế",
         "tradeValue": "Giá trị giao dịch",
         "closedPnl": "PNL đã thực hiện",
-        "feeDesc": "Khi người dùng thực hiện giao dịch, cả <1>phí giao dịch</1> và <2>phí nhà phát triển</2> đều được áp dụng.",
+        "feeDesc": "Khi người dùng thực hiện giao dịch, cả <1>phí giao dịch</1> và <2>phí builder</2> đều được áp dụng.",
         "amount": "Số lượng",
         "asset": "Tài sản",
         "action": "Thao tác",
@@ -3461,15 +3455,15 @@
         "openInterestTips": "Tổng vị thế đang mở của tất cả người dùng trên hợp đồng vĩnh viễn này.",
         "fundingGainsTips": "Đây là lợi nhuận funding ròng kể từ khi vị thế được mở. Funding là một phí theo giờ mà các nhà giao dịch trả hoặc nhận để giữ cho giá của hợp đồng vĩnh viễn (perp) gần với giá thực tế của token.",
         "fundingPaymentsTips": "Đây là các khoản thanh toán funding ròng kể từ khi vị thế được mở. Phí funding là một khoản phí theo giờ mà các nhà giao dịch trả hoặc nhận để giữ cho giá của hợp đồng vĩnh viễn gần với giá thực tế của token.",
-        "fundingTips": "Đây là một khoản phí theo giờ mà các nhà giao dịch trả hoặc nhận để giữ cho giá của hợp đồng vĩnh viễn gần với giá thực tế của token. Nếu dương, vị thế dài thanh toán cho vị thế ngắn. Nếu âm, vị thế ngắn thanh toán cho vị thế dài."
+        "fundingTips": "Đây là khoản phí theo giờ mà nhà giao dịch trả hoặc nhận để giữ giá hợp đồng vĩnh viễn gần với giá thực tế của token. Nếu dương, vị thế mua trả cho vị thế bán; nếu âm, vị thế bán trả cho vị thế mua."
       },
       "accountSelector": {
         "activatedAddress": "Đã kích hoạt",
         "notActivatedAddress": "Chưa kích hoạt",
         "hyperliquidBalance": "Số dư Perps",
         "noPosition": "Chưa có vị thế",
-        "positions": "Vị trí",
-        "position": "Vị trí",
+        "positions": "Vị thế",
+        "position": "Vị thế",
         "selectAddress": "Chọn một Địa chỉ"
       },
       "riskLevel": {
@@ -3479,7 +3473,7 @@
         },
         "warning": {
           "title": "Cảnh báo",
-          "description": "Vị thế của bạn đang đối mặt với nguy cơ thanh lý.\nKhoảng cách tới giá thanh lý là từ 3% đến 8%.\nTheo dõi vị thế của bạn một cách cẩn thận và xem xét bổ sung ký quỹ."
+          "description": "Vị thế của bạn đang tiến gần đến mức có nguy cơ thanh lý. Khoảng cách tới giá thanh lý nằm trong khoảng 3%–8%. Hãy theo dõi cẩn thận và cân nhắc bổ sung ký quỹ."
         },
         "safe": {
           "description": "Vị thế của bạn đang ở mức an toàn. Khoảng cách tới giá thanh lý lớn hơn 8%. Tiếp tục theo dõi diễn biến thị trường.",
@@ -3525,7 +3519,7 @@
       "deposit": "Nạp tiền",
       "yourPosition": "Vị thế của bạn",
       "seeMore": "Xem thêm",
-      "availableBalance": "Có sẵn: {{balance}}",
+      "availableBalance": "Khả dụng: {{balance}}",
       "learnAboutPerps": "Tìm hiểu về Perps",
       "closeLong": "Đóng vị thế mua",
       "providerFeeTips": "Phí Hyperliquid: {{fee}}",
@@ -3554,7 +3548,7 @@
       "tradePerps": "Giao dịch Perps",
       "leverageRangeMaxError": "Đòn bẩy tối đa là {{max}}x",
       "openInterest": "Tổng số hợp đồng đang mở",
-      "rabbyFeeTipsV2": "Rabby phí: 0,02%",
+      "rabbyFeeTipsV2": "Phí Rabby: 0,02%",
       "marginCross": "Ký quỹ (chéo)",
       "margin": "Ký quỹ",
       "stopLossTipsShort": "Giá dừng lỗ phải cao hơn giá hiện tại.",
@@ -3567,7 +3561,7 @@
       "stopLossTipsShortLiquidation": "Giá cao hơn giá thanh lý vị thế ({{price}})",
       "pnl": "Lợi nhuận và lỗ",
       "liquidationPrice": "Giá thanh lý vị thế",
-      "closeShort": "Đóng vị thế Short",
+      "closeShort": "Đóng vị thế bán khống",
       "lastUsed": "Đã sử dụng lần cuối",
       "stopLossWhen": "Đặt giá dừng lỗ",
       "pending": "Đang chờ xử lý",
@@ -3595,7 +3589,7 @@
       "openLong": "Mở vị thế mua",
       "funding": "Tỷ lệ funding",
       "fundingRate": "Tỷ lệ cấp vốn",
-      "rabbyFeeTipsZero": "Rabby phí: 0%",
+      "rabbyFeeTipsZero": "Phí Rabby: 0%",
       "openPositionTips": "Giao dịch hợp đồng vĩnh viễn mang lại rủi ro đáng kể, bao gồm khả năng mất đột ngột và toàn bộ khoản đầu tư và tài sản thế chấp của bạn do đòn bẩy cao và biến động thị trường, và có thể không phù hợp với tất cả người dùng. Giá có thể bị ảnh hưởng bởi tỷ lệ funding và thanh khoản và bạn có thể phải chịu thanh lý tự động mà không nhận được thông báo trước. Dữ liệu thị trường được cung cấp bởi Hyperliquid.",
       "takeProfit": "Lệnh chốt lời",
       "estimatedLiquidationPrice": "Giá thanh lý ước tính",
@@ -3615,15 +3609,15 @@
       "unrealizedPnl": "Lãi lỗ chưa thực hiện",
       "openProModeInTab": "Mở Chế độ Chuyên nghiệp trong Tab",
       "liquidationDistanceUp": "Đi lên <bold>{{percent}}</bold> sẽ kích hoạt thanh lý",
-      "cannotChangeMarginModeWithOpenPositions": "Không thể thay đổi Chế độ Margin khi có vị trí mở.",
+      "cannotChangeMarginModeWithOpenPositions": "Không thể thay đổi chế độ ký quỹ khi đang có vị thế mở.",
       "liquidationDistanceDown": "Đi xuống <bold>{{percent}}</bold> sẽ kích hoạt thanh lý",
-      "crossMarginDesc": "Tất cả các vị trí đều chia sẻ cùng một khoản ký quỹ. Điều này giảm khả năng một vị trí đơn lẻ bị thanh lý, nhưng tất cả các quỹ ký quỹ chéo có thể bị mất trong những biến động cực đoan của thị trường.",
+      "crossMarginDesc": "Tất cả các vị thế đều dùng chung một khoản ký quỹ. Điều này giảm khả năng một vị thế riêng lẻ bị thanh lý, nhưng toàn bộ quỹ ký quỹ chéo có thể bị mất khi thị trường biến động cực đoan.",
       "isolatedMarginDesc": "Mỗi vị thế sử dụng ký quỹ riêng của nó. Lỗ giới hạn ở vị thế đó, nhưng nó có thể bị thanh lý dễ hơn.",
       "newUserGuide": {
         "learnMore": "Tìm hiểu thêm"
       },
       "addFunds": "Thêm Quỹ",
-      "crossMarginLiqPriceTip": "Trong chế độ Cross Margin, giá thanh lý cho một vị trí đơn lẻ chỉ là một ước tính để tham khảo.",
+      "crossMarginLiqPriceTip": "Trong chế độ ký quỹ chéo, giá thanh lý của một vị thế riêng lẻ chỉ là giá trị ước tính để tham khảo.",
       "selectTokenToWithdraw": "Chọn Token để Rút",
       "PerpsDepositCard": {
         "availableToTrade": "Có sẵn để giao dịch: ",
@@ -3685,7 +3679,7 @@
       },
       "transferToSpot": "Chuyển sang Spot",
       "transferToPerps": "Chuyển sang Perps",
-      "selectChainToWithdraw": "Chọn Chain để rút",
+      "selectChainToWithdraw": "Chọn chuỗi để rút tiền",
       "perpsWidgetGuide": {
         "title": "PNL Của Bạn Luôn Trong Tầm Nhìn",
         "bulletViewPositions": "Theo dõi các vị thế hàng đầu trên bất kỳ trang web nào.",
@@ -3700,9 +3694,9 @@
         "volume": "Khối lượng",
         "searchMarkets": "Tìm kiếm thị trường",
         "24hVol": "Khối lượng 24h",
-        "mark": "Giá tham chiếu",
+        "mark": "Giá đánh dấu",
         "24hChange": "Biến động 24 giờ",
-        "openInterest": "Tồn mở hợp đồng",
+        "openInterest": "Tổng số hợp đồng đang mở",
         "lastPrice": "Giá giao dịch cuối cùng",
         "symbol": "Ký hiệu",
         "fundingCountdown": "Tỷ lệ funding / Đếm ngược",
@@ -3711,7 +3705,7 @@
         "oracleTips": "Trung vị của các giá bên ngoài do các nhà xác thực báo cáo, được dùng để tính toán tỷ lệ funding.",
         "openInterestTips": "Vị thế mở hai chiều: tổng các vị thế dài và ngắn trên hợp đồng này.",
         "oracle": "Oracle (nguồn dữ liệu giá ngoài chuỗi)",
-        "fundingTips": "Phí funding theo giờ là tỷ lệ mà vị thế dài trả cho vị thế ngắn (nếu âm, vị thế ngắn trả cho vị thế dài). Không có phí liên quan đến funding, đây là một giao dịch ngang hàng giữa người dùng nhằm đẩy giá về mức giá giao ngay. Xem Docs để biết chi tiết.",
+        "fundingTips": "Phí funding theo giờ là tỷ lệ mà vị thế mua trả cho vị thế bán (nếu âm, vị thế bán trả cho vị thế mua). Funding không phát sinh phí nền tảng; đây là khoản chuyển ngang hàng giữa người dùng nhằm đưa giá về gần giá giao ngay. Xem tài liệu để biết chi tiết.",
         "categoryAll": "TẤT CẢ"
       },
       "userInfo": {
@@ -3731,11 +3725,11 @@
           "liqPrice": "Giá thanh lý",
           "positions": "Vị thế",
           "fee": "Phí",
-          "reduceOnly": "Chỉ giảm",
+          "reduceOnly": "Chỉ giảm vị thế",
           "rate": "Tỷ lệ cấp vốn",
           "filled": "Đã khớp lệnh",
           "price": "Giá",
-          "side": "Phía",
+          "side": "Hướng",
           "direction": "Hướng",
           "unrealizedPnlTooltip": "Giá đánh dấu được sử dụng để ước tính PNL chưa thực hiện. Chỉ có giá giao dịch được sử dụng cho PNL đã thực hiện.",
           "size": "Kích thước vị thế",
@@ -3750,13 +3744,13 @@
           "fundingHistory": "Lịch sử tỷ lệ funding",
           "slice": "Phần",
           "funding": "Tỷ lệ funding",
-          "closedPnlTooltip": "PNL đã đóng bao gồm phí và tiền hoàn phí giao dịch",
+          "closedPnlTooltip": "PNL đã thực hiện bao gồm phí và khoản hoàn phí giao dịch",
           "unrealizedPnl": "Lợi nhuận/lỗ chưa thực hiện",
           "payment": "Thanh toán",
           "markEntry": "Giá tham chiếu / Giá vào vị thế",
           "closedPnl": "PnL đã thực hiện",
-          "fundingTipsV2": "Net funding kể từ khi vị trí được mở. Một giá trị funding đỏ (âm) cho thấy đã trả tiền funding, trong khi giá trị funding xanh (dương) cho thấy đã nhận được tiền funding.",
-          "fundingTipsBold": "Điều này cho thấy tổng số phí tài trợ của bạn đã được thanh toán kể từ khi vị trí được mở. <bold>Giá trị xanh (dương)</bold> có nghĩa là bạn đã kiếm được từ các nhà giao dịch khác, trong khi <bold>Giá trị đỏ (âm)</bold> là chi phí tài trợ mà bạn đã trả cho họ.",
+          "fundingTipsV2": "Khoản funding ròng kể từ khi vị thế được mở. Giá trị đỏ (âm) cho biết funding đã trả, còn giá trị xanh (dương) cho biết funding đã nhận.",
+          "fundingTipsBold": "Đây là tổng funding đã quyết toán kể từ khi vị thế được mở. <bold>Giá trị xanh (dương)</bold> là khoản bạn nhận từ nhà giao dịch khác, còn <bold>giá trị đỏ (âm)</bold> là chi phí funding bạn đã trả cho họ.",
           "assets": "Tài sản",
           "about": "Giới thiệu"
         },
@@ -3791,10 +3785,10 @@
           "limitClose": "Đóng lệnh giới hạn",
           "closeLimit": "Lệnh đóng giới hạn",
           "closeMarket": "Đóng vị thế theo giá thị trường",
-          "closedPnl": "PNL đã đóng",
-          "marketCloseBtn": "Đóng thị trường",
+          "closedPnl": "PNL đã thực hiện",
+          "marketCloseBtn": "Đóng theo giá thị trường",
           "invalidPrice": "Giá không hợp lệ",
-          "marketCloseTitle": "Đóng vị trí Thị trường",
+          "marketCloseTitle": "Đóng vị thế theo giá thị trường",
           "dontShowAgain": "Không hiển thị lại điều này nữa",
           "marketCloseDesc": "Điều này sẽ cố gắng đóng vị thế ngay lập tức.",
           "confirmCloseAllTitle": "Xác nhận Đóng Tất Cả Vị Thế",
@@ -3806,7 +3800,7 @@
           "sell": "Bán",
           "buyToSell": "Mua để bán",
           "sellToBuy": "Bán để mua",
-          "reverseAction": "Đảo ngược {{size}} {{coin}} {{side}}"
+          "reverseAction": "{{side}} {{size}} {{coin}} để đảo chiều vị thế"
         },
         "openOrders": {
           "time": "Thời gian",
@@ -3822,8 +3816,8 @@
           "type": "Loại"
         },
         "distanceRiskTag": {
-          "goingUp": "Khi giá tăng lên {{percent}} sẽ kích hoạt thanh lý vị thế",
-          "goingDown": "Giảm {{percent}} sẽ kích hoạt thanh lý ký quỹ."
+          "goingUp": "Giá tăng {{percent}} sẽ kích hoạt thanh lý vị thế",
+          "goingDown": "Giá giảm {{percent}} sẽ kích hoạt thanh lý vị thế."
         },
         "twap": {
           "activated": "Đã kích hoạt",
@@ -3843,13 +3837,13 @@
           "rejected": "Từ chối",
           "iocCancelRejected": "Bị từ chối do hủy IOC",
           "canceled": "Đã hủy",
-          "filled": "Đã hoàn thành",
+          "filled": "Đã khớp lệnh",
           "partiallyFilled": "Đã lấp đầy một phần",
-          "reduceOnlyCanceled": "Hủy bỏ do chỉ giảm bớt",
+          "reduceOnlyCanceled": "Hủy bỏ do chỉ giảm bớt ",
           "badAloPxRejected": "Bị từ chối do ALO PX xấu",
           "minTradeNtlRejected": "Bị từ chối do min trade NTL",
           "perpMarginRejected": "Đã từ chối ký quỹ Perp",
-          "siblingFilledCanceled": "Bị hủy do thứ tự của sibling đã được lấp đầy"
+          "siblingFilledCanceled": "Đã hủy vì lệnh liên kết đã được khớp"
         },
         "assets": {
           "columnAsset": "Tài sản",
@@ -3929,35 +3923,35 @@
         "sizePerSuborder": "Khối lượng cho mỗi lệnh con",
         "runtimeTooLong": "Thời gian chạy phải nhỏ hơn 24 giờ",
         "reduceOnly": "Chỉ giảm vị thế",
-        "startAndEndPriceMustBeDifferent": "Giá mở vị thế và giá đóng vị thế phải khác nhau",
+        "startAndEndPriceMustBeDifferent": "Giá bắt đầu và giá kết thúc phải khác nhau",
         "totalOrders": "Tổng số lệnh",
         "runtimeTooShort": "Thời lượng chạy phải lớn hơn 5 phút",
         "runtimeTips": "(5 phút - 24 giờ)",
         "tpSellMustBeHigherThanMidPrice": "Giá đặt lệnh bán phải cao hơn giá giữa.",
         "marginCross": "Ký quỹ chéo",
-        "stopLossExpectedPnL": "Lệnh dừng lỗ PnL dự kiến",
+        "stopLossExpectedPnL": "PnL dự kiến khi cắt lỗ",
         "reduceOnlyTooLarge": "Chỉ giảm quá lớn",
-        "takeProfitExpectedPnL": "Chốt lời PnL kỳ vọng",
-        "startPrice": "Giá khởi điểm",
+        "takeProfitExpectedPnL": "PnL dự kiến khi chốt lời",
+        "startPrice": "Giá bắt đầu",
         "tpSl": "Chốt lời / Cắt lỗ",
         "slSellMustBeLowerThanMidPrice": "Giá lệnh dừng bán phải thấp hơn giá giữa.",
-        "endPrice": "Giá đóng vị thế",
+        "endPrice": "Giá kết thúc",
         "minimumSuborderSize": "Kích thước lệnh con TWAP tối thiểu là $10.",
         "limitPrice": "Giá giới hạn",
-        "sizeSkewTooltip": "Tỷ lệ giữa giá kết thúc và giá bắt đầu. Ví dụ, nếu độ lệch kích thước bằng 2.0 thì một lệnh giới hạn cho giá kết thúc sẽ được đặt với gấp đôi kích thước của giá bắt đầu. Độ lệch kích thước bằng 1.0 tạo ra các lệnh có kích thước bằng nhau.",
+        "sizeSkewTooltip": "Tỷ lệ khối lượng lệnh giữa giá kết thúc và giá bắt đầu. Ví dụ, nếu độ lệch khối lượng là 2.0 thì lệnh giới hạn ở giá kết thúc sẽ có khối lượng gấp đôi lệnh ở giá bắt đầu. Giá trị 1.0 tạo ra các lệnh có khối lượng bằng nhau.",
         "randomizeTooltip": "Đảo ngẫu nhiên thời điểm và kích thước của các lệnh phụ nhằm làm cho chúng khó đoán hơn.",
         "buyLong": "Mua / Mở vị thế dài",
         "sellShort": "Bán khống",
         "aloTooLargeBuy": "Giá đặt lệnh phải thấp hơn giá chào bán tốt nhất.",
         "aloTooLargeSell": "Tất cả giá lệnh phải cao hơn giá mua tốt nhất.",
-        "currentPosition": "Vị trí hiện tại",
+        "currentPosition": "Vị thế hiện tại",
         "deposit": "Nạp tiền",
         "addFundsToGetStarted": "Thêm tiền để bắt đầu",
         "notAvailableInRegion": "Không khả dụng ở khu vực của bạn.",
         "price": "Giá",
-        "action": "Hành động",
+        "action": "Thao tác",
         "Sell": "Bán",
-        "long": "Dài",
+        "long": "Mua",
         "cost": "Chi phí",
         "sellTrigger": "Bán Kích Hoạt",
         "sideShortSell": "bán (short)",
@@ -3971,12 +3965,12 @@
         "tpTriggerMoreThanOrderPrice": "Giá kích hoạt TP của bạn phải cao hơn giá đơn hàng của bạn.",
         "slTriggerLessThanOrderPrice": "Giá kích hoạt SL của bạn nên thấp hơn giá đặt hàng của bạn.",
         "orderTypeTooltipMarket": "Lệnh thị trường sẽ được khớp ngay lập tức với giá thị trường tốt nhất có sẵn.",
-        "tpTriggerPriceIsZero": "Giá kích hoạt TP của bạn là 0 và sẽ không được đặt khi bạn đi {{side}}.",
-        "slTriggerPriceIsZero": "Giá kích hoạt SL của bạn là 0 và sẽ không được thiết lập khi bạn đi {{side}}.",
-        "orderTypeTooltipTakeLimit": "Lệnh Take Limit trở thành lệnh giới hạn khi giá take xác định được đạt đến. Đặt một mức giá kích hoạt để kích hoạt lệnh.",
+        "tpTriggerPriceIsZero": "Giá kích hoạt TP bằng 0 nên sẽ không được đặt khi mở vị thế {{side}}.",
+        "slTriggerPriceIsZero": "Giá kích hoạt SL bằng 0 nên sẽ không được đặt khi mở vị thế {{side}}.",
+        "orderTypeTooltipTakeLimit": "Lệnh chốt lời giới hạn sẽ trở thành lệnh giới hạn khi đạt mức giá chốt lời đã chỉ định. Hãy chỉ định giá kích hoạt để kích hoạt lệnh.",
         "orderTypeTooltipStopMarket": "Lệnh Dừng Thị Trường trở thành lệnh thị trường khi giá chỉ định được đạt đến. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
         "orderTypeTooltipStopLimit": "Lệnh Dừng Giới Hạn trở thành lệnh giới hạn khi giá dừng chỉ định được đạt. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
-        "orderTypeTooltipTakeMarket": "Thực hiện các lệnh thị trường sẽ trở thành lệnh thị trường khi một mức giá cụ thể được đạt tới. Chỉ định một mức giá kích hoạt để kích hoạt lệnh.",
+        "orderTypeTooltipTakeMarket": "Lệnh chốt lời thị trường sẽ trở thành lệnh thị trường khi đạt mức giá chốt lời đã chỉ định. Hãy chỉ định giá kích hoạt để kích hoạt lệnh.",
         "Buy": "Mua",
         "max": "TỐI ĐA",
         "buyTrigger": "Mua Kích hoạt",
@@ -3984,11 +3978,11 @@
         "hour": "giờ",
         "maxDurationTwap": "Thời gian tối đa để thực hiện lệnh TWAP là",
         "totalTime": "Thời gian tổng cộng (5 phút - 24 giờ)",
-        "orderTypeTooltipScale": "Đơn hàng được phân chia cho phép bạn chia một số tiền thành nhiều đơn hàng con để giảm thiểu tác động đến thị trường.",
+        "orderTypeTooltipScale": "Lệnh chia bậc cho phép bạn chia khối lượng thành nhiều lệnh con để giảm thiểu tác động đến thị trường.",
         "orderTypeTooltipLimit": "Lệnh giới hạn là lệnh mua hoặc bán ở một mức giá cụ thể hoặc tốt hơn. Lệnh giới hạn không được đảm bảo sẽ được thực hiện.",
         "bboTips": "Giá thầu tốt nhất (BBO) đề cập đến giá chào bán tốt nhất và giá thầu tốt nhất có sẵn trên sổ lệnh tại bất kỳ thời điểm nào. Các lệnh BBO luôn được đặt bằng cách sử dụng kích thước tick tối thiểu chính xác, đảm bảo giá cả chính xác và chi tiết, độc lập với sở thích hiển thị.",
         "orderTypeTooltipTwap": "TWAP (Giá trung bình theo thời gian) là một chiến lược thực hiện giao dịch theo thuật toán nhằm mục tiêu đạt được mức giá thực hiện trung bình gần với giá trung bình theo thời gian của giai đoạn do người dùng chỉ định.",
-        "min": "min",
+        "min": "phút",
         "swapStableCoins": "Hoán đổi Stablecoin"
       },
       "marginMode": {
@@ -4022,7 +4016,7 @@
         "takeProfitExpectedPnl": "Chốt lời: PnL dự kiến",
         "gain": "Lợi nhuận",
         "confirm": "Xác nhận",
-        "stopLossExpectedPnl": "Lệnh dừng lỗ: PnL kỳ vọng",
+        "stopLossExpectedPnl": "PnL dự kiến khi cắt lỗ",
         "loss": "lỗ",
         "entryCurrentPrice": "Giá vào / Giá hiện tại",
         "takeProfit": "Chốt lời",
@@ -4050,7 +4044,7 @@
         "crossMarginRatioTips": "Ký quỹ duy trì / Số dư ký quỹ. Các vị thế ký quỹ chéo của bạn sẽ bị thanh lý nếu Tỷ lệ ký quỹ đạt 100%.",
         "unrealizedPnl": "Lợi nhuận và lỗ chưa thực hiện",
         "crossAccountLeverageTips": "Đòn bẩy ký quỹ chéo = Tổng giá trị vị thế ký quỹ chéo / Giá trị tài khoản ký quỹ chéo.",
-        "available": "Có sẵn:",
+        "available": "Có sẵn: ",
         "accountSummary": "Tổng quan tài khoản",
         "unifiedAccountSummary": "Tổng quan Tài khoản Thống nhất",
         "unifiedAccountRatio": "Tỷ lệ Tài khoản Thống nhất",
@@ -4081,7 +4075,7 @@
         "pending": "Đang chờ xử lý",
         "positionCount": "{{count}} vị thế",
         "deposit": "Nạp ký quỹ",
-        "onePosition": "1 vị trí",
+        "onePosition": "1 vị thế",
         "availableBalanceTips": "Số dư khả dụng"
       },
       "orderBook": {
@@ -4095,7 +4089,7 @@
         "price": "Giá",
         "viewBids": "Lệnh mua",
         "noTrades": "Chưa có giao dịch",
-        "markPrice": "Giá tham chiếu",
+        "markPrice": "Giá đánh dấu",
         "trades": "Giao dịch",
         "viewAsks": "Giá bán",
         "avgPrice": "Giá TB",
@@ -4103,8 +4097,8 @@
         "sumUsd": "Tổng USD"
       },
       "editMargin": {
-        "longLiquidationTips": "Giảm {{percent}} sẽ kích hoạt việc thanh lý",
-        "currentPosition": "Vị trí hiện tại",
+        "longLiquidationTips": "Giảm {{percent}} sẽ kích hoạt thanh lý",
+        "currentPosition": "Vị thế hiện tại",
         "configureMargin": "Cấu hình Biên độ",
         "shortLiquidationTips": "Đi lên {{percent}} sẽ kích hoạt thanh lý",
         "title": "Quản lý Margin",
@@ -4130,9 +4124,9 @@
         "orderType": "Loại lệnh",
         "currentPrice": "Giá hiện tại",
         "check": "Kiểm tra",
-        "orderTypeMarket": "Market",
-        "orderTypeLimit": "Limit",
-        "limitPrice": "Giá Limit",
+        "orderTypeMarket": "Thị trường",
+        "orderTypeLimit": "Giới hạn",
+        "limitPrice": "Giá giới hạn",
         "mayExecuteImmediately": "Lệnh Limit này có thể được khớp ngay",
         "setLimitOrderBtn": "Đặt lệnh Limit",
         "free": "Miễn phí",
@@ -4152,7 +4146,7 @@
         "stopLossWhenPriceBelow": "Cắt lỗ khi giá xuống dưới",
         "takeProfitWhenPriceBelow": "Chốt lời khi giá dưới",
         "short": "Bán khống",
-        "long": "Vị thế dài",
+        "long": "Mua",
         "available": "Có sẵn",
         "rabbyFee": "Rabby Phí",
         "size": "Kích thước"
@@ -4200,13 +4194,13 @@
       },
       "PerpsAutoCloseModal": {
         "takeProfitTipsLong": "Giá chốt lời phải cao hơn giá hiện tại.",
-        "youLoss": "Bạn thua",
+        "youLoss": "Bạn lỗ",
         "stopLoss": "Lệnh dừng lỗ",
         "stopLossTipsShort": "Giá dừng lỗ phải cao hơn giá hiện tại.",
         "stopLossTipsLong": "Giá dừng lỗ phải thấp hơn giá hiện tại.",
-        "currentPrice": "Giá hiện tại:",
+        "currentPrice": "Giá hiện tại: ",
         "takeProfit": "Chốt lời",
-        "youGain": "Bạn được lợi",
+        "youGain": "Bạn lãi",
         "stopLossWhen": "Dừng lỗ khi",
         "cancel": "Hủy",
         "title": "Đóng vị thế tự động",
@@ -4245,13 +4239,13 @@
           "my_balance": "Số dư của tôi",
           "token_balance": "Token/Số dư",
           "mySupplies": "Nhà cung cấp của tôi",
-          "token": "Mã thông báo",
+          "token": "Token",
           "totalBorrowed": "Tổng số đã vay",
           "token_tvl": "Token/TVL",
           "my_assets": "Tài sản của tôi"
         },
         "item": {
-          "wrapperToken": "Wrapped token cho {{name}}"
+          "wrapperToken": "Token được bọc của {{name}}"
         }
       },
       "repayDetail": {
@@ -4260,19 +4254,19 @@
           "wallet": "Số dư ví"
         },
         "actions": "Trả nợ",
-        "amountTitle": "Số dư:",
+        "amountTitle": "Số dư: ",
         "approveAndRepay": "Chấp thuận và Trả nợ",
         "repayWith": "Trả nợ bằng"
       },
       "supplyDetail": {
-        "amountTitle": "Có sẵn:",
+        "amountTitle": "Có sẵn: ",
         "actions": "Cung cấp",
-        "supplied": "Cung cấp",
+        "supplied": "Đã cung cấp",
         "enabled": "Đã bật",
         "unavailable": "Không khả dụng",
         "availableToBorrow": "Có sẵn để vay",
-        "supplyBalance": "Cung Cấp Cân Bằng",
-        "collateralization": "Đảm bảo tài sản",
+        "supplyBalance": "Số dư cung cấp",
+        "collateralization": "Thế chấp",
         "supplyAPY": "Cung cấp APY",
         "approveAndSupply": "Phê duyệt và Cung cấp",
         "isolatedTips": "Tài sản cho vay/mượn hiện có của bạn không được hỗ trợ."
@@ -4291,8 +4285,8 @@
       "toggleCollateralModal": {
         "toggleRiskTexts": {
           "canNotUseThisCurrencyAsCollateral": "Bạn không thể sử dụng loại tiền tệ này làm tài sản thế chấp.",
-          "doNotHaveSuppliesInThisCurrency": "Bạn không có nguồn cung trong loại tiền tệ này.",
-          "canNotSwitchUsageAsCollateralMode": "Bạn không thể chuyển đổi việc sử dụng chế độ ký quỹ cho loại tiền tệ này, vì điều đó sẽ gây ra cuộc gọi ký quỹ.",
+          "doNotHaveSuppliesInThisCurrency": "Bạn không có tài sản đã gửi trong token này.",
+          "canNotSwitchUsageAsCollateralMode": "Không thể dùng tài sản này làm tài sản thế chấp vì sẽ gây ra rủi ro thanh lý.",
           "zeroLTVWithdrawBlocked": "Tài sản có LTV bằng 0 ({{assets}}) phải được rút hoặc vô hiệu hóa làm tài sản thế chấp để thực hiện hành động này."
         },
         "closeTitle": "Xem lại việc tắt",
@@ -4300,16 +4294,16 @@
         "exitIsolationModeTitle": "Thoát chế độ cách ly",
         "enableIsolationModeTitle": "Kích hoạt Chế độ Isolate",
         "exitIsolationModeDesc": "Bạn sẽ thoát khỏi chế độ cách ly và các token khác bây giờ có thể được sử dụng làm tài sản thế chấp.",
-        "closeDesc": "Việt ngữ: Việc vô hiệu hóa tài sản này làm tài sản thế chấp sẽ ảnh hưởng đến khả năng vay và Hệ số Sức khỏe của bạn.",
-        "riskToLiquidationText": "Bạn không thể chuyển đổi chế độ sử dụng sang chế độ tài sản thế chấp cho đồng tiền này, vì điều đó sẽ gây ra cuộc gọi tài sản thế chấp.",
-        "openDesc": "Bật tài sản này làm tài sản thế chấp sẽ tăng cường khả năng vay và Hệ số Sức khỏe của bạn. Tuy nhiên, nó có thể bị thanh lý nếu hệ số sức khỏe của bạn giảm xuống dưới 1.",
+        "closeDesc": "Việc tắt tài sản này làm tài sản thế chấp sẽ ảnh hưởng đến khả năng vay và Hệ số sức khỏe của bạn.",
+        "riskToLiquidationText": "Không thể dùng tài sản này làm tài sản thế chấp vì sẽ gây ra rủi ro thanh lý.",
+        "openDesc": "Bật tài sản này làm tài sản thế chấp sẽ tăng khả năng vay và Hệ số sức khỏe. Tuy nhiên, vị thế có thể bị thanh lý nếu Hệ số sức khỏe giảm xuống dưới 1.",
         "enableIsolationModeDesc": "Bạn đang vào chế độ Tách biệt. Trong chế độ Tách biệt, bạn không thể cung cấp tài sản khác làm thế chấp. Một giới hạn nợ toàn cầu hạn chế khả năng vay của tài sản tách biệt. Để thoát khỏi chế độ tách biệt, hãy vô hiệu hóa CRV làm thế chấp trước khi vay tài sản khác."
       },
       "borrowDetail": {
         "swapDebt": "Hoán đổi",
-        "actions": "Vay mượn",
+        "actions": "Vay",
         "borrowed": "Đã vay",
-        "amountTitle": "Có sẵn:",
+        "amountTitle": "Có sẵn: ",
         "approveAndBorrow": "Phê duyệt và Vay",
         "almostReachedError": "Số tiền tối đa có sẵn để vay bị giới hạn vì giới hạn vay của giao thức gần đạt.",
         "almostReachedWarning": "Giới hạn vay của giao thức cho tài sản này là 100%. Không thể vay thêm."
@@ -4324,62 +4318,62 @@
       "borrowOverview": {
         "availableToBorrow": "Có sẵn để vay",
         "myBorrow": "Vay Mượn Của Tôi",
-        "reachCapTip": "Tài sản này đã đạt giới hạn vay.",
-        "totalBorrowed": "Tổng số Mượn",
+        "reachCapTip": "Tài sản này đã đạt giới hạn vay. ",
+        "totalBorrowed": "Tổng số đã vay",
         "borrowCap": "Giới Hạn Vay",
         "title": "Chi tiết vay",
-        "liquidityPenalty": "Phạt Thanh lý"
+        "liquidityPenalty": "Phí phạt thanh lý"
       },
       "supplyOverview": {
-        "title": "Chi tiết cung cấp",
-        "mySupply": "Cung cấp của tôi",
-        "totalSupplied": "Tổng cung cấp",
+        "title": "Chi tiết khoản cung cấp",
+        "mySupply": "Khoản cung cấp của tôi",
+        "totalSupplied": "Tổng đã cung cấp",
         "walletBalance": "Số dư ví",
         "collateral": "Tài sản đảm bảo",
         "useAsCollateral": "Sử dụng làm tài sản thế chấp",
         "noBalance": "Không có số dư",
         "almostCap": "Tài sản này gần như đã đạt giới hạn vay của nó. Chỉ còn {{available}} có sẵn để vay từ thị trường này.",
-        "availableToSupply": "Có sẵn để cung cấp",
+        "availableToSupply": "Có thể cung cấp",
         "reachCap": "Tài sản này đã đạt đến giới hạn nguồn cung của nó. Không có gì có sẵn để cung cấp từ thị trường này."
       },
       "risk": {
-        "warning": "Vay mượn số tiền này sẽ làm giảm Hệ số Sức khỏe của bạn xuống mức rủi ro cho việc thanh lý.",
-        "withdrawWarning": "Rút số tiền này sẽ làm giảm Hệ số Sức khỏe của bạn đến mức rủi ro để thanh lý.",
-        "toggleCollateralWarning": "Việt ngữ: Vô hiệu hóa tài sản này làm tài sản thế chấp sẽ hạ thấp Hệ số Sức khỏe của bạn xuống mức rủi ro cho việc thanh lý.",
+        "warning": "Vay số tiền này sẽ làm giảm Hệ số sức khỏe xuống mức có nguy cơ bị thanh lý.",
+        "withdrawWarning": "Rút số tiền này sẽ làm Hệ số sức khỏe giảm xuống mức có nguy cơ bị thanh lý.",
+        "toggleCollateralWarning": "Tắt tài sản này làm tài sản thế chấp sẽ làm Hệ số sức khỏe giảm xuống mức có nguy cơ bị thanh lý.",
         "checkbox": "Tôi hiểu thông báo và muốn tiếp tục.",
-        "emodeBlockWarning": "Tắt E-mode sẽ làm giảm Hệ số Sức khỏe của bạn xuống mức rủi ro cho việc thanh lý.",
-        "blockEmodeWarning": "Bạn không thể tắt E-Mode vì điều đó có thể gây ra việc thanh lý. Để thoát khỏi E-Mode, hãy cung cấp hoặc trả lại các vị thế đã vay."
+        "emodeBlockWarning": "Tắt E-Mode sẽ làm Hệ số sức khỏe giảm xuống mức có nguy cơ bị thanh lý.",
+        "blockEmodeWarning": "Bạn không thể tắt E-Mode vì có thể dẫn đến thanh lý. Để thoát E-Mode, hãy bổ sung tài sản hoặc trả bớt khoản vay."
       },
       "lqDescription": {
         "liquidationTitle": "Thanh lý:",
         "desc": "Giá thanh lý",
         "risky": "Rủi ro",
-        "over3desc": "Vị trí của bạn là an toàn",
+        "over3desc": "Vị thế của bạn đang an toàn",
         "below1title": "Chỉ số Sức Khỏe ≤ 1.0:",
         "below1desc": "Vị thế của bạn đang có nguy cơ bị thanh lý.",
         "over3title": "Hệ số sức khỏe > 3.0:",
-        "introText": "Hệ số Sức khỏe của bạn cho thấy vị trí vay mượn của bạn an toàn như thế nào. Nếu nó giảm quá thấp, tài sản thế chấp của bạn có thể bị thanh lý.",
-        "warningText": "Hệ số Sức khỏe của bạn quá thấp. Để tránh bị thanh lý:\n1. Trả lại một phần hoặc toàn bộ khoản vay của bạn\n2. Thêm nhiều tài sản thế chấp hơn",
-        "liquidation": "Nếu chỉ số Tình trạng Sức khỏe của bạn giảm xuống dưới 1,0, một phần tài sản thế chấp của bạn có thể bị bán tự động để trả nợ. Một khoản phí thanh lý sẽ được áp dụng, dẫn đến việc mất một phần tài sản thế chấp của bạn."
+        "introText": " Hệ số sức khỏe cho biết vị thế vay của bạn an toàn đến mức nào. Nếu giảm quá thấp, tài sản thế chấp có thể bị thanh lý.",
+        "warningText": "Hệ số sức khỏe của bạn quá thấp. Để tránh thanh lý:\n1. Trả một phần hoặc toàn bộ khoản vay\n2. Bổ sung tài sản thế chấp",
+        "liquidation": "Nếu Hệ số sức khỏe giảm xuống dưới 1,0, một phần tài sản thế chấp có thể tự động bị bán để trả nợ. Phí phạt thanh lý sẽ được áp dụng, khiến bạn mất một phần tài sản thế chấp."
       },
       "modalDesc": {
         "availableToBorrow": "Có sẵn để vay",
-        "isolatedSupplyDesc": "Vi: Việc sử dụng tài sản thế chấp bị hạn chế do chế độ tách biệt.",
+        "isolatedSupplyDesc": "Việc sử dụng tài sản thế chấp bị hạn chế do chế độ cô lập.",
         "isolatedTitle": "Tài sản không thể được sử dụng làm tài sản thế chấp",
         "availableToBorrowDesc": "Bạn có thể vay dựa trên tài sản thế chấp mà bạn cung cấp và cho đến khi đạt giới hạn vay.",
         "lqDesc": "Khi xảy ra thanh lý, người thanh lý sẽ hoàn trả tới 50% số tiền đã vay còn lại thay mặt cho người vay. Đổi lại, họ có thể mua tài sản thế chấp với giá giảm và giữ phần chênh lệch (phí thanh lý) làm phần thưởng.",
         "maxAmount": "Đây là số tiền tối đa bạn có thể vay dựa trên tất cả tài sản thế chấp mà bạn cung cấp. Khả năng vay tổng cộng của bạn được tính bằng cách nhân giá thị trường của từng tài sản thế chấp với Max LTV của nó, sau đó cộng tất cả các kết quả lại.",
         "isolatedDesc": "Tài sản này chỉ có thể được sử dụng làm tài sản thế chấp trong chế độ cách ly, nơi bạn không thể cung cấp tài sản thế chấp khác để vay. Tài sản được sử dụng làm tài sản thế chấp trong chế độ cách ly chỉ có thể được vay lên đến một giới hạn nợ cụ thể.",
-        "maxLTV": "Tỷ lệ LTV tối đa đại diện cho sức mạnh vay tối đa của một tài sản đảm bảo cụ thể. Ví dụ, nếu một tài sản đảm bảo có LTV là 75%, người dùng có thể vay tối đa 0,75 giá trị ETH bằng tiền tệ chính cho mỗi 1 ETH giá trị tài sản đảm bảo.",
-        "globalIsolatedDesc": "Trong chế độ Isolate, bạn không thể cung cấp các tài sản khác làm tài sản thế chấp. Một trần nợ toàn cầu giới hạn khả năng vay mượn của tài sản bị cô lập. Để thoát khỏi chế độ Isolate, hãy tắt UNI làm tài sản thế chấp trước khi vay tài sản khác."
+        "maxLTV": "Tỷ lệ LTV tối đa thể hiện khả năng vay tối đa của một tài sản thế chấp. Ví dụ, nếu tài sản thế chấp có LTV 75%, người dùng có thể vay tối đa số tiền tương đương 0,75 ETH bằng đồng tiền chính cho mỗi tài sản thế chấp trị giá 1 ETH.",
+        "globalIsolatedDesc": "Trong chế độ cô lập, bạn không thể dùng tài sản khác làm tài sản thế chấp. Trần nợ chung giới hạn khả năng vay của tài sản cô lập. Để thoát chế độ này, hãy tắt UNI làm tài sản thế chấp trước khi vay tài sản khác. "
       },
       "repayWithAToken": {
         "header": {
           "balance": "Số dư",
-          "assets": "Hợp đồng"
+          "assets": "Token"
         },
         "title": "Chọn Token Trả Nợ",
-        "zeroLtvCollateralTips": "Bạn có các tài sản thế chấp LTV = 0 sau đây và do đó chỉ có thể trả nợ bằng các tài sản thế chấp này theo quy tắc trả nợ thế chấp."
+        "zeroLtvCollateralTips": "Bạn có các tài sản thế chấp với LTV = 0 sau đây. Theo quy tắc trả nợ bằng tài sản thế chấp, bạn phải ưu tiên dùng các tài sản này để trả nợ. "
       },
       "manageEmode": {
         "actions": {
@@ -4427,7 +4421,7 @@
         "unavailable": "• Không khả dụng",
         "enabled": "• Đã bật",
         "unavailableTips": "Tài sản cho vay/mượn hiện tại của bạn không được hỗ trợ.",
-        "description": "Kích hoạt E-Mode cho phép bạn tối đa hóa sức mạnh vay mượn của mình. Tuy nhiên, việc vay mượn bị hạn chế đối với các tài sản trong danh mục đã chọn."
+        "description": "Bật E-Mode cho phép bạn tối đa hóa khả năng vay. Tuy nhiên, bạn chỉ có thể vay các tài sản thuộc danh mục đã chọn."
       },
       "debtSwap": {
         "actions": {
@@ -4439,16 +4433,16 @@
         },
         "overview": {
           "title": "Tổng quan giao dịch",
-          "borrowAPY": "Vay mượn apy",
+          "borrowAPY": "APY vay",
           "borrowValueAfter": "Số dư vay sau khi hoán đổi"
         },
         "button": {
           "swap": "Hoán đổi"
         },
         "borrowBalance": "Số dư vay",
-        "title": "Hoán đổi Vị trí Vay",
+        "title": "Hoán đổi vị thế vay",
         "entryTips": "Nhấn một lần để hoán đổi tài sản bạn đã vay, giảm bớt bước thực hiện và phí giao dịch.",
-        "lpRiskWarning": "Hệ số sức khỏe thấp sau khi hoán đổi. Vị thế của bạn sẽ mang rủi ro thanh lý cao hơn.",
+        "lpRiskWarning": "Hệ số sức khỏe thấp sau khi hoán đổi, khiến vị thế có nguy cơ thanh lý cao hơn.",
         "priceImpactTips": "Tác động giá cao ({{lostValue}}). Đường dẫn này có thể trả lại nhiều hơn do thanh khoản thấp hoặc kích thước lệnh nhỏ.",
         "lpDangerWarning": "Hệ số sức khỏe của bạn sau giao dịch này sẽ ở mức rất thấp và có thể dẫn đến thanh lý. Vui lòng chọn một tài sản khác hoặc giảm số lượng giao dịch để giữ an toàn.",
         "maxLtvWarning": "Không đủ tài sản thế chấp để bao phủ vị thế vay mới. Ví cần phải có khả năng vay còn lại để thực hiện chuyển đổi nợ."
@@ -4465,7 +4459,7 @@
         "button": {
           "repay": "Hoàn trả"
         },
-        "toRepay": "Số tiền dự kiến ​​phải trả",
+        "toRepay": "Số tiền dự kiến phải trả",
         "repayWith": "Tài sản thế chấp để trả nợ",
         "collateralNotEnough": "Số dư tài sản thế chấp của bạn thấp hơn số tiền đã chọn."
       },
@@ -4478,11 +4472,11 @@
         "desc": "Không có nguồn cung: Để vay, bạn cần cung cấp tài sản làm tài sản thế chấp."
       },
       "type": {
-        "supplied": "Cung cấp",
-        "borrowed": "Vay mượn"
+        "supplied": "Đã cung cấp",
+        "borrowed": "Đã vay"
       },
       "actions": {
-        "borrow": "Vay mượn",
+        "borrow": "Vay",
         "swap": "Hoán đổi",
         "supply": "Cung cấp",
         "withdraw": "Rút tiền",
@@ -4496,16 +4490,16 @@
         },
         "totalBorrowed": "Tổng số đã vay",
         "eMode": "E-Mode",
-        "healthFactor": "Yếu tố sức khỏe",
+        "healthFactor": "Hệ số sức khỏe",
         "netWorth": "Giá trị ròng",
         "totalSupplied": "Tổng Cung cấp",
-        "healthFactorTip": "Yếu tố sức khỏe cho thấy độ an toàn của vị thế của bạn.",
+        "healthFactorTip": "Hệ số sức khỏe cho biết mức độ an toàn của vị thế.",
         "more": "Thêm",
         "healthy": "Lành mạnh",
         "estDailyEarnings": "Thu nhập hàng ngày ước tính",
         "netApy": "Lợi suất ròng APY",
-        "ethCorrelatedTip": "Tài sản liên quan đến ETH",
-        "lq": "Nếu giảm xuống dưới 1, việc thanh lý có thể được kích hoạt.",
+        "ethCorrelatedTip": "Tài sản tương quan với ETH",
+        "lq": "Nếu Hệ số sức khỏe giảm xuống dưới 1, vị thế có thể bị thanh lý.",
         "risky": "Rủi ro"
       },
       "market": {
@@ -4514,7 +4508,7 @@
       "accountActions": {
         "supply": "Cung cấp",
         "both": "Cả hai",
-        "borrow": "Vay mượn"
+        "borrow": "Vay"
       },
       "table": {
         "type": "Loại",
@@ -4525,31 +4519,31 @@
         "apy": "APY"
       },
       "supplyList": {
-        "collapse": "Sụp đổ",
+        "collapse": "Thu gọn",
         "more": "Nhiều token để cung cấp"
       },
       "borrowList": {
         "more": "Nhiều token hơn để vay",
-        "collapse": "Sập đổ"
+        "collapse": "Thu gọn"
       },
       "title": "Cho vay",
       "submitted": "đã gửi",
       "noData": "Không có dữ liệu",
       "borrowBalance": "Số dư vay",
-      "borrowed": "Vay mượn",
+      "borrowed": "Đã vay",
       "supplyApy": "Cung cấp APY",
       "netWorth": "Giá trị ròng",
       "totalBorrowed": "Tổng số đã vay",
-      "totalSupplied": "Tổng cung cấp",
+      "totalSupplied": "Tổng đã cung cấp",
       "totalSupply": "Tổng cung",
       "isolate": "tách biệt",
       "totalBorrow": "Tổng số vay",
       "gotIt": "Đã hiểu",
       "estNetApy": "Ước tính APY ròng",
       "netApy": "Lợi suất ròng hàng năm (Net APY)",
-      "supplied": "Cung cấp",
+      "supplied": "Đã cung cấp",
       "isolateTip": "Đây là một thị trường riêng lẻ",
-      "supplyBalance": "Cân bằng Cung cấp",
+      "supplyBalance": "Số dư cung cấp",
       "estDailyEarning": "Thu nhập hàng ngày ước tính",
       "borrowApy": "Lãi suất vay",
       "disabled": "VÔ HIỆU HÓA",
@@ -4593,7 +4587,7 @@
       "completedTitle": "Đã chuyển đổi Dust!",
       "done": "Hoàn tất",
       "conversionProgress": "Tiến trình chuyển đổi",
-      "slippageTolerance": "Chênh lệch giá cho phép",
+      "slippageTolerance": "Mức trượt giá cho phép",
       "singleTransactionGasLimit": "Gas Limit giao dịch đơn",
       "startConvert": "Bắt đầu chuyển đổi",
       "unsupportedWalletType": "Loại địa chỉ này không được hỗ trợ",
@@ -4609,7 +4603,7 @@
       "moreChains": "+{{count}} chuỗi",
       "swapFailed": "Hoán đổi thất bại, {{reason}}",
       "completedTips": "Hoán đổi đang diễn ra sẽ tiếp tục xử lý",
-      "priceImpact": "Giới hạn Biến động Giá",
+      "priceImpact": "Giới hạn tác động giá",
       "LedgerBtn": {
         "start": "Bắt đầu với Ledger",
         "confirm": "Vui lòng xác nhận với Ledger",
@@ -4632,12 +4626,12 @@
       },
       "filter": {
         "allProtocol": "Tất cả giao thức",
-        "allChains": "Tất cả chain",
+        "allChains": "Tất cả chuỗi",
         "selectProtocol": "Chọn giao thức",
-        "selectChain": "Chọn chain",
+        "selectChain": "Chọn chuỗi",
         "searchByName": "Tìm theo tên",
         "searchProtocol": "Tìm giao thức",
-        "searchChain": "Tìm chain",
+        "searchChain": "Tìm chuỗi",
         "all": "Tất cả",
         "clearFilter": "Xóa {{filter}}"
       },
@@ -4646,7 +4640,7 @@
         "noHoldingsFound": "Bạn hiện không có vị thế nào.",
         "noStakingPoolsFound": "Không tìm thấy pool staking",
         "noProtocols": "Không có giao thức",
-        "noChains": "Không có chain"
+        "noChains": "Không có chuỗi"
       },
       "error": {
         "failedLoadData": "Không thể tải dữ liệu staking",
@@ -4698,7 +4692,7 @@
         "certifications": "Chứng nhận",
         "certifiedBy": "Được chứng nhận bởi",
         "certifiedOn": "Chứng nhận vào",
-        "action": "Hành động",
+        "action": "Thao tác",
         "view": "Xem",
         "noCertificationData": "Không có dữ liệu chứng nhận"
       },
@@ -4721,7 +4715,7 @@
         "unsupportedPool": "Pool không được hỗ trợ",
         "unsupportedErc4626Pool": "Pool ERC4626 không được hỗ trợ",
         "unsupportedLpPool": "Pool LP không được hỗ trợ",
-        "unsupportedChain": "Chain không được hỗ trợ",
+        "unsupportedChain": "Chuỗi không được hỗ trợ",
         "unavailable": "Không khả dụng",
         "tokenFallback": "token",
         "insufficientBalance": "Số dư {{symbols}} không đủ",
@@ -4743,7 +4737,7 @@
     "manageBatchApprovals": {
       "cols": {
         "asset": "Tài sản",
-        "revokeFrom": "Thu hồi từ",
+        "revokeFrom": "Bên được cấp quyền",
         "gasFee": "Phí Gas"
       },
       "title": "Thu hồi hàng loạt",
@@ -4776,7 +4770,7 @@
       },
       "EIP7702Panel": {
         "unsupportedAddressType": "Loại địa chỉ không được hỗ trợ",
-        "unsupportedAddressTypeDesc": "Việc hủy ủy quyền EIP-7702 chỉ được hỗ trợ cho địa chỉ khóa riêng tư hoặc cụm từ hạt giống",
+        "unsupportedAddressTypeDesc": "Việc hủy ủy quyền EIP-7702 chỉ được hỗ trợ cho địa chỉ khóa riêng tư hoặc cụm từ khôi phục",
         "supportedChains": "Các chuỗi được hỗ trợ",
         "delegatedAddressDesc": "Địa chỉ ủy quyền",
         "notMatched": "Không khớp",
@@ -4812,7 +4806,7 @@
     },
     "AddressList": {
       "AddressItem": {
-        "addressTypeTip": "Nhập khẩu bởi {{type}}"
+        "addressTypeTip": "Được nhập bằng {{type}}"
       }
     },
     "AuthenticationModal": {
@@ -4862,23 +4856,23 @@
       "loadingData": "Đang tải dữ liệu..."
     },
     "MultiSelectAddressList": {
-      "imported": "Nhập khẩu"
+      "imported": "Đã nhập"
     },
     "NFTNumberInput": {
       "erc1155Tips": "Số dư của bạn là {{amount}}",
       "erc721Tips": "Chỉ có một NFT của ERC 721 có thể được gửi tại một thời điểm."
     },
     "TiledSelect": {
-      "errMsg": "Câu trúc từ khóa không đúng, vui lòng kiểm tra."
+      "errMsg": "Thứ tự cụm từ khôi phục không đúng, vui lòng kiểm tra."
     },
     "Uploader": {
       "placeholder": "Chọn một tệp JSON"
     },
     "WalletConnectBridgeModal": {
       "restore": "Khôi phục cài đặt ban đầu",
-      "title": "URL máy chủ Bridge",
+      "title": "URL máy chủ bridge",
       "invalidMsg": "Vui lòng kiểm tra máy chủ của bạn",
-      "requiredMsg": "Xin vui lòng nhập địa chỉ máy chủ cầu."
+      "requiredMsg": "Vui lòng nhập host của máy chủ bridge."
     },
     "PillsSwitch": {
       "NetSwitchTabs": {
@@ -4900,7 +4894,7 @@
           "title": "GIÁ"
         },
         "usdValue": {
-          "title": "GIÁ USD"
+          "title": "GIÁ TRỊ USD"
         }
       },
       "bridge": {
@@ -4940,10 +4934,10 @@
     },
     "signPermissionCheckModal": {
       "reconnect": "Kết nối lại Dapp",
-      "title": "Bạn chỉ cho phép Dapp này ký trên các testnets."
+      "title": "Bạn chỉ cho phép DApp này ký giao dịch trên testnet."
     },
     "testnetCheckModal": {
-      "title": "Vui lòng bật \"Enable Testnets\" trong \"More\" trước khi đăng nhập vào testnets."
+      "title": "Vui lòng bật \"Testnet\" trong \"Thêm\" trước khi truy cập testnet."
     },
     "EcologyNavBar": {
       "providedBy": "Cung cấp bởi {{chainName}}"
@@ -4958,7 +4952,7 @@
       "fast": "Bình thường",
       "normal": "Chậm",
       "title": "Dự trữ Gas",
-      "doNotReserve": "Đừng dành Gas"
+      "doNotReserve": "Không giữ lại Gas"
     },
     "OpenExternalWebsiteModal": {
       "button": "Tiếp tục",
@@ -4977,13 +4971,13 @@
       "viewDappOptions": "Xem tùy chọn Dapp",
       "thirdPartyDappToProceed": "Vui lòng sử dụng một Dapp bên thứ ba để tiếp tục.",
       "help": "Vui lòng liên hệ với đội ngũ chính thức của chuỗi này để được hỗ trợ",
-      "noDapps": "Không có Dapp nào khả dụng trên chuỗi này\n",
-      "bridgeOnDapp": "Trên Dapp\n",
-      "swapOnDapp": "Trên Dapp trao đổi\n"
+      "noDapps": "Không có DApp nào khả dụng trên chuỗi này",
+      "bridgeOnDapp": "Chuyển chuỗi qua DApp",
+      "swapOnDapp": "Hoán đổi trên DApp"
     },
     "AccountSelectorModal": {
-      "searchPlaceholder": "Tìm địa chỉ\n",
-      "title": "Chọn địa chỉ\n"
+      "searchPlaceholder": "Tìm địa chỉ",
+      "title": "Chọn địa chỉ"
     },
     "PageHeader": {
       "selectAccount": "Chọn Địa chỉ"
@@ -5021,7 +5015,7 @@
       "selectAddress": "Chọn Địa Chỉ"
     },
     "SeedPhraseBackupAlert": {
-      "message": "Ví dụ: Ví không được sao lưu. Bắt đầu sao lưu."
+      "message": "Ví chưa được sao lưu. Hãy bắt đầu sao lưu."
     },
     "UnknownTag": {
       "label": "Không xác định",
@@ -5041,7 +5035,7 @@
   "global": {
     "scamTx": "Tx lừa đảo",
     "ok": "OK",
-    "appName": "Ví dụ ví Rabby",
+    "appName": "Rabby Wallet",
     "copied": "Sao chép",
     "copyAddress": "Sao chép địa chỉ",
     "confirm": "Xác nhận",
@@ -5067,12 +5061,12 @@
     "Balance": "Số dư",
     "notSupportTesntnet": "Không hỗ trợ cho mạng tùy chỉnh",
     "addButton": "Thêm",
-    "watchModeAddress": "Chế độ Giám sát địa chỉ",
+    "watchModeAddress": "Địa chỉ chỉ xem",
     "assets": "tài sản",
     "Loading": "Đang tải",
     "Clear": "Xóa",
     "proceedButton": "Tiến hành",
-    "appDescription": "Ví dụ ví của bạn cho Ethereum và EVM",
+    "appDescription": "Ví đáng tin cậy của bạn cho Ethereum và EVM",
     "collapse": "Thu gọn",
     "Yes": "Có",
     "Submit": "Gửi"
@@ -5093,7 +5087,7 @@
       "txPushFailed": "Gửi giao dịch không thành công",
       "duplicateAccount": "Tài khoản bạn đang cố gắng nhập là trùng lặp.",
       "invalidJson": "tệp đầu vào không hợp lệ",
-      "invalidMnemonic": "Câu thần chú không hợp lệ, vui lòng kiểm tra!",
+      "invalidMnemonic": "Cụm từ khôi phục không hợp lệ, vui lòng kiểm tra!",
       "canNotUnlock": "Không thể mở khóa mà không có kho báu trước đó",
       "generateCacheAliasNames": "[GenerateCacheAliasNames]: cần ít nhất một địa chỉ",
       "notFoundKeyringByAddress": "Không thể tìm thấy keyring theo địa chỉ"
@@ -5109,7 +5103,7 @@
     "alias": {
       "watchAddressKeyring": "Chỉ xem",
       "simpleKeyring": "Khóa riêng",
-      "HdKeyring": "Câu cụt đầu tiên"
+      "HdKeyring": "Cụm từ khôi phục"
     },
     "keyring": {
       "onekey": {
@@ -5129,15 +5123,15 @@
   },
   "constant": {
     "KEYRING_TYPE_TEXT": {
-      "WatchAddressKeyring": "Xem chỉ",
-      "SimpleKeyring": "Nhập bằng Private Key",
-      "HdKeyring": "Được tạo bởi Seed Phrase"
+      "WatchAddressKeyring": "Chỉ xem",
+      "SimpleKeyring": "Nhập bằng khóa riêng",
+      "HdKeyring": "Được tạo bởi cụm từ khôi phục"
     },
     "SIGN_PERMISSION_OPTIONS": {
       "TESTNET": "Chỉ Testnets",
-      "MAINNET_AND_TESTNET": "Mainnet & Testnet"
+      "MAINNET_AND_TESTNET": "Mạng chính & Mạng thử nghiệm"
     },
-    "IMPORTED_HD_KEYRING": "Nhập khẩu bằng cụm từ hạt giống",
-    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Nhập bằng Seed Phrase (Passphrase)"
+    "IMPORTED_HD_KEYRING": "Được nhập bằng cụm từ khôi phục",
+    "IMPORTED_HD_KEYRING_NEED_PASSPHRASE": "Được nhập bằng cụm từ khôi phục (cụm mật khẩu)"
   }
 }
