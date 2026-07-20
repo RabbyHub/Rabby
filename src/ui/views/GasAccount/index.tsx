@@ -73,10 +73,7 @@ const GasAccountInner = () => {
     currentEligibleAddress,
     checkAddressesEligibility,
   } = useGasAccountEligibility();
-  const {
-    value: pendingHardwareGasAccountInfo,
-    loading: pendingHardwareAccountGasAccountInfoLoading,
-  } = useGasAccountInfoV2({
+  const { value: pendingHardwareGasAccountInfo } = useGasAccountInfoV2({
     address: pendingHardwareAccount?.address,
   });
 
@@ -88,6 +85,9 @@ const GasAccountInner = () => {
   const visibleBalance = Number(
     isLogin ? balance : pendingHardwareAccount ? pendingHardwareBalance : 0
   );
+  const hasGasAccountInfo = isLogin
+    ? !!gasAccount?.account?.id
+    : !!pendingHardwareGasAccountInfo?.account?.id;
   const [emptyStateLoading, setEmptyStateLoading] = useState(false);
 
   const dispatch = useRabbyDispatch();
@@ -218,9 +218,7 @@ const GasAccountInner = () => {
   }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
 
   const lowBalanceWarningMessage =
-    visibleBalance < LOW_GAS_ACCOUNT_BALANCE &&
-    !loading &&
-    !pendingHardwareAccountGasAccountInfoLoading
+    visibleBalance < LOW_GAS_ACCOUNT_BALANCE && hasGasAccountInfo
       ? t('page.gasAccount.lowBalance', {
           defaultValue:
             "You don't have enough gas. Deposit gas to ensure future transactions go smoothly.",

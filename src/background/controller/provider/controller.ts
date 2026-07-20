@@ -560,8 +560,7 @@ class ProviderController extends BaseController {
       'accountsChanged',
       account,
       origin,
-      undefined,
-      req.isFromDesktopDapp
+      undefined
     );
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
@@ -1197,8 +1196,10 @@ class ProviderController extends BaseController {
               let errMsg = typeof e === 'object' ? e.message : e;
               if (RPCService.hasCustomRPC(chain)) {
                 const rpc = RPCService.getRPCByChain(chain);
-                const origin = getOriginFromUrl(rpc.url);
-                errMsg = `[From ${origin}] ${errMsg}`;
+                if (rpc) {
+                  const origin = getOriginFromUrl(rpc.url);
+                  errMsg = `[From ${origin}] ${errMsg}`;
+                }
               }
               onTransactionSubmitFailed({
                 ...e,
@@ -1382,7 +1383,7 @@ class ProviderController extends BaseController {
         let errMsg = e.details || e.message || JSON.stringify(e);
         if (chainData && chainData.isTestnet) {
           const rpcUrl = RPCService.hasCustomRPC(chain)
-            ? RPCService.getRPCByChain(chain).url
+            ? RPCService.getRPCByChain(chain)?.url
             : (chainData as TestnetChain).rpcUrl;
           errMsg = rpcUrl
             ? `[From ${getOriginFromUrl(rpcUrl)}] ${errMsg}`

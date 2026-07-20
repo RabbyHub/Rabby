@@ -42,7 +42,7 @@ export const ListByContracts: React.FC = () => {
   }
 
   return (
-    <div className="flex flex-col gap-[8px]">
+    <div className="flex flex-col gap-[8px] pb-[16px]">
       {displaySortedContractList.map((contract) => {
         const selection = parseApprovalSpenderSelection(contract, 'contract', {
           curAllSelectedMap: contractRevokeMap,

@@ -85,10 +85,6 @@ export const HomePerpsPositionList: React.FC<{
             key={assetPosition.position.coin}
             position={assetPosition.position}
             handleNavigate={() => {
-              dispatch.innerDappFrame.setInnerDappId({
-                type: 'perps',
-                dappId: 'hyperliquid',
-              });
               if (isDesktop) {
                 dispatch.perps.resetProAccountInfo();
                 dispatch.perps.setCurrentPerpsAccount(currentAccount);

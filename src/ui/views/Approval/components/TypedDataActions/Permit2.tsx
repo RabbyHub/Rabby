@@ -96,7 +96,10 @@ const Permit2 = ({
           </Row>
           <Row>
             {actionData.sig_expire_at ? (
-              <Values.TimeSpanFuture to={actionData.sig_expire_at} />
+              <Values.TimeSpanFuture
+                to={actionData.sig_expire_at}
+                showMinutes
+              />
             ) : (
               '-'
             )}

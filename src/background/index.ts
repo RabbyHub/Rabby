@@ -60,7 +60,6 @@ import {
   OfflineChainsService,
   perpsService,
   transactionsService,
-  innerDappFrameService,
   feedbackService,
 } from './service';
 import { customTestnetService } from './service/customTestnet';
@@ -137,7 +136,6 @@ async function restoreAppState() {
   await perpsService.init();
   await transactionsService.init();
   await lendingService.init();
-  await innerDappFrameService.init();
   await feedbackService.init();
 
   // WS is lazy — subscribes only after the first content-script port attaches
@@ -421,10 +419,13 @@ browser.runtime.onConnect.addListener((port) => {
           case 'controller':
           default:
             if (data.method) {
-              const res = walletController[data.method].apply(
-                null,
-                data.params
-              );
+              const controllerMethod = walletController[data.method];
+              if (typeof controllerMethod !== 'function') {
+                throw new Error(
+                  `Unknown wallet controller method: ${String(data.method)}`
+                );
+              }
+              const res = controllerMethod.call(null, ...data.params);
               if (!IS_FIREFOX) {
                 return res;
               }
@@ -527,11 +528,6 @@ browser.runtime.onConnect.addListener((port) => {
       data,
       session,
       origin,
-      isFromDesktopDapp:
-        port.sender.id === browser.runtime.id &&
-        port.sender?.tab?.url?.startsWith(
-          `${browser.runtime.getURL('')}desktop.html#/desktop/`
-        ),
     };
     if (!session?.origin) {
       const tabInfo = await browser.tabs.get(sessionId);
@@ -540,7 +536,6 @@ browser.runtime.onConnect.addListener((port) => {
         origin,
         name: tabInfo.title || '',
         icon: tabInfo.favIconUrl || '',
-        isFromDesktopDapp: req.isFromDesktopDapp,
       });
     }
     // for background push to respective page

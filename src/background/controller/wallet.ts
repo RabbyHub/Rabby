@@ -45,7 +45,6 @@ import {
   perpsService,
   miscService,
   lendingService,
-  innerDappFrameService,
   feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
@@ -211,7 +210,7 @@ import { buildCreateListingTypedData } from '@/utils/nft';
 import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
-import { AccountScene, SCENE_ACCOUNT_CONFIG } from '@/constant/scene-account';
+import { AccountScene } from '@/constant/scene-account';
 import { syncDbService } from '@/db/services/syncDbService';
 import { historyDbService } from '@/db/services/historyDbService';
 import { tokenDbService } from '@/db/services/tokenDbService';
@@ -2592,8 +2591,7 @@ export class WalletController extends BaseController {
       'accountsChanged',
       currentAccount?.address ? [currentAccount?.address] : [],
       undefined,
-      undefined,
-      false
+      undefined
     );
   };
 
@@ -2640,18 +2638,6 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({
       sceneAccountMap: { ...prev, [scene]: account },
     });
-    const config = SCENE_ACCOUNT_CONFIG[scene];
-    if (config?.dapps) {
-      config.dapps.forEach((origin) => {
-        sessionService.broadcastEvent(
-          'accountsChanged',
-          [account.address],
-          origin,
-          undefined,
-          true
-        );
-      });
-    }
   };
 
   getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
@@ -2877,10 +2863,10 @@ export class WalletController extends BaseController {
       enum: chainEnum,
     });
     if (chain?.isTestnet) {
-      if (enable) {
+      if (enable && RPCService.hasCustomRPC(chainEnum)) {
         customTestnetService.setCustomRPC({
           chainId: chain.id,
-          url: RPCService.getRPCByChain(chainEnum).url,
+          url: RPCService.getRPCByChain(chainEnum)!.url,
         });
       } else {
         customTestnetService.removeCustomRPC(chain.id);
@@ -2990,8 +2976,7 @@ export class WalletController extends BaseController {
         'accountsChanged',
         site?.account?.address ? [site.account.address.toLowerCase()] : [],
         site.origin,
-        undefined,
-        false
+        undefined
       );
     }
   };
@@ -3047,8 +3032,7 @@ export class WalletController extends BaseController {
         'defaultWalletChanged',
         currentIsDefaultWallet ? 'rabby' : 'metamask',
         site.origin,
-        undefined,
-        false
+        undefined
       );
     }
   };
@@ -4337,8 +4321,6 @@ export class WalletController extends BaseController {
     ) {
       await this.resetCurrentAccount();
     }
-    innerDappFrameService.removeAccountFromAllFrames(address, type, brand);
-
     const sites = permissionService.getSites();
     sites.forEach((item) => {
       if (
@@ -7387,12 +7369,6 @@ export class WalletController extends BaseController {
 
     return http.get(url).then((res) => res.data);
   };
-  getInnerDappFrames = innerDappFrameService.getInnerDappFrames;
-  getInnerDappAccountByOrigin =
-    innerDappFrameService.getInnerDappAccountByOrigin;
-  setInnerDappAccount = innerDappFrameService.setInnerDappAccount;
-  setInnerDappId = innerDappFrameService.setInnerDappId;
-
   updateDashboardPanelOrder = preferenceService.updateDashboardPanelOrder;
 }
 

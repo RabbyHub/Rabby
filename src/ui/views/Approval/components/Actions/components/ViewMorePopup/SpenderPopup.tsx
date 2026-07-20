@@ -24,13 +24,14 @@ interface SpenderData {
 
 export interface Props {
   data: SpenderData;
+  title?: React.ReactNode;
 }
 
 export interface SpenderPopupProps extends Props {
   type: 'spender';
 }
 
-export const SpenderPopup: React.FC<Props> = ({ data }) => {
+export const SpenderPopup: React.FC<Props> = ({ data, title }) => {
   const { t } = useTranslation();
   const { contractBlacklist, contractWhitelist } = useRabbySelector((state) => {
     return state.securityEngine.userData;
@@ -54,9 +55,10 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
   return (
     <div>
       <div className="title">
-        {data.isRevoke
-          ? t('page.signTx.revokeTokenApprove.revokeFrom')
-          : t('page.signTx.tokenApprove.approveTo')}{' '}
+        {title ||
+          (data.isRevoke
+            ? t('page.signTx.revokeTokenApprove.revokeFrom')
+            : t('page.signTx.tokenApprove.approveTo'))}{' '}
         <Values.AddressWithCopy
           address={data.spender}
           chain={data.chain}

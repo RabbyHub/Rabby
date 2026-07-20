@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import {
   INITIAL_OPENAPI_URL,
   INITIAL_TESTNET_OPENAPI_URL,
+  CUSTOM_RPC_ENABLED,
   LANGS,
   ThemeIconType,
   ThemeModes,
@@ -399,7 +400,7 @@ const ResetAccountModal = ({
               onChange={setClearNonce}
             >
               <span className="text-13 text-r-neutral-body">
-                Also reset my local nonce data and signature record
+                {t('page.dashboard.settings.clearPendingCheckbox')}
               </span>
             </Checkbox>
           </div>
@@ -1103,24 +1104,28 @@ const SettingsInner = ({
             reportSettings('Custom Testnet');
           },
         },
-        {
-          leftIcon: RcIconCustomRPC,
-          content: t('page.dashboard.settings.settings.customRpc'),
-          onClick: () => {
-            history.push('/custom-rpc');
-            matomoRequestEvent({
-              category: 'Setting',
-              action: 'clickToUse',
-              label: 'Custom RPC',
-            });
+        ...(CUSTOM_RPC_ENABLED
+          ? [
+              {
+                leftIcon: RcIconCustomRPC,
+                content: t('page.dashboard.settings.settings.customRpc'),
+                onClick: () => {
+                  history.push('/custom-rpc');
+                  matomoRequestEvent({
+                    category: 'Setting',
+                    action: 'clickToUse',
+                    label: 'Custom RPC',
+                  });
 
-            ga4.fireEvent('More_CustomRPC', {
-              event_category: 'Click More',
-            });
+                  ga4.fireEvent('More_CustomRPC', {
+                    event_category: 'Click More',
+                  });
 
-            reportSettings('Custom RPC');
-          },
-        },
+                  reportSettings('Custom RPC');
+                },
+              },
+            ]
+          : []),
         {
           leftIcon: RcIconI18n,
           content: t('page.dashboard.settings.settings.currentLanguage'),

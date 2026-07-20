@@ -79,7 +79,7 @@ export const ImportPrivateKey = () => {
   const { runAsync: privateKeyValidator, error, loading } = useRequest(
     async (_, value: string) => {
       if (!value) {
-        throw new Error('Please input Private key');
+        throw new Error(t('page.newUserImport.importPrivateKey.required'));
       }
       return wallet.validatePrivateKey(value);
     },
@@ -105,7 +105,7 @@ export const ImportPrivateKey = () => {
               type="password"
               autoFocus
               spellCheck={false}
-              placeholder="Input private key"
+              placeholder={t('page.newUserImport.importPrivateKey.placeholder')}
               onBlur={(e) => {
                 if (!e.target.value) {
                   form.setFields([

@@ -36,9 +36,9 @@ import { ChainSelectorInSend } from '@/ui/views/SendToken/components/ChainSelect
 import { Chain } from '@debank/common';
 import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 import {
+  AutoSizeAmountInput,
   AmountInputOverflowPosition,
-  useAutoSizeAmountInput,
-} from '@/ui/hooks/useAutoSizeAmountInput';
+} from '../AutoSizeAmountInput';
 
 interface TokenAmountInputProps {
   token: TokenItem | null;
@@ -382,19 +382,6 @@ const TokenAmountInput = ({
   const actualInputValue = displayValueText ? '' : displayInputValue;
   const amountMeasureValue = displayValueText || displayInputValue || '0';
   const amountMeasureText = `${inputPrefixText || ''}${amountMeasureValue}`;
-  const {
-    containerRef: amountInputAreaRef,
-    measureRef: amountMeasureRef,
-    fontSize: amountFontSize,
-  } = useAutoSizeAmountInput({
-    inputRef: tokenInputRef,
-    inputValue: actualInputValue,
-    measureText: amountMeasureText,
-    maxFontSize: AMOUNT_MAX_FONT_SIZE,
-    minFontSize: AMOUNT_MIN_FONT_SIZE,
-    fontSizeStep: AMOUNT_FONT_SIZE_STEP,
-    overflowPosition: amountInputOverflowPosition,
-  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     applyInputValue(e.target.value);
@@ -426,57 +413,65 @@ const TokenAmountInput = ({
   return (
     <div className={clsx('token-amount-input flex-col gap-[13px]', className)}>
       <div className="token-amount-input__main-row flex items-start">
-        <div
-          ref={amountInputAreaRef}
+        <AutoSizeAmountInput
+          inputRef={tokenInputRef}
+          inputValue={actualInputValue}
+          measureText={amountMeasureText}
+          maxFontSize={AMOUNT_MAX_FONT_SIZE}
+          minFontSize={AMOUNT_MIN_FONT_SIZE}
+          fontSizeStep={AMOUNT_FONT_SIZE_STEP}
+          overflowPosition={amountInputOverflowPosition}
+          fontWeight={700}
           className="right token-amount-input__amount-area relative min-w-0 flex-1 overflow-hidden"
         >
-          {!!inputPrefixText && (
-            <span
-              className={clsx(
-                'token-amount-input__prefix',
-                insufficientError && 'text-rabby-red-default'
+          {(amountFontSize) => (
+            <>
+              {!!inputPrefixText && (
+                <span
+                  className={clsx(
+                    'token-amount-input__prefix',
+                    insufficientError && 'text-rabby-red-default'
+                  )}
+                  style={{ fontSize: amountFontSize }}
+                >
+                  {inputPrefixText}
+                </span>
               )}
-              style={{ fontSize: amountFontSize }}
-            >
-              {inputPrefixText}
-            </span>
-          )}
-          <div
-            className="token-amount-input__input-wrap"
-            onClick={displayValueText ? handleInputWrapClick : undefined}
-          >
-            {!!displayValueText && (
-              <span
-                className={clsx(
-                  'token-amount-input__display-text',
-                  insufficientError && 'text-rabby-red-default'
-                )}
-                style={{ fontSize: amountFontSize }}
+              <div
+                className="token-amount-input__input-wrap"
+                onClick={displayValueText ? handleInputWrapClick : undefined}
               >
-                {displayValueText}
-              </span>
-            )}
-            <StyledInput
-              ref={tokenInputRef}
-              placeholder={displayValueText ? '' : '0'}
-              $fontSize={amountFontSize}
-              $hasDisplayText={!!displayValueText}
-              className={clsx(
-                'h-[36px]',
-                insufficientError && 'text-rabby-red-default'
-              )}
-              autoFocus
-              value={actualInputValue}
-              size="large"
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              title={displayValueText || displayInputValue}
-            />
-          </div>
-          <span ref={amountMeasureRef} className="token-amount-input__measure">
-            {amountMeasureText}
-          </span>
-        </div>
+                {!!displayValueText && (
+                  <span
+                    className={clsx(
+                      'token-amount-input__display-text',
+                      insufficientError && 'text-rabby-red-default'
+                    )}
+                    style={{ fontSize: amountFontSize }}
+                  >
+                    {displayValueText}
+                  </span>
+                )}
+                <StyledInput
+                  ref={tokenInputRef}
+                  placeholder={displayValueText ? '' : '0'}
+                  $fontSize={amountFontSize}
+                  $hasDisplayText={!!displayValueText}
+                  className={clsx(
+                    'h-[36px]',
+                    insufficientError && 'text-rabby-red-default'
+                  )}
+                  autoFocus
+                  value={actualInputValue}
+                  size="large"
+                  onChange={handleChange}
+                  onKeyDown={handleKeyDown}
+                  title={displayValueText || displayInputValue}
+                />
+              </div>
+            </>
+          )}
+        </AutoSizeAmountInput>
 
         <div className="left shrink-0" onClick={handleSelectToken}>
           {initLoading ? (

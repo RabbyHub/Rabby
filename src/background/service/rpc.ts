@@ -3,7 +3,7 @@ import { createPersistStore } from 'background/utils';
 import { findChainByEnum } from '@/utils/chain';
 import { http } from '../utils/http';
 import openapiService, { DefaultRPCRes } from './openapi';
-import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
+import { CUSTOM_RPC_ENABLED, INTERNAL_REQUEST_ORIGIN } from '@/constant';
 
 export interface RPCItem {
   url: string;
@@ -221,18 +221,23 @@ class RPCService {
   };
 
   hasCustomRPC = (chain: CHAINS_ENUM) => {
-    return this.store.customRPC[chain] && this.store.customRPC[chain].enable;
+    return (
+      CUSTOM_RPC_ENABLED &&
+      this.store.customRPC[chain] &&
+      this.store.customRPC[chain].enable
+    );
   };
 
-  getRPCByChain = (chain: CHAINS_ENUM) => {
-    return this.store.customRPC[chain];
+  getRPCByChain = (chain: CHAINS_ENUM): RPCItem | undefined => {
+    return CUSTOM_RPC_ENABLED ? this.store.customRPC[chain] : undefined;
   };
 
-  getAllRPC = () => {
-    return this.store.customRPC;
+  getAllRPC = (): Record<string, RPCItem> => {
+    return CUSTOM_RPC_ENABLED ? this.store.customRPC : {};
   };
 
   setRPC = (chain: CHAINS_ENUM, url: string) => {
+    if (!CUSTOM_RPC_ENABLED) return;
     const rpcItem = this.store.customRPC[chain]
       ? {
           ...this.store.customRPC[chain],
@@ -252,6 +257,7 @@ class RPCService {
   };
 
   setRPCEnable = (chain: CHAINS_ENUM, enable: boolean) => {
+    if (!CUSTOM_RPC_ENABLED) return;
     this.store.customRPC = {
       ...this.store.customRPC,
       [chain]: {
@@ -262,6 +268,7 @@ class RPCService {
   };
 
   removeCustomRPC = (chain: CHAINS_ENUM) => {
+    if (!CUSTOM_RPC_ENABLED) return;
     const map = this.store.customRPC;
     delete map[chain];
     this.store.customRPC = map;
@@ -275,6 +282,9 @@ class RPCService {
     method: string,
     params: any[]
   ) => {
+    if (!CUSTOM_RPC_ENABLED) {
+      throw new Error('Custom RPC is disabled');
+    }
     const host = this.store.customRPC[chain]?.url;
     if (!host) {
       throw new Error(`No customRPC set for ${chain}`);
@@ -306,6 +316,7 @@ class RPCService {
   };
 
   ping = async (chain: CHAINS_ENUM) => {
+    if (!CUSTOM_RPC_ENABLED) return false;
     if (this.rpcStatus[chain]?.expireAt > Date.now()) {
       return this.rpcStatus[chain].available;
     }

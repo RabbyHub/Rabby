@@ -86,6 +86,8 @@ type BridgeMessage =
     };
 
 type BarSubscription = {
+  symbol: string;
+  resolution: string;
   unsubscribe: () => void;
   currentWeekBar: TVBar | null;
   lastDailyVolume: { time: number; value: number } | null;
@@ -523,10 +525,34 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   ]);
 
   useEffect(() => {
+    const sdk = getPerpsSDK();
+    let shouldResetChartOnOpen = false;
+
     const cleanupSubscriptions = () => {
       subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
       subscriptionsRef.current.clear();
     };
+
+    const handleWebSocketClose = () => {
+      // An SDK-level reconnect restores realtime subscriptions, but candle
+      // messages do not backfill the intervals missed while disconnected.
+      shouldResetChartOnOpen = true;
+    };
+
+    const handleWebSocketOpen = () => {
+      if (!shouldResetChartOnOpen) return;
+      shouldResetChartOnOpen = false;
+      if (subscriptionsRef.current.size === 0) return;
+
+      postToIframe({
+        channel: BRIDGE_CHANNEL,
+        kind: 'command',
+        command: 'resetData',
+      });
+    };
+
+    sdk.ws.on('close', handleWebSocketClose);
+    sdk.ws.on('open', handleWebSocketOpen);
 
     const handleGetBars = async (params: {
       symbol: string;
@@ -536,7 +562,6 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
         to?: number;
       };
     }) => {
-      const sdk = getPerpsSDK();
       const targetInterval = resolutionToInterval(params.resolution);
       const isWeekly = targetInterval === '1w';
       const fetchInterval: PerpsInterval = isWeekly ? '1d' : targetInterval;
@@ -567,6 +592,29 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
         } else {
           weeklyHistoryRef.current.delete(historyKey);
         }
+
+        // resetData() reloads TradingView history without replacing the SDK
+        // subscription object. Keep the mutable weekly aggregation state in
+        // sync so the next daily candle cannot overwrite refreshed history
+        // with the pre-disconnect week snapshot.
+        const nextState = cloneWeeklyHistoryState(historyState);
+        const currentWeekStart = getMondayUtc(Date.now());
+        subscriptionsRef.current.forEach((subscription) => {
+          if (
+            !nextState ||
+            nextState.currentWeekBar.time !== currentWeekStart ||
+            !subscription.isWeekly ||
+            getWeeklyHistoryKey(
+              subscription.symbol,
+              subscription.resolution
+            ) !== historyKey
+          ) {
+            return;
+          }
+
+          subscription.currentWeekBar = nextState.currentWeekBar;
+          subscription.lastDailyVolume = nextState.lastDailyVolume;
+        });
       }
       if (bars.length) {
         stateRef.current.onLatestBar?.(toHoverData(bars[bars.length - 1]));
@@ -582,7 +630,6 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       resolution: string;
       subscriberUID: string;
     }) => {
-      const sdk = getPerpsSDK();
       const targetInterval = resolutionToInterval(params.resolution);
       const isWeekly = targetInterval === '1w';
       const subscribeInterval: PerpsInterval = isWeekly ? '1d' : targetInterval;
@@ -597,6 +644,8 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       }
 
       const state: BarSubscription = {
+        symbol: params.symbol,
+        resolution: params.resolution,
         unsubscribe: () => undefined,
         currentWeekBar: null,
         lastDailyVolume: null,
@@ -802,6 +851,8 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     window.addEventListener('message', handleMessage);
     return () => {
       window.removeEventListener('message', handleMessage);
+      sdk.ws.off('close', handleWebSocketClose);
+      sdk.ws.off('open', handleWebSocketOpen);
       cleanupSubscriptions();
     };
   }, [iframeOrigin]);

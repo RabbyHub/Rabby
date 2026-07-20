@@ -142,17 +142,6 @@ export const ImportSeedPhrase = () => {
     [isSlip39]
   );
 
-  const { data: isValid } = useRequest(
-    async () => {
-      await checkSubmitSlip39Mnemonics(formValues.mnemonics);
-      return await validateMnemonic(formValues.mnemonics);
-    },
-    {
-      debounceWait: 300,
-      refreshDeps: [formValues.mnemonics],
-    }
-  );
-
   const run = React.useCallback(
     async ({
       mnemonics,
@@ -249,7 +238,7 @@ export const ImportSeedPhrase = () => {
           ) : null}
           <Button
             htmlType="submit"
-            disabled={disabledButton || !isValid}
+            disabled={disabledButton}
             block
             type="primary"
             className={clsx(

@@ -4,6 +4,9 @@
   padding: 0 20px;
   background-color: var(--r-blue-default, #7084ff);
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 
   &-modal {
     .ant-modal-body {
@@ -47,6 +50,7 @@
     padding-top: 26px;
     padding-bottom: 12px;
     min-height: 90px;
+    flex-shrink: 0;
     align-items: flex-start;
     gap: 8px;
     .icon-back path {
@@ -113,10 +117,9 @@
   }
 
   &-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    position: static;
+    flex-shrink: 0;
+    margin-top: auto;
     padding-bottom: 32px;
     img {
       margin: auto;
@@ -128,6 +131,7 @@
     box-shadow: 0px 12px 60px rgba(54, 69, 157, 0.2);
     border-radius: 8px;
     padding: 16px 4px 24px;
+    flex-shrink: 0;
 
     &-header {
       text-align: center;
@@ -174,6 +178,18 @@
       .icon-copy {
         margin-right: 6px;
       }
+    }
+  }
+
+  .receive-offline-chain-notify:not(:empty) + .qr-card {
+    padding: 12px 4px;
+
+    .qr-card-header {
+      margin-bottom: 8px;
+    }
+
+    .qr-card-img {
+      margin-bottom: 16px;
     }
   }
 }
