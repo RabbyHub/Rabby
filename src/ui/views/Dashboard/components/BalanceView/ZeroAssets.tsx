@@ -31,9 +31,9 @@ export const ZeroAssets = () => {
       <button
         type="button"
         className={clsx(
-          'rounded-[8px] bg-rb-neutral-bg-2 py-[10px] px-[16px] min-w-[170px]',
+          'rounded-[8px] bg-rb-neutral-bg-2 py-[9px] px-[16px] min-w-[170px]',
           'text-[15px] leading-[18px] font-medium text-rb-brand-default',
-          'active:bg-rb-neutral-bg-4'
+          'hover:bg-r-blue-light-2 active:bg-r-blue-disable active:text-rb-brand-default-icon'
         )}
         onClick={() => {
           history.push('/receive?isZero=1');

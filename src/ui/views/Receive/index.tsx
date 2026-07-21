@@ -323,25 +323,22 @@ const Receive = () => {
             className="qr-card-btn"
             onClick={handleCopyAddress}
           >
-            <ThemeIcon
-              src={RcIconCopy}
-              className="icon-copy text-r-neutral-title-1"
-            />
+            <ThemeIcon src={RcIconCopy} className="icon-copy" />
             {t('global.copyAddress')}
           </button>
           <div className="qr-card-divider" />
-          <div className="qr-card-chain">
+          <div
+            className="qr-card-chain"
+            onClick={() => {
+              if (isSafeSupportChainsReady) {
+                setIsShowReceiveModal(true);
+              }
+            }}
+          >
             <div className="qr-card-chain-label">
               {t('page.receive.supportedChain')}
             </div>
-            <div
-              className="qr-card-chain-list"
-              onClick={() => {
-                if (isSafeSupportChainsReady) {
-                  setIsShowReceiveModal(true);
-                }
-              }}
-            >
+            <div className="qr-card-chain-list">
               {shownChains.map((item) => (
                 <img
                   key={item.enum}
@@ -360,15 +357,20 @@ const Receive = () => {
           </div>
         </div>
         {qs.isZero ? (
-          <footer className="text-center mt-[24px] text-[13px] leading-[16px] ">
-            <span
+          <footer className="flex justify-center items-center mt-[16px]">
+            <button
+              type="button"
               onClick={() => {
                 setIsShowAddTestnetModal(true);
               }}
-              className="cursor-pointer text-r-neutral-title-2 underline underline-offset-auto"
+              className={clsx(
+                'text-r-neutral-title-2 text-[13px] leading-[16px] underline underline-offset-auto',
+                'py-[8px] px-[16px] rounded-[6px]',
+                'hover:bg-[rgba(255,255,255,0.12)] active:bg-[rgba(255,255,255,0.2)]'
+              )}
             >
               {t('page.receive.addCustomNetwork')}
-            </span>
+            </button>
           </footer>
         ) : (
           <div className="page-receive-footer hidden">
