@@ -86,6 +86,7 @@ const Receive = () => {
     qs.chain ? (qs.chain as CHAINS_ENUM) : undefined
   );
   const chain = useMemo(() => findChainByEnum(chainEnum), [chainEnum]);
+  console.log(chain);
   const [isShowReceiveModal, setIsShowReceiveModal] = useState(false);
 
   const { t } = useTranslation();
@@ -141,7 +142,7 @@ const Receive = () => {
       const idx = pinedList.indexOf(item.enum);
       return idx === -1 ? pinedList.length + 1 : idx;
     });
-    if (chain && list.some((item) => item.enum === chain.enum)) {
+    if (chain) {
       list = [chain, ...list.filter((item) => item.enum !== chain.enum)];
     }
     return list;
