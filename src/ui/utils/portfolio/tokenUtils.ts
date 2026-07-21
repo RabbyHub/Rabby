@@ -14,6 +14,10 @@ import {
   findChainByEnum,
 } from '@/utils/chain';
 import { pQueue } from './utils';
+import {
+  queryCustomRPCChainTokens,
+  getCustomRPCEnabledServerIds,
+} from './customRpcToken';
 import { flatten, uniqBy } from 'lodash';
 import { formatAmount, formatPrice, formatUsdValue, isSameAddress } from '..';
 import { AbstractPortfolioToken } from './types';
@@ -40,12 +44,22 @@ export const batchQueryTokens = async (
   isTestnet: boolean = !chainId ? false : checkIsTestnet(chainId),
   isAll: boolean = true
 ) => {
+  const customRpcServerIds = await getCustomRPCEnabledServerIds(wallet);
+
   if (!chainId && !isTestnet) {
     const usedChains = await wallet.openapi.usedChainList(user_id);
-    const chainIdList = usedChains.map((item) => item.id);
+    // Merge in custom-RPC chains: the backend may not list a self-hosted chain
+    // in usedChainList, but we still want to read it on-device.
+    const chainIdList = uniqBy(
+      [...usedChains.map((item) => item.id), ...customRpcServerIds],
+      (id) => id
+    );
     const res = await Promise.all(
       chainIdList.map((serverId) =>
         pQueue.add(() => {
+          if (customRpcServerIds.has(serverId)) {
+            return queryCustomRPCChainTokens(user_id, serverId, wallet);
+          }
           return requestOpenApiWithChainId(
             ({ openapi }) => openapi.listToken(user_id, serverId, isAll),
             {
@@ -57,6 +71,9 @@ export const batchQueryTokens = async (
       )
     );
     return flatten(res);
+  }
+  if (chainId && customRpcServerIds.has(chainId)) {
+    return queryCustomRPCChainTokens(user_id, chainId, wallet);
   }
   return requestOpenApiWithChainId(
     ({ openapi }) => openapi.listToken(user_id, chainId, isAll),

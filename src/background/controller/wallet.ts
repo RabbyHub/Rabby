@@ -69,6 +69,8 @@ import {
   DBK_CHAIN_ID,
   DBK_NFT_CONTRACT_ADDRESS,
   CORE_KEYRING_TYPES,
+  CUSTOM_RPC_ENABLED,
+  CUSTOM_RPC_AUTO_DISCOVER_TOKENS,
 } from 'consts';
 import { ERC20ABI, ERC721ABI, SeaportABI } from 'consts/abi';
 import {
@@ -2334,6 +2336,93 @@ export class WalletController extends BaseController {
     }
   };
 
+  /**
+   * Reads on-device token USD values for chains that have an enabled custom RPC.
+   * The cloud backend cannot see a self-hosted/forked chain, so its balances are
+   * computed here directly from the custom RPC (native token + a curated token
+   * set) and merged into the total balance. Prices come from the backend when
+   * reachable (hybrid); unavailable prices simply contribute 0 USD.
+   */
+  private getCustomRPCChainBalances = async (
+    address: string
+  ): Promise<{ perChainUsd: Record<string, number> }> => {
+    const perChainUsd: Record<string, number> = {};
+    if (!CUSTOM_RPC_ENABLED) return { perChainUsd };
+
+    const rpcMap = RPCService.getAllRPC();
+    const enabledEnums = Object.keys(rpcMap).filter(
+      (chainEnum) => rpcMap[chainEnum]?.enable
+    );
+
+    const hexToAmount = (hex: string | undefined, decimals: number) => {
+      if (!hex || hex === '0x') return 0;
+      try {
+        return new BigNumber(BigInt(hex).toString())
+          .div(new BigNumber(10).pow(decimals))
+          .toNumber();
+      } catch (e) {
+        return 0;
+      }
+    };
+    const encodeBalanceOf = (addr: string) =>
+      '0x70a08231' + addr.toLowerCase().replace(/^0x/, '').padStart(64, '0');
+
+    await Promise.all(
+      enabledEnums.map(async (chainEnum) => {
+        const chain = findChain({ enum: chainEnum });
+        if (!chain) return;
+        const serverId = chain.serverId;
+        const entries: { tokenId: string; isNative: boolean }[] = [
+          { tokenId: chain.nativeTokenAddress, isNative: true },
+          ...(
+            CUSTOM_RPC_AUTO_DISCOVER_TOKENS[serverId] || []
+          ).map((tokenAddress) => ({ tokenId: tokenAddress, isNative: false })),
+        ];
+        let chainUsd = 0;
+        await Promise.all(
+          entries.map(async ({ tokenId, isNative }) => {
+            try {
+              let decimals = isNative ? chain.nativeTokenDecimals || 18 : 18;
+              const rawHex = isNative
+                ? await this.requestETHRpc<string>(
+                    { method: 'eth_getBalance', params: [address, 'latest'] },
+                    serverId
+                  )
+                : await this.requestETHRpc<string>(
+                    {
+                      method: 'eth_call',
+                      params: [
+                        { to: tokenId, data: encodeBalanceOf(address) },
+                        'latest',
+                      ],
+                    },
+                    serverId
+                  );
+              let price = 0;
+              try {
+                const meta = await openapiService.getToken(
+                  address,
+                  serverId,
+                  tokenId
+                );
+                price = meta?.price || 0;
+                if (meta?.decimals != null) decimals = meta.decimals;
+              } catch (e) {
+                // offline / no backend price - contributes 0 USD
+              }
+              chainUsd += hexToAmount(rawHex, decimals) * price;
+            } catch (e) {
+              // skip unreadable token
+            }
+          })
+        );
+        perChainUsd[serverId] = (perChainUsd[serverId] || 0) + chainUsd;
+      })
+    );
+
+    return { perChainUsd };
+  };
+
   private getTotalBalanceCached = cached(
     'getTotalBalanceCached',
     async (address: string) => {
@@ -2361,10 +2450,50 @@ export class WalletController extends BaseController {
       } catch (error) {
         // just ignore appChain data
       }
+
+      // Merge on-device balances for chains with an enabled custom RPC (e.g. a
+      // self-hosted fork) that the cloud backend cannot see.
+      let customRpcDelta = 0;
+      try {
+        const { perChainUsd } = await this.getCustomRPCChainBalances(address);
+        const chainList = (data.chain_list = data.chain_list
+          ? [...data.chain_list]
+          : []);
+        Object.entries(perChainUsd).forEach(([serverId, usd]) => {
+          const existing = chainList.find((item) => item.id === serverId);
+          const prev = existing?.usd_value || 0;
+          customRpcDelta += usd - prev;
+          if (existing) {
+            existing.usd_value = usd;
+          } else {
+            const chain = findChain({ serverId });
+            if (chain) {
+              chainList.push({
+                id: chain.serverId,
+                community_id: chain.id,
+                name: chain.name,
+                native_token_id: chain.nativeTokenAddress,
+                logo_url: String(
+                  (chain as any).logo || chain.nativeTokenLogo || ''
+                ),
+                wrapped_token_id: '',
+                symbol: chain.nativeTokenSymbol,
+                is_support_history: false,
+                born_at: null,
+                usd_value: usd,
+              });
+            }
+          }
+        });
+      } catch (e) {
+        // ignore custom RPC augmentation failures
+      }
+
       const formatData: BalanceCacheData = normalizeBalanceCacheData({
         ...data,
-        evmUsdValue: data.total_usd_value,
-        total_usd_value: data.total_usd_value + appChainTotalNetWorth,
+        evmUsdValue: data.total_usd_value + customRpcDelta,
+        total_usd_value:
+          data.total_usd_value + appChainTotalNetWorth + customRpcDelta,
         appChainIds,
         appChainUsdValue: appChainTotalNetWorth,
       });

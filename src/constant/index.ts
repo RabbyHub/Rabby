@@ -1711,3 +1711,18 @@ export const SELF_HOST_SAFE_NETWORKS = [
   '8453',
 ];
 export const CUSTOM_RPC_ENABLED = true;
+
+/**
+ * When a chain has a user-configured custom RPC enabled, Rabby reads balances
+ * on-device directly from that RPC instead of the cloud backend (which cannot
+ * see a private/self-hosted fork). Because on-device RPC cannot enumerate which
+ * tokens an address holds, we auto-discover a curated set of well-known ERC-20
+ * contract addresses per chain (keyed by chain serverId). The native token is
+ * always read on-device in addition to these. USD prices/metadata are still
+ * pulled from the backend when reachable (hybrid), assuming the custom RPC
+ * shares canonical token addresses with the public chain.
+ */
+export const CUSTOM_RPC_AUTO_DISCOVER_TOKENS: Record<string, string[]> = {
+  // Base: USDC (canonical)
+  base: ['0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'],
+};
