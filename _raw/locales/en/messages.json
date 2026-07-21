@@ -851,7 +851,7 @@
       "receiveOn": "Receive {{token}} on",
       "addAssets": "Add assets",
       "receiveTitle": "Receive {{token}}",
-      "addCustomNetwork": "add custom network",
+      "addCustomNetwork": "Add custom network",
       "supportedChain": "Supported chain:"
     },
     "sendToken": {

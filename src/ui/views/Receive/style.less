@@ -175,8 +175,14 @@
       font-size: 13px;
       line-height: 15px;
       color: var(--r-neutral-title-1);
+
+      &:hover {
+        background: var(--r-neutral-card2, #f2f4f7);
+        color: var(--rb-brand-default, #4c65ff);
+      }
       &:active {
-        background-color: rgba(var(--r-neutral-card-2-rbg), 0.7);
+        background: var(--r-neutral-bg-4, #ebeef7);
+        color: var(--rb-brand-default, #4c65ff);
       }
 
       .icon-copy {
@@ -195,22 +201,25 @@
       justify-content: space-between;
       align-items: center;
       padding: 0 16px;
+      cursor: pointer;
+      color: var(--r-neutral-body);
 
       &-label {
         font-size: 13px;
         line-height: 16px;
-        color: var(--r-neutral-body);
       }
 
       &-list {
         display: flex;
         align-items: center;
-        color: var(--r-neutral-body);
-        cursor: pointer;
+      }
 
-        &:hover {
-          color: var(--r-blue-default);
-        }
+      &:hover {
+        color: var(--rb-brand-default, #4c65ff);
+      }
+
+      &:active {
+        color: var(--rb-brand-default-icon, #4056dd);
       }
 
       &-logo {
