@@ -307,11 +307,9 @@ const Receive = () => {
         <div className="qr-card">
           <div className="qr-card-header">
             <div className="text-[17px] leading-[20px] font-medium text-r-neutral-title1">
-              {qs.isZero
-                ? t('page.receive.addAssets')
-                : t('page.receive.receiveTitle', {
-                    token: qs.token || t('global.assets'),
-                  })}
+              {t('page.receive.receiveTitle', {
+                token: qs.token || t('global.assets'),
+              })}
             </div>
           </div>
           <div className="qr-card-img">
