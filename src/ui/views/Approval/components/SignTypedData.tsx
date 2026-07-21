@@ -973,6 +973,7 @@ const SignTypedData = ({
             chain={chain}
             engineResults={engineResults}
             raw={isSignTypedDataV1 ? data[0] : rawMessage || data[1]}
+            copyMessage={isSignTypedDataV1 ? JSON.stringify(data[0]) : data[1]}
             message={parsedMessage}
             origin={params.session.origin}
             originLogo={params.session.icon}
