@@ -851,7 +851,7 @@
       "receiveOn": "Receive {{token}} on",
       "receiveTitle": "Receive {{token}}",
       "addCustomNetwork": "Add custom network",
-      "supportedChain": "Supported chains:"
+      "supportedChain": "Supported chains"
     },
     "sendToken": {
       "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
