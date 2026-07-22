@@ -25,7 +25,6 @@ export type ContactBookStore = Record<string, ContactBookItem | undefined>;
 
 class ContactBook {
   store!: ContactBookStore;
-  cache: ContactBookStore = {};
 
   init = async () => {
     this.store = await createPersistStore<ContactBookStore>({
@@ -112,30 +111,6 @@ class ContactBook {
 
   getContactsByMap = () => {
     return this.store;
-  };
-
-  getCacheAlias = (address: string) => {
-    return this.cache[address.toLowerCase()];
-  };
-
-  updateCacheAlias = (data: {
-    address: string;
-    name: string;
-    cexId?: string;
-  }) => {
-    const key = data.address.toLowerCase();
-    this.cache[key] = {
-      name: data.name,
-      address: data.address.toLowerCase(),
-      isAlias: true,
-      isContact: false,
-      ...(data.cexId !== undefined ? { cexId: data.cexId } : {}),
-    };
-  };
-
-  removeCacheAlias = (address: string) => {
-    const key = address.toLowerCase();
-    delete this.cache[key];
   };
 
   detectWhiteListCex = async () => {

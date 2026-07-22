@@ -59,8 +59,6 @@ import BaseController from './base';
 import {
   KEYRING_WITH_INDEX,
   EVENTS,
-  BRAND_ALIAN_TYPE_TEXT,
-  WALLET_BRAND_CONTENT,
   CHAINS_ENUM,
   KEYRING_TYPE,
   INTERNAL_REQUEST_SESSION,
@@ -117,11 +115,7 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats, { EventParams } from '@/stats';
-import {
-  generateAliasName,
-  isFullVersionAccountType,
-  isSameAccount,
-} from '@/utils/account';
+import { isFullVersionAccountType, isSameAccount } from '@/utils/account';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
@@ -1993,74 +1987,19 @@ export class WalletController extends BaseController {
   };
 
   initAlianNames = async () => {
-    await preferenceService.changeInitAlianNameStatus();
+    preferenceService.changeInitAlianNameStatus();
     const contacts = await this.listContact();
-    const keyrings = await keyringService.getAllTypedAccounts();
-    const walletConnectKeyrings = keyrings.filter(
-      (item) => item.type === 'WalletConnect'
+    const accountAddresses = new Set(
+      (await keyringService.getAllTypedAccounts()).flatMap((keyring) =>
+        keyring.accounts.map((account) => account.address.toLowerCase())
+      )
     );
-    const catergoryGroupAccount = keyrings.map((item) => ({
-      type: item.type,
-      accounts: item.accounts,
-    }));
-    let walletConnectList: DisplayedKeryring['accounts'] = [];
-    for (let i = 0; i < walletConnectKeyrings.length; i++) {
-      const keyring = walletConnectKeyrings[i];
-      walletConnectList = [...walletConnectList, ...keyring.accounts];
-    }
-    const groupedWalletConnectList = groupBy(walletConnectList, 'brandName');
-    if (keyrings.length > 0) {
-      Object.keys(groupedWalletConnectList).forEach((key) => {
-        groupedWalletConnectList[key].map((acc, index) => {
-          if (
-            contacts.find((contact) =>
-              isSameAddress(contact.address, acc.address)
-            )
-          ) {
-            return;
-          }
-          this.updateAlianName(
-            acc?.address,
-            `${WALLET_BRAND_CONTENT[acc?.brandName]} ${index + 1}`
-          );
-        });
-      });
-      const catergories = groupBy(
-        catergoryGroupAccount.filter((group) => group.type !== 'WalletConnect'),
-        'type'
+
+    contacts
+      .filter((contact) => accountAddresses.has(contact.address.toLowerCase()))
+      .forEach((contact) =>
+        this.updateAlianName(contact.address, contact.name)
       );
-      const result = Object.keys(catergories)
-        .map((key) =>
-          catergories[key].map((item) =>
-            item.accounts.map((acc) => ({
-              address: acc.address,
-              type: key,
-            }))
-          )
-        )
-        .map((item) => item.flat(1));
-      result.forEach((group) =>
-        group.forEach((acc, index) => {
-          this.updateAlianName(
-            acc?.address,
-            `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`
-          );
-        })
-      );
-    }
-    if (contacts.length !== 0 && keyrings.length !== 0) {
-      const allAccounts = keyrings.map((item) => item.accounts).flat();
-      const sameAddressList = contacts.filter((item) =>
-        allAccounts.find((contact) =>
-          isSameAddress(contact.address, item.address)
-        )
-      );
-      if (sameAddressList.length > 0) {
-        sameAddressList.forEach((item) =>
-          this.updateAlianName(item.address, item.name)
-        );
-      }
-    }
   };
 
   getPendingApprovalCount = () => {
@@ -2073,11 +2012,10 @@ export class WalletController extends BaseController {
 
   unlock = async (password: string) => {
     const alianNameInited = await preferenceService.getInitAlianNameStatus();
-    const alianNames = contactBookService.listAlias();
     await keyringService.submitPassword(password);
     sessionService.broadcastEvent('unlock');
-    if (!alianNameInited && alianNames.length === 0) {
-      this.initAlianNames();
+    if (!alianNameInited) {
+      await this.initAlianNames();
     }
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     const isDefaultWallet = preferenceService.getIsDefaultWallet();
@@ -5380,112 +5318,6 @@ export class WalletController extends BaseController {
   getAllAlianName = () => {
     return contactBookService.listAlias();
   };
-
-  generateCacheAliasNames = async ({
-    addresses,
-    keyringType,
-  }: {
-    addresses: string[];
-    keyringType: string;
-  }) => {
-    if (addresses.length <= 0)
-      throw new Error(t('background.error.generateCacheAliasNames'));
-    const firstAddress = addresses[0];
-    const keyrings = await this.getTypedAccounts(keyringType);
-    const keyring = await keyringService.getKeyringForAccount(
-      firstAddress,
-      keyringType
-    );
-    if (!keyring) {
-      const aliases: { address: string; alias: string }[] = [];
-      for (let i = 0; i < addresses.length; i++) {
-        const alias = generateAliasName({
-          keyringType,
-          keyringCount: keyrings.length,
-          addressCount: i,
-        });
-        aliases.push({
-          address: addresses[i],
-          alias,
-        });
-      }
-      aliases.forEach(({ address, alias }) => {
-        contactBookService.updateCacheAlias({ address, name: alias });
-      });
-    } else {
-      // TODO: add index property into eth-hd-keyring
-    }
-  };
-
-  updateCacheAlias = contactBookService.updateCacheAlias;
-
-  getCacheAlias = contactBookService.getCacheAlias;
-
-  async generateAliasCacheForFreshMnemonic(
-    keyringId: keyof typeof stashKeyrings,
-    ids: number[]
-  ) {
-    const keyring = stashKeyrings[keyringId];
-    if (!keyring) {
-      throw new Error(
-        'failed to generateAliasCacheForFreshMnemonic, no keyring found.'
-      );
-    }
-
-    const importedAccounts = await (keyring as any).getAccounts();
-    const addressIndexStart = importedAccounts.length ?? 0;
-
-    const accounts = ids
-      .sort((a, b) => a - b)
-      .map((id, index) => {
-        const address = keyring._addressFromIndex(id)[0];
-        const alias = generateAliasName({
-          keyringType: KEYRING_TYPE.HdKeyring,
-          keyringCount: keyring.index,
-          addressCount: addressIndexStart + index,
-        });
-        contactBookService.updateCacheAlias({
-          address: address,
-          name: alias,
-        });
-        return {
-          address: address,
-          id,
-          alias,
-        };
-      });
-    return accounts;
-  }
-
-  async generateAliasCacheForExistedMnemonic(
-    mnemonic: string,
-    addresses: string[]
-  ) {
-    const keyring = keyringService.keyrings.find((item) => {
-      return item.type === KEYRING_CLASS.MNEMONIC && item.mnemonic === mnemonic;
-    });
-    if (!keyring) {
-      throw new Error(
-        'failed to generateAliasCacheForExistedMnemonic, no keyring found.'
-      );
-    }
-
-    const importedAccounts = await (keyring as any).getAccounts();
-    const adressIndexStart = importedAccounts.length;
-
-    for (let i = 0; i < addresses.length; i++) {
-      const alias = generateAliasName({
-        keyringType: KEYRING_CLASS.MNEMONIC,
-        keyringCount: keyring.index,
-        addressCount: adressIndexStart + i,
-      });
-
-      contactBookService.updateCacheAlias({
-        address: addresses[i],
-        name: alias,
-      });
-    }
-  }
 
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
   updateInitAlianNameStatus = () =>

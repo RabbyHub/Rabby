@@ -34,7 +34,7 @@ import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
 import contactBook from '../contactBook';
-import { filterKeyringData, generateAliasName } from '@/utils/account';
+import { filterKeyringData } from '@/utils/account';
 import * as Sentry from '@sentry/browser';
 import { GET_WALLETCONNECT_CONFIG, allChainIds } from '@/utils/walletconnect';
 import { EthImKeyKeyring } from './eth-imkey-keyring/eth-imkey-keyring';
@@ -182,27 +182,11 @@ export class KeyringService extends EventEmitter {
 
     return this.persistAllKeyrings()
       .then(this.addNewKeyring.bind(this, 'Simple Key Pair', [privateKey]))
-      .then(async (_keyring) => {
+      .then((_keyring) => {
         keyring = _keyring;
-        const [address] = await keyring.getAccounts();
-        const keyrings = await this.getAllTypedAccounts();
-        if (!contactBook.getContactByAddress(address)) {
-          const alias = generateAliasName({
-            keyringType: KEYRING_TYPE.SimpleKeyring,
-            keyringCount:
-              keyrings.filter(
-                (keyring) => keyring.type === KEYRING_TYPE.SimpleKeyring
-              ).length - 1,
-          });
-          contactBook.addAlias({
-            address,
-            name: alias,
-          });
-        }
         uninstalledMetricService.setWalletByKeyringType(
           KEYRING_TYPE.SimpleKeyring
         );
-        return this.persistAllKeyrings.bind(this);
       })
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this))
@@ -231,8 +215,6 @@ export class KeyringService extends EventEmitter {
     );
     const duplicateAddresses: string[] = [];
     const nextKeyrings: any[] = [];
-    const existingSimpleKeyringCount = existingKeyrings.length;
-
     for (const privateKey of privateKeys) {
       const keyring = new Keyring([privateKey]);
       const [address] = await keyring.getAccounts();
@@ -257,21 +239,6 @@ export class KeyringService extends EventEmitter {
     nextKeyrings.forEach((keyring) => {
       this.keyrings.push(keyring);
     });
-
-    await Promise.all(
-      nextKeyrings.map(async (keyring, index) => {
-        const [address] = await keyring.getAccounts();
-        if (!contactBook.getContactByAddress(address)) {
-          contactBook.addAlias({
-            address,
-            name: generateAliasName({
-              keyringType: KEYRING_TYPE.SimpleKeyring,
-              keyringCount: existingSimpleKeyringCount + index,
-            }),
-          });
-        }
-      })
-    );
 
     uninstalledMetricService.setWalletByKeyringType(KEYRING_TYPE.SimpleKeyring);
     await this.persistAllKeyrings();
@@ -608,69 +575,22 @@ export class KeyringService extends EventEmitter {
         }
       })
       .then((accounts) => {
-        const allAccounts = accounts.map((account) => ({
-          address: normalizeAddress(
+        accounts.forEach((account) => {
+          const address = normalizeAddress(
             typeof account === 'string' ? account : account.address
-          ),
-          brandName:
-            typeof account === 'string'
-              ? selectedKeyring.type
-              : account?.realBrandName || account.brandName,
-        }));
-        return Promise.all(
-          allAccounts.map(async (account) => {
-            await this.setAddressAlias(
-              account.address,
-              selectedKeyring,
-              account.brandName
-            );
-            this.emit('newAccount', account.address);
-          })
-        ).then(() => {
-          _accounts = accounts;
+          );
+          const existingContact = contactBook.getContactByAddress(address);
+          if (existingContact && !existingContact.isAlias) {
+            contactBook.updateAlias(existingContact);
+          }
+          this.emit('newAccount', address);
         });
+        _accounts = accounts;
       })
       .then(this.persistAllKeyrings.bind(this))
       .then(this._updateMemStoreKeyrings.bind(this))
       .then(this.fullUpdate.bind(this))
       .then(() => _accounts);
-  }
-
-  async setAddressAlias(address: string, keyring, brandName: string) {
-    const cacheAlias = contactBook.getCacheAlias(address);
-    const existAlias = contactBook.getContactByAddress(address);
-    if (!existAlias) {
-      if (cacheAlias) {
-        contactBook.removeCacheAlias(address);
-        contactBook.addAlias(cacheAlias);
-      } else {
-        const accounts = await keyring.getAccounts();
-
-        let addressCount = accounts.length - 1; // TODO: change 1 to real count of accounts if this function can add multiple accounts
-        if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
-          const accountWithBrands = await keyring.getAccountsWithBrand();
-          addressCount =
-            accountWithBrands.filter(
-              (item) =>
-                item.brandName === brandName || item.realBrandName === brandName
-            ).length - 1;
-        }
-        const alias = generateAliasName({
-          brandName,
-          keyringType: keyring.type,
-          keyringCount: keyring.index || 0,
-          addressCount,
-        });
-        contactBook.addAlias({
-          address,
-          name: alias,
-        });
-      }
-    } else {
-      if (!existAlias.isAlias) {
-        contactBook.updateAlias(existAlias);
-      }
-    }
   }
 
   /**
