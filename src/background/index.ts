@@ -405,6 +405,16 @@ browser.runtime.onConnect.addListener((port) => {
     port.name === 'tab' ||
     port.name === 'desktop'
   ) {
+    const ownUrl = browser.runtime.getURL('/'); // chrome-extension://<id>/
+    const senderUrl = port.sender?.url ?? '';
+    // content-script: sender.tab 存在 且 url 不是扩展自身页面
+    const isContentScript = !!port.sender?.tab && !senderUrl.startsWith(ownUrl);
+
+    if (port.sender?.id !== browser.runtime.id || isContentScript) {
+      port.disconnect();
+      return;
+    }
+    
     const pm = new PortMessage(port);
     pm.listen((data) => {
       if (data?.type) {
