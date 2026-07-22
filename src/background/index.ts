@@ -414,7 +414,6 @@ browser.runtime.onConnect.addListener((port) => {
       port.disconnect();
       return;
     }
-    
     const pm = new PortMessage(port);
     pm.listen((data) => {
       if (data?.type) {
