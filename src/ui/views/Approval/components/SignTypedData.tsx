@@ -611,7 +611,7 @@ const SignTypedData = ({
       },
       cex: cexInfo,
       apiProvider: isTestnetChainId(data.chainId)
-        ? wallet.testnetOpenapi
+        ? ((wallet.fakeTestnetOpenapi as unknown) as any)
         : wallet.openapi,
     });
     return requireData;
