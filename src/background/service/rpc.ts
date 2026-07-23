@@ -154,7 +154,7 @@ class RPCService {
     host: string,
     method: string,
     params: any[],
-    timeout = 5000
+    timeout = 10000
   ) => {
     const { data } = await http.post(
       host,
@@ -296,7 +296,7 @@ class RPCService {
     host: string,
     method: string,
     params: any[],
-    timeout = 5000
+    timeout = 10000
   ) => {
     const { data } = await http.post(
       host,
