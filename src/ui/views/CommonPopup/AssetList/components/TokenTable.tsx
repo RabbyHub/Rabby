@@ -15,31 +15,6 @@ export interface Props {
   EmptyComponent?: React.ReactNode;
 }
 
-type TokenTableRowData = {
-  list: TokenItemProps['item'][];
-  onSelect: (item: TokenItemProps['item']) => void;
-};
-
-// NOTE: keep this row renderer's reference stable and pass per-render data via
-// `itemData`. `react-window` renders each row through `createElement(children)`,
-// so an inline/changing renderer is treated as a new component type and remounts
-// the whole row subtree on every render — which resets any hovered tooltip
-// inside `TokenItem` (the arrow tooltip would flash and vanish).
-const TokenTableRow = ({
-  index,
-  data,
-  style,
-}: {
-  index: number;
-  data: TokenTableRowData;
-  style: React.CSSProperties;
-}) => {
-  const item = data.list[index];
-  return (
-    <TokenItem onClick={() => data.onSelect(item)} style={style} item={item} />
-  );
-};
-
 export const TokenTable: React.FC<Props> = ({
   list,
   virtual,
@@ -49,11 +24,6 @@ export const TokenTable: React.FC<Props> = ({
   const [visible, setVisible] = React.useState(false);
   const [token, setToken] = React.useState<TokenItemType>();
   const { t } = useTranslation();
-
-  const itemData = React.useMemo<TokenTableRowData>(
-    () => ({ list: list || [], onSelect: setSelected }),
-    [list]
-  );
 
   React.useEffect(() => {
     setVisible(!!selected);
@@ -90,11 +60,21 @@ export const TokenTable: React.FC<Props> = ({
               <FixedSizeList
                 height={virtual.height}
                 width="100%"
-                itemData={itemData}
+                itemData={list}
                 itemCount={list?.length || 0}
                 itemSize={virtual.itemSize}
               >
-                {TokenTableRow}
+                {({ data, index, style }) => {
+                  const item = data[index];
+                  return (
+                    <TokenItem
+                      onClick={() => setSelected(item)}
+                      style={style}
+                      key={`${item.chain}-${item.id}`}
+                      item={item}
+                    />
+                  );
+                }}
               </FixedSizeList>
             ) : (
               list?.map((item) => {

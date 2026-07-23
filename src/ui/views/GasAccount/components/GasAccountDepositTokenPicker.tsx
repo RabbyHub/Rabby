@@ -68,87 +68,6 @@ const GasAccountDepositTokenOwnerInfo = ({
   );
 };
 
-type GasAccountDepositTokenRowData = {
-  tokens: GasAccountAvailableToken[];
-  ownerAccountMap: ReturnType<typeof buildOwnerAccountMap>;
-  showOwnerInfo: boolean;
-  onSelect?: (token: GasAccountAvailableToken) => void;
-  handleClose?: () => void;
-};
-
-// NOTE: keep this `Row` reference stable (empty deps) and pass all per-render
-// data through `itemData`. `react-window` renders each row via
-// `createElement(children, ...)`, so a changing `Row` identity is treated as a
-// different component type and remounts the whole row subtree — which would
-// reset any hovered tooltip inside it (see TokenWithChain chain tooltip).
-const GasAccountDepositTokenRow = ({
-  index,
-  data,
-  style,
-}: {
-  index: number;
-  data: GasAccountDepositTokenRowData;
-  style: CSSProperties;
-}) => {
-  const {
-    tokens,
-    ownerAccountMap,
-    showOwnerInfo,
-    onSelect,
-    handleClose,
-  } = data;
-  const item = tokens[index];
-  const usdValue = getTokenUsdValue(item);
-  const ownerAccount = ownerAccountMap.get(item.owner_addr.toLowerCase());
-
-  return (
-    <div style={style} className="pb-8">
-      <div
-        className={clsx(
-          'flex w-full justify-between items-center h-[68px] px-16 rounded-[12px] text-left',
-          'bg-r-neutral-card1 border border-solid border-transparent',
-          'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light-1'
-        )}
-        onClick={() => {
-          onSelect?.(item);
-          handleClose?.();
-        }}
-      >
-        <div className="flex items-center gap-12 min-w-0 flex-1">
-          <TokenWithChain
-            token={item}
-            hideConer
-            width="32px"
-            height="32px"
-            isShowChainTooltip
-          />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center min-w-0">
-              <div className="text-15 font-medium text-r-neutral-title-1 truncate">
-                {getTokenSymbol(item)}
-              </div>
-            </div>
-            {showOwnerInfo ? (
-              <GasAccountDepositTokenOwnerInfo
-                address={item.owner_addr}
-                account={ownerAccount}
-              />
-            ) : null}
-          </div>
-        </div>
-        <div className="text-right ml-12 shrink-0">
-          <div className="text-15 font-medium text-r-neutral-title-1">
-            {formatUsdValue(usdValue)}
-          </div>
-          <div className="text-12 text-r-neutral-foot">
-            {formatTokenAmount(item.amount || 0)}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPickerProps> = ({
   visible,
   onClose,
@@ -184,15 +103,68 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
     return ownerAddresses.size > 1;
   }, [availableTokens]);
 
-  const rowData = React.useMemo<GasAccountDepositTokenRowData>(
-    () => ({
-      tokens: availableTokens,
-      ownerAccountMap,
-      showOwnerInfo,
-      onSelect,
-      handleClose,
-    }),
-    [availableTokens, ownerAccountMap, showOwnerInfo, onSelect, handleClose]
+  const Row = React.useCallback(
+    ({
+      index,
+      data,
+      style,
+    }: {
+      index: number;
+      data: GasAccountAvailableToken[];
+      style: CSSProperties;
+    }) => {
+      const item = data[index];
+      const usdValue = getTokenUsdValue(item);
+      const ownerAccount = ownerAccountMap.get(item.owner_addr.toLowerCase());
+
+      return (
+        <div style={style} className="pb-8">
+          <div
+            className={clsx(
+              'flex w-full justify-between items-center h-[68px] px-16 rounded-[12px] text-left',
+              'bg-r-neutral-card1 border border-solid border-transparent',
+              'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light-1'
+            )}
+            onClick={() => {
+              onSelect?.(item);
+              handleClose?.();
+            }}
+          >
+            <div className="flex items-center gap-12 min-w-0 flex-1">
+              <TokenWithChain
+                token={item}
+                hideConer
+                width="32px"
+                height="32px"
+                isShowChainTooltip
+              />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center min-w-0">
+                  <div className="text-15 font-medium text-r-neutral-title-1 truncate">
+                    {getTokenSymbol(item)}
+                  </div>
+                </div>
+                {showOwnerInfo ? (
+                  <GasAccountDepositTokenOwnerInfo
+                    address={item.owner_addr}
+                    account={ownerAccount}
+                  />
+                ) : null}
+              </div>
+            </div>
+            <div className="text-right ml-12 shrink-0">
+              <div className="text-15 font-medium text-r-neutral-title-1">
+                {formatUsdValue(usdValue)}
+              </div>
+              <div className="text-12 text-r-neutral-foot">
+                {formatTokenAmount(item.amount || 0)}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    },
+    [handleClose, onSelect, ownerAccountMap, showOwnerInfo]
   );
 
   return (
@@ -273,11 +245,11 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
               width="100%"
               height={listHeight}
               itemCount={availableTokens.length}
-              itemData={rowData}
+              itemData={availableTokens}
               itemSize={GAS_ACCOUNT_DEPOSIT_TOKEN_PICKER_ROW_HEIGHT}
               className="trades-container-no-scrollbar"
             >
-              {GasAccountDepositTokenRow}
+              {Row}
             </FixedSizeList>
           </div>
         ) : (
