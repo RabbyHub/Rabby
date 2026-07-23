@@ -29,6 +29,7 @@ const TooltipWrapStyled = styled(TooltipWrap)`
 `;
 
 /**
+ * @deprecated use TooltipV6 instead
  * FIXME: the bug is fixed in antd 5.x, so we can remove this component after upgrade
  * see https://ant.design/docs/blog/tooltip-align
  *

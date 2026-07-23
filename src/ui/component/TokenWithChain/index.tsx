@@ -6,8 +6,8 @@ import IconUnknown from 'ui/assets/token-default.svg';
 import './style.less';
 import clsx from 'clsx';
 import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
+import { TooltipV6 } from '../Tooltip/TooltipV6';
 import { findChain } from '@/utils/chain';
-import { Tooltip } from 'antd';
 
 const TokenWithChain = ({
   token,
@@ -58,7 +58,7 @@ const TokenWithChain = ({
       {!hideChainIcon &&
         (!hideConer || chain?.id) &&
         (isShowChainTooltip ? (
-          <Tooltip
+          <TooltipV6
             title={chain?.name}
             overlayClassName={clsx('rectangle w-[max-content]', chainClassName)}
             placement="top"
@@ -68,7 +68,7 @@ const TokenWithChain = ({
               style={chainStyle}
               src={chain?.logo || IconUnknown}
             />
-          </Tooltip>
+          </TooltipV6>
         ) : (
           <img
             className={clsx('chain-symbol', chainClassName)}
