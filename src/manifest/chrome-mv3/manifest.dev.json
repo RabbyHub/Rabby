@@ -80,5 +80,6 @@
         "<all_urls>"
       ]
     }
-  ]
+  ],
+  "externally_connectable": { "ids": [] }
 }
