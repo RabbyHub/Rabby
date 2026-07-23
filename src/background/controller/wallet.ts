@@ -403,6 +403,33 @@ const getScreenshotFeedbackDeviceInfo = (
 
 const stashKeyrings: Record<string | number, any> = {};
 
+// keyring methods the UI may invoke via requestKeyring; anything else is rejected
+const REQUEST_KEYRING_METHOD_ALLOWLIST = new Set([
+  'activeAccounts',
+  'cleanUp',
+  'exportCurrentSignRequestIdIfExist',
+  'forgetDevice',
+  'getAccountInfo',
+  'getAccounts',
+  'getAccountsWithBrand',
+  'getAddresses',
+  'getAddressesViaUSB',
+  'getCurrentAccounts',
+  'getCurrentUsedHDPathType',
+  'getFirstPage',
+  'getInfoByAddress',
+  'getInitialAccounts',
+  'getMaxAccountLimit',
+  'getNextPage',
+  'indexFromAddress',
+  'isReady',
+  'searchDevices',
+  'setCurrentUsedHDPathType',
+  'setHDPathType',
+  'signTransactionUrViaUSB',
+  'unlock',
+]);
+
 const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 
 const gnosisPQueue = new PQueue({
@@ -3118,7 +3145,7 @@ export class WalletController extends BaseController {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.GNOSIS;
     try {
-      keyring = this._getKeyringByType(keyringType);
+      keyring = this.#getKeyringByType(keyringType);
     } catch {
       const GnosisKeyring = keyringService.getKeyringClassForType(keyringType);
       keyring = new GnosisKeyring({});
@@ -3171,7 +3198,7 @@ export class WalletController extends BaseController {
   };
 
   syncAllGnosisNetworks = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       return;
     }
@@ -3187,7 +3214,7 @@ export class WalletController extends BaseController {
   };
 
   syncGnosisNetworks = async (address: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       return;
     }
@@ -3205,7 +3232,7 @@ export class WalletController extends BaseController {
   };
 
   clearGnosisTransaction = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction || keyring.safeInstance) {
       keyring.currentTransaction = null;
       keyring.safeInstance = null;
@@ -3213,7 +3240,7 @@ export class WalletController extends BaseController {
   };
 
   clearGnosisMessage = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentSafeMessage || keyring.safeInstance) {
       keyring.currentSafeMessage = null;
       keyring.safeInstance = null;
@@ -3224,7 +3251,7 @@ export class WalletController extends BaseController {
    * @deprecated
    */
   getGnosisNetworkId = (address: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     const networkId = keyring.networkIdMap[address.toLowerCase()];
     if (networkId === undefined) {
       throw new Error(`Address ${address} is not in keyring"`);
@@ -3233,7 +3260,7 @@ export class WalletController extends BaseController {
   };
 
   getGnosisNetworkIds = (address: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     const networkId = keyring.networkIdsMap[address.toLowerCase()];
     if (networkId === undefined) {
       throw new Error(`Address ${address} is not in keyring"`);
@@ -3242,7 +3269,7 @@ export class WalletController extends BaseController {
   };
 
   getGnosisTransactionHash = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction) {
       return keyring.getTransactionHash();
     }
@@ -3250,7 +3277,7 @@ export class WalletController extends BaseController {
   };
 
   getGnosisTransactionSignatures = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction) {
       const sigs = Array.from(keyring.currentTransaction.signatures.values());
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
@@ -3259,7 +3286,7 @@ export class WalletController extends BaseController {
   };
 
   setGnosisTransactionHash = (hash: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     keyring.currentTransactionHash = hash;
   };
 
@@ -3270,7 +3297,7 @@ export class WalletController extends BaseController {
     version: string,
     networkId: string
   ) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring) {
       const currentProvider = new EthereumProvider();
       currentProvider.currentAccount = account.address;
@@ -3303,7 +3330,7 @@ export class WalletController extends BaseController {
     },
     hash: string
   ) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring) {
       buildinProvider.currentProvider.currentAccount = account.address;
       buildinProvider.currentProvider.currentAccountType = account.type;
@@ -3327,7 +3354,7 @@ export class WalletController extends BaseController {
   };
 
   postGnosisTransaction = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring || !keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
@@ -3335,7 +3362,7 @@ export class WalletController extends BaseController {
   };
 
   getGnosisAllPendingTxs = async (address: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
@@ -3378,7 +3405,7 @@ export class WalletController extends BaseController {
   };
 
   getGnosisAllPendingMessages = async (address: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
@@ -3442,7 +3469,7 @@ export class WalletController extends BaseController {
     version: string,
     networkId: string
   ) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     const currentProvider = new EthereumProvider();
     currentProvider.currentAccount = account.address;
@@ -3460,7 +3487,7 @@ export class WalletController extends BaseController {
   };
 
   signGnosisTransaction = (account: Account) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction && keyring.safeInstance) {
       buildinProvider.currentProvider.currentAccount = account.address;
       buildinProvider.currentProvider.currentAccountType = account.type;
@@ -3477,7 +3504,7 @@ export class WalletController extends BaseController {
   };
 
   checkGnosisTransactionCanExec = async () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction && keyring.safeInstance) {
       const threshold = await keyring.safeInstance.getThreshold();
       return keyring.currentTransaction.signatures.size >= threshold;
@@ -3487,7 +3514,7 @@ export class WalletController extends BaseController {
 
   execGnosisTransaction = async (account: Account) => {
     try {
-      const keyring: GnosisKeyring = this._getKeyringByType(
+      const keyring: GnosisKeyring = this.#getKeyringByType(
         KEYRING_CLASS.GNOSIS
       );
       if (keyring.currentTransaction && keyring.safeInstance) {
@@ -3510,7 +3537,7 @@ export class WalletController extends BaseController {
   };
 
   gnosisGenerateTypedData = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
@@ -3519,7 +3546,7 @@ export class WalletController extends BaseController {
   };
 
   gnosisAddConfirmation = async (address: string, signature: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
@@ -3528,7 +3555,7 @@ export class WalletController extends BaseController {
   };
 
   gnosisAddPureSignature = async (address: string, signature: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
@@ -3537,7 +3564,7 @@ export class WalletController extends BaseController {
   };
 
   gnosisAddSignature = async (address: string, signature: string) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
@@ -3558,7 +3585,7 @@ export class WalletController extends BaseController {
     networkId: string;
     message: string | Record<string, any>;
   }) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring) {
       const currentProvider = new EthereumProvider();
       currentProvider.currentAccount = account.address;
@@ -3578,7 +3605,7 @@ export class WalletController extends BaseController {
   };
 
   getGnosisSafeMessageInfo = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
@@ -3592,7 +3619,7 @@ export class WalletController extends BaseController {
     signerAddress: string;
     signature: string;
   }) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     return keyring.addMessage({
       signerAddress,
@@ -3607,7 +3634,7 @@ export class WalletController extends BaseController {
     signerAddress: string;
     signature: string;
   }) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     return keyring.addMessageSignature({
       signerAddress,
@@ -3643,7 +3670,7 @@ export class WalletController extends BaseController {
     signerAddress: string;
     signature: string;
   }) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     return keyring.addPureMessageSignature({
       signerAddress,
@@ -3678,7 +3705,7 @@ export class WalletController extends BaseController {
   };
 
   getGnosisMessageSignatures = () => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentSafeMessage) {
       const sigs = Array.from(keyring.currentSafeMessage.signatures.values());
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
@@ -3698,7 +3725,7 @@ export class WalletController extends BaseController {
     },
     hash: string
   ) => {
-    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
@@ -3737,7 +3764,7 @@ export class WalletController extends BaseController {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.WATCH;
     try {
-      keyring = this._getKeyringByType(keyringType);
+      keyring = this.#getKeyringByType(keyringType);
     } catch {
       const WatchKeyring = keyringService.getKeyringClassForType(keyringType);
       keyring = new WatchKeyring();
@@ -3774,7 +3801,7 @@ export class WalletController extends BaseController {
   getWalletConnectStatus = (address: string, brandName: string) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
-      const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+      const keyring: WalletConnectKeyring = this.#getKeyringByType(keyringType);
       if (keyring) {
         return keyring.getConnectorStatus(address, brandName);
       }
@@ -3790,7 +3817,7 @@ export class WalletController extends BaseController {
         ? KEYRING_CLASS.Coinbase
         : KEYRING_CLASS.WALLETCONNECT;
     try {
-      const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+      const keyring: WalletConnectKeyring = this.#getKeyringByType(keyringType);
       if (keyring) {
         return keyring.getSessionStatus(address, brandName);
       }
@@ -3805,7 +3832,7 @@ export class WalletController extends BaseController {
     brandName: string
   ) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+    const keyring: WalletConnectKeyring = this.#getKeyringByType(keyringType);
     if (keyring) {
       return keyring.getSessionNetworkDelay(address, brandName);
     }
@@ -3818,7 +3845,7 @@ export class WalletController extends BaseController {
         ? KEYRING_CLASS.Coinbase
         : KEYRING_CLASS.WALLETCONNECT;
     try {
-      const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+      const keyring: WalletConnectKeyring = this.#getKeyringByType(keyringType);
       if (keyring) {
         return keyring.getSessionAccount(address, brandName);
       }
@@ -3834,7 +3861,7 @@ export class WalletController extends BaseController {
         ? KEYRING_CLASS.Coinbase
         : KEYRING_CLASS.WALLETCONNECT;
     try {
-      const keyring = this._getKeyringByType(keyringType);
+      const keyring = this.#getKeyringByType(keyringType);
       if (keyring) {
         await keyring.switchEthereumChain(
           account.brandName,
@@ -3867,7 +3894,7 @@ export class WalletController extends BaseController {
         keyring = stashKeyrings[curStashId];
         isNewKey = false;
       } else {
-        keyring = this._getKeyringByType(keyringType);
+        keyring = this.#getKeyringByType(keyringType);
       }
     } catch {
       const WalletConnect = keyringService.getKeyringClassForType(keyringType);
@@ -3957,7 +3984,7 @@ export class WalletController extends BaseController {
         brandName === KEYRING_CLASS.Coinbase
           ? KEYRING_CLASS.Coinbase
           : KEYRING_CLASS.WALLETCONNECT;
-      const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+      const keyring: WalletConnectKeyring = this.#getKeyringByType(keyringType);
       if (keyring) {
         await keyring.closeConnector({ address, brandName }, silent);
         // reset onAfterConnect
@@ -3970,7 +3997,7 @@ export class WalletController extends BaseController {
 
   getCommonWalletConnectInfo = (address: string) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+    const keyring: WalletConnectKeyring = this.#getKeyringByType(keyringType);
     if (keyring) {
       return keyring.getCommonWalletConnectInfo(address);
     }
@@ -3989,7 +4016,7 @@ export class WalletController extends BaseController {
       let keyring: WalletConnectKeyring, isNewKey;
       const keyringType = KEYRING_CLASS.WALLETCONNECT;
       try {
-        keyring = this._getKeyringByType(keyringType);
+        keyring = this.#getKeyringByType(keyringType);
       } catch {
         if (stashId !== null && stashId !== undefined) {
           keyring = stashKeyrings[stashId];
@@ -4033,7 +4060,7 @@ export class WalletController extends BaseController {
 
   gridPlusIsConnect = () => {
     const keyringType = KEYRING_CLASS.HARDWARE.GRIDPLUS;
-    const keyring = this._getKeyringByType(keyringType);
+    const keyring = this.#getKeyringByType(keyringType);
     if (keyring) {
       return keyring.isUnlocked();
     }
@@ -4383,7 +4410,7 @@ export class WalletController extends BaseController {
     return keyring;
   };
 
-  _getMnemonicKeyringByAddress = (address: string) => {
+  #getMnemonicKeyringByAddress = (address: string) => {
     return keyringService.keyrings.find((item) => {
       return (
         item.type === KEYRING_CLASS.MNEMONIC &&
@@ -4398,7 +4425,7 @@ export class WalletController extends BaseController {
     keyringService.removeKeyringByPublicKey(publicKey);
   };
 
-  getMnemonicKeyRingFromPublicKey = (publicKey: string) => {
+  #getMnemonicKeyRingFromPublicKey = (publicKey: string) => {
     const targetKeyring = keyringService.keyrings?.find((item) => {
       if (
         item.type === KEYRING_CLASS.MNEMONIC &&
@@ -4413,14 +4440,23 @@ export class WalletController extends BaseController {
     return targetKeyring;
   };
 
-  getMnemonicFromPublicKey = (publicKey: string) => {
-    const targetKeyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+  getMnemonicKeyRingFromPublicKey = async (
+    password: string,
+    publicKey: string
+  ) => {
+    await this.verifyPassword(password);
+    return this.#getMnemonicKeyRingFromPublicKey(publicKey);
+  };
+
+  getMnemonicFromPublicKey = async (password: string, publicKey: string) => {
+    await this.verifyPassword(password);
+    const targetKeyring = this.#getMnemonicKeyRingFromPublicKey(publicKey);
 
     return targetKeyring?.mnemonic;
   };
 
   getMnemonicKeyRingIdFromPublicKey = (publicKey: string) => {
-    const targetKeyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    const targetKeyring = this.#getMnemonicKeyRingFromPublicKey(publicKey);
     let keyringId;
     if (targetKeyring) {
       keyringId = this.updateKeyringInStash(targetKeyring);
@@ -4428,23 +4464,24 @@ export class WalletController extends BaseController {
     return keyringId;
   };
 
-  getMnemonicByAddress = (address: string) => {
-    const keyring = this._getMnemonicKeyringByAddress(address);
+  getMnemonicByAddress = async (password: string, address: string) => {
+    await this.verifyPassword(password);
+    const keyring = this.#getMnemonicKeyringByAddress(address);
     if (!keyring) {
       throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
     return keyring.mnemonic;
   };
 
-  private getMnemonicKeyring = async (
+  #getMnemonicKeyring = async (
     type: 'address' | 'publickey',
     value: string
   ) => {
     let keyring;
     if (type === 'address') {
-      keyring = await this._getMnemonicKeyringByAddress(value);
+      keyring = await this.#getMnemonicKeyringByAddress(value);
     } else {
-      keyring = await this.getMnemonicKeyRingFromPublicKey(value);
+      keyring = this.#getMnemonicKeyRingFromPublicKey(value);
     }
 
     if (!keyring) {
@@ -4458,7 +4495,7 @@ export class WalletController extends BaseController {
     type: 'address' | 'publickey',
     value: string
   ) => {
-    const keyring = await this.getMnemonicKeyring(type, value);
+    const keyring = await this.#getMnemonicKeyring(type, value);
     return keyring.needPassphrase;
   };
 
@@ -4466,7 +4503,7 @@ export class WalletController extends BaseController {
     type: 'address' | 'publickey',
     value: string
   ) => {
-    const keyring = await this.getMnemonicKeyring(type, value);
+    const keyring = await this.#getMnemonicKeyring(type, value);
     return keyring.passphrase;
   };
 
@@ -4475,7 +4512,7 @@ export class WalletController extends BaseController {
     value: string,
     passphrase: string
   ) => {
-    const keyring = await this.getMnemonicKeyring(type, value);
+    const keyring = await this.#getMnemonicKeyring(type, value);
     const result = keyring.checkPassphrase(passphrase);
     if (result) {
       keyring.setPassphrase(passphrase);
@@ -4484,7 +4521,7 @@ export class WalletController extends BaseController {
   };
 
   getMnemonicAddressInfo = async (address: string) => {
-    const keyring = this._getMnemonicKeyringByAddress(address);
+    const keyring = this.#getMnemonicKeyringByAddress(address);
     if (!keyring) {
       throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
@@ -4571,7 +4608,7 @@ export class WalletController extends BaseController {
   };
 
   removePublicKeyFromStash = (publicKey: string) => {
-    const keyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    const keyring = this.#getMnemonicKeyRingFromPublicKey(publicKey);
     if (keyring) {
       this.removeMnemonicKeyringFromStash(keyring);
     }
@@ -4596,11 +4633,9 @@ export class WalletController extends BaseController {
     }
   };
 
-  getKeyringByType = (type: string) => keyringService.getKeyringByType(type);
-
   checkHasMnemonic = () => {
     try {
-      const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
+      const keyring = this.#getKeyringByType(KEYRING_CLASS.MNEMONIC);
       return !!keyring.mnemonic;
     } catch (e) {
       return false;
@@ -4611,7 +4646,7 @@ export class WalletController extends BaseController {
    * @deprecated
    */
   deriveNewAccountFromMnemonic = async () => {
-    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
+    const keyring = this.#getKeyringByType(KEYRING_CLASS.MNEMONIC);
 
     const result = await keyringService.addNewAccount(keyring);
     this._setCurrentAccountFromKeyring(keyring, -1);
@@ -4619,7 +4654,7 @@ export class WalletController extends BaseController {
   };
 
   deriveNextAccountFromMnemonicByPublicKey = async (publicKey: string) => {
-    const keyring = this.getMnemonicKeyRingFromPublicKey(publicKey);
+    const keyring = this.#getMnemonicKeyRingFromPublicKey(publicKey);
     if (!keyring) {
       throw new Error(t('background.error.notFoundKeyringByAddress'));
     }
@@ -4729,7 +4764,7 @@ export class WalletController extends BaseController {
     let stashKeyringId: number | null = null;
     let isNew = false;
     try {
-      keyring = this._getKeyringByType(type);
+      keyring = this.#getKeyringByType(type);
     } catch {
       const Keyring = keyringService.getKeyringClassForType(type);
       keyring = new Keyring(
@@ -4777,7 +4812,7 @@ export class WalletController extends BaseController {
 
   acquireKeystoneMemStoreData = async () => {
     const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
-    const keyring: KeystoneKeyring = this._getKeyringByType(keyringType);
+    const keyring: KeystoneKeyring = this.#getKeyringByType(keyringType);
     if (keyring) {
       keyring.getInteraction().on(MemStoreDataReady, (request) => {
         eventBus.emit(EVENTS.broadcastToUI, {
@@ -4802,7 +4837,7 @@ export class WalletController extends BaseController {
       keyring = stashKeyrings[keyringId];
     } else {
       try {
-        keyring = this._getKeyringByType(keyringType);
+        keyring = this.#getKeyringByType(keyringType);
       } catch {
         const keystoneKeyring = keyringService.getKeyringClassForType(
           keyringType
@@ -4831,7 +4866,7 @@ export class WalletController extends BaseController {
       keyring = stashKeyrings[keyringId];
     } else {
       try {
-        keyring = this._getKeyringByType(keyringType);
+        keyring = this.#getKeyringByType(keyringType);
       } catch {
         const keystoneKeyring = keyringService.getKeyringClassForType(
           keyringType
@@ -4989,12 +5024,20 @@ export class WalletController extends BaseController {
     keyringId: number | null,
     ...params: any[]
   ) => {
+    if (
+      typeof methodName !== 'string' ||
+      !REQUEST_KEYRING_METHOD_ALLOWLIST.has(methodName)
+    ) {
+      throw new Error(
+        `requestKeyring: method ${String(methodName)} is not allowed`
+      );
+    }
     let keyring: any;
     if (keyringId !== null && keyringId !== undefined) {
       keyring = stashKeyrings[keyringId];
     } else {
       try {
-        keyring = this._getKeyringByType(type);
+        keyring = this.#getKeyringByType(type);
       } catch {
         const Keyring = keyringService.getKeyringClassForType(type);
         keyring = new Keyring(
@@ -5015,7 +5058,7 @@ export class WalletController extends BaseController {
       keyring = stashKeyrings[keyringId];
     } else {
       try {
-        keyring = this._getKeyringByType(type);
+        keyring = this.#getKeyringByType(type);
       } catch {
         const Keyring = keyringService.getKeyringClassForType(type);
         keyring = new Keyring(
@@ -5079,7 +5122,7 @@ export class WalletController extends BaseController {
   unlockHardwareAccount = async (keyring, indexes, keyringId) => {
     let keyringInstance: any = null;
     try {
-      keyringInstance = this._getKeyringByType(keyring);
+      keyringInstance = this.#getKeyringByType(keyring);
     } catch (e) {
       // NOTHING
     }
@@ -5278,7 +5321,7 @@ export class WalletController extends BaseController {
   isDefaultWallet = (origin?: string) =>
     preferenceService.getIsDefaultWallet(origin);
 
-  private _getKeyringByType(type) {
+  #getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];
 
     if (keyring) {
@@ -5866,7 +5909,7 @@ export class WalletController extends BaseController {
     let stashKeyringId: number | null = null;
     const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
     try {
-      keyring = this._getKeyringByType(keyringType);
+      keyring = this.#getKeyringByType(keyringType);
     } catch {
       const keystoneKeyring = keyringService.getKeyringClassForType(
         keyringType
@@ -5883,7 +5926,7 @@ export class WalletController extends BaseController {
 
   checkQRHardwareAllowImport = async (brand: string) => {
     try {
-      const keyring = this._getKeyringByType(KEYRING_CLASS.HARDWARE.KEYSTONE);
+      const keyring = this.#getKeyringByType(KEYRING_CLASS.HARDWARE.KEYSTONE);
 
       if (!keyring) {
         return {
@@ -5969,7 +6012,7 @@ export class WalletController extends BaseController {
     let keyring: CoboArgusKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.CoboArgus;
     try {
-      keyring = this._getKeyringByType(keyringType);
+      keyring = this.#getKeyringByType(keyringType);
     } catch {
       const CoboArgusKeyring = keyringService.getKeyringClassForType(
         keyringType
@@ -5997,7 +6040,7 @@ export class WalletController extends BaseController {
   };
 
   coboSafeGetAccountDetail = async (address: string) => {
-    const keyring = this._getKeyringByType(
+    const keyring = this.#getKeyringByType(
       KEYRING_CLASS.CoboArgus
     ) as CoboArgusKeyring;
     if (!keyring) {
@@ -6041,7 +6084,7 @@ export class WalletController extends BaseController {
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
-      keyring = this._getKeyringByType(keyringType);
+      keyring = this.#getKeyringByType(keyringType);
     } catch {
       const WalletConnect = keyringService.getKeyringClassForType(keyringType);
       keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
@@ -6081,7 +6124,7 @@ export class WalletController extends BaseController {
         keyring = stashKeyrings[curStashId];
         isNewKey = false;
       } else {
-        keyring = this._getKeyringByType(keyringType);
+        keyring = this.#getKeyringByType(keyringType);
       }
     } catch {
       const CoinbaseKeyring = keyringService.getKeyringClassForType(
@@ -6145,7 +6188,7 @@ export class WalletController extends BaseController {
     const keyringType = KEYRING_CLASS.Coinbase;
     const stashId = this._currentCoinbaseStashId;
     try {
-      keyring = this._getKeyringByType(keyringType);
+      keyring = this.#getKeyringByType(keyringType);
     } catch {
       if (stashId !== null && stashId !== undefined) {
         keyring = stashKeyrings[stashId];
