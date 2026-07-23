@@ -141,12 +141,8 @@ const Receive = () => {
       const idx = pinedList.indexOf(item.enum);
       return idx === -1 ? pinedList.length + 1 : idx;
     });
-    // filter custom network
-    if (chain && list.some((item) => item.enum === chain.enum)) {
-      list = [chain, ...list.filter((item) => item.enum !== chain.enum)];
-    }
     return list;
-  }, [chain, isSafeSupportChainsReady, safeSupportChains]);
+  }, [isSafeSupportChainsReady, safeSupportChains]);
 
   const shownChains = useMemo(() => {
     return displayChains.slice(0, 5);
@@ -327,27 +323,49 @@ const Receive = () => {
           </button>
           <div className="qr-card-divider" />
           <div
-            className="qr-card-chain"
+            className="qr-card-chain gap-[16px]"
             onClick={() => {
               if (isSafeSupportChainsReady) {
                 setIsShowReceiveModal(true);
               }
             }}
           >
-            <div className="qr-card-chain-label">
+            <div className="qr-card-chain-label shrink-0">
               {t('page.receive.supportedChain')}
             </div>
             <div className="qr-card-chain-list">
-              {shownChains.map((item) => (
-                <img
-                  key={item.enum}
-                  src={item.logo}
-                  alt={item.name}
-                  className="qr-card-chain-logo"
-                />
-              ))}
-              {restChainCount > 0 && (
-                <span className="qr-card-chain-count">+{restChainCount}</span>
+              {chain ? (
+                <>
+                  <img
+                    src={chain.logo}
+                    alt={chain.name}
+                    className="qr-card-chain-logo"
+                  />
+                  <span className="qr-card-chain-name truncate">
+                    {chain.name}
+                  </span>
+                  {displayChains.length > 1 && (
+                    <span className="qr-card-chain-count">
+                      +{displayChains.length - 1}
+                    </span>
+                  )}
+                </>
+              ) : (
+                <>
+                  {shownChains.map((item) => (
+                    <img
+                      key={item.enum}
+                      src={item.logo}
+                      alt={item.name}
+                      className="qr-card-chain-logo"
+                    />
+                  ))}
+                  {restChainCount > 0 && (
+                    <span className="qr-card-chain-count">
+                      +{restChainCount}
+                    </span>
+                  )}
+                </>
               )}
               {isSafeSupportChainsReady && (
                 <RcIconArrowRightCC className="qr-card-chain-arrow" />
