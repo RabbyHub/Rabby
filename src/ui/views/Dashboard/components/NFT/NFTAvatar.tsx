@@ -35,19 +35,7 @@ const isValidHttpUrl = (url?: string): boolean => {
       return false;
     }
 
-    const hostname = urlObj.hostname.toLowerCase();
-    // Basic guard against localhost and common private IP ranges
-    if (
-      hostname === 'localhost' ||
-      hostname === '127.0.0.1' ||
-      hostname === '0.0.0.0' ||
-      hostname === '::1' ||
-      hostname.startsWith('10.') ||
-      hostname.startsWith('192.168.') ||
-      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(hostname)
-    ) {
-      return false;
-    }
+    const hostname = urlObj.hostname.toLowerCase().replace(/^\\[|\\]$/g, '');\n    // Basic guard against localhost and common private IP ranges\n    if (\n      hostname === 'localhost' ||\n      hostname.startsWith('127.') ||\n      hostname === '0.0.0.0' ||\n      hostname === '::1' ||\n      hostname === '::' ||\n      hostname.startsWith('10.') ||\n      hostname.startsWith('192.168.') ||\n      hostname.startsWith('169.254.') ||\n      /^172\\.(1[6-9]|2[0-9]|3[0-1])\\./.test(hostname) ||\n      /^f[cd][0-9a-f]{2}:/i.test(hostname) ||\n      /^fe[89ab][0-9a-f]:/i.test(hostname)\n    ) {\n      return false;\n    }
 
     return true;
   } catch {
