@@ -223,14 +223,6 @@ export const BalanceView = ({
   };
 
   const { activePopup, setData, componentName } = useCommonPopupView();
-  const onClickViewAssets = () => {
-    if (balanceLoading) {
-      return;
-    }
-    activePopup('AssetList');
-    // wallet.openInDesktop('/desktop/profile');
-    // window.close();
-  };
 
   useEffect(() => {
     if (componentName === 'AssetList') {
@@ -336,6 +328,15 @@ export const BalanceView = ({
   const showAppChainTips = useMemo(() => {
     return evmBalance !== balance;
   }, [evmBalance, balance]);
+
+  const onClickViewAssets = () => {
+    if (shouldShowBalanceLoading) {
+      return;
+    }
+    activePopup('AssetList');
+    // wallet.openInDesktop('/desktop/profile');
+    // window.close();
+  };
 
   if (
     loadBalanceSuccess &&
