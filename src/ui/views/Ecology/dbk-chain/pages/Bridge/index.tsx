@@ -93,10 +93,10 @@ export const DbkChainBridge = () => {
   );
 
   const tabs = [
-    {
-      key: 'deposit' as const,
-      label: t('page.ecology.dbk.bridge.tabs.deposit'),
-    },
+    // {
+    //   key: 'deposit' as const,
+    //   label: t('page.ecology.dbk.bridge.tabs.deposit'),
+    // },
     {
       key: 'withdraw' as const,
       label: t('page.ecology.dbk.bridge.tabs.withdraw'),
@@ -106,9 +106,7 @@ export const DbkChainBridge = () => {
   const { search } = useLocation();
   const qs = query2obj(search);
   const [activeTab, setActiveTab] = React.useState<'deposit' | 'withdraw'>(
-    ['deposit', 'withdraw'].includes(qs.activeTab)
-      ? (qs.activeTab as any)
-      : 'deposit'
+    'withdraw'
   );
 
   const {

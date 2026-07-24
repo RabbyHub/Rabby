@@ -4114,7 +4114,8 @@
           "bridgeBtn": "Bridge",
           "mintNFT": "Mint DBK Genesis NFT",
           "mintNFTDesc": "Be a witness of DBK Chain",
-          "mintNFTBtn": "Mint"
+          "mintNFTBtn": "Mint",
+          "withdraw": "Withdraw from DBK chain"
         },
         "bridge": {
           "tabs": {

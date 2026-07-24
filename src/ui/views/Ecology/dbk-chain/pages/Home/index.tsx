@@ -20,7 +20,7 @@ export const DbkChainHome = () => {
         }}
       >
         <div className="text-r-neutral-title1 font-semibold text-[20px] leading-[24px] mb-[8px]">
-          {t('page.ecology.dbk.home.bridge')}
+          {t('page.ecology.dbk.home.withdraw')}
         </div>
         <div className="text-r-neutral-foot text-[13px] leading-[16px] mb-[28px]">
           {t('page.ecology.dbk.home.bridgePoweredBy')}
