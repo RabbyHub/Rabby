@@ -663,7 +663,10 @@
       "watchModeAlert1": "Este é um endereço em Modo de Observação.",
       "title": "Receber {{token}} na {{chain}}",
       "watchModeAlert2": "Tem a certeza de que pretende utilizá-lo para receber ativos?",
-      "receiveOn": "Receba {{token}} em"
+      "receiveOn": "Receba {{token}} em",
+      "receiveTitle": "Receber {{token}}",
+      "addCustomNetwork": "Adicionar rede personalizada",
+      "supportedChain": "Redes suportadas"
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -1598,7 +1601,8 @@
         "searchTokenPlaceholder": "Pesquisar token",
         "openInTab": "Abrir no separador Rabby",
         "openProMode": "Abrir Modo Pro",
-        "openInTabV2": "Abrir num novo separador"
+        "openInTabV2": "Abrir num novo separador",
+        "addAssets": "Adicionar ativos"
       },
       "hd": {
         "ledger": {
@@ -1662,7 +1666,11 @@
         "desc": "Consulte os seus pontos no Rabby Mobile.",
         "downloadIntro": "Ainda não tem a aplicação? Transfira-a agora."
       },
-      "noData": "Nenhuma moeda correspondente"
+      "noData": "Nenhuma moeda correspondente",
+      "ZeroAssets": {
+        "desc": "Adicione fundos à sua carteira para utilizar a Web3",
+        "addAssets": "Adicionar ativos"
+      }
     },
     "nft": {
       "empty": {

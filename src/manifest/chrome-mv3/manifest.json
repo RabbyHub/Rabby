@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.93.99",
+  "version": "0.93.100",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -55,7 +55,7 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; frame-ancestors 'none'"
   },
   "permissions": [
     "scripting",
@@ -79,5 +79,8 @@
         "<all_urls>"
       ]
     }
-  ]
+  ],
+  "externally_connectable": {
+    "ids": []
+  }
 }

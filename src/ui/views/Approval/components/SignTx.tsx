@@ -1325,7 +1325,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               value: tx.value || '0x0',
             },
             apiProvider: isTestnet(chain.serverId)
-              ? wallet.testnetOpenapi
+              ? ((wallet.fakeTestnetOpenapi as unknown) as any)
               : wallet.openapi,
           });
         })
@@ -1393,7 +1393,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           value: tx.value || '0x0',
         },
         apiProvider: isTestnet(chain.serverId)
-          ? wallet.testnetOpenapi
+          ? ((wallet.fakeTestnetOpenapi as unknown) as any)
           : wallet.openapi,
       });
       const ctx = await formatSecurityEngineContext({
