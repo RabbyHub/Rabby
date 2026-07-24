@@ -51,7 +51,7 @@ export const AliasName: React.FC<Props> = ({
     }
   }, [aliasName]);
 
-  if (!value || disabled) {
+  if (disabled) {
     if (cachedName[address] ?? cacheAliasName) {
       return (
         <div className="AliasName AliasName--disabled">

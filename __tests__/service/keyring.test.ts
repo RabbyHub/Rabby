@@ -238,6 +238,30 @@ describe('keyringService', () => {
       const accountsAfterAdd = await HDKeyring.getAccounts();
       expect(accountsAfterAdd).toHaveLength(2);
     });
+
+    it('does not create default aliases for new accounts', async () => {
+      await contactBook.init();
+
+      const importedKeyring = await keyringService.importPrivateKey(
+        'c87509a1c067bbde78beb793e6fa76530b6382a4c0241e5e4a9ec0a0f44dc0d3'
+      );
+      const batchResult = await keyringService.importPrivateKeys([
+        'b8a9c05beeedb25df85f8d641538cbffedf67216048de9c678ee26260eb91952',
+      ]);
+      const hdKeyring = await keyringService.addNewKeyring('HD Key Tree');
+      await keyringService.addNewAccount(hdKeyring);
+
+      const addresses = [
+        ...(await importedKeyring.getAccounts()),
+        ...(await batchResult.keyrings[0].getAccounts()),
+        ...(await hdKeyring.getAccounts()),
+      ];
+      expect(
+        addresses.every(
+          (address) => !contactBook.getContactByAddress(address)?.isAlias
+        )
+      ).toBe(true);
+    });
   });
 
   describe('getAppKeyAddress', () => {
