@@ -209,9 +209,9 @@ function isSendAmountGreaterThanBalance(
   }
 
   const amountBn = getSafeAmountBn(amount);
-  const balanceBn = new BigNumber(token.raw_amount_hex_str || 0).div(
-    10 ** token.decimals
-  );
+  const balanceBn = token.raw_amount_hex_str
+    ? new BigNumber(token.raw_amount_hex_str).div(10 ** token.decimals)
+    : new BigNumber(token.amount || 0);
 
   return amountBn.gt(balanceBn);
 }

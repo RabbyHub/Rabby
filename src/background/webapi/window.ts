@@ -56,7 +56,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   const left = cLeft! + width! - WINDOW_SIZE.width;
   const optionHeight = rest.height || 600;
   const maxHeight = (height || 1000) - 40;
-  const finalHeight = Math.min(optionHeight, Math.max(maxHeight, 600));
+  const finalHeight = Math.min(Math.max(optionHeight, 600), maxHeight);
 
   const currentWindow = await browser.windows.getLastFocused();
   let win;

@@ -8,6 +8,24 @@ const DEFAULT_TRADINGVIEW_URL = process.env.DEBUG
   ? 'https://tradingview-test.vercel.app/'
   : 'https://tradingview.rabby.io/';
 
+const ALLOWED_EXTERNAL_HOSTS = new Set([
+  'www.tradingview.com',
+  'tradingview.com',
+  'cn.tradingview.com',
+]);
+
+const toSafeExternalUrl = (input: unknown): string | null => {
+  if (typeof input !== 'string' || !input) return null;
+  try {
+    const parsed = new URL(input);
+    if (parsed.protocol !== 'https:') return null;
+    if (!ALLOWED_EXTERNAL_HOSTS.has(parsed.hostname)) return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+};
+
 type TradingViewResolution =
   | '1'
   | '5'
@@ -742,9 +760,10 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
           }
         } else if (message.event === 'openExternalUrl') {
           const url = message.payload?.url;
-          if (isTradingViewExternalUrl(url)) {
-            browser.tabs.create({ active: true, url }).catch(() => {
-              window.open(url, '_blank', 'noopener,noreferrer');
+          const safeUrl = toSafeExternalUrl(url);
+          if (safeUrl && isTradingViewExternalUrl(safeUrl)) {
+            browser.tabs.create({ active: true, url: safeUrl }).catch(() => {
+              window.open(safeUrl, '_blank', 'noopener,noreferrer');
             });
           }
         }

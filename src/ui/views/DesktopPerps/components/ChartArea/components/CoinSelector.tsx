@@ -62,8 +62,9 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   const priceChange = currentMarketData.prevDayPx
     ? Number(currentMarketData.markPx) - Number(currentMarketData.prevDayPx)
     : 0;
-  const priceChangePercent = currentMarketData.prevDayPx
-    ? (priceChange / Number(currentMarketData.prevDayPx)) * 100
+  const prevDayPxNum = Number(currentMarketData.prevDayPx || 0);
+  const priceChangePercent = prevDayPxNum !== 0
+    ? (priceChange / prevDayPxNum) * 100
     : 0;
   const isPriceUp = priceChange > 0;
   const isPriceDown = priceChange < 0;

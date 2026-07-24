@@ -239,15 +239,17 @@ const getLedgerStatusWord = (err: unknown) => {
   return value?._tag === 'RefusedByUserDAError' ? '6985' : '';
 };
 
-export const getLedgerErrorMessage = (err: unknown, fallback: string) =>
-  [stringifyLedgerErrorValue(err) || fallback, getLedgerStatusWord(err)]
-    .filter(Boolean)
-    .reduce((message, statusWord) => {
-      const normalizedStatus = `0x${statusWord}`;
-      return message.toLowerCase().includes(normalizedStatus)
-        ? message
-        : `${message} ${normalizedStatus}`;
-    });
+export const getLedgerErrorMessage = (err: unknown, fallback: string) => {
+  const msg = stringifyLedgerErrorValue(err) || fallback;
+  const statusWord = getLedgerStatusWord(err);
+  if (statusWord) {
+    const normalizedStatus = "0x" + statusWord;
+    return msg.toLowerCase().includes(normalizedStatus.toLowerCase())
+      ? msg
+      : msg + " " + normalizedStatus;
+  }
+  return msg;
+};
 
 const toLedgerError = (err: unknown, fallback: string) =>
   new Error(getLedgerErrorMessage(err, fallback));
