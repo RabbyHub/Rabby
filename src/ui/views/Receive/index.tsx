@@ -341,7 +341,7 @@ const Receive = () => {
                     alt={chain.name}
                     className="qr-card-chain-logo"
                   />
-                  <span className="qr-card-chain-name truncate min-w-0">
+                  <span className="qr-card-chain-name truncate min-w-0 ml-[3px] font-medium">
                     {chain.name}
                   </span>
                   {displayChains.length > 1 && (
