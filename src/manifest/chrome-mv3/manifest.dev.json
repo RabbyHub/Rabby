@@ -81,5 +81,7 @@
       ]
     }
   ],
-  "externally_connectable": { "ids": [] }
+  "externally_connectable": {
+    "ids": []
+  }
 }
