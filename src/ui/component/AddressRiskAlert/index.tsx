@@ -27,6 +27,7 @@ import {
 } from '@/constant';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useAddressRisks } from '@/ui/hooks/useAddressRisk';
+import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { RiskRow } from './RiskRow';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { IExchange } from '../CexSelect';
@@ -124,6 +125,11 @@ export const AddressTypeCard = ({
 }) => {
   const { isDarkTheme } = useThemeMode();
   const { t } = useTranslation();
+  const watchAddressTypeIcon = useBrandIcon({
+    address,
+    brandName,
+    type,
+  });
 
   const [form] = useForm();
   const [_alias, setAlias] = useAlias(address);
@@ -258,10 +264,12 @@ export const AddressTypeCard = ({
                   <ThemeIcon
                     className="icon icon-account-type w-[20px] h-[20px]"
                     src={
-                      pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
-                      WALLET_BRAND_CONTENT[brandName]?.image ||
-                      pickKeyringThemeIcon(type as any, isDarkTheme) ||
-                      KEYRING_ICONS[type]
+                      type === KEYRING_CLASS.WATCH
+                        ? watchAddressTypeIcon
+                        : pickKeyringThemeIcon(brandName as any, isDarkTheme) ||
+                          WALLET_BRAND_CONTENT[brandName]?.image ||
+                          pickKeyringThemeIcon(type as any, isDarkTheme) ||
+                          KEYRING_ICONS[type]
                     }
                   />
                 )}
