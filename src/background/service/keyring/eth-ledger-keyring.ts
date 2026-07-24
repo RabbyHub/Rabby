@@ -2,6 +2,7 @@ import {
   recoverPersonalSignature,
   recoverTypedSignature,
   SignTypedDataVersion,
+  TypedDataUtils,
 } from '@metamask/eth-sig-util';
 import {
   toChecksumAddress,
@@ -11,18 +12,25 @@ import {
 } from '@ethereumjs/util';
 import { RLP, utils } from '@ethereumjs/rlp';
 import {
+  ApduBuilder,
+  ApduParser,
   CloseAppCommand,
+  CommandResultFactory,
   DeviceActionStatus,
   DeviceSessionStateType,
   DeviceStatus,
   DeviceManagementKitBuilder,
   GetAppAndVersionCommand,
+  InvalidStatusWordError,
   OpenAppDeviceAction,
   UserInteractionRequired,
   isSuccessCommandResult,
 } from '@ledgerhq/device-management-kit';
 
 import type {
+  Apdu,
+  ApduResponse,
+  Command,
   DeviceManagementKit,
   DeviceSessionState,
   DeviceSessionId,
@@ -367,6 +375,99 @@ const toSignatureHex = (signature: Signature) => {
 
   return `0x${payload.r}${payload.s}${payload.v}`;
 };
+
+const HARDENED_PATH_FLAG = 0x80000000;
+
+const splitHdPath = (hdPath: string) =>
+  hdPath
+    .split('/')
+    .filter((segment) => segment !== '' && segment !== 'm')
+    .map((segment) => {
+      const isHardened = segment.endsWith("'");
+      const index = parseInt(isHardened ? segment.slice(0, -1) : segment, 10);
+      return isHardened ? HARDENED_PATH_FLAG + index : index;
+    });
+
+const EIP712_HASH_BYTE_LENGTH = 32;
+
+type SignEIP712HashedMessageCommandArgs = {
+  derivationPath: string;
+  domainHash: string;
+  messageHash: string;
+};
+
+// Sign-EIP712 APDU in legacy (v0) mode: the device signs
+// keccak256("\x19\x01" ‖ domainHash ‖ messageHash) without streaming the
+// typed struct, so it works regardless of payload size. Same wire format as
+// hw-app-eth's signEIP712HashedMessage, which this keyring used before the
+// DMK migration. Requires Blind signing to be enabled in the Ethereum app.
+// https://github.com/LedgerHQ/app-ethereum/blob/develop/doc/ethapp.adoc#sign-eth-eip-712
+class SignEIP712HashedMessageCommand implements Command<Signature, void, void> {
+  readonly name = 'signEIP712HashedMessage';
+
+  constructor(private readonly args: SignEIP712HashedMessageCommandArgs) {}
+
+  getApdu(): Apdu {
+    const { derivationPath, domainHash, messageHash } = this.args;
+    const builder = new ApduBuilder({
+      cla: 0xe0,
+      ins: 0x0c,
+      p1: 0x00,
+      p2: 0x00,
+    });
+    const paths = splitHdPath(derivationPath);
+    builder.add8BitUIntToData(paths.length);
+    for (const path of paths) {
+      builder.add32BitUIntToData(path);
+    }
+    builder.addHexaStringToData(domainHash);
+    builder.addHexaStringToData(messageHash);
+    return builder.build();
+  }
+
+  parseResponse(apduResponse: ApduResponse) {
+    const statusWord = Array.from(apduResponse.statusCode)
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('');
+    if (statusWord !== '9000') {
+      return CommandResultFactory<Signature, void>({
+        error: new InvalidStatusWordError(
+          statusWord === '6985'
+            ? 'Ledger: Signing was denied on the device, or Blind signing is disabled in the Ethereum app settings 0x6985'
+            : `0x${statusWord}`
+        ),
+      });
+    }
+
+    const parser = new ApduParser(apduResponse);
+    const v = parser.extract8BitUInt();
+    if (v === undefined) {
+      return CommandResultFactory<Signature, void>({
+        error: new InvalidStatusWordError('V is missing'),
+      });
+    }
+    const r = parser.encodeToHexaString(
+      parser.extractFieldByLength(EIP712_HASH_BYTE_LENGTH),
+      true
+    );
+    if (!r) {
+      return CommandResultFactory<Signature, void>({
+        error: new InvalidStatusWordError('R is missing'),
+      });
+    }
+    const s = parser.encodeToHexaString(
+      parser.extractFieldByLength(EIP712_HASH_BYTE_LENGTH),
+      true
+    );
+    if (!s) {
+      return CommandResultFactory<Signature, void>({
+        error: new InvalidStatusWordError('S is missing'),
+      });
+    }
+
+    return CommandResultFactory<Signature, void>({ data: { v, r, s } });
+  }
+}
 
 interface Account {
   address: string;
@@ -949,19 +1050,41 @@ class LedgerBridgeKeyring {
     }
 
     const hdPath = await this.unlockAccountByAddress(withAccount);
+    let signature: string;
     try {
       await this.ensureEthApp();
       const signer = this.buildSigner();
       if (!signer) {
         throw new Error('Ledger: Device disconnected');
       }
-      const signature = toSignatureHex(
+      signature = toSignatureHex(
         await runDeviceAction(
           signer.signTypedData(this._toLedgerPath(hdPath), data, {
             skipOpenApp: true,
           })
         )
       );
+    } catch (e: any) {
+      if (getLedgerStatusWord(e) === '6985' || !sessionId) {
+        throw toLedgerError(e, 'Ledger: Unknown error while signing message');
+      }
+      // Clear signing failed for a reason other than an explicit refusal on
+      // the device — typically an EIP-712 payload too large for the Ethereum
+      // app to stream (large Safe transactions), or a transport error while
+      // streaming it. Fall back to signing the EIP-712 hashes, which yields
+      // the same signature over the same digest. The pre-DMK keyring did the
+      // same via hw-app-eth's signEIP712HashedMessage, and the DMK signer
+      // itself falls back this way for the failure paths it catches.
+      try {
+        signature = await this.signTypedDataAsHashes(hdPath, data);
+      } catch (fallbackError: any) {
+        throw toLedgerError(
+          fallbackError,
+          'Ledger: Unknown error while signing message'
+        );
+      }
+    }
+    try {
       const addressSignedWith = recoverTypedSignature({
         data,
         signature,
@@ -975,6 +1098,46 @@ class LedgerBridgeKeyring {
       return signature;
     } catch (e: any) {
       throw toLedgerError(e, 'Ledger: Unknown error while signing message');
+    }
+  }
+
+  private async signTypedDataAsHashes(hdPath: string, data) {
+    const domainHash = bytesToHex(
+      TypedDataUtils.hashStruct(
+        'EIP712Domain',
+        data.domain,
+        data.types,
+        SignTypedDataVersion.V4
+      )
+    );
+    const { EIP712Domain: _domainType, ...messageTypes } = data.types;
+    const messageHash = bytesToHex(
+      TypedDataUtils.hashStruct(
+        data.primaryType,
+        data.message,
+        messageTypes,
+        SignTypedDataVersion.V4
+      )
+    );
+
+    beginLedgerOperation();
+    try {
+      const result = await getDmk().sendCommand({
+        sessionId: sessionId!,
+        command: new SignEIP712HashedMessageCommand({
+          derivationPath: this._toLedgerPath(hdPath),
+          domainHash,
+          messageHash,
+        }),
+      });
+
+      if (!isSuccessCommandResult(result)) {
+        throw result.error;
+      }
+
+      return toSignatureHex(result.data);
+    } finally {
+      endLedgerOperation();
     }
   }
 
