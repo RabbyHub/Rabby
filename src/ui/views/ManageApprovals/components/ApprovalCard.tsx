@@ -105,7 +105,7 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
             'text-[13px] leading-[16px] font-medium text-r-neutral-title1'
           )}
         >
-          {count} {t('page.manageApprovals.approvals')}
+          {t('page.manageApprovals.approvalsCount', { count })}
           <RcIconArrowRightCC />
         </div>
       </div>

@@ -44,6 +44,10 @@ export const AddAddressModal: React.FC = () => {
     ].includes(importType);
   }, [importType]);
 
+  const isHideCloseIcon = useMemo(() => {
+    return ['add-more-from-seed-phrase'].includes(importType);
+  }, [importType]);
+
   return (
     <Modal
       visible={state.visible}
@@ -54,7 +58,7 @@ export const AddAddressModal: React.FC = () => {
       }}
       width={403}
       centered
-      closable
+      closable={!isHideCloseIcon}
       className="modal-support-darkmode"
       closeIcon={
         <SvgIconCross
