@@ -1,14 +1,12 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import clsx from 'clsx';
 import styled from 'styled-components';
 
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown-cc.svg';
-import { ScrollToDomById } from './utils';
-import { TOKEN_WALLET_ANCHOR_ID } from './constant';
-import { ReactComponent as RcWalletIconCC } from 'ui/assets/wallet-cc.svg';
 import { useTranslation } from 'react-i18next';
+import { getAssetsProjectAnchorId, ScrollToAssetDomById } from './utils';
 
 const ProjectOverviewItemWrapper = styled.div`
   border-radius: 12px;
@@ -48,32 +46,26 @@ const ProjectOverviewItem = ({
   protocol: DisplayedProject;
   isAppChain?: boolean;
 }) => {
-  const isTokenWallet = protocol.id === TOKEN_WALLET_ANCHOR_ID;
-  const handleGotoProject = () => {
-    ScrollToDomById(protocol.id);
-  };
   return (
     <ProjectOverviewItemWrapper
-      onClick={handleGotoProject}
+      onClick={() =>
+        ScrollToAssetDomById(getAssetsProjectAnchorId(protocol.id))
+      }
       className={clsx(
         'border-[1px] border-solid border-transparent',
         'hover:bg-r-blue-light1 hover:border-rabby-blue-default'
       )}
     >
-      {isTokenWallet ? (
-        <RcWalletIconCC className="w-[20px] h-[20px]" />
-      ) : (
-        <IconWithChain
-          iconUrl={protocol.logo}
-          chainServerId={protocol.chain || 'eth'}
-          width="20px"
-          height="20px"
-          chainSize="10px"
-          noRound={isAppChain}
-          isShowChainTooltip={true}
-          hideChainIcon={isAppChain}
-        />
-      )}
+      <IconWithChain
+        iconUrl={protocol.logo}
+        chainServerId={protocol.chain || 'eth'}
+        width="20px"
+        height="20px"
+        chainSize="10px"
+        noRound={isAppChain}
+        isShowChainTooltip={true}
+        hideChainIcon={isAppChain}
+      />
       <div className="flex flex-col">
         <span className="name inline-flex items-center text-12 text-rb-neutral-foot truncate">
           {protocol.name}
@@ -87,14 +79,12 @@ const ProjectOverviewItem = ({
 };
 
 interface Props {
-  list: DisplayedProject[] | undefined;
+  list: DisplayedProject[];
   appIds?: string[];
-  removeProtocol?: (id: string) => void;
   isExpanded?: boolean;
   toggleExpand?: () => void;
   hasExpandSwitch?: boolean;
   smallLength?: number;
-  filterWallet?: boolean;
 }
 
 const ProjectOverviewListWrapper = styled.div`
@@ -112,34 +102,23 @@ const ListWrapper = styled.div`
 const MAX_FOLD_LENGTH = 11; // 折叠情况下最多展示两行
 
 const ProjectOverview = ({
-  list: originList,
+  list,
   appIds,
   isExpanded,
   toggleExpand,
   smallLength,
   hasExpandSwitch,
-  filterWallet,
 }: Props) => {
   const { t } = useTranslation();
-  const list = filterWallet
-    ? originList?.filter((item) => item.id !== TOKEN_WALLET_ANCHOR_ID)
-    : originList;
 
-  const truncateLength = useMemo(() => {
-    const allLength = isExpanded
-      ? list?.length || 0
-      : (smallLength || 0) + (list?.length || 0);
-    if (allLength > MAX_FOLD_LENGTH) {
-      return allLength - MAX_FOLD_LENGTH;
-    }
-    return smallLength;
-  }, [isExpanded, smallLength, list]);
-  if (!list) return null;
+  const allLength = isExpanded ? list.length : (smallLength || 0) + list.length;
+  const truncateLength =
+    allLength > MAX_FOLD_LENGTH ? allLength - MAX_FOLD_LENGTH : smallLength;
 
   return (
     <ProjectOverviewListWrapper>
       <ListWrapper>
-        {(isExpanded ? list : list?.slice(0, MAX_FOLD_LENGTH))?.map((item) => (
+        {(isExpanded ? list : list.slice(0, MAX_FOLD_LENGTH)).map((item) => (
           <ProjectOverviewItem
             protocol={item}
             key={item.id}
