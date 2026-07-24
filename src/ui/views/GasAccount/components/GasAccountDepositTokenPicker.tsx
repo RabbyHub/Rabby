@@ -11,7 +11,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
-import type { CSSProperties } from 'react';
+import type { ListChildComponentProps } from 'react-window';
 import {
   GasAccountAvailableToken,
   getTokenUsdValue,
@@ -40,6 +40,14 @@ type GasAccountDepositTokenOwnerAccount = {
   alianName?: string;
 };
 
+type GasAccountDepositTokenPickerRowData = {
+  tokens: GasAccountAvailableToken[];
+  ownerAccountMap: Map<string, GasAccountDepositTokenOwnerAccount>;
+  showOwnerInfo: boolean;
+  onSelect?: GasAccountDepositTokenPickerProps['onSelect'];
+  onClose?: GasAccountDepositTokenPickerProps['onClose'];
+};
+
 const GasAccountDepositTokenOwnerInfo = ({
   address,
   account,
@@ -66,6 +74,71 @@ const GasAccountDepositTokenOwnerInfo = ({
       </div>
     </div>
   );
+};
+
+const GasAccountDepositTokenPickerRow = ({
+  index,
+  data,
+  style,
+}: ListChildComponentProps<GasAccountDepositTokenPickerRowData>) => {
+  const item = data.tokens[index];
+  const usdValue = getTokenUsdValue(item);
+  const ownerAccount = data.ownerAccountMap.get(item.owner_addr.toLowerCase());
+
+  return (
+    <div style={style} className="pb-8">
+      <div
+        className={clsx(
+          'flex w-full justify-between items-center h-[68px] px-16 rounded-[12px] text-left',
+          'bg-r-neutral-card1 border border-solid border-transparent',
+          'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light-1'
+        )}
+        onClick={() => {
+          data.onSelect?.(item);
+          data.onClose?.();
+        }}
+      >
+        <div className="flex items-center gap-12 min-w-0 flex-1">
+          <TokenWithChain
+            token={item}
+            hideConer
+            isShowChainTooltip
+            width="32px"
+            height="32px"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center min-w-0">
+              <div className="text-15 font-medium text-r-neutral-title-1 truncate">
+                {getTokenSymbol(item)}
+              </div>
+            </div>
+            {data.showOwnerInfo ? (
+              <GasAccountDepositTokenOwnerInfo
+                address={item.owner_addr}
+                account={ownerAccount}
+              />
+            ) : null}
+          </div>
+        </div>
+        <div className="text-right ml-12 shrink-0">
+          <div className="text-15 font-medium text-r-neutral-title-1">
+            {formatUsdValue(usdValue)}
+          </div>
+          <div className="text-12 text-r-neutral-foot">
+            {formatTokenAmount(item.amount || 0)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const getGasAccountDepositTokenPickerItemKey = (
+  index: number,
+  data: GasAccountDepositTokenPickerRowData
+) => {
+  const token = data.tokens[index];
+  return `${token.owner_addr}:${token.chain}:${token.id}`;
 };
 
 export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPickerProps> = ({
@@ -102,69 +175,15 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
 
     return ownerAddresses.size > 1;
   }, [availableTokens]);
-
-  const Row = React.useCallback(
-    ({
-      index,
-      data,
-      style,
-    }: {
-      index: number;
-      data: GasAccountAvailableToken[];
-      style: CSSProperties;
-    }) => {
-      const item = data[index];
-      const usdValue = getTokenUsdValue(item);
-      const ownerAccount = ownerAccountMap.get(item.owner_addr.toLowerCase());
-
-      return (
-        <div style={style} className="pb-8">
-          <div
-            className={clsx(
-              'flex w-full justify-between items-center h-[68px] px-16 rounded-[12px] text-left',
-              'bg-r-neutral-card1 border border-solid border-transparent',
-              'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light-1'
-            )}
-            onClick={() => {
-              onSelect?.(item);
-              handleClose?.();
-            }}
-          >
-            <div className="flex items-center gap-12 min-w-0 flex-1">
-              <TokenWithChain
-                token={item}
-                hideConer
-                width="32px"
-                height="32px"
-                isShowChainTooltip
-              />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center min-w-0">
-                  <div className="text-15 font-medium text-r-neutral-title-1 truncate">
-                    {getTokenSymbol(item)}
-                  </div>
-                </div>
-                {showOwnerInfo ? (
-                  <GasAccountDepositTokenOwnerInfo
-                    address={item.owner_addr}
-                    account={ownerAccount}
-                  />
-                ) : null}
-              </div>
-            </div>
-            <div className="text-right ml-12 shrink-0">
-              <div className="text-15 font-medium text-r-neutral-title-1">
-                {formatUsdValue(usdValue)}
-              </div>
-              <div className="text-12 text-r-neutral-foot">
-                {formatTokenAmount(item.amount || 0)}
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    },
-    [handleClose, onSelect, ownerAccountMap, showOwnerInfo]
+  const rowData = React.useMemo<GasAccountDepositTokenPickerRowData>(
+    () => ({
+      tokens: availableTokens,
+      ownerAccountMap,
+      showOwnerInfo,
+      onSelect,
+      onClose: handleClose,
+    }),
+    [availableTokens, handleClose, onSelect, ownerAccountMap, showOwnerInfo]
   );
 
   return (
@@ -245,11 +264,12 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
               width="100%"
               height={listHeight}
               itemCount={availableTokens.length}
-              itemData={availableTokens}
+              itemData={rowData}
+              itemKey={getGasAccountDepositTokenPickerItemKey}
               itemSize={GAS_ACCOUNT_DEPOSIT_TOKEN_PICKER_ROW_HEIGHT}
               className="trades-container-no-scrollbar"
             >
-              {Row}
+              {GasAccountDepositTokenPickerRow}
             </FixedSizeList>
           </div>
         ) : (

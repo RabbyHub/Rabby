@@ -18,7 +18,10 @@ import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
-import { findSupportedExchange, resolveSupportedDepositExchange } from './cex';
+import {
+  findSupportedExchange,
+  resolveSupportedDepositExchange,
+} from '@/ui/utils/cex';
 
 // icons
 import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';

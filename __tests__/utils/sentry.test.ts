@@ -67,6 +67,66 @@ describe('Sentry ignored errors', () => {
   });
 });
 
+describe('Stale background forwarded listenCallback errors', () => {
+  // Real serialized rejection reported from an old background service worker
+  // (background.js line 2, pre-guard build) via Message.onRequest.
+  const forwardedStack =
+    "TypeError: Cannot read properties of undefined (reading 'apply')\n" +
+    '    at o.listenCallback (chrome-extension://acmacodkjbdgmoleebolmdjonilkdbch/background.js:2:10190337)\n' +
+    '    at o.onRequest (chrome-extension://acmacodkjbdgmoleebolmdjonilkdbch/background.js:2:11346745)\n' +
+    '    at chrome-extension://acmacodkjbdgmoleebolmdjonilkdbch/background.js:2:11347588';
+
+  test('ignores the UI-forwarded copy of an old background error', () => {
+    expect(
+      shouldIgnoreSentryError({
+        message: "Cannot read properties of undefined (reading 'apply')",
+        stack: forwardedStack,
+      })
+    ).toBe(true);
+  });
+
+  test('ignores the forwarded copy regardless of background.js line number', () => {
+    expect(
+      shouldIgnoreSentryError({
+        message: 'anything',
+        stack:
+          '    at s.listenCallback (chrome-extension://id/background.js:4:12040208)',
+      })
+    ).toBe(true);
+  });
+
+  test('keeps a genuine background-origin Error report', () => {
+    // setMessageErrorReporter captures real Error instances; those must still
+    // be reported even though the stack matches the forwarded signature.
+    const realError = new TypeError(
+      "Cannot read properties of undefined (reading 'apply')"
+    );
+    realError.stack = forwardedStack;
+    expect(shouldIgnoreSentryError(realError)).toBe(false);
+  });
+
+  test('keeps a generic apply error without the listenCallback signature', () => {
+    expect(
+      shouldIgnoreSentryError({
+        message: "Cannot read properties of undefined (reading 'apply')",
+        stack:
+          "TypeError: Cannot read properties of undefined (reading 'apply')\n" +
+          '    at renderDashboard (chrome-extension://id/ui.js:2:12345)',
+      })
+    ).toBe(false);
+  });
+
+  test('keeps a listenCallback error that is not from background.js', () => {
+    expect(
+      shouldIgnoreSentryError({
+        message: 'boom',
+        stack:
+          '    at o.listenCallback (chrome-extension://id/content-script.js:2:100)',
+      })
+    ).toBe(false);
+  });
+});
+
 describe('Sentry breadcrumb privacy', () => {
   test('removes query parameters, fragments, and wallet identifiers', () => {
     expect(
