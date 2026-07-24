@@ -289,7 +289,13 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
           onClick={(e) => handleClickToken(item)}
         >
           <div className="flex items-center gap-12">
-            <TokenWithChain token={item} hideConer width="32px" height="32px" />
+            <TokenWithChain
+              token={item}
+              hideConer
+              width="32px"
+              height="32px"
+              isShowChainTooltip
+            />
             <span className="text-15 text-r-neutral-title-1 font-medium">
               {getTokenSymbol(item)}
             </span>

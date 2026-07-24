@@ -542,6 +542,7 @@ export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
                       hideConer
                       width="24px"
                       height="24px"
+                      isShowChainTooltip
                     />
                     <span className="text-15 font-medium text-r-neutral-title-1">
                       {sym}

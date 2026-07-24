@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { findChainByServerID } from '@/utils/chain';
 
 import type { StakingPool, StakingProtocol, StakingToken } from '../types';
+import TooltipV6 from '@/ui/component/Tooltip/TooltipV6';
 
 const tokenLogoFallback = (event: React.SyntheticEvent<HTMLImageElement>) => {
   event.currentTarget.style.display = 'none';
@@ -108,21 +109,27 @@ export const TokenLogos = ({
         </div>
       ))}
       {chain?.logo ? (
-        <div
-          className={clsx(
-            'absolute rounded-full overflow-hidden bg-r-neutral-card1',
-            'flex items-center justify-center',
-            config.chain,
-            config.chainTop,
-            config.chainLeft
-          )}
+        <TooltipV6
+          title={chain?.name}
+          overlayClassName={clsx('rectangle w-[max-content]')}
+          placement="top"
         >
-          <img
-            src={chain.logo}
-            alt={chain.name}
-            className="block w-full h-full rounded-full object-cover"
-          />
-        </div>
+          <div
+            className={clsx(
+              'absolute rounded-full overflow-hidden bg-r-neutral-card1',
+              'flex items-center justify-center',
+              config.chain,
+              config.chainTop,
+              config.chainLeft
+            )}
+          >
+            <img
+              src={chain.logo}
+              alt={chain.name}
+              className="block w-full h-full rounded-full object-cover"
+            />
+          </div>
+        </TooltipV6>
       ) : null}
     </div>
   );
