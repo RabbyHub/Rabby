@@ -339,7 +339,6 @@ export const BalanceView = ({
   };
 
   if (
-    loadBalanceSuccess &&
     !balanceLoading &&
     !isGnosis &&
     !hasCustomNetwork &&
