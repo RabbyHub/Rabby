@@ -130,12 +130,12 @@
     background: var(--r-neutral-bg-1);
     box-shadow: 0px 12px 60px rgba(54, 69, 157, 0.2);
     border-radius: 8px;
-    padding: 16px 4px 24px;
+    padding: 16px 0;
     flex-shrink: 0;
 
     &-header {
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 19px;
     }
 
     &-img {
@@ -143,25 +143,29 @@
       border: 1px solid var(--r-neutral-line);
       border-radius: 10px;
       width: 200px;
+      height: 200px;
       margin-left: auto;
       margin-right: auto;
-      margin-bottom: 32px;
+      margin-bottom: 19px;
       background-color: #fff;
     }
     &-address {
-      font-size: 14px;
+      font-size: 13px;
       line-height: 16px;
       text-align: center;
       color: var(--r-neutral-title-1);
+      padding: 0 4px;
+      overflow-wrap: break-word;
 
-      margin-bottom: 16px;
+      margin-bottom: 19px;
       text-align: center;
     }
     &-btn {
       background: var(--r-neutral-card-2);
       border-radius: 4px;
       height: 40px;
-      padding: 12px 28px;
+      min-width: 160px;
+      padding: 12px 16px;
       display: flex;
       margin: auto;
       justify-content: center;
@@ -171,12 +175,77 @@
       font-size: 13px;
       line-height: 15px;
       color: var(--r-neutral-title-1);
+
+      &:hover {
+        background: var(--r-neutral-card2, #f2f4f7);
+        color: var(--rb-brand-default, #4c65ff);
+      }
       &:active {
-        background-color: rgba(var(--r-neutral-card-2-rbg), 0.7);
+        background: var(--r-neutral-bg-4, #ebeef7);
+        color: var(--rb-brand-default, #4c65ff);
       }
 
       .icon-copy {
         margin-right: 6px;
+      }
+    }
+
+    &-divider {
+      height: 1px;
+      background-color: var(--r-neutral-line);
+      margin: 19px 16px;
+    }
+
+    &-chain {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 16px;
+      cursor: pointer;
+      color: var(--r-neutral-body);
+
+      &-label {
+        font-size: 13px;
+        line-height: 16px;
+      }
+
+      &-list {
+        display: flex;
+        align-items: center;
+      }
+
+      &:hover {
+        color: var(--rb-brand-default, #4c65ff);
+      }
+
+      &:active {
+        color: var(--rb-brand-default-icon, #4056dd);
+      }
+
+      &-logo {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+
+        &:not(:first-child) {
+          margin-left: -4px;
+        }
+      }
+
+      &-name {
+        margin-left: 6px;
+        font-size: 13px;
+        line-height: 16px;
+      }
+
+      &-count {
+        margin-left: 4px;
+        font-size: 13px;
+        line-height: 16px;
+      }
+
+      &-arrow {
+        margin-left: 4px;
       }
     }
   }
