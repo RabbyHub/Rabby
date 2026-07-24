@@ -333,7 +333,7 @@ const Receive = () => {
             <div className="qr-card-chain-label shrink-0">
               {t('page.receive.supportedChain')}
             </div>
-            <div className="qr-card-chain-list">
+            <div className="qr-card-chain-list min-w-0">
               {chain ? (
                 <>
                   <img
@@ -341,7 +341,7 @@ const Receive = () => {
                     alt={chain.name}
                     className="qr-card-chain-logo"
                   />
-                  <span className="qr-card-chain-name truncate">
+                  <span className="qr-card-chain-name truncate min-w-0">
                     {chain.name}
                   </span>
                   {displayChains.length > 1 && (
@@ -368,7 +368,7 @@ const Receive = () => {
                 </>
               )}
               {isSafeSupportChainsReady && (
-                <RcIconArrowRightCC className="qr-card-chain-arrow" />
+                <RcIconArrowRightCC className="qr-card-chain-arrow shrink-0" />
               )}
             </div>
           </div>
