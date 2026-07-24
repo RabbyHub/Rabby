@@ -342,7 +342,8 @@ export const BalanceView = ({
     !balanceLoading &&
     !isGnosis &&
     !hasCustomNetwork &&
-    !chainBalancesWithValue?.length
+    !chainBalancesWithValue?.length &&
+    !balance
   ) {
     return <ZeroAssets />;
   }
