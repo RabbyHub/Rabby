@@ -108,9 +108,19 @@ Sentry.init(getSentryConfig());
 // context's global handlers. Business failures (user rejections, RPC errors)
 // carry an rpc error code and must stay report-free; only programming errors
 // are captured here.
+//
+// The allowlist is deliberately restricted to native engine error subtypes
+// (TypeError/ReferenceError/RangeError) rather than any uncoded Error. The
+// background throws hundreds of plain `new Error(...)` intentionally — mostly
+// i18n business validations like "no current account" / "invalid chain id" —
+// which have no rpc code either, so broadening to all uncoded Error instances
+// would flood Sentry with those expected states. The engine practically never
+// raises these subtypes for business logic, so they are a clean bug signal.
 setMessageErrorReporter((error) => {
   if (
-    (error instanceof TypeError || error instanceof ReferenceError) &&
+    (error instanceof TypeError ||
+      error instanceof ReferenceError ||
+      error instanceof RangeError) &&
     (error as { code?: unknown }).code === undefined
   ) {
     Sentry.captureException(error);
