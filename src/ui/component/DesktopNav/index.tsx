@@ -50,7 +50,7 @@ export const DesktopNav: React.FC<{
   const history = useHistory();
   const currentAccount = useCurrentAccount();
   const activeProfileTab = useRabbySelector(
-    (state) => state.desktopProfile.activeTab || 'tokens'
+    (state) => state.desktopProfile.activeTab || 'assets'
   );
 
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
