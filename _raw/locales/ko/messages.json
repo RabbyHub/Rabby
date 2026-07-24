@@ -663,7 +663,10 @@
       "watchModeAlert2": "자산을 수신하는 데 사용하시겠습니까?",
       "title": "{{chain}}에서 {{token}} 받기",
       "watchModeAlert1": "이것은 Watch Mode 주소입니다.",
-      "receiveOn": "{{token}}를 받으십시오"
+      "receiveOn": "{{token}}를 받으십시오",
+      "receiveTitle": "{{token}} 받기",
+      "addCustomNetwork": "사용자 지정 네트워크 추가",
+      "supportedChain": "지원되는 체인"
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -1598,7 +1601,8 @@
         "searchTokenPlaceholder": "토큰 검색",
         "openInTab": "Rabby 탭에서 열기",
         "openProMode": "프로 모드 열기",
-        "openInTabV2": "탭에서 열기"
+        "openInTabV2": "탭에서 열기",
+        "addAssets": "자산 추가"
       },
       "hd": {
         "ledger": {
@@ -1662,7 +1666,11 @@
         "downloadIntro": "아직 앱이 없으신가요? 지금 다운로드하세요.",
         "desc": "Rabby Mobile에서 포인트를 확인하세요."
       },
-      "noData": "일치하는 통화가 없습니다"
+      "noData": "일치하는 통화가 없습니다",
+      "ZeroAssets": {
+        "desc": "Web3를 사용하려면 지갑에 자금을 입금하세요",
+        "addAssets": "자산 추가"
+      }
     },
     "nft": {
       "empty": {

@@ -663,7 +663,10 @@
       "title": "Terima {{token}} di {{chain}}",
       "watchModeAlert1": "Ini adalah alamat hanya-pantau.",
       "watchModeAlert2": "Apakah Anda yakin ingin menggunakannya untuk menerima aset?",
-      "receiveOn": "Terima {{token}} di"
+      "receiveOn": "Terima {{token}} di",
+      "receiveTitle": "Terima {{token}}",
+      "addCustomNetwork": "Tambahkan jaringan kustom",
+      "supportedChain": "Jaringan yang didukung"
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -1598,7 +1601,8 @@
         "searchTokenPlaceholder": "Cari Token",
         "openInTab": "Buka di Rabby Tab",
         "openProMode": "Buka Mode Pro",
-        "openInTabV2": "Buka di Tab"
+        "openInTabV2": "Buka di Tab",
+        "addAssets": "Tambahkan aset"
       },
       "hd": {
         "ledger": {
@@ -1662,7 +1666,11 @@
         "desc": "Periksa poin Anda di Rabby Mobile.",
         "title": "Rabby Points"
       },
-      "noData": "Tidak ada mata uang yang cocok"
+      "noData": "Tidak ada mata uang yang cocok",
+      "ZeroAssets": {
+        "desc": "Isi dompet Anda untuk menggunakan Web3",
+        "addAssets": "Tambahkan aset"
+      }
     },
     "nft": {
       "empty": {
