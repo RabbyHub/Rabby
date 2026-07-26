@@ -53,6 +53,18 @@ export const getSentryConfig = (): BrowserOptions => ({
       return null;
     }
 
+    // Errors thrown in background listen callbacks are already captured by
+    // the background's message-error reporter and come back over the port
+    // with this flag; drop them here so the same error doesn't surface a
+    // second, unparseable copy from the receiving page.
+    if (
+      originalException !== null &&
+      typeof originalException === 'object' &&
+      (originalException as Record<string, any>).reportedFromBackground === true
+    ) {
+      return null;
+    }
+
     // 判断是否是 plain object rejection（不是真正的 Error 实例）
     if (
       originalException !== null &&

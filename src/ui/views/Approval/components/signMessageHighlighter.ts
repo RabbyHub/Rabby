@@ -31,6 +31,15 @@ const isValidUrl = (value: string) => {
   }
 };
 
+export const extractSignMessageUrls = (text: string) =>
+  Array.from(text.matchAll(TOKEN_RE)).flatMap((match) => {
+    const raw = match[0];
+    if (!/^https?:\/\//i.test(raw)) return [];
+
+    const value = raw.replace(URL_TRAILING_PUNCTUATION_RE, '');
+    return isValidUrl(value) ? [value] : [];
+  });
+
 const isHexChar = (value?: string) => !!value && HEX_CHAR_RE.test(value);
 
 const normalizeTypedDataAddress = (value: unknown) => {

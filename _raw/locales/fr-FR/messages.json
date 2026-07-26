@@ -817,7 +817,8 @@
         "searchTokenPlaceholder": "Rechercher un token",
         "openInTab": "Ouvrir dans l'onglet Rabby",
         "openProMode": "Ouvrir le mode pro",
-        "openInTabV2": "Ouvrir dans l'onglet"
+        "openInTabV2": "Ouvrir dans l'onglet",
+        "addAssets": "Ajouter des actifs"
       },
       "contacts": {
         "noData": "Pas de données",
@@ -1180,7 +1181,11 @@
         "desc": "Vérifiez vos points dans Rabby Mobile.",
         "downloadIntro": "Vous n'avez pas encore l'application ? Téléchargez-la maintenant."
       },
-      "noData": "Aucune devise correspondante"
+      "noData": "Aucune devise correspondante",
+      "ZeroAssets": {
+        "desc": "Approvisionnez votre portefeuille pour utiliser le Web3",
+        "addAssets": "Ajouter des actifs"
+      }
     },
     "ethSign": {
       "alert": "Signer avec \"eth_sign\" peut entraîner une perte d'actifs. Pour votre sécurité, Rabby ne prend pas en charge cette méthode."
@@ -1669,7 +1674,10 @@
       "title": "Recevoir {{token}} sur {{chain}}",
       "watchModeAlert1": "Il s'agit d'une adresse du mode observation.",
       "watchModeAlert2": "Êtes-vous sûr de vouloir l'utiliser pour recevoir des actifs ?",
-      "receiveOn": "Recevez {{token}} sur"
+      "receiveOn": "Recevez {{token}} sur",
+      "receiveTitle": "Recevoir {{token}}",
+      "addCustomNetwork": "Ajouter un réseau personnalisé",
+      "supportedChain": "Réseaux pris en charge"
     },
     "requestDebankTestnetGasToken": {
       "claimBadgeBtn": "Obtenir Rabby Badge",

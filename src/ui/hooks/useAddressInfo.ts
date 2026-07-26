@@ -10,6 +10,7 @@ import { findAccountByPriority } from '@/utils/account';
 import { ellipsisAddress } from '../utils/address';
 import type { Account } from '@/background/service/preference';
 import type { IDisplayedAccountWithBalance } from '../models/accountToDisplay';
+import { findSupportedExchange, normalizeAddressDescCex } from '../utils/cex';
 
 export type AddressInfo = Account | IDisplayedAccountWithBalance;
 export const useAddressInfo = (
@@ -29,7 +30,7 @@ export const useAddressInfo = (
     exchanges: s.exchange.exchanges,
   }));
 
-  const [addressDesc, setAddressDesc] = useState<
+  const [rawAddressDesc, setRawAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined
   >();
   const [loadingAddrDesc, setLoadingAddrDesc] = useState(true);
@@ -80,8 +81,8 @@ export const useAddressInfo = (
 
   const fetchAddressDesc = useCallback(async () => {
     let addrDescRes: AddrDescResponse | undefined;
-    if (addressDesc?.id && isSameAddress(addressDesc?.id, address)) {
-      addrDescRes = { desc: addressDesc };
+    if (rawAddressDesc?.id && isSameAddress(rawAddressDesc.id, address)) {
+      addrDescRes = { desc: rawAddressDesc };
     } else {
       if (!isValidAddress(address)) return;
       addrDescRes = await wallet.openapi.addrDesc(address);
@@ -89,22 +90,40 @@ export const useAddressInfo = (
     const cexId = await wallet.getCexId(address);
     if (addrDescRes) {
       if (cexId) {
-        const localCexInfo = exchanges.find(
-          (e) => e.id.toLowerCase() === cexId?.toLowerCase()
-        );
+        const localCexInfo = findSupportedExchange(exchanges, cexId);
         if (localCexInfo) {
-          addrDescRes.desc.cex = {
-            id: localCexInfo?.id || '',
-            name: localCexInfo?.name || '',
-            logo_url: localCexInfo?.logo || '',
-            is_deposit: true,
+          const currentCex = addrDescRes.desc.cex;
+          if (
+            currentCex?.id === localCexInfo.id &&
+            currentCex.name === localCexInfo.name &&
+            currentCex.logo_url === localCexInfo.logo &&
+            currentCex.is_deposit
+          ) {
+            return addrDescRes;
+          }
+          return {
+            ...addrDescRes,
+            desc: {
+              ...addrDescRes.desc,
+              cex: {
+                id: localCexInfo.id,
+                name: localCexInfo.name,
+                logo_url: localCexInfo.logo,
+                is_deposit: true,
+              },
+            },
           };
         }
       }
       return addrDescRes;
     }
     return undefined;
-  }, [address, addressDesc, exchanges, wallet]);
+  }, [address, rawAddressDesc, exchanges, wallet]);
+
+  const addressDesc = useMemo(
+    () => normalizeAddressDescCex(rawAddressDesc, exchanges),
+    [rawAddressDesc, exchanges]
+  );
 
   const isTokenSupport = useCallback(
     async (
@@ -118,15 +137,19 @@ export const useAddressInfo = (
     }> => {
       try {
         const addrDescRes = await fetchAddressDesc();
-        const cexId = addrDescRes?.desc?.cex?.id;
+        const supportedAddressDesc = normalizeAddressDescCex(
+          addrDescRes?.desc,
+          exchanges
+        );
+        const cexId = supportedAddressDesc?.cex?.id;
 
         const isSupportRes = cexId
           ? await wallet.openapi.depositCexSupport(id, chain, cexId)
           : { support: true };
         const isContract =
-          Object.keys(addrDescRes?.desc?.contract || {}).length > 0;
+          Object.keys(supportedAddressDesc?.contract || {}).length > 0;
         const supportChains = Object.entries(
-          addrDescRes?.desc?.contract || {}
+          supportedAddressDesc?.contract || {}
         ).map(([chainName]) => chainName?.toLowerCase());
 
         return {
@@ -145,21 +168,21 @@ export const useAddressInfo = (
         };
       }
     },
-    [fetchAddressDesc, wallet]
+    [exchanges, fetchAddressDesc, wallet]
   );
 
   useEffect(() => {
     (async () => {
       if (disableDesc && !isValidAddress(address)) {
-        setAddressDesc(undefined);
+        setRawAddressDesc(undefined);
         return;
       }
       setLoadingAddrDesc(true);
       try {
         const addrDescRes = await fetchAddressDesc();
-        setAddressDesc(addrDescRes?.desc);
+        setRawAddressDesc(addrDescRes?.desc);
       } catch (error) {
-        setAddressDesc(undefined);
+        setRawAddressDesc(undefined);
       } finally {
         setLoadingAddrDesc(false);
       }

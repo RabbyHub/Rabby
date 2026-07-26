@@ -125,6 +125,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     isDesktop,
   ]);
   const visible = useSyncStaleValue(_visible, 100);
+  const errorPopupVisible = !!error && !!ctx?.signInfo?.status;
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
 
@@ -708,7 +709,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         ) : null}
         <Popup
           height={'fit-content'}
-          visible={!!error && !!ctx.signInfo?.status}
+          visible={errorPopupVisible}
           bodyStyle={{ padding: 0 }}
           getContainer={desktopMiniSignerGetContainer}
         >
@@ -989,7 +990,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       ) : null}
       <Popup
         height={'fit-content'}
-        visible={!!error && !!ctx.signInfo?.status}
+        visible={errorPopupVisible}
         bodyStyle={{ padding: 0 }}
         getContainer={config?.getContainer}
         push={false}
@@ -1013,7 +1014,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         placement="bottom"
         height="fit-content"
         className="is-support-darkmode"
-        visible={visible}
+        visible={visible && !errorPopupVisible}
         onClose={handleCancel}
         maskClosable={!loading}
         closable={false}

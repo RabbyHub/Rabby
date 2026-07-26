@@ -317,6 +317,7 @@ const Actions = ({
   chain = CHAINS[CHAINS_ENUM.ETH],
   engineResults,
   raw,
+  copyMessage,
   message,
   origin,
   originLogo,
@@ -331,6 +332,7 @@ const Actions = ({
   chain?: Chain;
   engineResults: Result[];
   raw: Record<string, any>;
+  copyMessage: string;
   message: string;
   origin: string;
   originLogo?: string;
@@ -404,7 +406,7 @@ const Actions = ({
           <div className="title">
             <span className="title-text flex items-center gap-4">
               {t('page.signTx.typedDataMessage')}
-              <Copy data={message} className="w-14 h-14" />
+              <Copy data={copyMessage} className="w-14 h-14" />
             </span>
           </div>
           <SignMessageContent

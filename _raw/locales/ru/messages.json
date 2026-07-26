@@ -663,7 +663,10 @@
       "title": "Получить {{token}} в {{chain}}",
       "watchModeAlert1": "Это адрес Режима Наблюдения.",
       "watchModeAlert2": "Вы уверены, что хотите использовать его для получения активов?",
-      "receiveOn": "Получить {{token}} на"
+      "receiveOn": "Получить {{token}} на",
+      "receiveTitle": "Получить {{token}}",
+      "addCustomNetwork": "Добавить пользовательскую сеть",
+      "supportedChain": "Поддерживаемые сети"
     },
     "sendToken": {
       "addressNotInContract": "Не в списке адресов. <1></1><2>Добавить в контакты</2>",
@@ -1508,7 +1511,8 @@
         "searchTokenPlaceholder": "Поиск токена",
         "openInTab": "Открыть в Rabby Tab",
         "openProMode": "Открыть Pro режим",
-        "openInTabV2": "Открыть в новой вкладке"
+        "openInTabV2": "Открыть в новой вкладке",
+        "addAssets": "Добавить активы"
       },
       "hd": {
         "howToConnectLedger": "Как подключить Ledger",
@@ -1573,7 +1577,11 @@
         "desc": "Проверьте свои баллы в Rabby Mobile.",
         "downloadIntro": "Еще нет приложения? Загрузите сейчас."
       },
-      "noData": "Валюта не найдена"
+      "noData": "Валюта не найдена",
+      "ZeroAssets": {
+        "desc": "Пополните кошелёк, чтобы использовать Web3",
+        "addAssets": "Добавить активы"
+      }
     },
     "nft": {
       "floorPrice": "/ Минимальная цена:",

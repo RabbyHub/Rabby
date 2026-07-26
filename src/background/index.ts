@@ -3,7 +3,11 @@ import migrateData from '@/migrations';
 import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
 import { appIsDev, isManifestV3 } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { Message, sendReadyMessageToTabs } from '@/utils/message';
+import {
+  Message,
+  sendReadyMessageToTabs,
+  setMessageErrorReporter,
+} from '@/utils/message';
 import { getSentryConfig } from '@/utils/sentry-config';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
@@ -98,6 +102,32 @@ const { PortMessage } = Message;
 let appStoreLoaded = false;
 
 Sentry.init(getSentryConfig());
+
+// Errors thrown by pm.listen callbacks are caught in Message.onRequest and
+// forwarded to the calling page as the response, so they never reach this
+// context's global handlers. Business failures (user rejections, RPC errors)
+// carry an rpc error code and must stay report-free; only programming errors
+// are captured here.
+//
+// The allowlist is deliberately restricted to native engine error subtypes
+// (TypeError/ReferenceError/RangeError) rather than any uncoded Error. The
+// background throws hundreds of plain `new Error(...)` intentionally — mostly
+// i18n business validations like "no current account" / "invalid chain id" —
+// which have no rpc code either, so broadening to all uncoded Error instances
+// would flood Sentry with those expected states. The engine practically never
+// raises these subtypes for business logic, so they are a clean bug signal.
+setMessageErrorReporter((error) => {
+  if (
+    (error instanceof TypeError ||
+      error instanceof ReferenceError ||
+      error instanceof RangeError) &&
+    (error as { code?: unknown }).code === undefined
+  ) {
+    Sentry.captureException(error);
+    return true;
+  }
+  return false;
+});
 
 async function restoreAppState() {
   await onInstall();
@@ -385,6 +415,15 @@ browser.runtime.onConnect.addListener((port) => {
     port.name === 'tab' ||
     port.name === 'desktop'
   ) {
+    const ownUrl = browser.runtime.getURL('/'); // chrome-extension://<id>/
+    const senderUrl = port.sender?.url ?? '';
+    // content-script: sender.tab 存在 且 url 不是扩展自身页面
+    const isContentScript = !!port.sender?.tab && !senderUrl.startsWith(ownUrl);
+
+    if (port.sender?.id !== browser.runtime.id || isContentScript) {
+      port.disconnect();
+      return;
+    }
     const pm = new PortMessage(port);
     pm.listen((data) => {
       if (data?.type) {

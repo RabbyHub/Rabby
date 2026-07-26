@@ -848,7 +848,10 @@
       "title": "Receive {{token}} on {{chain}}",
       "watchModeAlert1": "This is a Watch Mode address.",
       "watchModeAlert2": "Are you sure to use it to receive assets?",
-      "receiveOn": "Receive {{token}} on"
+      "receiveOn": "Receive {{token}} on",
+      "receiveTitle": "Receive {{token}}",
+      "addCustomNetwork": "Add custom network",
+      "supportedChain": "Supported chains"
     },
     "sendToken": {
       "addressNotInContract": "Not on address list. <1></1><2>Add to contacts</2>",
@@ -3150,7 +3153,8 @@
         "openInTab": "Open in Rabby Tab",
         "openInTabV2": "Open in Tab",
         "openProMode": "Open Pro Mode",
-        "searchTokenPlaceholder": "Search Token"
+        "searchTokenPlaceholder": "Search Token",
+        "addAssets": "Add assets"
       },
       "hd": {
         "howToConnectLedger": "How to Connect Ledger",
@@ -3214,7 +3218,11 @@
         "desc": "Check your points in Rabby Mobile.",
         "downloadIntro": "Don’t have the app yet? Download now."
       },
-      "noData": "No matched currency"
+      "noData": "No matched currency",
+      "ZeroAssets": {
+        "desc": "Fund your wallet to use Web3",
+        "addAssets": "Add assets"
+      }
     },
     "nft": {
       "floorPrice": "/ Floor Price:",

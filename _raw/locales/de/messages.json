@@ -663,7 +663,10 @@
       "title": "{{token}} auf {{chain}} empfangen",
       "watchModeAlert1": "Dies ist eine Beobachtungsmodus-Adresse.",
       "watchModeAlert2": "Sind Sie sicher, dass Sie sie verwenden möchten, um Vermögenswerte zu erhalten?",
-      "receiveOn": "{{token}} empfangen auf"
+      "receiveOn": "{{token}} empfangen auf",
+      "receiveTitle": "{{token}} empfangen",
+      "addCustomNetwork": "Benutzerdefiniertes Netzwerk hinzufügen",
+      "supportedChain": "Unterstützte Netzwerke"
     },
     "sendToken": {
       "addressNotInContract": "Nicht in der Adressliste. <1></1><2>Zu Kontakten hinzufügen</2>",
@@ -1507,7 +1510,8 @@
         "searchTokenPlaceholder": "Token suchen",
         "openInTab": "Im Rabby-Tab öffnen",
         "openProMode": "Pro-Modus öffnen",
-        "openInTabV2": "Im Tab öffnen"
+        "openInTabV2": "Im Tab öffnen",
+        "addAssets": "Assets hinzufügen"
       },
       "hd": {
         "howToConnectLedger": "Ledger verbinden",
@@ -1572,7 +1576,11 @@
         "title": "Rabby Points",
         "desc": "Prüfen Sie Ihre Punkte in Rabby Mobile."
       },
-      "noData": "Keine übereinstimmende Währung"
+      "noData": "Keine übereinstimmende Währung",
+      "ZeroAssets": {
+        "desc": "Füge Guthaben hinzu, um Web3 zu nutzen",
+        "addAssets": "Assets hinzufügen"
+      }
     },
     "nft": {
       "floorPrice": "/ Mindestpreis (Floor):",

@@ -441,7 +441,7 @@ export class SignatureSteps {
                 value: tx.value || '0x0',
               },
               apiProvider: isTestnet(chain.serverId)
-                ? wallet.testnetOpenapi
+                ? ((wallet.fakeTestnetOpenapi as unknown) as any)
                 : wallet.openapi,
             });
           })
@@ -494,7 +494,7 @@ export class SignatureSteps {
           },
           tx: { ...last.tx, gas: '0x0' },
           apiProvider: isTestnet(chain.serverId)
-            ? wallet.testnetOpenapi
+            ? ((wallet.fakeTestnetOpenapi as unknown) as any)
             : wallet.openapi,
         });
         const ctx = await formatSecurityEngineContext({

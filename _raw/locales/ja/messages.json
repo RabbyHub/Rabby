@@ -663,7 +663,10 @@
       "title": "{{chain}}上で{{token}}を受け取る",
       "watchModeAlert1": "これは閲覧専用アドレスです。",
       "watchModeAlert2": "資産を受け取るためにこれを使用してもよろしいですか？",
-      "receiveOn": "{{token}}を受け取る"
+      "receiveOn": "{{token}}を受け取る",
+      "receiveTitle": "{{token}}を受け取る",
+      "addCustomNetwork": "カスタムネットワークを追加",
+      "supportedChain": "対応チェーン"
     },
     "sendToken": {
       "addressNotInContract": "アドレスリストにありません。<1></1><2>連絡先に追加</2>",
@@ -1507,7 +1510,8 @@
         "searchTokenPlaceholder": "トークンを検索",
         "openInTab": "Rabbyタブで開く",
         "openProMode": "プロモードを開く",
-        "openInTabV2": "新しいタブで開く"
+        "openInTabV2": "新しいタブで開く",
+        "addAssets": "資産を追加"
       },
       "hd": {
         "howToConnectLedger": "Ledgerとの接続方法",
@@ -1572,7 +1576,11 @@
         "desc": "Rabby Mobileでポイントを確認してください。",
         "downloadIntro": "アプリをまだお持ちではありませんか？今すぐダウンロードしてください。"
       },
-      "noData": "一致する通貨がありません"
+      "noData": "一致する通貨がありません",
+      "ZeroAssets": {
+        "desc": "Web3を利用するにはウォレットに入金してください",
+        "addAssets": "資産を追加"
+      }
     },
     "nft": {
       "floorPrice": "/ フロア価格:",

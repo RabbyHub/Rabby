@@ -62,6 +62,17 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /Request exceeds defined limit\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
 ];
 
+// Stale background service worker noise: after an extension update the old
+// background may keep running pre-guard code that throws "undefined.apply"
+// inside a listen callback. Message.onRequest catches it and forwards a
+// serialized {message, stack} to the calling page, where it surfaces as an
+// unparseable unhandled rejection tagged with the new release. The message
+// alone ("...reading 'apply'") is too generic to blanket-ignore, so match on
+// the forwarded stack signature instead. Genuine background-origin reports
+// are real Error instances (see setMessageErrorReporter), so callers must
+// restrict this to non-Error rejections to avoid swallowing them.
+const STALE_BACKGROUND_FORWARDED_STACK = /\.(?:listenCallback|onRequest) \([^)]*background\.js:\d+:\d+\)/;
+
 const collectErrorText = (error: unknown, depth = 0): string[] => {
   if (!error || depth > 3) {
     return [];
@@ -87,7 +98,26 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
 export const shouldIgnoreSentryError = (error: unknown) => {
   const text = collectErrorText(error).join('\n') || String(error || '');
 
-  return RABBY_SENTRY_IGNORE_ERRORS.some((pattern) =>
-    typeof pattern === 'string' ? text.includes(pattern) : pattern.test(text)
-  );
+  if (
+    RABBY_SENTRY_IGNORE_ERRORS.some((pattern) =>
+      typeof pattern === 'string' ? text.includes(pattern) : pattern.test(text)
+    )
+  ) {
+    return true;
+  }
+
+  // Drop the UI-side forwarded copy of errors thrown by an old background's
+  // listen callback (see STALE_BACKGROUND_FORWARDED_STACK). Restricted to
+  // non-Error rejections so real background-origin reports are kept.
+  if (
+    error !== null &&
+    typeof error === 'object' &&
+    !(error instanceof Error) &&
+    typeof (error as { stack?: unknown }).stack === 'string' &&
+    STALE_BACKGROUND_FORWARDED_STACK.test((error as { stack: string }).stack)
+  ) {
+    return true;
+  }
+
+  return false;
 };

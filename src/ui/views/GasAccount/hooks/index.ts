@@ -335,7 +335,7 @@ export const useGasAccountMethods = () => {
 
         return (await handleLoginOnSig(account, signature, isClaimGift)) || '';
       } catch (e) {
-        message.error('Login in error, Please retry');
+        console.error('handleNoSignLogin error', e);
       }
       return '';
     },

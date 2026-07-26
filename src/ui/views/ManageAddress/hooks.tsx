@@ -292,14 +292,17 @@ export const useBackUp = () => {
 
   const handleBackup = useCallback(
     async (publicKey: string, index) => {
+      let data: string | undefined;
       await AuthenticationModalPromise({
         confirmText: t('page.manageAddress.confirm'),
         cancelText: t('page.manageAddress.cancel'),
         title: t('page.manageAddress.backup-seed-phrase'),
 
+        validationHandler: async (password: string) => {
+          data = await wallet.getMnemonicFromPublicKey(password, publicKey);
+        },
         async onFinished() {
           await invokeEnterPassphrase(publicKey);
-          const data = await wallet.getMnemonicFromPublicKey(publicKey);
           history.replace({
             search: `?index=${index}`,
           });

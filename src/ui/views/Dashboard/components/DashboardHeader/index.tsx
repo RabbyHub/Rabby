@@ -205,6 +205,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
       {dashboardBalanceCacheInited && (
         <BalanceView currentAccount={currentAccount} />
       )}
+
       {isGnosis ? (
         <Queue
           // count={gnosisPendingCount || 0}

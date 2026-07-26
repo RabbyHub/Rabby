@@ -20,12 +20,22 @@ export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
 
   const goToHDManager = async () => {
     const passphrase = await invokeEnterPassphrase(address);
-    const mnemonics = await wallet.getMnemonicByAddress(address);
-    const result = await wallet.generateKeyringWithMnemonic(
-      mnemonics,
-      passphrase
-    );
-    const keyringId = result.keyringId;
+    let keyringId: number | null = null;
+    await AuthenticationModalPromise({
+      confirmText: t('global.confirm'),
+      cancelText: t('global.Cancel'),
+      title: t('page.addressDetail.backup-seed-phrase'),
+      validationHandler: async (password: string) => {
+        const mnemonics = await wallet.getMnemonicByAddress(password, address);
+        const result = await wallet.generateKeyringWithMnemonic(
+          mnemonics,
+          passphrase
+        );
+        keyringId = result.keyringId;
+      },
+      getContainer,
+      wallet,
+    });
 
     openInternalPageInTab(
       `import/select-address?hd=${KEYRING_CLASS.MNEMONIC}&keyringId=${keyringId}`

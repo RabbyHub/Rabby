@@ -664,7 +664,10 @@
       "title": "Отримати {{token}} у {{chain}}",
       "watchModeAlert1": "Це адреса в режимі спостереження.",
       "watchModeAlert2": "Ви впевнені, що хочете використовувати її для отримання активів?",
-      "receiveOn": "Отримати {{token}} на"
+      "receiveOn": "Отримати {{token}} на",
+      "receiveTitle": "Отримати {{token}}",
+      "addCustomNetwork": "Додати власну мережу",
+      "supportedChain": "Підтримувані мережі"
     },
     "sendToken": {
       "addressNotInContract": "Немає в списку адрес. <1></1><2>Додати в контакти</2>",
@@ -1510,7 +1513,8 @@
         "searchTokenPlaceholder": "Пошук Токену",
         "openInTab": "Відкрити в Rabby Tab",
         "openProMode": "Відкрити професійний режим",
-        "openInTabV2": "Відкрити у вкладці"
+        "openInTabV2": "Відкрити у вкладці",
+        "addAssets": "Додати активи"
       },
       "hd": {
         "howToConnectLedger": "Як підключити Ledger",
@@ -1576,7 +1580,11 @@
         "desc": "Перевірте свої бали в Rabby Mobile.",
         "downloadIntro": "Ще не маєте програми? Завантажте зараз."
       },
-      "noData": "Валюта не знайдена"
+      "noData": "Валюта не знайдена",
+      "ZeroAssets": {
+        "desc": "Поповніть гаманець, щоб користуватися Web3",
+        "addAssets": "Додати активи"
+      }
     },
     "nft": {
       "floorPrice": "/ Ринкова Ціна:",

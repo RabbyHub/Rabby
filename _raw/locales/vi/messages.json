@@ -663,7 +663,10 @@
       "watchModeAlert1": "Đây là một địa chỉ Chế độ Theo dõi.",
       "title": "Nhận {{token}} trên {{chain}}",
       "watchModeAlert2": "Bạn có chắc chắn sử dụng nó để nhận tài sản không?",
-      "receiveOn": "Nhận {{token}} trên"
+      "receiveOn": "Nhận {{token}} trên",
+      "receiveTitle": "Nhận {{token}}",
+      "addCustomNetwork": "Thêm mạng tùy chỉnh",
+      "supportedChain": "Các chuỗi được hỗ trợ"
     },
     "sendToken": {
       "AddToContactsModal": {
@@ -1598,7 +1601,8 @@
         "searchTokenPlaceholder": "Tìm kiếm Token",
         "openInTab": "Mở trong Rabby Tab",
         "openProMode": "Mở Chế Độ Chuyên Nghiệp",
-        "openInTabV2": "Mở trong Tab"
+        "openInTabV2": "Mở trong Tab",
+        "addAssets": "Thêm tài sản"
       },
       "hd": {
         "ledger": {
@@ -1662,7 +1666,11 @@
         "downloadIntro": "Chưa có ứng dụng? Tải xuống ngay.",
         "desc": "Kiểm tra điểm của bạn trong Rabby Mobile."
       },
-      "noData": "Không tìm thấy đơn vị tiền tệ phù hợp"
+      "noData": "Không tìm thấy đơn vị tiền tệ phù hợp",
+      "ZeroAssets": {
+        "desc": "Nạp tiền vào ví để sử dụng Web3",
+        "addAssets": "Thêm tài sản"
+      }
     },
     "nft": {
       "empty": {

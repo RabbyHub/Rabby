@@ -91,14 +91,29 @@ describe('sign message highlighter', () => {
       )
     ).toBe(true);
     expect(
-      hasSignMessageOriginMismatch('app.example.com', 'https://example.com')
+      hasSignMessageOriginMismatch(
+        'https://app.example.com',
+        'https://example.com'
+      )
     ).toBe(true);
     expect(
       hasSignMessageOriginMismatch(
-        'xn--fsqu00a.xn--0zwm56d',
+        'https://xn--fsqu00a.xn--0zwm56d',
         'https://例子.测试'
       )
     ).toBe(false);
+    expect(
+      hasSignMessageOriginMismatch(
+        '"verifying_contract": "intents.near"',
+        'https://near.com'
+      )
+    ).toBe(false);
+    expect(
+      hasSignMessageOriginMismatch(
+        '"verifying_contract": "https://intents.near"',
+        'https://near.com'
+      )
+    ).toBe(true);
     expect(
       hasSignMessageOriginMismatch(
         'No hostname in this message',
@@ -110,7 +125,7 @@ describe('sign message highlighter', () => {
   test('adds the origin rule only for an unparsed mismatched request', () => {
     const ctx = { contractCall: {} } as any;
     const options = {
-      message: 'docs.example.org',
+      message: 'https://docs.example.org',
       origin: 'https://example.com',
     };
 

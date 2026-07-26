@@ -1,6 +1,5 @@
 import type { ContextActionData } from '@rabby-wallet/rabby-security-engine/dist/rules';
-
-const DOMAIN_RE = /(?:https?:\/\/)?(?:[\p{L}\p{N}](?:[\p{L}\p{N}-]{0,61}[\p{L}\p{N}])?\.)+(?:xn--[a-z0-9-]{2,59}|[\p{L}]{2,63})(?::\d+)?(?:[/?#][^\s"'<>]*)?/giu;
+import { extractSignMessageUrls } from './signMessageHighlighter';
 
 const normalizeHostname = (value: string) => {
   try {
@@ -16,8 +15,8 @@ const normalizeHostname = (value: string) => {
 export const extractSignMessageHostnames = (message: string) =>
   Array.from(
     new Set(
-      Array.from(message.matchAll(DOMAIN_RE))
-        .map((match) => normalizeHostname(match[0]))
+      extractSignMessageUrls(message)
+        .map(normalizeHostname)
         .filter((hostname): hostname is string => !!hostname)
     )
   );

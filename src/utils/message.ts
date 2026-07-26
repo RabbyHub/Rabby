@@ -9,6 +9,8 @@ export const Message = {
   PortMessage,
 };
 
+export { setMessageErrorReporter } from './message/index';
+
 /**
  * Sends a message to the dapp(s) content script to signal it can connect to Rabby background as
  * the backend is not active. It is required to re-connect dapps after service worker re-activates.

@@ -116,7 +116,7 @@ export const SelectChainItem = forwardRef(
           onClick={() => !disabled && onChange?.(data.enum)}
         >
           <div className="w-full h-[60px] flex items-center">
-            <div className="flex items-center flex-1">
+            <div className="flex items-center flex-1 min-w-0">
               {data.isTestnet ? (
                 data.logo ? (
                   <img
@@ -151,8 +151,10 @@ export const SelectChainItem = forwardRef(
                   )}
                 </>
               )}
-              <div className="select-chain-item-info">
-                <div className="select-chain-item-name">{data.name}</div>
+              <div className="select-chain-item-info min-w-0">
+                <div className="select-chain-item-name truncate">
+                  {data.name}
+                </div>
                 {!!chainBalanceItem?.usd_value && (
                   <div className="select-chain-item-balance">
                     <ThemeIcon

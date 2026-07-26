@@ -785,7 +785,7 @@ function CommonTokenItem(props: {
               height="32px"
               hideConer
               chainSize={hideUsdValue ? 16 : 14}
-              isShowChainTooltip={!!hideUsdValue}
+              isShowChainTooltip
             />
             <div className="flex flex-col gap-2">
               {showExchangeLogos ? (
