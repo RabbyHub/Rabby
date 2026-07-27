@@ -15,7 +15,7 @@ export interface DesktopProfileState {
 export const desktopProfile = createModel<RootModel>()({
   state: {
     chain: undefined,
-    activeTab: 'tokens',
+    activeTab: 'assets',
     addAddress: {
       visible: false,
       importType: '',

@@ -31,7 +31,6 @@ export const useTokenAndDefiData = ({
     portfolioNetWorth,
     refreshPositions,
     refreshTokens,
-    refreshPortfolios,
   } = useQueryProjects(currentAccount?.address, {
     visible: true,
     lpTokenMode,
@@ -85,39 +84,20 @@ export const useTokenAndDefiData = ({
     return [...new Set(appPortfolios?.map((item) => item.id) || [])];
   }, [appPortfolios]);
 
-  const isNoResults =
-    !isTokensLoading &&
-    !isPortfoliosLoading &&
-    !isAppPortfoliosLoading &&
-    !sortTokens.length &&
-    !displayPortfolios?.length;
-
   return {
-    // useQueryProjects
     isTokensLoading,
     isAllTokenLoading,
     isPortfoliosLoading,
-    portfolios,
-    tokenList,
     hasTokens,
     removeProtocol,
-    portfolioNetWorth,
-    // useQueryProjects end
-    // useAppChain
-    appPortfolios,
-    appPortfolioNetWorth,
     isAppPortfoliosLoading,
-    // useAppChain end
     currentPortfolioNetWorth,
-    displayTokenList,
     displayPortfolios,
     sortTokens,
     lpTokenMode,
     setLpTokenMode,
     appIds,
-    isNoResults,
     refreshPositions,
     refreshTokens,
-    refreshPortfolios,
   };
 };
