@@ -19,7 +19,6 @@ import { useRequest } from 'ahooks';
 import { checkPerpsReference } from '@/ui/views/Perps/utils';
 import { useSticky } from '@/ui/hooks/useSticky';
 import { useLocation } from 'react-router-dom';
-import { getAssetsProjectAnchorId } from './utils';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -128,7 +127,7 @@ const ProtocolItem = ({
 }: {
   protocol: DisplayedProject;
   isAppChain?: boolean;
-  removeProtocol: (id: string) => void;
+  removeProtocol?: (id: string) => void;
 }) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
@@ -154,7 +153,7 @@ const ProtocolItem = ({
     if (res.portfolio_item_list.length) {
       setRealTimeProtocol(new DisplayedProject(res, res.portfolio_item_list));
     } else {
-      removeProtocol(protocol.id);
+      removeProtocol?.(protocol.id);
     }
     return res;
   }, [
@@ -181,10 +180,7 @@ const ProtocolItem = ({
   );
 
   return (
-    <ProtocolItemWrapper
-      id={getAssetsProjectAnchorId(protocol.id)}
-      data-assets-anchor="true"
-    >
+    <ProtocolItemWrapper className="protocol-item-wrapper" id={protocol.id}>
       <div>
         <div
           className={clsx(
@@ -271,9 +267,9 @@ const ProtocolItem = ({
 };
 
 interface Props {
-  list: DisplayedProject[];
+  list: DisplayedProject[] | undefined;
   appIds?: string[];
-  removeProtocol: (id: string) => void;
+  removeProtocol?: (id: string) => void;
   isExpanded?: boolean;
   toggleExpand?: () => void;
   hasExpandSwitch?: boolean;
@@ -283,7 +279,7 @@ const ProtocolListWrapper = styled.div`
   margin-top: 20px;
 `;
 
-const ProtocolList = ({
+const ProjectOverview = ({
   list,
   appIds,
   removeProtocol,
@@ -300,16 +296,18 @@ const ProtocolList = ({
   const location = useLocation();
 
   useEffect(() => {
-    if (isExpanded && location.pathname.includes('desktop/profile/assets')) {
+    if (isExpanded && location.pathname.includes('desktop/profile/difi')) {
       requestAnimationFrame(() => {
         observe();
       });
     }
   }, [location.pathname, list, isExpanded, observe]);
 
+  if (!list) return null;
+
   return (
     <ProtocolListWrapper>
-      {list.map((item) => (
+      {list?.map((item) => (
         <ProtocolItem
           protocol={item}
           removeProtocol={removeProtocol}
@@ -396,4 +394,4 @@ const ProtocolList = ({
   );
 };
 
-export default ProtocolList;
+export default ProjectOverview;

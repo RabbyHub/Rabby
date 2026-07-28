@@ -29,22 +29,20 @@ import {
   RcIconQueueCC,
   RcIconSpinCC,
 } from '@/ui/assets/desktop/profile';
+import TopShortcut, {
+  PORTFOLIO_LIST_ID,
+  TOP_SHORTCUT_SLOT_ID,
+} from './components/TokensTabPane/components/TopShortCut';
 import { AbstractProject } from '@/ui/utils/portfolio/types';
 import { NFTTabPane } from './components/NFTTabPane';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { DesktopPending } from './components/DesktopPending';
 import { TokenTab } from './components/TokensTabPane/TokenTab';
-import { AssetsTab } from './components/TokensTabPane/AssetsTab';
+import { DIFITab } from './components/TokensTabPane/DifiTab';
 import { useTokenAndDefiData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { reportWebPageView } from '@/ui/utils/ga-event';
 import { expiredNft } from '@/db/utils/expired';
-import {
-  DESKTOP_PROFILE_TAB_NAV_HEIGHT,
-  PORTFOLIO_LIST_ID,
-} from './components/TokensTabPane/constant';
-import { AssetsTopShortcut } from './components/TokensTabPane/components/AssetsTopShortcut';
-import { useDesktopProfileTabNavigation } from './hooks/useDesktopProfileTabNavigation';
 
 const DESKTOP_NAV_HEIGHT = 0;
 
@@ -85,7 +83,26 @@ export const DesktopProfile: React.FC<{
   const history = useHistory();
   const location = useLocation();
   const dispatch = useRabbyDispatch();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const activeTab = useMemo(() => {
+    const match = location.pathname.match(/^\/desktop\/profile(?:\/([^/?]+))?/);
+    return match?.[1] || 'tokens';
+  }, [location.pathname]);
+
+  const handleTabChange = (key: string) => {
+    dispatch.desktopProfile.setField({ activeTab: key });
+    history.replace(`/desktop/profile/${key}`);
+    const $scrollElement = scrollContainerRef.current;
+    if (!$scrollElement) {
+      return;
+    }
+    const profileHeight = 136;
+
+    if ($scrollElement.scrollTop > profileHeight) {
+      requestAnimationFrame(() => {
+        $scrollElement.scrollTo(0, profileHeight);
+      });
+    }
+  };
   const { action, sendPageType } = useMemo(() => {
     const searchParams = new URLSearchParams(location.search);
     return {
@@ -95,6 +112,7 @@ export const DesktopProfile: React.FC<{
   }, [location.search]);
   const chain = useRabbySelector((store) => store.desktopProfile.chain);
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
     balance,
     evmBalance,
@@ -119,24 +137,10 @@ export const DesktopProfile: React.FC<{
     }
   }, [isUpdating]);
 
-  const [assetsProjectOverviewList, setAssetsProjectOverviewList] = useState<
+  const [cacheProjectOverviewList, setCacheProjectOverviewList] = useState<
     AbstractProject[]
   >([]);
   const [searchValue, setSearchValue] = React.useState('');
-
-  const {
-    activeTab,
-    tabPaneActiveKey,
-    tabBarActiveKey,
-    isTopShortcutVisible,
-    handleTabChange,
-    handleTabClick,
-  } = useDesktopProfileTabNavigation({
-    contentRevision: refreshKey,
-    hasAssetsProjects: assetsProjectOverviewList.length > 0,
-    isActive,
-    scrollContainerRef,
-  });
 
   const {
     isTokensLoading,
@@ -151,18 +155,13 @@ export const DesktopProfile: React.FC<{
     lpTokenMode,
     setLpTokenMode,
     appIds,
+    isNoResults,
     refreshPositions,
     refreshTokens,
   } = useTokenAndDefiData({
     selectChainId: chainInfo?.serverId,
     allTokenMode: !!searchValue,
   });
-
-  const isTokensListLoading =
-    !!isTokensLoading || (!!lpTokenMode && !!isAllTokenLoading);
-  const isTokensListNoResults =
-    !searchValue && !isTokensListLoading && sortTokens.length === 0;
-  const isDefiLoading = !!isPortfoliosLoading || !!isAppPortfoliosLoading;
 
   const handleUpdate = useMemoizedFn(async () => {
     if (activeTab === 'nft' && currentAccount?.address) {
@@ -216,23 +215,19 @@ export const DesktopProfile: React.FC<{
       >
         <div className="main-content flex-1 pb-[20px]">
           <div className="layout-container">
-            {activeTab === 'assets' && (
-              <div
-                className="sticky h-0 z-20 pt-[0px] overflow-visible flex-initial px-1 w-auto"
-                style={{
-                  width: 0,
-                  scrollbarWidth: 'none',
-                  top: DESKTOP_NAV_HEIGHT + DESKTOP_PROFILE_TAB_NAV_HEIGHT,
-                }}
-              >
-                {assetsProjectOverviewList.length > 0 && isActive && (
-                  <AssetsTopShortcut
-                    projects={assetsProjectOverviewList}
-                    visible={isTopShortcutVisible}
-                  />
-                )}
-              </div>
-            )}
+            <div
+              className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
+              style={{
+                width: 0,
+                scrollbarWidth: 'none',
+                top: DESKTOP_NAV_HEIGHT + 57,
+              }}
+              id={TOP_SHORTCUT_SLOT_ID}
+            >
+              {cacheProjectOverviewList?.length > 0 && activeTab === 'difi' && (
+                <TopShortcut projects={cacheProjectOverviewList || []} />
+              )}
+            </div>
             <StickyBorderTop />
             <div className="flex items-start gap-[20px]">
               <main className="flex-1" id={PORTFOLIO_LIST_ID}>
@@ -255,18 +250,11 @@ export const DesktopProfile: React.FC<{
                     tabBarStyle={{
                       position: 'sticky',
                       top: DESKTOP_NAV_HEIGHT,
-                      zIndex: 30,
                     }}
                     className="overflow-visible"
-                    activeKey={tabPaneActiveKey}
-                    renderTabBar={(tabBarProps, DefaultTabBar) => (
-                      <DefaultTabBar
-                        {...tabBarProps}
-                        activeKey={tabBarActiveKey}
-                      />
-                    )}
+                    defaultActiveKey={activeTab}
+                    activeKey={activeTab}
                     onChange={handleTabChange}
-                    onTabClick={handleTabClick}
                     tabBarExtraContent={{
                       right: (
                         <>
@@ -306,33 +294,43 @@ export const DesktopProfile: React.FC<{
                       tab={t('page.desktopProfile.tabs.tokens')}
                       key="tokens"
                     >
-                      <AssetsTab
-                        onProjectOverviewListChange={
-                          setAssetsProjectOverviewList
+                      <TokenTab
+                        searchValue={searchValue}
+                        setSearchValue={setSearchValue}
+                        isTokensLoading={
+                          !!isTokensLoading ||
+                          (!!lpTokenMode && !!isAllTokenLoading)
                         }
-                        appIds={appIds}
-                        displayPortfolios={displayPortfolios}
-                        currentPortfolioNetWorth={currentPortfolioNetWorth}
-                        isDefiLoading={isDefiLoading}
-                        removeProtocol={removeProtocol}
-                      >
-                        <TokenTab
-                          searchValue={searchValue}
-                          setSearchValue={setSearchValue}
-                          isTokensLoading={isTokensListLoading}
-                          isNoResults={isTokensListNoResults}
-                          sortTokens={sortTokens}
-                          hasTokens={!!hasTokens}
-                          lpTokenMode={lpTokenMode}
-                          setLpTokenMode={setLpTokenMode}
-                          selectChainId={chainInfo?.serverId}
-                        />
-                      </AssetsTab>
+                        isNoResults={isNoResults}
+                        sortTokens={sortTokens}
+                        hasTokens={!!hasTokens}
+                        lpTokenMode={lpTokenMode}
+                        setLpTokenMode={setLpTokenMode}
+                        selectChainId={chainInfo?.serverId}
+                      />
                     </Tabs.TabPane>
                     <Tabs.TabPane
                       tab={t('page.desktopProfile.tabs.defi')}
                       key="difi"
-                    />
+                    >
+                      <>
+                        <DIFITab
+                          onProjectOverviewListChange={
+                            setCacheProjectOverviewList
+                          }
+                          appIds={appIds}
+                          displayPortfolios={displayPortfolios}
+                          currentPortfolioNetWorth={currentPortfolioNetWorth}
+                          isLoading={
+                            !!isTokensLoading ||
+                            !!isPortfoliosLoading ||
+                            !!isAppPortfoliosLoading
+                          }
+                          isNoResults={isNoResults}
+                          removeProtocol={removeProtocol}
+                        />
+                      </>
+                    </Tabs.TabPane>
                     <Tabs.TabPane tab="NFTs" key="nft">
                       <NFTTabPane selectChainId={chainInfo?.serverId} />
                     </Tabs.TabPane>

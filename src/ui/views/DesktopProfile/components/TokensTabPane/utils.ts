@@ -1,40 +1,34 @@
-import {
-  DESKTOP_PROFILE_TAB_NAV_HEIGHT,
-  TOP_SHORTCUT_HEIGHT,
-} from './constant';
+import { DisplayedProject } from '@/ui/utils/portfolio/project';
+import { TOKEN_WALLET_ANCHOR_ID } from './constant';
+import { numberWithCommasIsLtOne } from '@/ui/utils';
 
-const ASSETS_PROTOCOL_ANCHOR_PREFIX = 'desktop-profile-assets-protocol-';
-
-export const ScrollToAssetDomById = (
-  id: string,
-  options: {
-    withTopShortcut?: boolean;
-    topGap?: number;
-  } = {}
-) => {
+export const ScrollToDomById = (id: string, stickAnchor?: boolean) => {
   const dom = document.getElementById(id);
+  // const bar = document.getElementById('_anchor');
   if (!dom) return;
 
-  const scrollElement = dom.closest<HTMLElement>('.js-scroll-element');
+  const y = dom.getBoundingClientRect().y;
+  const scrollElement = document.querySelector('.js-scroll-element');
 
   if (!scrollElement) {
     return;
   }
 
-  const { withTopShortcut = true, topGap = 0 } = options;
-  const targetRect = dom.getBoundingClientRect();
-  const scrollRect = scrollElement.getBoundingClientRect();
-  const stickyOffset =
-    DESKTOP_PROFILE_TAB_NAV_HEIGHT +
-    (withTopShortcut ? TOP_SHORTCUT_HEIGHT : 0) +
-    topGap;
+  const scrollY = scrollElement.scrollTop;
 
-  scrollElement.scrollTo({
-    top:
-      scrollElement.scrollTop + targetRect.top - scrollRect.top - stickyOffset,
+  scrollElement?.scrollTo({
+    top: scrollY + y - 103 - (stickAnchor ? 60 + 57 : 0), // 103 是stick header的高度
     behavior: 'smooth',
   });
 };
 
-export const getAssetsProjectAnchorId = (projectId: string) =>
-  `${ASSETS_PROTOCOL_ANCHOR_PREFIX}${projectId}`;
+export const getTokenWalletFakeProject = (netWorth: number, name: string) => {
+  const p = new DisplayedProject({
+    id: TOKEN_WALLET_ANCHOR_ID,
+    name,
+    chain: 'eth',
+  });
+  p.netWorth = netWorth;
+  p._netWorth = '$' + numberWithCommasIsLtOne(netWorth, 0);
+  return p;
+};
