@@ -31,3 +31,16 @@ db.version(6).upgrade((trans) => {
     });
 });
 db.version(7).stores(schema);
+// re-judge is_small_tx after including sends in judgeIsSmallUsdTx
+db.version(8).upgrade((trans) => {
+  trans
+    .table('history')
+    .toCollection()
+    .modify((item: TxHistoryItemRow) => {
+      try {
+        item.is_small_tx = judgeIsSmallUsdTx(item);
+      } catch (e) {
+        console.error('judgeIsSmallUsdTx error', e, item);
+      }
+    });
+});
