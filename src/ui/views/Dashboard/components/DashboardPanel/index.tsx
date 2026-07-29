@@ -553,6 +553,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       onClick: () => {
         history.push('/history');
       },
+      onOpenInDesktop: () => {
+        openPanelInDesktop('/desktop/profile/transactions');
+      },
     } as IPanelItem,
     security: {
       icon: RcIconApprovalsCC,
