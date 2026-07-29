@@ -8,7 +8,8 @@ import { openapiService } from 'background/service';
 import { TokenItem } from './openapi';
 import * as Sentry from '@sentry/browser';
 import { getTxMatchData } from '@/utils/tempo';
-import { findChainByEnum } from '@/utils/chain';
+import { findChain, findChainByEnum } from '@/utils/chain';
+import { chain } from 'lodash';
 
 type ViewKey = keyof typeof CEX | keyof typeof DEX;
 
