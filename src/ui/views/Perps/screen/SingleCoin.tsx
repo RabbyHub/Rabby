@@ -47,7 +47,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as RcIconArrow } from '@/ui/assets/perps/polygon-cc.svg';
 import { ReactComponent as RcIconCollected } from '@/ui/assets/perps/IconCollected20.svg';
 import { ReactComponent as RcIconNotCollected } from '@/ui/assets/perps/IconUnCollected20.svg';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 import { obj2query } from '@/ui/utils/url';
 import { AddPositionPopup } from '../popup/AddPositionPopup';
 import usePerpsState from '../hooks/usePerpsState';
@@ -519,7 +519,7 @@ export const PerpsSingleCoin = () => {
             wallet.openInDesktop(`/desktop/perps?${obj2query({ coin })}`);
           }}
         >
-          <RcIconFullscreen />
+          <RcIconJumpBoldCC />
         </div>
         <div
           className="cursor-pointer flex items-center"

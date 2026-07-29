@@ -14,7 +14,7 @@ import { PendingTx } from './PendingTx';
 import { RabbyFeePopup } from '../../Swap/Component/RabbyFeePopup';
 import { getUiType, openInternalPageInTab } from '@/ui/utils';
 import { useHistory } from 'react-router-dom';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
 
@@ -77,7 +77,7 @@ export const Header = ({
                     onOpenInTab?.();
                   }}
                 >
-                  <RcIconFullscreen />
+                  <RcIconJumpBoldCC />
                 </div>
               )}
               <div
