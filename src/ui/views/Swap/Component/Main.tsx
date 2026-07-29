@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useRabbySelector } from '@/ui/store';
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, InputRef, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
@@ -1266,7 +1266,7 @@ export const Main = () => {
               }
               setPayToken(token);
             }}
-            chainId={findChainByEnum(chain)!.serverId}
+            chainId={findChainByEnum(chain, { fallback: true })!.serverId}
             type={'from'}
             excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
             getContainer={getContainer}
@@ -1310,7 +1310,7 @@ export const Main = () => {
               }
               setReceiveToken(token);
             }}
-            chainId={findChainByEnum(chain)!.serverId || CHAINS[chain].serverId}
+            chainId={findChainByEnum(chain, { fallback: true })!.serverId}
             type={'to'}
             excludeTokens={payToken?.id ? [payToken?.id] : undefined}
             currentQuote={activeProvider}

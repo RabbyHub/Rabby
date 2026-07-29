@@ -2805,11 +2805,13 @@ const SendToken = () => {
         if (chain) {
           setChain(chain.enum);
           const defaultToken = getChainDefaultToken(chain.enum);
-          nativeToken = await loadCurrentToken(
-            defaultToken.id,
-            chain.serverId,
-            account.address
-          );
+          if (defaultToken) {
+            nativeToken = await loadCurrentToken(
+              defaultToken.id,
+              chain.serverId,
+              account.address
+            );
+          }
         }
         setSafeInfo(safeInfo);
         persistPageStateCache({
