@@ -24,12 +24,12 @@ export interface ThousandsCore {
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-// A "content" char is part of the actual number (digit / dot / minus); anything
-// else — the thousands ',' and value prefixes like '$' — is decoration.
-// Anchoring the caret on content chars keeps it correct even when a prefix is
-// added or removed by the parent (e.g. the leading '$' on deposit/margin inputs).
-const isContentChar = (ch: string) =>
-  (ch >= '0' && ch <= '9') || ch === '.' || ch === '-';
+// A "content" char is part of the number the user actually types (digit / dot);
+// anything else — the thousands ',', value prefixes like '$', and the sign '-'
+// — is decoration. '-' is never user-typed here (all inputs validate against
+// unsigned patterns); it only appears when a parent prepends it (SL PnL/ROI),
+// so counting it as content would shift the caret when the parent inserts it.
+const isContentChar = (ch: string) => (ch >= '0' && ch <= '9') || ch === '.';
 
 const countContent = (s: string) => {
   let n = 0;

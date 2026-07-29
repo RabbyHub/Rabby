@@ -9,7 +9,6 @@ import React, {
 import clsx from 'clsx';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { ReactComponent as RcIconTwitter } from '@/ui/assets/perps/IconTwitter.svg';
-import { ReactComponent as RcIconDiscord } from '@/ui/assets/perps/IconDiscord.svg';
 import { ReactComponent as RcIconOpenVolume } from '@/ui/assets/perps/IconOpenVolume.svg';
 import { ReactComponent as RcIconClosedVolume } from '@/ui/assets/perps/IconClosedVolume.svg';
 import { ReactComponent as RcIconDocs } from '@/ui/assets/perps/IconDocument.svg';
@@ -607,10 +606,6 @@ export const StatusBar: React.FC = () => {
     openInTab('https://twitter.com/Rabby_io');
   };
 
-  const handleOpenDiscord = () => {
-    openInTab('https://discord.gg/seFBCWmUre');
-  };
-
   const handleOpenDocs = () => {
     openInTab('https://support.rabby.io/');
   };
@@ -762,10 +757,6 @@ export const StatusBar: React.FC = () => {
           <RcIconTwitter
             className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
             onClick={handleOpenTwitter}
-          />
-          <RcIconDiscord
-            className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-            onClick={handleOpenDiscord}
           />
           <RcIconDocs
             className="h-[20px] w-[20px] text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
