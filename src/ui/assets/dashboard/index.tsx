@@ -1,5 +1,6 @@
 export { ReactComponent as RcIconAddWalletCC } from './add-wallet-cc.svg';
 export { ReactComponent as RcIconJumpCC } from './jump-cc.svg';
+export { RcIconJumpBoldCC } from './JumpBoldIcon';
 export { ReactComponent as RcIconExternalCC } from './external-cc.svg';
 export { ReactComponent as RcIconExternal1CC } from './external-1-cc.svg';
 export { ReactComponent as RcIconFullscreenCC } from './fullscreen-cc.svg';

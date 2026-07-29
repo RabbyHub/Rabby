@@ -22,7 +22,7 @@ import {
 } from './hooks/useBatchRevokeTask';
 import { RevokeActionButton } from './components/RevokeActionButton';
 import { openInTab } from '@/ui/utils';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 
 const GlobalStyle = createGlobalStyle`
 .global-stop-revoke-modal {
@@ -177,7 +177,7 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
                   openInTab('desktop.html#/desktop/manage-approvals');
                 }}
               >
-                <RcIconFullscreen />
+                <RcIconJumpBoldCC />
               </div>
             </div>
           }
