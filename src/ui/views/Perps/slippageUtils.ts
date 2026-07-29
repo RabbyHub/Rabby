@@ -4,6 +4,8 @@ import BigNumber from 'bignumber.js';
 export const PERPS_SLIPPAGE_THRESHOLD = 0.05;
 /** Threshold above which the slippage value is highlighted (warning). */
 export const PERPS_SLIPPAGE_WARNING = 0.01;
+/** The slippage row is only displayed when slippage is above this. */
+export const PERPS_SLIPPAGE_DISPLAY_MIN = 0.02;
 
 export interface BookLevel {
   px: string;
