@@ -34,6 +34,7 @@ import { createGlobalStyle } from 'styled-components';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
+import { RcIconJumpCC } from '@/ui/assets/dashboard';
 
 import {
   RcIconApprovalsCC,
@@ -103,6 +104,37 @@ const GlobalStyle = createGlobalStyle`
 
       &:hover {
         background: var(--r-blue-light1, #edf0ff);
+      }
+
+      &:has(.panel-item-jump-button:hover) {
+        background: var(--r-neutral-card1, #fff);
+      }
+
+      &-jump-button {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        z-index: 1;
+
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 5px;
+
+        color: var(--r-neutral-title1, #192945);
+        background: var(--r-neutral-card3, #f7fafc);
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+          color: var(--r-blue-default, #4c65ff);
+          background: var(--r-blue-light1, #edf0ff);
+        }
+      }
+
+      &:hover > .panel-item-jump-button {
+        display: flex;
       }
 
       &-icon {
@@ -186,6 +218,7 @@ type IPanelItem = {
   iconClassName?: string;
   subContent?: React.ReactNode;
   isFullscreen?: boolean;
+  onOpenInDesktop?: () => void;
 };
 
 const SortablePanelItem: React.FC<{
@@ -250,6 +283,21 @@ const SortablePanelItem: React.FC<{
           }}
           className="panel-item group"
         >
+          {item.onOpenInDesktop && (
+            <button
+              type="button"
+              className="panel-item-jump-button"
+              aria-label={t('page.dashboard.assets.openInTabV2')}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                item.onOpenInDesktop?.();
+              }}
+            >
+              <RcIconJumpCC width={12} height={12} />
+            </button>
+          )}
           {item.showAlert && (
             <ThemeIcon src={IconAlertRed} className="icon icon-alert" />
           )}
@@ -307,6 +355,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   // useCheckBridgePendingItem();
 
   const wallet = useWallet();
+
+  const openPanelInDesktop = useMemoizedFn((path: string) => {
+    wallet.openInDesktop(path);
+    window.close();
+  });
 
   const [badgeModalVisible, setBadgeModalVisible] = useState(false);
 
@@ -371,6 +424,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     iconClassName?: string;
     subContent?: React.ReactNode;
     isFullscreen?: boolean;
+    onOpenInDesktop?: () => void;
   };
 
   const IconPerps = RcIconPerpsCC;
@@ -447,6 +501,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       onClick: () => {
         history.push('/dex-swap?rbisource=dashboard');
       },
+      onOpenInDesktop: () => {
+        openPanelInDesktop('/desktop/profile?action=swap&rbisource=dashboard');
+      },
     } as IPanelItem,
     send: {
       icon: RcIconSendCC,
@@ -455,6 +512,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       onClick: () => {
         history.push('/send-token?rbisource=dashboard');
       },
+      onOpenInDesktop: () => {
+        openPanelInDesktop('/desktop/profile?action=send&rbisource=dashboard');
+      },
     } as IPanelItem,
     bridge: {
       icon: RcIconBridgeCC,
@@ -462,6 +522,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       content: t('page.dashboard.home.panel.bridge'),
       onClick: () => {
         history.push('/bridge');
+      },
+      onOpenInDesktop: () => {
+        openPanelInDesktop(
+          '/desktop/profile?action=bridge&rbisource=dashboard'
+        );
       },
     } as IPanelItem,
     receive: {
@@ -502,6 +567,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       badge: approvalRiskAlert,
       badgeAlert: approvalRiskAlert > 0,
       isFullscreen: true,
+      onOpenInDesktop: () => {
+        openPanelInDesktop('/desktop/manage-approvals');
+      },
     } as IPanelItem,
     more: {
       icon: RcIconSettingCC,
@@ -545,6 +613,9 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         // await wallet.openInDesktop('/desktop/perps');
         history.push('/perps');
         // window.close();
+      },
+      onOpenInDesktop: () => {
+        openPanelInDesktop('/desktop/perps');
       },
       // isFullscreen: true,
     } as IPanelItem,
