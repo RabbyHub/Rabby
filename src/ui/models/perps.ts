@@ -47,6 +47,7 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { isSameAddress } from '../utils';
 import store from '@/ui/store';
+import { getQuoteAssetFromMeta } from '@/utils/perps/quoteAsset';
 import {
   formatAllDexsClearinghouseState,
   AggregatedClearinghouseState,
@@ -116,6 +117,18 @@ const buildMarketDataMap = (list: MarketData[]): MarketDataMap => {
     return acc;
   }, {} as MarketDataMap);
 };
+
+// Primary source for dex → quote mapping: marketData omits dexs whose coins
+// aren't in the DeBank top list, which would misattribute them to USDC
+// forever. Populated by fetchMarketData from the full meta universe.
+let dexQuoteAssetCache: Record<string, PerpsQuoteAsset> = {};
+
+// Falls back to USDC (the dominant quote) when nothing has loaded yet.
+export const getDexQuoteAsset = (dexId: string): PerpsQuoteAsset =>
+  dexQuoteAssetCache[dexId] ??
+  store.getState().perps.marketData.find((m) => m.dexId === dexId)
+    ?.quoteAsset ??
+  'USDC';
 
 export interface AccountHistoryItem {
   time: number;
@@ -1275,7 +1288,11 @@ export const perps = createModel<RootModel>()({
       if (
         rootState.perps.userAbstraction === UserAbstractionResp.unifiedAccount
       ) {
-        aggregated.withdrawable = rootState.perps.spotState.availableToTrade.toString();
+        // spot free cash + free cross margin (held on the spot ledger)
+        aggregated.withdrawable = String(
+          (Number(rootState.perps.spotState.availableToTrade) || 0) +
+            (Number(aggregated.crossAvailableAllDexs) || 0)
+        );
       }
       dispatch.perps.patchClearinghouseState(aggregated);
       dispatch.perps.setClearinghouseStateMapBySingle({
@@ -1462,6 +1479,13 @@ export const perps = createModel<RootModel>()({
           });
         }
 
+        const nextDexQuoteAssets: Record<string, PerpsQuoteAsset> = {};
+        allMetas.forEach((meta, idx) => {
+          nextDexQuoteAssets[dexIdMap[idx] ?? String(idx)] =
+            getQuoteAssetFromMeta(meta);
+        });
+        dexQuoteAssetCache = nextDexQuoteAssets;
+
         const formattedMarketData = formatMarkData(
           allMetas,
           topAssets,
@@ -1555,7 +1579,11 @@ export const perps = createModel<RootModel>()({
         if (
           latestState.userAbstraction === UserAbstractionResp.unifiedAccount
         ) {
-          clearinghouseState.withdrawable = latestState.spotState.availableToTrade.toString();
+          // spot free cash + free cross margin (held on the spot ledger)
+          clearinghouseState.withdrawable = String(
+            (Number(latestState.spotState.availableToTrade) || 0) +
+              (Number(clearinghouseState.crossAvailableAllDexs) || 0)
+          );
         }
         dispatch.perps.patchState({ dexClearinghouseStates: nextMap });
         dispatch.perps.patchClearinghouseState(clearinghouseState);

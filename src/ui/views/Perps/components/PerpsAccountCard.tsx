@@ -48,18 +48,18 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
     accountValue,
     availableBalance,
     isUnifiedAccount,
-    spotBalancesMap,
+    displaySpotBalancesMap,
   } = usePerpsAccount();
 
   const visibleStableBalances = useMemo(() => {
     if (!isUnifiedAccount) return [];
     return ALL_PERPS_QUOTE_ASSETS.map((coin) => {
-      const item = spotBalancesMap[getSpotBalanceKey(coin)];
+      const item = displaySpotBalancesMap[getSpotBalanceKey(coin)];
       return { coin, available: Number(item?.available || 0) };
     })
       .filter((b) => b.available >= PERPS_LOW_BALANCE_THRESHOLD)
       .sort((a, b) => b.available - a.available);
-  }, [isUnifiedAccount, spotBalancesMap]);
+  }, [isUnifiedAccount, displaySpotBalancesMap]);
 
   const [isBalanceExpanded, setIsBalanceExpanded] = useState(false);
   const showChips =

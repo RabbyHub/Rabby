@@ -4,6 +4,7 @@ import {
   UserAbstractionResp,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { useCallback, useEffect, useMemo } from 'react';
+import { getDexQuoteAsset } from '@/ui/models/perps';
 import { getSpotBalanceKey, PerpsQuoteAsset } from '../constants';
 
 type SpotBalance = {
@@ -67,8 +68,7 @@ export const usePerpsAccount = () => {
 
   // Portfolio margin needs the server-computed net free margin in USDC —
   // simple stablecoin sums miss LTV-weighted collateral (HYPE/UBTC/...) and
-  // borrowed positions. unifiedAccount doesn't need this override; its
-  // collateral is already accurately captured by stablecoin totals.
+  // borrowed positions.
   const portfolioMarginAccountValue = useMemo(() => {
     if (!isPortfolioMargin) {
       return 0;
@@ -98,17 +98,49 @@ export const usePerpsAccount = () => {
     if (isPortfolioMargin) {
       return portfolioMarginAccountValue;
     }
-    return Number(
-      isUnifiedAccount
-        ? spotAvailableToTrade
-        : clearinghouseState?.withdrawable || 0
-    );
+    if (isUnifiedAccount) {
+      // spot free cash + free cross margin (held on the spot ledger, so
+      // spot availableToTrade alone misses it)
+      return (
+        (Number(spotAvailableToTrade) || 0) +
+        (Number(clearinghouseState?.crossAvailableAllDexs) || 0)
+      );
+    }
+    return Number(clearinghouseState?.withdrawable) || 0;
   }, [
     isPortfolioMargin,
     portfolioMarginAccountValue,
     isUnifiedAccount,
     spotAvailableToTrade,
+    clearinghouseState?.crossAvailableAllDexs,
     clearinghouseState?.withdrawable,
+  ]);
+
+  // Per-coin display availability: each dex's free cross margin belongs to
+  // the dex's quote stablecoin. Only the home-card chips consume this —
+  // withdraw/swap keep reading spotBalancesMap (actual spot free, since held
+  // funds can't be withdrawn or swapped).
+  const displaySpotBalancesMap = useMemo(() => {
+    const byDex = clearinghouseState?.crossAvailableByDex;
+    if (!isUnifiedAccount || !byDex) {
+      return spotBalancesMap;
+    }
+    const next = { ...spotBalancesMap };
+    for (const [dexId, free] of Object.entries(byDex)) {
+      const extra = Number(free) || 0;
+      const coin = getSpotBalanceKey(getDexQuoteAsset(dexId));
+      const cur = next[coin];
+      if (!extra || !cur) continue;
+      next[coin] = {
+        ...cur,
+        available: String((Number(cur.available) || 0) + extra),
+      };
+    }
+    return next;
+  }, [
+    isUnifiedAccount,
+    spotBalancesMap,
+    clearinghouseState?.crossAvailableByDex,
   ]);
 
   const getSpotBalance = useCallback(
@@ -150,6 +182,9 @@ export const usePerpsAccount = () => {
     spotBalances: isSpotCollateralMode ? spotBalances : EMPTY_BALANCES,
     spotBalancesMap: isSpotCollateralMode
       ? spotBalancesMap
+      : EMPTY_BALANCES_MAP,
+    displaySpotBalancesMap: isSpotCollateralMode
+      ? displaySpotBalancesMap
       : EMPTY_BALANCES_MAP,
   };
 };

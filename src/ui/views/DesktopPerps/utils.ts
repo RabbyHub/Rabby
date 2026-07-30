@@ -373,13 +373,17 @@ export const getCustomClearinghouseState = async (address: string) => {
     return null;
   }
 
-  // Unified-account fallback: when no perp withdrawable, fall back to spot
-  // availableToTrade so the selector shows a meaningful balance.
+  // Unified-account fallback: when no perp withdrawable, use spot free cash
+  // plus free cross margin so the selector shows a meaningful balance.
   if (Number(aggregated.withdrawable) < 1) {
     const userAbstraction = await sdk.info.getUserAbstraction(address);
     if (userAbstraction === UserAbstractionResp.unifiedAccount) {
       const spotState = await sdk.info.getSpotClearingHouseState(address);
-      aggregated.withdrawable = formatSpotState(spotState).availableToTrade;
+      // spot free cash + free cross margin, same formula as usePerpsAccount
+      aggregated.withdrawable = String(
+        (Number(formatSpotState(spotState).availableToTrade) || 0) +
+          (Number(aggregated.crossAvailableAllDexs) || 0)
+      );
     }
   }
 
@@ -450,6 +454,12 @@ const calcCrossAccountValueByAllDexs = (
  */
 export type AggregatedClearinghouseState = ClearinghouseState & {
   crossMaintByDex?: Record<string, string>;
+  // Unified accounts hold the full cross equity on the spot ledger, so
+  // spot total-hold alone misses the free cross margin.
+  crossAvailableAllDexs?: string;
+  // Per-dex breakdown of the above — each dex's free margin belongs to the
+  // dex's quote stablecoin, needed for per-coin display attribution.
+  crossAvailableByDex?: Record<string, string>;
 };
 
 export const formatAllDexsClearinghouseState = (
@@ -470,14 +480,26 @@ export const formatAllDexsClearinghouseState = (
 
   const crossMaintByDex: Record<string, string> = {};
   let crossMaintenanceMarginUsed = 0;
+  let crossAvailableAllDexs = 0;
+  const crossAvailableByDex: Record<string, string> = {};
   for (const [dexName, state] of allClearinghouseState) {
     if (!state) continue;
     crossMaintByDex[dexName] = state.crossMaintenanceMarginUsed;
     crossMaintenanceMarginUsed += Number(state.crossMaintenanceMarginUsed || 0);
+    const crossFree =
+      Number(state.crossMarginSummary?.accountValue || 0) -
+      Number(state.crossMarginSummary?.totalMarginUsed || 0);
+    // clamped per dex: a deficit on one dex must not offset another
+    if (crossFree > 0) {
+      crossAvailableAllDexs += crossFree;
+      crossAvailableByDex[dexName] = crossFree.toString();
+    }
   }
 
   return {
     assetPositions: assetPositions,
+    crossAvailableAllDexs: crossAvailableAllDexs.toString(),
+    crossAvailableByDex,
     crossMaintenanceMarginUsed: crossMaintenanceMarginUsed.toString(),
     crossMaintByDex,
     crossMarginSummary: {
