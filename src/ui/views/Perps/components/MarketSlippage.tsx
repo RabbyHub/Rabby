@@ -2,7 +2,6 @@ import React from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import {
-  PERPS_SLIPPAGE_DISPLAY_MIN,
   PERPS_SLIPPAGE_THRESHOLD,
   PERPS_SLIPPAGE_WARNING,
 } from '../slippageUtils';
@@ -19,7 +18,7 @@ export interface MarketSlippageProps {
   valueClassName?: string;
 }
 
-/** Est. Slippage row, only shown above 2% (value colored 2%~5% amber / >=5% red) plus a switch-to-limit banner over threshold. */
+/** Est. Slippage row plus a switch-to-limit banner over threshold. Visibility (sticky >2% rule) is driven by useMarketSlippage's `shouldShow`. */
 export const MarketSlippage: React.FC<MarketSlippageProps> = ({
   slippage,
   depthInsufficient,
@@ -31,7 +30,7 @@ export const MarketSlippage: React.FC<MarketSlippageProps> = ({
   valueClassName,
 }) => {
   const { t } = useTranslation();
-  if (!visible || slippage <= PERPS_SLIPPAGE_DISPLAY_MIN) return null;
+  if (!visible) return null;
 
   const overThreshold = slippage >= PERPS_SLIPPAGE_THRESHOLD;
   const isWarning = !overThreshold && slippage >= PERPS_SLIPPAGE_WARNING;
