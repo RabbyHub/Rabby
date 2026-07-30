@@ -2,7 +2,10 @@
 /* eslint-enable react-hooks/exhaustive-deps */
 import type { Account } from '@/background/service/preference';
 import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
-import { RcIconArrowRightCC, RcIconJumpCC } from '@/ui/assets/dashboard';
+import {
+  RcIconArrowRightDashboardCC,
+  RcIconJumpCC,
+} from '@/ui/assets/dashboard';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -467,7 +470,7 @@ export const BalanceView = ({
                 <div
                   className={clsx(
                     'w-full flex items-center gap-[4px]',
-                    !currentHover && 'opacity-80'
+                    !currentHover && 'opacity-50'
                   )}
                 >
                   <ChainList
@@ -475,13 +478,13 @@ export const BalanceView = ({
                     matteredChainBalances={chainBalancesWithValue.slice(0)}
                     gnosisNetworks={gnosisNetworks}
                   />
-                  <RcIconArrowRightCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
+                  <RcIconArrowRightDashboardCC className="w-[18px] h-[18px] text-r-neutral-title2" />
                 </div>
               ) : (
                 <div
                   className={clsx(
                     'w-full flex items-center gap-[4px]',
-                    !currentHover && 'opacity-80'
+                    !currentHover && 'opacity-50'
                   )}
                 >
                   <div
@@ -491,7 +494,7 @@ export const BalanceView = ({
                   >
                     {t('page.dashboard.assets.noAssets')}
                   </div>
-                  <RcIconArrowRightCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
+                  <RcIconArrowRightDashboardCC className="w-[18px] h-[18px] text-r-neutral-title2" />
                 </div>
               )}
             </div>

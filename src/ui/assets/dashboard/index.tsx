@@ -8,3 +8,4 @@ export { ReactComponent as RcIconFullscreen1CC } from './fullscreen-1-cc.svg';
 export { ReactComponent as RcIconQrCodeCC } from './qr-code-cc.svg';
 export { ReactComponent as RcIconSettingCC } from './setting.svg';
 export { ReactComponent as RcIconArrowRightCC } from './arrow-right-cc.svg';
+export { ReactComponent as RcIconArrowRightDashboardCC } from './right-arrow-cc.svg';
