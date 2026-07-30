@@ -122,6 +122,16 @@ interface BasicCoboArgusInfo {
   delegates: string[];
 }
 
+// Let concurrently started promises land first, and let each original
+// boundary decide when to throw.
+const settle = <T,>(
+  promise: Promise<T>
+): Promise<{ value: T } | { error: any }> =>
+  promise.then(
+    (value) => ({ value }),
+    (error) => ({ error })
+  );
+
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
     return intToHex(Math.floor(value));
@@ -2216,16 +2226,30 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   });
 
   const init = async () => {
-    try {
-      await wallet.syncDefaultRPC();
-    } catch (error) {
+    const syncDefaultRPCPromise = wallet.syncDefaultRPC().catch((error) => {
       console.error('before submit sync default rpc error', error);
-    }
+    });
+    const hasCustomRPCResultPromise = wallet.hasCustomRPC(chain.enum).then(
+      (value) => {
+        setNoCustomRPC(!value);
+        if (value) {
+          setGasLessFailedReason(
+            t('page.signFooterBar.gasless.customRpcUnavailableTip')
+          );
+        }
+        return { value };
+      },
+      (error) => ({ error })
+    );
     dispatch.securityEngine.init();
     dispatch.securityEngine.resetCurrentTx();
     checkBlockedAddress();
     loadGasMedian(chain);
-    if (!isGnosisAccount && !isCoboArugsAccount) {
+    const isGnosisAccountType =
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring;
+    const isCoboArgusAccountType =
+      currentAccount.type === KEYRING_TYPE.CoboArgusKeyring;
+    if (!isGnosisAccountType && !isCoboArgusAccountType) {
       recommendNoncePromiseRef.current = wallet.getRecommendNonce({
         from: tx.from,
         chainId,
@@ -2237,16 +2261,33 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       });
     }
     const lastTimeGasPromise = wallet.getLastTimeGasSelection(chainId);
-    try {
-      const is1559 =
-        support1559 &&
-        SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
-      setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
-      setIsHardware(
-        !!Object.values(HARDWARE_KEYRING_TYPES).find(
-          (item) => item.type === currentAccount.type
-        )
-      );
+    const loadInitialGasSelection = async () => {
+      const lastTimeGas: ChainGas | null = await lastTimeGasPromise;
+      let customGasPrice = 0;
+      let useCachedCustomGasPrice = false;
+      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+        // use cached gasPrice if exist
+        customGasPrice = lastTimeGas.gasPrice;
+        useCachedCustomGasPrice = true;
+      }
+      if (
+        isSpeedUp ||
+        isCancel ||
+        ((isSend || isSwap || isBridge) && tx.gasPrice)
+      ) {
+        // use gasPrice set by dapp when it's a speedup or cancel tx
+        customGasPrice = parseInt(tx.gasPrice!);
+        useCachedCustomGasPrice = false;
+      }
+      const gasList = await loadGasMarket(chain, customGasPrice);
+      return {
+        lastTimeGas,
+        customGasPrice,
+        useCachedCustomGasPrice,
+        gasList,
+      };
+    };
+    const loadInitialGasTokenState = async () => {
       try {
         const balanceInfo = await getGasTokenBalance({
           wallet,
@@ -2283,12 +2324,40 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           }
         }
       } catch (e) {
-        if (await wallet.hasCustomRPC(chain.enum)) {
+        const hasCustomRPCResult = await hasCustomRPCResultPromise;
+        if ('error' in hasCustomRPCResult) {
+          throw hasCustomRPCResult.error;
+        }
+        if (hasCustomRPCResult.value) {
           triggerCustomRPCErrorModal();
         }
       } finally {
         setTempoGasTokenLoading(false);
       }
+    };
+    try {
+      const is1559 =
+        support1559 &&
+        SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
+      setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+      setIsHardware(
+        !!Object.values(HARDWARE_KEYRING_TYPES).find(
+          (item) => item.type === currentAccount.type
+        )
+      );
+      const initialGasSelectionResultPromise = settle(
+        loadInitialGasSelection()
+      );
+      let accountInitPromise = Promise.resolve();
+      if (isGnosisAccountType) {
+        setIsGnosisAccount(true);
+        accountInitPromise = getSafeInfo();
+      } else if (isCoboArgusAccountType) {
+        setIsCoboArugsAccount(true);
+        accountInitPromise = getCoboDelegates();
+      }
+      const accountInitResultPromise = settle(accountInitPromise);
+      await Promise.all([syncDefaultRPCPromise, loadInitialGasTokenState()]);
 
       matomoRequestEvent({
         category: 'Transaction',
@@ -2300,34 +2369,26 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         event_category: 'Transaction',
       });
 
-      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-        setIsGnosisAccount(true);
-        await getSafeInfo();
+      const accountInitResult = await accountInitResultPromise;
+      if ('error' in accountInitResult) {
+        throw accountInitResult.error;
       }
-      if (currentAccount.type === KEYRING_TYPE.CoboArgusKeyring) {
-        setIsCoboArugsAccount(true);
-        await getCoboDelegates();
-      }
-
       checkCanProcess();
-      const lastTimeGas: ChainGas | null = await lastTimeGasPromise;
-      let customGasPrice = 0;
-      let useCachedCustomGasPrice = false;
-      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
-        // use cached gasPrice if exist
-        customGasPrice = lastTimeGas.gasPrice;
-        useCachedCustomGasPrice = true;
-      }
-      if (
-        isSpeedUp ||
-        isCancel ||
-        ((isSend || isSwap || isBridge) && tx.gasPrice)
-      ) {
-        // use gasPrice set by dapp when it's a speedup or cancel tx
-        customGasPrice = parseInt(tx.gasPrice!);
-        useCachedCustomGasPrice = false;
-      }
-      let gasList = await loadGasMarket(chain, customGasPrice);
+
+      const initialGasSelection = await initialGasSelectionResultPromise.then(
+        (result) => {
+          if ('error' in result) {
+            throw result.error;
+          }
+          return result.value;
+        }
+      );
+      const {
+        lastTimeGas,
+        customGasPrice,
+        useCachedCustomGasPrice,
+      } = initialGasSelection;
+      let { gasList } = initialGasSelection;
       let gas: GasLevel | null = null;
 
       if (
