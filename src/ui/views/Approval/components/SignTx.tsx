@@ -1,5 +1,6 @@
 import stats from '@/stats';
 import {
+  BlockInfo,
   calcGasLimit,
   checkGasAndNonce,
   convertLegacyTo1559,
@@ -67,7 +68,11 @@ import {
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
-import { MultiAction, TxPushType } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  MultiAction,
+  SendAction,
+  TxPushType,
+} from '@rabby-wallet/rabby-api/dist/types';
 import type {
   GasAccountCheckResult,
   TokenItem,
@@ -432,6 +437,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const securityEngineCtx = useRef<any>(null);
   const logId = useRef('');
   const actionType = useRef('');
+  const explainEpochRef = useRef(0);
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [canProcess, setCanProcess] = useState(true);
@@ -1152,23 +1158,22 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     autoSwitchKey: gasMethodScopeKey,
   });
 
-  useEffect(() => {
-    const hasCustomRPC = async () => {
-      if (chain?.enum) {
-        const b = await wallet.hasCustomRPC(chain?.enum);
-        if (b) {
-          setGasLessFailedReason(
-            t('page.signFooterBar.gasless.customRpcUnavailableTip')
-          );
-        }
-        setNoCustomRPC(!b);
-      }
-    };
-    hasCustomRPC();
-  }, [chain?.enum]);
-
-  const explainTx = async (address: string) => {
+  const explainTx = async (address: string, detailEpoch: number) => {
+    const shouldCalculateGasLimit =
+      !(tx.gas && origin === INTERNAL_REQUEST_ORIGIN) && !gasLimit;
+    const preparedBlock = shouldCalculateGasLimit
+      ? wallet
+          .requestETHRpc<BlockInfo>(
+            {
+              method: 'eth_getBlockByNumber',
+              params: ['latest', false],
+            },
+            chain.serverId
+          )
+          .catch(() => null)
+      : undefined;
     let recommendNonce = updateNonce ? '0x0' : tx.nonce || '0x0';
+    let shouldSetRecommendNonce = false;
     if (!isGnosisAccount && !isCoboArugsAccount) {
       try {
         if (updateNonce) {
@@ -1187,16 +1192,15 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             });
           }
         }
-        setRecommendNonce(recommendNonce);
+        shouldSetRecommendNonce = true;
       } catch (e) {
         if (await wallet.hasCustomRPC(chain.enum)) {
-          triggerCustomRPCErrorModal();
+          if (explainEpochRef.current === detailEpoch) {
+            triggerCustomRPCErrorModal();
+          }
         }
       }
     }
-    if (updateNonce && !isGnosisAccount && !isCoboArugsAccount) {
-      setRealNonce(recommendNonce);
-    } // do not overwrite nonce if from === to(cancel transaction)
     const explainNonce = (updateNonce ? recommendNonce : tx.nonce) || '0x1';
     const delegateCall = isGnosisAccount
       ? !!params?.data?.[0]?.operation
@@ -1226,6 +1230,29 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       origin: origin || '',
       addr: address,
     });
+    const parseTxResultPromise = settle(parseTxPromise);
+    const cexInfoResultPromiseListPromise = parseTxResultPromise.then(
+      (result) => {
+        if ('error' in result) {
+          return [];
+        }
+        const { action } = result.value;
+        const actions =
+          action?.type === 'multi_actions'
+            ? (action.data as MultiAction)
+            : [action];
+        return actions.map((item) =>
+          settle(
+            getCexInfo(
+              item?.type === 'send_token'
+                ? (item.data as SendAction)?.to || ''
+                : '',
+              wallet
+            )
+          )
+        );
+      }
+    );
 
     const pendingTxListPromise = getPendingTxs({
       recommendNonce,
@@ -1248,122 +1275,112 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       pending_tx_list: await pendingTxListPromise,
       delegate_call: delegateCall,
     });
-
-    let estimateGas = 0;
-    if (res.gas.success) {
-      estimateGas = res.gas.gas_limit || res.gas.gas_used;
-    }
-    const { gas: gasRaw, needRatio, gasUsed } = await wallet.getRecommendGas({
-      gasUsed: res.gas.gas_used,
-      gas: estimateGas,
-      tx,
-      chainId,
-    });
-    const gas = new BigNumber(gasRaw);
-    setGasUsed(gasUsed);
-    setRecommendGasLimit(`0x${gas.toString(16)}`);
-    if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
-      setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
-    } else if (!gasLimit) {
-      const { gasLimit, recommendGasLimitRatio } = await calcGasLimit({
-        chain,
-        tx,
-        gas,
-        selectedGas,
-        nativeTokenBalance,
-        explainTx: res,
-        needRatio,
-        wallet,
-        gasTokenDecimals: gasToken.decimals || 18,
-        checkTxValueInBalance,
-      });
-      setGasLimit(gasLimit);
-      setRecommendGasLimitRatio(recommendGasLimitRatio);
-    }
-    setTxDetail(res);
-
-    setPreprocessSuccess(res.pre_exec.success);
-
-    const actionData = await parseTxPromise;
-    logId.current = actionData.log_id;
-    actionType.current = actionData?.action?.type || '';
-
-    let parsed: ParsedTransactionActionData, requiredData: ActionRequireData;
-    if (actionData.action?.type === 'multi_actions') {
-      const actions = actionData.action.data as MultiAction;
-      const parsedActions = actions.map((action) =>
-        parseAction({
+    const actionSecurityStatePromise = (async () => {
+      const parseTxResult = await parseTxResultPromise;
+      if ('error' in parseTxResult) {
+        throw parseTxResult.error;
+      }
+      const actionData = parseTxResult.value;
+      const cexInfoResultPromiseList = await cexInfoResultPromiseListPromise;
+      const getActionRequiredDataOptions = async (
+        parsed: ParsedTransactionActionData,
+        index: number
+      ) => {
+        const cexInfoResult = await cexInfoResultPromiseList[index];
+        if ('error' in cexInfoResult) {
+          throw cexInfoResult.error;
+        }
+        return {
           type: 'transaction',
-          data: action,
-          balanceChange: res.balance_change,
+          actionData: parsed,
+          contractCall: actionData.contract_call,
+          chainId: chain.serverId,
+          cex: cexInfoResult.value,
+          sender: address,
+          walletProvider: {
+            ethRpc: wallet.requestETHRpc,
+            findChain,
+            ALIAS_ADDRESS,
+            hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
+            hasAddress: wallet.hasAddress,
+            getWhitelist: wallet.getWhitelist,
+            isWhitelistEnabled: wallet.isWhitelistEnabled,
+            getPendingTxsByNonce: wallet.getPendingTxsByNonce,
+          },
           tx: {
             ...tx,
             gas: '0x0',
             nonce: explainNonce,
             value: tx.value || '0x0',
           },
-          preExecVersion: res.pre_exec_version,
-          gasUsed: res.gas.gas_used,
-          sender: tx.from,
-        })
-      );
-      const requireDataList = await Promise.all(
-        parsedActions.map(async (item) => {
-          const cexInfo = await getCexInfo(item.send?.to || '', wallet);
-          return fetchActionRequiredData({
+          apiProvider: isTestnet(chain.serverId)
+            ? ((wallet.fakeTestnetOpenapi as unknown) as any)
+            : wallet.openapi,
+        } as const;
+      };
+      const loadActionRequiredData = async (
+        parsed: ParsedTransactionActionData,
+        index: number
+      ) =>
+        fetchActionRequiredData(
+          await getActionRequiredDataOptions(parsed, index)
+        );
+      const formatActionSecurityContext = (
+        parsed: ParsedTransactionActionData,
+        requiredData: ActionRequireData
+      ) =>
+        formatSecurityEngineContext({
+          type: 'transaction',
+          actionData: parsed,
+          requireData: requiredData,
+          chainId: chain.serverId,
+          isTestnet: isTestnet(chain.serverId),
+          provider: {
+            getTimeSpan,
+            hasAddress: wallet.hasAddress,
+          },
+        });
+
+      if (actionData.action?.type === 'multi_actions') {
+        const actions = actionData.action.data as MultiAction;
+        const parsedActions = actions.map((action) =>
+          parseAction({
             type: 'transaction',
-            actionData: item,
-            contractCall: actionData.contract_call,
-            chainId: chain.serverId,
-            sender: address,
-            walletProvider: {
-              ethRpc: wallet.requestETHRpc,
-              findChain,
-              ALIAS_ADDRESS,
-              hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
-              hasAddress: wallet.hasAddress,
-              getWhitelist: wallet.getWhitelist,
-              isWhitelistEnabled: wallet.isWhitelistEnabled,
-              getPendingTxsByNonce: wallet.getPendingTxsByNonce,
-            },
-            cex: cexInfo,
+            data: action,
+            balanceChange: res.balance_change,
             tx: {
               ...tx,
               gas: '0x0',
               nonce: explainNonce,
               value: tx.value || '0x0',
             },
-            apiProvider: isTestnet(chain.serverId)
-              ? ((wallet.fakeTestnetOpenapi as unknown) as any)
-              : wallet.openapi,
-          });
-        })
-      );
-      const ctxList = await Promise.all(
-        requireDataList.map((requireData, index) => {
-          return formatSecurityEngineContext({
-            type: 'transaction',
-            actionData: parsedActions[index],
-            requireData,
-            chainId: chain.serverId,
-            isTestnet: isTestnet(chain.serverId),
-            provider: {
-              getTimeSpan,
-              hasAddress: wallet.hasAddress,
-            },
-          });
-        })
-      );
-      const resultList = await Promise.all(
-        ctxList.map((ctx) => executeEngine(ctx))
-      );
-      parsed = parsedActions[0];
-      requiredData = requireDataList[0];
-      setMultiActionList(parsedActions);
-      setMultiActionRequireDataList(requireDataList);
-      setMultiActionEngineResultList(resultList);
-    } else {
-      parsed = parseAction({
+            preExecVersion: res.pre_exec_version,
+            gasUsed: res.gas.gas_used,
+            sender: tx.from,
+          })
+        );
+        const requireDataList = await Promise.all(
+          parsedActions.map(loadActionRequiredData)
+        );
+        const ctxList = await Promise.all(
+          requireDataList.map((requiredData, index) =>
+            formatActionSecurityContext(parsedActions[index], requiredData)
+          )
+        );
+        const resultList = await Promise.all(
+          ctxList.map((ctx) => executeEngine(ctx))
+        );
+        return {
+          type: 'multi' as const,
+          actionData,
+          parsed: parsedActions[0],
+          parsedActions,
+          requireDataList,
+          resultList,
+        };
+      }
+
+      const parsed = parseAction({
         type: 'transaction',
         data: actionData.action,
         balanceChange: res.balance_change,
@@ -1377,53 +1394,98 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         gasUsed: res.gas.gas_used,
         sender: tx.from,
       });
-      const cexInfo = await getCexInfo(parsed.send?.to || '', wallet);
-      requiredData = await fetchActionRequiredData({
-        type: 'transaction',
-        actionData: parsed,
-        contractCall: actionData.contract_call,
-        chainId: chain.serverId,
-        cex: cexInfo,
-        sender: address,
-        walletProvider: {
-          ethRpc: wallet.requestETHRpc,
-          findChain,
-          ALIAS_ADDRESS,
-          hasPrivateKeyInWallet: wallet.hasPrivateKeyInWallet,
-          hasAddress: wallet.hasAddress,
-          getWhitelist: wallet.getWhitelist,
-          isWhitelistEnabled: wallet.isWhitelistEnabled,
-          getPendingTxsByNonce: wallet.getPendingTxsByNonce,
-        },
-        tx: {
-          ...tx,
-          gas: '0x0',
-          nonce: explainNonce,
-          value: tx.value || '0x0',
-        },
-        apiProvider: isTestnet(chain.serverId)
-          ? ((wallet.fakeTestnetOpenapi as unknown) as any)
-          : wallet.openapi,
-      });
-      const ctx = await formatSecurityEngineContext({
-        type: 'transaction',
-        actionData: parsed,
-        requireData: requiredData,
-        chainId: chain.serverId,
-        isTestnet: isTestnet(chain.serverId),
-        provider: {
-          getTimeSpan,
-          hasAddress: wallet.hasAddress,
-        },
-      });
-      securityEngineCtx.current = ctx;
+      const options = await getActionRequiredDataOptions(parsed, 0);
+      const requiredData = await fetchActionRequiredData(options);
+      const ctx = await formatActionSecurityContext(parsed, requiredData);
       const result = await executeEngine(ctx);
-      setEngineResults(result);
-      setActionData(parsed);
-      setActionRequireData(requiredData);
+      return {
+        type: 'single' as const,
+        actionData,
+        parsed,
+        requiredData,
+        ctx,
+        result,
+      };
+    })();
+    const actionSecurityStateResultPromise = settle(actionSecurityStatePromise);
+
+    let estimateGas = 0;
+    if (res.gas.success) {
+      estimateGas = res.gas.gas_limit || res.gas.gas_used;
+    }
+    const { gas: gasRaw, needRatio, gasUsed } = await wallet.getRecommendGas({
+      gasUsed: res.gas.gas_used,
+      gas: estimateGas,
+      tx,
+      chainId,
+    });
+    const gas = new BigNumber(gasRaw);
+    let nextGasLimit: string | undefined;
+    let nextRecommendGasLimitRatio: number | undefined;
+    if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
+      nextGasLimit = intToHex(Number(tx.gas)); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
+    } else if (shouldCalculateGasLimit) {
+      const { gasLimit, recommendGasLimitRatio } = await calcGasLimit({
+        chain,
+        tx,
+        gas,
+        selectedGas,
+        nativeTokenBalance,
+        explainTx: res,
+        needRatio,
+        wallet,
+        preparedBlock,
+        gasTokenDecimals: gasToken.decimals || 18,
+        checkTxValueInBalance,
+      });
+      nextGasLimit = gasLimit;
+      nextRecommendGasLimitRatio = recommendGasLimitRatio;
     }
 
+    const actionSecurityStateResult = await actionSecurityStateResultPromise;
+    if ('error' in actionSecurityStateResult) {
+      throw actionSecurityStateResult.error;
+    }
+    const actionSecurityState = actionSecurityStateResult.value;
+    const { actionData, parsed } = actionSecurityState;
+    const requiredData =
+      actionSecurityState.type === 'multi'
+        ? actionSecurityState.requireDataList[0]
+        : actionSecurityState.requiredData;
+
     const approval = await getApproval();
+    if (explainEpochRef.current !== detailEpoch) {
+      return;
+    }
+
+    if (shouldSetRecommendNonce) {
+      setRecommendNonce(recommendNonce);
+    }
+    if (updateNonce && !isGnosisAccount && !isCoboArugsAccount) {
+      setRealNonce(recommendNonce);
+    } // do not overwrite nonce if from === to(cancel transaction)
+    setGasUsed(gasUsed);
+    setRecommendGasLimit(`0x${gas.toString(16)}`);
+    if (nextGasLimit !== undefined) {
+      setGasLimit(nextGasLimit);
+    }
+    if (nextRecommendGasLimitRatio !== undefined) {
+      setRecommendGasLimitRatio(nextRecommendGasLimitRatio);
+    }
+    setTxDetail(res);
+    setPreprocessSuccess(res.pre_exec.success);
+    logId.current = actionData.log_id;
+    actionType.current = actionData?.action?.type || '';
+    if (actionSecurityState.type === 'multi') {
+      setMultiActionList(actionSecurityState.parsedActions);
+      setMultiActionRequireDataList(actionSecurityState.requireDataList);
+      setMultiActionEngineResultList(actionSecurityState.resultList);
+    } else {
+      securityEngineCtx.current = actionSecurityState.ctx;
+      setEngineResults(actionSecurityState.result);
+      setActionData(parsed);
+      setActionRequireData(actionSecurityState.requiredData);
+    }
 
     approval.signingTxId &&
       (await wallet.updateSigningTx(approval.signingTxId, {
@@ -1443,11 +1505,14 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const explain = async () => {
+    const detailEpoch = ++explainEpochRef.current;
     try {
       setIsReady(false);
-      await explainTx(currentAccount.address);
+      await explainTx(currentAccount.address, detailEpoch);
+      if (explainEpochRef.current !== detailEpoch) return;
       setIsReady(true);
     } catch (e: any) {
+      if (explainEpochRef.current !== detailEpoch) return;
       Modal.error({
         title: 'Error',
         content: e.message || JSON.stringify(e),
@@ -1934,6 +1999,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const handleCancel = () => {
+    explainEpochRef.current += 1;
     gaEvent('cancel');
     rejectApproval('User rejected the request.');
   };
