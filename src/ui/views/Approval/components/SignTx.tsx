@@ -58,7 +58,6 @@ import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
 import Actions from './Actions';
-import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import {
@@ -799,7 +798,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const checkTxValueInBalance = useMemo(() => !isTempoChain(chain?.serverId), [
     chain?.serverId,
   ]);
-  const { executeEngine } = useSecurityEngine();
+  const executeEngine = wallet.executeSecurityEngine;
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const [multiActionList, setMultiActionList] = useState<
     ParsedTransactionActionData[]
