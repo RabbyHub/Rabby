@@ -1961,31 +1961,29 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const checkCanProcess = async () => {
-    const session = params.session;
-    const site = await wallet.getConnectedSite(session.origin);
-
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setCanProcess(false);
       setCantProcessReason(
         <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
       );
+      return;
     }
-    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
-      const networkIds = await wallet.getGnosisNetworkIds(
-        currentAccount.address
+    if (currentAccount.type !== KEYRING_TYPE.GnosisKeyring && !isGnosis) {
+      return;
+    }
+    const networkIds = await wallet.getGnosisNetworkIds(currentAccount.address);
+    const site = chainId
+      ? undefined
+      : await wallet.getConnectedSite(params.session.origin);
+    const gnosisChainId = chainId || (site && CHAINS[site.chain]?.id);
+    if (!gnosisChainId || !networkIds.includes(gnosisChainId.toString())) {
+      setCanProcess(false);
+      setCantProcessReason(
+        <div className="flex items-center gap-6">
+          <img src={IconGnosis} alt="" className="w-[24px] shrink-0" />
+          {t('page.signTx.multiSigChainNotMatch')}
+        </div>
       );
-
-      if (
-        !networkIds.includes((chainId || CHAINS[site!.chain].id).toString())
-      ) {
-        setCanProcess(false);
-        setCantProcessReason(
-          <div className="flex items-center gap-6">
-            <img src={IconGnosis} alt="" className="w-[24px] shrink-0" />
-            {t('page.signTx.multiSigChainNotMatch')}
-          </div>
-        );
-      }
     }
   };
 
