@@ -80,6 +80,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
     slippage,
     depthInsufficient,
     isReady: slippageReady,
+    shouldShow: shouldShowSlippage,
   } = useMarketSlippage({
     coin,
     isBuy: direction === 'Short',
@@ -195,7 +196,11 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 </span>
               </div>
               <MarketSlippage
-                visible={slippageReady && Number(positionSize) > 0}
+                visible={
+                  slippageReady &&
+                  Number(positionSize) > 0 &&
+                  shouldShowSlippage
+                }
                 slippage={slippage}
                 depthInsufficient={depthInsufficient}
                 labelClassName="text-14 font-medium text-rb-neutral-body leading-[18px]"

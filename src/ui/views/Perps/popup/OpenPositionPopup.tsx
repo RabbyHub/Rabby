@@ -22,7 +22,6 @@ import { EditTpSlTag } from '../components/EditTpSlTag';
 import { EditLimitPriceTag } from '../components/EditLimitPriceTag';
 import { MarketSlippage } from '../components/MarketSlippage';
 import { useMarketSlippage } from '../hooks/useMarketSlippage';
-import { PERPS_SLIPPAGE_DISPLAY_MIN } from '../slippageUtils';
 import { isMarketableLimit } from '../limitOrderUtils';
 import { MarketData } from '@/ui/models/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
@@ -167,6 +166,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     slippage,
     depthInsufficient,
     isReady: slippageReady,
+    shouldShow: shouldShowSlippage,
   } = useMarketSlippage({
     coin,
     isBuy: direction === 'Long',
@@ -836,7 +836,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         {orderType === 'market' &&
           slippageReady &&
           Number(tradeSize) > 0 &&
-          slippage > PERPS_SLIPPAGE_DISPLAY_MIN && (
+          shouldShowSlippage && (
             <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-12">
               <MarketSlippage
                 slippage={slippage}
