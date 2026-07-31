@@ -41,6 +41,7 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   title?: string;
   description?: string;
   checklist?: string[];
+  defaultChecked?: boolean;
   placeholder?: string;
   getContainer?: DrawerProps['getContainer'];
   btnClassName?: string;
@@ -83,12 +84,12 @@ const FieldList = styled.div`
   }
 `;
 
-function useQuestionsCheck(checklist: string[]) {
+function useQuestionsCheck(checklist: string[], defaultChecked?: boolean) {
   const QUESTIONS = React.useMemo(() => {
     return checklist.map((item, index) => ({
       index,
       content: item,
-      checked: false,
+      checked: !!defaultChecked,
     }));
   }, []);
 
@@ -128,6 +129,7 @@ function useQuestionsCheck(checklist: string[]) {
 const AuthenticationPopup = ({
   description,
   checklist = [],
+  defaultChecked,
   validationHandler,
   onFinished,
   onCancel,
@@ -151,7 +153,7 @@ const AuthenticationPopup = ({
     isAllChecked,
     toggleCheckedByIndex,
     reset,
-  } = useQuestionsCheck(checklist);
+  } = useQuestionsCheck(checklist, defaultChecked);
   const height = useMemo(() => {
     if (!description && checklist.length <= 0) return 240;
     if (description && checklist.length <= 0) return 280;
