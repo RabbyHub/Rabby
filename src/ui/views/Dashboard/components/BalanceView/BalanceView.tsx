@@ -2,7 +2,10 @@
 /* eslint-enable react-hooks/exhaustive-deps */
 import type { Account } from '@/background/service/preference';
 import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
-import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
+import {
+  RcIconArrowRightDashboardCC,
+  RcIconJumpCC,
+} from '@/ui/assets/dashboard';
 import { ReactComponent as UpdateSVG } from '@/ui/assets/dashboard/update.svg';
 import { ReactComponent as WarningSVG } from '@/ui/assets/dashboard/warning-1.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -338,6 +341,13 @@ export const BalanceView = ({
     // window.close();
   };
 
+  const onClickOpenInDesktop = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    wallet.openInDesktop('/desktop/profile');
+    window.close();
+  };
+
   if (
     !balanceLoading &&
     !isGnosis &&
@@ -351,12 +361,27 @@ export const BalanceView = ({
   return (
     <div onMouseLeave={onMouseLeave} className={clsx('w-full')}>
       <div
-        className="min-h-[132px] w-full cursor-pointer rounded-[8px] bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]"
+        className={clsx(
+          'group/balance-card relative min-h-[132px] w-full cursor-pointer rounded-[8px]',
+          'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]',
+          '[&:has(.balance-view-jump-button:hover)]:bg-[rgba(255,255,255,0.05)]'
+        )}
         onClick={onClickViewAssets}
       >
-        <div
-          className={clsx('group w-full flex items-end px-[12px] pt-[10px]')}
+        <button
+          type="button"
+          className={clsx(
+            'balance-view-jump-button absolute right-[8px] top-[8px] z-[1]',
+            'hidden items-center justify-center cursor-pointer rounded-[4px] border-0',
+            'bg-[rgba(255,255,255,0.2)] p-[5px] opacity-60',
+            'group-hover/balance-card:flex hover:bg-[rgba(255,255,255,0.1)] hover:opacity-100'
+          )}
+          aria-label={t('page.dashboard.assets.openInTabV2')}
+          onClick={onClickOpenInDesktop}
         >
+          <RcIconJumpCC className="h-[12px] w-[12px] text-r-neutral-title2" />
+        </button>
+        <div className="group flex w-full items-end pl-[12px] pr-[42px] pt-[10px]">
           <div
             className={clsx(
               'text-r-neutral-title2 text-[30px] leading-[36px] font-bold max-w-full'
@@ -445,7 +470,7 @@ export const BalanceView = ({
                 <div
                   className={clsx(
                     'w-full flex items-center gap-[4px]',
-                    !currentHover && 'opacity-80'
+                    !currentHover && 'opacity-50'
                   )}
                 >
                   <ChainList
@@ -453,13 +478,13 @@ export const BalanceView = ({
                     matteredChainBalances={chainBalancesWithValue.slice(0)}
                     gnosisNetworks={gnosisNetworks}
                   />
-                  <RcIconArrowRightCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
+                  <RcIconArrowRightDashboardCC className="w-[18px] h-[18px] text-r-neutral-title2" />
                 </div>
               ) : (
                 <div
                   className={clsx(
                     'w-full flex items-center gap-[4px]',
-                    !currentHover && 'opacity-80'
+                    !currentHover && 'opacity-50'
                   )}
                 >
                   <div
@@ -469,7 +494,7 @@ export const BalanceView = ({
                   >
                     {t('page.dashboard.assets.noAssets')}
                   </div>
-                  <RcIconArrowRightCC className="ml-auto w-[18px] h-[18px] text-r-neutral-title2 opacity-50" />
+                  <RcIconArrowRightDashboardCC className="w-[18px] h-[18px] text-r-neutral-title2" />
                 </div>
               )}
             </div>
