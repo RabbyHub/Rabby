@@ -1360,11 +1360,7 @@
       }
     },
     "perpsPro": {
-      "__skip_translation": [
-        "TWAP",
-        "TP",
-        "SL"
-      ],
+      "__skip_translation": ["TWAP", "TP", "SL"],
       "chatArea": {
         "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
         "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
@@ -1388,9 +1384,7 @@
       },
       "userInfo": {
         "tab": {
-          "__skip_translation": [
-            "twap"
-          ],
+          "__skip_translation": ["twap"],
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "fundingTipsV2": "Net funding since the position was opened. a red (negative) funding value indicates funding paid, while a green (positive) value indicates funding received.",
@@ -1503,9 +1497,7 @@
           "reverseAction": "{{side}} {{size}} {{coin}} to Reverse"
         },
         "openOrders": {
-          "__skip_translation": [
-            "ro"
-          ],
+          "__skip_translation": ["ro"],
           "order": "Order",
           "time": "Time",
           "triggerConditions": "Trigger Conditions",
@@ -1967,9 +1959,7 @@
           "mySupplies": "My supplies"
         },
         "item": {
-          "__skip_translation": [
-            "tvl"
-          ],
+          "__skip_translation": ["tvl"],
           "tvl": "TVL",
           "wrapperToken": "Wrapped token for {{name}}"
         }
@@ -2102,9 +2092,7 @@
         "zeroLtvCollateralTips": "You have following LTV = 0 collaterals and thus can only repay with these collaterals first according to collateral repay rules. "
       },
       "manageEmode": {
-        "__skip_translation": [
-          "emode"
-        ],
+        "__skip_translation": ["emode"],
         "emode": "E-Mode",
         "title": "Manage E-Mode",
         "disableTitle": "Disable",
@@ -3244,7 +3232,7 @@
       "moreWallets": "More Wallets",
       "newSeedPhraseCreated": "New Seed Phrase Created",
       "newAddressAdded": "New Address Added",
-      "addMoreAddressesFromThisSeedPhrase": "Add more address from this seed phrase",
+      "addMoreAddressesFromThisSeedPhrase": "Add more addresses from this seed phrase",
       "importSeedPhrase": "Import Seed Phrase",
       "importPrivateKey": "Import Private Key",
       "privateKeyTab": "Private Key",
@@ -4548,9 +4536,7 @@
     },
     "search": {
       "sectionHeader": {
-        "__skip_translation": [
-          "Defi"
-        ],
+        "__skip_translation": ["Defi"],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -4632,9 +4618,7 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
-        "__skip_translation": [
-          "defi"
-        ],
+        "__skip_translation": ["defi"],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
@@ -4847,7 +4831,9 @@
       "ListByContracts": {
         "noApprovals": "No approvals",
         "notMatched": "Not Matched"
-      }
+      },
+      "approvalsCount": "{{count}} approvals",
+      "approvalsCount_one": "{{count}} approval"
     }
   },
   "component": {
@@ -5049,10 +5035,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",
