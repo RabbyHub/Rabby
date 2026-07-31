@@ -2561,6 +2561,7 @@
           "mintNFTDesc": "DBK 체인의 증인이 되세요",
           "mintNFT": "DBK Genesis NFT 민트",
           "bridgePoweredBy": "OP Superchain에 의해 구동됩니다.",
+          "withdraw": "DBK 체인에서 출금",
           "bridge": "DBK 체인으로 브리지"
         },
         "bridge": {
@@ -4796,7 +4797,9 @@
       "revoke": "철회",
       "approvals": "승인",
       "unselectAll": "모두 선택 해제",
-      "selectAll": "모두 선택"
+      "selectAll": "모두 선택",
+      "approvalsCount": "승인 {{count}}개",
+      "approvalsCount_one": "승인 {{count}}개"
     }
   },
   "component": {

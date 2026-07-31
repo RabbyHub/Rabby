@@ -2559,6 +2559,7 @@
           "mintNFTBtn": "Mint",
           "bridgeBtn": "Jembatan",
           "bridgePoweredBy": "Ditenagai oleh OP Superchain",
+          "withdraw": "Tarik dari DBK Chain",
           "mintNFT": "Mint DBK Genesis NFT",
           "bridge": "Jembatan ke DBK Chain",
           "mintNFTDesc": "Jadilah saksi dari DBK Chain"
@@ -4796,7 +4797,9 @@
       "revoke": "Batalkan",
       "approvals": "persetujuan",
       "unselectAll": "Batalkan Pilih Semua",
-      "selectAll": "Pilih Semua"
+      "selectAll": "Pilih Semua",
+      "approvalsCount": "{{count}} persetujuan",
+      "approvalsCount_one": "{{count}} persetujuan"
     }
   },
   "component": {

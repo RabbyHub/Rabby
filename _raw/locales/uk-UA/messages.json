@@ -2575,6 +2575,7 @@
           "bridge": "Переказати в DBK Chain",
           "mintNFT": "Мінт DBK Genesis NFT",
           "bridgePoweredBy": "На базі OP Superchain",
+          "withdraw": "Вивести з DBK Chain",
           "mintNFTDesc": "Станьте свідком DBK Chain",
           "mintNFTBtn": "Карбуй"
         },
@@ -4811,7 +4812,9 @@
       "revoke": "Скасувати",
       "approvals": "схвалення",
       "unselectAll": "Зняти виділення з усіх",
-      "selectAll": "Виділити всі"
+      "selectAll": "Виділити всі",
+      "approvalsCount": "{{count}} схвалень",
+      "approvalsCount_one": "{{count}} схвалення"
     }
   },
   "component": {
