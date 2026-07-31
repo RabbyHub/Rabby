@@ -2564,7 +2564,8 @@
           "mintNFT": "Mintar DBK Genesis NFT",
           "bridge": "Ponte para DBK Chain",
           "mintNFTDesc": "Seja uma testemunha da DBK Chain",
-          "bridgePoweredBy": "Alimentado por OP Superchain"
+          "bridgePoweredBy": "Alimentado por OP Superchain",
+          "withdraw": "Sacar da DBK Chain"
         },
         "bridge": {
           "tabs": {
@@ -4801,7 +4802,9 @@
       "revoke": "Revogar",
       "approvals": "aprovações",
       "unselectAll": "Desmarcar Todos",
-      "selectAll": "Selecionar Todos"
+      "selectAll": "Selecionar Todos",
+      "approvalsCount": "{{count}} aprovações",
+      "approvalsCount_one": "{{count}} aprovação"
     }
   },
   "component": {

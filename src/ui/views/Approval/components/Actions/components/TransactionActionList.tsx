@@ -193,7 +193,12 @@ const SingleAction: React.FC<{
           engineResults={engineResults}
         />
       )}
-      {data?.deployContract && <DeployContract />}
+      {data?.deployContract && (
+        <DeployContract
+          payNativeTokenAmount={raw.value || '0x0'}
+          nativeTokenSymbol={chain.nativeTokenSymbol}
+        />
+      )}
       {data?.pushMultiSig && (
         <PushMultiSig
           data={data.pushMultiSig}

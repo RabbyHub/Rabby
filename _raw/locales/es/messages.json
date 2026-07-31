@@ -2564,7 +2564,8 @@
           "mintNFT": "Acuñar DBK Genesis NFT",
           "bridgeBtn": "Bridge",
           "bridge": "Puente hacia DBK Chain",
-          "bridgePoweredBy": "Impulsado por OP Superchain"
+          "bridgePoweredBy": "Impulsado por OP Superchain",
+          "withdraw": "Retirar de DBK Chain"
         },
         "bridge": {
           "tabs": {
@@ -4799,7 +4800,9 @@
       "revoke": "Revocar",
       "approvals": "aprobaciones",
       "unselectAll": "Deseleccionar todo",
-      "selectAll": "Seleccionar todo"
+      "selectAll": "Seleccionar todo",
+      "approvalsCount": "{{count}} aprobaciones",
+      "approvalsCount_one": "{{count}} aprobación"
     }
   },
   "component": {

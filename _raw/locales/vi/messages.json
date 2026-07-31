@@ -2561,7 +2561,8 @@
           "mintNFTBtn": "Mint",
           "bridgeBtn": "Cầu nối",
           "mintNFTDesc": "Hãy là nhân chứng của DBK Chain",
-          "bridgePoweredBy": "Được hỗ trợ bởi OP Superchain"
+          "bridgePoweredBy": "Được hỗ trợ bởi OP Superchain",
+          "withdraw": "Rút tiền từ DBK Chain"
         },
         "bridge": {
           "tabs": {
@@ -4796,7 +4797,9 @@
       "revoke": "Hủy bỏ",
       "approvals": "Phê duyệt",
       "unselectAll": "Bỏ chọn tất cả",
-      "selectAll": "Chọn tất cả"
+      "selectAll": "Chọn tất cả",
+      "approvalsCount": "{{count}} phê duyệt",
+      "approvalsCount_one": "{{count}} phê duyệt"
     }
   },
   "component": {

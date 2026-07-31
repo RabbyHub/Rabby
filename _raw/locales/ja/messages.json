@@ -2561,6 +2561,7 @@
         "home": {
           "bridgeBtn": "ブリッジ",
           "bridgePoweredBy": "OP Superchain により提供",
+          "withdraw": "DBK Chain から出金",
           "mintNFT": "DBK Genesis NFT をミント",
           "mintNFTBtn": "ミント",
           "bridge": "DBK Chain にブリッジする",
@@ -4799,7 +4800,9 @@
       "revoke": "取り消し",
       "approvals": "承認",
       "unselectAll": "すべて選択解除",
-      "selectAll": "すべて選択"
+      "selectAll": "すべて選択",
+      "approvalsCount": "{{count}} 件の承認",
+      "approvalsCount_one": "{{count}} 件の承認"
     }
   },
   "component": {

@@ -9,7 +9,7 @@ import { useRabbyDispatch } from '@/ui/store';
 import { RabbyFeePopup } from './RabbyFeePopup';
 import { useHistory } from 'react-router-dom';
 import { getUiType } from '@/ui/utils';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
 
@@ -65,7 +65,7 @@ export const Header = ({
                     onOpenInTab?.();
                   }}
                 >
-                  <RcIconFullscreen />
+                  <RcIconJumpBoldCC />
                 </div>
               )}
               <div

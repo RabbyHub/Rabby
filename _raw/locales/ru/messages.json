@@ -2566,7 +2566,8 @@
           "bridgeBtn": "Перевести",
           "mintNFTDesc": "Будьте свидетелем DBK Chain",
           "mintNFT": "Минт DBK Genesis NFT",
-          "bridgePoweredBy": "Работает на OP Superchain"
+          "bridgePoweredBy": "Работает на OP Superchain",
+          "withdraw": "Вывести из DBK Chain"
         },
         "bridge": {
           "tabs": {
@@ -4801,7 +4802,9 @@
       "revoke": "Отозвать",
       "approvals": "одобрения",
       "unselectAll": "Снять выделение со всех",
-      "selectAll": "Выделить все"
+      "selectAll": "Выделить все",
+      "approvalsCount": "{{count}} одобрений",
+      "approvalsCount_one": "{{count}} одобрение"
     }
   },
   "component": {

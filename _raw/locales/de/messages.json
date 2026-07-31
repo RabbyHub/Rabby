@@ -2564,7 +2564,8 @@
           "mintNFT": "DBK Genesis NFT prägen",
           "mintNFTBtn": "Prägen",
           "bridge": "Bridge zu DBK Chain",
-          "bridgePoweredBy": "Unterstützt von OP Superchain"
+          "bridgePoweredBy": "Unterstützt von OP Superchain",
+          "withdraw": "Von der DBK Chain abheben"
         },
         "bridge": {
           "tabs": {
@@ -4799,7 +4800,9 @@
       "revoke": "Widerrufen",
       "approvals": "Freigaben",
       "unselectAll": "Auswahl aufheben",
-      "selectAll": "Alle auswählen"
+      "selectAll": "Alle auswählen",
+      "approvalsCount": "{{count}} Freigaben",
+      "approvalsCount_one": "{{count}} Freigabe"
     }
   },
   "component": {

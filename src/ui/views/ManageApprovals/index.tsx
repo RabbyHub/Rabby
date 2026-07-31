@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
 import { openIndexPage } from '@/background/webapi/tab';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 import {
   useCurrentAccount,
   useSceneAccountInfo,
@@ -104,7 +104,7 @@ const ManageApprovalsContent: React.FC = () => {
                 openInTab('desktop.html#/desktop/manage-approvals');
               }}
             >
-              <RcIconFullscreen />
+              <RcIconJumpBoldCC />
             </div>
           </div>
         }

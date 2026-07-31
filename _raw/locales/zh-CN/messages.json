@@ -531,7 +531,7 @@
       },
       "noData": "无匹配的货币",
       "ZeroAssets": {
-        "desc": "为钱包充值以使用 Web3",
+        "desc": "充值钱包开启Web3",
         "addAssets": "添加资产"
       }
     },
@@ -1290,7 +1290,7 @@
       "watchModeAlert1": "这是一个观察地址",
       "watchModeAlert2": "你确定用它来接收资产吗？",
       "receiveOn": "接收 {{token}} 的链：",
-      "receiveTitle": "接收 {{token}}",
+      "receiveTitle": "接收{{token}}",
       "addCustomNetwork": "添加自定义网络",
       "supportedChain": "支持的链"
     },
@@ -2650,7 +2650,8 @@
           "bridgeBtn": "跨链",
           "mintNFTDesc": "成为 DBK Chain 的见证者",
           "mintNFT": "铸造 DBK Genesis NFT",
-          "bridgePoweredBy": "由 OP Superchain 提供支持"
+          "bridgePoweredBy": "由 OP Superchain 提供支持",
+          "withdraw": "从 DBK 链提取"
         },
         "bridge": {
           "tabs": {
@@ -2770,7 +2771,7 @@
       "depositPopup": {
         "title": "充值",
         "gasDepositTitle": "Gas 充值",
-        "selectToken": "选择要充值的代币",
+        "selectToken": "选择支付代币",
         "zeroInvalidAmount": "金额不能为 0",
         "invalidAmount": "必须在 500 以下",
         "minAmountRequired": "最低充值金额为 ${{value}}",
@@ -4846,7 +4847,9 @@
       "revoke": "撤销",
       "approvals": "授权",
       "unselectAll": "取消全选",
-      "selectAll": "全选"
+      "selectAll": "全选",
+      "approvalsCount": "{{count}} 项授权",
+      "approvalsCount_one": "{{count}} 项授权"
     }
   },
   "component": {
@@ -4978,7 +4981,7 @@
       "common": "常用",
       "chainNotSupport": "此链不受支持",
       "chainFilterLine": {
-        "filterAll": "所有区块链"
+        "filterAll": "全部链"
       },
       "noLpTokens": "没有流动性提供者 (LP) 代币"
     },
