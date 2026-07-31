@@ -9,12 +9,12 @@ export const EcoChainMap = {
     navBarClassName: 'bg-r-neutral-bg1',
     entry: DbkChainEntry,
   },
-  [64165]: {
-    name: 'Sonic Testnet',
-    logo: 'https://soniclabs.com/images/chains/sonic-testnet.svg',
-    // navBarClassName: 'bg-r-sonic-background',
-    entry: SonicEntry,
-  },
+  // [64165]: {
+  //   name: 'Sonic Testnet',
+  //   logo: 'https://soniclabs.com/images/chains/sonic-testnet.svg',
+  //   // navBarClassName: 'bg-r-sonic-background',
+  //   entry: SonicEntry,
+  // },
 };
 
 export const EcoChains = Object.keys(EcoChainMap).map((key) => {
