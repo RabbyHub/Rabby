@@ -42,8 +42,10 @@ import { ZeroAssets } from './ZeroAssets';
 
 export const BalanceView = ({
   currentAccount,
+  hideJumpButton,
 }: {
   currentAccount?: Account | null;
+  hideJumpButton?: boolean;
 }) => {
   const { t } = useTranslation();
   const { currency, syncCurrencyList } = useCurrency();
@@ -368,19 +370,21 @@ export const BalanceView = ({
         )}
         onClick={onClickViewAssets}
       >
-        <button
-          type="button"
-          className={clsx(
-            'balance-view-jump-button absolute right-[8px] top-[8px] z-[1]',
-            'hidden items-center justify-center cursor-pointer rounded-[4px] border-0',
-            'bg-[rgba(255,255,255,0.2)] p-[5px] opacity-60',
-            'group-hover/balance-card:flex hover:bg-[rgba(255,255,255,0.1)] hover:opacity-100'
-          )}
-          aria-label={t('page.dashboard.assets.openInTabV2')}
-          onClick={onClickOpenInDesktop}
-        >
-          <RcIconJumpCC className="h-[12px] w-[12px] text-r-neutral-title2" />
-        </button>
+        {!hideJumpButton && (
+          <button
+            type="button"
+            className={clsx(
+              'balance-view-jump-button absolute right-[8px] top-[8px] z-[1]',
+              'hidden items-center justify-center cursor-pointer rounded-[4px] border-0',
+              'bg-[rgba(255,255,255,0.2)] p-[5px] opacity-60',
+              'group-hover/balance-card:flex hover:bg-[rgba(255,255,255,0.1)] hover:opacity-100'
+            )}
+            aria-label={t('page.dashboard.assets.openInTabV2')}
+            onClick={onClickOpenInDesktop}
+          >
+            <RcIconJumpCC className="h-[12px] w-[12px] text-r-neutral-title2" />
+          </button>
+        )}
         <div className="group flex w-full items-end pl-[12px] pr-[42px] pt-[10px]">
           <div
             className={clsx(

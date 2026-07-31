@@ -203,7 +203,10 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
         </div>
       )}
       {dashboardBalanceCacheInited && (
-        <BalanceView currentAccount={currentAccount} />
+        <BalanceView
+          currentAccount={currentAccount}
+          hideJumpButton={isGnosis}
+        />
       )}
 
       {isGnosis ? (
