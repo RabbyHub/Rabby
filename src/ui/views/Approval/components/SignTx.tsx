@@ -438,6 +438,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const logId = useRef('');
   const actionType = useRef('');
   const explainEpochRef = useRef(0);
+  const gasPriceMedianRequestRef = useRef<Promise<void> | null>(null);
+  const preparedBlockPromiseRef = useRef<Promise<BlockInfo | null> | null>(
+    null
+  );
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [canProcess, setCanProcess] = useState(true);
@@ -1158,20 +1162,24 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     autoSwitchKey: gasMethodScopeKey,
   });
 
+  const loadLatestBlock = () =>
+    wallet
+      .requestETHRpc<BlockInfo>(
+        {
+          method: 'eth_getBlockByNumber',
+          params: ['latest', false],
+        },
+        chain.serverId
+      )
+      .catch(() => null);
+
   const explainTx = async (address: string, detailEpoch: number) => {
     const shouldCalculateGasLimit =
       !(tx.gas && origin === INTERNAL_REQUEST_ORIGIN) && !gasLimit;
     const preparedBlock = shouldCalculateGasLimit
-      ? wallet
-          .requestETHRpc<BlockInfo>(
-            {
-              method: 'eth_getBlockByNumber',
-              params: ['latest', false],
-            },
-            chain.serverId
-          )
-          .catch(() => null)
+      ? preparedBlockPromiseRef.current || loadLatestBlock()
       : undefined;
+    preparedBlockPromiseRef.current = null;
     let recommendNonce = updateNonce ? '0x0' : tx.nonce || '0x0';
     let shouldSetRecommendNonce = false;
     if (!isGnosisAccount && !isCoboArugsAccount) {
@@ -1200,6 +1208,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           }
         }
       }
+    }
+    if (explainEpochRef.current !== detailEpoch) {
+      return;
     }
     const explainNonce = (updateNonce ? recommendNonce : tx.nonce) || '0x1';
     const delegateCall = isGnosisAccount
@@ -1233,7 +1244,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     const parseTxResultPromise = settle(parseTxPromise);
     const cexInfoResultPromiseListPromise = parseTxResultPromise.then(
       (result) => {
-        if ('error' in result) {
+        if ('error' in result || explainEpochRef.current !== detailEpoch) {
           return [];
         }
         const { action } = result.value;
@@ -1275,6 +1286,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       pending_tx_list: await pendingTxListPromise,
       delegate_call: delegateCall,
     });
+    if (explainEpochRef.current !== detailEpoch) {
+      return;
+    }
     const actionSecurityStatePromise = (async () => {
       const parseTxResult = await parseTxResultPromise;
       if ('error' in parseTxResult) {
@@ -2009,6 +2023,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const handleTxChange = (obj: Record<string, any>) => {
+    explainEpochRef.current += 1;
     setTx({
       ...tx,
       ...obj,
@@ -2030,11 +2045,20 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     return list;
   };
 
-  const loadGasMedian = async (chain: Chain) => {
-    const { median } = await wallet.openapi.gasPriceStats(chain.serverId);
-    setGasPriceMedian(median);
-    return median;
-  };
+  const loadGasMedian = useMemoizedFn(() => {
+    if (gasPriceMedian !== null || gasPriceMedianRequestRef.current) {
+      return;
+    }
+    gasPriceMedianRequestRef.current = wallet.openapi
+      .gasPriceStats(chain.serverId)
+      .then(({ median }) => {
+        setGasPriceMedian(median);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        gasPriceMedianRequestRef.current = null;
+      });
+  });
 
   const checkCanProcess = async () => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
@@ -2295,6 +2319,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     const syncDefaultRPCPromise = wallet.syncDefaultRPC().catch((error) => {
       console.error('before submit sync default rpc error', error);
     });
+    if (!(tx.gas && origin === INTERNAL_REQUEST_ORIGIN) && !gasLimit) {
+      preparedBlockPromiseRef.current = syncDefaultRPCPromise.then(
+        loadLatestBlock
+      );
+    }
     const hasCustomRPCResultPromise = wallet.hasCustomRPC(chain.enum).then(
       (value) => {
         setNoCustomRPC(!value);
@@ -2310,7 +2339,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     dispatch.securityEngine.init();
     dispatch.securityEngine.resetCurrentTx();
     checkBlockedAddress();
-    loadGasMedian(chain);
     const isGnosisAccountType =
       currentAccount.type === KEYRING_TYPE.GnosisKeyring;
     const isCoboArgusAccountType =
@@ -3022,6 +3050,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
                     tempoGasTokenLoading={tempoGasTokenLoading}
                     checkTxValueInBalance={checkTxValueInBalance}
                     gasPriceMedian={gasPriceMedian}
+                    onCustomGasSheetOpen={loadGasMedian}
                     checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
                   />
                 </div>

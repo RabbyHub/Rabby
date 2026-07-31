@@ -18,6 +18,8 @@ const SortHat = () => {
     const isInTab = UIType.isTab;
     const approvalPromise = getApproval() as Promise<Approval | undefined>;
     const isBootedPromise = wallet.isBooted();
+    // The no-approval path may return before this prefetched request is awaited.
+    void isBootedPromise.catch(() => undefined);
     const approval = await approvalPromise;
     if (isInNotification && !approval) {
       Browser.runtime.sendMessage({ type: 'closeNotification' });
