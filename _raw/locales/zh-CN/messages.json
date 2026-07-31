@@ -2650,7 +2650,8 @@
           "bridgeBtn": "跨链",
           "mintNFTDesc": "成为 DBK Chain 的见证者",
           "mintNFT": "铸造 DBK Genesis NFT",
-          "bridgePoweredBy": "由 OP Superchain 提供支持"
+          "bridgePoweredBy": "由 OP Superchain 提供支持",
+          "withdraw": "从 DBK 链提取"
         },
         "bridge": {
           "tabs": {
@@ -4846,7 +4847,9 @@
       "revoke": "撤销",
       "approvals": "授权",
       "unselectAll": "取消全选",
-      "selectAll": "全选"
+      "selectAll": "全选",
+      "approvalsCount": "{{count}} 项授权",
+      "approvalsCount_one": "{{count}} 项授权"
     }
   },
   "component": {

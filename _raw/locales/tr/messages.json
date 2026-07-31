@@ -2566,6 +2566,7 @@
           "bridge": "DBK Zincirine Köprü",
           "mintNFTBtn": "Darphane",
           "bridgePoweredBy": "OP Superchain tarafından desteklenmektedir",
+          "withdraw": "DBK Chain'den çek",
           "bridgeBtn": "Köprü",
           "mintNFT": "DBK Genesis NFT mint et"
         },
@@ -4802,7 +4803,9 @@
       "revoke": "İptal Et",
       "approvals": "onaylar",
       "unselectAll": "Tüm Seçimleri Kaldır",
-      "selectAll": "Tümünü Seç"
+      "selectAll": "Tümünü Seç",
+      "approvalsCount": "{{count}} onay",
+      "approvalsCount_one": "{{count}} onay"
     }
   },
   "component": {
