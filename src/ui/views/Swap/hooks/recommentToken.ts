@@ -136,20 +136,16 @@ export const useRecommendSwapToken = (params: {
           return undefined;
         }
         const target = tokenList?.find((e) => e.id === stableCoinAddr[1]);
-        if (target) {
-          return target;
-        }
 
-        const defaultToken = getChainDefaultToken(chainEnum);
-        return defaultToken
-          ? {
-              ...defaultToken,
-              id: stableCoinAddr[1],
-              logo_url: '',
-              symbol: stableCoinAddr[0]?.toUpperCase(),
-              optimized_symbol: stableCoinAddr[0]?.toUpperCase(),
-            }
-          : undefined;
+        return (
+          target || {
+            ...getChainDefaultToken(chainEnum),
+            id: stableCoinAddr[1],
+            logo_url: '',
+            symbol: stableCoinAddr[0]?.toUpperCase(),
+            optimized_symbol: stableCoinAddr[0]?.toUpperCase(),
+          }
+        );
       }
 
       return undefined;

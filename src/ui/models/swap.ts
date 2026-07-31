@@ -5,6 +5,7 @@ import { CHAINS_ENUM, DEX } from 'consts';
 import { SwapServiceStore } from '@/background/service/swap';
 import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { findChain } from '@/utils/chain';
 
 export const swap = createModel<RootModel>()({
   name: 'swap',
@@ -218,6 +219,18 @@ export const swap = createModel<RootModel>()({
       await store.app.wallet.setRecentSwapToToken(token);
       const recentToTokens = await store.app.wallet.getRecentSwapToTokens();
       this.setField({ recentToTokens });
+    },
+
+    async checkStore(_: void, store) {
+      if (
+        store.swap.selectedChain &&
+        !findChain({
+          enum: store.swap.selectedChain,
+        })
+      ) {
+        await store.app.wallet.setLastSelectedSwapChain(CHAINS_ENUM.ETH);
+        this.init();
+      }
     },
   }),
 });

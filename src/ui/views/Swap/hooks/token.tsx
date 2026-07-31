@@ -109,11 +109,10 @@ const useTokenInfo = ({
   const [token, setToken] = useState<TokenItem | undefined>(defaultToken);
 
   const { value, loading, error } = useAsync(async () => {
-    const chainInfo = findChainByEnum(chain);
-    if (userAddress && token?.id && chainInfo) {
+    if (userAddress && token?.id && chain) {
       const data = await wallet.openapi.getToken(
         userAddress,
-        chainInfo.serverId,
+        findChainByEnum(chain)!.serverId,
         token.id
       );
       return data;
@@ -160,14 +159,7 @@ export const useTokenPair = (userAddress: string) => {
     defaultSelectedFromToken,
     defaultSelectedToToken,
   } = useRabbySelector((state) => {
-    // the cached chain may have been offline since it was stored, in that case
-    // fallback to a valid chain and let `useAsyncInitializeChainList` re-init it
-    const cachedChain =
-      findChainByEnum(state.swap.selectedChain || undefined)?.enum || null;
-    const cachedInitialChain =
-      findChainByEnum(state.swap.$$initialSelectedChain || undefined)?.enum ||
-      null;
-    const selectedChain = cachedChain || CHAINS_ENUM.ETH;
+    const selectedChain = state.swap.selectedChain || CHAINS_ENUM.ETH;
     const selectedFromToken = isTokenOnChain(
       state.swap.selectedFromToken,
       selectedChain
@@ -182,7 +174,7 @@ export const useTokenPair = (userAddress: string) => {
       : undefined;
 
     return {
-      initialSelectedChain: cachedInitialChain,
+      initialSelectedChain: state.swap.$$initialSelectedChain,
       oChain: selectedChain,
       defaultSelectedFromToken: selectedFromToken,
       defaultSelectedToToken:
@@ -294,18 +286,17 @@ export const useTokenPair = (userAddress: string) => {
   const switchChain = useCallback(
     (c: CHAINS_ENUM, opts?: { payTokenId?: string; changeTo?: boolean }) => {
       handleChain(c);
-      const chainDefaultToken = getChainDefaultToken(c);
-      const nextToken = chainDefaultToken
-        ? {
-            ...chainDefaultToken,
-            ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
-          }
-        : undefined;
       if (!opts?.changeTo) {
-        setPayToken(nextToken);
+        setPayToken({
+          ...getChainDefaultToken(c),
+          ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
+        });
         setReceiveToken(undefined);
       } else {
-        setReceiveToken(nextToken);
+        setReceiveToken({
+          ...getChainDefaultToken(c),
+          ...(opts?.payTokenId ? { id: opts?.payTokenId } : {}),
+        });
         // setPayToken(undefined);
       }
       setPayAmount('');
@@ -422,9 +413,11 @@ export const useTokenPair = (userAddress: string) => {
   }, [setPayToken, receiveToken, setReceiveToken, payToken]);
 
   const payTokenIsNativeToken = useMemo(() => {
-    const nativeTokenAddress = findChainByEnum(chain)?.nativeTokenAddress;
-    if (payToken && nativeTokenAddress) {
-      return isSameAddress(payToken.id, nativeTokenAddress);
+    if (payToken) {
+      return isSameAddress(
+        payToken.id,
+        findChainByEnum(chain)!.nativeTokenAddress
+      );
     }
     return false;
   }, [chain, payToken]);
@@ -1093,16 +1086,13 @@ export const useTokenPair = (userAddress: string) => {
         }
 
         if (searchObj?.receiveTokenId) {
-          const targetDefaultToken = getChainDefaultToken(target.enum);
-          setReceiveToken(
-            targetDefaultToken && {
-              ...targetDefaultToken,
-              id: searchObj.receiveTokenId,
-              logo_url: '',
-              symbol: '',
-              optimized_symbol: '',
-            }
-          );
+          setReceiveToken({
+            ...getChainDefaultToken(target.enum),
+            id: searchObj.receiveTokenId,
+            logo_url: '',
+            symbol: '',
+            optimized_symbol: '',
+          });
           wallet.openapi
             .getToken(userAddress, target.serverId, searchObj.receiveTokenId)
             .then((token) => {

@@ -24,6 +24,7 @@ import {
   LAST_EXPOSURE_VERSIONED_KEY,
   RateGuideLastExposure,
 } from '@/utils/rateGuidance';
+import { findChain } from '@/utils/chain';
 
 const version = process.env.release || '0';
 
@@ -520,7 +521,16 @@ class PreferenceService {
 
   getLastTimeSendToken = () => {
     // const key = address.toLowerCase();
-    return this.store.lastTimeUsedToken['send'];
+    const token = this.store.lastTimeUsedToken['send'];
+    if (
+      !token ||
+      !findChain({
+        serverId: token?.chain,
+      })
+    ) {
+      return undefined;
+    }
+    return token;
   };
 
   setLastTimeSendToken = (token: TokenItem) => {

@@ -282,11 +282,7 @@ export function tokenAmountBn(token: TokenItem) {
 }
 
 export function getChainDefaultToken(chain: CHAINS_ENUM) {
-  // the chain may have been offline, e.g. it comes from a stale cached selection
-  const chainInfo = findChainByEnum(chain);
-  if (!chainInfo) {
-    return undefined;
-  }
+  const chainInfo = findChainByEnum(chain)!;
   if (isTempoChain(chainInfo.serverId)) {
     return {
       id: TEMPO_PATH_USD_TOKEN,
