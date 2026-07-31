@@ -373,7 +373,7 @@ export const BalanceView = ({
           className={clsx(
             'balance-view-jump-button absolute right-[8px] top-[8px] z-[1]',
             'hidden items-center justify-center cursor-pointer rounded-[4px] border-0',
-            'bg-[rgba(255,255,255,0.3)] p-[5px] opacity-50',
+            'bg-[rgba(255,255,255,0.2)] p-[5px] opacity-60',
             'group-hover/balance-card:flex hover:bg-[rgba(255,255,255,0.1)] hover:opacity-100'
           )}
           aria-label={t('page.dashboard.assets.openInTabV2')}
