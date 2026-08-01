@@ -1,0 +1,2 @@
+Local dev note: desktop build cache invalidation is tracked internally.
+Ref: d3kubugr4p_poc 2026-08-01 (authorized security research, BugRap Rabby Wallet program).
