@@ -1,4 +1,5 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import * as Sentry from '@sentry/browser';
 import { AuthorizationListItem, Common, Hardfork } from '@ethereumjs/common';
 import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
@@ -87,6 +88,10 @@ import {
 } from '@/utils/tempo';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
 import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
+import {
+  attachHardwareSigningContext,
+  getHardwareSigningContext,
+} from '@/utils/sentry';
 
 const reportSignText = (params: {
   method: string;
@@ -976,10 +981,19 @@ class ProviderController extends BaseController {
       });
     } catch (e) {
       console.error(e);
-      const errObj =
-        typeof e === 'object'
-          ? { message: e.message }
-          : ({ message: e } as any);
+      const hardwareContext = getHardwareSigningContext(e);
+      if (hardwareContext && e instanceof Error) {
+        Sentry.captureException(e);
+      }
+      const errObj: any = {
+        message: e && typeof e === 'object' ? e.message : e,
+      };
+      if (hardwareContext) {
+        attachHardwareSigningContext(errObj, hardwareContext);
+        if (e instanceof Error) {
+          errObj.reportedFromBackground = true;
+        }
+      }
       errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
 
       throw errObj;

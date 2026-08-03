@@ -49,6 +49,7 @@ import {
 import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
 import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
+import { withHardwareSigningContext } from './hardware-wallet-sentry';
 
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
@@ -802,7 +803,9 @@ export class KeyringService extends EventEmitter {
    */
   signTransaction(keyring, ethTx, _fromAddress, opts = {}) {
     const fromAddress = normalizeAddress(_fromAddress);
-    return keyring.signTransaction(fromAddress, ethTx, opts);
+    return withHardwareSigningContext(keyring, 'transaction', () =>
+      keyring.signTransaction(fromAddress, ethTx, opts)
+    );
   }
 
   signEip7702Authorization(
@@ -821,10 +824,8 @@ export class KeyringService extends EventEmitter {
         )
       );
     }
-    return keyring.signEip7702Authorization(
-      address,
-      authParams.authorization,
-      opts
+    return withHardwareSigningContext(keyring, 'eip7702_authorization', () =>
+      keyring.signEip7702Authorization(address, authParams.authorization, opts)
     );
   }
 
@@ -839,7 +840,9 @@ export class KeyringService extends EventEmitter {
   signMessage(msgParams, opts = {}) {
     const address = normalizeAddress(msgParams.from);
     return this.getKeyringForAccount(address).then((keyring) => {
-      return keyring.signMessage(address, msgParams.data, opts);
+      return withHardwareSigningContext(keyring, 'message', () =>
+        keyring.signMessage(address, msgParams.data, opts)
+      );
     });
   }
 
@@ -854,7 +857,9 @@ export class KeyringService extends EventEmitter {
    */
   signPersonalMessage(keyring, msgParams, opts = {}) {
     const address = normalizeAddress(msgParams.from);
-    return keyring.signPersonalMessage(address, msgParams.data, opts);
+    return withHardwareSigningContext(keyring, 'personal_message', () =>
+      keyring.signPersonalMessage(address, msgParams.data, opts)
+    );
   }
 
   /**
@@ -866,7 +871,9 @@ export class KeyringService extends EventEmitter {
    */
   signTypedMessage(keyring, msgParams, opts = { version: 'V1' }) {
     const address = normalizeAddress(msgParams.from);
-    return keyring.signTypedData(address, msgParams.data, opts);
+    return withHardwareSigningContext(keyring, 'typed_data', () =>
+      keyring.signTypedData(address, msgParams.data, opts)
+    );
   }
 
   /**
