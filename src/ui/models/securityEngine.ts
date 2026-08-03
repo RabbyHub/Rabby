@@ -65,8 +65,10 @@ export const securityEngine = createModel<RootModel>()({
   },
   effects: (dispatch) => ({
     async init(_: void, store) {
-      const userData = await store.app.wallet.getSecurityEngineUserData();
-      const rules = await store.app.wallet.getSecurityEngineRules();
+      const [userData, rules] = await Promise.all([
+        store.app.wallet.getSecurityEngineUserData(),
+        store.app.wallet.getSecurityEngineRules(),
+      ]);
       dispatch.securityEngine.setField({ userData, rules });
     },
 

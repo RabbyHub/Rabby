@@ -16,20 +16,24 @@ const SortHat = () => {
   const loadView = async () => {
     const isInNotification = UIType.isNotification;
     const isInTab = UIType.isTab;
-    const approval: Approval | undefined = await getApproval();
+    const approvalPromise = getApproval() as Promise<Approval | undefined>;
+    const isBootedPromise = wallet.isBooted();
+    // The no-approval path may return before this prefetched request is awaited.
+    void isBootedPromise.catch(() => undefined);
+    const approval = await approvalPromise;
     if (isInNotification && !approval) {
       Browser.runtime.sendMessage({ type: 'closeNotification' });
       window.close();
       return;
     }
 
-    if (!(await wallet.isBooted())) {
+    if (!(await isBootedPromise)) {
       setTo('/welcome');
       return;
     }
 
-    await wallet.tryUnlock();
-    if (!(await wallet.isUnlocked())) {
+    const isUnlocked = await wallet.tryUnlock();
+    if (!isUnlocked) {
       if (
         isInNotification &&
         approval?.data?.approvalComponent === 'Connect' &&
@@ -42,10 +46,10 @@ const SortHat = () => {
       return;
     }
     if (
-      (await wallet.hasPageStateCache()) &&
       !isInNotification &&
       !isInTab &&
-      !approval
+      !approval &&
+      (await wallet.hasPageStateCache())
     ) {
       const cache = (await wallet.getPageStateCache())!;
       if (cache.path && cache.path !== '/') {

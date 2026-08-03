@@ -6652,6 +6652,7 @@ export class WalletController extends BaseController {
   tryUnlock = async () => {
     await keyringService.tryUnlock();
     this.syncPopupIcon();
+    return this.isUnlocked();
   };
 
   syncPopupIcon = () => {
