@@ -7,6 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useRabbySelector } from '@/ui/store';
+import { useSwapStore } from '@/ui/stores/swap';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, InputRef, Modal } from 'antd';
@@ -27,7 +28,6 @@ import {
   useSetRefreshId,
 } from '../hooks';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
-import { useDispatch } from 'react-redux';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss, useDebounce } from 'react-use';
 import { DEX_WITH_WRAP } from '@/constant';
@@ -99,12 +99,9 @@ export const Main = () => {
     amountMode?: FormAmountMode;
   }
 
-  const { userAddress } = useRabbySelector((state) => ({
-    userAddress: state.account.currentAccount?.address || '',
-    unlimitedAllowance: state.swap.unlimitedAllowance || false,
-  }));
-
-  const dispatch = useDispatch();
+  const userAddress = useRabbySelector(
+    (state) => state.account.currentAccount?.address || ''
+  );
 
   const {
     passGasPrice,
@@ -182,17 +179,20 @@ export const Main = () => {
 
   const refreshId = useRefreshId();
 
-  const originPreferMEVGuarded = useRabbySelector(
-    (s) => !!s.swap.preferMEVGuarded
-  );
+  const originPreferMEVGuarded = useSwapStore((s) => !!s.preferMEVGuarded);
+  const setSwapPreferMEV = useSwapStore((s) => s.setSwapPreferMEV);
+  const setRecentSwapToToken = useSwapStore((s) => s.setRecentSwapToToken);
 
   const showMEVGuardedSwitch = useMemo(() => chain === CHAINS_ENUM.ETH, [
     chain,
   ]);
 
-  const switchPreferMEV = useCallback((bool: boolean) => {
-    dispatch.swap.setSwapPreferMEV(bool);
-  }, []);
+  const switchPreferMEV = useCallback(
+    (bool: boolean) => {
+      setSwapPreferMEV(bool);
+    },
+    [setSwapPreferMEV]
+  );
 
   const preferMEVGuarded = useMemo(
     () => (chain === CHAINS_ENUM.ETH ? originPreferMEVGuarded : false),
@@ -806,8 +806,8 @@ export const Main = () => {
   const handleSwap = useMemoizedFn(async () => {
     submitTxRef.current = true;
     setReloadTxRefreshPaused(true);
-    if (!isTab) {
-      dispatch.swap.setRecentSwapToToken(receiveToken);
+    if (!isTab && receiveToken) {
+      setRecentSwapToToken(receiveToken);
     }
     if (!isSupportedChain) {
       setSwapDappOpen(true);

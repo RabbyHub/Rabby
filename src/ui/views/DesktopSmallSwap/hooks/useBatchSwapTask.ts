@@ -2,6 +2,7 @@ import { Account } from '@/background/service/preference';
 import { DEX, KEYRING_TYPE } from '@/constant';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { useRabbySelector } from '@/ui/store';
+import { useSwapStore } from '@/ui/stores/swap';
 import { formatAmount, useWallet, WalletControllerType } from '@/ui/utils';
 import { waitForTxCompleted } from '@/ui/utils/transaction';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
@@ -287,8 +288,8 @@ export const useBatchSwapTask = (options: {
     autoResetGasStoreOnChainChange: true,
   });
 
-  const dexList = useRabbySelector((s) => {
-    return s.swap.supportedDEXList.filter((e) => DEX[e]);
+  const dexList = useSwapStore((s) => {
+    return s.supportedDEXList.filter((e) => DEX[e]);
   });
 
   const getDexId = useMemoizedFn(() => {
