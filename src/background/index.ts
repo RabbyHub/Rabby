@@ -74,6 +74,10 @@ import { userGuideService } from './service/userGuide';
 import lendingService from './service/lending';
 import perpsLive from './service/perpsLive';
 import { PERPS_LIVE_PORT_NAME } from '@/utils/message/perpsLive';
+import {
+  BACKGROUND_READY_EVENT,
+  BACKGROUND_READY_MESSAGE,
+} from '@/utils/message/constants';
 
 /** Controller methods the perps widget content-script may call via runtime.sendMessage */
 const PERPS_WIDGET_RPC_ALLOWLIST = new Set<string>([
@@ -176,6 +180,7 @@ async function restoreAppState() {
   rpcCache.start();
 
   appStoreLoaded = true;
+  eventBus.emit(BACKGROUND_READY_EVENT);
 
   syncChainService.roll();
   transactionWatchService.roll();
@@ -244,14 +249,6 @@ async function restoreAppState() {
   subscribeTxCompleted({ preferenceService });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'getBackgroundReady') {
-      sendResponse({
-        data: {
-          ready: true,
-        },
-      });
-      return;
-    }
     // Native chrome.runtime.onMessage requires explicit `sendResponse(...)` + `return true`
     // on async paths — returning a Promise would let Chrome close the channel immediately.
     if (message?.type === 'controller' && typeof message.method === 'string') {
@@ -495,26 +492,39 @@ browser.runtime.onConnect.addListener((port) => {
       });
     };
 
-    if (port.name === 'popup') {
-      preferenceService.setPopupOpen(true);
-
-      port.onDisconnect.addListener(() => {
-        preferenceService.setPopupOpen(false);
+    let activated = false;
+    const activateUIConnection = () => {
+      eventBus.removeEventListener(
+        BACKGROUND_READY_EVENT,
+        activateUIConnection
+      );
+      activated = true;
+      eventBus.addEventListener(EVENTS.broadcastToUI, boardcastCallback);
+      if (port.name === 'popup') {
+        preferenceService.setPopupOpen(true);
+      }
+      feedbackService.setScreenshotContextMenuVisible(true).catch(() => {
+        // Reset the native menu for newly opened extension pages.
       });
+      browser.runtime.sendMessage({ type: 'pageOpened' });
+      pm.send('message', { event: BACKGROUND_READY_MESSAGE });
+    };
+    if (appStoreLoaded) {
+      activateUIConnection();
+    } else {
+      eventBus.addEventListener(BACKGROUND_READY_EVENT, activateUIConnection);
     }
 
-    feedbackService.setScreenshotContextMenuVisible(true).catch(() => {
-      // Reset the native menu for newly opened extension pages.
-    });
-
-    browser.runtime.sendMessage({
-      type: 'pageOpened',
-    });
-    eventBus.addEventListener(EVENTS.broadcastToUI, boardcastCallback);
-    port.onDisconnect.addListener((p) => {
-      browser.runtime.sendMessage({
-        type: 'pageClosed',
-      });
+    port.onDisconnect.addListener(() => {
+      eventBus.removeEventListener(
+        BACKGROUND_READY_EVENT,
+        activateUIConnection
+      );
+      if (!activated) return;
+      if (port.name === 'popup') {
+        preferenceService.setPopupOpen(false);
+      }
+      browser.runtime.sendMessage({ type: 'pageClosed' });
       eventBus.removeEventListener(EVENTS.broadcastToUI, boardcastCallback);
     });
 
