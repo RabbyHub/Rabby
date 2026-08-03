@@ -45,6 +45,13 @@ describe('Sentry ignored errors', () => {
     expect(shouldIgnoreSentryError(new Error('Request timeout'))).toBe(true);
   });
 
+  test.each([
+    new Error('Request failed with status code 500'),
+    new TypeError('Load failed'),
+  ])('applies anchored ignore rules to Error messages', (error) => {
+    expect(shouldIgnoreSentryError(error)).toBe(true);
+  });
+
   test('keeps contextual timeout errors reportable', () => {
     expect(
       shouldIgnoreSentryError(new Error('Request timeout while signing'))

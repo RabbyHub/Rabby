@@ -1,11 +1,16 @@
 export type SentryIgnorePattern = string | RegExp;
 
+const BROAD_HTTP_IGNORE_PATTERN = /http/i;
+
 export const sanitizeSentryBreadcrumbUrl = (value: string) => {
   const withoutQueryOrFragment = value.split(/[?#]/, 1)[0];
 
   return withoutQueryOrFragment.replace(/0x[a-f\d]{40,64}/gi, '[redacted]');
 };
 
+// Keep this list in the SDK pipeline so it can also match Sentry-generated
+// event text. The broad HTTP rule is handled below because Trezor Bridge uses
+// HTTP and must remain reportable while signing.
 export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'ResizeObserver loop limit exceeded',
   'ResizeObserver loop completed with undelivered notifications',
@@ -27,7 +32,6 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /Could not establish connection/,
   /Receiving end does not exist/,
   /HttpRequestError/,
-  /http/i,
 
   // Browser extension lifecycle and runtime shutdown noise.
   /A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received/,
@@ -60,6 +64,17 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /RPC Request failed\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
   /The request took too long to respond\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
   /Request exceeds defined limit\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
+];
+
+const HARDWARE_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
+  /refusedbyuser|userrefusedondevice/iu,
+  /failure_(?:action|pin)cancelled|method_(?:cancel|interrupted)/iu,
+  /^(?:Error: )?(?:109|802|803|822):/u,
+  /^(?:Error: )?[{]"code":(?:"(?:109|802|803|822)"|(?:109|802|803|822))(?:,|[}])/u,
+  /\b0x6985\b/iu,
+  /^(?:Error: )*(?:Action cancell?ed by user|Cancell?ed|Popup closed)$/iu,
+  /not supported on this device|only version 4 of typed data signing is supported|typed data payload is incomplete/iu,
+  /device is locked|device not found|no (?:\w+ ){0,2}device found|multiple \w+ devices detected/iu,
 ];
 
 // Stale background service worker noise: after an extension update the old
@@ -95,14 +110,80 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
   ];
 };
 
-export const shouldIgnoreSentryError = (error: unknown) => {
-  const text = collectErrorText(error).join('\n') || String(error || '');
+export type HardwareSigningContext = {
+  wallet: string;
+  operation: string;
+};
 
-  if (
-    RABBY_SENTRY_IGNORE_ERRORS.some((pattern) =>
-      typeof pattern === 'string' ? text.includes(pattern) : pattern.test(text)
+const hardwareSigningContexts = new WeakMap<object, HardwareSigningContext>();
+
+export const attachHardwareSigningContext = (
+  error: unknown,
+  context: HardwareSigningContext
+) => {
+  if (error && typeof error === 'object') {
+    hardwareSigningContexts.set(error, context);
+  }
+};
+
+export const getHardwareSigningContext = (error: unknown) =>
+  error && typeof error === 'object'
+    ? hardwareSigningContexts.get(error)
+    : undefined;
+
+const REDACTIONS: [RegExp, string][] = [
+  [/([a-z][a-z\d+.-]*:\/\/[^\s?#]+)[?#][^\s]*/giu, '$1'],
+  [
+    /(["']?)(address|connect[_\s-]?id|device[_\s-]?id|passphrase(?:[_\s-]?state)?|public[_\s-]?key|serial(?:[_\s-]?(?:number|no))?|session[_\s-]?id|signature|uuid)\1\s*[:=]\s*(?:"[^"]*"|'[^']*'|[^\s,;}\]]+)/giu,
+    '$1$2$1: [redacted]',
+  ],
+  [
+    /\b[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}\b/giu,
+    '[redacted-uuid]',
+  ],
+  [/\b0x[a-f\d]{40,}\b/giu, '[redacted-hex]'],
+  [/\b[a-f\d]{40,}\b/giu, '[redacted-hex]'],
+  [/\b[A-Za-z\d+/]{80,}={0,2}/gu, '[redacted-data]'],
+  [/\bm(?:\/\d+'?){2,}\b/gu, '[redacted-hd-path]'],
+  [/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/gu, '[redacted-email]'],
+];
+
+const MAX_ERROR_TEXT_LENGTH = 4000;
+
+export const redactSensitiveText = (value: unknown) =>
+  REDACTIONS.reduce(
+    (text, [pattern, replacement]) => text.replace(pattern, replacement),
+    String(value ?? '')
+  ).slice(0, MAX_ERROR_TEXT_LENGTH);
+
+const matchesAny = (patterns: SentryIgnorePattern[], candidates: string[]) =>
+  patterns.some((pattern) =>
+    candidates.some((candidate) =>
+      typeof pattern === 'string'
+        ? candidate.includes(pattern)
+        : pattern.test(candidate)
     )
-  ) {
+  );
+
+export const shouldIgnoreSentryError = (error: unknown) => {
+  const parts = collectErrorText(error);
+  const text = parts.join('\n') || String(error || '');
+  const candidates = [
+    text,
+    ...parts,
+    error instanceof Error ? `${error.name}: ${error.message}` : '',
+  ].filter(Boolean);
+
+  const hardware = getHardwareSigningContext(error);
+  if (hardware?.wallet !== 'trezor' && BROAD_HTTP_IGNORE_PATTERN.test(text)) {
+    return true;
+  }
+
+  if (hardware && matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)) {
+    return true;
+  }
+
+  if (matchesAny(RABBY_SENTRY_IGNORE_ERRORS, candidates)) {
     return true;
   }
 
@@ -120,4 +201,53 @@ export const shouldIgnoreSentryError = (error: unknown) => {
   }
 
   return false;
+};
+
+type SentryEventLike = {
+  message?: string;
+  tags?: Record<string, unknown>;
+  fingerprint?: string[];
+  extra?: Record<string, unknown>;
+  exception?: { values?: { value?: string }[] };
+};
+
+export const applyHardwareSigningContext = (
+  event: SentryEventLike,
+  error: unknown
+) => {
+  const hardware = getHardwareSigningContext(error);
+  if (!hardware) {
+    return;
+  }
+
+  event.tags = {
+    ...event.tags,
+    hardware_wallet: hardware.wallet,
+    sign_operation: hardware.operation,
+  };
+  event.fingerprint = [
+    'hardware-wallet-signing',
+    hardware.wallet,
+    hardware.operation,
+    '{{ default }}',
+  ];
+
+  event.exception?.values?.forEach((value) => {
+    if (typeof value.value === 'string') {
+      value.value = redactSensitiveText(value.value);
+    }
+  });
+  if (typeof event.message === 'string') {
+    event.message = redactSensitiveText(event.message);
+  }
+
+  if (event.extra?.__serialized__ !== undefined) {
+    try {
+      event.extra.__serialized__ = redactSensitiveText(
+        JSON.stringify(event.extra.__serialized__)
+      );
+    } catch {
+      delete event.extra.__serialized__;
+    }
+  }
 };

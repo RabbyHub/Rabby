@@ -3,6 +3,7 @@ import type { BrowserOptions } from '@sentry/browser';
 import { getSentryEnv } from '@/utils/env';
 import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 import {
+  applyHardwareSigningContext,
   RABBY_SENTRY_IGNORE_ERRORS,
   sanitizeSentryBreadcrumbUrl,
   shouldIgnoreSentryError,
@@ -90,6 +91,9 @@ export const getSentryConfig = (): BrowserOptions => ({
         __serialized__: obj,
       };
     }
+
+    // Last, so it also redacts the __serialized__ blob above.
+    applyHardwareSigningContext(event, originalException);
 
     return event;
   },
