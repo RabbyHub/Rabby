@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Rabby Store"
+  short_description: "Create synced Zustand stores for Rabby"
+  default_prompt: "Use $rabby-create-store to create or migrate a Rabby Zustand store with the correct persistence and background sync."
