@@ -40,6 +40,32 @@ import {
 } from './useHomeBalanceView';
 import { ZeroAssets } from './ZeroAssets';
 
+export const BalanceViewJumpButton = ({
+  className,
+  onClick,
+}: {
+  className?: string;
+  onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <button
+      type="button"
+      className={clsx(
+        'balance-view-jump-button hidden shrink-0 items-center justify-center cursor-pointer rounded-[4px] border-0',
+        'bg-[rgba(255,255,255,0.2)] p-[5px] opacity-60',
+        'hover:bg-[rgba(255,255,255,0.1)] hover:opacity-100',
+        className
+      )}
+      aria-label={t('page.dashboard.assets.openInTabV2')}
+      onClick={onClick}
+    >
+      <RcIconJumpCC className="h-[12px] w-[12px] text-r-neutral-title2" />
+    </button>
+  );
+};
+
 export const BalanceView = ({
   currentAccount,
   hideJumpButton,
@@ -364,26 +390,17 @@ export const BalanceView = ({
     <div onMouseLeave={onMouseLeave} className={clsx('w-full')}>
       <div
         className={clsx(
-          'group/balance-card relative min-h-[132px] w-full cursor-pointer rounded-[8px]',
+          'balance-view-card group/balance-card relative min-h-[132px] w-full cursor-pointer rounded-[8px]',
           'bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)]',
           '[&:has(.balance-view-jump-button:hover)]:bg-[rgba(255,255,255,0.05)]'
         )}
         onClick={onClickViewAssets}
       >
         {!hideJumpButton && (
-          <button
-            type="button"
-            className={clsx(
-              'balance-view-jump-button absolute right-[8px] top-[8px] z-[1]',
-              'hidden items-center justify-center cursor-pointer rounded-[4px] border-0',
-              'bg-[rgba(255,255,255,0.2)] p-[5px] opacity-60',
-              'group-hover/balance-card:flex hover:bg-[rgba(255,255,255,0.1)] hover:opacity-100'
-            )}
-            aria-label={t('page.dashboard.assets.openInTabV2')}
+          <BalanceViewJumpButton
+            className="absolute right-[8px] top-[8px] z-[1] group-hover/balance-card:flex"
             onClick={onClickOpenInDesktop}
-          >
-            <RcIconJumpCC className="h-[12px] w-[12px] text-r-neutral-title2" />
-          </button>
+          />
         )}
         <div className="group flex w-full items-end pl-[12px] pr-[42px] pt-[10px]">
           <div
