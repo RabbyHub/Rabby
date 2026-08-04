@@ -172,6 +172,7 @@
     "warden-for-js": "3.0.0",
     "web3-eth-abi": "1.7.0",
     "webextension-polyfill": "0.7.0",
+    "zod": "4.4.3",
     "zustand": "4.5.4"
   },
   "devDependencies": {

@@ -3,13 +3,14 @@ import { subscribeWithSelector } from 'zustand/middleware';
 import {
   BackgroundStoreStorage,
   BackgroundStoreSyncEngine,
+  BackgroundStoreUpdate,
 } from './createSyncedBackgroundStorage';
 
 type SetState<State> = StoreApi<State>['setState'];
 type PendingSet<State> = Parameters<SetState<State>>;
 type FieldName<State> = Extract<keyof State, string>;
 
-export type BaseStoreOptions<State extends Record<string, unknown>> = {
+export type RabbyStoreOptions<State extends Record<string, unknown>> = {
   autoHydrate?: boolean;
   storage: BackgroundStoreStorage<State>;
   sync?: {
@@ -20,7 +21,7 @@ export type BaseStoreOptions<State extends Record<string, unknown>> = {
   onError?: (error: unknown) => void;
 };
 
-export type BaseStoreControls<State> = {
+export type RabbyStoreControls<State> = {
   applyRemote: (state: Partial<State>) => void;
   destroy: () => void;
   flush: () => Promise<void>;
@@ -29,10 +30,10 @@ export type BaseStoreControls<State> = {
   hydrationPromise: () => Promise<void>;
 };
 
-export type BaseStore<State extends Record<string, unknown>> = UseBoundStore<
+export type RabbyStore<State extends Record<string, unknown>> = UseBoundStore<
   StoreApi<State>
 > & {
-  persist: BaseStoreControls<State>;
+  persist: RabbyStoreControls<State>;
 };
 
 const defaultPartialize = <State extends Record<string, unknown>>(
@@ -56,26 +57,36 @@ const defaultPartialize = <State extends Record<string, unknown>>(
  * wallet-backed adapter, so persistence still goes through UI -> background
  * controller -> background service instead of accessing Chrome Storage here.
  */
-export const createBaseStore = <State extends Record<string, unknown>>(
+export const createRabbyStore = <State extends Record<string, unknown>>(
   initializer: StateCreator<
     State,
     [['zustand/subscribeWithSelector', never]],
     []
   >,
-  options: BaseStoreOptions<State>
-): BaseStore<State> => {
+  options: RabbyStoreOptions<State>
+): RabbyStore<State> => {
   const partialize =
     options.partialize || ((state: State) => defaultPartialize(state));
   let hydrated = false;
   let destroyed = false;
   let applyingRemote = false;
+  let latestRevision = -1;
   let rawSet!: SetState<State>;
   let writeQueue = Promise.resolve();
   const pendingLocalUpdates: PendingSet<State>[] = [];
   const pendingRemoteUpdates: Partial<State>[] = [];
+  const pendingSyncedUpdates: BackgroundStoreUpdate<State>[] = [];
 
   const reportError = (error: unknown) => {
     options.onError?.(error);
+  };
+
+  const restoreBackgroundSnapshot = async () => {
+    const snapshot = await options.storage.get();
+    if (snapshot.revision < latestRevision) return;
+
+    latestRevision = snapshot.revision;
+    applyRemote(snapshot.state);
   };
 
   const enqueuePersist = (
@@ -84,16 +95,29 @@ export const createBaseStore = <State extends Record<string, unknown>>(
     changedKeys: FieldName<State>[]
   ) => {
     if (!changedKeys.length || destroyed) return;
+    const partials = changedKeys.reduce<Partial<State>>((result, key) => {
+      result[key] = state[key];
+      return result;
+    }, {});
     writeQueue = writeQueue
-      .then(() => options.storage.set({ changedKeys, previousState, state }))
-      .catch(reportError);
+      .then(() =>
+        options.storage.set({ changedKeys, partials, previousState, state })
+      )
+      .catch(async (error) => {
+        reportError(error);
+        try {
+          await restoreBackgroundSnapshot();
+        } catch (restoreError) {
+          reportError(restoreError);
+        }
+      });
   };
 
   const trackLocalChanges = (before: State, after: State) => {
     if (applyingRemote) return;
     const previousState = partialize(before);
     const state = partialize(after);
-    const changedKeys = Object.keys(state).filter(
+    const changedKeys = Object.keys({ ...previousState, ...state }).filter(
       (key) =>
         !Object.is(
           previousState[key as FieldName<State>],
@@ -118,7 +142,7 @@ export const createBaseStore = <State extends Record<string, unknown>>(
       rawSet = set;
       return initializer(applyLocalSet, get, api);
     })
-  ) as BaseStore<State>;
+  ) as RabbyStore<State>;
 
   store.setState = applyLocalSet;
 
@@ -136,9 +160,20 @@ export const createBaseStore = <State extends Record<string, unknown>>(
     }
   };
 
+  const applySyncedUpdate = (update: BackgroundStoreUpdate<State>) => {
+    if (destroyed || update.revision <= latestRevision) return;
+    if (!hydrated) {
+      pendingSyncedUpdates.push(update);
+      return;
+    }
+    latestRevision = update.revision;
+    applyRemote(update.state);
+  };
+
   const hydrate = async () => {
     try {
-      const persistedState = await options.storage.get();
+      const snapshot = await options.storage.get();
+      const persistedState = snapshot.state;
       const currentState = store.getState();
       const mergedState = options.merge
         ? options.merge(persistedState, currentState)
@@ -151,9 +186,11 @@ export const createBaseStore = <State extends Record<string, unknown>>(
         applyingRemote = false;
       }
 
+      latestRevision = snapshot.revision;
       hydrated = true;
-      pendingLocalUpdates.splice(0).forEach((args) => applyLocalSet(...args));
+      pendingSyncedUpdates.splice(0).forEach(applySyncedUpdate);
       pendingRemoteUpdates.splice(0).forEach(applyRemote);
+      pendingLocalUpdates.splice(0).forEach((args) => applyLocalSet(...args));
     } catch (error) {
       hydrated = true;
       pendingLocalUpdates.splice(0).forEach((args) => applyLocalSet(...args));
@@ -167,7 +204,9 @@ export const createBaseStore = <State extends Record<string, unknown>>(
     hydration ||= hydrate();
     return hydration;
   };
-  const disposeRemoteSubscription = options.sync?.engine.subscribe(applyRemote);
+  const disposeRemoteSubscription = options.sync?.engine.subscribe(
+    applySyncedUpdate
+  );
 
   store.persist = {
     applyRemote,

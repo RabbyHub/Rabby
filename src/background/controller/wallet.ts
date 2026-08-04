@@ -130,7 +130,10 @@ import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import type {
   PersistedStoreKey,
   PersistedStoreMap,
+  PersistedStorePatch,
+  PersistedStoreSnapshot,
 } from '@/types/persistedStore';
+import { getPersistStoreRevision } from 'background/utils/persistStore';
 
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -2737,39 +2740,24 @@ export class WalletController extends BaseController {
     }
   };
 
+  getStorageSnapshot = <Key extends PersistedStoreKey>(
+    key: Key
+  ): PersistedStoreSnapshot<Key> => ({
+    revision: getPersistStoreRevision(key),
+    state: this.getStorageItem(key),
+  });
+
   setStorageItem = <Key extends PersistedStoreKey>(
     key: Key,
-    value: PersistedStoreMap[Key]
+    partials: PersistedStorePatch<Key>
   ) => {
-    if (!value || typeof value !== 'object') {
+    if (!partials || typeof partials !== 'object') {
       throw new Error(`Invalid persisted store value: ${String(key)}`);
     }
     switch (key) {
-      case 'swap': {
-        const nextStore = value as PersistedStoreMap['swap'];
-        const storeKeys: (keyof PersistedStoreMap['swap'])[] = [
-          'selectedChain',
-          'selectedFromToken',
-          'selectedToToken',
-          'autoSlippage',
-          'isCustomSlippage',
-          'slippage',
-          'recentToTokens',
-          'gasPriceCache',
-          'unlimitedAllowance',
-          'selectedDex',
-          'viewList',
-          'tradeList',
-          'sortIncludeGasFee',
-          'preferMEVGuarded',
-        ];
-        storeKeys.forEach((storeKey) => {
-          if (!isEqual(swapService.store[storeKey], nextStore[storeKey])) {
-            swapService.store[storeKey] = nextStore[storeKey] as never;
-          }
-        });
+      case 'swap':
+        swapService.patchStore(partials as PersistedStorePatch<'swap'>);
         return;
-      }
       default:
         throw new Error(`Unknown persisted store: ${String(key)}`);
     }

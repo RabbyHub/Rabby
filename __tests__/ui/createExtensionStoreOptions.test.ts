@@ -7,6 +7,7 @@ import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 jest.mock('@/ui/wallet', () => ({
   wallet: {
     getStorageItem: jest.fn(),
+    getStorageSnapshot: jest.fn(),
     setStorageItem: jest.fn(),
   },
 }));
@@ -20,6 +21,8 @@ const swapState: SwapServiceStore = {
   selectedChain: null,
   selectedDex: null,
   slippage: '0.1',
+  recentToTokens: [],
+  sortIncludeGasFee: true,
   tradeList: {} as SwapServiceStore['tradeList'],
   unlimitedAllowance: false,
   viewList: {} as SwapServiceStore['viewList'],
@@ -27,25 +30,26 @@ const swapState: SwapServiceStore = {
 
 describe('createExtensionStoreOptions', () => {
   test('adapts wallet storage methods and background store broadcasts', async () => {
-    const getStorageItem = wallet.getStorageItem as jest.Mock;
+    const getStorageSnapshot = wallet.getStorageSnapshot as jest.Mock;
     const setStorageItem = wallet.setStorageItem as jest.Mock;
-    getStorageItem.mockResolvedValue(swapState);
+    getStorageSnapshot.mockResolvedValue({ revision: 2, state: swapState });
     setStorageItem.mockResolvedValue(undefined);
     const options = createExtensionStoreOptions<TestSwapStore, 'swap'>({
       storageKey: 'swap',
     });
 
-    await expect(options.storage.get()).resolves.toBe(swapState);
+    await expect(options.storage.get()).resolves.toEqual({
+      revision: 2,
+      state: swapState,
+    });
     await options.storage.set({
       changedKeys: ['slippage'],
+      partials: { slippage: '0.5' },
       previousState: { ...swapState, slippage: '0.1' },
       state: { ...swapState, slippage: '0.5' },
     });
-    expect(getStorageItem).toHaveBeenCalledWith('swap');
-    expect(setStorageItem).toHaveBeenCalledWith('swap', {
-      ...swapState,
-      slippage: '0.5',
-    });
+    expect(getStorageSnapshot).toHaveBeenCalledWith('swap');
+    expect(setStorageItem).toHaveBeenCalledWith('swap', { slippage: '0.5' });
 
     const listener = jest.fn();
     const dispose = options.sync!.engine.subscribe(listener);
@@ -54,8 +58,12 @@ describe('createExtensionStoreOptions', () => {
       changedKey: 'slippage',
       changedKeys: ['slippage'],
       partials: { slippage: '1' },
+      revision: 3,
     });
-    expect(listener).toHaveBeenCalledWith({ slippage: '1' });
+    expect(listener).toHaveBeenCalledWith({
+      revision: 3,
+      state: { slippage: '1' },
+    });
     dispose();
   });
 });

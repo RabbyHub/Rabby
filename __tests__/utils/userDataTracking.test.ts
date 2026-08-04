@@ -79,6 +79,7 @@ describe('shouldReportUserBehaviorData', () => {
       partials: {
         userDataTrackingOptOut: false,
       },
+      revision: 1,
     });
 
     await expect(shouldReportUserBehaviorData()).resolves.toBe(true);
@@ -103,6 +104,7 @@ describe('shouldReportUserBehaviorData', () => {
         partials: {
           userDataTrackingOptOut: true,
         },
+        revision: 2,
       },
     });
 

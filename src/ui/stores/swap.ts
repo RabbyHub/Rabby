@@ -8,8 +8,8 @@ import { DEX } from '@/constant';
 import { findChain } from '@/utils/chain';
 import type { WalletControllerType } from '@/ui/utils/WalletContext';
 import { wallet } from '@/ui/wallet';
-import { createBaseStore } from './createBaseStore';
 import { createExtensionStoreOptions } from './createExtensionStoreOptions';
+import { createRabbyStore } from './createRabbyStore';
 
 type SwapState = SwapServiceStore & {
   $$initialSelectedChain: CHAINS_ENUM | null;
@@ -46,7 +46,7 @@ type SwapActions = {
 
 export type SwapStore = SwapState & SwapActions;
 
-export const useSwapStore = createBaseStore<SwapStore>(
+export const useSwapStore = createRabbyStore<SwapStore>(
   (set, get) => ({
     slippage: '0.1',
     autoSlippage: true,

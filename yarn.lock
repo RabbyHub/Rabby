@@ -21673,6 +21673,7 @@ __metadata:
     webpack-dev-server: "npm:4.7.4"
     webpack-hot-middleware: "npm:2.26.1"
     webpack-merge: "npm:5.7.3"
+    zod: "npm:4.4.3"
     zustand: "npm:4.5.4"
   languageName: unknown
   linkType: soft
@@ -27456,6 +27457,13 @@ __metadata:
     compress-commons: "npm:^6.0.2"
     readable-stream: "npm:^4.0.0"
   checksum: 10c0/50f2fb30327fb9d09879abf7ae2493705313adf403e794b030151aaae00009162419d60d0519e807673ec04d442e140c8879ca14314df0a0192de3b233e8f28b
+  languageName: node
+  linkType: hard
+
+"zod@npm:4.4.3":
+  version: 4.4.3
+  resolution: "zod@npm:4.4.3"
+  checksum: 10c0/7ea31b558e88f9faf44f31dd185e2e1cbf51fed3081787fb96cc2534749b50c0acfc6da7f0922a7353ed092dd358c7d50c28ea96c94d04af64191bd33152eca3
   languageName: node
   linkType: hard
 

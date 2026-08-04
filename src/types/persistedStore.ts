@@ -5,3 +5,12 @@ export type PersistedStoreMap = {
 };
 
 export type PersistedStoreKey = keyof PersistedStoreMap;
+
+export type PersistedStorePatch<Key extends PersistedStoreKey> = Partial<
+  PersistedStoreMap[Key]
+>;
+
+export type PersistedStoreSnapshot<Key extends PersistedStoreKey> = {
+  revision: number;
+  state: PersistedStoreMap[Key];
+};

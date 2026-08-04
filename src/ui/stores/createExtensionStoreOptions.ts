@@ -1,16 +1,17 @@
 import type {
   PersistedStoreKey,
-  PersistedStoreMap,
+  PersistedStorePatch,
+  PersistedStoreSnapshot,
 } from '@/types/persistedStore';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { wallet } from '@/ui/wallet';
-import type { BaseStoreOptions } from './createBaseStore';
+import type { RabbyStoreOptions } from './createRabbyStore';
 import { createSyncedBackgroundStorage } from './createSyncedBackgroundStorage';
 
 type ExtensionStoreOptions<
   State extends Record<string, unknown>,
   Key extends PersistedStoreKey
-> = Omit<BaseStoreOptions<State>, 'storage' | 'sync'> & {
+> = Omit<RabbyStoreOptions<State>, 'storage' | 'sync'> & {
   storageKey: Key;
 };
 
@@ -25,22 +26,29 @@ export const createExtensionStoreOptions = <
 >({
   storageKey,
   ...options
-}: ExtensionStoreOptions<State, Key>): BaseStoreOptions<State> => {
+}: ExtensionStoreOptions<State, Key>): RabbyStoreOptions<State> => {
   const { storage, syncEngine } = createSyncedBackgroundStorage<State>({
     async get() {
-      return ((await wallet.getStorageItem(
+      const snapshot = (await wallet.getStorageSnapshot(
         storageKey
-      )) as unknown) as Partial<State>;
+      )) as PersistedStoreSnapshot<Key>;
+      return {
+        revision: snapshot.revision,
+        state: (snapshot.state as unknown) as Partial<State>,
+      };
     },
-    async set({ state }) {
+    async set({ partials }) {
       await wallet.setStorageItem(
         storageKey,
-        (state as unknown) as PersistedStoreMap[Key]
+        (partials as unknown) as PersistedStorePatch<Key>
       );
     },
     subscribe(listener) {
-      return onBackgroundStoreChanged(storageKey, ({ partials }) => {
-        listener(partials as Partial<State>);
+      return onBackgroundStoreChanged(storageKey, ({ partials, revision }) => {
+        listener({
+          revision,
+          state: partials as Partial<State>,
+        });
       });
     },
   });
