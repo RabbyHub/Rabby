@@ -21674,7 +21674,7 @@ __metadata:
     webpack-hot-middleware: "npm:2.26.1"
     webpack-merge: "npm:5.7.3"
     zod: "npm:4.4.3"
-    zustand: "npm:4.5.4"
+    zustand: "npm:5.0.14"
   languageName: unknown
   linkType: soft
 
@@ -26200,15 +26200,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:1.2.0":
-  version: 1.2.0
-  resolution: "use-sync-external-store@npm:1.2.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 10c0/ac4814e5592524f242921157e791b022efe36e451fe0d4fd4d204322d5433a4fc300d63b0ade5185f8e0735ded044c70bcf6d2352db0f74d097a238cebd2da02
-  languageName: node
-  linkType: hard
-
 "use-sync-external-store@npm:^1.0.0":
   version: 1.6.0
   resolution: "use-sync-external-store@npm:1.6.0"
@@ -27467,15 +27458,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:4.5.4":
-  version: 4.5.4
-  resolution: "zustand@npm:4.5.4"
-  dependencies:
-    use-sync-external-store: "npm:1.2.0"
+"zustand@npm:5.0.14":
+  version: 5.0.14
+  resolution: "zustand@npm:5.0.14"
   peerDependencies:
-    "@types/react": ">=16.8"
+    "@types/react": ">=18.0.0"
     immer: ">=9.0.6"
-    react: ">=16.8"
+    react: ">=18.0.0"
+    use-sync-external-store: ">=1.2.0"
   peerDependenciesMeta:
     "@types/react":
       optional: true
@@ -27483,7 +27473,9 @@ __metadata:
       optional: true
     react:
       optional: true
-  checksum: 10c0/479af491ffa1f1eb2c38b3ba25dc4e14339e8b35a60033d3f6c165b22f8be8163f7e1370015ded9c6e28548cd25af84a73fb40b5fad0bd7882d16ddd5ed613c6
+    use-sync-external-store:
+      optional: true
+  checksum: 10c0/89de0c8119f1e0861b2f896a0b4df0d67994a373ecee02628d4e7b97cee1885207f646917d3ede395c3a5083316d48846855cfbc84aced7cd23a6db3238930a8
   languageName: node
   linkType: hard
 

@@ -173,7 +173,7 @@
     "web3-eth-abi": "1.7.0",
     "webextension-polyfill": "0.7.0",
     "zod": "4.4.3",
-    "zustand": "4.5.4"
+    "zustand": "5.0.14"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",

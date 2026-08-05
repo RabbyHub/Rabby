@@ -288,9 +288,10 @@ export const useBatchSwapTask = (options: {
     autoResetGasStoreOnChainChange: true,
   });
 
-  const dexList = useSwapStore((s) => {
-    return s.supportedDEXList.filter((e) => DEX[e]);
-  });
+  const supportedDEXList = useSwapStore((s) => s.supportedDEXList);
+  const dexList = useMemo(() => supportedDEXList.filter((e) => DEX[e]), [
+    supportedDEXList,
+  ]);
 
   const getDexId = useMemoizedFn(() => {
     const randomIndex = random(0, dexList.length - 1);
