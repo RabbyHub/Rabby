@@ -6943,6 +6943,10 @@ export class WalletController extends BaseController {
   setSoundEnabled = perpsService.setSoundEnabled;
   getSkipMarketCloseConfirm = perpsService.getSkipMarketCloseConfirm;
   setSkipMarketCloseConfirm = perpsService.setSkipMarketCloseConfirm;
+  getPerpsOrderConfirmations = perpsService.getOrderConfirmations;
+  setPerpsOrderConfirmation = perpsService.setOrderConfirmation;
+  getPerpsShowPopularTradings = perpsService.getShowPopularTradings;
+  setPerpsShowPopularTradings = perpsService.setShowPopularTradings;
   getPerpsIsNeedSetDarkTheme = perpsService.getIsNeedSetDarkTheme;
   updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;

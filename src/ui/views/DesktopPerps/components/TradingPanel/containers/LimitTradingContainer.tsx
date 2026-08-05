@@ -5,6 +5,7 @@ import {
   LimitOrderType,
   OrderSide,
   OrderSideInfo,
+  TPSLConfigItem,
   TradingContainerProps,
 } from '../../../types';
 import { TPSLSettings } from '../components/TPSLSettings';
@@ -17,7 +18,12 @@ import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { validatePriceInput } from '@/ui/views/Perps/utils';
-import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
+import {
+  calculateDistanceToLiquidation,
+  formatPerpsPct,
+  formatTpOrSlPrice,
+} from '@/ui/views/Perps/utils';
+import { splitNumberByStep } from '@/ui/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
@@ -26,11 +32,25 @@ import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInpu
 import { TradingButtons } from '../components/TradingButtons';
 import { BigNumber } from 'bignumber.js';
 import stats from '@/stats';
-import { getStatsReportSide } from '../../../utils';
+import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
+import { resolveTriggerComparator } from '../../../tpslTrigger';
 import { calcAmountFromPercentage } from '../utils';
 import { PerpsDropdown } from '../components';
 import { LimitOrderTypeSelector } from '../components/LimitOrderTypeSelector';
 import perpsToast from '../../PerpsToast';
+import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
+import type {
+  OrderConfirmRow,
+  OrderConfirmSection,
+} from '../../../modal/OrderConfirmModal';
+
+/** The numbers an order actually sends, frozen at click time. */
+interface LimitOrderSnapshot {
+  size: string;
+  limitPx: string;
+  tpTriggerPx?: string;
+  slTriggerPx?: string;
+}
 
 export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -46,6 +66,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     markPrice,
     midPrice,
     szDecimals,
+    pxDecimals,
     leverage,
     availableBalance,
     quoteAsset,
@@ -355,28 +376,60 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     return tradeSize;
   };
 
-  const openOrder = useMemoizedFn(async (isBuy: boolean) => {
-    // ALO direction-specific validation (deferred to button click)
+  // Shared by the submit path and the confirmation dialog so the trigger price
+  // shown is exactly the one sent.
+  const getTriggerPrice = useMemoizedFn(
+    (item: TPSLConfigItem, isBuy: boolean) => {
+      if (!tpslConfig.enabled || !item.value) return undefined;
+      if (item.settingMode === 'price') {
+        return item.value;
+      }
+      return isBuy ? item.buyTriggerPrice : item.sellTriggerPrice;
+    }
+  );
+
+  // The dialog's rows are built once at click time while `submit` runs whenever
+  // the user confirms, yet the size, the BBO limit price and the PNL/ROI trigger
+  // prices all re-derive from streaming balance and orderbook data. Freezing
+  // them into one snapshot is what keeps the order that is sent identical to the
+  // one that was shown.
+  const buildOrderSnapshot = useMemoizedFn(
+    (isBuy: boolean): LimitOrderSnapshot => ({
+      size: getDirectionTradeSize(isBuy),
+      limitPx: isBuy ? buyLimitPrice : sellLimitPrice,
+      tpTriggerPx: getTriggerPrice(tpslConfig.takeProfit, isBuy),
+      slTriggerPx: getTriggerPrice(tpslConfig.stopLoss, isBuy),
+    })
+  );
+
+  /**
+   * Direction-specific checks the form can't run until a side is picked;
+   * returns false and reports the reason itself when the order can't proceed.
+   *
+   * Runs before the confirmation dialog opens: an order that can only be
+   * rejected would otherwise bounce the user off a dialog whose explanation
+   * (an inline TP/SL field error) sits behind the modal's blurred mask.
+   */
+  const validateDirection = useMemoizedFn((isBuy: boolean) => {
     if (limitOrderType === 'Alo') {
       if (isBuy && Number(limitPrice) >= Number(currentBestAskPrice)) {
         perpsToast.error({
           title: t('page.perps.toast.orderError'),
           description: t('page.perpsPro.tradingPanel.aloTooLargeBuy'),
         });
-        throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeBuy'));
+        return false;
       }
       if (!isBuy && Number(limitPrice) <= Number(currentBestBidPrice)) {
         perpsToast.error({
           title: t('page.perps.toast.orderError'),
           description: t('page.perpsPro.tradingPanel.aloTooLargeSell'),
         });
-        throw new Error(t('page.perpsPro.tradingPanel.aloTooLargeSell'));
+        return false;
       }
     }
 
-    // Validate TP/SL for this direction
-    const side = isBuy ? OrderSide.BUY : OrderSide.SELL;
     if (tpslConfig.enabled) {
+      const side = isBuy ? OrderSide.BUY : OrderSide.SELL;
       const orderLimitPx = isBuy ? buyLimitPrice : sellLimitPrice;
       const tpslValidation = validateTpslForSide(side, orderLimitPx);
       if (!tpslValidation.valid) {
@@ -394,93 +447,99 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
           };
         }
         setTpslConfig(newConfig);
-        throw new Error('Invalid TP/SL configuration');
+        return false;
       }
     }
 
-    // Determine TP/SL trigger prices based on mode
-    const getTriggerPrice = (
-      item: typeof tpslConfig.takeProfit
-    ): string | undefined => {
-      if (!tpslConfig.enabled || !item.value) return undefined;
-      if (item.settingMode === 'price') {
-        return item.value;
-      }
-      return isBuy ? item.buyTriggerPrice : item.sellTriggerPrice;
-    };
-
-    const directionSize = getDirectionTradeSize(isBuy);
-
-    const orderLimitPrice = isBuy ? buyLimitPrice : sellLimitPrice;
-
-    await handleOpenLimitOrder({
-      coin: selectedCoin,
-      dex: currentMarketData?.dexId ?? '',
-      isBuy,
-      size: directionSize,
-      limitPx: orderLimitPrice,
-      tpTriggerPx: getTriggerPrice(tpslConfig.takeProfit),
-      slTriggerPx: getTriggerPrice(tpslConfig.stopLoss),
-      reduceOnly,
-      orderType: limitOrderType,
-    });
-    stats.report('perpsTradeHistory', {
-      created_at: new Date().getTime(),
-      user_addr: currentPerpsAccount?.address || '',
-      trade_type: 'limit',
-      leverage: leverage.toString(),
-      trade_side: getStatsReportSide(isBuy, reduceOnly),
-      margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-      coin: selectedCoin,
-      size: tradeSize,
-      price: orderLimitPrice,
-      trade_usd_value: new BigNumber(orderLimitPrice)
-        .times(tradeSize)
-        .toFixed(2),
-      service_provider: 'hyperliquid',
-      app_version: process.env.release || '0',
-      address_type: currentPerpsAccount?.type || '',
-    });
-    if (tpslConfig.enabled) {
-      const tpTrigger = getTriggerPrice(tpslConfig.takeProfit);
-      tpTrigger &&
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: currentPerpsAccount?.address || '',
-          trade_type: 'take profit in limit',
-          leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, reduceOnly),
-          margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-          coin: selectedCoin,
-          size: tradeSize,
-          price: tpTrigger,
-          trade_usd_value: new BigNumber(tpTrigger).times(tradeSize).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: currentPerpsAccount?.type || '',
-        });
-      const slTrigger = getTriggerPrice(tpslConfig.stopLoss);
-      slTrigger &&
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: currentPerpsAccount?.address || '',
-          trade_type: 'stop market in limit',
-          leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, reduceOnly),
-          margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-          coin: selectedCoin,
-          size: tradeSize,
-          price: slTrigger,
-          trade_usd_value: new BigNumber(slTrigger).times(tradeSize).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: currentPerpsAccount?.type || '',
-        });
-    }
+    return true;
   });
 
-  const { run: handleBuyOrder, loading: buyLoading } = useRequest(
-    () => openOrder(true),
+  const openOrder = useMemoizedFn(
+    async (isBuy: boolean, snapshot: LimitOrderSnapshot) => {
+      // Backstop: `validateDirection` already ran at click time, but the prices it
+      // checks against keep streaming, so re-check right before sending.
+      if (!validateDirection(isBuy)) {
+        throw new Error('Invalid order configuration');
+      }
+
+      const orderLimitPrice = snapshot.limitPx;
+
+      await handleOpenLimitOrder({
+        coin: selectedCoin,
+        dex: currentMarketData?.dexId ?? '',
+        isBuy,
+        size: snapshot.size,
+        limitPx: orderLimitPrice,
+        tpTriggerPx: snapshot.tpTriggerPx,
+        slTriggerPx: snapshot.slTriggerPx,
+        reduceOnly,
+        orderType: limitOrderType,
+      });
+      stats.report('perpsTradeHistory', {
+        created_at: new Date().getTime(),
+        user_addr: currentPerpsAccount?.address || '',
+        trade_type: 'limit',
+        leverage: leverage.toString(),
+        trade_side: getStatsReportSide(isBuy, reduceOnly),
+        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+        coin: selectedCoin,
+        size: tradeSize,
+        price: orderLimitPrice,
+        trade_usd_value: new BigNumber(orderLimitPrice)
+          .times(tradeSize)
+          .toFixed(2),
+        service_provider: 'hyperliquid',
+        app_version: process.env.release || '0',
+        address_type: currentPerpsAccount?.type || '',
+      });
+      if (tpslConfig.enabled) {
+        const tpTrigger = snapshot.tpTriggerPx;
+        tpTrigger &&
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'take profit in limit',
+            leverage: leverage.toString(),
+            trade_side: getStatsReportSide(!isBuy, reduceOnly),
+            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+            coin: selectedCoin,
+            size: tradeSize,
+            price: tpTrigger,
+            trade_usd_value: new BigNumber(tpTrigger)
+              .times(tradeSize)
+              .toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+        const slTrigger = snapshot.slTriggerPx;
+        slTrigger &&
+          stats.report('perpsTradeHistory', {
+            created_at: new Date().getTime(),
+            user_addr: currentPerpsAccount?.address || '',
+            trade_type: 'stop market in limit',
+            leverage: leverage.toString(),
+            trade_side: getStatsReportSide(!isBuy, reduceOnly),
+            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+            coin: selectedCoin,
+            size: tradeSize,
+            price: slTrigger,
+            trade_usd_value: new BigNumber(slTrigger)
+              .times(tradeSize)
+              .toFixed(2),
+            service_provider: 'hyperliquid',
+            app_version: process.env.release || '0',
+            address_type: currentPerpsAccount?.type || '',
+          });
+      }
+    }
+  );
+
+  // `runAsync` (rather than `run`) so the confirmation dialog can await the
+  // submission: it stays loading until the order settles, and stays open when
+  // it fails.
+  const { runAsync: handleBuyOrder, loading: buyLoading } = useRequest(
+    (snapshot: LimitOrderSnapshot) => openOrder(true, snapshot),
     {
       manual: true,
       onSuccess: () => {
@@ -492,8 +551,8 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     }
   );
 
-  const { run: handleSellOrder, loading: sellLoading } = useRequest(
-    () => openOrder(false),
+  const { runAsync: handleSellOrder, loading: sellLoading } = useRequest(
+    (snapshot: LimitOrderSnapshot) => openOrder(false, snapshot),
     {
       manual: true,
       onSuccess: () => {
@@ -509,6 +568,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const buyOrderInfo: OrderSideInfo = React.useMemo(
     () => ({
       liqPrice: buyDirInfo.liqPrice,
+      liqPriceNum: buyDirInfo.liqPriceNum,
       cost: buyDirInfo.cost,
       max: limitMaxBuyTradeSize || '0',
     }),
@@ -518,11 +578,170 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const sellOrderInfo: OrderSideInfo = React.useMemo(
     () => ({
       liqPrice: sellDirInfo.liqPrice,
+      liqPriceNum: sellDirInfo.liqPriceNum,
       cost: sellDirInfo.cost,
       max: limitMaxSellTradeSize || '0',
     }),
     [sellDirInfo, limitMaxSellTradeSize]
   );
+
+  const requestConfirm = useOrderConfirm();
+
+  /** `-1.86%(-1,230.5)` — signed against the mark price the panel trades on. */
+  const formatLiqDistance = (liqPx: number | null) => {
+    if (!liqPx || !markPrice) return '';
+    const sign = liqPx < markPrice ? '-' : '';
+    const gap = splitNumberByStep(
+      new BigNumber(liqPx).minus(markPrice).abs().toFixed(pxDecimals)
+    );
+    return `${sign}${formatPerpsPct(
+      calculateDistanceToLiquidation(liqPx, markPrice)
+    )}(${sign}${gap})`;
+  };
+
+  const buildConfirmContent = useMemoizedFn(
+    (isBuy: boolean, snapshot: LimitOrderSnapshot) => {
+      const orderLimitPrice = snapshot.limitPx;
+      const { liqPrice, liqPriceNum } = isBuy ? buyOrderInfo : sellOrderInfo;
+      const liqDistance = formatLiqDistance(liqPriceNum);
+
+      const rows: OrderConfirmRow[] = [];
+
+      // The price actually sent as `limitPx`: the typed limit price, or the
+      // orderbook price BBO mode resolved for this direction.
+      if (Number(orderLimitPrice) > 0) {
+        rows.push({
+          key: 'price',
+          label: t('page.perpsPro.orderConfirm.price'),
+          value: `${splitNumberByStep(orderLimitPrice)} ${quoteAsset}`,
+        });
+      }
+
+      if (markPrice) {
+        rows.push({
+          key: 'markPrice',
+          label: t('page.perpsPro.orderConfirm.markPrice'),
+          value: `${splitNumberByStep(
+            new BigNumber(markPrice).toFixed(pxDecimals)
+          )} ${quoteAsset}`,
+        });
+      }
+
+      rows.push({
+        key: 'amount',
+        label: t('page.perpsPro.orderConfirm.amount'),
+        value: `${snapshot.size} ${formatPerpsCoin(selectedCoin)}`,
+      });
+
+      // Mirrors OrderInfoGrid: a reduce-only order opens no new exposure, so it
+      // has no liquidation price to show.
+      if (!reduceOnly && liqPriceNum !== null) {
+        rows.push({
+          key: 'estLiqPrice',
+          label: t('page.perpsPro.orderConfirm.estLiqPrice'),
+          value: liqPrice,
+        });
+        if (liqDistance) {
+          rows.push({
+            key: 'estLiqDistance',
+            label: t('page.perpsPro.orderConfirm.estLiqDistance'),
+            value: liqDistance,
+          });
+        }
+      }
+
+      rows.push({
+        key: 'reduceOnly',
+        label: t('page.perpsPro.orderConfirm.reduceOnly'),
+        value: reduceOnly
+          ? t('page.perpsPro.orderConfirm.true')
+          : t('page.perpsPro.orderConfirm.false'),
+      });
+
+      const sections: OrderConfirmSection[] = [{ key: 'order', rows }];
+
+      const { tpTriggerPx: tpTrigger, slTriggerPx: slTrigger } = snapshot;
+      if (tpslConfig.enabled && (tpTrigger || slTrigger)) {
+        // TP/SL attached to a limit order are always market trigger orders
+        // (`isMarket: true` in `limitOrderOpen`).
+        const markPriceLabel = t('page.perpsPro.orderConfirm.markPrice');
+        const tpslRows: OrderConfirmRow[] = [];
+        if (tpTrigger) {
+          tpslRows.push(
+            {
+              key: 'tpType',
+              label: t('page.perpsPro.orderConfirm.takeProfitMarket'),
+              value: t('page.perpsPro.orderConfirm.marketPrice'),
+            },
+            {
+              key: 'tpTrigger',
+              label: t('page.perpsPro.orderConfirm.trigger'),
+              value: `${markPriceLabel}${resolveTriggerComparator(
+                isBuy,
+                true
+              )}${splitNumberByStep(tpTrigger)} ${quoteAsset}`,
+            }
+          );
+        }
+        if (slTrigger) {
+          tpslRows.push(
+            {
+              key: 'slType',
+              label: t('page.perpsPro.orderConfirm.stopLossMarket'),
+              value: t('page.perpsPro.orderConfirm.marketPrice'),
+            },
+            {
+              key: 'slTrigger',
+              label: t('page.perpsPro.orderConfirm.trigger'),
+              value: `${markPriceLabel}${resolveTriggerComparator(
+                isBuy,
+                false
+              )}${splitNumberByStep(slTrigger)} ${quoteAsset}`,
+            }
+          );
+        }
+        sections.push({
+          key: 'tpsl',
+          heading: t('page.perpsPro.orderConfirm.tpSl'),
+          rows: tpslRows,
+        });
+      }
+
+      return {
+        title: `${formatPerpsCoin(selectedCoin)}-${quoteAsset}`,
+        titleSuffix: {
+          text: isBuy
+            ? t('page.perpsPro.orderConfirm.buyLong')
+            : t('page.perpsPro.orderConfirm.sellShort'),
+          tone: (isBuy ? 'up' : 'down') as 'up' | 'down',
+        },
+        sections,
+      };
+    }
+  );
+
+  const handleOrderClick = useMemoizedFn((isBuy: boolean) => {
+    // Keep the direction-specific checks ahead of the dialog: otherwise the
+    // user would confirm an order that can only fail validation.
+    if (!validateDirection(isBuy)) return;
+
+    const snapshot = buildOrderSnapshot(isBuy);
+
+    // With the dialog turned off `requestConfirm` passes the submit promise
+    // straight through; swallow its rejection (openOrder already toasts and
+    // useRequest's onError logs) so it never surfaces as unhandled.
+    Promise.resolve(
+      requestConfirm({
+        type: 'limit',
+        content: () => buildConfirmContent(isBuy, snapshot),
+        dontShowAgainText: t('page.perpsPro.orderConfirm.dontShowAgain', {
+          orderType: t('page.perpsPro.orderConfirm.orderTypeName.limit'),
+        }),
+        submit: () =>
+          isBuy ? handleBuyOrder(snapshot) : handleSellOrder(snapshot),
+      })
+    ).catch(() => {});
+  });
 
   useEffect(() => {
     setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
@@ -686,8 +905,8 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
       {/* Buy/Sell Buttons */}
       <TradingButtons
-        onBuyClick={handleBuyOrder}
-        onSellClick={handleSellOrder}
+        onBuyClick={() => handleOrderClick(true)}
+        onSellClick={() => handleOrderClick(false)}
         buyLoading={buyLoading}
         sellLoading={sellLoading}
         buyDisabled={
