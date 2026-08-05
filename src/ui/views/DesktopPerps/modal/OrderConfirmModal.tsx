@@ -212,7 +212,7 @@ export const OrderConfirmModal: React.FC<OrderConfirmModalProps> = ({
               className="flex w-full items-start gap-[8px] cursor-pointer select-none"
               onClick={() => dontShowAgain.onChange(!dontShowAgain.checked)}
             >
-              <span className="flex h-[14px] w-[14px] shrink-0 translate-y-[2px] items-start">
+              <span className="flex h-[14px] w-[14px] shrink-0 items-center">
                 <OrderConfirmCheckbox checked={dontShowAgain.checked} />
               </span>
               <span className="flex-1 min-w-0 text-[12px] leading-[14px] text-rb-neutral-foot">
