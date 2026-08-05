@@ -143,17 +143,6 @@
     "category_id": "memes"
   },
   {
-    "id": "c63538def0a6ce77678955cb8ace334e",
-    "token_id": 0,
-    "name": "cash:USA500",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:USA500/3b03b47b3d0b04414545fa1acb155da7.png",
-    "daily_volume": 37947268,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
     "id": "a7af2d46cfb6c8799f3e483f46bc17a0",
     "token_id": 3,
     "name": "xyz:GOLD",
@@ -163,6 +152,17 @@
     "category": "Commodities",
     "display_name": "GOLD",
     "category_id": "commodities"
+  },
+  {
+    "id": "63600daf7e650698c22ba1c78fd69354",
+    "token_id": 99,
+    "name": "xyz:SKHY",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:SKHY/3327daf0643c51f834a99982cf8e3bd0.png",
+    "daily_volume": 34917883,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "SKHY",
+    "category_id": "stocks"
   },
   {
     "id": "961cce65d2a7aee2256f404aa9c10c3a",
@@ -187,6 +187,28 @@
     "category_id": "stocks"
   },
   {
+    "id": "e2b9fbb8bfd8152e5081c62adc7cd6b9",
+    "token_id": 91,
+    "name": "xyz:ZHIPU",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:ZHIPU/1c7f9671fabfc7c5a68175c741f0e6a4.png",
+    "daily_volume": 28861835,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "ZHIPU",
+    "category_id": "stocks"
+  },
+  {
+    "id": "7abe7c3c4b225865ec5d63a6c3721475",
+    "token_id": 231,
+    "name": "CASHCAT",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/CASHCAT/a63a4c2e2d017990eb6896eb286706c4.png",
+    "daily_volume": 28282707,
+    "dex_id": "",
+    "category": "",
+    "display_name": "",
+    "category_id": ""
+  },
+  {
     "id": "de520da8877cbc789c6b210a696dcbc5",
     "token_id": 15,
     "name": "kPEPE",
@@ -207,6 +229,17 @@
     "category": "",
     "display_name": "",
     "category_id": ""
+  },
+  {
+    "id": "f46e209c929d03b518a7e39771f63ee1",
+    "token_id": 76,
+    "name": "xyz:SPCX",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:SPCX/eade42a664ebd40e6bcea3b031e5e363.png",
+    "daily_volume": 23783279,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "SPCX",
+    "category_id": "stocks"
   },
   {
     "id": "18e3da87a585b6d1cb00714c7781af6a",
@@ -308,6 +341,17 @@
     "category_id": ""
   },
   {
+    "id": "6f4862a9a705c7dea77f97b43ebfb7df",
+    "token_id": 230,
+    "name": "GRAM",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/GRAM/c39ebd2726bc74808a4a7702fb4fdf99.png",
+    "daily_volume": 14155419,
+    "dex_id": "",
+    "category": "",
+    "display_name": "",
+    "category_id": ""
+  },
+  {
     "id": "07a1204d9bf813c9f0d33f5725b83d07",
     "token_id": 4,
     "name": "xyz:HOOD",
@@ -317,17 +361,6 @@
     "category": "Stocks",
     "display_name": "HOOD",
     "category_id": "stocks"
-  },
-  {
-    "id": "ee746a46408218444948e30e5c10917b",
-    "token_id": 12,
-    "name": "cash:WTI",
-    "full_logo_url": null,
-    "daily_volume": 11975823,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
   },
   {
     "id": "32a2021d439bd2ad321550b43cbd2f70",
@@ -385,17 +418,6 @@
     "category_id": ""
   },
   {
-    "id": "af687bd6b93d5c30a5f28d99e5b479a8",
-    "token_id": 0,
-    "name": "km:US500",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/km:US500/e42e8f682ffc6c0637ad8f62c2485614.png",
-    "daily_volume": 10482728,
-    "dex_id": "km",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
     "id": "64edd4ee9ed5a7e9621fd405be8244d5",
     "token_id": 74,
     "name": "NEAR",
@@ -415,6 +437,17 @@
     "dex_id": "xyz",
     "category": "Stocks",
     "display_name": "EWY",
+    "category_id": "stocks"
+  },
+  {
+    "id": "809ccf053690e55d6e7343f74493adea",
+    "token_id": 83,
+    "name": "xyz:IBM",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:IBM/c49129b8dcbd00e5f4d4dceafc5d7a6c.png",
+    "daily_volume": 9002748,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "IBM",
     "category_id": "stocks"
   },
   {
@@ -451,15 +484,15 @@
     "category_id": "stocks"
   },
   {
-    "id": "0ff8e8b50ea9488e520b0dc5162826d8",
-    "token_id": 3,
-    "name": "cash:HOOD",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:HOOD/0a5d5c64932e971bcddad7a5510f503f.png",
-    "daily_volume": 8463629,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "1682d224f5ad7e031d0411819b7cf4bb",
+    "token_id": 84,
+    "name": "xyz:AVGO",
+    "full_logo_url": null,
+    "daily_volume": 8635685,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "AVGO",
+    "category_id": "stocks"
   },
   {
     "id": "347cbca85aed318356cd4f78b6509882",
@@ -479,9 +512,9 @@
     "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:HIMS/a1ed92a7009c27ac1cc3f5101b555eb9.png",
     "daily_volume": 7802472,
     "dex_id": "xyz",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "category": "Stocks",
+    "display_name": "HIMS",
+    "category_id": "stocks"
   },
   {
     "id": "24ab470c1bb82044446662a989d55e29",
@@ -528,17 +561,6 @@
     "category_id": ""
   },
   {
-    "id": "5a33195892a43a9cb5f8dd6304a77380",
-    "token_id": 1,
-    "name": "cash:TSLA",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:TSLA/0a5d5c64932e971bcddad7a5510f503f.png",
-    "daily_volume": 7457290,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
     "id": "369225b84b2ee40dbabe94f6793add76",
     "token_id": 7,
     "name": "xyz:COIN",
@@ -559,17 +581,6 @@
     "category": "Stocks",
     "display_name": "MSFT",
     "category_id": "stocks"
-  },
-  {
-    "id": "c93533341e875a16ee3c7867983080a0",
-    "token_id": 10,
-    "name": "cash:SILVER",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:SILVER/0a5d5c64932e971bcddad7a5510f503f.png",
-    "daily_volume": 6928500,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
   },
   {
     "id": "ec9aa8c1456dc3f8f4c723581838e949",
@@ -625,17 +636,6 @@
     "category": "Stocks",
     "display_name": "MU",
     "category_id": "stocks"
-  },
-  {
-    "id": "840c129931871c040acd789049445439",
-    "token_id": 7,
-    "name": "flx:OIL",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:OIL/bd7277332e2f3559920eb50998d7837f.png",
-    "daily_volume": 6595158,
-    "dex_id": "flx",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
   },
   {
     "id": "30f56421281e386db702343848c647a4",
@@ -713,17 +713,6 @@
     "category": "Stocks",
     "display_name": "AMZN",
     "category_id": "stocks"
-  },
-  {
-    "id": "98bed1fff7cf22e18f95a5d88f8d5a1d",
-    "token_id": 7,
-    "name": "km:USOIL",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/km:USOIL/be8f53b5ba27eeef8668685fa1b8c169.png",
-    "daily_volume": 5209609,
-    "dex_id": "km",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
   },
   {
     "id": "f61f321babbab9ebed14041b1ddddcd2",
@@ -814,6 +803,17 @@
     "category_id": ""
   },
   {
+    "id": "f3462f768700e3fc6c706c05500d149c",
+    "token_id": 19,
+    "name": "para:UNITREE",
+    "full_logo_url": null,
+    "daily_volume": 4467825,
+    "dex_id": "para",
+    "category": "preipo",
+    "display_name": "",
+    "category_id": "preipo"
+  },
+  {
     "id": "05470727787aa721cf53222b5d3d40f3",
     "token_id": 162,
     "name": "VIRTUAL",
@@ -825,15 +825,15 @@
     "category_id": ""
   },
   {
-    "id": "442ef0d967ba07fcd9b6cc107892f2bc",
-    "token_id": 5,
-    "name": "cash:INTC",
-    "full_logo_url": null,
-    "daily_volume": 4402720,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "45ed3bd5a65b8b8f1dbee27220988bce",
+    "token_id": 81,
+    "name": "xyz:QNT",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:QNT/aa2168afb50f1640fa8dee30f078c476.png",
+    "daily_volume": 4236264,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "QNT",
+    "category_id": "stocks"
   },
   {
     "id": "f6f636f8205394168e8c8fbdaf467faa",
@@ -880,28 +880,6 @@
     "category_id": ""
   },
   {
-    "id": "8d4d5e0d41a12d5996e8d36f8066ccc9",
-    "token_id": 168,
-    "name": "ZEREBRO",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/ZEREBRO/ac69e36f55bcb71353d640366a9f911a.png",
-    "daily_volume": 3302494,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "830967d0d8af8347ad5ef6cadcbdb0de",
-    "token_id": 4,
-    "name": "cash:GOOGL",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:GOOGL/0a5d5c64932e971bcddad7a5510f503f.png",
-    "daily_volume": 3238872,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
     "id": "5a7e5405631202874b1aca0d8284ff39",
     "token_id": 30,
     "name": "xyz:COPPER",
@@ -924,28 +902,6 @@
     "category_id": "stocks"
   },
   {
-    "id": "56bdc1de890bc540ef0db1a01bb2b90f",
-    "token_id": 9,
-    "name": "km:SILVER",
-    "full_logo_url": null,
-    "daily_volume": 3069401,
-    "dex_id": "km",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
-  },
-  {
-    "id": "a12a3079e14ced46e69ba52b8a90b21a",
-    "token_id": 183,
-    "name": "IP",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/IP/672d11093fff9898fb7ed16484e55063.png",
-    "daily_volume": 3055679,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
     "id": "99ace1aa61927cb05ec651b20a3d6397",
     "token_id": 9,
     "name": "xyz:AAPL",
@@ -966,17 +922,6 @@
     "category": "Memes",
     "display_name": "",
     "category_id": "memes"
-  },
-  {
-    "id": "99f2dada6f62ed81892b1ddedae7a8de",
-    "token_id": 66,
-    "name": "TON",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/TON/c9ee9c517023051e14511f481f75cf71.png",
-    "daily_volume": 2920966,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
   },
   {
     "id": "2b333aaa7d749af5eb4b8a377e4ea96a",
@@ -1089,17 +1034,6 @@
     "category_id": ""
   },
   {
-    "id": "741f23f936b334ac89b85d6edac93d55",
-    "token_id": 4,
-    "name": "km:SMALL2000",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/km:SMALL2000/a2ae9803dfcacf27dc9a302d8b081f92.png",
-    "daily_volume": 2438646,
-    "dex_id": "km",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
     "id": "50c26816bdd3bb2a02def8e11a5cd5a3",
     "token_id": 108,
     "name": "ZETA",
@@ -1109,28 +1043,6 @@
     "category": "",
     "display_name": "",
     "category_id": ""
-  },
-  {
-    "id": "46589dbc497478193d0fc922e5421196",
-    "token_id": 181,
-    "name": "TST",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/TST/dd7460b1f1fc51c2a54bacc1f029a544.png",
-    "daily_volume": 2386319,
-    "dex_id": "",
-    "category": "Memes",
-    "display_name": "",
-    "category_id": "memes"
-  },
-  {
-    "id": "bbff0c486096c0d653fa4961fb18ebe1",
-    "token_id": 10,
-    "name": "km:GOLD",
-    "full_logo_url": null,
-    "daily_volume": 2319306,
-    "dex_id": "km",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
   },
   {
     "id": "7b98f792fccb603a0c59af0a8f4bdcfa",
@@ -1221,6 +1133,17 @@
     "category_id": ""
   },
   {
+    "id": "8720edfa3e4729babb1c27bc9b142a2d",
+    "token_id": 46,
+    "name": "xyz:KIOXIA",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:KIOXIA/f87cc1ff113965fd8cf88998af46e1e6.png",
+    "daily_volume": 1986651,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "KIOXIA",
+    "category_id": "stocks"
+  },
+  {
     "id": "6a62300b802598c73bde0a2548c72e3c",
     "token_id": 171,
     "name": "SPX",
@@ -1254,26 +1177,15 @@
     "category_id": "memes"
   },
   {
-    "id": "2b3592bde4b93c88169dfd8a2e5c3d23",
-    "token_id": 5,
-    "name": "km:USTECH",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/km:USTECH/eb85fa6def0cdca2d642de000b93e99d.png",
-    "daily_volume": 1744586,
-    "dex_id": "km",
-    "category": "Indices",
-    "display_name": "USTECH100",
-    "category_id": "indices"
-  },
-  {
-    "id": "082415eeb7e51a11a33fab9c6886e132",
-    "token_id": 2,
-    "name": "cash:NVDA",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:NVDA/0a5d5c64932e971bcddad7a5510f503f.png",
-    "daily_volume": 1599699,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "768fda093426aae2cacda7e80cd9c7a7",
+    "token_id": 80,
+    "name": "xyz:BB",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:BB/1b7641d21e4515f3061b7d9e2f9e5c6c.png",
+    "daily_volume": 1808312,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "BB",
+    "category_id": "stocks"
   },
   {
     "id": "bf1e2d28ca9ca99d7f10c663e672f989",
@@ -1282,28 +1194,6 @@
     "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/FET/5b2cbcaf4c4b67ddde2a040ab368e78b.png",
     "daily_volume": 1589763,
     "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "02e3c9521667194e7805076209ca8e38",
-    "token_id": 6,
-    "name": "cash:AMZN",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:AMZN/353e48ee26ee5b1cfecc722dced86804.png",
-    "daily_volume": 1561034,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "2ea2b4b5200b987d781ee7cd4bd52bde",
-    "token_id": 7,
-    "name": "cash:MSFT",
-    "full_logo_url": null,
-    "daily_volume": 1533753,
-    "dex_id": "cash",
     "category": "",
     "display_name": "",
     "category_id": ""
@@ -1353,15 +1243,26 @@
     "category_id": ""
   },
   {
+    "id": "61bb214e47efb230ce2d286feebba3f6",
+    "token_id": 86,
+    "name": "xyz:NBIS",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:NBIS/03e50e2597a5e9714db04d297e13858b.png",
+    "daily_volume": 1393177,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "NBIS",
+    "category_id": "stocks"
+  },
+  {
     "id": "dfdeddbcac99538b1d38b1cf510dbc65",
     "token_id": 63,
     "name": "xyz:BIRD",
     "full_logo_url": null,
     "daily_volume": 1318167,
     "dex_id": "xyz",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "category": "Stocks",
+    "display_name": "BIRD",
+    "category_id": "stocks"
   },
   {
     "id": "9a96bf72912d59d7e8fb05109dcbcba6",
@@ -1375,15 +1276,15 @@
     "category_id": ""
   },
   {
-    "id": "d195eaceb9567f5c49fc53b3a1c53167",
-    "token_id": 9,
-    "name": "cash:GOLD",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:GOLD/0a5d5c64932e971bcddad7a5510f503f.png",
-    "daily_volume": 1295801,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "de17d9bdb3f112a153bc1efceb3396f3",
+    "token_id": 94,
+    "name": "xyz:BOT",
+    "full_logo_url": null,
+    "daily_volume": 1234158,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "BOT",
+    "category_id": "stocks"
   },
   {
     "id": "ab0e9b0d2cd437c917eda38d15489215",
@@ -1405,6 +1306,17 @@
     "dex_id": "xyz",
     "category": "Stocks",
     "display_name": "SKHYNIX",
+    "category_id": "stocks"
+  },
+  {
+    "id": "a2a8c2942bd1ea6873cdfe2253f4d634",
+    "token_id": 98,
+    "name": "xyz:SHAZ",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:SHAZ/f892783b5fa8325b1ce1245cdeb20116.png",
+    "daily_volume": 1162430,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "SHAZ",
     "category_id": "stocks"
   },
   {
@@ -1441,17 +1353,6 @@
     "category_id": ""
   },
   {
-    "id": "e725cc43880ea966727a756ff9167f0d",
-    "token_id": 8,
-    "name": "cash:META",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/cash:META/0a5d5c64932e971bcddad7a5510f503f.png",
-    "daily_volume": 1120786,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
     "id": "a3bfe5939361801ae7ecade32605e526",
     "token_id": 180,
     "name": "BERA",
@@ -1463,23 +1364,23 @@
     "category_id": ""
   },
   {
+    "id": "125918c96f86d373275462544de354f4",
+    "token_id": 82,
+    "name": "xyz:DELL",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:DELL/9146d512ab0f898c73d449483b946cbb.png",
+    "daily_volume": 1110773,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "DELL",
+    "category_id": "stocks"
+  },
+  {
     "id": "85a1cdddc59cb89e6297acc2f2fc1755",
     "token_id": 29,
     "name": "COMP",
     "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/COMP/500c26e44c699edec15c24aeb9cdfdeb.png",
     "daily_volume": 1023446,
     "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "623632226cd3db9ce0875a354fea4518",
-    "token_id": 11,
-    "name": "cash:EWY",
-    "full_logo_url": null,
-    "daily_volume": 1020347,
-    "dex_id": "cash",
     "category": "",
     "display_name": "",
     "category_id": ""
@@ -1494,17 +1395,6 @@
     "category": "",
     "display_name": "",
     "category_id": ""
-  },
-  {
-    "id": "5ac84ce89dd856ea0b0576f894460b1d",
-    "token_id": 6,
-    "name": "flx:SILVER",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:SILVER/44e9080ac322f58147a0d5d83ae1f238.png",
-    "daily_volume": 998695,
-    "dex_id": "flx",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
   },
   {
     "id": "479b9804810ad36e01d1d453d54102a1",
@@ -1573,15 +1463,15 @@
     "category_id": ""
   },
   {
-    "id": "3236b2b23934b4f16e3ccb8d242d930d",
-    "token_id": 8,
-    "name": "flx:GAS",
+    "id": "01f99cbfedee0db9daee801c397db085",
+    "token_id": 92,
+    "name": "xyz:QCOM",
     "full_logo_url": null,
-    "daily_volume": 825331,
-    "dex_id": "flx",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
+    "daily_volume": 810142,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "QCOM",
+    "category_id": "stocks"
   },
   {
     "id": "3bbdb0e72accb85b8d2343441674f2ca",
@@ -1628,15 +1518,15 @@
     "category_id": ""
   },
   {
-    "id": "a8337f438d017df84b51e4e8014b8906",
-    "token_id": 2,
-    "name": "vntl:ANTHROPIC",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:ANTHROPIC/9421acbcf6c79584a86f38319de7a13f.png",
-    "daily_volume": 747924,
-    "dex_id": "vntl",
-    "category": "preipo",
+    "id": "8dbfea671141d9be1aa4927a39304371",
+    "token_id": 10,
+    "name": "para:STX",
+    "full_logo_url": null,
+    "daily_volume": 743138,
+    "dex_id": "para",
+    "category": "Stocks",
     "display_name": "",
-    "category_id": "preipo"
+    "category_id": "stocks"
   },
   {
     "id": "4a7ea31814f9d393c92bd8cc21759b68",
@@ -1672,6 +1562,17 @@
     "category_id": ""
   },
   {
+    "id": "4a86c1e5d33f7793223467bdb5be4d75",
+    "token_id": 95,
+    "name": "xyz:AMAT",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:AMAT/516f82791d3c0cd7c9a5635105e6d652.png",
+    "daily_volume": 712978,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "AMAT",
+    "category_id": "stocks"
+  },
+  {
     "id": "02f386111efd455902e5d314b8797d29",
     "token_id": 0,
     "name": "para:TOTAL2",
@@ -1681,6 +1582,28 @@
     "category": "crypto",
     "display_name": "TOTAL2",
     "category_id": "crypto"
+  },
+  {
+    "id": "f7751ebb36cc58d97367b2a4eba388f3",
+    "token_id": 0,
+    "name": "mkts:US500",
+    "full_logo_url": null,
+    "daily_volume": 702245,
+    "dex_id": "mkts",
+    "category": "Indices",
+    "display_name": "",
+    "category_id": "indices"
+  },
+  {
+    "id": "1a98b93e4802908998e034fe37584906",
+    "token_id": 60,
+    "name": "xyz:PURRDAT",
+    "full_logo_url": null,
+    "daily_volume": 700781,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "PURRDAT",
+    "category_id": "stocks"
   },
   {
     "id": "8fcce50f392a6fab43f30d3af609d4e3",
@@ -1705,26 +1628,15 @@
     "category_id": ""
   },
   {
-    "id": "06bcd79797d61882974bb492c4047cf6",
-    "token_id": 9,
-    "name": "vntl:ENERGY",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:ENERGY/2c5cc366d73bdfcff9d59f83d41de345.png",
-    "daily_volume": 645800,
-    "dex_id": "vntl",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
-    "id": "bbfcb6fcbf83e4da435b864328568315",
-    "token_id": 18,
-    "name": "hyna:IP",
-    "full_logo_url": null,
-    "daily_volume": 601889,
-    "dex_id": "hyna",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "44be9b3fd0e38e97f5af8c9204b7db5c",
+    "token_id": 65,
+    "name": "xyz:DRAM",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:DRAM/c1791a4317ccf445036d667131931259.png",
+    "daily_volume": 605958,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "DRAM",
+    "category_id": "stocks"
   },
   {
     "id": "4f6f18fc46c2b25436b90f473074cca0",
@@ -1780,17 +1692,6 @@
     "category": "Memes",
     "display_name": "",
     "category_id": "memes"
-  },
-  {
-    "id": "b8881d75d2f68bb493365695daafec19",
-    "token_id": 15,
-    "name": "km:NVDA",
-    "full_logo_url": null,
-    "daily_volume": 549530,
-    "dex_id": "km",
-    "category": "Stocks",
-    "display_name": "",
-    "category_id": "stocks"
   },
   {
     "id": "5bc0918cd4091850eaf5154cc8bd1550",
@@ -1870,17 +1771,6 @@
     "category_id": "stocks"
   },
   {
-    "id": "58d1d4ccc7cf8d7afcce09a44adfa415",
-    "token_id": 14,
-    "name": "cash:KWEB",
-    "full_logo_url": null,
-    "daily_volume": 492233,
-    "dex_id": "cash",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
     "id": "f791e215081d6dfc15b9a6eb525f5b29",
     "token_id": 99,
     "name": "CAKE",
@@ -1890,6 +1780,17 @@
     "category": "",
     "display_name": "",
     "category_id": ""
+  },
+  {
+    "id": "ac11c5230978775182c760d25b5588d7",
+    "token_id": 89,
+    "name": "xyz:SMH",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:SMH/3005189c3f2776ccb97d85cc09f76419.png",
+    "daily_volume": 481918,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "SMH",
+    "category_id": "stocks"
   },
   {
     "id": "aa53ca0b650dfd85c4f59fa156f7a2cc",
@@ -1923,17 +1824,6 @@
     "category": "",
     "display_name": "",
     "category_id": ""
-  },
-  {
-    "id": "431db37ac4c6d0efbfd624107a55c774",
-    "token_id": 14,
-    "name": "flx:USA500",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:USA500/72c7b18da390f541b78ec2cca051120c.png",
-    "daily_volume": 467944,
-    "dex_id": "flx",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
   },
   {
     "id": "aa8bcb2a6a7a1716989f28216e736ebc",
@@ -1980,6 +1870,17 @@
     "category_id": "memes"
   },
   {
+    "id": "98bf57ab1942c5e925aa84c88f3999db",
+    "token_id": 5,
+    "name": "mkts:USTECH",
+    "full_logo_url": null,
+    "daily_volume": 433711,
+    "dex_id": "mkts",
+    "category": "Indices",
+    "display_name": "QQQ",
+    "category_id": "indices"
+  },
+  {
     "id": "8cfbc6bc8db98c5bd60362347fca2da7",
     "token_id": 10,
     "name": "hyna:SUI",
@@ -2002,17 +1903,6 @@
     "category_id": "commodities"
   },
   {
-    "id": "8ea8a87841909a1e5dbaf975c43cae90",
-    "token_id": 8,
-    "name": "km:TSLA",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/km:TSLA/f80e9ad5e82c4d2222ed03beeccef977.png",
-    "daily_volume": 415277,
-    "dex_id": "km",
-    "category": "Stocks",
-    "display_name": "",
-    "category_id": "stocks"
-  },
-  {
     "id": "cb057b846b0f80c3bb7ae130530b3a27",
     "token_id": 136,
     "name": "ZK",
@@ -2024,26 +1914,15 @@
     "category_id": ""
   },
   {
-    "id": "cd0fed7df2774435d4378553c8be6d15",
-    "token_id": 3,
-    "name": "flx:COIN",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:COIN/99a18e4fd1a3ee16ad8de26dccc34d67.png",
-    "daily_volume": 402650,
-    "dex_id": "flx",
+    "id": "20fd99f5946a930ef6487a8fc3b49e8f",
+    "token_id": 4,
+    "name": "para:AVGO",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/para:AVGO/f968ee66e5665d9438ac1767cbef53f3.png",
+    "daily_volume": 405041,
+    "dex_id": "para",
     "category": "Stocks",
     "display_name": "",
     "category_id": "stocks"
-  },
-  {
-    "id": "13b09d6da1893ee050627fa898c6c1fc",
-    "token_id": 8,
-    "name": "vntl:DEFENSE",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:DEFENSE/0ff8391ff2d853f373158a5193ff7b96.png",
-    "daily_volume": 395280,
-    "dex_id": "vntl",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
   },
   {
     "id": "602bcb15b1e1b9719d1fae7b1b512431",
@@ -2055,6 +1934,17 @@
     "category": "",
     "display_name": "",
     "category_id": ""
+  },
+  {
+    "id": "b00e3e558557cdffb8ec5fb1a55b16c8",
+    "token_id": 78,
+    "name": "xyz:ASML",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:ASML/7acdace54327e5d8b50f7cd7a6c343a3.png",
+    "daily_volume": 372799,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "ASML",
+    "category_id": "stocks"
   },
   {
     "id": "b849337a5ae05daf6d0fd9cc2214c668",
@@ -2079,33 +1969,11 @@
     "category_id": ""
   },
   {
-    "id": "7c9b59cc221737a33e77e3304b4a3bc9",
-    "token_id": 3,
-    "name": "vntl:MAG7",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:MAG7/6b573b3ccecbb05dce733a79f0d3ee79.png",
-    "daily_volume": 362740,
-    "dex_id": "vntl",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
     "id": "a5c1a87dbb772cf8e08aac34634da407",
     "token_id": 209,
     "name": "STBL",
     "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/STBL/dcc88da5916306ed73e0e7a764bb4a7e.png",
     "daily_volume": 355772,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "9c0c527b9fed5549c3312964834ea7f6",
-    "token_id": 155,
-    "name": "CHILLGUY",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/CHILLGUY/cbd259b10f94c41722e6a2b9f9c463d3.png",
-    "daily_volume": 344023,
     "dex_id": "",
     "category": "",
     "display_name": "",
@@ -2132,6 +2000,17 @@
     "category": "",
     "display_name": "",
     "category_id": ""
+  },
+  {
+    "id": "9a45dc3d1e6645bc878c8539ee720aee",
+    "token_id": 85,
+    "name": "xyz:NOW",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:NOW/7cd4a0341ceea4a8f578fad5a167c59e.png",
+    "daily_volume": 332624,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "NOW",
+    "category_id": "stocks"
   },
   {
     "id": "9619ecd8a91e5d749cbcf79f6a4081d8",
@@ -2178,6 +2057,17 @@
     "category_id": ""
   },
   {
+    "id": "2bc9c05403fba42fbc91d3121347509f",
+    "token_id": 56,
+    "name": "xyz:XLE",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:XLE/4ad52bdccbc345617954426585fdbe0d.png",
+    "daily_volume": 311224,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "XLE",
+    "category_id": "stocks"
+  },
+  {
     "id": "fc91b14eef9c58c4cad8fdf87b4c0bea",
     "token_id": 87,
     "name": "SUPER",
@@ -2222,39 +2112,6 @@
     "category_id": ""
   },
   {
-    "id": "8569c5906bbeef46a0f4387d66460216",
-    "token_id": 7,
-    "name": "vntl:NUCLEAR",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:NUCLEAR/ad92e4dff2338ce6d2301da104f63dd6.png",
-    "daily_volume": 287408,
-    "dex_id": "vntl",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
-    "id": "e8308b53534b200f3887472b79eb630c",
-    "token_id": 2,
-    "name": "flx:CRCL",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:CRCL/1cbc2d7730090b0f99946487b725ccbf.png",
-    "daily_volume": 287108,
-    "dex_id": "flx",
-    "category": "Stocks",
-    "display_name": "",
-    "category_id": "stocks"
-  },
-  {
-    "id": "fcaf10dc30817f4c9b490c80a65ba548",
-    "token_id": 5,
-    "name": "flx:GOLD",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:GOLD/ec6a1aff13c1e381cd228242d6c72a2f.png",
-    "daily_volume": 283483,
-    "dex_id": "flx",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
-  },
-  {
     "id": "3bf9c3275729a12e43039b5eec192003",
     "token_id": 60,
     "name": "KAS",
@@ -2266,17 +2123,6 @@
     "category_id": ""
   },
   {
-    "id": "1699091e0299faeccb625f702279b696",
-    "token_id": 11,
-    "name": "flx:PALLADIUM",
-    "full_logo_url": null,
-    "daily_volume": 282198,
-    "dex_id": "flx",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
-  },
-  {
     "id": "eb118d899043dc20122a190fbd0f6376",
     "token_id": 75,
     "name": "MEME",
@@ -2286,6 +2132,17 @@
     "category": "Memes",
     "display_name": "",
     "category_id": "memes"
+  },
+  {
+    "id": "f374de21d7d2f5a3926ebb9a0b86464b",
+    "token_id": 97,
+    "name": "xyz:GIGADEV",
+    "full_logo_url": null,
+    "daily_volume": 276388,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "GIGADEV",
+    "category_id": "stocks"
   },
   {
     "id": "74e67efcb0c3c12cbaf6477fc7aef7d3",
@@ -2354,15 +2211,15 @@
     "category_id": ""
   },
   {
-    "id": "b543131f3ccab793cd6725de0e072097",
-    "token_id": 13,
-    "name": "vntl:WHEAT",
-    "full_logo_url": null,
-    "daily_volume": 236697,
-    "dex_id": "vntl",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
+    "id": "8c3615046cc87bf51c520ce5c8ba62d8",
+    "token_id": 41,
+    "name": "xyz:GME",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:GME/20e33b3c79d05a3206ec69450cff9a86.png",
+    "daily_volume": 240904,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "GME",
+    "category_id": "stocks"
   },
   {
     "id": "b5f12e7fa0f97efcd75bdd6518de44f7",
@@ -2519,15 +2376,15 @@
     "category_id": "memes"
   },
   {
-    "id": "b9c29cd5f83c535b0bcaf31343315bad",
-    "token_id": 146,
-    "name": "SCR",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/SCR/e06c04acdbfcf47f3fd34a1e3599b99a.png",
-    "daily_volume": 197904,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "77c1449a55b91b252d7e0b37c0f62be6",
+    "token_id": 61,
+    "name": "xyz:MRVL",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:MRVL/b4daf853b3f385faa11760f07badf9ea.png",
+    "daily_volume": 195445,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "MRVL",
+    "category_id": "stocks"
   },
   {
     "id": "983deea599927c5af7f56840e435a4e3",
@@ -2583,17 +2440,6 @@
     "category": "",
     "display_name": "",
     "category_id": ""
-  },
-  {
-    "id": "dc311b44a5a8fb5cb7cb712c0e2f49db",
-    "token_id": 19,
-    "name": "km:PLTR",
-    "full_logo_url": null,
-    "daily_volume": 188205,
-    "dex_id": "km",
-    "category": "Stocks",
-    "display_name": "",
-    "category_id": "stocks"
   },
   {
     "id": "efeea5c34b078cdca23c3a2e43d43c48",
@@ -2662,17 +2508,6 @@
     "category_id": ""
   },
   {
-    "id": "a51f01232a644dde9add6fceba96b91e",
-    "token_id": 4,
-    "name": "vntl:SEMIS",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:SEMIS/70c76f539bc1e53e92d78f1e0a090591.png",
-    "daily_volume": 182414,
-    "dex_id": "vntl",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
     "id": "d2a0e12f2582cb9cb956a0f8c7400fc2",
     "token_id": 182,
     "name": "LAYER",
@@ -2704,17 +2539,6 @@
     "category": "",
     "display_name": "",
     "category_id": ""
-  },
-  {
-    "id": "4a2d11bdc8b702e8afaed2ecbafd29f9",
-    "token_id": 5,
-    "name": "vntl:ROBOT",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:ROBOT/d3affbf3520d1ad4ad9456ae0daa6ea0.png",
-    "daily_volume": 171880,
-    "dex_id": "vntl",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
   },
   {
     "id": "b33650c3049093777ce4f171b0cc3f8e",
@@ -2783,37 +2607,15 @@
     "category_id": ""
   },
   {
-    "id": "70efaa0394c477d84db802cb53bb6aa3",
-    "token_id": 13,
-    "name": "flx:USDE",
-    "full_logo_url": null,
-    "daily_volume": 156114,
-    "dex_id": "flx",
-    "category": "crypto",
-    "display_name": "",
-    "category_id": "crypto"
-  },
-  {
-    "id": "74214ea7ac010e07f2468e10ac1c5344",
-    "token_id": 18,
-    "name": "km:MU",
-    "full_logo_url": null,
-    "daily_volume": 152369,
-    "dex_id": "km",
+    "id": "f0999e7beb22f5502bb7835da701ae4c",
+    "token_id": 88,
+    "name": "xyz:NOK",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:NOK/1ff94da1001f9accf9a3a9d960c47242.png",
+    "daily_volume": 157126,
+    "dex_id": "xyz",
     "category": "Stocks",
-    "display_name": "",
+    "display_name": "NOK",
     "category_id": "stocks"
-  },
-  {
-    "id": "37afa53921f04141b089aec3bb26211c",
-    "token_id": 188,
-    "name": "PROMPT",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/PROMPT/a8edbcc7641430b4c6bc9596da2d965d.png",
-    "daily_volume": 150558,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
   },
   {
     "id": "24fe976b135d343ba350030deee5a543",
@@ -2854,17 +2656,6 @@
     "name": "BRETT",
     "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/BRETT/76685304ade54755db9d9d3404925132.png",
     "daily_volume": 147021,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "8fc4318743b20712610bb5d9d6e80fe0",
-    "token_id": 88,
-    "name": "USTC",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/USTC/6ece7316faedd94d184216b933736f22.png",
-    "daily_volume": 145914,
     "dex_id": "",
     "category": "",
     "display_name": "",
@@ -2915,17 +2706,6 @@
     "category_id": ""
   },
   {
-    "id": "a9720539eb07413562ebfa296463f3f4",
-    "token_id": 1,
-    "name": "km:BABA",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/km:BABA/38731648a97a831971135e6e4f01b134.png",
-    "daily_volume": 135204,
-    "dex_id": "km",
-    "category": "Stocks",
-    "display_name": "",
-    "category_id": "stocks"
-  },
-  {
     "id": "40b81d079e9898fd450a53999ac28a41",
     "token_id": 67,
     "name": "MINA",
@@ -2959,25 +2739,25 @@
     "category_id": ""
   },
   {
-    "id": "a296e5d5a7bd199515f5379b62dc3e02",
-    "token_id": 55,
-    "name": "ARK",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/ARK/b2b6d697c9afa62004e918f4c2ebd9aa.png",
-    "daily_volume": 112119,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "87b099378c77e4c034fe4342556a8c63",
+    "token_id": 75,
+    "name": "xyz:GBP",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:GBP/a38af32854cc0772507cfc346d0192d3.png",
+    "daily_volume": 119643,
+    "dex_id": "xyz",
+    "category": "FX",
+    "display_name": "GBPUSD",
+    "category_id": "fx"
   },
   {
-    "id": "4692fee3fc564e24b9c739479519cb6a",
-    "token_id": 12,
-    "name": "km:GOOGL",
-    "full_logo_url": null,
-    "daily_volume": 108194,
-    "dex_id": "km",
+    "id": "d68a4d427475c8c0195ca6daad6c27bc",
+    "token_id": 43,
+    "name": "xyz:SOFTBANK",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:SOFTBANK/185b372d1bbf5cbc53217e135b0b6908.png",
+    "daily_volume": 114493,
+    "dex_id": "xyz",
     "category": "Stocks",
-    "display_name": "",
+    "display_name": "SOFTBANK",
     "category_id": "stocks"
   },
   {
@@ -2992,45 +2772,12 @@
     "category_id": ""
   },
   {
-    "id": "6f009305e1648cc08c658d764f8a2f90",
-    "token_id": 6,
-    "name": "km:USENERGY",
-    "full_logo_url": null,
-    "daily_volume": 105963,
-    "dex_id": "km",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
-    "id": "ca63a9e30a35f8f3d0070d974143f1e2",
-    "token_id": 1,
-    "name": "vntl:OPENAI",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:OPENAI/940537cd89399957699ce9315687e38f.png",
-    "daily_volume": 103201,
-    "dex_id": "vntl",
-    "category": "preipo",
-    "display_name": "",
-    "category_id": "preipo"
-  },
-  {
     "id": "8b0e0e08bc6d67128a264df24df0c34b",
     "token_id": 9,
     "name": "hyna:DOGE",
     "full_logo_url": null,
     "daily_volume": 102428,
     "dex_id": "hyna",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "977a916a311854fb0a0a7d4bc82b553b",
-    "token_id": 97,
-    "name": "MAV",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/MAV/c31ec874558ff78f6c7f6fd0c4ccdf3e.png",
-    "daily_volume": 101576,
-    "dex_id": "",
     "category": "",
     "display_name": "",
     "category_id": ""
@@ -3080,14 +2827,25 @@
     "category_id": "stocks"
   },
   {
-    "id": "68d4ef136c384be293577daa860a78bd",
-    "token_id": 20,
-    "name": "km:XIAOMI",
+    "id": "46ac51ac2115be47b47b0cc42dc53b16",
+    "token_id": 73,
+    "name": "xyz:ARM",
     "full_logo_url": null,
-    "daily_volume": 96985,
-    "dex_id": "km",
+    "daily_volume": 95273,
+    "dex_id": "xyz",
     "category": "Stocks",
-    "display_name": "",
+    "display_name": "ARM",
+    "category_id": "stocks"
+  },
+  {
+    "id": "59f5e77706f6c73a58795bc9ee3edec4",
+    "token_id": 69,
+    "name": "xyz:ZM",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:ZM/7875c72a935c3f1163547aa5e75390f6.png",
+    "daily_volume": 94955,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "ZM",
     "category_id": "stocks"
   },
   {
@@ -3100,39 +2858,6 @@
     "category": "",
     "display_name": "",
     "category_id": ""
-  },
-  {
-    "id": "f7d8b12e260d275d8dcdcc7f004167ad",
-    "token_id": 202,
-    "name": "YZY",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/YZY/05f3e30a2a1ea94144ad1e0bb011dfe7.png",
-    "daily_volume": 94053,
-    "dex_id": "",
-    "category": "Memes",
-    "display_name": "",
-    "category_id": "memes"
-  },
-  {
-    "id": "4974d591db664ba0cfbdeeaa8bc11c5c",
-    "token_id": 11,
-    "name": "km:AAPL",
-    "full_logo_url": null,
-    "daily_volume": 89729,
-    "dex_id": "km",
-    "category": "Stocks",
-    "display_name": "",
-    "category_id": "stocks"
-  },
-  {
-    "id": "91268ddd705b225553297028e1ddf4e7",
-    "token_id": 0,
-    "name": "flx:TSLA",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:TSLA/ddded05e9bc380648cc791ccac25943d.png",
-    "daily_volume": 87196,
-    "dex_id": "flx",
-    "category": "Stocks",
-    "display_name": "",
-    "category_id": "stocks"
   },
   {
     "id": "34bdde38789308ab22fdef9177b60db9",
@@ -3152,9 +2877,9 @@
     "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:DKNG/83e878cad01ced7bffee0cc4af845c96.png",
     "daily_volume": 82735,
     "dex_id": "xyz",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "category": "Stocks",
+    "display_name": "DKNG",
+    "category_id": "stocks"
   },
   {
     "id": "505273a0a2bba0111a40f6cccbc55d69",
@@ -3173,17 +2898,6 @@
     "name": "TNSR",
     "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/TNSR/c62422737c6930a3e3550f6328f0e3d7.png",
     "daily_volume": 79279,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "9d149112a747cab74a47e232bc2f1687",
-    "token_id": 194,
-    "name": "DOOD",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/DOOD/72d1ee60f6a42349c0d265dcddbfc1aa.png",
-    "daily_volume": 75990,
     "dex_id": "",
     "category": "",
     "display_name": "",
@@ -3212,17 +2926,6 @@
     "category_id": ""
   },
   {
-    "id": "4ce31ee83d010b8ce5ecec17c99ad163",
-    "token_id": 110,
-    "name": "MAVIA",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/MAVIA/b7266b99c3fd5eb38c05aa567fcb0ad7.png",
-    "daily_volume": 75177,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
     "id": "94b88e89ebb3c130b49e27ab66c3c0d2",
     "token_id": 42,
     "name": "xyz:KR200",
@@ -3243,28 +2946,6 @@
     "category": "",
     "display_name": "",
     "category_id": ""
-  },
-  {
-    "id": "d69f3a9ad0fd32086ba65b667ba95987",
-    "token_id": 12,
-    "name": "flx:PLATINUM",
-    "full_logo_url": null,
-    "daily_volume": 72310,
-    "dex_id": "flx",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
-  },
-  {
-    "id": "5f84b931a5aca2b435e90f29beebdef9",
-    "token_id": 10,
-    "name": "vntl:BIOTECH",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:BIOTECH/b7c50e2e353a49c789b8e308fc7be509.png",
-    "daily_volume": 70195,
-    "dex_id": "vntl",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
   },
   {
     "id": "82aa127a04ab2654382c15c27ab0a8a8",
@@ -3300,6 +2981,17 @@
     "category_id": ""
   },
   {
+    "id": "22e74da7cc909b10b16fac9be1db5b84",
+    "token_id": 79,
+    "name": "xyz:MINIMAX",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:MINIMAX/eed56e9235cd663e6bc8a336d82e129e.png",
+    "daily_volume": 59873,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "MINIMAX",
+    "category_id": "stocks"
+  },
+  {
     "id": "0d53bdf61d28614a0df8081c6eaccf14",
     "token_id": 45,
     "name": "xyz:HYUNDAI",
@@ -3322,6 +3014,17 @@
     "category_id": ""
   },
   {
+    "id": "6ead5de5541d0c649c1468dba892cebb",
+    "token_id": 14,
+    "name": "para:AAOI",
+    "full_logo_url": null,
+    "daily_volume": 54317,
+    "dex_id": "para",
+    "category": "stock",
+    "display_name": "",
+    "category_id": "stock"
+  },
+  {
     "id": "3993fd85ce0cce2634bc734006a64f64",
     "token_id": 164,
     "name": "USUAL",
@@ -3333,14 +3036,14 @@
     "category_id": ""
   },
   {
-    "id": "38e01e242021f3b252dd3d404dff8011",
-    "token_id": 16,
-    "name": "km:TENCENT",
-    "full_logo_url": null,
-    "daily_volume": 46671,
-    "dex_id": "km",
+    "id": "2e3223b322a26155bbbd88ec496963eb",
+    "token_id": 59,
+    "name": "xyz:BX",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:BX/807e785b60332fe2da0f6a162445fbbe.png",
+    "daily_volume": 46485,
+    "dex_id": "xyz",
     "category": "Stocks",
-    "display_name": "",
+    "display_name": "BX",
     "category_id": "stocks"
   },
   {
@@ -3355,26 +3058,15 @@
     "category_id": ""
   },
   {
-    "id": "64fef6ca3f0cf88cc32eb41646a5b6ae",
-    "token_id": 19,
-    "name": "hyna:BCH",
-    "full_logo_url": null,
-    "daily_volume": 45147,
-    "dex_id": "hyna",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "3e0cce5da5b8d70140366bd294d84901",
-    "token_id": 137,
-    "name": "BLAST",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/BLAST/959dfed2b26669bc8b1fb86fc2eaacd8.png",
-    "daily_volume": 43770,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "29b95f12441761b5570279cd6b03839b",
+    "token_id": 101,
+    "name": "xyz:CXMT",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:CXMT/d14bdae19606e42d0b27515aad297374.png",
+    "daily_volume": 45261,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "CXMT",
+    "category_id": "stocks"
   },
   {
     "id": "10df3d67626099df882920ba6552f16d",
@@ -3388,15 +3080,26 @@
     "category_id": ""
   },
   {
-    "id": "6b38b4ee7e0175bc8cceb62c7457f50f",
-    "token_id": 0,
-    "name": "vntl:SPACEX",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:SPACEX/aae4613e87fa208b5d439d015af5fa07.png",
-    "daily_volume": 41600,
-    "dex_id": "vntl",
-    "category": "preipo",
-    "display_name": "",
-    "category_id": "preipo"
+    "id": "6252d61922b40e0450aa72d80cf7b279",
+    "token_id": 87,
+    "name": "xyz:WDC",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:WDC/b85123d9ac0d923dbac29eb65c55125c.png",
+    "daily_volume": 39208,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "WDC",
+    "category_id": "stocks"
+  },
+  {
+    "id": "93063ee1eb1fe1b828efa00fafd34b2c",
+    "token_id": 74,
+    "name": "xyz:EWT",
+    "full_logo_url": null,
+    "daily_volume": 34512,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "EWT",
+    "category_id": "stocks"
   },
   {
     "id": "375fabdcc1d1bc6c71a7766741c22182",
@@ -3410,26 +3113,26 @@
     "category_id": ""
   },
   {
-    "id": "45ba280eb8f677f5648d3caae1484ec7",
-    "token_id": 139,
-    "name": "MEW",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/MEW/6455ba4fa8c684c34477fbd3eb980de3.png",
-    "daily_volume": 29166,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "18b262e85a7a9a4378a106045997d682",
+    "token_id": 90,
+    "name": "xyz:BE",
+    "full_logo_url": null,
+    "daily_volume": 28600,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "BE",
+    "category_id": "stocks"
   },
   {
-    "id": "a19943cd058fc7156a0ffcf29aaea797",
-    "token_id": 51,
-    "name": "FTT",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/FTT/a69a60c837f81b71cdd2ac1c6c4ebdbf.png",
-    "daily_volume": 26398,
-    "dex_id": "",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
+    "id": "3e6672ae87777d465ba28460cebdd2ae",
+    "token_id": 70,
+    "name": "xyz:EBAY",
+    "full_logo_url": null,
+    "daily_volume": 26920,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "EBAY",
+    "category_id": "stocks"
   },
   {
     "id": "0b6af1076205190b8f6f7bf5ca8fe206",
@@ -3443,23 +3146,23 @@
     "category_id": ""
   },
   {
-    "id": "f6a62119ee2d178d746320ff5b41f74a",
+    "id": "a79a2e902f2fff4e62039e441109c1ad",
     "token_id": 7,
-    "name": "hyna:LIGHTER",
+    "name": "para:CRDO",
     "full_logo_url": null,
-    "daily_volume": 25044,
-    "dex_id": "hyna",
-    "category": "",
+    "daily_volume": 21205,
+    "dex_id": "para",
+    "category": "Stocks",
     "display_name": "",
-    "category_id": ""
+    "category_id": "stocks"
   },
   {
-    "id": "711084227cc0882835d45d19557a5f7a",
-    "token_id": 21,
-    "name": "km:BMNR",
+    "id": "5dc07c071495a77722e2b6317d9c2b2e",
+    "token_id": 8,
+    "name": "para:LRCX",
     "full_logo_url": null,
-    "daily_volume": 21682,
-    "dex_id": "km",
+    "daily_volume": 18313,
+    "dex_id": "para",
     "category": "Stocks",
     "display_name": "",
     "category_id": "stocks"
@@ -3476,124 +3179,113 @@
     "category_id": ""
   },
   {
-    "id": "be51bdd975c1bb01126bc3384e12565d",
-    "token_id": 10,
-    "name": "flx:COPPER",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:COPPER/e994d728baa5ceaa05fbbc44e023ba64.png",
-    "daily_volume": 15809,
-    "dex_id": "flx",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
+    "id": "b6d8af42b1e0e96ef9f4feeedd3e539c",
+    "token_id": 93,
+    "name": "xyz:STRC",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:STRC/e7c0ca02befb1a31818ab7fd9a237d60.png",
+    "daily_volume": 12856,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "STRC",
+    "category_id": "stocks"
   },
   {
-    "id": "f55ba45f254e7636f0be08043a28756d",
-    "token_id": 14,
-    "name": "vntl:SOY",
+    "id": "067bca9c22ae0e78fad950787ba3eb84",
+    "token_id": 62,
+    "name": "xyz:RKLB",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:RKLB/3be1dba4d3e9e49ca1a6b5aa184ec4cf.png",
+    "daily_volume": 11796,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "RKLB",
+    "category_id": "stocks"
+  },
+  {
+    "id": "33366df03d7f19b07b40334556b679bc",
+    "token_id": 67,
+    "name": "xyz:EWZ",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:EWZ/e8aa248da3690a1249c68e245a47c7ef.png",
+    "daily_volume": 11443,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "EWZ",
+    "category_id": "stocks"
+  },
+  {
+    "id": "e011c747653266dd864b466e92401d94",
+    "token_id": 12,
+    "name": "para:VST",
     "full_logo_url": null,
-    "daily_volume": 12245,
-    "dex_id": "vntl",
-    "category": "Commodities",
-    "display_name": "",
-    "category_id": "commodities"
-  },
-  {
-    "id": "071492874adc40cb08c077f4320b5e86",
-    "token_id": 13,
-    "name": "km:SEMI",
-    "full_logo_url": null,
-    "daily_volume": 12166,
-    "dex_id": "km",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
-    "id": "febc02f07848a67f7818c30e61039604",
-    "token_id": 1,
-    "name": "flx:NVDA",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:NVDA/abcd16a8bf3f2b8958215006e51e57b3.png",
-    "daily_volume": 11230,
-    "dex_id": "flx",
+    "daily_volume": 10037,
+    "dex_id": "para",
     "category": "Stocks",
     "display_name": "",
     "category_id": "stocks"
   },
   {
-    "id": "4e928d509d2d90452a8e245606e712cb",
-    "token_id": 14,
-    "name": "km:GLDMINE",
-    "full_logo_url": null,
-    "daily_volume": 7966,
-    "dex_id": "km",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
-    "id": "dd145bb0e8c04dfdeeaa5aeb6d5718ad",
-    "token_id": 22,
-    "name": "km:RTX",
-    "full_logo_url": null,
-    "daily_volume": 7640,
-    "dex_id": "km",
-    "category": "Stocks",
-    "display_name": "",
-    "category_id": "stocks"
-  },
-  {
-    "id": "05e2d3a728a951abf8e111695aa0ffc9",
-    "token_id": 3,
-    "name": "km:USBOND",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/km:USBOND/0c9de32240c4b6815d8f057978f1144c.png",
-    "daily_volume": 5013,
-    "dex_id": "km",
-    "category": "",
-    "display_name": "",
-    "category_id": ""
-  },
-  {
-    "id": "4e1b28b1f93a0b34562137c0d9e1479c",
-    "token_id": 4,
-    "name": "flx:XMR",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:XMR/05eca2dae6366ad15662b650a5874fe9.png",
-    "daily_volume": 3998,
-    "dex_id": "flx",
-    "category": "crypto",
-    "display_name": "",
-    "category_id": "crypto"
-  },
-  {
-    "id": "4f10e178ca20356641f2ddc7a3903658",
+    "id": "4ccf0fbdfd49ee1a1577bac9e3a63a0f",
     "token_id": 6,
-    "name": "vntl:INFOTECH",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/vntl:INFOTECH/da0d421fc8db0892088757dcc2d21002.png",
-    "daily_volume": 1936,
-    "dex_id": "vntl",
-    "category": "Indices",
-    "display_name": "",
-    "category_id": "indices"
-  },
-  {
-    "id": "126a7a056c6b68a240a56d29d0dd34f0",
-    "token_id": 14,
-    "name": "hyna:XMR",
+    "name": "para:GLW",
     "full_logo_url": null,
-    "daily_volume": 1199,
-    "dex_id": "hyna",
-    "category": "",
+    "daily_volume": 9202,
+    "dex_id": "para",
+    "category": "Stocks",
     "display_name": "",
-    "category_id": ""
+    "category_id": "stocks"
   },
   {
-    "id": "c8b0582d16677db401cc4ba59c5123c5",
-    "token_id": 15,
-    "name": "flx:USA100",
-    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/flx:USA100/9386f1450897af476ac41bdc020b13f4.png",
-    "daily_volume": 192,
-    "dex_id": "flx",
-    "category": "",
+    "id": "b0320e7bc70e446d90994d9be2deb954",
+    "token_id": 5,
+    "name": "para:COHR",
+    "full_logo_url": null,
+    "daily_volume": 6661,
+    "dex_id": "para",
+    "category": "Stocks",
     "display_name": "",
-    "category_id": ""
+    "category_id": "stocks"
+  },
+  {
+    "id": "f63b365e109d2372662c67492fe940e5",
+    "token_id": 13,
+    "name": "para:TER",
+    "full_logo_url": null,
+    "daily_volume": 2109,
+    "dex_id": "para",
+    "category": "Stocks",
+    "display_name": "",
+    "category_id": "stocks"
+  },
+  {
+    "id": "b2b305cf6cdec51ead6221cd9ac39258",
+    "token_id": 11,
+    "name": "para:IREN",
+    "full_logo_url": null,
+    "daily_volume": 2030,
+    "dex_id": "para",
+    "category": "Stocks",
+    "display_name": "",
+    "category_id": "stocks"
+  },
+  {
+    "id": "df1b7b076ab5e2addcf186b74d2b3ddb",
+    "token_id": 66,
+    "name": "xyz:CBRS",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:CBRS/5be7d56ee59a01d9572e5873bb4f9e20.png",
+    "daily_volume": 220,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "CBRS",
+    "category_id": "stocks"
+  },
+  {
+    "id": "ca583f43f4e67a51c53d8eabbd386dd0",
+    "token_id": 54,
+    "name": "xyz:LITE",
+    "full_logo_url": "https://static.debank.com/image/hyper_liquid/logo_url/xyz:LITE/143f8fe3d2a3a340bb14282ca806fd36.png",
+    "daily_volume": 0,
+    "dex_id": "xyz",
+    "category": "Stocks",
+    "display_name": "LITE",
+    "category_id": "stocks"
   }
 ]
