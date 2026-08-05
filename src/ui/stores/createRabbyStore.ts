@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create, StateCreator, StoreApi, UseBoundStore } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import {
   BackgroundStoreStorage,
@@ -6,30 +6,27 @@ import {
   BackgroundStoreUpdate,
 } from './createSyncedBackgroundStorage';
 
-type StoreApi<State> = {
-  destroy: () => void;
-  getInitialState: () => State;
-  getState: () => State;
-  setState: (
-    partial:
-      | State
-      | Partial<State>
-      | ((state: State) => State | Partial<State>),
-    replace?: boolean
-  ) => void;
-  subscribe: (
-    listener: (state: State, previousState: State) => void
-  ) => () => void;
-};
-
-type StateCreator<State> = (
-  set: StoreApi<State>['setState'],
-  get: StoreApi<State>['getState'],
-  api: StoreApi<State>
-) => State;
+type SetStateArgs<State> =
+  | [
+      partial:
+        | State
+        | Partial<State>
+        | ((state: State) => State | Partial<State>),
+      replace?: false
+    ]
+  | [state: State | ((state: State) => State), replace: true];
 
 type SetState<State> = StoreApi<State>['setState'];
-type PendingSet<State> = Parameters<SetState<State>>;
+
+const callSet = <State>(set: SetState<State>, args: SetStateArgs<State>) => {
+  if (args[1] === true) {
+    set(args[0] as State | ((state: State) => State), true);
+    return;
+  }
+  set(args[0], args[1]);
+};
+
+type PendingSet<State> = SetStateArgs<State>;
 type FieldName<State> = Extract<keyof State, string>;
 
 export type RabbyStoreOptions<State extends Record<string, unknown>> = {
@@ -52,18 +49,9 @@ export type RabbyStoreControls<State> = {
   hydrationPromise: () => Promise<void>;
 };
 
-type RabbyBoundStore<State> = StoreApi<State> & {
-  (): State;
-  <Slice>(selector: (state: State) => Slice): Slice;
-  <Slice>(
-    selector: (state: State) => Slice,
-    equalityFn: (a: Slice, b: Slice) => boolean
-  ): Slice;
-};
-
-export type RabbyStore<
-  State extends Record<string, unknown>
-> = RabbyBoundStore<State> & {
+export type RabbyStore<State extends Record<string, unknown>> = UseBoundStore<
+  StoreApi<State>
+> & {
   persist: RabbyStoreControls<State>;
 };
 
@@ -154,21 +142,27 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
     enqueuePersist(previousState, state, changedKeys);
   };
 
-  const applyLocalSet: SetState<State> = (...args: PendingSet<State>) => {
+  const applyLocalSet = ((...args: PendingSet<State>) => {
     if (!hydrated) {
       pendingLocalUpdates.push(args);
       return;
     }
     const before = store.getState();
-    rawSet(...args);
+    callSet(rawSet, args);
     trackLocalChanges(before, store.getState());
-  };
+  }) as SetState<State>;
 
-  const store = create(
-    subscribeWithSelector((set, get, api) => {
-      rawSet = set;
-      return initializer(applyLocalSet, get, api);
-    })
+  const store = create<State>()(
+    subscribeWithSelector(
+      (
+        set: SetState<State>,
+        get: StoreApi<State>['getState'],
+        api: StoreApi<State>
+      ) => {
+        rawSet = set;
+        return initializer(applyLocalSet, get, api);
+      }
+    )
   ) as RabbyStore<State>;
 
   store.setState = applyLocalSet;
@@ -217,10 +211,14 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
       hydrated = true;
       pendingSyncedUpdates.splice(0).forEach(applySyncedUpdate);
       pendingRemoteUpdates.splice(0).forEach(applyRemote);
-      pendingLocalUpdates.splice(0).forEach((args) => applyLocalSet(...args));
+      pendingLocalUpdates
+        .splice(0)
+        .forEach((args) => callSet(applyLocalSet, args));
     } catch (error) {
       hydrated = true;
-      pendingLocalUpdates.splice(0).forEach((args) => applyLocalSet(...args));
+      pendingLocalUpdates
+        .splice(0)
+        .forEach((args) => callSet(applyLocalSet, args));
       reportError(error);
       throw error;
     }

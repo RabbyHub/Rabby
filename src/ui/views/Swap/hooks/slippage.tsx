@@ -2,10 +2,8 @@ import { useSwapStore } from '@/ui/stores/swap';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const useSlippageStore = () => {
-  const { autoSlippage, isCustomSlippage } = useSwapStore((store) => ({
-    autoSlippage: !!store.autoSlippage,
-    isCustomSlippage: !!store.isCustomSlippage,
-  }));
+  const autoSlippage = useSwapStore((store) => !!store.autoSlippage);
+  const isCustomSlippage = useSwapStore((store) => !!store.isCustomSlippage);
   const setAutoSlippageOnStore = useSwapStore((s) => s.setAutoSlippage);
   const setIsCustomSlippageOnStore = useSwapStore((s) => s.setIsCustomSlippage);
 

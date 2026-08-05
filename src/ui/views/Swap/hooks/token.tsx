@@ -152,25 +152,31 @@ export const useTokenPair = (userAddress: string) => {
   const wallet = useWallet();
   const depositFlowActive = useGasAccountDepositFlowActive();
 
+  const initialSelectedChain = useSwapStore(
+    (state) => state.$$initialSelectedChain
+  );
+  const storeSelectedChain = useSwapStore((state) => state.selectedChain);
+  const storeSelectedFromToken = useSwapStore(
+    (state) => state.selectedFromToken
+  );
+  const storeSelectedToToken = useSwapStore((state) => state.selectedToToken);
   const {
-    initialSelectedChain,
     oChain,
     defaultSelectedFromToken,
     defaultSelectedToToken,
-  } = useSwapStore((state) => {
-    const selectedChain = state.selectedChain || CHAINS_ENUM.ETH;
+  } = useMemo(() => {
+    const selectedChain = storeSelectedChain || CHAINS_ENUM.ETH;
     const selectedFromToken = isTokenOnChain(
-      state.selectedFromToken,
+      storeSelectedFromToken,
       selectedChain
     )
-      ? state.selectedFromToken
+      ? storeSelectedFromToken
       : undefined;
-    const selectedToToken = isTokenOnChain(state.selectedToToken, selectedChain)
-      ? state.selectedToToken
+    const selectedToToken = isTokenOnChain(storeSelectedToToken, selectedChain)
+      ? storeSelectedToToken
       : undefined;
 
     return {
-      initialSelectedChain: state.$$initialSelectedChain,
       oChain: selectedChain,
       defaultSelectedFromToken: selectedFromToken,
       defaultSelectedToToken:
@@ -178,7 +184,7 @@ export const useTokenPair = (userAddress: string) => {
           ? selectedToToken
           : undefined,
     };
-  });
+  }, [storeSelectedChain, storeSelectedFromToken, storeSelectedToToken]);
   const setSelectedChain = useSwapStore((s) => s.setSelectedChain);
   const setSelectedFromToken = useSwapStore((s) => s.setSelectedFromToken);
   const setSelectedToToken = useSwapStore((s) => s.setSelectedToToken);
