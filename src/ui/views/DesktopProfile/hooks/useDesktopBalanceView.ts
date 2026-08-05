@@ -80,11 +80,7 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
       appChainIds,
       curveChartData:
         latestCurveChartData ||
-        formChartData(
-          currentHomeBalanceCache?.originalCurveData || [],
-          balanceValue,
-          Date.now()
-        ),
+        formChartData(currentHomeBalanceCache?.originalCurveData || []),
       matteredChainBalances: latestMatteredChainBalances.length
         ? latestMatteredChainBalances
         : currentHomeBalanceCache?.matteredChainBalances || [],
