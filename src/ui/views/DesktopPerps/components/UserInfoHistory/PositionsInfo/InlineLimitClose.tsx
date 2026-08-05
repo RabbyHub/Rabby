@@ -28,6 +28,7 @@ import { EVENTS } from '@/constant';
 import { ThousandsNativeInput } from '../../ThousandsNativeInput';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
 import type { OrderConfirmRow } from '../../../modal/OrderConfirmModal';
+import { ConfirmAmount } from '../../../modal/OrderConfirmLiveValues';
 
 const CLOSE_PERCENTAGES = [10, 25, 50, 75, 100];
 
@@ -307,9 +308,14 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
               {
                 key: 'amount',
                 label: t('page.perpsPro.orderConfirm.amount'),
-                value: `${splitNumberByStep(
-                  new BigNumber(positionSize).toFixed(szDecimals)
-                )} ${formatPerpsCoin(record.coin)}`,
+                value: (
+                  <ConfirmAmount
+                    amount={new BigNumber(positionSize).toFixed(szDecimals)}
+                    coin={record.coin}
+                    price={midPrice}
+                    quoteAsset={quoteAsset}
+                  />
+                ),
               },
               // Closing the full position realizes exactly its unrealized PnL.
               ...buildEstPnlRow(Number(record.unrealizedPnl)),
@@ -353,9 +359,14 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
                 {
                   key: 'amount',
                   label: t('page.perpsPro.orderConfirm.amount'),
-                  value: `${splitNumberByStep(effectiveSize)} ${formatPerpsCoin(
-                    record.coin
-                  )}`,
+                  value: (
+                    <ConfirmAmount
+                      amount={effectiveSize}
+                      coin={record.coin}
+                      price={priceNum}
+                      quoteAsset={quoteAsset}
+                    />
+                  ),
                 },
                 ...(priceNum && sizeNum ? buildEstPnlRow(estPnl) : []),
               ],

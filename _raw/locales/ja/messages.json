@@ -4054,6 +4054,7 @@
         "sellTrigger": "売却トリガー",
         "estimatedPnlWillBe": "あなたの推定PnLは次のとおりです。",
         "bboDisabledTooltip": "BBOは{{bboDisabledReason}}が有効な場合サポートされていません",
+        "bboPriceUnavailable": "現在オーダーブックの価格を取得できません。もう一度お試しください。",
         "sideShortSell": "ショート (売り)",
         "sideLongBuy": "ロング (買い)",
         "tpTriggerLessThanOrderPrice": "あなたのTPトリガープライスは、注文価格よりも低くするべきです。",

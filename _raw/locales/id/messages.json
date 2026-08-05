@@ -4052,6 +4052,7 @@
         "tpTriggerPriceIsZero": "Harga pemicu TP bernilai 0 sehingga tidak akan ditetapkan saat membuka posisi {{side}}.",
         "slTriggerMoreThanOrderPrice": "Harga pemicu SL Anda harus lebih tinggi dari harga pesanan Anda.",
         "bboDisabledTooltip": "BBO tidak didukung ketika {{bboDisabledReason}} diaktifkan",
+        "bboPriceUnavailable": "Harga buku pesanan tidak tersedia saat ini. Silakan coba lagi.",
         "slTriggerLessThanOrderPrice": "Harga pemicu SL Anda harus lebih rendah dari harga pesanan Anda.",
         "orderTypeTooltipStopMarket": "Pesanan Stop Market menjadi pesanan pasar ketika harga tertentu tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",
         "orderTypeTooltipStopLimit": "Limit Order Stop menjadi limit order ketika harga stop yang ditentukan tercapai. Tentukan harga pemicu untuk mengaktifkan pesanan.",

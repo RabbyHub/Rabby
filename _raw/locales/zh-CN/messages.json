@@ -4107,6 +4107,7 @@
         "orderTypeTooltipLimit": "限价单是以特定价格或更好的价格买入或卖出的订单。限价单不能保证执行。",
         "tpTriggerPriceIsZero": "你的止盈触发价格为 0，在你进行 {{side}} 时不会设置。",
         "bboDisabledTooltip": "当 {{bboDisabledReason}} 被启用时，不支持 BBO。",
+        "bboPriceUnavailable": "当前暂无可用的订单簿价格，请重试。",
         "orderTypeTooltipTakeLimit": "止盈限价单会在达到指定止盈价格时转为限价单。请设置触发价格以激活订单。",
         "slTriggerPriceIsZero": "你的止损触发价格为 0，进行 {{side}} 操作时将不会设置。",
         "orderTypeTooltipStopLimit": "当达到特定止损价时，止损限价单变为限价单。请指定一个触发价格以激活该订单。",

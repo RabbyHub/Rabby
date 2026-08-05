@@ -282,6 +282,9 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
           markPrice,
           pxDecimals,
           amount: order.size,
+          // Matches the size input's own price, so a USD-entered size is shown
+          // back as the figure the user typed.
+          amountPrice: markPrice,
           estLiqPrice: isBuy ? buyInfo.liqPriceNum : sellInfo.liqPriceNum,
           reduceOnly: order.reduceOnly,
         }),

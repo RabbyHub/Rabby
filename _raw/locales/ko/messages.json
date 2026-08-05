@@ -4059,6 +4059,7 @@
         "tpTriggerMoreThanOrderPrice": "당신의 TP 트리거 가격은 주문 가격보다 높아야 합니다.",
         "tpTriggerPriceIsZero": "TP 트리거 가격이 0이므로 {{side}} 포지션 주문에는 설정되지 않습니다.",
         "bboDisabledTooltip": "BBO는 {{bboDisabledReason}}가 활성화되었을 때 지원되지 않습니다.",
+        "bboPriceUnavailable": "현재 사용할 수 있는 호가창 가격이 없습니다. 다시 시도해 주세요.",
         "orderTypeTooltipLimit": "리미트 주문은 특정 가격 또는 더 나은 가격으로 구매하거나 판매하기 위한 주문입니다. 리미트 주문은 실행이 보장되지 않습니다.",
         "orderTypeTooltipTakeMarket": "익절 시장가 주문은 지정한 익절 가격에 도달하면 시장가 주문으로 전환됩니다. 주문을 활성화할 트리거 가격을 지정하세요.",
         "orderTypeTooltipStopLimit": "스톱 리밋 주문은 지정한 스톱 가격에 도달하면 지정가 주문으로 전환됩니다. 주문을 활성화할 트리거 가격을 지정하세요.",

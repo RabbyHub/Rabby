@@ -4051,6 +4051,7 @@
         "slTriggerMoreThanOrderPrice": "Giá kích hoạt SL của bạn nên cao hơn giá đơn hàng của bạn.",
         "tpTriggerLessThanOrderPrice": "Giá kích hoạt TP của bạn phải thấp hơn giá đặt hàng của bạn.",
         "bboDisabledTooltip": "BBO không được hỗ trợ khi {{bboDisabledReason}} được kích hoạt.",
+        "bboPriceUnavailable": "Hiện không có giá từ sổ lệnh. Vui lòng thử lại.",
         "tpTriggerMoreThanOrderPrice": "Giá kích hoạt TP của bạn phải cao hơn giá đơn hàng của bạn.",
         "slTriggerLessThanOrderPrice": "Giá kích hoạt SL của bạn nên thấp hơn giá đặt hàng của bạn.",
         "orderTypeTooltipMarket": "Lệnh thị trường sẽ được khớp ngay lập tức với giá thị trường tốt nhất có sẵn.",

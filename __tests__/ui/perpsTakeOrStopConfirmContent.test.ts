@@ -14,6 +14,15 @@ jest.mock('@/ui/views/DesktopPerps/utils', () => ({
   formatPerpsCoin: (coin: string) => coin,
 }));
 
+// The two live cells are `.tsx`, which jest's transform (`^.+\.[tj]s$`) does not
+// cover. They are redux-subscribing presentation only — the assertions here are
+// about which rows exist and what the builder computes — so they are stubbed to
+// identifiable markers rather than dragging a React transform into this suite.
+jest.mock('@/ui/views/DesktopPerps/modal/OrderConfirmLiveValues', () => ({
+  LiveMarkPrice: 'LiveMarkPrice',
+  ConfirmAmount: 'ConfirmAmount',
+}));
+
 import type { TFunction } from 'i18next';
 import { buildTakeOrStopConfirmContent } from '@/ui/views/DesktopPerps/components/TradingPanel/containers/takeOrStopConfirmContent';
 import type { TakeOrStopConfirmParams } from '@/ui/views/DesktopPerps/components/TradingPanel/containers/takeOrStopConfirmContent';
@@ -36,6 +45,9 @@ const params = (
   markPrice: 100000,
   pxDecimals: 2,
   amount: '0.5',
+  // Only used to convert the size into the quote asset when the panel's unit
+  // toggle is on `usd`; the row's base-unit rendering ignores it.
+  amountPrice: 100000,
   estLiqPrice: null,
   reduceOnly: false,
   ...patch,
@@ -45,6 +57,14 @@ const rows = (content: Content) => content.sections?.[0]?.rows ?? [];
 
 const rowValue = (content: Content, key: string) =>
   rows(content).find((row) => row.key === key)?.value;
+
+/** Element type + props of a row whose value is one of the live cells. */
+const liveCell = (content: Content, key: string) => {
+  const el = rowValue(content, key) as
+    | { type: unknown; props: Record<string, unknown> }
+    | undefined;
+  return el && { type: el.type, props: el.props };
+};
 
 describe('conditional order confirmation body', () => {
   it('lists the dialog rows in reading order', () => {
@@ -66,9 +86,20 @@ describe('conditional order confirmation body', () => {
     expect(rowValue(content, 'price')).toBe(
       'page.perpsPro.orderConfirm.marketPrice'
     );
-    expect(rowValue(content, 'markPrice')).toBe('100,000 USDC');
-    expect(rowValue(content, 'amount')).toBe('0.5 BTC');
     expect(rowValue(content, 'estLiqPrice')).toBe('92,500 USDC');
+
+    // Mark price ticks and the size unit follows a global toggle, so these two
+    // are live cells rather than strings baked in at click time. What matters
+    // here is that the builder hands them the right inputs — in particular
+    // that `amount` is the base-asset size the order will submit.
+    expect(liveCell(content, 'markPrice')).toEqual({
+      type: 'LiveMarkPrice',
+      props: expect.objectContaining({ coin: 'BTC', fallback: 100000 }),
+    });
+    expect(liveCell(content, 'amount')).toEqual({
+      type: 'ConfirmAmount',
+      props: expect.objectContaining({ amount: '0.5', coin: 'BTC' }),
+    });
   });
 
   it('drops the trigger and price rows when they carry nothing', () => {
