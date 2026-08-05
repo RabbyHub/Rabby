@@ -4056,6 +4056,7 @@
         "slTriggerLessThanOrderPrice": "O preço de ativação de SL deve ser inferior ao preço da ordem.",
         "orderTypeTooltipMarket": "A ordem de mercado é imediatamente correspondida ao melhor preço de mercado disponível.",
         "bboDisabledTooltip": "O BBO não é suportado quando {{bboDisabledReason}} está ativado.",
+        "bboPriceUnavailable": "Não há preço do livro de ordens disponível de momento. Tente novamente.",
         "slTriggerMoreThanOrderPrice": "O preço de gatilho do SL deve ser superior ao preço da ordem.",
         "tpTriggerMoreThanOrderPrice": "O preço de gatilho do TP deve ser superior ao preço da ordem.",
         "slTriggerPriceIsZero": "O preço de gatilho do SL é 0 e não será definido quando for {{side}}.",

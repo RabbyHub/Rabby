@@ -1,7 +1,12 @@
+import React from 'react';
 import type { TFunction } from 'i18next';
 import { splitNumberByStep } from '@/ui/utils';
 import { formatPerpsPct } from '@/ui/views/Perps/utils';
 import { formatPerpsCoin } from '../../../utils';
+import {
+  ConfirmAmount,
+  LiveMarkPrice,
+} from '../../../modal/OrderConfirmLiveValues';
 import type { OrderConfirmRow } from '../../../modal/OrderConfirmModal';
 import type { OrderConfirmContent } from '../../../modal/OrderConfirmProvider';
 
@@ -14,13 +19,20 @@ export interface TakeOrStopConfirmParams {
   triggerPrice: string;
   /**
    * The `Price` cell: `Market Price` for the conditional-market container, the
-   * direction's limit price for the conditional-limit one.
+   * limit price for the conditional-limit one.
    */
   priceText: string;
+  /** Mark price at click time; only the starting value for the live cell. */
   markPrice: number;
   pxDecimals: number;
   /** Direction-specific trade size in base units, exactly as submitted. */
   amount: string;
+  /**
+   * Price used solely to convert `amount` when the panel's size unit is USD —
+   * whatever the container's size input converts with, so the dialog shows back
+   * the same figure the user typed.
+   */
+  amountPrice: number;
   /**
    * This direction's liquidation price as a number (`liqPriceNum` on
    * `OrderSideInfo`); `null` when there is none to show.
@@ -43,6 +55,7 @@ export const buildTakeOrStopConfirmContent = ({
   markPrice,
   pxDecimals,
   amount,
+  amountPrice,
   estLiqPrice,
   reduceOnly,
 }: TakeOrStopConfirmParams): OrderConfirmContent => {
@@ -68,9 +81,12 @@ export const buildTakeOrStopConfirmContent = ({
     rows.push({
       key: 'markPrice',
       label: t('page.perpsPro.orderConfirm.markPrice'),
-      value: `${splitNumberByStep(
-        markPrice.toFixed(pxDecimals)
-      )} ${quoteAsset}`,
+      value: React.createElement(LiveMarkPrice, {
+        coin: selectedCoin,
+        fallback: markPrice,
+        pxDecimals,
+        quoteAsset,
+      }),
     });
   }
 
@@ -78,7 +94,12 @@ export const buildTakeOrStopConfirmContent = ({
     rows.push({
       key: 'amount',
       label: t('page.perpsPro.orderConfirm.amount'),
-      value: `${amount} ${formatPerpsCoin(selectedCoin)}`,
+      value: React.createElement(ConfirmAmount, {
+        amount,
+        coin: selectedCoin,
+        price: amountPrice,
+        quoteAsset,
+      }),
     });
   }
 

@@ -4067,6 +4067,7 @@
         "buyTrigger": "Купити Триггер",
         "orderCount": "Кількість ордерів",
         "bboDisabledTooltip": "BBO не підтримується, коли активовано {{bboDisabledReason}}.",
+        "bboPriceUnavailable": "Зараз немає доступної ціни в книзі ордерів. Будь ласка, спробуйте ще раз.",
         "tpTriggerLessThanOrderPrice": "Ціна спрацювання TP має бути нижчою за ціну ордера.",
         "slTriggerLessThanOrderPrice": "Ваша ціна спрацьовування SL має бути нижчою за ціну вашого ордеру.",
         "slTriggerMoreThanOrderPrice": "Ваша ціна спрацьовування SL має бути вищою за ціну вашого ордеру.",

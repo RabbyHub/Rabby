@@ -27,6 +27,7 @@ import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinNam
 import { ReactComponent as RcIconReverseArrowDown } from '@/ui/assets/perps/icon-reverse-arrow-down.svg';
 import { useOrderConfirm } from './OrderConfirmProvider';
 import type { OrderConfirmContent } from './OrderConfirmProvider';
+import { ConfirmAmount } from './OrderConfirmLiveValues';
 
 export interface Props {
   visible: boolean;
@@ -339,9 +340,14 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
               {
                 key: 'amount',
                 label: t('page.perpsPro.orderConfirm.amount'),
-                value: `${splitNumberByStep(
-                  positionSize.amount || 0
-                )} ${baseAsset}`,
+                value: (
+                  <ConfirmAmount
+                    amount={positionSize.amount || '0'}
+                    coin={position.coin}
+                    price={type === 'limit' ? limitPrice : marketPrice}
+                    quoteAsset={quoteAsset}
+                  />
+                ),
               },
               {
                 key: 'estPnl',
