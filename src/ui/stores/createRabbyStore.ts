@@ -1,10 +1,32 @@
-import { StateCreator, StoreApi, UseBoundStore, create } from 'zustand';
+import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import {
   BackgroundStoreStorage,
   BackgroundStoreSyncEngine,
   BackgroundStoreUpdate,
 } from './createSyncedBackgroundStorage';
+
+type StoreApi<State> = {
+  destroy: () => void;
+  getInitialState: () => State;
+  getState: () => State;
+  setState: (
+    partial:
+      | State
+      | Partial<State>
+      | ((state: State) => State | Partial<State>),
+    replace?: boolean
+  ) => void;
+  subscribe: (
+    listener: (state: State, previousState: State) => void
+  ) => () => void;
+};
+
+type StateCreator<State> = (
+  set: StoreApi<State>['setState'],
+  get: StoreApi<State>['getState'],
+  api: StoreApi<State>
+) => State;
 
 type SetState<State> = StoreApi<State>['setState'];
 type PendingSet<State> = Parameters<SetState<State>>;
@@ -30,9 +52,18 @@ export type RabbyStoreControls<State> = {
   hydrationPromise: () => Promise<void>;
 };
 
-export type RabbyStore<State extends Record<string, unknown>> = UseBoundStore<
-  StoreApi<State>
-> & {
+type RabbyBoundStore<State> = StoreApi<State> & {
+  (): State;
+  <Slice>(selector: (state: State) => Slice): Slice;
+  <Slice>(
+    selector: (state: State) => Slice,
+    equalityFn: (a: Slice, b: Slice) => boolean
+  ): Slice;
+};
+
+export type RabbyStore<
+  State extends Record<string, unknown>
+> = RabbyBoundStore<State> & {
   persist: RabbyStoreControls<State>;
 };
 
@@ -58,11 +89,7 @@ const defaultPartialize = <State extends Record<string, unknown>>(
  * controller -> background service instead of accessing Chrome Storage here.
  */
 export const createRabbyStore = <State extends Record<string, unknown>>(
-  initializer: StateCreator<
-    State,
-    [['zustand/subscribeWithSelector', never]],
-    []
-  >,
+  initializer: StateCreator<State>,
   options: RabbyStoreOptions<State>
 ): RabbyStore<State> => {
   const partialize =
@@ -137,7 +164,7 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
     trackLocalChanges(before, store.getState());
   };
 
-  const store = create<State>()(
+  const store = create(
     subscribeWithSelector((set, get, api) => {
       rawSet = set;
       return initializer(applyLocalSet, get, api);
