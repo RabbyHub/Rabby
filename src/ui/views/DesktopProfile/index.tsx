@@ -43,6 +43,7 @@ import { useTokenAndDefiData } from './components/TokensTabPane/hook';
 import { DesktopPageWrap } from '@/ui/component/DesktopPageWrap';
 import { reportWebPageView } from '@/ui/utils/ga-event';
 import { expiredNft } from '@/db/utils/expired';
+import { useHomeBalanceViewOuterPrefetch } from '../Dashboard/components/BalanceView/useHomeBalanceView';
 
 const DESKTOP_NAV_HEIGHT = 0;
 
@@ -68,10 +69,15 @@ const StickyBorderTop = () => (
   </div>
 );
 
-export const DesktopProfile: React.FC<{
+type DesktopProfileProps = {
   isActive?: boolean;
   style?: React.CSSProperties;
-}> = ({ isActive = true, style }) => {
+};
+
+const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
+  isActive = true,
+  style,
+}) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
 
@@ -119,9 +125,11 @@ export const DesktopProfile: React.FC<{
     curveChartData,
     isBalanceLoading,
     isCurveLoading,
+    isRefreshing,
     appChainIds,
     refreshBalance,
     refreshCurve,
+    refreshBalanceAndCurveIfExpired,
   } = useDesktopBalanceView({
     address: currentAccount?.address,
   });
@@ -174,6 +182,16 @@ export const DesktopProfile: React.FC<{
     refreshCurve();
   });
 
+  const handleFocusedUpdate = useMemoizedFn(async () => {
+    if (activeTab === 'nft' && currentAccount?.address) {
+      expiredNft(currentAccount.address);
+    }
+
+    setRefreshKey((prev) => prev + 1);
+    refreshPositions();
+    refreshBalanceAndCurveIfExpired();
+  });
+
   useListenTxReload(async () => {
     refreshBalance();
     refreshCurve();
@@ -197,7 +215,7 @@ export const DesktopProfile: React.FC<{
 
   useEventBusListener(EVENTS.DESKTOP.FOCUSED, () => {
     // window.location.reload();
-    handleUpdate();
+    handleFocusedUpdate();
   });
 
   useMount(() => {
@@ -243,6 +261,7 @@ export const DesktopProfile: React.FC<{
                     evmBalance={evmBalance}
                     curveChartData={curveChartData}
                     isLoading={isBalanceLoading || isCurveLoading}
+                    isRefreshing={isRefreshing}
                     onRefresh={handleUpdate}
                     appChainIds={appChainIds}
                   />
@@ -461,5 +480,35 @@ export const DesktopProfile: React.FC<{
         destroyOnClose
       />
     </>
+  );
+};
+
+const DesktopProfilePrefetched: React.FC<
+  DesktopProfileProps & { currentAddress: string }
+> = ({ currentAddress, ...props }) => {
+  const { dashboardBalanceCacheInited } = useHomeBalanceViewOuterPrefetch(
+    currentAddress
+  );
+
+  if (!dashboardBalanceCacheInited) {
+    return null;
+  }
+
+  return <DesktopProfileContent {...props} />;
+};
+
+export const DesktopProfile: React.FC<DesktopProfileProps> = (props) => {
+  const currentAccount = useCurrentAccount();
+
+  if (!currentAccount?.address) {
+    return null;
+  }
+
+  return (
+    <DesktopProfilePrefetched
+      key={currentAccount.address}
+      currentAddress={currentAccount.address}
+      {...props}
+    />
   );
 };

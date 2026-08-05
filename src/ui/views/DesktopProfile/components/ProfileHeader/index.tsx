@@ -36,6 +36,7 @@ export const ProfileHeader: React.FC<{
   curveChartData?: CurveChartData;
   appChainIds: string[];
   isLoading?: boolean;
+  isRefreshing?: boolean;
   onRefresh?(): void;
 }> = (props) => {
   const currentAccount = useCurrentAccount();
