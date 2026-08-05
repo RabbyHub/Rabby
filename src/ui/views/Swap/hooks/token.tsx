@@ -1,4 +1,4 @@
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSwapStore } from '@/ui/stores/swap';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -147,7 +147,6 @@ export interface FeeProps {
 }
 
 export const useTokenPair = (userAddress: string) => {
-  const dispatch = useRabbyDispatch();
   const refreshId = useRefreshId();
   const setRefreshId = useSetRefreshId();
   const wallet = useWallet();
@@ -158,23 +157,20 @@ export const useTokenPair = (userAddress: string) => {
     oChain,
     defaultSelectedFromToken,
     defaultSelectedToToken,
-  } = useRabbySelector((state) => {
-    const selectedChain = state.swap.selectedChain || CHAINS_ENUM.ETH;
+  } = useSwapStore((state) => {
+    const selectedChain = state.selectedChain || CHAINS_ENUM.ETH;
     const selectedFromToken = isTokenOnChain(
-      state.swap.selectedFromToken,
+      state.selectedFromToken,
       selectedChain
     )
-      ? state.swap.selectedFromToken
+      ? state.selectedFromToken
       : undefined;
-    const selectedToToken = isTokenOnChain(
-      state.swap.selectedToToken,
-      selectedChain
-    )
-      ? state.swap.selectedToToken
+    const selectedToToken = isTokenOnChain(state.selectedToToken, selectedChain)
+      ? state.selectedToToken
       : undefined;
 
     return {
-      initialSelectedChain: state.swap.$$initialSelectedChain,
+      initialSelectedChain: state.$$initialSelectedChain,
       oChain: selectedChain,
       defaultSelectedFromToken: selectedFromToken,
       defaultSelectedToToken:
@@ -183,6 +179,9 @@ export const useTokenPair = (userAddress: string) => {
           : undefined,
     };
   });
+  const setSelectedChain = useSwapStore((s) => s.setSelectedChain);
+  const setSelectedFromToken = useSwapStore((s) => s.setSelectedFromToken);
+  const setSelectedToToken = useSwapStore((s) => s.setSelectedToToken);
 
   const [chain, setChain] = useState(oChain);
 
@@ -190,10 +189,10 @@ export const useTokenPair = (userAddress: string) => {
     (c: CHAINS_ENUM) => {
       setChain(c);
       if (!isTab) {
-        dispatch.swap.setSelectedChain(c);
+        setSelectedChain(c);
       }
     },
-    [dispatch?.swap?.setSelectedChain]
+    [setSelectedChain]
   );
   const [refreshTokenId, updateRefreshTokenId] = useState(0);
   const reloadTxRefreshPausedRef = useRef(false);
@@ -340,13 +339,13 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     if (!isTab) {
-      dispatch.swap.setSelectedFromToken(payToken);
+      setSelectedFromToken(payToken);
     }
   }, [payToken]);
 
   useEffect(() => {
     if (!isTab) {
-      dispatch.swap.setSelectedToToken(receiveToken);
+      setSelectedToToken(receiveToken);
     }
   }, [receiveToken]);
 

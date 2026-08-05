@@ -12,6 +12,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RcIconHiddenArrow } from '@/ui/assets/swap/hidden-quote-arrow.svg';
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
+import { useSwapStore } from '@/ui/stores/swap';
 import { DrawerProps } from 'antd';
 
 interface QuotesProps
@@ -103,7 +104,7 @@ export const Quotes = ({
   const [hiddenError, setHiddenError] = useState(true);
   const [errorQuoteDEXs, setErrorQuoteDEXs] = useState<string[]>([]);
 
-  const dexListLength = useRabbySelector((s) => s.swap.supportedDEXList.length);
+  const dexListLength = useSwapStore((s) => s.supportedDEXList.length);
 
   if (isSwapWrapToken(other.payToken.id, other.receiveToken.id, other.chain)) {
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
@@ -251,7 +252,7 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
 
   const { t } = useTranslation();
 
-  const dexList = useRabbySelector((s) => s.swap.supportedDEXList);
+  const dexList = useSwapStore((s) => s.supportedDEXList);
 
   const height = useMemo(() => {
     const min = 333;

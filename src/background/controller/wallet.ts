@@ -127,6 +127,13 @@ import * as Sentry from '@sentry/browser';
 import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
+import type {
+  PersistedStoreKey,
+  PersistedStoreMap,
+  PersistedStorePatch,
+  PersistedStoreSnapshot,
+} from '@/types/persistedStore';
+import { getPersistStoreRevision } from 'background/utils/persistStore';
 
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -2721,6 +2728,40 @@ export class WalletController extends BaseController {
   setSlippage = swapService.setSlippage;
   getRecentSwapToTokens = swapService.getRecentSwapToTokens;
   setRecentSwapToToken = swapService.setRecentSwapToToken;
+
+  getStorageItem = <Key extends PersistedStoreKey>(
+    key: Key
+  ): PersistedStoreMap[Key] => {
+    switch (key) {
+      case 'swap':
+        return swapService.getSwap() as PersistedStoreMap[Key];
+      default:
+        throw new Error(`Unknown persisted store: ${String(key)}`);
+    }
+  };
+
+  getStorageSnapshot = <Key extends PersistedStoreKey>(
+    key: Key
+  ): PersistedStoreSnapshot<Key> => ({
+    revision: getPersistStoreRevision(key),
+    state: this.getStorageItem(key),
+  });
+
+  setStorageItem = <Key extends PersistedStoreKey>(
+    key: Key,
+    partials: PersistedStorePatch<Key>
+  ) => {
+    if (!partials || typeof partials !== 'object') {
+      throw new Error(`Invalid persisted store value: ${String(key)}`);
+    }
+    switch (key) {
+      case 'swap':
+        swapService.patchStore(partials as PersistedStorePatch<'swap'>);
+        return;
+      default:
+        throw new Error(`Unknown persisted store: ${String(key)}`);
+    }
+  };
 
   setRedirect2Points = RabbyPointsService.setRedirect2Points;
   setRabbyPointsSignature = RabbyPointsService.setSignature;
