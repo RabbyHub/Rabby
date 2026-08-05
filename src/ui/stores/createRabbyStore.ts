@@ -1,4 +1,4 @@
-import { create } from 'zustand/react';
+import { create, StateCreator, StoreApi, UseBoundStore } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import {
   BackgroundStoreStorage,
@@ -16,16 +16,7 @@ type SetStateArgs<State> =
     ]
   | [state: State | ((state: State) => State), replace: true];
 
-type SetState<State> = {
-  (
-    partial:
-      | State
-      | Partial<State>
-      | ((state: State) => State | Partial<State>),
-    replace?: false
-  ): void;
-  (state: State | ((state: State) => State), replace: true): void;
-};
+type SetState<State> = StoreApi<State>['setState'];
 
 const callSet = <State>(set: SetState<State>, args: SetStateArgs<State>) => {
   if (args[1] === true) {
@@ -34,21 +25,6 @@ const callSet = <State>(set: SetState<State>, args: SetStateArgs<State>) => {
   }
   set(args[0], args[1]);
 };
-
-type StoreApi<State> = {
-  getInitialState: () => State;
-  getState: () => State;
-  setState: SetState<State>;
-  subscribe: (
-    listener: (state: State, previousState: State) => void
-  ) => () => void;
-};
-
-type StateCreator<State> = (
-  set: StoreApi<State>['setState'],
-  get: StoreApi<State>['getState'],
-  api: StoreApi<State>
-) => State;
 
 type PendingSet<State> = SetStateArgs<State>;
 type FieldName<State> = Extract<keyof State, string>;
@@ -73,14 +49,9 @@ export type RabbyStoreControls<State> = {
   hydrationPromise: () => Promise<void>;
 };
 
-type RabbyBoundStore<State> = StoreApi<State> & {
-  (): State;
-  <Slice>(selector: (state: State) => Slice): Slice;
-};
-
-export type RabbyStore<
-  State extends Record<string, unknown>
-> = RabbyBoundStore<State> & {
+export type RabbyStore<State extends Record<string, unknown>> = UseBoundStore<
+  StoreApi<State>
+> & {
   persist: RabbyStoreControls<State>;
 };
 
@@ -181,7 +152,7 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
     trackLocalChanges(before, store.getState());
   }) as SetState<State>;
 
-  const store = create(
+  const store = create<State>()(
     subscribeWithSelector(
       (
         set: SetState<State>,
