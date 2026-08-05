@@ -3,14 +3,15 @@ import {
   TokenItem,
   PerpTopTokenCategory,
 } from '@rabby-wallet/rabby-api/dist/types';
-import DEFAULT_TOP_ASSET_JSON from './constants/PerpsTopAsset.json';
-import DEFAULT_ASSET_CATEGORY_JSON from './constants/PerpsAssetCategory.json';
 
 // must be a USDC token and more than 5 usdc
 export const PERPS_SEND_ARB_USDC_ADDRESS =
   '0x2df1c51e09aecf9cacb7bc98cb1742757f163df7';
 
-export const PERPS_AGENT_NAME = 'rabby-agent';
+// Defined in `@/constant/perps` so `sdkManager` — which the background bundle
+// pulls in — doesn't have to import this module. Re-exported so the existing
+// view-side call sites keep one import path.
+export { PERPS_AGENT_NAME } from '@/constant/perps';
 
 export const ARB_USDC_TOKEN_ID = '0xaf88d065e77c8cc2239327c5edb3a432268e5831';
 
@@ -195,8 +196,23 @@ export enum CandlePeriod {
   ONE_MONTH = '1M',
 }
 
-export const DEFAULT_TOP_ASSET = DEFAULT_TOP_ASSET_JSON as PerpTopTokenV3[];
-export const DEFAULT_ASSET_CATEGORY = DEFAULT_ASSET_CATEGORY_JSON as PerpTopTokenCategory[];
+/**
+ * Baked-in market lists, reached only when the API errors or returns empty.
+ *
+ * Loaded on demand rather than imported: PerpsTopAsset.json is ~110KB, this
+ * module is pulled into the background bundle too (via sdkManager), and the
+ * project doesn't set `sideEffects: false`, so a static import parks that
+ * payload in both bundles for a path that almost never runs.
+ */
+export const loadDefaultTopAsset = async (): Promise<PerpTopTokenV3[]> =>
+  ((await import('./constants/PerpsTopAsset.json'))
+    .default as unknown) as PerpTopTokenV3[];
+
+export const loadDefaultAssetCategory = async (): Promise<
+  PerpTopTokenCategory[]
+> =>
+  ((await import('./constants/PerpsAssetCategory.json'))
+    .default as unknown) as PerpTopTokenCategory[];
 
 const INIT_PERPS_BUILD_FEE_RECEIVE_ADDRESS =
   '0xAd9bE64fD7a35d99a138b87CB212BAefbCDCf045';

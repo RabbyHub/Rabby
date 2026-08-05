@@ -9,7 +9,7 @@ import {
   TradingContainerProps,
 } from '../../../types';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
@@ -27,6 +27,8 @@ import { TradingButton } from '../components/TradingButtons';
 import { BigNumber } from 'bignumber.js';
 import stats from '@/stats';
 import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
+import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
+import { OrderConfirmScaleTable } from '../../../modal/OrderConfirmScaleTable';
 
 export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -248,8 +250,12 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     t,
   ]);
 
+  const requestConfirm = useOrderConfirm();
+
+  // `runAsync` rather than `run` so the confirmation dialog can await the
+  // submission and keep its spinner up until it settles.
   const {
-    run: handleOpenOrderRequest,
+    runAsync: handleOpenOrderRequest,
     loading: handleOpenOrderLoading,
   } = useRequest(
     async () => {
@@ -334,6 +340,32 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     endPrice,
     scaleOrders,
   ]);
+
+  // Scale always confirms: no `dontShowAgainText`, so the dialog omits the
+  // opt-out row and nothing is persisted for it.
+  const handlePlaceOrder = useMemoizedFn(() => {
+    requestConfirm({
+      type: 'scale',
+      content: () => ({
+        title: t('page.perpsPro.orderConfirm.orderPreview'),
+        children: (
+          <OrderConfirmScaleTable
+            coin={selectedCoin}
+            quoteAsset={quoteAsset}
+            isBuy={orderSide === OrderSide.BUY}
+            orders={scaleOrders}
+            // "Cost" means margin everywhere else in this panel
+            // (`OrderInfoGrid` renders `netNew * px / leverage` under it), and
+            // the panel's own label for the notional is "Order Value". Showing
+            // the notional here would overstate what leaves the balance by the
+            // leverage multiple, in the one dialog that can't be turned off.
+            cost={orderSummary.marginRequired}
+          />
+        ),
+      }),
+      submit: () => handleOpenOrderRequest(),
+    });
+  });
 
   const handleStartMidClick = () => {
     setStartPrice(formatTpOrSlPrice(midPrice, szDecimals));
@@ -536,7 +568,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       {/* Place Order Button — always primary blue */}
       <TradingButton
         loading={handleOpenOrderLoading}
-        onClick={handleOpenOrderRequest}
+        onClick={handlePlaceOrder}
         disabled={!validation.isValid}
         error={validation.error}
         isValid={validation.isValid}

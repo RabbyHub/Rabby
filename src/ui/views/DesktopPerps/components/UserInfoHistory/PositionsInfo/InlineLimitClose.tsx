@@ -5,13 +5,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Button, Modal, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import { ScrollAwareTooltip } from './ScrollAwareTooltip';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { MarketData } from '@/ui/models/perps';
 import { calculatePnL } from '../../TradingPanel/utils';
@@ -25,31 +25,11 @@ import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import { useThemeMode } from '@/ui/hooks/usePreference';
-import { PerpsBlueBorderedButton } from '@/ui/views/Perps/components/BlueBorderedButton';
-import { PerpsCheckbox } from '../../TradingPanel/components/PerpsCheckbox';
 import { ThousandsNativeInput } from '../../ThousandsNativeInput';
+import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
+import type { OrderConfirmRow } from '../../../modal/OrderConfirmModal';
 
 const CLOSE_PERCENTAGES = [10, 25, 50, 75, 100];
-
-const MarketCloseCheckbox: React.FC<{
-  defaultChecked: boolean;
-  onChange: (checked: boolean) => void;
-}> = ({ defaultChecked, onChange }) => {
-  const [checked, setChecked] = useState(defaultChecked);
-  const { t } = useTranslation();
-  const title = t('page.perpsPro.userInfo.positionInfo.dontShowAgain');
-  return (
-    <PerpsCheckbox
-      checked={checked}
-      onChange={(val) => {
-        setChecked(val);
-        onChange(val);
-      }}
-      title={<span className="text-r-neutral-foot text-12">{title}</span>}
-    />
-  );
-};
 
 interface InlineLimitCloseProps {
   record: PositionFormatData;
@@ -61,19 +41,16 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
   marketData,
 }) => {
   const { t } = useTranslation();
-  const { isDarkTheme } = useThemeMode();
-  const dispatch = useRabbyDispatch();
   const currentPerpsAccount = useRabbySelector(
     (store) => store.perps.currentPerpsAccount
   );
   const sizeDisplayUnit = useRabbySelector(
     (state) => state.perps.sizeDisplayUnit
   );
-  const skipMarketCloseConfirm = useRabbySelector(
-    (state) => state.perps.skipMarketCloseConfirm
-  );
 
   const selectedCoin = useRabbySelector((store) => store.perps.selectedCoin);
+
+  const requestConfirm = useOrderConfirm();
 
   const szDecimals = marketData.szDecimals ?? 4;
   const pxDecimals = marketData.pxDecimals ?? 2;
@@ -283,67 +260,113 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     }
   );
 
+  const confirmTitle = `${formatPerpsCoin(record.coin)}-${quoteAsset}`;
+  // Coloured by the trade the close actually places, not by the position being
+  // closed: closing a long sells (red), closing a short buys (green).
+  const confirmTitleSuffix = {
+    text: isLong
+      ? t('page.perpsPro.orderConfirm.closeLong')
+      : t('page.perpsPro.orderConfirm.closeShort'),
+    tone: (isLong ? 'down' : 'up') as 'up' | 'down',
+  };
+
+  // PnL settles in the market's quote asset, not always USDC — a hardcoded
+  // "USDC" would contradict the Price row above on a USDH/USDT-quoted market.
+  const buildEstPnlRow = useMemoizedFn((pnl: number): OrderConfirmRow[] => {
+    if (!Number.isFinite(pnl)) return [];
+    const isUp = pnl >= 0;
+    return [
+      {
+        key: 'estPnl',
+        label: t('page.perpsPro.orderConfirm.estPnl'),
+        value: `${isUp ? '+' : '-'}${splitNumberByStep(
+          new BigNumber(Math.abs(pnl)).toFixed(2)
+        )} ${quoteAsset}`,
+        tone: isUp ? 'up' : 'down',
+      },
+    ];
+  });
+
   const handleMarketCloseWithConfirm = useMemoizedFn(() => {
     if (marketLoading || isMarketSubmitting.current) return;
 
-    if (skipMarketCloseConfirm) {
-      isMarketSubmitting.current = true;
-      handleMarketClose().finally(() => {
-        isMarketSubmitting.current = false;
-      });
-      return;
-    }
+    requestConfirm({
+      type: 'closeMarket',
+      content: () => ({
+        title: confirmTitle,
+        titleSuffix: confirmTitleSuffix,
+        sections: [
+          {
+            key: 'main',
+            rows: [
+              {
+                key: 'price',
+                label: t('page.perpsPro.orderConfirm.price'),
+                value: t('page.perpsPro.orderConfirm.marketPrice'),
+              },
+              {
+                key: 'amount',
+                label: t('page.perpsPro.orderConfirm.amount'),
+                value: `${splitNumberByStep(
+                  new BigNumber(positionSize).toFixed(szDecimals)
+                )} ${formatPerpsCoin(record.coin)}`,
+              },
+              // Closing the full position realizes exactly its unrealized PnL.
+              ...buildEstPnlRow(Number(record.unrealizedPnl)),
+            ],
+          },
+        ],
+      }),
+      dontShowAgainText: t('page.perpsPro.orderConfirm.dontShowAgain', {
+        orderType: t('page.perpsPro.orderConfirm.orderTypeName.closeMarket'),
+      }),
+      submit: () => {
+        isMarketSubmitting.current = true;
+        return handleMarketClose().finally(() => {
+          isMarketSubmitting.current = false;
+        });
+      },
+    });
+  });
 
-    const dontShowAgainRef = { current: true };
-    const modal = Modal.info({
-      width: 400,
-      closable: false,
-      maskClosable: true,
-      centered: true,
-      title: null,
-      icon: null,
-      // bodyStyle: { padding: 0 },
-      className: clsx(
-        'perps-bridge-swap-modal perps-close-all-position-modal',
-        isDarkTheme
-          ? 'perps-bridge-swap-modal-dark'
-          : 'perps-bridge-swap-modal-light'
-      ),
-      content: (
-        <div className="flex items-center justify-center flex-col gap-12">
-          <div className="text-[16px] text-r-neutral-title-1 text-center">
-            {t('page.perpsPro.userInfo.positionInfo.marketCloseTitle')}
-          </div>
-          <div className="text-[13px] leading-[16px] text-rb-neutral-foot text-center mb-[20px]">
-            {t('page.perpsPro.userInfo.positionInfo.marketCloseDesc')}
-          </div>
-          <MarketCloseCheckbox
-            defaultChecked={true}
-            onChange={(checked) => {
-              dontShowAgainRef.current = checked;
-            }}
-          />
-          <div className="flex items-center justify-center w-full gap-12 mt-[12px]">
-            <PerpsBlueBorderedButton block onClick={() => modal.destroy()}>
-              {t('page.manageAddress.cancel')}
-            </PerpsBlueBorderedButton>
-            <Button
-              size="large"
-              block
-              type="primary"
-              onClick={() => {
-                if (dontShowAgainRef.current) {
-                  dispatch.perps.updateSkipMarketCloseConfirm(true);
-                }
-                handleMarketClose();
-                modal.destroy();
-              }}
-            >
-              {t('page.perpsPro.userInfo.positionInfo.marketCloseBtn')}
-            </Button>
-          </div>
-        </div>
-      ),
+  const handleLimitCloseWithConfirm = useMemoizedFn(() => {
+    if (loading) return;
+
+    requestConfirm({
+      type: 'closeLimit',
+      content: () => {
+        // Mirrors the clamping inside `handleSubmit`.
+        const effectiveSize =
+          sizeNum >= positionSize ? positionSize.toString() : sizeInput;
+        return {
+          title: confirmTitle,
+          titleSuffix: confirmTitleSuffix,
+          sections: [
+            {
+              key: 'main',
+              rows: [
+                {
+                  key: 'price',
+                  label: t('page.perpsPro.orderConfirm.price'),
+                  value: `${splitNumberByStep(limitPrice)} ${quoteAsset}`,
+                },
+                {
+                  key: 'amount',
+                  label: t('page.perpsPro.orderConfirm.amount'),
+                  value: `${splitNumberByStep(effectiveSize)} ${formatPerpsCoin(
+                    record.coin
+                  )}`,
+                },
+                ...(priceNum && sizeNum ? buildEstPnlRow(estPnl) : []),
+              ],
+            },
+          ],
+        };
+      },
+      dontShowAgainText: t('page.perpsPro.orderConfirm.dontShowAgain', {
+        orderType: t('page.perpsPro.orderConfirm.orderTypeName.closeLimit'),
+      }),
+      submit: () => handleSubmit(),
     });
   });
 
@@ -381,7 +404,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
 
   const handleKeyDown = useMemoizedFn((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && isPriceValid && sizeNum > 0 && !loading) {
-      handleSubmit();
+      handleLimitCloseWithConfirm();
     }
   });
 
@@ -521,7 +544,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
               e.stopPropagation();
               if (isPriceValid && sizeNum > 0 && !loading) {
                 setShowValidation(false);
-                handleSubmit();
+                handleLimitCloseWithConfirm();
               } else {
                 setShowValidation(true);
               }

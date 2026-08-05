@@ -93,8 +93,8 @@ const applyAuxParams = (sp: URLSearchParams, params: PerpsPopupParams) => {
 };
 
 /** Z-index assigned to the bottom-most popup. Each layer above adds 10. */
-const Z_INDEX_BASE = 1000;
-const Z_INDEX_STEP = 10;
+export const Z_INDEX_BASE = 1000;
+export const Z_INDEX_STEP = 10;
 
 /**
  * Shared URL-param driven navigation for Perps popup/modal mounting.

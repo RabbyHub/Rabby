@@ -237,7 +237,7 @@ export const usePerpsTradingState = () => {
       const pxBN = new BigNumber(orderPrice ?? markPrice);
       const sizeBN = new BigNumber(dirTradeSize || 0);
       if (!pxBN.gt(0) || !leverage || sizeBN.isZero()) {
-        return { liqPrice: '', cost: `0 ${quoteAsset}` };
+        return { liqPrice: '', liqPriceNum: null, cost: `0 ${quoteAsset}` };
       }
 
       const netNew = calcNetNewSize(direction, sizeBN.toNumber());
@@ -252,7 +252,7 @@ export const usePerpsTradingState = () => {
 
       // Liq price
       if (netNewBN.isZero()) {
-        return { liqPrice: '-', cost };
+        return { liqPrice: '-', liqPriceNum: null, cost };
       }
       const netNewUsdBN = netNewBN.times(pxBN);
       const netNewMarginBN = netNewUsdBN.dividedBy(leverage);
@@ -265,12 +265,16 @@ export const usePerpsTradingState = () => {
         maxLeverage
       );
       if (!new BigNumber(liqPrice).gt(0)) {
-        return { liqPrice: '-', cost };
+        return { liqPrice: '-', liqPriceNum: null, cost };
       }
       return {
         liqPrice: `${splitNumberByStep(
           liqPrice.toFixed(pxDecimals)
         )} ${quoteAsset}`,
+        // Handed out alongside the display string so callers that need to do
+        // arithmetic (liquidation distance) don't parse the formatted one back
+        // into a number — a round-trip any change to the formatter would break.
+        liqPriceNum: liqPrice,
         cost,
       };
     },
@@ -303,6 +307,7 @@ export const usePerpsTradingState = () => {
   const buyInfo: OrderSideInfo = useMemo(
     () => ({
       liqPrice: buyDirInfo.liqPrice,
+      liqPriceNum: buyDirInfo.liqPriceNum,
       cost: buyDirInfo.cost,
       max: maxBuyDisplay,
     }),
@@ -312,6 +317,7 @@ export const usePerpsTradingState = () => {
   const sellInfo: OrderSideInfo = useMemo(
     () => ({
       liqPrice: sellDirInfo.liqPrice,
+      liqPriceNum: sellDirInfo.liqPriceNum,
       cost: sellDirInfo.cost,
       max: maxSellDisplay,
     }),

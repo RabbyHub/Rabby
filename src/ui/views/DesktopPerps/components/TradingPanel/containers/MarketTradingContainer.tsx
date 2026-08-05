@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { OrderSide, TradingContainerProps } from '../../../types';
 import { TPSLSettings } from '../components/TPSLSettings';
 import { OrderInfoGrid } from '../components/OrderInfoGrid';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
@@ -16,8 +16,23 @@ import { TradingButtons } from '../components/TradingButtons';
 import BigNumber from 'bignumber.js';
 import { formatPercent } from '@/ui/views/Perps/utils';
 import stats from '@/stats';
-import { getStatsReportSide } from '../../../utils';
+import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
+import { resolveTriggerComparator } from '../../../tpslTrigger';
 import { calcAmountFromPercentage } from '../utils';
+import { perpsToast } from '../../PerpsToast';
+import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
+import type { OrderConfirmContent } from '../../../modal/OrderConfirmProvider';
+import type {
+  OrderConfirmRow,
+  OrderConfirmSection,
+} from '../../../modal/OrderConfirmModal';
+
+/** The numbers an order actually sends, frozen at click time. */
+interface MarketOrderSnapshot {
+  size: string;
+  tpTriggerPx?: string;
+  slTriggerPx?: string;
+}
 
 export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -39,6 +54,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     markPrice,
     midPrice,
     szDecimals,
+    pxDecimals,
     leverage,
     leverageType,
     availableBalance,
@@ -156,7 +172,12 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   };
 
-  const reportOrderStats = (isBuy: boolean, totalSz: string, avgPx: string) => {
+  const reportOrderStats = (
+    isBuy: boolean,
+    totalSz: string,
+    avgPx: string,
+    snapshot: MarketOrderSnapshot
+  ) => {
     stats.report('perpsTradeHistory', {
       created_at: new Date().getTime(),
       user_addr: currentPerpsAccount?.address || '',
@@ -174,7 +195,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     });
 
     if (tpslConfig.enabled) {
-      const { tpTriggerPx, slTriggerPx } = getTpSlTriggerPrices(isBuy);
+      const { tpTriggerPx, slTriggerPx } = snapshot;
       if (tpTriggerPx) {
         stats.report('perpsTradeHistory', {
           created_at: new Date().getTime(),
@@ -221,50 +242,86 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     return tradeSize;
   };
 
-  const createOrderHandler = (isBuy: boolean) => async () => {
-    // Validate TP/SL for this direction
-    if (tpslConfig.enabled) {
+  // Both the size and the PNL/ROI trigger prices are re-derived from the
+  // streaming balance and mark price, while the dialog's rows are built once at
+  // click time and `submit` runs whenever the user confirms. Freezing them into
+  // one snapshot is what keeps the order that is sent identical to the one that
+  // was shown.
+  const buildOrderSnapshot = useMemoizedFn(
+    (isBuy: boolean): MarketOrderSnapshot => ({
+      size: getDirectionTradeSize(isBuy),
+      ...getTpSlTriggerPrices(isBuy),
+    })
+  );
+
+  // Runs twice per submit: at click time, so an invalid form never opens the
+  // confirmation dialog, and again inside the handler, which also guards submits
+  // that skip the dialog.
+  //
+  // `reportError` toasts rather than leaving it to the inline field error: the
+  // trigger is checked against the streaming mark price, so the second pass can
+  // fail while the dialog is up and its inline error sits behind the mask.
+  const validateTpslForDirection = useMemoizedFn(
+    (isBuy: boolean, reportError = false) => {
+      if (!tpslConfig.enabled) return true;
+
       const tpslValidation = validateTpslForSide(
         isBuy ? OrderSide.BUY : OrderSide.SELL
       );
-      if (!tpslValidation.valid) {
-        setTpslConfig({
-          ...tpslConfig,
-          takeProfit: {
-            ...tpslConfig.takeProfit,
-            error: tpslValidation.errors.tp || '',
-          },
-          stopLoss: {
-            ...tpslConfig.stopLoss,
-            error: tpslValidation.errors.sl || '',
-          },
-        });
-        throw new Error('TP/SL validation failed');
-      }
-    }
+      if (tpslValidation.valid) return true;
 
-    const { tpTriggerPx, slTriggerPx } = getTpSlTriggerPrices(isBuy);
-    const directionSize = getDirectionTradeSize(isBuy);
+      if (reportError) {
+        perpsToast.error({
+          title: t('page.perps.toast.orderError'),
+          description: tpslValidation.errors.tp || tpslValidation.errors.sl,
+        });
+      }
+
+      setTpslConfig({
+        ...tpslConfig,
+        takeProfit: {
+          ...tpslConfig.takeProfit,
+          error: tpslValidation.errors.tp || '',
+        },
+        stopLoss: {
+          ...tpslConfig.stopLoss,
+          error: tpslValidation.errors.sl || '',
+        },
+      });
+      return false;
+    }
+  );
+
+  const createOrderHandler = (isBuy: boolean) => async (
+    snapshot: MarketOrderSnapshot
+  ) => {
+    if (!validateTpslForDirection(isBuy, true)) {
+      throw new Error('TP/SL validation failed');
+    }
 
     const res = await handleOpenMarketOrder({
       coin: selectedCoin,
       dex: currentMarketData?.dexId ?? '',
       isBuy,
-      size: directionSize,
+      size: snapshot.size,
+      // Deliberately not snapshotted: `midPx` is the reference the slippage
+      // bound is priced against, so it has to be the freshest one available.
       midPx: midPrice.toString(),
-      tpTriggerPx,
-      slTriggerPx,
+      tpTriggerPx: snapshot.tpTriggerPx,
+      slTriggerPx: snapshot.slTriggerPx,
       reduceOnly,
       slippage: marketSlippage,
     });
 
     if (res) {
       const { totalSz, avgPx } = res;
-      reportOrderStats(isBuy, totalSz, avgPx);
+      reportOrderStats(isBuy, totalSz, avgPx, snapshot);
     }
   };
 
-  const { run: handleBuyOrder, loading: buyLoading } = useRequest(
+  // `runAsync` (not `run`) so the confirmation dialog can await the submission
+  // and keep itself open when it rejects.
+  const { runAsync: handleBuyOrder, loading: buyLoading } = useRequest(
     createOrderHandler(true),
     {
       manual: true,
@@ -275,7 +332,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     }
   );
 
-  const { run: handleSellOrder, loading: sellLoading } = useRequest(
+  const { runAsync: handleSellOrder, loading: sellLoading } = useRequest(
     createOrderHandler(false),
     {
       manual: true,
@@ -285,6 +342,146 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       onError: () => {},
     }
   );
+
+  const requestConfirm = useOrderConfirm();
+
+  const buildConfirmContent = useMemoizedFn(
+    (isBuy: boolean, snapshot: MarketOrderSnapshot): OrderConfirmContent => {
+      const coinLabel = formatPerpsCoin(selectedCoin);
+      const markPriceNum = Number(markPrice || 0);
+      const rows: OrderConfirmRow[] = [
+        {
+          key: 'price',
+          label: t('page.perpsPro.orderConfirm.price'),
+          value: t('page.perpsPro.orderConfirm.marketPrice'),
+        },
+      ];
+
+      if (markPriceNum > 0) {
+        rows.push({
+          key: 'markPrice',
+          label: t('page.perpsPro.orderConfirm.markPrice'),
+          value: `${splitNumberByStep(
+            markPriceNum.toFixed(pxDecimals)
+          )} ${quoteAsset}`,
+        });
+      }
+
+      if (Number(snapshot.size) > 0) {
+        rows.push({
+          key: 'amount',
+          label: t('page.perpsPro.orderConfirm.amount'),
+          value: `${snapshot.size} ${coinLabel}`,
+        });
+      }
+
+      // Same source as the panel's OrderInfoGrid, down to the reduce-only rule:
+      // an order that only closes exposure has no new liquidation price.
+      const { liqPrice, liqPriceNum } = isBuy ? buyInfo : sellInfo;
+      if (!reduceOnly && liqPriceNum !== null && markPriceNum > 0) {
+        const delta = liqPriceNum - markPriceNum;
+        rows.push(
+          {
+            key: 'estLiqPrice',
+            label: t('page.perpsPro.orderConfirm.estLiqPrice'),
+            value: liqPrice,
+          },
+          {
+            key: 'estLiqDistance',
+            label: t('page.perpsPro.orderConfirm.estLiqDistance'),
+            value: `${formatPercent(
+              delta / markPriceNum,
+              2
+            )}(${splitNumberByStep(delta.toFixed(pxDecimals))})`,
+          }
+        );
+      }
+
+      rows.push({
+        key: 'reduceOnly',
+        label: t('page.perpsPro.orderConfirm.reduceOnly'),
+        value: reduceOnly
+          ? t('page.perpsPro.orderConfirm.true')
+          : t('page.perpsPro.orderConfirm.false'),
+      });
+
+      const sections: OrderConfirmSection[] = [{ key: 'main', rows }];
+
+      const { tpTriggerPx, slTriggerPx } = snapshot;
+      const markPriceLabel = t('page.perpsPro.orderConfirm.markPrice');
+      const tpslRows: OrderConfirmRow[] = [];
+
+      if (tpTriggerPx && Number(tpTriggerPx) > 0) {
+        tpslRows.push(
+          {
+            key: 'tp',
+            label: t('page.perpsPro.orderConfirm.takeProfitMarket'),
+            value: t('page.perpsPro.orderConfirm.marketPrice'),
+          },
+          {
+            key: 'tpTrigger',
+            label: t('page.perpsPro.orderConfirm.trigger'),
+            value: `${markPriceLabel}${resolveTriggerComparator(
+              isBuy,
+              true
+            )}${splitNumberByStep(tpTriggerPx)} ${quoteAsset}`,
+          }
+        );
+      }
+
+      if (slTriggerPx && Number(slTriggerPx) > 0) {
+        tpslRows.push(
+          {
+            key: 'sl',
+            label: t('page.perpsPro.orderConfirm.stopLossMarket'),
+            value: t('page.perpsPro.orderConfirm.marketPrice'),
+          },
+          {
+            key: 'slTrigger',
+            label: t('page.perpsPro.orderConfirm.trigger'),
+            value: `${markPriceLabel}${resolveTriggerComparator(
+              isBuy,
+              false
+            )}${splitNumberByStep(slTriggerPx)} ${quoteAsset}`,
+          }
+        );
+      }
+
+      if (tpslRows.length > 0) {
+        sections.push({
+          key: 'tpsl',
+          heading: t('page.perpsPro.orderConfirm.tpSl'),
+          rows: tpslRows,
+        });
+      }
+
+      return {
+        title: `${coinLabel}-${quoteAsset}`,
+        titleSuffix: isBuy
+          ? { text: t('page.perpsPro.orderConfirm.buyLong'), tone: 'up' }
+          : { text: t('page.perpsPro.orderConfirm.sellShort'), tone: 'down' },
+        sections,
+      };
+    }
+  );
+
+  const handleSubmitClick = useMemoizedFn((isBuy: boolean) => {
+    // Keep the direction-specific TP/SL check ahead of the dialog: otherwise the
+    // user would confirm an order that can only fail validation.
+    if (!validateTpslForDirection(isBuy)) return;
+
+    const snapshot = buildOrderSnapshot(isBuy);
+
+    requestConfirm({
+      type: 'market',
+      content: () => buildConfirmContent(isBuy, snapshot),
+      dontShowAgainText: t('page.perpsPro.orderConfirm.dontShowAgain', {
+        orderType: t('page.perpsPro.orderConfirm.orderTypeName.market'),
+      }),
+      submit: () =>
+        isBuy ? handleBuyOrder(snapshot) : handleSellOrder(snapshot),
+    });
+  });
 
   const slippageDisplay = useMemo(() => {
     // const estSlippage =
@@ -393,8 +590,8 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
         {/* Buy/Sell Buttons */}
         <TradingButtons
-          onBuyClick={handleBuyOrder}
-          onSellClick={handleSellOrder}
+          onBuyClick={() => handleSubmitClick(true)}
+          onSellClick={() => handleSubmitClick(false)}
           buyLoading={buyLoading}
           sellLoading={sellLoading}
           buyDisabled={buyDisabled}
