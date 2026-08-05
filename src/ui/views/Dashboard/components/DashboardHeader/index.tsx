@@ -221,7 +221,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
             <BalanceView currentAccount={currentAccount} hideJumpButton />
           )}
 
-          <div className="absolute right-[12px] top-[14px] z-[1] flex items-center gap-[8px]">
+          <div className="absolute right-[12px] top-[10px] z-[1] flex items-center gap-[8px]">
             <BalanceViewJumpButton
               className="balance-view-jump-button-external group-hover/balance-view-actions:flex"
               onClick={onClickOpenInDesktop}
