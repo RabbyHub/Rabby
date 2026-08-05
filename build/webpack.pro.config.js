@@ -15,7 +15,7 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
-    true && new SecSDK({
+    false && new SecSDK({
       dev: false
     }),
   ].filter(Boolean),
