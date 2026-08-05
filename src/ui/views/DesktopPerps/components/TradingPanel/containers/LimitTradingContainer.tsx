@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRabbySelector } from '@/ui/store';
+import store, { useRabbySelector } from '@/ui/store';
+import type { PerpsState } from '@/ui/models/perps';
 import {
   LimitOrderType,
   OrderSide,
@@ -43,11 +44,47 @@ import type {
   OrderConfirmRow,
   OrderConfirmSection,
 } from '../../../modal/OrderConfirmModal';
+import {
+  ConfirmAmount,
+  LiveMarkPrice,
+} from '../../../modal/OrderConfirmLiveValues';
+
+type BboStrategy = 'cp1' | 'cp5' | 'q1' | 'q5';
+
+const BBO_STRATEGY_OPTIONS: { key: BboStrategy; label: string }[] = [
+  { key: 'cp1', label: 'Counterparty 1' },
+  { key: 'cp5', label: 'Counterparty 5' },
+  { key: 'q1', label: 'Queue 1' },
+  { key: 'q5', label: 'Queue 5' },
+];
+
+/**
+ * Counterparty takes the opposing side of the book (buy→asks, sell→bids);
+ * Queue joins the user's own side (buy→bids, sell→asks). `1`/`5` pick the best
+ * level or the fifth.
+ */
+const resolveBboPrice = (
+  prices: PerpsState['bboPrices'],
+  strategy: BboStrategy,
+  isBuy: boolean
+): string => {
+  const isCounterparty = strategy === 'cp1' || strategy === 'cp5';
+  const isFive = strategy === 'cp5' || strategy === 'q5';
+  const useAsk = isBuy === isCounterparty;
+  if (useAsk) return isFive ? prices.asks5 : prices.asks1;
+  return isFive ? prices.bids5 : prices.bids1;
+};
 
 /** The numbers an order actually sends, frozen at click time. */
 interface LimitOrderSnapshot {
   size: string;
-  limitPx: string;
+  /**
+   * Only set when the user typed a price. A BBO order commits to a book level,
+   * not to a number, so there is nothing to freeze — see `bboStrategy`.
+   */
+  limitPx?: string;
+  /** Set instead of `limitPx` when BBO is on; resolved against the live book at submit. */
+  bboStrategy?: BboStrategy;
   tpTriggerPx?: string;
   slTriggerPx?: string;
 }
@@ -110,33 +147,17 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   );
 
   // BBO state
-  type BboStrategy = 'cp1' | 'cp5' | 'q1' | 'q5';
   const [bboEnabled, setBboEnabled] = React.useState(false);
   const [bboStrategy, setBboStrategy] = React.useState<BboStrategy>('cp1');
 
-  const bboStrategyOptions = useMemo(
-    () => [
-      { key: 'cp1', label: 'Counterparty 1' },
-      { key: 'cp5', label: 'Counterparty 5' },
-      { key: 'q1', label: 'Queue 1' },
-      { key: 'q5', label: 'Queue 5' },
-    ],
-    []
-  );
-
   // BBO: direction-specific prices
-  // Counterparty = opposing side: buy→asks, sell→bids
-  // Queue = same side: buy→bids, sell→asks
-  const { bboBuyPrice, bboSellPrice } = useMemo(() => {
-    const isCounterparty = bboStrategy === 'cp1' || bboStrategy === 'cp5';
-    const isFive = bboStrategy === 'cp5' || bboStrategy === 'q5';
-    const askKey = isFive ? 'asks5' : 'asks1';
-    const bidKey = isFive ? 'bids5' : 'bids1';
-    return {
-      bboBuyPrice: isCounterparty ? bboPrices[askKey] : bboPrices[bidKey],
-      bboSellPrice: isCounterparty ? bboPrices[bidKey] : bboPrices[askKey],
-    };
-  }, [bboStrategy, bboPrices]);
+  const { bboBuyPrice, bboSellPrice } = useMemo(
+    () => ({
+      bboBuyPrice: resolveBboPrice(bboPrices, bboStrategy, true),
+      bboSellPrice: resolveBboPrice(bboPrices, bboStrategy, false),
+    }),
+    [bboStrategy, bboPrices]
+  );
 
   // BBO disabled reason
   const bboDisabledReason = useMemo(() => {
@@ -172,6 +193,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   // Estimated price: BBO mode → midPrice, manual → use limitPrice as-is
   const estBuyPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
   const estSellPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+
+  const priceForCalculation = useMemo(() => {
+    return bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+  }, [bboEnabled, midPrice, limitPrice]);
 
   // Safety factor to avoid hitting exchange margin limits at 100% (fees, funding, etc.)
   const MARGIN_SAFETY = 0.99;
@@ -389,14 +414,18 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   );
 
   // The dialog's rows are built once at click time while `submit` runs whenever
-  // the user confirms, yet the size, the BBO limit price and the PNL/ROI trigger
-  // prices all re-derive from streaming balance and orderbook data. Freezing
-  // them into one snapshot is what keeps the order that is sent identical to the
-  // one that was shown.
+  // the user confirms, yet the size and the PNL/ROI trigger prices all re-derive
+  // from streaming balance and orderbook data. Freezing them into one snapshot
+  // is what keeps the order that is sent identical to the one that was shown.
+  //
+  // The BBO price is the deliberate exception: the user picked a book level, not
+  // a number, so only the strategy is frozen and the price is read off the book
+  // at submit time.
   const buildOrderSnapshot = useMemoizedFn(
     (isBuy: boolean): LimitOrderSnapshot => ({
       size: getDirectionTradeSize(isBuy),
-      limitPx: isBuy ? buyLimitPrice : sellLimitPrice,
+      limitPx: bboEnabled ? undefined : limitPrice,
+      bboStrategy: bboEnabled ? bboStrategy : undefined,
       tpTriggerPx: getTriggerPrice(tpslConfig.takeProfit, isBuy),
       slTriggerPx: getTriggerPrice(tpslConfig.stopLoss, isBuy),
     })
@@ -462,7 +491,25 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         throw new Error('Invalid order configuration');
       }
 
-      const orderLimitPrice = snapshot.limitPx;
+      // BBO committed to a book level rather than a number, so read the book as
+      // late as possible: `store.getState()` sees the newest `bboPrices` even if
+      // this closure was created before the last orderbook tick rendered.
+      const orderLimitPrice = snapshot.bboStrategy
+        ? resolveBboPrice(
+            store.getState().perps.bboPrices,
+            snapshot.bboStrategy,
+            isBuy
+          )
+        : snapshot.limitPx;
+
+      // An empty book level would otherwise be sent as a zero limit price.
+      if (!orderLimitPrice || !(Number(orderLimitPrice) > 0)) {
+        perpsToast.error({
+          title: t('page.perps.toast.orderError'),
+          description: t('page.perpsPro.tradingPanel.bboPriceUnavailable'),
+        });
+        throw new Error('Missing limit price');
+      }
 
       await handleOpenLimitOrder({
         coin: selectedCoin,
@@ -601,19 +648,30 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
   const buildConfirmContent = useMemoizedFn(
     (isBuy: boolean, snapshot: LimitOrderSnapshot) => {
-      const orderLimitPrice = snapshot.limitPx;
+      const { limitPx, bboStrategy: snapshotStrategy } = snapshot;
       const { liqPrice, liqPriceNum } = isBuy ? buyOrderInfo : sellOrderInfo;
       const liqDistance = formatLiqDistance(liqPriceNum);
 
       const rows: OrderConfirmRow[] = [];
 
-      // The price actually sent as `limitPx`: the typed limit price, or the
-      // orderbook price BBO mode resolved for this direction.
-      if (Number(orderLimitPrice) > 0) {
+      // A BBO order is submitted at whatever the book shows when it is sent, so
+      // quoting a number here would promise a price the order never commits to;
+      // show the strategy the user actually picked. Without BBO this is the
+      // typed price, frozen, and it is exactly what gets sent as `limitPx`.
+      const bboLabel = snapshotStrategy
+        ? BBO_STRATEGY_OPTIONS.find((o) => o.key === snapshotStrategy)?.label
+        : '';
+      if (bboLabel) {
         rows.push({
           key: 'price',
           label: t('page.perpsPro.orderConfirm.price'),
-          value: `${splitNumberByStep(orderLimitPrice)} ${quoteAsset}`,
+          value: bboLabel,
+        });
+      } else if (limitPx && Number(limitPx) > 0) {
+        rows.push({
+          key: 'price',
+          label: t('page.perpsPro.orderConfirm.price'),
+          value: `${splitNumberByStep(limitPx)} ${quoteAsset}`,
         });
       }
 
@@ -621,16 +679,28 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         rows.push({
           key: 'markPrice',
           label: t('page.perpsPro.orderConfirm.markPrice'),
-          value: `${splitNumberByStep(
-            new BigNumber(markPrice).toFixed(pxDecimals)
-          )} ${quoteAsset}`,
+          value: (
+            <LiveMarkPrice
+              coin={selectedCoin}
+              fallback={markPrice}
+              pxDecimals={pxDecimals}
+              quoteAsset={quoteAsset}
+            />
+          ),
         });
       }
 
       rows.push({
         key: 'amount',
         label: t('page.perpsPro.orderConfirm.amount'),
-        value: `${snapshot.size} ${formatPerpsCoin(selectedCoin)}`,
+        value: (
+          <ConfirmAmount
+            amount={snapshot.size}
+            coin={selectedCoin}
+            price={priceForCalculation}
+            quoteAsset={quoteAsset}
+          />
+        ),
       });
 
       // Mirrors OrderInfoGrid: a reduce-only order opens no new exposure, so it
@@ -771,10 +841,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     }
   };
 
-  const priceForCalculation = useMemo(() => {
-    return bboEnabled ? midPrice : Number(limitPrice) || midPrice;
-  }, [bboEnabled, midPrice, limitPrice]);
-
   return (
     <div className="flex flex-col gap-[12px]">
       <OrderSideAndFunds
@@ -789,12 +855,12 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         <div className="flex items-center gap-8">
           {bboEnabled ? (
             <PerpsDropdown
-              options={bboStrategyOptions}
+              options={BBO_STRATEGY_OPTIONS}
               onSelect={(key) => setBboStrategy(key as BboStrategy)}
             >
               <div className="flex-1 h-[44px] flex items-center justify-between px-[6px] rounded-[6px] border border-solid border-rb-neutral-line bg-rb-neutral-bg-5 cursor-pointer">
                 <span className="text-[15px] text-rb-neutral-title-1">
-                  {bboStrategyOptions.find((o) => o.key === bboStrategy)
+                  {BBO_STRATEGY_OPTIONS.find((o) => o.key === bboStrategy)
                     ?.label || 'Counterparty 1'}
                 </span>
                 <RcIconArrowDownCC className="text-rb-neutral-secondary" />

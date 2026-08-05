@@ -4052,6 +4052,7 @@
         "Buy": "Comprar",
         "Sell": "Vender",
         "bboDisabledTooltip": "BBO no es compatible cuando {{bboDisabledReason}} está habilitado.",
+        "bboPriceUnavailable": "No hay ningún precio disponible en el libro de órdenes en este momento. Por favor, inténtalo de nuevo.",
         "slTriggerLessThanOrderPrice": "El precio de activación de tu SL debe ser menor que el precio de tu orden.",
         "buyTrigger": "Disparador de compra",
         "tpTriggerLessThanOrderPrice": "Tu precio de activación de TP debe ser menor que tu precio de orden.",

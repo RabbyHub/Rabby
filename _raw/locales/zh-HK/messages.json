@@ -4102,6 +4102,7 @@
         "size": "數量",
         "slTriggerLessThanOrderPrice": "你的止蝕觸發價格應低於訂單價格。",
         "bboDisabledTooltip": "當 {{bboDisabledReason}} 被啟用時，BBO 不受支援",
+        "bboPriceUnavailable": "目前無法取得訂單簿價格。請再試一次。",
         "sideLongBuy": "做多（買入）",
         "tpTriggerMoreThanOrderPrice": "你的止賺觸發價格應高於訂單價格。",
         "tpTriggerPriceIsZero": "你的止賺觸發價格為 0，進行 {{side}} 時不會設定。",

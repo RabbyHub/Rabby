@@ -4058,6 +4058,7 @@
         "slTriggerLessThanOrderPrice": "SL tetikleme fiyatı emir fiyatından düşük olmalıdır.",
         "sideShortSell": "kısa (sat)",
         "bboDisabledTooltip": "BBO, {{bboDisabledReason}} etkin olduğunda desteklenmiyor.",
+        "bboPriceUnavailable": "Şu anda kullanılabilir bir emir defteri fiyatı yok. Lütfen tekrar deneyin.",
         "estimatedPnlWillBe": "Tahmin edilen PnL'iniz olacaktır",
         "sellTrigger": "Satış Tetikleyici",
         "orderTypeTooltipMarket": "Piyasa emri, mevcut en iyi piyasa fiyatıyla hemen eşleştirilir.",

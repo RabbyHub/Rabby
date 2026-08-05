@@ -22,6 +22,10 @@ import { calcAmountFromPercentage } from '../utils';
 import { perpsToast } from '../../PerpsToast';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
 import type { OrderConfirmContent } from '../../../modal/OrderConfirmProvider';
+import {
+  ConfirmAmount,
+  LiveMarkPrice,
+} from '../../../modal/OrderConfirmLiveValues';
 import type {
   OrderConfirmRow,
   OrderConfirmSection,
@@ -357,13 +361,20 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         },
       ];
 
+      // Whether the row exists is still decided at click time, but its value is
+      // a live reference the user reads while deciding — not part of the payload.
       if (markPriceNum > 0) {
         rows.push({
           key: 'markPrice',
           label: t('page.perpsPro.orderConfirm.markPrice'),
-          value: `${splitNumberByStep(
-            markPriceNum.toFixed(pxDecimals)
-          )} ${quoteAsset}`,
+          value: (
+            <LiveMarkPrice
+              coin={selectedCoin}
+              fallback={markPriceNum}
+              pxDecimals={pxDecimals}
+              quoteAsset={quoteAsset}
+            />
+          ),
         });
       }
 
@@ -371,7 +382,16 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         rows.push({
           key: 'amount',
           label: t('page.perpsPro.orderConfirm.amount'),
-          value: `${snapshot.size} ${coinLabel}`,
+          // Snapshot size, only re-unitised: `price` matches what the panel's
+          // own OrderInfoGrid converts with, so both read the same.
+          value: (
+            <ConfirmAmount
+              amount={snapshot.size}
+              coin={selectedCoin}
+              price={midPrice}
+              quoteAsset={quoteAsset}
+            />
+          ),
         });
       }
 

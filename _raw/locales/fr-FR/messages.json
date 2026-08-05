@@ -4400,6 +4400,7 @@
         "orderTypeTooltipMarket": "L'ordre de marché est immédiatement apparié au meilleur prix de marché disponible.",
         "slTriggerLessThanOrderPrice": "Votre prix de déclenchement SL doit être inférieur à votre prix d'ordre.",
         "bboDisabledTooltip": "BBO n'est pas pris en charge lorsque {{bboDisabledReason}} est activé.",
+        "bboPriceUnavailable": "Aucun prix disponible dans le carnet d'ordres pour le moment. Veuillez réessayer.",
         "tpTriggerMoreThanOrderPrice": "Votre prix de déclenchement TP doit être supérieur au prix de votre ordre.",
         "tpTriggerPriceIsZero": "Votre prix de déclenchement de TP est 0 et ne sera pas défini lorsque vous irez {{side}}.",
         "slTriggerPriceIsZero": "Votre prix de déclenchement SL est à 0 et ne sera pas défini lorsque vous irez {{side}}",

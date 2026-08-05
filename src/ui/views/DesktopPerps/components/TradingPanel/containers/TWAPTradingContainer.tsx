@@ -21,6 +21,10 @@ import {
   OrderConfirmContent,
 } from '../../../modal/OrderConfirmProvider';
 import type { OrderConfirmRow } from '../../../modal/OrderConfirmModal';
+import {
+  ConfirmAmount,
+  LiveMarkPrice,
+} from '../../../modal/OrderConfirmLiveValues';
 
 const RUNTIME_PRESETS = [
   { label: '1h', hours: 1, minutes: 0 },
@@ -336,7 +340,14 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         rows.push({
           key: 'totalSize',
           label: t('page.perpsPro.orderConfirm.totalSize'),
-          value: `${directionSize} ${coinLabel}`,
+          value: (
+            <ConfirmAmount
+              amount={directionSize}
+              coin={selectedCoin}
+              price={midPrice}
+              quoteAsset={quoteAsset}
+            />
+          ),
           emphasize: true,
         });
       }
@@ -351,7 +362,14 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         rows.push({
           key: 'amount',
           label: t('page.perpsPro.orderConfirm.amount'),
-          value: `${perSuborder} ${coinLabel}`,
+          value: (
+            <ConfirmAmount
+              amount={perSuborder}
+              coin={selectedCoin}
+              price={midPrice}
+              quoteAsset={quoteAsset}
+            />
+          ),
         });
       }
 
@@ -359,9 +377,16 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         rows.push({
           key: 'lastPrice',
           label: t('page.perpsPro.orderConfirm.lastPrice'),
-          value: `${splitNumberByStep(
-            new BigNumber(markPrice).toFixed(pxDecimals)
-          )} ${quoteAsset}`,
+          // Not part of the payload — a live reference the user reads while the
+          // dialog is open, so it keeps ticking instead of freezing.
+          value: (
+            <LiveMarkPrice
+              coin={selectedCoin}
+              fallback={markPrice}
+              pxDecimals={pxDecimals}
+              quoteAsset={quoteAsset}
+            />
+          ),
         });
       }
 

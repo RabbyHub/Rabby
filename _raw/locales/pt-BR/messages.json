@@ -4057,6 +4057,7 @@
         "estimatedPnlWillBe": "Seu PnL estimado será",
         "short": "Short: Vender a descoberto",
         "bboDisabledTooltip": "BBO não é suportado quando {{bboDisabledReason}} está habilitado",
+        "bboPriceUnavailable": "Nenhum preço disponível no livro de ordens no momento. Tente novamente.",
         "Buy": "Comprar",
         "slTriggerLessThanOrderPrice": "Seu preço de gatilho SL deve ser inferior ao seu preço de ordem.",
         "orderTypeTooltipMarket": "A ordem de mercado é imediatamente combinada com o melhor preço de mercado disponível.",

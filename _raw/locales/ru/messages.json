@@ -4050,6 +4050,7 @@
         "orderCount": "Количество ордеров",
         "estimatedPnlWillBe": "Ваши предполагаемые PnL составит",
         "bboDisabledTooltip": "BBO не поддерживается, когда {{bboDisabledReason}} включен",
+        "bboPriceUnavailable": "Цена из книги ордеров сейчас недоступна. Попробуйте снова.",
         "size": "Размер",
         "Buy": "Купить",
         "price": "Цена",

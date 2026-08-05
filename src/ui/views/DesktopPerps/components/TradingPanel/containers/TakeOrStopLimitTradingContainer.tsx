@@ -19,11 +19,6 @@ import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { calcAmountFromPercentage } from '../utils';
 import perpsToast from '../../PerpsToast';
-import { useRabbySelector } from '@/ui/store';
-import { PerpsDropdown } from '../components/PerpsDropdown';
-import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
-import { Tooltip } from 'antd';
-import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
 import { buildTakeOrStopConfirmContent } from './takeOrStopConfirmContent';
@@ -34,9 +29,9 @@ interface TakeOrStopLimitTradingContainerProps {
 
 /**
  * The order exactly as it will be sent, snapshotted when the button is clicked.
- * Both `size` (slider mode) and `limitPx` (BBO mode) are derived from streaming
- * values, so the dialog and the submit have to read them from the same snapshot
- * or they drift apart while the dialog is up.
+ * `size` is re-derived from streaming maxes in slider mode, so the dialog and
+ * the submit have to read it from the same snapshot or they drift apart while
+ * the dialog is up.
  */
 interface ConditionalLimitOrder {
   isBuy: boolean;
@@ -81,7 +76,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     reduceOnlySellDisabled,
     calcDirectionInfo,
   } = usePerpsTradingState();
-  const bboPrices = useRabbySelector((state) => state.perps.bboPrices);
   const [triggerPrice, setTriggerPrice] = React.useState('');
   const [limitPrice, setLimitPrice] = React.useState(
     formatTpOrSlPrice(midPrice, szDecimals)
@@ -97,51 +91,9 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     }
   }, [midPrice, szDecimals]);
 
-  // BBO state
-  type BboStrategy = 'cp1' | 'cp5' | 'q1' | 'q5';
-  const [bboEnabled, setBboEnabled] = React.useState(false);
-  const [bboStrategy, setBboStrategy] = React.useState<BboStrategy>('cp1');
-
-  const bboStrategyOptions = useMemo(
-    () => [
-      { key: 'cp1', label: 'Counterparty 1' },
-      { key: 'cp5', label: 'Counterparty 5' },
-      { key: 'q1', label: 'Queue 1' },
-      { key: 'q5', label: 'Queue 5' },
-    ],
-    []
-  );
-
-  // BBO: direction-specific prices
-  const { bboBuyPrice, bboSellPrice } = useMemo(() => {
-    const isCounterparty = bboStrategy === 'cp1' || bboStrategy === 'cp5';
-    const isFive = bboStrategy === 'cp5' || bboStrategy === 'q5';
-    const askKey = (isFive ? 'asks5' : 'asks1') as keyof typeof bboPrices;
-    const bidKey = (isFive ? 'bids5' : 'bids1') as keyof typeof bboPrices;
-    return {
-      bboBuyPrice: isCounterparty ? bboPrices[askKey] : bboPrices[bidKey],
-      bboSellPrice: isCounterparty ? bboPrices[bidKey] : bboPrices[askKey],
-    };
-  }, [bboStrategy, bboPrices]);
-
-  const canEnableBbo = true; // No TP/SL or ALO conflicts in this container
-
-  const handleBboToggle = () => {
-    if (bboEnabled) {
-      setBboEnabled(false);
-      setLimitPrice(formatTpOrSlPrice(midPrice, szDecimals));
-    } else if (canEnableBbo) {
-      setBboEnabled(true);
-    }
-  };
-
-  // Direction-specific limit prices (BBO mode uses orderbook sides)
-  const buyLimitPrice = bboEnabled ? bboBuyPrice : limitPrice;
-  const sellLimitPrice = bboEnabled ? bboSellPrice : limitPrice;
-
-  // Estimated price: BBO mode → midPrice, manual → use limitPrice as-is
-  const estBuyPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
-  const estSellPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+  // Estimated fill price: the typed limit price, falling back to mid while the
+  // field is empty. Same for both directions.
+  const estPrice = Number(limitPrice) || midPrice;
 
   const limitMaxBuyTradeSize = React.useMemo(() => {
     if (reduceOnly) {
@@ -149,13 +101,13 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         ? currentPosition.size.toFixed(szDecimals)
         : '0';
     }
-    if (!estBuyPrice) return maxBuyTradeSize;
+    if (!estPrice) return maxBuyTradeSize;
     const balanceBasedMax =
       availableBalance > 0
         ? Number(
             new BigNumber(availableBalance)
               .multipliedBy(leverage)
-              .div(estBuyPrice)
+              .div(estPrice)
               .toFixed(szDecimals, BigNumber.ROUND_DOWN)
           )
         : 0;
@@ -163,7 +115,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       currentPosition?.side === 'Short' ? currentPosition.size : 0;
     return (balanceBasedMax + closable).toFixed(szDecimals);
   }, [
-    estBuyPrice,
+    estPrice,
     availableBalance,
     leverage,
     szDecimals,
@@ -178,13 +130,13 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         ? currentPosition.size.toFixed(szDecimals)
         : '0';
     }
-    if (!estSellPrice) return maxSellTradeSize;
+    if (!estPrice) return maxSellTradeSize;
     const balanceBasedMax =
       availableBalance > 0
         ? Number(
             new BigNumber(availableBalance)
               .multipliedBy(leverage)
-              .div(estSellPrice)
+              .div(estPrice)
               .toFixed(szDecimals, BigNumber.ROUND_DOWN)
           )
         : 0;
@@ -192,7 +144,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       currentPosition?.side === 'Long' ? currentPosition.size : 0;
     return (balanceBasedMax + closable).toFixed(szDecimals);
   }, [
-    estSellPrice,
+    estPrice,
     availableBalance,
     leverage,
     szDecimals,
@@ -238,12 +190,12 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
 
   // Use hook's calcDirectionInfo with limit-based trade sizes and estPrice
   const buyDirInfo = React.useMemo(
-    () => calcDirectionInfo('Long', limitBuyTradeSize, estBuyPrice),
-    [calcDirectionInfo, limitBuyTradeSize, estBuyPrice]
+    () => calcDirectionInfo('Long', limitBuyTradeSize, estPrice),
+    [calcDirectionInfo, limitBuyTradeSize, estPrice]
   );
   const sellDirInfo = React.useMemo(
-    () => calcDirectionInfo('Short', limitSellTradeSize, estSellPrice),
-    [calcDirectionInfo, limitSellTradeSize, estSellPrice]
+    () => calcDirectionInfo('Short', limitSellTradeSize, estPrice),
+    [calcDirectionInfo, limitSellTradeSize, estPrice]
   );
 
   useEffect(() => {
@@ -256,17 +208,13 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   // Form validation (direction-agnostic, trigger price direction check moved to button click)
   const validation = useMemo(() => {
     const tradeSize = Number(positionSize.amount) || 0;
-    // BBO mode: use max of both direction prices for shared validation
-    const refPrice = bboEnabled
-      ? Math.max(Number(buyLimitPrice || 0), Number(sellLimitPrice || 0))
-      : Number(limitPrice || 0);
-    const notionalNum = tradeSize * (refPrice || midPrice);
+    const notionalNum = tradeSize * estPrice;
 
     // Empty trigger/limit price check
     if (!triggerPrice || Number(triggerPrice) <= 0) {
       return { isValid: false, error: '' };
     }
-    if (!bboEnabled && (!limitPrice || Number(limitPrice) <= 0)) {
+    if (!limitPrice || Number(limitPrice) <= 0) {
       return { isValid: false, error: '' };
     }
 
@@ -318,15 +266,12 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     positionSize.amount,
     limitPrice,
     triggerPrice,
-    midPrice,
+    estPrice,
     limitMaxBuyTradeSize,
     limitMaxSellTradeSize,
     reduceOnly,
     currentPosition,
     currentMarketData,
-    bboEnabled,
-    buyLimitPrice,
-    sellLimitPrice,
     t,
   ]);
 
@@ -349,7 +294,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       isBuy,
       size: getDirectionTradeSize(isBuy),
       triggerPx: triggerPrice,
-      limitPx: isBuy ? buyLimitPrice : sellLimitPrice,
+      limitPx: limitPrice,
       reduceOnly,
     })
   );
@@ -489,6 +434,9 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           markPrice,
           pxDecimals,
           amount: order.size,
+          // Matches the size input's own price, so a USD-entered size is shown
+          // back as the figure the user typed.
+          amountPrice: Number(order.limitPx) || midPrice,
           estLiqPrice: isBuy
             ? limitBuyInfo.liqPriceNum
             : limitSellInfo.liqPriceNum,
@@ -564,54 +512,22 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           {t('page.perpsPro.tradingPanel.limitPrice')}
         </span>
         <div className="flex items-center gap-8">
-          {bboEnabled ? (
-            <PerpsDropdown
-              options={bboStrategyOptions}
-              onSelect={(key) => setBboStrategy(key as BboStrategy)}
-            >
-              <div className="flex-1 h-[44px] flex items-center justify-between px-[6px] rounded-[6px] border border-solid border-rb-neutral-line bg-rb-neutral-bg-5 cursor-pointer">
-                <span className="text-[15px] text-rb-neutral-title-1">
-                  {bboStrategyOptions.find((o) => o.key === bboStrategy)
-                    ?.label || 'Counterparty 1'}
-                </span>
-                <RcIconArrowDownCC className="text-rb-neutral-secondary" />
-              </div>
-            </PerpsDropdown>
-          ) : (
-            <DesktopPerpsInput
-              value={limitPrice}
-              onChange={handleLimitPriceChange}
-              className="text-left"
-              suffix={
-                <span className="text-15 text-rb-neutral-title-1">
-                  {quoteAsset}
-                </span>
-              }
-            />
-          )}
-          <Tooltip
-            overlayClassName="rectangle"
-            placement="topRight"
-            title={t('page.perpsPro.tradingPanel.bboTips')}
-          >
-            <div
-              className={clsx(
-                'min-w-[64px] h-[44px] relative flex items-center justify-center text-center text-15 rounded-[6px] border border-solid cursor-pointer',
-                bboEnabled
-                  ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default'
-                  : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent'
-              )}
-              onClick={handleBboToggle}
-            >
-              BBO
-            </div>
-          </Tooltip>
+          <DesktopPerpsInput
+            value={limitPrice}
+            onChange={handleLimitPriceChange}
+            className="text-left"
+            suffix={
+              <span className="text-15 text-rb-neutral-title-1">
+                {quoteAsset}
+              </span>
+            }
+          />
         </div>
       </div>
 
       {/* Position Size Input */}
       <PositionSizeInputAndSlider
-        price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
+        price={estPrice}
         maxBuyTradeSize={limitMaxBuyTradeSize}
         maxSellTradeSize={limitMaxSellTradeSize}
         positionSize={positionSize}
@@ -658,7 +574,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
         selectedCoin={selectedCoin}
         quoteAsset={quoteAsset}
         reduceOnly={reduceOnly}
-        price={bboEnabled ? midPrice : Number(limitPrice) || midPrice}
+        price={estPrice}
       />
     </div>
   );
