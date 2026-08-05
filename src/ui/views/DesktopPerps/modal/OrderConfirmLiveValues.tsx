@@ -35,9 +35,7 @@ export const LiveMarkPrice: React.FC<{
   const price = live > 0 ? live : fallback;
 
   if (!(price > 0)) return null;
-  return (
-    <>{`${splitNumberByStep(price.toFixed(pxDecimals))} ${quoteAsset}`}</>
-  );
+  return <>{`${splitNumberByStep(price.toFixed(pxDecimals))} ${quoteAsset}`}</>;
 };
 
 /**
