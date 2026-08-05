@@ -20,6 +20,7 @@ export const ToConfirmBtn = (props: {
   disabled?: boolean;
   htmlType?: 'button' | 'submit' | 'reset';
   isHardWallet?: boolean;
+  onConfirmStart?: () => void;
   onCancel?: () => void;
   loading?: boolean;
   className?: string;
@@ -35,12 +36,14 @@ export const ToConfirmBtn = (props: {
 
     if (props.isHardWallet) {
       props.onConfirm();
+      return;
     }
 
     if (toConfirm) {
       setToConfirm(false);
       props.onConfirm();
     } else {
+      props.onConfirmStart?.();
       setToConfirm(true);
     }
   };
@@ -54,13 +57,19 @@ export const ToConfirmBtn = (props: {
     [props.onCancel]
   );
   const divRef = useRef<HTMLDivElement>(null);
-  useClickAway(divRef, () => setToConfirm(false));
+  useClickAway(divRef, () => {
+    if (toConfirm) {
+      setToConfirm(false);
+      props.onCancel?.();
+    }
+  });
 
   useEffect(() => {
-    if (props.disabled) {
+    if (props.disabled && toConfirm) {
       setToConfirm(false);
+      props.onCancel?.();
     }
-  }, [props.disabled]);
+  }, [props.disabled, props.onCancel, toConfirm]);
 
   return (
     <div
