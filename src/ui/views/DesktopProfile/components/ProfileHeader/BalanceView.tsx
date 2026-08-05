@@ -57,6 +57,7 @@ export const BalanceView: React.FC<{
   evmBalance?: number | null;
   curveChartData?: CurveChartData;
   isLoading?: boolean;
+  isRefreshing?: boolean;
   isManualRefreshing?: boolean;
   balanceLoading?: boolean;
   curveLoading?: boolean;
@@ -68,6 +69,7 @@ export const BalanceView: React.FC<{
   evmBalance,
   curveChartData,
   isLoading,
+  isRefreshing,
   isManualRefreshing,
   balanceLoading,
   curveLoading,
@@ -217,7 +219,7 @@ export const BalanceView: React.FC<{
                     className={clsx(
                       'w-[24px] h-[24px] text-rb-neutral-foot cursor-pointer',
                       'hover:text-r-blue-default',
-                      isLoading ? 'animate-spin' : ''
+                      isRefreshing ? 'animate-spin' : ''
                     )}
                     onClick={onRefresh}
                   />
