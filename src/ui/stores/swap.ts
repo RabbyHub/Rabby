@@ -11,6 +11,12 @@ import { wallet } from '@/ui/wallet';
 import { createExtensionStoreOptions } from './createExtensionStoreOptions';
 import { createRabbyStore } from './createRabbyStore';
 
+const isTokenOnChain = (token: TokenItem | undefined, chain: CHAINS_ENUM) => {
+  const chainInfo = findChain({ enum: chain });
+
+  return !!token && !!chainInfo && token.chain === chainInfo.serverId;
+};
+
 type SwapState = SwapServiceStore & {
   $$initialSelectedChain: CHAINS_ENUM | null;
   supportedDEXList: string[];
@@ -80,7 +86,18 @@ export const useSwapStore = createRabbyStore<SwapStore>(
       set({ selectedDex });
     },
     setSelectedChain(selectedChain) {
-      set({ selectedChain });
+      set((state) => ({
+        selectedChain,
+        selectedFromToken: isTokenOnChain(
+          state.selectedFromToken,
+          selectedChain
+        )
+          ? state.selectedFromToken
+          : undefined,
+        selectedToToken: isTokenOnChain(state.selectedToToken, selectedChain)
+          ? state.selectedToToken
+          : undefined,
+      }));
     },
     setSelectedFromToken(selectedFromToken) {
       set({ selectedFromToken });
