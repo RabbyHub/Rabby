@@ -40,8 +40,7 @@ export type RabbyStoreOptions<State extends Record<string, unknown>> = {
   onError?: (error: unknown) => void;
 };
 
-export type RabbyStoreControls<State> = {
-  applyRemote: (state: Partial<State>) => void;
+export type RabbyStoreControls = {
   destroy: () => void;
   flush: () => Promise<void>;
   hasHydrated: () => boolean;
@@ -52,7 +51,7 @@ export type RabbyStoreControls<State> = {
 export type RabbyStore<State extends Record<string, unknown>> = UseBoundStore<
   StoreApi<State>
 > & {
-  persist: RabbyStoreControls<State>;
+  persist: RabbyStoreControls;
 };
 
 const defaultPartialize = <State extends Record<string, unknown>>(
@@ -89,7 +88,6 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   let rawSet!: SetState<State>;
   let writeQueue = Promise.resolve();
   const pendingLocalUpdates: PendingSet<State>[] = [];
-  const pendingRemoteUpdates: Partial<State>[] = [];
   const pendingSyncedUpdates: BackgroundStoreUpdate<State>[] = [];
 
   const reportError = (error: unknown) => {
@@ -101,7 +99,7 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
     if (snapshot.revision < latestRevision) return;
 
     latestRevision = snapshot.revision;
-    applyRemote(snapshot.state);
+    applyRemoteState(snapshot.state);
   };
 
   const enqueuePersist = (
@@ -167,12 +165,8 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
 
   store.setState = applyLocalSet;
 
-  const applyRemote = (state: Partial<State>) => {
+  const applyRemoteState = (state: Partial<State>) => {
     if (destroyed) return;
-    if (!hydrated) {
-      pendingRemoteUpdates.push(state);
-      return;
-    }
     applyingRemote = true;
     try {
       rawSet(state);
@@ -188,7 +182,7 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
       return;
     }
     latestRevision = update.revision;
-    applyRemote(update.state);
+    applyRemoteState(update.state);
   };
 
   const hydrate = async () => {
@@ -210,7 +204,6 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
       latestRevision = snapshot.revision;
       hydrated = true;
       pendingSyncedUpdates.splice(0).forEach(applySyncedUpdate);
-      pendingRemoteUpdates.splice(0).forEach(applyRemote);
       pendingLocalUpdates
         .splice(0)
         .forEach((args) => callSet(applyLocalSet, args));
@@ -234,7 +227,6 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   );
 
   store.persist = {
-    applyRemote,
     destroy() {
       destroyed = true;
       disposeRemoteSubscription?.();

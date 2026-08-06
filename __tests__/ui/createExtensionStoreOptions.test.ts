@@ -16,16 +16,10 @@ type TestSwapStore = SwapServiceStore & Record<string, unknown>;
 
 const swapState: SwapServiceStore = {
   autoSlippage: true,
-  gasPriceCache: {},
   preferMEVGuarded: false,
-  selectedChain: null,
-  selectedDex: null,
-  slippage: '0.1',
   recentToTokens: [],
-  sortIncludeGasFee: true,
-  tradeList: {} as SwapServiceStore['tradeList'],
-  unlimitedAllowance: false,
-  viewList: {} as SwapServiceStore['viewList'],
+  selectedChain: null,
+  slippage: '0.1',
 };
 
 describe('createExtensionStoreOptions', () => {

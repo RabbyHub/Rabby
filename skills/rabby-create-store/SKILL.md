@@ -122,7 +122,8 @@ export const useFeatureStore = createRabbyStore<FeatureStore>(
 
 - Call `set()` for normal user actions. It performs the optimistic UI update and queues a partial background write after hydration.
 - Do not call `wallet.setStorageItem` manually from ordinary setters; the storage adapter owns persistence.
-- Use `useFeatureStore.persist.applyRemote(partials)` only for authoritative values fetched outside the normal sync channel. It must not write the value back to the background.
+- Do not expose or call a remote-apply method from business code. Hydration, background broadcasts, stale-revision checks, and rollback apply authoritative state internally.
+- Return persisted values fetched outside the normal sync channel directly to the caller instead of copying them into the UI store. Use ordinary `set()` for UI-only fields excluded by `partialize`.
 - Use `autoHydrate: false` when startup depends on another initialization step, then expose an initializer that awaits `useFeatureStore.persist.hydrate()`.
 - Otherwise allow automatic hydration.
 - Update UI consumers and remove the requested domain's Rematch bindings only after the Zustand replacement covers their behavior.
