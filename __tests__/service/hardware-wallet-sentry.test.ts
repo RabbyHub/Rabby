@@ -47,7 +47,11 @@ describe('hardware wallet Sentry reporting', () => {
         )
       ).rejects.toBe(error);
 
-      expect(getHardwareSigningContext(error)).toEqual({ wallet, operation });
+      expect(getHardwareSigningContext(error)).toMatchObject({
+        wallet,
+        operation,
+        originalError: error,
+      });
       expect(captureThroughBeforeSend(error)).toMatchObject({
         tags: {
           hardware_wallet: wallet,
@@ -160,7 +164,7 @@ describe('hardware wallet Sentry reporting', () => {
     }
   );
 
-  it('keeps and redacts a real Trezor Bridge failure', async () => {
+  it('keeps the original hardware error and device metadata', async () => {
     const address = '0x0123456789abcdef0123456789abcdef01234567';
     const error = new Error(
       `bridge http://127.0.0.1:21325/call?token=secret failed for ${address}`
@@ -177,9 +181,42 @@ describe('hardware wallet Sentry reporting', () => {
     const event = captureThroughBeforeSend(error);
     expect(event).not.toBeNull();
     expect(event.tags.hardware_wallet).toBe('trezor');
-    expect(event.exception.values[0].value).toBe(
-      'bridge http://127.0.0.1:21325/call failed for [redacted-hex]'
-    );
+    expect(event.extra.hardware_original_error).toBe(error);
+    expect(event.exception.values[0].value).toContain(address);
     expect(error.message).toContain(address);
+  });
+
+  it('reports Ledger metadata and the original SDK cause', async () => {
+    const sdkError = { code: 0x6985, message: 'rejected for 0xabc' };
+    const error = Object.assign(new Error('Ledger signing failed'), {
+      cause: sdkError,
+    });
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.LEDGER,
+      getHardwareSigningMetadata: () => ({
+        device_model: 'Nano X',
+        firmware_version: '2.2.3',
+        app_name: 'Ethereum',
+        app_version: '1.10.0',
+      }),
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(captureThroughBeforeSend(error)).toMatchObject({
+      extra: {
+        hardware_device: {
+          device_model: 'Nano X',
+          firmware_version: '2.2.3',
+          app_name: 'Ethereum',
+          app_version: '1.10.0',
+        },
+        hardware_original_error: sdkError,
+      },
+    });
   });
 });

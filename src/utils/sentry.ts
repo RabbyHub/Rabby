@@ -1,3 +1,5 @@
+import type { HardwareSigningContext } from '@/background/service/keyring/hardware-wallet-sentry';
+
 export type SentryIgnorePattern = string | RegExp;
 
 const BROAD_HTTP_IGNORE_PATTERN = /http/i;
@@ -108,11 +110,6 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
     ...parts.map(String),
     ...collectErrorText((error as any).cause, depth + 1),
   ];
-};
-
-export type HardwareSigningContext = {
-  wallet: string;
-  operation: string;
 };
 
 const hardwareSigningContexts = new WeakMap<object, HardwareSigningContext>();
@@ -232,22 +229,9 @@ export const applyHardwareSigningContext = (
     '{{ default }}',
   ];
 
-  event.exception?.values?.forEach((value) => {
-    if (typeof value.value === 'string') {
-      value.value = redactSensitiveText(value.value);
-    }
-  });
-  if (typeof event.message === 'string') {
-    event.message = redactSensitiveText(event.message);
-  }
-
-  if (event.extra?.__serialized__ !== undefined) {
-    try {
-      event.extra.__serialized__ = redactSensitiveText(
-        JSON.stringify(event.extra.__serialized__)
-      );
-    } catch {
-      delete event.extra.__serialized__;
-    }
-  }
+  event.extra = {
+    ...event.extra,
+    ...(hardware.metadata ? { hardware_device: hardware.metadata } : undefined),
+    hardware_original_error: hardware.originalError,
+  };
 };
