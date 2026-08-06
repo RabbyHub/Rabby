@@ -49,18 +49,6 @@ const swapStoreSchema = z.object({
   isCustomSlippage: z.boolean().optional(),
   slippage: z.string().default('0.1'),
   recentToTokens: z.array(tokenItemSchema).default(() => []),
-  /** @deprecated */
-  gasPriceCache: gasCacheSchema.default(() => ({})),
-  /** @deprecated */
-  unlimitedAllowance: z.boolean().default(false),
-  /** @deprecated */
-  selectedDex: dexSchema.nullable().default(null),
-  /** @deprecated */
-  viewList: viewListSchema.default(() => ({} as Record<ViewKey, boolean>)),
-  /** @deprecated */
-  tradeList: viewListSchema.default(() => ({} as Record<ViewKey, boolean>)),
-  /** @deprecated */
-  sortIncludeGasFee: z.boolean().default(true),
   preferMEVGuarded: z.boolean().default(false),
 });
 
@@ -78,10 +66,6 @@ class SwapService {
       schema: swapStoreSchema,
     });
     if (storage) {
-      const values = Object.values(DEX_ENUM);
-      if (storage.selectedDex && !values.includes(storage.selectedDex)) {
-        storage.selectedDex = null;
-      }
       if (storage.selectedChain) {
         if (!isTokenOnChain(storage.selectedFromToken, storage.selectedChain)) {
           storage.selectedFromToken = undefined;
@@ -100,53 +84,6 @@ class SwapService {
 
   patchStore = (partials: Partial<SwapServiceStore>) => {
     patchPersistStore(this.store, partials);
-  };
-
-  getLastTimeGasSelection = (chainId: keyof GasCache): ChainGas | null => {
-    const cache = this.store.gasPriceCache[chainId];
-    if (cache && cache.lastTimeSelect === 'gasPrice') {
-      if (Date.now() <= (cache.expireAt || 0)) {
-        return cache;
-      } else if (cache.gasLevel) {
-        return {
-          lastTimeSelect: 'gasLevel',
-          gasLevel: cache.gasLevel,
-        };
-      } else {
-        return null;
-      }
-    } else {
-      return cache;
-    }
-  };
-
-  updateLastTimeGasSelection = (chainId: keyof GasCache, gas: ChainGas) => {
-    if (gas.lastTimeSelect === 'gasPrice') {
-      this.store.gasPriceCache = {
-        ...this.store.gasPriceCache,
-        [chainId]: {
-          ...this.store.gasPriceCache[chainId],
-          ...gas,
-          expireAt: Date.now() + 3600000, // custom gasPrice will expire at 1h later
-        },
-      };
-    } else {
-      this.store.gasPriceCache = {
-        ...this.store.gasPriceCache,
-        [chainId]: {
-          ...this.store.gasPriceCache[chainId],
-          ...gas,
-        },
-      };
-    }
-  };
-
-  getSelectedDex = () => {
-    return this.store.selectedDex;
-  };
-
-  setSelectedDex = (dexId: DEX_ENUM) => {
-    this.store.selectedDex = dexId;
   };
 
   getSelectedChain = () => {
@@ -176,50 +113,6 @@ class SwapService {
   };
   setSelectedToToken = (token?: TokenItem) => {
     this.store.selectedToToken = token;
-  };
-
-  getUnlimitedAllowance = () => {
-    return this.store.unlimitedAllowance;
-  };
-
-  setUnlimitedAllowance = (bool: boolean) => {
-    this.store.unlimitedAllowance = bool;
-  };
-
-  getSwapViewList = () => {
-    return this.store.viewList;
-  };
-
-  setSwapView = (id: ViewKey, bool: boolean) => {
-    if (!this.store.viewList) {
-      this.store.viewList = {} as SwapServiceStore['viewList'];
-    }
-    this.store.viewList = {
-      ...this.store.viewList,
-      [id]: bool,
-    };
-  };
-
-  getSwapTradeList = () => {
-    return this.store.tradeList;
-  };
-
-  setSwapTrade = (dexId: ViewKey, bool: boolean) => {
-    if (!this.store.tradeList) {
-      this.store.tradeList = {} as SwapServiceStore['tradeList'];
-    }
-    this.store.tradeList = {
-      ...this.store.tradeList,
-      [dexId]: bool,
-    };
-  };
-
-  getSwapSortIncludeGasFee = () => {
-    return this.store.sortIncludeGasFee ?? true;
-  };
-
-  setSwapSortIncludeGasFee = (bool: boolean) => {
-    this.store.sortIncludeGasFee = bool;
   };
 
   txQuotes: Record<

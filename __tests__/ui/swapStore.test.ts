@@ -1,4 +1,5 @@
 import { SwapServiceStore } from '@/background/service/swap';
+import { DEX } from '@/constant';
 import { useSwapStore } from '@/ui/stores/swap';
 import { wallet } from '@/ui/wallet';
 import { findChain } from '@/utils/chain';
@@ -21,6 +22,9 @@ jest.mock('webextension-polyfill', () => ({
 jest.mock('@/ui/wallet', () => ({
   wallet: {
     getStorageSnapshot: jest.fn(),
+    openapi: {
+      getSupportedDEXList: jest.fn(),
+    },
     setStorageItem: jest.fn(),
   },
 }));
@@ -37,18 +41,12 @@ const ethToToken = {
 
 const swapState: SwapServiceStore = {
   autoSlippage: true,
-  gasPriceCache: {},
   preferMEVGuarded: false,
   recentToTokens: [],
   selectedChain: CHAINS_ENUM.ETH,
-  selectedDex: null,
   selectedFromToken: ethFromToken,
   selectedToToken: ethToToken,
   slippage: '0.1',
-  sortIncludeGasFee: true,
-  tradeList: {} as SwapServiceStore['tradeList'],
-  unlimitedAllowance: false,
-  viewList: {} as SwapServiceStore['viewList'],
 };
 
 describe('swap store', () => {
@@ -89,5 +87,19 @@ describe('swap store', () => {
       selectedFromToken: undefined,
       selectedToToken: undefined,
     });
+  });
+
+  test('updates UI-only state without persisting it', async () => {
+    const supportedDex = Object.keys(DEX)[0];
+    (wallet.openapi.getSupportedDEXList as jest.Mock).mockResolvedValue({
+      dex_list: [supportedDex, 'unknown'],
+    });
+    (wallet.setStorageItem as jest.Mock).mockClear();
+
+    await useSwapStore.getState().getSwapSupportedDEXList();
+    await useSwapStore.persist.flush();
+
+    expect(useSwapStore.getState().supportedDEXList).toEqual([supportedDex]);
+    expect(wallet.setStorageItem).not.toHaveBeenCalled();
   });
 });

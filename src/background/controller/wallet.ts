@@ -2709,18 +2709,7 @@ export class WalletController extends BaseController {
   setSelectedToToken = swapService.setSelectedToToken;
 
   getSwap = swapService.getSwap;
-  getSwapGasCache = swapService.getLastTimeGasSelection;
-  updateSwapGasCache = swapService.updateLastTimeGasSelection;
-  getSwapDexId = swapService.getSelectedDex;
-  setSwapDexId = swapService.setSelectedDex;
-  getUnlimitedAllowance = swapService.getUnlimitedAllowance;
-  setUnlimitedAllowance = swapService.setUnlimitedAllowance;
-  setSwapView = swapService.setSwapView;
-  setSwapTrade = swapService.setSwapTrade;
-  getSwapViewList = swapService.getSwapViewList;
-  getSwapTradeList = swapService.getSwapTradeList;
-  getSwapSortIncludeGasFee = swapService.getSwapSortIncludeGasFee;
-  setSwapSortIncludeGasFee = swapService.setSwapSortIncludeGasFee;
+
   getSwapPreferMEVGuarded = swapService.getSwapPreferMEVGuarded;
   setSwapPreferMEVGuarded = swapService.setSwapPreferMEVGuarded;
   setAutoSlippage = swapService.setAutoSlippage;
