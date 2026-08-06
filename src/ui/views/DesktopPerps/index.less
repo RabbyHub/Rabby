@@ -542,3 +542,12 @@ html.dark {
 html[desktop] .desktop-perps-settings-switch.ant-switch-checked {
   background: var(--rb-blue-default, #7084ff);
 }
+
+// style/antd-overwrite.less gives every `.ant-drawer-content` a 1.5px top
+// border — the seam the app's bottom-sheet drawers need against the page behind
+// them. This one slides in from the right at full height, so that seam lands as
+// a stray light line across the top of the panel. Two classes deep, same as the
+// rule it undoes, so it needs the `.ant-drawer` prefix to outrank it.
+.ant-drawer.desktop-perps-settings-drawer .ant-drawer-content {
+  border-top: none;
+}
