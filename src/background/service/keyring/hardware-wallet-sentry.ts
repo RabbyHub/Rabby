@@ -8,6 +8,20 @@ export type SignOperation =
   | 'typed_data'
   | 'eip7702_authorization';
 
+export type HardwareSigningMetadata = {
+  device_model?: string;
+  firmware_version?: string;
+  app_name?: string;
+  app_version?: string;
+};
+
+export type HardwareSigningContext = {
+  wallet: string;
+  operation: string;
+  metadata?: HardwareSigningMetadata;
+  originalError?: unknown;
+};
+
 const HARDWARE_WALLETS: Record<string, string> = {
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'ledger',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'onekey',
@@ -24,8 +38,15 @@ export const withHardwareSigningContext = (
     return sign();
   }
 
+  const metadata = keyring?.getHardwareSigningMetadata?.();
+
   const attach = (error: unknown) => {
-    attachHardwareSigningContext(error, { wallet, operation });
+    attachHardwareSigningContext(error, {
+      wallet,
+      operation,
+      metadata,
+      originalError: (error as any)?.cause ?? error,
+    });
     throw error;
   };
 

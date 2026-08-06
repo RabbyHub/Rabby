@@ -1,6 +1,6 @@
-export type SentryIgnorePattern = string | RegExp;
+import type { HardwareSigningContext } from '@/background/service/keyring/hardware-wallet-sentry';
 
-const BROAD_HTTP_IGNORE_PATTERN = /http/i;
+export type SentryIgnorePattern = string | RegExp;
 
 export const sanitizeSentryBreadcrumbUrl = (value: string) => {
   const withoutQueryOrFragment = value.split(/[?#]/, 1)[0];
@@ -9,8 +9,7 @@ export const sanitizeSentryBreadcrumbUrl = (value: string) => {
 };
 
 // Keep this list in the SDK pipeline so it can also match Sentry-generated
-// event text. The broad HTTP rule is handled below because Trezor Bridge uses
-// HTTP and must remain reportable while signing.
+// event text. Hardware signing errors are handled separately below.
 export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'ResizeObserver loop limit exceeded',
   'ResizeObserver loop completed with undelivered notifications',
@@ -110,11 +109,6 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
   ];
 };
 
-export type HardwareSigningContext = {
-  wallet: string;
-  operation: string;
-};
-
 const hardwareSigningContexts = new WeakMap<object, HardwareSigningContext>();
 
 export const attachHardwareSigningContext = (
@@ -175,12 +169,14 @@ export const shouldIgnoreSentryError = (error: unknown) => {
   ].filter(Boolean);
 
   const hardware = getHardwareSigningContext(error);
-  if (hardware?.wallet !== 'trezor' && BROAD_HTTP_IGNORE_PATTERN.test(text)) {
-    return true;
-  }
+  if (hardware) {
+    if (matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)) {
+      return true;
+    }
 
-  if (hardware && matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)) {
-    return true;
+    // Hardware signing errors must remain reportable even when a transport
+    // failure uses a generic network error message.
+    return false;
   }
 
   if (matchesAny(RABBY_SENTRY_IGNORE_ERRORS, candidates)) {
@@ -232,22 +228,9 @@ export const applyHardwareSigningContext = (
     '{{ default }}',
   ];
 
-  event.exception?.values?.forEach((value) => {
-    if (typeof value.value === 'string') {
-      value.value = redactSensitiveText(value.value);
-    }
-  });
-  if (typeof event.message === 'string') {
-    event.message = redactSensitiveText(event.message);
-  }
-
-  if (event.extra?.__serialized__ !== undefined) {
-    try {
-      event.extra.__serialized__ = redactSensitiveText(
-        JSON.stringify(event.extra.__serialized__)
-      );
-    } catch {
-      delete event.extra.__serialized__;
-    }
-  }
+  event.extra = {
+    ...event.extra,
+    ...(hardware.metadata ? { hardware_device: hardware.metadata } : undefined),
+    hardware_original_error: hardware.originalError,
+  };
 };
