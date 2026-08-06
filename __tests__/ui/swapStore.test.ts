@@ -1,0 +1,93 @@
+import { SwapServiceStore } from '@/background/service/swap';
+import { useSwapStore } from '@/ui/stores/swap';
+import { wallet } from '@/ui/wallet';
+import { findChain } from '@/utils/chain';
+import { CHAINS_ENUM } from '@debank/common';
+import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+
+jest.mock('webextension-polyfill', () => ({
+  storage: {
+    local: {
+      get: jest.fn().mockResolvedValue({}),
+    },
+  },
+  tabs: {
+    onCreated: {
+      addListener: jest.fn(),
+    },
+  },
+}));
+
+jest.mock('@/ui/wallet', () => ({
+  wallet: {
+    getStorageSnapshot: jest.fn(),
+    setStorageItem: jest.fn(),
+  },
+}));
+
+const ethServerId = findChain({ enum: CHAINS_ENUM.ETH })!.serverId;
+const ethFromToken = {
+  chain: ethServerId,
+  id: '0xfrom',
+} as TokenItem;
+const ethToToken = {
+  chain: ethServerId,
+  id: '0xto',
+} as TokenItem;
+
+const swapState: SwapServiceStore = {
+  autoSlippage: true,
+  gasPriceCache: {},
+  preferMEVGuarded: false,
+  recentToTokens: [],
+  selectedChain: CHAINS_ENUM.ETH,
+  selectedDex: null,
+  selectedFromToken: ethFromToken,
+  selectedToToken: ethToToken,
+  slippage: '0.1',
+  sortIncludeGasFee: true,
+  tradeList: {} as SwapServiceStore['tradeList'],
+  unlimitedAllowance: false,
+  viewList: {} as SwapServiceStore['viewList'],
+};
+
+describe('swap store', () => {
+  beforeAll(async () => {
+    (wallet.getStorageSnapshot as jest.Mock).mockResolvedValue({
+      revision: 0,
+      state: swapState,
+    });
+    (wallet.setStorageItem as jest.Mock).mockResolvedValue(undefined);
+    await useSwapStore.persist.hydrate();
+  });
+
+  afterAll(() => {
+    useSwapStore.persist.destroy();
+  });
+
+  test('clears incompatible tokens in the same persisted chain update', async () => {
+    useSwapStore.getState().setSelectedChain(CHAINS_ENUM.ETH);
+    expect(useSwapStore.getState()).toMatchObject({
+      selectedChain: CHAINS_ENUM.ETH,
+      selectedFromToken: ethFromToken,
+      selectedToToken: ethToToken,
+    });
+    expect(wallet.setStorageItem).not.toHaveBeenCalled();
+
+    useSwapStore.getState().setSelectedChain(CHAINS_ENUM.BSC);
+
+    expect(useSwapStore.getState()).toMatchObject({
+      selectedChain: CHAINS_ENUM.BSC,
+      selectedFromToken: undefined,
+      selectedToToken: undefined,
+    });
+
+    await useSwapStore.persist.flush();
+    expect(wallet.setStorageItem).toHaveBeenCalledTimes(1);
+    expect(wallet.setStorageItem).toHaveBeenCalledWith('swap', {
+      selectedChain: CHAINS_ENUM.BSC,
+      selectedFromToken: undefined,
+      selectedToToken: undefined,
+    });
+  });
+});
