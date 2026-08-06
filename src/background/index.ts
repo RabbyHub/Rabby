@@ -78,10 +78,12 @@ import { PERPS_LIVE_PORT_NAME } from '@/utils/message/perpsLive';
 /** Controller methods the perps widget content-script may call via runtime.sendMessage */
 const PERPS_WIDGET_RPC_ALLOWLIST = new Set<string>([
   'getPerpsWidgetEnabled',
+  'setPerpsWidgetEnabled',
   'getPerpsWidgetBlockedHosts',
   'getPerpsWidgetBallPosition',
   'setPerpsWidgetBallPosition',
   'openInDesktop',
+  'openPerpsWidgetProfile',
 ]);
 import rpcCache from './utils/rpcCache';
 import { storage } from './webapi';

@@ -151,11 +151,15 @@ const STYLES = `
     font-size: 12px;
     color: var(--rb-neutral-secondary);
     opacity: 0;
-    transition: opacity 0.5s ease-out 0.06s;
+    transition: opacity 0.5s ease-out 0.06s, color 0.3s ease;
   }
   .rabby-perps-widget.expanded .rabby-perps-widget__address {
     display: inline-block;
     opacity: 1;
+    cursor: pointer;
+  }
+  .rabby-perps-widget.expanded .rabby-perps-widget__address:hover {
+    color: var(--rb-neutral-foot);
   }
 
   .rabby-perps-widget__body {
@@ -317,7 +321,8 @@ const STYLES = `
   .rabby-perps-widget__footer {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
+    gap: 8px;
     font-size: 13px;
     color: var(--rb-neutral-secondary);
   }
@@ -327,6 +332,60 @@ const STYLES = `
   }
   .rabby-perps-widget__footer-text:hover {
     color: var(--rb-neutral-foot);
+  }
+
+  .rabby-perps-widget__hide {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    color: var(--rb-neutral-secondary);
+    transition: color 0.3s ease;
+  }
+  .rabby-perps-widget__hide:hover {
+    color: var(--rb-neutral-foot);
+  }
+  /* Anchored to the button's right edge so it grows inward — the widget clips overflow */
+  .rabby-perps-widget__hide-tip {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 10px);
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--rb-neutral-bg-2);
+    border: 1px solid var(--rb-neutral-line);
+    color: var(--rb-neutral-title-1);
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+  /* Rotated square, not a border triangle: only a real box can carry the 1px
+     outline on its two exposed sides. Sits half outside so its body overlaps
+     the bubble's bottom border and the two seams merge. */
+  .rabby-perps-widget__hide-tip::after {
+    content: '';
+    position: absolute;
+    right: 8px;
+    bottom: -4px;
+    width: 7px;
+    height: 7px;
+    transform: translateX(50%) rotate(45deg);
+    background: var(--rb-neutral-bg-2);
+    border-right: 1px solid var(--rb-neutral-line);
+    border-bottom: 1px solid var(--rb-neutral-line);
+    border-bottom-right-radius: 2px;
+  }
+  .rabby-perps-widget__hide:hover .rabby-perps-widget__hide-tip {
+    opacity: 1;
+    visibility: visible;
   }
 `;
 
