@@ -16,11 +16,21 @@ function buildHostVars(): string {
     .join('\n      ');
 }
 
+/**
+ * Must live below the shadow host: both the host element (index.ts) and the React
+ * container (mount.tsx) carry an inline `all: initial`, and inline declarations beat
+ * any `:host` rule — a font-family set there is silently reset to the UA default
+ * (Times on macOS, Noto Sans SC on zh-CN Windows). `.rabby-perps-widget` is the first
+ * node those two can't reach, so the stack applies there and inherits down.
+ * Note `all` does NOT reset custom properties, which is why --rb-* kept working.
+ */
+const FONT_STACK =
+  "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto, sans-serif";
+
 const STYLES = `
   :host {
     all: initial;
     ${buildHostVars()}
-    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Roboto, sans-serif;
     color-scheme: dark;
   }
 
@@ -38,6 +48,7 @@ const STYLES = `
 
   /* Transparent chrome — bg comes from the header/body children */
   .rabby-perps-widget {
+    font-family: ${FONT_STACK};
     position: fixed;
     display: flex;
     flex-direction: column;
