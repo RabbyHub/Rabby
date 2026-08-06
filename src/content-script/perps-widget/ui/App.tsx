@@ -61,7 +61,11 @@ export const App: React.FC = () => {
   }));
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
-  /** Optimistic local hide — the background's CLEARED broadcast lands a moment later. */
+  /**
+   * Covers only the gap between clicking hide and the background's CLEARED landing
+   * (an MV3 service worker may need waking first, so it isn't instant). Released as
+   * soon as CLEARED arrives — see the effect below.
+   */
   const [isHidden, setIsHidden] = React.useState(false);
 
   const hidePanelTimer = React.useRef<number | null>(null);
@@ -73,6 +77,17 @@ export const App: React.FC = () => {
       unsubSnap();
     };
   }, []);
+
+  // A latched isHidden would survive re-enabling from Settings and block the widget
+  // forever. CLEARED, not any snapshot, is the release point — a SNAPSHOT racing the
+  // disable would otherwise un-hide it. Collapsing too: DOM removal fires no
+  // mouseleave, so a widget hidden while hovered would come back expanded.
+  React.useEffect(() => {
+    if (snapshot === null) {
+      setIsHidden(false);
+      setIsExpanded(false);
+    }
+  }, [snapshot]);
 
   React.useEffect(() => {
     let cancelled = false;
