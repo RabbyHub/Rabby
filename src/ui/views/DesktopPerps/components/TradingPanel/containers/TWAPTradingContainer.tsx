@@ -21,10 +21,7 @@ import {
   OrderConfirmContent,
 } from '../../../modal/OrderConfirmProvider';
 import type { OrderConfirmRow } from '../../../modal/OrderConfirmModal';
-import {
-  ConfirmAmount,
-  LiveMarkPrice,
-} from '../../../modal/OrderConfirmLiveValues';
+import { LiveMarkPrice } from '../../../modal/OrderConfirmLiveValues';
 
 const RUNTIME_PRESETS = [
   { label: '1h', hours: 1, minutes: 0 },
@@ -340,14 +337,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         rows.push({
           key: 'totalSize',
           label: t('page.perpsPro.orderConfirm.totalSize'),
-          value: (
-            <ConfirmAmount
-              amount={directionSize}
-              coin={selectedCoin}
-              price={midPrice}
-              quoteAsset={quoteAsset}
-            />
-          ),
+          value: `${splitNumberByStep(directionSize)} ${coinLabel}`,
           emphasize: true,
         });
       }
@@ -359,17 +349,15 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
       });
 
       if (perSuborder !== '-' && Number(perSuborder) > 0) {
+        const perSuborderText = `${splitNumberByStep(
+          perSuborder
+        )} ${coinLabel}`;
         rows.push({
           key: 'amount',
-          label: t('page.perpsPro.orderConfirm.amount'),
-          value: (
-            <ConfirmAmount
-              amount={perSuborder}
-              coin={selectedCoin}
-              price={midPrice}
-              quoteAsset={quoteAsset}
-            />
-          ),
+          label: t('page.perpsPro.tradingPanel.sizePerSuborder'),
+          // Randomization varies each sub-order's size, so only this row is an
+          // estimate — the total the order sends stays exact.
+          value: order.randomizeDelay ? `~${perSuborderText}` : perSuborderText,
         });
       }
 

@@ -33,6 +33,19 @@ export function openInDesktopPerps(coin?: string): void {
   controllerCall('openInDesktop', [path]).catch(() => {});
 }
 
+/** Background-side: switches the wallet account to the perps one, then opens the portfolio. */
+export function openInDesktopProfile(): void {
+  controllerCall('openPerpsWidgetProfile').catch(() => {});
+}
+
+/**
+ * Flips the preference off. The background clears the live stream on that change
+ * and broadcasts CLEARED, so every tab's widget disappears — not just this one.
+ */
+export function disableWidget(): void {
+  controllerCall('setPerpsWidgetEnabled', [false]).catch(() => {});
+}
+
 export function saveBallPosition(
   pos: { x: number; y: number } | null
 ): Promise<void> {

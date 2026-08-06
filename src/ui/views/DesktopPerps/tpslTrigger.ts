@@ -17,3 +17,28 @@ export const resolveTriggerComparator = (
   isLong: boolean,
   isTakeProfit: boolean
 ): '>=' | '<=' => (isLong === isTakeProfit ? '>=' : '<=');
+
+/** The subset of a TP/SL config item the trigger resolution actually reads. */
+export interface TriggerSource {
+  settingMode: string;
+  value: string;
+  buyTriggerPrice: string;
+  sellTriggerPrice: string;
+}
+
+/**
+ * The trigger price an order-entry TP/SL will actually be submitted with.
+ *
+ * In `price` mode the user typed the trigger, so it is side-independent. In
+ * `pnl`/`roi` mode the panel derives one trigger per side from the order price,
+ * because the same profit target sits above the entry for a long and below it
+ * for a short.
+ */
+export const resolveTpSlTrigger = (
+  item: TriggerSource | undefined,
+  isBuy: boolean
+): string => {
+  if (!item) return '';
+  if (item.settingMode === 'price') return item.value || '';
+  return (isBuy ? item.buyTriggerPrice : item.sellTriggerPrice) || '';
+};
