@@ -324,38 +324,3 @@ export const useBackUp = () => {
   );
   return handleBackup;
 };
-
-export const useBackUpPrivateKey = () => {
-  const wallet = useWallet();
-  const history = useHistory();
-  const { t } = useTranslation();
-
-  return useCallback(
-    async (address: string, index: number) => {
-      let data: string | undefined;
-      await AuthenticationModalPromise({
-        confirmText: t('page.manageAddress.confirm'),
-        cancelText: t('page.manageAddress.cancel'),
-        title: t('page.addressDetail.backup-private-key'),
-        validationHandler: async (password: string) => {
-          data = await wallet.getPrivateKey(password, {
-            address,
-            type: KEYRING_TYPE.SimpleKeyring,
-          });
-        },
-        onFinished() {
-          history.replace({ search: `?index=${index}` });
-          history.push({
-            pathname: '/settings/address-backup/private-key',
-            state: { data, goBack: true },
-          });
-        },
-        onCancel() {
-          // do nothing
-        },
-        wallet,
-      });
-    },
-    [history, t, wallet]
-  );
-};

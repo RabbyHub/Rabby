@@ -5,7 +5,6 @@ import React, { useCallback, useState } from 'react';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { ReactComponent as IconPlus } from '@/ui/assets/address/plus.svg';
 import { ReactComponent as RcIconShowSeedPhrase } from '@/ui/assets/address/show-seed-phrase.svg';
-import { ReactComponent as RcIconKeyView } from '@/ui/assets/address/key-view.svg';
 import { ReactComponent as RcIconDelete } from '@/ui/assets/address/delete-current-color.svg';
 import { ReactComponent as RcIconPlusButton } from '@/ui/assets/import/plus.svg';
 
@@ -17,7 +16,7 @@ import { AddressDeleteModal } from './AddressDeleteModal';
 import { Button, message, Spin } from 'antd';
 import IconSuccess from '@/ui/assets/success.svg';
 import { GroupItem } from './GroupItem';
-import { useBackUp, useBackUpPrivateKey, useWalletTypeData } from './hooks';
+import { useBackUp, useWalletTypeData } from './hooks';
 import { SeedPhraseDeleteModal } from './SeedPhraseDelete';
 import { AccountList } from './List';
 import { LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
@@ -72,14 +71,10 @@ const ManageAddress = () => {
   const isSeedPhrase =
     TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['HdKeyring'];
 
-  const isPrivateKey =
-    TypedWalletObj?.[activeIndex]?.type === KEYRING_TYPE['SimpleKeyring'];
-
   const isLedger =
     TypedWalletObj?.[activeIndex]?.type === KEYRING_CLASS.HARDWARE.LEDGER;
 
   const backup = useBackUp();
-  const backupPrivateKey = useBackUpPrivateKey();
 
   const [open, setOpen] = useState(false);
   const [deleteGroup, setDeleteGroup] = useState(false);
@@ -330,19 +325,6 @@ const ManageAddress = () => {
                                 TypedWalletObj[activeIndex].publicKey!,
                                 currentIndex
                               );
-                            }
-                          }}
-                        />
-                      )}
-                      {isPrivateKey && TypedWalletObj[activeIndex]?.list[0] && (
-                        <RcIconKeyView
-                          viewBox="0 0 20 20"
-                          className="cursor-pointer text-r-neutral-body w-16 h-16"
-                          onClick={() => {
-                            const address =
-                              TypedWalletObj[activeIndex].list[0].address;
-                            if (address) {
-                              backupPrivateKey(address, currentIndex);
                             }
                           }}
                         />
