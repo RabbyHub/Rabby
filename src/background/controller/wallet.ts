@@ -7041,6 +7041,36 @@ export class WalletController extends BaseController {
     preferenceService.getPerpsWidgetBallPosition();
   setPerpsWidgetBallPosition = (pos: { x: number; y: number } | null) =>
     preferenceService.setPerpsWidgetBallPosition(pos);
+  /**
+   * Widget address → portfolio. The widget tracks the perps account, which can
+   * differ from the wallet's current account, so switch first — otherwise the
+   * portfolio would open on an unrelated address.
+   * Takes no params on purpose: it's reachable from content scripts, so the
+   * target address must come from trusted state, never from the caller.
+   */
+  openPerpsWidgetProfile = async () => {
+    try {
+      const perpsAccount = await perpsService.getCurrentAccount();
+      const current = preferenceService.getCurrentAccount();
+      if (
+        perpsAccount?.address &&
+        (current?.address?.toLowerCase() !==
+          perpsAccount.address.toLowerCase() ||
+          current?.type !== perpsAccount.type ||
+          current?.brandName !== perpsAccount.brandName)
+      ) {
+        this.changeAccount({
+          address: perpsAccount.address,
+          type: perpsAccount.type,
+          brandName: perpsAccount.brandName,
+        });
+      }
+    } catch (e) {
+      // Still open the portfolio on the account already selected.
+      console.warn('[perps-widget] switch account failed', e);
+    }
+    return this.openInDesktop('/desktop/profile');
+  };
 
   signPerpsSendSetReferrer = async ({
     address,

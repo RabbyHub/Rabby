@@ -19,11 +19,7 @@ import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { validatePriceInput } from '@/ui/views/Perps/utils';
-import {
-  calculateDistanceToLiquidation,
-  formatPerpsPct,
-  formatTpOrSlPrice,
-} from '@/ui/views/Perps/utils';
+import { formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import { splitNumberByStep } from '@/ui/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
@@ -46,6 +42,7 @@ import type {
 } from '../../../modal/OrderConfirmModal';
 import {
   ConfirmAmount,
+  LiveLiquidation,
   LiveMarkPrice,
 } from '../../../modal/OrderConfirmLiveValues';
 
@@ -634,23 +631,10 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
   const requestConfirm = useOrderConfirm();
 
-  /** `-1.86%(-1,230.5)` — signed against the mark price the panel trades on. */
-  const formatLiqDistance = (liqPx: number | null) => {
-    if (!liqPx || !markPrice) return '';
-    const sign = liqPx < markPrice ? '-' : '';
-    const gap = splitNumberByStep(
-      new BigNumber(liqPx).minus(markPrice).abs().toFixed(pxDecimals)
-    );
-    return `${sign}${formatPerpsPct(
-      calculateDistanceToLiquidation(liqPx, markPrice)
-    )}(${sign}${gap})`;
-  };
-
   const buildConfirmContent = useMemoizedFn(
     (isBuy: boolean, snapshot: LimitOrderSnapshot) => {
       const { limitPx, bboStrategy: snapshotStrategy } = snapshot;
-      const { liqPrice, liqPriceNum } = isBuy ? buyOrderInfo : sellOrderInfo;
-      const liqDistance = formatLiqDistance(liqPriceNum);
+      const { liqPriceNum } = isBuy ? buyOrderInfo : sellOrderInfo;
 
       const rows: OrderConfirmRow[] = [];
 
@@ -703,22 +687,31 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         ),
       });
 
-      // Mirrors OrderInfoGrid: a reduce-only order opens no new exposure, so it
-      // has no liquidation price to show.
-      if (!reduceOnly && liqPriceNum !== null) {
-        rows.push({
+      // Always shown; `LiveLiquidation` renders `-` when there is nothing to
+      // show — a reduce-only order, or no mark price to measure against.
+      // The entry is the price the user typed, so the liquidation price is
+      // fixed and only the distance moves with the mark. A BBO order has no
+      // frozen price to anchor it to — it resolves off the book at submit — so
+      // it passes no `orderPrice` and both figures follow the mark, the closest
+      // honest reference available before the order is sent.
+      const liqCellProps = {
+        direction: (isBuy ? 'Long' : 'Short') as 'Long' | 'Short',
+        size: snapshot.size,
+        orderPrice: limitPx,
+        pxDecimals,
+      };
+      rows.push(
+        {
           key: 'estLiqPrice',
           label: t('page.perpsPro.orderConfirm.estLiqPrice'),
-          value: liqPrice,
-        });
-        if (liqDistance) {
-          rows.push({
-            key: 'estLiqDistance',
-            label: t('page.perpsPro.orderConfirm.estLiqDistance'),
-            value: liqDistance,
-          });
+          value: <LiveLiquidation {...liqCellProps} variant="price" />,
+        },
+        {
+          key: 'estLiqDistance',
+          label: t('page.perpsPro.orderConfirm.estLiqDistance'),
+          value: <LiveLiquidation {...liqCellProps} variant="distance" />,
         }
-      }
+      );
 
       rows.push({
         key: 'reduceOnly',

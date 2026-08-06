@@ -10,7 +10,12 @@ import { PerpsLiveSnapshot } from '@/utils/message/perpsLive';
 import { Ball } from './Ball';
 import { Panel } from './Panel';
 import { truncateAddress } from './format';
-import { saveBallPosition, loadBallPosition } from './wallet';
+import {
+  saveBallPosition,
+  loadBallPosition,
+  openInDesktopProfile,
+  disableWidget,
+} from './wallet';
 
 const COLLAPSED_WIDTH = 130;
 const COLLAPSED_HEIGHT = 32;
@@ -56,6 +61,8 @@ export const App: React.FC = () => {
   }));
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
+  /** Optimistic local hide — the background's CLEARED broadcast lands a moment later. */
+  const [isHidden, setIsHidden] = React.useState(false);
 
   const hidePanelTimer = React.useRef<number | null>(null);
   const dragStateRef = React.useRef<DragState | null>(null);
@@ -123,6 +130,15 @@ export const App: React.FC = () => {
 
   React.useEffect(() => () => clearHideTimer(), []);
 
+  const handleHideWidget = (): void => {
+    setIsHidden(true);
+    disableWidget();
+  };
+
+  const handleAddressClick = (): void => {
+    openInDesktopProfile();
+  };
+
   // Threshold-gated drag so a hover-and-click doesn't accidentally pick up the widget.
   const handlePointerDown: React.PointerEventHandler<HTMLDivElement> = (e) => {
     if (e.button !== 0) return;
@@ -188,7 +204,7 @@ export const App: React.FC = () => {
   };
 
   const hasPositions = !!snapshot && snapshot.positions.length > 0;
-  if (!hasPositions) return null;
+  if (!hasPositions || isHidden) return null;
 
   const side = dockSideFor(pos.x);
   // Bottom-half ball → bottom-anchor so the panel grows upward (off-screen otherwise).
@@ -232,11 +248,14 @@ export const App: React.FC = () => {
         <div className="rabby-perps-widget__header-left">
           <Ball totalPnl={snapshot!.totalUnrealizedPnl} />
         </div>
-        <span className="rabby-perps-widget__address">
+        <span
+          className="rabby-perps-widget__address"
+          onClick={handleAddressClick}
+        >
           {truncateAddress(snapshot!.address)}
         </span>
       </div>
-      <Panel snapshot={snapshot} />
+      <Panel snapshot={snapshot} onHide={handleHideWidget} />
     </div>
   );
 };

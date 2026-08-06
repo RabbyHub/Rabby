@@ -21,6 +21,7 @@ import { calcAmountFromPercentage } from '../utils';
 import perpsToast from '../../PerpsToast';
 import { splitNumberByStep } from '@/ui/utils';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
+import { LiveLiquidation } from '../../../modal/OrderConfirmLiveValues';
 import { buildTakeOrStopConfirmContent } from './takeOrStopConfirmContent';
 
 interface TakeOrStopLimitTradingContainerProps {
@@ -419,6 +420,17 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   const handlePlaceOrder = useMemoizedFn((isBuy: boolean) => {
     const order = buildOrder(isBuy);
     if (!checkTriggerDirection(isBuy, order.triggerPx)) return;
+    // The entry is the limit price the user typed, so the liquidation price is
+    // fixed and only its distance from the streaming mark moves.
+    const liqCell = (variant: 'price' | 'distance') => (
+      <LiveLiquidation
+        direction={isBuy ? 'Long' : 'Short'}
+        size={order.size}
+        orderPrice={order.limitPx}
+        pxDecimals={pxDecimals}
+        variant={variant}
+      />
+    );
     const request = requestConfirm({
       type: 'conditional',
       content: () =>
@@ -437,9 +449,10 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
           // Matches the size input's own price, so a USD-entered size is shown
           // back as the figure the user typed.
           amountPrice: Number(order.limitPx) || midPrice,
-          estLiqPrice: isBuy
-            ? limitBuyInfo.liqPriceNum
-            : limitSellInfo.liqPriceNum,
+          // Always shown; the cell renders `-` when there is no liquidation
+          // price or no mark price to measure the distance against.
+          liqPriceCell: liqCell('price'),
+          liqDistanceCell: liqCell('distance'),
           reduceOnly: order.reduceOnly,
         }),
       dontShowAgainText: t('page.perpsPro.orderConfirm.dontShowAgain', {
