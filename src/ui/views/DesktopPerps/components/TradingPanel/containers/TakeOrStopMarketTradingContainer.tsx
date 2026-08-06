@@ -19,6 +19,7 @@ import { BigNumber } from 'bignumber.js';
 import { calcAmountFromPercentage } from '../utils';
 import perpsToast from '../../PerpsToast';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
+import { LiveLiquidation } from '../../../modal/OrderConfirmLiveValues';
 import { buildTakeOrStopConfirmContent } from './takeOrStopConfirmContent';
 
 interface TakeOrStopMarketTradingContainerProps {
@@ -269,6 +270,11 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
   const handlePlaceOrder = useMemoizedFn((isBuy: boolean) => {
     const order = buildOrder(isBuy);
     if (!checkTriggerDirection(isBuy, order.triggerPx)) return;
+    // Whether the liquidation rows exist is settled at click time — the panel
+    // has none for an order that only closes exposure — but their values are
+    // not: this order fills at market, so its entry is the mark price and both
+    // the liquidation price and its distance move with it.
+    const liqPriceNum = isBuy ? buyInfo.liqPriceNum : sellInfo.liqPriceNum;
     const request = requestConfirm({
       type: 'conditional',
       content: () =>
@@ -285,7 +291,25 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
           // Matches the size input's own price, so a USD-entered size is shown
           // back as the figure the user typed.
           amountPrice: markPrice,
-          estLiqPrice: isBuy ? buyInfo.liqPriceNum : sellInfo.liqPriceNum,
+          // Always shown; the cell renders `-` when there is no liquidation
+          // price. A conditional market order fills at the mark, so both the
+          // price and its distance follow it — hence no `orderPrice`.
+          liqPriceCell: (
+            <LiveLiquidation
+              direction={isBuy ? 'Long' : 'Short'}
+              size={order.size}
+              pxDecimals={pxDecimals}
+              variant="price"
+            />
+          ),
+          liqDistanceCell: (
+            <LiveLiquidation
+              direction={isBuy ? 'Long' : 'Short'}
+              size={order.size}
+              pxDecimals={pxDecimals}
+              variant="distance"
+            />
+          ),
           reduceOnly: order.reduceOnly,
         }),
       dontShowAgainText: t('page.perpsPro.orderConfirm.dontShowAgain', {

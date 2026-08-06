@@ -1,7 +1,6 @@
 import React from 'react';
 import type { TFunction } from 'i18next';
 import { splitNumberByStep } from '@/ui/utils';
-import { formatPerpsPct } from '@/ui/views/Perps/utils';
 import { formatPerpsCoin } from '../../../utils';
 import {
   ConfirmAmount,
@@ -34,10 +33,12 @@ export interface TakeOrStopConfirmParams {
    */
   amountPrice: number;
   /**
-   * This direction's liquidation price as a number (`liqPriceNum` on
-   * `OrderSideInfo`); `null` when there is none to show.
+   * The two liquidation cells, passed in rather than computed here: both track
+   * the market while the dialog is open, and how they track it differs between
+   * the market and limit containers. Omit either one to drop its row.
    */
-  estLiqPrice?: number | null;
+  liqPriceCell?: React.ReactNode;
+  liqDistanceCell?: React.ReactNode;
   reduceOnly: boolean;
 }
 
@@ -56,7 +57,8 @@ export const buildTakeOrStopConfirmContent = ({
   pxDecimals,
   amount,
   amountPrice,
-  estLiqPrice,
+  liqPriceCell,
+  liqDistanceCell,
   reduceOnly,
 }: TakeOrStopConfirmParams): OrderConfirmContent => {
   const rows: OrderConfirmRow[] = [];
@@ -103,25 +105,20 @@ export const buildTakeOrStopConfirmContent = ({
     });
   }
 
-  if (estLiqPrice) {
+  if (liqPriceCell) {
     rows.push({
       key: 'estLiqPrice',
       label: t('page.perpsPro.orderConfirm.estLiqPrice'),
-      value: `${splitNumberByStep(
-        estLiqPrice.toFixed(pxDecimals)
-      )} ${quoteAsset}`,
+      value: liqPriceCell,
     });
+  }
 
-    if (markPrice > 0) {
-      const delta = estLiqPrice - markPrice;
-      rows.push({
-        key: 'estLiqDistance',
-        label: t('page.perpsPro.orderConfirm.estLiqDistance'),
-        value: `${formatPerpsPct(delta / markPrice)}(${splitNumberByStep(
-          delta.toFixed(pxDecimals)
-        )})`,
-      });
-    }
+  if (liqDistanceCell) {
+    rows.push({
+      key: 'estLiqDistance',
+      label: t('page.perpsPro.orderConfirm.estLiqDistance'),
+      value: liqDistanceCell,
+    });
   }
 
   rows.push({

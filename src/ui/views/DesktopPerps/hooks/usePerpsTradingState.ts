@@ -17,7 +17,13 @@ import { usePerpsAccount } from '../../Perps/hooks/usePerpsAccount';
 import { calcAmountFromPercentage } from '../components/TradingPanel/utils';
 import { useTranslation } from 'react-i18next';
 
-export const usePerpsTradingState = () => {
+/**
+ * @param readOnly Skip the hook's write-back effects. Set it when the caller
+ * only reads derived numbers — the confirmation dialog's live cells each
+ * instantiate this hook, and without it every one of them would re-run the
+ * reduce-only reset below and dispatch on mount.
+ */
+export const usePerpsTradingState = ({ readOnly = false } = {}) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
 
@@ -325,10 +331,11 @@ export const usePerpsTradingState = () => {
   );
 
   React.useEffect(() => {
+    if (readOnly) return;
     if (!currentPosition) {
       setReduceOnly(false);
     }
-  }, [currentPosition?.side]);
+  }, [currentPosition?.side, readOnly]);
 
   // Calculate margin usage percentage
   const marginUsage = React.useMemo(() => {

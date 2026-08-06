@@ -1,13 +1,8 @@
-// The module under test reaches three barrels that boot the extension runtime
+// The module under test reaches two barrels that boot the extension runtime
 // on import (wallet context, the redux store, i18n, the Hyperliquid SDK). Only
 // their formatters are on its path, so they are stubbed ahead of the import.
 jest.mock('@/ui/utils', () => ({
   splitNumberByStep: jest.requireActual('@/ui/utils/number').splitNumberByStep,
-}));
-
-jest.mock('@/ui/views/Perps/utils', () => ({
-  // Same one-liner as the real export: sign-preserving, two decimals.
-  formatPerpsPct: (v: number) => `${(v * 100).toFixed(2)}%`,
 }));
 
 jest.mock('@/ui/views/DesktopPerps/utils', () => ({
@@ -16,8 +11,9 @@ jest.mock('@/ui/views/DesktopPerps/utils', () => ({
 
 // The two live cells are `.tsx`, which jest's transform (`^.+\.[tj]s$`) does not
 // cover. They are redux-subscribing presentation only — the assertions here are
-// about which rows exist and what the builder computes — so they are stubbed to
-// identifiable markers rather than dragging a React transform into this suite.
+// about which rows exist and what the builder hands them — so they are stubbed
+// to identifiable markers rather than dragging a React transform into this
+// suite.
 jest.mock('@/ui/views/DesktopPerps/modal/OrderConfirmLiveValues', () => ({
   LiveMarkPrice: 'LiveMarkPrice',
   ConfirmAmount: 'ConfirmAmount',
@@ -30,6 +26,12 @@ import type { TakeOrStopConfirmParams } from '@/ui/views/DesktopPerps/components
 const t = (((key: string) => key) as unknown) as TFunction;
 
 type Content = ReturnType<typeof buildTakeOrStopConfirmContent>;
+
+// The liquidation cells are live components owned by the containers; the
+// builder only decides whether their rows exist, so plain sentinels stand in
+// for them here.
+const LIQ_PRICE_CELL = '<liq-price>';
+const LIQ_DISTANCE_CELL = '<liq-distance>';
 
 // BTC-USDC, mark 100,000, a 92,000 trigger and half a coin; each case overrides
 // only what it is about.
@@ -48,7 +50,8 @@ const params = (
   // Only used to convert the size into the quote asset when the panel's unit
   // toggle is on `usd`; the row's base-unit rendering ignores it.
   amountPrice: 100000,
-  estLiqPrice: null,
+  liqPriceCell: undefined,
+  liqDistanceCell: undefined,
   reduceOnly: false,
   ...patch,
 });
@@ -69,7 +72,10 @@ const liveCell = (content: Content, key: string) => {
 describe('conditional order confirmation body', () => {
   it('lists the dialog rows in reading order', () => {
     const content = buildTakeOrStopConfirmContent(
-      params({ estLiqPrice: 92500 })
+      params({
+        liqPriceCell: LIQ_PRICE_CELL,
+        liqDistanceCell: LIQ_DISTANCE_CELL,
+      })
     );
 
     expect(rows(content).map((row) => row.key)).toEqual([
@@ -86,7 +92,6 @@ describe('conditional order confirmation body', () => {
     expect(rowValue(content, 'price')).toBe(
       'page.perpsPro.orderConfirm.marketPrice'
     );
-    expect(rowValue(content, 'estLiqPrice')).toBe('92,500 USDC');
 
     // Mark price ticks and the size unit follows a global toggle, so these two
     // are live cells rather than strings baked in at click time. What matters
@@ -144,62 +149,40 @@ describe('conditional order direction label', () => {
   });
 });
 
-describe('estimated liquidation distance', () => {
-  it('is negative when the liquidation price sits below mark', () => {
+// The liquidation figures move with the market, so the containers pass live
+// cells and the builder only places them. It must not reformat or re-derive
+// either one, and each row stands or falls on its own cell.
+describe('liquidation rows', () => {
+  it('renders whichever cell it is handed, untouched', () => {
     const content = buildTakeOrStopConfirmContent(
-      params({ isBuy: true, estLiqPrice: 92500 })
+      params({
+        liqPriceCell: LIQ_PRICE_CELL,
+        liqDistanceCell: LIQ_DISTANCE_CELL,
+      })
     );
 
-    expect(rowValue(content, 'estLiqDistance')).toBe('-7.50%(-7,500)');
+    expect(rowValue(content, 'estLiqPrice')).toBe(LIQ_PRICE_CELL);
+    expect(rowValue(content, 'estLiqDistance')).toBe(LIQ_DISTANCE_CELL);
   });
 
-  it('is positive when the liquidation price sits above mark', () => {
-    const content = buildTakeOrStopConfirmContent(
-      params({ isBuy: false, estLiqPrice: 107500 })
+  it('leaves out each row whose cell is missing', () => {
+    const priceOnly = buildTakeOrStopConfirmContent(
+      params({ liqPriceCell: LIQ_PRICE_CELL })
     );
+    expect(rowValue(priceOnly, 'estLiqPrice')).toBe(LIQ_PRICE_CELL);
+    expect(rowValue(priceOnly, 'estLiqDistance')).toBeUndefined();
 
-    expect(rowValue(content, 'estLiqDistance')).toBe('7.50%(7,500)');
-  });
-
-  it('never lets the percentage and the absolute gap disagree in sign', () => {
-    [92500, 99999, 100001, 107500].forEach((estLiqPrice) => {
-      const value = String(
-        rowValue(
-          buildTakeOrStopConfirmContent(params({ estLiqPrice })),
-          'estLiqDistance'
-        )
-      );
-      const [percent, gap] = value.split('(');
-
-      expect(percent.startsWith('-')).toBe(gap.startsWith('-'));
-      expect(percent.startsWith('-')).toBe(estLiqPrice < 100000);
-    });
-  });
-
-  it('rounds the gap to the market price decimals', () => {
-    const content = buildTakeOrStopConfirmContent(
-      params({ markPrice: 3000, pxDecimals: 0, estLiqPrice: 2850.4 })
+    const distanceOnly = buildTakeOrStopConfirmContent(
+      params({ liqDistanceCell: LIQ_DISTANCE_CELL })
     );
-
-    expect(rowValue(content, 'estLiqPrice')).toBe('2,850 USDC');
-    expect(rowValue(content, 'estLiqDistance')).toBe('-4.99%(-150)');
+    expect(rowValue(distanceOnly, 'estLiqPrice')).toBeUndefined();
+    expect(rowValue(distanceOnly, 'estLiqDistance')).toBe(LIQ_DISTANCE_CELL);
   });
 
-  it('is left out when the mark price is unknown, rather than dividing by it', () => {
-    const content = buildTakeOrStopConfirmContent(
-      params({ markPrice: 0, estLiqPrice: 92500 })
-    );
+  it('leaves both out when neither cell is passed', () => {
+    const content = buildTakeOrStopConfirmContent(params());
 
-    expect(rowValue(content, 'estLiqPrice')).toBe('92,500 USDC');
+    expect(rowValue(content, 'estLiqPrice')).toBeUndefined();
     expect(rowValue(content, 'estLiqDistance')).toBeUndefined();
-  });
-
-  it('is left out along with the price when there is no liquidation price', () => {
-    [null, undefined].forEach((estLiqPrice) => {
-      const content = buildTakeOrStopConfirmContent(params({ estLiqPrice }));
-
-      expect(rowValue(content, 'estLiqPrice')).toBeUndefined();
-      expect(rowValue(content, 'estLiqDistance')).toBeUndefined();
-    });
   });
 });

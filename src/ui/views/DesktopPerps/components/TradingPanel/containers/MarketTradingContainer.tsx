@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRabbySelector } from '@/ui/store';
-import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { OrderSide, TradingContainerProps } from '../../../types';
 import { TPSLSettings } from '../components/TPSLSettings';
 import { OrderInfoGrid } from '../components/OrderInfoGrid';
@@ -17,14 +16,16 @@ import BigNumber from 'bignumber.js';
 import { formatPercent } from '@/ui/views/Perps/utils';
 import stats from '@/stats';
 import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
-import { resolveTriggerComparator } from '../../../tpslTrigger';
+import { resolveTpSlTrigger } from '../../../tpslTrigger';
 import { calcAmountFromPercentage } from '../utils';
 import { perpsToast } from '../../PerpsToast';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
 import type { OrderConfirmContent } from '../../../modal/OrderConfirmProvider';
 import {
   ConfirmAmount,
+  LiveLiquidation,
   LiveMarkPrice,
+  LiveTpSlTrigger,
 } from '../../../modal/OrderConfirmLiveValues';
 import type {
   OrderConfirmRow,
@@ -34,6 +35,10 @@ import type {
 /** The numbers an order actually sends, frozen at click time. */
 interface MarketOrderSnapshot {
   size: string;
+}
+
+/** TP/SL triggers resolved for one side, shared by the submit and its stats. */
+interface TpSlTriggers {
   tpTriggerPx?: string;
   slTriggerPx?: string;
 }
@@ -148,39 +153,28 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   // Direction-specific validation
   const { handleOpenMarketOrder } = usePerpsProPosition();
 
-  const getTpSlTriggerPrices = (isBuy: boolean) => {
-    if (!tpslConfig.enabled) {
-      return { tpTriggerPx: undefined, slTriggerPx: undefined };
+  // Deliberately not snapshotted: in `pnl`/`roi` mode the panel re-derives the
+  // trigger from the streaming order price, so a trigger frozen at click time
+  // goes stale within seconds. The dialog reads the same live `tpslConfig`
+  // through `LiveTpSlTrigger`, so what is shown is what this resolves at send.
+  const getTpSlTriggerPrices = useMemoizedFn(
+    (isBuy: boolean): TpSlTriggers => {
+      if (!tpslConfig.enabled) {
+        return { tpTriggerPx: undefined, slTriggerPx: undefined };
+      }
+      const { takeProfit, stopLoss } = tpslConfig;
+      return {
+        tpTriggerPx: resolveTpSlTrigger(takeProfit, isBuy) || undefined,
+        slTriggerPx: resolveTpSlTrigger(stopLoss, isBuy) || undefined,
+      };
     }
-
-    const tpItem = tpslConfig.takeProfit;
-    const slItem = tpslConfig.stopLoss;
-
-    const tpTriggerPx =
-      tpItem.settingMode === 'price'
-        ? tpItem.value
-        : isBuy
-        ? tpItem.buyTriggerPrice
-        : tpItem.sellTriggerPrice;
-
-    const slTriggerPx =
-      slItem.settingMode === 'price'
-        ? slItem.value
-        : isBuy
-        ? slItem.buyTriggerPrice
-        : slItem.sellTriggerPrice;
-
-    return {
-      tpTriggerPx: tpTriggerPx || undefined,
-      slTriggerPx: slTriggerPx || undefined,
-    };
-  };
+  );
 
   const reportOrderStats = (
     isBuy: boolean,
     totalSz: string,
     avgPx: string,
-    snapshot: MarketOrderSnapshot
+    triggers: TpSlTriggers
   ) => {
     stats.report('perpsTradeHistory', {
       created_at: new Date().getTime(),
@@ -199,7 +193,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     });
 
     if (tpslConfig.enabled) {
-      const { tpTriggerPx, slTriggerPx } = snapshot;
+      const { tpTriggerPx, slTriggerPx } = triggers;
       if (tpTriggerPx) {
         stats.report('perpsTradeHistory', {
           created_at: new Date().getTime(),
@@ -246,15 +240,12 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     return tradeSize;
   };
 
-  // Both the size and the PNL/ROI trigger prices are re-derived from the
-  // streaming balance and mark price, while the dialog's rows are built once at
-  // click time and `submit` runs whenever the user confirms. Freezing them into
-  // one snapshot is what keeps the order that is sent identical to the one that
-  // was shown.
+  // `size` is re-derived from the streaming balance, while the dialog's rows are
+  // built once at click time and `submit` runs whenever the user confirms.
+  // Freezing it is what keeps the size that is sent identical to the one shown.
   const buildOrderSnapshot = useMemoizedFn(
     (isBuy: boolean): MarketOrderSnapshot => ({
       size: getDirectionTradeSize(isBuy),
-      ...getTpSlTriggerPrices(isBuy),
     })
   );
 
@@ -303,6 +294,10 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       throw new Error('TP/SL validation failed');
     }
 
+    // Resolved here rather than read off the snapshot so the triggers sent are
+    // the ones the dialog is showing at the moment the user confirms.
+    const triggers = getTpSlTriggerPrices(isBuy);
+
     const res = await handleOpenMarketOrder({
       coin: selectedCoin,
       dex: currentMarketData?.dexId ?? '',
@@ -311,15 +306,15 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       // Deliberately not snapshotted: `midPx` is the reference the slippage
       // bound is priced against, so it has to be the freshest one available.
       midPx: midPrice.toString(),
-      tpTriggerPx: snapshot.tpTriggerPx,
-      slTriggerPx: snapshot.slTriggerPx,
+      tpTriggerPx: triggers.tpTriggerPx,
+      slTriggerPx: triggers.slTriggerPx,
       reduceOnly,
       slippage: marketSlippage,
     });
 
     if (res) {
       const { totalSz, avgPx } = res;
-      reportOrderStats(isBuy, totalSz, avgPx, snapshot);
+      reportOrderStats(isBuy, totalSz, avgPx, triggers);
     }
   };
 
@@ -395,27 +390,36 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
         });
       }
 
-      // Same source as the panel's OrderInfoGrid, down to the reduce-only rule:
-      // an order that only closes exposure has no new liquidation price.
-      const { liqPrice, liqPriceNum } = isBuy ? buyInfo : sellInfo;
-      if (!reduceOnly && liqPriceNum !== null && markPriceNum > 0) {
-        const delta = liqPriceNum - markPriceNum;
-        rows.push(
-          {
-            key: 'estLiqPrice',
-            label: t('page.perpsPro.orderConfirm.estLiqPrice'),
-            value: liqPrice,
-          },
-          {
-            key: 'estLiqDistance',
-            label: t('page.perpsPro.orderConfirm.estLiqDistance'),
-            value: `${formatPercent(
-              delta / markPriceNum,
-              2
-            )}(${splitNumberByStep(delta.toFixed(pxDecimals))})`,
-          }
-        );
-      }
+      // Always shown; `LiveLiquidation` renders `-` when there is no
+      // liquidation price (a reduce-only order, or one that nets the position
+      // flat). Both values track the mark price, because a market order's entry
+      // *is* the mark — so the liquidation price moves along with its distance.
+      rows.push(
+        {
+          key: 'estLiqPrice',
+          label: t('page.perpsPro.orderConfirm.estLiqPrice'),
+          value: (
+            <LiveLiquidation
+              direction={isBuy ? 'Long' : 'Short'}
+              size={snapshot.size}
+              pxDecimals={pxDecimals}
+              variant="price"
+            />
+          ),
+        },
+        {
+          key: 'estLiqDistance',
+          label: t('page.perpsPro.orderConfirm.estLiqDistance'),
+          value: (
+            <LiveLiquidation
+              direction={isBuy ? 'Long' : 'Short'}
+              size={snapshot.size}
+              pxDecimals={pxDecimals}
+              variant="distance"
+            />
+          ),
+        }
+      );
 
       rows.push({
         key: 'reduceOnly',
@@ -427,7 +431,10 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
       const sections: OrderConfirmSection[] = [{ key: 'main', rows }];
 
-      const { tpTriggerPx, slTriggerPx } = snapshot;
+      // Whether a TP/SL side has rows is settled at click time, but its trigger
+      // is not: `pnl`/`roi` mode re-derives it from the streaming order price.
+      // The submit resolves it from the same `tpslConfig`, so the two agree.
+      const { tpTriggerPx, slTriggerPx } = getTpSlTriggerPrices(isBuy);
       const markPriceLabel = t('page.perpsPro.orderConfirm.markPrice');
       const tpslRows: OrderConfirmRow[] = [];
 
@@ -441,10 +448,14 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           {
             key: 'tpTrigger',
             label: t('page.perpsPro.orderConfirm.trigger'),
-            value: `${markPriceLabel}${resolveTriggerComparator(
-              isBuy,
-              true
-            )}${splitNumberByStep(tpTriggerPx)} ${quoteAsset}`,
+            value: (
+              <LiveTpSlTrigger
+                side="tp"
+                isBuy={isBuy}
+                quoteAsset={quoteAsset}
+                markPriceLabel={markPriceLabel}
+              />
+            ),
           }
         );
       }
@@ -459,10 +470,14 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
           {
             key: 'slTrigger',
             label: t('page.perpsPro.orderConfirm.trigger'),
-            value: `${markPriceLabel}${resolveTriggerComparator(
-              isBuy,
-              false
-            )}${splitNumberByStep(slTriggerPx)} ${quoteAsset}`,
+            value: (
+              <LiveTpSlTrigger
+                side="sl"
+                isBuy={isBuy}
+                quoteAsset={quoteAsset}
+                markPriceLabel={markPriceLabel}
+              />
+            ),
           }
         );
       }
