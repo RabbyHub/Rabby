@@ -149,20 +149,23 @@ describe('hardware wallet Sentry reporting', () => {
     expect(shouldIgnoreSentryError(error)).toBe(true);
   });
 
-  test.each([KEYRING_CLASS.HARDWARE.LEDGER, KEYRING_CLASS.HARDWARE.ONEKEY])(
-    'keeps the broad HTTP filter for %s',
-    async (type) => {
-      const error = new Error('request to https://device.example failed');
+  test.each([
+    KEYRING_CLASS.HARDWARE.LEDGER,
+    KEYRING_CLASS.HARDWARE.ONEKEY,
+    KEYRING_CLASS.HARDWARE.TREZOR,
+  ])('keeps generic network failures for %s', async (type) => {
+    const error = new Error(
+      'HttpRequestError: request failed with status code 502'
+    );
 
-      await expect(
-        withHardwareSigningContext({ type }, 'transaction', () =>
-          Promise.reject(error)
-        )
-      ).rejects.toBe(error);
+    await expect(
+      withHardwareSigningContext({ type }, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
 
-      expect(shouldIgnoreSentryError(error)).toBe(true);
-    }
-  );
+    expect(shouldIgnoreSentryError(error)).toBe(false);
+  });
 
   it('keeps the original hardware error and device metadata', async () => {
     const address = '0x0123456789abcdef0123456789abcdef01234567';

@@ -2,8 +2,6 @@ import type { HardwareSigningContext } from '@/background/service/keyring/hardwa
 
 export type SentryIgnorePattern = string | RegExp;
 
-const BROAD_HTTP_IGNORE_PATTERN = /http/i;
-
 export const sanitizeSentryBreadcrumbUrl = (value: string) => {
   const withoutQueryOrFragment = value.split(/[?#]/, 1)[0];
 
@@ -11,8 +9,7 @@ export const sanitizeSentryBreadcrumbUrl = (value: string) => {
 };
 
 // Keep this list in the SDK pipeline so it can also match Sentry-generated
-// event text. The broad HTTP rule is handled below because Trezor Bridge uses
-// HTTP and must remain reportable while signing.
+// event text. Hardware signing errors are handled separately below.
 export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'ResizeObserver loop limit exceeded',
   'ResizeObserver loop completed with undelivered notifications',
@@ -172,12 +169,14 @@ export const shouldIgnoreSentryError = (error: unknown) => {
   ].filter(Boolean);
 
   const hardware = getHardwareSigningContext(error);
-  if (hardware?.wallet !== 'trezor' && BROAD_HTTP_IGNORE_PATTERN.test(text)) {
-    return true;
-  }
+  if (hardware) {
+    if (matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)) {
+      return true;
+    }
 
-  if (hardware && matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)) {
-    return true;
+    // Hardware signing errors must remain reportable even when a transport
+    // failure uses a generic network error message.
+    return false;
   }
 
   if (matchesAny(RABBY_SENTRY_IGNORE_ERRORS, candidates)) {
