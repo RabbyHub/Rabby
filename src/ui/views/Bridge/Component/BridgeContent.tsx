@@ -118,7 +118,7 @@ export const BridgeContent = () => {
     setSlippageChanged,
     isSlippageHigh,
     isSlippageLow,
-    setReloadTxRefreshPaused,
+    setQuoteRefreshLocked,
 
     autoSlippage,
     isCustomSlippage,
@@ -156,6 +156,11 @@ export const BridgeContent = () => {
   const setVisible = useSetQuoteVisible();
 
   const refresh = useSetRefreshId();
+
+  const resumeQuoteRefresh = useCallback(() => {
+    setQuoteRefreshLocked(false);
+    refresh((id) => id + 1);
+  }, [refresh, setQuoteRefreshLocked]);
 
   const { t } = useTranslation();
 
@@ -729,7 +734,7 @@ export const BridgeContent = () => {
 
   const handleBridge = useMemoizedFn(async () => {
     submitTxRef.current = true;
-    setReloadTxRefreshPaused(true);
+    setQuoteRefreshLocked(true);
     if (canUseDirectSubmitTx) {
       setMiniSignLoading(true);
       try {
@@ -803,14 +808,14 @@ export const BridgeContent = () => {
       } finally {
         setMiniSignLoading(false);
         submitTxRef.current = false;
-        setReloadTxRefreshPaused(false);
+        setQuoteRefreshLocked(false);
       }
     } else {
       try {
         await gotoBridge();
       } finally {
         submitTxRef.current = false;
-        setReloadTxRefreshPaused(false);
+        setQuoteRefreshLocked(false);
       }
     }
   });
@@ -1296,6 +1301,8 @@ export const BridgeContent = () => {
                   disabled={btnDisabled}
                   title={btnText}
                   onConfirm={handleBridge}
+                  onConfirmStart={() => setQuoteRefreshLocked(true)}
+                  onCancel={resumeQuoteRefresh}
                   showRiskTips={showRiskTips && !btnDisabled}
                   accountType={currentAccount?.type}
                   signatureInstance={instance}
@@ -1326,6 +1333,7 @@ export const BridgeContent = () => {
                           return;
                         }
                         if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                          setQuoteRefreshLocked(true);
                           return Modal.confirm({
                             width: 360,
                             closable: true,
@@ -1346,6 +1354,7 @@ export const BridgeContent = () => {
                               </>
                             ),
                             okText: 'Proceed with two step approve',
+                            onCancel: resumeQuoteRefresh,
 
                             onOk() {
                               // gotoBridge();
