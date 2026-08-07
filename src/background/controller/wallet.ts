@@ -4457,8 +4457,11 @@ export class WalletController extends BaseController {
   getMnemonicFromPublicKey = async (password: string, publicKey: string) => {
     await this.verifyPassword(password);
     const targetKeyring = this.#getMnemonicKeyRingFromPublicKey(publicKey);
+    if (!targetKeyring) {
+      throw new Error('Keyring not found');
+    }
 
-    return targetKeyring?.mnemonic;
+    return targetKeyring.mnemonic;
   };
 
   getMnemonicKeyRingIdFromPublicKey = (publicKey: string) => {
