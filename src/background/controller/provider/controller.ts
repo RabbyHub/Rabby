@@ -496,6 +496,9 @@ class ProviderController extends BaseController {
     const chain = findChain({
       serverId: chainServerId,
     })!;
+    if (!chain.isTestnet && method === 'eth_sendRawTransaction') {
+      void RPCService.probeBestRPC(chainServerId);
+    }
     if (!chain.isTestnet) {
       if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
         const promise = RPCService.requestCustomRPC(
@@ -872,6 +875,10 @@ class ProviderController extends BaseController {
     const { explain: cacheExplain, rawTx, action } = approvingTx;
 
     const chainItem = findChainByEnum(chain);
+
+    if (chainItem && !chainItem.isTestnet) {
+      void RPCService.probeBestRPC(chainItem.serverId);
+    }
 
     const statsData: StatsData = {
       signed: false,
