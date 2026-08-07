@@ -11,8 +11,11 @@ export type SignOperation =
 export type HardwareSigningMetadata = {
   device_model?: string;
   firmware_version?: string;
+  // Ledger runs a per-chain app; the others are single-app devices.
   app_name?: string;
   app_version?: string;
+  // bootloader / notInitialized explains a whole class of signing failures.
+  device_mode?: string;
 };
 
 export type HardwareSigningContext = {

@@ -32,6 +32,18 @@ const captureThroughBeforeSend = (error: unknown) => {
 };
 
 describe('hardware wallet Sentry reporting', () => {
+  it('does not wrap non-hardware keyrings in a promise', () => {
+    const signature = { v: 27 };
+
+    expect(
+      withHardwareSigningContext(
+        { type: 'HD Key Tree' },
+        'transaction',
+        () => signature
+      )
+    ).toBe(signature);
+  });
+
   test.each([
     [KEYRING_CLASS.HARDWARE.LEDGER, 'ledger', 'transaction'],
     [KEYRING_CLASS.HARDWARE.ONEKEY, 'onekey', 'personal_message'],
