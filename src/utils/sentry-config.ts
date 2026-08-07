@@ -9,11 +9,8 @@ import {
   shouldIgnoreSentryError,
 } from '@/utils/sentry';
 
-const SENTRY_DSN =
-  'https://f4a992c621c55f48350156a32da4778d@o4507018303438848.ingest.us.sentry.io/4507018389749760';
-
 export const getSentryConfig = (): BrowserOptions => ({
-  dsn: SENTRY_DSN,
+  dsn: process.env.RABBY_SENTRY_DSN,
   release: process.env.release,
   environment: getSentryEnv(),
   skipBrowserExtensionCheck: true,
