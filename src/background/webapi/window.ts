@@ -43,14 +43,13 @@ const createFullScreenWindow = ({ url, ...rest }) => {
 };
 
 const create = async ({ url, ...rest }): Promise<number | undefined> => {
-  const {
-    top: cTop,
-    left: cLeft,
-    width,
-    height,
-  } = await browser.windows.getLastFocused({
-    windowTypes: ['normal'],
-  } as Windows.GetInfo);
+  const [normalWindow, currentWindow] = await Promise.all([
+    browser.windows.getLastFocused({
+      windowTypes: ['normal'],
+    } as Windows.GetInfo),
+    browser.windows.getLastFocused(),
+  ]);
+  const { top: cTop, left: cLeft, width, height } = normalWindow;
 
   const top = cTop;
   const left = cLeft! + width! - WINDOW_SIZE.width;
@@ -58,7 +57,6 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   const maxHeight = (height || 1000) - 40;
   const finalHeight = Math.min(optionHeight, Math.max(maxHeight, 600));
 
-  const currentWindow = await browser.windows.getLastFocused();
   let win;
   if (currentWindow.state === 'fullscreen') {
     // browser.windows.create not pass state to chrome
