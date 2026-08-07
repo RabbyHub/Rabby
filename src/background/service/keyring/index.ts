@@ -791,23 +791,25 @@ export class KeyringService extends EventEmitter {
   // SIGNING METHODS
   //
 
-  private signWithPairingCredsPersistence = async (
+  private signWithPairingCredsPersistence = (
     keyring: any,
     operation: Parameters<typeof withHardwareSigningContext>[1],
-    sign: () => Promise<any>
-  ) =>
-    withHardwareSigningContext(keyring, operation, async () => {
+    sign: () => any
+  ) => {
+    if (keyring?.type !== KEYRING_CLASS.HARDWARE.GRIDPLUS) {
+      return withHardwareSigningContext(keyring, operation, sign);
+    }
+
+    return (async () => {
       try {
-        return await sign();
+        return await withHardwareSigningContext(keyring, operation, sign);
       } finally {
-        if (
-          keyring?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS &&
-          keyring?.consumePairingCredsRefreshed?.()
-        ) {
+        if (keyring?.consumePairingCredsRefreshed?.()) {
           await this.persistAllKeyrings();
         }
       }
-    });
+    })();
+  };
 
   /**
    * Sign Ethereum Transaction
