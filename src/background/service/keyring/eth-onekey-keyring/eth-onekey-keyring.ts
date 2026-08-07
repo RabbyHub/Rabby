@@ -800,7 +800,9 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   // One extra read per session, cached, so a signing failure can be reported
-  // with the device it happened on. Never let it break signing.
+  // with the device it happened on. Deliberately not awaited by its caller and
+  // never rejects: reporting must not sit in the signing path. The metadata is
+  // read when a failure happens, long enough after this for it to have landed.
   private async _captureHardwareSigningMetadata() {
     if (this.hardwareSigningMetadata.device_model) {
       return;
@@ -816,11 +818,9 @@ class OneKeyKeyring extends EventEmitter {
         device_model: features.onekey_device_type || features.model,
         firmware_version:
           features.onekey_firmware_version ||
-          [
-            features.major_version,
-            features.minor_version,
-            features.patch_version,
-          ].join('.'),
+          (features.major_version
+            ? `${features.major_version}.${features.minor_version}.${features.patch_version}`
+            : undefined),
       };
     } catch (e) {
       console.log('failed to read OneKey features', e);
@@ -828,7 +828,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   private async _requestPassphraseParams(address: string) {
-    await this._captureHardwareSigningMetadata();
+    this._captureHardwareSigningMetadata();
     const accountDetail = this._accountDetailsFromAddress(address);
     if (accountDetail.version === 2) {
       return {

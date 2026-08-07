@@ -32,13 +32,19 @@ const HARDWARE_WALLETS: Record<string, string> = {
 // keyring comes from a package, so its bridge carries the info instead — and
 // the MV2 bridge only ever knows the model.
 const readMetadata = (keyring: any): HardwareSigningMetadata | undefined => {
-  const model = keyring?.getModel?.();
+  // Runs while a signing error is being rethrown: throwing in here would
+  // replace the real failure with a reporting bug.
+  try {
+    const model = keyring?.getModel?.();
 
-  return (
-    keyring?.getHardwareSigningMetadata?.() ??
-    keyring?.bridge?.getHardwareSigningMetadata?.() ??
-    (model ? { device_model: model } : undefined)
-  );
+    return (
+      keyring?.getHardwareSigningMetadata?.() ??
+      keyring?.bridge?.getHardwareSigningMetadata?.() ??
+      (model ? { device_model: model } : undefined)
+    );
+  } catch {
+    return undefined;
+  }
 };
 
 export const withHardwareSigningContext = (

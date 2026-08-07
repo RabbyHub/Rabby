@@ -295,6 +295,29 @@ describe('hardware wallet Sentry reporting', () => {
     });
   });
 
+  it('keeps the signing error when reading metadata throws', async () => {
+    const error = new Error('device failed');
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.TREZOR,
+      getModel: () => {
+        throw new TypeError(
+          "Cannot read properties of undefined (reading 'model')"
+        );
+      },
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(getHardwareSigningContext(error)).toMatchObject({
+      wallet: 'trezor',
+      metadata: undefined,
+    });
+  });
+
   it('falls back to the Trezor model when the bridge has no metadata', async () => {
     const error = new Error('Trezor signing failed');
     const keyring = {

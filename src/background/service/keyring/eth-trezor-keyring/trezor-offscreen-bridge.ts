@@ -16,11 +16,11 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
         this.model = features.model;
         this.hardwareSigningMetadata = {
           device_model: features.internal_model || features.model,
-          firmware_version: [
-            features.major_version,
-            features.minor_version,
-            features.patch_version,
-          ].join('.'),
+          // Some device events carry features without the version fields;
+          // reporting "undefined.undefined.undefined" is worse than nothing.
+          firmware_version: features.major_version
+            ? `${features.major_version}.${features.minor_version}.${features.patch_version}`
+            : undefined,
         };
       }
       const currentDeviceId = event.payload?.id;
