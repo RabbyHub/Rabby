@@ -6,8 +6,34 @@ jest.mock('@/utils/user-data-tracking', () => ({
 }));
 
 import * as Sentry from '@sentry/browser';
+import { SENTRY_IGNORED_SAMPLES } from '../fixtures/sentry-ignored-samples';
 import { getSentryConfig } from '@/utils/sentry-config';
 import { attachHardwareSigningContext } from '@/utils/sentry';
+
+const createRecordingClient = (events: any[]) => {
+  const client = new Sentry.BrowserClient({
+    ...getSentryConfig(),
+    integrations: [Sentry.eventFiltersIntegration()],
+    stackParser: Sentry.defaultStackParser,
+    sendClientReports: false,
+    transport: () =>
+      ({
+        send: async (envelope) => {
+          envelope[1].forEach(([header, event]) => {
+            if (header.type === 'event') {
+              events.push(event);
+            }
+          });
+          return { statusCode: 200 };
+        },
+        flush: async () => true,
+      } as any),
+  });
+  client.init();
+  const scope = new Sentry.Scope();
+  scope.setClient(client);
+  return { client, scope };
+};
 
 describe('Sentry configuration', () => {
   const config = getSentryConfig();
@@ -52,30 +78,11 @@ describe('Sentry configuration', () => {
 
   test('keeps and deduplicates hardware HTTP failures through Sentry', async () => {
     const events: any[] = [];
-    const pipelineConfig = getSentryConfig();
-    expect(pipelineConfig.ignoreErrors).toBeDefined();
+    // The ignore list must stay out of the SDK filter, which runs before
+    // beforeSend and would drop hardware failures before the bypass applies.
+    expect(getSentryConfig().ignoreErrors).toBeUndefined();
 
-    const client = new Sentry.BrowserClient({
-      ...pipelineConfig,
-      integrations: [Sentry.eventFiltersIntegration()],
-      stackParser: Sentry.defaultStackParser,
-      sendClientReports: false,
-      transport: () =>
-        ({
-          send: async (envelope) => {
-            envelope[1].forEach(([header, event]) => {
-              if (header.type === 'event') {
-                events.push(event);
-              }
-            });
-            return { statusCode: 200 };
-          },
-          flush: async () => true,
-        } as any),
-    });
-    client.init();
-    const scope = new Sentry.Scope();
-    scope.setClient(client);
+    const { client, scope } = createRecordingClient(events);
 
     const hardwareError = new Error(
       'bridge request to http://127.0.0.1:21325/call failed'
@@ -99,6 +106,18 @@ describe('Sentry configuration', () => {
       wallet: 'onekey',
       operation: 'transaction',
     });
+    // A transport failure during signing reads like generic network noise;
+    // it must still be reported because it carries a hardware context.
+    const transportError = new Error('Failed to fetch');
+    attachHardwareSigningContext(transportError, {
+      wallet: 'ledger',
+      operation: 'message',
+      originalError: {
+        code: '0x6a80',
+        derivationPath: "m/44'/60'/0'/0/3",
+        account: '0x0123456789abcdef0123456789abcdef01234567',
+      },
+    });
     const transactionClone = {
       message: transactionError.message,
       reportedFromBackground: true,
@@ -114,6 +133,7 @@ describe('Sentry configuration', () => {
     scope.captureException(hardwareObject);
     scope.captureException(cancelled);
     scope.captureException(transactionError);
+    scope.captureException(transportError);
     scope.captureException(transactionClone);
     scope.captureException(
       new Error(
@@ -135,16 +155,64 @@ describe('Sentry configuration', () => {
         ],
       },
     });
+    // Patterns written against the joined "type: value" form, which is the
+    // only place that text exists once Sentry has split the exception.
+    scope.captureEvent({
+      exception: {
+        values: [{ type: 'NotAllowedError', value: 'Permission denied.' }],
+      },
+    });
+    scope.captureEvent({
+      exception: {
+        values: [{ type: 'UnknownError', value: 'Internal error.' }],
+      },
+    });
     await client.flush(2000);
 
-    expect(events).toHaveLength(4);
+    expect(events).toHaveLength(5);
     expect(events[0].tags).toMatchObject({ hardware_wallet: 'trezor' });
     expect(events[1].tags).toMatchObject({ hardware_wallet: 'ledger' });
     expect(events[2].tags).toMatchObject({ hardware_wallet: 'onekey' });
     expect(events[2].exception?.values?.[0]?.value).toBe(
       'OneKey transaction failed'
     );
-    expect(events[3].tags?.hardware_wallet).toBeUndefined();
+    expect(events[3].exception?.values?.[0]?.value).toBe('Failed to fetch');
+    const reportedCause = events[3].extra?.hardware_original_error as string;
+    expect(reportedCause).toContain('0x6a80');
+    expect(reportedCause).toContain('[redacted-hd-path]');
+    expect(reportedCause).toContain('[redacted-hex]');
+    expect(reportedCause).not.toContain('0x0123456789abcdef');
+    expect(events[4].tags?.hardware_wallet).toBeUndefined();
+    await client.close(2000);
+  });
+
+  // shouldIgnoreSentryError returning true is not proof: the SDK matches text
+  // that only exists on the event Sentry builds, so every sample is replayed
+  // in each shape an error can reach the pipeline in.
+  test('drops every ignored sample through the real pipeline', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    SENTRY_IGNORED_SAMPLES.forEach((message) => {
+      scope.captureException(new Error(message));
+      scope.captureEvent({ message });
+
+      const [type, ...rest] = message.split(': ');
+      scope.captureEvent({
+        exception: {
+          values: rest.length
+            ? [{ type, value: rest.join(': ') }]
+            : [{ type: 'Error', value: message }],
+        },
+      });
+    });
+    await client.flush(2000);
+
+    expect(
+      events.map(
+        (event) => event.message ?? event.exception?.values?.[0]?.value
+      )
+    ).toEqual([]);
     await client.close(2000);
   });
 });

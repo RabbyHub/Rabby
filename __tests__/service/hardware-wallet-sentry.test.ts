@@ -32,6 +32,18 @@ const captureThroughBeforeSend = (error: unknown) => {
 };
 
 describe('hardware wallet Sentry reporting', () => {
+  it('does not wrap non-hardware keyrings in a promise', () => {
+    const signature = { v: 27 };
+
+    expect(
+      withHardwareSigningContext(
+        { type: 'HD Key Tree' },
+        'transaction',
+        () => signature
+      )
+    ).toBe(signature);
+  });
+
   test.each([
     [KEYRING_CLASS.HARDWARE.LEDGER, 'ledger', 'transaction'],
     [KEYRING_CLASS.HARDWARE.ONEKEY, 'onekey', 'personal_message'],
@@ -184,13 +196,14 @@ describe('hardware wallet Sentry reporting', () => {
     const event = captureThroughBeforeSend(error);
     expect(event).not.toBeNull();
     expect(event.tags.hardware_wallet).toBe('trezor');
-    expect(event.extra.hardware_original_error).toBe(error);
+    expect(event.extra.hardware_original_error).toContain('[redacted-hex]');
+    expect(event.extra.hardware_original_error).not.toContain('token=secret');
     expect(event.exception.values[0].value).toContain(address);
     expect(error.message).toContain(address);
   });
 
   it('reports Ledger metadata and the original SDK cause', async () => {
-    const sdkError = { code: 0x6985, message: 'rejected for 0xabc' };
+    const sdkError = { code: '0x6a80', message: 'invalid data for 0xabc' };
     const error = Object.assign(new Error('Ledger signing failed'), {
       cause: sdkError,
     });
@@ -218,8 +231,121 @@ describe('hardware wallet Sentry reporting', () => {
           app_name: 'Ethereum',
           app_version: '1.10.0',
         },
-        hardware_original_error: sdkError,
+        hardware_original_error:
+          'invalid data for 0xabc | 0x6a80 | {"code":"0x6a80","message":"invalid data for 0xabc"}',
       },
+    });
+  });
+
+  it('drops a cancellation carried only by the SDK error code', async () => {
+    const error = Object.assign(new Error('Ledger signing failed'), {
+      cause: { code: '0x6985' },
+    });
+
+    await expect(
+      withHardwareSigningContext(
+        { type: KEYRING_CLASS.HARDWARE.LEDGER },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(shouldIgnoreSentryError(error)).toBe(true);
+  });
+
+  it('reports OneKey metadata captured during signing', async () => {
+    const error = new Error('OneKey signing failed');
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.ONEKEY,
+      metadata: {} as Record<string, string>,
+      getHardwareSigningMetadata() {
+        return this.metadata;
+      },
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'transaction', () => {
+        // the keyring only learns the device once it talks to it
+        keyring.metadata = {
+          device_model: 'pro',
+          firmware_version: '4.10.0',
+        };
+        return Promise.reject(error);
+      })
+    ).rejects.toBe(error);
+
+    expect(captureThroughBeforeSend(error)).toMatchObject({
+      extra: {
+        hardware_device: { device_model: 'pro', firmware_version: '4.10.0' },
+      },
+    });
+  });
+
+  it('reports Trezor metadata from its bridge', async () => {
+    const error = new Error('Trezor signing failed');
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.TREZOR,
+      bridge: {
+        getHardwareSigningMetadata: () => ({
+          device_model: 'T2T1',
+          firmware_version: '2.8.7',
+        }),
+      },
+      getModel: () => 'T',
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'typed_data', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(captureThroughBeforeSend(error)).toMatchObject({
+      extra: {
+        hardware_device: { device_model: 'T2T1', firmware_version: '2.8.7' },
+      },
+    });
+  });
+
+  it('keeps the signing error when reading metadata throws', async () => {
+    const error = new Error('device failed');
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.TREZOR,
+      getModel: () => {
+        throw new TypeError(
+          "Cannot read properties of undefined (reading 'model')"
+        );
+      },
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(getHardwareSigningContext(error)).toMatchObject({
+      wallet: 'trezor',
+      metadata: undefined,
+    });
+  });
+
+  it('falls back to the Trezor model when the bridge has no metadata', async () => {
+    const error = new Error('Trezor signing failed');
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.TREZOR,
+      bridge: { model: 'T' },
+      getModel: () => 'T',
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'message', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(captureThroughBeforeSend(error)).toMatchObject({
+      extra: { hardware_device: { device_model: 'T' } },
     });
   });
 });

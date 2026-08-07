@@ -11,8 +11,11 @@ export type SignOperation =
 export type HardwareSigningMetadata = {
   device_model?: string;
   firmware_version?: string;
+  // Ledger runs a per-chain app; the others are single-app devices.
   app_name?: string;
   app_version?: string;
+  // bootloader / notInitialized explains a whole class of signing failures.
+  device_mode?: string;
 };
 
 export type HardwareSigningContext = {
@@ -28,6 +31,25 @@ const HARDWARE_WALLETS: Record<string, string> = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'trezor',
 };
 
+// Ledger and OneKey cache the device info on the keyring itself. Trezor's
+// keyring comes from a package, so its bridge carries the info instead — and
+// the MV2 bridge only ever knows the model.
+const readMetadata = (keyring: any): HardwareSigningMetadata | undefined => {
+  // Runs while a signing error is being rethrown: throwing in here would
+  // replace the real failure with a reporting bug.
+  try {
+    const model = keyring?.getModel?.();
+
+    return (
+      keyring?.getHardwareSigningMetadata?.() ??
+      keyring?.bridge?.getHardwareSigningMetadata?.() ??
+      (model ? { device_model: model } : undefined)
+    );
+  } catch {
+    return undefined;
+  }
+};
+
 export const withHardwareSigningContext = (
   keyring: any,
   operation: SignOperation,
@@ -38,13 +60,13 @@ export const withHardwareSigningContext = (
     return sign();
   }
 
-  const metadata = keyring?.getHardwareSigningMetadata?.();
-
+  // Read at failure time: the device info is only known once the keyring has
+  // talked to the device, which happens inside sign().
   const attach = (error: unknown) => {
     attachHardwareSigningContext(error, {
       wallet,
       operation,
-      metadata,
+      metadata: readMetadata(keyring),
       originalError: (error as any)?.cause ?? error,
     });
     throw error;
