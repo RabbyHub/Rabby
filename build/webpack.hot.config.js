@@ -173,7 +173,9 @@ const commonPlugins = [
     'process.env.release': JSON.stringify(APP_VERSION),
     'process.env.RABBY_BUILD_GIT_HASH': JSON.stringify(BUILD_GIT_HASH),
     'process.env.ETHERSCAN_KEY': JSON.stringify(process.env.ETHERSCAN_KEY),
-    'process.env.SENTRY_DSN': JSON.stringify(process.env.SENTRY_DSN),
+    'process.env.RABBY_SENTRY_DSN': JSON.stringify(
+      process.env.RABBY_SENTRY_DSN
+    ),
   }),
   new CopyPlugin({
     patterns: [
