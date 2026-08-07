@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import browser from 'webextension-polyfill';
 import type { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
@@ -419,6 +419,8 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   const subscriptionsRef = useRef<Map<string, BarSubscription>>(new Map());
   const weeklyHistoryRef = useRef<Map<string, WeeklyHistoryState>>(new Map());
   const iframeIntervalChangeRef = useRef(false);
+  // Bumped to remount the iframe when the chart never came up at all
+  const [chartReloadKey, setChartReloadKey] = useState(0);
 
   const iframeUrl = useMemo(() => {
     const base = getTradingViewBaseUrl();
@@ -508,24 +510,38 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
 
   useEffect(() => {
     const sdk = getPerpsSDK();
-    let shouldResetChartOnOpen = false;
+    let chartNeedsRecovery = false;
+    // The iframe answered at least one bridge message, i.e. its document and
+    // script actually loaded.
+    let bridgeAlive = false;
+    // getBars was answered successfully at least once, i.e. TradingView owns a
+    // rendered series.
+    let barsLoaded = false;
 
     const cleanupSubscriptions = () => {
       subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
       subscriptionsRef.current.clear();
     };
 
-    const handleWebSocketClose = () => {
-      // An SDK-level reconnect restores realtime subscriptions, but candle
-      // messages do not backfill the intervals missed while disconnected.
-      shouldResetChartOnOpen = true;
-    };
+    const recoverChart = () => {
+      // Offline at mount leaves nothing to refresh. Either the host document
+      // never loaded (it is served no-cache with no service worker, so there is
+      // no bridge to post to), or it loaded but its first getBars failed —
+      // TradingView only calls subscribeBars after a successful history
+      // response, so that chart has an errored series and no subscription.
+      // Remounting the iframe is the only way back for both; the host re-reads
+      // symbol/interval/theme through its getState handshake.
+      if (!bridgeAlive || !barsLoaded) {
+        bridgeAlive = false;
+        barsLoaded = false;
+        cleanupSubscriptions();
+        weeklyHistoryRef.current.clear();
+        setChartReloadKey((key) => key + 1);
+        return;
+      }
 
-    const handleWebSocketOpen = () => {
-      if (!shouldResetChartOnOpen) return;
-      shouldResetChartOnOpen = false;
-      if (subscriptionsRef.current.size === 0) return;
-
+      // The chart is alive and only missed the candles from the outage: drop
+      // its cached bars so it re-requests history through getBars.
       postToIframe({
         channel: BRIDGE_CHANNEL,
         kind: 'command',
@@ -533,8 +549,25 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       });
     };
 
+    const handleWebSocketClose = () => {
+      // An SDK-level reconnect restores realtime subscriptions, but candle
+      // messages do not backfill the intervals missed while disconnected.
+      chartNeedsRecovery = true;
+    };
+
+    // Recovery is one-shot per outage: 'online' and the SDK reconnect both fire
+    // on the same network restore, and whichever lands first consumes the flag.
+    // 'online' is kept because the SDK backs off for up to 30s before it
+    // reconnects, and the chart does not need the socket to refetch history.
+    const handleNetworkRestored = () => {
+      if (!chartNeedsRecovery) return;
+      chartNeedsRecovery = false;
+      recoverChart();
+    };
+
     sdk.ws.on('close', handleWebSocketClose);
-    sdk.ws.on('open', handleWebSocketOpen);
+    sdk.ws.on('open', handleNetworkRestored);
+    window.addEventListener('online', handleNetworkRestored);
 
     const handleGetBars = async (params: {
       symbol: string;
@@ -601,6 +634,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       if (bars.length) {
         stateRef.current.onLatestBar?.(toHoverData(bars[bars.length - 1]));
       }
+      barsLoaded = true;
       return {
         bars,
         noData: bars.length === 0,
@@ -727,6 +761,8 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       if (event.source !== iframeRef.current?.contentWindow) return;
       if (iframeOrigin !== '*' && event.origin !== iframeOrigin) return;
 
+      bridgeAlive = true;
+
       if (message.kind === 'event') {
         if (message.event === 'hover') {
           stateRef.current.onHoverData?.(
@@ -832,8 +868,9 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     window.addEventListener('message', handleMessage);
     return () => {
       window.removeEventListener('message', handleMessage);
+      window.removeEventListener('online', handleNetworkRestored);
       sdk.ws.off('close', handleWebSocketClose);
-      sdk.ws.off('open', handleWebSocketOpen);
+      sdk.ws.off('open', handleNetworkRestored);
       cleanupSubscriptions();
     };
   }, [iframeOrigin]);
@@ -924,6 +961,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
 
   return (
     <iframe
+      key={chartReloadKey}
       ref={iframeRef}
       src={iframeUrl}
       className={className}

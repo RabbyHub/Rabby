@@ -1,22 +1,8 @@
 [
   {
-    "id": "commodities",
-    "name": "Commodities",
-    "priority": 0,
-    "is_disable": false,
-    "translations": {
-      "en-US": "Commodities",
-      "ru-RU": "Сырьевые товары",
-      "es-ES": "Materias primas",
-      "fr-FR": "Matières premières",
-      "pt-PT": "Matérias-primas",
-      "zh-CN": "大宗商品"
-    }
-  },
-  {
     "id": "stocks",
     "name": "Stocks",
-    "priority": 1,
+    "priority": 0,
     "is_disable": false,
     "translations": {
       "en-US": "Stocks",
@@ -25,6 +11,20 @@
       "fr-FR": "Actions",
       "pt-PT": "Ações",
       "zh-CN": "股票"
+    }
+  },
+  {
+    "id": "commodities",
+    "name": "Commodities",
+    "priority": 1,
+    "is_disable": false,
+    "translations": {
+      "en-US": "Commodities",
+      "ru-RU": "Сырьевые товары",
+      "es-ES": "Materias primas",
+      "fr-FR": "Matières premières",
+      "pt-PT": "Matérias-primas",
+      "zh-CN": "大宗商品"
     }
   },
   {
