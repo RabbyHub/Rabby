@@ -684,5 +684,21 @@
   },
   "node_modules/@bitboxswiss/bitbox-api/dist/internal/transport-bridge.js": {
     "enable": false
+  },
+  "node_modules/zod/v4/core/core.js": {
+    "global": {
+      "allow": {
+        "__zod_globalConfig": "rw"
+      },
+      "disallow": []
+    }
+  },
+  "node_modules/zod/v4/core/registries.js":  {
+    "global": {
+      "allow": {
+        "__zod_globalRegistry": "rw"
+      },
+      "disallow": []
+    }
   }
 }
