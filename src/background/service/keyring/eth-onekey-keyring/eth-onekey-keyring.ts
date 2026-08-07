@@ -217,6 +217,12 @@ class OneKeyKeyring extends EventEmitter {
               }
             }
             const device = result.payload[0];
+            // Taken from the search result the unlock already performs. Asking
+            // the device for its features costs an extra call that cannot be
+            // scoped to a connectId (the offscreen bridge drops the argument),
+            // and that call is what reports 901 when it has to find a device
+            // on its own — it must not sit anywhere near signing.
+            this.hardwareSigningMetadata = { device_model: device.deviceType };
             const { deviceId, connectId } = device;
             if (!deviceId || !connectId) {
               reject('no deviceId or connectId');
@@ -799,36 +805,7 @@ class OneKeyKeyring extends EventEmitter {
     return this.hardwareSigningMetadata;
   }
 
-  // One extra read per session, cached, so a signing failure can be reported
-  // with the device it happened on. Deliberately not awaited by its caller and
-  // never rejects: reporting must not sit in the signing path. The metadata is
-  // read when a failure happens, long enough after this for it to have landed.
-  private async _captureHardwareSigningMetadata() {
-    if (this.hardwareSigningMetadata.device_model) {
-      return;
-    }
-
-    try {
-      const res = await this.bridge.getFeatures(this.connectId ?? undefined);
-      if (!res.success) {
-        return;
-      }
-      const features = res.payload;
-      this.hardwareSigningMetadata = {
-        device_model: features.onekey_device_type || features.model,
-        firmware_version:
-          features.onekey_firmware_version ||
-          (features.major_version
-            ? `${features.major_version}.${features.minor_version}.${features.patch_version}`
-            : undefined),
-      };
-    } catch (e) {
-      console.log('failed to read OneKey features', e);
-    }
-  }
-
   private async _requestPassphraseParams(address: string) {
-    this._captureHardwareSigningMetadata();
     const accountDetail = this._accountDetailsFromAddress(address);
     if (accountDetail.version === 2) {
       return {
