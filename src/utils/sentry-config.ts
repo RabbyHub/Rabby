@@ -44,18 +44,16 @@ export const getSentryConfig = (): BrowserOptions => ({
     return breadcrumb;
   },
   beforeSend: async (event, hint) => {
+    if (!(await shouldReportUserBehaviorData())) {
+      return null;
+    }
     const originalException = hint?.originalException;
 
-    // Before the opt-out lookup: this now filters everything the SDK's own
-    // `ignoreErrors` used to drop for free, and that storage read would
-    // otherwise run once per ignored event.
+    // Owns the whole ignore list, including what the SDK's own `ignoreErrors`
+    // used to drop, so it needs the Sentry-generated event text as well.
     if (
       shouldIgnoreSentryError(originalException, collectSentryEventText(event))
     ) {
-      return null;
-    }
-
-    if (!(await shouldReportUserBehaviorData())) {
       return null;
     }
 
