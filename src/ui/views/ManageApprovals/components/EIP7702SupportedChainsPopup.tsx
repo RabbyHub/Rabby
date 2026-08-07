@@ -2,8 +2,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Popup } from 'ui/component';
+import { getEIP7702RevokeSupportedChains } from '@/constant/eip7702';
 import { findChainByEnum } from '@/utils/chain';
-import { EIP7702_REVOKE_SUPPORTED_CHAINS } from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
 import clsx from 'clsx';
 
 type EIP7702SupportedChainsPopupProps = {
@@ -16,7 +16,7 @@ export const EIP7702SupportedChainsPopup: React.FC<EIP7702SupportedChainsPopupPr
   onCancel,
 }) => {
   const { t } = useTranslation();
-  const supportedChains = EIP7702_REVOKE_SUPPORTED_CHAINS;
+  const supportedChains = getEIP7702RevokeSupportedChains();
 
   return (
     <Popup
