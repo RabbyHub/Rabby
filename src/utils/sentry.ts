@@ -215,13 +215,19 @@ type SentryEventLike = {
   tags?: Record<string, unknown>;
   fingerprint?: string[];
   extra?: Record<string, unknown>;
-  exception?: { values?: { value?: string }[] };
+  exception?: { values?: { type?: string; value?: string }[] };
 };
 
+// Mirrors the SDK's own _getPossibleEventMessages: patterns like
+// /UnknownError: Internal error\./ are written against the joined form, which
+// exists nowhere else once an exception is split into type and value.
 export const collectSentryEventText = (event: SentryEventLike) =>
   [
     event.message,
-    ...(event.exception?.values ?? []).map((value) => value.value),
+    ...(event.exception?.values ?? []).flatMap(({ type, value }) => [
+      value,
+      type && value ? `${type}: ${value}` : undefined,
+    ]),
   ].filter((value): value is string => Boolean(value));
 
 // The shape of an SDK error is decided by the device library, not by Rabby, so

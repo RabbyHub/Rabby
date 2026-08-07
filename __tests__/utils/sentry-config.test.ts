@@ -150,6 +150,18 @@ describe('Sentry configuration', () => {
         ],
       },
     });
+    // Patterns written against the joined "type: value" form, which is the
+    // only place that text exists once Sentry has split the exception.
+    scope.captureEvent({
+      exception: {
+        values: [{ type: 'NotAllowedError', value: 'Permission denied.' }],
+      },
+    });
+    scope.captureEvent({
+      exception: {
+        values: [{ type: 'UnknownError', value: 'Internal error.' }],
+      },
+    });
     await client.flush(2000);
 
     expect(events).toHaveLength(5);
