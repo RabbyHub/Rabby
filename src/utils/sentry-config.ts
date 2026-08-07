@@ -4,7 +4,7 @@ import { getSentryEnv } from '@/utils/env';
 import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 import {
   applyHardwareSigningContext,
-  RABBY_SENTRY_IGNORE_ERRORS,
+  collectSentryEventText,
   sanitizeSentryBreadcrumbUrl,
   shouldIgnoreSentryError,
 } from '@/utils/sentry';
@@ -50,7 +50,9 @@ export const getSentryConfig = (): BrowserOptions => ({
 
     const originalException = hint?.originalException;
 
-    if (shouldIgnoreSentryError(originalException)) {
+    if (
+      shouldIgnoreSentryError(originalException, collectSentryEventText(event))
+    ) {
       return null;
     }
 
@@ -92,10 +94,11 @@ export const getSentryConfig = (): BrowserOptions => ({
       };
     }
 
-    // Last, so it also redacts the __serialized__ blob above.
     applyHardwareSigningContext(event, originalException);
 
     return event;
   },
-  ignoreErrors: RABBY_SENTRY_IGNORE_ERRORS,
+  // No `ignoreErrors` on purpose: the SDK applies it before beforeSend runs,
+  // which would drop hardware signing failures with a generic transport
+  // message. shouldIgnoreSentryError above owns the whole ignore list.
 });

@@ -8,8 +8,10 @@ export const sanitizeSentryBreadcrumbUrl = (value: string) => {
   return withoutQueryOrFragment.replace(/0x[a-f\d]{40,64}/gi, '[redacted]');
 };
 
-// Keep this list in the SDK pipeline so it can also match Sentry-generated
-// event text. Hardware signing errors are handled separately below.
+// Applied in beforeSend only, never as the SDK's own `ignoreErrors`: the SDK
+// filter runs before beforeSend, so it would drop hardware signing failures
+// before the bypass below can keep them. shouldIgnoreSentryError takes the
+// Sentry-generated event text so patterns matching that still work.
 export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'ResizeObserver loop limit exceeded',
   'ResizeObserver loop completed with undelivered notifications',
@@ -31,6 +33,7 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /Could not establish connection/,
   /Receiving end does not exist/,
   /HttpRequestError/,
+  /http/i,
 
   // Browser extension lifecycle and runtime shutdown noise.
   /A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received/,
@@ -101,6 +104,8 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
     (error as any).message,
     (error as any).shortMessage,
     (error as any).details,
+    // Hardware SDKs often reject with a bare code (803, 0x6985) and no message.
+    (error as any).code,
   ].filter(Boolean);
 
   return [
@@ -159,13 +164,19 @@ const matchesAny = (patterns: SentryIgnorePattern[], candidates: string[]) =>
     )
   );
 
-export const shouldIgnoreSentryError = (error: unknown) => {
+export const shouldIgnoreSentryError = (
+  error: unknown,
+  // Text Sentry generated for the event ("Non-Error promise rejection captured
+  // with keys: ..."), which never appears on the thrown value itself.
+  eventText: string[] = []
+) => {
   const parts = collectErrorText(error);
   const text = parts.join('\n') || String(error || '');
   const candidates = [
     text,
     ...parts,
     error instanceof Error ? `${error.name}: ${error.message}` : '',
+    ...eventText,
   ].filter(Boolean);
 
   const hardware = getHardwareSigningContext(error);
@@ -207,6 +218,29 @@ type SentryEventLike = {
   exception?: { values?: { value?: string }[] };
 };
 
+export const collectSentryEventText = (event: SentryEventLike) =>
+  [
+    event.message,
+    ...(event.exception?.values ?? []).map((value) => value.value),
+  ].filter((value): value is string => Boolean(value));
+
+// The shape of an SDK error is decided by the device library, not by Rabby, so
+// it is flattened to text and redacted instead of being handed to Sentry whole.
+const describeOriginalError = (error: unknown) => {
+  const parts = collectErrorText(error);
+
+  try {
+    const serialized = JSON.stringify(error);
+    if (serialized && serialized !== '{}') {
+      parts.push(serialized);
+    }
+  } catch {
+    // Circular SDK errors: the text collected above is all we can report.
+  }
+
+  return redactSensitiveText(parts.join(' | ')) || undefined;
+};
+
 export const applyHardwareSigningContext = (
   event: SentryEventLike,
   error: unknown
@@ -231,6 +265,6 @@ export const applyHardwareSigningContext = (
   event.extra = {
     ...event.extra,
     ...(hardware.metadata ? { hardware_device: hardware.metadata } : undefined),
-    hardware_original_error: hardware.originalError,
+    hardware_original_error: describeOriginalError(hardware.originalError),
   };
 };

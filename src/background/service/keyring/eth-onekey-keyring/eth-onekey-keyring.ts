@@ -17,6 +17,7 @@ import { t } from 'i18next';
 import { HardwareErrorCode } from '@onekeyfe/hd-shared';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import type { HardwareSigningMetadata } from '../hardware-wallet-sentry';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
@@ -124,6 +125,7 @@ class OneKeyKeyring extends EventEmitter {
   connectId: string | null = null;
   passphraseState: string | undefined = undefined;
   accountDetails: Record<string, AccountDetail>;
+  private hardwareSigningMetadata: HardwareSigningMetadata = {};
 
   bridge!: OneKeyBridgeInterface;
 
@@ -793,7 +795,40 @@ class OneKeyKeyring extends EventEmitter {
     };
   }
 
+  getHardwareSigningMetadata() {
+    return this.hardwareSigningMetadata;
+  }
+
+  // One extra read per session, cached, so a signing failure can be reported
+  // with the device it happened on. Never let it break signing.
+  private async _captureHardwareSigningMetadata() {
+    if (this.hardwareSigningMetadata.device_model) {
+      return;
+    }
+
+    try {
+      const res = await this.bridge.getFeatures(this.connectId ?? undefined);
+      if (!res.success) {
+        return;
+      }
+      const features = res.payload;
+      this.hardwareSigningMetadata = {
+        device_model: features.onekey_device_type || features.model,
+        firmware_version:
+          features.onekey_firmware_version ||
+          [
+            features.major_version,
+            features.minor_version,
+            features.patch_version,
+          ].join('.'),
+      };
+    } catch (e) {
+      console.log('failed to read OneKey features', e);
+    }
+  }
+
   private async _requestPassphraseParams(address: string) {
+    await this._captureHardwareSigningMetadata();
     const accountDetail = this._accountDetailsFromAddress(address);
     if (accountDetail.version === 2) {
       return {
