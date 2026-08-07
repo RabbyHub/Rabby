@@ -41,6 +41,10 @@ export const UseSeedPhrase = () => {
   const seedPhraseList = useMemo(() => {
     if (accountGroup && value) {
       const publicKeys = value.map((e) => e.publicKey!);
+      const keyringMappings = value.reduce((pre, cur) => {
+        pre[cur.publicKey || ''] = cur;
+        return pre;
+      }, {} as Record<string, typeof value[number]>);
       const pbMappings = Object.values(accountGroup[0]).reduce((pre, cur) => {
         if (cur.type === KEYRING_TYPE['HdKeyring']) {
           pre[cur.publicKey || ''] = cur;
@@ -51,7 +55,12 @@ export const UseSeedPhrase = () => {
         publicKeys
           .map((e) => pbMappings[e])
           .filter((e) => !!e)
-          .map((e, index) => ({ ...e, index })) as TypeKeyringGroup[]
+          .map((e, index) => ({
+            ...e,
+            index,
+            hasBackup:
+              keyringMappings[e.publicKey || '']?.keyring.hasBackup ?? true,
+          })) as TypeKeyringGroup[]
       );
     }
     return [];

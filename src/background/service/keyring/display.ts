@@ -6,6 +6,7 @@ class DisplayKeyring {
   // hd keyring
   isSlip39 = false;
   needPassphrase = '';
+  hasBackup?: boolean;
 
   constructor(keyring) {
     this.getAccounts = keyring.getAccounts?.bind(keyring);
@@ -17,6 +18,7 @@ class DisplayKeyring {
     this.type = keyring.type;
     this.isSlip39 = keyring.isSlip39;
     this.needPassphrase = keyring.needPassphrase;
+    this.hasBackup = keyring.hasBackup;
   }
 
   unlock: () => Promise<void>;

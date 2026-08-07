@@ -1,8 +1,10 @@
 import React from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
-import { formatUsdValue } from '@/ui/utils';
+import { formatUsdValue, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
+import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
+import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { UseSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase/hooks';
 import {
   getSeedPhraseGroupTotalBalance,
@@ -21,6 +23,8 @@ import {
   RcAddNewAddressChevronIcon,
   RcAddNewAddressCreateSeedIcon,
 } from '@/ui/assets/add-address';
+import { ReactComponent as RcIconInfoCC } from '@/ui/assets/dashboard/warning-cc.svg';
+import { BACKUP_SEED_PHRASE_REDIRECT_PATH } from './useCreateAddress';
 
 const MAX_VISIBLE_ADDRESSES = 3;
 
@@ -115,6 +119,7 @@ const SeedPhraseCard = ({
   onToggle,
   onShowMore,
   onAdd,
+  onBackup,
 }: {
   group: SeedPhraseGroupView;
   expanded: boolean;
@@ -123,28 +128,56 @@ const SeedPhraseCard = ({
   onToggle: () => void;
   onShowMore: () => void;
   onAdd: () => void;
+  onBackup: () => void;
 }) => {
   const { t } = useTranslation();
   const visibleAccounts = showAll
     ? group.sortedAccounts
     : group.sortedAccounts.slice(0, MAX_VISIBLE_ADDRESSES);
   const hasMoreAccounts = group.sortedAccounts.length > MAX_VISIBLE_ADDRESSES;
+  const totalBalance = formatUsdValue(group.totalBalance);
 
   return (
     <div className="bg-r-neutral-card-1 rounded-[6px]">
-      <button
-        type="button"
-        className="w-full h-[50px] px-[16px] flex items-center"
+      <div
+        className="w-full h-[50px] px-[16px] flex items-center cursor-pointer"
         onClick={onToggle}
       >
         <div className="text-[15px] leading-[18px] font-medium text-r-neutral-title-1">
           {`Seed Phrase ${(group.index || 0) + 1}`}
         </div>
-        <div className="ml-auto text-[13px] leading-[16px] font-medium text-r-neutral-title-1">
-          {formatUsdValue(group.totalBalance)}
-        </div>
-        <Chevron expanded={expanded} className="ml-[6px]" />
-      </button>
+        {group.hasBackup === false && (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={(event) => {
+              event.stopPropagation();
+              onBackup();
+            }}
+            className={clsx(
+              'ml-[8px] text-[13px] leading-[16px] font-medium text-r-red-default',
+              'py-[4px] px-[10px] bg-r-red-light rounded-[4px]',
+              'flex items-center gap-[4px]'
+            )}
+          >
+            <RcIconInfoCC />
+            {t('page.addressDetail.notBackup')}
+          </button>
+        )}
+        <button
+          type="button"
+          aria-expanded={expanded}
+          aria-label={`Seed Phrase ${(group.index || 0) + 1}, ${totalBalance}`}
+          className="ml-auto flex items-center text-[13px] leading-[16px] font-medium text-r-neutral-title-1"
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggle();
+          }}
+        >
+          {totalBalance}
+          <Chevron expanded={expanded} className="ml-[6px]" />
+        </button>
+      </div>
 
       {expanded && (
         <div className="border-t border-rabby-neutral-line px-[16px] pt-[6px] pb-[16px]">
@@ -188,11 +221,14 @@ export const AddNewAddress: React.FC<{
   onNavigate?(type: string, state?: Record<string, any>): void;
 }> = ({ isInModal, onBack, onNavigate }) => {
   const history = useHistory();
+  const wallet = useWallet();
+  const invokeEnterPassphrase = useEnterPassphraseModal('publickey');
   const { t } = useTranslation();
   const { seedPhraseList } = UseSeedPhrase();
   const {
     createNewSeedPhrase,
     deriveNextAddressFromSeedPhrase,
+    openBackupSeedPhrasePage,
   } = useCreateAddressActions({
     onNavigate,
   });
@@ -283,6 +319,43 @@ export const AddNewAddress: React.FC<{
     }
   });
 
+  const handleBackupSeedPhrase = useMemoizedFn(async (publicKey: string) => {
+    if (!publicKey || pendingAction !== null) {
+      return;
+    }
+
+    let data = '';
+    try {
+      setPendingAction(publicKey);
+      await AuthenticationModalPromise({
+        confirmText: t('global.confirm'),
+        cancelText: t('global.Cancel'),
+        title: t('page.addressDetail.backup-seed-phrase'),
+        validationHandler: async (password: string) => {
+          await invokeEnterPassphrase(publicKey);
+          data = await wallet.getMnemonicFromPublicKey(password, publicKey);
+        },
+        wallet,
+      });
+      if (!data) {
+        throw new Error('Seed phrase not found');
+      }
+      openBackupSeedPhrasePage({
+        publicKey,
+        data,
+        redirectTo: BACKUP_SEED_PHRASE_REDIRECT_PATH,
+      });
+    } catch (error) {
+      if (error) {
+        message.error(
+          error instanceof Error ? error.message : 'Failed to open backup page'
+        );
+      }
+    } finally {
+      setPendingAction(null);
+    }
+  });
+
   return (
     <div
       className={clsx(
@@ -334,6 +407,9 @@ export const AddNewAddress: React.FC<{
             }}
             onAdd={() => {
               handleAddAddress(group.publicKey || '');
+            }}
+            onBackup={() => {
+              handleBackupSeedPhrase(group.publicKey || '');
             }}
           />
         ))}
