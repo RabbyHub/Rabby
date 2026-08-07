@@ -95,9 +95,7 @@ export function useHomeBalanceView(currentAddress?: string | undefined) {
   const deleteHomeBalanceByAddress = useCallback((address: string) => {}, []);
 
   return {
-    currentHomeBalanceCache: currentHomeBalanceCache?.balance
-      ? currentHomeBalanceCache
-      : null,
+    currentHomeBalanceCache,
     deleteHomeBalanceByAddress,
   };
 }

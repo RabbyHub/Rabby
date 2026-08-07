@@ -196,14 +196,14 @@ export const useTokenPair = (userAddress: string) => {
     [dispatch?.swap?.setSelectedChain]
   );
   const [refreshTokenId, updateRefreshTokenId] = useState(0);
-  const reloadTxRefreshPausedRef = useRef(false);
+  const quoteRefreshLockedRef = useRef(false);
   const refreshTokensInfo = useCallback(
     () => updateRefreshTokenId((e) => e + 1),
     [updateRefreshTokenId]
   );
   useEffect(() => {
     const refreshToken = (params: { addressList: string[] }) => {
-      if (depositFlowActive || reloadTxRefreshPausedRef.current) {
+      if (depositFlowActive || quoteRefreshLockedRef.current) {
         return;
       }
       if (
@@ -260,7 +260,7 @@ export const useTokenPair = (userAddress: string) => {
   const setActiveProvider: React.Dispatch<
     React.SetStateAction<QuoteProvider | undefined>
   > = useCallback((p) => {
-    if (reloadTxRefreshPausedRef.current) {
+    if (quoteRefreshLockedRef.current) {
       return;
     }
 
@@ -271,10 +271,7 @@ export const useTokenPair = (userAddress: string) => {
 
     if (p && !depositFlowActiveRef.current) {
       expiredTimer.current = setTimeout(() => {
-        if (
-          !depositFlowActiveRef.current &&
-          !reloadTxRefreshPausedRef.current
-        ) {
+        if (!depositFlowActiveRef.current && !quoteRefreshLockedRef.current) {
           setRefreshId((e) => e + 1);
         }
       }, 1000 * 20);
@@ -736,7 +733,7 @@ export const useTokenPair = (userAddress: string) => {
     { loading: quoteLoading, error: quotesError },
     getQuotes,
   ] = useAsyncFn(async () => {
-    if (depositFlowActiveRef.current || reloadTxRefreshPausedRef.current) {
+    if (depositFlowActiveRef.current || quoteRefreshLockedRef.current) {
       setPending(false);
       return;
     }
@@ -821,7 +818,7 @@ export const useTokenPair = (userAddress: string) => {
   ]);
 
   useEffect(() => {
-    if (canRunQuoteRequest && !reloadTxRefreshPausedRef.current) {
+    if (canRunQuoteRequest && !quoteRefreshLockedRef.current) {
       setPending(true);
     } else {
       setPending(false);
@@ -841,11 +838,11 @@ export const useTokenPair = (userAddress: string) => {
     [getQuotes]
   );
 
-  const setReloadTxRefreshPaused = useCallback(
-    (paused: boolean) => {
-      reloadTxRefreshPausedRef.current = paused;
+  const setQuoteRefreshLocked = useCallback(
+    (locked: boolean) => {
+      quoteRefreshLockedRef.current = locked;
 
-      if (!paused) {
+      if (!locked) {
         return;
       }
 
@@ -913,11 +910,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [selectableQuoteListForDisplay.length]);
 
   useEffect(() => {
-    if (
-      reloadTxRefreshPausedRef.current ||
-      !canRunQuoteRequest ||
-      !receiveToken
-    ) {
+    if (quoteRefreshLockedRef.current || !canRunQuoteRequest || !receiveToken) {
       return;
     }
 
@@ -1217,7 +1210,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [clearExpiredTimer]);
 
   return {
-    setReloadTxRefreshPaused,
+    setQuoteRefreshLocked,
     bestQuoteDex,
     gasLevel,
 

@@ -1,16 +1,27 @@
 import { TrezorBridgeInterface } from '@rabby-wallet/eth-trezor-keyring/dist/trezor-bridge-interface';
 import EventEmitter from 'events';
+import type { HardwareSigningMetadata } from '../hardware-wallet-sentry';
 
 export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
   isDeviceConnected = false;
   model = '';
   connectDevices = new Set<string>();
   event = new EventEmitter();
+  private hardwareSigningMetadata: HardwareSigningMetadata = {};
 
   init: TrezorBridgeInterface['init'] = async (config) => {
     globalThis.TrezorConnect.on('DEVICE_EVENT', (event: any) => {
       if (event && event.payload && event.payload.features) {
-        this.model = event.payload.features.model;
+        const features = event.payload.features;
+        this.model = features.model;
+        this.hardwareSigningMetadata = {
+          device_model: features.internal_model || features.model,
+          // Some device events carry features without the version fields;
+          // reporting "undefined.undefined.undefined" is worse than nothing.
+          firmware_version: features.major_version
+            ? `${features.major_version}.${features.minor_version}.${features.patch_version}`
+            : undefined,
+        };
       }
       const currentDeviceId = event.payload?.id;
       if (event.type === 'device-connect') {
@@ -37,6 +48,8 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
       this.isDeviceConnected = true;
     }
   };
+
+  getHardwareSigningMetadata = () => this.hardwareSigningMetadata;
 
   dispose = globalThis.TrezorConnect.dispose;
 

@@ -31,8 +31,8 @@ import { RootModel, RabbyRootState } from '.';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { formatMarkData, getPxDecimals } from '../views/Perps/utils';
 import {
-  DEFAULT_TOP_ASSET,
-  DEFAULT_ASSET_CATEGORY,
+  loadDefaultTopAsset,
+  loadDefaultAssetCategory,
   HYPE_EVM_BRIDGE_ADDRESS_MAP,
   PerpsQuoteAsset,
   CANDLE_MENU_KEY_V2,
@@ -42,6 +42,11 @@ import type {
   PerpsTpslModePreference,
   PerpsTpslModePreferences,
 } from '@/background/service/perps';
+import { DEFAULT_PERPS_ORDER_CONFIRMATIONS } from '@/constant/perps';
+import type {
+  PerpsOrderConfirmations,
+  PerpsOrderConfirmType,
+} from '@/constant/perps';
 import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
@@ -256,6 +261,9 @@ export interface PerpsState {
   marketSlippage: number; // 0-1, default 0.05 (5%)
   soundEnabled: boolean;
   skipMarketCloseConfirm: boolean;
+  orderConfirmations: PerpsOrderConfirmations;
+  /** Whether the bottom status bar renders the popular-markets ticker. */
+  showPopularTradings: boolean;
   // Persisted candle interval for the popup chart ([CANDLE_MENU_KEY_V2]).
   // Persistence is handled via perpsService — see initCandleInterval /
   // updateCandleInterval effects.
@@ -283,6 +291,30 @@ export interface PerpsState {
 
 let topAssetsCache: PerpTopTokenV3[] = [];
 let perpsCategoryCache: PerpTopTokenCategory[] = [];
+
+// The baked-in lists are behind dynamic `import()`s, so reaching for them can
+// itself reject (chunk missing after an update, offline, disk error). They are
+// already the fallback path — losing them must degrade to an empty list, not
+// reject the `Promise.all` that market-data init is built on.
+const loadDefaultTopAssetSafe = async (): Promise<PerpTopTokenV3[]> => {
+  try {
+    return await loadDefaultTopAsset();
+  } catch (error) {
+    console.error('Failed to load bundled top assets:', error);
+    return [];
+  }
+};
+
+const loadDefaultAssetCategorySafe = async (): Promise<
+  PerpTopTokenCategory[]
+> => {
+  try {
+    return await loadDefaultAssetCategory();
+  } catch (error) {
+    console.error('Failed to load bundled asset categories:', error);
+    return [];
+  }
+};
 
 // Latest per-dex AssetCtx snapshot pushed by WS. WS frames are full-dex
 // snapshots, so the latest one is authoritative. Stored at module scope so
@@ -408,6 +440,8 @@ export const perps = createModel<RootModel>()({
     twapSliceFills: [],
     soundEnabled: true,
     skipMarketCloseConfirm: false,
+    orderConfirmations: DEFAULT_PERPS_ORDER_CONFIRMATIONS,
+    showPopularTradings: true,
     candleInterval: CANDLE_MENU_KEY_V2.FIFTEEN_MINUTES,
     marketSlippage: 0.05, // default 5%
     marketEstSize: '',
@@ -1076,6 +1110,24 @@ export const perps = createModel<RootModel>()({
       };
     },
 
+    setOrderConfirmations(state, payload: Partial<PerpsOrderConfirmations>) {
+      return {
+        ...state,
+        orderConfirmations: {
+          ...DEFAULT_PERPS_ORDER_CONFIRMATIONS,
+          ...state.orderConfirmations,
+          ...payload,
+        },
+      };
+    },
+
+    setShowPopularTradings(state, payload: boolean) {
+      return {
+        ...state,
+        showPopularTradings: payload ?? true,
+      };
+    },
+
     setCandleInterval(state, payload: CANDLE_MENU_KEY_V2) {
       return {
         ...state,
@@ -1418,11 +1470,11 @@ export const perps = createModel<RootModel>()({
               topAssetsCache = topAssets;
               return topAssets;
             } else {
-              return DEFAULT_TOP_ASSET;
+              return loadDefaultTopAssetSafe();
             }
           } catch (error) {
             console.error('Failed to fetch top assets:', error);
-            return DEFAULT_TOP_ASSET;
+            return loadDefaultTopAssetSafe();
           }
         };
 
@@ -1443,7 +1495,7 @@ export const perps = createModel<RootModel>()({
           } catch (error) {
             console.error('Failed to fetch token categories:', error);
           }
-          return DEFAULT_ASSET_CATEGORY;
+          return loadDefaultAssetCategorySafe();
         };
 
         const [topAssets, categories, allMetas, perpDexs] = await Promise.all([
@@ -1926,6 +1978,56 @@ export const perps = createModel<RootModel>()({
         dispatch.perps.setSkipMarketCloseConfirm(skip);
       } catch (error) {
         console.error('Failed to save skipMarketCloseConfirm:', error);
+      }
+    },
+
+    async initOrderConfirmations(_, rootState) {
+      try {
+        const confirmations = await rootState.app.wallet.getPerpsOrderConfirmations();
+        dispatch.perps.setOrderConfirmations(confirmations ?? {});
+      } catch (error) {
+        console.error('Failed to load perps order confirmations:', error);
+        dispatch.perps.setOrderConfirmations(DEFAULT_PERPS_ORDER_CONFIRMATIONS);
+      }
+    },
+
+    async updateOrderConfirmation(
+      payload: { type: PerpsOrderConfirmType; enabled: boolean },
+      rootState
+    ) {
+      // Apply first, persist second: these drive controlled `Switch`es, so
+      // awaiting the background write would leave the toggle frozen at its old
+      // value whenever that write fails — reading as a broken control.
+      dispatch.perps.setOrderConfirmations({
+        [payload.type]: payload.enabled,
+      });
+      try {
+        await rootState.app.wallet.setPerpsOrderConfirmation(
+          payload.type,
+          payload.enabled
+        );
+      } catch (error) {
+        console.error('Failed to save perps order confirmation:', error);
+      }
+    },
+
+    async initShowPopularTradings(_, rootState) {
+      try {
+        const show = await rootState.app.wallet.getPerpsShowPopularTradings();
+        dispatch.perps.setShowPopularTradings(show ?? true);
+      } catch (error) {
+        console.error('Failed to load popular tradings setting:', error);
+        dispatch.perps.setShowPopularTradings(true);
+      }
+    },
+
+    async updateShowPopularTradings(show: boolean, rootState) {
+      // Apply first, persist second — see updateOrderConfirmation.
+      dispatch.perps.setShowPopularTradings(show);
+      try {
+        await rootState.app.wallet.setPerpsShowPopularTradings(show);
+      } catch (error) {
+        console.error('Failed to save popular tradings setting:', error);
       }
     },
 

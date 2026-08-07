@@ -103,6 +103,8 @@ export interface OrderSummaryData {
 // Dual-column info for both buy and sell sides
 export interface OrderSideInfo {
   liqPrice: string;
+  /** Numeric twin of `liqPrice`; null when there is no liquidation price. */
+  liqPriceNum: number | null;
   cost: string;
   max: string;
 }

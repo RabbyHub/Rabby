@@ -44,6 +44,8 @@ export const usePerpsProInit = (isActive = true) => {
     dispatch.perps.initMarketSlippage(undefined);
     dispatch.perps.initSoundEnabled(undefined);
     dispatch.perps.initSkipMarketCloseConfirm(undefined);
+    dispatch.perps.initOrderConfirmations(undefined);
+    dispatch.perps.initShowPopularTradings(undefined);
     if (urlCoin) {
       dispatch.perps.updateSelectedCoin(urlCoin);
     } else {

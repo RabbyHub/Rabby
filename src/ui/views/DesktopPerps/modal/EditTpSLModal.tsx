@@ -17,8 +17,12 @@ import perpsToast from '../components/PerpsToast';
 import { ThousandsNativeInput } from '../components/ThousandsNativeInput';
 import stats from '@/stats';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { getStatsReportSide } from '../utils';
+import { formatPerpsCoin, getStatsReportSide } from '../utils';
+import { resolveTriggerComparator } from '../tpslTrigger';
 import { TPSLSettingMode } from '../types';
+import type { OrderConfirmRow, OrderConfirmSection } from './OrderConfirmModal';
+import { useOrderConfirm } from './OrderConfirmProvider';
+import type { OrderConfirmContent } from './OrderConfirmProvider';
 
 export interface Props {
   visible: boolean;
@@ -550,6 +554,10 @@ export const EditTpSlModal: React.FC<Props> = ({
   const pxDecimals = marketData.pxDecimals ?? 2;
   const currentPrice = Number(marketData.markPx || position.markPx || 0);
   const markPrice = currentPrice || Number(position.markPx || 0);
+  const baseAsset = formatPerpsCoin(position.coin);
+  const quoteAsset = marketData.quoteAsset || 'USDC';
+
+  const requestConfirm = useOrderConfirm();
 
   const [tpState, setTpState] = React.useState<TpslSideState>({
     ...EMPTY_SIDE_STATE,
@@ -850,6 +858,95 @@ export const EditTpSlModal: React.FC<Props> = ({
     }
   );
 
+  const buildSideConfirmSection = useMemoizedFn(
+    (side: TpslSide, state: TpslSideState): OrderConfirmSection | null => {
+      if (!state.triggerPrice || Number(state.triggerPrice) <= 0) {
+        return null;
+      }
+
+      const comparator = resolveTriggerComparator(
+        position.direction === 'Long',
+        side === 'tp'
+      );
+
+      const rows: OrderConfirmRow[] = [
+        {
+          key: `${side}-trigger`,
+          label: t('page.perpsPro.orderConfirm.triggerPrice'),
+          value: `${t(
+            'page.perpsPro.orderConfirm.markPrice'
+          )}${comparator}${splitNumberByStep(
+            state.triggerPrice
+          )} ${quoteAsset}`,
+        },
+      ];
+
+      const pnl = Number(state.estimatedPnl);
+      if (state.estimatedPnl && Number.isFinite(pnl)) {
+        rows.push({
+          key: `${side}-pnl`,
+          label: t('page.perpsPro.orderConfirm.totalEstimatedPnl'),
+          value: `${pnl >= 0 ? '+' : '-'}${splitNumberByStep(
+            Math.abs(pnl).toFixed(2)
+          )} ${quoteAsset}`,
+          tone: pnl >= 0 ? 'up' : 'down',
+        });
+      }
+
+      return {
+        key: side,
+        heading:
+          side === 'tp'
+            ? t('page.perpsPro.orderConfirm.takeProfit')
+            : t('page.perpsPro.orderConfirm.stopLoss'),
+        rows,
+      };
+    }
+  );
+
+  const buildConfirmContent = useMemoizedFn(
+    (): OrderConfirmContent => {
+      const sections: OrderConfirmSection[] = [
+        {
+          key: 'position',
+          rows: [
+            {
+              key: 'symbol',
+              label: t('page.perpsPro.orderConfirm.symbol'),
+              value: `${baseAsset}-${quoteAsset}`,
+            },
+            {
+              key: 'entryPrice',
+              label: t('page.perpsPro.orderConfirm.entryPrice'),
+              value: `${splitNumberByStep(position.entryPx)} ${quoteAsset}`,
+            },
+          ],
+        },
+      ];
+
+      const tpSection = buildSideConfirmSection('tp', tpState);
+      if (tpSection) sections.push(tpSection);
+      const slSection = buildSideConfirmSection('sl', slState);
+      if (slSection) sections.push(slSection);
+
+      return {
+        title: t('page.perpsPro.orderConfirm.tpslTitle'),
+        sections,
+      };
+    }
+  );
+
+  const handleSubmitClick = useMemoizedFn(() => {
+    requestConfirm({
+      type: 'tpsl',
+      content: buildConfirmContent,
+      dontShowAgainText: t('page.perpsPro.orderConfirm.dontShowAgain', {
+        orderType: t('page.perpsPro.orderConfirm.orderTypeName.tpsl'),
+      }),
+      submit: () => runSubmit(),
+    });
+  });
+
   const renderModeMenu = (side: TpslSide) => (
     <Menu
       className="bg-r-neutral-bg1"
@@ -1074,7 +1171,7 @@ export const EditTpSlModal: React.FC<Props> = ({
             className="desktop-perps-tpsl-confirm h-[48px] rounded-[6px] text-15 font-medium"
             loading={loading}
             disabled={!canSubmit || loading || Boolean(cancelingSide)}
-            onClick={runSubmit}
+            onClick={handleSubmitClick}
           >
             {t('global.confirm')}
           </Button>

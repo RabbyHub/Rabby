@@ -4,14 +4,12 @@ import { useTranslation } from 'react-i18next';
 
 import { RcIconArrowRightCC, RcIconJumpCC } from '@/ui/assets/dashboard';
 import { RcIconCopy1CC } from '@/ui/assets/desktop/common';
+import { getEIP7702RevokeSupportedChains } from '@/constant/eip7702';
 import ChainIcon from '@/ui/component/ChainIcon';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { findChainByEnum } from '@/utils/chain';
 import clsx from 'clsx';
-import {
-  EIP7702_REVOKE_SUPPORTED_CHAINS,
-  EIP7702Delegated,
-} from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
+import { EIP7702Delegated } from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
 import { CheckboxV2 } from '../../DesktopSmallSwap/components/Checkbox';
 import { EIP7702SupportedChainsPopup } from './EIP7702SupportedChainsPopup';
 import { EmptyState } from './EmptyState';
@@ -39,6 +37,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
 }) => {
   const { t } = useTranslation();
   const [supportedChainsOpen, setSupportedChainsOpen] = React.useState(false);
+  const supportedChains = getEIP7702RevokeSupportedChains();
 
   const currentAccount = useCurrentAccount();
 
@@ -114,7 +113,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
             className="flex items-center border-none bg-transparent "
           >
             <div className={clsx('flex items-center mr-[-16px]')}>
-              {EIP7702_REVOKE_SUPPORTED_CHAINS.slice(0, 5).map((chain, idx) => {
+              {supportedChains.slice(0, 5).map((chain, idx) => {
                 return (
                   <div
                     className={clsx('relative')}
@@ -136,7 +135,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
               })}
             </div>
             <div className="text-[13px] leading-[16px] font-medium text-r-neutral-body">
-              +{EIP7702_REVOKE_SUPPORTED_CHAINS.length - 5}
+              +{supportedChains.length - 5}
             </div>
             <RcIconArrowRightCC className="text-r-neutral-foot" />
           </button>

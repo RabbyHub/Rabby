@@ -222,9 +222,6 @@ const LedgerHardwareWaiting = ({
           approvalId: approval.id,
         });
       } else {
-        Sentry.captureException(
-          new Error('Ledger sign error: ' + JSON.stringify(data))
-        );
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
         setErrorMessage(data.errorMsg);
       }
