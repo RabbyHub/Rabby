@@ -96,6 +96,25 @@ describe('getBackupSeedPhrasePageRoute', () => {
     });
   });
 
+  it('supports backing up an empty seed phrase group by public key', () => {
+    const publicKeyState = {
+      publicKey: '0xpublicKey',
+      data: 'test seed phrase',
+      redirectTo: '/dashboard',
+    };
+
+    expect(
+      getBackupSeedPhrasePageRoute({
+        currentPathname: '/add-address/new-address',
+        isInModalFlow: false,
+        state: publicKeyState,
+      })
+    ).toEqual({
+      pathname: ADDRESS_BACKUP_MNEMONICS_PATH,
+      state: publicKeyState,
+    });
+  });
+
   it('returns desktop backup modal route for desktop modal flow', () => {
     expect(
       getBackupSeedPhrasePageRoute({

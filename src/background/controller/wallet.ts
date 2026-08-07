@@ -4128,11 +4128,17 @@ export class WalletController extends BaseController {
     return keyring.hasBackup == null ? true : keyring.hasBackup;
   };
 
-  backupSeedPhraseConfirmed = async (address: string) => {
-    const keyring = await keyringService.getKeyringForAccount(
-      address,
-      KEYRING_CLASS.MNEMONIC
-    );
+  backupSeedPhraseConfirmed = async (
+    value: string,
+    type: 'address' | 'publickey' = 'address'
+  ) => {
+    const keyring =
+      type === 'publickey'
+        ? await this.#getMnemonicKeyring(type, value)
+        : await keyringService.getKeyringForAccount(
+            value,
+            KEYRING_CLASS.MNEMONIC
+          );
     if (!keyring) {
       throw new Error('Keyring not found');
     }
