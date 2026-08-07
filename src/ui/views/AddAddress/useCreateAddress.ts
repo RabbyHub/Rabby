@@ -48,11 +48,13 @@ export interface AddMoreAddressesState {
   successState?: CreateAddressSuccessState;
 }
 
-export interface BackupSeedPhrasePageState {
-  address: string;
+export type BackupSeedPhrasePageState = {
   data: string;
   redirectTo: string;
-}
+} & (
+  | { address: string; publicKey?: never }
+  | { address?: never; publicKey: string }
+);
 
 export interface CreateAddressSuccessSecondaryAction {
   kind: 'backup' | 'add-more';
