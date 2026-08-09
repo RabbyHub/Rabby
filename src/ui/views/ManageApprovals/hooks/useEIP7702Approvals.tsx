@@ -3,13 +3,13 @@ import { CHAINS_ENUM } from '@debank/common';
 
 import { Account } from '@/background/service/preference';
 import { INTERNAL_REQUEST_SESSION, KEYRING_TYPE } from '@/constant';
+import { getEIP7702RevokeSupportedChains } from '@/constant/eip7702';
 import { useWallet } from '@/ui/utils';
 import { useRequest } from 'ahooks';
 import PQueue from 'p-queue';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fromHex, zeroAddress } from 'viem';
-import { EIP7702_REVOKE_SUPPORTED_CHAINS } from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
 
 const EIP7702SupportedAccountType = [
   KEYRING_TYPE.SimpleKeyring,
@@ -120,7 +120,7 @@ export const useEIP7702ApprovalsQuery = ({
       }
       return await checkEIP7702Delegation({
         address: accountAddress,
-        chains: EIP7702_REVOKE_SUPPORTED_CHAINS,
+        chains: getEIP7702RevokeSupportedChains(),
         wallet,
       });
     },

@@ -90,7 +90,7 @@ const UnlockMethodSwitch = styled.button`
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
-  const [, resolveApproval] = useApproval();
+  const [getApproval, resolveApproval] = useApproval();
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
@@ -186,7 +186,17 @@ const Unlock = () => {
       if (query.from === '/connect-approval') {
         history.replace('/approval?ignoreOtherWallet=1');
       } else {
-        resolveApproval();
+        const approval = await getApproval();
+        if (!approval) {
+          history.replace('/');
+        } else if (String(approval.data.approvalComponent) === 'Unlock') {
+          // Only resolve the Unlock approval itself, bound by id. A pending
+          // SignText/SignTypedData/SignTx must never be resolved by a
+          // password entry — hand control back to its own approval screen.
+          resolveApproval(undefined, false, false, approval.id);
+        } else {
+          history.replace('/approval');
+        }
       }
     } else if (UiType.isTab || UiType.isDesktop) {
       const account = query.address

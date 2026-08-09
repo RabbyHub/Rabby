@@ -65,6 +65,7 @@ export interface SignMainnetGasSelectorHeaderProps
   tempoPreferredFeeTokenId?: string;
   onAutoChangeGasMethod?: (value: 'native' | 'gasAccount') => void;
   disableAutoGasLevelSwitch?: boolean;
+  onCustomGasSheetOpen?: () => void;
 }
 
 export const SignMainnetGasSelectorHeader = ({
@@ -93,6 +94,7 @@ export const SignMainnetGasSelectorHeader = ({
   tempoGasTokenLoading = false,
   onAutoChangeGasMethod,
   disableAutoGasLevelSwitch = false,
+  onCustomGasSheetOpen,
   onSignTx,
   ...props
 }: SignMainnetGasSelectorHeaderProps) => {
@@ -843,6 +845,7 @@ export const SignMainnetGasSelectorHeader = ({
             tempoGasTokenLoading={tempoGasTokenLoading}
             getContainer={props.getContainer}
             onEditCustomGas={() => {
+              onCustomGasSheetOpen?.();
               setShowMoreOpen(false);
               setCustomVisible(true);
             }}

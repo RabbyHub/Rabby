@@ -15,6 +15,7 @@ import { formatUsdValue, isSameAddress, useWallet } from 'ui/utils';
 import './style.less';
 
 import { Chain, CHAINS_ENUM } from '@debank/common';
+import { getEIP7702RevokeSupportedChains } from '@/constant/eip7702';
 import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 
 import {
@@ -87,7 +88,6 @@ import { SpenderRow } from './components/SpenderRow';
 import { CheckboxRow } from './components/CheckboxRow';
 import { ChainSelectorButton } from './components/ChainSelectorButton';
 import {
-  EIP7702_REVOKE_SUPPORTED_CHAINS,
   EIP7702Delegated,
   useEIP7702ApprovalsQuery,
 } from './useEIP7702Approvals';
@@ -1185,7 +1185,7 @@ function TableByEIP7702({
             {t('page.approvals.component.EIP7702SupportChains')}
           </div>
           <div className="flex items-center flex-wrap gap-[12px]">
-            {EIP7702_REVOKE_SUPPORTED_CHAINS.map((e) => {
+            {getEIP7702RevokeSupportedChains().map((e) => {
               const chainInfo = findChainByEnum(e);
               if (!chainInfo) return null;
               return (

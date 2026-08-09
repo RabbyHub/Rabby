@@ -131,7 +131,9 @@ export const GnonisSafeInfo = ({
         <div className="rabby-list-item no-hover">
           <div className="rabby-list-item-content border-0">
             <div>
-              {t('page.addressDetail.admins')}
+              <div className="text-r-neutral-title-1">
+                {t('page.addressDetail.admins')}
+              </div>
               <div className="tabs-container">
                 <div className="tabs">
                   {safeInfo?.map((item) => {

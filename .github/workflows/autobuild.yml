@@ -103,3 +103,4 @@ jobs:
           GIT_REF_URL: ${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }}
           GITHUB_ACTOR: ${{ github.actor }}
           GITHUB_TRIGGERING_ACTOR: ${{ github.triggering_actor }}
+          RABBY_SENTRY_DSN: ${{ secrets.RABBY_SENTRY_DSN }}

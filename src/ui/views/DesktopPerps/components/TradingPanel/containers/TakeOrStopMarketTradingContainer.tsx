@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
@@ -18,9 +18,25 @@ import { getStatsReportSide } from '../../../utils';
 import { BigNumber } from 'bignumber.js';
 import { calcAmountFromPercentage } from '../utils';
 import perpsToast from '../../PerpsToast';
+import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
+import { LiveLiquidation } from '../../../modal/OrderConfirmLiveValues';
+import { buildTakeOrStopConfirmContent } from './takeOrStopConfirmContent';
 
 interface TakeOrStopMarketTradingContainerProps {
   takeOrStop: 'tp' | 'sl';
+}
+
+/**
+ * The order exactly as it will be sent, snapshotted when the button is clicked.
+ * `size` is re-derived from streaming maxes in slider mode, so the dialog and
+ * the submit have to read it from the same snapshot or they drift apart while
+ * the dialog is up.
+ */
+interface ConditionalMarketOrder {
+  isBuy: boolean;
+  size: string;
+  triggerPx: string;
+  reduceOnly: boolean;
 }
 
 export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingContainerProps> = ({
@@ -48,8 +64,6 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     tradeUsdAmount,
     marginRequired,
     tradeSize,
-    buyEstLiqPrice,
-    sellEstLiqPrice,
     buyInfo,
     sellInfo,
     maxBuyTradeSize,
@@ -148,145 +162,164 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     return tradeSize;
   };
 
-  const { run: handleBuyOrder, loading: buyLoading } = useRequest(
-    async () => {
-      const isBuy = true;
+  const buildOrder = useMemoizedFn(
+    (isBuy: boolean): ConditionalMarketOrder => ({
+      isBuy,
+      size: getDirectionTradeSize(isBuy),
+      triggerPx: triggerPrice,
+      reduceOnly,
+    })
+  );
 
-      // Trigger price direction validation
+  /**
+   * Runs at click time so the confirmation dialog never opens on an order that
+   * would be rejected the moment it is confirmed.
+   */
+  const checkTriggerDirection = useMemoizedFn(
+    (isBuy: boolean, triggerPx: string) => {
+      const trigger = Number(triggerPx);
+      let messageKey = '';
       if (isStopLoss) {
-        if (Number(triggerPrice) <= midPrice) {
-          perpsToast.error({
-            title: t('page.perps.toast.orderError'),
-            description: t(
-              'page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice'
-            ),
-          });
-          throw new Error(
-            t('page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice')
-          );
+        if (isBuy && trigger <= midPrice) {
+          messageKey =
+            'page.perpsPro.tradingPanel.slBuyMustBeHigherThanMidPrice';
+        } else if (!isBuy && trigger >= midPrice) {
+          messageKey =
+            'page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice';
         }
-      } else {
-        if (Number(triggerPrice) >= midPrice) {
-          perpsToast.error({
-            title: t('page.perps.toast.orderError'),
-            description: t(
-              'page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice'
-            ),
-          });
-          throw new Error(
-            t('page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice')
-          );
-        }
+      } else if (isBuy && trigger >= midPrice) {
+        messageKey = 'page.perpsPro.tradingPanel.tpBuyMustBeLowerThanMidPrice';
+      } else if (!isBuy && trigger <= midPrice) {
+        messageKey =
+          'page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice';
       }
+      if (!messageKey) return true;
+      perpsToast.error({
+        title: t('page.perps.toast.orderError'),
+        description: t(messageKey),
+      });
+      return false;
+    }
+  );
 
-      const directionSize = getDirectionTradeSize(isBuy);
-      await handleOpenTPSlMarketOrder({
-        coin: selectedCoin,
-        isBuy,
-        size: directionSize,
-        triggerPx: triggerPrice,
-        reduceOnly,
-        tpsl: takeOrStop,
-      });
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: currentPerpsAccount?.address || '',
-        trade_type:
-          takeOrStop === 'tp' ? 'take profit market' : 'stop loss market',
-        leverage: leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, reduceOnly),
-        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-        coin: selectedCoin,
-        size: tradeSize,
-        price: triggerPrice,
-        trade_usd_value: new BigNumber(triggerPrice)
-          .times(tradeSize)
-          .toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: currentPerpsAccount?.type || '',
-      });
-    },
+  const submitOrder = useMemoizedFn(async (order: ConditionalMarketOrder) => {
+    // Backstop: the click-time check ran before the dialog opened, but it
+    // compares the trigger against a streaming mid price. If mid crosses the
+    // trigger while the dialog is up, this would submit a stop that fires
+    // immediately as a market order.
+    if (!checkTriggerDirection(order.isBuy, order.triggerPx)) {
+      throw new Error('Invalid trigger direction');
+    }
+    await handleOpenTPSlMarketOrder({
+      coin: selectedCoin,
+      isBuy: order.isBuy,
+      size: order.size,
+      triggerPx: order.triggerPx,
+      reduceOnly: order.reduceOnly,
+      tpsl: takeOrStop,
+    });
+    stats.report('perpsTradeHistory', {
+      created_at: new Date().getTime(),
+      user_addr: currentPerpsAccount?.address || '',
+      trade_type:
+        takeOrStop === 'tp' ? 'take profit market' : 'stop loss market',
+      leverage: leverage.toString(),
+      trade_side: getStatsReportSide(order.isBuy, order.reduceOnly),
+      margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
+      coin: selectedCoin,
+      size: order.size,
+      price: order.triggerPx,
+      trade_usd_value: new BigNumber(order.triggerPx)
+        .times(order.size)
+        .toFixed(2),
+      service_provider: 'hyperliquid',
+      app_version: process.env.release || '0',
+      address_type: currentPerpsAccount?.type || '',
+    });
+  });
+
+  // One request per side so each button keeps its own loading state.
+  const { runAsync: submitBuyOrder, loading: buyLoading } = useRequest(
+    submitOrder,
     {
       manual: true,
       onSuccess: () => {
         resetForm();
       },
       onError: (error) => {
-        console.error('open limit order error', error);
+        console.error('open conditional market order error', error);
       },
     }
   );
 
-  const { run: handleSellOrder, loading: sellLoading } = useRequest(
-    async () => {
-      const isBuy = false;
-
-      // Trigger price direction validation
-      if (isStopLoss) {
-        if (Number(triggerPrice) >= midPrice) {
-          perpsToast.error({
-            title: t('page.perps.toast.orderError'),
-            description: t(
-              'page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice'
-            ),
-          });
-          throw new Error(
-            t('page.perpsPro.tradingPanel.slSellMustBeLowerThanMidPrice')
-          );
-        }
-      } else {
-        if (Number(triggerPrice) <= midPrice) {
-          perpsToast.error({
-            title: t('page.perps.toast.orderError'),
-            description: t(
-              'page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice'
-            ),
-          });
-          throw new Error(
-            t('page.perpsPro.tradingPanel.tpSellMustBeHigherThanMidPrice')
-          );
-        }
-      }
-
-      const directionSize = getDirectionTradeSize(isBuy);
-      await handleOpenTPSlMarketOrder({
-        coin: selectedCoin,
-        isBuy,
-        size: directionSize,
-        triggerPx: triggerPrice,
-        reduceOnly,
-        tpsl: takeOrStop,
-      });
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: currentPerpsAccount?.address || '',
-        trade_type:
-          takeOrStop === 'tp' ? 'take profit market' : 'stop loss market',
-        leverage: leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, reduceOnly),
-        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-        coin: selectedCoin,
-        size: tradeSize,
-        price: triggerPrice,
-        trade_usd_value: new BigNumber(triggerPrice)
-          .times(tradeSize)
-          .toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: currentPerpsAccount?.type || '',
-      });
-    },
+  const { runAsync: submitSellOrder, loading: sellLoading } = useRequest(
+    submitOrder,
     {
       manual: true,
       onSuccess: () => {
         resetForm();
       },
       onError: (error) => {
-        console.error('open limit order error', error);
+        console.error('open conditional market order error', error);
       },
     }
   );
+
+  const requestConfirm = useOrderConfirm();
+
+  const handlePlaceOrder = useMemoizedFn((isBuy: boolean) => {
+    const order = buildOrder(isBuy);
+    if (!checkTriggerDirection(isBuy, order.triggerPx)) return;
+    // Whether the liquidation rows exist is settled at click time — the panel
+    // has none for an order that only closes exposure — but their values are
+    // not: this order fills at market, so its entry is the mark price and both
+    // the liquidation price and its distance move with it.
+    const liqPriceNum = isBuy ? buyInfo.liqPriceNum : sellInfo.liqPriceNum;
+    const request = requestConfirm({
+      type: 'conditional',
+      content: () =>
+        buildTakeOrStopConfirmContent({
+          t,
+          isBuy,
+          selectedCoin,
+          quoteAsset,
+          triggerPrice: order.triggerPx,
+          priceText: t('page.perpsPro.orderConfirm.marketPrice'),
+          markPrice,
+          pxDecimals,
+          amount: order.size,
+          // Matches the size input's own price, so a USD-entered size is shown
+          // back as the figure the user typed.
+          amountPrice: markPrice,
+          // Always shown; the cell renders `-` when there is no liquidation
+          // price. A conditional market order fills at the mark, so both the
+          // price and its distance follow it — hence no `orderPrice`.
+          liqPriceCell: (
+            <LiveLiquidation
+              direction={isBuy ? 'Long' : 'Short'}
+              size={order.size}
+              pxDecimals={pxDecimals}
+              variant="price"
+            />
+          ),
+          liqDistanceCell: (
+            <LiveLiquidation
+              direction={isBuy ? 'Long' : 'Short'}
+              size={order.size}
+              pxDecimals={pxDecimals}
+              variant="distance"
+            />
+          ),
+          reduceOnly: order.reduceOnly,
+        }),
+      dontShowAgainText: t('page.perpsPro.orderConfirm.dontShowAgain', {
+        orderType: t('page.perpsPro.orderConfirm.orderTypeName.conditional'),
+      }),
+      submit: () => (isBuy ? submitBuyOrder(order) : submitSellOrder(order)),
+    });
+    // The submit request reports its own failures, so drop the rejection here.
+    Promise.resolve(request).catch(() => {});
+  });
 
   const handleMidClick = () => {
     setTriggerPrice(formatTpOrSlPrice(midPrice, szDecimals));
@@ -372,8 +405,8 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
       {/* Place Order Buttons */}
       <TradingButtons
-        onBuyClick={handleBuyOrder}
-        onSellClick={handleSellOrder}
+        onBuyClick={() => handlePlaceOrder(true)}
+        onSellClick={() => handlePlaceOrder(false)}
         buyLoading={buyLoading}
         sellLoading={sellLoading}
         buyDisabled={!validation.isValid || reduceOnlyBuyDisabled}

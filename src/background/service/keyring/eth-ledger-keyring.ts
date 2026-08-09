@@ -60,6 +60,7 @@ import {
 } from '@ethereumjs/tx';
 import { isSameAddress } from '@/background/utils';
 import { LedgerHDPathType } from './helper';
+import type { HardwareSigningMetadata } from './hardware-wallet-sentry';
 
 const type = 'Ledger Hardware';
 
@@ -252,7 +253,9 @@ export const getLedgerErrorMessage = (err: unknown, fallback: string) => {
 };
 
 const toLedgerError = (err: unknown, fallback: string) =>
-  new Error(getLedgerErrorMessage(err, fallback));
+  Object.assign(new Error(getLedgerErrorMessage(err, fallback)), {
+    cause: err,
+  });
 
 const delay = (ms: number) =>
   new Promise((resolve) => {
@@ -395,6 +398,7 @@ class LedgerBridgeKeyring {
   hasHIDPermission: null | boolean;
   usedHDPathTypeList: Record<string, HDPathType> = {};
   private unlockPromise: Promise<string> | null = null;
+  private hardwareSigningMetadata: HardwareSigningMetadata = {};
 
   constructor(opts = {}) {
     this.accountDetails = {};
@@ -579,6 +583,15 @@ class LedgerBridgeKeyring {
       throw new Error('Ledger: Device disconnected');
     }
 
+    this.hardwareSigningMetadata = {
+      device_model: state.deviceName || String(state.deviceModelId),
+      firmware_version:
+        'firmwareVersion' in state ? state.firmwareVersion?.os : undefined,
+      app_name: 'currentApp' in state ? state.currentApp?.name : undefined,
+      app_version:
+        'currentApp' in state ? state.currentApp?.version : undefined,
+    };
+
     if (state.deviceStatus === DeviceStatus.CONNECTED) {
       return state;
     }
@@ -596,6 +609,10 @@ class LedgerBridgeKeyring {
     }
 
     return this.assertDeviceReady(state);
+  }
+
+  getHardwareSigningMetadata() {
+    return this.hardwareSigningMetadata;
   }
 
   private assertDeviceReady(state: DeviceSessionState) {

@@ -111,6 +111,7 @@ const AddressHdKeyringOrSimpleKeyringDelete = ({
                         t('page.addressDetail.deleteSeedPhrase.check1'),
                         t('page.addressDetail.deleteSeedPhrase.check2'),
                       ],
+                      defaultChecked: true,
                       onFinished() {
                         handleDeleteAddress(true);
                       },
@@ -265,6 +266,7 @@ export const useHandleDeleteHdKeyringAndSimpleKeyringAccount = () => {
             t('page.addressDetail.deletePrivateKey.check1'),
             t('page.addressDetail.deletePrivateKey.check2'),
           ],
+          defaultChecked: true,
           onFinished() {
             // handleDeleteAddress();
             deletePrivateKeyAccount();

@@ -73,7 +73,7 @@ import {
   GasLevelType,
   SendReserveGasPopup,
 } from '../Swap/Component/ReserveGasPopup';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { useRequest } from 'ahooks';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
@@ -3041,7 +3041,7 @@ const SendToken = () => {
                   window.close();
                 }}
               >
-                <RcIconFullscreen />
+                <RcIconJumpBoldCC />
               </div>
             )
           }

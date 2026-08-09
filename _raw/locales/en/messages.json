@@ -1360,11 +1360,7 @@
       }
     },
     "perpsPro": {
-      "__skip_translation": [
-        "TWAP",
-        "TP",
-        "SL"
-      ],
+      "__skip_translation": ["TWAP", "TP", "SL"],
       "chatArea": {
         "markTips": "Used for margining, computing unrealized PNL, liquidations, and triggering TP/SL orders.",
         "oracleTips": "The median of external prices reported by validators, used for computing funding rates.",
@@ -1388,9 +1384,7 @@
       },
       "userInfo": {
         "tab": {
-          "__skip_translation": [
-            "twap"
-          ],
+          "__skip_translation": ["twap"],
           "unrealizedPnlTooltip": "Mark price is used to estimate unrealized PNL. Only trade prices are used for realized PNL.",
           "fundingTips": "Net funding payments since the position was opened. If negative, it means funding gains.",
           "fundingTipsV2": "Net funding since the position was opened. a red (negative) funding value indicates funding paid, while a green (positive) value indicates funding received.",
@@ -1503,9 +1497,7 @@
           "reverseAction": "{{side}} {{size}} {{coin}} to Reverse"
         },
         "openOrders": {
-          "__skip_translation": [
-            "ro"
-          ],
+          "__skip_translation": ["ro"],
           "order": "Order",
           "time": "Time",
           "triggerConditions": "Trigger Conditions",
@@ -1553,12 +1545,93 @@
       "statusBar": {
         "online": "Online",
         "offline": "Offline",
-        "sound": "Enable Sound"
+        "sound": "Enable Sound",
+        "settings": "Settings"
+      },
+      "orderConfirm": {
+        "buyLong": "Buy/Long",
+        "sellShort": "Sell/Short",
+        "closeLong": "Close Long",
+        "closeShort": "Close Short",
+        "dontShowAgain": "Don't show {{orderType}} confirmation again. You can change this anytime in Settings.",
+        "orderTypeName": {
+          "market": "Market Order",
+          "limit": "Limit Order",
+          "conditional": "Conditional Order",
+          "twap": "TWAP Order",
+          "closeMarket": "Close Market",
+          "closeLimit": "Close Limit",
+          "tpsl": "TP/SL"
+        },
+        "price": "Price",
+        "marketPrice": "Market Price",
+        "markPrice": "Mark Price",
+        "triggerPrice": "Trigger Price",
+        "amount": "Amount",
+        "estLiqPrice": "Est. Liq. Price",
+        "estLiqDistance": "Est. Liq. Distance",
+        "reduceOnly": "Reduce Only",
+        "yes": "Yes",
+        "no": "No",
+        "true": "True",
+        "false": "False",
+        "estPnl": "Est. Pnl",
+        "tpSl": "TP/SL",
+        "takeProfitMarket": "Take Profit Market",
+        "stopLossMarket": "Stop Loss Market",
+        "trigger": "Trigger",
+        "totalAmountApproximately": "Total Amount Approximately",
+        "totalSize": "Total Size",
+        "totalTime": "Total Time",
+        "lastPrice": "Last Price",
+        "tpslTitle": "Confirm Position TP/SL",
+        "symbol": "Symbol",
+        "entryPrice": "Entry Price",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "totalEstimatedPnl": "Total Estimated PNL",
+        "orderPreview": "Order Preview",
+        "scaleSymbol": "Symbol",
+        "scaleOrderType": "Order Type",
+        "scaleAmount": "Amount",
+        "scalePrice": "Price",
+        "scaleLimit": "Limit",
+        "cost": "Cost"
+      },
+      "settings": {
+        "title": "Setting",
+        "accountType": "Account Type",
+        "orderConfirmations": "Order Confirmations",
+        "soundReminder": "Sound Reminder",
+        "popularTradings": "Popular Tradings",
+        "accountTypeTitle": "Account Type",
+        "orderConfirmationsTitle": "Order Confirmations",
+        "orderConfirmationRow": {
+          "limit": "Limit Order",
+          "market": "Market Order",
+          "conditional": "Conditional Order",
+          "twap": "TWAP Order",
+          "closeMarket": "Close Market",
+          "closeLimit": "Close Limit",
+          "tpsl": "TP/SL Order"
+        },
+        "accountTypeOption": {
+          "unifiedAccountLabel": "Unified Account (Recommend)",
+          "unifiedAccountShortLabel": "Unified Account",
+          "unifiedAccountDesc": "The default account setting where each collateral asset has a separate balance. Perps can only use the settlement asset as collateral, and margining is only shared across cross margin assets with the same collateral asset.",
+          "manualLabel": "Manual",
+          "manualDesc": "Only recommended for automated traders. All DEXs have separate balances and cross margin applies separately within each DEX.",
+          "portfolioMarginLabel": "Portfolio Margin",
+          "portfolioMarginDesc": "For advanced users who want greater flexibility and capital efficiency. All trading is unified across spot and perps. Eligible collateral assets such as HYPE and BTC can be used directly as collateral for perp positions without converting to the settlement asset. Collateral assets earn or pay interest depending on whether they are at rest or actively borrowed to open positions."
+        },
+        "accountTypeSwitchSuccess": "Account type changed to: {{type}}",
+        "accountTypeSwitchFailed": "Failed to update account type"
       },
       "tradingPanel": {
         "swapStableCoins": "Swap Stablecoins",
         "bboTips": "Best Bid Offer (BBO) refers to the best-available ask price and the best-available bid price on the order book at any given time. BBO orders are always placed using the precise minimum tick size , ensuring granular and accurate pricing independent of display preferences.",
         "bboDisabledTooltip": "BBO is not supported when {{bboDisabledReason}} is enabled",
+        "bboPriceUnavailable": "No order book price available right now. Please try again.",
         "action": "Action",
         "orderCount": "Order Count",
         "buyTrigger": "Buy Trigger",
@@ -1967,9 +2040,7 @@
           "mySupplies": "My supplies"
         },
         "item": {
-          "__skip_translation": [
-            "tvl"
-          ],
+          "__skip_translation": ["tvl"],
           "tvl": "TVL",
           "wrapperToken": "Wrapped token for {{name}}"
         }
@@ -2102,9 +2173,7 @@
         "zeroLtvCollateralTips": "You have following LTV = 0 collaterals and thus can only repay with these collaterals first according to collateral repay rules. "
       },
       "manageEmode": {
-        "__skip_translation": [
-          "emode"
-        ],
+        "__skip_translation": ["emode"],
         "emode": "E-Mode",
         "title": "Manage E-Mode",
         "disableTitle": "Disable",
@@ -3244,7 +3313,7 @@
       "moreWallets": "More Wallets",
       "newSeedPhraseCreated": "New Seed Phrase Created",
       "newAddressAdded": "New Address Added",
-      "addMoreAddressesFromThisSeedPhrase": "Add more address from this seed phrase",
+      "addMoreAddressesFromThisSeedPhrase": "Add more addresses from this seed phrase",
       "importSeedPhrase": "Import Seed Phrase",
       "importPrivateKey": "Import Private Key",
       "privateKeyTab": "Private Key",
@@ -4114,7 +4183,8 @@
           "bridgeBtn": "Bridge",
           "mintNFT": "Mint DBK Genesis NFT",
           "mintNFTDesc": "Be a witness of DBK Chain",
-          "mintNFTBtn": "Mint"
+          "mintNFTBtn": "Mint",
+          "withdraw": "Withdraw from DBK chain"
         },
         "bridge": {
           "tabs": {
@@ -4548,9 +4618,7 @@
     },
     "search": {
       "sectionHeader": {
-        "__skip_translation": [
-          "Defi"
-        ],
+        "__skip_translation": ["Defi"],
         "token": "Tokens",
         "Defi": "DeFi",
         "NFT": "NFT",
@@ -4632,9 +4700,7 @@
         "pending": "{{pendingTxCount}} Pending"
       },
       "tabs": {
-        "__skip_translation": [
-          "defi"
-        ],
+        "__skip_translation": ["defi"],
         "tokens": "Tokens",
         "transactions": "Transactions",
         "approvals": "Approvals",
@@ -4847,7 +4913,9 @@
       "ListByContracts": {
         "noApprovals": "No approvals",
         "notMatched": "Not Matched"
-      }
+      },
+      "approvalsCount": "{{count}} approvals",
+      "approvalsCount_one": "{{count}} approval"
     }
   },
   "component": {
@@ -5049,10 +5117,7 @@
       "title": "Risk Detected"
     },
     "DappActions": {
-      "__skip_translation": [
-        "withdraw",
-        "claim"
-      ],
+      "__skip_translation": ["withdraw", "claim"],
       "withdraw": "Withdraw",
       "claim": "Claim",
       "queueDescription": "Current withdrawal​ will enter a waiting queue. Once processed, it can be ​withdrawn​ to your wallet.",

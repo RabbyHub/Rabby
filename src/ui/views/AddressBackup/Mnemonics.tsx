@@ -39,6 +39,7 @@ const AddressBackupMnemonics: React.FC<{
   const history = useHistory();
   const { state } = useLocation<{
     address?: string;
+    publicKey?: string;
     data?: string;
     goBack?: boolean;
     redirectTo?: string;
@@ -241,13 +242,18 @@ const AddressBackupMnemonics: React.FC<{
           className="w-full"
           size="large"
           onClick={async () => {
-            if (!backupAddress) {
+            if (state?.publicKey) {
+              await wallet.backupSeedPhraseConfirmed(
+                state.publicKey,
+                'publickey'
+              );
+            } else if (backupAddress) {
+              await wallet.backupSeedPhraseConfirmed(backupAddress);
+              runCheckBackup().catch(() => undefined);
+            } else {
               message.error('Address is missing');
               return;
             }
-
-            await wallet.backupSeedPhraseConfirmed(backupAddress);
-            runCheckBackup();
 
             if (state?.redirectTo) {
               history.replace(state.redirectTo);

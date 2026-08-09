@@ -2561,6 +2561,7 @@
           "mintNFTDesc": "DBK 체인의 증인이 되세요",
           "mintNFT": "DBK Genesis NFT 민트",
           "bridgePoweredBy": "OP Superchain에 의해 구동됩니다.",
+          "withdraw": "DBK 체인에서 출금",
           "bridge": "DBK 체인으로 브리지"
         },
         "bridge": {
@@ -3876,7 +3877,87 @@
       "statusBar": {
         "online": "온라인",
         "sound": "소리 켜기",
-        "offline": "오프라인"
+        "offline": "오프라인",
+        "settings": "설정"
+      },
+      "orderConfirm": {
+        "buyLong": "매수 / 롱",
+        "sellShort": "매도 / 공매도",
+        "closeLong": "롱 포지션 청산",
+        "closeShort": "숏 포지션 청산",
+        "dontShowAgain": "{{orderType}} 확인 창을 다시 표시하지 않습니다. 설정에서 언제든지 변경할 수 있습니다.",
+        "orderTypeName": {
+          "market": "시장가 주문",
+          "limit": "지정가 주문",
+          "conditional": "조건부 주문",
+          "twap": "TWAP 주문",
+          "closeMarket": "시장가 청산",
+          "closeLimit": "지정가 청산",
+          "tpsl": "TP/SL"
+        },
+        "price": "가격",
+        "marketPrice": "시장 가격",
+        "markPrice": "마크 가격",
+        "triggerPrice": "트리거 가격",
+        "amount": "수량",
+        "estLiqPrice": "예상 청산가",
+        "estLiqDistance": "예상 청산 거리",
+        "reduceOnly": "포지션 축소 전용",
+        "yes": "네",
+        "no": "아니요",
+        "true": "예",
+        "false": "아니요",
+        "estPnl": "예상 PNL",
+        "tpSl": "TP/SL",
+        "takeProfitMarket": "이익실현 시장가",
+        "stopLossMarket": "손절매 시장가",
+        "trigger": "트리거",
+        "totalAmountApproximately": "예상 총 금액",
+        "totalSize": "총 포지션 규모",
+        "totalTime": "총 시간",
+        "lastPrice": "마지막 체결가",
+        "tpslTitle": "포지션 TP/SL 확인",
+        "symbol": "심볼",
+        "entryPrice": "진입가",
+        "takeProfit": "이익실현",
+        "stopLoss": "손절매",
+        "totalEstimatedPnl": "총 예상 PNL",
+        "orderPreview": "주문 미리보기",
+        "scaleSymbol": "심볼",
+        "scaleOrderType": "주문 유형",
+        "scaleAmount": "수량",
+        "scalePrice": "가격",
+        "scaleLimit": "지정가",
+        "cost": "비용"
+      },
+      "settings": {
+        "title": "설정",
+        "accountType": "계정 유형",
+        "orderConfirmations": "주문 확인",
+        "soundReminder": "소리 알림",
+        "popularTradings": "인기 거래",
+        "accountTypeTitle": "계정 유형",
+        "orderConfirmationsTitle": "주문 확인",
+        "orderConfirmationRow": {
+          "limit": "지정가 주문",
+          "market": "시장가 주문",
+          "conditional": "조건부 주문",
+          "twap": "TWAP 주문",
+          "closeMarket": "시장가 청산",
+          "closeLimit": "지정가 청산",
+          "tpsl": "TP/SL 주문"
+        },
+        "accountTypeOption": {
+          "unifiedAccountLabel": "통합 계정 (권장)",
+          "unifiedAccountShortLabel": "통합 계정",
+          "unifiedAccountDesc": "각 담보 자산이 별도의 잔액을 갖는 기본 계정 설정입니다. Perps는 정산 자산만 담보로 사용할 수 있으며, 마진은 담보 자산이 동일한 크로스 마진 자산 간에만 공유됩니다.",
+          "manualLabel": "수동",
+          "manualDesc": "자동화된 거래를 하는 트레이더에게만 권장됩니다. 모든 DEX가 별도의 잔액을 사용하며, 크로스 마진은 각 DEX 내에서 개별적으로 적용됩니다.",
+          "portfolioMarginLabel": "포트폴리오 마진",
+          "portfolioMarginDesc": "더 큰 유연성과 자본 효율을 원하는 고급 사용자를 위한 모드입니다. 현물과 Perps의 모든 거래가 통합됩니다. HYPE, BTC 등 적격 담보 자산을 정산 자산으로 전환하지 않고도 Perp 포지션의 담보로 바로 사용할 수 있습니다. 담보 자산은 그대로 보유 중인지, 포지션을 열기 위해 차입되어 사용 중인지에 따라 이자를 받거나 지급합니다."
+        },
+        "accountTypeSwitchSuccess": "계정 유형이 {{type}}(으)로 변경되었습니다",
+        "accountTypeSwitchFailed": "계정 유형 변경에 실패했습니다"
       },
       "tradingPanel": {
         "slippagePage": {
@@ -3978,6 +4059,7 @@
         "tpTriggerMoreThanOrderPrice": "당신의 TP 트리거 가격은 주문 가격보다 높아야 합니다.",
         "tpTriggerPriceIsZero": "TP 트리거 가격이 0이므로 {{side}} 포지션 주문에는 설정되지 않습니다.",
         "bboDisabledTooltip": "BBO는 {{bboDisabledReason}}가 활성화되었을 때 지원되지 않습니다.",
+        "bboPriceUnavailable": "현재 사용할 수 있는 호가창 가격이 없습니다. 다시 시도해 주세요.",
         "orderTypeTooltipLimit": "리미트 주문은 특정 가격 또는 더 나은 가격으로 구매하거나 판매하기 위한 주문입니다. 리미트 주문은 실행이 보장되지 않습니다.",
         "orderTypeTooltipTakeMarket": "익절 시장가 주문은 지정한 익절 가격에 도달하면 시장가 주문으로 전환됩니다. 주문을 활성화할 트리거 가격을 지정하세요.",
         "orderTypeTooltipStopLimit": "스톱 리밋 주문은 지정한 스톱 가격에 도달하면 지정가 주문으로 전환됩니다. 주문을 활성화할 트리거 가격을 지정하세요.",
@@ -4796,7 +4878,9 @@
       "revoke": "철회",
       "approvals": "승인",
       "unselectAll": "모두 선택 해제",
-      "selectAll": "모두 선택"
+      "selectAll": "모두 선택",
+      "approvalsCount": "승인 {{count}}개",
+      "approvalsCount_one": "승인 {{count}}개"
     }
   },
   "component": {

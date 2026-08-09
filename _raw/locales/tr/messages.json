@@ -2566,6 +2566,7 @@
           "bridge": "DBK Zincirine Köprü",
           "mintNFTBtn": "Darphane",
           "bridgePoweredBy": "OP Superchain tarafından desteklenmektedir",
+          "withdraw": "DBK Chain'den çek",
           "bridgeBtn": "Köprü",
           "mintNFT": "DBK Genesis NFT mint et"
         },
@@ -3882,7 +3883,87 @@
       "statusBar": {
         "offline": "Çevrimdışı",
         "sound": "Sesi aç",
-        "online": "Çevrimiçi"
+        "online": "Çevrimiçi",
+        "settings": "Ayarlar"
+      },
+      "orderConfirm": {
+        "buyLong": "Al / Uzun",
+        "sellShort": "Sat / Kısa",
+        "closeLong": "Uzun Pozisyonu Kapat",
+        "closeShort": "Kısa Pozisyonu Kapat",
+        "dontShowAgain": "{{orderType}} için onay ekranını bir daha gösterme. Bunu istediğiniz zaman Ayarlar'dan değiştirebilirsiniz.",
+        "orderTypeName": {
+          "market": "Piyasa Emri",
+          "limit": "Limit Emri",
+          "conditional": "Koşullu Emir",
+          "twap": "TWAP Emri",
+          "closeMarket": "Piyasa Fiyatından Kapatma",
+          "closeLimit": "Limitli Kapatma",
+          "tpsl": "TP/SL"
+        },
+        "price": "Fiyat",
+        "marketPrice": "Piyasa Fiyatı",
+        "markPrice": "İşaret Fiyatı",
+        "triggerPrice": "Tetikleme Fiyatı",
+        "amount": "Miktar",
+        "estLiqPrice": "Tah. Likidasyon Fiyatı",
+        "estLiqDistance": "Tah. Likidasyon Mesafesi",
+        "reduceOnly": "Sadece Azalt",
+        "yes": "Evet",
+        "no": "Hayır",
+        "true": "Evet",
+        "false": "Hayır",
+        "estPnl": "Tah. PnL",
+        "tpSl": "TP/SL",
+        "takeProfitMarket": "Kâr Al (Piyasa)",
+        "stopLossMarket": "Zarar Durdur (Piyasa)",
+        "trigger": "Tetikleme",
+        "totalAmountApproximately": "Yaklaşık Toplam Tutar",
+        "totalSize": "Toplam Büyüklük",
+        "totalTime": "Toplam Zaman",
+        "lastPrice": "Son Fiyat",
+        "tpslTitle": "Pozisyon TP/SL'ini Onayla",
+        "symbol": "Sembol",
+        "entryPrice": "Giriş Fiyatı",
+        "takeProfit": "Kâr Al",
+        "stopLoss": "Zarar Durdur",
+        "totalEstimatedPnl": "Toplam Tahmini PNL",
+        "orderPreview": "Emir Önizlemesi",
+        "scaleSymbol": "Sembol",
+        "scaleOrderType": "Emir Türü",
+        "scaleAmount": "Miktar",
+        "scalePrice": "Fiyat",
+        "scaleLimit": "Limit",
+        "cost": "Maliyet"
+      },
+      "settings": {
+        "title": "Ayarlar",
+        "accountType": "Hesap Türü",
+        "orderConfirmations": "Emir Onayları",
+        "soundReminder": "Sesli Uyarı",
+        "popularTradings": "Popüler İşlemler",
+        "accountTypeTitle": "Hesap Türü",
+        "orderConfirmationsTitle": "Emir Onayları",
+        "orderConfirmationRow": {
+          "limit": "Limit Emri",
+          "market": "Piyasa Emri",
+          "conditional": "Koşullu Emir",
+          "twap": "TWAP Emri",
+          "closeMarket": "Piyasa Fiyatından Kapatma",
+          "closeLimit": "Limitli Kapatma",
+          "tpsl": "TP/SL Emri"
+        },
+        "accountTypeOption": {
+          "unifiedAccountLabel": "Birleşik Hesap (Önerilen)",
+          "unifiedAccountShortLabel": "Birleşik Hesap",
+          "unifiedAccountDesc": "Her teminat varlığının ayrı bir bakiyesinin olduğu varsayılan hesap ayarı. Perps yalnızca uzlaşma varlığını teminat olarak kullanabilir ve marjin yalnızca aynı teminat varlığına sahip çapraz marjin varlıkları arasında paylaşılır.",
+          "manualLabel": "Manuel",
+          "manualDesc": "Yalnızca otomatik işlem yapanlar için önerilir. Tüm DEX'lerin ayrı bakiyeleri vardır ve çapraz marjin her DEX içinde ayrı ayrı uygulanır.",
+          "portfolioMarginLabel": "Portföy Marjı",
+          "portfolioMarginDesc": "Daha fazla esneklik ve sermaye verimliliği isteyen ileri düzey kullanıcılar içindir. Tüm işlemler spot ve perps genelinde birleştirilir. HYPE ve BTC gibi uygun teminat varlıkları, uzlaşma varlığına dönüştürülmeden doğrudan perp pozisyonları için teminat olarak kullanılabilir. Teminat varlıkları, beklemede olmalarına veya pozisyon açmak için aktif olarak ödünç alınmalarına bağlı olarak faiz kazanır ya da faiz öder."
+        },
+        "accountTypeSwitchSuccess": "Hesap türü {{type}} olarak değiştirildi",
+        "accountTypeSwitchFailed": "Hesap türü güncellenemedi"
       },
       "tradingPanel": {
         "slippagePage": {
@@ -3977,6 +4058,7 @@
         "slTriggerLessThanOrderPrice": "SL tetikleme fiyatı emir fiyatından düşük olmalıdır.",
         "sideShortSell": "kısa (sat)",
         "bboDisabledTooltip": "BBO, {{bboDisabledReason}} etkin olduğunda desteklenmiyor.",
+        "bboPriceUnavailable": "Şu anda kullanılabilir bir emir defteri fiyatı yok. Lütfen tekrar deneyin.",
         "estimatedPnlWillBe": "Tahmin edilen PnL'iniz olacaktır",
         "sellTrigger": "Satış Tetikleyici",
         "orderTypeTooltipMarket": "Piyasa emri, mevcut en iyi piyasa fiyatıyla hemen eşleştirilir.",
@@ -4802,7 +4884,9 @@
       "revoke": "İptal Et",
       "approvals": "onaylar",
       "unselectAll": "Tüm Seçimleri Kaldır",
-      "selectAll": "Tümünü Seç"
+      "selectAll": "Tümünü Seç",
+      "approvalsCount": "{{count}} onay",
+      "approvalsCount_one": "{{count}} onay"
     }
   },
   "component": {

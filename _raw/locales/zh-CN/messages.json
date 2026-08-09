@@ -531,7 +531,7 @@
       },
       "noData": "无匹配的货币",
       "ZeroAssets": {
-        "desc": "为钱包充值以使用 Web3",
+        "desc": "充值钱包开启Web3",
         "addAssets": "添加资产"
       }
     },
@@ -1290,7 +1290,7 @@
       "watchModeAlert1": "这是一个观察地址",
       "watchModeAlert2": "你确定用它来接收资产吗？",
       "receiveOn": "接收 {{token}} 的链：",
-      "receiveTitle": "接收 {{token}}",
+      "receiveTitle": "接收{{token}}",
       "addCustomNetwork": "添加自定义网络",
       "supportedChain": "支持的链"
     },
@@ -2650,7 +2650,8 @@
           "bridgeBtn": "跨链",
           "mintNFTDesc": "成为 DBK Chain 的见证者",
           "mintNFT": "铸造 DBK Genesis NFT",
-          "bridgePoweredBy": "由 OP Superchain 提供支持"
+          "bridgePoweredBy": "由 OP Superchain 提供支持",
+          "withdraw": "从 DBK 链提取"
         },
         "bridge": {
           "tabs": {
@@ -2770,7 +2771,7 @@
       "depositPopup": {
         "title": "充值",
         "gasDepositTitle": "Gas 充值",
-        "selectToken": "选择要充值的代币",
+        "selectToken": "选择支付代币",
         "zeroInvalidAmount": "金额不能为 0",
         "invalidAmount": "必须在 500 以下",
         "minAmountRequired": "最低充值金额为 ${{value}}",
@@ -3926,7 +3927,87 @@
       "statusBar": {
         "offline": "离线",
         "online": "在线",
-        "sound": "开启声音"
+        "sound": "开启声音",
+        "settings": "设置"
+      },
+      "orderConfirm": {
+        "buyLong": "买入/做多",
+        "sellShort": "卖出/做空",
+        "closeLong": "平多",
+        "closeShort": "平空",
+        "dontShowAgain": "不再显示{{orderType}}确认弹窗。你可以随时在设置中修改。",
+        "orderTypeName": {
+          "market": "市价单",
+          "limit": "限价单",
+          "conditional": "条件单",
+          "twap": "TWAP 订单",
+          "closeMarket": "市价平仓",
+          "closeLimit": "限价平仓",
+          "tpsl": "止盈/止损"
+        },
+        "price": "价格",
+        "marketPrice": "市价",
+        "markPrice": "标记价",
+        "triggerPrice": "触发价",
+        "amount": "数量",
+        "estLiqPrice": "预计强平价",
+        "estLiqDistance": "预计强平距离",
+        "reduceOnly": "仅减仓",
+        "yes": "是",
+        "no": "否",
+        "true": "是",
+        "false": "否",
+        "estPnl": "预计盈亏",
+        "tpSl": "止盈/止损",
+        "takeProfitMarket": "止盈市价单",
+        "stopLossMarket": "止损市价单",
+        "trigger": "触发条件",
+        "totalAmountApproximately": "预计总金额",
+        "totalSize": "总数量",
+        "totalTime": "总时长",
+        "lastPrice": "最新价",
+        "tpslTitle": "确认仓位止盈/止损",
+        "symbol": "币对",
+        "entryPrice": "开仓价格",
+        "takeProfit": "止盈",
+        "stopLoss": "止损",
+        "totalEstimatedPnl": "预计总盈亏",
+        "orderPreview": "订单预览",
+        "scaleSymbol": "币对",
+        "scaleOrderType": "类型",
+        "scaleAmount": "数量",
+        "scalePrice": "价格",
+        "scaleLimit": "限价",
+        "cost": "成本"
+      },
+      "settings": {
+        "title": "设置",
+        "accountType": "账户类型",
+        "orderConfirmations": "下单确认",
+        "soundReminder": "声音提醒",
+        "popularTradings": "热门行情",
+        "accountTypeTitle": "账户类型",
+        "orderConfirmationsTitle": "下单确认",
+        "orderConfirmationRow": {
+          "limit": "限价单",
+          "market": "市价单",
+          "conditional": "条件单",
+          "twap": "TWAP 订单",
+          "closeMarket": "市价平仓",
+          "closeLimit": "限价平仓",
+          "tpsl": "止盈/止损订单"
+        },
+        "accountTypeOption": {
+          "unifiedAccountLabel": "统一账户（推荐）",
+          "unifiedAccountShortLabel": "统一账户",
+          "unifiedAccountDesc": "默认的账户设置，每种抵押品资产拥有独立的余额。Perps 只能使用结算资产作为抵押品，且保证金仅在抵押品资产相同的全仓资产之间共享。",
+          "manualLabel": "手动模式",
+          "manualDesc": "仅推荐给程序化交易者。所有 DEX 的余额相互独立，全仓保证金在各个 DEX 内单独计算。",
+          "portfolioMarginLabel": "组合保证金",
+          "portfolioMarginDesc": "适合追求更高灵活性和资金效率的进阶用户。现货与 Perps 的所有交易统一管理。HYPE、BTC 等符合条件的抵押品资产可直接用作永续仓位的抵押品，无需兑换为结算资产。抵押品资产处于闲置状态时可获得利息，被借出用于开仓时则需支付利息。"
+        },
+        "accountTypeSwitchSuccess": "账户类型已切换为：{{type}}",
+        "accountTypeSwitchFailed": "账户类型更新失败"
       },
       "tradingPanel": {
         "slippagePage": {
@@ -4026,6 +4107,7 @@
         "orderTypeTooltipLimit": "限价单是以特定价格或更好的价格买入或卖出的订单。限价单不能保证执行。",
         "tpTriggerPriceIsZero": "你的止盈触发价格为 0，在你进行 {{side}} 时不会设置。",
         "bboDisabledTooltip": "当 {{bboDisabledReason}} 被启用时，不支持 BBO。",
+        "bboPriceUnavailable": "当前暂无可用的订单簿价格，请重试。",
         "orderTypeTooltipTakeLimit": "止盈限价单会在达到指定止盈价格时转为限价单。请设置触发价格以激活订单。",
         "slTriggerPriceIsZero": "你的止损触发价格为 0，进行 {{side}} 操作时将不会设置。",
         "orderTypeTooltipStopLimit": "当达到特定止损价时，止损限价单变为限价单。请指定一个触发价格以激活该订单。",
@@ -4846,7 +4928,9 @@
       "revoke": "撤销",
       "approvals": "授权",
       "unselectAll": "取消全选",
-      "selectAll": "全选"
+      "selectAll": "全选",
+      "approvalsCount": "{{count}} 项授权",
+      "approvalsCount_one": "{{count}} 项授权"
     }
   },
   "component": {
@@ -4978,7 +5062,7 @@
       "common": "常用",
       "chainNotSupport": "此链不受支持",
       "chainFilterLine": {
-        "filterAll": "所有区块链"
+        "filterAll": "全部链"
       },
       "noLpTokens": "没有流动性提供者 (LP) 代币"
     },

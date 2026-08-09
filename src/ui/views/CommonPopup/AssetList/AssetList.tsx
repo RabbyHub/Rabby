@@ -14,7 +14,7 @@ import { Button } from 'antd';
 import { SpecialTokenListPopup } from './components/TokenButton';
 import { TestnetChainList } from './TestnetChainList';
 import { useFilteredTokens } from './useFilteredTokens';
-import { ReactComponent as RcIconFullscreen } from '@/ui/assets/fullscreen-cc.svg';
+import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 import { useHistory } from 'react-router-dom';
 
 export const AssetList = ({
@@ -83,7 +83,7 @@ export const AssetList = ({
               className="text-rb-neutral-body hover:text-rb-brand-default cursor-pointer relative hit-slop-8"
               onClick={handleOpenInTab}
             >
-              <RcIconFullscreen />
+              <RcIconJumpBoldCC width={16} height={16} />
             </div>
           </div>
         </div>

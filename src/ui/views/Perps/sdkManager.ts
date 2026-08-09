@@ -2,7 +2,7 @@ import { HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { KEYRING_CLASS } from '@/constant';
 import type { Account } from '@/background/service/preference';
 import type { WalletControllerType } from '@/ui/utils/WalletContext';
-import { PERPS_AGENT_NAME } from './constants';
+import { PERPS_AGENT_NAME } from '@/constant/perps';
 
 let sdkInstance: HyperliquidSDK | null = null;
 let currentMasterAddress: string | null = null;

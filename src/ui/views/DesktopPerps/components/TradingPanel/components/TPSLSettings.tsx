@@ -209,7 +209,8 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
     const newConfig = { ...config };
     let changed = false;
     (['takeProfit', 'stopLoss'] as const).forEach((type) => {
-      const item = { ...newConfig[type] };
+      const prev = newConfig[type];
+      const item = { ...prev };
       if (!item.value || !priceNum) return;
       if (item.settingMode === 'price') {
         const est = calcEstimatedPnlFromPrice(
@@ -240,6 +241,15 @@ export const TPSLSettings: React.FC<TPSLSettingsProps> = ({
         item.buyTriggerPrice = triggers.buyTriggerPrice;
         item.sellTriggerPrice = triggers.sellTriggerPrice;
       }
+      // This effect re-runs on every price tick (several times a second). Writing
+      // unconditionally would hand the parent a new config object each tick and
+      // re-render the whole panel, so only propagate a genuine value change.
+      const unchanged =
+        item.buyTriggerPrice === prev.buyTriggerPrice &&
+        item.sellTriggerPrice === prev.sellTriggerPrice &&
+        item.estimatedPnl === prev.estimatedPnl &&
+        item.estimatedPnlPercent === prev.estimatedPnlPercent;
+      if (unchanged) return;
       newConfig[type] = item;
       changed = true;
     });

@@ -2561,6 +2561,7 @@
           "bridge": "Bridge para DBK Chain",
           "mintNFT": "Minte DBK Genesis NFT",
           "bridgePoweredBy": "Impulsionado pela OP Superchain",
+          "withdraw": "Levantar da DBK Chain",
           "mintNFTDesc": "Seja uma testemunha da DBK Chain"
         },
         "bridge": {
@@ -3876,7 +3877,87 @@
       "statusBar": {
         "offline": "Desligado",
         "online": "Ligado",
-        "sound": "Ativar Som"
+        "sound": "Ativar Som",
+        "settings": "Definições"
+      },
+      "orderConfirm": {
+        "buyLong": "Comprar / Posição comprada",
+        "sellShort": "Vender / Venda a descoberto",
+        "closeLong": "Fechar posição comprada",
+        "closeShort": "Fechar posição vendida",
+        "dontShowAgain": "Não voltar a mostrar a confirmação de {{orderType}}. Pode alterar esta opção a qualquer momento nas Definições.",
+        "orderTypeName": {
+          "market": "Ordem de mercado",
+          "limit": "Ordem limite",
+          "conditional": "Ordem condicional",
+          "twap": "Ordem TWAP",
+          "closeMarket": "Fecho ao mercado",
+          "closeLimit": "Fecho com limite",
+          "tpsl": "TP/SL"
+        },
+        "price": "Preço",
+        "marketPrice": "Preço de mercado",
+        "markPrice": "Preço de marcação",
+        "triggerPrice": "Preço de gatilho",
+        "amount": "Quantidade",
+        "estLiqPrice": "Preço liq. est.",
+        "estLiqDistance": "Distância liq. est.",
+        "reduceOnly": "Reduzir apenas",
+        "yes": "Sim",
+        "no": "Não",
+        "true": "Verdadeiro",
+        "false": "Falso",
+        "estPnl": "PnL est.",
+        "tpSl": "TP/SL",
+        "takeProfitMarket": "Take Profit ao mercado",
+        "stopLossMarket": "Stop Loss ao mercado",
+        "trigger": "Gatilho",
+        "totalAmountApproximately": "Quantidade total aproximada",
+        "totalSize": "Tamanho total",
+        "totalTime": "Tempo total",
+        "lastPrice": "Último preço",
+        "tpslTitle": "Confirmar TP/SL da posição",
+        "symbol": "Símbolo",
+        "entryPrice": "Preço de entrada",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "totalEstimatedPnl": "PnL total estimado",
+        "orderPreview": "Pré-visualização da ordem",
+        "scaleSymbol": "Símbolo",
+        "scaleOrderType": "Tipo",
+        "scaleAmount": "Quantidade",
+        "scalePrice": "Preço",
+        "scaleLimit": "Limite",
+        "cost": "Custo"
+      },
+      "settings": {
+        "title": "Definições",
+        "accountType": "Tipo de conta",
+        "orderConfirmations": "Confirmações de ordens",
+        "soundReminder": "Alerta sonoro",
+        "popularTradings": "Negociações populares",
+        "accountTypeTitle": "Tipo de conta",
+        "orderConfirmationsTitle": "Confirmações de ordens",
+        "orderConfirmationRow": {
+          "limit": "Ordem limite",
+          "market": "Ordem de mercado",
+          "conditional": "Ordem condicional",
+          "twap": "Ordem TWAP",
+          "closeMarket": "Fecho ao mercado",
+          "closeLimit": "Fecho com limite",
+          "tpsl": "Ordem TP/SL"
+        },
+        "accountTypeOption": {
+          "unifiedAccountLabel": "Conta Unificada (Recomendado)",
+          "unifiedAccountShortLabel": "Conta Unificada",
+          "unifiedAccountDesc": "A definição de conta predefinida, em que cada ativo de garantia tem um saldo separado. Os Perps só podem utilizar o ativo de liquidação como garantia, e a margem apenas é partilhada entre ativos em margem cruzada com o mesmo ativo de garantia.",
+          "manualLabel": "Manual",
+          "manualDesc": "Recomendado apenas para operadores automatizados. Todos os DEXs têm saldos separados e a margem cruzada aplica-se separadamente dentro de cada DEX.",
+          "portfolioMarginLabel": "Margem de Portefólio",
+          "portfolioMarginDesc": "Para utilizadores avançados que pretendem maior flexibilidade e eficiência de capital. Toda a negociação é unificada entre spot e perps. Ativos de garantia elegíveis, como HYPE e BTC, podem ser utilizados diretamente como garantia para posições de perps, sem necessidade de conversão para o ativo de liquidação. Os ativos de garantia recebem ou pagam juros consoante estejam inativos ou sejam ativamente emprestados para abrir posições."
+        },
+        "accountTypeSwitchSuccess": "Tipo de conta alterado para: {{type}}",
+        "accountTypeSwitchFailed": "Falha ao atualizar o tipo de conta"
       },
       "tradingPanel": {
         "slippagePage": {
@@ -3975,6 +4056,7 @@
         "slTriggerLessThanOrderPrice": "O preço de ativação de SL deve ser inferior ao preço da ordem.",
         "orderTypeTooltipMarket": "A ordem de mercado é imediatamente correspondida ao melhor preço de mercado disponível.",
         "bboDisabledTooltip": "O BBO não é suportado quando {{bboDisabledReason}} está ativado.",
+        "bboPriceUnavailable": "Não há preço do livro de ordens disponível de momento. Tente novamente.",
         "slTriggerMoreThanOrderPrice": "O preço de gatilho do SL deve ser superior ao preço da ordem.",
         "tpTriggerMoreThanOrderPrice": "O preço de gatilho do TP deve ser superior ao preço da ordem.",
         "slTriggerPriceIsZero": "O preço de gatilho do SL é 0 e não será definido quando for {{side}}.",
@@ -4796,7 +4878,9 @@
       "revoke": "Revogar",
       "approvals": "aprovações",
       "unselectAll": "Desselecionar Tudo",
-      "selectAll": "Selecionar Tudo"
+      "selectAll": "Selecionar Tudo",
+      "approvalsCount": "{{count}} aprovações",
+      "approvalsCount_one": "{{count}} aprovação"
     }
   },
   "component": {

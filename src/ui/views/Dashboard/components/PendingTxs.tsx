@@ -6,16 +6,16 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
 const Wrapper = styled.div`
-  position: absolute;
-  padding: 4px;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  padding: 3px;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 4px;
   font-weight: 500;
-  font-size: 13px;
-  line-height: 15px;
+  font-size: 10px;
+  line-height: 12px;
   color: #fff;
-  top: 66px;
-  right: 28px;
   cursor: pointer;
   user-select: none;
 `;
@@ -26,9 +26,8 @@ const IconPendingTxElement = styled.img`
       transform: rotate(360deg);
     }
   }
-  width: 15px;
-  height: 15px;
-  margin-right: 4px;
+  width: 16px;
+  height: 16px;
   animation: icn-spin 1.5s linear infinite;
 `;
 
@@ -53,12 +52,9 @@ const PendingTxs = ({ pendingTxCount }: Props) => {
       onClick={handleClickPendingTxs}
     >
       <div className="flex relative">
-        <IconPendingTxElement
-          className="w-[20px] h-[20px] mr-0"
-          src={IconPendingTx}
-        />
-        <span className="absolute inset-0 leading-[20px] text-center">
-          {pendingTxCount > 99 ? '99+' : pendingTxCount}
+        <IconPendingTxElement src={IconPendingTx} />
+        <span className="absolute inset-0 leading-[16px] text-center">
+          {countStr}
         </span>
       </div>
     </Wrapper>
