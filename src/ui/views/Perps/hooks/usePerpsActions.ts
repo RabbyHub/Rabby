@@ -6,12 +6,23 @@ import * as Sentry from '@sentry/browser';
 import { UserAbstraction } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
 import { formatSpotState } from '../../DesktopPerps/utils';
+import { perpsToast } from '../../DesktopPerps/components/PerpsToast';
 import { useWallet } from '@/ui/utils';
 import type { Account } from '@/background/service/preference';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
 import { KEYRING_TYPE } from '@/constant';
 import { UI_TYPE } from '@/constant/ui';
+
+const ACCOUNT_TYPE_LABEL_KEY: Record<UserAbstraction, string> = {
+  [UserAbstraction.UNIFIED_ACCOUNT]:
+    'page.perpsPro.settings.accountTypeOption.unifiedAccountShortLabel',
+  [UserAbstraction.PORTFOLIO_MARGIN]:
+    'page.perpsPro.settings.accountTypeOption.portfolioMarginLabel',
+  [UserAbstraction.DISABLED]:
+    'page.perpsPro.settings.accountTypeOption.manualLabel',
+};
+
 export const usePerpsActions = () => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -72,8 +83,12 @@ export const usePerpsActions = () => {
     }
   );
 
-  const handleEnableUnifiedAccount = useMemoizedFn(
-    async (): Promise<boolean> => {
+  /**
+   * Switches the Hyperliquid account abstraction mode; `DISABLED` is the
+   * settings drawer's "Manual" option.
+   */
+  const handleSetUserAbstraction = useMemoizedFn(
+    async (abstraction: UserAbstraction): Promise<boolean> => {
       try {
         const sdk = getPerpsSDK();
         if (!currentPerpsAccount) throw new Error('No currentPerpsAccount');
@@ -81,7 +96,7 @@ export const usePerpsActions = () => {
 
         const action = sdk.exchange.prepareUserSetAbstraction({
           user: currentPerpsAccount.address,
-          abstraction: UserAbstraction.UNIFIED_ACCOUNT,
+          abstraction,
         });
 
         const [signature] = await executeSignTypedData(
@@ -115,17 +130,33 @@ export const usePerpsActions = () => {
           console.error('fetch spotState after enable failed', spotRes.reason);
         }
 
-        message.success({
-          duration: 1.5,
-          content: t('page.perps.PerpsSpotSwap.enabledSuccess'),
-        });
+        const successText = t(
+          'page.perpsPro.settings.accountTypeSwitchSuccess',
+          { type: t(ACCOUNT_TYPE_LABEL_KEY[abstraction]) }
+        );
+        if (isDesktop) {
+          perpsToast.success({
+            title: t('page.perps.toast.success'),
+            description: successText,
+          });
+        } else {
+          message.success({ duration: 1.5, content: successText });
+        }
         return true;
       } catch (error: any) {
-        console.error('Failed to enable unified account:', error);
-        message.error({
-          duration: 1.5,
-          content: error?.message || t('page.perps.PerpsSpotSwap.enableFailed'),
-        });
+        console.error('Failed to set user abstraction:', error);
+        const failedTitle = t('page.perpsPro.settings.accountTypeSwitchFailed');
+        if (isDesktop) {
+          perpsToast.error({
+            title: failedTitle,
+            description: error?.message,
+          });
+        } else {
+          message.error({
+            duration: 1.5,
+            content: error?.message || failedTitle,
+          });
+        }
         if (
           !String(error?.message || '')
             .toLowerCase()
@@ -133,7 +164,9 @@ export const usePerpsActions = () => {
         ) {
           Sentry.captureException(
             new Error(
-              'PERPS enableUnifiedAccount failed account: ' +
+              'PERPS setUserAbstraction failed abstraction: ' +
+                abstraction +
+                ' account: ' +
                 JSON.stringify(currentPerpsAccount) +
                 ' error: ' +
                 JSON.stringify({ error })
@@ -145,7 +178,13 @@ export const usePerpsActions = () => {
     }
   );
 
+  /** Alias for the enable-unified call sites. */
+  const handleEnableUnifiedAccount = useMemoizedFn(() =>
+    handleSetUserAbstraction(UserAbstraction.UNIFIED_ACCOUNT)
+  );
+
   return {
     handleEnableUnifiedAccount,
+    handleSetUserAbstraction,
   };
 };

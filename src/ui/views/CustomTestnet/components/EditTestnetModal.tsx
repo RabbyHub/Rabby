@@ -109,10 +109,10 @@ export const EditCustomTestnetModal = ({
           block: 'center',
         });
       });
-      // if (!isEdit && res.error.status === 'alreadySupported') {
-      //   setIsShowModifyRpcModal(true);
-      //   setFormValues(form.getFieldsValue());
-      // }
+      if (!isEdit && res.error.status === 'alreadySupported') {
+        setIsShowModifyRpcModal(true);
+        setFormValues(form.getFieldsValue());
+      }
     } else {
       onConfirm?.(res);
     }

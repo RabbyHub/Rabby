@@ -34,6 +34,7 @@ export type TypeKeyringGroup = {
   publicKey?: string;
   hdPathBasePublicKey?: string;
   hdPathType?: string;
+  hasBackup?: boolean;
 };
 
 export const getWalletTypeName = (s: string) => {
@@ -310,6 +311,7 @@ export const useBackUp = () => {
             pathname: '/settings/address-backup/mneonics',
             state: {
               data: data,
+              publicKey,
               goBack: true,
             },
           });

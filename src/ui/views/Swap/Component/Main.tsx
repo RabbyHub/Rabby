@@ -158,7 +158,7 @@ export const Main = () => {
     setLowCreditVisible,
     showMoreVisible,
     inSufficientCanGetQuote,
-    setReloadTxRefreshPaused,
+    setQuoteRefreshLocked,
 
     autoSuggestSlippage,
     setAutoSuggestSlippage,
@@ -182,6 +182,10 @@ export const Main = () => {
   const originPreferMEVGuarded = useSwapStore((s) => !!s.preferMEVGuarded);
   const setSwapPreferMEV = useSwapStore((s) => s.setSwapPreferMEV);
   const setRecentSwapToToken = useSwapStore((s) => s.setRecentSwapToToken);
+  const resumeQuoteRefresh = useCallback(() => {
+    setQuoteRefreshLocked(false);
+    refresh((id) => id + 1);
+  }, [refresh, setQuoteRefreshLocked]);
 
   const showMEVGuardedSwitch = useMemo(() => chain === CHAINS_ENUM.ETH, [
     chain,
@@ -805,14 +809,14 @@ export const Main = () => {
 
   const handleSwap = useMemoizedFn(async () => {
     submitTxRef.current = true;
-    setReloadTxRefreshPaused(true);
-    if (!isTab && receiveToken) {
+    setQuoteRefreshLocked(true);
+    if (!isTab) {
       setRecentSwapToToken(receiveToken);
     }
     if (!isSupportedChain) {
       setSwapDappOpen(true);
       submitTxRef.current = false;
-      setReloadTxRefreshPaused(false);
+      setQuoteRefreshLocked(false);
       return;
     }
 
@@ -897,7 +901,7 @@ export const Main = () => {
       } finally {
         setMiniSignLoading(false);
         submitTxRef.current = false;
-        setReloadTxRefreshPaused(false);
+        setQuoteRefreshLocked(false);
       }
       return;
     } else {
@@ -905,7 +909,7 @@ export const Main = () => {
         await gotoSwap();
       } finally {
         submitTxRef.current = false;
-        setReloadTxRefreshPaused(false);
+        setQuoteRefreshLocked(false);
       }
     }
   });
@@ -1460,6 +1464,8 @@ export const Main = () => {
                 loading={miniSignLoading}
                 title={latestQuoteBtnText || btnText}
                 onConfirm={handleSwap}
+                onConfirmStart={() => setQuoteRefreshLocked(true)}
+                onCancel={resumeQuoteRefresh}
                 showRiskTips={showRiskTips && !swapBtnDisabled}
                 accountType={currentAccount?.type}
                 signatureInstance={instance}
@@ -1488,6 +1494,7 @@ export const Main = () => {
                         return;
                       }
                       if (activeProvider?.shouldTwoStepApprove) {
+                        setQuoteRefreshLocked(true);
                         return Modal.confirm({
                           width: 360,
                           closable: true,
@@ -1505,6 +1512,7 @@ export const Main = () => {
                             </>
                           ),
                           okText: t('page.swap.process-with-two-step-approve'),
+                          onCancel: resumeQuoteRefresh,
                           onOk() {
                             // gotoSwap();
                             handleSwap();

@@ -1,9 +1,9 @@
 /** v1 ships hardcoded English. When i18n lands, replace keys with lookups against `perpsWidget.*`. */
 
 export const STRINGS = {
-  hiddenPositions: (count: number): string =>
-    count === 0
-      ? 'Open Pro Mode to view more details'
-      : `${count} position${count > 1 ? 's' : ''} hidden. View all in Pro Mode`,
+  /** Truncated list invites viewing the rest; a complete list just offers Pro Mode. */
+  footerLink: (hiddenCount: number): string =>
+    hiddenCount > 0 ? 'See more positions' : 'Open Pro Mode',
   pnl: 'PNL',
+  hideWidget: 'Hide this widget. Re-enable it in Settings.',
 };

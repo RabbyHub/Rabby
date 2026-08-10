@@ -8,6 +8,14 @@ import { SendApproveParams } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import {
+  DEFAULT_PERPS_ORDER_CONFIRMATIONS,
+  isPerpsOrderConfirmType,
+} from '@/constant/perps';
+import type {
+  PerpsOrderConfirmations,
+  PerpsOrderConfirmType,
+} from '@/constant/perps';
 export interface AgentWalletInfo {
   vault: string;
   preference: {
@@ -65,6 +73,8 @@ export interface PerpsServiceStore {
   skipMarketCloseConfirm: boolean;
   candleInterval: string;
   tpslModePreferences: PerpsTpslModePreferences;
+  orderConfirmations: PerpsOrderConfirmations;
+  showPopularTradings: boolean;
 }
 export interface PerpsServiceMemoryState {
   agentWallets: {
@@ -103,6 +113,8 @@ class PerpsService {
         skipMarketCloseConfirm: false,
         candleInterval: '15M',
         tpslModePreferences: DEFAULT_TPSL_MODE_PREFERENCES,
+        orderConfirmations: DEFAULT_PERPS_ORDER_CONFIRMATIONS,
+        showPopularTradings: true,
       },
     });
 
@@ -635,6 +647,49 @@ class PerpsService {
     this.store.skipMarketCloseConfirm = skip;
   };
 
+  getOrderConfirmations = async (): Promise<PerpsOrderConfirmations> => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    // Spread the defaults first so a store written by an older build (missing
+    // types added later) still resolves every key to `true` instead of
+    // `undefined`, which would read as "opted out" at the call site.
+    return {
+      ...DEFAULT_PERPS_ORDER_CONFIRMATIONS,
+      ...(this.store.orderConfirmations || {}),
+    };
+  };
+
+  setOrderConfirmation = async (
+    type: PerpsOrderConfirmType,
+    enabled: boolean
+  ) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    if (!isPerpsOrderConfirmType(type)) return;
+
+    this.store.orderConfirmations = {
+      ...DEFAULT_PERPS_ORDER_CONFIRMATIONS,
+      ...(this.store.orderConfirmations || {}),
+      [type]: enabled,
+    };
+  };
+
+  getShowPopularTradings = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return this.store.showPopularTradings ?? true;
+  };
+
+  setShowPopularTradings = async (show: boolean) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    this.store.showPopularTradings = show;
+  };
+
   getCandleInterval = async () => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
@@ -672,6 +727,8 @@ class PerpsService {
       skipMarketCloseConfirm: false,
       candleInterval: '15M',
       tpslModePreferences: DEFAULT_TPSL_MODE_PREFERENCES,
+      orderConfirmations: DEFAULT_PERPS_ORDER_CONFIRMATIONS,
+      showPopularTradings: true,
     };
     this.memoryState.agentWallets = {};
   };

@@ -9,12 +9,11 @@ import {
   formChartData,
   useCurve,
 } from '../../Dashboard/components/BalanceView/useCurve';
-import { IExtractFromPromise } from '@/ui/utils/type';
 
 export const useDesktopBalanceView = ({ address }: { address?: string }) => {
   const { currentHomeBalanceCache } = useHomeBalanceView(address);
 
-  const initHasCacheRef = useRef(!!currentHomeBalanceCache?.balance);
+  const initHasCacheRef = useRef(!!currentHomeBalanceCache);
   const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(
     initHasCacheRef?.current ? -1 : 0
   );
@@ -40,7 +39,6 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
     chainBalancesWithValue: latestChainBalancesWithValue,
     success: loadBalanceSuccess,
     balanceLoading,
-    balanceFromCache,
     isCurrentBalanceExpired,
     refreshBalance,
     missingList,
@@ -48,7 +46,7 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
     update: true,
     noNeedBalance: false,
     nonce: accountBalanceUpdateNonce,
-    initBalanceFromLocalCache: !!currentHomeBalanceCache?.balance,
+    initBalanceFromLocalCache: !!currentHomeBalanceCache,
   });
 
   const {
@@ -71,9 +69,9 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
     chainBalancesWithValue,
     appChainIds,
   } = useMemo(() => {
-    const balanceValue = latestBalance || currentHomeBalanceCache?.balance;
+    const balanceValue = latestBalance ?? currentHomeBalanceCache?.balance;
     const evmBalanceValue =
-      latestEvmBalance || currentHomeBalanceCache?.evmBalance;
+      latestEvmBalance ?? currentHomeBalanceCache?.evmBalance;
     const appChainIds =
       latestAppChainIds || currentHomeBalanceCache?.appChainIds;
     return {
@@ -82,11 +80,7 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
       appChainIds,
       curveChartData:
         latestCurveChartData ||
-        formChartData(
-          currentHomeBalanceCache?.originalCurveData || [],
-          balanceValue,
-          Date.now()
-        ),
+        formChartData(currentHomeBalanceCache?.originalCurveData || []),
       matteredChainBalances: latestMatteredChainBalances.length
         ? latestMatteredChainBalances
         : currentHomeBalanceCache?.matteredChainBalances || [],
@@ -121,40 +115,38 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
     isExpired: getCacheExpired,
   });
 
+  const refreshBalanceAndCurveIfExpired = useCallback(async () => {
+    const expirationInfo = await getCacheExpired();
+    if (!expirationInfo.expired) return;
+
+    await onRefresh({
+      balanceExpired: expirationInfo.balanceExpired,
+      curveExpired: expirationInfo.curveExpired,
+      isManual: false,
+    });
+  }, [getCacheExpired, onRefresh]);
+
   // const refreshTimerlegacy = useRef<NodeJS.Timeout>();
   // only execute once on component mounted or address changed
   useEffect(
     () => {
-      (async () => {
-        let expirationInfo: IExtractFromPromise<
-          ReturnType<typeof getCacheExpired>
-        > | null = null;
-        if (!currentHomeBalanceCache?.balance) {
-          onRefresh({
-            balanceExpired: true,
-            curveExpired: true,
-            isManual: false,
-          });
-        } else if (
-          (expirationInfo = await getCacheExpired()) &&
-          expirationInfo.expired
-        ) {
-          onRefresh({
-            balanceExpired: expirationInfo.balanceExpired,
-            curveExpired: expirationInfo.curveExpired,
-            isManual: false,
-          });
-        }
-      })();
+      if (!currentHomeBalanceCache) {
+        onRefresh({
+          balanceExpired: true,
+          curveExpired: true,
+          isManual: false,
+        });
+      } else {
+        refreshBalanceAndCurveIfExpired();
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
-  const couldShowLoadingDueToBalanceNil =
-    balance === null || (balanceFromCache && balance === 0);
+  const couldShowLoadingDueToBalanceNil = balance === null;
   const couldShowLoadingDueToUpdateSource =
-    !currentHomeBalanceCache?.balance || isManualRefreshing;
+    !currentHomeBalanceCache || isManualRefreshing;
 
   const isBalanceLoading =
     couldShowLoadingDueToBalanceNil ||
@@ -162,6 +154,8 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
   const isCurveLoading =
     couldShowLoadingDueToBalanceNil ||
     (couldShowLoadingDueToUpdateSource && curveLoading);
+  const isRefreshing =
+    balanceLoading || curveLoading || isBalanceLoading || isCurveLoading;
 
   return {
     balance,
@@ -169,8 +163,10 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
     curveChartData,
     isCurveLoading,
     isBalanceLoading,
+    isRefreshing,
     refreshCurve,
     refreshBalance,
+    refreshBalanceAndCurveIfExpired,
     appChainIds,
   };
 };

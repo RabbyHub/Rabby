@@ -9,13 +9,11 @@ import React, {
 import clsx from 'clsx';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { ReactComponent as RcIconTwitter } from '@/ui/assets/perps/IconTwitter.svg';
-import { ReactComponent as RcIconOpenVolume } from '@/ui/assets/perps/IconOpenVolume.svg';
-import { ReactComponent as RcIconClosedVolume } from '@/ui/assets/perps/IconClosedVolume.svg';
+import { ReactComponent as RcIconSettings } from '@/ui/assets/perps/IconPerpsSettings.svg';
 import { ReactComponent as RcIconDocs } from '@/ui/assets/perps/IconDocument.svg';
 import { useTranslation } from 'react-i18next';
 import { openInTab, splitNumberByStep } from '@/ui/utils';
 import store, { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { playSound } from '@/ui/utils/sound';
 import { formatPerpsCoin } from '../../utils';
 import type { MarketData } from '@/ui/models/perps';
 
@@ -186,8 +184,13 @@ const OnlineStatus: React.FC<{ online: boolean }> = ({ online }) => {
   );
 };
 
-export const StatusBar: React.FC = () => {
-  const soundEnabled = useRabbySelector((state) => state.perps.soundEnabled);
+/**
+ * Its own component so the `showPopularTradings` setting can unmount it
+ * wholesale: the measurement effects, the 500ms snapshot interval and the
+ * rAF loop are torn down with it instead of running against refs the parent
+ * decided not to render.
+ */
+const PopularTickers: React.FC = () => {
   const dispatch = useRabbyDispatch();
   const tickerViewportRef = useRef<HTMLDivElement>(null);
   const tickerTrackRef = useRef<HTMLDivElement>(null);
@@ -206,7 +209,6 @@ export const StatusBar: React.FC = () => {
   const tickerLastFrameTimeRef = useRef<number | null>(null);
   const tickerPausedRef = useRef(false);
   const tickerPrefersReducedMotionRef = useRef(false);
-  const [isConnected, setIsConnected] = useState(true);
   const [tickerSnapshotMarkets, setTickerSnapshotMarkets] = useState<
     TickerMarket[]
   >([]);
@@ -220,7 +222,6 @@ export const StatusBar: React.FC = () => {
   const [tickerVisibleCount, setTickerVisibleCount] = useState(
     TICKER_FALLBACK_MARKET_COUNT
   );
-  const { t } = useTranslation();
 
   const tickerSnapshotKey = useMemo(
     () => getTickerSnapshotKey(tickerSnapshotMarkets),
@@ -511,17 +512,6 @@ export const StatusBar: React.FC = () => {
     return () => clearInterval(interval);
   }, [commitTickerSnapshot, syncLiveTickerValues]);
 
-  useEffect(() => {
-    const sdk = getPerpsSDK();
-    // Check WebSocket connection status periodically
-    const checkConnection = () => {
-      setIsConnected(sdk.ws.isConnected ?? true);
-    };
-    checkConnection();
-    const interval = setInterval(checkConnection, 5000);
-    return () => clearInterval(interval);
-  }, []);
-
   useLayoutEffect(() => {
     const track = tickerTrackRef.current;
 
@@ -602,21 +592,6 @@ export const StatusBar: React.FC = () => {
     };
   }, [commitTickerSnapshot, tickerMarkets.length, syncTickerLoopWidth]);
 
-  const handleOpenTwitter = () => {
-    openInTab('https://twitter.com/Rabby_io');
-  };
-
-  const handleOpenDocs = () => {
-    openInTab('https://support.rabby.io/');
-  };
-
-  const handleToggleSound = () => {
-    if (!soundEnabled) {
-      playSound('/sounds/order-filled.mp3');
-    }
-    dispatch.perps.updateEnabledSound(!soundEnabled);
-  };
-
   const handleSelectTickerMarket = useCallback(
     (coin: string) => {
       dispatch.perps.updateSelectedCoin(coin);
@@ -632,8 +607,6 @@ export const StatusBar: React.FC = () => {
     tickerPausedRef.current = false;
     tickerLastFrameTimeRef.current = null;
   }, []);
-
-  const RcIconVolume = soundEnabled ? RcIconOpenVolume : RcIconClosedVolume;
 
   const renderTickerItem = useCallback(
     (item: TickerMarket, key: string, isMeasure = false) => {
@@ -700,58 +673,94 @@ export const StatusBar: React.FC = () => {
   }, [renderTickerItem, tickerSnapshotMarkets]);
 
   return (
+    <div
+      ref={tickerViewportRef}
+      className="desktop-perps-status-ticker flex-1 min-w-0 overflow-hidden"
+      onMouseEnter={handleTickerMouseEnter}
+      onMouseLeave={handleTickerMouseLeave}
+    >
+      {tickerMarkets.length > 0 ? (
+        <div
+          ref={tickerTrackRef}
+          className="desktop-perps-status-track flex w-max items-center"
+        >
+          <div ref={tickerLoopRef} className="desktop-perps-status-loop">
+            {tickerMarkets.map((item) =>
+              renderTickerItem(item, `${item.dexId || 'hyper'}-${item.name}`)
+            )}
+          </div>
+          <div className="desktop-perps-status-loop" aria-hidden>
+            {tickerMarkets.map((item) =>
+              renderTickerItem(
+                item,
+                `${item.dexId || 'hyper'}-${item.name}-duplicate`
+              )
+            )}
+          </div>
+        </div>
+      ) : null}
+      <div
+        ref={tickerMeasureRef}
+        className="desktop-perps-status-measure"
+        aria-hidden
+      >
+        {tickerMeasureItems}
+      </div>
+    </div>
+  );
+};
+
+export const StatusBar: React.FC<{ onOpenSettings?: () => void }> = ({
+  onOpenSettings,
+}) => {
+  const showPopularTradings = useRabbySelector(
+    (state) => state.perps.showPopularTradings
+  );
+  const [isConnected, setIsConnected] = useState(true);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    const sdk = getPerpsSDK();
+    // Check WebSocket connection status periodically
+    const checkConnection = () => {
+      setIsConnected(sdk.ws.isConnected ?? true);
+    };
+    checkConnection();
+    const interval = setInterval(checkConnection, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleOpenTwitter = () => {
+    openInTab('https://twitter.com/Rabby_io');
+  };
+
+  const handleOpenDocs = () => {
+    openInTab('https://support.rabby.io/');
+  };
+
+  return (
     <div className="fixed bottom-0 left-0 right-0 bg-rb-neutral-bg-page p-[6px] z-30">
       <div className="h-[32px] rounded-[6px] bg-rb-neutral-bg-1 flex items-center overflow-hidden px-[12px] gap-[12px]">
         <div className="desktop-perps-status-side flex items-center">
           <OnlineStatus online={isConnected} />
         </div>
 
-        <div
-          ref={tickerViewportRef}
-          className="desktop-perps-status-ticker flex-1 min-w-0 overflow-hidden"
-          onMouseEnter={handleTickerMouseEnter}
-          onMouseLeave={handleTickerMouseLeave}
-        >
-          {tickerMarkets.length > 0 ? (
-            <div
-              ref={tickerTrackRef}
-              className="desktop-perps-status-track flex w-max items-center"
-            >
-              <div ref={tickerLoopRef} className="desktop-perps-status-loop">
-                {tickerMarkets.map((item) =>
-                  renderTickerItem(
-                    item,
-                    `${item.dexId || 'hyper'}-${item.name}`
-                  )
-                )}
-              </div>
-              <div className="desktop-perps-status-loop" aria-hidden>
-                {tickerMarkets.map((item) =>
-                  renderTickerItem(
-                    item,
-                    `${item.dexId || 'hyper'}-${item.name}-duplicate`
-                  )
-                )}
-              </div>
-            </div>
-          ) : null}
-          <div
-            ref={tickerMeasureRef}
-            className="desktop-perps-status-measure"
-            aria-hidden
-          >
-            {tickerMeasureItems}
-          </div>
-        </div>
+        {/* The spacer keeps the actions pinned to the right edge while the
+            marquee is hidden. */}
+        {showPopularTradings ? (
+          <PopularTickers />
+        ) : (
+          <div className="flex-1 min-w-0" />
+        )}
 
         <div className="desktop-perps-status-actions flex items-center gap-[12px]">
           <button
             type="button"
-            title={t('page.perpsPro.statusBar.sound')}
+            title={t('page.perpsPro.statusBar.settings')}
             className="flex h-[20px] w-[20px] items-center justify-center border-0 bg-transparent p-0 text-rb-neutral-foot cursor-pointer hover:text-rb-brand-default"
-            onClick={handleToggleSound}
+            onClick={onOpenSettings}
           >
-            <RcIconVolume className="h-[20px] w-[20px]" />
+            <RcIconSettings className="h-[20px] w-[20px]" />
           </button>
           <div className="h-[12px] w-0 border-l border-solid border-rb-neutral-line" />
           <RcIconTwitter

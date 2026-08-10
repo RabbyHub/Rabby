@@ -1,4 +1,4 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useLayoutEffect, useState } from 'react';
 import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
@@ -17,6 +17,8 @@ import {
 import { SpotSwapModal } from './modal/SpotSwapModal';
 import { EnableUnifiedAccountModal } from './modal/EnableUnifiedAccountModal';
 import { TransferToPerpsModal } from './modal/TransferToPerpsModal';
+import { PerpsSettingsDrawer } from './components/PerpsSettingsDrawer';
+import { OrderConfirmProvider } from './modal/OrderConfirmProvider';
 import { usePerpsPopupNav } from './hooks/usePerpsPopupNav';
 import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
 import { useMount } from 'ahooks';
@@ -81,6 +83,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
     openPerpsPopup,
   } = usePerpsPopupNav();
   const { handleEnableUnifiedAccount } = usePerpsActions();
+  const [settingsVisible, setSettingsVisible] = useState(false);
 
   const location = useLocation();
   useMount(() => {
@@ -88,7 +91,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
   });
 
   return (
-    <>
+    <OrderConfirmProvider>
       <Wrap>
         {/* Fixed top bar — mirrors the fixed StatusBar at the bottom (sticky;
             content scrolls underneath). bg-page masks content behind the card.
@@ -164,7 +167,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
           </div>
         </div>
 
-        <StatusBar />
+        <StatusBar onOpenSettings={() => setSettingsVisible(true)} />
       </Wrap>
       {/* <AddAddressModal
         visible={action === 'add-address'}
@@ -215,6 +218,11 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         zIndex={getActionZIndex('transfer-to-perps')}
         onClose={closePerpsPopup}
       />
-    </>
+
+      <PerpsSettingsDrawer
+        visible={settingsVisible}
+        onClose={() => setSettingsVisible(false)}
+      />
+    </OrderConfirmProvider>
   );
 };

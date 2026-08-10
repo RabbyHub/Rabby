@@ -4128,11 +4128,17 @@ export class WalletController extends BaseController {
     return keyring.hasBackup == null ? true : keyring.hasBackup;
   };
 
-  backupSeedPhraseConfirmed = async (address: string) => {
-    const keyring = await keyringService.getKeyringForAccount(
-      address,
-      KEYRING_CLASS.MNEMONIC
-    );
+  backupSeedPhraseConfirmed = async (
+    value: string,
+    type: 'address' | 'publickey' = 'address'
+  ) => {
+    const keyring =
+      type === 'publickey'
+        ? await this.#getMnemonicKeyring(type, value)
+        : await keyringService.getKeyringForAccount(
+            value,
+            KEYRING_CLASS.MNEMONIC
+          );
     if (!keyring) {
       throw new Error('Keyring not found');
     }
@@ -4481,8 +4487,11 @@ export class WalletController extends BaseController {
   getMnemonicFromPublicKey = async (password: string, publicKey: string) => {
     await this.verifyPassword(password);
     const targetKeyring = this.#getMnemonicKeyRingFromPublicKey(publicKey);
+    if (!targetKeyring) {
+      throw new Error('Keyring not found');
+    }
 
-    return targetKeyring?.mnemonic;
+    return targetKeyring.mnemonic;
   };
 
   getMnemonicKeyRingIdFromPublicKey = (publicKey: string) => {
@@ -6682,6 +6691,7 @@ export class WalletController extends BaseController {
   tryUnlock = async () => {
     await keyringService.tryUnlock();
     this.syncPopupIcon();
+    return this.isUnlocked();
   };
 
   syncPopupIcon = () => {
@@ -6973,6 +6983,10 @@ export class WalletController extends BaseController {
   setSoundEnabled = perpsService.setSoundEnabled;
   getSkipMarketCloseConfirm = perpsService.getSkipMarketCloseConfirm;
   setSkipMarketCloseConfirm = perpsService.setSkipMarketCloseConfirm;
+  getPerpsOrderConfirmations = perpsService.getOrderConfirmations;
+  setPerpsOrderConfirmation = perpsService.setOrderConfirmation;
+  getPerpsShowPopularTradings = perpsService.getShowPopularTradings;
+  setPerpsShowPopularTradings = perpsService.setShowPopularTradings;
   getPerpsIsNeedSetDarkTheme = perpsService.getIsNeedSetDarkTheme;
   updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
@@ -7025,6 +7039,36 @@ export class WalletController extends BaseController {
     preferenceService.getPerpsWidgetBallPosition();
   setPerpsWidgetBallPosition = (pos: { x: number; y: number } | null) =>
     preferenceService.setPerpsWidgetBallPosition(pos);
+  /**
+   * Widget address → portfolio. The widget tracks the perps account, which can
+   * differ from the wallet's current account, so switch first — otherwise the
+   * portfolio would open on an unrelated address.
+   * Takes no params on purpose: it's reachable from content scripts, so the
+   * target address must come from trusted state, never from the caller.
+   */
+  openPerpsWidgetProfile = async () => {
+    try {
+      const perpsAccount = await perpsService.getCurrentAccount();
+      const current = preferenceService.getCurrentAccount();
+      if (
+        perpsAccount?.address &&
+        (current?.address?.toLowerCase() !==
+          perpsAccount.address.toLowerCase() ||
+          current?.type !== perpsAccount.type ||
+          current?.brandName !== perpsAccount.brandName)
+      ) {
+        this.changeAccount({
+          address: perpsAccount.address,
+          type: perpsAccount.type,
+          brandName: perpsAccount.brandName,
+        });
+      }
+    } catch (e) {
+      // Still open the portfolio on the account already selected.
+      console.warn('[perps-widget] switch account failed', e);
+    }
+    return this.openInDesktop('/desktop/profile');
+  };
 
   signPerpsSendSetReferrer = async ({
     address,

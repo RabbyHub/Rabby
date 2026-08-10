@@ -1,3 +1,5 @@
+import type { HardwareSigningContext } from '@/background/service/keyring/hardware-wallet-sentry';
+
 export type SentryIgnorePattern = string | RegExp;
 
 export const sanitizeSentryBreadcrumbUrl = (value: string) => {
@@ -6,6 +8,10 @@ export const sanitizeSentryBreadcrumbUrl = (value: string) => {
   return withoutQueryOrFragment.replace(/0x[a-f\d]{40,64}/gi, '[redacted]');
 };
 
+// Applied in beforeSend only, never as the SDK's own `ignoreErrors`: the SDK
+// filter runs before beforeSend, so it would drop hardware signing failures
+// before the bypass below can keep them. shouldIgnoreSentryError takes the
+// Sentry-generated event text so patterns matching that still work.
 export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   'ResizeObserver loop limit exceeded',
   'ResizeObserver loop completed with undelivered notifications',
@@ -62,6 +68,17 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /Request exceeds defined limit\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
 ];
 
+const HARDWARE_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
+  /refusedbyuser|userrefusedondevice/iu,
+  /failure_(?:action|pin)cancelled|method_(?:cancel|interrupted)/iu,
+  /^(?:Error: )?(?:109|802|803|822):/u,
+  /^(?:Error: )?[{]"code":(?:"(?:109|802|803|822)"|(?:109|802|803|822))(?:,|[}])/u,
+  /\b0x6985\b/iu,
+  /^(?:Error: )*(?:Action cancell?ed by user|Cancell?ed|Popup closed)$/iu,
+  /not supported on this device|only version 4 of typed data signing is supported|typed data payload is incomplete/iu,
+  /device is locked|device not found|no (?:\w+ ){0,2}device found|multiple \w+ devices detected/iu,
+];
+
 // Stale background service worker noise: after an extension update the old
 // background may keep running pre-guard code that throws "undefined.apply"
 // inside a listen callback. Message.onRequest catches it and forwards a
@@ -87,6 +104,8 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
     (error as any).message,
     (error as any).shortMessage,
     (error as any).details,
+    // Hardware SDKs often reject with a bare code (803, 0x6985) and no message.
+    (error as any).code,
   ].filter(Boolean);
 
   return [
@@ -95,14 +114,83 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
   ];
 };
 
-export const shouldIgnoreSentryError = (error: unknown) => {
-  const text = collectErrorText(error).join('\n') || String(error || '');
+const hardwareSigningContexts = new WeakMap<object, HardwareSigningContext>();
 
-  if (
-    RABBY_SENTRY_IGNORE_ERRORS.some((pattern) =>
-      typeof pattern === 'string' ? text.includes(pattern) : pattern.test(text)
+export const attachHardwareSigningContext = (
+  error: unknown,
+  context: HardwareSigningContext
+) => {
+  if (error && typeof error === 'object') {
+    hardwareSigningContexts.set(error, context);
+  }
+};
+
+export const getHardwareSigningContext = (error: unknown) =>
+  error && typeof error === 'object'
+    ? hardwareSigningContexts.get(error)
+    : undefined;
+
+const REDACTIONS: [RegExp, string][] = [
+  [/([a-z][a-z\d+.-]*:\/\/[^\s?#]+)[?#][^\s]*/giu, '$1'],
+  [
+    /(["']?)(address|connect[_\s-]?id|device[_\s-]?id|passphrase(?:[_\s-]?state)?|public[_\s-]?key|serial(?:[_\s-]?(?:number|no))?|session[_\s-]?id|signature|uuid)\1\s*[:=]\s*(?:"[^"]*"|'[^']*'|[^\s,;}\]]+)/giu,
+    '$1$2$1: [redacted]',
+  ],
+  [
+    /\b[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}\b/giu,
+    '[redacted-uuid]',
+  ],
+  [/\b0x[a-f\d]{40,}\b/giu, '[redacted-hex]'],
+  [/\b[a-f\d]{40,}\b/giu, '[redacted-hex]'],
+  [/\b[A-Za-z\d+/]{80,}={0,2}/gu, '[redacted-data]'],
+  [/\bm(?:\/\d+'?){2,}\b/gu, '[redacted-hd-path]'],
+  [/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/gu, '[redacted-email]'],
+];
+
+const MAX_ERROR_TEXT_LENGTH = 4000;
+
+export const redactSensitiveText = (value: unknown) =>
+  REDACTIONS.reduce(
+    (text, [pattern, replacement]) => text.replace(pattern, replacement),
+    String(value ?? '')
+  ).slice(0, MAX_ERROR_TEXT_LENGTH);
+
+const matchesAny = (patterns: SentryIgnorePattern[], candidates: string[]) =>
+  patterns.some((pattern) =>
+    candidates.some((candidate) =>
+      typeof pattern === 'string'
+        ? candidate.includes(pattern)
+        : pattern.test(candidate)
     )
-  ) {
+  );
+
+export const shouldIgnoreSentryError = (
+  error: unknown,
+  // Text Sentry generated for the event ("Non-Error promise rejection captured
+  // with keys: ..."), which never appears on the thrown value itself.
+  eventText: string[] = []
+) => {
+  const parts = collectErrorText(error);
+  const text = parts.join('\n') || String(error || '');
+  const candidates = [
+    text,
+    ...parts,
+    error instanceof Error ? `${error.name}: ${error.message}` : '',
+    ...eventText,
+  ].filter(Boolean);
+
+  const hardware = getHardwareSigningContext(error);
+  if (hardware) {
+    if (matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)) {
+      return true;
+    }
+
+    // Hardware signing errors must remain reportable even when a transport
+    // failure uses a generic network error message.
+    return false;
+  }
+
+  if (matchesAny(RABBY_SENTRY_IGNORE_ERRORS, candidates)) {
     return true;
   }
 
@@ -120,4 +208,69 @@ export const shouldIgnoreSentryError = (error: unknown) => {
   }
 
   return false;
+};
+
+type SentryEventLike = {
+  message?: string;
+  tags?: Record<string, unknown>;
+  fingerprint?: string[];
+  extra?: Record<string, unknown>;
+  exception?: { values?: { type?: string; value?: string }[] };
+};
+
+// Mirrors the SDK's own _getPossibleEventMessages: patterns like
+// /UnknownError: Internal error\./ are written against the joined form, which
+// exists nowhere else once an exception is split into type and value.
+export const collectSentryEventText = (event: SentryEventLike) =>
+  [
+    event.message,
+    ...(event.exception?.values ?? []).flatMap(({ type, value }) => [
+      value,
+      type && value ? `${type}: ${value}` : undefined,
+    ]),
+  ].filter((value): value is string => Boolean(value));
+
+// The shape of an SDK error is decided by the device library, not by Rabby, so
+// it is flattened to text and redacted instead of being handed to Sentry whole.
+const describeOriginalError = (error: unknown) => {
+  const parts = collectErrorText(error);
+
+  try {
+    const serialized = JSON.stringify(error);
+    if (serialized && serialized !== '{}') {
+      parts.push(serialized);
+    }
+  } catch {
+    // Circular SDK errors: the text collected above is all we can report.
+  }
+
+  return redactSensitiveText(parts.join(' | ')) || undefined;
+};
+
+export const applyHardwareSigningContext = (
+  event: SentryEventLike,
+  error: unknown
+) => {
+  const hardware = getHardwareSigningContext(error);
+  if (!hardware) {
+    return;
+  }
+
+  event.tags = {
+    ...event.tags,
+    hardware_wallet: hardware.wallet,
+    sign_operation: hardware.operation,
+  };
+  event.fingerprint = [
+    'hardware-wallet-signing',
+    hardware.wallet,
+    hardware.operation,
+    '{{ default }}',
+  ];
+
+  event.extra = {
+    ...event.extra,
+    ...(hardware.metadata ? { hardware_device: hardware.metadata } : undefined),
+    hardware_original_error: describeOriginalError(hardware.originalError),
+  };
 };

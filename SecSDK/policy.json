@@ -95096,6 +95096,13 @@
       "src/constant/index.ts"
     ]
   },
+  "src/constant/eip7702.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@debank/common/dist/index-rabby.js",
+      "src/utils/chain.ts"
+    ]
+  },
   "src/constant/gas-account.ts": {
     "enable": true,
     "require": [
@@ -95391,6 +95398,12 @@
     ]
   },
   "src/ui/assets/arrow-down-cc.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/arrow-right-cc.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -98112,6 +98125,7 @@
       "node_modules/p-queue/dist/index.js",
       "node_modules/react-redux/es/index.js",
       "src/constant/index.ts",
+      "src/constant/perps.ts",
       "src/eventBus.ts",
       "src/i18n.ts",
       "src/ui/models/account.ts",
@@ -98582,7 +98596,10 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
       "src/ui/assets/add-address/index.ts",
+      "src/ui/assets/dashboard/warning-cc.svg",
+      "src/ui/component/AuthenticationModal/index.tsx",
       "src/ui/component/index.tsx",
+      "src/ui/hooks/useEnterPassphraseModal.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/index.ts",
       "src/ui/views/AddAddress/useCreateAddress.ts",
@@ -99464,7 +99481,6 @@
       "src/ui/utils/gnosis.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/number.ts",
-      "src/ui/utils/securityEngine.ts",
       "src/ui/utils/token.ts",
       "src/ui/views/Approval/components/Actions/components/LogoWithText.tsx",
       "src/ui/views/Approval/components/Actions/components/SubTable.tsx",
@@ -100761,22 +100777,6 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/views/DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/@debank/common/dist/index-rabby.js",
-      "node_modules/antd/es/modal/index.js",
-      "node_modules/p-queue/dist/index.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react-use/esm/useAsyncRetry.js",
-      "node_modules/react/index.js",
-      "src/constant/index.ts",
-      "src/eventBus.ts",
-      "src/ui/hooks/backgroundState/useAccount.ts",
-      "src/ui/utils/index.ts",
-      "src/utils/chain.ts"
-    ]
-  },
   "src/ui/views/DesktopProfile/components/ApprovalsTabPane/utils.ts": {
     "enable": true,
     "require": [
@@ -100875,6 +100875,7 @@
       "node_modules/antd/es/back-top/index.js",
       "node_modules/antd/es/button/index.js",
       "node_modules/antd/es/config-provider/index.js",
+      "node_modules/antd/es/drawer/index.js",
       "node_modules/antd/es/dropdown/index.js",
       "node_modules/antd/es/empty/index.js",
       "node_modules/antd/es/image/index.js",
@@ -100908,6 +100909,7 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react-use/esm/useAsyncFn.js",
+      "node_modules/react-use/esm/useAsyncRetry.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react-use/esm/useMount.js",
       "node_modules/react-use/esm/useSetState.js",
@@ -100923,8 +100925,10 @@
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/web3-eth-abi/lib/index.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "src/constant/eip7702.ts",
       "src/constant/gas-account.ts",
       "src/constant/index.ts",
+      "src/constant/perps.ts",
       "src/constant/timeout.ts",
       "src/db/constants.ts",
       "src/db/hooks/history.ts",
@@ -100936,6 +100940,7 @@
       "src/ui/assets/animation/animation-create-success.min.json",
       "src/ui/assets/approval/loading.svg",
       "src/ui/assets/approval/success.svg",
+      "src/ui/assets/arrow-right-cc.svg",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/dapp-search/cc-close.svg",
       "src/ui/assets/dashboard/arrow-down-cc.svg",
@@ -101058,7 +101063,6 @@
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/BatchRevoke/style.less",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton.tsx",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/style.less",
-      "src/ui/views/DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals.tsx",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/utils.ts",
       "src/ui/views/DesktopProfile/components/TokenDetailModal/index.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch.tsx",
@@ -101724,6 +101728,7 @@
       "node_modules/viem/_esm/utils/encoding/fromHex.js",
       "node_modules/web3-eth-abi/lib/index.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "src/constant/eip7702.ts",
       "src/constant/gas-account.ts",
       "src/constant/index.ts",
       "src/constant/regexp.ts",
@@ -101736,6 +101741,7 @@
       "src/ui/assets/approval/loading.svg",
       "src/ui/assets/approval/success.svg",
       "src/ui/assets/arrow-down-cc.svg",
+      "src/ui/assets/arrow-right-cc.svg",
       "src/ui/assets/arrow-right-gray.svg",
       "src/ui/assets/check-2.svg",
       "src/ui/assets/check.svg",
@@ -101905,7 +101911,6 @@
       "src/ui/views/DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag.tsx",
       "src/ui/views/DesktopPerps/utils.ts",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton.tsx",
-      "src/ui/views/DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals.tsx",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/utils.ts",
       "src/ui/views/DesktopSmallSwap/components/Checkbox.tsx",
       "src/ui/views/Ecology/constants.tsx",
@@ -102111,6 +102116,7 @@
   "src/ui/views/Perps/constants.ts": {
     "enable": true,
     "require": [
+      "src/constant/perps.ts",
       "src/ui/views/Perps/constants/PerpsAssetCategory.json",
       "src/ui/views/Perps/constants/PerpsTopAsset.json",
       "src/utils/perps/quoteAsset.ts"
@@ -102149,6 +102155,7 @@
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/store.ts",
       "src/ui/utils/index.ts",
+      "src/ui/views/DesktopPerps/components/PerpsToast/index.tsx",
       "src/ui/views/DesktopPerps/utils.ts",
       "src/ui/views/Perps/sdkManager.ts"
     ]
@@ -102195,7 +102202,7 @@
     "require": [
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
       "src/constant/index.ts",
-      "src/ui/views/Perps/constants.ts"
+      "src/constant/perps.ts"
     ]
   },
   "src/ui/views/Perps/utils.ts": {
