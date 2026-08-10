@@ -810,7 +810,7 @@ export const Main = () => {
   const handleSwap = useMemoizedFn(async () => {
     submitTxRef.current = true;
     setQuoteRefreshLocked(true);
-    if (!isTab) {
+    if (!isTab && receiveToken) {
       setRecentSwapToToken(receiveToken);
     }
     if (!isSupportedChain) {

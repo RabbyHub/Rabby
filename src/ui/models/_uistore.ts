@@ -109,27 +109,4 @@ export default (store: typeof import('@/ui/store').default) => {
       }
     }
   });
-
-  onBackgroundStoreChanged('currency', (payload) => {
-    switch (payload.changedKey) {
-      case 'currency': {
-        dispatch.currency.setField({
-          currency: payload.partials.currency,
-        });
-        break;
-      }
-      case 'currencyList': {
-        dispatch.currency.setField({
-          currencyList: payload.partials.currencyList,
-        });
-        break;
-      }
-      case 'updatedAt': {
-        dispatch.currency.setField({
-          updatedAt: payload.partials.updatedAt,
-        });
-        break;
-      }
-    }
-  });
 };

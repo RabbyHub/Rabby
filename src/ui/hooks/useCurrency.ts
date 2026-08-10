@@ -1,5 +1,5 @@
 import { CurrencyItem } from '@/background/service/openapi';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useCurrencyStore } from '@/ui/stores/currency';
 import { formatCurrency } from '@/ui/utils';
 import { useCallback, useMemo } from 'react';
 
@@ -13,26 +13,16 @@ const USD_CURRENCY: CurrencyItem = {
 };
 
 export function useCurrency() {
-  const dispatch = useRabbyDispatch();
-
-  const currencyCode = useRabbySelector((state) => state.currency.currency);
-  const currencyList = useRabbySelector((state) => state.currency.currencyList);
+  const currencyCode = useCurrencyStore((state) => state.currency);
+  const currencyList = useCurrencyStore((state) => state.currencyList);
+  const setCurrentCurrency = useCurrencyStore((state) => state.setCurrency);
+  const syncCurrencyList = useCurrencyStore((state) => state.syncCurrencyList);
 
   const currency = useMemo(() => {
     return (
       currencyList.find((item) => item.code === currencyCode) || USD_CURRENCY
     );
   }, [currencyCode, currencyList]);
-
-  const setCurrentCurrency = useCallback(
-    (code: string) => dispatch.currency.setCurrency(code),
-    [dispatch.currency]
-  );
-
-  const syncCurrencyList = useCallback(
-    (force = false) => dispatch.currency.syncCurrencyList({ force }),
-    [dispatch.currency]
-  );
 
   const formatCurrentCurrency = useCallback(
     (value: string | number) => formatCurrency(value, { currency }),

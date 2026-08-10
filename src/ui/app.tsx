@@ -10,6 +10,7 @@ import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import browser from 'webextension-polyfill';
 
 import store from './store';
+import { initializeCurrencyStore } from './stores/currency';
 import { initializeSwapStore } from './stores/swap';
 
 import { updateChainStore } from '@/utils/chain';
@@ -88,6 +89,7 @@ const renderSentryErrorFallback: Sentry.FallbackRender = ({
 
 const main = async () => {
   await initializeSwapStore();
+  await initializeCurrencyStore();
   await compensateUnlockedOnceFlag();
 
   store.dispatch.app.initBizStore();

@@ -2722,6 +2722,8 @@ export class WalletController extends BaseController {
     key: Key
   ): PersistedStoreMap[Key] => {
     switch (key) {
+      case 'currency':
+        return currencyService.getStore() as PersistedStoreMap[Key];
       case 'swap':
         return swapService.getSwap() as PersistedStoreMap[Key];
       default:
@@ -2744,6 +2746,9 @@ export class WalletController extends BaseController {
       throw new Error(`Invalid persisted store value: ${String(key)}`);
     }
     switch (key) {
+      case 'currency':
+        currencyService.patchStore(partials as PersistedStorePatch<'currency'>);
+        return;
       case 'swap':
         swapService.patchStore(partials as PersistedStorePatch<'swap'>);
         return;

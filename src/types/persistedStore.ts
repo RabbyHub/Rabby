@@ -1,6 +1,8 @@
+import type { CurrencyStore } from '@/background/service/currency';
 import type { SwapServiceStore } from '@/background/service/swap';
 
 export type PersistedStoreMap = {
+  currency: CurrencyStore;
   swap: SwapServiceStore;
 };
 
