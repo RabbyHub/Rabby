@@ -1,7 +1,7 @@
 import type { CurrencyStore } from '@/background/service/currency';
 import type { CurrencyItem } from '@/background/service/openapi';
 import eventBus from '@/eventBus';
-import { useCurrencyStore } from '@/ui/stores/currency';
+import { useCurrencyStore } from '@/ui/state/currency';
 import { wallet } from '@/ui/wallet';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 

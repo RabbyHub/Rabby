@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import { useRabbySelector } from '@/ui/store';
-import { useSwapStore } from '@/ui/stores/swap';
+import { useSwapStore } from '@/ui/state/swap';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
 import { Alert, Button, Input, InputRef, Modal } from 'antd';

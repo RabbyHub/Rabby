@@ -1,5 +1,5 @@
 import { CurrencyItem } from '@/background/service/openapi';
-import { useCurrencyStore } from '@/ui/stores/currency';
+import { useCurrencyStore } from '@/ui/state/currency';
 import { formatCurrency } from '@/ui/utils';
 import { useCallback, useMemo } from 'react';
 

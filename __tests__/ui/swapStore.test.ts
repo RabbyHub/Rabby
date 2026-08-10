@@ -1,6 +1,6 @@
 import { SwapServiceStore } from '@/background/service/swap';
 import { DEX } from '@/constant';
-import { useSwapStore } from '@/ui/stores/swap';
+import { useSwapStore } from '@/ui/state/swap';
 import { wallet } from '@/ui/wallet';
 import { findChain } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';

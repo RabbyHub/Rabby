@@ -1,4 +1,4 @@
-import { useSwapStore } from '@/ui/stores/swap';
+import { useSwapStore } from '@/ui/state/swap';
 import { useMemo } from 'react';
 
 export const useSwapSettings = () => {

@@ -1,6 +1,6 @@
 import eventBus from '@/eventBus';
 import type { SwapServiceStore } from '@/background/service/swap';
-import { createExtensionStoreOptions } from '@/ui/stores/createExtensionStoreOptions';
+import { createExtensionStoreOptions } from '@/ui/state/createStore/createExtensionStoreOptions';
 import { wallet } from '@/ui/wallet';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 

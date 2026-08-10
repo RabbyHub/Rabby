@@ -5,7 +5,7 @@ import React, { useCallback, useState } from 'react';
 import { useRabbyFee, useSetRabbyFee } from '../hooks';
 import { SwapTxHistory } from './History';
 import { useTranslation } from 'react-i18next';
-import { useSwapStore } from '@/ui/stores/swap';
+import { useSwapStore } from '@/ui/state/swap';
 import { RabbyFeePopup } from './RabbyFeePopup';
 import { useHistory } from 'react-router-dom';
 import { getUiType } from '@/ui/utils';

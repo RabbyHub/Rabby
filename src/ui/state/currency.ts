@@ -1,8 +1,8 @@
 import type { CurrencyItem } from '@/background/service/openapi';
 import type { CurrencyStore as CurrencyServiceStore } from '@/background/service/currency';
 import { wallet } from '@/ui/wallet';
-import { createExtensionStoreOptions } from './createExtensionStoreOptions';
-import { createRabbyStore } from './createRabbyStore';
+import { createExtensionStoreOptions } from './createStore/createExtensionStoreOptions';
+import { createRabbyStore } from './createStore/createRabbyStore';
 
 type CurrencyActions = {
   setCurrency: (currency: string) => void;

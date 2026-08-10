@@ -10,13 +10,13 @@ Create persisted UI stores with the background service as the source of truth. P
 ## Inspect the Existing Domain
 
 1. Read these infrastructure files before changing code:
-   - `src/ui/stores/createRabbyStore.ts`
-   - `src/ui/stores/createExtensionStoreOptions.ts`
-   - `src/ui/stores/createSyncedBackgroundStorage.ts`
+   - `src/ui/state/createStore/createRabbyStore.ts`
+   - `src/ui/state/createStore/createExtensionStoreOptions.ts`
+   - `src/ui/state/createStore/createSyncedBackgroundStorage.ts`
    - `src/types/persistedStore.ts`
    - `src/background/controller/wallet.ts`
    - `src/background/utils/persistStore.ts`
-2. Read `src/ui/stores/swap.ts` and `src/background/service/swap.ts` as the reference implementation.
+2. Read `src/ui/state/swap.ts` and `src/background/service/swap.ts` as the reference implementation.
 3. Locate the current Rematch model, all UI call sites, initialization order, background service fields, and legacy controller methods for the requested domain.
 4. Check the worktree and preserve unrelated user changes.
 5. Use `rg` to find consumers before renaming, deleting, or changing a public API.

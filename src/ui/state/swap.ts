@@ -5,8 +5,8 @@ import { SwapServiceStore } from '@/background/service/swap';
 import { DEX } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { wallet } from '@/ui/wallet';
-import { createExtensionStoreOptions } from './createExtensionStoreOptions';
-import { createRabbyStore } from './createRabbyStore';
+import { createExtensionStoreOptions } from './createStore/createExtensionStoreOptions';
+import { createRabbyStore } from './createStore/createRabbyStore';
 
 const isTokenOnChain = (token: TokenItem | undefined, chain: CHAINS_ENUM) => {
   const chainInfo = findChain({ enum: chain });

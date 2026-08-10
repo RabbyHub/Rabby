@@ -10,8 +10,8 @@ import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import browser from 'webextension-polyfill';
 
 import store from './store';
-import { initializeCurrencyStore } from './stores/currency';
-import { initializeSwapStore } from './stores/swap';
+import { initializeCurrencyStore } from './state/currency';
+import { initializeSwapStore } from './state/swap';
 
 import { updateChainStore } from '@/utils/chain';
 import { getSentryConfig } from '@/utils/sentry-config';

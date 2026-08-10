@@ -2,7 +2,7 @@ import { DEX } from '@/constant';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React, { SVGProps } from 'react';
-import { useSwapStore } from '@/ui/stores/swap';
+import { useSwapStore } from '@/ui/state/swap';
 import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';

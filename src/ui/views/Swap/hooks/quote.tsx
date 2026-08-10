@@ -15,7 +15,7 @@ import BigNumber from 'bignumber.js';
 import React, { useRef } from 'react';
 import pRetry from 'p-retry';
 import { useRabbySelector } from '@/ui/store';
-import { useSwapStore } from '@/ui/stores/swap';
+import { useSwapStore } from '@/ui/state/swap';
 import stats from '@/stats';
 import { verifySdk } from './verify';
 import { findChainByEnum } from '@/utils/chain';

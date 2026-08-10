@@ -12,7 +12,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RcIconHiddenArrow } from '@/ui/assets/swap/hidden-quote-arrow.svg';
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
-import { useSwapStore } from '@/ui/stores/swap';
+import { useSwapStore } from '@/ui/state/swap';
 import { DrawerProps } from 'antd';
 
 interface QuotesProps

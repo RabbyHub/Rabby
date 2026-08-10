@@ -1,8 +1,8 @@
-import { createRabbyStore } from '@/ui/stores/createRabbyStore';
+import { createRabbyStore } from '@/ui/state/createStore/createRabbyStore';
 import {
   BackgroundStoreSnapshot,
   createSyncedBackgroundStorage,
-} from '@/ui/stores/createSyncedBackgroundStorage';
+} from '@/ui/state/createStore/createSyncedBackgroundStorage';
 
 type TestStore = {
   count: number;

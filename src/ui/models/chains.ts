@@ -12,7 +12,7 @@ import {
 } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import { RootModel } from '.';
-import { useSwapStore } from '@/ui/stores/swap';
+import { useSwapStore } from '@/ui/state/swap';
 import type { AccountState } from './account';
 
 type IState = {
