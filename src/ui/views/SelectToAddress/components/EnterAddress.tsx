@@ -24,7 +24,7 @@ import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
 import { KEYRING_TYPE } from '@/constant';
 import { ellipsisAddress } from '@/ui/utils/address';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 
 const StyledInputWrapper = styled.div<{ $hasError?: boolean }>`
   border-radius: 12px;
@@ -85,11 +85,7 @@ export const EnterAddress = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const { fetchAllAccounts, allSortedAccountList } = useAccounts();
-  const dispatch = useRabbyDispatch();
-
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
+  const whitelist = useWhitelistStore((state) => state.whitelists);
 
   const inputRef = useRef<InputRef>(null);
 
@@ -142,10 +138,6 @@ export const EnterAddress = ({
   useEffect(() => {
     fetchAllAccounts();
   }, [fetchAllAccounts]);
-
-  useEffect(() => {
-    dispatch.whitelist.getWhitelist();
-  }, [dispatch.whitelist]);
 
   const handleConfirmENS = useCallback(
     (result: string) => {

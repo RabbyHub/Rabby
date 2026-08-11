@@ -13,7 +13,6 @@ import { importMnemonics } from './importMnemonics';
 import { addressManagement } from './addressManagement';
 import { transactions } from './transactions';
 import { chains } from './chains';
-import { whitelist } from './whitelist';
 import { customRPC } from './customRPC';
 import { securityEngine } from './securityEngine';
 import { sign } from './sign';
@@ -41,7 +40,6 @@ export interface RootModel extends Models<RootModel> {
   addressManagement: typeof addressManagement;
   transactions: typeof transactions;
   chains: typeof chains;
-  whitelist: typeof whitelist;
   customRPC: typeof customRPC;
   securityEngine: typeof securityEngine;
   sign: typeof sign;
@@ -70,7 +68,6 @@ export const models: RootModel = {
   addressManagement,
   transactions,
   chains,
-  whitelist,
   customRPC,
   securityEngine,
   sign,

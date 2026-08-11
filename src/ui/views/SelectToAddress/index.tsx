@@ -15,6 +15,7 @@ import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 import { EnterAddress } from './components/EnterAddress';
 import { padWatchAccount } from './util';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
@@ -110,10 +111,11 @@ const SelectToAddress = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const { accountsList, whitelist } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-    whitelist: s.whitelist.whitelist,
-  }));
+  const accountsList = useRabbySelector(
+    (state) => state.accountToDisplay.accountsList
+  );
+  const whitelist = useWhitelistStore((state) => state.whitelists);
+  const isInWhitelist = useWhitelistStore((state) => state.isInWhitelist);
 
   // main state
   const [inputingAddress, setInputingAddress] = useState(false);
@@ -233,7 +235,7 @@ const SelectToAddress = () => {
   const handleSelectAccount = useCallback(
     (account: { address: string; type?: string }) => {
       if (isEnabledPwdForNonWhitelistedTx) {
-        const inWhitelist = dispatch.whitelist.isInWhitelist(account.address);
+        const inWhitelist = isInWhitelist(account.address);
         if (!inWhitelist) {
           setItemToConfirm(account);
           return;
@@ -242,13 +244,11 @@ const SelectToAddress = () => {
 
       handleConfirmAccount(account);
     },
-    [isEnabledPwdForNonWhitelistedTx, handleConfirmAccount, dispatch.whitelist]
+    [isEnabledPwdForNonWhitelistedTx, handleConfirmAccount, isInWhitelist]
   );
 
   useEffect(() => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-    dispatch.whitelist.getWhitelistEnabled();
-    dispatch.whitelist.getWhitelist();
   }, [dispatch]);
 
   useEffect(() => {

@@ -20,7 +20,6 @@ export function onBroadcastToUI<T extends BROADCAST_TO_UI_EVENTS>(
 type AllBackgroundStores = PersistedStoreMap & {
   contactBook: import('@/background/service/contactBook').ContactBookStore;
   preference: import('@/background/service/preference').PreferenceStore;
-  whitelist: import('@/background/service/whitelist').WhitelistStore;
   feedback: import('@/background/service/feedback').FeedbackServiceStore;
 };
 

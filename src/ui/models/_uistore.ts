@@ -92,21 +92,4 @@ export default (store: typeof import('@/ui/store').default) => {
       }
     }
   });
-
-  onBackgroundStoreChanged('whitelist', (payload) => {
-    switch (payload.changedKey) {
-      case 'whitelists': {
-        dispatch.whitelist.setField({
-          whitelist: payload.partials.whitelists,
-        });
-        break;
-      }
-      case 'enabled': {
-        dispatch.whitelist.setField({
-          enabled: payload.partials.enabled,
-        });
-        break;
-      }
-    }
-  });
 };

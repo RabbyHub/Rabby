@@ -1,9 +1,10 @@
 import { query2obj } from '@/ui/utils/url';
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { Switch } from 'antd';
-import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
+import { connectStore } from 'ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { PageHeader } from 'ui/component';
 import { isSameAddress, useAddressSource, useWallet } from 'ui/utils';
@@ -17,10 +18,7 @@ import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 const AddressDetail: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
   const { t } = useTranslation();
   const { search } = useLocation();
-  const dispatch = useRabbyDispatch();
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
+  const whitelist = useWhitelistStore((state) => state.whitelists);
   const wallet = useWallet();
   const qs = useMemo(() => query2obj(search), [search]) as {
     address: string;
@@ -40,10 +38,6 @@ const AddressDetail: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
     address,
   });
 
-  useEffect(() => {
-    dispatch.whitelist.getWhitelist();
-  }, []);
-
   const handleWhitelistChange = async (checked: boolean) => {
     if (!checked) {
       await wallet.removeWhitelist(address);
@@ -62,12 +56,8 @@ const AddressDetail: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
       validationHandler: async (password) => {
         await wallet.addWhitelist(password, address);
       },
-      onFinished() {
-        // dispatch.whitelist.getWhitelist();
-      },
-      onCancel() {
-        // do nothing
-      },
+    }).catch(() => {
+      // User cancelled authentication.
     });
   };
 
