@@ -10,7 +10,7 @@ import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountLis
 import { SwapTokenModal } from './components/SwapTokenModal';
 import { TransactionsTabPane } from './components/TransactionsTabPane';
 import { DesktopChainSelector } from '../DesktopChainSelector';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 import { findChainByEnum } from '@/utils/chain';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useDesktopBalanceView } from './hooks/useDesktopBalanceView';
@@ -88,14 +88,14 @@ const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
 
   const history = useHistory();
   const location = useLocation();
-  const dispatch = useRabbyDispatch();
+  const setActiveTab = useDesktopProfileStore((state) => state.setActiveTab);
   const activeTab = useMemo(() => {
     const match = location.pathname.match(/^\/desktop\/profile(?:\/([^/?]+))?/);
     return match?.[1] || 'tokens';
   }, [location.pathname]);
 
   const handleTabChange = (key: string) => {
-    dispatch.desktopProfile.setField({ activeTab: key });
+    setActiveTab(key);
     history.replace(`/desktop/profile/${key}`);
     const $scrollElement = scrollContainerRef.current;
     if (!$scrollElement) {
@@ -116,7 +116,8 @@ const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
       sendPageType: searchParams.get('sendPageType'),
     };
   }, [location.search]);
-  const chain = useRabbySelector((store) => store.desktopProfile.chain);
+  const chain = useDesktopProfileStore((state) => state.chain);
+  const setChain = useDesktopProfileStore((state) => state.setChain);
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const {
@@ -300,9 +301,7 @@ const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
                             <DesktopPending />
                             <DesktopChainSelector
                               value={chain}
-                              onChange={(v) =>
-                                dispatch.desktopProfile.setField({ chain: v })
-                              }
+                              onChange={setChain}
                             />
                           </div>
                         </>
