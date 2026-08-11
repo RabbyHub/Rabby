@@ -6,6 +6,7 @@ import { RcIconAddWalletCC } from '@/ui/assets/desktop/profile';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
@@ -287,7 +288,7 @@ const AccountList: React.FC<{
     return accounts.length + 1 > 8;
   }, [accounts.length]);
 
-  const dispatch = useRabbyDispatch();
+  const setAddAddress = useDesktopProfileStore((state) => state.setAddAddress);
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -359,12 +360,10 @@ const AccountList: React.FC<{
           Footer: () => (
             <div
               onClick={() => {
-                dispatch.desktopProfile.setField({
-                  addAddress: {
-                    visible: true,
-                    importType: '',
-                    state: {},
-                  },
+                setAddAddress({
+                  visible: true,
+                  importType: '',
+                  state: {},
                 });
                 onClose?.();
               }}

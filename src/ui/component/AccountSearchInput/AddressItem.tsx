@@ -10,7 +10,7 @@ import React, {
 
 import { AddressViewer } from 'ui/component';
 import { isSameAddress, splitNumberByStep, useAlias } from 'ui/utils';
-import { useRabbySelector } from '@/ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
@@ -43,10 +43,8 @@ const AddressItem = memo(
     onClick,
     onConfirm,
   }: AddressItemProps) => {
-    const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
-      whitelistEnable: s.whitelist.enabled,
-      whiteList: s.whitelist.whitelist,
-    }));
+    const whitelistEnable = useWhitelistStore((state) => state.enabled);
+    const whiteList = useWhitelistStore((state) => state.whitelists);
     const { t } = useTranslation();
 
     const isInWhiteList = useMemo(() => {

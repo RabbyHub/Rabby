@@ -2726,6 +2726,8 @@ export class WalletController extends BaseController {
         return currencyService.getStore() as PersistedStoreMap[Key];
       case 'swap':
         return swapService.getSwap() as PersistedStoreMap[Key];
+      case 'whitelist':
+        return whitelistService.getStore() as PersistedStoreMap[Key];
       default:
         throw new Error(`Unknown persisted store: ${String(key)}`);
     }
@@ -2751,6 +2753,11 @@ export class WalletController extends BaseController {
         return;
       case 'swap':
         swapService.patchStore(partials as PersistedStorePatch<'swap'>);
+        return;
+      case 'whitelist':
+        whitelistService.patchStore(
+          partials as PersistedStorePatch<'whitelist'>
+        );
         return;
       default:
         throw new Error(`Unknown persisted store: ${String(key)}`);

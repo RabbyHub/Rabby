@@ -11,7 +11,8 @@ import { findChain } from '@/utils/chain';
 import { isSameAddress, useWallet, WalletControllerType } from '@/ui/utils';
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyGetter, useRabbySelector } from '@/ui/store';
+import { useRabbyGetter } from '@/ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 import { findMaxGasTx } from '@/utils/tx';
 import { isValidAddress } from '@ethereumjs/util';
 import eventBus from '@/eventBus';
@@ -247,9 +248,7 @@ export function useToAddressPositiveTips({
   toAddress?: string;
   isMyImported?: boolean;
 }): ToAddressPositiveTips {
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
+  const whitelist = useWhitelistStore((state) => state.whitelists);
   const inWhitelist = useMemo(() => {
     return !!toAddress && whitelist?.some((w) => isSameAddress(w, toAddress));
   }, [toAddress, whitelist]);

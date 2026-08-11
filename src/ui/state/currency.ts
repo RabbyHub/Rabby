@@ -25,15 +25,10 @@ export const useCurrencyStore = createRabbyStore<CurrencyStore>(
     },
   }),
   createExtensionStoreOptions<CurrencyStore, 'currency'>({
-    autoHydrate: false,
+    autoHydrate: true,
     storageKey: 'currency',
     onError(error) {
       console.error('[currencyStore]', error);
     },
   })
 );
-
-export const initializeCurrencyStore = async () => {
-  await useCurrencyStore.persist.hydrate();
-  void useCurrencyStore.getState().syncCurrencyList();
-};

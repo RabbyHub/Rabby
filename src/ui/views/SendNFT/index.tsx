@@ -529,8 +529,6 @@ const SendNFT = () => {
   }, [nftItem, wallet, history.location.pathname, form]);
 
   const init = useCallback(async () => {
-    dispatch.whitelist.getWhitelistEnabled();
-    dispatch.whitelist.getWhitelist();
     dispatch.contactBook.getContactBookAsync();
     const account = await wallet.syncGetCurrentAccount();
 
@@ -539,7 +537,7 @@ const SendNFT = () => {
       return;
     }
     setInited(true);
-  }, [dispatch.contactBook, dispatch.whitelist, history, wallet]);
+  }, [dispatch.contactBook, history, wallet]);
 
   useEffect(() => {
     init();
