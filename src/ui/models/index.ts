@@ -20,7 +20,6 @@ import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
 import { rateGuidance } from './rateGuidance';
 import { exchange } from './exchange';
-import { directSubmitTx } from './directSubmitTx';
 import { gift } from './gift';
 import { perps } from './perps';
 
@@ -45,7 +44,6 @@ export interface RootModel extends Models<RootModel> {
   gasAccount: typeof gasAccount;
   rateGuidance: typeof rateGuidance;
   exchange: typeof exchange;
-  directSubmitTx: typeof directSubmitTx;
   gift: typeof gift;
   perps: typeof perps;
 }
@@ -71,7 +69,6 @@ export const models: RootModel = {
   gasAccount,
   rateGuidance,
   exchange,
-  directSubmitTx,
   gift,
   perps,
 };
