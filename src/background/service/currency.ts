@@ -1,33 +1,46 @@
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, patchPersistStore } from 'background/utils';
 import openapiService, { CurrencyItem } from './openapi';
+import { z } from 'zod';
 
-export interface CurrencyStore {
-  currencyList: CurrencyItem[];
-  updatedAt: number;
-  currency: string;
-}
+const currencyItemSchema = z.object({
+  symbol: z.string(),
+  code: z.string(),
+  logo_url: z.string(),
+  usd_rate: z.number(),
+  is_prefix: z.boolean(),
+});
+
+const currencyListSchema = z.array(currencyItemSchema);
+
+const currencyStoreSchema = z.object({
+  currencyList: currencyListSchema.default(() => []),
+  updatedAt: z.number().default(0),
+  currency: z.string().min(1).default('USD'),
+});
+
+export type CurrencyStore = z.output<typeof currencyStoreSchema>;
+
+const createCurrencyStoreTemplate = (): CurrencyStore =>
+  currencyStoreSchema.parse({});
 
 class CurrencyService {
-  store!: CurrencyStore;
+  store: CurrencyStore = createCurrencyStoreTemplate();
   timer: ReturnType<typeof setInterval> | null = null;
 
   init = async () => {
     this.store = await createPersistStore<CurrencyStore>({
       name: 'currency',
-      template: {
-        currencyList: [],
-        updatedAt: 0,
-        currency: 'USD',
-      },
+      template: createCurrencyStoreTemplate(),
+      schema: currencyStoreSchema,
     });
 
-    if (!Array.isArray(this.store.currencyList)) {
+    if (!currencyListSchema.safeParse(this.store.currencyList).success) {
       this.store.currencyList = [];
     }
-    if (!this.store.updatedAt) {
+    if (!z.number().safeParse(this.store.updatedAt).success) {
       this.store.updatedAt = 0;
     }
-    if (!this.store.currency) {
+    if (!z.string().min(1).safeParse(this.store.currency).success) {
       this.store.currency = 'USD';
     }
 
@@ -47,7 +60,11 @@ class CurrencyService {
   };
 
   setCurrency = (currency: CurrencyItem['code']) => {
-    this.store.currency = currency || 'USD';
+    this.patchStore({ currency: currency || 'USD' });
+  };
+
+  patchStore = (partials: Partial<CurrencyStore>) => {
+    patchPersistStore(this.store, partials);
   };
 
   syncCurrencyList = async (force = false) => {
@@ -61,8 +78,10 @@ class CurrencyService {
 
     try {
       const currencyList = await openapiService.getCurrencyList();
-      this.store.currencyList = currencyList;
-      this.store.updatedAt = Date.now();
+      this.patchStore({
+        currencyList,
+        updatedAt: Date.now(),
+      });
       return currencyList;
     } catch (error) {
       console.error('fetch currency list error: ', error);

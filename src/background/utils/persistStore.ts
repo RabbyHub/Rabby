@@ -2,21 +2,123 @@
 import { storage } from 'background/webapi';
 import { syncStateToUI } from './broadcastToUI';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
+import { isEqual } from 'lodash';
 
 const persistStorage = (name: string, obj: object) => {
   storage.set(name, obj);
+};
+
+const storeRevisions = new Map<string, number>();
+
+export type PersistStoreSchemaIssue = {
+  message: string;
+  path?: ReadonlyArray<PropertyKey | { key: PropertyKey }>;
+};
+
+type PersistStoreSchemaResult<T> =
+  | { value: T; issues?: undefined }
+  | { issues: ReadonlyArray<PersistStoreSchemaIssue> };
+
+/**
+ * The subset of Standard Schema v1 used by persisted background stores.
+ * Zod, Valibot and other Standard Schema-compatible validators can be passed
+ * directly without an adapter.
+ */
+export type PersistStoreSchema<T> = {
+  readonly '~standard': {
+    readonly version: 1;
+    readonly vendor: string;
+    readonly validate: (
+      value: unknown
+    ) => PersistStoreSchemaResult<T> | Promise<PersistStoreSchemaResult<T>>;
+  };
+};
+
+type PersistStoreMetadata<T extends object> = {
+  applyPatch: (partials: Partial<T>) => void;
+  schema?: PersistStoreSchema<T>;
+};
+
+const persistStoreMetadata = new WeakMap<object, PersistStoreMetadata<any>>();
+
+export class PersistStoreSchemaValidationError extends Error {
+  constructor(readonly issues: ReadonlyArray<PersistStoreSchemaIssue>) {
+    super(
+      `Persisted store validation failed: ${issues
+        .map((issue) => issue.message)
+        .join(', ')}`
+    );
+    this.name = 'PersistStoreSchemaValidationError';
+  }
+}
+
+const validatePersistStoreState = <T extends object>(
+  schema: PersistStoreSchema<T>,
+  state: unknown
+) => {
+  const result = schema['~standard'].validate(state);
+  if (result instanceof Promise) {
+    throw new Error('Persisted store schema must be synchronous');
+  }
+  if ('issues' in result && result.issues) {
+    throw new PersistStoreSchemaValidationError(result.issues);
+  }
+  return result.value;
+};
+
+const nextPersistStoreRevision = (name: string) => {
+  const revision = (storeRevisions.get(name) || 0) + 1;
+  storeRevisions.set(name, revision);
+  return revision;
+};
+
+export const getPersistStoreRevision = (name: string) =>
+  storeRevisions.get(name) || 0;
+
+export const patchPersistStore = <T extends object>(
+  store: T,
+  partials: Partial<T>
+) => {
+  const metadata = persistStoreMetadata.get(store) as
+    | PersistStoreMetadata<T>
+    | undefined;
+  if (!metadata) {
+    throw new Error('Store was not created by createPersistStore');
+  }
+  if (!metadata.schema) {
+    throw new Error('Persisted store does not have a schema');
+  }
+
+  const validatedState = validatePersistStoreState(metadata.schema, {
+    ...store,
+    ...partials,
+  });
+
+  const validatedPartials: Partial<T> = {};
+  Object.keys(partials).forEach((key) => {
+    const storeKey = key as keyof T;
+    if (
+      Object.prototype.hasOwnProperty.call(validatedState, storeKey) &&
+      !isEqual(store[storeKey], validatedState[storeKey])
+    ) {
+      validatedPartials[storeKey] = validatedState[storeKey];
+    }
+  });
+  metadata.applyPatch(validatedPartials);
 };
 
 interface CreatePersistStoreParams<T> {
   name: string;
   template?: T;
   fromStorage?: boolean;
+  schema?: PersistStoreSchema<T>;
 }
 
 const createPersistStore = async <T extends object>({
   name,
   template = Object.create(null),
   fromStorage = true,
+  schema,
 }: CreatePersistStoreParams<T>): Promise<T> => {
   let tpl = template;
 
@@ -29,20 +131,26 @@ const createPersistStore = async <T extends object>({
     }
   }
 
+  const commitPartials = (target: T, partials: Partial<T>) => {
+    const changedKeys = Object.keys(partials);
+    if (!changedKeys.length) return;
+
+    Object.assign(target, partials);
+    persistStorage(name, target);
+    const revision = nextPersistStoreRevision(name);
+
+    syncStateToUI(BROADCAST_TO_UI_EVENTS.storeChanged, {
+      bgStoreName: name,
+      changedKey: changedKeys[0]!,
+      changedKeys,
+      partials,
+      revision,
+    });
+  };
+
   const store = new Proxy(tpl, {
     set(target, prop, value) {
-      target[prop] = value;
-
-      persistStorage(name, target);
-
-      syncStateToUI(BROADCAST_TO_UI_EVENTS.storeChanged, {
-        bgStoreName: name,
-        changedKey: prop as string,
-        changedKeys: [prop as string],
-        partials: {
-          [prop]: value,
-        },
-      });
+      commitPartials(target, { [prop]: value } as Partial<T>);
 
       return true;
     },
@@ -56,6 +164,10 @@ const createPersistStore = async <T extends object>({
 
       return true;
     },
+  });
+  persistStoreMetadata.set(store, {
+    applyPatch: (partials) => commitPartials(tpl, partials as Partial<T>),
+    schema: schema as PersistStoreSchema<object> | undefined,
   });
 
   return store;

@@ -5,7 +5,6 @@ import { appVersion } from './appVersion';
 import { account } from './account';
 import { permission } from './permission';
 import { preference } from './preference';
-import { currency } from './currency';
 import { openapi } from './openapi';
 import { contactBook } from './contactBook';
 import { accountToDisplay } from './accountToDisplay';
@@ -15,7 +14,6 @@ import { addressManagement } from './addressManagement';
 import { transactions } from './transactions';
 import { chains } from './chains';
 import { whitelist } from './whitelist';
-import { swap } from './swap';
 import { customRPC } from './customRPC';
 import { securityEngine } from './securityEngine';
 import { sign } from './sign';
@@ -35,7 +33,6 @@ export interface RootModel extends Models<RootModel> {
   account: typeof account;
   permission: typeof permission;
   preference: typeof preference;
-  currency: typeof currency;
   openapi: typeof openapi;
   contactBook: typeof contactBook;
   accountToDisplay: typeof accountToDisplay;
@@ -45,7 +42,6 @@ export interface RootModel extends Models<RootModel> {
   transactions: typeof transactions;
   chains: typeof chains;
   whitelist: typeof whitelist;
-  swap: typeof swap;
   customRPC: typeof customRPC;
   securityEngine: typeof securityEngine;
   sign: typeof sign;
@@ -66,7 +62,6 @@ export const models: RootModel = {
   account,
   permission,
   preference,
-  currency,
   openapi,
   contactBook,
   accountToDisplay,
@@ -76,7 +71,6 @@ export const models: RootModel = {
   transactions,
   chains,
   whitelist,
-  swap,
   customRPC,
   securityEngine,
   sign,

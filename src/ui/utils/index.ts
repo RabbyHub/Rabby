@@ -24,29 +24,9 @@ export * from './time';
 
 export * from './number';
 export * from './os';
+export { getUiType, getUITypeName } from './uiType';
 
-const UI_TYPE = {
-  Tab: 'index',
-  Pop: 'popup',
-  Notification: 'notification',
-  Desktop: 'desktop',
-};
-
-type UiTypeCheck = {
-  isTab: boolean;
-  isNotification: boolean;
-  isPop: boolean;
-  isDesktop: boolean;
-};
-
-export const getUiType = (): UiTypeCheck => {
-  const { pathname } = window.location;
-  return Object.entries(UI_TYPE).reduce((m, [key, value]) => {
-    m[`is${key}`] = pathname === `/${value}.html`;
-
-    return m;
-  }, {} as UiTypeCheck);
-};
+import { getUiType } from './uiType';
 
 export function getContainerByScreen() {
   const uiType = getUiType();
@@ -67,17 +47,6 @@ export const hex2Text = (hex: string) => {
   } catch {
     return hex;
   }
-};
-
-export const getUITypeName = (): string => {
-  const UIType = getUiType();
-
-  if (UIType.isPop) return 'popup';
-  if (UIType.isNotification) return 'notification';
-  if (UIType.isTab) return 'tab';
-  if (UIType.isDesktop) return 'desktop';
-
-  return '';
 };
 
 /**
