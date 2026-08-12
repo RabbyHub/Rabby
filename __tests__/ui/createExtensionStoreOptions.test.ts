@@ -26,13 +26,18 @@ describe('createExtensionStoreOptions', () => {
   test('adapts wallet storage methods and background store broadcasts', async () => {
     const getStorageSnapshot = wallet.getStorageSnapshot as jest.Mock;
     const setStorageItem = wallet.setStorageItem as jest.Mock;
-    getStorageSnapshot.mockResolvedValue({ revision: 2, state: swapState });
+    getStorageSnapshot.mockResolvedValue({
+      origin: 'background-1',
+      revision: 2,
+      state: swapState,
+    });
     setStorageItem.mockResolvedValue(undefined);
     const options = createExtensionStoreOptions<TestSwapStore, 'swap'>({
       storageKey: 'swap',
     });
 
     await expect(options.storage.get()).resolves.toEqual({
+      origin: 'background-1',
       revision: 2,
       state: swapState,
     });
@@ -52,9 +57,11 @@ describe('createExtensionStoreOptions', () => {
       changedKey: 'slippage',
       changedKeys: ['slippage'],
       partials: { slippage: '1' },
+      origin: 'background-1',
       revision: 3,
     });
     expect(listener).toHaveBeenCalledWith({
+      origin: 'background-1',
       revision: 3,
       state: { slippage: '1' },
     });

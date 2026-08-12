@@ -79,6 +79,7 @@ describe('shouldReportUserBehaviorData', () => {
       partials: {
         userDataTrackingOptOut: false,
       },
+      origin: 'background-1',
       revision: 1,
     });
 
@@ -104,6 +105,7 @@ describe('shouldReportUserBehaviorData', () => {
         partials: {
           userDataTrackingOptOut: true,
         },
+        origin: 'background-1',
         revision: 2,
       },
     });

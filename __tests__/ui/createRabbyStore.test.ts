@@ -11,6 +11,8 @@ type TestStore = {
   setLabel: (label: string) => void;
 };
 
+const TEST_ORIGIN = 'background-1';
+
 const createDeferred = <T>() => {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((done) => {
@@ -22,6 +24,7 @@ const createDeferred = <T>() => {
 describe('createRabbyStore', () => {
   test('supports manually starting hydration after dependencies are injected', async () => {
     const get = jest.fn().mockResolvedValue({
+      origin: TEST_ORIGIN,
       revision: 0,
       state: { count: 3 },
     });
@@ -71,6 +74,7 @@ describe('createRabbyStore', () => {
     expect(store.getState().count).toBe(0);
 
     hydration.resolve({
+      origin: TEST_ORIGIN,
       revision: 0,
       state: { count: 5, label: 'persisted' },
     });
@@ -90,7 +94,7 @@ describe('createRabbyStore', () => {
   test('updates optimistically and serializes background persistence', async () => {
     const calls: number[] = [];
     const { storage } = createSyncedBackgroundStorage<TestStore>({
-      get: async () => ({ revision: 0, state: {} }),
+      get: async () => ({ origin: TEST_ORIGIN, revision: 0, state: {} }),
       set: async ({ partials }) => {
         calls.push(partials.count!);
       },
@@ -124,7 +128,7 @@ describe('createRabbyStore', () => {
     const persist = jest.fn().mockResolvedValue(undefined);
     const dispose = jest.fn();
     const { storage, syncEngine } = createSyncedBackgroundStorage<TestStore>({
-      get: async () => ({ revision: 0, state: {} }),
+      get: async () => ({ origin: TEST_ORIGIN, revision: 0, state: {} }),
       set: persist,
       subscribe(listener) {
         onRemote = listener;
@@ -145,7 +149,7 @@ describe('createRabbyStore', () => {
     );
     await store.persist.hydrationPromise();
 
-    onRemote({ revision: 1, state: { count: 9 } });
+    onRemote({ origin: TEST_ORIGIN, revision: 1, state: { count: 9 } });
     await store.persist.flush();
 
     expect(store.getState().count).toBe(9);
@@ -157,7 +161,11 @@ describe('createRabbyStore', () => {
   test('ignores background updates older than the latest revision', async () => {
     let onRemote!: (update: BackgroundStoreSnapshot<TestStore>) => void;
     const { storage, syncEngine } = createSyncedBackgroundStorage<TestStore>({
-      get: async () => ({ revision: 3, state: { count: 3 } }),
+      get: async () => ({
+        origin: TEST_ORIGIN,
+        revision: 3,
+        state: { count: 3 },
+      }),
       set: async () => undefined,
       subscribe(listener) {
         onRemote = listener;
@@ -175,10 +183,68 @@ describe('createRabbyStore', () => {
     );
     await store.persist.hydrationPromise();
 
-    onRemote({ revision: 5, state: { count: 5 } });
-    onRemote({ revision: 4, state: { count: 4 } });
+    onRemote({ origin: TEST_ORIGIN, revision: 5, state: { count: 5 } });
+    onRemote({ origin: TEST_ORIGIN, revision: 4, state: { count: 4 } });
 
     expect(store.getState().count).toBe(5);
+    store.persist.destroy();
+  });
+
+  test('restores a full snapshot when the background origin changes', async () => {
+    let onRemote!: (update: BackgroundStoreSnapshot<TestStore>) => void;
+    const restartedSnapshot = createDeferred<
+      BackgroundStoreSnapshot<TestStore>
+    >();
+    const get = jest
+      .fn()
+      .mockResolvedValueOnce({
+        origin: TEST_ORIGIN,
+        revision: 5,
+        state: { count: 5, label: 'old background' },
+      })
+      .mockImplementationOnce(() => restartedSnapshot.promise);
+    const { storage, syncEngine } = createSyncedBackgroundStorage<TestStore>({
+      get,
+      set: async () => undefined,
+      subscribe(listener) {
+        onRemote = listener;
+        return () => undefined;
+      },
+    });
+    const store = createRabbyStore<TestStore>(
+      (set) => ({
+        count: 0,
+        label: 'initial',
+        setCount: (count) => set({ count }),
+        setLabel: (label) => set({ label }),
+      }),
+      { storage, sync: { engine: syncEngine } }
+    );
+    await store.persist.hydrationPromise();
+
+    onRemote({
+      origin: 'background-2',
+      revision: 1,
+      state: { count: 1 },
+    });
+    expect(store.getState()).toMatchObject({
+      count: 5,
+      label: 'old background',
+    });
+
+    restartedSnapshot.resolve({
+      origin: 'background-2',
+      revision: 1,
+      state: { count: 1, label: 'restarted background' },
+    });
+    await restartedSnapshot.promise;
+    await Promise.resolve();
+
+    expect(get).toHaveBeenCalledTimes(2);
+    expect(store.getState()).toMatchObject({
+      count: 1,
+      label: 'restarted background',
+    });
     store.persist.destroy();
   });
 
@@ -186,8 +252,16 @@ describe('createRabbyStore', () => {
     const onError = jest.fn();
     const get = jest
       .fn()
-      .mockResolvedValueOnce({ revision: 0, state: { count: 0 } })
-      .mockResolvedValueOnce({ revision: 0, state: { count: 0 } });
+      .mockResolvedValueOnce({
+        origin: TEST_ORIGIN,
+        revision: 0,
+        state: { count: 0 },
+      })
+      .mockResolvedValueOnce({
+        origin: TEST_ORIGIN,
+        revision: 0,
+        state: { count: 0 },
+      });
     const { storage } = createSyncedBackgroundStorage<TestStore>({
       get,
       set: async () => {

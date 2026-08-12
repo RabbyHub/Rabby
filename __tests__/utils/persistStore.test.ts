@@ -1,5 +1,6 @@
 import {
   default as createPersistStore,
+  getPersistStoreOrigin,
   patchPersistStore,
   PersistStoreSchemaValidationError,
 } from '@/background/utils/persistStore';
@@ -52,6 +53,7 @@ describe('patchPersistStore', () => {
       expect.anything(),
       expect.objectContaining({
         changedKeys: ['count', 'optional'],
+        origin: getPersistStoreOrigin(),
         partials: { count: 1, optional: 'value' },
       })
     );

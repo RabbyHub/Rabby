@@ -1,6 +1,7 @@
 type FieldName<State> = Extract<keyof State, string>;
 
 export type BackgroundStoreSnapshot<State> = {
+  origin: string;
   revision: number;
   state: Partial<State>;
 };

@@ -19,6 +19,7 @@ jest.mock('webextension-polyfill', () => ({
 jest.mock('@/ui/wallet', () => ({
   wallet: {
     getStorageSnapshot: jest.fn().mockResolvedValue({
+      origin: 'background-1',
       revision: 1,
       state: {
         enabled: true,
@@ -77,6 +78,7 @@ describe('whitelist store', () => {
       partials: {
         whitelists: ['0xbbb', '0xaaa', '0xccc'],
       },
+      origin: 'background-1',
       revision: 2,
     });
 

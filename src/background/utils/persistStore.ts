@@ -3,12 +3,14 @@ import { storage } from 'background/webapi';
 import { syncStateToUI } from './broadcastToUI';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 import { isEqual } from 'lodash';
+import { nanoid } from 'nanoid';
 
 const persistStorage = (name: string, obj: object) => {
   storage.set(name, obj);
 };
 
 const storeRevisions = new Map<string, number>();
+const persistStoreOrigin = nanoid();
 
 export type PersistStoreSchemaIssue = {
   message: string;
@@ -74,6 +76,8 @@ const nextPersistStoreRevision = (name: string) => {
 
 export const getPersistStoreRevision = (name: string) =>
   storeRevisions.get(name) || 0;
+
+export const getPersistStoreOrigin = () => persistStoreOrigin;
 
 export const patchPersistStore = <T extends object>(
   store: T,
@@ -144,6 +148,7 @@ const createPersistStore = async <T extends object>({
       changedKey: changedKeys[0]!,
       changedKeys,
       partials,
+      origin: persistStoreOrigin,
       revision,
     });
   };

@@ -33,6 +33,7 @@ export const createExtensionStoreOptions = <
         storageKey
       )) as PersistedStoreSnapshot<Key>;
       return {
+        origin: snapshot.origin,
         revision: snapshot.revision,
         state: (snapshot.state as unknown) as Partial<State>,
       };
@@ -44,12 +45,16 @@ export const createExtensionStoreOptions = <
       );
     },
     subscribe(listener) {
-      return onBackgroundStoreChanged(storageKey, ({ partials, revision }) => {
-        listener({
-          revision,
-          state: partials as Partial<State>,
-        });
-      });
+      return onBackgroundStoreChanged(
+        storageKey,
+        ({ origin, partials, revision }) => {
+          listener({
+            origin,
+            revision,
+            state: partials as Partial<State>,
+          });
+        }
+      );
     },
   });
 

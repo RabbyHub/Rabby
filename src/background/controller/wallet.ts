@@ -133,7 +133,10 @@ import type {
   PersistedStorePatch,
   PersistedStoreSnapshot,
 } from '@/types/persistedStore';
-import { getPersistStoreRevision } from 'background/utils/persistStore';
+import {
+  getPersistStoreOrigin,
+  getPersistStoreRevision,
+} from 'background/utils/persistStore';
 
 import transactionWatcher from '../service/transactionWatcher';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -2736,6 +2739,7 @@ export class WalletController extends BaseController {
   getStorageSnapshot = <Key extends PersistedStoreKey>(
     key: Key
   ): PersistedStoreSnapshot<Key> => ({
+    origin: getPersistStoreOrigin(),
     revision: getPersistStoreRevision(key),
     state: this.getStorageItem(key),
   });
