@@ -22,6 +22,7 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 export const wallet = walletClient.wallet;
 export const walletReady = walletClient.ready;
 export const walletRequest = walletClient.request;
+export const onWalletReconnect = walletClient.onReconnect;
 export const disposeWallet = walletClient.dispose;
 
 export { createWallet } from './createWallet';

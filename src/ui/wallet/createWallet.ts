@@ -22,7 +22,10 @@ type PendingRequest = {
 export type WalletMessageChannel = {
   connect: (name?: string) => unknown;
   dispose: () => void;
-  on: (event: 'message', listener: (message: any) => void) => unknown;
+  on: (
+    event: 'disconnect' | 'message',
+    listener: (message?: any) => void
+  ) => unknown;
   request: (data: WalletRequest) => Promise<unknown>;
 };
 
@@ -57,6 +60,11 @@ export const createWallet = ({
 }: CreateWalletOptions) => {
   const pendingRequests: PendingRequest[] = [];
   let backgroundReady = false;
+  let connectedOnce = false;
+  let disposed = false;
+  let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
+  let reconnectAttempt = 0;
+  const reconnectListeners = new Set<() => void>();
   let resolveReady!: () => void;
   const ready = new Promise<void>((resolve) => {
     resolveReady = resolve;
@@ -77,12 +85,43 @@ export const createWallet = ({
     });
   };
 
+  const connectChannel = () => {
+    if (disposed) return;
+    reconnectTimer = undefined;
+    try {
+      channel.connect(name);
+    } catch {
+      scheduleReconnect();
+    }
+  };
+
+  const scheduleReconnect = () => {
+    if (disposed || reconnectTimer) return;
+    const retryDelay = Math.min(100 * 2 ** reconnectAttempt, 2_000);
+    reconnectAttempt += 1;
+    reconnectTimer = setTimeout(connectChannel, retryDelay);
+  };
+
+  channel.on('disconnect', () => {
+    if (disposed) return;
+    backgroundReady = false;
+    scheduleReconnect();
+  });
+
   channel.on('message', (message) => {
     if (message?.event === BACKGROUND_READY_MESSAGE) {
       if (!backgroundReady) {
         backgroundReady = true;
-        resolveReady();
+        reconnectAttempt = 0;
+        const reconnected = connectedOnce;
+        connectedOnce = true;
+        if (!reconnected) {
+          resolveReady();
+        }
         flushPendingRequests();
+        if (reconnected) {
+          reconnectListeners.forEach((listener) => listener());
+        }
       }
       return;
     }
@@ -111,15 +150,25 @@ export const createWallet = ({
     }
   ) as WalletControllerType;
 
-  channel.connect(name);
+  connectChannel();
 
   return {
     wallet,
     ready,
     request,
+    onReconnect(listener: () => void) {
+      reconnectListeners.add(listener);
+      return () => reconnectListeners.delete(listener);
+    },
     dispose() {
+      disposed = true;
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = undefined;
+      }
       const error = new Error('Wallet message channel disposed');
       pendingRequests.splice(0).forEach(({ reject }) => reject(error));
+      reconnectListeners.clear();
       channel.dispose();
     },
   };

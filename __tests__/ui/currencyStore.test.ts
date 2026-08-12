@@ -20,7 +20,23 @@ jest.mock('webextension-polyfill', () => ({
 
 jest.mock('@/ui/wallet', () => ({
   wallet: {
-    getStorageSnapshot: jest.fn(),
+    getStorageSnapshot: jest.fn().mockResolvedValue({
+      origin: 'background-1',
+      revision: 1,
+      state: {
+        currency: 'USD',
+        currencyList: [
+          {
+            code: 'USD',
+            symbol: '$',
+            logo_url: 'usd.png',
+            usd_rate: 1,
+            is_prefix: true,
+          },
+        ],
+        updatedAt: 1,
+      },
+    }),
     setStorageItem: jest.fn(),
     syncCurrencyList: jest.fn(),
   },
@@ -51,6 +67,7 @@ const currencyState: CurrencyStore = {
 describe('currency store', () => {
   beforeAll(async () => {
     (wallet.getStorageSnapshot as jest.Mock).mockResolvedValue({
+      origin: 'background-1',
       revision: 1,
       state: currencyState,
     });
@@ -95,6 +112,7 @@ describe('currency store', () => {
         currencyList: [eurCurrency],
         updatedAt: 2,
       },
+      origin: 'background-1',
       revision: 2,
     });
 

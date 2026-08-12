@@ -4,7 +4,7 @@ import type {
   PersistedStoreSnapshot,
 } from '@/types/persistedStore';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
-import { wallet } from '@/ui/wallet';
+import { onWalletReconnect, wallet } from '@/ui/wallet';
 import type { RabbyStoreOptions } from './createRabbyStore';
 import { createSyncedBackgroundStorage } from './createSyncedBackgroundStorage';
 
@@ -33,6 +33,7 @@ export const createExtensionStoreOptions = <
         storageKey
       )) as PersistedStoreSnapshot<Key>;
       return {
+        origin: snapshot.origin,
         revision: snapshot.revision,
         state: (snapshot.state as unknown) as Partial<State>,
       };
@@ -44,13 +45,18 @@ export const createExtensionStoreOptions = <
       );
     },
     subscribe(listener) {
-      return onBackgroundStoreChanged(storageKey, ({ partials, revision }) => {
-        listener({
-          revision,
-          state: partials as Partial<State>,
-        });
-      });
+      return onBackgroundStoreChanged(
+        storageKey,
+        ({ origin, partials, revision }) => {
+          listener({
+            origin,
+            revision,
+            state: partials as Partial<State>,
+          });
+        }
+      );
     },
+    onReconnect: onWalletReconnect,
   });
 
   return {

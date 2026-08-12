@@ -74,7 +74,7 @@ Follow these rules:
 1. Add the service store type to `PersistedStoreMap` in `src/types/persistedStore.ts`.
 2. Add the new key to the routing in `src/background/controller/wallet.ts` for snapshot reads and partial writes.
 3. Delegate writes to the domain service's `patchStore(partials)` method. Do not assign an incoming full UI state directly to the service store.
-4. Return the service snapshot with its current revision so the UI can reject stale updates.
+4. Return the service snapshot with the current background origin and revision so the UI can reject stale updates without confusing a Service Worker restart for an old event.
 5. Keep the generic API shaped like storage: `getStorageSnapshot(key)` and `setStorageItem(key, partials)`.
 
 ## Implement the UI Store
@@ -133,8 +133,10 @@ export const useFeatureStore = createRabbyStore<FeatureStore>(
 - Send only fields changed by the local UI action.
 - Validate `current background state + partials` before committing any field.
 - Make one accepted background patch produce one persistence write, one revision increment, and one broadcast.
-- Include only the changed partials and new revision in broadcasts.
-- Ignore remote updates whose revision is not newer than the UI's latest revision.
+- Include only the changed partials, background origin, and new revision in broadcasts.
+- Generate one origin per background runtime. Compare revisions only when two updates have the same origin.
+- When the origin changes, fetch and apply a full background snapshot before accepting further partial updates. A partial event alone cannot recover fields changed while the UI was disconnected.
+- Ignore remote updates whose revision is not newer than the UI's latest revision within the same origin.
 - Apply remote updates without triggering another persistence write.
 - Serialize UI writes so rapid local updates keep their order.
 - On persistence failure, report the error and restore the authoritative background snapshot.
@@ -150,6 +152,7 @@ Add or update focused tests alongside the existing store tests. Cover the behavi
 - optimistic local updates and serialized partial persistence;
 - remote updates without writeback loops;
 - stale revision rejection;
+- Service Worker restart recovery when the origin changes and revisions restart from zero;
 - rollback after a rejected persistence request;
 - Zod defaults and transformations;
 - atomic rejection of invalid patches;

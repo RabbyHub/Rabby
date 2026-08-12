@@ -15,6 +15,7 @@ export type PersistedStorePatch<Key extends PersistedStoreKey> = Partial<
 >;
 
 export type PersistedStoreSnapshot<Key extends PersistedStoreKey> = {
+  origin: string;
   revision: number;
   state: PersistedStoreMap[Key];
 };

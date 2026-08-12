@@ -52,6 +52,7 @@ const swapState: SwapServiceStore = {
 describe('swap store', () => {
   beforeAll(async () => {
     (wallet.getStorageSnapshot as jest.Mock).mockResolvedValue({
+      origin: 'background-1',
       revision: 0,
       state: swapState,
     });

@@ -84,7 +84,9 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   let hydrated = false;
   let destroyed = false;
   let applyingRemote = false;
+  let latestOrigin: string | undefined;
   let latestRevision = -1;
+  let latestSnapshotRequest = 0;
   let rawSet!: SetState<State>;
   let writeQueue = Promise.resolve();
   const pendingLocalUpdates: PendingSet<State>[] = [];
@@ -95,9 +97,17 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   };
 
   const restoreBackgroundSnapshot = async () => {
+    const request = ++latestSnapshotRequest;
     const snapshot = await options.storage.get();
-    if (snapshot.revision < latestRevision) return;
+    if (destroyed || request !== latestSnapshotRequest) return;
+    if (
+      snapshot.origin === latestOrigin &&
+      snapshot.revision < latestRevision
+    ) {
+      return;
+    }
 
+    latestOrigin = snapshot.origin;
     latestRevision = snapshot.revision;
     applyRemoteState(snapshot.state);
   };
@@ -176,11 +186,17 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   };
 
   const applySyncedUpdate = (update: BackgroundStoreUpdate<State>) => {
-    if (destroyed || update.revision <= latestRevision) return;
+    if (destroyed) return;
     if (!hydrated) {
       pendingSyncedUpdates.push(update);
       return;
     }
+    if (update.origin !== latestOrigin) {
+      void restoreBackgroundSnapshot().catch(reportError);
+      return;
+    }
+    if (update.revision <= latestRevision) return;
+
     latestRevision = update.revision;
     applyRemoteState(update.state);
   };
@@ -201,6 +217,7 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
         applyingRemote = false;
       }
 
+      latestOrigin = snapshot.origin;
       latestRevision = snapshot.revision;
       hydrated = true;
       pendingSyncedUpdates.splice(0).forEach(applySyncedUpdate);
@@ -225,11 +242,18 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   const disposeRemoteSubscription = options.sync?.engine.subscribe(
     applySyncedUpdate
   );
+  const disposeReconnectSubscription = options.sync?.engine.onReconnect?.(
+    () => {
+      if (!hydrated || destroyed) return;
+      void restoreBackgroundSnapshot().catch(reportError);
+    }
+  );
 
   store.persist = {
     destroy() {
       destroyed = true;
       disposeRemoteSubscription?.();
+      disposeReconnectSubscription?.();
     },
     flush: () => writeQueue,
     hasHydrated: () => hydrated,
