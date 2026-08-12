@@ -73,8 +73,8 @@ const fetchCachedGasAccountInfoV2 = async (
     return inflight;
   }
 
-  const request = wallet.openapi
-    .getGasAccountInfoV2({ id: address })
+  const request = wallet
+    .getGasAccountInfoV2InFlight({ id: address })
     .then((value) => {
       gasAccountInfoV2Cache.set(cacheKey, {
         updatedAt: Date.now(),

@@ -83,7 +83,7 @@ const loadGasAccountInfo = async (
     let data: GasAccountInfo | null = null;
 
     try {
-      const result = await wallet.openapi.getGasAccountInfoV2({
+      const result = await wallet.getGasAccountInfoV2InFlight({
         id: address,
       });
       data = result?.account || null;

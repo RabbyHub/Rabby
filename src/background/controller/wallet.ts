@@ -107,6 +107,7 @@ import {
   discoverGasAccountRuntimeState,
   GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT,
 } from '../utils/gasAccountDiscovery';
+import { getGasAccountInfoV2InFlight } from '../utils/gasAccountInfo';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -451,6 +452,7 @@ function getDesktopPageType(path: string): DesktopPageType {
 
 export class WalletController extends BaseController {
   openapi = openapiService;
+  getGasAccountInfoV2InFlight = getGasAccountInfoV2InFlight;
   testnetOpenapi = testnetOpenapiService;
   fakeTestnetOpenapi = fakeTestnetOpenapi;
 

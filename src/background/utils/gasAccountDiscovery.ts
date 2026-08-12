@@ -1,6 +1,7 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { Account } from 'background/service/preference';
-import { gasAccountService, openapiService } from 'background/service';
+import { gasAccountService } from 'background/service';
+import { getGasAccountInfoV2InFlight } from './gasAccountInfo';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import PQueue from 'p-queue';
 
@@ -78,7 +79,7 @@ const queryAccountGasAccountBalance = async (
   account: Account
 ): Promise<GasAccountDiscoveryBalanceResult | null> => {
   try {
-    const info = await openapiService.getGasAccountInfoV2({
+    const info = await getGasAccountInfoV2InFlight({
       id: account.address,
     });
 
