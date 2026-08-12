@@ -21,7 +21,10 @@ import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import Settings from './components/Settings';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
-import { useGasAccountDiscovery } from '@/ui/views/GasAccount/hooks';
+import {
+  useGasAccountDiscovery,
+  useGasAccountSign,
+} from '@/ui/views/GasAccount/hooks';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -31,6 +34,7 @@ const Dashboard = () => {
   const { refreshDiscovery } = useGasAccountDiscovery({
     autoRefresh: false,
   });
+  const { sig, accountId } = useGasAccountSign();
 
   const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
     ...s.appVersion,
@@ -82,7 +86,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!accountsDiscoveryKey) {
+    if (!accountsDiscoveryKey || (sig && accountId)) {
       return;
     }
     refreshDiscovery().catch((error) => {
@@ -91,7 +95,7 @@ const Dashboard = () => {
         error
       );
     });
-  }, [accountsDiscoveryKey, refreshDiscovery]);
+  }, [accountId, accountsDiscoveryKey, refreshDiscovery, sig]);
 
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();
