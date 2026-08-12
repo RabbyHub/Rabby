@@ -21,6 +21,7 @@ export type BackgroundStoreStorage<State> = {
 };
 
 export type BackgroundStoreSyncEngine<State> = {
+  onReconnect?: (listener: () => void) => () => void;
   subscribe: (
     listener: (update: BackgroundStoreUpdate<State>) => void
   ) => () => void;
@@ -32,6 +33,7 @@ type SyncedBackgroundStorageOptions<State> = {
   subscribe: (
     listener: (update: BackgroundStoreUpdate<State>) => void
   ) => () => void;
+  onReconnect?: (listener: () => void) => () => void;
 };
 
 /**
@@ -48,6 +50,7 @@ export const createSyncedBackgroundStorage = <State>(
   };
   const syncEngine: BackgroundStoreSyncEngine<State> = {
     subscribe: options.subscribe,
+    onReconnect: options.onReconnect,
   };
 
   return { storage, syncEngine };

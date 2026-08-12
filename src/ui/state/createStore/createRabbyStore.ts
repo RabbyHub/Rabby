@@ -242,11 +242,18 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   const disposeRemoteSubscription = options.sync?.engine.subscribe(
     applySyncedUpdate
   );
+  const disposeReconnectSubscription = options.sync?.engine.onReconnect?.(
+    () => {
+      if (!hydrated || destroyed) return;
+      void restoreBackgroundSnapshot().catch(reportError);
+    }
+  );
 
   store.persist = {
     destroy() {
       destroyed = true;
       disposeRemoteSubscription?.();
+      disposeReconnectSubscription?.();
     },
     flush: () => writeQueue,
     hasHydrated: () => hydrated,

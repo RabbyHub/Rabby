@@ -59,6 +59,7 @@ export default class BroadcastChannelMessage extends Message {
         data,
       },
     });
+    return true;
   };
 
   dispose = () => {

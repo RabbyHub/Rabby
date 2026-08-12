@@ -248,6 +248,54 @@ describe('createRabbyStore', () => {
     store.persist.destroy();
   });
 
+  test('restores a full snapshot after the wallet reconnects', async () => {
+    let onReconnect!: () => void;
+    const disposeReconnect = jest.fn();
+    const get = jest
+      .fn()
+      .mockResolvedValueOnce({
+        origin: TEST_ORIGIN,
+        revision: 5,
+        state: { count: 5, label: 'old background' },
+      })
+      .mockResolvedValueOnce({
+        origin: 'background-2',
+        revision: 0,
+        state: { count: 0, label: 'restarted background' },
+      });
+    const { storage, syncEngine } = createSyncedBackgroundStorage<TestStore>({
+      get,
+      set: async () => undefined,
+      subscribe: () => () => undefined,
+      onReconnect(listener) {
+        onReconnect = listener;
+        return disposeReconnect;
+      },
+    });
+    const store = createRabbyStore<TestStore>(
+      (set) => ({
+        count: 0,
+        label: 'initial',
+        setCount: (count) => set({ count }),
+        setLabel: (label) => set({ label }),
+      }),
+      { storage, sync: { engine: syncEngine } }
+    );
+    await store.persist.hydrationPromise();
+
+    onReconnect();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(get).toHaveBeenCalledTimes(2);
+    expect(store.getState()).toMatchObject({
+      count: 0,
+      label: 'restarted background',
+    });
+    store.persist.destroy();
+    expect(disposeReconnect).toHaveBeenCalledTimes(1);
+  });
+
   test('restores the background snapshot when persistence rejects', async () => {
     const onError = jest.fn();
     const get = jest

@@ -4,7 +4,7 @@ import type {
   PersistedStoreSnapshot,
 } from '@/types/persistedStore';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
-import { wallet } from '@/ui/wallet';
+import { onWalletReconnect, wallet } from '@/ui/wallet';
 import type { RabbyStoreOptions } from './createRabbyStore';
 import { createSyncedBackgroundStorage } from './createSyncedBackgroundStorage';
 
@@ -56,6 +56,7 @@ export const createExtensionStoreOptions = <
         }
       );
     },
+    onReconnect: onWalletReconnect,
   });
 
   return {

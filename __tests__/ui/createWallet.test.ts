@@ -4,10 +4,12 @@ import { BACKGROUND_READY_MESSAGE } from '@/utils/message/constants';
 
 class TestChannel extends EventEmitter {
   connectedName?: string;
+  connectedNames: (string | undefined)[] = [];
   requests: any[] = [];
 
   connect(name?: string) {
     this.connectedName = name;
+    this.connectedNames.push(name);
     return this;
   }
 
@@ -22,6 +24,10 @@ class TestChannel extends EventEmitter {
 }
 
 describe('createWallet', () => {
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   test('buffers wallet calls until the background ready handshake', async () => {
     const channel = new TestChannel();
     const { wallet, ready } = createWallet({
@@ -79,5 +85,37 @@ describe('createWallet', () => {
     expect((wallet.openapi as any).then).toBeUndefined();
     await expect(Promise.resolve(wallet)).resolves.toBe(wallet);
     expect(channel.requests).toEqual([]);
+  });
+
+  test('reconnects and buffers new calls until the restarted background is ready', async () => {
+    jest.useFakeTimers();
+    const channel = new TestChannel();
+    const onReconnect = jest.fn();
+    const client = createWallet({
+      channel,
+      name: 'popup',
+      onBroadcast: jest.fn(),
+    });
+    client.onReconnect(onReconnect);
+
+    channel.emit('message', { event: BACKGROUND_READY_MESSAGE });
+    await client.ready;
+    channel.requests = [];
+
+    channel.emit('disconnect');
+    const request = client.wallet.isUnlocked();
+
+    expect(channel.connectedNames).toEqual(['popup']);
+    jest.advanceTimersByTime(100);
+    expect(channel.connectedNames).toEqual(['popup', 'popup']);
+    expect(channel.requests).toEqual([]);
+
+    channel.emit('message', { event: BACKGROUND_READY_MESSAGE });
+
+    await expect(request).resolves.toBe('controller:isUnlocked');
+    expect(channel.requests).toEqual([
+      expect.objectContaining({ method: 'isUnlocked', type: 'controller' }),
+    ]);
+    expect(onReconnect).toHaveBeenCalledTimes(1);
   });
 });
