@@ -16,6 +16,27 @@ type ExtensionStoreOptions<
 };
 
 /**
+ * Chrome serializes port messages as JSON, which strips object keys whose
+ * value is `undefined`. Both directions therefore carry the key list
+ * separately so that clearing a field survives the trip instead of silently
+ * arriving as "nothing changed".
+ */
+const clearedKeysOf = (changedKeys: string[], partials: object) =>
+  changedKeys.filter(
+    (key) => (partials as Record<string, unknown>)[key] === undefined
+  );
+
+const restoreClearedKeys = (changedKeys: string[], partials: object) => {
+  const state = { ...partials } as Record<string, unknown>;
+  changedKeys?.forEach((key) => {
+    if (!Object.prototype.hasOwnProperty.call(state, key)) {
+      state[key] = undefined;
+    }
+  });
+  return state;
+};
+
+/**
  * Zustand persistence adapter backed by Rabby's background service stores.
  * Its API mirrors a localStorage-style getItem/setItem pair, while remote
  * changes are delivered through the existing background broadcast channel.
@@ -38,20 +59,24 @@ export const createExtensionStoreOptions = <
         state: (snapshot.state as unknown) as Partial<State>,
       };
     },
-    async set({ partials }) {
+    async set({ changedKeys, partials }) {
       await wallet.setStorageItem(
         storageKey,
-        (partials as unknown) as PersistedStorePatch<Key>
+        (partials as unknown) as PersistedStorePatch<Key>,
+        clearedKeysOf(changedKeys, partials)
       );
     },
     subscribe(listener) {
       return onBackgroundStoreChanged(
         storageKey,
-        ({ origin, partials, revision }) => {
+        ({ changedKeys, origin, partials, revision }) => {
           listener({
             origin,
             revision,
-            state: partials as Partial<State>,
+            state: restoreClearedKeys(
+              changedKeys as string[],
+              partials
+            ) as Partial<State>,
           });
         }
       );

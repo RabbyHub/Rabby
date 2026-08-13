@@ -176,6 +176,29 @@ describe('patchPersistStore', () => {
     expect(store.slippage).toBe('1');
   });
 
+  test('clears a field when a patch sets it to undefined', async () => {
+    const storageGet = storage.get as jest.Mock;
+    storageGet.mockResolvedValue({ count: 1, optional: 'value' });
+    (syncStateToUI as jest.Mock).mockClear();
+
+    const store = await createPersistStore<TestStore>({
+      name: 'test-clear-persist-store',
+      template: { count: 0, optional: undefined },
+      schema: testStoreSchema,
+    });
+    expect(store.optional).toBe('value');
+
+    patchPersistStore(store, { optional: undefined });
+
+    expect(store.optional).toBeUndefined();
+    // `changedKeys` is what lets the UI rebuild the cleared field after the
+    // JSON port transport drops the `undefined` value.
+    expect(syncStateToUI).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ changedKeys: ['optional'] })
+    );
+  });
+
   test('rejects invalid patches before changing the store', async () => {
     const storageGet = storage.get as jest.Mock;
     storageGet.mockResolvedValue(undefined);

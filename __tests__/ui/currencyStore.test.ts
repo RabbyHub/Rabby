@@ -90,9 +90,11 @@ describe('currency store', () => {
 
     expect(useCurrencyStore.getState().currency).toBe('EUR');
     await useCurrencyStore.persist.flush();
-    expect(wallet.setStorageItem).toHaveBeenCalledWith('currency', {
-      currency: 'EUR',
-    });
+    expect(wallet.setStorageItem).toHaveBeenCalledWith(
+      'currency',
+      { currency: 'EUR' },
+      []
+    );
   });
 
   test('applies synced currency lists without writing them back', async () => {
