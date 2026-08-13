@@ -21527,6 +21527,7 @@ __metadata:
     "@spruceid/siwe-parser": "npm:2.0.2"
     "@svgr/webpack": "npm:5.5.0"
     "@tailwindcss/postcss": "npm:4.3.0"
+    "@trezor/connect-web": "npm:9.6.4"
     "@trezor/connect-webextension": "npm:9.6.4"
     "@types/archiver": "npm:6.0.2"
     "@types/bignumber.js": "npm:5.0.0"
