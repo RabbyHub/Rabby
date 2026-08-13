@@ -74,13 +74,11 @@ const isDiscoveryBalanceResult = (
   item: GasAccountDiscoveryBalanceResult | null
 ): item is GasAccountDiscoveryBalanceResult => !!item;
 
-const queryAccountGasAccountBalance = async (
-  account: Account
-): Promise<GasAccountDiscoveryBalanceResult | null> => {
+const queryAddressGasAccountBalance = async (
+  address: string
+): Promise<number | null> => {
   try {
-    const info = await openapiService.getGasAccountInfoV2({
-      id: account.address,
-    });
+    const info = await openapiService.getGasAccountInfoV2({ id: address });
 
     if (
       !hasGasAccountBalance(info?.account?.balance, info?.account?.no_register)
@@ -88,10 +86,7 @@ const queryAccountGasAccountBalance = async (
       return null;
     }
 
-    return {
-      account,
-      balance: Number(info.account.balance || 0),
-    };
+    return Number(info.account.balance || 0);
   } catch {
     return null;
   }
@@ -142,11 +137,31 @@ export const discoverGasAccountRuntimeState = async (
     const queue = new PQueue({
       concurrency: GAS_ACCOUNT_INFO_CONCURRENCY,
     });
-    const responses = await Promise.all(
-      accounts.map((account) =>
-        queue.add(() => queryAccountGasAccountBalance(account))
+    // the same address can be imported under several keyrings; query it once,
+    // keyed by lower case but sent with the address as the keyring stores it
+    const addresses = new Map<string, string>();
+    accounts.forEach((account) => {
+      const key = account.address.toLowerCase();
+      if (!addresses.has(key)) {
+        addresses.set(key, account.address);
+      }
+    });
+    const balances = new Map<string, number>();
+    await Promise.all(
+      [...addresses].map(([key, address]) =>
+        queue.add(async () => {
+          const balance = await queryAddressGasAccountBalance(address);
+          if (balance !== null) {
+            balances.set(key, balance);
+          }
+        })
       )
     );
+
+    const responses = accounts.map((account) => {
+      const balance = balances.get(account.address.toLowerCase());
+      return balance === undefined ? null : { account, balance };
+    });
 
     const accountsWithGasAccountBalance = responses
       .filter(isDiscoveryBalanceResult)
