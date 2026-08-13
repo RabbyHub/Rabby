@@ -108,6 +108,140 @@ let sessionReleaseTimer: ReturnType<typeof setTimeout> | null = null;
 let activeLedgerOperationCount = 0;
 const ledgerSessionClosed$ = new Subject<void>();
 
+// Diagnostics only: nothing below changes what Rabby does, it only records
+// what happened so a failure can name its own cause in Sentry.
+const MAX_DEVICE_ACTION_TRACE_STEPS = 40;
+// The device session outlives a single signing operation, so its age and use
+// count are what tell a fresh-session failure apart from a stale-session one.
+let sessionCreatedAt: number | null = null;
+let sessionActionCount = 0;
+
+// Monotonic on purpose: these values are only ever subtracted from each other,
+// and a system clock adjustment during a signing operation would otherwise
+// produce a nonsensical or negative duration.
+const monotonicNow = () => Math.round(performance.now());
+
+// One per signing attempt rather than one module-wide, because attempts can
+// overlap: the approval screen offers Resend while the device is still waiting
+// on the first one, and that starts a second signing request without
+// cancelling or awaiting the first. A single shared trace would let the second
+// attempt reset the first's timing and reuse reading before the first has
+// reported its failure.
+type DeviceActionTrace = {
+  entries: string[];
+  startedAt: number;
+  truncated: boolean;
+  sessionReused: boolean;
+  settled: boolean;
+};
+
+let currentTrace: DeviceActionTrace | null = null;
+// Keyed by the thrown failure so each attempt reports the trace it actually
+// produced, whatever has become current by the time the error is reported.
+const traceByError = new WeakMap<object, DeviceActionTrace>();
+
+const pushTraceEntry = (
+  trace: DeviceActionTrace | null,
+  entry: string,
+  exemptFromCap = false
+) => {
+  // No trace means no signing attempt is open — device actions run for account
+  // discovery too, and those are not diagnosed here.
+  if (!trace) {
+    return;
+  }
+
+  if (!exemptFromCap && trace.entries.length >= MAX_DEVICE_ACTION_TRACE_STEPS) {
+    // Marked exactly once, on the first entry actually dropped, so a truncated
+    // trace is never read as a complete one and a trace that merely fills the
+    // budget keeps all of its entries. Tracked in a flag rather than inferred
+    // from the length, which an exempt push can carry past the boundary. The
+    // head is what survives: the gaps between the early steps are the Clear
+    // Signing timeout evidence, and overflowing a budget this far above a
+    // normal operation means something looped.
+    if (!trace.truncated) {
+      trace.truncated = true;
+      trace.entries.push('truncated');
+    }
+    return;
+  }
+
+  // Offsets from the start of the attempt: the gap between two steps is what
+  // identifies a Clear Signing network timeout, and an offset leaks nothing
+  // about when the user was signing.
+  trace.entries.push(`${entry}@${monotonicNow() - trace.startedAt}ms`);
+};
+
+const pushDeviceActionTrace = (entry: string, exemptFromCap = false) =>
+  pushTraceEntry(currentTrace, entry, exemptFromCap);
+
+// A signing attempt spans several device actions — getAddress, openApp and the
+// sign itself each get their own runDeviceAction — so the trace covers the
+// whole attempt, including the connection-opening recovery in ensureEthApp,
+// which tears down and rebuilds the session midway.
+const withDeviceActionTrace = async <T>(run: () => Promise<T>): Promise<T> => {
+  const previous = currentTrace;
+  const trace: DeviceActionTrace = {
+    entries: [],
+    startedAt: monotonicNow(),
+    truncated: false,
+    // Not merely "a session existed": the session is opened before the
+    // approval screen, so that would be true of almost every signature. What
+    // separates a stale-session failure from a fresh-session one is whether
+    // this session had already done work when the attempt began.
+    sessionReused: sessionActionCount > 0,
+    settled: false,
+  };
+  currentTrace = trace;
+
+  // Tells the reader why the earlier attempt's trace stops where it does,
+  // instead of leaving it looking like the device simply went quiet.
+  if (previous && !previous.settled) {
+    pushTraceEntry(previous, 'concurrentAttemptStarted');
+  }
+
+  try {
+    return await run();
+  } catch (error) {
+    if (error && typeof error === 'object') {
+      traceByError.set(error, trace);
+    }
+    throw error;
+  } finally {
+    trace.settled = true;
+    if (currentTrace === trace) {
+      currentTrace = previous?.settled === false ? previous : null;
+    }
+  }
+};
+
+// Both arguments are already stringified by the caller — see the tap in
+// runDeviceAction. Steps arrive fully namespaced
+// ("signer.eth.steps.provideContexts").
+const recordDeviceActionStep = (step: string, interaction?: string) => {
+  const name = step.slice(step.lastIndexOf('.') + 1);
+  const suffix =
+    interaction && interaction !== UserInteractionRequired.None
+      ? `(${interaction})`
+      : '';
+
+  pushDeviceActionTrace(`${name}${suffix}`);
+};
+
+// Reconnecting resets the session counters, so without this the report would
+// describe the session Rabby recovered onto and lose the age of the one that
+// actually failed.
+const recordSessionTeardown = () => {
+  const age = sessionCreatedAt === null ? 0 : monotonicNow() - sessionCreatedAt;
+
+  // Exempt from the cap: this is the one entry the trace exists to preserve
+  // across a mid-operation reconnect, and a filled trace must not drop it.
+  pushDeviceActionTrace(
+    `sessionClosed(age=${age}ms,actions=${sessionActionCount})`,
+    true
+  );
+};
+
 const cancelScheduledLedgerSessionRelease = () => {
   if (sessionReleaseTimer !== null) {
     clearTimeout(sessionReleaseTimer);
@@ -118,9 +252,25 @@ const cancelScheduledLedgerSessionRelease = () => {
 const cleanUpLedgerSession = async () => {
   cancelScheduledLedgerSessionRelease();
   const currentSessionId = sessionId;
+
+  // Every teardown funnels through here, so this is the one place that sees
+  // them all: the recovery paths, the offscreen disconnect event and the idle
+  // release. Teardowns outside a signing attempt have no trace to land in and
+  // are dropped.
+  if (currentSessionId && currentTrace) {
+    recordSessionTeardown();
+  }
+
   ledgerSessionClosed$.next();
   ethSigner = null;
   sessionId = null;
+  // Cleared so session_age_ms only ever describes a session that is actually
+  // open. The reading for a session torn down mid-operation is preserved by
+  // recordSessionTeardown above; keeping the timestamp alive here would
+  // instead report a long-dead session's age on a failure that had no
+  // session at all, contradicting session_reused.
+  sessionCreatedAt = null;
+  sessionActionCount = 0;
 
   if (currentSessionId && dmk) {
     await dmk.disconnect({ sessionId: currentSessionId }).catch(() => {
@@ -240,6 +390,23 @@ const getLedgerStatusWord = (err: unknown) => {
   return value?._tag === 'RefusedByUserDAError' ? '6985' : '';
 };
 
+// The reporting side must not re-derive the status word from message text:
+// getLedgerErrorMessage flattens the whole error chain into one string, so any
+// nested code is rendered in the same 0x-prefixed shape as the real one and no
+// position rule can tell them apart. This walks the chain instead, because
+// toLedgerError keeps the SDK failure as `cause` and the status word is
+// therefore one level down by the time an error leaves a signing method.
+const findLedgerStatusWord = (err: unknown, depth = 0): string => {
+  if (!err || depth > 3) {
+    return '';
+  }
+
+  return (
+    getLedgerStatusWord(err) ||
+    findLedgerStatusWord((err as any).cause, depth + 1)
+  );
+};
+
 export const getLedgerErrorMessage = (err: unknown, fallback: string) =>
   [stringifyLedgerErrorValue(err) || fallback, getLedgerStatusWord(err)]
     .filter(Boolean)
@@ -274,6 +441,7 @@ const runDeviceAction = async <Output>(
   action: ExecuteDeviceActionReturnType<Output, any, any>
 ): Promise<Output> => {
   beginLedgerOperation();
+  sessionActionCount += 1;
   let previousStep: unknown;
   const cancelAction = () => {
     try {
@@ -296,16 +464,33 @@ const runDeviceAction = async <Output>(
     return await firstValueFrom(
       observable.pipe(
         tap((state) => {
-          const step =
-            'intermediateValue' in state
-              ? state.intermediateValue?.step
-              : undefined;
-          if (step && step !== previousStep) {
+          const intermediate =
+            'intermediateValue' in state ? state.intermediateValue : undefined;
+          if (!intermediate?.step) {
+            return;
+          }
+
+          // Stringified here, before anything else touches them: the SDK types
+          // both as enums but they arrive through an `any`, and this runs
+          // inside the observable's tap, where a throw fails the device action
+          // instead of merely losing a trace entry.
+          const step = String(intermediate.step);
+          const interaction =
+            intermediate.requiredUserInteraction == null
+              ? undefined
+              : String(intermediate.requiredUserInteraction);
+          // The interaction is part of the identity of a step: a Web3 Checks
+          // opt-in prompt is a distinct event from the step that raised it.
+          const marker = `${step}:${interaction}`;
+
+          if (marker !== previousStep) {
             console.debug('[Ledger DMK][stage]', {
               step,
+              interaction,
               timestamp: Date.now(),
             });
-            previousStep = step;
+            recordDeviceActionStep(step, interaction);
+            previousStep = marker;
           }
         }),
         filter((state) => {
@@ -562,6 +747,8 @@ class LedgerBridgeKeyring {
         },
       });
       sessionId = nextSessionId;
+      sessionCreatedAt = monotonicNow();
+      sessionActionCount = 0;
       this.buildSigner();
       await this.ensureDeviceReady();
     })();
@@ -609,8 +796,29 @@ class LedgerBridgeKeyring {
     return this.assertDeviceReady(state);
   }
 
-  getHardwareSigningMetadata() {
-    return this.hardwareSigningMetadata;
+  getHardwareSigningMetadata(error?: unknown): HardwareSigningMetadata {
+    // The attempt's own trace, not whatever is current: a concurrent Resend
+    // may already have taken over by the time this failure is reported.
+    const trace =
+      (error && typeof error === 'object'
+        ? traceByError.get(error)
+        : undefined) ?? currentTrace;
+
+    return {
+      ...this.hardwareSigningMetadata,
+      status_word: findLedgerStatusWord(error) || undefined,
+      device_action_steps: trace?.entries.join(' > ') || undefined,
+      // Both are omitted together while no session is open: reporting a count
+      // of 0 next to no age reads as a real measurement of a session that does
+      // not exist.
+      session_age_ms:
+        sessionCreatedAt === null
+          ? undefined
+          : monotonicNow() - sessionCreatedAt,
+      session_action_count:
+        sessionCreatedAt === null ? undefined : sessionActionCount,
+      session_reused: trace?.sessionReused,
+    };
   }
 
   private assertDeviceReady(state: DeviceSessionState) {
@@ -800,6 +1008,15 @@ class LedgerBridgeKeyring {
 
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address, tx) {
+    // Wraps the whole body, not just the device call: the serialisation below
+    // can throw, and that failure is reported through
+    // withHardwareSigningContext too.
+    return withDeviceActionTrace(async () =>
+      this.serializeAndSign(address, tx)
+    );
+  }
+
+  private serializeAndSign(address, tx) {
     // make sure the previous transaction is cleaned up
 
     // transactions built with older versions of ethereumjs-tx have a
@@ -904,7 +1121,13 @@ class LedgerBridgeKeyring {
   }
 
   // For personal_sign, we need to prefix the message:
-  async signPersonalMessage(withAccount, message) {
+  signPersonalMessage(withAccount, message) {
+    return withDeviceActionTrace(() =>
+      this.signPersonalMessageInternal(withAccount, message)
+    );
+  }
+
+  private async signPersonalMessageInternal(withAccount, message) {
     try {
       const hdPath = await this.unlockAccountByAddress(withAccount);
       await this.ensureEthApp();
@@ -954,7 +1177,13 @@ class LedgerBridgeKeyring {
     return hdPath;
   }
 
-  async signTypedData(withAccount, data, options: any = {}) {
+  signTypedData(withAccount, data, options: any = {}) {
+    return withDeviceActionTrace(() =>
+      this.signTypedDataInternal(withAccount, data, options)
+    );
+  }
+
+  private async signTypedDataInternal(withAccount, data, options: any = {}) {
     const isV4 = options.version === 'V4';
     if (!isV4) {
       throw new Error(

@@ -247,6 +247,18 @@ const describeOriginalError = (error: unknown) => {
   return redactSensitiveText(parts.join(' | ')) || undefined;
 };
 
+// event.extra is sent verbatim, so the device metadata has to be redacted
+// here: it carries free text the keyrings read off the device. Note this
+// removes structured secrets (addresses, HD paths, URLs, emails) — it cannot
+// scrub a free-text device nickname, which has no pattern to match on.
+const redactHardwareMetadata = (metadata: Record<string, unknown>) =>
+  Object.fromEntries(
+    Object.entries(metadata).map(([key, value]) => [
+      key,
+      typeof value === 'string' ? redactSensitiveText(value) : value,
+    ])
+  );
+
 export const applyHardwareSigningContext = (
   event: SentryEventLike,
   error: unknown
@@ -256,21 +268,35 @@ export const applyHardwareSigningContext = (
     return;
   }
 
+  // Supplied by the keyring, never re-derived here: the thrown message is the
+  // whole error chain flattened into one string, in which every nested code is
+  // rendered in the same 0x-prefixed shape as the real status word, so no
+  // position rule over that text can pick the right one. Only the keyring that
+  // owns the device protocol knows which field is authoritative, and only the
+  // ones that speak in status words set it at all.
+  const statusWord = hardware.metadata?.status_word;
+
   event.tags = {
     ...event.tags,
     hardware_wallet: hardware.wallet,
     sign_operation: hardware.operation,
+    ...(statusWord ? { device_status_word: statusWord } : undefined),
   };
+  // Only extends the fingerprint when a status word was found, so failures
+  // without one keep grouping exactly as they did before.
   event.fingerprint = [
     'hardware-wallet-signing',
     hardware.wallet,
     hardware.operation,
+    ...(statusWord ? [statusWord] : []),
     '{{ default }}',
   ];
 
   event.extra = {
     ...event.extra,
-    ...(hardware.metadata ? { hardware_device: hardware.metadata } : undefined),
+    ...(hardware.metadata
+      ? { hardware_device: redactHardwareMetadata(hardware.metadata) }
+      : undefined),
     hardware_original_error: describeOriginalError(hardware.originalError),
   };
 };

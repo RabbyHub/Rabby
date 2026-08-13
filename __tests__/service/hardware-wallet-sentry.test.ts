@@ -348,4 +348,126 @@ describe('hardware wallet Sentry reporting', () => {
       extra: { hardware_device: { device_model: 'T' } },
     });
   });
+
+  // The keyring supplies the status word; nothing here re-derives it from
+  // message text. A keyring that reports one gets its own fingerprint bucket.
+  const ledgerReporting = (statusWord?: string) => ({
+    type: KEYRING_CLASS.HARDWARE.LEDGER,
+    getHardwareSigningMetadata: () => ({ status_word: statusWord }),
+  });
+
+  it('groups a hardware failure by the status word the keyring reports', async () => {
+    const error = new Error('Ledger: Unknown error while signing transaction');
+
+    await expect(
+      withHardwareSigningContext(ledgerReporting('6a80'), 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(captureThroughBeforeSend(error)).toMatchObject({
+      tags: { device_status_word: '6a80' },
+      fingerprint: [
+        'hardware-wallet-signing',
+        'ledger',
+        'transaction',
+        '6a80',
+        '{{ default }}',
+      ],
+    });
+  });
+
+  it('separates two status words that share a message', async () => {
+    const fingerprintFor = async (statusWord: string) => {
+      const error = new Error(
+        'Ledger: Unknown error while signing transaction'
+      );
+      await expect(
+        withHardwareSigningContext(
+          ledgerReporting(statusWord),
+          'transaction',
+          () => Promise.reject(error)
+        )
+      ).rejects.toBe(error);
+      return captureThroughBeforeSend(error).fingerprint;
+    };
+
+    expect(await fingerprintFor('6a80')).not.toEqual(
+      await fingerprintFor('6d00')
+    );
+  });
+
+  // Hex in the message must never become a status word. Scraping it out of the
+  // text is what produced wrong tags, and it also split the bucket of every
+  // wallet that does not speak in status words at all.
+  test.each([
+    [
+      'a Ledger error carrying hex but no reported status word',
+      ledgerReporting(undefined),
+      'Ledger: signing failed 0x6a80, transport said 0x5515',
+    ],
+    [
+      'a keyring that reports no metadata',
+      { type: KEYRING_CLASS.HARDWARE.LEDGER },
+      'Ledger: Account 0x0123456789abcdef0123456789abcdef01234567 is unknown',
+    ],
+    [
+      'a wallet that does not speak in status words',
+      { type: KEYRING_CLASS.HARDWARE.TREZOR },
+      'Trezor: chain 0x2105 is not supported',
+    ],
+  ])('keeps the default grouping for %s', async (_label, keyring, message) => {
+    const error = new Error(message);
+
+    await expect(
+      withHardwareSigningContext(keyring, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    const event = captureThroughBeforeSend(error);
+    expect(event.tags.device_status_word).toBeUndefined();
+    expect(event.fingerprint).toEqual([
+      'hardware-wallet-signing',
+      event.tags.hardware_wallet,
+      'transaction',
+      '{{ default }}',
+    ]);
+  });
+
+  it('reports the device action trace and session diagnostics', async () => {
+    const error = new Error('Ledger: signing failed 0x6a80');
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.LEDGER,
+      getHardwareSigningMetadata: () => ({
+        device_model: 'Nano S Plus',
+        app_name: 'Ethereum',
+        status_word: '6a80',
+        device_action_steps:
+          'openApp@0ms > getAddress@41ms > buildContexts@88ms > signTransaction@5102ms',
+        session_age_ms: 92311,
+        session_action_count: 7,
+        session_reused: true,
+      }),
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(captureThroughBeforeSend(error)).toMatchObject({
+      tags: { device_status_word: '6a80' },
+      extra: {
+        hardware_device: {
+          device_action_steps:
+            'openApp@0ms > getAddress@41ms > buildContexts@88ms > signTransaction@5102ms',
+          session_age_ms: 92311,
+          session_action_count: 7,
+          session_reused: true,
+        },
+      },
+    });
+  });
 });

@@ -16,6 +16,19 @@ export type HardwareSigningMetadata = {
   app_version?: string;
   // bootloader / notInitialized explains a whole class of signing failures.
   device_mode?: string;
+  // Devices that answer in APDU status words (Ledger) report the one this
+  // failure carried, read off the error by the keyring rather than scraped
+  // from message text. Absent for devices that do not speak in status words.
+  status_word?: string;
+  // Ledger only, all diagnostics for status words the message alone cannot
+  // explain (0x6a80 above all). The step trace names the stage the failure
+  // reached — Clear Signing context build, context upload, or the signature
+  // itself — while the session fields separate a failure on a freshly opened
+  // session from one on a session that has been kept alive and reused.
+  device_action_steps?: string;
+  session_age_ms?: number;
+  session_action_count?: number;
+  session_reused?: boolean;
 };
 
 export type HardwareSigningContext = {
@@ -34,15 +47,21 @@ const HARDWARE_WALLETS: Record<string, string> = {
 // Ledger and OneKey cache the device info on the keyring itself. Trezor's
 // keyring comes from a package, so its bridge carries the info instead — and
 // the MV2 bridge only ever knows the model.
-const readMetadata = (keyring: any): HardwareSigningMetadata | undefined => {
+// The failure is passed in because a device status word can only be read off
+// the error, and only the keyring that owns the device protocol knows which of
+// its fields is the authoritative one. Keyrings that take no argument ignore it.
+const readMetadata = (
+  keyring: any,
+  error: unknown
+): HardwareSigningMetadata | undefined => {
   // Runs while a signing error is being rethrown: throwing in here would
   // replace the real failure with a reporting bug.
   try {
     const model = keyring?.getModel?.();
 
     return (
-      keyring?.getHardwareSigningMetadata?.() ??
-      keyring?.bridge?.getHardwareSigningMetadata?.() ??
+      keyring?.getHardwareSigningMetadata?.(error) ??
+      keyring?.bridge?.getHardwareSigningMetadata?.(error) ??
       (model ? { device_model: model } : undefined)
     );
   } catch {
@@ -66,7 +85,7 @@ export const withHardwareSigningContext = (
     attachHardwareSigningContext(error, {
       wallet,
       operation,
-      metadata: readMetadata(keyring),
+      metadata: readMetadata(keyring, error),
       originalError: (error as any)?.cause ?? error,
     });
     throw error;

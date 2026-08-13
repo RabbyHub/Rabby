@@ -800,6 +800,161 @@ describe('LedgerBridgeKeyring makeApp', () => {
     }
   });
 
+  // The thrown message is the whole error chain flattened, so every nested
+  // code appears in the same 0x shape as the real status word. The keyring
+  // reads the field instead, walking past its own toLedgerError wrapper.
+  it('reports the status word carried by a wrapped device failure', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    mockSignTransaction.mockReturnValueOnce({
+      observable: of({
+        status: 'error',
+        error: {
+          _tag: 'EthAppCommandError',
+          errorCode: '6a80',
+          message: 'Invalid data 0x6a80',
+          // A later hex run that a text scan would pick instead.
+          originalError: { name: 'TransportError', errorCode: 0x5515 },
+        },
+      }),
+      cancel: jest.fn(),
+    });
+
+    try {
+      const failure = await keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+
+      expect(keyring.getHardwareSigningMetadata(failure).status_word).toBe(
+        '6a80'
+      );
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
+  // The approval screen offers Resend while the device is still waiting on the
+  // first attempt, which starts a second signing request without cancelling
+  // the first. Each attempt must report the trace it produced itself.
+  it('keeps each signing attempt diagnostics separate when Resend overlaps', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const firstAttempt$ = new Subject<any>();
+    mockSignTransaction
+      .mockReturnValueOnce({ observable: firstAttempt$, cancel: jest.fn() })
+      .mockReturnValueOnce({
+        observable: of({
+          status: 'error',
+          error: { _tag: 'EthAppCommandError', errorCode: '6d00' },
+        }),
+        cancel: jest.fn(),
+      });
+
+    try {
+      const first = keyring.signTransaction(address, tx).catch((e: Error) => e);
+      await waitForMockCall(mockSignTransaction);
+
+      // Resend, while the first attempt is still pending on the device.
+      const second = await keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+
+      firstAttempt$.next({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+      });
+      const firstError = await first;
+
+      const firstTrace = keyring.getHardwareSigningMetadata(firstError);
+      const secondTrace = keyring.getHardwareSigningMetadata(second);
+
+      expect(firstTrace.status_word).toBe('6a80');
+      expect(secondTrace.status_word).toBe('6d00');
+      // The first attempt's trace is its own, and says why it stops.
+      expect(firstTrace.device_action_steps).toContain(
+        'concurrentAttemptStarted'
+      );
+      // ...and is not handed to the attempt that displaced it.
+      expect(secondTrace.device_action_steps ?? '').not.toContain(
+        'concurrentAttemptStarted'
+      );
+    } finally {
+      firstAttempt$.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  it('reports a session age only while a session is open', async () => {
+    const keyring = new LedgerBridgeKeyring();
+
+    expect(keyring.getHardwareSigningMetadata().session_age_ms).toBeUndefined();
+
+    await keyring.unlock("m/44'/60'/0'/0/0");
+
+    const live = keyring.getHardwareSigningMetadata();
+    expect(live.session_age_ms).toEqual(expect.any(Number));
+    expect(live.session_action_count).toBeGreaterThanOrEqual(1);
+
+    await keyring.cleanUp();
+
+    // A closed session must stop reporting an age, or a later failure that
+    // never opened one would carry a stale age next to session_reused: false.
+    // The count goes with it: 0 next to no age reads as a real measurement.
+    const closed = keyring.getHardwareSigningMetadata();
+    expect(closed.session_age_ms).toBeUndefined();
+    expect(closed.session_action_count).toBeUndefined();
+  });
+
+  it('records the failed session reading when a signing operation tears the session down', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    mockSignTransaction.mockReturnValueOnce({
+      observable: of({
+        status: 'error',
+        error: {
+          _tag: 'InvalidStatusWordError',
+          originalError: new Error('R is missing'),
+        },
+      }),
+      cancel: jest.fn(),
+    });
+
+    try {
+      const failure = await keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+
+      // Reconnecting resets sessionCreatedAt and sessionActionCount, so the
+      // reading for the session that actually failed only survives here.
+      expect(
+        keyring.getHardwareSigningMetadata(failure).device_action_steps
+      ).toMatch(/sessionClosed\(age=\d+ms,actions=\d+\)@\d+ms/);
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
   it('rejects immediately when the Ledger action requires device unlock', async () => {
     const keyring = new LedgerBridgeKeyring();
     const cancel = jest.fn();
