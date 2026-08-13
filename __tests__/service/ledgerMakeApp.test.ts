@@ -866,7 +866,16 @@ describe('LedgerBridgeKeyring makeApp', () => {
 
     try {
       const first = keyring.signTransaction(address, tx).catch((e: Error) => e);
-      await waitForMockCall(mockSignTransaction);
+      // Wait until the first attempt is actually pending *on the device* —
+      // that is when the approval screen offers Resend.
+      for (
+        let i = 0;
+        i < 50 && mockSignTransaction.mock.calls.length < 1;
+        i++
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+      expect(mockSignTransaction).toHaveBeenCalledTimes(1);
 
       // Resend, while the first attempt is still pending on the device.
       const second = await keyring
@@ -894,6 +903,73 @@ describe('LedgerBridgeKeyring makeApp', () => {
       );
     } finally {
       firstAttempt$.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  // Attribution across overlapping attempts is best effort: an attempt reaches
+  // its first device action several awaits after it begins, so a Resend can
+  // take over recording before the earlier attempt has emitted anything. What
+  // must hold is that neither trace is readable as an exact account of one
+  // attempt, and that the status word stays with the attempt that carried it.
+  it('marks both traces when a Resend overlaps a pending attempt', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const first$ = new Subject<any>();
+    const second$ = new Subject<any>();
+    mockSignTransaction
+      .mockReturnValueOnce({ observable: first$, cancel: jest.fn() })
+      .mockReturnValueOnce({ observable: second$, cancel: jest.fn() });
+
+    try {
+      const first = keyring.signTransaction(address, tx).catch((e: Error) => e);
+      // Resend, while the first attempt has not settled.
+      const second = keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+      for (
+        let i = 0;
+        i < 50 && mockSignTransaction.mock.calls.length < 2;
+        i++
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+      expect(mockSignTransaction).toHaveBeenCalledTimes(2);
+
+      first$.next({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+      });
+      second$.next({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6d00' },
+      });
+
+      const firstTrace = keyring.getHardwareSigningMetadata(await first);
+      const secondTrace = keyring.getHardwareSigningMetadata(await second);
+
+      // Each attempt keeps its own status word — that part is exact, because
+      // it is read off the failure rather than off shared state.
+      expect(firstTrace.status_word).toBe('6a80');
+      expect(secondTrace.status_word).toBe('6d00');
+
+      // Neither trace may be read as a clean single-attempt account.
+      expect(firstTrace.device_action_steps).toContain(
+        'concurrentAttemptStarted'
+      );
+      expect(secondTrace.device_action_steps).toContain(
+        'startedDuringAnotherAttempt'
+      );
+    } finally {
+      first$.complete();
+      second$.complete();
       await keyring.cleanUp();
     }
   });

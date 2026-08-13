@@ -133,6 +133,7 @@ type DeviceActionTrace = {
   truncated: boolean;
   sessionReused: boolean;
   settled: boolean;
+  parent: DeviceActionTrace | null;
 };
 
 let currentTrace: DeviceActionTrace | null = null;
@@ -172,9 +173,6 @@ const pushTraceEntry = (
   trace.entries.push(`${entry}@${monotonicNow() - trace.startedAt}ms`);
 };
 
-const pushDeviceActionTrace = (entry: string, exemptFromCap = false) =>
-  pushTraceEntry(currentTrace, entry, exemptFromCap);
-
 // A signing attempt spans several device actions — getAddress, openApp and the
 // sign itself each get their own runDeviceAction — so the trace covers the
 // whole attempt, including the connection-opening recovery in ensureEthApp,
@@ -191,13 +189,19 @@ const withDeviceActionTrace = async <T>(run: () => Promise<T>): Promise<T> => {
     // this session had already done work when the attempt began.
     sessionReused: sessionActionCount > 0,
     settled: false,
+    parent: previous,
   };
   currentTrace = trace;
 
-  // Tells the reader why the earlier attempt's trace stops where it does,
-  // instead of leaving it looking like the device simply went quiet.
+  // Attribution across overlapping attempts is best effort, not exact: an
+  // attempt reaches its first device action several awaits after it begins,
+  // and whichever attempt is current when a step arrives is the one that
+  // records it. So mark both sides of an overlap rather than pretend the
+  // split is clean — a trace that may be mixed has to say so, or it gets read
+  // as an exact account of one attempt.
   if (previous && !previous.settled) {
     pushTraceEntry(previous, 'concurrentAttemptStarted');
+    pushTraceEntry(trace, 'startedDuringAnotherAttempt');
   }
 
   try {
@@ -210,7 +214,13 @@ const withDeviceActionTrace = async <T>(run: () => Promise<T>): Promise<T> => {
   } finally {
     trace.settled = true;
     if (currentTrace === trace) {
-      currentTrace = previous?.settled === false ? previous : null;
+      // Nearest ancestor still open, not just the immediate parent: with three
+      // overlapping attempts the middle one can settle first.
+      let restored = trace.parent;
+      while (restored?.settled) {
+        restored = restored.parent;
+      }
+      currentTrace = restored ?? null;
     }
   }
 };
@@ -218,25 +228,30 @@ const withDeviceActionTrace = async <T>(run: () => Promise<T>): Promise<T> => {
 // Both arguments are already stringified by the caller — see the tap in
 // runDeviceAction. Steps arrive fully namespaced
 // ("signer.eth.steps.provideContexts").
-const recordDeviceActionStep = (step: string, interaction?: string) => {
+const recordDeviceActionStep = (
+  trace: DeviceActionTrace | null,
+  step: string,
+  interaction?: string
+) => {
   const name = step.slice(step.lastIndexOf('.') + 1);
   const suffix =
     interaction && interaction !== UserInteractionRequired.None
       ? `(${interaction})`
       : '';
 
-  pushDeviceActionTrace(`${name}${suffix}`);
+  pushTraceEntry(trace, `${name}${suffix}`);
 };
 
 // Reconnecting resets the session counters, so without this the report would
 // describe the session Rabby recovered onto and lose the age of the one that
 // actually failed.
-const recordSessionTeardown = () => {
+const recordSessionTeardown = (trace: DeviceActionTrace | null) => {
   const age = sessionCreatedAt === null ? 0 : monotonicNow() - sessionCreatedAt;
 
   // Exempt from the cap: this is the one entry the trace exists to preserve
   // across a mid-operation reconnect, and a filled trace must not drop it.
-  pushDeviceActionTrace(
+  pushTraceEntry(
+    trace,
     `sessionClosed(age=${age}ms,actions=${sessionActionCount})`,
     true
   );
@@ -249,7 +264,12 @@ const cancelScheduledLedgerSessionRelease = () => {
   }
 };
 
-const cleanUpLedgerSession = async () => {
+const cleanUpLedgerSession = async (
+  // Passed by a caller that knows which attempt it is tearing down; otherwise
+  // best effort, since a teardown can also come from the idle timer or the
+  // offscreen disconnect event, which belong to no attempt.
+  owningTrace: DeviceActionTrace | null = currentTrace
+) => {
   cancelScheduledLedgerSessionRelease();
   const currentSessionId = sessionId;
 
@@ -257,8 +277,8 @@ const cleanUpLedgerSession = async () => {
   // them all: the recovery paths, the offscreen disconnect event and the idle
   // release. Teardowns outside a signing attempt have no trace to land in and
   // are dropped.
-  if (currentSessionId && currentTrace) {
-    recordSessionTeardown();
+  if (currentSessionId && owningTrace) {
+    recordSessionTeardown(owningTrace);
   }
 
   ledgerSessionClosed$.next();
@@ -396,15 +416,22 @@ const getLedgerStatusWord = (err: unknown) => {
 // position rule can tell them apart. This walks the chain instead, because
 // toLedgerError keeps the SDK failure as `cause` and the status word is
 // therefore one level down by the time an error leaves a signing method.
+// Shape-checked because this value is reported as a Sentry tag and joins the
+// fingerprint: the codes it is read from come off an SDK `any`, and anything
+// unbounded landing in a fingerprint splits grouping without limit.
+const LEDGER_STATUS_WORD_SHAPE = /^[\da-f]{1,4}$/u;
+
 const findLedgerStatusWord = (err: unknown, depth = 0): string => {
   if (!err || depth > 3) {
     return '';
   }
 
-  return (
-    getLedgerStatusWord(err) ||
-    findLedgerStatusWord((err as any).cause, depth + 1)
-  );
+  const word = getLedgerStatusWord(err);
+  if (LEDGER_STATUS_WORD_SHAPE.test(word)) {
+    return word;
+  }
+
+  return findLedgerStatusWord((err as any).cause, depth + 1);
 };
 
 export const getLedgerErrorMessage = (err: unknown, fallback: string) =>
@@ -442,6 +469,9 @@ const runDeviceAction = async <Output>(
 ): Promise<Output> => {
   beginLedgerOperation();
   sessionActionCount += 1;
+  // Captured at entry: Resend can start another attempt while this action is
+  // still running, and its steps belong to the attempt that started it.
+  const trace = currentTrace;
   let previousStep: unknown;
   const cancelAction = () => {
     try {
@@ -489,7 +519,7 @@ const runDeviceAction = async <Output>(
               interaction,
               timestamp: Date.now(),
             });
-            recordDeviceActionStep(step, interaction);
+            recordDeviceActionStep(trace, step, interaction);
             previousStep = marker;
           }
         }),
@@ -529,7 +559,7 @@ const runDeviceAction = async <Output>(
   } catch (e: any) {
     cancelAction();
     if (isLedgerSignatureResponseCorrupted(e)) {
-      await cleanUpLedgerSession();
+      await cleanUpLedgerSession(trace);
       throw new Error(
         'Ledger: Device communication was interrupted. Close other apps using Ledger and try again.'
       );
@@ -797,12 +827,11 @@ class LedgerBridgeKeyring {
   }
 
   getHardwareSigningMetadata(error?: unknown): HardwareSigningMetadata {
-    // The attempt's own trace, not whatever is current: a concurrent Resend
-    // may already have taken over by the time this failure is reported.
+    // Strictly the attempt's own trace. There is deliberately no fallback to
+    // whatever is current: the wrapper restores that before a failure is
+    // reported, so a fallback would hand over an unrelated attempt's trace.
     const trace =
-      (error && typeof error === 'object'
-        ? traceByError.get(error)
-        : undefined) ?? currentTrace;
+      error && typeof error === 'object' ? traceByError.get(error) : undefined;
 
     return {
       ...this.hardwareSigningMetadata,
