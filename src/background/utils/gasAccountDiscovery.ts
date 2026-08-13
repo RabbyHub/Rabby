@@ -166,10 +166,11 @@ export const discoverGasAccountRuntimeState = async (
     const accountsWithGasAccountBalance = responses
       .filter(isDiscoveryBalanceResult)
       .sort((a, b) => (b?.balance || 0) - (a?.balance || 0))
-      .map(({ account }) => ({
+      .map(({ account, balance }) => ({
         address: account.address,
         type: account.type,
         brandName: account.brandName,
+        balance,
       }));
     const loginCandidateAccountsWithGasAccountBalance = accountsWithGasAccountBalance.filter(
       (account) => isGasAccountDirectSignType(account.type)
