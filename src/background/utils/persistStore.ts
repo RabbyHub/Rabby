@@ -54,7 +54,7 @@ export class PersistStoreSchemaValidationError extends Error {
   }
 }
 
-const validatePersistStoreState = <T extends object>(
+const runSchemaValidation = <T extends object>(
   schema: PersistStoreSchema<T>,
   state: unknown
 ) => {
@@ -62,10 +62,79 @@ const validatePersistStoreState = <T extends object>(
   if (result instanceof Promise) {
     throw new Error('Persisted store schema must be synchronous');
   }
+  return result;
+};
+
+const validatePersistStoreState = <T extends object>(
+  schema: PersistStoreSchema<T>,
+  state: unknown
+) => {
+  const result = runSchemaValidation(schema, state);
   if ('issues' in result && result.issues) {
     throw new PersistStoreSchemaValidationError(result.issues);
   }
   return result.value;
+};
+
+const MAX_SANITIZE_PASSES = 10;
+
+const getIssueTopLevelKey = (issue: PersistStoreSchemaIssue) => {
+  const segment = issue.path?.[0];
+  if (segment === null || segment === undefined) return undefined;
+  if (typeof segment === 'object' && 'key' in segment) return segment.key;
+  return segment;
+};
+
+/**
+ * Repairs persisted state written before the current schema existed.
+ *
+ * `patchPersistStore` validates the whole merged state on every write, so one
+ * legacy field the schema rejects would make every later write throw — and the
+ * UI store silently rolls the change back. Drop only the offending top-level
+ * keys so the schema's own defaults fill them back in, and keep unknown keys
+ * so downgrading to an older build doesn't lose them.
+ */
+const sanitizePersistStoreState = <T extends object>(
+  schema: PersistStoreSchema<T>,
+  state: T
+): { state: T; repaired: boolean } => {
+  const candidate = { ...state } as Record<PropertyKey, unknown>;
+  const droppedKeys = new Set<PropertyKey>();
+
+  for (let pass = 0; pass < MAX_SANITIZE_PASSES; pass++) {
+    const result = runSchemaValidation(schema, candidate);
+
+    if (!('issues' in result) || !result.issues) {
+      if (!droppedKeys.size) return { state, repaired: false };
+
+      const sanitized = { ...state } as Record<PropertyKey, unknown>;
+      droppedKeys.forEach((key) => delete sanitized[key]);
+      Object.assign(sanitized, result.value);
+      return { state: (sanitized as unknown) as T, repaired: true };
+    }
+
+    const invalidKeys = result.issues
+      .map(getIssueTopLevelKey)
+      .filter(
+        (key): key is PropertyKey =>
+          key !== undefined &&
+          Object.prototype.hasOwnProperty.call(candidate, key)
+      );
+    if (!invalidKeys.length) break;
+
+    invalidKeys.forEach((key) => {
+      delete candidate[key];
+      droppedKeys.add(key);
+    });
+  }
+
+  // Nothing could be attributed to a specific field, so fall back to the
+  // schema's defaults rather than leaving a store that rejects every write.
+  try {
+    return { state: validatePersistStoreState(schema, {}), repaired: true };
+  } catch {
+    return { state, repaired: false };
+  }
 };
 
 const nextPersistStoreRevision = (name: string) => {
@@ -132,6 +201,16 @@ const createPersistStore = async <T extends object>({
     // tpl = storageCache || template;
     if (!storageCache) {
       await storage.set(name, tpl);
+    }
+  }
+
+  if (schema) {
+    const sanitized = sanitizePersistStoreState(schema, tpl);
+    if (sanitized.repaired) {
+      tpl = sanitized.state;
+      if (fromStorage) {
+        await storage.set(name, tpl);
+      }
     }
   }
 
