@@ -120,4 +120,18 @@ describe('swap store', () => {
     expect(useSwapStore.getState().supportedDEXList).toEqual([supportedDex]);
     expect(wallet.setStorageItem).not.toHaveBeenCalled();
   });
+
+  test('persists a chain outside the static CHAINS_ENUM values', async () => {
+    (wallet.setStorageItem as jest.Mock).mockClear();
+
+    useSwapStore.getState().setSelectedChain('HYPER' as CHAINS_ENUM);
+    await useSwapStore.persist.flush();
+
+    expect(useSwapStore.getState().selectedChain).toBe('HYPER');
+    expect(wallet.setStorageItem).toHaveBeenCalledWith(
+      'swap',
+      { selectedChain: 'HYPER' },
+      []
+    );
+  });
 });
