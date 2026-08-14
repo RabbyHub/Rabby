@@ -48,7 +48,7 @@ describe('createExtensionStoreOptions', () => {
       state: { ...swapState, slippage: '0.5' },
     });
     expect(getStorageSnapshot).toHaveBeenCalledWith('swap');
-    expect(setStorageItem).toHaveBeenCalledWith('swap', { slippage: '0.5' });
+    expect(setStorageItem).toHaveBeenCalledWith('swap', { slippage: '0.5' }, []);
 
     const listener = jest.fn();
     const dispose = options.sync!.engine.subscribe(listener);
@@ -65,6 +65,67 @@ describe('createExtensionStoreOptions', () => {
       revision: 3,
       state: { slippage: '1' },
     });
+    dispose();
+  });
+
+  // Chrome serializes port messages as JSON, which drops keys whose value is
+  // `undefined`. The round trips below reproduce that, so a regression here
+  // can't pass just because the mock keeps the key in-process.
+  const overWire = <T>(value: T): T => JSON.parse(JSON.stringify(value));
+
+  test('carries cleared fields across the JSON port boundary', async () => {
+    const setStorageItem = wallet.setStorageItem as jest.Mock;
+    setStorageItem.mockReset();
+    setStorageItem.mockResolvedValue(undefined);
+    const options = createExtensionStoreOptions<TestSwapStore, 'swap'>({
+      storageKey: 'swap',
+    });
+
+    await options.storage.set({
+      changedKeys: ['selectedChain', 'selectedFromToken', 'selectedToToken'],
+      partials: {
+        selectedChain: 'BSC' as any,
+        selectedFromToken: undefined,
+        selectedToToken: undefined,
+      },
+      previousState: swapState,
+      state: { ...swapState, selectedChain: 'BSC' as any },
+    });
+
+    const [, partials, clearedKeys] = setStorageItem.mock.calls[0];
+    // What the background actually receives.
+    expect(overWire(partials)).toEqual({ selectedChain: 'BSC' });
+    expect(overWire(clearedKeys)).toEqual([
+      'selectedFromToken',
+      'selectedToToken',
+    ]);
+  });
+
+  test('restores cleared fields from a broadcast that lost them in transit', () => {
+    const options = createExtensionStoreOptions<TestSwapStore, 'swap'>({
+      storageKey: 'swap',
+    });
+    const listener = jest.fn();
+    const dispose = options.sync!.engine.subscribe(listener);
+
+    eventBus.emit(
+      BROADCAST_TO_UI_EVENTS.storeChanged,
+      overWire({
+        bgStoreName: 'swap',
+        changedKey: 'selectedChain',
+        changedKeys: ['selectedChain', 'selectedFromToken'],
+        partials: { selectedChain: 'BSC', selectedFromToken: undefined },
+        origin: 'background-1',
+        revision: 4,
+      })
+    );
+
+    const { state } = listener.mock.calls[0][0];
+    expect(state.selectedChain).toBe('BSC');
+    expect(Object.prototype.hasOwnProperty.call(state, 'selectedFromToken')).toBe(
+      true
+    );
+    expect(state.selectedFromToken).toBeUndefined();
     dispose();
   });
 });

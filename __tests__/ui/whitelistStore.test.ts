@@ -53,9 +53,11 @@ describe('whitelist store', () => {
 
     expect(useWhitelistStore.getState().whitelists).toEqual(['0xbbb', '0xaaa']);
     await useWhitelistStore.persist.flush();
-    expect(wallet.setStorageItem).toHaveBeenCalledWith('whitelist', {
-      whitelists: ['0xbbb', '0xaaa'],
-    });
+    expect(wallet.setStorageItem).toHaveBeenCalledWith(
+      'whitelist',
+      { whitelists: ['0xbbb', '0xaaa'] },
+      []
+    );
   });
 
   test('rejects a membership change disguised as a reorder', async () => {

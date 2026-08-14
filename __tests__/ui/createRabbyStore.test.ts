@@ -337,4 +337,43 @@ describe('createRabbyStore', () => {
     expect(onError).toHaveBeenCalledWith(expect.any(Error));
     store.persist.destroy();
   });
+
+  test('retries hydration after a failed attempt', async () => {
+    const onError = jest.fn();
+    // The background port rejects in-flight requests when the service worker
+    // is evicted, so the first attempt can fail for purely transient reasons.
+    const get = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Message channel disconnected'))
+      .mockResolvedValue({
+        origin: TEST_ORIGIN,
+        revision: 1,
+        state: { count: 9 },
+      });
+    const { storage } = createSyncedBackgroundStorage<TestStore>({
+      get,
+      set: async () => undefined,
+      subscribe: () => () => undefined,
+    });
+    const store = createRabbyStore<TestStore>(
+      (set) => ({
+        count: 0,
+        label: 'initial',
+        setCount: (count) => set({ count }),
+        setLabel: (label) => set({ label }),
+      }),
+      { autoHydrate: false, storage, onError }
+    );
+
+    await expect(store.persist.hydrate()).rejects.toThrow(
+      'Message channel disconnected'
+    );
+    expect(onError).toHaveBeenCalledWith(expect.any(Error));
+
+    // The rejected promise must not be memoized.
+    await store.persist.hydrate();
+    expect(get).toHaveBeenCalledTimes(2);
+    expect(store.getState().count).toBe(9);
+    store.persist.destroy();
+  });
 });

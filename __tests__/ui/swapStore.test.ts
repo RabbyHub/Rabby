@@ -83,11 +83,28 @@ describe('swap store', () => {
 
     await useSwapStore.persist.flush();
     expect(wallet.setStorageItem).toHaveBeenCalledTimes(1);
-    expect(wallet.setStorageItem).toHaveBeenCalledWith('swap', {
-      selectedChain: CHAINS_ENUM.BSC,
-      selectedFromToken: undefined,
-      selectedToToken: undefined,
-    });
+    expect(wallet.setStorageItem).toHaveBeenCalledWith(
+      'swap',
+      {
+        selectedChain: CHAINS_ENUM.BSC,
+        selectedFromToken: undefined,
+        selectedToToken: undefined,
+      },
+      ['selectedFromToken', 'selectedToToken']
+    );
+
+    // The assertion above passes even when the clears are lost, because the
+    // mocked wallet keeps the keys in-process. Chrome's port messaging is
+    // JSON-serialized, so replay that here: the cleared fields must survive as
+    // the third argument, not as `undefined` values in the patch.
+    const [, partials, clearedKeys] = (wallet.setStorageItem as jest.Mock).mock
+      .calls[0];
+    const overWire = <T>(value: T): T => JSON.parse(JSON.stringify(value));
+    expect(overWire(partials)).toEqual({ selectedChain: CHAINS_ENUM.BSC });
+    expect(overWire(clearedKeys)).toEqual([
+      'selectedFromToken',
+      'selectedToToken',
+    ]);
   });
 
   test('updates UI-only state without persisting it', async () => {

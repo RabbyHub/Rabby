@@ -236,7 +236,13 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
 
   let hydration: Promise<void> | undefined;
   const startHydration = () => {
-    hydration ||= hydrate();
+    // A rejected hydration must not be memoized. The background port rejects
+    // in-flight requests when the service worker is evicted, so a failure here
+    // is usually transient and `persist.hydrate()` has to stay retryable.
+    hydration ||= hydrate().catch((error) => {
+      hydration = undefined;
+      throw error;
+    });
     return hydration;
   };
   const disposeRemoteSubscription = options.sync?.engine.subscribe(
@@ -262,7 +268,9 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   };
 
   if (options.autoHydrate !== false) {
-    void startHydration();
+    // Already reported through `onError`; swallow so an evicted service worker
+    // doesn't surface as an unhandled rejection.
+    void startHydration().catch(() => undefined);
   }
 
   return store;
