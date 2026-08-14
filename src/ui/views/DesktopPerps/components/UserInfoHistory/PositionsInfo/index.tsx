@@ -728,7 +728,7 @@ export const PositionsInfo: React.FC = () => {
         },
       },
     ],
-    [marketDataMap, isSmallScreen]
+    [marketDataMap, isSmallScreen, t]
   );
 
   return (
