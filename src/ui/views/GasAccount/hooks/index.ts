@@ -404,7 +404,7 @@ export const useGasAccountDiscovery = ({
     accountsWithGasAccountBalance:
       s.gasAccount.accountsWithGasAccountBalance || [],
   }));
-  const autoLoginInFlight = useRef(false);
+  const autoLoginAttemptedAddress = useRef<string>();
   const { login } = useGasAccountMethods();
 
   const refreshDiscovery = useCallback(
@@ -422,18 +422,20 @@ export const useGasAccountDiscovery = ({
   }, [autoRefresh, refreshDiscovery]);
 
   useEffect(() => {
-    if (!discovery.autoLoginAccount?.address || autoLoginInFlight.current) {
+    // autoLoginAccount is a fresh object on every discovery/sync, so identity
+    // alone can't gate this — attempt each address at most once per mount.
+    if (!discovery.autoLoginAccount?.address) {
+      return;
+    }
+    const address = discovery.autoLoginAccount.address.toLowerCase();
+    if (autoLoginAttemptedAddress.current === address) {
       return;
     }
 
-    autoLoginInFlight.current = true;
-    login(discovery.autoLoginAccount)
-      .catch((error) => {
-        console.error('[gasAccount] auto login failed', error);
-      })
-      .finally(() => {
-        autoLoginInFlight.current = false;
-      });
+    autoLoginAttemptedAddress.current = address;
+    login(discovery.autoLoginAccount).catch((error) => {
+      console.error('[gasAccount] auto login failed', error);
+    });
   }, [discovery.autoLoginAccount, login]);
 
   return {
