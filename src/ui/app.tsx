@@ -87,40 +87,61 @@ const renderSentryErrorFallback: Sentry.FallbackRender = ({
 };
 
 const main = async () => {
-  await initializeSwapStore();
+  try {
+    await initializeSwapStore();
+  } catch (e) {
+    // Swap state is not needed to render anything, and the store re-hydrates
+    // itself once the background port reconnects. Never block the first paint
+    // on it — a blank approval window would strand a pending dapp request.
+    console.error('[main] swap store hydration failed', e);
+    Sentry.captureException(e);
+  }
   await compensateUnlockedOnceFlag();
 
   store.dispatch.app.initBizStore();
   store.dispatch.chains.init();
 
   if (getUiType().isPop) {
-    wallet.tryOpenOrActiveUserGuide().then((opened) => {
-      if (opened) {
-        window.close();
-      }
-    });
+    wallet
+      .tryOpenOrActiveUserGuide()
+      .then((opened) => {
+        if (opened) {
+          window.close();
+        }
+      })
+      .catch((e) => {
+        console.error('[main] tryOpenOrActiveUserGuide failed', e);
+      });
   }
 
-  wallet.getLocale().then((locale) => {
-    addResourceBundle(locale).then(() => {
-      changeLanguage(locale);
-      root?.render(
-        <Sentry.ErrorBoundary
-          fallback={renderSentryErrorFallback}
-          beforeCapture={(scope) => {
-            scope.setTag('error_boundary', 'root');
-          }}
-        >
-          <Provider store={store}>
-            <Views wallet={wallet} />
-          </Provider>
-        </Sentry.ErrorBoundary>
-      );
-    });
+  // `fallbackLng` in src/i18n.ts, already bundled at module load.
+  const locale = await wallet.getLocale().catch((e) => {
+    console.error('[main] failed to read locale', e);
+    return 'en';
   });
+  await addResourceBundle(locale).catch((e) => {
+    console.error('[main] failed to load locale bundle', locale, e);
+  });
+  changeLanguage(locale);
+
+  root?.render(
+    <Sentry.ErrorBoundary
+      fallback={renderSentryErrorFallback}
+      beforeCapture={(scope) => {
+        scope.setTag('error_boundary', 'root');
+      }}
+    >
+      <Provider store={store}>
+        <Views wallet={wallet} />
+      </Provider>
+    </Sentry.ErrorBoundary>
+  );
 };
 
-main();
+main().catch((e) => {
+  console.error('[main] bootstrap failed', e);
+  Sentry.captureException(e);
+});
 
 const checkSwAlive = () => {
   console.log('[checkSwAlive]', new Date());

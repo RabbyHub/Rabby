@@ -2746,22 +2746,33 @@ export class WalletController extends BaseController {
 
   setStorageItem = <Key extends PersistedStoreKey>(
     key: Key,
-    partials: PersistedStorePatch<Key>
+    partials: PersistedStorePatch<Key>,
+    clearedKeys?: string[]
   ) => {
     if (!partials || typeof partials !== 'object') {
       throw new Error(`Invalid persisted store value: ${String(key)}`);
     }
+    // Port messages are JSON-serialized, so keys the caller set to `undefined`
+    // never arrive. Put them back before patching, otherwise clearing a field
+    // is a silent no-op. Each store still validates the resulting patch.
+    const patch = { ...partials } as Record<string, unknown>;
+    if (Array.isArray(clearedKeys)) {
+      clearedKeys.forEach((clearedKey) => {
+        if (typeof clearedKey === 'string') {
+          patch[clearedKey] = undefined;
+        }
+      });
+    }
+
     switch (key) {
       case 'currency':
-        currencyService.patchStore(partials as PersistedStorePatch<'currency'>);
+        currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
         return;
       case 'swap':
-        swapService.patchStore(partials as PersistedStorePatch<'swap'>);
+        swapService.patchStore(patch as PersistedStorePatch<'swap'>);
         return;
       case 'whitelist':
-        whitelistService.patchStore(
-          partials as PersistedStorePatch<'whitelist'>
-        );
+        whitelistService.patchStore(patch as PersistedStorePatch<'whitelist'>);
         return;
       default:
         throw new Error(`Unknown persisted store: ${String(key)}`);
