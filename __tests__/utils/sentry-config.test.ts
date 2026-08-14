@@ -8,7 +8,27 @@ jest.mock('@/utils/user-data-tracking', () => ({
 import * as Sentry from '@sentry/browser';
 import { SENTRY_IGNORED_SAMPLES } from '../fixtures/sentry-ignored-samples';
 import { getSentryConfig } from '@/utils/sentry-config';
-import { attachHardwareSigningContext } from '@/utils/sentry';
+import { attachSigningContext } from '@/utils/sentry';
+import type { SigningOperation } from '@/background/service/keyring/signing-diagnostics';
+
+const attachHardwareSigningContext = (
+  error: unknown,
+  context: { wallet: string; operation: string; originalError?: unknown }
+) =>
+  attachSigningContext(error, {
+    schema_version: 1,
+    wallet_family: 'hardware',
+    wallet_provider: context.wallet,
+    transport: 'unknown',
+    operation: (context.operation === 'message'
+      ? 'personal_message'
+      : context.operation) as SigningOperation,
+    stage: 'sign',
+    outcome: 'failed',
+    error_category: 'unknown',
+    duration_bucket: 'lt_100ms',
+    originalError: context.originalError,
+  });
 
 const createRecordingClient = (events: any[]) => {
   const client = new Sentry.BrowserClient({
@@ -170,19 +190,28 @@ describe('Sentry configuration', () => {
     await client.flush(2000);
 
     expect(events).toHaveLength(5);
-    expect(events[0].tags).toMatchObject({ hardware_wallet: 'trezor' });
-    expect(events[1].tags).toMatchObject({ hardware_wallet: 'ledger' });
-    expect(events[2].tags).toMatchObject({ hardware_wallet: 'onekey' });
+    expect(events[0].tags).toMatchObject({
+      wallet_family: 'hardware',
+      wallet_provider: 'trezor',
+    });
+    expect(events[1].tags).toMatchObject({
+      wallet_family: 'hardware',
+      wallet_provider: 'ledger',
+    });
+    expect(events[2].tags).toMatchObject({
+      wallet_family: 'hardware',
+      wallet_provider: 'onekey',
+    });
     expect(events[2].exception?.values?.[0]?.value).toBe(
       'OneKey transaction failed'
     );
     expect(events[3].exception?.values?.[0]?.value).toBe('Failed to fetch');
-    const reportedCause = events[3].extra?.hardware_original_error as string;
+    const reportedCause = events[3].extra?.signing_original_error as string;
     expect(reportedCause).toContain('0x6a80');
-    expect(reportedCause).toContain('[redacted-hd-path]');
-    expect(reportedCause).toContain('[redacted-hex]');
+    expect(reportedCause).not.toContain('derivationPath');
+    expect(reportedCause).not.toContain('account');
     expect(reportedCause).not.toContain('0x0123456789abcdef');
-    expect(events[4].tags?.hardware_wallet).toBeUndefined();
+    expect(events[4].tags?.wallet_family).toBeUndefined();
     await client.close(2000);
   });
 

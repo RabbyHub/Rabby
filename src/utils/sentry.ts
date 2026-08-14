@@ -80,6 +80,11 @@ const HARDWARE_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /device is locked|device not found|no (?:\w+ ){0,2}device found|multiple \w+ devices detected/iu,
 ];
 
+const SIGNING_CANCELLATION_ERRORS: SentryIgnorePattern[] = [
+  /refusedbyuser|userrefusedondevice|failure_(?:action|pin)cancelled|method_(?:cancel|interrupted)/iu,
+  /^(?:Action cancell?ed by user|Cancell?ed|Popup closed)$/iu,
+];
+
 // Stale background service worker noise: after an extension update the old
 // background may keep running pre-guard code that throws "undefined.apply"
 // inside a listen callback. Message.onRequest catches it and forwards a
@@ -195,10 +200,20 @@ export const shouldIgnoreSentryError = (
   const hardware = getHardwareSigningContext(error);
   if (signing || hardware) {
     if (
+      signing?.error_category === 'user_cancelled' &&
+      matchesAny(SIGNING_CANCELLATION_ERRORS, candidates)
+    ) {
+      return true;
+    }
+    if (
       (signing?.wallet_family === 'hardware' || hardware) &&
       matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)
     ) {
       return true;
+    }
+
+    if (signing && signing.wallet_family !== 'hardware') {
+      return matchesAny(RABBY_SENTRY_IGNORE_ERRORS, candidates);
     }
 
     // Signing failures remain reportable even when a transport failure uses a
@@ -246,20 +261,24 @@ export const collectSentryEventText = (event: SentryEventLike) =>
     ]),
   ].filter((value): value is string => Boolean(value));
 
-// The shape of an SDK error is decided by the device library, not by Rabby, so
-// it is flattened to text and redacted instead of being handed to Sentry whole.
-const describeOriginalError = (error: unknown) => {
-  const parts = collectErrorText(error);
+// The shape of an SDK error is decided by the device library. Keep only the
+// reviewed scalar fields; never serialize the SDK object into Sentry.
+const describeOriginalError = (
+  error: unknown,
+  depth = 0
+): string | undefined => {
+  if (!error || depth > 3) return undefined;
+  if (typeof error !== 'object') return redactSensitiveText(error) || undefined;
 
-  try {
-    const serialized = JSON.stringify(error);
-    if (serialized && serialized !== '{}') {
-      parts.push(serialized);
-    }
-  } catch {
-    // Circular SDK errors: the text collected above is all we can report.
-  }
-
+  const value = error as Record<string, unknown>;
+  const parts = [value.name, value.message, value.shortMessage, value.code]
+    .filter(
+      (part): part is string | number =>
+        typeof part === 'string' || typeof part === 'number'
+    )
+    .map(String);
+  const cause = describeOriginalError(value.cause, depth + 1);
+  if (cause) parts.push(cause);
   return redactSensitiveText(parts.join(' | ')) || undefined;
 };
 
@@ -317,6 +336,12 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
   ];
   event.extra = {
     ...event.extra,
+    ...(context.provider_code
+      ? { signing_provider_code: context.provider_code }
+      : {}),
+    ...(context.provider_stage
+      ? { signing_provider_stage: context.provider_stage }
+      : {}),
     signing_original_error: describeOriginalError(context.originalError),
   };
 };

@@ -231,8 +231,7 @@ describe('hardware wallet Sentry reporting', () => {
           app_name: 'Ethereum',
           app_version: '1.10.0',
         },
-        hardware_original_error:
-          'invalid data for 0xabc | 0x6a80 | {"code":"0x6a80","message":"invalid data for 0xabc"}',
+        hardware_original_error: 'invalid data for 0xabc | 0x6a80',
       },
     });
   });

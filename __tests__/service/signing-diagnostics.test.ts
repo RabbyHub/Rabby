@@ -1,5 +1,12 @@
-import { getSigningContext, applySigningContext } from '@/utils/sentry';
-import { withSigningDiagnostics } from '@/background/service/keyring/signing-diagnostics';
+import {
+  getSigningContext,
+  applySigningContext,
+  shouldIgnoreSentryError,
+} from '@/utils/sentry';
+import {
+  registerSigningDiagnosticsProvider,
+  withSigningDiagnostics,
+} from '@/background/service/keyring/signing-diagnostics';
 
 describe('signing diagnostics port', () => {
   it('keeps successful signing behavior unchanged', () => {
@@ -65,5 +72,99 @@ describe('signing diagnostics port', () => {
       wallet_family: 'walletconnect',
       wallet_provider: 'unknown',
     });
+  });
+
+  it('uses explicit provider capabilities and bounded categories', async () => {
+    registerSigningDiagnosticsProvider('test-wallet', () => ({
+      wallet_provider: 'test-wallet',
+      transport: 'bluetooth',
+      error_category: 'timeout',
+      provider_code: '90',
+    }));
+    const error = new Error('failed');
+
+    await expect(
+      withSigningDiagnostics(
+        { type: 'Future Hardware', signingDiagnosticsProvider: 'test-wallet' },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(getSigningContext(error)).toMatchObject({
+      wallet_family: 'hardware',
+      wallet_provider: 'test-wallet',
+      transport: 'bluetooth',
+      error_category: 'timeout',
+      provider_code: '90',
+    });
+  });
+
+  it('falls back to unknown for malformed provider values', async () => {
+    registerSigningDiagnosticsProvider('bad-wallet', () => ({
+      wallet_provider: 'address-0x1234567890123456789012345678901234567890',
+      transport: 'satellite',
+      error_category: 'made-up',
+      provider_code: 'x'.repeat(1000),
+      provider_reason: { secret: 'must not escape' },
+    }));
+    const error = new Error('failed');
+
+    await expect(
+      withSigningDiagnostics(
+        { type: 'Future Hardware', signingDiagnosticsProvider: 'bad-wallet' },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(getSigningContext(error)).toMatchObject({
+      wallet_provider: 'unknown',
+      transport: 'unknown',
+      error_category: 'unknown',
+    });
+    expect(getSigningContext(error)?.provider_code).toBeUndefined();
+  });
+
+  it('does not let concurrent attempts overwrite one error context', async () => {
+    const error = new Error('shared failure');
+    const first = withSigningDiagnostics(
+      { type: 'HD Key Tree' },
+      'transaction',
+      () => Promise.reject(error)
+    );
+    const second = withSigningDiagnostics(
+      { type: 'WalletConnect' },
+      'typed_data',
+      () => Promise.reject(error)
+    );
+
+    const [firstResult, secondResult] = await Promise.allSettled([
+      first,
+      second,
+    ]);
+    expect(firstResult.status).toBe('rejected');
+    expect(secondResult.status).toBe('rejected');
+    expect(
+      getSigningContext((firstResult as PromiseRejectedResult).reason)
+    ).toMatchObject({ wallet_family: 'software', operation: 'transaction' });
+    expect(
+      getSigningContext((secondResult as PromiseRejectedResult).reason)
+    ).toMatchObject({
+      wallet_family: 'walletconnect',
+      operation: 'typed_data',
+    });
+  });
+
+  it('filters an explicitly classified cancellation', async () => {
+    const error = Object.assign(new Error('cancelled'), {
+      category: 'user_cancelled',
+    });
+    await expect(
+      withSigningDiagnostics({ type: 'HD Key Tree' }, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+    expect(shouldIgnoreSentryError(error)).toBe(true);
   });
 });
