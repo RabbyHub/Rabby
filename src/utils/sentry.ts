@@ -1,4 +1,7 @@
-import type { HardwareSigningContext } from '@/background/service/keyring/hardware-wallet-sentry';
+import type {
+  HardwareSigningContext,
+  HardwareSigningMetadata,
+} from '@/background/service/keyring/hardware-wallet-sentry';
 
 export type SentryIgnorePattern = string | RegExp;
 
@@ -283,48 +286,40 @@ const setIfDefined = (
 // event.extra is sent verbatim. Keep this as an allowlist: keyrings are
 // duck-typed and must not be able to smuggle APDUs, addresses or session IDs
 // through unreviewed metadata keys.
+// Keyed off HardwareSigningMetadata so the map stops compiling when the type
+// gains a field. Without that a new field is silently dropped: only listed
+// keys reach Sentry, and nothing else links the two.
+const HARDWARE_METADATA_READERS: Record<
+  keyof HardwareSigningMetadata,
+  (value: unknown) => unknown
+> = {
+  device_model: readString,
+  firmware_version: readString,
+  app_name: readString,
+  app_version: readString,
+  device_mode: readString,
+  device_action_steps: readString,
+  ledger_action: readString,
+  ledger_action_status: readString,
+  // Shape-checked rather than merely stringified: this one joins the
+  // fingerprint, where an unbounded value would split grouping without limit.
+  status_word: (value) => readDeviceStatusWord({ status_word: value }),
+  session_age_ms: readNumber,
+  session_action_count: readNumber,
+  ledger_action_duration_ms: readNumber,
+  ledger_context_error_count: readNumber,
+  ledger_context_count: readNumber,
+  session_reused: readBoolean,
+  ledger_web3_checks_opt_in_result: readBoolean,
+  ledger_clear_signing_timeout_suspected: readBoolean,
+};
+
 const redactHardwareMetadata = (metadata: Record<string, unknown>) => {
   const redacted: Record<string, unknown> = {};
 
-  for (const key of [
-    'device_model',
-    'firmware_version',
-    'app_name',
-    'app_version',
-    'device_mode',
-    'device_action_steps',
-    'ledger_action',
-    'ledger_action_status',
-  ]) {
-    setIfDefined(redacted, key, readString(metadata[key]));
+  for (const [key, read] of Object.entries(HARDWARE_METADATA_READERS)) {
+    setIfDefined(redacted, key, read(metadata[key]));
   }
-  setIfDefined(redacted, 'status_word', readDeviceStatusWord(metadata));
-
-  for (const key of [
-    'session_age_ms',
-    'session_action_count',
-    'ledger_action_duration_ms',
-    'ledger_context_error_count',
-    'ledger_context_count',
-  ]) {
-    setIfDefined(redacted, key, readNumber(metadata[key]));
-  }
-
-  setIfDefined(
-    redacted,
-    'session_reused',
-    readBoolean(metadata.session_reused)
-  );
-  setIfDefined(
-    redacted,
-    'ledger_web3_checks_opt_in_result',
-    readBoolean(metadata.ledger_web3_checks_opt_in_result)
-  );
-  setIfDefined(
-    redacted,
-    'ledger_clear_signing_timeout_suspected',
-    readBoolean(metadata.ledger_clear_signing_timeout_suspected)
-  );
 
   return redacted;
 };
