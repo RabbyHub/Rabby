@@ -1,20 +1,18 @@
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSwapStore } from '@/ui/state/swap';
 import { useMemo } from 'react';
 
 export const useSwapSettings = () => {
-  const prevChain = useRabbySelector((s) => s.swap.selectedChain);
-  const dispatch = useRabbyDispatch();
+  const prevChain = useSwapStore((s) => s.selectedChain);
+  const setSelectedChain = useSwapStore((s) => s.setSelectedChain);
 
   const methods = useMemo(() => {
-    const { setSelectedChain } = dispatch.swap;
     return {
       setSelectedChain,
     };
-  }, [dispatch]);
+  }, [setSelectedChain]);
 
   return {
     prevChain,
-    dispatch,
     ...methods,
   };
 };

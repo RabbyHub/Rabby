@@ -3,22 +3,19 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import Views from './views';
-import { Message } from '@/utils/message';
-import { getUiType, getUITypeName } from 'ui/utils';
+import { getUiType } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
-import { EVENTS } from 'consts';
 import browser from 'webextension-polyfill';
 
-import type { WalletControllerType } from 'ui/utils/WalletContext';
-
 import store from './store';
+import { initializeSwapStore } from './state/swap';
 
-import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 import { getSentryConfig } from '@/utils/sentry-config';
 import { Button } from 'antd';
+import { wallet } from './wallet';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -42,90 +39,6 @@ function initAppMeta() {
 }
 
 initAppMeta();
-
-const { PortMessage } = Message;
-
-const portMessageChannel = new PortMessage();
-
-const wallet = new Proxy(
-  {},
-  {
-    get(obj, key) {
-      switch (key) {
-        case 'openapi':
-          return new Proxy(
-            {},
-            {
-              get(obj, key) {
-                return function (...params: any) {
-                  return portMessageChannel.request({
-                    type: 'openapi',
-                    method: key,
-                    params,
-                  });
-                };
-              },
-            }
-          );
-          break;
-        case 'testnetOpenapi':
-          return new Proxy(
-            {},
-            {
-              get(obj, key) {
-                return function (...params: any) {
-                  return portMessageChannel.request({
-                    type: 'testnetOpenapi',
-                    method: key,
-                    params,
-                  });
-                };
-              },
-            }
-          );
-          break;
-        case 'fakeTestnetOpenapi':
-          return new Proxy(
-            {},
-            {
-              get(obj, key) {
-                return function (...params: any) {
-                  return portMessageChannel.request({
-                    type: 'fakeTestnetOpenapi',
-                    method: key,
-                    params,
-                  });
-                };
-              },
-            }
-          );
-          break;
-        default:
-          return function (...params: any) {
-            return portMessageChannel.request({
-              type: 'controller',
-              method: key,
-              params,
-            });
-          };
-      }
-    },
-  }
-) as WalletControllerType;
-
-portMessageChannel.on('message', (data) => {
-  if (data.event === 'broadcast') {
-    eventBus.emit(data.data.type, data.data.data);
-  }
-});
-
-eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
-  portMessageChannel.request({
-    type: 'broadcast',
-    method: data.method,
-    params: data.data,
-  });
-});
 
 store.dispatch.app.initWallet({ wallet });
 
@@ -174,57 +87,61 @@ const renderSentryErrorFallback: Sentry.FallbackRender = ({
 };
 
 const main = async () => {
-  portMessageChannel.connect(getUITypeName());
+  try {
+    await initializeSwapStore();
+  } catch (e) {
+    // Swap state is not needed to render anything, and the store re-hydrates
+    // itself once the background port reconnects. Never block the first paint
+    // on it — a blank approval window would strand a pending dapp request.
+    console.error('[main] swap store hydration failed', e);
+    Sentry.captureException(e);
+  }
   await compensateUnlockedOnceFlag();
 
   store.dispatch.app.initBizStore();
   store.dispatch.chains.init();
 
   if (getUiType().isPop) {
-    wallet.tryOpenOrActiveUserGuide().then((opened) => {
-      if (opened) {
-        window.close();
-      }
-    });
+    wallet
+      .tryOpenOrActiveUserGuide()
+      .then((opened) => {
+        if (opened) {
+          window.close();
+        }
+      })
+      .catch((e) => {
+        console.error('[main] tryOpenOrActiveUserGuide failed', e);
+      });
   }
 
-  wallet.getLocale().then((locale) => {
-    addResourceBundle(locale).then(() => {
-      changeLanguage(locale);
-      root?.render(
-        <Sentry.ErrorBoundary
-          fallback={renderSentryErrorFallback}
-          beforeCapture={(scope) => {
-            scope.setTag('error_boundary', 'root');
-          }}
-        >
-          <Provider store={store}>
-            <Views wallet={wallet} />
-          </Provider>
-        </Sentry.ErrorBoundary>
-      );
-    });
+  // `fallbackLng` in src/i18n.ts, already bundled at module load.
+  const locale = await wallet.getLocale().catch((e) => {
+    console.error('[main] failed to read locale', e);
+    return 'en';
   });
+  await addResourceBundle(locale).catch((e) => {
+    console.error('[main] failed to load locale bundle', locale, e);
+  });
+  changeLanguage(locale);
+
+  root?.render(
+    <Sentry.ErrorBoundary
+      fallback={renderSentryErrorFallback}
+      beforeCapture={(scope) => {
+        scope.setTag('error_boundary', 'root');
+      }}
+    >
+      <Provider store={store}>
+        <Views wallet={wallet} />
+      </Provider>
+    </Sentry.ErrorBoundary>
+  );
 };
 
-const bootstrap = () => {
-  if (!isManifestV3) {
-    main();
-    return;
-  }
-  browser.runtime.sendMessage({ type: 'getBackgroundReady' }).then((res) => {
-    if (!res) {
-      setTimeout(() => {
-        bootstrap();
-      }, 100);
-      return;
-    }
-
-    main();
-  });
-};
-
-bootstrap();
+main().catch((e) => {
+  console.error('[main] bootstrap failed', e);
+  Sentry.captureException(e);
+});
 
 const checkSwAlive = () => {
   console.log('[checkSwAlive]', new Date());

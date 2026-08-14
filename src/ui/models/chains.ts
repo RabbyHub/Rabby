@@ -12,6 +12,7 @@ import {
 } from '@/utils/chain';
 import { Chain } from '@debank/common';
 import { RootModel } from '.';
+import { useSwapStore } from '@/ui/state/swap';
 import type { AccountState } from './account';
 
 type IState = {
@@ -59,7 +60,7 @@ export const chains = createModel<RootModel>()({
           }
         }),
       ]);
-      dispatch.swap.checkStore();
+      useSwapStore.getState().checkStore();
     },
     /**
      * @description get all chains current account could access, vary them and sort them

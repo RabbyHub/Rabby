@@ -1,6 +1,6 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 import styled from 'styled-components';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { Account } from '@/background/service/preference';
@@ -30,10 +30,7 @@ export const ToAddressCard = ({
   loading,
   cexInfo,
 }: AddressTypeCardProps) => {
-  const { whitelist } = useRabbySelector((s) => ({
-    whitelist: s.whitelist.whitelist,
-  }));
-  const dispatch = useRabbyDispatch();
+  const whitelist = useWhitelistStore((state) => state.whitelists);
 
   const addressSplit = useMemo(() => {
     const address = targetAccount.address || '';
@@ -46,10 +43,6 @@ export const ToAddressCard = ({
 
     return [prefix, middle, suffix];
   }, [targetAccount.address]);
-
-  useEffect(() => {
-    dispatch.whitelist.getWhitelist();
-  }, [dispatch.whitelist]);
 
   return (
     <header

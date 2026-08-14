@@ -12,6 +12,7 @@ import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 import { isSameAddress, splitNumberByStep } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { obj2query } from '@/ui/utils/url';
@@ -38,6 +39,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   const history = useHistory();
   const location = useLocation();
   const dispatch = useRabbyDispatch();
+  const setAddAddress = useDesktopProfileStore((state) => state.setAddAddress);
   const currentAccount = useCurrentAccount();
   const virtuosoRef = useRef<VirtuosoHandle>(null);
   const shouldScrollRef = useRef(true);
@@ -130,11 +132,9 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
       />
       <div
         onClick={() => {
-          dispatch.desktopProfile.setField({
-            addAddress: {
-              visible: true,
-              importType: '',
-            },
+          setAddAddress({
+            visible: true,
+            importType: '',
           });
         }}
         className={clsx(

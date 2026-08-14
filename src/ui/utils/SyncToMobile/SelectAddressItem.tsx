@@ -1,5 +1,5 @@
 import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
-import { useRabbySelector } from '@/ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 import { Tooltip } from 'antd';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,10 +24,8 @@ export const SelectAddressItem: React.FC<{
   onClick?(account: IDisplayedAccountWithBalance): void;
   checked?: boolean;
 }> = ({ account, onClick, disabled, checked, className }) => {
-  const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
-    whitelistEnable: s.whitelist.enabled,
-    whiteList: s.whitelist.whitelist,
-  }));
+  const whitelistEnable = useWhitelistStore((state) => state.enabled);
+  const whiteList = useWhitelistStore((state) => state.whitelists);
 
   const { t } = useTranslation();
   const accountInfo = useAccountInfo(

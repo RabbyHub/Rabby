@@ -15,7 +15,7 @@ import { useRepeatImportConfirm } from '../utils/useRepeatImportConfirm';
 import { safeJSONParse } from '@/utils';
 import { UI_TYPE } from '@/constant/ui';
 import qs from 'qs';
-import { useRabbyDispatch } from '../store';
+import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 
 const TipTextList = styled.div`
   margin-top: 32px;
@@ -52,7 +52,7 @@ const ImportPrivateKey: React.FC<{
     0
   );
   const isWide = useMedia('(min-width: 401px)');
-  const dispatch = useRabbyDispatch();
+  const setAddAddress = useDesktopProfileStore((state) => state.setAddAddress);
 
   const { show, contextHolder } = useRepeatImportConfirm();
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
@@ -161,9 +161,7 @@ const ImportPrivateKey: React.FC<{
         <Navbar
           onBack={() => {
             if (isInModal) {
-              dispatch.desktopProfile.setField({
-                addAddress: { visible: false, importType: '' },
-              });
+              setAddAddress({ visible: false, importType: '' });
             } else if (history.length > 1) {
               history.goBack();
             } else {

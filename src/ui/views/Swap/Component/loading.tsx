@@ -2,7 +2,7 @@ import { DEX } from '@/constant';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React, { SVGProps } from 'react';
-import { useRabbySelector } from '@/ui/store';
+import { useSwapStore } from '@/ui/state/swap';
 import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -76,7 +76,7 @@ export const QuoteLoading = ({
 export const QuoteListLoading = ({
   fetchedList: dataList,
 }: QuoteListLoadingProps) => {
-  const supportedDEXList = useRabbySelector((s) => s.swap.supportedDEXList);
+  const supportedDEXList = useSwapStore((s) => s.supportedDEXList);
   return (
     <>
       {Object.entries(DEX).map(([key, value]) => {

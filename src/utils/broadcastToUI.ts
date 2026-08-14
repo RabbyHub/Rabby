@@ -23,6 +23,8 @@ export type BROADCAST_TO_UI_EVENTS_PAYLOAD = {
     changedKey: string;
     changedKeys: string[];
     partials: Record<string, any>;
+    origin: string;
+    revision: number;
   };
 };
 
