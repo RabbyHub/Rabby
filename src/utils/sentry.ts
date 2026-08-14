@@ -247,17 +247,101 @@ const describeOriginalError = (error: unknown) => {
   return redactSensitiveText(parts.join(' | ')) || undefined;
 };
 
-// event.extra is sent verbatim, so the device metadata has to be redacted
-// here: it carries free text the keyrings read off the device. Note this
-// removes structured secrets (addresses, HD paths, URLs, emails) — it cannot
-// scrub a free-text device nickname, which has no pattern to match on.
-const redactHardwareMetadata = (metadata: Record<string, unknown>) =>
-  Object.fromEntries(
-    Object.entries(metadata).map(([key, value]) => [
-      key,
-      typeof value === 'string' ? redactSensitiveText(value) : value,
-    ])
+// A device status word is two bytes. Validated here as well as in the keyring
+// that produces it, because this is the boundary that writes it into a
+// fingerprint: metadata arrives from a duck-typed keyring, and an unbounded
+// value in a fingerprint splits grouping without limit.
+const DEVICE_STATUS_WORD_SHAPE = /^[\da-f]{1,4}$/u;
+
+const readDeviceStatusWord = (metadata?: { status_word?: unknown }) => {
+  const word = metadata?.status_word;
+
+  return typeof word === 'string' && DEVICE_STATUS_WORD_SHAPE.test(word)
+    ? word
+    : undefined;
+};
+
+const readString = (value: unknown) =>
+  typeof value === 'string' ? redactSensitiveText(value) : undefined;
+
+const readNumber = (value: unknown) =>
+  typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+
+const readBoolean = (value: unknown) =>
+  typeof value === 'boolean' ? value : undefined;
+
+const setIfDefined = (
+  target: Record<string, unknown>,
+  key: string,
+  value: unknown
+) => {
+  if (value !== undefined) {
+    target[key] = value;
+  }
+};
+
+// event.extra is sent verbatim. Keep this as an allowlist: keyrings are
+// duck-typed and must not be able to smuggle APDUs, addresses or session IDs
+// through unreviewed metadata keys.
+const redactHardwareMetadata = (metadata: Record<string, unknown>) => {
+  const redacted: Record<string, unknown> = {};
+
+  for (const key of [
+    'device_model',
+    'firmware_version',
+    'app_name',
+    'app_version',
+    'device_mode',
+    'device_action_steps',
+    'ledger_action',
+    'ledger_action_status',
+  ]) {
+    setIfDefined(redacted, key, readString(metadata[key]));
+  }
+  setIfDefined(redacted, 'status_word', readDeviceStatusWord(metadata));
+
+  for (const key of [
+    'session_age_ms',
+    'session_action_count',
+    'ledger_action_duration_ms',
+    'ledger_context_error_count',
+    'ledger_context_count',
+  ]) {
+    setIfDefined(redacted, key, readNumber(metadata[key]));
+  }
+
+  setIfDefined(
+    redacted,
+    'session_reused',
+    readBoolean(metadata.session_reused)
   );
+  setIfDefined(
+    redacted,
+    'ledger_web3_checks_opt_in_result',
+    readBoolean(metadata.ledger_web3_checks_opt_in_result)
+  );
+  setIfDefined(
+    redacted,
+    'ledger_clear_signing_timeout_suspected',
+    readBoolean(metadata.ledger_clear_signing_timeout_suspected)
+  );
+
+  return redacted;
+};
+
+const redactHardwareException = (event: SentryEventLike) => {
+  event.message = event.message
+    ? redactSensitiveText(event.message)
+    : undefined;
+  event.exception?.values?.forEach((exception) => {
+    if (exception.type) {
+      exception.type = redactSensitiveText(exception.type);
+    }
+    if (exception.value) {
+      exception.value = redactSensitiveText(exception.value);
+    }
+  });
+};
 
 export const applyHardwareSigningContext = (
   event: SentryEventLike,
@@ -267,6 +351,7 @@ export const applyHardwareSigningContext = (
   if (!hardware) {
     return;
   }
+  redactHardwareException(event);
 
   // Supplied by the keyring, never re-derived here: the thrown message is the
   // whole error chain flattened into one string, in which every nested code is
@@ -274,13 +359,16 @@ export const applyHardwareSigningContext = (
   // position rule over that text can pick the right one. Only the keyring that
   // owns the device protocol knows which field is authoritative, and only the
   // ones that speak in status words set it at all.
-  const statusWord = hardware.metadata?.status_word;
+  const statusWord = readDeviceStatusWord(hardware.metadata);
 
   event.tags = {
     ...event.tags,
     hardware_wallet: hardware.wallet,
     sign_operation: hardware.operation,
     ...(statusWord ? { device_status_word: statusWord } : undefined),
+    ...(hardware.metadata?.ledger_clear_signing_timeout_suspected === true
+      ? { ledger_clear_signing_timeout_suspected: 'true' }
+      : undefined),
   };
   // Only extends the fingerprint when a status word was found, so failures
   // without one keep grouping exactly as they did before.
@@ -293,7 +381,11 @@ export const applyHardwareSigningContext = (
   ];
 
   event.extra = {
-    ...event.extra,
+    ...Object.fromEntries(
+      Object.entries(event.extra ?? {}).filter(
+        ([key]) => key !== '__serialized__'
+      )
+    ),
     ...(hardware.metadata
       ? { hardware_device: redactHardwareMetadata(hardware.metadata) }
       : undefined),

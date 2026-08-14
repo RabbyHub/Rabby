@@ -7,7 +7,15 @@ const mockGetDeviceSessionState = jest.fn();
 const mockExecuteDeviceAction = jest.fn();
 const mockGetAddress = jest.fn();
 const mockSignTransaction = jest.fn();
-const mockContextModule = { clearSigning: true };
+const mockSendCommand = jest.fn();
+const mockGetContexts = jest.fn();
+// build() hands back a fresh module per call, as the real builder does.
+const mockGetTypedDataFilters = jest.fn();
+const buildMockContextModule = () => ({
+  clearSigning: true,
+  getContexts: mockGetContexts,
+  getTypedDataFilters: mockGetTypedDataFilters,
+});
 const mockRemoveDefaultLoaders = jest.fn();
 const mockAddTypedDataLoader = jest.fn();
 const mockSetChain = jest.fn();
@@ -25,8 +33,8 @@ const flushMicrotasks = async () => {
   }
 };
 
-const waitForMockCall = async (mock: jest.Mock) => {
-  for (let i = 0; i < 100 && mock.mock.calls.length === 0; i++) {
+const waitForMockCall = async (mock: jest.Mock, count = 1) => {
+  for (let i = 0; i < 100 && mock.mock.calls.length < count; i++) {
     await Promise.resolve();
   }
 };
@@ -61,6 +69,7 @@ jest.mock(
       Stopped: 'stopped',
     },
     UserInteractionRequired: {
+      None: 'none',
       UnlockDevice: 'unlock-device',
     },
     DeviceManagementKitBuilder: jest.fn().mockImplementation(() => ({
@@ -71,12 +80,14 @@ jest.mock(
         disconnect: mockDisconnect,
         getDeviceSessionState: mockGetDeviceSessionState,
         executeDeviceAction: mockExecuteDeviceAction,
+        sendCommand: mockSendCommand,
       })),
     })),
     CloseAppCommand: jest.fn(),
     GetAppAndVersionCommand: jest.fn(),
     OpenAppDeviceAction: jest.fn(),
-    isSuccessCommandResult: jest.fn(),
+    // Mirrors the real predicate so command results are actually exercised.
+    isSuccessCommandResult: (result: any) => !!result && 'data' in result,
   }),
   { virtual: true }
 );
@@ -101,6 +112,9 @@ jest.mock('webextension-polyfill', () => ({
 jest.mock(
   '@ledgerhq/context-module',
   () => ({
+    ClearSignContextType: {
+      ERROR: 'error',
+    },
     ContextModuleChainID: {
       Ethereum: 'ethereum',
     },
@@ -109,7 +123,7 @@ jest.mock(
       addTypedDataLoader: mockAddTypedDataLoader.mockReturnThis(),
       setChain: mockSetChain.mockReturnThis(),
       setBlindSigningReporter: mockSetBlindSigningReporter.mockReturnThis(),
-      build: mockContextModuleBuild.mockReturnValue(mockContextModule),
+      build: mockContextModuleBuild.mockImplementation(buildMockContextModule),
     })),
   }),
   { virtual: true }
@@ -148,6 +162,8 @@ describe('LedgerBridgeKeyring makeApp', () => {
     jest.clearAllMocks();
     mockListenToAvailableDevices.mockReturnValue(of([], [{ id: 'ledger' }]));
     mockDisconnect.mockResolvedValue(undefined);
+    mockGetContexts.mockResolvedValue([]);
+    mockGetTypedDataFilters.mockResolvedValue({ type: 'success' });
     mockGetDeviceSessionState.mockReturnValue(of(connectedState));
     mockExecuteDeviceAction.mockReturnValue({
       observable: of({
@@ -383,7 +399,12 @@ describe('LedgerBridgeKeyring makeApp', () => {
     expect(mockSetBlindSigningReporter).toHaveBeenCalledWith({
       report: expect.any(Function),
     });
-    expect(mockWithContextModule).toHaveBeenCalledWith(mockContextModule);
+    expect(mockWithContextModule).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clearSigning: true,
+        getContexts: expect.any(Function),
+      })
+    );
 
     const blindSigningReporter = mockSetBlindSigningReporter.mock.calls[0][0];
     await expect(blindSigningReporter.report()).resolves.toBeUndefined();
@@ -835,15 +856,16 @@ describe('LedgerBridgeKeyring makeApp', () => {
       expect(keyring.getHardwareSigningMetadata(failure).status_word).toBe(
         '6a80'
       );
+      expect(keyring.getHardwareSigningMetadata(failure)).toMatchObject({
+        ledger_action: 'signTx',
+        ledger_action_status: 'error',
+      });
     } finally {
       await keyring.cleanUp();
     }
   });
 
-  // The approval screen offers Resend while the device is still waiting on the
-  // first attempt, which starts a second signing request without cancelling
-  // the first. Each attempt must report the trace it produced itself.
-  it('keeps each signing attempt diagnostics separate when Resend overlaps', async () => {
+  it('reports a stopped device action without rewriting it to error', async () => {
     const address = '0x0000000000000000000000000000000000000001';
     const keyring = new LedgerBridgeKeyring({
       accounts: [address],
@@ -853,56 +875,285 @@ describe('LedgerBridgeKeyring makeApp', () => {
       getChainId: () => Uint8Array.from([1]),
       serialize: () => Buffer.from('f86c', 'hex'),
     } as any;
-    const firstAttempt$ = new Subject<any>();
-    mockSignTransaction
-      .mockReturnValueOnce({ observable: firstAttempt$, cancel: jest.fn() })
-      .mockReturnValueOnce({
-        observable: of({
-          status: 'error',
-          error: { _tag: 'EthAppCommandError', errorCode: '6d00' },
-        }),
-        cancel: jest.fn(),
-      });
+    mockSignTransaction.mockReturnValueOnce({
+      observable: of({ status: 'stopped' }),
+      cancel: jest.fn(),
+    });
 
     try {
-      const first = keyring.signTransaction(address, tx).catch((e: Error) => e);
-      // Wait until the first attempt is actually pending *on the device* —
-      // that is when the approval screen offers Resend.
-      for (
-        let i = 0;
-        i < 50 && mockSignTransaction.mock.calls.length < 1;
-        i++
-      ) {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      }
-      expect(mockSignTransaction).toHaveBeenCalledTimes(1);
-
-      // Resend, while the first attempt is still pending on the device.
-      const second = await keyring
+      const failure = await keyring
         .signTransaction(address, tx)
         .catch((e: Error) => e);
 
-      firstAttempt$.next({
+      expect(keyring.getHardwareSigningMetadata(failure)).toMatchObject({
+        ledger_action: 'signTx',
+        ledger_action_status: 'stopped',
+      });
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
+  it('keeps overlapping account discovery steps out of a pending signing trace', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: {
+        [address]: {
+          hdPath: "m/44'/60'/0'/0/0",
+          hdPathBasePublicKey: 'public-key',
+          hdPathType: 'Legacy',
+        },
+      },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const signing$ = new Subject<any>();
+    const discovery$ = new Subject<any>();
+    const completedAddress = {
+      status: 'completed',
+      output: { address, publicKey: 'public-key' },
+    };
+    mockConnect.mockResolvedValueOnce('session-1');
+    mockGetAddress
+      .mockReturnValueOnce({
+        observable: of(completedAddress),
+        cancel: jest.fn(),
+      })
+      .mockReturnValueOnce({
+        observable: discovery$,
+        cancel: jest.fn(),
+      })
+      .mockReturnValueOnce({
+        observable: of(
+          {
+            status: 'pending',
+            intermediateValue: {
+              step: 'signer.eth.steps.accountDiscovery',
+              requiredUserInteraction: 'none',
+            },
+          },
+          completedAddress
+        ),
+        cancel: jest.fn(),
+      });
+    mockSignTransaction.mockReturnValueOnce({
+      observable: signing$,
+      cancel: jest.fn(),
+    });
+
+    try {
+      const signing = keyring
+        .signTransaction(address, tx)
+        .catch((error: Error) => error);
+      await waitForMockCall(mockSignTransaction);
+
+      signing$.next({
+        status: 'pending',
+        intermediateValue: {
+          step: 'signer.eth.steps.signTransaction',
+          requiredUserInteraction: 'sign-transaction',
+        },
+      });
+
+      // Both calls share their first address lookup. The shorter one finishes
+      // first; a global trace toggle would then restore the signing trace while
+      // the longer discovery starts its second lookup.
+      const firstDiscovery = keyring.getAddresses(0, 1);
+      const secondDiscovery = keyring.getAddresses(0, 2);
+      await waitForMockCall(mockGetAddress, 2);
+      discovery$.next(completedAddress);
+      await Promise.all([firstDiscovery, secondDiscovery]);
+      signing$.next({
         status: 'error',
         error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
       });
-      const firstError = await first;
 
-      const firstTrace = keyring.getHardwareSigningMetadata(firstError);
-      const secondTrace = keyring.getHardwareSigningMetadata(second);
-
-      expect(firstTrace.status_word).toBe('6a80');
-      expect(secondTrace.status_word).toBe('6d00');
-      // The first attempt's trace is its own, and says why it stops.
-      expect(firstTrace.device_action_steps).toContain(
-        'concurrentAttemptStarted'
-      );
-      // ...and is not handed to the attempt that displaced it.
-      expect(secondTrace.device_action_steps ?? '').not.toContain(
-        'concurrentAttemptStarted'
-      );
+      const steps = keyring.getHardwareSigningMetadata(await signing)
+        .device_action_steps;
+      expect(steps).toContain('signTransaction');
+      expect(steps).not.toContain('accountDiscovery');
     } finally {
-      firstAttempt$.complete();
+      discovery$.complete();
+      signing$.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  it('keeps signing successful when diagnostic stage logging throws', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+      verifySignature: () => true,
+    } as any;
+    const signing$ = new Subject<any>();
+    const signature = {
+      v: 27,
+      r: '1'.padStart(64, '0'),
+      s: '2'.padStart(64, '0'),
+    };
+    const debug = jest.spyOn(console, 'debug').mockImplementation(() => {
+      throw new Error('diagnostic failure');
+    });
+    mockConnect.mockResolvedValueOnce('session-1');
+    const cancel = jest.fn();
+    mockSignTransaction.mockReturnValueOnce({
+      observable: signing$,
+      cancel,
+    });
+
+    try {
+      const signing = keyring.signTransaction(address, tx);
+      await waitForMockCall(mockSignTransaction);
+      signing$.next({
+        status: 'pending',
+        intermediateValue: {
+          step: 'signer.eth.steps.signTransaction',
+          requiredUserInteraction: 'sign-transaction',
+        },
+      });
+      signing$.next({ status: 'completed', output: signature });
+
+      await expect(signing).resolves.toBe(tx);
+      expect(cancel).not.toHaveBeenCalled();
+    } finally {
+      debug.mockRestore();
+      signing$.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  it('preserves the device failure when diagnostic stage logging throws', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const signing$ = new Subject<any>();
+    const deviceError = { _tag: 'EthAppCommandError', errorCode: '6a80' };
+    const debug = jest.spyOn(console, 'debug').mockImplementation(() => {
+      throw new Error('diagnostic failure');
+    });
+    mockConnect.mockResolvedValueOnce('session-1');
+    mockSignTransaction.mockReturnValueOnce({
+      observable: signing$,
+      cancel: jest.fn(),
+    });
+
+    try {
+      const signing = keyring
+        .signTransaction(address, tx)
+        .catch((error: Error) => error);
+      await waitForMockCall(mockSignTransaction);
+      signing$.next({
+        status: 'pending',
+        intermediateValue: {
+          step: 'signer.eth.steps.signTransaction',
+          requiredUserInteraction: 'sign-transaction',
+        },
+      });
+      signing$.next({ status: 'error', error: deviceError });
+
+      const failure = await signing;
+      expect(failure.message).toContain('0x6a80');
+      expect((failure as any).cause?.cause).toBe(deviceError);
+    } finally {
+      debug.mockRestore();
+      signing$.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  it('keeps signing successful when diagnostic timing throws', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+      verifySignature: () => true,
+    } as any;
+    const cancel = jest.fn();
+    const timing = jest.spyOn(performance, 'now').mockImplementation(() => {
+      throw new Error('diagnostic timing failure');
+    });
+    mockConnect.mockResolvedValueOnce('session-1');
+    mockSignTransaction.mockReturnValueOnce({
+      observable: of({
+        status: 'completed',
+        output: {
+          v: 27,
+          r: '1'.padStart(64, '0'),
+          s: '2'.padStart(64, '0'),
+        },
+      }),
+      cancel,
+    });
+
+    try {
+      await expect(keyring.signTransaction(address, tx)).resolves.toBe(tx);
+      expect(cancel).not.toHaveBeenCalled();
+      await keyring.cleanUp();
+      expect(mockDisconnect).toHaveBeenCalledWith({ sessionId: 'session-1' });
+    } finally {
+      timing.mockRestore();
+      await keyring.cleanUp();
+    }
+  });
+
+  it('still disconnects and preserves recovery when teardown tracing throws', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const signing$ = new Subject<any>();
+    const cancel = jest.fn();
+    mockConnect.mockResolvedValueOnce('session-1');
+    mockSignTransaction.mockReturnValueOnce({ observable: signing$, cancel });
+    const signing = keyring
+      .signTransaction(address, tx)
+      .catch((error: Error) => error);
+    await waitForMockCall(mockSignTransaction);
+    const timing = jest.spyOn(performance, 'now').mockImplementation(() => {
+      throw new Error('diagnostic teardown failure');
+    });
+
+    try {
+      signing$.next({
+        status: 'error',
+        error: {
+          _tag: 'InvalidStatusWordError',
+          originalError: new Error('R is missing'),
+        },
+      });
+
+      await expect(signing).resolves.toMatchObject({
+        message:
+          'Ledger: Device communication was interrupted. Close other apps using Ledger and try again.',
+      });
+      expect(cancel).toHaveBeenCalledTimes(1);
+      expect(mockDisconnect).toHaveBeenCalledWith({ sessionId: 'session-1' });
+    } finally {
+      timing.mockRestore();
+      signing$.complete();
       await keyring.cleanUp();
     }
   });
@@ -961,15 +1212,490 @@ describe('LedgerBridgeKeyring makeApp', () => {
       expect(secondTrace.status_word).toBe('6d00');
 
       // Neither trace may be read as a clean single-attempt account.
-      expect(firstTrace.device_action_steps).toContain(
-        'concurrentAttemptStarted'
-      );
-      expect(secondTrace.device_action_steps).toContain(
-        'startedDuringAnotherAttempt'
-      );
+      expect(firstTrace.device_action_steps).toContain('overlappingAttempt');
+      expect(secondTrace.device_action_steps).toContain('overlappingAttempt');
     } finally {
       first$.complete();
       second$.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  it('keeps each trace when overlapping attempts share a failing unlock', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const address$ = new Subject<any>();
+    mockConnect.mockResolvedValueOnce('session-1');
+    mockGetAddress.mockReturnValueOnce({
+      observable: address$,
+      cancel: jest.fn(),
+    });
+
+    try {
+      const first = keyring.signTransaction(address, tx).catch((e: Error) => e);
+      await waitForMockCall(mockGetAddress);
+
+      const second = keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+      address$.next({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+      });
+
+      const firstError = await first;
+      const secondError = await second;
+      const firstTrace = keyring.getHardwareSigningMetadata(firstError);
+      const secondTrace = keyring.getHardwareSigningMetadata(secondError);
+
+      expect(mockGetAddress).toHaveBeenCalledTimes(1);
+      expect(firstError).not.toBe(secondError);
+      expect(firstTrace.status_word).toBe('6a80');
+      expect(secondTrace.status_word).toBe('6a80');
+      expect(firstTrace.device_action_steps).toContain('overlappingAttempt');
+      expect(secondTrace.device_action_steps).toContain('overlappingAttempt');
+    } finally {
+      address$.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  // A long trace is exactly what makes a user reach for Resend, so the cap
+  // must never swallow the declaration that the trace may be mixed.
+  it('declares an overlap even on a trace that has hit its cap', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const first$ = new Subject<any>();
+    mockSignTransaction
+      .mockReturnValueOnce({ observable: first$, cancel: jest.fn() })
+      .mockReturnValueOnce({
+        observable: of({
+          status: 'error',
+          error: { _tag: 'EthAppCommandError', errorCode: '6d00' },
+        }),
+        cancel: jest.fn(),
+      });
+
+    try {
+      const first = keyring.signTransaction(address, tx).catch((e: Error) => e);
+      for (
+        let i = 0;
+        i < 50 && mockSignTransaction.mock.calls.length < 1;
+        i++
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+
+      // Well past MAX_DEVICE_ACTION_TRACE_STEPS.
+      for (let i = 0; i < 60; i++) {
+        first$.next({
+          status: 'pending',
+          intermediateValue: {
+            step: `signer.eth.steps.step${i}`,
+            requiredUserInteraction: 'none',
+          },
+        });
+      }
+      await flushMicrotasks();
+
+      await keyring.signTransaction(address, tx).catch((e: Error) => e);
+      first$.next({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+      });
+
+      const steps = keyring.getHardwareSigningMetadata(await first)
+        .device_action_steps;
+      expect(steps).toContain('truncated');
+      expect(steps).toContain('overlappingAttempt');
+    } finally {
+      first$.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  // UserInteractionRequired.None is the common case and must not be rendered,
+  // or every step carries a meaningless suffix.
+  it('omits the interaction suffix when the device wants nothing', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const stream = new Subject<any>();
+    mockSignTransaction.mockReturnValueOnce({
+      observable: stream,
+      cancel: jest.fn(),
+    });
+    mockConnect.mockResolvedValueOnce('session-1');
+
+    try {
+      const attempt = keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+      for (
+        let i = 0;
+        i < 50 && mockSignTransaction.mock.calls.length < 1;
+        i++
+      ) {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+
+      stream.next({
+        status: 'pending',
+        intermediateValue: {
+          step: 'signer.eth.steps.buildContexts',
+          requiredUserInteraction: 'none',
+        },
+      });
+      stream.next({
+        status: 'pending',
+        intermediateValue: {
+          step: 'signer.eth.steps.signTransaction',
+          requiredUserInteraction: 'sign-transaction',
+        },
+      });
+      stream.next({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+      });
+
+      const steps = keyring.getHardwareSigningMetadata(await attempt)
+        .device_action_steps;
+
+      expect(steps).toContain('buildContexts@');
+      expect(steps).not.toContain('buildContexts(none)');
+      expect(steps).toContain('signTransaction(sign-transaction)@');
+    } finally {
+      stream.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  it('flags a slow clear-signing context gap for Sentry filtering', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const stream = new Subject<any>();
+    let now = 0;
+    const timing = jest.spyOn(performance, 'now').mockImplementation(() => now);
+    mockSignTransaction.mockReturnValueOnce({
+      observable: stream,
+      cancel: jest.fn(),
+    });
+    mockConnect.mockResolvedValueOnce('session-1');
+
+    try {
+      const attempt = keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+      await waitForMockCall(mockSignTransaction);
+      await flushMicrotasks();
+
+      now = 100;
+      stream.next({
+        status: 'pending',
+        intermediateValue: {
+          step: 'signer.eth.steps.buildContexts',
+          requiredUserInteraction: 'none',
+        },
+      });
+      now = 5100;
+      stream.next({
+        status: 'pending',
+        intermediateValue: {
+          step: 'signer.eth.steps.provideContexts',
+          requiredUserInteraction: 'none',
+        },
+      });
+      stream.next({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+      });
+
+      expect(
+        keyring.getHardwareSigningMetadata(await attempt)
+          .ledger_clear_signing_timeout_suspected
+      ).toBe(true);
+    } finally {
+      timing.mockRestore();
+      stream.complete();
+      await keyring.cleanUp();
+    }
+  });
+
+  // The shape check must reject a malformed top-level code and keep walking,
+  // not give up: the real word can sit one level down.
+  it('walks past a malformed code to the real status word', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    mockSignTransaction.mockReturnValueOnce({
+      observable: of({
+        status: 'error',
+        error: {
+          _tag: 'EthAppCommandError',
+          errorCode: 'not-a-status-word',
+          cause: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+        },
+      }),
+      cancel: jest.fn(),
+    });
+
+    try {
+      const failure = await keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+
+      expect(keyring.getHardwareSigningMetadata(failure).status_word).toBe(
+        '6a80'
+      );
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
+  // The device error sits below two toLedgerError wrappers already, so the
+  // cause budget must have room left over rather than ending exactly there.
+  it('still finds the status word under a deeper wrapping', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    mockSignTransaction.mockReturnValueOnce({
+      observable: of({
+        status: 'error',
+        error: {
+          _tag: 'EthAppCommandError',
+          cause: {
+            _tag: 'EthAppCommandError',
+            errorCode: 'not-a-status-word',
+            cause: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+          },
+        },
+      }),
+      cancel: jest.fn(),
+    });
+
+    try {
+      const failure = await keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+
+      expect(keyring.getHardwareSigningMetadata(failure).status_word).toBe(
+        '6a80'
+      );
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
+  // Snapshotted at attempt start, and specifically "this session had already
+  // done work", not "a session existed" — the session is opened before the
+  // approval screen, so the weaker reading would be true of every signature.
+  it('reports session_reused from work done before the attempt began', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    const failing = () => ({
+      observable: of({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+      }),
+      cancel: jest.fn(),
+    });
+    mockSignTransaction.mockReturnValueOnce(failing());
+
+    try {
+      // First signature on a session that has run nothing yet.
+      const first = await keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+      expect(keyring.getHardwareSigningMetadata(first).session_reused).toBe(
+        false
+      );
+
+      // Same session, now with device actions behind it.
+      mockSignTransaction.mockReturnValueOnce(failing());
+      const second = await keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+      expect(keyring.getHardwareSigningMetadata(second).session_reused).toBe(
+        true
+      );
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
+  // makeApp shares one session-open across concurrent callers. When that open
+  // fails, every caller must get its own failure object, or two attempts
+  // overwrite each other in the trace WeakMap and one report carries the
+  // other's trace. Exercised directly: through the signing methods this is
+  // shadowed by unlock(), which already clones.
+  it('gives each caller its own failure when a shared session open fails', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    mockListenToAvailableDevices.mockReturnValue(of([], []));
+
+    const [first, second] = await Promise.all([
+      keyring.makeApp().catch((e: Error) => e),
+      keyring.makeApp().catch((e: Error) => e),
+    ]);
+
+    expect((first as Error).message).toContain('No connected Ledger device');
+    expect((second as Error).message).toContain('No connected Ledger device');
+    // Distinct objects, so traceByError can key each attempt separately.
+    expect(first).not.toBe(second);
+  });
+
+  // A context set that comes back fast but incomplete is otherwise
+  // indistinguishable from a failure unrelated to Clear Signing.
+  it('counts Clear Signing contexts that came back as errors', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: { [address]: { hdPath: "m/44'/60'/0'/0/0" } },
+    });
+    const tx = {
+      getChainId: () => Uint8Array.from([1]),
+      serialize: () => Buffer.from('f86c', 'hex'),
+    } as any;
+    mockGetContexts.mockResolvedValue([
+      { type: 'ethereumToken', payload: 'ok' },
+      { type: 'error', error: new Error('CAL unavailable') },
+      { type: 'error', error: new Error('CAL unavailable') },
+    ]);
+    mockSignTransaction.mockReturnValueOnce({
+      observable: of({
+        status: 'error',
+        error: { _tag: 'EthAppCommandError', errorCode: '6a80' },
+      }),
+      cancel: jest.fn(),
+    });
+
+    try {
+      const failure = await keyring
+        .signTransaction(address, tx)
+        .catch((e: Error) => e);
+      // The last module built is the one the signing attempt owns; earlier
+      // ones come from session setup and carry no trace.
+      const calls = mockWithContextModule.mock.calls;
+      const contextModule = calls[calls.length - 1][0];
+      await contextModule.getContexts({ to: '0x1' });
+
+      const metadata = keyring.getHardwareSigningMetadata(failure);
+      expect(metadata.ledger_context_error_count).toBe(2);
+      expect(metadata.ledger_context_count).toBe(3);
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
+  // The whole safety argument for this wrapper: the device is sent exactly
+  // what the module returned, so counting cannot change a signature.
+  it('hands back the context set untouched', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    const contexts = [
+      { type: 'ethereumToken', payload: 'a' },
+      { type: 'error', error: new Error('x') },
+    ];
+    mockGetContexts.mockResolvedValue(contexts);
+
+    try {
+      await keyring.unlock("m/44'/60'/0'/0/0");
+      const contextModule = mockWithContextModule.mock.calls[0][0];
+
+      // Same object, not merely equal: nothing filtered, reordered or copied.
+      await expect(contextModule.getContexts({ to: '0x1' })).resolves.toBe(
+        contexts
+      );
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
+  it('returns the contexts even if counting throws', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    // A context whose `type` getter throws, so the count blows up mid-filter.
+    const hostile = [
+      {
+        get type(): string {
+          throw new Error('hostile context');
+        },
+      },
+    ];
+    mockGetContexts.mockResolvedValue(hostile);
+
+    try {
+      await keyring.unlock("m/44'/60'/0'/0/0");
+      const contextModule = mockWithContextModule.mock.calls[0][0];
+
+      await expect(contextModule.getContexts({ to: '0x1' })).resolves.toBe(
+        hostile
+      );
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
+  // EIP-712 fetches through both getContexts and getTypedDataFilters, so
+  // counting only the former would under-report the typed-data path.
+  it('counts a failed typed-data filter fetch', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    const failed = { type: 'error', error: new Error('CAL unavailable') };
+    mockGetTypedDataFilters.mockResolvedValue(failed);
+
+    try {
+      await keyring.unlock("m/44'/60'/0'/0/0");
+      const calls = mockWithContextModule.mock.calls;
+      const contextModule = calls[calls.length - 1][0];
+
+      // Handed back untouched, same object.
+      await expect(
+        contextModule.getTypedDataFilters({ domain: {} })
+      ).resolves.toBe(failed);
+    } finally {
       await keyring.cleanUp();
     }
   });

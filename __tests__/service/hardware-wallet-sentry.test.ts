@@ -198,7 +198,8 @@ describe('hardware wallet Sentry reporting', () => {
     expect(event.tags.hardware_wallet).toBe('trezor');
     expect(event.extra.hardware_original_error).toContain('[redacted-hex]');
     expect(event.extra.hardware_original_error).not.toContain('token=secret');
-    expect(event.exception.values[0].value).toContain(address);
+    expect(event.exception.values[0].value).toContain('[redacted-hex]');
+    expect(event.exception.values[0].value).not.toContain(address);
     expect(error.message).toContain(address);
   });
 
@@ -435,6 +436,60 @@ describe('hardware wallet Sentry reporting', () => {
     ]);
   });
 
+  // The keyring shape-checks it, but this is the boundary that writes it into
+  // a fingerprint, and metadata arrives from a duck-typed keyring.
+  test.each([
+    ['a non-hex value', 'not-a-word'],
+    ['an over-long value', 'deadbeefdeadbeef'],
+    ['a non-string value', 1234 as any],
+  ])('ignores %s reported as a status word', async (_label, statusWord) => {
+    const error = new Error('Ledger signing failed');
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.LEDGER,
+      getHardwareSigningMetadata: () => ({ status_word: statusWord }),
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    const event = captureThroughBeforeSend(error);
+    expect(event.tags.device_status_word).toBeUndefined();
+    expect(event.extra.hardware_device).toEqual({});
+    expect(event.fingerprint).toEqual([
+      'hardware-wallet-signing',
+      'ledger',
+      'transaction',
+      '{{ default }}',
+    ]);
+  });
+
+  it('drops metadata reported outside the hardware allowlist', async () => {
+    const error = new Error('Ledger signing failed');
+    const address = '0x0123456789abcdef0123456789abcdef01234567';
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.LEDGER,
+      getHardwareSigningMetadata: () => ({
+        device_model: 'Nano S Plus',
+        [address]: 'seen',
+        extra: { owner: `sent from ${address}` },
+        nested: { a: { b: { c: 'too deep' } } },
+        counter: BigInt(7),
+      }),
+    };
+
+    await expect(
+      withHardwareSigningContext(keyring, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    const { hardware_device } = captureThroughBeforeSend(error).extra;
+    expect(hardware_device).toEqual({ device_model: 'Nano S Plus' });
+  });
+
   it('reports the device action trace and session diagnostics', async () => {
     const error = new Error('Ledger: signing failed 0x6a80');
     const keyring = {
@@ -448,6 +503,11 @@ describe('hardware wallet Sentry reporting', () => {
         session_age_ms: 92311,
         session_action_count: 7,
         session_reused: true,
+        ledger_action: 'signTx',
+        ledger_action_status: 'error',
+        ledger_action_duration_ms: 5021,
+        ledger_web3_checks_opt_in_result: false,
+        ledger_clear_signing_timeout_suspected: true,
       }),
     };
 
@@ -458,7 +518,10 @@ describe('hardware wallet Sentry reporting', () => {
     ).rejects.toBe(error);
 
     expect(captureThroughBeforeSend(error)).toMatchObject({
-      tags: { device_status_word: '6a80' },
+      tags: {
+        device_status_word: '6a80',
+        ledger_clear_signing_timeout_suspected: 'true',
+      },
       extra: {
         hardware_device: {
           device_action_steps:
@@ -466,6 +529,11 @@ describe('hardware wallet Sentry reporting', () => {
           session_age_ms: 92311,
           session_action_count: 7,
           session_reused: true,
+          ledger_action: 'signTx',
+          ledger_action_status: 'error',
+          ledger_action_duration_ms: 5021,
+          ledger_web3_checks_opt_in_result: false,
+          ledger_clear_signing_timeout_suspected: true,
         },
       },
     });

@@ -23,12 +23,34 @@ export type HardwareSigningMetadata = {
   // Ledger only, all diagnostics for status words the message alone cannot
   // explain (0x6a80 above all). The step trace names the stage the failure
   // reached — Clear Signing context build, context upload, or the signature
-  // itself — while the session fields separate a failure on a freshly opened
-  // session from one on a session that has been kept alive and reused.
+  // itself.
+  //
+  // The session fields are read at two different moments and must not be
+  // read as one reading: session_reused is snapshotted when the attempt
+  // began, session_age_ms and session_action_count describe the session that
+  // is open when the failure is reported. A recovery inside the attempt
+  // reconnects, so a report can legitimately pair session_reused: true with a
+  // small age — those are two different sessions, and the sessionClosed entry
+  // in the step trace carries the reading of the one that failed.
   device_action_steps?: string;
   session_age_ms?: number;
   session_action_count?: number;
   session_reused?: boolean;
+  ledger_action?:
+    | 'getAddress'
+    | 'openApp'
+    | 'signTx'
+    | 'signMessage'
+    | 'signTypedData';
+  ledger_action_status?: 'completed' | 'error' | 'stopped' | 'unknown';
+  ledger_action_duration_ms?: number;
+  // Clear Signing descriptors that came back as errors, and how many were
+  // returned at all. Absent when the transaction never took the Clear Signing
+  // path, so "no Clear Signing" stays distinct from "Clear Signing, no errors".
+  ledger_context_error_count?: number;
+  ledger_context_count?: number;
+  ledger_web3_checks_opt_in_result?: boolean;
+  ledger_clear_signing_timeout_suspected?: boolean;
 };
 
 export type HardwareSigningContext = {
