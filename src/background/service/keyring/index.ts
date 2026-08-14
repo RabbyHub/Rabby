@@ -49,7 +49,7 @@ import {
 import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
 import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
-import { withHardwareSigningContext } from './hardware-wallet-sentry';
+import { withSigningDiagnostics } from './signing-diagnostics';
 
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
@@ -793,10 +793,10 @@ export class KeyringService extends EventEmitter {
 
   private signWithPairingCredsPersistence = async (
     keyring: any,
-    operation: Parameters<typeof withHardwareSigningContext>[1],
+    operation: Parameters<typeof withSigningDiagnostics>[1],
     sign: () => Promise<any>
   ) =>
-    withHardwareSigningContext(keyring, operation, async () => {
+    withSigningDiagnostics(keyring, operation, async () => {
       try {
         return await sign();
       } finally {
@@ -865,8 +865,10 @@ export class KeyringService extends EventEmitter {
   signMessage(msgParams, opts = {}) {
     const address = normalizeAddress(msgParams.from);
     return this.getKeyringForAccount(address).then((keyring) => {
-      return this.signWithPairingCredsPersistence(keyring, 'message', () =>
-        keyring.signMessage(address, msgParams.data, opts)
+      return this.signWithPairingCredsPersistence(
+        keyring,
+        'personal_message',
+        () => keyring.signMessage(address, msgParams.data, opts)
       );
     });
   }

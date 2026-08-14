@@ -4,7 +4,9 @@ import { getSentryEnv } from '@/utils/env';
 import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 import {
   applyHardwareSigningContext,
+  applySigningContext,
   collectSentryEventText,
+  getSigningContext,
   sanitizeSentryBreadcrumbUrl,
   shouldIgnoreSentryError,
 } from '@/utils/sentry';
@@ -92,7 +94,10 @@ export const getSentryConfig = (): BrowserOptions => ({
       };
     }
 
-    applyHardwareSigningContext(event, originalException);
+    applySigningContext(event, originalException);
+    if (!getSigningContext(originalException)) {
+      applyHardwareSigningContext(event, originalException);
+    }
 
     return event;
   },

@@ -1,4 +1,5 @@
 import type { HardwareSigningContext } from '@/background/service/keyring/hardware-wallet-sentry';
+import type { SigningContext } from '@/background/service/keyring/signing-diagnostics';
 
 export type SentryIgnorePattern = string | RegExp;
 
@@ -115,6 +116,17 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
 };
 
 const hardwareSigningContexts = new WeakMap<object, HardwareSigningContext>();
+const signingContexts = new WeakMap<object, SigningContext>();
+
+export const attachSigningContext = (
+  error: unknown,
+  context: SigningContext
+) => {
+  if (error && typeof error === 'object') signingContexts.set(error, context);
+};
+
+export const getSigningContext = (error: unknown) =>
+  error && typeof error === 'object' ? signingContexts.get(error) : undefined;
 
 export const attachHardwareSigningContext = (
   error: unknown,
@@ -179,14 +191,18 @@ export const shouldIgnoreSentryError = (
     ...eventText,
   ].filter(Boolean);
 
+  const signing = getSigningContext(error);
   const hardware = getHardwareSigningContext(error);
-  if (hardware) {
-    if (matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)) {
+  if (signing || hardware) {
+    if (
+      (signing?.wallet_family === 'hardware' || hardware) &&
+      matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)
+    ) {
       return true;
     }
 
-    // Hardware signing errors must remain reportable even when a transport
-    // failure uses a generic network error message.
+    // Signing failures remain reportable even when a transport failure uses a
+    // generic network error message.
     return false;
   }
 
@@ -272,5 +288,35 @@ export const applyHardwareSigningContext = (
     ...event.extra,
     ...(hardware.metadata ? { hardware_device: hardware.metadata } : undefined),
     hardware_original_error: describeOriginalError(hardware.originalError),
+  };
+};
+
+export const applySigningContext = (event: SentryEventLike, error: unknown) => {
+  const context = getSigningContext(error);
+  if (!context) return;
+
+  event.tags = {
+    ...event.tags,
+    schema_version: context.schema_version,
+    wallet_family: context.wallet_family,
+    wallet_provider: context.wallet_provider,
+    transport: context.transport,
+    sign_operation: context.operation,
+    sign_stage: context.stage,
+    sign_outcome: context.outcome,
+    error_category: context.error_category,
+    duration_bucket: context.duration_bucket,
+  };
+  event.fingerprint = [
+    'signing',
+    context.wallet_family,
+    context.wallet_provider,
+    context.operation,
+    context.error_category,
+    '{{ default }}',
+  ];
+  event.extra = {
+    ...event.extra,
+    signing_original_error: describeOriginalError(context.originalError),
   };
 };

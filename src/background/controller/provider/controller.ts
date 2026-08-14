@@ -88,10 +88,7 @@ import {
 } from '@/utils/tempo';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
 import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
-import {
-  attachHardwareSigningContext,
-  getHardwareSigningContext,
-} from '@/utils/sentry';
+import { getSigningContext, attachSigningContext } from '@/utils/sentry';
 
 const reportSignText = (params: {
   method: string;
@@ -988,15 +985,15 @@ class ProviderController extends BaseController {
       });
     } catch (e) {
       console.error(e);
-      const hardwareContext = getHardwareSigningContext(e);
-      if (hardwareContext && e instanceof Error) {
+      const signingContext = getSigningContext(e);
+      if (signingContext && e instanceof Error) {
         Sentry.captureException(e);
       }
       const errObj: any = {
         message: e && typeof e === 'object' ? e.message : e,
       };
-      if (hardwareContext) {
-        attachHardwareSigningContext(errObj, hardwareContext);
+      if (signingContext) {
+        attachSigningContext(errObj, signingContext);
         if (e instanceof Error) {
           errObj.reportedFromBackground = true;
         }
