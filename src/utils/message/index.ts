@@ -3,13 +3,23 @@
  */
 
 import { EventEmitter } from 'events';
-import { ethErrors } from 'eth-rpc-errors';
+import { errorCodes, ethErrors } from 'eth-rpc-errors';
 import PQueue from 'p-queue';
 import { nanoid } from 'nanoid';
 
 const pQueue = new PQueue({ concurrency: 1000 });
 
+/**
+ * The channel to the background died before the request could be answered —
+ * usually an MV3 service worker eviction.
+ *
+ * This reaches dapps through the content script, so it must carry an EIP-1193
+ * code (4900 `disconnected`); `onRequest` only forwards `code` when the error
+ * actually has one, and dapps routinely branch on `error.code`.
+ */
 export class MessageDisconnectedError extends Error {
+  readonly code: number = errorCodes.provider.disconnected;
+
   constructor(message = 'Message channel disconnected') {
     super(message);
     this.name = 'MessageDisconnectedError';
