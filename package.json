@@ -99,6 +99,7 @@
     "@sentry/browser": "10.58.0",
     "@sentry/react": "10.58.0",
     "@spruceid/siwe-parser": "2.0.2",
+    "@trezor/connect-web": "9.6.4",
     "@trezor/connect-webextension": "9.6.4",
     "@types/bignumber.js": "5.0.0",
     "@types/lodash": "4.14.172",
