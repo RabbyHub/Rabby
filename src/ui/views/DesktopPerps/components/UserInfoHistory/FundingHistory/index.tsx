@@ -178,7 +178,7 @@ export const FundingHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap]
+    [marketDataMap, t]
   );
   return (
     <CommonTable

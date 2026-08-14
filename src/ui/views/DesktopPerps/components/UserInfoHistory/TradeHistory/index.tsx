@@ -230,7 +230,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap]
+    [marketDataMap, t]
   );
   return (
     <CommonTable

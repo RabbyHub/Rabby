@@ -299,7 +299,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap]
+    [marketDataMap, t]
   );
   return (
     <TableScrollX>
