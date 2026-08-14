@@ -45,7 +45,7 @@ const ensureInitialized = async (params?: TrezorRequest['params']) => {
         TrezorConnect.on('DEVICE_EVENT', forwardDeviceEvent);
         await TrezorConnect.init({
           ...initializationConfig,
-          coreMode: 'iframe',
+          coreMode: 'auto',
           env: 'webextension',
         });
       } catch (error) {
