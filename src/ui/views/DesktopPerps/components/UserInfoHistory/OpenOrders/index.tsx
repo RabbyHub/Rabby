@@ -294,7 +294,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
     ],
-    [marketDataMap]
+    [marketDataMap, t]
   );
   return (
     <>
