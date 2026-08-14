@@ -28,9 +28,9 @@ const isTokenItem = (value: unknown): value is TokenItem =>
   typeof value.chain === 'string';
 
 const tokenItemSchema = z.custom<TokenItem>(isTokenItem);
-const chainSchema = z.custom<CHAINS_ENUM>((value) =>
-  Object.values(CHAINS_ENUM).includes(value as CHAINS_ENUM)
-);
+// Rabby's supported chain list is updated independently of @debank/common,
+// so valid runtime enums can be newer than its static CHAINS_ENUM values.
+const chainSchema = z.string() as z.ZodType<CHAINS_ENUM>;
 const dexSchema = z.custom<DEX_ENUM>((value) =>
   Object.values(DEX_ENUM).includes(value as DEX_ENUM)
 );

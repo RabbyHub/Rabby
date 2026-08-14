@@ -136,7 +136,7 @@ describe('patchPersistStore', () => {
       typeof value.chain === 'string';
     const tokenItemSchema = z.custom(isTokenItem);
     const swapLikeSchema = z.object({
-      selectedChain: z.custom<string>((v) => v === 'ETH').nullable().default(null),
+      selectedChain: z.string().nullable().default(null),
       selectedFromToken: tokenItemSchema.optional(),
       selectedToToken: tokenItemSchema.optional(),
       slippage: z.string().default('0.1'),
@@ -172,8 +172,12 @@ describe('patchPersistStore', () => {
       patchPersistStore(store, { selectedFromToken: ethToken })
     ).not.toThrow();
     expect(() => patchPersistStore(store, { slippage: '1' })).not.toThrow();
+    expect(() =>
+      patchPersistStore(store, { selectedChain: 'HYPER' })
+    ).not.toThrow();
     expect(store.selectedFromToken).toEqual(ethToken);
     expect(store.slippage).toBe('1');
+    expect(store.selectedChain).toBe('HYPER');
   });
 
   test('clears a field when a patch sets it to undefined', async () => {
