@@ -337,34 +337,6 @@
       "disallow": []
     }
   },
-  "node_modules/@trezor/protobuf/node_modules/protobufjs/src/util/minimal.js": {
-    "global": {
-      "allow": {
-        "process": "r",
-        "dcodeIO": "r",
-        "Long": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/ua-parser-js/src/main/ua-parser.js": {
-    "global": {
-      "allow": {
-        "navigator": "r",
-        "jQuery": "r",
-        "Zepto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@trezor/connect-web/lib/popup/index.js": {
-    "global": {
-      "allow": {
-        "addEventListener": "r"
-      },
-      "disallow": []
-    }
-  },
   "node_modules/protobufjs/src/util/longbits.js": {
     "global": {
       "allow": {

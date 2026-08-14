@@ -1,98 +1,5 @@
 let scriptsLoadInitiated = false;
 
-const TREZOR_BROWSER_TARGET = 'trezor-browser';
-const TREZOR_POPUP_ORIGIN = 'https://connect.trezor.io';
-
-const isAllowedTrezorPopup = (url) => {
-  if (typeof url !== 'string') {
-    return false;
-  }
-
-  if (url === 'trezor-usb-permissions.html') {
-    return true;
-  }
-
-  try {
-    const parsed = new URL(url);
-    return (
-      parsed.origin === TREZOR_POPUP_ORIGIN &&
-      parsed.username === '' &&
-      parsed.password === '' &&
-      /(^|\/)popup\.html$/.test(parsed.pathname)
-    );
-  } catch (_) {
-    return false;
-  }
-};
-
-const describeRejectedTrezorUrl = (url) => {
-  try {
-    return `${typeof url}: ${JSON.stringify(url)}`;
-  } catch (_) {
-    return typeof url;
-  }
-};
-
-const registerTrezorBrowserProxy = () => {
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (
-      message?.target !== TREZOR_BROWSER_TARGET ||
-      sender.id !== chrome.runtime.id ||
-      sender.url !== chrome.runtime.getURL('offscreen.html')
-    ) {
-      return false;
-    }
-
-    const execute = async () => {
-      switch (message.action) {
-        case 'trezor-browser-get-current-window':
-          return chrome.windows.getCurrent();
-        case 'trezor-browser-create-window': {
-          const { url } = message.params || {};
-          if (!isAllowedTrezorPopup(url)) {
-            throw new Error(
-              `Invalid Trezor Popup URL (${describeRejectedTrezorUrl(url)})`
-            );
-          }
-          return chrome.windows.create({ url });
-        }
-        case 'trezor-browser-query-tabs': {
-          const { active, currentWindow, windowId } = message.params || {};
-          return chrome.tabs.query({ active, currentWindow, windowId });
-        }
-        case 'trezor-browser-create-tab': {
-          const { url, index, active } = message.params || {};
-          if (!isAllowedTrezorPopup(url)) {
-            throw new Error(
-              `Invalid Trezor Popup URL (${describeRejectedTrezorUrl(url)})`
-            );
-          }
-          return chrome.tabs.create({ url, index, active });
-        }
-        case 'trezor-browser-get-tab':
-          return chrome.tabs.get(message.params);
-        case 'trezor-browser-update-tab': {
-          const { tabId, updateProperties } = message.params || {};
-          return chrome.tabs.update(tabId, {
-            active: updateProperties?.active,
-          });
-        }
-        case 'trezor-browser-remove-tab':
-          return chrome.tabs.remove(message.params);
-        default:
-          throw new Error('Unsupported Trezor browser action');
-      }
-    };
-
-    execute()
-      .then(sendResponse)
-      .catch((error) => sendResponse({ error: error.message }));
-    return true;
-  });
-};
-
-registerTrezorBrowserProxy();
-
 const clearAlarms = async () => {
   const alarms = await chrome.alarms.getAll();
   alarms.forEach((alarm) => {
@@ -110,6 +17,7 @@ const importAllScripts = () => {
   try {
     importScripts(
       '/webextension-polyfill.js',
+      '/vendor/trezor/trezor-connect-webextension.js',
       '/background.js'
     );
     scriptsLoadInitiated = true;
