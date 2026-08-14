@@ -235,6 +235,7 @@ export const Main = () => {
       activeProvider.name,
       activeProvider.shouldApproveToken ? '1' : '0',
       activeProvider.shouldTwoStepApprove ? '1' : '0',
+      preferMEVGuarded ? '1' : '0',
       activeProvider.quote.toTokenAmount,
       activeProvider.quote.tx?.to || '',
       activeProvider.quote.tx?.value || '',
@@ -248,6 +249,7 @@ export const Main = () => {
     chain,
     inputAmount,
     payToken,
+    preferMEVGuarded,
     receiveToken,
     slippage,
   ]);
