@@ -367,6 +367,10 @@ export const BridgeToken = ({
   }, [isFromToken, disabled, onInputChange, handleSetGasPrice]);
 
   useEffect(() => {
+    isReserveMaxRef.current = false;
+  }, [chain, token?.chain, token?.id]);
+
+  useEffect(() => {
     if (
       isFromToken &&
       isReserveMaxRef.current &&
