@@ -74,7 +74,7 @@ const AccountItem = ({
   }, [defaultName, localName, updateAlias]);
 
   useClickAway(updateRef, () => {
-    if (init.current) {
+    if (init.current || localName.trim()) {
       update();
     }
   });

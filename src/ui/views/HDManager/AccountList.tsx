@@ -13,15 +13,14 @@ import clsx from 'clsx';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
-import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
+import { KEYRING_CLASS } from '@/constant';
 import { useRabbyDispatch } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import { detectClientOS } from '@/ui/utils/os';
 import { useQueryAccountsInfo } from './hooks/useQueryAccontsInfo';
 import { InViewport } from './InViewport';
 import { useMemoizedFn } from 'ahooks';
-import { generateAliasName } from '@/utils/account';
-import { uniqBy, values } from 'lodash';
+import { values } from 'lodash';
 import { ReactComponent as IconInfoCC } from '@/ui/assets/address/info-cc.svg';
 const isWin32 = detectClientOS() === 'win32';
 
@@ -62,7 +61,6 @@ export const AccountList: React.FC<Props> = ({
     updateSelectedAccountAliasName,
     keyring,
     tab,
-    brand,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
   const dispatch = useRabbyDispatch();
@@ -144,43 +142,9 @@ export const AccountList: React.FC<Props> = ({
 
   const handleSelectAccount = useMemoizedFn(
     async (checked: boolean, account: Account) => {
-      const addressCount =
-        uniqBy([...currentAccounts, ...selectedAccounts], (item) =>
-          item.address.toLowerCase()
-        ).length || 0;
-
       if (checked) {
-        const accountWithAlias = { ...account };
-        if (keyring === KEYRING_CLASS.MNEMONIC) {
-          const index = (await wallet.getKeyringIndex(keyring, keyringId)) || 0;
-
-          const alias = generateAliasName({
-            keyringType: keyring,
-            keyringCount: index,
-            addressCount,
-          });
-          wallet.updateCacheAlias({
-            address: account.address,
-            name: alias,
-          });
-          accountWithAlias.aliasName = alias;
-        } else {
-          const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)
-            .map((key) => HARDWARE_KEYRING_TYPES[key])
-            .find((item) => item.type === keyring);
-          const alias = generateAliasName({
-            brandName: brand || brandName,
-            keyringType: keyring,
-            addressCount,
-          });
-          wallet.updateCacheAlias({
-            address: account.address,
-            name: alias,
-          });
-          accountWithAlias.aliasName = alias;
-        }
         setSelectedAccounts((pre) => {
-          return [...pre, accountWithAlias];
+          return [...pre, account];
         });
       } else {
         setSelectedAccounts((pre) => {

@@ -299,9 +299,6 @@ export const importMnemonics = createModel<RootModel>()({
       addresses: Exclude<Account['address'], void>[],
       store
     ) {
-      const importedAddresses = store.importMnemonics.importedAddresses;
-      const stashKeyringId = store.importMnemonics.stashKeyringId!;
-      const isExistedKeyring = store.importMnemonics.isExistedKeyring;
       const queriedAccountsByAddress =
         store.importMnemonics.queriedAccountsByAddress;
 
@@ -312,36 +309,14 @@ export const importMnemonics = createModel<RootModel>()({
           queriedAccountsByAddress[b].index!
       );
 
-      if (isExistedKeyring) {
-        const addressesUnImporeted = addressList.filter(
-          (addr) => !importedAddresses.has(addr)
-        );
-        await store.app.wallet.generateAliasCacheForExistedMnemonic(
-          store.importMnemonics.finalMnemonics,
-          addressesUnImporeted
-        );
-      } else {
-        await store.app.wallet.generateAliasCacheForFreshMnemonic(
-          stashKeyringId,
-          addressList.map((addr) => queriedAccountsByAddress[addr].index! - 1)
-        );
-      }
-
       const confirmingAccounts = await Promise.all(
         addressList.map(async (addr) => {
           const account = queriedAccountsByAddress[addr];
-          let alianName = (await store.app.wallet.getAlianName(addr))!;
-          if (!alianName) {
-            const draftContactItem = await store.app.wallet.getCacheAlias(
-              account.address
-            );
-            alianName = draftContactItem!.name;
-          }
 
           return {
             address: account.address,
             index: account.index!,
-            alianName: alianName,
+            alianName: (await store.app.wallet.getAlianName(addr)) || '',
           };
         })
       );
@@ -401,12 +376,14 @@ export const importMnemonics = createModel<RootModel>()({
       }
 
       await Promise.all(
-        accountsToImport.map((account) => {
-          return store.app.wallet.updateAlianName(
-            account.address?.toLowerCase(),
-            account.alianName || ''
-          );
-        })
+        accountsToImport
+          .filter((account) => account.alianName.trim())
+          .map((account) => {
+            return store.app.wallet.updateAlianName(
+              account.address?.toLowerCase(),
+              account.alianName
+            );
+          })
       );
     },
   }),
