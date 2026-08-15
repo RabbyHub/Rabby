@@ -63,7 +63,7 @@ import {
 } from '@ethereumjs/tx';
 import { isSameAddress } from '@/background/utils';
 import { LedgerHDPathType } from './helper';
-import type { HardwareSigningMetadata } from './hardware-wallet-sentry';
+import type { HardwareSigningMetadata } from './signing-diagnostics';
 import { registerSigningDiagnosticsProvider } from './signing-diagnostics';
 
 const type = 'Ledger Hardware';

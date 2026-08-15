@@ -41,6 +41,14 @@ export type ProviderDiagnostics = {
   provider_metadata?: unknown;
 };
 
+export type HardwareSigningMetadata = {
+  device_model?: string;
+  firmware_version?: string;
+  app_name?: string;
+  app_version?: string;
+  device_mode?: string;
+};
+
 export type SigningDiagnosticsKeyring = {
   type?: unknown;
   signingDiagnosticsProvider?: unknown;

@@ -1,4 +1,3 @@
-import type { HardwareSigningContext } from '@/background/service/keyring/hardware-wallet-sentry';
 import type { SigningContext } from '@/background/service/keyring/signing-diagnostics';
 
 export type SentryIgnorePattern = string | RegExp;
@@ -120,7 +119,6 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
   ];
 };
 
-const hardwareSigningContexts = new WeakMap<object, HardwareSigningContext>();
 const signingContexts = new WeakMap<object, SigningContext>();
 
 export const attachSigningContext = (
@@ -132,20 +130,6 @@ export const attachSigningContext = (
 
 export const getSigningContext = (error: unknown) =>
   error && typeof error === 'object' ? signingContexts.get(error) : undefined;
-
-export const attachHardwareSigningContext = (
-  error: unknown,
-  context: HardwareSigningContext
-) => {
-  if (error && typeof error === 'object') {
-    hardwareSigningContexts.set(error, context);
-  }
-};
-
-export const getHardwareSigningContext = (error: unknown) =>
-  error && typeof error === 'object'
-    ? hardwareSigningContexts.get(error)
-    : undefined;
 
 const REDACTIONS: [RegExp, string][] = [
   [/([a-z][a-z\d+.-]*:\/\/[^\s?#]+)[?#][^\s]*/giu, '$1'],
@@ -197,8 +181,7 @@ export const shouldIgnoreSentryError = (
   ].filter(Boolean);
 
   const signing = getSigningContext(error);
-  const hardware = getHardwareSigningContext(error);
-  if (signing || hardware) {
+  if (signing) {
     if (
       signing?.error_category === 'user_cancelled' &&
       matchesAny(SIGNING_CANCELLATION_ERRORS, candidates)
@@ -206,13 +189,13 @@ export const shouldIgnoreSentryError = (
       return true;
     }
     if (
-      (signing?.wallet_family === 'hardware' || hardware) &&
+      signing.wallet_family === 'hardware' &&
       matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)
     ) {
       return true;
     }
 
-    if (signing && signing.wallet_family !== 'hardware') {
+    if (signing.wallet_family !== 'hardware') {
       return matchesAny(RABBY_SENTRY_IGNORE_ERRORS, candidates);
     }
 
@@ -280,34 +263,6 @@ const describeOriginalError = (
   const cause = describeOriginalError(value.cause, depth + 1);
   if (cause) parts.push(cause);
   return redactSensitiveText(parts.join(' | ')) || undefined;
-};
-
-export const applyHardwareSigningContext = (
-  event: SentryEventLike,
-  error: unknown
-) => {
-  const hardware = getHardwareSigningContext(error);
-  if (!hardware) {
-    return;
-  }
-
-  event.tags = {
-    ...event.tags,
-    hardware_wallet: hardware.wallet,
-    sign_operation: hardware.operation,
-  };
-  event.fingerprint = [
-    'hardware-wallet-signing',
-    hardware.wallet,
-    hardware.operation,
-    '{{ default }}',
-  ];
-
-  event.extra = {
-    ...event.extra,
-    ...(hardware.metadata ? { hardware_device: hardware.metadata } : undefined),
-    hardware_original_error: describeOriginalError(hardware.originalError),
-  };
 };
 
 export const applySigningContext = (event: SentryEventLike, error: unknown) => {

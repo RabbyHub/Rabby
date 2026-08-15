@@ -18,7 +18,7 @@ import { HardwareErrorCode } from '@onekeyfe/hd-shared';
 import type { KnownDevice } from '@onekeyfe/hd-core';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import type { HardwareSigningMetadata } from '../hardware-wallet-sentry';
+import type { HardwareSigningMetadata } from '../signing-diagnostics';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";

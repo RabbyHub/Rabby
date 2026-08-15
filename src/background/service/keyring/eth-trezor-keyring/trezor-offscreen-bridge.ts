@@ -8,7 +8,7 @@ import {
   TrezorAction,
 } from '@/constant/offscreen-communication';
 
-import type { HardwareSigningMetadata } from '../hardware-wallet-sentry';
+import type { HardwareSigningMetadata } from '../signing-diagnostics';
 
 export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
   isDeviceConnected = false;
