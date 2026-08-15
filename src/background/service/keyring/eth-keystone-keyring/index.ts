@@ -253,6 +253,20 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     return this.currentBrand;
   };
 
+  getSigningDiagnostics() {
+    const provider =
+      this.currentBrand === 'Keystone'
+        ? 'keystone'
+        : this.currentBrand === 'NGRAVE ZERO'
+        ? 'ngravezero'
+        : undefined;
+    return {
+      wallet_provider: provider,
+      transport: 'qr',
+      error_category: 'unknown',
+    };
+  }
+
   checkAllowImport = async (brand: string) => {
     const [account] = await this.getAccountsWithBrand();
 

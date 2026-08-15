@@ -152,6 +152,32 @@ describe('signing diagnostics port', () => {
     expect(getSigningContext(error)?.provider_code).toBeUndefined();
   });
 
+  it.each([
+    ['Keystone', 'keystone'],
+    ['NGRAVE ZERO', 'ngravezero'],
+  ])('keeps QR provider identity separate for %s', async (brand, provider) => {
+    const error = new Error('QR device rejected 0x6a80');
+    await expect(
+      withSigningDiagnostics(
+        {
+          type: 'QR Hardware Wallet Device',
+          getSigningDiagnostics: () => ({
+            wallet_provider: provider,
+            transport: 'qr',
+            error_category: 'unknown',
+          }),
+        },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+    expect(getSigningContext(error)).toMatchObject({
+      wallet_provider: provider,
+      transport: 'qr',
+    });
+    expect(getSigningContext(error)?.provider_code).toBeUndefined();
+  });
+
   it('does not let concurrent attempts overwrite one error context', async () => {
     const error = new Error('shared failure');
     const first = withSigningDiagnostics(
