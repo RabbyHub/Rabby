@@ -79,7 +79,7 @@ export type SigningDiagnosticsProvider = (
   error: unknown
 ) => ProviderDiagnostics | undefined;
 
-export const attachSigningDiagnosticsCapability = (
+export const initializeSigningDiagnosticsCapability = (
   keyring: SigningDiagnosticsKeyring
 ) => {
   if (keyring.signingDiagnosticsProvider) return;

@@ -50,7 +50,7 @@ import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
 import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
 import {
-  attachSigningDiagnosticsCapability,
+  initializeSigningDiagnosticsCapability,
   withSigningDiagnostics,
 } from './signing-diagnostics';
 
@@ -239,6 +239,7 @@ export class KeyringService extends EventEmitter {
 
     for (const privateKey of privateKeys) {
       const keyring = new Keyring([privateKey]);
+      initializeSigningDiagnosticsCapability(keyring);
       const [address] = await keyring.getAccounts();
       const normalizedAddress = normalizeAddress(address).toLowerCase();
 
@@ -380,6 +381,7 @@ export class KeyringService extends EventEmitter {
   }
 
   addKeyring(keyring) {
+    initializeSigningDiagnosticsCapability(keyring);
     return keyring
       .getAccounts()
       .then((accounts) => {
@@ -800,7 +802,6 @@ export class KeyringService extends EventEmitter {
     sign: () => Promise<any>,
     signingAddress?: string
   ) => {
-    attachSigningDiagnosticsCapability(keyring);
     return withSigningDiagnostics(
       keyring,
       operation,
@@ -1145,6 +1146,7 @@ export class KeyringService extends EventEmitter {
                 }
               : undefined
           );
+    initializeSigningDiagnosticsCapability(keyring);
     await keyring.deserialize(data);
     if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
       eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, (props) => {

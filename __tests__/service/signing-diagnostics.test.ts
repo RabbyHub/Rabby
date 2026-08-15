@@ -5,7 +5,7 @@ import {
 } from '@/utils/sentry';
 import {
   registerSigningDiagnosticsProvider,
-  attachSigningDiagnosticsCapability,
+  initializeSigningDiagnosticsCapability,
   withSigningDiagnostics,
 } from '@/background/service/keyring/signing-diagnostics';
 
@@ -84,7 +84,7 @@ describe('signing diagnostics port', () => {
     ['CoboArgus', 'cobo_argus'],
   ])('attaches explicit capability for %s', (type, provider) => {
     const keyring: any = { type };
-    attachSigningDiagnosticsCapability(keyring);
+    initializeSigningDiagnosticsCapability(keyring);
     expect(keyring.signingDiagnosticsProvider).toBe(provider);
   });
 
