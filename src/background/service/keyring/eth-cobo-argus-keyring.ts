@@ -25,6 +25,7 @@ interface SignTransactionOptions {
 export default class CoboArgusKeyring extends EventEmitter {
   static type = keyringType;
   type = keyringType;
+  signingDiagnosticsProvider = 'cobo_argus';
   accounts: string[] = [];
   accountDetails: Record<string, AccountDetail> = {};
   accountToAdd: string | null = null;

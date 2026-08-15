@@ -51,25 +51,41 @@ import { isEmpty } from 'lodash';
 import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
 import { withSigningDiagnostics } from './signing-diagnostics';
 
+class PrivateKeyKeyring extends SimpleKeyring {
+  signingDiagnosticsProvider = 'private_key';
+}
+
+class MnemonicKeyring extends HdKeyring {
+  signingDiagnosticsProvider = 'mnemonic';
+}
+
+class WalletConnectDiagnosticsKeyring extends WalletConnectKeyring {
+  signingDiagnosticsProvider = 'walletconnect';
+}
+
+class CoinbaseDiagnosticsKeyring extends CoinbaseKeyring {
+  signingDiagnosticsProvider = 'coinbase';
+}
+
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
   KEYRING_TYPE.HdKeyring,
 ];
 
 export const KEYRING_SDK_TYPES = {
-  SimpleKeyring,
-  HdKeyring,
+  SimpleKeyring: PrivateKeyKeyring,
+  HdKeyring: MnemonicKeyring,
   BitBox02Keyring,
   TrezorKeyring,
   LedgerBridgeKeyring,
   OnekeyKeyring,
   WatchKeyring,
-  WalletConnectKeyring,
+  WalletConnectKeyring: WalletConnectDiagnosticsKeyring,
   GnosisKeyring,
   LatticeKeyring,
   KeystoneKeyring,
   CoboArgusKeyring,
-  CoinbaseKeyring,
+  CoinbaseKeyring: CoinbaseDiagnosticsKeyring,
   EthImKeyKeyring,
 };
 
