@@ -5,7 +5,6 @@ import {
 } from '@/utils/sentry';
 import {
   registerSigningDiagnosticsProvider,
-  initializeSigningDiagnosticsCapability,
   withSigningDiagnostics,
 } from '@/background/service/keyring/signing-diagnostics';
 
@@ -73,19 +72,6 @@ describe('signing diagnostics port', () => {
       wallet_family: 'walletconnect',
       wallet_provider: 'unknown',
     });
-  });
-
-  it.each([
-    ['Simple Key Pair', 'private_key'],
-    ['HD Key Tree', 'mnemonic'],
-    ['WalletConnect', 'walletconnect'],
-    ['Coinbase', 'coinbase'],
-    ['Gnosis', 'gnosis'],
-    ['CoboArgus', 'cobo_argus'],
-  ])('attaches explicit capability for %s', (type, provider) => {
-    const keyring: any = { type };
-    initializeSigningDiagnosticsCapability(keyring);
-    expect(keyring.signingDiagnosticsProvider).toBe(provider);
   });
 
   it('uses explicit provider capabilities and bounded categories', async () => {

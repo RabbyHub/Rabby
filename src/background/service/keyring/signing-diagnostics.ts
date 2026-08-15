@@ -79,23 +79,6 @@ export type SigningDiagnosticsProvider = (
   error: unknown
 ) => ProviderDiagnostics | undefined;
 
-export const initializeSigningDiagnosticsCapability = (
-  keyring: SigningDiagnosticsKeyring
-) => {
-  if (keyring.signingDiagnosticsProvider) return;
-  const providerByType: Record<string, string> = {
-    'Simple Key Pair': 'private_key',
-    'HD Key Tree': 'mnemonic',
-    WalletConnect: 'walletconnect',
-    Coinbase: 'coinbase',
-    Gnosis: 'gnosis',
-    CoboArgus: 'cobo_argus',
-  };
-  const provider =
-    typeof keyring.type === 'string' ? providerByType[keyring.type] : undefined;
-  if (provider) keyring.signingDiagnosticsProvider = provider;
-};
-
 export type SigningContext = {
   schema_version: 1;
   wallet_family: SigningWalletFamily;
