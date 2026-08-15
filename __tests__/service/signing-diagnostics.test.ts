@@ -70,7 +70,7 @@ describe('signing diagnostics port', () => {
     ).rejects.toBe(error);
     expect(getSigningContext(error)).toMatchObject({
       wallet_family: 'walletconnect',
-      wallet_provider: 'unknown',
+      wallet_provider: 'walletconnect',
     });
   });
 
@@ -150,6 +150,45 @@ describe('signing diagnostics port', () => {
       error_category: 'unknown',
     });
     expect(getSigningContext(error)?.provider_code).toBeUndefined();
+  });
+
+  it.each([
+    ['BitBox02 Hardware', 'bitbox02'],
+    ['imKey Hardware', 'imkey'],
+    ['GridPlus Hardware', 'gridplus'],
+    ['WalletConnect', 'walletconnect'],
+    ['Gnosis', 'gnosis'],
+    ['Coinbase', 'coinbase'],
+  ])('covers the remaining provider family %s', async (type, provider) => {
+    const error = new Error('provider rejected 0x6a80');
+    await expect(
+      withSigningDiagnostics({ type }, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+    expect(getSigningContext(error)).toMatchObject({
+      wallet_provider: provider,
+      transport: 'unknown',
+      error_category: 'unknown',
+    });
+  });
+
+  it.each([
+    ['Simple Key Pair', 'private_key', 'decrypt_failed'],
+    ['HD Key Tree', 'mnemonic', 'derivation_failed'],
+  ])('classifies software failure %s', async (type, provider, category) => {
+    const error = Object.assign(new Error('safe'), {
+      error_category: category,
+    });
+    await expect(
+      withSigningDiagnostics({ type }, 'transaction', () =>
+        Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+    expect(getSigningContext(error)).toMatchObject({
+      wallet_provider: provider,
+      error_category: category,
+    });
   });
 
   it.each([

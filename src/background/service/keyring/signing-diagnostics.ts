@@ -85,6 +85,14 @@ const signingDiagnosticsProviders = new Map<
 const PROVIDER_BY_KEYRING_TYPE: Record<string, string> = {
   'Onekey Hardware': 'onekey',
   'Trezor Hardware': 'trezor',
+  'BitBox02 Hardware': 'bitbox02',
+  'imKey Hardware': 'imkey',
+  'GridPlus Hardware': 'gridplus',
+  'Simple Key Pair': 'private_key',
+  'HD Key Tree': 'mnemonic',
+  WalletConnect: 'walletconnect',
+  Gnosis: 'gnosis',
+  Coinbase: 'coinbase',
 };
 
 export const registerSigningDiagnosticsProvider = (
@@ -229,6 +237,35 @@ const resolveProviderDiagnostics = (
     return {};
   }
 };
+
+const classifySoftwareError = (error: unknown): SigningErrorCategory => {
+  const value = error as any;
+  return normalizeErrorCategory(value?.error_category ?? value?.category);
+};
+
+const registerSimpleProvider = (
+  provider: string,
+  walletTransport: SigningTransport = 'unknown',
+  classify = false
+) =>
+  registerSigningDiagnosticsProvider(provider, (_keyring, error) => ({
+    wallet_provider: provider,
+    transport: walletTransport,
+    error_category: classify ? classifySoftwareError(error) : 'unknown',
+  }));
+
+for (const provider of [
+  ['bitbox02', 'unknown'],
+  ['imkey', 'unknown'],
+  ['gridplus', 'unknown'],
+  ['walletconnect', 'unknown'],
+  ['gnosis', 'unknown'],
+  ['coinbase', 'unknown'],
+] as const) {
+  registerSimpleProvider(provider[0], provider[1]);
+}
+registerSimpleProvider('private_key', 'unknown', true);
+registerSimpleProvider('mnemonic', 'unknown', true);
 
 const cloneSharedError = (error: unknown) => {
   if (error instanceof Error) {
