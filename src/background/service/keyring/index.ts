@@ -49,7 +49,10 @@ import {
 import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
 import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
-import { withSigningDiagnostics } from './signing-diagnostics';
+import {
+  attachSigningDiagnosticsCapability,
+  withSigningDiagnostics,
+} from './signing-diagnostics';
 
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
@@ -796,8 +799,9 @@ export class KeyringService extends EventEmitter {
     operation: Parameters<typeof withSigningDiagnostics>[1],
     sign: () => Promise<any>,
     signingAddress?: string
-  ) =>
-    withSigningDiagnostics(
+  ) => {
+    attachSigningDiagnosticsCapability(keyring);
+    return withSigningDiagnostics(
       keyring,
       operation,
       async () => {
@@ -814,6 +818,7 @@ export class KeyringService extends EventEmitter {
       },
       signingAddress
     );
+  };
 
   /**
    * Sign Ethereum Transaction

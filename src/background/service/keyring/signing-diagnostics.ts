@@ -6,6 +6,16 @@ export type SigningOperation =
   | 'typed_data'
   | 'eip7702_authorization';
 
+export type SigningStage =
+  | 'preflight'
+  | 'connect'
+  | 'unlock'
+  | 'derive'
+  | 'prepare'
+  | 'sign'
+  | 'finalize'
+  | 'unknown';
+
 export type SigningWalletFamily =
   | 'hardware'
   | 'software'
@@ -69,13 +79,30 @@ export type SigningDiagnosticsProvider = (
   error: unknown
 ) => ProviderDiagnostics | undefined;
 
+export const attachSigningDiagnosticsCapability = (
+  keyring: SigningDiagnosticsKeyring
+) => {
+  if (keyring.signingDiagnosticsProvider) return;
+  const providerByType: Record<string, string> = {
+    'Simple Key Pair': 'private_key',
+    'HD Key Tree': 'mnemonic',
+    WalletConnect: 'walletconnect',
+    Coinbase: 'coinbase',
+    Gnosis: 'gnosis',
+    CoboArgus: 'cobo_argus',
+  };
+  const provider =
+    typeof keyring.type === 'string' ? providerByType[keyring.type] : undefined;
+  if (provider) keyring.signingDiagnosticsProvider = provider;
+};
+
 export type SigningContext = {
   schema_version: 1;
   wallet_family: SigningWalletFamily;
   wallet_provider: string;
   transport: SigningTransport;
   operation: SigningOperation;
-  stage: 'sign';
+  stage: SigningStage;
   outcome: 'failed';
   error_category: SigningErrorCategory;
   duration_bucket: 'lt_100ms' | '100ms_1s' | '1s_5s' | 'gte_5s';
@@ -89,19 +116,6 @@ const signingDiagnosticsProviders = new Map<
   string,
   SigningDiagnosticsProvider
 >();
-
-const PROVIDER_BY_KEYRING_TYPE: Record<string, string> = {
-  'Onekey Hardware': 'onekey',
-  'Trezor Hardware': 'trezor',
-  'BitBox02 Hardware': 'bitbox02',
-  'imKey Hardware': 'imkey',
-  'GridPlus Hardware': 'gridplus',
-  'Simple Key Pair': 'private_key',
-  'HD Key Tree': 'mnemonic',
-  WalletConnect: 'walletconnect',
-  Gnosis: 'gnosis',
-  Coinbase: 'coinbase',
-};
 
 export const registerSigningDiagnosticsProvider = (
   provider: string,
@@ -158,6 +172,22 @@ const normalizeErrorCategory = (value: unknown): SigningErrorCategory => {
   ];
   return typeof value === 'string' && categories.includes(value as any)
     ? (value as SigningErrorCategory)
+    : 'unknown';
+};
+
+const normalizeStage = (value: unknown): SigningStage => {
+  const stages: SigningStage[] = [
+    'preflight',
+    'connect',
+    'unlock',
+    'derive',
+    'prepare',
+    'sign',
+    'finalize',
+    'unknown',
+  ];
+  return typeof value === 'string' && stages.includes(value as SigningStage)
+    ? (value as SigningStage)
     : 'unknown';
 };
 
@@ -235,10 +265,7 @@ const resolveProviderDiagnostics = (
     if (direct) return normalizeMetadata(direct);
     const bridge = keyring.bridge?.getSigningDiagnostics?.(error);
     if (bridge) return normalizeMetadata(bridge);
-    const provider = normalizeProvider(
-      keyring.signingDiagnosticsProvider ??
-        PROVIDER_BY_KEYRING_TYPE[String(keyring.type)]
-    );
+    const provider = normalizeProvider(keyring.signingDiagnosticsProvider);
     const adapter = signingDiagnosticsProviders.get(provider);
     return adapter ? normalizeMetadata(adapter(keyring, error)) : {};
   } catch {
@@ -274,6 +301,7 @@ for (const provider of [
 }
 registerSimpleProvider('private_key', 'unknown', true);
 registerSimpleProvider('mnemonic', 'unknown', true);
+registerSimpleProvider('cobo_argus', 'unknown');
 
 const cloneSharedError = (error: unknown) => {
   if (error instanceof Error) {
@@ -329,7 +357,7 @@ export const withSigningDiagnostics = (
       wallet_provider: metadata.wallet_provider ?? 'unknown',
       transport: metadata.transport ?? 'unknown',
       operation,
-      stage: 'sign',
+      stage: normalizeStage(metadata.provider_stage),
       outcome: 'failed',
       error_category: errorCategory,
       duration_bucket: durationBucket(Date.now() - startedAt),

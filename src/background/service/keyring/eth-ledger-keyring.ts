@@ -479,6 +479,7 @@ class LedgerBridgeKeyring {
   private hardwareSigningMetadata: HardwareSigningMetadata = {};
   signingDiagnosticsProvider = 'ledger';
   private activeSigningAttempt: LedgerAttemptState | null = null;
+  private activeSigningAttempts = new Set<LedgerAttemptState>();
 
   constructor(opts = {}) {
     this.accountDetails = {};
@@ -574,7 +575,12 @@ class LedgerBridgeKeyring {
       .withContextModule(
         getEthContextModule((params) => {
           const attempt = this.activeSigningAttempt;
-          if (!attempt || !params.ethContext) return;
+          if (
+            !attempt ||
+            this.activeSigningAttempts.size !== 1 ||
+            !params.ethContext
+          )
+            return;
           attempt.clear_signing_context_errors = Math.max(
             0,
             Math.min(99, Math.trunc(params.ethContext.partialContextErrors))
@@ -718,6 +724,7 @@ class LedgerBridgeKeyring {
       slowestGapMs: 0,
     };
     this.activeSigningAttempt = attempt;
+    this.activeSigningAttempts.add(attempt);
     return attempt;
   }
 
@@ -725,6 +732,7 @@ class LedgerBridgeKeyring {
     if (error && typeof error === 'object') {
       ledgerAttemptByError.set(error, attempt as LedgerAttemptState);
     }
+    this.activeSigningAttempts.delete(attempt as LedgerAttemptState);
     if (attempt === this.activeSigningAttempt) this.activeSigningAttempt = null;
   }
 

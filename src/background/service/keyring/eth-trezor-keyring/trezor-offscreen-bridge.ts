@@ -125,11 +125,17 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
   getHardwareSigningMetadata = () => this.hardwareSigningMetadata;
 
+  getSigningDiagnostics = () => ({
+    wallet_provider: 'trezor' as const,
+    transport: 'usb' as const,
+    error_category: 'unknown' as const,
+    provider_metadata: this.hardwareSigningMetadata,
+  });
+
   dispose: TrezorBridgeInterface['dispose'] = async () => {
     if (!this.disposal) {
       const pendingInitialization = this.initialization;
       this.initialization = undefined;
-
       const attempt = (async () => {
         await pendingInitialization?.catch(() => undefined);
         await this.invoke(TrezorAction.dispose);

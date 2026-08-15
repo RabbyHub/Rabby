@@ -115,6 +115,7 @@ function handleDeviceError(
 class OneKeyKeyring extends EventEmitter {
   static type = keyringType;
   type = keyringType;
+  signingDiagnosticsProvider = 'onekey';
   accounts: string[] = [];
   hdk = new HDKey();
   page = 0;

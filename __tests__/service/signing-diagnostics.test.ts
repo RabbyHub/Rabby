@@ -5,6 +5,7 @@ import {
 } from '@/utils/sentry';
 import {
   registerSigningDiagnosticsProvider,
+  attachSigningDiagnosticsCapability,
   withSigningDiagnostics,
 } from '@/background/service/keyring/signing-diagnostics';
 
@@ -43,7 +44,7 @@ describe('signing diagnostics port', () => {
         wallet_provider: 'unknown',
         transport: 'unknown',
         operation,
-        stage: 'sign',
+        stage: 'unknown',
         outcome: 'failed',
         error_category: 'unknown',
       });
@@ -70,8 +71,21 @@ describe('signing diagnostics port', () => {
     ).rejects.toBe(error);
     expect(getSigningContext(error)).toMatchObject({
       wallet_family: 'walletconnect',
-      wallet_provider: 'walletconnect',
+      wallet_provider: 'unknown',
     });
+  });
+
+  it.each([
+    ['Simple Key Pair', 'private_key'],
+    ['HD Key Tree', 'mnemonic'],
+    ['WalletConnect', 'walletconnect'],
+    ['Coinbase', 'coinbase'],
+    ['Gnosis', 'gnosis'],
+    ['CoboArgus', 'cobo_argus'],
+  ])('attaches explicit capability for %s', (type, provider) => {
+    const keyring: any = { type };
+    attachSigningDiagnosticsCapability(keyring);
+    expect(keyring.signingDiagnosticsProvider).toBe(provider);
   });
 
   it('uses explicit provider capabilities and bounded categories', async () => {
@@ -111,6 +125,7 @@ describe('signing diagnostics port', () => {
         withSigningDiagnostics(
           {
             type,
+            signingDiagnosticsProvider: provider,
             getHardwareSigningMetadata: () => ({ device_model: 'safe-model' }),
           },
           'transaction',
@@ -162,8 +177,10 @@ describe('signing diagnostics port', () => {
   ])('covers the remaining provider family %s', async (type, provider) => {
     const error = new Error('provider rejected 0x6a80');
     await expect(
-      withSigningDiagnostics({ type }, 'transaction', () =>
-        Promise.reject(error)
+      withSigningDiagnostics(
+        { type, signingDiagnosticsProvider: provider },
+        'transaction',
+        () => Promise.reject(error)
       )
     ).rejects.toBe(error);
     expect(getSigningContext(error)).toMatchObject({
@@ -181,8 +198,10 @@ describe('signing diagnostics port', () => {
       error_category: category,
     });
     await expect(
-      withSigningDiagnostics({ type }, 'transaction', () =>
-        Promise.reject(error)
+      withSigningDiagnostics(
+        { type, signingDiagnosticsProvider: provider },
+        'transaction',
+        () => Promise.reject(error)
       )
     ).rejects.toBe(error);
     expect(getSigningContext(error)).toMatchObject({
