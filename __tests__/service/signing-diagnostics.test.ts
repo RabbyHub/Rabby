@@ -168,7 +168,8 @@ describe('signing diagnostics port', () => {
           }),
         },
         'transaction',
-        () => Promise.reject(error)
+        () => Promise.reject(error),
+        '0xabc'
       )
     ).rejects.toBe(error);
     expect(getSigningContext(error)).toMatchObject({

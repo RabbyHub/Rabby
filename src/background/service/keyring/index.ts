@@ -794,20 +794,26 @@ export class KeyringService extends EventEmitter {
   private signWithPairingCredsPersistence = async (
     keyring: any,
     operation: Parameters<typeof withSigningDiagnostics>[1],
-    sign: () => Promise<any>
+    sign: () => Promise<any>,
+    signingAddress?: string
   ) =>
-    withSigningDiagnostics(keyring, operation, async () => {
-      try {
-        return await sign();
-      } finally {
-        if (
-          keyring?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS &&
-          keyring?.consumePairingCredsRefreshed?.()
-        ) {
-          await this.persistAllKeyrings();
+    withSigningDiagnostics(
+      keyring,
+      operation,
+      async () => {
+        try {
+          return await sign();
+        } finally {
+          if (
+            keyring?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS &&
+            keyring?.consumePairingCredsRefreshed?.()
+          ) {
+            await this.persistAllKeyrings();
+          }
         }
-      }
-    });
+      },
+      signingAddress
+    );
 
   /**
    * Sign Ethereum Transaction
@@ -821,8 +827,11 @@ export class KeyringService extends EventEmitter {
    */
   signTransaction(keyring, ethTx, _fromAddress, opts = {}) {
     const fromAddress = normalizeAddress(_fromAddress);
-    return this.signWithPairingCredsPersistence(keyring, 'transaction', () =>
-      keyring.signTransaction(fromAddress, ethTx, opts)
+    return this.signWithPairingCredsPersistence(
+      keyring,
+      'transaction',
+      () => keyring.signTransaction(fromAddress, ethTx, opts),
+      fromAddress
     );
   }
 
@@ -850,7 +859,8 @@ export class KeyringService extends EventEmitter {
           address,
           authParams.authorization,
           opts
-        )
+        ),
+      address
     );
   }
 
@@ -868,7 +878,8 @@ export class KeyringService extends EventEmitter {
       return this.signWithPairingCredsPersistence(
         keyring,
         'personal_message',
-        () => keyring.signMessage(address, msgParams.data, opts)
+        () => keyring.signMessage(address, msgParams.data, opts),
+        address
       );
     });
   }
@@ -887,7 +898,8 @@ export class KeyringService extends EventEmitter {
     return this.signWithPairingCredsPersistence(
       keyring,
       'personal_message',
-      () => keyring.signPersonalMessage(address, msgParams.data, opts)
+      () => keyring.signPersonalMessage(address, msgParams.data, opts),
+      address
     );
   }
 
@@ -900,8 +912,11 @@ export class KeyringService extends EventEmitter {
    */
   signTypedMessage(keyring, msgParams, opts = { version: 'V1' }) {
     const address = normalizeAddress(msgParams.from);
-    return this.signWithPairingCredsPersistence(keyring, 'typed_data', () =>
-      keyring.signTypedData(address, msgParams.data, opts)
+    return this.signWithPairingCredsPersistence(
+      keyring,
+      'typed_data',
+      () => keyring.signTypedData(address, msgParams.data, opts),
+      address
     );
   }
 

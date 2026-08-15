@@ -45,6 +45,7 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   memStoreData: RequestSignPayload | undefined;
   brandsMap: Record<string, string> = {};
   currentBrand: string = DEFAULT_BRAND;
+  private signingAddressByError = new WeakMap<object, string | undefined>();
 
   constructor() {
     super();
@@ -253,11 +254,18 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     return this.currentBrand;
   };
 
-  getSigningDiagnostics() {
+  getSigningDiagnostics(error?: unknown) {
+    const address =
+      error && typeof error === 'object'
+        ? this.signingAddressByError.get(error)
+        : undefined;
+    const brand = address
+      ? this.brandsMap[address.toLowerCase()]
+      : this.currentBrand;
     const provider =
-      this.currentBrand === 'Keystone'
+      brand === 'Keystone'
         ? 'keystone'
-        : this.currentBrand === 'NGRAVE ZERO'
+        : brand === 'NGRAVE ZERO'
         ? 'ngravezero'
         : undefined;
     return {
@@ -265,6 +273,17 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
       transport: 'qr',
       error_category: 'unknown',
     };
+  }
+
+  beginSigningAttempt(_operation: string, signingAddress?: string) {
+    return { signingAddress };
+  }
+
+  endSigningAttempt(attempt: unknown, error?: unknown) {
+    if (error && typeof error === 'object') {
+      const address = (attempt as { signingAddress?: string })?.signingAddress;
+      this.signingAddressByError.set(error, address);
+    }
   }
 
   checkAllowImport = async (brand: string) => {

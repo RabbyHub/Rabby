@@ -45,7 +45,10 @@ export type SigningDiagnosticsKeyring = {
   type?: unknown;
   signingDiagnosticsProvider?: unknown;
   getHardwareSigningMetadata?: () => unknown;
-  beginSigningAttempt?: (operation: SigningOperation) => unknown;
+  beginSigningAttempt?: (
+    operation: SigningOperation,
+    signingAddress?: string
+  ) => unknown;
   endSigningAttempt?: (attempt: unknown, error?: unknown) => void;
   getSigningDiagnostics?: (error: unknown) => ProviderDiagnostics | undefined;
   bridge?: {
@@ -244,12 +247,13 @@ const cloneSharedError = (error: unknown) => {
 export const withSigningDiagnostics = (
   keyring: SigningDiagnosticsKeyring,
   operation: SigningOperation,
-  sign: () => any
+  sign: () => any,
+  signingAddress?: string
 ) => {
   const startedAt = Date.now();
   let attempt: unknown;
   try {
-    attempt = keyring.beginSigningAttempt?.(operation);
+    attempt = keyring.beginSigningAttempt?.(operation, signingAddress);
   } catch {
     attempt = undefined;
   }
