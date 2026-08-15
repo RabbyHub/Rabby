@@ -44,6 +44,7 @@ export type ProviderDiagnostics = {
 export type SigningDiagnosticsKeyring = {
   type?: unknown;
   signingDiagnosticsProvider?: unknown;
+  getHardwareSigningMetadata?: () => unknown;
   beginSigningAttempt?: (operation: SigningOperation) => unknown;
   endSigningAttempt?: (attempt: unknown, error?: unknown) => void;
   getSigningDiagnostics?: (error: unknown) => ProviderDiagnostics | undefined;
@@ -77,6 +78,11 @@ const signingDiagnosticsProviders = new Map<
   string,
   SigningDiagnosticsProvider
 >();
+
+const PROVIDER_BY_KEYRING_TYPE: Record<string, string> = {
+  'Onekey Hardware': 'onekey',
+  'Trezor Hardware': 'trezor',
+};
 
 export const registerSigningDiagnosticsProvider = (
   provider: string,
@@ -210,7 +216,10 @@ const resolveProviderDiagnostics = (
     if (direct) return normalizeMetadata(direct);
     const bridge = keyring.bridge?.getSigningDiagnostics?.(error);
     if (bridge) return normalizeMetadata(bridge);
-    const provider = normalizeProvider(keyring.signingDiagnosticsProvider);
+    const provider = normalizeProvider(
+      keyring.signingDiagnosticsProvider ??
+        PROVIDER_BY_KEYRING_TYPE[String(keyring.type)]
+    );
     const adapter = signingDiagnosticsProviders.get(provider);
     return adapter ? normalizeMetadata(adapter(keyring, error)) : {};
   } catch {
@@ -293,3 +302,35 @@ export const withSigningDiagnostics = (
     return attach(error);
   }
 };
+
+const getHardwareMetadata = (keyring: SigningDiagnosticsKeyring) => {
+  try {
+    if (
+      keyring.bridge &&
+      typeof (keyring.bridge as any).getHardwareSigningMetadata === 'function'
+    ) {
+      return (keyring.bridge as any).getHardwareSigningMetadata();
+    }
+  } catch {
+    // Keep provider and transport diagnostics if the bridge is unavailable.
+  }
+  try {
+    return keyring.getHardwareSigningMetadata?.();
+  } catch {
+    return undefined;
+  }
+};
+
+const registerMetadataOnlyProvider = (
+  provider: string,
+  transport: SigningTransport
+) =>
+  registerSigningDiagnosticsProvider(provider, (keyring) => ({
+    wallet_provider: provider,
+    transport,
+    error_category: 'unknown',
+    provider_metadata: getHardwareMetadata(keyring),
+  }));
+
+registerMetadataOnlyProvider('onekey', 'webhid');
+registerMetadataOnlyProvider('trezor', 'usb');

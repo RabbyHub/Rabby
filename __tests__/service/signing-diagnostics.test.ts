@@ -100,6 +100,32 @@ describe('signing diagnostics port', () => {
     });
   });
 
+  it.each([
+    ['Onekey Hardware', 'onekey', 'webhid'],
+    ['Trezor Hardware', 'trezor', 'usb'],
+  ])(
+    'uses the built-in %s adapter without Ledger classification',
+    async (type, provider, transport) => {
+      const error = new Error('0x6a80 device rejected');
+      await expect(
+        withSigningDiagnostics(
+          {
+            type,
+            getHardwareSigningMetadata: () => ({ device_model: 'safe-model' }),
+          },
+          'transaction',
+          () => Promise.reject(error)
+        )
+      ).rejects.toBe(error);
+      expect(getSigningContext(error)).toMatchObject({
+        wallet_provider: provider,
+        transport,
+        provider_metadata: { device_model: 'safe-model' },
+      });
+      expect(getSigningContext(error)?.provider_code).toBeUndefined();
+    }
+  );
+
   it('falls back to unknown for malformed provider values', async () => {
     registerSigningDiagnosticsProvider('bad-wallet', () => ({
       wallet_provider: 'address-0x1234567890123456789012345678901234567890',
