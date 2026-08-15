@@ -38,11 +38,14 @@ export type ProviderDiagnostics = {
   error_category?: unknown;
   provider_code?: unknown;
   provider_stage?: unknown;
+  provider_metadata?: unknown;
 };
 
 export type SigningDiagnosticsKeyring = {
   type?: unknown;
   signingDiagnosticsProvider?: unknown;
+  beginSigningAttempt?: (operation: SigningOperation) => unknown;
+  endSigningAttempt?: (attempt: unknown, error?: unknown) => void;
   getSigningDiagnostics?: (error: unknown) => ProviderDiagnostics | undefined;
   bridge?: {
     getSigningDiagnostics?: (error: unknown) => ProviderDiagnostics | undefined;
@@ -66,6 +69,7 @@ export type SigningContext = {
   duration_bucket: 'lt_100ms' | '100ms_1s' | '1s_5s' | 'gte_5s';
   provider_code?: string;
   provider_stage?: string;
+  provider_metadata?: Record<string, string | number | boolean>;
   originalError?: unknown;
 };
 
@@ -140,6 +144,7 @@ type NormalizedProviderDiagnostics = Partial<
     | 'error_category'
     | 'provider_code'
     | 'provider_stage'
+    | 'provider_metadata'
   >
 >;
 
@@ -148,6 +153,36 @@ const normalizeMetadata = (value: unknown): NormalizedProviderDiagnostics => {
   const diagnostics = value as ProviderDiagnostics;
   const providerCode = diagnostics.provider_code;
   const providerStage = diagnostics.provider_stage;
+  const providerMetadata = diagnostics.provider_metadata;
+  const safeMetadata: Record<string, string | number | boolean> = {};
+  if (providerMetadata && typeof providerMetadata === 'object') {
+    for (const key of [
+      'device_model',
+      'firmware_version',
+      'app_name',
+      'app_version',
+      'device_mode',
+      'status_word',
+      'device_action_steps',
+      'slowest_gap_bucket',
+      'overlapping_attempt',
+      'session_reused',
+      'clear_signing_context_errors',
+      'clear_signing_type',
+    ]) {
+      const item = (providerMetadata as Record<string, unknown>)[key];
+      if (
+        (typeof item === 'string' && item.length <= 512) ||
+        (typeof item === 'number' &&
+          Number.isFinite(item) &&
+          item >= 0 &&
+          item <= 99) ||
+        typeof item === 'boolean'
+      ) {
+        safeMetadata[key] = item;
+      }
+    }
+  }
   return {
     wallet_provider: normalizeProvider(diagnostics.wallet_provider),
     transport: normalizeTransport(diagnostics.transport),
@@ -159,6 +194,9 @@ const normalizeMetadata = (value: unknown): NormalizedProviderDiagnostics => {
     ...(typeof providerStage === 'string' &&
     /^[a-z0-9_.:-]{1,32}$/i.test(providerStage)
       ? { provider_stage: providerStage }
+      : {}),
+    ...(Object.keys(safeMetadata).length
+      ? { provider_metadata: safeMetadata }
       : {}),
   };
 };
@@ -200,7 +238,24 @@ export const withSigningDiagnostics = (
   sign: () => any
 ) => {
   const startedAt = Date.now();
+  let attempt: unknown;
+  try {
+    attempt = keyring.beginSigningAttempt?.(operation);
+  } catch {
+    attempt = undefined;
+  }
+  let finished = false;
+  const finish = (error?: unknown) => {
+    if (finished) return;
+    finished = true;
+    try {
+      keyring.endSigningAttempt?.(attempt, error);
+    } catch {
+      // Diagnostics lifecycle must never affect signing behavior.
+    }
+  };
   const attach = (error: unknown) => {
+    finish(error);
     const metadata = resolveProviderDiagnostics(keyring, error);
     const attemptError = getSigningContext(error)
       ? cloneSharedError(error)
@@ -229,8 +284,11 @@ export const withSigningDiagnostics = (
   try {
     const result = sign();
     return result && typeof result.then === 'function'
-      ? result.catch(attach)
-      : result;
+      ? result.then((value: unknown) => {
+          finish();
+          return value;
+        }, attach)
+      : (finish(), result);
   } catch (error) {
     return attach(error);
   }

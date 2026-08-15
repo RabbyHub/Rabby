@@ -342,6 +342,9 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
     ...(context.provider_stage
       ? { signing_provider_stage: context.provider_stage }
       : {}),
+    ...(context.provider_metadata
+      ? { signing_provider_metadata: context.provider_metadata }
+      : {}),
     signing_original_error: describeOriginalError(context.originalError),
   };
 };

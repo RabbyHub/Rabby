@@ -62,7 +62,9 @@ jest.mock('@/utils/env', () => ({
   isManifestV3: true,
 }));
 
-import { getLedgerErrorMessage } from 'background/service/keyring/eth-ledger-keyring';
+import LedgerBridgeKeyring, {
+  getLedgerErrorMessage,
+} from 'background/service/keyring/eth-ledger-keyring';
 
 describe('getLedgerErrorMessage', () => {
   it('extracts readable DMK object errors without losing status codes', () => {
@@ -106,5 +108,20 @@ describe('getLedgerErrorMessage', () => {
 
     expect(message).toContain('RefusedByUserDAError');
     expect(message).toContain('0x6985');
+  });
+
+  it('exposes structured provider diagnostics without parsing Sentry text', () => {
+    const keyring = new LedgerBridgeKeyring();
+    const diagnostics = keyring.getLedgerSigningDiagnostics({
+      statusCode: '0x6a80',
+    });
+
+    expect(diagnostics).toMatchObject({
+      wallet_provider: 'ledger',
+      transport: 'webhid',
+      provider_code: '0x6a80',
+      error_category: 'unknown',
+    });
+    expect(diagnostics).not.toHaveProperty('signing_original_error');
   });
 });
