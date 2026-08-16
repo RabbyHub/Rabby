@@ -19507,12 +19507,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:3.3.6":
-  version: 3.3.6
-  resolution: "nanoid@npm:3.3.6"
+"nanoid@npm:3.3.16":
+  version: 3.3.16
+  resolution: "nanoid@npm:3.3.16"
   bin:
     nanoid: bin/nanoid.cjs
-  checksum: 10c0/606b355960d0fcbe3d27924c4c52ef7d47d3b57208808ece73279420d91469b01ec1dce10fae512b6d4a8c5a5432b352b228336a8b2202a6ea68e67fa348e2ee
+  checksum: 10c0/bbf2dcffe22d2b62d16de2711752070b539c0f644c7916f823ad6521986b2078cbe524f2d6240f58c46e9141ea0c7b87a029e100c0f7f175228cacaf30e41bba
   languageName: node
   linkType: hard
 
@@ -21614,7 +21614,7 @@ __metadata:
     lottie-react: "npm:2.4.0"
     lru-cache: "npm:6.0.0"
     multiformats: "npm:13.3.2"
-    nanoid: "npm:3.3.6"
+    nanoid: "npm:3.3.16"
     obs-store: "npm:4.0.3"
     p-queue: "npm:7.3.0"
     p-retry: "npm:5.1.2"
