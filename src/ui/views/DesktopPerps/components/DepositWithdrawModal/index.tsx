@@ -485,7 +485,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                     </Tooltip>
                     <span className="text-rb-neutral-body">
                       {isHypeWithdraw
-                        ? `$${new BigNumber(hypeGasFeeUsd)
+                        ? `$${new BigNumber(hypeGasFeeUsd || 0)
                             .decimalPlaces(6)
                             .toFixed()}`
                         : '$1'}
