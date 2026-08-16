@@ -2866,8 +2866,6 @@ const SendToken = () => {
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
-    dispatch.whitelist.getWhitelistEnabled();
-    dispatch.whitelist.getWhitelist();
     dispatch.contactBook.getContactBookAsync();
     if (!account) {
       history.replace('/');

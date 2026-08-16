@@ -46,9 +46,6 @@ export const app = createModel<RootModel>()({
     initBizStore() {
       dispatch.account.init();
       dispatch.preference.init();
-      dispatch.currency.init();
-      dispatch.swap.init();
-      dispatch.whitelist.init();
       dispatch.bridge.init();
       dispatch.gasAccount.init();
       dispatch.exchange.init();

@@ -14,7 +14,7 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { connectStore, useRabbySelector } from '@/ui/store';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
@@ -74,7 +74,6 @@ const WhitelistInput = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
   const { exchanges } = useRabbySelector((s) => ({
     exchanges: s.exchange.exchanges,
   }));
@@ -197,7 +196,6 @@ const WhitelistInput = () => {
       exchanges,
       selectedExchange?.id
     );
-    dispatch.whitelist.getWhitelist();
     await wallet.updateAlianName(
       address,
       inputAlias || '',

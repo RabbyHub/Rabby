@@ -1,5 +1,5 @@
 import browser, { Runtime } from 'webextension-polyfill';
-import Message from './index';
+import Message, { MessageDisconnectedError } from './index';
 class PortMessage extends Message {
   port: Runtime.Port | null = null;
   listenCallback: any;
@@ -13,8 +13,14 @@ class PortMessage extends Message {
   }
 
   connect = (name?: string) => {
-    this.port = browser.runtime.connect(undefined, name ? { name } : undefined);
-    this.port.onMessage.addListener(({ _type_, data }) => {
+    if (this.port) return this;
+
+    const port = browser.runtime.connect(
+      undefined,
+      name ? { name } : undefined
+    );
+    this.port = port;
+    port.onMessage.addListener(({ _type_, data }) => {
       if (_type_ === `${this._EVENT_PRE}message`) {
         this.emit('message', data);
         return;
@@ -23,6 +29,13 @@ class PortMessage extends Message {
       if (_type_ === `${this._EVENT_PRE}response`) {
         this.onResponse(data);
       }
+    });
+    port.onDisconnect.addListener(() => {
+      if (this.port !== port) return;
+
+      this.port = null;
+      this.rejectPendingRequests(new MessageDisconnectedError());
+      this.emit('disconnect');
     });
 
     return this;
@@ -41,17 +54,21 @@ class PortMessage extends Message {
   };
 
   send = (type, data) => {
-    if (!this.port) return;
+    if (!this.port) return false;
     try {
       this.port.postMessage({ _type_: `${this._EVENT_PRE}${type}`, data });
-    } catch (e) {
-      // DO NOTHING BUT CATCH THIS ERROR
+      return true;
+    } catch {
+      return false;
     }
   };
 
   dispose = () => {
+    const port = this.port;
+    this.port = null;
     this._dispose();
-    this.port?.disconnect();
+    port?.disconnect();
+    this.removeAllListeners();
   };
 }
 

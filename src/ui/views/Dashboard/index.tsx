@@ -21,7 +21,10 @@ import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
 import Settings from './components/Settings';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
-import { useGasAccountDiscovery } from '@/ui/views/GasAccount/hooks';
+import {
+  useGasAccountDiscovery,
+  useGasAccountSign,
+} from '@/ui/views/GasAccount/hooks';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -31,6 +34,8 @@ const Dashboard = () => {
   const { refreshDiscovery } = useGasAccountDiscovery({
     autoRefresh: false,
   });
+  const { sig, accountId } = useGasAccountSign();
+  const hasGasAccountSession = !!sig && !!accountId;
 
   const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
     ...s.appVersion,
@@ -81,8 +86,15 @@ const Dashboard = () => {
     })();
   }, []);
 
+  // Discovery costs one gas account balance lookup per address. The dashboard
+  // only consumes the two fields discovery derives for a logged-out wallet —
+  // autoLoginAccount and pendingHardwareAccount — and both are forced to
+  // undefined once a session exists, so with one the whole round is wasted. The
+  // remaining field, accountsWithGasAccountBalance, is read by the GasAccount
+  // page, which refreshes discovery on its own mount. Losing a session mid-flight
+  // still rediscovers, from useGasAccountInfo's invalidateSession.
   useEffect(() => {
-    if (!accountsDiscoveryKey) {
+    if (!accountsDiscoveryKey || hasGasAccountSession) {
       return;
     }
     refreshDiscovery().catch((error) => {
@@ -91,7 +103,7 @@ const Dashboard = () => {
         error
       );
     });
-  }, [accountsDiscoveryKey, refreshDiscovery]);
+  }, [accountsDiscoveryKey, hasGasAccountSession, refreshDiscovery]);
 
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();

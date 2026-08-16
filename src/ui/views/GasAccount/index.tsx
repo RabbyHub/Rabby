@@ -65,8 +65,25 @@ const GasAccountInner = () => {
   const {
     pendingHardwareAccount,
     accountsWithGasAccountBalance,
+    refreshDiscovery,
   } = useGasAccountDiscovery();
   const { account: currentGasAccount } = useGasAccountSign();
+
+  // The switch list renders the balances discovery fetched, so refresh them when
+  // it is about to be shown rather than trusting the snapshot taken on mount —
+  // a deposit made since then would otherwise not be reflected. Not forced, so
+  // discovery's own cache still collapses repeated opens into one request.
+  useEffect(() => {
+    if (!loginVisible) {
+      return;
+    }
+    refreshDiscovery().catch((error) => {
+      console.error(
+        '[gasAccount] refresh discovery on switch open failed',
+        error
+      );
+    });
+  }, [loginVisible, refreshDiscovery]);
   const historyState = useGasAccountHistory();
   const {
     claimGift,

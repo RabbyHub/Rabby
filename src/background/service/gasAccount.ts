@@ -36,6 +36,8 @@ export type GasAccountServiceStore = {
     address: string;
     type: string;
     brandName: string;
+    /** gas account balance, carried so the picker need not re-query it */
+    balance: number;
   }>;
 };
 
@@ -72,8 +74,10 @@ const isSameDiscoveryAccountList = (
     return false;
   }
 
-  return prevList.every((item, index) =>
-    isSameDiscoveryAccount(item, nextList[index])
+  return prevList.every(
+    (item, index) =>
+      isSameDiscoveryAccount(item, nextList[index]) &&
+      item.balance === nextList[index]?.balance
   );
 };
 

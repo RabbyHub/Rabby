@@ -22,7 +22,7 @@ import { KEYRING_TYPE } from '@/constant';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import { debounce } from 'lodash';
-import { useRabbySelector } from '@/ui/store';
+import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 
 type DesktopNavAction = 'swap' | 'send' | 'bridge' | 'gnosis-queue';
 
@@ -49,8 +49,8 @@ export const DesktopNav: React.FC<{
   const { t } = useTranslation();
   const history = useHistory();
   const currentAccount = useCurrentAccount();
-  const activeProfileTab = useRabbySelector(
-    (state) => state.desktopProfile.activeTab || 'tokens'
+  const activeProfileTab = useDesktopProfileStore(
+    (state) => state.activeTab || 'tokens'
   );
 
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;

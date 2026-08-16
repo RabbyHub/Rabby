@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Button, DrawerProps, message } from 'antd';
 import styled from 'styled-components';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
@@ -49,14 +50,11 @@ const ListModal = ({
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const { accountsList, whitelist, whitelistEnabled } = useRabbySelector(
-    (s) => ({
-      currentAccount: s.account.currentAccount,
-      accountsList: s.accountToDisplay.accountsList,
-      whitelist: s.whitelist.whitelist,
-      whitelistEnabled: s.whitelist.enabled,
-    })
+  const accountsList = useRabbySelector(
+    (state) => state.accountToDisplay.accountsList
   );
+  const whitelist = useWhitelistStore((state) => state.whitelists);
+  const whitelistEnabled = useWhitelistStore((state) => state.enabled);
 
   const sortedAccountsList = useMemo(() => {
     if (!whitelistEnabled) {
@@ -88,8 +86,6 @@ const ListModal = ({
 
   const fetchData = async () => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-    dispatch.whitelist.getWhitelistEnabled();
-    dispatch.whitelist.getWhitelist();
   };
 
   const handleSaveWhitelist = async (list: string[]) => {

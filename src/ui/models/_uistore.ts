@@ -92,44 +92,4 @@ export default (store: typeof import('@/ui/store').default) => {
       }
     }
   });
-
-  onBackgroundStoreChanged('whitelist', (payload) => {
-    switch (payload.changedKey) {
-      case 'whitelists': {
-        dispatch.whitelist.setField({
-          whitelist: payload.partials.whitelists,
-        });
-        break;
-      }
-      case 'enabled': {
-        dispatch.whitelist.setField({
-          enabled: payload.partials.enabled,
-        });
-        break;
-      }
-    }
-  });
-
-  onBackgroundStoreChanged('currency', (payload) => {
-    switch (payload.changedKey) {
-      case 'currency': {
-        dispatch.currency.setField({
-          currency: payload.partials.currency,
-        });
-        break;
-      }
-      case 'currencyList': {
-        dispatch.currency.setField({
-          currencyList: payload.partials.currencyList,
-        });
-        break;
-      }
-      case 'updatedAt': {
-        dispatch.currency.setField({
-          updatedAt: payload.partials.updatedAt,
-        });
-        break;
-      }
-    }
-  });
 };

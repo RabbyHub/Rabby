@@ -113,6 +113,7 @@ export const UserInfoHistory: React.FC = () => {
     hasAbout,
     activeTab,
     isUnifiedAccount,
+    t,
   ]);
 
   const ActiveComponent = useMemo(

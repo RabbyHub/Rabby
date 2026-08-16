@@ -8,7 +8,8 @@ import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { ellipsisAddress } from '@/ui/utils/address';
 
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
+import { useWhitelistStore } from '@/ui/state/whitelist';
 import { groupBy } from 'lodash';
 import { findAccountByPriority, filterMyAccounts } from '@/utils/account';
 
@@ -56,10 +57,10 @@ export default function TabImported({
 }: {
   handleChange: (account: Account) => void;
 }) {
-  const { accountsList, whitelist } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-    whitelist: s.whitelist.whitelist,
-  }));
+  const accountsList = useRabbySelector(
+    (state) => state.accountToDisplay.accountsList
+  );
+  const whitelist = useWhitelistStore((state) => state.whitelists);
 
   const { sortedAccounts } = useMemo(() => {
     const whitelistSet = new Set(whitelist.map((item) => item.toLowerCase()));

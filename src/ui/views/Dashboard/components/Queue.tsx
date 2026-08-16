@@ -46,7 +46,7 @@ const Queue = ({ count, className }: QueueProps) => {
         'ease-in-out',
         'group',
         'whitespace-nowrap overflow-hidden text-ellipsis',
-        'flex items-center justify-end'
+        'flex items-center justify-center'
       )}
     >
       <div className="group-hover:block hidden">

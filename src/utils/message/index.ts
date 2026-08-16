@@ -3,11 +3,28 @@
  */
 
 import { EventEmitter } from 'events';
-import { ethErrors } from 'eth-rpc-errors';
+import { errorCodes, ethErrors } from 'eth-rpc-errors';
 import PQueue from 'p-queue';
 import { nanoid } from 'nanoid';
 
 const pQueue = new PQueue({ concurrency: 1000 });
+
+/**
+ * The channel to the background died before the request could be answered —
+ * usually an MV3 service worker eviction.
+ *
+ * This reaches dapps through the content script, so it must carry an EIP-1193
+ * code (4900 `disconnected`); `onRequest` only forwards `code` when the error
+ * actually has one, and dapps routinely branch on `error.code`.
+ */
+export class MessageDisconnectedError extends Error {
+  readonly code: number = errorCodes.provider.disconnected;
+
+  constructor(message = 'Message channel disconnected') {
+    super(message);
+    this.name = 'MessageDisconnectedError';
+  }
+}
 
 /** Returns true when the error was actually captured, so the response can
  * be flagged and the receiving page's Sentry skips its duplicate copy. */
@@ -157,7 +174,7 @@ abstract class Message extends EventEmitter {
     }
   >();
 
-  abstract send(type: string, data: any): void;
+  abstract send(type: string, data: any): boolean | void;
 
   request = (data) => {
     const sanitizedData = sanitizeProviderRequestData(data);
@@ -175,8 +192,26 @@ abstract class Message extends EventEmitter {
           reject,
         });
 
-        this.send('request', { ident, data: sanitizedData });
+        const sent = this.send('request', { ident, data: sanitizedData });
+        if (sent === false) {
+          this.rejectRequest(ident, new MessageDisconnectedError());
+        }
       });
+    });
+  };
+
+  private rejectRequest = (ident: string, error: unknown) => {
+    const request = this._waitingMap.get(ident);
+    if (!request) return;
+
+    this._requestIdPool.push(0);
+    this._waitingMap.delete(ident);
+    request.reject(error);
+  };
+
+  protected rejectPendingRequests = (error: unknown) => {
+    [...this._waitingMap.keys()].forEach((ident) => {
+      this.rejectRequest(ident, error);
     });
   };
 
@@ -221,11 +256,7 @@ abstract class Message extends EventEmitter {
   };
 
   _dispose = () => {
-    for (const request of this._waitingMap.values()) {
-      request.reject(ethErrors.provider.userRejectedRequest());
-    }
-
-    this._waitingMap.clear();
+    this.rejectPendingRequests(ethErrors.provider.userRejectedRequest());
   };
 }
 

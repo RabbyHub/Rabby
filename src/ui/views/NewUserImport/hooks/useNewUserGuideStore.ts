@@ -1,24 +1,13 @@
-import { RabbyRootState, useRabbyDispatch, useRabbyGetter } from '@/ui/store';
-import { useMemoizedFn } from 'ahooks';
-import { useSelector } from 'react-redux';
+import { useNewUserGuideStore as useNewUserGuideZustandStore } from '@/ui/state/newUserGuide';
 
 export const useNewUserGuideStore = () => {
-  const store = useSelector((s: RabbyRootState) => s.newUserGuide);
-
-  const dispatch = useRabbyDispatch();
-
-  const clearStore = useMemoizedFn(() => {
-    dispatch.newUserGuide.setState(
-      Object.keys(store).reduce((res, key) => {
-        res[key] = undefined;
-        return res;
-      }, {})
-    );
-  });
+  const store = useNewUserGuideZustandStore((state) => state.data);
+  const setStore = useNewUserGuideZustandStore((state) => state.setStore);
+  const clearStore = useNewUserGuideZustandStore((state) => state.clearStore);
 
   return {
     store,
-    setStore: dispatch.newUserGuide.setState,
+    setStore,
     clearStore,
   };
 };

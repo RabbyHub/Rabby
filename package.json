@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.94.2",
+  "version": "0.94.3",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "node build/clean.js",
@@ -99,6 +99,7 @@
     "@sentry/browser": "10.58.0",
     "@sentry/react": "10.58.0",
     "@spruceid/siwe-parser": "2.0.2",
+    "@trezor/connect-web": "9.6.4",
     "@trezor/connect-webextension": "9.6.4",
     "@types/bignumber.js": "5.0.0",
     "@types/lodash": "4.14.172",
@@ -171,7 +172,9 @@
     "viem": "2.47.6",
     "warden-for-js": "3.0.0",
     "web3-eth-abi": "1.7.0",
-    "webextension-polyfill": "0.7.0"
+    "webextension-polyfill": "0.7.0",
+    "zod": "4.4.3",
+    "zustand": "5.0.14"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
@@ -245,7 +248,7 @@
     "tinycolor2": "1.6.0",
     "ts-import-plugin": "1.6.7",
     "ts-jest": "29.1.1",
-    "ts-loader": "9.1.1",
+    "ts-loader": "9.6.2",
     "tsconfig-paths-webpack-plugin": "3.5.1",
     "typescript": "5.3.3",
     "typescript-plugin-styled-components": "2.0.0",

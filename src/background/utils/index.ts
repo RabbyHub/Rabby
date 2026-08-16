@@ -2,7 +2,11 @@ import pageStateCache from '../service/pageStateCache';
 import { isManifestV3 } from '@/utils/env';
 import { addHexPrefix, bytesToHex, toBytes } from '@ethereumjs/util';
 import browser from 'webextension-polyfill';
-export { default as createPersistStore } from './persistStore';
+export {
+  default as createPersistStore,
+  patchPersistStore,
+} from './persistStore';
+export type { PersistStoreSchema } from './persistStore';
 
 // {a:{b: string}} => {1: 'a.b'}
 // later same [source] value will override [result] key generated before

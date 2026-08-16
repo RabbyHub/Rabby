@@ -266,10 +266,6 @@ const AddressManagement = () => {
     [dispatch?.account?.changeAccountAsync]
   );
 
-  useEffect(() => {
-    dispatch.whitelist.init();
-  }, []);
-
   const AddNewAddressColumn = useMemo(() => {
     return (
       <div
