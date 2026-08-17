@@ -5,6 +5,8 @@ import contactBook from '@/background/service/contactBook';
 import { normalizeAddress } from '@/background/utils';
 import { Wallet } from '@ethereumjs/wallet';
 import { utils } from '@ethereumjs/rlp';
+import { EventEmitter } from 'events';
+import { KEYRING_CLASS, WALLETCONNECT_STATUS_MAP } from 'consts';
 
 const password = 'password123';
 const walletOneSeedWords =
@@ -48,6 +50,28 @@ describe('KeyringService setup', () => {
       await keyringService.setLocked();
       expect(spy.calledOnce).toBe(true);
     });
+  });
+
+  it('rejects a WalletConnect signing promise on provider failure status', async () => {
+    const keyring = Object.assign(new EventEmitter(), {
+      type: KEYRING_CLASS.WALLETCONNECT,
+    });
+    const signing = (keyringService as any).signWithPairingCredsPersistence(
+      keyring,
+      'transaction',
+      () => new Promise(() => undefined),
+      '0xabc'
+    );
+
+    queueMicrotask(() =>
+      keyring.emit('statusChange', {
+        status: WALLETCONNECT_STATUS_MAP.REJECTED,
+        account: { address: '0xabc' },
+        payload: new Error('remote rejected'),
+      })
+    );
+
+    await expect(signing).rejects.toThrow('remote rejected');
   });
 });
 

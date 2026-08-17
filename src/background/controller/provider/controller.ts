@@ -1,5 +1,4 @@
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import * as Sentry from '@sentry/browser';
 import { AuthorizationListItem, Common, Hardfork } from '@ethereumjs/common';
 import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
@@ -88,7 +87,12 @@ import {
 } from '@/utils/tempo';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
 import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
-import { getSigningContext, attachSigningContext } from '@/utils/sentry';
+import {
+  attachSigningContext,
+  bindSigningCarrier,
+  getSigningContext,
+  takeSigningCarrier,
+} from '@/utils/sentry';
 
 const reportSignText = (params: {
   method: string;
@@ -985,18 +989,20 @@ class ProviderController extends BaseController {
       });
     } catch (e) {
       console.error(e);
-      const signingContext = getSigningContext(e);
-      if (signingContext && e instanceof Error) {
-        Sentry.captureException(e);
-      }
+      const signingCarrier = takeSigningCarrier(e);
+      const signingContext =
+        getSigningContext(e) ?? getSigningContext(signingCarrier);
+      const carrier =
+        signingCarrier ?? (signingContext && e instanceof Error ? e : undefined);
       const errObj: any = {
         message: e && typeof e === 'object' ? e.message : e,
       };
-      if (signingContext) {
+      if (signingContext && !carrier) {
         attachSigningContext(errObj, signingContext);
-        if (e instanceof Error) {
-          errObj.reportedFromBackground = true;
-        }
+      }
+      if (carrier) {
+        bindSigningCarrier(errObj, carrier);
+        errObj.reportedFromBackground = true;
       }
       errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
 

@@ -10,5 +10,7 @@ describe('WebExtension API test doubles', () => {
 
     await browser.storage.local.clear();
     await expect(browser.storage.local.get(null)).resolves.toEqual({});
+    await expect(browser.storage.local.get('missing')).resolves.toEqual({});
+    await expect(browser.storage.local.get(['missing'])).resolves.toEqual({});
   });
 });

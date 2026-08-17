@@ -31,6 +31,10 @@ import {
   KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
 } from 'consts';
+import {
+  OffscreenCommunicationTarget,
+  TrezorBrowserAction,
+} from '@/constant/offscreen-communication';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { ethErrors } from 'eth-rpc-errors';
@@ -258,7 +262,50 @@ async function restoreAppState() {
   await sendReadyMessageToTabs();
   subscribeTxCompleted({ preferenceService });
 
-  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'getBackgroundReady') {
+      sendResponse({
+        data: {
+          ready: true,
+        },
+      });
+      return;
+    }
+    if (
+      message?.target === OffscreenCommunicationTarget.trezorBrowser &&
+      sender.id === chrome.runtime.id &&
+      Object.values(TrezorBrowserAction).includes(message.action)
+    ) {
+      const request = (() => {
+        switch (message.action) {
+          case TrezorBrowserAction.getCurrentWindow:
+            return browser.windows.getCurrent();
+          case TrezorBrowserAction.createWindow:
+            return browser.windows.create(message.params);
+          case TrezorBrowserAction.queryTabs:
+            return browser.tabs.query(message.params);
+          case TrezorBrowserAction.createTab:
+            return browser.tabs.create(message.params);
+          case TrezorBrowserAction.getTab:
+            return browser.tabs.get(message.params);
+          case TrezorBrowserAction.updateTab:
+            return browser.tabs.update(
+              message.params.tabId,
+              message.params.updateProperties
+            );
+          case TrezorBrowserAction.removeTab:
+            return browser.tabs.remove(message.params);
+          default:
+            return undefined;
+        }
+      })();
+      Promise.resolve(request).then(sendResponse, (error) =>
+        sendResponse({
+          error: error instanceof Error ? error.message : String(error),
+        })
+      );
+      return true;
+    }
     // Native chrome.runtime.onMessage requires explicit `sendResponse(...)` + `return true`
     // on async paths — returning a Promise would let Chrome close the channel immediately.
     if (message?.type === 'controller' && typeof message.method === 'string') {

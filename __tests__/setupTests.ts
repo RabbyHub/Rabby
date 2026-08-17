@@ -14,14 +14,24 @@ const createStorageArea = (store: Record<string, unknown>) => ({
   get: jest.fn(
     async (keys?: string | string[] | Record<string, unknown> | null) => {
       if (keys === null || keys === undefined) return { ...store };
-      if (typeof keys === 'string') return { [keys]: store[keys] };
+      if (typeof keys === 'string') {
+        return Object.prototype.hasOwnProperty.call(store, keys)
+          ? { [keys]: store[keys] }
+          : {};
+      }
       if (Array.isArray(keys)) {
-        return Object.fromEntries(keys.map((key) => [key, store[key]]));
+        return Object.fromEntries(
+          keys
+            .filter((key) => Object.prototype.hasOwnProperty.call(store, key))
+            .map((key) => [key, store[key]])
+        );
       }
       return Object.fromEntries(
         Object.entries(keys).map(([key, fallback]) => [
           key,
-          store[key] === undefined ? fallback : store[key],
+          Object.prototype.hasOwnProperty.call(store, key)
+            ? store[key]
+            : fallback,
         ])
       );
     }

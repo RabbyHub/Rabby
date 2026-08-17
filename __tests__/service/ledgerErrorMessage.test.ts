@@ -124,4 +124,20 @@ describe('getLedgerErrorMessage', () => {
     });
     expect(diagnostics).not.toHaveProperty('signing_original_error');
   });
+
+  it('finds a Ledger status word through nested signing wrappers', () => {
+    const keyring = new LedgerBridgeKeyring();
+    const diagnostics = keyring.getLedgerSigningDiagnostics({
+      cause: {
+        cause: {
+          statusCode: '0x6a80',
+        },
+      },
+    });
+
+    expect(diagnostics).toMatchObject({
+      provider_code: '0x6a80',
+      error_category: 'unknown',
+    });
+  });
 });

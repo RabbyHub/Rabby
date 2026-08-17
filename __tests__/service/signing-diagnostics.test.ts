@@ -57,7 +57,11 @@ describe('signing diagnostics port', () => {
         sign_outcome: 'failed',
         error_category: 'unknown',
       });
-      expect(event.extra.signing_original_error).toContain('Network Error');
+      expect(event.message).toBe('unknown signing failed');
+      expect(event.exception).toEqual({
+        values: [{ type: 'SigningError', value: 'unknown' }],
+      });
+      expect(event.extra).toEqual({});
     }
   );
 
@@ -100,8 +104,32 @@ describe('signing diagnostics port', () => {
     });
   });
 
+  it('keeps provider metadata behind its provider allowlist', async () => {
+    registerSigningDiagnosticsProvider('test-trezor', () => ({
+      wallet_provider: 'trezor',
+      provider_metadata: {
+        device_model: 'safe-model',
+        status_word: '0x6a80',
+        device_action_steps: 'secret-step',
+      },
+    }));
+    const error = new Error('failed');
+
+    await expect(
+      withSigningDiagnostics(
+        { type: 'Future Hardware', signingDiagnosticsProvider: 'test-trezor' },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    expect(getSigningContext(error)?.provider_metadata).toEqual({
+      device_model: 'safe-model',
+    });
+  });
+
   it.each([
-    ['Onekey Hardware', 'onekey', 'webhid'],
+    ['Onekey Hardware', 'onekey', 'usb'],
     ['Trezor Hardware', 'trezor', 'usb'],
   ])(
     'uses the built-in %s adapter without Ledger classification',
@@ -112,7 +140,12 @@ describe('signing diagnostics port', () => {
           {
             type,
             signingDiagnosticsProvider: provider,
-            getHardwareSigningMetadata: () => ({ device_model: 'safe-model' }),
+            getSigningDiagnostics: () => ({
+              wallet_provider: provider,
+              transport,
+              error_category: 'unknown',
+              provider_metadata: { device_model: 'safe-model' },
+            }),
           },
           'transaction',
           () => Promise.reject(error)
@@ -263,5 +296,79 @@ describe('signing diagnostics port', () => {
       )
     ).rejects.toBe(error);
     expect(shouldIgnoreSentryError(error)).toBe(true);
+  });
+
+  it('preserves primitive rejections while reporting an error carrier', async () => {
+    await expect(
+      withSigningDiagnostics(
+        { type: 'BitBox02 Hardware', signingDiagnosticsProvider: 'bitbox02' },
+        'transaction',
+        () => Promise.reject('Unsupported device')
+      )
+    ).rejects.toBe('Unsupported device');
+
+    let attemptError: unknown;
+    await withSigningDiagnostics(
+      {
+        type: 'BitBox02 Hardware',
+        signingDiagnosticsProvider: 'bitbox02',
+        endSigningAttempt: (_attempt, error) => {
+          attemptError = error;
+        },
+      },
+      'transaction',
+      () => Promise.reject('Unsupported device')
+    ).catch(() => undefined);
+    expect(getSigningContext(attemptError)).toMatchObject({
+      wallet_provider: 'bitbox02',
+      outcome: 'failed',
+    });
+  });
+
+  it('passes the primitive rejection carrier through attempt diagnostics', async () => {
+    let diagnosticsError: unknown;
+    const rejection = await withSigningDiagnostics(
+      {
+        type: 'QR Hardware Wallet Device',
+        beginSigningAttempt: () => ({}),
+        endSigningAttempt: (_attempt, attemptError) => {
+          diagnosticsError = attemptError;
+        },
+        getSigningDiagnostics: (attemptError) => ({
+          wallet_provider:
+            attemptError === diagnosticsError ? 'keystone' : 'ngravezero',
+          transport: 'qr',
+          error_category: 'unknown',
+        }),
+      },
+      'transaction',
+      () => Promise.reject('QR device rejected')
+    ).catch((attemptError) => attemptError);
+
+    expect(rejection).toBe('QR device rejected');
+    expect(diagnosticsError).toBeInstanceOf(Error);
+    expect(getSigningContext(diagnosticsError)).toMatchObject({
+      wallet_provider: 'keystone',
+      transport: 'qr',
+    });
+  });
+
+  it('does not allow non-hardware providers to pass hardware metadata', async () => {
+    const error = new Error('failed');
+    await expect(
+      withSigningDiagnostics(
+        {
+          type: 'WalletConnect',
+          signingDiagnosticsProvider: 'walletconnect',
+          getSigningDiagnostics: () => ({
+            wallet_provider: 'walletconnect',
+            provider_metadata: { device_model: 'must-drop' },
+          }),
+        },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+    expect(getSigningContext(error)?.provider_metadata).toBeUndefined();
   });
 });

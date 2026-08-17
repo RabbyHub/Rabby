@@ -1,4 +1,9 @@
-import { attachSigningContext, getSigningContext } from '@/utils/sentry';
+import {
+  attachSigningContext,
+  getSigningContext,
+  recordPrimitiveSigningCarrier,
+} from '@/utils/sentry';
+import * as Sentry from '@sentry/browser';
 
 export type SigningOperation =
   | 'transaction'
@@ -62,7 +67,6 @@ export type HardwareSigningMetadata = {
 export type SigningDiagnosticsKeyring = {
   type?: unknown;
   signingDiagnosticsProvider?: unknown;
-  getHardwareSigningMetadata?: () => unknown;
   beginSigningAttempt?: (
     operation: SigningOperation,
     signingAddress?: string
@@ -100,12 +104,31 @@ const signingDiagnosticsProviders = new Map<
   SigningDiagnosticsProvider
 >();
 
+const supportedProviders = new Set([
+  'ledger',
+  'onekey',
+  'trezor',
+  'bitbox02',
+  'imkey',
+  'gridplus',
+  'keystone',
+  'ngravezero',
+  'walletconnect',
+  'gnosis',
+  'coinbase',
+  'private_key',
+  'mnemonic',
+  'cobo_argus',
+]);
+
 export const registerSigningDiagnosticsProvider = (
   provider: string,
   adapter: SigningDiagnosticsProvider
 ) => {
   if (/^[a-z0-9_-]{1,32}$/i.test(provider)) {
-    signingDiagnosticsProviders.set(provider.toLowerCase(), adapter);
+    const normalized = provider.toLowerCase();
+    supportedProviders.add(normalized);
+    signingDiagnosticsProviders.set(normalized, adapter);
   }
 };
 
@@ -128,9 +151,14 @@ const walletFamily = (type: unknown): SigningWalletFamily => {
 };
 
 const normalizeProvider = (value: unknown): SigningContext['wallet_provider'] =>
-  typeof value === 'string' && /^[a-z0-9_-]{1,32}$/i.test(value)
+  typeof value === 'string' && supportedProviders.has(value.toLowerCase())
     ? value.toLowerCase()
     : 'unknown';
+
+const providerReference = (value: unknown) =>
+  typeof value === 'string' && /^[a-z0-9_-]{1,32}$/i.test(value)
+    ? value.toLowerCase()
+    : undefined;
 
 const normalizeTransport = (value: unknown): SigningTransport =>
   value === 'webhid' ||
@@ -186,28 +214,44 @@ type NormalizedProviderDiagnostics = Partial<
   >
 >;
 
-const normalizeMetadata = (value: unknown): NormalizedProviderDiagnostics => {
+const commonMetadataKeys = [
+  'device_model',
+  'firmware_version',
+  'app_name',
+  'app_version',
+  'device_mode',
+];
+
+const providerMetadataKeys: Record<string, string[]> = {
+  ledger: [
+    ...commonMetadataKeys,
+    'status_word',
+    'device_action_steps',
+    'slowest_gap_bucket',
+    'overlapping_attempt',
+    'session_reused',
+    'clear_signing_context_errors',
+    'clear_signing_type',
+  ],
+  onekey: commonMetadataKeys,
+  trezor: commonMetadataKeys,
+};
+
+const normalizeMetadata = (
+  value: unknown,
+  providerHint?: unknown
+): NormalizedProviderDiagnostics => {
   if (!value || typeof value !== 'object') return {};
   const diagnostics = value as ProviderDiagnostics;
   const providerCode = diagnostics.provider_code;
   const providerStage = diagnostics.provider_stage;
   const providerMetadata = diagnostics.provider_metadata;
+  const provider = normalizeProvider(
+    diagnostics.wallet_provider ?? providerHint
+  );
   const safeMetadata: Record<string, string | number | boolean> = {};
   if (providerMetadata && typeof providerMetadata === 'object') {
-    for (const key of [
-      'device_model',
-      'firmware_version',
-      'app_name',
-      'app_version',
-      'device_mode',
-      'status_word',
-      'device_action_steps',
-      'slowest_gap_bucket',
-      'overlapping_attempt',
-      'session_reused',
-      'clear_signing_context_errors',
-      'clear_signing_type',
-    ]) {
+    for (const key of providerMetadataKeys[provider] ?? []) {
       const item = (providerMetadata as Record<string, unknown>)[key];
       if (
         (typeof item === 'string' && item.length <= 512) ||
@@ -222,7 +266,7 @@ const normalizeMetadata = (value: unknown): NormalizedProviderDiagnostics => {
     }
   }
   return {
-    wallet_provider: normalizeProvider(diagnostics.wallet_provider),
+    wallet_provider: provider,
     transport: normalizeTransport(diagnostics.transport),
     error_category: normalizeErrorCategory(diagnostics.error_category),
     ...(typeof providerCode === 'string' &&
@@ -245,12 +289,23 @@ const resolveProviderDiagnostics = (
 ) => {
   try {
     const direct = keyring.getSigningDiagnostics?.(error);
-    if (direct) return normalizeMetadata(direct);
+    if (direct) {
+      return normalizeMetadata(direct, keyring.signingDiagnosticsProvider);
+    }
     const bridge = keyring.bridge?.getSigningDiagnostics?.(error);
-    if (bridge) return normalizeMetadata(bridge);
-    const provider = normalizeProvider(keyring.signingDiagnosticsProvider);
-    const adapter = signingDiagnosticsProviders.get(provider);
-    return adapter ? normalizeMetadata(adapter(keyring, error)) : {};
+    if (bridge) {
+      return normalizeMetadata(bridge, keyring.signingDiagnosticsProvider);
+    }
+    const provider = providerReference(keyring.signingDiagnosticsProvider);
+    const adapter = provider
+      ? signingDiagnosticsProviders.get(provider)
+      : undefined;
+    return adapter
+      ? normalizeMetadata(
+          adapter(keyring, error),
+          keyring.signingDiagnosticsProvider
+        )
+      : {};
   } catch {
     return {};
   }
@@ -300,6 +355,11 @@ const cloneSharedError = (error: unknown) => {
   return error;
 };
 
+const toErrorCarrier = (error: unknown) => {
+  if (error && typeof error === 'object') return error;
+  return Object.assign(new Error(String(error)), { cause: error });
+};
+
 export const withSigningDiagnostics = (
   keyring: SigningDiagnosticsKeyring,
   operation: SigningOperation,
@@ -324,11 +384,12 @@ export const withSigningDiagnostics = (
     }
   };
   const attach = (error: unknown) => {
-    finish(error);
-    const metadata = resolveProviderDiagnostics(keyring, error);
+    const preserveOriginalRejection = !error || typeof error !== 'object';
     const attemptError = getSigningContext(error)
       ? cloneSharedError(error)
-      : error;
+      : toErrorCarrier(error);
+    finish(attemptError);
+    const metadata = resolveProviderDiagnostics(keyring, attemptError);
     const errorCategory =
       metadata.error_category ??
       normalizeErrorCategory(
@@ -347,6 +408,11 @@ export const withSigningDiagnostics = (
       ...metadata,
       originalError: (error as any)?.cause ?? error,
     });
+    if (preserveOriginalRejection) {
+      recordPrimitiveSigningCarrier(error, attemptError);
+      Sentry.captureException(attemptError);
+      throw error;
+    }
     throw attemptError;
   };
 
@@ -363,34 +429,5 @@ export const withSigningDiagnostics = (
   }
 };
 
-const getHardwareMetadata = (keyring: SigningDiagnosticsKeyring) => {
-  try {
-    if (
-      keyring.bridge &&
-      typeof (keyring.bridge as any).getHardwareSigningMetadata === 'function'
-    ) {
-      return (keyring.bridge as any).getHardwareSigningMetadata();
-    }
-  } catch {
-    // Keep provider and transport diagnostics if the bridge is unavailable.
-  }
-  try {
-    return keyring.getHardwareSigningMetadata?.();
-  } catch {
-    return undefined;
-  }
-};
-
-const registerMetadataOnlyProvider = (
-  provider: string,
-  transport: SigningTransport
-) =>
-  registerSigningDiagnosticsProvider(provider, (keyring) => ({
-    wallet_provider: provider,
-    transport,
-    error_category: 'unknown',
-    provider_metadata: getHardwareMetadata(keyring),
-  }));
-
-registerMetadataOnlyProvider('onekey', 'webhid');
-registerMetadataOnlyProvider('trezor', 'usb');
+registerSimpleProvider('onekey', 'usb');
+registerSimpleProvider('trezor', 'usb');

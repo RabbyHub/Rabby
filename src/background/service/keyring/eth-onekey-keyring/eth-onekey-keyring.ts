@@ -841,6 +841,15 @@ class OneKeyKeyring extends EventEmitter {
     return this.hardwareSigningMetadata;
   }
 
+  getSigningDiagnostics() {
+    return {
+      wallet_provider: 'onekey' as const,
+      transport: 'usb' as const,
+      error_category: 'unknown' as const,
+      provider_metadata: this.hardwareSigningMetadata,
+    };
+  }
+
   private async _requestPassphraseParams(address: string) {
     await this._refreshHardwareSigningMetadata();
     const accountDetail = this._accountDetailsFromAddress(address);

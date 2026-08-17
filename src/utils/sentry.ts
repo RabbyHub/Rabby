@@ -34,6 +34,7 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /Receiving end does not exist/,
   /HttpRequestError/,
   /http/i,
+  /not supported on this device|only version 4 of typed data signing is supported|typed data payload is incomplete/iu,
 
   // Browser extension lifecycle and runtime shutdown noise.
   /A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received/,
@@ -66,22 +67,6 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /RPC Request failed\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
   /The request took too long to respond\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
   /Request exceeds defined limit\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
-];
-
-const HARDWARE_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
-  /refusedbyuser|userrefusedondevice/iu,
-  /failure_(?:action|pin)cancelled|method_(?:cancel|interrupted)/iu,
-  /^(?:Error: )?(?:109|802|803|822):/u,
-  /^(?:Error: )?[{]"code":(?:"(?:109|802|803|822)"|(?:109|802|803|822))(?:,|[}])/u,
-  /\b0x6985\b/iu,
-  /^(?:Error: )*(?:Action cancell?ed by user|Cancell?ed|Popup closed)$/iu,
-  /not supported on this device|only version 4 of typed data signing is supported|typed data payload is incomplete/iu,
-  /device is locked|device not found|no (?:\w+ ){0,2}device found|multiple \w+ devices detected/iu,
-];
-
-const SIGNING_CANCELLATION_ERRORS: SentryIgnorePattern[] = [
-  /refusedbyuser|userrefusedondevice|failure_(?:action|pin)cancelled|method_(?:cancel|interrupted)/iu,
-  /^(?:Action cancell?ed by user|Cancell?ed|Popup closed)$/iu,
 ];
 
 // Stale background service worker noise: after an extension update the old
@@ -120,6 +105,39 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
 };
 
 const signingContexts = new WeakMap<object, SigningContext>();
+const primitiveSigningCarriers = new Map<unknown, object[]>();
+const reportedSigningCarriers = new WeakSet<object>();
+const signingCarriersByError = new WeakMap<object, object>();
+
+export const recordPrimitiveSigningCarrier = (
+  error: unknown,
+  carrier: object
+) => {
+  const carriers = primitiveSigningCarriers.get(error) ?? [];
+  carriers.push(carrier);
+  primitiveSigningCarriers.set(error, carriers);
+  reportedSigningCarriers.add(carrier);
+};
+
+export const bindSigningCarrier = (error: object, carrier: object) => {
+  signingCarriersByError.set(error, carrier);
+};
+
+export const takeSigningCarrier = (error: unknown) => {
+  if (error && typeof error === 'object') {
+    const carrier = signingCarriersByError.get(error);
+    if (carrier) signingCarriersByError.delete(error);
+    return carrier;
+  }
+  const carriers = primitiveSigningCarriers.get(error);
+  if (!carriers?.length) return undefined;
+  const carrier = carriers.shift();
+  if (!carriers.length) primitiveSigningCarriers.delete(error);
+  return carrier;
+};
+
+export const isSigningCarrierReported = (carrier: object) =>
+  reportedSigningCarriers.has(carrier);
 
 export const attachSigningContext = (
   error: unknown,
@@ -182,25 +200,11 @@ export const shouldIgnoreSentryError = (
 
   const signing = getSigningContext(error);
   if (signing) {
-    if (
-      signing?.error_category === 'user_cancelled' &&
-      matchesAny(SIGNING_CANCELLATION_ERRORS, candidates)
-    ) {
+    if (signing.error_category === 'user_cancelled') {
       return true;
     }
-    if (
-      signing.wallet_family === 'hardware' &&
-      matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)
-    ) {
-      return true;
-    }
-
-    if (signing.wallet_family !== 'hardware') {
-      return matchesAny(RABBY_SENTRY_IGNORE_ERRORS, candidates);
-    }
-
-    // Signing failures remain reportable even when a transport failure uses a
-    // generic network error message.
+    // All other signing failures remain reportable, regardless of legacy text
+    // filters such as Network Error or device-locked messages.
     return false;
   }
 
@@ -229,7 +233,9 @@ type SentryEventLike = {
   tags?: Record<string, unknown>;
   fingerprint?: string[];
   extra?: Record<string, unknown>;
-  exception?: { values?: { type?: string; value?: string }[] };
+  exception?: {
+    values?: { type?: string; value?: string; stacktrace?: unknown }[];
+  };
 };
 
 // Mirrors the SDK's own _getPossibleEventMessages: patterns like
@@ -243,27 +249,6 @@ export const collectSentryEventText = (event: SentryEventLike) =>
       type && value ? `${type}: ${value}` : undefined,
     ]),
   ].filter((value): value is string => Boolean(value));
-
-// The shape of an SDK error is decided by the device library. Keep only the
-// reviewed scalar fields; never serialize the SDK object into Sentry.
-const describeOriginalError = (
-  error: unknown,
-  depth = 0
-): string | undefined => {
-  if (!error || depth > 3) return undefined;
-  if (typeof error !== 'object') return redactSensitiveText(error) || undefined;
-
-  const value = error as Record<string, unknown>;
-  const parts = [value.name, value.message, value.shortMessage, value.code]
-    .filter(
-      (part): part is string | number =>
-        typeof part === 'string' || typeof part === 'number'
-    )
-    .map(String);
-  const cause = describeOriginalError(value.cause, depth + 1);
-  if (cause) parts.push(cause);
-  return redactSensitiveText(parts.join(' | ')) || undefined;
-};
 
 export const applySigningContext = (event: SentryEventLike, error: unknown) => {
   const context = getSigningContext(error);
@@ -289,8 +274,18 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
     context.error_category,
     '{{ default }}',
   ];
+  event.message = `${context.wallet_provider} signing failed`;
+  const originalException = event.exception?.values?.[0];
+  event.exception = {
+    values: [
+      {
+        ...originalException,
+        type: 'SigningError',
+        value: context.error_category,
+      },
+    ],
+  };
   event.extra = {
-    ...event.extra,
     ...(context.provider_code
       ? { signing_provider_code: context.provider_code }
       : {}),
@@ -300,6 +295,5 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
     ...(context.provider_metadata
       ? { signing_provider_metadata: context.provider_metadata }
       : {}),
-    signing_original_error: describeOriginalError(context.originalError),
   };
 };

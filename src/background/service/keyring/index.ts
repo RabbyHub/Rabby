@@ -29,7 +29,12 @@ import GnosisKeyring, {
 } from './eth-gnosis-keyring';
 import preference, { Account } from '../preference';
 import i18n from '../i18n';
-import { KEYRING_TYPE, EVENTS, KEYRING_CLASS } from 'consts';
+import {
+  KEYRING_TYPE,
+  EVENTS,
+  KEYRING_CLASS,
+  WALLETCONNECT_STATUS_MAP,
+} from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
@@ -67,6 +72,67 @@ class CoinbaseDiagnosticsKeyring extends CoinbaseKeyring {
   signingDiagnosticsProvider = 'coinbase';
 }
 
+class TrezorDiagnosticsKeyring extends TrezorKeyring {
+  signingDiagnosticsProvider = 'trezor';
+}
+
+const withWalletConnectStatusRejection = (
+  keyring: any,
+  signingAddress: string | undefined,
+  sign: () => Promise<any>
+) => {
+  if (
+    keyring?.type !== KEYRING_CLASS.WALLETCONNECT ||
+    typeof keyring.on !== 'function'
+  ) {
+    return sign();
+  }
+
+  return new Promise((resolve, reject) => {
+    const onStatusChange = (data: any) => {
+      const status = data?.status;
+      if (
+        status !== WALLETCONNECT_STATUS_MAP.REJECTED &&
+        status !== WALLETCONNECT_STATUS_MAP.FAILED
+      ) {
+        return;
+      }
+      const statusAddress = data?.account?.address;
+      if (
+        !statusAddress ||
+        !signingAddress ||
+        statusAddress.toLowerCase() !== signingAddress.toLowerCase()
+      ) {
+        return;
+      }
+      cleanup();
+      const payload = data?.payload;
+      reject(
+        payload instanceof Error
+          ? payload
+          : Object.assign(new Error('WalletConnect signing rejected'), {
+              cause: payload,
+            })
+      );
+    };
+    const cleanup = () =>
+      keyring.removeListener?.('statusChange', onStatusChange);
+    keyring.on('statusChange', onStatusChange);
+    Promise.resolve()
+      .then(sign)
+      .then(
+        (value) => {
+          cleanup();
+          resolve(value);
+        },
+        (error) => {
+          cleanup();
+          reject(error);
+        }
+      );
+  });
+};
+
 const UNENCRYPTED_IGNORE_KEYRING = [
   KEYRING_TYPE.SimpleKeyring,
   KEYRING_TYPE.HdKeyring,
@@ -76,7 +142,7 @@ export const KEYRING_SDK_TYPES = {
   SimpleKeyring: PrivateKeyKeyring,
   HdKeyring: MnemonicKeyring,
   BitBox02Keyring,
-  TrezorKeyring,
+  TrezorKeyring: TrezorDiagnosticsKeyring,
   LedgerBridgeKeyring,
   OnekeyKeyring,
   WatchKeyring,
@@ -818,7 +884,11 @@ export class KeyringService extends EventEmitter {
       operation,
       async () => {
         try {
-          return await sign();
+          return await withWalletConnectStatusRejection(
+            keyring,
+            signingAddress,
+            sign
+          );
         } finally {
           if (
             keyring?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS &&
@@ -861,22 +931,21 @@ export class KeyringService extends EventEmitter {
     opts = {}
   ) {
     const address = normalizeAddress(authParams.from);
-    if (!keyring.signEip7702Authorization) {
-      return Promise.reject(
-        new Error(
-          `Keyring ${keyring.type} doesn't support signEip7702Authorization operation`
-        )
-      );
-    }
     return this.signWithPairingCredsPersistence(
       keyring,
       'eip7702_authorization',
-      () =>
-        keyring.signEip7702Authorization(
+      () => {
+        if (!keyring.signEip7702Authorization) {
+          throw new Error(
+            `Keyring ${keyring.type} doesn't support signEip7702Authorization operation`
+          );
+        }
+        return keyring.signEip7702Authorization(
           address,
           authParams.authorization,
           opts
-        ),
+        );
+      },
       address
     );
   }
