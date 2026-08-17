@@ -66,6 +66,7 @@ import { LedgerHDPathType } from './helper';
 import type {
   HardwareSigningMetadata,
   SigningAttempt,
+  SigningStage,
 } from './signing-diagnostics';
 import { registerSigningDiagnosticsProvider } from './signing-diagnostics';
 
@@ -127,10 +128,12 @@ type LedgerActionDiagnostics = {
 type LedgerAttemptState = LedgerActionDiagnostics & {
   lastStepAt: number;
   slowestGapMs: number;
+  setStage?: (stage: SigningStage) => void;
 };
 
 const ledgerActionDiagnostics = new WeakMap<object, LedgerActionDiagnostics>();
 const ledgerAttemptByError = new WeakMap<object, LedgerAttemptState>();
+const ledgerAttemptBySigningAttempt = new WeakMap<object, LedgerAttemptState>();
 
 const gapBucket = (
   durationMs: number
@@ -728,7 +731,11 @@ class LedgerBridgeKeyring {
     return this.hardwareSigningMetadata;
   }
 
-  beginSigningAttempt() {
+  beginSigningAttempt(
+    _operation?: string,
+    _signingAddress?: string,
+    signingAttempt?: SigningAttempt
+  ) {
     const startedAt = Date.now();
     const attempt: LedgerAttemptState = {
       steps: [],
@@ -737,9 +744,13 @@ class LedgerBridgeKeyring {
       session_reused: sessionId !== null,
       lastStepAt: startedAt,
       slowestGapMs: 0,
+      setStage: signingAttempt?.setStage,
     };
     this.activeSigningAttempt = attempt;
     this.activeSigningAttempts.add(attempt);
+    if (signingAttempt) {
+      ledgerAttemptBySigningAttempt.set(signingAttempt, attempt);
+    }
     return attempt;
   }
 
@@ -811,6 +822,7 @@ class LedgerBridgeKeyring {
     recoverConnectionOpening = true,
     attempt?: LedgerAttemptState
   ): Promise<void> {
+    attempt?.setStage?.('connect');
     beginLedgerOperation();
     try {
       await this.makeApp();
@@ -892,6 +904,7 @@ class LedgerBridgeKeyring {
     retryConnectionOpening = true,
     attempt?: LedgerAttemptState
   ): Promise<string> {
+    attempt?.setStage?.('unlock');
     if (force) {
       hdPath = this.hdPath;
     }
@@ -989,7 +1002,13 @@ class LedgerBridgeKeyring {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  signTransaction(address, tx) {
+  signTransaction(
+    address,
+    tx,
+    _opts?: unknown,
+    diagnosticsAttempt?: SigningAttempt
+  ) {
+    diagnosticsAttempt?.setStage('prepare');
     // make sure the previous transaction is cleaned up
 
     // transactions built with older versions of ethereumjs-tx have a
@@ -1008,12 +1027,17 @@ class LedgerBridgeKeyring {
 
       const rawTxHex = tx.serialize().toString('hex');
 
-      return this._signTransaction(address, rawTxHex, (payload) => {
-        tx.v = Buffer.from(payload.v, 'hex');
-        tx.r = Buffer.from(payload.r, 'hex');
-        tx.s = Buffer.from(payload.s, 'hex');
-        return tx;
-      });
+      return this._signTransaction(
+        address,
+        rawTxHex,
+        (payload) => {
+          tx.v = Buffer.from(payload.v, 'hex');
+          tx.r = Buffer.from(payload.r, 'hex');
+          tx.s = Buffer.from(payload.s, 'hex');
+          return tx;
+        },
+        diagnosticsAttempt
+      );
     }
     // For transactions created by newer versions of @ethereumjs/tx
     // Note: https://github.com/ethereumjs/ethereumjs-monorepo/issues/1188
@@ -1035,35 +1059,49 @@ class LedgerBridgeKeyring {
       rawTxHex = Buffer.from(messageToSign).toString('hex');
     }
 
-    return this._signTransaction(address, rawTxHex, (payload) => {
-      // Because tx will be immutable, first get a plain javascript object that
-      // represents the transaction. Using txData here as it aligns with the
-      // nomenclature of ethereumjs/tx.
-      const txData = tx.toJSON();
-      // The fromTxData utility expects v,r and s to be hex prefixed
-      txData.v = addHexPrefix(payload.v);
-      txData.r = addHexPrefix(payload.r);
-      txData.s = addHexPrefix(payload.s);
-      // Adopt the 'common' option from the original transaction and set the
-      // returned object to be frozen if the original is frozen.
-      if (is1559Tx(txData)) {
-        return FeeMarketEIP1559Transaction.fromTxData(txData);
-      } else {
-        return TransactionFactory.fromTxData(txData, {
-          common: tx.common,
-          freeze: Object.isFrozen(tx),
-        });
-      }
-    });
+    return this._signTransaction(
+      address,
+      rawTxHex,
+      (payload) => {
+        // Because tx will be immutable, first get a plain javascript object that
+        // represents the transaction. Using txData here as it aligns with the
+        // nomenclature of ethereumjs/tx.
+        const txData = tx.toJSON();
+        // The fromTxData utility expects v,r and s to be hex prefixed
+        txData.v = addHexPrefix(payload.v);
+        txData.r = addHexPrefix(payload.r);
+        txData.s = addHexPrefix(payload.s);
+        // Adopt the 'common' option from the original transaction and set the
+        // returned object to be frozen if the original is frozen.
+        if (is1559Tx(txData)) {
+          return FeeMarketEIP1559Transaction.fromTxData(txData);
+        } else {
+          return TransactionFactory.fromTxData(txData, {
+            common: tx.common,
+            freeze: Object.isFrozen(tx),
+          });
+        }
+      },
+      diagnosticsAttempt
+    );
   }
 
-  async _signTransaction(address, rawTxHex, handleSigning) {
-    const attempt = this.activeSigningAttempt;
+  async _signTransaction(
+    address,
+    rawTxHex,
+    handleSigning,
+    diagnosticsAttempt?: SigningAttempt
+  ) {
+    const attempt =
+      (diagnosticsAttempt &&
+        ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)) ??
+      this.activeSigningAttempt;
     const hdPath = await this.unlockAccountByAddress(
       address,
       attempt ?? undefined
     );
     await this.ensureEthApp(true, attempt ?? undefined);
+    attempt?.setStage?.('sign');
     try {
       const signer = this.buildSigner(attempt ?? undefined);
       if (!signer) {
@@ -1079,6 +1117,7 @@ class LedgerBridgeKeyring {
           attempt ?? undefined
         )
       );
+      attempt?.setStage?.('finalize');
       const newOrMutatedTx = handleSigning(res);
       const valid = newOrMutatedTx.verifySignature();
       if (valid) {
@@ -1094,19 +1133,39 @@ class LedgerBridgeKeyring {
     }
   }
 
-  signMessage(withAccount, data) {
-    return this.signPersonalMessage(withAccount, data);
+  signMessage(
+    withAccount,
+    data,
+    _opts?: unknown,
+    diagnosticsAttempt?: SigningAttempt
+  ) {
+    return this.signPersonalMessage(
+      withAccount,
+      data,
+      _opts,
+      diagnosticsAttempt
+    );
   }
 
   // For personal_sign, we need to prefix the message:
-  async signPersonalMessage(withAccount, message) {
-    const attempt = this.activeSigningAttempt;
+  async signPersonalMessage(
+    withAccount,
+    message,
+    _opts?: unknown,
+    diagnosticsAttempt?: SigningAttempt
+  ) {
+    diagnosticsAttempt?.setStage('prepare');
+    const attempt =
+      (diagnosticsAttempt &&
+        ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)) ??
+      this.activeSigningAttempt;
     try {
       const hdPath = await this.unlockAccountByAddress(
         withAccount,
         attempt ?? undefined
       );
       await this.ensureEthApp(true, attempt ?? undefined);
+      attempt?.setStage?.('sign');
       const signature = toSignatureHex(
         await runDeviceAction(
           ethSigner!.signMessage(
@@ -1117,6 +1176,7 @@ class LedgerBridgeKeyring {
           attempt ?? undefined
         )
       );
+      attempt?.setStage?.('finalize');
       const addressSignedWith = recoverPersonalSignature({
         data: message,
         signature,
@@ -1159,8 +1219,17 @@ class LedgerBridgeKeyring {
     return hdPath;
   }
 
-  async signTypedData(withAccount, data, options: any = {}) {
-    const attempt = this.activeSigningAttempt;
+  async signTypedData(
+    withAccount,
+    data,
+    options: any = {},
+    diagnosticsAttempt?: SigningAttempt
+  ) {
+    diagnosticsAttempt?.setStage('prepare');
+    const attempt =
+      (diagnosticsAttempt &&
+        ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)) ??
+      this.activeSigningAttempt;
     const isV4 = options.version === 'V4';
     if (!isV4) {
       throw new Error(
@@ -1177,6 +1246,7 @@ class LedgerBridgeKeyring {
     );
     try {
       await this.ensureEthApp(true, attempt ?? undefined);
+      attempt?.setStage?.('sign');
       const signer = this.buildSigner(attempt ?? undefined);
       if (!signer) {
         throw new Error('Ledger: Device disconnected');
@@ -1189,6 +1259,7 @@ class LedgerBridgeKeyring {
           attempt ?? undefined
         )
       );
+      attempt?.setStage?.('finalize');
       const addressSignedWith = recoverTypedSignature({
         data,
         signature,
@@ -1453,6 +1524,7 @@ class LedgerBridgeKeyring {
   }
 
   private async getLedgerAddress(path: string, attempt?: LedgerAttemptState) {
+    attempt?.setStage?.('derive');
     await this.ensureEthApp(true, attempt);
 
     return runDeviceAction(

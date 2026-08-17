@@ -54,7 +54,7 @@ import {
 import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
 import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
-import { withSigningDiagnostics } from './signing-diagnostics';
+import { SigningAttempt, withSigningDiagnostics } from './signing-diagnostics';
 
 class PrivateKeyKeyring extends SimpleKeyring {
   signingDiagnosticsProvider = 'private_key';
@@ -876,18 +876,21 @@ export class KeyringService extends EventEmitter {
   private signWithPairingCredsPersistence = async (
     keyring: any,
     operation: Parameters<typeof withSigningDiagnostics>[1],
-    sign: () => Promise<any>,
+    sign: (attempt: SigningAttempt) => Promise<any>,
     signingAddress?: string
   ) => {
     return withSigningDiagnostics(
       keyring,
       operation,
-      async () => {
+      async (attempt) => {
+        attempt.setStage('preflight');
         try {
           return await withWalletConnectStatusRejection(
             keyring,
             signingAddress,
-            sign
+            () => {
+              return sign(attempt);
+            }
           );
         } finally {
           if (
@@ -917,7 +920,7 @@ export class KeyringService extends EventEmitter {
     return this.signWithPairingCredsPersistence(
       keyring,
       'transaction',
-      () => keyring.signTransaction(fromAddress, ethTx, opts),
+      (attempt) => keyring.signTransaction(fromAddress, ethTx, opts, attempt),
       fromAddress
     );
   }
@@ -934,7 +937,7 @@ export class KeyringService extends EventEmitter {
     return this.signWithPairingCredsPersistence(
       keyring,
       'eip7702_authorization',
-      () => {
+      (attempt) => {
         if (!keyring.signEip7702Authorization) {
           throw new Error(
             `Keyring ${keyring.type} doesn't support signEip7702Authorization operation`
@@ -943,7 +946,8 @@ export class KeyringService extends EventEmitter {
         return keyring.signEip7702Authorization(
           address,
           authParams.authorization,
-          opts
+          opts,
+          attempt
         );
       },
       address
@@ -964,7 +968,8 @@ export class KeyringService extends EventEmitter {
       return this.signWithPairingCredsPersistence(
         keyring,
         'personal_message',
-        () => keyring.signMessage(address, msgParams.data, opts),
+        (attempt) =>
+          keyring.signMessage(address, msgParams.data, opts, attempt),
         address
       );
     });
@@ -984,7 +989,8 @@ export class KeyringService extends EventEmitter {
     return this.signWithPairingCredsPersistence(
       keyring,
       'personal_message',
-      () => keyring.signPersonalMessage(address, msgParams.data, opts),
+      (attempt) =>
+        keyring.signPersonalMessage(address, msgParams.data, opts, attempt),
       address
     );
   }
@@ -1001,7 +1007,8 @@ export class KeyringService extends EventEmitter {
     return this.signWithPairingCredsPersistence(
       keyring,
       'typed_data',
-      () => keyring.signTypedData(address, msgParams.data, opts),
+      (attempt) =>
+        keyring.signTypedData(address, msgParams.data, opts, attempt),
       address
     );
   }

@@ -43,7 +43,7 @@ describe('signing diagnostics port', () => {
         wallet_provider: 'unknown',
         transport: 'unknown',
         operation,
-        stage: 'sign',
+        stage: 'unknown',
         outcome: 'failed',
         error_category: 'unknown',
       });
@@ -113,8 +113,50 @@ describe('signing diagnostics port', () => {
     });
     expect(receivedAttempt).toMatchObject({
       operation: 'transaction',
+      stage: 'unknown',
     });
     expect(receivedAttempt?.startedAt).toEqual(expect.any(Number));
+  });
+
+  it('captures the canonical stage updated by the signing seam', async () => {
+    const error = new Error('failed during preparation');
+
+    await expect(
+      withSigningDiagnostics(
+        { type: 'Future Wallet' },
+        'transaction',
+        (attempt) => {
+          attempt.setStage('prepare');
+          return Promise.reject(error);
+        }
+      )
+    ).rejects.toBe(error);
+
+    expect(getSigningContext(error)?.stage).toBe('prepare');
+  });
+
+  it('passes the stage reporter to keyring attempt ownership', async () => {
+    const error = new Error('failed during connection');
+    let signingAttempt;
+
+    await expect(
+      withSigningDiagnostics(
+        {
+          type: 'Future Hardware',
+          beginSigningAttempt: (_operation, _address, reporter) => {
+            signingAttempt = reporter;
+            return undefined;
+          },
+        },
+        'transaction',
+        () => {
+          signingAttempt?.setStage('connect');
+          return Promise.reject(error);
+        }
+      )
+    ).rejects.toBe(error);
+
+    expect(getSigningContext(error)?.stage).toBe('connect');
   });
 
   it('keeps provider metadata behind its provider allowlist', async () => {

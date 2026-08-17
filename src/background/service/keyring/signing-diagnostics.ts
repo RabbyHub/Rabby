@@ -70,7 +70,8 @@ export type SigningDiagnosticsKeyring = {
   signingDiagnosticsProvider?: unknown;
   beginSigningAttempt?: (
     operation: SigningOperation,
-    signingAddress?: string
+    signingAddress?: string,
+    attempt?: SigningAttempt
   ) => unknown;
   endSigningAttempt?: (attempt: unknown, error?: unknown) => void;
   getSigningDiagnostics?: (
@@ -89,6 +90,8 @@ export type SigningAttempt = {
   operation: SigningOperation;
   signingAddress?: string;
   startedAt: number;
+  stage: SigningStage;
+  setStage: (stage: SigningStage) => void;
 };
 
 export type SigningDiagnosticsProvider = (
@@ -368,18 +371,26 @@ const toErrorCarrier = (error: unknown) => {
 export const withSigningDiagnostics = (
   keyring: SigningDiagnosticsKeyring,
   operation: SigningOperation,
-  sign: () => any,
+  sign: (attempt: SigningAttempt) => any,
   signingAddress?: string
 ) => {
   const startedAt = Date.now();
-  const signingAttempt: SigningAttempt = {
+  const signingAttempt = {
     operation,
     signingAddress,
     startedAt,
+    stage: 'unknown' as SigningStage,
+    setStage: (stage: SigningStage) => {
+      signingAttempt.stage = stage;
+    },
   };
   let attempt: unknown;
   try {
-    attempt = keyring.beginSigningAttempt?.(operation, signingAddress);
+    attempt = keyring.beginSigningAttempt?.(
+      operation,
+      signingAddress,
+      signingAttempt
+    );
   } catch {
     attempt = undefined;
   }
@@ -415,7 +426,7 @@ export const withSigningDiagnostics = (
       wallet_provider: metadata.wallet_provider ?? 'unknown',
       transport: metadata.transport ?? 'unknown',
       operation,
-      stage: 'sign',
+      stage: signingAttempt.stage,
       outcome: 'failed',
       error_category: errorCategory,
       duration_bucket: durationBucket(Date.now() - startedAt),
@@ -431,7 +442,7 @@ export const withSigningDiagnostics = (
   };
 
   try {
-    const result = sign();
+    const result = sign(signingAttempt);
     return result && typeof result.then === 'function'
       ? result.then((value: unknown) => {
           finish();
