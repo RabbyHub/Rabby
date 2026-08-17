@@ -9,7 +9,11 @@ import {
   setMessageErrorReporter,
 } from '@/utils/message';
 import { getSentryConfig } from '@/utils/sentry-config';
-import { getSigningContext } from '@/utils/sentry';
+import {
+  getSigningContext,
+  isSigningCarrierReported,
+  takeSigningCarrier,
+} from '@/utils/sentry';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
 import fetchAdapter from 'background/utils/fetchAdapter';
@@ -128,6 +132,14 @@ Sentry.init(getSentryConfig());
 // would flood Sentry with those expected states. The engine practically never
 // raises these subtypes for business logic, so they are a clean bug signal.
 setMessageErrorReporter((error) => {
+  const signingCarrier = takeSigningCarrier(error);
+  if (signingCarrier) {
+    if (!isSigningCarrierReported(signingCarrier)) {
+      Sentry.captureException(signingCarrier);
+    }
+    return true;
+  }
+
   // rpcFlow normally captures signing failures first. Capturing the same Error
   // here is deduplicated by Sentry and also covers direct wallet-controller calls.
   if (getSigningContext(error)) {
