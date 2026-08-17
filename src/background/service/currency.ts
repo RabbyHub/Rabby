@@ -1,6 +1,9 @@
 import { createPersistStore, patchPersistStore } from 'background/utils';
 import openapiService, { CurrencyItem } from './openapi';
 import { z } from 'zod';
+import { isManifestV3 } from '@/utils/env';
+import browser from 'webextension-polyfill';
+import { ALARMS_SYNC_CURRENCY_LIST } from '../utils/alarms';
 
 const currencyItemSchema = z.object({
   symbol: z.string(),
@@ -11,6 +14,7 @@ const currencyItemSchema = z.object({
 });
 
 const currencyListSchema = z.array(currencyItemSchema);
+const CURRENCY_LIST_SYNC_PERIOD_IN_MINUTES = 60;
 
 const currencyStoreSchema = z.object({
   currencyList: currencyListSchema.default(() => []),
@@ -70,7 +74,9 @@ class CurrencyService {
   syncCurrencyList = async (force = false) => {
     const currentStore = this.getStore();
     const shouldSkip =
-      !force && Date.now() - currentStore.updatedAt < 9 * 60 * 1000;
+      !force &&
+      Date.now() - currentStore.updatedAt <
+        (CURRENCY_LIST_SYNC_PERIOD_IN_MINUTES - 1) * 60 * 1000;
 
     if (shouldSkip) {
       return currentStore.currencyList;
@@ -90,15 +96,29 @@ class CurrencyService {
   };
 
   resetTimer = () => {
-    const periodInMinutes = 10;
+    const periodInMinutes = CURRENCY_LIST_SYNC_PERIOD_IN_MINUTES;
     if (this.timer) {
       clearInterval(this.timer);
+      this.timer = null;
+    } else if (isManifestV3) {
+      browser.alarms.clear(ALARMS_SYNC_CURRENCY_LIST);
     }
 
-    this.syncCurrencyList(true);
-    this.timer = setInterval(() => {
-      this.syncCurrencyList();
-    }, periodInMinutes * 60 * 1000);
+    if (isManifestV3) {
+      browser.alarms.create(ALARMS_SYNC_CURRENCY_LIST, {
+        delayInMinutes: periodInMinutes,
+        periodInMinutes,
+      });
+      browser.alarms.onAlarm.addListener((alarm) => {
+        if (alarm.name === ALARMS_SYNC_CURRENCY_LIST) {
+          this.syncCurrencyList();
+        }
+      });
+    } else {
+      this.timer = setInterval(() => {
+        this.syncCurrencyList();
+      }, periodInMinutes * 60 * 1000);
+    }
   };
 }
 

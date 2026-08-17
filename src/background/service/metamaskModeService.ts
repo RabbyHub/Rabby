@@ -39,7 +39,7 @@ class MetamaskModeService {
   };
 
   syncMetamaskModeList = async () => {
-    if (dayjs().isBefore(dayjs(this.store.updatedAt || 0).add(25, 'minute'))) {
+    if (dayjs().isBefore(dayjs(this.store.updatedAt || 0).add(55, 'minute'))) {
       return [];
     }
     try {
@@ -56,7 +56,7 @@ class MetamaskModeService {
   };
 
   resetTimer = () => {
-    const periodInMinutes = 30;
+    const periodInMinutes = 60;
     if (this.timer) {
       clearInterval(this.timer);
     } else if (isManifestV3) {
