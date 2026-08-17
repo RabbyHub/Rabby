@@ -883,7 +883,9 @@ export class KeyringService extends EventEmitter {
       keyring,
       operation,
       async (attempt) => {
-        attempt.setStage('preflight');
+        if (keyring?.type === KEYRING_CLASS.WALLETCONNECT) {
+          attempt.setStage('preflight');
+        }
         try {
           return await withWalletConnectStatusRejection(
             keyring,

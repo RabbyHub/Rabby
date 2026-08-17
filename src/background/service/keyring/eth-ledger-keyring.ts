@@ -497,7 +497,6 @@ class LedgerBridgeKeyring {
   private unlockPromise: Promise<string> | null = null;
   private hardwareSigningMetadata: HardwareSigningMetadata = {};
   signingDiagnosticsProvider = 'ledger';
-  private activeSigningAttempt: LedgerAttemptState | null = null;
   private activeSigningAttempts = new Set<LedgerAttemptState>();
 
   constructor(opts = {}) {
@@ -746,7 +745,6 @@ class LedgerBridgeKeyring {
       slowestGapMs: 0,
       setStage: signingAttempt?.setStage,
     };
-    this.activeSigningAttempt = attempt;
     this.activeSigningAttempts.add(attempt);
     if (signingAttempt) {
       ledgerAttemptBySigningAttempt.set(signingAttempt, attempt);
@@ -759,7 +757,6 @@ class LedgerBridgeKeyring {
       ledgerAttemptByError.set(error, attempt as LedgerAttemptState);
     }
     this.activeSigningAttempts.delete(attempt as LedgerAttemptState);
-    if (attempt === this.activeSigningAttempt) this.activeSigningAttempt = null;
   }
 
   getLedgerSigningDiagnostics(error: unknown, _attempt?: SigningAttempt) {
@@ -1092,10 +1089,9 @@ class LedgerBridgeKeyring {
     handleSigning,
     diagnosticsAttempt?: SigningAttempt
   ) {
-    const attempt =
-      (diagnosticsAttempt &&
-        ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)) ??
-      this.activeSigningAttempt;
+    const attempt = diagnosticsAttempt
+      ? ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)
+      : undefined;
     const hdPath = await this.unlockAccountByAddress(
       address,
       attempt ?? undefined
@@ -1155,10 +1151,9 @@ class LedgerBridgeKeyring {
     diagnosticsAttempt?: SigningAttempt
   ) {
     diagnosticsAttempt?.setStage('prepare');
-    const attempt =
-      (diagnosticsAttempt &&
-        ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)) ??
-      this.activeSigningAttempt;
+    const attempt = diagnosticsAttempt
+      ? ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)
+      : undefined;
     try {
       const hdPath = await this.unlockAccountByAddress(
         withAccount,
@@ -1166,9 +1161,13 @@ class LedgerBridgeKeyring {
       );
       await this.ensureEthApp(true, attempt ?? undefined);
       attempt?.setStage?.('sign');
+      const signer = this.buildSigner(attempt ?? undefined);
+      if (!signer) {
+        throw new Error('Ledger: Device disconnected');
+      }
       const signature = toSignatureHex(
         await runDeviceAction(
-          ethSigner!.signMessage(
+          signer.signMessage(
             this._toLedgerPath(hdPath),
             Buffer.from(stripHexPrefix(message), 'hex'),
             { skipOpenApp: true }
@@ -1226,10 +1225,9 @@ class LedgerBridgeKeyring {
     diagnosticsAttempt?: SigningAttempt
   ) {
     diagnosticsAttempt?.setStage('prepare');
-    const attempt =
-      (diagnosticsAttempt &&
-        ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)) ??
-      this.activeSigningAttempt;
+    const attempt = diagnosticsAttempt
+      ? ledgerAttemptBySigningAttempt.get(diagnosticsAttempt)
+      : undefined;
     const isV4 = options.version === 'V4';
     if (!isV4) {
       throw new Error(
@@ -1526,9 +1524,13 @@ class LedgerBridgeKeyring {
   private async getLedgerAddress(path: string, attempt?: LedgerAttemptState) {
     attempt?.setStage?.('derive');
     await this.ensureEthApp(true, attempt);
+    const signer = this.buildSigner(attempt);
+    if (!signer) {
+      throw new Error('Ledger: Device disconnected');
+    }
 
     return runDeviceAction(
-      ethSigner!.getAddress(this._toLedgerPath(path), {
+      signer.getAddress(this._toLedgerPath(path), {
         checkOnDevice: false,
         returnChainCode: true,
         skipOpenApp: true,
