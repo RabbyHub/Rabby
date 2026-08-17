@@ -12,6 +12,7 @@ import browser from 'webextension-polyfill';
 import store from './store';
 import { initializeSwapStore } from './state/swap';
 
+import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 import { getSentryConfig } from '@/utils/sentry-config';
 import { Button } from 'antd';
