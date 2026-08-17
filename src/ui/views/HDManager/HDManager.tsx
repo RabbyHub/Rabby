@@ -250,6 +250,7 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
     createTask,
     keyring,
     keyringId,
+    brand,
   } = React.useContext(HDManagerStateContext);
 
   const dispatch = useRabbyDispatch();
@@ -339,7 +340,8 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
           await wallet.unlockHardwareAccount(
             keyring,
             selectedAccounts.map((account) => account.index - 1),
-            keyringId
+            keyringId,
+            brand
           );
         }
       });
