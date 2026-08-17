@@ -254,6 +254,8 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
   const context = getSigningContext(error);
   if (!context) return;
 
+  const deviceModel = context.provider_metadata?.device_model;
+
   event.tags = {
     ...event.tags,
     schema_version: context.schema_version,
@@ -265,6 +267,9 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
     sign_outcome: context.outcome,
     error_category: context.error_category,
     duration_bucket: context.duration_bucket,
+    ...(typeof deviceModel === 'string'
+      ? { signing_device_model: deviceModel }
+      : {}),
   };
   event.fingerprint = [
     'signing',

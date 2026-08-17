@@ -78,6 +78,28 @@ describe('signing diagnostics port', () => {
     });
   });
 
+  it('promotes the sanitized device model to a Sentry tag', async () => {
+    const error = new Error('Ledger device failed');
+    registerSigningDiagnosticsProvider('tagged-ledger', () => ({
+      wallet_provider: 'ledger',
+      transport: 'webhid',
+      error_category: 'unknown',
+      provider_metadata: { device_model: 'Ledger Nano X' },
+    }));
+
+    await expect(
+      withSigningDiagnostics(
+        { type: 'Ledger Hardware', signingDiagnosticsProvider: 'tagged-ledger' },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    const event: any = {};
+    applySigningContext(event, error);
+    expect(event.tags.signing_device_model).toBe('Ledger Nano X');
+  });
+
   it('uses explicit provider capabilities and bounded categories', async () => {
     let receivedAttempt;
     registerSigningDiagnosticsProvider(
