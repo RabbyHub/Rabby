@@ -164,4 +164,42 @@ describe('getLedgerErrorMessage', () => {
       error_category: 'user_cancelled',
     });
   });
+
+  it('uses the explicit signing attempt when a shared unlock error is reused', () => {
+    const keyring = new LedgerBridgeKeyring();
+    const firstAttempt = {
+      operation: 'transaction',
+      startedAt: 1,
+      stage: 'sign',
+      setStage: jest.fn(),
+    } as any;
+    const secondAttempt = {
+      operation: 'transaction',
+      startedAt: 2,
+      stage: 'sign',
+      setStage: jest.fn(),
+    } as any;
+    const firstState = keyring.beginSigningAttempt(
+      'transaction',
+      undefined,
+      firstAttempt
+    ) as any;
+    const secondState = keyring.beginSigningAttempt(
+      'transaction',
+      undefined,
+      secondAttempt
+    ) as any;
+    firstState.steps.push('first-attempt');
+    secondState.steps.push('second-attempt');
+
+    const sharedError = new Error('Ledger: Device disconnected');
+    keyring.endSigningAttempt(firstState, sharedError);
+    keyring.endSigningAttempt(secondState, sharedError);
+
+    const metadata = keyring.getLedgerSigningDiagnostics(
+      sharedError,
+      firstAttempt
+    ).provider_metadata as any;
+    expect(metadata?.device_action_steps).toBe('first-attempt');
+  });
 });

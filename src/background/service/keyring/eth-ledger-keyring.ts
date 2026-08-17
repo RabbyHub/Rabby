@@ -770,9 +770,10 @@ class LedgerBridgeKeyring {
     this.activeSigningAttempts.delete(attempt as LedgerAttemptState);
   }
 
-  getLedgerSigningDiagnostics(error: unknown, _attempt?: SigningAttempt) {
+  getLedgerSigningDiagnostics(error: unknown, attempt?: SigningAttempt) {
     const statusWord = findLedgerStatusWord(error);
     const trace =
+      (attempt ? ledgerAttemptBySigningAttempt.get(attempt) : undefined) ??
       (error && typeof error === 'object'
         ? ledgerAttemptByError.get(error)
         : undefined) ?? findLedgerActionDiagnostics(error);
@@ -1602,8 +1603,8 @@ class LedgerBridgeKeyring {
   };
 }
 
-registerSigningDiagnosticsProvider('ledger', (keyring, error) =>
-  (keyring as LedgerBridgeKeyring).getLedgerSigningDiagnostics?.(error)
+registerSigningDiagnosticsProvider('ledger', (keyring, error, attempt) =>
+  (keyring as LedgerBridgeKeyring).getLedgerSigningDiagnostics?.(error, attempt)
 );
 
 export default LedgerBridgeKeyring;
