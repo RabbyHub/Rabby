@@ -128,6 +128,10 @@ export const NewUserImportKeystone = () => {
   };
 
   useEffect(() => {
+    if (connectType !== ConnectType.QRCode) {
+      return;
+    }
+
     wallet.initQRHardware(brand).then((stashKeyringId) => {
       stashKeyringIdRef.current = stashKeyringId;
       wallet
@@ -142,7 +146,7 @@ export const NewUserImportKeystone = () => {
     return () => {
       wallet.clearPageStateCache();
     };
-  }, []);
+  }, [connectType]);
 
   const onConnectViaUSB = async () => {
     try {
