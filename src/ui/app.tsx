@@ -11,6 +11,10 @@ import browser from 'webextension-polyfill';
 
 import store from './store';
 import { initializeSwapStore } from './state/swap';
+import {
+  initializeWalletStatusStore,
+  useWalletStatusStore,
+} from './state/walletStatus';
 
 import { updateChainStore } from '@/utils/chain';
 import { getSentryConfig } from '@/utils/sentry-config';
@@ -47,10 +51,10 @@ eventBus.addEventListener('syncChainList', (params) => {
   updateChainStore(params);
 });
 
-const compensateUnlockedOnceFlag = async () => {
+const compensateUnlockedOnceFlag = () => {
   try {
     if (store.getState().app.hasUnlockedOnce) return;
-    const isUnlocked = await wallet.isUnlocked();
+    const isUnlocked = useWalletStatusStore.getState().isUnlocked;
     if (isUnlocked) {
       store.dispatch.app.setField({
         hasUnlockedOnce: true,
@@ -87,6 +91,12 @@ const renderSentryErrorFallback: Sentry.FallbackRender = ({
 };
 
 const main = async () => {
+  const walletStatusInitialization = initializeWalletStatusStore().catch(
+    (e) => {
+      console.error('[main] wallet status initialization failed', e);
+      Sentry.captureException(e);
+    }
+  );
   try {
     await initializeSwapStore();
   } catch (e) {
@@ -96,7 +106,8 @@ const main = async () => {
     console.error('[main] swap store hydration failed', e);
     Sentry.captureException(e);
   }
-  await compensateUnlockedOnceFlag();
+  await walletStatusInitialization;
+  compensateUnlockedOnceFlag();
 
   store.dispatch.app.initBizStore();
   store.dispatch.chains.init();
