@@ -136,6 +136,10 @@ export const NewUserImportOneKey = () => {
   };
 
   useEffect(() => {
+    if (connectType !== ConnectType.QRCode) {
+      return;
+    }
+
     wallet.initQRHardware(brand).then((stashKeyringId) => {
       stashKeyringIdRef.current = stashKeyringId;
       wallet
@@ -150,7 +154,7 @@ export const NewUserImportOneKey = () => {
     return () => {
       wallet.clearPageStateCache();
     };
-  }, []);
+  }, [connectType]);
 
   useEffect(() => {
     // init onekey sdk
