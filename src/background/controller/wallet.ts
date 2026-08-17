@@ -475,6 +475,9 @@ export class WalletController extends BaseController {
     } else {
       setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
     }
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.UNLOCK_WALLET,
+    });
   };
   isBooted = () => keyringService.isBooted();
   verifyPassword = (password: string) =>
@@ -2133,6 +2136,10 @@ export class WalletController extends BaseController {
     });
   };
   isUnlocked = () => keyringService.isUnlocked();
+  getWalletStatus = () => ({
+    isBooted: this.isBooted(),
+    isUnlocked: this.isUnlocked(),
+  });
 
   lockWallet = async () => {
     await keyringService.setLocked();
@@ -6882,10 +6889,19 @@ export class WalletController extends BaseController {
   hasUnencryptedKeyringData = async () =>
     keyringService.hasUnencryptedKeyringData();
 
-  resetPassword = async (password: string) =>
-    keyringService.resetPassword(password);
+  resetPassword = async (password: string) => {
+    await keyringService.resetPassword(password);
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.LOCK_WALLET,
+    });
+  };
 
-  resetBooted = async () => keyringService.resetBooted();
+  resetBooted = async () => {
+    await keyringService.resetBooted();
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.LOCK_WALLET,
+    });
+  };
 
   getUnencryptedKeyringTypes = async () =>
     keyringService.getUnencryptedKeyringTypes();
