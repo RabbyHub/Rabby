@@ -8,7 +8,10 @@ import {
   TrezorAction,
 } from '@/constant/offscreen-communication';
 
-import type { HardwareSigningMetadata } from '../signing-diagnostics';
+import type {
+  HardwareSigningMetadata,
+  SigningAttempt,
+} from '../signing-diagnostics';
 
 export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
   isDeviceConnected = false;
@@ -125,7 +128,7 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
   getHardwareSigningMetadata = () => this.hardwareSigningMetadata;
 
-  getSigningDiagnostics = () => ({
+  getSigningDiagnostics = (_error?: unknown, _attempt?: SigningAttempt) => ({
     wallet_provider: 'trezor' as const,
     transport: 'usb' as const,
     error_category: 'unknown' as const,

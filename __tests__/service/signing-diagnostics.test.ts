@@ -43,7 +43,7 @@ describe('signing diagnostics port', () => {
         wallet_provider: 'unknown',
         transport: 'unknown',
         operation,
-        stage: 'unknown',
+        stage: 'sign',
         outcome: 'failed',
         error_category: 'unknown',
       });
@@ -79,12 +79,20 @@ describe('signing diagnostics port', () => {
   });
 
   it('uses explicit provider capabilities and bounded categories', async () => {
-    registerSigningDiagnosticsProvider('test-wallet', () => ({
-      wallet_provider: 'test-wallet',
-      transport: 'bluetooth',
-      error_category: 'timeout',
-      provider_code: '90',
-    }));
+    let receivedAttempt;
+    registerSigningDiagnosticsProvider(
+      'test-wallet',
+      (_keyring, _error, attempt) => {
+        receivedAttempt = attempt;
+        return {
+          wallet_provider: 'test-wallet',
+          transport: 'bluetooth',
+          error_category: 'timeout',
+          provider_code: '90',
+          provider_reason: 'test timeout',
+        };
+      }
+    );
     const error = new Error('failed');
 
     await expect(
@@ -101,7 +109,12 @@ describe('signing diagnostics port', () => {
       transport: 'bluetooth',
       error_category: 'timeout',
       provider_code: '90',
+      provider_reason: 'test timeout',
     });
+    expect(receivedAttempt).toMatchObject({
+      operation: 'transaction',
+    });
+    expect(receivedAttempt?.startedAt).toEqual(expect.any(Number));
   });
 
   it('keeps provider metadata behind its provider allowlist', async () => {

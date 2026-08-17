@@ -3,6 +3,7 @@ import { toChecksumAddress } from '@ethereumjs/util';
 import { StoredKeyring } from '@keystonehq/base-eth-keyring';
 import { Eth, default as EthLegacy } from '@keystonehq/hw-app-eth';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
+import type { SigningAttempt } from '../signing-diagnostics';
 import {
   KeystoneHDPathType,
   HDPATH_PLACEHOLDER,
@@ -254,7 +255,7 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
     return this.currentBrand;
   };
 
-  getSigningDiagnostics(error?: unknown) {
+  getSigningDiagnostics(error?: unknown, _attempt?: SigningAttempt) {
     const address =
       error && typeof error === 'object'
         ? this.signingAddressByError.get(error)

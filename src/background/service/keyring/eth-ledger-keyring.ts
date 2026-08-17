@@ -63,7 +63,10 @@ import {
 } from '@ethereumjs/tx';
 import { isSameAddress } from '@/background/utils';
 import { LedgerHDPathType } from './helper';
-import type { HardwareSigningMetadata } from './signing-diagnostics';
+import type {
+  HardwareSigningMetadata,
+  SigningAttempt,
+} from './signing-diagnostics';
 import { registerSigningDiagnosticsProvider } from './signing-diagnostics';
 
 const type = 'Ledger Hardware';
@@ -748,7 +751,7 @@ class LedgerBridgeKeyring {
     if (attempt === this.activeSigningAttempt) this.activeSigningAttempt = null;
   }
 
-  getLedgerSigningDiagnostics(error: unknown) {
+  getLedgerSigningDiagnostics(error: unknown, _attempt?: SigningAttempt) {
     const statusWord = findLedgerStatusWord(error);
     const trace =
       (error && typeof error === 'object'

@@ -53,6 +53,7 @@ export type ProviderDiagnostics = {
   error_category?: unknown;
   provider_code?: unknown;
   provider_stage?: unknown;
+  provider_reason?: unknown;
   provider_metadata?: unknown;
 };
 
@@ -72,15 +73,28 @@ export type SigningDiagnosticsKeyring = {
     signingAddress?: string
   ) => unknown;
   endSigningAttempt?: (attempt: unknown, error?: unknown) => void;
-  getSigningDiagnostics?: (error: unknown) => ProviderDiagnostics | undefined;
+  getSigningDiagnostics?: (
+    error: unknown,
+    attempt: SigningAttempt
+  ) => ProviderDiagnostics | undefined;
   bridge?: {
-    getSigningDiagnostics?: (error: unknown) => ProviderDiagnostics | undefined;
+    getSigningDiagnostics?: (
+      error: unknown,
+      attempt: SigningAttempt
+    ) => ProviderDiagnostics | undefined;
   };
+};
+
+export type SigningAttempt = {
+  operation: SigningOperation;
+  signingAddress?: string;
+  startedAt: number;
 };
 
 export type SigningDiagnosticsProvider = (
   keyring: SigningDiagnosticsKeyring,
-  error: unknown
+  error: unknown,
+  attempt: SigningAttempt
 ) => ProviderDiagnostics | undefined;
 
 export type SigningContext = {
@@ -95,6 +109,7 @@ export type SigningContext = {
   duration_bucket: 'lt_100ms' | '100ms_1s' | '1s_5s' | 'gte_5s';
   provider_code?: string;
   provider_stage?: string;
+  provider_reason?: string;
   provider_metadata?: Record<string, string | number | boolean>;
   originalError?: unknown;
 };
@@ -186,22 +201,6 @@ const normalizeErrorCategory = (value: unknown): SigningErrorCategory => {
     : 'unknown';
 };
 
-const normalizeStage = (value: unknown): SigningStage => {
-  const stages: SigningStage[] = [
-    'preflight',
-    'connect',
-    'unlock',
-    'derive',
-    'prepare',
-    'sign',
-    'finalize',
-    'unknown',
-  ];
-  return typeof value === 'string' && stages.includes(value as SigningStage)
-    ? (value as SigningStage)
-    : 'unknown';
-};
-
 type NormalizedProviderDiagnostics = Partial<
   Pick<
     SigningContext,
@@ -210,6 +209,7 @@ type NormalizedProviderDiagnostics = Partial<
     | 'error_category'
     | 'provider_code'
     | 'provider_stage'
+    | 'provider_reason'
     | 'provider_metadata'
   >
 >;
@@ -245,6 +245,7 @@ const normalizeMetadata = (
   const diagnostics = value as ProviderDiagnostics;
   const providerCode = diagnostics.provider_code;
   const providerStage = diagnostics.provider_stage;
+  const providerReason = diagnostics.provider_reason;
   const providerMetadata = diagnostics.provider_metadata;
   const provider = normalizeProvider(
     diagnostics.wallet_provider ?? providerHint
@@ -277,6 +278,9 @@ const normalizeMetadata = (
     /^[a-z0-9_.:-]{1,32}$/i.test(providerStage)
       ? { provider_stage: providerStage }
       : {}),
+    ...(typeof providerReason === 'string' && providerReason.length <= 512
+      ? { provider_reason: providerReason }
+      : {}),
     ...(Object.keys(safeMetadata).length
       ? { provider_metadata: safeMetadata }
       : {}),
@@ -285,14 +289,15 @@ const normalizeMetadata = (
 
 const resolveProviderDiagnostics = (
   keyring: SigningDiagnosticsKeyring,
-  error: unknown
+  error: unknown,
+  attempt: SigningAttempt
 ) => {
   try {
-    const direct = keyring.getSigningDiagnostics?.(error);
+    const direct = keyring.getSigningDiagnostics?.(error, attempt);
     if (direct) {
       return normalizeMetadata(direct, keyring.signingDiagnosticsProvider);
     }
-    const bridge = keyring.bridge?.getSigningDiagnostics?.(error);
+    const bridge = keyring.bridge?.getSigningDiagnostics?.(error, attempt);
     if (bridge) {
       return normalizeMetadata(bridge, keyring.signingDiagnosticsProvider);
     }
@@ -302,7 +307,7 @@ const resolveProviderDiagnostics = (
       : undefined;
     return adapter
       ? normalizeMetadata(
-          adapter(keyring, error),
+          adapter(keyring, error, attempt),
           keyring.signingDiagnosticsProvider
         )
       : {};
@@ -367,6 +372,11 @@ export const withSigningDiagnostics = (
   signingAddress?: string
 ) => {
   const startedAt = Date.now();
+  const signingAttempt: SigningAttempt = {
+    operation,
+    signingAddress,
+    startedAt,
+  };
   let attempt: unknown;
   try {
     attempt = keyring.beginSigningAttempt?.(operation, signingAddress);
@@ -389,7 +399,11 @@ export const withSigningDiagnostics = (
       ? cloneSharedError(error)
       : toErrorCarrier(error);
     finish(attemptError);
-    const metadata = resolveProviderDiagnostics(keyring, attemptError);
+    const metadata = resolveProviderDiagnostics(
+      keyring,
+      attemptError,
+      signingAttempt
+    );
     const errorCategory =
       metadata.error_category ??
       normalizeErrorCategory(
@@ -401,7 +415,7 @@ export const withSigningDiagnostics = (
       wallet_provider: metadata.wallet_provider ?? 'unknown',
       transport: metadata.transport ?? 'unknown',
       operation,
-      stage: normalizeStage(metadata.provider_stage),
+      stage: 'sign',
       outcome: 'failed',
       error_category: errorCategory,
       duration_bucket: durationBucket(Date.now() - startedAt),

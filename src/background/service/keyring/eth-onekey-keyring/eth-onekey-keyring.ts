@@ -18,7 +18,10 @@ import { HardwareErrorCode } from '@onekeyfe/hd-shared';
 import type { KnownDevice } from '@onekeyfe/hd-core';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import type { HardwareSigningMetadata } from '../signing-diagnostics';
+import type {
+  HardwareSigningMetadata,
+  SigningAttempt,
+} from '../signing-diagnostics';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
@@ -841,7 +844,7 @@ class OneKeyKeyring extends EventEmitter {
     return this.hardwareSigningMetadata;
   }
 
-  getSigningDiagnostics() {
+  getSigningDiagnostics(_error?: unknown, _attempt?: SigningAttempt) {
     return {
       wallet_provider: 'onekey' as const,
       transport: 'usb' as const,
