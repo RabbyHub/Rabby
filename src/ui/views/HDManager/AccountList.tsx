@@ -112,7 +112,8 @@ export const AccountList: React.FC<Props> = ({
             await wallet.unlockHardwareAccount(
               keyring,
               [account.index - 1],
-              keyringId
+              keyringId,
+              brand
             );
           }
         });
