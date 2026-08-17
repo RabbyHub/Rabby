@@ -140,4 +140,28 @@ describe('getLedgerErrorMessage', () => {
       error_category: 'unknown',
     });
   });
+
+  it('reports a bare 0x6985 as unknown instead of assuming user cancellation', () => {
+    const keyring = new LedgerBridgeKeyring();
+    const diagnostics = keyring.getLedgerSigningDiagnostics({
+      statusCode: '0x6985',
+    });
+
+    expect(diagnostics).toMatchObject({
+      provider_code: '0x6985',
+      error_category: 'unknown',
+    });
+  });
+
+  it('classifies an explicit DMK user rejection as user cancellation', () => {
+    const keyring = new LedgerBridgeKeyring();
+    const diagnostics = keyring.getLedgerSigningDiagnostics({
+      _tag: 'RefusedByUserDAError',
+    });
+
+    expect(diagnostics).toMatchObject({
+      provider_code: '0x6985',
+      error_category: 'user_cancelled',
+    });
+  });
 });

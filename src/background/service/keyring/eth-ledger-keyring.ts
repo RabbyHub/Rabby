@@ -303,6 +303,17 @@ const findLedgerStatusWord = (err: unknown, depth = 0): string => {
   );
 };
 
+const isLedgerUserCancellation = (err: unknown, depth = 0): boolean => {
+  if (!err || depth > 6 || typeof err !== 'object') return false;
+  return (
+    (err as { _tag?: unknown })._tag === 'RefusedByUserDAError' ||
+    isLedgerUserCancellation(
+      (err as { cause?: unknown }).cause,
+      depth + 1
+    )
+  );
+};
+
 export const getLedgerErrorMessage = (err: unknown, fallback: string) =>
   [stringifyLedgerErrorValue(err) || fallback, findLedgerStatusWord(err)]
     .filter(Boolean)
@@ -769,7 +780,7 @@ class LedgerBridgeKeyring {
       wallet_provider: 'ledger',
       transport: 'webhid',
       error_category:
-        statusWord === '6985'
+        statusWord === '6985' && isLedgerUserCancellation(error)
           ? 'user_cancelled'
           : statusWord === '5515'
           ? 'device_locked'
