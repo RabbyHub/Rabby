@@ -16,7 +16,6 @@ import { securityEngine } from './securityEngine';
 import { sign } from './sign';
 import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
-import { rateGuidance } from './rateGuidance';
 import { exchange } from './exchange';
 import { gift } from './gift';
 import { perps } from './perps';
@@ -38,7 +37,6 @@ export interface RootModel extends Models<RootModel> {
   sign: typeof sign;
   bridge: typeof bridge;
   gasAccount: typeof gasAccount;
-  rateGuidance: typeof rateGuidance;
   exchange: typeof exchange;
   gift: typeof gift;
   perps: typeof perps;
@@ -61,7 +59,6 @@ export const models: RootModel = {
   sign,
   bridge,
   gasAccount,
-  rateGuidance,
   exchange,
   gift,
   perps,
