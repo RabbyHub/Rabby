@@ -5,7 +5,6 @@ import { appVersion } from './appVersion';
 import { account } from './account';
 import { permission } from './permission';
 import { preference } from './preference';
-import { openapi } from './openapi';
 import { contactBook } from './contactBook';
 import { accountToDisplay } from './accountToDisplay';
 import { createMnemonics } from './createMnemonics';
@@ -29,7 +28,6 @@ export interface RootModel extends Models<RootModel> {
   account: typeof account;
   permission: typeof permission;
   preference: typeof preference;
-  openapi: typeof openapi;
   contactBook: typeof contactBook;
   accountToDisplay: typeof accountToDisplay;
   createMnemonics: typeof createMnemonics;
@@ -54,7 +52,6 @@ export const models: RootModel = {
   account,
   permission,
   preference,
-  openapi,
   contactBook,
   accountToDisplay,
   createMnemonics,

@@ -69,7 +69,10 @@ import {
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
-import { testnetOpenapiService } from './service/openapi';
+import {
+  initializeOpenapiStore,
+  testnetOpenapiService,
+} from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
 import lendingService from './service/lending';
@@ -149,10 +152,11 @@ async function restoreAppState() {
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
   keyringService.sanitizeUnencryptedKeyringDataInStore();
+  await initializeOpenapiStore();
   await openapiService.init();
   await testnetOpenapiService.init();
 
-  // Init keyring and openapi first since this two service will not be migrated
+  // Init keyring and openapi before migrations that depend on them.
   await migrateData();
 
   await customTestnetService.init();

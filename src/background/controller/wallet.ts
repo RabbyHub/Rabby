@@ -83,6 +83,8 @@ import {
   TxHistoryResult,
   NFTDetail,
   BridgeHistory,
+  getOpenapiStore,
+  patchOpenapiStore,
   testnetOpenapiService,
 } from '../service/openapi';
 import {
@@ -2734,6 +2736,8 @@ export class WalletController extends BaseController {
     switch (key) {
       case 'currency':
         return currencyService.getStore() as PersistedStoreMap[Key];
+      case 'openapi':
+        return getOpenapiStore() as PersistedStoreMap[Key];
       case 'swap':
         return swapService.getSwap() as PersistedStoreMap[Key];
       case 'whitelist':
@@ -2775,6 +2779,8 @@ export class WalletController extends BaseController {
       case 'currency':
         currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
         return;
+      case 'openapi':
+        return patchOpenapiStore(patch as PersistedStorePatch<'openapi'>);
       case 'swap':
         swapService.patchStore(patch as PersistedStorePatch<'swap'>);
         return;

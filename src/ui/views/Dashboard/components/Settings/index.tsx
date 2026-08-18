@@ -89,6 +89,7 @@ import {
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
 import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
+import { useOpenapiStore } from '@/ui/state/openapi';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -665,7 +666,7 @@ const SettingsInner = ({
   );
   const themeMode = useRabbySelector((state) => state.preference.themeMode);
 
-  const openapiStore = useRabbySelector((state) => state.openapi);
+  const openapiStore = useOpenapiStore();
 
   const dispatch = useRabbyDispatch();
   const { currency, syncCurrencyList } = useCurrency();
@@ -1647,11 +1648,6 @@ const SettingsInner = ({
     onClose && onClose(e);
   };
 
-  useEffect(() => {
-    dispatch.openapi.getHost();
-    dispatch.openapi.getTestnetHost();
-  }, [dispatch.openapi]);
-
   const [isShowEcology, setIsShowEcologyModal] = React.useState(false);
 
   return (
@@ -1742,7 +1738,7 @@ const SettingsInner = ({
         value={openapiStore.host}
         defaultValue={INITIAL_OPENAPI_URL}
         onFinish={(host) => {
-          dispatch.openapi.setHost(host);
+          openapiStore.setHost(host);
           setShowOpenApiModal(false);
         }}
         onCancel={() => setShowOpenApiModal(false)}
@@ -1753,7 +1749,7 @@ const SettingsInner = ({
         defaultValue={INITIAL_TESTNET_OPENAPI_URL}
         title={t('page.dashboard.settings.testnetBackendServiceUrl')}
         onFinish={(host) => {
-          dispatch.openapi.setTestnetHost(host);
+          openapiStore.setTestnetHost(host);
           setShowTestnetOpenApiModal(false);
         }}
         onCancel={() => setShowTestnetOpenApiModal(false)}

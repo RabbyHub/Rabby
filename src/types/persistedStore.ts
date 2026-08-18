@@ -1,9 +1,11 @@
 import type { CurrencyStore } from '@/background/service/currency';
+import type { OpenapiServiceStore } from '@/background/service/openapi';
 import type { SwapServiceStore } from '@/background/service/swap';
 import type { WhitelistStore } from '@/background/service/whitelist';
 
 export type PersistedStoreMap = {
   currency: CurrencyStore;
+  openapi: OpenapiServiceStore;
   swap: SwapServiceStore;
   whitelist: WhitelistStore;
 };
