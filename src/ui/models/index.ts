@@ -3,7 +3,6 @@ import { Models, RematchDispatch, RematchRootState } from '@rematch/core';
 import { app } from './app';
 import { account } from './account';
 import { preference } from './preference';
-import { contactBook } from './contactBook';
 import { accountToDisplay } from './accountToDisplay';
 import { createMnemonics } from './createMnemonics';
 import { importMnemonics } from './importMnemonics';
@@ -21,7 +20,6 @@ export interface RootModel extends Models<RootModel> {
   app: typeof app;
   account: typeof account;
   preference: typeof preference;
-  contactBook: typeof contactBook;
   accountToDisplay: typeof accountToDisplay;
   createMnemonics: typeof createMnemonics;
   importMnemonics: typeof importMnemonics;
@@ -40,7 +38,6 @@ export const models: RootModel = {
   app,
   account,
   preference,
-  contactBook,
   accountToDisplay,
   createMnemonics,
   importMnemonics,
