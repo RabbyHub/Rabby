@@ -993,7 +993,8 @@ class ProviderController extends BaseController {
       const signingContext =
         getSigningContext(e) ?? getSigningContext(signingCarrier);
       const carrier =
-        signingCarrier ?? (signingContext && e instanceof Error ? e : undefined);
+        signingCarrier ??
+        (signingContext && e instanceof Error ? e : undefined);
       const errObj: any = {
         message: e && typeof e === 'object' ? e.message : e,
       };
