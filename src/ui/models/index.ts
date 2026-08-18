@@ -11,7 +11,6 @@ import { addressManagement } from './addressManagement';
 import { transactions } from './transactions';
 import { chains } from './chains';
 import { customRPC } from './customRPC';
-import { securityEngine } from './securityEngine';
 import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
 import { exchange } from './exchange';
@@ -30,7 +29,6 @@ export interface RootModel extends Models<RootModel> {
   transactions: typeof transactions;
   chains: typeof chains;
   customRPC: typeof customRPC;
-  securityEngine: typeof securityEngine;
   bridge: typeof bridge;
   gasAccount: typeof gasAccount;
   exchange: typeof exchange;
@@ -50,7 +48,6 @@ export const models: RootModel = {
   transactions,
   chains,
   customRPC,
-  securityEngine,
   bridge,
   gasAccount,
   exchange,

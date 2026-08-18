@@ -26,7 +26,7 @@ import {
 import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { FooterBar } from './FooterBar/FooterBar';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import {
   filterPrimaryType,
   parseSignTypedDataMessage,
@@ -158,12 +158,8 @@ const SignTypedData = ({
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
-  const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    currentTx: s.securityEngine.currentTx,
-  }));
+  const securityEngine = useSecurityEngineStore();
+  const { userData, rules, currentTx } = securityEngine;
   const tokenDetail = useSignStore((state) => state.tokenDetail);
   const closeTokenDetailPopup = useSignStore(
     (state) => state.closeTokenDetailPopup
@@ -689,34 +685,32 @@ const SignTypedData = ({
   };
 
   const handleIgnoreAllRules = () => {
-    dispatch.securityEngine.processAllRules(
-      engineResults.map((result) => result.id)
-    );
+    securityEngine.processAllRules(engineResults.map((result) => result.id));
   };
 
   const handleIgnoreRule = (id: string) => {
-    dispatch.securityEngine.processRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.processRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleUndoIgnore = (id: string) => {
-    dispatch.securityEngine.unProcessRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.unProcessRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
     if (currentTx.processedRules.includes(id)) {
-      dispatch.securityEngine.unProcessRule(id);
+      securityEngine.unProcessRule(id);
     }
     await wallet.ruleEnableStatusChange(id, value);
-    dispatch.securityEngine.init();
+    securityEngine.init();
   };
 
   const handleRuleDrawerClose = (update: boolean) => {
     if (update) {
       executeSecurityEngine();
     }
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.closeRuleDrawer();
   };
 
   const { run: reportLogId } = useDebounceFn(
@@ -940,7 +934,7 @@ const SignTypedData = ({
   useEffect(() => {
     renderStartAt.current = Date.now();
     init();
-    dispatch.securityEngine.init();
+    securityEngine.init();
     checkWachMode();
     report('createSignText');
   }, []);

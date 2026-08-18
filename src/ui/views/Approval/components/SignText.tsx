@@ -1,5 +1,5 @@
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { findChain } from '@/utils/chain';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -105,12 +105,8 @@ const SignText = ({
     setParsedActionData,
   ] = useState<ParsedTextActionData | null>(null);
   const { executeEngine } = useSecurityEngine();
-  const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    currentTx: s.securityEngine.currentTx,
-  }));
+  const securityEngine = useSecurityEngineStore();
+  const { userData, rules, currentTx } = securityEngine;
   const tokenDetail = useSignStore((state) => state.tokenDetail);
   const closeTokenDetailPopup = useSignStore(
     (state) => state.closeTokenDetailPopup
@@ -308,34 +304,32 @@ const SignText = ({
   };
 
   const handleIgnoreAllRules = () => {
-    dispatch.securityEngine.processAllRules(
-      engineResults.map((result) => result.id)
-    );
+    securityEngine.processAllRules(engineResults.map((result) => result.id));
   };
 
   const handleIgnoreRule = (id: string) => {
-    dispatch.securityEngine.processRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.processRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleUndoIgnore = (id: string) => {
-    dispatch.securityEngine.unProcessRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.unProcessRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
     if (currentTx.processedRules.includes(id)) {
-      dispatch.securityEngine.unProcessRule(id);
+      securityEngine.unProcessRule(id);
     }
     await wallet.ruleEnableStatusChange(id, value);
-    dispatch.securityEngine.init();
+    securityEngine.init();
   };
 
   const handleRuleDrawerClose = (update: boolean) => {
     if (update) {
       executeSecurityEngine();
     }
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.closeRuleDrawer();
   };
 
   const checkWachMode = async () => {
@@ -408,7 +402,7 @@ const SignText = ({
   ) => {
     logId.current = textActionData.log_id;
     isUnparsedAction.current = textActionData.action === null;
-    dispatch.securityEngine.init();
+    securityEngine.init();
     if (
       currentAccount?.type &&
       REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)

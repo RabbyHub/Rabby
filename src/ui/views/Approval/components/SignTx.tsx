@@ -59,7 +59,7 @@ import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
 import Actions from './Actions';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import {
   Level,
@@ -67,6 +67,7 @@ import {
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignStore } from '@/ui/state/sign';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import {
@@ -587,20 +588,14 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const dispatch = useRabbyDispatch();
+  const securityEngine = useSecurityEngineStore();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [support7702, setSupport7702] = useState(chain.eip['7702']);
   const [isLedger, setIsLedger] = useState(false);
-  const { userData, rules, currentTx, cachedTokenList } = useRabbySelector(
-    (s) => ({
-      userData: s.securityEngine.userData,
-      rules: s.securityEngine.rules,
-      currentTx: s.securityEngine.currentTx,
-      cachedTokenList: s.account.tokens.list,
-    })
-  );
+  const { userData, rules, currentTx } = securityEngine;
+  const cachedTokenList = useRabbySelector((s) => s.account.tokens.list);
   const tokenDetail = useSignStore((state) => state.tokenDetail);
   const closeTokenDetailPopup = useSignStore(
     (state) => state.closeTokenDetailPopup
@@ -2225,34 +2220,32 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   };
 
   const handleIgnoreAllRules = () => {
-    dispatch.securityEngine.processAllRules(
-      engineResults.map((result) => result.id)
-    );
+    securityEngine.processAllRules(engineResults.map((result) => result.id));
   };
 
   const handleIgnoreRule = (id: string) => {
-    dispatch.securityEngine.processRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.processRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleUndoIgnore = (id: string) => {
-    dispatch.securityEngine.unProcessRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.unProcessRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
     if (currentTx.processedRules.includes(id)) {
-      dispatch.securityEngine.unProcessRule(id);
+      securityEngine.unProcessRule(id);
     }
     await wallet.ruleEnableStatusChange(id, value);
-    dispatch.securityEngine.init();
+    securityEngine.init();
   };
 
   const handleRuleDrawerClose = (update: boolean) => {
     if (update) {
       executeSecurityEngine();
     }
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.closeRuleDrawer();
   };
 
   const { run: reportLogId } = useDebounceFn(
@@ -2336,8 +2329,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       },
       (error) => ({ error })
     );
-    dispatch.securityEngine.init();
-    dispatch.securityEngine.resetCurrentTx();
+    securityEngine.init();
+    securityEngine.resetCurrentTx();
     checkBlockedAddress();
     const isGnosisAccountType =
       currentAccount.type === KEYRING_TYPE.GnosisKeyring;

@@ -7,7 +7,7 @@ import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
 import { isSameAddress, useHover, useWallet } from 'ui/utils';
 import { formatTimeSpanToMinutes, getTimeSpan } from 'ui/utils/time';
-import { useRabbyDispatch } from 'ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
 import LogoWithText from './LogoWithText';
 import { ellipsis } from '@/ui/utils/address';
@@ -152,7 +152,7 @@ const AddressMark = ({
 }) => {
   const chainId = chain?.serverId;
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
+  const initSecurityEngine = useSecurityEngineStore((state) => state.init);
   const { t } = useTranslation();
   const handleEditMark = () => {
     userDataDrawer({
@@ -238,7 +238,7 @@ const AddressMark = ({
             ),
           });
         }
-        dispatch.securityEngine.init();
+        initSecurityEngine();
         onChange();
       },
     });
