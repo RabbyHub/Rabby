@@ -1,6 +1,9 @@
 import BigNumber from 'bignumber.js';
 
 import {
+  buildParseTxRequest,
+  buildPreExecTxRequest,
+  normalizeTxParams,
   checkGasAndNonce,
   explainGas,
   getPendingTxs,
@@ -150,5 +153,80 @@ describe('getPendingTxs', () => {
     });
 
     expect(txs.map((tx) => tx.nonce)).toEqual(['0x1', '0x2', '0x3']);
+  });
+});
+
+test('buildParseTxRequest preserves object and tuple authorization lists', () => {
+  const request = buildParseTxRequest({
+    tx: { from: '0xfrom', chainId: 1 } as any,
+    chainId: '1',
+    nonce: '0x1',
+    origin: '',
+    addr: '0xfrom',
+    support1559: true,
+    enable7702: true,
+    authorizationList: [
+      { chainId: '0x1', address: '0xobject', nonce: '0x2' },
+      ['0x2', '0xtuple', '0x3'],
+    ],
+  });
+
+  expect((request.tx as any).authorizationList).toEqual([
+    [1, '0xobject', 2],
+    [2, '0xtuple', 3],
+  ]);
+});
+
+test('buildPreExecTxRequest normalizes fallback transaction fields', () => {
+  // buildPreExecTxRequest assumes tx has already been through
+  // normalizeTxParams (gas/gasLimit precedence is resolved there, not here)
+  // - it only fills in fields that are safe to default on their own.
+  const request = buildPreExecTxRequest({
+    tx: {
+      from: '0xfrom',
+      gas: '0x5208',
+    } as any,
+    nonce: '0x1',
+    origin: '',
+    address: '0xfrom',
+    updateNonce: true,
+    pendingTxList: [],
+    delegateCall: false,
+  });
+
+  expect(request.tx).toMatchObject({
+    nonce: '0x1',
+    data: '0x',
+    value: '0x0',
+    gas: '0x5208',
+  });
+});
+
+test('normalizeTxParams prefers gasLimit over gas when both are present', () => {
+  const tx = normalizeTxParams({
+    from: '0xfrom',
+    gas: '0x1',
+    gasLimit: 21000,
+  } as any);
+
+  expect(tx.gas).toBe('0x5208');
+});
+
+test('normalizeTxParams keeps background and UI transaction fields equivalent', () => {
+  const tx = normalizeTxParams({
+    from: '0xfrom',
+    gasPrice: 1,
+    maxFeePerGas: '2',
+    maxPriorityFeePerGas: 3,
+    value: 4,
+    data: 'abcd',
+  } as any);
+
+  expect(tx).toMatchObject({
+    gasPrice: '0x1',
+    maxFeePerGas: '0x2',
+    maxPriorityFeePerGas: '0x3',
+    value: '0x4',
+    data: '0xabcd',
   });
 });

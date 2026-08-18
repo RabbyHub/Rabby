@@ -2,6 +2,8 @@ import stats from '@/stats';
 import {
   BlockInfo,
   calcGasLimit,
+  buildParseTxRequest,
+  buildPreExecTxRequest,
   checkGasAndNonce,
   convertLegacyTo1559,
   explainGas,
@@ -10,6 +12,7 @@ import {
   getKRCategoryByType,
   getPendingTxs,
   is7702Tx,
+  normalizeTxParams as normalizeTransactionParams,
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
@@ -38,7 +41,7 @@ import {
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
 } from 'consts';
-import { addHexPrefix, isHexString } from '@ethereumjs/util';
+import { isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
@@ -48,7 +51,6 @@ import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
   useWallet,
-  isStringOrNumber,
   useCommonPopupView,
   getTimeSpan,
 } from '@/ui/utils';
@@ -137,80 +139,15 @@ const settle = <T,>(
     (error) => ({ error })
   );
 
-const normalizeHex = (value: string | number) => {
-  if (typeof value === 'number') {
-    return intToHex(Math.floor(value));
-  }
-  if (typeof value === 'string') {
-    if (!isHexString(value)) {
-      return addHexPrefix(value);
-    }
-    return value;
-  }
-  return value;
-};
-
 export const normalizeTxParams = (tx, isDapp?: boolean) => {
-  let copy = tx;
   try {
-    if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
-      copy.nonce = normalizeHex(copy.nonce);
-    }
-    if ('gas' in copy && isStringOrNumber(copy.gas)) {
-      copy.gas = normalizeHex(copy.gas);
-    }
-    if ('gasLimit' in copy && isStringOrNumber(copy.gasLimit)) {
-      copy.gas = normalizeHex(copy.gasLimit);
-    }
-    if ('gasPrice' in copy && isStringOrNumber(copy.gasPrice)) {
-      copy.gasPrice = normalizeHex(copy.gasPrice);
-    }
-    if ('maxFeePerGas' in copy && isStringOrNumber(copy.maxFeePerGas)) {
-      copy.maxFeePerGas = normalizeHex(copy.maxFeePerGas);
-    }
-    if (
-      'maxPriorityFeePerGas' in copy &&
-      isStringOrNumber(copy.maxPriorityFeePerGas)
-    ) {
-      copy.maxPriorityFeePerGas = normalizeHex(copy.maxPriorityFeePerGas);
-    }
-    if ('value' in copy) {
-      if (!isStringOrNumber(copy.value)) {
-        copy.value = '0x0';
-      } else {
-        copy.value = normalizeHex(copy.value);
-      }
-    }
-    if ('data' in copy) {
-      if (!tx.data.startsWith('0x')) {
-        copy.data = `0x${tx.data}`;
-      }
-    }
-
-    if ('authorizationList' in copy) {
-      copy.authorizationList = copy.authorizationList.map((item) => {
-        return normalizeHex(item);
-      });
-    }
-
-    if (isDapp) {
-      copy = omit(copy, [
-        'isSpeedUp',
-        'isCancel',
-        'isSend',
-        'isSwap',
-        'isBridge',
-        'swapPreferMEVGuarded',
-        'isViewGnosisSafe',
-        'reqId',
-      ]);
-    }
+    return normalizeTransactionParams(tx, isDapp);
   } catch (e) {
     Sentry.captureException(
       new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`)
     );
+    return tx;
   }
-  return copy;
 };
 
 const getCachedMaxPriorityFee = (
@@ -424,6 +361,7 @@ interface SignTxProps<TData extends any[] = any[]> {
     isGnosis?: boolean;
     account?: Account;
     $ctx?: any;
+    signTxPreparationId?: string;
   };
   origin?: string;
   account: Account;
@@ -612,6 +550,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const [footerShowShadow, setFooterShowShadow] = useState(false);
 
   const recommendNoncePromiseRef = useRef<Promise<string> | null>(null);
+  const signTxPreparationId = params.signTxPreparationId;
 
   const gaEvent = async (type: 'allow' | 'cancel') => {
     const ga:
@@ -1181,11 +1120,42 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       : undefined;
     preparedBlockPromiseRef.current = null;
     let recommendNonce = updateNonce ? '0x0' : tx.nonce || '0x0';
+    const preparation = signTxPreparationId
+      ? await wallet.getSignTxPreparation(signTxPreparationId)
+      : null;
+    // Only trust the preparation when its nonce actually resolved and it was
+    // computed for the same nonce/account path this explain is taking -
+    // otherwise the other prepared results may have been built against a
+    // fallback nonce that no longer matches the nonce fetched below.
+    const canUsePreparation =
+      preparation?.recommendNonce !== undefined &&
+      updateNonce &&
+      !isGnosisAccount &&
+      !isCoboArugsAccount;
+    const prepared = canUsePreparation ? preparation : undefined;
+    const preparedRecommendNonce = prepared?.recommendNonce;
+    const preparedPendingTxList = prepared?.pendingTxList;
+    const preparedParseTx = prepared?.parseTx;
+    const preparedPreExecTx = prepared?.preExecTx;
+    if (preparation) {
+      stats.report('signTxPreparationTiming', {
+        type: 'transaction',
+        preparationToMount: renderStartAt.current - preparation.startedAt,
+        preparationDuration: preparation.resolvedAt - preparation.startedAt,
+        preparationToConsume: Date.now() - preparation.startedAt,
+      });
+    }
+    if (preparedRecommendNonce !== undefined) {
+      recommendNonce = preparedRecommendNonce;
+    }
     let shouldSetRecommendNonce = false;
     if (!isGnosisAccount && !isCoboArugsAccount) {
       try {
         if (updateNonce) {
-          if (recommendNoncePromiseRef.current) {
+          if (preparedRecommendNonce !== undefined) {
+            // Reuse the background preparation instead of starting a second nonce request.
+            recommendNoncePromiseRef.current = null;
+          } else if (recommendNoncePromiseRef.current) {
             recommendNonce = (await recommendNoncePromiseRef.current) || '0x0';
             recommendNoncePromiseRef.current = null;
           } else {
@@ -1217,30 +1187,21 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       ? !!params?.data?.[0]?.operation
       : false;
 
-    const parseTxPromise = wallet.openapi.parseTx({
-      chainId: chain.serverId,
-      tx: omit(
-        {
-          ...tx,
-          gas: '0x0',
-          nonce: explainNonce,
-          value: tx.value || '0x0',
-          // todo
-          to: tx.to || '',
-          type: is7702Tx(tx) ? 4 : support1559 ? 2 : undefined,
-          authorizationList:
-            params?.$ctx?.eip7702RevokeAuthorization ||
-            authorizationList?.map((e) => [
-              new BigNumber(e.chainId).toNumber(),
-              e.address,
-              new BigNumber(e.nonce).toNumber(),
-            ]),
-        },
-        !enable7702 ? ['authorizationList'] : []
-      ),
-      origin: origin || '',
-      addr: address,
-    });
+    const parseTxPromise = preparedParseTx
+      ? Promise.resolve(preparedParseTx)
+      : wallet.openapi.parseTx(
+          buildParseTxRequest({
+            tx,
+            chainId: chain.serverId,
+            nonce: explainNonce,
+            origin: origin || '',
+            addr: address,
+            support1559,
+            enable7702,
+            authorizationList:
+              params?.$ctx?.eip7702RevokeAuthorization || authorizationList,
+          })
+        );
     const parseTxResultPromise = settle(parseTxPromise);
     const cexInfoResultPromiseListPromise = parseTxResultPromise.then(
       (result) => {
@@ -1265,27 +1226,28 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }
     );
 
-    const pendingTxListPromise = getPendingTxs({
-      recommendNonce,
-      wallet,
-      address,
-      chainId: tx.chainId,
-    });
+    const pendingTxListPromise = preparedPendingTxList
+      ? Promise.resolve(preparedPendingTxList)
+      : getPendingTxs({
+          recommendNonce,
+          wallet,
+          address,
+          chainId: tx.chainId,
+        });
 
-    const res = await wallet.openapi.preExecTx({
-      tx: {
-        ...tx,
-        nonce: explainNonce, // set a mock nonce for explain if dapp not set it
-        data: tx.data,
-        value: tx.value || '0x0',
-        gas: tx.gas || '', // set gas limit if dapp not set
-      },
-      origin: origin || '',
-      address,
-      updateNonce,
-      pending_tx_list: await pendingTxListPromise,
-      delegate_call: delegateCall,
-    });
+    const res = await (preparedPreExecTx
+      ? preparedPreExecTx
+      : wallet.openapi.preExecTx(
+          buildPreExecTxRequest({
+            tx,
+            nonce: explainNonce,
+            origin: origin || '',
+            address,
+            updateNonce,
+            pendingTxList: await pendingTxListPromise,
+            delegateCall,
+          })
+        ));
     if (explainEpochRef.current !== detailEpoch) {
       return;
     }
@@ -2343,7 +2305,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring;
     const isCoboArgusAccountType =
       currentAccount.type === KEYRING_TYPE.CoboArgusKeyring;
-    if (!isGnosisAccountType && !isCoboArgusAccountType) {
+    if (
+      !isGnosisAccountType &&
+      !isCoboArgusAccountType &&
+      !signTxPreparationId
+    ) {
       recommendNoncePromiseRef.current = wallet.getRecommendNonce({
         from: tx.from,
         chainId,
