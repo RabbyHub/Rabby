@@ -5,7 +5,6 @@ import { account } from './account';
 import { preference } from './preference';
 import { accountToDisplay } from './accountToDisplay';
 import { addressManagement } from './addressManagement';
-import { transactions } from './transactions';
 import { chains } from './chains';
 import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
@@ -18,7 +17,6 @@ export interface RootModel extends Models<RootModel> {
   preference: typeof preference;
   accountToDisplay: typeof accountToDisplay;
   addressManagement: typeof addressManagement;
-  transactions: typeof transactions;
   chains: typeof chains;
   bridge: typeof bridge;
   gasAccount: typeof gasAccount;
@@ -32,7 +30,6 @@ export const models: RootModel = {
   preference,
   accountToDisplay,
   addressManagement,
-  transactions,
   chains,
   bridge,
   gasAccount,
