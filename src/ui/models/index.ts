@@ -12,7 +12,6 @@ import { transactions } from './transactions';
 import { chains } from './chains';
 import { customRPC } from './customRPC';
 import { securityEngine } from './securityEngine';
-import { sign } from './sign';
 import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
 import { exchange } from './exchange';
@@ -32,7 +31,6 @@ export interface RootModel extends Models<RootModel> {
   chains: typeof chains;
   customRPC: typeof customRPC;
   securityEngine: typeof securityEngine;
-  sign: typeof sign;
   bridge: typeof bridge;
   gasAccount: typeof gasAccount;
   exchange: typeof exchange;
@@ -53,7 +51,6 @@ export const models: RootModel = {
   chains,
   customRPC,
   securityEngine,
-  sign,
   bridge,
   gasAccount,
   exchange,

@@ -46,6 +46,7 @@ import {
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId, findChain } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useSignStore } from '@/ui/state/sign';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
 import stats from '@/stats';
@@ -158,12 +159,15 @@ const SignTypedData = ({
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
+  const { userData, rules, currentTx } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
-    tokenDetail: s.sign.tokenDetail,
   }));
+  const tokenDetail = useSignStore((state) => state.tokenDetail);
+  const closeTokenDetailPopup = useSignStore(
+    (state) => state.closeTokenDetailPopup
+  );
   const [currentChainId, setCurrentChainId] = useState<number | undefined>(
     undefined
   );
@@ -1098,7 +1102,7 @@ const SignTypedData = ({
       <TokenDetailPopup
         token={tokenDetail.selectToken}
         visible={tokenDetail.popupVisible}
-        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        onClose={closeTokenDetailPopup}
         canClickToken={false}
         hideOperationButtons
         variant="add"

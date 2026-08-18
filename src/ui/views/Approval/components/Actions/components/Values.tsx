@@ -26,6 +26,7 @@ import { getAddressScanLink } from '@/utils';
 import { findChain } from '@/utils/chain';
 import clsx from 'clsx';
 import { copyAddress } from '@/ui/utils/clipboard';
+import { useSignStore } from '@/ui/state/sign';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -473,9 +474,11 @@ const TokenSymbol = ({
   token: TokenItem;
   disableHover?: boolean;
 }) => {
-  const dispatch = useRabbyDispatch();
+  const openTokenDetailPopup = useSignStore(
+    (state) => state.openTokenDetailPopup
+  );
   const handleClickTokenSymbol = () => {
-    dispatch.sign.openTokenDetailPopup(token);
+    openTokenDetailPopup(token);
   };
   return (
     <span

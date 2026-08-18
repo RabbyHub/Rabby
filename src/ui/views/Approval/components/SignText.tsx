@@ -51,6 +51,7 @@ import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 import { ga4 } from '@/utils/ga4';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useSignStore } from '@/ui/state/sign';
 import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { tokenizeSignMessageText } from './signMessageHighlighter';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
@@ -105,12 +106,15 @@ const SignText = ({
   ] = useState<ParsedTextActionData | null>(null);
   const { executeEngine } = useSecurityEngine();
   const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
+  const { userData, rules, currentTx } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
-    tokenDetail: s.sign.tokenDetail,
   }));
+  const tokenDetail = useSignStore((state) => state.tokenDetail);
+  const closeTokenDetailPopup = useSignStore(
+    (state) => state.closeTokenDetailPopup
+  );
   const [chainId, setChainId] = useState<number | undefined>(undefined);
   const isGnosisAccount = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -722,7 +726,7 @@ const SignText = ({
       <TokenDetailPopup
         token={tokenDetail.selectToken}
         visible={tokenDetail.popupVisible}
-        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        onClose={closeTokenDetailPopup}
         canClickToken={false}
         hideOperationButtons
         variant="add"

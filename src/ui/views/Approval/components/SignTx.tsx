@@ -66,6 +66,7 @@ import {
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useSignStore } from '@/ui/state/sign';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import {
@@ -592,19 +593,18 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [support7702, setSupport7702] = useState(chain.eip['7702']);
   const [isLedger, setIsLedger] = useState(false);
-  const {
-    userData,
-    rules,
-    currentTx,
-    tokenDetail,
-    cachedTokenList,
-  } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    currentTx: s.securityEngine.currentTx,
-    tokenDetail: s.sign.tokenDetail,
-    cachedTokenList: s.account.tokens.list,
-  }));
+  const { userData, rules, currentTx, cachedTokenList } = useRabbySelector(
+    (s) => ({
+      userData: s.securityEngine.userData,
+      rules: s.securityEngine.rules,
+      currentTx: s.securityEngine.currentTx,
+      cachedTokenList: s.account.tokens.list,
+    })
+  );
+  const tokenDetail = useSignStore((state) => state.tokenDetail);
+  const closeTokenDetailPopup = useSignStore(
+    (state) => state.closeTokenDetailPopup
+  );
   const cachedTokenItems = useMemo(
     () => (cachedTokenList || []).map(abstractTokenToTokenItem),
     [cachedTokenList]
@@ -3140,7 +3140,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       <TokenDetailPopup
         token={tokenDetail.selectToken}
         visible={tokenDetail.popupVisible}
-        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        onClose={closeTokenDetailPopup}
         canClickToken={false}
         hideOperationButtons
         variant="add"
