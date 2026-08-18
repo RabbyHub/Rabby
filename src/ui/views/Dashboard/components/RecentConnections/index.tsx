@@ -4,12 +4,12 @@ import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { openInTab, useWallet } from 'ui/utils';
+import { openInTab } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
-import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import clsx from 'clsx';
 import { SvgIconCross } from '@/ui/assets';
+import { usePermissionStore } from '@/ui/state/permission';
 
 interface RecentConnectionsProps {
   visible?: boolean;
@@ -23,11 +23,17 @@ const RecentConnections = ({
   canBack,
 }: RecentConnectionsProps) => {
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
-  const connections = useRabbySelector((state) => state.permission.websites);
+  const {
+    websites: connections,
+    getWebsites,
+    removeWebsite,
+    pinWebsite,
+    unpinWebsite,
+    clearAll,
+  } = usePermissionStore();
 
   const list = useMemo(() => {
-    return connections.sort((a, b) => (a.order || 0) - (b.order || 0));
+    return [...connections].sort((a, b) => (a.order || 0) - (b.order || 0));
   }, [connections]);
 
   const pinnedList = useMemo(() => {
@@ -53,13 +59,13 @@ const RecentConnections = ({
 
   const handlePinChange = (item: ConnectedSite) => {
     if (item.isTop) {
-      dispatch.permission.unpinWebsite(item.origin);
+      void unpinWebsite(item.origin);
     } else {
-      dispatch.permission.pinWebsite(item.origin);
+      void pinWebsite(item.origin);
     }
   };
   const handleRemove = async (origin: string) => {
-    await dispatch.permission.removeWebsite(origin);
+    await removeWebsite(origin);
     matomoRequestEvent({
       category: 'Dapps',
       action: 'disconnectDapp',
@@ -77,7 +83,7 @@ const RecentConnections = ({
 
   const removeAll = async () => {
     try {
-      await dispatch.permission.clearAll();
+      await clearAll();
       matomoRequestEvent({
         category: 'Dapps',
         action: 'disconnectAllDapps',
@@ -121,8 +127,8 @@ const RecentConnections = ({
   };
 
   useEffect(() => {
-    dispatch.permission.getWebsites();
-  }, []);
+    void getWebsites();
+  }, [getWebsites]);
   const [isVisible, setIsVisible] = useState(false);
 
   const handleCancel = () => {

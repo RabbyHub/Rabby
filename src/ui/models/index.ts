@@ -2,7 +2,6 @@ import { Models, RematchDispatch, RematchRootState } from '@rematch/core';
 
 import { app } from './app';
 import { account } from './account';
-import { permission } from './permission';
 import { preference } from './preference';
 import { contactBook } from './contactBook';
 import { accountToDisplay } from './accountToDisplay';
@@ -23,7 +22,6 @@ import { perps } from './perps';
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
   account: typeof account;
-  permission: typeof permission;
   preference: typeof preference;
   contactBook: typeof contactBook;
   accountToDisplay: typeof accountToDisplay;
@@ -45,7 +43,6 @@ export interface RootModel extends Models<RootModel> {
 export const models: RootModel = {
   app,
   account,
-  permission,
   preference,
   contactBook,
   accountToDisplay,
