@@ -14,7 +14,7 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore, useRabbySelector } from '@/ui/store';
+import { connectStore } from '@/ui/store';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
@@ -29,6 +29,7 @@ import { ReactComponent as RcIconDownCC } from '@/ui/assets/dashboard/arrow-down
 import IconSuccess from 'ui/assets/success.svg';
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconContactCC } from '@/ui/assets/contact-cc.svg';
+import { useExchangeStore } from '@/ui/state/exchange';
 
 import './styles.less';
 
@@ -74,9 +75,7 @@ const WhitelistInput = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
-  const { exchanges } = useRabbySelector((s) => ({
-    exchanges: s.exchange.exchanges,
-  }));
+  const exchanges = useExchangeStore((state) => state.exchanges);
   // main state
   const [inputAddress, setInputAddress] = useState('');
   const [inputAlias, setInputAlias] = useState('');

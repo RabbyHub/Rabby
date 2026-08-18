@@ -11,7 +11,7 @@ import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { ReactComponent as RcIconTips } from '@/ui/assets/new-user-import/tips.svg';
 import { PasswordCard } from './PasswordCard';
 import { useMemoizedFn, useMount } from 'ahooks';
-import { useRabbyDispatch } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { KEYRING_CLASS } from '@/constant';
 
 export const CreateSeedPhrase = () => {
@@ -22,7 +22,6 @@ export const CreateSeedPhrase = () => {
   const { setStore } = useNewUserGuideStore();
 
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
 
   const handleSubmit = useMemoizedFn(async (password: string) => {
     try {
@@ -36,17 +35,21 @@ export const CreateSeedPhrase = () => {
         keyring!.publicKey!
       );
 
-      dispatch.importMnemonics.switchKeyring({
+      useImportMnemonicsStore.getState().switchKeyring({
         stashKeyringId: stashKeyringId as number,
       });
 
-      const accounts = await dispatch.importMnemonics.getAccounts({
+      const accounts = await useImportMnemonicsStore.getState().getAccounts({
         start: 0,
         end: 1,
       });
 
-      await dispatch.importMnemonics.setSelectedAccounts([accounts[0].address]);
-      await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+      await useImportMnemonicsStore
+        .getState()
+        .setSelectedAccounts([accounts[0].address]);
+      await useImportMnemonicsStore
+        .getState()
+        .confirmAllImportingAccountsAsync();
 
       history.push({
         pathname: '/new-user/success',

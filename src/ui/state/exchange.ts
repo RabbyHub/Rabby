@@ -1,6 +1,7 @@
-import { createModel } from '@rematch/core';
-import { RootModel } from '.';
-import { WalletControllerType } from '../utils';
+import { create } from 'zustand';
+
+import type { WalletControllerType } from '@/ui/utils';
+import { wallet } from '@/ui/wallet';
 
 export interface Exchange {
   id: string;
@@ -8,7 +9,7 @@ export interface Exchange {
   logo: string;
 }
 
-const initExchanges = [
+const initialExchanges: Exchange[] = [
   {
     id: 'binance',
     name: 'Binance',
@@ -64,68 +65,64 @@ const initExchanges = [
       'https://static.debank.com/image/cex/logo_url/okex/7dffa8dcee98ef99958ed304bf0b2648.png',
   },
 ];
+
 export const globalSupportCexList: Exchange[] = [];
 
-type IState = {
+export type ExchangeState = {
   exchanges: Exchange[];
 };
 
-export const exchange = createModel<RootModel>()({
-  name: 'exchange',
-  state: {
-    exchanges: initExchanges,
-  } as IState,
-  reducers: {
-    setField(state, payload: Partial<typeof state>) {
-      return Object.keys(payload).reduce(
-        (accu, key) => {
-          accu[key] = payload[key];
-          return accu;
-        },
-        { ...state }
-      );
-    },
+type ExchangeActions = {
+  init: () => Promise<void>;
+};
+
+export type ExchangeStore = ExchangeState & ExchangeActions;
+
+export function getDefaultExchangeState(): ExchangeState {
+  return {
+    exchanges: initialExchanges.map((exchange) => ({ ...exchange })),
+  };
+}
+
+export const useExchangeStore = create<ExchangeStore>()((set) => ({
+  ...getDefaultExchangeState(),
+
+  async init() {
+    try {
+      const cexLists = await wallet.openapi.getCexSupportList();
+      if (cexLists.length) {
+        const exchanges = cexLists.map((item) => ({
+          id: item.id,
+          name: item.name,
+          logo: item.logo_url,
+        }));
+
+        if (globalSupportCexList.length === 0) {
+          globalSupportCexList.push(...exchanges);
+        }
+        set({ exchanges });
+      }
+    } catch {
+      // Keep using the built-in exchange list when the remote request fails.
+    } finally {
+      if (globalSupportCexList.length === 0) {
+        globalSupportCexList.push(...initialExchanges);
+      }
+    }
   },
-  effects: () => ({
-    async init(_: void, store) {
-      store.app.wallet.openapi
-        .getCexSupportList()
-        .then((cexLists) => {
-          if (cexLists.length) {
-            globalSupportCexList.length === 0 &&
-              globalSupportCexList.push(
-                ...cexLists.map((item) => ({
-                  id: item.id,
-                  name: item.name,
-                  logo: item.logo_url,
-                }))
-              );
-            this.setField({
-              exchanges: cexLists.map((item) => ({
-                id: item.id,
-                name: item.name,
-                logo: item.logo_url,
-              })),
-            });
-          }
-        })
-        .finally(() => {
-          globalSupportCexList.length === 0 &&
-            globalSupportCexList.push(...initExchanges);
-        });
-    },
-  }),
-});
+}));
+
+export const initializeExchangeStore = () => useExchangeStore.getState().init();
 
 export const getCexInfo = async (
   address: string,
-  wallet: WalletControllerType
+  walletController: WalletControllerType
 ) => {
   try {
-    if (!address || !wallet) {
+    if (!address || !walletController) {
       return undefined;
     }
-    const cexId = await wallet.getCexId(address);
+    const cexId = await walletController.getCexId(address);
     const cexInfo = globalSupportCexList.find(
       (item) => item.id.toLowerCase() === cexId?.toLowerCase()
     );
@@ -134,10 +131,10 @@ export const getCexInfo = async (
     }
     return {
       id: cexId,
-      name: cexInfo?.name || '',
-      logo: cexInfo?.logo || '',
+      name: cexInfo.name || '',
+      logo: cexInfo.logo || '',
     };
-  } catch (error) {
+  } catch {
     return undefined;
   }
 };

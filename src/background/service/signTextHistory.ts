@@ -1,4 +1,3 @@
-import { sign } from './../../ui/models/sign';
 import { createPersistStore } from 'background/utils';
 import permissionService, { ConnectedSite } from './permission';
 import { sortBy } from 'lodash';

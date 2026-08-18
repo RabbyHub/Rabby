@@ -26,7 +26,7 @@ import {
 import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { FooterBar } from './FooterBar/FooterBar';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import {
   filterPrimaryType,
   parseSignTypedDataMessage,
@@ -46,6 +46,7 @@ import {
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { isTestnetChainId, findChain } from '@/utils/chain';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useSignStore } from '@/ui/state/sign';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
 import stats from '@/stats';
@@ -63,7 +64,7 @@ import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
 import { ga4 } from '@/utils/ga4';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import { getCexInfo } from '@/ui/models/exchange';
+import { getCexInfo } from '@/ui/state/exchange';
 import {
   MultiAction,
   TypeDataActionItem,
@@ -157,13 +158,12 @@ const SignTypedData = ({
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
-  const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    currentTx: s.securityEngine.currentTx,
-    tokenDetail: s.sign.tokenDetail,
-  }));
+  const securityEngine = useSecurityEngineStore();
+  const { userData, rules, currentTx } = securityEngine;
+  const tokenDetail = useSignStore((state) => state.tokenDetail);
+  const closeTokenDetailPopup = useSignStore(
+    (state) => state.closeTokenDetailPopup
+  );
   const [currentChainId, setCurrentChainId] = useState<number | undefined>(
     undefined
   );
@@ -685,34 +685,32 @@ const SignTypedData = ({
   };
 
   const handleIgnoreAllRules = () => {
-    dispatch.securityEngine.processAllRules(
-      engineResults.map((result) => result.id)
-    );
+    securityEngine.processAllRules(engineResults.map((result) => result.id));
   };
 
   const handleIgnoreRule = (id: string) => {
-    dispatch.securityEngine.processRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.processRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleUndoIgnore = (id: string) => {
-    dispatch.securityEngine.unProcessRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.unProcessRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
     if (currentTx.processedRules.includes(id)) {
-      dispatch.securityEngine.unProcessRule(id);
+      securityEngine.unProcessRule(id);
     }
     await wallet.ruleEnableStatusChange(id, value);
-    dispatch.securityEngine.init();
+    securityEngine.init();
   };
 
   const handleRuleDrawerClose = (update: boolean) => {
     if (update) {
       executeSecurityEngine();
     }
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.closeRuleDrawer();
   };
 
   const { run: reportLogId } = useDebounceFn(
@@ -936,7 +934,7 @@ const SignTypedData = ({
   useEffect(() => {
     renderStartAt.current = Date.now();
     init();
-    dispatch.securityEngine.init();
+    securityEngine.init();
     checkWachMode();
     report('createSignText');
   }, []);
@@ -1098,7 +1096,7 @@ const SignTypedData = ({
       <TokenDetailPopup
         token={tokenDetail.selectToken}
         visible={tokenDetail.popupVisible}
-        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        onClose={closeTokenDetailPopup}
         canClickToken={false}
         hideOperationButtons
         variant="add"

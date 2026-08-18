@@ -9,7 +9,7 @@ import {
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import { formatTokenAmount } from 'ui/utils/number';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { Table, Col, Row } from './components/Table';
 import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
@@ -68,11 +68,10 @@ const ContractCall = ({
   engineResults: Result[];
   onChange(tx: Record<string, any>): void;
 }) => {
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
-  const { contractWhitelist } = useRabbySelector((state) => {
-    return state.securityEngine.userData;
-  });
+  const contractWhitelist = useSecurityEngineStore(
+    (state) => state.userData.contractWhitelist
+  );
 
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(

@@ -22,7 +22,7 @@ import {
   zeroAddress,
   toChecksumAddress,
 } from '@ethereumjs/util';
-import { globalSupportCexList } from '@/ui/models/exchange';
+import { globalSupportCexList } from '@/ui/state/exchange';
 
 import {
   CHAINS_ENUM,
@@ -32,7 +32,7 @@ import {
   CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
   KEYRING_TYPE,
 } from 'consts';
-import { useRabbyDispatch, connectStore, useRabbySelector } from 'ui/store';
+import { connectStore, useRabbySelector } from 'ui/store';
 import {
   getUiType,
   isSameAddress,
@@ -138,6 +138,7 @@ import {
   parseAmountInputUrlState,
   shouldDisplaySmallUsdMaxAmount,
 } from './amountInputState';
+import { useContactBookStore } from '@/ui/state/contactBook';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -332,7 +333,9 @@ const SendToken = () => {
   const { useForm } = Form;
   const { t } = useTranslation();
   const history = useHistory();
-  const dispatch = useRabbyDispatch();
+  const getContactBookAsync = useContactBookStore(
+    (state) => state.getContactBookAsync
+  );
   const rbisource = useRbiSource();
   const { search } = useLocation();
   const wallet = useWallet();
@@ -2866,7 +2869,7 @@ const SendToken = () => {
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
-    dispatch.contactBook.getContactBookAsync();
+    getContactBookAsync();
     if (!account) {
       history.replace('/');
       return;

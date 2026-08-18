@@ -35,7 +35,7 @@ import {
 import { calcMaxPriorityFee, GasTokenInfo } from '@/utils/transaction';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
@@ -193,7 +193,6 @@ const GasSelectorHeader = ({
   getContainer,
 }: GasSelectorProps) => {
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
   const customerInputRef = useRef<InputRef>(null);
   const hasCustomPriorityFee = useRef(false);
@@ -246,10 +245,12 @@ const GasSelectorHeader = ({
   );
   const [customGasEstimated, setCustomGasEstimated] = useState<number>(0);
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const {
+    rules,
+    currentTx: { processedRules },
+    openRuleDrawer,
+    init: initSecurityEngine,
+  } = useSecurityEngineStore();
 
   const loadCustomGasData = useCallback(
     async (custom?: number): Promise<GasLevel> => {
@@ -606,7 +607,7 @@ const GasSelectorHeader = ({
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
     const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: result?.value,
       level: result?.level,
@@ -673,7 +674,7 @@ const GasSelectorHeader = ({
   }, [isReady]);
 
   useEffect(() => {
-    dispatch.securityEngine.init();
+    initSecurityEngine();
   }, []);
 
   useEffect(() => {

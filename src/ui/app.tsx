@@ -11,6 +11,7 @@ import browser from 'webextension-polyfill';
 
 import store from './store';
 import { initializeSwapStore } from './state/swap';
+import { initializeExchangeStore } from './state/exchange';
 import {
   initializeWalletStatusStore,
   useWalletStatusStore,
@@ -111,6 +112,7 @@ const main = async () => {
   compensateUnlockedOnceFlag();
 
   store.dispatch.app.initBizStore();
+  void initializeExchangeStore();
   store.dispatch.chains.init();
 
   if (getUiType().isPop) {

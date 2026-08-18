@@ -7,7 +7,7 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { isSameAddress } from 'ui/utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { Table, Col, Row } from '../Actions/components/Table';
 import NFTWithName from '../Actions/components/NFTWithName';
 import * as Values from '../Actions/components/Values';
@@ -67,15 +67,13 @@ const ApproveNFT = ({
   sender: string;
 }) => {
   const actionData = data!;
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
-  const { rules, processedRules, contractWhitelist } = useRabbySelector(
-    (s) => ({
-      rules: s.securityEngine.rules,
-      processedRules: s.securityEngine.currentTx.processedRules,
-      contractWhitelist: s.securityEngine.userData.contractWhitelist,
-    })
-  );
+  const {
+    rules,
+    currentTx: { processedRules },
+    userData: { contractWhitelist },
+    openRuleDrawer,
+  } = useSecurityEngineStore();
 
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(
@@ -101,7 +99,7 @@ const ApproveNFT = ({
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
     const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: result?.value,
       level: result?.level,

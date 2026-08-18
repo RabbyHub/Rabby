@@ -83,6 +83,8 @@ import {
   TxHistoryResult,
   NFTDetail,
   BridgeHistory,
+  getOpenapiStore,
+  patchOpenapiStore,
   testnetOpenapiService,
 } from '../service/openapi';
 import {
@@ -2734,6 +2736,10 @@ export class WalletController extends BaseController {
     switch (key) {
       case 'currency':
         return currencyService.getStore() as PersistedStoreMap[Key];
+      case 'openapi':
+        return getOpenapiStore() as PersistedStoreMap[Key];
+      case 'rpc':
+        return RPCService.getCustomRPCStore() as PersistedStoreMap[Key];
       case 'swap':
         return swapService.getSwap() as PersistedStoreMap[Key];
       case 'whitelist':
@@ -2775,6 +2781,15 @@ export class WalletController extends BaseController {
       case 'currency':
         currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
         return;
+      case 'openapi':
+        return patchOpenapiStore(patch as PersistedStorePatch<'openapi'>);
+      case 'rpc': {
+        const changedChains = RPCService.patchStore(
+          patch as PersistedStorePatch<'rpc'>
+        );
+        changedChains.forEach(this.syncCustomTestnetRPC);
+        return;
+      }
       case 'swap':
         swapService.patchStore(patch as PersistedStorePatch<'swap'>);
         return;
@@ -2927,42 +2942,35 @@ export class WalletController extends BaseController {
   setRetryTxRecommendNonce = bgRetryTxMethods.setRetryTxRecommendNonce;
   getTxFailedResult = bgRetryTxMethods.getTxFailedResult;
 
+  private syncCustomTestnetRPC = (chainEnum: CHAINS_ENUM) => {
+    const chain = findChain({ enum: chainEnum });
+    if (!chain?.isTestnet) return;
+
+    const rpc = RPCService.getRPCByChain(chainEnum);
+    if (rpc?.enable && RPCService.hasCustomRPC(chainEnum)) {
+      customTestnetService.setCustomRPC({
+        chainId: chain.id,
+        url: rpc.url,
+      });
+    } else {
+      customTestnetService.removeCustomRPC(chain.id);
+    }
+  };
+
   setCustomRPC = (chainEnum: CHAINS_ENUM, url: string) => {
     RPCService.setRPC(chainEnum, url);
-    const chain = findChain({
-      enum: chainEnum,
-    });
-    if (chain?.isTestnet && RPCService.hasCustomRPC(chainEnum)) {
-      customTestnetService.setCustomRPC({ chainId: chain.id, url: url });
-    }
+    this.syncCustomTestnetRPC(chainEnum);
   };
   removeCustomRPC = (chainEnum: CHAINS_ENUM) => {
     RPCService.removeCustomRPC(chainEnum);
-    const chain = findChain({
-      enum: chainEnum,
-    });
-    if (chain?.isTestnet) {
-      customTestnetService.removeCustomRPC(chain.id);
-    }
+    this.syncCustomTestnetRPC(chainEnum);
   };
   getAllCustomRPC = RPCService.getAllRPC;
   getCustomRpcByChain = RPCService.getRPCByChain;
   pingCustomRPC = RPCService.ping;
   setRPCEnable = (chainEnum: CHAINS_ENUM, enable: boolean) => {
     RPCService.setRPCEnable(chainEnum, enable);
-    const chain = findChain({
-      enum: chainEnum,
-    });
-    if (chain?.isTestnet) {
-      if (enable && RPCService.hasCustomRPC(chainEnum)) {
-        customTestnetService.setCustomRPC({
-          chainId: chain.id,
-          url: RPCService.getRPCByChain(chainEnum)!.url,
-        });
-      } else {
-        customTestnetService.removeCustomRPC(chain.id);
-      }
-    }
+    this.syncCustomTestnetRPC(chainEnum);
   };
   validateRPC = async (url: string, chainId: number) => {
     const chain = findChain({

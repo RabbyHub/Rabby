@@ -13,7 +13,7 @@ import { formatAmount } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import ViewMore from './components/ViewMore';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { SecurityListItem } from './components/SecurityListItem';
 import { isSameAddress } from '@/ui/utils';
 import { ProtocolListItem } from './components/ProtocolListItem';
@@ -51,15 +51,12 @@ const UnWrapToken = ({
 }) => {
   const { payToken, receiveToken, receiver } = data!;
 
-  const { rules, processedRules, contractWhitelist } = useRabbySelector(
-    (s) => ({
-      contractWhitelist: s.securityEngine.userData.contractWhitelist,
-      rules: s.securityEngine.rules,
-      processedRules: s.securityEngine.currentTx.processedRules,
-    })
-  );
-
-  const dispatch = useRabbyDispatch();
+  const {
+    rules,
+    currentTx: { processedRules },
+    userData: { contractWhitelist },
+    openRuleDrawer,
+  } = useSecurityEngineStore();
   const { t } = useTranslation();
 
   const isInWhitelist = useMemo(() => {
@@ -82,7 +79,7 @@ const UnWrapToken = ({
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
     const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: result?.value,
       level: result?.level,

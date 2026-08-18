@@ -1,6 +1,6 @@
 import { Account } from '@/background/service/preference';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { Chain } from '@debank/common';
@@ -236,13 +236,13 @@ export const MiniFooterBar: React.FC<Props> = ({
     setConnectedSite,
   ] = React.useState<ConnectedSite | null>(null);
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const {
+    rules,
+    currentTx: { processedRules },
+    openRuleDrawer,
+  } = useSecurityEngineStore();
 
   const currentChain = useMemo(() => {
     if (origin === INTERNAL_REQUEST_ORIGIN) {
@@ -269,7 +269,7 @@ export const MiniFooterBar: React.FC<Props> = ({
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
     const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: result?.value,
       level: result?.level,

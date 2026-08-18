@@ -39,7 +39,7 @@ import { BigNumber } from 'bignumber.js';
 import { MenuButtonStyled } from '../GasMenuButton';
 import { GasMethod } from '../GasSelectorHeader';
 import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import SecurityLevelTagNoText from 'ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText';
 import {
   useGasAccountInfoV2,
@@ -665,17 +665,18 @@ export const SignMainnetGasSelectorHeader = ({
     [props.engineResults]
   );
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
-  const dispatch = useRabbyDispatch();
+  const {
+    rules,
+    currentTx: { processedRules },
+    openRuleDrawer,
+    init: initSecurityEngine,
+  } = useSecurityEngineStore();
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
 
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: securityResult?.value,
       level: securityResult?.level,
@@ -687,9 +688,9 @@ export const SignMainnetGasSelectorHeader = ({
   useEffect(() => {
     if (props.engineResults && !initEngineResultsRef.current) {
       initEngineResultsRef.current = true;
-      dispatch.securityEngine.init();
+      initSecurityEngine();
     }
-  }, [dispatch, props.engineResults]);
+  }, [initSecurityEngine, props.engineResults]);
 
   const summaryNode = (
     <div

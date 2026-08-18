@@ -1,10 +1,10 @@
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useCustomRPCStore } from '@/ui/state/customRPC';
 import { findChain, findChainByEnum, getTestnetChainList } from '@/utils/chain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { CHAINS_ENUM } from '@debank/common';
 import { Button, Switch, message } from 'antd';
-import { RPCItem } from 'background/service/rpc';
+import type { RPCItem } from 'background/service/rpc';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -109,7 +109,8 @@ const RPCItemComp = ({
   item: { id: CHAINS_ENUM; rpc: RPCItem; nonce: number };
   onEdit(item: { id: CHAINS_ENUM; rpc: RPCItem }): void;
 }) => {
-  const dispatch = useRabbyDispatch();
+  const setRPCEnable = useCustomRPCStore((state) => state.setRPCEnable);
+  const deleteCustomRPC = useCustomRPCStore((state) => state.deleteCustomRPC);
   const { t } = useTranslation();
 
   const chainItem = useMemo(() => {
@@ -121,7 +122,7 @@ const RPCItemComp = ({
   };
 
   const handleSwitchRPCEnable = async (val: boolean) => {
-    await dispatch.customRPC.setRPCEnable({
+    await setRPCEnable({
       chain: item.id,
       enable: val,
     });
@@ -140,7 +141,7 @@ const RPCItemComp = ({
   };
 
   const handleDelete = async () => {
-    await dispatch.customRPC.deleteCustomRPC(item.id);
+    await deleteCustomRPC(item.id);
     matomoRequestEvent({
       category: 'CustomRPC',
       action: 'delete',
@@ -192,10 +193,9 @@ const RPCItemComp = ({
 
 const CustomRPC = () => {
   const { t } = useTranslation();
-  const { customRPC } = useRabbySelector((s) => ({
-    ...s.customRPC,
-  }));
-  const dispatch = useRabbyDispatch();
+  const customRPC = useCustomRPCStore((state) => state.customRPC);
+  const getAllRPC = useCustomRPCStore((state) => state.getAllRPC);
+  const setCustomRPC = useCustomRPCStore((state) => state.setCustomRPC);
   const [chainSelectorVisible, setChainSelectorVisible] = useState(false);
   const [rpcModalVisible, setRPCModalVisible] = useState(false);
   const [selectedChain, setSelectedChain] = useState<CHAINS_ENUM>(
@@ -245,7 +245,7 @@ const CustomRPC = () => {
   };
 
   const handleConfirmCustomRPC = async (url: string) => {
-    await dispatch.customRPC.setCustomRPC({
+    await setCustomRPC({
       chain: selectedChain,
       url,
     });
@@ -285,8 +285,8 @@ const CustomRPC = () => {
   );
 
   useEffect(() => {
-    dispatch.customRPC.getAllRPC().then(handleLocationState);
-  }, []);
+    void getAllRPC().then(handleLocationState);
+  }, [getAllRPC, handleLocationState]);
 
   useEffect(() => {
     if (!rpcModalVisible && !chainSelectorVisible) {

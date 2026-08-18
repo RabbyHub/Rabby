@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { KEYRING_TYPE } from 'consts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { useRabbyDispatch } from '@/ui/store';
+import { useSignStore } from '@/ui/state/sign';
 import { getTokenSymbol } from '@/ui/utils/token';
 import IconDanger from '@/ui/assets/sign/security-engine/danger.svg';
 import { ReactComponent as IconArrowRight } from '@/ui/assets/sign/arrow-right-lite.svg';
@@ -89,7 +89,9 @@ interface Props {
 
 const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
+  const openTokenDetailPopup = useSignStore(
+    (state) => state.openTokenDetailPopup
+  );
   const addressInfo = data;
   const { address } = addressInfo;
   const alias = addressInfo?.alias;
@@ -125,7 +127,7 @@ const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
       onMouseDown={(event) => event.preventDefault()}
       onClick={
         opensTokenDetail && token
-          ? () => dispatch.sign.openTokenDetailPopup(token)
+          ? () => openTokenDetailPopup(token)
           : undefined
       }
     >

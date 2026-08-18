@@ -46,6 +46,7 @@ import Tooltip from 'antd/es/tooltip';
 import { LOW_GAS_ACCOUNT_BALANCE } from '@/constant/gas-account';
 import { ReactComponent as RcIconFeedbackCC } from '@/ui/assets/icon-feedback-cc.svg';
 import { RcIconSuccessCC } from '@/ui/assets/desktop/common';
+import { useTransactionsStore } from '@/ui/state/transactions';
 import {
   useLatestRepliedFeedbacks,
   useViewingFeedback,
@@ -73,9 +74,12 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
 
   const currentAccount = useCurrentAccount();
 
-  const { pendingTransactionCount: pendingTxCount } = useRabbySelector((s) => ({
-    ...s.transactions,
-  }));
+  const pendingTxCount = useTransactionsStore(
+    (state) => state.pendingTransactionCount
+  );
+  const getPendingTxCountAsync = useTransactionsStore(
+    (state) => state.getPendingTxCountAsync
+  );
 
   const [displayName, setDisplayName] = useState<string>('');
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
@@ -84,13 +88,13 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
     if (!currentAccount) return;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
 
-    dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
+    void getPendingTxCountAsync(currentAccount.address);
   }, 30000);
 
   useEffect(() => {
     if (currentAccount) {
       if (currentAccount.type !== KEYRING_TYPE.GnosisKeyring) {
-        dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
+        void getPendingTxCountAsync(currentAccount.address);
       }
 
       wallet

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { isSameAddress } from 'ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { Table, Col, Row } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
 import { SecurityListItem } from '../Actions/components/SecurityListItem';
@@ -64,15 +64,12 @@ const MultiSwap = ({
   sender: string;
 }) => {
   const actionData = data!;
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
-  const { rules, processedRules, contractWhitelist } = useRabbySelector(
-    (s) => ({
-      rules: s.securityEngine.rules,
-      processedRules: s.securityEngine.currentTx.processedRules,
-      contractWhitelist: s.securityEngine.userData.contractWhitelist,
-    })
-  );
+  const {
+    rules,
+    currentTx: { processedRules },
+    userData: { contractWhitelist },
+  } = useSecurityEngineStore();
 
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(
