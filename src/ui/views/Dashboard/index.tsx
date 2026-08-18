@@ -17,7 +17,8 @@ import { DashboardHeader } from './components/DashboardHeader';
 import { DashboardPanel } from './components/DashboardPanel';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { GasPriceBar } from './components/GasPriceBar';
-import { CHAINS_ENUM, KEYRING_CLASS } from '@/constant';
+import { CHAINS_ENUM, ETH_USDT_CONTRACT, KEYRING_CLASS } from '@/constant';
+import { DEFAULT_SWAP_TO_TOKEN_ITEM_BY_CHAIN_SERVER_ID } from '@/constant/dex-swap';
 import Settings from './components/Settings';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
@@ -25,6 +26,14 @@ import {
   useGasAccountDiscovery,
   useGasAccountSign,
 } from '@/ui/views/GasAccount/hooks';
+import { StablecoinSwapPopup } from './components/StablecoinSwapPopup';
+
+const STABLECOIN_SWAP_ROUTE = `/dex-swap?${new URLSearchParams({
+  chain: 'eth',
+  payTokenId: DEFAULT_SWAP_TO_TOKEN_ITEM_BY_CHAIN_SERVER_ID.eth.id,
+  receiveTokenId: ETH_USDT_CONTRACT,
+  rbisource: 'dashboard',
+}).toString()}`;
 
 const Dashboard = () => {
   const history = useHistory();
@@ -53,6 +62,9 @@ const Dashboard = () => {
   );
 
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
+  const [stablecoinSwapPopupVisible, setStablecoinSwapPopupVisible] = useState(
+    true
+  );
 
   const getCurrentAccount = async () => {
     const account = await dispatch.account.getCurrentAccountAsync();
@@ -183,13 +195,18 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className={clsx('dashboard')}>
+      <div className={clsx('dashboard', 'relative')}>
         <DashboardHeader onSettingClick={toggleShowMoreSettings} />
         <DashboardPanel onSettingClick={toggleShowMoreSettings} />
         <div className="px-[16px] pb-[13px]">
           <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
           <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
         </div>
+        <StablecoinSwapPopup
+          visible={stablecoinSwapPopupVisible}
+          onClose={() => setStablecoinSwapPopupVisible(false)}
+          onSwap={() => history.push(STABLECOIN_SWAP_ROUTE)}
+        />
       </div>
       <Modal
         visible={firstNotice && updateContent}
