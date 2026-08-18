@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import clsx from 'clsx';
-import { connectStore, useRabbyDispatch } from 'ui/store';
+import { connectStore } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import { IconCopyCC } from 'ui/assets/component/IconCopyCC';
 import IconSuccess from 'ui/assets/success.svg';
@@ -13,9 +13,9 @@ import { Card } from '@/ui/component/NewUserImport';
 import { useHistory } from 'react-router-dom';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useCreateMnemonicsStore } from '@/ui/state/createMnemonics';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 
 const DisplayMnemonic = () => {
-  const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   const mnemonics = useCreateMnemonicsStore((state) => state.mnemonics);
   const prepareMnemonicsAsync = useCreateMnemonicsStore(
@@ -49,16 +49,18 @@ const DisplayMnemonic = () => {
     const keyringId = await wallet.getMnemonicKeyRingIdFromPublicKey(
       keyring!.publicKey!
     );
-    dispatch.importMnemonics.switchKeyring({
+    useImportMnemonicsStore.getState().switchKeyring({
       stashKeyringId: keyringId as number,
     });
 
-    const accounts = await dispatch.importMnemonics.getAccounts({
+    const accounts = await useImportMnemonicsStore.getState().getAccounts({
       start: 0,
       end: 1,
     });
-    await dispatch.importMnemonics.setSelectedAccounts([accounts[0].address]);
-    await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+    await useImportMnemonicsStore
+      .getState()
+      .setSelectedAccounts([accounts[0].address]);
+    await useImportMnemonicsStore.getState().confirmAllImportingAccountsAsync();
 
     history.push({
       pathname: '/new-user/success',

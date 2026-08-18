@@ -5,7 +5,7 @@ import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
 import { HDManagerStateContext } from './utils';
-import { useRabbyDispatch } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { KEYRING_CLASS } from '@/constant';
 
 interface Props extends AccountListProps {
@@ -50,7 +50,6 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
   const { createTask, keyringId, keyring } = React.useContext(
     HDManagerStateContext
   );
-  const dispatch = useRabbyDispatch();
   const maxCountRef = React.useRef(MAX_ACCOUNT_COUNT);
   const maxStepCount =
     keyring === KEYRING_CLASS.HARDWARE.TREZOR
@@ -90,7 +89,7 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
         }
         const accounts = (await createTask(() => {
           if (keyring === KEYRING_CLASS.MNEMONIC) {
-            return dispatch.importMnemonics.getAccounts({
+            return useImportMnemonicsStore.getState().getAccounts({
               start: i,
               end: i + maxStepCount,
             });

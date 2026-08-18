@@ -6,7 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { Account } from './AccountList';
 import * as Sentry from '@sentry/browser';
 import { KEYRING_CLASS } from '@/constant';
-import { useRabbyDispatch } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useTranslation } from 'react-i18next';
 import { isFunction } from 'lodash';
 import { useMemoizedFn } from 'ahooks';
@@ -91,14 +91,15 @@ const useGetCurrentAccounts = ({ keyringId, keyring }: StateProviderProps) => {
   const [accounts, setAccounts] = React.useState<Account[]>([]);
   const [initialAccounts, setInitialAccounts] = React.useState<Account[]>([]);
   const initialAccountsRef = React.useRef<Account[] | null>(null);
-  const dispatch = useRabbyDispatch();
 
   const getCurrentAccounts = React.useCallback(
     async (options?: { resetInitialAccounts?: boolean }) => {
       setLoading(true);
       const accounts: Account[] = [];
       if (keyring === KEYRING_CLASS.MNEMONIC) {
-        const list = await dispatch.importMnemonics.getImportedAccounts({});
+        const list = await useImportMnemonicsStore
+          .getState()
+          .getImportedAccounts({});
         accounts.push(...list);
       } else {
         accounts.push(

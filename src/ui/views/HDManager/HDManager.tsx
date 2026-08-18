@@ -35,7 +35,7 @@ import { useTranslation } from 'react-i18next';
 import { ImKeyManager } from './ImKeyManager';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { useRabbyDispatch } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useNewUserGuideStore } from '../NewUserImport/hooks/useNewUserGuideStore';
 import { isHardwareImportSelectAddress } from '../SelectAddress/route';
 import type { Account } from './AccountList';
@@ -252,8 +252,6 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
     keyringId,
   } = React.useContext(HDManagerStateContext);
 
-  const dispatch = useRabbyDispatch();
-
   const { store } = useNewUserGuideStore();
   const query = React.useMemo(() => new URLSearchParams(search), [search]);
 
@@ -325,7 +323,7 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
       }
       await createTask(async () => {
         if (keyring === KEYRING_CLASS.MNEMONIC) {
-          await dispatch.importMnemonics.setField({
+          useImportMnemonicsStore.getState().setField({
             confirmingAccounts: selectedAccounts.map((account) => {
               return {
                 address: account.address,
@@ -334,7 +332,9 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
               };
             }),
           });
-          await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+          await useImportMnemonicsStore
+            .getState()
+            .confirmAllImportingAccountsAsync();
         } else {
           await wallet.unlockHardwareAccount(
             keyring,

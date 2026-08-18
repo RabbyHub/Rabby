@@ -14,7 +14,7 @@ import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
 import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
-import { useRabbyDispatch } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useTranslation } from 'react-i18next';
 import { detectClientOS } from '@/ui/utils/os';
 import { useQueryAccountsInfo } from './hooks/useQueryAccontsInfo';
@@ -65,7 +65,6 @@ export const AccountList: React.FC<Props> = ({
     brand,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
-  const dispatch = useRabbyDispatch();
 
   useEffect(() => {
     currentAccountsRef.current = currentAccounts;
@@ -104,10 +103,12 @@ export const AccountList: React.FC<Props> = ({
       if (checked) {
         await createTask(async () => {
           if (keyring === KEYRING_CLASS.MNEMONIC) {
-            await dispatch.importMnemonics.setSelectedAccounts([
-              account.address,
-            ]);
-            await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+            await useImportMnemonicsStore
+              .getState()
+              .setSelectedAccounts([account.address]);
+            await useImportMnemonicsStore
+              .getState()
+              .confirmAllImportingAccountsAsync();
           } else {
             await wallet.unlockHardwareAccount(
               keyring,
