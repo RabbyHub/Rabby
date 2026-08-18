@@ -57,6 +57,8 @@ const ON_DEMAND_KLINE_COOLDOWN_MS = 5 * 1000;
 const CATALOG_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 const CATALOG_CACHE_KEY = 'perpsLiveCatalogV1';
 const CATALOG_CACHE_VERSION = 1;
+const CATALOG_RETRY_BASE_MS = 5 * 60 * 1000;
+const CATALOG_RETRY_MAX_MS = 60 * 60 * 1000;
 const WS_WATCHDOG_INTERVAL_MS = 60 * 1000;
 /**
  * With open positions the assetCtx WS pushes ~every second, so this much
@@ -191,6 +193,8 @@ export class PerpsLiveService {
   private tokenCatalog = new Map<string, PerpTopTokenV3>();
   private catalogFetchedAt = 0;
   private catalogLoadPromise: Promise<void> | null = null;
+  private catalogRetryAt = 0;
+  private catalogRetryDelayMs = CATALOG_RETRY_BASE_MS;
 
   /** dex prefix → quoteAsset; main dex uses '' as key */
   private dexLookup = new Map<string, { quoteAsset: PerpsQuoteAsset }>();
@@ -724,7 +728,10 @@ export class PerpsLiveService {
   }
 
   private ensureCatalogs(): Promise<void> {
-    if (this.isCatalogFresh()) return Promise.resolve();
+    const now = Date.now();
+    if (this.isCatalogFresh(now) || now < this.catalogRetryAt) {
+      return Promise.resolve();
+    }
     if (this.catalogLoadPromise) return this.catalogLoadPromise;
 
     const loadPromise = this.loadCatalogs().finally(() => {
@@ -752,10 +759,27 @@ export class PerpsLiveService {
       this.refreshTokenCatalog(),
       this.refreshDexLookup(catalogSdk),
     ]);
-    if (!tokenCatalogOk || !dexLookupOk) return;
+    if (!tokenCatalogOk || !dexLookupOk) {
+      this.deferCatalogRetry();
+      return;
+    }
 
     this.catalogFetchedAt = Date.now();
+    this.resetCatalogRetry();
     await this.writeCatalogCache();
+  }
+
+  private deferCatalogRetry(now = Date.now()): void {
+    this.catalogRetryAt = now + this.catalogRetryDelayMs;
+    this.catalogRetryDelayMs = Math.min(
+      this.catalogRetryDelayMs * 2,
+      CATALOG_RETRY_MAX_MS
+    );
+  }
+
+  private resetCatalogRetry(): void {
+    this.catalogRetryAt = 0;
+    this.catalogRetryDelayMs = CATALOG_RETRY_BASE_MS;
   }
 
   private async readCatalogCache(): Promise<PerpsLiveCatalogCache | null> {
@@ -781,6 +805,7 @@ export class PerpsLiveService {
       this.dexLookup.set(entry.dexId, { quoteAsset: entry.quoteAsset });
     }
     this.catalogFetchedAt = cache.fetchedAt;
+    this.resetCatalogRetry();
     this.scheduleRebuild();
   }
 

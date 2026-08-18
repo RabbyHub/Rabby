@@ -75,6 +75,7 @@ import { PerpsLiveService } from '@/background/service/perpsLive';
 
 const CATALOG_CACHE_KEY = 'perpsLiveCatalogV1';
 const CATALOG_TTL_MS = 24 * 60 * 60 * 1000;
+const CATALOG_RETRY_BASE_MS = 5 * 60 * 1000;
 const NOW = Date.UTC(2026, 7, 18, 0, 0, 0);
 
 const token = {
@@ -235,16 +236,39 @@ describe('PerpsLiveService lazy catalogs', () => {
     });
   });
 
-  test('clears the in-flight guard after a failed load so the next check can retry', async () => {
+  test('backs off exponentially after failed loads and resets after recovery', async () => {
     mockOpenapiGetTopTokens.mockRejectedValueOnce(new Error('offline'));
     const service = new PerpsLiveService();
     service.attachPort(createPort());
     await waitForCatalog(service);
 
+    await (service as any).ensureCatalogs();
+    expect(mockOpenapiGetTopTokens).toHaveBeenCalledTimes(1);
+    expect(mockSessionSet).not.toHaveBeenCalled();
+
+    jest.setSystemTime(NOW + CATALOG_RETRY_BASE_MS - 1);
+    await (service as any).ensureCatalogs();
+    expect(mockOpenapiGetTopTokens).toHaveBeenCalledTimes(1);
+
+    mockOpenapiGetTopTokens.mockRejectedValueOnce(new Error('still offline'));
+    jest.setSystemTime(NOW + CATALOG_RETRY_BASE_MS);
+    await (service as any).ensureCatalogs();
+    expect(mockOpenapiGetTopTokens).toHaveBeenCalledTimes(2);
+    expect((service as any).catalogRetryAt).toBe(
+      NOW + CATALOG_RETRY_BASE_MS * 3
+    );
+
+    jest.setSystemTime(NOW + CATALOG_RETRY_BASE_MS * 3 - 1);
+    await (service as any).ensureCatalogs();
+    expect(mockOpenapiGetTopTokens).toHaveBeenCalledTimes(2);
+
     mockOpenapiGetTopTokens.mockResolvedValue([token]);
+    jest.setSystemTime(NOW + CATALOG_RETRY_BASE_MS * 3);
     await (service as any).ensureCatalogs();
 
-    expect(mockOpenapiGetTopTokens).toHaveBeenCalledTimes(2);
+    expect(mockOpenapiGetTopTokens).toHaveBeenCalledTimes(3);
     expect(mockSessionSet).toHaveBeenCalledTimes(1);
+    expect((service as any).catalogRetryAt).toBe(0);
+    expect((service as any).catalogRetryDelayMs).toBe(CATALOG_RETRY_BASE_MS);
   });
 });
