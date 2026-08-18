@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import clsx from 'clsx';
-import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
+import { connectStore, useRabbyDispatch } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import { IconCopyCC } from 'ui/assets/component/IconCopyCC';
 import IconSuccess from 'ui/assets/success.svg';
@@ -12,18 +12,22 @@ import { useTranslation } from 'react-i18next';
 import { Card } from '@/ui/component/NewUserImport';
 import { useHistory } from 'react-router-dom';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import { useCreateMnemonicsStore } from '@/ui/state/createMnemonics';
 
 const DisplayMnemonic = () => {
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
+  const mnemonics = useCreateMnemonicsStore((state) => state.mnemonics);
+  const prepareMnemonicsAsync = useCreateMnemonicsStore(
+    (state) => state.prepareMnemonicsAsync
+  );
+  const resetCreateMnemonics = useCreateMnemonicsStore((state) => state.reset);
+  const stepTo = useCreateMnemonicsStore((state) => state.stepTo);
   useEffect(() => {
-    dispatch.createMnemonics.prepareMnemonicsAsync();
-  }, []);
+    prepareMnemonicsAsync();
+  }, [prepareMnemonicsAsync]);
   const history = useHistory();
   const { t } = useTranslation();
-  const { mnemonics } = useRabbySelector((s) => ({
-    mnemonics: s.createMnemonics.mnemonics,
-  }));
 
   const onCopyMnemonics = React.useCallback(() => {
     copyTextToClipboard(mnemonics).then(() => {
@@ -62,11 +66,11 @@ const DisplayMnemonic = () => {
         KEYRING_CLASS.MNEMONIC
       }&keyringId=${keyringId}&isCreated=${true}`,
     });
-    dispatch.createMnemonics.reset();
+    resetCreateMnemonics();
   }, [mnemonics]);
 
   return (
-    <Card onBack={() => dispatch.createMnemonics.stepTo('risk-check')} step={1}>
+    <Card onBack={() => stepTo('risk-check')} step={1}>
       <div className="mt-[18px] mb-[9px] text-[28px] font-medium text-r-neutral-title1 text-center">
         {t('page.newAddress.seedPhrase.backup')}
       </div>

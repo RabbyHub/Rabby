@@ -4,7 +4,6 @@ import { app } from './app';
 import { account } from './account';
 import { preference } from './preference';
 import { accountToDisplay } from './accountToDisplay';
-import { createMnemonics } from './createMnemonics';
 import { importMnemonics } from './importMnemonics';
 import { addressManagement } from './addressManagement';
 import { transactions } from './transactions';
@@ -21,7 +20,6 @@ export interface RootModel extends Models<RootModel> {
   account: typeof account;
   preference: typeof preference;
   accountToDisplay: typeof accountToDisplay;
-  createMnemonics: typeof createMnemonics;
   importMnemonics: typeof importMnemonics;
   addressManagement: typeof addressManagement;
   transactions: typeof transactions;
@@ -39,7 +37,6 @@ export const models: RootModel = {
   account,
   preference,
   accountToDisplay,
-  createMnemonics,
   importMnemonics,
   addressManagement,
   transactions,
