@@ -21,6 +21,7 @@ import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
 import { ga4 } from '@/utils/ga4';
+import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -383,7 +384,17 @@ const flowContext = flow
                 payload.params = e.message;
               }
 
-              Sentry.captureException(e);
+              const signingCarrier = takeSigningCarrier(e);
+              if (signingCarrier) {
+                if (!isSigningCarrierReported(signingCarrier)) {
+                  Sentry.captureException(signingCarrier);
+                }
+              } else if (
+                !isSignApproval(approvalType) ||
+                (e && typeof e === 'object')
+              ) {
+                Sentry.captureException(e);
+              }
               if (isSignApproval(approvalType)) {
                 eventBus.emit(EVENTS.broadcastToUI, payload);
               }
