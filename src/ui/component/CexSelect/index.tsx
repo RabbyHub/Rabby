@@ -3,7 +3,7 @@ import React, { ReactNode } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 
-import { useRabbySelector } from '@/ui/store';
+import { useExchangeStore } from '@/ui/state/exchange';
 
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 
@@ -37,9 +37,7 @@ export const CexListSelectModal = ({
   getContainer,
 }: AddressRiskAlertProps) => {
   const { t } = useTranslation();
-  const { exchanges } = useRabbySelector((s) => ({
-    exchanges: s.exchange.exchanges,
-  }));
+  const exchanges = useExchangeStore((state) => state.exchanges);
 
   return (
     <Drawer

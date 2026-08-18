@@ -64,7 +64,7 @@ import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
 import { ga4 } from '@/utils/ga4';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import { getCexInfo } from '@/ui/models/exchange';
+import { getCexInfo } from '@/ui/state/exchange';
 import {
   MultiAction,
   TypeDataActionItem,

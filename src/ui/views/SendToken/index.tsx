@@ -22,7 +22,7 @@ import {
   zeroAddress,
   toChecksumAddress,
 } from '@ethereumjs/util';
-import { globalSupportCexList } from '@/ui/models/exchange';
+import { globalSupportCexList } from '@/ui/state/exchange';
 
 import {
   CHAINS_ENUM,

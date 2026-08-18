@@ -11,7 +11,6 @@ import { chains } from './chains';
 import { customRPC } from './customRPC';
 import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
-import { exchange } from './exchange';
 import { gift } from './gift';
 import { perps } from './perps';
 
@@ -27,7 +26,6 @@ export interface RootModel extends Models<RootModel> {
   customRPC: typeof customRPC;
   bridge: typeof bridge;
   gasAccount: typeof gasAccount;
-  exchange: typeof exchange;
   gift: typeof gift;
   perps: typeof perps;
 }
@@ -44,7 +42,6 @@ export const models: RootModel = {
   customRPC,
   bridge,
   gasAccount,
-  exchange,
   gift,
   perps,
 };

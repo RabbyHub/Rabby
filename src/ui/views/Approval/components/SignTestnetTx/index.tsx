@@ -48,7 +48,7 @@ import {
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import * as Sentry from '@sentry/browser';
-import { getCexInfo } from '@/ui/models/exchange';
+import { getCexInfo } from '@/ui/state/exchange';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 
 const checkGasAndNonce = ({
