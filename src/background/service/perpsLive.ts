@@ -14,6 +14,7 @@ import {
   CandleSnapshot,
   PerpDex,
 } from '@rabby-wallet/hyperliquid-sdk';
+import browser from 'webextension-polyfill';
 import type { Runtime } from 'webextension-polyfill';
 import type { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
 import eventBus from '@/eventBus';
@@ -27,6 +28,7 @@ import {
 } from '@/utils/message/perpsLive';
 import { getHyperliquidCoinLogoUrl } from '@/utils/perps/coinLogo';
 import {
+  ALL_PERPS_QUOTE_ASSETS,
   PerpsQuoteAsset,
   getQuoteAssetFromMeta,
 } from '@/utils/perps/quoteAsset';
@@ -52,7 +54,11 @@ const KLINE_INTERVAL = '15m';
 const TOP_N_KLINE = 3;
 /** Min gap between WS-driven (on-demand) kline kicks; bounds retries if a fetch keeps failing */
 const ON_DEMAND_KLINE_COOLDOWN_MS = 5 * 1000;
-const CATALOG_REFRESH_MS = 24 * 60 * 60 * 1000;
+const CATALOG_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+const CATALOG_CACHE_KEY = 'perpsLiveCatalogV1';
+const CATALOG_CACHE_VERSION = 1;
+const CATALOG_RETRY_BASE_MS = 5 * 60 * 1000;
+const CATALOG_RETRY_MAX_MS = 60 * 60 * 1000;
 const WS_WATCHDOG_INTERVAL_MS = 60 * 1000;
 /**
  * With open positions the assetCtx WS pushes ~every second, so this much
@@ -76,6 +82,58 @@ interface AssetCtxEntry {
 }
 
 type DexClearinghousePair = [string, ClearinghouseState];
+
+interface PerpsLiveCatalogCache {
+  version: typeof CATALOG_CACHE_VERSION;
+  fetchedAt: number;
+  tokenCatalog: PerpTopTokenV3[];
+  dexLookup: Array<{
+    dexId: string;
+    quoteAsset: PerpsQuoteAsset;
+  }>;
+}
+
+function parseCatalogCache(
+  value: unknown,
+  now: number
+): PerpsLiveCatalogCache | null {
+  if (!value || typeof value !== 'object') return null;
+  const candidate = value as Partial<PerpsLiveCatalogCache>;
+  if (
+    candidate.version !== CATALOG_CACHE_VERSION ||
+    typeof candidate.fetchedAt !== 'number' ||
+    !Number.isFinite(candidate.fetchedAt)
+  ) {
+    return null;
+  }
+
+  const age = now - candidate.fetchedAt;
+  if (age < 0 || age >= CATALOG_CACHE_TTL_MS) return null;
+  if (
+    !Array.isArray(candidate.tokenCatalog) ||
+    candidate.tokenCatalog.length === 0 ||
+    !candidate.tokenCatalog.every(
+      (token) =>
+        token && typeof token.name === 'string' && token.name.length > 0
+    )
+  ) {
+    return null;
+  }
+  if (
+    !Array.isArray(candidate.dexLookup) ||
+    candidate.dexLookup.length === 0 ||
+    !candidate.dexLookup.every(
+      (entry) =>
+        entry &&
+        typeof entry.dexId === 'string' &&
+        ALL_PERPS_QUOTE_ASSETS.includes(entry.quoteAsset)
+    )
+  ) {
+    return null;
+  }
+
+  return candidate as PerpsLiveCatalogCache;
+}
 
 /** Avoid float noise like `1.7000000000001` in the reverse-derived markPx */
 function alignDecimals(value: number, refStr: string | undefined): string {
@@ -101,7 +159,7 @@ function appendLivePrice(
   return [...base, livePx];
 }
 
-class PerpsLiveService {
+export class PerpsLiveService {
   private sdk: HyperliquidSDK | null = null;
   private wsClearinghouse: { unsubscribe: () => void } | null = null;
 
@@ -133,23 +191,20 @@ class PerpsLiveService {
 
   /** Keyed by Hyperliquid coin string. DeBank's `t.name` is already in that format — `t.dex_id` is redundant */
   private tokenCatalog = new Map<string, PerpTopTokenV3>();
-  private catalogRefreshTimer: TimerHandle | null = null;
+  private catalogFetchedAt = 0;
+  private catalogLoadPromise: Promise<void> | null = null;
+  private catalogRetryAt = 0;
+  private catalogRetryDelayMs = CATALOG_RETRY_BASE_MS;
 
   /** dex prefix → quoteAsset; main dex uses '' as key */
   private dexLookup = new Map<string, { quoteAsset: PerpsQuoteAsset }>();
 
   private booted = false;
 
-  async boot(): Promise<void> {
+  boot(): void {
     if (this.booted) return;
     this.booted = true;
     console.log('[perpsLive] boot');
-
-    this.sdk = new HyperliquidSDK({
-      isTestnet: false,
-      timeout: 10000,
-      wsConfig: { autoReconnect: true },
-    });
 
     eventBus.addEventListener(
       EVENTS.PERPS.WIDGET_ACCOUNT_CHANGED,
@@ -162,18 +217,6 @@ class PerpsLiveService {
       console.log('[perpsLive] enabledChange');
       this.applyAddress(this.deriveCurrentAddress());
     });
-
-    // 2s ceiling so a slow REST doesn't block SW boot; the pending Promise.all
-    // keeps running and eventually fills the maps anyway.
-    await Promise.race([
-      Promise.all([this.refreshTokenCatalog(), this.refreshDexLookup()]),
-      new Promise<void>((r) => setTimeout(r, 2000)),
-    ]);
-
-    this.catalogRefreshTimer = setInterval(() => {
-      this.refreshTokenCatalog();
-      this.refreshDexLookup();
-    }, CATALOG_REFRESH_MS);
   }
 
   attachPort(port: Port): void {
@@ -234,15 +277,8 @@ class PerpsLiveService {
     this.stopStream();
     this.broadcastWsState('connecting');
 
-    if (!this.sdk) {
-      // Defensive — boot() constructs sdk synchronously.
-      console.warn('[perpsLive] SDK not ready, retrying soon');
-      this.scheduleWsRetry(address);
-      return;
-    }
-    const sdk = this.sdk;
-
     try {
+      const sdk = this.getSdk();
       this.wsClearinghouse = sdk.ws.subscribeToAllDexsClearinghouseState(
         address,
         (data) => this.onAllDexsClearinghouseStates(data)
@@ -253,6 +289,10 @@ class PerpsLiveService {
       this.startWsWatchdog();
       this.broadcastWsState('open');
       console.log('[perpsLive] ws open (all dexs) for', address);
+      // Public display metadata is useful only while the widget has an active
+      // consumer. Cache/session reads and all three REST requests stay behind
+      // the same enabled + port + account gate as the live stream.
+      void this.ensureCatalogs();
     } catch (err) {
       console.warn('[perpsLive] ws subscribe failed, retry in 5s', err);
       this.broadcastWsState('closed');
@@ -287,7 +327,8 @@ class PerpsLiveService {
       this.wsClearinghouse = null;
     }
 
-    // WS disconnects but SDK stays — refreshDexLookup and the next startStream both reuse it.
+    // WS disconnects but the live SDK stays for the next stream and kline fetches.
+    // Catalog refreshes use a separate fresh SDK once their TTL expires.
     if (this.sdk) {
       try {
         this.sdk.disconnectWebSocket();
@@ -325,6 +366,10 @@ class PerpsLiveService {
   private startWsWatchdog(): void {
     this.stopWsWatchdog();
     this.wsWatchdogTimer = setInterval(() => {
+      // Also acts as the active-only catalog TTL check. When there is no live
+      // widget stream, stopWsWatchdog removes this timer, so metadata refreshes
+      // never wake an otherwise idle extension.
+      void this.ensureCatalogs();
       if (!this.currentAddress || !this.sdk) return;
       const quietFor = Date.now() - this.lastWsMessageAt;
       // The quiet-period grace avoids stomping on an in-flight connect or the
@@ -662,12 +707,133 @@ class PerpsLiveService {
     );
   }
 
-  private async refreshTokenCatalog(): Promise<void> {
+  private createSdk(): HyperliquidSDK {
+    return new HyperliquidSDK({
+      isTestnet: false,
+      timeout: 10000,
+      wsConfig: { autoReconnect: true },
+    });
+  }
+
+  private getSdk(): HyperliquidSDK {
+    if (!this.sdk) {
+      this.sdk = this.createSdk();
+    }
+    return this.sdk;
+  }
+
+  private isCatalogFresh(now = Date.now()): boolean {
+    const age = now - this.catalogFetchedAt;
+    return age >= 0 && age < CATALOG_CACHE_TTL_MS;
+  }
+
+  private ensureCatalogs(): Promise<void> {
+    const now = Date.now();
+    if (this.isCatalogFresh(now) || now < this.catalogRetryAt) {
+      return Promise.resolve();
+    }
+    if (this.catalogLoadPromise) return this.catalogLoadPromise;
+
+    const loadPromise = this.loadCatalogs().finally(() => {
+      if (this.catalogLoadPromise === loadPromise) {
+        this.catalogLoadPromise = null;
+      }
+    });
+    this.catalogLoadPromise = loadPromise;
+    return this.catalogLoadPromise;
+  }
+
+  private async loadCatalogs(): Promise<void> {
+    const cached = await this.readCatalogCache();
+    if (cached) {
+      this.applyCatalogCache(cached);
+      return;
+    }
+
+    // The SDK caches these metadata calls for its own lifetime. Reuse the live
+    // SDK for the first load, but use a fresh HTTP client after our TTL expires
+    // so the advertised 24h refresh actually reaches Hyperliquid.
+    const catalogSdk =
+      this.catalogFetchedAt > 0 ? this.createSdk() : this.getSdk();
+    const [tokenCatalogOk, dexLookupOk] = await Promise.all([
+      this.refreshTokenCatalog(),
+      this.refreshDexLookup(catalogSdk),
+    ]);
+    if (!tokenCatalogOk || !dexLookupOk) {
+      this.deferCatalogRetry();
+      return;
+    }
+
+    this.catalogFetchedAt = Date.now();
+    this.resetCatalogRetry();
+    await this.writeCatalogCache();
+  }
+
+  private deferCatalogRetry(now = Date.now()): void {
+    this.catalogRetryAt = now + this.catalogRetryDelayMs;
+    this.catalogRetryDelayMs = Math.min(
+      this.catalogRetryDelayMs * 2,
+      CATALOG_RETRY_MAX_MS
+    );
+  }
+
+  private resetCatalogRetry(): void {
+    this.catalogRetryAt = 0;
+    this.catalogRetryDelayMs = CATALOG_RETRY_BASE_MS;
+  }
+
+  private async readCatalogCache(): Promise<PerpsLiveCatalogCache | null> {
+    try {
+      const session = browser.storage?.session;
+      if (!session) return null;
+      const result = await session.get(CATALOG_CACHE_KEY);
+      return parseCatalogCache(result?.[CATALOG_CACHE_KEY], Date.now());
+    } catch (err) {
+      console.warn('[perpsLive] read catalog cache failed', err);
+      return null;
+    }
+  }
+
+  private applyCatalogCache(cache: PerpsLiveCatalogCache): void {
+    this.tokenCatalog.clear();
+    for (const token of cache.tokenCatalog) {
+      this.tokenCatalog.set(token.name, token);
+    }
+
+    this.dexLookup.clear();
+    for (const entry of cache.dexLookup) {
+      this.dexLookup.set(entry.dexId, { quoteAsset: entry.quoteAsset });
+    }
+    this.catalogFetchedAt = cache.fetchedAt;
+    this.resetCatalogRetry();
+    this.scheduleRebuild();
+  }
+
+  private async writeCatalogCache(): Promise<void> {
+    try {
+      const session = browser.storage?.session;
+      if (!session) return;
+      const cache: PerpsLiveCatalogCache = {
+        version: CATALOG_CACHE_VERSION,
+        fetchedAt: this.catalogFetchedAt,
+        tokenCatalog: Array.from(this.tokenCatalog.values()),
+        dexLookup: Array.from(
+          this.dexLookup.entries()
+        ).map(([dexId, { quoteAsset }]) => ({ dexId, quoteAsset })),
+      };
+      await session.set({ [CATALOG_CACHE_KEY]: cache });
+    } catch (err) {
+      // Cache persistence is an optimization; live data remains usable.
+      console.warn('[perpsLive] write catalog cache failed', err);
+    }
+  }
+
+  private async refreshTokenCatalog(): Promise<boolean> {
     try {
       const list = await openapiService.getPerpTopTokenListV3?.({
         dex_id: 'all',
       });
-      if (!Array.isArray(list)) return;
+      if (!Array.isArray(list) || list.length === 0) return false;
       this.tokenCatalog.clear();
       for (const t of list) {
         if (t?.name) {
@@ -679,15 +845,15 @@ class PerpsLiveService {
         this.tokenCatalog.size
       );
       this.scheduleRebuild();
+      return true;
     } catch (err) {
       console.warn('[perpsLive] refreshTokenCatalog failed', err);
+      return false;
     }
   }
 
   /** perpDexs and allMetas are index-aligned; perpDexs[i] === null marks the main dex (key '') */
-  private async refreshDexLookup(): Promise<void> {
-    if (!this.sdk) return;
-    const sdk = this.sdk;
+  private async refreshDexLookup(sdk: HyperliquidSDK): Promise<boolean> {
     try {
       const [allMetas, perpDexs] = await Promise.all([
         sdk.info.getPerpsAllMetas(),
@@ -704,8 +870,10 @@ class PerpsLiveService {
         this.dexLookup.size
       );
       this.scheduleRebuild();
+      return this.dexLookup.size > 0;
     } catch (err) {
       console.warn('[perpsLive] refreshDexLookup failed', err);
+      return false;
     }
   }
 
