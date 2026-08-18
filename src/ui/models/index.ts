@@ -7,7 +7,6 @@ import { accountToDisplay } from './accountToDisplay';
 import { addressManagement } from './addressManagement';
 import { transactions } from './transactions';
 import { chains } from './chains';
-import { customRPC } from './customRPC';
 import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
 import { gift } from './gift';
@@ -21,7 +20,6 @@ export interface RootModel extends Models<RootModel> {
   addressManagement: typeof addressManagement;
   transactions: typeof transactions;
   chains: typeof chains;
-  customRPC: typeof customRPC;
   bridge: typeof bridge;
   gasAccount: typeof gasAccount;
   gift: typeof gift;
@@ -36,7 +34,6 @@ export const models: RootModel = {
   addressManagement,
   transactions,
   chains,
-  customRPC,
   bridge,
   gasAccount,
   gift,
