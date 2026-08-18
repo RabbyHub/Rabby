@@ -307,10 +307,7 @@ const isLedgerUserCancellation = (err: unknown, depth = 0): boolean => {
   if (!err || depth > 6 || typeof err !== 'object') return false;
   return (
     (err as { _tag?: unknown })._tag === 'RefusedByUserDAError' ||
-    isLedgerUserCancellation(
-      (err as { cause?: unknown }).cause,
-      depth + 1
-    )
+    isLedgerUserCancellation((err as { cause?: unknown }).cause, depth + 1)
   );
 };
 
@@ -776,7 +773,8 @@ class LedgerBridgeKeyring {
       (attempt ? ledgerAttemptBySigningAttempt.get(attempt) : undefined) ??
       (error && typeof error === 'object'
         ? ledgerAttemptByError.get(error)
-        : undefined) ?? findLedgerActionDiagnostics(error);
+        : undefined) ??
+      findLedgerActionDiagnostics(error);
     return {
       wallet_provider: 'ledger',
       transport: 'webhid',

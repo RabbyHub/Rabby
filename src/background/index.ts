@@ -274,7 +274,7 @@ async function restoreAppState() {
   await sendReadyMessageToTabs();
   subscribeTxCompleted({ preferenceService });
 
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'getBackgroundReady') {
       sendResponse({
         data: {
