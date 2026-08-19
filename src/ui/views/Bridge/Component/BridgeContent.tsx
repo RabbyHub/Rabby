@@ -1069,8 +1069,6 @@ export const BridgeContent = () => {
     runBuildBridgeTxsKeyRef.current = '';
   }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
-  const [showMoreOpen, setShowMoreOpen] = useState(false);
-
   const switchFeePopup = useSetSettingVisible();
 
   const openFeePopup = useCallback(() => {
@@ -1209,8 +1207,6 @@ export const BridgeContent = () => {
               supportDirectSign={canUseDirectSubmitTx}
               signatureInstance={instance}
               openFeePopup={openFeePopup}
-              open={showMoreOpen}
-              setOpen={setShowMoreOpen}
               sourceName={selectedBridgeQuote?.aggregator.name || ''}
               sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
               duration={selectedBridgeQuote?.duration || 0}

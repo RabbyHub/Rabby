@@ -1107,8 +1107,6 @@ export const Main = () => {
     },
   });
 
-  const [showMoreOpen, setShowMoreOpen] = useState(false);
-
   const [sourceName, sourceLogo] = useMemo(() => {
     if (activeProvider?.name) {
       if (isWrapToken) {
@@ -1141,12 +1139,6 @@ export const Main = () => {
   );
 
   const noQuote = useSyncStaleValue(noQuoteOrigin, 10);
-
-  useEffect(() => {
-    if (noQuote) {
-      setShowMoreOpen(true);
-    }
-  }, [noQuote]);
 
   const setRabbyFeeVisible = useSetRabbyFee();
 
@@ -1379,8 +1371,6 @@ export const Main = () => {
               signatureInstance={instance}
               autoSuggestSlippage={autoSuggestSlippage}
               openFeePopup={openFeePopup}
-              open={showMoreOpen}
-              setOpen={setShowMoreOpen}
               sourceName={sourceName}
               sourceLogo={sourceLogo}
               slippage={slippageState}

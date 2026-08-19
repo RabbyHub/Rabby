@@ -8,16 +8,13 @@ import {
 import { Button, Skeleton, Switch, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
-  Dispatch,
   PropsWithChildren,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ReactComponent as IconArrowDownCC } from 'ui/assets/bridge/tiny-down-arrow-cc.svg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
@@ -106,8 +103,6 @@ export const BridgeShowMore = ({
   isCustomSlippage,
   setAutoSlippage,
   setIsCustomSlippage,
-  open,
-  setOpen,
   type,
   isWrapToken,
   isBestQuote,
@@ -122,8 +117,6 @@ export const BridgeShowMore = ({
   signatureInstance,
   isRabbyFeeFree = false,
 }: {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
   openQuotesList: () => void;
   sourceName: string;
   sourceLogo: string;
@@ -405,7 +398,7 @@ export const BridgeShowMore = ({
         <div />
       </div>
 
-      <div className={clsx('overflow-hidden', !open && 'h-0')}>
+      <div>
         {!sourceAlwaysShow && sourceContentRender()}
         {!showSlippageError && (
           <BridgeSlippage
@@ -450,28 +443,6 @@ export const BridgeShowMore = ({
             </Tooltip>
           </ListItem>
         ) : null}
-      </div>
-
-      <div className="flex items-center justify-center gap-8 mt-8">
-        <div
-          className={clsx(
-            'flex items-center opacity-50',
-            'cursor-pointer',
-            'text-r-neutral-foot text-12'
-          )}
-          onClick={() => setOpen((e) => !e)}
-        >
-          <span>{t('page.bridge.showMore.title')}</span>
-          <IconArrowDownCC
-            viewBox="0 0 14 14"
-            width={14}
-            height={14}
-            className={clsx(
-              'transition-transform',
-              open && 'rotate-180 translate-y-1'
-            )}
-          />
-        </div>
       </div>
     </div>
   );
