@@ -1387,7 +1387,6 @@ export const Main = () => {
               openQuotesList={openQuotesList}
               quoteLoading={quoteLoading}
               gasFeeLoading={directSignTxPreparing}
-              slippageError={isSlippageHigh || isSlippageLow}
               autoSlippage={!!autoSlippage}
               isCustomSlippage={isCustomSlippage}
               setAutoSlippage={setAutoSlippage}

@@ -98,7 +98,6 @@ export const BridgeShowMore = ({
   toAmount,
   quoteLoading,
   gasFeeLoading,
-  slippageError,
   autoSlippage,
   isCustomSlippage,
   setAutoSlippage,
@@ -131,7 +130,6 @@ export const BridgeShowMore = ({
   toAmount?: string | number;
   quoteLoading?: boolean;
   gasFeeLoading?: boolean;
-  slippageError?: boolean;
   autoSlippage: boolean;
   isCustomSlippage: boolean;
   insufficient?: boolean;
@@ -189,9 +187,7 @@ export const BridgeShowMore = ({
     return undefined;
   }, [isBestQuote]);
 
-  const showSlippageError = slippageError;
-  const showSourceFallback =
-    insufficient || !fromToken || !supportDirectSign;
+  const showSourceFallback = insufficient || !fromToken || !supportDirectSign;
 
   const showMinDuration = useMemo(() => {
     return Math.max(Math.round((duration || 0) / 60), 1);
@@ -334,10 +330,7 @@ export const BridgeShowMore = ({
   }, [data, quoteLoading, toToken, fromToken]);
 
   const rabbyFeeContentRender = () => (
-    <ListItem
-      name={t('page.swap.rabbyFee.title')}
-      className={isRabbyFeeFree ? 'h-18' : 'mt-12 h-18'}
-    >
+    <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
       <div
         className={clsx(
           'text-12 font-medium',
@@ -384,49 +377,27 @@ export const BridgeShowMore = ({
             signatureInstance={signatureInstance}
             sourceSelector={sourceSelectorRender()}
           />
-        ) : type === 'bridge' ? (
+        ) : (
           sourceContentRender()
-        ) : null}
-
-        {isRabbyFeeFree && rabbyFeeContentRender()}
-
-        {showSlippageError && (
-          <BridgeSlippage
-            autoSuggestSlippage={autoSuggestSlippage}
-            value={slippage}
-            displaySlippage={displaySlippage}
-            onChange={onSlippageChange}
-            autoSlippage={autoSlippage}
-            isCustomSlippage={isCustomSlippage}
-            setAutoSlippage={setAutoSlippage}
-            setIsCustomSlippage={setIsCustomSlippage}
-            type={type}
-            isWrapToken={isWrapToken}
-            recommendValue={recommendValue}
-          />
         )}
-        <div />
+
+        <BridgeSlippage
+          autoSuggestSlippage={autoSuggestSlippage}
+          value={slippage}
+          displaySlippage={displaySlippage}
+          onChange={onSlippageChange}
+          autoSlippage={autoSlippage}
+          isCustomSlippage={isCustomSlippage}
+          setAutoSlippage={setAutoSlippage}
+          setIsCustomSlippage={setIsCustomSlippage}
+          type={type}
+          isWrapToken={isWrapToken}
+          recommendValue={recommendValue}
+        />
       </div>
 
       <div>
-        {showSourceFallback && type === 'swap' && sourceContentRender()}
-        {!showSlippageError && (
-          <BridgeSlippage
-            autoSuggestSlippage={autoSuggestSlippage}
-            value={slippage}
-            displaySlippage={displaySlippage}
-            onChange={onSlippageChange}
-            autoSlippage={autoSlippage}
-            isCustomSlippage={isCustomSlippage}
-            setAutoSlippage={setAutoSlippage}
-            setIsCustomSlippage={setIsCustomSlippage}
-            type={type}
-            isWrapToken={isWrapToken}
-            recommendValue={recommendValue}
-          />
-        )}
-
-        {!isRabbyFeeFree && rabbyFeeContentRender()}
+        {rabbyFeeContentRender()}
 
         {showMEVGuardedSwitch && type === 'swap' ? (
           <ListItem
