@@ -1,6 +1,7 @@
 import { Account } from '@/background/service/preference';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { Chain } from '@debank/common';
@@ -238,11 +239,13 @@ export const MiniFooterBar: React.FC<Props> = ({
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const {
-    rules,
-    currentTx: { processedRules },
-    openRuleDrawer,
-  } = useSecurityEngineStore();
+  const { rules, processedRules, openRuleDrawer } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
 
   const currentChain = useMemo(() => {
     if (origin === INTERNAL_REQUEST_ORIGIN) {

@@ -565,6 +565,9 @@ export const EVENTS = {
   },
   LOCK_WALLET: 'LOCK_WALLET',
   UNLOCK_WALLET: 'UNLOCK_WALLET',
+  // Boot/lock state changed out of band. Unlike LOCK_WALLET this carries no
+  // navigation intent, so the page that triggered the change keeps its route.
+  WALLET_STATUS_CHANGED: 'WALLET_STATUS_CHANGED',
   RELOAD_TX: 'RELOAD_TX',
   SIGN_BEGIN: 'SIGN_BEGIN',
   SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',

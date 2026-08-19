@@ -12,6 +12,7 @@ import {
 import { formatAmount } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import ViewMore from './components/ViewMore';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { SecurityListItem } from './components/SecurityListItem';
@@ -53,10 +54,17 @@ const WrapToken = ({
 
   const {
     rules,
-    currentTx: { processedRules },
-    userData: { contractWhitelist },
+    processedRules,
+    contractWhitelist,
     openRuleDrawer,
-  } = useSecurityEngineStore();
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      contractWhitelist: s.userData.contractWhitelist,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
   const { t } = useTranslation();
 
   const isInWhitelist = useMemo(() => {

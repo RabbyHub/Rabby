@@ -14,6 +14,7 @@ import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import ViewMore from './components/ViewMore';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { SecurityListItem } from './components/SecurityListItem';
 import { isSameAddress } from '@/ui/utils';
 import { ProtocolListItem } from './components/ProtocolListItem';
@@ -53,10 +54,17 @@ const UnWrapToken = ({
 
   const {
     rules,
-    currentTx: { processedRules },
-    userData: { contractWhitelist },
+    processedRules,
+    contractWhitelist,
     openRuleDrawer,
-  } = useSecurityEngineStore();
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      contractWhitelist: s.userData.contractWhitelist,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
   const { t } = useTranslation();
 
   const isInWhitelist = useMemo(() => {

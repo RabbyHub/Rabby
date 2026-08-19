@@ -10,6 +10,7 @@ import { useWallet } from '@/ui/utils';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 
 interface Props {
   chain?: Chain;
@@ -63,10 +64,17 @@ export const OriginInfo: React.FC<Props> = ({
   ] = React.useState<ConnectedSite | null>(null);
   const {
     rules,
-    currentTx: { processedRules },
+    processedRules,
     openRuleDrawer,
-    init: initSecurityEngine,
-  } = useSecurityEngineStore();
+    initSecurityEngine,
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+      initSecurityEngine: s.init,
+    }))
+  );
 
   const currentChain = useMemo(() => {
     if (origin === INTERNAL_REQUEST_ORIGIN) {
