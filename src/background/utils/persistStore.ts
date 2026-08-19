@@ -185,6 +185,12 @@ interface CreatePersistStoreParams<T> {
   template?: T;
   fromStorage?: boolean;
   schema?: PersistStoreSchema<T>;
+  /**
+   * Keys the UI is allowed to see. When set, every other key stays inside the
+   * background: it is still persisted, just never broadcast. Omit to share the
+   * whole store, which is the default.
+   */
+  broadcastKeys?: ReadonlyArray<keyof T & string>;
 }
 
 const createPersistStore = async <T extends object>({
@@ -192,6 +198,7 @@ const createPersistStore = async <T extends object>({
   template = Object.create(null),
   fromStorage = true,
   schema,
+  broadcastKeys,
 }: CreatePersistStoreParams<T>): Promise<T> => {
   let tpl = template;
 
@@ -222,11 +229,24 @@ const createPersistStore = async <T extends object>({
     persistStorage(name, target);
     const revision = nextPersistStoreRevision(name);
 
+    const sharedKeys = broadcastKeys
+      ? changedKeys.filter((key) =>
+          broadcastKeys.includes(key as keyof T & string)
+        )
+      : changedKeys;
+    if (!sharedKeys.length) return;
+
+    const sharedPartials = broadcastKeys
+      ? (Object.fromEntries(
+          sharedKeys.map((key) => [key, partials[key as keyof T]])
+        ) as Partial<T>)
+      : partials;
+
     syncStateToUI(BROADCAST_TO_UI_EVENTS.storeChanged, {
       bgStoreName: name,
-      changedKey: changedKeys[0]!,
-      changedKeys,
-      partials,
+      changedKey: sharedKeys[0]!,
+      changedKeys: sharedKeys,
+      partials: sharedPartials,
       origin: persistStoreOrigin,
       revision,
     });

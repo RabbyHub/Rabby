@@ -32,6 +32,9 @@ jest.mock('@/ui/wallet', () => ({
       },
     }),
     setStorageItem: jest.fn().mockResolvedValue(undefined),
+    setCustomRPC: jest.fn().mockResolvedValue(undefined),
+    setRPCEnable: jest.fn().mockResolvedValue(undefined),
+    removeCustomRPC: jest.fn().mockResolvedValue(undefined),
   },
 }));
 
@@ -53,7 +56,7 @@ describe('custom RPC store', () => {
     });
   });
 
-  test('optimistically adds an RPC and persists only the custom RPC field', async () => {
+  test('adds an RPC through the per-chain controller, not a map write', async () => {
     (wallet.setStorageItem as jest.Mock).mockClear();
 
     await useCustomRPCStore.getState().setCustomRPC({
@@ -61,26 +64,36 @@ describe('custom RPC store', () => {
       url: 'https://bsc.example',
     });
 
-    expect(useCustomRPCStore.getState().customRPC.BSC).toEqual({
-      url: 'https://bsc.example',
-      enable: true,
-    });
-    expect(wallet.setStorageItem).toHaveBeenCalledWith(
-      'rpc',
-      {
-        customRPC: {
-          ETH: {
-            url: 'https://eth.example',
-            enable: true,
-          },
-          BSC: {
-            url: 'https://bsc.example',
-            enable: true,
-          },
-        },
-      },
-      []
+    expect(wallet.setCustomRPC).toHaveBeenCalledWith(
+      CHAINS_ENUM.BSC,
+      'https://bsc.example'
     );
+    // Persisting the whole map here would be last-writer-wins against any
+    // other UI context; the background merges one chain and broadcasts back.
+    expect(wallet.setStorageItem).not.toHaveBeenCalled();
+  });
+
+  test('toggles and removes through the per-chain controller', async () => {
+    (wallet.setStorageItem as jest.Mock).mockClear();
+
+    await useCustomRPCStore
+      .getState()
+      .setRPCEnable({ chain: CHAINS_ENUM.ETH, enable: false });
+    await useCustomRPCStore.getState().deleteCustomRPC(CHAINS_ENUM.ETH);
+
+    expect(wallet.setRPCEnable).toHaveBeenCalledWith(CHAINS_ENUM.ETH, false);
+    expect(wallet.removeCustomRPC).toHaveBeenCalledWith(CHAINS_ENUM.ETH);
+    expect(wallet.setStorageItem).not.toHaveBeenCalled();
+  });
+
+  test('skips toggling a chain the snapshot does not know', async () => {
+    (wallet.setRPCEnable as jest.Mock).mockClear();
+
+    await useCustomRPCStore
+      .getState()
+      .setRPCEnable({ chain: CHAINS_ENUM.BSC, enable: true });
+
+    expect(wallet.setRPCEnable).not.toHaveBeenCalled();
   });
 
   test('applies background RPC changes without writing them back', () => {

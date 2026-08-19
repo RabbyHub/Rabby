@@ -1,12 +1,12 @@
 import type { CurrencyStore } from '@/background/service/currency';
-import type { OpenapiServiceStore } from '@/background/service/openapi';
+import type { PublicOpenapiStore } from '@/background/service/openapi';
 import type { CustomRPCServiceStore } from '@/background/service/rpc';
 import type { SwapServiceStore } from '@/background/service/swap';
 import type { WhitelistStore } from '@/background/service/whitelist';
 
 export type PersistedStoreMap = {
   currency: CurrencyStore;
-  openapi: OpenapiServiceStore;
+  openapi: PublicOpenapiStore;
   rpc: CustomRPCServiceStore;
   swap: SwapServiceStore;
   whitelist: WhitelistStore;
