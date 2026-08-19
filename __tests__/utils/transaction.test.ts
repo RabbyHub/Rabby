@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import {
   buildParseTxRequest,
   buildPreExecTxRequest,
-  getTxFingerprint,
   normalizeTxParams,
   checkGasAndNonce,
   explainGas,
@@ -230,15 +229,4 @@ test('normalizeTxParams keeps background and UI transaction fields equivalent', 
     value: '0x4',
     data: '0xabcd',
   });
-});
-
-test('getTxFingerprint changes when effective gas parameters change', () => {
-  const tx = { from: '0xfrom', gas: '0x5208', gasPrice: '0x1' } as any;
-
-  expect(getTxFingerprint(tx)).not.toBe(
-    getTxFingerprint({ ...tx, gasPrice: '0x2' })
-  );
-  expect(getTxFingerprint(tx)).not.toBe(
-    getTxFingerprint({ ...tx, gas: '0x7530' })
-  );
 });

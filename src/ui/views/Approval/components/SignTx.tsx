@@ -11,7 +11,6 @@ import {
   getGasTokenBalance,
   getKRCategoryByType,
   getPendingTxs,
-  getTxFingerprint,
   is7702Tx,
   normalizeTxParams as normalizeTransactionParams,
   validateGasPriceRange,
@@ -1129,16 +1128,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       !isGnosisAccount &&
       !isCoboArugsAccount;
     const prepared = canUsePreparation ? preparation : undefined;
-    const canUsePreparedTxResults =
-      !!prepared && getTxFingerprint(tx) === prepared.txFingerprint;
     const preparedRecommendNonce = prepared?.recommendNonce;
     const preparedPendingTxList = prepared?.pendingTxList;
-    const preparedParseTx = canUsePreparedTxResults
-      ? prepared.parseTx
-      : undefined;
-    const preparedPreExecTx = canUsePreparedTxResults
-      ? prepared.preExecTx
-      : undefined;
+    const preparedParseTx = prepared?.parseTx;
+    const preparedPreExecTx = prepared?.preExecTx;
     if (preparation) {
       stats.report('signTxPreparationTiming', {
         type: 'transaction',

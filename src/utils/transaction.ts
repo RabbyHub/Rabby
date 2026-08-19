@@ -100,24 +100,6 @@ export const normalizeTxParams = (tx: Tx, isDapp = false) => {
     : copy) as Tx;
 };
 
-export const getTxFingerprint = (tx: Tx) => {
-  const params = tx as Tx & Record<string, any>;
-  return JSON.stringify({
-    chainId: params.chainId,
-    from: params.from,
-    to: params.to,
-    data: params.data || '0x',
-    value: params.value || '0x0',
-    gas: params.gas || params.gasLimit || '',
-    gasPrice: params.gasPrice,
-    maxFeePerGas: params.maxFeePerGas,
-    maxPriorityFeePerGas: params.maxPriorityFeePerGas,
-    authorizationList: params.authorizationList,
-    feeToken: params.feeToken,
-    operation: params.operation,
-  });
-};
-
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = findChain({
     id: tx.chainId,
