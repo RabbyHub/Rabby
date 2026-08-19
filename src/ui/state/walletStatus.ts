@@ -23,6 +23,39 @@ const initialState: WalletStatusState = {
   isSyncing: false,
 };
 
+export type PrivateRouteDecision = 'pending' | 'render' | 'redirect';
+
+/**
+ * Decides what a guarded route shows for a given wallet-status snapshot.
+ * Kept pure and free of React so the lock gating can be tested directly.
+ */
+export const resolvePrivateRouteDecision = ({
+  isInitialized,
+  isSyncing,
+  isUnlocked,
+  pathname,
+}: Pick<WalletStatusState, 'isInitialized' | 'isSyncing' | 'isUnlocked'> & {
+  pathname: string;
+}): PrivateRouteDecision => {
+  // Waiting on a locked snapshot keeps an unlock navigation from bouncing
+  // straight back to /unlock. An already-unlocked snapshot stays on screen
+  // while it refreshes: background reconnects (MV3 service-worker restarts)
+  // resync every time, and blanking would unmount the whole protected tree,
+  // discarding in-flight approval, import and send state.
+  if (!isInitialized || (isSyncing && !isUnlocked)) {
+    return 'pending';
+  }
+  // Keep children mounted across route switches (keep-alive).
+  if (isUnlocked) {
+    return 'render';
+  }
+  // Guards keep running on /unlock; redirecting again would nest `from` and loop.
+  if (pathname === '/unlock') {
+    return 'pending';
+  }
+  return 'redirect';
+};
+
 let latestSyncRequest = 0;
 let subscribed = false;
 
@@ -52,7 +85,10 @@ export async function syncWalletStatus() {
     });
   } catch (error) {
     if (request === latestSyncRequest) {
-      useWalletStatusStore.setState({ isSyncing: false });
+      // Fail closed. Keeping the previous snapshot would leave a page gated on
+      // a stale `isUnlocked: true` with no revalidation path, so an unreadable
+      // status is treated as locked until a later sync proves otherwise.
+      useWalletStatusStore.setState({ isUnlocked: false, isSyncing: false });
     }
     throw error;
   }
@@ -77,6 +113,9 @@ const subscribeWalletStatus = () => {
 
   eventBus.addEventListener(EVENTS.UNLOCK_WALLET, syncAfterWalletEvent);
   eventBus.addEventListener(EVENTS.LOCK_WALLET, syncAfterLock);
+  // No optimistic write here: a reset can clear `booted` without locking, so
+  // the authoritative read decides rather than an assumption about direction.
+  eventBus.addEventListener(EVENTS.WALLET_STATUS_CHANGED, syncAfterWalletEvent);
   onWalletReconnect(syncAfterWalletEvent);
 };
 

@@ -7,6 +7,7 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
@@ -59,10 +60,17 @@ const Permit = ({
   const { t } = useTranslation();
   const {
     rules,
-    currentTx: { processedRules },
-    userData: { contractWhitelist },
+    processedRules,
+    contractWhitelist,
     openRuleDrawer,
-  } = useSecurityEngineStore();
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      contractWhitelist: s.userData.contractWhitelist,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
 
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(

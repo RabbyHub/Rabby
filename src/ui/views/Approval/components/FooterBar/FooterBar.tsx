@@ -1,6 +1,7 @@
 import { Account } from '@/background/service/preference';
 import { FallbackSiteLogo } from '@/ui/component';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { useWallet } from '@/ui/utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Chain } from '@debank/common';
@@ -191,11 +192,13 @@ export const FooterBar: React.FC<Props> = ({
   const wallet = useWallet();
   const { t } = useTranslation();
 
-  const {
-    rules,
-    currentTx: { processedRules },
-    openRuleDrawer,
-  } = useSecurityEngineStore();
+  const { rules, processedRules, openRuleDrawer } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
 
   const currentChain = useMemo(() => {
     if (origin === INTERNAL_REQUEST_ORIGIN) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import SecurityLevelTagNoText from '../../SecurityEngine/SecurityLevelTagNoText';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import styled from 'styled-components';
 
@@ -17,11 +18,13 @@ export const SecurityListItemTag: React.FC<Props> = ({
   engineResult,
   inSubTable,
 }) => {
-  const {
-    rules,
-    currentTx: { processedRules },
-    openRuleDrawer,
-  } = useSecurityEngineStore();
+  const { rules, processedRules, openRuleDrawer } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;

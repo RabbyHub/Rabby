@@ -218,3 +218,53 @@ describe('patchPersistStore', () => {
     expect(store.count).toBe(0);
   });
 });
+
+describe('broadcastKeys', () => {
+  const secretStoreSchema = z.object({
+    host: z.string(),
+    apiKey: z.string().nullable(),
+  });
+  type SecretStore = z.output<typeof secretStoreSchema>;
+
+  const createStore = (name: string) => {
+    (storage.get as jest.Mock).mockResolvedValue(undefined);
+    return createPersistStore<SecretStore>({
+      name,
+      template: { host: 'https://api.example.com', apiKey: null },
+      schema: secretStoreSchema,
+      broadcastKeys: ['host'],
+    });
+  };
+
+  test('keeps unlisted keys out of the UI broadcast', async () => {
+    const store = await createStore('test-broadcast-secret');
+    (syncStateToUI as jest.Mock).mockClear();
+
+    patchPersistStore(store, { apiKey: 'secret' });
+
+    // Still persisted for the background's own use, just never shared.
+    expect(store.apiKey).toBe('secret');
+    expect(syncStateToUI).not.toHaveBeenCalled();
+  });
+
+  test('broadcasts only the listed half of a mixed patch', async () => {
+    const store = await createStore('test-broadcast-mixed');
+    (syncStateToUI as jest.Mock).mockClear();
+
+    patchPersistStore(store, {
+      host: 'https://next.example.com',
+      apiKey: 'secret',
+    });
+
+    expect(store.apiKey).toBe('secret');
+    expect(syncStateToUI).toHaveBeenCalledTimes(1);
+    expect(syncStateToUI).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        changedKey: 'host',
+        changedKeys: ['host'],
+        partials: { host: 'https://next.example.com' },
+      })
+    );
+  });
+});

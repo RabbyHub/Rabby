@@ -36,6 +36,7 @@ import { calcMaxPriorityFee, GasTokenInfo } from '@/utils/transaction';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { getGasLevelI18nKey } from '@/ui/utils/trans';
@@ -247,10 +248,17 @@ const GasSelectorHeader = ({
 
   const {
     rules,
-    currentTx: { processedRules },
+    processedRules,
     openRuleDrawer,
-    init: initSecurityEngine,
-  } = useSecurityEngineStore();
+    initSecurityEngine,
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+      initSecurityEngine: s.init,
+    }))
+  );
 
   const loadCustomGasData = useCallback(
     async (custom?: number): Promise<GasLevel> => {

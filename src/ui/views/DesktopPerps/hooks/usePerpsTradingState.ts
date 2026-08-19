@@ -95,13 +95,6 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
     return marketDataMap?.[selectedCoin] || null;
   }, [marketDataMap, selectedCoin]);
 
-  const crossMargin = React.useMemo(() => {
-    return (
-      Number(clearinghouseState?.crossMarginSummary.accountValue || 0) -
-      Number(clearinghouseState?.crossMaintenanceMarginUsed || 0)
-    );
-  }, [clearinghouseState?.crossMarginSummary.accountValue]);
-
   // Get current position for selected coin
   const currentPosition: Position | null = React.useMemo(() => {
     const position = clearinghouseState?.assetPositions?.find(
@@ -143,6 +136,24 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
   const leverageType = wsActiveAssetData?.leverage.type || 'isolated';
 
   const { availableBalance: withdrawableBalance } = usePerpsAccount();
+
+  // Cross-margin buffer backing a new order, per direction. `activeAssetData`
+  // is subscribed for the selected coin, so `availableToTrade` is already
+  // scoped to that market's DEX and collateral token — which is what the
+  // liquidation estimate needs. Summing every DEX's `crossMarginSummary`
+  // instead collapses a unified account's buffer down to the perp DEXs' own
+  // equity (its collateral sits in the spot account) and pushes the estimated
+  // liquidation price right up against the mark.
+  const crossAvailable = React.useMemo(
+    () => ({
+      Long: Number(wsActiveAssetData?.availableToTrade?.[0] || 0),
+      Short: Number(wsActiveAssetData?.availableToTrade?.[1] || 0),
+    }),
+    [
+      wsActiveAssetData?.availableToTrade?.[0],
+      wsActiveAssetData?.availableToTrade?.[1],
+    ]
+  );
 
   // Available balance - direction-agnostic min of buy/sell available.
   const availableBalance = React.useMemo(() => {
@@ -264,7 +275,9 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
       const netNewMarginBN = netNewUsdBN.dividedBy(leverage);
       const liqPrice = calLiquidationPrice(
         pxBN.toNumber(),
-        leverageType === 'cross' ? crossMargin : netNewMarginBN.toNumber(),
+        leverageType === 'cross'
+          ? crossAvailable[direction]
+          : netNewMarginBN.toNumber(),
         direction,
         netNewBN.toNumber(),
         netNewUsdBN.toNumber(),
@@ -285,7 +298,7 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
       };
     },
     [
-      crossMargin,
+      crossAvailable,
       markPrice,
       leverageType,
       leverage,
@@ -447,7 +460,6 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
   return {
     currentPerpsAccount,
     leverageType,
-    crossMargin,
     selectedCoin,
     positionSize,
     setPositionSize,

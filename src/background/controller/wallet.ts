@@ -2151,15 +2151,18 @@ export class WalletController extends BaseController {
   lockWallet = async () => {
     await keyringService.setLocked();
     cancelAllSignTxPreparations();
+    // The keyring is locked from here on, so tell the UI before the remaining
+    // best-effort cleanup. A throw below must not leave open pages rendering
+    // protected content against a stale "unlocked" snapshot.
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.LOCK_WALLET,
+    });
     if (isManifestV3) {
       await Browser.storage.session.clear();
     }
     sessionService.broadcastEvent('accountsChanged', []);
     sessionService.broadcastEvent('lock');
     setPopupIcon('locked');
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.LOCK_WALLET,
-    });
   };
 
   setAutoLockTime = (time: number) => {
@@ -6908,15 +6911,21 @@ export class WalletController extends BaseController {
 
   resetPassword = async (password: string) => {
     await keyringService.resetPassword(password);
+    // Not LOCK_WALLET: that event also drives `useAutoLock`, which would
+    // redirect the Forgot Password page to /unlock before it can render its
+    // next step. Other pages still re-gate off the refreshed status.
     eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.LOCK_WALLET,
+      method: EVENTS.WALLET_STATUS_CHANGED,
     });
   };
 
   resetBooted = async () => {
     await keyringService.resetBooted();
+    // This clears `booted` without locking, so the correct destination for
+    // other open pages is /welcome -- which PrivateRoute resolves once the
+    // status refreshes, unlike LOCK_WALLET's hardcoded /unlock.
     eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.LOCK_WALLET,
+      method: EVENTS.WALLET_STATUS_CHANGED,
     });
   };
 
