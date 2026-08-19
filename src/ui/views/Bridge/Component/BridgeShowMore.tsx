@@ -154,7 +154,6 @@ export const BridgeShowMore = ({
   isRabbyFeeFree?: boolean;
 }) => {
   const { t } = useTranslation();
-  const sourceAlwaysShow = type === 'bridge';
 
   const RABBY_FEE = '0.25%';
 
@@ -191,6 +190,8 @@ export const BridgeShowMore = ({
   }, [isBestQuote]);
 
   const showSlippageError = slippageError;
+  const showSourceFallback =
+    insufficient || !fromToken || !supportDirectSign;
 
   const showMinDuration = useMemo(() => {
     return Math.max(Math.round((duration || 0) / 60), 1);
@@ -207,16 +208,9 @@ export const BridgeShowMore = ({
     return 'text-r-blue-default';
   }, [showMinDuration]);
 
-  const sourceContentRender = useMemoizedFn(() => {
+  const sourceSelectorRender = useMemoizedFn(() => {
     return (
-      <ListItem
-        name={
-          type === 'bridge'
-            ? t('page.bridge.showMore.source')
-            : t('page.swap.source')
-        }
-        className="mb-12 h-18"
-      >
+      <>
         {quoteLoading ? (
           <Skeleton.Input
             active
@@ -269,6 +263,21 @@ export const BridgeShowMore = ({
             )}
           </div>
         )}
+      </>
+    );
+  });
+
+  const sourceContentRender = useMemoizedFn(() => {
+    return (
+      <ListItem
+        name={
+          type === 'bridge'
+            ? t('page.bridge.showMore.source')
+            : t('page.swap.source')
+        }
+        className="mb-12 h-18"
+      >
+        {sourceSelectorRender()}
       </ListItem>
     );
   });
@@ -363,11 +372,9 @@ export const BridgeShowMore = ({
   return (
     <div className="mx-16">
       <div className={isRabbyFeeFree ? 'space-y-12' : 'space-y-16'}>
-        {sourceAlwaysShow && sourceContentRender()}
-
         {lostValueContentRender()}
 
-        {!insufficient && fromToken && supportDirectSign ? (
+        {!showSourceFallback && fromToken ? (
           <DirectSignGasInfo
             supportDirectSign={supportDirectSign}
             loading={!!quoteLoading || !!gasFeeLoading}
@@ -375,7 +382,10 @@ export const BridgeShowMore = ({
             noQuote={!sourceLogo && !sourceName}
             chainServeId={fromToken?.chain}
             signatureInstance={signatureInstance}
+            sourceSelector={sourceSelectorRender()}
           />
+        ) : type === 'bridge' ? (
+          sourceContentRender()
         ) : null}
 
         {isRabbyFeeFree && rabbyFeeContentRender()}
@@ -399,7 +409,7 @@ export const BridgeShowMore = ({
       </div>
 
       <div>
-        {!sourceAlwaysShow && sourceContentRender()}
+        {showSourceFallback && type === 'swap' && sourceContentRender()}
         {!showSlippageError && (
           <BridgeSlippage
             autoSuggestSlippage={autoSuggestSlippage}
@@ -476,6 +486,7 @@ export const DirectSignGasInfo = ({
   type = 'bridge',
   chainServeId,
   signatureInstance,
+  sourceSelector,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
@@ -484,6 +495,7 @@ export const DirectSignGasInfo = ({
   type?: 'send' | 'swap' | 'bridge';
   chainServeId: string;
   signatureInstance: SignatureManager;
+  sourceSelector?: React.ReactNode;
 }) => {
   const wallet = useWallet();
   const { cachedTokenList } = useRabbySelector((s) => ({
@@ -1160,6 +1172,7 @@ export const DirectSignGasInfo = ({
             onSelectTempoGasToken={handleSelectTempoGasToken}
             tempoGasTokenLoading={tempoGasTokenLoading}
             getContainer={getContainer}
+            rightPrefix={sourceSelector}
           />
         </div>
       ) : !loading && noQuote ? (
@@ -1167,6 +1180,7 @@ export const DirectSignGasInfo = ({
           name={<>{'Gas fee'}</>}
           className={clsx(type !== 'send' && 'mt-12')}
         >
+          {sourceSelector}
           <div>-</div>
         </ListItem>
       ) : (
@@ -1174,6 +1188,7 @@ export const DirectSignGasInfo = ({
           name={<>{'Gas fee'}</>}
           className={clsx(type !== 'send' && 'mt-12')}
         >
+          {sourceSelector}
           <Skeleton.Input
             active
             className="rounded"
@@ -1215,7 +1230,7 @@ function ListItem({
       )}
     >
       <span>{name}</span>
-      <div className="flex items-center">{children}</div>
+      <div className="flex items-center gap-8">{children}</div>
     </div>
   );
 }

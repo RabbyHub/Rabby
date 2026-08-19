@@ -66,6 +66,7 @@ export interface SignMainnetGasSelectorHeaderProps
   onAutoChangeGasMethod?: (value: 'native' | 'gasAccount') => void;
   disableAutoGasLevelSwitch?: boolean;
   onCustomGasSheetOpen?: () => void;
+  rightPrefix?: React.ReactNode;
 }
 
 export const SignMainnetGasSelectorHeader = ({
@@ -95,6 +96,7 @@ export const SignMainnetGasSelectorHeader = ({
   onAutoChangeGasMethod,
   disableAutoGasLevelSwitch = false,
   onCustomGasSheetOpen,
+  rightPrefix,
   onSignTx,
   ...props
 }: SignMainnetGasSelectorHeaderProps) => {
@@ -810,6 +812,7 @@ export const SignMainnetGasSelectorHeader = ({
         {gasAccountInfoTooltip}
       </span>
       <div className="flex items-center gap-8">
+        {rightPrefix}
         {canOpenShowMore ? (
           <SignMainnetShowMoreGasModal
             visible={showMoreOpen}
