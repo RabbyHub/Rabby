@@ -16,6 +16,7 @@ import { Chain } from 'background/service/openapi';
 import { findChain } from '@/utils/chain';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { isSameAddress } from '@/ui/utils';
@@ -60,10 +61,17 @@ const CrossSwapToken = ({
   const { t } = useTranslation();
   const {
     rules,
-    currentTx: { processedRules },
-    userData: { contractWhitelist },
+    processedRules,
+    contractWhitelist,
     openRuleDrawer,
-  } = useSecurityEngineStore();
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      contractWhitelist: s.userData.contractWhitelist,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
 
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(

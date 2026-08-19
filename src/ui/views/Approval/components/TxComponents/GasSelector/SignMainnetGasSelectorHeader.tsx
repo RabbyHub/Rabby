@@ -40,6 +40,7 @@ import { MenuButtonStyled } from '../GasMenuButton';
 import { GasMethod } from '../GasSelectorHeader';
 import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import SecurityLevelTagNoText from 'ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText';
 import {
   useGasAccountInfoV2,
@@ -667,10 +668,17 @@ export const SignMainnetGasSelectorHeader = ({
 
   const {
     rules,
-    currentTx: { processedRules },
+    processedRules,
     openRuleDrawer,
-    init: initSecurityEngine,
-  } = useSecurityEngineStore();
+    initSecurityEngine,
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+      initSecurityEngine: s.init,
+    }))
+  );
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);

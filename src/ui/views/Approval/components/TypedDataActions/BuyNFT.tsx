@@ -7,6 +7,7 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { isSameAddress } from 'ui/utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { Table, Col, Row } from '../Actions/components/Table';
 import NFTWithName from '../Actions/components/NFTWithName';
 import * as Values from '../Actions/components/Values';
@@ -72,10 +73,17 @@ const BuyNFT = ({
   const { t } = useTranslation();
   const {
     rules,
-    currentTx: { processedRules },
-    userData: { contractWhitelist },
+    processedRules,
+    contractWhitelist,
     openRuleDrawer,
-  } = useSecurityEngineStore();
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      contractWhitelist: s.userData.contractWhitelist,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
 
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(
