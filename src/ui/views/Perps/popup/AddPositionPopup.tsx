@@ -16,8 +16,9 @@ import { TokenImg } from '../components/TokenImg';
 import { PERPS_MAX_NTL_VALUE, PERPS_MINI_USD_VALUE } from '../constants';
 import {
   calculateDistanceToLiquidation,
-  calLiquidationPrice,
   formatPerpsPct,
+  PerpsProjectedPosition,
+  resolveProjectedLiquidationPrice,
 } from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
@@ -29,11 +30,10 @@ export interface AddPositionPopupProps {
   activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
   currentAssetCtx: MarketData | null;
   availableBalance: number;
-  /**
-   * WS `activeAssetData.availableToTrade` as [long, short], scoped per coin
-   * (so per DEX and collateral token). Backs the cross liquidation estimate.
-   */
-  availableToTrade?: [string, string] | null;
+  /** See `resolveCrossMarginAvailableAfterMaintenance`; null hides the estimate. */
+  crossMarginAvailable?: number | null;
+  /** The position being added to; the estimate projects the merged position. */
+  projectedPosition?: PerpsProjectedPosition | null;
   direction: 'Long' | 'Short';
   positionSize: number;
   marginUsed: number;
@@ -58,7 +58,8 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   activeAssetCtx,
   currentAssetCtx,
   availableBalance,
-  availableToTrade,
+  crossMarginAvailable,
+  projectedPosition,
   leverage,
   leverageType,
   direction,
@@ -178,40 +179,31 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
     if (!markPrice || !leverage) {
       return 0;
     }
-    const maxLeverage = leverageRange[1];
-    // A cross position draws on the whole account. `availableToTrade` is what
-    // is left after every position's initial margin, so add this position's
-    // own margin back to recover the equity standing behind it; the formula
-    // then subtracts the merged position's maintenance margin. `addMargin` is
-    // deliberately NOT added on top — under cross it only moves equity from
-    // free to used, it does not grow the account. Isolated keeps using the
-    // position's own isolated margin, which the order really does top up.
-    const marginBuffer =
-      leverageType === 'cross'
-        ? Number(availableToTrade?.[direction === 'Long' ? 0 : 1] || 0) +
-          marginUsed
-        : addMargin + marginUsed;
-    return calLiquidationPrice(
-      markPrice,
-      marginBuffer,
-      direction,
-      Number(tradeSize) + Number(positionSize),
-      Number(tradeAmount) + Number(positionSize) * Number(markPrice),
-      maxLeverage
-    ).toFixed(pxDecimals);
+    // No `addMargin` under cross: it only moves equity from free to used,
+    // it doesn't grow the account.
+    return (
+      resolveProjectedLiquidationPrice({
+        baseSize: tradeSize,
+        crossMarginAvailableAfterMaintenance: crossMarginAvailable ?? null,
+        currentPosition: projectedPosition,
+        entryPrice: String(markPrice),
+        leverage,
+        marginMode: leverageType,
+        maxLeverage: leverageRange[1],
+        pxDecimals,
+        side: direction === 'Long' ? 'buy' : 'sell',
+      })?.liquidationPrice ?? 0
+    );
   }, [
     markPrice,
     leverage,
     leverageRange,
-    addMargin,
     direction,
     tradeSize,
     pxDecimals,
-    tradeAmount,
-    positionSize,
-    marginUsed,
     leverageType,
-    availableToTrade,
+    crossMarginAvailable,
+    projectedPosition,
   ]);
 
   const { runAsync: handleConfirm, loading } = useRequest(
