@@ -16,6 +16,27 @@ const openapiStoreSchema = z.object({
 
 export type OpenapiServiceStore = z.output<typeof openapiStoreSchema>;
 
+/**
+ * The half of the openapi store the UI is allowed to hold. `apiKey` is the
+ * X-API-Key header on every api.rabby.io request, so it stays in the
+ * background rather than being copied into each extension page.
+ */
+export const PUBLIC_OPENAPI_KEYS = ['host', 'testnetHost'] as const;
+
+export type PublicOpenapiStore = Pick<
+  OpenapiServiceStore,
+  typeof PUBLIC_OPENAPI_KEYS[number]
+>;
+
+const pickPublicOpenapiStore = <T extends Partial<OpenapiServiceStore>>(
+  store: T
+): Pick<T, typeof PUBLIC_OPENAPI_KEYS[number] & keyof T> =>
+  Object.fromEntries(
+    Object.entries(store).filter(([key]) =>
+      (PUBLIC_OPENAPI_KEYS as ReadonlyArray<string>).includes(key)
+    )
+  ) as Pick<T, typeof PUBLIC_OPENAPI_KEYS[number] & keyof T>;
+
 const createOpenapiStoreTemplate = (): OpenapiServiceStore =>
   openapiStoreSchema.parse({});
 
@@ -33,6 +54,7 @@ class OpenapiStore {
       name: 'openapi',
       template: createOpenapiStoreTemplate(),
       schema: openapiStoreSchema,
+      broadcastKeys: PUBLIC_OPENAPI_KEYS,
     });
     this.initialized = true;
     if (!this.store.apiKey) {
@@ -144,12 +166,15 @@ export const testnetOpenapiService = new OpenApiService({
 
 export const initializeOpenapiStore = () => proxyStore.init();
 
-export const getOpenapiStore = () => proxyStore.getStore();
+export const getOpenapiStore = (): PublicOpenapiStore =>
+  pickPublicOpenapiStore(proxyStore.getStore());
 
 export const patchOpenapiStore = async (
-  partials: Partial<OpenapiServiceStore>
+  partials: Partial<PublicOpenapiStore>
 ) => {
-  proxyStore.patchStore(partials);
+  // Reachable from the UI through `setStorageItem`, so drop anything outside
+  // the public half instead of trusting the caller's typing.
+  proxyStore.patchStore(pickPublicOpenapiStore(partials));
 
   const initializations: Promise<void>[] = [];
   if (Object.prototype.hasOwnProperty.call(partials, 'host')) {
