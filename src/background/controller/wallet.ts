@@ -200,6 +200,10 @@ import {
   shouldUseTempoBatchTransaction,
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
+import {
+  cancelAllSignTxPreparations,
+  getSignTxPreparation,
+} from '../service/signTxPreparation';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
@@ -482,6 +486,7 @@ export class WalletController extends BaseController {
     });
   };
   isBooted = () => keyringService.isBooted();
+  getSignTxPreparation = getSignTxPreparation;
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
@@ -2145,6 +2150,7 @@ export class WalletController extends BaseController {
 
   lockWallet = async () => {
     await keyringService.setLocked();
+    cancelAllSignTxPreparations();
     if (isManifestV3) {
       await Browser.storage.session.clear();
     }

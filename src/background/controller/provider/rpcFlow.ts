@@ -6,7 +6,13 @@ import {
   preferenceService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
-import { EVENTS, KEYRING_CLASS } from 'consts';
+import {
+  EVENTS,
+  INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  SUPPORT_1559_KEYRING_TYPE,
+} from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
@@ -22,6 +28,12 @@ import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
 import { ga4 } from '@/utils/ga4';
 import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
+import { normalizeTxParams } from '@/utils/transaction';
+import {
+  cancelSignTxPreparation,
+  startSignTxPreparation,
+} from '@/background/service/signTxPreparation';
+import { v4 as uuidv4 } from 'uuid';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -242,20 +254,77 @@ const flowContext = flow
         }
       }
 
-      ctx.approvalRes = await notificationService.requestApproval(
-        {
+      const approvalCtx = ctx?.request?.data?.$ctx;
+      const hasEip7702Authorization = Boolean(
+        params[0].authorizationList ||
+          approvalCtx?.eip7702Revoke ||
+          approvalCtx?.eip7702RevokeAuthorization
+      );
+      const signTxChain =
+        approvalType === 'SignTx'
+          ? findChain({ id: Number(params[0].chainId) })
+          : undefined;
+      const isSafeAccount =
+        ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring ||
+        ctx.request.account?.type === KEYRING_TYPE.CoboArgusKeyring;
+      let signTxPreparationId: string | undefined;
+      if (
+        approvalType === 'SignTx' &&
+        signTxChain &&
+        !signTxChain.isTestnet &&
+        !isSafeAccount &&
+        !params[0].nonce &&
+        !hasEip7702Authorization
+      ) {
+        signTxPreparationId = uuidv4();
+      }
+
+      try {
+        const approvalData = {
           approvalComponent: approvalType,
           params: {
-            $ctx: ctx?.request?.data?.$ctx,
+            $ctx: approvalCtx,
             method,
             data: ctx.request.data.params,
             session: { origin, name, icon, isFromRabby },
           },
           account: ctx.request.account,
           origin,
-        },
-        { height: windowHeight }
-      );
+        };
+        const approvalPromise = notificationService.requestApproval(
+          approvalData,
+          { height: windowHeight },
+          {
+            onCurrent: () => {
+              if (!signTxPreparationId) return;
+              Object.assign(approvalData.params, { signTxPreparationId });
+              startSignTxPreparation({
+                id: signTxPreparationId,
+                tx: normalizeTxParams(
+                  { ...params[0] },
+                  !isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
+                ),
+                origin,
+                chainId: Number(params[0].chainId),
+                support1559:
+                  signTxChain!.eip['1559'] &&
+                  SUPPORT_1559_KEYRING_TYPE.includes(
+                    ctx.request.account?.type as any
+                  ),
+                delegateCall:
+                  Boolean(params[0].operation) &&
+                  ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring,
+              });
+            },
+          }
+        );
+
+        ctx.approvalRes = await approvalPromise;
+      } finally {
+        if (signTxPreparationId) {
+          cancelSignTxPreparation(signTxPreparationId);
+        }
+      }
 
       if (isSignApproval(approvalType)) {
         permissionService.updateConnectSite(origin, { isSigned: true }, true);
