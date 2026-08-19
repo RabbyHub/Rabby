@@ -4,6 +4,7 @@ import {
   calcGasLimit,
   buildParseTxRequest,
   buildPreExecTxRequest,
+  buildSignTx,
   checkGasAndNonce,
   convertLegacyTo1559,
   explainGas,
@@ -41,7 +42,6 @@ import {
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
 } from 'consts';
-import { isHexString } from '@ethereumjs/util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
@@ -529,7 +529,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const securityEngine = useSecurityEngineStore();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
-  const [support1559, setSupport1559] = useState(chain.eip['1559']);
+  const [support1559, setSupport1559] = useState(
+    chain.eip['1559'] &&
+      SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any)
+  );
   const [support7702, setSupport7702] = useState(chain.eip['7702']);
   const [isLedger, setIsLedger] = useState(false);
   const { userData, rules, currentTx } = securityEngine;
@@ -620,6 +623,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     });
   };
 
+  const normalizedTx = useMemo(() => {
+    return normalizeTxParams(
+      params.data[0],
+      !params.session.isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
+    );
+  }, [params.data]);
+
   const {
     data = '0x',
     from,
@@ -648,12 +658,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     keyAuthorization,
     validBefore,
     validAfter,
-  } = useMemo(() => {
-    return normalizeTxParams(
-      params.data[0],
-      !params.session.isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
-    );
-  }, [params.data]);
+  } = normalizedTx;
 
   const is7702 = is7702Tx({ authorizationList } as any);
 
@@ -681,50 +686,14 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)
     updateNonce = false;
 
-  const getGasPrice = () => {
-    let result = '';
-    if (maxFeePerGas) {
-      result = isHexString(maxFeePerGas)
-        ? maxFeePerGas
-        : intToHex(maxFeePerGas);
-    }
-    if (gasPrice) {
-      result = isHexString(gasPrice) ? gasPrice : intToHex(parseInt(gasPrice));
-    }
-    if (Number.isNaN(Number(result))) {
-      result = '';
-    }
-    return result;
-  };
-
   const [tx, setTx] = useState<Tx>(
-    omit(
-      {
-        chainId,
-        data: data || '0x', // can not execute with empty string, use 0x instead
-        from,
-        gas: enable7702
-          ? getEIP7702MiniGasLimit(gas || params.data[0].gasLimit)
-          : gas || params.data[0].gasLimit,
-        gasPrice: getGasPrice(),
-        nonce,
-        to,
-        value,
-        type,
-        calls,
-        feeToken,
-        maxFeePerGas,
-        feePayer,
-        feePayerSignature,
-        nonceKey,
-        keyAuthorization,
-        validBefore,
-        validAfter,
-        authorizationList:
-          params?.$ctx?.eip7702RevokeAuthorization || authorizationList,
-      },
-      !enable7702 ? ['authorizationList'] : []
-    ) as any
+    buildSignTx({
+      tx: normalizedTx,
+      chainId,
+      gasLimit: params.data[0].gasLimit,
+      enable7702,
+      revokeAuthorization: params?.$ctx?.eip7702RevokeAuthorization,
+    })
   );
   const [manualGasMethod, setManualGasMethod] = useState<
     ApprovalGasMethod | undefined

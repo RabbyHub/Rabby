@@ -18,6 +18,7 @@ import {
   TxPushType,
 } from 'background/service/openapi';
 import { findChain } from './chain';
+import { getEIP7702MiniGasLimit } from '@/background/utils/7702';
 import type { WalletControllerType } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import i18n from '@/i18n';
@@ -99,6 +100,73 @@ export const normalizeTxParams = (tx: Tx, isDapp = false) => {
       ])
     : copy) as Tx;
 };
+
+const getSignTxGasPrice = (tx: Tx & Record<string, any>) => {
+  let result = '';
+  if (tx.maxFeePerGas) {
+    result = isHexString(tx.maxFeePerGas)
+      ? tx.maxFeePerGas
+      : intToHex(tx.maxFeePerGas as any);
+  }
+  if (tx.gasPrice) {
+    result = isHexString(tx.gasPrice)
+      ? tx.gasPrice
+      : intToHex(parseInt(tx.gasPrice));
+  }
+  if (Number.isNaN(Number(result))) {
+    result = '';
+  }
+  return result;
+};
+
+/**
+ * The transaction SignTx renders, simulates and signs.
+ *
+ * The background pre-execution path must build it through here too: a prepared
+ * parseTx/preExecTx result is shown to the user as the asset change of the
+ * transaction they are about to sign, so it has to describe the same
+ * transaction. Keep this the single construction site.
+ */
+export const buildSignTx = ({
+  tx,
+  chainId,
+  gasLimit,
+  enable7702 = false,
+  revokeAuthorization,
+}: {
+  /** dapp params already through {@link normalizeTxParams} */
+  tx: Tx & Record<string, any>;
+  chainId: number;
+  gasLimit?: string | number;
+  enable7702?: boolean;
+  revokeAuthorization?: any;
+}) =>
+  omit(
+    {
+      chainId,
+      data: tx.data || '0x', // can not execute with empty string, use 0x instead
+      from: tx.from,
+      gas: enable7702
+        ? getEIP7702MiniGasLimit((tx.gas || gasLimit) as string | number)
+        : tx.gas || gasLimit,
+      gasPrice: getSignTxGasPrice(tx),
+      nonce: tx.nonce,
+      to: tx.to,
+      value: tx.value,
+      type: tx.type,
+      calls: tx.calls,
+      feeToken: tx.feeToken,
+      maxFeePerGas: tx.maxFeePerGas,
+      feePayer: tx.feePayer,
+      feePayerSignature: tx.feePayerSignature,
+      nonceKey: tx.nonceKey,
+      keyAuthorization: tx.keyAuthorization,
+      validBefore: tx.validBefore,
+      validAfter: tx.validAfter,
+      authorizationList: revokeAuthorization || tx.authorizationList,
+    },
+    !enable7702 ? ['authorizationList'] : []
+  ) as Tx;
 
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = findChain({
