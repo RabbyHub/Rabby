@@ -43,6 +43,12 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   pxDecimals: number;
   szDecimals: number;
   availableBalance: number;
+  /**
+   * WS `activeAssetData.availableToTrade` as [long, short]. It is subscribed
+   * per coin, so it is already scoped to this market's DEX and collateral
+   * token — which is what a cross position's liquidation estimate needs.
+   */
+  availableToTrade?: [string, string] | null;
   maxNtlValue: number;
   currentAssetCtx: MarketData;
   activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
@@ -84,6 +90,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   pxDecimals,
   szDecimals,
   availableBalance,
+  availableToTrade,
   onCancel,
   onConfirm,
   maxNtlValue,
@@ -180,9 +187,17 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     if (!markPrice || !leverage) return 0;
     const maxLeverage = leverageRange[1];
     const basePx = isMarketable ? markPrice : effectivePx;
+    // A cross position is backed by the whole account, not by this order's
+    // margin alone — feeding the order margin in shrinks the buffer to the
+    // initial margin and reports a liquidation price far closer to the mark
+    // than it really is. Isolated keeps using the order's own margin.
+    const marginBuffer =
+      marginMode === 'cross'
+        ? Number(availableToTrade?.[direction === 'Long' ? 0 : 1] || 0)
+        : Number(margin);
     return calLiquidationPrice(
       basePx,
-      Number(margin),
+      marginBuffer,
       direction,
       Number(tradeSize),
       Number(tradeSize) * basePx,
@@ -198,6 +213,8 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
     tradeSize,
     direction,
     pxDecimals,
+    marginMode,
+    availableToTrade,
   ]);
 
   // 验证 margin 输入

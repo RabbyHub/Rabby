@@ -1200,6 +1200,7 @@ export const PerpsSingleCoin = () => {
         onMarginModeChange={handleMarginModeChange}
         hasPosition={hasPosition}
         availableBalance={Number(availableBalance || 0)}
+        availableToTrade={activeAssetData?.availableToTrade}
         quoteAsset={quoteAsset}
         onDepositPress={() => {
           setAmountVisible(true);
@@ -1398,6 +1399,7 @@ export const PerpsSingleCoin = () => {
             direction={positionData.direction as 'Long' | 'Short'}
             leverage={positionData.leverage}
             availableBalance={Number(availableBalance || 0)}
+            availableToTrade={activeAssetData?.availableToTrade}
             liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
             positionSize={positionData.size}
             marginUsed={positionData.marginUsed}
