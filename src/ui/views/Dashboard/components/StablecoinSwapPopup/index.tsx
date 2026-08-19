@@ -1,83 +1,25 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ReactComponent as RcArrowRight } from '@/ui/assets/dashboard/stablecoin-swap-popup/arrow-right.svg';
 import BackgroundEffect from '@/ui/assets/dashboard/stablecoin-swap-popup/background-effect.svg';
 import { ReactComponent as RcClose } from '@/ui/assets/dashboard/stablecoin-swap-popup/close.svg';
 import { ReactComponent as RcMoreDot } from '@/ui/assets/dashboard/stablecoin-swap-popup/more-dot.svg';
-
-const TOKEN_ICON_URLS = {
-  usdc:
-    'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
-  usdt:
-    'https://static.debank.com/image/coin/logo_url/usdt/23af7472292cb41dc39b3f1146ead0fe.png',
-  usd1:
-    'https://static-assets.rabby.io/files/6a499840-3f0d-4640-9a30-aec184311cb0.png',
-  usde:
-    'https://static.debank.com/image/eth_token/logo_url/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/1228d6e73f70f37ec1f6fe02a3bbe6ff.png',
-  usds:
-    'https://static.debank.com/image/eth_token/logo_url/0xdc035d45d973e3ec169d2276ddab16f1e407384f/78fbc2e73e33fa80fcecfaafa2074887.png',
-} as const;
-
-interface StablecoinSwapPopupProps {
-  visible: boolean;
-  onClose(): void;
-  onSwap(): void;
-}
-
-const supportedStablecoinIcons = [
-  TOKEN_ICON_URLS.usdc,
-  TOKEN_ICON_URLS.usdt,
-  TOKEN_ICON_URLS.usd1,
-  TOKEN_ICON_URLS.usde,
-  TOKEN_ICON_URLS.usds,
-];
-
-const rotatingStablecoinIcons = [
-  { symbol: 'USDT', src: TOKEN_ICON_URLS.usdt },
-  { symbol: 'USD1', src: TOKEN_ICON_URLS.usd1 },
-  { symbol: 'USDe', src: TOKEN_ICON_URLS.usde },
-  { symbol: 'USDS', src: TOKEN_ICON_URLS.usds },
-] as const;
+import { useStablecoinSwapPopup } from '../../hooks/ads/useStablecoinSwapPopup';
 
 /** Bottom promotion displayed over the popup Dashboard. */
-export const StablecoinSwapPopup: React.FC<StablecoinSwapPopupProps> = ({
-  visible,
-  onClose,
-  onSwap,
-}) => {
+export const StablecoinSwapPopup: React.FC = () => {
   const { t } = useTranslation();
-  const rotatingTokenIndexRef = useRef(0);
-  const [rotatingTokenIndex, setRotatingTokenIndex] = useState(0);
-  const [previousRotatingTokenIndex, setPreviousRotatingTokenIndex] = useState<
-    number | null
-  >(null);
-
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-
-    const timer = window.setInterval(() => {
-      const currentIndex = rotatingTokenIndexRef.current;
-      const randomOffset =
-        Math.floor(Math.random() * (rotatingStablecoinIcons.length - 1)) + 1;
-      const nextIndex =
-        (currentIndex + randomOffset) % rotatingStablecoinIcons.length;
-
-      setPreviousRotatingTokenIndex(currentIndex);
-      rotatingTokenIndexRef.current = nextIndex;
-      setRotatingTokenIndex(nextIndex);
-    }, 2000);
-
-    return () => window.clearInterval(timer);
-  }, [visible]);
-
-  const rotatingToken = rotatingStablecoinIcons[rotatingTokenIndex];
-  const previousRotatingToken =
-    previousRotatingTokenIndex === null
-      ? null
-      : rotatingStablecoinIcons[previousRotatingTokenIndex];
+  const {
+    visible,
+    onClose,
+    onSwap,
+    payTokenIcon,
+    supportedStablecoinIcons,
+    rotatingToken,
+    previousRotatingToken,
+    onTokenAnimationEnd,
+  } = useStablecoinSwapPopup();
 
   if (!visible) {
     return null;
@@ -108,11 +50,7 @@ export const StablecoinSwapPopup: React.FC<StablecoinSwapPopupProps> = ({
 
       <div className="absolute left-1/2 top-[22px] flex -translate-x-1/2 items-center gap-[12px] whitespace-nowrap text-[16px] leading-[20px] text-r-neutral-title1">
         <span>{t('page.dashboard.home.stablecoinSwapPopup.title')}</span>
-        <img
-          src={TOKEN_ICON_URLS.usdc}
-          alt="USDC"
-          className="h-[20px] w-[20px]"
-        />
+        <img src={payTokenIcon} alt="USDC" className="h-[20px] w-[20px]" />
         <span aria-hidden="true">=&gt;</span>
         <div
           role="img"
@@ -129,7 +67,7 @@ export const StablecoinSwapPopup: React.FC<StablecoinSwapPopupProps> = ({
           <img
             src={rotatingToken.src}
             alt=""
-            onAnimationEnd={() => setPreviousRotatingTokenIndex(null)}
+            onAnimationEnd={onTokenAnimationEnd}
             className={`block h-[20px] w-[20px] max-w-none ${
               previousRotatingToken ? 'stablecoin-swap-popup-token-enter' : ''
             }`}
