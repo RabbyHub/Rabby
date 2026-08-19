@@ -8,7 +8,10 @@ import {
   SizeDisplayUnit,
   OrderSideInfo,
 } from '../types';
-import { calLiquidationPrice } from '../../Perps/utils';
+import {
+  resolveCrossMarginAvailableAfterMaintenance,
+  resolveProjectedLiquidationPrice,
+} from '../../Perps/utils';
 import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
 import { DEFAULT_TPSL_CONFIG } from '@/ui/models/perps';
@@ -40,6 +43,9 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
     tradingTpslConfig: tpslConfig,
     tradingReduceOnly: reduceOnly,
     sizeDisplayUnit,
+    dexClearinghouseStates,
+    spotState,
+    userAbstraction,
   } = useRabbySelector((state) => state.perps);
 
   // Setters using Redux dispatch
@@ -137,21 +143,25 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
 
   const { availableBalance: withdrawableBalance } = usePerpsAccount();
 
-  // Cross-margin buffer backing a new order, per direction. `activeAssetData`
-  // is subscribed for the selected coin, so `availableToTrade` is already
-  // scoped to that market's DEX and collateral token — which is what the
-  // liquidation estimate needs. Summing every DEX's `crossMarginSummary`
-  // instead collapses a unified account's buffer down to the perp DEXs' own
-  // equity (its collateral sits in the spot account) and pushes the estimated
-  // liquidation price right up against the mark.
-  const crossAvailable = React.useMemo(
-    () => ({
-      Long: Number(wsActiveAssetData?.availableToTrade?.[0] || 0),
-      Short: Number(wsActiveAssetData?.availableToTrade?.[1] || 0),
-    }),
+  // Scoped to the selected market's DEX and collateral token. Summing every
+  // DEX's `crossMarginSummary` instead collapses a unified account down to the
+  // perp DEXs' own equity — its collateral sits in the spot account — and
+  // pushes the estimate right up against the mark.
+  const crossMarginAvailable = React.useMemo(
+    () =>
+      resolveCrossMarginAvailableAfterMaintenance({
+        dexState: dexClearinghouseStates?.[currentMarketData?.dexId ?? ''],
+        quoteAsset: currentMarketData?.quoteAsset,
+        tokenToAvailableAfterMaintenance:
+          spotState?.tokenToAvailableAfterMaintenance,
+        userAbstraction,
+      }),
     [
-      wsActiveAssetData?.availableToTrade?.[0],
-      wsActiveAssetData?.availableToTrade?.[1],
+      dexClearinghouseStates,
+      currentMarketData?.dexId,
+      currentMarketData?.quoteAsset,
+      spotState?.tokenToAvailableAfterMaintenance,
+      userAbstraction,
     ]
   );
 
@@ -242,6 +252,22 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
     [currentPosition]
   );
 
+  const projectedPosition = React.useMemo(
+    () =>
+      currentPosition
+        ? {
+            entryPx: String(currentPosition.entryPrice),
+            marginUsed: String(currentPosition.marginUsed),
+            szi: String(
+              currentPosition.side === 'Long'
+                ? currentPosition.size
+                : -currentPosition.size
+            ),
+          }
+        : null,
+    [currentPosition]
+  );
+
   const quoteAsset = currentMarketData?.quoteAsset || 'USDC';
   // Calculate liquidation price and cost for a direction
   // orderPrice: optional override (e.g. limitPrice), defaults to markPrice
@@ -267,38 +293,30 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
         cost = `${splitNumberByStep(netNewMargin.toFixed(2))} ${quoteAsset}`;
       }
 
-      // Liq price
-      if (netNewBN.isZero()) {
-        return { liqPrice: '-', liqPriceNum: null, cost };
-      }
-      const netNewUsdBN = netNewBN.times(pxBN);
-      const netNewMarginBN = netNewUsdBN.dividedBy(leverage);
-      const liqPrice = calLiquidationPrice(
-        pxBN.toNumber(),
-        leverageType === 'cross'
-          ? crossAvailable[direction]
-          : netNewMarginBN.toNumber(),
-        direction,
-        netNewBN.toNumber(),
-        netNewUsdBN.toNumber(),
-        maxLeverage
-      );
-      if (!new BigNumber(liqPrice).gt(0)) {
+      const projected = resolveProjectedLiquidationPrice({
+        baseSize: sizeBN.toFixed(),
+        crossMarginAvailableAfterMaintenance: crossMarginAvailable,
+        currentPosition: projectedPosition,
+        entryPrice: pxBN.toFixed(),
+        leverage,
+        marginMode: leverageType,
+        maxLeverage,
+        pxDecimals,
+        side: direction === 'Long' ? 'buy' : 'sell',
+      });
+      if (!projected) {
         return { liqPrice: '-', liqPriceNum: null, cost };
       }
       return {
         liqPrice: `${splitNumberByStep(
-          liqPrice.toFixed(pxDecimals)
+          projected.liquidationPrice
         )} ${quoteAsset}`,
-        // Handed out alongside the display string so callers that need to do
-        // arithmetic (liquidation distance) don't parse the formatted one back
-        // into a number — a round-trip any change to the formatter would break.
-        liqPriceNum: liqPrice,
+        liqPriceNum: projected.liquidationPriceNum,
         cost,
       };
     },
     [
-      crossAvailable,
+      crossMarginAvailable,
       markPrice,
       leverageType,
       leverage,
@@ -306,6 +324,7 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
       maxLeverage,
       pxDecimals,
       calcNetNewSize,
+      projectedPosition,
       quoteAsset,
     ]
   );

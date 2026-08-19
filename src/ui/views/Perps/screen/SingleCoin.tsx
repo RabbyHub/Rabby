@@ -65,7 +65,11 @@ import { usePerpsActions } from '../hooks/usePerpsActions';
 import { useActiveAssetSubscription } from '../hooks/useActiveAssetSubscription';
 import { PerpsLimitOrdersSection } from '../components/PerpsLimitOrdersSection';
 import { useDetailLimitOrders } from '../hooks/useLimitOrders';
-import { calculateDistanceToLiquidation, formatPerpsPct } from '../utils';
+import {
+  calculateDistanceToLiquidation,
+  formatPerpsPct,
+  resolveCrossMarginAvailableAfterMaintenance,
+} from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { EnableUnifiedAccountPopup } from '../popup/EnableUnifiedAccountPopup';
 import { SpotSwapPopup } from '../popup/SpotSwapPopup';
@@ -90,6 +94,9 @@ export const PerpsSingleCoin = () => {
     openOrders,
     favoritedCoins,
     marginModePreferences,
+    dexClearinghouseStates,
+    spotState,
+    userAbstraction,
   } = useRabbySelector((state) => state.perps);
   const [coin, setCoin] = useState(_coin);
   const {
@@ -326,6 +333,36 @@ export const PerpsSingleCoin = () => {
     hasPosition,
     currentPosition?.position.szi,
   ]);
+
+  const crossMarginAvailable = useMemo(
+    () =>
+      resolveCrossMarginAvailableAfterMaintenance({
+        dexState: dexClearinghouseStates?.[currentAssetCtx?.dexId ?? ''],
+        quoteAsset,
+        tokenToAvailableAfterMaintenance:
+          spotState?.tokenToAvailableAfterMaintenance,
+        userAbstraction,
+      }),
+    [
+      dexClearinghouseStates,
+      currentAssetCtx?.dexId,
+      quoteAsset,
+      spotState?.tokenToAvailableAfterMaintenance,
+      userAbstraction,
+    ]
+  );
+
+  const projectedPosition = useMemo(
+    () =>
+      currentPosition
+        ? {
+            entryPx: currentPosition.position.entryPx,
+            marginUsed: currentPosition.position.marginUsed,
+            szi: currentPosition.position.szi,
+          }
+        : null,
+    [currentPosition]
+  );
 
   const needDepositFirst = useMemo(() => {
     return (
@@ -1200,7 +1237,8 @@ export const PerpsSingleCoin = () => {
         onMarginModeChange={handleMarginModeChange}
         hasPosition={hasPosition}
         availableBalance={Number(availableBalance || 0)}
-        availableToTrade={activeAssetData?.availableToTrade}
+        crossMarginAvailable={crossMarginAvailable}
+        projectedPosition={projectedPosition}
         quoteAsset={quoteAsset}
         onDepositPress={() => {
           setAmountVisible(true);
@@ -1399,7 +1437,8 @@ export const PerpsSingleCoin = () => {
             direction={positionData.direction as 'Long' | 'Short'}
             leverage={positionData.leverage}
             availableBalance={Number(availableBalance || 0)}
-            availableToTrade={activeAssetData?.availableToTrade}
+            crossMarginAvailable={crossMarginAvailable}
+            projectedPosition={projectedPosition}
             liquidationPx={Number(currentPosition?.position.liquidationPx || 0)}
             positionSize={positionData.size}
             marginUsed={positionData.marginUsed}
