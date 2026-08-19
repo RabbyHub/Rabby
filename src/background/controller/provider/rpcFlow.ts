@@ -254,25 +254,27 @@ const flowContext = flow
       }
 
       const approvalCtx = ctx?.request?.data?.$ctx;
+      // `params` is not always a tx array - wallet_watchAsset passes an object,
+      // so params[0] must only be read on the SignTx path.
+      const signTx = approvalType === 'SignTx' ? params[0] : undefined;
       const hasEip7702Authorization = Boolean(
-        params[0].authorizationList ||
+        signTx?.authorizationList ||
           approvalCtx?.eip7702Revoke ||
           approvalCtx?.eip7702RevokeAuthorization
       );
-      const signTxChain =
-        approvalType === 'SignTx'
-          ? findChain({ id: Number(params[0].chainId) })
-          : undefined;
+      const signTxChain = signTx
+        ? findChain({ id: Number(signTx.chainId) })
+        : undefined;
       const isSafeAccount =
         ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring ||
         ctx.request.account?.type === KEYRING_TYPE.CoboArgusKeyring;
       let signTxPreparationId: string | undefined;
       if (
-        approvalType === 'SignTx' &&
+        signTx &&
         signTxChain &&
         !signTxChain.isTestnet &&
         !isSafeAccount &&
-        !params[0].nonce &&
+        !signTx.nonce &&
         !hasEip7702Authorization
       ) {
         signTxPreparationId = uuidv4();
@@ -295,23 +297,23 @@ const flowContext = flow
           { height: windowHeight },
           {
             onCurrent: () => {
-              if (!signTxPreparationId) return;
+              if (!signTxPreparationId || !signTx || !signTxChain) return;
               Object.assign(approvalData.params, { signTxPreparationId });
               startSignTxPreparation({
                 id: signTxPreparationId,
                 tx: normalizeTxParams(
-                  { ...params[0] },
+                  { ...signTx },
                   !isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
                 ),
                 origin,
-                chainId: Number(params[0].chainId),
+                chainId: Number(signTx.chainId),
                 support1559:
-                  signTxChain!.eip['1559'] &&
+                  signTxChain.eip['1559'] &&
                   SUPPORT_1559_KEYRING_TYPE.includes(
                     ctx.request.account?.type as any
                   ),
                 delegateCall:
-                  Boolean(params[0].operation) &&
+                  Boolean(signTx.operation) &&
                   ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring,
               });
             },
