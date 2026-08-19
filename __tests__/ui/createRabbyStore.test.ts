@@ -330,7 +330,7 @@ describe('createRabbyStore', () => {
 
     store.getState().setCount(2);
     expect(store.getState().count).toBe(2);
-    await store.persist.flush();
+    await expect(store.persist.flush()).rejects.toThrow('invalid patch');
 
     expect(store.getState().count).toBe(0);
     expect(get).toHaveBeenCalledTimes(2);
