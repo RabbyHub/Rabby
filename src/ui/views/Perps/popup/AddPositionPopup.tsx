@@ -29,6 +29,11 @@ export interface AddPositionPopupProps {
   activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
   currentAssetCtx: MarketData | null;
   availableBalance: number;
+  /**
+   * WS `activeAssetData.availableToTrade` as [long, short], scoped per coin
+   * (so per DEX and collateral token). Backs the cross liquidation estimate.
+   */
+  availableToTrade?: [string, string] | null;
   direction: 'Long' | 'Short';
   positionSize: number;
   marginUsed: number;
@@ -53,6 +58,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   activeAssetCtx,
   currentAssetCtx,
   availableBalance,
+  availableToTrade,
   leverage,
   leverageType,
   direction,
@@ -173,9 +179,21 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
       return 0;
     }
     const maxLeverage = leverageRange[1];
+    // A cross position draws on the whole account. `availableToTrade` is what
+    // is left after every position's initial margin, so add this position's
+    // own margin back to recover the equity standing behind it; the formula
+    // then subtracts the merged position's maintenance margin. `addMargin` is
+    // deliberately NOT added on top — under cross it only moves equity from
+    // free to used, it does not grow the account. Isolated keeps using the
+    // position's own isolated margin, which the order really does top up.
+    const marginBuffer =
+      leverageType === 'cross'
+        ? Number(availableToTrade?.[direction === 'Long' ? 0 : 1] || 0) +
+          marginUsed
+        : addMargin + marginUsed;
     return calLiquidationPrice(
       markPrice,
-      Number(addMargin + marginUsed),
+      marginBuffer,
       direction,
       Number(tradeSize) + Number(positionSize),
       Number(tradeAmount) + Number(positionSize) * Number(markPrice),
@@ -192,6 +210,8 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
     tradeAmount,
     positionSize,
     marginUsed,
+    leverageType,
+    availableToTrade,
   ]);
 
   const { runAsync: handleConfirm, loading } = useRequest(
