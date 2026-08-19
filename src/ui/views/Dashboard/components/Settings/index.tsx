@@ -90,10 +90,12 @@ import {
 } from '@/ui/utils/biometric';
 import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
 import { useOpenapiStore } from '@/ui/state/openapi';
+import { appIsDebugPkg, appIsDev } from '@/utils/env';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
-  return [
+
+  const options = [
     {
       value: 0,
       label: t('page.dashboard.settings.lock.never'),
@@ -119,6 +121,13 @@ const useAutoLockOptions = () => {
       label: t('page.dashboard.settings.10Minutes'),
     },
   ];
+  if (appIsDebugPkg || appIsDev) {
+    options.push({
+      value: 1,
+      label: '1 minute',
+    });
+  }
+  return options;
 };
 
 interface SettingsProps {
