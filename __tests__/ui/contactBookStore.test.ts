@@ -50,6 +50,23 @@ describe('contact book store', () => {
     expect(useContactBookStore.getState().contactsByAddr).toEqual(result);
   });
 
+  test('drops empty entries instead of throwing on them', async () => {
+    (wallet.getContactsByMap as jest.Mock).mockResolvedValue({
+      '0xabc': contact({ address: '0xAbC', name: 'Alice' }),
+      '0xdead': null,
+      '0xbeef': undefined,
+    });
+
+    const result = await useContactBookStore.getState().getContactBookAsync();
+
+    expect(result).toEqual({
+      '0xabc': expect.objectContaining({ address: '0xabc', name: 'Alice' }),
+    });
+    // Readers index by address and never distinguish a null value from a
+    // missing key, so dropping keeps the declared state type honest.
+    expect(selectAllAddrs(useContactBookStore.getState())).toHaveLength(1);
+  });
+
   test('derives all addresses, aliases, and contacts', () => {
     useContactBookStore.setState({
       contactsByAddr: {

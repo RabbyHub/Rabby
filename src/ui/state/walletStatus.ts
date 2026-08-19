@@ -115,10 +115,7 @@ const subscribeWalletStatus = () => {
   eventBus.addEventListener(EVENTS.LOCK_WALLET, syncAfterLock);
   // No optimistic write here: a reset can clear `booted` without locking, so
   // the authoritative read decides rather than an assumption about direction.
-  eventBus.addEventListener(
-    EVENTS.WALLET_STATUS_CHANGED,
-    syncAfterWalletEvent
-  );
+  eventBus.addEventListener(EVENTS.WALLET_STATUS_CHANGED, syncAfterWalletEvent);
   onWalletReconnect(syncAfterWalletEvent);
 };
 

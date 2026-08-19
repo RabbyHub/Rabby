@@ -34,16 +34,22 @@ export const useContactBookStore = create<ContactBookStore>()((set) => ({
 
   async getContactBookAsync() {
     const contactsByAddr = await wallet.getContactsByMap<
-      Record<string, ContactBookItem>
+      Record<string, ContactBookItem | undefined>
     >();
+    // The background store is `Record<string, ContactBookItem | undefined>`
+    // and legacy data does carry empty entries. Drop them here rather than
+    // dereferencing them -- a throw would leave every reader with an empty
+    // contact book and no error to show.
     const normalizedContacts = Object.fromEntries(
-      Object.entries(contactsByAddr).map(([address, item]) => [
-        address,
-        {
-          ...item,
-          address: item.address.toLowerCase(),
-        },
-      ])
+      Object.entries(contactsByAddr)
+        .filter((entry): entry is [string, ContactBookItem] => !!entry[1])
+        .map(([address, item]) => [
+          address,
+          {
+            ...item,
+            address: item.address.toLowerCase(),
+          },
+        ])
     ) as Record<string, ContactBookItem>;
 
     set({ contactsByAddr: normalizedContacts });
