@@ -1106,14 +1106,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     const preparedPendingTxList = prepared?.pendingTxList;
     const preparedParseTx = prepared?.parseTx;
     const preparedPreExecTx = prepared?.preExecTx;
-    if (preparation) {
-      stats.report('signTxPreparationTiming', {
-        type: 'transaction',
-        preparationToMount: renderStartAt.current - preparation.startedAt,
-        preparationDuration: preparation.resolvedAt - preparation.startedAt,
-        preparationToConsume: Date.now() - preparation.startedAt,
-      });
-    }
     if (preparedRecommendNonce !== undefined) {
       recommendNonce = preparedRecommendNonce;
     }
