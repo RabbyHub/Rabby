@@ -3,6 +3,7 @@ import {
   buildParseTxRequest,
   buildPendingTxList,
   buildPreExecTxRequest,
+  getTxFingerprint,
 } from '@/utils/transaction';
 import { getRecommendNonce } from '../controller/walletUtils/sign';
 import openapiService from './openapi';
@@ -11,6 +12,7 @@ import type { Tx } from './openapi';
 
 type Preparation = {
   state: { cancelled: boolean };
+  txFingerprint: string;
   startedAt: number;
   settled: Promise<{
     results: [
@@ -110,6 +112,7 @@ export const startSignTxPreparation = ({
 
   preparations.set(id, {
     state,
+    txFingerprint: getTxFingerprint(tx),
     startedAt,
     settled,
   });
@@ -123,6 +126,7 @@ export const getSignTxPreparation = async (id: string) => {
   const [recommendNonce, pendingTxList, parseTx, preExecTx] = results;
   preparations.delete(id);
   return {
+    txFingerprint: preparation.txFingerprint,
     startedAt: preparation.startedAt,
     resolvedAt,
     recommendNonce:
