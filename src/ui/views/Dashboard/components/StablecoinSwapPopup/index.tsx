@@ -7,6 +7,46 @@ import { ReactComponent as RcClose } from '@/ui/assets/dashboard/stablecoin-swap
 import { ReactComponent as RcMoreDot } from '@/ui/assets/dashboard/stablecoin-swap-popup/more-dot.svg';
 import { useStablecoinSwapPopup } from '../../hooks/ads/useStablecoinSwapPopup';
 
+interface AnimatedTokenProps {
+  token: {
+    symbol: string;
+    src: string;
+  };
+  previousToken: {
+    symbol: string;
+    src: string;
+  } | null;
+  onAnimationEnd(): void;
+}
+
+const AnimatedToken: React.FC<AnimatedTokenProps> = ({
+  token,
+  previousToken,
+  onAnimationEnd,
+}) => (
+  <div
+    role="img"
+    aria-label={token.symbol}
+    className="relative block h-[20px] w-[20px] flex-none overflow-hidden"
+  >
+    {previousToken && (
+      <img
+        src={previousToken.src}
+        alt=""
+        className="stablecoin-swap-popup-token-exit absolute left-0 top-0 block h-[20px] w-[20px] max-w-none"
+      />
+    )}
+    <img
+      src={token.src}
+      alt=""
+      onAnimationEnd={onAnimationEnd}
+      className={`block h-[20px] w-[20px] max-w-none ${
+        previousToken ? 'stablecoin-swap-popup-token-enter' : ''
+      }`}
+    />
+  </div>
+);
+
 /** Bottom promotion displayed over the popup Dashboard. */
 export const StablecoinSwapPopup: React.FC = () => {
   const { t } = useTranslation();
@@ -14,11 +54,13 @@ export const StablecoinSwapPopup: React.FC = () => {
     visible,
     onClose,
     onSwap,
-    payTokenIcon,
     supportedStablecoinIcons,
-    rotatingToken,
-    previousRotatingToken,
-    onTokenAnimationEnd,
+    payToken,
+    previousPayToken,
+    receiveToken,
+    previousReceiveToken,
+    onPayTokenAnimationEnd,
+    onReceiveTokenAnimationEnd,
   } = useStablecoinSwapPopup();
 
   if (!visible) {
@@ -50,29 +92,17 @@ export const StablecoinSwapPopup: React.FC = () => {
 
       <div className="absolute left-1/2 top-[22px] flex -translate-x-1/2 items-center gap-[12px] whitespace-nowrap text-[16px] leading-[20px] text-r-neutral-title1">
         <span>{t('page.dashboard.home.stablecoinSwapPopup.title')}</span>
-        <img src={payTokenIcon} alt="USDC" className="h-[20px] w-[20px]" />
+        <AnimatedToken
+          token={payToken}
+          previousToken={previousPayToken}
+          onAnimationEnd={onPayTokenAnimationEnd}
+        />
         <span aria-hidden="true">=&gt;</span>
-        <div
-          role="img"
-          aria-label={rotatingToken.symbol}
-          className="relative block h-[20px] w-[20px] flex-none overflow-hidden"
-        >
-          {previousRotatingToken && (
-            <img
-              src={previousRotatingToken.src}
-              alt=""
-              className="stablecoin-swap-popup-token-exit absolute left-0 top-0 block h-[20px] w-[20px] max-w-none"
-            />
-          )}
-          <img
-            src={rotatingToken.src}
-            alt=""
-            onAnimationEnd={onTokenAnimationEnd}
-            className={`block h-[20px] w-[20px] max-w-none ${
-              previousRotatingToken ? 'stablecoin-swap-popup-token-enter' : ''
-            }`}
-          />
-        </div>
+        <AnimatedToken
+          token={receiveToken}
+          previousToken={previousReceiveToken}
+          onAnimationEnd={onReceiveTokenAnimationEnd}
+        />
       </div>
 
       <div className="absolute left-1/2 top-[52px] flex -translate-x-1/2 flex-col items-center gap-[8px] transition-[top] duration-300 ease-out group-hover:top-[59px]">
