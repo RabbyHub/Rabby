@@ -271,7 +271,7 @@ export const BridgeShowMore = ({
             ? t('page.bridge.showMore.source')
             : t('page.swap.source')
         }
-        className="mb-12 h-18"
+        className="h-18"
       >
         {sourceSelectorRender()}
       </ListItem>
@@ -363,8 +363,8 @@ export const BridgeShowMore = ({
   );
 
   return (
-    <div className="mx-16">
-      <div className={isRabbyFeeFree ? 'space-y-12' : 'space-y-16'}>
+    <div className="no-scrollbar max-h-[124px] overflow-y-auto rounded-t-[8px] bg-r-neutral-card-1 px-16 py-12">
+      <div className="space-y-12">
         {lostValueContentRender()}
 
         {!showSourceFallback && fromToken ? (
@@ -376,6 +376,7 @@ export const BridgeShowMore = ({
             chainServeId={fromToken?.chain}
             signatureInstance={signatureInstance}
             sourceSelector={sourceSelectorRender()}
+            showTopMargin={false}
           />
         ) : (
           sourceContentRender()
@@ -458,6 +459,7 @@ export const DirectSignGasInfo = ({
   chainServeId,
   signatureInstance,
   sourceSelector,
+  showTopMargin = true,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
@@ -467,6 +469,7 @@ export const DirectSignGasInfo = ({
   chainServeId: string;
   signatureInstance: SignatureManager;
   sourceSelector?: React.ReactNode;
+  showTopMargin?: boolean;
 }) => {
   const wallet = useWallet();
   const { cachedTokenList } = useRabbySelector((s) => ({
@@ -1097,7 +1100,7 @@ export const DirectSignGasInfo = ({
   return (
     <>
       {showGasContent ? (
-        <div className={clsx(type !== 'send' && 'mt-12')}>
+        <div className={clsx(showTopMargin && type !== 'send' && 'mt-12')}>
           <SignMainnetGasSelectorHeader
             tx={currentTx!}
             gasAccountCost={gasAccount as any}
@@ -1149,7 +1152,7 @@ export const DirectSignGasInfo = ({
       ) : !loading && noQuote ? (
         <ListItem
           name={<>{'Gas fee'}</>}
-          className={clsx(type !== 'send' && 'mt-12')}
+          className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
         >
           {sourceSelector}
           <div>-</div>
@@ -1157,7 +1160,7 @@ export const DirectSignGasInfo = ({
       ) : (
         <ListItem
           name={<>{'Gas fee'}</>}
-          className={clsx(type !== 'send' && 'mt-12')}
+          className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
         >
           {sourceSelector}
           <Skeleton.Input

@@ -1363,53 +1363,6 @@ export const Main = () => {
           />
         ) : null}
 
-        {isShowMoreVisible && (
-          <div className={clsx('mx-20 mb-20', noQuote ? 'mt-12' : 'mt-20')}>
-            <BridgeShowMore
-              insufficient={inSufficient}
-              supportDirectSign={canUseDirectSubmitTx}
-              signatureInstance={instance}
-              autoSuggestSlippage={autoSuggestSlippage}
-              openFeePopup={openFeePopup}
-              sourceName={sourceName}
-              sourceLogo={sourceLogo}
-              slippage={slippageState}
-              displaySlippage={slippage}
-              onSlippageChange={setSlippage}
-              fromToken={payToken}
-              toToken={receiveToken}
-              amount={inputAmount}
-              toAmount={
-                isWrapToken
-                  ? inputAmount
-                  : activeProvider?.actualReceiveAmount || 0
-              }
-              openQuotesList={openQuotesList}
-              quoteLoading={quoteLoading}
-              gasFeeLoading={directSignTxPreparing}
-              autoSlippage={!!autoSlippage}
-              isCustomSlippage={isCustomSlippage}
-              setAutoSlippage={setAutoSlippage}
-              setIsCustomSlippage={setIsCustomSlippage}
-              type="swap"
-              isWrapToken={isWrapToken}
-              isRabbyFeeFree={isFreeTokenPair}
-              isBestQuote={
-                !!activeProvider &&
-                !!bestQuoteDex &&
-                bestQuoteDex === activeProvider?.name
-              }
-              showMEVGuardedSwitch={showMEVGuardedSwitch}
-              originPreferMEVGuarded={originPreferMEVGuarded}
-              switchPreferMEV={switchPreferMEV}
-              recommendValue={
-                slippageValidInfo?.is_valid
-                  ? undefined
-                  : slippageValidInfo?.suggest_slippage
-              }
-            />
-          </div>
-        )}
         {approveHash ||
         Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
           <div className="mx-20 mt-20">
@@ -1423,105 +1376,152 @@ export const Main = () => {
           </div>
         ) : null}
         {/* for bottom padding */}
-        <div className={clsx('w-full', 'h-[20px]')} />
-
         <div
           className={clsx(
-            'fixed z-10 w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-10',
-            'bg-r-neutral-bg-2 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
-            'py-[13px]',
-            isTab ? 'rounded-b-[16px]' : ''
+            'w-full',
+            isShowMoreVisible ? 'h-[192px]' : 'h-[68px]'
           )}
-        >
-          <TooltipWithMagnetArrow
-            overlayClassName="rectangle w-[max-content]"
-            title={
-              !isSupportedChain && externalDapps.length < 1
-                ? t('component.externalSwapBrideDappPopup.noDapps')
-                : t('page.swap.insufficient-balance')
-            }
-            visible={
-              !isSupportedChain && externalDapps.length < 1
-                ? undefined
-                : inSufficient && activeProvider
-                ? undefined
-                : false
-            }
-          >
-            {canUseDirectSubmitTx && currentAccount?.type ? (
-              <DirectSignToConfirmBtn
-                key={refreshId}
-                disabled={swapBtnDisabled || approveTxPending}
-                loading={miniSignLoading}
-                title={latestQuoteBtnText || btnText}
-                onConfirm={handleSwap}
-                onConfirmStart={() => setQuoteRefreshLocked(true)}
-                onCancel={resumeQuoteRefresh}
-                showRiskTips={showRiskTips && !swapBtnDisabled}
-                accountType={currentAccount?.type}
+        />
+
+        <div className="fixed z-10 w-full bottom-0 mt-auto px-20 pb-20">
+          <div className="w-full rounded-[8px] bg-r-neutral-bg-5">
+            {isShowMoreVisible && (
+              <BridgeShowMore
+                insufficient={inSufficient}
+                supportDirectSign={canUseDirectSubmitTx}
                 signatureInstance={instance}
-                riskReset={swapBtnDisabled}
+                autoSuggestSlippage={autoSuggestSlippage}
+                openFeePopup={openFeePopup}
+                sourceName={sourceName}
+                sourceLogo={sourceLogo}
+                slippage={slippageState}
+                displaySlippage={slippage}
+                onSlippageChange={setSlippage}
+                fromToken={payToken}
+                toToken={receiveToken}
+                amount={inputAmount}
+                toAmount={
+                  isWrapToken
+                    ? inputAmount
+                    : activeProvider?.actualReceiveAmount || 0
+                }
+                openQuotesList={openQuotesList}
+                quoteLoading={quoteLoading}
+                gasFeeLoading={directSignTxPreparing}
+                autoSlippage={!!autoSlippage}
+                isCustomSlippage={isCustomSlippage}
+                setAutoSlippage={setAutoSlippage}
+                setIsCustomSlippage={setIsCustomSlippage}
+                type="swap"
+                isWrapToken={isWrapToken}
+                isRabbyFeeFree={isFreeTokenPair}
+                isBestQuote={
+                  !!activeProvider &&
+                  !!bestQuoteDex &&
+                  bestQuoteDex === activeProvider?.name
+                }
+                showMEVGuardedSwitch={showMEVGuardedSwitch}
+                originPreferMEVGuarded={originPreferMEVGuarded}
+                switchPreferMEV={switchPreferMEV}
+                recommendValue={
+                  slippageValidInfo?.is_valid
+                    ? undefined
+                    : slippageValidInfo?.suggest_slippage
+                }
               />
-            ) : (
-              <RiskTipsWrapper
-                showRiskTips={showRiskTips && !swapBtnDisabled}
-                riskReset={swapBtnDisabled}
-              >
-                {({ riskDisabled }) => (
-                  <Button
-                    type="primary"
-                    block
-                    size="large"
-                    className="h-[48px] text-white text-[16px] font-medium"
-                    loading={isSubmitLoading}
-                    onClick={() => {
-                      if (!isSupportedChain && externalDapps.length > 0) {
-                        setSwapDappOpen(true);
-                        return;
-                      }
-                      if (!activeProvider) {
-                        console.log('refresh 4');
-                        refresh((e) => e + 1);
-                        return;
-                      }
-                      if (activeProvider?.shouldTwoStepApprove) {
-                        setQuoteRefreshLocked(true);
-                        return Modal.confirm({
-                          width: 360,
-                          closable: true,
-                          centered: true,
-                          className: twoStepApproveCn,
-                          title: null,
-                          content: (
-                            <>
-                              <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                                {t('page.swap.two-step-approve')}
-                              </div>
-                              <div className="text-13 leading-[17px]  text-r-neutral-body">
-                                {t('page.swap.two-step-approve-details')}
-                              </div>
-                            </>
-                          ),
-                          okText: t('page.swap.process-with-two-step-approve'),
-                          onCancel: resumeQuoteRefresh,
-                          onOk() {
-                            // gotoSwap();
-                            handleSwap();
-                          },
-                        });
-                      }
-                      // gotoSwap();
-                      // runBuildSwapTxs();
-                      handleSwap();
-                    }}
-                    disabled={swapBtnDisabled || riskDisabled}
-                  >
-                    {btnText}
-                  </Button>
-                )}
-              </RiskTipsWrapper>
             )}
-          </TooltipWithMagnetArrow>
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle w-[max-content]"
+              title={
+                !isSupportedChain && externalDapps.length < 1
+                  ? t('component.externalSwapBrideDappPopup.noDapps')
+                  : t('page.swap.insufficient-balance')
+              }
+              visible={
+                !isSupportedChain && externalDapps.length < 1
+                  ? undefined
+                  : inSufficient && activeProvider
+                  ? undefined
+                  : false
+              }
+            >
+              {canUseDirectSubmitTx && currentAccount?.type ? (
+                <DirectSignToConfirmBtn
+                  key={refreshId}
+                  disabled={swapBtnDisabled || approveTxPending}
+                  loading={miniSignLoading}
+                  title={latestQuoteBtnText || btnText}
+                  onConfirm={handleSwap}
+                  onConfirmStart={() => setQuoteRefreshLocked(true)}
+                  onCancel={resumeQuoteRefresh}
+                  showRiskTips={showRiskTips && !swapBtnDisabled}
+                  accountType={currentAccount?.type}
+                  signatureInstance={instance}
+                  riskReset={swapBtnDisabled}
+                />
+              ) : (
+                <RiskTipsWrapper
+                  showRiskTips={showRiskTips && !swapBtnDisabled}
+                  riskReset={swapBtnDisabled}
+                >
+                  {({ riskDisabled }) => (
+                    <Button
+                      type="primary"
+                      block
+                      size="large"
+                      className="h-[48px] rounded-[6px] text-white text-[16px] font-medium"
+                      loading={isSubmitLoading}
+                      onClick={() => {
+                        if (!isSupportedChain && externalDapps.length > 0) {
+                          setSwapDappOpen(true);
+                          return;
+                        }
+                        if (!activeProvider) {
+                          console.log('refresh 4');
+                          refresh((e) => e + 1);
+                          return;
+                        }
+                        if (activeProvider?.shouldTwoStepApprove) {
+                          setQuoteRefreshLocked(true);
+                          return Modal.confirm({
+                            width: 360,
+                            closable: true,
+                            centered: true,
+                            className: twoStepApproveCn,
+                            title: null,
+                            content: (
+                              <>
+                                <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                                  {t('page.swap.two-step-approve')}
+                                </div>
+                                <div className="text-13 leading-[17px]  text-r-neutral-body">
+                                  {t('page.swap.two-step-approve-details')}
+                                </div>
+                              </>
+                            ),
+                            okText: t(
+                              'page.swap.process-with-two-step-approve'
+                            ),
+                            onCancel: resumeQuoteRefresh,
+                            onOk() {
+                              // gotoSwap();
+                              handleSwap();
+                            },
+                          });
+                        }
+                        // gotoSwap();
+                        // runBuildSwapTxs();
+                        handleSwap();
+                      }}
+                      disabled={swapBtnDisabled || riskDisabled}
+                    >
+                      {btnText}
+                    </Button>
+                  )}
+                </RiskTipsWrapper>
+              )}
+            </TooltipWithMagnetArrow>
+          </div>
         </div>
 
         {payToken && receiveToken && chain ? (
