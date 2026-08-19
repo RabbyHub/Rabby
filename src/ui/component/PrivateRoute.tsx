@@ -1,6 +1,9 @@
 import React from 'react';
 import { Route, Redirect, useLocation } from 'react-router-dom';
-import { useWalletStatusStore } from '@/ui/state/walletStatus';
+import {
+  resolvePrivateRouteDecision,
+  useWalletStatusStore,
+} from '@/ui/state/walletStatus';
 
 export const PrivateRouteGuard = ({ children }) => {
   const location = useLocation();
@@ -14,18 +17,17 @@ export const PrivateRouteGuard = ({ children }) => {
   )}`;
   const to = !isBooted ? '/welcome' : unlockTo;
 
-  // Initial bootstrap and lifecycle events refresh the authoritative state.
-  // Waiting here prevents a stale locked snapshot from bouncing an unlock
-  // navigation back to /unlock.
-  if (!isInitialized || isSyncing) {
-    return <></>;
-  }
-  // Keep children mounted across route switches (keep-alive).
-  if (isUnlocked) {
+  const decision = resolvePrivateRouteDecision({
+    isInitialized,
+    isSyncing,
+    isUnlocked,
+    pathname: location.pathname,
+  });
+
+  if (decision === 'render') {
     return children;
   }
-  // Guards keep running on /unlock; redirecting again would nest `from` and loop.
-  if (location.pathname === '/unlock') {
+  if (decision === 'pending') {
     return <></>;
   }
   return <Redirect to={to} />;
