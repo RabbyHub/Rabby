@@ -375,7 +375,11 @@ export const BridgeShowMore = ({
             noQuote={!sourceLogo && !sourceName}
             chainServeId={fromToken?.chain}
             signatureInstance={signatureInstance}
-            sourceSelector={sourceSelectorRender()}
+            sourceSelector={
+              quoteLoading || sourceLogo || sourceName
+                ? sourceSelectorRender()
+                : undefined
+            }
             showTopMargin={false}
           />
         ) : (

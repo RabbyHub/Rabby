@@ -611,6 +611,7 @@ export const BridgeContent = () => {
     Number(amount) > 0 &&
     !quoteLoading &&
     !quoteList?.length;
+  const showStickyInfo = !!fromToken && !!toToken && !noQuote;
 
   const btnDisabled =
     inSufficient ||
@@ -1217,15 +1218,12 @@ export const BridgeContent = () => {
 
         {/* for bottom padding */}
         <div
-          className={clsx(
-            'w-full',
-            selectedBridgeQuote ? 'h-[192px]' : 'h-[68px]'
-          )}
+          className={clsx('w-full', showStickyInfo ? 'h-[192px]' : 'h-[68px]')}
         />
 
         <div className="fixed z-10 w-full bottom-0 mt-auto px-20 pb-20">
           <div className="w-full rounded-[8px] bg-r-neutral-bg-5">
-            {selectedBridgeQuote && (
+            {showStickyInfo && (
               <BridgeShowMore
                 insufficient={inSufficient}
                 supportDirectSign={canUseDirectSubmitTx}
@@ -1254,6 +1252,7 @@ export const BridgeContent = () => {
                 type="bridge"
                 isBestQuote={
                   !!bestQuoteId &&
+                  !!selectedBridgeQuote &&
                   bestQuoteId?.aggregatorId ===
                     selectedBridgeQuote.aggregator.id &&
                   bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id

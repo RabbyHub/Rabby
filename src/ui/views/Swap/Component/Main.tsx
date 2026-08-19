@@ -1139,6 +1139,11 @@ export const Main = () => {
   );
 
   const noQuote = useSyncStaleValue(noQuoteOrigin, 10);
+  const showStickyInfo =
+    !!payToken &&
+    !!receiveToken &&
+    !isSameAddress(payToken.id, receiveToken.id) &&
+    !noQuote;
 
   const setRabbyFeeVisible = useSetRabbyFee();
 
@@ -1377,15 +1382,12 @@ export const Main = () => {
         ) : null}
         {/* for bottom padding */}
         <div
-          className={clsx(
-            'w-full',
-            isShowMoreVisible ? 'h-[192px]' : 'h-[68px]'
-          )}
+          className={clsx('w-full', showStickyInfo ? 'h-[192px]' : 'h-[68px]')}
         />
 
         <div className="fixed z-10 w-full bottom-0 mt-auto px-20 pb-20">
           <div className="w-full rounded-[8px] bg-r-neutral-bg-5">
-            {isShowMoreVisible && (
+            {showStickyInfo && (
               <BridgeShowMore
                 insufficient={inSufficient}
                 supportDirectSign={canUseDirectSubmitTx}
