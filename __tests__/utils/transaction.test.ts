@@ -1,8 +1,11 @@
 import BigNumber from 'bignumber.js';
+import { intToHex, isHexString } from '@ethereumjs/util';
+import { omit } from 'lodash';
 
 import {
   buildParseTxRequest,
   buildPreExecTxRequest,
+  buildSignTx,
   normalizeTxParams,
   checkGasAndNonce,
   explainGas,
@@ -228,5 +231,128 @@ test('normalizeTxParams keeps background and UI transaction fields equivalent', 
     maxPriorityFeePerGas: '0x3',
     value: '0x4',
     data: '0xabcd',
+  });
+});
+
+describe('buildSignTx', () => {
+  // Verbatim copy of the construction SignTx used before it was extracted.
+  // buildSignTx must keep producing exactly this - it decides what the user
+  // sees and signs.
+  const legacySignTxConstruction = (rawTx: any, chainId: number) => {
+    const {
+      data = '0x',
+      from,
+      type,
+      calls,
+      gas,
+      gasPrice,
+      nonce,
+      to,
+      value,
+      feeToken,
+      maxFeePerGas,
+      authorizationList,
+      feePayer,
+      feePayerSignature,
+      nonceKey,
+      keyAuthorization,
+      validBefore,
+      validAfter,
+    } = normalizeTxParams(rawTx, true) as any;
+    const enable7702 = false;
+    const getGasPrice = () => {
+      let result = '';
+      if (maxFeePerGas) {
+        result = isHexString(maxFeePerGas)
+          ? maxFeePerGas
+          : intToHex(maxFeePerGas);
+      }
+      if (gasPrice) {
+        result = isHexString(gasPrice)
+          ? gasPrice
+          : intToHex(parseInt(gasPrice));
+      }
+      if (Number.isNaN(Number(result))) {
+        result = '';
+      }
+      return result;
+    };
+    return omit(
+      {
+        chainId,
+        data: data || '0x',
+        from,
+        gas: gas || rawTx.gasLimit,
+        gasPrice: getGasPrice(),
+        nonce,
+        to,
+        value,
+        type,
+        calls,
+        feeToken,
+        maxFeePerGas,
+        feePayer,
+        feePayerSignature,
+        nonceKey,
+        keyAuthorization,
+        validBefore,
+        validAfter,
+        authorizationList,
+      },
+      ['authorizationList']
+    );
+  };
+
+  const cases: Record<string, any> = {
+    '1559 dapp tx': {
+      from: '0xfrom',
+      to: '0xto',
+      data: '0xdeadbeef',
+      value: '0x0',
+      chainId: '0x1',
+      maxFeePerGas: '0x3b9aca00',
+      maxPriorityFeePerGas: '0x5f5e100',
+    },
+    'legacy dapp tx with gasLimit': {
+      from: '0xfrom',
+      to: '0xto',
+      data: '0xdeadbeef',
+      value: '0x0',
+      chainId: '0x89',
+      gasLimit: 21000,
+      gasPrice: '0x3b9aca00',
+    },
+    'bare tx, no gas fields': {
+      from: '0xfrom',
+      to: '0xto',
+      chainId: 1,
+    },
+  };
+
+  Object.entries(cases).forEach(([name, rawTx]) => {
+    test(`matches the pre-extraction construction: ${name}`, () => {
+      const chainId = Number(rawTx.chainId);
+      expect(
+        buildSignTx({
+          tx: normalizeTxParams(rawTx, true) as any,
+          chainId,
+          gasLimit: rawTx.gasLimit,
+        })
+      ).toEqual(legacySignTxConstruction(rawTx, chainId));
+    });
+  });
+
+  test('background and UI call sites agree on the diverging fields', () => {
+    // These three used to differ between rpcFlow and SignTx, which made the
+    // prepared pre-exec result describe a different tx than the signed one.
+    const rawTx = cases['1559 dapp tx'];
+    const tx = buildSignTx({
+      tx: normalizeTxParams(rawTx, true) as any,
+      chainId: Number(rawTx.chainId),
+    }) as any;
+
+    expect(tx.chainId).toBe(1);
+    expect(tx.gasPrice).toBe('0x3b9aca00');
+    expect(tx.maxPriorityFeePerGas).toBeUndefined();
   });
 });

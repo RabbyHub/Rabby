@@ -27,7 +27,7 @@ import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
 import { ga4 } from '@/utils/ga4';
-import { normalizeTxParams } from '@/utils/transaction';
+import { buildSignTx, normalizeTxParams } from '@/utils/transaction';
 import {
   cancelSignTxPreparation,
   startSignTxPreparation,
@@ -301,10 +301,18 @@ const flowContext = flow
               Object.assign(approvalData.params, { signTxPreparationId });
               startSignTxPreparation({
                 id: signTxPreparationId,
-                tx: normalizeTxParams(
-                  { ...signTx },
-                  !isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
-                ),
+                // must match how SignTx builds the tx it renders and signs -
+                // the prepared pre-exec result is shown as that tx's asset
+                // change. enable7702 is always false here, preparation is
+                // skipped for any 7702 authorization.
+                tx: buildSignTx({
+                  tx: normalizeTxParams(
+                    { ...signTx },
+                    !isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
+                  ),
+                  chainId: Number(signTx.chainId),
+                  gasLimit: signTx.gasLimit,
+                }),
                 origin,
                 chainId: Number(signTx.chainId),
                 support1559:
