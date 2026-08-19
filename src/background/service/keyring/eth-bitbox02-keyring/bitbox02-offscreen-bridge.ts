@@ -5,13 +5,15 @@ import {
   OffscreenCommunicationEvents,
   BitBox02Action,
 } from '@/constant/offscreen-communication';
-import * as HDKey from 'hdkey';
+import HDKey from 'hdkey';
 
 export default class BitBox02OffscreenBridge
   implements BitBox02BridgeInterface {
   isDeviceConnected = false;
 
   hdk: HDKey = new HDKey();
+
+  private isMessageListenerRegistered = false;
 
   private async openPopup(url) {
     await browser.windows.create({
@@ -26,7 +28,11 @@ export default class BitBox02OffscreenBridge
     browser.runtime.sendMessage({ type: 'bitbox02', action: 'popup-close' });
   }
 
-  init: BitBox02BridgeInterface['init'] = async (hdPath) => {
+  private registerMessageListener() {
+    if (this.isMessageListenerRegistered) {
+      return;
+    }
+
     browser.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       if (
         msg.target === OffscreenCommunicationTarget.extension &&
@@ -54,6 +60,11 @@ export default class BitBox02OffscreenBridge
 
       return true;
     });
+    this.isMessageListenerRegistered = true;
+  }
+
+  init: BitBox02BridgeInterface['init'] = async (hdPath) => {
+    this.registerMessageListener();
 
     return new Promise((resolve, reject) => {
       browser.runtime
