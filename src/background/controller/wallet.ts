@@ -206,6 +206,7 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
+import { bootWallet } from './walletUtils/boot';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
@@ -473,20 +474,7 @@ export class WalletController extends BaseController {
   fakeTestnetOpenapi = fakeTestnetOpenapi;
 
   /* wallet */
-  boot = async (password) => {
-    await keyringService.boot(password);
-    userGuideService.destroy();
-    const hasOtherProvider = preferenceService.getHasOtherProvider();
-    const isDefaultWallet = preferenceService.getIsDefaultWallet();
-    if (!hasOtherProvider) {
-      setPopupIcon('default');
-    } else {
-      setPopupIcon(isDefaultWallet ? 'rabby' : 'metamask');
-    }
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.UNLOCK_WALLET,
-    });
-  };
+  boot = bootWallet;
   isBooted = () => keyringService.isBooted();
   getSignTxPreparation = getSignTxPreparation;
   getSignTxPreparationGas = getSignTxPreparationGas;
