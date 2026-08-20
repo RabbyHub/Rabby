@@ -310,6 +310,7 @@ const resolveInitialGasSelection = ({
   tx,
   chainId,
   support1559,
+  enable7702,
   gasList,
   lastTimeGas,
   ...intent
@@ -317,6 +318,7 @@ const resolveInitialGasSelection = ({
   tx: Tx;
   chainId: number;
   support1559: boolean;
+  enable7702?: boolean;
   gasList: GasLevel[];
   lastTimeGas: ChainGas | null;
 }): InitialGasSelection => {
@@ -360,13 +362,11 @@ const resolveInitialGasSelection = ({
   }
 
   return {
-    // Preparation is skipped for any 7702 authorization, so the prepared tx
-    // never carries an authorizationList - callers that need one build it
-    // themselves via applySelectedGasToTx.
     tx: applySelectedGasToTx({
       tx,
       gasPrice: intToHex(gas.price),
       support1559,
+      enable7702,
     }),
     gasList,
     gas,
@@ -390,6 +390,7 @@ export const prepareInitialGasSelection = async ({
   tx: Tx;
   chainId: number;
   support1559: boolean;
+  enable7702?: boolean;
   lastTimeGas: ChainGas | null;
   loadGasMarket: (customGasPrice: number) => Promise<GasLevel[]>;
 }) => {

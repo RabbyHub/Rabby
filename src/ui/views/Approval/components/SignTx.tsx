@@ -2288,6 +2288,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           tx,
           chainId,
           support1559: is1559,
+          enable7702,
           lastTimeGas,
           loadGasMarket: (customGasPrice) =>
             loadGasMarket(chain, customGasPrice),
