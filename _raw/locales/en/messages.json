@@ -2640,6 +2640,7 @@
       "edit": "Edit",
       "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
       "the-following-swap-rates-are-found": "Found following rates",
+      "quotes": "Quotes",
       "best-subtitle": "The best quote is determined by the lowest estimated total cost, including the exchange rate and gas fees.",
       "sort-with-gas": "Sort with gas",
       "est-payment": "Est. Payment:",

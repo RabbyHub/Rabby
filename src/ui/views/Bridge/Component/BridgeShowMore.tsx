@@ -12,6 +12,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -118,6 +119,11 @@ export const BridgeShowMore = ({
   isRabbyFeeFree = false,
   getContainer,
   validateSlippage,
+  renderSwapQuotes,
+  onRefreshSwapQuotes,
+  swapQuotesLoading,
+  swapGasQuoteVisible,
+  onSwapGasQuoteVisibleChange,
 }: {
   openQuotesList: () => void;
   sourceName: string;
@@ -157,6 +163,11 @@ export const BridgeShowMore = ({
   validateSlippage?: (
     slippage: string
   ) => Promise<SlippageValidationResult | undefined>;
+  renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
+  onRefreshSwapQuotes?: () => void;
+  swapQuotesLoading?: boolean;
+  swapGasQuoteVisible?: boolean;
+  onSwapGasQuoteVisibleChange?: (visible: boolean) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -211,7 +222,7 @@ export const BridgeShowMore = ({
     return 'text-r-blue-default';
   }, [showMinDuration]);
 
-  const sourceSelectorRender = useMemoizedFn(() => {
+  const sourceSelectorRender = useMemoizedFn((clickable = true) => {
     return (
       <>
         {quoteLoading ? (
@@ -226,7 +237,7 @@ export const BridgeShowMore = ({
         ) : (
           <div
             className="flex items-center gap-4  cursor-pointer"
-            onClick={openQuotesList}
+            onClick={clickable ? openQuotesList : undefined}
           >
             <div
               className={clsx(
@@ -396,11 +407,16 @@ export const BridgeShowMore = ({
             signatureInstance={signatureInstance}
             sourceSelector={
               type === 'swap' && (quoteLoading || sourceLogo || sourceName)
-                ? sourceSelectorRender()
+                ? sourceSelectorRender(false)
                 : undefined
             }
             showTopMargin={false}
             useInfoCardStyle
+            renderSwapQuotes={renderSwapQuotes}
+            onRefreshSwapQuotes={onRefreshSwapQuotes}
+            swapQuotesLoading={swapQuotesLoading}
+            swapGasQuoteVisible={swapGasQuoteVisible}
+            onSwapGasQuoteVisibleChange={onSwapGasQuoteVisibleChange}
           />
         ) : type === 'swap' ? (
           sourceContentRender()
@@ -476,6 +492,34 @@ const GasTipsWrapper = styled.div`
   }
 `;
 
+const StableSignMainnetGasSelectorHeader = ({
+  headerProps,
+  dynamicProps,
+  className,
+}: {
+  headerProps?: React.ComponentProps<typeof SignMainnetGasSelectorHeader>;
+  dynamicProps?: Partial<
+    React.ComponentProps<typeof SignMainnetGasSelectorHeader>
+  >;
+  className?: string;
+}) => {
+  const lastHeaderPropsRef = useRef(headerProps);
+  if (headerProps) {
+    lastHeaderPropsRef.current = headerProps;
+  }
+
+  const cachedHeaderProps = lastHeaderPropsRef.current;
+  if (!cachedHeaderProps) {
+    return null;
+  }
+
+  return (
+    <div className={className}>
+      <SignMainnetGasSelectorHeader {...cachedHeaderProps} {...dynamicProps} />
+    </div>
+  );
+};
+
 export const DirectSignGasInfo = ({
   supportDirectSign,
   loading,
@@ -487,6 +531,11 @@ export const DirectSignGasInfo = ({
   sourceSelector,
   showTopMargin = true,
   useInfoCardStyle = false,
+  renderSwapQuotes,
+  onRefreshSwapQuotes,
+  swapQuotesLoading,
+  swapGasQuoteVisible,
+  onSwapGasQuoteVisibleChange,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
@@ -498,6 +547,11 @@ export const DirectSignGasInfo = ({
   sourceSelector?: React.ReactNode;
   showTopMargin?: boolean;
   useInfoCardStyle?: boolean;
+  renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
+  onRefreshSwapQuotes?: () => void;
+  swapQuotesLoading?: boolean;
+  swapGasQuoteVisible?: boolean;
+  onSwapGasQuoteVisibleChange?: (visible: boolean) => void;
 }) => {
   const wallet = useWallet();
   const { cachedTokenList } = useRabbySelector((s) => ({
@@ -1125,68 +1179,86 @@ export const DirectSignGasInfo = ({
     </GasTipsWrapper>
   );
 
+  const gasSelectorHeaderProps: React.ComponentProps<
+    typeof SignMainnetGasSelectorHeader
+  > | null = showGasContent
+    ? {
+        tx: currentTx!,
+        gasAccountCost: gasAccount as any,
+        gasMethod: effectiveGasMethod,
+        onChangeGasMethod: handleChangeGasMethod,
+        onAutoChangeGasMethod: handleAutoChangeGasMethod,
+        disableAutoGasLevelSwitch: !!manualGasMethod,
+        isWalletConnect:
+          currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring,
+        disabled: false,
+        isReady,
+        gasLimit: String(txsResult?.[0]?.gasLimit || currentTx?.gas || 0),
+        noUpdate: false,
+        gasList: gasList || [],
+        selectedGas,
+        version: txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0',
+        recommendGasLimit: txsResult?.[0]?.gasLimit || currentTx?.gas || 0,
+        recommendNonce: currentTx?.nonce || '0',
+        chainId,
+        onChange: handleGasChange,
+        nonce: String(currentTx?.nonce || '0'),
+        disableNonce: true,
+        isSpeedUp: !!isSpeedUp,
+        isCancel: !!isCancel,
+        is1559: support1559,
+        isHardware,
+        manuallyChangeGasLimit: false,
+        errors: checkErrors,
+        nativeTokenBalance,
+        gasToken,
+        gasPriceMedian,
+        gas: totalGasCost,
+        gasCalcMethod,
+        directSubmit: true,
+        checkGasLevelIsNotEnough,
+        nativeTokenInsufficient: isGasNotEnough,
+        freeGasAvailable: canUseGasLess,
+        noCustomRPC,
+        showTempoGasTokenSelector,
+        tempoGasTokenList,
+        tempoPreferredFeeTokenId,
+        onSelectTempoGasToken: handleSelectTempoGasToken,
+        tempoGasTokenLoading,
+        getContainer,
+        rightPrefix: sourceSelector,
+        summaryClassName: useInfoCardStyle ? 'font-normal' : undefined,
+        summaryTextClassName: useInfoCardStyle
+          ? 'text-r-neutral-title-1'
+          : undefined,
+        summarySuffix: useInfoCardStyle ? (
+          <RcInfoRowArrowRight className="h-14 w-14 text-r-neutral-foot" />
+        ) : undefined,
+        hideGasLevelInSummary: useInfoCardStyle,
+        renderSwapQuotes,
+        onRefreshSwapQuotes,
+        swapQuotesLoading,
+        swapGasQuoteVisible,
+        onSwapGasQuoteVisibleChange,
+      }
+    : null;
+  const keepCombinedGasHeaderMounted =
+    !!renderSwapQuotes && !!swapGasQuoteVisible;
+
   return (
     <>
-      {showGasContent ? (
-        <div className={clsx(showTopMargin && type !== 'send' && 'mt-12')}>
-          <SignMainnetGasSelectorHeader
-            tx={currentTx!}
-            gasAccountCost={gasAccount as any}
-            gasMethod={effectiveGasMethod}
-            onChangeGasMethod={handleChangeGasMethod}
-            onAutoChangeGasMethod={handleAutoChangeGasMethod}
-            disableAutoGasLevelSwitch={!!manualGasMethod}
-            isWalletConnect={
-              currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring
-            }
-            disabled={false}
-            isReady={isReady}
-            gasLimit={String(txsResult?.[0]?.gasLimit || currentTx?.gas || 0)}
-            noUpdate={false}
-            gasList={gasList || []}
-            selectedGas={selectedGas}
-            version={txsResult?.[0]?.preExecResult?.pre_exec_version || 'v0'}
-            recommendGasLimit={txsResult?.[0]?.gasLimit || currentTx?.gas || 0}
-            recommendNonce={currentTx?.nonce || '0'}
-            chainId={chainId}
-            onChange={handleGasChange}
-            nonce={String(currentTx?.nonce || '0')}
-            disableNonce={true}
-            isSpeedUp={!!isSpeedUp}
-            isCancel={!!isCancel}
-            is1559={support1559}
-            isHardware={isHardware}
-            manuallyChangeGasLimit={false}
-            errors={checkErrors}
-            nativeTokenBalance={nativeTokenBalance}
-            gasToken={gasToken}
-            gasPriceMedian={gasPriceMedian}
-            gas={totalGasCost}
-            gasCalcMethod={gasCalcMethod}
-            directSubmit
-            checkGasLevelIsNotEnough={checkGasLevelIsNotEnough}
-            nativeTokenInsufficient={isGasNotEnough}
-            freeGasAvailable={canUseGasLess}
-            noCustomRPC={noCustomRPC}
-            showTempoGasTokenSelector={showTempoGasTokenSelector}
-            tempoGasTokenList={tempoGasTokenList}
-            tempoPreferredFeeTokenId={tempoPreferredFeeTokenId}
-            onSelectTempoGasToken={handleSelectTempoGasToken}
-            tempoGasTokenLoading={tempoGasTokenLoading}
-            getContainer={getContainer}
-            rightPrefix={sourceSelector}
-            summaryClassName={useInfoCardStyle ? 'font-normal' : undefined}
-            summaryTextClassName={
-              useInfoCardStyle ? 'text-r-neutral-title-1' : undefined
-            }
-            summarySuffix={
-              useInfoCardStyle ? (
-                <RcInfoRowArrowRight className="h-14 w-14 text-r-neutral-foot" />
-              ) : undefined
-            }
-            hideGasLevelInSummary={useInfoCardStyle}
-          />
-        </div>
+      {showGasContent || keepCombinedGasHeaderMounted ? (
+        <StableSignMainnetGasSelectorHeader
+          headerProps={gasSelectorHeaderProps || undefined}
+          dynamicProps={{
+            renderSwapQuotes,
+            onRefreshSwapQuotes,
+            swapQuotesLoading,
+            swapGasQuoteVisible,
+            onSwapGasQuoteVisibleChange,
+          }}
+          className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
+        />
       ) : !loading && noQuote ? (
         <ListItem
           name={<>{'Gas fee'}</>}

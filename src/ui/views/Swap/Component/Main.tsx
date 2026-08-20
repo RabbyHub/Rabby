@@ -19,7 +19,7 @@ import {
   useWallet,
 } from '@/ui/utils';
 import clsx from 'clsx';
-import { QuoteList } from './Quotes';
+import { QuoteList, Quotes } from './Quotes';
 import {
   useQuoteVisible,
   useRefreshId,
@@ -215,6 +215,7 @@ export const Main = () => {
 
   const visible = useQuoteVisible();
   const setVisible = useSetQuoteVisible();
+  const [swapGasQuoteVisible, setSwapGasQuoteVisible] = useState(false);
   const { t } = useTranslation();
 
   const amountAvailable = useMemo(() => Number(inputAmount) > 0, [inputAmount]);
@@ -1436,6 +1437,35 @@ export const Main = () => {
                     : slippageValidInfo?.suggest_slippage
                 }
                 validateSlippage={validateSlippage}
+                renderSwapQuotes={(onSelect) =>
+                  payToken && receiveToken && chain ? (
+                    <Quotes
+                      list={quoteList}
+                      activeName={activeProvider?.name}
+                      loading={quoteLoading}
+                      visible
+                      onClose={() => undefined}
+                      userAddress={userAddress}
+                      chain={chain}
+                      slippage={slippage}
+                      payToken={payToken}
+                      payAmount={inputAmount}
+                      receiveToken={receiveToken}
+                      fee={feeRate}
+                      inSufficient={inSufficient}
+                      setActiveProvider={setActiveProvider}
+                      getContainer={getContainer}
+                      sortIncludeGasFee
+                      noPadding
+                      combined
+                      onSelect={onSelect}
+                    />
+                  ) : null
+                }
+                onRefreshSwapQuotes={() => refresh((id) => id + 1)}
+                swapQuotesLoading={quoteLoading}
+                swapGasQuoteVisible={swapGasQuoteVisible}
+                onSwapGasQuoteVisibleChange={setSwapGasQuoteVisible}
               />
             )}
             <TooltipWithMagnetArrow

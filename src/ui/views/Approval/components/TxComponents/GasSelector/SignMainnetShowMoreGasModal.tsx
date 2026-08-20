@@ -45,7 +45,7 @@ type SignMainnetGasChange = GasLevel & {
   maxPriorityFee: number;
 };
 
-type Props = {
+export type SignMainnetShowMoreGasModalProps = {
   visible: boolean;
   onVisibleChange(open: boolean): void;
   children: React.ReactElement;
@@ -120,7 +120,7 @@ export const SignMainnetShowMoreGasModal = ({
   tempoGasTokenLoading = false,
   getContainer,
   onEditCustomGas,
-}: Props) => {
+}: SignMainnetShowMoreGasModalProps) => {
   const { t } = useTranslation();
   const currentGasMethod = gasMethod ?? 'native';
   const noCustomRPCEnabled = noCustomRPC ?? true;
