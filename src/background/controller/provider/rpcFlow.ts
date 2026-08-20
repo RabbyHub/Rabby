@@ -27,7 +27,12 @@ import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
 import { ga4 } from '@/utils/ga4';
-import { buildSignTx, normalizeTxParams } from '@/utils/transaction';
+import {
+  buildSignTx,
+  normalizeTxParams,
+  shouldUpdateNonce,
+} from '@/utils/transaction';
+import type { Tx } from 'background/service/openapi';
 import {
   cancelSignTxPreparation,
   startSignTxPreparation,
@@ -269,18 +274,27 @@ const flowContext = flow
       const isSafeAccount =
         ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring ||
         ctx.request.account?.type === KEYRING_TYPE.CoboArgusKeyring;
+      const canPrepareNonce = normalizedSignTx
+        ? shouldUpdateNonce({
+            nonce: normalizedSignTx.nonce,
+            from: normalizedSignTx.from,
+            to: normalizedSignTx.to,
+            isSpeedUp: normalizedSignTx.isSpeedUp,
+            isCancel: normalizedSignTx.isCancel,
+          }) || normalizedSignTx.nonce != null
+        : false;
       let signTxPreparationId: string | undefined;
       if (
         signTx &&
+        normalizedSignTx &&
         signTxChain &&
         !signTxChain.isTestnet &&
         !isSafeAccount &&
-        !signTx.nonce &&
+        canPrepareNonce &&
         !hasEip7702Authorization
       ) {
         signTxPreparationId = uuidv4();
       }
-
       try {
         const approvalData = {
           approvalComponent: approvalType,

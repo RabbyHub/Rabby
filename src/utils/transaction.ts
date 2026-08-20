@@ -220,6 +220,19 @@ export type TxIntent = {
   isBridge?: boolean;
 };
 
+export const shouldUpdateNonce = ({
+  nonce,
+  from,
+  to,
+  isSpeedUp,
+  isCancel,
+  nonceChanged = false,
+}: Pick<Tx, 'nonce' | 'from' | 'to'> & {
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
+  nonceChanged?: boolean;
+}) => !isCancel && !isSpeedUp && !(nonce && from === to) && !nonceChanged;
+
 export type InitialGasSelection = {
   tx: Tx;
   gasList: GasLevel[];

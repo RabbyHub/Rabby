@@ -16,6 +16,7 @@ import {
   normalizeTxParams as normalizeTransactionParams,
   prepareInitialGasSelection,
   resolve1559MaxPriorityFee,
+  shouldUpdateNonce,
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
@@ -666,9 +667,14 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     type: swapPreferMEVGuarded ? 'mev' : 'default',
   });
 
-  let updateNonce = true;
-  if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)
-    updateNonce = false;
+  const updateNonce = shouldUpdateNonce({
+    nonce,
+    from,
+    to,
+    isCancel,
+    isSpeedUp,
+    nonceChanged,
+  });
 
   const [tx, setTx] = useState<Tx>(
     buildSignTx({
@@ -1078,7 +1084,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     const canUsePreparation =
       preparationGasReadyRef.current &&
       preparation?.recommendNonce !== undefined &&
-      updateNonce &&
+      (updateNonce || preparation.recommendNonce === tx.nonce) &&
       !isGnosisAccount &&
       !isCoboArugsAccount;
     const prepared = canUsePreparation ? preparation : undefined;

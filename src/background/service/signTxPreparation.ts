@@ -4,6 +4,7 @@ import {
   buildPendingTxList,
   buildPreExecTxRequest,
   prepareInitialGasSelection,
+  shouldUpdateNonce,
 } from '@/utils/transaction';
 import type { InitialGasSelection, TxIntent } from '@/utils/transaction';
 import { getRecommendNonce } from '../controller/walletUtils/sign';
@@ -57,11 +58,20 @@ export const startSignTxPreparation = ({
   const openapi = openapiService;
   const startedAt = Date.now();
   const state = { cancelled: false };
-  const recommendNonce = getRecommendNonce({
+  const updateNonce = shouldUpdateNonce({
+    nonce: tx.nonce,
     from: tx.from,
-    chainId,
-    nonceKey: (tx as any).nonceKey,
+    to: tx.to,
+    isSpeedUp: intent.isSpeedUp,
+    isCancel: intent.isCancel,
   });
+  const recommendNonce = updateNonce
+    ? getRecommendNonce({
+        from: tx.from,
+        chainId,
+        nonceKey: (tx as any).nonceKey,
+      })
+    : Promise.resolve(tx.nonce);
   const loadGasMarket = (customGasPrice: number) =>
     gasMarketV2({
       chain,
@@ -119,7 +129,7 @@ export const startSignTxPreparation = ({
               nonce,
               origin: origin || '',
               address: tx.from,
-              updateNonce: !tx.nonce,
+              updateNonce,
               pendingTxList: pending_tx_list,
               delegateCall: delegateCall || false,
             })
@@ -137,7 +147,6 @@ export const startSignTxPreparation = ({
     results,
     resolvedAt: Date.now(),
   }));
-
   preparations.set(id, {
     state,
     startedAt,

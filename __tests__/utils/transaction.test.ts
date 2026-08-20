@@ -11,6 +11,7 @@ import {
   explainGas,
   getPendingTxs,
   prepareInitialGasSelection,
+  shouldUpdateNonce,
 } from '@/utils/transaction';
 
 jest.mock('@/i18n', () => ({
@@ -30,6 +31,38 @@ jest.mock('consts', () => ({
   SAFE_GAS_LIMIT_BUFFER: 0,
   SAFE_GAS_LIMIT_RATIO: 1,
 }));
+
+describe('shouldUpdateNonce', () => {
+  const tx = { from: '0xfrom', to: '0xto' } as any;
+
+  test('updates an ordinary transaction without a nonce', () => {
+    expect(shouldUpdateNonce(tx)).toBe(true);
+  });
+
+  test('keeps the existing SignTx behavior for an explicit nonce', () => {
+    expect(shouldUpdateNonce({ ...tx, nonce: '0x1' })).toBe(true);
+  });
+
+  test('preserves nonce for speed up and cancel transactions', () => {
+    expect(
+      shouldUpdateNonce({ ...tx, nonce: '0x1', isSpeedUp: true } as any)
+    ).toBe(false);
+    expect(
+      shouldUpdateNonce({ ...tx, nonce: '0x1', isCancel: true } as any)
+    ).toBe(false);
+  });
+
+  test('preserves nonce for same-address transactions and user changes', () => {
+    expect(
+      shouldUpdateNonce({
+        ...tx,
+        nonce: '0x1',
+        to: tx.from,
+      })
+    ).toBe(false);
+    expect(shouldUpdateNonce({ ...tx, nonceChanged: true })).toBe(false);
+  });
+});
 
 jest.mock('@/utils/chain', () => ({
   findChain: () => ({
@@ -216,7 +249,7 @@ test('normalizeTxParams prefers gasLimit over gas when both are present', () => 
   expect(tx.gas).toBe('0x5208');
 });
 
-test('normalizeTxParams keeps background and UI transaction fields equivalent', () => {
+test('normalizeTxParams normalizes numeric transaction fields', () => {
   const tx = normalizeTxParams({
     from: '0xfrom',
     gasPrice: 1,
@@ -468,7 +501,7 @@ describe('buildSignTx', () => {
     });
   });
 
-  test('background and UI call sites agree on the diverging fields', () => {
+  test('buildSignTx preserves the expected dapp fee fields', () => {
     // These three used to differ between rpcFlow and SignTx, which made the
     // prepared pre-exec result describe a different tx than the signed one.
     const rawTx = cases['1559 dapp tx'];
