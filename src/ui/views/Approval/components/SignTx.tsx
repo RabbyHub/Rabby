@@ -1074,9 +1074,13 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       : undefined;
     preparedBlockPromiseRef.current = null;
     let recommendNonce = updateNonce ? '0x0' : tx.nonce || '0x0';
-    const preparation = signTxPreparationId
-      ? await wallet.getSignTxPreparation(signTxPreparationId)
-      : null;
+    // Don't block explain on requests whose results canUsePreparation is
+    // already guaranteed to discard - getSignTxPreparation awaits every
+    // prepared request, including ones the fallback path has raced past.
+    const preparation =
+      signTxPreparationId && preparationGasReadyRef.current
+        ? await wallet.getSignTxPreparation(signTxPreparationId)
+        : null;
     // Only trust the preparation when its nonce actually resolved and it was
     // computed for the same nonce/account path this explain is taking -
     // otherwise the other prepared results may have been built against a
