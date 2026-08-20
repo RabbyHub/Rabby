@@ -1250,6 +1250,7 @@ export const BridgeContent = () => {
                 setAutoSlippage={setAutoSlippage}
                 setIsCustomSlippage={setIsCustomSlippage}
                 type="bridge"
+                getContainer={getContainer}
                 isBestQuote={
                   !!bestQuoteId &&
                   !!selectedBridgeQuote &&

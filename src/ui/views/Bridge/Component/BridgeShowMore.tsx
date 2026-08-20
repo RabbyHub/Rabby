@@ -5,7 +5,7 @@ import {
   TokenItem,
   Tx,
 } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, Skeleton, Switch, Tooltip } from 'antd';
+import { Button, DrawerProps, Skeleton, Switch, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
   PropsWithChildren,
@@ -17,7 +17,7 @@ import React, {
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arrow-right-cc.svg';
-import { BridgeSlippage } from './BridgeSlippage';
+import { BridgeSlippage, SlippageValidationResult } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
 import { ReactComponent as RcIconFree } from '@/ui/assets/swap/free.svg';
@@ -116,6 +116,8 @@ export const BridgeShowMore = ({
   insufficient = false,
   signatureInstance,
   isRabbyFeeFree = false,
+  getContainer,
+  validateSlippage,
 }: {
   openQuotesList: () => void;
   sourceName: string;
@@ -151,6 +153,10 @@ export const BridgeShowMore = ({
   supportDirectSign?: boolean;
   signatureInstance: SignatureManager;
   isRabbyFeeFree?: boolean;
+  getContainer?: DrawerProps['getContainer'];
+  validateSlippage?: (
+    slippage: string
+  ) => Promise<SlippageValidationResult | undefined>;
 }) => {
   const { t } = useTranslation();
 
@@ -401,6 +407,8 @@ export const BridgeShowMore = ({
           type={type}
           isWrapToken={isWrapToken}
           recommendValue={recommendValue}
+          getContainer={getContainer}
+          validateSlippage={validateSlippage}
         />
       </div>
 

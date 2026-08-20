@@ -1008,25 +1008,27 @@ export const useTokenPair = (userAddress: string) => {
     console.error('quotesError', quotesError);
   }
 
+  const validateSlippage = useCallback(
+    async (slippage: string) => {
+      if (chain && Number(slippage) && payToken?.id && receiveToken?.id) {
+        return validSlippage({
+          chain,
+          slippage,
+          payTokenId: payToken.id,
+          receiveTokenId: receiveToken.id,
+        });
+      }
+    },
+    [chain, payToken?.id, receiveToken?.id, validSlippage]
+  );
+
   const {
     value: slippageValidInfo,
     error: slippageValidError,
     loading: slippageValidLoading,
   } = useAsync(async () => {
-    if (
-      chain &&
-      Number(slippageObj.slippage) &&
-      payToken?.id &&
-      receiveToken?.id
-    ) {
-      return validSlippage({
-        chain,
-        slippage: slippageObj.slippage,
-        payTokenId: payToken?.id,
-        receiveTokenId: receiveToken?.id,
-      });
-    }
-  }, [slippageObj.slippage, chain, payToken?.id, receiveToken?.id, refreshId]);
+    return validateSlippage(slippageObj.slippage);
+  }, [slippageObj.slippage, validateSlippage, refreshId]);
   const openQuote = useSetQuoteVisible();
 
   const openQuotesList = useCallback(() => {
@@ -1257,6 +1259,7 @@ export const useTokenPair = (userAddress: string) => {
 
     slippageValidInfo,
     slippageValidLoading,
+    validateSlippage,
 
     slider,
     swapUseSlider,

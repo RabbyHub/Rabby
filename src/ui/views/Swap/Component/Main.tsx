@@ -149,6 +149,7 @@ export const Main = () => {
     currentProvider: activeProvider,
     setActiveProvider,
     slippageValidInfo,
+    validateSlippage,
     slider,
     swapUseSlider,
     onChangeSlider,
@@ -1418,6 +1419,7 @@ export const Main = () => {
                 setAutoSlippage={setAutoSlippage}
                 setIsCustomSlippage={setIsCustomSlippage}
                 type="swap"
+                getContainer={getContainer}
                 isWrapToken={isWrapToken}
                 isRabbyFeeFree={isFreeTokenPair}
                 isBestQuote={
@@ -1433,6 +1435,7 @@ export const Main = () => {
                     ? undefined
                     : slippageValidInfo?.suggest_slippage
                 }
+                validateSlippage={validateSlippage}
               />
             )}
             <TooltipWithMagnetArrow
