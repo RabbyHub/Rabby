@@ -22,7 +22,7 @@ import {
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
 import { Drawer, message, Modal } from 'antd';
-import { maxBy, omit } from 'lodash';
+import { maxBy } from 'lodash';
 import {
   Chain,
   ExplainTxResponse,
@@ -1172,28 +1172,26 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }
     );
 
-    const pendingTxListPromise = preparedPendingTxList
-      ? Promise.resolve(preparedPendingTxList)
-      : getPendingTxs({
-          recommendNonce,
-          wallet,
-          address,
-          chainId: tx.chainId,
-        });
-
-    const res = await (preparedPreExecTx
+    const res = preparedPreExecTx
       ? preparedPreExecTx
-      : wallet.openapi.preExecTx(
+      : await wallet.openapi.preExecTx(
           buildPreExecTxRequest({
             tx,
             nonce: explainNonce,
             origin: origin || '',
             address,
             updateNonce,
-            pendingTxList: await pendingTxListPromise,
+            pendingTxList:
+              preparedPendingTxList ??
+              (await getPendingTxs({
+                recommendNonce,
+                wallet,
+                address,
+                chainId: tx.chainId,
+              })),
             delegateCall,
           })
-        ));
+        );
     if (explainEpochRef.current !== detailEpoch) {
       return;
     }
@@ -2385,7 +2383,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           return result.value;
         }
       );
-      const { gasList, gas, fee } = initialGasSelection;
+      const { gasList, gas, fee, tx: selectedTx } = initialGasSelection;
       setGasList(gasList);
 
       wallet.reportStats('createTransaction', {
@@ -2404,16 +2402,28 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
       setSelectedGas(gas);
       setSupport1559(is1559);
-      // Merge onto the latest tx rather than the one captured when this effect
-      // started, so a concurrent setTx is not discarded.
-      setTx(
-        (prev) =>
-          applySelectedGasToTx({
-            tx: prev,
-            gasPrice: intToHex(gas.price),
-            support1559: is1559,
-            enable7702: is7702Tx(prev as any),
-          }) as any
+      // Prepared path: adopt the tx the background pre-executed, so the tx we
+      // render and sign is that exact tx rather than a second construction
+      // that has to agree with it - a silent disagreement would show the user
+      // the asset change of a different transaction. Safe here because
+      // rpcFlow skips preparation for Gnosis and CoboArgus, so getSafeInfo /
+      // getCoboDelegates never run alongside this init, and every other setTx
+      // caller is gated behind isReady.
+      //
+      // Fallback path: there is no background pre-execution to agree with, so
+      // adopting selectedTx buys nothing. Keep transforming the latest tx -
+      // getSafeInfo() does run in this init for Gnosis and fixes a missing or
+      // stale Safe nonce through setTx, and overwriting that would leave
+      // pre-exec simulating the old nonce while the signature uses realNonce.
+      setTx((prev) =>
+        preparationGasReadyRef.current
+          ? selectedTx
+          : (applySelectedGasToTx({
+              tx: prev,
+              gasPrice: intToHex(gas.price),
+              support1559: is1559,
+              enable7702: is7702Tx(prev as any),
+            }) as any)
       );
       setInited(true);
     } catch (e) {

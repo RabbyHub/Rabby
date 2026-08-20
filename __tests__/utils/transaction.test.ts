@@ -268,6 +268,20 @@ test('normalizeTxParams normalizes numeric transaction fields', () => {
   });
 });
 
+test('normalizeTxParams hex-encodes a value past Number.MAX_SAFE_INTEGER', () => {
+  // MAX_SAFE_INTEGER is ~0.009 ETH in wei, so any real amount a dapp sends as
+  // a number lands here. Throwing would make the caller fall back to the raw
+  // params, skipping normalization - including the isDapp field stripping,
+  // which is what keeps a dapp from steering the gas level.
+  const tx = normalizeTxParams(
+    { from: '0xfrom', value: 1e18, isSpeedUp: true } as any,
+    true
+  );
+
+  expect(tx.value).toBe('0xde0b6b3a7640000');
+  expect((tx as any).isSpeedUp).toBeUndefined();
+});
+
 test('prepareInitialGasSelection keeps the initial SignTx gas behavior', async () => {
   const loadGasMarket = jest.fn().mockResolvedValue([
     {
@@ -502,8 +516,8 @@ describe('buildSignTx', () => {
   });
 
   test('buildSignTx preserves the expected dapp fee fields', () => {
-    // These three used to differ between rpcFlow and SignTx, which made the
-    // prepared pre-exec result describe a different tx than the signed one.
+    // buildSignTx is the single construction site for the signed tx, so these
+    // three conversions are what every downstream consumer depends on.
     const rawTx = cases['1559 dapp tx'];
     const tx = buildSignTx({
       tx: normalizeTxParams(rawTx, true) as any,
