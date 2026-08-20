@@ -59,7 +59,17 @@ const isStringOrNumber = (value: unknown): value is string | number =>
 function normalizeHex(value: string | number): string;
 function normalizeHex(value: unknown): unknown;
 function normalizeHex(value: unknown) {
-  if (typeof value === 'number') return intToHex(Math.floor(value));
+  if (typeof value === 'number') {
+    // Not @ethereumjs/util's intToHex: it rejects anything above
+    // Number.MAX_SAFE_INTEGER, which is ~0.009 ETH in wei, so a dapp sending a
+    // numeric `value` for any real amount would throw. The callers catch that
+    // and fall back to the raw params, which skips normalization entirely -
+    // including the isDapp field stripping.
+    if (!Number.isFinite(value)) {
+      throw new Error(`${value} is not int`);
+    }
+    return `0x${new BigNumber(Math.floor(value)).toString(16)}`;
+  }
   if (typeof value !== 'string') return value;
   return isHexString(value) ? value : `0x${value}`;
 }
