@@ -1,9 +1,9 @@
 diff --git a/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/v2sdk.js b/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/v2sdk.js
-index 0000000..0000000 100644
+index 7c7fddd..cf85321 100644
 --- a/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/v2sdk.js
 +++ b/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/v2sdk.js
-@@ -138,7 +138,7 @@ class WalletConnectKeyringV2 extends WalletConnectKeyringBase {
-             };
+@@ -138,7 +138,7 @@ class V2SDK extends sdk_1.SDK {
+             });
              const listenerJwtError = () => {
                  var _a;
 -                (_a = this.client) === null || _a === void 0 ? void 0 : _a.core.relayer.provider.once('error', (e) => __awaiter(this, void 0, void 0, function* () {
