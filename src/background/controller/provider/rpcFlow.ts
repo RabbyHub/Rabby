@@ -258,7 +258,8 @@ const flowContext = flow
       // so params[0] must only be read on the SignTx path.
       const signTx = approvalType === 'SignTx' ? params[0] : undefined;
       const hasEip7702Authorization = Boolean(
-        signTx?.authorizationList ||
+        (Array.isArray(signTx?.authorizationList) &&
+          signTx.authorizationList.length > 0) ||
           approvalCtx?.eip7702Revoke ||
           approvalCtx?.eip7702RevokeAuthorization
       );
@@ -323,6 +324,11 @@ const flowContext = flow
                 delegateCall:
                   Boolean(signTx.operation) &&
                   ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring,
+                isSpeedUp: signTx.isSpeedUp,
+                isCancel: signTx.isCancel,
+                isSend: signTx.isSend,
+                isSwap: signTx.isSwap,
+                isBridge: signTx.isBridge,
               });
             },
           }

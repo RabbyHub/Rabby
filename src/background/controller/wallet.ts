@@ -198,8 +198,10 @@ import {
   shouldUseTempoBatchTransaction,
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
+import { gasMarketV2 as loadGasMarketV2 } from '../service/gasMarket';
 import {
   cancelAllSignTxPreparations,
+  getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
@@ -482,6 +484,7 @@ export class WalletController extends BaseController {
   };
   isBooted = () => keyringService.isBooted();
   getSignTxPreparation = getSignTxPreparation;
+  getSignTxPreparationGas = getSignTxPreparationGas;
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
@@ -6783,62 +6786,7 @@ export class WalletController extends BaseController {
 
   uninstalledSyncStatus = uninstalledService.syncStatus;
 
-  gasMarketV2 = async (
-    params:
-      | {
-          chain: Chain;
-          tx: Tx;
-          customGas?: number;
-        }
-      | {
-          chainId: string;
-          customGas?: number;
-        }
-  ) => {
-    let chainId: string;
-    let tx: Tx | undefined;
-
-    if ('tx' in params) {
-      chainId = params.chain.serverId;
-
-      if (params?.chain && params?.chain.enum === CHAINS_ENUM.LINEA) {
-        if (params.tx.nonce === undefined) {
-          params.tx.nonce = await this.getRecommendNonce({
-            from: params.tx.from,
-            chainId: params.chain.id,
-          });
-        }
-
-        if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
-          params.tx.gasPrice = '0x0';
-        }
-        if (params.tx.gas === undefined || params.tx.gas === '') {
-          params.tx.gas = '0x0';
-        }
-        if (params.tx.data === undefined || params.tx.data === '') {
-          params.tx.data = '0x';
-        }
-        tx = {
-          chainId: params.tx.chainId,
-          data: params.tx.data,
-          from: params.tx.from,
-          gas: params.tx.gas,
-          nonce: params.tx.nonce,
-          to: params.tx.to,
-          value: params.tx.value,
-          gasPrice: params.tx.gasPrice,
-        };
-      }
-    } else {
-      chainId = params.chainId;
-    }
-
-    return openapiService.gasMarketV2({
-      customGas: params.customGas,
-      chainId,
-      tx,
-    });
-  };
+  gasMarketV2 = loadGasMarketV2;
 
   changeDappProvider = ({
     origin,

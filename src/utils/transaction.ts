@@ -23,6 +23,7 @@ import type { WalletControllerType } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import i18n from '@/i18n';
 import { Account } from 'background/service/preference';
+import type { ChainGas } from 'background/service/preference';
 import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
 import { TX_GAS_LIMIT_CHAIN_MAPPING } from '@/constant/txGasLimit';
 import { getTempoFeeTokenInfo, isTempoChain } from './tempo';
@@ -208,6 +209,191 @@ export const convertLegacyTo1559 = (tx: Tx) => {
     maxPriorityFeePerGas: tx.gasPrice,
     nonce: tx.nonce,
   };
+};
+
+/** What the user is doing with this tx - drives the initial gas selection. */
+export type TxIntent = {
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
+  isSend?: boolean;
+  isSwap?: boolean;
+  isBridge?: boolean;
+};
+
+export type InitialGasSelection = {
+  tx: Tx;
+  gasList: GasLevel[];
+  gas: GasLevel;
+  fee: number;
+};
+
+const resolveCustomGasPrice = ({
+  tx,
+  lastTimeGas,
+  isSpeedUp,
+  isCancel,
+  isSend,
+  isSwap,
+  isBridge,
+}: TxIntent & {
+  tx: Pick<Tx, 'gasPrice'>;
+  lastTimeGas: ChainGas | null;
+}) => {
+  let customGasPrice = 0;
+  let useCachedCustomGasPrice = false;
+
+  if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+    customGasPrice = lastTimeGas.gasPrice;
+    useCachedCustomGasPrice = true;
+  }
+  if (
+    isSpeedUp ||
+    isCancel ||
+    ((isSend || isSwap || isBridge) && tx.gasPrice)
+  ) {
+    customGasPrice = parseInt(tx.gasPrice as string);
+    useCachedCustomGasPrice = false;
+  }
+
+  return { customGasPrice, useCachedCustomGasPrice };
+};
+
+export const resolve1559MaxPriorityFee = (
+  maxFeePerGas: string | number | undefined,
+  maxPriorityFee: number
+) => {
+  const nextMaxFeePerGas = Math.max(0, Math.round(Number(maxFeePerGas || 0)));
+
+  if (!Number.isFinite(maxPriorityFee) || maxPriorityFee < 0) {
+    return nextMaxFeePerGas;
+  }
+
+  return Math.min(nextMaxFeePerGas, Math.round(maxPriorityFee));
+};
+
+export const applySelectedGasToTx = ({
+  tx,
+  gasPrice,
+  support1559,
+  enable7702,
+}: {
+  tx: Tx;
+  gasPrice: string;
+  support1559: boolean;
+  enable7702?: boolean;
+}): Tx =>
+  support1559
+    ? (omit(
+        {
+          ...tx,
+          ...convertLegacyTo1559({ ...tx, gasPrice }),
+          authorizationList: (tx as ApprovalRes).authorizationList,
+        },
+        [...(enable7702 ? [] : ['authorizationList']), 'gasPrice']
+      ) as Tx)
+    : { ...tx, gasPrice };
+
+const resolveInitialGasSelection = ({
+  tx,
+  chainId,
+  support1559,
+  gasList,
+  lastTimeGas,
+  ...intent
+}: TxIntent & {
+  tx: Tx;
+  chainId: number;
+  support1559: boolean;
+  gasList: GasLevel[];
+  lastTimeGas: ChainGas | null;
+}): InitialGasSelection => {
+  const { isSpeedUp, isCancel, isSend, isSwap, isBridge } = intent;
+  const { customGasPrice, useCachedCustomGasPrice } = resolveCustomGasPrice({
+    tx,
+    lastTimeGas,
+    ...intent,
+  });
+  let gas: GasLevel | undefined;
+
+  if (
+    ((isSend || isSwap || isBridge) && customGasPrice) ||
+    isSpeedUp ||
+    isCancel ||
+    lastTimeGas?.lastTimeSelect === 'gasPrice'
+  ) {
+    gas = gasList.find((item) => item.level === 'custom');
+  } else if (lastTimeGas?.lastTimeSelect === 'gasLevel') {
+    gas = gasList.find((item) => item.level === lastTimeGas.gasLevel);
+  }
+  gas ||= gasList.find((item) => item.level === 'normal');
+  if (!gas) {
+    throw new Error('No gas level available');
+  }
+
+  // The cached priority fee patches the selected level only. `feeGasList` stays
+  // local: the published gasList is the untouched market list, as before.
+  let feeGasList = gasList;
+  if (
+    useCachedCustomGasPrice &&
+    lastTimeGas &&
+    typeof lastTimeGas.maxPriorityFee === 'number' &&
+    gas.level === 'custom'
+  ) {
+    gas = {
+      ...gas,
+      priority_price: Math.min(lastTimeGas.maxPriorityFee, customGasPrice),
+    };
+    feeGasList = gasList.map((item) => (item.level === 'custom' ? gas! : item));
+  }
+
+  return {
+    // Preparation is skipped for any 7702 authorization, so the prepared tx
+    // never carries an authorizationList - callers that need one build it
+    // themselves via applySelectedGasToTx.
+    tx: applySelectedGasToTx({
+      tx,
+      gasPrice: intToHex(gas.price),
+      support1559,
+    }),
+    gasList,
+    gas,
+    fee: calcMaxPriorityFee(
+      feeGasList,
+      gas,
+      chainId,
+      !!(isCancel || isSpeedUp)
+    ),
+  };
+};
+
+export const prepareInitialGasSelection = async ({
+  tx,
+  chainId,
+  support1559,
+  lastTimeGas,
+  loadGasMarket,
+  ...intent
+}: TxIntent & {
+  tx: Tx;
+  chainId: number;
+  support1559: boolean;
+  lastTimeGas: ChainGas | null;
+  loadGasMarket: (customGasPrice: number) => Promise<GasLevel[]>;
+}) => {
+  const { customGasPrice } = resolveCustomGasPrice({
+    tx,
+    lastTimeGas,
+    ...intent,
+  });
+
+  return resolveInitialGasSelection({
+    tx,
+    chainId,
+    support1559,
+    gasList: await loadGasMarket(customGasPrice),
+    lastTimeGas,
+    ...intent,
+  });
 };
 
 export const is1559Tx = (tx: Tx) => {
