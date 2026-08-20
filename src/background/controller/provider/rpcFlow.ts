@@ -28,7 +28,12 @@ import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
 import { ga4 } from '@/utils/ga4';
 import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
-import { buildSignTx, normalizeTxParams } from '@/utils/transaction';
+import {
+  buildSignTx,
+  normalizeTxParams,
+  shouldUpdateNonce,
+} from '@/utils/transaction';
+import type { Tx } from 'background/service/openapi';
 import {
   cancelSignTxPreparation,
   startSignTxPreparation,
@@ -258,8 +263,26 @@ const flowContext = flow
       // `params` is not always a tx array - wallet_watchAsset passes an object,
       // so params[0] must only be read on the SignTx path.
       const signTx = approvalType === 'SignTx' ? params[0] : undefined;
+      // SignTx renders and signs the dapp-normalized tx, so the preparation
+      // has to read its intent flags from that same copy - reading them off
+      // the raw dapp params lets a dapp set isSpeedUp/isSend and steer the
+      // prepared nonce and gas level. Normalizing can throw on malformed
+      // numeric input; that must only skip the preparation, never reject the
+      // approval the user would otherwise see.
+      let normalizedSignTx: (Tx & Record<string, any>) | undefined;
+      try {
+        normalizedSignTx = signTx
+          ? (normalizeTxParams(
+              { ...signTx },
+              !isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
+            ) as Tx & Record<string, any>)
+          : undefined;
+      } catch (e) {
+        Sentry.captureException(e);
+      }
       const hasEip7702Authorization = Boolean(
-        signTx?.authorizationList ||
+        (Array.isArray(signTx?.authorizationList) &&
+          signTx.authorizationList.length > 0) ||
           approvalCtx?.eip7702Revoke ||
           approvalCtx?.eip7702RevokeAuthorization
       );
@@ -269,18 +292,27 @@ const flowContext = flow
       const isSafeAccount =
         ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring ||
         ctx.request.account?.type === KEYRING_TYPE.CoboArgusKeyring;
+      const canPrepareNonce = normalizedSignTx
+        ? shouldUpdateNonce({
+            nonce: normalizedSignTx.nonce,
+            from: normalizedSignTx.from,
+            to: normalizedSignTx.to,
+            isSpeedUp: normalizedSignTx.isSpeedUp,
+            isCancel: normalizedSignTx.isCancel,
+          }) || normalizedSignTx.nonce != null
+        : false;
       let signTxPreparationId: string | undefined;
       if (
         signTx &&
+        normalizedSignTx &&
         signTxChain &&
         !signTxChain.isTestnet &&
         !isSafeAccount &&
-        !signTx.nonce &&
+        canPrepareNonce &&
         !hasEip7702Authorization
       ) {
         signTxPreparationId = uuidv4();
       }
-
       try {
         const approvalData = {
           approvalComponent: approvalType,
@@ -298,7 +330,14 @@ const flowContext = flow
           { height: windowHeight },
           {
             onCurrent: () => {
-              if (!signTxPreparationId || !signTx || !signTxChain) return;
+              if (
+                !signTxPreparationId ||
+                !signTx ||
+                !normalizedSignTx ||
+                !signTxChain
+              ) {
+                return;
+              }
               Object.assign(approvalData.params, { signTxPreparationId });
               startSignTxPreparation({
                 id: signTxPreparationId,
@@ -307,12 +346,9 @@ const flowContext = flow
                 // change. enable7702 is always false here, preparation is
                 // skipped for any 7702 authorization.
                 tx: buildSignTx({
-                  tx: normalizeTxParams(
-                    { ...signTx },
-                    !isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
-                  ),
+                  tx: normalizedSignTx,
                   chainId: Number(signTx.chainId),
-                  gasLimit: signTx.gasLimit,
+                  gasLimit: normalizedSignTx.gasLimit,
                 }),
                 origin,
                 chainId: Number(signTx.chainId),
@@ -322,8 +358,13 @@ const flowContext = flow
                     ctx.request.account?.type as any
                   ),
                 delegateCall:
-                  Boolean(signTx.operation) &&
+                  Boolean(normalizedSignTx.operation) &&
                   ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring,
+                isSpeedUp: normalizedSignTx.isSpeedUp,
+                isCancel: normalizedSignTx.isCancel,
+                isSend: normalizedSignTx.isSend,
+                isSwap: normalizedSignTx.isSwap,
+                isBridge: normalizedSignTx.isBridge,
               });
             },
           }

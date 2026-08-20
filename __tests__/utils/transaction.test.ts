@@ -10,6 +10,8 @@ import {
   checkGasAndNonce,
   explainGas,
   getPendingTxs,
+  prepareInitialGasSelection,
+  shouldUpdateNonce,
 } from '@/utils/transaction';
 
 jest.mock('@/i18n', () => ({
@@ -29,6 +31,38 @@ jest.mock('consts', () => ({
   SAFE_GAS_LIMIT_BUFFER: 0,
   SAFE_GAS_LIMIT_RATIO: 1,
 }));
+
+describe('shouldUpdateNonce', () => {
+  const tx = { from: '0xfrom', to: '0xto' } as any;
+
+  test('updates an ordinary transaction without a nonce', () => {
+    expect(shouldUpdateNonce(tx)).toBe(true);
+  });
+
+  test('keeps the existing SignTx behavior for an explicit nonce', () => {
+    expect(shouldUpdateNonce({ ...tx, nonce: '0x1' })).toBe(true);
+  });
+
+  test('preserves nonce for speed up and cancel transactions', () => {
+    expect(
+      shouldUpdateNonce({ ...tx, nonce: '0x1', isSpeedUp: true } as any)
+    ).toBe(false);
+    expect(
+      shouldUpdateNonce({ ...tx, nonce: '0x1', isCancel: true } as any)
+    ).toBe(false);
+  });
+
+  test('preserves nonce for same-address transactions and user changes', () => {
+    expect(
+      shouldUpdateNonce({
+        ...tx,
+        nonce: '0x1',
+        to: tx.from,
+      })
+    ).toBe(false);
+    expect(shouldUpdateNonce({ ...tx, nonceChanged: true })).toBe(false);
+  });
+});
 
 jest.mock('@/utils/chain', () => ({
   findChain: () => ({
@@ -215,7 +249,7 @@ test('normalizeTxParams prefers gasLimit over gas when both are present', () => 
   expect(tx.gas).toBe('0x5208');
 });
 
-test('normalizeTxParams keeps background and UI transaction fields equivalent', () => {
+test('normalizeTxParams normalizes numeric transaction fields', () => {
   const tx = normalizeTxParams({
     from: '0xfrom',
     gasPrice: 1,
@@ -232,6 +266,131 @@ test('normalizeTxParams keeps background and UI transaction fields equivalent', 
     value: '0x4',
     data: '0xabcd',
   });
+});
+
+test('prepareInitialGasSelection keeps the initial SignTx gas behavior', async () => {
+  const loadGasMarket = jest.fn().mockResolvedValue([
+    {
+      level: 'normal',
+      price: 90,
+      priority_price: 80,
+      front_tx_count: 0,
+      estimated_seconds: 1,
+      base_fee: 0,
+    },
+    {
+      level: 'custom',
+      price: 100,
+      priority_price: 70,
+      front_tx_count: 0,
+      estimated_seconds: 1,
+      base_fee: 0,
+    },
+  ]);
+  const tx = {
+    chainId: 1,
+    from: '0xfrom',
+    to: '0xto',
+    data: '0x',
+    value: '0x0',
+  } as any;
+
+  const result = await prepareInitialGasSelection({
+    tx,
+    chainId: 1,
+    support1559: true,
+    isSend: true,
+    lastTimeGas: null,
+    loadGasMarket,
+  });
+
+  expect(loadGasMarket).toHaveBeenCalledWith(0);
+  expect(result.gas.level).toBe('normal');
+  expect(result.tx).toMatchObject({
+    maxFeePerGas: '0x5a',
+    maxPriorityFeePerGas: '0x5a',
+  });
+  expect(result.tx).not.toHaveProperty('gasPrice');
+});
+
+test('prepareInitialGasSelection preserves cached and dapp gas precedence', async () => {
+  const gasList = [
+    {
+      level: 'normal',
+      price: 90,
+      priority_price: 80,
+      front_tx_count: 0,
+      estimated_seconds: 1,
+      base_fee: 0,
+    },
+    {
+      level: 'custom',
+      price: 100,
+      priority_price: 60,
+      front_tx_count: 0,
+      estimated_seconds: 1,
+      base_fee: 0,
+    },
+  ];
+  const loadGasMarket = jest.fn().mockResolvedValue(gasList);
+  const baseTx = {
+    chainId: 1,
+    from: '0xfrom',
+    to: '0xto',
+    data: '0x',
+    value: '0x0',
+  } as any;
+
+  const cached = await prepareInitialGasSelection({
+    tx: baseTx,
+    chainId: 1,
+    support1559: false,
+    lastTimeGas: {
+      lastTimeSelect: 'gasPrice',
+      gasPrice: 100,
+      maxPriorityFee: 70,
+    } as any,
+    loadGasMarket,
+  });
+  expect(cached.gas.level).toBe('custom');
+  expect(cached.gas.priority_price).toBe(70);
+  expect(cached.tx.gasPrice).toBe('0x64');
+  // Only the selected level carries the cached priority fee - the returned
+  // list is the raw market list, which is what the gas selector renders.
+  expect(cached.gasList).toBe(gasList);
+  expect(cached.gasList[1].priority_price).toBe(60);
+
+  loadGasMarket.mockClear();
+  const dappGas = await prepareInitialGasSelection({
+    tx: { ...baseTx, gasPrice: '0x78' },
+    chainId: 1,
+    support1559: false,
+    isSend: true,
+    lastTimeGas: {
+      lastTimeSelect: 'gasLevel',
+      gasLevel: 'normal',
+      gasPrice: 100,
+      maxPriorityFee: 70,
+    } as any,
+    loadGasMarket,
+  });
+  expect(loadGasMarket).toHaveBeenCalledWith(120);
+  expect(dappGas.gas.level).toBe('custom');
+  expect(dappGas.tx.gasPrice).toBe('0x64');
+});
+
+test('prepareInitialGasSelection rejects when gas market fails', async () => {
+  const error = new Error('gas market unavailable');
+
+  await expect(
+    prepareInitialGasSelection({
+      tx: { chainId: 1, from: '0xfrom' } as any,
+      chainId: 1,
+      support1559: true,
+      lastTimeGas: null,
+      loadGasMarket: jest.fn().mockRejectedValue(error),
+    })
+  ).rejects.toBe(error);
 });
 
 describe('buildSignTx', () => {
@@ -342,7 +501,7 @@ describe('buildSignTx', () => {
     });
   });
 
-  test('background and UI call sites agree on the diverging fields', () => {
+  test('buildSignTx preserves the expected dapp fee fields', () => {
     // These three used to differ between rpcFlow and SignTx, which made the
     // prepared pre-exec result describe a different tx than the signed one.
     const rawTx = cases['1559 dapp tx'];

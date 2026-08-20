@@ -6,14 +6,17 @@ import {
   buildPreExecTxRequest,
   buildSignTx,
   checkGasAndNonce,
-  convertLegacyTo1559,
   explainGas,
   GasTokenInfo,
   getGasTokenBalance,
   getKRCategoryByType,
   getPendingTxs,
+  applySelectedGasToTx,
   is7702Tx,
   normalizeTxParams as normalizeTransactionParams,
+  prepareInitialGasSelection,
+  resolve1559MaxPriorityFee,
+  shouldUpdateNonce,
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe, { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
@@ -58,7 +61,6 @@ import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
 import { intToHex } from 'ui/utils/number';
-import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
 import Actions from './Actions';
 import { useRabbySelector } from '@/ui/store';
@@ -150,30 +152,6 @@ export const normalizeTxParams = (tx, isDapp?: boolean) => {
     );
     return tx;
   }
-};
-
-const getCachedMaxPriorityFee = (
-  lastTimeGas: ChainGas | null,
-  customGasPrice: number
-) => {
-  if (typeof lastTimeGas?.maxPriorityFee !== 'number') {
-    return undefined;
-  }
-
-  return Math.min(lastTimeGas.maxPriorityFee, customGasPrice);
-};
-
-const resolve1559MaxPriorityFee = (
-  maxFeePerGas: string | number | undefined,
-  maxPriorityFee: number
-) => {
-  const nextMaxFeePerGas = Math.max(0, Math.round(Number(maxFeePerGas || 0)));
-
-  if (!Number.isFinite(maxPriorityFee) || maxPriorityFee < 0) {
-    return nextMaxFeePerGas;
-  }
-
-  return Math.min(Math.round(maxPriorityFee), nextMaxFeePerGas);
 };
 
 export const TxTypeComponent = ({
@@ -548,6 +526,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const [footerShowShadow, setFooterShowShadow] = useState(false);
 
   const recommendNoncePromiseRef = useRef<Promise<string> | null>(null);
+  // A failed background gas request makes its parse/pre-exec results stale.
+  const preparationGasReadyRef = useRef(false);
   const signTxPreparationId = params.signTxPreparationId;
 
   const gaEvent = async (type: 'allow' | 'cancel') => {
@@ -682,9 +662,14 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     type: swapPreferMEVGuarded ? 'mev' : 'default',
   });
 
-  let updateNonce = true;
-  if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)
-    updateNonce = false;
+  const updateNonce = shouldUpdateNonce({
+    nonce,
+    from,
+    to,
+    isCancel,
+    isSpeedUp,
+    nonceChanged,
+  });
 
   const [tx, setTx] = useState<Tx>(
     buildSignTx({
@@ -1084,16 +1069,21 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       : undefined;
     preparedBlockPromiseRef.current = null;
     let recommendNonce = updateNonce ? '0x0' : tx.nonce || '0x0';
-    const preparation = signTxPreparationId
-      ? await wallet.getSignTxPreparation(signTxPreparationId)
-      : null;
+    // Don't block explain on requests whose results canUsePreparation is
+    // already guaranteed to discard - getSignTxPreparation awaits every
+    // prepared request, including ones the fallback path has raced past.
+    const preparation =
+      signTxPreparationId && preparationGasReadyRef.current
+        ? await wallet.getSignTxPreparation(signTxPreparationId)
+        : null;
     // Only trust the preparation when its nonce actually resolved and it was
     // computed for the same nonce/account path this explain is taking -
     // otherwise the other prepared results may have been built against a
     // fallback nonce that no longer matches the nonce fetched below.
     const canUsePreparation =
+      preparationGasReadyRef.current &&
       preparation?.recommendNonce !== undefined &&
-      updateNonce &&
+      (updateNonce || preparation.recommendNonce === tx.nonce) &&
       !isGnosisAccount &&
       !isCoboArugsAccount;
     const prepared = canUsePreparation ? preparation : undefined;
@@ -2274,33 +2264,34 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           | undefined,
       });
     }
-    const lastTimeGasPromise = wallet.getLastTimeGasSelection(chainId);
-    const loadInitialGasSelection = async () => {
-      const lastTimeGas: ChainGas | null = await lastTimeGasPromise;
-      let customGasPrice = 0;
-      let useCachedCustomGasPrice = false;
-      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
-        // use cached gasPrice if exist
-        customGasPrice = lastTimeGas.gasPrice;
-        useCachedCustomGasPrice = true;
-      }
-      if (
-        isSpeedUp ||
-        isCancel ||
-        ((isSend || isSwap || isBridge) && tx.gasPrice)
-      ) {
-        // use gasPrice set by dapp when it's a speedup or cancel tx
-        customGasPrice = parseInt(tx.gasPrice!);
-        useCachedCustomGasPrice = false;
-      }
-      const gasList = await loadGasMarket(chain, customGasPrice);
-      return {
-        lastTimeGas,
-        customGasPrice,
-        useCachedCustomGasPrice,
-        gasList,
-      };
-    };
+    const is1559 =
+      support1559 &&
+      SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
+    const preparationGasPromise = signTxPreparationId
+      ? wallet.getSignTxPreparationGas(signTxPreparationId).catch(() => null)
+      : Promise.resolve(null);
+    const loadInitialGasSelection = () =>
+      preparationGasPromise.then(async (prepared) => {
+        if (prepared) {
+          preparationGasReadyRef.current = true;
+          return prepared;
+        }
+        const lastTimeGas = await wallet.getLastTimeGasSelection(chainId);
+        return prepareInitialGasSelection({
+          tx,
+          chainId,
+          support1559: is1559,
+          enable7702,
+          lastTimeGas,
+          loadGasMarket: (customGasPrice) =>
+            loadGasMarket(chain, customGasPrice),
+          isSpeedUp,
+          isCancel,
+          isSend,
+          isSwap,
+          isBridge,
+        });
+      });
     const loadInitialGasTokenState = async () => {
       try {
         const balanceInfo = await getGasTokenBalance({
@@ -2350,9 +2341,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }
     };
     try {
-      const is1559 =
-        support1559 &&
-        SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
       setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
       setIsHardware(
         !!Object.values(HARDWARE_KEYRING_TYPES).find(
@@ -2397,56 +2385,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           return result.value;
         }
       );
-      const {
-        lastTimeGas,
-        customGasPrice,
-        useCachedCustomGasPrice,
-      } = initialGasSelection;
-      let { gasList } = initialGasSelection;
-      let gas: GasLevel | null = null;
-
-      if (
-        ((isSend || isSwap || isBridge) && customGasPrice) ||
-        isSpeedUp ||
-        isCancel ||
-        lastTimeGas?.lastTimeSelect === 'gasPrice'
-      ) {
-        gas = gasList.find((item) => item.level === 'custom')!;
-      } else if (
-        lastTimeGas?.lastTimeSelect &&
-        lastTimeGas?.lastTimeSelect === 'gasLevel'
-      ) {
-        const target = gasList.find(
-          (item) => item.level === lastTimeGas?.gasLevel
-        )!;
-        if (target) {
-          gas = target;
-        } else {
-          gas = gasList.find((item) => item.level === 'normal')!;
-        }
-      } else {
-        // no cache, use the fast level in gasMarket
-        gas = gasList.find((item) => item.level === 'normal')!;
-      }
-      const cachedMaxPriorityFee =
-        useCachedCustomGasPrice && gas?.level === 'custom'
-          ? getCachedMaxPriorityFee(lastTimeGas, customGasPrice)
-          : undefined;
-      if (typeof cachedMaxPriorityFee === 'number') {
-        gas = {
-          ...gas,
-          priority_price: cachedMaxPriorityFee,
-        };
-        gasList = gasList.map((item) =>
-          item.level === 'custom' ? (gas as GasLevel) : item
-        );
-      }
-      const fee = calcMaxPriorityFee(
-        gasList,
-        gas,
-        chainId,
-        isCancel || isSpeedUp
-      );
+      const { gasList, gas, fee } = initialGasSelection;
+      setGasList(gasList);
 
       wallet.reportStats('createTransaction', {
         type: currentAccount.brandName,
@@ -2464,27 +2404,17 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
 
       setSelectedGas(gas);
       setSupport1559(is1559);
-      if (is1559) {
-        setTx((prev) => {
-          const is7702 = is7702Tx(prev as any);
-          return omit(
-            {
-              ...prev,
-              ...convertLegacyTo1559({
-                ...prev,
-                gasPrice: intToHex(gas!.price),
-              }),
-              authorizationList: (prev as any).authorizationList,
-            },
-            [...(is7702 ? [] : ['authorizationList']), 'gasPrice']
-          ) as any;
-        });
-      } else {
-        setTx((prev) => ({
-          ...prev,
-          gasPrice: intToHex(gas!.price),
-        }));
-      }
+      // Merge onto the latest tx rather than the one captured when this effect
+      // started, so a concurrent setTx is not discarded.
+      setTx(
+        (prev) =>
+          applySelectedGasToTx({
+            tx: prev,
+            gasPrice: intToHex(gas.price),
+            support1559: is1559,
+            enable7702: is7702Tx(prev as any),
+          }) as any
+      );
       setInited(true);
     } catch (e) {
       Modal.error({
