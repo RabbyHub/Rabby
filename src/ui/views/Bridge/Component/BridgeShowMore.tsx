@@ -374,6 +374,8 @@ export const BridgeShowMore = ({
       <div className="space-y-12">
         {lostValueContentRender()}
 
+        {type === 'bridge' && sourceContentRender()}
+
         {!showSourceFallback && fromToken ? (
           <DirectSignGasInfo
             supportDirectSign={supportDirectSign}
@@ -384,16 +386,16 @@ export const BridgeShowMore = ({
             chainServeId={fromToken?.chain}
             signatureInstance={signatureInstance}
             sourceSelector={
-              quoteLoading || sourceLogo || sourceName
+              type === 'swap' && (quoteLoading || sourceLogo || sourceName)
                 ? sourceSelectorRender()
                 : undefined
             }
             showTopMargin={false}
             useInfoCardStyle
           />
-        ) : (
+        ) : type === 'swap' ? (
           sourceContentRender()
-        )}
+        ) : null}
 
         <BridgeSlippage
           autoSuggestSlippage={autoSuggestSlippage}
