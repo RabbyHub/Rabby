@@ -291,6 +291,10 @@ const flowContext = flow
       const isSafeAccount =
         ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring ||
         ctx.request.account?.type === KEYRING_TYPE.CoboArgusKeyring;
+      // SignTx sends its own parse/pre-exec requests with the approval
+      // account's address, not the dapp-supplied `from`, so the preparation
+      // has to use the same one or the two describe the request differently.
+      const preparationAddress = ctx.request.account?.address;
       const canPrepareNonce = normalizedSignTx
         ? shouldUpdateNonce({
             nonce: normalizedSignTx.nonce,
@@ -304,6 +308,7 @@ const flowContext = flow
       if (
         signTx &&
         normalizedSignTx &&
+        preparationAddress &&
         signTxChain &&
         !signTxChain.isTestnet &&
         !isSafeAccount &&
@@ -333,6 +338,7 @@ const flowContext = flow
                 !signTxPreparationId ||
                 !signTx ||
                 !normalizedSignTx ||
+                !preparationAddress ||
                 !signTxChain
               ) {
                 return;
@@ -350,6 +356,7 @@ const flowContext = flow
                   gasLimit: normalizedSignTx.gasLimit,
                 }),
                 origin,
+                address: preparationAddress,
                 chainId: Number(signTx.chainId),
                 support1559:
                   signTxChain.eip['1559'] &&

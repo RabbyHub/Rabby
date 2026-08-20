@@ -40,6 +40,7 @@ export const startSignTxPreparation = ({
   id,
   tx,
   origin,
+  address,
   chainId,
   support1559,
   delegateCall,
@@ -48,6 +49,13 @@ export const startSignTxPreparation = ({
   id: string;
   tx: Tx;
   origin?: string;
+  /**
+   * The approval's account address, the same value SignTx passes as `addr` /
+   * `address`. `tx.from` is the same account but carries whatever casing the
+   * dapp sent, so using it here would describe the request differently than
+   * the UI's own fallback request does.
+   */
+  address: string;
   chainId: number;
   support1559: boolean;
   delegateCall?: boolean;
@@ -95,7 +103,7 @@ export const startSignTxPreparation = ({
   const preparedTx = initialGasSelection.then(
     ({ tx: selectedTx }) => selectedTx
   );
-  const pendingTxs = getPendingHistory(tx.from, chainId);
+  const pendingTxs = getPendingHistory(address, chainId);
   const pendingTxList = Promise.all([
     recommendNonce,
     pendingTxs,
@@ -113,7 +121,7 @@ export const startSignTxPreparation = ({
               chainId: chain.serverId,
               nonce,
               origin: origin || '',
-              addr: tx.from,
+              addr: address,
               support1559,
               enable7702: false,
             })
@@ -128,7 +136,7 @@ export const startSignTxPreparation = ({
               tx: selectedTx,
               nonce,
               origin: origin || '',
-              address: tx.from,
+              address,
               updateNonce,
               pendingTxList: pending_tx_list,
               delegateCall: delegateCall || false,
