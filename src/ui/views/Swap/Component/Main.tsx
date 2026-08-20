@@ -181,8 +181,8 @@ export const Main = () => {
 
   const refreshId = useRefreshId();
 
-  const originPreferMEVGuarded = useSwapStore((s) => !!s.preferMEVGuarded);
-  const setSwapPreferMEV = useSwapStore((s) => s.setSwapPreferMEV);
+  const mevProtection = useSwapStore((s) => s.mevProtection ?? true);
+  const setMEVProtection = useSwapStore((s) => s.setMEVProtection);
   const setRecentSwapToToken = useSwapStore((s) => s.setRecentSwapToToken);
   const resumeQuoteRefresh = useCallback(() => {
     setQuoteRefreshLocked(false);
@@ -195,14 +195,14 @@ export const Main = () => {
 
   const switchPreferMEV = useCallback(
     (bool: boolean) => {
-      setSwapPreferMEV(bool);
+      setMEVProtection(bool);
     },
-    [setSwapPreferMEV]
+    [setMEVProtection]
   );
 
   const preferMEVGuarded = useMemo(
-    () => (chain === CHAINS_ENUM.ETH ? originPreferMEVGuarded : false),
-    [chain, originPreferMEVGuarded]
+    () => (chain === CHAINS_ENUM.ETH ? mevProtection : false),
+    [chain, mevProtection]
   );
 
   const inputRef = useRef<InputRef>();
@@ -1429,7 +1429,7 @@ export const Main = () => {
                   bestQuoteDex === activeProvider?.name
                 }
                 showMEVGuardedSwitch={showMEVGuardedSwitch}
-                originPreferMEVGuarded={originPreferMEVGuarded}
+                originPreferMEVGuarded={mevProtection}
                 switchPreferMEV={switchPreferMEV}
                 recommendValue={
                   slippageValidInfo?.is_valid
