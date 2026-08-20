@@ -16,6 +16,7 @@ import React, {
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
+import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arrow-right-cc.svg';
 import { BridgeSlippage } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
@@ -335,7 +336,7 @@ export const BridgeShowMore = ({
         className={clsx(
           'text-12 font-medium',
           isRabbyFeeFree
-            ? 'flex shrink-0 items-center gap-4'
+            ? 'flex shrink-0 items-center gap-8'
             : isWrapToken
             ? 'text-r-neutral-foot'
             : 'text-r-blue-default cursor-pointer'
@@ -344,14 +345,14 @@ export const BridgeShowMore = ({
       >
         {isRabbyFeeFree ? (
           <>
-            <span className="font-normal text-r-neutral-foot line-through">
-              {RABBY_FEE}
-            </span>
             <RcIconFree
               aria-hidden
               className="h-16 w-[52px] shrink-0"
               viewBox="0 0 52 16"
             />
+            <span className="font-normal text-r-neutral-foot line-through">
+              {RABBY_FEE}
+            </span>
           </>
         ) : isWrapToken && type === 'swap' ? (
           t('page.swap.no-fees-for-wrap')
@@ -373,6 +374,7 @@ export const BridgeShowMore = ({
             loading={!!quoteLoading || !!gasFeeLoading}
             openShowMore={noop}
             noQuote={!sourceLogo && !sourceName}
+            type={type}
             chainServeId={fromToken?.chain}
             signatureInstance={signatureInstance}
             sourceSelector={
@@ -381,6 +383,7 @@ export const BridgeShowMore = ({
                 : undefined
             }
             showTopMargin={false}
+            useInfoCardStyle
           />
         ) : (
           sourceContentRender()
@@ -464,6 +467,7 @@ export const DirectSignGasInfo = ({
   signatureInstance,
   sourceSelector,
   showTopMargin = true,
+  useInfoCardStyle = false,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
@@ -474,6 +478,7 @@ export const DirectSignGasInfo = ({
   signatureInstance: SignatureManager;
   sourceSelector?: React.ReactNode;
   showTopMargin?: boolean;
+  useInfoCardStyle?: boolean;
 }) => {
   const wallet = useWallet();
   const { cachedTokenList } = useRabbySelector((s) => ({
@@ -1151,6 +1156,16 @@ export const DirectSignGasInfo = ({
             tempoGasTokenLoading={tempoGasTokenLoading}
             getContainer={getContainer}
             rightPrefix={sourceSelector}
+            summaryClassName={useInfoCardStyle ? 'font-normal' : undefined}
+            summaryTextClassName={
+              useInfoCardStyle ? 'text-r-neutral-title-1' : undefined
+            }
+            summarySuffix={
+              useInfoCardStyle ? (
+                <RcIconArrowRightCC className="h-14 w-14 text-r-neutral-foot" />
+              ) : undefined
+            }
+            hideGasLevelInSummary={useInfoCardStyle}
           />
         </div>
       ) : !loading && noQuote ? (

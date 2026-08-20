@@ -13,6 +13,7 @@ import React from 'react';
 import { Input } from 'antd';
 import i18n from '@/i18n';
 import { Trans, useTranslation } from 'react-i18next';
+import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arrow-right-cc.svg';
 
 const SlippageItem = styled.div`
   position: relative;
@@ -266,11 +267,11 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
         <span className="font-normal text-r-neutral-foot">
           {t('page.swap.slippage-tolerance')}
         </span>
-        <span className="font-medium text-r-neutral-title-1 inline-flex items-center">
+        <span className="inline-flex items-center gap-2 font-normal">
           <span
             className={clsx(
               valueClassName,
-              tips ? 'text-r-red-default' : 'text-r-blue-default'
+              tips ? 'text-r-red-default' : 'text-r-neutral-title-1'
             )}
           >
             {type === 'swap' && autoSlippage
@@ -278,6 +279,7 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
               : displaySlippage}
             %
           </span>
+          <RcIconArrowRightCC className="h-14 w-14 text-r-neutral-foot" />
         </span>
       </div>
       <Wrapper className="widget-has-ant-input">

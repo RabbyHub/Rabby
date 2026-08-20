@@ -48,6 +48,7 @@ import { SwapTokenItem } from './Token';
 import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arrow-right-cc.svg';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
@@ -1231,7 +1232,7 @@ export const Main = () => {
       <div
         className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
       >
-        <div className="mb-8 mx-20">
+        <div className="mx-20 flex flex-col gap-2 overflow-hidden rounded-[8px]">
           <ChainSelectorInForm
             swap
             value={chain}
@@ -1239,86 +1240,88 @@ export const Main = () => {
             disabledTips={getDisabledTips}
             // supportChains={SWAP_SUPPORT_CHAINS}
             hideTestnetTab={true}
-            chainRenderClassName={clsx(
-              'text-[13px] font-medium border-0',
-              'before:border-transparent hover:before:border-rabby-blue-default'
-            )}
+            chainRenderClassName="border-0 font-medium"
+            arrowDownComponent={
+              <RcIconArrowRightCC className="down text-r-neutral-foot" />
+            }
             drawerHeight={540}
             showClosableIcon
             getContainer={getContainer}
             ref={chainSelectorRef}
             zIndex={1111}
           />
-        </div>
 
-        <div
-          className={clsx('relative bg-r-neutral-card-1 rounded-[8px] mx-20')}
-        >
-          <SwapTokenItem
-            inSufficient={inSufficient}
-            slider={slider}
-            onChangeSlider={onChangeSlider}
-            value={inputAmount}
-            onValueChange={handleAmountChange}
-            token={payToken}
-            onTokenChange={(token) => {
-              const chainItem = findChainByServerID(token.chain);
-              if (chainItem?.enum !== chain) {
-                switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
-                setReceiveToken(undefined);
+          <div className="relative rounded-b-[8px] bg-r-neutral-card-1">
+            <SwapTokenItem
+              inSufficient={inSufficient}
+              slider={slider}
+              onChangeSlider={onChangeSlider}
+              value={inputAmount}
+              onValueChange={handleAmountChange}
+              token={payToken}
+              onTokenChange={(token) => {
+                const chainItem = findChainByServerID(token.chain);
+                if (chainItem?.enum !== chain) {
+                  switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+                  setReceiveToken(undefined);
+                }
+                setPayToken(token);
+              }}
+              chainId={findChainByEnum(chain)!.serverId}
+              type={'from'}
+              excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
+              getContainer={getContainer}
+              disabled={!isSupportedChain}
+              onFromSelectChain={() =>
+                chainSelectorRef.current?.toggleShow(true)
               }
-              setPayToken(token);
-            }}
-            chainId={findChainByEnum(chain)!.serverId}
-            type={'from'}
-            excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
-            getContainer={getContainer}
-            disabled={!isSupportedChain}
-            onFromSelectChain={() => chainSelectorRef.current?.toggleShow(true)}
-          />
+            />
 
-          <div
-            className={clsx(
-              'w-full h-[0.5px] bg-rabby-neutral-line',
-              'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-            )}
-          />
+            <div
+              className={clsx(
+                'absolute left-1/2 top-1/2 h-px w-full -translate-x-1/2 -translate-y-1/2',
+                'bg-r-neutral-bg-2'
+              )}
+            />
 
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <BridgeSwitchBtn
-              onClick={exchangeToken}
-              loading={
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+              <BridgeSwitchBtn
+                onClick={exchangeToken}
+                loading={
+                  quoteLoading &&
+                  amountAvailable &&
+                  inSufficientCanGetQuote &&
+                  !activeProvider?.manualClick
+                }
+              />
+            </div>
+
+            <SwapTokenItem
+              valueLoading={
                 quoteLoading &&
                 amountAvailable &&
                 inSufficientCanGetQuote &&
                 !activeProvider?.manualClick
               }
+              value={receiveTokenDisplayValue}
+              token={receiveToken}
+              onTokenChange={(token) => {
+                const chainItem = findChainByServerID(token.chain);
+                if (chainItem?.enum !== chain) {
+                  switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
+                  setPayToken(undefined);
+                }
+                setReceiveToken(token);
+              }}
+              chainId={
+                findChainByEnum(chain)!.serverId || CHAINS[chain].serverId
+              }
+              type={'to'}
+              excludeTokens={payToken?.id ? [payToken?.id] : undefined}
+              currentQuote={activeProvider}
+              getContainer={getContainer}
             />
           </div>
-
-          <SwapTokenItem
-            valueLoading={
-              quoteLoading &&
-              amountAvailable &&
-              inSufficientCanGetQuote &&
-              !activeProvider?.manualClick
-            }
-            value={receiveTokenDisplayValue}
-            token={receiveToken}
-            onTokenChange={(token) => {
-              const chainItem = findChainByServerID(token.chain);
-              if (chainItem?.enum !== chain) {
-                switchChain(chainItem?.enum || CHAINS_ENUM.ETH);
-                setPayToken(undefined);
-              }
-              setReceiveToken(token);
-            }}
-            chainId={findChainByEnum(chain)!.serverId || CHAINS[chain].serverId}
-            type={'to'}
-            excludeTokens={payToken?.id ? [payToken?.id] : undefined}
-            currentQuote={activeProvider}
-            getContainer={getContainer}
-          />
         </div>
 
         {!isSupportedChain ? (

@@ -67,6 +67,10 @@ export interface SignMainnetGasSelectorHeaderProps
   disableAutoGasLevelSwitch?: boolean;
   onCustomGasSheetOpen?: () => void;
   rightPrefix?: React.ReactNode;
+  summaryClassName?: string;
+  summaryTextClassName?: string;
+  summarySuffix?: React.ReactNode;
+  hideGasLevelInSummary?: boolean;
 }
 
 export const SignMainnetGasSelectorHeader = ({
@@ -97,6 +101,10 @@ export const SignMainnetGasSelectorHeader = ({
   disableAutoGasLevelSwitch = false,
   onCustomGasSheetOpen,
   rightPrefix,
+  summaryClassName,
+  summaryTextClassName,
+  summarySuffix,
+  hideGasLevelInSummary,
   onSignTx,
   ...props
 }: SignMainnetGasSelectorHeaderProps) => {
@@ -696,9 +704,12 @@ export const SignMainnetGasSelectorHeader = ({
   const summaryNode = (
     <div
       className={clsx(
-        'text-12 font-medium flex items-center gap-4',
+        'flex items-center gap-4 text-12',
+        summaryClassName || 'font-medium',
         canOpenShowMore && 'cursor-pointer',
-        isSummaryNotEnough ? 'text-r-red-default' : 'text-r-blue-default'
+        isSummaryNotEnough
+          ? 'text-r-red-default'
+          : summaryTextClassName || 'text-r-blue-default'
       )}
       onClick={() => {
         if (canOpenShowMore) {
@@ -718,7 +729,14 @@ export const SignMainnetGasSelectorHeader = ({
       ) : gas.error || !gas.success ? (
         <span>{t('page.signTx.failToFetchGasCost')}</span>
       ) : (
-        <span>{`${levelText} · ${summary.primaryText}`}</span>
+        <>
+          <span>
+            {hideGasLevelInSummary
+              ? summary.primaryText
+              : `${levelText} · ${summary.primaryText}`}
+          </span>
+          {canOpenShowMore && summarySuffix}
+        </>
       )}
     </div>
   );
