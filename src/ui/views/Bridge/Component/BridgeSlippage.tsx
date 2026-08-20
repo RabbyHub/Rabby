@@ -14,7 +14,7 @@ import React from 'react';
 import { Button, DrawerProps, Input, InputRef } from 'antd';
 import i18n from '@/i18n';
 import { Trans, useTranslation } from 'react-i18next';
-import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arrow-right-cc.svg';
+import { ReactComponent as RcInfoRowArrowRight } from '@/ui/assets/swap/info-row-arrow-right.svg';
 import { Popup } from '@/ui/component';
 import { useDebounce } from 'react-use';
 
@@ -422,7 +422,7 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
           >
             {displayValue}%
           </span>
-          <RcIconArrowRightCC className="h-14 w-14 text-r-neutral-foot" />
+          <RcInfoRowArrowRight className="h-14 w-14 text-r-neutral-foot" />
         </span>
       </div>
 

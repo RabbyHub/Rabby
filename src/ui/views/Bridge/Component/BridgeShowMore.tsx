@@ -16,7 +16,7 @@ import React, {
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
-import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arrow-right-cc.svg';
+import { ReactComponent as RcInfoRowArrowRight } from '@/ui/assets/swap/info-row-arrow-right.svg';
 import { BridgeSlippage, SlippageValidationResult } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
@@ -1172,7 +1172,7 @@ export const DirectSignGasInfo = ({
             }
             summarySuffix={
               useInfoCardStyle ? (
-                <RcIconArrowRightCC className="h-14 w-14 text-r-neutral-foot" />
+                <RcInfoRowArrowRight className="h-14 w-14 text-r-neutral-foot" />
               ) : undefined
             }
             hideGasLevelInSummary={useInfoCardStyle}
