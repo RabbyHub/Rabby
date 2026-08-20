@@ -1771,6 +1771,9 @@ const SignTx = ({
       return;
     }
 
+    const approval = await getApproval();
+    if (!approval) return;
+
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
     }
@@ -1860,24 +1863,25 @@ const SignTx = ({
       delete submitTransaction.validBefore;
       delete submitTransaction.validAfter;
     }
-    const approval = await getApproval();
+    const currentApproval = await getApproval();
     if (
-      !approval ||
-      approval.id !== approvalId ||
-      approval.data.approvalComponent !== 'SignTx' ||
+      !currentApproval ||
+      currentApproval.id !== approval.id ||
+      currentApproval.id !== approvalId ||
+      currentApproval.data.approvalComponent !== 'SignTx' ||
       !isCurrentSecurityEvaluation()
     )
       return;
     gaEvent('allow');
 
-    approval.signingTxId &&
-      (await wallet.updateSigningTx(approval.signingTxId, {
+    currentApproval.signingTxId &&
+      (await wallet.updateSigningTx(currentApproval.signingTxId, {
         rawTx: {
           nonce: realNonce || tx.nonce,
         },
         explain: {
           ...txDetail!,
-          approvalId: approval.id,
+          approvalId: currentApproval.id,
           calcSuccess: !(checkErrors.length > 0),
         },
         action: {
@@ -1887,29 +1891,34 @@ const SignTx = ({
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      resolveApproval({
-        ...submitTransaction,
-        isSend,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        uiRequestComponent: WaitingSignComponent[currentAccount.type],
-        type: currentAccount.type,
-        address: currentAccount.address,
-        traceId: txDetail?.trace_id,
-        extra: {
-          brandName: currentAccount.brandName,
+      resolveApproval(
+        {
+          ...submitTransaction,
+          isSend,
+          nonce: realNonce || tx.nonce,
+          gas: gasLimit,
+          uiRequestComponent: WaitingSignComponent[currentAccount.type],
+          type: currentAccount.type,
+          address: currentAccount.address,
+          traceId: txDetail?.trace_id,
+          extra: {
+            brandName: currentAccount.brandName,
+          },
+          $account: currentAccount,
+          $ctx: params.$ctx,
+          signingTxId: currentApproval.signingTxId,
+          pushType: pushInfo.type,
+          lowGasDeadline: pushInfo.lowGasDeadline,
+          reqId,
+          isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
+          isGasAccount: effectiveGasAccountCanPay,
+          logId: logId.current,
+          sig,
         },
-        $account: currentAccount,
-        $ctx: params.$ctx,
-        signingTxId: approval.signingTxId,
-        pushType: pushInfo.type,
-        lowGasDeadline: pushInfo.lowGasDeadline,
-        reqId,
-        isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
-        isGasAccount: effectiveGasAccountCanPay,
-        logId: logId.current,
-        sig,
-      });
+        false,
+        false,
+        currentApproval.id
+      );
 
       return;
     }
@@ -1940,18 +1949,23 @@ const SignTx = ({
       event_category: 'Transaction',
     });
 
-    resolveApproval({
-      ...submitTransaction,
-      nonce: realNonce || tx.nonce,
-      gas: gasLimit,
-      isSend,
-      traceId: txDetail?.trace_id,
-      signingTxId: approval.signingTxId,
-      pushType: pushInfo.type,
-      lowGasDeadline: pushInfo.lowGasDeadline,
-      reqId,
-      logId: logId.current,
-    });
+    resolveApproval(
+      {
+        ...submitTransaction,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        isSend,
+        traceId: txDetail?.trace_id,
+        signingTxId: currentApproval.signingTxId,
+        pushType: pushInfo.type,
+        lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
+        logId: logId.current,
+      },
+      false,
+      false,
+      currentApproval.id
+    );
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
