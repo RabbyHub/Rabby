@@ -257,11 +257,20 @@ export const BridgeShowMore = ({
               ) : null}
             </div>
             {type === 'bridge' && (
-              <span className={`text-12 font-medium ${durationColor}`}>
+              <span
+                className={clsx(
+                  'text-12 font-medium',
+                  sourceLogo || sourceName
+                    ? durationColor
+                    : 'text-r-neutral-foot'
+                )}
+              >
                 {' · '}
-                {t('page.bridge.duration', {
-                  duration: showMinDuration,
-                })}
+                {sourceLogo || sourceName
+                  ? t('page.bridge.duration', {
+                      duration: showMinDuration,
+                    })
+                  : '-'}
               </span>
             )}
           </div>
