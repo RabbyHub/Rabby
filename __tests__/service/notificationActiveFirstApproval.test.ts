@@ -74,7 +74,11 @@ describe('notificationService.activeFirstApproval', () => {
         taskId: null,
         data: {
           approvalComponent: 'SignTx',
-          account: { address: '0xaccount' },
+          account: {
+            type: 'PrivateKey',
+            address: '0xaccount',
+            brandName: '私钥',
+          },
         },
         winProps: {},
       },
@@ -87,5 +91,16 @@ describe('notificationService.activeFirstApproval', () => {
 
     expect(mockOpenNotification).not.toHaveBeenCalled();
     expect(mockCaptureException).not.toHaveBeenCalled();
+  });
+
+  test('reports the original error with an approval flow tag', async () => {
+    const error = new Error('windows lookup failed');
+    mockGetAll.mockRejectedValueOnce(error);
+
+    await notificationService.activeFirstApproval();
+
+    expect(mockCaptureException).toHaveBeenCalledWith(error, {
+      tags: { function: 'activeFirstApproval' },
+    });
   });
 });

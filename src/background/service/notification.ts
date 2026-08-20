@@ -169,9 +169,9 @@ class NotificationService extends Events {
       this.currentApproval = approval;
       this.openNotification(approval.winProps, true);
     } catch (e) {
-      Sentry.captureException(
-        new Error('activeFirstApproval failed: ' + JSON.stringify(e))
-      );
+      Sentry.captureException(e, {
+        tags: { function: 'activeFirstApproval' },
+      });
       this.clear();
     }
   };
