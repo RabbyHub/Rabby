@@ -1642,6 +1642,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       return;
     }
 
+    const approval = await getApproval();
+    if (!approval) return;
+
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
     }
@@ -1731,7 +1734,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       delete submitTransaction.validBefore;
       delete submitTransaction.validAfter;
     }
-    const approval = await getApproval();
+    if ((await getApproval())?.id !== approval.id) return;
     gaEvent('allow');
 
     approval.signingTxId &&
@@ -1751,29 +1754,34 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      resolveApproval({
-        ...submitTransaction,
-        isSend,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        uiRequestComponent: WaitingSignComponent[currentAccount.type],
-        type: currentAccount.type,
-        address: currentAccount.address,
-        traceId: txDetail?.trace_id,
-        extra: {
-          brandName: currentAccount.brandName,
+      resolveApproval(
+        {
+          ...submitTransaction,
+          isSend,
+          nonce: realNonce || tx.nonce,
+          gas: gasLimit,
+          uiRequestComponent: WaitingSignComponent[currentAccount.type],
+          type: currentAccount.type,
+          address: currentAccount.address,
+          traceId: txDetail?.trace_id,
+          extra: {
+            brandName: currentAccount.brandName,
+          },
+          $account: currentAccount,
+          $ctx: params.$ctx,
+          signingTxId: approval.signingTxId,
+          pushType: pushInfo.type,
+          lowGasDeadline: pushInfo.lowGasDeadline,
+          reqId,
+          isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
+          isGasAccount: effectiveGasAccountCanPay,
+          logId: logId.current,
+          sig,
         },
-        $account: currentAccount,
-        $ctx: params.$ctx,
-        signingTxId: approval.signingTxId,
-        pushType: pushInfo.type,
-        lowGasDeadline: pushInfo.lowGasDeadline,
-        reqId,
-        isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
-        isGasAccount: effectiveGasAccountCanPay,
-        logId: logId.current,
-        sig,
-      });
+        false,
+        false,
+        approval.id
+      );
 
       return;
     }
@@ -1804,18 +1812,23 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       event_category: 'Transaction',
     });
 
-    resolveApproval({
-      ...submitTransaction,
-      nonce: realNonce || tx.nonce,
-      gas: gasLimit,
-      isSend,
-      traceId: txDetail?.trace_id,
-      signingTxId: approval.signingTxId,
-      pushType: pushInfo.type,
-      lowGasDeadline: pushInfo.lowGasDeadline,
-      reqId,
-      logId: logId.current,
-    });
+    resolveApproval(
+      {
+        ...submitTransaction,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        isSend,
+        traceId: txDetail?.trace_id,
+        signingTxId: approval.signingTxId,
+        pushType: pushInfo.type,
+        lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
+        logId: logId.current,
+      },
+      false,
+      false,
+      approval.id
+    );
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
