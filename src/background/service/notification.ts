@@ -352,6 +352,8 @@ class NotificationService extends Events {
         }
       }
 
+      // TODO: queued approvals currently drop onCurrent, so preparation only
+      // starts for the approval that is current when requestApproval runs.
       if (this.currentApproval === approval) {
         try {
           options?.onCurrent?.();
