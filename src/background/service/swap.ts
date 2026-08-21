@@ -49,7 +49,7 @@ const swapStoreSchema = z.object({
   isCustomSlippage: z.boolean().optional(),
   slippage: z.string().default('0.1'),
   recentToTokens: z.array(tokenItemSchema).default(() => []),
-  preferMEVGuarded: z.boolean().default(false),
+  mevProtection: z.boolean().default(true),
 });
 
 export type SwapServiceStore = z.output<typeof swapStoreSchema>;
@@ -152,11 +152,11 @@ class SwapService {
   };
 
   getSwapPreferMEVGuarded = () => {
-    return this.store.preferMEVGuarded ?? false;
+    return this.store.mevProtection ?? true;
   };
 
   setSwapPreferMEVGuarded = (bool: boolean) => {
-    this.store.preferMEVGuarded = bool;
+    this.store.mevProtection = bool;
   };
 
   setAutoSlippage = (auto: boolean) => {
