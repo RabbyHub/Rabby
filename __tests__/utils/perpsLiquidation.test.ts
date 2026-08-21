@@ -64,6 +64,33 @@ describe('resolveProjectedLiquidationPrice (parity with rabby-mobile)', () => {
     ).toBe(expectedFrom(100, 20, 'Long', 2, 200, 20));
   });
 
+  it('charges the existing maintenance margin once when cross adds to a position', () => {
+    // Balance 100 already has the 1-unit position's maintenance margin taken
+    // off, so it is added back (1 * 100 * 0.025 = 2.5) before the formula
+    // charges maintenance on the merged 3-unit notional. Baseline is the fill
+    // price, not the 280/3 weighted entry, because the balance carries
+    // unrealised PnL and is measured at the current price.
+    expect(
+      resolve({
+        marginMode: 'cross',
+        crossMarginAvailableAfterMaintenance: 100,
+        currentPosition: { entryPx: '80', marginUsed: '8', szi: '1' },
+      })?.liquidationPrice
+    ).toBe(expectedFrom(100, 102.5, 'Long', 3, 300, 20));
+  });
+
+  it('adds the released maintenance margin back when cross flips direction', () => {
+    // The old 1-unit short is closed, so its maintenance margin is freed
+    // (20 + 1 * 100 * 0.025) and only the 1-unit remainder is charged.
+    expect(
+      resolve({
+        marginMode: 'cross',
+        crossMarginAvailableAfterMaintenance: 20,
+        currentPosition: { entryPx: '80', marginUsed: '8', szi: '-1' },
+      })?.liquidationPrice
+    ).toBe(expectedFrom(100, 22.5, 'Long', 1, 100, 20));
+  });
+
   it('hides the estimate when the projected price is not positive', () => {
     // A 990 balance puts the long liquidation below zero.
     expect(resolve({ marginMode: 'cross' })).toBeNull();
