@@ -259,7 +259,7 @@ export const usePerpsPosition = ({
           duration: 1.5,
           content: error?.message || 'Update margin mode failed',
         });
-        Sentry.captureException(error);
+        capturePerpsError('update margin mode error', error, { params });
         return false;
       }
     }
