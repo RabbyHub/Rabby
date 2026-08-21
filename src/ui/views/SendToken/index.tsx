@@ -139,6 +139,11 @@ import {
   shouldDisplaySmallUsdMaxAmount,
 } from './amountInputState';
 import { useContactBookStore } from '@/ui/state/contactBook';
+import {
+  GNOSIS_REPLACE_QUERY_KEY,
+  isGnosisSendReplaceTargetMatched,
+  parseGnosisSendReplaceContext,
+} from '@/ui/utils/gnosisReplace';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -397,10 +402,17 @@ const SendToken = () => {
     price: paramAmountInputState?.usdPrice || null,
   }));
 
-  const [safeInfo, setSafeInfo] = useState<{
-    chainId: number;
-    nonce: number;
-  } | null>(null);
+  const gnosisReplaceContextResult = useMemo(
+    () => parseGnosisSendReplaceContext(search),
+    [search]
+  );
+  const gnosisReplaceContext =
+    gnosisReplaceContextResult.status === 'valid'
+      ? gnosisReplaceContextResult.context
+      : null;
+  const gnosisReplaceQueryValue = new URLSearchParams(search).get(
+    GNOSIS_REPLACE_QUERY_KEY
+  );
 
   const [inited, setInited] = useState(false);
   const [initLoading, setInitLoading] = useState(true);
@@ -421,10 +433,6 @@ const SendToken = () => {
       nextStateCache?: {
         values?: FormSendToken;
         currentToken?: TokenItem | null;
-        safeInfo?: {
-          chainId: number;
-          nonce: number;
-        };
         fromGasAccountRedirect?: boolean;
         topUpSnapshot?: SendTopUpSnapshot;
         amountInputState?: SendAmountInputUrlState | null;
@@ -445,7 +453,6 @@ const SendToken = () => {
             states: {
               values: form.getFieldsValue(),
               currentToken,
-              safeInfo,
               amountInputState: amountInputUrlStateRef.current,
               ...nextStateCache,
             },
@@ -455,7 +462,7 @@ const SendToken = () => {
       persistPageStateCacheQueueRef.current = nextTask.catch(() => undefined);
       return nextTask;
     },
-    [wallet, history, form, currentToken, safeInfo]
+    [wallet, history, form, currentToken]
   );
 
   const [
@@ -800,9 +807,26 @@ const SendToken = () => {
     (hasRiskForToAddress && agreeRequiredChecks.forToAddress) ||
     (hasRiskForToken && agreeRequiredChecks.forToken);
 
+  const currentTokenChainId = useMemo(
+    () =>
+      currentToken
+        ? findChain({ serverId: currentToken.chain })?.id
+        : undefined,
+    [currentToken]
+  );
+  const isGnosisReplaceContextReady =
+    gnosisReplaceContextResult.status === 'absent' ||
+    (gnosisReplaceContextResult.status === 'valid' &&
+      currentAccount?.type === KEYRING_CLASS.GNOSIS &&
+      isGnosisSendReplaceTargetMatched(gnosisReplaceContextResult.context, {
+        safeAddress: currentAccountAddress,
+        chainId: currentTokenChainId,
+      }));
+
   const canSubmitBasic =
     isValidAddress(form.getFieldValue('to')) &&
     !!currentToken &&
+    isGnosisReplaceContextReady &&
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).gte(0) &&
     !isLoading;
@@ -857,8 +881,18 @@ const SendToken = () => {
         data: abiCoder.encodeFunctionCall(dataInput[0], dataInput[1]),
         isSend: true,
       };
-      if (safeInfo?.nonce != null) {
-        params.nonce = safeInfo.nonce;
+      if (gnosisReplaceContext) {
+        if (
+          currentAccount?.type !== KEYRING_CLASS.GNOSIS ||
+          !isGnosisSendReplaceTargetMatched(gnosisReplaceContext, {
+            safeAddress: currentAccountAddress,
+            chainId: chain.id,
+          })
+        ) {
+          return {};
+        }
+        params.chainId = gnosisReplaceContext.chainId;
+        params.nonce = intToHex(gnosisReplaceContext.nonce);
       }
       if (isNativeToken) {
         params.to = toAddress;
@@ -872,8 +906,9 @@ const SendToken = () => {
     [
       currentAccountAddress,
       currentToken,
+      currentAccount?.type,
+      gnosisReplaceContext,
       isNativeToken,
-      safeInfo?.nonce,
       toAddress,
     ]
   );
@@ -1032,6 +1067,10 @@ const SendToken = () => {
       forceSignPage,
     }: FormSendToken & { forceSignPage?: boolean }) => {
       if (!currentToken || !currentAccount?.address) {
+        return;
+      }
+      if (!isGnosisReplaceContextReady) {
+        message.error(t('page.signTx.errorRetry.InvalidTx'));
         return;
       }
       const params = getParams({
@@ -1217,9 +1256,13 @@ const SendToken = () => {
       amount?: string;
       amountInputState?: SendAmountInputUrlState | null;
       amountBalanceError?: boolean;
+      clearGnosisReplaceContext?: boolean;
     }) => {
       const { token, amount } = input;
       const searchParams = new URLSearchParams(history.location.search);
+      if (input.clearGnosisReplaceContext) {
+        searchParams.delete(GNOSIS_REPLACE_QUERY_KEY);
+      }
       if (token) {
         searchParams.set('token', encodeTokenParam(token));
       } else if (token === null) {
@@ -1253,6 +1296,7 @@ const SendToken = () => {
       amount?: string;
       amountInputState?: SendAmountInputUrlState | null;
       amountBalanceError?: boolean;
+      clearGnosisReplaceContext?: boolean;
     }) => {
       const search = buildHistorySearch(input);
       history.replace({
@@ -1263,6 +1307,24 @@ const SendToken = () => {
     },
     [buildHistorySearch, history]
   );
+
+  const clearGnosisReplaceContext = useCallback(async () => {
+    const nextSearch = replaceHistorySearch({
+      clearGnosisReplaceContext: true,
+    });
+
+    try {
+      await persistPageStateCache(undefined, { search: nextSearch });
+    } catch (error) {
+      console.error(
+        '[SendToken] persist cleared Gnosis replace context failed',
+        error
+      );
+      await wallet.clearPageStateCache();
+    }
+
+    return nextSearch;
+  }, [persistPageStateCache, replaceHistorySearch, wallet]);
 
   const paramFormAmount = useMemo(
     () => normalizeInputNumber(paramAmount) || '',
@@ -2270,6 +2332,13 @@ const SendToken = () => {
 
   const handleCurrentTokenChange = useCallback(
     async (token: TokenItem, ignoreCache = false) => {
+      const nextChain = findChain({ serverId: token.chain });
+      const shouldClearGnosisReplaceContext =
+        !!gnosisReplaceContext &&
+        !isGnosisSendReplaceTargetMatched(gnosisReplaceContext, {
+          safeAddress: currentAccountAddress,
+          chainId: nextChain?.id,
+        });
       cancelClickedMax();
       if (showGasReserved) {
         setShowGasReserved(false);
@@ -2285,8 +2354,7 @@ const SendToken = () => {
           amount: '',
         });
       }
-      const chainItem = findChain({ serverId: token.chain });
-      setChain(chainItem?.enum ?? CHAINS_ENUM.ETH);
+      setChain(nextChain?.enum ?? CHAINS_ENUM.ETH);
       setCurrentToken(token);
       // setEstimatedGas(0);
       setChainTokenGasFees((prev) => ({
@@ -2298,8 +2366,9 @@ const SendToken = () => {
         ...(tokenChanged ? { amount: '' } : {}),
         amountInputState: tokenChanged ? null : amountInputUrlStateRef.current,
         ...(tokenChanged ? { amountBalanceError: false } : {}),
+        clearGnosisReplaceContext: shouldClearGnosisReplaceContext,
       });
-      if (!ignoreCache) {
+      if (!ignoreCache || shouldClearGnosisReplaceContext) {
         await persistPageStateCache(
           { currentToken: token },
           { search: nextSearch }
@@ -2315,7 +2384,9 @@ const SendToken = () => {
     [
       currentToken?.chain,
       currentToken?.id,
+      currentAccountAddress,
       form,
+      gnosisReplaceContext,
       loadCurrentToken,
       persistPageStateCache,
       setShowGasReserved,
@@ -2684,6 +2755,22 @@ const SendToken = () => {
     try {
       const account = (await wallet.syncGetCurrentAccount())!;
       const qs = query2obj(history.location.search);
+      if (gnosisReplaceContextResult.status === 'invalid') {
+        message.error(t('page.signTx.errorRetry.InvalidTx'));
+        return;
+      }
+      let activeGnosisReplaceContext = gnosisReplaceContext;
+      if (
+        activeGnosisReplaceContext &&
+        (account.type !== KEYRING_CLASS.GNOSIS ||
+          !isGnosisSendReplaceTargetMatched(activeGnosisReplaceContext, {
+            safeAddress: account.address,
+            chainId: activeGnosisReplaceContext.chainId,
+          }))
+      ) {
+        activeGnosisReplaceContext = null;
+        await clearGnosisReplaceContext();
+      }
       const cache = await wallet.getPageStateCache();
       const shouldClearAmountForAccountChange =
         shouldClearAmountForAccountChangeRef.current;
@@ -2788,6 +2875,13 @@ const SendToken = () => {
           }
           return;
         }
+        if (
+          activeGnosisReplaceContext &&
+          target.id !== activeGnosisReplaceContext.chainId
+        ) {
+          activeGnosisReplaceContext = null;
+          await clearGnosisReplaceContext();
+        }
         setChain(target.enum);
         const tokenItem = await loadCurrentToken(
           id,
@@ -2797,26 +2891,20 @@ const SendToken = () => {
         if (!restoreCachedValues(tokenItem)) {
           fillAmount(tokenItem || undefined);
         }
-      } else if ((history.location.state as any)?.safeInfo) {
-        const safeInfo: {
-          nonce: number;
-          chainId: number;
-        } = (history.location.state as any)?.safeInfo;
-
-        const chain = findChainByID(safeInfo.chainId);
-        let nativeToken: TokenItem | null = null;
-        if (chain) {
-          setChain(chain.enum);
-          const defaultToken = getChainDefaultToken(chain.enum);
-          nativeToken = await loadCurrentToken(
-            defaultToken.id,
-            chain.serverId,
-            account.address
-          );
+      } else if (activeGnosisReplaceContext) {
+        const chain = findChainByID(activeGnosisReplaceContext.chainId);
+        if (!chain) {
+          message.error(t('page.signTx.errorRetry.InvalidTx'));
+          return;
         }
-        setSafeInfo(safeInfo);
+        setChain(chain.enum);
+        const defaultToken = getChainDefaultToken(chain.enum);
+        const nativeToken = await loadCurrentToken(
+          defaultToken.id,
+          chain.serverId,
+          account.address
+        );
         persistPageStateCache({
-          safeInfo,
           currentToken: nativeToken || currentToken,
         });
       } else {
@@ -2836,9 +2924,6 @@ const SendToken = () => {
           restoreCachedValues(sendTokenCache.states.currentToken);
           if (sendTokenCache.states.currentToken) {
             needLoadToken = sendTokenCache.states.currentToken;
-          }
-          if (sendTokenCache.states.safeInfo) {
-            setSafeInfo(sendTokenCache.states.safeInfo);
           }
         }
         if (!needLoadToken) return;
@@ -3019,11 +3104,23 @@ const SendToken = () => {
           canBack={!(isTab || isDesktop)}
           className="mb-[10px]"
           onBeforeSwitchAccountChange={async (nextAccount) => {
-            if (
+            const isSameAccount =
               currentAccount?.address &&
-              isSameAddress(currentAccount.address, nextAccount.address)
-            ) {
+              isSameAddress(currentAccount.address, nextAccount.address) &&
+              currentAccount.type === nextAccount.type;
+            if (isSameAccount) {
               return;
+            }
+
+            if (
+              gnosisReplaceContext &&
+              (nextAccount.type !== KEYRING_CLASS.GNOSIS ||
+                !isGnosisSendReplaceTargetMatched(gnosisReplaceContext, {
+                  safeAddress: nextAccount.address,
+                  chainId: gnosisReplaceContext.chainId,
+                }))
+            ) {
+              await clearGnosisReplaceContext();
             }
 
             await clearAmountForAccountChange();
@@ -3071,6 +3168,14 @@ const SendToken = () => {
                 > = amountInputInsufficientError
                   ? { [AMOUNT_BALANCE_ERROR_QUERY_KEY]: '1' }
                   : {};
+                const gnosisReplaceQueryFields: Record<
+                  string,
+                  string
+                > = gnosisReplaceQueryValue
+                  ? {
+                      [GNOSIS_REPLACE_QUERY_KEY]: gnosisReplaceQueryValue,
+                    }
+                  : {};
                 if (isDesktop) {
                   history.push(
                     `${history.location.pathname}?${obj2query({
@@ -3084,6 +3189,7 @@ const SendToken = () => {
                         id: currentToken?.id || '',
                       }),
                       amount: form.getFieldValue('amount') || '',
+                      ...gnosisReplaceQueryFields,
                       ...amountInputQueryFields,
                       ...amountBalanceErrorQueryFields,
                     })}`
@@ -3099,6 +3205,7 @@ const SendToken = () => {
                         id: currentToken?.id || '',
                       }),
                       amount: form.getFieldValue('amount') || '',
+                      ...gnosisReplaceQueryFields,
                       ...amountInputQueryFields,
                       ...amountBalanceErrorQueryFields,
                     })}`
