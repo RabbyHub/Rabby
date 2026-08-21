@@ -41,6 +41,8 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   coin: string;
   markPrice: number;
   leverageRange: [number, number]; // [min, max]
+  /** The account's on-chain leverage for this coin; falls back to max. */
+  defaultLeverage?: number;
   pxDecimals: number;
   szDecimals: number;
   availableBalance: number;
@@ -54,7 +56,10 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   onCancel: () => void;
   onConfirm: () => void;
   marginMode: 'cross' | 'isolated';
-  onMarginModeChange?: (mode: 'cross' | 'isolated') => void;
+  /** Resolves false when the on-chain switch failed — the modal then stays open. */
+  onMarginModeChange?: (
+    mode: 'cross' | 'isolated'
+  ) => boolean | Promise<boolean>;
   hasPosition?: boolean;
   quoteAsset?: string;
   onDepositPress?: () => void;
@@ -86,6 +91,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   coin,
   markPrice,
   leverageRange,
+  defaultLeverage,
   pxDecimals,
   szDecimals,
   availableBalance,
@@ -117,7 +123,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   );
   const [margin, setMargin] = React.useState<string>('');
   const [selectedLeverage, setLeverage] = React.useState<number | undefined>(
-    leverageRange[1]
+    defaultLeverage ?? leverageRange[1]
   );
   const leverage = selectedLeverage || 1;
   const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
@@ -314,7 +320,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       availableBalance > 2
         ? setMargin(Math.round(availableBalance / 2).toString())
         : setMargin('');
-      setLeverage(leverageRange[1]);
+      setLeverage(defaultLeverage ?? leverageRange[1]);
       resetInitValues();
       setIsReviewMode(false);
       setOrderType('market');
@@ -912,9 +918,11 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         visible={marginModeModalVisible}
         currentMode={marginMode}
         onCancel={() => setMarginModeModalVisible(false)}
-        onConfirm={(mode) => {
-          onMarginModeChange?.(mode);
-          setMarginModeModalVisible(false);
+        onConfirm={async (mode) => {
+          const ok = await onMarginModeChange?.(mode);
+          if (ok !== false) {
+            setMarginModeModalVisible(false);
+          }
         }}
       />
     </>

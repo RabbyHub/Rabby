@@ -237,6 +237,45 @@ export const usePerpsPosition = ({
     }
   );
 
+  /**
+   * Applies the margin mode on click instead of waiting for the order. HL sets
+   * mode and leverage in one action, so pass the account's current leverage —
+   * a stale value would silently move the liquidation price. Returns false when
+   * the call failed; the error is already surfaced.
+   */
+  const handleUpdateMarginMode = useMemoizedFn(
+    async (params: {
+      coin: string;
+      leverage: number;
+      marginMode: 'cross' | 'isolated';
+    }) => {
+      const { coin, leverage, marginMode } = params;
+      try {
+        const sdk = getPerpsSDK();
+        await sdk.exchange?.updateLeverage({
+          coin,
+          leverage,
+          isCross: marginMode === 'cross',
+        });
+        return true;
+      } catch (error) {
+        if (await judgeIsUserAgentIsExpired(error?.message || '')) {
+          return false;
+        }
+        if (judgeIsBuilderFeeNeedApprove(error?.message)) {
+          return false;
+        }
+        console.error('Update margin mode error:', error);
+        message.error({
+          duration: 1.5,
+          content: error?.message || 'Update margin mode failed',
+        });
+        Sentry.captureException(error);
+        return false;
+      }
+    }
+  );
+
   const handleClosePosition = useMemoizedFn(
     async (params: {
       coin: string;
@@ -649,6 +688,7 @@ export const usePerpsPosition = ({
     handleCancelOrder,
     handleCancelLimitOrders,
     handleUpdateMargin,
+    handleUpdateMarginMode,
     handleStableCoinOrder,
     userFills,
     isLogin,
