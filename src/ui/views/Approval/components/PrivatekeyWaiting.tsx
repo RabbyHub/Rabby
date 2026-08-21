@@ -70,7 +70,7 @@ export const PrivatekeyWaiting = ({
     setHeight,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval('PrivatekeyWaiting');
   const { t } = useTranslation();
   const { type } = params;
   const [errorMessage, setErrorMessage] = React.useState('');

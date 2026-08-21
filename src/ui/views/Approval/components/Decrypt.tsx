@@ -30,7 +30,7 @@ const GetEncryptionPublicKey = ({ params, account }: ConnectProps) => {
   const [result, setResult] = useState('');
 
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval('Decrypt');
   const handleCancel = useCallback(() => {
     rejectApproval('User rejected the request.');
   }, [rejectApproval]);

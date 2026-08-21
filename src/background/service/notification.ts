@@ -144,7 +144,16 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
-          this.rejectApproval();
+          const approval = this.currentApproval;
+          if (approval) {
+            this.rejectApproval(
+              undefined,
+              false,
+              false,
+              approval.id,
+              approval.data.approvalComponent
+            );
+          }
         }
       }
     });
@@ -169,9 +178,9 @@ class NotificationService extends Events {
       this.currentApproval = approval;
       this.openNotification(approval.winProps, true);
     } catch (e) {
-      Sentry.captureException(e, {
-        tags: { function: 'activeFirstApproval' },
-      });
+      Sentry.captureException(
+        new Error('activeFirstApproval failed: ' + JSON.stringify(e))
+      );
       this.clear();
     }
   };
@@ -190,19 +199,26 @@ class NotificationService extends Events {
   resolveApproval = async (
     data?: any,
     forceReject = false,
-    approvalId?: string
+    approvalId?: string,
+    approvalComponent?: keyof IApprovalComponents
   ) => {
-    if (approvalId && approvalId !== this.currentApproval?.id) return;
-    if (forceReject) {
-      this.currentApproval?.reject &&
-        this.currentApproval?.reject(
-          new EthereumProviderError(4001, 'User Cancel')
-        );
-    } else {
-      this.currentApproval?.resolve && this.currentApproval?.resolve(data);
+    const approval = this.currentApproval;
+    if (
+      !approval ||
+      !approvalId ||
+      approval.id !== approvalId ||
+      !approvalComponent ||
+      approval.data.approvalComponent !== approvalComponent
+    ) {
+      return false;
     }
 
-    const approval = this.currentApproval;
+    if (forceReject) {
+      approval.reject &&
+        approval.reject(new EthereumProviderError(4001, 'User Cancel'));
+    } else {
+      approval.resolve && approval.resolve(data);
+    }
 
     this.clearLastRejectDapp();
     this.deleteApproval(approval);
@@ -214,11 +230,29 @@ class NotificationService extends Events {
     }
 
     this.emit('resolve', data);
+    return true;
   };
 
-  rejectApproval = async (err?: string, stay = false, isInternal = false) => {
-    this.addLastRejectDapp();
+  rejectApproval = async (
+    err?: string,
+    stay = false,
+    isInternal = false,
+    approvalId?: string,
+    approvalComponent?: keyof IApprovalComponents
+  ) => {
     const approval = this.currentApproval;
+    if (
+      !approval ||
+      !approvalId ||
+      approval.id !== approvalId ||
+      !approvalComponent ||
+      approval.data.approvalComponent !== approvalComponent
+    ) {
+      return false;
+    }
+
+    this.addLastRejectDapp();
+
     if (this.approvals.length <= 1) {
       await this.clear(stay); // TODO: FIXME
     }
@@ -241,13 +275,10 @@ class NotificationService extends Events {
       await this.clear(stay);
     }
     this.emit('reject', err);
+    return true;
   };
 
-  requestApproval = async (
-    data,
-    winProps?,
-    options?: { onCurrent?: () => void }
-  ): Promise<any> => {
+  requestApproval = async (data, winProps?): Promise<any> => {
     const origin = this.getOrigin(data);
     if (origin) {
       const dapp = this.dappManager.get(origin);
@@ -349,18 +380,6 @@ class NotificationService extends Events {
         this.approvals = [...this.approvals, approval];
         if (!this.currentApproval) {
           this.currentApproval = approval;
-        }
-      }
-
-      // TODO: queued approvals currently drop onCurrent, so preparation only
-      // starts for the approval that is current when requestApproval runs.
-      if (this.currentApproval === approval) {
-        try {
-          options?.onCurrent?.();
-        } catch (e) {
-          Sentry.captureException(
-            new Error('onCurrent failed: ' + JSON.stringify(e))
-          );
         }
       }
 

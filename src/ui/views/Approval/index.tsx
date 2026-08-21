@@ -11,6 +11,7 @@ import './style.less';
 import clsx from 'clsx';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
+import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 
 const Approval: React.FC<{
   className?: string;
@@ -33,7 +34,7 @@ const Approval: React.FC<{
       return null;
     }
 
-    // "忽略所有" 只允许作用于当前审批, 不能在同窗口排队切换时残留到下一笔
+    // Ignore-all state is scoped to the current approval and must not leak to a queued request.
     dispatch.securityEngine.resetCurrentTx();
     setApproval(approval);
     document.title = 'Rabby Wallet Notification';
@@ -58,14 +59,21 @@ const Approval: React.FC<{
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <ApprovalUtilsProvider>
-          <CurrentApprovalComponent
-            params={params}
-            origin={origin}
-            account={account}
-            // requestDefer={requestDefer}
-          />
-        </ApprovalUtilsProvider>
+        <ApprovalBindingContext.Provider
+          value={{
+            id: approval.id,
+            component: approval.data.approvalComponent,
+          }}
+        >
+          <ApprovalUtilsProvider>
+            <CurrentApprovalComponent
+              params={params}
+              origin={origin}
+              account={account}
+              // requestDefer={requestDefer}
+            />
+          </ApprovalUtilsProvider>
+        </ApprovalBindingContext.Provider>
       )}
     </div>
   );

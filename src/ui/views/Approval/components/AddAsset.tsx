@@ -193,7 +193,7 @@ interface TokenHistoryItem extends TxHistoryItem {
 }
 
 const AddAsset = ({ params, account }: AddAssetProps) => {
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval('AddAsset');
   const wallet = useWallet();
   const { t } = useTranslation();
   const [tokens, setTokens] = useState<TokenItem[]>([]);
