@@ -141,6 +141,7 @@ import {
 import { useContactBookStore } from '@/ui/state/contactBook';
 import {
   GNOSIS_REPLACE_QUERY_KEY,
+  GnosisSendReplaceContext,
   isGnosisSendReplaceTargetMatched,
   parseGnosisSendReplaceContext,
 } from '@/ui/utils/gnosisReplace';
@@ -1112,7 +1113,7 @@ const SendToken = () => {
             },
           });
 
-          clearAmountAfterSuccessfulSend();
+          await clearAmountAfterSuccessfulSend();
           const hash = hashes[hashes.length - 1];
           if (hash) {
             await handleMiniSignResolve();
@@ -1236,7 +1237,7 @@ const SendToken = () => {
 
         if (isTab || isDesktop) {
           await promise;
-          clearAmountAfterSuccessfulSend();
+          await clearAmountAfterSuccessfulSend();
         } else {
           window.close();
         }
@@ -1308,23 +1309,42 @@ const SendToken = () => {
     [buildHistorySearch, history]
   );
 
-  const clearGnosisReplaceContext = useCallback(async () => {
-    const nextSearch = replaceHistorySearch({
-      clearGnosisReplaceContext: true,
-    });
+  const clearGnosisReplaceContext = useCallback(
+    async (expectedContext?: GnosisSendReplaceContext) => {
+      if (expectedContext) {
+        const currentContextResult = parseGnosisSendReplaceContext(
+          history.location.search
+        );
+        if (
+          currentContextResult.status !== 'valid' ||
+          currentContextResult.context.nonce !== expectedContext.nonce ||
+          !isGnosisSendReplaceTargetMatched(expectedContext, {
+            safeAddress: currentContextResult.context.safeAddress,
+            chainId: currentContextResult.context.chainId,
+          })
+        ) {
+          return false;
+        }
+      }
 
-    try {
-      await persistPageStateCache(undefined, { search: nextSearch });
-    } catch (error) {
-      console.error(
-        '[SendToken] persist cleared Gnosis replace context failed',
-        error
-      );
-      await wallet.clearPageStateCache();
-    }
+      const nextSearch = replaceHistorySearch({
+        clearGnosisReplaceContext: true,
+      });
 
-    return nextSearch;
-  }, [persistPageStateCache, replaceHistorySearch, wallet]);
+      try {
+        await persistPageStateCache(undefined, { search: nextSearch });
+      } catch (error) {
+        console.error(
+          '[SendToken] persist cleared Gnosis replace context failed',
+          error
+        );
+        await wallet.clearPageStateCache();
+      }
+
+      return true;
+    },
+    [history, persistPageStateCache, replaceHistorySearch, wallet]
+  );
 
   const paramFormAmount = useMemo(
     () => normalizeInputNumber(paramAmount) || '',
@@ -1935,7 +1955,23 @@ const SendToken = () => {
     ]
   );
 
-  const clearAmountAfterSuccessfulSend = useCallback(() => {
+  const clearAmountAfterSuccessfulSend = useCallback(async () => {
+    if (gnosisReplaceContext) {
+      try {
+        const didConsumeGnosisReplaceContext = await clearGnosisReplaceContext(
+          gnosisReplaceContext
+        );
+        if (!didConsumeGnosisReplaceContext) {
+          return;
+        }
+      } catch (error) {
+        console.error(
+          '[SendToken] clear Gnosis replace context after send failed',
+          error
+        );
+      }
+    }
+
     cancelClickedMax();
 
     const nextAmountInputState =
@@ -1954,17 +1990,21 @@ const SendToken = () => {
       ...form.getFieldsValue(),
       amount: '',
     };
-    handleFormValuesChange({ amount: '' }, nextValues, {
-      updateHistoryState: true,
-      amountInputState: nextAmountInputState,
-    }).catch((error) => {
+    try {
+      await handleFormValuesChange({ amount: '' }, nextValues, {
+        updateHistoryState: true,
+        amountInputState: nextAmountInputState,
+      });
+    } catch (error) {
       console.error('[SendToken] clear amount after send failed', error);
-    });
+    }
   }, [
     amountInputMode,
     cancelClickedMax,
+    clearGnosisReplaceContext,
     form,
     getAmountInputUrlStateForTokenAmount,
+    gnosisReplaceContext,
     handleFormValuesChange,
   ]);
 
