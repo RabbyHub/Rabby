@@ -90,7 +90,7 @@ const ChainWrapper = styled.div`
   &.swap {
     gap: 8px;
     padding: 0 16px;
-    border: 1px solid transparent;
+    border: 0.5px solid transparent;
     background: var(--r-neutral-card1, #fff);
     border-radius: 8px 8px 0 0;
     height: 52px;

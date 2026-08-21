@@ -303,7 +303,7 @@ export const SignMainnetSwapGasQuotePopup = ({
         className="z-[999]"
         getContainer={getContainer}
       >
-        <div className="flex h-full flex-col gap-24 overflow-hidden rounded-t-[16px] bg-r-neutral-bg-2 p-20 pb-0 shadow-[0_-12px_10px_rgba(35,47,129,0.1)]">
+        <div className="flex h-full flex-col gap-24 overflow-hidden rounded-t-[16px] bg-r-neutral-bg-2 p-20 shadow-[0_-12px_10px_rgba(35,47,129,0.1)]">
           <div className="flex shrink-0 flex-col gap-12">
             <div className="flex items-center justify-between">
               <span className="text-[16px] font-medium text-r-neutral-title-1">
