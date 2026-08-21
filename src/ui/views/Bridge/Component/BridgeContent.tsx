@@ -94,7 +94,6 @@ export const BridgeContent = () => {
     switchToken,
     amount,
     handleAmountChange,
-    feeRate,
 
     recommendFromToken,
     fillRecommendFromToken,
@@ -259,7 +258,6 @@ export const BridgeContent = () => {
               to_token_amount: selectedBridgeQuote.to_token_amount,
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
-              fee_rate: Number(feeRate),
               slippage: new BigNumber(slippage).div(100).toNumber(),
             },
             addHistoryData: {
@@ -328,7 +326,6 @@ export const BridgeContent = () => {
     selectedBridgeQuote?.to_token_amount,
     wallet,
     amount,
-    feeRate,
     rbiSource,
     slippageState,
     maxNativeTokenGasPrice,
@@ -345,7 +342,6 @@ export const BridgeContent = () => {
       toToken.chain,
       toToken.id,
       amount,
-      feeRate,
       slippageState,
       selectedBridgeQuote.aggregator.id,
       selectedBridgeQuote.bridge_id,
@@ -361,7 +357,6 @@ export const BridgeContent = () => {
     ].join('|');
   }, [
     amount,
-    feeRate,
     fromToken,
     maxNativeTokenGasPrice,
     selectedBridgeQuote,
@@ -460,7 +455,6 @@ export const BridgeContent = () => {
               to_token_amount: selectedBridgeQuote.to_token_amount,
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
-              fee_rate: Number(feeRate),
               slippage: new BigNumber(slippage).div(100).toNumber(),
             },
             addHistoryData: {
@@ -617,12 +611,6 @@ export const BridgeContent = () => {
     Number(amount) > 0 &&
     !quoteLoading &&
     !quoteList?.length;
-  const [bridgeProgressVisible, setBridgeProgressVisible] = useState(false);
-  const showStickyInfo =
-    !!fromToken &&
-    !!toToken &&
-    !noQuote &&
-    !(amount === '' && bridgeProgressVisible);
 
   const btnDisabled =
     inSufficient ||
@@ -1081,6 +1069,8 @@ export const BridgeContent = () => {
     runBuildBridgeTxsKeyRef.current = '';
   }, [awaitingTopUpResume, buildTopUpSnapshot, closeSign]);
 
+  const [showMoreOpen, setShowMoreOpen] = useState(false);
+
   const switchFeePopup = useSetSettingVisible();
 
   const openFeePopup = useCallback(() => {
@@ -1213,6 +1203,45 @@ export const BridgeContent = () => {
         ) : null}
 
         <div className="mx-20 mt-20">
+          {selectedBridgeQuote && (
+            <BridgeShowMore
+              insufficient={inSufficient}
+              supportDirectSign={canUseDirectSubmitTx}
+              signatureInstance={instance}
+              openFeePopup={openFeePopup}
+              open={showMoreOpen}
+              setOpen={setShowMoreOpen}
+              sourceName={selectedBridgeQuote?.aggregator.name || ''}
+              sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
+              duration={selectedBridgeQuote?.duration || 0}
+              slippage={slippageState}
+              displaySlippage={slippage}
+              onSlippageChange={(e) => {
+                setSlippageChanged(true);
+                setSlippage(e);
+              }}
+              fromToken={fromToken}
+              toToken={toToken}
+              amount={amount || 0}
+              toAmount={selectedBridgeQuote?.to_token_amount}
+              openQuotesList={openQuotesList}
+              quoteLoading={quoteLoading}
+              gasFeeLoading={directSignTxPreparing}
+              slippageError={isSlippageHigh || isSlippageLow}
+              autoSlippage={autoSlippage}
+              isCustomSlippage={isCustomSlippage}
+              setAutoSlippage={setAutoSlippage}
+              setIsCustomSlippage={setIsCustomSlippage}
+              type="bridge"
+              isBestQuote={
+                !!bestQuoteId &&
+                !!selectedBridgeQuote &&
+                bestQuoteId?.aggregatorId ===
+                  selectedBridgeQuote.aggregator.id &&
+                bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id
+              }
+            />
+          )}
           {noQuote && recommendFromToken && (
             <RecommendFromToken
               token={recommendFromToken}
@@ -1223,170 +1252,128 @@ export const BridgeContent = () => {
         </div>
         {!selectedBridgeQuote && !recommendFromToken && (
           <div className="mt-20 mx-20">
-            <BridgePendingTxItem
-              getContainer={getContainer}
-              onDisplayChange={setBridgeProgressVisible}
-            />
+            <BridgePendingTxItem getContainer={getContainer} />
           </div>
         )}
 
         {/* for bottom padding */}
+        <div className={clsx('w-full', 'h-[40px]')} />
+
         <div
-          className={clsx('w-full', showStickyInfo ? 'h-[192px]' : 'h-[68px]')}
-        />
+          className={clsx(
+            'fixed w-full bottom-0 mt-auto flex flex-col items-center justify-center p-20 gap-12',
+            'bg-r-neutral-bg-2 border border-t-[0.5px] border-transparent border-t-rabby-neutral-line',
+            'py-[16px]',
+            isTab ? 'rounded-b-[16px]' : ''
+          )}
+        >
+          {(fromChain as string) === 'DBK' ? (
+            <DbkButton
+              className="h-[48px] w-full text-[16px] font-medium bg-r-orange-DBK border-transparent rounded-[6px]"
+              onClick={() => {
+                history.push(
+                  `/ecology/${DBK_CHAIN_ID}/bridge?activeTab=withdraw`
+                );
+              }}
+            >
+              {t('page.bridge.bridgeDbkBtn')}
+            </DbkButton>
+          ) : (
+            <TooltipWithMagnetArrow
+              overlayClassName="rectangle w-[max-content]"
+              title={
+                !isSupportedChain && externalDapps.length < 1
+                  ? t('component.externalSwapBrideDappPopup.noDapps')
+                  : t('page.swap.insufficient-balance')
+              }
+              visible={
+                !isSupportedChain && externalDapps.length < 1
+                  ? undefined
+                  : inSufficient && selectedBridgeQuote
+                  ? undefined
+                  : false
+              }
+            >
+              {canUseDirectSubmitTx &&
+              currentAccount?.type &&
+              isSupportedChain ? (
+                <DirectSignToConfirmBtn
+                  disabled={btnDisabled}
+                  title={btnText}
+                  onConfirm={handleBridge}
+                  onConfirmStart={() => setQuoteRefreshLocked(true)}
+                  onCancel={resumeQuoteRefresh}
+                  showRiskTips={showRiskTips && !btnDisabled}
+                  accountType={currentAccount?.type}
+                  signatureInstance={instance}
+                  riskReset={btnDisabled}
+                  loading={miniSignLoading}
+                />
+              ) : (
+                <RiskTipsWrapper
+                  showRiskTips={showRiskTips && !bridgeButtonDisabled}
+                  riskReset={bridgeButtonDisabled}
+                >
+                  {({ riskDisabled }) => (
+                    <Button
+                      loading={fetchingBridgeQuote}
+                      type="primary"
+                      block
+                      size="large"
+                      className="h-[48px] text-white text-[16px] font-medium"
+                      onClick={() => {
+                        if (showExternalDappTips && externalDapps.length > 0) {
+                          setExternalDappOpen(true);
+                          return;
+                        }
+                        if (fetchingBridgeQuote) return;
+                        if (!selectedBridgeQuote) {
+                          refresh((e) => e + 1);
 
-        <div className="fixed z-10 w-full bottom-0 mt-auto px-20 pb-20">
-          <div className="w-full rounded-[8px] bg-r-neutral-bg-2">
-            {showStickyInfo && (
-              <BridgeShowMore
-                insufficient={inSufficient}
-                supportDirectSign={canUseDirectSubmitTx}
-                signatureInstance={instance}
-                openFeePopup={openFeePopup}
-                sourceName={selectedBridgeQuote?.aggregator.name || ''}
-                sourceLogo={selectedBridgeQuote?.aggregator.logo_url || ''}
-                duration={selectedBridgeQuote?.duration || 0}
-                slippage={slippageState}
-                displaySlippage={slippage}
-                onSlippageChange={(e) => {
-                  setSlippageChanged(true);
-                  setSlippage(e);
-                }}
-                fromToken={fromToken}
-                toToken={toToken}
-                amount={amount || 0}
-                toAmount={selectedBridgeQuote?.to_token_amount}
-                openQuotesList={openQuotesList}
-                quoteLoading={quoteLoading}
-                gasFeeLoading={directSignTxPreparing}
-                autoSlippage={autoSlippage}
-                isCustomSlippage={isCustomSlippage}
-                setAutoSlippage={setAutoSlippage}
-                setIsCustomSlippage={setIsCustomSlippage}
-                type="bridge"
-                getContainer={getContainer}
-                isRabbyFeeFree={feeRate === '0'}
-                isRabbyFeeHalf={feeRate === '0.12'}
-                isBestQuote={
-                  !!bestQuoteId &&
-                  !!selectedBridgeQuote &&
-                  bestQuoteId?.aggregatorId ===
-                    selectedBridgeQuote.aggregator.id &&
-                  bestQuoteId?.bridgeId === selectedBridgeQuote.bridge_id
-                }
-              />
-            )}
-            {(fromChain as string) === 'DBK' ? (
-              <DbkButton
-                className="h-[48px] w-full text-[16px] font-medium bg-r-orange-DBK border-transparent rounded-[6px]"
-                onClick={() => {
-                  history.push(
-                    `/ecology/${DBK_CHAIN_ID}/bridge?activeTab=withdraw`
-                  );
-                }}
-              >
-                {t('page.bridge.bridgeDbkBtn')}
-              </DbkButton>
-            ) : (
-              <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content]"
-                title={
-                  !isSupportedChain && externalDapps.length < 1
-                    ? t('component.externalSwapBrideDappPopup.noDapps')
-                    : t('page.swap.insufficient-balance')
-                }
-                visible={
-                  !isSupportedChain && externalDapps.length < 1
-                    ? undefined
-                    : inSufficient && selectedBridgeQuote
-                    ? undefined
-                    : false
-                }
-              >
-                {canUseDirectSubmitTx &&
-                currentAccount?.type &&
-                isSupportedChain ? (
-                  <DirectSignToConfirmBtn
-                    disabled={btnDisabled}
-                    title={btnText}
-                    onConfirm={handleBridge}
-                    onConfirmStart={() => setQuoteRefreshLocked(true)}
-                    onCancel={resumeQuoteRefresh}
-                    showRiskTips={showRiskTips && !btnDisabled}
-                    accountType={currentAccount?.type}
-                    signatureInstance={instance}
-                    riskReset={btnDisabled}
-                    loading={miniSignLoading}
-                  />
-                ) : (
-                  <RiskTipsWrapper
-                    showRiskTips={showRiskTips && !bridgeButtonDisabled}
-                    riskReset={bridgeButtonDisabled}
-                  >
-                    {({ riskDisabled }) => (
-                      <Button
-                        loading={fetchingBridgeQuote}
-                        type="primary"
-                        block
-                        size="large"
-                        className="h-[48px] rounded-[6px] text-white text-[16px] font-medium"
-                        onClick={() => {
-                          if (
-                            showExternalDappTips &&
-                            externalDapps.length > 0
-                          ) {
-                            setExternalDappOpen(true);
-                            return;
-                          }
-                          if (fetchingBridgeQuote) return;
-                          if (!selectedBridgeQuote) {
-                            refresh((e) => e + 1);
+                          return;
+                        }
+                        if (selectedBridgeQuote?.shouldTwoStepApprove) {
+                          setQuoteRefreshLocked(true);
+                          return Modal.confirm({
+                            width: 360,
+                            closable: true,
+                            centered: true,
+                            className: twoStepApproveCn,
+                            title: null,
+                            content: (
+                              <>
+                                <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
+                                  Sign 2 transactions to change allowance
+                                </div>
+                                <div className="text-13 leading-[17px]  text-r-neutral-body">
+                                  Token USDT requires 2 transactions to change
+                                  allowance. First you would need to reset
+                                  allowance to zero, and only then set new
+                                  allowance value.
+                                </div>
+                              </>
+                            ),
+                            okText: 'Proceed with two step approve',
+                            onCancel: resumeQuoteRefresh,
 
-                            return;
-                          }
-                          if (selectedBridgeQuote?.shouldTwoStepApprove) {
-                            setQuoteRefreshLocked(true);
-                            return Modal.confirm({
-                              width: 360,
-                              closable: true,
-                              centered: true,
-                              className: twoStepApproveCn,
-                              title: null,
-                              content: (
-                                <>
-                                  <div className="text-[16px] font-medium text-r-neutral-title-1 mb-18 text-center">
-                                    Sign 2 transactions to change allowance
-                                  </div>
-                                  <div className="text-13 leading-[17px]  text-r-neutral-body">
-                                    Token USDT requires 2 transactions to change
-                                    allowance. First you would need to reset
-                                    allowance to zero, and only then set new
-                                    allowance value.
-                                  </div>
-                                </>
-                              ),
-                              okText: 'Proceed with two step approve',
-                              onCancel: resumeQuoteRefresh,
-
-                              onOk() {
-                                // gotoBridge();
-                                handleBridge();
-                              },
-                            });
-                          }
-                          // gotoBridge();
-                          handleBridge();
-                        }}
-                        disabled={bridgeButtonDisabled || riskDisabled}
-                      >
-                        {btnText}
-                      </Button>
-                    )}
-                  </RiskTipsWrapper>
-                )}
-              </TooltipWithMagnetArrow>
-            )}
-          </div>
+                            onOk() {
+                              // gotoBridge();
+                              handleBridge();
+                            },
+                          });
+                        }
+                        // gotoBridge();
+                        handleBridge();
+                      }}
+                      disabled={bridgeButtonDisabled || riskDisabled}
+                    >
+                      {btnText}
+                    </Button>
+                  )}
+                </RiskTipsWrapper>
+              )}
+            </TooltipWithMagnetArrow>
+          )}
         </div>
         {fromToken && toToken ? (
           <QuoteList

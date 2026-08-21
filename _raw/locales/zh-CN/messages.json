@@ -2014,6 +2014,8 @@
       "pendingTip": "交易已提交。\n如果交易长时间处于待处理状态，可尝试在设置中清除待处理交易。",
       "price-expired-refresh-quote": "价格已过期，\n刷新报价",
       "rabby-fee": "Rabby 手续费",
+      "preferMEV": "优先使用 MEV 保护",
+      "preferMEVTip": "为 Ethereum 兑换启用“MEV Guarded”功能，以降低遭受三明治攻击的风险。注意：使用自定义 RPC 或 WalletConnect 地址时不支持此功能。",
       "rate": "汇率",
       "rates-from-cex": "来自 CEX 的汇率",
       "recommend-slippage": "为了防止被抢先交易，我们建议滑点为 <2>{{ slippage }}</2>%",

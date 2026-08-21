@@ -932,7 +932,7 @@
       "nft": {
         "collectionList": {
           "all_nfts": {
-            "label": "Tous les NFT"
+          "label": "Tous les NFT"
           },
           "collections": {
             "label": "Collections"
@@ -2469,6 +2469,8 @@
       "unlimited-allowance": "Autorisation illimitée",
       "view-quotes": "Voir les cotations",
       "wrap-contract": "Smart contract de wrap",
+      "preferMEV": "Préférer MEV Guarded",
+      "preferMEVTip": "Activez la fonctionnalité « MEV Guarded » pour les swaps sur Ethereum afin de réduire le risque d'attaque sandwich. Remarque : cette fonctionnalité n'est pas prise en charge avec un RPC personnalisé ou une adresse WalletConnect.",
       "sort-with-gas": "Trier avec les frais de gas",
       "rabbyFee": {
         "wallet": "Portefeuille",

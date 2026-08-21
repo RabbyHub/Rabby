@@ -181,7 +181,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
   }, [token?.id, disabled]);
 
   return (
-    <div className="h-[124px] p-16">
+    <div className="p-16 pb-20 h-[132px]">
       <div
         className={clsx(
           'flex items-center justify-between',

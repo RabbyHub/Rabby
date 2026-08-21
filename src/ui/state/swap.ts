@@ -23,7 +23,7 @@ type SwapActions = {
   setSelectedChain: (selectedChain: CHAINS_ENUM) => void;
   setSelectedFromToken: (token?: TokenItem) => void;
   setSelectedToToken: (token?: TokenItem) => void;
-  setMEVProtection: (value: boolean) => void;
+  setSwapPreferMEV: (value: boolean) => void;
   getSwapSupportedDEXList: () => Promise<void>;
   setAutoSlippage: (value: boolean) => void;
   setIsCustomSlippage: (value: boolean) => void;
@@ -40,7 +40,7 @@ export const useSwapStore = createRabbyStore<SwapStore>(
     autoSlippage: true,
     supportedDEXList: Object.keys(DEX),
     selectedChain: null,
-    mevProtection: true,
+    preferMEVGuarded: false,
     $$initialSelectedChain: null,
     recentToTokens: [],
 
@@ -64,8 +64,8 @@ export const useSwapStore = createRabbyStore<SwapStore>(
     setSelectedToToken(selectedToToken) {
       set({ selectedToToken });
     },
-    setMEVProtection(mevProtection) {
-      set({ mevProtection });
+    setSwapPreferMEV(preferMEVGuarded) {
+      set({ preferMEVGuarded });
     },
     async getSwapSupportedDEXList() {
       const data = await wallet.openapi.getSupportedDEXList();

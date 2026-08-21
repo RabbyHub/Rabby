@@ -94,28 +94,6 @@ const ItemWrapper = styled.div`
     }
   }
 
-  &.combined {
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.08);
-
-    &::after {
-      border-radius: 8px !important;
-    }
-
-    .percent {
-      font-size: 12px;
-    }
-  }
-
-  &.combined.active {
-    height: 80px;
-
-    .receiveNum {
-      max-width: 110px;
-      font-size: 13px;
-    }
-  }
-
   .receiveNum {
     font-size: 16px;
     max-width: 130px;
@@ -161,8 +139,6 @@ export interface QuoteItemProps {
     React.SetStateAction<QuoteProvider | undefined>
   >;
   sortIncludeGasFee: boolean;
-  onSelect?: () => void;
-  combined?: boolean;
 }
 
 export const DexQuoteItem = (
@@ -190,7 +166,6 @@ export const DexQuoteItem = (
     quoteProviderInfo,
     setActiveProvider,
     sortIncludeGasFee,
-    onSelect,
   } = props;
 
   const { t } = useTranslation();
@@ -360,7 +335,6 @@ export const DexQuoteItem = (
     });
 
     openSwapQuote(false);
-    onSelect?.();
   }, [
     disabled,
     inSufficient,
@@ -370,7 +344,6 @@ export const DexQuoteItem = (
     preExecResult,
     gasFeeTooHigh,
     receiveToken,
-    onSelect,
   ]);
 
   const isWrapToken = useMemo(
@@ -435,7 +408,6 @@ export const DexQuoteItem = (
         className={clsx(
           'dex',
           active && 'active',
-          props.combined && 'combined',
           disabled && 'disabled',
           isErrorQuote && 'error',
           inSufficient && !disabled && 'disabled inSufficient',
@@ -444,32 +416,16 @@ export const DexQuoteItem = (
             'bg-transparent shadow-none p-0 h-auto hover:border-transparent hover:after:hidden'
         )}
       >
-        <div
-          className={clsx(
-            'flex flex-1 flex-col',
-            props.combined && active ? 'gap-8' : 'gap-12'
-          )}
-        >
+        <div className="flex-1 flex flex-col gap-12">
           <div className="flex items-center justify-between">
             {/* dex logo */}
-            <div
-              className={clsx(
-                'relative flex items-center',
-                props.combined && active ? 'gap-4' : 'gap-8'
-              )}
-            >
+            <div className="flex items-center gap-8 relative">
               <QuoteLogo
                 loaded
                 logo={quoteProviderInfo.logo}
                 isLoading={props.onlyShow ? false : props.isLoading}
-                size={props.combined && active ? 18 : undefined}
               />
-              <span
-                className={clsx(
-                  'font-medium text-r-neutral-title-1',
-                  props.combined && active ? 'text-13' : 'text-[16px]'
-                )}
-              >
+              <span className="text-[16px] font-medium text-r-neutral-title-1">
                 {quoteProviderInfo.name}
               </span>
               {!!preExecResult?.shouldApproveToken && (
@@ -478,12 +434,7 @@ export const DexQuoteItem = (
                   overlayClassName="rectangle w-[max-content]"
                   title={t('page.swap.need-to-approve-token-before-swap')}
                 >
-                  <img
-                    src={ImgLock}
-                    className={clsx(
-                      props.combined && active ? 'h-14 w-14' : 'w-16 h16'
-                    )}
-                  />
+                  <img src={ImgLock} className="w-16 h16" />
                 </TooltipWithMagnetArrow>
               )}
             </div>
@@ -493,24 +444,16 @@ export const DexQuoteItem = (
                 {!isErrorQuote && (
                   <TokenWithChain
                     token={props.receiveToken}
-                    width={props.combined && active ? '14px' : '20px'}
-                    height={props.combined && active ? '14px' : '20px'}
+                    width="20px"
+                    height="20px"
                     hideChainIcon
                     hideConer
                   />
                 )}
-                <div
-                  className={clsx(
-                    'flex items-center',
-                    props.combined && 'gap-4',
-                    props.combined ? (active ? 'ml-4' : 'ml-8') : 'ml-6'
-                  )}
-                >
+                <div className="ml-6 flex items-center">
                   {receiveOrErrorContent}
-                  {props.combined && !isErrorQuote ? (
-                    <CheckedIcon size={active ? 14 : 16} />
-                  ) : null}
                 </div>
+                {/* <CheckIcon /> */}
               </div>
             )}
           </div>
@@ -526,7 +469,7 @@ export const DexQuoteItem = (
                 >
                   <RcIconGasCC
                     className={clsx(
-                      props.combined && active ? 'h-14 w-14' : 'h-16 w-16',
+                      'text-r-neutral-foot w-16 h-16',
                       gasFeeTooHigh
                         ? 'text-rabby-red-default'
                         : 'text-r-neutral-foot'
@@ -591,7 +534,7 @@ export const DexQuoteItem = (
   );
 };
 
-function CheckedIcon({ size = 16 }: { size?: number }) {
+function CheckedIcon() {
   const { t } = useTranslation();
   return (
     <TooltipWithMagnetArrow
@@ -599,7 +542,7 @@ function CheckedIcon({ size = 16 }: { size?: number }) {
       overlayClassName={clsx('rectangle', 'w-[max-content]')}
       title={t('page.swap.by-transaction-simulation-the-quote-is-valid')}
     >
-      <img src={ImgVerified} style={{ width: size, height: size }} />
+      <img src={ImgVerified} className="w-[16px] h-[16px]" />
     </TooltipWithMagnetArrow>
   );
 }

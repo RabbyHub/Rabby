@@ -12,11 +12,7 @@ import {
   ExplainTxResponse,
   TokenItem,
 } from '@rabby-wallet/rabby-api/dist/types';
-import {
-  DEX_ENUM,
-  DEX_SPENDER_WHITELIST,
-  isSameTypeTokenPair,
-} from '@rabby-wallet/rabby-swap';
+import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
 import { last, random, flatten, omit } from 'lodash';
@@ -25,7 +21,6 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   isSwapWrapToken,
-  getRabbyFeeRate,
   QuoteProvider,
   TDexQuoteData,
   useQuoteMethods,
@@ -86,14 +81,6 @@ export const getActiveProvider = async ({
     return null;
   }
 
-  const isWrapToken = isSwapWrapToken(payToken.id, receiveToken.id, chain.enum);
-  const feeRate = getRabbyFeeRate({
-    payAmount,
-    payTokenPrice: payToken.price || 0,
-    isFreeTokenPair: isSameTypeTokenPair(payToken, receiveToken),
-    isWrapToken,
-  });
-
   const quoteResult = await getSingleQuote({
     dexId,
     userAddress: currentAddress,
@@ -102,7 +89,9 @@ export const getActiveProvider = async ({
     slippage,
     chain: chain.enum,
     payAmount,
-    fee: feeRate,
+    fee: isSwapWrapToken(payToken.id, receiveToken.id, chain.enum)
+      ? '0'
+      : '0.25',
     inSufficient: false,
   });
 
@@ -164,12 +153,6 @@ export const buildSwapTxs = async ({
   }
 
   try {
-    const feeRate = getRabbyFeeRate({
-      payAmount: inputAmount,
-      payTokenPrice: payToken.price || 0,
-      isFreeTokenPair: isSameTypeTokenPair(payToken, receiveToken),
-      isWrapToken: isSwapWrapToken(payToken.id, receiveToken.id, chain),
-    });
     const toAmount = new BigNumber(quoteResult.toTokenAmount)
       .div(10 ** (quoteResult.toTokenDecimals || receiveToken.decimals))
       .toNumber();
@@ -197,7 +180,6 @@ export const buildSwapTxs = async ({
             slippage: new BigNumber(slippage).div(100).toNumber(),
           },
           dex_id: activeProvider.name || 'WrapToken',
-          fee_rate: Number(feeRate),
         },
         addHistoryData: {
           address: userAddress,

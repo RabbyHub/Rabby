@@ -7,30 +7,22 @@ export const QuoteLogo = ({
   logo,
   isCex = false,
   loaded = false,
-  size,
 }: {
   isLoading?: boolean;
   logo: string;
   isCex?: boolean;
   loaded?: boolean;
-  size?: number;
 }) => {
-  const imageSize = size ?? (!loaded && (isLoading || isCex) ? 18 : 24);
-  const wrapperSize = size ?? 24;
-
   return (
-    <div
-      className="flex items-center justify-center"
-      style={{ width: wrapperSize, height: wrapperSize }}
-    >
+    <div className="flex items-center justify-center w-24 h-24">
       <div className="relative flex items-center justify-center">
         <img
-          className="rounded-full"
-          style={{
-            minWidth: imageSize,
-            width: imageSize,
-            height: imageSize,
-          }}
+          className={clsx(
+            'rounded-full',
+            !loaded && (isLoading || isCex)
+              ? 'min-w-[18px] w-18 h-18'
+              : 'min-w-[24px] w-24 h-24'
+          )}
           src={logo}
         />
         {isLoading && (

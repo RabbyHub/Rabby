@@ -1273,7 +1273,7 @@ class ProviderController extends BaseController {
                   : null,
               },
               sig,
-              mev_share_model: pushType === 'mev' ? 'user' : '',
+              mev_share_model: pushType === 'mev' ? 'user' : 'rabby',
             };
 
             const adoptBE7702Params = () => {

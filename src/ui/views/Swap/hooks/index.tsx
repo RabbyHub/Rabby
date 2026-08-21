@@ -5,4 +5,3 @@ export * from './context';
 export * from './verify';
 export * from './quote';
 export * from './history';
-export * from './fee';

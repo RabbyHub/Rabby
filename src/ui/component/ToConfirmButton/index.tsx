@@ -13,7 +13,6 @@ import {
   useSignatureStoreOf,
 } from '@/ui/component/MiniSignV2/state';
 import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import styled from 'styled-components';
 
 export const ToConfirmBtn = (props: {
   title: React.ReactNode;
@@ -157,12 +156,6 @@ export const ToConfirmBtn = (props: {
   );
 };
 
-const RiskTipsContainer = styled.div`
-  .risk-tips-checkbox .rabby-checkbox__label {
-    margin-left: 4px;
-  }
-`;
-
 export const RiskTipsWrapper = ({
   showRiskTips,
   riskLabel,
@@ -195,14 +188,12 @@ export const RiskTipsWrapper = ({
   }, [riskReset]);
 
   return (
-    <RiskTipsContainer
-      className={clsx('w-full flex flex-col gap-[8px]', containerClassName)}
+    <div
+      className={clsx('w-full flex flex-col gap-[15px]', containerClassName)}
     >
-      {children({ riskDisabled, resetRiskChecked })}
       {showRiskTips ? (
-        <div className="flex h-[14px] items-center justify-center">
+        <div className="flex items-center justify-center">
           <Checkbox
-            className="risk-tips-checkbox h-[14px]"
             checked={riskChecked}
             type="square"
             onChange={setRiskChecked}
@@ -235,13 +226,14 @@ export const RiskTipsWrapper = ({
               ) : null
             }
           >
-            <span className="whitespace-nowrap text-r-neutral-body text-12 font-normal leading-[14px]">
+            <span className="text-rabby-neutral-body text-13 font-normal">
               {riskLabel || t('page.swap.understandRisks')}
             </span>
           </Checkbox>
         </div>
       ) : null}
-    </RiskTipsContainer>
+      {children({ riskDisabled, resetRiskChecked })}
+    </div>
   );
 };
 
