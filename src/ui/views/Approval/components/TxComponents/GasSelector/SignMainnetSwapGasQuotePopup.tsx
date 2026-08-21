@@ -16,7 +16,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { IconRefresh } from '@/ui/views/Swap/Component/IconRefresh';
+import { ReactComponent as RcIconRefreshCC } from '@/ui/assets/swap/quote-refresh-cc.svg';
 import { GasLevelIcon } from '../GasMenuButton';
 import { calcGasAccountUsd } from './directSignSummary';
 import {
@@ -369,7 +369,12 @@ export const SignMainnetSwapGasQuotePopup = ({
                   onClick={onRefreshQuotes}
                 >
                   <div className="h-14 w-14 overflow-hidden">
-                    <IconRefresh spinning={quotesLoading} />
+                    <RcIconRefreshCC
+                      className={clsx(
+                        'h-14 w-14',
+                        quotesLoading && 'animate-spin'
+                      )}
+                    />
                   </div>
                   <span className="text-13 font-medium">
                     {t('global.refresh')}

@@ -105,6 +105,12 @@ const ItemWrapper = styled.div`
     .percent {
       font-size: 12px;
     }
+
+    .quote-tag .percent {
+      color: inherit !important;
+      font-size: 12px;
+      font-weight: 500;
+    }
   }
 
   &.combined.active {
@@ -577,10 +583,13 @@ export const DexQuoteItem = (
               lineHeight: 'normal',
             }}
             className={clsx(
-              'absolute top-[-1px] left-[-1px] ',
-              'px-6 py-[1px] rounded-tl-[4px] rounded-br-[4px]',
-              props.isBestQuote ? 'bg-r-blue-light2' : 'bg-r-red-light',
-              'text-r-red-default'
+              'absolute rounded-tl-[4px] rounded-br-[4px]',
+              props.combined
+                ? 'quote-tag left-0 top-0 flex h-16 w-60 items-center justify-center px-8 py-1 text-12 font-medium leading-normal'
+                : 'left-[-1px] top-[-1px] px-6 py-[1px]',
+              props.isBestQuote
+                ? 'bg-r-blue-light2 text-r-blue-default'
+                : 'bg-r-red-light text-r-red-default'
             )}
           >
             {bestQuotePercent}

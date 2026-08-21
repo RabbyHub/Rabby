@@ -1399,7 +1399,7 @@ export const Main = () => {
         />
 
         <div className="fixed z-10 w-full bottom-0 mt-auto px-20 pb-20">
-          <div className="w-full rounded-[8px] bg-r-neutral-bg-5">
+          <div className="w-full rounded-[8px] bg-r-neutral-bg-2">
             {showStickyInfo && (
               <BridgeShowMore
                 insufficient={inSufficient}
