@@ -216,7 +216,13 @@ class NotificationService extends Events {
     this.emit('resolve', data);
   };
 
-  rejectApproval = async (err?: string, stay = false, isInternal = false) => {
+  rejectApproval = async (
+    err?: string,
+    stay = false,
+    isInternal = false,
+    approvalId?: string
+  ) => {
+    if (approvalId && approvalId !== this.currentApproval?.id) return;
     this.addLastRejectDapp();
     const approval = this.currentApproval;
     if (this.approvals.length <= 1) {
