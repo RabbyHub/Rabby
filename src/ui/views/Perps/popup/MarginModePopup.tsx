@@ -3,12 +3,13 @@ import { Button } from 'antd';
 import Popup from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { useMemoizedFn } from 'ahooks';
 
 interface MarginModePopupProps {
   visible: boolean;
   currentMode: 'cross' | 'isolated';
   onCancel: () => void;
-  onConfirm: (mode: 'cross' | 'isolated') => void;
+  onConfirm: (mode: 'cross' | 'isolated') => void | Promise<unknown>;
 }
 
 export const MarginModePopup: React.FC<MarginModePopupProps> = ({
@@ -22,11 +23,23 @@ export const MarginModePopup: React.FC<MarginModePopupProps> = ({
     currentMode
   );
 
+  const [loading, setLoading] = React.useState(false);
+
   React.useEffect(() => {
     if (visible) {
       setPendingMode(currentMode);
     }
   }, [visible, currentMode]);
+
+  const handleConfirm = useMemoizedFn(async () => {
+    if (loading) return;
+    setLoading(true);
+    try {
+      await onConfirm(pendingMode);
+    } finally {
+      setLoading(false);
+    }
+  });
 
   return (
     <Popup
@@ -112,7 +125,8 @@ export const MarginModePopup: React.FC<MarginModePopupProps> = ({
             size="large"
             type="primary"
             className="h-[48px] text-15 font-medium"
-            onClick={() => onConfirm(pendingMode)}
+            loading={loading}
+            onClick={handleConfirm}
           >
             {t('page.perps.confirm')}
           </Button>
