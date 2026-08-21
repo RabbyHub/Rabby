@@ -222,12 +222,12 @@ describe('wallet status store', () => {
       isSyncing: true,
     });
 
-    resolveStatus({ isBooted: false, isUnlocked: false });
+    resolveStatus({ isBooted: false, isUnlocked: true });
     await flushPromises();
 
     expect(useWalletStatusStore.getState()).toMatchObject({
       isBooted: false,
-      isUnlocked: false,
+      isUnlocked: true,
       isInitialized: true,
       isSyncing: false,
     });
@@ -259,6 +259,7 @@ describe('private route decision', () => {
     resolvePrivateRouteDecision({
       isInitialized: true,
       isSyncing: false,
+      isBooted: true,
       isUnlocked: true,
       pathname: '/dashboard',
       ...overrides,
@@ -273,6 +274,10 @@ describe('private route decision', () => {
     // A background reconnect resyncs on every MV3 service-worker restart, so
     // blanking here would unmount the approval/import/send tree mid-flow.
     expect(decide({ isSyncing: true, isUnlocked: true })).toBe('render');
+  });
+
+  test('redirects when reset clears booted without locking the keyring', () => {
+    expect(decide({ isBooted: false, isUnlocked: true })).toBe('redirect');
   });
 
   test('waits instead of redirecting while a locked snapshot refreshes', () => {

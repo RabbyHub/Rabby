@@ -20,6 +20,7 @@ export const PrivateRouteGuard = ({ children }) => {
   const decision = resolvePrivateRouteDecision({
     isInitialized,
     isSyncing,
+    isBooted,
     isUnlocked,
     pathname: location.pathname,
   });

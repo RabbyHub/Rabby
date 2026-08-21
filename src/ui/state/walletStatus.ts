@@ -32,9 +32,13 @@ export type PrivateRouteDecision = 'pending' | 'render' | 'redirect';
 export const resolvePrivateRouteDecision = ({
   isInitialized,
   isSyncing,
+  isBooted,
   isUnlocked,
   pathname,
-}: Pick<WalletStatusState, 'isInitialized' | 'isSyncing' | 'isUnlocked'> & {
+}: Pick<
+  WalletStatusState,
+  'isInitialized' | 'isSyncing' | 'isBooted' | 'isUnlocked'
+> & {
   pathname: string;
 }): PrivateRouteDecision => {
   // Waiting on a locked snapshot keeps an unlock navigation from bouncing
@@ -44,6 +48,11 @@ export const resolvePrivateRouteDecision = ({
   // discarding in-flight approval, import and send state.
   if (!isInitialized || (isSyncing && !isUnlocked)) {
     return 'pending';
+  }
+  // Resetting a forgotten password clears `booted` without locking. Treat that
+  // lifecycle boundary as authoritative even if the keyring is still unlocked.
+  if (!isBooted) {
+    return 'redirect';
   }
   // Keep children mounted across route switches (keep-alive).
   if (isUnlocked) {
