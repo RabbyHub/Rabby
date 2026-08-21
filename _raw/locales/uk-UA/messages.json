@@ -3626,6 +3626,7 @@
       "details": "Деталі",
       "info": "Інформація",
       "marginMode": "Режим маржі",
+      "marginModeSwitchFailed": "Не вдалося змінити режим маржі. Спробуйте ще раз.",
       "unrealizedPnl": "Нереалізований PNL",
       "positionValue": "Значення позиції",
       "currentPrice": "Поточна ціна",

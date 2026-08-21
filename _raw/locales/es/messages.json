@@ -3617,6 +3617,7 @@
       "currentPrice": "Precio Actual",
       "settings": "Configuración",
       "marginMode": "Modo de Margen",
+      "marginModeSwitchFailed": "No se pudo cambiar el modo de margen. Inténtalo de nuevo.",
       "isolatedMargin": "Margen Aislada",
       "liquidationDistanceUp": "Una subida del <bold>{{percent}}</bold> activará la liquidación",
       "liquidationDistanceDown": "Una bajada del <bold>{{percent}}</bold> activará la liquidación",

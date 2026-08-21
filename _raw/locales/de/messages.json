@@ -3618,6 +3618,7 @@
       "settings": "Einstellungen",
       "unrealizedPnl": "Unrealisierter PNL",
       "marginMode": "Margin-Modus",
+      "marginModeSwitchFailed": "Margin-Modus konnte nicht gewechselt werden. Bitte versuche es erneut.",
       "liquidationDistanceUp": "Steigt der Preis um <bold>{{percent}}</bold>, wird die Liquidation ausgelöst.",
       "currentPrice": "Aktueller Preis",
       "isolatedMargin": "Isolierte Margin",
