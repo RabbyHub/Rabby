@@ -95,11 +95,17 @@ const ItemWrapper = styled.div`
   }
 
   &.combined {
+    height: 76px;
     border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.08);
+    border: none;
+    box-shadow: none;
 
     &::after {
       border-radius: 8px !important;
+    }
+
+    &:hover:not(.disabled, .inSufficient, .active)::after {
+      inset: calc(0px - var(--quote--border-width)) 0;
     }
 
     .percent {
@@ -111,15 +117,16 @@ const ItemWrapper = styled.div`
       font-size: 12px;
       font-weight: 500;
     }
-  }
-
-  &.combined.active {
-    height: 80px;
 
     .receiveNum {
       max-width: 110px;
       font-size: 13px;
     }
+  }
+
+  &.combined.active {
+    height: 78px;
+    border: var(--quote--border-width) solid transparent;
   }
 
   .receiveNum {
@@ -453,7 +460,7 @@ export const DexQuoteItem = (
         <div
           className={clsx(
             'flex flex-1 flex-col',
-            props.combined && active ? 'gap-8' : 'gap-12'
+            props.combined ? 'gap-8' : 'gap-12'
           )}
         >
           <div className="flex items-center justify-between">
@@ -461,19 +468,19 @@ export const DexQuoteItem = (
             <div
               className={clsx(
                 'relative flex items-center',
-                props.combined && active ? 'gap-4' : 'gap-8'
+                props.combined ? 'gap-4' : 'gap-8'
               )}
             >
               <QuoteLogo
                 loaded
                 logo={quoteProviderInfo.logo}
                 isLoading={props.onlyShow ? false : props.isLoading}
-                size={props.combined && active ? 18 : undefined}
+                size={props.combined ? 18 : undefined}
               />
               <span
                 className={clsx(
                   'font-medium text-r-neutral-title-1',
-                  props.combined && active ? 'text-13' : 'text-[16px]'
+                  props.combined ? 'text-13' : 'text-[16px]'
                 )}
               >
                 {quoteProviderInfo.name}
@@ -486,9 +493,7 @@ export const DexQuoteItem = (
                 >
                   <img
                     src={ImgLock}
-                    className={clsx(
-                      props.combined && active ? 'h-14 w-14' : 'w-16 h16'
-                    )}
+                    className={clsx(props.combined ? 'h-14 w-14' : 'h-16 w-16')}
                   />
                 </TooltipWithMagnetArrow>
               )}
@@ -499,8 +504,8 @@ export const DexQuoteItem = (
                 {!isErrorQuote && (
                   <TokenWithChain
                     token={props.receiveToken}
-                    width={props.combined && active ? '14px' : '20px'}
-                    height={props.combined && active ? '14px' : '20px'}
+                    width={props.combined ? '14px' : '20px'}
+                    height={props.combined ? '14px' : '20px'}
                     hideChainIcon
                     hideConer
                   />
@@ -509,12 +514,12 @@ export const DexQuoteItem = (
                   className={clsx(
                     'flex items-center',
                     props.combined && 'gap-4',
-                    props.combined ? (active ? 'ml-4' : 'ml-8') : 'ml-6'
+                    props.combined ? 'ml-4' : 'ml-6'
                   )}
                 >
                   {receiveOrErrorContent}
                   {props.combined && !isErrorQuote ? (
-                    <CheckedIcon size={active ? 14 : 16} />
+                    <CheckedIcon size={14} />
                   ) : null}
                 </div>
               </div>
@@ -532,7 +537,7 @@ export const DexQuoteItem = (
                 >
                   <RcIconGasCC
                     className={clsx(
-                      props.combined && active ? 'h-14 w-14' : 'h-16 w-16',
+                      props.combined ? 'h-14 w-14' : 'h-16 w-16',
                       gasFeeTooHigh
                         ? 'text-rabby-red-default'
                         : 'text-r-neutral-foot'
@@ -541,7 +546,7 @@ export const DexQuoteItem = (
                   />
                   <span
                     className={clsx(
-                      'text-13',
+                      props.combined ? 'text-12' : 'text-13',
                       gasFeeTooHigh
                         ? 'text-rabby-red-default'
                         : 'text-r-neutral-foot'
@@ -555,7 +560,8 @@ export const DexQuoteItem = (
               <div
                 className={clsx(
                   'flex items-center gap-6 justify-end',
-                  'text-13 font-medium',
+                  props.combined ? 'text-12' : 'text-13',
+                  'font-medium',
                   'relative'
                 )}
               >
@@ -583,10 +589,13 @@ export const DexQuoteItem = (
               lineHeight: 'normal',
             }}
             className={clsx(
-              'absolute rounded-tl-[4px] rounded-br-[4px]',
+              'absolute',
               props.combined
                 ? 'quote-tag left-0 top-0 flex h-16 w-60 items-center justify-center px-8 py-1 text-12 font-medium leading-normal'
                 : 'left-[-1px] top-[-1px] px-6 py-[1px]',
+              props.combined && !props.isBestQuote
+                ? 'rounded-tl-[8px] rounded-br-[8px]'
+                : 'rounded-tl-[4px] rounded-br-[4px]',
               props.isBestQuote
                 ? 'bg-r-blue-light2 text-r-blue-default'
                 : 'bg-r-red-light text-r-red-default'

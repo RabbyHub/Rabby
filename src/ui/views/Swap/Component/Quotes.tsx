@@ -155,7 +155,8 @@ export const Quotes = ({
   return (
     <div
       className={clsx(
-        'flex flex-col flex-1 w-full overflow-auto pb-12',
+        'flex flex-col flex-1 w-full overflow-auto',
+        !other.combined && 'pb-12',
         !noPadding && 'px-20'
       )}
     >
