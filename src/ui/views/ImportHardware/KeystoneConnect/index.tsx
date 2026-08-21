@@ -147,6 +147,10 @@ export const KeystoneConnect = () => {
   };
 
   useEffect(() => {
+    if (connectType !== ConnectType.QRCode) {
+      return;
+    }
+
     wallet
       .initQRHardware(WALLET_BRAND_TYPES.KEYSTONE)
       .then((stashKeyringId) => {
@@ -173,7 +177,7 @@ export const KeystoneConnect = () => {
     return () => {
       wallet.clearPageStateCache();
     };
-  }, []);
+  }, [connectType]);
 
   const onConnectViaUSB = () => {
     history.push({

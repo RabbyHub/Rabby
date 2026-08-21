@@ -149,7 +149,11 @@ const openInDesktop = async (req: ProviderRequest) => {
   }
 
   if (!keyringService.isUnlocked()) {
-    wallet.openInDesktop(`/unlock?address=${params.address || ''}`);
+    wallet.openInDesktop(
+      `/unlock?address=${encodeURIComponent(
+        params.address || ''
+      )}&from=${encodeURIComponent('/desktop/profile?utm_source=debank')}`
+    );
     return;
   }
   if (params.address) {
@@ -163,7 +167,7 @@ const openInDesktop = async (req: ProviderRequest) => {
       preferenceService.setCurrentAccount(account);
     }
   }
-  wallet.openInDesktop('/desktop/profile');
+  wallet.openInDesktop('/desktop/profile?utm_source=debank');
 };
 
 export default {

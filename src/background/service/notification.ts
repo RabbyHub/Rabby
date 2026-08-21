@@ -163,15 +163,15 @@ class NotificationService extends Events {
         return;
       }
 
-      if (this.approvals.length < 0) return;
+      if (this.approvals.length <= 0) return;
 
       const approval = this.approvals[0];
       this.currentApproval = approval;
       this.openNotification(approval.winProps, true);
     } catch (e) {
-      Sentry.captureException(
-        new Error('activeFirstApproval failed: ' + JSON.stringify(e))
-      );
+      Sentry.captureException(e, {
+        tags: { function: 'activeFirstApproval' },
+      });
       this.clear();
     }
   };

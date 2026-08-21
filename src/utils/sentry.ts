@@ -1,4 +1,4 @@
-import type { HardwareSigningContext } from '@/background/service/keyring/hardware-wallet-sentry';
+import type { SigningContext } from '@/background/service/keyring/signing-diagnostics';
 
 export type SentryIgnorePattern = string | RegExp;
 
@@ -34,6 +34,7 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /Receiving end does not exist/,
   /HttpRequestError/,
   /http/i,
+  /not supported on this device|only version 4 of typed data signing is supported|typed data payload is incomplete/iu,
 
   // Browser extension lifecycle and runtime shutdown noise.
   /A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received/,
@@ -66,17 +67,6 @@ export const RABBY_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
   /RPC Request failed\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
   /The request took too long to respond\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
   /Request exceeds defined limit\. URL: .* Request body: \{"method":"eth_getTransactionReceipt"/,
-];
-
-const HARDWARE_SENTRY_IGNORE_ERRORS: SentryIgnorePattern[] = [
-  /refusedbyuser|userrefusedondevice/iu,
-  /failure_(?:action|pin)cancelled|method_(?:cancel|interrupted)/iu,
-  /^(?:Error: )?(?:109|802|803|822):/u,
-  /^(?:Error: )?[{]"code":(?:"(?:109|802|803|822)"|(?:109|802|803|822))(?:,|[}])/u,
-  /\b0x6985\b/iu,
-  /^(?:Error: )*(?:Action cancell?ed by user|Cancell?ed|Popup closed)$/iu,
-  /not supported on this device|only version 4 of typed data signing is supported|typed data payload is incomplete/iu,
-  /device is locked|device not found|no (?:\w+ ){0,2}device found|multiple \w+ devices detected/iu,
 ];
 
 // Stale background service worker noise: after an extension update the old
@@ -114,21 +104,50 @@ const collectErrorText = (error: unknown, depth = 0): string[] => {
   ];
 };
 
-const hardwareSigningContexts = new WeakMap<object, HardwareSigningContext>();
+const signingContexts = new WeakMap<object, SigningContext>();
+const primitiveSigningCarriers = new Map<unknown, object[]>();
+const reportedSigningCarriers = new WeakSet<object>();
+const signingCarriersByError = new WeakMap<object, object>();
 
-export const attachHardwareSigningContext = (
+export const recordPrimitiveSigningCarrier = (
   error: unknown,
-  context: HardwareSigningContext
+  carrier: object
 ) => {
-  if (error && typeof error === 'object') {
-    hardwareSigningContexts.set(error, context);
-  }
+  const carriers = primitiveSigningCarriers.get(error) ?? [];
+  carriers.push(carrier);
+  primitiveSigningCarriers.set(error, carriers);
+  reportedSigningCarriers.add(carrier);
 };
 
-export const getHardwareSigningContext = (error: unknown) =>
-  error && typeof error === 'object'
-    ? hardwareSigningContexts.get(error)
-    : undefined;
+export const bindSigningCarrier = (error: object, carrier: object) => {
+  signingCarriersByError.set(error, carrier);
+};
+
+export const takeSigningCarrier = (error: unknown) => {
+  if (error && typeof error === 'object') {
+    const carrier = signingCarriersByError.get(error);
+    if (carrier) signingCarriersByError.delete(error);
+    return carrier;
+  }
+  const carriers = primitiveSigningCarriers.get(error);
+  if (!carriers?.length) return undefined;
+  const carrier = carriers.shift();
+  if (!carriers.length) primitiveSigningCarriers.delete(error);
+  return carrier;
+};
+
+export const isSigningCarrierReported = (carrier: object) =>
+  reportedSigningCarriers.has(carrier);
+
+export const attachSigningContext = (
+  error: unknown,
+  context: SigningContext
+) => {
+  if (error && typeof error === 'object') signingContexts.set(error, context);
+};
+
+export const getSigningContext = (error: unknown) =>
+  error && typeof error === 'object' ? signingContexts.get(error) : undefined;
 
 const REDACTIONS: [RegExp, string][] = [
   [/([a-z][a-z\d+.-]*:\/\/[^\s?#]+)[?#][^\s]*/giu, '$1'],
@@ -179,14 +198,13 @@ export const shouldIgnoreSentryError = (
     ...eventText,
   ].filter(Boolean);
 
-  const hardware = getHardwareSigningContext(error);
-  if (hardware) {
-    if (matchesAny(HARDWARE_SENTRY_IGNORE_ERRORS, candidates)) {
+  const signing = getSigningContext(error);
+  if (signing) {
+    if (signing.error_category === 'user_cancelled') {
       return true;
     }
-
-    // Hardware signing errors must remain reportable even when a transport
-    // failure uses a generic network error message.
+    // All other signing failures remain reportable, regardless of legacy text
+    // filters such as Network Error or device-locked messages.
     return false;
   }
 
@@ -215,7 +233,9 @@ type SentryEventLike = {
   tags?: Record<string, unknown>;
   fingerprint?: string[];
   extra?: Record<string, unknown>;
-  exception?: { values?: { type?: string; value?: string }[] };
+  exception?: {
+    values?: { type?: string; value?: string; stacktrace?: unknown }[];
+  };
 };
 
 // Mirrors the SDK's own _getPossibleEventMessages: patterns like
@@ -230,47 +250,58 @@ export const collectSentryEventText = (event: SentryEventLike) =>
     ]),
   ].filter((value): value is string => Boolean(value));
 
-// The shape of an SDK error is decided by the device library, not by Rabby, so
-// it is flattened to text and redacted instead of being handed to Sentry whole.
-const describeOriginalError = (error: unknown) => {
-  const parts = collectErrorText(error);
+export const applySigningContext = (event: SentryEventLike, error: unknown) => {
+  const context = getSigningContext(error);
+  if (!context) return;
 
-  try {
-    const serialized = JSON.stringify(error);
-    if (serialized && serialized !== '{}') {
-      parts.push(serialized);
-    }
-  } catch {
-    // Circular SDK errors: the text collected above is all we can report.
-  }
-
-  return redactSensitiveText(parts.join(' | ')) || undefined;
-};
-
-export const applyHardwareSigningContext = (
-  event: SentryEventLike,
-  error: unknown
-) => {
-  const hardware = getHardwareSigningContext(error);
-  if (!hardware) {
-    return;
-  }
+  const deviceModel = context.provider_metadata?.device_model;
 
   event.tags = {
     ...event.tags,
-    hardware_wallet: hardware.wallet,
-    sign_operation: hardware.operation,
+    schema_version: context.schema_version,
+    wallet_family: context.wallet_family,
+    wallet_provider: context.wallet_provider,
+    transport: context.transport,
+    sign_operation: context.operation,
+    sign_stage: context.stage,
+    sign_outcome: context.outcome,
+    error_category: context.error_category,
+    duration_bucket: context.duration_bucket,
+    ...(typeof deviceModel === 'string'
+      ? { signing_device_model: deviceModel }
+      : {}),
   };
   event.fingerprint = [
-    'hardware-wallet-signing',
-    hardware.wallet,
-    hardware.operation,
+    'signing',
+    context.wallet_family,
+    context.wallet_provider,
+    context.operation,
+    context.error_category,
     '{{ default }}',
   ];
-
+  event.message = `${context.wallet_provider} signing failed`;
+  const originalException = event.exception?.values?.[0];
+  event.exception = {
+    values: [
+      {
+        ...originalException,
+        type: 'SigningError',
+        value: context.error_category,
+      },
+    ],
+  };
   event.extra = {
-    ...event.extra,
-    ...(hardware.metadata ? { hardware_device: hardware.metadata } : undefined),
-    hardware_original_error: describeOriginalError(hardware.originalError),
+    ...(context.provider_code
+      ? { signing_provider_code: context.provider_code }
+      : {}),
+    ...(context.provider_stage
+      ? { signing_provider_stage: context.provider_stage }
+      : {}),
+    ...(context.provider_reason
+      ? { signing_provider_reason: context.provider_reason }
+      : {}),
+    ...(context.provider_metadata
+      ? { signing_provider_metadata: context.provider_metadata }
+      : {}),
   };
 };

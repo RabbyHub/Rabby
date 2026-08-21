@@ -3828,20 +3828,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@keystonehq/hw-transport-error@npm:0.0.2, @keystonehq/hw-transport-error@npm:^0.0.2":
+"@keystonehq/hw-transport-error@npm:^0.0.2":
   version: 0.0.2
   resolution: "@keystonehq/hw-transport-error@npm:0.0.2"
   checksum: 10c0/c67bbd08c01d8a10a9bb010a03698330f869a3377c4b88d9869e3af821d75044d0b861af0eb63021967e06e90b6337155fde52fa54393f0af59d9cd1eb052184
   languageName: node
   linkType: hard
 
-"@keystonehq/hw-transport-webusb@npm:0.3.2":
-  version: 0.3.2
-  resolution: "@keystonehq/hw-transport-webusb@npm:0.3.2"
+"@keystonehq/hw-transport-usb@npm:0.2.0, @keystonehq/hw-transport-usb@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@keystonehq/hw-transport-usb@npm:0.2.0"
   dependencies:
-    "@keystonehq/hw-transport-error": "npm:0.0.2"
+    "@keystonehq/hw-transport-error": "npm:^0.0.2"
     buffer: "npm:^6.0.3"
-  checksum: 10c0/e86d112198b0b37ed623eadd1a3e0ec1511c9a1ad9e2ba417e2c113b644a45145a24cbe915e25abdd744778d44704005884015a01f0c574ff71a79efbf5e50c6
+  checksum: 10c0/957a646bb0e185395fca1787f8bec76a129bf53c73cfc207671ed85f19873aa12197edbffd14e9ffc997a357ba1a5c8e389825ec3305fb8ad7a1d4ebccb91494
+  languageName: node
+  linkType: hard
+
+"@keystonehq/hw-transport-webusb@npm:0.5.3":
+  version: 0.5.3
+  resolution: "@keystonehq/hw-transport-webusb@npm:0.5.3"
+  dependencies:
+    "@keystonehq/hw-transport-error": "npm:^0.0.2"
+    "@keystonehq/hw-transport-usb": "npm:^0.2.0"
+    buffer: "npm:^6.0.3"
+  checksum: 10c0/23ef5bc7334cf3cd488048cda622675cfe48593031958bd3fff7525adb2c00ca64b91a1f14c47c0b3ce4bbb8a1fa279091dd0b1dba774e940c8baf4e6d4cf941
   languageName: node
   linkType: hard
 
@@ -21474,7 +21485,8 @@ __metadata:
     "@ethereumjs/wallet": "npm:2.0.4"
     "@imkey/web3-provider": "npm:1.3.10"
     "@keystonehq/hw-app-eth": "npm:0.4.4"
-    "@keystonehq/hw-transport-webusb": "npm:0.3.2"
+    "@keystonehq/hw-transport-usb": "npm:0.2.0"
+    "@keystonehq/hw-transport-webusb": "npm:0.5.3"
     "@keystonehq/metamask-airgapped-keyring": "npm:0.15.1"
     "@ledgerhq/context-module": "npm:2.1.0"
     "@ledgerhq/device-management-kit": "npm:1.7.1"

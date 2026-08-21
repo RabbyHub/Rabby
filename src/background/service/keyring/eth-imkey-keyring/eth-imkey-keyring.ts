@@ -55,6 +55,7 @@ interface AccountDetail {
 }
 
 export class EthImKeyKeyring extends EventEmitter {
+  signingDiagnosticsProvider = 'imkey';
   static type = keyringType;
   type = keyringType;
   accounts: string[] = [];

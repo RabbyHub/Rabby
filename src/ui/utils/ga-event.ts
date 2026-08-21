@@ -59,7 +59,7 @@ export function useRbiSource() {
   return state?.rbisource || rbisource;
 }
 
-export const reportWebPageView = (pathname: string) => {
+export const reportWebPageView = (pathname: string, search: string) => {
   matomoRequestEvent({
     category: 'RabbyWeb_Active',
     action: 'RabbyWeb_PageView',
@@ -69,5 +69,21 @@ export const reportWebPageView = (pathname: string) => {
   ga4.fireEvent('RabbyWeb_PageView', {
     event_category: 'RabbyWeb_Active',
     event_label: pathname,
+  });
+
+  const utmSource =
+    new URLSearchParams(search).get('utm_source') === 'debank'
+      ? 'debank'
+      : 'rabby';
+
+  matomoRequestEvent({
+    category: 'RabbyWeb_Active',
+    action: 'RabbyWeb_Source',
+    label: utmSource,
+  });
+
+  ga4.fireEvent('RabbyWeb_Source', {
+    event_category: 'RabbyWeb_Active',
+    event_label: utmSource,
   });
 };

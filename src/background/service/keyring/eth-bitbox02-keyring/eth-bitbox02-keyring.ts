@@ -23,6 +23,7 @@ const pathBase = 'm';
 const MAX_INDEX = 100;
 
 class BitBox02Keyring extends EventEmitter {
+  signingDiagnosticsProvider = 'bitbox02';
   static type = keyringType;
   type = keyringType;
   accounts: string[] = [];

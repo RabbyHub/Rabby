@@ -5194,7 +5194,7 @@ export class WalletController extends BaseController {
     preferenceService.setCurrentAccount(_account);
   };
 
-  unlockHardwareAccount = async (keyring, indexes, keyringId) => {
+  unlockHardwareAccount = async (keyring, indexes, keyringId, brand?) => {
     let keyringInstance: any = null;
     try {
       keyringInstance = this.#getKeyringByType(keyring);
@@ -5204,6 +5204,9 @@ export class WalletController extends BaseController {
     if (!keyringInstance && keyringId !== null && keyringId !== undefined) {
       await keyringService.addKeyring(stashKeyrings[keyringId]);
       keyringInstance = stashKeyrings[keyringId];
+    }
+    if (brand && keyringInstance?.setCurrentBrand) {
+      keyringInstance.setCurrentBrand(brand);
     }
     for (let i = 0; i < indexes.length; i++) {
       keyringInstance!.setAccountToUnlock(indexes[i]);
