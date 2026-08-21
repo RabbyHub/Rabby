@@ -1151,9 +1151,7 @@ export const DirectSignGasInfo = ({
     return null;
   }
   const gasTipsComponent = () => (
-    <GasTipsWrapper
-      className={clsx(useInfoCardStyle && 'info-card-style')}
-    >
+    <GasTipsWrapper className={clsx(useInfoCardStyle && 'info-card-style')}>
       {showGasLessToSign ? (
         <GasLessActivityToSign
           directSubmit
