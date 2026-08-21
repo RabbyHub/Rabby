@@ -179,22 +179,38 @@ export const resolveProjectedLiquidationPrice = ({
     : projectedSize.multipliedBy(entry);
   const projectedEntry = notional.dividedBy(projectedSize);
 
-  const margin =
-    marginMode === 'cross'
-      ? new BigNumber(crossMarginAvailableAfterMaintenance ?? Number.NaN)
-      : sameDirection
-      ? new BigNumber(currentPosition?.marginUsed ?? 0).plus(
-          orderSize.multipliedBy(entry).dividedBy(leverageValue)
-        )
-      : notional.dividedBy(leverageValue);
+  // `calLiquidationPrice` only balances if price, margin and notional are all
+  // measured at the same price. Isolated margin is the capital put in, which
+  // pairs with the position's own entry. A cross balance instead carries
+  // unrealised PnL and is therefore measured at the current price, so cross has
+  // to run off the fill price with the notional valued there too — pairing it
+  // with the historical weighted entry would mix the two baselines.
+  const isCross = marginMode === 'cross';
+  const basePrice = isCross ? entry : projectedEntry;
+  const baseNotional = isCross ? projectedSize.multipliedBy(entry) : notional;
+
+  const margin = isCross
+    ? // The cross balance already has the existing position's maintenance
+      // margin deducted, and `baseNotional` covers that same position — so the
+      // formula would charge it a second time. Add it back to charge it once.
+      new BigNumber(crossMarginAvailableAfterMaintenance ?? Number.NaN).plus(
+        currentSize
+          .multipliedBy(entry)
+          .multipliedBy(new BigNumber(1).dividedBy(maxLeverage).dividedBy(2))
+      )
+    : sameDirection
+    ? new BigNumber(currentPosition?.marginUsed ?? 0).plus(
+        orderSize.multipliedBy(entry).dividedBy(leverageValue)
+      )
+    : notional.dividedBy(leverageValue);
   if (!margin.isFinite() || margin.lte(0)) return null;
 
   const liquidation = calLiquidationPrice(
-    projectedEntry.toNumber(),
+    basePrice.toNumber(),
     margin.toNumber(),
     side === 'buy' ? 'Long' : 'Short',
     projectedSize.toNumber(),
-    notional.toNumber(),
+    baseNotional.toNumber(),
     maxLeverage
   );
   if (!Number.isFinite(liquidation) || liquidation <= 0) return null;
