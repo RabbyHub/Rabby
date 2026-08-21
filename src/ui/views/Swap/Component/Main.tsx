@@ -1251,7 +1251,7 @@ export const Main = () => {
             disabledTips={getDisabledTips}
             // supportChains={SWAP_SUPPORT_CHAINS}
             hideTestnetTab={true}
-            chainRenderClassName="border-0 font-medium"
+            chainRenderClassName="font-medium"
             arrowDownComponent={
               <RcIconArrowRightCC className="down text-r-neutral-foot" />
             }
