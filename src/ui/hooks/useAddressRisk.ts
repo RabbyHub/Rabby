@@ -19,6 +19,7 @@ import { IExchange } from '../component/CexSelect';
 import { isSameAddress, useWallet } from '../utils';
 import { KEYRING_CLASS } from 'consts';
 import { useDebouncedValue } from './useDebounceValue';
+import { useExchangeStore } from '../state/exchange';
 
 const queue = new PQueue({ intervalCap: 5, concurrency: 5, interval: 1000 });
 
@@ -84,10 +85,10 @@ export const useAddressRisks = (options: {
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
 
-  const { accountsList, exchanges } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-    exchanges: s.exchange.exchanges,
-  }));
+  const accountsList = useRabbySelector(
+    (state) => state.accountToDisplay.accountsList
+  );
+  const exchanges = useExchangeStore((state) => state.exchanges);
 
   const [addressDesc, setAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined

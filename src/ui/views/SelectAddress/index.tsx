@@ -4,7 +4,7 @@ import { getUiType } from 'ui/utils';
 import { KEYRING_CLASS } from 'consts';
 import './style.less';
 import { HDManager } from '../HDManager/HDManager';
-import { useRabbyDispatch } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 
@@ -52,10 +52,9 @@ const SelectAddress = () => {
   }
 
   const [isMounted, setIsMounted] = React.useState(false);
-  const dispatch = useRabbyDispatch();
   const initMnemonics = async () => {
     if (isMnemonic) {
-      dispatch.importMnemonics.switchKeyring({
+      useImportMnemonicsStore.getState().switchKeyring({
         stashKeyringId: keyringId.current as number,
       });
     }

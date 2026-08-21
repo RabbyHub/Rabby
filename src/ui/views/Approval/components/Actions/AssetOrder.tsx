@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { isSameAddress } from 'ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { Table, Col, Row } from '../Actions/components/Table';
 import NFTWithName from '../Actions/components/NFTWithName';
 import * as Values from '../Actions/components/Values';
@@ -66,14 +67,19 @@ const AssetOrder = ({
   sender: string;
 }) => {
   const actionData = data!;
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
-  const { rules, processedRules, contractWhitelist } = useRabbySelector(
-    (s) => ({
-      rules: s.securityEngine.rules,
-      processedRules: s.securityEngine.currentTx.processedRules,
-      contractWhitelist: s.securityEngine.userData.contractWhitelist,
-    })
+  const {
+    rules,
+    processedRules,
+    contractWhitelist,
+    openRuleDrawer,
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      contractWhitelist: s.userData.contractWhitelist,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
   );
 
   const isInWhitelist = useMemo(() => {
@@ -100,7 +106,7 @@ const AssetOrder = ({
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
     const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: result?.value,
       level: result?.level,
