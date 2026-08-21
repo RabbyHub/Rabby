@@ -127,9 +127,6 @@ export const PerpsSingleCoin = () => {
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [addPositionVisible, setAddPositionVisible] = useState(false);
   const [riskPopupVisible, setRiskPopupVisible] = useState(false);
-  const [marginMode, setMarginMode] = useState<'cross' | 'isolated'>(
-    'isolated'
-  );
 
   const isFavorited = useMemo(() => favoritedCoins.includes(coin), [
     favoritedCoins,
@@ -272,6 +269,7 @@ export const PerpsSingleCoin = () => {
     handleClosePosition,
     handleSetAutoClose,
     handleUpdateMargin,
+    handleUpdateMarginMode,
     handleCancelOrder,
     currentPerpsAccount,
     isLogin,
@@ -302,21 +300,40 @@ export const PerpsSingleCoin = () => {
 
   const marginModeDisabled = currentAssetCtx?.onlyIsolated;
 
-  useEffect(() => {
-    if (!coin) return;
-    if (marginModeDisabled) {
-      setMarginMode('isolated');
-    } else {
-      setMarginMode(marginModePreferences[coin] ?? 'isolated');
-    }
-  }, [coin, marginModePreferences, marginModeDisabled]);
+  // Mirrors the server: HL's activeAssetData push is the source of truth, the
+  // stored preference only fills the window before the first push lands.
+  const marginMode: 'cross' | 'isolated' = marginModeDisabled
+    ? 'isolated'
+    : activeAssetData?.leverage?.type ??
+      marginModePreferences[coin] ??
+      'isolated';
 
-  const handleMarginModeChange = useMemoizedFn((mode: 'cross' | 'isolated') => {
-    setMarginMode(mode);
-    if (coin) {
-      dispatch.perps.setMarginModePreference({ coin, mode });
+  const handleMarginModeChange = useMemoizedFn(
+    async (mode: 'cross' | 'isolated') => {
+      if (mode === marginMode) return true;
+      // updateLeverage writes mode and leverage together — reuse the pushed
+      // leverage so switching mode never moves the user's leverage.
+      const leverage = activeAssetData?.leverage?.value;
+      if (!coin || !leverage) {
+        // No push yet (fresh page, or mid coin-switch) — guessing a leverage
+        // here would move the liquidation price, so bail out loudly instead.
+        message.error({
+          duration: 1.5,
+          content: t('page.perps.marginModeSwitchFailed'),
+        });
+        return false;
+      }
+      const success = await handleUpdateMarginMode({
+        coin,
+        leverage,
+        marginMode: mode,
+      });
+      if (success) {
+        dispatch.perps.setMarginModePreference({ coin, mode });
+      }
+      return success;
     }
-  });
+  );
 
   const availableBalance = useMemo(() => {
     if (activeAssetData?.availableToTrade) {
@@ -1232,6 +1249,7 @@ export const PerpsSingleCoin = () => {
         pxDecimals={currentAssetCtx?.pxDecimals ?? 2}
         szDecimals={currentAssetCtx?.szDecimals || 0}
         leverageRange={[1, currentAssetCtx?.maxLeverage || 5]}
+        defaultLeverage={activeAssetData?.leverage?.value}
         markPrice={markPrice}
         marginMode={marginMode}
         onMarginModeChange={handleMarginModeChange}
