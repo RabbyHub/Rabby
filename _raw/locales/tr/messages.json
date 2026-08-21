@@ -3625,6 +3625,7 @@
       "cannotChangeMarginModeWithOpenPositions": "Açık pozisyonlarla Marj Modu değiştirilemez.",
       "liquidationDistanceDown": "Aşağı düşme <bold>{{percent}}</bold> tasfiye tetikler",
       "marginMode": "Marjin Modu",
+      "marginModeSwitchFailed": "Marjin modu değiştirilemedi, lütfen tekrar deneyin.",
       "positionValue": "Pozisyon Değeri",
       "isolatedMarginDesc": "Her pozisyon kendi teminatını kullanır. Kayıplar yalnızca o pozisyonla sınırlıdır, ancak pozisyon daha kolay likide edilebilir.",
       "crossMarginDesc": "Tüm pozisyonlar aynı marjı paylaşır. Bu, tek bir pozisyonun tasfiye edilme şansını azaltır, ancak tüm çapraz marj fonları aşırı piyasa hareketlerinde kaybedilebilir.",
