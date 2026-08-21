@@ -5,7 +5,6 @@ import { ReactComponent as RcArrowRight } from '@/ui/assets/dashboard/stablecoin
 import BackgroundEffect from '@/ui/assets/dashboard/stablecoin-swap-popup/background-effect.svg';
 import { ReactComponent as RcClose } from '@/ui/assets/dashboard/stablecoin-swap-popup/close.svg';
 import { ReactComponent as RcMoreDot } from '@/ui/assets/dashboard/stablecoin-swap-popup/more-dot.svg';
-import { ReactComponent as RcTokenSwitch } from '@/ui/assets/dashboard/stablecoin-swap-popup/token-switch.svg';
 import { useStablecoinSwapPopup } from '../../hooks/ads/useStablecoinSwapPopup';
 
 interface AnimatedTokenProps {
@@ -72,7 +71,7 @@ export const StablecoinSwapPopup: React.FC = () => {
     <section
       role="dialog"
       aria-label={t('page.dashboard.home.stablecoinSwapPopup.title')}
-      className="group absolute bottom-[-118px] left-0 z-20 h-[182px] w-full overflow-hidden rounded-t-[16px] border border-r-neutral-line bg-r-neutral-bg1 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] transition-[bottom] duration-300 ease-out hover:bottom-0"
+      className="group absolute bottom-[-126px] left-0 z-20 h-[190px] w-full overflow-hidden rounded-t-[16px] border border-r-neutral-line bg-r-neutral-bg1 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] transition-[bottom] duration-300 ease-out hover:bottom-0"
     >
       <div className="pointer-events-none absolute left-[-92px] top-[106px] h-[211px] w-[186px]">
         <img
@@ -91,17 +90,14 @@ export const StablecoinSwapPopup: React.FC = () => {
         <RcClose className="h-[14px] w-[14px] text-[#C5C5CF]" />
       </button>
 
-      <div className="absolute left-1/2 top-[16px] flex -translate-x-1/2 items-center gap-[12px] whitespace-nowrap text-[16px] leading-[20px] text-r-neutral-title1">
+      <div className="absolute left-1/2 top-[22px] flex -translate-x-1/2 items-center gap-[12px] whitespace-nowrap text-[16px] leading-[20px] text-r-neutral-title1">
         <span>{t('page.dashboard.home.stablecoinSwapPopup.title')}</span>
         <AnimatedToken
           token={payToken}
           previousToken={previousPayToken}
           onAnimationEnd={onPayTokenAnimationEnd}
         />
-        <RcTokenSwitch
-          aria-hidden="true"
-          className="h-[14px] w-[14px] flex-none text-r-neutral-title1"
-        />
+        <span aria-hidden="true">=&gt;</span>
         <AnimatedToken
           token={receiveToken}
           previousToken={previousReceiveToken}
@@ -109,7 +105,7 @@ export const StablecoinSwapPopup: React.FC = () => {
         />
       </div>
 
-      <div className="absolute left-1/2 top-[52px] flex -translate-x-1/2 flex-col items-center gap-[8px] transition-[top] duration-300 ease-out group-hover:top-[60px]">
+      <div className="absolute left-1/2 top-[52px] flex -translate-x-1/2 flex-col items-center gap-[8px] transition-[top] duration-300 ease-out group-hover:top-[59px]">
         <div className="flex h-[20px] items-end gap-[8px]">
           {supportedStablecoinIcons.map((icon) => (
             <img
@@ -144,7 +140,7 @@ export const StablecoinSwapPopup: React.FC = () => {
       <button
         type="button"
         onClick={onSwap}
-        className="absolute left-1/2 top-[126px] flex h-[36px] w-[240px] -translate-x-1/2 cursor-pointer items-center justify-center gap-[6px] rounded-[8px] border border-r-neutral-line bg-transparent text-[14px] leading-[18px] text-r-neutral-title1 hover:border-r-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default active:border-r-blue-default active:bg-r-blue-light2 active:text-r-blue-default"
+        className="absolute left-1/2 top-[121px] flex h-[36px] w-[240px] -translate-x-1/2 cursor-pointer items-center justify-center gap-[6px] rounded-[8px] border border-r-neutral-line bg-transparent text-[14px] leading-[18px] text-r-neutral-title1 hover:border-r-blue-default hover:bg-r-blue-light1 hover:text-r-blue-default active:border-r-blue-default active:bg-r-blue-light2 active:text-r-blue-default"
       >
         <span>{t('page.dashboard.home.stablecoinSwapPopup.goToSwap')}</span>
         <RcArrowRight className="h-[14px] w-[14px]" />
