@@ -572,6 +572,8 @@ export const Main = () => {
     type: 'approveSwap',
     onApprovePending,
   });
+  const pendingTxType =
+    shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap';
 
   const miniSignNextStep = (hash: string) => {
     next(hash);
@@ -1144,11 +1146,16 @@ export const Main = () => {
   );
 
   const noQuote = useSyncStaleValue(noQuoteOrigin, 10);
+  const [swapProgressStatus, setSwapProgressStatus] = useState<
+    'pending' | 'success' | 'failed' | null
+  >(null);
+  const hasSwapProgress = swapProgressStatus !== null;
   const showStickyInfo =
     !!payToken &&
     !!receiveToken &&
     !isSameAddress(payToken.id, receiveToken.id) &&
-    !noQuote;
+    !noQuote &&
+    !(inputAmount === '' && pendingTxType === 'swap' && hasSwapProgress);
 
   const setRabbyFeeVisible = useSetRabbyFee();
 
@@ -1380,9 +1387,8 @@ export const Main = () => {
           <div className="mx-20 mt-20">
             <PendingTxItem
               getContainer={getContainer}
-              type={
-                shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap'
-              }
+              type={pendingTxType}
+              onStatusChange={setSwapProgressStatus}
               ref={pendingTxRef}
             />
           </div>

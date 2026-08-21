@@ -617,7 +617,12 @@ export const BridgeContent = () => {
     Number(amount) > 0 &&
     !quoteLoading &&
     !quoteList?.length;
-  const showStickyInfo = !!fromToken && !!toToken && !noQuote;
+  const [bridgeProgressVisible, setBridgeProgressVisible] = useState(false);
+  const showStickyInfo =
+    !!fromToken &&
+    !!toToken &&
+    !noQuote &&
+    !(amount === '' && bridgeProgressVisible);
 
   const btnDisabled =
     inSufficient ||
@@ -1218,7 +1223,10 @@ export const BridgeContent = () => {
         </div>
         {!selectedBridgeQuote && !recommendFromToken && (
           <div className="mt-20 mx-20">
-            <BridgePendingTxItem getContainer={getContainer} />
+            <BridgePendingTxItem
+              getContainer={getContainer}
+              onDisplayChange={setBridgeProgressVisible}
+            />
           </div>
         )}
 
@@ -1228,7 +1236,7 @@ export const BridgeContent = () => {
         />
 
         <div className="fixed z-10 w-full bottom-0 mt-auto px-20 pb-20">
-          <div className="w-full rounded-[8px] bg-r-neutral-bg-5">
+          <div className="w-full rounded-[8px] bg-r-neutral-bg-2">
             {showStickyInfo && (
               <BridgeShowMore
                 insufficient={inSufficient}

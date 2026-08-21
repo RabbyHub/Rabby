@@ -271,21 +271,26 @@ export const BridgeShowMore = ({
               ) : null}
             </div>
             {type === 'bridge' && (
-              <span
-                className={clsx(
-                  'text-12 font-medium',
-                  sourceLogo || sourceName
-                    ? durationColor
-                    : 'text-r-neutral-foot'
+              <>
+                <span
+                  className={clsx(
+                    'text-12 font-medium',
+                    sourceLogo || sourceName
+                      ? durationColor
+                      : 'text-r-neutral-foot'
+                  )}
+                >
+                  {' · '}
+                  {sourceLogo || sourceName
+                    ? t('page.bridge.duration', {
+                        duration: showMinDuration,
+                      })
+                    : '-'}
+                </span>
+                {Boolean(sourceLogo || sourceName) && (
+                  <RcInfoRowArrowRight className="h-14 w-14 text-r-neutral-foot" />
                 )}
-              >
-                {' · '}
-                {sourceLogo || sourceName
-                  ? t('page.bridge.duration', {
-                      duration: showMinDuration,
-                    })
-                  : '-'}
-              </span>
+              </>
             )}
           </div>
         )}
@@ -312,7 +317,7 @@ export const BridgeShowMore = ({
     return (
       <>
         {data?.showLoss && !quoteLoading && (
-          <div className="leading-4 text-12 text-r-neutral-foot">
+          <div className="price-impact-warning leading-4 text-12 text-r-neutral-foot">
             <div className="flex justify-between">
               <span>{t('page.bridge.price-impact')}</span>
               <span
@@ -348,7 +353,7 @@ export const BridgeShowMore = ({
                 </Tooltip>
               </span>
             </div>
-            <div className="mt-[8px] rounded-[4px] border-[0.5px] border-rabby-red-default bg-r-red-light p-8 text-13 font-normal text-r-red-default">
+            <div className="mt-8 flex min-h-[32px] items-center rounded-[4px] border-[0.5px] border-rabby-red-default bg-r-red-light px-12 py-7 text-12 font-normal leading-normal text-r-red-default">
               {t('page.bridge.loss-tips', {
                 usd: data?.lossUsd,
               })}
@@ -404,7 +409,7 @@ export const BridgeShowMore = ({
   );
 
   return (
-    <div className="no-scrollbar max-h-[124px] overflow-y-auto rounded-t-[8px] bg-r-neutral-card-1 px-16 py-12">
+    <InfoCardWrapper className="no-scrollbar overflow-y-auto rounded-t-[8px] bg-r-neutral-card-1 px-16 py-12">
       <div className="space-y-12">
         {lostValueContentRender()}
 
@@ -482,9 +487,17 @@ export const BridgeShowMore = ({
           </ListItem>
         ) : null}
       </div>
-    </div>
+    </InfoCardWrapper>
   );
 };
+
+const InfoCardWrapper = styled.div`
+  max-height: 124px;
+
+  &:has(.security-level-tip):not(:has(.price-impact-warning)) {
+    max-height: 150px;
+  }
+`;
 
 const GasTipsWrapper = styled.div`
   position: relative;
@@ -502,6 +515,31 @@ const GasTipsWrapper = styled.div`
       width: 14px;
       height: 14px;
       margin-right: 6px;
+    }
+  }
+
+  &.info-card-style {
+    .security-level-tip {
+      min-height: 32px !important;
+      margin-top: 6px !important;
+      padding: 4px 8px;
+      gap: 10px;
+      border-width: 0.5px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: normal;
+
+      .ant-btn {
+        min-width: 72px;
+        height: 24px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        box-shadow: none;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: normal;
+      }
     }
   }
 `;
@@ -1113,7 +1151,9 @@ export const DirectSignGasInfo = ({
     return null;
   }
   const gasTipsComponent = () => (
-    <GasTipsWrapper>
+    <GasTipsWrapper
+      className={clsx(useInfoCardStyle && 'info-card-style')}
+    >
       {showGasLessToSign ? (
         <GasLessActivityToSign
           directSubmit
