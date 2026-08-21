@@ -47,9 +47,7 @@ describe('Gnosis send replacement context', () => {
     { ...context, nonce: Number.MAX_SAFE_INTEGER + 1 },
   ])('rejects malformed context %#', (invalidContext) => {
     expect(
-      parseGnosisSendReplaceContext(
-        buildSearch(JSON.stringify(invalidContext))
-      )
+      parseGnosisSendReplaceContext(buildSearch(JSON.stringify(invalidContext)))
     ).toEqual({ status: 'invalid' });
   });
 

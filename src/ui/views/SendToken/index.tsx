@@ -1305,6 +1305,24 @@ const SendToken = () => {
     [buildHistorySearch, history]
   );
 
+  const clearGnosisReplaceContext = useCallback(async () => {
+    const nextSearch = replaceHistorySearch({
+      clearGnosisReplaceContext: true,
+    });
+
+    try {
+      await persistPageStateCache(undefined, { search: nextSearch });
+    } catch (error) {
+      console.error(
+        '[SendToken] persist cleared Gnosis replace context failed',
+        error
+      );
+      await wallet.clearPageStateCache();
+    }
+
+    return nextSearch;
+  }, [persistPageStateCache, replaceHistorySearch, wallet]);
+
   const paramFormAmount = useMemo(
     () => normalizeInputNumber(paramAmount) || '',
     [paramAmount]
@@ -2347,7 +2365,7 @@ const SendToken = () => {
         ...(tokenChanged ? { amountBalanceError: false } : {}),
         clearGnosisReplaceContext: shouldClearGnosisReplaceContext,
       });
-      if (!ignoreCache) {
+      if (!ignoreCache || shouldClearGnosisReplaceContext) {
         await persistPageStateCache(
           { currentToken: token },
           { search: nextSearch }
@@ -2741,13 +2759,14 @@ const SendToken = () => {
       let activeGnosisReplaceContext = gnosisReplaceContext;
       if (
         activeGnosisReplaceContext &&
-        !isGnosisSendReplaceTargetMatched(activeGnosisReplaceContext, {
-          safeAddress: account.address,
-          chainId: activeGnosisReplaceContext.chainId,
-        })
+        (account.type !== KEYRING_CLASS.GNOSIS ||
+          !isGnosisSendReplaceTargetMatched(activeGnosisReplaceContext, {
+            safeAddress: account.address,
+            chainId: activeGnosisReplaceContext.chainId,
+          }))
       ) {
         activeGnosisReplaceContext = null;
-        replaceHistorySearch({ clearGnosisReplaceContext: true });
+        await clearGnosisReplaceContext();
       }
       const cache = await wallet.getPageStateCache();
       const shouldClearAmountForAccountChange =
@@ -2858,7 +2877,7 @@ const SendToken = () => {
           target.id !== activeGnosisReplaceContext.chainId
         ) {
           activeGnosisReplaceContext = null;
-          replaceHistorySearch({ clearGnosisReplaceContext: true });
+          await clearGnosisReplaceContext();
         }
         setChain(target.enum);
         const tokenItem = await loadCurrentToken(
@@ -3082,11 +3101,23 @@ const SendToken = () => {
           canBack={!(isTab || isDesktop)}
           className="mb-[10px]"
           onBeforeSwitchAccountChange={async (nextAccount) => {
-            if (
+            const isSameAccount =
               currentAccount?.address &&
-              isSameAddress(currentAccount.address, nextAccount.address)
-            ) {
+              isSameAddress(currentAccount.address, nextAccount.address) &&
+              currentAccount.type === nextAccount.type;
+            if (isSameAccount) {
               return;
+            }
+
+            if (
+              gnosisReplaceContext &&
+              (nextAccount.type !== KEYRING_CLASS.GNOSIS ||
+                !isGnosisSendReplaceTargetMatched(gnosisReplaceContext, {
+                  safeAddress: nextAccount.address,
+                  chainId: gnosisReplaceContext.chainId,
+                }))
+            ) {
+              await clearGnosisReplaceContext();
             }
 
             await clearAmountForAccountChange();
