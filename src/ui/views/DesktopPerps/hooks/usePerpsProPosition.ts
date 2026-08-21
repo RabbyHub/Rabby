@@ -13,7 +13,7 @@ import {
   SLIPPAGE,
 } from '@rabby-wallet/hyperliquid-sdk';
 import { perpsToast } from '../components/PerpsToast';
-import * as Sentry from '@sentry/browser';
+import { capturePerpsError } from '../../Perps/sentry';
 import { useMemoizedFn } from 'ahooks';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
@@ -75,9 +75,7 @@ export const usePerpsProPosition = () => {
       });
     } catch (error) {
       console.error('Failed to send new approve agent:', error);
-      Sentry.captureException(
-        new Error(`Failed to send new approve agent: ${error}`)
-      );
+      capturePerpsError('send new approve agent failed', error);
     }
   });
 
@@ -143,15 +141,7 @@ export const usePerpsProPosition = () => {
           title: errorMessage,
           description: error?.message?.toString() || 'unknown error',
         });
-        Sentry.captureException(
-          new Error(
-            `PERPS ${errorMessage} ` +
-              'params: ' +
-              JSON.stringify(params) +
-              'error: ' +
-              JSON.stringify(error)
-          )
-        );
+        capturePerpsError(errorMessage, error, { params });
       }
     }
   );

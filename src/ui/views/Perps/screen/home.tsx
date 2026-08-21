@@ -55,7 +55,7 @@ import {
 } from '../constants';
 import { useMemoizedFn } from 'ahooks';
 import { getPerpsSDK } from '../sdkManager';
-import * as Sentry from '@sentry/browser';
+import { capturePerpsError } from '../sentry';
 import { RiskLevelPopup } from '../popup/RiskLevelPopup';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import stats from '@/stats';
@@ -319,11 +319,7 @@ export const Perps: React.FC = () => {
         duration: 1.5,
         content: error?.message || 'close all position error',
       });
-      Sentry.captureException(
-        new Error(
-          'PERPS close all position error' + 'error: ' + JSON.stringify(error)
-        )
-      );
+      capturePerpsError('close all position error', error);
     }
   });
 
