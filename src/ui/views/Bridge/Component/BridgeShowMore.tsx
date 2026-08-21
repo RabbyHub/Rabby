@@ -117,6 +117,7 @@ export const BridgeShowMore = ({
   insufficient = false,
   signatureInstance,
   isRabbyFeeFree = false,
+  isRabbyFeeHalf = false,
   getContainer,
   validateSlippage,
   renderSwapQuotes,
@@ -159,6 +160,7 @@ export const BridgeShowMore = ({
   supportDirectSign?: boolean;
   signatureInstance: SignatureManager;
   isRabbyFeeFree?: boolean;
+  isRabbyFeeHalf?: boolean;
   getContainer?: DrawerProps['getContainer'];
   validateSlippage?: (
     slippage: string
@@ -172,6 +174,7 @@ export const BridgeShowMore = ({
   const { t } = useTranslation();
 
   const RABBY_FEE = '0.25%';
+  const RABBY_HALF_FEE = '0.12%';
 
   const data = useMemo(() => {
     if (quoteLoading || (!sourceLogo && !sourceName)) {
@@ -363,6 +366,8 @@ export const BridgeShowMore = ({
           'text-12 font-medium',
           isRabbyFeeFree
             ? 'flex shrink-0 items-center gap-8'
+            : isRabbyFeeHalf
+            ? 'flex shrink-0 items-center gap-4 cursor-pointer'
             : isWrapToken
             ? 'text-r-neutral-foot'
             : 'text-r-blue-default cursor-pointer'
@@ -378,6 +383,15 @@ export const BridgeShowMore = ({
             />
             <span className="font-normal text-r-neutral-foot line-through">
               {RABBY_FEE}
+            </span>
+          </>
+        ) : isRabbyFeeHalf ? (
+          <>
+            <span className="font-normal text-r-neutral-foot line-through">
+              {RABBY_FEE}
+            </span>
+            <span className="font-normal text-r-green-default">
+              {RABBY_HALF_FEE}
             </span>
           </>
         ) : isWrapToken && type === 'swap' ? (

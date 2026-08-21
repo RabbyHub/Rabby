@@ -16,7 +16,7 @@ type TestSwapStore = SwapServiceStore & Record<string, unknown>;
 
 const swapState: SwapServiceStore = {
   autoSlippage: true,
-  preferMEVGuarded: false,
+  mevProtection: true,
   recentToTokens: [],
   selectedChain: null,
   slippage: '0.1',

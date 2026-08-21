@@ -305,6 +305,7 @@ export const Main = () => {
                   slippage: new BigNumber(slippage).div(100).toNumber(),
                 },
                 dex_id: activeProvider?.name || 'WrapToken',
+                fee_rate: Number(feeRate),
               },
               addHistoryData: {
                 address: userAddress,
@@ -392,6 +393,7 @@ export const Main = () => {
                 slippage: new BigNumber(slippage).div(100).toNumber(),
               },
               dex_id: activeProvider?.name || 'WrapToken',
+              fee_rate: Number(feeRate),
             },
             addHistoryData: {
               address: userAddress,
@@ -1422,7 +1424,10 @@ export const Main = () => {
                 type="swap"
                 getContainer={getContainer}
                 isWrapToken={isWrapToken}
-                isRabbyFeeFree={isFreeTokenPair}
+                isRabbyFeeFree={
+                  isFreeTokenPair || (!isWrapToken && feeRate === '0')
+                }
+                isRabbyFeeHalf={feeRate === '0.12'}
                 isBestQuote={
                   !!activeProvider &&
                   !!bestQuoteDex &&
