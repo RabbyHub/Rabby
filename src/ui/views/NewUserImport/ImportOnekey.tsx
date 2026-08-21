@@ -120,7 +120,7 @@ export const NewUserImportOneKey = () => {
       HDPathType.BIP44
     );
     await wallet.boot(store.password);
-    await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], keyringId);
+    await wallet.unlockHardwareAccount(KEYSTONE_TYPE, [0], keyringId, brand);
     history.push({
       pathname: '/new-user/success',
       search: `?hd=${KEYSTONE_TYPE}&brand=${brand}&keyringId=${keyringId}`,
@@ -136,6 +136,10 @@ export const NewUserImportOneKey = () => {
   };
 
   useEffect(() => {
+    if (connectType !== ConnectType.QRCode) {
+      return;
+    }
+
     wallet.initQRHardware(brand).then((stashKeyringId) => {
       stashKeyringIdRef.current = stashKeyringId;
       wallet
@@ -150,7 +154,7 @@ export const NewUserImportOneKey = () => {
     return () => {
       wallet.clearPageStateCache();
     };
-  }, []);
+  }, [connectType]);
 
   useEffect(() => {
     // init onekey sdk

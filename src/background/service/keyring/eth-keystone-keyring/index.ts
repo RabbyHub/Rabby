@@ -3,6 +3,7 @@ import { toChecksumAddress } from '@ethereumjs/util';
 import { StoredKeyring } from '@keystonehq/base-eth-keyring';
 import { Eth, default as EthLegacy } from '@keystonehq/hw-app-eth';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
+import type { SigningAttempt } from '../signing-diagnostics';
 import {
   KeystoneHDPathType,
   HDPATH_PLACEHOLDER,
@@ -45,6 +46,7 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   memStoreData: RequestSignPayload | undefined;
   brandsMap: Record<string, string> = {};
   currentBrand: string = DEFAULT_BRAND;
+  private signingAddressByError = new WeakMap<object, string | undefined>();
 
   constructor() {
     super();
@@ -252,6 +254,38 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   getCurrentBrand = async () => {
     return this.currentBrand;
   };
+
+  getSigningDiagnostics(error?: unknown, _attempt?: SigningAttempt) {
+    const address =
+      error && typeof error === 'object'
+        ? this.signingAddressByError.get(error)
+        : undefined;
+    const brand = address
+      ? this.brandsMap[address.toLowerCase()]
+      : this.currentBrand;
+    const provider =
+      brand === 'Keystone'
+        ? 'keystone'
+        : brand === 'NGRAVE ZERO'
+        ? 'ngravezero'
+        : undefined;
+    return {
+      wallet_provider: provider,
+      transport: 'qr',
+      error_category: 'unknown',
+    };
+  }
+
+  beginSigningAttempt(_operation: string, signingAddress?: string) {
+    return { signingAddress };
+  }
+
+  endSigningAttempt(attempt: unknown, error?: unknown) {
+    if (error && typeof error === 'object') {
+      const address = (attempt as { signingAddress?: string })?.signingAddress;
+      this.signingAddressByError.set(error, address);
+    }
+  }
 
   checkAllowImport = async (brand: string) => {
     const [account] = await this.getAccountsWithBrand();

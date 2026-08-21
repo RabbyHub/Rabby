@@ -221,7 +221,7 @@ const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
 
   useMount(() => {
     if (!action) {
-      reportWebPageView(location.pathname);
+      reportWebPageView(location.pathname, location.search);
     }
   });
 
