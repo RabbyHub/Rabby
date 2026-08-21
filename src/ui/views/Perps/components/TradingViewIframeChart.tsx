@@ -2,6 +2,12 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import browser from 'webextension-polyfill';
 import type { Candle, CandleSnapshot } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
+import {
+  closeAllCandleSubscriptions,
+  closeCandleSubscription,
+  isCandleForChannel,
+  openCandleSubscription,
+} from '../candleSubscriptions';
 
 const BRIDGE_CHANNEL = 'rabby-tradingview-bridge-v1';
 const DEFAULT_TRADINGVIEW_URL = process.env.DEBUG
@@ -70,6 +76,7 @@ type BridgeMessage =
 type BarSubscription = {
   symbol: string;
   resolution: string;
+  subscribeInterval: PerpsInterval;
   unsubscribe: () => void;
   currentWeekBar: TVBar | null;
   lastDailyVolume: { time: number; value: number } | null;
@@ -529,8 +536,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     let barsLoaded = false;
 
     const cleanupSubscriptions = () => {
-      subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
-      subscriptionsRef.current.clear();
+      closeAllCandleSubscriptions(subscriptionsRef.current);
     };
 
     const recoverChart = () => {
@@ -663,105 +669,114 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
         params.symbol,
         params.resolution
       );
-      const current = subscriptionsRef.current.get(params.subscriberUID);
-      if (current) {
-        current.unsubscribe();
-        subscriptionsRef.current.delete(params.subscriberUID);
-      }
-
       const state: BarSubscription = {
         symbol: params.symbol,
         resolution: params.resolution,
+        subscribeInterval,
         unsubscribe: () => undefined,
         currentWeekBar: null,
         lastDailyVolume: null,
         isWeekly,
       };
 
-      const subscription = sdk.ws.subscribeToCandles(
-        params.symbol,
-        subscribeInterval,
-        (snapshot) => {
-          const parsed = parseBars([snapshot]);
-          if (!parsed.length) return;
-          const dayBar = parsed[0];
-
-          if (!state.isWeekly) {
-            postToIframe({
-              channel: BRIDGE_CHANNEL,
-              kind: 'event',
-              event: 'realtimeBar',
-              payload: {
-                subscriberUID: params.subscriberUID,
-                bar: dayBar,
-              },
-            });
-            stateRef.current.onLatestBar?.(toHoverData(dayBar));
-            return;
-          }
-
-          const mondayTs = getMondayUtc(dayBar.time);
-          if (!state.currentWeekBar) {
-            const historyState = cloneWeeklyHistoryState(
-              weeklyHistoryRef.current.get(weeklyHistoryKey)
-            );
-            if (!historyState) {
+      const openSubscription = () => {
+        const subscription = sdk.ws.subscribeToCandles(
+          params.symbol,
+          subscribeInterval,
+          (snapshot) => {
+            if (
+              !isCandleForChannel(snapshot, {
+                symbol: params.symbol,
+                subscribeInterval,
+              })
+            ) {
               return;
             }
-            state.currentWeekBar = historyState.currentWeekBar;
-            state.lastDailyVolume = historyState.lastDailyVolume;
-          }
 
-          const currentWeekBar = state.currentWeekBar;
-          if (currentWeekBar && currentWeekBar.time === mondayTs) {
-            currentWeekBar.high = Math.max(currentWeekBar.high, dayBar.high);
-            currentWeekBar.low = Math.min(currentWeekBar.low, dayBar.low);
-            currentWeekBar.close = dayBar.close;
+            const parsed = parseBars([snapshot]);
+            if (!parsed.length) return;
+            const dayBar = parsed[0];
 
-            const prevDayVolume =
-              state.lastDailyVolume?.time === dayBar.time
-                ? state.lastDailyVolume.value
-                : 0;
-            currentWeekBar.volume =
-              currentWeekBar.volume - prevDayVolume + dayBar.volume;
-          } else {
-            state.currentWeekBar = {
-              ...dayBar,
-              time: mondayTs,
+            if (!state.isWeekly) {
+              postToIframe({
+                channel: BRIDGE_CHANNEL,
+                kind: 'event',
+                event: 'realtimeBar',
+                payload: {
+                  subscriberUID: params.subscriberUID,
+                  bar: dayBar,
+                },
+              });
+              stateRef.current.onLatestBar?.(toHoverData(dayBar));
+              return;
+            }
+
+            const mondayTs = getMondayUtc(dayBar.time);
+            if (!state.currentWeekBar) {
+              const historyState = cloneWeeklyHistoryState(
+                weeklyHistoryRef.current.get(weeklyHistoryKey)
+              );
+              if (!historyState) {
+                return;
+              }
+              state.currentWeekBar = historyState.currentWeekBar;
+              state.lastDailyVolume = historyState.lastDailyVolume;
+            }
+
+            const currentWeekBar = state.currentWeekBar;
+            if (currentWeekBar && currentWeekBar.time === mondayTs) {
+              currentWeekBar.high = Math.max(currentWeekBar.high, dayBar.high);
+              currentWeekBar.low = Math.min(currentWeekBar.low, dayBar.low);
+              currentWeekBar.close = dayBar.close;
+
+              const prevDayVolume =
+                state.lastDailyVolume?.time === dayBar.time
+                  ? state.lastDailyVolume.value
+                  : 0;
+              currentWeekBar.volume =
+                currentWeekBar.volume - prevDayVolume + dayBar.volume;
+            } else {
+              state.currentWeekBar = {
+                ...dayBar,
+                time: mondayTs,
+              };
+            }
+
+            state.lastDailyVolume = {
+              time: dayBar.time,
+              value: dayBar.volume,
             };
-          }
 
-          state.lastDailyVolume = {
-            time: dayBar.time,
-            value: dayBar.volume,
-          };
-
-          if (state.currentWeekBar) {
-            postToIframe({
-              channel: BRIDGE_CHANNEL,
-              kind: 'event',
-              event: 'realtimeBar',
-              payload: {
-                subscriberUID: params.subscriberUID,
-                bar: state.currentWeekBar,
-              },
-            });
-            stateRef.current.onLatestBar?.(toHoverData(state.currentWeekBar));
+            if (state.currentWeekBar) {
+              postToIframe({
+                channel: BRIDGE_CHANNEL,
+                kind: 'event',
+                event: 'realtimeBar',
+                payload: {
+                  subscriberUID: params.subscriberUID,
+                  bar: state.currentWeekBar,
+                },
+              });
+              stateRef.current.onLatestBar?.(toHoverData(state.currentWeekBar));
+            }
           }
-        }
+        );
+
+        state.unsubscribe = subscription.unsubscribe;
+        return state;
+      };
+
+      openCandleSubscription(
+        subscriptionsRef.current,
+        params.subscriberUID,
+        { symbol: params.symbol, subscribeInterval },
+        openSubscription
       );
-
-      state.unsubscribe = subscription.unsubscribe;
-      subscriptionsRef.current.set(params.subscriberUID, state);
       return { ok: true };
     };
 
     const handleUnsubscribeBars = (params: { subscriberUID: string }) => {
-      const current = subscriptionsRef.current.get(params.subscriberUID);
-      if (current) {
-        current.unsubscribe();
-        subscriptionsRef.current.delete(params.subscriberUID);
-      }
+      closeCandleSubscription(subscriptionsRef.current, params.subscriberUID);
       return { ok: true };
     };
 
@@ -901,8 +916,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     iframeChartStateRef.current = { symbol: coin, resolution };
 
     // Cancel all active SDK WebSocket subscriptions before switching symbol
-    subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
-    subscriptionsRef.current.clear();
+    closeAllCandleSubscriptions(subscriptionsRef.current);
 
     postToIframe({
       channel: BRIDGE_CHANNEL,
