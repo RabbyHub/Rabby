@@ -26,7 +26,6 @@ import {
   useGasAccountSign,
 } from '@/ui/views/GasAccount/hooks';
 import { useAppVersionStore } from '@/ui/state/appVersion';
-import { StablecoinSwapPopup } from './components/StablecoinSwapPopup';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -190,14 +189,13 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className={clsx('dashboard', 'relative')}>
+      <div className={clsx('dashboard')}>
         <DashboardHeader onSettingClick={toggleShowMoreSettings} />
         <DashboardPanel onSettingClick={toggleShowMoreSettings} />
         <div className="px-[16px] pb-[13px]">
           <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
           <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
         </div>
-        <StablecoinSwapPopup />
       </div>
       <Modal
         visible={firstNotice && updateContent}
