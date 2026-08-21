@@ -13,7 +13,7 @@ const useLowFeeThreshold = __DEV__ || appIsDebugPkg;
 const SWAP_HALF_FEE_MIN_USD = useLowFeeThreshold ? 5 : 100_000;
 const SWAP_FREE_FEE_MIN_USD = useLowFeeThreshold ? 10 : 1_000_000;
 
-export const getSwapFeeRate = ({
+export const getRabbyFeeRate = ({
   payAmount,
   payTokenPrice,
   isFreeTokenPair,

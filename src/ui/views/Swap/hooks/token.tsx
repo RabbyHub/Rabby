@@ -44,7 +44,7 @@ import { isTempoChain } from '@/utils/tempo';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getDefaultSwapToTokenItem } from '@/constant/dex-swap';
-import { getSwapFeeRate, SwapFeeRate } from './fee';
+import { getRabbyFeeRate, SwapFeeRate } from './fee';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -635,7 +635,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const feeRate = useMemo<FeeProps['fee']>(
     () =>
-      getSwapFeeRate({
+      getRabbyFeeRate({
         payAmount: inputAmount,
         payTokenPrice: payToken?.price || 0,
         isFreeTokenPair,

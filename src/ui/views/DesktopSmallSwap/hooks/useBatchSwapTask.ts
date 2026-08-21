@@ -25,7 +25,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   isSwapWrapToken,
-  getSwapFeeRate,
+  getRabbyFeeRate,
   QuoteProvider,
   TDexQuoteData,
   useQuoteMethods,
@@ -87,7 +87,7 @@ export const getActiveProvider = async ({
   }
 
   const isWrapToken = isSwapWrapToken(payToken.id, receiveToken.id, chain.enum);
-  const feeRate = getSwapFeeRate({
+  const feeRate = getRabbyFeeRate({
     payAmount,
     payTokenPrice: payToken.price || 0,
     isFreeTokenPair: isSameTypeTokenPair(payToken, receiveToken),
@@ -164,7 +164,7 @@ export const buildSwapTxs = async ({
   }
 
   try {
-    const feeRate = getSwapFeeRate({
+    const feeRate = getRabbyFeeRate({
       payAmount: inputAmount,
       payTokenPrice: payToken.price || 0,
       isFreeTokenPair: isSameTypeTokenPair(payToken, receiveToken),

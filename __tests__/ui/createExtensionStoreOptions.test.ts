@@ -48,7 +48,11 @@ describe('createExtensionStoreOptions', () => {
       state: { ...swapState, slippage: '0.5' },
     });
     expect(getStorageSnapshot).toHaveBeenCalledWith('swap');
-    expect(setStorageItem).toHaveBeenCalledWith('swap', { slippage: '0.5' }, []);
+    expect(setStorageItem).toHaveBeenCalledWith(
+      'swap',
+      { slippage: '0.5' },
+      []
+    );
 
     const listener = jest.fn();
     const dispose = options.sync!.engine.subscribe(listener);
@@ -122,9 +126,9 @@ describe('createExtensionStoreOptions', () => {
 
     const { state } = listener.mock.calls[0][0];
     expect(state.selectedChain).toBe('BSC');
-    expect(Object.prototype.hasOwnProperty.call(state, 'selectedFromToken')).toBe(
-      true
-    );
+    expect(
+      Object.prototype.hasOwnProperty.call(state, 'selectedFromToken')
+    ).toBe(true);
     expect(state.selectedFromToken).toBeUndefined();
     dispose();
   });
