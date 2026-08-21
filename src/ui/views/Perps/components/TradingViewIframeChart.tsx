@@ -418,7 +418,17 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const subscriptionsRef = useRef<Map<string, BarSubscription>>(new Map());
   const weeklyHistoryRef = useRef<Map<string, WeeklyHistoryState>>(new Map());
-  const iframeIntervalChangeRef = useRef(false);
+  // What the iframe chart is known to be showing, written both from its own
+  // intervalChanged event and from every setSymbolInterval we post. Comparing
+  // against it makes the command below idempotent. A boolean "this change came
+  // from the iframe" flag cannot: it is armed in a message handler but consumed
+  // in an effect, and React flushes those independently, so two interval
+  // changes in quick succession arm it once and leave the second effect run
+  // unguarded.
+  const iframeChartStateRef = useRef<{
+    symbol: string;
+    resolution: string;
+  } | null>(null);
   // Bumped to remount the iframe when the chart never came up at all
   const [chartReloadKey, setChartReloadKey] = useState(0);
 
@@ -771,7 +781,10 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
         } else if (message.event === 'intervalChanged') {
           const resolution = message.payload?.resolution;
           if (resolution) {
-            iframeIntervalChangeRef.current = true;
+            iframeChartStateRef.current = {
+              symbol: stateRef.current.coin,
+              resolution,
+            };
             stateRef.current.onIntervalChange?.(
               resolutionToInterval(resolution)
             );
@@ -876,11 +889,16 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   }, [iframeOrigin]);
 
   useEffect(() => {
-    // Skip if the interval change originated from the TradingView iframe itself
-    if (iframeIntervalChangeRef.current) {
-      iframeIntervalChangeRef.current = false;
+    const resolution = intervalToResolution(interval);
+    const synced = iframeChartStateRef.current;
+    // The iframe already shows this pair — normally because the change came
+    // from its own toolbar. Re-posting would drop every SDK subscription while
+    // TradingView ignores the command, leaving the chart with no realtime feed.
+    if (synced?.symbol === coin && synced.resolution === resolution) {
       return;
     }
+
+    iframeChartStateRef.current = { symbol: coin, resolution };
 
     // Cancel all active SDK WebSocket subscriptions before switching symbol
     subscriptionsRef.current.forEach((sub) => sub.unsubscribe());
@@ -892,7 +910,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       command: 'setSymbolInterval',
       payload: {
         symbol: coin,
-        resolution: intervalToResolution(interval),
+        resolution,
       },
     });
   }, [coin, interval]);
