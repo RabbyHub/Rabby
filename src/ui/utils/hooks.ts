@@ -47,14 +47,25 @@ export const useApproval = () => {
     }, 0);
   };
 
-  const rejectApproval = async (err?, stay = false, isInternal = false) => {
+  const rejectApproval = async (
+    err?,
+    stay = false,
+    isInternal = false,
+    approvalId?: string
+  ) => {
     const approval = await getApproval();
-    if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
-      wallet.coboSafeResetCurrentAccount();
-    }
+    // the caller is acting on an approval that is no longer current: skip the
+    // reject, but still navigate so the window re-renders on the real one
+    const isStale = !!approvalId && approvalId !== approval?.id;
 
-    if (approval) {
-      await wallet.rejectApproval(err, stay, isInternal);
+    if (!isStale) {
+      if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
+        wallet.coboSafeResetCurrentAccount();
+      }
+
+      if (approval) {
+        await wallet.rejectApproval(err, stay, isInternal, approvalId);
+      }
     }
     if (!stay) {
       history.push('/');
