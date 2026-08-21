@@ -26,7 +26,7 @@ const GetEncryptionPublicKey = ({ params, account }: ConnectProps) => {
   const { icon, origin } = params.session;
 
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval('GetPublicKey');
   const handleCancel = useCallback(() => {
     rejectApproval('User rejected the request.');
   }, [rejectApproval]);

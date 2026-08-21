@@ -23,7 +23,7 @@ interface AddAssetProps {
 }
 
 const ETHSign = ({ params }: { params: AddAssetProps }) => {
-  const [, , rejectApproval] = useApproval();
+  const [, , rejectApproval] = useApproval('ETHSign');
   const { t } = useTranslation();
 
   return (

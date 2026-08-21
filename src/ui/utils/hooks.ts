@@ -1,7 +1,13 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from 'react';
 import { useHistory } from 'react-router-dom';
-import { Approval } from 'background/service/notification';
+import type { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
@@ -10,11 +16,18 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
+import {
+  ApprovalBindingContext,
+  getApprovalBinding,
+} from './approval-context';
 
-export const useApproval = () => {
+export const useApproval = (
+  expectedApprovalComponent?: Approval['data']['approvalComponent']
+) => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
+  const approvalBinding = useContext(ApprovalBindingContext);
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
   const deviceConnect = useDeviceConnect();
@@ -26,14 +39,29 @@ export const useApproval = () => {
     approvalId?: string
   ) => {
     const approval = await getApproval();
+    const binding = getApprovalBinding(approval, approvalBinding);
 
-    // handle connect
-    if (!(await deviceConnect(data, approval?.data?.account))) {
+    if (
+      !binding ||
+      (expectedApprovalComponent &&
+        binding.component !== expectedApprovalComponent) ||
+      (approvalId && binding.id !== approvalId)
+    ) {
       return;
     }
 
-    if (approval) {
-      wallet.resolveApproval(data, forceReject, approvalId);
+    if (!(await deviceConnect(data, approval.data.account))) {
+      return;
+    }
+
+    const resolved = await wallet.resolveApproval(
+      data,
+      forceReject,
+      binding.id,
+      binding.component
+    );
+    if (!resolved) {
+      return;
     }
 
     if (stay) {
@@ -49,13 +77,31 @@ export const useApproval = () => {
 
   const rejectApproval = async (err?, stay = false, isInternal = false) => {
     const approval = await getApproval();
-    if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
+    const binding = getApprovalBinding(approval, approvalBinding);
+
+    if (
+      !binding ||
+      (expectedApprovalComponent &&
+        binding.component !== expectedApprovalComponent)
+    ) {
+      return;
+    }
+
+    if (approval.data.params?.data?.[0]?.isCoboSafe) {
       wallet.coboSafeResetCurrentAccount();
     }
 
-    if (approval) {
-      await wallet.rejectApproval(err, stay, isInternal);
+    const rejected = await wallet.rejectApproval(
+      err,
+      stay,
+      isInternal,
+      binding.id,
+      binding.component
+    );
+    if (!rejected) {
+      return;
     }
+
     if (!stay) {
       history.push('/');
     }

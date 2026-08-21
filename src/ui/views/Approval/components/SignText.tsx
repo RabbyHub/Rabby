@@ -78,7 +78,7 @@ const SignText = ({
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval('SignText');
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;

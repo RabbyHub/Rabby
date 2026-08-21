@@ -72,7 +72,7 @@ const LedgerHardwareWaiting = ({
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval('LedgerHardwareWaiting');
   const chain = findChain({
     id: params.chainId || 1,
   });

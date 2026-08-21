@@ -7,7 +7,7 @@ import { useApproval } from 'ui/utils';
 import Browser from 'webextension-polyfill';
 
 export const EIP7702Warning = () => {
-  const [, , rejectApproval] = useApproval();
+  const [, , rejectApproval] = useApproval('SignTx');
   const { t } = useTranslation();
 
   useEffect(() => {

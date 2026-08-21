@@ -65,7 +65,7 @@ export const CommonWaiting = ({
     closePopup,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval('CommonWaiting');
   const { t } = useTranslation();
   const { type } = params;
   const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)

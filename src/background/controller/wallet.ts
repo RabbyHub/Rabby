@@ -77,6 +77,8 @@ import {
   UnlockPreferredMethod,
 } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
+import type { Approval } from '../service/notification';
+
 import {
   TokenItem,
   Tx,
@@ -198,12 +200,6 @@ import {
   shouldUseTempoBatchTransaction,
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
-import { gasMarketV2 as loadGasMarketV2 } from '../service/gasMarket';
-import {
-  cancelAllSignTxPreparations,
-  getSignTxPreparationGas,
-  getSignTxPreparation,
-} from '../service/signTxPreparation';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
@@ -483,8 +479,6 @@ export class WalletController extends BaseController {
     }
   };
   isBooted = () => keyringService.isBooted();
-  getSignTxPreparation = getSignTxPreparation;
-  getSignTxPreparationGas = getSignTxPreparationGas;
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
@@ -563,8 +557,20 @@ export class WalletController extends BaseController {
 
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
-  rejectApproval = (err?: string, stay = false, isInternal = false) => {
-    return notificationService.rejectApproval(err, stay, isInternal);
+  rejectApproval = (
+    err?: string,
+    stay = false,
+    isInternal = false,
+    approvalId?: string,
+    approvalComponent?: Approval['data']['approvalComponent']
+  ) => {
+    return notificationService.rejectApproval(
+      err,
+      stay,
+      isInternal,
+      approvalId,
+      approvalComponent
+    );
   };
 
   rejectAllApprovals = () => {
@@ -2143,8 +2149,8 @@ export class WalletController extends BaseController {
   isUnlocked = () => keyringService.isUnlocked();
 
   lockWallet = async () => {
+    this.rejectAllApprovals();
     await keyringService.setLocked();
-    cancelAllSignTxPreparations();
     if (isManifestV3) {
       await Browser.storage.session.clear();
     }
@@ -5194,7 +5200,7 @@ export class WalletController extends BaseController {
     preferenceService.setCurrentAccount(_account);
   };
 
-  unlockHardwareAccount = async (keyring, indexes, keyringId, brand?) => {
+  unlockHardwareAccount = async (keyring, indexes, keyringId) => {
     let keyringInstance: any = null;
     try {
       keyringInstance = this.#getKeyringByType(keyring);
@@ -5204,9 +5210,6 @@ export class WalletController extends BaseController {
     if (!keyringInstance && keyringId !== null && keyringId !== undefined) {
       await keyringService.addKeyring(stashKeyrings[keyringId]);
       keyringInstance = stashKeyrings[keyringId];
-    }
-    if (brand && keyringInstance?.setCurrentBrand) {
-      keyringInstance.setCurrentBrand(brand);
     }
     for (let i = 0; i < indexes.length; i++) {
       keyringInstance!.setAccountToUnlock(indexes[i]);
@@ -6789,7 +6792,62 @@ export class WalletController extends BaseController {
 
   uninstalledSyncStatus = uninstalledService.syncStatus;
 
-  gasMarketV2 = loadGasMarketV2;
+  gasMarketV2 = async (
+    params:
+      | {
+          chain: Chain;
+          tx: Tx;
+          customGas?: number;
+        }
+      | {
+          chainId: string;
+          customGas?: number;
+        }
+  ) => {
+    let chainId: string;
+    let tx: Tx | undefined;
+
+    if ('tx' in params) {
+      chainId = params.chain.serverId;
+
+      if (params?.chain && params?.chain.enum === CHAINS_ENUM.LINEA) {
+        if (params.tx.nonce === undefined) {
+          params.tx.nonce = await this.getRecommendNonce({
+            from: params.tx.from,
+            chainId: params.chain.id,
+          });
+        }
+
+        if (params.tx.gasPrice === undefined || params.tx.gasPrice === '') {
+          params.tx.gasPrice = '0x0';
+        }
+        if (params.tx.gas === undefined || params.tx.gas === '') {
+          params.tx.gas = '0x0';
+        }
+        if (params.tx.data === undefined || params.tx.data === '') {
+          params.tx.data = '0x';
+        }
+        tx = {
+          chainId: params.tx.chainId,
+          data: params.tx.data,
+          from: params.tx.from,
+          gas: params.tx.gas,
+          nonce: params.tx.nonce,
+          to: params.tx.to,
+          value: params.tx.value,
+          gasPrice: params.tx.gasPrice,
+        };
+      }
+    } else {
+      chainId = params.chainId;
+    }
+
+    return openapiService.gasMarketV2({
+      customGas: params.customGas,
+      chainId,
+      tx,
+    });
+  };
 
   changeDappProvider = ({
     origin,
