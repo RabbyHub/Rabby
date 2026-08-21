@@ -16,8 +16,9 @@ import { TokenImg } from '../components/TokenImg';
 import { PERPS_MAX_NTL_VALUE, PERPS_MINI_USD_VALUE } from '../constants';
 import {
   calculateDistanceToLiquidation,
-  calLiquidationPrice,
   formatPerpsPct,
+  PerpsProjectedPosition,
+  resolveProjectedLiquidationPrice,
 } from '../utils';
 import { DistanceRiskTag } from '../../DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
@@ -29,6 +30,10 @@ export interface AddPositionPopupProps {
   activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
   currentAssetCtx: MarketData | null;
   availableBalance: number;
+  /** See `resolveCrossMarginAvailableAfterMaintenance`; null hides the estimate. */
+  crossMarginAvailable?: number | null;
+  /** The position being added to; the estimate projects the merged position. */
+  projectedPosition?: PerpsProjectedPosition | null;
   direction: 'Long' | 'Short';
   positionSize: number;
   marginUsed: number;
@@ -53,6 +58,8 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   activeAssetCtx,
   currentAssetCtx,
   availableBalance,
+  crossMarginAvailable,
+  projectedPosition,
   leverage,
   leverageType,
   direction,
@@ -172,26 +179,31 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
     if (!markPrice || !leverage) {
       return 0;
     }
-    const maxLeverage = leverageRange[1];
-    return calLiquidationPrice(
-      markPrice,
-      Number(addMargin + marginUsed),
-      direction,
-      Number(tradeSize) + Number(positionSize),
-      Number(tradeAmount) + Number(positionSize) * Number(markPrice),
-      maxLeverage
-    ).toFixed(pxDecimals);
+    // No `addMargin` under cross: it only moves equity from free to used,
+    // it doesn't grow the account.
+    return (
+      resolveProjectedLiquidationPrice({
+        baseSize: tradeSize,
+        crossMarginAvailableAfterMaintenance: crossMarginAvailable ?? null,
+        currentPosition: projectedPosition,
+        entryPrice: String(markPrice),
+        leverage,
+        marginMode: leverageType,
+        maxLeverage: leverageRange[1],
+        pxDecimals,
+        side: direction === 'Long' ? 'buy' : 'sell',
+      })?.liquidationPrice ?? 0
+    );
   }, [
     markPrice,
     leverage,
     leverageRange,
-    addMargin,
     direction,
     tradeSize,
     pxDecimals,
-    tradeAmount,
-    positionSize,
-    marginUsed,
+    leverageType,
+    crossMarginAvailable,
+    projectedPosition,
   ]);
 
   const { runAsync: handleConfirm, loading } = useRequest(

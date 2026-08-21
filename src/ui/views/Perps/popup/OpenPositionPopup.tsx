@@ -12,9 +12,10 @@ import { ReactComponent as RcIconPerpsLeveragePlus } from 'ui/assets/perps/ImgLe
 import { ReactComponent as RcIconPerpsLeverageMinus } from 'ui/assets/perps/ImgLeverageMinus.svg';
 import { useMemoizedFn } from 'ahooks';
 import {
-  calLiquidationPrice,
   formatPercent,
   formatTpOrSlPrice,
+  PerpsProjectedPosition,
+  resolveProjectedLiquidationPrice,
 } from '../utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { PERPS_MAX_NTL_VALUE, PerpsOpenOrderType } from '../constants';
@@ -40,16 +41,25 @@ interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   coin: string;
   markPrice: number;
   leverageRange: [number, number]; // [min, max]
+  /** The account's on-chain leverage for this coin; falls back to max. */
+  defaultLeverage?: number;
   pxDecimals: number;
   szDecimals: number;
   availableBalance: number;
+  /** See `resolveCrossMarginAvailableAfterMaintenance`; null hides the estimate. */
+  crossMarginAvailable?: number | null;
+  /** Existing position on this coin; the estimate projects what the order leaves behind. */
+  projectedPosition?: PerpsProjectedPosition | null;
   maxNtlValue: number;
   currentAssetCtx: MarketData;
   activeAssetCtx: WsActiveAssetCtx['ctx'] | null;
   onCancel: () => void;
   onConfirm: () => void;
   marginMode: 'cross' | 'isolated';
-  onMarginModeChange?: (mode: 'cross' | 'isolated') => void;
+  /** Resolves false when the on-chain switch failed — the modal then stays open. */
+  onMarginModeChange?: (
+    mode: 'cross' | 'isolated'
+  ) => boolean | Promise<boolean>;
   hasPosition?: boolean;
   quoteAsset?: string;
   onDepositPress?: () => void;
@@ -81,9 +91,12 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   coin,
   markPrice,
   leverageRange,
+  defaultLeverage,
   pxDecimals,
   szDecimals,
   availableBalance,
+  crossMarginAvailable,
+  projectedPosition,
   onCancel,
   onConfirm,
   maxNtlValue,
@@ -110,7 +123,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   );
   const [margin, setMargin] = React.useState<string>('');
   const [selectedLeverage, setLeverage] = React.useState<number | undefined>(
-    leverageRange[1]
+    defaultLeverage ?? leverageRange[1]
   );
   const leverage = selectedLeverage || 1;
   const [tpTriggerPx, setTpTriggerPx] = React.useState<string>('');
@@ -178,26 +191,32 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   // 计算预估清算价格
   const estimatedLiquidationPrice = React.useMemo(() => {
     if (!markPrice || !leverage) return 0;
-    const maxLeverage = leverageRange[1];
     const basePx = isMarketable ? markPrice : effectivePx;
-    return calLiquidationPrice(
-      basePx,
-      Number(margin),
-      direction,
-      Number(tradeSize),
-      Number(tradeSize) * basePx,
-      maxLeverage
-    ).toFixed(pxDecimals);
+    return (
+      resolveProjectedLiquidationPrice({
+        baseSize: tradeSize,
+        crossMarginAvailableAfterMaintenance: crossMarginAvailable ?? null,
+        currentPosition: projectedPosition,
+        entryPrice: String(basePx),
+        leverage,
+        marginMode,
+        maxLeverage: leverageRange[1],
+        pxDecimals,
+        side: direction === 'Long' ? 'buy' : 'sell',
+      })?.liquidationPrice ?? 0
+    );
   }, [
     markPrice,
     effectivePx,
     isMarketable,
     leverage,
     leverageRange,
-    margin,
     tradeSize,
     direction,
     pxDecimals,
+    marginMode,
+    crossMarginAvailable,
+    projectedPosition,
   ]);
 
   // 验证 margin 输入
@@ -301,7 +320,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       availableBalance > 2
         ? setMargin(Math.round(availableBalance / 2).toString())
         : setMargin('');
-      setLeverage(leverageRange[1]);
+      setLeverage(defaultLeverage ?? leverageRange[1]);
       resetInitValues();
       setIsReviewMode(false);
       setOrderType('market');
@@ -899,9 +918,11 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         visible={marginModeModalVisible}
         currentMode={marginMode}
         onCancel={() => setMarginModeModalVisible(false)}
-        onConfirm={(mode) => {
-          onMarginModeChange?.(mode);
-          setMarginModeModalVisible(false);
+        onConfirm={async (mode) => {
+          const ok = await onMarginModeChange?.(mode);
+          if (ok !== false) {
+            setMarginModeModalVisible(false);
+          }
         }}
       />
     </>

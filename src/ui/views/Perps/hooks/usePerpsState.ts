@@ -10,7 +10,7 @@ import {
   initPerpsAgentAccount,
 } from '../sdkManager';
 import { waitForInitialWsData, checkSelfSignBuilderFee } from '../utils';
-import * as Sentry from '@sentry/browser';
+import { capturePerpsError } from '../sentry';
 import {
   Abstraction,
   UserAbstractionResp,
@@ -71,13 +71,10 @@ export const usePerpsInitial = () => {
         logout(currentPerpsAccount?.address);
         wallet.createPerpsAgentWallet(currentPerpsAccount?.address);
         console.error('Failed to set builder fee');
-        Sentry.captureException(
-          new Error(
-            'PERPS set builder fee error, no max builder fee' +
-              'account: ' +
-              JSON.stringify(currentPerpsAccount)
-          )
-        );
+        capturePerpsError('set builder fee error, no max builder fee', null, {
+          address: currentPerpsAccount?.address,
+          accountType: currentPerpsAccount?.type,
+        });
       }
     } catch (error) {
       console.error('Failed to set builder fee:', error);
@@ -275,11 +272,9 @@ export const usePerpsState = ({
       if (!res) {
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
         console.error('Failed to set builder fee');
-        Sentry.captureException(
-          new Error(
-            `PERPS set builder fee error, no max builder fee, address: ${address}`
-          )
-        );
+        capturePerpsError('set builder fee error, no max builder fee', null, {
+          address,
+        });
       }
     } catch (error) {
       console.error('Failed to set builder fee:', error);
@@ -545,11 +540,11 @@ export const usePerpsState = ({
         // showToast(String(e), 'error');
         dispatch.perps.setAccountNeedApproveAgent(true);
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
-        Sentry.captureException(
-          new Error(
-            `ensure login approve sign failed, address: ${account.address} , account type: ${account.type} , agentAddress: ${agentAddress} , error: ${e}`
-          )
-        );
+        capturePerpsError('ensure login approve sign failed', e, {
+          address: account.address,
+          accountType: account.type,
+          agentAddress,
+        });
       }
     }
   );
@@ -615,11 +610,10 @@ export const usePerpsState = ({
       console.error('Failed to handle action approve status:', error);
       // todo fixme maybe no need show toast in prod
       message.error('message' in error ? error.message : String(error));
-      Sentry.captureException(
-        new Error(
-          `Failed to handle action approve status, address: ${currentPerpsAccount?.address} , account type: ${currentPerpsAccount?.type} , error: ${error}`
-        )
-      );
+      capturePerpsError('failed to handle action approve status', error, {
+        address: currentPerpsAccount?.address,
+        accountType: currentPerpsAccount?.type,
+      });
       throw error;
     }
   });
@@ -777,14 +771,10 @@ export const usePerpsState = ({
         duration: 1.5,
         content: error.message || 'Login failed',
       });
-      Sentry.captureException(
-        new Error(
-          'PERPS Login failed' +
-            JSON.stringify({
-              error,
-            })
-        )
-      );
+      capturePerpsError('login failed', error, {
+        address: account.address,
+        accountType: account.type,
+      });
     }
   });
 
@@ -882,19 +872,11 @@ export const usePerpsState = ({
           duration: 1.5,
           content: error.message || 'Withdraw failed',
         });
-        Sentry.captureException(
-          new Error(
-            'PERPS Withdraw failed' +
-              'account: ' +
-              JSON.stringify(currentPerpsAccount) +
-              'amount: ' +
-              amount +
-              'error: ' +
-              JSON.stringify({
-                error,
-              })
-          )
-        );
+        capturePerpsError('withdraw failed', error, {
+          address: currentPerpsAccount?.address,
+          accountType: currentPerpsAccount?.type,
+          amount,
+        });
         return false;
       }
     }
