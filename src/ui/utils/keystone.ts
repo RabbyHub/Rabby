@@ -1,8 +1,7 @@
 import {
-  keystoneUSBProductId,
   keystoneUSBVendorId,
   StatusCode,
-} from '@keystonehq/hw-transport-usb';
+} from '@keystonehq/hw-transport-webusb';
 import { message } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,11 +12,13 @@ const navigator = window.navigator;
 const isKeystoneDevice = (
   device?: {
     vendorId?: number;
-    productId?: number;
+    productName?: string;
+    manufacturerName?: string;
   } | null
 ) =>
   device?.vendorId === keystoneUSBVendorId &&
-  device?.productId === keystoneUSBProductId;
+  !device?.productName?.toLowerCase()?.includes('onekey') &&
+  !device?.manufacturerName?.toLowerCase()?.includes('onekey');
 
 export const hasConnectedKeystoneDevice = async () => {
   const devices = await navigator.usb?.getDevices();
