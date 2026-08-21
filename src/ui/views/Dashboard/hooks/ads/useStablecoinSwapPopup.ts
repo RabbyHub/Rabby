@@ -4,45 +4,33 @@ import { useMemoizedFn } from 'ahooks';
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-const SUPPORTED_STABLECOINS = [
-  {
-    symbol: 'USDC',
-    src:
-      'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
-  },
-  {
-    symbol: 'USDT',
-    src:
-      'https://static.debank.com/image/coin/logo_url/usdt/23af7472292cb41dc39b3f1146ead0fe.png',
-  },
-  {
-    symbol: 'USD1',
-    src:
-      'https://static-assets.rabby.io/files/6a499840-3f0d-4640-9a30-aec184311cb0.png',
-  },
-  {
-    symbol: 'USDe',
-    src:
-      'https://static.debank.com/image/eth_token/logo_url/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/1228d6e73f70f37ec1f6fe02a3bbe6ff.png',
-  },
-  {
-    symbol: 'USDS',
-    src:
-      'https://static.debank.com/image/eth_token/logo_url/0xdc035d45d973e3ec169d2276ddab16f1e407384f/78fbc2e73e33fa80fcecfaafa2074887.png',
-  },
+const TOKEN_ICON_URLS = {
+  usdc:
+    'https://static.debank.com/image/coin/logo_url/usdc/e87790bfe0b3f2ea855dc29069b38818.png',
+  usdt:
+    'https://static.debank.com/image/coin/logo_url/usdt/23af7472292cb41dc39b3f1146ead0fe.png',
+  usd1:
+    'https://static-assets.rabby.io/files/6a499840-3f0d-4640-9a30-aec184311cb0.png',
+  usde:
+    'https://static.debank.com/image/eth_token/logo_url/0x4c9edd5852cd905f086c759e8383e09bff1e68b3/1228d6e73f70f37ec1f6fe02a3bbe6ff.png',
+  usds:
+    'https://static.debank.com/image/eth_token/logo_url/0xdc035d45d973e3ec169d2276ddab16f1e407384f/78fbc2e73e33fa80fcecfaafa2074887.png',
+} as const;
+
+const SUPPORTED_STABLECOIN_ICONS = [
+  TOKEN_ICON_URLS.usdc,
+  TOKEN_ICON_URLS.usdt,
+  TOKEN_ICON_URLS.usd1,
+  TOKEN_ICON_URLS.usde,
+  TOKEN_ICON_URLS.usds,
+];
+
+const ROTATING_STABLECOIN_ICONS = [
+  { symbol: 'USDT', src: TOKEN_ICON_URLS.usdt },
+  { symbol: 'USD1', src: TOKEN_ICON_URLS.usd1 },
+  { symbol: 'USDe', src: TOKEN_ICON_URLS.usde },
+  { symbol: 'USDS', src: TOKEN_ICON_URLS.usds },
 ] as const;
-
-const SUPPORTED_STABLECOIN_ICONS = SUPPORTED_STABLECOINS.map(
-  (token) => token.src
-);
-
-const getRandomTokenIndex = (excludedIndices: number[]) => {
-  const candidates = SUPPORTED_STABLECOINS.map((_, index) => index).filter(
-    (index) => !excludedIndices.includes(index)
-  );
-
-  return candidates[Math.floor(Math.random() * candidates.length)];
-};
 
 const STABLECOIN_SWAP_ROUTE = `/dex-swap?${new URLSearchParams({
   chain: 'eth',
@@ -52,7 +40,7 @@ const STABLECOIN_SWAP_ROUTE = `/dex-swap?${new URLSearchParams({
 }).toString()}`;
 
 const STABLECOIN_SWAP_POPUP_DISMISSED_KEY =
-  'rabby:dashboard:ad:stablecoin-swap-popup:dismissed';
+  'rabby:dashboard:stablecoin-swap-popup:dismissed';
 
 export const useStablecoinSwapPopup = () => {
   const history = useHistory();
@@ -60,15 +48,9 @@ export const useStablecoinSwapPopup = () => {
     () =>
       window.localStorage.getItem(STABLECOIN_SWAP_POPUP_DISMISSED_KEY) !== '1'
   );
-  const payTokenIndexRef = useRef(0);
-  const receiveTokenIndexRef = useRef(1);
-  const nextTokenSideRef = useRef<'pay' | 'receive'>('receive');
-  const [payTokenIndex, setPayTokenIndex] = useState(0);
-  const [receiveTokenIndex, setReceiveTokenIndex] = useState(1);
-  const [previousPayTokenIndex, setPreviousPayTokenIndex] = useState<
-    number | null
-  >(null);
-  const [previousReceiveTokenIndex, setPreviousReceiveTokenIndex] = useState<
+  const rotatingTokenIndexRef = useRef(0);
+  const [rotatingTokenIndex, setRotatingTokenIndex] = useState(0);
+  const [previousRotatingTokenIndex, setPreviousRotatingTokenIndex] = useState<
     number | null
   >(null);
 
@@ -78,30 +60,15 @@ export const useStablecoinSwapPopup = () => {
     }
 
     const timer = window.setInterval(() => {
-      if (nextTokenSideRef.current === 'receive') {
-        const currentIndex = receiveTokenIndexRef.current;
-        const nextIndex = getRandomTokenIndex([
-          currentIndex,
-          payTokenIndexRef.current,
-        ]);
+      const currentIndex = rotatingTokenIndexRef.current;
+      const randomOffset =
+        Math.floor(Math.random() * (ROTATING_STABLECOIN_ICONS.length - 1)) + 1;
+      const nextIndex =
+        (currentIndex + randomOffset) % ROTATING_STABLECOIN_ICONS.length;
 
-        setPreviousReceiveTokenIndex(currentIndex);
-        receiveTokenIndexRef.current = nextIndex;
-        setReceiveTokenIndex(nextIndex);
-        nextTokenSideRef.current = 'pay';
-        return;
-      }
-
-      const currentIndex = payTokenIndexRef.current;
-      const nextIndex = getRandomTokenIndex([
-        currentIndex,
-        receiveTokenIndexRef.current,
-      ]);
-
-      setPreviousPayTokenIndex(currentIndex);
-      payTokenIndexRef.current = nextIndex;
-      setPayTokenIndex(nextIndex);
-      nextTokenSideRef.current = 'receive';
+      setPreviousRotatingTokenIndex(currentIndex);
+      rotatingTokenIndexRef.current = nextIndex;
+      setRotatingTokenIndex(nextIndex);
     }, 2000);
 
     return () => window.clearInterval(timer);
@@ -116,33 +83,24 @@ export const useStablecoinSwapPopup = () => {
     history.push(STABLECOIN_SWAP_ROUTE);
   });
 
-  const onPayTokenAnimationEnd = useMemoizedFn(() => {
-    setPreviousPayTokenIndex(null);
+  const onTokenAnimationEnd = useMemoizedFn(() => {
+    setPreviousRotatingTokenIndex(null);
   });
 
-  const onReceiveTokenAnimationEnd = useMemoizedFn(() => {
-    setPreviousReceiveTokenIndex(null);
-  });
-
-  const previousPayToken =
-    previousPayTokenIndex === null
+  const rotatingToken = ROTATING_STABLECOIN_ICONS[rotatingTokenIndex];
+  const previousRotatingToken =
+    previousRotatingTokenIndex === null
       ? null
-      : SUPPORTED_STABLECOINS[previousPayTokenIndex];
-  const previousReceiveToken =
-    previousReceiveTokenIndex === null
-      ? null
-      : SUPPORTED_STABLECOINS[previousReceiveTokenIndex];
+      : ROTATING_STABLECOIN_ICONS[previousRotatingTokenIndex];
 
   return {
     visible,
     onClose,
     onSwap,
+    payTokenIcon: TOKEN_ICON_URLS.usdc,
     supportedStablecoinIcons: SUPPORTED_STABLECOIN_ICONS,
-    payToken: SUPPORTED_STABLECOINS[payTokenIndex],
-    previousPayToken,
-    receiveToken: SUPPORTED_STABLECOINS[receiveTokenIndex],
-    previousReceiveToken,
-    onPayTokenAnimationEnd,
-    onReceiveTokenAnimationEnd,
+    rotatingToken,
+    previousRotatingToken,
+    onTokenAnimationEnd,
   };
 };
