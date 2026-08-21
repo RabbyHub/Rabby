@@ -243,7 +243,11 @@ class NotificationService extends Events {
     this.emit('reject', err);
   };
 
-  requestApproval = async (data, winProps?): Promise<any> => {
+  requestApproval = async (
+    data,
+    winProps?,
+    options?: { onCurrent?: () => void }
+  ): Promise<any> => {
     const origin = this.getOrigin(data);
     if (origin) {
       const dapp = this.dappManager.get(origin);
@@ -345,6 +349,18 @@ class NotificationService extends Events {
         this.approvals = [...this.approvals, approval];
         if (!this.currentApproval) {
           this.currentApproval = approval;
+        }
+      }
+
+      // TODO: queued approvals currently drop onCurrent, so preparation only
+      // starts for the approval that is current when requestApproval runs.
+      if (this.currentApproval === approval) {
+        try {
+          options?.onCurrent?.();
+        } catch (e) {
+          Sentry.captureException(
+            new Error('onCurrent failed: ' + JSON.stringify(e))
+          );
         }
       }
 
