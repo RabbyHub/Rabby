@@ -12,6 +12,7 @@ import browser from 'webextension-polyfill';
 import store from './store';
 import { initializeSwapStore } from './state/swap';
 
+import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
 import { getSentryConfig } from '@/utils/sentry-config';
 import { Button } from 'antd';
@@ -138,10 +139,34 @@ const main = async () => {
   );
 };
 
-main().catch((e) => {
-  console.error('[main] bootstrap failed', e);
-  Sentry.captureException(e);
-});
+const bootstrap = () => {
+  if (!isManifestV3) {
+    void main().catch((e) => {
+      console.error('[main] bootstrap failed', e);
+      Sentry.captureException(e);
+    });
+    return;
+  }
+
+  browser.runtime
+    .sendMessage({ type: 'getBackgroundReady' })
+    .then((res) => {
+      if (!res) {
+        setTimeout(bootstrap, 100);
+        return;
+      }
+
+      void main().catch((e) => {
+        console.error('[main] bootstrap failed', e);
+        Sentry.captureException(e);
+      });
+    })
+    .catch(() => {
+      setTimeout(bootstrap, 100);
+    });
+};
+
+bootstrap();
 
 const checkSwAlive = () => {
   console.log('[checkSwAlive]', new Date());

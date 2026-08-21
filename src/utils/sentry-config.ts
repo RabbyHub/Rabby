@@ -3,8 +3,9 @@ import type { BrowserOptions } from '@sentry/browser';
 import { getSentryEnv } from '@/utils/env';
 import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 import {
-  applyHardwareSigningContext,
+  applySigningContext,
   collectSentryEventText,
+  getSigningContext,
   sanitizeSentryBreadcrumbUrl,
   shouldIgnoreSentryError,
 } from '@/utils/sentry';
@@ -86,13 +87,15 @@ export const getSentryConfig = (): BrowserOptions => ({
       }
 
       // 把原始对象的所有字段附加到 extra 里，方便查看
-      event.extra = {
-        ...event.extra,
-        __serialized__: obj,
-      };
+      if (!getSigningContext(originalException)) {
+        event.extra = {
+          ...event.extra,
+          __serialized__: obj,
+        };
+      }
     }
 
-    applyHardwareSigningContext(event, originalException);
+    applySigningContext(event, originalException);
 
     return event;
   },
