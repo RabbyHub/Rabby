@@ -10,26 +10,28 @@ export const ApprovalBindingContext = createContext<ApprovalBinding | null>(
   null
 );
 
+/**
+ * Validates and returns the strict approval binding context.
+ * Security hardening: Requires an explicit, captured binding context matching the current 
+ * active approval, preventing cross-request race conditions and unauthorized resolution 
+ * from uncaptured components (fail-closed model).
+ */
 export const getApprovalBinding = (
   approval: Approval | null,
   binding: ApprovalBinding | null
 ): ApprovalBinding | null => {
-  if (!approval) {
+  if (!approval || !binding) {
     return null;
   }
 
-  const currentBinding = binding || {
-    id: approval.id,
-    component: approval.data.approvalComponent,
-  };
-
+  // Ensure strict enforcement of context integrity: 
+  // Drop out-of-context or mismatched bindings to prevent asynchronous race vulnerabilities.
   if (
-    approval.id !== currentBinding.id ||
-    approval.data.approvalComponent !== currentBinding.component
+    approval.id !== binding.id ||
+    approval.data.approvalComponent !== binding.component
   ) {
     return null;
   }
 
-  return currentBinding;
+  return binding;
 };
-
