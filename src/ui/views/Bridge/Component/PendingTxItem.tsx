@@ -561,8 +561,10 @@ const PendingStatusDetail = ({
 
 export const BridgePendingTxItem = ({
   getContainer,
+  onDisplayChange,
 }: {
   getContainer?: DrawerProps['getContainer'];
+  onDisplayChange?: (visible: boolean) => void;
 }) => {
   const type = 'bridge';
   const { t } = useTranslation();
@@ -573,6 +575,11 @@ export const BridgePendingTxItem = ({
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
   }));
+
+  useEffect(() => {
+    onDisplayChange?.(!!data);
+    return () => onDisplayChange?.(false);
+  }, [!!data, onDisplayChange]);
 
   const fetchHistory = useCallback(async () => {
     if (!userAddress) return;

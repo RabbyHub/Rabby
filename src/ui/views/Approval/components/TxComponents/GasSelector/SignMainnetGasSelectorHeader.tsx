@@ -6,7 +6,13 @@ import { calcMaxPriorityFee } from '@/utils/transaction';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import type { ComponentProps } from 'react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -14,6 +20,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { buildDirectSignSummary, calcGasAccountUsd } from './directSignSummary';
 import { SignMainnetCustomGasSheet } from './SignMainnetCustomGasSheet';
 import { SignMainnetShowMoreGasModal } from './SignMainnetShowMoreGasModal';
+import { SignMainnetSwapGasQuotePopup } from './SignMainnetSwapGasQuotePopup';
 import {
   isApprovalGasMethodNotEnough,
   isGasAccountBalanceEnoughForDisplay,
@@ -67,6 +74,16 @@ export interface SignMainnetGasSelectorHeaderProps
   onAutoChangeGasMethod?: (value: 'native' | 'gasAccount') => void;
   disableAutoGasLevelSwitch?: boolean;
   onCustomGasSheetOpen?: () => void;
+  rightPrefix?: React.ReactNode;
+  summaryClassName?: string;
+  summaryTextClassName?: string;
+  summarySuffix?: React.ReactNode;
+  hideGasLevelInSummary?: boolean;
+  renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
+  onRefreshSwapQuotes?: () => void;
+  swapQuotesLoading?: boolean;
+  swapGasQuoteVisible?: boolean;
+  onSwapGasQuoteVisibleChange?: (visible: boolean) => void;
 }
 
 export const SignMainnetGasSelectorHeader = ({
@@ -96,6 +113,16 @@ export const SignMainnetGasSelectorHeader = ({
   onAutoChangeGasMethod,
   disableAutoGasLevelSwitch = false,
   onCustomGasSheetOpen,
+  rightPrefix,
+  summaryClassName,
+  summaryTextClassName,
+  summarySuffix,
+  hideGasLevelInSummary,
+  renderSwapQuotes,
+  onRefreshSwapQuotes,
+  swapQuotesLoading,
+  swapGasQuoteVisible,
+  onSwapGasQuoteVisibleChange,
   onSignTx,
   ...props
 }: SignMainnetGasSelectorHeaderProps) => {
@@ -571,6 +598,14 @@ export const SignMainnetGasSelectorHeader = ({
 
   const canOpenShowMore =
     !!props.isReady && !props.disabled && gas.success && !gas.error;
+  const combinedPopupVisible = swapGasQuoteVisible ?? showMoreOpen;
+  const setCombinedPopupVisible = useCallback(
+    (visible: boolean) => {
+      setShowMoreOpen(visible);
+      onSwapGasQuoteVisibleChange?.(visible);
+    },
+    [onSwapGasQuoteVisibleChange]
+  );
   const levelText = t(getGasLevelI18nKey(selectedGas?.level || 'normal'));
   const gasAccountInfoTooltip =
     displayGasMethod === 'gasAccount' ? (
@@ -703,9 +738,12 @@ export const SignMainnetGasSelectorHeader = ({
   const summaryNode = (
     <div
       className={clsx(
-        'text-12 font-medium flex items-center gap-4',
+        'flex items-center gap-4 text-12',
+        summaryClassName || 'font-medium',
         canOpenShowMore && 'cursor-pointer',
-        isSummaryNotEnough ? 'text-r-red-default' : 'text-r-blue-default'
+        isSummaryNotEnough
+          ? 'text-r-red-default'
+          : summaryTextClassName || 'text-r-blue-default'
       )}
       onClick={() => {
         if (canOpenShowMore) {
@@ -725,7 +763,14 @@ export const SignMainnetGasSelectorHeader = ({
       ) : gas.error || !gas.success ? (
         <span>{t('page.signTx.failToFetchGasCost')}</span>
       ) : (
-        <span>{`${levelText} · ${summary.primaryText}`}</span>
+        <>
+          <span>
+            {hideGasLevelInSummary
+              ? summary.primaryText
+              : `${levelText} · ${summary.primaryText}`}
+          </span>
+          {canOpenShowMore && summarySuffix}
+        </>
       )}
     </div>
   );
@@ -818,49 +863,63 @@ export const SignMainnetGasSelectorHeader = ({
         )}
         {gasAccountInfoTooltip}
       </span>
-      <div className="flex items-center gap-8">
+      <div
+        className="flex items-center gap-8"
+        onClick={() => {
+          if (renderSwapQuotes && canOpenShowMore) {
+            setCombinedPopupVisible(true);
+          }
+        }}
+      >
+        {rightPrefix}
         {canOpenShowMore ? (
-          <SignMainnetShowMoreGasModal
-            visible={showMoreOpen}
-            onVisibleChange={(open) => {
-              setShowMoreOpen(open);
-              if (open) {
-                hasOpenedOnceRef.current = true;
+          renderSwapQuotes ? (
+            <>{onSignTx ? rightNode : summaryNode}</>
+          ) : (
+            <SignMainnetShowMoreGasModal
+              visible={showMoreOpen}
+              onVisibleChange={(open) => {
+                setShowMoreOpen(open);
+                if (open) {
+                  hasOpenedOnceRef.current = true;
+                }
+              }}
+              gasList={gasList}
+              selectedGas={selectedGas}
+              gasMethod={gasMethod}
+              onChangeGasMethod={props.onChangeGasMethod}
+              noCustomRPC={noCustomRPCEnabled}
+              freeGasAvailable={freeGasAvailable}
+              chainId={chainId}
+              gasLimit={gasLimit || '0'}
+              nonce={nonce}
+              onChange={onChange}
+              isCancel={isCancel}
+              isSpeedUp={isSpeedUp}
+              selectedGasCostUsdStr={gasCostUsdStr}
+              gasAccountCost={gasAccountCost}
+              pendingHardwareGasAccountBalance={
+                pendingHardwareGasAccountBalance
               }
-            }}
-            gasList={gasList}
-            selectedGas={selectedGas}
-            gasMethod={gasMethod}
-            onChangeGasMethod={props.onChangeGasMethod}
-            noCustomRPC={noCustomRPCEnabled}
-            freeGasAvailable={freeGasAvailable}
-            chainId={chainId}
-            gasLimit={gasLimit || '0'}
-            nonce={nonce}
-            onChange={onChange}
-            isCancel={isCancel}
-            isSpeedUp={isSpeedUp}
-            selectedGasCostUsdStr={gasCostUsdStr}
-            gasAccountCost={gasAccountCost}
-            pendingHardwareGasAccountBalance={pendingHardwareGasAccountBalance}
-            nativeTokenInsufficient={nativeTokenInsufficient}
-            isWalletConnect={isWalletConnect}
-            autoOpenSignal={autoOpenSignal}
-            levelState={levelState}
-            showTempoGasTokenSelector={showTempoGasTokenSelector}
-            selectedGasToken={resolvedGasToken}
-            tempoGasTokenList={tempoGasTokenList}
-            onSelectTempoGasToken={onSelectTempoGasToken}
-            tempoGasTokenLoading={tempoGasTokenLoading}
-            getContainer={props.getContainer}
-            onEditCustomGas={() => {
-              onCustomGasSheetOpen?.();
-              setShowMoreOpen(false);
-              setCustomVisible(true);
-            }}
-          >
-            {onSignTx ? rightNode : summaryNode}
-          </SignMainnetShowMoreGasModal>
+              nativeTokenInsufficient={nativeTokenInsufficient}
+              isWalletConnect={isWalletConnect}
+              autoOpenSignal={autoOpenSignal}
+              levelState={levelState}
+              showTempoGasTokenSelector={showTempoGasTokenSelector}
+              selectedGasToken={resolvedGasToken}
+              tempoGasTokenList={tempoGasTokenList}
+              onSelectTempoGasToken={onSelectTempoGasToken}
+              tempoGasTokenLoading={tempoGasTokenLoading}
+              getContainer={props.getContainer}
+              onEditCustomGas={() => {
+                onCustomGasSheetOpen?.();
+                setShowMoreOpen(false);
+                setCustomVisible(true);
+              }}
+            >
+              {onSignTx ? rightNode : summaryNode}
+            </SignMainnetShowMoreGasModal>
+          )
         ) : (
           <>{onSignTx ? rightNode : summaryNode}</>
         )}
@@ -871,6 +930,51 @@ export const SignMainnetGasSelectorHeader = ({
   return (
     <>
       {content}
+
+      {renderSwapQuotes && (canOpenShowMore || combinedPopupVisible) ? (
+        <SignMainnetSwapGasQuotePopup
+          visible={combinedPopupVisible}
+          onVisibleChange={(open) => {
+            setCombinedPopupVisible(open);
+            if (open) {
+              hasOpenedOnceRef.current = true;
+            }
+          }}
+          gasList={gasList}
+          selectedGas={selectedGas}
+          gasMethod={gasMethod}
+          onChangeGasMethod={props.onChangeGasMethod}
+          noCustomRPC={noCustomRPCEnabled}
+          freeGasAvailable={freeGasAvailable}
+          chainId={chainId}
+          gasLimit={gasLimit || '0'}
+          nonce={nonce}
+          onChange={onChange}
+          isCancel={isCancel}
+          isSpeedUp={isSpeedUp}
+          selectedGasCostUsdStr={gasCostUsdStr}
+          gasAccountCost={gasAccountCost}
+          pendingHardwareGasAccountBalance={pendingHardwareGasAccountBalance}
+          nativeTokenInsufficient={nativeTokenInsufficient}
+          isWalletConnect={isWalletConnect}
+          autoOpenSignal={autoOpenSignal}
+          levelState={levelState}
+          showTempoGasTokenSelector={showTempoGasTokenSelector}
+          selectedGasToken={resolvedGasToken}
+          tempoGasTokenList={tempoGasTokenList}
+          onSelectTempoGasToken={onSelectTempoGasToken}
+          tempoGasTokenLoading={tempoGasTokenLoading}
+          getContainer={props.getContainer}
+          onEditCustomGas={() => {
+            onCustomGasSheetOpen?.();
+            setShowMoreOpen(false);
+            setCustomVisible(true);
+          }}
+          renderQuotes={renderSwapQuotes}
+          onRefreshQuotes={onRefreshSwapQuotes || (() => undefined)}
+          quotesLoading={swapQuotesLoading}
+        />
+      ) : null}
 
       <SignMainnetCustomGasSheet
         version={props.version}
