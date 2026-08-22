@@ -37,6 +37,7 @@ export interface Approval {
   winProps: any;
   resolve?(params?: any): void;
   reject?(err: EthereumProviderError<any>): void;
+  onCurrent?(): void;
 }
 
 const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
@@ -225,6 +226,7 @@ class NotificationService extends Events {
 
     if (this.approvals.length > 0) {
       this.currentApproval = this.approvals[0];
+      this.currentApproval.onCurrent?.();
     } else {
       this.currentApproval = null;
     }
@@ -271,6 +273,7 @@ class NotificationService extends Events {
     if (approval && this.approvals.length > 1) {
       this.deleteApproval(approval);
       this.currentApproval = this.approvals[0];
+      this.currentApproval.onCurrent?.();
     } else {
       await this.clear(stay);
     }
@@ -278,7 +281,11 @@ class NotificationService extends Events {
     return true;
   };
 
-  requestApproval = async (data, winProps?): Promise<any> => {
+  requestApproval = async (
+    data,
+    winProps?,
+    options?: { onCurrent?: () => void }
+  ): Promise<any> => {
     const origin = this.getOrigin(data);
     if (origin) {
       const dapp = this.dappManager.get(origin);
@@ -338,6 +345,7 @@ class NotificationService extends Events {
         signingTxId,
         data,
         winProps,
+        onCurrent: options?.onCurrent,
         resolve(data) {
           if (this.data.approvalComponent === 'SignTx') {
             reportExplain(this.signingTxId);
@@ -376,10 +384,12 @@ class NotificationService extends Events {
       if (data.isUnshift) {
         this.approvals = [approval, ...this.approvals];
         this.currentApproval = approval;
+        approval.onCurrent?.();
       } else {
         this.approvals = [...this.approvals, approval];
         if (!this.currentApproval) {
           this.currentApproval = approval;
+          approval.onCurrent?.();
         }
       }
 
