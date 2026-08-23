@@ -1,5 +1,6 @@
 import { intToHex, isHexString } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
+import { omit } from 'lodash';
 import {
   CAN_ESTIMATE_L1_FEE_CHAINS,
   DEFAULT_GAS_LIMIT_BUFFER,
@@ -17,10 +18,12 @@ import {
   TxPushType,
 } from 'background/service/openapi';
 import { findChain } from './chain';
+import { getEIP7702MiniGasLimit } from '@/background/utils/7702';
 import type { WalletControllerType } from '@/ui/utils';
 import { Chain } from '@debank/common';
 import i18n from '@/i18n';
 import { Account } from 'background/service/preference';
+import type { ChainGas } from 'background/service/preference';
 import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
 import { TX_GAS_LIMIT_CHAIN_MAPPING } from '@/constant/txGasLimit';
 import { getTempoFeeTokenInfo, isTempoChain } from './tempo';
@@ -49,6 +52,132 @@ export interface ApprovalRes extends Tx {
   authorizationList?: AuthorizationListBytes | AuthorizationList | never;
   sig?: string;
 }
+
+const isStringOrNumber = (value: unknown): value is string | number =>
+  typeof value === 'string' || typeof value === 'number';
+
+function normalizeHex(value: string | number): string;
+function normalizeHex(value: unknown): unknown;
+function normalizeHex(value: unknown) {
+  if (typeof value === 'number') {
+    // Not @ethereumjs/util's intToHex: it rejects anything above
+    // Number.MAX_SAFE_INTEGER, which is ~0.009 ETH in wei, so a dapp sending a
+    // numeric `value` for any real amount would throw. The callers catch that
+    // and fall back to the raw params, which skips normalization entirely -
+    // including the isDapp field stripping.
+    if (!Number.isFinite(value)) {
+      throw new Error(`${value} is not int`);
+    }
+    return `0x${new BigNumber(Math.floor(value)).toString(16)}`;
+  }
+  if (typeof value !== 'string') return value;
+  return isHexString(value) ? value : `0x${value}`;
+}
+
+export const normalizeTxParams = (tx: Tx, isDapp = false) => {
+  const copy = { ...tx } as Tx & Record<string, any>;
+  if (isStringOrNumber(copy.nonce)) copy.nonce = normalizeHex(copy.nonce);
+  if (isStringOrNumber(copy.gas)) copy.gas = normalizeHex(copy.gas);
+  if (isStringOrNumber(copy.gasLimit)) copy.gas = normalizeHex(copy.gasLimit);
+  if (isStringOrNumber(copy.gasPrice))
+    copy.gasPrice = normalizeHex(copy.gasPrice);
+  if (isStringOrNumber(copy.maxFeePerGas))
+    copy.maxFeePerGas = normalizeHex(copy.maxFeePerGas);
+  if (isStringOrNumber(copy.maxPriorityFeePerGas))
+    copy.maxPriorityFeePerGas = normalizeHex(copy.maxPriorityFeePerGas);
+  if ('value' in copy) {
+    copy.value = isStringOrNumber(copy.value)
+      ? normalizeHex(copy.value)
+      : '0x0';
+  }
+  if (typeof copy.data === 'string' && !copy.data.startsWith('0x')) {
+    copy.data = `0x${copy.data}`;
+  }
+  if (Array.isArray(copy.authorizationList)) {
+    copy.authorizationList = copy.authorizationList.map((item) =>
+      normalizeHex(item)
+    );
+  }
+  return (isDapp
+    ? omit(copy, [
+        'isSpeedUp',
+        'isCancel',
+        'isSend',
+        'isSwap',
+        'isBridge',
+        'swapPreferMEVGuarded',
+        'isViewGnosisSafe',
+        'reqId',
+      ])
+    : copy) as Tx;
+};
+
+const getSignTxGasPrice = (tx: Tx & Record<string, any>) => {
+  let result = '';
+  if (tx.maxFeePerGas) {
+    result = isHexString(tx.maxFeePerGas)
+      ? tx.maxFeePerGas
+      : intToHex(tx.maxFeePerGas as any);
+  }
+  if (tx.gasPrice) {
+    result = isHexString(tx.gasPrice)
+      ? tx.gasPrice
+      : intToHex(parseInt(tx.gasPrice));
+  }
+  if (Number.isNaN(Number(result))) {
+    result = '';
+  }
+  return result;
+};
+
+/**
+ * The transaction SignTx renders, simulates and signs.
+ *
+ * The background pre-execution path must build it through here too: a prepared
+ * parseTx/preExecTx result is shown to the user as the asset change of the
+ * transaction they are about to sign, so it has to describe the same
+ * transaction. Keep this the single construction site.
+ */
+export const buildSignTx = ({
+  tx,
+  chainId,
+  gasLimit,
+  enable7702 = false,
+  revokeAuthorization,
+}: {
+  /** dapp params already through {@link normalizeTxParams} */
+  tx: Tx & Record<string, any>;
+  chainId: number;
+  gasLimit?: string | number;
+  enable7702?: boolean;
+  revokeAuthorization?: any;
+}) =>
+  omit(
+    {
+      chainId,
+      data: tx.data || '0x', // can not execute with empty string, use 0x instead
+      from: tx.from,
+      gas: enable7702
+        ? getEIP7702MiniGasLimit((tx.gas || gasLimit) as string | number)
+        : tx.gas || gasLimit,
+      gasPrice: getSignTxGasPrice(tx),
+      nonce: tx.nonce,
+      to: tx.to,
+      value: tx.value,
+      type: tx.type,
+      calls: tx.calls,
+      feeToken: tx.feeToken,
+      maxFeePerGas: tx.maxFeePerGas,
+      feePayer: tx.feePayer,
+      feePayerSignature: tx.feePayerSignature,
+      nonceKey: tx.nonceKey,
+      keyAuthorization: tx.keyAuthorization,
+      validBefore: tx.validBefore,
+      validAfter: tx.validAfter,
+      authorizationList: revokeAuthorization || tx.authorizationList,
+    },
+    !enable7702 ? ['authorizationList'] : []
+  ) as Tx;
 
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = findChain({
@@ -92,6 +221,205 @@ export const convertLegacyTo1559 = (tx: Tx) => {
   };
 };
 
+/** What the user is doing with this tx - drives the initial gas selection. */
+export type TxIntent = {
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
+  isSend?: boolean;
+  isSwap?: boolean;
+  isBridge?: boolean;
+};
+
+export const shouldUpdateNonce = ({
+  nonce,
+  from,
+  to,
+  isSpeedUp,
+  isCancel,
+  nonceChanged = false,
+}: Pick<Tx, 'nonce' | 'from' | 'to'> & {
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
+  nonceChanged?: boolean;
+}) => !isCancel && !isSpeedUp && !(nonce && from === to) && !nonceChanged;
+
+export type InitialGasSelection = {
+  tx: Tx;
+  gasList: GasLevel[];
+  gas: GasLevel;
+  fee: number;
+};
+
+const resolveCustomGasPrice = ({
+  tx,
+  lastTimeGas,
+  isSpeedUp,
+  isCancel,
+  isSend,
+  isSwap,
+  isBridge,
+}: TxIntent & {
+  tx: Pick<Tx, 'gasPrice'>;
+  lastTimeGas: ChainGas | null;
+}) => {
+  let customGasPrice = 0;
+  let useCachedCustomGasPrice = false;
+
+  if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+    customGasPrice = lastTimeGas.gasPrice;
+    useCachedCustomGasPrice = true;
+  }
+  if (
+    isSpeedUp ||
+    isCancel ||
+    ((isSend || isSwap || isBridge) && tx.gasPrice)
+  ) {
+    customGasPrice = parseInt(tx.gasPrice as string);
+    useCachedCustomGasPrice = false;
+  }
+
+  return { customGasPrice, useCachedCustomGasPrice };
+};
+
+export const resolve1559MaxPriorityFee = (
+  maxFeePerGas: string | number | undefined,
+  maxPriorityFee: number
+) => {
+  const nextMaxFeePerGas = Math.max(0, Math.round(Number(maxFeePerGas || 0)));
+
+  if (!Number.isFinite(maxPriorityFee) || maxPriorityFee < 0) {
+    return nextMaxFeePerGas;
+  }
+
+  return Math.min(nextMaxFeePerGas, Math.round(maxPriorityFee));
+};
+
+export const applySelectedGasToTx = ({
+  tx,
+  gasPrice,
+  support1559,
+  enable7702,
+}: {
+  tx: Tx;
+  gasPrice: string;
+  support1559: boolean;
+  enable7702?: boolean;
+}): Tx =>
+  support1559
+    ? (omit(
+        {
+          ...tx,
+          ...convertLegacyTo1559({ ...tx, gasPrice }),
+          authorizationList: (tx as ApprovalRes).authorizationList,
+        },
+        [...(enable7702 ? [] : ['authorizationList']), 'gasPrice']
+      ) as Tx)
+    : { ...tx, gasPrice };
+
+const resolveInitialGasSelection = ({
+  tx,
+  chainId,
+  support1559,
+  enable7702,
+  gasList,
+  lastTimeGas,
+  ...intent
+}: TxIntent & {
+  tx: Tx;
+  chainId: number;
+  support1559: boolean;
+  enable7702?: boolean;
+  gasList: GasLevel[];
+  lastTimeGas: ChainGas | null;
+}): InitialGasSelection => {
+  const { isSpeedUp, isCancel, isSend, isSwap, isBridge } = intent;
+  const { customGasPrice, useCachedCustomGasPrice } = resolveCustomGasPrice({
+    tx,
+    lastTimeGas,
+    ...intent,
+  });
+  let gas: GasLevel | undefined;
+
+  if (
+    ((isSend || isSwap || isBridge) && customGasPrice) ||
+    isSpeedUp ||
+    isCancel ||
+    lastTimeGas?.lastTimeSelect === 'gasPrice'
+  ) {
+    gas = gasList.find((item) => item.level === 'custom');
+  } else if (lastTimeGas?.lastTimeSelect === 'gasLevel') {
+    gas = gasList.find((item) => item.level === lastTimeGas.gasLevel);
+  }
+  gas ||= gasList.find((item) => item.level === 'normal');
+  if (!gas) {
+    throw new Error('No gas level available');
+  }
+
+  // The cached priority fee patches the selected level only. `feeGasList` stays
+  // local: the published gasList is the untouched market list, as before.
+  let feeGasList = gasList;
+  if (
+    useCachedCustomGasPrice &&
+    lastTimeGas &&
+    typeof lastTimeGas.maxPriorityFee === 'number' &&
+    gas.level === 'custom'
+  ) {
+    gas = {
+      ...gas,
+      priority_price: Math.min(lastTimeGas.maxPriorityFee, customGasPrice),
+    };
+    feeGasList = gasList.map((item) => (item.level === 'custom' ? gas! : item));
+  }
+
+  return {
+    tx: applySelectedGasToTx({
+      tx,
+      gasPrice: intToHex(gas.price),
+      support1559,
+      enable7702,
+    }),
+    gasList,
+    gas,
+    fee: calcMaxPriorityFee(
+      feeGasList,
+      gas,
+      chainId,
+      !!(isCancel || isSpeedUp)
+    ),
+  };
+};
+
+export const prepareInitialGasSelection = async ({
+  tx,
+  chainId,
+  support1559,
+  lastTimeGas,
+  loadGasMarket,
+  ...intent
+}: TxIntent & {
+  tx: Tx;
+  chainId: number;
+  support1559: boolean;
+  enable7702?: boolean;
+  lastTimeGas: ChainGas | null;
+  loadGasMarket: (customGasPrice: number) => Promise<GasLevel[]>;
+}) => {
+  const { customGasPrice } = resolveCustomGasPrice({
+    tx,
+    lastTimeGas,
+    ...intent,
+  });
+
+  return resolveInitialGasSelection({
+    tx,
+    chainId,
+    support1559,
+    gasList: await loadGasMarket(customGasPrice),
+    lastTimeGas,
+    ...intent,
+  });
+};
+
 export const is1559Tx = (tx: Tx) => {
   if (!('maxFeePerGas' in tx) || !('maxPriorityFeePerGas' in tx)) return false;
   return isHexString(tx.maxFeePerGas!) && isHexString(tx.maxPriorityFeePerGas!);
@@ -109,6 +437,95 @@ export const is7702Tx = (tx: ApprovalRes) => {
 
   return false;
 };
+
+export const buildParseTxRequest = ({
+  tx,
+  chainId,
+  nonce,
+  origin,
+  addr,
+  support1559,
+  enable7702,
+  authorizationList,
+}: {
+  tx: Tx;
+  chainId: string;
+  nonce: string;
+  origin: string;
+  addr: string;
+  support1559: boolean;
+  enable7702: boolean;
+  authorizationList?: Array<
+    | {
+        chainId: any;
+        address: string;
+        nonce: any;
+      }
+    | [any, string, any]
+  >;
+}) => {
+  const parseTx = {
+    ...tx,
+    gas: '0x0',
+    nonce,
+    data: tx.data || '0x',
+    value: tx.value || '0x0',
+    to: tx.to || '',
+    type: is7702Tx({ ...tx, authorizationList } as ApprovalRes)
+      ? 4
+      : support1559
+      ? 2
+      : undefined,
+    authorizationList: authorizationList?.map((item) => {
+      const [chainId, address, nonce] = Array.isArray(item)
+        ? item
+        : [item.chainId, item.address, item.nonce];
+      return [
+        new BigNumber(chainId).toNumber(),
+        address,
+        new BigNumber(nonce).toNumber(),
+      ];
+    }),
+  } as any;
+
+  return {
+    chainId,
+    tx: (enable7702 ? parseTx : omit(parseTx, ['authorizationList'])) as Tx,
+    origin,
+    addr,
+  };
+};
+
+export const buildPreExecTxRequest = ({
+  tx,
+  nonce,
+  origin,
+  address,
+  updateNonce,
+  pendingTxList,
+  delegateCall,
+}: {
+  tx: Tx;
+  nonce: string;
+  origin: string;
+  address: string;
+  updateNonce: boolean;
+  pendingTxList: Tx[];
+  delegateCall: boolean;
+}) => ({
+  tx: {
+    ...tx,
+    nonce,
+    data: tx.data || '0x',
+    value: tx.value || '0x0',
+    gas: tx.gas || '',
+  },
+  origin,
+  address,
+  updateNonce,
+  pending_tx_list: pendingTxList,
+  delegate_call: delegateCall,
+});
 
 export function getKRCategoryByType(type?: string) {
   return KEYRING_CATEGORY_MAP[type as any] || null;
@@ -389,11 +806,20 @@ export const getPendingTxs = async ({
 }) => {
   const { pendings } = await wallet.getTransactionHistory(address);
 
-  return pendings
-    .filter(
-      (item) =>
-        item.chainId === chainId && new BigNumber(item.nonce).lt(recommendNonce)
-    )
+  return buildPendingTxList(
+    pendings.filter((item) => item.chainId === chainId),
+    recommendNonce
+  );
+};
+
+export const buildPendingTxList = (
+  pendings: Awaited<
+    ReturnType<WalletControllerType['getTransactionHistory']>
+  >['pendings'],
+  recommendNonce: string
+) =>
+  pendings
+    .filter((item) => new BigNumber(item.nonce).lt(recommendNonce))
     .sort((a, b) =>
       new BigNumber(a.nonce).minus(new BigNumber(b.nonce)).toNumber()
     )
@@ -412,7 +838,6 @@ export const getPendingTxs = async ({
       ).toString(16)}`,
       gas: item.gas || item.gasLimit || '0x0',
     }));
-};
 
 export const explainGas = async ({
   gasUsed,

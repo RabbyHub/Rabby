@@ -17,7 +17,7 @@ import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
-import { useRabbySelector } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
@@ -140,8 +140,14 @@ export const ImportOrCreatedSuccess = () => {
 
   const documentVisibility = useDocumentVisibility();
   const hasReportedRef = useRef(false);
-  const { isExistedKeyring, finalMnemonics, stashKeyringId } = useRabbySelector(
-    (s) => s.importMnemonics
+  const isExistedKeyring = useImportMnemonicsStore(
+    (state) => state.isExistedKeyring
+  );
+  const finalMnemonics = useImportMnemonicsStore(
+    (state) => state.finalMnemonics
+  );
+  const stashKeyringId = useImportMnemonicsStore(
+    (state) => state.stashKeyringId
   );
   const hasMnemonicImportContext = Boolean(finalMnemonics || stashKeyringId);
 

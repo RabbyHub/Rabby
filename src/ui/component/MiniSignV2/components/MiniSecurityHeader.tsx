@@ -39,7 +39,8 @@ export const MiniSecurityHeader: React.FC<{
   } = engineResults || {};
 
   const chain = findChainByID(tx.chainId)!;
-  const { isSpeedUp } = normalizeTxParams(tx);
+  const normalizedTx = normalizeTxParams(tx);
+  const { isSpeedUp } = normalizedTx;
 
   return (
     <TxTypeComponent
@@ -49,7 +50,7 @@ export const MiniSecurityHeader: React.FC<{
       actionRequireData={actionRequireData || {}}
       chain={chain}
       txDetail={txDetail}
-      raw={{ ...tx }}
+      raw={{ ...normalizedTx }}
       onChange={noop}
       isSpeedUp={isSpeedUp}
       engineResults={engineResult || engineResultList?.[0] || []}

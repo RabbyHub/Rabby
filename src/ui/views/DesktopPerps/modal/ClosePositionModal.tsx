@@ -12,13 +12,7 @@ import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
 import { PerpsPositionCard } from '../components/PerpsPositionCard';
 import { usePerpsProPosition } from '../hooks/usePerpsProPosition';
 import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo';
-import {
-  calculateDistanceToLiquidation,
-  calLiquidationPrice,
-  formatPerpsPct,
-  formatTpOrSlPrice,
-  validatePriceInput,
-} from '../../Perps/utils';
+import { formatTpOrSlPrice, validatePriceInput } from '../../Perps/utils';
 import { PositionSizeInputAndSlider } from '../components/TradingPanel/components/PositionSizeInputAndSlider';
 import { PositionSize } from '../types';
 import stats from '@/stats';
@@ -433,43 +427,6 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
 
   const reverseDirection =
     position.direction === 'Long' ? ('Short' as const) : ('Long' as const);
-
-  const reverseEstimatedLiquidationPrice = useMemo(() => {
-    const markPrice = Number(marketData.markPx);
-    const margin = Number(position.marginUsed);
-    const positionSize = Number(position.size);
-    const maxLeverage = Number(marketData.maxLeverage);
-
-    if (!markPrice || !margin || !positionSize || !maxLeverage) {
-      return 0;
-    }
-
-    return calLiquidationPrice(
-      markPrice,
-      margin,
-      reverseDirection,
-      positionSize,
-      positionSize * markPrice,
-      maxLeverage
-    );
-  }, [
-    marketData.markPx,
-    marketData.maxLeverage,
-    position.marginUsed,
-    position.size,
-    reverseDirection,
-  ]);
-
-  const reverseLiquidationDistance = useMemo(() => {
-    if (!reverseEstimatedLiquidationPrice || !Number(marketData.markPx)) {
-      return 0;
-    }
-
-    return calculateDistanceToLiquidation(
-      reverseEstimatedLiquidationPrice,
-      marketData.markPx
-    );
-  }, [reverseEstimatedLiquidationPrice, marketData.markPx]);
 
   const renderReverseTag = (
     children: React.ReactNode,

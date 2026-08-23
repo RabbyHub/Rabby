@@ -89,10 +89,13 @@ import {
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
 import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
+import { useOpenapiStore } from '@/ui/state/openapi';
+import { appIsDebugPkg, appIsDev } from '@/utils/env';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
-  return [
+
+  const options = [
     {
       value: 0,
       label: t('page.dashboard.settings.lock.never'),
@@ -118,6 +121,13 @@ const useAutoLockOptions = () => {
       label: t('page.dashboard.settings.10Minutes'),
     },
   ];
+  if (appIsDebugPkg || appIsDev) {
+    options.push({
+      value: 1,
+      label: '1 minute',
+    });
+  }
+  return options;
 };
 
 interface SettingsProps {
@@ -665,7 +675,7 @@ const SettingsInner = ({
   );
   const themeMode = useRabbySelector((state) => state.preference.themeMode);
 
-  const openapiStore = useRabbySelector((state) => state.openapi);
+  const openapiStore = useOpenapiStore();
 
   const dispatch = useRabbyDispatch();
   const { currency, syncCurrencyList } = useCurrency();
@@ -1647,11 +1657,6 @@ const SettingsInner = ({
     onClose && onClose(e);
   };
 
-  useEffect(() => {
-    dispatch.openapi.getHost();
-    dispatch.openapi.getTestnetHost();
-  }, [dispatch.openapi]);
-
   const [isShowEcology, setIsShowEcologyModal] = React.useState(false);
 
   return (
@@ -1742,7 +1747,7 @@ const SettingsInner = ({
         value={openapiStore.host}
         defaultValue={INITIAL_OPENAPI_URL}
         onFinish={(host) => {
-          dispatch.openapi.setHost(host);
+          openapiStore.setHost(host);
           setShowOpenApiModal(false);
         }}
         onCancel={() => setShowOpenApiModal(false)}
@@ -1753,7 +1758,7 @@ const SettingsInner = ({
         defaultValue={INITIAL_TESTNET_OPENAPI_URL}
         title={t('page.dashboard.settings.testnetBackendServiceUrl')}
         onFinish={(host) => {
-          dispatch.openapi.setTestnetHost(host);
+          openapiStore.setTestnetHost(host);
           setShowTestnetOpenApiModal(false);
         }}
         onCancel={() => setShowTestnetOpenApiModal(false)}

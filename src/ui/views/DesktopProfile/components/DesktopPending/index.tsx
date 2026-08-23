@@ -5,29 +5,29 @@ import {
   useCurrentAccount,
   useSceneAccount,
 } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyDispatch } from '@/ui/store';
 import { EVENTS, KEYRING_TYPE } from '@/constant';
 import { useRequest } from 'ahooks';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { RcIconSpinCC } from '@/ui/assets/desktop/profile';
 import React from 'react';
 import { AccountScene } from '@/constant/scene-account';
+import { useTransactionsStore } from '@/ui/state/transactions';
 
 export const DesktopPending = ({ className }: { className?: string }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const currentAccount = useCurrentAccount();
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
-  const dispatch = useRabbyDispatch();
+  const getPendingTxCountAsync = useTransactionsStore(
+    (state) => state.getPendingTxCountAsync
+  );
 
   const { data: pendingTxCount, runAsync } = useRequest(
     async () => {
       if (!currentAccount?.address || isGnosis) {
         return;
       }
-      return dispatch.transactions.getPendingTxCountAsync(
-        currentAccount?.address
-      );
+      return getPendingTxCountAsync(currentAccount.address);
     },
     {
       refreshDeps: [currentAccount?.address, isGnosis],
@@ -78,16 +78,16 @@ export const DesktopScenePending = ({
   const history = useHistory();
   const [currentAccount] = useSceneAccount({ scene });
   const isGnosis = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
-  const dispatch = useRabbyDispatch();
+  const getPendingTxCountAsync = useTransactionsStore(
+    (state) => state.getPendingTxCountAsync
+  );
 
   const { data: pendingTxCount, runAsync } = useRequest(
     async () => {
       if (!currentAccount?.address || isGnosis) {
         return;
       }
-      return dispatch.transactions.getPendingTxCountAsync(
-        currentAccount?.address
-      );
+      return getPendingTxCountAsync(currentAccount.address);
     },
     {
       refreshDeps: [currentAccount?.address, isGnosis],

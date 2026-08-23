@@ -7,7 +7,7 @@ import { toChecksumAddress } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { last } from 'lodash';
-import * as Sentry from '@sentry/browser';
+import { capturePerpsError } from '@/ui/views/Perps/sentry';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import {
   ARB_USDC_TOKEN_ID,
@@ -1062,17 +1062,11 @@ export const useDepositWithdraw = (
         duration: 1.5,
         content: error.message || 'Withdraw failed',
       });
-      Sentry.captureException(
-        new Error(
-          'PERPS Withdraw failed' +
-            'account: ' +
-            JSON.stringify(currentPerpsAccount) +
-            'amount: ' +
-            amount +
-            'error: ' +
-            JSON.stringify({ error })
-        )
-      );
+      capturePerpsError('withdraw failed', error, {
+        address: currentPerpsAccount?.address,
+        accountType: currentPerpsAccount?.type,
+        amount,
+      });
     } finally {
       setIsWithdrawLoading(false);
     }

@@ -26,7 +26,7 @@ import { AddressViewer, Popup } from 'ui/component';
 import { splitNumberByStep, useAlias, useCexId } from 'ui/utils';
 import { ReactComponent as RcWhitelistGuardBordered } from '@/ui/assets/component/whitelist-guard-bordered.svg';
 import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
-import { Exchange } from '@/ui/models/exchange';
+import type { Exchange } from '@/ui/state/exchange';
 import { useForm } from 'antd/lib/form/Form';
 import styled from 'styled-components';
 

@@ -15,7 +15,8 @@ import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { Chain } from 'background/service/openapi';
 import { findChain } from '@/utils/chain';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { isSameAddress } from '@/ui/utils';
@@ -58,14 +59,19 @@ const CrossSwapToken = ({
     receiver,
   } = data!;
   const { t } = useTranslation();
-  const { rules, processedRules, contractWhitelist } = useRabbySelector(
-    (s) => ({
-      rules: s.securityEngine.rules,
-      processedRules: s.securityEngine.currentTx.processedRules,
-      contractWhitelist: s.securityEngine.userData.contractWhitelist,
-    })
+  const {
+    rules,
+    processedRules,
+    contractWhitelist,
+    openRuleDrawer,
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      contractWhitelist: s.userData.contractWhitelist,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
   );
-  const dispatch = useRabbyDispatch();
 
   const isInWhitelist = useMemo(() => {
     return contractWhitelist.some(
@@ -95,7 +101,7 @@ const CrossSwapToken = ({
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
     const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: result?.value,
       level: result?.level,

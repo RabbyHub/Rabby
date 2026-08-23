@@ -47,7 +47,6 @@ import { getDefaultSwapToTokenItem } from '@/constant/dex-swap';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
-const FREE_TOKEN_PAIR_AUTO_SLIPPAGE = '0.1';
 
 const getDexQuoteReceiveAmount = (
   quote: TDexQuoteData,
@@ -620,9 +619,7 @@ export const useTokenPair = (userAddress: string) => {
     [payToken, receiveToken]
   );
 
-  const autoSlippageValue = isFreeTokenPair
-    ? FREE_TOKEN_PAIR_AUTO_SLIPPAGE
-    : getSwapAutoSlippageValue(isStableCoin);
+  const autoSlippageValue = getSwapAutoSlippageValue(isStableCoin);
 
   const [isWrapToken, wrapTokenSymbol] = useMemo(() => {
     if (payToken?.id && receiveToken?.id) {
@@ -753,12 +750,7 @@ export const useTokenPair = (userAddress: string) => {
         e.map((q) => ({ ...q, loading: true, isBest: false }))
       );
       let slippage = slippageObj.slippage;
-      if (slippageObj.autoSlippage && isFreeTokenPair) {
-        slippage = autoSlippageValue;
-        if (currentFetchId === fetchIdRef.current) {
-          setAutoSuggestSlippage(slippage);
-        }
-      } else if (slippageObj.autoSlippage) {
+      if (slippageObj.autoSlippage) {
         try {
           const suggestSlippage = await wallet.openapi.suggestSlippage({
             chain_id: findChainByEnum(chain)!.serverId,
@@ -817,8 +809,6 @@ export const useTokenPair = (userAddress: string) => {
     feeRate,
     slippageObj.slippage,
     slippageObj.autoSlippage,
-    isFreeTokenPair,
-    autoSlippageValue,
     isDraggingSlider,
   ]);
 

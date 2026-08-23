@@ -15,7 +15,7 @@ import clsx from 'clsx';
 import React, { useEffect, useMemo } from 'react';
 import { SelectChainItemProps, TDisableCheckChainFn } from './SelectChainItem';
 import { SortableSelectChainItem } from './SortableSelectChainItem';
-import { useRabbyDispatch } from '@/ui/store';
+import { useCustomRPCStore } from '@/ui/state/customRPC';
 
 export type SelectChainListProps = {
   className?: string;
@@ -48,12 +48,12 @@ export const SelectChainList = (props: SelectChainListProps) => {
     disableChainCheck,
     showRPCStatus = false,
   } = props;
-  const dispatch = useRabbyDispatch();
+  const getAllRPC = useCustomRPCStore((state) => state.getAllRPC);
 
   useEffect(() => {
     if (!showRPCStatus) return;
-    dispatch.customRPC.getAllRPC();
-  }, [dispatch, showRPCStatus]);
+    void getAllRPC();
+  }, [getAllRPC, showRPCStatus]);
 
   const items = useMemo(() => {
     return data.map((item, index) => ({

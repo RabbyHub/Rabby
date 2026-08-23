@@ -3614,6 +3614,7 @@
       "directDepositFast": "Rápido, 0 Slippage",
       "crossMargin": "Margem Cruzada",
       "marginMode": "Modo de Margem",
+      "marginModeSwitchFailed": "Falha ao alterar o modo de margem. Tente novamente.",
       "settings": "Configurações",
       "unrealizedPnl": "PNL não realizado",
       "positionValue": "Valor da Posição",

@@ -10,6 +10,7 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
+import { useExchangeStore } from '../state/exchange';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -240,9 +241,7 @@ export const useAlias = (address: string) => {
 
 export const useCexId = (address: string) => {
   const wallet = useWallet();
-  const { exchanges } = useRabbySelector((s) => ({
-    exchanges: s.exchange.exchanges,
-  }));
+  const exchanges = useExchangeStore((state) => state.exchanges);
   const [cexId, setCexId] = useState<string>();
   useEffect(() => {
     setCexId(undefined);

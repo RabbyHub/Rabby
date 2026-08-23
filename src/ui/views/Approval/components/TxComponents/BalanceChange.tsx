@@ -15,7 +15,7 @@ import { ReactComponent as RcIconAlert } from 'ui/assets/sign/tx/alert-currentco
 import { ReactComponent as NoBalanceSVG } from 'ui/assets/sign/no-balance.svg';
 import { formatNumber, formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { useRabbyDispatch } from 'ui/store';
+import { useSignStore } from '@/ui/state/sign';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import styled from 'styled-components';
 import IconNFTDefault from '@/ui/assets/nft-default.svg';
@@ -157,7 +157,9 @@ const BalanceChange = ({
   chainEnum?: CHAINS_ENUM;
   version: 'v0' | 'v1' | 'v2';
 }) => {
-  const dispatch = useRabbyDispatch();
+  const openTokenDetailPopup = useSignStore(
+    (state) => state.openTokenDetailPopup
+  );
   const { t } = useTranslation();
 
   const isSuccess = data?.success;
@@ -194,7 +196,7 @@ const BalanceChange = ({
   }, [data]);
 
   const handleClickToken = (t: TokenItem) => {
-    dispatch.sign.openTokenDetailPopup(t);
+    openTokenDetailPopup(t);
   };
 
   if (version === 'v0') {

@@ -6,7 +6,13 @@ import {
   preferenceService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
-import { EVENTS, KEYRING_CLASS } from 'consts';
+import {
+  EVENTS,
+  INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  SUPPORT_1559_KEYRING_TYPE,
+} from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
@@ -21,6 +27,18 @@ import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
 import { ga4 } from '@/utils/ga4';
+import {
+  buildSignTx,
+  normalizeTxParams,
+  shouldUpdateNonce,
+} from '@/utils/transaction';
+import type { Tx } from 'background/service/openapi';
+import {
+  cancelSignTxPreparation,
+  startSignTxPreparation,
+} from '@/background/service/signTxPreparation';
+import { v4 as uuidv4 } from 'uuid';
+import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -241,20 +259,130 @@ const flowContext = flow
         }
       }
 
-      ctx.approvalRes = await notificationService.requestApproval(
-        {
+      const approvalCtx = ctx?.request?.data?.$ctx;
+      // `params` is not always a tx array - wallet_watchAsset passes an object,
+      // so params[0] must only be read on the SignTx path.
+      const signTx = approvalType === 'SignTx' ? params[0] : undefined;
+      // SignTx renders and signs the dapp-normalized tx, so the preparation
+      // has to read its intent flags from that same copy - reading them off
+      // the raw dapp params lets a dapp set isSpeedUp/isSend and steer the
+      // prepared nonce and gas level. Normalizing can throw on malformed
+      // numeric input; that must only skip the preparation, never reject the
+      // approval the user would otherwise see.
+      let normalizedSignTx: (Tx & Record<string, any>) | undefined;
+      try {
+        normalizedSignTx = signTx
+          ? (normalizeTxParams(
+              { ...signTx },
+              !isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
+            ) as Tx & Record<string, any>)
+          : undefined;
+      } catch (e) {
+        Sentry.captureException(e);
+      }
+      const hasEip7702Authorization = Boolean(
+        (Array.isArray(signTx?.authorizationList) &&
+          signTx.authorizationList.length > 0) ||
+          approvalCtx?.eip7702Revoke ||
+          approvalCtx?.eip7702RevokeAuthorization
+      );
+      const signTxChain = signTx
+        ? findChain({ id: Number(signTx.chainId) })
+        : undefined;
+      const isSafeAccount =
+        ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring ||
+        ctx.request.account?.type === KEYRING_TYPE.CoboArgusKeyring;
+      // SignTx sends its own parse/pre-exec requests with the approval
+      // account's address, not the dapp-supplied `from`, so the preparation
+      // has to use the same one or the two describe the request differently.
+      const preparationAddress = ctx.request.account?.address;
+      const canPrepareNonce = normalizedSignTx
+        ? shouldUpdateNonce({
+            nonce: normalizedSignTx.nonce,
+            from: normalizedSignTx.from,
+            to: normalizedSignTx.to,
+            isSpeedUp: normalizedSignTx.isSpeedUp,
+            isCancel: normalizedSignTx.isCancel,
+          }) || normalizedSignTx.nonce != null
+        : false;
+      let signTxPreparationId: string | undefined;
+      if (
+        signTx &&
+        normalizedSignTx &&
+        preparationAddress &&
+        signTxChain &&
+        !signTxChain.isTestnet &&
+        !isSafeAccount &&
+        canPrepareNonce &&
+        !hasEip7702Authorization
+      ) {
+        signTxPreparationId = uuidv4();
+      }
+      try {
+        const approvalData = {
           approvalComponent: approvalType,
           params: {
-            $ctx: ctx?.request?.data?.$ctx,
+            $ctx: approvalCtx,
             method,
             data: ctx.request.data.params,
             session: { origin, name, icon, isFromRabby },
           },
           account: ctx.request.account,
           origin,
-        },
-        { height: windowHeight }
-      );
+        };
+        const approvalPromise = notificationService.requestApproval(
+          approvalData,
+          { height: windowHeight },
+          {
+            onCurrent: () => {
+              if (
+                !signTxPreparationId ||
+                !signTx ||
+                !normalizedSignTx ||
+                !preparationAddress ||
+                !signTxChain
+              ) {
+                return;
+              }
+              Object.assign(approvalData.params, { signTxPreparationId });
+              startSignTxPreparation({
+                id: signTxPreparationId,
+                // must match how SignTx builds the tx it renders and signs -
+                // the prepared pre-exec result is shown as that tx's asset
+                // change. enable7702 is always false here, preparation is
+                // skipped for any 7702 authorization.
+                tx: buildSignTx({
+                  tx: normalizedSignTx,
+                  chainId: Number(signTx.chainId),
+                  gasLimit: normalizedSignTx.gasLimit,
+                }),
+                origin,
+                address: preparationAddress,
+                chainId: Number(signTx.chainId),
+                support1559:
+                  signTxChain.eip['1559'] &&
+                  SUPPORT_1559_KEYRING_TYPE.includes(
+                    ctx.request.account?.type as any
+                  ),
+                delegateCall:
+                  Boolean(normalizedSignTx.operation) &&
+                  ctx.request.account?.type === KEYRING_TYPE.GnosisKeyring,
+                isSpeedUp: normalizedSignTx.isSpeedUp,
+                isCancel: normalizedSignTx.isCancel,
+                isSend: normalizedSignTx.isSend,
+                isSwap: normalizedSignTx.isSwap,
+                isBridge: normalizedSignTx.isBridge,
+              });
+            },
+          }
+        );
+
+        ctx.approvalRes = await approvalPromise;
+      } finally {
+        if (signTxPreparationId) {
+          cancelSignTxPreparation(signTxPreparationId);
+        }
+      }
 
       if (isSignApproval(approvalType)) {
         permissionService.updateConnectSite(origin, { isSigned: true }, true);
@@ -383,7 +511,17 @@ const flowContext = flow
                 payload.params = e.message;
               }
 
-              Sentry.captureException(e);
+              const signingCarrier = takeSigningCarrier(e);
+              if (signingCarrier) {
+                if (!isSigningCarrierReported(signingCarrier)) {
+                  Sentry.captureException(signingCarrier);
+                }
+              } else if (
+                !isSignApproval(approvalType) ||
+                (e && typeof e === 'object')
+              ) {
+                Sentry.captureException(e);
+              }
               if (isSignApproval(approvalType)) {
                 eventBus.emit(EVENTS.broadcastToUI, payload);
               }

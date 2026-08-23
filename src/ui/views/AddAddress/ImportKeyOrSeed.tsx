@@ -9,7 +9,8 @@ import { KEYRING_CLASS } from 'consts';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import { connectStore, useRabbyDispatch } from '@/ui/store';
+import { connectStore } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { PageHeader } from '@/ui/component';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
@@ -71,7 +72,6 @@ const ImportKeyOrSeed: React.FC<{
   const history = useHistory();
   const location = useLocation<RouteState>();
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
   const { openSuccessPage } = useCreateAddressActions({
     onNavigate,
@@ -294,20 +294,24 @@ const ImportKeyOrSeed: React.FC<{
       } = await wallet.generateKeyringWithMnemonic(seedPhrase, passphrase);
       const keyring = await wallet.getKeyringByMnemonic(seedPhrase, passphrase);
 
-      dispatch.importMnemonics.switchKeyring({
+      useImportMnemonicsStore.getState().switchKeyring({
         finalMnemonics: seedPhrase,
         passphrase,
         isExistedKeyring: isExistedKR,
         stashKeyringId,
       });
 
-      const accounts = await dispatch.importMnemonics.getAccounts({
+      const accounts = await useImportMnemonicsStore.getState().getAccounts({
         start: 0,
         end: 1,
       });
 
-      await dispatch.importMnemonics.setSelectedAccounts([accounts[0].address]);
-      await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+      await useImportMnemonicsStore
+        .getState()
+        .setSelectedAccounts([accounts[0].address]);
+      await useImportMnemonicsStore
+        .getState()
+        .confirmAllImportingAccountsAsync();
       clearClipboard();
 
       openSuccess(

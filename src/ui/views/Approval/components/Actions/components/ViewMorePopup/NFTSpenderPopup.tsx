@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
-import { useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { isSameAddress } from '@/ui/utils';
 
 interface NFTSpenderData {
@@ -33,9 +33,9 @@ export interface NFTSpenderPopupProps extends Props {
 export const NFTSpenderPopup: React.FC<Props> = ({ data }) => {
   const { t } = useTranslation();
 
-  const { contractBlacklist, contractWhitelist } = useRabbySelector((state) => {
-    return state.securityEngine.userData;
-  });
+  const { contractBlacklist, contractWhitelist } = useSecurityEngineStore(
+    (state) => state.userData
+  );
 
   const { isInBlackList, isInWhiteList } = useMemo(() => {
     return {

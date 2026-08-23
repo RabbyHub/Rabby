@@ -34,7 +34,7 @@ import {
   SUPPORT_1559_KEYRING_TYPE,
 } from 'consts';
 import { normalizeTxParams } from '@/ui/views/Approval/components/SignTx';
-import { getCexInfo } from '@/ui/models/exchange';
+import { getCexInfo } from '@/ui/state/exchange';
 
 import type { OpenApiService } from '@rabby-wallet/rabby-api';
 import { buildFingerprint } from '@/ui/component/MiniSignV2/domain/ctx';
