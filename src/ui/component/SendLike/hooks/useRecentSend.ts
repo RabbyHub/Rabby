@@ -11,12 +11,16 @@ import { findChain } from '@/utils/chain';
 import { isSameAddress, useWallet, WalletControllerType } from '@/ui/utils';
 import { TransactionGroup } from '@/background/service/transactionHistory';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyGetter } from '@/ui/store';
 import { useWhitelistStore } from '@/ui/state/whitelist';
+import {
+  selectMyImportedAccounts,
+  useAccountToDisplayStore,
+} from '@/ui/state/accountToDisplay';
 import { findMaxGasTx } from '@/utils/tx';
 import { isValidAddress } from '@ethereumjs/util';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { useShallow } from 'zustand/react/shallow';
 
 interface DisplayHistoryItem {
   isDateStart?: boolean;
@@ -104,8 +108,8 @@ export const useRecentSend = ({
 } = {}) => {
   const wallet = useWallet();
 
-  const myImportedAccounts = useRabbyGetter(
-    (s) => s.accountToDisplay.myImportedAccounts
+  const myImportedAccounts = useAccountToDisplayStore(
+    useShallow(selectMyImportedAccounts)
   );
 
   const unionAccounts = useMemo(() => {

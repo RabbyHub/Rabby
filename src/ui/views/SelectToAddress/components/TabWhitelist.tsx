@@ -35,7 +35,7 @@ import { useContactBookStore } from '@/ui/state/contactBook';
 import { groupBy } from 'lodash';
 import { findAccountByPriority } from '@/utils/account';
 import { padWatchAccount } from '../util';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 
 // icons
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';

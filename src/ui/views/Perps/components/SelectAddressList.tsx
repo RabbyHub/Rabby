@@ -4,7 +4,7 @@ import { ReactComponent as RcIconChecked } from '@/ui/assets/check-2.svg';
 import { AddressViewer, Item } from '@/ui/component';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import {
   formatUsdValue,

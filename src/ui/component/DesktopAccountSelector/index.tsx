@@ -5,7 +5,7 @@ import { RcIconCopyCC } from '@/ui/assets/desktop/common';
 import { RcIconAddWalletCC } from '@/ui/assets/desktop/profile';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep, useAlias } from '@/ui/utils';

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import clsx from 'clsx';
 import { message, Tooltip } from 'antd';
 import { ellipsis } from 'ui/utils/address';
-import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { splitNumberByStep } from 'ui/utils/number';
 import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from 'consts';
 import { ReactComponent as RcIconWhitelist } from 'ui/assets/address/whitelist.svg';

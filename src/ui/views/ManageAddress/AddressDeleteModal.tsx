@@ -7,7 +7,7 @@ import { Popup } from '@/ui/component';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { Button } from 'antd';
 import React, { useMemo } from 'react';
-import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { ReactComponent as IconDelete } from '@/ui/assets/address/red-delete.svg';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';

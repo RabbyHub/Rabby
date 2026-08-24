@@ -2,7 +2,6 @@ import { Models, RematchDispatch } from '@rematch/core';
 
 import { app } from './app';
 import { preference } from './preference';
-import { accountToDisplay } from './accountToDisplay';
 import { addressManagement } from './addressManagement';
 import { chains } from './chains';
 import { bridge } from './bridge';
@@ -10,11 +9,14 @@ import { gasAccount } from './gasAccount';
 import { gift } from './gift';
 import { perps } from './perps';
 import type { AccountActions, AccountState } from '@/ui/state/account';
+import type {
+  AccountToDisplayActions,
+  AccountToDisplayState,
+} from '@/ui/state/accountToDisplay';
 
 type RabbyModels = {
   app: typeof app;
   preference: typeof preference;
-  accountToDisplay: typeof accountToDisplay;
   addressManagement: typeof addressManagement;
   chains: typeof chains;
   bridge: typeof bridge;
@@ -28,7 +30,6 @@ export interface RootModel extends Models<RootModel>, RabbyModels {}
 export const models: RootModel = {
   app,
   preference,
-  accountToDisplay,
   addressManagement,
   chains,
   bridge,
@@ -39,9 +40,11 @@ export const models: RootModel = {
 
 export type RabbyDispatch = RematchDispatch<RootModel> & {
   account: AccountActions;
+  accountToDisplay: AccountToDisplayActions;
 };
 export type RabbyRootState = {
   [Key in keyof RabbyModels]: RabbyModels[Key]['state'];
 } & {
   account: AccountState;
+  accountToDisplay: AccountToDisplayState;
 };

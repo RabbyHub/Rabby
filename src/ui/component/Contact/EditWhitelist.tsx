@@ -3,7 +3,7 @@ import { Button } from 'antd';
 import styled from 'styled-components';
 import { PageHeader, Checkbox, Modal } from 'ui/component';
 import AccountItem from './AccountItem';
-import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { isSameAddress } from 'ui/utils';
 import { useTranslation } from 'react-i18next';
 

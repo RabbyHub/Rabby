@@ -5,16 +5,22 @@ import selectPlugin from '@rematch/select';
 
 import onStoreInitialized from './models/_uistore';
 import { accountActions, useAccountStore } from './state/account';
+import {
+  accountToDisplayActions,
+  useAccountToDisplayStore,
+} from './state/accountToDisplay';
 import { createSelectorStore } from './state/createStore/createSelectorStore';
 
 const store = init<RootModel>({ models, plugins: [selectPlugin()] });
 (store.dispatch as RabbyDispatch).account = accountActions;
+(store.dispatch as RabbyDispatch).accountToDisplay = accountToDisplayActions;
 
 onStoreInitialized(store);
 
 const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
   ...store.getState(),
   account: useAccountStore.getState(),
+  accountToDisplay: useAccountToDisplayStore.getState(),
 }));
 
 store.subscribe(() => {
@@ -22,6 +28,9 @@ store.subscribe(() => {
 });
 useAccountStore.subscribe((account) => {
   useCombinedStore.setState({ account });
+});
+useAccountToDisplayStore.subscribe((accountToDisplay) => {
+  useCombinedStore.setState({ accountToDisplay });
 });
 
 export type { RabbyRootState };

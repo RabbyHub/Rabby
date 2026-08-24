@@ -1,4 +1,5 @@
 import { createModel } from '@rematch/core';
+import { useAccountToDisplayStore } from '@/ui/state/accountToDisplay';
 
 import { RootModel } from '.';
 import { Account, IHighlightedAddress } from '@/background/service/preference';
@@ -81,7 +82,7 @@ export const addressManagement = createModel<RootModel>()({
       store
     ) {
       await store.app.wallet.removeAddress(...payload);
-      await dispatch.accountToDisplay.getAllAccountsToDisplay();
+      await useAccountToDisplayStore.getState().getAllAccountsToDisplay();
     },
   }),
 });
