@@ -7,7 +7,7 @@ import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
 import { isSameAddress, useHover, useWallet } from 'ui/utils';
 import { formatTimeSpanToMinutes, getTimeSpan } from 'ui/utils/time';
-import { useRabbyDispatch } from 'ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
 import LogoWithText from './LogoWithText';
 import { ellipsis } from '@/ui/utils/address';
@@ -26,6 +26,7 @@ import { getAddressScanLink } from '@/utils';
 import { findChain } from '@/utils/chain';
 import clsx from 'clsx';
 import { copyAddress } from '@/ui/utils/clipboard';
+import { useSignStore } from '@/ui/state/sign';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -151,7 +152,7 @@ const AddressMark = ({
 }) => {
   const chainId = chain?.serverId;
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
+  const initSecurityEngine = useSecurityEngineStore((state) => state.init);
   const { t } = useTranslation();
   const handleEditMark = () => {
     userDataDrawer({
@@ -237,7 +238,7 @@ const AddressMark = ({
             ),
           });
         }
-        dispatch.securityEngine.init();
+        initSecurityEngine();
         onChange();
       },
     });
@@ -473,9 +474,11 @@ const TokenSymbol = ({
   token: TokenItem;
   disableHover?: boolean;
 }) => {
-  const dispatch = useRabbyDispatch();
+  const openTokenDetailPopup = useSignStore(
+    (state) => state.openTokenDetailPopup
+  );
   const handleClickTokenSymbol = () => {
-    dispatch.sign.openTokenDetailPopup(token);
+    openTokenDetailPopup(token);
   };
   return (
     <span

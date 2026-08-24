@@ -2,15 +2,17 @@ import { useCallback } from 'react';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { KEYRING_CLASS } from '@/constant';
 import { isSameAddress } from '../utils';
+import { useContactBookStore } from '@/ui/state/contactBook';
 
 export function useContactAccounts() {
   const dispatch = useRabbyDispatch();
-  const { accountsList, contactsByAddr } = useRabbySelector((state) => {
-    return {
-      accountsList: state.accountToDisplay.accountsList,
-      contactsByAddr: state.contactBook.contactsByAddr,
-    };
-  });
+  const accountsList = useRabbySelector(
+    (state) => state.accountToDisplay.accountsList
+  );
+  const contactsByAddr = useContactBookStore((state) => state.contactsByAddr);
+  const getContactBookAsync = useContactBookStore(
+    (state) => state.getContactBookAsync
+  );
 
   const isAddrOnContactBook = useCallback(
     (address?: string) => {
@@ -33,9 +35,9 @@ export function useContactAccounts() {
   );
 
   const fetchContactAccounts = useCallback(() => {
-    dispatch.contactBook.getContactBookAsync();
+    getContactBookAsync();
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-  }, []);
+  }, [dispatch.accountToDisplay, getContactBookAsync]);
 
   return {
     getAddressNote,

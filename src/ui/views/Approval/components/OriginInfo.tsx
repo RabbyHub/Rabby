@@ -9,7 +9,8 @@ import { ConnectedSite } from '@/background/service/permission';
 import { useWallet } from '@/ui/utils';
 import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 
 interface Props {
   chain?: Chain;
@@ -61,11 +62,19 @@ export const OriginInfo: React.FC<Props> = ({
     connectedSite,
     setConnectedSite,
   ] = React.useState<ConnectedSite | null>(null);
-  const dispatch = useRabbyDispatch();
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const {
+    rules,
+    processedRules,
+    openRuleDrawer,
+    initSecurityEngine,
+  } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+      initSecurityEngine: s.init,
+    }))
+  );
 
   const currentChain = useMemo(() => {
     if (origin === INTERNAL_REQUEST_ORIGIN) {
@@ -105,7 +114,7 @@ export const OriginInfo: React.FC<Props> = ({
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
     const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: result?.value,
       level: result?.level,
@@ -114,7 +123,7 @@ export const OriginInfo: React.FC<Props> = ({
   };
 
   const init = async () => {
-    dispatch.securityEngine.init();
+    await initSecurityEngine();
   };
 
   useEffect(() => {

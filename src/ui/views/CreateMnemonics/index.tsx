@@ -1,15 +1,16 @@
 import React from 'react';
-import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
+import { connectStore, useRabbyDispatch } from 'ui/store';
 import RiskCheck from './RiskCheck';
 import DisplayMnemonic from './DisplayMnemonic';
 import { useTranslation } from 'react-i18next';
+import { useCreateMnemonicsStore } from '@/ui/state/createMnemonics';
 
 const CreateMnemonic = () => {
-  const step = useRabbySelector((s) => s.createMnemonics.step);
+  const step = useCreateMnemonicsStore((state) => state.step);
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   React.useEffect(() => {
-    dispatch.createMnemonics.getAllHDKeyrings();
+    dispatch.account.getAllClassAccountsAsync();
   }, []);
   let node;
 

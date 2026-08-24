@@ -14,6 +14,8 @@ import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useRabbySelector } from '@/ui/store';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { findChain } from '@/utils/chain';
+import { ga4 } from '@/utils/ga4';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Chain } from '@debank/common';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
@@ -364,6 +366,13 @@ export const BalanceView = ({
     if (shouldShowBalanceLoading) {
       return;
     }
+    matomoRequestEvent({
+      category: 'Front Page Click',
+      action: 'Click_BalanceCard',
+    });
+    ga4.fireEvent('Click_BalanceCard', {
+      event_category: 'Front Page Click',
+    });
     activePopup('AssetList');
     // wallet.openInDesktop('/desktop/profile');
     // window.close();

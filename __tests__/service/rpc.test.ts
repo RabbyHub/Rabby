@@ -1,5 +1,8 @@
 jest.mock('@/background/utils', () => ({
   createPersistStore: jest.fn(),
+  patchPersistStore: jest.fn((store, partials) => {
+    Object.assign(store, partials);
+  }),
 }));
 
 jest.mock('@/background/utils/http', () => ({
@@ -26,7 +29,55 @@ jest.mock('@/constant', () => ({
   INTERNAL_REQUEST_ORIGIN: 'https://rabby.io',
 }));
 
-import RPCService from '@/background/service/rpc';
+import RPCService, { rpcServiceStoreSchema } from '@/background/service/rpc';
+import { patchPersistStore } from '@/background/utils';
+
+describe('RPCService persistence', () => {
+  beforeEach(() => {
+    RPCService.store = {
+      customRPC: {
+        ETH: {
+          url: 'https://eth.example',
+          enable: true,
+        },
+      },
+      defaultRPC: {},
+    };
+    RPCService.rpcStatus = {
+      ETH: {
+        expireAt: Date.now() + 60_000,
+        available: true,
+      },
+    };
+    (patchPersistStore as jest.Mock).mockClear();
+  });
+
+  test('provides defaults and rejects invalid persisted RPC items', () => {
+    expect(rpcServiceStoreSchema.parse({})).toEqual({ customRPC: {} });
+    expect(
+      rpcServiceStoreSchema.safeParse({
+        customRPC: {
+          ETH: { url: 'https://eth.example' },
+        },
+      }).success
+    ).toBe(false);
+  });
+
+  test('patches the full RPC map atomically and clears changed status caches', () => {
+    const customRPC = {
+      BSC: {
+        url: 'https://bsc.example',
+        enable: false,
+      },
+    };
+
+    expect(RPCService.patchStore({ customRPC }).sort()).toEqual(['BSC', 'ETH']);
+    expect(patchPersistStore).toHaveBeenCalledWith(RPCService.store, {
+      customRPC,
+    });
+    expect(RPCService.rpcStatus.ETH).toBeUndefined();
+  });
+});
 
 describe('RPCService preferred RPC', () => {
   afterEach(() => {

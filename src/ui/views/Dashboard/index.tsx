@@ -25,6 +25,7 @@ import {
   useGasAccountSign,
 } from '@/ui/views/GasAccount/hooks';
 import { StablecoinSwapPopup } from './components/StablecoinSwapPopup';
+import { useAppVersionStore } from '@/ui/state/appVersion';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -37,9 +38,14 @@ const Dashboard = () => {
   const { sig, accountId } = useGasAccountSign();
   const hasGasAccountSession = !!sig && !!accountId;
 
-  const { firstNotice, updateContent, version } = useRabbySelector((s) => ({
-    ...s.appVersion,
-  }));
+  const {
+    firstNotice,
+    updateContent,
+    version,
+    checkIfFirstLoginAsync,
+    afterFirstLogin,
+  } = useAppVersionStore();
+  const locale = useRabbySelector((s) => s.preference.locale);
   const accountsDiscoveryKey = useRabbySelector((s) =>
     s.accountToDisplay.accountsList
       .map(
@@ -105,9 +111,9 @@ const Dashboard = () => {
     });
   }, [accountsDiscoveryKey, hasGasAccountSession, refreshDiscovery]);
 
-  useEffect(() => {
-    dispatch.appVersion.checkIfFirstLoginAsync();
-  }, [dispatch]);
+  useMount(() => {
+    void checkIfFirstLoginAsync(locale);
+  });
 
   const { t } = useTranslation();
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
@@ -201,7 +207,7 @@ const Dashboard = () => {
         title={t('page.dashboard.home.whatsNew')}
         className="first-notice"
         onCancel={() => {
-          dispatch.appVersion.afterFirstLogin();
+          afterFirstLogin();
         }}
         maxHeight="420px"
       >

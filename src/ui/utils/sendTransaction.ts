@@ -35,7 +35,7 @@ import {
   ActionRequireData,
 } from '@rabby-wallet/rabby-action';
 import stats from '@/stats';
-import { getCexInfo } from '../models/exchange';
+import { getCexInfo } from '../state/exchange';
 import { Account } from '@/background/service/preference';
 import {
   buildTempoTransaction,

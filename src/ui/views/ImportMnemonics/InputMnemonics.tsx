@@ -5,11 +5,12 @@ import styled from 'styled-components';
 import clsx from 'clsx';
 import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import { connectStore, useRabbyDispatch } from '../../store';
+import { connectStore } from '../../store';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/ui/component/NewUserImport';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 
 const FormItemWrapper = styled.div`
   .mnemonics-with-error,
@@ -30,7 +31,6 @@ const ImportMnemonics = () => {
   const wallet = useWallet();
   const [form] = Form.useForm<IFormStates>();
   const { t } = useTranslation();
-  const dispatch = useRabbyDispatch();
   const [needPassphrase, setNeedPassphrase] = React.useState(false);
   const [slip39ErrorIndex, setSlip39ErrorIndex] = React.useState<number>(-1);
   const [isSlip39, setIsSlip39] = React.useState(false);
@@ -68,19 +68,23 @@ const ImportMnemonics = () => {
         isExistedKR,
       } = await wallet.generateKeyringWithMnemonic(mnemonics, passphrase);
 
-      dispatch.importMnemonics.switchKeyring({
+      useImportMnemonicsStore.getState().switchKeyring({
         finalMnemonics: mnemonics,
         passphrase,
         isExistedKeyring: isExistedKR,
         stashKeyringId,
       });
-      const accounts = await dispatch.importMnemonics.getAccounts({
+      const accounts = await useImportMnemonicsStore.getState().getAccounts({
         start: 0,
         end: 1,
       });
 
-      await dispatch.importMnemonics.setSelectedAccounts([accounts[0].address]);
-      await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+      await useImportMnemonicsStore
+        .getState()
+        .setSelectedAccounts([accounts[0].address]);
+      await useImportMnemonicsStore
+        .getState()
+        .confirmAllImportingAccountsAsync();
       keyringId = stashKeyringId;
     },
     {

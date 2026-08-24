@@ -1,49 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Route, Redirect, useLocation } from 'react-router-dom';
-import { useWallet } from 'ui/utils';
+import {
+  resolvePrivateRouteDecision,
+  useWalletStatusStore,
+} from '@/ui/state/walletStatus';
 
 export const PrivateRouteGuard = ({ children }) => {
-  const wallet = useWallet();
   const location = useLocation();
-  const [isBooted, setIsBooted] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [checkedPath, setCheckedPath] = useState<string | null>(null);
+  const isBooted = useWalletStatusStore((state) => state.isBooted);
+  const isUnlocked = useWalletStatusStore((state) => state.isUnlocked);
+  const isInitialized = useWalletStatusStore((state) => state.isInitialized);
+  const isSyncing = useWalletStatusStore((state) => state.isSyncing);
   // `from` lets Unlock return here instead of the default page.
   const unlockTo = `/unlock?from=${encodeURIComponent(
     location.pathname + location.search
   )}`;
   const to = !isBooted ? '/welcome' : unlockTo;
 
-  useEffect(() => {
-    let cancelled = false;
-    const init = async () => {
-      const [booted, unlocked] = await Promise.all([
-        wallet.isBooted(),
-        wallet.isUnlocked(),
-      ]);
-      if (cancelled) {
-        return;
-      }
-      setIsBooted(booted);
-      setIsUnlocked(unlocked);
-      setCheckedPath(location.pathname);
-    };
-    init();
-    return () => {
-      cancelled = true;
-    };
-  }, [location.pathname, wallet]);
+  const decision = resolvePrivateRouteDecision({
+    isInitialized,
+    isSyncing,
+    isBooted,
+    isUnlocked,
+    pathname: location.pathname,
+  });
 
-  // Keep children mounted across route switches (keep-alive).
-  if (isUnlocked) {
+  if (decision === 'render') {
     return children;
   }
-  // Wait for a recheck — a stale "locked" right after unlock-nav would bounce back here.
-  if (checkedPath !== location.pathname) {
-    return <></>;
-  }
-  // Guards keep running on /unlock; redirecting again would nest `from` and loop.
-  if (location.pathname === '/unlock') {
+  if (decision === 'pending') {
     return <></>;
   }
   return <Redirect to={to} />;

@@ -3954,6 +3954,7 @@
       "TakeProfit": "Prise de bénéfices",
       "directDepositFast": "Rapide, 0 Slippage",
       "marginMode": "Mode de marge",
+      "marginModeSwitchFailed": "Échec du changement de mode de marge. Veuillez réessayer.",
       "settings": "Paramètres",
       "currentPrice": "Prix actuel",
       "unrealizedPnl": "PNL non réalisé",

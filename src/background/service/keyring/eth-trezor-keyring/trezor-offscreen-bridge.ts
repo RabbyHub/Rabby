@@ -8,7 +8,10 @@ import {
   TrezorAction,
 } from '@/constant/offscreen-communication';
 
-import type { HardwareSigningMetadata } from '../hardware-wallet-sentry';
+import type {
+  HardwareSigningMetadata,
+  SigningAttempt,
+} from '../signing-diagnostics';
 
 export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
   isDeviceConnected = false;
@@ -125,11 +128,17 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
   getHardwareSigningMetadata = () => this.hardwareSigningMetadata;
 
+  getSigningDiagnostics = (_error?: unknown, _attempt?: SigningAttempt) => ({
+    wallet_provider: 'trezor' as const,
+    transport: 'usb' as const,
+    error_category: 'unknown' as const,
+    provider_metadata: this.hardwareSigningMetadata,
+  });
+
   dispose: TrezorBridgeInterface['dispose'] = async () => {
     if (!this.disposal) {
       const pendingInitialization = this.initialization;
       this.initialization = undefined;
-
       const attempt = (async () => {
         await pendingInitialization?.catch(() => undefined);
         await this.invoke(TrezorAction.dispose);

@@ -1,5 +1,5 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import { useRabbyDispatch } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useWallet } from '@/ui/utils';
 import { obj2query, query2obj } from '@/ui/utils/url';
 import { useMemoizedFn, useMount } from 'ahooks';
@@ -23,7 +23,6 @@ export const NewUserSetPassword = () => {
 
   const history = useHistory();
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
 
   const handlePrivateKey = useMemoizedFn(async (password: string) => {
     try {
@@ -57,26 +56,28 @@ export const NewUserSetPassword = () => {
           store.passphrase || ''
         );
 
-        dispatch.importMnemonics.switchKeyring({
+        useImportMnemonicsStore.getState().switchKeyring({
           finalMnemonics: store.seedPhrase,
           passphrase: store.passphrase,
           isExistedKeyring: isExistedKR,
           stashKeyringId: keyringId,
         });
         stashKeyringId = keyringId;
-        dispatch.importMnemonics.switchKeyring({
+        useImportMnemonicsStore.getState().switchKeyring({
           stashKeyringId: stashKeyringId as number,
         });
 
-        const accounts = await dispatch.importMnemonics.getAccounts({
+        const accounts = await useImportMnemonicsStore.getState().getAccounts({
           start: 0,
           end: 1,
         });
 
-        await dispatch.importMnemonics.setSelectedAccounts([
-          accounts[0].address,
-        ]);
-        await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+        await useImportMnemonicsStore
+          .getState()
+          .setSelectedAccounts([accounts[0].address]);
+        await useImportMnemonicsStore
+          .getState()
+          .confirmAllImportingAccountsAsync();
 
         setStore({
           password,
@@ -100,19 +101,21 @@ export const NewUserSetPassword = () => {
           keyring!.publicKey!
         );
 
-        dispatch.importMnemonics.switchKeyring({
+        useImportMnemonicsStore.getState().switchKeyring({
           stashKeyringId: stashKeyringId as number,
         });
 
-        const accounts = await dispatch.importMnemonics.getAccounts({
+        const accounts = await useImportMnemonicsStore.getState().getAccounts({
           start: 0,
           end: 1,
         });
 
-        await dispatch.importMnemonics.setSelectedAccounts([
-          accounts[0].address,
-        ]);
-        await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+        await useImportMnemonicsStore
+          .getState()
+          .setSelectedAccounts([accounts[0].address]);
+        await useImportMnemonicsStore
+          .getState()
+          .confirmAllImportingAccountsAsync();
 
         history.push({
           pathname: '/new-user/success',

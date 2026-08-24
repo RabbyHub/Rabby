@@ -3613,6 +3613,7 @@
       "info": "Thông tin",
       "settings": "Cài đặt",
       "marginMode": "Chế độ Ký quỹ",
+      "marginModeSwitchFailed": "Không thể chuyển chế độ ký quỹ, vui lòng thử lại.",
       "positionValue": "Giá trị vị thế",
       "isolatedMargin": "Ký quỹ riêng biệt",
       "unrealizedPnl": "Lãi lỗ chưa thực hiện",

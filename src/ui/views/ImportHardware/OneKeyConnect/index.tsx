@@ -166,6 +166,10 @@ const OneKeyConnect = () => {
   };
 
   useEffect(() => {
+    if (connectType !== ConnectType.QRCode) {
+      return;
+    }
+
     wallet.initQRHardware(BRAND_TYPES).then((stashKeyringId) => {
       stashKeyringIdRef.current = stashKeyringId;
       wallet
@@ -190,7 +194,7 @@ const OneKeyConnect = () => {
     return () => {
       wallet.clearPageStateCache();
     };
-  }, []);
+  }, [connectType]);
 
   const onConnectViaUSB = () => {
     history.push({

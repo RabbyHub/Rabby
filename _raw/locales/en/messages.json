@@ -1215,6 +1215,7 @@
       "marginIsolated": "Margin (Isolated)",
       "marginCross": "Margin (Cross)",
       "marginMode": "Margin Mode",
+      "marginModeSwitchFailed": "Failed to switch margin mode, please try again",
       "cannotChangeMarginModeWithOpenPositions": "Cannot change Margin Mode with open positions",
       "crossMargin": "Cross Margin",
       "crossMarginDesc": "All positions share the same margin. This reduces the chance of a single position being liquidated, but all cross-margin funds can be lost in extreme market moves.",

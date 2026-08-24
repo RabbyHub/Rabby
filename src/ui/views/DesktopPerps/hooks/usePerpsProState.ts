@@ -3,7 +3,7 @@ import { Account } from '@/background/service/preference';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { sleep, useWallet } from '@/ui/utils';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
-import * as Sentry from '@sentry/browser';
+import { capturePerpsError } from '../../Perps/sentry';
 import {
   PERPS_AGENT_NAME,
   PERPS_BUILD_FEE,
@@ -135,11 +135,9 @@ export const usePerpsProState = () => {
       if (!res) {
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
         console.error('Failed to set builder fee');
-        Sentry.captureException(
-          new Error(
-            `PERPS set builder fee error, no max builder fee, address: ${address}`
-          )
-        );
+        capturePerpsError('set builder fee error, no max builder fee', null, {
+          address,
+        });
       }
     } catch (error) {
       console.error('Failed to set builder fee:', error);
@@ -389,11 +387,11 @@ export const usePerpsProState = () => {
         // showToast(String(e), 'error');
         dispatch.perps.setAccountNeedApproveAgent(true);
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
-        Sentry.captureException(
-          new Error(
-            `ensure login approve sign failed, address: ${account.address} , account type: ${account.type} , agentAddress: ${agentAddress} , error: ${e}`
-          )
-        );
+        capturePerpsError('ensure login approve sign failed', e, {
+          address: account.address,
+          accountType: account.type,
+          agentAddress,
+        });
       }
     }
   );
@@ -466,11 +464,10 @@ export const usePerpsProState = () => {
         title: 'Failed to enable trading',
         description: 'message' in error ? error.message : String(error),
       });
-      Sentry.captureException(
-        new Error(
-          `Failed to handle action approve status, address: ${currentPerpsAccount?.address} , account type: ${currentPerpsAccount?.type} , error: ${error}`
-        )
-      );
+      capturePerpsError('failed to handle action approve status', error, {
+        address: currentPerpsAccount?.address,
+        accountType: currentPerpsAccount?.type,
+      });
       throw error;
     }
   });
@@ -633,14 +630,10 @@ export const usePerpsProState = () => {
         title: 'Switch account failed',
         description: error.message || 'Login failed',
       });
-      Sentry.captureException(
-        new Error(
-          'PERPS Login failed' +
-            JSON.stringify({
-              error,
-            })
-        )
-      );
+      capturePerpsError('login failed', error, {
+        address: account.address,
+        accountType: account.type,
+      });
     }
   });
 

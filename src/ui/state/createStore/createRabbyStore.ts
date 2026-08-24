@@ -89,6 +89,8 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
   let latestSnapshotRequest = 0;
   let rawSet!: SetState<State>;
   let writeQueue = Promise.resolve();
+  // Boxed so a thrown `undefined` is still reportable.
+  let pendingWriteError: { error: unknown } | undefined;
   const pendingLocalUpdates: PendingSet<State>[] = [];
   const pendingSyncedUpdates: BackgroundStoreUpdate<State>[] = [];
 
@@ -127,6 +129,9 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
         options.storage.set({ changedKeys, partials, previousState, state })
       )
       .catch(async (error) => {
+        // Held for `flush()` to surface. The queue itself stays resolved so a
+        // single failed write does not poison every write after it.
+        pendingWriteError = { error };
         reportError(error);
         try {
           await restoreBackgroundSnapshot();
@@ -261,7 +266,15 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
       disposeRemoteSubscription?.();
       disposeReconnectSubscription?.();
     },
-    flush: () => writeQueue,
+    // Rejects when a queued write failed, so callers that await a save can
+    // tell the user instead of reporting a success the background rejected.
+    flush: async () => {
+      await writeQueue;
+      if (!pendingWriteError) return;
+      const { error } = pendingWriteError;
+      pendingWriteError = undefined;
+      throw error;
+    },
     hasHydrated: () => hydrated,
     hydrate: startHydration,
     hydrationPromise: startHydration,
