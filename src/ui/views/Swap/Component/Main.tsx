@@ -10,14 +10,9 @@ import { useRabbySelector } from '@/ui/store';
 import { useSwapStore } from '@/ui/state/swap';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useDetectLoss, useTokenPair } from '../hooks/token';
-import { Alert, Button, Input, InputRef, Modal } from 'antd';
+import { Alert, Button, InputRef, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
-import {
-  getUiType,
-  isSameAddress,
-  openInternalPageInTab,
-  useWallet,
-} from '@/ui/utils';
+import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList, Quotes } from './Quotes';
 import {
@@ -49,7 +44,6 @@ import { BridgeSwitchBtn } from '../../Bridge/Component/BridgeSwitchButton';
 import { BridgeShowMore } from '../../Bridge/Component/BridgeShowMore';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arrow-right-cc.svg';
-import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { Header } from './Header';
 import { obj2query } from '@/ui/utils/url';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -74,6 +68,7 @@ import {
 } from '@/ui/utils/form';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { buildFingerprint } from '@/ui/component/MiniSignV2/domain/ctx';
+import { useSwapMainRenderState } from '../hooks/render';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -189,10 +184,6 @@ export const Main = () => {
     refresh((id) => id + 1);
   }, [refresh, setQuoteRefreshLocked]);
 
-  const showMEVGuardedSwitch = useMemo(() => chain === CHAINS_ENUM.ETH, [
-    chain,
-  ]);
-
   const switchPreferMEV = useCallback(
     (bool: boolean) => {
       setMEVProtection(bool);
@@ -217,8 +208,6 @@ export const Main = () => {
   const setVisible = useSetQuoteVisible();
   const [swapGasQuoteVisible, setSwapGasQuoteVisible] = useState(false);
   const { t } = useTranslation();
-
-  const amountAvailable = useMemo(() => Number(inputAmount) > 0, [inputAmount]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -515,35 +504,6 @@ export const Main = () => {
     receiveToken: receiveToken,
   });
 
-  const swapBtnDisabled = isSupportedChain
-    ? quoteLoading ||
-      !payToken ||
-      !receiveToken ||
-      !amountAvailable ||
-      inSufficient ||
-      !activeProvider
-    : externalDapps.length
-    ? false
-    : true;
-
-  const isShowMoreVisible = useMemo(
-    () =>
-      showMoreVisible &&
-      Number(inputAmount) > 0 &&
-      inSufficientCanGetQuote &&
-      !!amountAvailable &&
-      !!payToken &&
-      !!receiveToken,
-    [
-      showMoreVisible,
-      inputAmount,
-      inSufficientCanGetQuote,
-      amountAvailable,
-      payToken,
-      receiveToken,
-    ]
-  );
-
   const canUseDirectSubmitTx = useMemo(
     () => isSupportedChain && supportedDirectSign(currentAccount?.type || ''),
 
@@ -649,8 +609,6 @@ export const Main = () => {
   //   !isSlippageLow &&
   //   !showLoss;
 
-  const showRiskTips = isSlippageLow || isSlippageHigh || showLoss;
-
   const [swapDappOpen, setSwapDappOpen] = useState(false);
   const history = useHistory();
 
@@ -664,14 +622,57 @@ export const Main = () => {
   );
   const [awaitingTopUpResume, setAwaitingTopUpResume] = useState(false);
   const depositFlowActive = useGasAccountDepositFlowActive();
-  const canPrepareDirectSign =
-    canUseDirectSubmitTx &&
-    !swapBtnDisabled &&
-    !!activeProvider &&
-    !awaitingTopUpResume &&
-    !depositFlowActive;
-  const directSignTxPreparing =
-    canPrepareDirectSign && (buildSwapTxsLoading || !currentTxs?.length);
+  const {
+    amountAvailable,
+    swapBtnDisabled,
+    showMEVGuardedSwitch,
+    showRiskTips,
+    directSignTxPreparing,
+    noQuote,
+    showUnsupportedChainTips,
+    showQuoteAlert,
+    showPendingTxItem,
+    showStickyInfo,
+    showSubmitTooltip,
+    showDirectSignButton,
+    quoteListRenderData,
+    setSwapProgressStatus,
+  } = useSwapMainRenderState({
+    form: {
+      chain,
+      inputAmount,
+      payToken,
+      receiveToken,
+      inSufficient,
+      inSufficientCanGetQuote,
+    },
+    quote: {
+      loading: quoteLoading,
+      activeProvider,
+      showMoreVisible,
+    },
+    page: {
+      isSupportedChain,
+      hasExternalDapps: externalDapps.length > 0,
+    },
+    risk: {
+      isSlippageLow,
+      isSlippageHigh,
+      showLoss,
+    },
+    directSign: {
+      enabled: canUseDirectSubmitTx,
+      accountType: currentAccount?.type,
+      buildLoading: buildSwapTxsLoading,
+      currentTxsLength: currentTxs?.length || 0,
+      awaitingTopUpResume,
+      depositFlowActive,
+    },
+    pending: {
+      type: pendingTxType,
+      approveHash,
+    },
+  });
   const buildTopUpSnapshot = useCallback(
     (): SwapTopUpSnapshot => ({
       amount: inputAmount || '',
@@ -1125,39 +1126,6 @@ export const Main = () => {
     return ['', ''];
   }, [isWrapToken, activeProvider?.name]);
 
-  const noQuoteOrigin = useMemo(
-    () =>
-      Number(inputAmount) > 0 &&
-      inSufficientCanGetQuote &&
-      amountAvailable &&
-      !quoteLoading &&
-      !!payToken &&
-      !!receiveToken &&
-      !activeProvider,
-    [
-      inputAmount,
-      inSufficientCanGetQuote,
-      amountAvailable,
-      quoteLoading,
-      payToken,
-      receiveToken,
-      activeProvider,
-    ]
-  );
-
-  const noQuote = useSyncStaleValue(noQuoteOrigin, 10);
-  const [swapProgressStatus, setSwapProgressStatus] = useState<
-    'pending' | 'success' | 'failed' | null
-  >(null);
-  const hasSwapProgress = swapProgressStatus !== null;
-  const showStickyInfo =
-    !!payToken &&
-    !!receiveToken &&
-    !isSameAddress(payToken.id, receiveToken.id) &&
-    !noQuote &&
-    isSupportedChain &&
-    !(inputAmount === '' && pendingTxType === 'swap' && hasSwapProgress);
-
   const setRabbyFeeVisible = useSetRabbyFee();
 
   const openFeePopup = useCallback(() => {
@@ -1211,19 +1179,6 @@ export const Main = () => {
       <Header
         noShowHeader={isDesktop}
         onOpenInTab={async () => {
-          // openInternalPageInTab(
-          //   `dex-swap?${obj2query({
-          //     chain:
-          //       findChain({
-          //         enum: chain,
-          //       })?.serverId || '',
-          //     payTokenId: payToken?.id || '',
-          //     receiveTokenId: receiveToken?.id || '',
-          //     inputAmount,
-          //     isMax: slider >= 100 ? 'true' : '',
-          //     rbiSource,
-          //   })}`
-          // );
           await wallet.openInDesktop(
             `desktop/profile?${obj2query({
               chain:
@@ -1244,7 +1199,7 @@ export const Main = () => {
       <div
         className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
       >
-        <div className="mx-20 flex flex-col gap-2 overflow-hidden rounded-[8px]">
+        <div className="mx-20 flex flex-col gap-2 overflow-hidden rounded-lg">
           <ChainSelectorInForm
             swap
             value={chain}
@@ -1263,7 +1218,7 @@ export const Main = () => {
             zIndex={1111}
           />
 
-          <div className="relative rounded-b-[8px] bg-r-neutral-card-1">
+          <div className="relative rounded-b-lg bg-r-neutral-card-1">
             <SwapTokenItem
               inSufficient={inSufficient}
               slider={slider}
@@ -1336,7 +1291,7 @@ export const Main = () => {
           </div>
         </div>
 
-        {!isSupportedChain ? (
+        {showUnsupportedChainTips ? (
           <div className="mt-16 mx-20">
             <ExternalSwapBridgeDappTips
               dappsAvailable={externalDapps.length > 0}
@@ -1353,10 +1308,10 @@ export const Main = () => {
           </div>
         ) : null}
 
-        {!inSufficientCanGetQuote || noQuote ? (
+        {showQuoteAlert ? (
           <Alert
             className={clsx(
-              'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
+              'mx-[20px] rounded-sm px-0 py-[3px] bg-transparent mt-6'
             )}
             icon={
               <RcIconWarningCC
@@ -1383,8 +1338,7 @@ export const Main = () => {
           />
         ) : null}
 
-        {approveHash ||
-        Boolean(!isShowMoreVisible && !activeProvider?.quote) ? (
+        {showPendingTxItem ? (
           <div className="mx-20 mt-20">
             <PendingTxItem
               getContainer={getContainer}
@@ -1400,7 +1354,7 @@ export const Main = () => {
         />
 
         <div className="fixed z-10 w-full bottom-0 mt-auto px-20 pb-20">
-          <div className="w-full rounded-[8px] bg-r-neutral-bg-2">
+          <div className="w-full rounded-lg bg-r-neutral-bg-2">
             {showStickyInfo && (
               <BridgeShowMore
                 insufficient={inSufficient}
@@ -1450,7 +1404,7 @@ export const Main = () => {
                 }
                 validateSlippage={validateSlippage}
                 renderSwapQuotes={(onSelect) =>
-                  payToken && receiveToken && chain ? (
+                  quoteListRenderData ? (
                     <Quotes
                       list={quoteList}
                       activeName={activeProvider?.name}
@@ -1458,11 +1412,11 @@ export const Main = () => {
                       visible
                       onClose={() => undefined}
                       userAddress={userAddress}
-                      chain={chain}
+                      chain={quoteListRenderData.chain}
                       slippage={slippage}
-                      payToken={payToken}
+                      payToken={quoteListRenderData.payToken}
                       payAmount={inputAmount}
-                      receiveToken={receiveToken}
+                      receiveToken={quoteListRenderData.receiveToken}
                       fee={feeRate}
                       inSufficient={inSufficient}
                       setActiveProvider={setActiveProvider}
@@ -1487,15 +1441,9 @@ export const Main = () => {
                   ? t('component.externalSwapBrideDappPopup.noDapps')
                   : t('page.swap.insufficient-balance')
               }
-              visible={
-                !isSupportedChain && externalDapps.length < 1
-                  ? undefined
-                  : inSufficient && activeProvider
-                  ? undefined
-                  : false
-              }
+              visible={showSubmitTooltip ? undefined : false}
             >
-              {canUseDirectSubmitTx && currentAccount?.type ? (
+              {showDirectSignButton ? (
                 <DirectSignToConfirmBtn
                   key={refreshId}
                   disabled={swapBtnDisabled || approveTxPending}
@@ -1519,7 +1467,7 @@ export const Main = () => {
                       type="primary"
                       block
                       size="large"
-                      className="h-[48px] rounded-[6px] text-white text-[16px] font-medium"
+                      className="h-[48px] rounded-md text-white text-[16px] font-medium"
                       loading={isSubmitLoading}
                       onClick={() => {
                         if (!isSupportedChain && externalDapps.length > 0) {
@@ -1574,7 +1522,7 @@ export const Main = () => {
           </div>
         </div>
 
-        {payToken && receiveToken && chain ? (
+        {quoteListRenderData ? (
           <QuoteList
             list={quoteList}
             activeName={activeProvider?.name}
@@ -1584,11 +1532,11 @@ export const Main = () => {
               setVisible(false);
             }}
             userAddress={userAddress}
-            chain={chain}
+            chain={quoteListRenderData.chain}
             slippage={slippage}
-            payToken={payToken}
+            payToken={quoteListRenderData.payToken}
             payAmount={inputAmount}
-            receiveToken={receiveToken}
+            receiveToken={quoteListRenderData.receiveToken}
             fee={feeRate}
             inSufficient={inSufficient}
             setActiveProvider={setActiveProvider}
