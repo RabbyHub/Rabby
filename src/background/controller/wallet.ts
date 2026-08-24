@@ -2734,6 +2734,8 @@ export class WalletController extends BaseController {
     key: Key
   ): PersistedStoreMap[Key] => {
     switch (key) {
+      case 'bridge':
+        return bridgeService.getBridgeData() as PersistedStoreMap[Key];
       case 'currency':
         return currencyService.getStore() as PersistedStoreMap[Key];
       case 'openapi':
@@ -2778,6 +2780,9 @@ export class WalletController extends BaseController {
     }
 
     switch (key) {
+      case 'bridge':
+        bridgeService.patchStore(patch as PersistedStorePatch<'bridge'>);
+        return;
       case 'currency':
         currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
         return;

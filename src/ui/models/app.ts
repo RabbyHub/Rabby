@@ -2,6 +2,7 @@ import type { WalletControllerType } from 'ui/utils/WalletContext';
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { useAccountStore } from '@/ui/state/account';
+import { initializeBridgeStore } from '@/ui/state/bridge';
 
 export const app = createModel<RootModel>()({
   name: 'app',
@@ -53,7 +54,7 @@ export const app = createModel<RootModel>()({
         await accountStore.getSceneAccountMap();
       })();
       dispatch.preference.init();
-      dispatch.bridge.init();
+      void initializeBridgeStore();
       dispatch.gasAccount.init();
       dispatch.perps.initEventBus();
     },
