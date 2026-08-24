@@ -15,6 +15,7 @@ import {
 } from './state/addressManagement';
 import { bridgeActions, useBridgeStore } from './state/bridge';
 import { chainsActions, useChainsStore } from './state/chains';
+import { giftActions, useGiftStore } from './state/gift';
 import { createSelectorStore } from './state/createStore/createSelectorStore';
 
 const store = init<RootModel>({ models, plugins: [selectPlugin()] });
@@ -23,6 +24,7 @@ const store = init<RootModel>({ models, plugins: [selectPlugin()] });
 (store.dispatch as RabbyDispatch).addressManagement = addressManagementActions;
 (store.dispatch as RabbyDispatch).bridge = bridgeActions;
 (store.dispatch as RabbyDispatch).chains = chainsActions;
+(store.dispatch as RabbyDispatch).gift = giftActions;
 
 onStoreInitialized(store);
 
@@ -33,6 +35,7 @@ const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
   addressManagement: useAddressManagementStore.getState(),
   bridge: useBridgeStore.getState(),
   chains: useChainsStore.getState(),
+  gift: useGiftStore.getState(),
 }));
 
 store.subscribe(() => {
@@ -52,6 +55,9 @@ useBridgeStore.subscribe((bridge) => {
 });
 useChainsStore.subscribe((chains) => {
   useCombinedStore.setState({ chains });
+});
+useGiftStore.subscribe((gift) => {
+  useCombinedStore.setState({ gift });
 });
 
 export type { RabbyRootState };

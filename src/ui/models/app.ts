@@ -3,6 +3,7 @@ import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { useAccountStore } from '@/ui/state/account';
 import { initializeBridgeStore } from '@/ui/state/bridge';
+import { initializeGiftStore } from '@/ui/state/gift';
 
 export const app = createModel<RootModel>()({
   name: 'app',
@@ -50,7 +51,7 @@ export const app = createModel<RootModel>()({
         const accountStore = useAccountStore.getState();
         const account = await accountStore.getCurrentAccountAsync();
         await accountStore.onAccountChanged(account?.address);
-        await dispatch.gift.initGiftStateAsync();
+        await initializeGiftStore();
         await accountStore.getSceneAccountMap();
       })();
       dispatch.preference.init();
