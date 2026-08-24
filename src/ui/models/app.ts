@@ -4,6 +4,7 @@ import { RootModel } from '.';
 import { useAccountStore } from '@/ui/state/account';
 import { initializeBridgeStore } from '@/ui/state/bridge';
 import { initializeGiftStore } from '@/ui/state/gift';
+import { initializeGasAccountStore } from '@/ui/state/gasAccount';
 
 export const app = createModel<RootModel>()({
   name: 'app',
@@ -56,7 +57,7 @@ export const app = createModel<RootModel>()({
       })();
       dispatch.preference.init();
       void initializeBridgeStore();
-      dispatch.gasAccount.init();
+      void initializeGasAccountStore();
       dispatch.perps.initEventBus();
     },
   }),

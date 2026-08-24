@@ -16,6 +16,7 @@ import {
 import { bridgeActions, useBridgeStore } from './state/bridge';
 import { chainsActions, useChainsStore } from './state/chains';
 import { giftActions, useGiftStore } from './state/gift';
+import { gasAccountActions, useGasAccountStore } from './state/gasAccount';
 import { createSelectorStore } from './state/createStore/createSelectorStore';
 
 const store = init<RootModel>({ models, plugins: [selectPlugin()] });
@@ -25,6 +26,7 @@ const store = init<RootModel>({ models, plugins: [selectPlugin()] });
 (store.dispatch as RabbyDispatch).bridge = bridgeActions;
 (store.dispatch as RabbyDispatch).chains = chainsActions;
 (store.dispatch as RabbyDispatch).gift = giftActions;
+(store.dispatch as RabbyDispatch).gasAccount = gasAccountActions;
 
 onStoreInitialized(store);
 
@@ -36,6 +38,7 @@ const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
   bridge: useBridgeStore.getState(),
   chains: useChainsStore.getState(),
   gift: useGiftStore.getState(),
+  gasAccount: useGasAccountStore.getState(),
 }));
 
 store.subscribe(() => {
@@ -58,6 +61,9 @@ useChainsStore.subscribe((chains) => {
 });
 useGiftStore.subscribe((gift) => {
   useCombinedStore.setState({ gift });
+});
+useGasAccountStore.subscribe((gasAccount) => {
+  useCombinedStore.setState({ gasAccount });
 });
 
 export type { RabbyRootState };
