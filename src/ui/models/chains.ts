@@ -13,7 +13,7 @@ import {
 import { Chain } from '@debank/common';
 import { RootModel } from '.';
 import { useSwapStore } from '@/ui/state/swap';
-import type { AccountState } from './account';
+import { AccountState, useAccountStore } from '@/ui/state/account';
 
 type IState = {
   currentConnection: ConnectedSite | null | undefined;
@@ -74,7 +74,7 @@ export const chains = createModel<RootModel>()({
       const { supportChains } = opts || {};
       const { pinned, matteredChainBalances } = await Promise.allSettled([
         dispatch.preference.getPreference('pinnedChain'),
-        dispatch.account.getMatteredChainBalance(),
+        useAccountStore.getState().getMatteredChainBalance(),
       ]).then(([pinnedChain, balance]) => {
         return {
           pinned: (pinnedChain.status === 'fulfilled'

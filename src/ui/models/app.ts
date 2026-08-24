@@ -1,6 +1,7 @@
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
+import { useAccountStore } from '@/ui/state/account';
 
 export const app = createModel<RootModel>()({
   name: 'app',
@@ -44,7 +45,13 @@ export const app = createModel<RootModel>()({
      * @description call other biz domain's init methods here
      */
     initBizStore() {
-      dispatch.account.init();
+      void (async () => {
+        const accountStore = useAccountStore.getState();
+        const account = await accountStore.getCurrentAccountAsync();
+        await accountStore.onAccountChanged(account?.address);
+        await dispatch.gift.initGiftStateAsync();
+        await accountStore.getSceneAccountMap();
+      })();
       dispatch.preference.init();
       dispatch.bridge.init();
       dispatch.gasAccount.init();

@@ -18,6 +18,10 @@ import { ensurePrefix } from '@/utils/string';
 import { ga4 } from '@/utils/ga4';
 import { KEYRING_CLASS } from '@/constant';
 import { pick } from 'lodash';
+import {
+  selectCurrentBalanceAboutMap,
+  useAccountStore,
+} from '@/ui/state/account';
 
 const TX_COUNT_LIMIT = appIsDev ? 1 : 3; // Minimum number of transactions before showing the rate guide
 const STAR_COUNT = 5;
@@ -109,9 +113,7 @@ function makeStarText(count: number, total = 5) {
 export const FEEDBACK_LEN_LIMIT = 300;
 
 export function useTotalBalanceTextForRate() {
-  const cacheAboutData = useRabbyGetter(
-    (s) => s.account.currentBalanceAboutMap
-  );
+  const cacheAboutData = useAccountStore(selectCurrentBalanceAboutMap);
   const accountsList = useRabbySelector((s) => s.accountToDisplay.accountsList);
 
   const { balanceMap } = cacheAboutData;

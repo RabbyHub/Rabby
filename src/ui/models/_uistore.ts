@@ -1,21 +1,20 @@
-import { RabbyRootState, RabbyDispatch } from '@/ui/models';
+import { RabbyDispatch } from '@/ui/models';
 import { changeLanguage } from '@/i18n';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
+import { useAccountStore } from '@/ui/state/account';
 
 export default (store: typeof import('@/ui/store').default) => {
   const dispatch = store.dispatch as RabbyDispatch;
 
   onBackgroundStoreChanged('contactBook', (payload) => {
-    const state = store.getState() as RabbyRootState;
-    const currentAccount = state.account.currentAccount;
+    const currentAccount = useAccountStore.getState().currentAccount;
     const currentAddr = currentAccount?.address;
 
     if (currentAddr && payload.partials[currentAddr]) {
       const aliasName = payload.partials[currentAddr]!.name;
-      currentAccount.alianName = aliasName;
-      dispatch.account.setField({
+      useAccountStore.getState().setField({
         alianName: aliasName,
-        currentAccount: { ...currentAccount },
+        currentAccount: { ...currentAccount, alianName: aliasName },
       });
     }
   });
@@ -39,12 +38,6 @@ export default (store: typeof import('@/ui/store').default) => {
         }
         break;
       }
-      // case 'curvePointsMap': {
-      //   dispatch.account.setField({
-      //     curvePointsMap: payload.partials.curvePointsMap,
-      //   })
-      //   break;
-      // }
       case 'rateGuideLastExposure': {
         dispatch.preference.setField({
           rateGuideLastExposure: payload.partials.rateGuideLastExposure,
