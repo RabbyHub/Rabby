@@ -22,6 +22,8 @@ jest.mock('@/ui/wallet', () => ({
       revision: 1,
       state: {
         host: 'https://api.example.com',
+        apiKey: 'background-key',
+        apiTime: 100,
       },
     }),
     setStorageItem: jest.fn().mockResolvedValue(undefined),
@@ -30,6 +32,8 @@ jest.mock('@/ui/wallet', () => ({
 
 const openapiState: PublicOpenapiStore = {
   host: 'https://api.example.com',
+  apiKey: 'background-key',
+  apiTime: 100,
 };
 
 describe('openapi store', () => {
@@ -46,12 +50,8 @@ describe('openapi store', () => {
     useOpenapiStore.persist.destroy();
   });
 
-  test('hydrates only the host from the background store', () => {
+  test('hydrates the shared OpenAPI identity from the background store', () => {
     expect(useOpenapiStore.getState()).toMatchObject(openapiState);
-    // `apiKey` is the X-API-Key header for every api.rabby.io request; it must
-    // never be reachable from an extension page.
-    expect(useOpenapiStore.getState()).not.toHaveProperty('apiKey');
-    expect(useOpenapiStore.getState()).not.toHaveProperty('apiTime');
     expect(useOpenapiStore.getState()).not.toHaveProperty('testnetHost');
   });
 

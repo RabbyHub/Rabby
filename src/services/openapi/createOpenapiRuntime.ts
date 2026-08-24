@@ -1,5 +1,4 @@
 import type { OpenApiService } from '@rabby-wallet/rabby-api';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   createOpenapiClient,
@@ -52,16 +51,9 @@ export type OpenapiRuntime = {
   dispose: () => void;
 };
 
-/**
- * UI pages use their own volatile API identity. The background's persisted
- * X-API-Key never crosses the extension message boundary.
- */
+/** UI pages hydrate the OpenAPI identity persisted by the background. */
 class UIOpenapiStore implements OpenapiClientStore {
-  private state: OpenapiClientStore = {
-    ...createOpenapiStoreTemplate(),
-    apiKey: uuidv4(),
-    apiTime: Math.floor(Date.now() / 1000),
-  };
+  private state: OpenapiClientStore = createOpenapiStoreTemplate();
   private commitQueue = Promise.resolve();
   private latestCommit = Promise.resolve();
 
@@ -74,14 +66,37 @@ class UIOpenapiStore implements OpenapiClientStore {
     partials: Partial<PublicOpenapiStore>,
     persist = false
   ): boolean {
-    const changed =
-      typeof partials.host === 'string' && partials.host !== this.state.host;
+    const patch: Partial<PublicOpenapiStore> = {};
 
-    if (typeof partials.host === 'string') {
+    if (
+      Object.prototype.hasOwnProperty.call(partials, 'host') &&
+      typeof partials.host === 'string' &&
+      partials.host !== this.state.host
+    ) {
+      patch.host = partials.host;
       this.state.host = partials.host;
     }
+
+    if (
+      Object.prototype.hasOwnProperty.call(partials, 'apiKey') &&
+      (typeof partials.apiKey === 'string' || partials.apiKey === null) &&
+      partials.apiKey !== this.state.apiKey
+    ) {
+      patch.apiKey = partials.apiKey;
+      this.state.apiKey = partials.apiKey;
+    }
+
+    if (
+      Object.prototype.hasOwnProperty.call(partials, 'apiTime') &&
+      (typeof partials.apiTime === 'number' || partials.apiTime === null) &&
+      partials.apiTime !== this.state.apiTime
+    ) {
+      patch.apiTime = partials.apiTime;
+      this.state.apiTime = partials.apiTime;
+    }
+
+    const changed = Object.keys(patch).length > 0;
     if (persist && changed) {
-      const patch: Partial<PublicOpenapiStore> = { host: this.state.host };
       this.latestCommit = this.commitQueue.then(() => this.commit(patch));
       void this.latestCommit.catch(this.onError);
       this.commitQueue = this.latestCommit.catch(() => undefined);
@@ -103,7 +118,7 @@ class UIOpenapiStore implements OpenapiClientStore {
   }
 
   set apiKey(apiKey: string | null) {
-    this.state.apiKey = apiKey;
+    this.applyPublicState({ apiKey }, true);
   }
 
   get apiTime() {
@@ -111,7 +126,7 @@ class UIOpenapiStore implements OpenapiClientStore {
   }
 
   set apiTime(apiTime: number | null) {
-    this.state.apiTime = apiTime;
+    this.applyPublicState({ apiTime }, true);
   }
 
   flushPublicCommit = () => this.latestCommit;
@@ -152,7 +167,10 @@ export const createOpenapiRuntime = (
       .catch(onError);
   };
 
-  const applyUpdate = ({ origin, revision, partials }: PublicOpenapiUpdate) => {
+  const applyUpdate = (
+    { origin, revision, partials }: PublicOpenapiUpdate,
+    acceptEqualRevision = false
+  ) => {
     if (disposed || !uiStore) return;
     if (origin !== latestOrigin) {
       latestOrigin = origin;
@@ -160,8 +178,11 @@ export const createOpenapiRuntime = (
     }
 
     const accepted: Partial<PublicOpenapiStore> = {};
-    if (revision > latestRevision && typeof partials.host === 'string') {
-      accepted.host = partials.host;
+    if (
+      revision > latestRevision ||
+      (acceptEqualRevision && revision === latestRevision)
+    ) {
+      Object.assign(accepted, partials);
       latestRevision = revision;
     }
     scheduleReconfiguration(uiStore.applyPublicState(accepted));
@@ -170,11 +191,16 @@ export const createOpenapiRuntime = (
   const reload = async () => {
     if (!uiOptions) return;
     const snapshot = await uiOptions.load();
-    applyUpdate({
-      origin: snapshot.origin,
-      revision: snapshot.revision,
-      partials: snapshot.state,
-    });
+    applyUpdate(
+      {
+        origin: snapshot.origin,
+        revision: snapshot.revision,
+        partials: snapshot.state,
+      },
+      // A full snapshot may race with a partial broadcast for the same
+      // revision after reconnect. Let the snapshot fill the remaining fields.
+      true
+    );
   };
 
   const ensureReady = () => {

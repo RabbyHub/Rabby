@@ -109,9 +109,13 @@ export const patchOpenapiStore = async (
   // the public half instead of trusting the caller's typing.
   proxyStore.patchStore(pickPublicOpenapiStore(partials));
 
-  // The signer was initialized during background startup. Host changes only
-  // need to rebuild the axios client after the runtime is ready.
-  if (Object.prototype.hasOwnProperty.call(partials, 'host')) {
+  // Keep the background request headers aligned with identity changes coming
+  // from any UI runtime.
+  if (
+    PUBLIC_OPENAPI_KEYS.some((key) =>
+      Object.prototype.hasOwnProperty.call(partials, key)
+    )
+  ) {
     await openapiRuntime.reconfigure();
   }
 };

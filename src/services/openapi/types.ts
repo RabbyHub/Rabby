@@ -10,10 +10,10 @@ export const openapiStoreSchema = z.object({
 export type OpenapiServiceStore = z.output<typeof openapiStoreSchema>;
 
 /**
- * The half of the OpenAPI store extension pages are allowed to read and
- * update. API metadata remains private to each runtime.
+ * OpenAPI configuration shared between the background and extension pages.
+ * The background remains the persisted source of truth for these values.
  */
-export const PUBLIC_OPENAPI_KEYS = ['host'] as const;
+export const PUBLIC_OPENAPI_KEYS = ['host', 'apiKey', 'apiTime'] as const;
 
 export type PublicOpenapiStore = Pick<
   OpenapiServiceStore,

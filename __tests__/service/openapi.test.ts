@@ -4,6 +4,7 @@ const mockLegacyOpenapiStore = {
   apiKey: 'key',
   apiTime: 1,
 };
+const mockReconfigure = jest.fn().mockResolvedValue(undefined);
 
 jest.mock('background/utils', () => ({
   createPersistStore: jest.fn().mockResolvedValue(mockLegacyOpenapiStore),
@@ -19,7 +20,7 @@ jest.mock('@/services/openapi', () => {
     createOpenapiRuntime: jest.fn(() => ({
       openapi: { initSync: jest.fn() },
       ready: Promise.resolve(),
-      reconfigure: jest.fn().mockResolvedValue(undefined),
+      reconfigure: mockReconfigure,
       dispose: jest.fn(),
     })),
   };
@@ -28,20 +29,42 @@ jest.mock('@/services/openapi', () => {
 import {
   getOpenapiStore,
   initializeOpenapiStore,
+  patchOpenapiStore,
 } from '@/background/service/openapi';
 import { createPersistStore } from 'background/utils';
 
 describe('background OpenAPI store', () => {
+  beforeEach(() => {
+    mockReconfigure.mockClear();
+  });
+
   test('removes the legacy testnet host during initialization', async () => {
     await initializeOpenapiStore();
 
     expect(mockLegacyOpenapiStore).not.toHaveProperty('testnetHost');
-    expect(getOpenapiStore()).toEqual({ host: 'https://api.example.com' });
+    expect(getOpenapiStore()).toEqual({
+      host: 'https://api.example.com',
+      apiKey: 'key',
+      apiTime: 1,
+    });
     expect(createPersistStore).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'openapi',
-        broadcastKeys: ['host'],
+        broadcastKeys: ['host', 'apiKey', 'apiTime'],
       })
     );
+  });
+
+  test('reconfigures the background client for UI identity updates', async () => {
+    await patchOpenapiStore({
+      apiKey: 'next-key',
+      apiTime: 2,
+    });
+
+    expect(mockReconfigure).toHaveBeenCalledTimes(1);
+    expect(getOpenapiStore()).toMatchObject({
+      apiKey: 'next-key',
+      apiTime: 2,
+    });
   });
 });
