@@ -2895,7 +2895,15 @@
         "chain": " chain, ",
         "chainEnd": " chain",
         "appChainTips": "Hyperliquid & Polymarket Account not included",
-        "slotAppChainTips": "{{appChainNames}} Account not included"
+        "slotAppChainTips": "{{appChainNames}} Account not included",
+        "stablecoinSwapPopup": {
+          "title": "0% Swap Fee For",
+          "supportPrefix": "Support",
+          "supportCount": "30+",
+          "supportSuffix": "Stablecoins on 40+ Chains",
+          "goToSwap": "Go to Swap",
+          "close": "Close"
+        }
       },
       "recentConnection": {
         "disconnected": "Disconnected",
