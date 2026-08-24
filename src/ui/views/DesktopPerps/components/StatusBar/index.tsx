@@ -13,9 +13,10 @@ import { ReactComponent as RcIconSettings } from '@/ui/assets/perps/IconPerpsSet
 import { ReactComponent as RcIconDocs } from '@/ui/assets/perps/IconDocument.svg';
 import { useTranslation } from 'react-i18next';
 import { openInTab, splitNumberByStep } from '@/ui/utils';
-import store, { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatPerpsCoin } from '../../utils';
-import type { MarketData } from '@/ui/models/perps';
+import { usePerpsStore } from '@/ui/state/perps';
+import type { MarketData } from '@/ui/state/perps';
 
 const MARQUEE_PIXELS_PER_SECOND = 21;
 const TICKER_EXTRA_VISIBLE_ITEMS = 3;
@@ -63,7 +64,7 @@ const toTickerMarket = (item: MarketData): TickerMarket => ({
 });
 
 const getSortedTickerMarkets = () => {
-  const { marketData, wsActiveAssetCtx } = store.getState().perps;
+  const { marketData, wsActiveAssetCtx } = usePerpsStore.getState();
 
   return marketData
     .map((item) => {

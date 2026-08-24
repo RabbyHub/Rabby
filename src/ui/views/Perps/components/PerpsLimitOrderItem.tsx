@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { OpenOrder, Leverage } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { TokenImg } from './TokenImg';
 import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
 import { computeFilledPct } from '../limitOrderUtils';

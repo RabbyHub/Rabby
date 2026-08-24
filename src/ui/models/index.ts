@@ -1,7 +1,6 @@
 import { Models, RematchDispatch } from '@rematch/core';
 
 import { app } from './app';
-import { perps } from './perps';
 import type { AccountActions, AccountState } from '@/ui/state/account';
 import type {
   AccountToDisplayActions,
@@ -16,17 +15,16 @@ import type { ChainsActions, ChainsState } from '@/ui/state/chains';
 import type { GiftActions, GiftState } from '@/ui/state/gift';
 import type { GasAccountActions, GasAccountState } from '@/ui/state/gasAccount';
 import type { PreferenceActions, PreferenceState } from '@/ui/state/preference';
+import type { PerpsActions, PerpsState } from '@/ui/state/perps';
 
 type RabbyModels = {
   app: typeof app;
-  perps: typeof perps;
 };
 
 export interface RootModel extends Models<RootModel>, RabbyModels {}
 
 export const models: RootModel = {
   app,
-  perps,
 };
 
 export type RabbyDispatch = RematchDispatch<RootModel> & {
@@ -38,6 +36,7 @@ export type RabbyDispatch = RematchDispatch<RootModel> & {
   gift: GiftActions;
   gasAccount: GasAccountActions;
   preference: PreferenceActions;
+  perps: PerpsActions;
 };
 export type RabbyRootState = {
   [Key in keyof RabbyModels]: RabbyModels[Key]['state'];
@@ -50,4 +49,5 @@ export type RabbyRootState = {
   gift: GiftState;
   gasAccount: GasAccountState;
   preference: PreferenceState;
+  perps: PerpsState;
 };

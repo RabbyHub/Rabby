@@ -17,6 +17,7 @@ import { chainsActions, useChainsStore } from './state/chains';
 import { giftActions, useGiftStore } from './state/gift';
 import { gasAccountActions, useGasAccountStore } from './state/gasAccount';
 import { preferenceActions, usePreferenceStore } from './state/preference';
+import { perpsActions, usePerpsStore } from './state/perps';
 import { createSelectorStore } from './state/createStore/createSelectorStore';
 
 const store = init<RootModel>({ models });
@@ -28,6 +29,7 @@ const store = init<RootModel>({ models });
 (store.dispatch as RabbyDispatch).gift = giftActions;
 (store.dispatch as RabbyDispatch).gasAccount = gasAccountActions;
 (store.dispatch as RabbyDispatch).preference = preferenceActions;
+(store.dispatch as RabbyDispatch).perps = perpsActions;
 
 onStoreInitialized(store);
 
@@ -41,6 +43,7 @@ const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
   gift: useGiftStore.getState(),
   gasAccount: useGasAccountStore.getState(),
   preference: usePreferenceStore.getState(),
+  perps: usePerpsStore.getState(),
 }));
 
 store.subscribe(() => {
@@ -69,6 +72,9 @@ useGasAccountStore.subscribe((gasAccount) => {
 });
 usePreferenceStore.subscribe((preference) => {
   useCombinedStore.setState({ preference });
+});
+usePerpsStore.subscribe((perps) => {
+  useCombinedStore.setState({ perps });
 });
 
 export type { RabbyRootState };

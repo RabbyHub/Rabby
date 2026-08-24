@@ -6,6 +6,7 @@ import { initializeBridgeStore } from '@/ui/state/bridge';
 import { initializeGiftStore } from '@/ui/state/gift';
 import { initializeGasAccountStore } from '@/ui/state/gasAccount';
 import { initializePreferenceStore } from '@/ui/state/preference';
+import { initializePerpsStore } from '@/ui/state/perps';
 
 export const app = createModel<RootModel>()({
   name: 'app',
@@ -44,7 +45,7 @@ export const app = createModel<RootModel>()({
       };
     },
   },
-  effects: (dispatch) => ({
+  effects: () => ({
     /**
      * @description call other biz domain's init methods here
      */
@@ -59,7 +60,7 @@ export const app = createModel<RootModel>()({
       void initializePreferenceStore();
       void initializeBridgeStore();
       void initializeGasAccountStore();
-      dispatch.perps.initEventBus();
+      initializePerpsStore();
     },
   }),
 });
