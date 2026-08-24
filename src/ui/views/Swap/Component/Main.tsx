@@ -1155,6 +1155,7 @@ export const Main = () => {
     !!receiveToken &&
     !isSameAddress(payToken.id, receiveToken.id) &&
     !noQuote &&
+    isSupportedChain &&
     !(inputAmount === '' && pendingTxType === 'swap' && hasSwapProgress);
 
   const setRabbyFeeVisible = useSetRabbyFee();
