@@ -5,6 +5,7 @@ import { useAccountStore } from '@/ui/state/account';
 import { initializeBridgeStore } from '@/ui/state/bridge';
 import { initializeGiftStore } from '@/ui/state/gift';
 import { initializeGasAccountStore } from '@/ui/state/gasAccount';
+import { initializePreferenceStore } from '@/ui/state/preference';
 
 export const app = createModel<RootModel>()({
   name: 'app',
@@ -55,7 +56,7 @@ export const app = createModel<RootModel>()({
         await initializeGiftStore();
         await accountStore.getSceneAccountMap();
       })();
-      dispatch.preference.init();
+      void initializePreferenceStore();
       void initializeBridgeStore();
       void initializeGasAccountStore();
       dispatch.perps.initEventBus();

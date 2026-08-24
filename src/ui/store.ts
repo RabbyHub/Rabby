@@ -1,7 +1,6 @@
 import { init } from '@rematch/core';
 import { models, RootModel, RabbyDispatch, RabbyRootState } from './models';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import selectPlugin from '@rematch/select';
+import { connect, useDispatch } from 'react-redux';
 
 import onStoreInitialized from './models/_uistore';
 import { accountActions, useAccountStore } from './state/account';
@@ -17,9 +16,10 @@ import { bridgeActions, useBridgeStore } from './state/bridge';
 import { chainsActions, useChainsStore } from './state/chains';
 import { giftActions, useGiftStore } from './state/gift';
 import { gasAccountActions, useGasAccountStore } from './state/gasAccount';
+import { preferenceActions, usePreferenceStore } from './state/preference';
 import { createSelectorStore } from './state/createStore/createSelectorStore';
 
-const store = init<RootModel>({ models, plugins: [selectPlugin()] });
+const store = init<RootModel>({ models });
 (store.dispatch as RabbyDispatch).account = accountActions;
 (store.dispatch as RabbyDispatch).accountToDisplay = accountToDisplayActions;
 (store.dispatch as RabbyDispatch).addressManagement = addressManagementActions;
@@ -27,6 +27,7 @@ const store = init<RootModel>({ models, plugins: [selectPlugin()] });
 (store.dispatch as RabbyDispatch).chains = chainsActions;
 (store.dispatch as RabbyDispatch).gift = giftActions;
 (store.dispatch as RabbyDispatch).gasAccount = gasAccountActions;
+(store.dispatch as RabbyDispatch).preference = preferenceActions;
 
 onStoreInitialized(store);
 
@@ -39,6 +40,7 @@ const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
   chains: useChainsStore.getState(),
   gift: useGiftStore.getState(),
   gasAccount: useGasAccountStore.getState(),
+  preference: usePreferenceStore.getState(),
 }));
 
 store.subscribe(() => {
@@ -65,6 +67,9 @@ useGiftStore.subscribe((gift) => {
 useGasAccountStore.subscribe((gasAccount) => {
   useCombinedStore.setState({ gasAccount });
 });
+usePreferenceStore.subscribe((preference) => {
+  useCombinedStore.setState({ preference });
+});
 
 export type { RabbyRootState };
 
@@ -74,13 +79,5 @@ export const useRabbyDispatch = () => useDispatch<RabbyDispatch>();
 export const useRabbySelector = <Selected>(
   selector: (state: RabbyRootState) => Selected
 ) => useCombinedStore(selector);
-
-export function useRabbyGetter<Selected = unknown>(
-  selector: (
-    select: typeof store['select']
-  ) => (state: ReturnType<typeof store.getState>) => Selected
-) {
-  return useSelector(selector(store.select));
-}
 
 export default store;
