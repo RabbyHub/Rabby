@@ -9,11 +9,16 @@ import {
   accountToDisplayActions,
   useAccountToDisplayStore,
 } from './state/accountToDisplay';
+import {
+  addressManagementActions,
+  useAddressManagementStore,
+} from './state/addressManagement';
 import { createSelectorStore } from './state/createStore/createSelectorStore';
 
 const store = init<RootModel>({ models, plugins: [selectPlugin()] });
 (store.dispatch as RabbyDispatch).account = accountActions;
 (store.dispatch as RabbyDispatch).accountToDisplay = accountToDisplayActions;
+(store.dispatch as RabbyDispatch).addressManagement = addressManagementActions;
 
 onStoreInitialized(store);
 
@@ -21,6 +26,7 @@ const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
   ...store.getState(),
   account: useAccountStore.getState(),
   accountToDisplay: useAccountToDisplayStore.getState(),
+  addressManagement: useAddressManagementStore.getState(),
 }));
 
 store.subscribe(() => {
@@ -31,6 +37,9 @@ useAccountStore.subscribe((account) => {
 });
 useAccountToDisplayStore.subscribe((accountToDisplay) => {
   useCombinedStore.setState({ accountToDisplay });
+});
+useAddressManagementStore.subscribe((addressManagement) => {
+  useCombinedStore.setState({ addressManagement });
 });
 
 export type { RabbyRootState };
