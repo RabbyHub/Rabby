@@ -54,6 +54,7 @@ export const StablecoinSwapPopup: React.FC = () => {
   const {
     visible,
     onClose,
+    onHover,
     onSwap,
     supportedStablecoinIcons,
     payToken,
@@ -72,6 +73,7 @@ export const StablecoinSwapPopup: React.FC = () => {
     <section
       role="dialog"
       aria-label={t('page.dashboard.home.stablecoinSwapPopup.title')}
+      onMouseEnter={onHover}
       className="group absolute bottom-[-118px] left-0 z-20 h-[182px] w-full overflow-hidden rounded-t-[16px] border border-r-neutral-line bg-r-neutral-bg1 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] transition-[bottom] duration-300 ease-out hover:bottom-0"
     >
       <div className="pointer-events-none absolute left-[-92px] top-[106px] h-[211px] w-[186px]">
