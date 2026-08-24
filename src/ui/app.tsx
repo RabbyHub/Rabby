@@ -16,6 +16,7 @@ import {
   initializeWalletStatusStore,
   useWalletStatusStore,
 } from './state/walletStatus';
+import { initializeChainsStore, useChainsStore } from './state/chains';
 
 import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
@@ -49,7 +50,7 @@ initAppMeta();
 store.dispatch.app.initWallet({ wallet });
 
 eventBus.addEventListener('syncChainList', (params) => {
-  store.dispatch.chains.setField(params);
+  useChainsStore.getState().setField(params);
   updateChainStore(params);
 });
 
@@ -113,7 +114,7 @@ const main = async () => {
 
   store.dispatch.app.initBizStore();
   void initializeExchangeStore();
-  store.dispatch.chains.init();
+  void initializeChainsStore();
 
   if (getUiType().isPop) {
     wallet
