@@ -2,17 +2,17 @@ import { init } from '@rematch/core';
 import { models, RootModel, RabbyDispatch, RabbyRootState } from './models';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import selectPlugin from '@rematch/select';
-import { create } from 'zustand';
 
 import onStoreInitialized from './models/_uistore';
 import { accountActions, useAccountStore } from './state/account';
+import { createSelectorStore } from './state/createStore/createSelectorStore';
 
 const store = init<RootModel>({ models, plugins: [selectPlugin()] });
 (store.dispatch as RabbyDispatch).account = accountActions;
 
 onStoreInitialized(store);
 
-const useCombinedStore = create<RabbyRootState>()(() => ({
+const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
   ...store.getState(),
   account: useAccountStore.getState(),
 }));
