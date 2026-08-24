@@ -1,5 +1,5 @@
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { findChain } from '@/utils/chain';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -51,6 +51,7 @@ import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 import { ga4 } from '@/utils/ga4';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
+import { useSignStore } from '@/ui/state/sign';
 import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { tokenizeSignMessageText } from './signMessageHighlighter';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
@@ -104,13 +105,12 @@ const SignText = ({
     setParsedActionData,
   ] = useState<ParsedTextActionData | null>(null);
   const { executeEngine } = useSecurityEngine();
-  const dispatch = useRabbyDispatch();
-  const { userData, rules, currentTx, tokenDetail } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    currentTx: s.securityEngine.currentTx,
-    tokenDetail: s.sign.tokenDetail,
-  }));
+  const securityEngine = useSecurityEngineStore();
+  const { userData, rules, currentTx } = securityEngine;
+  const tokenDetail = useSignStore((state) => state.tokenDetail);
+  const closeTokenDetailPopup = useSignStore(
+    (state) => state.closeTokenDetailPopup
+  );
   const [chainId, setChainId] = useState<number | undefined>(undefined);
   const isGnosisAccount = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -304,34 +304,32 @@ const SignText = ({
   };
 
   const handleIgnoreAllRules = () => {
-    dispatch.securityEngine.processAllRules(
-      engineResults.map((result) => result.id)
-    );
+    securityEngine.processAllRules(engineResults.map((result) => result.id));
   };
 
   const handleIgnoreRule = (id: string) => {
-    dispatch.securityEngine.processRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.processRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleUndoIgnore = (id: string) => {
-    dispatch.securityEngine.unProcessRule(id);
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.unProcessRule(id);
+    securityEngine.closeRuleDrawer();
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
     if (currentTx.processedRules.includes(id)) {
-      dispatch.securityEngine.unProcessRule(id);
+      securityEngine.unProcessRule(id);
     }
     await wallet.ruleEnableStatusChange(id, value);
-    dispatch.securityEngine.init();
+    securityEngine.init();
   };
 
   const handleRuleDrawerClose = (update: boolean) => {
     if (update) {
       executeSecurityEngine();
     }
-    dispatch.securityEngine.closeRuleDrawer();
+    securityEngine.closeRuleDrawer();
   };
 
   const checkWachMode = async () => {
@@ -404,7 +402,7 @@ const SignText = ({
   ) => {
     logId.current = textActionData.log_id;
     isUnparsedAction.current = textActionData.action === null;
-    dispatch.securityEngine.init();
+    securityEngine.init();
     if (
       currentAccount?.type &&
       REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)
@@ -722,7 +720,7 @@ const SignText = ({
       <TokenDetailPopup
         token={tokenDetail.selectToken}
         visible={tokenDetail.popupVisible}
-        onClose={() => dispatch.sign.closeTokenDetailPopup()}
+        onClose={closeTokenDetailPopup}
         canClickToken={false}
         hideOperationButtons
         variant="add"

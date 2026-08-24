@@ -1,0 +1,202 @@
+import { findChain } from '@/utils/chain';
+import {
+  buildParseTxRequest,
+  buildPendingTxList,
+  buildPreExecTxRequest,
+  prepareInitialGasSelection,
+  shouldUpdateNonce,
+} from '@/utils/transaction';
+import type { InitialGasSelection, TxIntent } from '@/utils/transaction';
+import { getRecommendNonce } from '../controller/walletUtils/sign';
+import { gasMarketV2 } from './gasMarket';
+import openapiService from './openapi';
+import preferenceService from './preference';
+import transactionHistoryService from './transactionHistory';
+import type { Tx } from './openapi';
+
+type Preparation = {
+  state: { cancelled: boolean };
+  startedAt: number;
+  initialGasSelection: Promise<InitialGasSelection>;
+  settled: Promise<{
+    results: [
+      PromiseSettledResult<string>,
+      PromiseSettledResult<Tx[]>,
+      PromiseSettledResult<Awaited<ReturnType<typeof openapiService.parseTx>>>,
+      PromiseSettledResult<Awaited<ReturnType<typeof openapiService.preExecTx>>>
+    ];
+    resolvedAt: number;
+  }>;
+};
+
+const preparations = new Map<string, Preparation>();
+
+const getPendingHistory = async (address: string, chainId: number) => {
+  const { pendings } = await transactionHistoryService.getList(address);
+  return pendings.filter((item) => item.chainId === chainId);
+};
+
+export const startSignTxPreparation = ({
+  id,
+  tx,
+  origin,
+  address,
+  chainId,
+  support1559,
+  delegateCall,
+  ...intent
+}: TxIntent & {
+  id: string;
+  tx: Tx;
+  origin?: string;
+  /**
+   * The approval's account address, the same value SignTx passes as `addr` /
+   * `address`. `tx.from` is the same account but carries whatever casing the
+   * dapp sent, so using it here would describe the request differently than
+   * the UI's own fallback request does.
+   */
+  address: string;
+  chainId: number;
+  support1559: boolean;
+  delegateCall?: boolean;
+}) => {
+  const chain = findChain({ id: chainId });
+  if (!chain || preparations.has(id)) return;
+
+  const openapi = openapiService;
+  const startedAt = Date.now();
+  const state = { cancelled: false };
+  const updateNonce = shouldUpdateNonce({
+    nonce: tx.nonce,
+    from: tx.from,
+    to: tx.to,
+    isSpeedUp: intent.isSpeedUp,
+    isCancel: intent.isCancel,
+  });
+  const recommendNonce = updateNonce
+    ? getRecommendNonce({
+        from: tx.from,
+        chainId,
+        nonceKey: (tx as any).nonceKey,
+      })
+    : Promise.resolve(tx.nonce);
+  const loadGasMarket = (customGasPrice: number) =>
+    gasMarketV2({
+      chain,
+      tx,
+      customGas: customGasPrice || undefined,
+      recommendNonce,
+    });
+  const initialGasSelection = prepareInitialGasSelection({
+    tx,
+    chainId,
+    support1559,
+    lastTimeGas: preferenceService.getLastTimeGasSelection(chainId),
+    loadGasMarket,
+    ...intent,
+  }).then((selection) =>
+    state.cancelled
+      ? Promise.reject(new Error('Sign transaction preparation cancelled'))
+      : selection
+  );
+  void initialGasSelection.catch(() => undefined);
+  const preparedTx = initialGasSelection.then(
+    ({ tx: selectedTx }) => selectedTx
+  );
+  const pendingTxs = getPendingHistory(address, chainId);
+  const pendingTxList = Promise.all([
+    recommendNonce,
+    pendingTxs,
+  ]).then(([nonce, pendings]) => buildPendingTxList(pendings, nonce));
+  const explainNonce = recommendNonce.then(
+    (nonce) => nonce || tx.nonce || '0x1'
+  );
+  const parseTx = Promise.all([explainNonce, preparedTx]).then(
+    ([nonce, selectedTx]) =>
+      state.cancelled
+        ? Promise.reject(new Error('Sign transaction preparation cancelled'))
+        : openapi.parseTx(
+            buildParseTxRequest({
+              tx: selectedTx,
+              chainId: chain.serverId,
+              nonce,
+              origin: origin || '',
+              addr: address,
+              support1559,
+              enable7702: false,
+            })
+          )
+  );
+  const preExecTx = Promise.all([explainNonce, pendingTxList, preparedTx]).then(
+    ([nonce, pending_tx_list, selectedTx]) =>
+      state.cancelled
+        ? Promise.reject(new Error('Sign transaction preparation cancelled'))
+        : openapi.preExecTx(
+            buildPreExecTxRequest({
+              tx: selectedTx,
+              nonce,
+              origin: origin || '',
+              address,
+              updateNonce,
+              pendingTxList: pending_tx_list,
+              delegateCall: delegateCall || false,
+            })
+          )
+  );
+
+  void parseTx.catch(() => undefined);
+  void preExecTx.catch(() => undefined);
+  const settled = Promise.allSettled([
+    recommendNonce,
+    pendingTxList,
+    parseTx,
+    preExecTx,
+  ]).then((results) => ({
+    results,
+    resolvedAt: Date.now(),
+  }));
+  preparations.set(id, {
+    state,
+    startedAt,
+    initialGasSelection,
+    settled,
+  });
+  setTimeout(() => preparations.delete(id), 60_000);
+};
+
+export const getSignTxPreparationGas = async (id: string) => {
+  const preparation = preparations.get(id);
+  if (!preparation) return null;
+  return preparation.initialGasSelection;
+};
+
+export const getSignTxPreparation = async (id: string) => {
+  const preparation = preparations.get(id);
+  if (!preparation) return null;
+  const { results, resolvedAt } = await preparation.settled;
+  const [recommendNonce, pendingTxList, parseTx, preExecTx] = results;
+  preparations.delete(id);
+  return {
+    startedAt: preparation.startedAt,
+    resolvedAt,
+    recommendNonce:
+      recommendNonce.status === 'fulfilled' ? recommendNonce.value : undefined,
+    pendingTxList:
+      pendingTxList.status === 'fulfilled' ? pendingTxList.value : undefined,
+    parseTx: parseTx.status === 'fulfilled' ? parseTx.value : undefined,
+    preExecTx: preExecTx.status === 'fulfilled' ? preExecTx.value : undefined,
+  };
+};
+
+export const cancelSignTxPreparation = (id: string) => {
+  const preparation = preparations.get(id);
+  if (preparation) preparation.state.cancelled = true;
+  preparations.delete(id);
+};
+
+export const cancelAllSignTxPreparations = () => {
+  preparations.forEach((preparation) => {
+    preparation.state.cancelled = true;
+  });
+  preparations.clear();
+};

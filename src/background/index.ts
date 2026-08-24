@@ -9,7 +9,11 @@ import {
   setMessageErrorReporter,
 } from '@/utils/message';
 import { getSentryConfig } from '@/utils/sentry-config';
-import { getHardwareSigningContext } from '@/utils/sentry';
+import {
+  getSigningContext,
+  isSigningCarrierReported,
+  takeSigningCarrier,
+} from '@/utils/sentry';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
 import fetchAdapter from 'background/utils/fetchAdapter';
@@ -69,7 +73,10 @@ import {
 } from './service';
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
-import { testnetOpenapiService } from './service/openapi';
+import {
+  initializeOpenapiStore,
+  testnetOpenapiService,
+} from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
 import lendingService from './service/lending';
@@ -124,9 +131,17 @@ Sentry.init(getSentryConfig());
 // would flood Sentry with those expected states. The engine practically never
 // raises these subtypes for business logic, so they are a clean bug signal.
 setMessageErrorReporter((error) => {
+  const signingCarrier = takeSigningCarrier(error);
+  if (signingCarrier) {
+    if (!isSigningCarrierReported(signingCarrier)) {
+      Sentry.captureException(signingCarrier);
+    }
+    return true;
+  }
+
   // rpcFlow normally captures signing failures first. Capturing the same Error
   // here is deduplicated by Sentry and also covers direct wallet-controller calls.
-  if (getHardwareSigningContext(error)) {
+  if (getSigningContext(error)) {
     Sentry.captureException(error);
     return true;
   }
@@ -149,10 +164,11 @@ async function restoreAppState() {
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
   keyringService.sanitizeUnencryptedKeyringDataInStore();
+  await initializeOpenapiStore();
   await openapiService.init();
   await testnetOpenapiService.init();
 
-  // Init keyring and openapi first since this two service will not be migrated
+  // Init keyring and openapi before migrations that depend on them.
   await migrateData();
 
   await customTestnetService.init();
@@ -259,6 +275,14 @@ async function restoreAppState() {
   subscribeTxCompleted({ preferenceService });
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'getBackgroundReady') {
+      sendResponse({
+        data: {
+          ready: true,
+        },
+      });
+      return;
+    }
     // Native chrome.runtime.onMessage requires explicit `sendResponse(...)` + `return true`
     // on async paths — returning a Promise would let Chrome close the channel immediately.
     if (message?.type === 'controller' && typeof message.method === 'string') {

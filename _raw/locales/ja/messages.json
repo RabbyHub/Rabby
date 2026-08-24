@@ -3621,6 +3621,7 @@
       "liquidationDistanceUp": "上昇 <bold>{{percent}}</bold> は清算を引き起こします",
       "cannotChangeMarginModeWithOpenPositions": "オープンポジションがある状態でマージンモードを変更することはできません。",
       "marginMode": "マージンモード",
+      "marginModeSwitchFailed": "証拠金モードの切り替えに失敗しました。もう一度お試しください。",
       "isolatedMarginDesc": "各ポジションはそれぞれ独自のマージンを使用します。損失はそのポジションに限定されますが、より簡単に清算される可能性があります。",
       "crossMarginDesc": "すべてのポジションは同じマージンを共有します。これにより、単一のポジションが清算される可能性が減りますが、すべてのクロスマージン資金は、極端な市場動向では失われる可能性があります。",
       "newUserGuide": {

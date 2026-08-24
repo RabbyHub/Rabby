@@ -8,6 +8,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useRabbyDispatch } from '@/ui/store';
+import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useTranslation } from 'react-i18next';
@@ -406,7 +407,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
 
       const rawAccounts: Account[] = [];
       for (let i = start; i < end; i += FETCH_STEP) {
-        const batch = await dispatch.importMnemonics.getAccounts({
+        const batch = await useImportMnemonicsStore.getState().getAccounts({
           start: i,
           end: Math.min(i + FETCH_STEP, end),
         });
@@ -419,9 +420,9 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
         );
       }
 
-      const importedAccounts = await dispatch.importMnemonics.getImportedAccounts(
-        {}
-      );
+      const importedAccounts = await useImportMnemonicsStore
+        .getState()
+        .getImportedAccounts({});
       const importedSet = new Set(
         importedAccounts.map((item) => item.address.toLowerCase())
       );
@@ -476,7 +477,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
           state.publicKey
         );
 
-        dispatch.importMnemonics.switchKeyring({
+        useImportMnemonicsStore.getState().switchKeyring({
           stashKeyringId: Number(nextKeyringId),
         });
         setKeyringId(Number(nextKeyringId));
@@ -491,12 +492,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
     };
 
     init();
-  }, [
-    dispatch.importMnemonics,
-    invokeEnterPassphrase,
-    state.publicKey,
-    wallet,
-  ]);
+  }, [invokeEnterPassphrase, state.publicKey, wallet]);
 
   React.useEffect(() => {
     if (keyringId == null) {
@@ -542,8 +538,12 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
 
       const selectedRowAddresses = selectedRows.map((item) => item.address);
 
-      await dispatch.importMnemonics.setSelectedAccounts(selectedRowAddresses);
-      await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+      await useImportMnemonicsStore
+        .getState()
+        .setSelectedAccounts(selectedRowAddresses);
+      await useImportMnemonicsStore
+        .getState()
+        .confirmAllImportingAccountsAsync();
       await wallet.requestKeyring(
         KEYRING_CLASS.MNEMONIC,
         'setCurrentUsedHDPathType',

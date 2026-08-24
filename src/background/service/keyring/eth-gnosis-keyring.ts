@@ -175,6 +175,7 @@ export const generateTypedDataFrom = ({
 };
 
 class GnosisKeyring extends EventEmitter {
+  signingDiagnosticsProvider = 'gnosis';
   static type = keyringType;
   type = keyringType;
   accounts: string[] = [];

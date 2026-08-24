@@ -112,18 +112,6 @@ export function ChainFilterV2Line({
   //   };
   // }, [chainList, selectedChain]);
 
-  // const { customRPC } = useRabbySelector((s) => ({
-  //   customRPC: s.customRPC.customRPC,
-  //   // cachedChainBalances: {
-  //   //   mainnet: s.account.matteredChainBalances,
-  //   //   testnet: s.account.testnetMatteredChainBalances,
-  //   // },
-  // }));
-  // const dispatch = useRabbyDispatch();
-  // useEffect(() => {
-  //   dispatch.customRPC.getAllRPC();
-  // }, []);
-
   return (
     <div
       className={clsx(

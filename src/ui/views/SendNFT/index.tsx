@@ -17,7 +17,7 @@ import { isValidAddress, toChecksumAddress } from '@ethereumjs/util';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useRequest } from 'ahooks';
 import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { useRabbyDispatch, connectStore } from 'ui/store';
+import { connectStore } from 'ui/store';
 import {
   useWallet,
   openInTab,
@@ -64,6 +64,7 @@ import {
 } from '@/ui/hooks/useAddressRisk';
 import BottomArea from './BottomArea';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
+import { useContactBookStore } from '@/ui/state/contactBook';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -78,7 +79,9 @@ const SendNFT = () => {
   const { search } = useLocation();
   const { t } = useTranslation();
   const rbisource = useRbiSource();
-  const dispatch = useRabbyDispatch();
+  const getContactBookAsync = useContactBookStore(
+    (state) => state.getContactBookAsync
+  );
 
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState<CHAINS_ENUM | undefined>(undefined);
@@ -529,7 +532,7 @@ const SendNFT = () => {
   }, [nftItem, wallet, history.location.pathname, form]);
 
   const init = useCallback(async () => {
-    dispatch.contactBook.getContactBookAsync();
+    getContactBookAsync();
     const account = await wallet.syncGetCurrentAccount();
 
     if (!account) {
@@ -537,7 +540,7 @@ const SendNFT = () => {
       return;
     }
     setInited(true);
-  }, [dispatch.contactBook, history, wallet]);
+  }, [getContactBookAsync, history, wallet]);
 
   useEffect(() => {
     init();

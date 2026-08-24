@@ -3658,6 +3658,7 @@
       "details": "詳情",
       "info": "市場資訊",
       "marginMode": "保證金模式",
+      "marginModeSwitchFailed": "切換保證金模式失敗，請再試一次",
       "currentPrice": "目前價格",
       "settings": "設定",
       "openProModeInTab": "在新分頁開啟專業模式",

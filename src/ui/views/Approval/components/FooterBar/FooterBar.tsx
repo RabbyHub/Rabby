@@ -1,6 +1,7 @@
 import { Account } from '@/background/service/preference';
 import { FallbackSiteLogo } from '@/ui/component';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
+import { useShallow } from 'zustand/react/shallow';
 import { useWallet } from '@/ui/utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Chain } from '@debank/common';
@@ -189,13 +190,15 @@ export const FooterBar: React.FC<Props> = ({
   ] = React.useState<ConnectedSite | null>(null);
   const account = gnosisAccount || currentAccount;
   const wallet = useWallet();
-  const dispatch = useRabbyDispatch();
   const { t } = useTranslation();
 
-  const { rules, processedRules } = useRabbySelector((s) => ({
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
+  const { rules, processedRules, openRuleDrawer } = useSecurityEngineStore(
+    useShallow((s) => ({
+      rules: s.rules,
+      processedRules: s.currentTx.processedRules,
+      openRuleDrawer: s.openRuleDrawer,
+    }))
+  );
 
   const currentChain = useMemo(() => {
     if (origin === INTERNAL_REQUEST_ORIGIN) {
@@ -222,7 +225,7 @@ export const FooterBar: React.FC<Props> = ({
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
     const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
+    openRuleDrawer({
       ruleConfig: rule,
       value: result?.value,
       level: result?.level,

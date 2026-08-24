@@ -53,19 +53,14 @@ export function initBitBox02() {
           onCloseCb();
           bridge.isDeviceConnected = true;
           const rootPub = await bridge.app.ethXpub(msg.params[0]);
-          await browser.runtime.sendMessage({
-            target: OffscreenCommunicationTarget.extension,
-            event: OffscreenCommunicationEvents.bitbox02DeviceConnect,
-            payload: {
-              name: 'pub-key',
-              pubKey: rootPub,
-            },
-          });
 
           if (!bridge.app.ethSupported()) {
             sendResponse({ error: 'Unsupported device' });
+            return;
           }
-          sendResponse();
+          // The pub key answers this init request, so it goes back as its
+          // response rather than as a broadcast every listener has to sort out.
+          sendResponse({ pubKey: rootPub });
         } catch (err) {
           console.error(err);
           if (bridge.app) {

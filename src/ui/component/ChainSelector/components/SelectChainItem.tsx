@@ -21,6 +21,7 @@ import { ReactComponent as RcIconWarningCC } from '@/ui/assets/riskWarning-cc.sv
 import { formatUsdValue } from '@/ui/utils';
 import ThemeIcon from '../../ThemeMode/ThemeIcon';
 import { TestnetChainLogo } from '../../TestnetChainLogo';
+import { useCustomRPCStore } from '@/ui/state/customRPC';
 
 export type TDisableCheckChainFn = (
   chain: string
@@ -59,13 +60,13 @@ export const SelectChainItem = forwardRef(
     }: SelectChainItemProps,
     ref: React.ForwardedRef<HTMLDivElement>
   ) => {
-    const { customRPC, cachedChainBalances } = useRabbySelector((s) => ({
-      customRPC: s.customRPC.customRPC,
+    const customRPC = useCustomRPCStore((state) => state.customRPC);
+    const cachedChainBalances = useRabbySelector((state) => ({
       cachedChainBalances: {
-        mainnet: s.account.matteredChainBalances,
-        testnet: s.account.testnetMatteredChainBalances,
+        mainnet: state.account.matteredChainBalances,
+        testnet: state.account.testnetMatteredChainBalances,
       },
-    }));
+    })).cachedChainBalances;
 
     const finalDisabledTips = useMemo(() => {
       if (typeof disabledTips === 'function') {

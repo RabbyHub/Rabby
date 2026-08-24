@@ -11,6 +11,7 @@ import { ellipsisAddress } from '../utils/address';
 import type { Account } from '@/background/service/preference';
 import type { IDisplayedAccountWithBalance } from '../models/accountToDisplay';
 import { findSupportedExchange, normalizeAddressDescCex } from '../utils/cex';
+import { useExchangeStore } from '../state/exchange';
 
 export type AddressInfo = Account | IDisplayedAccountWithBalance;
 export const useAddressInfo = (
@@ -25,10 +26,10 @@ export const useAddressInfo = (
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const [alias] = useAlias(address);
-  const { accountsList, exchanges } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-    exchanges: s.exchange.exchanges,
-  }));
+  const accountsList = useRabbySelector(
+    (state) => state.accountToDisplay.accountsList
+  );
+  const exchanges = useExchangeStore((state) => state.exchanges);
 
   const [rawAddressDesc, setRawAddressDesc] = useState<
     AddrDescResponse['desc'] | undefined

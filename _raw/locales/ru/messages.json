@@ -3614,6 +3614,7 @@
       "details": "Детали",
       "info": "Информация",
       "marginMode": "Маржинальный режим",
+      "marginModeSwitchFailed": "Не удалось переключить режим маржи. Повторите попытку.",
       "isolatedMargin": "Изолированная маржа",
       "crossMargin": "Кросс-маржа",
       "unrealizedPnl": "Нереализованная PNL",

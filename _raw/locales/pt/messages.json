@@ -3612,6 +3612,7 @@
       "liquidationDistanceDown": "Uma descida de <bold>{{percent}}</bold> acionará a liquidação",
       "isolatedMarginDesc": "Cada posição utiliza a sua própria margem. As perdas ficam limitadas a essa posição, mas esta pode ser liquidada com maior facilidade.",
       "marginMode": "Modo de Margem",
+      "marginModeSwitchFailed": "Não foi possível alterar o modo de margem. Tente novamente.",
       "currentPrice": "Preço Atual",
       "details": "Detalhes",
       "info": "Informações",

@@ -1,74 +1,38 @@
 import { Models, RematchDispatch, RematchRootState } from '@rematch/core';
 
 import { app } from './app';
-import { appVersion } from './appVersion';
 import { account } from './account';
-import { permission } from './permission';
 import { preference } from './preference';
-import { openapi } from './openapi';
-import { contactBook } from './contactBook';
 import { accountToDisplay } from './accountToDisplay';
-import { createMnemonics } from './createMnemonics';
-import { importMnemonics } from './importMnemonics';
 import { addressManagement } from './addressManagement';
-import { transactions } from './transactions';
 import { chains } from './chains';
-import { customRPC } from './customRPC';
-import { securityEngine } from './securityEngine';
-import { sign } from './sign';
 import { bridge } from './bridge';
 import { gasAccount } from './gasAccount';
-import { rateGuidance } from './rateGuidance';
-import { exchange } from './exchange';
 import { gift } from './gift';
 import { perps } from './perps';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
-  appVersion: typeof appVersion;
   account: typeof account;
-  permission: typeof permission;
   preference: typeof preference;
-  openapi: typeof openapi;
-  contactBook: typeof contactBook;
   accountToDisplay: typeof accountToDisplay;
-  createMnemonics: typeof createMnemonics;
-  importMnemonics: typeof importMnemonics;
   addressManagement: typeof addressManagement;
-  transactions: typeof transactions;
   chains: typeof chains;
-  customRPC: typeof customRPC;
-  securityEngine: typeof securityEngine;
-  sign: typeof sign;
   bridge: typeof bridge;
   gasAccount: typeof gasAccount;
-  rateGuidance: typeof rateGuidance;
-  exchange: typeof exchange;
   gift: typeof gift;
   perps: typeof perps;
 }
 
 export const models: RootModel = {
   app,
-  appVersion,
   account,
-  permission,
   preference,
-  openapi,
-  contactBook,
   accountToDisplay,
-  createMnemonics,
-  importMnemonics,
   addressManagement,
-  transactions,
   chains,
-  customRPC,
-  securityEngine,
-  sign,
   bridge,
   gasAccount,
-  rateGuidance,
-  exchange,
   gift,
   perps,
 };

@@ -3609,6 +3609,7 @@
       "details": "Detail",
       "info": "Info",
       "marginMode": "Mode Margin",
+      "marginModeSwitchFailed": "Gagal mengganti mode margin, silakan coba lagi",
       "currentPrice": "Harga Saat Ini",
       "isolatedMargin": "Margin Terpisah",
       "openProModeInTab": "Buka Mode Pro di Tab",

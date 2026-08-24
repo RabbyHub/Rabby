@@ -3664,6 +3664,7 @@
       "liquidationDistanceUp": "上涨 <bold>{{percent}}</bold> 将触发强平",
       "cannotChangeMarginModeWithOpenPositions": "有未平仓仓位时无法更改保证金模式",
       "marginMode": "保证金模式",
+      "marginModeSwitchFailed": "保证金模式切换失败，请重试",
       "openProModeInTab": "在新标签页中打开专业模式",
       "isolatedMarginDesc": "每个仓位使用独立保证金。亏损仅限于该仓位，但更容易被强平。",
       "liquidationDistanceDown": "下跌 <bold>{{percent}}</bold> 将触发强平",

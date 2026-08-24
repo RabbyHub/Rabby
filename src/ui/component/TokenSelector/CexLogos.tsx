@@ -1,4 +1,4 @@
-import { globalSupportCexList } from '@/ui/models/exchange';
+import { globalSupportCexList } from '@/ui/state/exchange';
 import { Tooltip } from 'antd';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

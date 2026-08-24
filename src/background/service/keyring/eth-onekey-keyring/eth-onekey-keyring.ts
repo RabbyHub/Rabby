@@ -18,7 +18,10 @@ import { HardwareErrorCode } from '@onekeyfe/hd-shared';
 import type { KnownDevice } from '@onekeyfe/hd-core';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import type { HardwareSigningMetadata } from '../hardware-wallet-sentry';
+import type {
+  HardwareSigningMetadata,
+  SigningAttempt,
+} from '../signing-diagnostics';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
@@ -115,6 +118,7 @@ function handleDeviceError(
 class OneKeyKeyring extends EventEmitter {
   static type = keyringType;
   type = keyringType;
+  signingDiagnosticsProvider = 'onekey';
   accounts: string[] = [];
   hdk = new HDKey();
   page = 0;
@@ -838,6 +842,15 @@ class OneKeyKeyring extends EventEmitter {
 
   getHardwareSigningMetadata() {
     return this.hardwareSigningMetadata;
+  }
+
+  getSigningDiagnostics(_error?: unknown, _attempt?: SigningAttempt) {
+    return {
+      wallet_provider: 'onekey' as const,
+      transport: 'usb' as const,
+      error_category: 'unknown' as const,
+      provider_metadata: this.hardwareSigningMetadata,
+    };
   }
 
   private async _requestPassphraseParams(address: string) {

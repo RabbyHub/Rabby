@@ -3,7 +3,7 @@ import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { getPerpsSDK } from '../sdkManager';
 import { usePerpsState } from './usePerpsState';
-import * as Sentry from '@sentry/browser';
+import { capturePerpsError } from '../sentry';
 import { sleep, useWallet } from '@/ui/utils';
 import {
   PERPS_BUILDER_INFO,
@@ -117,15 +117,7 @@ export const usePerpsPosition = ({
           duration: 1.5,
           content: error?.message || errorText,
         });
-        Sentry.captureException(
-          new Error(
-            errorText +
-              'params: ' +
-              JSON.stringify(params) +
-              'error: ' +
-              JSON.stringify(error)
-          )
-        );
+        capturePerpsError(errorText, error, { params });
       }
     }
   );
@@ -160,22 +152,18 @@ export const usePerpsPosition = ({
             duration: 1.5,
             content: actionText + ' cancel error',
           });
-          Sentry.captureException(
-            new Error(
-              actionText + ' cancel error' + 'res: ' + JSON.stringify(res)
-            )
-          );
+          capturePerpsError(`${actionText} cancel error`, null, {
+            oid,
+            coin,
+            res,
+          });
         }
       } catch (error) {
         message.error({
           className: 'toast-message-2025',
           content: actionText + ' cancel error',
         });
-        Sentry.captureException(
-          new Error(
-            actionText + ' cancel error' + 'error: ' + JSON.stringify(error)
-          )
-        );
+        capturePerpsError(`${actionText} cancel error`, error, { oid, coin });
       }
     }
   );
@@ -212,12 +200,13 @@ export const usePerpsPosition = ({
             duration: 1.5,
             content: msg || 'Update margin failed',
           });
-          Sentry.captureException(
-            new Error(
-              'PERPS update margin failed: ' +
-                JSON.stringify({ action, margin, res })
-            )
-          );
+          capturePerpsError('update margin failed', null, {
+            coin,
+            dex,
+            action,
+            margin,
+            res,
+          });
         }
       } catch (error) {
         console.error('Update margin error:', error);
@@ -226,13 +215,52 @@ export const usePerpsPosition = ({
           duration: 1.5,
           content: error?.message || 'Update margin failed',
         });
-        Sentry.captureException(
-          new Error(
-            'PERPS update margin error: ' +
-              JSON.stringify({ action, margin, error })
-          )
-        );
+        capturePerpsError('update margin error', error, {
+          coin,
+          dex,
+          action,
+          margin,
+        });
         throw error;
+      }
+    }
+  );
+
+  /**
+   * Applies the margin mode on click instead of waiting for the order. HL sets
+   * mode and leverage in one action, so pass the account's current leverage —
+   * a stale value would silently move the liquidation price. Returns false when
+   * the call failed; the error is already surfaced.
+   */
+  const handleUpdateMarginMode = useMemoizedFn(
+    async (params: {
+      coin: string;
+      leverage: number;
+      marginMode: 'cross' | 'isolated';
+    }) => {
+      const { coin, leverage, marginMode } = params;
+      try {
+        const sdk = getPerpsSDK();
+        await sdk.exchange?.updateLeverage({
+          coin,
+          leverage,
+          isCross: marginMode === 'cross',
+        });
+        return true;
+      } catch (error) {
+        if (await judgeIsUserAgentIsExpired(error?.message || '')) {
+          return false;
+        }
+        if (judgeIsBuilderFeeNeedApprove(error?.message)) {
+          return false;
+        }
+        console.error('Update margin mode error:', error);
+        message.error({
+          duration: 1.5,
+          content: error?.message || 'Update margin mode failed',
+        });
+        capturePerpsError('update margin mode error', error, { params });
+        return false;
       }
     }
   );
@@ -287,15 +315,7 @@ export const usePerpsPosition = ({
             duration: 1.5,
             content: msg || 'close position error',
           });
-          Sentry.captureException(
-            new Error(
-              'PERPS close position noFills' +
-                'params: ' +
-                JSON.stringify(params) +
-                'res: ' +
-                JSON.stringify(res)
-            )
-          );
+          capturePerpsError('close position noFills', null, { params, res });
           return null;
         }
       } catch (e) {
@@ -312,15 +332,7 @@ export const usePerpsPosition = ({
           duration: 1.5,
           content: e?.message || 'close position error',
         });
-        Sentry.captureException(
-          new Error(
-            'PERPS close position error' +
-              'params: ' +
-              JSON.stringify(params) +
-              'error: ' +
-              JSON.stringify(e)
-          )
-        );
+        capturePerpsError('close position error', e, { params });
         return null;
       }
     }
@@ -459,15 +471,7 @@ export const usePerpsPosition = ({
             duration: 1.5,
             content: msg || 'open position error',
           });
-          Sentry.captureException(
-            new Error(
-              'PERPS open position noFills' +
-                'params: ' +
-                JSON.stringify(params) +
-                'res: ' +
-                JSON.stringify(res)
-            )
-          );
+          capturePerpsError('open position noFills', null, { params, res });
         }
       } catch (error) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
@@ -483,15 +487,7 @@ export const usePerpsPosition = ({
           duration: 1.5,
           content: error?.message || 'open position error',
         });
-        Sentry.captureException(
-          new Error(
-            'PERPS open position error' +
-              'params: ' +
-              JSON.stringify(params) +
-              'error: ' +
-              JSON.stringify(error)
-          )
-        );
+        capturePerpsError('open position error', error, { params });
       }
     }
   );
@@ -522,15 +518,7 @@ export const usePerpsPosition = ({
           duration: 1.5,
           content: error?.message || t('page.perps.PerpsSpotSwap.swapFailed'),
         });
-        Sentry.captureException(
-          new Error(
-            'PERPS stableCoinOrder error ' +
-              'params: ' +
-              JSON.stringify(params) +
-              ' error: ' +
-              JSON.stringify(error)
-          )
-        );
+        capturePerpsError('stableCoinOrder error', error, { params });
         return false;
       }
     }
@@ -566,13 +554,7 @@ export const usePerpsPosition = ({
           duration: 1.5,
           content: error?.message || 'Close all positions error',
         });
-        Sentry.captureException(
-          new Error(
-            'PERPS closeAllPositions error ' +
-              ' error: ' +
-              JSON.stringify(error)
-          )
-        );
+        capturePerpsError('closeAllPositions error', error);
         return false;
       }
     }
@@ -603,11 +585,11 @@ export const usePerpsPosition = ({
                 : t('page.perps.toast.cancelLimitOrderSuccess'),
           });
           if (failCount > 0) {
-            Sentry.captureException(
-              new Error(
-                'PERPS cancel limit orders partial fail: ' + JSON.stringify(res)
-              )
-            );
+            capturePerpsError('cancel limit orders partial fail', null, {
+              failCount,
+              okCount,
+              res,
+            });
           }
           const marketDataMap = store.getState().perps.marketDataMap;
           dispatch.perps.fetchPositionOpenOrdersHttpForDexes({
@@ -620,9 +602,7 @@ export const usePerpsPosition = ({
           duration: 1.5,
           content: t('page.perps.toast.cancelLimitOrderError'),
         });
-        Sentry.captureException(
-          new Error('PERPS cancel limit orders failed: ' + JSON.stringify(res))
-        );
+        capturePerpsError('cancel limit orders failed', null, { res });
         return false;
       } catch (error: any) {
         const isExpired = await judgeIsUserAgentIsExpired(error?.message || '');
@@ -633,9 +613,7 @@ export const usePerpsPosition = ({
           content:
             error?.message || t('page.perps.toast.cancelLimitOrderError'),
         });
-        Sentry.captureException(
-          new Error('PERPS cancel limit orders error: ' + JSON.stringify(error))
-        );
+        capturePerpsError('cancel limit orders error', error);
         return false;
       }
     }
@@ -649,6 +627,7 @@ export const usePerpsPosition = ({
     handleCancelOrder,
     handleCancelLimitOrders,
     handleUpdateMargin,
+    handleUpdateMarginMode,
     handleStableCoinOrder,
     userFills,
     isLogin,
