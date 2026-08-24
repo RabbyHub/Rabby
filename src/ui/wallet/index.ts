@@ -1,9 +1,9 @@
 import { EVENTS } from 'consts';
 
 import eventBus from '@/eventBus';
+import { createOpenapiRuntime } from '@/services/openapi';
 import type { PublicOpenapiStore } from '@/services/openapi';
 import type { PersistedStoreSnapshot } from '@/types/persistedStore';
-import { createUIOpenapiRuntime } from '../service/openapi';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
 import { getUITypeName } from '../utils/uiType';
 import { createWallet } from './createWallet';
@@ -15,7 +15,8 @@ const walletClient = createWallet({
   },
 });
 
-const uiOpenapiRuntime = createUIOpenapiRuntime({
+const uiOpenapiRuntime = createOpenapiRuntime({
+  kind: 'ui',
   async load() {
     return (await walletClient.request({
       type: 'controller',

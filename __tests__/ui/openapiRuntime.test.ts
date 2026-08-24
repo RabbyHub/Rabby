@@ -1,32 +1,35 @@
 let mockStore: any;
-const mockOpenapi = {
-  initSync: jest.fn(),
-  getHost: jest.fn(() => mockStore.host),
-  setHost: jest.fn(async (host: string) => {
-    mockStore.host = host;
-  }),
-};
 const mockInit = jest.fn().mockResolvedValue(undefined);
+const mockInstances: any[] = [];
 
-jest.mock('@/services/openapi', () => {
-  const actual = jest.requireActual('@/services/openapi');
+jest.mock('@rabby-wallet/rabby-api', () => {
   return {
-    ...actual,
-    createOpenapiClient: jest.fn((store) => {
-      mockStore = store;
-      return {
-        openapi: mockOpenapi,
-        init: mockInit,
-      };
-    }),
+    OpenApiService: class MockOpenApiService {
+      init = mockInit;
+      initSync = jest.fn();
+      getHost = jest.fn(() => mockStore.host);
+      setHost = jest.fn(async (host: string) => {
+        mockStore.host = host;
+      });
+
+      constructor(options: any) {
+        mockStore = options.store;
+        mockInstances.push(this);
+      }
+    },
   };
 });
 
-import { createUIOpenapiRuntime } from '@/ui/service/openapi';
+jest.mock('@rabby-wallet/rabby-api/dist/plugins/web-sign', () => ({
+  WebSignApiPlugin: {},
+}));
 
-describe('UI OpenAPI runtime', () => {
+import { createOpenapiRuntime } from '@/services/openapi';
+
+describe('OpenAPI runtime', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockInstances.splice(0);
   });
 
   test('hydrates the public host and uses a volatile UI API identity', async () => {
@@ -38,7 +41,8 @@ describe('UI OpenAPI runtime', () => {
         })
     );
     let onUpdate: ((update: any) => void) | undefined;
-    const runtime = createUIOpenapiRuntime({
+    const runtime = createOpenapiRuntime({
+      kind: 'ui',
       load: jest.fn().mockResolvedValue({
         origin: 'background-1',
         revision: 1,
@@ -83,8 +87,29 @@ describe('UI OpenAPI runtime', () => {
     await expect(runtime.openapi.getHost()).resolves.toBe(
       'https://remote.example.com'
     );
-    expect(mockOpenapi.initSync).toHaveBeenCalledTimes(1);
+    expect(mockInstances[0].initSync).toHaveBeenCalledTimes(1);
 
     runtime.dispose();
+  });
+
+  test('initializes and reconfigures the background client', async () => {
+    const initializeStore = jest.fn().mockResolvedValue(undefined);
+    const runtime = createOpenapiRuntime({
+      kind: 'background',
+      store: {
+        host: 'https://api.example.com',
+        apiKey: 'key',
+        apiTime: 1,
+      },
+      initializeStore,
+    });
+
+    await runtime.ready;
+    expect(initializeStore).toHaveBeenCalledTimes(1);
+    expect(mockInit).toHaveBeenCalledTimes(1);
+    expect(runtime.openapi).toBe(mockInstances[0]);
+
+    await runtime.reconfigure();
+    expect(mockInstances[0].initSync).toHaveBeenCalledTimes(1);
   });
 });

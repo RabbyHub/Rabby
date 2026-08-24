@@ -1,30 +1,55 @@
-import {
-  createOpenapiClient,
-  createOpenapiStoreTemplate,
-  createReadyOpenapiProxy,
-  OpenapiClientStore,
-  PublicOpenapiStore,
-} from '@/services/openapi';
+import type { OpenApiService } from '@rabby-wallet/rabby-api';
 import { v4 as uuidv4 } from 'uuid';
 
-type PublicOpenapiSnapshot = {
+import {
+  createOpenapiClient,
+  createReadyOpenapiProxy,
+} from './createOpenapiClient';
+import {
+  createOpenapiStoreTemplate,
+  OpenapiClientStore,
+  PublicOpenapiStore,
+} from './types';
+
+export type PublicOpenapiSnapshot = {
   origin: string;
   revision: number;
   state: PublicOpenapiStore;
 };
 
-type PublicOpenapiUpdate = {
+export type PublicOpenapiUpdate = {
   origin: string;
   revision: number;
   partials: Partial<PublicOpenapiStore>;
 };
 
-export type CreateUIOpenapiRuntimeOptions = {
+type OpenapiRuntimeCommonOptions = {
+  onError?: (error: unknown) => void;
+};
+
+export type CreateUIOpenapiRuntimeOptions = OpenapiRuntimeCommonOptions & {
+  kind: 'ui';
   load: () => Promise<PublicOpenapiSnapshot>;
   commit: (partials: Partial<PublicOpenapiStore>) => Promise<void>;
   subscribe: (listener: (update: PublicOpenapiUpdate) => void) => () => void;
   onReconnect?: (listener: () => void) => () => void;
-  onError?: (error: unknown) => void;
+};
+
+export type CreateBackgroundOpenapiRuntimeOptions = OpenapiRuntimeCommonOptions & {
+  kind: 'background';
+  store: OpenapiClientStore;
+  initializeStore: () => Promise<void>;
+};
+
+export type CreateOpenapiRuntimeOptions =
+  | CreateUIOpenapiRuntimeOptions
+  | CreateBackgroundOpenapiRuntimeOptions;
+
+export type OpenapiRuntime = {
+  openapi: OpenApiService;
+  ready: Promise<void>;
+  reconfigure: () => Promise<void>;
+  dispose: () => void;
 };
 
 /**
@@ -92,14 +117,23 @@ class UIOpenapiStore implements OpenapiClientStore {
   flushPublicCommit = () => this.latestCommit;
 }
 
-export const createUIOpenapiRuntime = ({
-  load,
-  commit,
-  subscribe,
-  onReconnect,
-  onError = (error) => console.error('[uiOpenapi]', error),
-}: CreateUIOpenapiRuntimeOptions) => {
-  const store = new UIOpenapiStore(commit, onError);
+/**
+ * Creates one OpenAPI runtime for the current JavaScript context. UI pages and
+ * the background use the same lifecycle implementation but keep separate
+ * stores and OpenApiService instances.
+ */
+export const createOpenapiRuntime = (
+  options: CreateOpenapiRuntimeOptions
+): OpenapiRuntime => {
+  const onError =
+    options.onError ||
+    ((error: unknown) => console.error(`[${options.kind}Openapi]`, error));
+  const uiOptions = options.kind === 'ui' ? options : undefined;
+  const backgroundOptions = options.kind === 'background' ? options : undefined;
+  const uiStore = uiOptions
+    ? new UIOpenapiStore(uiOptions.commit, onError)
+    : undefined;
+  const store = uiStore || backgroundOptions!.store;
   const clients = createOpenapiClient(store);
   let disposed = false;
   let initialized = false;
@@ -108,7 +142,7 @@ export const createUIOpenapiRuntime = ({
   let latestOrigin: string | undefined;
   let latestRevision = -1;
 
-  const scheduleReconfiguration = (changed: boolean) => {
+  const scheduleReconfiguration = (changed = true) => {
     if (!initialized || !changed) return;
     reconfiguration = reconfiguration
       .then(() => {
@@ -119,7 +153,7 @@ export const createUIOpenapiRuntime = ({
   };
 
   const applyUpdate = ({ origin, revision, partials }: PublicOpenapiUpdate) => {
-    if (disposed) return;
+    if (disposed || !uiStore) return;
     if (origin !== latestOrigin) {
       latestOrigin = origin;
       latestRevision = -1;
@@ -130,11 +164,12 @@ export const createUIOpenapiRuntime = ({
       accepted.host = partials.host;
       latestRevision = revision;
     }
-    scheduleReconfiguration(store.applyPublicState(accepted));
+    scheduleReconfiguration(uiStore.applyPublicState(accepted));
   };
 
   const reload = async () => {
-    const snapshot = await load();
+    if (!uiOptions) return;
+    const snapshot = await uiOptions.load();
     applyUpdate({
       origin: snapshot.origin,
       revision: snapshot.revision,
@@ -144,8 +179,14 @@ export const createUIOpenapiRuntime = ({
 
   const ensureReady = () => {
     initialization ||= (async () => {
-      await reload();
-      if (disposed) throw new Error('UI OpenAPI runtime disposed');
+      if (backgroundOptions) {
+        await backgroundOptions.initializeStore();
+      } else {
+        await reload();
+      }
+      if (disposed) {
+        throw new Error(`${options.kind} OpenAPI runtime disposed`);
+      }
       await clients.init();
       initialized = true;
     })().catch((error) => {
@@ -160,8 +201,8 @@ export const createUIOpenapiRuntime = ({
     await reconfiguration;
   };
 
-  const unsubscribe = subscribe(applyUpdate);
-  const unsubscribeReconnect = onReconnect?.(() => {
+  const unsubscribe = uiOptions?.subscribe(applyUpdate);
+  const unsubscribeReconnect = uiOptions?.onReconnect?.(() => {
     void reload().catch(onError);
   });
 
@@ -170,15 +211,22 @@ export const createUIOpenapiRuntime = ({
   void ready.catch(onError);
 
   return {
-    openapi: createReadyOpenapiProxy(
-      clients.openapi,
-      getReady,
-      store.flushPublicCommit
-    ),
+    openapi: uiStore
+      ? createReadyOpenapiProxy(
+          clients.openapi,
+          getReady,
+          uiStore.flushPublicCommit
+        )
+      : clients.openapi,
     ready,
+    async reconfigure() {
+      await ensureReady();
+      scheduleReconfiguration();
+      await reconfiguration;
+    },
     dispose() {
       disposed = true;
-      unsubscribe();
+      unsubscribe?.();
       unsubscribeReconnect?.();
     },
   };

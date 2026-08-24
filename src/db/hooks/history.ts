@@ -1,16 +1,13 @@
-import openapiService, { TxHistoryItem } from '@/background/service/openapi';
-import { Account } from '@/background/service/preference';
+import type { Account } from '@/background/service/preference';
 import { UI_TYPE } from '@/constant/ui';
 import { isSupportDBAccount } from '@/utils/account';
 import { findChain } from '@/utils/chain';
 import { transformToHistory } from '@/utils/history';
 import { useWallet } from '@/ui/utils';
-import { useInfiniteScroll, useRequest } from 'ahooks';
-import Dexie from 'dexie';
-import { last, sortBy, has } from 'lodash';
+import { useRequest } from 'ahooks';
 import { db } from '..';
 import { historyDbService } from '../services/historyDbService';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { TxHistoryItemRow } from '../schema/history';
 
@@ -19,18 +16,7 @@ export type TxHistoryItemWithGasDeposit = TxHistoryItemRow & {
 };
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
-  // return useQuery({
-  //   queryKey: ['syncHistory', options.address],
-  //   queryFn: async () => {
-  //     const { address } = options;
-  //     await historyDbService.sync({ address });
-  //   },
-  //   refetchOnWindowFocus: false,
-  //   refetchOnReconnect: false,
-  //   staleTime: 1 * 60 * 1000, // 1 minute
-  //   cacheTime: 5 * 60 * 1000, // 5 minutes
-  // });
-
+  const wallet = useWallet();
   return useRequest(
     async () => {
       const { account } = options;
@@ -41,7 +27,10 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
       ) {
         return;
       }
-      return historyDbService.sync({ address: account.address });
+      return historyDbService.sync({
+        openapi: wallet.openapi,
+        address: account.address,
+      });
     },
     {
       refreshDeps: [options.account?.address],
@@ -50,8 +39,6 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
     }
   );
 };
-
-const PAGE_COUNT = 20;
 
 export const useQueryDbHistory = (options: {
   account?: Account | null;
@@ -90,14 +77,13 @@ export const useQueryDbHistory = (options: {
   }, [isSupportAccount, account?.address, isFilterScam, serverChainId]);
 
   const { data, loading } = useRequest(
-    async (d) => {
-      const startTime = d?.last || 0;
+    async () => {
       const address = account?.address;
       if (!address || isSupportAccount) {
         return [];
       }
 
-      const res = await openapiService.getAllTxHistory({
+      const res = await wallet.openapi.getAllTxHistory({
         id: address,
       });
 

@@ -1,6 +1,6 @@
 import { INITIAL_OPENAPI_URL } from '@/constant';
 import {
-  createOpenapiClient,
+  createOpenapiRuntime,
   createOpenapiStoreTemplate,
   OpenapiServiceStore,
   openapiStoreSchema,
@@ -89,11 +89,15 @@ if (!process.env.DEBUG) {
   proxyStore.host = INITIAL_OPENAPI_URL;
 }
 
-const clients = createOpenapiClient(proxyStore);
-const service = clients.openapi;
+const openapiRuntime = createOpenapiRuntime({
+  kind: 'background',
+  store: proxyStore,
+  initializeStore: proxyStore.init,
+});
+const service = openapiRuntime.openapi;
 
 export const initializeOpenapiStore = () => proxyStore.init();
-export const initializeOpenapiClients = () => clients.init();
+export const initializeOpenapiRuntime = () => openapiRuntime.ready;
 
 export const getOpenapiStore = (): PublicOpenapiStore =>
   pickPublicOpenapiStore(proxyStore.getStore());
@@ -106,9 +110,9 @@ export const patchOpenapiStore = async (
   proxyStore.patchStore(pickPublicOpenapiStore(partials));
 
   // The signer was initialized during background startup. Host changes only
-  // need to rebuild the axios client and can therefore stay synchronous.
+  // need to rebuild the axios client after the runtime is ready.
   if (Object.prototype.hasOwnProperty.call(partials, 'host')) {
-    service.initSync();
+    await openapiRuntime.reconfigure();
   }
 };
 

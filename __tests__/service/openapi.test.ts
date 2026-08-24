@@ -16,9 +16,11 @@ jest.mock('@/services/openapi', () => {
   const actual = jest.requireActual('@/services/openapi');
   return {
     ...actual,
-    createOpenapiClient: jest.fn(() => ({
+    createOpenapiRuntime: jest.fn(() => ({
       openapi: { initSync: jest.fn() },
-      init: jest.fn().mockResolvedValue(undefined),
+      ready: Promise.resolve(),
+      reconfigure: jest.fn().mockResolvedValue(undefined),
+      dispose: jest.fn(),
     })),
   };
 });
