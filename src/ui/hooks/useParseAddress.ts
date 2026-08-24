@@ -52,10 +52,7 @@ export function useParseContractAddress(
     userAddress?: string | null;
     chain: Chain | null;
     inputDataHex?: string | null;
-  } | null,
-  opts?: {
-    isTestnet?: boolean;
-  }
+  } | null
 ) {
   const { contractAddress, userAddress, chain, inputDataHex } = input || {};
 
@@ -76,9 +73,7 @@ export function useParseContractAddress(
         chainId: chain.id,
       });
 
-      const openapi = opts?.isTestnet ? wallet.testnetOpenapi : wallet.openapi;
-
-      const res = await openapi.preExecTx({
+      const res = await wallet.openapi.preExecTx({
         tx: {
           chainId: Number(chain.id),
           from: userAddress,

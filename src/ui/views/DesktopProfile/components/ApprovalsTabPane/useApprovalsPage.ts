@@ -171,9 +171,7 @@ export function useApprovalsPage(options?: {
   ] = useAsyncFn(async () => {
     setIsLoadingOnAsyncFn(true);
 
-    const openapiClient = options?.isTestnet
-      ? wallet.testnetOpenapi
-      : wallet.openapi;
+    const openapiClient = wallet.openapi;
 
     const userAddress = account!.address;
     const usedChainList = await openapiClient.usedChainList(userAddress);

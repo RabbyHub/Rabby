@@ -16,7 +16,7 @@ import {
 } from '@/utils/sentry';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
-import fetchAdapter from 'background/utils/fetchAdapter';
+import fetchAdapter from '@/services/openapi/fetchAdapter';
 import { WalletController } from 'background/controller/wallet';
 import {
   APPCHAIN_SYNC_SCENE,
@@ -74,8 +74,8 @@ import {
 import { customTestnetService } from './service/customTestnet';
 import { GasAccountServiceStore } from './service/gasAccount';
 import {
+  initializeOpenapiClients,
   initializeOpenapiStore,
-  testnetOpenapiService,
 } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
@@ -165,8 +165,7 @@ async function restoreAppState() {
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
   keyringService.sanitizeUnencryptedKeyringDataInStore();
   await initializeOpenapiStore();
-  await openapiService.init();
-  await testnetOpenapiService.init();
+  await initializeOpenapiClients();
 
   // Init keyring and openapi before migrations that depend on them.
   await migrateData();
@@ -465,14 +464,6 @@ browser.runtime.onConnect.addListener((port) => {
           case 'openapi':
             if (walletController.openapi[data.method]) {
               return walletController.openapi[data.method].apply(
-                null,
-                data.params
-              );
-            }
-            break;
-          case 'testnetOpenapi':
-            if (walletController.testnetOpenapi[data.method]) {
-              return walletController.testnetOpenapi[data.method].apply(
                 null,
                 data.params
               );

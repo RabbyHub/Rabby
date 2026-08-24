@@ -87,6 +87,24 @@ describe('createWallet', () => {
     expect(channel.requests).toEqual([]);
   });
 
+  test('can replace OpenAPI namespaces with a UI-local client', async () => {
+    const channel = new TestChannel();
+    const client = createWallet({
+      channel,
+      name: 'popup',
+      onBroadcast: jest.fn(),
+    });
+    const getSupportedDEXList = jest.fn().mockResolvedValue(['dex']);
+
+    client.setNamespace('openapi', { getSupportedDEXList });
+
+    await expect(client.wallet.openapi.getSupportedDEXList()).resolves.toEqual([
+      'dex',
+    ]);
+    expect(getSupportedDEXList).toHaveBeenCalledTimes(1);
+    expect(channel.requests).toEqual([]);
+  });
+
   test('reconnects and buffers new calls until the restarted background is ready', async () => {
     jest.useFakeTimers();
     const channel = new TestChannel();
