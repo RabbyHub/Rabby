@@ -514,6 +514,14 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       approvalRef.current = approval ?? null;
     });
   }, []);
+  // Fail closed. The background guard skips its id check when no id is passed
+  // and then acts on whatever approval is current, so an action fired before
+  // the capture above resolves must do nothing rather than pass `undefined`.
+  const rejectCurrentApproval = (err = 'User rejected the request.') => {
+    const approval = approvalRef.current;
+    if (!approval) return;
+    return rejectApproval(err, false, false, approval.id);
+  };
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(
@@ -1464,6 +1472,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (activeApprovalPopup()) {
       return;
     }
+    // Same fail-closed rule as rejectCurrentApproval: both resolves below
+    // carry approvalRef.current?.id.
+    if (!approvalRef.current) {
+      return;
+    }
 
     if (account?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(account.address);
@@ -1954,12 +1967,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const handleCancel = () => {
     explainEpochRef.current += 1;
     gaEvent('cancel');
-    rejectApproval(
-      'User rejected the request.',
-      false,
-      false,
-      approvalRef.current?.id
-    );
+    rejectCurrentApproval();
   };
 
   const handleDrawerCancel = () => {
@@ -2221,21 +2229,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           okText: t('page.sendToken.blockedTransactionCancelText'),
           onCancel: async () => {
             await wallet.clearPageStateCache();
-            rejectApproval(
-              'User rejected the request.',
-              false,
-              false,
-              approvalRef.current?.id
-            );
+            rejectCurrentApproval();
           },
           onOk: async () => {
             await wallet.clearPageStateCache();
-            rejectApproval(
-              'User rejected the request.',
-              false,
-              false,
-              approvalRef.current?.id
-            );
+            rejectCurrentApproval();
           },
         });
       }
