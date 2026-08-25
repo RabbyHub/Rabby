@@ -86,7 +86,7 @@
     "@rabby-wallet/page-provider": "0.4.11",
     "@rabby-wallet/rabby-action": "0.1.16",
     "@rabby-wallet/rabby-api": "0.9.64-alpha.1",
-    "@rabby-wallet/rabby-bridge": "0.0.8-alpha.0",
+    "@rabby-wallet/rabby-bridge": "0.0.8-alpha.3",
     "@rabby-wallet/rabby-security-engine": "2.0.12",
     "@rabby-wallet/rabby-swap": "0.0.83-beta.1",
     "@rabby-wallet/staking-sdk": "0.1.0",
