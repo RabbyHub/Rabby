@@ -3,16 +3,14 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { CurveChartData } from '@/ui/views/Dashboard/components/BalanceView/useCurve';
-import { useRequest } from 'ahooks';
 import { Popover } from 'antd';
 import QRCode from 'qrcode.react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
-import { useWallet } from '@/ui/utils';
-import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
 import clsx from 'clsx';
+import { useContactBookStore } from '@/ui/state/contactBook';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -40,26 +38,11 @@ export const ProfileHeader: React.FC<{
   onRefresh?(): void;
 }> = (props) => {
   const currentAccount = useCurrentAccount();
-
-  const wallet = useWallet();
-
-  const { data: alias, runAsync: runFetchAlias } = useRequest(
-    async () => {
-      if (!currentAccount?.address) {
-        return '';
-      }
-      return wallet.getAlianName(currentAccount?.address || '');
-    },
-    {
-      refreshDeps: [currentAccount?.address],
-    }
-  );
-
-  useEffect(() => {
-    return onBackgroundStoreChanged('contactBook', (payload) => {
-      runFetchAlias();
-    });
-  }, [runFetchAlias]);
+  const alias = useContactBookStore((state) => {
+    if (!currentAccount?.address) return '';
+    const contact = state[currentAccount.address.toLowerCase()];
+    return contact?.isAlias ? contact.name : '';
+  });
 
   if (!currentAccount) {
     return null;

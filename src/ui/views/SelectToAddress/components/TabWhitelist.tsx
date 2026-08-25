@@ -31,7 +31,6 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
 import { useWhitelistStore } from '@/ui/state/whitelist';
-import { useContactBookStore } from '@/ui/state/contactBook';
 import { groupBy } from 'lodash';
 import { findAccountByPriority } from '@/utils/account';
 import { padWatchAccount } from '../util';
@@ -251,9 +250,6 @@ export default function TabWhitelist({
   onManagePwdForNonWhitelistedTx: () => void;
 }) {
   const history = useHistory();
-  const getContactBookAsync = useContactBookStore(
-    (state) => state.getContactBookAsync
-  );
   const wallet = useWallet();
   const { t } = useTranslation();
 
@@ -405,7 +401,6 @@ export default function TabWhitelist({
         await wallet.updateCexId(address, '');
       }
     }
-    getContactBookAsync();
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('page.whitelist.tips.removed'),
