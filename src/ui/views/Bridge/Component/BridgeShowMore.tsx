@@ -222,7 +222,7 @@ export const BridgeShowMore = ({
     if (showMinDuration > 3) {
       return 'text-r-orange-default';
     }
-    return 'text-r-blue-default';
+    return 'text-r-neutral-title-1';
   }, [showMinDuration]);
 
   const sourceSelectorRender = useMemoizedFn((clickable = true) => {
@@ -274,7 +274,7 @@ export const BridgeShowMore = ({
               <>
                 <span
                   className={clsx(
-                    'text-12 font-medium',
+                    'text-12',
                     sourceLogo || sourceName
                       ? durationColor
                       : 'text-r-neutral-foot'

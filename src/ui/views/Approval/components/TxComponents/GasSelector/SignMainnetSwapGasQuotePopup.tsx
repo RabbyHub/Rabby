@@ -381,11 +381,11 @@ export const SignMainnetSwapGasQuotePopup = ({
                   </span>
                 </div>
               </div>
-              <div className="h-[26px] text-12 leading-normal text-r-neutral-foot">
+              <div className="text-12 leading-normal text-r-neutral-foot">
                 {t('page.swap.best-subtitle')}
               </div>
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="min-h-0 pb-20 flex-1 overflow-y-auto">
               {renderQuotes(() => onVisibleChange(false))}
             </div>
           </div>

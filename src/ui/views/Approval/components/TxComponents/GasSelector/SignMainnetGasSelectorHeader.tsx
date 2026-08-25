@@ -15,7 +15,7 @@ import React, {
 } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { TooltipV6 } from '@/ui/component/Tooltip/TooltipV6';
 
 import { buildDirectSignSummary, calcGasAccountUsd } from './directSignSummary';
 import { SignMainnetCustomGasSheet } from './SignMainnetCustomGasSheet';
@@ -609,9 +609,9 @@ export const SignMainnetGasSelectorHeader = ({
   const levelText = t(getGasLevelI18nKey(selectedGas?.level || 'normal'));
   const gasAccountInfoTooltip =
     displayGasMethod === 'gasAccount' ? (
-      <TooltipWithMagnetArrow
+      <TooltipV6
         placement="top"
-        className="rectangle w-[max-content]"
+        overlayClassName="rectangle w-[max-content]"
         title={
           <div onClick={(e) => e.stopPropagation()}>
             <div>{t('page.signTx.gasAccount.description')}</div>
@@ -642,7 +642,7 @@ export const SignMainnetGasSelectorHeader = ({
             onClick={(e) => e.stopPropagation()}
           />
         </span>
-      </TooltipWithMagnetArrow>
+      </TooltipV6>
     ) : null;
   const gasMethodQuickSwitch =
     gasMethod && props.onChangeGasMethod && !props.disabled ? (
