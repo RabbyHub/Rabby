@@ -1,5 +1,6 @@
 import { useQueryDbHistory } from '@/db/hooks/history';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { isSupportDBAccount } from '@/utils/account';
 import { Switch } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,12 +20,17 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
 }) => {
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
+  const isSupportAccount = isSupportDBAccount(currentAccount);
 
-  const [isHideScam, setIsHideScam] = React.useState(true);
+  const [isHideScam, setIsHideScam] = React.useState(isSupportAccount);
 
-  const { data, loading } = useQueryDbHistory({
+  React.useEffect(() => {
+    setIsHideScam(isSupportAccount);
+  }, [isSupportAccount]);
+
+  const { data, loading, loadingMore, loadMore, noMore } = useQueryDbHistory({
     account: currentAccount,
-    isFilterScam: isHideScam,
+    isFilterScam: isSupportAccount && isHideScam,
     serverChainId: selectChainId,
   });
 
@@ -38,14 +44,16 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-end pt-[24px]">
-            <label className="flex items-center gap-[6px] cursor-pointer">
-              <Switch checked={isHideScam} onChange={setIsHideScam} />
-              <div className="text-rb-neutral-title-1 text-[14px] leading-[17px]">
-                {t('page.transactions.hideScamTips')}
-              </div>
-            </label>
-          </div>
+          {isSupportAccount ? (
+            <div className="flex items-center justify-end pt-[24px]">
+              <label className="flex items-center gap-[6px] cursor-pointer">
+                <Switch checked={isHideScam} onChange={setIsHideScam} />
+                <div className="text-rb-neutral-title-1 text-[14px] leading-[17px]">
+                  {t('page.transactions.hideScamTips')}
+                </div>
+              </label>
+            </div>
+          ) : null}
           {isEmpty ? (
             <Empty
               title={t('page.transactions.empty.noTxInThreeMonth')}
@@ -59,15 +67,15 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
               itemContent={(_, item) => (
                 <DesktopHistoryItem key={item.id} data={item} />
               )}
-              // endReached={loadMore}
-              // components={{
-              //   Footer: () => {
-              //     if (loadingMore) {
-              //       return <DesktopLoading count={3} active />;
-              //     }
-              //     return null;
-              //   },
-              // }}
+              endReached={noMore ? undefined : loadMore}
+              components={{
+                Footer: () => {
+                  if (loadingMore) {
+                    return <DesktopLoading count={3} active />;
+                  }
+                  return null;
+                },
+              }}
             />
           )}
         </>
