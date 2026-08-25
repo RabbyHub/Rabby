@@ -2,9 +2,7 @@ import axios from 'axios';
 import type { AxiosAdapter, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 type AxiosErrorCtor = typeof import('axios').AxiosError;
-
 type AxiosErrorLike = Error & { isAxiosError?: boolean };
-
 type FetchResult<T = any> = AxiosResponse<T> | AxiosErrorLike;
 
 type AdapterExtras = {
@@ -44,23 +42,15 @@ const fetchAdapter: AxiosAdapter = async (config) => {
   }
 
   const settled = await Promise.race(executors);
-
-  if (timeoutId) {
-    clearTimeout(timeoutId);
-  }
-
-  if (settled instanceof Error) {
-    throw settled;
-  }
+  if (timeoutId) clearTimeout(timeoutId);
+  if (settled instanceof Error) throw settled;
 
   const extras = config as AdapterExtras;
-
   if (extras.settle) {
     return await new Promise<AxiosResponse>((resolve, reject) => {
       extras.settle!(resolve, reject, settled);
     });
   }
-
   return settleResponse(settled);
 };
 
@@ -70,10 +60,9 @@ async function getResponse(
   request: Request,
   config: AxiosRequestConfig
 ): Promise<FetchResult> {
-  let stageOne: Response;
-
+  let response: Response;
   try {
-    stageOne = await fetch(request);
+    response = await fetch(request);
   } catch (error: any) {
     if (isAbortError(error)) {
       return createError('Request aborted', config, 'ERR_CANCELED', request);
@@ -81,17 +70,14 @@ async function getResponse(
     return createError('Network Error', config, 'ERR_NETWORK', request);
   }
 
-  const responseHeaders = toPlainHeaders(stageOne.headers);
-  const response: AxiosResponse = {
-    data: await parseBody(stageOne, config),
-    status: stageOne.status,
-    statusText: stageOne.statusText,
-    headers: responseHeaders,
+  return {
+    data: await parseBody(response, config),
+    status: response.status,
+    statusText: response.statusText,
+    headers: toPlainHeaders(response.headers),
     config,
     request,
   };
-
-  return response;
 }
 
 function createRequest(config: AxiosRequestConfig) {
@@ -99,8 +85,7 @@ function createRequest(config: AxiosRequestConfig) {
   if (config.headers) {
     Object.keys(config.headers).forEach((key) => {
       const value = (config.headers as any)[key];
-      if (value == null) return;
-      headers.append(key, String(value));
+      if (value != null) headers.append(key, String(value));
     });
   }
 
@@ -113,11 +98,7 @@ function createRequest(config: AxiosRequestConfig) {
   }
 
   const method = (config.method ?? 'get').toUpperCase();
-  const options: RequestInit = {
-    headers,
-    method,
-  };
-
+  const options: RequestInit = { headers, method };
   if (
     method !== 'GET' &&
     method !== 'HEAD' &&
@@ -127,42 +108,26 @@ function createRequest(config: AxiosRequestConfig) {
   }
 
   const extras = config as AdapterExtras;
-  if (extras.mode) {
-    options.mode = extras.mode;
-  }
-  if (extras.cache) {
-    options.cache = extras.cache;
-  }
-  if (extras.integrity) {
-    options.integrity = extras.integrity;
-  }
-  if (extras.redirect) {
-    options.redirect = extras.redirect;
-  }
-  if (extras.referrer) {
-    options.referrer = extras.referrer;
-  }
-  if (!isUndefined(config.withCredentials)) {
+  if (extras.mode) options.mode = extras.mode;
+  if (extras.cache) options.cache = extras.cache;
+  if (extras.integrity) options.integrity = extras.integrity;
+  if (extras.redirect) options.redirect = extras.redirect;
+  if (extras.referrer) options.referrer = extras.referrer;
+  if (typeof config.withCredentials !== 'undefined') {
     options.credentials = config.withCredentials ? 'include' : 'omit';
   }
-  if (config.signal) {
-    options.signal = config.signal;
-  }
+  if (config.signal) options.signal = config.signal;
 
-  const url = axios.getUri(config);
-
-  return new Request(url, options);
+  return new Request(axios.getUri(config), options);
 }
 
 function settleResponse(response: AxiosResponse) {
   const validateStatus = response.config?.validateStatus;
-
   if (!response.status || !validateStatus || validateStatus(response.status)) {
     return response;
   }
 
   const code = response.status >= 500 ? 'ERR_BAD_RESPONSE' : 'ERR_BAD_REQUEST';
-
   throw createError(
     `Request failed with status code ${response.status}`,
     response.config,
@@ -178,9 +143,7 @@ function parseBody(response: Response, config: AxiosRequestConfig) {
     return Promise.resolve(null);
   }
 
-  const responseType = (config as AdapterExtras).responseType;
-
-  switch (responseType) {
+  switch ((config as AdapterExtras).responseType) {
     case 'arraybuffer':
       return response.arrayBuffer();
     case 'blob':
@@ -197,14 +160,12 @@ function parseBody(response: Response, config: AxiosRequestConfig) {
 }
 
 async function parseJsonSafely(response: Response) {
-  const text = await response.text();
-  if (!text) {
-    return text;
-  }
+  const value = await response.text();
+  if (!value) return value;
   try {
-    return JSON.parse(text);
+    return JSON.parse(value);
   } catch {
-    return text;
+    return value;
   }
 }
 
@@ -235,7 +196,6 @@ function createError(
 ) {
   const AxiosErrorClass: AxiosErrorCtor | undefined = (axios as any).AxiosError;
   const resolvedCode = resolveAxiosCode(code, AxiosErrorClass);
-
   if (AxiosErrorClass && typeof AxiosErrorClass === 'function') {
     return new AxiosErrorClass(
       message,
@@ -245,7 +205,6 @@ function createError(
       response
     );
   }
-
   return enhanceError(
     new Error(message),
     config,
@@ -257,9 +216,7 @@ function createError(
 
 function resolveAxiosCode(code: string | undefined, ctor?: AxiosErrorCtor) {
   if (!code) return code;
-  if (ctor && (ctor as any)[code]) {
-    return (ctor as any)[code];
-  }
+  if (ctor && (ctor as any)[code]) return (ctor as any)[code];
   return code;
 }
 
@@ -271,15 +228,9 @@ function enhanceError(
   response?: AxiosResponse
 ) {
   (error as any).config = config;
-  if (code) {
-    (error as any).code = code;
-  }
-  if (request) {
-    (error as any).request = request;
-  }
-  if (response) {
-    (error as any).response = response;
-  }
+  if (code) (error as any).code = code;
+  if (request) (error as any).request = request;
+  if (response) (error as any).response = response;
   error.isAxiosError = true;
   (error as any).toJSON = function toJSON() {
     return {
@@ -298,8 +249,4 @@ function enhanceError(
     };
   };
   return error;
-}
-
-function isUndefined(value: unknown): value is undefined {
-  return typeof value === 'undefined';
 }

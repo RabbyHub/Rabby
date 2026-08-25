@@ -1,16 +1,17 @@
-import openapiService, {
-  TokenItem,
-  TxAllHistoryResult,
-  TxHistoryResult,
-} from '@/background/service/openapi';
+import type { OpenApiService } from '@rabby-wallet/rabby-api';
+import type { TxAllHistoryResult, TxHistoryResult } from '@/services/openapi';
 import { db } from '..';
-import { TxHistoryItemRow } from '../schema/history';
-import { has, last, transform } from 'lodash';
+import { last } from 'lodash';
 import Dexie from 'dexie';
 import { transformToHistory } from '@/utils/history';
 import { syncDbService } from './syncDbService';
 
 const USE_REALTIME_API_DURATION = 24 * 5 * 60 * 60 * 1000; // use async history api if user not opened app in 5 days
+
+export type HistoryOpenapi = Pick<
+  OpenApiService,
+  'hasNewTxFrom' | 'getAllTxHistory' | 'listTxHisotry'
+>;
 
 class HistoryDbService {
   async fillEntity({
@@ -45,11 +46,13 @@ class HistoryDbService {
   }
 
   async sync({
+    openapi,
     address,
     startTime,
     latestTime: _latestTime,
     forceUseRealTimeApi: _forceUseRealTimeApi,
   }: {
+    openapi: HistoryOpenapi;
     address: string;
     startTime?: number;
     latestTime?: number;
@@ -70,6 +73,7 @@ class HistoryDbService {
       const pendingLatestTime = syncState.pendingLatestTime!;
 
       await this.syncWithAllHistoryApi({
+        openapi,
         address,
         startTime: pendingStartTime,
         latestTime: pendingLatestTime,
@@ -89,7 +93,7 @@ class HistoryDbService {
     let hasNew = true;
 
     if (latestTime) {
-      const res = await openapiService.hasNewTxFrom({
+      const res = await openapi.hasNewTxFrom({
         address: address,
         startTime: latestTime,
       });
@@ -106,6 +110,7 @@ class HistoryDbService {
 
     if (forceUseRealTimeApi) {
       await this.syncWithRealTimeApi({
+        openapi,
         address,
         startTime: startTime || 0,
         latestTime: latestTime * 1000,
@@ -121,6 +126,7 @@ class HistoryDbService {
     }
 
     await this.syncWithAllHistoryApi({
+      openapi,
       address,
       startTime: startTime || 0,
       latestTime,
@@ -134,10 +140,12 @@ class HistoryDbService {
   }
 
   async syncWithAllHistoryApi({
+    openapi,
     address,
     startTime: _startTime,
     latestTime: _latestTime,
   }: {
+    openapi: HistoryOpenapi;
     address: string;
     startTime: number;
     latestTime?: number;
@@ -161,7 +169,7 @@ class HistoryDbService {
     });
 
     while (!isEnd) {
-      const res = await openapiService.getAllTxHistory({
+      const res = await openapi.getAllTxHistory({
         id: address,
         start_time: startTime || 0,
         page_count: isAddUpdate ? 500 : 2000,
@@ -247,10 +255,12 @@ class HistoryDbService {
   }
 
   async syncWithRealTimeApi({
+    openapi,
     address,
     startTime: _startTime,
     latestTime: _latestTime,
   }: {
+    openapi: HistoryOpenapi;
     address: string;
     startTime: number;
     latestTime?: number;
@@ -274,7 +284,7 @@ class HistoryDbService {
     const ninetyDaysAgo = new Date().getTime() / 1000 - 90 * 24 * 60 * 60; // 90 days ago
 
     while (!isEnd) {
-      const res = await openapiService.listTxHisotry({
+      const res = await openapi.listTxHisotry({
         id: address,
         start_time: nextStartTime,
         page_count: PAGE_COUNT,

@@ -5,7 +5,6 @@ import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
 import {
   INITIAL_OPENAPI_URL,
-  INITIAL_TESTNET_OPENAPI_URL,
   CUSTOM_RPC_ENABLED,
   LANGS,
   ThemeIconType,
@@ -624,7 +623,6 @@ const SettingsInner = ({
   const history = useHistory();
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
-  const [showTestnetOpenApiModal, setShowTestnetOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
   const [isShowLangModal, setIsShowLangModal] = useState(false);
@@ -1321,19 +1319,6 @@ const SettingsInner = ({
         },
         {
           leftIcon: RcIconServerCC,
-          content: (
-            <span>{t('page.dashboard.settings.testnetBackendServiceUrl')}</span>
-          ),
-          onClick: () => setShowTestnetOpenApiModal(true),
-          rightIcon: (
-            <ThemeIcon
-              src={RcIconArrowRight}
-              className="icon icon-arrow-right"
-            />
-          ),
-        },
-        {
-          leftIcon: RcIconServerCC,
           content: <span>Sync chain list</span>,
           onClick: () => {
             wallet.syncMainnetChainList({
@@ -1751,17 +1736,6 @@ const SettingsInner = ({
           setShowOpenApiModal(false);
         }}
         onCancel={() => setShowOpenApiModal(false)}
-      />
-      <OpenApiModal
-        visible={showTestnetOpenApiModal}
-        value={openapiStore.testnetHost}
-        defaultValue={INITIAL_TESTNET_OPENAPI_URL}
-        title={t('page.dashboard.settings.testnetBackendServiceUrl')}
-        onFinish={(host) => {
-          openapiStore.setTestnetHost(host);
-          setShowTestnetOpenApiModal(false);
-        }}
-        onCancel={() => setShowTestnetOpenApiModal(false)}
       />
       <ResetAccountModal
         visible={showResetAccountModal}

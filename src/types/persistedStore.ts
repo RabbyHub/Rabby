@@ -1,10 +1,10 @@
 import type { BridgeServiceStore } from '@/background/service/bridge';
 import type { ContactBookStore } from '@/background/service/contactBook';
 import type { CurrencyStore } from '@/background/service/currency';
-import type { PublicOpenapiStore } from '@/background/service/openapi';
 import type { CustomRPCServiceStore } from '@/background/service/rpc';
 import type { SwapServiceStore } from '@/background/service/swap';
 import type { WhitelistStore } from '@/background/service/whitelist';
+import type { PublicOpenapiStore } from '@/services/openapi';
 
 export type PersistedStoreMap = {
   bridge: BridgeServiceStore;
