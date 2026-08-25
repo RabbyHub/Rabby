@@ -25,12 +25,18 @@ export const selectAllAliasAddrs = (state: ContactBookState) =>
 export const selectAllContacts = (state: ContactBookState) =>
   selectAllAddrs(state).filter((item) => item.isContact);
 
-export const createContactBookStore = () =>
+type CreateContactBookStoreOptions = {
+  autoHydrate?: boolean;
+};
+
+export const createContactBookStore = ({
+  autoHydrate = true,
+}: CreateContactBookStoreOptions = {}) =>
   createRabbyStore<ContactBookState>(
     () => getDefaultContactBookState(),
     createExtensionStoreOptions<ContactBookState, 'contactBook'>({
       storageKey: 'contactBook',
-      autoHydrate: false,
+      autoHydrate,
       // The UI state intentionally has exactly the same dynamic address keys
       // as the background service. A full snapshot therefore replaces it;
       // incremental broadcasts are still shallow-merged by createRabbyStore.
@@ -45,5 +51,7 @@ export const createContactBookStore = () =>
 
 export const useContactBookStore = createContactBookStore();
 
+// Keep an explicit, idempotent entry point so startup can retry an automatic
+// hydration that failed before the background connection settled.
 export const initializeContactBookStore = () =>
   useContactBookStore.persist.hydrate();

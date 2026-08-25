@@ -35,6 +35,9 @@ export const initializeUIStore = () => {
       syncCurrentAccountAlias();
     }
   });
+  if (useContactBookStore.persist.hasHydrated()) {
+    syncCurrentAccountAlias();
+  }
 
   onBackgroundStoreChanged('preference', (payload) => {
     switch (payload.changedKey) {

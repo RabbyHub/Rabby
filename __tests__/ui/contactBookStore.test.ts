@@ -8,13 +8,18 @@ import {
   selectAllAddrs,
   selectAllAliasAddrs,
   selectAllContacts,
+  useContactBookStore,
 } from '@/ui/state/contactBook';
 import { wallet } from '@/ui/wallet';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 
 jest.mock('@/ui/wallet', () => ({
   wallet: {
-    getStorageSnapshot: jest.fn(),
+    getStorageSnapshot: jest.fn().mockResolvedValue({
+      origin: 'background-default',
+      revision: 0,
+      state: {},
+    }),
     setStorageItem: jest.fn(),
   },
   onWalletReconnect: jest.fn(() => () => undefined),
@@ -41,14 +46,35 @@ const createHydratedStore = async (
     revision,
     state,
   });
-  const store = createContactBookStore();
+  const store = createContactBookStore({ autoHydrate: false });
   await store.persist.hydrate();
   return store;
 };
 
 describe('contact book store', () => {
+  beforeAll(async () => {
+    await useContactBookStore.persist.hydrationPromise();
+    useContactBookStore.persist.destroy();
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  test('hydrates automatically by default', async () => {
+    const alice = contact({ address: '0xabc', name: 'Alice' });
+    (wallet.getStorageSnapshot as jest.Mock).mockResolvedValueOnce({
+      origin: 'background-1',
+      revision: 0,
+      state: { '0xabc': alice },
+    });
+
+    const store = createContactBookStore();
+
+    expect(wallet.getStorageSnapshot).toHaveBeenCalledWith('contactBook');
+    await store.persist.hydrationPromise();
+    expect(store.getState()).toEqual({ '0xabc': alice });
+    store.persist.destroy();
   });
 
   test('hydrates the service record without a UI wrapper', async () => {
@@ -127,7 +153,7 @@ describe('contact book store', () => {
         revision: 0,
         state: { '0xdef': bob },
       });
-    const store = createContactBookStore();
+    const store = createContactBookStore({ autoHydrate: false });
     await store.persist.hydrate();
 
     eventBus.emit(BROADCAST_TO_UI_EVENTS.storeChanged, {
