@@ -141,6 +141,38 @@ describe('OpenAPI runtime', () => {
     runtime.dispose();
   });
 
+  test('recovers normal API calls after a public store commit fails', async () => {
+    const commitError = new Error('background unavailable');
+    const onError = jest.fn();
+    const runtime = createOpenapiRuntime({
+      kind: 'ui',
+      load: jest.fn().mockResolvedValue({
+        origin: 'background-1',
+        revision: 1,
+        state: {
+          host: 'https://api.example.com',
+          apiKey: 'background-key',
+          apiTime: 100,
+        },
+      }),
+      commit: jest.fn().mockRejectedValue(commitError),
+      subscribe: () => jest.fn(),
+      onError,
+    });
+
+    await runtime.ready;
+    await expect(
+      runtime.openapi.setHost('https://local.example.com')
+    ).rejects.toBe(commitError);
+    expect(onError).toHaveBeenCalledWith(commitError);
+
+    await expect(runtime.openapi.getHost()).resolves.toBe(
+      'https://local.example.com'
+    );
+
+    runtime.dispose();
+  });
+
   test('initializes and reconfigures the background client', async () => {
     const initializeStore = jest.fn().mockResolvedValue(undefined);
     const runtime = createOpenapiRuntime({

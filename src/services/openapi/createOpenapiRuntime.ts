@@ -55,7 +55,7 @@ export type OpenapiRuntime = {
 class UIOpenapiStore implements OpenapiClientStore {
   private state: OpenapiClientStore = createOpenapiStoreTemplate();
   private commitQueue = Promise.resolve();
-  private latestCommit = Promise.resolve();
+  private latestCommit?: Promise<void>;
 
   constructor(
     private commit: (partials: Partial<PublicOpenapiStore>) => Promise<void>,
@@ -129,7 +129,20 @@ class UIOpenapiStore implements OpenapiClientStore {
     this.applyPublicState({ apiTime }, true);
   }
 
-  flushPublicCommit = () => this.latestCommit;
+  flushPublicCommit = async () => {
+    const pendingCommit = this.latestCommit;
+    if (!pendingCommit) return;
+
+    try {
+      await pendingCommit;
+    } finally {
+      // Propagate this commit's failure to the call that triggered it, but do
+      // not let the rejected promise poison unrelated future API calls.
+      if (this.latestCommit === pendingCommit) {
+        this.latestCommit = undefined;
+      }
+    }
+  };
 }
 
 /**
