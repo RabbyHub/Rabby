@@ -191,9 +191,15 @@ class HistoryDbService {
       });
 
       const ninetyDaysAgo = new Date().getTime() / 1000 - 90 * 24 * 60 * 60; // 90 days ago
-      res.history_list = res.history_list.filter(
-        (i) => i.time_at > ninetyDaysAgo
+      // res.history_list = res.history_list.filter(
+      //   (i) => i.time_at > ninetyDaysAgo
+      // );
+      const isNinetyDaysAgo = res.history_list.some(
+        (i) => i.time_at < ninetyDaysAgo
       );
+      if (isNinetyDaysAgo) {
+        isEnd = true;
+      }
 
       console.debug('getAllTxHistory length:', res.history_list.length);
       if (!res.history_list.length) {
