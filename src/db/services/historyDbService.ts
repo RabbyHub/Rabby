@@ -7,6 +7,16 @@ import { transformToHistory } from '@/utils/history';
 import { syncDbService } from './syncDbService';
 
 const USE_REALTIME_API_DURATION = 24 * 5 * 60 * 60 * 1000; // use async history api if user not opened app in 5 days
+// getAllTxHistory can be cached for 10 minutes; double that window for late data.
+const REALTIME_API_OVERLAP_SECONDS = 20 * 60;
+
+const getRealtimeApiLatestTime = (latestTime: number) => {
+  if (!latestTime) {
+    return undefined;
+  }
+
+  return Math.max(latestTime - REALTIME_API_OVERLAP_SECONDS, 0) * 1000;
+};
 
 export type HistoryOpenapi = Pick<
   OpenApiService,
@@ -90,6 +100,23 @@ class HistoryDbService {
       _forceUseRealTimeApi ??
       updatedAt > Date.now() - USE_REALTIME_API_DURATION;
 
+    if (forceUseRealTimeApi) {
+      await this.syncWithRealTimeApi({
+        openapi,
+        address,
+        startTime: startTime || 0,
+        latestTime: getRealtimeApiLatestTime(latestTime),
+      });
+
+      await syncDbService.setUpdatedAt({
+        address,
+        scene: 'history',
+        updatedAt: Date.now(),
+      });
+
+      return;
+    }
+
     let hasNew = true;
 
     if (latestTime) {
@@ -100,20 +127,11 @@ class HistoryDbService {
       hasNew = res.has_new_tx;
     }
     if (!hasNew) {
-      await syncDbService.setUpdatedAt({
-        address,
-        scene: 'history',
-        updatedAt: Date.now(),
-      });
-      return;
-    }
-
-    if (forceUseRealTimeApi) {
       await this.syncWithRealTimeApi({
         openapi,
         address,
         startTime: startTime || 0,
-        latestTime: latestTime * 1000,
+        latestTime: getRealtimeApiLatestTime(latestTime),
       });
 
       await syncDbService.setUpdatedAt({
@@ -121,7 +139,6 @@ class HistoryDbService {
         scene: 'history',
         updatedAt: Date.now(),
       });
-
       return;
     }
 
@@ -130,6 +147,14 @@ class HistoryDbService {
       address,
       startTime: startTime || 0,
       latestTime,
+    });
+
+    const latestItemTime = (await this.getLatestItemTime(address)) ?? 0;
+    await this.syncWithRealTimeApi({
+      openapi,
+      address,
+      startTime: 0,
+      latestTime: getRealtimeApiLatestTime(latestItemTime),
     });
 
     await syncDbService.setUpdatedAt({
