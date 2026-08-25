@@ -19,4 +19,5 @@ export type ProviderRequest<
   account?: Account;
   origin?: string;
   requestedApproval?: boolean;
+  sourceFrameId?: number;
 };

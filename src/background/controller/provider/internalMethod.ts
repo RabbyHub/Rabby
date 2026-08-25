@@ -12,6 +12,8 @@ import wallet from '../wallet';
 import { metamaskModeService } from '@/background/service/metamaskModeService';
 import { ProviderRequest } from './type';
 import { ga4 } from '@/utils/ga4';
+import { ethErrors } from 'eth-rpc-errors';
+import { getOpenInDesktopPolicy } from './openInDesktopPolicy';
 
 const TAB_CHECKIN_DEDUPE_MS = 100;
 const TAB_CHECKIN_TTL_MS = 2 * 1000;
@@ -138,15 +140,34 @@ const resetProvider = ({ origin }: { origin: string }) => {
 
 const openInDesktop = async (req: ProviderRequest) => {
   const origin = req.session?.origin || req.origin;
+  const policy = getOpenInDesktopPolicy(origin, req.sourceFrameId);
+  if (!policy) {
+    throw ethErrors.provider.unauthorized();
+  }
+
+  if (policy.source === 'go-rabby') {
+    const requestedTarget = req.data?.params?.[0]?.target;
+    let desktopPath: string;
+    switch (requestedTarget) {
+      case 'perps':
+        desktopPath = '/desktop/perps';
+        break;
+      case 'swap':
+        desktopPath = '/desktop/profile?action=swap';
+        break;
+      case 'bridge':
+        desktopPath = '/desktop/profile?action=bridge';
+        break;
+      case 'home':
+      default:
+        desktopPath = '/desktop/profile';
+        break;
+    }
+    await wallet.openInDesktop(desktopPath);
+    return { opened: true } as const;
+  }
 
   const params: { address: string } = req.data?.params?.[0] || {};
-
-  if (
-    !origin ||
-    !['https://debank.com', 'https://www.debank.com'].includes(origin)
-  ) {
-    return;
-  }
 
   if (!keyringService.isUnlocked()) {
     wallet.openInDesktop(
