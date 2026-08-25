@@ -1,44 +1,8 @@
 import { changeLanguage } from '@/i18n';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
-import { useAccountStore } from '@/ui/state/account';
-import { useContactBookStore } from '@/ui/state/contactBook';
 import { preferenceActions } from '@/ui/state/preference';
 
 export const initializeUIStore = () => {
-  const syncCurrentAccountAlias = () => {
-    const currentAccount = useAccountStore.getState().currentAccount;
-    if (!currentAccount?.address) return;
-
-    const contact = useContactBookStore.getState()[
-      currentAccount.address.toLowerCase()
-    ];
-    const aliasName = contact?.isAlias ? contact.name : '';
-    const accountState = useAccountStore.getState();
-    if (
-      accountState.alianName === aliasName &&
-      (currentAccount.alianName || '') === aliasName
-    ) {
-      return;
-    }
-
-    accountState.setField({
-      alianName: aliasName,
-      currentAccount: { ...currentAccount, alianName: aliasName },
-    });
-  };
-
-  useContactBookStore.subscribe(syncCurrentAccountAlias);
-  useAccountStore.subscribe((state, previousState) => {
-    if (
-      state.currentAccount?.address !== previousState.currentAccount?.address
-    ) {
-      syncCurrentAccountAlias();
-    }
-  });
-  if (useContactBookStore.persist.hasHydrated()) {
-    syncCurrentAccountAlias();
-  }
-
   onBackgroundStoreChanged('preference', (payload) => {
     switch (payload.changedKey) {
       case 'themeMode': {

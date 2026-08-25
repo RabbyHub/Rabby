@@ -3,11 +3,15 @@ import type {
   ContactBookStore,
 } from '@/background/service/contactBook';
 import eventBus from '@/eventBus';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
 import {
   createContactBookStore,
   selectAllAddrs,
   selectAllAliasAddrs,
   selectAllContacts,
+  selectAliasByAddress,
+  useContactAlias,
   useContactBookStore,
 } from '@/ui/state/contactBook';
 import { wallet } from '@/ui/wallet';
@@ -51,10 +55,19 @@ const createHydratedStore = async (
   return store;
 };
 
+const reactActEnvironment = globalThis as typeof globalThis & {
+  IS_REACT_ACT_ENVIRONMENT?: boolean;
+};
+
 describe('contact book store', () => {
   beforeAll(async () => {
+    reactActEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
     await useContactBookStore.persist.hydrationPromise();
     useContactBookStore.persist.destroy();
+  });
+
+  afterAll(() => {
+    delete reactActEnvironment.IS_REACT_ACT_ENVIRONMENT;
   });
 
   beforeEach(() => {
@@ -194,5 +207,67 @@ describe('contact book store', () => {
       '0xboth',
     ]);
     store.persist.destroy();
+  });
+
+  test('selects an alias by address without exposing non-alias contacts', () => {
+    const state: ContactBookStore = {
+      '0xabc': contact({
+        address: '0xAbC',
+        name: 'Alice',
+        isAlias: true,
+      }),
+      '0xdef': contact({
+        address: '0xDeF',
+        name: 'Bob',
+        isContact: true,
+      }),
+    };
+
+    expect(selectAliasByAddress(state, '0xAbC')).toBe('Alice');
+    expect(selectAliasByAddress(state, '0xDeF')).toBe('');
+    expect(selectAliasByAddress(state, '0xMissing')).toBe('');
+    expect(selectAliasByAddress(state)).toBe('');
+  });
+
+  test('reacts to alias changes for the selected address', () => {
+    const container = document.createElement('div');
+    const root = createRoot(container);
+    let selectedAlias = '';
+
+    const Consumer = () => {
+      selectedAlias = useContactAlias('0xReactive');
+      return null;
+    };
+
+    act(() => {
+      root.render(React.createElement(Consumer));
+    });
+    expect(selectedAlias).toBe('');
+
+    act(() => {
+      useContactBookStore.setState({
+        '0xreactive': contact({
+          address: '0xReactive',
+          name: 'Reactive alias',
+          isAlias: true,
+        }),
+      });
+    });
+    expect(selectedAlias).toBe('Reactive alias');
+
+    act(() => {
+      useContactBookStore.setState({
+        '0xreactive': contact({
+          address: '0xReactive',
+          name: 'Contact only',
+          isContact: true,
+        }),
+      });
+    });
+    expect(selectedAlias).toBe('');
+
+    act(() => {
+      root.unmount();
+    });
   });
 });

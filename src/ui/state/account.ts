@@ -41,8 +41,6 @@ const symLoaderMatteredBalance = Symbol('uiHelperMateeredChainBalancesPromise');
 
 export interface AccountState {
   currentAccount: null | Account;
-  /** @description alias name of CURRENT account */
-  alianName: string;
   visibleAccounts: DisplayedKeryring[];
   hiddenAccounts: Account[];
   keyrings: DisplayedKeryring[];
@@ -97,7 +95,6 @@ export type AccountActions = {
   }) => Promise<void>;
   changeAccountAsync: (account: Account) => Promise<void>;
   resetTokenList: () => Promise<void>;
-  fetchCurrentAccountAliasNameAsync: () => Promise<string>;
   getAllClassAccountsAsync: () => Promise<DisplayedKeryring[]>;
   getAllVisibleAccountsAsync: () => Promise<DisplayedKeryring[]>;
   getAllHiddenAccountsAsync: () => Promise<Account[]>;
@@ -129,7 +126,6 @@ export type AccountStore = AccountState & AccountActions;
 
 export const getDefaultAccountState = (): AccountState => ({
   currentAccount: null,
-  alianName: '',
   visibleAccounts: [],
   hiddenAccounts: [],
   keyrings: [],
@@ -281,17 +277,6 @@ export const useAccountStore = create<AccountStore>()((set, get) => ({
       tokens: { list: [], customize: [], blocked: [] },
       testnetTokens: { list: [], customize: [], blocked: [] },
     });
-  },
-  async fetchCurrentAccountAliasNameAsync() {
-    const currentAccount = get().currentAccount;
-    if (!currentAccount?.address) return '';
-
-    const alianName = await wallet.getAlianName<string>(currentAccount.address);
-    set({
-      alianName,
-      currentAccount: { ...currentAccount, alianName },
-    });
-    return alianName;
   },
   async getAllClassAccountsAsync() {
     const keyrings = await wallet.getAllClassAccounts<DisplayedKeryring[]>();

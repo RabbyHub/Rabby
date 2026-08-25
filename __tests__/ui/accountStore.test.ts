@@ -12,7 +12,6 @@ jest.mock('@/ui/wallet', () => ({
     addCustomizedToken: jest.fn(),
     changeAccount: jest.fn(),
     getAddressCacheBalance: jest.fn(),
-    getAlianName: jest.fn(),
     getCurrentAccount: jest.fn(),
     getPreference: jest.fn(),
     removeBlockedToken: jest.fn(),
@@ -38,24 +37,13 @@ describe('account store', () => {
     expect('persist' in useAccountStore).toBe(false);
   });
 
-  test('loads the current account and updates its alias', async () => {
+  test('loads the current account', async () => {
     (wallet.getCurrentAccount as jest.Mock).mockResolvedValue(currentAccount);
-    (wallet.getAlianName as jest.Mock).mockResolvedValue('Main account');
 
     await expect(
       useAccountStore.getState().getCurrentAccountAsync()
     ).resolves.toEqual(currentAccount);
-    await expect(
-      useAccountStore.getState().fetchCurrentAccountAliasNameAsync()
-    ).resolves.toBe('Main account');
-
-    expect(useAccountStore.getState()).toMatchObject({
-      alianName: 'Main account',
-      currentAccount: {
-        ...currentAccount,
-        alianName: 'Main account',
-      },
-    });
+    expect(useAccountStore.getState().currentAccount).toEqual(currentAccount);
   });
 
   test('updates a scene account only after the background accepts it', async () => {

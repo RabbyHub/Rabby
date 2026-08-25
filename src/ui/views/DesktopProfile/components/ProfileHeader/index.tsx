@@ -10,7 +10,6 @@ import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
 import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
 import clsx from 'clsx';
-import { useContactBookStore } from '@/ui/state/contactBook';
 
 const GlobalStyle = createGlobalStyle`
   .global-qr-code-popover {
@@ -38,11 +37,6 @@ export const ProfileHeader: React.FC<{
   onRefresh?(): void;
 }> = (props) => {
   const currentAccount = useCurrentAccount();
-  const alias = useContactBookStore((state) => {
-    if (!currentAccount?.address) return '';
-    const contact = state[currentAccount.address.toLowerCase()];
-    return contact?.isAlias ? contact.name : '';
-  });
 
   if (!currentAccount) {
     return null;
@@ -54,7 +48,7 @@ export const ProfileHeader: React.FC<{
       <div className="px-[20px] pt-[24px] pb-[8px] relative">
         <div className="mb-[20px] flex items-center gap-[8px]">
           <div className="text-r-neutral-title1 text-[18px] leading-[21px] font-semibold">
-            {alias}
+            {currentAccount.alianName}
           </div>
           <div className="text-rb-neutral-body text-[18px] leading-[21px]">
             {ellipsisAddress(currentAccount?.address || '')}

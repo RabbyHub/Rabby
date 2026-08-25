@@ -25,6 +25,16 @@ export const selectAllAliasAddrs = (state: ContactBookState) =>
 export const selectAllContacts = (state: ContactBookState) =>
   selectAllAddrs(state).filter((item) => item.isContact);
 
+export const selectAliasByAddress = (
+  state: ContactBookState,
+  address?: string
+) => {
+  if (!address) return '';
+
+  const contact = state[address.toLowerCase()];
+  return contact?.isAlias ? contact.name : '';
+};
+
 type CreateContactBookStoreOptions = {
   autoHydrate?: boolean;
 };
@@ -50,6 +60,9 @@ export const createContactBookStore = ({
   );
 
 export const useContactBookStore = createContactBookStore();
+
+export const useContactAlias = (address?: string) =>
+  useContactBookStore((state) => selectAliasByAddress(state, address));
 
 // Keep an explicit, idempotent entry point so startup can retry an automatic
 // hydration that failed before the background connection settled.
