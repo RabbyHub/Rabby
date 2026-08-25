@@ -138,7 +138,6 @@ import {
   parseAmountInputUrlState,
   shouldDisplaySmallUsdMaxAmount,
 } from './amountInputState';
-import { useContactBookStore } from '@/ui/state/contactBook';
 import {
   GNOSIS_REPLACE_QUERY_KEY,
   GnosisSendReplaceContext,
@@ -339,9 +338,6 @@ const SendToken = () => {
   const { useForm } = Form;
   const { t } = useTranslation();
   const history = useHistory();
-  const getContactBookAsync = useContactBookStore(
-    (state) => state.getContactBookAsync
-  );
   const rbisource = useRbiSource();
   const { search } = useLocation();
   const wallet = useWallet();
@@ -2994,7 +2990,6 @@ const SendToken = () => {
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
-    getContactBookAsync();
     if (!account) {
       history.replace('/');
       return;

@@ -1,4 +1,5 @@
-import store, { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { usePerpsStore } from '@/ui/state/perps';
 import { useMemoizedFn } from 'ahooks';
 import { message } from 'antd';
 import { getPerpsSDK } from '../sdkManager';
@@ -591,7 +592,7 @@ export const usePerpsPosition = ({
               res,
             });
           }
-          const marketDataMap = store.getState().perps.marketDataMap;
+          const marketDataMap = usePerpsStore.getState().marketDataMap;
           dispatch.perps.fetchPositionOpenOrdersHttpForDexes({
             dexes: orders.map((o) => marketDataMap[o.coin]?.dexId ?? ''),
           });

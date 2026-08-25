@@ -50,6 +50,7 @@ describe('wallet status store', () => {
     useWalletStatusStore.setState({
       isBooted: false,
       isUnlocked: false,
+      hasUnlockedOnce: false,
       isInitialized: false,
       isSyncing: false,
     });
@@ -68,6 +69,7 @@ describe('wallet status store', () => {
     expect(useWalletStatusStore.getState()).toMatchObject({
       isBooted: true,
       isUnlocked: false,
+      hasUnlockedOnce: false,
       isInitialized: true,
       isSyncing: false,
     });
@@ -97,6 +99,7 @@ describe('wallet status store', () => {
     expect(useWalletStatusStore.getState()).toMatchObject({
       isBooted: true,
       isUnlocked: true,
+      hasUnlockedOnce: true,
       isInitialized: true,
       isSyncing: false,
     });
@@ -106,6 +109,7 @@ describe('wallet status store', () => {
     useWalletStatusStore.setState({
       isBooted: true,
       isUnlocked: true,
+      hasUnlockedOnce: true,
       isInitialized: true,
     });
     getWalletStatus.mockResolvedValue({
@@ -120,6 +124,7 @@ describe('wallet status store', () => {
     expect(useWalletStatusStore.getState()).toMatchObject({
       isBooted: true,
       isUnlocked: false,
+      hasUnlockedOnce: true,
       isInitialized: true,
       isSyncing: false,
     });

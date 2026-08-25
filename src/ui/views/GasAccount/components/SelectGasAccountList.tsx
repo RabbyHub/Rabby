@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { AddressViewer, Item } from '@/ui/component';
 import { Virtuoso } from 'react-virtuoso';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import clsx from 'clsx';
 import { useGasAccountSign } from '../hooks';

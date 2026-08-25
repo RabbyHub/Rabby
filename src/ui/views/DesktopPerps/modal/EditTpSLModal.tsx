@@ -1,4 +1,4 @@
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { Button, Dropdown, Menu, Modal } from 'antd';

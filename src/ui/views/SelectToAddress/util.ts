@@ -1,5 +1,5 @@
 import { KEYRING_TYPE } from '@/constant';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { ellipsisAddress } from '@/ui/utils/address';
 
 export const padWatchAccount = (

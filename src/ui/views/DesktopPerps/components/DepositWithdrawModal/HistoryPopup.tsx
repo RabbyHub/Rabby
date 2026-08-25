@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { AccountHistoryItem } from '@/ui/models/perps';
+import { AccountHistoryItem } from '@/ui/state/perps';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { ReactComponent as RcIconOpenExternal } from 'ui/assets/perps/icon-jump.svg';
 import { formatUsdValue, openInTab, sinceTime } from '@/ui/utils';

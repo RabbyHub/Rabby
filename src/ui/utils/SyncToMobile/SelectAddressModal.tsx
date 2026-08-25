@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { SelectAddressItem } from './SelectAddressItem';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { isSameAccount, SYNC_KEYRING_TYPES } from '@/utils/account';
 import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
 

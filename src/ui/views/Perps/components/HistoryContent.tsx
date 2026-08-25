@@ -8,7 +8,7 @@ import { HistoryDetailPopup } from '../popup/HistoryDetailPopup';
 import { HistoryTransferDetailPopup } from '../popup/HistoryTransferDetailPopup';
 import { ReactComponent as RcIconNoSrc } from '@/ui/assets/perps/IconNoSrc.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
-import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
+import { AccountHistoryItem, MarketData } from '@/ui/state/perps';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useHistory } from 'react-router-dom';
 import { useMemoizedFn } from 'ahooks';
