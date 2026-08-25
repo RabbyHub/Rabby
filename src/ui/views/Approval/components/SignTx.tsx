@@ -541,6 +541,22 @@ const SignTx = ({
     canResolve: isCurrentSecurityEvaluation,
   });
   const securityEngine = useSecurityEngineStore();
+  // identity of the approval this page was mounted for; anything the user
+  // triggers here must only ever resolve/reject that one
+  const approvalRef = useRef<Approval | null>(null);
+  useEffect(() => {
+    getApproval().then((approval) => {
+      approvalRef.current = approval ?? null;
+    });
+  }, []);
+  // Fail closed. The background guard skips its id check when no id is passed
+  // and then acts on whatever approval is current, so an action fired before
+  // the capture above resolves must do nothing rather than pass `undefined`.
+  const rejectCurrentApproval = (err = 'User rejected the request.') => {
+    const approval = approvalRef.current;
+    if (!approval) return;
+    return rejectApproval(err, false, false, approval.id);
+  };
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(
@@ -1563,6 +1579,12 @@ const SignTx = ({
     if (activeApprovalPopup()) {
       return;
     }
+    // Same fail-closed rule as rejectCurrentApproval: both resolves below
+    // carry approvalRef.current?.id.
+    if (!approvalRef.current) {
+      return;
+    }
+    const currentApprovalId = approvalRef.current.id;
 
     if (account?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(account.address);
@@ -1617,7 +1639,8 @@ const SignTx = ({
       if (isSend) {
         wallet.clearPageStateCache();
       }
-      resolveApproval({
+      resolveApproval(
+        {
         uiRequestComponent: WaitingSignMessageComponent[account.type],
         type: account.type,
         address: account.address,
@@ -1633,7 +1656,10 @@ const SignTx = ({
             },
           },
         },
-      });
+        false,
+        false,
+        currentApprovalId
+      );
     } else {
       // it should never go to here
       try {
@@ -1657,7 +1683,7 @@ const SignTx = ({
         if (isSend) {
           wallet.clearPageStateCache();
         }
-        resolveApproval();
+        resolveApproval(undefined, false, false, currentApprovalId);
       } catch (e) {
         message.error({
           content: e.message,
@@ -2072,7 +2098,7 @@ const SignTx = ({
     explainEpochRef.current += 1;
     invalidateSecurity();
     gaEvent('cancel');
-    rejectApproval('User rejected the request.');
+    rejectCurrentApproval();
   };
 
   const handleDrawerCancel = () => {
@@ -2338,11 +2364,11 @@ const SignTx = ({
           okText: t('page.sendToken.blockedTransactionCancelText'),
           onCancel: async () => {
             await wallet.clearPageStateCache();
-            rejectApproval('User rejected the request.');
+            rejectCurrentApproval();
           },
           onOk: async () => {
             await wallet.clearPageStateCache();
-            rejectApproval('User rejected the request.');
+            rejectCurrentApproval();
           },
         });
       }
