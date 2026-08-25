@@ -23,7 +23,6 @@ type AllBackgroundStores = PersistedStoreMap & {
   feedback: import('@/background/service/feedback').FeedbackServiceStore;
 };
 
-// type StoreRootModel = import('@/ui/models').RootModel;
 export function onBackgroundStoreChanged<S extends keyof AllBackgroundStores>(
   bgStoreName: S,
   listener: (

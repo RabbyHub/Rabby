@@ -1,11 +1,9 @@
-import { RabbyDispatch } from '@/ui/models';
 import { changeLanguage } from '@/i18n';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
 import { useAccountStore } from '@/ui/state/account';
+import { preferenceActions } from '@/ui/state/preference';
 
-export default (store: typeof import('@/ui/store').default) => {
-  const dispatch = store.dispatch as RabbyDispatch;
-
+export const initializeUIStore = () => {
   onBackgroundStoreChanged('contactBook', (payload) => {
     const currentAccount = useAccountStore.getState().currentAccount;
     const currentAddr = currentAccount?.address;
@@ -20,12 +18,9 @@ export default (store: typeof import('@/ui/store').default) => {
   });
 
   onBackgroundStoreChanged('preference', (payload) => {
-    // const state = store.getState() as RabbyRootState;
-    // const preference = state.preference;
-
     switch (payload.changedKey) {
       case 'themeMode': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           themeMode: payload.partials.themeMode,
         });
         break;
@@ -34,51 +29,51 @@ export default (store: typeof import('@/ui/store').default) => {
         const locale = payload.partials.locale;
         if (locale) {
           changeLanguage(locale);
-          dispatch.preference.setField({ locale });
+          preferenceActions.setField({ locale });
         }
         break;
       }
       case 'rateGuideLastExposure': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           rateGuideLastExposure: payload.partials.rateGuideLastExposure,
         });
         break;
       }
       case 'isEnabledPwdForNonWhitelistedTx': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           isEnabledPwdForNonWhitelistedTx:
             payload.partials.isEnabledPwdForNonWhitelistedTx,
         });
         break;
       }
       case 'biometricUnlockEnabled': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           biometricUnlockEnabled: payload.partials.biometricUnlockEnabled,
         });
         break;
       }
       case 'biometricUnlockCredentialId': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           biometricUnlockCredentialId:
             payload.partials.biometricUnlockCredentialId,
         });
         break;
       }
       case 'biometricUnlockEncryptedPassword': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           biometricUnlockEncryptedPassword:
             payload.partials.biometricUnlockEncryptedPassword,
         });
         break;
       }
       case 'biometricUnlockIv': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           biometricUnlockIv: payload.partials.biometricUnlockIv,
         });
         break;
       }
       case 'unlockPreferredMethod': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           unlockPreferredMethod: payload.partials.unlockPreferredMethod,
         });
         break;

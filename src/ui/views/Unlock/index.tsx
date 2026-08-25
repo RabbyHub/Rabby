@@ -30,6 +30,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { ga4 } from '@/utils/ga4';
+import { useWalletStatusStore } from '@/ui/state/walletStatus';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -123,8 +124,8 @@ const Unlock = () => {
   const unlockPreferredMethod = useRabbySelector(
     (state) => state.preference.unlockPreferredMethod
   );
-  const hasUnlockedOnce = useRabbySelector(
-    (state) => state.app.hasUnlockedOnce
+  const hasUnlockedOnce = useWalletStatusStore(
+    (state) => state.hasUnlockedOnce
   );
   const query = useMemo(() => {
     return qs.parse(location.search, {
@@ -179,7 +180,7 @@ const Unlock = () => {
       );
     }
 
-    dispatch.app.setField({
+    useWalletStatusStore.setState({
       hasUnlockedOnce: true,
     });
     if (UiType.isNotification) {

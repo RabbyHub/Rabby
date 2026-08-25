@@ -1,40 +1,75 @@
-import { init } from '@rematch/core';
-import { models, RootModel, RabbyDispatch, RabbyRootState } from './models';
-import { connect, useDispatch } from 'react-redux';
-
-import onStoreInitialized from './models/_uistore';
+import type { AccountActions, AccountState } from './state/account';
 import { accountActions, useAccountStore } from './state/account';
+import type {
+  AccountToDisplayActions,
+  AccountToDisplayState,
+} from './state/accountToDisplay';
 import {
   accountToDisplayActions,
   useAccountToDisplayStore,
 } from './state/accountToDisplay';
+import type {
+  AddressManagementActions,
+  AddressManagementState,
+} from './state/addressManagement';
 import {
   addressManagementActions,
   useAddressManagementStore,
 } from './state/addressManagement';
+import type { BridgeActions, BridgeState } from './state/bridge';
 import { bridgeActions, useBridgeStore } from './state/bridge';
+import type { ChainsActions, ChainsState } from './state/chains';
 import { chainsActions, useChainsStore } from './state/chains';
-import { giftActions, useGiftStore } from './state/gift';
-import { gasAccountActions, useGasAccountStore } from './state/gasAccount';
-import { preferenceActions, usePreferenceStore } from './state/preference';
-import { perpsActions, usePerpsStore } from './state/perps';
 import { createSelectorStore } from './state/createStore/createSelectorStore';
+import type { GiftActions, GiftState } from './state/gift';
+import { giftActions, useGiftStore } from './state/gift';
+import type { GasAccountActions, GasAccountState } from './state/gasAccount';
+import { gasAccountActions, useGasAccountStore } from './state/gasAccount';
+import { initializeUIStore } from './state/initializeUIStore';
+import type { PerpsActions, PerpsState } from './state/perps';
+import { perpsActions, usePerpsStore } from './state/perps';
+import type { PreferenceActions, PreferenceState } from './state/preference';
+import { preferenceActions, usePreferenceStore } from './state/preference';
 
-const store = init<RootModel>({ models });
-(store.dispatch as RabbyDispatch).account = accountActions;
-(store.dispatch as RabbyDispatch).accountToDisplay = accountToDisplayActions;
-(store.dispatch as RabbyDispatch).addressManagement = addressManagementActions;
-(store.dispatch as RabbyDispatch).bridge = bridgeActions;
-(store.dispatch as RabbyDispatch).chains = chainsActions;
-(store.dispatch as RabbyDispatch).gift = giftActions;
-(store.dispatch as RabbyDispatch).gasAccount = gasAccountActions;
-(store.dispatch as RabbyDispatch).preference = preferenceActions;
-(store.dispatch as RabbyDispatch).perps = perpsActions;
+export type RabbyDispatch = {
+  account: AccountActions;
+  accountToDisplay: AccountToDisplayActions;
+  addressManagement: AddressManagementActions;
+  bridge: BridgeActions;
+  chains: ChainsActions;
+  gift: GiftActions;
+  gasAccount: GasAccountActions;
+  perps: PerpsActions;
+  preference: PreferenceActions;
+};
 
-onStoreInitialized(store);
+export type RabbyRootState = {
+  account: AccountState;
+  accountToDisplay: AccountToDisplayState;
+  addressManagement: AddressManagementState;
+  bridge: BridgeState;
+  chains: ChainsState;
+  gift: GiftState;
+  gasAccount: GasAccountState;
+  perps: PerpsState;
+  preference: PreferenceState;
+};
+
+const rabbyDispatch: RabbyDispatch = {
+  account: accountActions,
+  accountToDisplay: accountToDisplayActions,
+  addressManagement: addressManagementActions,
+  bridge: bridgeActions,
+  chains: chainsActions,
+  gift: giftActions,
+  gasAccount: gasAccountActions,
+  perps: perpsActions,
+  preference: preferenceActions,
+};
+
+initializeUIStore();
 
 const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
-  ...store.getState(),
   account: useAccountStore.getState(),
   accountToDisplay: useAccountToDisplayStore.getState(),
   addressManagement: useAddressManagementStore.getState(),
@@ -42,13 +77,10 @@ const useCombinedStore = createSelectorStore<RabbyRootState>()(() => ({
   chains: useChainsStore.getState(),
   gift: useGiftStore.getState(),
   gasAccount: useGasAccountStore.getState(),
-  preference: usePreferenceStore.getState(),
   perps: usePerpsStore.getState(),
+  preference: usePreferenceStore.getState(),
 }));
 
-store.subscribe(() => {
-  useCombinedStore.setState(store.getState());
-});
 useAccountStore.subscribe((account) => {
   useCombinedStore.setState({ account });
 });
@@ -70,20 +102,23 @@ useGiftStore.subscribe((gift) => {
 useGasAccountStore.subscribe((gasAccount) => {
   useCombinedStore.setState({ gasAccount });
 });
-usePreferenceStore.subscribe((preference) => {
-  useCombinedStore.setState({ preference });
-});
 usePerpsStore.subscribe((perps) => {
   useCombinedStore.setState({ perps });
 });
+usePreferenceStore.subscribe((preference) => {
+  useCombinedStore.setState({ preference });
+});
 
-export type { RabbyRootState };
+/**
+ * Compatibility helper for legacy call sites. The old `connect()` calls did
+ * not select Redux state or consume an injected dispatch prop, so returning
+ * the component directly preserves their behavior without a Redux Provider.
+ */
+export const connectStore = () => <Component>(component: Component) =>
+  component;
 
-export { connect as connectStore };
+export const useRabbyDispatch = () => rabbyDispatch;
 
-export const useRabbyDispatch = () => useDispatch<RabbyDispatch>();
 export const useRabbySelector = <Selected>(
   selector: (state: RabbyRootState) => Selected
 ) => useCombinedStore(selector);
-
-export default store;
