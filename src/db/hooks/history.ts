@@ -30,12 +30,14 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
   //   cacheTime: 5 * 60 * 1000, // 5 minutes
   // });
 
+  const isSupportAccount = isSupportDBAccount(options.account);
+
   return useRequest(
     async () => {
       const { account } = options;
       if (
         !account?.address ||
-        !isSupportDBAccount(account) ||
+        !isSupportAccount ||
         !(UI_TYPE.isDesktop || UI_TYPE.isPop)
       ) {
         return;
@@ -43,8 +45,8 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
       return historyDbService.sync({ address: account.address });
     },
     {
-      refreshDeps: [options.account?.address],
-      cacheKey: `syncHistory-${options.account?.address}`,
+      refreshDeps: [options.account?.address, isSupportAccount],
+      cacheKey: `syncHistory-${options.account?.address}-${isSupportAccount}`,
       staleTime: 10 * 1000,
     }
   );
