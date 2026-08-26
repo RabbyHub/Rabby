@@ -429,6 +429,11 @@ export const BridgeShowMore = ({
                 ? sourceSelectorRender(false)
                 : undefined
             }
+            fallbackSourceSelector={
+              type === 'swap' && (quoteLoading || sourceLogo || sourceName)
+                ? sourceSelectorRender()
+                : undefined
+            }
             showTopMargin={false}
             useInfoCardStyle
             renderSwapQuotes={renderSwapQuotes}
@@ -581,6 +586,7 @@ export const DirectSignGasInfo = ({
   chainServeId,
   signatureInstance,
   sourceSelector,
+  fallbackSourceSelector,
   showTopMargin = true,
   useInfoCardStyle = false,
   renderSwapQuotes,
@@ -597,6 +603,7 @@ export const DirectSignGasInfo = ({
   chainServeId: string;
   signatureInstance: SignatureManager;
   sourceSelector?: React.ReactNode;
+  fallbackSourceSelector?: React.ReactNode;
   showTopMargin?: boolean;
   useInfoCardStyle?: boolean;
   renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
@@ -1316,7 +1323,7 @@ export const DirectSignGasInfo = ({
           name={<>{'Gas fee'}</>}
           className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
         >
-          {sourceSelector}
+          {fallbackSourceSelector ?? sourceSelector}
           <div>-</div>
         </ListItem>
       ) : (
@@ -1324,7 +1331,7 @@ export const DirectSignGasInfo = ({
           name={<>{'Gas fee'}</>}
           className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
         >
-          {sourceSelector}
+          {fallbackSourceSelector ?? sourceSelector}
           <Skeleton.Input
             active
             className="rounded"
