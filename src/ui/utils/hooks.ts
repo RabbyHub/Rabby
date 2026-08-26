@@ -13,7 +13,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
 import { ApprovalBindingContext, getApprovalBinding } from './approval-context';
 
-export const useApproval = () => {
+export const useApproval = (expectedComponent?: string) => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
@@ -32,8 +32,14 @@ export const useApproval = () => {
     const approval = await getApproval();
 
     // Enforce strict binding context if provided by the Provider.
-    const binding = getApprovalBinding(approval, approvalBinding);
+    const binding = getApprovalBinding ? getApprovalBinding(approval, approvalBinding) : null;
     
+    // Strict component validation if requested by caller
+    if (expectedComponent && approval && approval.data.approvalComponent !== expectedComponent) {
+      console.warn(`Approval component mismatch. Expected ${expectedComponent}, got ${approval.data.approvalComponent}`);
+      return; 
+    }
+
     // For external notification routes (like Unlock), we allow the explicitly passed approvalId.
     const targetId = approvalId || binding?.id;
 
@@ -64,19 +70,31 @@ export const useApproval = () => {
     }, 0);
   };
 
-  const rejectApproval = async (err?, stay = false, isInternal = false) => {
+  const rejectApproval = async (err?: any, stay = false, isInternal = false, approvalId?: string) => {
     const approval = await getApproval();
+    const binding = getApprovalBinding ? getApprovalBinding(approval, approvalBinding) : null;
+
+    // Strict component validation if requested by caller
+    if (expectedComponent && approval && approval.data.approvalComponent !== expectedComponent) {
+      console.warn(`Approval component mismatch on reject. Expected ${expectedComponent}`);
+      return; 
+    }
+
+    const targetId = approvalId || binding?.id;
+
     if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
       wallet.coboSafeResetCurrentAccount();
     }
 
     if (approval) {
-      await wallet.rejectApproval(err, stay, isInternal);
+      // Security: Pass the captured ID to rejection to prevent race conditions
+      await wallet.rejectApproval(err, stay, isInternal, targetId);
     }
     if (!stay) {
       history.push('/');
     }
   };
+  
   return [getApproval, resolveApproval, rejectApproval] as const;
 };
 
@@ -195,6 +213,7 @@ export const useWalletRequest = <TReqArgs extends any[] = any[], TRet = any>(
 
   return [run, loading, res, err] as const;
 };
+
 export interface UseHoverOptions {
   mouseEnterDelayMS?: number;
   mouseLeaveDelayMS?: number;
@@ -383,6 +402,7 @@ export const useAccountInfo = (
   const isMnemonics = type === KEYRING_CLASS.MNEMONIC;
   const isKeystone = brand === 'Keystone';
   const mnemonicAccounts = useRabbySelector((state) => state.account);
+  
   const fetAccountInfo = useCallback(() => {
     wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
       setAccount({
