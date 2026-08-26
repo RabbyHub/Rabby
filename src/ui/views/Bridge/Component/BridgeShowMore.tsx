@@ -1313,6 +1313,7 @@ export const DirectSignGasInfo = ({
             renderSwapQuotes,
             onRefreshSwapQuotes,
             swapQuotesLoading,
+            swapGasInteractionDisabled: !showGasContent,
             swapGasQuoteVisible,
             onSwapGasQuoteVisibleChange,
           }}

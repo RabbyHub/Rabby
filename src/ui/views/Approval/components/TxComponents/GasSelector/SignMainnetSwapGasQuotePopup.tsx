@@ -34,6 +34,7 @@ type Props = Omit<SignMainnetShowMoreGasModalProps, 'children'> & {
   renderQuotes(onSelect: () => void): React.ReactNode;
   onRefreshQuotes(): void;
   quotesLoading?: boolean;
+  gasInteractionDisabled?: boolean;
 };
 
 export const SignMainnetSwapGasQuotePopup = ({
@@ -68,6 +69,7 @@ export const SignMainnetSwapGasQuotePopup = ({
   renderQuotes,
   onRefreshQuotes,
   quotesLoading,
+  gasInteractionDisabled,
 }: Props) => {
   const { t } = useTranslation();
   const currentGasMethod = gasMethod ?? 'native';
@@ -100,13 +102,16 @@ export const SignMainnetSwapGasQuotePopup = ({
     title: React.ReactNode;
   }) => {
     const active = currentGasMethod === value;
-    const disabled = value === 'gasAccount' && !noCustomRPCEnabled;
+    const disabledByCustomRPC = value === 'gasAccount' && !noCustomRPCEnabled;
+    const disabled = gasInteractionDisabled || disabledByCustomRPC;
     return (
       <Tooltip
         placement="top"
         overlayClassName="rectangle w-[max-content]"
         title={
-          disabled ? t('page.signTx.BroadcastMode.tips.customRPC') : undefined
+          disabledByCustomRPC
+            ? t('page.signTx.BroadcastMode.tips.customRPC')
+            : undefined
         }
       >
         <div
@@ -215,6 +220,9 @@ export const SignMainnetSwapGasQuotePopup = ({
       : costUsd;
 
     const handleSelect = () => {
+      if (gasInteractionDisabled) {
+        return;
+      }
       if (isCustom) {
         onVisibleChange(false);
         onEditCustomGas?.();
@@ -239,7 +247,10 @@ export const SignMainnetSwapGasQuotePopup = ({
       <div
         key={gas.level}
         className={clsx(
-          'flex h-[106px] min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-12 rounded-[8px] border border-solid py-12',
+          'flex h-[106px] min-w-0 flex-1 flex-col items-center justify-center gap-12 rounded-[8px] border border-solid py-12',
+          gasInteractionDisabled
+            ? 'cursor-not-allowed opacity-50'
+            : 'cursor-pointer',
           isActive
             ? 'border-r-blue-default bg-r-blue-light1'
             : 'border-transparent bg-r-neutral-card-1'
@@ -275,7 +286,17 @@ export const SignMainnetSwapGasQuotePopup = ({
           )}
         </div>
         {isCustom ? (
-          <div className="flex h-[30px] items-center justify-center">
+          <div className="flex h-[30px] items-center justify-center gap-4">
+            {isActive && costUsd ? (
+              <span
+                className={clsx(
+                  'text-12 font-medium',
+                  isNotEnough ? 'text-r-red-default' : 'text-r-neutral-title-1'
+                )}
+              >
+                {costUsd}
+              </span>
+            ) : null}
             <IconGasCustomRightArrowCC className="h-14 w-14 text-r-neutral-foot" />
           </div>
         ) : (
@@ -329,8 +350,14 @@ export const SignMainnetSwapGasQuotePopup = ({
 
             {showTempoGasTokenSelector && currentGasMethod !== 'gasAccount' ? (
               <div
-                className="flex h-[32px] cursor-pointer items-center justify-between rounded-[6px] bg-r-neutral-card-1 px-8"
+                className={clsx(
+                  'flex h-[32px] items-center justify-between rounded-[6px] bg-r-neutral-card-1 px-8',
+                  gasInteractionDisabled
+                    ? 'cursor-not-allowed opacity-50'
+                    : 'cursor-pointer'
+                )}
                 onClick={() => {
+                  if (gasInteractionDisabled) return;
                   onVisibleChange(false);
                   setTempoGasTokenVisible(true);
                 }}
