@@ -6,22 +6,19 @@ import { getUITypeName, WalletController, WalletControllerType } from './index';
 import { getOriginFromUrl } from '@/utils';
 import Modal from '../component/Modal';
 import { ReactComponent as ExternalLinkAlert } from 'ui/assets/component/external-link-alert.svg';
+import { getCurrentTab } from './currentTab';
 
-export const getCurrentTab = async (): Promise<Tabs.Tab> => {
-  const tabs = await browser.tabs.query({ active: true, currentWindow: true });
-
-  return tabs[0];
-};
+export { getCurrentTab } from './currentTab';
 
 export const getCurrentConnectSite = async (
   wallet: WalletController | WalletControllerType
 ) => {
-  const { id, url } = await getCurrentTab();
-  if (!id || !url) return null;
+  const tab = await getCurrentTab();
+  if (tab?.id == null || !tab.url) return null;
 
   return (wallet as WalletControllerType).getCurrentConnectedSite(
-    id,
-    getOriginFromUrl(url)
+    tab.id,
+    getOriginFromUrl(tab.url)
   );
 };
 
