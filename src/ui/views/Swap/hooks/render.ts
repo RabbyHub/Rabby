@@ -113,8 +113,10 @@ export const useSwapMainRenderState = ({
     showUnsupportedChainTips: !page.isSupportedChain,
     showQuoteAlert: !form.inSufficientCanGetQuote || noQuote,
     showPendingTxItem:
-      !!pending.approveHash ||
-      Boolean(!isShowMoreVisible && !quote.activeProvider?.quote),
+      amountAvailable && pending.type === 'swap'
+        ? false
+        : !!pending.approveHash ||
+          Boolean(!isShowMoreVisible && !quote.activeProvider?.quote),
     showStickyInfo:
       hasTokenPair &&
       !isSameTokenPair &&
