@@ -78,7 +78,11 @@ const SignText = ({
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
+  
+  // Explicitly bind the approval component to 'SignText' to enforce strict authorization boundaries
+  // and prevent cross-request race conditions from delayed callbacks.
   const [, resolveApproval, rejectApproval] = useApproval('SignText');
+  
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
@@ -235,6 +239,7 @@ const SignText = ({
 
   const handleCancel = () => {
     report('cancelSignText');
+    // Reject current approval request with fail-closed protection safely hooked inside useApproval
     rejectApproval('User rejected the request.');
   };
 
