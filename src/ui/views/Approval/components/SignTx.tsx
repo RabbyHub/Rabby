@@ -151,7 +151,7 @@ const normalizeHex = (value: string | number) => {
 };
 
 export const normalizeTxParams = (tx, isDapp?: boolean) => {
-  let copy = tx;
+  let copy = { ...tx };
   try {
     if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
       copy.nonce = normalizeHex(copy.nonce);
@@ -160,7 +160,7 @@ export const normalizeTxParams = (tx, isDapp?: boolean) => {
       copy.gas = normalizeHex(copy.gas);
     }
     if ('gasLimit' in copy && isStringOrNumber(copy.gasLimit)) {
-      copy.gas = normalizeHex(copy.gasLimit);
+      copy.gasLimit = normalizeHex(copy.gasLimit);
     }
     if ('gasPrice' in copy && isStringOrNumber(copy.gasPrice)) {
       copy.gasPrice = normalizeHex(copy.gasPrice);
@@ -182,12 +182,16 @@ export const normalizeTxParams = (tx, isDapp?: boolean) => {
       }
     }
     if ('data' in copy) {
-      if (!tx.data.startsWith('0x')) {
-        copy.data = `0x${tx.data}`;
+      if (typeof copy.data === 'string') {
+        if (!copy.data.startsWith('0x')) {
+          copy.data = `0x${copy.data}`;
+        }
+      } else {
+        copy.data = '0x';
       }
     }
 
-    if ('authorizationList' in copy) {
+    if ('authorizationList' in copy && Array.isArray(copy.authorizationList)) {
       copy.authorizationList = copy.authorizationList.map((item) => {
         return normalizeHex(item);
       });
@@ -209,6 +213,19 @@ export const normalizeTxParams = (tx, isDapp?: boolean) => {
     Sentry.captureException(
       new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`)
     );
+    // Fail-closed fallback on normalization error to prevent privilege/field leakage
+    if (isDapp) {
+      copy = omit(copy, [
+        'isSpeedUp',
+        'isCancel',
+        'isSend',
+        'isSwap',
+        'isBridge',
+        'swapPreferMEVGuarded',
+        'isViewGnosisSafe',
+        'reqId',
+      ]);
+    }
   }
   return copy;
 };
@@ -2483,6 +2500,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         useCachedCustomGasPrice,
       } = initialGasSelection;
       let { gasList } = initialGasSelection;
+      
+      // FIXED: Publish the loaded list to state to prevent empty/zero gas lists
+      setGasList(gasList);
+
       let gas: GasLevel | null = null;
 
       if (
@@ -2520,6 +2541,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         gasList = gasList.map((item) =>
           item.level === 'custom' ? (gas as GasLevel) : item
         );
+        setGasList(gasList);
       }
       const fee = calcMaxPriorityFee(
         gasList,
@@ -2580,37 +2602,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (!isViewGnosisSafe) {
       await wallet.clearGnosisTransaction();
     }
-    // if (SELF_HOST_SAFE_NETWORKS.includes(chainId.toString())) {
-    //   const hasConfirmed = await wallet.hasConfirmSafeSelfHost(
-    //     chainId.toString()
-    //   );
-    //   const sigs = await wallet.getGnosisTransactionSignatures();
-    //   const isNewTx = sigs.length <= 0;
-    //   if (isNewTx && !hasConfirmed) {
-    //     Modal.info({
-    //       closable: false,
-    //       centered: true,
-    //       width: 320,
-    //       className: 'modal-support-darkmode external-link-alert-modal',
-    //       title: t('page.signTx.safeTx.selfHostConfirm.title'),
-
-    //       content: (
-    //         <Trans i18nKey={'page.signTx.safeTx.selfHostConfirm.content'} />
-    //       ),
-    //       okText: t('page.signTx.safeTx.selfHostConfirm.button'),
-    //       okButtonProps: {
-    //         className: 'w-full',
-    //       },
-    //       cancelText: null,
-    //       onOk() {
-    //         wallet.setConfirmSafeSelfHost(chainId.toString());
-    //       },
-    //       onCancel() {
-    //         wallet.setConfirmSafeSelfHost(chainId.toString());
-    //       },
-    //     });
-    //   }
-    // }
   };
 
   const executeSecurityEngine = async () => {
@@ -2632,9 +2623,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const hasUnProcessSecurityResult = useMemo(() => {
     const { processedRules } = currentTx;
     const enableResults = engineResults.filter((item) => item.enable);
-    // const hasForbidden = enableResults.find(
-    //   (result) => result.level === Level.FORBIDDEN
-    // );
     const hasSafe = !!enableResults.find(
       (result) => result.level === Level.SAFE
     );
@@ -2654,7 +2642,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (trueDanger) {
       return true;
     }
-    // if (hasForbidden) return true;
     if (needProcess.length > 0) {
       return !hasSafe;
     } else {
@@ -2944,8 +2931,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
               gnosisAccount={currentGnosisAdmin}
               account={currentGnosisAdmin}
               onCancel={handleCancel}
-              // securityLevel={securityLevel}
-              // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
               onSubmit={runHandleGnosisSign}
               enableTooltip={
                 currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
@@ -3103,7 +3088,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
             onSubmit={() => handleAllow()}
             onIgnoreAllRules={handleIgnoreAllRules}
             enableTooltip={
-              // 3001 use gasless tip
               checkErrors && checkErrors?.[0]?.code === 3001
                 ? false
                 : !canProcess ||
