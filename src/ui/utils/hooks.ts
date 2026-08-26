@@ -10,7 +10,6 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
-import { useExchangeStore } from '../state/exchange';
 import { ApprovalBindingContext, getApprovalBinding } from './approval-context';
 
 export const useApproval = (expectedComponent?: string) => {
