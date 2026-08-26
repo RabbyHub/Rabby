@@ -7,6 +7,9 @@ import type { QuoteProvider } from './quote';
 
 type SwapProgressStatus = 'pending' | 'success' | 'failed' | null;
 
+export const isMEVProtectionSupported = (chain: CHAINS_ENUM) =>
+  [CHAINS_ENUM.ETH, CHAINS_ENUM.BSC].includes(chain);
+
 interface UseSwapMainRenderStateParams {
   form: {
     chain: CHAINS_ENUM;
@@ -104,7 +107,7 @@ export const useSwapMainRenderState = ({
   return {
     amountAvailable,
     swapBtnDisabled,
-    showMEVGuardedSwitch: form.chain === CHAINS_ENUM.ETH,
+    showMEVGuardedSwitch: isMEVProtectionSupported(form.chain),
     showRiskTips: risk.isSlippageLow || risk.isSlippageHigh || risk.showLoss,
     directSignTxPreparing:
       canPrepareDirectSign &&

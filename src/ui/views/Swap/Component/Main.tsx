@@ -68,7 +68,10 @@ import {
 } from '@/ui/utils/form';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { buildFingerprint } from '@/ui/component/MiniSignV2/domain/ctx';
-import { useSwapMainRenderState } from '../hooks/render';
+import {
+  isMEVProtectionSupported,
+  useSwapMainRenderState,
+} from '../hooks/render';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -192,7 +195,7 @@ export const Main = () => {
   );
 
   const preferMEVGuarded = useMemo(
-    () => (chain === CHAINS_ENUM.ETH ? mevProtection : false),
+    () => (isMEVProtectionSupported(chain) ? mevProtection : false),
     [chain, mevProtection]
   );
 
