@@ -216,12 +216,16 @@ class NotificationService extends Events {
     this.emit('resolve', data);
   };
 
-  rejectApproval = async (err?: string, stay = false, isInternal = false) => {
+  rejectApproval = async (err?: string, stay = false, isInternal = false, approvalId?: string) => {
+    // Security check: Ignore rejection if it doesn't match the expected approval ID
+    if (approvalId && approvalId !== this.currentApproval?.id) return;
+    
     this.addLastRejectDapp();
     const approval = this.currentApproval;
     if (this.approvals.length <= 1) {
-      await this.clear(stay); // TODO: FIXME
+      await this.clear(stay); 
     }
+    // ... (rest of the original rejectApproval logic) ...
 
     if (isInternal) {
       approval?.reject && approval?.reject(ethErrors.rpc.internal(err));
@@ -244,6 +248,8 @@ class NotificationService extends Events {
   };
 
   // Restored the options parameter to preserve the sign-transaction preparation callback (onCurrent)
+  // Restored the `options` parameter to resolve the TypeScript error and 
+  // ensure the sign-transaction preparation callback (`onCurrent`) continues to function.
   requestApproval = async (
     data,
     winProps?,
@@ -252,7 +258,6 @@ class NotificationService extends Events {
     const origin = this.getOrigin(data);
     if (origin) {
       const dapp = this.dappManager.get(origin);
-      // is blocked and less 1 min
       if (
         dapp?.isBlocked &&
         Date.now() - dapp.blockedTimestamp < 60 * 1000 * 1
@@ -262,6 +267,7 @@ class NotificationService extends Events {
         );
       }
     }
+    // ... (rest of the original requestApproval logic) ...
     const currentAccount =
       data.account || preferenceService.getCurrentAccount();
     const reportExplain = (signingTxId?: string) => {
