@@ -37,7 +37,6 @@ export interface Approval {
   winProps: any;
   resolve?(params?: any): void;
   reject?(err: EthereumProviderError<any>): void;
-  onCurrent?(): void;
 }
 
 const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
@@ -145,16 +144,7 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
-          const approval = this.currentApproval;
-          if (approval) {
-            this.rejectApproval(
-              undefined,
-              false,
-              false,
-              approval.id,
-              approval.data.approvalComponent
-            );
-          }
+          this.rejectApproval();
         }
       }
     });
@@ -179,9 +169,9 @@ class NotificationService extends Events {
       this.currentApproval = approval;
       this.openNotification(approval.winProps, true);
     } catch (e) {
-      Sentry.captureException(
-        new Error('activeFirstApproval failed: ' + JSON.stringify(e))
-      );
+      Sentry.captureException(e, {
+        tags: { function: 'activeFirstApproval' },
+      });
       this.clear();
     }
   };
@@ -200,61 +190,35 @@ class NotificationService extends Events {
   resolveApproval = async (
     data?: any,
     forceReject = false,
-    approvalId?: string,
-    approvalComponent?: keyof IApprovalComponents
+    approvalId?: string
   ) => {
-    const approval = this.currentApproval;
-    if (
-      !approval ||
-      !approvalId ||
-      approval.id !== approvalId ||
-      !approvalComponent ||
-      approval.data.approvalComponent !== approvalComponent
-    ) {
-      return false;
+    if (approvalId && approvalId !== this.currentApproval?.id) return;
+    if (forceReject) {
+      this.currentApproval?.reject &&
+        this.currentApproval?.reject(
+          new EthereumProviderError(4001, 'User Cancel')
+        );
+    } else {
+      this.currentApproval?.resolve && this.currentApproval?.resolve(data);
     }
 
-    if (forceReject) {
-      approval.reject &&
-        approval.reject(new EthereumProviderError(4001, 'User Cancel'));
-    } else {
-      approval.resolve && approval.resolve(data);
-    }
+    const approval = this.currentApproval;
 
     this.clearLastRejectDapp();
     this.deleteApproval(approval);
 
     if (this.approvals.length > 0) {
       this.currentApproval = this.approvals[0];
-      this.currentApproval.onCurrent?.();
     } else {
       this.currentApproval = null;
     }
 
     this.emit('resolve', data);
-    return true;
   };
 
-  rejectApproval = async (
-    err?: string,
-    stay = false,
-    isInternal = false,
-    approvalId?: string,
-    approvalComponent?: keyof IApprovalComponents
-  ) => {
-    const approval = this.currentApproval;
-    if (
-      !approval ||
-      !approvalId ||
-      approval.id !== approvalId ||
-      !approvalComponent ||
-      approval.data.approvalComponent !== approvalComponent
-    ) {
-      return false;
-    }
-
+  rejectApproval = async (err?: string, stay = false, isInternal = false) => {
     this.addLastRejectDapp();
-
+    const approval = this.currentApproval;
     if (this.approvals.length <= 1) {
       await this.clear(stay); // TODO: FIXME
     }
@@ -273,14 +237,13 @@ class NotificationService extends Events {
     if (approval && this.approvals.length > 1) {
       this.deleteApproval(approval);
       this.currentApproval = this.approvals[0];
-      this.currentApproval.onCurrent?.();
     } else {
       await this.clear(stay);
     }
     this.emit('reject', err);
-    return true;
   };
 
+  // Restored the options parameter to preserve the sign-transaction preparation callback (onCurrent)
   requestApproval = async (
     data,
     winProps?,
@@ -345,7 +308,6 @@ class NotificationService extends Events {
         signingTxId,
         data,
         winProps,
-        onCurrent: options?.onCurrent,
         resolve(data) {
           if (this.data.approvalComponent === 'SignTx') {
             reportExplain(this.signingTxId);
@@ -384,12 +346,21 @@ class NotificationService extends Events {
       if (data.isUnshift) {
         this.approvals = [approval, ...this.approvals];
         this.currentApproval = approval;
-        approval.onCurrent?.();
       } else {
         this.approvals = [...this.approvals, approval];
         if (!this.currentApproval) {
           this.currentApproval = approval;
-          approval.onCurrent?.();
+        }
+      }
+
+      // Preserve onCurrent callback to trigger sign-transaction preparation flows correctly
+      if (this.currentApproval === approval) {
+        try {
+          options?.onCurrent?.();
+        } catch (e) {
+          Sentry.captureException(
+            new Error('onCurrent failed: ' + JSON.stringify(e))
+          );
         }
       }
 

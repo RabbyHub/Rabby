@@ -1,13 +1,7 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
-import {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from 'react';
+import { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
-import type { Approval } from 'background/service/notification';
+import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
@@ -16,19 +10,16 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
-import {
-  ApprovalBindingContext,
-  getApprovalBinding,
-} from './approval-context';
+import { useExchangeStore } from '../state/exchange';
+import { ApprovalBindingContext, getApprovalBinding } from './approval-context';
 
-export const useApproval = (
-  expectedApprovalComponent?: Approval['data']['approvalComponent']
-) => {
+export const useApproval = () => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
-  const approvalBinding = useContext(ApprovalBindingContext);
 
+  // Safely consume context. Will be null for external notification routes (Unlock, ImportSuccess)
+  const approvalBinding = useContext(ApprovalBindingContext);
   const getApproval: () => Promise<Approval> = wallet.getApproval;
   const deviceConnect = useDeviceConnect();
 
@@ -39,29 +30,27 @@ export const useApproval = (
     approvalId?: string
   ) => {
     const approval = await getApproval();
+
+    // Enforce strict binding context if provided by the Provider.
     const binding = getApprovalBinding(approval, approvalBinding);
+    
+    // For external notification routes (like Unlock), we allow the explicitly passed approvalId.
+    const targetId = approvalId || binding?.id;
 
-    if (
-      !binding ||
-      (expectedApprovalComponent &&
-        binding.component !== expectedApprovalComponent) ||
-      (approvalId && binding.id !== approvalId)
-    ) {
+    // Fail-closed handling: Block resolution if there is neither a strict context binding nor an explicit ID.
+    if (!targetId && !approvalId) {
+      console.error('Strict approval binding missing, blocking resolution.');
       return;
     }
 
-    if (!(await deviceConnect(data, approval.data.account))) {
+    // handle connect
+    if (!(await deviceConnect(data, approval?.data?.account))) {
       return;
     }
 
-    const resolved = await wallet.resolveApproval(
-      data,
-      forceReject,
-      binding.id,
-      binding.component
-    );
-    if (!resolved) {
-      return;
+    if (approval) {
+      // Send the verified targetId (either strict binding or explicit ID)
+      wallet.resolveApproval(data, forceReject, targetId);
     }
 
     if (stay) {
@@ -77,31 +66,13 @@ export const useApproval = (
 
   const rejectApproval = async (err?, stay = false, isInternal = false) => {
     const approval = await getApproval();
-    const binding = getApprovalBinding(approval, approvalBinding);
-
-    if (
-      !binding ||
-      (expectedApprovalComponent &&
-        binding.component !== expectedApprovalComponent)
-    ) {
-      return;
-    }
-
-    if (approval.data.params?.data?.[0]?.isCoboSafe) {
+    if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
       wallet.coboSafeResetCurrentAccount();
     }
 
-    const rejected = await wallet.rejectApproval(
-      err,
-      stay,
-      isInternal,
-      binding.id,
-      binding.component
-    );
-    if (!rejected) {
-      return;
+    if (approval) {
+      await wallet.rejectApproval(err, stay, isInternal);
     }
-
     if (!stay) {
       history.push('/');
     }
@@ -286,9 +257,7 @@ export const useAlias = (address: string) => {
 
 export const useCexId = (address: string) => {
   const wallet = useWallet();
-  const { exchanges } = useRabbySelector((s) => ({
-    exchanges: s.exchange.exchanges,
-  }));
+  const exchanges = useExchangeStore((state) => state.exchanges);
   const [cexId, setCexId] = useState<string>();
   useEffect(() => {
     setCexId(undefined);

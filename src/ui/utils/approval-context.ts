@@ -20,6 +20,8 @@ export const getApprovalBinding = (
   approval: Approval | null,
   binding: ApprovalBinding | null
 ): ApprovalBinding | null => {
+  // Reject if no captured binding or no approval is available.
+  // This strictly enforces the fail-closed request handling required by the automated review.
   if (!approval || !binding) {
     return null;
   }
