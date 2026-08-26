@@ -1221,7 +1221,7 @@ export const BridgeContent = () => {
             />
           )}
         </div>
-        {!selectedBridgeQuote && !recommendFromToken && (
+        {!amountAvailable && !selectedBridgeQuote && !recommendFromToken && (
           <div className="mt-20 mx-20">
             <BridgePendingTxItem
               getContainer={getContainer}
