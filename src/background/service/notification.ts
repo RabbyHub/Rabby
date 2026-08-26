@@ -421,9 +421,25 @@ class NotificationService extends Events {
       winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = null;
     }
-    winMgr.openNotification(winProps).then((winId) => {
-      this.notifiWindowId = winId!;
-    });
+    winMgr
+      .openNotification(winProps)
+      .then((winId) => {
+        if (winId == null) {
+          if (this.notifiWindowId === null) {
+            this.unLock();
+          }
+          return;
+        }
+        this.notifiWindowId = winId;
+      })
+      .catch((e) => {
+        if (this.notifiWindowId === null) {
+          this.unLock();
+        }
+        Sentry.captureException(e, {
+          tags: { function: 'openNotification' },
+        });
+      });
   };
 
   updateNotificationWinProps = (winProps: Windows.UpdateUpdateInfoType) => {

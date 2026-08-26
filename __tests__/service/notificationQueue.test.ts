@@ -126,4 +126,31 @@ describe('notificationService SignTx queueing', () => {
       'onCurrent failed'
     );
   });
+
+  test('unlocks when the notification window is not created', async () => {
+    mockOpenNotification.mockResolvedValueOnce(undefined);
+
+    notificationService.openNotification({});
+    expect(notificationService.isLocked).toBe(true);
+
+    await Promise.resolve();
+
+    expect(notificationService.notifiWindowId).toBeNull();
+    expect(notificationService.isLocked).toBe(false);
+  });
+
+  test('unlocks and reports when notification window creation rejects', async () => {
+    const error = new Error('window creation failed');
+    mockOpenNotification.mockRejectedValueOnce(error);
+
+    notificationService.openNotification({});
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(notificationService.notifiWindowId).toBeNull();
+    expect(notificationService.isLocked).toBe(false);
+    expect(mockCaptureException).toHaveBeenCalledWith(error, {
+      tags: { function: 'openNotification' },
+    });
+  });
 });
