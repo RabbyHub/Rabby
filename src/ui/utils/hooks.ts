@@ -275,8 +275,12 @@ export const useAlias = (address: string) => {
 
 export const useCexId = (address: string) => {
   const wallet = useWallet();
-  const exchanges = useExchangeStore((state) => state.exchanges);
+  
+  // RESTORED: Use Rabby's existing selector instead of the missing state/exchange module
+  const exchanges = useRabbySelector((state: any) => state.exchange?.exchanges || []);
+  
   const [cexId, setCexId] = useState<string>();
+  
   useEffect(() => {
     setCexId(undefined);
     if (!address || !isValidAddress(address)) {
@@ -294,7 +298,7 @@ export const useCexId = (address: string) => {
   );
 
   return [
-    exchanges.find((e) => e.id.toLowerCase() === cexId?.toLowerCase()),
+    exchanges.find((e: any) => e.id.toLowerCase() === cexId?.toLowerCase()),
     updateCexId,
   ] as const;
 };
