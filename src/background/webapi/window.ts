@@ -90,6 +90,8 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
       }
     }
   }
+  if (!win) return;
+
   // shim firefox
   if (win.left !== left && currentWindow.state !== 'fullscreen') {
     try {

@@ -174,7 +174,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
-    if (!tab.id || !tab.url) return;
+    if (tab?.id == null || !tab.url) return;
     const domain = getOriginFromUrl(tab.url);
     const current = await wallet.getCurrentSite(tab.id, domain);
     setSite(current);
