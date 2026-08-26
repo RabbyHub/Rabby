@@ -275,14 +275,11 @@ export const useDappAction = (
 
     let calldata: `0x${string}`;
     let expectedParamCount: number | undefined;
-    let actualParamCount = data.str_params?.length || 0;
     try {
       const normalizedFunc = getMethodDesc(data.func);
       const abi = parseAbiItem(normalizedFunc) as AbiFunction;
       expectedParamCount = abi.inputs.length;
-      // TEMP: Force an ABI parameter-count mismatch to verify Sentry reporting.
-      const params = [...(data.str_params || []), '__sentry_test__'];
-      actualParamCount = params.length;
+      const params = data.str_params;
       calldata = encodeFunctionData({
         abi: [abi],
         functionName: abi.name,
@@ -308,7 +305,7 @@ export const useDappAction = (
           extra: {
             function_signature: data.func,
             expected_param_count: expectedParamCount,
-            actual_param_count: actualParamCount,
+            actual_param_count: data.str_params?.length || 0,
           },
         }
       );
