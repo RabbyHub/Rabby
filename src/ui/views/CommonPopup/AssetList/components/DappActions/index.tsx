@@ -136,7 +136,11 @@ const DappActions = ({
     [targetAction?.type]
   );
 
-  const { valid: show, action } = useDappAction(targetAction, chain);
+  const { valid: show, action } = useDappAction(
+    targetAction,
+    chain,
+    protocolName
+  );
 
   const simulationRef = React.useRef<{
     usdValueChange?: number;
