@@ -18,12 +18,26 @@ export type TxHistoryItemWithGasDeposit = TxHistoryItemRow & {
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
   const wallet = useWallet();
+  // return useQuery({
+  //   queryKey: ['syncHistory', options.address],
+  //   queryFn: async () => {
+  //     const { address } = options;
+  //     await historyDbService.sync({ address });
+  //   },
+  //   refetchOnWindowFocus: false,
+  //   refetchOnReconnect: false,
+  //   staleTime: 1 * 60 * 1000, // 1 minute
+  //   cacheTime: 5 * 60 * 1000, // 5 minutes
+  // });
+
+  const isSupportAccount = isSupportDBAccount(options.account);
+
   return useRequest(
     async () => {
       const { account } = options;
       if (
         !account?.address ||
-        !isSupportDBAccount(account) ||
+        !isSupportAccount ||
         !(UI_TYPE.isDesktop || UI_TYPE.isPop)
       ) {
         return;
@@ -34,8 +48,8 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
       });
     },
     {
-      refreshDeps: [options.account?.address],
-      cacheKey: `syncHistory-${options.account?.address}`,
+      refreshDeps: [options.account?.address, isSupportAccount],
+      cacheKey: `syncHistory-${options.account?.address}-${isSupportAccount}`,
       staleTime: 10 * 1000,
     }
   );
