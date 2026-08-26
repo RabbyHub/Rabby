@@ -123,8 +123,6 @@ export const BridgeShowMore = ({
   renderSwapQuotes,
   onRefreshSwapQuotes,
   swapQuotesLoading,
-  swapGasQuoteVisible,
-  onSwapGasQuoteVisibleChange,
 }: {
   openQuotesList: () => void;
   sourceName: string;
@@ -168,8 +166,6 @@ export const BridgeShowMore = ({
   renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
   onRefreshSwapQuotes?: () => void;
   swapQuotesLoading?: boolean;
-  swapGasQuoteVisible?: boolean;
-  onSwapGasQuoteVisibleChange?: (visible: boolean) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -439,8 +435,6 @@ export const BridgeShowMore = ({
             renderSwapQuotes={renderSwapQuotes}
             onRefreshSwapQuotes={onRefreshSwapQuotes}
             swapQuotesLoading={swapQuotesLoading}
-            swapGasQuoteVisible={swapGasQuoteVisible}
-            onSwapGasQuoteVisibleChange={onSwapGasQuoteVisibleChange}
           />
         ) : type === 'swap' ? (
           sourceContentRender()
@@ -592,8 +586,6 @@ export const DirectSignGasInfo = ({
   renderSwapQuotes,
   onRefreshSwapQuotes,
   swapQuotesLoading,
-  swapGasQuoteVisible,
-  onSwapGasQuoteVisibleChange,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
@@ -609,10 +601,9 @@ export const DirectSignGasInfo = ({
   renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
   onRefreshSwapQuotes?: () => void;
   swapQuotesLoading?: boolean;
-  swapGasQuoteVisible?: boolean;
-  onSwapGasQuoteVisibleChange?: (visible: boolean) => void;
 }) => {
   const wallet = useWallet();
+  const [swapGasQuoteVisible, setSwapGasQuoteVisible] = useState(false);
   const { cachedTokenList } = useRabbySelector((s) => ({
     cachedTokenList: s.account.tokens.list,
   }));
@@ -1298,7 +1289,7 @@ export const DirectSignGasInfo = ({
         onRefreshSwapQuotes,
         swapQuotesLoading,
         swapGasQuoteVisible,
-        onSwapGasQuoteVisibleChange,
+        onSwapGasQuoteVisibleChange: setSwapGasQuoteVisible,
       }
     : null;
   const keepCombinedGasHeaderMounted =
@@ -1315,7 +1306,7 @@ export const DirectSignGasInfo = ({
             swapQuotesLoading,
             swapGasInteractionDisabled: !showGasContent,
             swapGasQuoteVisible,
-            onSwapGasQuoteVisibleChange,
+            onSwapGasQuoteVisibleChange: setSwapGasQuoteVisible,
           }}
           className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
         />

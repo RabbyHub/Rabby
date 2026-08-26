@@ -622,7 +622,7 @@ export const BridgeContent = () => {
     !!fromToken &&
     !!toToken &&
     !noQuote &&
-    !(amount === '' && bridgeProgressVisible);
+    !(bridgeProgressVisible && !amountAvailable);
 
   const btnDisabled =
     inSufficient ||

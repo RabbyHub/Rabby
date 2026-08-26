@@ -209,7 +209,6 @@ export const Main = () => {
 
   const visible = useQuoteVisible();
   const setVisible = useSetQuoteVisible();
-  const [swapGasQuoteVisible, setSwapGasQuoteVisible] = useState(false);
   const { t } = useTranslation();
 
   const wallet = useWallet();
@@ -1433,8 +1432,6 @@ export const Main = () => {
                 }
                 onRefreshSwapQuotes={() => refresh((id) => id + 1)}
                 swapQuotesLoading={quoteLoading}
-                swapGasQuoteVisible={swapGasQuoteVisible}
-                onSwapGasQuoteVisibleChange={setSwapGasQuoteVisible}
               />
             )}
             <TooltipWithMagnetArrow
