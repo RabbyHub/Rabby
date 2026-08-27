@@ -41,7 +41,7 @@ const ethToToken = {
 
 const swapState: SwapServiceStore = {
   autoSlippage: true,
-  preferMEVGuarded: false,
+  mevProtection: true,
   recentToTokens: [],
   selectedChain: CHAINS_ENUM.ETH,
   selectedFromToken: ethFromToken,
@@ -97,8 +97,11 @@ describe('swap store', () => {
     // mocked wallet keeps the keys in-process. Chrome's port messaging is
     // JSON-serialized, so replay that here: the cleared fields must survive as
     // the third argument, not as `undefined` values in the patch.
-    const [, partials, clearedKeys] = (wallet.setStorageItem as jest.Mock).mock
-      .calls[0];
+    const [
+      ,
+      partials,
+      clearedKeys,
+    ] = (wallet.setStorageItem as jest.Mock).mock.calls[0];
     const overWire = <T>(value: T): T => JSON.parse(JSON.stringify(value));
     expect(overWire(partials)).toEqual({ selectedChain: CHAINS_ENUM.BSC });
     expect(overWire(clearedKeys)).toEqual([
@@ -119,6 +122,21 @@ describe('swap store', () => {
 
     expect(useSwapStore.getState().supportedDEXList).toEqual([supportedDex]);
     expect(wallet.setStorageItem).not.toHaveBeenCalled();
+  });
+
+  test('persists MEV Protection changes from its default-on state', async () => {
+    expect(useSwapStore.getState().mevProtection).toBe(true);
+    (wallet.setStorageItem as jest.Mock).mockClear();
+
+    useSwapStore.getState().setMEVProtection(false);
+    await useSwapStore.persist.flush();
+
+    expect(useSwapStore.getState().mevProtection).toBe(false);
+    expect(wallet.setStorageItem).toHaveBeenCalledWith(
+      'swap',
+      { mevProtection: false },
+      []
+    );
   });
 
   test('persists a chain outside the static CHAINS_ENUM values', async () => {

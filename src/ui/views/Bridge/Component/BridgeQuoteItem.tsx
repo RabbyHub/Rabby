@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { QuoteLogo } from './QuoteLogo';
 import ImgLock from '@/ui/assets/swap/lock.svg';
 import { TokenWithChain } from '@/ui/component';
-import ImgGas from '@/ui/assets/swap/gas.svg';
-import { ReactComponent as RCIconDuration } from '@/ui/assets/bridge/duration.svg';
+import { ReactComponent as RcIconGasCC } from '@/ui/assets/swap/gas-cc.svg';
 import { ReactComponent as RCIconDurationCC } from '@/ui/assets/bridge/durationCC.svg';
 import clsx from 'clsx';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -17,7 +16,41 @@ import { useRabbySelector } from '@/ui/store';
 import styled from 'styled-components';
 
 const ItemWrapper = styled.div`
+  --quote-border-width: 1px;
   position: relative;
+
+  &.bridge-quote-compact {
+    border: none;
+    border-radius: 8px;
+    background: var(--r-neutral-card-1, #fff);
+    box-shadow: none;
+
+    &::after {
+      border-radius: 8px;
+    }
+
+    &:hover:not(.active)::after,
+    &.active::after {
+      position: absolute;
+      z-index: 2;
+      content: '';
+      border: var(--quote-border-width) solid var(--r-blue-default, #7084ff);
+      pointer-events: none;
+    }
+
+    &:hover:not(.active)::after {
+      inset: calc(0px - var(--quote-border-width)) 0;
+    }
+
+    &.active {
+      border: var(--quote-border-width) solid transparent;
+      background: var(--r-blue-light-1, #eef1ff);
+
+      &::after {
+        inset: calc(0px - var(--quote-border-width));
+      }
+    }
+  }
 `;
 
 interface QuoteItemProps extends SelectedBridgeQuote {
@@ -145,38 +178,37 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     >
       <ItemWrapper
         className={clsx(
-          ' flex flex-col gap-12  justify-center rounded-md',
-          !props.inSufficient && 'enabledAggregator',
           props.onlyShow
-            ? 'bg-transparent h-auto'
+            ? 'flex h-auto flex-col gap-12 bg-transparent'
             : props.inSufficient
-            ? 'h-[88px] p-16 pt-[20px] bg-transparent border-[1px] border-solid border-rabby-neutral-line'
+            ? 'flex h-[78px] flex-col gap-8 rounded-lg border border-solid border-r-neutral-line bg-transparent px-16 pb-16 pt-20'
             : clsx(
-                'h-[88px] p-16 pt-[20px] cursor-pointer',
-                'bg-r-neutral-card1 border-[1px] border-solid border-transparent',
-                props.active && 'bg-rabby-blue-light1',
-                props.active &&
-                  'after:absolute after:rounded-md after:inset-[-1px] after:border after:border-rabby-blue-default after:pointer-events-none',
-                ' hover:after:absolute hover:after:rounded-md hover:after:inset-[-1px] hover:after:border hover:after:border-rabby-blue-default hover:after:pointer-events-none'
+                'bridge-quote-compact flex cursor-pointer flex-col gap-8 px-16 pb-16 pt-20',
+                props.active ? 'active h-[78px]' : 'h-[76px]'
               )
         )}
-        style={
-          props.onlyShow || props.inSufficient
-            ? {}
-            : {
-                boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.05)',
-              }
-        }
         onClick={handleClick}
       >
         <div className="flex items-center justify-between relative">
-          <div className="flex gap-6  items-center  overflow-hidden pr-16">
+          <div
+            className={clsx(
+              'flex min-w-0 items-center overflow-hidden pr-8',
+              props.onlyShow ? 'gap-6' : 'gap-4'
+            )}
+          >
             <QuoteLogo
               logo={props.aggregator.logo_url}
               bridgeLogo={props.bridge.logo_url}
               isLoading={props.onlyShow ? false : props.loading}
+              size={props.onlyShow ? 24 : 18}
+              bridgeLogoSize={props.onlyShow ? 14 : 10}
             />
-            <span className="text-[16px] font-medium text-r-neutral-title1">
+            <span
+              className={clsx(
+                'shrink-0 font-medium text-r-neutral-title-1',
+                props.onlyShow ? 'text-[16px]' : 'text-13'
+              )}
+            >
               {props.aggregator.name}
             </span>
             <TooltipWithMagnetArrow
@@ -189,7 +221,8 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             >
               <span
                 className={clsx(
-                  'text-13 text-r-neutral-foot',
+                  props.onlyShow ? 'text-13' : 'text-12',
+                  'text-r-neutral-foot',
                   'overflow-hidden text-ellipsis whitespace-nowrap'
                 )}
               >
@@ -206,23 +239,33 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
                 arrowPointAtCenter
                 placement="top"
               >
-                <img src={ImgLock} className="w-16 h16" />
+                <img
+                  src={ImgLock}
+                  className={props.onlyShow ? 'h-16 w-16' : 'h-14 w-14'}
+                />
               </TooltipWithMagnetArrow>
             )}
           </div>
 
-          <div className="flex items-center gap-8 flex-1 justify-end">
+          <div
+            className={clsx(
+              'flex flex-1 items-center justify-end',
+              props.onlyShow ? 'gap-8' : 'gap-4'
+            )}
+          >
             <TokenWithChain
               token={props.receiveToken}
-              width="20px"
-              height="20px"
+              width={props.onlyShow ? '20px' : '14px'}
+              height={props.onlyShow ? '20px' : '14px'}
               hideChainIcon
               hideConer
             />
             <span
               className={clsx(
-                'text-[16px] font-medium text-rabby-neutral-title1 overflow-hidden text-ellipsis whitespace-nowrap',
-                props.onlyShow ? 'max-w-[126px]' : 'max-w-[138px]'
+                'overflow-hidden text-ellipsis whitespace-nowrap font-medium text-r-neutral-title-1',
+                props.onlyShow
+                  ? 'max-w-[126px] text-[16px]'
+                  : 'max-w-[110px] text-13'
               )}
               title={formatTokenAmount(props.to_token_amount)}
             >
@@ -232,12 +275,27 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex  items-center text-13 text-r-neutral-foot">
-            <img src={ImgGas} className="w-16 h16 mr-4" />
+          <div
+            className={clsx(
+              'flex items-center text-r-neutral-foot',
+              props.onlyShow ? 'text-13' : 'text-12'
+            )}
+          >
+            <RcIconGasCC
+              viewBox="0 0 16 16"
+              className={clsx(
+                'mr-4 text-r-neutral-foot',
+                props.onlyShow ? 'h-16 w-16' : 'h-14 w-14'
+              )}
+            />
             <span>{formatUsdValue(props.gas_fee.usd_value)}</span>
             <RCIconDurationCC
               viewBox="0 0 16 16"
-              className={`w-16 h16 ml-8 mr-4 ${durationColor}`}
+              className={clsx(
+                'ml-8 mr-4',
+                props.onlyShow ? 'h-16 w-16' : 'h-14 w-14',
+                durationColor
+              )}
             />
             <span className={durationColor}>
               {t('page.bridge.duration', {
@@ -245,7 +303,12 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               })}
             </span>
           </div>
-          <div className="flex items-center gap-2 text-13 text-r-neutral-foot">
+          <div
+            className={clsx(
+              'flex items-center gap-2 text-r-neutral-foot',
+              props.onlyShow ? 'text-13' : 'text-12'
+            )}
+          >
             <span>
               {t('page.bridge.estimated-value', {
                 value: formatUsdValue(
@@ -261,11 +324,12 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
         {!props.onlyShow && (
           <div
             className={clsx(
-              'absolute top-[-1px] left-[-1px]',
-              'rounded-tl-[4px] rounded-br-[4px] px-[6px] py-[1px]',
-              'text-12 font-medium',
+              'absolute left-0 top-0 flex h-16 w-60 items-center justify-center px-8 py-1 text-12 font-medium leading-normal',
               props.isBestQuote
-                ? 'text-r-blue-default bg-light-r-blue-light2'
+                ? 'rounded-br-[4px] rounded-tl-[4px]'
+                : 'rounded-br-[8px] rounded-tl-[8px]',
+              props.isBestQuote
+                ? 'text-r-blue-default bg-r-blue-light2'
                 : isTopAmount
                 ? 'text-r-green-default bg-r-green-light'
                 : 'text-r-red-default bg-r-red-light'

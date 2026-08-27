@@ -1,7 +1,6 @@
 import { Popup } from '@/ui/component';
 import React, { useMemo } from 'react';
 import { QuoteLoading } from './loading';
-import { IconRefresh } from './IconRefresh';
 import { SelectedBridgeQuote, useSetRefreshId } from '../hooks';
 import BigNumber from 'bignumber.js';
 import { SvgIconCross } from 'ui/assets';
@@ -11,6 +10,8 @@ import { BridgeQuoteItem, bridgeQuoteScore } from './BridgeQuoteItem';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 import { DrawerProps } from 'antd';
 import { useRabbySelector } from '@/ui/store';
+import clsx from 'clsx';
+import { ReactComponent as RcIconRefreshCC } from '@/ui/assets/swap/quote-refresh-cc.svg';
 
 interface QuotesProps {
   userAddress: string;
@@ -80,7 +81,7 @@ export const Quotes = ({
 
   return (
     <div className="flex flex-col h-full w-full ">
-      <div className="flex flex-col gap-12 flex-1 pb-12 px-20">
+      <div className="flex flex-col gap-12 flex-1 px-20 pb-20">
         {sortedList?.map((item, idx) => {
           return (
             <BridgeQuoteItem
@@ -134,7 +135,7 @@ export const QuoteList = (props: QuotesProps) => {
     const min = 333;
     const max = 548;
     const itemCount = Math.max(props.list?.length || 0, aggregatorsList.length);
-    const h = 45 + 24 + itemCount * 100;
+    const h = 45 + 24 + itemCount * 88;
 
     if (h < min) {
       return min;
@@ -155,27 +156,24 @@ export const QuoteList = (props: QuotesProps) => {
       }}
       visible={visible}
       title={
-        <div className="mb-[-2px] pb-10">
-          <div className="relative pr-24 text-left text-r-neutral-title-1 text-[16px] font-medium">
-            <div>{t('page.bridge.the-following-bridge-route-are-found')}</div>
-            <div className="absolute right-0 top-1/2 translate-y-[-50%] flex items-center gap-2 text-r-blue-default">
-              <div className="w-14 h-14 relative overflow-hidden mr-4">
-                <div className="w-[14px] h-[14px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-                  <IconRefresh
-                    spinning={props.loading}
-                    onClick={refreshQuote}
-                  />
-                </div>
+        <div className="flex flex-col gap-12 pb-16">
+          <div className="flex items-center justify-between text-left">
+            <div className="text-[16px] font-medium text-r-neutral-title-1">
+              {t('page.bridge.the-following-bridge-route-are-found')}
+            </div>
+            <div
+              className="flex cursor-pointer items-center gap-4 text-r-blue-default"
+              onClick={refreshQuote}
+            >
+              <div className="h-14 w-14 overflow-hidden">
+                <RcIconRefreshCC
+                  className={clsx('h-14 w-14', props.loading && 'animate-spin')}
+                />
               </div>
-              <span
-                className="text-[16px] font-medium cursor-pointer"
-                onClick={refreshQuote}
-              >
-                {t('global.refresh')}
-              </span>
+              <span className="text-13 font-medium">{t('global.refresh')}</span>
             </div>
           </div>
-          <div className="mt-8 mb-16 text-12 leading-[18px] text-r-neutral-foot text-left">
+          <div className="text-left text-12 leading-normal text-r-neutral-foot">
             {t('page.bridge.best-subtitle')}
           </div>
         </div>

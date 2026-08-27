@@ -4,11 +4,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-export const twoStepChains = [
-  'HYPER' as CHAINS_ENUM,
-  'MONAD' as CHAINS_ENUM,
-  'RSK' as CHAINS_ENUM,
-];
+export const twoStepChains = ['RSK' as CHAINS_ENUM];
 
 export const useTwoStepSwap = ({
   chain,

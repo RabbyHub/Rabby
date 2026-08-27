@@ -27,6 +27,7 @@ import eventBus from '@/eventBus';
 import { bridgeQuoteScore } from '../Component/BridgeQuoteItem';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
+import { getRabbyFeeRate } from '@/ui/views/Swap/hooks/fee';
 
 export const enableInsufficientQuote = true;
 
@@ -351,6 +352,16 @@ export const useBridge = () => {
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
   );
+  const feeRate = useMemo(
+    () =>
+      getRabbyFeeRate({
+        payAmount: amount,
+        payTokenPrice: fromToken?.price || 0,
+        isFreeTokenPair: false,
+        isWrapToken: false,
+      }),
+    [amount, fromToken?.price]
+  );
   const canRunQuoteRequest = !!(
     inSufficientCanGetQuote &&
     userAddress &&
@@ -375,12 +386,14 @@ export const useBridge = () => {
         fromChain || '',
         toChain || '',
         amount || '',
+        feeRate,
       ].join('|'),
     [
       amount,
       canRunQuoteRequest,
       fromChain,
       fromToken?.id,
+      feeRate,
       toChain,
       toToken?.id,
       userAddress,
@@ -531,6 +544,7 @@ export const useBridge = () => {
                 slippage: new BigNumber(slippageObj.slippageState)
                   .div(100)
                   .toString(10),
+                feeRate: Number(feeRate),
               },
               wallet.openapi
             ).catch((e) => {
@@ -639,6 +653,7 @@ export const useBridge = () => {
     fromChain,
     toChain,
     amount,
+    feeRate,
     slippageObj.slippage,
   ]);
 
@@ -944,6 +959,7 @@ export const useBridge = () => {
     inSufficientCanGetQuote,
     amount,
     handleAmountChange,
+    feeRate,
     showLoss,
 
     openQuotesList,

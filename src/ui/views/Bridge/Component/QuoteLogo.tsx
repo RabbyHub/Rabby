@@ -6,21 +6,30 @@ export const QuoteLogo = ({
   isLoading,
   bridgeLogo,
   logo,
+  size = 24,
+  bridgeLogoSize = 14,
 }: {
   isLoading?: boolean;
   logo: string;
   bridgeLogo?: string;
+  size?: number;
+  bridgeLogoSize?: number;
 }) => {
   return (
-    <div className="flex items-center justify-center w-24 h-24 relative">
+    <div
+      className="relative flex items-center justify-center"
+      style={{ width: size, height: size }}
+    >
       <div className="relative flex items-center justify-center">
         <img
-          className={clsx('rounded-full', 'min-w-[24px] w-24 h-24')}
+          className="rounded-full"
+          style={{ minWidth: size, width: size, height: size }}
           src={logo}
         />
         {!!bridgeLogo && (
           <img
-            className="absolute w-14 h-14 -right-2 -bottom-2 rounded-full"
+            className="absolute -bottom-2 -right-2 rounded-full"
+            style={{ width: bridgeLogoSize, height: bridgeLogoSize }}
             src={bridgeLogo}
           />
         )}
