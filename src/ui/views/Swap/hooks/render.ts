@@ -123,7 +123,6 @@ export const useSwapMainRenderState = ({
     showStickyInfo:
       hasTokenPair &&
       !isSameTokenPair &&
-      !noQuote &&
       page.isSupportedChain &&
       !shouldPrioritizeSwapProgress,
     showSubmitTooltip:
