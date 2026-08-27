@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import { __DEV__, appIsDebugPkg } from '@/utils/env';
 
 export const SWAP_FEE_RATE = {
   DEFAULT: '0.25',
@@ -9,9 +8,8 @@ export const SWAP_FEE_RATE = {
 
 export type SwapFeeRate = typeof SWAP_FEE_RATE[keyof typeof SWAP_FEE_RATE];
 
-const useLowFeeThreshold = __DEV__ || appIsDebugPkg;
-const SWAP_HALF_FEE_MIN_USD = useLowFeeThreshold ? 5 : 100_000;
-const SWAP_FREE_FEE_MIN_USD = useLowFeeThreshold ? 10 : 1_000_000;
+const SWAP_HALF_FEE_MIN_USD = 100_000;
+const SWAP_FREE_FEE_MIN_USD = 1_000_000;
 
 export const getRabbyFeeRate = ({
   payAmount,
