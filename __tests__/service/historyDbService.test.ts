@@ -90,14 +90,19 @@ describe('historyDbService sync routing', () => {
     });
 
     expect(openapi.hasNewTxFrom).toHaveBeenCalledTimes(1);
-    expect(syncWithRealTimeApi).toHaveBeenCalledTimes(1);
+    expect(syncWithRealTimeApi).toHaveBeenCalledWith({
+      openapi,
+      address: ADDRESS,
+      startTime: 0,
+      latestTime: LATEST_TIME * 1000,
+    });
     expect(syncWithAllHistoryApi).not.toHaveBeenCalled();
     expect(openapi.hasNewTxFrom.mock.invocationCallOrder[0]).toBeLessThan(
       syncWithRealTimeApi.mock.invocationCallOrder[0]
     );
   });
 
-  test('uses the full API before realtime reconciliation after a stale sync', async () => {
+  test('uses only the full API after a stale sync', async () => {
     mockSyncDbService.getUpdatedAt.mockResolvedValue(0);
     const openapi = createOpenapi(true);
     const syncWithRealTimeApi = jest
@@ -114,9 +119,6 @@ describe('historyDbService sync routing', () => {
 
     expect(openapi.hasNewTxFrom).toHaveBeenCalledTimes(1);
     expect(syncWithAllHistoryApi).toHaveBeenCalledTimes(1);
-    expect(syncWithRealTimeApi).toHaveBeenCalledTimes(1);
-    expect(syncWithAllHistoryApi.mock.invocationCallOrder[0]).toBeLessThan(
-      syncWithRealTimeApi.mock.invocationCallOrder[0]
-    );
+    expect(syncWithRealTimeApi).not.toHaveBeenCalled();
   });
 });
