@@ -16,7 +16,6 @@ import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
 import { coerceFloat, sleep } from '../utils';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
-import { requestOpenApiMultipleNets } from '../utils/openapi';
 import { AccountScene } from '@/constant/scene-account';
 
 interface TotalBalanceWithEvmUsdValue extends TotalBalanceResponse {
@@ -500,25 +499,9 @@ export const account = createModel<RootModel>()({
       if (!currentAccount?.address) return;
       const wallet = store.app.wallet;
 
-      const isShowTestnet = store.preference.isShowTestnet;
-
-      await requestOpenApiMultipleNets<TotalBalanceResponse | null, void>(
-        (ctx) => {
-          return wallet.getInMemoryAddressBalance(
-            currentAccount.address,
-            true /* force */,
-            ctx.isTestnetTask
-          );
-        },
-        {
-          wallet,
-          needTestnetResult: isShowTestnet,
-          processResults: () => null,
-          fallbackValues: {
-            mainnet: null,
-            testnet: null,
-          },
-        }
+      await wallet.getInMemoryAddressBalance(
+        currentAccount.address,
+        true /* force */
       );
     },
 

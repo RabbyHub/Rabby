@@ -1,5 +1,4 @@
-import openapiService from '@/background/service/openapi';
-import { Account } from '@/background/service/preference';
+import type { Account } from '@/background/service/preference';
 import { UI_TYPE } from '@/constant/ui';
 import { useWallet } from '@/ui/utils';
 import { isSupportDBAccount } from '@/utils/account';
@@ -18,18 +17,7 @@ export type TxHistoryItemWithGasDeposit = TxHistoryItemRow & {
 };
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
-  // return useQuery({
-  //   queryKey: ['syncHistory', options.address],
-  //   queryFn: async () => {
-  //     const { address } = options;
-  //     await historyDbService.sync({ address });
-  //   },
-  //   refetchOnWindowFocus: false,
-  //   refetchOnReconnect: false,
-  //   staleTime: 1 * 60 * 1000, // 1 minute
-  //   cacheTime: 5 * 60 * 1000, // 5 minutes
-  // });
-
+  const wallet = useWallet();
   const isSupportAccount = isSupportDBAccount(options.account);
 
   return useRequest(
@@ -42,7 +30,10 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
       ) {
         return;
       }
-      return historyDbService.sync({ address: account.address });
+      return historyDbService.sync({
+        openapi: wallet.openapi,
+        address: account.address,
+      });
     },
     {
       refreshDeps: [options.account?.address, isSupportAccount],
@@ -115,8 +106,8 @@ export const useQueryDbHistory = (options: {
 
       const startTime =
         currentData?.queryKey === apiQueryKey ? currentData.last || 0 : 0;
-      const res = await openapiService.listTxHisotry({
-        id: account.address,
+      const res = await wallet.openapi.listTxHisotry({
+        id: address,
         start_time: startTime,
         page_count: PAGE_COUNT,
         chain_id: serverChainId,

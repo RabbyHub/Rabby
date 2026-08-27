@@ -570,9 +570,7 @@ export function useManageApprovalsPage(options: {
         return EMPTY_APPROVALS_DATA;
       }
 
-      const openapiClient = options.isTestnet
-        ? wallet.testnetOpenapi
-        : wallet.openapi;
+      const openapiClient = wallet.openapi;
       const usedChainList = await openapiClient.usedChainList(account.address);
       const nextApprovalsData = {
         contractMap: {},
