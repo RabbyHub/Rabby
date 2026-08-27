@@ -1,3 +1,7 @@
+// Register navigation interception synchronously before the lazy background
+// bundle. MV3 service workers can otherwise miss a cold-start navigation.
+importScripts('/go-rabby-link-router.js');
+
 let scriptsLoadInitiated = false;
 
 const TREZOR_BROWSER_TARGET = 'trezor-browser';
