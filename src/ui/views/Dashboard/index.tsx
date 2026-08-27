@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
@@ -25,6 +24,7 @@ import {
   useGasAccountDiscovery,
   useGasAccountSign,
 } from '@/ui/views/GasAccount/hooks';
+import { StablecoinSwapPopup } from './components/StablecoinSwapPopup';
 import { useAppVersionStore } from '@/ui/state/appVersion';
 
 const Dashboard = () => {
@@ -189,13 +189,18 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className={clsx('dashboard')}>
-        <DashboardHeader onSettingClick={toggleShowMoreSettings} />
-        <DashboardPanel onSettingClick={toggleShowMoreSettings} />
-        <div className="px-[16px] pb-[13px]">
-          <GasPriceBar currentConnectedSiteChain={currentConnectedSiteChain} />
-          <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
+      <div className="relative h-full overflow-hidden">
+        <div className="dashboard h-full overflow-y-auto">
+          <DashboardHeader onSettingClick={toggleShowMoreSettings} />
+          <DashboardPanel onSettingClick={toggleShowMoreSettings} />
+          <div className="px-[16px] pb-[13px]">
+            <GasPriceBar
+              currentConnectedSiteChain={currentConnectedSiteChain}
+            />
+            <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
+          </div>
         </div>
+        <StablecoinSwapPopup />
       </div>
       <Modal
         visible={firstNotice && updateContent}
