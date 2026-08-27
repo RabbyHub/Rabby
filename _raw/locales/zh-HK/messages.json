@@ -160,7 +160,15 @@
         "chain": " 鏈、",
         "chainEnd": " 鏈",
         "appChainTips": "Hyperliquid 和 Polymarket 帳戶未包含",
-        "slotAppChainTips": "{{appChainNames}} 帳戶未包含"
+        "slotAppChainTips": "{{appChainNames}} 帳戶未包含",
+        "stablecoinSwapPopup": {
+          "title": "0% 兌換手續費",
+          "supportPrefix": "支援",
+          "supportCount": "30+",
+          "supportSuffix": "種穩定幣，涵蓋 40+ 條鏈",
+          "goToSwap": "前往兌換",
+          "close": "關閉"
+        }
       },
       "recentConnection": {
         "disconnected": "已斷開連接",
@@ -2008,6 +2016,8 @@
       "insufficient-balance": "結餘不足",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "滑點過低，可能會因高波動性而導致交易失敗",
       "minimum-received": "最少收到",
+      "preferMEV": "MEV 保護",
+      "preferMEVTip": "為 Ethereum 和 BNB Chain 兌換啟用「MEV 保護」，以降低三明治攻擊風險。注意：使用自訂 RPC 或 WalletConnect 地址時不支援此功能。",
       "need-to-approve-token-before-swap": "兌換前需要授權代幣",
       "no-transaction-records": "無交易記錄",
       "not-supported": "不支援",
@@ -2029,6 +2039,7 @@
       "swap-via-x": "透過 {{name}} 兌換",
       "testnet-is-not-supported": "不支援自訂網絡",
       "the-following-swap-rates-are-found": "發現以下兌換報價",
+      "quotes": "報價",
       "sort-with-gas": "按包含 Gas 費用的總成本排序",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易沒有滑點",
       "this-exchange-is-not-enabled-to-trade-by-you": "你未啟用該交易所進行交易",

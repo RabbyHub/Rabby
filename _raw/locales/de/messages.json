@@ -990,6 +990,8 @@
       "insufficient-balance": "Unzureichendes Guthaben",
       "rabby-fee": "Rabby-Gebühr",
       "minimum-received": "Mindestens erhalten",
+      "preferMEV": "MEV-Schutz",
+      "preferMEVTip": "Aktivieren Sie den \"MEV-Schutz\" für Swaps auf Ethereum und BNB Chain, um das Risiko von Sandwich-Angriffen zu verringern. Hinweis: Diese Funktion wird nicht unterstützt, wenn Sie einen benutzerdefinierten RPC oder eine WalletConnect-Adresse verwenden.",
       "there-is-no-fee-and-slippage-for-this-trade": "Bei diesem Tausch gibt es keine Kursabweichung",
       "approve-tips": "1. Genehmigen → 2. Tauschen",
       "best": "Beste",
@@ -1008,6 +1010,7 @@
       "edit": "Bearbeiten",
       "tradingSettingTips": "{{viewCount}} Börsen bieten Kurse an, davon ermöglichen {{tradeCount}} den Handel",
       "the-following-swap-rates-are-found": "Die folgenden Kurse wurden gefunden",
+      "quotes": "Angebote",
       "est-payment": "Geschätzte Zahlung:",
       "est-receiving": "Geschätzter Erhalt:",
       "est-difference": "Geschätzte Differenz:",
@@ -1177,7 +1180,15 @@
         "chain": " Netzwerk, ",
         "missingDataTooltip": "Der Kontostand wird möglicherweise aufgrund aktueller Netzwerkprobleme mit {{text}} nicht aktualisiert.",
         "appChainTips": "Hyperliquid- und Polymarket-Konten nicht enthalten",
-        "slotAppChainTips": "{{appChainNames}} Konto nicht enthalten"
+        "slotAppChainTips": "{{appChainNames}} Konto nicht enthalten",
+        "stablecoinSwapPopup": {
+          "title": "0 % Swap-Gebühr",
+          "supportPrefix": "Unterstützt",
+          "supportCount": "30+",
+          "supportSuffix": "Stablecoins auf über 40 Netzwerken",
+          "goToSwap": "Zum Tauschen gehen",
+          "close": "Schließen"
+        }
       },
       "recentConnection": {
         "disconnected": "Getrennt",

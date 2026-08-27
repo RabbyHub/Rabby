@@ -1010,6 +1010,8 @@
       "from": "Dari",
       "search-by-name-address": "Cari berdasarkan Nama / Alamat",
       "minimum-received": "Jumlah minimum diterima",
+      "preferMEV": "Perlindungan MEV",
+      "preferMEVTip": "Aktifkan \"Perlindungan MEV\" untuk swap di Ethereum dan BNB Chain guna mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat WalletConnect.",
       "fail-to-simulate-transaction": "Gagal mensimulasikan transaksi",
       "to": "Untuk",
       "this-exchange-is-not-enabled-to-trade-by-you": "Anda tidak dapat berdagang melalui bursa ini.",
@@ -1025,6 +1027,7 @@
       "est-difference": "Est. Perbedaan:",
       "rates-from-cex": "Tarif dari CEX",
       "the-following-swap-rates-are-found": "Ditemukan tarif berikut",
+      "quotes": "Penawaran harga",
       "view-quotes": "Lihat penawaran harga",
       "wrap-contract": "Kontrak pembungkus",
       "confirm": "Konfirmasi",
@@ -1270,7 +1273,15 @@
         "missingDataTooltip": "Saldo mungkin tidak diperbarui karena masalah jaringan saat ini dengan {{text}}.",
         "rejectAll": "Tolak Semua",
         "appChainTips": "Akun Hyperliquid tidak termasuk",
-        "slotAppChainTips": "{{appChainNames}} Akun tidak termasuk"
+        "slotAppChainTips": "{{appChainNames}} Akun tidak termasuk",
+        "stablecoinSwapPopup": {
+          "title": "Biaya Swap 0%",
+          "supportPrefix": "Mendukung",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoin di 40+ jaringan",
+          "goToSwap": "Pergi ke Swap",
+          "close": "Tutup"
+        }
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

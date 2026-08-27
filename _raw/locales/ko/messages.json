@@ -1009,6 +1009,8 @@
       "this-exchange-is-not-enabled-to-trade-by-you": "이 거래소에서는 거래할 수 없습니다.",
       "there-is-no-fee-and-slippage-for-this-trade": "이 거래에는 슬리피지가 없습니다.",
       "minimum-received": "최소 수신",
+      "preferMEV": "MEV 보호",
+      "preferMEVTip": "Ethereum 및 BNB Chain 스왑에서 \"MEV 보호\"를 활성화하여 샌드위치 공격 위험을 줄이세요. 사용자 지정 RPC 또는 WalletConnect 주소를 사용하는 경우 이 기능은 지원되지 않습니다.",
       "no-fee-for-wrap": "Wrap에는 Rabby 수수료가 없습니다",
       "enable-it": "사용 가능하게 하세요",
       "rates-from-cex": "CEX에서의 요금",
@@ -1017,6 +1019,7 @@
       "no-slippage-for-wrap": "Wrap에는 슬리피지가 없습니다",
       "est-payment": "예상 결제:",
       "the-following-swap-rates-are-found": "다음 요금이 발견되었습니다",
+      "quotes": "견적",
       "tradingSettingTips": "{{viewCount}} 개의 거래소가 견적을 제공하며, {{tradeCount}} 개의 거래소에서 거래가 가능합니다.",
       "Gas-fee-too-high": "가스 요금이 너무 비쌉니다",
       "this-token-pair-is-not-supported": "토큰 쌍은 지원되지 않습니다",
@@ -1270,7 +1273,15 @@
         "missingDataTooltip": "현재 {{text}}의 네트워크 문제로 인해 잔액이 업데이트되지 않을 수 있습니다.",
         "importType": "{{type}}에 의해 가져왔습니다.",
         "appChainTips": "Hyperliquid 및 Polymarket 계정은 포함되지 않음",
-        "slotAppChainTips": "{{appChainNames}} 계좌가 포함되지 않았습니다."
+        "slotAppChainTips": "{{appChainNames}} 계좌가 포함되지 않았습니다.",
+        "stablecoinSwapPopup": {
+          "title": "스왑 수수료 0%",
+          "supportPrefix": "지원:",
+          "supportCount": "30+",
+          "supportSuffix": "개 스테이블코인 · 40개 이상의 체인",
+          "goToSwap": "스왑 하러 가기",
+          "close": "닫기"
+        }
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

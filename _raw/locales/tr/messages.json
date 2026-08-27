@@ -990,6 +990,8 @@
       "insufficient-balance": "Yetersiz bakiye",
       "rabby-fee": "Rabby ücreti",
       "minimum-received": "Minimum alınacak",
+      "preferMEV": "MEV Koruması",
+      "preferMEVTip": "Sandviç saldırısı riskini azaltmak için Ethereum ve BNB Chain takaslarında \"MEV Koruması\" özelliğini etkinleştirin. Not: Özel bir RPC veya WalletConnect adresi kullanıyorsanız bu özellik desteklenmez.",
       "there-is-no-fee-and-slippage-for-this-trade": "Bu işlemde fiyat kayması yoktur",
       "approve-tips": "1.Onayla → 2.Takas",
       "best": "En iyi",
@@ -1008,6 +1010,7 @@
       "edit": "Düzenle",
       "tradingSettingTips": "{{viewCount}} borsa teklif sunuyor ve {{tradeCount}} ticareti etkinleştiriyor",
       "the-following-swap-rates-are-found": "Aşağıdaki takas oranları bulundu",
+      "quotes": "Teklifler",
       "est-payment": "Tahm. Ödeme:",
       "est-receiving": "Tahm. Alınan:",
       "est-difference": "Tahm. Fark:",
@@ -1177,7 +1180,15 @@
         "chainEnd": "zincir",
         "chain": "zincir,",
         "appChainTips": "Hyperliquid ve Polymarket hesapları dahil edilmedi",
-        "slotAppChainTips": "{{appChainNames}} Hesabı dahil edilmedi"
+        "slotAppChainTips": "{{appChainNames}} Hesabı dahil edilmedi",
+        "stablecoinSwapPopup": {
+          "title": "%0 Takas Ücreti",
+          "supportPrefix": "Desteklenen:",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoin (40'tan fazla zincirde)",
+          "goToSwap": "Takasa Git",
+          "close": "Kapat"
+        }
       },
       "recentConnection": {
         "disconnected": "Bağlantı kesildi",
