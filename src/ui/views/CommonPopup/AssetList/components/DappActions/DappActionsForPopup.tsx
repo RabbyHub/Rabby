@@ -137,11 +137,13 @@ const DappActionsForPopup = ({
 
   const { valid: showWithdraw, action: actionWithdraw } = useDappAction(
     withdrawAction,
-    chain
+    chain,
+    protocolName
   );
   const { valid: showClaim, action: actionClaim } = useDappAction(
     claimAction,
-    chain
+    chain,
+    protocolName
   );
 
   const onPreExecChange = useCallback(
