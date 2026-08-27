@@ -1018,7 +1018,10 @@
       "est-receiving": "Est. Nhận:",
       "security-verification-failed": "Xác minh bảo mật thất bại",
       "minimum-received": "Tối thiểu nhận được",
+      "preferMEV": "Bảo vệ MEV",
+      "preferMEVTip": "Bật \"Bảo vệ MEV\" cho các giao dịch swap trên Ethereum và BNB Chain để giảm rủi ro tấn công sandwich. Lưu ý: tính năng này không được hỗ trợ nếu bạn sử dụng RPC tùy chỉnh hoặc địa chỉ WalletConnect.",
       "the-following-swap-rates-are-found": "Tìm thấy các tỷ lệ sau đây",
+      "quotes": "Báo giá",
       "enable-it": "Bật nó lên",
       "sort-with-gas": "Sắp xếp theo gas",
       "by-transaction-simulation-the-quote-is-valid": "Bằng cách mô phỏng giao dịch, báo giá là hợp lệ",
@@ -1270,7 +1273,15 @@
         "chain": " chuỗi, ",
         "pendingCountPlural": "{{countStr}} Đang chờ xử lý",
         "appChainTips": "Không bao gồm tài khoản Hyperliquid và Polymarket",
-        "slotAppChainTips": "{{appChainNames}} Tài khoản không được bao gồm"
+        "slotAppChainTips": "{{appChainNames}} Tài khoản không được bao gồm",
+        "stablecoinSwapPopup": {
+          "title": "Phí swap 0%",
+          "supportPrefix": "Hỗ trợ",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoin trên hơn 40 chain",
+          "goToSwap": "Đi đến Swap",
+          "close": "Đóng"
+        }
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

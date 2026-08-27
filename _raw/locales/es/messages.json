@@ -990,6 +990,8 @@
       "insufficient-balance": "Saldo insuficiente",
       "rabby-fee": "Tarifa de Rabby",
       "minimum-received": "Mínimo recibido",
+      "preferMEV": "Protección MEV",
+      "preferMEVTip": "Activa la «Protección MEV» para los swaps en Ethereum y BNB Chain a fin de reducir el riesgo de ataques sándwich. Nota: esta función no es compatible si utilizas un RPC personalizado o una dirección de WalletConnect.",
       "there-is-no-fee-and-slippage-for-this-trade": "Este intercambio no tiene slippage",
       "approve-tips": "1. Aprobar → 2. Intercambiar",
       "best": "Mejor",
@@ -1008,6 +1010,7 @@
       "edit": "Editar",
       "tradingSettingTips": "{{viewCount}} exchanges ofrecen cotizaciones y {{tradeCount}} permiten el intercambio",
       "the-following-swap-rates-are-found": "Se encontraron los siguientes tipos de cambio",
+      "quotes": "Cotizaciones",
       "est-payment": "Pago estimado:",
       "est-receiving": "Recepción estimada:",
       "est-difference": "Diferencia estimada:",
@@ -1177,7 +1180,15 @@
         "chainEnd": " red",
         "chain": " red, ",
         "appChainTips": "Cuentas de Hyperliquid y Polymarket no incluidas",
-        "slotAppChainTips": "{{appChainNames}} Cuenta no incluida"
+        "slotAppChainTips": "{{appChainNames}} Cuenta no incluida",
+        "stablecoinSwapPopup": {
+          "title": "0 % de comisión de swap",
+          "supportPrefix": "Compatible con",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoins en más de 40 cadenas",
+          "goToSwap": "Ir a Swap",
+          "close": "Cerrar"
+        }
       },
       "recentConnection": {
         "disconnected": "Desconectado",

@@ -990,6 +990,8 @@
       "insufficient-balance": "残高が不足しています",
       "rabby-fee": "Rabby 手数料",
       "minimum-received": "最低受取額",
+      "preferMEV": "MEV保護",
+      "preferMEVTip": "EthereumとBNB Chainのスワップで「MEV保護」を有効にし、サンドイッチ攻撃のリスクを軽減します。注：カスタムRPCまたはWalletConnectアドレスを使用する場合、この機能はサポートされません。",
       "there-is-no-fee-and-slippage-for-this-trade": "この取引には手数料とスリッページはありません",
       "approve-tips": "1. 承認 → 2. スワップ",
       "best": "ベスト",
@@ -1008,6 +1010,7 @@
       "edit": "編集",
       "tradingSettingTips": "{{viewCount}} つの取引所が見積もりを提供し、{{tradeCount}} つで取引が有効です",
       "the-following-swap-rates-are-found": "以下のスワップレートが見つかりました",
+      "quotes": "見積もり",
       "est-payment": "推定支払い:",
       "est-receiving": "推定受け取り:",
       "est-difference": "推定差額:",
@@ -1177,7 +1180,15 @@
         "chain": " チェーン， ",
         "missingDataTooltip": "現在の{{text}}のネットワーク問題により、残高が更新されない場合があります。",
         "appChainTips": "HyperliquidとPolymarketのアカウントは含まれません",
-        "slotAppChainTips": "{{appChainNames}} アカウントは含まれていません"
+        "slotAppChainTips": "{{appChainNames}} アカウントは含まれていません",
+        "stablecoinSwapPopup": {
+          "title": "スワップ手数料 0%",
+          "supportPrefix": "対応：",
+          "supportCount": "30+",
+          "supportSuffix": "のステーブルコイン（40以上のチェーン）",
+          "goToSwap": "スワップに進む",
+          "close": "閉じる"
+        }
       },
       "recentConnection": {
         "disconnected": "切断済み",

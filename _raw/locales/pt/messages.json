@@ -1005,7 +1005,10 @@
       "sort-with-gas": "Classificar com gas",
       "wrap-contract": "Contrato de encapsulamento",
       "the-following-swap-rates-are-found": "Encontradas as seguintes taxas",
+      "quotes": "Cotações",
       "minimum-received": "Valor mínimo recebido",
+      "preferMEV": "Proteção MEV",
+      "preferMEVTip": "Ative a \"Proteção MEV\" para swaps na Ethereum e na BNB Chain a fim de reduzir o risco de ataques sandwich. Nota: esta funcionalidade não é suportada se utilizar um RPC personalizado ou um endereço WalletConnect.",
       "rates-from-cex": "Taxas de CEX",
       "est-payment": "Est. Pagamento:",
       "no-fee-for-wrap": "Sem taxa do Rabby para Wrap",
@@ -1270,7 +1273,15 @@
         "missingDataTooltip": "O saldo pode não ser atualizado devido a problemas de rede atuais com {{text}}.",
         "importType": "Importado por {{type}}",
         "appChainTips": "Contas Hyperliquid e Polymarket não incluídas",
-        "slotAppChainTips": "Conta {{appChainNames}} não incluída"
+        "slotAppChainTips": "Conta {{appChainNames}} não incluída",
+        "stablecoinSwapPopup": {
+          "title": "0% de taxa de swap",
+          "supportPrefix": "Suporte para",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoins em mais de 40 redes",
+          "goToSwap": "Ir para a troca",
+          "close": "Fechar"
+        }
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

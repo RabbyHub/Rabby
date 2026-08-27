@@ -990,6 +990,8 @@
       "insufficient-balance": "Недостаточный баланс",
       "rabby-fee": "Комиссия Rabby",
       "minimum-received": "Минимум к получению",
+      "preferMEV": "Защита от MEV",
+      "preferMEVTip": "Включите «Защиту от MEV» для обменов в сетях Ethereum и BNB Chain, чтобы снизить риск сэндвич-атак. Примечание: эта функция не поддерживается при использовании пользовательского RPC или адреса WalletConnect.",
       "there-is-no-fee-and-slippage-for-this-trade": "Для этой сделки нет комиссии и отклонения",
       "approve-tips": "1.Подтвердить → 2.Обменять",
       "best": "Лучший",
@@ -1008,6 +1010,7 @@
       "edit": "Изменить",
       "tradingSettingTips": "{{viewCount}} бирж дают котировки, на {{tradeCount}} разрешен обмен",
       "the-following-swap-rates-are-found": "Найденные курсы обмена",
+      "quotes": "Котировки",
       "sort-with-gas": "Сортировка по газу",
       "est-payment": "Расч. оплата:",
       "est-receiving": "Расч. получение:",
@@ -1177,7 +1180,15 @@
         "chain": " сети, ",
         "chainEnd": " сеть",
         "appChainTips": "Учётные записи Hyperliquid и Polymarket не включены",
-        "slotAppChainTips": "{{appChainNames}} Аккаунт не включен"
+        "slotAppChainTips": "{{appChainNames}} Аккаунт не включен",
+        "stablecoinSwapPopup": {
+          "title": "Комиссия за обмен — 0%",
+          "supportPrefix": "Поддержка",
+          "supportCount": "30+",
+          "supportSuffix": "стейблкоинов в 40+ сетях",
+          "goToSwap": "Перейти к обмену",
+          "close": "Закрыть"
+        }
       },
       "recentConnection": {
         "disconnected": "Отключено",
