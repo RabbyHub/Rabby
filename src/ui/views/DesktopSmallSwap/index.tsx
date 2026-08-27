@@ -12,7 +12,7 @@ import { db } from '@/db';
 import { useWallet } from '@/ui/utils';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { abstractTokenToTokenItem } from '@/ui/utils/token';
-import { isSupportDBAccount } from '@/utils/account';
+import { isFullVersionAccountType } from '@/utils/account';
 import { findChain } from '@/utils/chain';
 import { useEventListener, useMemoizedFn, useMount, useRequest } from 'ahooks';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -122,7 +122,9 @@ const DesktopSmallSwapContent: React.FC = () => {
     realtimeMode: true,
   });
 
-  const isSupportDB = isSupportDBAccount(currentAccount);
+  const isSupportDB = currentAccount
+    ? isFullVersionAccountType(currentAccount)
+    : false;
 
   const _tokenList = useMemo(() => {
     if (isSupportDB) {

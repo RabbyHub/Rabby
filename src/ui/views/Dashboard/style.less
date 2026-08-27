@@ -7,6 +7,33 @@
     opacity: 1;
   }
 }
+
+@keyframes stablecoinTokenSlideIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes stablecoinTokenSlideOut {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+.stablecoin-swap-popup-token-enter {
+  animation: stablecoinTokenSlideIn 300ms ease-out forwards;
+}
+
+.stablecoin-swap-popup-token-exit {
+  animation: stablecoinTokenSlideOut 300ms ease-out forwards;
+}
+
 @keyframes fadeOut {
   0% {
     opacity: 1;

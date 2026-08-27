@@ -1,14 +1,15 @@
 import type { Account } from '@/background/service/preference';
 import { UI_TYPE } from '@/constant/ui';
+import { useWallet } from '@/ui/utils';
 import { isSupportDBAccount } from '@/utils/account';
 import { findChain } from '@/utils/chain';
 import { transformToHistory } from '@/utils/history';
-import { useWallet } from '@/ui/utils';
-import { useRequest } from 'ahooks';
+import { useInfiniteScroll, useRequest } from 'ahooks';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { last, sortBy } from 'lodash';
+import { useMemo } from 'react';
 import { db } from '..';
 import { historyDbService } from '../services/historyDbService';
-import { useMemo } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { TxHistoryItemRow } from '../schema/history';
 
 export type TxHistoryItemWithGasDeposit = TxHistoryItemRow & {
@@ -17,12 +18,14 @@ export type TxHistoryItemWithGasDeposit = TxHistoryItemRow & {
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
   const wallet = useWallet();
+  const isSupportAccount = isSupportDBAccount(options.account);
+
   return useRequest(
     async () => {
       const { account } = options;
       if (
         !account?.address ||
-        !isSupportDBAccount(account) ||
+        !isSupportAccount ||
         !(UI_TYPE.isDesktop || UI_TYPE.isPop)
       ) {
         return;
@@ -33,12 +36,14 @@ export const useSyncDbHistory = (options: { account?: Account | null }) => {
       });
     },
     {
-      refreshDeps: [options.account?.address],
-      cacheKey: `syncHistory-${options.account?.address}`,
+      refreshDeps: [options.account?.address, isSupportAccount],
+      cacheKey: `syncHistory-${options.account?.address}-${isSupportAccount}`,
       staleTime: 10 * 1000,
     }
   );
 };
+
+const PAGE_COUNT = 20;
 
 export const useQueryDbHistory = (options: {
   account?: Account | null;
@@ -76,26 +81,62 @@ export const useQueryDbHistory = (options: {
       .sortBy('time_at');
   }, [isSupportAccount, account?.address, isFilterScam, serverChainId]);
 
-  const { data, loading } = useRequest(
-    async () => {
+  const apiQueryKey = [
+    account?.address?.toLowerCase() || '',
+    serverChainId || '',
+  ].join(':');
+
+  const {
+    data: apiHistory,
+    loading: isLoadingApiHistory,
+    loadingMore,
+    loadMore,
+    noMore,
+  } = useInfiniteScroll(
+    async (currentData) => {
       const address = account?.address;
       if (!address || isSupportAccount) {
-        return [];
+        return {
+          queryKey: apiQueryKey,
+          last: undefined,
+          list: [],
+          pageSize: 0,
+        };
       }
 
-      const res = await wallet.openapi.getAllTxHistory({
+      const startTime =
+        currentData?.queryKey === apiQueryKey ? currentData.last || 0 : 0;
+      const res = await wallet.openapi.listTxHisotry({
         id: address,
+        start_time: startTime,
+        page_count: PAGE_COUNT,
+        chain_id: serverChainId,
       });
+      const list = sortBy(
+        transformToHistory({ data: res, address }),
+        (item) => -item.time_at
+      );
 
-      return transformToHistory({ data: res || [], address });
+      return {
+        queryKey: apiQueryKey,
+        last: last(list)?.time_at,
+        list,
+        pageSize: res.history_list.length,
+      };
     },
     {
-      refreshDeps: [account?.address, account?.type, isSupportAccount],
+      manual: !account?.address || isSupportAccount,
+      reloadDeps: [apiQueryKey, account?.type, isSupportAccount],
+      isNoMore: (data) => {
+        return !data?.last || data.pageSize < PAGE_COUNT;
+      },
     }
   );
 
   const list = useMemo(() => {
-    return (data || []).filter((item) => {
+    const data =
+      apiHistory?.queryKey === apiQueryKey ? apiHistory.list || [] : [];
+    return data.filter((item) => {
       let flag = true;
       if (isFilterScam) {
         flag = !item.is_scam && !item.is_small_tx;
@@ -105,7 +146,7 @@ export const useQueryDbHistory = (options: {
       }
       return flag;
     });
-  }, [data, isFilterScam, serverChainId]);
+  }, [apiHistory, apiQueryKey, isFilterScam, serverChainId]);
 
   const result = useMemo(() => {
     if (isSupportAccount) {
@@ -162,6 +203,11 @@ export const useQueryDbHistory = (options: {
 
   return {
     data: enrichedResult,
-    loading: !isSupportAccount ? loading : isSyncing || dbHistory === undefined,
+    loading: !isSupportAccount
+      ? isLoadingApiHistory
+      : isSyncing || dbHistory === undefined,
+    loadingMore: !isSupportAccount && loadingMore,
+    loadMore,
+    noMore: isSupportAccount || noMore,
   };
 };

@@ -53,6 +53,7 @@ export const TokenSearchInput = React.forwardRef<InputRef, Props>(
     return (
       <InputStyled
         ref={ref}
+        value={input}
         onChange={(e) => setInput(e.target.value)}
         placeholder={
           placeholder || t('page.dashboard.assets.searchPlaceholder')

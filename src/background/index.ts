@@ -598,6 +598,7 @@ browser.runtime.onConnect.addListener((port) => {
       data,
       session,
       origin,
+      sourceFrameId: port.sender.frameId,
     };
     if (!session?.origin) {
       const tabInfo = await browser.tabs.get(sessionId);

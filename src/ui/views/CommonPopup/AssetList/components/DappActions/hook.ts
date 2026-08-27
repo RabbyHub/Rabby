@@ -1,4 +1,3 @@
-import { flatten, uniqBy } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { Tx, WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
@@ -15,10 +14,9 @@ import PQueue from 'p-queue';
 import { CHAINS_ENUM, ETH_USDT_CONTRACT } from '@/constant';
 import BigNumber from 'bignumber.js';
 import { DisplayedProject } from '@/ui/utils/portfolio/project';
-import { useRequest } from 'ahooks';
-import { Account } from '@/background/service/preference';
 import { ActionType } from './DappActionsForPopup';
 import { useTranslation } from 'react-i18next';
+import * as Sentry from '@sentry/browser';
 
 const rpcQueue = new PQueue({
   concurrency: 20,
@@ -93,7 +91,8 @@ export const getMethodDesc = (fncName: string) => {
 
 export const useDappAction = (
   data: WithdrawAction | undefined,
-  chain?: string
+  chain?: string,
+  protocolName?: string
 ) => {
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
@@ -274,14 +273,44 @@ export const useDappAction = (
       return [];
     }
 
-    const normalizedFunc = getMethodDesc(data.func);
-    const abi = parseAbiItem(normalizedFunc) as AbiFunction;
-    const params = data.str_params;
-    const calldata = encodeFunctionData({
-      abi: [abi],
-      functionName: abi.name,
-      args: params as any[],
-    });
+    let calldata: `0x${string}`;
+    let expectedParamCount: number | undefined;
+    try {
+      const normalizedFunc = getMethodDesc(data.func);
+      const abi = parseAbiItem(normalizedFunc) as AbiFunction;
+      expectedParamCount = abi.inputs.length;
+      const params = data.str_params;
+      calldata = encodeFunctionData({
+        abi: [abi],
+        functionName: abi.name,
+        args: params as any[],
+      });
+    } catch (error) {
+      const errorName =
+        error instanceof Error && error.name ? error.name : 'UnknownError';
+
+      Sentry.captureException(
+        new Error(`DappAction parameter encoding failed: ${errorName}`),
+        {
+          tags: {
+            feature: 'dapp_action',
+            error_stage: 'encode_params',
+            protocol_name: protocolName || 'unknown',
+            chain_id: String(chainInfo.id),
+            chain_server_id: chainInfo.serverId,
+            action_type: data.type,
+            original_error_name: errorName,
+          },
+          fingerprint: ['dapp-action', 'encode-params', errorName],
+          extra: {
+            function_signature: data.func,
+            expected_param_count: expectedParamCount,
+            actual_param_count: data.str_params?.length || 0,
+          },
+        }
+      );
+      return [];
+    }
 
     const approve_txs = await buildApproveTxs();
 
@@ -294,7 +323,15 @@ export const useDappAction = (
     } as any;
 
     return [...approve_txs, tx];
-  }, [data, valid, currentAccount?.address, chainInfo?.id, buildApproveTxs]);
+  }, [
+    data,
+    valid,
+    currentAccount?.address,
+    chainInfo?.id,
+    chainInfo?.serverId,
+    buildApproveTxs,
+    protocolName,
+  ]);
 
   return {
     valid,

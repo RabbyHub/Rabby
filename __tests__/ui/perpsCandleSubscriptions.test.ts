@@ -1,22 +1,27 @@
 import {
-  closeAllCandleSubscriptions,
-  closeCandleSubscription,
-  isCandleForChannel,
-  openCandleSubscription,
   CandleSubscriptionEntry,
+  CandleSubscriptionRegistry,
+  isCandleForChannel,
 } from '@/ui/views/Perps/candleSubscriptions';
 
+type MockCandle = {
+  s?: string;
+  i?: string;
+  close: number;
+};
+
 /**
- * Stands in for the SDK's WebSocketClient. The behaviour that matters here is
- * that a candle channel is keyed by coin+interval and is *not* refcounted:
- * unsubscribe() tells the server to stop pushing the whole channel, however
- * many callbacks are still attached to it.
+ * Mirrors the SDK behavior relevant to candles:
+ *
+ * - the server channel is keyed by coin+interval and is not refcounted;
+ * - callbacks are dispatched by channel type, so every candle callback sees
+ *   every candle frame and has to filter by `s`/`i` itself.
  */
 const createMockSdkWs = () => {
   const frames: string[] = [];
   const openChannels = new Set<string>();
-  const callbacks = new Map<string, Set<(bar: number) => void>>();
-
+  const listeners = new Set<(candle: MockCandle) => void>();
+  const allListeners = new Set<(candle: MockCandle) => void>();
   const keyOf = (coin: string, interval: string) => `${coin}:${interval}`;
 
   return {
@@ -27,281 +32,270 @@ const createMockSdkWs = () => {
     subscribeToCandles(
       coin: string,
       interval: string,
-      callback: (bar: number) => void
+      callback: (candle: MockCandle) => void
     ) {
       const key = keyOf(coin, interval);
       frames.push(`subscribe ${key}`);
       openChannels.add(key);
-      const attached = callbacks.get(key) || new Set();
-      attached.add(callback);
-      callbacks.set(key, attached);
+      listeners.add(callback);
+      allListeners.add(callback);
 
       return {
         unsubscribe: () => {
           frames.push(`unsubscribe ${key}`);
-          // No refcount: the server stops pushing the channel outright.
           openChannels.delete(key);
-          callbacks.get(key)?.delete(callback);
+          listeners.delete(callback);
         },
       };
     },
 
-    /** Server push. Only reaches listeners while the channel is open. */
-    push(coin: string, interval: string, bar: number) {
-      const key = keyOf(coin, interval);
-      if (!openChannels.has(key)) return;
-      callbacks.get(key)?.forEach((callback) => callback(bar));
+    push(coin: string, interval: string, close: number) {
+      if (!openChannels.has(keyOf(coin, interval))) return;
+      [...listeners].forEach((listener) =>
+        listener({ s: coin, i: interval, close })
+      );
+    },
+
+    emitLate(coin: string, interval: string, close: number) {
+      [...allListeners].forEach((listener) =>
+        listener({ s: coin, i: interval, close })
+      );
     },
   };
 };
 
+type Registry = CandleSubscriptionRegistry<
+  MockCandle,
+  CandleSubscriptionEntry<MockCandle>
+>;
 type Ws = ReturnType<typeof createMockSdkWs>;
 
-const BTC_15M = { symbol: 'BTC', subscribeInterval: '15m' };
-
 const subscribe = (
+  registry: Registry,
   ws: Ws,
-  subscriptions: Map<string, CandleSubscriptionEntry>,
   subscriberUID: string,
-  received: Map<string, number[]>,
-  channel = BTC_15M
-) => {
-  received.set(subscriberUID, []);
-  return openCandleSubscription(
-    subscriptions,
+  symbol: string,
+  interval: string,
+  received: number[]
+) =>
+  registry.subscribe(
     subscriberUID,
-    channel,
-    () => {
-      const subscription = ws.subscribeToCandles(
-        channel.symbol,
-        channel.subscribeInterval,
-        (bar) => received.get(subscriberUID)?.push(bar)
-      );
-      return { ...channel, unsubscribe: subscription.unsubscribe };
-    }
+    {
+      symbol,
+      subscribeInterval: interval,
+      onCandle: (candle) => received.push(candle.close),
+    },
+    (onCandle) => ws.subscribeToCandles(symbol, interval, onCandle)
   );
-};
 
-describe('openCandleSubscription', () => {
-  it('keeps the live subscription when the superseded UID is retired late', () => {
+describe('CandleSubscriptionRegistry', () => {
+  it('multiplexes daily and weekly series over one physical daily channel', () => {
     const ws = createMockSdkWs();
-    const subscriptions = new Map<string, CandleSubscriptionEntry>();
-    const received = new Map<string, number[]>();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const daily: number[] = [];
+    const weekly: number[] = [];
 
-    subscribe(ws, subscriptions, 'uid-old', received);
-    // TradingView opens the replacement before it retires the previous UID...
-    subscribe(ws, subscriptions, 'uid-new', received);
-    // ...and only then unsubscribes the old one.
-    closeCandleSubscription(subscriptions, 'uid-old');
+    subscribe(registry, ws, 'BTC_#_1D', 'BTC', '1d', daily);
+    subscribe(registry, ws, 'BTC_#_1W', 'BTC', '1d', weekly);
+    ws.push('BTC', '1d', 101);
 
-    ws.push('BTC', '15m', 42);
-
-    expect(ws.isChannelOpen('BTC', '15m')).toBe(true);
-    expect(received.get('uid-new')).toEqual([42]);
-    expect(subscriptions.size).toBe(1);
+    expect(ws.frames).toEqual(['subscribe BTC:1d']);
+    expect(daily).toEqual([101]);
+    expect(weekly).toEqual([101]);
+    expect(registry.subscriberCount).toBe(2);
+    expect(registry.channelCount).toBe(1);
   });
 
-  it('orders the frames unsubscribe-then-subscribe when replacing a channel', () => {
+  it('keeps both cached series live when TradingView revisits without subscribing again', () => {
     const ws = createMockSdkWs();
-    const subscriptions = new Map<string, CandleSubscriptionEntry>();
-    const received = new Map<string, number[]>();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const daily: number[] = [];
+    const weekly: number[] = [];
 
-    subscribe(ws, subscriptions, 'uid-old', received);
-    subscribe(ws, subscriptions, 'uid-new', received);
+    // TradingView registers each pair once, retains the callbacks while the
+    // symbol remains on screen, and can revisit 1D without another subscribe.
+    subscribe(registry, ws, 'BTC_#_1D', 'BTC', '1d', daily);
+    subscribe(registry, ws, 'BTC_#_1W', 'BTC', '1d', weekly);
+    ws.push('BTC', '1d', 102);
+
+    expect(daily[daily.length - 1]).toBe(102);
+    expect(weekly[weekly.length - 1]).toBe(102);
+    expect(ws.isChannelOpen('BTC', '1d')).toBe(true);
+  });
+
+  it('does not close a shared channel until its last logical subscriber leaves', () => {
+    const ws = createMockSdkWs();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const daily: number[] = [];
+    const weekly: number[] = [];
+
+    subscribe(registry, ws, 'BTC_#_1D', 'BTC', '1d', daily);
+    subscribe(registry, ws, 'BTC_#_1W', 'BTC', '1d', weekly);
+    registry.unsubscribe('BTC_#_1D');
+    ws.push('BTC', '1d', 103);
+
+    expect(ws.frames).toEqual(['subscribe BTC:1d']);
+    expect(daily).toEqual([]);
+    expect(weekly).toEqual([103]);
+
+    registry.unsubscribe('BTC_#_1W');
+    expect(ws.frames).toEqual(['subscribe BTC:1d', 'unsubscribe BTC:1d']);
+    expect(ws.isChannelOpen('BTC', '1d')).toBe(false);
+  });
+
+  it('replaces a reused UID without bouncing its physical channel', () => {
+    const ws = createMockSdkWs();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const oldSeries: number[] = [];
+    const liveSeries: number[] = [];
+
+    subscribe(registry, ws, 'BTC_#_15', 'BTC', '15m', oldSeries);
+    subscribe(registry, ws, 'BTC_#_15', 'BTC', '15m', liveSeries);
+    ws.push('BTC', '15m', 104);
+
+    expect(ws.frames).toEqual(['subscribe BTC:15m']);
+    expect(oldSeries).toEqual([]);
+    expect(liveSeries).toEqual([104]);
+    expect(registry.subscriberCount).toBe(1);
+  });
+
+  it('moves a reused UID to a different physical channel', () => {
+    const ws = createMockSdkWs();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const received: number[] = [];
+
+    subscribe(registry, ws, 'uid-1', 'BTC', '15m', received);
+    subscribe(registry, ws, 'uid-1', 'BTC', '1h', received);
 
     expect(ws.frames).toEqual([
       'subscribe BTC:15m',
+      'subscribe BTC:1h',
       'unsubscribe BTC:15m',
-      'subscribe BTC:15m',
     ]);
+    expect(ws.isChannelOpen('BTC', '15m')).toBe(false);
+    expect(ws.isChannelOpen('BTC', '1h')).toBe(true);
   });
 
-  it('stops feeding a superseded UID', () => {
+  it('keeps the old channel when opening a replacement throws', () => {
     const ws = createMockSdkWs();
-    const subscriptions = new Map<string, CandleSubscriptionEntry>();
-    const received = new Map<string, number[]>();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const received: number[] = [];
 
-    subscribe(ws, subscriptions, 'uid-old', received);
-    subscribe(ws, subscriptions, 'uid-new', received);
-    ws.push('BTC', '15m', 7);
+    subscribe(registry, ws, 'uid-1', 'BTC', '15m', received);
+    expect(() =>
+      registry.subscribe(
+        'uid-1',
+        {
+          symbol: 'BTC',
+          subscribeInterval: '1h',
+          onCandle: (candle) => received.push(candle.close),
+        },
+        () => {
+          throw new Error('open failed');
+        }
+      )
+    ).toThrow('open failed');
 
-    expect(received.get('uid-old')).toEqual([]);
-  });
-
-  it('leaves subscriptions on other channels alone', () => {
-    const ws = createMockSdkWs();
-    const subscriptions = new Map<string, CandleSubscriptionEntry>();
-    const received = new Map<string, number[]>();
-
-    subscribe(ws, subscriptions, 'uid-eth', received, {
-      symbol: 'ETH',
-      subscribeInterval: '15m',
-    });
-    subscribe(ws, subscriptions, 'uid-btc-1h', received, {
-      symbol: 'BTC',
-      subscribeInterval: '1h',
-    });
-    subscribe(ws, subscriptions, 'uid-btc-15m', received);
-
-    ws.push('ETH', '15m', 1);
-    ws.push('BTC', '1h', 2);
-
-    expect(received.get('uid-eth')).toEqual([1]);
-    expect(received.get('uid-btc-1h')).toEqual([2]);
-    expect(subscriptions.size).toBe(3);
-  });
-
-  it('replaces an entry reusing the same UID', () => {
-    const ws = createMockSdkWs();
-    const subscriptions = new Map<string, CandleSubscriptionEntry>();
-    const received = new Map<string, number[]>();
-
-    subscribe(ws, subscriptions, 'uid-1', received, {
-      symbol: 'BTC',
-      subscribeInterval: '1h',
-    });
-    subscribe(ws, subscriptions, 'uid-1', received);
-
-    expect(ws.isChannelOpen('BTC', '1h')).toBe(false);
+    ws.push('BTC', '15m', 105);
+    expect(received).toEqual([105]);
     expect(ws.isChannelOpen('BTC', '15m')).toBe(true);
-    expect(subscriptions.size).toBe(1);
-  });
-});
-
-describe('closeCandleSubscription', () => {
-  it('is a no-op for a UID that was already superseded', () => {
-    const ws = createMockSdkWs();
-    const subscriptions = new Map<string, CandleSubscriptionEntry>();
-    const received = new Map<string, number[]>();
-
-    subscribe(ws, subscriptions, 'uid-old', received);
-    subscribe(ws, subscriptions, 'uid-new', received);
-    const framesBefore = [...ws.frames];
-
-    closeCandleSubscription(subscriptions, 'uid-old');
-
-    expect(ws.frames).toEqual(framesBefore);
+    expect(registry.subscriberCount).toBe(1);
+    expect(registry.channelCount).toBe(1);
   });
 
-  it('retires the channel when the live UID is unsubscribed', () => {
+  it('filters the SDK type-level fanout to the matching physical channel', () => {
     const ws = createMockSdkWs();
-    const subscriptions = new Map<string, CandleSubscriptionEntry>();
-    const received = new Map<string, number[]>();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const btc: number[] = [];
+    const eth: number[] = [];
 
-    subscribe(ws, subscriptions, 'uid-live', received);
-    closeCandleSubscription(subscriptions, 'uid-live');
-    ws.push('BTC', '15m', 9);
+    subscribe(registry, ws, 'btc', 'BTC', '15m', btc);
+    subscribe(registry, ws, 'eth', 'ETH', '1h', eth);
+    ws.push('BTC', '15m', 105);
+    ws.push('ETH', '1h', 106);
 
-    expect(ws.isChannelOpen('BTC', '15m')).toBe(false);
-    expect(received.get('uid-live')).toEqual([]);
-    expect(subscriptions.size).toBe(0);
+    expect(btc).toEqual([105]);
+    expect(eth).toEqual([106]);
   });
-});
 
-describe('closeAllCandleSubscriptions', () => {
-  it('retires every channel and empties the map', () => {
+  it('clears every physical channel exactly once', () => {
     const ws = createMockSdkWs();
-    const subscriptions = new Map<string, CandleSubscriptionEntry>();
-    const received = new Map<string, number[]>();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
 
-    subscribe(ws, subscriptions, 'uid-btc', received);
-    subscribe(ws, subscriptions, 'uid-eth', received, {
-      symbol: 'ETH',
-      subscribeInterval: '1h',
-    });
+    subscribe(registry, ws, 'daily', 'BTC', '1d', []);
+    subscribe(registry, ws, 'weekly', 'BTC', '1d', []);
+    subscribe(registry, ws, 'eth', 'ETH', '1h', []);
+    registry.clear();
 
-    closeAllCandleSubscriptions(subscriptions);
+    expect(ws.frames).toEqual([
+      'subscribe BTC:1d',
+      'subscribe ETH:1h',
+      'unsubscribe BTC:1d',
+      'unsubscribe ETH:1h',
+    ]);
+    expect(registry.subscriberCount).toBe(0);
+    expect(registry.channelCount).toBe(0);
+  });
 
-    expect(ws.isChannelOpen('BTC', '15m')).toBe(false);
-    expect(ws.isChannelOpen('ETH', '1h')).toBe(false);
-    expect(subscriptions.size).toBe(0);
+  it('drops a late SDK callback after clear', () => {
+    const ws = createMockSdkWs();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const received: number[] = [];
+
+    subscribe(registry, ws, 'daily', 'BTC', '1d', received);
+    registry.clear();
+    ws.emitLate('BTC', '1d', 107);
+
+    expect(received).toEqual([]);
+  });
+
+  it('stops an in-flight fanout when a consumer clears the registry', () => {
+    const ws = createMockSdkWs();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+    const first: number[] = [];
+    const second: number[] = [];
+
+    registry.subscribe(
+      'first',
+      {
+        symbol: 'BTC',
+        subscribeInterval: '1d',
+        onCandle: (candle) => {
+          first.push(candle.close);
+          registry.clear();
+        },
+      },
+      (onCandle) => ws.subscribeToCandles('BTC', '1d', onCandle)
+    );
+    subscribe(registry, ws, 'second', 'BTC', '1d', second);
+    ws.push('BTC', '1d', 108);
+
+    expect(first).toEqual([108]);
+    expect(second).toEqual([]);
+  });
+
+  it('treats an unknown UID unsubscribe as a no-op', () => {
+    const ws = createMockSdkWs();
+    const registry = new CandleSubscriptionRegistry<MockCandle>();
+
+    subscribe(registry, ws, 'daily', 'BTC', '1d', []);
+    registry.unsubscribe('missing');
+
+    expect(ws.frames).toEqual(['subscribe BTC:1d']);
+    expect(registry.subscriberCount).toBe(1);
   });
 });
 
 describe('isCandleForChannel', () => {
-  const channel = { symbol: 'BTC', subscribeInterval: '15m' };
+  const channel = { symbol: 'BTC', subscribeInterval: '1d' };
 
-  it('accepts a frame from its own channel', () => {
-    expect(isCandleForChannel({ s: 'BTC', i: '15m' }, channel)).toBe(true);
-  });
-
-  it('rejects another coin', () => {
-    expect(isCandleForChannel({ s: 'ETH', i: '15m' }, channel)).toBe(false);
-  });
-
-  it('rejects another interval on the same coin', () => {
+  it('accepts its own channel and rejects another coin or interval', () => {
+    expect(isCandleForChannel({ s: 'BTC', i: '1d' }, channel)).toBe(true);
+    expect(isCandleForChannel({ s: 'ETH', i: '1d' }, channel)).toBe(false);
     expect(isCandleForChannel({ s: 'BTC', i: '1h' }, channel)).toBe(false);
   });
 
-  it('accepts a frame that carries no channel metadata', () => {
-    // Starving the listener would freeze the chart — the failure this guards
-    // against — so an unlabelled frame is let through.
+  it('accepts a frame without channel metadata', () => {
     expect(isCandleForChannel({}, channel)).toBe(true);
-  });
-
-  it('matches the daily channel a weekly subscription rides on', () => {
-    expect(
-      isCandleForChannel(
-        { s: 'BTC', i: '1d' },
-        { symbol: 'BTC', subscribeInterval: '1d' }
-      )
-    ).toBe(true);
-  });
-});
-
-/**
- * The SDK fans candle frames out by channel *type*: while two channels overlap,
- * both listeners see both channels' bars. This mirrors that dispatch so the
- * guard is exercised the way it runs in production.
- */
-const createTypeFanoutSdkWs = () => {
-  const listeners: Array<(candle: { s: string; i: string; c: string }) => void> = [];
-  const openChannels = new Set<string>();
-
-  return {
-    subscribeToCandles(
-      coin: string,
-      interval: string,
-      callback: (candle: { s: string; i: string; c: string }) => void
-    ) {
-      openChannels.add(`${coin}:${interval}`);
-      listeners.push(callback);
-      return {
-        unsubscribe: () => {
-          openChannels.delete(`${coin}:${interval}`);
-          const index = listeners.indexOf(callback);
-          if (index >= 0) listeners.splice(index, 1);
-        },
-      };
-    },
-
-    push(coin: string, interval: string, close: string) {
-      if (!openChannels.has(`${coin}:${interval}`)) return;
-      // No per-channel routing: every candle listener gets the frame.
-      [...listeners].forEach((listener) =>
-        listener({ s: coin, i: interval, c: close })
-      );
-    },
-  };
-};
-
-describe('overlapping channels', () => {
-  it('does not forward another channel bars while both are open', () => {
-    const ws = createTypeFanoutSdkWs();
-    const forwarded: string[] = [];
-    const channel = { symbol: 'BTC', subscribeInterval: '1h' };
-
-    // A superseded 15m listener is still attached...
-    ws.subscribeToCandles('BTC', '15m', () => undefined);
-    // ...while the chart now rides the 1h channel.
-    ws.subscribeToCandles('BTC', '1h', (candle) => {
-      if (!isCandleForChannel(candle, channel)) return;
-      forwarded.push(candle.c);
-    });
-
-    ws.push('BTC', '15m', '100');
-    ws.push('BTC', '1h', '200');
-
-    expect(forwarded).toEqual(['200']);
   });
 });

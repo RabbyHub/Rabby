@@ -21,7 +21,7 @@ import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
 const StyledInput = styled(Input)`
   &,
   & > .ant-input {
-    height: 46px;
+    height: 40px;
     font-weight: 500;
     box-shadow: none;
     border-radius: 4px;
@@ -181,7 +181,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
   }, [token?.id, disabled]);
 
   return (
-    <div className="p-16 pb-20 h-[132px]">
+    <div className="h-[124px] p-16">
       <div
         className={clsx(
           'flex items-center justify-between',
@@ -189,7 +189,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
         )}
         onClick={handleTokenModalOpen}
       >
-        <span className="block w-[150px] text-rabby-neutral-foot">
+        <span className="block w-[150px] text-13 font-normal leading-normal text-rabby-neutral-foot">
           {isFrom ? t('page.swap.from') : t('page.swap.to')}
         </span>
         {isFrom && (
