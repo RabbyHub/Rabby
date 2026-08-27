@@ -123,8 +123,6 @@ export const BridgeShowMore = ({
   renderSwapQuotes,
   onRefreshSwapQuotes,
   swapQuotesLoading,
-  swapGasQuoteVisible,
-  onSwapGasQuoteVisibleChange,
 }: {
   openQuotesList: () => void;
   sourceName: string;
@@ -168,8 +166,6 @@ export const BridgeShowMore = ({
   renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
   onRefreshSwapQuotes?: () => void;
   swapQuotesLoading?: boolean;
-  swapGasQuoteVisible?: boolean;
-  onSwapGasQuoteVisibleChange?: (visible: boolean) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -429,13 +425,16 @@ export const BridgeShowMore = ({
                 ? sourceSelectorRender(false)
                 : undefined
             }
+            fallbackSourceSelector={
+              type === 'swap' && (quoteLoading || sourceLogo || sourceName)
+                ? sourceSelectorRender()
+                : undefined
+            }
             showTopMargin={false}
             useInfoCardStyle
             renderSwapQuotes={renderSwapQuotes}
             onRefreshSwapQuotes={onRefreshSwapQuotes}
             swapQuotesLoading={swapQuotesLoading}
-            swapGasQuoteVisible={swapGasQuoteVisible}
-            onSwapGasQuoteVisibleChange={onSwapGasQuoteVisibleChange}
           />
         ) : type === 'swap' ? (
           sourceContentRender()
@@ -581,13 +580,12 @@ export const DirectSignGasInfo = ({
   chainServeId,
   signatureInstance,
   sourceSelector,
+  fallbackSourceSelector,
   showTopMargin = true,
   useInfoCardStyle = false,
   renderSwapQuotes,
   onRefreshSwapQuotes,
   swapQuotesLoading,
-  swapGasQuoteVisible,
-  onSwapGasQuoteVisibleChange,
 }: {
   supportDirectSign: boolean;
   loading: boolean;
@@ -597,15 +595,15 @@ export const DirectSignGasInfo = ({
   chainServeId: string;
   signatureInstance: SignatureManager;
   sourceSelector?: React.ReactNode;
+  fallbackSourceSelector?: React.ReactNode;
   showTopMargin?: boolean;
   useInfoCardStyle?: boolean;
   renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
   onRefreshSwapQuotes?: () => void;
   swapQuotesLoading?: boolean;
-  swapGasQuoteVisible?: boolean;
-  onSwapGasQuoteVisibleChange?: (visible: boolean) => void;
 }) => {
   const wallet = useWallet();
+  const [swapGasQuoteVisible, setSwapGasQuoteVisible] = useState(false);
   const { cachedTokenList } = useRabbySelector((s) => ({
     cachedTokenList: s.account.tokens.list,
   }));
@@ -1291,7 +1289,7 @@ export const DirectSignGasInfo = ({
         onRefreshSwapQuotes,
         swapQuotesLoading,
         swapGasQuoteVisible,
-        onSwapGasQuoteVisibleChange,
+        onSwapGasQuoteVisibleChange: setSwapGasQuoteVisible,
       }
     : null;
   const keepCombinedGasHeaderMounted =
@@ -1306,8 +1304,9 @@ export const DirectSignGasInfo = ({
             renderSwapQuotes,
             onRefreshSwapQuotes,
             swapQuotesLoading,
+            swapGasInteractionDisabled: !showGasContent,
             swapGasQuoteVisible,
-            onSwapGasQuoteVisibleChange,
+            onSwapGasQuoteVisibleChange: setSwapGasQuoteVisible,
           }}
           className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
         />
@@ -1316,7 +1315,7 @@ export const DirectSignGasInfo = ({
           name={<>{'Gas fee'}</>}
           className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
         >
-          {sourceSelector}
+          {fallbackSourceSelector ?? sourceSelector}
           <div>-</div>
         </ListItem>
       ) : (
@@ -1324,7 +1323,7 @@ export const DirectSignGasInfo = ({
           name={<>{'Gas fee'}</>}
           className={clsx(showTopMargin && type !== 'send' && 'mt-12')}
         >
-          {sourceSelector}
+          {fallbackSourceSelector ?? sourceSelector}
           <Skeleton.Input
             active
             className="rounded"

@@ -82,6 +82,7 @@ export interface SignMainnetGasSelectorHeaderProps
   renderSwapQuotes?: (onSelect: () => void) => React.ReactNode;
   onRefreshSwapQuotes?: () => void;
   swapQuotesLoading?: boolean;
+  swapGasInteractionDisabled?: boolean;
   swapGasQuoteVisible?: boolean;
   onSwapGasQuoteVisibleChange?: (visible: boolean) => void;
 }
@@ -121,6 +122,7 @@ export const SignMainnetGasSelectorHeader = ({
   renderSwapQuotes,
   onRefreshSwapQuotes,
   swapQuotesLoading,
+  swapGasInteractionDisabled,
   swapGasQuoteVisible,
   onSwapGasQuoteVisibleChange,
   onSignTx,
@@ -973,6 +975,7 @@ export const SignMainnetGasSelectorHeader = ({
           renderQuotes={renderSwapQuotes}
           onRefreshQuotes={onRefreshSwapQuotes || (() => undefined)}
           quotesLoading={swapQuotesLoading}
+          gasInteractionDisabled={swapGasInteractionDisabled}
         />
       ) : null}
 

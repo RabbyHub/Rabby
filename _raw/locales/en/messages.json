@@ -2620,7 +2620,7 @@
       "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
       "preferMEV": "MEV Protection",
-      "preferMEVTip": "Enable \"MEV Protection\" for Ethereum swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
+      "preferMEVTip": "Enable \"MEV Protection\" for Ethereum and BNB Chain swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
       "minimum-received": "Minimum received",
       "there-is-no-fee-and-slippage-for-this-trade": "There is no slippage for this trade",
       "no-slippage-for-wrap": "No slippage for Wrap",
