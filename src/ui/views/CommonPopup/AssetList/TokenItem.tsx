@@ -193,7 +193,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
               </span>
             )}
           </LpContainer>
-          <span className="text-r-neutral-foot text-13 leading-[16px] truncate whitespace-nowrap text-ellipsis overflow-hidden">
+          <span className="text-r-neutral-foot text-13 leading-[16px] truncate whitespace-nowrap text-ellipsis overflow-hidden max-w-[180px]">
             {item._amountStr}
           </span>
         </div>
