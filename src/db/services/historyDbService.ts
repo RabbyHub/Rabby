@@ -100,23 +100,6 @@ class HistoryDbService {
       _forceUseRealTimeApi ??
       updatedAt > Date.now() - USE_REALTIME_API_DURATION;
 
-    if (forceUseRealTimeApi) {
-      await this.syncWithRealTimeApi({
-        openapi,
-        address,
-        startTime: startTime || 0,
-        latestTime: getRealtimeApiLatestTime(latestTime),
-      });
-
-      await syncDbService.setUpdatedAt({
-        address,
-        scene: 'history',
-        updatedAt: Date.now(),
-      });
-
-      return;
-    }
-
     let hasNew = true;
 
     if (latestTime) {
@@ -127,6 +110,15 @@ class HistoryDbService {
       hasNew = res.has_new_tx;
     }
     if (!hasNew) {
+      await syncDbService.setUpdatedAt({
+        address,
+        scene: 'history',
+        updatedAt: Date.now(),
+      });
+      return;
+    }
+
+    if (forceUseRealTimeApi) {
       await this.syncWithRealTimeApi({
         openapi,
         address,
