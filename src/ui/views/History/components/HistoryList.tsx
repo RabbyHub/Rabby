@@ -17,7 +17,7 @@ export const HistoryList = ({
   const ref = useRef<HTMLDivElement | null>(null);
   const currentAccount = useCurrentAccount();
 
-  const { data, loading } = useQueryDbHistory({
+  const { data, loading, loadingMore, loadMore, noMore } = useQueryDbHistory({
     account: currentAccount,
     isFilterScam,
   });
@@ -92,16 +92,16 @@ export const HistoryList = ({
                   />
                 );
               }}
-              // endReached={loadMore}
+              endReached={noMore ? undefined : loadMore}
               increaseViewportBy={100}
-              // components={{
-              //   Footer: () => {
-              //     if (loadingMore) {
-              //       return <Loading count={2} active />;
-              //     }
-              //     return null;
-              //   },
-              // }}
+              components={{
+                Footer: () => {
+                  if (loadingMore) {
+                    return <Loading count={2} active />;
+                  }
+                  return null;
+                },
+              }}
             ></Virtuoso>
           )}
         </>
