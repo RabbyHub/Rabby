@@ -8,8 +8,6 @@ import {
 } from 'background/service';
 import { createPersistStore, isSameAddress } from 'background/utils';
 import interval from 'interval-promise';
-import { flatten } from 'lodash';
-import { testnetOpenapiService } from './openapi';
 import transactionHistory from './transactionHistory';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
@@ -63,31 +61,18 @@ class TransactionBroadcastWatcher {
     if (list.length <= 0) {
       return;
     }
-    const { testnetList, mainnetList } = list.reduce(
-      (res, item) => {
-        const chainItem = findChainByID(item.chainId);
-
-        if (chainItem?.isTestnet) {
-          res.testnetList.push(item);
-        } else {
-          res.mainnetList.push(item);
-        }
-        return res;
-      },
-      { testnetList: [] as WatcherItem[], mainnetList: [] as WatcherItem[] }
+    const mainnetList = list.filter(
+      (item) => !findChainByID(item.chainId)?.isTestnet
     );
 
-    const res = await Promise.all([
-      [] as TxRequest[],
-      mainnetList?.length
-        ? openapiService
-            .getTxRequests(mainnetList.map((item) => item.reqId))
-            .catch(() => [] as TxRequest[])
-        : ([] as TxRequest[]),
-    ]);
+    const txRequests = mainnetList.length
+      ? await openapiService
+          .getTxRequests(mainnetList.map((item) => item.reqId))
+          .catch(() => [] as TxRequest[])
+      : [];
 
     const addressList: string[] = [];
-    flatten(res).forEach((item) => {
+    txRequests.forEach((item) => {
       if (
         item.is_finished ||
         item.is_withdraw ||

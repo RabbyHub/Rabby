@@ -9,7 +9,6 @@ import { KEYRING_CLASS } from '@/constant';
 import type { AccountScene } from '@/constant/scene-account';
 import { wallet } from '@/ui/wallet';
 import { coerceFloat } from '@/ui/utils/number';
-import { requestOpenApiMultipleNets } from '@/ui/utils/openapi';
 import type { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import {
   formatChainToDisplay,
@@ -389,24 +388,7 @@ export const useAccountStore = create<AccountStore>()((set, get) => ({
     const currentAccount = get().currentAccount;
     if (!currentAccount?.address) return;
 
-    const isShowTestnet = await wallet.getPreference<boolean>('isShowTestnet');
-    await requestOpenApiMultipleNets<TotalBalanceResponse | null, void>(
-      (ctx) =>
-        wallet.getInMemoryAddressBalance(
-          currentAccount.address,
-          true,
-          ctx.isTestnetTask
-        ),
-      {
-        wallet,
-        needTestnetResult: isShowTestnet,
-        processResults: () => null,
-        fallbackValues: {
-          mainnet: null,
-          testnet: null,
-        },
-      }
-    );
+    await wallet.getInMemoryAddressBalance(currentAccount.address, true);
   },
   async getMatteredChainBalance(options) {
     const currentAccountAddress =

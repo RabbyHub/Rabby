@@ -7,6 +7,7 @@ const mockGetDeviceSessionState = jest.fn();
 const mockExecuteDeviceAction = jest.fn();
 const mockGetAddress = jest.fn();
 const mockSignTransaction = jest.fn();
+const mockSignTypedData = jest.fn();
 const mockContextModule = { clearSigning: true };
 const mockRemoveDefaultLoaders = jest.fn();
 const mockAddTypedDataLoader = jest.fn();
@@ -123,6 +124,7 @@ jest.mock(
       build: () => ({
         getAddress: mockGetAddress,
         signTransaction: mockSignTransaction,
+        signTypedData: mockSignTypedData,
       }),
     })),
   }),
@@ -847,5 +849,57 @@ describe('LedgerBridgeKeyring makeApp', () => {
     ).rejects.toThrow('Ledger: Typed data payload is incomplete');
 
     expect(mockConnect).not.toHaveBeenCalled();
+  });
+
+  it('passes the original typed data to the Ledger signer', async () => {
+    const address = '0x0000000000000000000000000000000000000001';
+    const keyring = new LedgerBridgeKeyring({
+      accounts: [address],
+      accountDetails: {
+        [address]: {
+          hdPath: "m/44'/60'/0'/0/0",
+        },
+      },
+    });
+    const typedData = {
+      domain: {
+        name: 'Test',
+        version: '1',
+        chainId: 1,
+        verifyingContract: address,
+        salt: '',
+      },
+      types: {
+        EIP712Domain: [
+          { name: 'name', type: 'string' },
+          { name: 'version', type: 'string' },
+          { name: 'chainId', type: 'uint256' },
+          { name: 'verifyingContract', type: 'address' },
+        ],
+        Mail: [{ name: 'contents', type: 'string' }],
+      },
+      primaryType: 'Mail',
+      message: { contents: 'Hello' },
+    };
+    mockSignTypedData.mockReturnValueOnce({
+      observable: of({
+        status: 'error',
+        error: new Error('stop after capturing typed data'),
+      }),
+      cancel: jest.fn(),
+    });
+
+    try {
+      await expect(
+        keyring.signTypedData(address, typedData, { version: 'V4' })
+      ).rejects.toThrow('stop after capturing typed data');
+      expect(mockSignTypedData).toHaveBeenCalledWith(
+        "44'/60'/0'/0/0",
+        typedData,
+        { skipOpenApp: true }
+      );
+    } finally {
+      await keyring.cleanUp();
+    }
   });
 });

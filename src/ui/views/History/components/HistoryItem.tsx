@@ -99,19 +99,14 @@ function ViewMessageTriggerForContract({
     isLoadingExplain,
     loadingExplainError,
     contractCallPlainText,
-  } = useParseContractAddress(
-    {
-      contractAddress,
-      chain: chainItem,
-      inputDataHex: txInputData
-        ? formatTxInputDataOnERC20(txInputData).hexData
-        : null,
-      userAddress,
-    },
-    {
-      isTestnet,
-    }
-  );
+  } = useParseContractAddress({
+    contractAddress,
+    chain: chainItem,
+    inputDataHex: txInputData
+      ? formatTxInputDataOnERC20(txInputData).hexData
+      : null,
+    userAddress,
+  });
 
   const { t } = useTranslation();
 

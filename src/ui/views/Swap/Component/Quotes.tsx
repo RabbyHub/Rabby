@@ -31,6 +31,7 @@ interface QuotesProps
   visible: boolean;
   onClose: () => void;
   getContainer?: DrawerProps['getContainer'];
+  noPadding?: boolean;
 }
 
 export const Quotes = ({
@@ -38,6 +39,7 @@ export const Quotes = ({
   activeName,
   inSufficient,
   getContainer,
+  noPadding,
   ...other
 }: QuotesProps) => {
   const { t } = useTranslation();
@@ -110,7 +112,7 @@ export const Quotes = ({
     const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
 
     return (
-      <div className="flex flex-col gap-8 px-20">
+      <div className={clsx('flex flex-col gap-8', !noPadding && 'px-20')}>
         {dex ? (
           <DexQuoteItem
             active={activeName === dex?.name}
@@ -151,7 +153,13 @@ export const Quotes = ({
     );
   }
   return (
-    <div className="flex flex-col flex-1 w-full overflow-auto pb-12 px-20">
+    <div
+      className={clsx(
+        'flex flex-col flex-1 w-full overflow-auto',
+        !other.combined && 'pb-12',
+        !noPadding && 'px-20'
+      )}
+    >
       <div className="flex flex-col gap-12">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;

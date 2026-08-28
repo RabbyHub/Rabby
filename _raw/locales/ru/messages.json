@@ -989,9 +989,9 @@
       "unlimited-allowance": "Неограниченный лимит",
       "insufficient-balance": "Недостаточный баланс",
       "rabby-fee": "Комиссия Rabby",
-      "preferMEV": "Выбрать защиту от MEV",
-      "preferMEVTip": "Включить \"MEV Guarded\" функцию для Ethereum обмена чтобы снизить риск сендвич-атак. Примечание: функция работает только со встроенным RPC и кошельком",
       "minimum-received": "Минимум к получению",
+      "preferMEV": "Защита от MEV",
+      "preferMEVTip": "Включите «Защиту от MEV» для обменов в сетях Ethereum и BNB Chain, чтобы снизить риск сэндвич-атак. Примечание: эта функция не поддерживается при использовании пользовательского RPC или адреса WalletConnect.",
       "there-is-no-fee-and-slippage-for-this-trade": "Для этой сделки нет комиссии и отклонения",
       "approve-tips": "1.Подтвердить → 2.Обменять",
       "best": "Лучший",
@@ -1010,6 +1010,7 @@
       "edit": "Изменить",
       "tradingSettingTips": "{{viewCount}} бирж дают котировки, на {{tradeCount}} разрешен обмен",
       "the-following-swap-rates-are-found": "Найденные курсы обмена",
+      "quotes": "Котировки",
       "sort-with-gas": "Сортировка по газу",
       "est-payment": "Расч. оплата:",
       "est-receiving": "Расч. получение:",
@@ -1179,7 +1180,15 @@
         "chain": " сети, ",
         "chainEnd": " сеть",
         "appChainTips": "Учётные записи Hyperliquid и Polymarket не включены",
-        "slotAppChainTips": "{{appChainNames}} Аккаунт не включен"
+        "slotAppChainTips": "{{appChainNames}} Аккаунт не включен",
+        "stablecoinSwapPopup": {
+          "title": "Комиссия за обмен — 0%",
+          "supportPrefix": "Поддержка",
+          "supportCount": "30+",
+          "supportSuffix": "стейблкоинов в 40+ сетях",
+          "goToSwap": "Перейти к обмену",
+          "close": "Закрыть"
+        }
       },
       "recentConnection": {
         "disconnected": "Отключено",
@@ -1348,7 +1357,7 @@
         "DappAccount": {
           "title": "Независимо переключайте адреса DApp",
           "button": "Включить",
-        "desc": "Включив эту функцию, вы сможете отдельно выбирать адрес подключения для каждого DApp. Изменение основного адреса не повлияет на адреса, подключённые к DApp."
+          "desc": "Включив эту функцию, вы сможете отдельно выбирать адрес подключения для каждого DApp. Изменение основного адреса не повлияет на адреса, подключённые к DApp."
         },
         "rateModalTriggerOnHome": {
           "description": "Как вы оцениваете Rabby Wallet?"

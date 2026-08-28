@@ -6,7 +6,6 @@ import openapiService, {
   Tx,
   ExplainTxResponse,
   TxPushType,
-  testnetOpenapiService,
   TxRequest,
   TokenItem,
   NFTItem,
@@ -1576,11 +1575,9 @@ class TxHistory {
     nonce: number;
     reqId: string;
   }) => {
-    const chain = findChainByID(chainId);
-    const service = chain?.isTestnet ? testnetOpenapiService : openapiService;
     let error: any = null;
     try {
-      await service.withdrawTx(reqId);
+      await openapiService.withdrawTx(reqId);
     } catch (e) {
       error = e;
     }
@@ -1601,10 +1598,8 @@ class TxHistory {
     nonce: number;
     reqId: string;
   }) => {
-    const chain = findChainByID(chainId);
-    const service = chain?.isTestnet ? testnetOpenapiService : openapiService;
     try {
-      await service.retryPushTx(reqId);
+      await openapiService.retryPushTx(reqId);
       this.reloadTxRequest({ address, chainId, nonce });
     } catch (e) {
       this.reloadTxRequest({ address, chainId, nonce });

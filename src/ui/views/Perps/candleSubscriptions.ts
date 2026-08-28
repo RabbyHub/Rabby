@@ -1,17 +1,16 @@
 /**
- * Bookkeeping for the TradingView datafeed's candle subscriptions.
+ * Bookkeeping for the TradingView datafeed's logical candle subscriptions.
  *
- * The Hyperliquid SDK keys its candle channels by coin+interval and does not
- * refcount them: every unsubscribe() sends an unsubscribe frame that stops the
- * server pushing that channel to *every* listener on it. TradingView, meanwhile,
- * does not guarantee it retires the outgoing subscriberUID before it opens the
- * replacement, so two UIDs can briefly share one channel — and the late
- * unsubscribe then silences the live one, leaving the chart with a subscriber
- * that never receives another bar.
+ * TradingView identifies a series by symbol+display resolution, while the
+ * Hyperliquid channel is symbol+SDK interval. Those identities are not
+ * one-to-one: Rabby's weekly series is aggregated from the daily channel, so
+ * `BTC/1D` and `BTC/1W` both ride `BTC/1d`.
  *
- * These helpers keep at most one entry per channel, and retire a collision
- * *before* its replacement is opened so the frames reach the server in
- * unsubscribe → subscribe order.
+ * The SDK cannot safely open that physical channel twice. Its active channel
+ * map is not refcounted, and either duplicate's unsubscribe frame stops the
+ * server stream for both. The registry below therefore owns exactly one SDK
+ * subscription per physical channel and fans each candle out to every logical
+ * TradingView subscriber riding it.
  */
 
 export interface CandleChannel {
@@ -20,23 +19,33 @@ export interface CandleChannel {
   subscribeInterval: string;
 }
 
-export interface CandleSubscriptionEntry extends CandleChannel {
+export interface CandleSubscriptionEntry<TCandle> extends CandleChannel {
+  onCandle: (candle: TCandle) => void;
+}
+
+interface PhysicalCandleSubscription<
+  TCandle,
+  TEntry extends CandleSubscriptionEntry<TCandle>
+> extends CandleChannel {
+  subscribers: Map<string, TEntry>;
+  active: boolean;
   unsubscribe: () => void;
 }
 
-export const sharesCandleChannel = (a: CandleChannel, b: CandleChannel) =>
-  a.symbol === b.symbol && a.subscribeInterval === b.subscribeInterval;
+const getCandleChannelKey = (channel: CandleChannel) =>
+  JSON.stringify([channel.symbol, channel.subscribeInterval]);
+
+const sharesCandleChannel = (a: CandleChannel, b: CandleChannel) =>
+  getCandleChannelKey(a) === getCandleChannelKey(b);
 
 /**
- * The SDK dispatches candle frames by channel *type*, so every candle listener
- * sees every subscribed channel's bars. While two channels overlap — the
- * outgoing interval has not been retired yet and its replacement is already
- * open — a listener would otherwise forward the other channel's bar as its own.
+ * The SDK dispatches candle frames by channel *type*, so every physical candle
+ * listener sees every subscribed channel's bars. Only forward a frame to the
+ * listener for the channel named by its metadata.
  *
- * Frames that do not carry `s`/`i` are let through: a listener starved by
- * missing metadata would freeze the chart, which is the very failure this
- * guards against. Only a frame that positively names another channel is
- * dropped.
+ * Frames without `s`/`i` are let through. Hyperliquid candle frames currently
+ * carry both fields, but accepting an unlabelled frame preserves liveness if a
+ * compatible SDK version omits them.
  */
 export const isCandleForChannel = (
   candle: { s?: string; i?: string },
@@ -49,49 +58,137 @@ export const isCandleForChannel = (
 };
 
 /**
- * Retire whatever already holds `channel` (or `subscriberUID`), then open the
- * replacement through `open` and register it. `open` runs after the teardown so
- * that a replacement on the same channel re-subscribes behind its own
- * unsubscribe frame instead of being cancelled by it.
+ * Multiplexes logical TradingView subscribers over physical SDK channels.
+ *
+ * Replacing the same UID on the same channel only replaces its consumer; it
+ * must not bounce the SDK channel, because a late teardown for the old series
+ * can otherwise silence the replacement. Moving a UID to a different channel
+ * releases its old physical channel when no other logical subscriber uses it.
  */
-export const openCandleSubscription = <T extends CandleSubscriptionEntry>(
-  subscriptions: Map<string, T>,
-  subscriberUID: string,
-  channel: CandleChannel,
-  open: () => T
-): T => {
-  subscriptions.forEach((entry, uid) => {
-    if (uid !== subscriberUID && !sharesCandleChannel(entry, channel)) return;
+export class CandleSubscriptionRegistry<
+  TCandle extends { s?: string; i?: string },
+  TEntry extends CandleSubscriptionEntry<TCandle> = CandleSubscriptionEntry<TCandle>
+> {
+  private readonly subscribers = new Map<string, TEntry>();
 
-    entry.unsubscribe();
-    subscriptions.delete(uid);
-  });
+  private readonly channels = new Map<
+    string,
+    PhysicalCandleSubscription<TCandle, TEntry>
+  >();
 
-  const entry = open();
-  subscriptions.set(subscriberUID, entry);
-  return entry;
-};
+  get subscriberCount() {
+    return this.subscribers.size;
+  }
 
-/**
- * Retire one subscriberUID. A UID already superseded by
- * {@link openCandleSubscription} is gone from the map, so this is a no-op for it
- * — which is the point: unsubscribing it again would close the channel its
- * replacement is still listening on.
- */
-export const closeCandleSubscription = <T extends CandleSubscriptionEntry>(
-  subscriptions: Map<string, T>,
-  subscriberUID: string
-): void => {
-  const entry = subscriptions.get(subscriberUID);
-  if (!entry) return;
+  get channelCount() {
+    return this.channels.size;
+  }
 
-  entry.unsubscribe();
-  subscriptions.delete(subscriberUID);
-};
+  subscribe(
+    subscriberUID: string,
+    entry: TEntry,
+    openChannel: (
+      onCandle: (candle: TCandle) => void
+    ) => { unsubscribe: () => void }
+  ): TEntry {
+    const current = this.subscribers.get(subscriberUID);
+    if (current && sharesCandleChannel(current, entry)) {
+      const currentPhysical = this.channels.get(getCandleChannelKey(current));
+      if (currentPhysical) {
+        currentPhysical.subscribers.set(subscriberUID, entry);
+        this.subscribers.set(subscriberUID, entry);
+        return entry;
+      }
+    }
 
-export const closeAllCandleSubscriptions = <T extends CandleSubscriptionEntry>(
-  subscriptions: Map<string, T>
-): void => {
-  subscriptions.forEach((entry) => entry.unsubscribe());
-  subscriptions.clear();
-};
+    const channelKey = getCandleChannelKey(entry);
+    let physical = this.channels.get(channelKey);
+    if (!physical) {
+      physical = {
+        symbol: entry.symbol,
+        subscribeInterval: entry.subscribeInterval,
+        subscribers: new Map(),
+        active: true,
+        unsubscribe: () => undefined,
+      };
+      this.channels.set(channelKey, physical);
+
+      try {
+        const subscription = openChannel((candle) => {
+          if (!physical?.active || !isCandleForChannel(candle, physical)) {
+            return;
+          }
+
+          // Snapshot entries so one consumer can unsubscribe itself without
+          // skipping peers. A full registry clear marks the physical channel
+          // inactive and stops the rest of this in-flight dispatch.
+          for (const [uid, subscriber] of Array.from(
+            physical.subscribers.entries()
+          )) {
+            if (!physical.active) break;
+            if (physical.subscribers.get(uid) !== subscriber) continue;
+            subscriber.onCandle(candle);
+          }
+        });
+        physical.unsubscribe = subscription.unsubscribe;
+      } catch (error) {
+        physical.active = false;
+        physical.subscribers.clear();
+        this.channels.delete(channelKey);
+        throw error;
+      }
+    }
+
+    // Opening the destination is transactional: only detach the current entry
+    // after the new physical channel exists. A synchronous open failure leaves
+    // the UID riding its original channel instead of losing both registrations.
+    if (current && !sharesCandleChannel(current, entry)) {
+      const currentChannelKey = getCandleChannelKey(current);
+      const currentPhysical = this.channels.get(currentChannelKey);
+      currentPhysical?.subscribers.delete(subscriberUID);
+      if (currentPhysical && currentPhysical.subscribers.size === 0) {
+        currentPhysical.active = false;
+        currentPhysical.subscribers.clear();
+        this.channels.delete(currentChannelKey);
+        currentPhysical.unsubscribe();
+      }
+    }
+
+    physical.subscribers.set(subscriberUID, entry);
+    this.subscribers.set(subscriberUID, entry);
+    return entry;
+  }
+
+  unsubscribe(subscriberUID: string): void {
+    const entry = this.subscribers.get(subscriberUID);
+    if (!entry) return;
+
+    this.subscribers.delete(subscriberUID);
+    const channelKey = getCandleChannelKey(entry);
+    const physical = this.channels.get(channelKey);
+    if (!physical) return;
+
+    physical.subscribers.delete(subscriberUID);
+    if (physical.subscribers.size > 0) return;
+
+    physical.active = false;
+    physical.subscribers.clear();
+    this.channels.delete(channelKey);
+    physical.unsubscribe();
+  }
+
+  forEachSubscriber(callback: (entry: TEntry, subscriberUID: string) => void) {
+    this.subscribers.forEach(callback);
+  }
+
+  clear(): void {
+    const physicalSubscriptions = Array.from(this.channels.values());
+    physicalSubscriptions.forEach((physical) => {
+      physical.active = false;
+      physical.subscribers.clear();
+    });
+    this.channels.clear();
+    this.subscribers.clear();
+    physicalSubscriptions.forEach((physical) => physical.unsubscribe());
+  }
+}

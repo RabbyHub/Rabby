@@ -97,7 +97,7 @@ export const loadTestnetPortfolioSnapshot = (
   wallet: WalletControllerType
 ) => {
   return pQueue.add(() => {
-    return wallet.testnetOpenapi.getComplexProtocolList(userAddr);
+    return wallet.openapi.getComplexProtocolList(userAddr);
   });
 };
 
@@ -105,16 +105,10 @@ export const batchLoadProjects = async (
   user_id: string,
   projectIds: string[],
   wallet: WalletControllerType,
-  isTestnet = false
+  _isTestnet = false
 ) => {
   const queues = projectIds.map((id) =>
-    pQueue.add(() => {
-      if (isTestnet) {
-        return wallet.testnetOpenapi.getProtocol({ addr: user_id, id });
-      } else {
-        return wallet.openapi.getProtocol({ addr: user_id, id });
-      }
-    })
+    pQueue.add(() => wallet.openapi.getProtocol({ addr: user_id, id }))
   );
   return await Promise.all(queues);
 };
@@ -124,17 +118,10 @@ export const batchLoadHistoryProjects = async (
   projectIds: string[],
   wallet: WalletControllerType,
   time_at?: number,
-  isTestnet = false
+  _isTestnet = false
 ) => {
   const queues = projectIds.map((id) => {
     return pQueue.add(() => {
-      if (isTestnet) {
-        return wallet.testnetOpenapi.getHistoryProtocol({
-          addr: user_id,
-          id,
-          timeAt: time_at,
-        });
-      }
       return wallet.openapi.getHistoryProtocol({
         addr: user_id,
         id,

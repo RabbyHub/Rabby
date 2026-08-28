@@ -993,6 +993,8 @@
       "insufficient-balance": "Недостатній баланс",
       "rabby-fee": "Rabby комісія",
       "minimum-received": "Мінімум отримано",
+      "preferMEV": "Захист від MEV",
+      "preferMEVTip": "Увімкніть «Захист від MEV» для обмінів у мережах Ethereum і BNB Chain, щоб знизити ризик сендвіч-атак. Примітка: ця функція не підтримується, якщо ви використовуєте власний RPC або адресу WalletConnect.",
       "there-is-no-fee-and-slippage-for-this-trade": "Для цієї угоди немає комісії та прослизання",
       "approve-tips": "1.Схвалити → 2.Обміняти",
       "best": "Найкращий",
@@ -1011,6 +1013,7 @@
       "edit": "Редагувати",
       "tradingSettingTips": "{{viewCount}} біржі пропонують котирування, а {{tradeCount}} дозволяють торгувати",
       "the-following-swap-rates-are-found": "Знайдено такі курси обмінів",
+      "quotes": "Котирування",
       "est-payment": "Est. Оплата:",
       "est-receiving": "Est. Отримання:",
       "est-difference": "Est. Різниця:",
@@ -1055,7 +1058,6 @@
       "Gas-fee-too-high": "Комісія за газ занадто висока",
       "approve-and-swap": "Затвердити та обміняти через {{name}}",
       "hidden-no-quote-rates_other": "{{count}} курсів недоступно",
-      "preferMEVTip": "Увімкніть функцію \"MEV Guarded\" для обмінів Ethereum, щоб знизити ризики атак типу \"бутерброд\". Примітка: ця функція не підтримується, якщо ви використовуєте користувацькі RPC або адресу підключення гаманця.",
       "no-fee-for-wrap": "Wrap без комісії Rabby",
       "no-quote-found": "Не знайдено котирування",
       "Auto": "Авто",
@@ -1069,7 +1071,6 @@
       "two-step-approve-details": "Токен USDT вимагає 2 транзакції для зміни дозволу. Спочатку потрібно скинути дозвол до нуля, а потім встановити нове значення дозволу.",
       "two-step-approve": "Підпишіть 2 транзакції, щоб змінити ліміт дозволу",
       "loss-tips": "Ви втрачаєте {{usd}}. Спробуйте меншу суму на маленькому ринку.",
-      "preferMEV": "Віддати перевагу MEV Guarded",
       "from": "Від",
       "understandRisks": "Я розумію ризики і хочу продовжити",
       "approve": "Схвалити",
@@ -1182,7 +1183,15 @@
         "missingDataTooltip": "Через поточні проблеми з мережею {{text}} баланс може не оновлюватись.",
         "chain": " мережа, ",
         "appChainTips": "Облікові записи Hyperliquid і Polymarket не включені",
-        "slotAppChainTips": "{{appChainNames}} Обліковий запис не включено"
+        "slotAppChainTips": "{{appChainNames}} Обліковий запис не включено",
+        "stablecoinSwapPopup": {
+          "title": "0% комісії за обмін",
+          "supportPrefix": "Підтримка",
+          "supportCount": "30+",
+          "supportSuffix": "стейблкоїнів у понад 40 мережах",
+          "goToSwap": "Перейти до свапу",
+          "close": "Закрити"
+        }
       },
       "recentConnection": {
         "disconnected": "Відключено",

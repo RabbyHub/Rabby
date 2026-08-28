@@ -990,6 +990,8 @@
       "insufficient-balance": "残高が不足しています",
       "rabby-fee": "Rabby 手数料",
       "minimum-received": "最低受取額",
+      "preferMEV": "MEV保護",
+      "preferMEVTip": "EthereumとBNB Chainのスワップで「MEV保護」を有効にし、サンドイッチ攻撃のリスクを軽減します。注：カスタムRPCまたはWalletConnectアドレスを使用する場合、この機能はサポートされません。",
       "there-is-no-fee-and-slippage-for-this-trade": "この取引には手数料とスリッページはありません",
       "approve-tips": "1. 承認 → 2. スワップ",
       "best": "ベスト",
@@ -1008,6 +1010,7 @@
       "edit": "編集",
       "tradingSettingTips": "{{viewCount}} つの取引所が見積もりを提供し、{{tradeCount}} つで取引が有効です",
       "the-following-swap-rates-are-found": "以下のスワップレートが見つかりました",
+      "quotes": "見積もり",
       "est-payment": "推定支払い:",
       "est-receiving": "推定受け取り:",
       "est-difference": "推定差額:",
@@ -1053,7 +1056,6 @@
       "approve-and-swap": "{{name}} で承認してスワップする",
       "no-slippage-for-wrap": "Wrap にスリッページはありません",
       "no-fee-for-wrap": "Wrap に Rabby 手数料はかかりません",
-      "preferMEV": "MEV保護を優先",
       "hidden-no-quote-rates_one": "{{count}} 件のレートは利用できません",
       "two-step-approve": "2 つのトランザクションに署名してアローワンスを変更してください。",
       "process-with-two-step-approve": "2段階承認を進める",
@@ -1067,7 +1069,6 @@
       "two-step-approve-details": "トークン USDT の許可変更には 2 つのトランザクションが必要です。まず、許可をゼロにリセットし、その後に新しい許可の値を設定する必要があります。",
       "No-available-quote": "利用できるレートはありません",
       "loss-tips": "{{usd}}の損失が発生します。流動性の低い市場では、金額を減らしてお試しください。",
-      "preferMEVTip": "イーサリアムのスワップに対して「MEV Guarded」機能を有効にして、サンドイッチ攻撃のリスクを軽減します。注: カスタムRPCまたはウォレット接続アドレスを使用する場合、この機能はサポートされていません。",
       "understandRisks": "リスクを理解しており、続けたいと思います。",
       "approve": "承認",
       "search-by-token-name-address": "トークン名 / アドレスを検索",
@@ -1179,7 +1180,15 @@
         "chain": " チェーン， ",
         "missingDataTooltip": "現在の{{text}}のネットワーク問題により、残高が更新されない場合があります。",
         "appChainTips": "HyperliquidとPolymarketのアカウントは含まれません",
-        "slotAppChainTips": "{{appChainNames}} アカウントは含まれていません"
+        "slotAppChainTips": "{{appChainNames}} アカウントは含まれていません",
+        "stablecoinSwapPopup": {
+          "title": "スワップ手数料 0%",
+          "supportPrefix": "対応：",
+          "supportCount": "30+",
+          "supportSuffix": "のステーブルコイン（40以上のチェーン）",
+          "goToSwap": "スワップに進む",
+          "close": "閉じる"
+        }
       },
       "recentConnection": {
         "disconnected": "切断済み",

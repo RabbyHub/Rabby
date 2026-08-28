@@ -95150,14 +95150,11 @@
   "src/background/service/openapi.ts": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/rabby-api/dist/index.js",
-      "node_modules/@rabby-wallet/rabby-api/dist/plugins/web-sign.js",
       "node_modules/process/browser.js",
       "node_modules/uuid/dist/esm-browser/v4.js",
-      "node_modules/zod/v4/classic/schemas.js",
-      "src/background/utils/fetchAdapter.ts",
       "src/background/utils/index.ts",
-      "src/constant/index.ts"
+      "src/constant/index.ts",
+      "src/services/openapi/index.ts"
     ]
   },
   "src/background/service/pageStateCache.ts": {
@@ -95192,17 +95189,11 @@
       "src/eventBus.ts"
     ]
   },
-  "src/background/utils/fetchAdapter.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/axios/index.js"
-    ]
-  },
   "src/background/utils/http.ts": {
     "enable": true,
     "require": [
       "node_modules/axios/index.js",
-      "src/background/utils/fetchAdapter.ts"
+      "src/services/openapi/fetchAdapter.ts"
     ]
   },
   "src/background/utils/index.ts": {
@@ -95273,6 +95264,14 @@
       "node_modules/events/events.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/constant/index.ts"
+    ]
+  },
+  "src/constant/dex-swap.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@debank/common/dist/index-rabby.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
+      "src/utils/chain.ts"
     ]
   },
   "src/constant/eip7702.ts": {
@@ -95424,12 +95423,12 @@
   "src/db/hooks/history.ts": {
     "enable": true,
     "require": [
+      "node_modules/ahooks/es/useInfiniteScroll/index.js",
       "node_modules/ahooks/es/useRequest/index.js",
       "node_modules/dexie-react-hooks/dist/dexie-react-hooks.mjs",
       "node_modules/dexie/import-wrapper-prod.mjs",
       "node_modules/lodash/lodash.js",
       "node_modules/react/index.js",
-      "src/background/service/openapi.ts",
       "src/constant/ui.ts",
       "src/db/index.ts",
       "src/db/services/syncDbService.ts",
@@ -95490,6 +95489,42 @@
       "node_modules/@trezor/connect-web/lib/index.js",
       "node_modules/hdkey/lib/hdkey.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js"
+    ]
+  },
+  "src/services/openapi/createOpenapiClient.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-api/dist/index.js",
+      "node_modules/@rabby-wallet/rabby-api/dist/plugins/web-sign.js",
+      "src/services/openapi/fetchAdapter.ts"
+    ]
+  },
+  "src/services/openapi/createOpenapiRuntime.ts": {
+    "enable": true,
+    "require": [
+      "src/services/openapi/createOpenapiClient.ts",
+      "src/services/openapi/types.ts"
+    ]
+  },
+  "src/services/openapi/fetchAdapter.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/axios/index.js"
+    ]
+  },
+  "src/services/openapi/index.ts": {
+    "enable": true,
+    "require": [
+      "src/services/openapi/createOpenapiClient.ts",
+      "src/services/openapi/createOpenapiRuntime.ts",
+      "src/services/openapi/types.ts"
+    ]
+  },
+  "src/services/openapi/types.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/zod/v4/classic/schemas.js",
+      "src/constant/index.ts"
     ]
   },
   "src/stats.ts": {
@@ -95674,6 +95709,12 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/assets/dashboard/arrow-right-cc.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/assets/dashboard/asset-empty.svg": {
     "enable": true,
     "require": [
@@ -95701,7 +95742,8 @@
   "src/ui/assets/dashboard/index.tsx": {
     "enable": true,
     "require": [
-      "node_modules/react/index.js"
+      "node_modules/react/index.js",
+      "src/ui/assets/dashboard/arrow-right-cc.svg"
     ]
   },
   "src/ui/assets/dashboard/panel/index.tsx": {
@@ -96186,6 +96228,12 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/assets/swap/gas-cc.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/assets/swap/history-cc.svg": {
     "enable": true,
     "require": [
@@ -96211,6 +96259,12 @@
     ]
   },
   "src/ui/assets/swap/quote-loading.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/swap/quote-refresh-cc.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -97471,6 +97525,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useClickAway.js",
       "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/loading-cc.svg",
       "src/ui/component/Checkbox/index.tsx",
@@ -98173,6 +98228,7 @@
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "node_modules/zustand/esm/react.mjs",
+      "src/constant/dex-swap.ts",
       "src/constant/gas-account.ts",
       "src/constant/index.ts",
       "src/constant/timeout.ts",
@@ -98281,7 +98337,6 @@
       "node_modules/@rematch/core/dist/core.esm.js",
       "src/constant/index.ts",
       "src/ui/utils/index.ts",
-      "src/ui/utils/openapi.ts",
       "src/utils/chain.ts"
     ]
   },
@@ -99957,10 +100012,11 @@
       "src/ui/assets/sign/tx/gas-active.svg",
       "src/ui/assets/sign/tx/gas-blur-cc.svg",
       "src/ui/assets/swap/arrow-down-cc.svg",
+      "src/ui/assets/swap/quote-refresh-cc.svg",
       "src/ui/assets/token-default.svg",
       "src/ui/component/ChainSelector/icons/loading-cc.svg",
       "src/ui/component/index.tsx",
-      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/component/Tooltip/TooltipV6.tsx",
       "src/ui/state/securityEngine.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/number.ts",
@@ -100251,6 +100307,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/assets/swap/gas-cc.svg",
       "src/ui/assets/swap/lock.svg",
       "src/ui/assets/swap/quote-loading.svg",
       "src/ui/component/index.tsx",
@@ -100274,6 +100331,7 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/lodash/lodash.js",
       "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react/index.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/index.ts",
@@ -100351,6 +100409,7 @@
       "src/ui/views/Bridge/Component/BridgeQuoteItem.tsx",
       "src/ui/views/Bridge/hooks/context.tsx",
       "src/ui/views/GasAccount/hooks/runtime.ts",
+      "src/ui/views/Swap/hooks/fee.ts",
       "src/utils/chain.ts"
     ]
   },
@@ -100388,6 +100447,7 @@
       "src/ui/assets/swap/arrow-right.svg",
       "src/ui/assets/swap/history-cc.svg",
       "src/ui/assets/swap/pending.svg",
+      "src/ui/assets/swap/quote-refresh-cc.svg",
       "src/ui/assets/swap/wallet-cc.svg",
       "src/ui/assets/token-default.svg",
       "src/ui/assets/warning-cc.svg",
@@ -100538,6 +100598,7 @@
     "enable": true,
     "require": [
       "node_modules/@ethereumjs/util/dist/esm/index.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/bignumber.js/bignumber.js",
       "node_modules/p-queue/dist/index.js",
       "node_modules/react-i18next/dist/es/index.js",
@@ -102908,6 +102969,12 @@
       "src/ui/hooks/contextState.tsx"
     ]
   },
+  "src/ui/views/Swap/hooks/fee.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js"
+    ]
+  },
   "src/ui/views/Swap/hooks/index.tsx": {
     "enable": true,
     "require": [
@@ -102922,6 +102989,7 @@
       "src/ui/utils/ga-event.ts",
       "src/ui/utils/index.ts",
       "src/ui/views/Swap/hooks/context.tsx",
+      "src/ui/views/Swap/hooks/fee.ts",
       "src/ui/views/Swap/hooks/quote.tsx",
       "src/ui/views/Swap/hooks/token.tsx",
       "src/ui/views/Swap/hooks/verify.tsx"
@@ -102955,6 +103023,7 @@
       "node_modules/react-use/esm/useAsyncFn.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react/index.js",
+      "src/constant/dex-swap.ts",
       "src/constant/index.ts",
       "src/eventBus.ts",
       "src/stats.ts",
@@ -102968,6 +103037,7 @@
       "src/ui/views/GasAccount/hooks/runtime.ts",
       "src/ui/views/Swap/Component/LowCreditModal.tsx",
       "src/ui/views/Swap/hooks/context.tsx",
+      "src/ui/views/Swap/hooks/fee.ts",
       "src/ui/views/Swap/hooks/quote.tsx",
       "src/utils/chain.ts",
       "src/utils/tempo.ts",
@@ -103017,10 +103087,12 @@
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/index.ts",
       "src/i18n.ts",
+      "src/ui/assets/dashboard/arrow-right-cc.svg",
       "src/ui/assets/dashboard/index.tsx",
       "src/ui/assets/index.ts",
       "src/ui/assets/swap/arrow-right.svg",
       "src/ui/assets/swap/empty.svg",
+      "src/ui/assets/swap/gas-cc.svg",
       "src/ui/assets/swap/history-cc.svg",
       "src/ui/assets/swap/lock.svg",
       "src/ui/assets/swap/pending.svg",
@@ -103233,6 +103305,8 @@
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/constant/index.ts",
       "src/eventBus.ts",
+      "src/services/openapi/index.ts",
+      "src/ui/utils/broadcastToUI.ts",
       "src/ui/utils/uiType.ts"
     ]
   },
