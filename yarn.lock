@@ -21683,7 +21683,7 @@ __metadata:
     url-loader: "npm:4.1.1"
     uuid: "npm:9.0.0"
     viem: "npm:2.47.6"
-    warden-for-js: "npm:3.0.1"
+    warden-for-js: "npm:3.0.2"
     web3-eth-abi: "npm:1.7.0"
     webextension-polyfill: "npm:0.7.0"
     webpack: "npm:5.76.0"
@@ -26609,15 +26609,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"warden-for-js@npm:3.0.1":
-  version: 3.0.1
-  resolution: "warden-for-js@npm:3.0.1"
+"warden-for-js@npm:3.0.2":
+  version: 3.0.2
+  resolution: "warden-for-js@npm:3.0.2"
   dependencies:
     "@babel/generator": "npm:^7.29.1"
     "@babel/parser": "npm:^7.29.0"
     "@babel/traverse": "npm:^7.29.0"
     webpack-sources: "npm:^3.3.4"
-  checksum: 10c0/cd16439fe6d9138b61b4d716811b78b2d65570d8b36154c4af839c5941f36b72c5fe93c588edcd650c591da8da6a00393879a8fac8ffe5cf345f9b999b8e478e
+  checksum: 10c0/5dee4ac75d15d987b9194cbc5df616d21d4d7ec391194e39e22b6787e449510db6955c6dc10c8d61cc4c88a04f50fc1365a3811c54fc3269ce570182fbc0febd
   languageName: node
   linkType: hard
 
