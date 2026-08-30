@@ -5,12 +5,7 @@ import { BACKGROUND_READY_MESSAGE } from '@/utils/message/constants';
 export type WalletRequest = {
   method: PropertyKey;
   params: unknown[];
-  type:
-    | 'controller'
-    | 'openapi'
-    | 'testnetOpenapi'
-    | 'fakeTestnetOpenapi'
-    | 'broadcast';
+  type: 'controller' | 'openapi' | 'fakeTestnetOpenapi' | 'broadcast';
 };
 
 type PendingRequest = {
@@ -34,6 +29,8 @@ type CreateWalletOptions = {
   name: string;
   onBroadcast: (data: { type: string; data: unknown }) => void;
 };
+
+export type WalletNamespace = 'openapi' | 'fakeTestnetOpenapi';
 
 const createNamespaceProxy = (
   request: (data: WalletRequest) => Promise<unknown>,
@@ -132,9 +129,8 @@ export const createWallet = ({
 
   const namespaces = {
     openapi: createNamespaceProxy(request, 'openapi'),
-    testnetOpenapi: createNamespaceProxy(request, 'testnetOpenapi'),
     fakeTestnetOpenapi: createNamespaceProxy(request, 'fakeTestnetOpenapi'),
-  };
+  } as Record<WalletNamespace, object>;
 
   const wallet = new Proxy(
     {},
@@ -156,6 +152,9 @@ export const createWallet = ({
     wallet,
     ready,
     request,
+    setNamespace(name: WalletNamespace, namespace: object) {
+      namespaces[name] = namespace;
+    },
     onReconnect(listener: () => void) {
       reconnectListeners.add(listener);
       return () => reconnectListeners.delete(listener);

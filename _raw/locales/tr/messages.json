@@ -990,6 +990,8 @@
       "insufficient-balance": "Yetersiz bakiye",
       "rabby-fee": "Rabby ücreti",
       "minimum-received": "Minimum alınacak",
+      "preferMEV": "MEV Koruması",
+      "preferMEVTip": "Sandviç saldırısı riskini azaltmak için Ethereum ve BNB Chain takaslarında \"MEV Koruması\" özelliğini etkinleştirin. Not: Özel bir RPC veya WalletConnect adresi kullanıyorsanız bu özellik desteklenmez.",
       "there-is-no-fee-and-slippage-for-this-trade": "Bu işlemde fiyat kayması yoktur",
       "approve-tips": "1.Onayla → 2.Takas",
       "best": "En iyi",
@@ -1008,6 +1010,7 @@
       "edit": "Düzenle",
       "tradingSettingTips": "{{viewCount}} borsa teklif sunuyor ve {{tradeCount}} ticareti etkinleştiriyor",
       "the-following-swap-rates-are-found": "Aşağıdaki takas oranları bulundu",
+      "quotes": "Teklifler",
       "est-payment": "Tahm. Ödeme:",
       "est-receiving": "Tahm. Alınan:",
       "est-difference": "Tahm. Fark:",
@@ -1057,7 +1060,6 @@
       "approve-swap": "Onayla ve Takas Yap",
       "sort-with-gas": "Gaz ile sırala",
       "usd-after-fees": "≈ {{usd}}",
-      "preferMEV": "MEV Korumalı Tercih Et",
       "no-fee-for-wrap": "Wrap için Rabby ücreti yok",
       "process-with-two-step-approve": "İki adımlı onayla devam et",
       "loss-tips": "{{usd}} kaybediyorsunuz. Küçük bir pazarda daha küçük bir miktar deneyin.",
@@ -1067,7 +1069,6 @@
       "hidden-no-quote-rates_one": "{{count}} oranı kullanılamıyor",
       "hidden-no-quote-rates_other": "{{count}} oranları kullanılamıyor",
       "two-step-approve-details": "USDT iznini değiştirmek için 2 işlem gerekir. Önce izni sıfırlamanız, ardından yeni izin değerini belirlemeniz gerekir.",
-      "preferMEVTip": "Ethereum takasları için \"MEV Guarded\" özelliğini etkinleştirerek sandwich saldırı risklerini azaltın. Not: Özel bir RPC veya cüzdan bağlanma adresi kullanıyorsanız bu özellik desteklenmez.",
       "understandRisks": "Riskleri anlıyorum ve devam etmek istiyorum.",
       "approve": "Onayla",
       "search-by-token-name-address": "Token Adı / Adresi Ara",
@@ -1179,7 +1180,15 @@
         "chainEnd": "zincir",
         "chain": "zincir,",
         "appChainTips": "Hyperliquid ve Polymarket hesapları dahil edilmedi",
-        "slotAppChainTips": "{{appChainNames}} Hesabı dahil edilmedi"
+        "slotAppChainTips": "{{appChainNames}} Hesabı dahil edilmedi",
+        "stablecoinSwapPopup": {
+          "title": "%0 Takas Ücreti",
+          "supportPrefix": "Desteklenen:",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoin (40'tan fazla zincirde)",
+          "goToSwap": "Takasa Git",
+          "close": "Kapat"
+        }
       },
       "recentConnection": {
         "disconnected": "Bağlantı kesildi",

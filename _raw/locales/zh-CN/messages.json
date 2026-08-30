@@ -160,7 +160,15 @@
         "chain": " 链、",
         "chainEnd": " 链",
         "appChainTips": "Hyperliquid 和 Polymarket 账户未包含",
-        "slotAppChainTips": "{{appChainNames}} 账户未包含"
+        "slotAppChainTips": "{{appChainNames}} 账户未包含",
+        "stablecoinSwapPopup": {
+          "title": "0% 兑换手续费",
+          "supportPrefix": "支持",
+          "supportCount": "30+",
+          "supportSuffix": "种稳定币，覆盖 40+ 条链",
+          "goToSwap": "去兑换",
+          "close": "关闭"
+        }
       },
       "recentConnection": {
         "disconnected": "已断开连接",
@@ -2008,14 +2016,14 @@
       "insufficient-balance": "余额不足",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "滑点过低，可能会因高波动性而导致交易失败",
       "minimum-received": "最少收到",
+      "preferMEV": "MEV 保护",
+      "preferMEVTip": "为 Ethereum 和 BNB Chain 兑换启用“MEV 保护”，以降低三明治攻击风险。注意：使用自定义 RPC 或 WalletConnect 地址时不支持此功能。",
       "need-to-approve-token-before-swap": "兑换前需要授权代币",
       "no-transaction-records": "无交易记录",
       "not-supported": "不支持",
       "pendingTip": "交易已提交。\n如果交易长时间处于待处理状态，可尝试在设置中清除待处理交易。",
       "price-expired-refresh-quote": "价格已过期，\n刷新报价",
       "rabby-fee": "Rabby 手续费",
-      "preferMEV": "优先使用 MEV 保护",
-      "preferMEVTip": "为 Ethereum 兑换启用“MEV Guarded”功能，以降低遭受三明治攻击的风险。注意：使用自定义 RPC 或 WalletConnect 地址时不支持此功能。",
       "rate": "汇率",
       "rates-from-cex": "来自 CEX 的汇率",
       "recommend-slippage": "为了防止被抢先交易，我们建议滑点为 <2>{{ slippage }}</2>%",
@@ -2031,6 +2039,7 @@
       "swap-via-x": "通过 {{name}} 兑换",
       "testnet-is-not-supported": "不支持自定义网络",
       "the-following-swap-rates-are-found": "发现以下兑换报价",
+      "quotes": "报价",
       "best-subtitle": "最佳报价由最低的预估总成本决定，其中包括汇率和 Gas 费用。",
       "sort-with-gas": "按含 Gas 费用的总成本排序",
       "there-is-no-fee-and-slippage-for-this-trade": "此交易没有滑点",

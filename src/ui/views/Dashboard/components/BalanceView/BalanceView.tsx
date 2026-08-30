@@ -160,8 +160,8 @@ export const BalanceView = ({
         latestCurveChartData ||
         formChartData(
           currentHomeBalanceCache?.originalCurveData || [],
-          balanceValue,
-          Date.now(),
+          undefined,
+          undefined,
           currency
         ),
       matteredChainBalances: latestMatteredChainBalances.length

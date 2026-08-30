@@ -85,7 +85,6 @@ import {
   BridgeHistory,
   getOpenapiStore,
   patchOpenapiStore,
-  testnetOpenapiService,
 } from '../service/openapi';
 import {
   ContextActionData,
@@ -470,7 +469,6 @@ function getDesktopPageType(path: string): DesktopPageType {
 
 export class WalletController extends BaseController {
   openapi = openapiService;
-  testnetOpenapi = testnetOpenapiService;
   fakeTestnetOpenapi = fakeTestnetOpenapi;
 
   /* wallet */
@@ -2439,66 +2437,30 @@ export class WalletController extends BaseController {
     }
   );
 
-  private getTestnetTotalBalanceCached = cached(
-    'getTestnetTotalBalanceCached',
-    async (address: string) => {
-      const testnetData = await testnetOpenapiService.getTotalBalance(address);
-      preferenceService.updateTestnetAddressBalance(address, testnetData);
-      return testnetData;
-    },
-    {
-      timeout: BALANCE_LOADING_CONFS.TIMEOUT,
-      maxSize: BALANCE_LOADING_CONFS.CACHE_LIMIT,
-    }
-  );
-
   /**
    * @description get balance about info by address,
    * it will use cache in memory, or re-fetch, update-cache
    * AND **persist the cache to preference store** if expired
    */
-  getInMemoryAddressBalance = async (
-    address: string,
-    force = false,
-    isTestnet = false
-  ) => {
+  getInMemoryAddressBalance = async (address: string, force = false) => {
     const addr = address?.toLowerCase() || '';
-
-    if (isTestnet) {
-      return this.getTestnetTotalBalanceCached.fn([addr], addr, force);
-    }
     return this.getTotalBalanceCached.fn([addr], addr, force);
   };
 
-  forceExpireInMemoryAddressBalance = (address: string, isTestnet = false) => {
-    if (isTestnet) {
-      // preferenceService.removeTestnetAddressBalance(address);
-      return this.getTestnetTotalBalanceCached.forceExpire(address);
-    }
-
+  forceExpireInMemoryAddressBalance = (address: string) => {
     // preferenceService.removeAddressBalance(address);
     return this.getTotalBalanceCached.forceExpire(address);
   };
 
-  isInMemoryAddressBalanceExpired = (address: string, isTestnet = false) => {
-    if (isTestnet) {
-      return this.getTestnetTotalBalanceCached.isExpired(address);
-    }
-
+  isInMemoryAddressBalanceExpired = (address: string) => {
     return this.getTotalBalanceCached.isExpired(address);
   };
 
   /**
    * @deprecatedgetPersistedBalanceAboutCacheMap
    */
-  getAddressCacheBalance = async (
-    address: string | undefined,
-    isTestnet = false
-  ) => {
+  getAddressCacheBalance = async (address: string | undefined) => {
     if (!address) return null;
-    if (isTestnet) {
-      return null;
-    }
 
     try {
       const balance = await balanceDbService.queryBalance(address);

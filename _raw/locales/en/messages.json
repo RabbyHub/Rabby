@@ -2619,8 +2619,8 @@
       "hidden-no-quote-rates_other": "{{count}} rates unavailable",
       "Gas-fee-too-high": "Gas fee too high",
       "rabby-fee": "Rabby fee",
-      "preferMEV": "Prefer MEV Guarded",
-      "preferMEVTip": "Enable \"MEV Guarded\" feature for Ethereum swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
+      "preferMEV": "MEV Protection",
+      "preferMEVTip": "Enable \"MEV Protection\" for Ethereum and BNB Chain swaps to reduce sandwich attack risks. Note: this feature is not supported if you use a custom RPC or wallet connect address",
       "minimum-received": "Minimum received",
       "there-is-no-fee-and-slippage-for-this-trade": "There is no slippage for this trade",
       "no-slippage-for-wrap": "No slippage for Wrap",
@@ -2641,6 +2641,7 @@
       "edit": "Edit",
       "tradingSettingTips": "{{viewCount}} exchanges offer quotes, and {{tradeCount}} enable trading",
       "the-following-swap-rates-are-found": "Found following rates",
+      "quotes": "Quotes",
       "best-subtitle": "The best quote is determined by the lowest estimated total cost, including the exchange rate and gas fees.",
       "sort-with-gas": "Sort with gas",
       "est-payment": "Est. Payment:",
@@ -2894,7 +2895,15 @@
         "chain": " chain, ",
         "chainEnd": " chain",
         "appChainTips": "Hyperliquid & Polymarket Account not included",
-        "slotAppChainTips": "{{appChainNames}} Account not included"
+        "slotAppChainTips": "{{appChainNames}} Account not included",
+        "stablecoinSwapPopup": {
+          "title": "0% Swap Fee For",
+          "supportPrefix": "Support",
+          "supportCount": "30+",
+          "supportSuffix": "Stablecoins on 40+ Chains",
+          "goToSwap": "Go to Swap",
+          "close": "Close"
+        }
       },
       "recentConnection": {
         "disconnected": "Disconnected",

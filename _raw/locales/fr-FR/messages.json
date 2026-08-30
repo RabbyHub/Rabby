@@ -927,12 +927,20 @@
         "chainEnd": " réseau",
         "missingDataTooltip": "Le solde peut ne pas être mis à jour en raison de problèmes de réseau actuels avec {{text}}.",
         "appChainTips": "Comptes Hyperliquid et Polymarket non inclus",
-        "slotAppChainTips": "{{appChainNames}} Compte non inclus"
+        "slotAppChainTips": "{{appChainNames}} Compte non inclus",
+        "stablecoinSwapPopup": {
+          "title": "0 % de frais de swap",
+          "supportPrefix": "Prend en charge",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoins sur plus de 40 réseaux",
+          "goToSwap": "Aller à l’échange",
+          "close": "Fermer"
+        }
       },
       "nft": {
         "collectionList": {
           "all_nfts": {
-          "label": "Tous les NFT"
+            "label": "Tous les NFT"
           },
           "collections": {
             "label": "Collections"
@@ -2434,6 +2442,8 @@
       "insufficient-balance": "Solde insuffisant",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Un faible slippage peut entraîner l'échec des transactions en raison d'une forte volatilité",
       "minimum-received": "Minimum reçu",
+      "preferMEV": "Protection MEV",
+      "preferMEVTip": "Activez la « protection MEV » pour les swaps sur Ethereum et BNB Chain afin de réduire le risque d’attaque sandwich. Remarque : cette fonctionnalité n’est pas prise en charge avec un RPC personnalisé ou une adresse WalletConnect.",
       "need-to-approve-token-before-swap": "Vous devez approuver le token avant l'échange",
       "no-transaction-records": "Aucun enregistrement de transaction",
       "not-supported": "Non pris en charge",
@@ -2455,6 +2465,7 @@
       "swap-via-x": "Échange via {{name}}",
       "testnet-is-not-supported": "Le réseau personnalisé n'est pas pris en charge",
       "the-following-swap-rates-are-found": "Les taux de swap suivants ont été trouvés",
+      "quotes": "Cotations",
       "there-is-no-fee-and-slippage-for-this-trade": "Ce swap ne présente aucun slippage",
       "this-exchange-is-not-enabled-to-trade-by-you": "Vous n'avez pas activé cet exchange pour le trading.",
       "this-token-pair-is-not-supported": "La paire de tokens n'est pas prise en charge",
@@ -2469,8 +2480,6 @@
       "unlimited-allowance": "Autorisation illimitée",
       "view-quotes": "Voir les cotations",
       "wrap-contract": "Smart contract de wrap",
-      "preferMEV": "Préférer MEV Guarded",
-      "preferMEVTip": "Activez la fonctionnalité « MEV Guarded » pour les swaps sur Ethereum afin de réduire le risque d'attaque sandwich. Remarque : cette fonctionnalité n'est pas prise en charge avec un RPC personnalisé ou une adresse WalletConnect.",
       "sort-with-gas": "Trier avec les frais de gas",
       "rabbyFee": {
         "wallet": "Portefeuille",

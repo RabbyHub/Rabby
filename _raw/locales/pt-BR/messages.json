@@ -990,6 +990,8 @@
       "insufficient-balance": "Saldo insuficiente",
       "rabby-fee": "Taxa Rabby",
       "minimum-received": "Mínimo Recebido",
+      "preferMEV": "Proteção MEV",
+      "preferMEVTip": "Ative a \"Proteção MEV\" para swaps na Ethereum e na BNB Chain a fim de reduzir o risco de ataques sandwich. Nota: este recurso não é compatível se você usar um RPC personalizado ou um endereço WalletConnect.",
       "there-is-no-fee-and-slippage-for-this-trade": "Não há slippage nesta troca",
       "approve-tips": "1. Aprovar → 2. Trocar",
       "best": "Melhor",
@@ -1008,6 +1010,7 @@
       "edit": "Editar",
       "tradingSettingTips": "{{viewCount}} exchanges oferecem cotações, e {{tradeCount}} habilitam negociação",
       "the-following-swap-rates-are-found": "As seguintes taxas de troca foram encontradas",
+      "quotes": "Cotações",
       "est-payment": "Pagamento Estimado:",
       "est-receiving": "Recebimento Estimado:",
       "est-difference": "Diferença Estimada:",
@@ -1048,7 +1051,6 @@
       "No-available-quote": "Sem cotação disponível",
       "fetch-best-quote": "Buscando a melhor cotação",
       "from": "De",
-      "preferMEV": "Preferir MEV Guardado",
       "no-slippage-for-wrap": "Sem slippage para Wrap",
       "source": "Fonte",
       "Auto": "Auto",
@@ -1062,7 +1064,6 @@
       "no-fees-for-wrap": "Sem taxa Rabby para Wrap",
       "sort-with-gas": "Ordenar com gas",
       "process-with-two-step-approve": "Prossiga com a aprovação em duas etapas",
-      "preferMEVTip": "Ative o recurso \"MEV Guarded\" para trocas de Ethereum a fim de reduzir os riscos de ataques sandwich. Nota: este recurso não é compatível se você usar um RPC personalizado ou endereço de conexão de carteira",
       "price-impact": "Impacto no Preço",
       "approve-and-swap": "Aprovar e Trocar via {{name}}",
       "two-step-approve-details": "O token USDT requer 2 transações para alterar a permissão. Primeiro, você precisará redefinir a permissão para zero e, somente então, definir um novo valor de permissão.",
@@ -1179,7 +1180,15 @@
         "chain": "cadeia,",
         "missingDataTooltip": "O saldo pode não estar atualizado devido a problemas atuais na rede com {{text}}.",
         "appChainTips": "Contas Hyperliquid e Polymarket não incluídas",
-        "slotAppChainTips": "{{appChainNames}} Conta não incluída"
+        "slotAppChainTips": "{{appChainNames}} Conta não incluída",
+        "stablecoinSwapPopup": {
+          "title": "0% de taxa de swap",
+          "supportPrefix": "Suporte a",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoins em mais de 40 redes",
+          "goToSwap": "Ir para a Troca",
+          "close": "Fechar"
+        }
       },
       "recentConnection": {
         "disconnected": "Desconectado",

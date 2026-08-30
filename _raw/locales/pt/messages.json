@@ -1005,7 +1005,10 @@
       "sort-with-gas": "Classificar com gas",
       "wrap-contract": "Contrato de encapsulamento",
       "the-following-swap-rates-are-found": "Encontradas as seguintes taxas",
+      "quotes": "Cotações",
       "minimum-received": "Valor mínimo recebido",
+      "preferMEV": "Proteção MEV",
+      "preferMEVTip": "Ative a \"Proteção MEV\" para swaps na Ethereum e na BNB Chain a fim de reduzir o risco de ataques sandwich. Nota: esta funcionalidade não é suportada se utilizar um RPC personalizado ou um endereço WalletConnect.",
       "rates-from-cex": "Taxas de CEX",
       "est-payment": "Est. Pagamento:",
       "no-fee-for-wrap": "Sem taxa do Rabby para Wrap",
@@ -1019,7 +1022,6 @@
       "enable-it": "Ativar isso",
       "need-to-approve-token-before-swap": "Precisa aprovar o token antes da troca",
       "tradingSettingTips": "{{viewCount}} plataformas fornecem cotações e {{tradeCount}} permitem negociar",
-      "preferMEV": "Preferir MEV Guarded",
       "approve-tips": "1.Aprovar → 2.Trocar",
       "security-verification-failed": "Verificação de segurança falhou",
       "Gas-fee-too-high": "Taxa de gas muito alta",
@@ -1031,7 +1033,6 @@
       "no-slippage-for-wrap": "Sem deslizamento para Wrap",
       "this-exchange-is-not-enabled-to-trade-by-you": "Esta plataforma de negociação não está ativada.",
       "QuoteLessWarning": "O valor recebido é estimado a partir da simulação de transação do Rabby. A oferta fornecida pelo dex é {{receive}}. Receberá {{diff}} a menos do que a oferta esperada.",
-      "preferMEVTip": "Ative o recurso \"MEV Guarded\" para trocas Ethereum para reduzir os riscos de ataque de sanduíche. Nota: este recurso não é suportado se usar um RPC personalizado ou um endereço de ligação de carteira.",
       "fetch-best-quote": "A procurar a melhor cotação",
       "view-quotes": "Ver cotações",
       "est-receiving": "Receção estimada:",
@@ -1272,7 +1273,15 @@
         "missingDataTooltip": "O saldo pode não ser atualizado devido a problemas de rede atuais com {{text}}.",
         "importType": "Importado por {{type}}",
         "appChainTips": "Contas Hyperliquid e Polymarket não incluídas",
-        "slotAppChainTips": "Conta {{appChainNames}} não incluída"
+        "slotAppChainTips": "Conta {{appChainNames}} não incluída",
+        "stablecoinSwapPopup": {
+          "title": "0% de taxa de swap",
+          "supportPrefix": "Suporte para",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoins em mais de 40 redes",
+          "goToSwap": "Ir para a troca",
+          "close": "Fechar"
+        }
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

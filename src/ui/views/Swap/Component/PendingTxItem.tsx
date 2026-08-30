@@ -106,11 +106,19 @@ export const PendingTxItem = forwardRef<
     bridgeHistoryList?: BridgeHistory[];
     openBridgeHistory?: () => void;
     onFulfilled?: () => void;
+    onStatusChange?: (status: PendingTxData['status'] | null) => void;
     getContainer?: DrawerProps['getContainer'];
   }
 >(
   (
-    { type, bridgeHistoryList, openBridgeHistory, onFulfilled, getContainer },
+    {
+      type,
+      bridgeHistoryList,
+      openBridgeHistory,
+      onFulfilled,
+      onStatusChange,
+      getContainer,
+    },
     ref
   ) => {
     const { t } = useTranslation();
@@ -122,6 +130,11 @@ export const PendingTxItem = forwardRef<
       userAddress: state.account.currentAccount?.address || '',
     }));
     const preFulfilledRef = useRef<boolean>(true);
+
+    useEffect(() => {
+      onStatusChange?.(data?.status || null);
+      return () => onStatusChange?.(null);
+    }, [data?.status, onStatusChange]);
 
     const fetchHistory = useCallback(async () => {
       if (!userAddress) return;

@@ -1004,13 +1004,14 @@
       "hidden-no-quote-rates_one": "{{count}} tarif tidak tersedia",
       "security-verification-failed": "Verifikasi keamanan gagal",
       "approve-tips": "1. Setujui → 2. Tukar",
-      "preferMEV": "Suka MEV Guarded",
       "unlimited-allowance": "Izin tak terbatas",
       "there-is-no-fee-and-slippage-for-this-trade": "Tidak ada slippage untuk perdagangan ini.",
       "get-quotes": "Dapatkan penawaran harga",
       "from": "Dari",
       "search-by-name-address": "Cari berdasarkan Nama / Alamat",
       "minimum-received": "Jumlah minimum diterima",
+      "preferMEV": "Perlindungan MEV",
+      "preferMEVTip": "Aktifkan \"Perlindungan MEV\" untuk swap di Ethereum dan BNB Chain guna mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat WalletConnect.",
       "fail-to-simulate-transaction": "Gagal mensimulasikan transaksi",
       "to": "Untuk",
       "this-exchange-is-not-enabled-to-trade-by-you": "Anda tidak dapat berdagang melalui bursa ini.",
@@ -1026,6 +1027,7 @@
       "est-difference": "Est. Perbedaan:",
       "rates-from-cex": "Tarif dari CEX",
       "the-following-swap-rates-are-found": "Ditemukan tarif berikut",
+      "quotes": "Penawaran harga",
       "view-quotes": "Lihat penawaran harga",
       "wrap-contract": "Kontrak pembungkus",
       "confirm": "Konfirmasi",
@@ -1035,7 +1037,6 @@
       "enable-trading": "Aktifkan Perdagangan",
       "trade": "Perdagangan",
       "low-slippage-may-cause-failed-transactions-due-to-high-volatility": "Slippage rendah dapat menyebabkan transaksi gagal akibat volatilitas tinggi",
-      "preferMEVTip": "Aktifkan fitur \"MEV Guarded\" untuk swap Ethereum guna mengurangi risiko serangan sandwich. Catatan: fitur ini tidak didukung jika Anda menggunakan RPC kustom atau alamat WalletConnect.",
       "est-payment": "Est. Pembayaran:",
       "selected-offer-differs-greatly-from-current-rate-may-cause-big-losses": "Penawaran yang dipilih sangat berbeda dari tarif saat ini, dapat menyebabkan kerugian besar",
       "tradingSettingTip2": "2. Rabby tidak bertanggung jawab atas risiko yang timbul dari kontrak pertukaran",
@@ -1272,7 +1273,15 @@
         "missingDataTooltip": "Saldo mungkin tidak diperbarui karena masalah jaringan saat ini dengan {{text}}.",
         "rejectAll": "Tolak Semua",
         "appChainTips": "Akun Hyperliquid tidak termasuk",
-        "slotAppChainTips": "{{appChainNames}} Akun tidak termasuk"
+        "slotAppChainTips": "{{appChainNames}} Akun tidak termasuk",
+        "stablecoinSwapPopup": {
+          "title": "Biaya Swap 0%",
+          "supportPrefix": "Mendukung",
+          "supportCount": "30+",
+          "supportSuffix": "stablecoin di 40+ jaringan",
+          "goToSwap": "Pergi ke Swap",
+          "close": "Tutup"
+        }
       },
       "recentConnection": {
         "disconnectRecentlyUsed": {

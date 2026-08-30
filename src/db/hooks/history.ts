@@ -1,17 +1,15 @@
-import openapiService, { TxHistoryItem } from '@/background/service/openapi';
-import { Account } from '@/background/service/preference';
+import type { Account } from '@/background/service/preference';
 import { UI_TYPE } from '@/constant/ui';
+import { useWallet } from '@/ui/utils';
 import { isSupportDBAccount } from '@/utils/account';
 import { findChain } from '@/utils/chain';
 import { transformToHistory } from '@/utils/history';
-import { useWallet } from '@/ui/utils';
 import { useInfiniteScroll, useRequest } from 'ahooks';
-import Dexie from 'dexie';
-import { last, sortBy, has } from 'lodash';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { last, sortBy } from 'lodash';
+import { useMemo } from 'react';
 import { db } from '..';
 import { historyDbService } from '../services/historyDbService';
-import { useEffect, useMemo } from 'react';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { TxHistoryItemRow } from '../schema/history';
 
 export type TxHistoryItemWithGasDeposit = TxHistoryItemRow & {
@@ -19,33 +17,27 @@ export type TxHistoryItemWithGasDeposit = TxHistoryItemRow & {
 };
 
 export const useSyncDbHistory = (options: { account?: Account | null }) => {
-  // return useQuery({
-  //   queryKey: ['syncHistory', options.address],
-  //   queryFn: async () => {
-  //     const { address } = options;
-  //     await historyDbService.sync({ address });
-  //   },
-  //   refetchOnWindowFocus: false,
-  //   refetchOnReconnect: false,
-  //   staleTime: 1 * 60 * 1000, // 1 minute
-  //   cacheTime: 5 * 60 * 1000, // 5 minutes
-  // });
+  const wallet = useWallet();
+  const isSupportAccount = isSupportDBAccount(options.account);
 
   return useRequest(
     async () => {
       const { account } = options;
       if (
         !account?.address ||
-        !isSupportDBAccount(account) ||
+        !isSupportAccount ||
         !(UI_TYPE.isDesktop || UI_TYPE.isPop)
       ) {
         return;
       }
-      return historyDbService.sync({ address: account.address });
+      return historyDbService.sync({
+        openapi: wallet.openapi,
+        address: account.address,
+      });
     },
     {
-      refreshDeps: [options.account?.address],
-      cacheKey: `syncHistory-${options.account?.address}`,
+      refreshDeps: [options.account?.address, isSupportAccount],
+      cacheKey: `syncHistory-${options.account?.address}-${isSupportAccount}`,
       staleTime: 10 * 1000,
     }
   );
@@ -89,27 +81,62 @@ export const useQueryDbHistory = (options: {
       .sortBy('time_at');
   }, [isSupportAccount, account?.address, isFilterScam, serverChainId]);
 
-  const { data, loading } = useRequest(
-    async (d) => {
-      const startTime = d?.last || 0;
+  const apiQueryKey = [
+    account?.address?.toLowerCase() || '',
+    serverChainId || '',
+  ].join(':');
+
+  const {
+    data: apiHistory,
+    loading: isLoadingApiHistory,
+    loadingMore,
+    loadMore,
+    noMore,
+  } = useInfiniteScroll(
+    async (currentData) => {
       const address = account?.address;
       if (!address || isSupportAccount) {
-        return [];
+        return {
+          queryKey: apiQueryKey,
+          last: undefined,
+          list: [],
+          pageSize: 0,
+        };
       }
 
-      const res = await openapiService.getAllTxHistory({
+      const startTime =
+        currentData?.queryKey === apiQueryKey ? currentData.last || 0 : 0;
+      const res = await wallet.openapi.listTxHisotry({
         id: address,
+        start_time: startTime,
+        page_count: PAGE_COUNT,
+        chain_id: serverChainId,
       });
+      const list = sortBy(
+        transformToHistory({ data: res, address }),
+        (item) => -item.time_at
+      );
 
-      return transformToHistory({ data: res || [], address });
+      return {
+        queryKey: apiQueryKey,
+        last: last(list)?.time_at,
+        list,
+        pageSize: res.history_list.length,
+      };
     },
     {
-      refreshDeps: [account?.address, account?.type, isSupportAccount],
+      manual: !account?.address || isSupportAccount,
+      reloadDeps: [apiQueryKey, account?.type, isSupportAccount],
+      isNoMore: (data) => {
+        return !data?.last || data.pageSize < PAGE_COUNT;
+      },
     }
   );
 
   const list = useMemo(() => {
-    return (data || []).filter((item) => {
+    const data =
+      apiHistory?.queryKey === apiQueryKey ? apiHistory.list || [] : [];
+    return data.filter((item) => {
       let flag = true;
       if (isFilterScam) {
         flag = !item.is_scam && !item.is_small_tx;
@@ -119,7 +146,7 @@ export const useQueryDbHistory = (options: {
       }
       return flag;
     });
-  }, [data, isFilterScam, serverChainId]);
+  }, [apiHistory, apiQueryKey, isFilterScam, serverChainId]);
 
   const result = useMemo(() => {
     if (isSupportAccount) {
@@ -176,6 +203,11 @@ export const useQueryDbHistory = (options: {
 
   return {
     data: enrichedResult,
-    loading: !isSupportAccount ? loading : isSyncing || dbHistory === undefined,
+    loading: !isSupportAccount
+      ? isLoadingApiHistory
+      : isSyncing || dbHistory === undefined,
+    loadingMore: !isSupportAccount && loadingMore,
+    loadMore,
+    noMore: isSupportAccount || noMore,
   };
 };

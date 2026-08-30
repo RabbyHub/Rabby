@@ -390,7 +390,7 @@ export const BridgeToken = ({
   ]);
 
   return (
-    <div className={clsx('h-[156px] bg-r-neutral-card1 rounded-[8px]')}>
+    <div className={clsx('h-[148px] bg-r-neutral-card1 rounded-[8px]')}>
       <div
         className={clsx(
           'flex items-center gap-8',
@@ -416,7 +416,7 @@ export const BridgeToken = ({
         />
       </div>
 
-      <div className={clsx('p-16 pb-[18px]')}>
+      <div className={clsx('p-16')}>
         <div className={clsx('flex justify-between items-center')}>
           {valueLoading && skeletonLoading ? (
             <SkeletonInput
@@ -488,7 +488,7 @@ export const BridgeToken = ({
         <div
           className={clsx(
             'flex justify-between items-center',
-            'mt-14 text-13 text-r-neutral-foot font-normal'
+            'mt-12 text-13 text-r-neutral-foot font-normal'
           )}
         >
           <div className="flex items-center gap-2">
