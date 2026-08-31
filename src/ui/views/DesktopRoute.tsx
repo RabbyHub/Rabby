@@ -16,7 +16,7 @@ import { useRabbyDispatch } from '../store';
 import { useEventBusListener } from '../hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { useMemoizedFn } from 'ahooks';
-import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
+import { useContactBookStore } from '@/ui/state/contactBook';
 import { DesktopSmallSwap } from './DesktopSmallSwap';
 import { DesktopManageApprovals } from './DesktopManageApprovals';
 
@@ -56,9 +56,7 @@ const Main = () => {
   });
 
   useEffect(() => {
-    return onBackgroundStoreChanged('contactBook', (payload) => {
-      fetchAllAccounts();
-    });
+    return useContactBookStore.subscribe(fetchAllAccounts);
   }, [fetchAllAccounts]);
 
   return (

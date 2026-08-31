@@ -14,7 +14,7 @@ import {
 } from '../../Perps/utils';
 import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
-import { DEFAULT_TPSL_CONFIG } from '@/ui/models/perps';
+import { DEFAULT_TPSL_CONFIG } from '@/ui/state/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { usePerpsAccount } from '../../Perps/hooks/usePerpsAccount';
 import { calcAmountFromPercentage } from '../components/TradingPanel/utils';

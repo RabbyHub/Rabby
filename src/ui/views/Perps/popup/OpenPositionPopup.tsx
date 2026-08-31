@@ -24,7 +24,7 @@ import { EditLimitPriceTag } from '../components/EditLimitPriceTag';
 import { MarketSlippage } from '../components/MarketSlippage';
 import { useMarketSlippage } from '../hooks/useMarketSlippage';
 import { isMarketableLimit } from '../limitOrderUtils';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { MarginInput } from '../components/MarginInput';
 import { LeverageInput } from '../components/LeverageInput';

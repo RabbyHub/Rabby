@@ -1,32 +1,12 @@
-import { RabbyRootState, RabbyDispatch } from '@/ui/models';
 import { changeLanguage } from '@/i18n';
 import { onBackgroundStoreChanged } from '../utils/broadcastToUI';
+import { preferenceActions } from '@/ui/state/preference';
 
-export default (store: typeof import('@/ui/store').default) => {
-  const dispatch = store.dispatch as RabbyDispatch;
-
-  onBackgroundStoreChanged('contactBook', (payload) => {
-    const state = store.getState() as RabbyRootState;
-    const currentAccount = state.account.currentAccount;
-    const currentAddr = currentAccount?.address;
-
-    if (currentAddr && payload.partials[currentAddr]) {
-      const aliasName = payload.partials[currentAddr]!.name;
-      currentAccount.alianName = aliasName;
-      dispatch.account.setField({
-        alianName: aliasName,
-        currentAccount: { ...currentAccount },
-      });
-    }
-  });
-
+export const initializeUIStore = () => {
   onBackgroundStoreChanged('preference', (payload) => {
-    // const state = store.getState() as RabbyRootState;
-    // const preference = state.preference;
-
     switch (payload.changedKey) {
       case 'themeMode': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           themeMode: payload.partials.themeMode,
         });
         break;
@@ -35,57 +15,51 @@ export default (store: typeof import('@/ui/store').default) => {
         const locale = payload.partials.locale;
         if (locale) {
           changeLanguage(locale);
-          dispatch.preference.setField({ locale });
+          preferenceActions.setField({ locale });
         }
         break;
       }
-      // case 'curvePointsMap': {
-      //   dispatch.account.setField({
-      //     curvePointsMap: payload.partials.curvePointsMap,
-      //   })
-      //   break;
-      // }
       case 'rateGuideLastExposure': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           rateGuideLastExposure: payload.partials.rateGuideLastExposure,
         });
         break;
       }
       case 'isEnabledPwdForNonWhitelistedTx': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           isEnabledPwdForNonWhitelistedTx:
             payload.partials.isEnabledPwdForNonWhitelistedTx,
         });
         break;
       }
       case 'biometricUnlockEnabled': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           biometricUnlockEnabled: payload.partials.biometricUnlockEnabled,
         });
         break;
       }
       case 'biometricUnlockCredentialId': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           biometricUnlockCredentialId:
             payload.partials.biometricUnlockCredentialId,
         });
         break;
       }
       case 'biometricUnlockEncryptedPassword': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           biometricUnlockEncryptedPassword:
             payload.partials.biometricUnlockEncryptedPassword,
         });
         break;
       }
       case 'biometricUnlockIv': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           biometricUnlockIv: payload.partials.biometricUnlockIv,
         });
         break;
       }
       case 'unlockPreferredMethod': {
-        dispatch.preference.setField({
+        preferenceActions.setField({
           unlockPreferredMethod: payload.partials.unlockPreferredMethod,
         });
         break;

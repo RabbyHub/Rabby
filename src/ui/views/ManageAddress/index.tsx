@@ -2,7 +2,7 @@ import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { PageHeader } from '@/ui/component';
 import { useRabbyDispatch } from '@/ui/store';
 import React, { useCallback, useState } from 'react';
-import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { ReactComponent as IconPlus } from '@/ui/assets/address/plus.svg';
 import { ReactComponent as RcIconShowSeedPhrase } from '@/ui/assets/address/show-seed-phrase.svg';
 import { ReactComponent as RcIconDelete } from '@/ui/assets/address/delete-current-color.svg';

@@ -6,7 +6,7 @@ import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from 'consts';
 import { isSameAddress } from '@/ui/utils';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 
 interface ChainSelectorModalProps {
   onChange(val: Account): void;

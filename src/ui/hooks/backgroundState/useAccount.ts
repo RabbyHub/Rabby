@@ -9,20 +9,28 @@ import {
 } from '@/utils/broadcastToUI';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { onBroadcastToUI } from '@/ui/utils/broadcastToUI';
-import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
-import { useMemoizedFn, useRequest } from 'ahooks';
+import { isSameAddress } from '@/ui/utils';
+import { useMemoizedFn } from 'ahooks';
 import { Account } from '@/background/service/preference';
 import { AccountScene } from '@/constant/scene-account';
+import { useContactAlias } from '@/ui/state/contactBook';
+
+const useAccountWithAlias = (account: Account | null | undefined) => {
+  const alias = useContactAlias(account?.address);
+
+  return useMemo(() => (account ? { ...account, alianName: alias } : null), [
+    account,
+    alias,
+  ]);
+};
 
 export function useCurrentAccount(options?: {
-  onChanged?: (ctx: {
-    reason: 'aliasName' | 'currentAccount';
-    address: string;
-  }) => void;
+  onChanged?: (ctx: { reason: 'currentAccount'; address: string }) => void;
 }) {
-  const dispatch = useRabbyDispatch();
-
-  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+  const storedCurrentAccount = useRabbySelector(
+    (s) => s.account.currentAccount
+  );
+  const currentAccount = useAccountWithAlias(storedCurrentAccount);
 
   const { onChanged } = options || {};
 
@@ -33,31 +41,17 @@ export function useCurrentAccount(options?: {
       onChanged?.({ reason: 'currentAccount', address: payload?.address });
     };
 
-    const onAliasNameChanged = (
-      payload: BROADCAST_TO_UI_EVENTS_PAYLOAD['accountAliasNameChanged']
-    ) => {
-      if (!currentAccount) return;
-      onChanged?.({ reason: 'aliasName', address: payload?.address });
-      if (payload.address === currentAccount.address) {
-        dispatch.account.fetchCurrentAccountAliasNameAsync();
-      }
-    };
-
     const disposes = [
       onBroadcastToUI(
         BROADCAST_TO_UI_EVENTS.accountsChanged,
         onAccountsChanged
-      ),
-      onBroadcastToUI(
-        BROADCAST_TO_UI_EVENTS.accountAliasNameChanged,
-        onAliasNameChanged
       ),
     ];
 
     return () => {
       runBroadcastDispose(disposes);
     };
-  }, [currentAccount, onChanged, dispatch.account]);
+  }, [onChanged]);
 
   return currentAccount;
 }
@@ -66,11 +60,12 @@ export function useSceneAccount(options?: { scene: AccountScene }) {
   const dispatch = useRabbyDispatch();
   const { scene } = options || {};
 
-  const currentAccount = useRabbySelector((s) => {
+  const storedCurrentAccount = useRabbySelector((s) => {
     return scene
       ? s.account.sceneAccountMap?.[scene] || s.account.currentAccount
       : s.account.currentAccount;
   });
+  const currentAccount = useAccountWithAlias(storedCurrentAccount);
 
   const switchCurrentAccount = useMemoizedFn((account: Account) => {
     if (!scene) {
@@ -142,34 +137,17 @@ export function useReloadPageOnCurrentAccountChanged() {
 
 export function useSceneAccountInfo() {
   const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
-
-  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
-  const { data: alias } = useRequest(
-    async () => {
-      if (!currentAccount?.address) {
-        return '';
-      }
-      return wallet.getAlianName(currentAccount?.address);
-    },
-    {
-      refreshDeps: [currentAccount?.address],
-    }
+  const storedCurrentAccount = useRabbySelector(
+    (s) => s.account.currentAccount
   );
+  const currentAccount = useAccountWithAlias(storedCurrentAccount);
 
   const switchCurrentAccount = useMemoizedFn((account: Account) => {
     return dispatch.account.changeAccountAsync(account);
   });
 
   return {
-    currentAccount: useMemo(() => {
-      return currentAccount
-        ? {
-            ...currentAccount,
-            alianName: alias,
-          }
-        : null;
-    }, [currentAccount, alias]),
+    currentAccount,
     switchCurrentAccount,
   };
 }

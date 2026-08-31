@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import { formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
-import { AccountHistoryItem } from '@/ui/models/perps';
+import { AccountHistoryItem } from '@/ui/state/perps';
 
 interface HistoryTransferDetailPopupProps extends Omit<PopupProps, 'onCancel'> {
   item: AccountHistoryItem | null;

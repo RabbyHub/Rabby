@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import Views from './views';
 import { getUiType } from 'ui/utils';
@@ -9,13 +8,11 @@ import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
 import browser from 'webextension-polyfill';
 
-import store from './store';
 import { initializeSwapStore } from './state/swap';
 import { initializeExchangeStore } from './state/exchange';
-import {
-  initializeWalletStatusStore,
-  useWalletStatusStore,
-} from './state/walletStatus';
+import { initializeWalletStatusStore } from './state/walletStatus';
+import { initializeChainsStore, useChainsStore } from './state/chains';
+import { initializeBizStores } from './state/initializeBizStores';
 
 import { isManifestV3 } from '@/utils/env';
 import { updateChainStore } from '@/utils/chain';
@@ -46,26 +43,10 @@ function initAppMeta() {
 
 initAppMeta();
 
-store.dispatch.app.initWallet({ wallet });
-
 eventBus.addEventListener('syncChainList', (params) => {
-  store.dispatch.chains.setField(params);
+  useChainsStore.getState().setField(params);
   updateChainStore(params);
 });
-
-const compensateUnlockedOnceFlag = () => {
-  try {
-    if (store.getState().app.hasUnlockedOnce) return;
-    const isUnlocked = useWalletStatusStore.getState().isUnlocked;
-    if (isUnlocked) {
-      store.dispatch.app.setField({
-        hasUnlockedOnce: true,
-      });
-    }
-  } catch (e) {
-    console.log('[compensateUnlockedOnceFlag] failed', e);
-  }
-};
 
 const rootContainer = document.getElementById('root');
 const root = rootContainer ? createRoot(rootContainer) : null;
@@ -109,11 +90,10 @@ const main = async () => {
     Sentry.captureException(e);
   }
   await walletStatusInitialization;
-  compensateUnlockedOnceFlag();
 
-  store.dispatch.app.initBizStore();
+  void initializeBizStores();
   void initializeExchangeStore();
-  store.dispatch.chains.init();
+  void initializeChainsStore();
 
   if (getUiType().isPop) {
     wallet
@@ -145,9 +125,7 @@ const main = async () => {
         scope.setTag('error_boundary', 'root');
       }}
     >
-      <Provider store={store}>
-        <Views wallet={wallet} />
-      </Provider>
+      <Views wallet={wallet} />
     </Sentry.ErrorBoundary>
   );
 };
