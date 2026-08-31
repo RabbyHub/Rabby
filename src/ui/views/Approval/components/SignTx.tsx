@@ -429,6 +429,7 @@ const useCheckGasAndNonce = ({
   );
 };
 
+// BOT FIX: Added signTxPreparationId back to interface
 interface SignTxProps<TData extends any[] = any[]> {
   params: {
     session: {
@@ -441,13 +442,14 @@ interface SignTxProps<TData extends any[] = any[]> {
     isGnosis?: boolean;
     account?: Account;
     $ctx?: any;
+    signTxPreparationId?: string;
   };
   origin?: string;
   account: Account;
 }
 
 const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
-  const { isGnosis } = params;
+  const { isGnosis, signTxPreparationId } = params;
   const currentAccount = params.isGnosis ? params.account! : $account;
   const renderStartAt = useRef(0);
   const reportedRenderDuration = useRef(false);
@@ -882,17 +884,17 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   });
 
   const checkErrors = useCheckGasAndNonce({
+    recommendGasLimitRatio,
     recommendGasLimit,
     recommendNonce,
-    gasLimit: Number(gasLimit),
+    tx,
+    gasLimit,
     nonce: Number(realNonce || tx.nonce),
+    isCancel,
     gasExplainResponse,
     isSpeedUp,
-    isCancel,
-    tx,
     isGnosisAccount: isGnosisAccount || isCoboArugsAccount,
     nativeTokenBalance,
-    recommendGasLimitRatio,
     gasTokenDecimals: gasToken.decimals || 18,
     gasTokenId: gasToken.tokenId,
     tempoPreferredFeeTokenId,
