@@ -48,6 +48,7 @@ import {
   feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
+import extensionUpdateService from 'background/service/extensionUpdate';
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
@@ -7103,6 +7104,8 @@ export class WalletController extends BaseController {
 
   setReportGasLevel = miscService.setCurrentGasLevel;
   getReportGasLevel = miscService.getCurrentGasLevel;
+
+  getPendingExtensionVersion = extensionUpdateService.getPendingVersion;
 
   getScreenshotFeedbacks = feedbackService.getScreenshotFeedbacks;
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
