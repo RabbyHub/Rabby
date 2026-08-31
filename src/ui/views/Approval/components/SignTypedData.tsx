@@ -80,6 +80,8 @@ interface SignTypedDataProps {
     origin: string;
     icon: string;
     name: string;
+    // BOT FIX: Added signTxPreparationId back to interface
+    signTxPreparationId?: string;
   };
   isGnosis?: boolean;
   isSend?: boolean;
