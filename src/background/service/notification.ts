@@ -432,13 +432,19 @@ class NotificationService extends Events {
   clear = async (stay = false) => {
     this.approvals = [];
     this.currentApproval = null;
-    if (this.notifiWindowId !== null && !stay) {
+    const winId = this.notifiWindowId;
+    if (winId !== null && !stay) {
+      // Forget the window before awaiting its removal. requestApproval focuses
+      // the existing window for a whitelisted component instead of opening one,
+      // so an approval arriving during the await - an Unlock request right
+      // after a lock, say - would be focused into the window we are about to
+      // destroy and end up with no window at all.
+      this.notifiWindowId = null;
       try {
-        await winMgr.remove(this.notifiWindowId);
+        await winMgr.remove(winId);
       } catch (e) {
         // ignore error
       }
-      this.notifiWindowId = null;
     }
   };
 
