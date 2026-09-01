@@ -118,7 +118,9 @@ export const useApproval = () => {
   // must check this before the side effect, not only rely on the resolve at the
   // end being dropped. Pass an id to check that one instead of the binding.
   const isBound = async (approvalId?: string) => {
-    const approval = await getApproval();
+    // never throw: every caller is `if (!(await isBound())) return;` in an
+    // uncaught handler, and a background round trip can fail (MV3 restart)
+    const approval = await getApproval().catch(() => null);
 
     return !getApprovalTarget(approval, binding, approvalId).isStale;
   };

@@ -387,7 +387,6 @@ restoreAppState();
     // This is on the keyring event rather than in lockWallet so that every path
     // that locks - auto lock, the shortcut, resetPassword - is covered.
     notificationService.rejectAllApprovals();
-    notificationService.clear();
 
     if (interval) {
       clearInterval(interval);
