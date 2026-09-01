@@ -159,6 +159,39 @@ describe('resolveProjectedLiquidationPrice (parity with rabby-mobile)', () => {
     ).toBe('779.48');
   });
 
+  it('assumeSufficientMargin floors a deficient cross balance at the order margin', () => {
+    // A 5 balance cannot fund the 20 order margin: unflagged the estimate is
+    // hidden (margin_available <= 0), flagged it matches the isolated one.
+    const facts = {
+      marginMode: 'cross' as const,
+      crossMarginAvailableAfterMaintenance: 5,
+    };
+    expect(resolve(facts)).toBeNull();
+    expect(
+      resolve({ ...facts, assumeSufficientMargin: true })?.liquidationPrice
+    ).toBe(expectedFrom(100, 20, 'Long', 2, 200, 20));
+  });
+
+  it('assumeSufficientMargin never lowers a sufficient cross balance', () => {
+    expect(
+      resolve({
+        marginMode: 'cross',
+        crossMarginAvailableAfterMaintenance: 30,
+        assumeSufficientMargin: true,
+      })?.liquidationPrice
+    ).toBe(expectedFrom(100, 30, 'Long', 2, 200, 20));
+  });
+
+  it('assumeSufficientMargin still fails closed on an unavailable balance', () => {
+    expect(
+      resolve({
+        marginMode: 'cross',
+        crossMarginAvailableAfterMaintenance: null,
+        assumeSufficientMargin: true,
+      })
+    ).toBeNull();
+  });
+
   it('distinguishes the MSFT unpriced long from its finite short', () => {
     const msft = {
       crossMarginAvailableAfterMaintenance: 36.2449065,

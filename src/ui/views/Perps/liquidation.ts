@@ -132,6 +132,7 @@ export const resolveProjectedLiquidationPrice = ({
   maxLeverage,
   pxDecimals,
   side,
+  assumeSufficientMargin,
 }: {
   /** Order size in the base asset. */
   baseSize: string;
@@ -144,6 +145,16 @@ export const resolveProjectedLiquidationPrice = ({
   maxLeverage: number;
   pxDecimals: number;
   side: 'buy' | 'sell';
+  /**
+   * Floor the cross balance at the projected position's own initial margin
+   * (notional / leverage). With a balance shortfall the real balance prices
+   * liquidation on top of the entry, or hides the estimate entirely; with this
+   * flag the estimate is the one the order would have if it were affordable —
+   * for surfaces that keep quoting while the order is unaffordable. A
+   * sufficient balance is never lowered, an unavailable one (null) still fails
+   * closed, and isolated margin already charges the order's own margin.
+   */
+  assumeSufficientMargin?: boolean;
 }): { liquidationPrice: string; liquidationPriceNum: number } | null => {
   const entry = positiveBn(entryPrice);
   const orderSize = positiveBn(baseSize);
@@ -189,7 +200,7 @@ export const resolveProjectedLiquidationPrice = ({
   const basePrice = isCross ? entry : projectedEntry;
   const baseNotional = isCross ? projectedSize.multipliedBy(entry) : notional;
 
-  const margin = isCross
+  const backingMargin = isCross
     ? // The cross balance already has the existing position's maintenance
       // margin deducted, and `baseNotional` covers that same position — so the
       // formula would charge it a second time. Add it back to charge it once.
@@ -203,6 +214,12 @@ export const resolveProjectedLiquidationPrice = ({
         orderSize.multipliedBy(entry).dividedBy(leverageValue)
       )
     : notional.dividedBy(leverageValue);
+  // `isFinite` keeps the null-balance case failing closed: the floor only
+  // raises a real deficit, never invents a balance that couldn't be resolved.
+  const margin =
+    isCross && assumeSufficientMargin && backingMargin.isFinite()
+      ? BigNumber.maximum(backingMargin, baseNotional.dividedBy(leverageValue))
+      : backingMargin;
   if (!margin.isFinite() || margin.lte(0)) return null;
 
   const liquidation = calLiquidationPrice(
