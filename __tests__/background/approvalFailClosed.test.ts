@@ -24,8 +24,13 @@ jest.mock('webextension-polyfill', () => ({
   },
 }));
 
+const removeWindow = jest.fn();
 jest.mock('background/webapi', () => ({
-  winMgr: { event: { on: jest.fn() }, openNotification: jest.fn() },
+  winMgr: {
+    event: { on: jest.fn() },
+    openNotification: jest.fn(),
+    remove: (...args: any[]) => removeWindow(...args),
+  },
 }));
 
 jest.mock('@/background/service/transactionHistory', () => ({
@@ -70,6 +75,8 @@ describe('approval resolution is fail closed', () => {
   beforeEach(() => {
     captureException.mockClear();
     addBreadcrumb.mockClear();
+    removeWindow.mockReset();
+    removeWindow.mockResolvedValue(undefined);
   });
 
   it('refuses to resolve an approval that was not named', async () => {
@@ -115,6 +122,26 @@ describe('approval resolution is fail closed', () => {
 
     expect(captureException).not.toHaveBeenCalled();
     expect(addBreadcrumb).toHaveBeenCalled();
+  });
+
+  it('stops reusing the notification window before it is removed', async () => {
+    // requestApproval focuses the existing window for a whitelisted component,
+    // so an approval arriving mid-removal must not be sent to a dying window
+    let finishRemoval: () => void;
+    removeWindow.mockReturnValue(
+      new Promise<void>((resolve) => {
+        finishRemoval = resolve;
+      })
+    );
+    pending('a');
+    (notificationService as any).notifiWindowId = 7;
+
+    const cleared = notificationService.clear();
+
+    expect((notificationService as any).notifiWindowId).toBeNull();
+    finishRemoval!();
+    await cleared;
+    expect(removeWindow).toHaveBeenCalledWith(7);
   });
 
   it('resolves the approval the caller named', async () => {
