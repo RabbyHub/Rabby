@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { findChainByServerID } from '@/utils/chain';
 import { UI_TYPE } from '@/constant/ui';
 import { openNFTLinkFromChainItem } from '@/ui/views/DesktopProfile/components/ApprovalsTabPane/utils';
+import { resolveNftDisplayMedia } from '@/ui/utils/nft';
 
 interface ContentProps {
   data?: NFTItem;
@@ -33,6 +34,7 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
   const price = calc(data);
   const history = useHistory();
   const { setVisible } = useCommonPopupView();
+  const media = resolveNftDisplayMedia(data, data?.collection);
 
   const handleClickSend = () => {
     setVisible(false);
@@ -76,8 +78,8 @@ const NFTModal = ({ onClose, data, collectionName }: ContentProps) => {
     <div className="nft-preview-card">
       <NFTAvatar
         thumbnail={false}
-        content={data?.content}
-        type={data?.content_type}
+        content={media.content}
+        type={media.type}
         amount={data?.amount}
       ></NFTAvatar>
       <div className={clsx('nft-preview-card-title', 'flex')}>

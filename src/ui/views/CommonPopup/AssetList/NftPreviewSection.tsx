@@ -9,6 +9,7 @@ import type {
 } from '@rabby-wallet/rabby-api/dist/types';
 
 import { useWallet } from '@/ui/utils';
+import { resolveNftDisplayMedia } from '@/ui/utils/nft';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { ReactComponent as RcIconJump } from 'ui/assets/tokenDetail/IconJump.svg';
 
@@ -89,6 +90,8 @@ export const NftPreviewSection: React.FC<Props> = ({
           <div className="mt-[8px] overflow-hidden">
             <div className="flex w-max items-center gap-[4px]">
               {list.slice(0, 7).map((item) => {
+                const media = resolveNftDisplayMedia(item.nft, item.collection);
+
                 return (
                   <div
                     key={`${item.collection.chain}-${item.collection.id}-${item.nft.id}`}
@@ -96,8 +99,8 @@ export const NftPreviewSection: React.FC<Props> = ({
                   >
                     <NFTAvatar
                       className="w-[48px] h-[48px]"
-                      type={item.nft?.content_type}
-                      content={item.nft?.content}
+                      type={media.type}
+                      content={media.content}
                       empty={
                         <div className="w-[48px] h-[48px] bg-r-neutral-line flex items-center justify-center rounded-[4px]">
                           <div className="text-[12px] leading-[16px] font-semibold text-r-neutral-foot">

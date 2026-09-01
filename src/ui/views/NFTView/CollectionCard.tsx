@@ -7,6 +7,7 @@ import NFTAvatar from '../Dashboard/components/NFT/NFTAvatar';
 import { ChainIcon } from './ChainIcon';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
+import { resolveNftDisplayMedia } from '@/ui/utils/nft';
 
 export interface Props {
   collection: CollectionList;
@@ -82,21 +83,25 @@ export const CollectionCard: React.FC<Props> = ({
         </div>
       </section>
       <section className="grid grid-cols-5 gap-10">
-        {collection.nft_list.map((item) => (
-          <div
-            key={item.id}
-            className="rounded w-full h-[59px] cursor-pointer overflow-hidden"
-          >
-            <NFTAvatar
-              className="h-[59px] w-[59px]"
-              onPreview={() => onClickNFT?.(item, collection.name)}
-              type={item.content_type}
-              amount={item.amount}
-              content={item.content}
+        {collection.nft_list.map((item) => {
+          const media = resolveNftDisplayMedia(item, collection);
+
+          return (
+            <div
               key={item.id}
-            />
-          </div>
-        ))}
+              className="rounded w-full h-[59px] cursor-pointer overflow-hidden"
+            >
+              <NFTAvatar
+                className="h-[59px] w-[59px]"
+                onPreview={() => onClickNFT?.(item, collection.name)}
+                type={media.type}
+                amount={item.amount}
+                content={media.content}
+                key={item.id}
+              />
+            </div>
+          );
+        })}
       </section>
     </div>
   );

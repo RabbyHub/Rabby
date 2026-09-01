@@ -53,13 +53,10 @@ const Thumbnail = ({
     );
   }
 
-  const isShowEmpty =
-    !(type && ['image', 'image_url'].includes(type) && content) && empty;
+  const isImage = !!content && (!type || ['image', 'image_url'].includes(type));
+  const isShowEmpty = !isImage && empty;
 
-  const src =
-    type && ['image', 'image_url'].includes(type) && content
-      ? content
-      : unknown || IconNFTDefault;
+  const src = isImage ? content : unknown || IconNFTDefault;
 
   if (isShowEmpty) {
     return <>{empty}</>;
@@ -82,7 +79,8 @@ const Thumbnail = ({
 };
 
 const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
-  if (type && ['image', 'image_url'].includes(type) && content) {
+  const isImage = !!content && (!type || ['image', 'image_url'].includes(type));
+  if (isImage) {
     return (
       <Image
         src={content}

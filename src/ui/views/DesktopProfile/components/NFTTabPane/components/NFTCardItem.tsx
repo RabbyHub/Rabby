@@ -1,4 +1,5 @@
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import { resolveNftDisplayMedia } from '@/ui/utils/nft';
 import { findChain } from '@/utils/chain';
 import { CollectionList, NFTItem } from '@rabby-wallet/rabby-api/dist/types';
 import clsx from 'clsx';
@@ -12,6 +13,7 @@ export const NFTCardItem: React.FC<{
   onClick: () => void;
 }> = ({ item, onClick }) => {
   const chain = findChain({ serverId: item.nft.chain });
+  const media = resolveNftDisplayMedia(item.nft, item.collection);
 
   return (
     <div
@@ -25,9 +27,9 @@ export const NFTCardItem: React.FC<{
       <div className="relative">
         <NFTAvatar
           className="w-[198px] h-[198px] rounded-[4px]"
-          type={item.nft.content_type}
+          type={media.type}
           // amount={item.nft.amount}
-          content={item.nft.content}
+          content={media.content}
           empty={
             <div className="w-[198px] h-[198px] bg-r-neutral-line flex items-center justify-center rounded-[4px]">
               <div className="text-[40px] leading-[48px] font-semibold text-r-neutral-foot">

@@ -28,6 +28,7 @@ import { EndTime } from './EndTime';
 import IconDefaultNFT from '@/ui/assets/default-nft.svg';
 import { useNFTListingOrders } from '../hooks/useNFTListingOrders';
 import { useTranslation } from 'react-i18next';
+import { resolveNftDisplayMedia } from '@/ui/utils/nft';
 
 type Props = ModalProps & {
   nft?: NFTItem;
@@ -143,6 +144,8 @@ const Content: React.FC<Props> = (props) => {
     return bestOfferPrice.times(offerToken.price);
   }, [offerToken, bestOfferPrice]);
 
+  const media = resolveNftDisplayMedia(nftDetail || nft, collection);
+
   return (
     <>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
@@ -153,9 +156,9 @@ const Content: React.FC<Props> = (props) => {
           <div className="relative shrink-0">
             <NFTAvatar
               className="w-[340px] h-[340px]"
-              type={nft?.content_type}
+              type={media.type}
               // amount={nft?.amount}
-              content={nft?.content}
+              content={media.content}
               empty={
                 <div className="w-[340px] h-[340px] bg-r-neutral-line flex items-center justify-center rounded-[8px]">
                   <div className="text-[40px] leading-[48px] font-semibold text-r-neutral-foot">
