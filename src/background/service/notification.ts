@@ -247,6 +247,9 @@ class NotificationService extends Events {
     ) {
       return false;
     }
+    // same reason as rejectAllApprovals: a signer parked on the identity-free
+    // SIGN_WAITING_AMOUNTED belongs to consent that is being withdrawn here
+    this.signingSession += 1;
     this.addLastRejectDapp();
     const approval = this.currentApproval;
 
