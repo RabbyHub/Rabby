@@ -18,8 +18,11 @@ jest.mock('@/ui/utils/WalletContext', () => ({
     activePopup: jest.fn(),
     setAccount: jest.fn(),
     approvalBinding: null,
+    publishApprovalBinding: jest.fn(() => jest.fn()),
   }),
 }));
+
+jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
 
 jest.mock('@/ui/utils/useDeviceConnect', () => ({
   useDeviceConnect: () => async () => true,
