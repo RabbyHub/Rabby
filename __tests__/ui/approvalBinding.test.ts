@@ -33,10 +33,10 @@ describe('getApprovalTarget', () => {
     });
   });
 
-  it('leaves unbound callers unchanged', () => {
+  it('fails closed when the action cannot name its approval', () => {
     expect(getApprovalTarget(approval('a'), null)).toEqual({
       id: undefined,
-      isStale: false,
+      isStale: true,
     });
   });
 });

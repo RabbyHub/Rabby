@@ -144,7 +144,9 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
-          this.rejectApproval();
+          // name the approval we just checked: rejectApproval is fail closed,
+          // and an unnamed reject would race the queue advancing
+          this.rejectApproval(undefined, false, false, this.currentApproval.id);
         }
       }
     });
@@ -192,7 +194,10 @@ class NotificationService extends Events {
     forceReject = false,
     approvalId?: string
   ) => {
-    if (approvalId && approvalId !== this.currentApproval?.id) return;
+    // Fail closed: an approval can only be resolved by name. Without an id we
+    // would resolve whatever happens to be current, which is not what the
+    // caller consented to.
+    if (!approvalId || approvalId !== this.currentApproval?.id) return;
     if (forceReject) {
       this.currentApproval?.reject &&
         this.currentApproval?.reject(
@@ -222,7 +227,8 @@ class NotificationService extends Events {
     isInternal = false,
     approvalId?: string
   ) => {
-    if (approvalId && approvalId !== this.currentApproval?.id) return;
+    // Fail closed, same as resolveApproval: no id, no rejection.
+    if (!approvalId || approvalId !== this.currentApproval?.id) return;
     this.addLastRejectDapp();
     const approval = this.currentApproval;
     if (this.approvals.length <= 1) {

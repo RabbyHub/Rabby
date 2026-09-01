@@ -5,6 +5,7 @@ import { IExtractFromPromise } from './type';
 import { CommonPopupComponentName } from '../views/CommonPopup';
 import { PopupProps } from '../component/Popup';
 import { AppChain } from '../hooks/useAppChain';
+import { ApprovalBinding } from './approval-context';
 
 // TODO: implement here but not used now to avoid too much ts checker error.
 // we will use it on almost biz store ready.
@@ -30,7 +31,7 @@ export type WalletController = Object.Merge<
   Record<string, <T = any>(...params: any) => Promise<T>>
 >;
 
-const useCommonPopupViewState = () => {
+const useCommonPopupViewState = (wallet: WalletController) => {
   const [componentName, setComponentName] = useState<
     CommonPopupComponentName | false
   >();
@@ -48,8 +49,25 @@ const useCommonPopupViewState = () => {
   const [data, setData] = useState<any>();
   const [apps, setApps] = useState<AppChain[]>();
   const [popupProps, setPopupProps] = useState<PopupProps | undefined>();
+  const [
+    approvalBinding,
+    setApprovalBinding,
+  ] = useState<ApprovalBinding | null>(null);
 
-  const activePopup = (name: CommonPopupComponentName) => {
+  // A popup opened over an approval acts on that approval, so capture its
+  // identity before showing: by the time the user hits cancel the queue may
+  // have moved on, and an unnamed reject would hit whatever replaced it.
+  const activePopup = async (name: CommonPopupComponentName) => {
+    try {
+      const approval = await wallet.getApproval();
+      setApprovalBinding(
+        approval
+          ? { id: approval.id, component: approval.data.approvalComponent }
+          : null
+      );
+    } catch (e) {
+      setApprovalBinding(null);
+    }
     setComponentName(name);
     setVisible(true);
   };
@@ -88,6 +106,7 @@ const useCommonPopupViewState = () => {
     setPopupProps,
     apps,
     setApps,
+    approvalBinding,
   };
 };
 
@@ -103,7 +122,7 @@ const WalletProvider = ({
   children?: ReactNode;
   wallet: WalletController;
 }) => {
-  const commonPopupView = useCommonPopupViewState();
+  const commonPopupView = useCommonPopupViewState(wallet);
 
   return (
     <WalletContext.Provider value={{ wallet, commonPopupView }}>

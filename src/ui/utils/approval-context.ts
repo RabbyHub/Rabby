@@ -15,18 +15,23 @@ export const ApprovalBindingContext = createContext<ApprovalBinding | null>(
 );
 
 // The approval an action is bound to: the one the caller named, else the one
-// its page was mounted for. Acting without an id acts on whatever is current,
-// so every constraint we have must still match the live approval; if any of
-// them does not, the action is stale and must be dropped.
+// its page was mounted for. The background refuses an action that cannot name
+// its approval, so an action with no id, or one whose id or component no longer
+// matches the live approval, is stale and must be dropped here too.
 export const getApprovalTarget = (
   approval: Approval | null,
   binding: ApprovalBinding | null,
   approvalId?: string
-) => ({
-  id: approvalId ?? binding?.id,
-  isStale:
-    (!!approvalId && approvalId !== approval?.id) ||
-    (!!binding &&
-      (binding.id !== approval?.id ||
-        binding.component !== approval?.data?.approvalComponent)),
-});
+) => {
+  const id = approvalId ?? binding?.id;
+
+  return {
+    id,
+    isStale:
+      !id ||
+      id !== approval?.id ||
+      (!!binding &&
+        (binding.id !== approval?.id ||
+          binding.component !== approval?.data?.approvalComponent)),
+  };
+};

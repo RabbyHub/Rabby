@@ -11,6 +11,7 @@ import { AssetList } from './AssetList/AssetList';
 import { CancelApproval } from './CancelApproval/CancelApproval';
 import { CancelConnect } from './CancelConnect/CancelConnect';
 import { ImKeyPermission } from './ImKeyPermission';
+import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 
 export type CommonPopupComponentName =
   | 'Approval'
@@ -76,6 +77,7 @@ export const CommonPopup: React.FC = () => {
     className,
     componentName,
     popupProps,
+    approvalBinding,
   } = useCommonPopupView();
 
   const config =
@@ -115,23 +117,25 @@ export const CommonPopup: React.FC = () => {
       isNew={config.isNew}
       {...popupProps}
     >
-      {componentName === 'Approval' && <Approval className="h-full" />}
-      {componentName === 'WalletConnect' && <ReconnectView />}
-      {componentName === 'SwitchAddress' && <SwitchAddress />}
-      {componentName === 'SwitchChain' && <SwitchChain />}
-      {componentName === 'Ledger' && <Ledger />}
-      {componentName === 'ImKeyPermission' && <ImKeyPermission />}
-      {componentName === 'Keystone' && <Keystone />}
-      {componentName === 'AssetList' && (
-        <AssetList
-          visible={visible}
-          onClose={() => {
-            setVisible(false);
-          }}
-        />
-      )}
-      {componentName === 'CancelApproval' && <CancelApproval />}
-      {componentName === 'CancelConnect' && <CancelConnect />}
+      <ApprovalBindingContext.Provider value={approvalBinding}>
+        {componentName === 'Approval' && <Approval className="h-full" />}
+        {componentName === 'WalletConnect' && <ReconnectView />}
+        {componentName === 'SwitchAddress' && <SwitchAddress />}
+        {componentName === 'SwitchChain' && <SwitchChain />}
+        {componentName === 'Ledger' && <Ledger />}
+        {componentName === 'ImKeyPermission' && <ImKeyPermission />}
+        {componentName === 'Keystone' && <Keystone />}
+        {componentName === 'AssetList' && (
+          <AssetList
+            visible={visible}
+            onClose={() => {
+              setVisible(false);
+            }}
+          />
+        )}
+        {componentName === 'CancelApproval' && <CancelApproval />}
+        {componentName === 'CancelConnect' && <CancelConnect />}
+      </ApprovalBindingContext.Provider>
     </Popup>
   );
 };
