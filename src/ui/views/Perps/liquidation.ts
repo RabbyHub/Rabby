@@ -238,10 +238,9 @@ export const resolveProjectedLiquidationPrice = ({
       // free balance underneath it. Flooring the sum would let a large enough
       // add-back mask a deficit outright: 18 free against a 20 order reads as
       // 20.5 and is never topped up.
-      (floorCross
-        ? BigNumber.maximum(crossFree, addedMargin)
-        : crossFree
-      ).plus(crossMaintenanceAddBack)
+      (floorCross ? BigNumber.maximum(crossFree, addedMargin) : crossFree).plus(
+        crossMaintenanceAddBack
+      )
     : floorCross
     ? BigNumber.maximum(crossAfterRelease, addedMargin)
     : crossAfterRelease;
