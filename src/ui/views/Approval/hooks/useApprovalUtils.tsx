@@ -34,7 +34,7 @@ export const ApprovalUtilsProvider = ({
   children: React.ReactNode;
 }) => {
   const value = useApprovalUtilsState();
-  const { setApprovalBinding } = useCommonPopupView();
+  const { publishApprovalBinding } = useCommonPopupView();
 
   const id = approval?.id;
   const component = approval?.data.approvalComponent;
@@ -49,13 +49,8 @@ export const ApprovalUtilsProvider = ({
   // pending in the notification window.
   React.useEffect(() => {
     if (!binding) return;
-    setApprovalBinding(binding);
-    // The route and the approval popup can both be mounted at once, so only
-    // withdraw our own binding: clearing unconditionally would let whichever
-    // unmounts first take the live one down with it.
-    return () =>
-      setApprovalBinding((current) => (current === binding ? null : current));
-  }, [binding]);
+    return publishApprovalBinding(binding);
+  }, [binding, publishApprovalBinding]);
 
   return (
     <ApprovalBindingContext.Provider value={binding}>
