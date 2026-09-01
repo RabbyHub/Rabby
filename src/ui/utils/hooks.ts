@@ -1,5 +1,5 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
+import { ApprovalBindingContext, getApprovalTarget } from './approval-context';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -19,6 +20,7 @@ export const useApproval = () => {
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
   const deviceConnect = useDeviceConnect();
+  const binding = useContext(ApprovalBindingContext);
 
   const resolveApproval = async (
     data?: any,
@@ -27,6 +29,14 @@ export const useApproval = () => {
     approvalId?: string
   ) => {
     const approval = await getApproval();
+    const { id, isStale } = getApprovalTarget(approval, binding, approvalId);
+
+    if (isStale) {
+      // never resolve the approval that replaced ours; navigate so the window
+      // re-renders on the real one
+      history.replace('/');
+      return;
+    }
 
     // handle connect
     if (!(await deviceConnect(data, approval?.data?.account))) {
@@ -34,7 +44,7 @@ export const useApproval = () => {
     }
 
     if (approval) {
-      wallet.resolveApproval(data, forceReject, approvalId);
+      wallet.resolveApproval(data, forceReject, id);
     }
 
     if (stay) {
@@ -57,7 +67,7 @@ export const useApproval = () => {
     const approval = await getApproval();
     // the caller is acting on an approval that is no longer current: skip the
     // reject, but still navigate so the window re-renders on the real one
-    const isStale = !!approvalId && approvalId !== approval?.id;
+    const { id, isStale } = getApprovalTarget(approval, binding, approvalId);
 
     if (!isStale) {
       if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
@@ -65,7 +75,7 @@ export const useApproval = () => {
       }
 
       if (approval) {
-        await wallet.rejectApproval(err, stay, isInternal, approvalId);
+        await wallet.rejectApproval(err, stay, isInternal, id);
       }
     }
     if (!stay) {
