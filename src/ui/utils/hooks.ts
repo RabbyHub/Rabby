@@ -24,13 +24,21 @@ export const useApproval = () => {
   const binding = useContext(ApprovalBindingContext);
 
   // An action with neither a binding nor an explicit id can never do anything,
-  // and it fails silently: the button just does nothing. That is a page mounted
-  // outside an approval container, i.e. a wiring bug, so report it. A mismatch
-  // is an ordinary race and stays quiet.
-  const reportUnboundAction = (method: 'resolve' | 'reject') => {
+  // and it fails silently: the button just does nothing. Report it only when an
+  // approval is actually pending - that is a page looking at an approval it
+  // cannot name, i.e. a wiring bug. With nothing pending it is an ordinary
+  // no-op, such as a hardware prompt cancelled from the dashboard.
+  const reportUnboundAction = (
+    method: 'resolve' | 'reject',
+    approval: Approval | null
+  ) => {
+    if (!approval) return;
     Sentry.captureException(
       new Error(`useApproval ${method} has no approval to act on`),
-      { tags: { function: 'useApproval' } }
+      {
+        tags: { function: 'useApproval' },
+        extra: { approvalComponent: approval.data?.approvalComponent },
+      }
     );
   };
 
@@ -44,7 +52,7 @@ export const useApproval = () => {
     const { id, isStale } = getApprovalTarget(approval, binding, approvalId);
 
     if (isStale) {
-      if (!id) reportUnboundAction('resolve');
+      if (!id) reportUnboundAction('resolve', approval);
       // never resolve the approval that replaced ours; navigate so the window
       // re-renders on the real one
       if (!stay) {
@@ -85,7 +93,7 @@ export const useApproval = () => {
     const { id, isStale } = getApprovalTarget(approval, binding, approvalId);
 
     if (isStale && !id) {
-      reportUnboundAction('reject');
+      reportUnboundAction('reject', approval);
     }
 
     if (!isStale) {
