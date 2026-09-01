@@ -17,8 +17,14 @@ export const ApprovalBindingContext = createContext<ApprovalBinding | null>(
 
 // The approval an action is bound to: the one the caller named, else the one
 // its page was mounted for. The background refuses an action that cannot name
-// its approval, so an action with no id, or one whose id or component no longer
-// matches the live approval, is stale and must be dropped here too.
+// its approval, so an action with no id, or one whose id no longer matches the
+// live approval, is stale and must be dropped here too.
+//
+// The component comparison below cannot currently fire - the binding is derived
+// from the same Approval object and ids are uuids, so equal ids imply equal
+// components. It is kept as an assertion, not as protection. The check that
+// would carry weight is the rendered component against the approval's declared
+// one, which nothing does today; see the tracker.
 export const getApprovalTarget = (
   approval: Approval | null,
   binding: ApprovalBinding | null,
