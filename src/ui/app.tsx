@@ -1,5 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { QueryClientProvider } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import Views from './views';
 import { getUiType } from 'ui/utils';
@@ -19,6 +21,7 @@ import { updateChainStore } from '@/utils/chain';
 import { getSentryConfig } from '@/utils/sentry-config';
 import { Button } from 'antd';
 import { wallet } from './wallet';
+import { queryClient } from './query';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -125,7 +128,11 @@ const main = async () => {
         scope.setTag('error_boundary', 'root');
       }}
     >
-      <Views wallet={wallet} />
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <Views wallet={wallet} />
+        </QueryClientProvider>
+      </Provider>
     </Sentry.ErrorBoundary>
   );
 };

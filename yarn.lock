@@ -6656,6 +6656,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.102.2":
+  version: 5.102.2
+  resolution: "@tanstack/query-core@npm:5.102.2"
+  checksum: 10c0/aa77d58d0f47fe1d660839d138e859cdeb814bea05f6757d5ace0dcf7da573a937899f4ff205e95073f567b10e071c1dae4bfc1c0b82325069bdf0cd867b4808
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:5.102.2":
+  version: 5.102.2
+  resolution: "@tanstack/react-query@npm:5.102.2"
+  dependencies:
+    "@tanstack/query-core": "npm:5.102.2"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/3f1c4044bef914860f04feea8461ec322ebe6731c725b444f18f1058dd47e5e87dc70c13137490419eca1c4cc9bb3e301c27cac5b06cd06f975c1b721340b0dc
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:^9.0.0":
   version: 9.3.4
   resolution: "@testing-library/dom@npm:9.3.4"
@@ -20458,6 +20476,7 @@ __metadata:
     "@sentry/webpack-plugin": "npm:5.3.0"
     "@svgr/webpack": "npm:5.5.0"
     "@tailwindcss/postcss": "npm:4.3.0"
+    "@tanstack/react-query": "npm:5.102.2"
     "@trezor/connect-web": "npm:9.6.4"
     "@trezor/connect-webextension": "npm:9.6.4"
     "@types/chrome": "npm:0.0.263"
