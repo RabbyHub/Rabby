@@ -188,9 +188,15 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const buyLimitPrice = bboEnabled ? bboBuyPrice : limitPrice;
   const sellLimitPrice = bboEnabled ? bboSellPrice : limitPrice;
 
-  // Estimated price: BBO mode → midPrice, manual → use limitPrice as-is
-  const estBuyPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
-  const estSellPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+  // Estimated fill price: the book level a BBO order will rest at (per
+  // direction), or the typed limit price; mid while neither is available.
+  // Liquidation, cost and the balance-based max all derive from it.
+  const estBuyPrice = bboEnabled
+    ? Number(bboBuyPrice) || midPrice
+    : Number(limitPrice) || midPrice;
+  const estSellPrice = bboEnabled
+    ? Number(bboSellPrice) || midPrice
+    : Number(limitPrice) || midPrice;
 
   const priceForCalculation = useMemo(() => {
     return bboEnabled ? midPrice : Number(limitPrice) || midPrice;
