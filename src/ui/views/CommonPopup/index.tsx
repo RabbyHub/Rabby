@@ -117,6 +117,10 @@ export const CommonPopup: React.FC = () => {
       isNew={config.isNew}
       {...popupProps}
     >
+      {/* Every popup below is bound to the approval that was current when it
+          opened, so a `useApproval()` action inside one acts on that approval
+          and on nothing else. Opened from the dashboard there is no approval,
+          the binding is null, and such an action does nothing. */}
       <ApprovalBindingContext.Provider value={approvalBinding}>
         {componentName === 'Approval' && <Approval className="h-full" />}
         {componentName === 'WalletConnect' && <ReconnectView />}
