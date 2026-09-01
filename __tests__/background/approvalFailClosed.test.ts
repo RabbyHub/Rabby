@@ -42,7 +42,12 @@ jest.mock('@/stats', () => ({
   __esModule: true,
   default: { report: jest.fn() },
 }));
-jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
+const captureException = jest.fn();
+const addBreadcrumb = jest.fn();
+jest.mock('@sentry/browser', () => ({
+  captureException: (...args: any[]) => captureException(...args),
+  addBreadcrumb: (...args: any[]) => addBreadcrumb(...args),
+}));
 
 import notificationService from '@/background/service/notification';
 
@@ -62,6 +67,11 @@ const pending = (id: string) => {
 };
 
 describe('approval resolution is fail closed', () => {
+  beforeEach(() => {
+    captureException.mockClear();
+    addBreadcrumb.mockClear();
+  });
+
   it('refuses to resolve an approval that was not named', async () => {
     const approval = pending('a');
 
@@ -88,6 +98,23 @@ describe('approval resolution is fail closed', () => {
 
     expect(approval.resolve).not.toHaveBeenCalled();
     expect(approval.reject).not.toHaveBeenCalled();
+  });
+
+  it('reports a caller that names no approval, but not an ordinary race', async () => {
+    pending('a');
+
+    await notificationService.rejectApproval('user cancel');
+
+    expect(captureException).toHaveBeenCalledTimes(1);
+    expect(captureException.mock.calls[0][0].message).toContain(
+      'without an approvalId'
+    );
+
+    captureException.mockClear();
+    await notificationService.rejectApproval('user cancel', false, false, 'b');
+
+    expect(captureException).not.toHaveBeenCalled();
+    expect(addBreadcrumb).toHaveBeenCalled();
   });
 
   it('resolves the approval the caller named', async () => {
