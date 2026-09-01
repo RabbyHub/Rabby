@@ -56,6 +56,8 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   );
   const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
+  const signFinishedRef = React.useRef<((data: any) => void) | null>(null);
+
   const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
@@ -129,11 +131,11 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         }
       }
     );
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const onSignFinished = async (data) => {
       if (data.success) {
         // the Safe writes below cannot be taken back and SIGN_FINISHED is a
         // global event, so make sure it is ours
-        if (!(await isBound(approval.id))) return;
+        if (!(await isBound())) return;
 
         let sig = data.data;
         try {
@@ -170,7 +172,9 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         setErrorMessage(data.errorMsg);
         // rejectApproval(data.errorMsg);
       }
-    });
+    };
+    signFinishedRef.current = onSignFinished;
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, onSignFinished);
 
     emitSignComponentAmounted();
     wallet.acquireKeystoneMemStoreData();
@@ -179,7 +183,12 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   React.useEffect(() => {
     init();
     return () => {
-      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+      if (signFinishedRef.current) {
+        eventBus.removeEventListener(
+          EVENTS.SIGN_FINISHED,
+          signFinishedRef.current
+        );
+      }
       eventBus.removeAllEventListeners(
         EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED
       );

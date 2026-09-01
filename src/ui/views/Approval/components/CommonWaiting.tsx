@@ -65,6 +65,8 @@ export const CommonWaiting = ({
     closePopup,
     setPopupProps,
   } = useCommonPopupView();
+  const signFinishedRef = React.useRef<((data: any) => void) | null>(null);
+
   const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
   const { t } = useTranslation();
   const { type } = params;
@@ -187,12 +189,12 @@ export const CommonWaiting = ({
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const onSignFinished = async (data) => {
       console.log('finished', data);
       if (data.success) {
         // the Safe writes below post to the Safe service and cannot be taken
         // back; SIGN_FINISHED is a global event, so make sure it is ours
-        if (!(await isBound(approval.id))) return;
+        if (!(await isBound())) return;
 
         let sig = data.data;
         setResult(sig);
@@ -239,7 +241,9 @@ export const CommonWaiting = ({
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
         setErrorMessage(data.errorMsg);
       }
-    });
+    };
+    signFinishedRef.current = onSignFinished;
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, onSignFinished);
 
     emitSignComponentAmounted();
   };
@@ -264,7 +268,12 @@ export const CommonWaiting = ({
     // SIGN_FINISHED is a global event: leaving this page's listener registered
     // means a second waiting page in the same window runs it too
     return () => {
-      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+      if (signFinishedRef.current) {
+        eventBus.removeEventListener(
+          EVENTS.SIGN_FINISHED,
+          signFinishedRef.current
+        );
+      }
     };
   }, []);
 
