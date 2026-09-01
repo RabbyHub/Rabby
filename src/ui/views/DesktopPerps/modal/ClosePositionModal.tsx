@@ -1,11 +1,11 @@
 import { MarketData } from '@/ui/models/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { useMemoizedFn, useRequest } from 'ahooks';
+import { useMemoizedFn } from 'ahooks';
 import { Button, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
@@ -227,13 +227,39 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     }
   });
 
-  const { loading, runAsync: runSubmit } = useRequest(doSubmit, {
-    manual: true,
-    onSuccess: () => {
+  const inFlightRef = useRef(false);
+  const [loading, setLoading] = useState(false);
+
+  /**
+   * The single submit path for both buttons, and the only in-flight guard.
+   *
+   * Deliberately not `useRequest`: ahooks cancels an in-flight `runAsync` when
+   * this content unmounts (a WS position update can remove the position — and
+   * with it this modal — before the order response returns), and a cancelled
+   * `runAsync` returns a promise that never settles, deadlocking the confirm
+   * dialog in its submitting state.
+   *
+   * The ref matters because the dialog is not always there to block a second
+   * click: when the user has opted out of the confirmation for this order
+   * type, `requestConfirm` submits immediately with no dialog and no mask, so
+   * without it a double click sends two close orders.
+   */
+  const runSubmit = useMemoizedFn(async () => {
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
+    setLoading(true);
+    try {
+      await doSubmit();
       // ClearinghouseState is refreshed inside the handlers (single-dex path).
       dispatch.perps.fetchUserHistoricalOrders();
       onConfirm?.();
-    },
+    } catch (e) {
+      // Swallowed on purpose: the handlers report their own failures, and the
+      // confirm dialog's `await` has to settle either way.
+    } finally {
+      inFlightRef.current = false;
+      setLoading(false);
+    }
   });
 
   const handleMidClick = () => {
@@ -371,17 +397,9 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         orderType: t(`page.perpsPro.orderConfirm.orderTypeName.${confirmType}`),
       }),
       // Returned so the dialog can show loading while the order is in flight.
-      // Not `runSubmit`: ahooks cancels an in-flight `runAsync` when this
-      // content unmounts (a WS position update can remove the position — and
-      // with it this modal — before the order response returns), and a
-      // cancelled `runAsync` returns a promise that never settles, deadlocking
-      // the confirm dialog in its submitting state. A plain call always
-      // settles; `dispatch` and the parent's `onConfirm` survive the unmount.
-      submit: async () => {
-        await doSubmit();
-        dispatch.perps.fetchUserHistoricalOrders();
-        onConfirm?.();
-      },
+      // `runSubmit` always settles and carries the in-flight guard the
+      // opted-out (no-dialog) path has nothing else to fall back on.
+      submit: () => runSubmit(),
     });
   });
 
