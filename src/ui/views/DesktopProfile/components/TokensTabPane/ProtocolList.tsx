@@ -14,7 +14,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown-cc.svg';
 import * as PortfolioTemplate from './Protocols/template';
 import { RcIconExternal1CC } from '@/ui/assets/desktop/common';
-import { PERPS_INVITE_URL } from '@/ui/views/Perps/constants';
+import { useRabbyDispatch } from '@/ui/store';
 import { useRequest } from 'ahooks';
 import { checkPerpsReference } from '@/ui/views/Perps/utils';
 import { useSticky } from '@/ui/hooks/useSticky';
@@ -132,6 +132,7 @@ const ProtocolItem = ({
   const { t } = useTranslation();
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
   const [
     realTimeProtocol,
     setRealTimeProtocol,
@@ -203,12 +204,15 @@ const ProtocolItem = ({
             className="ml-[10px] flex items-center"
             onClick={(evt) => {
               evt.stopPropagation();
-              openInTab(
-                protocol.id === 'hyperliquid' && isShowPerpsInvite
-                  ? PERPS_INVITE_URL
-                  : protocol.site_url,
-                false
-              );
+              if (protocol.id === 'hyperliquid') {
+                dispatch.perps.resetProAccountInfo();
+                dispatch.perps.setCurrentPerpsAccount(currentAccount);
+                wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount!);
+                wallet.openInDesktop('/desktop/perps');
+              } else {
+                openInTab(protocol.site_url, false);
+              }
             }}
           >
             {protocol.id === 'hyperliquid' && isShowPerpsInvite ? (
