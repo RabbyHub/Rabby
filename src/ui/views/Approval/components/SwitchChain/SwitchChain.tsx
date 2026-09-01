@@ -27,7 +27,7 @@ interface SwitchChainProps {
 
 const SwitchChain = ({ params }: { params: SwitchChainProps }) => {
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval, isBound] = useApproval();
   const { t } = useTranslation();
 
   const { data, session } = params;
@@ -75,6 +75,10 @@ const SwitchChain = ({ params }: { params: SwitchChainProps }) => {
 
   const { loading, runAsync: runAddChain } = useRequest(
     async () => {
+      // addCustomTestnet and updateConnectSite change what chain the dapp is
+      // bound to, and chain switch is a session boundary
+      if (!(await isBound())) return;
+
       await form.validateFields();
       const values = form.getFieldsValue();
 

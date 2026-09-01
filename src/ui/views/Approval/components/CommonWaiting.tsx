@@ -65,7 +65,7 @@ export const CommonWaiting = ({
     closePopup,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
   const { t } = useTranslation();
   const { type } = params;
   const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)
@@ -91,6 +91,11 @@ export const CommonWaiting = ({
   const [description, setDescription] = React.useState('');
 
   const handleRetry = async () => {
+    // resendSign restarts whatever the background's single deferred-signer
+    // slot currently holds, so never fire it for an approval this page is no
+    // longer showing
+    if (!(await isBound())) return;
+
     if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
       message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
@@ -185,6 +190,10 @@ export const CommonWaiting = ({
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       console.log('finished', data);
       if (data.success) {
+        // the Safe writes below post to the Safe service and cannot be taken
+        // back; SIGN_FINISHED is a global event, so make sure it is ours
+        if (!(await isBound(approval.id))) return;
+
         let sig = data.data;
         setResult(sig);
         setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
@@ -251,6 +260,12 @@ export const CommonWaiting = ({
       setHeight('fit-content');
       init();
     })();
+
+    // SIGN_FINISHED is a global event: leaving this page's listener registered
+    // means a second waiting page in the same window runs it too
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+    };
   }, []);
 
   React.useEffect(() => {
