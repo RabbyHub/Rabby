@@ -407,6 +407,10 @@ const flowContext = flow
       originApprovalRes: typeof approvalRes
     ) => async (isRetry = false) =>
       new Promise((resolve, reject) => {
+        // the session this signer was authorised in; SIGN_WAITING_AMOUNTED is a
+        // global event, so a later waiting component would otherwise release
+        // this one against an approval that was already cancelled
+        const signingSession = notificationService.signingSession;
         let waitSignComponentPromise = Promise.resolve();
 
         if (isSignApproval(approvalType) && uiRequestComponent) {
@@ -421,6 +425,10 @@ const flowContext = flow
         }
 
         return waitSignComponentPromise.then(() => {
+          if (notificationService.signingSession !== signingSession) {
+            return reject(ethErrors.provider.userRejectedRequest());
+          }
+
           let _approvalRes = originApprovalRes;
 
           if (

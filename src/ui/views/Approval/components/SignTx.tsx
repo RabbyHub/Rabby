@@ -1483,6 +1483,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       trigger: params?.$ctx?.ga?.trigger || '',
       networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
+    // Building and signing a Safe transaction are side effects that outlive
+    // this handler, so re-check the mounted approval before starting them: the
+    // resolve at the end would be dropped, but the signer would already be up.
+    if ((await getApproval())?.id !== binding?.id) return;
+
     if (!isViewGnosisSafe) {
       const params: any = {
         from: tx.from,

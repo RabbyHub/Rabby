@@ -1,4 +1,6 @@
 import React, { ReactNode, useEffect, useMemo, useState, useRef } from 'react';
+import { useContext } from 'react';
+import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -143,7 +145,9 @@ const SignTypedData = ({
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  // the approval this page was mounted for
+  const binding = useContext(ApprovalBindingContext);
   const { t } = useTranslation();
   const wallet = useWallet();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -768,6 +772,10 @@ const SignTypedData = ({
       chainId: BigInt(currentChainId!),
       data: signTypedData as any,
     });
+
+    // the signer started here outlives this handler, so re-check the mounted
+    // approval first: the resolve below would be dropped, but not the signer
+    if ((await getApproval())?.id !== binding?.id) return;
 
     if (WaitingSignMessageComponent[account.type]) {
       wallet.signTypedDataWithUI(
