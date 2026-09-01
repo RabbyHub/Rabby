@@ -275,14 +275,13 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   };
 
   const handleSubmit = async () => {
-    // submitQRHardwareSignature completes a signature; never feed one into the
-    // keyring for an approval this page is no longer showing
-    if (!(await isBound())) return;
-
     // cache signMethod in statsData
     await wallet.setStatsData({
       signMethod,
     });
+    // submitQRHardwareSignature completes a signature; check right here, with
+    // nothing awaited between, that this page still owns the approval
+    if (!(await isBound())) return;
     wallet.submitQRHardwareSignature(
       signPayload!.requestId,
       scanMessage!,
