@@ -4971,7 +4971,7 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const fn = () =>
-      waitSignComponentAmounted().then(() => {
+      notificationService.awaitSignComponent().then(() => {
         this.signPersonalMessage(type, from, data as any, options);
       });
 
@@ -5011,7 +5011,7 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const fn = () =>
-      waitSignComponentAmounted().then(() => {
+      notificationService.awaitSignComponent().then(() => {
         return this.signTypedData(type, from, data as any, options);
       });
 

@@ -18,6 +18,7 @@ import preferenceService, { Account } from './preference';
 import stats from '@/stats';
 import { findChain } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -452,7 +453,7 @@ class NotificationService extends Events {
     }
   };
 
-  rejectAllApprovals = () => {
+  rejectAllApprovals = async () => {
     // in-flight signing is unconsented work too: it is waiting on the next
     // waiting component to mount, and that component may belong to a request
     // made after this cancellation
@@ -465,8 +466,11 @@ class NotificationService extends Events {
           new EthereumProviderError(4001, 'User rejected the request.')
         );
     });
-    this.approvals = [];
-    this.currentApproval = null;
+    // Every caller of this is cancelling everything pending, so leave no window
+    // rendering an approval that no longer exists: without this the page stays
+    // up, the next dapp request only focuses the window, and the user acts on
+    // a screen that shows the wrong request.
+    await this.clear();
     transactionHistoryService.removeAllSigningTx();
   };
 
@@ -512,6 +516,20 @@ class NotificationService extends Events {
   updateNotificationWinProps = (winProps: Windows.UpdateUpdateInfoType) => {
     if (this.notifiWindowId !== null) {
       browser.windows.update(this.notifiWindowId!, winProps);
+    }
+  };
+
+  // Wait for the signing UI to mount, then refuse to go on if consent was
+  // cancelled while we were parked. SIGN_WAITING_AMOUNTED is a global event
+  // with no request identity, so any later waiting component would otherwise
+  // release a signer whose approval is long gone.
+  awaitSignComponent = async () => {
+    const session = this.signingSession;
+
+    await waitSignComponentAmounted();
+
+    if (this.signingSession !== session) {
+      throw ethErrors.provider.userRejectedRequest();
     }
   };
 
