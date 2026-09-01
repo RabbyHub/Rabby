@@ -532,6 +532,11 @@ const SignText = ({
       return;
     }
 
+    // Building the Safe message and starting the signer both outlive this
+    // handler, so re-check the mounted approval before either: the resolve at
+    // the end would be dropped, but the side effects would already have run.
+    if ((await getApproval())?.id !== binding?.id) return;
+
     if (!isViewGnosisSafe) {
       await wallet.buildGnosisMessage({
         safeAddress: safeInfo.address,
@@ -556,10 +561,6 @@ const SignText = ({
       chainId: BigInt(chainId!),
       data: signText,
     });
-    // the signer started here outlives this handler, so re-check the mounted
-    // approval first: the resolve below would be dropped, but not the signer
-    if ((await getApproval())?.id !== binding?.id) return;
-
     if (WaitingSignMessageComponent[account.type]) {
       wallet.signTypedDataWithUI(
         account.type,
