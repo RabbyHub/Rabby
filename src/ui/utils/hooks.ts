@@ -112,7 +112,18 @@ export const useApproval = () => {
       history.push('/');
     }
   };
-  return [getApproval, resolveApproval, rejectApproval] as const;
+  // True while the page is still acting on the approval it was mounted for.
+  // Handlers that do anything outliving themselves - starting a signer, writing
+  // another approval's signing record, switching accounts, posting to a Safe -
+  // must check this before the side effect, not only rely on the resolve at the
+  // end being dropped. Pass an id to check that one instead of the binding.
+  const isBound = async (approvalId?: string) => {
+    const approval = await getApproval();
+
+    return !getApprovalTarget(approval, binding, approvalId).isStale;
+  };
+
+  return [getApproval, resolveApproval, rejectApproval, isBound] as const;
 };
 
 export const useSelectOption = <T>({

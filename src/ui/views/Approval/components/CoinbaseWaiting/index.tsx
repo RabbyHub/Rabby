@@ -56,7 +56,7 @@ const CoinbaseWaiting = ({
     message?: string;
   }>(null);
   const [result, setResult] = useState('');
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
 
   const chain = findChain({
     id: params.chainId || 1,
@@ -94,6 +94,11 @@ const CoinbaseWaiting = ({
   };
 
   const handleRetry = async (retry?: boolean) => {
+    // resendSign restarts whatever the background's single deferred-signer
+    // slot currently holds, so never fire it for an approval this page is no
+    // longer showing
+    if (!(await isBound())) return;
+
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
     setConnectError(null);
     await wallet.resendSign(retry);
@@ -115,6 +120,10 @@ const CoinbaseWaiting = ({
 
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
+        // the Safe writes below post to the Safe service and cannot be taken
+        // back; SIGN_FINISHED is a global event, so make sure it is ours
+        if (!(await isBound(approval.id))) return;
+
         let sig = data.data;
         setResult(sig);
         setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
@@ -206,6 +215,12 @@ const CoinbaseWaiting = ({
   useEffect(() => {
     init();
     setHeight('fit-content');
+
+    // SIGN_FINISHED is a global event: leaving this page's listener registered
+    // means a second waiting page in the same window runs it too
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
+    };
   }, []);
 
   useEffect(() => {

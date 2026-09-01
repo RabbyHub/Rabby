@@ -56,7 +56,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   );
   const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
   const { t } = useTranslation();
@@ -131,6 +131,10 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
     );
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
+        // the Safe writes below cannot be taken back and SIGN_FINISHED is a
+        // global event, so make sure it is ours
+        if (!(await isBound(approval.id))) return;
+
         let sig = data.data;
         try {
           if (params.isGnosis) {
@@ -258,6 +262,10 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   };
 
   const handleSubmit = async () => {
+    // submitQRHardwareSignature completes a signature; never feed one into the
+    // keyring for an approval this page is no longer showing
+    if (!(await isBound())) return;
+
     // cache signMethod in statsData
     await wallet.setStatsData({
       signMethod,
@@ -304,8 +312,10 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
       const onKeystoneWaitingPageDone = () => setIsClickDone(true);
       const onKeystoneWaitingPageSetErrorMessage = (error) =>
         setErrorMessage(error);
-      const onKeystoneWaitingPageHandleSuccess = (message) => {
+      const onKeystoneWaitingPageHandleSuccess = async (message) => {
         setScanMessage(message);
+        // same rule as handleSubmit: this completes a signature
+        if (!(await isBound())) return;
         wallet.submitQRHardwareSignature(
           signPayload!.requestId,
           message,

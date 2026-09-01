@@ -22,8 +22,6 @@ import {
   REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
-import { useContext } from 'react';
-import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useScroll, useThrottleFn } from 'react-use';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
@@ -81,9 +79,7 @@ const SignText = ({
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  // the approval this page was mounted for
-  const binding = useContext(ApprovalBindingContext);
+  const [, resolveApproval, rejectApproval, isBound] = useApproval();
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
@@ -535,7 +531,7 @@ const SignText = ({
     // Building the Safe message and starting the signer both outlive this
     // handler, so re-check the mounted approval before either: the resolve at
     // the end would be dropped, but the side effects would already have run.
-    if ((await getApproval())?.id !== binding?.id) return;
+    if (!(await isBound())) return;
 
     if (!isViewGnosisSafe) {
       await wallet.buildGnosisMessage({

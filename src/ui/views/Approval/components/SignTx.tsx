@@ -45,15 +45,7 @@ import {
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
 } from 'consts';
-import React, {
-  ReactNode,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { ApprovalBindingContext } from '@/ui/utils/approval-context';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
@@ -511,11 +503,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  // identity of the approval this page was mounted for. The queue can advance
-  // under us (rpcFlow unshifts a replacement and makes it current in place), so
-  // a second read of getApproval() is not a check against anything.
-  const binding = useContext(ApprovalBindingContext);
+  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
   const securityEngine = useSecurityEngineStore();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
@@ -1386,6 +1374,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         : actionSecurityState.requiredData;
 
     const approval = await getApproval();
+    // updateSigningTx below writes into approval.signingTxId; the epoch ref only
+    // serialises this page's own explains, it says nothing about the queue
+    if (!(await isBound())) return;
     if (explainEpochRef.current !== detailEpoch) {
       return;
     }
@@ -1486,7 +1477,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     // Building and signing a Safe transaction are side effects that outlive
     // this handler, so re-check the mounted approval before starting them: the
     // resolve at the end would be dropped, but the signer would already be up.
-    if ((await getApproval())?.id !== binding?.id) return;
+    if (!(await isBound())) return;
 
     if (!isViewGnosisSafe) {
       const params: any = {
@@ -1623,7 +1614,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     const approval = await getApproval();
     // same rule as handleAllow: sendRequest below is a real side effect, so
     // stop if the queue advanced onto a different approval
-    if (!approval || approval.id !== binding?.id) return;
+    if (!approval || !(await isBound())) return;
 
     wallet.sendRequest({
       $ctx: params.$ctx,
@@ -1663,7 +1654,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
 
     const approval = await getApproval();
-    if (!approval || approval.id !== binding?.id) return;
+    if (!approval || !(await isBound())) return;
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
@@ -1757,7 +1748,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     // the queue moved on while we were preparing: useApproval would drop the
     // resolve anyway, so stop before writing this tx into the replacement's
     // signing record
-    if ((await getApproval())?.id !== binding?.id) return;
+    if (!(await isBound())) return;
     gaEvent('allow');
 
     approval.signingTxId &&
