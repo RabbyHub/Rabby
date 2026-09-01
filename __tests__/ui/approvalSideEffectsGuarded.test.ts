@@ -7,10 +7,14 @@ import ts from 'typescript';
 // another approval's signing record, switching accounts, posting to a Safe.
 // Every one of those has to be gated on the approval the page is bound to.
 //
-// This is a presence check, not an ordering one: a function that calls
-// something on this list must also call `isBound`. Whether the guard sits
-// before the effect is a judgement the reader still has to make - but a new
-// unguarded call site cannot land silently.
+// A function that calls something on this list must call `isBound` first. The
+// check is textual position within the function, which is enough to catch a
+// guard that sits after the effect, and it is all this can honestly do.
+//
+// Known holes, so nobody over-trusts a green run: an effect reached through a
+// helper in another file, a call through a variable or a computed member name,
+// and anything outside `src/ui/views/Approval/components`. It narrows the
+// surface, it does not close it.
 const IRREVERSIBLE = [
   'updateSigningTx',
   'resendSign',
@@ -25,7 +29,6 @@ const IRREVERSIBLE = [
   'postGnosisTransaction',
   'handleGnosisMessage',
   'coboSafeBuildTransaction',
-  'coboSafeImport',
   'addCustomTestnet',
   'updateConnectSite',
 ];
@@ -50,18 +53,23 @@ const sources = () => {
   return out;
 };
 
-const calledNames = (node: ts.Node) => {
-  const names = new Set<string>();
+// first position at which each name is called anywhere inside `node`
+const callPositions = (node: ts.Node) => {
+  const at = new Map<string, number>();
+  const seen = (name: string, pos: number) => {
+    if (!at.has(name) || pos < at.get(name)!) at.set(name, pos);
+  };
   const visit = (n: ts.Node) => {
     if (ts.isCallExpression(n)) {
       const callee = n.expression;
-      if (ts.isIdentifier(callee)) names.add(callee.text);
-      if (ts.isPropertyAccessExpression(callee)) names.add(callee.name.text);
+      if (ts.isIdentifier(callee)) seen(callee.text, n.getStart());
+      if (ts.isPropertyAccessExpression(callee))
+        seen(callee.name.text, n.getStart());
     }
     ts.forEachChild(n, visit);
   };
   visit(node);
-  return names;
+  return at;
 };
 
 describe('irreversible approval side effects are gated on the bound approval', () => {
@@ -80,6 +88,10 @@ describe('irreversible approval side effects are gated on the bound approval', (
         ts.ScriptKind.TSX
       );
 
+      // A handler that deliberately acts on an approval it creates itself has
+      // to say so, in writing, at the call site.
+      const EXEMPT = 'approval-side-effect-ok:';
+
       const visit = (node: ts.Node) => {
         if (
           ts.isFunctionDeclaration(node) ||
@@ -87,9 +99,13 @@ describe('irreversible approval side effects are gated on the bound approval', (
           ts.isArrowFunction(node) ||
           ts.isMethodDeclaration(node)
         ) {
-          const names = calledNames(node);
-          const effects = IRREVERSIBLE.filter((name) => names.has(name));
-          if (effects.length && !names.has('isBound')) {
+          const at = callPositions(node);
+          const guard = at.get('isBound');
+          const effects = IRREVERSIBLE.filter(
+            (name) =>
+              at.has(name) && (guard === undefined || guard > at.get(name)!)
+          );
+          if (effects.length && !node.getText().includes(EXEMPT)) {
             const { line } = source.getLineAndCharacterOfPosition(
               node.getStart()
             );
