@@ -1,4 +1,5 @@
 import { ConnectedSite } from '@/background/service/permission';
+import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { Account } from '@/background/service/preference';
 import { RcIconSuccessCC } from '@/ui/assets/desktop/common';
 import IconRabbyWallet from '@/ui/assets/icon-rabby-circle.svg';
@@ -81,7 +82,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
     params: { icon, origin, name, $ctx },
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
+  const [getApproval, resolveApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
 
@@ -175,10 +176,17 @@ export const PerpsInviteContent = (props: ConnectProps) => {
           // sendRequest above queues a fresh approval; this page is still bound
           // to the Connect approval it was opened from, which is already
           // resolved, so hand the UI over to the new one by name
-          // resolve the approval sendRequest just queued, not whatever else
-          // may have become current in the meantime
+          // Resolve the approval sendRequest just queued and nothing else. A
+          // dapp's own eth_signTypedData_v4 is also a SignTypedData approval
+          // and can be current here, so the component name is not identity -
+          // the origin is what separates our request from theirs.
           const target = await getApproval();
-          if (target?.data.approvalComponent !== 'SignTypedData') return false;
+          if (
+            target?.data.approvalComponent !== 'SignTypedData' ||
+            target.data.origin !== INTERNAL_REQUEST_ORIGIN
+          ) {
+            throw new Error('Failed to hand over to the signing request');
+          }
           resolveApproval(
             {
               uiRequestComponent:

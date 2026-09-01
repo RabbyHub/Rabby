@@ -53,13 +53,22 @@ const sources = () => {
   return out;
 };
 
-// first position at which each name is called anywhere inside `node`
+const isFunctionLike = (n: ts.Node) =>
+  ts.isFunctionDeclaration(n) ||
+  ts.isFunctionExpression(n) ||
+  ts.isArrowFunction(n) ||
+  ts.isMethodDeclaration(n);
+
+// First position at which each name is called in this function's *own* scope.
+// Nested functions are visited on their own; counting their calls here would
+// let a guard inside one callback vouch for an effect in a sibling.
 const callPositions = (node: ts.Node) => {
   const at = new Map<string, number>();
   const seen = (name: string, pos: number) => {
     if (!at.has(name) || pos < at.get(name)!) at.set(name, pos);
   };
   const visit = (n: ts.Node) => {
+    if (n !== node && isFunctionLike(n)) return;
     if (ts.isCallExpression(n)) {
       const callee = n.expression;
       if (ts.isIdentifier(callee)) seen(callee.text, n.getStart());
@@ -89,8 +98,16 @@ describe('irreversible approval side effects are gated on the bound approval', (
       );
 
       // A handler that deliberately acts on an approval it creates itself has
-      // to say so, in writing, at the call site.
+      // to say so, in writing, on the lines just above that call - not
+      // anywhere in the function, or one marker would excuse the whole file.
       const EXEMPT = 'approval-side-effect-ok:';
+      const lines = text.split('\n');
+      const exemptedAt = (pos: number) => {
+        const { line } = source.getLineAndCharacterOfPosition(pos);
+        return lines
+          .slice(Math.max(0, line - 4), line)
+          .some((l) => l.includes(EXEMPT));
+      };
 
       const visit = (node: ts.Node) => {
         if (
@@ -103,16 +120,18 @@ describe('irreversible approval side effects are gated on the bound approval', (
           const guard = at.get('isBound');
           const effects = IRREVERSIBLE.filter(
             (name) =>
-              at.has(name) && (guard === undefined || guard > at.get(name)!)
+              at.has(name) &&
+              (guard === undefined || guard > at.get(name)!) &&
+              !exemptedAt(at.get(name)!)
           );
-          if (effects.length && !node.getText().includes(EXEMPT)) {
+          if (effects.length) {
             const { line } = source.getLineAndCharacterOfPosition(
               node.getStart()
             );
             unguarded.push(
               `${path.relative(ROOT, file)}:${line + 1} → ${effects.join(', ')}`
             );
-            return; // report the outermost function only
+            // keep descending: a nested handler is judged on its own scope
           }
         }
         ts.forEachChild(node, visit);

@@ -319,6 +319,10 @@ const WatchAddressWaiting = ({
       }
     );
     await initWalletConnect();
+    // this releases the parked signer for the approval below; only do it if
+    // this page really is showing the current one
+    if (!(await isBound())) return;
+
     emitSignComponentAmounted();
   };
 
