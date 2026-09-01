@@ -1616,6 +1616,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     }
 
     const approval = await getApproval();
+    // same rule as handleAllow: sendRequest below is a real side effect, so
+    // stop if the queue advanced onto a different approval
+    if (!approval || approval.id !== binding?.id) return;
 
     wallet.sendRequest({
       $ctx: params.$ctx,

@@ -1,4 +1,10 @@
-import React, { ReactNode, createContext, useContext, useState } from 'react';
+import React, {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 import { Object } from 'ts-toolbelt';
 import { WalletController as WalletControllerClass } from 'background/controller/wallet';
 import { IExtractFromPromise } from './type';
@@ -6,6 +12,11 @@ import { CommonPopupComponentName } from '../views/CommonPopup';
 import { PopupProps } from '../component/Popup';
 import { AppChain } from '../hooks/useAppChain';
 import { ApprovalBinding } from './approval-context';
+import {
+  currentBinding,
+  dropBinding,
+  pushBinding,
+} from './approval-binding-stack';
 
 // TODO: implement here but not used now to avoid too much ts checker error.
 // we will use it on almost biz store ready.
@@ -49,14 +60,21 @@ const useCommonPopupViewState = () => {
   const [data, setData] = useState<any>();
   const [apps, setApps] = useState<AppChain[]>();
   const [popupProps, setPopupProps] = useState<PopupProps | undefined>();
-  // The approval this window is currently showing, published by the approval
-  // page itself (see ApprovalUtilsProvider). Popups mount outside that tree but
-  // inside the same window, so this is how they learn what they are acting on;
-  // a window with no approval page keeps it null.
-  const [
-    approvalBinding,
-    setApprovalBinding,
-  ] = useState<ApprovalBinding | null>(null);
+  // The approvals this window is currently showing, published by the approval
+  // pages themselves (see ApprovalUtilsProvider). Popups mount outside those
+  // trees but inside the same window, so this is how they learn what they are
+  // acting on; a window with no approval page keeps the stack empty.
+  //
+  // It is a stack because two containers can be mounted at once - the route and
+  // the approval popup - and whichever unmounts first must hand back to the
+  // other rather than leaving the window unbound.
+  const [bindings, setBindings] = useState<ApprovalBinding[]>([]);
+  const approvalBinding = currentBinding(bindings);
+
+  const publishApprovalBinding = useCallback((binding: ApprovalBinding) => {
+    setBindings((current) => pushBinding(current, binding));
+    return () => setBindings((current) => dropBinding(current, binding));
+  }, []);
 
   const activePopup = (name: CommonPopupComponentName) => {
     setComponentName(name);
@@ -98,7 +116,7 @@ const useCommonPopupViewState = () => {
     apps,
     setApps,
     approvalBinding,
-    setApprovalBinding,
+    publishApprovalBinding,
   };
 };
 

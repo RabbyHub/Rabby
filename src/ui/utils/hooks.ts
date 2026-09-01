@@ -13,6 +13,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
 import { ApprovalBindingContext, getApprovalTarget } from './approval-context';
 import * as Sentry from '@sentry/browser';
+import { getUiType } from './uiType';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -24,15 +25,17 @@ export const useApproval = () => {
   const binding = useContext(ApprovalBindingContext);
 
   // An action with neither a binding nor an explicit id can never do anything,
-  // and it fails silently: the button just does nothing. Report it only when an
-  // approval is actually pending - that is a page looking at an approval it
-  // cannot name, i.e. a wiring bug. With nothing pending it is an ordinary
-  // no-op, such as a hardware prompt cancelled from the dashboard.
+  // and it fails silently: the button just does nothing. Report it only from a
+  // notification window, which is the only place approval pages are routed to
+  // (SortHat), so an unnamed action there means a page cannot name the approval
+  // it is showing - a wiring bug. Elsewhere the same call is an ordinary no-op:
+  // `getApproval()` is global background state, so a dashboard page acting
+  // while some other window holds an approval must not be reported.
   const reportUnboundAction = (
     method: 'resolve' | 'reject',
     approval: Approval | null
   ) => {
-    if (!approval) return;
+    if (!approval || !getUiType().isNotification) return;
     Sentry.captureException(
       new Error(`useApproval ${method} has no approval to act on`),
       {

@@ -6,10 +6,11 @@ export type ApprovalBinding = {
   component: Approval['data']['approvalComponent'];
 };
 
-// Identity of the approval an approval page was mounted for. `useApproval`
-// binds every resolve/reject to it, so a page can never act on the queued
-// approval that replaced it. Null outside the approval container (Unlock,
-// ImportSuccess, CommonPopup, ...), where the old unbound behaviour stands.
+// Identity of the approval an approval page was mounted for, provided by
+// ApprovalUtilsProvider. `useApproval` binds every resolve/reject to it, so a
+// page can never act on the queued approval that replaced it. Null on pages
+// that are not approval pages (Unlock, ImportSuccess, ...); those must name
+// their approval explicitly or the action is dropped.
 export const ApprovalBindingContext = createContext<ApprovalBinding | null>(
   null
 );
