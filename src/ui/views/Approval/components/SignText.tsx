@@ -22,6 +22,8 @@ import {
   REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { useContext } from 'react';
+import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useScroll, useThrottleFn } from 'react-use';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
@@ -79,7 +81,9 @@ const SignText = ({
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  // the approval this page was mounted for
+  const binding = useContext(ApprovalBindingContext);
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
@@ -552,6 +556,10 @@ const SignText = ({
       chainId: BigInt(chainId!),
       data: signText,
     });
+    // the signer started here outlives this handler, so re-check the mounted
+    // approval first: the resolve below would be dropped, but not the signer
+    if ((await getApproval())?.id !== binding?.id) return;
+
     if (WaitingSignMessageComponent[account.type]) {
       wallet.signTypedDataWithUI(
         account.type,

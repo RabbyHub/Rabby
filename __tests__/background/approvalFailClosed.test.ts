@@ -144,6 +144,19 @@ describe('approval resolution is fail closed', () => {
     expect(removeWindow).toHaveBeenCalledWith(7);
   });
 
+  it('invalidates in-flight signing when pending consent is cancelled', async () => {
+    // a deferred signer parked on SIGN_WAITING_AMOUNTED compares this against
+    // the value it captured, so cancelling must move it
+    pending('a');
+    (notificationService as any).currentRequestDeferFn = jest.fn();
+    const before = (notificationService as any).signingSession;
+
+    notificationService.rejectAllApprovals();
+
+    expect((notificationService as any).signingSession).not.toBe(before);
+    expect((notificationService as any).currentRequestDeferFn).toBeUndefined();
+  });
+
   it('resolves the approval the caller named', async () => {
     const approval = pending('a');
 
