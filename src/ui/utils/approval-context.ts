@@ -24,15 +24,19 @@ export const getApprovalTarget = (
   binding: ApprovalBinding | null,
   approvalId?: string
 ) => {
-  const id = approvalId ?? binding?.id;
+  // An explicit id wins over the ambient binding: the caller read the live
+  // approval, whereas the binding is only what its page was mounted for. A
+  // flow that legitimately moves onto a newly created approval - the Perps
+  // invite handing over to a signing request - has no other way to say so.
+  if (approvalId) {
+    return { id: approvalId, isStale: approvalId !== approval?.id };
+  }
 
   return {
-    id,
+    id: binding?.id,
     isStale:
-      !id ||
-      id !== approval?.id ||
-      (!!binding &&
-        (binding.id !== approval?.id ||
-          binding.component !== approval?.data?.approvalComponent)),
+      !binding ||
+      binding.id !== approval?.id ||
+      binding.component !== approval?.data?.approvalComponent,
   };
 };

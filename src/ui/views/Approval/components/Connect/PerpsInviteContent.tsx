@@ -81,7 +81,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
     params: { icon, origin, name, $ctx },
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
 
@@ -169,17 +169,26 @@ export const PerpsInviteContent = (props: ConnectProps) => {
         });
 
         if (WaitingSignMessageComponent[selectedAccount.type]) {
-          resolveApproval({
-            uiRequestComponent:
-              WaitingSignMessageComponent[selectedAccount?.type],
-            $account: selectedAccount,
-            type: selectedAccount.type,
-            address: selectedAccount.address,
-            extra: {
-              brandName: selectedAccount.brandName,
-              signTextMethod: 'eth_signTypedData_v4',
+          // sendRequest above queues a fresh approval; this page is still bound
+          // to the Connect approval it was opened from, which is already
+          // resolved, so hand the UI over to the new one by name
+          const target = await getApproval();
+          resolveApproval(
+            {
+              uiRequestComponent:
+                WaitingSignMessageComponent[selectedAccount?.type],
+              $account: selectedAccount,
+              type: selectedAccount.type,
+              address: selectedAccount.address,
+              extra: {
+                brandName: selectedAccount.brandName,
+                signTextMethod: 'eth_signTypedData_v4',
+              },
             },
-          });
+            false,
+            false,
+            target?.id
+          );
         }
 
         signature = await promise;

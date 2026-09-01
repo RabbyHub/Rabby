@@ -21,16 +21,23 @@ describe('getApprovalTarget', () => {
     );
   });
 
-  it('requires an explicit id and the binding to agree', () => {
+  it('lets an explicit id override the page it was mounted for', () => {
+    // a flow that moves onto an approval it just created names it; the page's
+    // own binding is only the default for callers that name nothing
     const binding = { id: 'a', component: 'SignTx' } as any;
     expect(getApprovalTarget(approval('b'), binding, 'b')).toEqual({
       id: 'b',
-      isStale: true,
+      isStale: false,
     });
     expect(getApprovalTarget(approval('b'), null, 'b')).toEqual({
       id: 'b',
       isStale: false,
     });
+  });
+
+  it('still checks an explicit id against the live approval', () => {
+    expect(getApprovalTarget(approval('a'), null, 'b').isStale).toBe(true);
+    expect(getApprovalTarget(null, null, 'b').isStale).toBe(true);
   });
 
   it('fails closed when the action cannot name its approval', () => {
