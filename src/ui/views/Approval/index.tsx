@@ -11,7 +11,6 @@ import './style.less';
 import clsx from 'clsx';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
-import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 
 const Approval: React.FC<{
   className?: string;
@@ -61,18 +60,15 @@ const Approval: React.FC<{
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <ApprovalBindingContext.Provider
-          value={{ id: approval.id, component: approvalComponent }}
-        >
-          <ApprovalUtilsProvider>
-            <CurrentApprovalComponent
-              params={params}
-              origin={origin}
-              account={account}
-              // requestDefer={requestDefer}
-            />
-          </ApprovalUtilsProvider>
-        </ApprovalBindingContext.Provider>
+        <ApprovalUtilsProvider approval={approval}>
+          <CurrentApprovalComponent
+            key={approval.id}
+            params={params}
+            origin={origin}
+            account={account}
+            // requestDefer={requestDefer}
+          />
+        </ApprovalUtilsProvider>
       )}
     </div>
   );
