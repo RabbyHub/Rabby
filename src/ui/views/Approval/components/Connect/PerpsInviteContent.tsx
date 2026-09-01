@@ -118,10 +118,6 @@ export const PerpsInviteContent = (props: ConnectProps) => {
       if (!selectedAccount) {
         throw new Error('Please select an account');
       }
-      // every branch below starts a signature; this page is opened from the
-      // Connect approval and must not sign for one that is already gone
-      if (!(await isBound())) return false;
-
       const sdk = getPerpsSDK();
       sdk.initAccount(selectedAccount.address);
       const resp = sdk.exchange?.prepareSetReferrer(PERPS_REFERENCE_CODE);
@@ -167,6 +163,9 @@ export const PerpsInviteContent = (props: ConnectProps) => {
         signature = res[0];
         typedDataSignatureStore.close();
       } else {
+        // approval-side-effect-ok: this deliberately starts a new request of
+        // its own; the Connect approval that opened this page is already
+        // resolved, and the resolve below names the approval this creates
         const promise = wallet.sendRequest<string>({
           method: 'eth_signTypedData_v4',
           params: [selectedAccount.address, JSON.stringify(resp?.typedData)],
@@ -176,7 +175,10 @@ export const PerpsInviteContent = (props: ConnectProps) => {
           // sendRequest above queues a fresh approval; this page is still bound
           // to the Connect approval it was opened from, which is already
           // resolved, so hand the UI over to the new one by name
+          // resolve the approval sendRequest just queued, not whatever else
+          // may have become current in the meantime
           const target = await getApproval();
+          if (target?.data.approvalComponent !== 'SignTypedData') return false;
           resolveApproval(
             {
               uiRequestComponent:

@@ -1572,6 +1572,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   });
 
   const handleCoboArugsConfirm = async (account: Account) => {
+    // coboSafeBuildTransaction switches the wallet's current account, so the
+    // check has to happen before it, not only before the sendRequest below
+    if (!(await isBound())) return;
+
     if (!coboArgusInfo) return;
 
     wallet.reportStats('signTransaction', {
