@@ -1630,6 +1630,10 @@ const SignTx = ({
 
     if (!(await canSubmitCurrentApproval())) return;
     if (WaitingSignMessageComponent[account.type]) {
+      // the build above is a network round trip; re-check before the signer
+      // starts, or a cancellation during it still gets a signature
+      if (!(await isBound())) return;
+
       wallet.signTypedDataWithUI(
         account.type,
         account.address,
