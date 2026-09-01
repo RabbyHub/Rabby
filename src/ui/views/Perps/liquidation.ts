@@ -158,7 +158,9 @@ export const resolveProjectedLiquidationPrice = ({
    * The floor is the *added* margin, not the merged position's: an existing
    * position's margin is already real and carried by the cross balance, so
    * flooring at the merged notional would invent margin for it too and quote a
-   * liquidation price far safer than the account's.
+   * liquidation price far safer than the account's. It is applied to the free
+   * balance before the existing leg's maintenance margin is added back, since
+   * that add-back is locked by the old leg and cannot fund this order.
    */
   assumeSufficientMargin?: boolean;
 }): { liquidationPrice: string; liquidationPriceNum: number } | null => {
@@ -206,35 +208,51 @@ export const resolveProjectedLiquidationPrice = ({
   const basePrice = isCross ? entry : projectedEntry;
   const baseNotional = isCross ? projectedSize.multipliedBy(entry) : notional;
 
-  const backingMargin = isCross
-    ? // The cross balance already has the existing position's maintenance
-      // margin deducted, and `baseNotional` covers that same position — so the
-      // formula would charge it a second time. Add it back to charge it once.
-      new BigNumber(crossMarginAvailableAfterMaintenance ?? Number.NaN).plus(
-        currentSize
-          .multipliedBy(entry)
-          .multipliedBy(new BigNumber(1).dividedBy(maxLeverage).dividedBy(2))
-      )
-    : sameDirection
-    ? new BigNumber(currentPosition?.marginUsed ?? 0).plus(
-        orderSize.multipliedBy(entry).dividedBy(leverageValue)
-      )
-    : notional.dividedBy(leverageValue);
+  const crossFree = new BigNumber(
+    crossMarginAvailableAfterMaintenance ?? Number.NaN
+  );
+  // The cross balance already has the existing position's maintenance margin
+  // deducted, and `baseNotional` covers that same position — so the formula
+  // would charge it a second time. Add it back to charge it once.
+  const crossMaintenanceAddBack = currentSize
+    .multipliedBy(entry)
+    .multipliedBy(new BigNumber(1).dividedBy(maxLeverage).dividedBy(2));
   // Only the size this order adds needs margin invented for it: growing a
   // position adds `orderSize`, flipping one adds the whole post-flip position
   // (`projectedSize`) since the old leg is closed out, and with no position the
   // two are the same. Charging `baseNotional` instead would also fabricate
   // margin for the existing leg, which the cross balance already backs.
-  const netNewSize = sameDirection ? orderSize : projectedSize;
+  const addedMargin = (sameDirection ? orderSize : projectedSize)
+    .multipliedBy(entry)
+    .dividedBy(leverageValue);
   // `isFinite` keeps the null-balance case failing closed: the floor only
   // raises a real deficit, never invents a balance that couldn't be resolved.
-  const margin =
-    isCross && assumeSufficientMargin && backingMargin.isFinite()
-      ? BigNumber.maximum(
-          backingMargin,
-          netNewSize.multipliedBy(entry).dividedBy(leverageValue)
-        )
-      : backingMargin;
+  const floorCross = assumeSufficientMargin && crossFree.isFinite();
+
+  // Flipping closes the old leg and releases its maintenance margin back into
+  // the balance, so the whole sum genuinely backs the new position.
+  const crossAfterRelease = crossFree.plus(crossMaintenanceAddBack);
+  const crossBacking = sameDirection
+    ? // Growing instead leaves that maintenance margin locked by the existing
+      // leg, where this order cannot spend it — so the floor has to land on the
+      // free balance underneath it. Flooring the sum would let a large enough
+      // add-back mask a deficit outright: 18 free against a 20 order reads as
+      // 20.5 and is never topped up.
+      (floorCross
+        ? BigNumber.maximum(crossFree, addedMargin)
+        : crossFree
+      ).plus(crossMaintenanceAddBack)
+    : floorCross
+    ? BigNumber.maximum(crossAfterRelease, addedMargin)
+    : crossAfterRelease;
+
+  const margin = isCross
+    ? crossBacking
+    : sameDirection
+    ? new BigNumber(currentPosition?.marginUsed ?? 0).plus(
+        orderSize.multipliedBy(entry).dividedBy(leverageValue)
+      )
+    : notional.dividedBy(leverageValue);
   if (!margin.isFinite() || margin.lte(0)) return null;
 
   const liquidation = calLiquidationPrice(

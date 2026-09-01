@@ -87,6 +87,7 @@ export const Assets: React.FC = () => {
     });
   }, [
     isUnifiedAccount,
+    isPortfolioMargin,
     spotBalancesMap,
     rawSpotBalancesMap,
     clearinghouseState,
