@@ -81,7 +81,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
     params: { icon, origin, name, $ctx },
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
 
@@ -118,6 +118,10 @@ export const PerpsInviteContent = (props: ConnectProps) => {
       if (!selectedAccount) {
         throw new Error('Please select an account');
       }
+      // every branch below starts a signature; this page is opened from the
+      // Connect approval and must not sign for one that is already gone
+      if (!(await isBound())) return false;
+
       const sdk = getPerpsSDK();
       sdk.initAccount(selectedAccount.address);
       const resp = sdk.exchange?.prepareSetReferrer(PERPS_REFERENCE_CODE);

@@ -1,7 +1,5 @@
 import { Account, ChainGas } from 'background/service/preference';
 import React, { ReactNode, useMemo, useRef, useState } from 'react';
-import { useContext } from 'react';
-import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
@@ -640,9 +638,7 @@ export const SignTestnetTx = ({
 
   const { t } = useTranslation();
 
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  // the approval this page was mounted for; the queue can advance under us
-  const binding = useContext(ApprovalBindingContext);
+  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
 
   const checkCanProcess = async () => {
     const session = params.session;
@@ -786,7 +782,7 @@ export const SignTestnetTx = ({
     (transaction as Tx).gasPrice = tx.gasPrice;
     const approval = await getApproval();
     // stop before writing this tx into a replacement's signing record
-    if (!approval || approval.id !== binding?.id) return;
+    if (!approval || !(await isBound())) return;
 
     approval.signingTxId &&
       (await wallet.updateSigningTx(approval.signingTxId, {
