@@ -469,12 +469,17 @@ class NotificationService extends Events {
           new EthereumProviderError(4001, 'User rejected the request.')
         );
     });
+    // Finish cancelling before yielding: awaiting the window teardown first
+    // would let a request that arrives during it create its signing record and
+    // then have it wiped, and its approval later fails with "approvingTx not
+    // found".
+    transactionHistoryService.removeAllSigningTx();
+
     // Every caller of this is cancelling everything pending, so leave no window
     // rendering an approval that no longer exists: without this the page stays
     // up, the next dapp request only focuses the window, and the user acts on
     // a screen that shows the wrong request.
     await this.clear();
-    transactionHistoryService.removeAllSigningTx();
   };
 
   unLock = () => {
