@@ -793,7 +793,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
                           {engineResults &&
                           ctx?.txsCalc[txs.length - 1].preExecResult ? (
-                            <ApprovalUtilsProvider>
+                            <ApprovalUtilsProvider approval={null}>
                               <MiniSecurityHeader
                                 engineResults={engineResults}
                                 tx={txs[txs.length - 1]}
@@ -1069,7 +1069,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
                   {engineResults &&
                   ctx?.txsCalc[txs.length - 1].preExecResult ? (
-                    <ApprovalUtilsProvider>
+                    <ApprovalUtilsProvider approval={null}>
                       <MiniSecurityHeader
                         engineResults={engineResults}
                         tx={txs[txs.length - 1]}
