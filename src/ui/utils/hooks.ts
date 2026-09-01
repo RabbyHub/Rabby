@@ -12,6 +12,7 @@ import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
 import { ApprovalBindingContext, getApprovalTarget } from './approval-context';
+import * as Sentry from '@sentry/browser';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -21,6 +22,17 @@ export const useApproval = () => {
   const getApproval: () => Promise<Approval> = wallet.getApproval;
   const deviceConnect = useDeviceConnect();
   const binding = useContext(ApprovalBindingContext);
+
+  // An action with neither a binding nor an explicit id can never do anything,
+  // and it fails silently: the button just does nothing. That is a page mounted
+  // outside an approval container, i.e. a wiring bug, so report it. A mismatch
+  // is an ordinary race and stays quiet.
+  const reportUnboundAction = (method: 'resolve' | 'reject') => {
+    Sentry.captureException(
+      new Error(`useApproval ${method} has no approval to act on`),
+      { tags: { function: 'useApproval' } }
+    );
+  };
 
   const resolveApproval = async (
     data?: any,
@@ -32,9 +44,12 @@ export const useApproval = () => {
     const { id, isStale } = getApprovalTarget(approval, binding, approvalId);
 
     if (isStale) {
+      if (!id) reportUnboundAction('resolve');
       // never resolve the approval that replaced ours; navigate so the window
       // re-renders on the real one
-      history.replace('/');
+      if (!stay) {
+        history.replace('/');
+      }
       return;
     }
 
@@ -68,6 +83,10 @@ export const useApproval = () => {
     // the caller is acting on an approval that is no longer current: skip the
     // reject, but still navigate so the window re-renders on the real one
     const { id, isStale } = getApprovalTarget(approval, binding, approvalId);
+
+    if (isStale && !id) {
+      reportUnboundAction('reject');
+    }
 
     if (!isStale) {
       if (approval?.data?.params?.data?.[0]?.isCoboSafe) {

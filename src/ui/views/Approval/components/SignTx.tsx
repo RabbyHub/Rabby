@@ -45,7 +45,15 @@ import {
   GAS_TOP_UP_ADDRESS,
   ALIAS_ADDRESS,
 } from 'consts';
-import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
@@ -504,6 +512,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  // identity of the approval this page was mounted for. The queue can advance
+  // under us (rpcFlow unshifts a replacement and makes it current in place), so
+  // a second read of getApproval() is not a check against anything.
+  const binding = useContext(ApprovalBindingContext);
   const securityEngine = useSecurityEngineStore();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
@@ -1642,10 +1654,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       return;
     }
 
-    // identity of the approval this run is for, captured before the async
-    // preparation below
     const approval = await getApproval();
-    if (!approval) return;
+    if (!approval || approval.id !== binding?.id) return;
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
@@ -1739,7 +1749,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     // the queue moved on while we were preparing: useApproval would drop the
     // resolve anyway, so stop before writing this tx into the replacement's
     // signing record
-    if ((await getApproval())?.id !== approval.id) return;
+    if ((await getApproval())?.id !== binding?.id) return;
     gaEvent('allow');
 
     approval.signingTxId &&

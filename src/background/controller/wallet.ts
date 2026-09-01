@@ -2148,8 +2148,8 @@ export class WalletController extends BaseController {
   });
 
   lockWallet = async () => {
-    // Lock is a session boundary: consent given before it must not survive it.
-    this.rejectAllApprovals();
+    // Pending approvals are rejected on the keyring `lock` event, which covers
+    // every path that locks, this one included.
     await keyringService.setLocked();
     // The keyring is locked from here on, so tell the UI before the remaining
     // best-effort cleanup. A throw below must not leave open pages rendering

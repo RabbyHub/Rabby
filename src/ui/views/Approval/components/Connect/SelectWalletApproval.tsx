@@ -43,7 +43,7 @@ export const ConnectApproval: React.FC<{
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <ApprovalUtilsProvider>
+        <ApprovalUtilsProvider approval={approval}>
           <Connect params={params} />
         </ApprovalUtilsProvider>
       )}

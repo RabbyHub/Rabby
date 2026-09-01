@@ -51,6 +51,7 @@ import {
   gasAccountService,
   HDKeyRingLastAddAddrTimeService,
   keyringService,
+  notificationService,
   openapiService,
   pageStateCacheService,
   permissionService,
@@ -382,6 +383,12 @@ restoreAppState();
   });
 
   keyringService.on('lock', () => {
+    // Lock is a session boundary: consent given before it must not survive it.
+    // This is on the keyring event rather than in lockWallet so that every path
+    // that locks - auto lock, the shortcut, resetPassword - is covered.
+    notificationService.rejectAllApprovals();
+    notificationService.clear();
+
     if (interval) {
       clearInterval(interval);
       interval = null;
