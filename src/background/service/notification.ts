@@ -87,6 +87,10 @@ class NotificationService extends Events {
   notifiWindowId: null | number = null;
   isLocked = false;
   currentRequestDeferFn?: (retry?: boolean) => void;
+  // Bumped whenever pending consent is cancelled. A deferred signer parked on
+  // SIGN_WAITING_AMOUNTED outlives the approval it belongs to, so it compares
+  // this against the value it captured and refuses to sign once they differ.
+  signingSession = 0;
   statsData: StatsData | undefined;
 
   get approvals() {
@@ -449,6 +453,11 @@ class NotificationService extends Events {
   };
 
   rejectAllApprovals = () => {
+    // in-flight signing is unconsented work too: it is waiting on the next
+    // waiting component to mount, and that component may belong to a request
+    // made after this cancellation
+    this.signingSession += 1;
+    this.currentRequestDeferFn = undefined;
     this.addLastRejectDapp();
     this.approvals.forEach((approval) => {
       approval.reject &&
