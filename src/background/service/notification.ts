@@ -189,6 +189,40 @@ class NotificationService extends Events {
 
   getApproval = () => this.currentApproval;
 
+  // A dropped action is invisible from the UI: the button simply does nothing.
+  // A mismatch is an ordinary race (double click, a hardware callback landing
+  // after the queue moved on), so it only leaves a breadcrumb. A caller that
+  // names no approval at all is a programming error - every caller is expected
+  // to pass one - so that gets reported.
+  private reportDroppedApproval = (
+    method: 'resolve' | 'reject',
+    approvalId?: string
+  ) => {
+    const detail = {
+      method,
+      approvalId,
+      currentApprovalId: this.currentApproval?.id,
+      approvalComponent: this.currentApproval?.data.approvalComponent,
+    };
+
+    Sentry.addBreadcrumb({
+      category: 'approval',
+      level: 'warning',
+      message: `${method}Approval dropped`,
+      data: detail,
+    });
+
+    if (!approvalId) {
+      Sentry.captureException(
+        new Error(`${method}Approval called without an approvalId`),
+        {
+          tags: { function: `${method}Approval` },
+          extra: detail,
+        }
+      );
+    }
+  };
+
   resolveApproval = async (
     data?: any,
     forceReject = false,
@@ -197,7 +231,10 @@ class NotificationService extends Events {
     // Fail closed: an approval can only be resolved by name. Without an id we
     // would resolve whatever happens to be current, which is not what the
     // caller consented to.
-    if (!approvalId || approvalId !== this.currentApproval?.id) return;
+    if (!approvalId || approvalId !== this.currentApproval?.id) {
+      this.reportDroppedApproval('resolve', approvalId);
+      return;
+    }
     if (forceReject) {
       this.currentApproval?.reject &&
         this.currentApproval?.reject(
@@ -228,7 +265,10 @@ class NotificationService extends Events {
     approvalId?: string
   ) => {
     // Fail closed, same as resolveApproval: no id, no rejection.
-    if (!approvalId || approvalId !== this.currentApproval?.id) return;
+    if (!approvalId || approvalId !== this.currentApproval?.id) {
+      this.reportDroppedApproval('reject', approvalId);
+      return;
+    }
     this.addLastRejectDapp();
     const approval = this.currentApproval;
     if (this.approvals.length <= 1) {
