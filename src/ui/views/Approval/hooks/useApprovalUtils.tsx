@@ -50,7 +50,11 @@ export const ApprovalUtilsProvider = ({
   React.useEffect(() => {
     if (!binding) return;
     setApprovalBinding(binding);
-    return () => setApprovalBinding(null);
+    // The route and the approval popup can both be mounted at once, so only
+    // withdraw our own binding: clearing unconditionally would let whichever
+    // unmounts first take the live one down with it.
+    return () =>
+      setApprovalBinding((current) => (current === binding ? null : current));
   }, [binding]);
 
   return (
