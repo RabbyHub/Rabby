@@ -1,3 +1,7 @@
+// WalletContext is replaced wholesale below. That keeps the .tsx import chain
+// out of a jest setup that only transforms .ts, but it also means these tests
+// only prove the context path: if useApproval ever reads its binding from
+// somewhere else in that module, they would keep passing. Widen the mock then.
 const mockWallet = {
   getApproval: jest.fn(),
   resolveApproval: jest.fn(),
