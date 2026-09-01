@@ -14,7 +14,6 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ReactComponent as RcIconDropdown } from '@/ui/assets/dashboard/dropdown-cc.svg';
 import * as PortfolioTemplate from './Protocols/template';
 import { RcIconExternal1CC } from '@/ui/assets/desktop/common';
-import { PERPS_INVITE_URL } from '@/ui/views/Perps/constants';
 import { useRequest } from 'ahooks';
 import { checkPerpsReference } from '@/ui/views/Perps/utils';
 import { useSticky } from '@/ui/hooks/useSticky';
@@ -203,12 +202,19 @@ const ProtocolItem = ({
             className="ml-[10px] flex items-center"
             onClick={(evt) => {
               evt.stopPropagation();
-              openInTab(
-                protocol.id === 'hyperliquid' && isShowPerpsInvite
-                  ? PERPS_INVITE_URL
-                  : protocol.site_url,
-                false
-              );
+              if (protocol.id === 'hyperliquid') {
+                // The Perps page lives in its own desktop tab with its own
+                // store, so it learns the account through the background
+                // (`switchDesktopPerpsAccount` broadcasts it) — dispatching
+                // into this tab's perps slice would only reset the page the
+                // user is leaving behind.
+                if (!currentAccount) return;
+                wallet.setPerpsCurrentAccount(currentAccount);
+                wallet.switchDesktopPerpsAccount(currentAccount);
+                wallet.openInDesktop('/desktop/perps');
+              } else {
+                openInTab(protocol.site_url, false);
+              }
             }}
           >
             {protocol.id === 'hyperliquid' && isShowPerpsInvite ? (

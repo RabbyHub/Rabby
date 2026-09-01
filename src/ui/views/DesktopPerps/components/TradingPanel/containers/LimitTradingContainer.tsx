@@ -33,6 +33,7 @@ import stats from '@/stats';
 import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
 import { resolveTriggerComparator } from '../../../tpslTrigger';
 import { calcAmountFromPercentage } from '../utils';
+import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
 import { PerpsDropdown } from '../components';
 import { LimitOrderTypeSelector } from '../components/LimitOrderTypeSelector';
 import perpsToast from '../../PerpsToast';
@@ -188,9 +189,15 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   const buyLimitPrice = bboEnabled ? bboBuyPrice : limitPrice;
   const sellLimitPrice = bboEnabled ? bboSellPrice : limitPrice;
 
-  // Estimated price: BBO mode → midPrice, manual → use limitPrice as-is
-  const estBuyPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
-  const estSellPrice = bboEnabled ? midPrice : Number(limitPrice) || midPrice;
+  // Estimated fill price: the book level a BBO order will rest at (per
+  // direction), or the typed limit price; mid while neither is available.
+  // Liquidation, cost and the balance-based max all derive from it.
+  const estBuyPrice = bboEnabled
+    ? Number(bboBuyPrice) || midPrice
+    : Number(limitPrice) || midPrice;
+  const estSellPrice = bboEnabled
+    ? Number(bboSellPrice) || midPrice
+    : Number(limitPrice) || midPrice;
 
   const priceForCalculation = useMemo(() => {
     return bboEnabled ? midPrice : Number(limitPrice) || midPrice;
@@ -322,7 +329,8 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, [wsActiveAssetCtx, markPrice, selectedCoin]);
 
-  // Form validation (direction-agnostic, ALO check moved to button click)
+  // Form validation (direction-agnostic, ALO check moved to button click;
+  // the per-side max gate lives at the buttons)
   const validation = React.useMemo(() => {
     let error: string = '';
     const tradeSize = Number(positionSize.amount) || 0;
@@ -342,22 +350,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       return { isValid: false, error };
     }
 
-    // Check max trade size (shared: use max of both directions)
-    const effectiveMaxTradeSize = reduceOnly
-      ? Number(
-          (currentPosition?.side === 'Long'
-            ? limitMaxSellTradeSize
-            : limitMaxBuyTradeSize) || 0
-        )
-      : Math.max(
-          Number(limitMaxBuyTradeSize || 0),
-          Number(limitMaxSellTradeSize || 0)
-        );
-    if (effectiveMaxTradeSize && tradeSize > effectiveMaxTradeSize) {
-      error = t('page.perpsPro.tradingPanel.insufficientBalance');
-      return { isValid: false, error };
-    }
-
     // Check maximum position size
     const maxUsdValue = Number(currentMarketData?.maxUsdValueSize || 1000000);
     if (notionalNum > maxUsdValue) {
@@ -374,18 +366,20 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     };
   }, [
     positionSize.amount,
-    reduceOnly,
     bboEnabled,
     buyLimitPrice,
     sellLimitPrice,
     limitPrice,
     percentage,
     currentMarketData,
-    currentPosition,
-    limitMaxBuyTradeSize,
-    limitMaxSellTradeSize,
     t,
   ]);
+
+  const checkDirectionMax = useDirectionMaxGate({
+    positionSize,
+    maxBuyTradeSize: limitMaxBuyTradeSize,
+    maxSellTradeSize: limitMaxSellTradeSize,
+  });
 
   // ALO validation is deferred to button click (see openOrder)
 
@@ -785,6 +779,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
   );
 
   const handleOrderClick = useMemoizedFn((isBuy: boolean) => {
+    if (!checkDirectionMax(isBuy)) return;
     // Keep the direction-specific checks ahead of the dialog: otherwise the
     // user would confirm an order that can only fail validation.
     if (!validateDirection(isBuy)) return;

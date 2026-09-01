@@ -125,7 +125,7 @@ export const PositionItem: React.FC<{
               className="text-15 ml-4 font-medium"
             />
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 relative">
             <span
               className={clsx(
                 'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',

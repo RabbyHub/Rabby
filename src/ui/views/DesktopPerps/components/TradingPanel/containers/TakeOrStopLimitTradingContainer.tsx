@@ -18,6 +18,7 @@ import { BigNumber } from 'bignumber.js';
 import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { calcAmountFromPercentage } from '../utils';
+import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
 import perpsToast from '../../PerpsToast';
 import { splitNumberByStep } from '@/ui/utils';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
@@ -206,7 +207,8 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
 
   const isStopLoss = takeOrStop === 'sl';
 
-  // Form validation (direction-agnostic, trigger price direction check moved to button click)
+  // Form validation (direction-agnostic, trigger price direction check moved to
+  // button click; the per-side max gate lives at the buttons)
   const validation = useMemo(() => {
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * estPrice;
@@ -231,25 +233,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       };
     }
 
-    // Max trade size check - use limitMax values with reduceOnly awareness
-    const effectiveMaxTradeSize = reduceOnly
-      ? Number(
-          (currentPosition?.side === 'Long'
-            ? limitMaxSellTradeSize
-            : limitMaxBuyTradeSize) || 0
-        )
-      : Math.max(
-          Number(limitMaxBuyTradeSize || 0),
-          Number(limitMaxSellTradeSize || 0)
-        );
-
-    if (effectiveMaxTradeSize > 0 && tradeSize > effectiveMaxTradeSize) {
-      return {
-        isValid: false,
-        error: t('page.perpsPro.tradingPanel.insufficientBalance'),
-      };
-    }
-
     // Max USD value check
     const maxUsdValue = Number(currentMarketData?.maxUsdValueSize || 1000000);
     if (notionalNum > maxUsdValue) {
@@ -268,13 +251,15 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
     limitPrice,
     triggerPrice,
     estPrice,
-    limitMaxBuyTradeSize,
-    limitMaxSellTradeSize,
-    reduceOnly,
-    currentPosition,
     currentMarketData,
     t,
   ]);
+
+  const checkDirectionMax = useDirectionMaxGate({
+    positionSize,
+    maxBuyTradeSize: limitMaxBuyTradeSize,
+    maxSellTradeSize: limitMaxSellTradeSize,
+  });
 
   const {
     handleOpenTPSlLimitOrder,
@@ -418,6 +403,7 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
   const requestConfirm = useOrderConfirm();
 
   const handlePlaceOrder = useMemoizedFn((isBuy: boolean) => {
+    if (!checkDirectionMax(isBuy)) return;
     const order = buildOrder(isBuy);
     if (!checkTriggerDirection(isBuy, order.triggerPx)) return;
     // The entry is the limit price the user typed, so the liquidation price is
