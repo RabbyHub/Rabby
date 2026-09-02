@@ -92,7 +92,13 @@ export const bridgeQuoteScore = (
     1
   );
 
-  return amountUsd.minus(gasFeeUsd).minus(timeCostUsd);
+  const score = amountUsd.minus(timeCostUsd);
+
+  if (!receiveToken.price) {
+    return score;
+  }
+
+  return score.minus(gasFeeUsd);
 };
 
 export const BridgeQuoteItem = (props: QuoteItemProps) => {
