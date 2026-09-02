@@ -629,8 +629,7 @@ export const BridgeContent = () => {
     !noQuote &&
     !(bridgeProgressVisible && !amountAvailable);
   const canScrollContent =
-    showStickyInfo &&
-    (showExternalDappTips || !inSufficientCanGetQuote);
+    showStickyInfo && (showExternalDappTips || !inSufficientCanGetQuote);
 
   const btnDisabled =
     inSufficient ||
