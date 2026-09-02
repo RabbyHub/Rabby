@@ -1,6 +1,5 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
 import { QueryClientProvider } from '@tanstack/react-query';
 import BigNumber from 'bignumber.js';
 import Views from './views';
@@ -128,11 +127,9 @@ const main = async () => {
         scope.setTag('error_boundary', 'root');
       }}
     >
-      <Provider store={store}>
-        <QueryClientProvider client={queryClient}>
-          <Views wallet={wallet} />
-        </QueryClientProvider>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Views wallet={wallet} />
+      </QueryClientProvider>
     </Sentry.ErrorBoundary>
   );
 };
