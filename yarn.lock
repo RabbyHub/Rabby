@@ -4882,9 +4882,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-api@npm:0.9.64":
-  version: 0.9.64
-  resolution: "@rabby-wallet/rabby-api@npm:0.9.64"
+"@rabby-wallet/rabby-api@npm:0.9.65-alpha.0":
+  version: 0.9.65-alpha.0
+  resolution: "@rabby-wallet/rabby-api@npm:0.9.65-alpha.0"
   dependencies:
     "@rabby-wallet/rabby-sign": "npm:0.4.0"
     axios: "npm:^0.27.2"
@@ -4895,7 +4895,7 @@ __metadata:
   peerDependencies:
     "@debank/common": ^0.3.9
     "@rabby-wallet/rabby-sign": ">= 0.3"
-  checksum: 10c0/99109e2fa582797687405ba3b0762c5f0bb15fae993bced29ac6deba7d787990101f4184722d7ef54e7562c0b6c87994fc563a0d85ace6d734716fad56cbdcb0
+  checksum: 10c0/0c908f654edb70640b16b692ccc3eba29de4f7ebfa4a08ca8ab8491d378dc2117a6e8e5da0fdca2d8483696830df83a8e61ab498bdb7c9681f504e10a88c3ace
   languageName: node
   linkType: hard
 
@@ -20383,7 +20383,7 @@ __metadata:
     "@rabby-wallet/hyperliquid-sdk": "npm:1.1.15"
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.16"
-    "@rabby-wallet/rabby-api": "npm:0.9.64"
+    "@rabby-wallet/rabby-api": "npm:0.9.65-alpha.0"
     "@rabby-wallet/rabby-bridge": "npm:0.0.8"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
     "@rabby-wallet/rabby-swap": "npm:0.0.83"
