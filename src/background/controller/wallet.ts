@@ -44,7 +44,6 @@ import {
   OfflineChainsService,
   perpsService,
   miscService,
-  lendingService,
   feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
@@ -228,7 +227,6 @@ import { buildCreateListingTypedData } from '@/utils/nft';
 import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
-import { AccountScene } from '@/constant/scene-account';
 import { syncDbService } from '@/db/services/syncDbService';
 import { historyDbService } from '@/db/services/historyDbService';
 import { tokenDbService } from '@/db/services/tokenDbService';
@@ -457,12 +455,11 @@ const gnosisPQueue = new PQueue({
   concurrency: 2,
 });
 
-type DesktopPageType = 'profile' | 'perps' | 'lending' | 'prediction';
+type DesktopPageType = 'profile' | 'perps' | 'prediction';
 
 function getDesktopPageType(path: string): DesktopPageType {
   const normalized = path.replace(/^\//, '');
   if (normalized.startsWith('desktop/perps')) return 'perps';
-  if (normalized.startsWith('desktop/lending')) return 'lending';
   if (normalized.startsWith('desktop/prediction')) return 'prediction';
   return 'profile';
 }
@@ -2635,19 +2632,6 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
   };
 
-  switchSceneAccount = ({
-    scene,
-    account,
-  }: {
-    scene: AccountScene;
-    account: Account;
-  }) => {
-    const prev = preferenceService.getPreference('sceneAccountMap') || {};
-    preferenceService.setPreferencePartials({
-      sceneAccountMap: { ...prev, [scene]: account },
-    });
-  };
-
   getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
   setLastTimeSendToken = (token: TokenItem) =>
     preferenceService.setLastTimeSendToken(token);
@@ -2779,11 +2763,6 @@ export class WalletController extends BaseController {
   setRabbyPointsSignature = RabbyPointsService.setSignature;
   getRabbyPointsSignature = RabbyPointsService.getSignature;
   clearRabbyPointsSignature = RabbyPointsService.clearSignature;
-
-  getLastSelectedLendingChain = lendingService.getLastSelectedChain;
-  setLastSelectedLendingChain = lendingService.setLastSelectedChain;
-  getSkipHealthFactorWarning = lendingService.getSkipHealthFactorWarning;
-  setSkipHealthFactorWarning = lendingService.setSkipHealthFactorWarning;
 
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
   getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
