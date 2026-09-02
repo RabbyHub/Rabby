@@ -120,6 +120,7 @@ export const useSwapMainRenderState = ({
         ? false
         : !!pending.approveHash ||
           Boolean(!isShowMoreVisible && !quote.activeProvider?.quote),
+    hasSwapProgress,
     showStickyInfo:
       hasTokenPair &&
       !isSameTokenPair &&

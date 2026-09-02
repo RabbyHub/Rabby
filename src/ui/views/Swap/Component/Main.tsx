@@ -634,6 +634,7 @@ export const Main = () => {
     showUnsupportedChainTips,
     showQuoteAlert,
     showPendingTxItem,
+    hasSwapProgress,
     showStickyInfo,
     showSubmitTooltip,
     showDirectSignButton,
@@ -675,6 +676,8 @@ export const Main = () => {
       approveHash,
     },
   });
+  const canScrollContent =
+    showStickyInfo && showPendingTxItem && hasSwapProgress;
   const buildTopUpSnapshot = useCallback(
     (): SwapTopUpSnapshot => ({
       amount: inputAmount || '',
@@ -1199,7 +1202,10 @@ export const Main = () => {
         }}
       />
       <div
-        className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
+        className={clsx(
+          'flex-1 page-has-ant-input pb-[76px]',
+          canScrollContent ? 'overflow-auto' : 'overflow-hidden'
+        )}
       >
         <div className="mx-20 flex flex-col gap-2 overflow-hidden rounded-lg">
           <ChainSelectorInForm
