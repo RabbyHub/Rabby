@@ -111,6 +111,17 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
     return Math.max(Math.round(props.duration / 60), 1);
   }, [props.duration]);
 
+  const durationText = useMemo(() => {
+    if (props.duration < 60) {
+      return t('page.bridge.duration-sec', {
+        duration: Math.max(Math.round(props.duration), 1),
+      });
+    }
+    return t('page.bridge.duration', {
+      duration: showMinDuration,
+    });
+  }, [props.duration, showMinDuration, t]);
+
   const durationColor = useMemo(() => {
     if (showMinDuration > 10) {
       return 'text-r-red-default';
@@ -297,11 +308,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
                 durationColor
               )}
             />
-            <span className={durationColor}>
-              {t('page.bridge.duration', {
-                duration: showMinDuration,
-              })}
-            </span>
+            <span className={durationColor}>{durationText}</span>
           </div>
           <div
             className={clsx(
