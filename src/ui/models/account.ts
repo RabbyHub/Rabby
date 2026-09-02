@@ -16,7 +16,6 @@ import { AbstractPortfolioToken } from 'ui/utils/portfolio/types';
 import { DisplayChainWithWhiteLogo, formatChainToDisplay } from '@/utils/chain';
 import { coerceFloat, sleep } from '../utils';
 import { isTestnet as checkIsTestnet } from '@/utils/chain';
-import { AccountScene } from '@/constant/scene-account';
 
 interface TotalBalanceWithEvmUsdValue extends TotalBalanceResponse {
   evmUsdValue?: number;
@@ -61,8 +60,6 @@ export interface AccountState {
   [symLoaderMatteredBalance]: Promise<MatteredChainBalancesResult> | null;
 
   approvalStatus: Record<string, ApprovalStatus[]>;
-
-  sceneAccountMap: Partial<Record<AccountScene, Account | null>>;
 }
 
 /**
@@ -117,8 +114,6 @@ export const account = createModel<RootModel>()({
     [symLoaderMatteredBalance]: null,
 
     approvalStatus: {},
-
-    sceneAccountMap: {},
   } as AccountState,
 
   reducers: {
@@ -244,7 +239,6 @@ export const account = createModel<RootModel>()({
 
       // 初始化gift状态
       await dispatch.gift.initGiftStateAsync();
-      await dispatch.account.getSceneAccountMap();
 
       return account;
     },
@@ -272,28 +266,6 @@ export const account = createModel<RootModel>()({
       }
 
       return account;
-    },
-
-    async getSceneAccountMap(_: void, store) {
-      const sceneAccountMap = await store.app.wallet.getPreference(
-        'sceneAccountMap'
-      );
-      if (sceneAccountMap) {
-        dispatch.account.setField({ sceneAccountMap });
-      }
-    },
-
-    async switchSceneAccount(
-      payload: { scene: AccountScene; account: Account },
-      store
-    ) {
-      await store.app.wallet.switchSceneAccount(payload);
-      dispatch.account.setField({
-        sceneAccountMap: {
-          ...store.account.sceneAccountMap,
-          [payload.scene]: payload.account,
-        },
-      });
     },
 
     async changeAccountAsync(account: Account, store) {
