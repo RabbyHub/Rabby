@@ -77,6 +77,7 @@ export const bridgeQuoteEstimatedValueBn = (
 };
 
 const PER_MINUTE_TIME_COST = 20000;
+const SECONDS_PER_MINUTE = 60;
 
 export const bridgeQuoteScore = (
   quote: SelectedBridgeQuote,
@@ -86,9 +87,11 @@ export const bridgeQuoteScore = (
     receiveToken.price || 1
   );
   const gasFeeUsd = new BigNumber(quote.gas_fee.usd_value);
-  const durationMinutes = Math.ceil(quote.duration / 60);
   const timeCostUsd = BigNumber.min(
-    amountUsd.div(PER_MINUTE_TIME_COST).times(durationMinutes),
+    amountUsd
+      .div(PER_MINUTE_TIME_COST)
+      .times(quote.duration)
+      .div(SECONDS_PER_MINUTE),
     1
   );
 
