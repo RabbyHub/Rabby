@@ -327,6 +327,7 @@ export const BridgeContent = () => {
     selectedBridgeQuote?.aggregator.id,
     selectedBridgeQuote?.bridge_id,
     selectedBridgeQuote?.to_token_amount,
+    selectedBridgeQuote?.duration,
     wallet,
     amount,
     feeRate,
