@@ -51,12 +51,9 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import {
-  useApproval,
-  useWallet,
-  useCommonPopupView,
-  getTimeSpan,
-} from '@/ui/utils';
+import { useWallet, useCommonPopupView, getTimeSpan } from '@/ui/utils';
+import { useApprovalActions } from '@/ui/approval/actions';
+import { useApprovalScope } from '@/ui/approval/context';
 import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
@@ -503,7 +500,17 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
-  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
+  const approval = useApprovalScope();
+  const { resolve, reject, isBound } = useApprovalActions();
+  const signingContext = approval.signing?.attempt
+    ? {
+        approval: approval.approval,
+        signing: {
+          flow: approval.signing.flow,
+          attempt: approval.signing.attempt,
+        },
+      }
+    : undefined;
   const securityEngine = useSecurityEngineStore();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
@@ -1373,10 +1380,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         ? actionSecurityState.requireDataList[0]
         : actionSecurityState.requiredData;
 
-    const approval = await getApproval();
-    // updateSigningTx below writes into approval.signingTxId; the epoch ref only
-    // serialises this page's own explains, it says nothing about the queue
-    if (!(await isBound())) return;
     if (explainEpochRef.current !== detailEpoch) {
       return;
     }
@@ -1417,7 +1420,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         },
         explain: {
           ...res,
-          approvalId: approval.id,
+          approvalId: approval.approval.approvalId,
           calcSuccess: !(checkErrors.length > 0),
         },
         action: {
@@ -1451,16 +1454,19 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     setCurrentGnosisAdmin(account);
   };
   const handleGnosisSign = async () => {
+    if (!(await isBound())) return;
     const account = currentGnosisAdmin;
     if (!safeInfo || !account) {
       return;
     }
+    if (!signingContext) return;
     if (activeApprovalPopup()) {
       return;
     }
 
     if (account?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(account.address);
+      if (!(await isBound())) return;
     }
 
     wallet.reportStats('signTransaction', {
@@ -1474,11 +1480,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       trigger: params?.$ctx?.ga?.trigger || '',
       networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
-    // Building and signing a Safe transaction are side effects that outlive
-    // this handler, so re-check the mounted approval before starting them: the
-    // resolve at the end would be dropped, but the signer would already be up.
-    if (!(await isBound())) return;
-
     if (!isViewGnosisSafe) {
       const params: any = {
         from: tx.from,
@@ -1493,32 +1494,34 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         account,
         params,
         safeInfo.version,
-        chain.network
+        chain.network,
+        signingContext
       );
     }
+    if (!(await isBound())) return;
     const typedData = await wallet.gnosisGenerateTypedData();
     if (!typedData) {
       throw new Error('Failed to generate typed data');
     }
+    if (!(await isBound())) return;
 
     if (WaitingSignMessageComponent[account.type]) {
-      // the build above is a network round trip; re-check before the signer
-      // starts, or a cancellation during it still gets a signature
-      if (!(await isBound())) return;
-
-      wallet.signTypedDataWithUI(
-        account.type,
-        account.address,
-        typedData as any,
-        {
-          brandName: account.brandName,
-          version: 'V4',
-        }
-      );
+      void wallet
+        .signTypedDataWithUI(
+          account.type,
+          account.address,
+          typedData as any,
+          {
+            brandName: account.brandName,
+            version: 'V4',
+          },
+          signingContext
+        )
+        .catch(() => undefined);
       if (isSend) {
         wallet.clearPageStateCache();
       }
-      resolveApproval({
+      resolve({
         uiRequestComponent: WaitingSignMessageComponent[account.type],
         type: account.type,
         address: account.address,
@@ -1543,21 +1546,31 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           typedData as any,
           {
             version: 'V4',
-          }
+          },
+          signingContext
         );
+        if (!(await isBound())) return;
         result = adjustV('eth_signTypedData', result);
 
         const sigs = await wallet.getGnosisTransactionSignatures();
         if (sigs.length > 0) {
-          await wallet.gnosisAddConfirmation(account.address, result);
+          await wallet.gnosisAddConfirmation(
+            account.address,
+            result,
+            signingContext
+          );
         } else {
-          await wallet.gnosisAddSignature(account.address, result);
-          await wallet.postGnosisTransaction();
+          await wallet.gnosisAddSignature(
+            account.address,
+            result,
+            signingContext
+          );
+          await wallet.postGnosisTransaction(signingContext);
         }
         if (isSend) {
           wallet.clearPageStateCache();
         }
-        resolveApproval();
+        resolve();
       } catch (e) {
         message.error({
           content: e.message,
@@ -1576,11 +1589,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   });
 
   const handleCoboArugsConfirm = async (account: Account) => {
-    // coboSafeBuildTransaction switches the wallet's current account, so the
-    // check has to happen before it, not only before the sendRequest below
-    if (!(await isBound())) return;
-
     if (!coboArgusInfo) return;
+    if (!signingContext) return;
 
     wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.CoboArgusKeyring,
@@ -1597,6 +1607,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     let newTx;
 
     try {
+      if (!(await isBound())) return;
       newTx = await wallet.coboSafeBuildTransaction({
         tx: {
           ...tx,
@@ -1604,9 +1615,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         chainServerId: coboArgusInfo.networkId,
         coboSafeAddress: coboArgusInfo.safeModuleAddress,
         account,
+        context: signingContext,
       });
+      if (!(await isBound())) return;
     } catch (e) {
-      wallet.coboSafeResetCurrentAccount();
       let content = e.message || JSON.stringify(e);
       if (content.includes('E48')) {
         content = t('page.signTx.coboSafeNotPermission');
@@ -1619,25 +1631,29 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       return;
     }
 
-    const approval = await getApproval();
-    // same rule as handleAllow: sendRequest below is a real side effect, so
-    // stop if the queue advanced onto a different approval
-    if (!approval || !(await isBound())) return;
-
-    wallet.sendRequest({
-      $ctx: params.$ctx,
-      method: 'eth_sendTransaction',
-      params: [
+    try {
+      await wallet.sendRequest(
         {
-          gas: tx.gas,
-          gasPrice: tx.gasPrice,
-          chainId: tx.chainId,
-          ...newTx,
-          isCoboSafe: true,
+          $ctx: params.$ctx,
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              gas: tx.gas,
+              gasPrice: tx.gasPrice,
+              chainId: tx.chainId,
+              ...newTx,
+              isCoboSafe: true,
+            },
+          ],
         },
-      ],
-    });
-    resolveApproval({
+        { account, approval: approval.approval, session: params.session }
+      );
+    } catch (e) {
+      if (e?.code !== 4001) Sentry.captureException(e);
+      return;
+    }
+    if (!(await isBound())) return;
+    await resolve({
       ...tx,
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
@@ -1648,6 +1664,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       lowGasDeadline: pushInfo.lowGasDeadline,
       reqId,
       logId: logId.current,
+      isCoboSafe: true,
     });
     wallet.clearPageStateCache();
   };
@@ -1656,16 +1673,15 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
   const handleAllow = async () => {
     if (!selectedGas) return;
+    if (!(await isBound())) return;
 
     if (activeApprovalPopup()) {
       return;
     }
 
-    const approval = await getApproval();
-    if (!approval || !(await isBound())) return;
-
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
+      if (!(await isBound())) return;
     }
 
     try {
@@ -1694,7 +1710,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       selected.gasLevel = selectedGas.level;
     }
     if (!isSpeedUp && !isCancel && !isSwap) {
+      if (!(await isBound())) return;
       await wallet.updateLastTimeGasSelection(chainId, selected);
+      if (!(await isBound())) return;
     }
     const tempoTx = tx as TxWithTempoExtras<Tx>;
     const shouldUseTempoCallsForGasAccount =
@@ -1753,11 +1771,9 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       delete submitTransaction.validBefore;
       delete submitTransaction.validAfter;
     }
-    // the queue moved on while we were preparing: useApproval would drop the
-    // resolve anyway, so stop before writing this tx into the replacement's
-    // signing record
-    if (!(await isBound())) return;
     gaEvent('allow');
+
+    if (!(await isBound())) return;
 
     approval.signingTxId &&
       (await wallet.updateSigningTx(approval.signingTxId, {
@@ -1766,7 +1782,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         },
         explain: {
           ...txDetail!,
-          approvalId: approval.id,
+          approvalId: approval.approval.approvalId,
           calcSuccess: !(checkErrors.length > 0),
         },
         action: {
@@ -1774,9 +1790,10 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           requiredData: actionRequireData,
         },
       }));
+    if (!(await isBound())) return;
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      resolveApproval({
+      resolve({
         ...submitTransaction,
         isSend,
         nonce: realNonce || tx.nonce,
@@ -1819,6 +1836,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
 
+    if (!(await isBound())) return;
+
     matomoRequestEvent({
       category: 'Transaction',
       action: 'Submit',
@@ -1829,7 +1848,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       event_category: 'Transaction',
     });
 
-    resolveApproval({
+    resolve({
       ...submitTransaction,
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
@@ -1946,7 +1965,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const handleCancel = () => {
     explainEpochRef.current += 1;
     gaEvent('cancel');
-    rejectApproval('User rejected the request.');
+    reject('User rejected the request.');
   };
 
   const handleDrawerCancel = () => {
@@ -2208,11 +2227,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           okText: t('page.sendToken.blockedTransactionCancelText'),
           onCancel: async () => {
             await wallet.clearPageStateCache();
-            rejectApproval('User rejected the request.');
+            reject('User rejected the request.');
           },
           onOk: async () => {
             await wallet.clearPageStateCache();
-            rejectApproval('User rejected the request.');
+            reject('User rejected the request.');
           },
         });
       }

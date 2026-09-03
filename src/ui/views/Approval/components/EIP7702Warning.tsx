@@ -3,11 +3,11 @@ import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconWarning from 'ui/assets/warning.svg';
-import { useApproval } from 'ui/utils';
+import { useApprovalActions } from '@/ui/approval/actions';
 import Browser from 'webextension-polyfill';
 
 export const EIP7702Warning = () => {
-  const [, , rejectApproval] = useApproval();
+  const { reject: rejectApproval } = useApprovalActions();
   const { t } = useTranslation();
 
   useEffect(() => {

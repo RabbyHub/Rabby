@@ -6,7 +6,8 @@ import { useForm } from 'antd/lib/form/Form';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useApproval, useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
+import { useApprovalActions } from '@/ui/approval/actions';
 import { AddEthereumChainParams } from './type';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 
@@ -21,7 +22,11 @@ interface AddChainProps {
 
 const AddChain = ({ params }: { params: AddChainProps }) => {
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval, isBound] = useApproval();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+    isBound,
+  } = useApprovalActions();
   const { t } = useTranslation();
 
   const { data, session } = params;
@@ -47,8 +52,6 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
 
   const { loading, runAsync: runAddChain } = useRequest(
     async () => {
-      // addCustomTestnet and updateConnectSite change what chain the dapp is
-      // bound to, and chain switch is a session boundary
       if (!(await isBound())) return;
 
       await form.validateFields();

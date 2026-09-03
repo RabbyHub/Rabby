@@ -34,9 +34,9 @@ import {
   isSameAddress,
   openInTab,
   splitNumberByStep,
-  useApproval,
   useWallet,
 } from 'ui/utils';
+import { useApprovalActions } from '@/ui/approval/actions';
 import { ellipsis } from 'ui/utils/address';
 import { getTokenSymbol } from 'ui/utils/token';
 import { HistoryItem } from 'ui/views/Dashboard/components/TokenDetailPopup/HistoryItem';
@@ -193,7 +193,10 @@ interface TokenHistoryItem extends TxHistoryItem {
 }
 
 const AddAsset = ({ params, account }: AddAssetProps) => {
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+  } = useApprovalActions();
   const wallet = useWallet();
   const { t } = useTranslation();
   const [tokens, setTokens] = useState<TokenItem[]>([]);

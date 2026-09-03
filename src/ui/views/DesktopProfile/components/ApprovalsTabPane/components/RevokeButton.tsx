@@ -24,7 +24,7 @@ export const RevokeButton: React.FC<Props> = ({
 
   useLayoutEffect(() => {
     const onBodyFocus = async () => {
-      const approval = await wallet.getApproval();
+      const approval = await wallet.getCurrentApproval();
       if (!approval) {
         setIsRevokeLoading(false);
       }
