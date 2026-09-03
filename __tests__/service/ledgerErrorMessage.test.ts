@@ -153,6 +153,45 @@ describe('getLedgerErrorMessage', () => {
     });
   });
 
+  it('preserves the allowlisted DMK error tag', () => {
+    const keyring = new LedgerBridgeKeyring();
+    const diagnostics = keyring.getLedgerSigningDiagnostics({
+      _tag: 'EthAppCommandError',
+      errorCode: '6985',
+    });
+
+    expect(diagnostics).toMatchObject({
+      provider_code: '0x6985',
+      provider_error_tag: 'EthAppCommandError',
+    });
+    expect(
+      keyring.getLedgerSigningDiagnostics({ _tag: 'UnexpectedError' })
+    ).not.toHaveProperty('provider_error_tag');
+  });
+
+  it('classifies Rabby-generated device readiness errors', () => {
+    const keyring = new LedgerBridgeKeyring();
+
+    expect(
+      keyring.getLedgerSigningDiagnostics(
+        new Error('Ledger: Device is locked 0x5515')
+      )
+    ).toMatchObject({
+      provider_code: '0x5515',
+      error_category: 'device_locked',
+      provider_reason: 'device_locked',
+    });
+
+    expect(
+      keyring.getLedgerSigningDiagnostics(
+        new Error('Ledger: Device disconnected')
+      )
+    ).toMatchObject({
+      error_category: 'disconnected',
+      provider_reason: 'device_disconnected',
+    });
+  });
+
   it('classifies an explicit DMK user rejection as user cancellation', () => {
     const keyring = new LedgerBridgeKeyring();
     const diagnostics = keyring.getLedgerSigningDiagnostics({
@@ -189,7 +228,11 @@ describe('getLedgerErrorMessage', () => {
       undefined,
       secondAttempt
     ) as any;
-    firstState.steps.push('first-attempt');
+    firstState.steps.push(
+      'first-attempt',
+      'signer.eth.steps.blindSignTransactionFallback'
+    );
+    firstState.last_required_user_interaction = 'sign-transaction';
     secondState.steps.push('second-attempt');
 
     const sharedError = new Error('Ledger: Device disconnected');
@@ -200,6 +243,11 @@ describe('getLedgerErrorMessage', () => {
       sharedError,
       firstAttempt
     ).provider_metadata as any;
-    expect(metadata?.device_action_steps).toBe('first-attempt');
+    expect(metadata).toMatchObject({
+      device_action_steps:
+        'first-attempt>signer.eth.steps.blindSignTransactionFallback',
+      last_required_user_interaction: 'sign-transaction',
+      used_fallback: true,
+    });
   });
 });
