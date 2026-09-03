@@ -81,8 +81,6 @@ const ImportSuccess = ({
     importedLength = 0,
   } = state;
   const [getApproval, resolveApproval] = useApproval();
-  // bind to the approval that opened this page, not to whatever is current by
-  // the time the user finishes importing
   const openedByApproval = React.useMemo(
     () => getApproval().catch(() => null),
     []

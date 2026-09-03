@@ -1,11 +1,15 @@
-import { EVENTS, INTERNAL_REQUEST_SESSION } from '@/constant';
+import { INTERNAL_REQUEST_SESSION } from '@/constant';
 import { WalletControllerType } from '@/ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
-import eventBus from '@/eventBus';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import { Account } from '@/background/service/preference';
 import { underline2Camelcase } from '@/background/utils';
+import type {
+  HardwareOperationRef,
+  SigningRequestContext,
+} from '@/utils/signingTypes';
+import { emitHardwareOperationRejected } from '@/utils/signEvent';
 
 // fail code
 export enum FailedCode {
@@ -71,6 +75,8 @@ export const sendSignTypedData = async ({
   onProgress,
   // ga,
   account: _account,
+  hardwareOperation,
+  signing,
 }: {
   from: string;
   data: Record<string, any>;
@@ -79,6 +85,8 @@ export const sendSignTypedData = async ({
   onProgress?: (status: ProgressStatus, hash?: string) => void;
   ga?: Record<string, any>;
   account?: Account;
+  hardwareOperation?: HardwareOperationRef;
+  signing?: SigningRequestContext;
 }) => {
   const account = _account || (await wallet.getCurrentAccount());
   if (!account) {
@@ -112,11 +120,17 @@ export const sendSignTypedData = async ({
   try {
     const data1 = data as any;
 
-    hash = await wallet.signTypedData(account?.type, from, data1, {
-      brandName: currentAccount.brandName,
-      signTextMethod: method,
-      version: version,
-    });
+    hash = await wallet.signTypedData(
+      account?.type,
+      from,
+      data1,
+      {
+        brandName: currentAccount.brandName,
+        signTextMethod: method,
+        version: version,
+      },
+      signing
+    );
 
     await wallet.signTextCreateHistory({
       address: from,
@@ -131,7 +145,9 @@ export const sendSignTypedData = async ({
     await handleSendAfter();
     const err = new Error(e.message);
     err.name = FailedCode.SubmitTxFailed;
-    eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, e.message);
+    if (hardwareOperation) {
+      emitHardwareOperationRejected(hardwareOperation, e);
+    }
     throw err;
   }
 

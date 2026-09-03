@@ -51,12 +51,9 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import {
-  useApproval,
-  useWallet,
-  useCommonPopupView,
-  getTimeSpan,
-} from '@/ui/utils';
+import { useWallet, useCommonPopupView, getTimeSpan } from '@/ui/utils';
+import { useApprovalActions } from '@/ui/approval/actions';
+import { useApprovalScope } from '@/ui/approval/context';
 import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
@@ -66,19 +63,12 @@ import Actions from './Actions';
 import { useRabbySelector } from '@/ui/store';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import {
-  ContextActionData,
+  Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignStore } from '@/ui/state/sign';
-import {
-  useSecurityEngineStore,
-  SecurityEngineScopeProvider,
-} from '@/ui/state/securityEngine';
-import {
-  getActionSecurityGate,
-  hasActionSecurityError,
-} from './SecurityEngine/actionSecurity';
+import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { CoboDelegatedDrawer } from './TxComponents/CoboDelegatedDrawer';
 import { BroadcastMode } from './BroadcastMode';
 import {
@@ -352,24 +342,9 @@ interface SignTxProps<TData extends any[] = any[]> {
   };
   origin?: string;
   account: Account;
-  approvalId?: string;
 }
 
-type PreparedTxActions = {
-  type: 'single' | 'multi';
-  actions: {
-    data: ParsedTransactionActionData;
-    requireData: ActionRequireData;
-    ctx: ContextActionData;
-  }[];
-};
-
-const SignTx = ({
-  params,
-  origin,
-  account: $account,
-  approvalId,
-}: SignTxProps) => {
+const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const { isGnosis } = params;
   const currentAccount = params.isGnosis ? params.account! : $account;
   const renderStartAt = useRef(0);
@@ -450,14 +425,10 @@ const SignTx = ({
       contract_protocol_name: '',
     },
   });
-  const [
-    preparedActions,
-    setPreparedActions,
-  ] = useState<PreparedTxActions | null>(null);
-  const preparedActionsRef = useRef(preparedActions);
-  preparedActionsRef.current = preparedActions;
-  const actionData = preparedActions?.actions[0]?.data || {};
-  const actionRequireData = preparedActions?.actions[0]?.requireData || null;
+  const [actionData, setActionData] = useState<ParsedTransactionActionData>({});
+  const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
+    null
+  );
   const { t } = useTranslation();
   const [preprocessSuccess, setPreprocessSuccess] = useState(true);
   const [chainId, setChainId] = useState<number>(
@@ -529,34 +500,18 @@ const SignTx = ({
   const scrollRef = useRef<HTMLDivElement>(null);
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
-  const canResolveSecurityRef = useRef<() => boolean>(() => false);
-  const evaluationSequence = useRef(0);
-  const renderSecurityVersion = evaluationSequence.current;
-  const isCurrentSecurityEvaluation = () =>
-    renderSecurityVersion === evaluationSequence.current &&
-    canResolveSecurityRef.current();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval({
-    approvalId,
-    approvalComponent: 'SignTx',
-    canResolve: isCurrentSecurityEvaluation,
-  });
+  const approval = useApprovalScope();
+  const { resolve, reject, isBound } = useApprovalActions();
+  const signingContext = approval.signing?.attempt
+    ? {
+        approval: approval.approval,
+        signing: {
+          flow: approval.signing.flow,
+          attempt: approval.signing.attempt,
+        },
+      }
+    : undefined;
   const securityEngine = useSecurityEngineStore();
-  // identity of the approval this page was mounted for; anything the user
-  // triggers here must only ever resolve/reject that one
-  const approvalRef = useRef<Approval | null>(null);
-  useEffect(() => {
-    getApproval().then((approval) => {
-      approvalRef.current = approval ?? null;
-    });
-  }, []);
-  // Fail closed. The background guard skips its id check when no id is passed
-  // and then acts on whatever approval is current, so an action fired before
-  // the capture above resolves must do nothing rather than pass `undefined`.
-  const rejectCurrentApproval = (err = 'User rejected the request.') => {
-    const approval = approvalRef.current;
-    if (!approval) return;
-    return rejectApproval(err, false, false, approval.id);
-  };
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
   const [support1559, setSupport1559] = useState(
@@ -759,83 +714,32 @@ const SignTx = ({
     chain?.serverId,
   ]);
   const executeEngine = wallet.executeSecurityEngine;
-  const [securityReload, setSecurityReload] = useState(0);
-  const [securityError, setSecurityError] = useState(false);
-  const [securityEvaluation, setSecurityEvaluation] = useState<{
-    prepared: PreparedTxActions;
-    rules: typeof rules;
-    userData: typeof userData;
-    reload: number;
-    version: number;
-    results: Result[][];
-  } | null>(null);
-  const isSecurityReady =
-    !!securityEvaluation &&
-    securityEvaluation.prepared === preparedActions &&
-    securityEvaluation.rules === rules &&
-    securityEvaluation.userData === userData &&
-    securityEvaluation.reload === securityReload;
-  const securityGroups = useMemo(
-    () =>
-      isSecurityReady && securityEvaluation
-        ? securityEvaluation.results.map((results, index) => ({
-            scope: `${approvalId}:${securityEvaluation.version}:${index}`,
-            results,
-          }))
-        : [],
-    [isSecurityReady, securityEvaluation, approvalId]
-  );
-  const securityGate = getActionSecurityGate(
-    securityGroups,
-    currentTx.processedRules,
-    'transaction'
-  );
-  const { securityLevel, hasUnProcessSecurityResult } = securityGate;
-  const securityBlocked = !isSecurityReady || hasUnProcessSecurityResult;
-  const engineResults = useMemo(
-    () => securityGroups.flatMap((group) => group.results),
-    [securityGroups]
-  );
-  const isMultiActions = preparedActions?.type === 'multi';
-  const multiActionList =
-    preparedActions?.actions.map((action) => action.data) || [];
-  const multiActionRequireDataList =
-    preparedActions?.actions.map((action) => action.requireData) || [];
-  const multiActionEngineResultList = securityGroups.map(
-    (group) => group.results
-  );
-  canResolveSecurityRef.current = () => {
-    const current = useSecurityEngineStore.getState();
-    return (
-      isReady &&
-      isSecurityReady &&
-      preparedActionsRef.current === securityEvaluation?.prepared &&
-      securityEvaluation?.version === evaluationSequence.current &&
-      current.rules === securityEvaluation.rules &&
-      current.userData === securityEvaluation.userData &&
-      !getActionSecurityGate(
-        securityGroups,
-        current.currentTx.processedRules,
-        'transaction'
-      ).hasUnProcessSecurityResult
-    );
-  };
-  const invalidateSecurity = () => {
-    evaluationSequence.current += 1;
-    canResolveSecurityRef.current = () => false;
-    preparedActionsRef.current = null;
-    setPreparedActions(null);
-    setSecurityEvaluation(null);
-    setSecurityError(false);
-    securityEngine.resetCurrentTx();
-  };
-  const executeSecurityEngine = () => {
-    evaluationSequence.current += 1;
-    canResolveSecurityRef.current = () => false;
-    setSecurityEvaluation(null);
-    setSecurityError(false);
-    setSecurityReload((value) => value + 1);
-  };
+  const [engineResults, setEngineResults] = useState<Result[]>([]);
+  const [multiActionList, setMultiActionList] = useState<
+    ParsedTransactionActionData[]
+  >([]);
+  const [multiActionRequireDataList, setMultiActionRequireDataList] = useState<
+    ActionRequireData[]
+  >([]);
+  const [
+    multiActionEngineResultList,
+    setMultiActionEngineResultList,
+  ] = useState<Result[][]>([]);
+  const isMultiActions = useMemo(() => {
+    return multiActionList.length > 0;
+  }, [multiActionList]);
+  const securityLevel = useMemo(() => {
+    const enableResults = engineResults.filter((result) => {
+      return result.enable && !currentTx.processedRules.includes(result.id);
+    });
+    if (enableResults.some((result) => result.level === Level.FORBIDDEN))
+      return Level.FORBIDDEN;
+    if (enableResults.some((result) => result.level === Level.DANGER))
+      return Level.DANGER;
+    if (enableResults.some((result) => result.level === Level.WARNING))
+      return Level.WARNING;
+    return undefined;
+  }, [engineResults, currentTx]);
 
   const isGasTopUp = tx.to?.toLowerCase() === GAS_TOP_UP_ADDRESS.toLowerCase();
   const isGasAccountTopUpFlow =
@@ -1366,7 +1270,6 @@ const SignTx = ({
 
       if (actionData.action?.type === 'multi_actions') {
         const actions = actionData.action.data as MultiAction;
-        if (!actions.length) throw new Error('Empty transaction action batch');
         const parsedActions = actions.map((action) =>
           parseAction({
             type: 'transaction',
@@ -1391,13 +1294,16 @@ const SignTx = ({
             formatActionSecurityContext(parsedActions[index], requiredData)
           )
         );
+        const resultList = await Promise.all(
+          ctxList.map((ctx) => executeEngine(ctx))
+        );
         return {
           type: 'multi' as const,
           actionData,
           parsed: parsedActions[0],
           parsedActions,
           requireDataList,
-          ctxList,
+          resultList,
         };
       }
 
@@ -1418,12 +1324,14 @@ const SignTx = ({
       const options = await getActionRequiredDataOptions(parsed, 0);
       const requiredData = await fetchActionRequiredData(options);
       const ctx = await formatActionSecurityContext(parsed, requiredData);
+      const result = await executeEngine(ctx);
       return {
         type: 'single' as const,
         actionData,
         parsed,
         requiredData,
         ctx,
+        result,
       };
     })();
     const actionSecurityStateResultPromise = settle(actionSecurityStatePromise);
@@ -1472,13 +1380,7 @@ const SignTx = ({
         ? actionSecurityState.requireDataList[0]
         : actionSecurityState.requiredData;
 
-    const approval = await getApproval();
-    if (
-      explainEpochRef.current !== detailEpoch ||
-      !approval ||
-      approval.id !== approvalId ||
-      approval.data.approvalComponent !== 'SignTx'
-    ) {
+    if (explainEpochRef.current !== detailEpoch) {
       return;
     }
 
@@ -1500,23 +1402,16 @@ const SignTx = ({
     setPreprocessSuccess(res.pre_exec.success);
     logId.current = actionData.log_id;
     actionType.current = actionData?.action?.type || '';
-    const actions =
-      actionSecurityState.type === 'multi'
-        ? actionSecurityState.parsedActions.map((data, index) => ({
-            data,
-            requireData: actionSecurityState.requireDataList[index],
-            ctx: actionSecurityState.ctxList[index],
-          }))
-        : [
-            {
-              data: parsed,
-              requireData: actionSecurityState.requiredData,
-              ctx: actionSecurityState.ctx,
-            },
-          ];
-    securityEngineCtx.current =
-      actionSecurityState.type === 'single' ? actionSecurityState.ctx : null;
-    setPreparedActions({ type: actionSecurityState.type, actions });
+    if (actionSecurityState.type === 'multi') {
+      setMultiActionList(actionSecurityState.parsedActions);
+      setMultiActionRequireDataList(actionSecurityState.requireDataList);
+      setMultiActionEngineResultList(actionSecurityState.resultList);
+    } else {
+      securityEngineCtx.current = actionSecurityState.ctx;
+      setEngineResults(actionSecurityState.result);
+      setActionData(parsed);
+      setActionRequireData(actionSecurityState.requiredData);
+    }
 
     approval.signingTxId &&
       (await wallet.updateSigningTx(approval.signingTxId, {
@@ -1525,7 +1420,7 @@ const SignTx = ({
         },
         explain: {
           ...res,
-          approvalId: approval.id,
+          approvalId: approval.approval.approvalId,
           calcSuccess: !(checkErrors.length > 0),
         },
         action: {
@@ -1537,7 +1432,6 @@ const SignTx = ({
 
   const explain = async () => {
     const detailEpoch = ++explainEpochRef.current;
-    invalidateSecurity();
     try {
       setIsReady(false);
       await explainTx(currentAccount.address, detailEpoch);
@@ -1554,40 +1448,25 @@ const SignTx = ({
     }
   };
 
-  const canSubmitCurrentApproval = async () => {
-    if (!isCurrentSecurityEvaluation()) return false;
-    const approval = await getApproval();
-    return (
-      !!approval &&
-      approval.id === approvalId &&
-      approval.data.approvalComponent === 'SignTx' &&
-      isCurrentSecurityEvaluation()
-    );
-  };
-
   const handleGnosisConfirm = async (account: Account) => {
     if (!safeInfo) return;
     setGnosisFooterBarVisible(true);
     setCurrentGnosisAdmin(account);
   };
   const handleGnosisSign = async () => {
-    if (!(await canSubmitCurrentApproval())) return;
+    if (!(await isBound())) return;
     const account = currentGnosisAdmin;
     if (!safeInfo || !account) {
       return;
     }
+    if (!signingContext) return;
     if (activeApprovalPopup()) {
       return;
     }
-    // Same fail-closed rule as rejectCurrentApproval: both resolves below
-    // carry approvalRef.current?.id.
-    if (!approvalRef.current) {
-      return;
-    }
-    const currentApprovalId = approvalRef.current.id;
 
     if (account?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(account.address);
+      if (!(await isBound())) return;
     }
 
     wallet.reportStats('signTransaction', {
@@ -1601,11 +1480,6 @@ const SignTx = ({
       trigger: params?.$ctx?.ga?.trigger || '',
       networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
-    // Building and signing a Safe transaction are side effects that outlive
-    // this handler, so re-check the mounted approval before starting them: the
-    // resolve at the end would be dropped, but the signer would already be up.
-    if ((await getApproval())?.id !== binding?.id) return;
-
     if (!isViewGnosisSafe) {
       const params: any = {
         from: tx.from,
@@ -1620,42 +1494,39 @@ const SignTx = ({
         account,
         params,
         safeInfo.version,
-        chain.network
+        chain.network,
+        signingContext
       );
     }
+    if (!(await isBound())) return;
     const typedData = await wallet.gnosisGenerateTypedData();
     if (!typedData) {
       throw new Error('Failed to generate typed data');
     }
+    if (!(await isBound())) return;
 
-    if (!(await canSubmitCurrentApproval())) return;
     if (WaitingSignMessageComponent[account.type]) {
-      // the build above is a network round trip; re-check before the signer
-      // starts, or a cancellation during it still gets a signature
-      if (!(await isBound())) return;
-
-      wallet.signTypedDataWithUI(
-        account.type,
-        account.address,
-        typedData as any,
-        {
-          brandName: account.brandName,
-          version: 'V4',
-          sourceApprovalId: approvalId,
-          approvalComponent: WaitingSignMessageComponent[account.type],
-        }
-      );
+      void wallet
+        .signTypedDataWithUI(
+          account.type,
+          account.address,
+          typedData as any,
+          {
+            brandName: account.brandName,
+            version: 'V4',
+          },
+          signingContext
+        )
+        .catch(() => undefined);
       if (isSend) {
         wallet.clearPageStateCache();
       }
-      resolveApproval(
-        {
+      resolve({
         uiRequestComponent: WaitingSignMessageComponent[account.type],
         type: account.type,
         address: account.address,
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
-        sourceApprovalId: approvalId,
         account: account,
         $account: account,
         extra: {
@@ -1665,10 +1536,7 @@ const SignTx = ({
             },
           },
         },
-        false,
-        false,
-        currentApprovalId
-      );
+      });
     } else {
       // it should never go to here
       try {
@@ -1678,21 +1546,31 @@ const SignTx = ({
           typedData as any,
           {
             version: 'V4',
-          }
+          },
+          signingContext
         );
+        if (!(await isBound())) return;
         result = adjustV('eth_signTypedData', result);
 
         const sigs = await wallet.getGnosisTransactionSignatures();
         if (sigs.length > 0) {
-          await wallet.gnosisAddConfirmation(account.address, result);
+          await wallet.gnosisAddConfirmation(
+            account.address,
+            result,
+            signingContext
+          );
         } else {
-          await wallet.gnosisAddSignature(account.address, result);
-          await wallet.postGnosisTransaction();
+          await wallet.gnosisAddSignature(
+            account.address,
+            result,
+            signingContext
+          );
+          await wallet.postGnosisTransaction(signingContext);
         }
         if (isSend) {
           wallet.clearPageStateCache();
         }
-        resolveApproval(undefined, false, false, currentApprovalId);
+        resolve();
       } catch (e) {
         message.error({
           content: e.message,
@@ -1711,7 +1589,8 @@ const SignTx = ({
   });
 
   const handleCoboArugsConfirm = async (account: Account) => {
-    if (!coboArgusInfo || !(await canSubmitCurrentApproval())) return;
+    if (!coboArgusInfo) return;
+    if (!signingContext) return;
 
     wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.CoboArgusKeyring,
@@ -1728,6 +1607,7 @@ const SignTx = ({
     let newTx;
 
     try {
+      if (!(await isBound())) return;
       newTx = await wallet.coboSafeBuildTransaction({
         tx: {
           ...tx,
@@ -1735,9 +1615,10 @@ const SignTx = ({
         chainServerId: coboArgusInfo.networkId,
         coboSafeAddress: coboArgusInfo.safeModuleAddress,
         account,
+        context: signingContext,
       });
+      if (!(await isBound())) return;
     } catch (e) {
-      wallet.coboSafeResetCurrentAccount();
       let content = e.message || JSON.stringify(e);
       if (content.includes('E48')) {
         content = t('page.signTx.coboSafeNotPermission');
@@ -1750,39 +1631,29 @@ const SignTx = ({
       return;
     }
 
-    const approval = await getApproval();
-    if (
-      !approval ||
-      approval.id !== approvalId ||
-      approval.data.approvalComponent !== 'SignTx' ||
-      !isCurrentSecurityEvaluation()
-    ) {
-      if (!approval || approval.id === approvalId) {
-        const current = await wallet.getCurrentAccount();
-        if (
-          current?.address === account.address &&
-          current.type === account.type
-        ) {
-          await wallet.coboSafeResetCurrentAccount();
-        }
-      }
+    try {
+      await wallet.sendRequest(
+        {
+          $ctx: params.$ctx,
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              gas: tx.gas,
+              gasPrice: tx.gasPrice,
+              chainId: tx.chainId,
+              ...newTx,
+              isCoboSafe: true,
+            },
+          ],
+        },
+        { account, approval: approval.approval, session: params.session }
+      );
+    } catch (e) {
+      if (e?.code !== 4001) Sentry.captureException(e);
       return;
     }
-
-    wallet.sendRequest({
-      $ctx: params.$ctx,
-      method: 'eth_sendTransaction',
-      params: [
-        {
-          gas: tx.gas,
-          gasPrice: tx.gasPrice,
-          chainId: tx.chainId,
-          ...newTx,
-          isCoboSafe: true,
-        },
-      ],
-    });
-    resolveApproval({
+    if (!(await isBound())) return;
+    await resolve({
       ...tx,
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
@@ -1793,6 +1664,7 @@ const SignTx = ({
       lowGasDeadline: pushInfo.lowGasDeadline,
       reqId,
       logId: logId.current,
+      isCoboSafe: true,
     });
     wallet.clearPageStateCache();
   };
@@ -1800,17 +1672,16 @@ const SignTx = ({
   const { activeApprovalPopup } = useCommonPopupView();
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
   const handleAllow = async () => {
-    if (!selectedGas || !(await canSubmitCurrentApproval())) return;
+    if (!selectedGas) return;
+    if (!(await isBound())) return;
 
     if (activeApprovalPopup()) {
       return;
     }
 
-    const approval = await getApproval();
-    if (!approval) return;
-
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
+      if (!(await isBound())) return;
     }
 
     try {
@@ -1839,7 +1710,9 @@ const SignTx = ({
       selected.gasLevel = selectedGas.level;
     }
     if (!isSpeedUp && !isCancel && !isSwap) {
+      if (!(await isBound())) return;
       await wallet.updateLastTimeGasSelection(chainId, selected);
+      if (!(await isBound())) return;
     }
     const tempoTx = tx as TxWithTempoExtras<Tx>;
     const shouldUseTempoCallsForGasAccount =
@@ -1898,25 +1771,18 @@ const SignTx = ({
       delete submitTransaction.validBefore;
       delete submitTransaction.validAfter;
     }
-    const currentApproval = await getApproval();
-    if (
-      !currentApproval ||
-      currentApproval.id !== approval.id ||
-      currentApproval.id !== approvalId ||
-      currentApproval.data.approvalComponent !== 'SignTx' ||
-      !isCurrentSecurityEvaluation()
-    )
-      return;
     gaEvent('allow');
 
-    currentApproval.signingTxId &&
-      (await wallet.updateSigningTx(currentApproval.signingTxId, {
+    if (!(await isBound())) return;
+
+    approval.signingTxId &&
+      (await wallet.updateSigningTx(approval.signingTxId, {
         rawTx: {
           nonce: realNonce || tx.nonce,
         },
         explain: {
           ...txDetail!,
-          approvalId: currentApproval.id,
+          approvalId: approval.approval.approvalId,
           calcSuccess: !(checkErrors.length > 0),
         },
         action: {
@@ -1924,36 +1790,32 @@ const SignTx = ({
           requiredData: actionRequireData,
         },
       }));
+    if (!(await isBound())) return;
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      resolveApproval(
-        {
-          ...submitTransaction,
-          isSend,
-          nonce: realNonce || tx.nonce,
-          gas: gasLimit,
-          uiRequestComponent: WaitingSignComponent[currentAccount.type],
-          type: currentAccount.type,
-          address: currentAccount.address,
-          traceId: txDetail?.trace_id,
-          extra: {
-            brandName: currentAccount.brandName,
-          },
-          $account: currentAccount,
-          $ctx: params.$ctx,
-          signingTxId: currentApproval.signingTxId,
-          pushType: pushInfo.type,
-          lowGasDeadline: pushInfo.lowGasDeadline,
-          reqId,
-          isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
-          isGasAccount: effectiveGasAccountCanPay,
-          logId: logId.current,
-          sig,
+      resolve({
+        ...submitTransaction,
+        isSend,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        uiRequestComponent: WaitingSignComponent[currentAccount.type],
+        type: currentAccount.type,
+        address: currentAccount.address,
+        traceId: txDetail?.trace_id,
+        extra: {
+          brandName: currentAccount.brandName,
         },
-        false,
-        false,
-        currentApproval.id
-      );
+        $account: currentAccount,
+        $ctx: params.$ctx,
+        signingTxId: approval.signingTxId,
+        pushType: pushInfo.type,
+        lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
+        isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
+        isGasAccount: effectiveGasAccountCanPay,
+        logId: logId.current,
+        sig,
+      });
 
       return;
     }
@@ -1974,6 +1836,8 @@ const SignTx = ({
       networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
     });
 
+    if (!(await isBound())) return;
+
     matomoRequestEvent({
       category: 'Transaction',
       action: 'Submit',
@@ -1984,23 +1848,18 @@ const SignTx = ({
       event_category: 'Transaction',
     });
 
-    resolveApproval(
-      {
-        ...submitTransaction,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        isSend,
-        traceId: txDetail?.trace_id,
-        signingTxId: currentApproval.signingTxId,
-        pushType: pushInfo.type,
-        lowGasDeadline: pushInfo.lowGasDeadline,
-        reqId,
-        logId: logId.current,
-      },
-      false,
-      false,
-      currentApproval.id
-    );
+    resolve({
+      ...submitTransaction,
+      nonce: realNonce || tx.nonce,
+      gas: gasLimit,
+      isSend,
+      traceId: txDetail?.trace_id,
+      signingTxId: approval.signingTxId,
+      pushType: pushInfo.type,
+      lowGasDeadline: pushInfo.lowGasDeadline,
+      reqId,
+      logId: logId.current,
+    });
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
@@ -2105,9 +1964,8 @@ const SignTx = ({
 
   const handleCancel = () => {
     explainEpochRef.current += 1;
-    invalidateSecurity();
     gaEvent('cancel');
-    rejectCurrentApproval();
+    reject('User rejected the request.');
   };
 
   const handleDrawerCancel = () => {
@@ -2116,8 +1974,6 @@ const SignTx = ({
 
   const handleTxChange = (obj: Record<string, any>) => {
     explainEpochRef.current += 1;
-    invalidateSecurity();
-    setIsReady(false);
     setTx({
       ...tx,
       ...obj,
@@ -2319,25 +2175,23 @@ const SignTx = ({
   };
 
   const handleIgnoreAllRules = () => {
-    if (!isSecurityReady) return;
-    securityEngine.processAllRules([
-      ...currentTx.processedRules,
-      ...securityGate.pendingRuleKeys,
-    ]);
+    securityEngine.processAllRules(engineResults.map((result) => result.id));
   };
 
   const handleIgnoreRule = (id: string) => {
-    securityEngine.processRule(id, currentTx.ruleDrawer.selectRule?.scope);
+    securityEngine.processRule(id);
     securityEngine.closeRuleDrawer();
   };
 
   const handleUndoIgnore = (id: string) => {
-    securityEngine.unProcessRule(id, currentTx.ruleDrawer.selectRule?.scope);
+    securityEngine.unProcessRule(id);
     securityEngine.closeRuleDrawer();
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
-    securityEngine.unProcessRule(id, currentTx.ruleDrawer.selectRule?.scope);
+    if (currentTx.processedRules.includes(id)) {
+      securityEngine.unProcessRule(id);
+    }
     await wallet.ruleEnableStatusChange(id, value);
     securityEngine.init();
   };
@@ -2373,11 +2227,11 @@ const SignTx = ({
           okText: t('page.sendToken.blockedTransactionCancelText'),
           onCancel: async () => {
             await wallet.clearPageStateCache();
-            rejectCurrentApproval();
+            reject('User rejected the request.');
           },
           onOk: async () => {
             await wallet.clearPageStateCache();
-            rejectCurrentApproval();
+            reject('User rejected the request.');
           },
         });
       }
@@ -2663,6 +2517,55 @@ const SignTx = ({
     // }
   };
 
+  const executeSecurityEngine = async () => {
+    const ctx = await formatSecurityEngineContext({
+      type: 'transaction',
+      actionData: actionData,
+      requireData: actionRequireData,
+      chainId: chain.serverId,
+      isTestnet: isTestnet(chain.serverId),
+      provider: {
+        getTimeSpan,
+        hasAddress: wallet.hasAddress,
+      },
+    });
+    const result = await executeEngine(ctx);
+    setEngineResults(result);
+  };
+
+  const hasUnProcessSecurityResult = useMemo(() => {
+    const { processedRules } = currentTx;
+    const enableResults = engineResults.filter((item) => item.enable);
+    // const hasForbidden = enableResults.find(
+    //   (result) => result.level === Level.FORBIDDEN
+    // );
+    const hasSafe = !!enableResults.find(
+      (result) => result.level === Level.SAFE
+    );
+    const needProcess = enableResults.filter(
+      (result) =>
+        (result.level === Level.DANGER ||
+          result.level === Level.WARNING ||
+          result.level === Level.FORBIDDEN) &&
+        !processedRules.includes(result.id)
+    );
+
+    const trueDanger = needProcess.some(
+      (item) =>
+        ['1016', '1019', '1020', '1021'].includes(item.id) &&
+        item.level === Level.DANGER
+    );
+    if (trueDanger) {
+      return true;
+    }
+    // if (hasForbidden) return true;
+    if (needProcess.length > 0) {
+      return !hasSafe;
+    } else {
+      return false;
+    }
+  }, [engineResults, currentTx]);
+
   useEffect(() => {
     renderStartAt.current = Date.now();
     init();
@@ -2779,56 +2682,11 @@ const SignTx = ({
   }, [inited, updateId]);
 
   useEffect(() => {
-    if (!preparedActions) return;
-    let cancelled = false;
-    const version = ++evaluationSequence.current;
-    setSecurityEvaluation(null);
-    setSecurityError(false);
-    securityEngine.resetCurrentTx();
-    Promise.all(
-      preparedActions.actions.map((action) => executeEngine(action.ctx))
-    )
-      .then((results) => {
-        if (cancelled || evaluationSequence.current !== version) return;
-        if (hasActionSecurityError(results)) {
-          setSecurityError(true);
-          return;
-        }
-        setSecurityEvaluation({
-          prepared: preparedActions,
-          rules,
-          userData,
-          reload: securityReload,
-          version,
-          results,
-        });
-      })
-      .catch((error) => {
-        if (cancelled || evaluationSequence.current !== version) return;
-        Sentry.captureException(error);
-        setSecurityError(true);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [preparedActions, userData, rules, securityReload]);
-
-  useEffect(
-    () => () => {
-      explainEpochRef.current += 1;
-      evaluationSequence.current += 1;
-      canResolveSecurityRef.current = () => false;
-    },
-    []
-  );
+    executeSecurityEngine();
+  }, [userData, rules]);
 
   useEffect(() => {
-    if (
-      logId.current &&
-      isReady &&
-      isSecurityReady &&
-      securityEngineCtx.current
-    ) {
+    if (logId.current && isReady && securityEngineCtx.current) {
       try {
         const keys = Object.keys(securityEngineCtx.current);
         const key: any = keys[0];
@@ -2852,7 +2710,7 @@ const SignTx = ({
         // IGNORE
       }
     }
-  }, [isReady, isSecurityReady, engineResults]);
+  }, [isReady, engineResults]);
 
   useEffect(() => {
     if (scrollRef.current && scrollInfo && scrollRefSize) {
@@ -2867,7 +2725,7 @@ const SignTx = ({
   }, [scrollInfo, scrollRefSize]);
 
   return (
-    <SecurityEngineScopeProvider scope={securityGroups[0]?.scope}>
+    <>
       <div
         className={clsx('approval-tx', {
           'pre-process-failed': !preprocessSuccess,
@@ -2876,21 +2734,10 @@ const SignTx = ({
       >
         {txDetail && (
           <>
-            {securityError ? (
-              <div className="py-24 text-center text-r-neutral-body">
-                <p>{t('global.failed')}</p>
-                <button
-                  type="button"
-                  className="mt-8 text-r-blue-default"
-                  onClick={executeSecurityEngine}
-                >
-                  {t('global.refresh')}
-                </button>
-              </div>
-            ) : (
+            {txDetail && (
               <TxTypeComponent
                 account={currentAccount}
-                isReady={isReady && isSecurityReady}
+                isReady={isReady}
                 actionData={actionData}
                 actionRequireData={actionRequireData}
                 chain={chain}
@@ -2911,9 +2758,6 @@ const SignTx = ({
                         actionList: multiActionList,
                         requireDataList: multiActionRequireDataList,
                         engineResultList: multiActionEngineResultList,
-                        securityScopes: securityGroups.map(
-                          (group) => group.scope
-                        ),
                       }
                     : undefined
                 }
@@ -3004,9 +2848,8 @@ const SignTx = ({
               gnosisAccount={currentGnosisAdmin}
               account={currentGnosisAdmin}
               onCancel={handleCancel}
-              securityLevel={securityLevel}
-              hasUnProcessSecurityResult={hasUnProcessSecurityResult}
-              securityBlocked={securityBlocked}
+              // securityLevel={securityLevel}
+              // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
               onSubmit={runHandleGnosisSign}
               enableTooltip={
                 currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
@@ -3156,7 +2999,6 @@ const SignTx = ({
             gasTipsApprovalUiStyle
             hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             securityLevel={securityLevel}
-            securityBlocked={securityBlocked}
             gnosisAccount={isGnosis ? params.account : undefined}
             account={currentAccount}
             chain={chain}
@@ -3185,7 +3027,7 @@ const SignTx = ({
               (isCoboArugsAccount ? !coboArgusInfo : false) ||
               !canProcess ||
               !!checkErrors.find((item) => item.level === 'forbidden') ||
-              securityBlocked ||
+              hasUnProcessSecurityResult ||
               (isGnosisAccount &&
                 new BigNumber(realNonce || 0).isLessThan(safeInfo?.nonce || 0))
             }
@@ -3208,7 +3050,7 @@ const SignTx = ({
         variant="add"
         account={currentAccount}
       />
-    </SecurityEngineScopeProvider>
+    </>
   );
 };
 

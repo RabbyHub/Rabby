@@ -9,7 +9,7 @@ import {
   KEYRING_CATEGORY_MAP,
   CHAINS_ENUM,
 } from 'consts';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import { useCommonPopupView, useWallet } from 'ui/utils';
 import eventBus from '@/eventBus';
 import Process from './Process';
 import Scan from './Scan';
@@ -17,8 +17,13 @@ import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { notifySigningUiReady } from '@/utils/signEvent';
+import type { SigningAttempt } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
+import { useApprovalScope } from '@/ui/approval/context';
+import { useApprovalActions } from '@/ui/approval/actions';
+import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
+import { requireSigningAttempt } from '@/utils/signingTypes';
 
 interface ApprovalParams {
   address: string;
@@ -49,8 +54,6 @@ const WatchAddressWaiting = ({
 }) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
-  const signFinishedRef = React.useRef<((data: any) => void) | null>(null);
-
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
@@ -60,7 +63,29 @@ const WatchAddressWaiting = ({
   }>(null);
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
-  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
+  const approvalScope = useApprovalScope();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+  } = useApprovalActions();
+  const attemptRef = useRef<SigningAttempt>(
+    requireSigningAttempt(approvalScope.signing?.attempt)
+  );
+  const getSigningContext = (attempt = attemptRef.current) => {
+    const flow = approvalScope.signing?.flow;
+    return flow && attempt
+      ? { approval: approvalScope.approval, signing: { flow, attempt } }
+      : undefined;
+  };
+  const handlersRef = useRef<{
+    onFinished?: (data: any) => void;
+  }>({});
+  useSigningAttemptEvents(attemptRef, {
+    onFinished: (data) => handlersRef.current.onFinished?.(data),
+  });
+  const listenersCleanupRef = useRef<(() => void) | null>(null);
+  const walletConnectInitedRef = useRef<((data: any) => void) | null>(null);
+  const mountedRef = useRef(false);
   const chain =
     findChain({
       id: params.chainId || 1,
@@ -70,7 +95,7 @@ const WatchAddressWaiting = ({
   const explainRef = useRef<any | null>(null);
   const [signFinishedData, setSignFinishedData] = useState<{
     data: any;
-    approvalId: string;
+    signingAttempt?: SigningAttempt;
   }>();
   const [isClickDone, setIsClickDone] = useState(false);
   const { status: sessionStatus } = useSessionStatus(currentAccount!);
@@ -87,9 +112,20 @@ const WatchAddressWaiting = ({
         status === null ? WALLETCONNECT_STATUS_MAP.PENDING : status
       );
     }
-    eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
-      setQrcodeContent(uri);
-    });
+    if (!walletConnectInitedRef.current) {
+      const onWalletConnectInited = async ({ uri }) => {
+        if (
+          !(await wallet.isApprovalCurrent(approvalScope.approval.approvalId))
+        )
+          return;
+        setQrcodeContent(uri);
+      };
+      walletConnectInitedRef.current = onWalletConnectInited;
+      eventBus.addEventListener(
+        EVENTS.WALLETCONNECT.INITED,
+        onWalletConnectInited
+      );
+    }
     const signingTx = await wallet.getSigningTx(params.signingTxId!);
 
     explainRef.current = signingTx?.explain;
@@ -109,17 +145,22 @@ const WatchAddressWaiting = ({
   };
 
   const handleRetry = async (retry?: boolean) => {
-    // resendSign restarts whatever the background's single deferred-signer
-    // slot currently holds, so never fire it for an approval this page is no
-    // longer showing
-    if (!(await isBound())) return;
-
-    const account = params.isGnosis ? params.account! : $account;
+    if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+      return;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     setConnectError(null);
-    wallet.resendSign(retry);
+    const context = getSigningContext();
+    if (!context) return;
+    const attempt = await wallet.resendSign({
+      retry,
+      context,
+    });
+    if (!attempt) return;
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
-    emitSignComponentAmounted();
+    if (attempt) {
+      attemptRef.current = attempt;
+      notifySigningUiReady(attempt);
+    }
   };
 
   const handleRefreshQrCode = () => {
@@ -127,7 +168,20 @@ const WatchAddressWaiting = ({
   };
 
   const init = async () => {
-    const approval = await getApproval();
+    const approval = {
+      id: approvalScope.approval.approvalId,
+      data: {
+        approvalComponent: approvalScope.approval.component,
+        approvalType: approvalScope.approvalType,
+        params: approvalScope.params,
+        account: approvalScope.account,
+        signing: approvalScope.signing,
+      },
+    } as any;
+    if (!mountedRef.current || !approval) return;
+    if (approval.data.signing?.attempt) {
+      attemptRef.current = approval.data.signing.attempt;
+    }
     const account = params.isGnosis ? params.account! : $account;
 
     setCurrentAccount(account);
@@ -139,29 +193,34 @@ const WatchAddressWaiting = ({
     isSignTextRef.current = isText;
 
     const onSignFinished = async (data) => {
+      if (!(await wallet.isApprovalCurrent(approval.id))) return;
+      const signingAttempt = data.attempt;
       if (data.success) {
-        // the Safe writes below post to the Safe service and cannot be taken
-        // back; SIGN_FINISHED is a global event, so make sure it is ours
-        if (!(await isBound())) return;
-
         let sig = data.data;
         setResult(sig);
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
+            const context = getSigningContext(signingAttempt);
+            if (!context) return;
             const safeMessage = params.safeMessage;
             if (safeMessage) {
               await wallet.handleGnosisMessage({
                 signature: data.data,
                 signerAddress: params.account!.address!,
+                context,
               });
             } else {
               const sigs = await wallet.getGnosisTransactionSignatures();
               if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
+                await wallet.gnosisAddConfirmation(
+                  account.address,
+                  sig,
+                  context
+                );
               } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
+                await wallet.gnosisAddSignature(account.address, sig, context);
+                await wallet.postGnosisTransaction(context);
               }
             }
           }
@@ -193,9 +252,10 @@ const WatchAddressWaiting = ({
             //   });
           }
         }
+        if (!(await wallet.isApprovalCurrent(approval.id))) return;
         setSignFinishedData({
           data: sig,
-          approvalId: approval.id,
+          signingAttempt: data.attempt,
         });
       } else {
         if (!isSignTextRef.current) {
@@ -225,133 +285,140 @@ const WatchAddressWaiting = ({
         rejectApproval(data.errorMsg);
       }
     };
-    signFinishedRef.current = onSignFinished;
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, onSignFinished);
+    handlersRef.current = { onFinished: onSignFinished };
 
-    eventBus.addEventListener(
-      EVENTS.WALLETCONNECT.STATUS_CHANGED,
-      async ({ status, payload }) => {
-        setVisible(true);
-        setConnectStatus(status);
-        if (
-          status !== WALLETCONNECT_STATUS_MAP.FAILED &&
-          status !== WALLETCONNECT_STATUS_MAP.REJECTED
-        ) {
-          if (!isText && !isSignTriggered) {
-            const explain = explainRef.current;
-            const chainInfo = findChainByEnum(chain);
+    const onWalletConnectStatusChanged = async ({ status, payload }) => {
+      if (!(await wallet.isApprovalCurrent(approval.id))) return;
+      setVisible(true);
+      setConnectStatus(status);
+      if (
+        status !== WALLETCONNECT_STATUS_MAP.FAILED &&
+        status !== WALLETCONNECT_STATUS_MAP.REJECTED
+      ) {
+        if (!isText && !isSignTriggered) {
+          const explain = explainRef.current;
+          const chainInfo = findChainByEnum(chain);
 
-            // const tx = approval.data?.params;
-            if (explain || chainInfo?.isTestnet) {
-              // const { nonce, from, chainId } = tx;
-              // const explain = await wallet.getExplainCache({
-              //   nonce: Number(nonce),
-              //   address: from,
-              //   chainId: Number(chainId),
-              // });
+          // const tx = approval.data?.params;
+          if (explain || chainInfo?.isTestnet) {
+            // const { nonce, from, chainId } = tx;
+            // const explain = await wallet.getExplainCache({
+            //   nonce: Number(nonce),
+            //   address: from,
+            //   chainId: Number(chainId),
+            // });
 
-              wallet.reportStats('signTransaction', {
-                type: account.brandName,
-                chainId: chainInfo?.serverId || '',
-                category: KEYRING_CATEGORY_MAP[account.type],
-                preExecSuccess: explain
-                  ? explain?.calcSuccess && explain?.pre_exec.success
-                  : true,
-                createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-                source: params?.$ctx?.ga?.source || '',
-                trigger: params?.$ctx?.ga?.trigger || '',
-                networkType: chainInfo?.isTestnet
-                  ? 'Custom Network'
-                  : 'Integrated Network',
-              });
-            }
-            matomoRequestEvent({
-              category: 'Transaction',
-              action: 'Submit',
-              label: chainInfo?.isTestnet
+            wallet.reportStats('signTransaction', {
+              type: account.brandName,
+              chainId: chainInfo?.serverId || '',
+              category: KEYRING_CATEGORY_MAP[account.type],
+              preExecSuccess: explain
+                ? explain?.calcSuccess && explain?.pre_exec.success
+                : true,
+              createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+              source: params?.$ctx?.ga?.source || '',
+              trigger: params?.$ctx?.ga?.trigger || '',
+              networkType: chainInfo?.isTestnet
                 ? 'Custom Network'
                 : 'Integrated Network',
             });
-
-            ga4.fireEvent(
-              `Submit_${chainInfo?.isTestnet ? 'Custom' : 'Integrated'}`,
-              {
-                event_category: 'Transaction',
-              }
-            );
-
-            isSignTriggered = true;
           }
-          if (isText && !isSignTriggered) {
-            wallet.reportStats('startSignText', {
-              type: account.brandName,
-              category: KEYRING_CATEGORY_MAP[account.type],
-              method: params?.extra?.signTextMethod,
-            });
-            isSignTriggered = true;
-          }
-        }
-        switch (status) {
-          case WALLETCONNECT_STATUS_MAP.CONNECTED:
-            break;
-          case WALLETCONNECT_STATUS_MAP.FAILED:
-          case WALLETCONNECT_STATUS_MAP.REJECTED:
-            if (payload?.code) {
-              try {
-                const error = JSON.parse(payload.message);
-                setConnectError({
-                  code: payload.code,
-                  message: error.message,
-                });
-              } catch (e) {
-                setConnectError(payload);
-              }
-            } else {
-              setConnectError(
-                (payload?.params && payload.params[0]) || payload
-              );
+          matomoRequestEvent({
+            category: 'Transaction',
+            action: 'Submit',
+            label: chainInfo?.isTestnet
+              ? 'Custom Network'
+              : 'Integrated Network',
+          });
+
+          ga4.fireEvent(
+            `Submit_${chainInfo?.isTestnet ? 'Custom' : 'Integrated'}`,
+            {
+              event_category: 'Transaction',
             }
-            break;
-          case WALLETCONNECT_STATUS_MAP.SUBMITTED:
-            setResult(payload);
-            break;
+          );
+
+          isSignTriggered = true;
+        }
+        if (isText && !isSignTriggered) {
+          wallet.reportStats('startSignText', {
+            type: account.brandName,
+            category: KEYRING_CATEGORY_MAP[account.type],
+            method: params?.extra?.signTextMethod,
+          });
+          isSignTriggered = true;
         }
       }
+      switch (status) {
+        case WALLETCONNECT_STATUS_MAP.CONNECTED:
+          break;
+        case WALLETCONNECT_STATUS_MAP.FAILED:
+        case WALLETCONNECT_STATUS_MAP.REJECTED:
+          if (payload?.code) {
+            try {
+              const error = JSON.parse(payload.message);
+              setConnectError({
+                code: payload.code,
+                message: error.message,
+              });
+            } catch (e) {
+              setConnectError(payload);
+            }
+          } else {
+            setConnectError((payload?.params && payload.params[0]) || payload);
+          }
+          break;
+        case WALLETCONNECT_STATUS_MAP.SUBMITTED:
+          setResult(payload);
+          break;
+      }
+    };
+    eventBus.addEventListener(
+      EVENTS.WALLETCONNECT.STATUS_CHANGED,
+      onWalletConnectStatusChanged
     );
+    listenersCleanupRef.current = () => {
+      if (walletConnectInitedRef.current) {
+        eventBus.removeEventListener(
+          EVENTS.WALLETCONNECT.INITED,
+          walletConnectInitedRef.current
+        );
+        walletConnectInitedRef.current = null;
+      }
+      eventBus.removeEventListener(
+        EVENTS.WALLETCONNECT.STATUS_CHANGED,
+        onWalletConnectStatusChanged
+      );
+    };
     await initWalletConnect();
-    // this releases the parked signer for the approval below; only do it if
-    // this page really is showing the current one
-    if (!(await isBound())) return;
-
-    emitSignComponentAmounted();
+    if (!mountedRef.current) return;
+    const attempt = approvalScope.signing?.attempt;
+    if (attempt) {
+      attemptRef.current = attempt;
+      notifySigningUiReady(attempt);
+    }
   };
 
   useEffect(() => {
+    mountedRef.current = true;
     init();
     setHeight('fit-content');
-
-    // SIGN_FINISHED is a global event: leaving this page's listener registered
-    // means a second waiting page in the same window runs it too
     return () => {
-      if (signFinishedRef.current) {
-        eventBus.removeEventListener(
-          EVENTS.SIGN_FINISHED,
-          signFinishedRef.current
-        );
-      }
+      mountedRef.current = false;
+      listenersCleanupRef.current?.();
+      listenersCleanupRef.current = null;
     };
   }, []);
 
   const { stay = false } = params || {};
   useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
-        signFinishedData.data,
+      void resolveApproval(signFinishedData.data, {
         stay,
-        false,
-        signFinishedData.approvalId
-      );
+        attempt: signFinishedData.signingAttempt,
+      }).then((result) => {
+        if (result?.accepted) closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

@@ -4,12 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
-import {
-  intToHex,
-  useApproval,
-  useCommonPopupView,
-  useWallet,
-} from '@/ui/utils';
+import { intToHex, useCommonPopupView, useWallet } from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
   ALIAS_ADDRESS,
@@ -50,6 +45,8 @@ import {
 import * as Sentry from '@sentry/browser';
 import { getCexInfo } from '@/ui/state/exchange';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
+import { useApprovalScope } from '@/ui/approval/context';
+import { useApprovalActions } from '@/ui/approval/actions';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -638,7 +635,12 @@ export const SignTestnetTx = ({
 
   const { t } = useTranslation();
 
-  const [getApproval, resolveApproval, rejectApproval, isBound] = useApproval();
+  const approvalScope = useApprovalScope();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+    isBound,
+  } = useApprovalActions();
 
   const checkCanProcess = async () => {
     const session = params.session;
@@ -750,12 +752,15 @@ export const SignTestnetTx = ({
       return;
     }
 
+    if (!(await isBound())) return;
+
     if (activeApprovalPopup()) {
       return;
     }
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
+      if (!(await isBound())) return;
     }
 
     const selected: ChainGas = {
@@ -767,8 +772,11 @@ export const SignTestnetTx = ({
       selected.gasLevel = selectedGas.level;
     }
     if (!isSpeedUp && !isCancel && !isSwap && !isDappGasPriceRef.current) {
+      if (!(await isBound())) return;
       await wallet.updateLastTimeGasSelection(chainId, selected);
+      if (!(await isBound())) return;
     }
+    if (!(await isBound())) return;
     const transaction: Tx = {
       from: tx.from,
       to: tx.to,
@@ -780,17 +788,16 @@ export const SignTestnetTx = ({
     };
 
     (transaction as Tx).gasPrice = tx.gasPrice;
-    const approval = await getApproval();
-    // stop before writing this tx into a replacement's signing record
-    if (!approval || !(await isBound())) return;
+    if (!(await isBound())) return;
 
-    approval.signingTxId &&
-      (await wallet.updateSigningTx(approval.signingTxId, {
+    approvalScope.signingTxId &&
+      (await wallet.updateSigningTx(approvalScope.signingTxId, {
         rawTx: {
           nonce: realNonce || tx.nonce,
         },
         action: explainResult,
       }));
+    if (!(await isBound())) return;
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
@@ -807,7 +814,7 @@ export const SignTestnetTx = ({
           brandName: currentAccount.brandName,
         },
         $ctx: params.$ctx,
-        signingTxId: approval.signingTxId,
+        signingTxId: approvalScope.signingTxId,
         // pushType: pushInfo.type,
         // lowGasDeadline: pushInfo.lowGasDeadline,
         reqId,
@@ -846,7 +853,7 @@ export const SignTestnetTx = ({
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
       isSend,
-      signingTxId: approval.signingTxId,
+      signingTxId: approvalScope.signingTxId,
       reqId,
     });
   };
