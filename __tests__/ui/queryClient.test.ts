@@ -4,6 +4,13 @@ import {
   QUERY_STALE_TIME,
 } from '@/ui/query/queryClient';
 import { createQueryKey } from '@/ui/query/queryKey';
+import { gasMarketQueryOptions } from '@/ui/query/resources/gasMarket';
+import { tokenPriceQueryOptions } from '@/ui/query/resources/tokenPrice';
+import type { WalletControllerType } from '@/ui/utils/WalletContext';
+
+jest.mock('@/utils/chain', () => ({
+  findChain: jest.fn(() => ({ isTestnet: false })),
+}));
 
 describe('TanStack Query infrastructure', () => {
   test('uses extension-safe defaults', () => {
@@ -46,5 +53,39 @@ describe('TanStack Query infrastructure', () => {
       },
       { tokenId: '0xToken' },
     ]);
+  });
+
+  test('uses the chain server id for gas-market requests', async () => {
+    const gasMarketV2 = jest.fn().mockResolvedValue([
+      {
+        level: 'slow',
+        price: 1e9,
+      },
+    ]);
+    const wallet = ({ gasMarketV2 } as unknown) as WalletControllerType;
+    const client = createQueryClient();
+
+    await expect(
+      client.fetchQuery(gasMarketQueryOptions(wallet, 'eth'))
+    ).resolves.toBe(1);
+    expect(gasMarketV2).toHaveBeenCalledWith({ chainId: 'eth' });
+  });
+
+  test('keeps resource failures in the query error state', async () => {
+    const error = new Error('request failed');
+    const wallet = ({
+      gasMarketV2: jest.fn().mockRejectedValue(error),
+      openapi: {
+        tokenPrice: jest.fn().mockRejectedValue(error),
+      },
+    } as unknown) as WalletControllerType;
+    const client = createQueryClient();
+
+    await expect(
+      client.fetchQuery(gasMarketQueryOptions(wallet, 'eth'))
+    ).rejects.toBe(error);
+    await expect(
+      client.fetchQuery(tokenPriceQueryOptions(wallet, 'eth'))
+    ).rejects.toBe(error);
   });
 });

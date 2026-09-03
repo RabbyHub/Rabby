@@ -4,7 +4,7 @@ import { tokenQueryOptions } from '@/ui/query/resources/token';
 import { tokenPriceQueryOptions } from '@/ui/query/resources/tokenPrice';
 import { useRabbySelector } from '@/ui/store';
 import { splitNumberByStep, useWallet } from '@/ui/utils';
-import { findChain, findChainByEnum } from '@/utils/chain';
+import { findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM } from '@debank/common';
 import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from 'antd';
@@ -21,20 +21,6 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
   const wallet = useWallet();
   const account = useRabbySelector((state) => state.account.currentAccount);
 
-  const currentConnectedSiteChainNativeToken = useMemo(
-    () =>
-      currentConnectedSiteChain
-        ? findChain({
-            enum: currentConnectedSiteChain,
-          })?.nativeTokenAddress || 'eth'
-        : 'eth',
-    [currentConnectedSiteChain]
-  );
-
-  const { data: gasPrice = 0, isLoading: gasPriceLoading } = useQuery(
-    gasMarketQueryOptions(wallet, currentConnectedSiteChainNativeToken)
-  );
-
   const chainItem = useMemo(
     () =>
       findChainByEnum(currentConnectedSiteChain, {
@@ -42,6 +28,13 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
       })!,
     [currentConnectedSiteChain]
   );
+  const currentConnectedSiteChainNativeToken =
+    chainItem.nativeTokenAddress || 'eth';
+
+  const { data: gasPrice = 0, isLoading: gasPriceLoading } = useQuery(
+    gasMarketQueryOptions(wallet, chainItem.serverId || '')
+  );
+
   const { data: tokenInfo, isLoading: tokenLoading } = useQuery(
     tokenQueryOptions(wallet, {
       address: account?.address,
