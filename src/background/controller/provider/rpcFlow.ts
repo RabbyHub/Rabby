@@ -45,7 +45,6 @@ import {
   toAccountRef,
   sameAccountRef,
 } from '@/utils/signingTypes';
-import { emitSigningAttemptFinished } from '@/utils/signEvent';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -544,7 +543,6 @@ const flowContext = flow
         {
           retryable: () =>
             approvalType === 'SignTx' && mapMethod === 'ethSendTransaction',
-          onFinished: emitSigningAttemptFinished,
         }
       );
     };

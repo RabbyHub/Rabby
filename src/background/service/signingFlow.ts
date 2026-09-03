@@ -51,18 +51,11 @@ type FlowRecord = {
   attempts: Map<string, AttemptRecord>;
   activeAttemptId?: string;
   owner?: Owner;
-  onFinished?: (event: {
-    attempt: SigningAttemptRef;
-    success: boolean;
-    data?: unknown;
-    error?: unknown;
-  }) => void;
 };
 
 type AttemptRecord = {
   ref: SigningAttemptRef;
   approval?: ApprovalRef;
-  approvalId?: string;
   status: SigningAttemptStatus;
   awaitUi: boolean;
   uiReady: boolean;
@@ -276,7 +269,7 @@ export class SigningFlowService {
 
   createAttempt(
     flow: SigningFlowRef,
-    options: { attemptId?: string; awaitUi?: boolean; approvalId?: string } = {}
+    options: { attemptId?: string; awaitUi?: boolean } = {}
   ): SigningAttemptRef | undefined {
     const record = this.flows.get(flow.flowId);
     if (!record || this.isTerminal(record.status)) return;
@@ -293,7 +286,6 @@ export class SigningFlowService {
     };
     const attempt: AttemptRecord = {
       ref,
-      approvalId: options.approvalId,
       status: options.awaitUi === false ? 'created' : 'awaiting-ui',
       awaitUi: options.awaitUi !== false,
       uiReady: options.awaitUi === false,
@@ -324,7 +316,6 @@ export class SigningFlowService {
     const record = this.getAttempt(attempt);
     if (!record || !this.isCurrentAttempt(attempt)) return false;
     record.approval = approval;
-    record.approvalId = approval.approvalId;
     return true;
   }
 
@@ -342,7 +333,7 @@ export class SigningFlowService {
       flow.status !== 'cancelled' &&
       !!current &&
       sameAttempt(current.ref, attempt) &&
-      record.approvalId === approvalId
+      record.approval?.approvalId === approvalId
     );
   }
 
@@ -472,7 +463,6 @@ export class SigningFlowService {
     if (!next) return;
     const nextRecord = this.getAttempt(next)!;
     nextRecord.approval = current.approval;
-    nextRecord.approvalId = current.approvalId;
     nextRecord.runner = current.runner;
     nextRecord.retryable = current.retryable;
     void this.startRunner(next, input.retryOptions).catch(() => undefined);
@@ -485,12 +475,6 @@ export class SigningFlowService {
     runner: AttemptRunner<T>,
     options: {
       retryable?: (error: unknown) => boolean;
-      onFinished?: (event: {
-        attempt: SigningAttemptRef;
-        success: boolean;
-        data?: unknown;
-        error?: unknown;
-      }) => void;
     } = {}
   ): Promise<T> {
     const record = this.getAttempt(attempt);
@@ -504,7 +488,6 @@ export class SigningFlowService {
       });
       return Promise.reject(rejected());
     }
-    flowRecord.onFinished = options.onFinished;
     if (!flowRecord.owner) {
       let resolve!: (value: unknown) => void;
       let reject!: (error: unknown) => void;
@@ -582,7 +565,7 @@ export class SigningFlowService {
       const result = await record.runner(attempt, retryOptions);
       const finished = this.finishAttempt(attempt, { success: true });
       if (finished.accepted) {
-        this.notifyFinished(flow, { attempt, success: true, data: result });
+        this.notifyFinished({ attempt, success: true, data: result });
         this.resolveOwner(flow, result, true);
         this.maybeCleanup(flow);
       }
@@ -593,7 +576,7 @@ export class SigningFlowService {
         retryable,
       });
       if (finished.accepted) {
-        this.notifyFinished(flow, { attempt, success: false, error });
+        this.notifyFinished({ attempt, success: false, error });
         if (!retryable) this.resolveOwner(flow, error, false);
         this.maybeCleanup(flow);
       }
@@ -621,16 +604,10 @@ export class SigningFlowService {
   }
 
   private notifyFinished(
-    flow: FlowRecord,
-    event: {
-      attempt: SigningAttemptRef;
-      success: boolean;
-      data?: unknown;
-      error?: unknown;
-    }
+    event: Parameters<typeof emitSigningAttemptFinished>[0]
   ) {
     try {
-      flow.onFinished?.(event);
+      emitSigningAttemptFinished(event);
     } catch (error) {
       Sentry.captureException(error);
     }

@@ -4,7 +4,6 @@ import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { findChain } from '@/utils/chain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { notifySigningUiReady } from '@/utils/signEvent';
-import type { SigningAttempt } from '@/utils/signEvent';
 import * as Sentry from '@sentry/browser';
 import { message } from 'antd';
 import { Account } from 'background/service/preference';
@@ -25,6 +24,7 @@ import { useApprovalScope } from '@/ui/approval/context';
 import { useApprovalActions } from '@/ui/approval/actions';
 import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
 import { requireSigningAttempt } from '@/utils/signingTypes';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface ApprovalParams {
   address: string;
@@ -77,7 +77,7 @@ const LedgerHardwareWaiting = ({
     resolve: resolveApproval,
     reject: rejectApproval,
   } = useApprovalActions();
-  const attemptRef = React.useRef<SigningAttempt>(
+  const attemptRef = React.useRef<SigningAttemptRef>(
     requireSigningAttempt(approvalScope.signing?.attempt)
   );
   const getSigningContext = (attempt = attemptRef.current) => {
@@ -107,7 +107,7 @@ const LedgerHardwareWaiting = ({
   const [isClickDone, setIsClickDone] = React.useState(false);
   const [signFinishedData, setSignFinishedData] = React.useState<{
     data: any;
-    signingAttempt?: SigningAttempt;
+    signingAttempt?: SigningAttemptRef;
   }>();
   const { status: sessionStatus } = useLedgerStatus();
   const firstConnectRef = React.useRef<boolean>(false);

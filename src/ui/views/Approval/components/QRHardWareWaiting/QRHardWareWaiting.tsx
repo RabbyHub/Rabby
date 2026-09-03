@@ -26,11 +26,11 @@ import {
 } from './KeystoneWaiting';
 import clsx from 'clsx';
 import { notifySigningUiReady } from '@/utils/signEvent';
-import type { SigningAttempt } from '@/utils/signEvent';
 import { useApprovalScope } from '@/ui/approval/context';
 import { useApprovalActions } from '@/ui/approval/actions';
 import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
 import { requireSigningAttempt } from '@/utils/signingTypes';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -66,7 +66,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
     resolve: resolveApproval,
     reject: rejectApproval,
   } = useApprovalActions();
-  const attemptRef = React.useRef<SigningAttempt>(
+  const attemptRef = React.useRef<SigningAttemptRef>(
     requireSigningAttempt(approvalScope.signing?.attempt)
   );
   const getSigningContext = (attempt = attemptRef.current) => {
@@ -98,7 +98,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   const [signFinishedData, setSignFinishedData] = React.useState<{
     data: any;
     stay: boolean;
-    signingAttempt?: SigningAttempt;
+    signingAttempt?: SigningAttemptRef;
   }>();
 
   React.useEffect(() => {

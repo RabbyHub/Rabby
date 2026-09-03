@@ -82,9 +82,7 @@ const start = (approval: any, flowId: string) => {
     origin: approval.data.origin || '',
     rpcRequestId: flowId,
   });
-  const attempt = signingFlowService.createAttempt(flow, {
-    approvalId: approval.id,
-  });
+  const attempt = signingFlowService.createAttempt(flow);
   const ref = approvalRef(approval);
   signingFlowService.attachApproval(flow, ref);
   signingFlowService.bindAttemptApproval(attempt!, ref);

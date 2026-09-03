@@ -22,13 +22,13 @@ import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
 import { notifySigningUiReady } from '@/utils/signEvent';
-import type { SigningAttempt } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useApprovalScope } from '@/ui/approval/context';
 import { useApprovalActions } from '@/ui/approval/actions';
 import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
 import { requireSigningAttempt } from '@/utils/signingTypes';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface ApprovalParams {
   from?: string;
@@ -70,7 +70,7 @@ export const CommonWaiting = ({
     resolve: resolveApproval,
     reject: rejectApproval,
   } = useApprovalActions();
-  const attemptRef = React.useRef<SigningAttempt>(
+  const attemptRef = React.useRef<SigningAttemptRef>(
     requireSigningAttempt(approvalScope.signing?.attempt)
   );
   const getSigningContext = (attempt = attemptRef.current) => {
@@ -108,7 +108,7 @@ export const CommonWaiting = ({
   const [isClickDone, setIsClickDone] = React.useState(false);
   const [signFinishedData, setSignFinishedData] = React.useState<{
     data: any;
-    signingAttempt?: SigningAttempt;
+    signingAttempt?: SigningAttemptRef;
   }>();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']

@@ -3,8 +3,6 @@ import eventBus from '@/eventBus';
 import { ethErrors } from 'eth-rpc-errors';
 import { HardwareOperationRef, SigningAttemptRef } from './signingTypes';
 
-export type SigningAttempt = SigningAttemptRef;
-
 const matches = (left: SigningAttemptRef, right: unknown) =>
   !!right &&
   (right as SigningAttemptRef).flowId === left.flowId &&

@@ -18,12 +18,12 @@ import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus'
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { notifySigningUiReady } from '@/utils/signEvent';
-import type { SigningAttempt } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
 import { useApprovalScope } from '@/ui/approval/context';
 import { useApprovalActions } from '@/ui/approval/actions';
 import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
 import { requireSigningAttempt } from '@/utils/signingTypes';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface ApprovalParams {
   address: string;
@@ -68,7 +68,7 @@ const WatchAddressWaiting = ({
     resolve: resolveApproval,
     reject: rejectApproval,
   } = useApprovalActions();
-  const attemptRef = useRef<SigningAttempt>(
+  const attemptRef = useRef<SigningAttemptRef>(
     requireSigningAttempt(approvalScope.signing?.attempt)
   );
   const getSigningContext = (attempt = attemptRef.current) => {
@@ -95,7 +95,7 @@ const WatchAddressWaiting = ({
   const explainRef = useRef<any | null>(null);
   const [signFinishedData, setSignFinishedData] = useState<{
     data: any;
-    signingAttempt?: SigningAttempt;
+    signingAttempt?: SigningAttemptRef;
   }>();
   const [isClickDone, setIsClickDone] = useState(false);
   const { status: sessionStatus } = useSessionStatus(currentAccount!);

@@ -206,8 +206,6 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
-import { emitSigningAttemptFinished } from '@/utils/signEvent';
-import type { SigningAttempt } from '@/utils/signEvent';
 import {
   sameAccountRef,
   toAccountRef,
@@ -217,6 +215,7 @@ import type {
   ApprovalRef,
   ApprovalSigningContext,
   InternalSignRequestId,
+  SigningAttemptRef,
   SigningRequestContext,
 } from '@/utils/signingTypes';
 import pRetry from 'p-retry';
@@ -688,7 +687,7 @@ export class WalletController extends BaseController {
 
   private runSigningMessageWithUI = <T>(
     context: ApprovalSigningContext,
-    run: (attempt: SigningAttempt) => Promise<T>
+    run: (attempt: SigningAttemptRef) => Promise<T>
   ) => {
     if (!context.signing?.flow || !context.signing.attempt) {
       const rejected = Promise.reject<T>(
@@ -718,7 +717,6 @@ export class WalletController extends BaseController {
 
     const owner = signingFlowService.run(flow, attempt, run, {
       retryable: () => true,
-      onFinished: emitSigningAttemptFinished,
     });
     void owner.catch(() => undefined);
     return owner;

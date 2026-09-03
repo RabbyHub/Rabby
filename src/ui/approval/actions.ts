@@ -125,12 +125,6 @@ export const useApprovalActions = () => {
       onRejected: () => history.push('/'),
     });
 
-    return {
-      ...actions,
-      reject: async (error?: string, options: ApprovalRejectOptions = {}) => {
-        const result = await actions.reject(error, options);
-        return result;
-      },
-    };
+    return actions;
   }, [approval, deviceConnect, enablePopup, history, showPopup, wallet]);
 };
