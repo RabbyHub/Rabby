@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
-import { useWallet, useApproval } from 'ui/utils';
-import { IExtractFromPromise } from '@/ui/utils/type';
+import { useWallet } from 'ui/utils';
+import {
+  createApprovalScope,
+  ApprovalScopeContext,
+} from '@/ui/approval/context';
+import { getCurrentApproval } from '@/ui/approval/global';
 import { ApprovalUtilsProvider } from './hooks/useApprovalUtils';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import * as ApprovalComponent from './components';
@@ -11,6 +15,7 @@ import './style.less';
 import clsx from 'clsx';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
+import { toApprovalRef } from '@/utils/signingTypes';
 
 const Approval: React.FC<{
   className?: string;
@@ -18,18 +23,13 @@ const Approval: React.FC<{
   const history = useHistory();
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
-  const [getApproval, , rejectApproval] = useApproval();
-  type IApproval = Exclude<
-    IExtractFromPromise<ReturnType<typeof getApproval>>,
-    void
-  >;
-  const [approval, setApproval] = useState<IApproval | null>(null);
+  const [approval, setApproval] = useState<Approval | null>(null);
   const resetCurrentTx = useSecurityEngineStore(
     (state) => state.resetCurrentTx
   );
 
   const init = async () => {
-    const approval = await getApproval();
+    const approval = await getCurrentApproval(wallet);
     if (!approval) {
       history.replace('/');
       return null;
@@ -41,7 +41,10 @@ const Approval: React.FC<{
     document.title = 'Rabby Wallet Notification';
     const account = approval.data.account || (await wallet.getCurrentAccount());
     if (!account) {
-      rejectApproval(undefined, false, false, approval.id);
+      const result = await wallet.rejectApprovalFor({
+        approval: toApprovalRef(approval.id, approval.data.approvalComponent),
+      });
+      if (result.accepted) history.replace('/');
       return;
     }
   };
@@ -52,23 +55,35 @@ const Approval: React.FC<{
 
   useEventBusListener(EVENTS.RELOAD_APPROVAL, init);
 
+  const scope = React.useMemo(
+    () => (approval ? createApprovalScope(approval) : null),
+    [approval]
+  );
+
   if (!approval) return <></>;
   const { data } = approval;
   const { approvalComponent, params, origin, account } = data;
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
+  const renderedParams = scope?.signing
+    ? {
+        ...(params || {}),
+        signing: scope.signing,
+      }
+    : params;
 
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <ApprovalUtilsProvider approval={approval}>
-          <CurrentApprovalComponent
-            key={approval.id}
-            params={params}
-            origin={origin}
-            account={account}
-            // requestDefer={requestDefer}
-          />
-        </ApprovalUtilsProvider>
+        <ApprovalScopeContext.Provider value={scope}>
+          <ApprovalUtilsProvider>
+            <CurrentApprovalComponent
+              key={approval.id}
+              params={renderedParams as any}
+              origin={origin}
+              account={account}
+            />
+          </ApprovalUtilsProvider>
+        </ApprovalScopeContext.Provider>
       )}
     </div>
   );
