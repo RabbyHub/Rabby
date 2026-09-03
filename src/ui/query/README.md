@@ -6,9 +6,10 @@ services remain authoritative for wallet state.
 
 ## Resource shape
 
-Following Rainbow's resource-module pattern, each resource should export its
-query key and query options before exposing a React hook. Components must not
-assemble raw keys or call `queryClient` with duplicated key logic.
+Following Rainbow's resource-module pattern, shared resources should export
+their query key and query options before exposing a React hook. Feature-local
+queries with a single consumer may keep the same shape next to that feature.
+Components must not duplicate key construction or query-client operations.
 
 Every value that can change a response belongs in the key. Use
 `createQueryKey` for the relevant address, chain/server id, testnet mode, and

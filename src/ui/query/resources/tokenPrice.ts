@@ -12,22 +12,15 @@ export const tokenPriceQueryOptions = (
   queryOptions({
     queryKey: tokenPriceQueryKey(tokenId),
     queryFn: async () => {
-      try {
-        const {
-          change_percent = 0,
-          last_price = 0,
-        } = await wallet.openapi.tokenPrice(tokenId);
+      const {
+        change_percent = 0,
+        last_price = 0,
+      } = await wallet.openapi.tokenPrice(tokenId);
 
-        return {
-          currentPrice: last_price,
-          percentage: change_percent,
-        };
-      } catch {
-        return {
-          currentPrice: null,
-          percentage: null,
-        };
-      }
+      return {
+        currentPrice: last_price,
+        percentage: change_percent,
+      };
     },
     enabled: Boolean(tokenId),
     staleTime: 5_000,
