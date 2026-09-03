@@ -21,6 +21,7 @@ import {
   keyringService,
   preferenceService,
   notificationService,
+  signingFlowService,
   permissionService,
   sessionService,
   openapiService,
@@ -206,7 +207,19 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
-import { waitSignComponentAmounted } from '@/utils/signEvent';
+import { emitSigningAttemptFinished } from '@/utils/signEvent';
+import type { SigningAttempt } from '@/utils/signEvent';
+import {
+  sameAccountRef,
+  toAccountRef,
+  toApprovalRef,
+} from '@/utils/signingTypes';
+import type {
+  ApprovalRef,
+  ApprovalSigningContext,
+  InternalSignRequestId,
+  SigningRequestContext,
+} from '@/utils/signingTypes';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
@@ -450,6 +463,36 @@ const REQUEST_KEYRING_METHOD_ALLOWLIST = new Set([
 
 const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 
+const assertApprovalActionCurrent = (context?: ApprovalSigningContext) => {
+  const signing = context?.signing;
+  if (
+    !context ||
+    !notificationService.isApprovalRefCurrent(context.approval) ||
+    (signing &&
+      (!signing.attempt ||
+        signing.attempt.flowId !== signing.flow.flowId ||
+        !signingFlowService.isAttemptValidForApproval(
+          signing.attempt,
+          context.approval.approvalId
+        )))
+  ) {
+    if (!context) return;
+    throw ethErrors.provider.userRejectedRequest();
+  }
+};
+
+const assertSigningContextCurrent = (context?: SigningRequestContext) => {
+  if (!context) return;
+  const currentAccount = preferenceService.getCurrentAccount();
+  if (
+    !currentAccount ||
+    !signingFlowService.isActiveContext(context) ||
+    !sameAccountRef(toAccountRef(currentAccount), context.account)
+  ) {
+    throw ethErrors.provider.userRejectedRequest();
+  }
+};
+
 const gnosisPQueue = new PQueue({
   interval: 1000,
   intervalCap: 10,
@@ -534,43 +577,165 @@ export class WalletController extends BaseController {
     options?: {
       isBuild?: boolean;
       account?: Account;
-      session?: typeof INTERNAL_REQUEST_SESSION;
+      session?: ProviderRequest['session'];
+      approval?: ApprovalRef;
+      internalSignRequestId?: ProviderRequest['internalSignRequestId'];
     }
   ) => {
     const { isBuild = false, account, session } = options || {};
+    const approval = options?.approval;
+    if (approval && !notificationService.isApprovalRefCurrent(approval)) {
+      return Promise.reject(ethErrors.provider.userRejectedRequest());
+    }
     if (isBuild) {
       return Promise.resolve<T>(data as T);
     }
+    const parentSigning = approval
+      ? notificationService.getSigningRequestContext(approval)
+      : undefined;
+    let signing = approval
+      ? notificationService.getSigningRequestContext(approval, account)
+      : undefined;
+    if (approval && parentSigning && account && !signing) {
+      const requestedAccount = toAccountRef(account);
+      const requestOrigin = session?.origin || parentSigning.origin;
+      const isCoboContinuation =
+        data.method === 'eth_sendTransaction' &&
+        data.params?.[0]?.isCoboSafe === true;
+      if (
+        !isCoboContinuation ||
+        !requestedAccount ||
+        requestOrigin !== parentSigning.origin
+      ) {
+        return Promise.reject(ethErrors.provider.userRejectedRequest());
+      }
+      signing = signingFlowService.createChildAttempt({
+        parent: parentSigning,
+        account: requestedAccount,
+        origin: requestOrigin,
+        approval,
+      });
+    }
+    if (approval && parentSigning && !signing) {
+      return Promise.reject(ethErrors.provider.userRejectedRequest());
+    }
+    const requestSession = signing
+      ? {
+          ...(session || INTERNAL_REQUEST_SESSION),
+          origin: signing.origin,
+        }
+      : session || INTERNAL_REQUEST_SESSION;
     return provider<T>({
       data,
-      session: session || INTERNAL_REQUEST_SESSION,
-      account,
+      session: requestSession,
+      account: account || signing?.account,
+      approval,
+      internalSignRequestId: options?.internalSignRequestId,
+      signing,
     });
   };
 
-  resendSign = (retry?: boolean) => {
-    notificationService.callCurrentRequestDeferFn(retry);
+  startDirectSigning = async (input?: {
+    account?: Account;
+    origin?: string;
+  }) => {
+    const currentAccount = await preferenceService.getCurrentAccount();
+    const account = toAccountRef(currentAccount);
+    if (
+      !account ||
+      (input?.account && !sameAccountRef(account, toAccountRef(input.account)))
+    ) {
+      throw ethErrors.provider.userRejectedRequest();
+    }
+    const context = signingFlowService.startAttempt({
+      account,
+      origin: input?.origin || INTERNAL_REQUEST_SESSION.origin,
+    });
+    if (!context) throw ethErrors.provider.userRejectedRequest();
+    return context;
   };
 
-  getApproval = notificationService.getApproval;
-  resolveApproval = notificationService.resolveApproval;
-  rejectApproval = (
-    err?: string,
-    stay = false,
-    isInternal = false,
-    approvalId?: string
-  ) => {
-    return notificationService.rejectApproval(
-      err,
-      stay,
-      isInternal,
-      approvalId
-    );
+  finishDirectSigning = (
+    context: SigningRequestContext,
+    outcome: {
+      success: boolean;
+      data?: unknown;
+      error?: unknown;
+    }
+  ) => signingFlowService.finishAttemptWithEvent(context, outcome);
+
+  cancelDirectSigning = (context: SigningRequestContext) =>
+    notificationService.invalidateSigningFlow(context.flow.flowId);
+
+  resendSign = ({
+    retry = false,
+    context,
+  }: {
+    retry?: boolean;
+    context: ApprovalSigningContext;
+  }) => {
+    assertApprovalActionCurrent(context);
+    const flow = context.signing?.flow;
+    const currentAttempt = context.signing?.attempt;
+    if (!flow || !currentAttempt) return;
+    const next = signingFlowService.retrySigningAttempt({
+      flow,
+      currentAttempt,
+      retryOptions: { isRetry: retry },
+    });
+    if (next) {
+      notificationService.updateSigningAttempt(context.approval, next);
+    }
+    return next;
   };
+
+  private runSigningMessageWithUI = <T>(
+    context: ApprovalSigningContext,
+    run: (attempt: SigningAttempt) => Promise<T>
+  ) => {
+    if (!context.signing?.flow || !context.signing.attempt) {
+      const rejected = Promise.reject<T>(
+        ethErrors.provider.userRejectedRequest()
+      );
+      void rejected.catch(() => undefined);
+      return rejected;
+    }
+
+    try {
+      assertApprovalActionCurrent(context);
+    } catch (error) {
+      const rejected = Promise.reject<T>(error);
+      void rejected.catch(() => undefined);
+      return rejected;
+    }
+
+    const flow = context.signing.flow;
+    const attempt = context.signing.attempt;
+    if (!signingFlowService.isCurrentAttempt(attempt)) {
+      const rejected = Promise.reject<T>(
+        ethErrors.provider.userRejectedRequest()
+      );
+      void rejected.catch(() => undefined);
+      return rejected;
+    }
+
+    const owner = signingFlowService.run(flow, attempt, run, {
+      retryable: () => true,
+      onFinished: emitSigningAttemptFinished,
+    });
+    void owner.catch(() => undefined);
+    return owner;
+  };
+
+  getCurrentApproval = notificationService.getCurrentApproval;
+  waitForApproval = notificationService.waitForApproval;
+  cancelApprovalWaiter = notificationService.cancelApprovalWaiter;
+  isApprovalCurrent = notificationService.isApprovalCurrent;
+  resolveApprovalFor = notificationService.resolveApprovalFor;
+  rejectApprovalFor = notificationService.rejectApprovalFor;
 
   rejectAllApprovals = () => {
     notificationService.rejectAllApprovals();
-    notificationService.clear();
   };
 
   getERC20Allowance = async (
@@ -2148,8 +2313,6 @@ export class WalletController extends BaseController {
   });
 
   lockWallet = async () => {
-    // Pending approvals are rejected on the keyring `lock` event, which covers
-    // every path that locks, this one included.
     await keyringService.setLocked();
     // The keyring is locked from here on, so tell the UI before the remaining
     // best-effort cleanup. A throw below must not leave open pages rendering
@@ -2910,7 +3073,11 @@ export class WalletController extends BaseController {
   setCloseTipsChains = OfflineChainsService.setCloseTipsChains;
 
   getRetryTxType = bgRetryTxMethods.getRetryTxType;
-  setRetryTxType = bgRetryTxMethods.setRetryTxType;
+  setRetryTxType = (type, context?: ApprovalSigningContext) => {
+    if (context) assertApprovalActionCurrent(context);
+    bgRetryTxMethods.setRetryTxType(type);
+    return true;
+  };
   retryTxReset = bgRetryTxMethods.retryTxReset;
   getRetryTxRecommendNonce = bgRetryTxMethods.getRetryTxRecommendNonce;
   setRetryTxRecommendNonce = bgRetryTxMethods.setRetryTxRecommendNonce;
@@ -3341,8 +3508,10 @@ export class WalletController extends BaseController {
     account: Account,
     tx,
     version: string,
-    networkId: string
+    networkId: string,
+    context?: ApprovalSigningContext
   ) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring) {
       const currentProvider = new EthereumProvider();
@@ -3357,6 +3526,7 @@ export class WalletController extends BaseController {
         version,
         networkId
       );
+      assertApprovalActionCurrent(context);
     } else {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
@@ -3399,12 +3569,16 @@ export class WalletController extends BaseController {
     }
   };
 
-  postGnosisTransaction = () => {
+  postGnosisTransaction = (context?: ApprovalSigningContext) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring || !keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    return keyring.postTransaction();
+    return keyring.postTransaction().then((result) => {
+      assertApprovalActionCurrent(context);
+      return result;
+    });
   };
 
   getGnosisAllPendingTxs = async (address: string) => {
@@ -3591,31 +3765,49 @@ export class WalletController extends BaseController {
     return keyring.generateTypedData();
   };
 
-  gnosisAddConfirmation = async (address: string, signature: string) => {
+  gnosisAddConfirmation = async (
+    address: string,
+    signature: string,
+    context?: ApprovalSigningContext
+  ) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     await keyring.addConfirmation(address, signature);
+    assertApprovalActionCurrent(context);
   };
 
-  gnosisAddPureSignature = async (address: string, signature: string) => {
+  gnosisAddPureSignature = async (
+    address: string,
+    signature: string,
+    context?: ApprovalSigningContext
+  ) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     await keyring.addPureSignature(address, signature);
+    assertApprovalActionCurrent(context);
   };
 
-  gnosisAddSignature = async (address: string, signature: string) => {
+  gnosisAddSignature = async (
+    address: string,
+    signature: string,
+    context?: ApprovalSigningContext
+  ) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     await keyring.addSignature(address, signature);
+    assertApprovalActionCurrent(context);
   };
 
   buildGnosisMessage = async ({
@@ -3624,13 +3816,16 @@ export class WalletController extends BaseController {
     networkId,
     version,
     message,
+    context,
   }: {
     safeAddress: string;
     account: Account;
     version: string;
     networkId: string;
     message: string | Record<string, any>;
+    context?: ApprovalSigningContext;
   }) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring) {
       const currentProvider = new EthereumProvider();
@@ -3638,13 +3833,15 @@ export class WalletController extends BaseController {
       currentProvider.currentAccountType = account.type;
       currentProvider.currentAccountBrand = account.brandName;
       currentProvider.chainId = networkId;
-      return keyring.buildMessage({
+      const result = await keyring.buildMessage({
         address: safeAddress,
         provider: new ethers.providers.Web3Provider(currentProvider),
         version,
         networkId,
         message: message as any,
       });
+      assertApprovalActionCurrent(context);
+      return result;
     } else {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
@@ -3661,50 +3858,65 @@ export class WalletController extends BaseController {
   addGnosisMessage = async ({
     signerAddress,
     signature,
+    context,
   }: {
     signerAddress: string;
     signature: string;
+    context?: ApprovalSigningContext;
   }) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    return keyring.addMessage({
+    const result = await keyring.addMessage({
       signerAddress,
       signature,
     });
+    assertApprovalActionCurrent(context);
+    return result;
   };
 
   addGnosisMessageSignature = async ({
     signerAddress,
     signature,
+    context,
   }: {
     signerAddress: string;
     signature: string;
+    context?: ApprovalSigningContext;
   }) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    return keyring.addMessageSignature({
+    const result = await keyring.addMessageSignature({
       signerAddress,
       signature,
     });
+    assertApprovalActionCurrent(context);
+    return result;
   };
 
   handleGnosisMessage = async ({
     signerAddress,
     signature,
+    context,
   }: {
     signerAddress: string;
     signature: string;
+    context?: ApprovalSigningContext;
   }) => {
+    assertApprovalActionCurrent(context);
     const sigs = this.getGnosisMessageSignatures();
     if (sigs.length > 0) {
       await wallet.addGnosisMessageSignature({
         signature: signature,
         signerAddress: signerAddress,
+        context,
       });
     } else {
       await wallet.addGnosisMessage({
         signature: signature,
         signerAddress: signerAddress,
+        context,
       });
     }
   };
@@ -3712,16 +3924,21 @@ export class WalletController extends BaseController {
   addPureGnosisMessageSignature = async ({
     signerAddress,
     signature,
+    context,
   }: {
     signerAddress: string;
     signature: string;
+    context?: ApprovalSigningContext;
   }) => {
+    assertApprovalActionCurrent(context);
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    return keyring.addPureMessageSignature({
+    const result = await keyring.addPureMessageSignature({
       signerAddress,
       signature,
     });
+    assertApprovalActionCurrent(context);
+    return result;
   };
 
   getGnosisMessage = async ({
@@ -4314,10 +4531,6 @@ export class WalletController extends BaseController {
     preferenceService.showAddress(type, address);
   hideAddress = (type: string, address: string, brandName: string) => {
     preferenceService.hideAddress(type, address, brandName);
-    const current = preferenceService.getCurrentAccount();
-    if (current?.address === address && current.type === type) {
-      this.resetCurrentAccount();
-    }
   };
 
   clearWatchMode = async () => {
@@ -4365,6 +4578,21 @@ export class WalletController extends BaseController {
     brand?: string,
     removeEmptyKeyrings?: boolean
   ) => {
+    const currentBeforeRemoval = preferenceService.getCurrentAccount();
+    const isRemovingCurrent =
+      !!currentBeforeRemoval &&
+      currentBeforeRemoval.address.toLowerCase() === address.toLowerCase() &&
+      currentBeforeRemoval.type === type &&
+      (!brand || currentBeforeRemoval.brandName === brand);
+
+    if (isRemovingCurrent) {
+      notificationService.invalidateApprovalSession();
+      // Make the account unavailable before any async keyring cleanup so a
+      // concurrent request cannot bind a new approval to the account being
+      // removed.
+      preferenceService.setCurrentAccount(null);
+    }
+
     await this.killWalletConnectConnector(address, brand || type, true, true);
 
     if (removeEmptyKeyrings) {
@@ -4392,12 +4620,7 @@ export class WalletController extends BaseController {
       perpsService.removeAgentWallet(address);
       this.forceExpireInMemoryAddressBalance(address);
     }
-    const current = preferenceService.getCurrentAccount();
-    if (
-      current?.address === address &&
-      current.type === type &&
-      current.brandName === brand
-    ) {
+    if (isRemovingCurrent) {
       await this.resetCurrentAccount();
     }
     const sites = permissionService.getSites();
@@ -4474,7 +4697,7 @@ export class WalletController extends BaseController {
 
   removeMnemonicsKeyRingByPublicKey = async (publicKey: string) => {
     this.removePublicKeyFromStash(publicKey);
-    keyringService.removeKeyringByPublicKey(publicKey);
+    await keyringService.removeKeyringByPublicKey(publicKey);
   };
 
   #getMnemonicKeyRingFromPublicKey = (publicKey: string) => {
@@ -4764,10 +4987,6 @@ export class WalletController extends BaseController {
 
   changeAccount = (account: Account) => {
     preferenceService.setCurrentAccount(account);
-    if (notificationService.currentApproval) {
-      notificationService.rejectAllApprovals();
-      notificationService.clear();
-    }
   };
 
   authorizeLedgerHIDPermission = async () => {
@@ -4941,35 +5160,38 @@ export class WalletController extends BaseController {
   submitQRHardwareSignature = async (
     requestId: string,
     cbor: string,
+    context: ApprovalSigningContext,
     address?: string
   ) => {
+    assertApprovalActionCurrent(context);
     const account = await preferenceService.getCurrentAccount();
+    assertApprovalActionCurrent(context);
     const keyring = await keyringService.getKeyringForAccount(
       address ? address : account!.address,
       KEYRING_CLASS.HARDWARE.KEYSTONE
     );
-    return await keyring.submitSignature(requestId, cbor);
+    assertApprovalActionCurrent(context);
+    const result = await keyring.submitSignature(requestId, cbor);
+    assertApprovalActionCurrent(context);
+    return result;
   };
 
   signPersonalMessage = async (
     type: string,
     from: string,
     data: string,
-    options?: any
+    options?: any,
+    context?: ApprovalSigningContext
   ) => {
+    assertApprovalActionCurrent(context);
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    assertApprovalActionCurrent(context);
     const res = await keyringService.signPersonalMessage(
       keyring,
       { from, data },
       options
     );
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.SIGN_FINISHED,
-      params: {
-        success: true,
-        data: res,
-      },
-    });
+    assertApprovalActionCurrent(context);
     return res;
   };
 
@@ -4977,36 +5199,49 @@ export class WalletController extends BaseController {
     type: string,
     from: string,
     data: string,
-    options?: any
+    options: any,
+    context: ApprovalSigningContext
   ) => {
-    const fn = () =>
-      notificationService.awaitSignComponent().then(() => {
-        this.signPersonalMessage(type, from, data as any, options);
-      });
-
-    notificationService.setCurrentRequestDeferFn(fn);
-    return fn();
+    assertApprovalActionCurrent(context);
+    return this.runSigningMessageWithUI(context, (attempt) =>
+      this.signPersonalMessage(type, from, data as any, options, {
+        approval: context.approval,
+        signing: {
+          flow: context.signing!.flow,
+          attempt,
+        },
+      })
+    );
   };
 
   signTypedData = async (
     type: string,
     from: string,
     data: Record<string, any>,
-    options?: any
+    options?: any,
+    context?: ApprovalSigningContext | SigningRequestContext
   ) => {
+    if (context && 'approval' in context) {
+      assertApprovalActionCurrent(context);
+    } else {
+      assertSigningContextCurrent(context);
+    }
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    if (context && 'approval' in context) {
+      assertApprovalActionCurrent(context);
+    } else {
+      assertSigningContextCurrent(context);
+    }
     const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
       options
     );
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.SIGN_FINISHED,
-      params: {
-        success: true,
-        data: res,
-      },
-    });
+    if (context && 'approval' in context) {
+      assertApprovalActionCurrent(context);
+    } else {
+      assertSigningContextCurrent(context);
+    }
     return res;
   };
 
@@ -5017,15 +5252,19 @@ export class WalletController extends BaseController {
     type: string,
     from: string,
     data: string,
-    options?: any
+    options: any,
+    context: ApprovalSigningContext
   ) => {
-    const fn = () =>
-      notificationService.awaitSignComponent().then(() => {
-        return this.signTypedData(type, from, data as any, options);
-      });
-
-    notificationService.setCurrentRequestDeferFn(fn);
-    return fn();
+    assertApprovalActionCurrent(context);
+    return this.runSigningMessageWithUI(context, (attempt) =>
+      this.signTypedData(type, from, data as any, options, {
+        approval: context.approval,
+        signing: {
+          flow: context.signing!.flow,
+          attempt,
+        },
+      })
+    );
   };
 
   signTransaction = async (
@@ -6036,21 +6275,24 @@ export class WalletController extends BaseController {
     chainServerId,
     coboSafeAddress,
     account,
+    context,
   }: {
     tx: Tx;
     chainServerId: string;
     coboSafeAddress: string;
     account;
+    context: ApprovalSigningContext;
   }): Promise<Tx> => {
-    await preferenceService.saveCurrentCoboSafeAddress();
-    await preferenceService.setCurrentAccount(account);
+    assertApprovalActionCurrent(context);
     const provider = await getWeb3Provider({ chainServerId, account });
+    assertApprovalActionCurrent(context);
     const coboSafe = new CoboSafeAccount(coboSafeAddress, provider);
     const res = await coboSafe.execRawTransaction(
       tx,
       account.address,
       chainServerId
     );
+    assertApprovalActionCurrent(context);
     return res as any;
   };
 
@@ -7054,16 +7296,25 @@ export class WalletController extends BaseController {
     typedData,
     nonce,
     action,
+    approval,
+    internalSignRequestId,
+    account,
   }: {
     address: string;
     typedData: Record<string, any>;
     action: Record<string, any>;
     nonce: number;
+    approval?: ApprovalRef;
+    internalSignRequestId?: InternalSignRequestId;
+    account: Account;
   }) => {
-    const signature = await wallet.sendRequest<string>({
-      method: 'eth_signTypedData_v4',
-      params: [address, JSON.stringify(typedData)],
-    });
+    const signature = await wallet.sendRequest<string>(
+      {
+        method: 'eth_signTypedData_v4',
+        params: [address, JSON.stringify(typedData)],
+      },
+      { account, approval, internalSignRequestId }
+    );
     if (!signature) {
       throw new Error('User rejected signing');
     }

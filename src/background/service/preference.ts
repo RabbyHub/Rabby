@@ -620,10 +620,11 @@ class PreferenceService {
     ];
     if (
       type === this.store.currentAccount?.type &&
-      address === this.store.currentAccount.address &&
+      isSameAddress(address, this.store.currentAccount.address) &&
       brandName === this.store.currentAccount.brandName
     ) {
-      this.resetCurrentAccount();
+      this.setCurrentAccount(null);
+      void this.resetCurrentAccount();
     }
   };
 
@@ -653,6 +654,14 @@ class PreferenceService {
   };
 
   setCurrentAccount = (account: Account | null) => {
+    const previous = this.store.currentAccount;
+    const changed =
+      previous?.address?.toLowerCase() !== account?.address?.toLowerCase() ||
+      previous?.type !== account?.type ||
+      previous?.brandName !== account?.brandName;
+    if (changed) {
+      eventBus.emit(EVENTS.ACCOUNT_WILL_CHANGE, { previous, next: account });
+    }
     this.store.currentAccount = account;
     if (account) {
       if (!this.store.isEnabledDappAccount) {
