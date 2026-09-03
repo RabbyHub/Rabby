@@ -2380,7 +2380,6 @@
       "need-to-approve-token-before-bridge": "Need to approve token before bridge",
       "via-bridge": "via {{bridge}}",
       "duration": "{{duration}} min",
-      "duration-sec": "{{duration}} s",
       "estimated-value": "≈ {{value}} ",
       "best": "Best",
       "best-subtitle": "The best quote is determined by a combination of estimated total cost (including gas fees) and delivery speed.",
