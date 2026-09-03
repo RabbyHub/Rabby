@@ -1,4 +1,5 @@
 export { default as notificationService } from './notification';
+export { signingFlowService, SigningFlowService } from './signingFlow';
 export { default as keyringService } from './keyring';
 export { default as permissionService } from './permission';
 export { default as preferenceService } from './preference';

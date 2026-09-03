@@ -30,6 +30,7 @@ import {
   notificationService,
   bridgeService,
   gasAccountService,
+  signingFlowService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx, TxPushType } from 'background/service/openapi';
@@ -44,8 +45,9 @@ import {
   EVENTS,
   INTERNAL_REQUEST_SESSION,
   INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CATEGORY,
 } from 'consts';
-import buildinProvider from 'background/utils/buildinProvider';
+import { EthereumProvider } from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
 import {
@@ -93,6 +95,40 @@ import {
   getSigningContext,
   takeSigningCarrier,
 } from '@/utils/sentry';
+import { sameAccountRef, toAccountRef } from '@/utils/signingTypes';
+
+const assertSigningAttemptValid = (request: ProviderRequest) => {
+  const context = request.signing;
+  if (!context) return;
+  const attempt = context?.attempt;
+  if (!context || !attempt || context.flow.flowId !== attempt.flowId) {
+    throw ethErrors.provider.userRejectedRequest();
+  }
+  const flow = signingFlowService.getFlow(context.flow);
+  const requestAccount = toAccountRef(request.account);
+  const requestOrigin = request.session?.origin || request.origin;
+  if (
+    !flow ||
+    !signingFlowService.isActiveContext(context) ||
+    (requestAccount && !sameAccountRef(requestAccount, context.account)) ||
+    (requestOrigin && context.origin && requestOrigin !== context.origin) ||
+    (request.approval &&
+      !signingFlowService.isAttemptValidForApproval(
+        attempt,
+        request.approval.approvalId
+      ))
+  ) {
+    throw ethErrors.provider.userRejectedRequest();
+  }
+};
+
+function assertApprovalResult(
+  approvalRes: unknown
+): asserts approvalRes is ApprovalRes {
+  if (!approvalRes || typeof approvalRes !== 'object') {
+    throw ethErrors.provider.userRejectedRequest();
+  }
+}
 
 const reportSignText = (params: {
   method: string;
@@ -656,6 +692,8 @@ class ProviderController extends BaseController {
     pushed: boolean;
     result: any;
     account: Account;
+    approval?: ProviderRequest['approval'];
+    signing?: ProviderRequest['signing'];
   }) => {
     const rechargeGasAccountOnTx = (txHash = '') => {
       if (
@@ -679,6 +717,7 @@ class ProviderController extends BaseController {
     };
 
     assertProviderRequest(options as any);
+    assertSigningAttemptValid(options as any);
     if (options.pushed) return options.result;
     const {
       data: {
@@ -688,8 +727,10 @@ class ProviderController extends BaseController {
       approvalRes,
       account,
     } = cloneDeep(options);
+    assertApprovalResult(approvalRes);
     const currentAccount = account;
     const keyring = await this._checkAddress(txParams.from, options);
+    assertSigningAttemptValid(options as any);
     const isSend = !!txParams.isSend;
     const isSpeedUp = !!txParams.isSpeedUp;
     const isCancel = !!txParams.isCancel;
@@ -794,6 +835,7 @@ class ProviderController extends BaseController {
         const authorizationList = [] as AuthorizationListItem[];
 
         for (const authorization of eip7702RevokeAuthorization) {
+          assertSigningAttemptValid(options as any);
           const signature: string = await keyringService.signEip7702Authorization(
             keyring,
             {
@@ -801,6 +843,7 @@ class ProviderController extends BaseController {
               authorization: authorization,
             }
           );
+          assertSigningAttemptValid(options as any);
           const r = signature.slice(0, 66) as `0x${string}`;
           const s = add0x(signature.slice(66, 130));
           const v = parseInt(signature.slice(130, 132), 16);
@@ -843,13 +886,19 @@ class ProviderController extends BaseController {
     let opts;
     opts = extra;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      buildinProvider.currentProvider.currentAccount = approvalRes!.account!.address;
-      buildinProvider.currentProvider.currentAccountType = approvalRes!.account!.type;
-      buildinProvider.currentProvider.currentAccountBrand = approvalRes!.account!.brandName;
+      assertSigningAttemptValid(options as any);
       try {
-        const provider = new ethers.providers.Web3Provider(
-          buildinProvider.currentProvider
-        );
+        const currentProvider = new EthereumProvider();
+        currentProvider.currentAccount = approvalRes!.account!.address;
+        currentProvider.currentAccountType = approvalRes!.account!.type;
+        currentProvider.currentAccountBrand = approvalRes!.account!.brandName;
+        currentProvider.chainId = String(approvalRes.chainId);
+        currentProvider.$ctx = {
+          ...(options?.data?.$ctx || {}),
+          approval: options.approval,
+          signing: options.signing,
+        };
+        const provider = new ethers.providers.Web3Provider(currentProvider);
         opts = {
           provider,
         };
@@ -909,6 +958,7 @@ class ProviderController extends BaseController {
 
     let signedTx;
     let tempoSerializedRawTx: `0x${string}` | undefined;
+    assertSigningAttemptValid(options as any);
     try {
       if (isTempoTx) {
         const typedApprovalRes = approvalRes as any;
@@ -981,6 +1031,7 @@ class ProviderController extends BaseController {
           opts
         );
       }
+      assertSigningAttemptValid(options as any);
       await fixKeyringAccountOnSigned({
         keyring,
         address: txParams.from,
@@ -1003,10 +1054,17 @@ class ProviderController extends BaseController {
         bindSigningCarrier(errObj, carrier);
         errObj.reportedFromBackground = true;
       }
-      errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
+      if (
+        options.signing &&
+        KEYRING_CATEGORY_MAP[currentAccount.type] === KEYRING_CATEGORY.Hardware
+      ) {
+        errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
+      }
 
       throw errObj;
     }
+
+    assertSigningAttemptValid(options as any);
 
     transactionHistoryService.updateSigningTx(signingTxId!, {
       isSubmitted: true,
@@ -1039,6 +1097,7 @@ class ProviderController extends BaseController {
         reqId?: string;
         pushType?: TxPushType;
       }) => {
+        assertSigningAttemptValid(options as any);
         const { hash, reqId, pushType = 'default' } = info;
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
@@ -1121,6 +1180,7 @@ class ProviderController extends BaseController {
         }
       };
       const onTransactionSubmitFailed = (e: any) => {
+        assertSigningAttemptValid(options as any);
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
           Array.isArray(options?.data?.$ctx?.stats?.afterSign)
@@ -1171,6 +1231,7 @@ class ProviderController extends BaseController {
       };
 
       if (typeof signedTx === 'string') {
+        assertSigningAttemptValid(options as any);
         onTransactionCreated({
           hash: signedTx,
           pushType: 'default',
@@ -1193,8 +1254,10 @@ class ProviderController extends BaseController {
       signedTransactionSuccess = true;
       statsData.signed = true;
       statsData.signedSuccess = true;
+      assertSigningAttemptValid(options as any);
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
+        params: options.signing?.attempt,
       });
 
       try {
@@ -1210,6 +1273,7 @@ class ProviderController extends BaseController {
             const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
             const rawTx = bytesToHex(tx.serialize());
             try {
+              assertSigningAttemptValid(options as any);
               hash = await RPCService.requestCustomRPC(
                 chain,
                 'eth_sendRawTransaction',
@@ -1309,6 +1373,7 @@ class ProviderController extends BaseController {
               }
 
               try {
+                assertSigningAttemptValid(options as any);
                 const [
                   fePushedHash,
                   url,
@@ -1328,6 +1393,7 @@ class ProviderController extends BaseController {
                   return_tx_id: fePushedHash!,
                 };
 
+                assertSigningAttemptValid(options as any);
                 openapiService.submitTxV2(params).catch((error) => {
                   console.log('ignore BE error', error);
                 });
@@ -1352,6 +1418,7 @@ class ProviderController extends BaseController {
               if (fePushedError) {
                 adoptBE7702Params();
                 try {
+                  assertSigningAttemptValid(options as any);
                   const res = await openapiService.submitTxV2(params);
                   hash = res.tx_id;
                 } catch (bePushError) {
@@ -1364,6 +1431,7 @@ class ProviderController extends BaseController {
               }
             } else {
               adoptBE7702Params();
+              assertSigningAttemptValid(options as any);
               const res = await openapiService.submitTxV2(params);
               if (res.access_token) {
                 void handleGasAccountLoginSuccess(
@@ -1399,6 +1467,7 @@ class ProviderController extends BaseController {
           const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
+          assertSigningAttemptValid(options as any);
           hash = await client.request({
             method: 'eth_sendRawTransaction',
             params: [rawTx as any],
@@ -1486,15 +1555,18 @@ class ProviderController extends BaseController {
     ) {
       return approvalRes;
     }
+    assertApprovalResult(approvalRes);
     try {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
       const keyring = await this._checkAddress(from, req);
+      assertSigningAttemptValid(req);
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
-        approvalRes?.extra
+        approvalRes.extra
       );
+      assertSigningAttemptValid(req);
 
       signTextHistoryService.createHistory({
         address: from,
@@ -1533,7 +1605,9 @@ class ProviderController extends BaseController {
     },
     req: ProviderRequest
   ) => {
+    assertApprovalResult((req as any).approvalRes);
     const keyring = await this._checkAddress(from, req);
+    assertSigningAttemptValid(req);
     let _data = data;
     if (version !== 'V1') {
       if (typeof data === 'string') {
@@ -1541,11 +1615,13 @@ class ProviderController extends BaseController {
       }
     }
 
-    return keyringService.signTypedMessage(
+    const result = await keyringService.signTypedMessage(
       keyring,
       { from, data: _data },
       { version, ...(extra || {}) }
     );
+    assertSigningAttemptValid(req);
+    return result;
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
@@ -1566,12 +1642,13 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     try {
+      assertApprovalResult(approvalRes);
       const result = await this._signTypedData(
         {
           from,
           data,
           version: 'V1',
-          extra: approvalRes?.extra,
+          extra: approvalRes.extra,
         },
         req
       );
@@ -1616,12 +1693,13 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     try {
+      assertApprovalResult(approvalRes);
       const result = await this._signTypedData(
         {
           from,
           data,
           version: 'V1',
-          extra: approvalRes?.extra,
+          extra: approvalRes.extra,
         },
         req
       );
@@ -1665,12 +1743,13 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     try {
+      assertApprovalResult(approvalRes);
       const result = await this._signTypedData(
         {
           from,
           data,
           version: 'V3',
-          extra: approvalRes?.extra,
+          extra: approvalRes.extra,
         },
         req
       );
@@ -1714,12 +1793,13 @@ class ProviderController extends BaseController {
       return approvalRes;
     }
     try {
+      assertApprovalResult(approvalRes);
       const result = await this._signTypedData(
         {
           from,
           data,
           version: 'V4',
-          extra: approvalRes?.extra,
+          extra: approvalRes.extra,
         },
         req
       );
@@ -1803,6 +1883,10 @@ class ProviderController extends BaseController {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
+    const connectedSite = permissionService.getConnectedSite(origin);
+    if (!connectedSite || connectedSite.chain !== chain.enum) {
+      notificationService.invalidateApprovalSession();
+    }
     if (approvalRes) {
       RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
     }
@@ -1872,6 +1956,10 @@ class ProviderController extends BaseController {
       });
     }
 
+    const connectedSite = permissionService.getConnectedSite(origin);
+    if (connectedSite?.chain !== chain.enum) {
+      notificationService.invalidateApprovalSession();
+    }
     permissionService.updateConnectSite(
       origin,
       {
