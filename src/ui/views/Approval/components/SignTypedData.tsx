@@ -17,12 +17,7 @@ import {
   KEYRING_TYPE,
   REJECT_SIGN_TEXT_KEYRINGS,
 } from 'consts';
-import {
-  getTimeSpan,
-  useApproval,
-  useCommonPopupView,
-  useWallet,
-} from 'ui/utils';
+import { getTimeSpan, useCommonPopupView, useWallet } from 'ui/utils';
 import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { FooterBar } from './FooterBar/FooterBar';
@@ -73,6 +68,8 @@ import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
 import { tokenizeSignTypedDataMessage } from './signMessageHighlighter';
 import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
+import { useApprovalScope } from '@/ui/approval/context';
+import { useApprovalActions } from '@/ui/approval/actions';
 
 interface SignTypedDataProps {
   method: string;
@@ -143,7 +140,20 @@ const SignTypedData = ({
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
-  const [, resolveApproval, rejectApproval, isBound] = useApproval();
+  const approval = useApprovalScope();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+  } = useApprovalActions();
+  const signingContext = approval.signing?.attempt
+    ? {
+        approval: approval.approval,
+        signing: {
+          flow: approval.signing.flow,
+          attempt: approval.signing.attempt,
+        },
+      }
+    : undefined;
   const { t } = useTranslation();
   const wallet = useWallet();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -526,6 +536,7 @@ const SignTypedData = ({
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = async () => {
+    if (!(await wallet.isApprovalCurrent(approval.approval.approvalId))) return;
     if (activeApprovalPopup()) {
       return;
     }
@@ -537,6 +548,8 @@ const SignTypedData = ({
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
+      if (!(await wallet.isApprovalCurrent(approval.approval.approvalId)))
+        return;
     }
 
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
@@ -573,7 +586,9 @@ const SignTypedData = ({
       currentAccount?.type &&
       REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)
     ) {
-      rejectApproval('This address can not sign text message', false, true);
+      rejectApproval('This address can not sign text message', {
+        isInternal: true,
+      });
     }
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
   };
@@ -740,31 +755,33 @@ const SignTypedData = ({
     if (!safeInfo || !account || !signTypedData) {
       return;
     }
+    if (!signingContext) return;
     if (activeApprovalPopup()) {
       return;
     }
 
-    // Building the Safe message and starting the signer both outlive this
-    // handler, so re-check the mounted approval before either: the resolve at
-    // the end would be dropped, but the side effects would already have run.
-    if (!(await isBound())) return;
-
     if (!isViewGnosisSafe) {
+      if (!(await wallet.isApprovalCurrent(approval.approval.approvalId)))
+        return;
       await wallet.buildGnosisMessage({
         safeAddress: safeInfo.address,
         account,
         version: safeInfo.version,
         networkId: currentChainId + '',
         message: signTypedData,
+        context: signingContext,
       });
       await Promise.all(
         (currentSafeMessage?.safeMessage?.confirmations || []).map((item) => {
           return wallet.addPureGnosisMessageSignature({
             signerAddress: item.owner,
             signature: item.signature,
+            context: signingContext,
           });
         })
       );
+      if (!(await wallet.isApprovalCurrent(approval.approval.approvalId)))
+        return;
     }
 
     const typedData = generateTypedData({
@@ -773,21 +790,21 @@ const SignTypedData = ({
       chainId: BigInt(currentChainId!),
       data: signTypedData as any,
     });
+    if (!(await wallet.isApprovalCurrent(approval.approval.approvalId))) return;
 
     if (WaitingSignMessageComponent[account.type]) {
-      // the build above is a network round trip; re-check before the signer
-      // starts, or a cancellation during it still gets a signature
-      if (!(await isBound())) return;
-
-      wallet.signTypedDataWithUI(
-        account.type,
-        account.address,
-        typedData as any,
-        {
-          brandName: account.brandName,
-          version: 'V4',
-        }
-      );
+      void wallet
+        .signTypedDataWithUI(
+          account.type,
+          account.address,
+          typedData as any,
+          {
+            brandName: account.brandName,
+            version: 'V4',
+          },
+          signingContext
+        )
+        .catch(() => undefined);
 
       resolveApproval({
         uiRequestComponent: WaitingSignMessageComponent[account.type],

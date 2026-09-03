@@ -6,6 +6,7 @@ import { Account } from '@/background/service/preference';
 import { Chain } from '@debank/common';
 import { useCommonPopupView, useWallet } from '@/ui/utils';
 import { ReactComponent as ArrowDownSVG } from '@/ui/assets/approval/arrow-down-blue.svg';
+import { ApprovalScopeContext } from '@/ui/approval/context';
 
 export interface Props {
   onSubmit(): void;
@@ -38,6 +39,7 @@ export const ActionsContainer: React.FC<
     setDisplayCancelAllApproval,
   ] = React.useState(false);
   const { activePopup, setData } = useCommonPopupView();
+  const approval = React.useContext(ApprovalScopeContext);
 
   React.useEffect(() => {
     wallet
@@ -57,7 +59,7 @@ export const ActionsContainer: React.FC<
       displayBlockedRequestApproval,
       displayCancelAllApproval,
     });
-    activePopup('CancelApproval');
+    activePopup('CancelApproval', approval?.approval.approvalId);
   };
 
   return (

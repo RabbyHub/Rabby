@@ -9,6 +9,10 @@ import { findIndexRevokeList } from '../../utils';
 import i18n from '@/i18n';
 import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import {
+  createStandaloneHardwareOperation,
+  HardwareOperationRef,
+} from '@/utils/signingTypes';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 async function buildTx(
@@ -155,6 +159,7 @@ export const useBatchRevokeTask = () => {
     'idle'
   );
   const currentApprovalRef = React.useRef<AssetApprovalSpender>();
+  const hardwareOperationRef = React.useRef<HardwareOperationRef>();
 
   const addRevokeTask = React.useCallback(
     async (
@@ -184,6 +189,7 @@ export const useBatchRevokeTask = () => {
               ignoreGasCheck,
               wallet,
               chainServerId: revokeItem.chainServerId,
+              hardwareOperation: hardwareOperationRef.current,
               sig: gasAccount?.sig,
               autoUseGasAccount: true,
               onProgress: (status) => {
@@ -237,6 +243,7 @@ export const useBatchRevokeTask = () => {
   );
 
   const start = React.useCallback(() => {
+    hardwareOperationRef.current = createStandaloneHardwareOperation();
     setStatus('active');
     for (const item of list) {
       addRevokeTask(item);
@@ -249,6 +256,7 @@ export const useBatchRevokeTask = () => {
       revokeList: ApprovalSpenderItemToBeRevoked[]
     ) => {
       queueRef.current.clear();
+      hardwareOperationRef.current = undefined;
       setList(dataSource);
       setRevokeList(revokeList);
       setStatus('idle');
@@ -272,11 +280,13 @@ export const useBatchRevokeTask = () => {
     });
 
     queueRef.current.on('idle', () => {
+      hardwareOperationRef.current = undefined;
       setStatus('completed');
     });
 
     return () => {
       queueRef.current.clear();
+      hardwareOperationRef.current = undefined;
     };
   }, []);
 
@@ -305,6 +315,7 @@ export const useBatchRevokeTask = () => {
     revokedApprovals,
     currentApprovalIndex,
     currentApprovalRef,
+    hardwareOperationRef,
   };
 };
 

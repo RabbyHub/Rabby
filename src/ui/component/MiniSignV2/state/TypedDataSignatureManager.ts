@@ -5,11 +5,12 @@ import { Account } from '@/background/service/preference';
 import { MINI_SIGN_ERROR } from './SignatureManager';
 import { MiniTypedData } from '@/ui/views/Approval/components/MiniSignTypedData/useTypedDataTask';
 import { hasConnectedLedgerDevice, WalletControllerType } from '@/ui/utils';
-import { EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { supportedHardwareDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { sendSignTypedData } from '@/ui/utils/sendTypedData';
 import { SignatureSteps } from '../services';
-import eventBus from '@/eventBus';
 import { isLedgerLockError } from '@/ui/utils/ledger';
+import type { SigningRequestContext } from '@/utils/signingTypes';
 
 type Subscriber = (state: TypedDataSignatureState) => void;
 
@@ -45,6 +46,9 @@ class TypedDataSignatureManager {
   private lastRequest: TypedDataSignatureRequest | null = null;
   private resumeIndex = 0;
   private partialResults: string[] = [];
+  private signingContext?: SigningRequestContext;
+  private signingWallet?: WalletControllerType;
+  private runId = 0;
   private pendingResult: {
     resolve: (hashes: string[]) => void;
     reject: (reason: any) => void;
@@ -80,22 +84,50 @@ class TypedDataSignatureManager {
     }
   }
 
-  private async checkHardWareConnected(cb: () => void) {
+  private discardSigningContext(
+    context: SigningRequestContext,
+    wallet: WalletControllerType
+  ) {
+    if (this.signingContext === context) {
+      this.signingContext = undefined;
+      this.signingWallet = undefined;
+    }
+    void wallet.cancelDirectSigning(context).catch((error) => {
+      console.error('cancel stale direct typed-data signing failed', error);
+    });
+  }
+
+  private invalidateRun() {
+    this.runId += 1;
+    if (this.signingContext && this.signingWallet) {
+      this.discardSigningContext(this.signingContext, this.signingWallet);
+    }
+  }
+
+  private isActiveRun(runId: number, request: TypedDataSignatureRequest) {
+    return this.runId === runId && this.lastRequest === request;
+  }
+
+  private async checkHardWareConnected(runId: number, cb: () => void) {
     const account = this.state.request?.config.account;
+    if (this.runId !== runId) return;
     if (!account) {
-      this.pendingResult?.reject(MINI_SIGN_ERROR.PREFETCH_FAILURE);
+      this.reject(MINI_SIGN_ERROR.PREFETCH_FAILURE);
       return;
     }
     if (account.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const isConnected = await hasConnectedLedgerDevice();
+        if (this.runId !== runId) return;
         if (isConnected) {
           cb();
         } else {
-          eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+          this.reject(MINI_SIGN_ERROR.USER_CANCELLED);
         }
       } catch {
-        this.pendingResult?.reject?.(MINI_SIGN_ERROR.USER_CANCELLED);
+        if (this.runId === runId) {
+          this.reject(MINI_SIGN_ERROR.USER_CANCELLED);
+        }
       }
 
       return;
@@ -114,6 +146,7 @@ class TypedDataSignatureManager {
     if (!request.txs.length) {
       throw new Error('No typed data to sign');
     }
+    this.invalidateRun();
     this.ensureNoPending();
     this.lastRequest = request;
     this.resumeIndex = 0;
@@ -128,9 +161,12 @@ class TypedDataSignatureManager {
       progress: { current: 0, total: request.txs.length },
     });
     if (request.config.mode !== 'UI') {
-      this.checkHardWareConnected(() => {
+      const runId = this.runId;
+      this.checkHardWareConnected(runId, () => {
+        if (!this.isActiveRun(runId, request)) return;
         void this.runSigningFlow({
           request,
+          runId,
           startIndex: 0,
           existingResults: [],
           getContainer: config.getContainer || request.config.getContainer,
@@ -142,11 +178,13 @@ class TypedDataSignatureManager {
 
   private async runSigningFlow({
     request,
+    runId,
     startIndex = 0,
     existingResults = [],
     getContainer,
   }: {
     request: TypedDataSignatureRequest;
+    runId: number;
     startIndex?: number;
     existingResults?: string[];
     getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
@@ -166,9 +204,24 @@ class TypedDataSignatureManager {
         return;
       }
     }
+    if (!this.isActiveRun(runId, request)) return;
 
+    let signingContext: SigningRequestContext | undefined;
     try {
+      signingContext = await wallet.startDirectSigning({
+        account: config.account,
+      });
+      if (!this.isActiveRun(runId, request)) {
+        this.discardSigningContext(signingContext, wallet);
+        return;
+      }
+      this.signingContext = signingContext;
+      this.signingWallet = wallet;
       for (let idx = startIndex; idx < txs.length; idx++) {
+        if (!this.isActiveRun(runId, request)) {
+          this.discardSigningContext(signingContext, wallet);
+          return;
+        }
         const item = txs[idx];
         this.setState({
           ...this.state,
@@ -181,7 +234,18 @@ class TypedDataSignatureManager {
           ...item,
           wallet: request.wallet,
           account: request.config.account,
+          hardwareOperation: supportedHardwareDirectSign(config.account.type)
+            ? {
+                kind: 'signing-attempt',
+                attempt: signingContext.attempt,
+              }
+            : undefined,
+          signing: signingContext,
         });
+        if (!this.isActiveRun(runId, request)) {
+          this.discardSigningContext(signingContext, wallet);
+          return;
+        }
 
         result.push(hash);
         this.setState({
@@ -191,11 +255,25 @@ class TypedDataSignatureManager {
           progress: { current: idx + 1, total: txs.length },
         });
       }
+      if (!this.isActiveRun(runId, request)) {
+        this.discardSigningContext(signingContext, wallet);
+        return;
+      }
       this.partialResults = [];
       this.resumeIndex = 0;
+      await this.finishSigningContext({ success: true, data: result });
+      if (!this.isActiveRun(runId, request)) return;
       this.resolve(result);
     } catch (error) {
-      const message = error.message || error.name;
+      if (signingContext && this.isActiveRun(runId, request)) {
+        await this.finishSigningContext({ success: false, error });
+      } else if (signingContext) {
+        this.discardSigningContext(signingContext, wallet);
+        return;
+      }
+      if (!this.isActiveRun(runId, request)) return;
+      const message =
+        error instanceof Error ? error.message || error.name : String(error);
       this.partialResults = result;
       this.resumeIndex = Math.min(
         txs.length - 1,
@@ -243,6 +321,8 @@ class TypedDataSignatureManager {
     if (!request) {
       throw new Error('No typed data request to retry');
     }
+    this.invalidateRun();
+    const runId = this.runId;
     const startIndex = this.resumeIndex || 0;
     const existingResults = [...this.partialResults];
     this.setState({
@@ -251,9 +331,11 @@ class TypedDataSignatureManager {
       error: undefined,
       progress: { current: startIndex, total: request.txs.length },
     });
-    this.checkHardWareConnected(() => {
-      this.runSigningFlow({
+    this.checkHardWareConnected(runId, () => {
+      if (!this.isActiveRun(runId, request)) return;
+      void this.runSigningFlow({
         request,
+        runId,
         startIndex,
         existingResults,
         getContainer,
@@ -262,10 +344,36 @@ class TypedDataSignatureManager {
   }
 
   private reset() {
+    this.invalidateRun();
     this.lastRequest = null;
     this.resumeIndex = 0;
     this.partialResults = [];
+    this.signingContext = undefined;
+    this.signingWallet = undefined;
     this.setState({ status: 'idle' });
+  }
+
+  private async finishSigningContext(outcome: {
+    success: boolean;
+    data?: unknown;
+    error?: unknown;
+  }) {
+    const context = this.signingContext;
+    const wallet = this.signingWallet;
+    if (!context || !wallet) return;
+    this.signingContext = undefined;
+    this.signingWallet = undefined;
+    try {
+      await wallet.finishDirectSigning(context, outcome);
+    } catch (error) {
+      console.error('finish direct typed-data signing failed', error);
+      await wallet.cancelDirectSigning(context).catch((cancelError) => {
+        console.error(
+          'cancel direct typed-data signing after finish failed',
+          cancelError
+        );
+      });
+    }
   }
 }
 

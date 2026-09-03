@@ -45,6 +45,11 @@ import {
   TxWithTempoExtras,
   toTempoCallsTx,
 } from '@/utils/tempo';
+import type {
+  HardwareOperationRef,
+  SigningRequestContext,
+} from '@/utils/signingTypes';
+import { emitHardwareOperationRejected } from '@/utils/signEvent';
 
 // fail code
 export enum FailedCode {
@@ -131,6 +136,8 @@ export const sendTransaction = async ({
   extra,
   session,
   account: _account,
+  hardwareOperation,
+  signing,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -155,6 +162,8 @@ export const sendTransaction = async ({
   };
   session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
   account?: Account;
+  hardwareOperation?: HardwareOperationRef;
+  signing?: SigningRequestContext;
 }) => {
   const shouldUseTempoCallsForGasAccount = (gasAccountEnabled?: boolean) =>
     !!gasAccountEnabled &&
@@ -663,13 +672,16 @@ export const sendTransaction = async ({
       pushed: false,
       result: undefined,
       account: account!,
+      signing,
     });
     await handleSendAfter();
   } catch (e) {
     await handleSendAfter();
     const err = new Error(e.message);
     err.name = FailedCode.SubmitTxFailed;
-    eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, e.message);
+    if (hardwareOperation) {
+      emitHardwareOperationRejected(hardwareOperation, e);
+    }
     throw err;
   }
 
@@ -729,6 +741,8 @@ export const sendTransactionByMiniSignV2 = async ({
   session,
   account: _account,
   preExecResult,
+  hardwareOperation,
+  signing,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -745,6 +759,8 @@ export const sendTransactionByMiniSignV2 = async ({
   preExecResult?: ExplainTxResponse;
   parsedData?: ParsedTransactionActionData;
   requiredData?: ActionRequireData;
+  hardwareOperation?: HardwareOperationRef;
+  signing?: SigningRequestContext;
 }) => {
   const buildTempoTx = (
     rawTx: Tx & Record<string, unknown>,
@@ -1031,13 +1047,16 @@ export const sendTransactionByMiniSignV2 = async ({
       pushed: false,
       result: undefined,
       account: account,
+      signing,
     });
     await handleSendAfter();
   } catch (e) {
     await handleSendAfter();
     const err = new Error(e.message);
     err.name = FailedCode.SubmitTxFailed;
-    eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, e.message);
+    if (hardwareOperation) {
+      emitHardwareOperationRejected(hardwareOperation, e);
+    }
     throw err;
   }
 

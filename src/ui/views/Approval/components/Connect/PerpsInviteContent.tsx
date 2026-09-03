@@ -1,5 +1,4 @@
 import { ConnectedSite } from '@/background/service/permission';
-import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { Account } from '@/background/service/preference';
 import { RcIconSuccessCC } from '@/ui/assets/desktop/common';
 import IconRabbyWallet from '@/ui/assets/icon-rabby-circle.svg';
@@ -22,9 +21,11 @@ import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import { FallbackSiteLogo } from 'ui/component';
-import { useApproval, useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { WaitingSignMessageComponent } from '../map';
 import eventBus from '@/eventBus';
+import { asInternalSignRequestId } from '@/utils/signingTypes';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ConnectProps {
   params: any;
@@ -82,7 +83,6 @@ export const PerpsInviteContent = (props: ConnectProps) => {
     params: { icon, origin, name, $ctx },
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [getApproval, resolveApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
 
@@ -132,6 +132,8 @@ export const PerpsInviteContent = (props: ConnectProps) => {
           action: resp?.action,
           nonce: resp?.nonce || 0,
           typedData: resp?.typedData,
+          internalSignRequestId: asInternalSignRequestId(uuidv4()),
+          account: selectedAccount,
         });
         eventBus.emit(EVENTS.RELOAD_APPROVAL);
         await promise;
@@ -164,33 +166,38 @@ export const PerpsInviteContent = (props: ConnectProps) => {
         signature = res[0];
         typedDataSignatureStore.close();
       } else {
-        // approval-side-effect-ok: this deliberately starts a new request of
-        // its own; the Connect approval that opened this page is already
-        // resolved, and the resolve below names the approval this creates
-        const promise = wallet.sendRequest<string>({
-          method: 'eth_signTypedData_v4',
-          params: [selectedAccount.address, JSON.stringify(resp?.typedData)],
-        });
+        const internalSignRequestId = asInternalSignRequestId(uuidv4());
+        const promise = wallet.sendRequest<string>(
+          {
+            method: 'eth_signTypedData_v4',
+            params: [selectedAccount.address, JSON.stringify(resp?.typedData)],
+          },
+          {
+            account: selectedAccount,
+            internalSignRequestId,
+          }
+        );
 
         if (WaitingSignMessageComponent[selectedAccount.type]) {
-          // sendRequest above queues a fresh approval; this page is still bound
-          // to the Connect approval it was opened from, which is already
-          // resolved, so hand the UI over to the new one by name
-          // Resolve the approval sendRequest just queued and nothing else. A
-          // dapp's own eth_signTypedData_v4 is also a SignTypedData approval
-          // and can be current here, so the component name is not identity -
-          // the origin is what separates our request from theirs.
-          const target = await getApproval();
-          if (
-            target?.data.approvalComponent !== 'SignTypedData' ||
-            target.data.origin !== INTERNAL_REQUEST_ORIGIN
-          ) {
-            throw new Error('Failed to hand over to the signing request');
+          let target;
+          try {
+            target = await Promise.race([
+              wallet.waitForApproval(internalSignRequestId),
+              promise.then(
+                () => {
+                  throw new Error('Signing request finished without approval');
+                },
+                (error) => Promise.reject(error)
+              ),
+            ]);
+          } finally {
+            wallet.cancelApprovalWaiter(internalSignRequestId);
           }
-          resolveApproval(
-            {
+          const result = await wallet.resolveApprovalFor({
+            approval: target,
+            data: {
               uiRequestComponent:
-                WaitingSignMessageComponent[selectedAccount?.type],
+                WaitingSignMessageComponent[selectedAccount.type],
               $account: selectedAccount,
               type: selectedAccount.type,
               address: selectedAccount.address,
@@ -199,10 +206,10 @@ export const PerpsInviteContent = (props: ConnectProps) => {
                 signTextMethod: 'eth_signTypedData_v4',
               },
             },
-            false,
-            false,
-            target?.id
-          );
+          });
+          if (!result.accepted) {
+            throw new Error('Signing request is no longer current');
+          }
         }
 
         signature = await promise;

@@ -71,14 +71,6 @@ export const ImportCoboArgus: React.FC<{
     }
   }, [selectedChain, step, inputAddress]);
 
-  const [getApproval, , rejectApproval] = useApproval();
-  // bind to the approval that opened this page, not to whatever is current
-  // when the user closes it
-  const openedByApproval = React.useMemo(
-    () => getApproval().catch(() => null),
-    []
-  );
-
   const handleDone = React.useCallback(async () => {
     try {
       const accounts = await wallet.coboSafeImport({
@@ -107,6 +99,11 @@ export const ImportCoboArgus: React.FC<{
     }
   }, [selectedChain, safeAddress, inputAddress]);
 
+  const [getApproval, , rejectApproval] = useApproval();
+  const openedByApproval = React.useMemo(
+    () => getApproval().catch(() => null),
+    []
+  );
   const handleClose = React.useCallback(async () => {
     const approval = await openedByApproval;
     rejectApproval(undefined, false, false, approval?.id);

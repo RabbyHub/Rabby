@@ -40,6 +40,36 @@
       "env": {
         "jest": true
       }
+    },
+    {
+      "files": ["src/ui/views/Approval/components/**/*.{ts,tsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@/ui/approval/global",
+                "message": "Use useApprovalScope and useApprovalActions in approval components."
+              },
+              {
+                "name": "ui/approval/global",
+                "message": "Use useApprovalScope and useApprovalActions in approval components."
+              },
+              {
+                "name": "ui/utils",
+                "importNames": ["useApproval"],
+                "message": "Use useApprovalScope and useApprovalActions in approval components."
+              },
+              {
+                "name": "@/ui/utils",
+                "importNames": ["useApproval"],
+                "message": "Use useApprovalScope and useApprovalActions in approval components."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
