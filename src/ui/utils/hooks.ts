@@ -1,8 +1,8 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
-import { useEffect, useRef, useState, useCallback, useContext } from 'react';
+import { useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
-import { useWallet } from './WalletContext';
+import { useCommonPopupView, useWallet } from './WalletContext';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useApprovalPopup } from './approval-popup';
@@ -11,39 +11,29 @@ import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
-import { ApprovalBindingContext, getApprovalTarget } from './approval-context';
-import * as Sentry from '@sentry/browser';
-import { getUiType } from './uiType';
+import { ApprovalScopeContext } from '@/ui/approval/context';
+import { toApprovalRef } from '@/utils/signingTypes';
 
 export const useApproval = () => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
+  const { approvalId: popupApprovalId, componentName } = useCommonPopupView();
+  const approvalScope = useContext(ApprovalScopeContext);
+  const scopedApprovalId =
+    approvalScope?.approval.approvalId || popupApprovalId;
+  const isUnboundPopup = !!componentName && !scopedApprovalId;
 
-  const getApproval: () => Promise<Approval> = wallet.getApproval;
-  const deviceConnect = useDeviceConnect();
-  const binding = useContext(ApprovalBindingContext);
-
-  // An action with neither a binding nor an explicit id can never do anything,
-  // and it fails silently: the button just does nothing. Report it only from a
-  // notification window, which is the only place approval pages are routed to
-  // (SortHat), so an unnamed action there means a page cannot name the approval
-  // it is showing - a wiring bug. Elsewhere the same call is an ordinary no-op:
-  // `getApproval()` is global background state, so a dashboard page acting
-  // while some other window holds an approval must not be reported.
-  const reportUnboundAction = (
-    method: 'resolve' | 'reject',
-    approval: Approval | null
-  ) => {
-    if (!approval || !getUiType().isNotification) return;
-    Sentry.captureException(
-      new Error(`useApproval ${method} has no approval to act on`),
-      {
-        tags: { function: 'useApproval' },
-        extra: { approvalComponent: approval.data?.approvalComponent },
-      }
-    );
+  // Keep the legacy hook's non-null getter type for its existing consumers,
+  // while preventing a scoped component from reading a replacement approval.
+  const getApproval: () => Promise<Approval | null | undefined> = async () => {
+    if (isUnboundPopup || !scopedApprovalId) {
+      return isUnboundPopup ? undefined : wallet.getCurrentApproval();
+    }
+    const approval = await wallet.getCurrentApproval();
+    return approval?.id === scopedApprovalId ? approval : undefined;
   };
+  const deviceConnect = useDeviceConnect();
 
   const resolveApproval = async (
     data?: any,
@@ -51,30 +41,52 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
-    const approval = await getApproval();
-    const { id, isStale } = getApprovalTarget(approval, binding, approvalId);
-
-    if (isStale) {
-      if (!id) reportUnboundAction('resolve', approval);
-      // never resolve the approval that replaced ours; navigate so the window
-      // re-renders on the real one
-      if (!stay) {
-        history.replace('/');
-      }
+    const targetApprovalId = approvalId || scopedApprovalId;
+    if (
+      targetApprovalId &&
+      !(await wallet.isApprovalCurrent(targetApprovalId))
+    ) {
       return;
     }
+    const approval = await (targetApprovalId
+      ? wallet.getCurrentApproval()
+      : getApproval());
+    if (!approval) {
+      if (!stay) history.replace('/');
+      return;
+    }
+
+    if (targetApprovalId && approval.id !== targetApprovalId) return;
 
     // handle connect
-    if (!(await deviceConnect(data, approval?.data?.account))) {
+    if (!(await deviceConnect(data, approval.data.account))) {
       return;
     }
 
-    if (approval) {
-      wallet.resolveApproval(data, forceReject, id);
+    if (
+      targetApprovalId &&
+      !(await wallet.isApprovalCurrent(targetApprovalId))
+    ) {
+      return;
     }
+
+    const approvalRef =
+      approvalScope?.approval ||
+      toApprovalRef(
+        targetApprovalId || approval.id,
+        approval.data.approvalComponent
+      );
+    const attempt = approvalScope?.signing?.attempt;
+    const result = await wallet.resolveApprovalFor({
+      approval: approvalRef,
+      data,
+      forceReject,
+      signing: attempt ? { attempt } : undefined,
+    });
+    if (!result.accepted) return;
 
     if (stay) {
-      return;
+      return result;
     }
     setTimeout(() => {
       if (data && enablePopup(data.type)) {
@@ -82,6 +94,7 @@ export const useApproval = () => {
       }
       history.replace('/');
     }, 0);
+    return result;
   };
 
   const rejectApproval = async (
@@ -90,39 +103,52 @@ export const useApproval = () => {
     isInternal = false,
     approvalId?: string
   ) => {
-    const approval = await getApproval();
-    // the caller is acting on an approval that is no longer current: skip the
-    // reject, but still navigate so the window re-renders on the real one
-    const { id, isStale } = getApprovalTarget(approval, binding, approvalId);
-
-    if (isStale && !id) {
-      reportUnboundAction('reject', approval);
+    const targetApprovalId = approvalId || scopedApprovalId;
+    if (
+      targetApprovalId &&
+      !(await wallet.isApprovalCurrent(targetApprovalId))
+    ) {
+      return;
+    }
+    const approval = await (targetApprovalId
+      ? wallet.getCurrentApproval()
+      : getApproval());
+    if (!approval) {
+      if (!stay) history.push('/');
+      return;
     }
 
-    if (!isStale) {
-      if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
-        wallet.coboSafeResetCurrentAccount();
-      }
+    if (targetApprovalId && approval.id !== targetApprovalId) return;
 
-      if (approval) {
-        await wallet.rejectApproval(err, stay, isInternal, id);
-      }
-    }
+    const approvalRef =
+      approvalScope?.approval ||
+      toApprovalRef(
+        targetApprovalId || approval.id,
+        approval.data.approvalComponent
+      );
+    const result = await wallet.rejectApprovalFor({
+      approval: approvalRef,
+      error: err,
+      stay,
+      isInternal,
+      signing: approvalScope?.signing?.attempt
+        ? { attempt: approvalScope.signing.attempt }
+        : undefined,
+    });
+    if (!result.accepted) return;
     if (!stay) {
       history.push('/');
     }
+    return result;
   };
-  // True while the page is still acting on the approval it was mounted for.
-  // Handlers that do anything outliving themselves - starting a signer, writing
-  // another approval's signing record, switching accounts, posting to a Safe -
-  // must check this before the side effect, not only rely on the resolve at the
-  // end being dropped. Pass an id to check that one instead of the binding.
   const isBound = async (approvalId?: string) => {
-    // never throw: every caller is `if (!(await isBound())) return;` in an
-    // uncaught handler, and a background round trip can fail (MV3 restart)
-    const approval = await getApproval().catch(() => null);
-
-    return !getApprovalTarget(approval, binding, approvalId).isStale;
+    const targetApprovalId = approvalId || scopedApprovalId;
+    if (!targetApprovalId) return false;
+    try {
+      return await wallet.isApprovalCurrent(targetApprovalId);
+    } catch {
+      return false;
+    }
   };
 
   return [getApproval, resolveApproval, rejectApproval, isBound] as const;
