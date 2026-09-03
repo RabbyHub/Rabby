@@ -124,7 +124,7 @@
     "eth-rpc-errors": "4.0.3",
     "ethers": "5.8.0",
     "events": "3.3.0",
-    "fflate": "0.8.2",
+    "fflate": "0.8.3",
     "hdkey": "0.8.0",
     "https-browserify": "1.0.0",
     "human-standard-token-abi": "2.0.0",
