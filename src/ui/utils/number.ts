@@ -379,12 +379,12 @@ export const formatLargeTokenAmount = (amount: number | string) => {
 
   if (
     bn.isFinite() &&
-    bn.absoluteValue().gt(SCIENTIFIC_TOKEN_AMOUNT_THRESHOLD)
+    bn.absoluteValue().gte(SCIENTIFIC_TOKEN_AMOUNT_THRESHOLD)
   ) {
     return bn.toExponential(SCIENTIFIC_TOKEN_AMOUNT_DECIMALS);
   }
 
-  if (bn.isFinite() && bn.absoluteValue().gt(COMPACT_TOKEN_AMOUNT_THRESHOLD)) {
+  if (bn.isFinite() && bn.absoluteValue().gte(COMPACT_TOKEN_AMOUNT_THRESHOLD)) {
     return formatAmount(amount);
   }
 
