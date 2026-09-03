@@ -7,6 +7,8 @@ import wallet from '../controller/wallet';
 import { CHAINS, INTERNAL_REQUEST_SESSION, CHAINS_ENUM } from 'consts';
 import { underline2Camelcase } from 'background/utils';
 import { findChain } from '@/utils/chain';
+import { asInternalSignRequestId } from '@/utils/signingTypes';
+import { v4 as uuidv4 } from 'uuid';
 
 interface StateProvider {
   accounts: string[] | null;
@@ -95,14 +97,10 @@ export class EthereumProvider extends EventEmitter {
       case 'eth_requestAccounts':
         return [this.currentAccount];
       case 'personal_sign':
-        return new Promise((resolve, reject) => {
-          notificationService.on('resolve', (data) => {
-            if (data.uiRequestComponent) return;
-            resolve(data);
-          });
-          notificationService.on('reject', (err) => {
-            reject(err);
-          });
+        return notificationService.requestInternalPersonalSign({
+          requestId: asInternalSignRequestId(uuidv4()),
+          attempt: this.$ctx?.signing?.attempt,
+          request: data,
         });
       case 'eth_sendTransaction': {
         const txParams = {
@@ -112,6 +110,9 @@ export class EthereumProvider extends EventEmitter {
         if (txParams.gas) {
           delete txParams.gas;
         }
+        const session = this.$ctx?.signing?.origin
+          ? { ...INTERNAL_REQUEST_SESSION, origin: this.$ctx.signing.origin }
+          : INTERNAL_REQUEST_SESSION;
         return wallet.sendRequest(
           {
             $ctx: this.$ctx,
@@ -126,6 +127,8 @@ export class EthereumProvider extends EventEmitter {
                   brandName: this.currentAccountBrand,
                 }
               : undefined,
+            approval: this.$ctx?.approval,
+            session,
           }
         );
       }

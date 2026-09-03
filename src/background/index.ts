@@ -52,6 +52,7 @@ import {
   HDKeyRingLastAddAddrTimeService,
   keyringService,
   notificationService,
+  signingFlowService,
   openapiService,
   pageStateCacheService,
   permissionService,
@@ -109,6 +110,14 @@ Safe.openapiService = openapiService;
 dayjs.extend(utc);
 
 const { PortMessage } = Message;
+
+eventBus.addEventListener(EVENTS.SIGN_WAITING_AMOUNTED, (attempt) => {
+  signingFlowService.markUiReady(attempt);
+});
+
+eventBus.addEventListener(EVENTS.ACCOUNT_WILL_CHANGE, () => {
+  notificationService.invalidateApprovalSession();
+});
 
 let appStoreLoaded = false;
 
@@ -381,11 +390,7 @@ restoreAppState();
   });
 
   keyringService.on('lock', () => {
-    // Lock is a session boundary: consent given before it must not survive it.
-    // This is on the keyring event rather than in lockWallet so that every path
-    // that locks - auto lock, the shortcut, resetPassword - is covered.
     notificationService.rejectAllApprovals();
-
     if (interval) {
       clearInterval(interval);
       interval = null;
@@ -395,6 +400,19 @@ restoreAppState();
   keyringService.on(
     'removedAccount',
     async (address: string, type: string, brand?: string) => {
+      const current = preferenceService.getCurrentAccount();
+      if (
+        current &&
+        current.address.toLowerCase() === address.toLowerCase() &&
+        current.type === type &&
+        (!brand || current.brandName === brand)
+      ) {
+        notificationService.invalidateApprovalSession();
+        // Close the account boundary synchronously; reset can await keyring
+        // state, but new requests must not observe the removed account.
+        preferenceService.setCurrentAccount(null);
+        await walletController.resetCurrentAccount();
+      }
       await logoutGasAccountOnAddressRemoved(address, type, brand);
       if (type !== KEYRING_TYPE.WatchAddressKeyring) {
         const perpsAccount = await perpsService.getCurrentAccount();
