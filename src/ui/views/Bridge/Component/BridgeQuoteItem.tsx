@@ -14,6 +14,7 @@ import { SelectedBridgeQuote, useSetQuoteVisible } from '../hooks';
 import { Tooltip } from 'antd';
 import { useRabbySelector } from '@/ui/store';
 import styled from 'styled-components';
+import { bridgeQuoteEstimatedValueBn } from '../utils/bridgeQuote';
 
 const ItemWrapper = styled.div`
   --quote-border-width: 1px;
@@ -66,43 +67,6 @@ interface QuoteItemProps extends SelectedBridgeQuote {
   loading?: boolean;
   inSufficient?: boolean;
 }
-
-export const bridgeQuoteEstimatedValueBn = (
-  quote: SelectedBridgeQuote,
-  receiveToken: TokenItem
-) => {
-  return new BigNumber(quote.to_token_amount)
-    .times(receiveToken.price || 1)
-    .minus(quote.gas_fee.usd_value);
-};
-
-const PER_MINUTE_TIME_COST = 20000;
-const SECONDS_PER_MINUTE = 60;
-
-export const bridgeQuoteScore = (
-  quote: SelectedBridgeQuote,
-  receiveToken: TokenItem
-) => {
-  const amountUsd = new BigNumber(quote.to_token_amount).times(
-    receiveToken.price || 1
-  );
-  const gasFeeUsd = new BigNumber(quote.gas_fee.usd_value);
-  const timeCostUsd = BigNumber.min(
-    amountUsd
-      .div(PER_MINUTE_TIME_COST)
-      .times(quote.duration)
-      .div(SECONDS_PER_MINUTE),
-    1
-  );
-
-  const score = amountUsd.minus(timeCostUsd);
-
-  if (!receiveToken.price) {
-    return score;
-  }
-
-  return score.minus(gasFeeUsd);
-};
 
 export const BridgeQuoteItem = (props: QuoteItemProps) => {
   const { t } = useTranslation();
