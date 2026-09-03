@@ -1,8 +1,8 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useContext, useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
-import { useWallet } from './WalletContext';
+import { useCommonPopupView, useWallet } from './WalletContext';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useApprovalPopup } from './approval-popup';
@@ -11,49 +11,29 @@ import { useTranslation } from 'react-i18next';
 import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
+import { ApprovalScopeContext } from '@/ui/approval/context';
+import { toApprovalRef } from '@/utils/signingTypes';
 
-export interface ApprovalBinding {
-  approvalId?: string;
-  approvalComponent: Approval['data']['approvalComponent'];
-  canResolve?: () => boolean;
-}
-
-export const useApproval = (binding?: ApprovalBinding) => {
+export const useApproval = () => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
+  const { approvalId: popupApprovalId, componentName } = useCommonPopupView();
+  const approvalScope = useContext(ApprovalScopeContext);
+  const scopedApprovalId =
+    approvalScope?.approval.approvalId || popupApprovalId;
+  const isUnboundPopup = !!componentName && !scopedApprovalId;
 
-  const getApproval: () => Promise<Approval> = wallet.getApproval;
-  const deviceConnect = useDeviceConnect();
-  const mounted = useRef(true);
-  const bindingRef = useRef(binding);
-  bindingRef.current = binding;
-
-  useEffect(() => {
-    mounted.current = true;
-    return () => {
-      mounted.current = false;
-    };
-  }, []);
-
-  const matchesBinding = (approval?: Approval, approvalId?: string) => {
-    if (!approval || (approvalId && approval.id !== approvalId)) return false;
-    if (!binding) return true;
-    return (
-      mounted.current &&
-      !!binding.approvalId &&
-      binding.approvalId === bindingRef.current?.approvalId &&
-      binding.approvalComponent === bindingRef.current?.approvalComponent &&
-      approval.id === binding.approvalId &&
-      approval.data.approvalComponent === binding.approvalComponent
-    );
+  // Keep the legacy hook's non-null getter type for its existing consumers,
+  // while preventing a scoped component from reading a replacement approval.
+  const getApproval: () => Promise<Approval | null | undefined> = async () => {
+    if (isUnboundPopup || !scopedApprovalId) {
+      return isUnboundPopup ? undefined : wallet.getCurrentApproval();
+    }
+    const approval = await wallet.getCurrentApproval();
+    return approval?.id === scopedApprovalId ? approval : undefined;
   };
-
-  const canResolve = () =>
-    !binding ||
-    (mounted.current &&
-      binding.canResolve?.() !== false &&
-      bindingRef.current?.canResolve?.() !== false);
+  const deviceConnect = useDeviceConnect();
 
   const resolveApproval = async (
     data?: any,
@@ -61,80 +41,114 @@ export const useApproval = (binding?: ApprovalBinding) => {
     forceReject = false,
     approvalId?: string
   ) => {
-    if (!canResolve()) return false;
-    const approval = await getApproval();
-    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
+    const targetApprovalId = approvalId || scopedApprovalId;
+    if (
+      targetApprovalId &&
+      !(await wallet.isApprovalCurrent(targetApprovalId))
+    ) {
+      return;
+    }
+    const approval = await (targetApprovalId
+      ? wallet.getCurrentApproval()
+      : getApproval());
+    if (!approval) {
+      if (!stay) history.replace('/');
+      return;
+    }
+
+    if (targetApprovalId && approval.id !== targetApprovalId) return;
 
     // handle connect
-    if (!(await deviceConnect(data, approval?.data?.account))) {
-      return false;
+    if (!(await deviceConnect(data, approval.data.account))) {
+      return;
     }
 
-    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
-    const resolved = await wallet.resolveApproval(
+    if (
+      targetApprovalId &&
+      !(await wallet.isApprovalCurrent(targetApprovalId))
+    ) {
+      return;
+    }
+
+    const approvalRef =
+      approvalScope?.approval ||
+      toApprovalRef(
+        targetApprovalId || approval.id,
+        approval.data.approvalComponent
+      );
+    const attempt = approvalScope?.signing?.attempt;
+    const result = await wallet.resolveApprovalFor({
+      approval: approvalRef,
       data,
       forceReject,
-      approval.id,
-      approval.data.approvalComponent
-    );
-    if (!resolved) return false;
+      signing: attempt ? { attempt } : undefined,
+    });
+    if (!result.accepted) return;
 
     if (stay) {
-      return true;
+      return result;
     }
     setTimeout(() => {
-      if (binding && !mounted.current) return;
       if (data && enablePopup(data.type)) {
         return showPopup();
       }
       history.replace('/');
     }, 0);
-    return true;
+    return result;
   };
 
   const rejectApproval = async (
     err?,
     stay = false,
     isInternal = false,
-    approvalId?: string,
-    approvalComponent?: Approval['data']['approvalComponent']
+    approvalId?: string
   ) => {
-    const approval = await getApproval();
+    const targetApprovalId = approvalId || scopedApprovalId;
     if (
-      !matchesBinding(approval, approvalId) ||
-      (approvalComponent &&
-        approval.data.approvalComponent !== approvalComponent)
+      targetApprovalId &&
+      !(await wallet.isApprovalCurrent(targetApprovalId))
     ) {
-      return false;
+      return;
     }
-    if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
-      wallet.coboSafeResetCurrentAccount();
+    const approval = await (targetApprovalId
+      ? wallet.getCurrentApproval()
+      : getApproval());
+    if (!approval) {
+      if (!stay) history.push('/');
+      return;
     }
 
-    const rejected = await wallet.rejectApproval(
-      err,
+    if (targetApprovalId && approval.id !== targetApprovalId) return;
+
+    const approvalRef =
+      approvalScope?.approval ||
+      toApprovalRef(
+        targetApprovalId || approval.id,
+        approval.data.approvalComponent
+      );
+    const result = await wallet.rejectApprovalFor({
+      approval: approvalRef,
+      error: err,
       stay,
       isInternal,
-      approval.id,
-      approval.data.approvalComponent
-    );
-    if (!rejected) return false;
-    if (!stay && (!binding || mounted.current)) {
+      signing: approvalScope?.signing?.attempt
+        ? { attempt: approvalScope.signing.attempt }
+        : undefined,
+    });
+    if (!result.accepted) return;
+    if (!stay) {
       history.push('/');
     }
-    return true;
+    return result;
   };
-  // True while the page is still acting on the approval it was mounted for.
-  // Handlers that do anything outliving themselves - starting a signer, writing
-  // another approval's signing record, switching accounts, posting to a Safe -
-  // must check this before the side effect, not only rely on the resolve at the
-  // end being dropped. Pass an id to check that one instead of the binding.
   const isBound = async (approvalId?: string) => {
-    // never throw: every caller is `if (!(await isBound())) return;` in an
-    // uncaught handler, and a background round trip can fail (MV3 restart)
-    const approval = await getApproval().catch(() => null);
-
-    return !getApprovalTarget(approval, binding, approvalId).isStale;
+    const targetApprovalId = approvalId || scopedApprovalId;
+    if (!targetApprovalId) return false;
+    try {
+      return await wallet.isApprovalCurrent(targetApprovalId);
+    } catch {
+      return false;
+    }
   };
 
   return [getApproval, resolveApproval, rejectApproval, isBound] as const;

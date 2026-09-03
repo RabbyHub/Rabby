@@ -11,7 +11,6 @@ import { AssetList } from './AssetList/AssetList';
 import { CancelApproval } from './CancelApproval/CancelApproval';
 import { CancelConnect } from './CancelConnect/CancelConnect';
 import { ImKeyPermission } from './ImKeyPermission';
-import { ApprovalBindingContext } from '@/ui/utils/approval-context';
 
 export type CommonPopupComponentName =
   | 'Approval'
@@ -72,12 +71,12 @@ export const CommonPopup: React.FC = () => {
   const {
     visible,
     setVisible,
+    closePopup,
     title,
     height,
     className,
     componentName,
     popupProps,
-    approvalBinding,
   } = useCommonPopupView();
 
   const config =
@@ -105,7 +104,7 @@ export const CommonPopup: React.FC = () => {
       closable={config.closeable}
       maskClosable={config.maskClosable}
       height={height}
-      onClose={() => setVisible(false)}
+      onClose={closePopup}
       visible={visible && !!componentName}
       className={className}
       destroyOnClose={false}
@@ -117,29 +116,23 @@ export const CommonPopup: React.FC = () => {
       isNew={config.isNew}
       {...popupProps}
     >
-      {/* Every popup below is bound to the approval this window is showing, so a
-          `useApproval()` action inside one acts on that approval and on nothing
-          else. In a window with no approval page - the dashboard - the binding
-          is null and such an action does nothing. */}
-      <ApprovalBindingContext.Provider value={approvalBinding}>
-        {componentName === 'Approval' && <Approval className="h-full" />}
-        {componentName === 'WalletConnect' && <ReconnectView />}
-        {componentName === 'SwitchAddress' && <SwitchAddress />}
-        {componentName === 'SwitchChain' && <SwitchChain />}
-        {componentName === 'Ledger' && <Ledger />}
-        {componentName === 'ImKeyPermission' && <ImKeyPermission />}
-        {componentName === 'Keystone' && <Keystone />}
-        {componentName === 'AssetList' && (
-          <AssetList
-            visible={visible}
-            onClose={() => {
-              setVisible(false);
-            }}
-          />
-        )}
-        {componentName === 'CancelApproval' && <CancelApproval />}
-        {componentName === 'CancelConnect' && <CancelConnect />}
-      </ApprovalBindingContext.Provider>
+      {componentName === 'Approval' && <Approval className="h-full" />}
+      {componentName === 'WalletConnect' && <ReconnectView />}
+      {componentName === 'SwitchAddress' && <SwitchAddress />}
+      {componentName === 'SwitchChain' && <SwitchChain />}
+      {componentName === 'Ledger' && <Ledger />}
+      {componentName === 'ImKeyPermission' && <ImKeyPermission />}
+      {componentName === 'Keystone' && <Keystone />}
+      {componentName === 'AssetList' && (
+        <AssetList
+          visible={visible}
+          onClose={() => {
+            setVisible(false);
+          }}
+        />
+      )}
+      {componentName === 'CancelApproval' && <CancelApproval />}
+      {componentName === 'CancelConnect' && <CancelConnect />}
     </Popup>
   );
 };
