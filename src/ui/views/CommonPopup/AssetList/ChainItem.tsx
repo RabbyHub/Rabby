@@ -84,13 +84,9 @@ export const ChainItem: React.FC<Props> = ({
         </Tooltip>
       ) : (
         <span
-          className={clsx(
-            'text-12 text-r-neutral-foot font-normal',
-            'ml-2',
-            {
-              'opacity-30': inactive,
-            }
-          )}
+          className={clsx('text-12 text-r-neutral-foot font-normal', 'ml-2', {
+            'opacity-30': inactive,
+          })}
         >
           {percent?.toFixed(0)}%
         </span>
