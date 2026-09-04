@@ -260,6 +260,7 @@ export const BridgeContent = () => {
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               fee_rate: Number(feeRate),
+              duration: selectedBridgeQuote.duration,
               slippage: new BigNumber(slippage).div(100).toNumber(),
             },
             addHistoryData: {
@@ -326,6 +327,7 @@ export const BridgeContent = () => {
     selectedBridgeQuote?.aggregator.id,
     selectedBridgeQuote?.bridge_id,
     selectedBridgeQuote?.to_token_amount,
+    selectedBridgeQuote?.duration,
     wallet,
     amount,
     feeRate,
@@ -461,6 +463,7 @@ export const BridgeContent = () => {
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               fee_rate: Number(feeRate),
+              duration: selectedBridgeQuote.duration,
               slippage: new BigNumber(slippage).div(100).toNumber(),
             },
             addHistoryData: {
