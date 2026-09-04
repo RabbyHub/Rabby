@@ -3,7 +3,12 @@ import React, { useMemo, useState } from 'react';
 import { QuoteListLoading, QuoteLoading } from './loading';
 import { IconRefresh } from './IconRefresh';
 import { DexQuoteItem, QuoteItemProps } from './QuoteItem';
-import { TDexQuoteData, isSwapWrapToken, useSetRefreshId } from '../hooks';
+import {
+  getDexQuoteScore,
+  TDexQuoteData,
+  isSwapWrapToken,
+  useSetRefreshId,
+} from '../hooks';
 import BigNumber from 'bignumber.js';
 import { DEX_WITH_WRAP } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
@@ -45,36 +50,22 @@ export const Quotes = ({
   const { t } = useTranslation();
 
   const sortedList = useMemo(
-    () => [
-      ...(list?.sort((a, b) => {
-        const getNumber = (quote: typeof a) => {
-          const price = other.receiveToken.price ? other.receiveToken.price : 0;
-          if (inSufficient) {
-            return new BigNumber(quote.data?.toTokenAmount || 0)
-              .div(
-                10 **
-                  (quote.data?.toTokenDecimals || other.receiveToken.decimals)
-              )
-              .times(price);
-          }
-          if (!quote.preExecResult) {
-            return new BigNumber(Number.MIN_SAFE_INTEGER);
-          }
-          const receiveTokenAmount = new BigNumber(
-            quote?.data?.toTokenAmount || 0
+    () =>
+      [...(list || [])].sort((a, b) =>
+        getDexQuoteScore({
+          quote: b,
+          receiveToken: other.receiveToken,
+          inSufficient,
+        })
+          .minus(
+            getDexQuoteScore({
+              quote: a,
+              receiveToken: other.receiveToken,
+              inSufficient,
+            })
           )
-            .div(
-              10 **
-                (quote?.data?.toTokenDecimals || other.receiveToken.decimals)
-            )
-            .toString();
-          return new BigNumber(receiveTokenAmount)
-            .times(price)
-            .minus(quote?.preExecResult?.gasUsdValue || 0);
-        };
-        return getNumber(b).minus(getNumber(a)).toNumber();
-      }) || []),
-    ],
+          .toNumber()
+      ),
     [inSufficient, list, other.receiveToken]
   );
 
