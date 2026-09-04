@@ -4,7 +4,7 @@ import type { SpotMeta, FFastAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { getSpotBalanceKey } from '@/ui/views/Perps/constants';
 import type { PerpsQuoteAsset } from '@/ui/views/Perps/constants';
 import { COLLATERAL_TOKEN_TO_QUOTE } from '@/utils/perps/quoteAsset';
-import type { MarketData, MarketDataMap } from '@/ui/models/perps';
+import type { MarketData, MarketDataMap } from '@/ui/state/perps';
 import type {
   AggregatedClearinghouseState,
   SpotBalance as PmSpotBalance,

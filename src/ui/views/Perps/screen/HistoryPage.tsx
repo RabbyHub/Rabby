@@ -7,7 +7,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
 import { HistoryDetailPopup } from '../popup/HistoryDetailPopup';
 import { HistoryTransferDetailPopup } from '../popup/HistoryTransferDetailPopup';
-import { AccountHistoryItem } from '@/ui/models/perps';
+import { AccountHistoryItem } from '@/ui/state/perps';
 import { ReactComponent as RcIconNoSrc } from '@/ui/assets/perps/IconNoSrc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useHistory, useParams } from 'react-router-dom';

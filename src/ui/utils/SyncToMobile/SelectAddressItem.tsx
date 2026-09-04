@@ -1,4 +1,4 @@
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useWhitelistStore } from '@/ui/state/whitelist';
 import { Tooltip } from 'antd';
 import React, { useMemo } from 'react';

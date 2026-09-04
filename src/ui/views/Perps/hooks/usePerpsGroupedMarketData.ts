@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import type { PerpTopTokenCategory } from '@rabby-wallet/rabby-api/dist/types';
-import type { MarketData } from '@/ui/models/perps';
+import type { MarketData } from '@/ui/state/perps';
 import {
   PerpsCategoryConfig,
   PerpsCategoryId,

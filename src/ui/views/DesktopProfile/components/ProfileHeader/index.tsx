@@ -3,14 +3,11 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { CurveChartData } from '@/ui/views/Dashboard/components/BalanceView/useCurve';
-import { useRequest } from 'ahooks';
 import { Popover } from 'antd';
 import QRCode from 'qrcode.react';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { BalanceView } from './BalanceView';
-import { useWallet } from '@/ui/utils';
-import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
 import clsx from 'clsx';
 
@@ -41,26 +38,6 @@ export const ProfileHeader: React.FC<{
 }> = (props) => {
   const currentAccount = useCurrentAccount();
 
-  const wallet = useWallet();
-
-  const { data: alias, runAsync: runFetchAlias } = useRequest(
-    async () => {
-      if (!currentAccount?.address) {
-        return '';
-      }
-      return wallet.getAlianName(currentAccount?.address || '');
-    },
-    {
-      refreshDeps: [currentAccount?.address],
-    }
-  );
-
-  useEffect(() => {
-    return onBackgroundStoreChanged('contactBook', (payload) => {
-      runFetchAlias();
-    });
-  }, [runFetchAlias]);
-
   if (!currentAccount) {
     return null;
   }
@@ -71,7 +48,7 @@ export const ProfileHeader: React.FC<{
       <div className="px-[20px] pt-[24px] pb-[8px] relative">
         <div className="mb-[20px] flex items-center gap-[8px]">
           <div className="text-r-neutral-title1 text-[18px] leading-[21px] font-semibold">
-            {alias}
+            {currentAccount.alianName}
           </div>
           <div className="text-rb-neutral-body text-[18px] leading-[21px]">
             {ellipsisAddress(currentAccount?.address || '')}

@@ -2,7 +2,7 @@ import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';

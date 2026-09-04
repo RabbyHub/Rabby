@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import store, { useRabbySelector } from '@/ui/store';
-import type { PerpsState } from '@/ui/models/perps';
+import { useRabbySelector } from '@/ui/store';
+import { usePerpsStore } from '@/ui/state/perps';
+import type { PerpsState } from '@/ui/state/perps';
 import {
   LimitOrderType,
   OrderSide,
@@ -487,7 +488,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       // this closure was created before the last orderbook tick rendered.
       const orderLimitPrice = snapshot.bboStrategy
         ? resolveBboPrice(
-            store.getState().perps.bboPrices,
+            usePerpsStore.getState().bboPrices,
             snapshot.bboStrategy,
             isBuy
           )

@@ -7,7 +7,7 @@ import { ReactComponent as RcIconDeposit } from '@/ui/assets/perps/IconDeposit.s
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { ReactComponent as RcIconWithdraw } from '@/ui/assets/perps/IconWithdraw.svg';
 import { ReactComponent as RcIconTransfer } from '@/ui/assets/perps/IconTransfer.svg';
-import { AccountHistoryItem, MarketData } from '@/ui/models/perps';
+import { AccountHistoryItem, MarketData } from '@/ui/state/perps';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useTranslation } from 'react-i18next';
 import { TokenImg } from './TokenImg';

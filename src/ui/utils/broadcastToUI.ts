@@ -18,12 +18,10 @@ export function onBroadcastToUI<T extends BROADCAST_TO_UI_EVENTS>(
 }
 
 type AllBackgroundStores = PersistedStoreMap & {
-  contactBook: import('@/background/service/contactBook').ContactBookStore;
   preference: import('@/background/service/preference').PreferenceStore;
   feedback: import('@/background/service/feedback').FeedbackServiceStore;
 };
 
-// type StoreRootModel = import('@/ui/models').RootModel;
 export function onBackgroundStoreChanged<S extends keyof AllBackgroundStores>(
   bgStoreName: S,
   listener: (

@@ -1,6 +1,7 @@
 import { CHAINS_ENUM } from '@debank/common';
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, patchPersistStore } from 'background/utils';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
+import { z } from 'zod';
 
 import { openapiService } from 'background/service';
 import { TokenItem } from './openapi';
@@ -22,55 +23,73 @@ export type BridgeRecord = {
   slippage: number;
 };
 
-export type BridgeServiceStore = {
-  selectedChain: CHAINS_ENUM | null;
-  selectedFromToken?: TokenItem;
-  selectedToToken?: TokenItem;
-  selectedAggregators?: string[];
-  txQuotes?: Record<string, BridgeRecord>;
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  !!value && typeof value === 'object' && !Array.isArray(value);
 
-  /**
-   * @deprecated
-   */
-  unlimitedAllowance: boolean;
-  /**
-   * @deprecated
-   */
-  sortIncludeGasFee?: boolean;
-  /**
-   * @deprecated
-   */
-  firstOpen: boolean;
-};
+const tokenItemSchema = z.custom<TokenItem>(
+  (value) =>
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.chain === 'string'
+);
+const chainSchema = z.string() as z.ZodType<CHAINS_ENUM>;
+const isStringOrNumber = (value: unknown) =>
+  typeof value === 'string' || typeof value === 'number';
+const bridgeRecordSchema = z.custom<BridgeRecord>(
+  (value) =>
+    isRecord(value) &&
+    typeof value.aggregator_id === 'string' &&
+    typeof value.bridge_id === 'string' &&
+    typeof value.from_chain_id === 'string' &&
+    typeof value.from_token_id === 'string' &&
+    isStringOrNumber(value.from_token_amount) &&
+    typeof value.to_chain_id === 'string' &&
+    typeof value.to_token_id === 'string' &&
+    isStringOrNumber(value.to_token_amount) &&
+    isRecord(value.tx) &&
+    typeof value.rabby_fee === 'number' &&
+    typeof value.slippage === 'number'
+);
+
+export const bridgeStoreSchema = z.object({
+  selectedChain: chainSchema.nullable().default(null),
+  selectedFromToken: tokenItemSchema.optional(),
+  selectedToToken: tokenItemSchema.optional(),
+  selectedAggregators: z.array(z.string()).default(() => []),
+  txQuotes: z.record(z.string(), bridgeRecordSchema).default(() => ({})),
+  /** @deprecated */
+  unlimitedAllowance: z.boolean().default(false),
+  /** @deprecated */
+  sortIncludeGasFee: z.boolean().default(true),
+  /** @deprecated */
+  firstOpen: z.boolean().default(true),
+});
+
+export type BridgeServiceStore = z.output<typeof bridgeStoreSchema>;
+
+const createBridgeStoreTemplate = (): BridgeServiceStore =>
+  bridgeStoreSchema.parse({});
 
 class BridgeService {
-  store: BridgeServiceStore = {
-    selectedChain: null,
-    selectedFromToken: undefined,
-    selectedToToken: undefined,
-    selectedAggregators: undefined,
-    unlimitedAllowance: false,
-    sortIncludeGasFee: true,
-    firstOpen: true,
-  };
+  store: BridgeServiceStore = createBridgeStoreTemplate();
 
   init = async () => {
     const storage = await createPersistStore<BridgeServiceStore>({
       name: 'bridge',
-      template: {
-        selectedChain: null,
-        unlimitedAllowance: false,
-        sortIncludeGasFee: true,
-        txQuotes: {},
-        firstOpen: true,
-      },
+      template: createBridgeStoreTemplate(),
+      schema: bridgeStoreSchema,
     });
 
     this.store = storage || this.store;
   };
 
   getBridgeData = (key?: keyof BridgeServiceStore) => {
-    return key ? this.store[key] : { ...this.store };
+    const state = bridgeStoreSchema.parse(this.store);
+    return key ? state[key] : state;
+  };
+
+  patchStore = (partials: Partial<BridgeServiceStore>) => {
+    patchPersistStore(this.store, partials);
   };
 
   getBridgeAggregators = () => {
@@ -78,7 +97,7 @@ class BridgeService {
   };
 
   setBridgeAggregators = (selectedAggregators: string[]) => {
-    this.store.selectedAggregators = [...selectedAggregators];
+    this.patchStore({ selectedAggregators: [...selectedAggregators] });
   };
 
   getSelectedChain = () => {
@@ -86,7 +105,7 @@ class BridgeService {
   };
 
   setSelectedChain = (chain: CHAINS_ENUM) => {
-    this.store.selectedChain = chain;
+    this.patchStore({ selectedChain: chain });
   };
 
   getSelectedFromToken = () => {
@@ -97,10 +116,10 @@ class BridgeService {
   };
 
   setSelectedFromToken = (token?: TokenItem) => {
-    this.store.selectedFromToken = token;
+    this.patchStore({ selectedFromToken: token });
   };
   setSelectedToToken = (token?: TokenItem) => {
-    this.store.selectedToToken = token;
+    this.patchStore({ selectedToToken: token });
   };
 
   getUnlimitedAllowance = () => {
@@ -108,7 +127,7 @@ class BridgeService {
   };
 
   setUnlimitedAllowance = (bool: boolean) => {
-    this.store.unlimitedAllowance = bool;
+    this.patchStore({ unlimitedAllowance: bool });
   };
 
   getBridgeSortIncludeGasFee = () => {
@@ -116,11 +135,11 @@ class BridgeService {
   };
 
   setBridgeSortIncludeGasFee = (bool: boolean) => {
-    this.store.sortIncludeGasFee = bool;
+    this.patchStore({ sortIncludeGasFee: bool });
   };
 
   setBridgeSettingFirstOpen = (bool: boolean) => {
-    this.store.firstOpen = bool;
+    this.patchStore({ firstOpen: bool });
   };
 
   txQuotes: Record<string, BridgeRecord> = {};

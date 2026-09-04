@@ -1,4 +1,5 @@
-import { useRabbyDispatch, useRabbyGetter } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { selectIsReserveGasOnSendToken } from '@/ui/state/preference';
 import { Switch } from 'antd';
 import React from 'react';
 
@@ -14,8 +15,8 @@ export default function SwitchReserveGas({
 >) {
   const { t } = useTranslation();
 
-  const isReserveGasOnSendToken = useRabbyGetter(
-    (s) => s.preference.isReserveGasOnSendToken
+  const isReserveGasOnSendToken = useRabbySelector((state) =>
+    selectIsReserveGasOnSendToken(state.preference)
   );
 
   const dispatch = useRabbyDispatch();
