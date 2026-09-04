@@ -618,11 +618,16 @@ export const BridgeContent = () => {
     !quoteLoading &&
     !quoteList?.length;
   const [bridgeProgressVisible, setBridgeProgressVisible] = useState(false);
+  const showQuoteAlert =
+    !inSufficientCanGetQuote || (noQuote && !recommendFromToken);
+  const showRecommendFromToken = noQuote && !!recommendFromToken;
   const showStickyInfo =
     !!fromToken &&
     !!toToken &&
     !noQuote &&
     !(bridgeProgressVisible && !amountAvailable);
+  const canScrollContent =
+    showStickyInfo && (showExternalDappTips || !inSufficientCanGetQuote);
 
   const btnDisabled =
     inSufficient ||
@@ -1126,7 +1131,8 @@ export const BridgeContent = () => {
       />
       <div
         className={clsx(
-          'flex-1 overflow-auto page-has-ant-input',
+          'flex-1 page-has-ant-input',
+          canScrollContent ? 'overflow-auto' : 'overflow-hidden',
           selectedBridgeQuote?.shouldApproveToken ? 'pb-[130px]' : 'pb-[110px]'
         )}
       >
@@ -1165,7 +1171,7 @@ export const BridgeContent = () => {
             <BridgeSwitchBtn onClick={switchToken} loading={quoteLoading} />
           </div>
         </div>
-        {!isSupportedChain && fromChain && toChain ? (
+        {showExternalDappTips ? (
           <div className="mt-16 mx-20">
             <ExternalSwapBridgeDappTips
               dappsAvailable={externalDapps?.length > 0}
@@ -1182,7 +1188,7 @@ export const BridgeContent = () => {
           </div>
         ) : null}
 
-        {!inSufficientCanGetQuote || (noQuote && !recommendFromToken) ? (
+        {showQuoteAlert ? (
           <Alert
             className={clsx(
               'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
@@ -1213,7 +1219,7 @@ export const BridgeContent = () => {
         ) : null}
 
         <div className="mx-20 mt-20">
-          {noQuote && recommendFromToken && (
+          {showRecommendFromToken && (
             <RecommendFromToken
               token={recommendFromToken}
               className="mt-16"
