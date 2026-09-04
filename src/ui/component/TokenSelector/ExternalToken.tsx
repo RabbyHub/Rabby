@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { UnknownTag } from '@/ui/component';
 import TokenWithChain from '../TokenWithChain';
 import {
+  formatTVL,
   formatLargeTokenAmount,
   formatPrice,
   formatUsdValue,
@@ -198,7 +199,7 @@ export const ExternalContent = ({
       ) : (
         <span className="symbol text-13 font-normal text-r-neutral-foot mb-2 z-20">
           {t('page.search.tokenItem.FDV')}{' '}
-          {data.identity?.fdv ? formatUsdValue(data.identity?.fdv) : '-'}
+          {data.identity?.fdv ? formatTVL(data.identity.fdv) : '-'}
           <span className="text-r-neutral-line text-13 font-normal"> | </span>
           CA:{' '}
           {ellipsisAddress(
