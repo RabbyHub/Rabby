@@ -5,39 +5,6 @@ __metadata:
   version: 9
   cacheKey: 10c0
 
-"@aave-dao/aave-address-book@npm:4.47.14":
-  version: 4.47.14
-  resolution: "@aave-dao/aave-address-book@npm:4.47.14"
-  peerDependencies:
-    viem: ^2.23.5
-  checksum: 10c0/4162d31f0c10fe0ae70f56caf3027e6a58e148dea23b5910670577b41ba8649f31cd663f552e43b7021f61ae7e8350dd2aa03cc2900dab5d897120ecf56f4503
-  languageName: node
-  linkType: hard
-
-"@aave/contract-helpers@npm:1.37.1":
-  version: 1.37.1
-  resolution: "@aave/contract-helpers@npm:1.37.1"
-  dependencies:
-    isomorphic-unfetch: "npm:^3.1.0"
-  peerDependencies:
-    bignumber.js: ^9.x
-    ethers: ^5.x
-    reflect-metadata: ^0.1.x
-    tslib: ^2.4.x
-  checksum: 10c0/9d24d4c0912f5b2e3a4bfda2a365a20b2ace6cd60a8f06af909b9c59b3fd585a6f4dd43c60780682b278cc25be250fd35c05bb55819d8631422d2f0e1d3809ab
-  languageName: node
-  linkType: hard
-
-"@aave/math-utils@npm:1.37.1":
-  version: 1.37.1
-  resolution: "@aave/math-utils@npm:1.37.1"
-  peerDependencies:
-    bignumber.js: ^9.x
-    tslib: ^2.4.x
-  checksum: 10c0/aa51a74eac0cde04f273a7478fd0004dba7637b01c722709d35ede2ace8e110969ffa3d95d235dd4400d92d51536fddae425ec2298f67fca5c7bb946d5423038
-  languageName: node
-  linkType: hard
-
 "@adraffy/ens-normalize@npm:1.10.1":
   version: 1.10.1
   resolution: "@adraffy/ens-normalize@npm:1.10.1"
@@ -4615,35 +4582,6 @@ __metadata:
     ethers: "npm:^6.9.0"
     merkletreejs: "npm:^0.5.0"
   checksum: 10c0/c88e4bbb518bfaa9010c4eb74255b8a5b641dc865bb09608ee7eb924d7c471ddcb9f09ded10f4ac7cf676714894f4eac6f1279ce3082031a36ef4e30a018c360
-  languageName: node
-  linkType: hard
-
-"@paraswap/core@npm:2.2.0":
-  version: 2.2.0
-  resolution: "@paraswap/core@npm:2.2.0"
-  checksum: 10c0/8a62ef1c6bfa9a6b7f9326315263a7c5b77d27aa6624ec846c6308f6e3fb8fe1661a6f7845182c0b7d2c17f15f8c5d2f40ccf6853980fcd8d69caa6bfd21883c
-  languageName: node
-  linkType: hard
-
-"@paraswap/sdk@npm:6.10.0":
-  version: 6.10.0
-  resolution: "@paraswap/sdk@npm:6.10.0"
-  dependencies:
-    "@paraswap/core": "npm:2.2.0"
-    bignumber.js: "npm:^9.0.2"
-    ts-essentials: "npm:^9.1.2"
-  peerDependencies:
-    axios: ">=0.25.0 <2.0.0"
-    ethers: ^5.5.0
-    web3: ^1.7.1
-  peerDependenciesMeta:
-    axios:
-      optional: true
-    ethers:
-      optional: true
-    web3:
-      optional: true
-  checksum: 10c0/ac097956363648c776ecf4aa3148b75d191e7c96485f339f4e69aab6fe678b5a6d2e40c75b17c7ea9ffc1825aea9af1859ec8c819e3536611621dc055c5e21eb
   languageName: node
   linkType: hard
 
@@ -16020,16 +15958,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"isomorphic-unfetch@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "isomorphic-unfetch@npm:3.1.0"
-  dependencies:
-    node-fetch: "npm:^2.6.1"
-    unfetch: "npm:^4.2.0"
-  checksum: 10c0/d3b61fca06304db692b7f76bdfd3a00f410e42cfa7403c3b250546bf71589d18cf2f355922f57198e4cc4a9872d3647b20397a5c3edf1a347c90d57c83cf2a89
-  languageName: node
-  linkType: hard
-
 "isomorphic-ws@npm:^4.0.1":
   version: 4.0.1
   resolution: "isomorphic-ws@npm:4.0.1"
@@ -18754,7 +18682,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.1, node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
+"node-fetch@npm:^2.6.7, node-fetch@npm:^2.7.0":
   version: 2.7.0
   resolution: "node-fetch@npm:2.7.0"
   dependencies:
@@ -20377,9 +20305,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rabby@workspace:."
   dependencies:
-    "@aave-dao/aave-address-book": "npm:4.47.14"
-    "@aave/contract-helpers": "npm:1.37.1"
-    "@aave/math-utils": "npm:1.37.1"
     "@bitboxswiss/bitbox-api": "npm:0.1.1"
     "@coinbase/wallet-sdk": "npm:3.8.0-beta.3"
     "@debank/common": "npm:0.3.60"
@@ -20419,7 +20344,6 @@ __metadata:
     "@onekeyfe/hd-core": "npm:1.1.0"
     "@onekeyfe/hd-web-sdk": "npm:1.1.0"
     "@opensea/seaport-js": "npm:4.0.5"
-    "@paraswap/sdk": "npm:6.10.0"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:0.6.2"
     "@rabby-wallet/eth-coinbase-keyring": "npm:0.0.0-beta.8"
     "@rabby-wallet/eth-hd-keyring": "npm:4.3.7"
@@ -24094,18 +24018,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-essentials@npm:^9.1.2":
-  version: 9.4.2
-  resolution: "ts-essentials@npm:9.4.2"
-  peerDependencies:
-    typescript: ">=4.1.0"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/125d79a0fc4fbfcfbc6f6461e05cde1f9da46035867ae3164812e615d6cc02cd0b2f470c944f619e87f89bebb00b81eb5c9558e83cf6e8e0f47be184474f855e
-  languageName: node
-  linkType: hard
-
 "ts-import-plugin@npm:1.6.7":
   version: 1.6.7
   resolution: "ts-import-plugin@npm:1.6.7"
@@ -24524,13 +24436,6 @@ __metadata:
   version: 6.25.0
   resolution: "undici@npm:6.25.0"
   checksum: 10c0/2597cc6689bdb02c210c557b1f85febbfda65becae6e6fc1061508e2f33734d25207f81cd8af56ada9956329eb3a7bd7431e87dcfeceba20ee87059b57dcf985
-  languageName: node
-  linkType: hard
-
-"unfetch@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "unfetch@npm:4.2.0"
-  checksum: 10c0/a5c0a896a6f09f278b868075aea65652ad185db30e827cb7df45826fe5ab850124bf9c44c4dafca4bf0c55a0844b17031e8243467fcc38dd7a7d435007151f1b
   languageName: node
   linkType: hard
 
