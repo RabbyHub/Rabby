@@ -270,7 +270,7 @@ export const EnterAddress = ({
           <StyledInputWrapper
             onClick={(e) => e.stopPropagation()}
             className="relative"
-            $hasError={!isValidAddr && !filteredAccounts.length}
+            $hasError={showSearchError}
           >
             <Input.TextArea
               maxLength={44}
