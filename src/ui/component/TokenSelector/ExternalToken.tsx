@@ -4,7 +4,12 @@ import React, { memo, SVGProps, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UnknownTag } from '@/ui/component';
 import TokenWithChain from '../TokenWithChain';
-import { formatPrice, formatTokenAmount, formatUsdValue } from '@/ui/utils';
+import {
+  formatPrice,
+  formatTokenAmount,
+  formatTVL,
+  formatUsdValue,
+} from '@/ui/utils';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/portfolio/cc-right.svg';
 import clsx from 'clsx';
@@ -194,7 +199,7 @@ export const ExternalContent = ({
       ) : (
         <span className="symbol text-13 font-normal text-r-neutral-foot mb-2 z-20">
           {t('page.search.tokenItem.FDV')}{' '}
-          {data.identity?.fdv ? formatUsdValue(data.identity?.fdv) : '-'}
+          {data.identity?.fdv ? formatTVL(data.identity.fdv) : '-'}
           <span className="text-r-neutral-line text-13 font-normal"> | </span>
           CA:{' '}
           {ellipsisAddress(
