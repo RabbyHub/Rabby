@@ -1,5 +1,6 @@
 {
   "document": [
+    "^node_modules/@tanstack/query-core",
     "^node_modules/@ant-design",
     "^node_modules/@coinbase/wallet-sdk",
     "^node_modules/@dnd-kit",
@@ -92,6 +93,7 @@
     "^node_modules/zustand"
   ],
   "addEventListener": [
+    "^node_modules/@tanstack/query-core",
     "^node_modules/@ant-design",
     "^node_modules/@dnd-kit",
     "^node_modules/@metamask/post-message-stream",
@@ -130,7 +132,8 @@
     "^node_modules/@sentry/utils",
     "^node_modules/@trezor/connect-web",
     "^node_modules/lightweight-charts",
-    "^node_modules/webextension-polyfill"
+    "^node_modules/webextension-polyfill",
+    "^node_modules/@tanstack/query-core"
   ],
   "fetch": [
     "^node_modules/@bitboxswiss/bitbox-api",
