@@ -1479,6 +1479,8 @@
           "lowValueDefis": "{{count}} 低価値のDeFiアセット"
         },
         "noAssets": "アセットなし",
+        "unfoldChain": "他1件のチェーン",
+        "unfoldChainPlural": "他{{moreLen}}件のチェーン",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
         "blockDescription": "ユーザーによってブロックされたトークンがここに表示されます",
         "customLinkText": "カスタムトークンを追加するためのアドレスを検索",

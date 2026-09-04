@@ -429,6 +429,8 @@
           "lowValueAssets_one": "{{count}} 個低價值代幣"
         },
         "noAssets": "沒有資產",
+        "unfoldChain": "還有 1 條鏈",
+        "unfoldChainPlural": "還有 {{moreLen}} 條鏈",
         "blockLinkText": "搜尋代幣地址以隱藏代幣",
         "blockDescription": "被你隱藏的代幣將顯示在此處",
         "customLinkText": "搜尋代幣地址，新增代幣",

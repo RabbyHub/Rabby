@@ -1594,6 +1594,8 @@
         "amount": "금액",
         "usdValue": "USD 가치",
         "noAssets": "자산이 없습니다",
+        "unfoldChain": "체인 1개 더",
+        "unfoldChainPlural": "체인 {{moreLen}}개 더",
         "comingSoon": "곧 출시됩니다...",
         "blockDescription": "여기에는 당신이 차단한 토큰이 표시됩니다.",
         "blockLinkText": "주소 검색하여 토큰 차단",

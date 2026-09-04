@@ -1479,6 +1479,8 @@
           "lowValueAssets_other": "{{count}} düşük değerli token"
         },
         "noAssets": "Varlık Yok",
+        "unfoldChain": "1 ağ daha",
+        "unfoldChainPlural": "{{moreLen}} ağ daha",
         "blockLinkText": "Tokeni engellemek için adresi ara",
         "blockDescription": "Tarafınızdan engellenen token burada gösterilecek",
         "customLinkText": "Farklı bir token eklemek için adresi ara",
