@@ -18,7 +18,13 @@ export const TestnetChainList = ({
   const chainList = useRabbySelector((store) =>
     sortBy(store.chains.testnetList, (item) => item.name)
   );
-  const { showMore, setShowMore, expand, collapse, rootRef } = useExpandableList();
+  const {
+    showMore,
+    setShowMore,
+    expand,
+    collapse,
+    rootRef,
+  } = useExpandableList();
   const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
   const { t } = useTranslation();
 

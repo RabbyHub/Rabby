@@ -28,7 +28,13 @@ export const ChainList = ({
     ? (data?.testnetBalance as number) ?? 0
     : (data?.balance as number) ?? 0;
   const balanceLoading = (data?.balanceLoading as boolean) ?? false;
-  const { showMore, setShowMore, expand, collapse, rootRef } = useExpandableList();
+  const {
+    showMore,
+    setShowMore,
+    expand,
+    collapse,
+    rootRef,
+  } = useExpandableList();
   const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
   const { t } = useTranslation();
 
@@ -127,10 +133,7 @@ export const ChainList = ({
               item={item}
             />
           ))}
-          <ChainToggleButton
-            expanded
-            onClick={collapse}
-          />
+          <ChainToggleButton expanded onClick={collapse} />
         </>
       ) : (
         <ChainToggleButton
