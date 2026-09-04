@@ -16,8 +16,8 @@ import { useAsync, useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem, TokenItemWithEntity } from 'background/service/openapi';
 import {
+  formatLargeTokenAmount,
   formatPrice,
-  formatTokenAmount,
   formatUsdValue,
 } from 'ui/utils/number';
 import { getTokenSymbol } from 'ui/utils/token';
@@ -856,7 +856,7 @@ function CommonTokenItem(props: {
                 )
               ) : (
                 <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-                  {formatTokenAmount(value?.amount || 0)}
+                  {formatLargeTokenAmount(value?.amount || 0)}
                 </span>
               )}
             </div>
@@ -893,7 +893,7 @@ function CommonTokenItem(props: {
               </>
             ) : (
               <div className={clsx('token_usd_value')}>
-                {formatTokenAmount(value?.amount || 0)}
+                {formatLargeTokenAmount(value?.amount || 0)}
               </div>
             )}
           </div>

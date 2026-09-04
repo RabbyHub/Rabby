@@ -56,30 +56,6 @@ export function useCurrentAccount(options?: {
   return currentAccount;
 }
 
-export function useSceneAccount(options?: { scene: AccountScene }) {
-  const dispatch = useRabbyDispatch();
-  const { scene } = options || {};
-
-  const storedCurrentAccount = useRabbySelector((s) => {
-    return scene
-      ? s.account.sceneAccountMap?.[scene] || s.account.currentAccount
-      : s.account.currentAccount;
-  });
-  const currentAccount = useAccountWithAlias(storedCurrentAccount);
-
-  const switchCurrentAccount = useMemoizedFn((account: Account) => {
-    if (!scene) {
-      return dispatch.account.changeAccountAsync(account);
-    }
-    return dispatch.account.switchSceneAccount({
-      scene,
-      account,
-    });
-  });
-
-  return [currentAccount, switchCurrentAccount] as const;
-}
-
 export function useSubscribeCurrentAccountChanged() {
   const dispatch = useRabbyDispatch();
 
