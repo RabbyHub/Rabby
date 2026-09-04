@@ -25,6 +25,7 @@ import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
 import { KEYRING_TYPE } from '@/constant';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useWhitelistStore } from '@/ui/state/whitelist';
+import { getNormalizedAddressInputAfterPaste } from '@/ui/utils/addressInput';
 
 const StyledInputWrapper = styled.div<{ $hasError?: boolean }>`
   border-radius: 12px;
@@ -194,6 +195,24 @@ export const EnterAddress = ({
     [wallet]
   );
 
+  const handlePasteAddress = useCallback(
+    (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const normalizedValue = getNormalizedAddressInputAfterPaste({
+        value: event.currentTarget.value,
+        pastedText: event.clipboardData.getData('text'),
+        selectionStart: event.currentTarget.selectionStart,
+        selectionEnd: event.currentTarget.selectionEnd,
+      });
+      if (normalizedValue === null) {
+        return;
+      }
+      event.preventDefault();
+      setInputAddress(normalizedValue);
+      handleValuesChange({ address: normalizedValue });
+    },
+    [handleValuesChange]
+  );
+
   const handleNextClick = () => {
     const address = ensResult?.addr || inputAddress;
     if (address && isValidAddress(address)) {
@@ -236,6 +255,7 @@ export const EnterAddress = ({
                 setInputAddress(e.target.value);
                 handleValuesChange({ address: e.target.value });
               }}
+              onPaste={handlePasteAddress}
               size="large"
               spellCheck={false}
               rows={4}
