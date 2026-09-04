@@ -1,4 +1,5 @@
-import { useRequest } from 'ahooks';
+import { useQuery } from '@tanstack/react-query';
+import { tokenQueryOptions } from '@/ui/query/resources/token';
 import { useWallet } from '../utils';
 
 export const useTokenInfo = (
@@ -11,19 +12,10 @@ export const useTokenInfo = (
 ) => {
   const { address, chainServerId, tokenId } = params;
   const wallet = useWallet();
-  const { data } = useRequest(
-    async () => {
-      if (!address || !chainServerId || !tokenId) {
-        return;
-      }
-      return wallet.openapi.getToken(address, chainServerId, tokenId);
-    },
-    {
-      refreshDeps: [address, chainServerId, tokenId],
-      cacheKey: `${address}-${chainServerId}-${tokenId}`,
-      staleTime: 10_000,
-      ...options,
-    }
-  );
+  const { data } = useQuery({
+    ...tokenQueryOptions(wallet, params),
+    enabled:
+      options?.ready !== false && Boolean(address && chainServerId && tokenId),
+  });
   return data;
 };
