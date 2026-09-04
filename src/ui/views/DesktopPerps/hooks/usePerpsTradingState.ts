@@ -303,6 +303,10 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
         maxLeverage,
         pxDecimals,
         side: direction === 'Long' ? 'buy' : 'sell',
+        // The pro panel keeps quoting while the typed size exceeds what the
+        // balance can fund (submission is blocked elsewhere), so price the
+        // order as if the margin were there instead of showing `-`.
+        assumeSufficientMargin: true,
       });
       if (!projected) {
         return { liqPrice: '-', liqPriceNum: null, cost };
