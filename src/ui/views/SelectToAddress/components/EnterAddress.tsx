@@ -281,7 +281,7 @@ export const EnterAddress = ({
         )}
         {ensResult && (
           <div
-            className="mt-[12px] p-[12px] bg-r-neutral-card1 rounded-[12px] cursor-pointer"
+            className="mt-[12px] p-[12px] bg-r-neutral-card1 text-r-neutral-title1 rounded-[12px] cursor-pointer"
             onClick={() => handleConfirmENS(ensResult.addr)}
           >
             <div className="flex items-center gap-[8px] break-all">
