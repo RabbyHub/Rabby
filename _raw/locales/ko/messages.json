@@ -1598,8 +1598,6 @@
         "blockDescription": "차단한 토큰이 여기에 표시됩니다.",
         "blockLinkText": "주소 검색하여 토큰 차단",
         "customDescription": "추가한 커스텀 토큰이 여기에 표시됩니다.",
-        "unfoldChainPlural": "{{moreLen}} 체인을 펼치기",
-        "unfoldChain": "1 체인을 펼치세요",
         "customButtonText": "사용자 정의 토큰 추가",
         "addTokenEntryText": "토큰",
         "noTestnetAssets": "사용자 지정 네트워크 자산이 없습니다.",

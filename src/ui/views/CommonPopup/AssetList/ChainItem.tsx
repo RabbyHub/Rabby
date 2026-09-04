@@ -43,7 +43,7 @@ export const ChainItem: React.FC<Props> = ({
     <div
       onClick={onClick}
       className={clsx(
-        'flex gap-6 items-center',
+        'flex gap-4 items-center',
         'cursor-pointer relative',
         className
       )}
@@ -75,7 +75,7 @@ export const ChainItem: React.FC<Props> = ({
           title={t('component.ChainItem.appChain', { chain: name })}
         >
           <div
-            className={clsx('text-r-neutral-foot', {
+            className={clsx('text-r-neutral-foot ml-2', {
               'opacity-30': inactive,
             })}
           >
@@ -84,9 +84,13 @@ export const ChainItem: React.FC<Props> = ({
         </Tooltip>
       ) : (
         <span
-          className={clsx('text-12 leading-[16px] text-r-neutral-foot', {
-            'opacity-30': inactive,
-          })}
+          className={clsx(
+            'text-12 leading-[16px] text-r-neutral-foot font-normal',
+            'ml-2',
+            {
+              'opacity-30': inactive,
+            }
+          )}
         >
           {percent?.toFixed(0)}%
         </span>

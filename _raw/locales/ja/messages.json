@@ -1481,8 +1481,6 @@
         "noAssets": "アセットなし",
         "blockLinkText": "トークンをブロックするためのアドレスを検索",
         "blockDescription": "ユーザーによってブロックされたトークンがここに表示されます",
-        "unfoldChain": "1つのチェーンを展開",
-        "unfoldChainPlural": "{{moreLen}}のチェーンを展開",
         "customLinkText": "カスタムトークンを追加するためのアドレスを検索",
         "customDescription": "ユーザーによって追加されたカスタムトークンがここに表示されます",
         "comingSoon": "近日公開...",

@@ -1,11 +1,12 @@
 import { useCommonPopupView } from '@/ui/utils';
 import clsx from 'clsx';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ChainItem, ChainItemType, sortChainWithValueDesc } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { formatAppChain } from '@/ui/hooks/useAppChain';
+import { ChainToggleButton } from './ChainToggleButton';
 
 function shouldChainRevealed(chainItem: ChainItemType) {
   return chainItem.percent >= 5 || chainItem.usd_value >= 1000;
@@ -113,32 +114,39 @@ export const ChainList = ({
         />
       ))}
       {showMore ? (
-        chainsToHide.map((item) => (
-          <ChainItem
+        <>
+          {chainsToHide.map((item) => (
+            <ChainItem
+              onClick={() => {
+                handleSelectChain(item.id);
+              }}
+              inactive={activeChainId !== null && activeChainId !== item.id}
+              key={item.id}
+              item={item}
+            />
+          ))}
+          <ChainToggleButton
+            expanded
+            label={t('global.collapse')}
             onClick={() => {
-              handleSelectChain(item.id);
+              setShowMore(false);
             }}
-            inactive={activeChainId !== null && activeChainId !== item.id}
-            key={item.id}
-            item={item}
           />
-        ))
+        </>
       ) : (
-        <div
-          className={clsx(
-            'cursor-pointer text-12 underline text-r-neutral-foot leading-[20px]',
-            {
-              hidden: moreLen === 0,
-            }
-          )}
+        <ChainToggleButton
+          className={clsx({
+            hidden: moreLen === 0,
+          })}
+          label={
+            moreLen > 1
+              ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
+              : t('page.dashboard.assets.unfoldChain')
+          }
           onClick={() => {
             setShowMore(true);
           }}
-        >
-          {moreLen > 1
-            ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
-            : t('page.dashboard.assets.unfoldChain')}
-        </div>
+        />
       )}
     </div>
   );
