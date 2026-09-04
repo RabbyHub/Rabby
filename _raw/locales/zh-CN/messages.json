@@ -431,8 +431,6 @@
         "noAssets": "没有资产",
         "blockLinkText": "搜索代币地址以隐藏代币",
         "blockDescription": "被你隐藏的代币将显示在此处",
-        "unfoldChain": "展开 1 条链",
-        "unfoldChainPlural": "展开 {{moreLen}} 条链",
         "customLinkText": "搜索代币地址，添加代币",
         "customDescription": "你手动添加的代币将显示在此处",
         "comingSoon": "即将推出...",

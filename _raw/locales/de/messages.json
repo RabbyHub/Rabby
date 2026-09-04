@@ -1481,8 +1481,6 @@
         "noAssets": "Keine Vermögenswerte",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
         "blockDescription": "Von Ihnen blockierte Token werden hier angezeigt",
-        "unfoldChain": "1 Netzwerk aufklappen",
-        "unfoldChainPlural": "{{moreLen}} Netzwerke aufklappen",
         "customLinkText": "Adresse suchen, um benutzerdefinierten Token hinzuzufügen",
         "customDescription": "Von Ihnen hinzugefügte benutzerdefinierte Token werden hier angezeigt",
         "comingSoon": "Demnächst...",

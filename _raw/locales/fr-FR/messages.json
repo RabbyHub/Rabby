@@ -782,8 +782,6 @@
         "tokenButton": {
           "subTitle": "Les tokens de cette liste ne seront pas ajoutés au solde total."
         },
-        "unfoldChain": "Déplier 1 réseau",
-        "unfoldChainPlural": "Déplier {{moreLen}} réseaux",
         "usdValue": "VALEUR EN USD",
         "AddMainnetToken": {
           "tokenAddress": "Adresse du token",

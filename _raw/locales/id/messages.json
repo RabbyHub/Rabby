@@ -1598,8 +1598,6 @@
         "addTokenEntryText": "Token",
         "noTestnetAssets": "Tidak ada Aset Jaringan Kustom",
         "noAssets": "Tidak ada aset",
-        "unfoldChain": "Buka 1 jaringan",
-        "unfoldChainPlural": "Buka {{moreLen}} rantai",
         "searchPlaceholder": "Tokens",
         "blockDescription": "Token yang diblokir oleh Anda akan ditampilkan di sini",
         "blockLinkText": "Cari alamat untuk memblokir token",

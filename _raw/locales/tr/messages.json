@@ -1481,8 +1481,6 @@
         "noAssets": "Varlık Yok",
         "blockLinkText": "Tokeni engellemek için adresi ara",
         "blockDescription": "Tarafınızdan engellenen token burada gösterilecek",
-        "unfoldChain": "1 zinciri aç",
-        "unfoldChainPlural": "{{moreLen}} zinciri aç",
         "customLinkText": "Farklı bir token eklemek için adresi ara",
         "customDescription": "Tarafınızdan özel olarak eklenen token burada gösterilecek",
         "comingSoon": "Yakında...",

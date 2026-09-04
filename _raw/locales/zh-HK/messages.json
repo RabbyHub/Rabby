@@ -431,8 +431,6 @@
         "noAssets": "沒有資產",
         "blockLinkText": "搜尋代幣地址以隱藏代幣",
         "blockDescription": "被你隱藏的代幣將顯示在此處",
-        "unfoldChain": "展開 1 條鏈",
-        "unfoldChainPlural": "展開 {{moreLen}} 條鏈",
         "customLinkText": "搜尋代幣地址，新增代幣",
         "customDescription": "你手動新增的代幣將顯示在此處",
         "comingSoon": "即將推出...",

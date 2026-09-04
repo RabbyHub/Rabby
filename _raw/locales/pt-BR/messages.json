@@ -1481,8 +1481,6 @@
         "noAssets": "Sem ativos",
         "blockLinkText": "Pesquise o endereço para bloquear o token",
         "blockDescription": "Os tokens bloqueados por você serão exibidos aqui",
-        "unfoldChain": "Expandir 1 rede",
-        "unfoldChainPlural": "Expandir {{moreLen}} redes",
         "customLinkText": "Pesquise o endereço para adicionar um token personalizado",
         "customDescription": "Os tokens personalizados adicionados por você serão exibidos aqui",
         "comingSoon": "Em Breve...",
