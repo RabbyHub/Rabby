@@ -1596,6 +1596,8 @@
         "searchPlaceholder": "Tokens",
         "blockLinkText": "Tìm địa chỉ để khóa token",
         "noAssets": "Không có tài sản",
+        "unfoldChain": "Thêm 1 chuỗi",
+        "unfoldChainPlural": "Thêm {{moreLen}} chuỗi",
         "comingSoon": "Sắp ra mắt...",
         "customDescription": "Token tùy chỉnh do bạn thêm sẽ được hiển thị ở đây.",
         "blockDescription": "Token bị chặn bởi bạn sẽ được hiển thị ở đây",

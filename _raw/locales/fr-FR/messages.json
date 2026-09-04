@@ -737,6 +737,8 @@
         "customDescription": "Le token personnalisé que vous avez ajouté sera affiché ici",
         "customLinkText": "Rechercher une adresse pour ajouter un token personnalisé",
         "noAssets": "Aucun actif",
+        "unfoldChain": "1 chaîne supplémentaire",
+        "unfoldChainPlural": "{{moreLen}} chaînes supplémentaires",
         "portfolio": {
           "fractionTips": "Calcul en fonction du prix du token ERC-20 lié.",
           "nftTips": "Calculé à partir du prix plancher reconnu par ce protocole."

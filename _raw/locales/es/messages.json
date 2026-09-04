@@ -1479,6 +1479,8 @@
           "lowValueDefis": "{{count}} activos DeFi de bajo valor"
         },
         "noAssets": "No hay activos",
+        "unfoldChain": "1 cadena más",
+        "unfoldChainPlural": "{{moreLen}} cadenas más",
         "blockLinkText": "Buscar dirección para bloquear token",
         "blockDescription": "Los tokens bloqueados por ti se mostrarán aquí",
         "customLinkText": "Buscar dirección para agregar token personalizado",

@@ -1479,6 +1479,8 @@
           "lowValueDefis": "{{count}} geringwertige DeFi-Vermögenswerte"
         },
         "noAssets": "Keine Vermögenswerte",
+        "unfoldChain": "1 weitere Chain",
+        "unfoldChainPlural": "{{moreLen}} weitere Chains",
         "blockLinkText": "Adresse suchen, um Token zu blockieren",
         "blockDescription": "Von Ihnen blockierte Token werden hier angezeigt",
         "customLinkText": "Adresse suchen, um benutzerdefinierten Token hinzuzufügen",

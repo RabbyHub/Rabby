@@ -1598,6 +1598,8 @@
         "customDescription": "Tokens personalizados adicionados por si serão exibidos aqui.",
         "blockDescription": "Os tokens bloqueados por si serão exibidos aqui.",
         "noAssets": "Nenhum ativo",
+        "unfoldChain": "Mais 1 rede",
+        "unfoldChainPlural": "Mais {{moreLen}} redes",
         "comingSoon": "Em Breve...",
         "searchPlaceholder": "Tokens",
         "addTokenEntryText": "Token",

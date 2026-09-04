@@ -1479,6 +1479,8 @@
           "noLpTokens": "Nenhum Token de Provedor de Liquidez (LP)"
         },
         "noAssets": "Sem ativos",
+        "unfoldChain": "Mais 1 rede",
+        "unfoldChainPlural": "Mais {{moreLen}} redes",
         "blockLinkText": "Pesquise o endereço para bloquear o token",
         "blockDescription": "Os tokens bloqueados por você serão exibidos aqui",
         "customLinkText": "Pesquise o endereço para adicionar um token personalizado",

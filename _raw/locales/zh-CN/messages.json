@@ -429,6 +429,8 @@
           "noLpTokens": "没有流动性提供者（LP）代币"
         },
         "noAssets": "没有资产",
+        "unfoldChain": "还有 1 条链",
+        "unfoldChainPlural": "还有 {{moreLen}} 条链",
         "blockLinkText": "搜索代币地址以隐藏代币",
         "blockDescription": "被你隐藏的代币将显示在此处",
         "customLinkText": "搜索代币地址，添加代币",

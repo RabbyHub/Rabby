@@ -1482,6 +1482,8 @@
           "lowValueDefis": "{{count}} низьковартісних DeFi активів"
         },
         "noAssets": "Немає активів",
+        "unfoldChain": "Ще 1 мережа",
+        "unfoldChainPlural": "Ще мереж: {{moreLen}}",
         "blockLinkText": "Адреса для пошуку токена блоку",
         "blockDescription": "Тут буде показано заблокований вами токен",
         "customLinkText": "Шукайте адресу для додавання кастомного токена",
