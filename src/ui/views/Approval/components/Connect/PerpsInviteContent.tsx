@@ -21,9 +21,11 @@ import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import { FallbackSiteLogo } from 'ui/component';
-import { useApproval, useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { WaitingSignMessageComponent } from '../map';
 import eventBus from '@/eventBus';
+import { asInternalSignRequestId } from '@/utils/signingTypes';
+import { v4 as uuidv4 } from 'uuid';
 
 interface ConnectProps {
   params: any;
@@ -81,7 +83,6 @@ export const PerpsInviteContent = (props: ConnectProps) => {
     params: { icon, origin, name, $ctx },
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
 
@@ -131,6 +132,8 @@ export const PerpsInviteContent = (props: ConnectProps) => {
           action: resp?.action,
           nonce: resp?.nonce || 0,
           typedData: resp?.typedData,
+          internalSignRequestId: asInternalSignRequestId(uuidv4()),
+          account: selectedAccount,
         });
         eventBus.emit(EVENTS.RELOAD_APPROVAL);
         await promise;
@@ -163,23 +166,50 @@ export const PerpsInviteContent = (props: ConnectProps) => {
         signature = res[0];
         typedDataSignatureStore.close();
       } else {
-        const promise = wallet.sendRequest<string>({
-          method: 'eth_signTypedData_v4',
-          params: [selectedAccount.address, JSON.stringify(resp?.typedData)],
-        });
+        const internalSignRequestId = asInternalSignRequestId(uuidv4());
+        const promise = wallet.sendRequest<string>(
+          {
+            method: 'eth_signTypedData_v4',
+            params: [selectedAccount.address, JSON.stringify(resp?.typedData)],
+          },
+          {
+            account: selectedAccount,
+            internalSignRequestId,
+          }
+        );
 
         if (WaitingSignMessageComponent[selectedAccount.type]) {
-          resolveApproval({
-            uiRequestComponent:
-              WaitingSignMessageComponent[selectedAccount?.type],
-            $account: selectedAccount,
-            type: selectedAccount.type,
-            address: selectedAccount.address,
-            extra: {
-              brandName: selectedAccount.brandName,
-              signTextMethod: 'eth_signTypedData_v4',
+          let target;
+          try {
+            target = await Promise.race([
+              wallet.waitForApproval(internalSignRequestId),
+              promise.then(
+                () => {
+                  throw new Error('Signing request finished without approval');
+                },
+                (error) => Promise.reject(error)
+              ),
+            ]);
+          } finally {
+            wallet.cancelApprovalWaiter(internalSignRequestId);
+          }
+          const result = await wallet.resolveApprovalFor({
+            approval: target,
+            data: {
+              uiRequestComponent:
+                WaitingSignMessageComponent[selectedAccount.type],
+              $account: selectedAccount,
+              type: selectedAccount.type,
+              address: selectedAccount.address,
+              extra: {
+                brandName: selectedAccount.brandName,
+                signTextMethod: 'eth_signTypedData_v4',
+              },
             },
           });
+          if (!result.accepted) {
+            throw new Error('Signing request is no longer current');
+          }
         }
 
         signature = await promise;

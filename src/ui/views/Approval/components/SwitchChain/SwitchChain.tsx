@@ -10,7 +10,8 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useApproval, useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
+import { useApprovalActions } from '@/ui/approval/actions';
 import { SwitchEthereumChainParams } from './type';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -27,7 +28,11 @@ interface SwitchChainProps {
 
 const SwitchChain = ({ params }: { params: SwitchChainProps }) => {
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+    isBound,
+  } = useApprovalActions();
   const { t } = useTranslation();
 
   const { data, session } = params;
@@ -75,6 +80,8 @@ const SwitchChain = ({ params }: { params: SwitchChainProps }) => {
 
   const { loading, runAsync: runAddChain } = useRequest(
     async () => {
+      if (!(await isBound())) return;
+
       await form.validateFields();
       const values = form.getFieldsValue();
 

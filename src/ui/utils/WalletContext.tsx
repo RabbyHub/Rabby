@@ -48,15 +48,21 @@ const useCommonPopupViewState = () => {
   const [data, setData] = useState<any>();
   const [apps, setApps] = useState<AppChain[]>();
   const [popupProps, setPopupProps] = useState<PopupProps | undefined>();
+  const [approvalId, setApprovalId] = useState<string>();
 
-  const activePopup = (name: CommonPopupComponentName) => {
+  const activePopup = (
+    name: CommonPopupComponentName,
+    nextApprovalId?: string
+  ) => {
     setComponentName(name);
     setVisible(true);
+    setApprovalId(nextApprovalId);
   };
 
   const closePopup = () => {
     setVisible(false);
     setComponentName(undefined);
+    setApprovalId(undefined);
   };
 
   const activeApprovalPopup = () => {
@@ -86,6 +92,7 @@ const useCommonPopupViewState = () => {
     setData,
     popupProps,
     setPopupProps,
+    approvalId,
     apps,
     setApps,
   };

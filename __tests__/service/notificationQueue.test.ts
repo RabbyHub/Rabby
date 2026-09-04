@@ -19,6 +19,10 @@ jest.mock('consts', () => ({
   IS_CHROME: false,
   KEYRING_CATEGORY: {},
   IS_WINDOWS: false,
+  EVENTS: {
+    SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
+    SIGN_WAITING_CANCELLED: 'SIGN_WAITING_CANCELLED',
+  },
 }));
 
 jest.mock('background/webapi', () => ({
@@ -59,6 +63,8 @@ jest.mock('@sentry/browser', () => ({
 }));
 
 import notificationService from '@/background/service/notification';
+import { signingFlowService } from '@/background/service/signingFlow';
+import { toSigningFlowRef } from '@/utils/signingTypes';
 
 const signTxRequest = (signTxPreparationId?: string) => ({
   approvalComponent: 'SignTx' as const,
@@ -74,6 +80,7 @@ describe('notificationService SignTx queueing', () => {
   beforeEach(() => {
     notificationService.approvals = [];
     notificationService.currentApproval = null;
+    notificationService.invalidateAllSigningFlows();
     notificationService.notifiWindowId = null;
     notificationService.isLocked = false;
     mockOpenNotification.mockClear();
@@ -107,6 +114,21 @@ describe('notificationService SignTx queueing', () => {
     expect(secondRequest.params.signTxPreparationId).toBeUndefined();
     expect(notificationService.approvals).toHaveLength(2);
     expect(secondOnCurrent).not.toHaveBeenCalled();
+  });
+
+  test('publishes the initial signing attempt on the approval', () => {
+    const flowId = 'flow-1';
+
+    void notificationService.requestApproval(signTxRequest(), undefined, {
+      signing: { flow: toSigningFlowRef(flowId) },
+    });
+
+    const approval = notificationService.getCurrentApproval();
+    expect(approval?.data.signing?.flow.flowId).toBe(flowId);
+    expect(approval?.data.signing?.attempt.attemptId).toBe(
+      signingFlowService.getActiveAttempt(toSigningFlowRef(flowId))?.attemptId
+    );
+    expect(approval?.data.signing?.attempt.attemptId).toBeTruthy();
   });
 
   test('onCurrent failure does not prevent opening the notification', () => {

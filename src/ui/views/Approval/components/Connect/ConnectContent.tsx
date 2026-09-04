@@ -20,7 +20,7 @@ import styled from 'styled-components';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { ChainSelector, FallbackSiteLogo, Spin } from 'ui/component';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import { useCommonPopupView, useWallet } from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import RuleResult from './RuleResult';
@@ -31,6 +31,8 @@ import { useRabbyGetter, useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
 import { useMemoizedFn } from 'ahooks';
 import { checkPerpsReference } from '@/ui/views/Perps/utils';
+import { useApprovalScope } from '@/ui/approval/context';
+import { useApprovalActions } from '@/ui/approval/actions';
 
 interface ConnectProps {
   params: any;
@@ -222,7 +224,11 @@ export const ConnectContent = (
   }>();
   const { showChainsModal = false } = state ?? {};
   const [showModal] = useState(showChainsModal);
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+  } = useApprovalActions();
+  const approvalScope = useApprovalScope();
   const { t } = useTranslation();
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
@@ -610,7 +616,7 @@ export const ConnectContent = (
         defaultChain,
         defaultAccount: selectedAccount,
       },
-      stay
+      { stay }
     );
 
     if (stay) {
@@ -666,7 +672,7 @@ export const ConnectContent = (
       onCancel: handleCancel,
       displayBlockedRequestApproval,
     });
-    activePopup('CancelConnect');
+    activePopup('CancelConnect', approvalScope.approval.approvalId);
   };
 
   return (
