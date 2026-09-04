@@ -370,6 +370,27 @@ export const formatAmount = (amount: string | number, decimals = 4) => {
   return formatNumber(amount, decimals);
 };
 
+const COMPACT_TOKEN_AMOUNT_THRESHOLD = new BigNumber('1e14');
+const SCIENTIFIC_TOKEN_AMOUNT_THRESHOLD = new BigNumber('1e24');
+const SCIENTIFIC_TOKEN_AMOUNT_DECIMALS = 4;
+
+export const formatLargeTokenAmount = (amount: number | string) => {
+  const bn = new BigNumber(amount);
+
+  if (
+    bn.isFinite() &&
+    bn.absoluteValue().gte(SCIENTIFIC_TOKEN_AMOUNT_THRESHOLD)
+  ) {
+    return bn.toExponential(SCIENTIFIC_TOKEN_AMOUNT_DECIMALS);
+  }
+
+  if (bn.isFinite() && bn.absoluteValue().gte(COMPACT_TOKEN_AMOUNT_THRESHOLD)) {
+    return formatAmount(amount);
+  }
+
+  return formatTokenAmount(amount);
+};
+
 export const calcPercent = (
   pre?: number,
   next?: number,

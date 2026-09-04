@@ -11,7 +11,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TokenRender } from '../../Swap/Component/TokenRender';
 import {
-  formatTokenAmount,
+  formatLargeTokenAmount,
   formatUsdValue,
   isSameAddress,
   useWallet,
@@ -520,7 +520,8 @@ export const BridgeToken = ({
               <RcIconWalletCC viewBox="0 0 16 16" className="w-16 h-16" />
               <span className={clsx(valueLoading && 'opacity-50')}>
                 {token
-                  ? formatTokenAmount(tokenAmountBn(token).toString(10)) || '0'
+                  ? formatLargeTokenAmount(tokenAmountBn(token).toString(10)) ||
+                    '0'
                   : 0}
               </span>
             </div>

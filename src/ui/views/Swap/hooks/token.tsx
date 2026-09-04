@@ -69,7 +69,7 @@ const isTokenOnChain = (token: TokenItem | undefined, chain: CHAINS_ENUM) => {
   return !!token && !!chainInfo && token.chain === chainInfo.serverId;
 };
 
-const getDexQuoteScore = ({
+export const getDexQuoteScore = ({
   quote,
   receiveToken,
   inSufficient,
@@ -82,16 +82,17 @@ const getDexQuoteScore = ({
     return new BigNumber(Number.MIN_SAFE_INTEGER);
   }
 
-  const price = receiveToken.price ? receiveToken.price : 1;
-  const receiveUsdValue = new BigNumber(
+  const receiveAmount = new BigNumber(
     getDexQuoteReceiveAmount(quote, receiveToken)
-  ).times(price);
+  );
 
-  if (inSufficient) {
-    return receiveUsdValue;
+  if (inSufficient || !receiveToken.price) {
+    return receiveAmount;
   }
 
-  return receiveUsdValue.minus(quote.preExecResult?.gasUsdValue || 0);
+  return receiveAmount
+    .times(receiveToken.price)
+    .minus(quote.preExecResult?.gasUsdValue || 0);
 };
 
 const useTokenInfo = ({

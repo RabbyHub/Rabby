@@ -14,6 +14,7 @@ import stats from '@/stats';
 import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
 import { BigNumber } from 'bignumber.js';
 import { calcAmountFromPercentage } from '../utils';
+import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
 import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
 import {
@@ -160,7 +161,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     return { ...info, max: maxSellTradeSize || '0' };
   }, [calcDirectionInfo, sellTradeSize, maxSellTradeSize]);
 
-  // Shared validation (direction-agnostic)
+  // Shared validation (direction-agnostic; the per-side max gate lives at the buttons)
   const validation = useMemo(() => {
     const size = Number(positionSize.amount) || 0;
     const notionalNum = size * midPrice;
@@ -197,22 +198,6 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
       };
     }
 
-    // Max trade size - use max of both directions (shared check)
-    const effectiveMaxTradeSize = reduceOnly
-      ? Number(
-          (currentPosition?.side === 'Long'
-            ? maxSellTradeSize
-            : maxBuyTradeSize) || 0
-        )
-      : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
-
-    if (effectiveMaxTradeSize > 0 && size > effectiveMaxTradeSize) {
-      return {
-        isValid: false,
-        error: t('page.perpsPro.tradingPanel.insufficientBalance'),
-      };
-    }
-
     const maxUsdValue = Number(currentMarketData?.maxUsdValueSize || 1000000);
     if (notionalNum > maxUsdValue) {
       return {
@@ -230,13 +215,15 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     midPrice,
     allMinsDuration,
     sizePerSuborder,
-    maxBuyTradeSize,
-    maxSellTradeSize,
-    reduceOnly,
-    currentPosition,
     currentMarketData,
     t,
   ]);
+
+  const checkDirectionMax = useDirectionMaxGate({
+    positionSize,
+    maxBuyTradeSize,
+    maxSellTradeSize,
+  });
 
   const {
     handleOpenTWAPOrder,
@@ -400,6 +387,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
   );
 
   const handleOrderClick = useMemoizedFn((isBuy: boolean) => {
+    if (!checkDirectionMax(isBuy)) return;
     const order = buildOrder(isBuy);
     // The submit request reports its own failures, so drop the rejection here.
     Promise.resolve(

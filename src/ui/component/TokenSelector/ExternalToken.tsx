@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { UnknownTag } from '@/ui/component';
 import TokenWithChain from '../TokenWithChain';
 import {
-  formatPrice,
-  formatTokenAmount,
   formatTVL,
+  formatLargeTokenAmount,
+  formatPrice,
   formatUsdValue,
 } from '@/ui/utils';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
@@ -97,7 +97,7 @@ const ExternalTokenRow = memo(
                 <ExchangeLogos cexIds={cexIds} />
               </div>
               <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-                {formatTokenAmount(data.amount || 0)}
+                {formatLargeTokenAmount(data.amount || 0)}
               </span>
             </div>
           </div>
