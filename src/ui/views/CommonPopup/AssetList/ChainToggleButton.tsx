@@ -8,7 +8,7 @@ export const ChainToggleButton = ({
   onClick,
   className,
 }: {
-  label: string;
+  label?: string;
   expanded?: boolean;
   onClick(): void;
   className?: string;
@@ -23,7 +23,7 @@ export const ChainToggleButton = ({
       )}
       onClick={onClick}
     >
-      <span className="whitespace-nowrap">{label}</span>
+      {!!label && <span className="whitespace-nowrap">{label}</span>}
       <RcIconArrowUpCC
         className={clsx('w-14 h-14 shrink-0', {
           'rotate-180': !expanded,

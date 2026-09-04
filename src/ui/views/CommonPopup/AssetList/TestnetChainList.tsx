@@ -5,6 +5,7 @@ import { sortBy } from 'lodash';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChainToggleButton } from './ChainToggleButton';
+import { useExpandableList } from './useExpandableList';
 
 const COUNT = 5;
 
@@ -17,7 +18,7 @@ export const TestnetChainList = ({
   const chainList = useRabbySelector((store) =>
     sortBy(store.chains.testnetList, (item) => item.name)
   );
-  const [showMore, setShowMore] = React.useState(false);
+  const { showMore, setShowMore, expand, collapse, rootRef } = useExpandableList();
   const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
   const { t } = useTranslation();
 
@@ -59,6 +60,7 @@ export const TestnetChainList = ({
 
   return (
     <div
+      ref={rootRef}
       className={clsx(
         'bg-r-neutral-card-1 rounded-[8px] p-[12px]',
         'flex gap-12 flex-wrap'
@@ -92,9 +94,7 @@ export const TestnetChainList = ({
         <ChainToggleButton
           expanded
           label={t('global.collapse')}
-          onClick={() => {
-            setShowMore(false);
-          }}
+          onClick={collapse}
         />
       ) : moreLen ? (
         <ChainToggleButton
@@ -103,9 +103,7 @@ export const TestnetChainList = ({
               ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
               : t('page.dashboard.assets.unfoldChain')
           }
-          onClick={() => {
-            setShowMore(true);
-          }}
+          onClick={expand}
         />
       ) : null}
     </div>
