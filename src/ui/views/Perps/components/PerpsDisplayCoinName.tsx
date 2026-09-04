@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
 import { SPOT_STABLE_COIN_NAME } from '../constants';
 

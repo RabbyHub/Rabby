@@ -834,6 +834,40 @@ describe('LedgerBridgeKeyring makeApp', () => {
     }
   });
 
+  it('keeps the device action successful when an optional diagnostic field throws', async () => {
+    const keyring = new LedgerBridgeKeyring();
+    const address = '0x0000000000000000000000000000000000000001';
+    const cancel = jest.fn();
+    const state = {
+      status: 'completed',
+      output: {
+        address,
+        publicKey: 'public-key',
+      },
+    } as any;
+    let shouldThrow = true;
+    Object.defineProperty(state, 'intermediateValue', {
+      get: () => {
+        if (shouldThrow) {
+          shouldThrow = false;
+          throw new Error('diagnostic read failed');
+        }
+        return undefined;
+      },
+    });
+    mockGetAddress.mockReturnValueOnce({
+      observable: of(state),
+      cancel,
+    });
+
+    try {
+      await expect(keyring.unlock("m/44'/60'/0'/0/0")).resolves.toBe(address);
+      expect(cancel).not.toHaveBeenCalled();
+    } finally {
+      await keyring.cleanUp();
+    }
+  });
+
   it('rejects incomplete typed data before touching the device', async () => {
     const keyring = new LedgerBridgeKeyring();
 

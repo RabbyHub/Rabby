@@ -14,7 +14,7 @@ import cx from 'clsx';
 import AddressItem from './AddressItem';
 
 import './index.less';
-import type { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import type { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 import ThemeIcon from '../ThemeMode/ThemeIcon';

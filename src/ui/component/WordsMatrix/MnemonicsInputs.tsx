@@ -20,6 +20,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
 
 import { ReactComponent as RcIconArrowCC } from '@/ui/assets/import/arrow-cc.svg';
+import { UI_TYPE } from '@/constant/ui';
 
 const ITEM_H = 52;
 const ROW_COUNT = 3;
@@ -572,7 +573,12 @@ function MnemonicsInputs({
           onVisibleChange={handleDropdownVisibleChange}
           getPopupContainer={() => dropdownTriggerRef.current || document.body}
           overlay={
-            <Menu className="mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1">
+            <Menu
+              className={clsx(
+                'mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1',
+                UI_TYPE.isPop && 'max-h-[334px] overflow-y-auto'
+              )}
+            >
               {(showAllMenuOptions
                 ? [...DISPLAYED_MNEMONICS_COUNTS, ...MORE_MNEMONICS_COUNTS]
                 : DISPLAYED_MNEMONICS_COUNTS

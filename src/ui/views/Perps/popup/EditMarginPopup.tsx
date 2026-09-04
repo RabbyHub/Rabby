@@ -17,7 +17,7 @@ import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { AssetPriceInfo } from '../components/AssetPriceInfo';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { MarginInput } from '../components/MarginInput';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { PERPS_MARGIN_SIGNIFICANT_DIGITS } from '../constants';
 import { MarginEditInput } from '../components/MarginEditInput';
 import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import clsx from 'clsx';
 import { AssetPosition, OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { TokenImg } from './TokenImg';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
@@ -125,7 +125,7 @@ export const PositionItem: React.FC<{
               className="text-15 ml-4 font-medium"
             />
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 relative">
             <span
               className={clsx(
                 'text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px]',

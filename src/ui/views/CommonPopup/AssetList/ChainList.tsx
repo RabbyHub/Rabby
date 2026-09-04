@@ -1,11 +1,13 @@
 import { useCommonPopupView } from '@/ui/utils';
 import clsx from 'clsx';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ChainItem, ChainItemType, sortChainWithValueDesc } from './ChainItem';
 import { DisplayChainWithWhiteLogo } from '@/ui/hooks/useCurrentBalance';
 import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { formatAppChain } from '@/ui/hooks/useAppChain';
+import { ChainToggleButton } from './ChainToggleButton';
+import { useExpandableList } from './useExpandableList';
 
 function shouldChainRevealed(chainItem: ChainItemType) {
   return chainItem.percent >= 5 || chainItem.usd_value >= 1000;
@@ -26,7 +28,13 @@ export const ChainList = ({
     ? (data?.testnetBalance as number) ?? 0
     : (data?.balance as number) ?? 0;
   const balanceLoading = (data?.balanceLoading as boolean) ?? false;
-  const [showMore, setShowMore] = React.useState(false);
+  const {
+    showMore,
+    setShowMore,
+    expand,
+    collapse,
+    rootRef,
+  } = useExpandableList();
   const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
   const { t } = useTranslation();
 
@@ -97,6 +105,7 @@ export const ChainList = ({
 
   return (
     <div
+      ref={rootRef}
       className={clsx(
         'bg-r-neutral-card-1 rounded-[8px] p-[12px]',
         'flex gap-12 flex-wrap'
@@ -113,32 +122,31 @@ export const ChainList = ({
         />
       ))}
       {showMore ? (
-        chainsToHide.map((item) => (
-          <ChainItem
-            onClick={() => {
-              handleSelectChain(item.id);
-            }}
-            inactive={activeChainId !== null && activeChainId !== item.id}
-            key={item.id}
-            item={item}
-          />
-        ))
+        <>
+          {chainsToHide.map((item) => (
+            <ChainItem
+              onClick={() => {
+                handleSelectChain(item.id);
+              }}
+              inactive={activeChainId !== null && activeChainId !== item.id}
+              key={item.id}
+              item={item}
+            />
+          ))}
+          <ChainToggleButton expanded onClick={collapse} />
+        </>
       ) : (
-        <div
-          className={clsx(
-            'cursor-pointer text-12 underline text-r-neutral-foot leading-[20px]',
-            {
-              hidden: moreLen === 0,
-            }
-          )}
-          onClick={() => {
-            setShowMore(true);
-          }}
-        >
-          {moreLen > 1
-            ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
-            : t('page.dashboard.assets.unfoldChain')}
-        </div>
+        <ChainToggleButton
+          className={clsx({
+            hidden: moreLen === 0,
+          })}
+          label={
+            moreLen > 1
+              ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
+              : t('page.dashboard.assets.unfoldChain')
+          }
+          onClick={expand}
+        />
       )}
     </div>
   );

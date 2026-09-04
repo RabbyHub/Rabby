@@ -2,7 +2,7 @@ import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { groupBy, Dictionary, omit } from 'lodash';
 import { nanoid } from 'nanoid';
 import React from 'react';
-import { IDisplayedAccountWithBalance } from '../models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { sortAccountsByBalance } from '../utils/account';
 import { getWalletScore } from '../views/ManageAddress/hooks';

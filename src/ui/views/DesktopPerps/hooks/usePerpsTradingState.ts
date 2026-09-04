@@ -14,7 +14,7 @@ import {
 } from '../../Perps/utils';
 import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
-import { DEFAULT_TPSL_CONFIG } from '@/ui/models/perps';
+import { DEFAULT_TPSL_CONFIG } from '@/ui/state/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { usePerpsAccount } from '../../Perps/hooks/usePerpsAccount';
 import { calcAmountFromPercentage } from '../components/TradingPanel/utils';
@@ -303,6 +303,10 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
         maxLeverage,
         pxDecimals,
         side: direction === 'Long' ? 'buy' : 'sell',
+        // The pro panel keeps quoting while the typed size exceeds what the
+        // balance can fund (submission is blocked elsewhere), so price the
+        // order as if the margin were there instead of showing `-`.
+        assumeSufficientMargin: true,
       });
       if (!projected) {
         return { liqPrice: '-', liqPriceNum: null, cost };

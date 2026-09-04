@@ -76,7 +76,6 @@ import { GasAccountServiceStore } from './service/gasAccount';
 import { initializeOpenapiRuntime } from './service/openapi';
 import { syncChainService } from './service/syncChain';
 import { userGuideService } from './service/userGuide';
-import lendingService from './service/lending';
 import perpsLive from './service/perpsLive';
 import { PERPS_LIVE_PORT_NAME } from '@/utils/message/perpsLive';
 import {
@@ -190,7 +189,6 @@ async function restoreAppState() {
   await syncChainService.init();
   await perpsService.init();
   await transactionsService.init();
-  await lendingService.init();
   await feedbackService.init();
 
   // WS is lazy — subscribes only after the first content-script port attaches

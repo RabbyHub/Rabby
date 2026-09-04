@@ -16,7 +16,7 @@ import { ReactComponent as RcIconStar } from '@/ui/assets/perps/icon-star.svg';
 import { ReactComponent as RcIconStarFilled } from '@/ui/assets/perps/icon-star-filled.svg';
 import { ReactComponent as RcIconSearch } from '@/ui/assets/perps/IconSearchCC.svg';
 import { TokenImg } from '@/ui/views/Perps/components/TokenImg';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { formatPercent } from '@/ui/views/Perps/utils';
 import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
 import BigNumber from 'bignumber.js';

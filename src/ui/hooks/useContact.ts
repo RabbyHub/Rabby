@@ -9,10 +9,7 @@ export function useContactAccounts() {
   const accountsList = useRabbySelector(
     (state) => state.accountToDisplay.accountsList
   );
-  const contactsByAddr = useContactBookStore((state) => state.contactsByAddr);
-  const getContactBookAsync = useContactBookStore(
-    (state) => state.getContactBookAsync
-  );
+  const contactBook = useContactBookStore();
 
   const isAddrOnContactBook = useCallback(
     (address?: string) => {
@@ -20,24 +17,23 @@ export function useContactAccounts() {
       const laddr = address.toLowerCase();
 
       return (
-        !!contactsByAddr[laddr]?.isAlias &&
+        !!contactBook[laddr]?.isAlias &&
         accountsList.find((account) => isSameAddress(account.address, laddr))
       );
     },
-    [accountsList, contactsByAddr]
+    [accountsList, contactBook]
   );
 
   const getAddressNote = useCallback(
     (addr) => {
-      return contactsByAddr[addr.toLowerCase()]?.name || '';
+      return contactBook[addr.toLowerCase()]?.name || '';
     },
-    [contactsByAddr]
+    [contactBook]
   );
 
   const fetchContactAccounts = useCallback(() => {
-    getContactBookAsync();
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-  }, [dispatch.accountToDisplay, getContactBookAsync]);
+  }, [dispatch.accountToDisplay]);
 
   return {
     getAddressNote,

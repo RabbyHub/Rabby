@@ -24,7 +24,7 @@ import { useBridgeSlippage } from './slippage';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import eventBus from '@/eventBus';
-import { bridgeQuoteScore } from '../Component/BridgeQuoteItem';
+import { bridgeQuoteScore } from '../utils/bridgeQuote';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getRabbyFeeRate } from '@/ui/views/Swap/hooks/fee';

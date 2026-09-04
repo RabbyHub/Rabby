@@ -1,6 +1,6 @@
 import IconHyperliquid from '@/ui/assets/perps/icon-hyperliquid.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import {
   formatUsdValue,
   splitNumberByStep,

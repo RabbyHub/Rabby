@@ -6,16 +6,13 @@
  *
  * @desc biz hooks based on store (see ./store.ts),
  *
- * @warning all hooks ONLY valid if the component connected
- * to the store by `connectStore` API in ./store.ts
  */
-import { useEffect, useState } from 'react';
-import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from './store';
+import { useEffect } from 'react';
+import { selectIsShowMnemonic, useAccountStore } from './state/account';
 
 export function useAccount() {
-  const account = useRabbySelector((state) => state.account.currentAccount);
-  const dispatch = useRabbyDispatch();
-  const setAccount = dispatch.account.setCurrentAccount;
+  const account = useAccountStore((state) => state.currentAccount);
+  const setAccount = useAccountStore((state) => state.setCurrentAccount);
   return [account, setAccount] as const;
 }
 
@@ -23,14 +20,14 @@ export function useAccount() {
  * @description check if current wallet should display about tip mnemonic
  */
 export function useIsShowMnemonic() {
-  const dispatch = useRabbyDispatch();
-  const isShowMnemonic = useRabbyGetter<boolean>(
-    (s) => s.account.isShowMnemonic
+  const getTypedMnemonicAccountsAsync = useAccountStore(
+    (state) => state.getTypedMnemonicAccountsAsync
   );
+  const isShowMnemonic = useAccountStore(selectIsShowMnemonic);
 
   useEffect(() => {
-    dispatch.account.getTypedMnemonicAccountsAsync();
-  }, []);
+    void getTypedMnemonicAccountsAsync();
+  }, [getTypedMnemonicAccountsAsync]);
 
   return isShowMnemonic;
 }

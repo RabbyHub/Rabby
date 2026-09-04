@@ -4,7 +4,7 @@ import { ReactComponent as RcIconChecked } from '@/ui/assets/check-2.svg';
 import { AddressViewer, Item } from '@/ui/component';
 import { CopyChecked } from '@/ui/component/CopyChecked';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import {
   formatUsdValue,
@@ -321,7 +321,7 @@ function AccountItem(props: {
       );
     }
     return (
-      <div className="flex flex-col gap-[4px] items-end ml-auto">
+      <div className="flex flex-col gap-[4px] items-end ml-auto flex-shrink-0">
         <div className="text-[13px] leading-[16px] text-r-neutral-body font-medium">
           {info ? formatUsdValue(Number(info?.withdrawable || 0)) : ''}
         </div>
@@ -360,16 +360,16 @@ function AccountItem(props: {
         />
       }
     >
-      <div className="ml-10">
+      <div className="ml-10 flex-1 min-w-0">
         <div className="flex items-center gap-[4px]">
           <div
             className={clsx(
-              'text-r-neutral-title1 font-medium leading-[16px] text-[13px]'
+              'text-r-neutral-title1 font-medium leading-[16px] text-[13px] truncate'
             )}
           >
             {alias}
           </div>
-          <div>
+          <div className="flex-shrink-0">
             {isCurrent ? (
               <RcIconChecked className="text-r-green-default w-[16px] h-[16px]" />
             ) : isLogin ? null : isLastUsed ? (

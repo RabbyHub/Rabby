@@ -4,7 +4,7 @@ import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history-cc.svg
 import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconSpin.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/perps/IconYellowArrow.svg';
-import { AccountHistoryItem } from '@/ui/models/perps';
+import { AccountHistoryItem } from '@/ui/state/perps';
 import { useWallet } from '@/ui/utils';
 
 interface PerpsHeaderRightProps {

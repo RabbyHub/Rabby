@@ -30,6 +30,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconContactCC } from '@/ui/assets/contact-cc.svg';
 import { useExchangeStore } from '@/ui/state/exchange';
+import { getNormalizedAddressInputAfterPaste } from '@/ui/utils/addressInput';
 
 import './styles.less';
 
@@ -185,6 +186,23 @@ const WhitelistInput = () => {
       });
     },
     [detectAddress, wallet]
+  );
+
+  const handlePasteAddress = useCallback(
+    (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+      const normalizedValue = getNormalizedAddressInputAfterPaste({
+        value: event.currentTarget.value,
+        pastedText: event.clipboardData.getData('text'),
+        selectionStart: event.currentTarget.selectionStart,
+        selectionEnd: event.currentTarget.selectionEnd,
+      });
+      if (normalizedValue === null) {
+        return;
+      }
+      event.preventDefault();
+      handleInputChangeAddress(normalizedValue);
+    },
+    [handleInputChangeAddress]
   );
 
   const confirmToWhitelist = async (address: string) => {
@@ -349,6 +367,7 @@ const WhitelistInput = () => {
                 onBlur={() => setIsFocusAddress(false)}
                 value={inputAddress}
                 onChange={(v) => handleInputChangeAddress(v.target.value)}
+                onPaste={handlePasteAddress}
                 className="rounded-[12px] leading-normal"
               />
               <div className="absolute w-[20px] h-[20px] right-[16px] bottom-[16px]">

@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { calculatePnL } from '../../TradingPanel/utils';
 import { validatePriceInput, formatTpOrSlPrice } from '@/ui/views/Perps/utils';
 import { validateAmountInput } from '../../TradingPanel/utils';
