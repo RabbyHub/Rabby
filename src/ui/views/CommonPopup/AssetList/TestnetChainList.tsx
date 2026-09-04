@@ -1,10 +1,10 @@
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useRabbySelector } from '@/ui/store';
 import { useCommonPopupView } from '@/ui/utils';
 import clsx from 'clsx';
 import { sortBy } from 'lodash';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChainToggleButton } from './ChainToggleButton';
 
 const COUNT = 5;
 
@@ -13,7 +13,7 @@ export const TestnetChainList = ({
 }: {
   onChange(id: string | null): void;
 }) => {
-  const { data, visible } = useCommonPopupView();
+  const { visible } = useCommonPopupView();
   const chainList = useRabbySelector((store) =>
     sortBy(store.chains.testnetList, (item) => item.name)
   );
@@ -88,22 +88,25 @@ export const TestnetChainList = ({
           </div>
         );
       })}
-      {!showMore && moreLen ? (
-        <div
-          className={clsx(
-            'cursor-pointer text-12 underline text-r-neutral-foot leading-[20px]',
-            {
-              hidden: moreLen === 0,
-            }
-          )}
+      {showMore ? (
+        <ChainToggleButton
+          expanded
+          label={t('global.collapse')}
+          onClick={() => {
+            setShowMore(false);
+          }}
+        />
+      ) : moreLen ? (
+        <ChainToggleButton
+          label={
+            moreLen > 1
+              ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
+              : t('page.dashboard.assets.unfoldChain')
+          }
           onClick={() => {
             setShowMore(true);
           }}
-        >
-          {moreLen > 1
-            ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
-            : t('page.dashboard.assets.unfoldChain')}
-        </div>
+        />
       ) : null}
     </div>
   );
