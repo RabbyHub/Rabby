@@ -1,35 +1,4 @@
 {
-  "node_modules/@aave/contract-helpers/dist/esm/commons/ipfs.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r",
-      "console": "r"
-    }
-  },
-  "node_modules/@aave/contract-helpers/dist/esm/commons/utils.js": {
-    "enable": true,
-    "global": {
-      "expect": "r"
-    }
-  },
-  "node_modules/@aave/contract-helpers/dist/esm/commons/validators/methodValidators.js": {
-    "enable": true,
-    "global": {
-      "console": "r"
-    }
-  },
-  "node_modules/@aave/contract-helpers/dist/esm/commons/validators/validations.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    }
-  },
-  "node_modules/@aave/contract-helpers/dist/esm/erc20-2612/index.js": {
-    "enable": true,
-    "global": {
-      "console": "r"
-    }
-  },
   "node_modules/@ant-design/colors/dist/index.esm.js": {
     "enable": true,
     "require": [
@@ -20418,8 +20387,8 @@
     "require": [
       "node_modules/@metamask/eth-block-tracker/dist/logging-utils.js",
       "node_modules/@metamask/eth-block-tracker/node_modules/@metamask/safe-event-emitter/dist/cjs/index.js",
-      "node_modules/@metamask/eth-block-tracker/node_modules/pify/index.js",
-      "node_modules/json-rpc-random-id/index.js"
+      "node_modules/json-rpc-random-id/index.js",
+      "node_modules/pify/index.js"
     ]
   },
   "node_modules/@metamask/eth-block-tracker/dist/SubscribeBlockTracker.js": {
@@ -20952,8 +20921,8 @@
     "require": [
       "node_modules/@metamask/eth-json-rpc-filters/base-filter-history.js",
       "node_modules/@metamask/eth-json-rpc-filters/hexUtils.js",
-      "node_modules/@metamask/eth-json-rpc-filters/node_modules/pify/index.js",
-      "node_modules/@metamask/eth-query/index.js"
+      "node_modules/@metamask/eth-query/index.js",
+      "node_modules/pify/index.js"
     ]
   },
   "node_modules/@metamask/eth-json-rpc-filters/node_modules/@metamask/safe-event-emitter/dist/cjs/index.js": {
@@ -41127,25 +41096,6 @@
       "innerHeight": "r",
       "innerWidth": "r"
     }
-  },
-  "node_modules/@rematch/core/dist/core.esm.js": {
-    "enable": true,
-    "global": {
-      "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/redux/es/redux.js"
-    ]
-  },
-  "node_modules/@rematch/select/dist/select.esm.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/reselect/es/index.js"
-    ]
   },
   "node_modules/@safe-global/api-kit/dist/esm/index.mjs": {
     "enable": true,
@@ -61833,6 +61783,234 @@
       "node_modules/@sinclair/typebox/build/cjs/value/hash/hash.js"
     ]
   },
+  "node_modules/@tanstack/query-core/build/modern/environmentManager.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/focusManager.js": {
+    "enable": true,
+    "global": {
+      "addEventListener": "r",
+      "document": "r",
+      "removeEventListener": "r"
+    },
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/subscribable.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/hydration.js": {
+    "enable": true,
+    "global": {
+      "console": "r",
+      "process": "r"
+    }
+  },
+  "node_modules/@tanstack/query-core/build/modern/infiniteQueryBehavior.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/mutation.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/notifyManager.js",
+      "node_modules/@tanstack/query-core/build/modern/removable.js",
+      "node_modules/@tanstack/query-core/build/modern/retryer.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/mutationCache.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/mutation.js",
+      "node_modules/@tanstack/query-core/build/modern/notifyManager.js",
+      "node_modules/@tanstack/query-core/build/modern/subscribable.js",
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/notifyManager.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/timeoutManager.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/onlineManager.js": {
+    "enable": true,
+    "global": {
+      "addEventListener": "r",
+      "removeEventListener": "r"
+    },
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/subscribable.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/queriesObserver.js": {
+    "enable": true,
+    "global": {
+      "console": "r",
+      "process": "r"
+    }
+  },
+  "node_modules/@tanstack/query-core/build/modern/query.js": {
+    "enable": true,
+    "global": {
+      "AbortController": "r",
+      "console": "r",
+      "process": "r"
+    },
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/infiniteQueryBehavior.js",
+      "node_modules/@tanstack/query-core/build/modern/notifyManager.js",
+      "node_modules/@tanstack/query-core/build/modern/removable.js",
+      "node_modules/@tanstack/query-core/build/modern/retryer.js",
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/queryCache.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/notifyManager.js",
+      "node_modules/@tanstack/query-core/build/modern/query.js",
+      "node_modules/@tanstack/query-core/build/modern/subscribable.js",
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/queryClient.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/focusManager.js",
+      "node_modules/@tanstack/query-core/build/modern/mutationCache.js",
+      "node_modules/@tanstack/query-core/build/modern/notifyManager.js",
+      "node_modules/@tanstack/query-core/build/modern/onlineManager.js",
+      "node_modules/@tanstack/query-core/build/modern/queryCache.js",
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/queryObserver.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/environmentManager.js",
+      "node_modules/@tanstack/query-core/build/modern/focusManager.js",
+      "node_modules/@tanstack/query-core/build/modern/notifyManager.js",
+      "node_modules/@tanstack/query-core/build/modern/query.js",
+      "node_modules/@tanstack/query-core/build/modern/subscribable.js",
+      "node_modules/@tanstack/query-core/build/modern/timeoutManager.js",
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/removable.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/environmentManager.js",
+      "node_modules/@tanstack/query-core/build/modern/timeoutManager.js",
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/retryer.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/environmentManager.js",
+      "node_modules/@tanstack/query-core/build/modern/focusManager.js",
+      "node_modules/@tanstack/query-core/build/modern/onlineManager.js",
+      "node_modules/@tanstack/query-core/build/modern/utils.js"
+    ]
+  },
+  "node_modules/@tanstack/query-core/build/modern/timeoutManager.js": {
+    "enable": true,
+    "global": {
+      "clearInterval": "r",
+      "clearTimeout": "r",
+      "console": "r",
+      "process": "r",
+      "setInterval": "r",
+      "setTimeout": "r"
+    }
+  },
+  "node_modules/@tanstack/query-core/build/modern/utils.js": {
+    "enable": true,
+    "global": {
+      "Deno": "r",
+      "console": "r",
+      "process": "r"
+    },
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/timeoutManager.js"
+    ]
+  },
+  "node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "node_modules/react/jsx-runtime.js"
+    ]
+  },
+  "node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "node_modules/react/jsx-runtime.js"
+    ]
+  },
+  "node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/utils.js",
+      "node_modules/react/index.js"
+    ]
+  },
+  "node_modules/@tanstack/react-query/build/modern/useBaseQuery.js": {
+    "enable": true,
+    "global": {
+      "console": "r",
+      "process": "r"
+    },
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/notifyManager.js",
+      "node_modules/@tanstack/query-core/build/modern/utils.js",
+      "node_modules/@tanstack/react-query/build/modern/errorBoundaryUtils.js",
+      "node_modules/@tanstack/react-query/build/modern/IsRestoringProvider.js",
+      "node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js",
+      "node_modules/@tanstack/react-query/build/modern/QueryErrorResetBoundary.js",
+      "node_modules/@tanstack/react-query/build/modern/suspense.js",
+      "node_modules/react/index.js"
+    ]
+  },
+  "node_modules/@tanstack/react-query/build/modern/useQuery.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/query-core/build/modern/queryObserver.js",
+      "node_modules/@tanstack/react-query/build/modern/useBaseQuery.js"
+    ]
+  },
+  "node_modules/@tanstack/react-query/build/modern/useSuspenseInfiniteQuery.js": {
+    "enable": true,
+    "global": {
+      "console": "r",
+      "process": "r"
+    }
+  },
+  "node_modules/@tanstack/react-query/build/modern/useSuspenseQueries.js": {
+    "enable": true,
+    "global": {
+      "console": "r",
+      "process": "r"
+    }
+  },
+  "node_modules/@tanstack/react-query/build/modern/useSuspenseQuery.js": {
+    "enable": true,
+    "global": {
+      "console": "r",
+      "process": "r"
+    }
+  },
   "node_modules/@trezor/connect-common/lib/index.js": {
     "enable": true,
     "require": [
@@ -72111,8 +72289,8 @@
     "require": [
       "node_modules/eth-json-rpc-filters/base-filter-history.js",
       "node_modules/eth-json-rpc-filters/hexUtils.js",
-      "node_modules/eth-json-rpc-filters/node_modules/pify/index.js",
-      "node_modules/eth-query/index.js"
+      "node_modules/eth-query/index.js",
+      "node_modules/pify/index.js"
     ]
   },
   "node_modules/eth-json-rpc-filters/subscriptionManager.js": {
@@ -75792,12 +75970,6 @@
     "require": [
       "node_modules/which-typed-array/index.js"
     ]
-  },
-  "node_modules/isomorphic-unfetch/browser.js": {
-    "enable": true,
-    "global": {
-      "fetch": "rw"
-    }
   },
   "node_modules/isomorphic-ws/browser.js": {
     "enable": true,
@@ -83656,182 +83828,6 @@
       "node_modules/react-markdown/node_modules/react-is/cjs/react-is.production.min.js"
     ]
   },
-  "node_modules/react-redux/es/components/Context.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/react-redux/es/components/Provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-redux/es/components/Context.js",
-      "node_modules/react-redux/es/utils/Subscription.js",
-      "node_modules/react-redux/es/utils/useIsomorphicLayoutEffect.js",
-      "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/react-redux/es/components/connect.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@babel/runtime/helpers/esm/extends.js",
-      "node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js",
-      "node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js",
-      "node_modules/react-redux/es/components/Context.js",
-      "node_modules/react-redux/es/connect/mapDispatchToProps.js",
-      "node_modules/react-redux/es/connect/mapStateToProps.js",
-      "node_modules/react-redux/es/connect/mergeProps.js",
-      "node_modules/react-redux/es/connect/selectorFactory.js",
-      "node_modules/react-redux/es/utils/shallowEqual.js",
-      "node_modules/react-redux/es/utils/Subscription.js",
-      "node_modules/react-redux/es/utils/useIsomorphicLayoutEffect.js",
-      "node_modules/react-redux/es/utils/useSyncExternalStore.js",
-      "node_modules/react-redux/node_modules/react-is/index.js",
-      "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/react-redux/es/connect/mapDispatchToProps.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-redux/es/connect/invalidArgFactory.js",
-      "node_modules/react-redux/es/connect/wrapMapToProps.js",
-      "node_modules/react-redux/es/utils/bindActionCreators.js"
-    ]
-  },
-  "node_modules/react-redux/es/connect/mapStateToProps.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-redux/es/connect/invalidArgFactory.js",
-      "node_modules/react-redux/es/connect/wrapMapToProps.js"
-    ]
-  },
-  "node_modules/react-redux/es/connect/mergeProps.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@babel/runtime/helpers/esm/extends.js",
-      "node_modules/react-redux/es/connect/invalidArgFactory.js"
-    ]
-  },
-  "node_modules/react-redux/es/connect/selectorFactory.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js"
-    ]
-  },
-  "node_modules/react-redux/es/connect/wrapMapToProps.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/react-redux/es/exports.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-redux/es/components/connect.js",
-      "node_modules/react-redux/es/components/Context.js",
-      "node_modules/react-redux/es/components/Provider.js",
-      "node_modules/react-redux/es/hooks/useDispatch.js",
-      "node_modules/react-redux/es/hooks/useSelector.js",
-      "node_modules/react-redux/es/hooks/useStore.js"
-    ]
-  },
-  "node_modules/react-redux/es/hooks/useDispatch.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-redux/es/components/Context.js",
-      "node_modules/react-redux/es/hooks/useStore.js"
-    ]
-  },
-  "node_modules/react-redux/es/hooks/useReduxContext.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/react-redux/es/components/Context.js",
-      "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/react-redux/es/hooks/useSelector.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/react-redux/es/components/Context.js",
-      "node_modules/react-redux/es/hooks/useReduxContext.js",
-      "node_modules/react-redux/es/utils/useSyncExternalStore.js",
-      "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/react-redux/es/hooks/useStore.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-redux/es/components/Context.js",
-      "node_modules/react-redux/es/hooks/useReduxContext.js",
-      "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/react-redux/es/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-redux/es/components/connect.js",
-      "node_modules/react-redux/es/exports.js",
-      "node_modules/react-redux/es/hooks/useSelector.js",
-      "node_modules/react-redux/es/utils/batch.js",
-      "node_modules/react-redux/es/utils/reactBatchedUpdates.js",
-      "node_modules/use-sync-external-store/shim/index.js",
-      "node_modules/use-sync-external-store/shim/with-selector.js"
-    ]
-  },
-  "node_modules/react-redux/es/utils/Subscription.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-redux/es/utils/batch.js"
-    ]
-  },
-  "node_modules/react-redux/es/utils/reactBatchedUpdates.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-dom/index.js"
-    ]
-  },
-  "node_modules/react-redux/es/utils/useIsomorphicLayoutEffect.js": {
-    "enable": true,
-    "global": {
-      "document": "r"
-    },
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/react-redux/es/utils/warning.js": {
-    "enable": true,
-    "global": {
-      "console": "r"
-    }
-  },
-  "node_modules/react-redux/node_modules/react-is/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/react-redux/node_modules/react-is/cjs/react-is.production.min.js"
-    ]
-  },
   "node_modules/react-resize-detector/build/index.esm.js": {
     "enable": true,
     "global": {
@@ -86411,16 +86407,6 @@
       "node_modules/reduce-css-calc/node_modules/postcss-value-parser/lib/walk.js"
     ]
   },
-  "node_modules/redux/es/redux.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@babel/runtime/helpers/esm/objectSpread2.js"
-    ]
-  },
   "node_modules/reflect-metadata/Reflect.js": {
     "enable": true,
     "global": {
@@ -86456,12 +86442,6 @@
     "enable": true,
     "require": [
       "node_modules/mdast-util-to-hast/lib/index.js"
-    ]
-  },
-  "node_modules/reselect/es/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/reselect/es/defaultMemoize.js"
     ]
   },
   "node_modules/resize-observer-polyfill/dist/ResizeObserver.es.js": {
@@ -88144,13 +88124,6 @@
     "require": [
       "node_modules/uint8arrays/node_modules/multiformats/esm/vendor/varint.js"
     ]
-  },
-  "node_modules/unfetch/dist/unfetch.module.js": {
-    "enable": true,
-    "global": {
-      "Blob": "r",
-      "XMLHttpRequest": "r"
-    }
   },
   "node_modules/unified/lib/index.js": {
     "enable": true,
@@ -94896,32 +94869,17 @@
       "node_modules/zustand/esm/vanilla/shallow.mjs"
     ]
   },
+  "node_modules/zustand/esm/traditional.mjs": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "node_modules/use-sync-external-store/shim/with-selector.js",
+      "node_modules/zustand/esm/vanilla.mjs"
+    ]
+  },
   "src/background/index.ts": {
     "enable": true,
     "require": [
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Arbitrum.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Avalanche.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Base.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3BNB.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Celo.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Ethereum.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3EthereumLido.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Gnosis.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3InkWhitelabel.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Linea.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Mantle.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3MegaEth.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Metis.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Optimism.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Plasma.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Polygon.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Scroll.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Soneium.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3Sonic.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3XLayer.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/AaveV3ZkSync.mjs",
-      "node_modules/@aave-dao/aave-address-book/dist/GhoMantle.mjs",
-      "node_modules/@aave/contract-helpers/dist/esm/commons/types.js",
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/@debank/festats/dist/index.js",
       "node_modules/@eth-optimism/contracts/dist/index.js",
@@ -96878,6 +96836,7 @@
       "src/ui/component/ChainSelector/LoadingBalances.tsx",
       "src/ui/component/Empty/index.tsx",
       "src/ui/component/PillsSwitch/NetSwitchTabs.tsx",
+      "src/ui/state/account.ts",
       "src/ui/store.ts",
       "src/utils/chain.ts"
     ]
@@ -96906,6 +96865,7 @@
       "src/ui/component/ChainSelector/LoadingBalances.tsx",
       "src/ui/component/Empty/index.tsx",
       "src/ui/component/PillsSwitch/NetSwitchTabs.tsx",
+      "src/ui/state/account.ts",
       "src/ui/store.ts",
       "src/utils/chain.ts"
     ]
@@ -97480,11 +97440,12 @@
       "node_modules/dayjs/dayjs.min.js",
       "node_modules/lodash/lodash.js",
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/eventBus.ts",
       "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/state/accountToDisplay.ts",
       "src/ui/state/whitelist.ts",
-      "src/ui/store.ts",
       "src/ui/utils/index.ts",
       "src/utils/chain.ts",
       "src/utils/tx.ts"
@@ -97777,6 +97738,7 @@
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/constant/ui.ts",
       "src/ui/assets/success.svg",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/component/WordsMatrix/MnemonicsInputs.less",
@@ -97873,8 +97835,8 @@
     "enable": true,
     "require": [
       "node_modules/ahooks/es/useMemoizedFn/index.js",
-      "node_modules/ahooks/es/useRequest/index.js",
       "node_modules/react/index.js",
+      "src/ui/state/contactBook.ts",
       "src/ui/store.ts",
       "src/ui/utils/broadcastToUI.ts",
       "src/ui/utils/index.ts",
@@ -98168,6 +98130,10 @@
       "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/@sentry/react/build/esm/errorboundary.js",
       "node_modules/@sentry/react/build/esm/sdk.js",
+      "node_modules/@tanstack/query-core/build/modern/queryClient.js",
+      "node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js",
+      "node_modules/@tanstack/react-query/build/modern/queryOptions.js",
+      "node_modules/@tanstack/react-query/build/modern/useQuery.js",
       "node_modules/@zumer/snapdom/dist/snapdom.mjs",
       "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/ahooks/es/useMount/index.js",
@@ -98207,7 +98173,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-idle-timer/dist/index.esm.js",
       "node_modules/react-markdown/index.js",
-      "node_modules/react-redux/es/index.js",
       "node_modules/react-router-dom/esm/react-router-dom.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useAsync.js",
@@ -98279,9 +98244,19 @@
       "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useGnosisNetworks.ts",
       "src/ui/hooks/usePreference.ts",
+      "src/ui/query/queryKey.ts",
+      "src/ui/query/resources/token.ts",
+      "src/ui/state/account.ts",
+      "src/ui/state/bridge.ts",
+      "src/ui/state/chains.ts",
+      "src/ui/state/contactBook.ts",
       "src/ui/state/createStore/createExtensionStoreOptions.ts",
       "src/ui/state/createStore/createRabbyStore.ts",
       "src/ui/state/exchange.ts",
+      "src/ui/state/gasAccount.ts",
+      "src/ui/state/gift.ts",
+      "src/ui/state/perps.ts",
+      "src/ui/state/preference.ts",
       "src/ui/state/swap.ts",
       "src/ui/state/transactions.ts",
       "src/ui/state/walletStatus.ts",
@@ -98331,20 +98306,59 @@
       "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ prefetchOrder: 0 preloadOrder: 0 namespace object"
     ]
   },
-  "src/ui/models/account.ts": {
+  "src/ui/query/resources/token.ts": {
     "enable": true,
     "require": [
-      "node_modules/@rematch/core/dist/core.esm.js",
+      "node_modules/@tanstack/react-query/build/modern/queryOptions.js",
+      "src/ui/query/queryKey.ts"
+    ]
+  },
+  "src/ui/state/account.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/zustand/esm/react.mjs",
       "src/constant/index.ts",
-      "src/ui/utils/index.ts",
+      "src/ui/utils/number.ts",
+      "src/ui/wallet/index.ts",
+      "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/state/accountToDisplay.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/p-queue/dist/index.js",
+      "node_modules/zustand/esm/react.mjs",
+      "src/ui/utils/account.ts",
+      "src/ui/wallet/index.ts",
+      "src/utils/account.ts"
+    ]
+  },
+  "src/ui/state/bridge.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-bridge/dist/index.js",
+      "src/constant/index.ts",
+      "src/ui/state/createStore/createExtensionStoreOptions.ts",
+      "src/ui/state/createStore/createRabbyStore.ts",
+      "src/ui/wallet/index.ts",
+      "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/state/chains.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/zustand/esm/react.mjs",
+      "src/ui/state/account.ts",
+      "src/ui/state/swap.ts",
+      "src/ui/wallet/index.ts",
       "src/utils/chain.ts"
     ]
   },
   "src/ui/state/contactBook.ts": {
     "enable": true,
     "require": [
-      "node_modules/zustand/esm/react.mjs",
-      "src/ui/wallet/index.ts"
+      "src/ui/state/createStore/createExtensionStoreOptions.ts",
+      "src/ui/state/createStore/createRabbyStore.ts"
     ]
   },
   "src/ui/state/createStore/createExtensionStoreOptions.ts": {
@@ -98383,12 +98397,58 @@
       "src/ui/wallet/index.ts"
     ]
   },
+  "src/ui/state/gasAccount.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/zustand/esm/react.mjs",
+      "src/constant/index.ts",
+      "src/eventBus.ts",
+      "src/ui/views/GasAccount/utils/bridgeSupportTokens.ts",
+      "src/ui/wallet/index.ts"
+    ]
+  },
+  "src/ui/state/gift.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/zustand/esm/react.mjs",
+      "src/ui/wallet/index.ts",
+      "src/utils/account.ts"
+    ]
+  },
   "src/ui/state/importMnemonics.ts": {
     "enable": true,
     "require": [
       "node_modules/zustand/esm/react.mjs",
       "src/constant/index.ts",
       "src/ui/wallet/index.ts"
+    ]
+  },
+  "src/ui/state/perps.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
+      "node_modules/zustand/esm/react.mjs",
+      "src/constant/index.ts",
+      "src/constant/perps.ts",
+      "src/eventBus.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/DesktopPerps/types.ts",
+      "src/ui/views/DesktopPerps/utils.ts",
+      "src/ui/views/Perps/constants.ts",
+      "src/ui/views/Perps/sdkManager.ts",
+      "src/ui/views/Perps/utils.ts",
+      "src/ui/wallet/index.ts"
+    ]
+  },
+  "src/ui/state/preference.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/zustand/esm/react.mjs",
+      "src/constant/index.ts",
+      "src/i18n.ts",
+      "src/ui/wallet/index.ts",
+      "src/utils/ga4.ts",
+      "src/utils/rateGuidance.ts"
     ]
   },
   "src/ui/state/securityEngine.ts": {
@@ -98442,37 +98502,25 @@
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "src/ui/store.ts"
+      "src/ui/state/account.ts"
     ]
   },
   "src/ui/store.ts": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
-      "node_modules/@rabby-wallet/rabby-bridge/dist/index.js",
-      "node_modules/@rematch/core/dist/core.esm.js",
-      "node_modules/@rematch/select/dist/select.esm.js",
-      "node_modules/p-queue/dist/index.js",
-      "node_modules/react-redux/es/index.js",
-      "src/constant/index.ts",
-      "src/constant/perps.ts",
-      "src/eventBus.ts",
+      "node_modules/zustand/esm/react.mjs",
+      "node_modules/zustand/esm/traditional.mjs",
       "src/i18n.ts",
-      "src/ui/models/account.ts",
-      "src/ui/state/swap.ts",
-      "src/ui/utils/account.ts",
+      "src/ui/state/account.ts",
+      "src/ui/state/accountToDisplay.ts",
+      "src/ui/state/bridge.ts",
+      "src/ui/state/chains.ts",
+      "src/ui/state/gasAccount.ts",
+      "src/ui/state/gift.ts",
+      "src/ui/state/perps.ts",
+      "src/ui/state/preference.ts",
       "src/ui/utils/broadcastToUI.ts",
-      "src/ui/utils/index.ts",
-      "src/ui/views/DesktopPerps/types.ts",
-      "src/ui/views/DesktopPerps/utils.ts",
-      "src/ui/views/GasAccount/utils/bridgeSupportTokens.ts",
-      "src/ui/views/Perps/constants.ts",
-      "src/ui/views/Perps/sdkManager.ts",
-      "src/ui/views/Perps/utils.ts",
-      "src/utils/account.ts",
-      "src/utils/chain.ts",
-      "src/utils/ga4.ts",
-      "src/utils/rateGuidance.ts"
+      "src/ui/wallet/index.ts"
     ]
   },
   "src/ui/style/cssvars-custom.css": {
@@ -98509,6 +98557,12 @@
     "enable": true,
     "require": [
       "node_modules/bignumber.js/bignumber.js"
+    ]
+  },
+  "src/ui/utils/addressInput.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethereumjs/util/dist/esm/index.js"
     ]
   },
   "src/ui/utils/broadcastToUI.ts": {
@@ -100226,7 +100280,6 @@
       "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePreference.ts",
-      "src/ui/models/account.ts",
       "src/ui/state/exchange.ts",
       "src/ui/state/securityEngine.ts",
       "src/ui/state/sign.ts",
@@ -100296,25 +100349,6 @@
       "node_modules/css-loader/dist/runtime/api.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/views/Approval/style.less"
-    ]
-  },
-  "src/ui/views/Bridge/Component/BridgeQuoteItem.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/es/tooltip/index.js",
-      "node_modules/bignumber.js/bignumber.js",
-      "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
-      "src/ui/assets/swap/gas-cc.svg",
-      "src/ui/assets/swap/lock.svg",
-      "src/ui/assets/swap/quote-loading.svg",
-      "src/ui/component/index.tsx",
-      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
-      "src/ui/store.ts",
-      "src/ui/utils/index.ts",
-      "src/ui/views/Bridge/hooks/index.tsx"
     ]
   },
   "src/ui/views/Bridge/Component/BridgeShowMore.tsx": {
@@ -100406,8 +100440,8 @@
       "src/ui/utils/quote.ts",
       "src/ui/utils/token.ts",
       "src/ui/utils/url.ts",
-      "src/ui/views/Bridge/Component/BridgeQuoteItem.tsx",
       "src/ui/views/Bridge/hooks/context.tsx",
+      "src/ui/views/Bridge/utils/bridgeQuote.ts",
       "src/ui/views/GasAccount/hooks/runtime.ts",
       "src/ui/views/Swap/hooks/fee.ts",
       "src/utils/chain.ts"
@@ -100428,6 +100462,7 @@
       "node_modules/antd/es/message/index.js",
       "node_modules/antd/es/modal/index.js",
       "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tooltip/index.js",
       "node_modules/antd/lib/skeleton/Input.js",
       "node_modules/bignumber.js/bignumber.js",
       "node_modules/clsx/dist/clsx.m.js",
@@ -100445,8 +100480,11 @@
       "src/ui/assets/dashboard/index.tsx",
       "src/ui/assets/index.ts",
       "src/ui/assets/swap/arrow-right.svg",
+      "src/ui/assets/swap/gas-cc.svg",
       "src/ui/assets/swap/history-cc.svg",
+      "src/ui/assets/swap/lock.svg",
       "src/ui/assets/swap/pending.svg",
+      "src/ui/assets/swap/quote-loading.svg",
       "src/ui/assets/swap/quote-refresh-cc.svg",
       "src/ui/assets/swap/wallet-cc.svg",
       "src/ui/assets/token-default.svg",
@@ -100477,11 +100515,11 @@
       "src/ui/utils/token.ts",
       "src/ui/utils/url.ts",
       "src/ui/utils/withAccountChange.tsx",
-      "src/ui/views/Bridge/Component/BridgeQuoteItem.tsx",
       "src/ui/views/Bridge/Component/BridgeShowMore.tsx",
       "src/ui/views/Bridge/Component/BridgeSwitchButton.tsx",
       "src/ui/views/Bridge/hooks/index.tsx",
       "src/ui/views/Bridge/hooks/token.tsx",
+      "src/ui/views/Bridge/utils/bridgeQuote.ts",
       "src/ui/views/Ecology/dbk-chain/components/DbkButton.tsx",
       "src/ui/views/GasAccount/hooks/runtime.ts",
       "src/ui/views/SendToken/components/MaxButton.tsx",
@@ -100490,6 +100528,12 @@
       "src/utils/chain.ts",
       "src/utils/tempo.ts",
       "src/utils/transaction.ts"
+    ]
+  },
+  "src/ui/views/Bridge/utils/bridgeQuote.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js"
     ]
   },
   "src/ui/views/ChainList/style.less": {
@@ -100662,6 +100706,7 @@
       "node_modules/lodash/groupBy.js",
       "node_modules/lodash/lodash.js",
       "node_modules/lodash/omit.js",
+      "node_modules/react-dom/index.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useDebounce.js",
@@ -100861,6 +100906,7 @@
       "node_modules/react-use/esm/usePrevious.js",
       "node_modules/react/index.js",
       "src/ui/hooks/useRefState.ts",
+      "src/ui/state/account.ts",
       "src/ui/store.ts",
       "src/ui/utils/index.ts",
       "src/ui/views/Dashboard/components/BalanceView/useCurve.ts",
@@ -101221,6 +101267,7 @@
       "node_modules/@opensea/seaport-js/lib/constants.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
+      "node_modules/@tanstack/react-query/build/modern/useQuery.js",
       "node_modules/ahooks/es/useDebounceFn/index.js",
       "node_modules/ahooks/es/useEventListener/index.js",
       "node_modules/ahooks/es/useInterval/index.js",
@@ -101362,12 +101409,14 @@
       "src/ui/hooks/useSearchToken.ts",
       "src/ui/hooks/useSigner.tsx",
       "src/ui/hooks/useSortTokens.ts",
+      "src/ui/query/resources/token.ts",
+      "src/ui/state/contactBook.ts",
       "src/ui/state/desktopProfile.ts",
+      "src/ui/state/perps.ts",
       "src/ui/state/swap.ts",
       "src/ui/state/transactions.ts",
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
-      "src/ui/utils/broadcastToUI.ts",
       "src/ui/utils/clipboard.tsx",
       "src/ui/utils/ga-event.ts",
       "src/ui/utils/index.ts",
@@ -102216,6 +102265,7 @@
       "src/ui/hooks/useSigner.tsx",
       "src/ui/state/customRPC.ts",
       "src/ui/state/importMnemonics.ts",
+      "src/ui/state/perps.ts",
       "src/ui/state/whitelist.ts",
       "src/ui/store.ts",
       "src/ui/utils/account.ts",
@@ -102585,7 +102635,7 @@
     "require": [
       "node_modules/bignumber.js/bignumber.js",
       "src/constant/index.ts",
-      "src/ui/store.ts",
+      "src/ui/state/perps.ts",
       "src/ui/views/Perps/constants.ts",
       "src/ui/views/Perps/sdkManager.ts",
       "src/utils/perps/quoteAsset.ts"
@@ -102676,10 +102726,10 @@
       "src/ui/component/Whitelist/Modal.tsx",
       "src/ui/hooks/useAccounts.ts",
       "src/ui/hooks/usePreference.ts",
-      "src/ui/state/contactBook.ts",
       "src/ui/state/whitelist.ts",
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
+      "src/ui/utils/addressInput.ts",
       "src/ui/utils/ens.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/WalletContext.tsx",
@@ -102741,7 +102791,6 @@
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePreference.ts",
       "src/ui/hooks/useSigner.tsx",
-      "src/ui/state/contactBook.ts",
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/ga-event.ts",
@@ -102839,7 +102888,6 @@
       "src/ui/hooks/useSearchToken.ts",
       "src/ui/hooks/useSigner.tsx",
       "src/ui/hooks/useSortTokens.ts",
-      "src/ui/state/contactBook.ts",
       "src/ui/state/exchange.ts",
       "src/ui/store.ts",
       "src/ui/utils/form.ts",
@@ -103284,6 +103332,7 @@
       "src/ui/component/index.tsx",
       "src/ui/state/exchange.ts",
       "src/ui/store.ts",
+      "src/ui/utils/addressInput.ts",
       "src/ui/utils/cex.ts",
       "src/ui/utils/index.ts",
       "src/ui/views/WhitelistInput/styles.less"
