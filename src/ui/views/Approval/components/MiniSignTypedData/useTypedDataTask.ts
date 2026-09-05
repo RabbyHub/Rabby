@@ -7,10 +7,7 @@ import {
   useSetDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { sendSignTypedData } from '@/ui/utils/sendTypedData';
-import type {
-  SigningAttemptRef,
-  SigningRequestContext,
-} from '@/utils/signingTypes';
+import type { SigningRequestContext } from '@/utils/signingTypes';
 
 type TxStatus = 'sended' | 'signed' | 'idle' | 'failed';
 
@@ -31,9 +28,7 @@ type ListItemType = {
   hash?: string;
 };
 
-export const useBatchSignTypedDataTask = ({
-  ga,
-}: {
+export const useBatchSignTypedDataTask = (_options?: {
   ga?: Record<string, any>;
 }) => {
   const wallet = useWallet();
@@ -66,7 +61,6 @@ export const useBatchSignTypedDataTask = ({
 
   const setDirectSigning = useSetDirectSigning();
   const signingContextRef = React.useRef<SigningRequestContext>();
-  const [signingAttempt, setSigningAttempt] = useState<SigningAttemptRef>();
   const runIdRef = React.useRef(0);
 
   const finishSigning = useMemoizedFn(
@@ -74,13 +68,13 @@ export const useBatchSignTypedDataTask = ({
       context: SigningRequestContext | undefined,
       outcome: { success: boolean; data?: unknown; error?: unknown }
     ) => {
-      if (!context) return;
+      if (!context) return false;
       if (signingContextRef.current === context) {
         signingContextRef.current = undefined;
-        setSigningAttempt(undefined);
       }
       try {
-        await wallet.finishDirectSigning(context, outcome);
+        const result = await wallet.finishDirectSigning(context, outcome);
+        return result.accepted;
       } catch (error) {
         console.error('finish direct typed-data signing failed', error);
         await wallet.cancelDirectSigning(context).catch((cancelError) => {
@@ -89,16 +83,16 @@ export const useBatchSignTypedDataTask = ({
             cancelError
           );
         });
+        return false;
       }
     }
   );
 
-  const start = useMemoizedFn(async (isRetry = false) => {
+  const start = useMemoizedFn(async () => {
     const results: string[] = [];
     const runId = ++runIdRef.current;
     const previousContext = signingContextRef.current;
     signingContextRef.current = undefined;
-    setSigningAttempt(undefined);
     if (previousContext) {
       void wallet.cancelDirectSigning(previousContext).catch((error) => {
         console.error(
@@ -121,7 +115,6 @@ export const useBatchSignTypedDataTask = ({
         throw new Error('User cancelled');
       }
       signingContextRef.current = signingContext;
-      setSigningAttempt(signingContext.attempt);
       setDirectSigning(true);
       setStatus('active');
 
@@ -146,13 +139,9 @@ export const useBatchSignTypedDataTask = ({
             hardwareOperation: supportedHardwareDirectSign(
               signingContext.account.type
             )
-              ? {
-                  kind: 'signing-attempt',
-                  attempt: signingContext.attempt,
-                }
+              ? { kind: 'signing-attempt', attempt: signingContext.attempt }
               : undefined,
             signing: signingContext,
-            // ga,
             onProgress: (status) => {
               if (runId !== runIdRef.current) return;
               if (status === 'builded') {
@@ -176,6 +165,7 @@ export const useBatchSignTypedDataTask = ({
           results.push(result.txHash || '');
         } catch (e) {
           console.error(e);
+          if (runId !== runIdRef.current) throw e;
           const msg = e.message || e.name;
 
           _updateList({
@@ -191,25 +181,23 @@ export const useBatchSignTypedDataTask = ({
         }
       }
       if (runId !== runIdRef.current) throw new Error('User cancelled');
-      await finishSigning(signingContext, { success: true, data: results });
+      if (
+        !(await finishSigning(signingContext, { success: true, data: results }))
+      ) {
+        throw new Error('User cancelled');
+      }
       finished = true;
       if (runId !== runIdRef.current) throw new Error('User cancelled');
       setStatus('completed');
-      // eventBus.emit(EVENTS.DIRECT_SIGN, {});
       return results;
     } catch (e) {
       console.error(e);
-      const msg = e.message || e.name;
-
       if (runId === runIdRef.current) {
         await finishSigning(signingContext, { success: false, error: e });
         finished = true;
       }
       if (runId !== runIdRef.current) throw e;
 
-      // eventBus.emit(EVENTS.DIRECT_SIGN, {
-      //   error: msg || 'failed to completed',
-      // });
       throw e;
     } finally {
       if (signingContext && !finished) {
@@ -219,7 +207,6 @@ export const useBatchSignTypedDataTask = ({
       }
       if (signingContextRef.current === signingContext) {
         signingContextRef.current = undefined;
-        setSigningAttempt(undefined);
       }
       if (runId === runIdRef.current) {
         setDirectSigning(false);
@@ -229,7 +216,7 @@ export const useBatchSignTypedDataTask = ({
 
   const handleRetry = useMemoizedFn(async () => {
     setError('');
-    const hash = await start(true);
+    const hash = await start();
     return hash;
   });
 
@@ -237,13 +224,13 @@ export const useBatchSignTypedDataTask = ({
     runIdRef.current += 1;
     const context = signingContextRef.current;
     signingContextRef.current = undefined;
-    setSigningAttempt(undefined);
     if (context) {
       void wallet.cancelDirectSigning(context).catch((error) => {
         console.error('cancel direct typed-data signing failed', error);
       });
     }
     setStatus('idle');
+    setDirectSigning(false);
   });
 
   const currentActiveIndex = React.useMemo(() => {
@@ -266,7 +253,6 @@ export const useBatchSignTypedDataTask = ({
     total: list.length,
     txStatus,
     stop,
-    signingAttempt,
   };
 };
 

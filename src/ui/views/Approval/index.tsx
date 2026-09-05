@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from 'ui/utils';
@@ -6,7 +6,6 @@ import {
   createApprovalScope,
   ApprovalScopeContext,
 } from '@/ui/approval/context';
-import { getCurrentApproval } from '@/ui/approval/global';
 import { ApprovalUtilsProvider } from './hooks/useApprovalUtils';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import * as ApprovalComponent from './components';
@@ -24,12 +23,15 @@ const Approval: React.FC<{
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
   const [approval, setApproval] = useState<Approval | null>(null);
+  const initGeneration = useRef(0);
   const resetCurrentTx = useSecurityEngineStore(
     (state) => state.resetCurrentTx
   );
 
   const init = async () => {
-    const approval = await getCurrentApproval(wallet);
+    const generation = ++initGeneration.current;
+    const approval = await wallet.getCurrentApproval();
+    if (generation !== initGeneration.current) return;
     if (!approval) {
       history.replace('/');
       return null;
@@ -40,10 +42,12 @@ const Approval: React.FC<{
     setApproval(approval);
     document.title = 'Rabby Wallet Notification';
     const account = approval.data.account || (await wallet.getCurrentAccount());
+    if (generation !== initGeneration.current) return;
     if (!account) {
       const result = await wallet.rejectApprovalFor({
         approval: toApprovalRef(approval.id, approval.data.approvalComponent),
       });
+      if (generation !== initGeneration.current) return;
       if (result.accepted) history.replace('/');
       return;
     }
@@ -64,12 +68,6 @@ const Approval: React.FC<{
   const { data } = approval;
   const { approvalComponent, params, origin, account } = data;
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
-  const renderedParams = scope?.signing
-    ? {
-        ...(params || {}),
-        signing: scope.signing,
-      }
-    : params;
 
   return (
     <div className={clsx('approval', className)}>
@@ -78,7 +76,7 @@ const Approval: React.FC<{
           <ApprovalUtilsProvider>
             <CurrentApprovalComponent
               key={approval.id}
-              params={renderedParams as any}
+              params={params}
               origin={origin}
               account={account}
             />

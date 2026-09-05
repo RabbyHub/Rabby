@@ -62,6 +62,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
   });
 
   const retryTxs = useRef<ListItemType[]>([]);
+  const retryScopeRef = useRef<string>();
   const signingContextRef = useRef<SigningRequestContext>();
   const [signingAttempt, setSigningAttempt] = useState<SigningAttemptRef>();
   const runIdRef = useRef(0);
@@ -73,13 +74,14 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
       context: SigningRequestContext | undefined,
       outcome: { success: boolean; data?: unknown; error?: unknown }
     ) => {
-      if (!context) return;
+      if (!context) return false;
       if (signingContextRef.current === context) {
         signingContextRef.current = undefined;
         setSigningAttempt(undefined);
       }
       try {
-        await wallet.finishDirectSigning(context, outcome);
+        const result = await wallet.finishDirectSigning(context, outcome);
+        return result.accepted;
       } catch (error) {
         console.error('finish direct transaction signing failed', error);
         await wallet.cancelDirectSigning(context).catch((cancelError) => {
@@ -88,6 +90,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
             cancelError
           );
         });
+        return false;
       }
     }
   );
@@ -107,7 +110,9 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
       });
     }
     let signingContext: SigningRequestContext | undefined;
+    let retryScope: string | undefined;
     let finished = false;
+    let completed = false;
     try {
       const account =
         list[0]?.options?.account ||
@@ -120,6 +125,10 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
         throw new Error('User cancelled');
       }
       signingContextRef.current = signingContext;
+      if (!isRetry) {
+        retryScopeRef.current = signingContext.flow.flowId;
+      }
+      retryScope = retryScopeRef.current || signingContext.flow.flowId;
       setSigningAttempt(signingContext.attempt);
       setDirectSigning(true);
       setStatus('active');
@@ -133,7 +142,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
 
       if (!isRetry) {
         retryTxs.current = [];
-        await retryTxReset();
+        await retryTxReset(retryScope);
       } else {
         if (!retryTxs.current.length) {
           retryTxs.current = list;
@@ -155,10 +164,10 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
         const tx = item.tx;
 
         if (isRetry) {
-          const retryType = await getRetryTxType();
+          const retryType = await getRetryTxType(retryScope);
           switch (retryType) {
             case 'nonce': {
-              const recommendNonce = await getRetryTxRecommendNonce();
+              const recommendNonce = await getRetryTxRecommendNonce(retryScope);
               tx.nonce = recommendNonce;
               break;
             }
@@ -194,10 +203,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
             hardwareOperation: supportedHardwareDirectSign(
               signingContext.account.type
             )
-              ? {
-                  kind: 'signing-attempt',
-                  attempt: signingContext.attempt,
-                }
+              ? { kind: 'signing-attempt', attempt: signingContext.attempt }
               : undefined,
             signing: signingContext,
             onProgress: (status) => {
@@ -229,10 +235,6 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
           if (runId !== runIdRef.current) throw e;
           const msg = e.message || e.name;
 
-          // eventBus.emit(EVENTS.DIRECT_SIGN, {
-          //   error: msg,
-          // });
-
           _updateList({
             index,
             payload: {
@@ -241,7 +243,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
             },
           });
 
-          await retryTxReset();
+          await retryTxReset(retryScope);
           if (
             !(
               isLedgerLockError(msg) ||
@@ -254,6 +256,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
                 from: tx.from,
                 chainId: tx.chainId,
                 nonce: tx.nonce,
+                scope: retryScope,
               });
             } catch (error) {
               console.error(
@@ -278,27 +281,26 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
           throw e;
         }
       }
-      await retryTxReset();
+      await retryTxReset(retryScope);
       if (runId !== runIdRef.current) throw new Error('User cancelled');
-      await finishSigning(signingContext, { success: true, data: txHash });
+      if (
+        !(await finishSigning(signingContext, { success: true, data: txHash }))
+      ) {
+        throw new Error('User cancelled');
+      }
       finished = true;
       if (runId !== runIdRef.current) throw new Error('User cancelled');
       setStatus('completed');
-      // eventBus.emit(EVENTS.DIRECT_SIGN, {});
+      completed = true;
       return txHash;
     } catch (e) {
       console.error(e);
-      const msg = e.message || e.name;
-
       if (runId === runIdRef.current) {
         await finishSigning(signingContext, { success: false, error: e });
         finished = true;
       }
       if (runId !== runIdRef.current) throw e;
 
-      // eventBus.emit(EVENTS.DIRECT_SIGN, {
-      //   error: msg || 'failed to completed',
-      // });
       throw e;
     } finally {
       if (signingContext && !finished) {
@@ -309,6 +311,9 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
       if (signingContextRef.current === signingContext) {
         signingContextRef.current = undefined;
         setSigningAttempt(undefined);
+      }
+      if (completed && retryScopeRef.current === retryScope) {
+        retryScopeRef.current = undefined;
       }
       if (runId === runIdRef.current) {
         setDirectSigning(false);
@@ -332,7 +337,15 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
         console.error('cancel direct transaction signing failed', error);
       });
     }
+    const retryScope = retryScopeRef.current;
+    retryScopeRef.current = undefined;
+    if (retryScope) {
+      void wallet.retryTxReset(retryScope).catch((error) => {
+        console.error('reset direct signing retry state failed', error);
+      });
+    }
     setStatus('idle');
+    setDirectSigning(false);
   });
 
   const currentActiveIndex = React.useMemo(() => {

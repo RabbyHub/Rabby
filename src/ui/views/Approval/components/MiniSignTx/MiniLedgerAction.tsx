@@ -30,7 +30,8 @@ import {
   useDirectSigning,
   useSetDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { SigningAttemptEventBridge } from '@/ui/hooks/useSigningAttemptEvents';
+import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -102,19 +103,13 @@ export const MiniLedgerAction: React.FC<Props> = ({
     ) {
       setVisibleLedgerConnectModal(true);
       task.stop();
-
-      // if (msg !== 'DISCONNECTED') {
-      //   task.addRevokeTask(task.currentApprovalRef.current!, 1);
-      // }
     }
   });
-
-  const hardwareEventBridge = (
-    <SigningAttemptEventBridge
-      attempt={task.signingAttempt}
-      onHardwareError={handleHardwareError}
-    />
-  );
+  const attemptRef = useRef<SigningAttemptRef>();
+  attemptRef.current = task.signingAttempt;
+  useSigningAttemptEvents(attemptRef, {
+    onHardwareError: handleHardwareError,
+  });
 
   const handleSubmit = useMemoizedFn(() => {
     setLedgerErrorMessage('');
@@ -204,7 +199,6 @@ export const MiniLedgerAction: React.FC<Props> = ({
   if (!directSubmit) {
     return (
       <>
-        {hardwareEventBridge}
         <Popup
           height={320}
           visible={visibleLedgerConnectModal}
@@ -212,7 +206,6 @@ export const MiniLedgerAction: React.FC<Props> = ({
           onCancel={() => {
             setDirectSigning(false);
             setVisibleLedgerConnectModal(false);
-            // props.onCancel?.();
           }}
           title={pendingText}
           maskStyle={{
@@ -269,7 +262,6 @@ export const MiniLedgerAction: React.FC<Props> = ({
 
   return (
     <>
-      {hardwareEventBridge}
       <Popup
         height={320}
         visible={visibleLedgerConnectModal}

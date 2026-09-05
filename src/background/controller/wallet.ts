@@ -206,11 +206,7 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
-import {
-  sameAccountRef,
-  toAccountRef,
-  toApprovalRef,
-} from '@/utils/signingTypes';
+import { toAccountRef } from '@/utils/signingTypes';
 import type {
   ApprovalRef,
   ApprovalSigningContext,
@@ -478,13 +474,14 @@ const assertApprovalActionCurrent = (context?: ApprovalSigningContext) => {
   }
 };
 
-const assertSigningContextCurrent = (context?: SigningRequestContext) => {
+const assertSigningContextCurrent = (
+  context?: SigningRequestContext,
+  from?: string
+) => {
   if (!context) return;
-  const currentAccount = preferenceService.getCurrentAccount();
   if (
-    !currentAccount ||
     !signingFlowService.isActiveContext(context) ||
-    !sameAccountRef(toAccountRef(currentAccount), context.account)
+    (from && context.account.address !== from.toLowerCase())
   ) {
     throw ethErrors.provider.userRejectedRequest();
   }
@@ -635,12 +632,10 @@ export class WalletController extends BaseController {
     account?: Account;
     origin?: string;
   }) => {
-    const currentAccount = await preferenceService.getCurrentAccount();
-    const account = toAccountRef(currentAccount);
-    if (
-      !account ||
-      (input?.account && !sameAccountRef(account, toAccountRef(input.account)))
-    ) {
+    const account = input?.account
+      ? toAccountRef(input.account)
+      : toAccountRef(preferenceService.getCurrentAccount());
+    if (!account) {
       throw ethErrors.provider.userRejectedRequest();
     }
     const context = signingFlowService.startAttempt({
@@ -687,7 +682,7 @@ export class WalletController extends BaseController {
 
   private runSigningMessageWithUI = <T>(
     context: ApprovalSigningContext,
-    run: (attempt: SigningAttemptRef) => Promise<T>
+    run: (attempt: SigningAttemptRef, approval: ApprovalRef) => Promise<T>
   ) => {
     if (!context.signing?.flow || !context.signing.attempt) {
       const rejected = Promise.reject<T>(
@@ -715,9 +710,16 @@ export class WalletController extends BaseController {
       return rejected;
     }
 
-    const owner = signingFlowService.run(flow, attempt, run, {
-      retryable: () => true,
-    });
+    const owner = signingFlowService.run(
+      flow,
+      attempt,
+      (currentAttempt) => {
+        const approval = signingFlowService.getAttemptApproval(currentAttempt);
+        if (!approval) throw ethErrors.provider.userRejectedRequest();
+        return run(currentAttempt, approval);
+      },
+      { retryable: () => true }
+    );
     void owner.catch(() => undefined);
     return owner;
   };
@@ -3062,9 +3064,12 @@ export class WalletController extends BaseController {
   setCloseTipsChains = OfflineChainsService.setCloseTipsChains;
 
   getRetryTxType = bgRetryTxMethods.getRetryTxType;
-  setRetryTxType = (type, context?: ApprovalSigningContext) => {
+  setRetryTxType = (type, context?: ApprovalSigningContext, scope?: string) => {
     if (context) assertApprovalActionCurrent(context);
-    bgRetryTxMethods.setRetryTxType(type);
+    bgRetryTxMethods.setRetryTxType(
+      type,
+      scope || context?.signing?.flow.flowId
+    );
     return true;
   };
   retryTxReset = bgRetryTxMethods.retryTxReset;
@@ -4575,7 +4580,6 @@ export class WalletController extends BaseController {
       (!brand || currentBeforeRemoval.brandName === brand);
 
     if (isRemovingCurrent) {
-      notificationService.invalidateApprovalSession();
       // Make the account unavailable before any async keyring cleanup so a
       // concurrent request cannot bind a new approval to the account being
       // removed.
@@ -4650,6 +4654,7 @@ export class WalletController extends BaseController {
 
   resetCurrentAccount = async () => {
     const [account] = await this.getAccounts();
+    if (preferenceService.getCurrentAccount() !== null) return;
     if (account) {
       preferenceService.setCurrentAccount(account);
     } else {
@@ -5192,9 +5197,9 @@ export class WalletController extends BaseController {
     context: ApprovalSigningContext
   ) => {
     assertApprovalActionCurrent(context);
-    return this.runSigningMessageWithUI(context, (attempt) =>
+    return this.runSigningMessageWithUI(context, (attempt, approval) =>
       this.signPersonalMessage(type, from, data as any, options, {
-        approval: context.approval,
+        approval,
         signing: {
           flow: context.signing!.flow,
           attempt,
@@ -5213,13 +5218,13 @@ export class WalletController extends BaseController {
     if (context && 'approval' in context) {
       assertApprovalActionCurrent(context);
     } else {
-      assertSigningContextCurrent(context);
+      assertSigningContextCurrent(context, from);
     }
     const keyring = await keyringService.getKeyringForAccount(from, type);
     if (context && 'approval' in context) {
       assertApprovalActionCurrent(context);
     } else {
-      assertSigningContextCurrent(context);
+      assertSigningContextCurrent(context, from);
     }
     const res = await keyringService.signTypedMessage(
       keyring,
@@ -5229,7 +5234,7 @@ export class WalletController extends BaseController {
     if (context && 'approval' in context) {
       assertApprovalActionCurrent(context);
     } else {
-      assertSigningContextCurrent(context);
+      assertSigningContextCurrent(context, from);
     }
     return res;
   };
@@ -5245,9 +5250,9 @@ export class WalletController extends BaseController {
     context: ApprovalSigningContext
   ) => {
     assertApprovalActionCurrent(context);
-    return this.runSigningMessageWithUI(context, (attempt) =>
+    return this.runSigningMessageWithUI(context, (attempt, approval) =>
       this.signTypedData(type, from, data as any, options, {
-        approval: context.approval,
+        approval,
         signing: {
           flow: context.signing!.flow,
           attempt,
@@ -6283,10 +6288,6 @@ export class WalletController extends BaseController {
     );
     assertApprovalActionCurrent(context);
     return res as any;
-  };
-
-  coboSafeResetCurrentAccount = async () => {
-    preferenceService.resetCurrentCoboSafeAddress();
   };
 
   coboSafeImport = async ({

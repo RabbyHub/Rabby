@@ -22,6 +22,7 @@ import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.sv
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import { FallbackSiteLogo } from 'ui/component';
 import { useWallet } from 'ui/utils';
+import { useApprovalPopup } from '@/ui/utils/approval-popup';
 import { WaitingSignMessageComponent } from '../map';
 import eventBus from '@/eventBus';
 import { asInternalSignRequestId } from '@/utils/signingTypes';
@@ -85,6 +86,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { t } = useTranslation();
   const wallet = useWallet();
+  const { showPopup } = useApprovalPopup();
 
   const [currentSite, setCurrentSite] = useState<ConnectedSite>();
   const isEnabledDappAccount = useRabbySelector((s) => {
@@ -210,6 +212,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
           if (!result.accepted) {
             throw new Error('Signing request is no longer current');
           }
+          setTimeout(() => showPopup(), 0);
         }
 
         signature = await promise;

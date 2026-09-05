@@ -17,7 +17,6 @@ export type ApprovalScope = Readonly<{
   approvalType?: Approval['data']['approvalType'];
   account: Approval['data']['account'];
   params?: Approval['data']['params'];
-  origin?: Approval['data']['origin'];
 }>;
 
 export const ApprovalScopeContext = createContext<ApprovalScope | null>(null);
@@ -33,7 +32,6 @@ export const createApprovalScope = (approval: Approval): ApprovalScope => {
     approvalType: approval.data.approvalType,
     account: approval.data.account,
     params: approval.data.params,
-    origin: approval.data.origin,
   };
 };
 

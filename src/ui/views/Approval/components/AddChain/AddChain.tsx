@@ -6,8 +6,7 @@ import { useForm } from 'antd/lib/form/Form';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useWallet } from 'ui/utils';
-import { useApprovalActions } from '@/ui/approval/actions';
+import { useApproval, useWallet } from 'ui/utils';
 import { AddEthereumChainParams } from './type';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 
@@ -22,11 +21,7 @@ interface AddChainProps {
 
 const AddChain = ({ params }: { params: AddChainProps }) => {
   const wallet = useWallet();
-  const {
-    resolve: resolveApproval,
-    reject: rejectApproval,
-    isBound,
-  } = useApprovalActions();
+  const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
 
   const { data, session } = params;
@@ -52,8 +47,6 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
 
   const { loading, runAsync: runAddChain } = useRequest(
     async () => {
-      if (!(await isBound())) return;
-
       await form.validateFields();
       const values = form.getFieldsValue();
 

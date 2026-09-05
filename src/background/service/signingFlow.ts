@@ -11,10 +11,7 @@ import {
   asSigningFlowId,
   sameAccountRef,
 } from '@/utils/signingTypes';
-import {
-  cancelSignComponentWaiting,
-  emitSigningAttemptFinished,
-} from '@/utils/signEvent';
+import { emitSigningAttemptFinished } from '@/utils/signEvent';
 
 export type SigningFlowStatus =
   | 'created'
@@ -223,7 +220,7 @@ export class SigningFlowService {
     }
     const finished = this.finishAttempt(context.attempt, outcome);
     if (!finished.accepted) return finished;
-    emitSigningAttemptFinished({
+    this.notifyFinished({
       attempt: context.attempt,
       success: outcome.success,
       ...(outcome.success ? { data: outcome.data } : { error: outcome.error }),
@@ -276,6 +273,10 @@ export class SigningFlowService {
 
     const previous = this.activeAttempt(record);
     if (previous && !this.isTerminalAttempt(previous.status)) {
+      if (previous.runner && record.owner && !record.owner.settled) {
+        this.report('cannot-supersede-owned-attempt', previous.ref);
+        return;
+      }
       this.supersede(previous);
     }
 
@@ -307,7 +308,7 @@ export class SigningFlowService {
       : undefined;
   }
 
-  getAttempt(attempt: SigningAttemptRef) {
+  private getAttempt(attempt: SigningAttemptRef) {
     const record = this.flows.get(attempt.flowId);
     return record?.attempts.get(attempt.attemptId);
   }
@@ -363,7 +364,8 @@ export class SigningFlowService {
     options: { retryable?: (error: unknown) => boolean } = {}
   ) {
     const record = this.getAttempt(attempt);
-    if (!record || !this.isCurrentAttempt(attempt)) return false;
+    if (!record || record.runner || !this.isCurrentAttempt(attempt))
+      return false;
     record.runner = runner;
     record.retryable = options.retryable;
     return true;
@@ -446,6 +448,7 @@ export class SigningFlowService {
     if (
       !flow ||
       !current ||
+      input.currentAttempt.flowId !== input.flow.flowId ||
       flow.activeAttemptId !== input.currentAttempt.attemptId ||
       current.status !== 'failed' ||
       flow.status !== 'awaiting-retry' ||
@@ -479,7 +482,12 @@ export class SigningFlowService {
   ): Promise<T> {
     const record = this.getAttempt(attempt);
     const flowRecord = this.flows.get(flow.flowId);
-    if (!record || !flowRecord || !this.isCurrentAttempt(attempt)) {
+    if (
+      !record ||
+      !flowRecord ||
+      attempt.flowId !== flow.flowId ||
+      !this.isCurrentAttempt(attempt)
+    ) {
       return Promise.reject(rejected());
     }
     if (!this.registerRunner(attempt, runner, options)) {
@@ -508,7 +516,6 @@ export class SigningFlowService {
     record.attempts.forEach((attempt) => {
       if (!this.isTerminalAttempt(attempt.status)) {
         attempt.status = 'cancelled';
-        cancelSignComponentWaiting(attempt.ref);
         attempt.waiters.splice(0).forEach(({ reject }) => reject(reason));
       }
     });
@@ -523,33 +530,8 @@ export class SigningFlowService {
     return true;
   }
 
-  cancelByApproval(approvalId: string, reason = rejected()) {
-    let cancelled = false;
-    this.flows.forEach((flow) => {
-      if (flow.approvals.has(approvalId)) {
-        cancelled = this.cancelFlow(flow.ref, reason) || cancelled;
-      }
-    });
-    return cancelled;
-  }
-
-  cancelFlowsForAccount(account: AccountRef, reason = rejected()) {
-    let cancelled = false;
-    this.flows.forEach((flow) => {
-      if (sameAccountRef(flow.account, account)) {
-        cancelled = this.cancelFlow(flow.ref, reason) || cancelled;
-      }
-    });
-    return cancelled;
-  }
-
   cancelAll(reason = rejected()) {
     this.flows.forEach((flow) => this.cancelFlow(flow.ref, reason));
-  }
-
-  clear() {
-    this.cancelAll();
-    this.flows.clear();
   }
 
   private async startRunner(
@@ -561,7 +543,7 @@ export class SigningFlowService {
     if (!record || !flow || !record.runner) return;
     try {
       await this.waitForSigningUi(attempt);
-      if (!this.beginAttempt(attempt)) return;
+      if (!this.isActiveAttempt(attempt) && !this.beginAttempt(attempt)) return;
       const result = await record.runner(attempt, retryOptions);
       const finished = this.finishAttempt(attempt, { success: true });
       if (finished.accepted) {
@@ -591,7 +573,6 @@ export class SigningFlowService {
 
   private supersede(attempt: AttemptRecord) {
     attempt.status = 'superseded';
-    cancelSignComponentWaiting(attempt.ref);
     attempt.waiters.splice(0).forEach(({ reject }) => reject(rejected()));
   }
 

@@ -99,9 +99,7 @@ export const RevokeActionOnekeyButton: React.FC<{
         visible={disconnectTipsModal}
         closable
         onCancel={() => {
-          // setDirectSigning(false);
           setDisconnectTipsModal(false);
-          // props.onCancel?.();
         }}
         title={t('page.dashboard.hd.onekeyIsDisconnected')}
         maskStyle={{

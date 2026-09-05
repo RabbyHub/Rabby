@@ -192,7 +192,6 @@ class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
   hasOtherProvider = false;
-  currentCoboSafeAddress?: Account | null;
 
   init = async () => {
     let defaultLang = 'en';
@@ -634,6 +633,7 @@ class PreferenceService {
    */
   resetCurrentAccount = async () => {
     const [account] = await keyringService.getAllVisibleAccountsArray();
+    if (this.store.currentAccount !== null) return;
     this.setCurrentAccount(account);
   };
 
@@ -1021,13 +1021,6 @@ class PreferenceService {
   setDesktopTokensAllMode = (value: boolean) => {
     this.store.desktopTokensAllMode = value;
   };
-  saveCurrentCoboSafeAddress = async () => {
-    this.currentCoboSafeAddress = await this.getCurrentAccount();
-  };
-  resetCurrentCoboSafeAddress = async () => {
-    this.setCurrentAccount(this.currentCoboSafeAddress ?? null);
-  };
-
   resetAddressSortStoreExpiredValue = () => {
     if (
       !this.store.addressSortStore.lastCurrentRecordTime ||

@@ -800,25 +800,28 @@ export const SignTestnetTx = ({
     if (!(await isBound())) return;
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      resolveApproval({
-        ...transaction,
-        isSend,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        uiRequestComponent: WaitingSignComponent[currentAccount.type],
-        $account: currentAccount,
-        type: currentAccount.type,
-        address: currentAccount.address,
-        // traceId: txDetail?.trace_id,
-        extra: {
-          brandName: currentAccount.brandName,
+      resolveApproval(
+        {
+          ...transaction,
+          isSend,
+          nonce: realNonce || tx.nonce,
+          gas: gasLimit,
+          uiRequestComponent: WaitingSignComponent[currentAccount.type],
+          $account: currentAccount,
+          type: currentAccount.type,
+          address: currentAccount.address,
+          // traceId: txDetail?.trace_id,
+          extra: {
+            brandName: currentAccount.brandName,
+          },
+          $ctx: params.$ctx,
+          signingTxId: approvalScope.signingTxId,
+          // pushType: pushInfo.type,
+          // lowGasDeadline: pushInfo.lowGasDeadline,
+          reqId,
         },
-        $ctx: params.$ctx,
-        signingTxId: approvalScope.signingTxId,
-        // pushType: pushInfo.type,
-        // lowGasDeadline: pushInfo.lowGasDeadline,
-        reqId,
-      });
+        { attempt: approvalScope.signing?.attempt }
+      );
 
       return;
     }
@@ -848,14 +851,17 @@ export const SignTestnetTx = ({
       event_category: 'Transaction',
     });
 
-    resolveApproval({
-      ...transaction,
-      nonce: realNonce || tx.nonce,
-      gas: gasLimit,
-      isSend,
-      signingTxId: approvalScope.signingTxId,
-      reqId,
-    });
+    resolveApproval(
+      {
+        ...transaction,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        isSend,
+        signingTxId: approvalScope.signingTxId,
+        reqId,
+      },
+      { attempt: approvalScope.signing?.attempt }
+    );
   };
 
   const checkErrors = useCheckGasAndNonce({

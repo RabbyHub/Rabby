@@ -167,6 +167,7 @@ export const useBatchRevokeTask = () => {
       priority: number = 0,
       ignoreGasCheck = false
     ) => {
+      const hardwareOperation = hardwareOperationRef.current;
       return queueRef.current.add(
         async () => {
           currentApprovalRef.current = item;
@@ -189,7 +190,7 @@ export const useBatchRevokeTask = () => {
               ignoreGasCheck,
               wallet,
               chainServerId: revokeItem.chainServerId,
-              hardwareOperation: hardwareOperationRef.current,
+              hardwareOperation,
               sig: gasAccount?.sig,
               autoUseGasAccount: true,
               onProgress: (status) => {

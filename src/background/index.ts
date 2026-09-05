@@ -407,7 +407,6 @@ restoreAppState();
         current.type === type &&
         (!brand || current.brandName === brand)
       ) {
-        notificationService.invalidateApprovalSession();
         // Close the account boundary synchronously; reset can await keyring
         // state, but new requests must not observe the removed account.
         preferenceService.setCurrentAccount(null);

@@ -1,3 +1,4 @@
+import { useGnosisSubmission } from '@/ui/hooks/useGnosisSubmission';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -20,7 +21,10 @@ import { ga4 } from '@/utils/ga4';
 import { useApprovalScope } from '@/ui/approval/context';
 import { useApprovalActions } from '@/ui/approval/actions';
 import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
-import { requireSigningAttempt } from '@/utils/signingTypes';
+import {
+  requireSigningAttempt,
+  sameSigningAttempt,
+} from '@/utils/signingTypes';
 import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface ApprovalParams {
@@ -76,8 +80,16 @@ const CoinbaseWaiting = ({
   };
   const signFinishedRef = useRef<((data: any) => void) | null>(null);
   const hardwareErrorRef = useRef<((message: string) => void) | null>(null);
-  useSigningAttemptEvents(attemptRef, {
+  const gnosisSubmission = useGnosisSubmission({
+    wallet,
+    attemptRef,
+    isGnosis: params.isGnosis,
+    isMessage: !!params.safeMessage,
+    signerAddress: params.account?.address || '',
     onFinished: (data) => signFinishedRef.current?.(data),
+  });
+  useSigningAttemptEvents(attemptRef, {
+    onFinished: gnosisSubmission.onFinished,
     onHardwareError: (message) => hardwareErrorRef.current?.(message),
   });
   const mountedRef = useRef(false);
@@ -118,6 +130,7 @@ const CoinbaseWaiting = ({
   };
 
   const handleRetry = async (retry?: boolean) => {
+    if (await gnosisSubmission.retry()) return;
     if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
       return;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
@@ -130,27 +143,12 @@ const CoinbaseWaiting = ({
     });
     if (!attempt) return;
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
-    if (attempt) {
-      attemptRef.current = attempt;
-      notifySigningUiReady(attempt);
-    }
+    attemptRef.current = attempt;
+    notifySigningUiReady(attempt);
   };
 
   const init = async () => {
-    const approval = {
-      id: approvalScope.approval.approvalId,
-      data: {
-        approvalComponent: approvalScope.approval.component,
-        approvalType: approvalScope.approvalType,
-        params: approvalScope.params,
-        account: approvalScope.account,
-        signing: approvalScope.signing,
-      },
-    } as any;
-    if (!mountedRef.current || !approval) return;
-    if (approval.data.signing?.attempt) {
-      attemptRef.current = approval.data.signing.attempt;
-    }
+    if (!mountedRef.current) return;
     const account = params.isGnosis ? params.account! : $account;
 
     setCurrentAccount(account);
@@ -158,12 +156,14 @@ const CoinbaseWaiting = ({
     let isSignTriggered = false;
     const isText = params.isGnosis
       ? true
-      : approval?.data.approvalType !== 'SignTx';
+      : approvalScope.approvalType !== 'SignTx';
     isSignTextRef.current = isText;
 
     const onSignFinished = async (data) => {
-      if (!(await wallet.isApprovalCurrent(approval.id))) return;
       const signingAttempt = data.attempt;
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -173,32 +173,24 @@ const CoinbaseWaiting = ({
             sig = adjustV('eth_signTypedData', sig);
             const context = getSigningContext(signingAttempt);
             if (!context) return;
-            const safeMessage = params.safeMessage;
-            if (safeMessage) {
-              await wallet.handleGnosisMessage({
-                signature: data.data,
-                signerAddress: params.account!.address!,
-                context,
-              });
-            } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(
-                  account.address,
-                  sig,
-                  context
-                );
-              } else {
-                await wallet.gnosisAddSignature(account.address, sig, context);
-                await wallet.postGnosisTransaction(context);
-              }
-            }
+            await gnosisSubmission.submit(
+              params.safeMessage ? data.data : sig,
+              context
+            );
           }
         } catch (e) {
-          rejectApproval(e.message);
+          if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
+          setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
+          setConnectError({ message: e.message });
           return;
         }
-        if (!(await wallet.isApprovalCurrent(approval.id))) return;
+        if (
+          !(await wallet.isApprovalCurrent(
+            approvalScope.approval.approvalId
+          )) ||
+          !sameSigningAttempt(attemptRef.current, signingAttempt)
+        )
+          return;
 
         setSignFinishedData({
           data: sig,
@@ -207,7 +199,7 @@ const CoinbaseWaiting = ({
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
         setConnectError({
-          message: data.errorMsg,
+          message: data.error,
         });
       }
     };
@@ -261,11 +253,7 @@ const CoinbaseWaiting = ({
       isSignTriggered = true;
     }
 
-    const attempt = approvalScope.signing?.attempt;
-    if (attempt) {
-      attemptRef.current = attempt;
-      notifySigningUiReady(attempt);
-    }
+    notifySigningUiReady(attemptRef.current);
   };
 
   useEffect(() => {

@@ -339,6 +339,7 @@ export const useBatchSwapTask = (options: {
 
   const addTask = useMemoizedFn(
     async (item: TokenItem, priority: number = 0, ignoreGasCheck = false) => {
+      const hardwareOperation = hardwareOperationRef.current;
       const taskToken = cancelTokenRef.current;
       const isTaskCancelled = () => cancelTokenRef.current !== taskToken;
       const throwIfTaskCancelled = () => {
@@ -520,7 +521,7 @@ export const useBatchSwapTask = (options: {
                   ignoreGasCheck,
                   wallet,
                   chainServerId: options.chain.serverId,
-                  hardwareOperation: hardwareOperationRef.current,
+                  hardwareOperation,
                   sig: gasAccount?.sig,
                   autoUseGasAccount: true,
                   onProgress: (status) => {

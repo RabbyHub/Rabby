@@ -24,8 +24,6 @@ export const useApproval = () => {
     approvalScope?.approval.approvalId || popupApprovalId;
   const isUnboundPopup = !!componentName && !scopedApprovalId;
 
-  // Keep the legacy hook's non-null getter type for its existing consumers,
-  // while preventing a scoped component from reading a replacement approval.
   const getApproval: () => Promise<Approval | null | undefined> = async () => {
     if (isUnboundPopup || !scopedApprovalId) {
       return isUnboundPopup ? undefined : wallet.getCurrentApproval();
@@ -141,17 +139,7 @@ export const useApproval = () => {
     }
     return result;
   };
-  const isBound = async (approvalId?: string) => {
-    const targetApprovalId = approvalId || scopedApprovalId;
-    if (!targetApprovalId) return false;
-    try {
-      return await wallet.isApprovalCurrent(targetApprovalId);
-    } catch {
-      return false;
-    }
-  };
-
-  return [getApproval, resolveApproval, rejectApproval, isBound] as const;
+  return [getApproval, resolveApproval, rejectApproval] as const;
 };
 
 export const useSelectOption = <T>({

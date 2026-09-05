@@ -100,8 +100,8 @@ import { sameAccountRef, toAccountRef } from '@/utils/signingTypes';
 const assertSigningAttemptValid = (request: ProviderRequest) => {
   const context = request.signing;
   if (!context) return;
-  const attempt = context?.attempt;
-  if (!context || !attempt || context.flow.flowId !== attempt.flowId) {
+  const attempt = context.attempt;
+  if (!attempt || context.flow.flowId !== attempt.flowId) {
     throw ethErrors.provider.userRejectedRequest();
   }
   const flow = signingFlowService.getFlow(context.flow);
@@ -736,7 +736,6 @@ class ProviderController extends BaseController {
     const isCancel = !!txParams.isCancel;
     const extra = approvalRes.extra;
     const signingTxId = approvalRes.signingTxId;
-    const isCoboSafe = !!txParams.isCoboSafe;
     const pushType = approvalRes.pushType || 'default';
     const lowGasDeadline = approvalRes.lowGasDeadline;
     const preReqId = approvalRes.reqId;
@@ -1099,7 +1098,6 @@ class ProviderController extends BaseController {
         reqId?: string;
         pushType?: TxPushType;
       }) => {
-        assertSigningAttemptValid(options as any);
         const { hash, reqId, pushType = 'default' } = info;
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
@@ -1176,13 +1174,8 @@ class ProviderController extends BaseController {
             nonce: approvalRes.nonce,
           });
         }
-
-        if (isCoboSafe) {
-          preferenceService.resetCurrentCoboSafeAddress();
-        }
       };
       const onTransactionSubmitFailed = (e: any) => {
-        assertSigningAttemptValid(options as any);
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
           Array.isArray(options?.data?.$ctx?.stats?.afterSign)
@@ -1395,7 +1388,6 @@ class ProviderController extends BaseController {
                   return_tx_id: fePushedHash!,
                 };
 
-                assertSigningAttemptValid(options as any);
                 openapiService.submitTxV2(params).catch((error) => {
                   console.log('ignore BE error', error);
                 });
@@ -1555,6 +1547,7 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertSigningAttemptValid(req);
       return approvalRes;
     }
     assertApprovalResult(approvalRes);
@@ -1641,10 +1634,10 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertSigningAttemptValid(req);
       return approvalRes;
     }
     try {
-      assertApprovalResult(approvalRes);
       const result = await this._signTypedData(
         {
           from,
@@ -1692,10 +1685,10 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertSigningAttemptValid(req);
       return approvalRes;
     }
     try {
-      assertApprovalResult(approvalRes);
       const result = await this._signTypedData(
         {
           from,
@@ -1742,10 +1735,10 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertSigningAttemptValid(req);
       return approvalRes;
     }
     try {
-      assertApprovalResult(approvalRes);
       const result = await this._signTypedData(
         {
           from,
@@ -1792,10 +1785,10 @@ class ProviderController extends BaseController {
       currentAccount.type === KEYRING_TYPE.GnosisKeyring &&
       isString(approvalRes)
     ) {
+      assertSigningAttemptValid(req);
       return approvalRes;
     }
     try {
-      assertApprovalResult(approvalRes);
       const result = await this._signTypedData(
         {
           from,
@@ -1886,7 +1879,7 @@ class ProviderController extends BaseController {
     }
 
     const connectedSite = permissionService.getConnectedSite(origin);
-    if (!connectedSite || connectedSite.chain !== chain.enum) {
+    if (connectedSite && connectedSite.chain !== chain.enum) {
       notificationService.invalidateApprovalSession();
     }
     if (approvalRes) {
@@ -1959,7 +1952,7 @@ class ProviderController extends BaseController {
     }
 
     const connectedSite = permissionService.getConnectedSite(origin);
-    if (connectedSite?.chain !== chain.enum) {
+    if (connectedSite && connectedSite.chain !== chain.enum) {
       notificationService.invalidateApprovalSession();
     }
     permissionService.updateConnectSite(

@@ -26,7 +26,6 @@ export type ApprovalRejectOptions = {
 
 type ApprovalActionDependencies = {
   approval: ResolveApprovalCommand['approval'];
-  attempt?: SigningAttemptRef;
   account: Account;
   isCurrent: () => Promise<boolean>;
   deviceConnect: (data: any, account: Account) => Promise<boolean>;
@@ -47,7 +46,6 @@ const staleApprovalResult: ApprovalActionResult = {
 
 export const createApprovalActions = ({
   approval,
-  attempt,
   account,
   isCurrent,
   deviceConnect,
@@ -56,19 +54,17 @@ export const createApprovalActions = ({
   onResolved,
   onRejected,
 }: ApprovalActionDependencies) => {
-  const isBound = async () => isCurrent();
-
   return {
-    isBound,
+    isBound: isCurrent,
     resolve: async (
       data?: any,
       options: ApprovalResolveOptions = {}
     ): Promise<ApprovalActionResult | undefined> => {
-      if (!(await isBound())) return staleApprovalResult;
+      if (!(await isCurrent())) return staleApprovalResult;
       if (!(await deviceConnect(data, account))) return;
-      if (!(await isBound())) return staleApprovalResult;
+      if (!(await isCurrent())) return staleApprovalResult;
 
-      const signingAttempt = options.attempt || attempt;
+      const signingAttempt = options.attempt;
       const result = await resolveApprovalFor({
         approval,
         data,
@@ -82,8 +78,8 @@ export const createApprovalActions = ({
       error?: string,
       options: ApprovalRejectOptions = {}
     ): Promise<ApprovalActionResult> => {
-      if (!(await isBound())) return staleApprovalResult;
-      const signingAttempt = options.attempt || attempt;
+      if (!(await isCurrent())) return staleApprovalResult;
+      const signingAttempt = options.attempt;
       const result = await rejectApprovalFor({
         approval,
         error,
@@ -107,7 +103,6 @@ export const useApprovalActions = () => {
   return useMemo(() => {
     const actions = createApprovalActions({
       approval: approval.approval,
-      attempt: approval.signing?.attempt,
       account: approval.account,
       isCurrent: () => wallet.isApprovalCurrent(approval.approval.approvalId),
       deviceConnect,

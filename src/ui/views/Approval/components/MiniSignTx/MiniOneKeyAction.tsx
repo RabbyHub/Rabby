@@ -23,7 +23,8 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { OneKey } from '@/ui/views/CommonPopup/OneKey';
 import { ProcessActions } from '../FooterBar/ProcessActions';
-import { SigningAttemptEventBridge } from '@/ui/hooks/useSigningAttemptEvents';
+import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -88,13 +89,11 @@ export const MiniOneKeyAction: React.FC<Props> = ({
       task.stop();
     }
   });
-
-  const hardwareEventBridge = (
-    <SigningAttemptEventBridge
-      attempt={task.signingAttempt}
-      onHardwareError={handleHardwareError}
-    />
-  );
+  const attemptRef = useRef<SigningAttemptRef>();
+  attemptRef.current = task.signingAttempt;
+  useSigningAttemptEvents(attemptRef, {
+    onHardwareError: handleHardwareError,
+  });
 
   const handleSubmit = useMemoizedFn(() => {
     onSubmit();
@@ -126,7 +125,6 @@ export const MiniOneKeyAction: React.FC<Props> = ({
   if (!directSubmit) {
     return (
       <>
-        {hardwareEventBridge}
         <Popup
           height={320}
           visible={disconnectTipsModal}
@@ -134,7 +132,6 @@ export const MiniOneKeyAction: React.FC<Props> = ({
           onCancel={() => {
             setDirectSigning(false);
             setDisconnectTipsModal(false);
-            // props.onCancel?.();
           }}
           title={t('page.dashboard.hd.onekeyIsDisconnected')}
           maskStyle={{
@@ -204,7 +201,6 @@ export const MiniOneKeyAction: React.FC<Props> = ({
 
   return (
     <>
-      {hardwareEventBridge}
       <Popup
         height={'auto'}
         visible={disconnectTipsModal}
