@@ -106,6 +106,15 @@ export const requireSigningAttempt = (
   return attempt;
 };
 
+export const sameSigningAttempt = (
+  left?: SigningAttemptRef | null,
+  right?: SigningAttemptRef | null
+) =>
+  !!left &&
+  !!right &&
+  left.flowId === right.flowId &&
+  left.attemptId === right.attemptId;
+
 export const toAccountRef = (
   account?: Partial<AccountRef> | null
 ): AccountRef | undefined => {

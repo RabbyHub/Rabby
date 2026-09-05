@@ -185,7 +185,7 @@ const openInDesktop = async (req: ProviderRequest) => {
       currentAccount &&
       account.address?.toLowerCase() !== currentAccount.address.toLowerCase()
     ) {
-      wallet.changeAccount(account);
+      preferenceService.setCurrentAccount(account);
     }
   }
   wallet.openInDesktop('/desktop/profile?utm_source=debank');

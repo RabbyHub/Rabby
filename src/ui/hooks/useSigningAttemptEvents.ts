@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import type {
@@ -6,22 +6,17 @@ import type {
   SigningAttemptFinishedEvent,
   SigningAttemptRef,
 } from '@/utils/signingTypes';
+import { sameSigningAttempt } from '@/utils/signingTypes';
 
 type EventCallbacks = {
   onFinished?: (event: SigningAttemptFinishedEvent) => void;
-  onHardwareError?: (errorMessage: string) => void;
-  onSubmitting?: () => void;
+  onHardwareError?: (errorMessage: string, attempt: SigningAttemptRef) => void;
+  onSubmitting?: (attempt: SigningAttemptRef) => void;
 };
 
 type SigningAttemptRefHolder = {
-  current: SigningAttemptRef;
+  current?: SigningAttemptRef;
 };
-
-const sameAttempt = (expected: SigningAttemptRef | undefined, value: unknown) =>
-  !!expected &&
-  !!value &&
-  (value as SigningAttemptRef).flowId === expected.flowId &&
-  (value as SigningAttemptRef).attemptId === expected.attemptId;
 
 export const useSigningAttemptEvents = (
   attemptRef: SigningAttemptRefHolder,
@@ -33,23 +28,32 @@ export const useSigningAttemptEvents = (
 
   useEffect(() => {
     const onFinished = (data: SigningAttemptFinishedEvent) => {
-      if (!sameAttempt(attemptRef.current, data?.attempt)) return;
-      if (sameAttempt(finishedAttemptRef.current, data.attempt)) return;
+      if (!sameSigningAttempt(attemptRef.current, data?.attempt)) return;
+      if (sameSigningAttempt(finishedAttemptRef.current, data.attempt)) return;
       finishedAttemptRef.current = data.attempt;
       callbacksRef.current.onFinished?.(data);
     };
     const onHardwareError = (data: {
-      operation?: HardwareOperationRef;
-      errorMsg?: string;
+      operation: HardwareOperationRef;
+      errorMsg: string;
     }) => {
       const operation = data?.operation;
-      if (operation?.kind !== 'signing-attempt') return;
-      if (!sameAttempt(attemptRef.current, operation.attempt)) return;
-      if (data.errorMsg) callbacksRef.current.onHardwareError?.(data.errorMsg);
+      if (
+        operation?.kind !== 'signing-attempt' ||
+        !sameSigningAttempt(attemptRef.current, operation.attempt)
+      ) {
+        return;
+      }
+      if (data.errorMsg) {
+        callbacksRef.current.onHardwareError?.(
+          data.errorMsg,
+          operation.attempt
+        );
+      }
     };
-    const onSubmitting = (data: { attempt: SigningAttemptRef }) => {
-      if (!sameAttempt(attemptRef.current, data?.attempt)) return;
-      callbacksRef.current.onSubmitting?.();
+    const onSubmitting = (attempt: SigningAttemptRef) => {
+      if (!sameSigningAttempt(attemptRef.current, attempt)) return;
+      callbacksRef.current.onSubmitting?.(attempt);
     };
 
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, onFinished);
@@ -64,31 +68,4 @@ export const useSigningAttemptEvents = (
       eventBus.removeEventListener(EVENTS.TX_SUBMITTING, onSubmitting);
     };
   }, [attemptRef]);
-};
-
-const SigningAttemptEventBridgeMounted = ({
-  attempt,
-  onHardwareError,
-}: {
-  attempt: SigningAttemptRef;
-  onHardwareError?: (errorMessage: string) => void;
-}) => {
-  const attemptRef = useRef(attempt);
-  attemptRef.current = attempt;
-  useSigningAttemptEvents(attemptRef, { onHardwareError });
-  return null;
-};
-
-export const SigningAttemptEventBridge = ({
-  attempt,
-  onHardwareError,
-}: {
-  attempt?: SigningAttemptRef;
-  onHardwareError?: (errorMessage: string) => void;
-}) => {
-  if (!attempt) return null;
-  return React.createElement(SigningAttemptEventBridgeMounted, {
-    attempt,
-    onHardwareError,
-  });
 };

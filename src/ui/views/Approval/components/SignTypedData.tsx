@@ -474,7 +474,9 @@ const SignTypedData = ({
                     block
                     onClick={() => {
                       modal.destroy();
-                      resolveApproval(res.safeMessage.preparedSignature);
+                      resolveApproval(res.safeMessage.preparedSignature, {
+                        attempt: approval.signing?.attempt,
+                      });
                     }}
                     className="text-[15px] h-[40px] rounded-[6px]"
                   >
@@ -564,21 +566,24 @@ const SignTypedData = ({
       currentAccount?.type &&
       WaitingSignMessageComponent[currentAccount?.type]
     ) {
-      resolveApproval({
-        uiRequestComponent: WaitingSignMessageComponent[currentAccount?.type],
-        $account: currentAccount,
-        type: currentAccount.type,
-        address: currentAccount.address,
-        extra: {
-          brandName: currentAccount.brandName,
-          signTextMethod: underline2Camelcase(params.method),
+      resolveApproval(
+        {
+          uiRequestComponent: WaitingSignMessageComponent[currentAccount?.type],
+          $account: currentAccount,
+          type: currentAccount.type,
+          address: currentAccount.address,
+          extra: {
+            brandName: currentAccount.brandName,
+            signTextMethod: underline2Camelcase(params.method),
+          },
         },
-      });
+        { attempt: approval.signing?.attempt }
+      );
 
       return;
     }
     report('startSignText');
-    resolveApproval({});
+    resolveApproval({}, { attempt: approval.signing?.attempt });
   };
 
   const init = async () => {
@@ -806,28 +811,31 @@ const SignTypedData = ({
         )
         .catch(() => undefined);
 
-      resolveApproval({
-        uiRequestComponent: WaitingSignMessageComponent[account.type],
-        type: account.type,
-        address: account.address,
-        data: [account.address, JSON.stringify(typedData)],
-        isGnosis: true,
-        account: account,
-        $account: account,
-        safeMessage: {
-          message: signTypedData,
-          safeAddress: safeInfo.address,
-          chainId: currentChainId,
-          safeMessageHash: safeMessageHash,
-        },
-        extra: {
-          popupProps: {
-            maskStyle: {
-              backgroundColor: 'transparent',
+      resolveApproval(
+        {
+          uiRequestComponent: WaitingSignMessageComponent[account.type],
+          type: account.type,
+          address: account.address,
+          data: [account.address, JSON.stringify(typedData)],
+          isGnosis: true,
+          account: account,
+          $account: account,
+          safeMessage: {
+            message: signTypedData,
+            safeAddress: safeInfo.address,
+            chainId: currentChainId,
+            safeMessageHash: safeMessageHash,
+          },
+          extra: {
+            popupProps: {
+              maskStyle: {
+                backgroundColor: 'transparent',
+              },
             },
           },
         },
-      });
+        { attempt: approval.signing?.attempt }
+      );
     }
     return;
   };

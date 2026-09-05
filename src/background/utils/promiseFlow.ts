@@ -8,8 +8,6 @@ type FlowTask<T extends Record<string, any> = Record<string, any>, U = any> = (
 
 export default class PromiseFlow<T extends ContextType = ContextType> {
   private _tasks: FlowTask<T>[] = [];
-  _context: ContextType = {};
-  requestedApproval = false;
 
   use(fn: FlowTask<T>): PromiseFlow<T> {
     if (typeof fn !== 'function') {

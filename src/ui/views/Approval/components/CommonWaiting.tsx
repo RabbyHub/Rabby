@@ -1,3 +1,4 @@
+import { useGnosisSubmission } from '@/ui/hooks/useGnosisSubmission';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { openInternalPageInTab, useCommonPopupView, useWallet } from 'ui/utils';
@@ -27,7 +28,10 @@ import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectS
 import { useApprovalScope } from '@/ui/approval/context';
 import { useApprovalActions } from '@/ui/approval/actions';
 import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
-import { requireSigningAttempt } from '@/utils/signingTypes';
+import {
+  requireSigningAttempt,
+  sameSigningAttempt,
+} from '@/utils/signingTypes';
 import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface ApprovalParams {
@@ -81,14 +85,22 @@ export const CommonWaiting = ({
   };
   const handlersRef = React.useRef<{
     onFinished?: (data: any) => void;
-    onHardwareError?: (message: string) => void;
-    onSubmitting?: () => void;
+    onHardwareError?: (message: string, attempt: SigningAttemptRef) => void;
+    onSubmitting?: (attempt: SigningAttemptRef) => void;
   }>({});
-  useSigningAttemptEvents(attemptRef, {
+  const gnosisSubmission = useGnosisSubmission({
+    wallet,
+    attemptRef,
+    isGnosis: params.isGnosis,
+    isMessage: !!params.safeMessage,
+    signerAddress: params.account?.address || '',
     onFinished: (data) => handlersRef.current.onFinished?.(data),
-    onHardwareError: (message) =>
-      handlersRef.current.onHardwareError?.(message),
-    onSubmitting: () => handlersRef.current.onSubmitting?.(),
+  });
+  useSigningAttemptEvents(attemptRef, {
+    onFinished: gnosisSubmission.onFinished,
+    onHardwareError: (message, attempt) =>
+      handlersRef.current.onHardwareError?.(message, attempt),
+    onSubmitting: (attempt) => handlersRef.current.onSubmitting?.(attempt),
   });
   const mountedRef = React.useRef(false);
   const listenersCleanupRef = React.useRef<(() => void) | null>(null);
@@ -117,6 +129,7 @@ export const CommonWaiting = ({
   const [description, setDescription] = React.useState('');
 
   const handleRetry = async () => {
+    if (await gnosisSubmission.retry()) return;
     if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
       message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
@@ -141,10 +154,8 @@ export const CommonWaiting = ({
     if (!attempt) return;
 
     message.success(t('page.signFooterBar.ledger.resent'));
-    if (attempt) {
-      attemptRef.current = attempt;
-      notifySigningUiReady(attempt);
-    }
+    attemptRef.current = attempt;
+    notifySigningUiReady(attempt);
   };
 
   const handleCancel = () => {
@@ -168,26 +179,13 @@ export const CommonWaiting = ({
 
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
-    const approval = {
-      id: approvalScope.approval.approvalId,
-      data: {
-        approvalComponent: approvalScope.approval.component,
-        approvalType: approvalScope.approvalType,
-        params: approvalScope.params,
-        account: approvalScope.account,
-        signing: approvalScope.signing,
-      },
-    } as any;
-    if (!mountedRef.current || !approval) return;
-    if (approval.data.signing?.attempt) {
-      attemptRef.current = approval.data.signing.attempt;
-    }
+    if (!mountedRef.current) return;
 
     const isSignText = params.isGnosis
       ? true
-      : approval?.data.approvalType !== 'SignTx';
+      : approvalScope.approvalType !== 'SignTx';
     if (!isSignText) {
-      const signingTxId = approval.data.params.signingTxId;
+      const signingTxId = approvalScope.params?.signingTxId;
       if (signingTxId) {
         const signingTx = await wallet.getSigningTx(signingTxId);
         if (!mountedRef.current) return;
@@ -222,20 +220,28 @@ export const CommonWaiting = ({
       });
     }
 
-    const onHardwareRejected = async (errorMessage: string) => {
-      if (!(await wallet.isApprovalCurrent(approval.id))) return;
+    const onHardwareRejected = async (
+      errorMessage: string,
+      signingAttempt: SigningAttemptRef
+    ) => {
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       if (!errorMessage) return;
       setErrorMessage(errorMessage);
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
     };
 
     const onOneKeyPermission = async (data) => {
-      if (!(await wallet.isApprovalCurrent(approval.id))) return;
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
       openInternalPageInTab('request-permission?type=onekey&from=approval');
     };
 
-    const onTxSubmitting = async () => {
-      if (!(await wallet.isApprovalCurrent(approval.id))) return;
+    const onTxSubmitting = async (signingAttempt: SigningAttemptRef) => {
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     };
     eventBus.addEventListener(
@@ -243,9 +249,11 @@ export const CommonWaiting = ({
       onOneKeyPermission
     );
     const onSignFinished = async (data) => {
-      console.log('finished', data);
-      if (!(await wallet.isApprovalCurrent(approval.id))) return;
       const signingAttempt = data.attempt;
+      console.log('finished', data);
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -255,37 +263,21 @@ export const CommonWaiting = ({
             sig = adjustV('eth_signTypedData', sig);
             const context = getSigningContext(signingAttempt);
             if (!context) return;
-            const safeMessage = params.safeMessage;
-            if (safeMessage) {
-              await wallet.handleGnosisMessage({
-                signature: data.data,
-                signerAddress: params.account!.address!,
-                context,
-              });
-            } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(
-                  account.address,
-                  data.data,
-                  context
-                );
-              } else {
-                await wallet.gnosisAddSignature(
-                  account.address,
-                  data.data,
-                  context
-                );
-                await wallet.postGnosisTransaction(context);
-              }
-            }
+            await gnosisSubmission.submit(data.data, context);
           }
         } catch (e) {
+          if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           setErrorMessage(e.message);
           return;
         }
-        if (!(await wallet.isApprovalCurrent(approval.id))) return;
+        if (
+          !(await wallet.isApprovalCurrent(
+            approvalScope.approval.approvalId
+          )) ||
+          !sameSigningAttempt(attemptRef.current, signingAttempt)
+        )
+          return;
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
@@ -302,7 +294,7 @@ export const CommonWaiting = ({
         });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setErrorMessage(data.errorMsg);
+        setErrorMessage(data.error);
       }
     };
     handlersRef.current = {
@@ -318,11 +310,7 @@ export const CommonWaiting = ({
       handlersRef.current = {};
     };
 
-    const attempt = approvalScope.signing?.attempt;
-    if (attempt) {
-      attemptRef.current = attempt;
-      notifySigningUiReady(attempt);
-    }
+    notifySigningUiReady(attemptRef.current);
   };
 
   React.useEffect(() => {
@@ -404,6 +392,8 @@ export const CommonWaiting = ({
   }, [brandContent?.brand]);
 
   const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    approvalType: approvalScope.approvalType,
+    retryScope: approvalScope.signing?.flow.flowId,
     nonce: params?.nonce,
     chainId: params?.chainId,
     from: params?.from,

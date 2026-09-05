@@ -103,9 +103,7 @@ export const RevokeActionLedgerButton: React.FC<{
         visible={visibleLedgerConnectModal}
         closable
         onCancel={() => {
-          // setDirectSigning(false);
           setVisibleLedgerConnectModal(false);
-          // props.onCancel?.();
         }}
         title={t('page.dashboard.hd.ledgerIsDisconnected')}
         maskStyle={{

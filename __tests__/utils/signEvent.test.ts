@@ -1,85 +1,60 @@
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import {
-  cancelSignComponentWaiting,
   notifySigningUiReady,
   getSignEventErrorMessage,
-  waitForSigningUi,
+  emitSigningAttemptFinished,
 } from '@/utils/signEvent';
 import { toSigningAttemptRef } from '@/utils/signingTypes';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
+
+(global as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 describe('scoped signing readiness events', () => {
+  it('accepts the submitting attempt payload and ignores other attempts', () => {
+    const attempt = toSigningAttemptRef('flow-a', 'attempt-a');
+    const onSubmitting = jest.fn();
+    const Consumer = () => {
+      const ref = React.useRef(attempt);
+      useSigningAttemptEvents(ref, { onSubmitting });
+      return null;
+    };
+    const root = createRoot(document.createElement('div'));
+    act(() => root.render(React.createElement(Consumer)));
+    try {
+      eventBus.emit(EVENTS.TX_SUBMITTING, toSigningAttemptRef('flow-a', 'old'));
+      eventBus.emit(EVENTS.TX_SUBMITTING, undefined);
+      expect(onSubmitting).not.toHaveBeenCalled();
+      eventBus.emit(EVENTS.TX_SUBMITTING, attempt);
+      expect(onSubmitting).toHaveBeenCalledTimes(1);
+      expect(onSubmitting).toHaveBeenCalledWith(attempt);
+    } finally {
+      act(() => root.unmount());
+    }
+  });
   beforeEach(() => {
-    eventBus.removeAllEventListeners(EVENTS.SIGN_WAITING_AMOUNTED);
-    eventBus.removeAllEventListeners(EVENTS.SIGN_WAITING_CANCELLED);
     eventBus.removeAllEventListeners(EVENTS.broadcastToBackground);
+    eventBus.removeAllEventListeners(EVENTS.broadcastToUI);
   });
 
   afterEach(() => {
-    eventBus.removeAllEventListeners(EVENTS.SIGN_WAITING_AMOUNTED);
-    eventBus.removeAllEventListeners(EVENTS.SIGN_WAITING_CANCELLED);
     eventBus.removeAllEventListeners(EVENTS.broadcastToBackground);
+    eventBus.removeAllEventListeners(EVENTS.broadcastToUI);
   });
 
-  it('waits for the matching attempt instead of consuming another flow event', async () => {
-    let settled = false;
-    const attempt = toSigningAttemptRef('flow-a', 'attempt-a');
-    const waiting = waitForSigningUi(attempt).then(() => {
-      settled = true;
-    });
-
-    eventBus.emit(EVENTS.SIGN_WAITING_AMOUNTED, {
-      flowId: 'flow-b',
-      attemptId: 'attempt-b',
-    });
-    await Promise.resolve();
-    expect(settled).toBe(false);
-
-    eventBus.emit(EVENTS.SIGN_WAITING_AMOUNTED, {
-      flowId: 'flow-a',
-      attemptId: 'attempt-a',
-    });
-    await waiting;
-    expect(settled).toBe(true);
-  });
-
-  it('requires an identity-bearing ready event', async () => {
-    let settled = false;
-    const waiting = waitForSigningUi(
-      toSigningAttemptRef('flow-a', 'attempt-a')
-    ).then(() => {
-      settled = true;
-    });
-
-    eventBus.emit(EVENTS.SIGN_WAITING_AMOUNTED, {
-      flowId: 'flow-b',
-      attemptId: 'attempt-b',
-    });
-    await Promise.resolve();
-    expect(settled).toBe(false);
-
-    eventBus.emit(EVENTS.SIGN_WAITING_AMOUNTED, {
-      flowId: 'flow-a',
-      attemptId: 'attempt-a',
-    });
-    await waiting;
-    expect(settled).toBe(true);
-  });
-
-  it('broadcasts the signing attempt to the background and local listeners', () => {
+  it('broadcasts the signing attempt to the background', () => {
     const background = jest.fn();
-    const ui = jest.fn();
     eventBus.addEventListener(EVENTS.broadcastToBackground, background);
-    eventBus.addEventListener(EVENTS.SIGN_WAITING_AMOUNTED, ui);
 
     const attempt = toSigningAttemptRef('flow-a', 'attempt-a');
-    notifySigningUiReady(toSigningAttemptRef('flow-a', 'attempt-a'));
+    notifySigningUiReady(attempt);
 
     expect(background).toHaveBeenCalledWith({
       method: EVENTS.SIGN_WAITING_AMOUNTED,
       data: attempt,
     });
-    expect(ui).toHaveBeenCalledWith(attempt);
   });
 
   it('keeps legacy error consumers compatible with identity-bearing payloads', () => {
@@ -93,21 +68,24 @@ describe('scoped signing readiness events', () => {
     expect(getSignEventErrorMessage('DISCONNECTED')).toBe('DISCONNECTED');
   });
 
-  it('rejects a waiter when its matching attempt is cancelled', async () => {
+  it('emits completion failures under the shared error field', () => {
+    const ui = jest.fn();
+    eventBus.addEventListener(EVENTS.broadcastToUI, ui);
     const attempt = toSigningAttemptRef('flow-a', 'attempt-a');
-    const waiting = waitForSigningUi(attempt);
 
-    cancelSignComponentWaiting(toSigningAttemptRef('flow-b', 'attempt-b'));
-    await Promise.resolve();
-
-    let settled = false;
-    waiting.catch(() => {
-      settled = true;
+    emitSigningAttemptFinished({
+      attempt,
+      success: false,
+      error: new Error('sign failed'),
     });
-    await Promise.resolve();
-    expect(settled).toBe(false);
 
-    cancelSignComponentWaiting(attempt);
-    await expect(waiting).rejects.toMatchObject({ code: 4001 });
+    expect(ui).toHaveBeenCalledWith({
+      method: EVENTS.SIGN_FINISHED,
+      params: {
+        attempt,
+        success: false,
+        error: 'sign failed',
+      },
+    });
   });
 });

@@ -1,5 +1,7 @@
 import { SigningFlowService } from '@/background/service/signingFlow';
 import { asSigningFlowId, toSigningAttemptRef } from '@/utils/signingTypes';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 const flow = (id = 'flow-a') => ({ flowId: asSigningFlowId(id) });
 
@@ -20,6 +22,76 @@ describe('SigningFlowService', () => {
     expect(service.finishAttempt(attempt, { success: true }).accepted).toBe(
       false
     );
+  });
+
+  it('starts only one runner for an attempt', async () => {
+    const service = new SigningFlowService();
+    const ref = service.createFlow({
+      flowId: 'flow-a',
+      origin: 'https://dapp.test',
+      rpcRequestId: 'rpc-a',
+    });
+    const attempt = service.createAttempt(ref, { awaitUi: false })!;
+    const runner = jest.fn().mockResolvedValue('0xresult');
+
+    const owner = service.run(ref, attempt, runner);
+    await expect(service.run(ref, attempt, runner)).rejects.toMatchObject({
+      code: 4001,
+    });
+    await expect(owner).resolves.toBe('0xresult');
+    expect(runner).toHaveBeenCalledTimes(1);
+  });
+
+  it('runs an attempt that was started before its direct runner is registered', async () => {
+    const service = new SigningFlowService();
+    const context = service.startAttempt({
+      account: { address: '0xaccount', type: 'privateKey', brandName: 'Rabby' },
+      origin: 'https://a.test',
+      rpcRequestId: 'a',
+    })!;
+    const owner = service.run(context.flow, context.attempt, async () => '0xresult');
+
+    await expect(owner).resolves.toBe('0xresult');
+    expect(service.getFlow(context.flow)).toBeUndefined();
+  });
+
+  it('does not leave the owner pending when a running attempt is superseded', async () => {
+    const service = new SigningFlowService();
+    const ref = service.createFlow({
+      flowId: 'flow-a',
+      origin: 'https://dapp.test',
+      rpcRequestId: 'rpc-a',
+    });
+    const attempt = service.createAttempt(ref, { awaitUi: false })!;
+    const runner = jest.fn().mockResolvedValue('0xresult');
+    const owner = service.run(ref, attempt, runner);
+
+    expect(service.createAttempt(ref)).toBeUndefined();
+    await expect(owner).resolves.toBe('0xresult');
+    expect(runner).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects a runner registered with an attempt from another flow', async () => {
+    const service = new SigningFlowService();
+    const flowA = service.createFlow({
+      flowId: 'flow-a',
+      origin: 'https://a.test',
+      rpcRequestId: 'a',
+    });
+    const flowB = service.createFlow({
+      flowId: 'flow-b',
+      origin: 'https://b.test',
+      rpcRequestId: 'b',
+    });
+    const attemptB = service.createAttempt(flowB, { awaitUi: false })!;
+    const runner = jest.fn().mockResolvedValue('wrong-flow');
+
+    await expect(service.run(flowA, attemptB, runner)).rejects.toMatchObject({
+      code: 4001,
+    });
+    expect(runner).not.toHaveBeenCalled();
+    expect(service.getFlow(flowA)?.status).toBe('awaiting-approval');
+    expect(service.getFlow(flowB)?.status).toBe('created');
   });
 
   it('rejects mismatched readiness and superseded completion', async () => {
@@ -102,6 +174,44 @@ describe('SigningFlowService', () => {
     expect(service.finishAttempt(attempt, { success: true }).accepted).toBe(
       false
     );
+  });
+
+  it('keeps cleanup when a completion listener throws', () => {
+    const service = new SigningFlowService();
+    const ref = service.createFlow({
+      flowId: 'flow-a',
+      account: { address: '0xaccount', type: 'privateKey', brandName: 'Rabby' },
+      origin: 'https://a.test',
+      rpcRequestId: 'a',
+    });
+    const attempt = service.createAttempt(ref, { awaitUi: false })!;
+    service.beginAttempt(attempt);
+    const listener = () => {
+      throw new Error('listener failed');
+    };
+    eventBus.addEventListener(EVENTS.broadcastToUI, listener);
+
+    try {
+      expect(
+        service.finishAttemptWithEvent(
+          {
+            flow: ref,
+            attempt,
+            account: {
+              address: '0xaccount',
+              type: 'privateKey',
+              brandName: 'Rabby',
+            },
+            origin: 'https://a.test',
+            rpcRequestId: 'a',
+          },
+          { success: true, data: 'signed' }
+        )
+      ).toEqual({ accepted: true, status: 'succeeded' });
+      expect(service.getFlow(ref)).toBeUndefined();
+    } finally {
+      eventBus.removeEventListener(EVENTS.broadcastToUI, listener);
+    }
   });
 
   it('links a different-account child attempt and removes it on cancellation', () => {

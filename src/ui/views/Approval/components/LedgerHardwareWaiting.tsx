@@ -1,3 +1,4 @@
+import { useGnosisSubmission } from '@/ui/hooks/useGnosisSubmission';
 import eventBus from '@/eventBus';
 import stats from '@/stats';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
@@ -23,7 +24,10 @@ import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectS
 import { useApprovalScope } from '@/ui/approval/context';
 import { useApprovalActions } from '@/ui/approval/actions';
 import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
-import { requireSigningAttempt } from '@/utils/signingTypes';
+import {
+  requireSigningAttempt,
+  sameSigningAttempt,
+} from '@/utils/signingTypes';
 import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface ApprovalParams {
@@ -88,14 +92,22 @@ const LedgerHardwareWaiting = ({
   };
   const handlersRef = React.useRef<{
     onFinished?: (data: any) => void;
-    onHardwareError?: (message: string) => void;
-    onSubmitting?: () => void;
+    onHardwareError?: (message: string, attempt: SigningAttemptRef) => void;
+    onSubmitting?: (attempt: SigningAttemptRef) => void;
   }>({});
-  useSigningAttemptEvents(attemptRef, {
+  const gnosisSubmission = useGnosisSubmission({
+    wallet,
+    attemptRef,
+    isGnosis: params.isGnosis,
+    isMessage: !!params.safeMessage,
+    signerAddress: params.account?.address || '',
     onFinished: (data) => handlersRef.current.onFinished?.(data),
-    onHardwareError: (message) =>
-      handlersRef.current.onHardwareError?.(message),
-    onSubmitting: () => handlersRef.current.onSubmitting?.(),
+  });
+  useSigningAttemptEvents(attemptRef, {
+    onFinished: gnosisSubmission.onFinished,
+    onHardwareError: (message, attempt) =>
+      handlersRef.current.onHardwareError?.(message, attempt),
+    onSubmitting: (attempt) => handlersRef.current.onSubmitting?.(attempt),
   });
   const chain = findChain({
     id: params.chainId || 1,
@@ -120,6 +132,7 @@ const LedgerHardwareWaiting = ({
   };
 
   const handleRetry = async (showToast = true) => {
+    if (await gnosisSubmission.retry()) return;
     if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
       message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
@@ -146,10 +159,8 @@ const LedgerHardwareWaiting = ({
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
-    if (attempt) {
-      attemptRef.current = attempt;
-      notifySigningUiReady(attempt);
-    }
+    attemptRef.current = attempt;
+    notifySigningUiReady(attempt);
   };
 
   // const handleClickResult = () => {
@@ -159,28 +170,14 @@ const LedgerHardwareWaiting = ({
 
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
-    const approval = {
-      id: approvalScope.approval.approvalId,
-      data: {
-        approvalComponent: approvalScope.approval.component,
-        approvalType: approvalScope.approvalType,
-        params: approvalScope.params,
-        account: approvalScope.account,
-        signing: approvalScope.signing,
-      },
-    } as any;
-    if (!mountedRef.current || !approval) return;
-    if (approval.data.signing?.attempt) {
-      attemptRef.current = approval.data.signing.attempt;
-    }
+    if (!mountedRef.current) return;
 
     const isSignText = params.isGnosis
       ? true
-      : approval?.data.approvalType !== 'SignTx';
+      : approvalScope.approvalType !== 'SignTx';
     setIsSignText(isSignText);
     if (!isSignText) {
-      const signingTxId = approval.data.params.signingTxId;
-      // const tx = approval.data?.params;
+      const signingTxId = approvalScope.params?.signingTxId;
       if (signingTxId) {
         // const { nonce, from, chainId } = tx;
         // const explain = await wallet.getExplainCache({
@@ -221,24 +218,36 @@ const LedgerHardwareWaiting = ({
         method: params?.extra?.signTextMethod,
       });
     }
-    const onHardwareRejected = async (errorMessage: string) => {
-      if (!(await wallet.isApprovalCurrent(approval.id))) return;
+    const onHardwareRejected = async (
+      errorMessage: string,
+      signingAttempt: SigningAttemptRef
+    ) => {
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       if (!errorMessage) return;
       setErrorMessage(errorMessage);
       if (/DisconnectedDeviceDuringOperation/i.test(errorMessage)) {
-        const result = await rejectApproval('User rejected the request.');
+        const result = await rejectApproval('User rejected the request.', {
+          attempt: signingAttempt,
+        });
         if (!result?.accepted) return;
+        if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
         openInternalPageInTab('request-permission?type=ledger&from=approval');
       }
       setConnectStatus(WALLETCONNECT_STATUS_MAP.REJECTED);
     };
-    const onTxSubmitting = async () => {
-      if (!(await wallet.isApprovalCurrent(approval.id))) return;
+    const onTxSubmitting = async (signingAttempt: SigningAttemptRef) => {
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     };
     const onSignFinished = async (data) => {
-      if (!(await wallet.isApprovalCurrent(approval.id))) return;
       const signingAttempt = data.attempt;
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -248,33 +257,24 @@ const LedgerHardwareWaiting = ({
             sig = adjustV('eth_signTypedData', sig);
             const context = getSigningContext(signingAttempt);
             if (!context) return;
-            const sigs = await wallet.getGnosisTransactionSignatures();
-            const safeMessage = params.safeMessage;
-            if (safeMessage) {
-              await wallet.handleGnosisMessage({
-                signature: data.data,
-                signerAddress: params.account!.address!,
-                context,
-              });
-            } else {
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(
-                  account.address,
-                  sig,
-                  context
-                );
-              } else {
-                await wallet.gnosisAddSignature(account.address, sig, context);
-                await wallet.postGnosisTransaction(context);
-              }
-            }
+            await gnosisSubmission.submit(
+              params.safeMessage ? data.data : sig,
+              context
+            );
           }
         } catch (e) {
+          if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
           Sentry.captureException(e);
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           return;
         }
-        if (!(await wallet.isApprovalCurrent(approval.id))) return;
+        if (
+          !(await wallet.isApprovalCurrent(
+            approvalScope.approval.approvalId
+          )) ||
+          !sameSigningAttempt(attemptRef.current, signingAttempt)
+        )
+          return;
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
@@ -291,7 +291,7 @@ const LedgerHardwareWaiting = ({
         });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setErrorMessage(data.errorMsg);
+        setErrorMessage(data.error);
       }
     };
     handlersRef.current = {
@@ -303,11 +303,7 @@ const LedgerHardwareWaiting = ({
       handlersRef.current = {};
     };
 
-    const attempt = approvalScope.signing?.attempt;
-    if (attempt) {
-      attemptRef.current = attempt;
-      notifySigningUiReady(attempt);
-    }
+    notifySigningUiReady(attemptRef.current);
   };
 
   React.useEffect(() => {
@@ -433,6 +429,8 @@ const LedgerHardwareWaiting = ({
   }, [description, t]);
 
   const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    approvalType: approvalScope.approvalType,
+    retryScope: approvalScope.signing?.flow.flowId,
     nonce: params?.nonce,
     chainId: params?.chainId,
     status: connectStatus,

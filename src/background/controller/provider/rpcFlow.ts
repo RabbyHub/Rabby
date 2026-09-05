@@ -8,14 +8,11 @@ import {
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import {
-  EVENTS,
   INTERNAL_REQUEST_ORIGIN,
-  KEYRING_CLASS,
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
 } from 'consts';
 import providerController from './controller';
-import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
@@ -38,7 +35,6 @@ import {
   startSignTxPreparation,
 } from '@/background/service/signTxPreparation';
 import { v4 as uuidv4 } from 'uuid';
-import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
 import {
   SigningAttemptRef,
   SigningFlowRef,
@@ -64,7 +60,6 @@ const flow = new PromiseFlow<{
   };
   mapMethod: string;
   approvalRes: any;
-  approvalFlowId?: string;
   signingFlow?: SigningFlowRef;
 }>();
 const flowContext = flow
@@ -274,7 +269,6 @@ const flowContext = flow
       const flowId = isSignApproval(approvalType)
         ? inheritedSigning?.flow.flowId || uuidv4()
         : undefined;
-      ctx.approvalFlowId = flowId;
       if (approvalType === 'SignTx' && !('chainId' in params[0])) {
         const site = permissionService.getConnectedSite(origin);
         if (site) {
@@ -376,7 +370,8 @@ const flowContext = flow
           account: ctx.request.account,
           origin,
           internalSignRequestId: ctx.request.internalSignRequestId,
-          isUnshift: !!ctx.request.approval,
+          isUnshift:
+            !!ctx.request.approval || !!ctx.request.internalSignRequestId,
         };
         const approvalPromise = notificationService.requestApproval(
           approvalData,
@@ -466,19 +461,22 @@ const flowContext = flow
       ? signingFlowService.getActiveAttempt(flowRef)
       : undefined;
 
+    let latestApprovalRes = approvalRes;
     const prepareRetryApproval = (isRetry: boolean) => {
       if (
         !isRetry ||
         approvalType !== 'SignTx' ||
         mapMethod !== 'ethSendTransaction'
       ) {
-        return approvalRes;
+        return latestApprovalRes;
       }
-      const retryApproval = { ...approvalRes };
-      const retryType = bgRetryTxMethods.getRetryTxType();
+      const retryApproval = { ...latestApprovalRes };
+      const retryType = bgRetryTxMethods.getRetryTxType(flowRef?.flowId);
       switch (retryType) {
         case 'nonce': {
-          const recommendNonce = bgRetryTxMethods.getRetryTxRecommendNonce();
+          const recommendNonce = bgRetryTxMethods.getRetryTxRecommendNonce(
+            flowRef?.flowId
+          );
           retryApproval.nonce =
             recommendNonce === retryApproval.nonce
               ? intToHex(hexToNumber(recommendNonce as '0x${string}') + 1)
@@ -502,16 +500,15 @@ const flowContext = flow
         default:
           break;
       }
+      latestApprovalRes = retryApproval;
       return retryApproval;
     };
 
     const runSigningAttempt = (attempt: SigningAttemptRef) => {
       if (!flowRef)
         return Promise.reject(ethErrors.provider.userRejectedRequest());
-      const account =
-        toAccountRef(request.account) ||
-        signingFlowService.getFlow(flowRef)?.account;
       const flow = signingFlowService.getFlow(flowRef);
+      const account = toAccountRef(request.account) || flow?.account;
       if (!account || !flow || !sameAccountRef(flow.account, account)) {
         return Promise.reject(ethErrors.provider.userRejectedRequest());
       }
@@ -524,11 +521,9 @@ const flowContext = flow
             flow: flowRef,
             attempt: currentAttempt,
             account,
-            origin,
-            rpcRequestId:
-              signingFlowService.getFlow(flowRef)?.rpcRequestId ||
-              flowRef.flowId,
-            parentFlow: signingFlowService.getFlow(flowRef)?.parentFlow,
+            origin: flow.origin,
+            rpcRequestId: flow.rpcRequestId,
+            parentFlow: flow.parentFlow,
           };
           const approval = signingFlowService.getAttemptApproval(
             currentAttempt
@@ -541,8 +536,7 @@ const flowContext = flow
           });
         },
         {
-          retryable: () =>
-            approvalType === 'SignTx' && mapMethod === 'ethSendTransaction',
+          retryable: () => !!uiRequestComponent && isSignApproval(approvalType),
         }
       );
     };
@@ -581,16 +575,16 @@ const flowContext = flow
           account: $account,
           origin,
           approvalType,
+          isGnosis: rest.isGnosis,
           isUnshift: true,
         },
         undefined,
         {
+          parentApproval: ctx.request.approval,
           signing: flowRef
             ? {
                 flow: flowRef,
-                ...(ctx.request.signing
-                  ? { attempt: ctx.request.signing.attempt }
-                  : {}),
+                attempt: ctx.request.signing?.attempt || signingAttempt,
               }
             : undefined,
         }
@@ -610,6 +604,9 @@ const flowContext = flow
           ...rest,
         });
         reportStatsData();
+        if (isApprovalHandoff && flowRef) {
+          notificationService.invalidateSigningFlow(flowRef.flowId);
+        }
         if (rest?.safeMessage) {
           const safeMessage: {
             safeAddress: string;
@@ -618,7 +615,6 @@ const flowContext = flow
             safeMessageHash: string;
           } = rest.safeMessage;
           if (ctx.request.requestedApproval) {
-            flow.requestedApproval = false;
             // only unlock notification if current flow is an approval flow
             notificationService.unLock();
           }
@@ -692,7 +688,6 @@ export default (request: ProviderRequest) => {
     reportStatsData();
 
     if (ctx.request.requestedApproval) {
-      flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow
       notificationService.unLock();
     }

@@ -61,12 +61,7 @@ let nextInstanceId = 0;
 
 export class SignatureManager {
   public readonly instanceId: string;
-  constructor(
-    private readonly options?: {
-      onReset?: () => void;
-    },
-    instanceId?: string
-  ) {
+  constructor(instanceId?: string) {
     this.instanceId = instanceId ?? `sig-${++nextInstanceId}`;
   }
   private state: SignatureFlowState = {
@@ -89,6 +84,10 @@ export class SignatureManager {
   private manualGasFingerprint?: string;
   private signingContext?: SigningRequestContext;
   private signingWallet?: WalletControllerType;
+  private retryTxs: Tx[] = [];
+  private retryScope?: string;
+  private retryFingerprint?: string;
+  private retryWallet?: WalletControllerType;
 
   private dispatch(action: SignatureAction) {
     const next = signatureReducer(this.state, action);
@@ -149,13 +148,24 @@ export class SignatureManager {
   private clearRunState() {
     const signingContext = this.signingContext;
     const signingWallet = this.signingWallet;
+    const retryScope = this.retryScope;
+    const retryWallet = this.retryWallet;
     this.run = null;
     this.pendingCtx.clear();
     this.signingContext = undefined;
     this.signingWallet = undefined;
+    this.retryTxs = [];
+    this.retryScope = undefined;
+    this.retryFingerprint = undefined;
+    this.retryWallet = undefined;
     if (signingContext && signingWallet) {
       void signingWallet.cancelDirectSigning(signingContext).catch((error) => {
         console.error('cancel direct signing failed', error);
+      });
+    }
+    if (retryScope && retryWallet) {
+      void retryWallet.retryTxReset(retryScope).catch((error) => {
+        console.error('reset direct signing retry state failed', error);
       });
     }
   }
@@ -182,8 +192,6 @@ export class SignatureManager {
       account,
       origin: origin || INTERNAL_REQUEST_SESSION.origin,
     });
-    this.signingContext = context;
-    this.signingWallet = wallet;
     return context;
   }
 
@@ -194,16 +202,18 @@ export class SignatureManager {
   }) {
     const context = this.signingContext;
     const wallet = this.signingWallet;
-    if (!context || !wallet) return;
+    if (!context || !wallet) return false;
     this.signingContext = undefined;
     this.signingWallet = undefined;
     try {
-      await wallet.finishDirectSigning(context, outcome);
+      const result = await wallet.finishDirectSigning(context, outcome);
+      return result.accepted;
     } catch (error) {
       console.error('finish direct signing failed', error);
       await wallet.cancelDirectSigning(context).catch((cancelError) => {
         console.error('cancel direct signing after finish failed', cancelError);
       });
+      return false;
     }
   }
 
@@ -261,7 +271,8 @@ export class SignatureManager {
     if (
       this.state.fingerprint === fingerprint &&
       this.state.ctx &&
-      this.state.status !== 'error'
+      this.state.status !== 'error' &&
+      this.state.status !== 'prefetching'
     ) {
       return Promise.resolve(
         this.withManualGasMethod(this.state.ctx, fingerprint)
@@ -269,7 +280,18 @@ export class SignatureManager {
     }
 
     const cached = this.pendingCtx.get(fingerprint);
-    if (cached) return cached;
+    if (cached) {
+      return cached.then((ctx) => {
+        if (opId && this.isActive(opId, fingerprint)) {
+          this.dispatch({
+            type: 'PREFETCH_SUCCESS',
+            fingerprint,
+            ctx,
+          });
+        }
+        return ctx;
+      });
+    }
     const currentOpId = this.markRun(fingerprint, opId);
     const skeleton = this.withManualGasMethod(
       this.createSkeletonCtx(request.txs, fingerprint),
@@ -421,6 +443,8 @@ export class SignatureManager {
     return this.state;
   };
 
+  public getRetryScope = () => this.retryScope || this.instanceId;
+
   public subscribe = (fn: Subscriber) => {
     this.subscribers.push(fn);
     return () => {
@@ -443,9 +467,7 @@ export class SignatureManager {
     const opId = this.markRun(fingerprint);
     this.dispatch({ type: 'SET_CONFIG', payload: request.config });
 
-    const prepared =
-      this.pendingCtx.get(fingerprint) ||
-      this.ensureContext(request, wallet, opId);
+    const prepared = this.ensureContext(request, wallet, opId);
 
     const skeleton = this.withManualGasMethod(
       this.createSkeletonCtx(request.txs, fingerprint),
@@ -606,6 +628,23 @@ export class SignatureManager {
     this.pausedIndex = 0;
     this.signedHashes = [];
     const opId = this.markRun(fingerprint);
+    const reuseRetryState =
+      !!retry && this.retryFingerprint === fingerprint && !!this.retryScope;
+    const retryScope = reuseRetryState
+      ? this.retryScope!
+      : `${this.instanceId}:${opId}`;
+    if (!reuseRetryState) {
+      if (this.retryScope && this.retryWallet) {
+        void this.retryWallet.retryTxReset(this.retryScope).catch((error) => {
+          console.error('reset previous signing retry state failed', error);
+        });
+      }
+      this.retryTxs = [];
+      this.retryScope = retryScope;
+      this.retryFingerprint = fingerprint;
+    }
+    const retryTxs = this.retryTxs;
+    this.retryWallet = wallet;
     if (config.account.type === KEYRING_TYPE.HdKeyring) {
       try {
         await SignatureSteps.invokeEnterPassphraseModal({
@@ -614,7 +653,9 @@ export class SignatureManager {
           getContainer: getContainer || config.getContainer,
         });
       } catch (error) {
-        this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+        if (this.isActive(opId, fingerprint)) {
+          this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+        }
         return;
       }
     }
@@ -631,6 +672,8 @@ export class SignatureManager {
         this.discardSigningContext(signingContext, wallet);
         return [];
       }
+      this.signingContext = signingContext;
+      this.signingWallet = wallet;
       const latestCtx =
         this.state.fingerprint === fingerprint && this.state.ctx
           ? this.state.ctx
@@ -651,12 +694,11 @@ export class SignatureManager {
           this.dispatch({ type: 'SEND_PROGRESS', fingerprint, ctx: nextCtx });
         },
         hardwareOperation: supportedHardwareDirectSign(config.account.type)
-          ? {
-              kind: 'signing-attempt',
-              attempt: signingContext.attempt,
-            }
+          ? { kind: 'signing-attempt', attempt: signingContext.attempt }
           : undefined,
         signing: signingContext,
+        retryScope,
+        retryTxs,
       });
       if (!this.isActive(opId, fingerprint)) {
         this.discardSigningContext(signingContext, wallet);
@@ -664,7 +706,14 @@ export class SignatureManager {
       }
       if (Array.isArray(res)) {
         const hashes = res.map((item) => item.txHash);
-        await this.finishSigningContext({ success: true, data: hashes });
+        if (
+          !(await this.finishSigningContext({ success: true, data: hashes }))
+        ) {
+          if (this.isActive(opId, fingerprint)) {
+            this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+          }
+          return [];
+        }
         if (!this.isActive(opId, fingerprint)) return [];
         this.dispatch({ type: 'SEND_SUCCESS', fingerprint, hashes });
         this.resolvePending(hashes);
@@ -678,10 +727,17 @@ export class SignatureManager {
         };
         this.signedHashes = paused.partial.map((p) => p.txHash);
         this.pausedIndex = paused.currentIndex;
-        await this.finishSigningContext({
-          success: true,
-          data: this.signedHashes,
-        });
+        if (
+          !(await this.finishSigningContext({
+            success: true,
+            data: this.signedHashes,
+          }))
+        ) {
+          if (this.isActive(opId, fingerprint)) {
+            this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+          }
+          return [];
+        }
         if (!this.isActive(opId, fingerprint)) return [];
         this.dispatch({
           type: 'SEND_PAUSED',
@@ -698,11 +754,15 @@ export class SignatureManager {
         return this.signedHashes;
       }
       if ((res as any).error) {
-        await this.finishSigningContext({
+        const finished = await this.finishSigningContext({
           success: false,
           error: (res as any).error.description,
         });
         if (!this.isActive(opId, fingerprint)) return [];
+        if (!finished) {
+          this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+          return [];
+        }
         if (isHideErrorUI) {
           this.rejectPending((res as any).error.description);
         } else {
@@ -716,7 +776,12 @@ export class SignatureManager {
       }
 
       const hashes = Array.isArray(res) ? res.map((item) => item.txHash) : [];
-      await this.finishSigningContext({ success: true, data: hashes });
+      if (!(await this.finishSigningContext({ success: true, data: hashes }))) {
+        if (this.isActive(opId, fingerprint)) {
+          this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+        }
+        return [];
+      }
       if (!this.isActive(opId, fingerprint)) return [];
       this.dispatch({ type: 'SEND_SUCCESS', fingerprint, hashes });
       this.resolvePending(hashes);
@@ -730,6 +795,7 @@ export class SignatureManager {
       }
       if (signingContext) {
         await this.finishSigningContext({ success: false, error });
+        if (!this.isActive(opId, fingerprint)) return [];
       }
       const message = createErrorMessage(error);
       this.dispatch({ type: 'SEND_FAILURE', fingerprint, error: defaultError });
@@ -762,7 +828,6 @@ export class SignatureManager {
       this.pendingResult = null;
     }
     this.dispatch({ type: 'RESET' });
-    this.options?.onReset?.();
   }
 
   public updateConfig(config: Partial<SignerConfig>) {
@@ -797,29 +862,37 @@ export class SignatureManager {
     return this.send({ wallet, getContainer });
   }
 
-  private async checkHardWareConnected(cb: () => void) {
+  private async checkHardWareConnected(
+    opId: number,
+    fingerprint: string,
+    cb: () => void
+  ) {
     const { config } = this.state;
     const { account } = config || {};
+    if (!this.isActive(opId, fingerprint)) return;
     if (!account) {
-      this.pendingResult?.reject(MINI_SIGN_ERROR.PREFETCH_FAILURE);
+      this.rejectPending(MINI_SIGN_ERROR.PREFETCH_FAILURE);
       return;
     }
     if (account.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const isConnected = await hasConnectedLedgerDevice();
+        if (!this.isActive(opId, fingerprint)) return;
         if (isConnected) {
           cb();
         } else {
           this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
         }
       } catch {
-        this.pendingResult?.reject?.(MINI_SIGN_ERROR.USER_CANCELLED);
+        if (this.isActive(opId, fingerprint)) {
+          this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+        }
       }
 
       return;
     }
 
-    cb();
+    if (this.isActive(opId, fingerprint)) cb();
     return;
   }
 
@@ -839,6 +912,7 @@ export class SignatureManager {
       return resultPromise;
     }
 
+    const opId = this.markRun(fingerprint);
     this.dispatch({ type: 'SET_CONFIG', payload: request.config });
     this.dispatch({
       type: 'UPDATE_CTX',
@@ -850,11 +924,10 @@ export class SignatureManager {
     });
 
     try {
-      const prepared =
-        this.pendingCtx.get(fingerprint) ||
-        this.ensureContext(request, wallet, this.run?.id);
+      const prepared = this.ensureContext(request, wallet, opId);
       await prepared;
 
+      if (!this.isActive(opId, fingerprint)) return resultPromise;
       if (this.isPreExecResultFailed()) {
         this.rejectPending(MINI_SIGN_ERROR.PREFETCH_FAILURE);
         return resultPromise;
@@ -873,7 +946,7 @@ export class SignatureManager {
         ctx: { ...this.state.ctx, mode: 'direct' } as SignerCtx,
       });
 
-      await this.checkHardWareConnected(() =>
+      await this.checkHardWareConnected(opId, fingerprint, () =>
         this.send({
           wallet,
           isHideErrorUI: opts?.isHideErrorUI,
@@ -881,7 +954,9 @@ export class SignatureManager {
       );
     } catch (error) {
       const message = createErrorMessage(error);
-      this.rejectPending(message);
+      if (this.isActive(opId, fingerprint)) {
+        this.rejectPending(message);
+      }
       throw error instanceof Error ? error : new Error(message);
     }
     return resultPromise;
@@ -988,8 +1063,12 @@ export class SignatureManager {
       this.pauseAfterThreshold = opts.pauseAfter;
     }
     const resultPromise = this.createResultPromise();
+    const fingerprint = this.getFingerprint(request.txs);
 
-    this.openUI(request, wallet).catch((error) => {
+    const openPromise = this.openUI(request, wallet);
+    const runId = this.run?.id;
+    openPromise.catch((error) => {
+      if (!runId || !this.isActive(runId, fingerprint)) return;
       const message = createErrorMessage(error);
       this.rejectPending(message);
     });

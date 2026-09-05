@@ -4,6 +4,9 @@ import { intToHex } from '@ethereumjs/util';
 import i18n from '../service/i18n';
 
 export type RetryUpdateType = 'nonce' | 'gasPrice' | 'origin' | false;
+export type RetryScope = string;
+
+const DEFAULT_RETRY_SCOPE = 'default';
 
 class TxRetry {
   private _retryUpdateType: RetryUpdateType = false;
@@ -22,39 +25,51 @@ class TxRetry {
     this._recommendNonce = nonce;
   }
 
-  reset() {
-    this._retryUpdateType = false;
-    this._recommendNonce = '0x0';
-  }
-
   setType(type: RetryUpdateType) {
     this._retryUpdateType = type;
   }
 }
 
-const txErrorRetryState = new TxRetry();
+const txErrorRetryStates = new Map<RetryScope, TxRetry>();
 
-const getRetryTxType = () => txErrorRetryState.retryUpdateType;
+const normalizeScope = (scope?: RetryScope) => scope || DEFAULT_RETRY_SCOPE;
 
-const setRetryTxType = (type: RetryUpdateType) => {
-  txErrorRetryState.setType(type);
+const getState = (scope?: RetryScope) => {
+  const key = normalizeScope(scope);
+  let state = txErrorRetryStates.get(key);
+  if (!state) {
+    state = new TxRetry();
+    txErrorRetryStates.set(key, state);
+  }
+  return { key, state };
 };
 
-const retryTxReset = () => {
-  txErrorRetryState.reset();
+const getRetryTxType = (scope?: RetryScope) =>
+  txErrorRetryStates.get(normalizeScope(scope))?.retryUpdateType || false;
+
+const setRetryTxType = (type: RetryUpdateType, scope?: RetryScope) => {
+  getState(scope).state.setType(type);
 };
 
-const getRetryTxRecommendNonce = () => txErrorRetryState.recommendNonce;
+const retryTxReset = (scope?: RetryScope) => {
+  txErrorRetryStates.delete(normalizeScope(scope));
+};
+
+const getRetryTxRecommendNonce = (scope?: RetryScope) =>
+  txErrorRetryStates.get(normalizeScope(scope))?.recommendNonce || '0x0';
 
 const setRetryTxRecommendNonce = async ({
   nonce,
   from,
   chainId,
+  scope,
 }: {
   nonce: string;
   from: string;
   chainId: number;
+  scope?: RetryScope;
 }) => {
+  const { key, state } = getState(scope);
   let recommendNonce: string = nonce;
 
   try {
@@ -72,7 +87,9 @@ const setRetryTxRecommendNonce = async ({
     console.debug('recommendNonce error', error);
   }
 
-  txErrorRetryState.setRecommendNonce(recommendNonce);
+  if (txErrorRetryStates.get(key) === state) {
+    state.setRecommendNonce(recommendNonce);
+  }
 
   return recommendNonce;
 };
@@ -141,7 +158,8 @@ const hintRules: HintRule[] = [
 
 const getTxFailedResult = (
   origin: string,
-  params?: { nonce?: string | number }
+  params?: { nonce?: string | number },
+  scope?: RetryScope
 ): [string, RetryUpdateType] => {
   const lowerText = origin.toLowerCase();
 
@@ -149,7 +167,10 @@ const getTxFailedResult = (
     if (
       rule.keywords.some((keyword) => lowerText.includes(keyword.toLowerCase()))
     ) {
-      const options = { nonce: getRetryTxRecommendNonce(), ...params };
+      const options = {
+        nonce: getRetryTxRecommendNonce(scope),
+        ...params,
+      };
       return [
         i18n.t(rule.messageKey, rule.getOptions?.(options)),
         rule.retryType,

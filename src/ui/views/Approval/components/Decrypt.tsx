@@ -7,8 +7,7 @@ import { useTranslation } from 'react-i18next';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { Copy } from 'ui/component';
-import { useWallet } from 'ui/utils';
-import { useApprovalActions } from '@/ui/approval/actions';
+import { useApproval, useWallet } from 'ui/utils';
 import AccountCard from './AccountCard';
 import { Account } from '@/background/service/preference';
 
@@ -31,10 +30,7 @@ const GetEncryptionPublicKey = ({ params, account }: ConnectProps) => {
   const [result, setResult] = useState('');
 
   const wallet = useWallet();
-  const {
-    resolve: resolveApproval,
-    reject: rejectApproval,
-  } = useApprovalActions();
+  const [, resolveApproval, rejectApproval] = useApproval();
   const handleCancel = useCallback(() => {
     rejectApproval('User rejected the request.');
   }, [rejectApproval]);

@@ -44,6 +44,8 @@ type SendParams = {
   onProgress?: (ctx: SignerCtx) => void;
   hardwareOperation?: import('@/utils/signingTypes').HardwareOperationRef;
   signing?: SigningRequestContext;
+  retryScope: string;
+  retryTxs: Tx[];
 };
 
 export const signatureService = {
@@ -100,6 +102,8 @@ export const signatureService = {
     onProgress,
     hardwareOperation,
     signing,
+    retryScope,
+    retryTxs,
   }: SendParams) => {
     const chainMeta = findChain({ id: ctx.chainId });
     const chainServerId = chainMeta?.serverId || '';
@@ -113,6 +117,8 @@ export const signatureService = {
       shouldPause,
       hardwareOperation,
       signing,
+      retryScope,
+      retryTxs,
       onSendedTx: ({ hash, idx }) => {
         if (!onProgress) return;
         const txsCalc = currentCtx.txsCalc.map((item, index) =>

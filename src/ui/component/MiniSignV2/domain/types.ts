@@ -112,6 +112,8 @@ export type SendOptions = {
   pushType?: 'default' | 'mev';
   hardwareOperation?: HardwareOperationRef;
   signing?: SigningRequestContext;
+  retryScope: string;
+  retryTxs: Tx[];
 };
 
 export type GasSelectionOptions = {

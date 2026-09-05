@@ -1521,22 +1521,25 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       if (isSend) {
         wallet.clearPageStateCache();
       }
-      resolve({
-        uiRequestComponent: WaitingSignMessageComponent[account.type],
-        type: account.type,
-        address: account.address,
-        data: [account.address, JSON.stringify(typedData)],
-        isGnosis: true,
-        account: account,
-        $account: account,
-        extra: {
-          popupProps: {
-            maskStyle: {
-              backgroundColor: 'transparent',
+      resolve(
+        {
+          uiRequestComponent: WaitingSignMessageComponent[account.type],
+          type: account.type,
+          address: account.address,
+          data: [account.address, JSON.stringify(typedData)],
+          isGnosis: true,
+          account: account,
+          $account: account,
+          extra: {
+            popupProps: {
+              maskStyle: {
+                backgroundColor: 'transparent',
+              },
             },
           },
         },
-      });
+        { attempt: signingContext.signing.attempt }
+      );
     } else {
       // it should never go to here
       try {
@@ -1570,7 +1573,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         if (isSend) {
           wallet.clearPageStateCache();
         }
-        resolve();
+        resolve(undefined, { attempt: signingContext.signing.attempt });
       } catch (e) {
         message.error({
           content: e.message,
@@ -1653,19 +1656,22 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       return;
     }
     if (!(await isBound())) return;
-    await resolve({
-      ...tx,
-      nonce: realNonce || tx.nonce,
-      gas: gasLimit,
-      isSend,
-      traceId: txDetail?.trace_id,
-      signingTxId: approval.signingTxId,
-      pushType: pushInfo.type,
-      lowGasDeadline: pushInfo.lowGasDeadline,
-      reqId,
-      logId: logId.current,
-      isCoboSafe: true,
-    });
+    await resolve(
+      {
+        ...tx,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        isSend,
+        traceId: txDetail?.trace_id,
+        signingTxId: approval.signingTxId,
+        pushType: pushInfo.type,
+        lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
+        logId: logId.current,
+        isCoboSafe: true,
+      },
+      { attempt: signingContext.signing.attempt }
+    );
     wallet.clearPageStateCache();
   };
 
@@ -1793,29 +1799,32 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (!(await isBound())) return;
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      resolve({
-        ...submitTransaction,
-        isSend,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        uiRequestComponent: WaitingSignComponent[currentAccount.type],
-        type: currentAccount.type,
-        address: currentAccount.address,
-        traceId: txDetail?.trace_id,
-        extra: {
-          brandName: currentAccount.brandName,
+      resolve(
+        {
+          ...submitTransaction,
+          isSend,
+          nonce: realNonce || tx.nonce,
+          gas: gasLimit,
+          uiRequestComponent: WaitingSignComponent[currentAccount.type],
+          type: currentAccount.type,
+          address: currentAccount.address,
+          traceId: txDetail?.trace_id,
+          extra: {
+            brandName: currentAccount.brandName,
+          },
+          $account: currentAccount,
+          $ctx: params.$ctx,
+          signingTxId: approval.signingTxId,
+          pushType: pushInfo.type,
+          lowGasDeadline: pushInfo.lowGasDeadline,
+          reqId,
+          isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
+          isGasAccount: effectiveGasAccountCanPay,
+          logId: logId.current,
+          sig,
         },
-        $account: currentAccount,
-        $ctx: params.$ctx,
-        signingTxId: approval.signingTxId,
-        pushType: pushInfo.type,
-        lowGasDeadline: pushInfo.lowGasDeadline,
-        reqId,
-        isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
-        isGasAccount: effectiveGasAccountCanPay,
-        logId: logId.current,
-        sig,
-      });
+        { attempt: signingContext?.signing?.attempt }
+      );
 
       return;
     }
@@ -1848,18 +1857,21 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       event_category: 'Transaction',
     });
 
-    resolve({
-      ...submitTransaction,
-      nonce: realNonce || tx.nonce,
-      gas: gasLimit,
-      isSend,
-      traceId: txDetail?.trace_id,
-      signingTxId: approval.signingTxId,
-      pushType: pushInfo.type,
-      lowGasDeadline: pushInfo.lowGasDeadline,
-      reqId,
-      logId: logId.current,
-    });
+    resolve(
+      {
+        ...submitTransaction,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        isSend,
+        traceId: txDetail?.trace_id,
+        signingTxId: approval.signingTxId,
+        pushType: pushInfo.type,
+        lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
+        logId: logId.current,
+      },
+      { attempt: signingContext?.signing?.attempt }
+    );
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
@@ -2227,11 +2239,15 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           okText: t('page.sendToken.blockedTransactionCancelText'),
           onCancel: async () => {
             await wallet.clearPageStateCache();
-            reject('User rejected the request.');
+            reject('User rejected the request.', {
+              attempt: signingContext?.signing?.attempt,
+            });
           },
           onOk: async () => {
             await wallet.clearPageStateCache();
-            reject('User rejected the request.');
+            reject('User rejected the request.', {
+              attempt: signingContext?.signing?.attempt,
+            });
           },
         });
       }

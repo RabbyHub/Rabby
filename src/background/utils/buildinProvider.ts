@@ -100,7 +100,6 @@ export class EthereumProvider extends EventEmitter {
         return notificationService.requestInternalPersonalSign({
           requestId: asInternalSignRequestId(uuidv4()),
           attempt: this.$ctx?.signing?.attempt,
-          request: data,
         });
       case 'eth_sendTransaction': {
         const txParams = {

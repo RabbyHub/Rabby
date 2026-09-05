@@ -34,9 +34,7 @@ type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
 
 type InternalSignWaiter = {
-  id: InternalSignRequestId;
   attempt?: SigningAttemptRef;
-  request: { method: string; params?: any };
   resolve: (value: string) => void;
   reject: (error: unknown) => void;
   timeout: ReturnType<typeof setTimeout>;
@@ -240,7 +238,7 @@ class NotificationService extends Events {
       Sentry.captureException(e, {
         tags: { function: 'activeFirstApproval' },
       });
-      this.clear();
+      this.rejectAllApprovals(false);
     }
   };
 
@@ -279,7 +277,7 @@ class NotificationService extends Events {
       !flow.account ||
       !sameAccountRef(flow.account, approvalAccount) ||
       (requestedAccount && !sameAccountRef(flow.account, requestedAccount)) ||
-      !signingFlowService.isCurrentAttempt(signing.attempt)
+      !signingFlowService.isAttemptValidForApproval(signing.attempt, current.id)
     ) {
       return;
     }
@@ -296,11 +294,9 @@ class NotificationService extends Events {
   requestInternalPersonalSign = ({
     requestId,
     attempt,
-    request,
   }: {
     requestId: InternalSignRequestId;
     attempt?: SigningAttemptRef;
-    request: { method: string; params?: any };
   }): Promise<string> => {
     if (attempt && !signingFlowService.isCurrentAttempt(attempt)) {
       return Promise.reject(ethErrors.provider.userRejectedRequest());
@@ -319,9 +315,7 @@ class NotificationService extends Events {
         );
       }, 30_000);
       this.internalSignWaiters.set(requestId, {
-        id: requestId,
         attempt,
-        request,
         resolve,
         reject,
         timeout,
@@ -423,8 +417,8 @@ class NotificationService extends Events {
 
     const attempt = approval.data.signing?.attempt;
     if (!attempt) return;
-    const matching = [...this.internalSignWaiters.values()].filter(
-      (waiter) =>
+    const matching = [...this.internalSignWaiters.entries()].filter(
+      ([, waiter]) =>
         waiter.attempt?.flowId === attempt.flowId &&
         waiter.attempt?.attemptId === attempt.attemptId
     );
@@ -439,7 +433,7 @@ class NotificationService extends Events {
       }
       return;
     }
-    this.settleInternalSignRequest(matching[0].id, success, value);
+    this.settleInternalSignRequest(matching[0][0], success, value);
   };
 
   private rejectInternalSignWaiters = (flowId?: string) => {
@@ -461,7 +455,8 @@ class NotificationService extends Events {
   private ensureSigningFlow = (
     flowId: string,
     account?: Account,
-    origin?: string
+    origin?: string,
+    allowSignerAccountMismatch = false
   ) => {
     const existing = signingFlowService.getFlow(flowId);
     const requestedAccount = toAccountRef(account);
@@ -469,14 +464,15 @@ class NotificationService extends Events {
       existing &&
       ((existing.account &&
         requestedAccount &&
-        !sameAccountRef(existing.account, requestedAccount)) ||
+        !sameAccountRef(existing.account, requestedAccount) &&
+        !allowSignerAccountMismatch) ||
         existing.origin !== (origin || ''))
     ) {
       throw ethErrors.provider.userRejectedRequest();
     }
     return signingFlowService.createFlow({
       flowId,
-      account: requestedAccount || existing?.account,
+      account: existing?.account || requestedAccount,
       origin: origin || existing?.origin || '',
       rpcRequestId: existing?.rpcRequestId || flowId,
       parentFlow: existing?.parentFlow,
@@ -606,7 +602,9 @@ class NotificationService extends Events {
       );
     } else {
       currentApproval.resolve?.(data);
-      this.settleInternalSignWaiter(currentApproval, true, data);
+      if (!data?.uiRequestComponent) {
+        this.settleInternalSignWaiter(currentApproval, true, data);
+      }
     }
 
     this.clearLastRejectDapp();
@@ -771,25 +769,17 @@ class NotificationService extends Events {
         this.isApprovalRefCurrent(options.parentApproval);
       if (
         !isExplicitHandoff &&
-        !QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(data.approvalComponent)
-      ) {
-        if (this.currentApproval) {
-          throw ethErrors.provider.userRejectedRequest(
-            'please request after current approval resolve'
-          );
-        }
-      } else {
-        if (
-          !isExplicitHandoff &&
-          this.currentApproval &&
+        this.currentApproval &&
+        (!QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(
+          data.approvalComponent
+        ) ||
           !QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(
             this.currentApproval.data.approvalComponent
-          )
-        ) {
-          throw ethErrors.provider.userRejectedRequest(
-            'please request after current approval resolve'
-          );
-        }
+          ))
+      ) {
+        throw ethErrors.provider.userRejectedRequest(
+          'please request after current approval resolve'
+        );
       }
 
       let signingFlow: SigningFlowRef | undefined;
@@ -798,7 +788,8 @@ class NotificationService extends Events {
         signingFlow = this.ensureSigningFlow(
           options.signing.flow.flowId,
           data.account,
-          data.origin
+          data.origin,
+          !!options.signing.attempt && !!data.isGnosis
         );
         const activeAttempt = signingFlowService.getActiveAttempt(signingFlow);
         if (options.signing.attempt) {
@@ -863,13 +854,13 @@ class NotificationService extends Events {
   };
 
   clear = async (stay = false) => {
-    this.invalidateAllSigningFlows();
     this.rejectApprovalWaiters();
     this.approvals = [];
     this.currentApproval = null;
     const notificationWindowId = this.notifiWindowId;
     if (notificationWindowId !== null && !stay) {
       this.notifiWindowId = null;
+      this.unLock();
       try {
         await winMgr.remove(notificationWindowId);
       } catch (e) {
@@ -878,23 +869,43 @@ class NotificationService extends Events {
     }
   };
 
-  rejectAllApprovals = () => {
+  rejectAllApprovals = (cancelUnrelatedFlows = true) => {
     this.addLastRejectDapp();
-    this.invalidateAllSigningFlows();
-    this.approvals.forEach((approval) => {
+    const approvals = this.approvals;
+    if (cancelUnrelatedFlows) {
+      this.invalidateAllSigningFlows();
+    } else {
+      approvals.forEach((approval) => {
+        this.invalidateSigningFlow(approval.data.signing?.flow.flowId);
+      });
+    }
+    approvals.forEach((approval) => {
       approval.reject &&
         approval.reject(
           new EthereumProviderError(4001, 'User rejected the request.')
         );
+      this.settleInternalSignWaiter(
+        approval,
+        false,
+        ethErrors.provider.userRejectedRequest()
+      );
     });
+    if (cancelUnrelatedFlows) {
+      transactionHistoryService.removeAllSigningTx();
+    } else {
+      approvals.forEach((approval) => {
+        if (approval.signingTxId) {
+          transactionHistoryService.removeSigningTx(approval.signingTxId);
+        }
+      });
+    }
     this.approvals = [];
     this.currentApproval = null;
-    transactionHistoryService.removeAllSigningTx();
     void this.clear();
   };
 
   invalidateApprovalSession = () => {
-    if (this.currentApproval) {
+    if (this.currentApproval || this.approvals.length > 0) {
       this.rejectAllApprovals();
     } else {
       this.invalidateAllSigningFlows();

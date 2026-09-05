@@ -49,13 +49,32 @@ jest.mock('@sentry/browser', () => ({
 }));
 
 import notificationService from '@/background/service/notification';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { MemoryRouter } from 'react-router-dom';
+import { useApprovalActions } from '@/ui/approval/actions';
+import {
+  ApprovalScopeContext,
+  createApprovalScope,
+} from '@/ui/approval/context';
+
+jest.mock('@/ui/utils/approval-popup', () => ({
+  useApprovalPopup: () => ({}),
+}));
+jest.mock('@/ui/utils/useDeviceConnect', () => ({
+  useDeviceConnect: () => jest.fn(),
+}));
+jest.mock('@/ui/utils/WalletContext', () => ({
+  useWallet: () => notificationService,
+}));
 import { signingFlowService } from '@/background/service/signingFlow';
-import { waitForSigningUi } from '@/utils/signEvent';
 import {
   asInternalSignRequestId,
   toApprovalRef,
   toSigningFlowRef,
 } from '@/utils/signingTypes';
+
+(global as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const pending = (id: string) => {
   const approval = {
@@ -191,7 +210,7 @@ describe('approval actions validate the current identity', () => {
   it('cancels the previous signing attempt when a retry starts', async () => {
     const approval = pending('signing-approval');
     const first = start(approval, 'flow');
-    const waiting = waitForSigningUi(first!);
+    const waiting = signingFlowService.waitForSigningUi(first!);
     const second = signingFlowService.createAttempt(toSigningFlowRef('flow'));
 
     await expect(waiting).rejects.toMatchObject({ code: 4001 });
@@ -209,6 +228,67 @@ describe('approval actions validate the current identity', () => {
 
     expect(second?.attemptId).not.toBe(first?.attemptId);
     expect(approval.data.signing.attempt.attemptId).toBe(second?.attemptId);
+  });
+
+  it('cancels a retry from the originally mounted approval actions', async () => {
+    const approval = pending('retry-cancel');
+    approval.data.approvalComponent = 'LedgerHardwareWaiting';
+    const first = start(approval, 'retry-cancel-flow')!;
+    const scope = createApprovalScope(approval);
+    let actions!: ReturnType<typeof useApprovalActions>;
+    const Consumer = () => {
+      actions = useApprovalActions();
+      return null;
+    };
+    const container = document.createElement('div');
+    const root = createRoot(container);
+    act(() => {
+      root.render(
+        React.createElement(
+          MemoryRouter,
+          null,
+          React.createElement(
+            ApprovalScopeContext.Provider,
+            { value: scope },
+            React.createElement(Consumer)
+          )
+        )
+      );
+    });
+    try {
+      signingFlowService.registerRunner(first, async () => 'signature');
+      signingFlowService.markUiReady(first);
+      signingFlowService.beginAttempt(first);
+      signingFlowService.finishAttempt(first, {
+        success: false,
+        retryable: true,
+      });
+      const retry = signingFlowService.retrySigningAttempt({
+        flow: scope.signing!.flow,
+        currentAttempt: first,
+      })!;
+      expect(
+        notificationService.updateSigningAttempt(scope.approval, retry)
+      ).toBe(true);
+      // A late callback remains attempt-scoped; the user's Cancel targets the approval.
+      await expect(
+        actions.reject('late failure', { attempt: first })
+      ).resolves.toMatchObject({
+        accepted: false,
+        reason: 'SIGNING_ATTEMPT_MISMATCH',
+      });
+      await act(async () => {
+        await expect(actions.reject('user cancel')).resolves.toEqual({
+          accepted: true,
+        });
+      });
+      expect(approval.reject).toHaveBeenCalledTimes(1);
+      expect(signingFlowService.isCurrentAttempt(retry)).toBe(false);
+    } finally {
+      act(() => {
+        root.unmount();
+      });
+    }
   });
 
   it('does not start a signing attempt for a stale flow', () => {
@@ -234,6 +314,36 @@ describe('approval actions validate the current identity', () => {
       )
     ).toBe(false);
     expect(signingFlowService.isCurrentAttempt(currentAttempt!)).toBe(true);
+  });
+
+  it('does not derive a nested context from an unbound active attempt', () => {
+    const approval = pending('signing-approval');
+    approval.data.account = {
+      address: '0xaccount',
+      type: 'privateKey',
+      brandName: 'Rabby',
+    };
+    const flow = signingFlowService.createFlow({
+      flowId: 'unbound-flow',
+      account: {
+        address: '0xaccount',
+        type: 'privateKey',
+        brandName: 'Rabby',
+      },
+      origin: '',
+      rpcRequestId: 'unbound-flow',
+    });
+    const attempt = signingFlowService.createAttempt(flow, {
+      awaitUi: false,
+    });
+    approval.data.signing = { flow, attempt };
+
+    expect(
+      notificationService.getSigningRequestContext(
+        approvalRef(approval),
+        approval.data.account
+      )
+    ).toBeUndefined();
   });
 
   it('does not start a legacy attempt for a stale approval id', () => {
@@ -279,6 +389,38 @@ describe('approval actions validate the current identity', () => {
     });
 
     expect(signingFlowService.isCurrentAttempt(attempt!)).toBe(true);
+  });
+
+  it('does not settle an internal signer during a UI handoff', async () => {
+    const approval = pending('handoff-approval');
+    const attempt = start(approval, 'handoff-flow')!;
+    const requestId = asInternalSignRequestId('handoff-request');
+    const promise = notificationService.requestInternalPersonalSign({
+      requestId,
+      attempt,
+    });
+
+    await notificationService.resolveApprovalFor({
+      approval: approvalRef(approval),
+      data: { uiRequestComponent: 'LedgerHardwareWaiting' },
+    });
+
+    await expect(
+      Promise.race([
+        promise.then(
+          () => 'settled',
+          () => 'settled'
+        ),
+        Promise.resolve('pending'),
+      ])
+    ).resolves.toBe('pending');
+
+    notificationService.settleInternalSignRequest(
+      requestId,
+      true,
+      '0xsignature'
+    );
+    await expect(promise).resolves.toBe('0xsignature');
   });
 
   it('invalidates an attempt when a waiting approval resolves', async () => {
@@ -333,6 +475,38 @@ describe('approval actions validate the current identity', () => {
     });
 
     expect(signingFlowService.isCurrentAttempt(attempt!)).toBe(false);
+  });
+
+  it('does not clear an unrelated direct signing flow with the approval queue', async () => {
+    const approval = pending('approval-with-unrelated-flow');
+    const flow = signingFlowService.createFlow({
+      flowId: 'unrelated-direct-flow',
+      origin: 'internal',
+      rpcRequestId: 'unrelated-direct-flow',
+    });
+    const attempt = signingFlowService.createAttempt(flow, {
+      awaitUi: false,
+    })!;
+    signingFlowService.beginAttempt(attempt);
+
+    await notificationService.rejectApprovalFor({
+      approval: approvalRef(approval),
+      error: 'cancel',
+    });
+
+    expect(signingFlowService.isCurrentAttempt(attempt)).toBe(true);
+  });
+
+  it('rejects a Cobo Safe approval without a legacy account restore', async () => {
+    const approval = pending('cobo-approval');
+    approval.data.params = { data: [{ isCoboSafe: true }] };
+
+    await notificationService.rejectApprovalFor({
+      approval: approvalRef(approval),
+      error: 'cancel',
+    });
+
+    expect(approval.reject).toHaveBeenCalledTimes(1);
   });
 
   it('rejects a stale attempt from resolving the current approval', async () => {
@@ -407,12 +581,10 @@ describe('approval actions validate the current identity', () => {
     const promiseA = notificationService.requestInternalPersonalSign({
       requestId: requestA,
       attempt: attemptA,
-      request: { method: 'personal_sign', params: ['a'] },
     });
     const promiseB = notificationService.requestInternalPersonalSign({
       requestId: requestB,
       attempt: attemptB,
-      request: { method: 'personal_sign', params: ['b'] },
     });
 
     expect(
@@ -451,13 +623,11 @@ describe('approval actions validate the current identity', () => {
     const promiseA = notificationService.requestInternalPersonalSign({
       requestId: asInternalSignRequestId('cancel-internal-request-a'),
       attempt: attemptA,
-      request: { method: 'personal_sign', params: ['a'] },
     });
     const requestB = asInternalSignRequestId('cancel-internal-request-b');
     const promiseB = notificationService.requestInternalPersonalSign({
       requestId: requestB,
       attempt: attemptB,
-      request: { method: 'personal_sign', params: ['b'] },
     });
 
     notificationService.invalidateSigningFlow(flowA.flowId);
@@ -494,7 +664,6 @@ describe('approval actions validate the current identity', () => {
     const request = notificationService.requestInternalPersonalSign({
       requestId: asInternalSignRequestId('child-internal-request'),
       attempt: child.attempt,
-      request: { method: 'personal_sign', params: ['child'] },
     });
 
     notificationService.invalidateSigningFlow(parent.flowId);
