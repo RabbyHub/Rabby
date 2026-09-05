@@ -234,6 +234,12 @@ export class SigningFlowService {
     return this.flows.get(typeof flow === 'string' ? flow : flow.flowId);
   }
 
+  getFlowsForOrigin(origin: string): SigningFlowRef[] {
+    return [...this.flows.values()]
+      .filter((flow) => flow.origin === origin)
+      .map((flow) => flow.ref);
+  }
+
   isInFlowTree(
     flow: SigningFlowRef | string,
     ancestor: SigningFlowRef | string

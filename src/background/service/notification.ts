@@ -12,7 +12,9 @@ import {
   IS_CHROME,
   KEYRING_CATEGORY,
   IS_WINDOWS,
+  EVENTS,
 } from 'consts';
+import eventBus from '@/eventBus';
 import transactionHistoryService from './transactionHistory';
 import preferenceService, { Account } from './preference';
 import stats from '@/stats';
@@ -857,6 +859,10 @@ class NotificationService extends Events {
     this.rejectApprovalWaiters();
     this.approvals = [];
     this.currentApproval = null;
+    await this.closeNotification(stay);
+  };
+
+  private closeNotification = async (stay = false) => {
     const notificationWindowId = this.notifiWindowId;
     if (notificationWindowId !== null && !stay) {
       this.notifiWindowId = null;
@@ -904,7 +910,40 @@ class NotificationService extends Events {
     void this.clear();
   };
 
-  invalidateApprovalSession = () => {
+  invalidateApprovalSession = (origin?: string) => {
+    if (origin !== undefined) {
+      signingFlowService.getFlowsForOrigin(origin).forEach((flow) => {
+        this.invalidateSigningFlow(flow.flowId);
+      });
+      const affected = this.approvals.filter(
+        (approval) => this.getOrigin(approval.data) === origin
+      );
+      if (!affected.length) return;
+      const current = this.currentApproval;
+      affected.forEach((approval) => {
+        const error = ethErrors.provider.userRejectedRequest();
+        approval.reject?.(error);
+        this.settleInternalSignWaiter(approval, false, error);
+        if (approval.data.signing) {
+          signingFlowService.detachApproval(
+            approval.data.signing.flow,
+            toApprovalRef(approval.id, approval.data.approvalComponent)
+          );
+        }
+        if (approval.signingTxId) {
+          transactionHistoryService.removeSigningTx(approval.signingTxId);
+        }
+      });
+      this.approvals = this.approvals.filter(
+        (approval) => this.getOrigin(approval.data) !== origin
+      );
+      if (!current || affected.includes(current)) {
+        this.currentApproval = this.approvals[0] || null;
+        if (!this.currentApproval) void this.closeNotification();
+        eventBus.emit(EVENTS.broadcastToUI, { method: EVENTS.RELOAD_APPROVAL });
+      }
+      return;
+    }
     if (this.currentApproval || this.approvals.length > 0) {
       this.rejectAllApprovals();
     } else {

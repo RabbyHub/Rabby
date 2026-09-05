@@ -1878,7 +1878,7 @@ class ProviderController extends BaseController {
 
     const connectedSite = permissionService.getConnectedSite(origin);
     if (connectedSite && connectedSite.chain !== chain.enum) {
-      notificationService.invalidateApprovalSession();
+      notificationService.invalidateApprovalSession(origin);
     }
     if (approvalRes) {
       RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
@@ -1951,7 +1951,7 @@ class ProviderController extends BaseController {
 
     const connectedSite = permissionService.getConnectedSite(origin);
     if (connectedSite && connectedSite.chain !== chain.enum) {
-      notificationService.invalidateApprovalSession();
+      notificationService.invalidateApprovalSession(origin);
     }
     permissionService.updateConnectSite(
       origin,
