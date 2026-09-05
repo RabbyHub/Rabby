@@ -70,6 +70,10 @@ class TypedDataSignatureManager {
     return this.state;
   }
 
+  public get signingAttempt() {
+    return this.signingContext?.attempt;
+  }
+
   public subscribe(fn: Subscriber) {
     this.subscribers.push(fn);
     return () => {
