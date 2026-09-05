@@ -238,6 +238,9 @@ export const useBatchSignPersonalMessageTask = (_options?: {
   }, [list, currentActiveIndex]);
 
   return {
+    get signingAttempt() {
+      return signingContextRef.current?.attempt;
+    },
     list,
     init,
     start,
