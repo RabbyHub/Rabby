@@ -23,6 +23,8 @@ jest.mock('consts', () => ({
   IS_WINDOWS: false,
   EVENTS: {
     SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
+    broadcastToUI: 'broadcastToUI',
+    RELOAD_APPROVAL: 'RELOAD_APPROVAL',
   },
 }));
 
@@ -66,6 +68,8 @@ jest.mock('@sentry/browser', () => ({
 }));
 
 import notificationService from '@/background/service/notification';
+import eventBus from '@/eventBus';
+import { EVENTS } from 'consts';
 import { winMgr } from 'background/webapi';
 import { signingFlowService } from '@/background/service/signingFlow';
 import transactionHistoryService from '@/background/service/transactionHistory';
@@ -417,6 +421,85 @@ describe('notificationService SignTx queueing', () => {
 
     expect(queuedApproval.reject).toHaveBeenCalled();
     expect(notificationService.approvals).toEqual([]);
+  });
+
+  test.each([false, true])(
+    'a dapp chain change preserves other origins (affected current: %s)',
+    (affectedCurrent) => {
+      const changedOrigin = 'https://chain-switcher.test';
+      const approvals = [changedOrigin, 'https://signer.test'].map(
+        (origin) => ({
+          id: origin,
+          signingTxId: origin,
+          data: { approvalComponent: 'SignTx', origin },
+          reject: jest.fn(),
+        })
+      );
+      const direct = [
+        'https://chain-switcher.test',
+        'https://signer.test',
+        'rabby',
+      ].map(
+        (origin) =>
+          signingFlowService.startAttempt({
+            origin,
+            account: {
+              address: '0xaccount',
+              type: 'Private Key',
+              brandName: 'Private Key',
+            },
+          })!
+      );
+      notificationService.approvals = approvals as any;
+      notificationService.currentApproval = approvals[
+        affectedCurrent ? 0 : 1
+      ] as any;
+      notificationService.notifiWindowId = 99;
+      const broadcast = jest.spyOn(eventBus, 'emit');
+
+      notificationService.invalidateApprovalSession(changedOrigin);
+
+      expect(approvals[1].reject).not.toHaveBeenCalled();
+      expect(notificationService.currentApproval).toBe(approvals[1]);
+      expect(notificationService.approvals).toEqual([approvals[1]]);
+      expect(notificationService.notifiWindowId).toBe(99);
+      expect(approvals[0].reject).toHaveBeenCalledWith(
+        expect.objectContaining({ code: 4001 })
+      );
+      expect(
+        direct.map(({ attempt }) =>
+          signingFlowService.isCurrentAttempt(attempt)
+        )
+      ).toEqual([false, true, true]);
+      expect(transactionHistoryService.removeSigningTx).toHaveBeenCalledWith(
+        changedOrigin
+      );
+      expect(
+        transactionHistoryService.removeAllSigningTx
+      ).not.toHaveBeenCalled();
+      expect(broadcast.mock.calls).toEqual(
+        affectedCurrent
+          ? [[EVENTS.broadcastToUI, { method: EVENTS.RELOAD_APPROVAL }]]
+          : []
+      );
+      broadcast.mockRestore();
+    }
+  );
+
+  test('origin invalidation also cancels a signer after its approval has resolved', () => {
+    const context = signingFlowService.startAttempt({
+      origin: 'https://dapp.test',
+      account: {
+        address: '0xaccount',
+        type: 'Private Key',
+        brandName: 'Private Key',
+      },
+    })!;
+    expect(notificationService.approvals).toEqual([]);
+
+    notificationService.invalidateApprovalSession(context.origin);
+
+    expect(signingFlowService.isCurrentAttempt(context.attempt)).toBe(false);
   });
 
   test('unlocks when the notification window is not created', async () => {
