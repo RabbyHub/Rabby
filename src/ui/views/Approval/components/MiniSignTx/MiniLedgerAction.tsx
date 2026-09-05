@@ -105,8 +105,14 @@ export const MiniLedgerAction: React.FC<Props> = ({
       task.stop();
     }
   });
-  const attemptRef = useRef<SigningAttemptRef>();
-  attemptRef.current = task.signingAttempt;
+  const attemptRef = React.useMemo(
+    () => ({
+      get current(): SigningAttemptRef | undefined {
+        return task.signingAttempt;
+      },
+    }),
+    [task]
+  );
   useSigningAttemptEvents(attemptRef, {
     onHardwareError: handleHardwareError,
   });

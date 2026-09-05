@@ -83,6 +83,9 @@ export class SignatureManager {
   private manualGasMethod?: SignerCtx['gasMethod'];
   private manualGasFingerprint?: string;
   private signingContext?: SigningRequestContext;
+  public get signingAttempt() {
+    return this.signingContext?.attempt;
+  }
   private signingWallet?: WalletControllerType;
   private retryTxs: Tx[] = [];
   private retryScope?: string;

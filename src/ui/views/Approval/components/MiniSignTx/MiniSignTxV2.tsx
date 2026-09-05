@@ -626,6 +626,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   // mock mini sign task
   const task = {
+    get signingAttempt() {
+      return instance.signingAttempt;
+    },
     status: ctx.signInfo?.status
       ? ctx.signInfo?.status === 'signing'
         ? 'active'
