@@ -243,6 +243,9 @@ export const useBatchSignTypedDataTask = (_options?: {
   }, [list, currentActiveIndex]);
 
   return {
+    get signingAttempt() {
+      return signingContextRef.current?.attempt;
+    },
     list,
     init,
     start,
