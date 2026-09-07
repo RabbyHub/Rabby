@@ -4882,9 +4882,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-api@npm:0.9.65":
-  version: 0.9.65
-  resolution: "@rabby-wallet/rabby-api@npm:0.9.65"
+"@rabby-wallet/rabby-api@npm:0.9.66-alpha.0":
+  version: 0.9.66-alpha.0
+  resolution: "@rabby-wallet/rabby-api@npm:0.9.66-alpha.0"
   dependencies:
     "@rabby-wallet/rabby-sign": "npm:0.4.0"
     axios: "npm:^0.27.2"
@@ -4895,17 +4895,17 @@ __metadata:
   peerDependencies:
     "@debank/common": ^0.3.9
     "@rabby-wallet/rabby-sign": ">= 0.3"
-  checksum: 10c0/a45b81f862e466a58f8f943d0b83e72f4b1f9206ac2a9aa187c723a1fd0d02aa95d0ac5a41a1e11eb3444b692e5392ff3452041f7009ad807fc73a9f8ce9db76
+  checksum: 10c0/51a50e8a53ece939b0b8983c27f615bb93541c4fd1c09866475d49b960a3077871abdb0acf4171cbe6be25379de0690c0dd9f487919197d37157528e03c8c148
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-bridge@npm:0.0.8":
-  version: 0.0.8
-  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.8"
+"@rabby-wallet/rabby-bridge@npm:0.0.9-alpha.0":
+  version: 0.0.9-alpha.0
+  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.9-alpha.0"
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.9.58"
-  checksum: 10c0/1b28e5dba47580a89829ecd1d25e8aa8722c015079b7df2294e8f7e463a34cf1e47efe0049c583bf00da1b20d1877bcf31dedebdeb5c29fbfc77f9ceedd45015
+  checksum: 10c0/2bf5ee73c05d0866c239e8f719cd68e8000fe262da6ab857d450689e7265ea2216b1b56074486afbd79c054458b80422f292da124eb9367434ef622d19f75c37
   languageName: node
   linkType: hard
 
@@ -20353,8 +20353,8 @@ __metadata:
     "@rabby-wallet/hyperliquid-sdk": "npm:1.1.15"
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.16"
-    "@rabby-wallet/rabby-api": "npm:0.9.65"
-    "@rabby-wallet/rabby-bridge": "npm:0.0.8"
+    "@rabby-wallet/rabby-api": "npm:0.9.66-alpha.0"
+    "@rabby-wallet/rabby-bridge": "npm:0.0.9-alpha.0"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
     "@rabby-wallet/rabby-swap": "npm:0.0.83"
     "@rabby-wallet/staking-sdk": "npm:0.1.0"
