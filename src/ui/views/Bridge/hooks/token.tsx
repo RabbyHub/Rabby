@@ -729,6 +729,15 @@ export const useBridge = () => {
     [cancelDebounce]
   );
 
+  const resumeQuoteRefresh = useCallback(() => {
+    setQuoteRefreshLocked(false);
+    if (canRunQuoteRequest && !depositFlowActiveRef.current) {
+      setQuoteRefreshCountdown({ startedAt: 0, deadline: 0, expired: true });
+      setPending(true);
+    }
+    setRefreshId((id) => id + 1);
+  }, [canRunQuoteRequest, setQuoteRefreshLocked, setRefreshId]);
+
   useEffect(() => {
     if (depositFlowActive) {
       setQuoteRefreshCountdown(null);
@@ -981,6 +990,7 @@ export const useBridge = () => {
 
   return {
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
 
     fromChain,
     fromToken,

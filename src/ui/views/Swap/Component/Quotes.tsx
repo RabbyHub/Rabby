@@ -151,7 +151,7 @@ export const Quotes = ({
         !noPadding && 'px-20'
       )}
     >
-      <div className="flex flex-col gap-12">
+      <div className="flex flex-col gap-12 mb-24">
         {sortedList.map((params, idx) => {
           const { name, data, isDex } = params;
           if (!isDex) return null;
@@ -180,7 +180,7 @@ export const Quotes = ({
       </div>
       <div
         className={clsx(
-          'flex items-center justify-center my-8 mt-24 cursor-pointer gap-4',
+          'flex items-center justify-center my-8 cursor-pointer gap-4',
           errorQuoteDEXs.length === 0 ||
             errorQuoteDEXs?.length === dexListLength
             ? 'hidden'
