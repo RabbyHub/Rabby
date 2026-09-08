@@ -160,6 +160,7 @@ export const Main = () => {
     showMoreVisible,
     inSufficientCanGetQuote,
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
 
     autoSuggestSlippage,
     setAutoSuggestSlippage,
@@ -183,10 +184,6 @@ export const Main = () => {
   const mevProtection = useSwapStore((s) => s.mevProtection ?? true);
   const setMEVProtection = useSwapStore((s) => s.setMEVProtection);
   const setRecentSwapToToken = useSwapStore((s) => s.setRecentSwapToToken);
-  const resumeQuoteRefresh = useCallback(() => {
-    setQuoteRefreshLocked(false);
-    refresh((id) => id + 1);
-  }, [refresh, setQuoteRefreshLocked]);
 
   const switchPreferMEV = useCallback(
     (bool: boolean) => {

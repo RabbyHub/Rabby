@@ -121,6 +121,7 @@ export const BridgeContent = () => {
     isSlippageHigh,
     isSlippageLow,
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
 
     autoSlippage,
     isCustomSlippage,
@@ -158,11 +159,6 @@ export const BridgeContent = () => {
   const setVisible = useSetQuoteVisible();
 
   const refresh = useSetRefreshId();
-
-  const resumeQuoteRefresh = useCallback(() => {
-    setQuoteRefreshLocked(false);
-    refresh((id) => id + 1);
-  }, [refresh, setQuoteRefreshLocked]);
 
   const { t } = useTranslation();
 
