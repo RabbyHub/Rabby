@@ -140,6 +140,7 @@ export const Main = () => {
 
     openQuotesList,
     quoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList,
@@ -1262,6 +1263,7 @@ export const Main = () => {
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <BridgeSwitchBtn
                 onClick={exchangeToken}
+                refreshCountdown={quoteRefreshCountdown}
                 loading={
                   quoteLoading &&
                   amountAvailable &&

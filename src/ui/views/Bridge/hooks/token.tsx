@@ -232,6 +232,13 @@ export const useBridge = () => {
   >();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
+  const quoteFetchingRef = useRef(false);
+  const [quoteRefreshCountdown, setQuoteRefreshCountdown] = useState<{
+    startedAt: number;
+    deadline: number;
+    expired?: boolean;
+    frozen?: boolean;
+  } | null>(null);
   const depositFlowActiveRef = useRef(depositFlowActive);
   const previousDepositFlowActiveRef = useRef(depositFlowActive);
 
@@ -406,21 +413,45 @@ export const useBridge = () => {
       return;
     }
 
+    if (quoteFetchingRef.current) {
+      setOriSelectedBridgeQuote(quote);
+      if (quote && !quote.manualClick && !depositFlowActiveRef.current) {
+        setQuoteRefreshCountdown((prev) => {
+          if (prev?.expired || prev?.frozen) {
+            return prev;
+          }
+          return { startedAt: 0, deadline: 0, frozen: true };
+        });
+      } else if (!quote) {
+        setQuoteRefreshCountdown((prev) => (prev?.expired ? prev : null));
+      }
+      return;
+    }
+
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
     }
+    setQuoteRefreshCountdown(null);
     if (
       !quote?.manualClick &&
       quote &&
       !depositFlowActiveRef.current &&
       !quoteRefreshLockedRef.current
     ) {
+      const startedAt = Date.now();
+      const delay = 1000 * 30;
+      setQuoteRefreshCountdown({ startedAt, deadline: startedAt + delay });
       expiredTimer.current = setTimeout(() => {
+        expiredTimer.current = undefined;
+        setQuoteRefreshCountdown((prev) =>
+          prev ? { ...prev, expired: true } : null
+        );
         if (!depositFlowActiveRef.current && !quoteRefreshLockedRef.current) {
+          setPending(true);
           setRefreshId((e) => e + 1);
         }
-      }, 1000 * 30);
+      }, delay);
     }
     setOriSelectedBridgeQuote(quote);
   }, []);
@@ -441,6 +472,11 @@ export const useBridge = () => {
     );
     setRecommendFromToken(undefined);
     if (shouldResetQuote) {
+      setQuoteRefreshCountdown(null);
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
+      }
       setSelectedBridgeQuote(undefined);
     }
     setPending(canRunQuoteRequest);
@@ -684,6 +720,7 @@ export const useBridge = () => {
       fetchIdRef.current += 1;
       setPending(false);
       cancelDebounce();
+      setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
         expiredTimer.current = undefined;
@@ -694,6 +731,7 @@ export const useBridge = () => {
 
   useEffect(() => {
     if (depositFlowActive) {
+      setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
         expiredTimer.current = undefined;
@@ -722,6 +760,7 @@ export const useBridge = () => {
   }, []);
 
   const rawQuoteLoading = quoteLoading || pending;
+  quoteFetchingRef.current = rawQuoteLoading;
   const allQuotesLoaded = !rawQuoteLoading;
   const quoteListForDisplay = useMemo(() => {
     if (allQuotesLoaded || !fromToken || !toToken) {
@@ -821,6 +860,7 @@ export const useBridge = () => {
 
   useEffect(() => {
     return () => {
+      fetchIdRef.current += 1;
       clearExpiredTimer();
     };
   }, [clearExpiredTimer]);
@@ -964,6 +1004,7 @@ export const useBridge = () => {
 
     openQuotesList,
     quoteLoading: displayQuoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     setQuotesList,
