@@ -1,7 +1,7 @@
 import React from 'react';
 import { TBody, THeadCell, THeader, Table } from './Table';
 import { TokenItem, Props as TokenItemProps } from '../TokenItem';
-import { FixedSizeList } from 'react-window';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { TokenItem as TokenItemType } from '@/background/service/openapi';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,27 @@ export interface Props {
   };
   EmptyComponent?: React.ReactNode;
 }
+
+interface TokenRowData {
+  list: Props['list'];
+  onSelect: (item: TokenItemProps['item']) => void;
+}
+
+const VirtualTokenRow = ({
+  data,
+  index,
+  style,
+}: ListChildComponentProps<TokenRowData>) => {
+  const item = data.list![index];
+  return (
+    <TokenItem
+      onClick={() => data.onSelect(item)}
+      style={style}
+      key={`${item.chain}-${item.id}`}
+      item={item}
+    />
+  );
+};
 
 export const TokenTable: React.FC<Props> = ({
   list,
@@ -60,21 +81,11 @@ export const TokenTable: React.FC<Props> = ({
               <FixedSizeList
                 height={virtual.height}
                 width="100%"
-                itemData={list}
+                itemData={{ list, onSelect: setSelected }}
                 itemCount={list?.length || 0}
                 itemSize={virtual.itemSize}
               >
-                {({ data, index, style }) => {
-                  const item = data[index];
-                  return (
-                    <TokenItem
-                      onClick={() => setSelected(item)}
-                      style={style}
-                      key={`${item.chain}-${item.id}`}
-                      item={item}
-                    />
-                  );
-                }}
+                {VirtualTokenRow}
               </FixedSizeList>
             ) : (
               list?.map((item) => {
