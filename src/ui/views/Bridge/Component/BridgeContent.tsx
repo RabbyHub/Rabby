@@ -103,6 +103,7 @@ export const BridgeContent = () => {
 
     openQuotesList,
     quoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList,
@@ -1171,7 +1172,11 @@ export const BridgeContent = () => {
             getContainer={getContainer}
           />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <BridgeSwitchBtn onClick={switchToken} loading={quoteLoading} />
+            <BridgeSwitchBtn
+              onClick={switchToken}
+              loading={quoteLoading}
+              refreshCountdown={quoteRefreshCountdown}
+            />
           </div>
         </div>
         {showExternalDappTips ? (

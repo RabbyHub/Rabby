@@ -270,17 +270,41 @@ export const useTokenPair = (userAddress: string) => {
       return;
     }
 
+    if (quoteFetchingRef.current) {
+      setOriActiveProvider(p);
+      if (p && !depositFlowActiveRef.current) {
+        setQuoteRefreshCountdown((prev) => {
+          if (prev?.expired || prev?.frozen) {
+            return prev;
+          }
+          return { startedAt: 0, deadline: 0, frozen: true };
+        });
+      } else if (!p) {
+        setQuoteRefreshCountdown((prev) => (prev?.expired ? prev : null));
+      }
+      return;
+    }
+
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
     }
+    setQuoteRefreshCountdown(null);
 
     if (p && !depositFlowActiveRef.current) {
+      const startedAt = Date.now();
+      const delay = 1000 * 20;
+      setQuoteRefreshCountdown({ startedAt, deadline: startedAt + delay });
       expiredTimer.current = setTimeout(() => {
+        expiredTimer.current = undefined;
+        setQuoteRefreshCountdown((prev) =>
+          prev ? { ...prev, expired: true } : null
+        );
         if (!depositFlowActiveRef.current && !quoteRefreshLockedRef.current) {
+          setPending(true);
           setRefreshId((e) => e + 1);
         }
-      }, 1000 * 20);
+      }, delay);
     }
 
     setOriActiveProvider(p);
@@ -399,6 +423,13 @@ export const useTokenPair = (userAddress: string) => {
   >();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
+  const quoteFetchingRef = useRef(false);
+  const [quoteRefreshCountdown, setQuoteRefreshCountdown] = useState<{
+    startedAt: number;
+    deadline: number;
+    expired?: boolean;
+    frozen?: boolean;
+  } | null>(null);
   const depositFlowActiveRef = useRef(depositFlowActive);
   const previousDepositFlowActiveRef = useRef(depositFlowActive);
 
@@ -783,6 +814,10 @@ export const useTokenPair = (userAddress: string) => {
         }
       }
 
+      if (currentFetchId !== fetchIdRef.current) {
+        return;
+      }
+
       return getAllQuotes({
         userAddress,
         payToken,
@@ -852,6 +887,7 @@ export const useTokenPair = (userAddress: string) => {
       fetchIdRef.current += 1;
       setPending(false);
       cancelQuoteDebounce();
+      setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
         expiredTimer.current = undefined;
@@ -862,6 +898,7 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     if (depositFlowActive) {
+      setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
         expiredTimer.current = undefined;
@@ -876,6 +913,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [cancelQuoteDebounce, depositFlowActive, setRefreshId]);
 
   const rawQuoteLoading = quoteLoading || pending;
+  quoteFetchingRef.current = rawQuoteLoading;
   const allQuotesLoaded = !rawQuoteLoading;
   const quoteListForDisplay = useMemo(() => {
     if (allQuotesLoaded || !payToken || !receiveToken) {
@@ -1034,6 +1072,7 @@ export const useTokenPair = (userAddress: string) => {
   }, []);
 
   useEffect(() => {
+    setQuoteRefreshCountdown(null);
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
@@ -1041,6 +1080,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [payToken?.id, receiveToken?.id, chain, inputAmount]);
 
   useEffect(() => {
+    setQuoteRefreshCountdown(null);
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
@@ -1210,6 +1250,7 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     return () => {
+      fetchIdRef.current += 1;
       clearExpiredTimer();
     };
   }, [clearExpiredTimer]);
@@ -1249,6 +1290,7 @@ export const useTokenPair = (userAddress: string) => {
     //quote
     openQuotesList,
     quoteLoading: displayQuoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList: quoteListForDisplay,
