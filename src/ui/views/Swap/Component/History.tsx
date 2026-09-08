@@ -127,7 +127,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     );
     const actualSlippagePercent = useMemo(
       () => new BigNumber(data?.actual?.slippage).times(100).toString(10) + '%',
-      [data?.quote?.slippage]
+      [data?.actual?.slippage]
     );
 
     const { t } = useTranslation();
