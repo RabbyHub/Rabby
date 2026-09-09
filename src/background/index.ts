@@ -175,6 +175,7 @@ async function restoreAppState() {
   await permissionService.init();
   await preferenceService.init();
   await currencyService.init();
+  await extensionUpdateService.init();
   await transactionWatchService.init();
   await transactionBroadcastWatchService.init();
   await pageStateCacheService.init();

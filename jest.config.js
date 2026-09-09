@@ -47,6 +47,7 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
+    '^.+\\.tsx$': ['ts-jest', { tsconfig: { jsx: 'react' }, useESM: true }],
     '^.+\\.[tj]s$': [
       'ts-jest',
       {

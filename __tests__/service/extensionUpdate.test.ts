@@ -18,6 +18,7 @@ jest.mock('@/background/utils/broadcastToUI', () => ({
 }));
 
 jest.mock('webextension-polyfill', () => ({
+  tabs: { create: jest.fn() },
   runtime: {
     getManifest: jest.fn(),
     onUpdateAvailable: { addListener: jest.fn() },
@@ -40,6 +41,7 @@ describe('extension update service', () => {
     getManifest.mockReturnValue({ version: '1.0.0' });
     getStorage.mockResolvedValue({});
     setStorage.mockResolvedValue(undefined);
+    (browser.tabs.create as jest.Mock).mockResolvedValue({ id: 1 });
     service = new ExtensionUpdateService();
     onUpdateAvailable = (details) => addListener.mock.calls[0][0](details);
   });
@@ -131,5 +133,46 @@ describe('extension update service', () => {
     ).toThrow();
     expect(setStorage).not.toHaveBeenCalled();
     await expect(service.getPendingVersion()).resolves.toBe('1.1.0');
+  });
+
+  it('does not open a tab or reload without a pending update', async () => {
+    await service.reloadForUpdate();
+    expect(browser.tabs.create).not.toHaveBeenCalled();
+    expect(browser.runtime.reload).not.toHaveBeenCalled();
+  });
+
+  it('waits for the updating tab before reloading and deduplicates concurrent requests', async () => {
+    await service.init();
+    onUpdateAvailable({ version: '1.1.0' });
+    let resolveTab!: (tab: object) => void;
+    const tabCreated = new Promise((resolve) => {
+      resolveTab = resolve;
+    });
+    (browser.tabs.create as jest.Mock).mockReturnValue(tabCreated);
+
+    const reload = service.reloadForUpdate();
+    expect(service.reloadForUpdate()).toBe(reload);
+    await service.getPendingVersion();
+    expect(browser.tabs.create).toHaveBeenCalledTimes(1);
+    expect(browser.tabs.create).toHaveBeenCalledWith({
+      url: 'https://rabby.io/updating',
+      active: true,
+    });
+    expect(browser.runtime.reload).not.toHaveBeenCalled();
+    resolveTab({ id: 1 });
+    await reload;
+    expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not reload if opening the tab fails and allows retry', async () => {
+    await service.init();
+    onUpdateAvailable({ version: '1.1.0' });
+    const error = new Error('Cannot create tab');
+    (browser.tabs.create as jest.Mock).mockRejectedValueOnce(error);
+
+    await expect(service.reloadForUpdate()).rejects.toThrow(error);
+    expect(browser.runtime.reload).not.toHaveBeenCalled();
+    await service.reloadForUpdate();
+    expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
   });
 });

@@ -75,6 +75,12 @@ import { getChainList } from '@/utils/chain';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { ga4 } from '@/utils/ga4';
 import { EcosystemBanner } from './components/EcosystemBanner';
+import { ExtensionUpdateCard } from './components/ExtensionUpdateCard';
+import { ExtensionUpdateDialog } from './components/ExtensionUpdateDialog';
+import {
+  EXTENSION_UPDATE_PREVIEW,
+  EXTENSION_UPDATE_PREVIEW_VERSION,
+} from '../extensionUpdatePreview';
 import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
@@ -87,7 +93,10 @@ import {
 import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
 import { useOpenapiStore } from '@/ui/state/openapi';
 import { appIsDebugPkg, appIsDev } from '@/utils/env';
-import { useExtensionUpdate } from '@/ui/hooks/useExtensionUpdate';
+import {
+  selectHasNewExtensionVersion,
+  useExtensionUpdateStore,
+} from '@/ui/state/extensionUpdate';
 
 const useAutoLockOptions = () => {
   const { t } = useTranslation();
@@ -804,11 +813,21 @@ const SettingsInner = ({
     });
   };
 
-  const { hasNewVersion, reloadForUpdate } = useExtensionUpdate();
+  const previewExtensionUpdate = EXTENSION_UPDATE_PREVIEW;
+  const hasPendingUpdate = useExtensionUpdateStore(
+    selectHasNewExtensionVersion
+  );
+  const hasNewVersion = previewExtensionUpdate || hasPendingUpdate;
+  const storedPendingVersion = useExtensionUpdateStore((s) => s.version);
+  const pendingVersion = previewExtensionUpdate
+    ? storedPendingVersion || EXTENSION_UPDATE_PREVIEW_VERSION
+    : storedPendingVersion;
+  const reloadForUpdate = useExtensionUpdateStore((s) => s.reloadForUpdate);
+  const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
 
   const updateVersion = () => {
     if (hasNewVersion) {
-      reloadForUpdate();
+      setUpdateDialogVisible(true);
     } else {
       message.success({
         key: 'latest version',
@@ -1616,6 +1635,13 @@ const SettingsInner = ({
         <div className={clsx('content')}>
           {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
 
+          {hasNewVersion && (
+            <ExtensionUpdateCard
+              version={pendingVersion}
+              onUpdate={reloadForUpdate}
+            />
+          )}
+
           <RateModalTriggerOnSettings className="mb-[16px]" />
 
           {Object.values(renderData).map((group, idxl1) => {
@@ -1708,6 +1734,12 @@ const SettingsInner = ({
         visible={isShowAutoLockModal}
         onFinish={() => setIsShowAutoLockModal(false)}
         onCancel={() => setIsShowAutoLockModal(false)}
+      />
+      <ExtensionUpdateDialog
+        visible={!!visible && hasNewVersion && updateDialogVisible}
+        version={pendingVersion}
+        onClose={() => setUpdateDialogVisible(false)}
+        onUpdate={reloadForUpdate}
       />
       <SwitchLangModal
         visible={isShowLangModal}

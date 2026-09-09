@@ -1383,6 +1383,15 @@
         "lock": {
           "never": "Nunca"
         },
+        "updateCard": {
+          "check": "Ver",
+          "title": "Nova versão disponível",
+          "update": "Atualizar",
+          "dismiss": "Fechar aviso de atualização",
+          "error": "Não foi possível atualizar a extensão",
+          "perps": "Melhorámos a experiência de negociação de perpétuos.",
+          "screenshots": "Faça capturas com o botão direito para comunicar erros facilmente."
+        },
         "updateVersion": {
           "okText": "Veja o Tutorial",
           "title": "Atualização Disponível",

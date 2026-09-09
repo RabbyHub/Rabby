@@ -44,7 +44,14 @@ jest.mock('@/utils/chain', () => ({
 }));
 
 jest.mock('@/utils/env', () => ({
+  __esModule: true,
   appIsDev: false,
+  isManifestV3: true,
+}));
+
+jest.mock('webextension-polyfill', () => ({
+  action: { openPopup: jest.fn() },
+  browserAction: { openPopup: jest.fn() },
 }));
 
 jest.mock('@/background/service/metamaskModeService', () => ({
@@ -62,6 +69,8 @@ jest.mock('@/utils/ga4', () => ({
 import { keyringService, preferenceService } from 'background/service';
 import wallet from '@/background/controller/wallet';
 import internalMethods from '@/background/controller/provider/internalMethod';
+import browser from 'webextension-polyfill';
+import * as env from '@/utils/env';
 
 const openInDesktop = internalMethods['rabby:openInDesktop'];
 const isUnlockedMock = keyringService.isUnlocked as jest.Mock;
@@ -173,5 +182,91 @@ describe('rabby:openInDesktop', () => {
     expect(walletOpenInDesktopMock).toHaveBeenCalledWith(
       '/desktop/profile?utm_source=debank'
     );
+  });
+});
+
+describe('rabby:openPopup', () => {
+  const openPopup = internalMethods['rabby:openPopup'];
+
+  beforeEach(() => {
+    (env as any).isManifestV3 = true;
+    (browser.action.openPopup as jest.Mock).mockResolvedValue(undefined);
+    (browser.browserAction.openPopup as jest.Mock).mockResolvedValue(undefined);
+  });
+
+  it('opens the popup for rabby.io without changing accounts', async () => {
+    await expect(
+      openPopup({
+        origin: 'https://rabby.io',
+        data: { method: 'rabby:openPopup' },
+      })
+    ).resolves.toEqual({ opened: true });
+    expect(browser.action.openPopup).toHaveBeenCalledTimes(1);
+    expect(setCurrentAccountMock).not.toHaveBeenCalled();
+    expect(walletOpenInDesktopMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    undefined,
+    '',
+    'null',
+    'http://rabby.io',
+    'https://www.rabby.io',
+    'https://go.rabby.io',
+    'https://rabby.io.evil.test',
+    'https://evil.test',
+    'https://rabby.io:8443',
+  ])(
+    'rejects origin %s even if request params and session claim rabby.io',
+    async (origin) => {
+      await expect(
+        openPopup({
+          origin,
+          session: { origin: 'https://rabby.io', name: '', icon: '' },
+          data: {
+            method: 'rabby:openPopup',
+            params: [{ origin: 'https://rabby.io' }],
+          },
+        })
+      ).rejects.toMatchObject({ code: 4100 });
+      expect(browser.action.openPopup).not.toHaveBeenCalled();
+      expect(browser.browserAction.openPopup).not.toHaveBeenCalled();
+    }
+  );
+
+  it('supports MV2 through browserAction', async () => {
+    (env as any).isManifestV3 = false;
+    await openPopup({
+      origin: 'https://rabby.io',
+      data: { method: 'rabby:openPopup' },
+    });
+    expect(browser.browserAction.openPopup).toHaveBeenCalledTimes(1);
+    expect(browser.action.openPopup).not.toHaveBeenCalled();
+  });
+
+  it('propagates popup errors instead of reporting success', async () => {
+    const error = new Error('Popup could not be opened');
+    (browser.action.openPopup as jest.Mock).mockRejectedValueOnce(error);
+    await expect(
+      openPopup({
+        origin: 'https://rabby.io',
+        data: { method: 'rabby:openPopup' },
+      })
+    ).rejects.toThrow(error);
+  });
+
+  it('rejects when the browser has no openPopup API', async () => {
+    const original = browser.action.openPopup;
+    (browser.action as any).openPopup = undefined;
+    try {
+      await expect(
+        openPopup({
+          origin: 'https://rabby.io',
+          data: { method: 'rabby:openPopup' },
+        })
+      ).rejects.toMatchObject({ code: 4200 });
+    } finally {
+      browser.action.openPopup = original;
+    }
   });
 });

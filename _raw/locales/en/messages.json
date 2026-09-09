@@ -2678,6 +2678,15 @@
         "disableWhitelistTip": "You can send assets to any address once disabled",
         "warning": "Warning",
         "clearWatchAddressContent": "Do you make sure to delete all Watch Mode address?",
+        "updateCard": {
+          "check": "Check",
+          "title": "New Version available",
+          "update": "Update",
+          "dismiss": "Dismiss update notice",
+          "error": "Failed to update extension",
+          "perps": "Enhanced the Perps trading experience.",
+          "screenshots": "Right-click screenshots to easily submit bug reports."
+        },
         "updateVersion": {
           "content": "A new update for Rabby Wallet is available. Click to check how to update manually.",
           "okText": "See Tutorial",

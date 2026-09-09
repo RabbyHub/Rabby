@@ -26,6 +26,15 @@ import {
 } from '@/ui/views/GasAccount/hooks';
 import { StablecoinSwapPopup } from './components/StablecoinSwapPopup';
 import { useAppVersionStore } from '@/ui/state/appVersion';
+import {
+  selectHasNewExtensionVersion,
+  useExtensionUpdateStore,
+} from '@/ui/state/extensionUpdate';
+import { ExtensionUpdateBanner } from './components/ExtensionUpdateBanner';
+import {
+  EXTENSION_UPDATE_PREVIEW,
+  EXTENSION_UPDATE_PREVIEW_VERSION,
+} from './components/extensionUpdatePreview';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -121,6 +130,10 @@ const Dashboard = () => {
   );
 
   const [settingVisible, setSettingVisible] = useState(false);
+  const hasPendingUpdate = useExtensionUpdateStore(
+    selectHasNewExtensionVersion
+  );
+  const pendingVersion = useExtensionUpdateStore((s) => s.version);
   const [autoScrollToBiometric, setAutoScrollToBiometric] = useState(false);
   const toggleShowMoreSettings = useMemoizedFn(() => {
     setSettingVisible(!settingVisible);
@@ -201,6 +214,16 @@ const Dashboard = () => {
           </div>
         </div>
         <StablecoinSwapPopup />
+        <ExtensionUpdateBanner
+          key={pendingVersion || EXTENSION_UPDATE_PREVIEW_VERSION}
+          visible={
+            (EXTENSION_UPDATE_PREVIEW || hasPendingUpdate) && !settingVisible
+          }
+          onCheck={() => {
+            setAutoScrollToBiometric(false);
+            setSettingVisible(true);
+          }}
+        />
       </div>
       <Modal
         visible={firstNotice && updateContent}
