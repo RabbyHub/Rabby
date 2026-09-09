@@ -43,7 +43,7 @@ const HistoryItem = ({
 
   const gotoTxDetail = () => {
     if (txDetailUrl) {
-      window.open(txDetailUrl);
+      window.open(txDetailUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
