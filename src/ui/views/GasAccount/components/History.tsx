@@ -8,6 +8,7 @@ import { Skeleton, Tooltip } from 'antd';
 import { ReactComponent as RcIconPendingCC } from '@/ui/assets/pending-cc.svg';
 import { ReactComponent as RcIconOpenExternalCC } from '@/ui/assets/open-external-cc.svg';
 import { findChainByServerID } from '@/utils/chain';
+import { getTxScanLink } from '@/utils';
 import { ReactComponent as IconGift } from '@/ui/assets/gift-green.svg';
 
 type GasAccountHistoryState = ReturnType<typeof useGasAccountHistory>;
@@ -38,7 +39,8 @@ const HistoryItem = ({
   const { t } = useTranslation();
   const txDetailUrl =
     !isWithdraw && chainServerId && txId
-      ? findChainByServerID(chainServerId)?.scanLink?.replace('_s_', txId)
+      ? getTxScanLink(findChainByServerID(chainServerId)?.scanLink, txId) ||
+        undefined
       : undefined;
 
   const gotoTxDetail = () => {
