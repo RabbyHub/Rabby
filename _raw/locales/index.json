@@ -13,5 +13,6 @@
   { "code": "pt", "name": "Português" },
   { "code": "vi", "name": "Tiếng Việt" },
   { "code": "id", "name": "Bahasa Indonesia" },
-  { "code": "ko", "name": "한국어" }
+  { "code": "ko", "name": "한국어" },
+  { "code": "az", "name": "Azərbaycan dili" }
 ]
