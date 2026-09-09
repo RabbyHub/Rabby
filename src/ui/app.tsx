@@ -21,6 +21,11 @@ import { getSentryConfig } from '@/utils/sentry-config';
 import { Button } from 'antd';
 import { wallet } from './wallet';
 import { queryClient } from './query';
+import {
+  markBackgroundStartupSuccessful,
+  tryReloadForBackgroundRecovery,
+  waitForBackgroundReady,
+} from './utils/backgroundStartup';
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -134,63 +139,66 @@ const main = async () => {
   );
 };
 
-const bootstrap = () => {
+const renderBackgroundRecovery = (reloading: boolean) => {
+  root?.render(
+    <div className="fixed inset-0 flex flex-col items-center justify-center gap-[16px] p-[24px] text-center bg-rb-neutral-bg-2 text-r-neutral-title-1">
+      <h2>{reloading ? 'Reloading Rabby' : 'Rabby could not start'}</h2>
+      <p className="text-r-neutral-body">
+        {reloading
+          ? 'This window will close. Please reopen Rabby in a moment.'
+          : 'Try reloading Rabby and reopening it. If the problem continues, restart Chrome.'}
+      </p>
+      {!reloading && (
+        <Button type="primary" onClick={() => browser.runtime.reload()}>
+          Reload Rabby
+        </Button>
+      )}
+    </div>
+  );
+};
+
+const bootstrap = async () => {
   if (!isManifestV3) {
-    void main().catch((e) => {
-      console.error('[main] bootstrap failed', e);
-      Sentry.captureException(e);
-    });
+    await main();
     return;
   }
 
-  browser.runtime
-    .sendMessage({ type: 'getBackgroundReady' })
-    .then((res) => {
-      if (!res) {
-        setTimeout(bootstrap, 100);
-        return;
-      }
-
-      void main().catch((e) => {
-        console.error('[main] bootstrap failed', e);
-        Sentry.captureException(e);
-      });
-    })
-    .catch(() => {
-      setTimeout(bootstrap, 100);
+  const isPopup = getUiType().isPop;
+  const startedAt = Date.now();
+  const controller = new AbortController();
+  window.addEventListener('pagehide', () => controller.abort(), { once: true });
+  while (!controller.signal.aborted) {
+    const result = await waitForBackgroundReady({
+      signal: controller.signal,
+      checkHealth: isPopup,
     });
+    if (result === 'cancelled') return;
+    if (result === 'ready') {
+      await main();
+      if (isPopup && !controller.signal.aborted) {
+        await markBackgroundStartupSuccessful(startedAt);
+      }
+      return;
+    }
+    // Only the popup's initial handshake can reload the extension. Notification
+    // windows and failures of signing/transaction RPCs never enter recovery.
+    const recovery = await tryReloadForBackgroundRecovery({
+      signal: controller.signal,
+      onReloading: () => renderBackgroundRecovery(true),
+    });
+    console.warn('[background startup] recovery result:', recovery);
+    if (recovery === 'responsive') {
+      root?.render(null);
+      continue;
+    }
+    if (recovery === 'blocked' && !controller.signal.aborted) {
+      renderBackgroundRecovery(false);
+    }
+    return;
+  }
 };
 
-bootstrap();
-
-const checkSwAlive = () => {
-  console.log('[checkSwAlive]', new Date());
-  Promise.race([
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('timeout')), 5000)
-    ),
-    browser.runtime.sendMessage({
-      type: 'ping',
-    }),
-  ])
-    .then(() => {
-      console.log('[checkSwAlive] sw is alive');
-    })
-    .catch((e) => {
-      if (e.message === 'timeout') {
-        console.log('[checkSwAlive] sw is inactive', e);
-        Sentry.captureException(
-          'sw is inactive' +
-            (browser.runtime.lastError ? ':' + browser.runtime.lastError : '')
-        );
-      } else {
-        console.log('[checkSwAlive] sw is dead');
-        Sentry.captureMessage(
-          'sw is dead:' +
-            e.message +
-            (browser.runtime.lastError ? ':' + browser.runtime.lastError : '')
-        );
-      }
-    });
-};
-checkSwAlive();
+void bootstrap().catch((e) => {
+  console.error('[main] bootstrap failed', e);
+  Sentry.captureException(e);
+});

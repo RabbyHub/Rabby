@@ -1,3 +1,19 @@
+// Respond without loading the wallet bundle, so popup recovery can distinguish
+// a broken worker connection from a wallet that is still initializing.
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (
+    sender.id === chrome.runtime.id &&
+    message?.type === 'RABBY_SW_HEALTH_CHECK' &&
+    typeof message.requestId === 'string'
+  ) {
+    sendResponse({
+      type: 'RABBY_SW_HEALTH_RESPONSE',
+      requestId: message.requestId,
+    });
+  }
+  return false;
+});
+
 // Register navigation interception synchronously before the lazy background
 // bundle. MV3 service workers can otherwise miss a cold-start navigation.
 importScripts('/go-rabby-link-router.js');
@@ -145,6 +161,7 @@ const createOffscreen = async () => {
 const keepAlive = () => {
   // keep the service worker alive when messages are received
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message?.type === 'RABBY_SW_HEALTH_CHECK') return false;
     importAllScripts();
     return false;
   });
