@@ -102,7 +102,9 @@ import { subscribeTxCompleted } from './subscriptions/rateGuidance';
 import extensionUpdateService from './service/extensionUpdate';
 
 // Register synchronously so update events can wake the MV3 service worker.
-extensionUpdateService.init();
+void extensionUpdateService.init().catch((error) => {
+  console.error('[extensionUpdate] failed to initialize store', error);
+});
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
