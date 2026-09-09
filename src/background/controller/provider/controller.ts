@@ -857,12 +857,10 @@ class ProviderController extends BaseController {
         console.log(e);
       }
     }
-    const chain =
-      permissionService.isInternalOrigin(origin) || isSpeedUp || isCancel
-        ? (findChain({
-            id: approvalRes.chainId,
-          })?.enum as CHAINS_ENUM)
-        : permissionService.getConnectedSite(origin)!.chain;
+    // Pin the broadcast chain to the approved transaction's chain; the
+    // connected site's chain is attacker-mutable mid-approval.
+    const chain = (findChain({ id: approvalRes.chainId })?.enum ??
+      permissionService.getConnectedSite(origin)?.chain) as CHAINS_ENUM;
 
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
 
