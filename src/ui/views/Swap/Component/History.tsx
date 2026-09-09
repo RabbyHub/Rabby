@@ -23,6 +23,7 @@ import { ellipsis } from '@/ui/utils/address';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
+import { isValidHttpUrl } from '@/utils';
 import { DEX } from '@/constant';
 import { DrawerProps } from 'antd';
 const isTab = getUiType().isTab;
@@ -101,9 +102,13 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
       [data?.chain]
     );
     const chainName = chainItem?.name || '';
-    const scanLink = useMemo(() => chainItem?.scanLink.replace('_s_', ''), [
-      chainItem?.scanLink,
-    ]);
+    const scanLink = useMemo(
+      () =>
+        chainItem?.scanLink && isValidHttpUrl(chainItem.scanLink)
+          ? chainItem.scanLink.replace('_s_', '')
+          : undefined,
+      [chainItem?.scanLink]
+    );
     const loading = data?.status !== 'Finished';
 
     const gasUsed = useMemo(() => {
