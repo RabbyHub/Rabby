@@ -486,6 +486,10 @@ export const useBridge = () => {
     { loading: quoteLoading, error: quotesError },
     getQuoteList,
   ] = useAsyncFn(async () => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
+    }
     if (depositFlowActiveRef.current || quoteRefreshLockedRef.current) {
       setPending(false);
       return;
@@ -695,6 +699,10 @@ export const useBridge = () => {
 
   useEffect(() => {
     if (canRunQuoteRequest && !quoteRefreshLockedRef.current) {
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
+      }
       setPending(true);
     } else {
       setPending(false);
