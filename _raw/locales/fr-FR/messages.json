@@ -1073,6 +1073,15 @@
         "supportedChains": "Réseaux intégrés",
         "testnetBackendServiceUrl": "URL du service backend testnet",
         "updateAvailable": "Mise à jour disponible",
+        "updateCard": {
+          "check": "Voir",
+          "title": "Nouvelle version disponible",
+          "update": "Mettre à jour",
+          "dismiss": "Fermer l’avis de mise à jour",
+          "error": "Échec de la mise à jour de l’extension",
+          "perps": "L’expérience de trading de perpétuels a été améliorée.",
+          "screenshots": "Faites des captures par clic droit pour signaler facilement des bugs."
+        },
         "updateVersion": {
           "content": "Une nouvelle mise à jour de Rabby Wallet est disponible. Cliquez pour découvrir comment effectuer la mise à jour manuellement.",
           "okText": "Voir le tutoriel",

@@ -291,6 +291,15 @@
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "有可用更新",
+        "updateCard": {
+          "check": "查看",
+          "title": "有新版本可用",
+          "update": "更新",
+          "dismiss": "關閉更新提示",
+          "error": "更新擴充功能失敗",
+          "perps": "優化了永續合約交易體驗。",
+          "screenshots": "右鍵截圖，輕鬆提交問題回報。"
+        },
         "updateVersion": {
           "content": "檢測到 Rabby Wallet 更新版本\n點擊查看如何手動更新",
           "okText": "查看教學",

@@ -19,6 +19,7 @@ export class ExtensionUpdateService {
   private initPromise?: Promise<void>;
   private initialized = false;
   private pendingUpdate?: ExtensionUpdateStore;
+  private reloadPromise?: Promise<void>;
 
   init = () => {
     if (this.initPromise) return this.initPromise;
@@ -72,6 +73,22 @@ export class ExtensionUpdateService {
       return update.version;
     }
     return null;
+  };
+
+  reloadForUpdate = (): Promise<void> => {
+    this.reloadPromise ||= (async () => {
+      if (!(await this.getPendingVersion())) return;
+
+      // Opening an active tab closes the popup; finish the update in background.
+      await browser.tabs.create({
+        url: 'https://rabby.io/updating',
+        active: true,
+      });
+      browser.runtime.reload();
+    })().finally(() => {
+      this.reloadPromise = undefined;
+    });
+    return this.reloadPromise;
   };
 }
 

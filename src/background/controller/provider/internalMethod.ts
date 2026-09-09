@@ -7,7 +7,8 @@ import {
 } from 'background/service';
 import providerController from './controller';
 import { findChainByEnum } from '@/utils/chain';
-import { appIsDev } from '@/utils/env';
+import { appIsDev, isManifestV3 } from '@/utils/env';
+import browser from 'webextension-polyfill';
 import wallet from '../wallet';
 import { metamaskModeService } from '@/background/service/metamaskModeService';
 import { ProviderRequest } from './type';
@@ -191,6 +192,22 @@ const openInDesktop = async (req: ProviderRequest) => {
   wallet.openInDesktop('/desktop/profile?utm_source=debank');
 };
 
+const openPopup = async (req: ProviderRequest) => {
+  // Background derives this origin from port.sender.url, not request params.
+  if (req.origin !== 'https://rabby.io') {
+    throw ethErrors.provider.unauthorized();
+  }
+
+  const action = isManifestV3 ? browser.action : browser.browserAction;
+  if (!action?.openPopup) {
+    throw ethErrors.provider.unsupportedMethod({
+      message: 'Opening the extension popup is not supported by this browser',
+    });
+  }
+  await action.openPopup();
+  return { opened: true } as const;
+};
+
 export default {
   tabCheckin,
   getProviderState,
@@ -200,4 +217,5 @@ export default {
   'rabby:getProviderConfig': getProviderConfig,
   'rabby:resetProvider': resetProvider,
   'rabby:openInDesktop': openInDesktop,
+  'rabby:openPopup': openPopup,
 };

@@ -1383,6 +1383,15 @@
         "lock": {
           "never": "Không bao giờ"
         },
+        "updateCard": {
+          "check": "Xem",
+          "title": "Đã có phiên bản mới",
+          "update": "Cập nhật",
+          "dismiss": "Đóng thông báo cập nhật",
+          "error": "Không thể cập nhật tiện ích",
+          "perps": "Cải thiện trải nghiệm giao dịch hợp đồng vĩnh cửu.",
+          "screenshots": "Nhấp chuột phải để chụp màn hình và dễ dàng báo cáo lỗi."
+        },
         "updateVersion": {
           "content": "Một bản cập nhật mới cho Rabby Wallet đã có sẵn. Nhấp vào đây để kiểm tra cách cập nhật thủ công.",
           "successTip": "Bạn đang sử dụng phiên bản mới nhất",
