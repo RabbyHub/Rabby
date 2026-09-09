@@ -774,6 +774,10 @@ export const useTokenPair = (userAddress: string) => {
     { loading: quoteLoading, error: quotesError },
     getQuotes,
   ] = useAsyncFn(async () => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
+    }
     if (depositFlowActiveRef.current || quoteRefreshLockedRef.current) {
       setPending(false);
       return;
@@ -857,6 +861,10 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     if (canRunQuoteRequest && !quoteRefreshLockedRef.current) {
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
+      }
       setPending(true);
     } else {
       setPending(false);
