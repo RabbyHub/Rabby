@@ -1,48 +1,71 @@
+import { createPersistStore, patchPersistStore } from 'background/utils';
 import browser from 'webextension-polyfill';
+import { z } from 'zod';
 
 const STORAGE_KEY = 'pendingExtensionUpdate';
 
-type PendingExtensionUpdate = {
-  currentVersion: string;
-  version: string;
-};
+const extensionUpdateStoreSchema = z.object({
+  currentVersion: z.string().default(''),
+  version: z.string().default(''),
+});
+
+export type ExtensionUpdateStore = z.output<typeof extensionUpdateStoreSchema>;
+
+const createExtensionUpdateStoreTemplate = (): ExtensionUpdateStore =>
+  extensionUpdateStoreSchema.parse({});
 
 export class ExtensionUpdateService {
+  store: ExtensionUpdateStore = createExtensionUpdateStoreTemplate();
+  private initPromise?: Promise<void>;
   private initialized = false;
-  private pendingUpdate?: PendingExtensionUpdate;
+  private pendingUpdate?: ExtensionUpdateStore;
 
   init = () => {
-    if (this.initialized) return;
-    this.initialized = true;
+    if (this.initPromise) return this.initPromise;
+
+    // Register before reading storage so MV3 startup cannot miss an update.
     browser.runtime.onUpdateAvailable.addListener(this.onUpdateAvailable);
+    this.initPromise = createPersistStore<ExtensionUpdateStore>({
+      name: STORAGE_KEY,
+      template: createExtensionUpdateStoreTemplate(),
+      schema: extensionUpdateStoreSchema,
+    }).then((store) => {
+      this.store = store;
+      this.initialized = true;
+      // An update received during hydration takes precedence over storage.
+      if (this.pendingUpdate) {
+        this.patchStore(this.pendingUpdate);
+        this.pendingUpdate = undefined;
+      }
+    });
+
+    return this.initPromise;
+  };
+
+  patchStore = (partials: Partial<ExtensionUpdateStore>) => {
+    patchPersistStore(this.store, partials);
   };
 
   private onUpdateAvailable = ({ version }: { version: string }) => {
-    this.pendingUpdate = {
+    const update = {
       currentVersion: browser.runtime.getManifest().version,
       version,
     };
 
-    // Keep the notification across popup closures and MV3 worker restarts.
-    // Bind it to the installed version so an applied update cannot stay visible.
-    void browser.storage.local
-      .set({ [STORAGE_KEY]: this.pendingUpdate })
-      .catch((error) => {
-        console.error('[extensionUpdate] failed to persist update', error);
-      });
+    if (!this.initialized) {
+      this.pendingUpdate = update;
+      return;
+    }
+    this.patchStore(update);
   };
 
   getPendingVersion = async (): Promise<string | null> => {
-    const stored = this.pendingUpdate
-      ? undefined
-      : (await browser.storage.local.get(STORAGE_KEY))[STORAGE_KEY];
-    // An event received while storage was being read takes precedence.
-    const update = this.pendingUpdate || stored;
+    await this.init();
+    const update = this.store;
     const currentVersion = browser.runtime.getManifest().version;
 
     if (
-      update?.currentVersion === currentVersion &&
-      typeof update.version === 'string' &&
+      update.currentVersion === currentVersion &&
       update.version &&
       update.version !== currentVersion
     ) {
