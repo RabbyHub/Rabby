@@ -2,10 +2,72 @@ import { SigningFlowService } from '@/background/service/signingFlow';
 import { asSigningFlowId, toSigningAttemptRef } from '@/utils/signingTypes';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import * as Sentry from '@sentry/browser';
+import { withSigningDiagnostics } from '@/background/service/keyring/signing-diagnostics';
+import { getSigningContext } from '@/utils/sentry';
+
+jest.mock('@sentry/browser', () => ({
+  addBreadcrumb: jest.fn(),
+  captureException: jest.fn(),
+}));
 
 const flow = (id = 'flow-a') => ({ flowId: asSigningFlowId(id) });
 
 describe('SigningFlowService', () => {
+  it.each(['retry', 'cancel', 'primitive'])(
+    'preserves signing diagnostics when a retryable failure ends with %s',
+    async (outcome) => {
+      const capture = jest.mocked(Sentry.captureException);
+      capture.mockClear();
+      const service = new SigningFlowService();
+      const ref = service.createFlow({ origin: 'dapp', rpcRequestId: outcome });
+      const attempt = service.createAttempt(ref, { awaitUi: false })!;
+      const error =
+        outcome === 'primitive' ? 'device locked' : new Error('device locked');
+      const runner = jest
+        .fn()
+        .mockImplementationOnce(() =>
+          withSigningDiagnostics(
+            { type: 'Ledger Hardware' },
+            'personal_message',
+            () => {
+              throw error;
+            }
+          )
+        )
+        .mockResolvedValue('signature');
+      const owner = service.run(ref, attempt, runner, {
+        retryable: () => true,
+      });
+      const settled = owner.catch((reason) => reason);
+      try {
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(service.getFlow(ref)?.status).toBe('awaiting-retry');
+        expect(capture).toHaveBeenCalledTimes(1);
+        expect(getSigningContext(capture.mock.calls[0][0])).toMatchObject({
+          operation: 'personal_message',
+          originalError: error,
+        });
+        if (outcome === 'retry') {
+          const next = service.retrySigningAttempt({
+            flow: ref,
+            currentAttempt: attempt,
+          })!;
+          service.markUiReady(next);
+          await expect(owner).resolves.toBe('signature');
+        } else {
+          service.cancelFlow(ref);
+          await expect(settled).resolves.toMatchObject({ code: 4001 });
+        }
+        expect(capture).toHaveBeenCalledTimes(1);
+      } finally {
+        service.cancelFlow(ref);
+        await settled;
+      }
+    }
+  );
+
   it('accepts only one matching completion and terminalizes before the caller broadcasts', async () => {
     const service = new SigningFlowService();
     const ref = service.createFlow({
@@ -49,7 +111,11 @@ describe('SigningFlowService', () => {
       origin: 'https://a.test',
       rpcRequestId: 'a',
     })!;
-    const owner = service.run(context.flow, context.attempt, async () => '0xresult');
+    const owner = service.run(
+      context.flow,
+      context.attempt,
+      async () => '0xresult'
+    );
 
     await expect(owner).resolves.toBe('0xresult');
     expect(service.getFlow(context.flow)).toBeUndefined();

@@ -49,6 +49,7 @@ jest.mock('@sentry/browser', () => ({
 }));
 
 import notificationService from '@/background/service/notification';
+import { winMgr } from 'background/webapi';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { MemoryRouter } from 'react-router-dom';
@@ -119,6 +120,62 @@ describe('approval actions validate the current identity', () => {
     (notificationService as any).currentApproval = null;
     notificationService.invalidateAllSigningFlows();
   });
+
+  it.each(['all', 'scoped', 'window', 'single'])(
+    'releases a completed flow when its waiting approval is discarded via %s',
+    async (action) => {
+      const account = {
+        address: '0xowner',
+        type: 'Ledger',
+        brandName: 'Ledger',
+      };
+      const flow = signingFlowService.createFlow({
+        account,
+        origin: 'dapp',
+        rpcRequestId: action,
+      });
+      const attempt = signingFlowService.createAttempt(flow)!;
+      notificationService.notifiWindowId = 123;
+      const approvalResult = notificationService
+        .requestApproval(
+          {
+            approvalComponent: 'LedgerHardwareWaiting',
+            origin: 'dapp',
+            account,
+            isGnosis: true,
+            params: {},
+          },
+          {},
+          { signing: { flow, attempt } }
+        )
+        .catch((error) => error);
+      const approval = notificationService.getCurrentApproval()!;
+      const owner = signingFlowService.run(
+        flow,
+        attempt,
+        async () => 'signature'
+      );
+      signingFlowService.markUiReady(attempt);
+      await expect(owner).resolves.toBe('signature');
+      expect(signingFlowService.getFlow(flow)?.status).toBe('completed');
+
+      if (action === 'window') {
+        const removed = (winMgr.event.on as jest.Mock).mock.calls.find(
+          ([event]) => event === 'windowRemoved'
+        )![1];
+        removed(123, true);
+      } else if (action === 'single') {
+        await notificationService.rejectApprovalFor({
+          approval: toApprovalRef(approval.id, 'LedgerHardwareWaiting'),
+        });
+      } else {
+        notificationService.rejectAllApprovals(action === 'all');
+      }
+      await expect(approvalResult).resolves.toMatchObject({ code: 4001 });
+      expect(notificationService.getCurrentApproval()).toBeNull();
+      expect(signingFlowService.getFlow(flow)).toBeUndefined();
+    }
+  );
 
   it('resolves the named approval while it is current', async () => {
     const approval = pending('a');

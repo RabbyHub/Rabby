@@ -203,6 +203,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
           !sameSigningAttempt(attemptRef.current, signingAttempt)
         )
           return;
+        setErrorMessage('');
         setStatus(QRHARDWARE_STATUS.DONE);
         setSignFinishedData({
           data: sig,

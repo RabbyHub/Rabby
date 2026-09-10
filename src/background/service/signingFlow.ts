@@ -12,6 +12,7 @@ import {
   sameAccountRef,
 } from '@/utils/signingTypes';
 import { emitSigningAttemptFinished } from '@/utils/signEvent';
+import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
 
 export type SigningFlowStatus =
   | 'created'
@@ -564,6 +565,14 @@ export class SigningFlowService {
         retryable,
       });
       if (finished.accepted) {
+        const signingCarrier = takeSigningCarrier(error);
+        if (signingCarrier) {
+          if (!isSigningCarrierReported(signingCarrier)) {
+            Sentry.captureException(signingCarrier);
+          }
+        } else if (error && typeof error === 'object') {
+          Sentry.captureException(error);
+        }
         this.notifyFinished({ attempt, success: false, error });
         if (!retryable) this.resolveOwner(flow, error, false);
         this.maybeCleanup(flow);

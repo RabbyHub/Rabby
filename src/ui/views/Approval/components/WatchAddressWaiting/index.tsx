@@ -244,6 +244,8 @@ const WatchAddressWaiting = ({
           !sameSigningAttempt(attemptRef.current, signingAttempt)
         )
           return;
+        setConnectError(null);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
         setSignFinishedData({
           data: sig,
           signingAttempt: data.attempt,

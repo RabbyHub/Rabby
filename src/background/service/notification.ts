@@ -886,6 +886,12 @@ class NotificationService extends Events {
       });
     }
     approvals.forEach((approval) => {
+      if (approval.data.signing) {
+        signingFlowService.detachApproval(
+          approval.data.signing.flow,
+          toApprovalRef(approval.id, approval.data.approvalComponent)
+        );
+      }
       approval.reject &&
         approval.reject(
           new EthereumProviderError(4001, 'User rejected the request.')

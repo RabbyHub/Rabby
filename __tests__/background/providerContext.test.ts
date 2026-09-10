@@ -21,10 +21,7 @@ jest.mock('@/background/controller/provider/rpcFlow', () => ({
 
 import provider from '@/background/controller/provider';
 import rpcFlow from '@/background/controller/provider/rpcFlow';
-import {
-  INTERNAL_REQUEST_ORIGIN,
-  INTERNAL_REQUEST_SESSION,
-} from '@/constant';
+import { INTERNAL_REQUEST_ORIGIN, INTERNAL_REQUEST_SESSION } from '@/constant';
 
 describe('provider signing context', () => {
   it('keeps nested signing origin and account canonical', async () => {

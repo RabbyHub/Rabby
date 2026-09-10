@@ -47,7 +47,7 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    '^.+\\.[tj]s$': [
+    '^.+\\.[tj]sx?$': [
       'ts-jest',
       {
         tsconfig: 'tsconfig.json',

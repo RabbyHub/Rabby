@@ -167,7 +167,7 @@ export const useBatchRevokeTask = () => {
       priority: number = 0,
       ignoreGasCheck = false
     ) => {
-      const hardwareOperation = hardwareOperationRef.current;
+      const hardwareOperation = (hardwareOperationRef.current ??= createStandaloneHardwareOperation());
       return queueRef.current.add(
         async () => {
           currentApprovalRef.current = item;

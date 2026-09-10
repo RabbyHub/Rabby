@@ -173,7 +173,6 @@ const flowContext = flow
           );
 
           if (!isEnabledDappAccount) {
-            notificationService.rejectAllApprovals();
             preferenceService.setCurrentAccount(defaultAccount!);
           }
           connectOrigins.delete(origin);
