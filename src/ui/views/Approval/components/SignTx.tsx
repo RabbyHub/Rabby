@@ -1569,7 +1569,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   });
 
   const handleCoboArugsConfirm = async (account: Account) => {
-    if (!coboArgusInfo) return;
+    if (!coboArgusInfo || !(await isBound())) return;
 
     wallet.reportStats('signTransaction', {
       type: KEYRING_TYPE.CoboArgusKeyring,
@@ -1586,7 +1586,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     let newTx;
 
     try {
-      if (!(await isBound())) return;
       newTx = await wallet.coboSafeBuildTransaction({
         tx: {
           ...tx,
@@ -1595,8 +1594,8 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         coboSafeAddress: coboArgusInfo.safeModuleAddress,
         account,
       });
-      if (!(await isBound())) return;
     } catch (e) {
+      wallet.coboSafeResetCurrentAccount();
       let content = e.message || JSON.stringify(e);
       if (content.includes('E48')) {
         content = t('page.signTx.coboSafeNotPermission');
@@ -1609,44 +1608,33 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       return;
     }
 
-    try {
-      await wallet.sendRequest(
-        {
-          $ctx: params.$ctx,
-          method: 'eth_sendTransaction',
-          params: [
-            {
-              gas: tx.gas,
-              gasPrice: tx.gasPrice,
-              chainId: tx.chainId,
-              ...newTx,
-              isCoboSafe: true,
-            },
-          ],
-        },
-        { account, session: params.session }
-      );
-    } catch (e) {
-      if (e?.code !== 4001) Sentry.captureException(e);
-      return;
-    }
     if (!(await isBound())) return;
-    await resolve(
-      {
-        ...tx,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        isSend,
-        traceId: txDetail?.trace_id,
-        signingTxId: approval.signingTxId,
-        pushType: pushInfo.type,
-        lowGasDeadline: pushInfo.lowGasDeadline,
-        reqId,
-        logId: logId.current,
-        isCoboSafe: true,
-      },
-      {}
-    );
+
+    wallet.sendRequest({
+      $ctx: params.$ctx,
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          gas: tx.gas,
+          gasPrice: tx.gasPrice,
+          chainId: tx.chainId,
+          ...newTx,
+          isCoboSafe: true,
+        },
+      ],
+    });
+    await resolve({
+      ...tx,
+      nonce: realNonce || tx.nonce,
+      gas: gasLimit,
+      isSend,
+      traceId: txDetail?.trace_id,
+      signingTxId: approval.signingTxId,
+      pushType: pushInfo.type,
+      lowGasDeadline: pushInfo.lowGasDeadline,
+      reqId,
+      logId: logId.current,
+    });
     wallet.clearPageStateCache();
   };
 
