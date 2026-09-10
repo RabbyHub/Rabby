@@ -23,6 +23,7 @@ import stats from '@/stats';
 import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
+import { createSigningSessionGuard } from '@/background/service/signingSession';
 import { gnosisController } from './gnosisController';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
@@ -448,21 +449,27 @@ const flowContext = flow
       try {
         let result;
         if (approvalRes?.isGnosis) {
+          const assertCurrent = createSigningSessionGuard(
+            () => keyringService.isUnlocked(),
+            signal
+          );
           const account = rest.$account || rest.account;
           const keyring = await keyringService.getKeyringForAccount(
             account.address,
             account.type
           );
-          if (signal.aborted) throw ethErrors.provider.userRejectedRequest();
+          assertCurrent();
           result = await keyringService.signTypedMessage(
             keyring,
             { from: account.address, data: JSON.parse(rest.data[1]) },
             { brandName: account.brandName, version: 'V4' }
           );
+          assertCurrent();
         } else {
           result = await providerController[mapMethod]({
             ...request,
             executionId,
+            signingSignal: signal,
             approvalRes: nextApprovalRes,
           });
         }

@@ -55,6 +55,11 @@ import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
 import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
 import { SigningAttempt, withSigningDiagnostics } from './signing-diagnostics';
+import {
+  createSigningSessionGuard,
+  invalidateSigningSession,
+  isBroadcastTransactionHash,
+} from '../signingSession';
 
 class PrivateKeyKeyring extends SimpleKeyring {
   signingDiagnosticsProvider = 'private_key';
@@ -497,6 +502,7 @@ export class KeyringService extends EventEmitter {
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
   async setLocked(): Promise<MemStoreState> {
+    invalidateSigningSession();
     // set locked
     // release all transport before lock wallet
     this.keyrings.forEach((keyring) => {
@@ -879,7 +885,8 @@ export class KeyringService extends EventEmitter {
     sign: (attempt: SigningAttempt) => Promise<any>,
     signingAddress?: string
   ) => {
-    return withSigningDiagnostics(
+    const assertCurrent = createSigningSessionGuard(() => this.isUnlocked());
+    const result = await withSigningDiagnostics(
       keyring,
       operation,
       async (attempt) => {
@@ -891,6 +898,7 @@ export class KeyringService extends EventEmitter {
             keyring,
             signingAddress,
             () => {
+              assertCurrent();
               return sign(attempt);
             }
           );
@@ -899,12 +907,20 @@ export class KeyringService extends EventEmitter {
             keyring?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS &&
             keyring?.consumePairingCredsRefreshed?.()
           ) {
+            assertCurrent();
             await this.persistAllKeyrings();
           }
         }
       },
       signingAddress
     );
+    if (
+      operation !== 'transaction' ||
+      !isBroadcastTransactionHash(keyring.type, result)
+    ) {
+      assertCurrent();
+    }
+    return result;
   };
 
   /**
@@ -964,17 +980,19 @@ export class KeyringService extends EventEmitter {
    * @param {Object} msgParams - The message parameters to sign.
    * @returns {Promise<Buffer>} The raw signature.
    */
-  signMessage(msgParams, opts = {}) {
+  async signMessage(msgParams, opts = {}) {
+    const assertCurrent = createSigningSessionGuard(() => this.isUnlocked());
     const address = normalizeAddress(msgParams.from);
-    return this.getKeyringForAccount(address).then((keyring) => {
-      return this.signWithPairingCredsPersistence(
-        keyring,
-        'personal_message',
-        (attempt) =>
-          keyring.signMessage(address, msgParams.data, opts, attempt),
-        address
-      );
-    });
+    const keyring = await this.getKeyringForAccount(address);
+    assertCurrent();
+    const result = await this.signWithPairingCredsPersistence(
+      keyring,
+      'personal_message',
+      (attempt) => keyring.signMessage(address, msgParams.data, opts, attempt),
+      address
+    );
+    assertCurrent();
+    return result;
   }
 
   /**
@@ -1583,6 +1601,7 @@ export class KeyringService extends EventEmitter {
    * @emits KeyringController#unlock
    */
   setUnlocked(): void {
+    invalidateSigningSession();
     this.memStore.updateState({ isUnlocked: true });
     this.emit('unlock');
   }

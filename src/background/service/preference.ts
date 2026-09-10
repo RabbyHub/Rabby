@@ -25,6 +25,7 @@ import {
   RateGuideLastExposure,
 } from '@/utils/rateGuidance';
 import { findChain } from '@/utils/chain';
+import { invalidateSigningSession } from './signingSession';
 
 const version = process.env.release || '0';
 
@@ -652,6 +653,14 @@ class PreferenceService {
   };
 
   setCurrentAccount = (account: Account | null) => {
+    const previous = this.store.currentAccount;
+    if (
+      previous?.address?.toLowerCase() !== account?.address?.toLowerCase() ||
+      previous?.type !== account?.type ||
+      previous?.brandName !== account?.brandName
+    ) {
+      invalidateSigningSession();
+    }
     this.store.currentAccount = account;
     if (account) {
       if (!this.store.isEnabledDappAccount) {

@@ -53,6 +53,7 @@ describe('KeyringService setup', () => {
   });
 
   it('rejects a WalletConnect signing promise on provider failure status', async () => {
+    keyringService.setUnlocked();
     const keyring = Object.assign(new EventEmitter(), {
       type: KEYRING_CLASS.WALLETCONNECT,
     });

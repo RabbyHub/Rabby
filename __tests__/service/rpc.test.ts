@@ -128,7 +128,8 @@ describe('RPCService preferred RPC', () => {
       RPCService.defaultRPCSubmitTxWithFallback(
         chainServerId,
         'eth_sendRawTransaction',
-        ['0xraw']
+        ['0xraw'],
+        () => undefined
       )
     ).resolves.toEqual(['0xhash', staleRPC]);
 

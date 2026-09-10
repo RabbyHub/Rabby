@@ -261,15 +261,17 @@ class RPCService {
   defaultRPCSubmitTxWithFallback = async (
     chainServerId: string,
     method: string,
-    params: any[]
+    params: any[],
+    assertCurrent: () => void
   ) => {
     const hostList = this?.store?.defaultRPC?.[chainServerId]?.rpcUrl || [];
     if (!hostList.length) {
       throw new Error(`No available rpc for ${chainServerId}`);
     }
-    return submitTxWithFallbackRpcs(hostList, (rpc) =>
-      this.defaultRPCRequest(rpc, method, params)
-    );
+    return submitTxWithFallbackRpcs(hostList, (rpc) => {
+      assertCurrent();
+      return this.defaultRPCRequest(rpc, method, params);
+    });
   };
 
   requestDefaultRPC = async ({

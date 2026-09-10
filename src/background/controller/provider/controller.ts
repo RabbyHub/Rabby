@@ -73,6 +73,10 @@ import { hexToNumber, isAddress, numberToHex, stringToHex, toHex } from 'viem';
 import { Transaction as ViemTempoTransaction } from 'viem/tempo';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
+import {
+  createSigningSessionGuard,
+  isBroadcastTransactionHash,
+} from '@/background/service/signingSession';
 import { add0x } from '@/ui/utils/address';
 import {
   EIP7702RevokeMiniGasLimit,
@@ -657,6 +661,7 @@ class ProviderController extends BaseController {
     result: any;
     account: Account;
     executionId?: string;
+    signingSignal?: AbortSignal;
   }) => {
     const rechargeGasAccountOnTx = (txHash = '') => {
       if (
@@ -681,6 +686,10 @@ class ProviderController extends BaseController {
 
     assertProviderRequest(options as any);
     if (options.pushed) return options.result;
+    const assertCurrent = createSigningSessionGuard(
+      () => keyringService.isUnlocked(),
+      options.signingSignal
+    );
     const {
       data: {
         params: [txParams],
@@ -691,6 +700,7 @@ class ProviderController extends BaseController {
     } = cloneDeep(options);
     const currentAccount = account;
     const keyring = await this._checkAddress(txParams.from, options);
+    assertCurrent();
     const isSend = !!txParams.isSend;
     const isSpeedUp = !!txParams.isSpeedUp;
     const isCancel = !!txParams.isCancel;
@@ -795,6 +805,7 @@ class ProviderController extends BaseController {
         const authorizationList = [] as AuthorizationListItem[];
 
         for (const authorization of eip7702RevokeAuthorization) {
+          assertCurrent();
           const signature: string = await keyringService.signEip7702Authorization(
             keyring,
             {
@@ -913,6 +924,7 @@ class ProviderController extends BaseController {
     let signedTx;
     let tempoSerializedRawTx: `0x${string}` | undefined;
     try {
+      assertCurrent();
       if (isTempoTx) {
         const typedApprovalRes = approvalRes as any;
         const shouldBackendSponsorTempo = isGasAccount || isGasLess;
@@ -984,10 +996,14 @@ class ProviderController extends BaseController {
           opts
         );
       }
-      await fixKeyringAccountOnSigned({
-        keyring,
-        address: txParams.from,
-      });
+      if (!isBroadcastTransactionHash(keyring.type, signedTx)) {
+        assertCurrent();
+        await fixKeyringAccountOnSigned({
+          keyring,
+          address: txParams.from,
+        });
+        assertCurrent();
+      }
     } catch (e) {
       console.error(e);
       const signingCarrier = takeSigningCarrier(e);
@@ -1214,6 +1230,7 @@ class ProviderController extends BaseController {
             const tx = TransactionFactory.fromTxData(txDataWithRSV, { common });
             const rawTx = bytesToHex(tx.serialize());
             try {
+              assertCurrent();
               hash = await RPCService.requestCustomRPC(
                 chain,
                 'eth_sendRawTransaction',
@@ -1319,7 +1336,8 @@ class ProviderController extends BaseController {
                 ] = await RPCService.defaultRPCSubmitTxWithFallback(
                   chainServerId,
                   'eth_sendRawTransaction',
-                  [rawTx]
+                  [rawTx],
+                  assertCurrent
                 );
 
                 hash = fePushedHash;
@@ -1332,9 +1350,15 @@ class ProviderController extends BaseController {
                   return_tx_id: fePushedHash!,
                 };
 
-                openapiService.submitTxV2(params).catch((error) => {
-                  console.log('ignore BE error', error);
-                });
+                try {
+                  assertCurrent();
+                  openapiService.submitTxV2(params).catch((error) => {
+                    console.log('ignore BE error', error);
+                  });
+                } catch {
+                  // The RPC already accepted the transaction. Keep its history
+                  // even if this session ended while awaiting the response.
+                }
               } catch (fePushError) {
                 fePushedError =
                   fePushError ?? new Error('Frontend RPC push failed');
@@ -1354,6 +1378,7 @@ class ProviderController extends BaseController {
               }
 
               if (fePushedError) {
+                assertCurrent();
                 adoptBE7702Params();
                 try {
                   const res = await openapiService.submitTxV2(params);
@@ -1367,6 +1392,7 @@ class ProviderController extends BaseController {
                 }
               }
             } else {
+              assertCurrent();
               adoptBE7702Params();
               const res = await openapiService.submitTxV2(params);
               if (res.access_token) {
@@ -1403,6 +1429,7 @@ class ProviderController extends BaseController {
           const rawTx = bytesToHex(tx.serialize());
           const client = customTestnetService.getClient(chainData.id);
 
+          assertCurrent();
           hash = await client.request({
             method: 'eth_sendRawTransaction',
             params: [rawTx as any],
@@ -1481,6 +1508,10 @@ class ProviderController extends BaseController {
   ])
   personalSign = async (req) => {
     assertProviderRequest(req);
+    const assertCurrent = createSigningSessionGuard(
+      () => keyringService.isUnlocked(),
+      req.signingSignal
+    );
     const { data, approvalRes, session, account: currentAccount } = req;
     if (!data.params) return;
 
@@ -1494,11 +1525,13 @@ class ProviderController extends BaseController {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
       const keyring = await this._checkAddress(from, req);
+      assertCurrent();
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
         approvalRes?.extra
       );
+      assertCurrent();
 
       signTextHistoryService.createHistory({
         address: from,
@@ -1537,7 +1570,12 @@ class ProviderController extends BaseController {
     },
     req: ProviderRequest
   ) => {
+    const assertCurrent = createSigningSessionGuard(
+      () => keyringService.isUnlocked(),
+      req.signingSignal
+    );
     const keyring = await this._checkAddress(from, req);
+    assertCurrent();
     let _data = data;
     if (version !== 'V1') {
       if (typeof data === 'string') {
@@ -1545,11 +1583,13 @@ class ProviderController extends BaseController {
       }
     }
 
-    return keyringService.signTypedMessage(
+    const result = await keyringService.signTypedMessage(
       keyring,
       { from, data: _data },
       { version, ...(extra || {}) }
     );
+    assertCurrent();
+    return result;
   };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])

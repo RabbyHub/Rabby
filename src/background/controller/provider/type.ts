@@ -21,4 +21,5 @@ export type ProviderRequest<
   requestedApproval?: boolean;
   sourceFrameId?: number;
   executionId?: string;
+  signingSignal?: AbortSignal;
 };

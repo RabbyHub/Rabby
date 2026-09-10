@@ -1,4 +1,5 @@
 import type { ApprovalRef, SigningRetry } from '@/utils/signingTypes';
+import { createSigningSessionGuard } from '@/background/service/signingSession';
 import {
   stripHexPrefix,
   isValidPrivate,
@@ -4945,12 +4946,17 @@ export class WalletController extends BaseController {
     data: string,
     options?: any
   ) => {
+    const assertCurrent = createSigningSessionGuard(() =>
+      keyringService.isUnlocked()
+    );
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    assertCurrent();
     const res = await keyringService.signPersonalMessage(
       keyring,
       { from, data },
       options
     );
+    assertCurrent();
     return res;
   };
 
@@ -4960,12 +4966,17 @@ export class WalletController extends BaseController {
     data: Record<string, any>,
     options?: any
   ) => {
+    const assertCurrent = createSigningSessionGuard(() =>
+      keyringService.isUnlocked()
+    );
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    assertCurrent();
     const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
       options
     );
+    assertCurrent();
     return res;
   };
 
@@ -4975,7 +4986,11 @@ export class WalletController extends BaseController {
     data: any,
     options?: any
   ) => {
+    const assertCurrent = createSigningSessionGuard(() =>
+      keyringService.isUnlocked()
+    );
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    assertCurrent();
     return keyringService.signTransaction(keyring, data, from, options);
   };
 
