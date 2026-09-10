@@ -141,7 +141,6 @@ export const sendPersonalMessage = async ({
     await handleSendAfter();
     const err = new Error(e.message);
     err.name = FailedCode.SubmitTxFailed;
-    eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, e.message);
     throw err;
   }
 

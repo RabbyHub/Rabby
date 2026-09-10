@@ -26,7 +26,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
 import { ga4 } from '@/utils/ga4';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
@@ -58,6 +58,7 @@ export const CommonWaiting = ({
   account: Account;
 }) => {
   const wallet = useWallet();
+  const signingEvents = useSigningEvents();
   const {
     setHeight,
     setTitle,
@@ -97,13 +98,16 @@ export const CommonWaiting = ({
     }
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
 
-    const autoRetryUpdate =
-      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
-    await wallet.setRetryTxType(txFailedResult?.[1] || false);
-    await wallet.resendSign(autoRetryUpdate);
+    if (
+      !(await signingEvents.retry({
+        type: txFailedResult?.[1] || false,
+        nonce: txFailedResult?.[2],
+      }))
+    )
+      return;
 
     message.success(t('page.signFooterBar.ledger.resent'));
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   const handleCancel = () => {
@@ -168,10 +172,14 @@ export const CommonWaiting = ({
       });
     }
 
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
-      setErrorMessage(data);
-      setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-    });
+    signingEvents.listen(
+      EVENTS.COMMON_HARDWARE.REJECTED,
+      async (event, isCurrent) => {
+        const data = event.errorMsg || '';
+        setErrorMessage(data);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
+      }
+    );
 
     eventBus.addEventListener(
       EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB,
@@ -180,10 +188,10 @@ export const CommonWaiting = ({
       }
     );
 
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    signingEvents.listen(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
       console.log('finished', data);
       if (data.success) {
         let sig = data.data;
@@ -194,6 +202,7 @@ export const CommonWaiting = ({
             sig = adjustV('eth_signTypedData', sig);
             const safeMessage = params.safeMessage;
             if (safeMessage) {
+              if (!(await isCurrent())) return;
               await wallet.handleGnosisMessage({
                 signature: data.data,
                 signerAddress: params.account!.address!,
@@ -201,14 +210,18 @@ export const CommonWaiting = ({
             } else {
               const sigs = await wallet.getGnosisTransactionSignatures();
               if (sigs.length > 0) {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddConfirmation(account.address, data.data);
               } else {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddSignature(account.address, data.data);
+                if (!(await isCurrent())) return;
                 await wallet.postGnosisTransaction();
               }
             }
           }
         } catch (e) {
+          if (!(await isCurrent())) return;
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           setErrorMessage(e.message);
           return;
@@ -223,17 +236,18 @@ export const CommonWaiting = ({
           event_category: 'Transaction',
         });
 
+        if (!(await isCurrent())) return;
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
         });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setErrorMessage(data.errorMsg);
+        setErrorMessage(data.errorMsg || '');
       }
     });
 
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   React.useEffect(() => {

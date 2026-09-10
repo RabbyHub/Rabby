@@ -1,6 +1,6 @@
 import browser, { Windows } from 'webextension-polyfill';
 import Events from 'events';
-import { toApprovalRef, ApprovalRef } from '@/utils/signingTypes';
+import { toApprovalRef, ApprovalRef, SigningRetry } from '@/utils/signingTypes';
 import { ethErrors } from 'eth-rpc-errors';
 import { v4 as uuidv4 } from 'uuid';
 import * as Sentry from '@sentry/browser';
@@ -34,10 +34,13 @@ export interface Approval {
     approvalComponent: keyof IApprovalComponents;
     requestDefer?: Promise<any>;
     approvalType?: string;
+    executionId?: string;
   };
   winProps: any;
   resolve?(params?: any): void;
   reject?(err: EthereumProviderError<any>): void;
+  requestDeferFn?(executionId: string, retry?: SigningRetry): void;
+  cancelSigning?(): void;
 }
 
 export type ResolveApprovalCommand = {
@@ -110,7 +113,6 @@ class NotificationService extends Events {
   _approvals: Approval[] = [];
   notifiWindowId: null | number = null;
   isLocked = false;
-  currentRequestDeferFn?: (retry?: boolean) => void;
   statsData: StatsData | undefined;
 
   get approvals() {
@@ -206,6 +208,7 @@ class NotificationService extends Events {
   };
 
   deleteApproval = (approval) => {
+    approval?.cancelSigning?.();
     if (approval && this.approvals.length > 1) {
       this.approvals = this.approvals.filter((item) => approval.id !== item.id);
     } else {
@@ -284,7 +287,11 @@ class NotificationService extends Events {
   requestApproval = async (
     data,
     winProps?,
-    options?: { onCurrent?: () => void }
+    options?: {
+      onCurrent?: () => void;
+      requestDeferFn?: Approval['requestDeferFn'];
+      cancelSigning?: Approval['cancelSigning'];
+    }
   ): Promise<any> => {
     const origin = this.getOrigin(data);
     if (origin) {
@@ -345,6 +352,8 @@ class NotificationService extends Events {
         signingTxId,
         data,
         winProps,
+        requestDeferFn: options?.requestDeferFn,
+        cancelSigning: options?.cancelSigning,
         resolve(data) {
           if (this.data.approvalComponent === 'SignTx') {
             reportExplain(this.signingTxId);
@@ -416,6 +425,7 @@ class NotificationService extends Events {
   };
 
   clear = async (stay = false) => {
+    this.approvals.forEach((approval) => approval.cancelSigning?.());
     this.approvals = [];
     this.currentApproval = null;
     if (this.notifiWindowId !== null && !stay) {
@@ -433,6 +443,7 @@ class NotificationService extends Events {
   rejectAllApprovals = () => {
     this.addLastRejectDapp();
     this.approvals.forEach((approval) => {
+      approval.cancelSigning?.();
       approval.reject &&
         approval.reject(
           new EthereumProviderError(4001, 'User rejected the request.')
@@ -488,12 +499,19 @@ class NotificationService extends Events {
     }
   };
 
-  setCurrentRequestDeferFn = (fn: (retry?: boolean) => void) => {
-    this.currentRequestDeferFn = fn;
-  };
-
-  callCurrentRequestDeferFn = (retry?: boolean) => {
-    return this.currentRequestDeferFn?.(retry);
+  callCurrentRequestDeferFn = (
+    ref: ApprovalRef,
+    executionId: string,
+    retry?: SigningRetry
+  ) => {
+    if (!this.checkApproval(ref).accepted) return;
+    const approval = this.currentApproval!;
+    if (!executionId || approval.data.executionId !== executionId) return;
+    if (!approval.requestDeferFn) return;
+    const nextExecutionId = uuidv4();
+    approval.data.executionId = nextExecutionId;
+    approval.requestDeferFn(nextExecutionId, retry);
+    return nextExecutionId;
   };
 
   setStatsData = (data?: StatsData) => {

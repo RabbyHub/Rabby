@@ -17,7 +17,7 @@ import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
 import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
@@ -49,6 +49,7 @@ const WatchAddressWaiting = ({
 }) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
+  const signingEvents = useSigningEvents();
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
@@ -110,9 +111,9 @@ const WatchAddressWaiting = ({
     const account = params.isGnosis ? params.account! : $account;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     setConnectError(null);
-    wallet.resendSign(retry);
+    if (!(await signingEvents.retry())) return;
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   const handleRefreshQrCode = () => {
@@ -132,7 +133,7 @@ const WatchAddressWaiting = ({
       : approval?.data.approvalType !== 'SignTx';
     isSignTextRef.current = isText;
 
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -141,6 +142,7 @@ const WatchAddressWaiting = ({
             sig = adjustV('eth_signTypedData', sig);
             const safeMessage = params.safeMessage;
             if (safeMessage) {
+              if (!(await isCurrent())) return;
               await wallet.handleGnosisMessage({
                 signature: data.data,
                 signerAddress: params.account!.address!,
@@ -148,14 +150,18 @@ const WatchAddressWaiting = ({
             } else {
               const sigs = await wallet.getGnosisTransactionSignatures();
               if (sigs.length > 0) {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddConfirmation(account.address, sig);
               } else {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddSignature(account.address, sig);
+                if (!(await isCurrent())) return;
                 await wallet.postGnosisTransaction();
               }
             }
           }
         } catch (e) {
+          if (!(await isCurrent())) return;
           rejectApproval(e.message);
           return;
         }
@@ -183,6 +189,7 @@ const WatchAddressWaiting = ({
             //   });
           }
         }
+        if (!(await isCurrent())) return;
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
@@ -307,7 +314,7 @@ const WatchAddressWaiting = ({
       }
     );
     await initWalletConnect();
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   useEffect(() => {

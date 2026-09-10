@@ -1,9 +1,8 @@
-import eventBus from '@/eventBus';
 import stats from '@/stats';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { findChain } from '@/utils/chain';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
 import * as Sentry from '@sentry/browser';
 import { message } from 'antd';
 import { Account } from 'background/service/preference';
@@ -68,6 +67,7 @@ const LedgerHardwareWaiting = ({
   const [content, setContent] = React.useState('');
   const [description, setDescription] = React.useState('');
   const wallet = useWallet();
+  const signingEvents = useSigningEvents();
 
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
@@ -102,14 +102,17 @@ const LedgerHardwareWaiting = ({
     if (sessionStatus === 'DISCONNECTED') return;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
 
-    const autoRetryUpdate =
-      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
-    await wallet.setRetryTxType(txFailedResult?.[1] || false);
-    await wallet.resendSign(autoRetryUpdate);
+    if (
+      !(await signingEvents.retry({
+        type: txFailedResult?.[1] || false,
+        nonce: txFailedResult?.[2],
+      }))
+    )
+      return;
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   // const handleClickResult = () => {
@@ -168,18 +171,24 @@ const LedgerHardwareWaiting = ({
         method: params?.extra?.signTextMethod,
       });
     }
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
-      setErrorMessage(data);
-      if (/DisconnectedDeviceDuringOperation/i.test(data)) {
-        await rejectApproval('User rejected the request.');
-        openInternalPageInTab('request-permission?type=ledger&from=approval');
+    signingEvents.listen(
+      EVENTS.COMMON_HARDWARE.REJECTED,
+      async (event, isCurrent) => {
+        const data = event.errorMsg || '';
+        setErrorMessage(data);
+        if (/DisconnectedDeviceDuringOperation/i.test(data)) {
+          const rejected = await rejectApproval('User rejected the request.');
+          if (!rejected?.accepted) return;
+          openInternalPageInTab('request-permission?type=ledger&from=approval');
+        }
+        if (!(await isCurrent())) return;
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.REJECTED);
       }
-      setConnectStatus(WALLETCONNECT_STATUS_MAP.REJECTED);
-    });
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    );
+    signingEvents.listen(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -190,20 +199,25 @@ const LedgerHardwareWaiting = ({
             const sigs = await wallet.getGnosisTransactionSignatures();
             const safeMessage = params.safeMessage;
             if (safeMessage) {
+              if (!(await isCurrent())) return;
               await wallet.handleGnosisMessage({
                 signature: data.data,
                 signerAddress: params.account!.address!,
               });
             } else {
               if (sigs.length > 0) {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddConfirmation(account.address, sig);
               } else {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddSignature(account.address, sig);
+                if (!(await isCurrent())) return;
                 await wallet.postGnosisTransaction();
               }
             }
           }
         } catch (e) {
+          if (!(await isCurrent())) return;
           Sentry.captureException(e);
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           return;
@@ -218,17 +232,18 @@ const LedgerHardwareWaiting = ({
           event_category: 'Transaction',
         });
 
+        if (!(await isCurrent())) return;
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
         });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setErrorMessage(data.errorMsg);
+        setErrorMessage(data.errorMsg || '');
       }
     });
 
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   React.useEffect(() => {

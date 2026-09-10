@@ -76,6 +76,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
   const task = {
     status: status ? (status === 'signing' ? 'active' : status) : 'idle',
     error: null,
+    hardwareError: error,
     list: [],
     init: () => {},
     start: () => Promise.resolve(''),

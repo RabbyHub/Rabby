@@ -38,6 +38,8 @@ export const useBatchSignPersonalMessageTask = ({
     'idle' | 'active' | 'paused' | 'completed'
   >('idle');
   const [error, setError] = useState('');
+  const [hardwareError, setHardwareError] = useState<string>();
+  const runIdRef = React.useRef(0);
 
   const _updateList = useMemoizedFn(
     ({ index, payload }: { index: number; payload: Partial<ListItemType> }) => {
@@ -55,6 +57,8 @@ export const useBatchSignPersonalMessageTask = ({
   );
 
   const init = useMemoizedFn((list: ListItemType[]) => {
+    runIdRef.current += 1;
+    setHardwareError(undefined);
     setList(list);
     setStatus('idle');
   });
@@ -62,12 +66,16 @@ export const useBatchSignPersonalMessageTask = ({
   const setDirectSigning = useSetDirectSigning();
 
   const start = useMemoizedFn(async (isRetry = false) => {
+    const runId = ++runIdRef.current;
+    const isCurrent = () => runId === runIdRef.current;
+    setHardwareError(undefined);
     const results: string[] = [];
     try {
       setDirectSigning(true);
       setStatus('active');
 
       for (let index = 0; index < list.length; index++) {
+        if (!isCurrent()) throw new Error('User cancelled');
         const item = list[index];
 
         if (item.status === 'signed') {
@@ -86,6 +94,7 @@ export const useBatchSignPersonalMessageTask = ({
             wallet,
             // ga,
             onProgress: (status) => {
+              if (!isCurrent()) return;
               if (status === 'builded') {
                 _updateList({
                   index,
@@ -103,10 +112,20 @@ export const useBatchSignPersonalMessageTask = ({
               }
             },
           });
+          if (!isCurrent()) throw new Error('User cancelled');
           results.push(result.txHash || '');
         } catch (e) {
+          if (!isCurrent()) throw e;
           console.error(e);
           const msg = e.message || e.name;
+          if (
+            isLedgerLockError(msg) ||
+            isLedgerConnectionRecoverableError(msg) ||
+            msg === 'No OneKey Device found'
+          ) {
+            setHardwareError(msg);
+            setStatus('paused');
+          }
 
           _updateList({
             index,
@@ -123,11 +142,13 @@ export const useBatchSignPersonalMessageTask = ({
               msg === 'No OneKey Device found'
             )
           ) {
+            if (!isCurrent()) throw e;
             setError(msg);
           }
           throw e;
         }
       }
+      if (!isCurrent()) throw new Error('User cancelled');
       setStatus('completed');
       // eventBus.emit(EVENTS.DIRECT_SIGN, {});
       return results;
@@ -140,7 +161,7 @@ export const useBatchSignPersonalMessageTask = ({
       // });
       throw e;
     } finally {
-      setDirectSigning(false);
+      if (isCurrent()) setDirectSigning(false);
     }
   });
 
@@ -151,8 +172,17 @@ export const useBatchSignPersonalMessageTask = ({
   });
 
   const stop = useMemoizedFn(() => {
+    runIdRef.current += 1;
+    setDirectSigning(false);
     setStatus('idle');
   });
+
+  React.useEffect(
+    () => () => {
+      runIdRef.current += 1;
+    },
+    []
+  );
 
   const currentActiveIndex = React.useMemo(() => {
     const index = _.findLastIndex(list, (item) => item.status !== 'idle');
@@ -169,6 +199,7 @@ export const useBatchSignPersonalMessageTask = ({
     start,
     retry: handleRetry,
     error,
+    hardwareError,
     status,
     currentActiveIndex,
     total: list.length,

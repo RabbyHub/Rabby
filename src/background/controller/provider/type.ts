@@ -20,4 +20,5 @@ export type ProviderRequest<
   origin?: string;
   requestedApproval?: boolean;
   sourceFrameId?: number;
+  executionId?: string;
 };

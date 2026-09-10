@@ -25,7 +25,7 @@ import {
   KeystoneWiredWaiting,
 } from './KeystoneWaiting';
 import clsx from 'clsx';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -62,6 +62,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
+  const signingEvents = useSigningEvents();
   const [walletBrandContent, setWalletBrandContent] = useState(
     WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE]
   );
@@ -130,7 +131,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         }
       }
     );
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
       if (data.success) {
         let sig = data.data;
         try {
@@ -138,6 +139,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
             sig = adjustV('eth_signTypedData', sig);
             const safeMessage = params.safeMessage;
             if (safeMessage) {
+              if (!(await isCurrent())) return;
               await wallet.handleGnosisMessage({
                 signature: data.data,
                 signerAddress: params.account!.address!,
@@ -145,38 +147,42 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
             } else {
               const sigs = await wallet.getGnosisTransactionSignatures();
               if (sigs.length > 0) {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddConfirmation(account.address, sig);
               } else {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddSignature(account.address, sig);
+                if (!(await isCurrent())) return;
                 await wallet.postGnosisTransaction();
               }
             }
           }
         } catch (e) {
+          if (!(await isCurrent())) return;
           setErrorMessage(e.message);
           // rejectApproval(e.message);
           return;
         }
         setStatus(QRHARDWARE_STATUS.DONE);
+        if (!(await isCurrent())) return;
         setSignFinishedData({
           data: sig,
           stay: !isSignText,
           approvalId: approval.id,
         });
       } else {
-        setErrorMessage(data.errorMsg);
+        setErrorMessage(data.errorMsg || '');
         // rejectApproval(data.errorMsg);
       }
     });
 
-    emitSignComponentAmounted();
+    signingEvents.ready();
     wallet.acquireKeystoneMemStoreData();
   }, []);
 
   React.useEffect(() => {
     init();
     return () => {
-      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
       eventBus.removeAllEventListeners(
         EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED
       );

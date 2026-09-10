@@ -7,6 +7,7 @@ import {
 import { useWallet, WalletControllerType } from '@/ui/utils';
 import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import { isHardwareRecoveryError } from '@/ui/utils/hardwareRecovery';
 import { AssetApprovalSpender } from '@/utils/approval';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -207,6 +208,8 @@ export const useBatchRevokeTask = () => {
     'idle'
   );
   const currentApprovalRef = React.useRef<AssetApprovalSpender>();
+  const generationRef = React.useRef(0);
+  const [hardwareError, setHardwareError] = React.useState<string>();
 
   const pause = useMemoizedFn(() => {
     queueRef.current.pause();
@@ -219,8 +222,11 @@ export const useBatchRevokeTask = () => {
       priority: number = -1,
       ignoreGasCheck = false
     ) => {
+      const generation = generationRef.current;
+      const isCurrent = () => generation === generationRef.current;
       return queueRef.current.add(
-        async () => {
+        async (): Promise<void> => {
+          if (!isCurrent()) return;
           currentApprovalRef.current = item;
           const cloneItem = cloneAssetApprovalSpender(item);
           const revokeItem =
@@ -236,6 +242,7 @@ export const useBatchRevokeTask = () => {
           setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
           try {
             const tx = await buildTx(wallet, revokeItem);
+            if (!isCurrent()) return;
             const result = await sendTransaction({
               tx,
               ignoreGasCheck,
@@ -244,6 +251,7 @@ export const useBatchRevokeTask = () => {
               sig: gasAccount?.sig,
               autoUseGasAccount: true,
               onProgress: (progress) => {
+                if (!isCurrent()) return;
                 if (progress === 'builded') {
                   setTxStatus('sended');
                 } else if (progress === 'signed') {
@@ -251,6 +259,7 @@ export const useBatchRevokeTask = () => {
                 }
               },
               onUseGasAccount: () => {
+                if (!isCurrent()) return;
                 cloneItem.$status = {
                   status: 'pending',
                   isGasAccount: true,
@@ -268,6 +277,13 @@ export const useBatchRevokeTask = () => {
               gasCost: result.gasCost,
             };
           } catch (error: any) {
+            if (!isCurrent()) return;
+            if (isHardwareRecoveryError(account?.type, error?.message || '')) {
+              queueRef.current.pause();
+              setStatus('paused');
+              setHardwareError(error.message);
+              void addRevokeTask(item, 1, ignoreGasCheck);
+            }
             let failedCode = FailedCode.SubmitTxFailed;
             if (FailedCode[error?.name]) {
               failedCode = error.name;
@@ -285,8 +301,10 @@ export const useBatchRevokeTask = () => {
               pause();
             }
           } finally {
-            setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
-            setTxStatus('idle');
+            if (isCurrent()) {
+              setList((prev) => updateAssetApprovalSpender(prev, cloneItem));
+              setTxStatus('idle');
+            }
           }
         },
         { priority }
@@ -295,6 +313,7 @@ export const useBatchRevokeTask = () => {
   );
 
   const start = useMemoizedFn(() => {
+    setHardwareError(undefined);
     setStatus('active');
     for (const item of list) {
       addRevokeTask(item);
@@ -307,13 +326,18 @@ export const useBatchRevokeTask = () => {
       nextRevokeList: ApprovalSpenderItemToBeRevoked[]
     ) => {
       queueRef.current.clear();
+      generationRef.current += 1;
+      setHardwareError(undefined);
+      queueRef.current.start();
       setList(dataSource);
       setRevokeList(nextRevokeList);
+      setTxStatus('idle');
       setStatus('idle');
     }
   );
 
   const handleContinue = useMemoizedFn(() => {
+    setHardwareError(undefined);
     queueRef.current.start();
     setStatus('active');
   });
@@ -324,11 +348,13 @@ export const useBatchRevokeTask = () => {
     });
 
     queueRef.current.on('idle', () => {
-      setStatus('completed');
+      setStatus((current) => (current === 'idle' ? current : 'completed'));
     });
 
     return () => {
+      queueRef.current.removeAllListeners();
       queueRef.current.clear();
+      generationRef.current += 1;
     };
   }, []);
 
@@ -361,6 +387,7 @@ export const useBatchRevokeTask = () => {
     revokedApprovals,
     currentApprovalIndex,
     currentApprovalRef,
+    hardwareError,
     resetCurrent,
   };
 };

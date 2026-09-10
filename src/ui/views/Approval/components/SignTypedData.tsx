@@ -770,16 +770,6 @@ const SignTypedData = ({
     });
 
     if (WaitingSignMessageComponent[account.type]) {
-      wallet.signTypedDataWithUI(
-        account.type,
-        account.address,
-        typedData as any,
-        {
-          brandName: account.brandName,
-          version: 'V4',
-        }
-      );
-
       resolveApproval({
         uiRequestComponent: WaitingSignMessageComponent[account.type],
         type: account.type,

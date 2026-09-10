@@ -119,7 +119,9 @@ export const useGetTxFailedResultInWaiting = ({
   const wallet = useWallet();
   const [getApproval] = useApproval();
 
-  return useAsync<() => Promise<[string, RetryUpdateType]>>(async () => {
+  return useAsync<
+    () => Promise<[string, RetryUpdateType, string?]>
+  >(async () => {
     const originDesc = showOriginDesc?.();
     if (originDesc) {
       return [originDesc, 'origin'];
@@ -140,15 +142,16 @@ export const useGetTxFailedResultInWaiting = ({
       const txFailedResult = await wallet.getTxFailedResult(description || '');
 
       if (txFailedResult?.[1] === 'nonce') {
-        const recommendNonce = await wallet.setRetryTxRecommendNonce({
+        const recommendNonce = await wallet.calculateRetryTxNonce({
           from: from,
           chainId: chainId,
           nonce: nonce,
         });
 
-        return wallet.getTxFailedResult(description || '', {
+        const result = await wallet.getTxFailedResult(description || '', {
           nonce: recommendNonce,
         });
+        return [result[0], result[1], recommendNonce];
       }
 
       return txFailedResult;

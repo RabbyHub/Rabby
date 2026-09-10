@@ -4,10 +4,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOneKeyStatus } from '@/ui/component/ConnectStatus/useOneKeyStatus';
 import { CommonAccount } from '@/ui/views/Approval/components/FooterBar/CommonAccount';
-import { EVENTS, WALLET_BRAND_CONTENT } from '@/constant';
+import { WALLET_BRAND_CONTENT } from '@/constant';
 import { ReactComponent as OnekeyPressSVG } from '@/ui/assets/onekey-press.svg';
 import { Dots } from '@/ui/views/Approval/components/Popup/Dots';
-import eventBus from '@/eventBus';
 import { OneKey } from '@/ui/views/CommonPopup/OneKey';
 import { Popup } from '@/ui/component';
 import { BatchRevokeTaskType } from '../../hooks/useBatchRevokeTask';
@@ -48,20 +47,8 @@ export const RevokeActionOnekeyButton: React.FC<{
   const handledDisconnectRef = React.useRef(false);
 
   React.useEffect(() => {
-    const listener = (msg) => {
-      if (msg === 'DISCONNECTED' || msg.startsWith('901:')) {
-        handledDisconnectRef.current = true;
-        setDisconnectTipsModal(true);
-        task?.pause();
-      }
-    };
-
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-
-    return () => {
-      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-    };
-  }, [task]);
+    if (task.hardwareError) setDisconnectTipsModal(true);
+  }, [task.hardwareError]);
 
   React.useEffect(() => {
     if (task.status !== 'active') {
@@ -71,7 +58,8 @@ export const RevokeActionOnekeyButton: React.FC<{
 
     if (status === 'DISCONNECTED' && !handledDisconnectRef.current) {
       handledDisconnectRef.current = true;
-      eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+      setDisconnectTipsModal(true);
+      task.pause();
     }
   }, [status, task.status]);
 
@@ -82,9 +70,7 @@ export const RevokeActionOnekeyButton: React.FC<{
         visible={disconnectTipsModal}
         closable
         onCancel={() => {
-          // setDirectSigning(false);
           setDisconnectTipsModal(false);
-          // props.onCancel?.();
         }}
         title={t('page.dashboard.hd.onekeyIsDisconnected')}
         maskStyle={{

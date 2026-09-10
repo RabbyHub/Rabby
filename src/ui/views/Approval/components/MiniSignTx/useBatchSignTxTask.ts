@@ -33,6 +33,8 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
     'idle' | 'active' | 'paused' | 'completed'
   >('idle');
   const [error, setError] = useState('');
+  const [hardwareError, setHardwareError] = useState<string>();
+  const runIdRef = React.useRef(0);
 
   const _updateList = useMemoizedFn(
     ({ index, payload }: { index: number; payload: Partial<ListItemType> }) => {
@@ -50,6 +52,8 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
   );
 
   const init = useMemoizedFn((list: ListItemType[]) => {
+    runIdRef.current += 1;
+    setHardwareError(undefined);
     setList(list);
     setStatus('idle');
   });
@@ -59,6 +63,9 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
   const setDirectSigning = useSetDirectSigning();
 
   const start = useMemoizedFn(async (isRetry = false) => {
+    const runId = ++runIdRef.current;
+    const isCurrent = () => runId === runIdRef.current;
+    setHardwareError(undefined);
     let txHash = '';
     try {
       setDirectSigning(true);
@@ -81,6 +88,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
       }
 
       for (let index = 0; index < list.length; index++) {
+        if (!isCurrent()) throw new Error('User cancelled');
         let item = list[index];
         const options = item.options;
 
@@ -125,12 +133,14 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
         }
 
         try {
+          if (!isCurrent()) throw new Error('User cancelled');
           const result = await sendTransaction({
             ...options,
             tx,
             wallet,
             ga,
             onProgress: (status) => {
+              if (!isCurrent()) return;
               if (status === 'builded') {
                 _updateList({
                   index,
@@ -148,13 +158,23 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
               }
             },
           });
+          if (!isCurrent()) throw new Error('User cancelled');
           // 保存交易 hash
           if (result) {
             txHash = result.txHash || '';
           }
         } catch (e) {
+          if (!isCurrent()) throw e;
           console.error(e);
           const msg = e.message || e.name;
+          if (
+            isLedgerLockError(msg) ||
+            isLedgerConnectionRecoverableError(msg) ||
+            msg === 'No OneKey Device found'
+          ) {
+            setHardwareError(msg);
+            setStatus('paused');
+          }
 
           // eventBus.emit(EVENTS.DIRECT_SIGN, {
           //   error: msg,
@@ -189,6 +209,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
               );
             }
 
+            if (!isCurrent()) throw e;
             setError(msg);
           }
 
@@ -206,6 +227,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
         }
       }
       retryTxReset();
+      if (!isCurrent()) throw new Error('User cancelled');
       setStatus('completed');
       // eventBus.emit(EVENTS.DIRECT_SIGN, {});
       return txHash;
@@ -218,7 +240,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
       // });
       throw e;
     } finally {
-      setDirectSigning(false);
+      if (isCurrent()) setDirectSigning(false);
     }
   });
 
@@ -229,8 +251,17 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
   });
 
   const stop = useMemoizedFn(() => {
+    runIdRef.current += 1;
+    setDirectSigning(false);
     setStatus('idle');
   });
+
+  React.useEffect(
+    () => () => {
+      runIdRef.current += 1;
+    },
+    []
+  );
 
   const currentActiveIndex = React.useMemo(() => {
     const index = _.findLastIndex(list, (item) => item.status !== 'idle');
@@ -247,6 +278,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
     start,
     retry: handleRetry,
     error,
+    hardwareError,
     status,
     currentActiveIndex,
     total: list.length,

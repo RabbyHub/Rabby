@@ -1,3 +1,4 @@
+import type { ApprovalRef, SigningRetry } from '@/utils/signingTypes';
 import {
   stripHexPrefix,
   isValidPrivate,
@@ -205,7 +206,6 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
-import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
@@ -545,8 +545,16 @@ export class WalletController extends BaseController {
     });
   };
 
-  resendSign = (retry?: boolean) => {
-    notificationService.callCurrentRequestDeferFn(retry);
+  resendSign = (
+    approval: ApprovalRef,
+    executionId: string,
+    retry?: SigningRetry
+  ) => {
+    return notificationService.callCurrentRequestDeferFn(
+      approval,
+      executionId,
+      retry
+    );
   };
 
   getApproval = notificationService.getApproval;
@@ -2893,6 +2901,7 @@ export class WalletController extends BaseController {
   retryTxReset = bgRetryTxMethods.retryTxReset;
   getRetryTxRecommendNonce = bgRetryTxMethods.getRetryTxRecommendNonce;
   setRetryTxRecommendNonce = bgRetryTxMethods.setRetryTxRecommendNonce;
+  calculateRetryTxNonce = bgRetryTxMethods.calculateRetryTxNonce;
   getTxFailedResult = bgRetryTxMethods.getTxFailedResult;
 
   private syncCustomTestnetRPC = (chainEnum: CHAINS_ENUM) => {
@@ -4942,29 +4951,7 @@ export class WalletController extends BaseController {
       { from, data },
       options
     );
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.SIGN_FINISHED,
-      params: {
-        success: true,
-        data: res,
-      },
-    });
     return res;
-  };
-
-  signPersonalMessageWithUI = async (
-    type: string,
-    from: string,
-    data: string,
-    options?: any
-  ) => {
-    const fn = () =>
-      waitSignComponentAmounted().then(() => {
-        this.signPersonalMessage(type, from, data as any, options);
-      });
-
-    notificationService.setCurrentRequestDeferFn(fn);
-    return fn();
   };
 
   signTypedData = async (
@@ -4979,32 +4966,7 @@ export class WalletController extends BaseController {
       { from, data },
       options
     );
-    eventBus.emit(EVENTS.broadcastToUI, {
-      method: EVENTS.SIGN_FINISHED,
-      params: {
-        success: true,
-        data: res,
-      },
-    });
     return res;
-  };
-
-  /**
-   * signTypedData when UI is mounted, and can retry if needed
-   */
-  signTypedDataWithUI = async (
-    type: string,
-    from: string,
-    data: string,
-    options?: any
-  ) => {
-    const fn = () =>
-      waitSignComponentAmounted().then(() => {
-        return this.signTypedData(type, from, data as any, options);
-      });
-
-    notificationService.setCurrentRequestDeferFn(fn);
-    return fn();
   };
 
   signTransaction = async (

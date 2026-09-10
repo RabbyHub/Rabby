@@ -5,15 +5,9 @@ import { useTranslation } from 'react-i18next';
 // import { BatchRevokeTaskType } from './useBatchRevokeTask';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { CommonAccount } from '@/ui/views/Approval/components/FooterBar/CommonAccount';
-import { EVENTS, WALLET_BRAND_CONTENT } from '@/constant';
+import { WALLET_BRAND_CONTENT } from '@/constant';
 import { ReactComponent as LedgerPressSVG } from '@/ui/assets/ledger/press.svg';
 import { Dots } from '@/ui/views/Approval/components/Popup/Dots';
-import eventBus from '@/eventBus';
-import {
-  isLedgerConnectionRecoverableError,
-  isLedgerDisconnectedError,
-  isLedgerLockError,
-} from '@/ui/utils/ledger';
 import { Ledger } from '@/ui/views/CommonPopup/Ledger';
 import { Modal } from '@/ui/component';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
@@ -54,31 +48,13 @@ export const SwapActionLedgerButton: React.FC<{
   ] = React.useState(false);
 
   React.useEffect(() => {
-    const listener = (msg) => {
-      const message = String(msg || '');
-      if (
-        isLedgerLockError(message) ||
-        isLedgerConnectionRecoverableError(message)
-      ) {
-        setVisibleLedgerConnectModal(true);
-        task.pause();
-
-        if (!isLedgerDisconnectedError(message)) {
-          task.addTask(task.currentApprovalRef.current!, 1);
-        }
-      }
-    };
-
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-
-    return () => {
-      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-    };
-  }, [task.addTask]);
+    if (task.hardwareError) setVisibleLedgerConnectModal(true);
+  }, [task.hardwareError]);
 
   React.useEffect(() => {
     if (task.status === 'active' && status === 'DISCONNECTED') {
-      eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+      setVisibleLedgerConnectModal(true);
+      task.pause();
     }
   }, [task.status, status]);
 

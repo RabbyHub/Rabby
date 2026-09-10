@@ -1496,12 +1496,6 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (!(await isBound())) return;
 
     if (WaitingSignMessageComponent[account.type]) {
-      void wallet
-        .signTypedDataWithUI(account.type, account.address, typedData as any, {
-          brandName: account.brandName,
-          version: 'V4',
-        })
-        .catch(() => undefined);
       if (isSend) {
         wallet.clearPageStateCache();
       }

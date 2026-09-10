@@ -46,7 +46,7 @@ const retryTxReset = () => {
 
 const getRetryTxRecommendNonce = () => txErrorRetryState.recommendNonce;
 
-const setRetryTxRecommendNonce = async ({
+const calculateRetryTxNonce = async ({
   nonce,
   from,
   chainId,
@@ -72,9 +72,15 @@ const setRetryTxRecommendNonce = async ({
     console.debug('recommendNonce error', error);
   }
 
-  txErrorRetryState.setRecommendNonce(recommendNonce);
-
   return recommendNonce;
+};
+
+const setRetryTxRecommendNonce = async (
+  params: Parameters<typeof calculateRetryTxNonce>[0]
+) => {
+  const nonce = await calculateRetryTxNonce(params);
+  txErrorRetryState.setRecommendNonce(nonce);
+  return nonce;
 };
 
 type HintRule = {
@@ -166,6 +172,7 @@ export const bgRetryTxMethods = {
   retryTxReset,
   getRetryTxRecommendNonce,
   setRetryTxRecommendNonce,
+  calculateRetryTxNonce,
   getTxFailedResult,
 };
 

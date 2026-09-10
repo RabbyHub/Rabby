@@ -1,3 +1,4 @@
+import type { SigningRetry } from '@/utils/signingTypes';
 import { ethErrors } from 'eth-rpc-errors';
 import {
   keyringService,
@@ -23,7 +24,6 @@ import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
-import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
 import { ga4 } from '@/utils/ga4';
@@ -406,157 +406,138 @@ const flowContext = flow
       session: { origin },
     } = request;
 
-    const createRequestDeferFn = (
-      originApprovalRes: typeof approvalRes
-    ) => async (isRetry = false) =>
-      new Promise((resolve, reject) => {
-        let waitSignComponentPromise = Promise.resolve();
-
-        if (isSignApproval(approvalType) && uiRequestComponent) {
-          waitSignComponentPromise = waitSignComponentAmounted();
+    let lastApprovalRes = approvalRes;
+    const execute = async (
+      executionId: string,
+      signal: AbortSignal,
+      retry?: SigningRetry
+    ) => {
+      if (approvalRes?.isGnosis && !uiRequestComponent) return;
+      if (isSignApproval(approvalType) && uiRequestComponent) {
+        await waitSignComponentAmounted(executionId, signal);
+        if (
+          notificationService.getApproval()?.data.executionId !== executionId
+        ) {
+          throw ethErrors.provider.userRejectedRequest();
         }
-
-        // if (approvalRes?.isGnosis && !approvalRes.safeMessage) {
-        //   return resolve(undefined);
-        // }
-        if (originApprovalRes?.isGnosis) {
-          return resolve(undefined);
-        }
-
-        return waitSignComponentPromise.then(() => {
-          let _approvalRes = originApprovalRes;
-
-          if (
-            isRetry &&
-            approvalType === 'SignTx' &&
-            mapMethod === 'ethSendTransaction'
-          ) {
-            _approvalRes = { ...originApprovalRes };
-            const {
-              getRetryTxType,
-              getRetryTxRecommendNonce,
-            } = bgRetryTxMethods;
-            const retryType = getRetryTxType();
-            switch (retryType) {
-              case 'nonce': {
-                const recommendNonce = getRetryTxRecommendNonce();
-                if (recommendNonce === _approvalRes.nonce) {
-                  _approvalRes.nonce = intToHex(
-                    hexToNumber(recommendNonce as '0x${string}') + 1
-                  );
-                } else {
-                  _approvalRes.nonce = recommendNonce;
-                }
-
-                break;
-              }
-
-              case 'gasPrice': {
-                if (_approvalRes.gasPrice) {
-                  _approvalRes.gasPrice = `0x${new BigNumber(
-                    new BigNumber(_approvalRes.gasPrice, 16)
-                      .times(1.3)
-                      .toFixed(0)
-                  ).toString(16)}`;
-                }
-                if (_approvalRes.maxFeePerGas) {
-                  _approvalRes.maxFeePerGas = `0x${new BigNumber(
-                    new BigNumber(_approvalRes.maxFeePerGas, 16)
-                      .times(1.3)
-                      .toFixed(0)
-                  ).toString(16)}`;
-                }
-                break;
-              }
-
-              default:
-                break;
-            }
-            if (retryType) {
-              if (!approvalRes?.isGnosis) {
-                notificationService.setCurrentRequestDeferFn(
-                  createRequestDeferFn(_approvalRes)
-                );
-              }
+      }
+      if (signal.aborted) throw ethErrors.provider.userRejectedRequest();
+      let nextApprovalRes = lastApprovalRes;
+      if (
+        retry &&
+        approvalType === 'SignTx' &&
+        mapMethod === 'ethSendTransaction'
+      ) {
+        nextApprovalRes = { ...lastApprovalRes };
+        if (retry.type === 'nonce' && retry.nonce) {
+          nextApprovalRes.nonce =
+            retry.nonce === nextApprovalRes.nonce
+              ? intToHex(hexToNumber(retry.nonce as `0x${string}`) + 1)
+              : retry.nonce;
+        } else if (retry.type === 'gasPrice') {
+          for (const field of ['gasPrice', 'maxFeePerGas']) {
+            if (nextApprovalRes[field]) {
+              nextApprovalRes[field] = `0x${new BigNumber(
+                new BigNumber(nextApprovalRes[field], 16).times(1.3).toFixed(0)
+              ).toString(16)}`;
             }
           }
+        }
+        lastApprovalRes = nextApprovalRes;
+      }
+      try {
+        let result;
+        if (approvalRes?.isGnosis) {
+          const account = rest.$account || rest.account;
+          const keyring = await keyringService.getKeyringForAccount(
+            account.address,
+            account.type
+          );
+          if (signal.aborted) throw ethErrors.provider.userRejectedRequest();
+          result = await keyringService.signTypedMessage(
+            keyring,
+            { from: account.address, data: JSON.parse(rest.data[1]) },
+            { brandName: account.brandName, version: 'V4' }
+          );
+        } else {
+          result = await providerController[mapMethod]({
+            ...request,
+            executionId,
+            approvalRes: nextApprovalRes,
+          });
+        }
+        if (signal.aborted) throw ethErrors.provider.userRejectedRequest();
+        if (isSignApproval(approvalType) && uiRequestComponent) {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.SIGN_FINISHED,
+            params: { executionId, success: true, data: result },
+          });
+        }
+        return result;
+      } catch (e) {
+        if (signal.aborted) throw e;
+        const signingCarrier = takeSigningCarrier(e);
+        if (signingCarrier) {
+          if (!isSigningCarrierReported(signingCarrier))
+            Sentry.captureException(signingCarrier);
+        } else if (
+          !isSignApproval(approvalType) ||
+          (e && typeof e === 'object')
+        ) {
+          Sentry.captureException(e);
+        }
+        if (isSignApproval(approvalType) && uiRequestComponent) {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: e.method || EVENTS.SIGN_FINISHED,
+            params: {
+              executionId,
+              success: false,
+              errorMsg: e?.message || JSON.stringify(e),
+            },
+          });
+        }
+        throw e;
+      }
+    };
 
-          return Promise.resolve(
-            providerController[mapMethod]({
-              ...request,
-              approvalRes: _approvalRes,
-            })
-          )
-            .then((result) => {
-              if (isSignApproval(approvalType)) {
-                eventBus.emit(EVENTS.broadcastToUI, {
-                  method: EVENTS.SIGN_FINISHED,
-                  params: {
-                    success: true,
-                    data: result,
-                  },
-                });
-              }
-              return result;
-            })
-            .then(resolve)
-            .catch((e: any) => {
-              console.error(e);
-              const payload = {
-                method: EVENTS.SIGN_FINISHED,
-                params: {
-                  success: false,
-                  errorMsg: e?.message || JSON.stringify(e),
-                },
-              };
-              if (e.method) {
-                payload.method = e.method;
-                payload.params = e.message;
-              }
-
-              const signingCarrier = takeSigningCarrier(e);
-              if (signingCarrier) {
-                if (!isSigningCarrierReported(signingCarrier)) {
-                  Sentry.captureException(signingCarrier);
-                }
-              } else if (
-                !isSignApproval(approvalType) ||
-                (e && typeof e === 'object')
-              ) {
-                Sentry.captureException(e);
-              }
-              if (isSignApproval(approvalType)) {
-                eventBus.emit(EVENTS.broadcastToUI, payload);
-              }
-              reject(e);
-            });
-        });
-      });
-
-    const requestDeferFn = createRequestDeferFn(approvalRes);
-
-    if (!approvalRes?.isGnosis) {
-      notificationService.setCurrentRequestDeferFn(requestDeferFn);
-    }
-    const requestDefer = requestDeferFn();
     async function requestApprovalLoop({
       uiRequestComponent,
       $account,
       ...rest
     }) {
       ctx.request.requestedApproval = true;
-      const res = await notificationService.requestApproval({
-        approvalComponent: uiRequestComponent,
-        params: rest,
-        account: $account,
-        origin,
-        approvalType,
-        isUnshift: true,
-      });
-      if (res?.uiRequestComponent) {
-        return await requestApprovalLoop(res);
-      } else {
-        return res;
+      let controller: AbortController;
+      const run = (executionId: string, retry?: SigningRetry) => {
+        controller?.abort();
+        controller = new AbortController();
+        // The waiting approval owns the result/error UI; the request promise
+        // resolves when that approval is resolved, including after a retry.
+        void execute(executionId, controller.signal, retry).catch(
+          () => undefined
+        );
+      };
+      const executionId = uuidv4();
+      run(executionId);
+      try {
+        const res = await notificationService.requestApproval(
+          {
+            approvalComponent: uiRequestComponent,
+            params: rest,
+            account: $account,
+            origin,
+            approvalType,
+            executionId,
+            isUnshift: true,
+          },
+          undefined,
+          {
+            requestDeferFn: run,
+            cancelSigning: () => controller.abort(),
+          }
+        );
+        return res?.uiRequestComponent ? await requestApprovalLoop(res) : res;
+      } finally {
+        controller!.abort();
       }
     }
 
@@ -586,7 +567,7 @@ const flowContext = flow
       }
     }
 
-    return requestDefer;
+    return execute(uuidv4(), new AbortController().signal);
   })
   .callback();
 

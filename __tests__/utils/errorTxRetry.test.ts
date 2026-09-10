@@ -16,6 +16,25 @@ jest.mock('@/background/controller/walletUtils/sign', () => ({
 }));
 
 import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
+import { getRecommendNonce } from '@/background/controller/walletUtils/sign';
+
+test('calculating a waiting approval nonce cannot overwrite another local task retry', async () => {
+  (getRecommendNonce as jest.Mock).mockResolvedValueOnce('0x9');
+  await bgRetryTxMethods.setRetryTxRecommendNonce({
+    from: 'A',
+    chainId: 1,
+    nonce: '0x8',
+  });
+  (getRecommendNonce as jest.Mock).mockResolvedValueOnce('0x2');
+  expect(
+    await bgRetryTxMethods.calculateRetryTxNonce({
+      from: 'B',
+      chainId: 1,
+      nonce: '0x2',
+    })
+  ).toBe('0x3');
+  expect(bgRetryTxMethods.getRetryTxRecommendNonce()).toBe('0x9');
+});
 
 describe('error tx retry i18n', () => {
   beforeEach(() => {

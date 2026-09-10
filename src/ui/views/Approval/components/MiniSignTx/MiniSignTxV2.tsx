@@ -632,6 +632,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
         : ctx.signInfo?.status
       : 'idle',
     error: null,
+    hardwareError: error?.description,
     list: [],
     init: () => {},
     start: () => Promise.resolve(''),

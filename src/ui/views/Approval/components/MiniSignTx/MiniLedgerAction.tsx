@@ -5,7 +5,6 @@ import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
-import { EVENTS } from 'consts';
 import React, { ReactNode, useRef } from 'react';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
@@ -20,7 +19,6 @@ import {
   isLedgerDisconnectedError,
   isLedgerLockError,
 } from '@/ui/utils/ledger';
-import eventBus from '@/eventBus';
 import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { Ledger } from '../../../CommonPopup/Ledger';
@@ -94,29 +92,19 @@ export const MiniLedgerAction: React.FC<Props> = ({
   ] = React.useState(false);
   const [ledgerErrorMessage, setLedgerErrorMessage] = React.useState('');
 
+  const handleHardwareError = useMemoizedFn((message: string) => {
+    setLedgerErrorMessage(message);
+    if (
+      isLedgerLockError(message) ||
+      isLedgerConnectionRecoverableError(message)
+    ) {
+      setVisibleLedgerConnectModal(true);
+      task.stop();
+    }
+  });
   React.useEffect(() => {
-    const listener = (msg) => {
-      const message = String(msg || '');
-      setLedgerErrorMessage(message);
-      if (
-        isLedgerLockError(message) ||
-        isLedgerConnectionRecoverableError(message)
-      ) {
-        setVisibleLedgerConnectModal(true);
-        task.stop();
-
-        // if (msg !== 'DISCONNECTED') {
-        //   task.addRevokeTask(task.currentApprovalRef.current!, 1);
-        // }
-      }
-    };
-
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-
-    return () => {
-      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-    };
-  }, []);
+    if (task.hardwareError) handleHardwareError(task.hardwareError);
+  }, [task.hardwareError, handleHardwareError]);
 
   const handleSubmit = useMemoizedFn(() => {
     setLedgerErrorMessage('');
@@ -152,7 +140,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
   useDebounce(
     () => {
       if (task.status === 'active' && status === 'DISCONNECTED') {
-        eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+        handleHardwareError('DISCONNECTED');
       }
     },
     300,
@@ -207,7 +195,6 @@ export const MiniLedgerAction: React.FC<Props> = ({
           onCancel={() => {
             setDirectSigning(false);
             setVisibleLedgerConnectModal(false);
-            // props.onCancel?.();
           }}
           title={pendingText}
           maskStyle={{

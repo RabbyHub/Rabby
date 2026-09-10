@@ -33,6 +33,7 @@ import {
 import { twoStepChains } from '../../Swap/hooks/twoStepSwap';
 import { DEFAULT_MAX_GAS_COST, DEFAULT_PRICE_IMPACT } from '../constant';
 import { sendTransaction } from '@/ui/utils/sendTransaction';
+import { isHardwareRecoveryError } from '@/ui/utils/hardwareRecovery';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
@@ -294,6 +295,7 @@ export const useBatchSwapTask = (options: {
     'idle'
   );
   const cancelTokenRef = React.useRef(0);
+  const [hardwareError, setHardwareError] = React.useState<string>();
   const currentApprovalRef = React.useRef<TokenItem>();
   const [currentToken, setCurrentToken] = React.useState<TokenItem | null>(
     null
@@ -574,6 +576,14 @@ export const useBatchSwapTask = (options: {
             console.log('batch swap task error', e);
             console.error('transaction error', e, { name: e.name }, e.message);
             if (!isTaskCancelled()) {
+              if (
+                isHardwareRecoveryError(options.account?.type, e?.message || '')
+              ) {
+                queueRef.current.pause();
+                updateStatus('paused');
+                setHardwareError(e.message);
+                void addTask(item, 1, ignoreGasCheck);
+              }
               setStatusDict((prev) => ({
                 ...prev,
                 [item.id]: {
@@ -603,6 +613,7 @@ export const useBatchSwapTask = (options: {
   );
 
   const start = React.useCallback(() => {
+    setHardwareError(undefined);
     updateStatus('active');
 
     for (const item of list) {
@@ -616,6 +627,7 @@ export const useBatchSwapTask = (options: {
   const init = React.useCallback(
     (dataSource: TokenItem[]) => {
       cancelRunningTasks();
+      setHardwareError(undefined);
       setList(dataSource);
       setStatusDict(
         dataSource.reduce((dict, item) => {
@@ -639,6 +651,7 @@ export const useBatchSwapTask = (options: {
   }, [updateStatus]);
 
   const handleContinue = React.useCallback(() => {
+    setHardwareError(undefined);
     queueRef.current.start();
     updateStatus('active');
   }, [updateStatus]);
@@ -716,6 +729,7 @@ export const useBatchSwapTask = (options: {
 
   const clear = useMemoizedFn(() => {
     cancelRunningTasks();
+    setHardwareError(undefined);
     setList([]);
     setStatusDict({});
     setTxStatus('idle');
@@ -748,6 +762,7 @@ export const useBatchSwapTask = (options: {
     currentToken,
     currentTaskIndex,
     currentApprovalRef,
+    hardwareError,
     clear,
     config,
     setConfig,

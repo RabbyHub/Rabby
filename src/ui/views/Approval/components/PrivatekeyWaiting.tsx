@@ -20,7 +20,6 @@ import {
 } from './Popup/ApprovalPopupContainer';
 import { Account } from 'background/service/preference';
 import stats from '@/stats';
-import eventBus from '@/eventBus';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
@@ -28,7 +27,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
 import { ga4 } from '@/utils/ga4';
 import { useAsync } from 'react-use';
 import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
@@ -63,6 +62,7 @@ export const PrivatekeyWaiting = ({
   account: Account;
 }) => {
   const wallet = useWallet();
+  const signingEvents = useSigningEvents();
   const {
     setTitle,
     setVisible,
@@ -99,13 +99,16 @@ export const PrivatekeyWaiting = ({
     }
     setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
 
-    const autoRetryUpdate =
-      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
-    await wallet.setRetryTxType(txFailedResult?.[1] || false);
-    await wallet.resendSign(autoRetryUpdate);
+    if (
+      !(await signingEvents.retry({
+        type: txFailedResult?.[1] || false,
+        nonce: txFailedResult?.[2],
+      }))
+    )
+      return;
 
     message.success(t('page.signFooterBar.ledger.resent'));
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
   const isSignText = /personalSign|SignTypedData/.test(
     params?.extra?.signTextMethod
@@ -185,10 +188,10 @@ export const PrivatekeyWaiting = ({
       });
     }
 
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    signingEvents.listen(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -198,6 +201,7 @@ export const PrivatekeyWaiting = ({
             sig = adjustV('eth_signTypedData', sig);
             const safeMessage = params.safeMessage;
             if (safeMessage) {
+              if (!(await isCurrent())) return;
               await wallet.handleGnosisMessage({
                 signature: data.data,
                 signerAddress: params.account!.address!,
@@ -205,14 +209,18 @@ export const PrivatekeyWaiting = ({
             } else {
               const sigs = await wallet.getGnosisTransactionSignatures();
               if (sigs.length > 0) {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddConfirmation(account.address, data.data);
               } else {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddSignature(account.address, data.data);
+                if (!(await isCurrent())) return;
                 await wallet.postGnosisTransaction();
               }
             }
           }
         } catch (e) {
+          if (!(await isCurrent())) return;
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           setErrorMessage(e.message);
           console.error(e);
@@ -228,17 +236,18 @@ export const PrivatekeyWaiting = ({
           event_category: 'Transaction',
         });
 
+        if (!(await isCurrent())) return;
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
         });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setErrorMessage(data.errorMsg);
+        setErrorMessage(data.errorMsg || '');
       }
     });
 
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   React.useEffect(() => {

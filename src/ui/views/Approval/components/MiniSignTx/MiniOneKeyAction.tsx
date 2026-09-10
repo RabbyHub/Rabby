@@ -5,7 +5,6 @@ import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
-import { EVENTS } from 'consts';
 import React, { ReactNode, useRef } from 'react';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 
@@ -13,7 +12,6 @@ import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
 import { GasLessConfig } from '../FooterBar/GasLessComponents';
 import { Dots } from '../Popup/Dots';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
-import eventBus from '@/eventBus';
 import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { useMemoizedFn } from 'ahooks';
@@ -83,21 +81,15 @@ export const MiniOneKeyAction: React.FC<Props> = ({
 
   const [disconnectTipsModal, setDisconnectTipsModal] = React.useState(false);
 
+  const handleHardwareError = useMemoizedFn((message: string) => {
+    if (message === 'No OneKey Device found') {
+      setDisconnectTipsModal(true);
+      task.stop();
+    }
+  });
   React.useEffect(() => {
-    const listener = (msg) => {
-      if (msg === 'No OneKey Device found') {
-        console.log('msgmsg', msg);
-        setDisconnectTipsModal(true);
-        task.stop();
-      }
-    };
-
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-
-    return () => {
-      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-    };
-  }, []);
+    if (task.hardwareError) handleHardwareError(task.hardwareError);
+  }, [task.hardwareError, handleHardwareError]);
 
   const handleSubmit = useMemoizedFn(() => {
     onSubmit();
@@ -136,7 +128,6 @@ export const MiniOneKeyAction: React.FC<Props> = ({
           onCancel={() => {
             setDirectSigning(false);
             setDisconnectTipsModal(false);
-            // props.onCancel?.();
           }}
           title={t('page.dashboard.hd.onekeyIsDisconnected')}
           maskStyle={{

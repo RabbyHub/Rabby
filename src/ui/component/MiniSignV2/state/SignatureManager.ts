@@ -17,8 +17,7 @@ import {
   signatureService,
   SignatureSteps,
 } from '@/ui/component/MiniSignV2/services';
-import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import eventBus from '@/eventBus';
+import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { findChain } from '@/utils/chain';
 import { t } from 'i18next';
 import { DrawerProps, ModalProps } from 'antd';
@@ -42,11 +41,11 @@ type RunContext = {
   fingerprint: string;
 };
 
-const defaultError = {
+const defaultError: NonNullable<SignatureFlowState['error']> = {
   status: 'FAILED',
   content: t('page.signFooterBar.qrcode.txFailed'),
   description: MINI_SIGN_ERROR.PREFETCH_FAILURE,
-} as SignatureFlowState['error'];
+};
 
 const createErrorMessage = (err: unknown) =>
   err instanceof Error ? err.message : String(err ?? 'Unknown error');
@@ -194,7 +193,8 @@ export class SignatureManager {
     if (
       this.state.fingerprint === fingerprint &&
       this.state.ctx &&
-      this.state.status !== 'error'
+      this.state.status !== 'error' &&
+      this.state.status !== 'prefetching'
     ) {
       return Promise.resolve(
         this.withManualGasMethod(this.state.ctx, fingerprint)
@@ -202,7 +202,14 @@ export class SignatureManager {
     }
 
     const cached = this.pendingCtx.get(fingerprint);
-    if (cached) return cached;
+    if (cached) {
+      return cached.then((ctx) => {
+        if (opId && this.isActive(opId, fingerprint)) {
+          this.dispatch({ type: 'PREFETCH_SUCCESS', fingerprint, ctx });
+        }
+        return ctx;
+      });
+    }
     const currentOpId = this.markRun(fingerprint, opId);
     const skeleton = this.withManualGasMethod(
       this.createSkeletonCtx(request.txs, fingerprint),
@@ -547,10 +554,12 @@ export class SignatureManager {
           getContainer: getContainer || config.getContainer,
         });
       } catch (error) {
-        this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
+        if (this.isActive(opId, fingerprint))
+          this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
         return;
       }
     }
+    if (!this.isActive(opId, fingerprint)) return [];
     this.dispatch({ type: 'SEND_START', fingerprint });
     try {
       const latestCtx =
@@ -564,6 +573,7 @@ export class SignatureManager {
         config,
         retry,
         shouldPause: (idx, signedCount) =>
+          !this.isActive(opId, fingerprint) ||
           this.pauseRequested ||
           (typeof this.pauseAfterThreshold === 'number' &&
             this.pauseAfterThreshold >= 0 &&
@@ -687,7 +697,11 @@ export class SignatureManager {
     return this.send({ wallet, getContainer });
   }
 
-  private async checkHardWareConnected(cb: () => void) {
+  private async checkHardWareConnected(
+    opId: number,
+    fingerprint: string,
+    cb: () => void
+  ) {
     const { config } = this.state;
     const { account } = config || {};
     if (!account) {
@@ -697,13 +711,19 @@ export class SignatureManager {
     if (account.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const isConnected = await hasConnectedLedgerDevice();
+        if (!this.isActive(opId, fingerprint)) return;
         if (isConnected) {
           cb();
         } else {
-          eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+          this.dispatch({
+            type: 'SEND_FAILURE',
+            fingerprint,
+            error: { ...defaultError, description: 'DISCONNECTED' },
+          });
         }
       } catch {
-        this.pendingResult?.reject?.(MINI_SIGN_ERROR.USER_CANCELLED);
+        if (this.isActive(opId, fingerprint))
+          this.rejectPending(MINI_SIGN_ERROR.USER_CANCELLED);
       }
 
       return;
@@ -724,6 +744,7 @@ export class SignatureManager {
     const fingerprint = this.getFingerprint(request.txs);
     this.bindManualGasMethodToFingerprint(fingerprint);
     const resultPromise = this.createResultPromise();
+    const opId = this.markRun(fingerprint);
     if (this.state.status === 'prefetch_failure') {
       this.rejectPending(MINI_SIGN_ERROR.PREFETCH_FAILURE);
       return resultPromise;
@@ -740,10 +761,9 @@ export class SignatureManager {
     });
 
     try {
-      const prepared =
-        this.pendingCtx.get(fingerprint) ||
-        this.ensureContext(request, wallet, this.run?.id);
+      const prepared = this.ensureContext(request, wallet, opId);
       await prepared;
+      if (!this.isActive(opId, fingerprint)) return resultPromise;
 
       if (this.isPreExecResultFailed()) {
         this.rejectPending(MINI_SIGN_ERROR.PREFETCH_FAILURE);
@@ -763,12 +783,13 @@ export class SignatureManager {
         ctx: { ...this.state.ctx, mode: 'direct' } as SignerCtx,
       });
 
-      await this.checkHardWareConnected(() =>
+      await this.checkHardWareConnected(opId, fingerprint, () =>
         this.send({ wallet, isHideErrorUI: opts?.isHideErrorUI }).catch(
           () => undefined
         )
       );
     } catch (error) {
+      if (!this.isActive(opId, fingerprint)) return resultPromise;
       const message = createErrorMessage(error);
       this.rejectPending(message);
       throw error instanceof Error ? error : new Error(message);

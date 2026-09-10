@@ -5,11 +5,9 @@ import { Account } from '@/background/service/preference';
 import { MINI_SIGN_ERROR } from './SignatureManager';
 import { MiniTypedData } from '@/ui/views/Approval/components/MiniSignTypedData/useTypedDataTask';
 import { hasConnectedLedgerDevice, WalletControllerType } from '@/ui/utils';
-import { EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { sendSignTypedData } from '@/ui/utils/sendTypedData';
 import { SignatureSteps } from '../services';
-import eventBus from '@/eventBus';
-import { isLedgerLockError } from '@/ui/utils/ledger';
 
 type Subscriber = (state: TypedDataSignatureState) => void;
 
@@ -42,6 +40,7 @@ class TypedDataSignatureManager {
     status: 'idle',
   };
   private subscribers: Subscriber[] = [];
+  private generation = 0;
   private lastRequest: TypedDataSignatureRequest | null = null;
   private resumeIndex = 0;
   private partialResults: string[] = [];
@@ -80,7 +79,7 @@ class TypedDataSignatureManager {
     }
   }
 
-  private async checkHardWareConnected(cb: () => void) {
+  private async checkHardWareConnected(generation: number, cb: () => void) {
     const account = this.state.request?.config.account;
     if (!account) {
       this.pendingResult?.reject(MINI_SIGN_ERROR.PREFETCH_FAILURE);
@@ -89,13 +88,19 @@ class TypedDataSignatureManager {
     if (account.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const isConnected = await hasConnectedLedgerDevice();
+        if (generation !== this.generation) return;
         if (isConnected) {
           cb();
         } else {
-          eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+          this.setState({
+            ...this.state,
+            status: 'error',
+            error: 'DISCONNECTED',
+          });
         }
       } catch {
-        this.pendingResult?.reject?.(MINI_SIGN_ERROR.USER_CANCELLED);
+        if (generation === this.generation)
+          this.reject(MINI_SIGN_ERROR.USER_CANCELLED);
       }
 
       return;
@@ -115,6 +120,7 @@ class TypedDataSignatureManager {
       throw new Error('No typed data to sign');
     }
     this.ensureNoPending();
+    const generation = ++this.generation;
     this.lastRequest = request;
     this.resumeIndex = 0;
     this.partialResults = [];
@@ -128,7 +134,7 @@ class TypedDataSignatureManager {
       progress: { current: 0, total: request.txs.length },
     });
     if (request.config.mode !== 'UI') {
-      this.checkHardWareConnected(() => {
+      this.checkHardWareConnected(generation, () => {
         void this.runSigningFlow({
           request,
           startIndex: 0,
@@ -151,6 +157,8 @@ class TypedDataSignatureManager {
     existingResults?: string[];
     getContainer?: ModalProps['getContainer'] | DrawerProps['getContainer'];
   }) {
+    const generation = this.generation;
+    const isCurrent = () => generation === this.generation;
     const { wallet, txs, config } = request;
     const result: string[] = [...existingResults];
 
@@ -162,13 +170,14 @@ class TypedDataSignatureManager {
           getContainer: getContainer || config.getContainer,
         });
       } catch (error) {
-        this.reject(MINI_SIGN_ERROR.USER_CANCELLED);
+        if (isCurrent()) this.reject(MINI_SIGN_ERROR.USER_CANCELLED);
         return;
       }
     }
 
     try {
       for (let idx = startIndex; idx < txs.length; idx++) {
+        if (!isCurrent()) return;
         const item = txs[idx];
         this.setState({
           ...this.state,
@@ -183,6 +192,7 @@ class TypedDataSignatureManager {
           account: request.config.account,
         });
 
+        if (!isCurrent()) return;
         result.push(hash);
         this.setState({
           ...this.state,
@@ -195,13 +205,14 @@ class TypedDataSignatureManager {
       this.resumeIndex = 0;
       this.resolve(result);
     } catch (error) {
+      if (!isCurrent()) return;
       const message = error.message || error.name;
       this.partialResults = result;
       this.resumeIndex = Math.min(
         txs.length - 1,
         Math.max(startIndex, this.state.progress?.current || startIndex)
       );
-      if (!isLedgerLockError(message)) {
+      {
         this.setState({
           status: 'error',
           request,
@@ -243,6 +254,7 @@ class TypedDataSignatureManager {
     if (!request) {
       throw new Error('No typed data request to retry');
     }
+    const generation = ++this.generation;
     const startIndex = this.resumeIndex || 0;
     const existingResults = [...this.partialResults];
     this.setState({
@@ -251,7 +263,7 @@ class TypedDataSignatureManager {
       error: undefined,
       progress: { current: startIndex, total: request.txs.length },
     });
-    this.checkHardWareConnected(() => {
+    this.checkHardWareConnected(generation, () => {
       this.runSigningFlow({
         request,
         startIndex,
@@ -262,6 +274,7 @@ class TypedDataSignatureManager {
   }
 
   private reset() {
+    this.generation += 1;
     this.lastRequest = null;
     this.resumeIndex = 0;
     this.partialResults = [];

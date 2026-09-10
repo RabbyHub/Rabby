@@ -656,6 +656,7 @@ class ProviderController extends BaseController {
     pushed: boolean;
     result: any;
     account: Account;
+    executionId?: string;
   }) => {
     const rechargeGasAccountOnTx = (txHash = '') => {
       if (
@@ -1197,6 +1198,7 @@ class ProviderController extends BaseController {
       statsData.signedSuccess = true;
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.TX_SUBMITTING,
+        params: { executionId: options.executionId },
       });
 
       try {

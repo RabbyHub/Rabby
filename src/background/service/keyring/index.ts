@@ -1004,7 +1004,11 @@ export class KeyringService extends EventEmitter {
    * @param {Object} msgParams - The message parameters to sign.
    * @returns {Promise<Buffer>} The raw signature.
    */
-  signTypedMessage(keyring, msgParams, opts = { version: 'V1' }) {
+  signTypedMessage(
+    keyring,
+    msgParams,
+    opts: { version: string; brandName?: string } = { version: 'V1' }
+  ) {
     const address = normalizeAddress(msgParams.from);
     return this.signWithPairingCredsPersistence(
       keyring,

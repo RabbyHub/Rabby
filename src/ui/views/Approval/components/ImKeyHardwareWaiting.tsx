@@ -18,7 +18,6 @@ import {
   useCommonPopupView,
 } from 'ui/utils';
 import { adjustV } from 'ui/utils/gnosis';
-import eventBus from '@/eventBus';
 import stats from '@/stats';
 import ImKeySVG from 'ui/assets/walletlogo/imkey.svg';
 import {
@@ -28,7 +27,7 @@ import {
 import { useImKeyStatus } from '@/ui/component/ConnectStatus/useImKeyStatus';
 import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
 import { ga4 } from '@/utils/ga4';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
@@ -71,6 +70,7 @@ export const ImKeyHardwareWaiting = ({
   const [content, setContent] = React.useState('');
   const [description, setDescription] = React.useState('');
   const wallet = useWallet();
+  const signingEvents = useSigningEvents();
 
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
@@ -104,14 +104,17 @@ export const ImKeyHardwareWaiting = ({
     }
     if (sessionStatus === 'DISCONNECTED') return;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    const autoRetryUpdate =
-      !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
-    await wallet.setRetryTxType(txFailedResult?.[1] || false);
-    await wallet.resendSign(autoRetryUpdate);
+    if (
+      !(await signingEvents.retry({
+        type: txFailedResult?.[1] || false,
+        nonce: txFailedResult?.[2],
+      }))
+    )
+      return;
     if (showToast) {
       message.success(t('page.signFooterBar.ledger.resent'));
     }
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   // const handleClickResult = () => {
@@ -171,18 +174,24 @@ export const ImKeyHardwareWaiting = ({
       });
     }
 
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
-      setErrorMessage(data);
-      if (/DisconnectedDeviceDuringOperation/i.test(data)) {
-        await rejectApproval('User rejected the request.');
-        openInternalPageInTab('request-permission?type=imkey&from=approval');
+    signingEvents.listen(
+      EVENTS.COMMON_HARDWARE.REJECTED,
+      async (event, isCurrent) => {
+        const data = event.errorMsg || '';
+        setErrorMessage(data);
+        if (/DisconnectedDeviceDuringOperation/i.test(data)) {
+          const rejected = await rejectApproval('User rejected the request.');
+          if (!rejected?.accepted) return;
+          openInternalPageInTab('request-permission?type=imkey&from=approval');
+        }
+        if (!(await isCurrent())) return;
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.REJECTED);
       }
-      setConnectStatus(WALLETCONNECT_STATUS_MAP.REJECTED);
-    });
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    );
+    signingEvents.listen(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -192,6 +201,7 @@ export const ImKeyHardwareWaiting = ({
             sig = adjustV('eth_signTypedData', sig);
             const safeMessage = params.safeMessage;
             if (safeMessage) {
+              if (!(await isCurrent())) return;
               await wallet.handleGnosisMessage({
                 signature: data.data,
                 signerAddress: params.account!.address!,
@@ -199,14 +209,18 @@ export const ImKeyHardwareWaiting = ({
             } else {
               const sigs = await wallet.getGnosisTransactionSignatures();
               if (sigs.length > 0) {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddConfirmation(account.address, sig);
               } else {
+                if (!(await isCurrent())) return;
                 await wallet.gnosisAddSignature(account.address, sig);
+                if (!(await isCurrent())) return;
                 await wallet.postGnosisTransaction();
               }
             }
           }
         } catch (e) {
+          if (!(await isCurrent())) return;
           Sentry.captureException(e);
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           return;
@@ -221,6 +235,7 @@ export const ImKeyHardwareWaiting = ({
           event_category: 'Transaction',
         });
 
+        if (!(await isCurrent())) return;
         setSignFinishedData({
           data: sig,
           approvalId: approval.id,
@@ -230,11 +245,11 @@ export const ImKeyHardwareWaiting = ({
           new Error('imKey sign error: ' + JSON.stringify(data))
         );
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setErrorMessage(data.errorMsg);
+        setErrorMessage(data.errorMsg || '');
       }
     });
 
-    emitSignComponentAmounted();
+    signingEvents.ready();
   };
 
   React.useEffect(() => {
