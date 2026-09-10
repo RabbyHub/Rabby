@@ -130,10 +130,12 @@ export const RabbyFeeTag = ({
                     'flex w-full items-center justify-between gap-4 rounded-[4px] px-8 py-[7px] text-12 leading-[normal]',
                     tier === feeTier
                       ? 'bg-r-blue-light-1 text-r-blue-default font-510'
-                      : 'bg-r-neutral-card-1 text-r-neutral-foot font-normal'
+                      : 'bg-transparent text-r-neutral-foot font-normal'
                   )}
                 >
-                  <span>{t(`page.swap.rabbyFee.cases.${tier}`)}</span>
+                  <span className="min-w-0 truncate">
+                    {t(`page.swap.rabbyFee.cases.${tier}`)}
+                  </span>
                   <span className="shrink-0">
                     {tier === 'hundredThousand'
                       ? '50%'
