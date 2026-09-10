@@ -3,6 +3,7 @@ import type {
   ApprovalRef,
   InternalSignRequestId,
   SigningRequestContext,
+  DirectSigningId,
 } from '@/utils/signingTypes';
 
 type InternalMethods = keyof typeof import('./internalMethod')['default'];
@@ -28,4 +29,5 @@ export type ProviderRequest<
   approval?: ApprovalRef;
   internalSignRequestId?: InternalSignRequestId;
   signing?: SigningRequestContext;
+  directSigning?: DirectSigningId;
 };

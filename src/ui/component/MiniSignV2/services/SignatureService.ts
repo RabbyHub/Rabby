@@ -14,7 +14,7 @@ import { findChain } from '@/utils/chain';
 import { Account } from '@/background/service/preference';
 import { explainGas } from '@/utils/transaction';
 import BigNumber from 'bignumber.js';
-import type { SigningRequestContext } from '@/utils/signingTypes';
+import type { DirectSigningId } from '@/utils/signingTypes';
 
 type PrepareParams = {
   wallet: WalletControllerType;
@@ -42,8 +42,7 @@ type SendParams = {
   retry?: boolean;
   shouldPause?: (idx: number, signedCount: number) => boolean;
   onProgress?: (ctx: SignerCtx) => void;
-  hardwareOperation?: import('@/utils/signingTypes').HardwareOperationRef;
-  signing?: SigningRequestContext;
+  directSigning?: DirectSigningId;
   retryScope: string;
   retryTxs: Tx[];
 };
@@ -100,8 +99,7 @@ export const signatureService = {
     retry,
     shouldPause,
     onProgress,
-    hardwareOperation,
-    signing,
+    directSigning,
     retryScope,
     retryTxs,
   }: SendParams) => {
@@ -115,8 +113,7 @@ export const signatureService = {
       config,
       retry,
       shouldPause,
-      hardwareOperation,
-      signing,
+      directSigning,
       retryScope,
       retryTxs,
       onSendedTx: ({ hash, idx }) => {

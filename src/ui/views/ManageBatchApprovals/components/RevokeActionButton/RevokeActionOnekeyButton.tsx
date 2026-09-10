@@ -4,17 +4,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useOneKeyStatus } from '@/ui/component/ConnectStatus/useOneKeyStatus';
 import { CommonAccount } from '@/ui/views/Approval/components/FooterBar/CommonAccount';
-import { EVENTS, WALLET_BRAND_CONTENT } from '@/constant';
+import { WALLET_BRAND_CONTENT } from '@/constant';
 import { ReactComponent as OnekeyPressSVG } from '@/ui/assets/onekey-press.svg';
 import { Dots } from '@/ui/views/Approval/components/Popup/Dots';
-import eventBus from '@/eventBus';
 import { OneKey } from '@/ui/views/CommonPopup/OneKey';
 import { Popup } from '@/ui/component';
 import { BatchRevokeTaskType } from '../../hooks/useBatchRevokeTask';
-import {
-  emitHardwareOperationRejected,
-  getSignEventErrorMessage,
-} from '@/utils/signEvent';
+import { getSignEventErrorMessage } from '@/utils/signEvent';
 
 const buttonBaseClass = clsx(
   'rounded-[6px] h-[48px] w-[252px]',
@@ -52,17 +48,8 @@ export const RevokeActionOnekeyButton: React.FC<{
   const handledDisconnectRef = React.useRef(false);
 
   React.useEffect(() => {
-    const listener = (msg) => {
-      const operation = msg?.operation;
-      const expected = task.hardwareOperationRef.current;
-      if (
-        operation?.kind !== 'standalone' ||
-        expected?.kind !== 'standalone' ||
-        operation.operationId !== expected.operationId
-      ) {
-        return;
-      }
-      const message = getSignEventErrorMessage(msg);
+    task.onErrorRef.current = (error) => {
+      const message = getSignEventErrorMessage(error);
       if (message === 'DISCONNECTED' || message.startsWith('901:')) {
         handledDisconnectRef.current = true;
         setDisconnectTipsModal(true);
@@ -70,10 +57,8 @@ export const RevokeActionOnekeyButton: React.FC<{
       }
     };
 
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-
     return () => {
-      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
+      task.onErrorRef.current = undefined;
     };
   }, [task]);
 
@@ -85,10 +70,8 @@ export const RevokeActionOnekeyButton: React.FC<{
 
     if (status === 'DISCONNECTED' && !handledDisconnectRef.current) {
       handledDisconnectRef.current = true;
-      const operation = task.hardwareOperationRef.current;
-      if (operation) {
-        emitHardwareOperationRejected(operation, 'DISCONNECTED');
-      }
+      setDisconnectTipsModal(true);
+      task.pause();
     }
   }, [status, task.status]);
 

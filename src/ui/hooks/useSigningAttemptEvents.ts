@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import type {
-  HardwareOperationRef,
   SigningAttemptFinishedEvent,
   SigningAttemptRef,
 } from '@/utils/signingTypes';
@@ -34,21 +33,12 @@ export const useSigningAttemptEvents = (
       callbacksRef.current.onFinished?.(data);
     };
     const onHardwareError = (data: {
-      operation: HardwareOperationRef;
+      attempt: SigningAttemptRef;
       errorMsg: string;
     }) => {
-      const operation = data?.operation;
-      if (
-        operation?.kind !== 'signing-attempt' ||
-        !sameSigningAttempt(attemptRef.current, operation.attempt)
-      ) {
-        return;
-      }
+      if (!sameSigningAttempt(attemptRef.current, data?.attempt)) return;
       if (data.errorMsg) {
-        callbacksRef.current.onHardwareError?.(
-          data.errorMsg,
-          operation.attempt
-        );
+        callbacksRef.current.onHardwareError?.(data.errorMsg, data.attempt);
       }
     };
     const onSubmitting = (attempt: SigningAttemptRef) => {

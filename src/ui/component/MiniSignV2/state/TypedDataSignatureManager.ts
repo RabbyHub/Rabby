@@ -5,12 +5,11 @@ import { Account } from '@/background/service/preference';
 import { MINI_SIGN_ERROR } from './SignatureManager';
 import { MiniTypedData } from '@/ui/views/Approval/components/MiniSignTypedData/useTypedDataTask';
 import { hasConnectedLedgerDevice, WalletControllerType } from '@/ui/utils';
-import { supportedHardwareDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { sendSignTypedData } from '@/ui/utils/sendTypedData';
 import { SignatureSteps } from '../services';
 import { isLedgerLockError } from '@/ui/utils/ledger';
-import type { SigningRequestContext } from '@/utils/signingTypes';
+import type { DirectSigningId } from '@/utils/signingTypes';
 
 type Subscriber = (state: TypedDataSignatureState) => void;
 
@@ -46,7 +45,8 @@ class TypedDataSignatureManager {
   private lastRequest: TypedDataSignatureRequest | null = null;
   private resumeIndex = 0;
   private partialResults: string[] = [];
-  private signingContext?: SigningRequestContext;
+  private directSigningId?: DirectSigningId;
+  public readonly onErrorRef: { current?: (message: string) => void } = {};
   private signingWallet?: WalletControllerType;
   private runId = 0;
   private pendingResult: {
@@ -70,10 +70,6 @@ class TypedDataSignatureManager {
     return this.state;
   }
 
-  public get signingAttempt() {
-    return this.signingContext?.attempt;
-  }
-
   public subscribe(fn: Subscriber) {
     this.subscribers.push(fn);
     return () => {
@@ -89,22 +85,22 @@ class TypedDataSignatureManager {
   }
 
   private discardSigningContext(
-    context: SigningRequestContext,
+    context: DirectSigningId,
     wallet: WalletControllerType
   ) {
-    if (this.signingContext === context) {
-      this.signingContext = undefined;
+    if (this.directSigningId === context) {
+      this.directSigningId = undefined;
       this.signingWallet = undefined;
     }
-    void wallet.cancelDirectSigning(context).catch((error) => {
+    void wallet.endDirectSigning(context).catch((error) => {
       console.error('cancel stale direct typed-data signing failed', error);
     });
   }
 
   private invalidateRun() {
     this.runId += 1;
-    if (this.signingContext && this.signingWallet) {
-      this.discardSigningContext(this.signingContext, this.signingWallet);
+    if (this.directSigningId && this.signingWallet) {
+      this.discardSigningContext(this.directSigningId, this.signingWallet);
     }
   }
 
@@ -212,20 +208,20 @@ class TypedDataSignatureManager {
     }
     if (!this.isActiveRun(runId, request)) return;
 
-    let signingContext: SigningRequestContext | undefined;
+    let directSigningId: DirectSigningId | undefined;
     try {
-      signingContext = await wallet.startDirectSigning({
+      directSigningId = await wallet.startDirectSigning({
         account: config.account,
       });
       if (!this.isActiveRun(runId, request)) {
-        this.discardSigningContext(signingContext, wallet);
+        this.discardSigningContext(directSigningId, wallet);
         return;
       }
-      this.signingContext = signingContext;
+      this.directSigningId = directSigningId;
       this.signingWallet = wallet;
       for (let idx = startIndex; idx < txs.length; idx++) {
         if (!this.isActiveRun(runId, request)) {
-          this.discardSigningContext(signingContext, wallet);
+          this.discardSigningContext(directSigningId, wallet);
           return;
         }
         const item = txs[idx];
@@ -240,13 +236,10 @@ class TypedDataSignatureManager {
           ...item,
           wallet: request.wallet,
           account: request.config.account,
-          hardwareOperation: supportedHardwareDirectSign(config.account.type)
-            ? { kind: 'signing-attempt', attempt: signingContext.attempt }
-            : undefined,
-          signing: signingContext,
+          directSigning: directSigningId,
         });
         if (!this.isActiveRun(runId, request)) {
-          this.discardSigningContext(signingContext, wallet);
+          this.discardSigningContext(directSigningId, wallet);
           return;
         }
 
@@ -259,12 +252,12 @@ class TypedDataSignatureManager {
         });
       }
       if (!this.isActiveRun(runId, request)) {
-        this.discardSigningContext(signingContext, wallet);
+        this.discardSigningContext(directSigningId, wallet);
         return;
       }
       this.partialResults = [];
       this.resumeIndex = 0;
-      if (!(await this.finishSigningContext({ success: true, data: result }))) {
+      if (!(await this.finishSigningContext())) {
         if (this.isActiveRun(runId, request)) {
           this.reject(MINI_SIGN_ERROR.USER_CANCELLED);
         }
@@ -273,11 +266,13 @@ class TypedDataSignatureManager {
       if (!this.isActiveRun(runId, request)) return;
       this.resolve(result);
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message || error.name : String(error);
       let finished = true;
-      if (signingContext && this.isActiveRun(runId, request)) {
-        finished = await this.finishSigningContext({ success: false, error });
-      } else if (signingContext) {
-        this.discardSigningContext(signingContext, wallet);
+      if (directSigningId && this.isActiveRun(runId, request)) {
+        finished = await this.finishSigningContext();
+      } else if (directSigningId) {
+        this.discardSigningContext(directSigningId, wallet);
         return;
       }
       if (!this.isActiveRun(runId, request)) return;
@@ -285,9 +280,9 @@ class TypedDataSignatureManager {
         this.reject(MINI_SIGN_ERROR.USER_CANCELLED);
         return;
       }
-      const message =
-        error instanceof Error ? error.message || error.name : String(error);
-      if (!signingContext && config.mode !== 'UI') {
+      this.onErrorRef.current?.(message);
+      if (!this.isActiveRun(runId, request)) return;
+      if (!directSigningId && config.mode !== 'UI') {
         this.reject(message);
         return;
       }
@@ -368,29 +363,16 @@ class TypedDataSignatureManager {
     this.setState({ status: 'idle' });
   }
 
-  private async finishSigningContext(outcome: {
-    success: boolean;
-    data?: unknown;
-    error?: unknown;
-  }) {
-    const context = this.signingContext;
+  private async finishSigningContext() {
+    const id = this.directSigningId;
     const wallet = this.signingWallet;
-    if (!context || !wallet) return false;
-    this.signingContext = undefined;
+    this.directSigningId = undefined;
     this.signingWallet = undefined;
-    try {
-      const result = await wallet.finishDirectSigning(context, outcome);
-      return result.accepted;
-    } catch (error) {
-      console.error('finish direct typed-data signing failed', error);
-      await wallet.cancelDirectSigning(context).catch((cancelError) => {
-        console.error(
-          'cancel direct typed-data signing after finish failed',
-          cancelError
-        );
-      });
+    if (!id || !wallet) return false;
+    return wallet.endDirectSigning(id).catch((error) => {
+      console.error('end direct signing failed', error);
       return false;
-    }
+    });
   }
 }
 

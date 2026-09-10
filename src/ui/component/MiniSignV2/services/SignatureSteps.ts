@@ -46,7 +46,7 @@ import type {
   Tx,
 } from '@rabby-wallet/rabby-api/dist/types';
 import type { WalletControllerType } from '@/ui/utils';
-import type { SigningRequestContext } from '@/utils/signingTypes';
+import type { DirectSigningId } from '@/utils/signingTypes';
 import type {
   PreparedContext,
   CalcItem,
@@ -1109,8 +1109,7 @@ export class SignatureSteps {
           isGasAccount: !!options?.isGasAccount,
           ga: options?.ga,
           session: options?.session,
-          hardwareOperation: options?.hardwareOperation,
-          signing: options?.signing,
+          directSigning: options?.directSigning,
           sig,
           preExecResult: txsCalc[i]?.preExecResult,
           account,
@@ -1332,8 +1331,7 @@ export class SignatureSteps {
     onSendedTx: (prams: { hash: string; idx: number }) => void;
     retry?: boolean;
     shouldPause?: (idx: number, signedCount: number) => boolean;
-    hardwareOperation?: import('@/utils/signingTypes').HardwareOperationRef;
-    signing?: SigningRequestContext;
+    directSigning?: DirectSigningId;
     retryScope: string;
     retryTxs: Tx[];
   }): Promise<
@@ -1365,8 +1363,7 @@ export class SignatureSteps {
         pushType: normalizeTxParams(txs[0])?.swapPreferMEVGuarded
           ? 'mev'
           : 'default',
-        hardwareOperation: params.hardwareOperation,
-        signing: params.signing,
+        directSigning: params.directSigning,
         retryScope: params.retryScope,
         retryTxs: params.retryTxs,
       },

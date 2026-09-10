@@ -74,9 +74,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
 
   // mock mini sign task
   const task = {
-    get signingAttempt() {
-      return typedDataSignatureStore.signingAttempt;
-    },
+    onErrorRef: typedDataSignatureStore.onErrorRef,
     status: status ? (status === 'signing' ? 'active' : status) : 'idle',
     error: null,
     list: [],

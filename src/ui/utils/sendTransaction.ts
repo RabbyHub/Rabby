@@ -45,11 +45,8 @@ import {
   TxWithTempoExtras,
   toTempoCallsTx,
 } from '@/utils/tempo';
-import type {
-  HardwareOperationRef,
-  SigningRequestContext,
-} from '@/utils/signingTypes';
-import { emitHardwareOperationRejected } from '@/utils/signEvent';
+import type { DirectSigningId } from '@/utils/signingTypes';
+import { getSignEventErrorMessage } from '@/utils/signEvent';
 
 // fail code
 export enum FailedCode {
@@ -136,8 +133,7 @@ export const sendTransaction = async ({
   extra,
   session,
   account: _account,
-  hardwareOperation,
-  signing,
+  directSigning,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -162,8 +158,7 @@ export const sendTransaction = async ({
   };
   session?: Parameters<typeof wallet.ethSendTransaction>[0]['session'];
   account?: Account;
-  hardwareOperation?: HardwareOperationRef;
-  signing?: SigningRequestContext;
+  directSigning?: DirectSigningId;
 }) => {
   const shouldUseTempoCallsForGasAccount = (gasAccountEnabled?: boolean) =>
     !!gasAccountEnabled &&
@@ -672,16 +667,13 @@ export const sendTransaction = async ({
       pushed: false,
       result: undefined,
       account: account!,
-      signing,
+      directSigning,
     });
     await handleSendAfter();
   } catch (e) {
     await handleSendAfter();
-    const err = new Error(e.message);
+    const err = new Error(getSignEventErrorMessage(e));
     err.name = FailedCode.SubmitTxFailed;
-    if (hardwareOperation) {
-      emitHardwareOperationRejected(hardwareOperation, e);
-    }
     throw err;
   }
 
@@ -741,8 +733,7 @@ export const sendTransactionByMiniSignV2 = async ({
   session,
   account: _account,
   preExecResult,
-  hardwareOperation,
-  signing,
+  directSigning,
 }: {
   tx: Tx;
   chainServerId: string;
@@ -759,8 +750,7 @@ export const sendTransactionByMiniSignV2 = async ({
   preExecResult?: ExplainTxResponse;
   parsedData?: ParsedTransactionActionData;
   requiredData?: ActionRequireData;
-  hardwareOperation?: HardwareOperationRef;
-  signing?: SigningRequestContext;
+  directSigning?: DirectSigningId;
 }) => {
   const buildTempoTx = (
     rawTx: Tx & Record<string, unknown>,
@@ -1047,16 +1037,13 @@ export const sendTransactionByMiniSignV2 = async ({
       pushed: false,
       result: undefined,
       account: account,
-      signing,
+      directSigning,
     });
     await handleSendAfter();
   } catch (e) {
     await handleSendAfter();
-    const err = new Error(e.message);
+    const err = new Error(getSignEventErrorMessage(e));
     err.name = FailedCode.SubmitTxFailed;
-    if (hardwareOperation) {
-      emitHardwareOperationRejected(hardwareOperation, e);
-    }
     throw err;
   }
 

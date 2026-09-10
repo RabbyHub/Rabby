@@ -1,6 +1,6 @@
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
-import type { HardwareOperationRef, SigningAttemptRef } from './signingTypes';
+import type { SigningAttemptRef } from './signingTypes';
 
 export const getSignEventErrorMessage = (data: unknown) =>
   typeof data === 'string'
@@ -11,16 +11,6 @@ export const notifySigningUiReady = (attempt: SigningAttemptRef) => {
   eventBus.emit(EVENTS.broadcastToBackground, {
     method: EVENTS.SIGN_WAITING_AMOUNTED,
     data: attempt,
-  });
-};
-
-export const emitHardwareOperationRejected = (
-  operation: HardwareOperationRef,
-  error: unknown
-) => {
-  eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, {
-    operation,
-    errorMsg: getSignEventErrorMessage(error),
   });
 };
 
@@ -36,13 +26,9 @@ export const emitSigningAttemptFinished = (event: {
     !event.success &&
     (event.error as any)?.method === EVENTS.COMMON_HARDWARE.REJECTED
   ) {
-    const operation = {
-      kind: 'signing-attempt' as const,
-      attempt: event.attempt,
-    };
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.COMMON_HARDWARE.REJECTED,
-      params: { operation, errorMsg },
+      params: { attempt: event.attempt, errorMsg },
     });
   }
 

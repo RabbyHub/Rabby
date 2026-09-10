@@ -104,21 +104,18 @@ describe('SigningFlowService', () => {
     expect(runner).toHaveBeenCalledTimes(1);
   });
 
-  it('runs an attempt that was started before its direct runner is registered', async () => {
+  it('runs an attempt begun before its runner is registered', async () => {
     const service = new SigningFlowService();
-    const context = service.startAttempt({
-      account: { address: '0xaccount', type: 'privateKey', brandName: 'Rabby' },
+    const flow = service.createFlow({
       origin: 'https://a.test',
       rpcRequestId: 'a',
-    })!;
-    const owner = service.run(
-      context.flow,
-      context.attempt,
-      async () => '0xresult'
-    );
-
-    await expect(owner).resolves.toBe('0xresult');
-    expect(service.getFlow(context.flow)).toBeUndefined();
+    });
+    const attempt = service.createAttempt(flow, { awaitUi: false })!;
+    service.beginAttempt(attempt);
+    await expect(
+      service.run(flow, attempt, async () => '0xresult')
+    ).resolves.toBe('0xresult');
+    expect(service.getFlow(flow)).toBeUndefined();
   });
 
   it('does not leave the owner pending when a running attempt is superseded', async () => {
@@ -242,7 +239,7 @@ describe('SigningFlowService', () => {
     );
   });
 
-  it('keeps cleanup when a completion listener throws', () => {
+  it('keeps cleanup when a completion listener throws', async () => {
     const service = new SigningFlowService();
     const ref = service.createFlow({
       flowId: 'flow-a',
@@ -258,22 +255,9 @@ describe('SigningFlowService', () => {
     eventBus.addEventListener(EVENTS.broadcastToUI, listener);
 
     try {
-      expect(
-        service.finishAttemptWithEvent(
-          {
-            flow: ref,
-            attempt,
-            account: {
-              address: '0xaccount',
-              type: 'privateKey',
-              brandName: 'Rabby',
-            },
-            origin: 'https://a.test',
-            rpcRequestId: 'a',
-          },
-          { success: true, data: 'signed' }
-        )
-      ).toEqual({ accepted: true, status: 'succeeded' });
+      await expect(
+        service.run(ref, attempt, async () => 'signed')
+      ).resolves.toBe('signed');
       expect(service.getFlow(ref)).toBeUndefined();
     } finally {
       eventBus.removeEventListener(EVENTS.broadcastToUI, listener);

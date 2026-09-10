@@ -67,6 +67,7 @@ jest.mock('@sentry/browser', () => ({
   captureException: (...args: unknown[]) => mockCaptureException(...args),
 }));
 
+import { directSigning } from '@/background/service/directSigning';
 import notificationService, {
   Approval,
 } from '@/background/service/notification';
@@ -448,10 +449,10 @@ describe('notificationService SignTx queueing', () => {
   });
 
   test('does not cancel an unrelated direct signing flow on activation failure', async () => {
-    const direct = signingFlowService.startAttempt({
-      account: { address: '0xaccount', type: 'privateKey', brandName: 'Rabby' },
-      origin: 'internal',
-    });
+    const direct = directSigning.start(
+      { address: '0xaccount', type: 'privateKey', brandName: 'Rabby' },
+      'internal'
+    );
     expect(direct).toBeTruthy();
 
     const approval = {
@@ -466,7 +467,7 @@ describe('notificationService SignTx queueing', () => {
     await notificationService.activeFirstApproval();
 
     expect(approval.reject).toHaveBeenCalled();
-    expect(signingFlowService.isCurrentAttempt(direct!.attempt)).toBe(true);
+    expect(directSigning.end(direct)).toBe(true);
   });
 
   test('only removes approval signing records on scoped activation failure', async () => {
@@ -541,16 +542,15 @@ describe('notificationService SignTx queueing', () => {
         'https://chain-switcher.test',
         'https://signer.test',
         'rabby',
-      ].map(
-        (origin) =>
-          signingFlowService.startAttempt({
-            origin,
-            account: {
-              address: '0xaccount',
-              type: 'Private Key',
-              brandName: 'Private Key',
-            },
-          })!
+      ].map((origin) =>
+        directSigning.start(
+          {
+            address: '0xaccount',
+            type: 'Private Key',
+            brandName: 'Private Key',
+          },
+          origin
+        )
       );
       notificationService.approvals = approvals as any;
       notificationService.currentApproval = approvals[
@@ -568,11 +568,11 @@ describe('notificationService SignTx queueing', () => {
       expect(approvals[0].reject).toHaveBeenCalledWith(
         expect.objectContaining({ code: 4001 })
       );
-      expect(
-        direct.map(({ attempt }) =>
-          signingFlowService.isCurrentAttempt(attempt)
-        )
-      ).toEqual([false, true, true]);
+      expect(direct.map((id) => directSigning.end(id))).toEqual([
+        false,
+        true,
+        true,
+      ]);
       expect(transactionHistoryService.removeSigningTx).toHaveBeenCalledWith(
         changedOrigin
       );
@@ -589,19 +589,17 @@ describe('notificationService SignTx queueing', () => {
   );
 
   test('origin invalidation also cancels a signer after its approval has resolved', () => {
-    const context = signingFlowService.startAttempt({
+    const flow = signingFlowService.createFlow({
       origin: 'https://dapp.test',
-      account: {
-        address: '0xaccount',
-        type: 'Private Key',
-        brandName: 'Private Key',
-      },
-    })!;
+      rpcRequestId: 'resolved-approval',
+    });
+    const attempt = signingFlowService.createAttempt(flow, { awaitUi: false })!;
+    signingFlowService.beginAttempt(attempt);
     expect(notificationService.approvals).toEqual([]);
 
-    notificationService.invalidateApprovalSession(context.origin);
+    notificationService.invalidateApprovalSession('https://dapp.test');
 
-    expect(signingFlowService.isCurrentAttempt(context.attempt)).toBe(false);
+    expect(signingFlowService.isCurrentAttempt(attempt)).toBe(false);
   });
 
   test('unlocks when the notification window is not created', async () => {

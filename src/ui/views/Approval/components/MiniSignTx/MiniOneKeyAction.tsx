@@ -23,8 +23,6 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { OneKey } from '@/ui/views/CommonPopup/OneKey';
 import { ProcessActions } from '../FooterBar/ProcessActions';
-import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
-import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -89,17 +87,12 @@ export const MiniOneKeyAction: React.FC<Props> = ({
       task.stop();
     }
   });
-  const attemptRef = React.useMemo(
-    () => ({
-      get current(): SigningAttemptRef | undefined {
-        return task.signingAttempt;
-      },
-    }),
-    [task]
-  );
-  useSigningAttemptEvents(attemptRef, {
-    onHardwareError: handleHardwareError,
-  });
+  React.useEffect(() => {
+    task.onErrorRef.current = handleHardwareError;
+    return () => {
+      task.onErrorRef.current = undefined;
+    };
+  }, [task.onErrorRef, handleHardwareError]);
 
   const handleSubmit = useMemoizedFn(() => {
     onSubmit();

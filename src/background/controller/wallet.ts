@@ -1,3 +1,4 @@
+import { directSigning } from '@/background/service/directSigning';
 import {
   stripHexPrefix,
   isValidPrivate,
@@ -212,7 +213,7 @@ import type {
   ApprovalSigningContext,
   InternalSignRequestId,
   SigningAttemptRef,
-  SigningRequestContext,
+  DirectSigningId,
 } from '@/utils/signingTypes';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
@@ -474,19 +475,6 @@ const assertApprovalActionCurrent = (context?: ApprovalSigningContext) => {
   }
 };
 
-const assertSigningContextCurrent = (
-  context?: SigningRequestContext,
-  from?: string
-) => {
-  if (!context) return;
-  if (
-    !signingFlowService.isActiveContext(context) ||
-    (from && context.account.address !== from.toLowerCase())
-  ) {
-    throw ethErrors.provider.userRejectedRequest();
-  }
-};
-
 const gnosisPQueue = new PQueue({
   interval: 1000,
   intervalCap: 10,
@@ -628,35 +616,20 @@ export class WalletController extends BaseController {
     });
   };
 
-  startDirectSigning = async (input?: {
-    account?: Account;
-    origin?: string;
-  }) => {
-    const account = input?.account
-      ? toAccountRef(input.account)
-      : toAccountRef(preferenceService.getCurrentAccount());
-    if (!account) {
+  startDirectSigning = (input?: { account?: Account; origin?: string }) => {
+    const account = toAccountRef(
+      input?.account || preferenceService.getCurrentAccount()
+    );
+    if (!account || !keyringService.isUnlocked()) {
       throw ethErrors.provider.userRejectedRequest();
     }
-    const context = signingFlowService.startAttempt({
+    return directSigning.start(
       account,
-      origin: input?.origin || INTERNAL_REQUEST_SESSION.origin,
-    });
-    if (!context) throw ethErrors.provider.userRejectedRequest();
-    return context;
+      input?.origin || INTERNAL_REQUEST_SESSION.origin
+    );
   };
 
-  finishDirectSigning = (
-    context: SigningRequestContext,
-    outcome: {
-      success: boolean;
-      data?: unknown;
-      error?: unknown;
-    }
-  ) => signingFlowService.finishAttemptWithEvent(context, outcome);
-
-  cancelDirectSigning = (context: SigningRequestContext) =>
-    notificationService.invalidateSigningFlow(context.flow.flowId);
+  endDirectSigning = (id: DirectSigningId) => directSigning.end(id);
 
   resendSign = ({
     retry = false,
@@ -5213,29 +5186,28 @@ export class WalletController extends BaseController {
     from: string,
     data: Record<string, any>,
     options?: any,
-    context?: ApprovalSigningContext | SigningRequestContext
+    context?: ApprovalSigningContext | DirectSigningId
   ) => {
-    if (context && 'approval' in context) {
-      assertApprovalActionCurrent(context);
-    } else {
-      assertSigningContextCurrent(context, from);
-    }
+    const assertCurrent = () => {
+      if (typeof context === 'string') {
+        directSigning.assertCurrent(context, {
+          address: from,
+          type,
+          brandName: options?.brandName,
+        });
+      } else {
+        assertApprovalActionCurrent(context);
+      }
+    };
+    assertCurrent();
     const keyring = await keyringService.getKeyringForAccount(from, type);
-    if (context && 'approval' in context) {
-      assertApprovalActionCurrent(context);
-    } else {
-      assertSigningContextCurrent(context, from);
-    }
+    assertCurrent();
     const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
       options
     );
-    if (context && 'approval' in context) {
-      assertApprovalActionCurrent(context);
-    } else {
-      assertSigningContextCurrent(context, from);
-    }
+    assertCurrent();
     return res;
   };
 

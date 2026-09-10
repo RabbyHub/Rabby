@@ -128,35 +128,6 @@ export class SigningFlowService {
     return ref;
   }
 
-  startAttempt(input: {
-    account: AccountRef;
-    origin: string;
-    rpcRequestId?: string;
-    parentFlow?: SigningFlowRef;
-  }): SigningRequestContext | undefined {
-    const flow = this.createFlow({
-      account: input.account,
-      origin: input.origin,
-      rpcRequestId: input.rpcRequestId || uuidv4(),
-      parentFlow: input.parentFlow,
-    });
-    const attempt = this.createAttempt(flow, { awaitUi: false });
-    if (!attempt || !this.beginAttempt(attempt)) {
-      this.cancelFlow(flow);
-      return;
-    }
-    const flowRecord = this.getFlow(flow);
-    if (!flowRecord) return;
-    return {
-      flow,
-      attempt,
-      account: input.account,
-      origin: flowRecord.origin,
-      rpcRequestId: flowRecord.rpcRequestId,
-      ...(input.parentFlow ? { parentFlow: input.parentFlow } : {}),
-    };
-  }
-
   createChildAttempt(input: {
     parent: SigningRequestContext;
     account: AccountRef;
@@ -204,31 +175,6 @@ export class SigningFlowService {
     return (
       this.isCurrentContext(context) && this.isActiveAttempt(context.attempt)
     );
-  }
-
-  finishAttemptWithEvent(
-    context: SigningRequestContext,
-    outcome: {
-      success: boolean;
-      data?: unknown;
-      error?: unknown;
-      retryable?: boolean;
-    }
-  ) {
-    if (!this.isActiveContext(context)) {
-      this.report('late-context-finish-discarded', context.attempt);
-      return { accepted: false as const };
-    }
-    const finished = this.finishAttempt(context.attempt, outcome);
-    if (!finished.accepted) return finished;
-    this.notifyFinished({
-      attempt: context.attempt,
-      success: outcome.success,
-      ...(outcome.success ? { data: outcome.data } : { error: outcome.error }),
-    });
-    const flow = this.getFlow(context.flow);
-    if (flow) this.maybeCleanup(flow);
-    return finished;
   }
 
   getFlow(flow: SigningFlowRef | string) {

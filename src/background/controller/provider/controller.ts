@@ -1,3 +1,4 @@
+import { directSigning } from '@/background/service/directSigning';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { AuthorizationListItem, Common, Hardfork } from '@ethereumjs/common';
 import { FeeMarketEIP1559TxData, TransactionFactory } from '@ethereumjs/tx';
@@ -98,6 +99,13 @@ import {
 import { sameAccountRef, toAccountRef } from '@/utils/signingTypes';
 
 const assertSigningAttemptValid = (request: ProviderRequest) => {
+  if (request.directSigning !== undefined) {
+    directSigning.assertCurrent(
+      request.directSigning,
+      request.account,
+      request.session?.origin || request.origin
+    );
+  }
   const context = request.signing;
   if (!context) return;
   const attempt = context.attempt;
@@ -694,6 +702,7 @@ class ProviderController extends BaseController {
     account: Account;
     approval?: ProviderRequest['approval'];
     signing?: ProviderRequest['signing'];
+    directSigning?: ProviderRequest['directSigning'];
   }) => {
     const rechargeGasAccountOnTx = (txHash = '') => {
       if (

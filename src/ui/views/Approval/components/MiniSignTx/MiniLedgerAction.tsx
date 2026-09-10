@@ -19,7 +19,6 @@ import {
   isLedgerDisconnectedError,
   isLedgerLockError,
 } from '@/ui/utils/ledger';
-import { emitHardwareOperationRejected } from '@/utils/signEvent';
 import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { Ledger } from '../../../CommonPopup/Ledger';
@@ -30,8 +29,6 @@ import {
   useDirectSigning,
   useSetDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
-import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -105,17 +102,12 @@ export const MiniLedgerAction: React.FC<Props> = ({
       task.stop();
     }
   });
-  const attemptRef = React.useMemo(
-    () => ({
-      get current(): SigningAttemptRef | undefined {
-        return task.signingAttempt;
-      },
-    }),
-    [task]
-  );
-  useSigningAttemptEvents(attemptRef, {
-    onHardwareError: handleHardwareError,
-  });
+  React.useEffect(() => {
+    task.onErrorRef.current = handleHardwareError;
+    return () => {
+      task.onErrorRef.current = undefined;
+    };
+  }, [task.onErrorRef, handleHardwareError]);
 
   const handleSubmit = useMemoizedFn(() => {
     setLedgerErrorMessage('');
@@ -151,17 +143,11 @@ export const MiniLedgerAction: React.FC<Props> = ({
   useDebounce(
     () => {
       if (task.status === 'active' && status === 'DISCONNECTED') {
-        const attempt = task.signingAttempt;
-        if (attempt) {
-          emitHardwareOperationRejected(
-            { kind: 'signing-attempt', attempt },
-            'DISCONNECTED'
-          );
-        }
+        handleHardwareError('DISCONNECTED');
       }
     },
     300,
-    [task.status, status]
+    [task.status, status, handleHardwareError]
   );
   const { t } = useTranslation();
   const ledgerDisconnected =

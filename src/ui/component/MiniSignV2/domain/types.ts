@@ -11,10 +11,7 @@ import type {
 } from '@rabby-wallet/rabby-action';
 import type { Account } from '@/background/service/preference';
 import type { GasTokenInfo } from '@/utils/transaction';
-import type {
-  HardwareOperationRef,
-  SigningRequestContext,
-} from '@/utils/signingTypes';
+import type { DirectSigningId } from '@/utils/signingTypes';
 
 export type CalcItem = {
   tx: Tx;
@@ -110,8 +107,7 @@ export type SendOptions = {
   isGasAccount?: boolean;
   ignoreChecks?: boolean;
   pushType?: 'default' | 'mev';
-  hardwareOperation?: HardwareOperationRef;
-  signing?: SigningRequestContext;
+  directSigning?: DirectSigningId;
   retryScope: string;
   retryTxs: Tx[];
 };

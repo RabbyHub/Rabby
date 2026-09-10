@@ -5,11 +5,8 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 import { Account } from '@/background/service/preference';
 import { underline2Camelcase } from '@/background/utils';
-import type {
-  HardwareOperationRef,
-  SigningRequestContext,
-} from '@/utils/signingTypes';
-import { emitHardwareOperationRejected } from '@/utils/signEvent';
+import type { DirectSigningId } from '@/utils/signingTypes';
+import { getSignEventErrorMessage } from '@/utils/signEvent';
 
 // fail code
 export enum FailedCode {
@@ -75,8 +72,7 @@ export const sendSignTypedData = async ({
   onProgress,
   // ga,
   account: _account,
-  hardwareOperation,
-  signing,
+  directSigning,
 }: {
   from: string;
   data: Record<string, any>;
@@ -85,8 +81,7 @@ export const sendSignTypedData = async ({
   onProgress?: (status: ProgressStatus, hash?: string) => void;
   ga?: Record<string, any>;
   account?: Account;
-  hardwareOperation?: HardwareOperationRef;
-  signing?: SigningRequestContext;
+  directSigning?: DirectSigningId;
 }) => {
   const account = _account || (await wallet.getCurrentAccount());
   if (!account) {
@@ -129,7 +124,7 @@ export const sendSignTypedData = async ({
         signTextMethod: method,
         version: version,
       },
-      signing
+      directSigning
     );
 
     await wallet.signTextCreateHistory({
@@ -143,11 +138,8 @@ export const sendSignTypedData = async ({
   } catch (e) {
     console.error(e);
     await handleSendAfter();
-    const err = new Error(e.message);
+    const err = new Error(getSignEventErrorMessage(e));
     err.name = FailedCode.SubmitTxFailed;
-    if (hardwareOperation) {
-      emitHardwareOperationRejected(hardwareOperation, e);
-    }
     throw err;
   }
 

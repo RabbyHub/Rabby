@@ -69,6 +69,7 @@ jest.mock('@sentry/browser', () => ({
 }));
 
 import rpcFlow from '@/background/controller/provider/rpcFlow';
+import { directSigning } from '@/background/service/directSigning';
 import notificationService from '@/background/service/notification';
 import preferenceService from '@/background/service/preference';
 import { signingFlowService } from '@/background/service/signingFlow';
@@ -116,6 +117,8 @@ it.each([
     const approve = jest
       .spyOn(notificationService, 'requestApproval')
       .mockResolvedValue({ defaultAccount: next, defaultChain: 'ETH' });
+    const directId = directSigning.start(account, 'rabby');
+
     // Background bootstrap routes actual account changes to session invalidation.
     const onAccountChange = () =>
       notificationService.invalidateApprovalSession();
@@ -149,6 +152,7 @@ it.each([
         expect.objectContaining({ approvalComponent: 'Connect' }),
         expect.anything()
       );
+      expect(directSigning.end(directId)).toBe(!cancelled);
       if (cancelled) {
         await expect(outcome).resolves.toMatchObject({ error: { code: 4001 } });
         expect(signingFlowService.getFlow(flow)).toBeUndefined();

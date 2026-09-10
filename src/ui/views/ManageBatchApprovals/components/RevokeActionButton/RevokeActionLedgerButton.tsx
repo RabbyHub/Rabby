@@ -4,19 +4,15 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { CommonAccount } from '@/ui/views/Approval/components/FooterBar/CommonAccount';
-import { EVENTS, WALLET_BRAND_CONTENT } from '@/constant';
+import { WALLET_BRAND_CONTENT } from '@/constant';
 import { ReactComponent as LedgerPressSVG } from '@/ui/assets/ledger/press.svg';
 import { Dots } from '@/ui/views/Approval/components/Popup/Dots';
-import eventBus from '@/eventBus';
 import {
   isLedgerConnectionRecoverableError,
   isLedgerDisconnectedError,
   isLedgerLockError,
 } from '@/ui/utils/ledger';
-import {
-  emitHardwareOperationRejected,
-  getSignEventErrorMessage,
-} from '@/utils/signEvent';
+import { getSignEventErrorMessage } from '@/utils/signEvent';
 import { Ledger } from '@/ui/views/CommonPopup/Ledger';
 import { Modal, Popup } from '@/ui/component';
 import { BatchRevokeTaskType } from '../../hooks/useBatchRevokeTask';
@@ -56,17 +52,8 @@ export const RevokeActionLedgerButton: React.FC<{
   ] = React.useState(false);
 
   React.useEffect(() => {
-    const listener = (msg) => {
-      const operation = msg?.operation;
-      const expected = task.hardwareOperationRef.current;
-      if (
-        operation?.kind !== 'standalone' ||
-        expected?.kind !== 'standalone' ||
-        operation.operationId !== expected.operationId
-      ) {
-        return;
-      }
-      const message = getSignEventErrorMessage(msg);
+    task.onErrorRef.current = (error) => {
+      const message = getSignEventErrorMessage(error);
       if (
         isLedgerLockError(message) ||
         isLedgerConnectionRecoverableError(message)
@@ -80,19 +67,15 @@ export const RevokeActionLedgerButton: React.FC<{
       }
     };
 
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-
     return () => {
-      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
+      task.onErrorRef.current = undefined;
     };
   }, [task.addRevokeTask]);
 
   React.useEffect(() => {
     if (task.status === 'active' && status === 'DISCONNECTED') {
-      const operation = task.hardwareOperationRef.current;
-      if (operation) {
-        emitHardwareOperationRejected(operation, 'DISCONNECTED');
-      }
+      setVisibleLedgerConnectModal(true);
+      task.pause();
     }
   }, [task.status, status]);
 

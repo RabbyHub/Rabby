@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-
 export type Branded<T, Brand extends string> = T & {
   readonly __brand: Brand;
 };
@@ -7,8 +5,8 @@ export type Branded<T, Brand extends string> = T & {
 export type ApprovalId = Branded<string, 'ApprovalId'>;
 export type SigningFlowId = Branded<string, 'SigningFlowId'>;
 export type SigningAttemptId = Branded<string, 'SigningAttemptId'>;
+export type DirectSigningId = Branded<string, 'DirectSigningId'>;
 export type InternalSignRequestId = Branded<string, 'InternalSignRequestId'>;
-export type HardwareOperationId = Branded<string, 'HardwareOperationId'>;
 
 export type ApprovalRef<Component extends string = string> = Readonly<{
   approvalId: ApprovalId;
@@ -47,16 +45,6 @@ export type ApprovalSigningContext = Readonly<{
   }>;
 }>;
 
-export type HardwareOperationRef =
-  | Readonly<{
-      kind: 'signing-attempt';
-      attempt: SigningAttemptRef;
-    }>
-  | Readonly<{
-      kind: 'standalone';
-      operationId: HardwareOperationId;
-    }>;
-
 export type SigningAttemptFinishedEvent = Readonly<{
   attempt: SigningAttemptRef;
   success: boolean;
@@ -71,14 +59,6 @@ export const asSigningAttemptId = (value: string): SigningAttemptId =>
   value as SigningAttemptId;
 export const asInternalSignRequestId = (value: string): InternalSignRequestId =>
   value as InternalSignRequestId;
-export const asHardwareOperationId = (value: string): HardwareOperationId =>
-  value as HardwareOperationId;
-
-export const createStandaloneHardwareOperation = (): HardwareOperationRef => ({
-  kind: 'standalone',
-  operationId: asHardwareOperationId(uuidv4()),
-});
-
 export const toApprovalRef = <Component extends string>(
   approvalId: string,
   component: Component

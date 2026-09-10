@@ -1,3 +1,4 @@
+import { directSigning } from './directSigning';
 import browser, { Windows } from 'webextension-polyfill';
 import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
@@ -488,6 +489,7 @@ class NotificationService extends Events {
   };
 
   invalidateAllSigningFlows = () => {
+    directSigning.cancelAll();
     this.rejectInternalSignWaiters();
     signingFlowService.cancelAll();
   };
@@ -918,6 +920,7 @@ class NotificationService extends Events {
 
   invalidateApprovalSession = (origin?: string) => {
     if (origin !== undefined) {
+      directSigning.cancelAll(origin);
       signingFlowService.getFlowsForOrigin(origin).forEach((flow) => {
         this.invalidateSigningFlow(flow.flowId);
       });

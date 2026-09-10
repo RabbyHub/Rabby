@@ -89,3 +89,37 @@ describe('scoped signing readiness events', () => {
     });
   });
 });
+
+test('approval hardware errors retain attempt identity across the UI broadcast', () => {
+  const attempt = toSigningAttemptRef('approval-flow', 'retry');
+  const recover = jest.fn();
+  const Consumer = () => {
+    const ref = React.useRef(attempt);
+    useSigningAttemptEvents(ref, { onHardwareError: recover });
+    return null;
+  };
+  const broadcast = ({ method, params }) => eventBus.emit(method, params);
+  eventBus.addEventListener(EVENTS.broadcastToUI, broadcast);
+  const root = createRoot(document.createElement('div'));
+  act(() => root.render(React.createElement(Consumer)));
+  try {
+    const failure = (eventAttempt) =>
+      emitSigningAttemptFinished({
+        attempt: eventAttempt,
+        success: false,
+        error: Object.assign(new Error('0x5515'), {
+          method: EVENTS.COMMON_HARDWARE.REJECTED,
+        }),
+      });
+    eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, { errorMsg: '0x5515' });
+    failure(toSigningAttemptRef('approval-flow', 'old'));
+    failure(toSigningAttemptRef('other-flow', 'retry'));
+    expect(recover).not.toHaveBeenCalled();
+    failure(attempt);
+    expect(recover).toHaveBeenCalledTimes(1);
+    expect(recover).toHaveBeenCalledWith('0x5515', attempt);
+  } finally {
+    act(() => root.unmount());
+    eventBus.removeEventListener(EVENTS.broadcastToUI, broadcast);
+  }
+});
