@@ -27,7 +27,7 @@ import eventBus from '@/eventBus';
 import { bridgeQuoteScore } from '../utils/bridgeQuote';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
-import { getRabbyFeeRate } from '@/ui/views/Swap/hooks/fee';
+import { getRabbyFeeInfo } from '@/ui/views/Swap/hooks/fee';
 
 export const enableInsufficientQuote = true;
 
@@ -359,12 +359,12 @@ export const useBridge = () => {
   const aggregatorsList = useRabbySelector(
     (s) => s.bridge.aggregatorsList || []
   );
-  const feeRate = useMemo(
+  const { feeRate, feeTier } = useMemo(
     () =>
-      getRabbyFeeRate({
+      getRabbyFeeInfo({
         payAmount: amount,
         payTokenPrice: fromToken?.price || 0,
-        isFreeTokenPair: false,
+        type: 'bridge',
         isWrapToken: false,
       }),
     [amount, fromToken?.price]
@@ -1018,6 +1018,7 @@ export const useBridge = () => {
     amount,
     handleAmountChange,
     feeRate,
+    feeTier,
     showLoss,
 
     openQuotesList,
