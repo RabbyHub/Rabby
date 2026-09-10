@@ -121,6 +121,7 @@ const WatchAddressWaiting = ({
 
   const init = async () => {
     const approval = await getApproval();
+    if (!approval) return;
     const account = params.isGnosis ? params.account! : $account;
 
     setCurrentAccount(account);

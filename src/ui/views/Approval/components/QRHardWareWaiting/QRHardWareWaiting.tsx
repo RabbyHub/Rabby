@@ -88,6 +88,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
     })?.enum || CHAINS_ENUM.ETH;
   const init = useCallback(async () => {
     const approval = await getApproval();
+    if (!approval) return;
     if (!account) return;
     setBrand(account.brandName);
     const icon = WALLET_BRAND_CONTENT[account.brandName].icon;
@@ -200,6 +201,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   };
   const handleRequestSignature = async () => {
     const approval = await getApproval();
+    if (!approval) return;
     if (account) {
       if (!isSignText) {
         const signingTxId = approval.data.params.signingTxId;

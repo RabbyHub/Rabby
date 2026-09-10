@@ -71,6 +71,7 @@ export const CommonPopup: React.FC = () => {
   const {
     visible,
     setVisible,
+    closePopup,
     title,
     height,
     className,
@@ -103,7 +104,7 @@ export const CommonPopup: React.FC = () => {
       closable={config.closeable}
       maskClosable={config.maskClosable}
       height={height}
-      onClose={() => setVisible(false)}
+      onClose={closePopup}
       visible={visible && !!componentName}
       className={className}
       destroyOnClose={false}

@@ -34,6 +34,8 @@ jest.mock('@/background/service/transactionHistory', () => ({
   default: {
     addSigningTx: jest.fn(() => 'signing-tx-id'),
     getSigningTx: jest.fn(),
+    removeSigningTx: jest.fn(),
+    removeAllSigningTx: jest.fn(),
   },
 }));
 
@@ -152,5 +154,60 @@ describe('notificationService SignTx queueing', () => {
     expect(mockCaptureException).toHaveBeenCalledWith(error, {
       tags: { function: 'openNotification' },
     });
+  });
+});
+
+describe('approval commands bind consent to the rendered approval', () => {
+  beforeEach(() => {
+    notificationService.approvals = [];
+    notificationService.currentApproval = null;
+    notificationService.notifiWindowId = null;
+    notificationService.isLocked = false;
+  });
+
+  test.each([
+    undefined,
+    { approvalId: 'old', component: 'SignTx' },
+    { approvalId: 'current', component: 'Connect' },
+  ])('does not settle a current approval using %p', async (ref) => {
+    const pending = notificationService.requestApproval(signTxRequest());
+    const approval = notificationService.currentApproval!;
+    approval.id = 'current';
+    const settled = jest.fn();
+    pending.then(settled, settled);
+    expect(
+      await notificationService.resolveApprovalFor({
+        approval: ref as any,
+        data: { signed: true },
+      })
+    ).toMatchObject({ accepted: false });
+    expect(
+      await notificationService.rejectApprovalFor({ approval: ref as any })
+    ).toMatchObject({ accepted: false });
+    expect(notificationService.currentApproval).toBe(approval);
+    expect(settled).not.toHaveBeenCalled();
+    await notificationService.rejectApprovalFor({
+      approval: { approvalId: approval.id, component: 'SignTx' },
+    });
+    await pending.catch(() => undefined);
+  });
+
+  test('accepts a matching result once and leaves the next approval pending', async () => {
+    const first = notificationService.requestApproval(signTxRequest());
+    const approval = notificationService.currentApproval!;
+    void notificationService.requestApproval(signTxRequest());
+    const next = notificationService.approvals[1];
+    const command = {
+      approval: { approvalId: approval.id, component: 'SignTx' as const },
+      data: { nonce: '0x1' },
+    };
+    expect(await notificationService.resolveApprovalFor(command)).toEqual({
+      accepted: true,
+    });
+    await expect(first).resolves.toEqual(command.data);
+    expect(
+      await notificationService.resolveApprovalFor(command)
+    ).toMatchObject({ accepted: false });
+    expect(notificationService.currentApproval).toBe(next);
   });
 });

@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
-import { useWallet, useApproval } from 'ui/utils';
-import { IExtractFromPromise } from '@/ui/utils/type';
+import { useWallet } from 'ui/utils';
+import {
+  createApprovalScope,
+  ApprovalScopeContext,
+} from '@/ui/approval/context';
 import { ApprovalUtilsProvider } from './hooks/useApprovalUtils';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import * as ApprovalComponent from './components';
@@ -11,6 +14,7 @@ import './style.less';
 import clsx from 'clsx';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
+import { toApprovalRef } from '@/utils/signingTypes';
 
 const Approval: React.FC<{
   className?: string;
@@ -18,18 +22,16 @@ const Approval: React.FC<{
   const history = useHistory();
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
-  const [getApproval, , rejectApproval] = useApproval();
-  type IApproval = Exclude<
-    IExtractFromPromise<ReturnType<typeof getApproval>>,
-    void
-  >;
-  const [approval, setApproval] = useState<IApproval | null>(null);
+  const [approval, setApproval] = useState<Approval | null>(null);
+  const initGeneration = useRef(0);
   const resetCurrentTx = useSecurityEngineStore(
     (state) => state.resetCurrentTx
   );
 
   const init = async () => {
-    const approval = await getApproval();
+    const generation = ++initGeneration.current;
+    const approval = await wallet.getCurrentApproval();
+    if (generation !== initGeneration.current) return;
     if (!approval) {
       history.replace('/');
       return null;
@@ -40,17 +42,30 @@ const Approval: React.FC<{
     setApproval(approval);
     document.title = 'Rabby Wallet Notification';
     const account = approval.data.account || (await wallet.getCurrentAccount());
+    if (generation !== initGeneration.current) return;
     if (!account) {
-      rejectApproval();
+      const result = await wallet.rejectApprovalFor({
+        approval: toApprovalRef(approval.id, approval.data.approvalComponent),
+      });
+      if (generation !== initGeneration.current) return;
+      if (result.accepted) history.replace('/');
       return;
     }
   };
 
   useEffect(() => {
     init();
+    return () => {
+      ++initGeneration.current;
+    };
   }, []);
 
   useEventBusListener(EVENTS.RELOAD_APPROVAL, init);
+
+  const scope = React.useMemo(
+    () => (approval ? createApprovalScope(approval) : null),
+    [approval]
+  );
 
   if (!approval) return <></>;
   const { data } = approval;
@@ -60,14 +75,16 @@ const Approval: React.FC<{
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <ApprovalUtilsProvider>
-          <CurrentApprovalComponent
-            params={params}
-            origin={origin}
-            account={account}
-            // requestDefer={requestDefer}
-          />
-        </ApprovalUtilsProvider>
+        <ApprovalScopeContext.Provider value={scope}>
+          <ApprovalUtilsProvider>
+            <CurrentApprovalComponent
+              key={approval.id}
+              params={params}
+              origin={origin}
+              account={account}
+            />
+          </ApprovalUtilsProvider>
+        </ApprovalScopeContext.Provider>
       )}
     </div>
   );

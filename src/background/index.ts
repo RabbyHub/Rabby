@@ -51,6 +51,7 @@ import {
   gasAccountService,
   HDKeyRingLastAddAddrTimeService,
   keyringService,
+  notificationService,
   openapiService,
   pageStateCacheService,
   permissionService,
@@ -380,6 +381,7 @@ restoreAppState();
   });
 
   keyringService.on('lock', () => {
+    notificationService.rejectAllApprovals();
     if (interval) {
       clearInterval(interval);
       interval = null;

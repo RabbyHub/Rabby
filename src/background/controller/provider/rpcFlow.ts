@@ -398,6 +398,9 @@ const flowContext = flow
     // process request
     const [approvalType] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
+    if (isSignApproval(approvalType) && !approvalRes) {
+      throw ethErrors.provider.userRejectedRequest();
+    }
     const { uiRequestComponent, ...rest } = approvalRes || {};
     const {
       session: { origin },

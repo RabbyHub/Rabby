@@ -144,6 +144,7 @@ export const PrivatekeyWaiting = ({
     const account = params.isGnosis ? params.account! : $account;
 
     const approval = await getApproval();
+    if (!approval) return;
 
     const isSignText = params.isGnosis
       ? true

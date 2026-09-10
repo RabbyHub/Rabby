@@ -1,5 +1,6 @@
 import browser, { Windows } from 'webextension-polyfill';
 import Events from 'events';
+import { toApprovalRef, ApprovalRef } from '@/utils/signingTypes';
 import { ethErrors } from 'eth-rpc-errors';
 import { v4 as uuidv4 } from 'uuid';
 import * as Sentry from '@sentry/browser';
@@ -38,6 +39,29 @@ export interface Approval {
   resolve?(params?: any): void;
   reject?(err: EthereumProviderError<any>): void;
 }
+
+export type ResolveApprovalCommand = {
+  approval: ApprovalRef<Approval['data']['approvalComponent']>;
+  data?: any;
+  forceReject?: boolean;
+};
+
+export type RejectApprovalCommand = {
+  approval: ApprovalRef<Approval['data']['approvalComponent']>;
+  error?: string;
+  stay?: boolean;
+  isInternal?: boolean;
+};
+
+export type ApprovalActionResult =
+  | { accepted: true }
+  | {
+      accepted: false;
+      reason:
+        | 'NO_CURRENT_APPROVAL'
+        | 'APPROVAL_ID_MISMATCH'
+        | 'APPROVAL_COMPONENT_MISMATCH';
+    };
 
 const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'Unlock',
@@ -144,7 +168,12 @@ class NotificationService extends Events {
             this.currentApproval.data.approvalComponent
           )
         ) {
-          this.rejectApproval();
+          void this.rejectApprovalFor({
+            approval: toApprovalRef(
+              this.currentApproval.id,
+              this.currentApproval.data.approvalComponent
+            ),
+          });
         }
       }
     });
@@ -187,60 +216,69 @@ class NotificationService extends Events {
 
   getApproval = () => this.currentApproval;
 
-  resolveApproval = async (
-    data?: any,
-    forceReject = false,
-    approvalId?: string
-  ) => {
-    if (approvalId && approvalId !== this.currentApproval?.id) return;
-    if (forceReject) {
-      this.currentApproval?.reject &&
-        this.currentApproval?.reject(
-          new EthereumProviderError(4001, 'User Cancel')
-        );
-    } else {
-      this.currentApproval?.resolve && this.currentApproval?.resolve(data);
+  getCurrentApproval = this.getApproval;
+
+  isApprovalCurrent = (approvalId: string) =>
+    !!approvalId && this.currentApproval?.id === approvalId;
+
+  private checkApproval(approval?: ApprovalRef): ApprovalActionResult {
+    const current = this.currentApproval;
+    if (!current) return { accepted: false, reason: 'NO_CURRENT_APPROVAL' };
+    if (!approval?.approvalId || current.id !== approval.approvalId) {
+      return { accepted: false, reason: 'APPROVAL_ID_MISMATCH' };
     }
+    if (current.data.approvalComponent !== approval.component) {
+      return { accepted: false, reason: 'APPROVAL_COMPONENT_MISMATCH' };
+    }
+    return { accepted: true };
+  }
 
-    const approval = this.currentApproval;
-
+  resolveApprovalFor = async ({
+    approval: ref,
+    data,
+    forceReject = false,
+  }: ResolveApprovalCommand): Promise<ApprovalActionResult> => {
+    const checked = this.checkApproval(ref);
+    if (!checked.accepted) return checked;
+    const approval = this.currentApproval!;
     this.clearLastRejectDapp();
     this.deleteApproval(approval);
-
-    if (this.approvals.length > 0) {
-      this.currentApproval = this.approvals[0];
+    this.currentApproval = this.approvals[0] || null;
+    if (forceReject) {
+      approval.reject?.(new EthereumProviderError(4001, 'User Cancel'));
     } else {
-      this.currentApproval = null;
+      approval.resolve?.(data);
     }
-
     this.emit('resolve', data);
+    return { accepted: true };
   };
 
-  rejectApproval = async (err?: string, stay = false, isInternal = false) => {
+  rejectApprovalFor = async ({
+    approval: ref,
+    error,
+    stay = false,
+    isInternal = false,
+  }: RejectApprovalCommand): Promise<ApprovalActionResult> => {
+    const checked = this.checkApproval(ref);
+    if (!checked.accepted) return checked;
+    const approval = this.currentApproval!;
     this.addLastRejectDapp();
-    const approval = this.currentApproval;
-    if (this.approvals.length <= 1) {
-      await this.clear(stay); // TODO: FIXME
+    if (approval.data.params?.data?.[0]?.isCoboSafe) {
+      void preferenceService.resetCurrentCoboSafeAddress();
     }
-
-    if (isInternal) {
-      approval?.reject && approval?.reject(ethErrors.rpc.internal(err));
-    } else {
-      approval?.reject &&
-        approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
-    }
-
-    if (approval?.signingTxId) {
+    this.deleteApproval(approval);
+    this.currentApproval = this.approvals[0] || null;
+    if (approval.signingTxId) {
       transactionHistoryService.removeSigningTx(approval.signingTxId);
     }
-
-    if (approval && this.approvals.length > 1) {
-      this.deleteApproval(approval);
-      this.currentApproval = this.approvals[0];
-    } else {
-      await this.clear(stay);
-    }
-    this.emit('reject', err);
+    approval.reject?.(
+      isInternal
+        ? ethErrors.rpc.internal(error)
+        : ethErrors.provider.userRejectedRequest<any>(error)
+    );
+    if (!this.currentApproval) await this.clear(stay);
+    this.emit('reject', error);
+    return { accepted: true };
   };
 
   requestApproval = async (
@@ -381,12 +419,14 @@ class NotificationService extends Events {
     this.approvals = [];
     this.currentApproval = null;
     if (this.notifiWindowId !== null && !stay) {
+      const windowId = this.notifiWindowId;
+      this.notifiWindowId = null;
+      this.unLock();
       try {
-        await winMgr.remove(this.notifiWindowId);
+        await winMgr.remove(windowId);
       } catch (e) {
         // ignore error
       }
-      this.notifiWindowId = null;
     }
   };
 
