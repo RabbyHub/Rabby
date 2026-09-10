@@ -132,6 +132,7 @@ const TokenSelector = ({
   showLpTokenSwitch,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
+  const tokenListRef = React.useRef<HTMLUListElement>(null);
   const [query, setQuery] = useState('');
   const [isInputActive, setIsInputActive] = useState(false);
   const history = useHistory();
@@ -170,6 +171,12 @@ const TokenSelector = ({
   };
 
   const { selectedTab, onTabChange } = useSwitchNetTab();
+
+  useEffect(() => {
+    if (visible) {
+      tokenListRef.current?.scrollTo({ top: 0 });
+    }
+  }, [visible, chainServerId, lpTokenMode, selectedTab]);
 
   const {
     testnetTokenList: customTestnetTokenList,
@@ -571,33 +578,21 @@ const TokenSelector = ({
           </div>
         )}
 
-        {selectedTab === 'mainnet' ? (
-          <ul className={clsx('token-list', { empty: isEmpty })}>
-            {isEmpty
-              ? NoDataUI
-              : displayList.map((token) => {
-                  return commonItemRender(
-                    token,
-                    type,
-                    undefined,
-                    disableItemCheck
-                  );
-                })}
-          </ul>
-        ) : (
-          <ul className={clsx('token-list', { empty: isEmpty })}>
-            {isEmpty
-              ? NoDataUI
-              : displayList.map((token) => {
-                  return commonItemRender(
-                    token,
-                    type,
-                    undefined,
-                    disableItemCheck
-                  );
-                })}
-          </ul>
-        )}
+        <ul
+          ref={tokenListRef}
+          className={clsx('token-list', { empty: isEmpty })}
+        >
+          {isEmpty
+            ? NoDataUI
+            : displayList.map((token) => {
+                return commonItemRender(
+                  token,
+                  type,
+                  undefined,
+                  disableItemCheck
+                );
+              })}
+        </ul>
       </Drawer>
       <TokenDetailPopup
         variant="add"
