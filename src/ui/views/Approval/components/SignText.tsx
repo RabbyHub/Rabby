@@ -25,13 +25,7 @@ import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsync, useScroll, useThrottleFn } from 'react-use';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import {
-  getTimeSpan,
-  hex2Text,
-  useApproval,
-  useCommonPopupView,
-  useWallet,
-} from 'ui/utils';
+import { getTimeSpan, hex2Text, useCommonPopupView, useWallet } from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { FooterBar } from './FooterBar/FooterBar';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
@@ -55,6 +49,8 @@ import { useSignStore } from '@/ui/state/sign';
 import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { tokenizeSignMessageText } from './signMessageHighlighter';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
+import { useApprovalScope } from '@/ui/approval/context';
+import { useApprovalActions } from '@/ui/approval/actions';
 
 interface SignTextProps {
   data: string[];
@@ -79,7 +75,20 @@ const SignText = ({
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const approval = useApprovalScope();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+  } = useApprovalActions();
+  const signingContext = approval.signing?.attempt
+    ? {
+        approval: approval.approval,
+        signing: {
+          flow: approval.signing.flow,
+          attempt: approval.signing.attempt,
+        },
+      }
+    : undefined;
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
@@ -242,6 +251,7 @@ const SignText = ({
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = async () => {
+    if (!(await wallet.isApprovalCurrent(approval.approval.approvalId))) return;
     if (activeApprovalPopup()) {
       return;
     }
@@ -253,27 +263,32 @@ const SignText = ({
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
+      if (!(await wallet.isApprovalCurrent(approval.approval.approvalId)))
+        return;
     }
 
     if (
       currentAccount?.type &&
       WaitingSignMessageComponent[currentAccount?.type]
     ) {
-      resolveApproval({
-        uiRequestComponent: WaitingSignMessageComponent[currentAccount?.type],
-        $account: currentAccount,
-        type: currentAccount.type,
-        address: currentAccount.address,
-        extra: {
-          brandName: currentAccount.brandName,
-          signTextMethod: 'personalSign',
+      resolveApproval(
+        {
+          uiRequestComponent: WaitingSignMessageComponent[currentAccount?.type],
+          $account: currentAccount,
+          type: currentAccount.type,
+          address: currentAccount.address,
+          extra: {
+            brandName: currentAccount.brandName,
+            signTextMethod: 'personalSign',
+          },
         },
-      });
+        { attempt: approval.signing?.attempt }
+      );
 
       return;
     }
     report('startSignText');
-    resolveApproval({});
+    resolveApproval({}, { attempt: approval.signing?.attempt });
   };
 
   const withOriginFallback = (ctx: ContextActionData): ContextActionData =>
@@ -380,7 +395,9 @@ const SignText = ({
                     block
                     onClick={() => {
                       modal.destroy();
-                      resolveApproval(res.safeMessage.preparedSignature);
+                      resolveApproval(res.safeMessage.preparedSignature, {
+                        attempt: approval.signing?.attempt,
+                      });
                     }}
                     className="text-[15px] h-[40px] rounded-[6px]"
                   >
@@ -407,7 +424,9 @@ const SignText = ({
       currentAccount?.type &&
       REJECT_SIGN_TEXT_KEYRINGS.includes(currentAccount.type as any)
     ) {
-      rejectApproval('This address can not sign text message', false, true);
+      rejectApproval('This address can not sign text message', {
+        isInternal: true,
+      });
     }
     actionType.current = textActionData?.action?.type || '';
     const parsed = parseAction({
@@ -524,26 +543,33 @@ const SignText = ({
     if (!safeInfo || !account) {
       return;
     }
+    if (!signingContext) return;
     if (activeApprovalPopup()) {
       return;
     }
 
     if (!isViewGnosisSafe) {
+      if (!(await wallet.isApprovalCurrent(approval.approval.approvalId)))
+        return;
       await wallet.buildGnosisMessage({
         safeAddress: safeInfo.address,
         account,
         version: safeInfo.version,
         networkId: chainId + '',
         message: signText,
+        context: signingContext,
       });
       await Promise.all(
         (currentSafeMessage?.safeMessage?.confirmations || []).map((item) => {
           return wallet.addPureGnosisMessageSignature({
             signerAddress: item.owner,
             signature: item.signature,
+            context: signingContext,
           });
         })
       );
+      if (!(await wallet.isApprovalCurrent(approval.approval.approvalId)))
+        return;
     }
 
     const typedData = generateTypedData({
@@ -552,39 +578,46 @@ const SignText = ({
       chainId: BigInt(chainId!),
       data: signText,
     });
+    if (!(await wallet.isApprovalCurrent(approval.approval.approvalId))) return;
     if (WaitingSignMessageComponent[account.type]) {
-      wallet.signTypedDataWithUI(
-        account.type,
-        account.address,
-        typedData as any,
-        {
-          brandName: account.brandName,
-          version: 'V4',
-        }
-      );
+      void wallet
+        .signTypedDataWithUI(
+          account.type,
+          account.address,
+          typedData as any,
+          {
+            brandName: account.brandName,
+            version: 'V4',
+          },
+          signingContext
+        )
+        .catch(() => undefined);
 
-      resolveApproval({
-        uiRequestComponent: WaitingSignMessageComponent[account.type],
-        type: account.type,
-        address: account.address,
-        data: [account.address, JSON.stringify(typedData)],
-        isGnosis: true,
-        account: account,
-        $account: account,
-        safeMessage: {
-          message: signText,
-          safeAddress: safeInfo.address,
-          chainId: chainId,
-          safeMessageHash: safeMessageHash,
-        },
-        extra: {
-          popupProps: {
-            maskStyle: {
-              backgroundColor: 'transparent',
+      resolveApproval(
+        {
+          uiRequestComponent: WaitingSignMessageComponent[account.type],
+          type: account.type,
+          address: account.address,
+          data: [account.address, JSON.stringify(typedData)],
+          isGnosis: true,
+          account: account,
+          $account: account,
+          safeMessage: {
+            message: signText,
+            safeAddress: safeInfo.address,
+            chainId: chainId,
+            safeMessageHash: safeMessageHash,
+          },
+          extra: {
+            popupProps: {
+              maskStyle: {
+                backgroundColor: 'transparent',
+              },
             },
           },
         },
-      });
+        { attempt: approval.signing?.attempt }
+      );
     }
     return;
   };

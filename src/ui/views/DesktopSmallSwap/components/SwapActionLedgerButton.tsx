@@ -14,6 +14,10 @@ import {
   isLedgerDisconnectedError,
   isLedgerLockError,
 } from '@/ui/utils/ledger';
+import {
+  emitHardwareOperationRejected,
+  getSignEventErrorMessage,
+} from '@/utils/signEvent';
 import { Ledger } from '@/ui/views/CommonPopup/Ledger';
 import { Modal } from '@/ui/component';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
@@ -55,7 +59,16 @@ export const SwapActionLedgerButton: React.FC<{
 
   React.useEffect(() => {
     const listener = (msg) => {
-      const message = String(msg || '');
+      const operation = msg?.operation;
+      const expected = task.hardwareOperationRef.current;
+      if (
+        operation?.kind !== 'standalone' ||
+        expected?.kind !== 'standalone' ||
+        operation.operationId !== expected.operationId
+      ) {
+        return;
+      }
+      const message = getSignEventErrorMessage(msg);
       if (
         isLedgerLockError(message) ||
         isLedgerConnectionRecoverableError(message)
@@ -78,7 +91,10 @@ export const SwapActionLedgerButton: React.FC<{
 
   React.useEffect(() => {
     if (task.status === 'active' && status === 'DISCONNECTED') {
-      eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+      const operation = task.hardwareOperationRef.current;
+      if (operation) {
+        emitHardwareOperationRejected(operation, 'DISCONNECTED');
+      }
     }
   }, [task.status, status]);
 

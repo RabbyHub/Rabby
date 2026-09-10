@@ -37,6 +37,45 @@
       "env": {
         "jest": true
       }
+    },
+    {
+      "files": [
+        "src/ui/views/Approval/components/SignTx*.{ts,tsx}",
+        "src/ui/views/Approval/components/SignTestnetTx/**/*.{ts,tsx}",
+        "src/ui/views/Approval/components/SignText*.{ts,tsx}",
+        "src/ui/views/Approval/components/SignTypedData*.{ts,tsx}",
+        "src/ui/views/Approval/components/*Waiting*.{ts,tsx}",
+        "src/ui/views/Approval/components/*Waiting*/**/*.{ts,tsx}",
+        "src/ui/views/Approval/components/ETHSign*.{ts,tsx}",
+        "src/ui/views/Approval/components/EIP7702Warning*.{ts,tsx}"
+      ],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@/ui/approval/global",
+                "message": "Use useApprovalScope and useApprovalActions in approval components."
+              },
+              {
+                "name": "ui/approval/global",
+                "message": "Use useApprovalScope and useApprovalActions in approval components."
+              },
+              {
+                "name": "ui/utils",
+                "importNames": ["useApproval"],
+                "message": "Use useApprovalScope and useApprovalActions in approval components."
+              },
+              {
+                "name": "@/ui/utils",
+                "importNames": ["useApproval"],
+                "message": "Use useApprovalScope and useApprovalActions in approval components."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

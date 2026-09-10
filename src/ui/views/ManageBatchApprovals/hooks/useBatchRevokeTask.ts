@@ -7,6 +7,10 @@ import {
 import { useWallet, WalletControllerType } from '@/ui/utils';
 import { FailedCode, sendTransaction } from '@/ui/utils/sendTransaction';
 import { useGasAccountSign } from '@/ui/views/GasAccount/hooks';
+import {
+  createStandaloneHardwareOperation,
+  HardwareOperationRef,
+} from '@/utils/signingTypes';
 import { AssetApprovalSpender } from '@/utils/approval';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -207,6 +211,7 @@ export const useBatchRevokeTask = () => {
     'idle'
   );
   const currentApprovalRef = React.useRef<AssetApprovalSpender>();
+  const hardwareOperationRef = React.useRef<HardwareOperationRef>();
 
   const pause = useMemoizedFn(() => {
     queueRef.current.pause();
@@ -219,6 +224,7 @@ export const useBatchRevokeTask = () => {
       priority: number = -1,
       ignoreGasCheck = false
     ) => {
+      const hardwareOperation = hardwareOperationRef.current;
       return queueRef.current.add(
         async () => {
           currentApprovalRef.current = item;
@@ -241,6 +247,7 @@ export const useBatchRevokeTask = () => {
               ignoreGasCheck,
               wallet,
               chainServerId: revokeItem.chainServerId,
+              hardwareOperation,
               sig: gasAccount?.sig,
               autoUseGasAccount: true,
               onProgress: (progress) => {
@@ -295,6 +302,7 @@ export const useBatchRevokeTask = () => {
   );
 
   const start = useMemoizedFn(() => {
+    hardwareOperationRef.current = createStandaloneHardwareOperation();
     setStatus('active');
     for (const item of list) {
       addRevokeTask(item);
@@ -307,6 +315,7 @@ export const useBatchRevokeTask = () => {
       nextRevokeList: ApprovalSpenderItemToBeRevoked[]
     ) => {
       queueRef.current.clear();
+      hardwareOperationRef.current = undefined;
       setList(dataSource);
       setRevokeList(nextRevokeList);
       setStatus('idle');
@@ -324,11 +333,13 @@ export const useBatchRevokeTask = () => {
     });
 
     queueRef.current.on('idle', () => {
+      hardwareOperationRef.current = undefined;
       setStatus('completed');
     });
 
     return () => {
       queueRef.current.clear();
+      hardwareOperationRef.current = undefined;
     };
   }, []);
 
@@ -361,6 +372,7 @@ export const useBatchRevokeTask = () => {
     revokedApprovals,
     currentApprovalIndex,
     currentApprovalRef,
+    hardwareOperationRef,
     resetCurrent,
   };
 };

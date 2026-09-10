@@ -1,3 +1,4 @@
+import { useGnosisSubmission } from '@/ui/hooks/useGnosisSubmission';
 import React, { useCallback, useMemo, useState } from 'react';
 import stats from '@/stats';
 import Player from './Player';
@@ -12,7 +13,7 @@ import {
   WALLET_BRAND_TYPES,
 } from 'consts';
 import eventBus from '@/eventBus';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import { useCommonPopupView, useWallet } from 'ui/utils';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
@@ -25,7 +26,15 @@ import {
   KeystoneWiredWaiting,
 } from './KeystoneWaiting';
 import clsx from 'clsx';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { notifySigningUiReady } from '@/utils/signEvent';
+import { useApprovalScope } from '@/ui/approval/context';
+import { useApprovalActions } from '@/ui/approval/actions';
+import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
+import {
+  requireSigningAttempt,
+  sameSigningAttempt,
+} from '@/utils/signingTypes';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -44,6 +53,7 @@ export type RequestSignPayload = {
 };
 
 const QRHardWareWaiting = ({ params, account: $account }) => {
+  const wallet = useWallet();
   const account = params.isGnosis ? params.account : $account;
   const { setTitle, closePopup, setHeight } = useCommonPopupView();
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
@@ -56,12 +66,41 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   );
   const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const approvalScope = useApprovalScope();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+  } = useApprovalActions();
+  const attemptRef = React.useRef<SigningAttemptRef>(
+    requireSigningAttempt(approvalScope.signing?.attempt)
+  );
+  const getSigningContext = (attempt = attemptRef.current) => {
+    const flow = approvalScope.signing?.flow;
+    return flow && attempt
+      ? { approval: approvalScope.approval, signing: { flow, attempt } }
+      : undefined;
+  };
+  const handlersRef = React.useRef<{
+    onFinished?: (data: any) => void;
+  }>({});
+  const gnosisSubmission = useGnosisSubmission({
+    wallet,
+    attemptRef,
+    isGnosis: params.isGnosis,
+    isMessage: !!params.safeMessage,
+    signerAddress: params.account?.address || '',
+    onFinished: (data) => handlersRef.current.onFinished?.(data),
+  });
+  useSigningAttemptEvents(attemptRef, {
+    onFinished: gnosisSubmission.onFinished,
+  });
+  const acquireMemStoreListener = React.useRef<((data: any) => void) | null>(
+    null
+  );
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
   const { t } = useTranslation();
   const history = useHistory();
-  const wallet = useWallet();
   const [walletBrandContent, setWalletBrandContent] = useState(
     WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE]
   );
@@ -70,7 +109,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   const [signFinishedData, setSignFinishedData] = React.useState<{
     data: any;
     stay: boolean;
-    approvalId: string;
+    signingAttempt?: SigningAttemptRef;
   }>();
 
   React.useEffect(() => {
@@ -87,7 +126,6 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
       id: params.chainId || 1,
     })?.enum || CHAINS_ENUM.ETH;
   const init = useCallback(async () => {
-    const approval = await getApproval();
     if (!account) return;
     setBrand(account.brandName);
     const icon = WALLET_BRAND_CONTENT[account.brandName].icon;
@@ -104,106 +142,134 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
     setHeight('fit-content');
     setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
     setIsSignText(
-      params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
+      params.isGnosis ? true : approvalScope.approvalType !== 'SignTx'
     );
 
-    eventBus.addEventListener(
-      EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
-      async ({ request }) => {
-        let currentSignId = null;
-        if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
-          currentSignId = await wallet.requestKeyring(
-            KEYSTONE_TYPE,
-            'exportCurrentSignRequestIdIfExist',
-            null
-          );
-        }
-
-        if (currentSignId) {
-          if (currentSignId === request.requestId) {
-            setSignPayload(request);
-          }
+    const onAcquireMemStore = async ({ request }) => {
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      let currentSignId = null;
+      if (account.brandName === WALLET_BRAND_TYPES.KEYSTONE) {
+        currentSignId = await wallet.requestKeyring(
+          KEYSTONE_TYPE,
+          'exportCurrentSignRequestIdIfExist',
+          null
+        );
+        if (
+          !(await wallet.isApprovalCurrent(approvalScope.approval.approvalId))
+        )
           return;
-        } else {
+      }
+
+      if (currentSignId) {
+        if (currentSignId === request.requestId) {
           setSignPayload(request);
         }
+        return;
       }
+      setSignPayload(request);
+    };
+    acquireMemStoreListener.current = onAcquireMemStore;
+    eventBus.addEventListener(
+      EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
+      onAcquireMemStore
     );
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    const onSignFinished = async (data) => {
+      const signingAttempt = data.attempt;
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       if (data.success) {
         let sig = data.data;
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const safeMessage = params.safeMessage;
-            if (safeMessage) {
-              await wallet.handleGnosisMessage({
-                signature: data.data,
-                signerAddress: params.account!.address!,
-              });
-            } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
-              } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
-              }
-            }
+            const context = getSigningContext(signingAttempt);
+            if (!context) return;
+            await gnosisSubmission.submit(
+              params.safeMessage ? data.data : sig,
+              context
+            );
           }
         } catch (e) {
+          if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
           setErrorMessage(e.message);
-          // rejectApproval(e.message);
           return;
         }
+        if (
+          !(await wallet.isApprovalCurrent(
+            approvalScope.approval.approvalId
+          )) ||
+          !sameSigningAttempt(attemptRef.current, signingAttempt)
+        )
+          return;
         setStatus(QRHARDWARE_STATUS.DONE);
         setSignFinishedData({
           data: sig,
           stay: !isSignText,
-          approvalId: approval.id,
+          signingAttempt: data.attempt,
         });
       } else {
-        setErrorMessage(data.errorMsg);
-        // rejectApproval(data.errorMsg);
+        setErrorMessage(data.error);
       }
-    });
+    };
+    handlersRef.current = { onFinished: onSignFinished };
 
-    emitSignComponentAmounted();
-    wallet.acquireKeystoneMemStoreData();
+    notifySigningUiReady(attemptRef.current);
+    if (await wallet.isApprovalCurrent(approvalScope.approval.approvalId)) {
+      wallet.acquireKeystoneMemStoreData();
+    }
   }, []);
 
   React.useEffect(() => {
     init();
     return () => {
-      eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
-      eventBus.removeAllEventListeners(
-        EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED
-      );
+      handlersRef.current = {};
+      if (acquireMemStoreListener.current) {
+        eventBus.removeEventListener(
+          EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
+          acquireMemStoreListener.current
+        );
+      }
     };
   }, [init]);
 
   const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
-        signFinishedData.data,
+      void resolveApproval(signFinishedData.data, {
         stay,
-        false,
-        signFinishedData.approvalId
-      );
+        attempt: signFinishedData.signingAttempt,
+      }).then((result) => {
+        if (result?.accepted) closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 
   const handleCancel = () => {
     rejectApproval('User rejected the request.');
   };
+  const handleRetry = async () => {
+    if (await gnosisSubmission.retry()) return;
+    if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+      return;
+    const context = getSigningContext();
+    if (!context) return;
+    const attempt = await wallet.resendSign({ retry: false, context });
+    if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+      return;
+    if (attempt) {
+      attemptRef.current = attempt;
+      notifySigningUiReady(attempt);
+    }
+    // Scanner errors leave the current signing attempt waiting for its QR.
+    await handleRequestSignature();
+    setStatus(QRHARDWARE_STATUS.SYNC);
+  };
   const handleRequestSignature = async () => {
-    const approval = await getApproval();
     if (account) {
       if (!isSignText) {
-        const signingTxId = approval.data.params.signingTxId;
-        // const tx = approval.data?.params;
+        const signingTxId = approvalScope.params?.signingTxId;
         if (signingTxId) {
           // const { nonce, from, chainId } = tx;
           // const explain = await wallet.getExplainCache({
@@ -212,6 +278,10 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
           //   chainId: Number(chainId),
           // });
           const signingTx = await wallet.getSigningTx(signingTxId);
+          if (
+            !(await wallet.isApprovalCurrent(approvalScope.approval.approvalId))
+          )
+            return;
           const chainInfo = findChain({
             enum: chain,
           });
@@ -259,14 +329,26 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
 
   const handleSubmit = async () => {
     // cache signMethod in statsData
+    if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+      return;
     await wallet.setStatsData({
       signMethod,
     });
-    wallet.submitQRHardwareSignature(
-      signPayload!.requestId,
-      scanMessage!,
-      account?.address
-    );
+    if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+      return;
+    const context = getSigningContext();
+    if (!context) return;
+    void wallet
+      .submitQRHardwareSignature(
+        signPayload!.requestId,
+        scanMessage!,
+        context,
+        account?.address
+      )
+      .catch((error) => {
+        if (error?.code !== 4001)
+          setErrorMessage(error?.message || String(error));
+      });
   };
 
   const popupStatus = React.useMemo(() => {
@@ -306,21 +388,24 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         setErrorMessage(error);
       const onKeystoneWaitingPageHandleSuccess = (message) => {
         setScanMessage(message);
-        wallet.submitQRHardwareSignature(
-          signPayload!.requestId,
-          message,
-          account?.address
-        );
+        const context = getSigningContext();
+        if (!context) return;
+        void wallet
+          .submitQRHardwareSignature(
+            signPayload!.requestId,
+            message,
+            context,
+            account?.address
+          )
+          .catch((error) => {
+            if (error?.code !== 4001)
+              setErrorMessage(error?.message || String(error));
+          });
       };
-      const onKeystoneWaitingPageRetry = async () => {
-        await handleRequestSignature();
-        setStatus(QRHARDWARE_STATUS.SYNC);
-      };
-
       return (
         <KeystoneWiredWaiting
           isDone={status === QRHARDWARE_STATUS.DONE}
-          onRetry={onKeystoneWaitingPageRetry}
+          onRetry={handleRetry}
           onDone={onKeystoneWaitingPageDone}
           payload={signPayload?.payload}
           errorMessage={errorMessage}
@@ -376,7 +461,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         content={content}
         description={errorMessage}
         onCancel={handleCancel}
-        onRetry={handleRequestSignature}
+        onRetry={handleRetry}
         onDone={() => setIsClickDone(true)}
         onSubmit={handleSubmit}
         hasMoreDescription={!!errorMessage}

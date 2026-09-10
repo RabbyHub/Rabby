@@ -33,6 +33,10 @@ import {
 import { twoStepChains } from '../../Swap/hooks/twoStepSwap';
 import { DEFAULT_MAX_GAS_COST, DEFAULT_PRICE_IMPACT } from '../constant';
 import { sendTransaction } from '@/ui/utils/sendTransaction';
+import {
+  createStandaloneHardwareOperation,
+  HardwareOperationRef,
+} from '@/utils/signingTypes';
 export { FailedCode } from '@/ui/utils/sendTransaction';
 
 const TASK_CANCELLED_ERROR_NAME = 'BatchSwapTaskCancelled';
@@ -294,6 +298,7 @@ export const useBatchSwapTask = (options: {
     'idle'
   );
   const cancelTokenRef = React.useRef(0);
+  const hardwareOperationRef = React.useRef<HardwareOperationRef>();
   const currentApprovalRef = React.useRef<TokenItem>();
   const [currentToken, setCurrentToken] = React.useState<TokenItem | null>(
     null
@@ -328,11 +333,13 @@ export const useBatchSwapTask = (options: {
     cancelTokenRef.current += 1;
     queueRef.current.pause();
     queueRef.current.clear();
+    hardwareOperationRef.current = undefined;
     closeSign();
   });
 
   const addTask = useMemoizedFn(
     async (item: TokenItem, priority: number = 0, ignoreGasCheck = false) => {
+      const hardwareOperation = hardwareOperationRef.current;
       const taskToken = cancelTokenRef.current;
       const isTaskCancelled = () => cancelTokenRef.current !== taskToken;
       const throwIfTaskCancelled = () => {
@@ -514,6 +521,7 @@ export const useBatchSwapTask = (options: {
                   ignoreGasCheck,
                   wallet,
                   chainServerId: options.chain.serverId,
+                  hardwareOperation,
                   sig: gasAccount?.sig,
                   autoUseGasAccount: true,
                   onProgress: (status) => {
@@ -603,6 +611,7 @@ export const useBatchSwapTask = (options: {
   );
 
   const start = React.useCallback(() => {
+    hardwareOperationRef.current = createStandaloneHardwareOperation();
     updateStatus('active');
 
     for (const item of list) {
@@ -649,6 +658,7 @@ export const useBatchSwapTask = (options: {
     });
 
     queueRef.current.on('idle', () => {
+      hardwareOperationRef.current = undefined;
       if (statusRef.current === 'active' || statusRef.current === 'paused') {
         updateStatus('completed');
       }
@@ -725,6 +735,7 @@ export const useBatchSwapTask = (options: {
 
   const stop = useMemoizedFn(() => {
     // cancelRunningTasks();
+    hardwareOperationRef.current = undefined;
     setList([]);
     setCurrentToken(null);
     updateStatus('completed');
@@ -748,6 +759,7 @@ export const useBatchSwapTask = (options: {
     currentToken,
     currentTaskIndex,
     currentApprovalRef,
+    hardwareOperationRef,
     clear,
     config,
     setConfig,

@@ -46,6 +46,7 @@ import type {
   Tx,
 } from '@rabby-wallet/rabby-api/dist/types';
 import type { WalletControllerType } from '@/ui/utils';
+import type { SigningRequestContext } from '@/utils/signingTypes';
 import type {
   PreparedContext,
   CalcItem,
@@ -311,8 +312,6 @@ function aggregateCheckErrors(params: {
   }
   return checkErrors;
 }
-
-let retryTxs = [] as Tx[];
 
 export class SignatureSteps {
   static async invokeEnterPassphraseModal(params: {
@@ -1038,13 +1037,14 @@ export class SignatureSteps {
       getRetryTxRecommendNonce,
       setRetryTxRecommendNonce,
     } = wallet;
+    const { retryScope, retryTxs } = options;
 
     if (!isRetry) {
-      retryTxs = [];
-      await retryTxReset();
+      retryTxs.splice(0, retryTxs.length);
+      await retryTxReset(retryScope);
     } else {
       if (!retryTxs.length) {
-        retryTxs = txsCalc.map((e) => e.tx);
+        retryTxs.push(...txsCalc.map((e) => e.tx));
       }
     }
 
@@ -1064,11 +1064,12 @@ export class SignatureSteps {
         let tx = txsCalc[i].tx;
         if (isRetry) {
           tx = retryTxs[i];
+          if (!tx) throw new Error('Retry transaction is unavailable');
 
-          const retryType = await getRetryTxType();
+          const retryType = await getRetryTxType(retryScope);
           switch (retryType) {
             case 'nonce': {
-              const recommendNonce = await getRetryTxRecommendNonce();
+              const recommendNonce = await getRetryTxRecommendNonce(retryScope);
               tx.nonce = recommendNonce;
               break;
             }
@@ -1092,7 +1093,7 @@ export class SignatureSteps {
           }
           const tmp = [...retryTxs];
           tmp[i] = { ...tx };
-          retryTxs = tmp;
+          retryTxs.splice(0, retryTxs.length, ...tmp);
         }
         let sig: string | undefined;
         if (options?.isGasAccount) {
@@ -1108,6 +1109,8 @@ export class SignatureSteps {
           isGasAccount: !!options?.isGasAccount,
           ga: options?.ga,
           session: options?.session,
+          hardwareOperation: options?.hardwareOperation,
+          signing: options?.signing,
           sig,
           preExecResult: txsCalc[i]?.preExecResult,
           account,
@@ -1116,11 +1119,11 @@ export class SignatureSteps {
         txHashes.push({ ...result });
       }
 
-      retryTxReset();
+      retryTxReset(retryScope);
       return txHashes;
     } catch (e) {
       const msg = (e as any)?.message || (e as any)?.name || 'unknown error';
-      retryTxReset();
+      retryTxReset(retryScope);
       const tx = txsCalc?.[i]?.tx;
       if (
         !(
@@ -1134,6 +1137,7 @@ export class SignatureSteps {
             from: tx.from,
             chainId: tx.chainId,
             nonce: tx.nonce,
+            scope: retryScope,
           });
         } catch (error) {
           console.error(
@@ -1328,6 +1332,10 @@ export class SignatureSteps {
     onSendedTx: (prams: { hash: string; idx: number }) => void;
     retry?: boolean;
     shouldPause?: (idx: number, signedCount: number) => boolean;
+    hardwareOperation?: import('@/utils/signingTypes').HardwareOperationRef;
+    signing?: SigningRequestContext;
+    retryScope: string;
+    retryTxs: Tx[];
   }): Promise<
     | {
         txHash: string;
@@ -1357,6 +1365,10 @@ export class SignatureSteps {
         pushType: normalizeTxParams(txs[0])?.swapPreferMEVGuarded
           ? 'mev'
           : 'default',
+        hardwareOperation: params.hardwareOperation,
+        signing: params.signing,
+        retryScope: params.retryScope,
+        retryTxs: params.retryTxs,
       },
       onSendedTx,
       retry,

@@ -164,9 +164,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
       msg = getLedgerError(msg);
     }
     return msg
-      ? wallet.getTxFailedResult(msg)
+      ? wallet.getTxFailedResult(msg, undefined, instance.getRetryScope())
       : Promise.resolve(['', 'origin']);
-  }, [error, currentAccount?.type]);
+  }, [error, currentAccount?.type, instance, wallet]);
 
   const handleAutoChangeGasMethod = useCallback(
     async (method: ApprovalGasMethod) => {
@@ -626,6 +626,9 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   // mock mini sign task
   const task = {
+    get signingAttempt() {
+      return instance.signingAttempt;
+    },
     status: ctx.signInfo?.status
       ? ctx.signInfo?.status === 'signing'
         ? 'active'
@@ -721,7 +724,11 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
             description={description}
             onCancel={handleCancel}
             onRetry={async () => {
-              await wallet.setRetryTxType(retryUpdateType);
+              await wallet.setRetryTxType(
+                retryUpdateType,
+                undefined,
+                instance.getRetryScope()
+              );
               handleRetry(desktopMiniSignerGetContainer);
             }}
             retryUpdateType={retryUpdateType}
@@ -1003,7 +1010,11 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
           description={description}
           onCancel={handleCancel}
           onRetry={async () => {
-            await wallet.setRetryTxType(retryUpdateType);
+            await wallet.setRetryTxType(
+              retryUpdateType,
+              undefined,
+              instance.getRetryScope()
+            );
             handleRetry(config?.getContainer);
           }}
           retryUpdateType={retryUpdateType}

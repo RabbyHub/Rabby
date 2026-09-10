@@ -3,11 +3,11 @@ import { useMemoizedFn } from 'ahooks';
 import React, { useMemo, useState } from 'react';
 import _ from 'lodash';
 import {
-  isLedgerConnectionRecoverableError,
-  isLedgerLockError,
-} from '@/ui/utils/ledger';
-import { useSetDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
+  supportedHardwareDirectSign,
+  useSetDirectSigning,
+} from '@/ui/hooks/useMiniApprovalDirectSign';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
+import type { SigningRequestContext } from '@/utils/signingTypes';
 
 type TxStatus = 'sended' | 'signed' | 'idle' | 'failed';
 
@@ -26,9 +26,7 @@ type ListItemType = {
   hash?: string;
 };
 
-export const useBatchSignPersonalMessageTask = ({
-  ga,
-}: {
+export const useBatchSignPersonalMessageTask = (_options?: {
   ga?: Record<string, any>;
 }) => {
   const wallet = useWallet();
@@ -60,14 +58,63 @@ export const useBatchSignPersonalMessageTask = ({
   });
 
   const setDirectSigning = useSetDirectSigning();
+  const signingContextRef = React.useRef<SigningRequestContext>();
+  const runIdRef = React.useRef(0);
 
-  const start = useMemoizedFn(async (isRetry = false) => {
+  const finishSigning = useMemoizedFn(
+    async (
+      context: SigningRequestContext | undefined,
+      outcome: { success: boolean; data?: unknown; error?: unknown }
+    ) => {
+      if (!context) return false;
+      if (signingContextRef.current === context) {
+        signingContextRef.current = undefined;
+      }
+      try {
+        const result = await wallet.finishDirectSigning(context, outcome);
+        return result.accepted;
+      } catch (error) {
+        console.error('finish direct personal signing failed', error);
+        await wallet.cancelDirectSigning(context).catch((cancelError) => {
+          console.error(
+            'cancel direct personal signing after finish failed',
+            cancelError
+          );
+        });
+        return false;
+      }
+    }
+  );
+
+  const start = useMemoizedFn(async () => {
     const results: string[] = [];
+    const runId = ++runIdRef.current;
+    const previousContext = signingContextRef.current;
+    signingContextRef.current = undefined;
+    if (previousContext) {
+      void wallet.cancelDirectSigning(previousContext).catch((error) => {
+        console.error('cancel previous direct personal signing failed', error);
+      });
+    }
+    let signingContext: SigningRequestContext | undefined;
+    let finished = false;
     try {
+      const account =
+        list[0]?.options?.account ||
+        (await wallet.getCurrentAccount()) ||
+        undefined;
+      if (runId !== runIdRef.current) throw new Error('User cancelled');
+      signingContext = await wallet.startDirectSigning({ account });
+      if (runId !== runIdRef.current) {
+        await wallet.cancelDirectSigning(signingContext);
+        throw new Error('User cancelled');
+      }
+      signingContextRef.current = signingContext;
       setDirectSigning(true);
       setStatus('active');
 
       for (let index = 0; index < list.length; index++) {
+        if (runId !== runIdRef.current) throw new Error('User cancelled');
         const item = list[index];
 
         if (item.status === 'signed') {
@@ -84,8 +131,14 @@ export const useBatchSignPersonalMessageTask = ({
             ...options,
             // tx,
             wallet,
-            // ga,
+            hardwareOperation: supportedHardwareDirectSign(
+              signingContext.account.type
+            )
+              ? { kind: 'signing-attempt', attempt: signingContext.attempt }
+              : undefined,
+            signing: signingContext,
             onProgress: (status) => {
+              if (runId !== runIdRef.current) return;
               if (status === 'builded') {
                 _updateList({
                   index,
@@ -103,9 +156,11 @@ export const useBatchSignPersonalMessageTask = ({
               }
             },
           });
+          if (runId !== runIdRef.current) throw new Error('User cancelled');
           results.push(result.txHash || '');
         } catch (e) {
           console.error(e);
+          if (runId !== runIdRef.current) throw e;
           const msg = e.message || e.name;
 
           _updateList({
@@ -116,42 +171,61 @@ export const useBatchSignPersonalMessageTask = ({
             },
           });
 
-          if (
-            !(
-              isLedgerLockError(msg) ||
-              isLedgerConnectionRecoverableError(msg) ||
-              msg === 'No OneKey Device found'
-            )
-          ) {
-            setError(msg);
-          }
+          setError(msg);
           throw e;
         }
       }
+      if (runId !== runIdRef.current) throw new Error('User cancelled');
+      if (
+        !(await finishSigning(signingContext, { success: true, data: results }))
+      ) {
+        throw new Error('User cancelled');
+      }
+      finished = true;
+      if (runId !== runIdRef.current) throw new Error('User cancelled');
       setStatus('completed');
-      // eventBus.emit(EVENTS.DIRECT_SIGN, {});
       return results;
     } catch (e) {
       console.error(e);
-      const msg = e.message || e.name;
+      if (runId === runIdRef.current) {
+        await finishSigning(signingContext, { success: false, error: e });
+        finished = true;
+      }
+      if (runId !== runIdRef.current) throw e;
 
-      // eventBus.emit(EVENTS.DIRECT_SIGN, {
-      //   error: msg || 'failed to completed',
-      // });
       throw e;
     } finally {
-      setDirectSigning(false);
+      if (signingContext && !finished) {
+        await wallet.cancelDirectSigning(signingContext).catch((error) => {
+          console.error('cancel direct personal signing failed', error);
+        });
+      }
+      if (signingContextRef.current === signingContext) {
+        signingContextRef.current = undefined;
+      }
+      if (runId === runIdRef.current) {
+        setDirectSigning(false);
+      }
     }
   });
 
   const handleRetry = useMemoizedFn(async () => {
     setError('');
-    const hash = await start(true);
+    const hash = await start();
     return hash;
   });
 
   const stop = useMemoizedFn(() => {
+    runIdRef.current += 1;
+    const context = signingContextRef.current;
+    signingContextRef.current = undefined;
+    if (context) {
+      void wallet.cancelDirectSigning(context).catch((error) => {
+        console.error('cancel direct personal signing failed', error);
+      });
+    }
     setStatus('idle');
+    setDirectSigning(false);
   });
 
   const currentActiveIndex = React.useMemo(() => {
@@ -164,6 +238,9 @@ export const useBatchSignPersonalMessageTask = ({
   }, [list, currentActiveIndex]);
 
   return {
+    get signingAttempt() {
+      return signingContextRef.current?.attempt;
+    },
     list,
     init,
     start,

@@ -80,7 +80,11 @@ const ImportSuccess = ({
     isMnemonics = false,
     importedLength = 0,
   } = state;
-  const [, resolveApproval] = useApproval();
+  const [getApproval, resolveApproval] = useApproval();
+  const openedByApproval = React.useMemo(
+    () => getApproval().catch(() => null),
+    []
+  );
   const safeAddresses = React.useMemo(
     () =>
       safeAccount
@@ -109,7 +113,8 @@ const ImportSuccess = ({
     }
 
     if (getUiType().isNotification) {
-      resolveApproval();
+      const approval = await openedByApproval;
+      resolveApproval(undefined, false, false, approval?.id);
       return;
     }
 

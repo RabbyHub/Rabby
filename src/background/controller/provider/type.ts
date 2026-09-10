@@ -1,4 +1,9 @@
 import { Account } from '@/background/service/preference';
+import type {
+  ApprovalRef,
+  InternalSignRequestId,
+  SigningRequestContext,
+} from '@/utils/signingTypes';
 
 type InternalMethods = keyof typeof import('./internalMethod')['default'];
 
@@ -20,4 +25,7 @@ export type ProviderRequest<
   origin?: string;
   requestedApproval?: boolean;
   sourceFrameId?: number;
+  approval?: ApprovalRef;
+  internalSignRequestId?: InternalSignRequestId;
+  signing?: SigningRequestContext;
 };

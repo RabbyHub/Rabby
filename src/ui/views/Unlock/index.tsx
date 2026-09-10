@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   useWallet,
-  useApproval,
   useWalletRequest,
   getUiType,
   openInternalPageInTab,
@@ -31,6 +30,7 @@ import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { ga4 } from '@/utils/ga4';
 import { useWalletStatusStore } from '@/ui/state/walletStatus';
+import { toApprovalRef } from '@/utils/signingTypes';
 
 const InputFormStyled = styled(Form.Item)`
   .ant-form-item-explain {
@@ -91,7 +91,6 @@ const UnlockMethodSwitch = styled.button`
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
-  const [getApproval, resolveApproval] = useApproval();
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
@@ -187,14 +186,20 @@ const Unlock = () => {
       if (query.from === '/connect-approval') {
         history.replace('/approval?ignoreOtherWallet=1');
       } else {
-        const approval = await getApproval();
+        const approval = await wallet.getCurrentApproval();
         if (!approval) {
           history.replace('/');
         } else if (String(approval.data.approvalComponent) === 'Unlock') {
           // Only resolve the Unlock approval itself, bound by id. A pending
           // SignText/SignTypedData/SignTx must never be resolved by a
           // password entry — hand control back to its own approval screen.
-          resolveApproval(undefined, false, false, approval.id);
+          const result = await wallet.resolveApprovalFor({
+            approval: toApprovalRef(
+              approval.id,
+              approval.data.approvalComponent
+            ),
+          });
+          if (result.accepted) history.replace('/');
         } else {
           history.replace('/approval');
         }

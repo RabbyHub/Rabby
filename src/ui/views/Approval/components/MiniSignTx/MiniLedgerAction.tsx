@@ -5,7 +5,6 @@ import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
-import { EVENTS } from 'consts';
 import React, { ReactNode, useRef } from 'react';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { Props as ActionGroupProps } from '../FooterBar/ActionGroup';
@@ -20,7 +19,7 @@ import {
   isLedgerDisconnectedError,
   isLedgerLockError,
 } from '@/ui/utils/ledger';
-import eventBus from '@/eventBus';
+import { emitHardwareOperationRejected } from '@/utils/signEvent';
 import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { Ledger } from '../../../CommonPopup/Ledger';
@@ -31,6 +30,8 @@ import {
   useDirectSigning,
   useSetDirectSigning,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -94,29 +95,27 @@ export const MiniLedgerAction: React.FC<Props> = ({
   ] = React.useState(false);
   const [ledgerErrorMessage, setLedgerErrorMessage] = React.useState('');
 
-  React.useEffect(() => {
-    const listener = (msg) => {
-      const message = String(msg || '');
-      setLedgerErrorMessage(message);
-      if (
-        isLedgerLockError(message) ||
-        isLedgerConnectionRecoverableError(message)
-      ) {
-        setVisibleLedgerConnectModal(true);
-        task.stop();
-
-        // if (msg !== 'DISCONNECTED') {
-        //   task.addRevokeTask(task.currentApprovalRef.current!, 1);
-        // }
-      }
-    };
-
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-
-    return () => {
-      eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
-    };
-  }, []);
+  const handleHardwareError = useMemoizedFn((message: string) => {
+    setLedgerErrorMessage(message);
+    if (
+      isLedgerLockError(message) ||
+      isLedgerConnectionRecoverableError(message)
+    ) {
+      setVisibleLedgerConnectModal(true);
+      task.stop();
+    }
+  });
+  const attemptRef = React.useMemo(
+    () => ({
+      get current(): SigningAttemptRef | undefined {
+        return task.signingAttempt;
+      },
+    }),
+    [task]
+  );
+  useSigningAttemptEvents(attemptRef, {
+    onHardwareError: handleHardwareError,
+  });
 
   const handleSubmit = useMemoizedFn(() => {
     setLedgerErrorMessage('');
@@ -152,7 +151,13 @@ export const MiniLedgerAction: React.FC<Props> = ({
   useDebounce(
     () => {
       if (task.status === 'active' && status === 'DISCONNECTED') {
-        eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
+        const attempt = task.signingAttempt;
+        if (attempt) {
+          emitHardwareOperationRejected(
+            { kind: 'signing-attempt', attempt },
+            'DISCONNECTED'
+          );
+        }
       }
     },
     300,
@@ -207,7 +212,6 @@ export const MiniLedgerAction: React.FC<Props> = ({
           onCancel={() => {
             setDirectSigning(false);
             setVisibleLedgerConnectModal(false);
-            // props.onCancel?.();
           }}
           title={pendingText}
           maskStyle={{

@@ -1,10 +1,11 @@
 import { KEYRING_CLASS } from '@/constant';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useLedgerStatus } from '../component/ConnectStatus/useLedgerStatus';
 import { useCommonPopupView, useWallet } from './WalletContext';
 import { useCurrentAccount } from '../hooks/backgroundState/useAccount';
 import { useImKeyStatus } from '../component/ConnectStatus/useImKeyStatus';
 import { Account } from '@/background/service/preference';
+import { ApprovalScopeContext } from '@/ui/approval/context';
 
 /**
  * some devices require a connection to the device to sign transactions
@@ -15,6 +16,7 @@ export const useDeviceConnect = () => {
   const imKeyStatus = useImKeyStatus();
   const { activePopup, setAccount } = useCommonPopupView();
   const wallet = useWallet();
+  const approvalScope = useContext(ApprovalScopeContext);
 
   /**
    * @returns {boolean} true if connected, false if not connected and popup is shown
@@ -28,7 +30,7 @@ export const useDeviceConnect = () => {
 
       if (type === KEYRING_CLASS.HARDWARE.LEDGER) {
         if (ledgerStatus.status === 'DISCONNECTED') {
-          activePopup('Ledger');
+          activePopup('Ledger', approvalScope?.approval.approvalId);
           return false;
         }
       } else if (type === KEYRING_CLASS.WALLETCONNECT) {
@@ -45,19 +47,19 @@ export const useDeviceConnect = () => {
               type,
             });
           }
-          activePopup('WalletConnect');
+          activePopup('WalletConnect', approvalScope?.approval.approvalId);
           return false;
         }
       } else if (type === KEYRING_CLASS.HARDWARE.IMKEY) {
         if (imKeyStatus.status === 'DISCONNECTED') {
-          activePopup('ImKeyPermission');
+          activePopup('ImKeyPermission', approvalScope?.approval.approvalId);
           return false;
         }
       }
 
       return true;
     },
-    [ledgerStatus, imKeyStatus]
+    [approvalScope?.approval.approvalId, imKeyStatus, ledgerStatus, wallet]
   );
 
   return connect;

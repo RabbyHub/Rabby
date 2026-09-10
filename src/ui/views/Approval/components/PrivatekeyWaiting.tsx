@@ -1,11 +1,7 @@
+import { useGnosisSubmission } from '@/ui/hooks/useGnosisSubmission';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  isSameAddress,
-  useApproval,
-  useCommonPopupView,
-  useWallet,
-} from 'ui/utils';
+import { isSameAddress, useCommonPopupView, useWallet } from 'ui/utils';
 import {
   CHAINS,
   EVENTS,
@@ -28,11 +24,19 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import { notifySigningUiReady } from '@/utils/signEvent';
 import { ga4 } from '@/utils/ga4';
 import { useAsync } from 'react-use';
 import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useApprovalScope } from '@/ui/approval/context';
+import { useApprovalActions } from '@/ui/approval/actions';
+import { useSigningAttemptEvents } from '@/ui/hooks/useSigningAttemptEvents';
+import {
+  requireSigningAttempt,
+  sameSigningAttempt,
+} from '@/utils/signingTypes';
+import type { SigningAttemptRef } from '@/utils/signingTypes';
 
 interface ApprovalParams {
   address: string;
@@ -70,7 +74,38 @@ export const PrivatekeyWaiting = ({
     setHeight,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const approvalScope = useApprovalScope();
+  const {
+    resolve: resolveApproval,
+    reject: rejectApproval,
+  } = useApprovalActions();
+  const attemptRef = React.useRef<SigningAttemptRef>(
+    requireSigningAttempt(approvalScope.signing?.attempt)
+  );
+  const getSigningContext = (attempt = attemptRef.current) => {
+    const flow = approvalScope.signing?.flow;
+    return flow && attempt
+      ? { approval: approvalScope.approval, signing: { flow, attempt } }
+      : undefined;
+  };
+  const handlersRef = React.useRef<{
+    onFinished?: (data: any) => void;
+    onSubmitting?: (attempt: SigningAttemptRef) => void;
+  }>({});
+  const gnosisSubmission = useGnosisSubmission({
+    wallet,
+    attemptRef,
+    isGnosis: params.isGnosis,
+    isMessage: !!params.safeMessage,
+    signerAddress: params.account?.address || '',
+    onFinished: (data) => handlersRef.current.onFinished?.(data),
+  });
+  useSigningAttemptEvents(attemptRef, {
+    onFinished: gnosisSubmission.onFinished,
+    onSubmitting: (attempt) => handlersRef.current.onSubmitting?.(attempt),
+  });
+  const mountedRef = React.useRef(false);
+  const listenersCleanupRef = React.useRef<(() => void) | null>(null);
   const { t } = useTranslation();
   const { type } = params;
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -84,7 +119,7 @@ export const PrivatekeyWaiting = ({
   const [isClickDone, setIsClickDone] = React.useState(false);
   const [signFinishedData, setSignFinishedData] = React.useState<{
     data: any;
-    approvalId: string;
+    signingAttempt?: SigningAttemptRef;
   }>();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
@@ -93,19 +128,33 @@ export const PrivatekeyWaiting = ({
   const [description, setDescription] = React.useState('');
 
   const handleRetry = async () => {
+    if (await gnosisSubmission.retry()) return;
     if (connectStatus === WALLETCONNECT_STATUS_MAP.SUBMITTING) {
       message.success(t('page.signFooterBar.ledger.resubmited'));
       return;
     }
+    if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+      return;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
 
     const autoRetryUpdate =
       !!txFailedResult?.[1] && txFailedResult?.[1] !== 'origin';
-    await wallet.setRetryTxType(txFailedResult?.[1] || false);
-    await wallet.resendSign(autoRetryUpdate);
+    const context = getSigningContext();
+    if (!context) return;
+    if (!(await wallet.setRetryTxType(txFailedResult?.[1] || false, context))) {
+      return;
+    }
+    if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+      return;
+    const attempt = await wallet.resendSign({
+      retry: autoRetryUpdate,
+      context,
+    });
+    if (!attempt) return;
 
     message.success(t('page.signFooterBar.ledger.resent'));
-    emitSignComponentAmounted();
+    attemptRef.current = attempt;
+    notifySigningUiReady(attempt);
   };
   const isSignText = /personalSign|SignTypedData/.test(
     params?.extra?.signTextMethod
@@ -143,16 +192,17 @@ export const PrivatekeyWaiting = ({
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
 
-    const approval = await getApproval();
+    if (!mountedRef.current) return;
 
     const isSignText = params.isGnosis
       ? true
-      : approval?.data.approvalType !== 'SignTx';
+      : approvalScope.approvalType !== 'SignTx';
 
     if (!isSignText) {
-      const signingTxId = approval.data.params.signingTxId;
+      const signingTxId = approvalScope.params?.signingTxId;
       if (signingTxId) {
         const signingTx = await wallet.getSigningTx(signingTxId);
+        if (!mountedRef.current) return;
 
         if (!signingTx?.explain && chain && !chain.isTestnet) {
           setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
@@ -184,10 +234,17 @@ export const PrivatekeyWaiting = ({
       });
     }
 
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    const onTxSubmitting = async (signingAttempt: SigningAttemptRef) => {
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
-    });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    };
+    const onSignFinished = async (data) => {
+      const signingAttempt = data.attempt;
+      if (!(await wallet.isApprovalCurrent(approvalScope.approval.approvalId)))
+        return;
+      if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -195,28 +252,24 @@ export const PrivatekeyWaiting = ({
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const safeMessage = params.safeMessage;
-            if (safeMessage) {
-              await wallet.handleGnosisMessage({
-                signature: data.data,
-                signerAddress: params.account!.address!,
-              });
-            } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, data.data);
-              } else {
-                await wallet.gnosisAddSignature(account.address, data.data);
-                await wallet.postGnosisTransaction();
-              }
-            }
+            const context = getSigningContext(signingAttempt);
+            if (!context) return;
+            await gnosisSubmission.submit(data.data, context);
           }
         } catch (e) {
+          if (!sameSigningAttempt(attemptRef.current, signingAttempt)) return;
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           setErrorMessage(e.message);
           console.error(e);
           return;
         }
+        if (
+          !(await wallet.isApprovalCurrent(
+            approvalScope.approval.approvalId
+          )) ||
+          !sameSigningAttempt(attemptRef.current, signingAttempt)
+        )
+          return;
         matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
@@ -229,18 +282,26 @@ export const PrivatekeyWaiting = ({
 
         setSignFinishedData({
           data: sig,
-          approvalId: approval.id,
+          signingAttempt: data.attempt,
         });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setErrorMessage(data.errorMsg);
+        setErrorMessage(data.error);
       }
-    });
+    };
+    handlersRef.current = {
+      onFinished: onSignFinished,
+      onSubmitting: onTxSubmitting,
+    };
+    listenersCleanupRef.current = () => {
+      handlersRef.current = {};
+    };
 
-    emitSignComponentAmounted();
+    notifySigningUiReady(attemptRef.current);
   };
 
   React.useEffect(() => {
+    mountedRef.current = true;
     (async () => {
       setTitle(
         <div className="flex justify-center items-center">
@@ -260,6 +321,11 @@ export const PrivatekeyWaiting = ({
       }
       init();
     })();
+    return () => {
+      mountedRef.current = false;
+      listenersCleanupRef.current?.();
+      listenersCleanupRef.current = null;
+    };
   }, []);
 
   React.useEffect(() => {
@@ -269,13 +335,12 @@ export const PrivatekeyWaiting = ({
   const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
-        signFinishedData.data,
+      void resolveApproval(signFinishedData.data, {
         stay,
-        false,
-        signFinishedData.approvalId
-      );
+        attempt: signFinishedData.signingAttempt,
+      }).then((result) => {
+        if (result?.accepted) closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 
@@ -309,6 +374,8 @@ export const PrivatekeyWaiting = ({
   }, [connectStatus, errorMessage]);
 
   const { value: txFailedResult } = useGetTxFailedResultInWaiting({
+    approvalType: approvalScope.approvalType,
+    retryScope: approvalScope.signing?.flow.flowId,
     nonce: params?.nonce,
     chainId: params?.chainId,
     status: connectStatus,

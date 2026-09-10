@@ -192,7 +192,6 @@ class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
   hasOtherProvider = false;
-  currentCoboSafeAddress?: Account | null;
 
   init = async () => {
     let defaultLang = 'en';
@@ -619,10 +618,11 @@ class PreferenceService {
     ];
     if (
       type === this.store.currentAccount?.type &&
-      address === this.store.currentAccount.address &&
+      isSameAddress(address, this.store.currentAccount.address) &&
       brandName === this.store.currentAccount.brandName
     ) {
-      this.resetCurrentAccount();
+      this.setCurrentAccount(null);
+      void this.resetCurrentAccount();
     }
   };
 
@@ -633,6 +633,7 @@ class PreferenceService {
    */
   resetCurrentAccount = async () => {
     const [account] = await keyringService.getAllVisibleAccountsArray();
+    if (this.store.currentAccount !== null) return;
     this.setCurrentAccount(account);
   };
 
@@ -652,6 +653,14 @@ class PreferenceService {
   };
 
   setCurrentAccount = (account: Account | null) => {
+    const previous = this.store.currentAccount;
+    const changed =
+      previous?.address?.toLowerCase() !== account?.address?.toLowerCase() ||
+      previous?.type !== account?.type ||
+      previous?.brandName !== account?.brandName;
+    if (changed) {
+      eventBus.emit(EVENTS.ACCOUNT_WILL_CHANGE, { previous, next: account });
+    }
     this.store.currentAccount = account;
     if (account) {
       if (!this.store.isEnabledDappAccount) {
@@ -1012,13 +1021,6 @@ class PreferenceService {
   setDesktopTokensAllMode = (value: boolean) => {
     this.store.desktopTokensAllMode = value;
   };
-  saveCurrentCoboSafeAddress = async () => {
-    this.currentCoboSafeAddress = await this.getCurrentAccount();
-  };
-  resetCurrentCoboSafeAddress = async () => {
-    this.setCurrentAccount(this.currentCoboSafeAddress ?? null);
-  };
-
   resetAddressSortStoreExpiredValue = () => {
     if (
       !this.store.addressSortStore.lastCurrentRecordTime ||

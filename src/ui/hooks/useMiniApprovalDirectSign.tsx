@@ -9,7 +9,7 @@ import {
 } from '@/constant';
 import useAsync from 'react-use/lib/useAsync';
 import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
-import { useApproval, useWallet } from '../utils';
+import { useWallet } from '../utils';
 import { createGlobalState } from 'react-use';
 
 export const useDirectSigningGlobal = createGlobalState(false);
@@ -69,19 +69,7 @@ export const useStartDirectSigning = () => {
   const setDirectSigning = useSetDirectSigning();
 
   return useCallback(async () => {
-    // const waitingDirectSignReSult = () =>
-    //   new Promise<void>((resolve, reject) => {
-    //     eventBus.once(EVENTS.DIRECT_SIGN, ({ error }) => {
-    //       setDirectSigning(false);
-    //       if (!error) {
-    //         resolve();
-    //       } else {
-    //         reject(error);
-    //       }
-    //     });
-    //   });
     setDirectSigning(true);
-    // await waitingDirectSignReSult();
   }, [setDirectSigning]);
 };
 
@@ -102,6 +90,8 @@ export const supportedHardwareDirectSign = (type: string) => {
 };
 
 export const useGetTxFailedResultInWaiting = ({
+  approvalType,
+  retryScope,
   nonce,
   chainId,
   status,
@@ -109,6 +99,8 @@ export const useGetTxFailedResultInWaiting = ({
   description,
   showOriginDesc,
 }: {
+  approvalType: string | undefined;
+  retryScope?: string;
   nonce?: string;
   chainId?: number;
   status: number;
@@ -117,7 +109,6 @@ export const useGetTxFailedResultInWaiting = ({
   showOriginDesc?: () => string | undefined;
 }) => {
   const wallet = useWallet();
-  const [getApproval] = useApproval();
 
   return useAsync<() => Promise<[string, RetryUpdateType]>>(async () => {
     const originDesc = showOriginDesc?.();
@@ -134,26 +125,31 @@ export const useGetTxFailedResultInWaiting = ({
       return [description || '', 'origin'];
     }
 
-    const approval = await getApproval();
-
-    if (approval?.data?.approvalType === 'SignTx' && nonce && chainId && from) {
-      const txFailedResult = await wallet.getTxFailedResult(description || '');
+    if (approvalType === 'SignTx' && nonce && chainId && from) {
+      const txFailedResult = await wallet.getTxFailedResult(
+        description || '',
+        undefined,
+        retryScope
+      );
 
       if (txFailedResult?.[1] === 'nonce') {
         const recommendNonce = await wallet.setRetryTxRecommendNonce({
           from: from,
           chainId: chainId,
           nonce: nonce,
+          scope: retryScope,
         });
 
-        return wallet.getTxFailedResult(description || '', {
-          nonce: recommendNonce,
-        });
+        return wallet.getTxFailedResult(
+          description || '',
+          { nonce: recommendNonce },
+          retryScope
+        );
       }
 
       return txFailedResult;
     }
 
     return [description, 'origin'] as [string, RetryUpdateType];
-  }, [nonce, chainId, status, from, description]);
+  }, [approvalType, retryScope, nonce, chainId, status, from, description]);
 };

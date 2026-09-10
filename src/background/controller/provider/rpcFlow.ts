@@ -4,24 +4,21 @@ import {
   notificationService,
   permissionService,
   preferenceService,
+  signingFlowService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import {
-  EVENTS,
   INTERNAL_REQUEST_ORIGIN,
-  KEYRING_CLASS,
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
 } from 'consts';
 import providerController from './controller';
-import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
-import { waitSignComponentAmounted } from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
 import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
@@ -38,7 +35,12 @@ import {
   startSignTxPreparation,
 } from '@/background/service/signTxPreparation';
 import { v4 as uuidv4 } from 'uuid';
-import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
+import {
+  SigningAttemptRef,
+  SigningFlowRef,
+  toAccountRef,
+  sameAccountRef,
+} from '@/utils/signingTypes';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -58,6 +60,7 @@ const flow = new PromiseFlow<{
   };
   mapMethod: string;
   approvalRes: any;
+  signingFlow?: SigningFlowRef;
 }>();
 const flowContext = flow
   .use(async (ctx, next) => {
@@ -170,6 +173,7 @@ const flowContext = flow
           );
 
           if (!isEnabledDappAccount) {
+            notificationService.rejectAllApprovals();
             preferenceService.setCurrentAccount(defaultAccount!);
           }
           connectOrigins.delete(origin);
@@ -212,6 +216,13 @@ const flowContext = flow
     const [approvalType, condition, options = {}] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
 
+    if (
+      ctx.request.approval &&
+      !notificationService.isApprovalRefCurrent(ctx.request.approval)
+    ) {
+      throw ethErrors.provider.userRejectedRequest();
+    }
+
     let windowHeight = 800;
     if ('height' in options) {
       windowHeight = options.height;
@@ -247,6 +258,17 @@ const flowContext = flow
     }
     if (approvalType && (!condition || !condition(ctx.request))) {
       ctx.request.requestedApproval = true;
+      const inheritedSigning = ctx.request.signing;
+      if (
+        isSignApproval(approvalType) &&
+        inheritedSigning &&
+        !signingFlowService.isCurrentContext(inheritedSigning)
+      ) {
+        throw ethErrors.provider.userRejectedRequest();
+      }
+      const flowId = isSignApproval(approvalType)
+        ? inheritedSigning?.flow.flowId || uuidv4()
+        : undefined;
       if (approvalType === 'SignTx' && !('chainId' in params[0])) {
         const site = permissionService.getConnectedSite(origin);
         if (site) {
@@ -318,6 +340,24 @@ const flowContext = flow
       ) {
         signTxPreparationId = uuidv4();
       }
+      if (flowId) {
+        ctx.signingFlow = signingFlowService.createFlow({
+          flowId,
+          account:
+            inheritedSigning?.account || toAccountRef(ctx.request.account),
+          origin,
+          rpcRequestId:
+            inheritedSigning?.rpcRequestId ||
+            String((ctx.request.data as any).id || flowId),
+          parentFlow: inheritedSigning?.parentFlow,
+        });
+      }
+      const signing = ctx.signingFlow
+        ? {
+            flow: ctx.signingFlow,
+            ...(inheritedSigning ? { attempt: inheritedSigning.attempt } : {}),
+          }
+        : undefined;
       try {
         const approvalData = {
           approvalComponent: approvalType,
@@ -329,11 +369,16 @@ const flowContext = flow
           },
           account: ctx.request.account,
           origin,
+          internalSignRequestId: ctx.request.internalSignRequestId,
+          isUnshift:
+            !!ctx.request.approval || !!ctx.request.internalSignRequestId,
         };
         const approvalPromise = notificationService.requestApproval(
           approvalData,
           { height: windowHeight },
           {
+            signing,
+            parentApproval: ctx.request.approval,
             onCurrent: () => {
               if (
                 !signTxPreparationId ||
@@ -378,6 +423,14 @@ const flowContext = flow
         );
 
         ctx.approvalRes = await approvalPromise;
+        if (ctx.approvalRes?.isCoboSafe && ctx.signingFlow) {
+          notificationService.invalidateSigningFlow(ctx.signingFlow.flowId);
+        }
+      } catch (error) {
+        if (ctx.signingFlow) {
+          notificationService.invalidateSigningFlow(ctx.signingFlow.flowId);
+        }
+        throw error;
       } finally {
         if (signTxPreparationId) {
           cancelSignTxPreparation(signTxPreparationId);
@@ -395,161 +448,147 @@ const flowContext = flow
   })
   .use(async (ctx) => {
     const { approvalRes, mapMethod, request } = ctx;
-    // process request
     const [approvalType] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
     const { uiRequestComponent, ...rest } = approvalRes || {};
+    const isApprovalHandoff =
+      !!approvalRes?.isGnosis || !!approvalRes?.isCoboSafe;
     const {
       session: { origin },
     } = request;
+    const flowRef = ctx.signingFlow as SigningFlowRef | undefined;
+    const signingAttempt = flowRef
+      ? signingFlowService.getActiveAttempt(flowRef)
+      : undefined;
 
-    const createRequestDeferFn = (
-      originApprovalRes: typeof approvalRes
-    ) => async (isRetry = false) =>
-      new Promise((resolve, reject) => {
-        let waitSignComponentPromise = Promise.resolve();
-
-        if (isSignApproval(approvalType) && uiRequestComponent) {
-          waitSignComponentPromise = waitSignComponentAmounted();
+    let latestApprovalRes = approvalRes;
+    const prepareRetryApproval = (isRetry: boolean) => {
+      if (
+        !isRetry ||
+        approvalType !== 'SignTx' ||
+        mapMethod !== 'ethSendTransaction'
+      ) {
+        return latestApprovalRes;
+      }
+      const retryApproval = { ...latestApprovalRes };
+      const retryType = bgRetryTxMethods.getRetryTxType(flowRef?.flowId);
+      switch (retryType) {
+        case 'nonce': {
+          const recommendNonce = bgRetryTxMethods.getRetryTxRecommendNonce(
+            flowRef?.flowId
+          );
+          retryApproval.nonce =
+            recommendNonce === retryApproval.nonce
+              ? intToHex(hexToNumber(recommendNonce as '0x${string}') + 1)
+              : recommendNonce;
+          break;
         }
-
-        // if (approvalRes?.isGnosis && !approvalRes.safeMessage) {
-        //   return resolve(undefined);
-        // }
-        if (originApprovalRes?.isGnosis) {
-          return resolve(undefined);
-        }
-
-        return waitSignComponentPromise.then(() => {
-          let _approvalRes = originApprovalRes;
-
-          if (
-            isRetry &&
-            approvalType === 'SignTx' &&
-            mapMethod === 'ethSendTransaction'
-          ) {
-            _approvalRes = { ...originApprovalRes };
-            const {
-              getRetryTxType,
-              getRetryTxRecommendNonce,
-            } = bgRetryTxMethods;
-            const retryType = getRetryTxType();
-            switch (retryType) {
-              case 'nonce': {
-                const recommendNonce = getRetryTxRecommendNonce();
-                if (recommendNonce === _approvalRes.nonce) {
-                  _approvalRes.nonce = intToHex(
-                    hexToNumber(recommendNonce as '0x${string}') + 1
-                  );
-                } else {
-                  _approvalRes.nonce = recommendNonce;
-                }
-
-                break;
-              }
-
-              case 'gasPrice': {
-                if (_approvalRes.gasPrice) {
-                  _approvalRes.gasPrice = `0x${new BigNumber(
-                    new BigNumber(_approvalRes.gasPrice, 16)
-                      .times(1.3)
-                      .toFixed(0)
-                  ).toString(16)}`;
-                }
-                if (_approvalRes.maxFeePerGas) {
-                  _approvalRes.maxFeePerGas = `0x${new BigNumber(
-                    new BigNumber(_approvalRes.maxFeePerGas, 16)
-                      .times(1.3)
-                      .toFixed(0)
-                  ).toString(16)}`;
-                }
-                break;
-              }
-
-              default:
-                break;
-            }
-            if (retryType) {
-              if (!approvalRes?.isGnosis) {
-                notificationService.setCurrentRequestDeferFn(
-                  createRequestDeferFn(_approvalRes)
-                );
-              }
-            }
+        case 'gasPrice':
+          if (retryApproval.gasPrice) {
+            retryApproval.gasPrice = `0x${new BigNumber(
+              new BigNumber(retryApproval.gasPrice, 16).times(1.3).toFixed(0)
+            ).toString(16)}`;
           }
+          if (retryApproval.maxFeePerGas) {
+            retryApproval.maxFeePerGas = `0x${new BigNumber(
+              new BigNumber(retryApproval.maxFeePerGas, 16)
+                .times(1.3)
+                .toFixed(0)
+            ).toString(16)}`;
+          }
+          break;
+        default:
+          break;
+      }
+      latestApprovalRes = retryApproval;
+      return retryApproval;
+    };
 
-          return Promise.resolve(
-            providerController[mapMethod]({
-              ...request,
-              approvalRes: _approvalRes,
-            })
-          )
-            .then((result) => {
-              if (isSignApproval(approvalType)) {
-                eventBus.emit(EVENTS.broadcastToUI, {
-                  method: EVENTS.SIGN_FINISHED,
-                  params: {
-                    success: true,
-                    data: result,
-                  },
-                });
-              }
-              return result;
-            })
-            .then(resolve)
-            .catch((e: any) => {
-              console.error(e);
-              const payload = {
-                method: EVENTS.SIGN_FINISHED,
-                params: {
-                  success: false,
-                  errorMsg: e?.message || JSON.stringify(e),
-                },
-              };
-              if (e.method) {
-                payload.method = e.method;
-                payload.params = e.message;
-              }
+    const runSigningAttempt = (attempt: SigningAttemptRef) => {
+      if (!flowRef)
+        return Promise.reject(ethErrors.provider.userRejectedRequest());
+      const flow = signingFlowService.getFlow(flowRef);
+      const account = toAccountRef(request.account) || flow?.account;
+      if (!account || !flow || !sameAccountRef(flow.account, account)) {
+        return Promise.reject(ethErrors.provider.userRejectedRequest());
+      }
+      return signingFlowService.run(
+        flowRef,
+        attempt,
+        async (currentAttempt, retryOptions) => {
+          const retry = !!(retryOptions as any)?.isRetry;
+          const context = {
+            flow: flowRef,
+            attempt: currentAttempt,
+            account,
+            origin: flow.origin,
+            rpcRequestId: flow.rpcRequestId,
+            parentFlow: flow.parentFlow,
+          };
+          const approval = signingFlowService.getAttemptApproval(
+            currentAttempt
+          );
+          return providerController[mapMethod]({
+            ...request,
+            approvalRes: prepareRetryApproval(retry),
+            approval,
+            signing: context,
+          });
+        },
+        {
+          retryable: () => !!uiRequestComponent && isSignApproval(approvalType),
+        }
+      );
+    };
 
-              const signingCarrier = takeSigningCarrier(e);
-              if (signingCarrier) {
-                if (!isSigningCarrierReported(signingCarrier)) {
-                  Sentry.captureException(signingCarrier);
-                }
-              } else if (
-                !isSignApproval(approvalType) ||
-                (e && typeof e === 'object')
-              ) {
-                Sentry.captureException(e);
-              }
-              if (isSignApproval(approvalType)) {
-                eventBus.emit(EVENTS.broadcastToUI, payload);
-              }
-              reject(e);
-            });
-        });
-      });
-
-    const requestDeferFn = createRequestDeferFn(approvalRes);
-
-    if (!approvalRes?.isGnosis) {
-      notificationService.setCurrentRequestDeferFn(requestDeferFn);
+    if (
+      flowRef &&
+      signingAttempt &&
+      !uiRequestComponent &&
+      !isApprovalHandoff
+    ) {
+      signingFlowService.markUiReady(signingAttempt);
     }
-    const requestDefer = requestDeferFn();
+    const requestDefer =
+      flowRef && signingAttempt && !isApprovalHandoff
+        ? runSigningAttempt(signingAttempt)
+        : !isApprovalHandoff
+        ? providerController[mapMethod]({ ...request, approvalRes })
+        : Promise.resolve(undefined);
+
+    // The UI handoff owns the outer approval promise; the signer continues in
+    // the flow service and this branch intentionally does not await it.
+    if (uiRequestComponent) {
+      void requestDefer.catch(() => undefined);
+    }
+
     async function requestApprovalLoop({
       uiRequestComponent,
       $account,
       ...rest
     }) {
       ctx.request.requestedApproval = true;
-      const res = await notificationService.requestApproval({
-        approvalComponent: uiRequestComponent,
-        params: rest,
-        account: $account,
-        origin,
-        approvalType,
-        isUnshift: true,
-      });
+      const res = await notificationService.requestApproval(
+        {
+          approvalComponent: uiRequestComponent,
+          params: rest,
+          account: $account,
+          origin,
+          approvalType,
+          isGnosis: rest.isGnosis,
+          isUnshift: true,
+        },
+        undefined,
+        {
+          parentApproval: ctx.request.approval,
+          signing: flowRef
+            ? {
+                flow: flowRef,
+                attempt: ctx.request.signing?.attempt || signingAttempt,
+              }
+            : undefined,
+        }
+      );
       if (res?.uiRequestComponent) {
         return await requestApprovalLoop(res);
       } else {
@@ -559,31 +598,43 @@ const flowContext = flow
 
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
-      const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
-      reportStatsData();
-      if (rest?.safeMessage) {
-        const safeMessage: {
-          safeAddress: string;
-          message: string | Record<string, any>;
-          chainId: number;
-          safeMessageHash: string;
-        } = rest.safeMessage;
-        if (ctx.request.requestedApproval) {
-          flow.requestedApproval = false;
-          // only unlock notification if current flow is an approval flow
-          notificationService.unLock();
-        }
-        return gnosisController.watchMessage({
-          address: safeMessage.safeAddress,
-          chainId: safeMessage.chainId,
-          safeMessageHash: safeMessage.safeMessageHash,
+      try {
+        const result = await requestApprovalLoop({
+          uiRequestComponent,
+          ...rest,
         });
-      } else {
-        return result;
+        reportStatsData();
+        if (isApprovalHandoff && flowRef) {
+          notificationService.invalidateSigningFlow(flowRef.flowId);
+        }
+        if (rest?.safeMessage) {
+          const safeMessage: {
+            safeAddress: string;
+            message: string | Record<string, any>;
+            chainId: number;
+            safeMessageHash: string;
+          } = rest.safeMessage;
+          if (ctx.request.requestedApproval) {
+            // only unlock notification if current flow is an approval flow
+            notificationService.unLock();
+          }
+          return gnosisController.watchMessage({
+            address: safeMessage.safeAddress,
+            chainId: safeMessage.chainId,
+            safeMessageHash: safeMessage.safeMessageHash,
+          });
+        } else {
+          return result;
+        }
+      } catch (error) {
+        if (flowRef) {
+          notificationService.invalidateSigningFlow(flowRef.flowId);
+        }
+        throw error;
       }
     }
 
-    return requestDefer;
+    return await requestDefer;
   })
   .callback();
 
@@ -637,7 +688,6 @@ export default (request: ProviderRequest) => {
     reportStatsData();
 
     if (ctx.request.requestedApproval) {
-      flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow
       notificationService.unLock();
     }

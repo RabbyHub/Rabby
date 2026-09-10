@@ -1,22 +1,19 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { getUiType, useApproval, useWallet } from 'ui/utils';
+import { getUiType, useWallet } from 'ui/utils';
 import { Spin } from 'ui/component';
-import { Approval } from 'background/service/notification';
 import Browser from 'webextension-polyfill';
 
 const SortHat = () => {
   const wallet = useWallet();
   const [to, setTo] = useState('');
-  // eslint-disable-next-line prefer-const
-  let [getApproval] = useApproval();
   const UIType = getUiType();
 
   const loadView = async () => {
     const isInNotification = UIType.isNotification;
     const isInTab = UIType.isTab;
-    const approvalPromise = getApproval() as Promise<Approval | undefined>;
+    const approvalPromise = wallet.getCurrentApproval();
     const isBootedPromise = wallet.isBooted();
     // The no-approval path may return before this prefetched request is awaited.
     void isBootedPromise.catch(() => undefined);

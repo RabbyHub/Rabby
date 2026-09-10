@@ -14,6 +14,7 @@ import { findChain } from '@/utils/chain';
 import { Account } from '@/background/service/preference';
 import { explainGas } from '@/utils/transaction';
 import BigNumber from 'bignumber.js';
+import type { SigningRequestContext } from '@/utils/signingTypes';
 
 type PrepareParams = {
   wallet: WalletControllerType;
@@ -41,6 +42,10 @@ type SendParams = {
   retry?: boolean;
   shouldPause?: (idx: number, signedCount: number) => boolean;
   onProgress?: (ctx: SignerCtx) => void;
+  hardwareOperation?: import('@/utils/signingTypes').HardwareOperationRef;
+  signing?: SigningRequestContext;
+  retryScope: string;
+  retryTxs: Tx[];
 };
 
 export const signatureService = {
@@ -95,6 +100,10 @@ export const signatureService = {
     retry,
     shouldPause,
     onProgress,
+    hardwareOperation,
+    signing,
+    retryScope,
+    retryTxs,
   }: SendParams) => {
     const chainMeta = findChain({ id: ctx.chainId });
     const chainServerId = chainMeta?.serverId || '';
@@ -106,6 +115,10 @@ export const signatureService = {
       config,
       retry,
       shouldPause,
+      hardwareOperation,
+      signing,
+      retryScope,
+      retryTxs,
       onSendedTx: ({ hash, idx }) => {
         if (!onProgress) return;
         const txsCalc = currentCtx.txsCalc.map((item, index) =>
