@@ -40,6 +40,16 @@ const PopoverStyle = createGlobalStyle`
     }
     .ant-popover-arrow-content {
       --antd-arrow-background-color: rgba(var(--r-neutral-bg-1-rgb), 0.9);
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-right: 0.5px solid var(--r-neutral-line);
+        border-bottom: 0.5px solid var(--r-neutral-line);
+        border-radius: inherit;
+        pointer-events: none;
+      }
     }
   }
 `;
