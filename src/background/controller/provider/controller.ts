@@ -1022,7 +1022,7 @@ class ProviderController extends BaseController {
         bindSigningCarrier(errObj, carrier);
         errObj.reportedFromBackground = true;
       }
-      errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
+      errObj.signingErrorStage = 'hardware';
 
       throw errObj;
     }

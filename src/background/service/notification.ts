@@ -1,6 +1,11 @@
 import browser, { Windows } from 'webextension-polyfill';
 import Events from 'events';
-import { toApprovalRef, ApprovalRef, SigningRetry } from '@/utils/signingTypes';
+import {
+  ApprovalRef,
+  SigningResult,
+  SigningRetry,
+  toApprovalRef,
+} from '@/utils/signingTypes';
 import { ethErrors } from 'eth-rpc-errors';
 import { v4 as uuidv4 } from 'uuid';
 import * as Sentry from '@sentry/browser';
@@ -32,15 +37,21 @@ export interface Approval {
     account: Account;
     origin?: string;
     approvalComponent: keyof IApprovalComponents;
-    requestDefer?: Promise<any>;
     approvalType?: string;
-    executionId?: string;
+    signingAttempt?: number;
   };
   winProps: any;
   resolve?(params?: any): void;
   reject?(err: EthereumProviderError<any>): void;
-  requestDeferFn?(executionId: string, retry?: SigningRetry): void;
-  cancelSigning?(): void;
+  signing?: {
+    run: (
+      executionId: string,
+      signal: AbortSignal,
+      retry?: SigningRetry
+    ) => Promise<SigningResult>;
+    controller?: AbortController;
+    result?: Promise<SigningResult>;
+  };
 }
 
 export type ResolveApprovalCommand = {
@@ -208,7 +219,7 @@ class NotificationService extends Events {
   };
 
   deleteApproval = (approval) => {
-    approval?.cancelSigning?.();
+    approval?.signing?.controller?.abort();
     if (approval && this.approvals.length > 1) {
       this.approvals = this.approvals.filter((item) => approval.id !== item.id);
     } else {
@@ -289,8 +300,7 @@ class NotificationService extends Events {
     winProps?,
     options?: {
       onCurrent?: () => void;
-      requestDeferFn?: Approval['requestDeferFn'];
-      cancelSigning?: Approval['cancelSigning'];
+      sign?: NonNullable<Approval['signing']>['run'];
     }
   ): Promise<any> => {
     const origin = this.getOrigin(data);
@@ -350,10 +360,9 @@ class NotificationService extends Events {
         taskId: uuid as any,
         id: uuid,
         signingTxId,
-        data,
+        data: options?.sign ? { ...data, signingAttempt: 0 } : data,
         winProps,
-        requestDeferFn: options?.requestDeferFn,
-        cancelSigning: options?.cancelSigning,
+        signing: options?.sign ? { run: options.sign } : undefined,
         resolve(data) {
           if (this.data.approvalComponent === 'SignTx') {
             reportExplain(this.signingTxId);
@@ -425,7 +434,7 @@ class NotificationService extends Events {
   };
 
   clear = async (stay = false) => {
-    this.approvals.forEach((approval) => approval.cancelSigning?.());
+    this.approvals.forEach((approval) => approval.signing?.controller?.abort());
     this.approvals = [];
     this.currentApproval = null;
     if (this.notifiWindowId !== null && !stay) {
@@ -443,7 +452,7 @@ class NotificationService extends Events {
   rejectAllApprovals = () => {
     this.addLastRejectDapp();
     this.approvals.forEach((approval) => {
-      approval.cancelSigning?.();
+      approval.signing?.controller?.abort();
       approval.reject &&
         approval.reject(
           new EthereumProviderError(4001, 'User rejected the request.')
@@ -499,19 +508,38 @@ class NotificationService extends Events {
     }
   };
 
-  callCurrentRequestDeferFn = (
+  signApproval = async (
     ref: ApprovalRef,
-    executionId: string,
+    attempt: number,
     retry?: SigningRetry
   ) => {
     if (!this.checkApproval(ref).accepted) return;
     const approval = this.currentApproval!;
-    if (!executionId || approval.data.executionId !== executionId) return;
-    if (!approval.requestDeferFn) return;
-    const nextExecutionId = uuidv4();
-    approval.data.executionId = nextExecutionId;
-    approval.requestDeferFn(nextExecutionId, retry);
-    return nextExecutionId;
+    const signing = approval.signing;
+    if (!signing || !Number.isSafeInteger(attempt) || attempt < 0) return;
+    const isNextAttempt = attempt === approval.data.signingAttempt! + 1;
+    if (attempt !== approval.data.signingAttempt && !(retry && isNextAttempt))
+      return;
+
+    // Reopening or retrying the same attempt joins its promise. Only the
+    // next sequence number can start another signing operation.
+    if (!signing.result || isNextAttempt) {
+      signing.controller?.abort();
+      signing.controller = new AbortController();
+      approval.data.signingAttempt = attempt;
+      signing.result = signing.run(
+        `${approval.id}:${attempt}`,
+        signing.controller.signal,
+        retry
+      );
+    }
+    const result = await signing.result;
+    if (
+      this.checkApproval(ref).accepted &&
+      approval.data.signingAttempt === attempt &&
+      !signing.controller?.signal.aborted
+    )
+      return result;
   };
 
   setStatsData = (data?: StatsData) => {

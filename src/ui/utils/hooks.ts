@@ -12,6 +12,7 @@ import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
 import { ApprovalScopeContext } from '@/ui/approval/context';
+import { createApprovalActions } from '@/ui/approval/actions';
 import { toApprovalRef } from '@/utils/signingTypes';
 
 export const useApproval = () => {
@@ -33,65 +34,43 @@ export const useApproval = () => {
   };
   const deviceConnect = useDeviceConnect();
 
+  const getActions = async (approvalId?: string) => {
+    const targetApprovalId = approvalId || scopedApprovalId;
+    if (!targetApprovalId) return;
+    if (scopedApprovalId && targetApprovalId !== scopedApprovalId) return;
+    const approval = await wallet.getCurrentApproval();
+    if (approval?.id !== targetApprovalId) return;
+
+    return createApprovalActions({
+      approval:
+        approvalScope?.approval ||
+        toApprovalRef(targetApprovalId, approval.data.approvalComponent),
+      account: approval.data.account,
+      isCurrent: () => wallet.isApprovalCurrent(targetApprovalId),
+      deviceConnect,
+      resolveApprovalFor: (command) => wallet.resolveApprovalFor(command),
+      rejectApprovalFor: (command) => wallet.rejectApprovalFor(command),
+      onResolved: (data) => {
+        setTimeout(() => {
+          if (data && enablePopup(data.type)) {
+            showPopup();
+          } else {
+            history.replace('/');
+          }
+        }, 0);
+      },
+      onRejected: () => history.push('/'),
+    });
+  };
   const resolveApproval = async (
     data?: any,
     stay = false,
     forceReject = false,
     approvalId?: string
   ) => {
-    const targetApprovalId = approvalId || scopedApprovalId;
-    if (!targetApprovalId) return;
-    if (
-      targetApprovalId &&
-      !(await wallet.isApprovalCurrent(targetApprovalId))
-    ) {
-      return;
-    }
-    const approval = await (targetApprovalId
-      ? wallet.getCurrentApproval()
-      : getApproval());
-    if (!approval) {
-      if (!stay) history.replace('/');
-      return;
-    }
-
-    if (targetApprovalId && approval.id !== targetApprovalId) return;
-
-    // handle connect
-    if (!(await deviceConnect(data, approval.data.account))) {
-      return;
-    }
-
-    if (
-      targetApprovalId &&
-      !(await wallet.isApprovalCurrent(targetApprovalId))
-    ) {
-      return;
-    }
-
-    const approvalRef =
-      approvalScope?.approval ||
-      toApprovalRef(
-        targetApprovalId || approval.id,
-        approval.data.approvalComponent
-      );
-    const result = await wallet.resolveApprovalFor({
-      approval: approvalRef,
-      data,
-      forceReject,
-    });
-    if (!result.accepted) return;
-
-    if (stay) {
-      return result;
-    }
-    setTimeout(() => {
-      if (data && enablePopup(data.type)) {
-        return showPopup();
-      }
-      history.replace('/');
-    }, 0);
-    return result;
+    const actions = await getActions(approvalId);
+    const result = await actions?.resolve(data, { stay, forceReject });
+    return result?.accepted ? result : undefined;
   };
 
   const rejectApproval = async (
@@ -100,41 +79,9 @@ export const useApproval = () => {
     isInternal = false,
     approvalId?: string
   ) => {
-    const targetApprovalId = approvalId || scopedApprovalId;
-    if (!targetApprovalId) return;
-    if (
-      targetApprovalId &&
-      !(await wallet.isApprovalCurrent(targetApprovalId))
-    ) {
-      return;
-    }
-    const approval = await (targetApprovalId
-      ? wallet.getCurrentApproval()
-      : getApproval());
-    if (!approval) {
-      if (!stay) history.push('/');
-      return;
-    }
-
-    if (targetApprovalId && approval.id !== targetApprovalId) return;
-
-    const approvalRef =
-      approvalScope?.approval ||
-      toApprovalRef(
-        targetApprovalId || approval.id,
-        approval.data.approvalComponent
-      );
-    const result = await wallet.rejectApprovalFor({
-      approval: approvalRef,
-      error: err,
-      stay,
-      isInternal,
-    });
-    if (!result.accepted) return;
-    if (!stay) {
-      history.push('/');
-    }
-    return result;
+    const actions = await getActions(approvalId);
+    const result = await actions?.reject(err, { stay, isInternal });
+    return result?.accepted ? result : undefined;
   };
   return [getApproval, resolveApproval, rejectApproval] as const;
 };

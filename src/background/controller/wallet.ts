@@ -1,4 +1,3 @@
-import type { ApprovalRef, SigningRetry } from '@/utils/signingTypes';
 import { createSigningSessionGuard } from '@/background/service/signingSession';
 import {
   stripHexPrefix,
@@ -546,17 +545,7 @@ export class WalletController extends BaseController {
     });
   };
 
-  resendSign = (
-    approval: ApprovalRef,
-    executionId: string,
-    retry?: SigningRetry
-  ) => {
-    return notificationService.callCurrentRequestDeferFn(
-      approval,
-      executionId,
-      retry
-    );
-  };
+  signApproval = notificationService.signApproval;
 
   getApproval = notificationService.getApproval;
   getCurrentApproval = notificationService.getCurrentApproval;
@@ -3647,57 +3636,6 @@ export class WalletController extends BaseController {
     return keyring.getMessageInfo();
   };
 
-  addGnosisMessage = async ({
-    signerAddress,
-    signature,
-  }: {
-    signerAddress: string;
-    signature: string;
-  }) => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    return keyring.addMessage({
-      signerAddress,
-      signature,
-    });
-  };
-
-  addGnosisMessageSignature = async ({
-    signerAddress,
-    signature,
-  }: {
-    signerAddress: string;
-    signature: string;
-  }) => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    return keyring.addMessageSignature({
-      signerAddress,
-      signature,
-    });
-  };
-
-  handleGnosisMessage = async ({
-    signerAddress,
-    signature,
-  }: {
-    signerAddress: string;
-    signature: string;
-  }) => {
-    const sigs = this.getGnosisMessageSignatures();
-    if (sigs.length > 0) {
-      await wallet.addGnosisMessageSignature({
-        signature: signature,
-        signerAddress: signerAddress,
-      });
-    } else {
-      await wallet.addGnosisMessage({
-        signature: signature,
-        signerAddress: signerAddress,
-      });
-    }
-  };
-
   addPureGnosisMessageSignature = async ({
     signerAddress,
     signature,
@@ -3737,15 +3675,6 @@ export class WalletController extends BaseController {
       networkId: String(chainId),
     });
     return safe.getSafeMessageHash(hashSafeMessage(message as any));
-  };
-
-  getGnosisMessageSignatures = () => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (keyring.currentSafeMessage) {
-      const sigs = Array.from(keyring.currentSafeMessage.signatures.values());
-      return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
-    }
-    return [];
   };
 
   validateGnosisMessage = async (

@@ -13,9 +13,8 @@ import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import Process from './Process';
 import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
-import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
-import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
+import { useApprovalSigning } from '@/ui/hooks/useApprovalSigning';
 import { ga4 } from '@/utils/ga4';
 
 interface ApprovalParams {
@@ -47,7 +46,6 @@ const CoinbaseWaiting = ({
 }) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
-  const signingEvents = useSigningEvents();
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
@@ -66,7 +64,6 @@ const CoinbaseWaiting = ({
   const explainRef = useRef<any | null>(null);
   const [signFinishedData, setSignFinishedData] = useState<{
     data: any;
-    approvalId: string;
   }>();
   const [isClickDone, setIsClickDone] = useState(false);
   const { status: sessionStatus } = useSessionStatus(currentAccount!);
@@ -96,10 +93,31 @@ const CoinbaseWaiting = ({
   const handleRetry = async (retry?: boolean) => {
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
     setConnectError(null);
-    if (!(await signingEvents.retry())) return;
+    if (!(await startSigning({ type: 'origin' }))) return;
     message.success(t('page.signFooterBar.walletConnect.requestSuccessToast'));
-    signingEvents.ready();
   };
+
+  const startSigning = useApprovalSigning({
+    onResult: async (data) => {
+      if (!data.success && data.errorStage === 'gnosis') {
+        rejectApproval(data.errorMsg);
+        return;
+      }
+      if (data.success) {
+        const sig = data.data;
+        setResult(sig);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
+        setSignFinishedData({
+          data: sig,
+        });
+      } else {
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
+        setConnectError({
+          message: data.errorMsg,
+        });
+      }
+    },
+  });
 
   const init = async () => {
     const approval = await getApproval();
@@ -113,53 +131,6 @@ const CoinbaseWaiting = ({
       ? true
       : approval?.data.approvalType !== 'SignTx';
     isSignTextRef.current = isText;
-
-    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
-      if (data.success) {
-        let sig = data.data;
-        setResult(sig);
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
-        try {
-          if (params.isGnosis) {
-            sig = adjustV('eth_signTypedData', sig);
-            const safeMessage = params.safeMessage;
-            if (safeMessage) {
-              if (!(await isCurrent())) return;
-              await wallet.handleGnosisMessage({
-                signature: data.data,
-                signerAddress: params.account!.address!,
-              });
-            } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                if (!(await isCurrent())) return;
-                await wallet.gnosisAddConfirmation(account.address, sig);
-              } else {
-                if (!(await isCurrent())) return;
-                await wallet.gnosisAddSignature(account.address, sig);
-                if (!(await isCurrent())) return;
-                await wallet.postGnosisTransaction();
-              }
-            }
-          }
-        } catch (e) {
-          if (!(await isCurrent())) return;
-          rejectApproval(e.message);
-          return;
-        }
-
-        if (!(await isCurrent())) return;
-        setSignFinishedData({
-          data: sig,
-          approvalId: approval.id,
-        });
-      } else {
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setConnectError({
-          message: data.errorMsg,
-        });
-      }
-    });
 
     await initWalletConnect();
 
@@ -207,7 +178,7 @@ const CoinbaseWaiting = ({
       isSignTriggered = true;
     }
 
-    signingEvents.ready();
+    startSigning();
   };
 
   useEffect(() => {
@@ -218,12 +189,7 @@ const CoinbaseWaiting = ({
   useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        false,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, false, false);
     }
   }, [signFinishedData, isClickDone]);
 

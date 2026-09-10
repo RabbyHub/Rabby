@@ -1,4 +1,4 @@
-import type { SigningRetry } from '@/utils/signingTypes';
+import type { SigningResult, SigningRetry } from '@/utils/signingTypes';
 import { ethErrors } from 'eth-rpc-errors';
 import {
   keyringService,
@@ -22,8 +22,6 @@ import * as Sentry from '@sentry/browser';
 import stats from '@/stats';
 import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
-import { waitSignComponentAmounted } from '@/utils/signEvent';
-import { createSigningSessionGuard } from '@/background/service/signingSession';
 import { gnosisController } from './gnosisController';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
@@ -414,14 +412,6 @@ const flowContext = flow
       retry?: SigningRetry
     ) => {
       if (approvalRes?.isGnosis && !uiRequestComponent) return;
-      if (isSignApproval(approvalType) && uiRequestComponent) {
-        await waitSignComponentAmounted(executionId, signal);
-        if (
-          notificationService.getApproval()?.data.executionId !== executionId
-        ) {
-          throw ethErrors.provider.userRejectedRequest();
-        }
-      }
       if (signal.aborted) throw ethErrors.provider.userRejectedRequest();
       let nextApprovalRes = lastApprovalRes;
       if (
@@ -447,39 +437,13 @@ const flowContext = flow
         lastApprovalRes = nextApprovalRes;
       }
       try {
-        let result;
-        if (approvalRes?.isGnosis) {
-          const assertCurrent = createSigningSessionGuard(
-            () => keyringService.isUnlocked(),
-            signal
-          );
-          const account = rest.$account || rest.account;
-          const keyring = await keyringService.getKeyringForAccount(
-            account.address,
-            account.type
-          );
-          assertCurrent();
-          result = await keyringService.signTypedMessage(
-            keyring,
-            { from: account.address, data: JSON.parse(rest.data[1]) },
-            { brandName: account.brandName, version: 'V4' }
-          );
-          assertCurrent();
-        } else {
-          result = await providerController[mapMethod]({
-            ...request,
-            executionId,
-            signingSignal: signal,
-            approvalRes: nextApprovalRes,
-          });
-        }
+        const result = await providerController[mapMethod]({
+          ...request,
+          executionId,
+          signingSignal: signal,
+          approvalRes: nextApprovalRes,
+        });
         if (signal.aborted) throw ethErrors.provider.userRejectedRequest();
-        if (isSignApproval(approvalType) && uiRequestComponent) {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.SIGN_FINISHED,
-            params: { executionId, success: true, data: result },
-          });
-        }
         return result;
       } catch (e) {
         if (signal.aborted) throw e;
@@ -493,16 +457,6 @@ const flowContext = flow
         ) {
           Sentry.captureException(e);
         }
-        if (isSignApproval(approvalType) && uiRequestComponent) {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: e.method || EVENTS.SIGN_FINISHED,
-            params: {
-              executionId,
-              success: false,
-              errorMsg: e?.message || JSON.stringify(e),
-            },
-          });
-        }
         throw e;
       }
     };
@@ -513,39 +467,42 @@ const flowContext = flow
       ...rest
     }) {
       ctx.request.requestedApproval = true;
-      let controller: AbortController;
-      const run = (executionId: string, retry?: SigningRetry) => {
-        controller?.abort();
-        controller = new AbortController();
-        // The waiting approval owns the result/error UI; the request promise
-        // resolves when that approval is resolved, including after a retry.
-        void execute(executionId, controller.signal, retry).catch(
-          () => undefined
-        );
-      };
-      const executionId = uuidv4();
-      run(executionId);
-      try {
-        const res = await notificationService.requestApproval(
-          {
-            approvalComponent: uiRequestComponent,
-            params: rest,
-            account: $account,
-            origin,
-            approvalType,
-            executionId,
-            isUnshift: true,
+      const res = await notificationService.requestApproval(
+        {
+          approvalComponent: uiRequestComponent,
+          params: rest,
+          account: $account,
+          origin,
+          approvalType,
+          isUnshift: true,
+        },
+        undefined,
+        {
+          sign: async (executionId, signal, retry): Promise<SigningResult> => {
+            if (rest.isGnosis) {
+              return gnosisController.sign({
+                account: $account || rest.account,
+                data: JSON.parse(rest.data[1]),
+                isMessage: !!rest.safeMessage,
+                signal,
+              });
+            }
+            try {
+              return {
+                success: true,
+                data: await execute(executionId, signal, retry),
+              };
+            } catch (e) {
+              return {
+                success: false,
+                errorMsg: e?.message || JSON.stringify(e),
+                errorStage: e.signingErrorStage,
+              };
+            }
           },
-          undefined,
-          {
-            requestDeferFn: run,
-            cancelSigning: () => controller.abort(),
-          }
-        );
-        return res?.uiRequestComponent ? await requestApprovalLoop(res) : res;
-      } finally {
-        controller!.abort();
-      }
+        }
+      );
+      return res?.uiRequestComponent ? requestApprovalLoop(res) : res;
     }
 
     if (uiRequestComponent) {

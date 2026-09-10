@@ -1,11 +1,9 @@
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
-import { readFileSync } from 'fs';
 import { resolve } from 'path';
-import ts from 'typescript';
 import { execFileSync } from 'child_process';
 import eventBus from '@/eventBus';
-import { EVENTS } from '@/constant';
+import { useBatchSignPersonalMessageTask } from '@/ui/views/Approval/components/MiniPersonalMessgae/useBatchPersonalMessageTask';
 import { useBatchSignTypedDataTask } from '@/ui/views/Approval/components/MiniSignTypedData/useTypedDataTask';
 
 jest.mock('@/ui/utils', () => ({ useWallet: () => mockWallet }));
@@ -21,25 +19,6 @@ jest.mock('@/ui/utils/sendTypedData', () => ({
 const mockSend = jest.fn();
 const mockWallet = {};
 const mockSetDirectSigning = jest.fn();
-const compiled = ts.transpileModule(
-  readFileSync(
-    resolve(
-      __dirname,
-      '../../src/ui/views/Approval/components/MiniPersonalMessgae/useBatchPersonalMessageTask.tsx'
-    ),
-    'utf8'
-  ),
-  {
-    compilerOptions: {
-      module: ts.ModuleKind.CommonJS,
-      target: ts.ScriptTarget.ES2020,
-      esModuleInterop: true,
-    },
-  }
-).outputText;
-const hookExports: any = {};
-new Function('require', 'exports', compiled)(require, hookExports);
-const { useBatchSignPersonalMessageTask } = hookExports;
 Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
 
 it('direct signing receives a prefetch that was already in flight', () => {
@@ -100,7 +79,7 @@ describe.each([
     let resultA!: Promise<any>;
     let resultB!: Promise<any>;
     const broadcast = jest.fn();
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, broadcast);
+    eventBus.addEventListener('COMMON_HARDWARE_REJECTED', broadcast);
     await act(async () => {
       resultA = tasks[0].start().catch((e) => e);
       resultB = tasks[1].start();
@@ -118,7 +97,7 @@ describe.each([
       await resultB;
     });
     expect(tasks[1].status).toBe('completed');
-    eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, broadcast);
+    eventBus.removeEventListener('COMMON_HARDWARE_REJECTED', broadcast);
   });
 
   it('a replaced task ignores the old signature failure', async () => {

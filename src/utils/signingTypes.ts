@@ -8,12 +8,11 @@ export const toApprovalRef = <Component extends string>(
   component: Component
 ): ApprovalRef<Component> => ({ approvalId, component });
 
-// Correlates one execution (including a retry), independently of user consent.
-export type SigningEvent = {
-  executionId: string;
-  success?: boolean;
+export type SigningResult = {
+  success: boolean;
   data?: any;
   errorMsg?: string;
+  errorStage?: 'hardware' | 'gnosis';
 };
 
 export type SigningRetry = {

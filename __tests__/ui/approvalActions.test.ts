@@ -6,9 +6,24 @@ jest.mock('@/ui/utils/useDeviceConnect', () => ({
 }));
 jest.mock('@/ui/utils/WalletContext', () => ({
   useWallet: jest.fn(),
+  useCommonPopupView: () => ({}),
 }));
+jest.mock('@/ui/utils/ledger', () => ({}));
+jest.mock('@/ui/store', () => ({}));
+jest.mock('@/ui/state/exchange', () => ({}));
 
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { MemoryRouter } from 'react-router-dom';
 import { createApprovalActions } from '@/ui/approval/actions';
+import {
+  ApprovalScopeContext,
+  createApprovalScope,
+} from '@/ui/approval/context';
+import { useApproval } from '@/ui/utils/hooks';
+import { useWallet } from '@/ui/utils/WalletContext';
+import { useDeviceConnect } from '@/ui/utils/useDeviceConnect';
+import { useApprovalPopup } from '@/ui/utils/approval-popup';
 import { toApprovalRef } from '@/utils/signingTypes';
 
 const accepted = { accepted: true } as const;
@@ -16,6 +31,58 @@ const stale = {
   accepted: false,
   reason: 'APPROVAL_ID_MISMATCH' as const,
 };
+
+it('the legacy hook shares the same stale-device protection and cannot override its scope', async () => {
+  Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  let currentId = 'a';
+  let release!: (connected: boolean) => void;
+  const approval = {
+    id: 'a',
+    data: { approvalComponent: 'SignTx', account: {} },
+  };
+  const wallet = {
+    getCurrentApproval: jest.fn(async () => ({ ...approval, id: currentId })),
+    isApprovalCurrent: jest.fn(async (id) => id === currentId),
+    resolveApprovalFor: jest.fn(),
+  };
+  const connect = jest.fn(() => new Promise<boolean>((r) => (release = r)));
+  (useWallet as jest.Mock).mockReturnValue(wallet);
+  (useDeviceConnect as jest.Mock).mockReturnValue(connect);
+  (useApprovalPopup as jest.Mock).mockReturnValue({});
+  let actions!: ReturnType<typeof useApproval>;
+  const Harness = () => {
+    actions = useApproval();
+    return null;
+  };
+  const root = createRoot(document.createElement('div'));
+  try {
+    await act(async () => {
+      root.render(
+        React.createElement(
+          MemoryRouter,
+          null,
+          React.createElement(
+            ApprovalScopeContext.Provider,
+            { value: createApprovalScope(approval as any) },
+            React.createElement(Harness)
+          )
+        )
+      );
+    });
+    await actions[1]({}, true, false, 'b');
+    expect(connect).not.toHaveBeenCalled();
+    let result!: ReturnType<typeof actions[1]>;
+    await act(async () => {
+      result = actions[1]({}, true);
+    });
+    currentId = 'b';
+    release(true);
+    await expect(result).resolves.toBeUndefined();
+    expect(wallet.resolveApprovalFor).not.toHaveBeenCalled();
+  } finally {
+    await act(async () => root.unmount());
+  }
+});
 
 describe('approval actions keep the render-scoped id across async work', () => {
   it('sends A after the async step even when B becomes current', async () => {

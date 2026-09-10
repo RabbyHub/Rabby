@@ -16,7 +16,6 @@ import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
-import { adjustV } from '@/ui/utils/gnosis';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import {
   UnderlineButton as SwitchButton,
@@ -25,7 +24,7 @@ import {
   KeystoneWiredWaiting,
 } from './KeystoneWaiting';
 import clsx from 'clsx';
-import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
+import { useApprovalSigning } from '@/ui/hooks/useApprovalSigning';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -62,7 +61,6 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
-  const signingEvents = useSigningEvents();
   const [walletBrandContent, setWalletBrandContent] = useState(
     WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE]
   );
@@ -70,8 +68,6 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   const [isClickDone, setIsClickDone] = React.useState(false);
   const [signFinishedData, setSignFinishedData] = React.useState<{
     data: any;
-    stay: boolean;
-    approvalId: string;
   }>();
 
   React.useEffect(() => {
@@ -87,6 +83,22 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
     findChain({
       id: params.chainId || 1,
     })?.enum || CHAINS_ENUM.ETH;
+  const startSigning = useApprovalSigning({
+    onResult: async (data) => {
+      if (data.success) {
+        const sig = data.data;
+
+        setStatus(QRHARDWARE_STATUS.DONE);
+        setSignFinishedData({
+          data: sig,
+        });
+      } else {
+        setErrorMessage(data.errorMsg || '');
+        // rejectApproval(data.errorMsg);
+      }
+    },
+  });
+
   const init = useCallback(async () => {
     const approval = await getApproval();
     if (!approval) return;
@@ -131,52 +143,8 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
         }
       }
     );
-    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
-      if (data.success) {
-        let sig = data.data;
-        try {
-          if (params.isGnosis) {
-            sig = adjustV('eth_signTypedData', sig);
-            const safeMessage = params.safeMessage;
-            if (safeMessage) {
-              if (!(await isCurrent())) return;
-              await wallet.handleGnosisMessage({
-                signature: data.data,
-                signerAddress: params.account!.address!,
-              });
-            } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                if (!(await isCurrent())) return;
-                await wallet.gnosisAddConfirmation(account.address, sig);
-              } else {
-                if (!(await isCurrent())) return;
-                await wallet.gnosisAddSignature(account.address, sig);
-                if (!(await isCurrent())) return;
-                await wallet.postGnosisTransaction();
-              }
-            }
-          }
-        } catch (e) {
-          if (!(await isCurrent())) return;
-          setErrorMessage(e.message);
-          // rejectApproval(e.message);
-          return;
-        }
-        setStatus(QRHARDWARE_STATUS.DONE);
-        if (!(await isCurrent())) return;
-        setSignFinishedData({
-          data: sig,
-          stay: !isSignText,
-          approvalId: approval.id,
-        });
-      } else {
-        setErrorMessage(data.errorMsg || '');
-        // rejectApproval(data.errorMsg);
-      }
-    });
 
-    signingEvents.ready();
+    startSigning();
     wallet.acquireKeystoneMemStoreData();
   }, []);
 
@@ -193,12 +161,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, stay, false);
     }
   }, [signFinishedData, isClickDone]);
 

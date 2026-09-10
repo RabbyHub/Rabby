@@ -8,7 +8,7 @@ export type ApprovalScope = Readonly<{
   approvalType?: Approval['data']['approvalType'];
   account: Approval['data']['account'];
   params?: Approval['data']['params'];
-  executionId?: string;
+  signingAttempt?: number;
 }>;
 
 export const ApprovalScopeContext = createContext<ApprovalScope | null>(null);
@@ -20,7 +20,7 @@ export const createApprovalScope = (approval: Approval): ApprovalScope => {
     approvalType: approval.data.approvalType,
     account: approval.data.account,
     params: approval.data.params,
-    executionId: approval.data.executionId,
+    signingAttempt: approval.data.signingAttempt,
   };
 };
 

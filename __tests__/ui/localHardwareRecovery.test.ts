@@ -100,7 +100,7 @@ describe.each([
       expect(task.list[0].$status).toMatchObject({ failedCode: 'GasTooHigh' });
 
       await act(async () =>
-        eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, {
+        eventBus.emit('COMMON_HARDWARE_REJECTED', {
           operation: {
             kind: 'signing-attempt',
             attempt: { flowId: 'foreign', attemptId: 'foreign' },

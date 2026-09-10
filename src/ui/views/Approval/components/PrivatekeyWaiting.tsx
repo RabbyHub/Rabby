@@ -21,13 +21,12 @@ import {
 import { Account } from 'background/service/preference';
 import stats from '@/stats';
 import { matomoRequestEvent } from '@/utils/matomo-request';
-import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
-import { useSigningEvents } from '@/ui/hooks/useSigningEvents';
+import { useApprovalSigning } from '@/ui/hooks/useApprovalSigning';
 import { ga4 } from '@/utils/ga4';
 import { useAsync } from 'react-use';
 import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
@@ -62,7 +61,6 @@ export const PrivatekeyWaiting = ({
   account: Account;
 }) => {
   const wallet = useWallet();
-  const signingEvents = useSigningEvents();
   const {
     setTitle,
     setVisible,
@@ -84,7 +82,6 @@ export const PrivatekeyWaiting = ({
   const [isClickDone, setIsClickDone] = React.useState(false);
   const [signFinishedData, setSignFinishedData] = React.useState<{
     data: any;
-    approvalId: string;
   }>();
   const [statusProp, setStatusProp] = React.useState<
     ApprovalPopupContainerProps['status']
@@ -100,7 +97,7 @@ export const PrivatekeyWaiting = ({
     setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
 
     if (
-      !(await signingEvents.retry({
+      !(await startSigning({
         type: txFailedResult?.[1] || false,
         nonce: txFailedResult?.[2],
       }))
@@ -108,7 +105,6 @@ export const PrivatekeyWaiting = ({
       return;
 
     message.success(t('page.signFooterBar.ledger.resent'));
-    signingEvents.ready();
   };
   const isSignText = /personalSign|SignTypedData/.test(
     params?.extra?.signTextMethod
@@ -142,6 +138,33 @@ export const PrivatekeyWaiting = ({
   }, [type, isDarkTheme]);
 
   const account = params.isGnosis ? params.account! : $account;
+
+  const startSigning = useApprovalSigning({
+    onSubmitting: () => setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING),
+    onResult: async (data) => {
+      if (data.success) {
+        const sig = data.data;
+        setResult(sig);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
+
+        matomoRequestEvent({
+          category: 'Transaction',
+          action: 'Submit',
+          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
+        });
+
+        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
+          event_category: 'Transaction',
+        });
+        setSignFinishedData({
+          data: sig,
+        });
+      } else {
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
+        setErrorMessage(data.errorMsg || '');
+      }
+    },
+  });
 
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
@@ -188,66 +211,7 @@ export const PrivatekeyWaiting = ({
       });
     }
 
-    signingEvents.listen(EVENTS.TX_SUBMITTING, async () => {
-      setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
-    });
-    signingEvents.listen(EVENTS.SIGN_FINISHED, async (data, isCurrent) => {
-      if (data.success) {
-        let sig = data.data;
-        setResult(sig);
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTED);
-        try {
-          if (params.isGnosis) {
-            sig = adjustV('eth_signTypedData', sig);
-            const safeMessage = params.safeMessage;
-            if (safeMessage) {
-              if (!(await isCurrent())) return;
-              await wallet.handleGnosisMessage({
-                signature: data.data,
-                signerAddress: params.account!.address!,
-              });
-            } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                if (!(await isCurrent())) return;
-                await wallet.gnosisAddConfirmation(account.address, data.data);
-              } else {
-                if (!(await isCurrent())) return;
-                await wallet.gnosisAddSignature(account.address, data.data);
-                if (!(await isCurrent())) return;
-                await wallet.postGnosisTransaction();
-              }
-            }
-          }
-        } catch (e) {
-          if (!(await isCurrent())) return;
-          setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-          setErrorMessage(e.message);
-          console.error(e);
-          return;
-        }
-        matomoRequestEvent({
-          category: 'Transaction',
-          action: 'Submit',
-          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-        });
-
-        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
-          event_category: 'Transaction',
-        });
-
-        if (!(await isCurrent())) return;
-        setSignFinishedData({
-          data: sig,
-          approvalId: approval.id,
-        });
-      } else {
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
-        setErrorMessage(data.errorMsg || '');
-      }
-    });
-
-    signingEvents.ready();
+    startSigning();
   };
 
   React.useEffect(() => {
@@ -280,12 +244,7 @@ export const PrivatekeyWaiting = ({
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, stay, false);
     }
   }, [signFinishedData, isClickDone]);
 
