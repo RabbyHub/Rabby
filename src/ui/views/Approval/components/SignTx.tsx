@@ -51,8 +51,12 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import { useWallet, useCommonPopupView, getTimeSpan } from '@/ui/utils';
-import { useApprovalActions } from '@/ui/approval/actions';
+import {
+  useApproval,
+  useWallet,
+  useCommonPopupView,
+  getTimeSpan,
+} from '@/ui/utils';
 import { useApprovalScope } from '@/ui/approval/context';
 import { WaitingSignComponent, WaitingSignMessageComponent } from './map';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
@@ -501,7 +505,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const approval = useApprovalScope();
-  const { resolve, reject, isBound } = useApprovalActions();
+  const [, resolveApproval, rejectApproval, isBound] = useApproval();
   const securityEngine = useSecurityEngineStore();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
@@ -1411,7 +1415,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         },
         explain: {
           ...res,
-          approvalId: approval.approval.approvalId,
+          approvalId: approval.id,
           calcSuccess: !(checkErrors.length > 0),
         },
         action: {
@@ -1505,25 +1509,22 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       if (isSend) {
         wallet.clearPageStateCache();
       }
-      resolve(
-        {
-          uiRequestComponent: WaitingSignMessageComponent[account.type],
-          type: account.type,
-          address: account.address,
-          data: [account.address, JSON.stringify(typedData)],
-          isGnosis: true,
-          account: account,
-          $account: account,
-          extra: {
-            popupProps: {
-              maskStyle: {
-                backgroundColor: 'transparent',
-              },
+      resolveApproval({
+        uiRequestComponent: WaitingSignMessageComponent[account.type],
+        type: account.type,
+        address: account.address,
+        data: [account.address, JSON.stringify(typedData)],
+        isGnosis: true,
+        account: account,
+        $account: account,
+        extra: {
+          popupProps: {
+            maskStyle: {
+              backgroundColor: 'transparent',
             },
           },
         },
-        {}
-      );
+      });
     } else {
       // it should never go to here
       try {
@@ -1550,7 +1551,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         if (isSend) {
           wallet.clearPageStateCache();
         }
-        resolve(undefined, {});
+        resolveApproval();
       } catch (e) {
         message.error({
           content: e.message,
@@ -1623,7 +1624,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         },
       ],
     });
-    await resolve({
+    await resolveApproval({
       ...tx,
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
@@ -1751,7 +1752,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
         },
         explain: {
           ...txDetail!,
-          approvalId: approval.approval.approvalId,
+          approvalId: approval.id,
           calcSuccess: !(checkErrors.length > 0),
         },
         action: {
@@ -1762,32 +1763,29 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
     if (!(await isBound())) return;
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      resolve(
-        {
-          ...submitTransaction,
-          isSend,
-          nonce: realNonce || tx.nonce,
-          gas: gasLimit,
-          uiRequestComponent: WaitingSignComponent[currentAccount.type],
-          type: currentAccount.type,
-          address: currentAccount.address,
-          traceId: txDetail?.trace_id,
-          extra: {
-            brandName: currentAccount.brandName,
-          },
-          $account: currentAccount,
-          $ctx: params.$ctx,
-          signingTxId: approval.signingTxId,
-          pushType: pushInfo.type,
-          lowGasDeadline: pushInfo.lowGasDeadline,
-          reqId,
-          isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
-          isGasAccount: effectiveGasAccountCanPay,
-          logId: logId.current,
-          sig,
+      resolveApproval({
+        ...submitTransaction,
+        isSend,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        uiRequestComponent: WaitingSignComponent[currentAccount.type],
+        type: currentAccount.type,
+        address: currentAccount.address,
+        traceId: txDetail?.trace_id,
+        extra: {
+          brandName: currentAccount.brandName,
         },
-        {}
-      );
+        $account: currentAccount,
+        $ctx: params.$ctx,
+        signingTxId: approval.signingTxId,
+        pushType: pushInfo.type,
+        lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
+        isGasLess: effectiveGasMethod === 'native' ? useGasLess : false,
+        isGasAccount: effectiveGasAccountCanPay,
+        logId: logId.current,
+        sig,
+      });
 
       return;
     }
@@ -1820,21 +1818,18 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
       event_category: 'Transaction',
     });
 
-    resolve(
-      {
-        ...submitTransaction,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        isSend,
-        traceId: txDetail?.trace_id,
-        signingTxId: approval.signingTxId,
-        pushType: pushInfo.type,
-        lowGasDeadline: pushInfo.lowGasDeadline,
-        reqId,
-        logId: logId.current,
-      },
-      {}
-    );
+    resolveApproval({
+      ...submitTransaction,
+      nonce: realNonce || tx.nonce,
+      gas: gasLimit,
+      isSend,
+      traceId: txDetail?.trace_id,
+      signingTxId: approval.signingTxId,
+      pushType: pushInfo.type,
+      lowGasDeadline: pushInfo.lowGasDeadline,
+      reqId,
+      logId: logId.current,
+    });
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
@@ -1940,7 +1935,7 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
   const handleCancel = () => {
     explainEpochRef.current += 1;
     gaEvent('cancel');
-    reject('User rejected the request.');
+    rejectApproval('User rejected the request.');
   };
 
   const handleDrawerCancel = () => {
@@ -2202,11 +2197,11 @@ const SignTx = ({ params, origin, account: $account }: SignTxProps) => {
           okText: t('page.sendToken.blockedTransactionCancelText'),
           onCancel: async () => {
             await wallet.clearPageStateCache();
-            reject('User rejected the request.', {});
+            rejectApproval('User rejected the request.');
           },
           onOk: async () => {
             await wallet.clearPageStateCache();
-            reject('User rejected the request.', {});
+            rejectApproval('User rejected the request.');
           },
         });
       }

@@ -4,7 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
-import { intToHex, useCommonPopupView, useWallet } from '@/ui/utils';
+import {
+  intToHex,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from '@/ui/utils';
 import { useMount, useRequest } from 'ahooks';
 import {
   ALIAS_ADDRESS,
@@ -46,7 +51,6 @@ import * as Sentry from '@sentry/browser';
 import { getCexInfo } from '@/ui/state/exchange';
 import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 import { useApprovalScope } from '@/ui/approval/context';
-import { useApprovalActions } from '@/ui/approval/actions';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -636,11 +640,7 @@ export const SignTestnetTx = ({
   const { t } = useTranslation();
 
   const approvalScope = useApprovalScope();
-  const {
-    resolve: resolveApproval,
-    reject: rejectApproval,
-    isBound,
-  } = useApprovalActions();
+  const [, resolveApproval, rejectApproval, isBound] = useApproval();
 
   const checkCanProcess = async () => {
     const session = params.session;
@@ -800,28 +800,25 @@ export const SignTestnetTx = ({
     if (!(await isBound())) return;
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      resolveApproval(
-        {
-          ...transaction,
-          isSend,
-          nonce: realNonce || tx.nonce,
-          gas: gasLimit,
-          uiRequestComponent: WaitingSignComponent[currentAccount.type],
-          $account: currentAccount,
-          type: currentAccount.type,
-          address: currentAccount.address,
-          // traceId: txDetail?.trace_id,
-          extra: {
-            brandName: currentAccount.brandName,
-          },
-          $ctx: params.$ctx,
-          signingTxId: approvalScope.signingTxId,
-          // pushType: pushInfo.type,
-          // lowGasDeadline: pushInfo.lowGasDeadline,
-          reqId,
+      resolveApproval({
+        ...transaction,
+        isSend,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        uiRequestComponent: WaitingSignComponent[currentAccount.type],
+        $account: currentAccount,
+        type: currentAccount.type,
+        address: currentAccount.address,
+        // traceId: txDetail?.trace_id,
+        extra: {
+          brandName: currentAccount.brandName,
         },
-        {}
-      );
+        $ctx: params.$ctx,
+        signingTxId: approvalScope.signingTxId,
+        // pushType: pushInfo.type,
+        // lowGasDeadline: pushInfo.lowGasDeadline,
+        reqId,
+      });
 
       return;
     }
@@ -851,17 +848,14 @@ export const SignTestnetTx = ({
       event_category: 'Transaction',
     });
 
-    resolveApproval(
-      {
-        ...transaction,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        isSend,
-        signingTxId: approvalScope.signingTxId,
-        reqId,
-      },
-      {}
-    );
+    resolveApproval({
+      ...transaction,
+      nonce: realNonce || tx.nonce,
+      gas: gasLimit,
+      isSend,
+      signingTxId: approvalScope.signingTxId,
+      reqId,
+    });
   };
 
   const checkErrors = useCheckGasAndNonce({

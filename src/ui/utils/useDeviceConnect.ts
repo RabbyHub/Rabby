@@ -30,7 +30,7 @@ export const useDeviceConnect = () => {
 
       if (type === KEYRING_CLASS.HARDWARE.LEDGER) {
         if (ledgerStatus.status === 'DISCONNECTED') {
-          activePopup('Ledger', approvalScope?.approval.approvalId);
+          activePopup('Ledger', approvalScope?.id);
           return false;
         }
       } else if (type === KEYRING_CLASS.WALLETCONNECT) {
@@ -42,7 +42,7 @@ export const useDeviceConnect = () => {
 
         if (
           approvalScope &&
-          !(await wallet.isApprovalCurrent(approvalScope.approval.approvalId))
+          !(await wallet.isApprovalCurrent(approvalScope.id))
         )
           return false;
         if (!status || status === 'DISCONNECTED') {
@@ -52,19 +52,19 @@ export const useDeviceConnect = () => {
               type,
             });
           }
-          activePopup('WalletConnect', approvalScope?.approval.approvalId);
+          activePopup('WalletConnect', approvalScope?.id);
           return false;
         }
       } else if (type === KEYRING_CLASS.HARDWARE.IMKEY) {
         if (imKeyStatus.status === 'DISCONNECTED') {
-          activePopup('ImKeyPermission', approvalScope?.approval.approvalId);
+          activePopup('ImKeyPermission', approvalScope?.id);
           return false;
         }
       }
 
       return true;
     },
-    [approvalScope?.approval.approvalId, imKeyStatus, ledgerStatus, wallet]
+    [approvalScope?.id, imKeyStatus, ledgerStatus, wallet]
   );
 
   return connect;

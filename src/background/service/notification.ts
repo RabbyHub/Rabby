@@ -268,14 +268,14 @@ class NotificationService extends Events {
     }
     this.deleteApproval(approval);
     this.currentApproval = this.approvals[0] || null;
-    if (approval.signingTxId) {
-      transactionHistoryService.removeSigningTx(approval.signingTxId);
-    }
     approval.reject?.(
       isInternal
         ? ethErrors.rpc.internal(error)
         : ethErrors.provider.userRejectedRequest<any>(error)
     );
+    if (approval.signingTxId) {
+      transactionHistoryService.removeSigningTx(approval.signingTxId);
+    }
     if (!this.currentApproval) await this.clear(stay);
     this.emit('reject', error);
     return { accepted: true };

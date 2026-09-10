@@ -61,6 +61,9 @@ jest.mock('@sentry/browser', () => ({
 }));
 
 import notificationService from '@/background/service/notification';
+import transactionHistoryService from '@/background/service/transactionHistory';
+import stats from '@/stats';
+import { winMgr } from 'background/webapi';
 
 const signTxRequest = (signTxPreparationId?: string) => ({
   approvalComponent: 'SignTx' as const,
@@ -209,5 +212,70 @@ describe('approval commands bind consent to the rendered approval', () => {
       await notificationService.resolveApprovalFor(command)
     ).toMatchObject({ accepted: false });
     expect(notificationService.currentApproval).toBe(next);
+  });
+
+  test('reports a cancelled transaction before removing its signing record', async () => {
+    let signingTx: any = {
+      rawTx: { chainId: '0x1' },
+      explain: { calcSuccess: true, pre_exec: { success: true } },
+    };
+    jest.mocked(stats.report).mockClear();
+    jest
+      .mocked(transactionHistoryService.getSigningTx)
+      .mockImplementation(() => signingTx);
+    jest
+      .mocked(transactionHistoryService.removeSigningTx)
+      .mockImplementationOnce(() => {
+        signingTx = undefined;
+      });
+    const pending = notificationService
+      .requestApproval(signTxRequest())
+      .catch(() => undefined);
+    const approval = notificationService.currentApproval!;
+
+    await notificationService.rejectApprovalFor({
+      approval: { approvalId: approval.id, component: 'SignTx' },
+    });
+    await pending;
+
+    expect(stats.report).toHaveBeenCalledWith(
+      'preExecTransaction',
+      expect.objectContaining({ success: true })
+    );
+    expect(signingTx).toBeUndefined();
+  });
+
+  test('finishing an old window close preserves the new approval and its window', async () => {
+    let release!: () => void;
+    jest.mocked(winMgr.remove).mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          release = resolve;
+        })
+    );
+    jest.mocked(transactionHistoryService.removeSigningTx).mockClear();
+    const pending = notificationService
+      .requestApproval(signTxRequest())
+      .catch(() => undefined);
+    const approval = notificationService.currentApproval!;
+    notificationService.notifiWindowId = 1;
+
+    const rejection = notificationService.rejectApprovalFor({
+      approval: { approvalId: approval.id, component: 'SignTx' },
+    });
+    mockOpenNotification.mockResolvedValueOnce(2);
+    void notificationService.requestApproval(signTxRequest());
+    const next = notificationService.currentApproval;
+    await Promise.resolve();
+    release();
+    await rejection;
+    await pending;
+
+    expect(notificationService.currentApproval).toBe(next);
+    expect(notificationService.notifiWindowId).toBe(2);
+    expect(transactionHistoryService.removeSigningTx).toHaveBeenCalledTimes(1);
+    expect(transactionHistoryService.removeSigningTx).toHaveBeenCalledWith(
+      approval.signingTxId
+    );
   });
 });

@@ -20,17 +20,25 @@ export const useApproval = () => {
   const { showPopup, enablePopup } = useApprovalPopup();
   const { approvalId: popupApprovalId, componentName } = useCommonPopupView();
   const approvalScope = useContext(ApprovalScopeContext);
-  const scopedApprovalId =
-    approvalScope?.approval.approvalId || popupApprovalId;
-  const isUnboundPopup = !!componentName && !scopedApprovalId;
+  const scopedApprovalId = approvalScope?.id || popupApprovalId;
+  const component = approvalScope?.data.approvalComponent;
 
-  const getApproval: () => Promise<Approval | null | undefined> = async () => {
-    if (isUnboundPopup || !scopedApprovalId) {
-      return isUnboundPopup ? undefined : wallet.getCurrentApproval();
-    }
+  const getApproval = async (
+    approvalId = scopedApprovalId
+  ): Promise<Approval | null | undefined> => {
+    if (componentName && !approvalId) return;
     const approval = await wallet.getCurrentApproval();
-    return approval?.id === scopedApprovalId ? approval : undefined;
+    if (approvalId && approval?.id !== approvalId) return;
+    if (component && approval?.data.approvalComponent !== component) return;
+    return approval;
   };
+
+  const getBoundApproval = async (approvalId = scopedApprovalId) => {
+    if (!approvalId || (scopedApprovalId && approvalId !== scopedApprovalId))
+      return;
+    return getApproval(approvalId);
+  };
+  const isBound = async () => !!(await getBoundApproval());
   const deviceConnect = useDeviceConnect();
 
   const resolveApproval = async (
@@ -39,42 +47,19 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
-    const targetApprovalId = approvalId || scopedApprovalId;
-    if (!targetApprovalId) return;
-    if (
-      targetApprovalId &&
-      !(await wallet.isApprovalCurrent(targetApprovalId))
-    ) {
-      return;
-    }
-    const approval = await (targetApprovalId
-      ? wallet.getCurrentApproval()
-      : getApproval());
-    if (!approval) {
-      if (!stay) history.replace('/');
-      return;
-    }
-
-    if (targetApprovalId && approval.id !== targetApprovalId) return;
+    const approval = await getBoundApproval(approvalId);
+    if (!approval) return;
+    const approvalRef = toApprovalRef(
+      approval.id,
+      component || approval.data.approvalComponent
+    );
 
     // handle connect
     if (!(await deviceConnect(data, approval.data.account))) {
       return;
     }
 
-    if (
-      targetApprovalId &&
-      !(await wallet.isApprovalCurrent(targetApprovalId))
-    ) {
-      return;
-    }
-
-    const approvalRef =
-      approvalScope?.approval ||
-      toApprovalRef(
-        targetApprovalId || approval.id,
-        approval.data.approvalComponent
-      );
+    if (!(await wallet.isApprovalCurrent(approval.id))) return;
     const result = await wallet.resolveApprovalFor({
       approval: approvalRef,
       data,
@@ -100,32 +85,13 @@ export const useApproval = () => {
     isInternal = false,
     approvalId?: string
   ) => {
-    const targetApprovalId = approvalId || scopedApprovalId;
-    if (!targetApprovalId) return;
-    if (
-      targetApprovalId &&
-      !(await wallet.isApprovalCurrent(targetApprovalId))
-    ) {
-      return;
-    }
-    const approval = await (targetApprovalId
-      ? wallet.getCurrentApproval()
-      : getApproval());
-    if (!approval) {
-      if (!stay) history.push('/');
-      return;
-    }
-
-    if (targetApprovalId && approval.id !== targetApprovalId) return;
-
-    const approvalRef =
-      approvalScope?.approval ||
-      toApprovalRef(
-        targetApprovalId || approval.id,
-        approval.data.approvalComponent
-      );
+    const approval = await getBoundApproval(approvalId);
+    if (!approval) return;
     const result = await wallet.rejectApprovalFor({
-      approval: approvalRef,
+      approval: toApprovalRef(
+        approval.id,
+        component || approval.data.approvalComponent
+      ),
       error: err,
       stay,
       isInternal,
@@ -136,7 +102,7 @@ export const useApproval = () => {
     }
     return result;
   };
-  return [getApproval, resolveApproval, rejectApproval] as const;
+  return [getApproval, resolveApproval, rejectApproval, isBound] as const;
 };
 
 export const useSelectOption = <T>({

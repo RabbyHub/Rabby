@@ -14,15 +14,14 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { useEventListener, useRequest } from 'ahooks';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
-import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import { CHAINS_ENUM, EVENTS, KEYRING_TYPE } from 'consts';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import { FallbackSiteLogo } from 'ui/component';
-import { useApproval, useWallet } from 'ui/utils';
-import { WaitingSignMessageComponent } from '../map';
+import { useWallet } from 'ui/utils';
 import eventBus from '@/eventBus';
 
 interface ConnectProps {
@@ -81,7 +80,6 @@ export const PerpsInviteContent = (props: ConnectProps) => {
     params: { icon, origin, name, $ctx },
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
 
@@ -125,7 +123,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
         throw new Error('Prepare set referrer failed');
       }
 
-      if (selectedAccount.type === KEYRING_CLASS.HARDWARE.TREZOR) {
+      if (!supportedDirectSign(selectedAccount.type)) {
         const promise = wallet.signPerpsSendSetReferrer({
           address: selectedAccount.address,
           action: resp?.action,
@@ -137,53 +135,28 @@ export const PerpsInviteContent = (props: ConnectProps) => {
         return true;
       }
 
-      let signature = '';
-      if (supportedDirectSign(selectedAccount.type)) {
-        typedDataSignatureStore.close();
-        const isLocalWallet =
-          selectedAccount.type === KEYRING_TYPE.SimpleKeyring ||
-          selectedAccount.type === KEYRING_TYPE.HdKeyring;
-        const res = await typedDataSignatureStore.start(
-          {
-            txs: [
-              {
-                data: resp?.typedData,
-                from: selectedAccount.address,
-                version: 'V4',
-              },
-            ],
-            config: {
-              account: selectedAccount,
-              mode: isLocalWallet ? undefined : 'UI',
+      typedDataSignatureStore.close();
+      const isLocalWallet =
+        selectedAccount.type === KEYRING_TYPE.SimpleKeyring ||
+        selectedAccount.type === KEYRING_TYPE.HdKeyring;
+      const [signature] = await typedDataSignatureStore.start(
+        {
+          txs: [
+            {
+              data: resp?.typedData,
+              from: selectedAccount.address,
+              version: 'V4',
             },
-            wallet,
+          ],
+          config: {
+            account: selectedAccount,
+            mode: isLocalWallet ? undefined : 'UI',
           },
-          {}
-        );
-        signature = res[0];
-        typedDataSignatureStore.close();
-      } else {
-        const promise = wallet.sendRequest<string>({
-          method: 'eth_signTypedData_v4',
-          params: [selectedAccount.address, JSON.stringify(resp?.typedData)],
-        });
-
-        if (WaitingSignMessageComponent[selectedAccount.type]) {
-          resolveApproval({
-            uiRequestComponent:
-              WaitingSignMessageComponent[selectedAccount?.type],
-            $account: selectedAccount,
-            type: selectedAccount.type,
-            address: selectedAccount.address,
-            extra: {
-              brandName: selectedAccount.brandName,
-              signTextMethod: 'eth_signTypedData_v4',
-            },
-          });
-        }
-
-        signature = await promise;
-      }
+          wallet,
+        },
+        {}
+      );
+      typedDataSignatureStore.close();
       if (!signature) {
         throw new Error('Signature failed');
       }

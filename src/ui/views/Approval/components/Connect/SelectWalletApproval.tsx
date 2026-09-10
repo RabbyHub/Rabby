@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import type { Approval } from 'background/service/notification';
 import { useWallet } from 'ui/utils';
-import {
-  ApprovalScopeContext,
-  createApprovalScope,
-} from '@/ui/approval/context';
+import { ApprovalScopeContext } from '@/ui/approval/context';
 
 import clsx from 'clsx';
 import Connect from '.';
@@ -35,12 +32,11 @@ export const ConnectApproval: React.FC<{
 
   if (!approval) return <></>;
   const { params } = approval.data;
-  const scope = createApprovalScope(approval);
 
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <ApprovalScopeContext.Provider value={scope}>
+        <ApprovalScopeContext.Provider value={approval}>
           <ApprovalUtilsProvider>
             <Connect key={approval.id} params={params} />
           </ApprovalUtilsProvider>

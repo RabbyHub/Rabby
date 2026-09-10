@@ -2,10 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from 'ui/utils';
-import {
-  createApprovalScope,
-  ApprovalScopeContext,
-} from '@/ui/approval/context';
+import { ApprovalScopeContext } from '@/ui/approval/context';
 import { ApprovalUtilsProvider } from './hooks/useApprovalUtils';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import * as ApprovalComponent from './components';
@@ -62,11 +59,6 @@ const Approval: React.FC<{
 
   useEventBusListener(EVENTS.RELOAD_APPROVAL, init);
 
-  const scope = React.useMemo(
-    () => (approval ? createApprovalScope(approval) : null),
-    [approval]
-  );
-
   if (!approval) return <></>;
   const { data } = approval;
   const { approvalComponent, params, origin, account } = data;
@@ -75,7 +67,7 @@ const Approval: React.FC<{
   return (
     <div className={clsx('approval', className)}>
       {approval && (
-        <ApprovalScopeContext.Provider value={scope}>
+        <ApprovalScopeContext.Provider value={approval}>
           <ApprovalUtilsProvider>
             <CurrentApprovalComponent
               key={approval.id}
