@@ -969,7 +969,16 @@
         "title": "Phí Rabby",
         "button": "Đã hiểu",
         "bridgeDesc": "Rabby Wallet sẽ luôn tìm ra tỷ lệ tốt nhất có thể từ các nhà tổng hợp hàng đầu và xác minh độ tin cậy của các ưu đãi của họ. Rabby tính phí 0,25%, khoản phí này sẽ tự động được bao gồm trong báo giá.",
-        "swapDesc": "Rabby Wallet luôn tìm tỷ giá tốt nhất từ các trình tổng hợp hàng đầu và xác minh độ tin cậy của báo giá. Rabby tính phí 0,25% (0% khi bọc token), khoản phí này được tự động tính trong báo giá."
+        "swapDesc": "Rabby Wallet luôn tìm tỷ giá tốt nhất từ các trình tổng hợp hàng đầu và xác minh độ tin cậy của báo giá. Rabby tính phí 0,25% (0% khi bọc token), khoản phí này được tự động tính trong báo giá.",
+        "discountTitle": "Giảm phí Rabby",
+        "free": "Miễn phí",
+        "cases": {
+          "wrap": "Bọc/gỡ bọc token gốc",
+          "stablecoins": "Stablecoin",
+          "lstLrt": "Token LST/LRT",
+          "million": "Khối lượng $1M+",
+          "hundredThousand": "Khối lượng $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "Token này có giá trị tín dụng thấp.",

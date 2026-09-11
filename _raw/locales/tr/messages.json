@@ -1041,7 +1041,16 @@
         "wallet": "Cüzdan",
         "swapDesc": "Rabby Wallet, en iyi aggregatorlardan mümkün olan en iyi oranı bulur ve tekliflerinin güvenilirliğini doğrular. Rabby %0,25 ücret alır (Wrap için %0); bu ücret teklife otomatik olarak dahildir.",
         "button": "Anladım",
-        "bridgeDesc": "Rabby Wallet, en iyi toplayıcılardan en iyi mümkün olan oranı her zaman bulacak ve tekliflerinin güvenilirliğini doğrulayacaktır. Rabby, otomatik olarak teklife dahil edilen %0.25 ücret alır."
+        "bridgeDesc": "Rabby Wallet, en iyi toplayıcılardan en iyi mümkün olan oranı her zaman bulacak ve tekliflerinin güvenilirliğini doğrulayacaktır. Rabby, otomatik olarak teklife dahil edilen %0.25 ücret alır.",
+        "discountTitle": "Rabby Ücret İndirimi",
+        "free": "Ücretsiz",
+        "cases": {
+          "wrap": "Yerel tokeni sar/sargısını aç",
+          "stablecoins": "Sabit coinler",
+          "lstLrt": "LST/LRT Tokeni",
+          "million": "Hacim $1M+",
+          "hundredThousand": "Hacim $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "Bu tokenin düşük bir kredi değeri var",

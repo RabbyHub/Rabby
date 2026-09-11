@@ -969,7 +969,16 @@
         "rate": "Tarif biaya",
         "bridgeDesc": "Rabby Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Rabby mengenakan biaya 0,25% yang otomatis disertakan dalam penawaran harga.",
         "title": "Biaya Rabby",
-        "swapDesc": "Rabby Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Rabby mengenakan biaya 0,25% (0% untuk membungkus token) yang otomatis disertakan dalam penawaran harga."
+        "swapDesc": "Rabby Wallet selalu mencari nilai tukar terbaik dari agregator teratas dan memverifikasi keandalan penawarannya. Rabby mengenakan biaya 0,25% (0% untuk membungkus token) yang otomatis disertakan dalam penawaran harga.",
+        "discountTitle": "Diskon Biaya Rabby",
+        "free": "Gratis",
+        "cases": {
+          "wrap": "Bungkus/buka bungkus token asli",
+          "stablecoins": "Stablecoin",
+          "lstLrt": "Token LST/LRT",
+          "million": "Volume $1M+",
+          "hundredThousand": "Volume $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "Token ini memiliki nilai kredit yang rendah",
