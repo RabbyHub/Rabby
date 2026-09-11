@@ -1,6 +1,7 @@
 import type { BridgeServiceStore } from '@/background/service/bridge';
 import type { ContactBookStore } from '@/background/service/contactBook';
 import type { CurrencyStore } from '@/background/service/currency';
+import type { ExtensionUpdateStore } from '@/background/service/extensionUpdate';
 import type { CustomRPCServiceStore } from '@/background/service/rpc';
 import type { SwapServiceStore } from '@/background/service/swap';
 import type { WhitelistStore } from '@/background/service/whitelist';
@@ -10,6 +11,7 @@ export type PersistedStoreMap = {
   bridge: BridgeServiceStore;
   contactBook: ContactBookStore;
   currency: CurrencyStore;
+  pendingExtensionUpdate: ExtensionUpdateStore;
   openapi: PublicOpenapiStore;
   rpc: CustomRPCServiceStore;
   swap: SwapServiceStore;

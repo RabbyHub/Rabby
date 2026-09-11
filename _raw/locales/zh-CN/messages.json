@@ -154,6 +154,10 @@
           "count": "{{count}} 笔"
         },
         "whatsNew": "更新内容",
+        "firstNotice": {
+          "title": "新版本已就绪",
+          "gotIt": "知道了"
+        },
         "importType": "由 {{type}} 导入",
         "missingDataTooltip": "由于 {{text}} 当前存在网络问题，地址余额可能无法更新。",
         "chain": " 链、",
@@ -291,6 +295,15 @@
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "有可用更新",
+        "updateCard": {
+          "check": "查看",
+          "title": "有新版本可用",
+          "update": "更新",
+          "dismiss": "关闭更新提示",
+          "error": "更新插件失败",
+          "perps": "优化了永续合约交易体验。",
+          "screenshots": "右键截图，轻松提交问题反馈。"
+        },
         "updateVersion": {
           "content": "检测到 Rabby Wallet 更新版本\n点击查看如何手动更新",
           "okText": "查看教程",

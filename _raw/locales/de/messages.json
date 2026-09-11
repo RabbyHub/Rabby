@@ -1183,6 +1183,10 @@
           "count": "{{count}} in der"
         },
         "whatsNew": "Was gibt's Neues",
+        "firstNotice": {
+          "title": "Neue Version bereit",
+          "gotIt": "Verstanden"
+        },
         "importType": "Importiert über {{type}}",
         "chainEnd": " Netzwerk",
         "chain": " Netzwerk, ",
@@ -1314,6 +1318,15 @@
         "disableWhitelistTip": "Sobald die Whitelist deaktiviert ist, können Sie Vermögenswerte an jede Adresse senden",
         "warning": "Warnung",
         "clearWatchAddressContent": "Möchten Sie wirklich alle Nur-Lese-Adressen löschen?",
+        "updateCard": {
+          "check": "Ansehen",
+          "title": "Neue Version verfügbar",
+          "update": "Aktualisieren",
+          "dismiss": "Update-Hinweis schließen",
+          "error": "Erweiterung konnte nicht aktualisiert werden",
+          "perps": "Das Perps-Trading-Erlebnis wurde verbessert.",
+          "screenshots": "Per Rechtsklick Screenshots erstellen und Fehler einfach melden."
+        },
         "updateVersion": {
           "content": "Ein neues Update für Rabby Wallet ist verfügbar. Klicken Sie hier, um zu erfahren, wie Sie manuell aktualisieren können.",
           "okText": "Tutorial ansehen",

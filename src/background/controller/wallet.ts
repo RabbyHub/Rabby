@@ -48,6 +48,7 @@ import {
   feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
+import extensionUpdateService from 'background/service/extensionUpdate';
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
@@ -2703,6 +2704,8 @@ export class WalletController extends BaseController {
         return contactBookService.getContactsByMap() as PersistedStoreMap[Key];
       case 'currency':
         return currencyService.getStore() as PersistedStoreMap[Key];
+      case 'pendingExtensionUpdate':
+        return extensionUpdateService.store as PersistedStoreMap[Key];
       case 'openapi':
         return getOpenapiStore() as PersistedStoreMap[Key];
       case 'rpc':
@@ -2755,6 +2758,11 @@ export class WalletController extends BaseController {
         return;
       case 'currency':
         currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
+        return;
+      case 'pendingExtensionUpdate':
+        extensionUpdateService.patchStore(
+          patch as PersistedStorePatch<'pendingExtensionUpdate'>
+        );
         return;
       case 'openapi':
         return patchOpenapiStore(patch as PersistedStorePatch<'openapi'>);
@@ -7103,6 +7111,10 @@ export class WalletController extends BaseController {
 
   setReportGasLevel = miscService.setCurrentGasLevel;
   getReportGasLevel = miscService.getCurrentGasLevel;
+
+  getPendingExtensionVersion = extensionUpdateService.getPendingVersion;
+  requestExtensionUpdateCheck = extensionUpdateService.requestUpdateCheck;
+  reloadExtensionForUpdate = extensionUpdateService.reloadForUpdate;
 
   getScreenshotFeedbacks = feedbackService.getScreenshotFeedbacks;
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;

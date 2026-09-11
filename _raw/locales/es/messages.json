@@ -1183,6 +1183,10 @@
           "count": "{{count}} en"
         },
         "whatsNew": "Novedades",
+        "firstNotice": {
+          "title": "Nueva versión lista",
+          "gotIt": "Entendido"
+        },
         "importType": "Importado mediante {{type}}",
         "missingDataTooltip": "El saldo puede no estar actualizado debido a problemas actuales de la red con {{text}}.",
         "chainEnd": " red",
@@ -1314,6 +1318,15 @@
         "disableWhitelistTip": "Podrás enviar activos a cualquier dirección una vez deshabilitada",
         "warning": "Advertencia",
         "clearWatchAddressContent": "¿Estás seguro de que deseas eliminar todas las direcciones en modo de observación?",
+        "updateCard": {
+          "check": "Ver",
+          "title": "Nueva versión disponible",
+          "update": "Actualizar",
+          "dismiss": "Cerrar aviso de actualización",
+          "error": "No se pudo actualizar la extensión",
+          "perps": "Se ha mejorado la experiencia de trading de perpetuos.",
+          "screenshots": "Haz capturas con el botón derecho para informar de errores fácilmente."
+        },
         "updateVersion": {
           "content": "Hay una nueva actualización para Rabby Wallet disponible. Haz clic para ver cómo actualizar manualmente.",
           "okText": "Ver tutorial",

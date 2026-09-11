@@ -1183,6 +1183,10 @@
           "count": "{{count}} içinde"
         },
         "whatsNew": "Yenilikler",
+        "firstNotice": {
+          "title": "Yeni Sürüm Hazır",
+          "gotIt": "Anladım"
+        },
         "importType": "{{type}} tarafından içe aktarıldı",
         "missingDataTooltip": "Bakiyen, {{text}} ile ilgili mevcut ağ sorunları nedeniyle güncellenmeyebilir.",
         "chainEnd": "zincir",
@@ -1314,6 +1318,15 @@
         "disableWhitelistTip": "Devre dışı bırakıldığında herhangi bir adrese varlık gönderebilirsiniz",
         "warning": "Uyarı",
         "clearWatchAddressContent": "Tüm İzleme Modu adreslerini silmek istediğinizden emin misiniz?",
+        "updateCard": {
+          "check": "İncele",
+          "title": "Yeni sürüm mevcut",
+          "update": "Güncelle",
+          "dismiss": "Güncelleme bildirimini kapat",
+          "error": "Uzantı güncellenemedi",
+          "perps": "Sürekli vadeli işlem deneyimi iyileştirildi.",
+          "screenshots": "Sağ tıklayarak ekran görüntüsü alın ve hataları kolayca bildirin."
+        },
         "updateVersion": {
           "content": "Rabby Cüzdanı için yeni bir güncelleme mevcut. Manuel olarak nasıl güncelleneceğini kontrol etmek için tıklayın.",
           "okText": "Eğiticiye Bak",

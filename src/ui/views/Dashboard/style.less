@@ -1,4 +1,97 @@
 @import '../../style/var.less';
+
+.extension-update-banner {
+  position: absolute;
+  z-index: 20;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: 110px;
+  padding: 19px 48px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  overflow: hidden;
+  border: 1px solid var(--r-neutral-line);
+  border-radius: 16px 16px 8px 8px;
+  background: var(--r-neutral-card-1);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  transform: translateY(0);
+  transition: transform 300ms cubic-bezier(0.7, 0.3, 0.1, 1);
+
+  &.is-closing {
+    transform: translateY(100%);
+    pointer-events: none;
+  }
+
+  &-glow {
+    position: absolute;
+    width: 1186px;
+    height: 1211px;
+    max-width: none;
+    left: -592px;
+    top: -478px;
+    pointer-events: none;
+  }
+
+  &-logo {
+    position: absolute;
+    width: 116px;
+    height: 102px;
+    left: -30px;
+    top: 23px;
+    transform: rotate(-8.45deg);
+    opacity: 0.05;
+    pointer-events: none;
+  }
+
+  &-title {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--r-neutral-title-1);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 18px;
+    img {
+      flex-shrink: 0;
+      transform: rotate(-90deg);
+    }
+  }
+
+  &-close {
+    position: absolute;
+    top: 15px;
+    right: 16px;
+    padding: 4px;
+    background: transparent;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    &:focus-visible {
+      outline: 2px solid var(--r-blue-default);
+    }
+  }
+
+  &-check.ant-btn {
+    position: relative;
+    width: 220px;
+    max-width: 100%;
+    height: 32px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    box-shadow: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition-duration: 1ms;
+  }
+}
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -1419,42 +1512,98 @@
   }
 }
 .first-notice {
+  .ant-modal-content {
+    border: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: url('../../assets/settings/update/glow.svg') no-repeat -591px -461px,
+      linear-gradient(var(--r-neutral-card-1), var(--r-neutral-card-1)),
+      var(--r-neutral-bg-1);
+    background-size: 1186px 1211px, auto;
+    color: var(--r-neutral-title-1);
+  }
+
   .ant-modal-header {
-    background: var(--r-neutral-bg-1);
-    text-align: left;
+    padding: 20px 48px 0 20px;
+    background: transparent;
     border-bottom: 0;
   }
+
   .ant-modal-title {
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 23px;
-    color: var(--r-neutral-title-1);
     text-align: left;
   }
-  .ant-modal-content {
-    background: var(--r-neutral-bg-1);
-    color: var(--r-neutral-title-1);
-    .ant-modal-body {
-      max-height: 420px;
-      h2 {
-        color: var(--r-neutral-title-1);
-      }
-      li {
-        padding-left: 10px;
-        position: relative;
-        &::before {
-          content: '';
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background-color: var(--r-neutral-title-1);
-          border-radius: 100%;
-          left: 0;
-          top: 9px;
-        }
+
+  &-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
+    color: var(---r-neutral-title-1, #192945);
+  }
+
+  &-version {
+    margin-top: 8px;
+    color: var(--r-neutral-foot);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17px;
+  }
+
+  .ant-modal-close {
+    top: 16px;
+    right: 16px;
+    border-radius: 4px;
+
+    &:focus-visible {
+      outline: 2px solid var(--r-blue-default);
+    }
+  }
+
+  .ant-modal-close-x {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ant-modal-body {
+    padding: 16px 20px 20px;
+    max-height: min(420px, calc(100vh - 200px));
+    overflow: auto;
+  }
+
+  &-notes {
+    color: var(--r-neutral-body, #3e495e);
+    h2 {
+      color: var(--r-neutral-title-1);
+    }
+
+    li {
+      padding-left: 10px;
+      position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background-color: var(--r-neutral-body, #3e495e);
+        border-radius: 100%;
+        left: 0;
+        top: 9px;
       }
     }
+  }
+
+  .ant-modal-footer {
+    padding: 0 20px 20px;
+    border-top: 0;
+  }
+
+  &-button.ant-btn {
+    height: 44px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    box-shadow: none;
   }
 }
 .pointer {
