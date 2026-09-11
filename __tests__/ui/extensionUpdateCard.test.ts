@@ -59,7 +59,7 @@ describe('extension update card', () => {
 
   it('shows the pending version without initiating an update', () => {
     render();
-    expect(container.textContent).toContain('V 1.2.3.4');
+    expect(container.textContent).toContain('v1.2.3.4');
     expect(container.textContent).toContain('1. New feature');
     expect(container.textContent).toContain('2. Bug fix');
     const notes = container.querySelector('.extension-update-card-notes')!;
@@ -81,7 +81,7 @@ describe('extension update card', () => {
         })
       )
     );
-    expect(container.textContent).toContain('V 1.2.3.4');
+    expect(container.textContent).toContain('v1.2.3.4');
     expect(
       container.querySelector('.extension-update-card-dialog')
     ).not.toBeNull();
@@ -120,7 +120,7 @@ describe('extension update card', () => {
     renderDialog(false);
     expect(container.querySelector('section')).toBeNull();
     renderDialog(true);
-    expect(container.textContent).toContain('V 1.2.3.4');
+    expect(container.textContent).toContain('v1.2.3.4');
   });
 
   it('dismisses only the current version and shows a newer one', () => {
@@ -134,7 +134,7 @@ describe('extension update card', () => {
     render();
     expect(container.querySelector('section')).toBeNull();
     render('1.2.4');
-    expect(container.textContent).toContain('V 1.2.4');
+    expect(container.textContent).toContain('v1.2.4');
     expect(onUpdate).not.toHaveBeenCalled();
   });
 

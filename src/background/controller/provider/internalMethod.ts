@@ -16,10 +16,6 @@ import { ga4 } from '@/utils/ga4';
 import { ethErrors } from 'eth-rpc-errors';
 import { getOpenInDesktopPolicy } from './openInDesktopPolicy';
 import extensionUpdateService from '@/background/service/extensionUpdate';
-import {
-  isLocalUpdateTest,
-  LOCAL_UPDATE_TEST_ORIGIN,
-} from '@/utils/extensionUpdateTest';
 
 const TAB_CHECKIN_DEDUPE_MS = 100;
 const TAB_CHECKIN_TTL_MS = 2 * 1000;
@@ -198,22 +194,16 @@ const openInDesktop = async (req: ProviderRequest) => {
 };
 
 const getUpdateStatus = async (req: ProviderRequest) => {
-  const localTest =
-    isLocalUpdateTest() && req.origin === LOCAL_UPDATE_TEST_ORIGIN;
-  if (req.origin !== 'https://rabby.io' && !localTest) {
+  if (req.origin !== 'https://rabby.io') {
     throw ethErrors.provider.unauthorized();
   }
-  if (localTest) return extensionUpdateService.getLocalTestUpdateStatus();
   const pendingVersion = await extensionUpdateService.getPendingVersion();
   return { version: browser.runtime.getManifest().version, pendingVersion };
 };
 
 const openPopup = async (req: ProviderRequest) => {
   // Background derives this origin from port.sender.url, not request params.
-  if (
-    req.origin !== 'https://rabby.io' &&
-    !(isLocalUpdateTest() && req.origin === LOCAL_UPDATE_TEST_ORIGIN)
-  ) {
+  if (req.origin !== 'https://rabby.io') {
     throw ethErrors.provider.unauthorized();
   }
 
