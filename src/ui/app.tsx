@@ -7,7 +7,6 @@ import { getUiType } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import i18n, { addResourceBundle, changeLanguage } from 'src/i18n';
-import browser from 'webextension-polyfill';
 
 import { initializeSwapStore } from './state/swap';
 import { initializeExchangeStore } from './state/exchange';
@@ -23,6 +22,7 @@ import { wallet } from './wallet';
 import { queryClient } from './query';
 import {
   markBackgroundStartupSuccessful,
+  reloadForBackgroundRecovery,
   tryReloadForBackgroundRecovery,
   waitForBackgroundReady,
 } from './utils/backgroundStartup';
@@ -139,7 +139,7 @@ const main = async () => {
   );
 };
 
-const renderBackgroundRecovery = (reloading: boolean) => {
+const renderBackgroundRecovery = (reloading: boolean, signal: AbortSignal) => {
   root?.render(
     <div className="fixed inset-0 flex flex-col items-center justify-center gap-[16px] p-[24px] text-center bg-rb-neutral-bg-2 text-r-neutral-title-1">
       <h2>{reloading ? 'Reloading Rabby' : 'Rabby could not start'}</h2>
@@ -149,7 +149,19 @@ const renderBackgroundRecovery = (reloading: boolean) => {
           : 'Try reloading Rabby and reopening it. If the problem continues, restart Chrome.'}
       </p>
       {!reloading && (
-        <Button type="primary" onClick={() => browser.runtime.reload()}>
+        <Button
+          type="primary"
+          onClick={() => {
+            renderBackgroundRecovery(true, signal);
+            void reloadForBackgroundRecovery({
+              trigger: 'manual',
+              signal,
+            }).catch((error) => {
+              console.warn('[background startup] manual reload failed', error);
+              if (!signal.aborted) renderBackgroundRecovery(false, signal);
+            });
+          }}
+        >
           Reload Rabby
         </Button>
       )}
@@ -184,7 +196,7 @@ const bootstrap = async () => {
     // windows and failures of signing/transaction RPCs never enter recovery.
     const recovery = await tryReloadForBackgroundRecovery({
       signal: controller.signal,
-      onReloading: () => renderBackgroundRecovery(true),
+      onReloading: () => renderBackgroundRecovery(true, controller.signal),
     });
     console.warn('[background startup] recovery result:', recovery);
     if (recovery === 'responsive') {
@@ -192,7 +204,7 @@ const bootstrap = async () => {
       continue;
     }
     if (recovery === 'blocked' && !controller.signal.aborted) {
-      renderBackgroundRecovery(false);
+      renderBackgroundRecovery(false, controller.signal);
     }
     return;
   }

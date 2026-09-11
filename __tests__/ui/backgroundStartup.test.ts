@@ -1,7 +1,10 @@
 import browser from 'webextension-polyfill';
+import * as Sentry from '@sentry/react';
 import { jest as jestTimers } from '@jest/globals';
+import { shouldIgnoreSentryError } from '@/utils/sentry';
 import {
   markBackgroundStartupSuccessful,
+  reloadForBackgroundRecovery,
   tryReloadForBackgroundRecovery,
   waitForBackgroundReady,
 } from '@/ui/utils/backgroundStartup';
@@ -10,9 +13,15 @@ jestTimers.mock('webextension-polyfill', () => ({
   __esModule: true,
   default: { runtime: { sendMessage: jest.fn(), reload: jest.fn() } },
 }));
+jestTimers.mock('@sentry/react', () => ({
+  captureMessage: jest.fn(),
+  flush: jest.fn(),
+}));
 
 const sendMessage = browser.runtime.sendMessage as jest.Mock;
 const reload = browser.runtime.reload as jest.Mock;
+const captureMessage = Sentry.captureMessage as jest.Mock;
+const flush = Sentry.flush as jest.Mock;
 const key = 'rabby:sw-recovery';
 let lockHeld = false;
 
@@ -42,6 +51,8 @@ beforeEach(() => {
   });
   sendMessage.mockReset().mockResolvedValue(undefined);
   reload.mockReset();
+  captureMessage.mockReset();
+  flush.mockReset().mockResolvedValue(true);
 });
 
 afterEach(() => {
@@ -143,6 +154,94 @@ test('persists the recovery attempt before reload and blocks subsequent popup op
   await jestTimers.advanceTimersByTimeAsync(60 * 60 * 1000);
   await expect(recover()).resolves.toBe('blocked');
   expect(reload).toHaveBeenCalledTimes(1);
+  expect(captureMessage).toHaveBeenCalledTimes(1);
+  expect(captureMessage).toHaveBeenCalledWith('Background recovery reload', {
+    level: 'warning',
+    tags: { reload_trigger: 'automatic' },
+  });
+  expect(shouldIgnoreSentryError(captureMessage.mock.calls[0][0])).toBe(false);
+});
+
+test('manual reload reports its trigger and waits for Sentry before reloading', async () => {
+  let finishFlush!: (sent: boolean) => void;
+  flush.mockImplementation(
+    () => new Promise<boolean>((resolve) => (finishFlush = resolve))
+  );
+  const result = reloadForBackgroundRecovery({
+    trigger: 'manual',
+    signal: new AbortController().signal,
+  });
+  await jestTimers.advanceTimersByTimeAsync(0);
+  expect(captureMessage).toHaveBeenCalledWith('Background recovery reload', {
+    level: 'warning',
+    tags: { reload_trigger: 'manual' },
+  });
+  expect(flush).toHaveBeenCalledWith(2000);
+  expect(captureMessage.mock.invocationCallOrder[0]).toBeLessThan(
+    flush.mock.invocationCallOrder[0]
+  );
+  expect(reload).not.toHaveBeenCalled();
+  finishFlush(true);
+  await expect(result).resolves.toBe('reloading');
+  expect(reload).toHaveBeenCalledTimes(1);
+  expect(jest.getTimerCount()).toBe(0);
+});
+
+test.each(['capture-throws', 'flush-rejects', 'flush-times-out', 'not-sent'])(
+  'telemetry failure (%s) cannot prevent automatic recovery',
+  async (failure) => {
+    if (failure === 'capture-throws') {
+      captureMessage.mockImplementation(() => {
+        throw new Error('Sentry unavailable');
+      });
+    } else if (failure === 'flush-rejects') {
+      flush.mockRejectedValue(new Error('Transport unavailable'));
+    } else if (failure === 'flush-times-out') {
+      flush.mockImplementation(() => new Promise(() => undefined));
+    } else {
+      flush.mockResolvedValue(false);
+    }
+    const result = recover();
+    await jestTimers.advanceTimersByTimeAsync(2499);
+    if (failure === 'flush-times-out') {
+      expect(reload).not.toHaveBeenCalled();
+      expect(localStorage.getItem(key)).toBeNull();
+    }
+    await jestTimers.advanceTimersByTimeAsync(1);
+    await expect(result).resolves.toBe('reloading');
+    expect(reload).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(localStorage.getItem(key)!)).toMatchObject({
+      pending: true,
+    });
+    expect(jest.getTimerCount()).toBe(0);
+  }
+);
+
+test('closing the popup during Sentry flush does not reload or consume the recovery budget', async () => {
+  flush.mockImplementation(() => new Promise(() => undefined));
+  const controller = new AbortController();
+  const result = recover(controller);
+  await jestTimers.advanceTimersByTimeAsync(500);
+  expect(captureMessage).toHaveBeenCalledTimes(1);
+  controller.abort();
+  await expect(result).resolves.toBe('cancelled');
+  expect(reload).not.toHaveBeenCalled();
+  expect(localStorage.getItem(key)).toBeNull();
+  expect(jest.getTimerCount()).toBe(0);
+});
+
+test('an already closed popup cannot report or reload', async () => {
+  const controller = new AbortController();
+  controller.abort();
+  await expect(
+    reloadForBackgroundRecovery({
+      trigger: 'manual',
+      signal: controller.signal,
+    })
+  ).resolves.toBe('cancelled');
+  expect(captureMessage).not.toHaveBeenCalled();
+  expect(flush).not.toHaveBeenCalled();
+  expect(reload).not.toHaveBeenCalled();
 });
 
 test('successful startup resets the pending flag but retains the cooldown', async () => {
@@ -210,15 +309,21 @@ test('rechecks responsiveness immediately before reloading', async () => {
   await expect(result).resolves.toBe('responsive');
   expect(localStorage.getItem(key)).toBeNull();
   expect(reload).not.toHaveBeenCalled();
+  expect(captureMessage).not.toHaveBeenCalled();
 });
 
 test('concurrent popup contexts can only claim one recovery attempt', async () => {
+  flush.mockImplementation(() => new Promise(() => undefined));
   const first = recover();
   const second = recover();
   await expect(second).resolves.toBe('blocked');
   await jestTimers.advanceTimersByTimeAsync(500);
+  await expect(recover()).resolves.toBe('blocked');
+  expect(reload).not.toHaveBeenCalled();
+  await jestTimers.advanceTimersByTimeAsync(2000);
   await expect(first).resolves.toBe('reloading');
   expect(reload).toHaveBeenCalledTimes(1);
+  expect(captureMessage).toHaveBeenCalledTimes(1);
 });
 
 test('an older popup completing startup cannot clear a newer recovery attempt', async () => {

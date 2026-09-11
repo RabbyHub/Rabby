@@ -1,6 +1,8 @@
 import browser from 'webextension-polyfill';
+import * as Sentry from '@sentry/react';
 
 const MESSAGE_TIMEOUT = 2000;
+const SENTRY_FLUSH_TIMEOUT = 2000;
 const RETRY_INTERVAL = 500;
 const UNRESPONSIVE_TIMEOUT = 15000;
 const RECOVERY_COOLDOWN = 30 * 60 * 1000;
@@ -39,6 +41,36 @@ function withTimeout<T>(
 
 function pause(ms: number, signal: AbortSignal) {
   return withTimeout(() => new Promise<never>(() => undefined), signal, ms);
+}
+
+export async function reloadForBackgroundRecovery({
+  trigger,
+  signal,
+  beforeReload,
+}: {
+  trigger: 'automatic' | 'manual';
+  signal: AbortSignal;
+  beforeReload?: () => void;
+}): Promise<'reloading' | 'cancelled'> {
+  // Capture the recovery attempt in the popup; reporting must work without the
+  // worker, and a stalled transport must not prevent recovery.
+  await withTimeout(
+    () => {
+      Sentry.captureMessage('Background recovery reload', {
+        level: 'warning',
+        tags: { reload_trigger: trigger },
+      });
+      return Sentry.flush(SENTRY_FLUSH_TIMEOUT);
+    },
+    signal,
+    SENTRY_FLUSH_TIMEOUT
+  );
+  if (signal.aborted) return 'cancelled';
+  // Claim the recovery budget only once we're actually about to reload, so
+  // closing the popup while flushing doesn't consume the automatic attempt.
+  beforeReload?.();
+  browser.runtime.reload();
+  return 'reloading';
 }
 
 async function getBackgroundStatus(signal: AbortSignal, checkHealth: boolean) {
@@ -148,14 +180,18 @@ export async function tryReloadForBackgroundRecovery({
         if (signal.aborted) return 'cancelled';
         if (status.ready || status.alive) return 'responsive';
 
-        // Write synchronously BEFORE reload. Storage failures disable automatic
-        // recovery, and an unsuccessful reload stays blocked across popup opens.
-        localStorage.setItem(
-          RECOVERY_KEY,
-          JSON.stringify({ attemptedAt: Date.now(), pending: true })
-        );
-        browser.runtime.reload();
-        return 'reloading';
+        return reloadForBackgroundRecovery({
+          trigger: 'automatic',
+          signal,
+          beforeReload: () => {
+            // Write synchronously BEFORE reload. Storage failures disable
+            // automatic recovery; unsuccessful reloads stay blocked on reopen.
+            localStorage.setItem(
+              RECOVERY_KEY,
+              JSON.stringify({ attemptedAt: Date.now(), pending: true })
+            );
+          },
+        });
       }
     );
   } catch (error) {
