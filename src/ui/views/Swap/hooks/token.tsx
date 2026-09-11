@@ -270,17 +270,41 @@ export const useTokenPair = (userAddress: string) => {
       return;
     }
 
+    if (quoteFetchingRef.current) {
+      setOriActiveProvider(p);
+      if (p && !depositFlowActiveRef.current) {
+        setQuoteRefreshCountdown((prev) => {
+          if (prev?.expired || prev?.frozen) {
+            return prev;
+          }
+          return { startedAt: 0, deadline: 0, frozen: true };
+        });
+      } else if (!p) {
+        setQuoteRefreshCountdown((prev) => (prev?.expired ? prev : null));
+      }
+      return;
+    }
+
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
     }
+    setQuoteRefreshCountdown(null);
 
     if (p && !depositFlowActiveRef.current) {
+      const startedAt = Date.now();
+      const delay = 1000 * 20;
+      setQuoteRefreshCountdown({ startedAt, deadline: startedAt + delay });
       expiredTimer.current = setTimeout(() => {
+        expiredTimer.current = undefined;
+        setQuoteRefreshCountdown((prev) =>
+          prev ? { ...prev, expired: true } : null
+        );
         if (!depositFlowActiveRef.current && !quoteRefreshLockedRef.current) {
+          setPending(true);
           setRefreshId((e) => e + 1);
         }
-      }, 1000 * 20);
+      }, delay);
     }
 
     setOriActiveProvider(p);
@@ -399,6 +423,13 @@ export const useTokenPair = (userAddress: string) => {
   >();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
+  const quoteFetchingRef = useRef(false);
+  const [quoteRefreshCountdown, setQuoteRefreshCountdown] = useState<{
+    startedAt: number;
+    deadline: number;
+    expired?: boolean;
+    frozen?: boolean;
+  } | null>(null);
   const depositFlowActiveRef = useRef(depositFlowActive);
   const previousDepositFlowActiveRef = useRef(depositFlowActive);
 
@@ -743,6 +774,10 @@ export const useTokenPair = (userAddress: string) => {
     { loading: quoteLoading, error: quotesError },
     getQuotes,
   ] = useAsyncFn(async () => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
+    }
     if (depositFlowActiveRef.current || quoteRefreshLockedRef.current) {
       setPending(false);
       return;
@@ -781,6 +816,10 @@ export const useTokenPair = (userAddress: string) => {
         } catch (error) {
           console.log('suggest_slippage error', error);
         }
+      }
+
+      if (currentFetchId !== fetchIdRef.current) {
+        return;
       }
 
       return getAllQuotes({
@@ -822,6 +861,10 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     if (canRunQuoteRequest && !quoteRefreshLockedRef.current) {
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
+      }
       setPending(true);
     } else {
       setPending(false);
@@ -852,6 +895,7 @@ export const useTokenPair = (userAddress: string) => {
       fetchIdRef.current += 1;
       setPending(false);
       cancelQuoteDebounce();
+      setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
         expiredTimer.current = undefined;
@@ -860,8 +904,18 @@ export const useTokenPair = (userAddress: string) => {
     [cancelQuoteDebounce]
   );
 
+  const resumeQuoteRefresh = useCallback(() => {
+    setQuoteRefreshLocked(false);
+    if (canRunQuoteRequest && !depositFlowActiveRef.current) {
+      setQuoteRefreshCountdown({ startedAt: 0, deadline: 0, expired: true });
+      setPending(true);
+    }
+    setRefreshId((id) => id + 1);
+  }, [canRunQuoteRequest, setQuoteRefreshLocked, setRefreshId]);
+
   useEffect(() => {
     if (depositFlowActive) {
+      setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
         expiredTimer.current = undefined;
@@ -876,6 +930,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [cancelQuoteDebounce, depositFlowActive, setRefreshId]);
 
   const rawQuoteLoading = quoteLoading || pending;
+  quoteFetchingRef.current = rawQuoteLoading;
   const allQuotesLoaded = !rawQuoteLoading;
   const quoteListForDisplay = useMemo(() => {
     if (allQuotesLoaded || !payToken || !receiveToken) {
@@ -1034,6 +1089,7 @@ export const useTokenPair = (userAddress: string) => {
   }, []);
 
   useEffect(() => {
+    setQuoteRefreshCountdown(null);
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
@@ -1041,6 +1097,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [payToken?.id, receiveToken?.id, chain, inputAmount]);
 
   useEffect(() => {
+    setQuoteRefreshCountdown(null);
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
@@ -1210,12 +1267,14 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     return () => {
+      fetchIdRef.current += 1;
       clearExpiredTimer();
     };
   }, [clearExpiredTimer]);
 
   return {
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
     bestQuoteDex,
     gasLevel,
 
@@ -1249,6 +1308,7 @@ export const useTokenPair = (userAddress: string) => {
     //quote
     openQuotesList,
     quoteLoading: displayQuoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList: quoteListForDisplay,

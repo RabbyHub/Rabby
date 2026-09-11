@@ -140,6 +140,7 @@ export const Main = () => {
 
     openQuotesList,
     quoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList,
@@ -159,6 +160,7 @@ export const Main = () => {
     showMoreVisible,
     inSufficientCanGetQuote,
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
 
     autoSuggestSlippage,
     setAutoSuggestSlippage,
@@ -182,10 +184,6 @@ export const Main = () => {
   const mevProtection = useSwapStore((s) => s.mevProtection ?? true);
   const setMEVProtection = useSwapStore((s) => s.setMEVProtection);
   const setRecentSwapToToken = useSwapStore((s) => s.setRecentSwapToToken);
-  const resumeQuoteRefresh = useCallback(() => {
-    setQuoteRefreshLocked(false);
-    refresh((id) => id + 1);
-  }, [refresh, setQuoteRefreshLocked]);
 
   const switchPreferMEV = useCallback(
     (bool: boolean) => {
@@ -1262,6 +1260,7 @@ export const Main = () => {
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <BridgeSwitchBtn
                 onClick={exchangeToken}
+                refreshCountdown={quoteRefreshCountdown}
                 loading={
                   quoteLoading &&
                   amountAvailable &&

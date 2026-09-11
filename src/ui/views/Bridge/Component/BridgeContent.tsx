@@ -103,6 +103,7 @@ export const BridgeContent = () => {
 
     openQuotesList,
     quoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList,
@@ -120,6 +121,7 @@ export const BridgeContent = () => {
     isSlippageHigh,
     isSlippageLow,
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
 
     autoSlippage,
     isCustomSlippage,
@@ -157,11 +159,6 @@ export const BridgeContent = () => {
   const setVisible = useSetQuoteVisible();
 
   const refresh = useSetRefreshId();
-
-  const resumeQuoteRefresh = useCallback(() => {
-    setQuoteRefreshLocked(false);
-    refresh((id) => id + 1);
-  }, [refresh, setQuoteRefreshLocked]);
 
   const { t } = useTranslation();
 
@@ -1171,7 +1168,11 @@ export const BridgeContent = () => {
             getContainer={getContainer}
           />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <BridgeSwitchBtn onClick={switchToken} loading={quoteLoading} />
+            <BridgeSwitchBtn
+              onClick={switchToken}
+              loading={quoteLoading}
+              refreshCountdown={quoteRefreshCountdown}
+            />
           </div>
         </div>
         {showExternalDappTips ? (
