@@ -2,10 +2,7 @@ import { useSwapStore } from '@/ui/state/swap';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import {
-  isSameTypeTokenPair,
-  WrapTokenAddressMap,
-} from '@rabby-wallet/rabby-swap';
+import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import {
   useCallback,
@@ -44,7 +41,7 @@ import { isTempoChain } from '@/utils/tempo';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getDefaultSwapToTokenItem } from '@/constant/dex-swap';
-import { getRabbyFeeRate, SwapFeeRate } from './fee';
+import { getRabbyFeeInfo, SwapFeeRate } from './fee';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -645,11 +642,6 @@ export const useTokenPair = (userAddress: string) => {
     return false;
   }, [payToken, receiveToken]);
 
-  const isFreeTokenPair = useMemo(
-    () => isSameTypeTokenPair(payToken, receiveToken),
-    [payToken, receiveToken]
-  );
-
   const autoSlippageValue = getSwapAutoSlippageValue(isStableCoin);
 
   const [isWrapToken, wrapTokenSymbol] = useMemo(() => {
@@ -665,15 +657,16 @@ export const useTokenPair = (userAddress: string) => {
     return [false, ''];
   }, [payToken?.id, receiveToken?.id, chain]);
 
-  const feeRate = useMemo<FeeProps['fee']>(
+  const { feeRate, feeTier } = useMemo(
     () =>
-      getRabbyFeeRate({
+      getRabbyFeeInfo({
         payAmount: inputAmount,
         payTokenPrice: payToken?.price || 0,
-        isFreeTokenPair,
+        payToken,
+        receiveToken,
         isWrapToken,
       }),
-    [inputAmount, isFreeTokenPair, isWrapToken, payToken?.price]
+    [inputAmount, isWrapToken, payToken, receiveToken]
   );
 
   const inSufficient = useMemo(
@@ -1298,12 +1291,12 @@ export const useTokenPair = (userAddress: string) => {
     inputAmount,
 
     isWrapToken,
-    isFreeTokenPair,
     wrapTokenSymbol,
     inSufficient,
     inSufficientCanGetQuote,
 
     feeRate,
+    feeTier,
 
     //quote
     openQuotesList,

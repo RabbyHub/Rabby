@@ -123,7 +123,6 @@ export const Main = () => {
 
     payTokenIsGasToken,
     isWrapToken,
-    isFreeTokenPair,
     inSufficient,
 
     slippageState,
@@ -137,6 +136,7 @@ export const Main = () => {
     setIsCustomSlippage,
 
     feeRate,
+    feeTier,
 
     openQuotesList,
     quoteLoading,
@@ -1392,10 +1392,7 @@ export const Main = () => {
                 type="swap"
                 getContainer={getContainer}
                 isWrapToken={isWrapToken}
-                isRabbyFeeFree={
-                  isFreeTokenPair || (!isWrapToken && feeRate === '0')
-                }
-                isRabbyFeeHalf={feeRate === '0.12'}
+                feeTier={feeTier}
                 isBestQuote={
                   !!activeProvider &&
                   !!bestQuoteDex &&

@@ -95,6 +95,7 @@ export const BridgeContent = () => {
     amount,
     handleAmountChange,
     feeRate,
+    feeTier,
 
     recommendFromToken,
     fillRecommendFromToken,
@@ -1275,8 +1276,7 @@ export const BridgeContent = () => {
                 setIsCustomSlippage={setIsCustomSlippage}
                 type="bridge"
                 getContainer={getContainer}
-                isRabbyFeeFree={feeRate === '0'}
-                isRabbyFeeHalf={feeRate === '0.12'}
+                feeTier={feeTier}
                 isBestQuote={
                   !!bestQuoteId &&
                   !!selectedBridgeQuote &&

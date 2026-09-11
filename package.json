@@ -84,7 +84,7 @@
     "@rabby-wallet/rabby-api": "0.9.65",
     "@rabby-wallet/rabby-bridge": "0.0.8",
     "@rabby-wallet/rabby-security-engine": "2.0.12",
-    "@rabby-wallet/rabby-swap": "0.0.83",
+    "@rabby-wallet/rabby-swap": "0.0.85",
     "@rabby-wallet/staking-sdk": "0.1.0",
     "@safe-global/protocol-kit": "5.0.3",
     "@safe-global/sdk-starter-kit": "1.1.1",
