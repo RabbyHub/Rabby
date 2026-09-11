@@ -2547,6 +2547,10 @@
           "count": "{{count}} in"
         },
         "whatsNew": "What's new",
+        "firstNotice": {
+          "title": "New Version Ready",
+          "gotIt": "Got it"
+        },
         "importType": "Imported by {{type}}",
         "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
         "chain": " chain, ",

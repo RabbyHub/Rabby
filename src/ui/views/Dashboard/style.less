@@ -1512,42 +1512,148 @@
   }
 }
 .first-notice {
+  .ant-modal-content {
+    border: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: url('../../assets/settings/update/glow.svg') no-repeat -591px -461px,
+      linear-gradient(var(--r-neutral-card-1), var(--r-neutral-card-1)),
+      var(--r-neutral-bg-1);
+    background-size: 1186px 1211px, auto;
+    color: var(--r-neutral-title-1);
+  }
+
   .ant-modal-header {
-    background: var(--r-neutral-bg-1);
-    text-align: left;
+    padding: 20px 48px 0 20px;
+    background: transparent;
     border-bottom: 0;
   }
+
   .ant-modal-title {
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 23px;
-    color: var(--r-neutral-title-1);
     text-align: left;
   }
-  .ant-modal-content {
-    background: var(--r-neutral-bg-1);
+
+  &-title {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 19px;
     color: var(--r-neutral-title-1);
-    .ant-modal-body {
-      max-height: 420px;
-      h2 {
-        color: var(--r-neutral-title-1);
-      }
-      li {
-        padding-left: 10px;
+  }
+
+  &-version {
+    margin-top: 8px;
+    color: var(--r-neutral-foot);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17px;
+  }
+
+  .ant-modal-close {
+    top: 16px;
+    right: 16px;
+    border-radius: 4px;
+
+    &:focus-visible {
+      outline: 2px solid var(--r-blue-default);
+    }
+  }
+
+  .ant-modal-close-x {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ant-modal-body {
+    padding: 16px 20px 20px;
+    max-height: min(420px, calc(100vh - 200px));
+    overflow: auto;
+  }
+
+  &-notes {
+    color: var(--r-neutral-body);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 17px;
+    overflow-wrap: anywhere;
+
+    > * + * {
+      margin-top: 8px;
+    }
+
+    p,
+    ul,
+    ol {
+      margin-bottom: 0;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: var(--r-neutral-title-1);
+      font-size: 14px;
+      line-height: 17px;
+    }
+
+    ul {
+      padding-left: 0;
+      list-style: none;
+
+      > li {
         position: relative;
+        padding-left: 20px;
+
         &::before {
           content: '';
           position: absolute;
-          width: 4px;
-          height: 4px;
-          background-color: var(--r-neutral-title-1);
-          border-radius: 100%;
+          width: 16px;
+          height: 12px;
           left: 0;
-          top: 9px;
+          top: 0;
+          background: url('../../assets/settings/update/bullet.svg') no-repeat
+            center / 16px 12px;
         }
       }
     }
+
+    ol {
+      padding-left: 20px;
+      list-style: decimal;
+
+      > li::marker {
+        color: var(--r-neutral-foot);
+      }
+    }
+
+    li + li,
+    li > ul,
+    li > ol {
+      margin-top: 4px;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    pre {
+      white-space: pre-wrap;
+    }
+  }
+
+  .ant-modal-footer {
+    padding: 0 20px 20px;
+    border-top: 0;
+  }
+
+  &-button.ant-btn {
+    height: 44px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    box-shadow: none;
   }
 }
 .pointer {

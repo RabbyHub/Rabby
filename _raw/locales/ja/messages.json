@@ -1183,6 +1183,10 @@
           "count": "{{count}} 件 in"
         },
         "whatsNew": "新着情報",
+        "firstNotice": {
+          "title": "新しいバージョンの準備ができました",
+          "gotIt": "了解"
+        },
         "importType": "{{type}} によってインポート",
         "chainEnd": " チェーン",
         "chain": " チェーン， ",

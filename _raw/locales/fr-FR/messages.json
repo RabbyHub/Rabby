@@ -921,6 +921,10 @@
         "view": "Voir",
         "viewFirstOne": "Voir le premier",
         "whatsNew": "Quoi de neuf",
+        "firstNotice": {
+          "title": "Nouvelle version prête",
+          "gotIt": "Compris"
+        },
         "chain": " réseau, ",
         "chainEnd": " réseau",
         "missingDataTooltip": "Le solde peut ne pas être mis à jour en raison de problèmes de réseau actuels avec {{text}}.",

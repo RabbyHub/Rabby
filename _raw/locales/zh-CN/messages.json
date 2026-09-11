@@ -154,6 +154,10 @@
           "count": "{{count}} 笔"
         },
         "whatsNew": "更新内容",
+        "firstNotice": {
+          "title": "新版本已就绪",
+          "gotIt": "知道了"
+        },
         "importType": "由 {{type}} 导入",
         "missingDataTooltip": "由于 {{text}} 当前存在网络问题，地址余额可能无法更新。",
         "chain": " 链、",

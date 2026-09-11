@@ -1183,6 +1183,10 @@
           "count": "{{count}} na"
         },
         "whatsNew": "O que há de novo",
+        "firstNotice": {
+          "title": "Nova versão pronta",
+          "gotIt": "Entendi"
+        },
         "importType": "Importado por {{type}}",
         "chainEnd": "rede",
         "chain": "cadeia,",
