@@ -1627,15 +1627,15 @@ const SettingsInner = ({
         <div className={clsx('content')}>
           {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
 
-          {hasNewVersion && (
+          {hasNewVersion ? (
             <ExtensionUpdateCard
               version={pendingVersion}
               changelog={changelog}
               onUpdate={reloadForUpdate}
             />
+          ) : (
+            <RateModalTriggerOnSettings className="mb-[16px]" />
           )}
-
-          <RateModalTriggerOnSettings className="mb-[16px]" />
 
           {Object.values(renderData).map((group, idxl1) => {
             return (
